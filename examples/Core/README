@@ -6,8 +6,8 @@ Example1.cpp:
 - Compute the cotan matrix of the loaded mesh
 
 Example2.cpp:
-- Show how it is possible to send/receive matrices to/from matlab
+- Shows how it is possible to send/receive matrices to/from matlab
 in order to use the matlab functions in the igl_toolbox
 
-Tu run example2 you need matlab and to properly configure your PATH and DYLD_PATH.
+To run example2 you need matlab and to properly configure your PATH and DYLD_PATH.
 See runexample2.sh for an example.
