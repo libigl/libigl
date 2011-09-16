@@ -1,20 +1,11 @@
 
 all: example1 example2
 
-STATIC_ANTTWEAKBAR=""
-
 igl_lib=../../
 eigen_lib=/opt/local/include/eigen3/
 
-ifdef STATIC_ANTTWEAKBAR
-CFLAGS=-g -DSTATIC_ANTTWEAKBAR
-inc=-I$(igl_lib) -I./static -I$(eigen_lib)
-lib= -lAntTweakBar -framework AppKit
-else
 CFLAGS=-g
 inc=-I$(igl_lib) -I$(eigen_lib)
-lib=-lAntTweakBar
-endif
 
 matlablibs=-I/Applications/MATLAB_R2010b.app/extern/include -L/Applications/MATLAB_R2010b.app/bin/maci64/ -leng -lmx
 
