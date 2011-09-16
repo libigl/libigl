@@ -30,6 +30,8 @@ namespace igl
     float * quat);
 }
 
+// Implementation
+
 // Utility inline functions
 inline float _QuatD(int w, int h)
 {
@@ -44,6 +46,9 @@ inline float _QuatIY(int y, int w, int h)
     return (-2.0f*(float)y + (float)h - 1.0f)/_QuatD(w, h);
 }
 
+// This is largely the trackball as implemented in AntTweakbar. Much of the
+// code is straight from its source in TwMgr.cpp
+// http://www.antisphere.com/Wiki/tools:anttweakbar
 void igl::trackball(
   const int w,
   const int h,
@@ -82,7 +87,11 @@ void igl::trackball(
     double qrot[4], qres[4], qorig[4];
     axis_angle_to_quat(axis,angle,qrot);
 
-    double nqorig = sqrt(down_quat[0]*down_quat[0]+down_quat[1]*down_quat[1]+down_quat[2]*down_quat[2]+down_quat[3]*down_quat[3]);
+    double nqorig =
+      sqrt(down_quat[0]*down_quat[0]+
+      down_quat[1]*down_quat[1]+
+      down_quat[2]*down_quat[2]+
+      down_quat[3]*down_quat[3]);
 
     if( fabs(nqorig)>DOUBLE_EPS_SQ )
     {
