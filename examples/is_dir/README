@@ -1,0 +1,18 @@
+This is a simple example program that shows how to use the is_dir function of
+is_dir.h in the igl library.
+
+
+To Build:
+  make
+
+To Run:
+  ./example [path_1] [path_2] ... [path_n]
+
+Example Run #1:
+  Issuing:
+    ./example . .. example.cpp non-existant-file
+  should produce:
+    is_dir(.) --> TRUE
+    is_dir(..) --> TRUE
+    is_dir(example.cpp) --> FALSE
+    is_dir(non-existant-file) --> FALSE
