@@ -20,7 +20,7 @@ int main (int argc, const char * argv[])
 {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
-    igl::read(string(argv[1]),V,F);
+    igl::read("bunny.off",V,F);
 
     std::cout << "Mesh loaded!\n";
     cout << "Vertex Array:" << endl;
@@ -36,7 +36,7 @@ int main (int argc, const char * argv[])
     cout << L << endl;
     cout << "-------------" << endl;
     
-    igl::write(string(argv[2]),V,F);
+    igl::write("bunny_out.off",V,F);
     
     // Face Topology
     cout << "TT Topology:" << endl;
