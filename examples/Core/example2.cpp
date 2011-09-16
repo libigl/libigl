@@ -26,7 +26,7 @@ int main (int argc, const char * argv[])
     Eigen::MatrixXi F,F2;
     
     // Read mesh from file
-    igl::read(string(argv[1]),V,F);
+    igl::read("bunny.off",V,F);
     
     // Send mesh to matlab
     igl::mlsetmatrix("V",V);
