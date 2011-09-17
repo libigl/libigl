@@ -1,7 +1,3 @@
-#include <dot.h>
-#include <cross.h>
-#include <axis_angle_to_quat.h>
-#include <quat_mult.h>
 
 namespace igl
 {
@@ -32,16 +28,24 @@ namespace igl
 
 // Implementation
 
+#include <dot.h>
+#include <cross.h>
+#include <axis_angle_to_quat.h>
+#include <quat_mult.h>
+#include <cmath>
+#include <cstdlib>
+#include <algorithm>
+
 // Utility inline functions
-inline float _QuatD(int w, int h)
+static inline float _QuatD(int w, int h)
 {
-    return (float)min(abs(w), abs(h)) - 4;
+    return (float)std::min(abs(w), abs(h)) - 4;
 }
-inline float _QuatIX(int x, int w, int h)
+static inline float _QuatIX(int x, int w, int h)
 {
     return (2.0f*(float)x - (float)w - 1.0f)/_QuatD(w, h);
 }
-inline float _QuatIY(int y, int w, int h)
+static inline float _QuatIY(int y, int w, int h)
 {
     return (-2.0f*(float)y + (float)h - 1.0f)/_QuatD(w, h);
 }

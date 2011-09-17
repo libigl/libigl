@@ -1,0 +1,18 @@
+This is a simple GLUT-based example that shows how to use igl's trackball.h
+function.
+
+To compile:
+  make
+
+Usage:
+  ./example
+or
+  ./example [positive speed factor]
+
+Interaction:
+  Drag on screen to use trackball
+  Press SPACE to change shape
+
+Example #1:
+  # use a speed factor of 2: twice as fast trackball
+  ./example 2
