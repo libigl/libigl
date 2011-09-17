@@ -7,7 +7,7 @@ all: example
 
 igl_lib=../../
 
-CFLAGS=-g
+CFLAGS=-g -Wall
 inc=-I$(igl_lib)
 
 example: example.o

@@ -1,36 +1,10 @@
 /*
   This is an example program that came with AntTweakBar modified to not use
   AntTweakBar and just show how a trackball works
-
-  On mac os x compile with:
-
   g++ -c example.cpp -o example.o 
   g++ -o example example.o -framework OpenGL -framework GLUT
   rm *.o
-
 */
-
-#ifdef __APPLE__
-#define _MACOSX
-#endif
-// ORIGINAL COPYRIGHT INFO
-//  ---------------------------------------------------------------------------
-//
-//  @file       TwSimpleGLUT.c
-//  @brief      A simple example that uses AntTweakBar with OpenGL and GLUT.
-//
-//              AntTweakBar: http://www.antisphere.com/Wiki/tools:anttweakbar
-//              OpenGL:      http://www.opengl.org
-//              GLUT:        http://opengl.org/resources/libraries/glut
-//  
-//  @author     Philippe Decaudin - http://www.antisphere.com
-//  @date       2006/05/20
-//
-//  Compilation:
-//  http://www.antisphere.com/Wiki/tools:anttweakbar:examples#twsimpleglut
-//
-//  ---------------------------------------------------------------------------
-
 
 // IGL library
 #include "quat_to_mat.h"
@@ -53,7 +27,7 @@ using namespace std;
 
 #if defined(USE_MINI_GLUT)
 #   include "../src/MiniGLUT.h"
-#elif defined(_MACOSX)
+#elif defined(__APPLE__)
 #   include <GLUT/glut.h>
 #else
 #   include <GL/glut.h>
@@ -138,7 +112,6 @@ void Display(void)
   
   // Rotate and draw shape
   glPushMatrix();
-  glTranslatef(0.5f, -0.3f, 0.0f);
   float mat[4*4]; // rotation matrix
   quat_to_mat(rotation,mat);
   glMultMatrixf(mat);
@@ -167,7 +140,6 @@ void Reshape(int width, int height)
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   gluLookAt(0,0,5, 0,0,0, 0,1,0);
-  glTranslatef(0, 0.6f, -1);
 }
 
 
@@ -212,7 +184,7 @@ int main(int argc, char *argv[])
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(640, 480);
-  glutCreateWindow("AntTweakBar simple example using GLUT");
+  glutCreateWindow("Simple GLUT example with trackball");
   glutCreateMenu(NULL);
   
   // Set GLUT callbacks
