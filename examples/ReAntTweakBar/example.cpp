@@ -3,9 +3,8 @@
 
   On mac os x compile with:
 
-  g++ -c ReAntTweakBar.cpp -o ReAntTweakBar.o 
   g++ -c example.cpp -o example.o 
-  g++ -o example ReAntTweakBar.o example.o -framework OpenGL -framework GLUT -lAntTweakBar
+  g++ -o example example.o -framework OpenGL -framework GLUT -lAntTweakBar
   rm *.o
 
 */

@@ -1,3 +1,6 @@
+#ifndef IGL_QUAT_MULT_H
+#define IGL_QUAT_MULT_H
+
 namespace igl
 {
   // Computes out = q1 * q2 with quaternion multiplication
@@ -26,3 +29,5 @@ inline void igl::quat_mult(
     out[2] = q1[3]*q2[2] + q1[2]*q2[3] + q1[0]*q2[1] - q1[1]*q2[0];
     out[3] = q1[3]*q2[3] - (q1[0]*q2[0] + q1[1]*q2[1] + q1[2]*q2[2]);
 }
+
+#endif

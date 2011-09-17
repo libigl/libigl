@@ -1,4 +1,8 @@
+#ifndef IGL_AXIS_ANGLE_TO_QUAT_H
+#define IGL_AXIS_ANGLE_TO_QUAT_H
+
 #include <EPS.h>
+#include <cmath>
 namespace igl
 {
   // Convert axis angle representation of a rotation to a quaternion
@@ -13,6 +17,11 @@ namespace igl
     const double *axis, 
     const double angle,
     double *out);
+  // Same but with floats
+  inline void axis_angle_to_quat(
+    const float *axis, 
+    const float angle,
+    float *out);
 }
 
 // Implementation
@@ -39,3 +48,28 @@ inline void igl::axis_angle_to_quat(
         out[0] = out[1] = out[2] = 0.0;
     }
 }
+
+// http://www.antisphere.com/Wiki/tools:anttweakbar
+inline void igl::axis_angle_to_quat(
+  const float *axis, 
+  const float angle,
+  float *out)
+{
+    float n = axis[0]*axis[0] + axis[1]*axis[1] + axis[2]*axis[2];
+    if( fabs(n)>igl::FLOAT_EPS )
+    {
+        float f = 0.5*angle;
+        out[3] = cos(f);
+        f = sin(f)/sqrt(n);
+        out[0] = axis[0]*f;
+        out[1] = axis[1]*f;
+        out[2] = axis[2]*f;
+    }
+    else
+    {
+        out[3] = 1.0;
+        out[0] = out[1] = out[2] = 0.0;
+    }
+}
+
+#endif

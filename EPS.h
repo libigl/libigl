@@ -5,5 +5,7 @@ namespace igl
 {
   const double DOUBLE_EPS    = 1.0e-14;
   const double DOUBLE_EPS_SQ = 1.0e-28;
+  const float FLOAT_EPS    = 1.0e-7;
+  const float FLOAT_EPS_SQ = 1.0e-14;
 }
 #endif
