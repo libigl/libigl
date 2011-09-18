@@ -8,11 +8,10 @@ all: example
 igl_lib=../../
 
 CFLAGS=-g -Wall 
-#deps=-MMD -MF depends.txt
 inc=-I$(igl_lib)
 
 example: example.o
-	g++ $(CFLAGS) -o example example.o -framework OpenGL -framework GLUT $(lib)
+	g++ $(CFLAGS) -o example example.o $(lib) 
 	rm example.o
 
 example.o: example.cpp
@@ -20,4 +19,3 @@ example.o: example.cpp
 clean:
 	rm -f example.o
 	rm -f example
-	rm -f depends.txt

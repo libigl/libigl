@@ -1,0 +1,16 @@
+This pair of .cpp and .php programs demonstrate the use of pathinfo. 
+
+To compile:
+  make
+
+To run C++
+  ./example
+
+To run php:
+  php example.php
+
+To run test:
+  ./example > c++_output.txt
+  php example.php > php_output.txt
+  # should find 0 differences
+  diff c++_output.txt php_output.txt

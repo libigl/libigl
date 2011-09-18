@@ -3,37 +3,48 @@
 //
 //  Copyright 2011, Daniele Panozzo. All rights reserved.
 
-#ifndef READ_H
-#define READ_H
+// History:
+//  return type changed from void to bool  Alec 18 Sept 2011
+
+
+#ifndef IGL_READ_H
+#define IGL_READ_H
 
 #include <Eigen/Core>
 #include <string>
 
-#include <readOBJ.h>
-#include <readOFF.h>
-
 namespace igl 
 {
     // read mesh from an ascii file with automatic detection of file format. supported: obj, off)
-    void read(std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
+  // Inputs:
+  //   str  path to .obj/.off file
+  // Outputs:
+  //   V  eigen double matrix #V by 3
+  //   F  eigen int matrix #F by 3
+  bool read(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F);
+}
+
+// Implementation
+#include <readOBJ.h>
+#include <readOFF.h>
+bool igl::read(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
+{
+    const char* p;
+    for (p = str.c_str(); *p != '\0'; p++)
+        ;
+    while (*p != '.')
+        p--;
+    
+    if (!strcmp(p, ".obj") || !strcmp(p, ".OBJ"))
     {
-        const char* p;
-        for (p = str.c_str(); *p != '\0'; p++)
-            ;
-        while (*p != '.')
-            p--;
-        
-        if (!strcmp(p, ".obj") || !strcmp(p, ".OBJ"))
-        {
-            igl::readOBJ(str,V,F);
-            return;
-        }
-        
-        if (!strcmp(p, ".off") || !strcmp(p, ".OFF"))
-        {
-            igl::readOFF(str,V,F);
-            return;
-        }
+        return igl::readOBJ(str,V,F);
+    }else if (!strcmp(p, ".off") || !strcmp(p, ".OFF"))
+    {
+        return igl::readOFF(str,V,F);
+    }else
+    {
+      fprintf(stderr,"read() does not recognize extension: %s\n",p);
+      return false;
     }
 }
 
