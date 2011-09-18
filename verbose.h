@@ -1,3 +1,5 @@
+#ifndef IGL_VERBOSE_H
+#define IGL_VERBOSE_H
 // Provide a macro for printf, called verbose that functions exactly like
 // printf if VERBOSE is defined and does exactly nothing if VERBOSE is
 // undefined
@@ -26,3 +28,4 @@ inline int igl::verbose(const char * msg,...)
   return 0;
 #endif
 }
+#endif
