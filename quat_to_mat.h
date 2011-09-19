@@ -9,22 +9,24 @@ namespace igl
   //   quat  pointer to four elements of quaternion (x,y,z,w)  
   // Output:
   //   mat  pointer to 16 elements of matrix
-  void quat_to_mat(const float * quat, float * mat);
+  template <typename Q_type>
+  void quat_to_mat(const Q_type * quat, Q_type * mat);
 }
 
 // Implementation
 
-void igl::quat_to_mat(const float * quat, float * mat)
+template <typename Q_type>
+void igl::quat_to_mat(const Q_type * quat, Q_type * mat)
 {
-  float yy2 = 2.0f * quat[1] * quat[1];
-  float xy2 = 2.0f * quat[0] * quat[1];
-  float xz2 = 2.0f * quat[0] * quat[2];
-  float yz2 = 2.0f * quat[1] * quat[2];
-  float zz2 = 2.0f * quat[2] * quat[2];
-  float wz2 = 2.0f * quat[3] * quat[2];
-  float wy2 = 2.0f * quat[3] * quat[1];
-  float wx2 = 2.0f * quat[3] * quat[0];
-  float xx2 = 2.0f * quat[0] * quat[0];
+  Q_type yy2 = 2.0f * quat[1] * quat[1];
+  Q_type xy2 = 2.0f * quat[0] * quat[1];
+  Q_type xz2 = 2.0f * quat[0] * quat[2];
+  Q_type yz2 = 2.0f * quat[1] * quat[2];
+  Q_type zz2 = 2.0f * quat[2] * quat[2];
+  Q_type wz2 = 2.0f * quat[3] * quat[2];
+  Q_type wy2 = 2.0f * quat[3] * quat[1];
+  Q_type wx2 = 2.0f * quat[3] * quat[0];
+  Q_type xx2 = 2.0f * quat[0] * quat[0];
   mat[0*4+0] = - yy2 - zz2 + 1.0f;
   mat[0*4+1] = xy2 + wz2;
   mat[0*4+2] = xz2 - wy2;

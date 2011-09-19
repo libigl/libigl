@@ -26,12 +26,16 @@ namespace igl
 }
 
 // Implementation
+#include <cassert>
 
 // http://www.songho.ca/opengl/gl_vbo.html#create
 void igl::create_vector_vbo(
   const Eigen::MatrixXd & V,
   GLuint & V_vbo_id)
 {
+  // Expects that input is list of 3D vectors along rows
+  assert(V.cols() == 3);
+
   // Generate Buffers
   glGenBuffersARB(1,&V_vbo_id);
   // Bind Buffers

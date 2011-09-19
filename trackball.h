@@ -14,16 +14,17 @@ namespace igl
   //   mouse_y  current y position of mouse
   // Outputs:
   //   quat  the resulting rotation (as quaternion)
+  template <typename Q_type>
   void trackball(
     const int w,
     const int h,
-    const double speed_factor,
-    const float * down_quat,
+    const Q_type speed_factor,
+    const Q_type * down_quat,
     const int down_mouse_x,
     const int down_mouse_y,
     const int mouse_x,
     const int mouse_y,
-    float * quat);
+    Q_type * quat);
 }
 
 // Implementation
@@ -37,40 +38,46 @@ namespace igl
 #include <algorithm>
 
 // Utility inline functions
-static inline float _QuatD(int w, int h)
+template <typename Q_type>
+static inline Q_type _QuatD(int w, int h)
 {
-    return (float)std::min(abs(w), abs(h)) - 4;
+  return (Q_type)std::min(abs(w), abs(h)) - 4;
 }
-static inline float _QuatIX(int x, int w, int h)
+template <typename Q_type>
+static inline Q_type _QuatIX(int x, int w, int h)
 {
-    return (2.0f*(float)x - (float)w - 1.0f)/_QuatD(w, h);
+  return (2.0f*(Q_type)x - (Q_type)w - 1.0f)/_QuatD<Q_type>(w, h);
 }
-static inline float _QuatIY(int y, int w, int h)
+template <typename Q_type>
+static inline Q_type _QuatIY(int y, int w, int h)
 {
-    return (-2.0f*(float)y + (float)h - 1.0f)/_QuatD(w, h);
+  return (-2.0f*(Q_type)y + (Q_type)h - 1.0f)/_QuatD<Q_type>(w, h);
 }
 
 // This is largely the trackball as implemented in AntTweakbar. Much of the
 // code is straight from its source in TwMgr.cpp
 // http://www.antisphere.com/Wiki/tools:anttweakbar
+template <typename Q_type>
 void igl::trackball(
   const int w,
   const int h,
-  const double speed_factor,
-  const float * down_quat,
+  const Q_type speed_factor,
+  const Q_type * down_quat,
   const int down_mouse_x,
   const int down_mouse_y,
   const int mouse_x,
   const int mouse_y,
-  float * quat)
+  Q_type * quat)
 {
-  double original_x = 
-    _QuatIX(speed_factor*(down_mouse_x-w/2)+w/2, w, h);
-  double original_y = 
-    _QuatIY(speed_factor*(down_mouse_y-h/2)+h/2, w, h);
+  assert(speed_factor > 0);
 
-  double x = _QuatIX(speed_factor*(mouse_x-w/2)+w/2, w, h);
-  double y = _QuatIY(speed_factor*(mouse_y-h/2)+h/2, w, h);
+  double original_x = 
+    _QuatIX<Q_type>(speed_factor*(down_mouse_x-w/2)+w/2, w, h);
+  double original_y = 
+    _QuatIY<Q_type>(speed_factor*(down_mouse_y-h/2)+h/2, w, h);
+
+  double x = _QuatIX<Q_type>(speed_factor*(mouse_x-w/2)+w/2, w, h);
+  double y = _QuatIY<Q_type>(speed_factor*(mouse_y-h/2)+h/2, w, h);
 
   double z = 1;
   double n0 = sqrt(original_x*original_x + original_y*original_y + z*z);
@@ -103,7 +110,7 @@ void igl::trackball(
         qorig[1] = down_quat[1]/nqorig;
         qorig[2] = down_quat[2]/nqorig;
         qorig[3] = down_quat[3]/nqorig;
-        quat_mult(qrot,qorig,qres);
+        igl::quat_mult<double>(qrot,qorig,qres);
         quat[0] = qres[0];
         quat[1] = qres[1];
         quat[2] = qres[2];
