@@ -1,6 +1,10 @@
 #ifndef IGL_PER_VERTEX_NORMALS_H
 #define IGL_PER_VERTEX_NORMALS_H
 #include <Eigen/Core>
+// Note: So for this only computes normals per vertex as uniformly weighted
+// averages of incident triangle normals. It would be nice to support more or
+// all of the methods here:
+// "A comparison of algorithms for vertex normal computation"
 namespace igl
 {
   // Compute vertex normals via vertex position list, face list
@@ -27,7 +31,8 @@ void igl::per_vertex_normals(
   Eigen::MatrixXd PFN;
   igl::per_face_normals(V,F,PFN);
 
-  N = Eigen::MatrixXd(V.rows(),3);
+  // Resize for output
+  N.resize(V.rows(),3);
   // loop over vertices, setting normalize to 0
   for(int i = 0; i < N.rows();i++)
   {

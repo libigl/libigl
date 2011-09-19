@@ -21,7 +21,7 @@ void igl::per_face_normals(
   const Eigen::MatrixXi & F,
   Eigen::MatrixXd & N)
 {
-  N = Eigen::MatrixXd(F.rows(),3);
+  N.resize(F.rows(),3);
   // loop over faces
   for(int i = 0; i < F.rows();i++)
   {

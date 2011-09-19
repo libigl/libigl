@@ -15,6 +15,9 @@ namespace igl
 
 void igl::normalize_rows(const Eigen::MatrixXd & A, Eigen::MatrixXd & B)
 {
+  // Resize output
+  B.resize(A.rows(),A.cols());
+
   // loop over rows
   for(int i = 0; i < A.rows();i++)
   {
