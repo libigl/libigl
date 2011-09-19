@@ -6,8 +6,8 @@
 // History:
 //  return type changed from void to bool  Alec 18 Sept 2011
 
-#ifndef READOFF_H
-#define READOFF_H
+#ifndef IGL_READOFF_H
+#define IGL_READOFF_H
 
 #include <Eigen/Core>
 #include <string>
