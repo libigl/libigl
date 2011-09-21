@@ -1,0 +1,12 @@
+This is a simple example program that shows how to use the stdin_to_temp
+function in stdin_to_temp.h in the igl library.
+
+To Build:
+  make
+
+To Run:
+  cat file1 | ./stdin_to_temp_demo
+  cat file1 | ./stdin_to_temp_demo | cat >file2
+  cat file1 | ./stdin_to_temp_demo dummy1 dummy2 | cat >file2
+  ./stdin_to_temp_demo <file1 | cat >file2
+  ./stdin_to_temp_demo <file1 >file2
