@@ -11,7 +11,7 @@
 #endif
 
 // Create a VBO (Vertex Buffer Object) for a list of vectors:
-// GL_ARRAY_BUFFER_ARB for the vectors (V)
+// GL_ARRAY_BUFFER for the vectors (V)
 namespace igl
 {
 
@@ -37,32 +37,32 @@ void igl::create_vector_vbo(
   assert(V.cols() == 3);
 
   // Generate Buffers
-  glGenBuffersARB(1,&V_vbo_id);
+  glGenBuffers(1,&V_vbo_id);
   // Bind Buffers
-  glBindBufferARB(GL_ARRAY_BUFFER_ARB,V_vbo_id);
+  glBindBuffer(GL_ARRAY_BUFFER,V_vbo_id);
   // Copy data to buffers
   // We expect a matrix with each vertex position on a row, we then want to
   // pass this data to OpenGL reading across rows (row-major)
   if(V.Options & Eigen::RowMajor)
   {
-    glBufferDataARB(
-      GL_ARRAY_BUFFER_ARB,
+    glBufferData(
+      GL_ARRAY_BUFFER,
       sizeof(double)*V.size(),
       V.data(),
-      GL_STATIC_DRAW_ARB);
+      GL_STATIC_DRAW);
   }else
   {
     // Create temporary copy of transpose
     Eigen::MatrixXd VT = V.transpose();
     // If its column major then we need to temporarily store a transpose
-    glBufferDataARB(
-      GL_ARRAY_BUFFER_ARB,
+    glBufferData(
+      GL_ARRAY_BUFFER,
       sizeof(double)*V.size(),
       VT.data(),
-      GL_STATIC_DRAW_ARB);
+      GL_STATIC_DRAW);
   }
   // bind with 0, so, switch back to normal pointer operation
-  glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 #endif
