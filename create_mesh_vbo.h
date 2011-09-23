@@ -11,8 +11,8 @@
 #endif
 
 // Create a VBO (Vertex Buffer Object) for a mesh. Actually two VBOs: one 
-// GL_ARRAY_BUFFER_ARB for the vertex positions (V) and one
-// GL_ELEMENT_ARRAY_BUFFER_ARB for the triangle indices (F)
+// GL_ARRAY_BUFFER for the vertex positions (V) and one
+// GL_ELEMENT_ARRAY_BUFFER for the triangle indices (F)
 namespace igl
 {
 

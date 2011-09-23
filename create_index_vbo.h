@@ -43,7 +43,7 @@ void igl::create_index_vbo(
   {
     glBufferDataARB(
       GL_ELEMENT_ARRAY_BUFFER_ARB,
-      sizeof(double)*F.size(),
+      sizeof(int)*F.size(),
       F.data(),
       GL_STATIC_DRAW_ARB);
   }else
@@ -53,9 +53,9 @@ void igl::create_index_vbo(
     // If its column major then we need to temporarily store a transpose
     glBufferDataARB(
       GL_ELEMENT_ARRAY_BUFFER_ARB,
-      sizeof(double)*F.size(),
+      sizeof(int)*F.size(),
       FT.data(),
-      GL_STATIC_DRAW_ARB);
+      GL_STATIC_DRAW);
   }
   // bind with 0, so, switch back to normal pointer operation
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
