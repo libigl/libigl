@@ -1,0 +1,20 @@
+This is a simple example program that shows how to use the is_dir, is_file,
+file_exists, is_readable, is_writable, functions of the igl library
+
+
+To Build:
+  make
+
+To Run:
+  ./example [path_1] [path_2] ... [path_n]
+
+Example Run #1:
+  Issuing:
+    touch not-writable
+    touch not-readable
+    chmod u-r not-readable 
+    chmod u-w not-writable 
+    ./example       / . .. example.cpp non-existant-file not-readable not-writable > output
+    php example.php / . .. example.cpp non-existant-file not-readable not-writable > php-output
+    diff php-output output
+  should produce no differences

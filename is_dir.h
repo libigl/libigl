@@ -1,3 +1,5 @@
+#ifndef IGL_IS_DIR_H
+#define IGL_IS_DIR_H
 namespace igl
 {
   // Act like php's is_dir function
@@ -8,13 +10,13 @@ namespace igl
   //     be checked relative to the current working directory. 
   // Returns TRUE if the filename exists and is a directory, FALSE
   // otherwise.
-  bool is_dir(const char * filename);
+  inline bool is_dir(const char * filename);
 
 }
 
 // Implementation
 #include <sys/stat.h>
-bool igl::is_dir(const char * filename)
+inline bool igl::is_dir(const char * filename)
 {
   struct stat status;
   if(stat(filename,&status)!=0)
@@ -26,3 +28,4 @@ bool igl::is_dir(const char * filename)
   return S_ISDIR(status.st_mode);
 }
 
+#endif
