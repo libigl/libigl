@@ -1,0 +1,14 @@
+This is a simple example program that shows how to use the
+file_contents_as_string function in the igl library.
+
+
+To Build:
+  make
+
+To Run:
+  ./example [path_1] [path_2] ... [path_n]
+
+Example Run #1:
+  Issuing:
+    ./example example.cpp | diff - example.cpp
+  Should produce no differences

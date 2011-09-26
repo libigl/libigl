@@ -21,6 +21,8 @@ namespace igl
   //  extension  string containing extension (characters after last '.')
   //  filename  string containing extension (characters of basename before last
   //    '.')
+  //
+  //  See also: basename, dirname
   void pathinfo(
     const std::string & path,
     std::string & dirname,

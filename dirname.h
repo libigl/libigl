@@ -9,6 +9,8 @@ namespace igl
   // Input:
   //  path  string containing input path
   // Returns string containing dirname (see php's dirname)
+  //
+  // See also: basename, pathinfo
   std::string dirname(const std::string & path);
 }
 
