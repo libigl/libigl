@@ -1,0 +1,15 @@
+This is a simple example program that creates a dummy GLUT window to get a
+valid opengl context then print the glsl version string
+
+
+To Build:
+  make
+
+To Run:
+  ./example
+
+Example Run #1:
+  Issuing:
+    ./example
+  should produce something like:
+    GL_SHADING_LANGUAGE_VERSION: 1.20

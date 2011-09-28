@@ -1,0 +1,22 @@
+This is a simple example program that shows how to use the readDMAT and
+writeDMAT functions of the igl library
+
+
+To Build:
+  make
+
+To Run:
+  ./example [input path] [output path]
+
+Example Run #1:
+  Issuing:
+    ./example example.dmat output.dmat
+    cat output.dmat
+  should produce:
+    3 2
+    1
+    4
+    2
+    5
+    3
+    6
