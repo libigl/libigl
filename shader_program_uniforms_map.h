@@ -12,11 +12,11 @@
 namespace igl
 {
   // Builds a map of *active* uniform names as strings to their respective
-  // locations as GLuint.
+  // indices (NOT locations) as GLuint.
   // Input:
   //   id  index id of the program to query 
   // Output:
-  //   uniforms  map of names to locations
+  //   uniforms  map of names to indices
   // Returns true on success, false on errors
   void shader_program_uniforms_map(
     const GLuint id, 
@@ -26,6 +26,7 @@ namespace igl
 // Implementation
 #include "verbose.h"
 #include "report_gl_error.h"
+#include "uniform_type_to_string.h"
 
 void igl::shader_program_uniforms_map(
   const GLuint id, 
@@ -58,6 +59,11 @@ void igl::shader_program_uniforms_map(
     glGetActiveUniform(id,u,max_name_length,&length,&size,&type,name);
     // insert into map
     uniforms[string(name)] = u;
+    verbose("%s --> index: %d size: %d type: %s\n",
+      name,
+      (int)u,
+      size,
+      uniform_type_to_string(type).c_str());
   }
 
   delete[] name;
