@@ -1,6 +1,5 @@
 #ifndef IGL_GET_SECONDS_H
 #define IGL_GET_SECONDS_H
-#include <sys/time.h>
 
 namespace igl
 {
@@ -10,6 +9,7 @@ namespace igl
 }
 
 //Implementation
+#include <sys/time.h>
 
 inline double igl::get_seconds()
 {

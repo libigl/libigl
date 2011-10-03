@@ -45,18 +45,15 @@ inline bool igl::create_shader_program(
   const std::map<std::string,GLuint> attrib,
   GLuint & id)
 {
-  // load vertex shader
-  GLuint v = igl::load_shader(vert_source.c_str(),GL_VERTEX_SHADER);
-  if(v == 0)
+  if(vert_source == "" && frag_source == "")
   {
+    fprintf(
+      stderr,
+      "Error: create_shader_program() could not create shader program,"
+      " both .vert and .frag source given were empty\n");
     return false;
   }
-  // load fragment shader
-  GLuint f = igl::load_shader(frag_source.c_str(),GL_FRAGMENT_SHADER);
-  if(f == 0)
-  {
-    return false;
-  }
+
   // create program
   id = glCreateProgram();
   if(id == 0)
@@ -66,9 +63,29 @@ inline bool igl::create_shader_program(
       "Error: create_shader_program() could not create shader program.\n");
     return false;
   }
-  // Attach vertex and frag shaders to program
-  glAttachShader(id,v);
-  glAttachShader(id,f);
+
+  if(vert_source != "")
+  {
+    // load vertex shader
+    GLuint v = igl::load_shader(vert_source.c_str(),GL_VERTEX_SHADER);
+    if(v == 0)
+    {
+      return false;
+    }
+    glAttachShader(id,v);
+  }
+
+  if(frag_source != "")
+  {
+    // load fragment shader
+    GLuint f = igl::load_shader(frag_source.c_str(),GL_FRAGMENT_SHADER);
+    if(f == 0)
+    {
+      return false;
+    }
+    glAttachShader(id,f);
+  }
+
   // loop over attributes
   for(
     std::map<std::string,GLuint>::const_iterator ait = attrib.begin();
