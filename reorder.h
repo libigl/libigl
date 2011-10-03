@@ -28,7 +28,7 @@ inline void igl::reorder(
   // sorted
   std::vector<T> copy = unordered;
   ordered.resize(index_map.size());
-  for(int i = 0; i<index_map.size();i++)
+  for(int i = 0; i<(int)index_map.size();i++)
   {
     ordered[i] = copy[index_map[i]];
   }

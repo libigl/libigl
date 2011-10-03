@@ -1,0 +1,83 @@
+<html>
+  <head>
+    <title>MATLAB to Eigen</title>
+    <style type="text/css">
+table
+{
+  border-spacing: 0px;
+}
+tr.header th
+{
+  border-bottom: 1px solid; 
+  background-color: #ffb;
+  padding-left: 10px;
+  padding-right: 20px;
+}
+tr.d0 td 
+{
+  background-color: #EEE; 
+  color: black;
+  padding-left: 10px;
+  padding-right: 20px;
+  min-width: 200px;
+}
+tr.d1 td
+{
+  background-color: #bcf; 
+  color: black;
+  padding-left: 10px;
+  padding-right: 20px;
+  min-width: 200px;
+}
+    </style>
+  </head>
+  <body>
+    <table>
+      <tr class="header">
+        <th>MATLAB</th>
+        <th>Eigen</th>
+        <th>Notes</th>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>[Y,IX] = sort(Y,dim,mode)</code></pre></td>
+        <td><pre><code>igl::sort(X,dim,mode,Y,IX)</code></pre></td>
+        <td>MATLAB version allows Y to be a multidimensional matrix, but the
+        Eigen version is only for 1D or 2D matrices.</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>B(i:(i+w),j:(j+h)) = A(x:(x+w),y:(y+h))</code></pre></td>
+        <td><pre><code>B.block(i,j,w,h) = A.block(i,j,w,h)</code></pre></td>
+        <td>MATLAB version would allow w and h to be non-positive since the
+        colon operator evaluates to a list of indices, but the Eigen version
+        needs non-negative width and height values.</td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>max(A(:))</code></pre></td>
+        <td><pre><code>A.maxCoeff()</code></pre></td>
+        <td>Find the maximum coefficient over all entries of the matrix.</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>min(A(:))</code></pre></td>
+        <td><pre><code>A.minCoeff()</code></pre></td>
+        <td>Find the minimum coefficient over all entries of the matrix.</td>
+      </tr>
+
+      <!-- Insert rows for each command pair -->
+
+      <!-- Leave this here for copy and pasting
+
+      <tr class=d0>
+        <td><pre><code>Matlab code</code></pre></td>
+        <td><pre><code>Eigen code</code></pre></td>
+        <td>Notes</td>
+      </tr>
+
+      -->
+
+    </table>
+  </body>
+</html>

@@ -59,7 +59,7 @@ inline bool igl::snap_to_canonical_view_quat(
   // loop over canonical view quaternions
   for(int sign = -1;sign<=1;sign+=2)
   {
-    for(int i = 0; i<NUM_CANONICAL_VIEW_QUAT; i++)
+    for(int i = 0; i<(int)NUM_CANONICAL_VIEW_QUAT; i++)
     {
       Q_type distance = 0.0;
       // loop over coordinates

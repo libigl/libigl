@@ -75,7 +75,7 @@ int igl::cocoa_key_to_anttweakbar_key(int key)
       return TW_KEY_F14;
     case 63250:
       return TW_KEY_F15;
-    otherwise:
+    default:
       break;
   }
   return key;
