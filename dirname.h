@@ -11,14 +11,14 @@ namespace igl
   // Returns string containing dirname (see php's dirname)
   //
   // See also: basename, pathinfo
-  std::string dirname(const std::string & path);
+  inline std::string dirname(const std::string & path);
 }
 
 // Implementation
 #include <algorithm>
 #include "verbose.h"
 
-std::string igl::dirname(const std::string & path)
+inline std::string igl::dirname(const std::string & path)
 {
   if(path == "")
   {
