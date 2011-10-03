@@ -15,13 +15,16 @@
 namespace igl
 {
 
+  // Templates:
+  //   T  should be a eigen matrix primitive type like int or double
   // Inputs:
-  //   V  #V by 3 eigen Matrix of vertex 3D positions
+  //   V  m by n eigen Matrix of type T values
   // Outputs:
   //   V_vbo_id  buffer id for vectors
   //
+  template <typename T>
   void create_vector_vbo(
-    const Eigen::MatrixXd & V,
+    const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & V,
     GLuint & V_vbo_id);
 }
 
@@ -29,12 +32,13 @@ namespace igl
 #include <cassert>
 
 // http://www.songho.ca/opengl/gl_vbo.html#create
+template <typename T>
 void igl::create_vector_vbo(
-  const Eigen::MatrixXd & V,
+  const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & V,
   GLuint & V_vbo_id)
 {
-  // Expects that input is list of 3D vectors along rows
-  assert(V.cols() == 3);
+  //// Expects that input is list of 3D vectors along rows
+  //assert(V.cols() == 3);
 
   // Generate Buffers
   glGenBuffers(1,&V_vbo_id);
@@ -47,17 +51,17 @@ void igl::create_vector_vbo(
   {
     glBufferData(
       GL_ARRAY_BUFFER,
-      sizeof(double)*V.size(),
+      sizeof(T)*V.size(),
       V.data(),
       GL_STATIC_DRAW);
   }else
   {
     // Create temporary copy of transpose
-    Eigen::MatrixXd VT = V.transpose();
+    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> VT = V.transpose();
     // If its column major then we need to temporarily store a transpose
     glBufferData(
       GL_ARRAY_BUFFER,
-      sizeof(double)*V.size(),
+      sizeof(T)*V.size(),
       VT.data(),
       GL_STATIC_DRAW);
   }
