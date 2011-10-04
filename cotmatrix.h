@@ -29,9 +29,9 @@ namespace igl
             halfArea = cotTolerance;
         }
         
-        cotAlpha = (v12.dot(v13)) / halfArea;
-        cotBeta =  (v23.dot(-v12)) / halfArea;
-        cotGamma = (-v23.dot(-v13)) / halfArea;
+        cotAlpha = (v12.dot(v13)) / halfArea /2;
+        cotBeta =  (v23.dot(-v12)) / halfArea /2;
+        cotGamma = (-v23.dot(-v13)) / halfArea /2;
     }
     
     void cotmatrix (Eigen::MatrixXd V, Eigen::MatrixXi F, Eigen::SparseMatrix<double>& L, bool cotan = true)
@@ -53,8 +53,11 @@ namespace igl
                 computeCotWeights (v1, v2, v3, cot_a, cot_b, cot_g);
                 
                 dyn_L.coeffRef (vi1, vi2) += cot_g;
+                dyn_L.coeffRef (vi2, vi1) += cot_g;
                 dyn_L.coeffRef (vi2, vi3) += cot_a;
+                dyn_L.coeffRef (vi3, vi2) += cot_a;
                 dyn_L.coeffRef (vi3, vi1) += cot_b;
+                dyn_L.coeffRef (vi1, vi3) += cot_b;
             }
             else
             {
@@ -63,7 +66,6 @@ namespace igl
                 dyn_L.coeffRef (vi3, vi1) += 1.0;
             }
         }
-        
         for (int k=0; k < dyn_L.outerSize(); ++k)
         {
             double tmp = 0.0f;
@@ -71,7 +73,6 @@ namespace igl
                 tmp += it.value ();
             dyn_L.coeffRef (k,k) = -tmp;
         }
-        
         L = Eigen::SparseMatrix<double> (dyn_L);
     }
 }
