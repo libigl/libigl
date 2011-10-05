@@ -35,7 +35,6 @@ inline bool igl::readDMAT(const std::string file_name, Eigen::MatrixXd & W)
   FILE * fp = fopen(file_name.c_str(),"r");
   if(fp == NULL)
   {
-    fclose(fp);
     fprintf(stderr,"IOError: readDMAT() could not open %s...\n",file_name.c_str());
     return false; 
   }
