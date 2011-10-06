@@ -66,6 +66,18 @@ tr.d1 td
         <td>Find the minimum coefficient over all entries of the matrix.</td>
       </tr>
 
+      <tr class=d0>
+        <td><pre><code>eye(w,h)</code></pre></td>
+        <td><pre><code>MatrixXd::Identity(w,h), MatrixXf::Identity(w,h), etc.</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>A(i:(i+w),j:(j+h)) = eye(w,h)</code></pre></td>
+        <td><pre><code>A.setIdentity()</code></pre></td>
+        <td></td>
+      </tr>
+
       <!-- Insert rows for each command pair -->
 
       <!-- Leave this here for copy and pasting
