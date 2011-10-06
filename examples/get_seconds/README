@@ -1,0 +1,20 @@
+Simple program showing how to use get_seconds from the igl library
+
+Compile with:
+  make
+
+Run with:
+  ./example
+which should produces something similar to:
+  start: 0.001414s
+  1.00141s - 0.001414s = 1s
+  2.00141s - 0.001414s = 2s
+  3.00142s - 0.001414s = 3s
+  4.00141s - 0.001414s = 4s
+  5.00141s - 0.001414s = 5s
+  6.00141s - 0.001414s = 6s
+  7.00141s - 0.001414s = 7s
+  8.00141s - 0.001414s = 8s
+  9.00141s - 0.001414s = 9s
+  10.0014s - 0.001414s = 10s
+  end: 10.0014s

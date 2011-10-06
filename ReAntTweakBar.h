@@ -627,7 +627,7 @@ bool igl::ReTwBar::set_value_from_string(
   TwType type, 
   const char * value_str)
 {
-  void * value;
+  void * value = NULL;
   // possible value slots
   int i;
   float v;

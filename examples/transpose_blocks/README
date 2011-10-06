@@ -1,0 +1,34 @@
+This is a simple example program that shows how to use the transpose_blocks
+function of the igl library
+
+
+To Build:
+  make
+
+To Run:
+  ./example
+which should produce
+  A=[
+    0   1   2   3
+    4   5   6   7
+  100 101 102 103
+  104 105 106 107
+  200 201 202 203
+  204 205 206 207
+  ];
+  B=[
+    0   4
+    1   5
+    2   6
+    3   7
+  100 104
+  101 105
+  102 106
+  103 107
+  200 204
+  201 205
+  202 206
+  203 207
+  ];
+
+
