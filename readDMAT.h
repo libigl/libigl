@@ -47,8 +47,6 @@ inline bool igl::readDMAT(const std::string file_name, Eigen::MatrixXd & W)
     fprintf(stderr,"IOError: readDMAT() first row should be [num cols] [num rows]...\n");
     return false;
   }
-  verbose("Number of rows: %d\n",num_rows);
-  verbose("Number of cols: %d\n",num_cols);
 
   // check that number of columns and rows are sane
   if(num_cols < 0)
