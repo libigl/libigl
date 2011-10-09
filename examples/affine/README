@@ -1,0 +1,8 @@
+A small program showing how .translate and .rotate affect eigen's Affine matrix class
+
+
+Compile with:
+  make
+
+Run with:
+  ./example
