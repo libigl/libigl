@@ -2,6 +2,7 @@
 #define IGL_SORT_H
 
 #include <vector>
+#include <Eigen/Core>
 namespace igl
 {
 
