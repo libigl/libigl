@@ -78,6 +78,41 @@ tr.d1 td
         <td></td>
       </tr>
 
+      <tr class=d0>
+        <td><pre><code>[I,J,V] = find(X)</code></pre></td>
+        <td><pre><code>igl::find(X,I,J,V)</code></pre></td>
+        <td>Matlab supports finding subscripts (I and J) as well as indices
+        (just I), but so far igl::find only supports subscripts. Also,
+        igl::find requires X to be sparse.</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>X(:,j) = X(:,j) + x</code></pre></td>
+        <td><pre><code>X.col(j).array() += x</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>Adim_sum = sum(A,dim)</code></pre></td>
+        <td><pre><code>igl::sum(A,dim,Adim_sum)</code></pre></td>
+        <td>Currently the igl version only supports sparse matrix input (and
+            dim must be 1 or 2)</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>D = diag(M)</code></pre></td>
+        <td><pre><code>igl::diag(M,D)</code></pre></td>
+        <td>Extract the main diagonal of a matrix. Currently igl version
+        supports sparse only.</td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>M = diag(D)</code></pre></td>
+        <td><pre><code>igl::diag(D,M)</code></pre></td>
+        <td>Construct new square matrix M with entries of vector D along the
+        diagonal. Currently igl version supports sparse only.</td>
+      </tr>
+
       <!-- Insert rows for each command pair -->
 
       <!-- Leave this here for copy and pasting
