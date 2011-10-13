@@ -5,15 +5,15 @@
 
 // WARNING: These functions require matlab installed
 // Additional header folder required:
-//   /Applications/MATLAB_R2010b.app/extern/include
+//   /Applications/MATLAB_R2011a.app/extern/include
 // Additional binary lib to be linked with:
-// /Applications/MATLAB_R2010b.app/bin/maci64/libeng.dylib
-// /Applications/MATLAB_R2010b.app/bin/maci64/libmx.dylib
+// /Applications/MATLAB_R2011a.app/bin/maci64/libeng.dylib
+// /Applications/MATLAB_R2011a.app/bin/maci64/libmx.dylib
 
 // MAC ONLY:
 // Add to the environment variables:
-// DYLD_LIBRARY_PATH = /Applications/MATLAB_R2010b.app/bin/maci64
-// PATH = /opt/local/bin:/opt/local/sbin:/Applications/MATLAB_R2010b.app/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/texbin:/usr/X11/bin
+// DYLD_LIBRARY_PATH = /Applications/MATLAB_R2011a.app/bin/maci64
+// PATH = /opt/local/bin:/opt/local/sbin:/Applications/MATLAB_R2011a.app/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/texbin:/usr/X11/bin
 
 #ifndef MATLAB_INTERFACE_H
 #define MATLAB_INTERFACE_H
