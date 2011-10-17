@@ -57,8 +57,8 @@ using namespace igl;
 
 
 // This example displays one of the following shapes
-typedef enum { SHAPE_TEAPOT=1, SHAPE_TORUS, SHAPE_CONE } Shape;
-#define NUM_SHAPES 3
+typedef enum { SHAPE_TEAPOT=1, SHAPE_TORUS, SHAPE_CONE, SHAPE_SPHERE } Shape;
+#define NUM_SHAPES 4
 Shape g_CurrentShape = SHAPE_TORUS;
 // Shapes scale
 float g_Zoom = 1.0f;
@@ -304,6 +304,9 @@ int main(int argc, char *argv[])
   glNewList(SHAPE_CONE, GL_COMPILE);
   glutSolidCone(1.0, 1.5, 64, 4);
   glEndList();
+  glNewList(SHAPE_SPHERE, GL_COMPILE);
+  glutSolidSphere(1.0, 50, 40);
+  glEndList();
   
   // Create a tweak bar
   rebar.TwNewBar("TweakBar");
@@ -342,7 +345,7 @@ int main(int argc, char *argv[])
   // (before adding an enum variable, its enum type must be declared to AntTweakBar as follow)
   {
     // ShapeEV associates Shape enum values with labels that will be displayed instead of enum values
-    TwEnumVal shapeEV[NUM_SHAPES] = { {SHAPE_TEAPOT, "Teapot"}, {SHAPE_TORUS, "Torus"}, {SHAPE_CONE, "Cone"} };
+    TwEnumVal shapeEV[NUM_SHAPES] = { {SHAPE_TEAPOT, "Teapot"}, {SHAPE_TORUS, "Torus"}, {SHAPE_CONE, "Cone"} , {SHAPE_SPHERE, "Sphere"}};
     // Create a type for the enum shapeEV
     TwType shapeType = ReTwDefineEnum("ShapeType", shapeEV, NUM_SHAPES);
     // add 'g_CurrentShape' to 'bar': this is a variable of type ShapeType. Its key shortcuts are [<] and [>].

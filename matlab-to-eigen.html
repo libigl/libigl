@@ -29,6 +29,25 @@ tr.d1 td
   padding-right: 20px;
   min-width: 200px;
 }
+
+tr.gotcha1 td
+{
+  background-color: #fcb;
+  color: black;
+  padding-left: 10px;
+  padding-right: 20px;
+  min-width: 200px;
+}
+
+tr.gotcha2 td
+{
+  background-color: #fed;
+  color: black;
+  padding-left: 10px;
+  padding-right: 20px;
+  min-width: 200px;
+}
+
     </style>
   </head>
   <body>
@@ -93,8 +112,8 @@ tr.d1 td
       </tr>
 
       <tr class=d0>
-        <td><pre><code>Adim_sum = sum(A,dim)</code></pre></td>
-        <td><pre><code>igl::sum(A,dim,Adim_sum)</code></pre></td>
+        <td><pre><code>Acol_sum = sum(A,1)<br>Arow_sum = sum(A,2)<br>Adim_sum = sum(Asparse,dim)</code></pre></td>
+        <td><pre><code>Acol_sum = A.colwise().sum()<br>Arow_sum = A.rowwise().sum()<br>igl::sum(Asparse,dim,Adim_sum)</code></pre></td>
         <td>Currently the igl version only supports sparse matrix input (and
             dim must be 1 or 2)</td>
       </tr>
@@ -113,6 +132,69 @@ tr.d1 td
         diagonal. Currently igl version supports sparse only.</td>
       </tr>
 
+      <tr class=d1>
+        <td><pre><code>[Y,I] = max(X,[],dim)</code></pre></td>
+        <td id=mat_max><pre><code>igl::mat_max(X,dim,Y,I)</code></pre></td>
+        <td>Matlab has a bizarre convention of passing [] as the second
+          argument to mean take the max/min along dimension dim.</td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>Y = max(X,[],1)<br>Y = max(X,[],2)<br>Y = min(X,[],1)<br>Y = min(X,[],2)</code></pre></td>
+        <td><pre><code>Y = X.colwise().maxCoeff()<br>Y = X.rowwise().maxCoeff()<br>Y = X.colwise().minCoeff()<br>Y = X.rowwise().minCoeff()</code></pre></td>
+        <td>Matlab allows you to obtain the indices of extrema see <a href=#mat_max>mat_max</a></td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>C = A.*B</code></pre></td>
+        <td><pre><code>C = (A.array() * B.array()).matrix()</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>C = A.^b</code></pre></td>
+        <td><pre><code>C = A.array().pow(b).matrix()</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>A(B == 0) = C</code></pre></td>
+        <td><pre><code>A = (B == 0).select(C,A)</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=gotcha1>
+        <td><pre><code>C = A + B'</code></pre></td>
+        <td><pre><code>SparseMatrixType BT = B.transpose()<br>SparseMatrixType C = A+BT;</code></pre></td>
+        <td>Do <b>not</b> attempt to combine .transpose() in expression like
+        this: <pre><code>C = A + B.transpose()</code></pre></td>
+      </tr>
+
+      <tr class=gotcha2>
+        <td><pre><code>[L,p] = chol(A)</code></pre></td>
+        <td><pre><code>SparseLLT&lt;SparseMatrixType&gt; A_LLT(A.template triangularView&lt;Lower&gt;())<br>SparseMatrixType L = A_LLT.matrixL();bool p = (L*0).eval().nonZeros()==0;</code></pre></td>
+        <td>Do <b>not</b> attempt to use A in constructor of A_LLT like
+        this: <pre><code>SparseLLT&lt;SparseMatrixType&gt; A_LLT(A)</code></pre><br>
+        Do <b>not</b> attempt to use A_LLT.succeeded() to determine if Cholesky
+        factorization succeeded, like this:
+        <pre><code>bool p = A_LLT.succeeded()</code></pre>
+        </td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>X = U\(L\b)</code></pre></td>
+        <td><pre><code>X = b;<br>L.template triangularView&lt;Lower&gt;().solveInPlace(X);<br>U.template triangularView&lt;Upper&gt;().solveInPlace(X);</code></pre></td>
+        <td>Expects that L and U are lower and upper triangular matrices
+        respectively</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>B = repmat(A,i,j)</code></pre></td>
+        <td><pre><code>igl::repmat(A,i,j,B)</code></pre></td>
+        <td>So far igl::repmat is only implemented for dense matrices.
+        </td>
+      </tr>
+
       <!-- Insert rows for each command pair -->
 
       <!-- Leave this here for copy and pasting
@@ -126,5 +208,7 @@ tr.d1 td
       -->
 
     </table>
+    <a href="http://eigen.tuxfamily.org/dox/AsciiQuickReference.txt">Eigen's
+    "ASCII Quick Reference" with MATLAB translations</a>
   </body>
 </html>
