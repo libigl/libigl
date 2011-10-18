@@ -51,14 +51,22 @@ inline void igl::slice(
   // Build reindexing maps for columns and rows, -1 means not in map
   Eigen::Matrix<int,Eigen::Dynamic,1> RI;
   RI.resize(xm);
-  RI.array() = RI.array()*0-1;
+  // initialize to -1
+  for(int i = 0;i<xm;i++)
+  {
+    RI(i) = -1;
+  }
   for(int i = 0;i<ym;i++)
   {
     RI(R(i)) = i;
   }
   Eigen::Matrix<int,Eigen::Dynamic,1> CI;
   CI.resize(xn);
-  CI.array() = CI.array()*0-1;
+  // initialize to -1
+  for(int i = 0;i<xn;i++)
+  {
+    CI(i) = -1;
+  }
   for(int i = 0;i<yn;i++)
   {
     CI(C(i)) = i;
@@ -99,14 +107,22 @@ inline void igl::slice(
   // Build reindexing maps for columns and rows, -1 means not in map
   Eigen::Matrix<int,Eigen::Dynamic,1> RI;
   RI.resize(xm);
-  RI.array() = RI.array()*0-1;
+  // initialize to -1
+  for(int i = 0;i<xm;i++)
+  {
+    RI(i) = -1;
+  }
   for(int i = 0;i<ym;i++)
   {
     RI(R(i)) = i;
   }
   Eigen::Matrix<int,Eigen::Dynamic,1> CI;
   CI.resize(xn);
-  CI.array() = CI.array()*0-1;
+  // initialize to -1
+  for(int i = 0;i<xn;i++)
+  {
+    CI(i) = -1;
+  }
   for(int i = 0;i<yn;i++)
   {
     CI(C(i)) = i;
