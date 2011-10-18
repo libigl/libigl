@@ -5,6 +5,7 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <Eigen/SparseExtra>
 
 namespace igl
 {
@@ -30,7 +31,7 @@ namespace igl
   //     using min_quad_with_fixed_solve
   // Returns true on success, false on error
   template <typename T>
-  bool min_quad_with_fixed_precompute(
+  inline bool min_quad_with_fixed_precompute(
     const Eigen::SparseMatrix<T>& A,
     const Eigen::MatrixXi & known,
     const Eigen::SparseMatrix<T>& Aeq,
@@ -45,7 +46,7 @@ namespace igl
   //   Z  n by cols solution
   // Returns true on success, false on error
   template <typename T>
-  bool min_quad_with_fixed_solve(
+  inline bool min_quad_with_fixed_solve(
     const min_quad_with_fixed_data<T> & data,
     const Eigen::Matrix<T,Eigen::Dynamic,1> & B,
     const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & Y,
@@ -57,30 +58,46 @@ namespace igl
 #include <Eigen/SparseExtra>
 #include <cassert>
 #include <cstdio>
+
 #include "slice.h"
 #include "is_symmetric.h"
-
 #include "find.h"
 #include "sparse.h"
+#include "repmat.h"
 #include "lu_lagrange.h"
+#include "full.h"
 
 template <typename T>
 struct igl::min_quad_with_fixed_data
 {
+  // Size of original system: number of unknowns + number of knowns
   int n;
+  // Whether A(unknown,unknown) is positive definite
   bool Auu_pd;
+  // Whether A(unknown,unknown) is symmetric
   bool Auu_sym;
+  // Indices of known variables
   Eigen::Matrix<int,Eigen::Dynamic,1> known;
+  // Indices of unknown variables
   Eigen::Matrix<int,Eigen::Dynamic,1> unknown;
+  // Indices of lagrange variables
   Eigen::Matrix<int,Eigen::Dynamic,1> lagrange;
+  // Indices of unknown variable followed by Indices of lagrange variables
   Eigen::Matrix<int,Eigen::Dynamic,1> unknown_lagrange;
-  SparseMatrix<T> preY;
-  SparseMatrix<T> L;
-  SparseMatrix<T> U;
+  // Matrix multiplied against Y when constructing right hand side
+  Eigen::SparseMatrix<T> preY;
+  // Tells whether system is sparse
+  bool sparse;
+  // Lower triangle of LU decomposition of final system matrix
+  Eigen::SparseMatrix<T> L;
+  // Upper triangle of LU decomposition of final system matrix
+  Eigen::SparseMatrix<T> U;
+  // Dense LU factorization
+  Eigen::FullPivLU<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> > lu;
 };
 
 template <typename T>
-bool igl::min_quad_with_fixed_precompute(
+inline bool igl::min_quad_with_fixed_precompute(
   const Eigen::SparseMatrix<T>& A,
   const Eigen::Matrix<int,Eigen::Dynamic,1> & known,
   const Eigen::SparseMatrix<T>& Aeq,
@@ -94,10 +111,9 @@ bool igl::min_quad_with_fixed_precompute(
   data.n = n;
 
   int neq = Aeq.rows();
-  // defulat is to have 0 linear equality constraints
+  // default is to have 0 linear equality constraints
   if(Aeq.size() != 0)
   {
-    //Aeq = Eigen::SparseMatrix<T>(0,n);
     assert(n == Aeq.cols());
   }
 
@@ -150,7 +166,7 @@ bool igl::min_quad_with_fixed_precompute(
   data.Auu_pd = pd;
 
   // Append lagrange multiplier quadratic terms
-  SparseMatrix<T> new_A;
+  Eigen::SparseMatrix<T> new_A;
   Eigen::Matrix<int,Eigen::Dynamic,1> AI;
   Eigen::Matrix<int,Eigen::Dynamic,1> AJ;
   Eigen::Matrix<T,Eigen::Dynamic,1> AV;
@@ -168,33 +184,29 @@ bool igl::min_quad_with_fixed_precompute(
   new_AI << AI, (AeqI.array()+n).matrix(), AeqJ;
   new_AJ << AJ, AeqJ, (AeqI.array()+n).matrix();
   new_AV << AV, AeqV, AeqV;
-  //new_AI.block(0,0,n,1) = AI;
-  //new_AJ.block(0,0,n,1) = AJ;
-  //new_AV.block(0,0,n,1) = AV;
-  //new_AI.block(n,0,neq,1) = AeqI+n;
-  //new_AJ.block(n,0,neq,1) = AeqJ;
-  //new_AV.block(n,0,neq,1) = AeqV;
-  //new_AI.block(n+neq,0,neq,1) = AeqJ;
-  //new_AJ.block(n+neq,0,neq,1) = AeqI+n;
-  //new_AV.block(n+neq,0,neq,1) = AeqV;
   igl::sparse(new_AI,new_AJ,new_AV,n+neq,n+neq,new_A);
 
   // precompute RHS builders
-  Eigen::SparseMatrix<T> Aulk;
-  igl::slice(new_A,data.unknown_lagrange,data.known,Aulk);
-  Eigen::SparseMatrix<T> Akul;
-  igl::slice(new_A,data.known,data.unknown_lagrange,Akul);
+  if(kr > 0)
+  {
+    Eigen::SparseMatrix<T> Aulk;
+    igl::slice(new_A,data.unknown_lagrange,data.known,Aulk);
+    Eigen::SparseMatrix<T> Akul;
+    igl::slice(new_A,data.known,data.unknown_lagrange,Akul);
 
-  //// This doesn't work!!!
-  //data.preY = Aulk + Akul.transpose();
-  Eigen::SparseMatrix<T> AkulT = Akul.transpose();
-  //// Resize preY before assigning
-  //data.preY.resize(data.unknown_lagrange.size(),data.known.size());
-  data.preY = Aulk + AkulT;
+    //// This doesn't work!!!
+    //data.preY = Aulk + Akul.transpose();
+    Eigen::SparseMatrix<T> AkulT = Akul.transpose();
+    data.preY = Aulk + AkulT;
+  }else
+  {
+    data.preY.resize(data.unknown_lagrange.size(),0);
+  }
 
   // Create factorization
   if(data.Auu_sym && data.Auu_pd)
   {
+    data.sparse = true;
     Eigen::SparseMatrix<T> Aequ(0,0);
     if(neq>0)
     {
@@ -218,15 +230,27 @@ bool igl::min_quad_with_fixed_precompute(
   {
     Eigen::SparseMatrix<T> NA;
     igl::slice(new_A,data.unknown_lagrange,data.unknown_lagrange,NA);
-    assert(false);
-    return false;
+    // Build LU decomposition of NA
+    data.sparse = false;
+    fprintf(stderr,
+      "Warning: min_quad_with_fixed_precompute() resorting to dense LU\n");
+    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> NAfull;
+    igl::full(NA,NAfull);
+    data.lu = 
+      Eigen::FullPivLU<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> >(NAfull);
+    if(!data.lu.isInvertible())
+    {
+      fprintf(stderr,
+        "Error: min_quad_with_fixed_precompute() LU not invertible\n");
+      return false;
+    }
   }
   return true;
 }
 
 
 template <typename T>
-bool igl::min_quad_with_fixed_solve(
+inline bool igl::min_quad_with_fixed_solve(
   const igl::min_quad_with_fixed_data<T> & data,
   const Eigen::Matrix<T,Eigen::Dynamic,1> & B,
   const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & Y,
@@ -245,10 +269,6 @@ bool igl::min_quad_with_fixed_solve(
   // number of lagrange multipliers aka linear equality constraints
   int neq = data.lagrange.size();
 
-  if(neq != 0)
-  {
-  }
-
   // append lagrange multiplier rhs's
   Eigen::Matrix<T,Eigen::Dynamic,1> BBeq(B.size() + Beq.size());
   BBeq << B, (Beq*-2.0);
@@ -259,7 +279,13 @@ bool igl::min_quad_with_fixed_solve(
   Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> BBequlcols;
   igl::repmat(BBequl,1,cols,BBequlcols);
   Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> NB;
-  NB = data.preY * Y + BBequlcols;
+  if(kr == 0)
+  {
+    NB = BBequlcols;
+  }else
+  {
+    NB = data.preY * Y + BBequlcols;
+  }
 
   // resize output
   Z.resize(data.n,cols);
@@ -272,8 +298,23 @@ bool igl::min_quad_with_fixed_solve(
       Z(data.known(i),j) = Y(i,j);
     }
   }
-  data.L.template triangularView<Lower>().solveInPlace(NB);
-  data.U.template triangularView<Upper>().solveInPlace(NB);
+
+  //std::cout<<"NB=["<<std::endl<<NB<<std::endl<<"];"<<std::endl;
+
+  if(data.sparse)
+  {
+    //std::cout<<"data.LIJV=["<<std::endl;print_ijv(data.L,1);std::cout<<std::endl<<"];"<<
+    //  std::endl<<"data.L=sparse(data.LIJV(:,1),data.LIJV(:,2),data.LIJV(:,3),"<<
+    //  data.L.rows()<<","<<data.L.cols()<<");"<<std::endl;
+    //std::cout<<"data.UIJV=["<<std::endl;print_ijv(data.U,1);std::cout<<std::endl<<"];"<<
+    //  std::endl<<"data.U=sparse(data.UIJV(:,1),data.UIJV(:,2),data.UIJV(:,3),"<<
+    //  data.U.rows()<<","<<data.U.cols()<<");"<<std::endl;
+    data.L.template triangularView<Eigen::Lower>().solveInPlace(NB);
+    data.U.template triangularView<Eigen::Upper>().solveInPlace(NB);
+  }else
+  {
+    NB = data.lu.solve(NB);
+  }
   // Now NB contains sol/-0.5
   NB *= -0.5;
   // Now NB contains solution

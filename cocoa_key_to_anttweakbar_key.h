@@ -8,11 +8,11 @@ namespace igl
   // Inputs:
   //   key  unsigned char key from keyboard
   // Returns int of new key code 
-  int cocoa_key_to_anttweakbar_key(int key);
+  inline int cocoa_key_to_anttweakbar_key(int key);
 }
 
 // Implementation
-int igl::cocoa_key_to_anttweakbar_key(int key)
+inline int igl::cocoa_key_to_anttweakbar_key(int key)
 {
   // I've left commented the AntTweakBar key codes that correspond to keys I
   // don't have on my keyboard. Please fill this in if you have those keys

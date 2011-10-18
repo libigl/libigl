@@ -15,7 +15,7 @@
 namespace igl 
 {
     // Compute triangle-triangle adjacency
-    void tt(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::MatrixXi& TT)
+    inline void tt(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::MatrixXi& TT)
     {
         assert(igl::isManifold(V,F));
         std::vector<std::vector<int> > TTT;

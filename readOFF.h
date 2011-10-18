@@ -20,12 +20,12 @@ namespace igl
   // Outputs:
   //   V  eigen double matrix #V by 3
   //   F  eigen int matrix #F by 3
-  bool readOFF (const std::string meshfile, Eigen::MatrixXd& V, Eigen::MatrixXi& F);
+  inline bool readOFF (const std::string meshfile, Eigen::MatrixXd& V, Eigen::MatrixXi& F);
 }
 
 // Implementation
 
-bool igl::readOFF (const std::string meshfile, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
+inline bool igl::readOFF (const std::string meshfile, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
 {
     int vnum, fnum;
     FILE *fp = fopen (meshfile.c_str(), "r");

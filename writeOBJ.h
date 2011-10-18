@@ -20,7 +20,7 @@ namespace igl
   //   V  eigen double matrix #V by 3 (mesh vertices)
   //   F  eigen int matrix #F by 3 (mesh indices)
   // Returns true on success, false on error
-  bool writeOBJ(const std::string str, const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
+  inline bool writeOBJ(const std::string str, const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
 }
 
 // Implementation
@@ -28,7 +28,7 @@ namespace igl
 #include <fstream>
 #include <cstdio>
 
-bool igl::writeOBJ(const std::string str, const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
+inline bool igl::writeOBJ(const std::string str, const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
 {
   std::ofstream s(str.c_str());
 

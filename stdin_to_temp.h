@@ -18,13 +18,13 @@ namespace igl
   //
   // Note: Caller is responsible for closing the file (tmpfile() automatically
   // unlinks the file so there is no need to remove/delete/unlink the file)
-  bool stdin_to_temp(FILE ** temp_file);
+  inline bool stdin_to_temp(FILE ** temp_file);
 }
 
 // IMPLEMENTATION
 #include <iostream>
 
-bool igl::stdin_to_temp(FILE ** temp_file)
+inline bool igl::stdin_to_temp(FILE ** temp_file)
 {
   // get a temporary file
   *temp_file = tmpfile();

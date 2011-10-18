@@ -12,7 +12,7 @@
 namespace igl 
 {
     // write mesh to an ascii off file
-    void writeOFF (std::string fname, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
+    inline void writeOFF (std::string fname, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
     {
         FILE *fp = fopen (fname.c_str(), "w");
         

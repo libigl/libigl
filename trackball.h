@@ -15,7 +15,7 @@ namespace igl
   // Outputs:
   //   quat  the resulting rotation (as quaternion)
   template <typename Q_type>
-  void trackball(
+  inline void trackball(
     const int w,
     const int h,
     const Q_type speed_factor,
@@ -58,7 +58,7 @@ static inline Q_type _QuatIY(int y, int w, int h)
 // code is straight from its source in TwMgr.cpp
 // http://www.antisphere.com/Wiki/tools:anttweakbar
 template <typename Q_type>
-void igl::trackball(
+inline void igl::trackball(
   const int w,
   const int h,
   const Q_type speed_factor,

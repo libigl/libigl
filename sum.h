@@ -18,14 +18,14 @@ namespace igl
   //   or
   //   S  m-long sparse vector (if dim == 2)
   template <typename T>
-  void sum(
+  inline void sum(
     const Eigen::SparseMatrix<T>& X, 
     const int dim,
     Eigen::SparseVector<T>& S);
 }
 
 template <typename T>
-void igl::sum(
+inline void igl::sum(
   const Eigen::SparseMatrix<T>& X, 
   const int dim,
   Eigen::SparseVector<T>& S)

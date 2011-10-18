@@ -23,7 +23,7 @@ namespace igl
   //   L  #V by #V cotangent matrix, each row i corresponding to V(i,:)
   //
   // See also: adjacency_matrix
-  void cotmatrix(
+  inline void cotmatrix(
     const Eigen::MatrixXd & V, 
     const Eigen::MatrixXi & F,
     Eigen::SparseMatrix<double>& L);
@@ -38,7 +38,7 @@ namespace igl
   //   cot2 cotangent of angle at corner #2
   //   cot3  cotangent of angle at corner #3
   //   
-  void computeCotWeights(
+  inline void computeCotWeights(
     const Eigen::Vector3d& v1, 
     const Eigen::Vector3d& v2, 
     const Eigen::Vector3d& v3, 
@@ -52,7 +52,7 @@ namespace igl
 // For error printing
 #include <cstdio>
 
-void igl::computeCotWeights(
+inline void igl::computeCotWeights(
   const Eigen::Vector3d& v1, 
   const Eigen::Vector3d& v2, 
   const Eigen::Vector3d& v3, 
@@ -79,13 +79,14 @@ void igl::computeCotWeights(
   cot3 = (-v23.dot(-v13)) / halfArea /2;
 }
 
-void igl::cotmatrix(
+inline void igl::cotmatrix(
   const Eigen::MatrixXd & V, 
   const Eigen::MatrixXi & F, 
   Eigen::SparseMatrix<double>& L)
 {
-  // Assumes vertices are 3D
-  assert(V.cols() == 3);
+  // Assumes vertices are 3D or 2D
+  assert((V.cols() == 3) || (V.cols() == 2));
+  int dim = V.cols();
   // Assumes faces are triangles
   assert(F.cols() == 3);
 
@@ -99,9 +100,9 @@ void igl::cotmatrix(
     int vi2 = F(i,1);
     int vi3 = F(i,2);
     // Grab corner positions of this triangle
-    Eigen::Vector3d v1(V(vi1,0), V(vi1,1), V(vi1,2));
-    Eigen::Vector3d v2(V(vi2,0), V(vi2,1), V(vi2,2));
-    Eigen::Vector3d v3(V(vi3,0), V(vi3,1), V(vi3,2));
+    Eigen::Vector3d v1(V(vi1,0), V(vi1,1), (dim==2?0:V(vi1,2)));
+    Eigen::Vector3d v2(V(vi2,0), V(vi2,1), (dim==2?0:V(vi2,2)));
+    Eigen::Vector3d v3(V(vi3,0), V(vi3,1), (dim==2?0:V(vi3,2)));
     // Compute cotangent of angles at each corner
     double cot1, cot2, cot3;
     computeCotWeights(v1, v2, v3, cot1, cot2, cot3);

@@ -17,14 +17,14 @@ namespace igl
   //     GL_FRAGMENT_SHADER
   //     GL_GEOMETRY_SHADER
   // Returns  index id of the newly created shader, 0 on error
-  GLuint load_shader(const char *src,const GLenum type);
+  inline GLuint load_shader(const char *src,const GLenum type);
 }
 
 // Implmentation
 // Copyright Denis Kovacs 4/10/08
 #include "print_shader_info_log.h"
 #include <cstdio>
-GLuint igl::load_shader(const char *src,const GLenum type)
+inline GLuint igl::load_shader(const char *src,const GLenum type)
 {
   GLuint s = glCreateShader(type);
   if(s == 0)

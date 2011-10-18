@@ -10,10 +10,10 @@ namespace igl
   //   A  #rows by k input matrix
   // Outputs:
   //   B  #rows by k input matrix, can be the same as A
-  void normalize_rows(const Eigen::MatrixXd & A, Eigen::MatrixXd & B);
+  inline void normalize_rows(const Eigen::MatrixXd & A, Eigen::MatrixXd & B);
 }
 
-void igl::normalize_rows(const Eigen::MatrixXd & A, Eigen::MatrixXd & B)
+inline void igl::normalize_rows(const Eigen::MatrixXd & A, Eigen::MatrixXd & B)
 {
   // Resize output
   B.resize(A.rows(),A.cols());

@@ -15,7 +15,7 @@ namespace igl
   // Outputs:
   //   V  a min(m,n) sparse vector
   template <typename T>
-  void diag(
+  inline void diag(
     const Eigen::SparseMatrix<T>& X, 
     Eigen::SparseVector<T>& V);
   // Templates:
@@ -25,7 +25,7 @@ namespace igl
   // Outputs:
   //  X  a m by m sparse matrix
   template <typename T>
-  void diag(
+  inline void diag(
     const Eigen::SparseVector<T>& V,
     Eigen::SparseMatrix<T>& X);
 }
@@ -34,7 +34,7 @@ namespace igl
 #include "verbose.h"
 
 template <typename T>
-void igl::diag(
+inline void igl::diag(
   const Eigen::SparseMatrix<T>& X, 
   Eigen::SparseVector<T>& V)
 {
@@ -58,7 +58,7 @@ void igl::diag(
 }
 
 template <typename T>
-void igl::diag(
+inline void igl::diag(
   const Eigen::SparseVector<T>& V,
   Eigen::SparseMatrix<T>& X)
 {
@@ -66,7 +66,7 @@ void igl::diag(
   Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> dyn_X(V.size(),V.size());
 
   // loop over non-zeros
-  for(typename SparseVector<T>::InnerIterator it(V); it; ++it)
+  for(typename Eigen::SparseVector<T>::InnerIterator it(V); it; ++it)
   {
     dyn_X.coeffRef(it.index(),it.index()) += it.value();
   }

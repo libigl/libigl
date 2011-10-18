@@ -10,13 +10,13 @@ namespace igl
   // Output:
   //   mat  pointer to 16 elements of matrix
   template <typename Q_type>
-  void quat_to_mat(const Q_type * quat, Q_type * mat);
+  inline void quat_to_mat(const Q_type * quat, Q_type * mat);
 }
 
 // Implementation
 
 template <typename Q_type>
-void igl::quat_to_mat(const Q_type * quat, Q_type * mat)
+inline void igl::quat_to_mat(const Q_type * quat, Q_type * mat)
 {
   Q_type yy2 = 2.0f * quat[1] * quat[1];
   Q_type xy2 = 2.0f * quat[0] * quat[1];

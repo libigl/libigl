@@ -23,7 +23,7 @@ namespace igl
   //   V_vbo_id  buffer id for vectors
   //
   template <typename T>
-  void create_vector_vbo(
+  inline void create_vector_vbo(
     const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & V,
     GLuint & V_vbo_id);
 }
@@ -33,7 +33,7 @@ namespace igl
 
 // http://www.songho.ca/opengl/gl_vbo.html#create
 template <typename T>
-void igl::create_vector_vbo(
+inline void igl::create_vector_vbo(
   const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & V,
   GLuint & V_vbo_id)
 {

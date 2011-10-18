@@ -195,6 +195,15 @@ tr.gotcha2 td
         </td>
       </tr>
 
+      <tr class=d0>
+        <td><pre><code>I = low:step:hi</code></pre></td>
+        <td><pre><code>igl::colon(low,step,hi,I)</code></pre></td>
+        <td>IGL version should be templated enough to handle same situations as
+        matlab's colon. The matlab keyword <b>end</b> does not correspond in
+        the C++ version. You'll have to use M.size(),M.rows() or whatever.
+        </td>
+      </tr>
+
       <!-- Insert rows for each command pair -->
 
       <!-- Leave this here for copy and pasting

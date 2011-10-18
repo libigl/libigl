@@ -39,7 +39,7 @@ namespace igl
   // 204 208];
   //   
   template <typename T>
-  void transpose_blocks(
+  inline void transpose_blocks(
     const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & A,
     const size_t k,
     const size_t dim,
@@ -50,7 +50,7 @@ namespace igl
 #include <cassert>
 
 template <typename T>
-void igl::transpose_blocks(
+inline void igl::transpose_blocks(
   const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & A,
   const size_t k,
   const size_t dim,

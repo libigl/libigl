@@ -29,12 +29,24 @@ namespace igl
   //   U  upper triangular matrix such that Q = L*U
   // Returns true on success, false on error
   //
+  // Note: C should *not* have any empty columns. Typically C is the slice of
+  // the linear constraints matrix Aeq concerning the unknown variables of a
+  // quadratic optimization. Generally constraints may deal with unknowns as
+  // well as knowns. Each linear constraint corresponds to a column of Aeq. As
+  // long as each constraint concerns at least one unknown then the
+  // corresponding column in C will have at least one non zero entry. If a
+  // constraint concerns *no* unknowns, you should double check that this is a
+  // valid constraint. How can you constrain known values to each other? This
+  // is either a contradiction to the knowns' values or redundent. In either
+  // case, it's not this functions responsiblilty to handle empty constraints
+  // so you will get an error.
+  //
   template <typename T>
-  bool lu_lagrange(
-    const SparseMatrix<T> & ATA,
-    const SparseMatrix<T> & C,
-    SparseMatrix<T> & L,
-    SparseMatrix<T> & U);
+  inline bool lu_lagrange(
+    const Eigen::SparseMatrix<T> & ATA,
+    const Eigen::SparseMatrix<T> & C,
+    Eigen::SparseMatrix<T> & L,
+    Eigen::SparseMatrix<T> & U);
 
 }
 
@@ -46,11 +58,11 @@ namespace igl
 #include "sparse.h"
 
 template <typename T>
-bool igl::lu_lagrange(
-  const SparseMatrix<T> & ATA,
-  const SparseMatrix<T> & C,
-  SparseMatrix<T> & L,
-  SparseMatrix<T> & U)
+inline bool igl::lu_lagrange(
+  const Eigen::SparseMatrix<T> & ATA,
+  const Eigen::SparseMatrix<T> & C,
+  Eigen::SparseMatrix<T> & L,
+  Eigen::SparseMatrix<T> & U)
 {
   // number of unknowns
   int n = ATA.rows();
@@ -61,14 +73,42 @@ bool igl::lu_lagrange(
   if(m != 0)
   {
     assert(C.rows() == n);
+    if(C.nonZeros() == 0)
+    {
+      // See note above about empty columns in C
+      fprintf(stderr,"Error: lu_lagrange() C has columns but no entries\n");
+      return false;
+    }
   }
+
+  // Check that each column of C has at least one entry
+  std::vector<bool> has_entry; has_entry.resize(C.cols(),false);
+  // Iterate over outside
+  for(int k=0; k<C.outerSize(); ++k)
+  {
+    // Iterate over inside
+    for(typename Eigen::SparseMatrix<T>::InnerIterator it (C,k); it; ++it)
+    {
+      has_entry[it.col()] = true;
+    }
+  }
+  for(int i=0;i<(int)has_entry.size();i++)
+  {
+    if(!has_entry[i])
+    {
+      // See note above about empty columns in C
+      fprintf(stderr,"Error: lu_lagrange() C(:,%d) has no entries\n",i);
+      return false;
+    }
+  }
+
 
 
   // Cholesky factorization of ATA
   //// Eigen fails if you give a full view of the matrix like this:
   //Eigen::SparseLLT<SparseMatrix<T> > ATA_LLT(ATA);
-  SparseMatrix<T> ATA_LT = ATA.template triangularView<Eigen::Lower>();
-  Eigen::SparseLLT<SparseMatrix<T> > ATA_LLT(ATA_LT);
+  Eigen::SparseMatrix<T> ATA_LT = ATA.template triangularView<Eigen::Lower>();
+  Eigen::SparseLLT<Eigen::SparseMatrix<T> > ATA_LLT(ATA_LT);
 
   Eigen::SparseMatrix<T> J = ATA_LLT.matrixL();
 
@@ -81,6 +121,8 @@ bool igl::lu_lagrange(
 
   if(m == 0)
   {
+    // If there are no constraints (C is empty) then LU decomposition is just L
+    // and L' from cholesky decomposition
     L = J;
     U = J.transpose();
   }else
@@ -89,15 +131,12 @@ bool igl::lu_lagrange(
     Eigen::SparseMatrix<T> M = C;
     J.template triangularView<Eigen::Lower>().solveInPlace(M);
 
-
     // Compute cholesky factorizaiton of M'*M
     Eigen::SparseMatrix<T> MTM = M.transpose() * M;
 
-
-    Eigen::SparseLLT<SparseMatrix<T> > MTM_LLT(MTM.template triangularView<Eigen::Lower>());
+    Eigen::SparseLLT<Eigen::SparseMatrix<T> > MTM_LLT(MTM.template triangularView<Eigen::Lower>());
 
     Eigen::SparseMatrix<T> K = MTM_LLT.matrixL();
-
 
     //if(!MTM_LLT.succeeded())
     if(!((K*0).eval().nonZeros() == 0))
@@ -139,10 +178,6 @@ bool igl::lu_lagrange(
     LJ << JJ,                        MI, (KJ.array() + n).matrix(); 
     LV << JV,                        MV,                        KV;
     igl::sparse(LI,LJ,LV,L);
-
-    //// Only keep lower and upper parts
-    //L = L.template triangularView<Lower>();
-    //U = U.template triangularView<Upper>();
   }
 
   return true;

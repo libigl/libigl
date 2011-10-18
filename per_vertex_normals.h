@@ -13,7 +13,7 @@ namespace igl
   //   F  #F by 3 eigne Matrix of face (triangle) indices
   // Output:
   //   N  #V by 3 eigen Matrix of mesh vertex 3D normals
-  void per_vertex_normals(
+  inline void per_vertex_normals(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
     Eigen::MatrixXd & N);
@@ -23,7 +23,7 @@ namespace igl
 #include "per_face_normals.h"
 #include "normalize_rows.h"
 
-void igl::per_vertex_normals(
+inline void igl::per_vertex_normals(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   Eigen::MatrixXd & N)

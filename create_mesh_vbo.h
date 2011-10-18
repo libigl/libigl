@@ -26,7 +26,7 @@ namespace igl
   // NOTE: when using glDrawElements VBOs for V and F using MatrixXd and
   // MatrixXi will have types GL_DOUBLE and GL_UNSIGNED_INT respectively
   //
-  void create_mesh_vbo(
+  inline void create_mesh_vbo(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
     GLuint & V_vbo_id,
@@ -40,7 +40,7 @@ namespace igl
   //   V_vbo_id  buffer id for vertex positions
   //   F_vbo_id  buffer id for face indices
   //   N_vbo_id  buffer id for vertex positions
-  void create_mesh_vbo(
+  inline void create_mesh_vbo(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
     const Eigen::MatrixXd & N,
@@ -55,7 +55,7 @@ namespace igl
 #include "create_index_vbo.h"
 
 // http://www.songho.ca/opengl/gl_vbo.html#create
-void igl::create_mesh_vbo(
+inline void igl::create_mesh_vbo(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   GLuint & V_vbo_id,
@@ -68,7 +68,7 @@ void igl::create_mesh_vbo(
 }
 
 // http://www.songho.ca/opengl/gl_vbo.html#create
-void igl::create_mesh_vbo(
+inline void igl::create_mesh_vbo(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   const Eigen::MatrixXd & N,

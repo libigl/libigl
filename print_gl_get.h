@@ -12,13 +12,13 @@ namespace igl
   // Prints the value of pname found by issuing glGet*(pname,*)
   // Inputs:
   //   pname  enum key to gl parameter
-  void print_gl_get(GLenum pname);
+  inline void print_gl_get(GLenum pname);
 }
 
 
 // implementation
 #include <cstdio>
-void igl::print_gl_get(GLenum pname)
+inline void igl::print_gl_get(GLenum pname)
 {
   double dM[16];
 
