@@ -33,7 +33,7 @@ namespace igl
   template <typename T>
   inline bool min_quad_with_fixed_precompute(
     const Eigen::SparseMatrix<T>& A,
-    const Eigen::MatrixXi & known,
+    const Eigen::Matrix<int,Eigen::Dynamic,1> & known,
     const Eigen::SparseMatrix<T>& Aeq,
     const bool pd,
     min_quad_with_fixed_data<T> & data
