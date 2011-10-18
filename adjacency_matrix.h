@@ -31,7 +31,7 @@ namespace igl
   //
   // See also: edges, cotmatrix, diag
   template <typename T>
-  void adjacency_matrix(
+  inline void adjacency_matrix(
     const Eigen::MatrixXi & F, 
     Eigen::SparseMatrix<T>& A);
 }
@@ -40,7 +40,7 @@ namespace igl
 #include "verbose.h"
 
 template <typename T>
-void igl::adjacency_matrix(
+inline void igl::adjacency_matrix(
   const Eigen::MatrixXi & F, 
   Eigen::SparseMatrix<T>& A)
 {

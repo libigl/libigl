@@ -24,13 +24,13 @@ namespace igl
 
   // Sparse version
   template <typename T>
-  void repdiag(
+  inline void repdiag(
     const Eigen::SparseMatrix<T>& A,
     const int d,
     Eigen::SparseMatrix<T>& B);
   // Dense version
   template <typename T>
-  void repdiag(
+  inline void repdiag(
     const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & A,
     const int d,
     Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & B);
@@ -39,7 +39,7 @@ namespace igl
 // Implementation
 
 template <typename T>
-void igl::repdiag(
+inline void igl::repdiag(
   const Eigen::SparseMatrix<T>& A,
   const int d,
   Eigen::SparseMatrix<T>& B)
@@ -57,7 +57,7 @@ void igl::repdiag(
     for (int k=0; k<A.outerSize(); ++k)
     {
       // loop inner level
-      for (typename SparseMatrix<T>::InnerIterator it(A,k); it; ++it)
+      for (typename Eigen::SparseMatrix<T>::InnerIterator it(A,k); it; ++it)
       {
         dyn_B.coeffRef(i*m+it.row(),i*n+it.col()) += it.value();
       }
@@ -68,7 +68,7 @@ void igl::repdiag(
 }
 
 template <typename T>
-void igl::repdiag(
+inline void igl::repdiag(
   const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & A,
   const int d,
   Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & B)

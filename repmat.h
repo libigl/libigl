@@ -27,6 +27,12 @@ namespace igl
     const int r,
     const int c,
     Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & B);
+  template <typename T>
+  inline void repmat(
+    const Eigen::SparseMatrix<T> & A,
+    const int r,
+    const int c,
+    Eigen::SparseMatrix<T> & B);
 }
 
 // Implementation
@@ -51,5 +57,34 @@ inline void igl::repmat(
       B.block(i*A.rows(),j*A.cols(),A.rows(),A.cols()) = A;
     }
   }
+}
+
+template <typename T>
+inline void igl::repmat(
+  const Eigen::SparseMatrix<T> & A,
+  const int r,
+  const int c,
+  Eigen::SparseMatrix<T> & B)
+{
+  assert(r>0);
+  assert(c>0);
+  B.resize(r*A.rows(),c*A.cols());
+  B.reserve(r*c*A.nonZeros());
+  for(int i = 0;i<r;i++)
+  {
+    for(int j = 0;j<c;j++)
+    {
+      // Loop outer level
+      for (int k=0; k<A.outerSize(); ++k)
+      {
+        // loop inner level
+        for (typename Eigen::SparseMatrix<T>::InnerIterator it(A,k); it; ++it)
+        {
+          B.insert(i*A.rows()+it.row(),j*A.cols() + it.col()) = it.value();
+        }
+      }
+    }
+  }
+  B.finalize();
 }
 #endif

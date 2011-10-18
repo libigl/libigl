@@ -23,7 +23,7 @@ namespace igl
   //    '.')
   //
   //  See also: basename, dirname
-  void pathinfo(
+  inline void pathinfo(
     const std::string & path,
     std::string & dirname,
     std::string & basename,
@@ -38,7 +38,7 @@ namespace igl
 // Verbose should be removed once everythings working correctly
 #include "verbose.h"
 
-void igl::pathinfo(
+inline void igl::pathinfo(
   const std::string & path,
   std::string & dirname,
   std::string & basename,

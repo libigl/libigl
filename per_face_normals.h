@@ -9,14 +9,14 @@ namespace igl
   //   F  #F by 3 eigne Matrix of face (triangle) indices
   // Output:
   //   N  #F by 3 eigen Matrix of mesh face (triangle) 3D normals
-  void per_face_normals(
+  inline void per_face_normals(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
     Eigen::MatrixXd & N);
 }
 // Implementation
 
-void igl::per_face_normals(
+inline void igl::per_face_normals(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   Eigen::MatrixXd & N)

@@ -19,8 +19,8 @@ inline bool igl::is_symmetric(const Eigen::SparseMatrix<T>& A)
   {
     return false;
   }
-  SparseMatrix<T> AT = A.transpose();
-  SparseMatrix<T> AmAT = A-AT;
+  Eigen::SparseMatrix<T> AT = A.transpose();
+  Eigen::SparseMatrix<T> AmAT = A-AT;
   //// Eigen screws up something with LLT if you try to do
   //SparseMatrix<T> AmAT = A-A.transpose();
   //// Eigen crashes at runtime if you try to do

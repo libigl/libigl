@@ -29,11 +29,11 @@ namespace igl
   //
   // KNOWN BUG: This only knows how to face lines without normal or texture
   // indices. It will probably crash or give garbage on anything else.
-  bool readOBJ(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F);
+  inline bool readOBJ(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F);
 }
 
 // Implementation
-bool igl::readOBJ(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
+inline bool igl::readOBJ(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
 {
     std::ifstream s(str.c_str());
     if (s.is_open() == false)

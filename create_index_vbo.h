@@ -20,7 +20,7 @@ namespace igl
   // Outputs:
   //   F_vbo_id  buffer id for face indices
   //
-  void create_index_vbo(
+  inline void create_index_vbo(
     const Eigen::MatrixXi & F,
     GLuint & F_vbo_id);
 }
@@ -28,7 +28,7 @@ namespace igl
 // Implementation
 
 // http://www.songho.ca/opengl/gl_vbo.html#create
-void igl::create_index_vbo(
+inline void igl::create_index_vbo(
   const Eigen::MatrixXi & F,
   GLuint & F_vbo_id)
 {

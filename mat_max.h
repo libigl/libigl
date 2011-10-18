@@ -22,7 +22,7 @@ namespace igl
   //   I  vector the same size as Y containing the indices along dim of maximum
   //     entries
   template <typename T>
-  void mat_max(
+  inline void mat_max(
     const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,
     const int dim,
     Eigen::Matrix<T,Eigen::Dynamic,1> & Y,
@@ -30,7 +30,7 @@ namespace igl
 }
 
 template <typename T>
-void igl::mat_max(
+inline void igl::mat_max(
   const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,
   const int dim,
   Eigen::Matrix<T,Eigen::Dynamic,1> & Y,

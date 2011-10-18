@@ -24,7 +24,7 @@ namespace igl
   //
   // See also: mat_max
   template <typename T>
-  void mat_min(
+  inline void mat_min(
     const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,
     const int dim,
     Eigen::Matrix<T,Eigen::Dynamic,1> & Y,
@@ -34,7 +34,7 @@ namespace igl
 #include "verbose.h"
 
 template <typename T>
-void igl::mat_min(
+inline void igl::mat_min(
   const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,
   const int dim,
   Eigen::Matrix<T,Eigen::Dynamic,1> & Y,

@@ -21,7 +21,7 @@ namespace igl
     // FE : #Fx3, Stores the Triangle-Edge relation
     // EF : #Ex2: Stores the Edge-Triangle relation (unsorted)
 
-    void edgetopology(Eigen::MatrixXd& V, Eigen::MatrixXi& F, 
+    inline void edgetopology(Eigen::MatrixXd& V, Eigen::MatrixXi& F, 
                       Eigen::MatrixXi& EV, Eigen::MatrixXi& FE, Eigen::MatrixXi& EF)
     {
         assert(igl::isManifold(V,F));

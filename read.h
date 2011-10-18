@@ -21,13 +21,13 @@ namespace igl
   // Outputs:
   //   V  eigen double matrix #V by 3
   //   F  eigen int matrix #F by 3
-  bool read(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F);
+  inline bool read(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F);
 }
 
 // Implementation
 #include <readOBJ.h>
 #include <readOFF.h>
-bool igl::read(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
+inline bool igl::read(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
 {
     const char* p;
     for (p = str.c_str(); *p != '\0'; p++)

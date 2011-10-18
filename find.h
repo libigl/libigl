@@ -84,7 +84,7 @@ inline void igl::find(
 
   int i = 0;
   // loop over non-zeros
-  for(typename SparseVector<T>::InnerIterator it(X); it; ++it)
+  for(typename Eigen::SparseVector<T>::InnerIterator it(X); it; ++it)
   {
     I(i) = it.index();
     V(i) = it.value();

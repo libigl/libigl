@@ -11,13 +11,13 @@ namespace igl
   // Returns string containing basename (see php's basename)
   //
   // See also: dirname, pathinfo
-  std::string basename(const std::string & path);
+  inline std::string basename(const std::string & path);
 }
 
 // Implementation
 #include <algorithm>
 
-std::string igl::basename(const std::string & path)
+inline std::string igl::basename(const std::string & path)
 {
   if(path == "")
   {
