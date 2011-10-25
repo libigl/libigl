@@ -1,0 +1,115 @@
+#ifndef IGL_SLICE_INTO_H
+#define IGL_SLICE_INTO_H
+namespace igl
+{
+  // Act like the matlab Y(row_indices,col_indices) = X
+  // 
+  // Inputs:
+  //   X  xm by xn rhs matrix
+  //   R  list of row indices
+  //   C  list of column indices
+  //   Y  ym by yn lhs matrix
+  // Output:
+  //   Y  ym by yn lhs matrix, same as input but Y(R,C) = X
+  template <typename T>
+  inline void slice_into(
+    const Eigen::SparseMatrix<T>& X,
+    const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
+    const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
+    Eigen::SparseMatrix<T>& Y);
+
+  template <typename T, const int W, const int H>
+  inline void slice_into(
+    const Eigen::Matrix<T,W,H> & X,
+    const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
+    const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
+    Eigen::Matrix<T,W,H> & Y);
+
+  template <typename T>
+  inline void slice_into(
+    const Eigen::Matrix<T,Eigen::Dynamic,1> & X,
+    const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
+    Eigen::Matrix<T,Eigen::Dynamic,1> & Y);
+}
+
+// Implementation
+
+template <typename T>
+inline void igl::slice_into(
+  const Eigen::SparseMatrix<T>& X,
+  const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
+  const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
+  Eigen::SparseMatrix<T>& Y)
+{
+
+  int xm = X.rows();
+  int xn = X.cols();
+  assert(R.size() == xm);
+  assert(C.size() == xn);
+  int ym = Y.size();
+  int yn = Y.size();
+  assert(R.minCoeff() >= 0);
+  assert(R.maxCoeff() < ym);
+  assert(C.minCoeff() >= 0);
+  assert(C.maxCoeff() < yn);
+  // create temporary dynamic sparse matrix
+  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor>  dyn_Y(Y);
+  // Iterate over outside
+  for(int k=0; k<X.outerSize(); ++k)
+  {
+    // Iterate over inside
+    for(typename Eigen::SparseMatrix<T>::InnerIterator it (X,k); it; ++it)
+    {
+      dyn_Y.coeffRef(R(it.row()),C(it.col())) = it.value();
+    }
+  }
+  Y = Eigen::SparseMatrix<T>(dyn_Y);
+}
+
+template <typename T, const int W, const int H>
+inline void igl::slice_into(
+  const Eigen::Matrix<T,W,H> & X,
+  const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
+  const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
+  Eigen::Matrix<T,W,H> & Y)
+{
+
+  int xm = X.rows();
+  int xn = X.cols();
+  assert(R.size() == xm);
+  assert(C.size() == xn);
+  int ym = Y.size();
+  int yn = Y.size();
+  assert(R.minCoeff() >= 0);
+  assert(R.maxCoeff() < ym);
+  assert(C.minCoeff() >= 0);
+  assert(C.maxCoeff() < yn);
+
+  // Build reindexing maps for columns and rows, -1 means not in map
+  Eigen::Matrix<int,Eigen::Dynamic,1> RI;
+  RI.resize(xm);
+  for(int i = 0;i<xm;i++)
+  {
+    for(int j = 0;j<xn;j++)
+    {
+      Y(R(i),C(j)) = X(i,j);
+    }
+  }
+}
+
+template <typename T>
+inline void igl::slice_into(
+  const Eigen::Matrix<T,Eigen::Dynamic,1> & X,
+  const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
+  Eigen::Matrix<T,Eigen::Dynamic,1> & Y)
+{
+  // phony column indices
+  Eigen::Matrix<int,Eigen::Dynamic,1> C;
+  C.resize(1);
+  C(0) = 0;
+  return igl::slice_into(X,R,C,Y);
+}
+
+#endif
+
+
