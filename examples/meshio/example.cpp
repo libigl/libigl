@@ -2,9 +2,14 @@
 
 #include <cstdio>
 #include <vector>
+#include <algorithm>
+#include <functional>
+
+#include <Eigen/Dense>
 
 using namespace igl;
 using namespace std;
+using namespace Eigen;
 
 // Template:
 //   T  type that can be safely cast to float
@@ -30,8 +35,8 @@ int main(int argc, char * argv[])
     printf("USAGE:\n  ./example [path_1] [path_2] ... [path_n]\n");
     return 1;
   }
-  std::vector<std::vector<double> > V,TC,N;
-  std::vector<std::vector<int> > F,FTC,FN;
+  vector<std::vector<double> > V,TC,N;
+  vector<std::vector<int> > F,FTC,FN;
   // loop over arguments
   for(int i = 1; i < argc; i++)
   {
@@ -46,6 +51,14 @@ int main(int argc, char * argv[])
     cout<<"F=[";  print_vector_of_vectors_as_floats(F);  cout<<"];"<<endl;
     cout<<"FTC=[";print_vector_of_vectors_as_floats(FTC);cout<<"];"<<endl;
     cout<<"FN=["; print_vector_of_vectors_as_floats(FN); cout<<"];"<<endl;
+    // Eigen (V,F) style
+    MatrixXd EV;
+    MatrixXi EF;
+    readOBJ(argv[i],EV,EF);
+    cout<<"EV=["<<EV<<"];"<<endl;
+    cout<<"EF=["<<EF<<"];"<<endl;
   }
+
+
   return 0;
 }
