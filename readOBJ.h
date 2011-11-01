@@ -59,49 +59,45 @@ namespace igl
 }
 
 // Implementation
+#include "list_to_matrix.h"
+
 #include <iostream>
 #include <fstream>
 
 inline bool igl::readOBJ(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
 {
-  std::ifstream s(str.c_str());
-  if (s.is_open() == false)
+  std::vector<std::vector<double> > vV,vTC,vN;
+  std::vector<std::vector<int> > vF,vFTC,vFN;
+  bool success = igl::readOBJ(str,vV,vTC,vN,vF,vFTC,vFN);
+  if(!success)
   {
-    fprintf (stderr, "readOBJ(): could not open file %s", str.c_str());
+    // readOBJ(str,vV,vTC,vN,vF,vFTC,vFN) should have already printed an error
+    // message to stderr
     return false;
   }
-    std::vector<Eigen::Vector3d> Vtemp;
-    std::vector<Eigen::Vector3i> Ftemp;
-    char buf[1000];
-    while(!s.eof())
-    {
-        s.getline(buf, 1000);
-        if (buf[0] == 'v') // vertex coordinates found
-        {
-            char v;
-            double v1,v2,v3;
-            sscanf(buf, "%c %lf %lf %lf",&v,&v1,&v2,&v3);
-            Vtemp.push_back(Eigen::Vector3d(v1,v2,v3));
-        }
-        else if (buf[0] == 'f') // face description found
-        {
-            char v;
-            int v1,v2,v3;
-            sscanf(buf, "%c %d %d %d",&v,&v1,&v2,&v3);
-            Ftemp.push_back(Eigen::Vector3i(v1-1,v2-1,v3-1));
-        }
-    }
-    s.close();
-    
-    V = Eigen::MatrixXd(Vtemp.size(),3);
-    for(int i=0;i<V.rows();++i)
-        V.row(i) = Vtemp[i];
-    
-    F = Eigen::MatrixXi(Ftemp.size(),3);
-    for(int i=0;i<F.rows();++i)
-        F.row(i) = Ftemp[i];
-
-    return true;
+  bool V_rect = igl::list_to_matrix(vV,V);
+  if(!V_rect)
+  {
+    // igl::list_to_matrix(vV,V) already printed error message to std err
+    return false;
+  }
+  bool F_rect = igl::list_to_matrix(vF,F);
+  if(!F_rect)
+  {
+    // igl::list_to_matrix(vF,F) already printed error message to std err
+    return false;
+  }
+  // Legacy
+  if(F.cols() != 3)
+  {
+    fprintf(stderr,
+      "Error: readOBJ(filename,V,F) is meant for reading triangle-only"
+      " meshes. This mesh has faces all with size %d. See readOBJ.h for other"
+      " options.\n",
+      (int)F.cols());
+    return false;
+  }
+  return true;
 }
 
 template <typename Scalar, typename Index>
