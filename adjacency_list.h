@@ -48,12 +48,16 @@ inline void igl::adjacency_list(
       // Get indices of edge: s --> d
       int s = F(i,j);
       int d = F(i,(j+1)%F.cols());
-      if (s>d)
-      {
-        A[s].push_back(d);
-        A[d].push_back(s);
-      }
+      A[s].push_back(d);
+      A[d].push_back(s);
     }
+  }
+  
+  // Remove duplicates
+  for(int i=0; i<A.size();++i)
+  {
+    std::sort(A[i].begin(), A[i].end());
+    A[i].erase(std::unique(A[i].begin(), A[i].end()), A[i].end());
   }
 }
 
