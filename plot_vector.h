@@ -4,21 +4,21 @@
 namespace igl 
 {
   template <typename T>
-  inline void plot_vector( vector<T>& v)
+  inline void plot_vector( std::vector<T>& v)
   {
     for (int i=0; i<v.size(); ++i)
-      cerr << v[i] << " ";
-    cerr << endl;
+      std::cerr << v[i] << " ";
+    std::cerr << std::endl;
   }
 
   template <typename T>
-  inline void plot_vector( vector< vector<T> >& v)
+  inline void plot_vector( std::vector< std::vector<T> >& v)
   {
     for (int i=0; i<v.size(); ++i)
     {
       for (int j=0; j<v[i].size(); ++j)
-        cerr << v[i][j] << " ";
-      cerr << endl;
+        std::cerr << v[i][j] << " ";
+      std::cerr << std::endl;
     }
   }
 
