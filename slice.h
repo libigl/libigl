@@ -1,5 +1,9 @@
 #ifndef IGL_SLICE_H
 #define IGL_SLICE_H
+
+#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+#include <Eigen/Sparse>
+
 namespace igl
 {
   // Act like the matlab X(row_indices,col_indices) operator
