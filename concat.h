@@ -1,5 +1,5 @@
-#ifndef IGL_COLON_H
-#define IGL_COLON_H
+#ifndef IGL_CONCAT_H
+#define IGL_CONCAT_H
 #include <Eigen/Dense>
 namespace igl
 {
@@ -32,7 +32,7 @@ namespace igl
 #include <cstdio>
 
 template <typename T>
-inline void concat(
+inline void igl::concat(
                    const T A, 
                    const T B,
                    const bool horiz,                 
@@ -42,26 +42,26 @@ inline void concat(
   {
     // O = [A,B]
     assert(A.rows() == B.rows());
-    O = MatrixXd(A.rows(),A.cols()+B.cols());
+    O = T(A.rows(),A.cols()+B.cols());
     O << A,B;
   }
   else
   {
     // O = [A;B]
     assert(A.cols() == B.cols());
-    O = MatrixXd(A.rows()+B.rows(),A.cols());
+    O = T(A.rows()+B.rows(),A.cols());
     O << A,B;
   }
 }
 
 template <typename T>
-inline T concat(
+inline T igl::concat(
                 const T A, 
                 const T B,
-                bool horiz = false
+                bool horiz
                 )
 {
-  O = T(1,1);
+  T O = T(1,1);
   concat(A,B,horiz,O);
   return O;
 }

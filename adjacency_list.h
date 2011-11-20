@@ -24,7 +24,7 @@ namespace igl
   template <typename T>
   inline void adjacency_list(
                              const Eigen::MatrixXi & F, 
-                             vector<vector<T> >& A
+                             std::vector<std::vector<T> >& A
                              );
 }
 
@@ -34,7 +34,7 @@ namespace igl
 template <typename T>
 inline void igl::adjacency_list(
   const Eigen::MatrixXi & F, 
-  vector<vector<T> >& A)
+  std::vector<std::vector<T> >& A)
 {
   A.clear(); 
   A.resize(F.maxCoeff()+1);

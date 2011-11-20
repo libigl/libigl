@@ -16,7 +16,7 @@ namespace igl
 {
 
   // Preprocessing
-  void tt_preprocess(Eigen::MatrixXd& V, Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT)
+  inline void tt_preprocess(Eigen::MatrixXd& V, Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT)
   {
     for(int f=0;f<F.rows();++f)
       for (int i=0;i<3;++i)
@@ -34,7 +34,7 @@ namespace igl
   }
   
   // Extract the face adjacencies
-  void tt_extractTT(Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT, Eigen::MatrixXi& TT)
+  inline void tt_extractTT(Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT, Eigen::MatrixXi& TT)
   {
     TT = Eigen::MatrixXi::Constant((int)(F.rows()),3,-1);
     
@@ -51,7 +51,7 @@ namespace igl
   }
   
   // Extract the face adjacencies indices (needed for fast traversal)
-  void tt_extractTTi(Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT, Eigen::MatrixXi& TTi)
+  inline void tt_extractTTi(Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT, Eigen::MatrixXi& TTi)
   {
     TTi = Eigen::MatrixXi::Constant((int)(F.rows()),3,-1);
     
