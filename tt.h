@@ -16,7 +16,7 @@ namespace igl
 {
 
   // Preprocessing
-  inline void tt_preprocess(Eigen::MatrixXd& V, Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT)
+  inline void tt_preprocess(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT)
   {
     for(int f=0;f<F.rows();++f)
       for (int i=0;i<3;++i)
@@ -34,7 +34,7 @@ namespace igl
   }
   
   // Extract the face adjacencies
-  inline void tt_extractTT(Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT, Eigen::MatrixXi& TT)
+  inline void tt_extractTT(const Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT, Eigen::MatrixXi& TT)
   {
     TT = Eigen::MatrixXi::Constant((int)(F.rows()),3,-1);
     
@@ -51,7 +51,7 @@ namespace igl
   }
   
   // Extract the face adjacencies indices (needed for fast traversal)
-  inline void tt_extractTTi(Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT, Eigen::MatrixXi& TTi)
+  inline void tt_extractTTi(const Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT, Eigen::MatrixXi& TTi)
   {
     TTi = Eigen::MatrixXi::Constant((int)(F.rows()),3,-1);
     
@@ -68,7 +68,7 @@ namespace igl
   }
 
   // Compute triangle-triangle adjacency
-  inline void tt(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::MatrixXi& TT)
+  inline void tt(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F, Eigen::MatrixXi& TT)
   {
     assert(igl::isManifold(V,F));
     std::vector<std::vector<int> > TTT;
@@ -78,7 +78,7 @@ namespace igl
   }
 
   // Compute triangle-triangle adjacency with indices
-  inline void tt(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::MatrixXi& TT, Eigen::MatrixXi& TTi)
+  inline void tt(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F, Eigen::MatrixXi& TT, Eigen::MatrixXi& TTi)
   {
     assert(igl::isManifold(V,F));
     std::vector<std::vector<int> > TTT;
