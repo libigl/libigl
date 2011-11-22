@@ -1,6 +1,7 @@
 #ifndef IGL_PLOT_VECTOR_H
 #define IGL_PLOT_VECTOR_H
 
+#include <iostream>
 namespace igl 
 {
   template <typename T>
