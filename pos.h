@@ -19,7 +19,7 @@ namespace igl
   {
   public:
     // Init the pos by specifying Face,Edge Index and Orientation
-    Pos(Eigen::MatrixXi* F, 
+    Pos(const Eigen::MatrixXi* F, 
         Eigen::MatrixXi* FF, 
         Eigen::MatrixXi* FFi, 
         int fi,
@@ -115,7 +115,7 @@ namespace igl
     int ei;
     bool reverse;
     
-    Eigen::MatrixXi*     F;
+    const Eigen::MatrixXi*     F;
     Eigen::MatrixXi*     FF;
     Eigen::MatrixXi*     FFi;
   };

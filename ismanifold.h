@@ -14,7 +14,7 @@
 namespace igl 
 {
     // check if the mesh is edge-manifold
-    inline bool isManifold(Eigen::MatrixXd& V, Eigen::MatrixXi& F)
+    inline bool isManifold(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
     {
         std::vector<std::vector<int> > TTT;
         for(int f=0;f<F.rows();++f)
