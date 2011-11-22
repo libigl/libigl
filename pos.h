@@ -8,7 +8,7 @@
 
 #include <Eigen/Core>
 #include <string>
-#include <ismanifold.h>
+#include "ismanifold.h"
 
 #include <vector>
 
