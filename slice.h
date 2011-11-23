@@ -78,6 +78,9 @@ inline void igl::slice(
   // Resize output
   Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> 
     dyn_Y(ym,yn);
+  // Take a guess at the number of nonzeros (this assumes uniform distribution
+  // not banded or heavily diagonal)
+  dyn_Y.reserve((X.nonzeros()/(X.rows()*X.cols())) * (ym*yn));
   // Iterate over outside
   for(int k=0; k<X.outerSize(); ++k)
   {

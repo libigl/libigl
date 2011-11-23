@@ -59,7 +59,9 @@ description of each template, input and output in each prototype.
   = Specific style conventions =
 
   Each file should be wrapped in an ifndef compiler directive. If the
-  file's (and function's) name is example.h, then the ifndef should be
+  file's (and function's) name is example.h, then the ifndef should
+  always begin with IGL_, then the function/file name in all caps then
+  _H. As in:
 #ifndef IGL_EXAMPLE_H
 #define IGL_EXAMPLE_H
 ...
@@ -80,3 +82,4 @@ description of each template, input and output in each prototype.
   Be generous by templating your inputs and outputs. If you do use
   templates, you must document the template just as you document inputs
   and outputs.
+

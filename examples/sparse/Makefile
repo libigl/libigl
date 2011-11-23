@@ -8,8 +8,8 @@ all: example
 igl_lib=-I../../
 eigen=-I/usr/local/include/eigen3 -I/usr/local/include/eigen3/unsupported
 
-CFLAGS=-g
-#CFLAGS=-Os -DNDEBUG
+#CFLAGS=-g
+CFLAGS=-Os -DNDEBUG
 inc=$(igl_lib) $(eigen)
 lib=
 

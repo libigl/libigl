@@ -79,8 +79,9 @@ inline void igl::sparse(
   // number of values
   int nv = V.size();
 
-  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> 
-    dyn_X(m,n);
+  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> dyn_X(m,n);
+  // over estimate the number of entries
+  dyn_X.reserve(I.size());
   for(int i = 0;i < nv;i++)
   {
     dyn_X.coeffRef((int)I(i),(int)J(i)) += (T)V(i);

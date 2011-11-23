@@ -47,8 +47,13 @@ inline void igl::repdiag(
   int m = A.rows();
   int n = A.cols();
 
+  // Should be able to *easily* do this in coherent order without
+  // dynamicsparsematrix
+
   Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> 
     dyn_B(m*d,n*d);
+  // Reserve enough space for new non zeros
+  dyn_B.reserve(d*A.nonZeros());
 
   // loop over reps
   for(int i=0;i<d;i++)
