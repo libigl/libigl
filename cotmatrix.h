@@ -91,6 +91,10 @@ inline void igl::cotmatrix(
   assert(F.cols() == 3);
 
   Eigen::DynamicSparseMatrix<double, Eigen::RowMajor> dyn_L (V.rows(), V.rows());
+  // This is important! it could decrease the comptuation time by a factor of 2
+  // Laplacian for a closed 2d manifold mesh will have on average 7 entries per
+  // row
+  dyn_L.reserve(7*V.rows());
   
   // Loop over triangles
   for (unsigned i = 0; i < F.rows(); i++)
