@@ -1,0 +1,2 @@
+This is a simple example comparing different methods of building a sparse
+cotangent matrix for a given mesh using Eigen.
