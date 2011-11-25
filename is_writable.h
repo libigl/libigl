@@ -8,11 +8,30 @@ namespace igl
   //   filename  path to file
   // Returns true if file exists and is writable and false if file doesn't
   // exist or *is not writable*
+  //
+  // Note: Windows version will not test group and user id
   inline bool is_writable(const char * filename);
 }
 
 
 // Implementation
+#ifdef _WIN32
+#include <sys/stat.h>
+#ifndef S_IWUSR
+#  define S_IWUSR S_IWRITE
+#endif
+inline bool is_writable(const char* filename)
+{
+  // Check if file already exists
+  struct stat status;
+  if(stat(filename,&status)!=0)
+  {
+    return false;
+  }
+
+  return S_IWUSR & status.st_mode;
+}
+#else
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -44,4 +63,5 @@ inline bool igl::is_writable(const char* filename)
   // Dealing with other
   return S_IWOTH & status.st_mode;
 }
+#endif
 #endif

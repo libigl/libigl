@@ -76,7 +76,7 @@ inline void igl::colon(
     }
   }
   // resize output
-  int n = floor((hi-low)/step)+1;
+  int n = floor(double((hi-low)/step))+1;
   I.resize(n);
   int i = 0;
   T v = (T)low;

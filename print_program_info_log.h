@@ -2,9 +2,14 @@
 #define IGL_PRINT_PROGRAM_INFO_LOG_H
 
 #ifdef __APPLE__
-#   include <OpenGL/gl.h>
+#  include <OpenGL/gl.h>
 #else
-#   include <GL/gl.h>
+#  ifdef _WIN32
+#    define NOMINMAX
+#    include <Windows.h>
+#    undef NOMINMAX
+#  endif
+#  include <GL/gl.h>
 #endif
 namespace igl
 {
