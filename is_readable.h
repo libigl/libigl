@@ -8,14 +8,28 @@ namespace igl
   //   filename  path to file
   // Returns true if file exists and is readable and false if file doesn't
   // exist or *is not readable*
+  //
+  // Note: Windows version will not check user or group ids
   inline bool is_readable(const char * filename);
 }
 
 
 // Implementation
-#include <sys/stat.h>
-#include <unistd.h>
-
+#ifdef _WIN32
+#  include <cstdio>
+inline bool igl::is_readable(const char* filename)
+{
+  FILE * f = fopen(filename,"r");
+  if(f == NULL)
+  {
+    return false;
+  }
+  fclose(f);
+  return true;
+}
+#else
+#  include <sys/stat.h>
+#  include <unistd.h>
 inline bool igl::is_readable(const char* filename)
 {
   // Check if file already exists
@@ -43,5 +57,8 @@ inline bool igl::is_readable(const char* filename)
 
   // Dealing with other
   return S_IROTH & status.st_mode;
+
 }
+#endif
+
 #endif
