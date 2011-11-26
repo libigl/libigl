@@ -12,7 +12,7 @@ namespace igl
   //   V  #V by 3 list of vertex coordinates
   //   F  #F by dim list of mesh faces (must be triangles)
   // Outputs: 
-  //   A  vector<vector<int>> of face indices, each row i corresponding to V(i,:)
+  // 
   //
   // See also: edges, cotmatrix, diag, vv
     
@@ -20,7 +20,7 @@ namespace igl
   inline void vf( 
     const Eigen::MatrixXd & V, 
     const Eigen::MatrixXi & F, 
-    vector<vector<T> >& Al);
+    vector<vector<T> >& VF, vector<vector<T> >& VFi);
 }
 
 // Implementation
@@ -30,22 +30,22 @@ template <typename T>
 inline void igl::vf(
   const Eigen::MatrixXd & V, 
   const Eigen::MatrixXi & F, 
-  vector<vector<T> >& Al)
+  vector<vector<T> >& VF, vector<vector<T> >& VFi)
 {
-    Al.clear;
-    Al.resize(V.rows());
-    
-  // Loop over faces
-  for(int i = 0;i<F.rows();i++)
+  VF.clear();
+  VFi.clear();
+  
+  VF.resize(V.rows());
+  VFi.resize(V.rows());
+  
+  for(int fi=0; fi<F.rows(); ++fi)
   {
-    // Loop over this face
-    for(int j = 0;j<F.cols();j++)
+    for(int i = 0; i < 3; ++i)
     {
-      Al[F(i,j)].push_back();
+      VF[F(fi,i)].push_back(fi);
+      VFi[F(fi,i)].push_back(i);
     }
   }
-
-  A = Eigen::SparseMatrix<T>(dyn_A);
 }
 
 #endif
