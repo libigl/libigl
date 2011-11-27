@@ -1,0 +1,8 @@
+Small example showing how to use the slice.h function in the igl lib which is
+like the slice operator in matlab.
+
+Compile:
+  make
+
+Run:
+  ./example
