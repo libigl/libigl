@@ -36,6 +36,7 @@ namespace igl
 }
 
 // Implementation
+#include <vector>
 
 template <typename T>
 inline void igl::slice(
@@ -52,32 +53,23 @@ inline void igl::slice(
   assert(R.maxCoeff() < xm);
   assert(C.minCoeff() >= 0);
   assert(C.maxCoeff() < xn);
+
   // Build reindexing maps for columns and rows, -1 means not in map
-  Eigen::Matrix<int,Eigen::Dynamic,1> RI;
+  std::vector<std::vector<int> > RI;
   RI.resize(xm);
-  // initialize to -1
-  for(int i = 0;i<xm;i++)
-  {
-    RI(i) = -1;
-  }
   for(int i = 0;i<ym;i++)
   {
-    RI(R(i)) = i;
+    RI[R(i)].push_back(i);
   }
-  Eigen::Matrix<int,Eigen::Dynamic,1> CI;
+  std::vector<std::vector<int> > CI;
   CI.resize(xn);
   // initialize to -1
-  for(int i = 0;i<xn;i++)
-  {
-    CI(i) = -1;
-  }
   for(int i = 0;i<yn;i++)
   {
-    CI(C(i)) = i;
+    CI[C(i)].push_back(i);
   }
   // Resize output
-  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> 
-    dyn_Y(ym,yn);
+  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> dyn_Y(ym,yn);
   // Take a guess at the number of nonzeros (this assumes uniform distribution
   // not banded or heavily diagonal)
   dyn_Y.reserve((X.nonZeros()/(X.rows()*X.cols())) * (ym*yn));
@@ -87,9 +79,13 @@ inline void igl::slice(
     // Iterate over inside
     for(typename Eigen::SparseMatrix<T>::InnerIterator it (X,k); it; ++it)
     {
-      if(RI(it.row()) >= 0 && CI(it.col()) >= 0)
+      std::vector<int>::iterator rit, cit;
+      for(rit = RI[it.row()].begin();rit != RI[it.row()].end(); rit++)
       {
-        dyn_Y.coeffRef(RI(it.row()),CI(it.col())) = it.value();
+        for(cit = CI[it.row()].begin();cit != CI[it.row()].end(); cit++)
+        {
+          dyn_Y.coeffRef(*rit,*cit) = it.value();
+        }
       }
     }
   }
@@ -111,39 +107,15 @@ inline void igl::slice(
   assert(R.maxCoeff() < xm);
   assert(C.minCoeff() >= 0);
   assert(C.maxCoeff() < xn);
-  // Build reindexing maps for columns and rows, -1 means not in map
-  Eigen::Matrix<int,Eigen::Dynamic,1> RI;
-  RI.resize(xm);
-  // initialize to -1
-  for(int i = 0;i<xm;i++)
-  {
-    RI(i) = -1;
-  }
-  for(int i = 0;i<ym;i++)
-  {
-    RI(R(i)) = i;
-  }
-  Eigen::Matrix<int,Eigen::Dynamic,1> CI;
-  CI.resize(xn);
-  // initialize to -1
-  for(int i = 0;i<xn;i++)
-  {
-    CI(i) = -1;
-  }
-  for(int i = 0;i<yn;i++)
-  {
-    CI(C(i)) = i;
-  }
+
   // Resize output
   Y.resize(ym,yn);
-  for(int i = 0;i<xm;i++)
+  // loop over output rows, then columns
+  for(int i = 0;i<ym;i++)
   {
-    for(int j = 0;j<xn;j++)
+    for(int j = 0;j<yn;j++)
     {
-      if(RI(i) >= 0 && CI(j) >= 0)
-      {
-        Y(RI(i),CI(j)) = X(i,j);
-      }
+      Y(i,j) = X(R(i),C(j));
     }
   }
 }
