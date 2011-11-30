@@ -49,6 +49,14 @@ inline void igl::slice(
   int xn = X.cols();
   int ym = R.size();
   int yn = C.size();
+
+  // special case when R or C is empty
+  if(ym == 0 || yn == 0)
+  {
+    Y.resize(ym,yn);
+    return;
+  }
+
   assert(R.minCoeff() >= 0);
   assert(R.maxCoeff() < xm);
   assert(C.minCoeff() >= 0);
@@ -82,7 +90,7 @@ inline void igl::slice(
       std::vector<int>::iterator rit, cit;
       for(rit = RI[it.row()].begin();rit != RI[it.row()].end(); rit++)
       {
-        for(cit = CI[it.row()].begin();cit != CI[it.row()].end(); cit++)
+        for(cit = CI[it.col()].begin();cit != CI[it.col()].end(); cit++)
         {
           dyn_Y.coeffRef(*rit,*cit) = it.value();
         }
@@ -103,6 +111,14 @@ inline void igl::slice(
   int xn = X.cols();
   int ym = R.size();
   int yn = C.size();
+
+  // special case when R or C is empty
+  if(ym == 0 || yn == 0)
+  {
+    Y.resize(ym,yn);
+    return;
+  }
+
   assert(R.minCoeff() >= 0);
   assert(R.maxCoeff() < xm);
   assert(C.minCoeff() >= 0);
