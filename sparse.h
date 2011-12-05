@@ -87,6 +87,7 @@ inline void igl::sparse(
     dyn_X.coeffRef((int)I(i),(int)J(i)) += (T)V(i);
   }
   X = Eigen::SparseMatrix<T>(dyn_X);
+
 }
 
 #endif

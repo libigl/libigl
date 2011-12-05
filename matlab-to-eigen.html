@@ -1,5 +1,4 @@
-<html>
-  <head>
+<html> <head>
     <title>MATLAB to Eigen</title>
     <style type="text/css">
 table
@@ -202,6 +201,30 @@ tr.gotcha2 td
         matlab's colon. The matlab keyword <b>end</b> does not correspond in
         the C++ version. You'll have to use M.size(),M.rows() or whatever.
         </td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>O = ones(m,n)</code></pre></td>
+        <td><pre><code>Matrix* O = Matrix*::Ones(m,n)</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>O = zeros(m,n)</code></pre></td>
+        <td><pre><code>Matrix* O = Matrix*::Zero(m,n)</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>B = A(I,J)<br>B = A(I,:)</code></pre></td>
+        <td><pre><code>igl::slice(A,I,J,B)<br>B = igl::slice(A,I,igl::colon(0,A.cols()-1))</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>B(I,J) = A<br>B(I,:) = A</code></pre></td>
+        <td><pre><code>igl::slice_into(A,I,J,B)<br>B = igl::slice_into(A,I,igl::colon(0,B.cols()-1))</code></pre></td>
+        <td></td>
       </tr>
 
       <!-- Insert rows for each command pair -->

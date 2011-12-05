@@ -29,10 +29,11 @@ namespace igl
 
 // Implementation
 
-#include <dot.h>
-#include <cross.h>
-#include <axis_angle_to_quat.h>
-#include <quat_mult.h>
+#include "EPS.h"
+#include "dot.h"
+#include "cross.h"
+#include "axis_angle_to_quat.h"
+#include "quat_mult.h"
 #include <cmath>
 #include <cstdlib>
 #include <algorithm>
@@ -41,7 +42,7 @@ namespace igl
 template <typename Q_type>
 static inline Q_type _QuatD(int w, int h)
 {
-  return (Q_type)std::min(abs(w), abs(h)) - 4;
+  return (Q_type)(abs(w) < abs(h) ? abs(w) : abs(h)) - 4;
 }
 template <typename Q_type>
 static inline Q_type _QuatIX(int x, int w, int h)
@@ -82,7 +83,7 @@ inline void igl::trackball(
   double z = 1;
   double n0 = sqrt(original_x*original_x + original_y*original_y + z*z);
   double n1 = sqrt(x*x + y*y + z*z);
-  if(n0>DOUBLE_EPS && n1>DOUBLE_EPS)
+  if(n0>igl::DOUBLE_EPS && n1>igl::DOUBLE_EPS)
   {
     double v0[] = { original_x/n0, original_y/n0, z/n0 };
     double v1[] = { x/n1, y/n1, z/n1 };
@@ -104,7 +105,7 @@ inline void igl::trackball(
       down_quat[2]*down_quat[2]+
       down_quat[3]*down_quat[3]);
 
-    if( fabs(nqorig)>DOUBLE_EPS_SQ )
+    if( fabs(nqorig)>igl::DOUBLE_EPS_SQ )
     {
         qorig[0] = down_quat[0]/nqorig;
         qorig[1] = down_quat[1]/nqorig;

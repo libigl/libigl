@@ -58,6 +58,7 @@ namespace igl
 #include <Eigen/SparseExtra>
 #include <cassert>
 #include <cstdio>
+#include <iostream>
 
 #include "slice.h"
 #include "is_symmetric.h"

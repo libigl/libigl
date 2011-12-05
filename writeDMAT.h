@@ -1,29 +1,31 @@
 #ifndef IGL_WRITEDMAT_H
 #define IGL_WRITEDMAT_H
 // See writeDMAT.h for a description of the .dmat file type
-#include <Eigen/Core>
 #include <string>
 namespace igl
 {
   // Write a matrix using ascii dmat file type
   //
+  // Template:
+  //   Mat  matrix type that supports .rows(), .cols(), operator(i,j)
   // Inputs:
   //   file_name  path to .dmat file
   //   W  eigen matrix containing to-be-written coefficients
   // Returns true on success, false on error
   //
-  inline bool writeDMAT(const std::string file_name, const Eigen::MatrixXd & W);
+  template <class Mat>
+  inline bool writeDMAT(const std::string file_name, const Mat & W);
 }
 
 // Implementation
 #include <cstdio>
 
-inline bool igl::writeDMAT(const std::string file_name, const Eigen::MatrixXd & W)
+  template <class Mat>
+inline bool igl::writeDMAT(const std::string file_name, const Mat & W)
 {
   FILE * fp = fopen(file_name.c_str(),"w");
   if(fp == NULL)
   {
-    fclose(fp);
     fprintf(stderr,"IOError: writeDMAT() could not open %s...",file_name.c_str());
     return false; 
   }
@@ -35,7 +37,7 @@ inline bool igl::writeDMAT(const std::string file_name, const Eigen::MatrixXd & 
     // loop over rows (down columns) quickly
     for(int i = 0;i < W.rows();i++)
     {
-      fprintf(fp,"%lg\n",W(i,j));
+      fprintf(fp,"%lg\n",(double)W(i,j));
     }
   }
   fclose(fp);
