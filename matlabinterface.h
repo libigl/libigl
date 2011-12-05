@@ -42,11 +42,17 @@ namespace igl
   inline void mlsetmatrix(Engine** engine, std::string name, const Eigen::MatrixXd& M);
   
   // Send a matrix to MATLAB
+  inline void mlsetmatrix(Engine** engine, std::string name, const Eigen::MatrixXf& M);
+
+  // Send a matrix to MATLAB
   inline void mlsetmatrix(Engine** engine, std::string name, const Eigen::MatrixXi& M);
   
   // Receive a matrix from MATLAB
   inline void mlgetmatrix(Engine** engine, std::string name, Eigen::MatrixXd& M);
   
+  // Receive a matrix from MATLAB
+  inline void mlgetmatrix(Engine** engine, std::string name, Eigen::MatrixXf& M);
+
   // Receive a matrix from MATLAB
   inline void mlgetmatrix(Engine** engine, std::string name, Eigen::MatrixXi& M);
   
@@ -79,6 +85,24 @@ inline void igl::mlclose(Engine** mlengine)
 
 // Send a matrix to MATLAB
 inline void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::MatrixXd& M)
+{
+  if (*mlengine == 0)
+    mlinit(mlengine);
+  
+  mxArray *A = mxCreateDoubleMatrix(M.rows(), M.cols(), mxREAL);
+  double *pM = mxGetPr(A);
+  
+  int c = 0;
+  for(int j=0; j<M.cols();++j)
+    for(int i=0; i<M.rows();++i)
+      pM[c++] = double(M(i,j));
+  
+  engPutVariable(*mlengine, name.c_str(), A);
+  mxDestroyArray(A);
+}
+
+// Send a matrix to MATLAB
+inline void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::MatrixXf& M)
 {
   if (*mlengine == 0)
     mlinit(mlengine);
@@ -135,6 +159,39 @@ inline void igl::mlgetmatrix(Engine** mlengine, std::string name, Eigen::MatrixX
     m = mxGetM(ary);
     n = mxGetN(ary);
     M = Eigen::MatrixXd(m,n);
+    
+    double *pM = mxGetPr(ary);
+    
+    int c = 0;
+    for(int j=0; j<M.cols();++j)
+      for(int i=0; i<M.rows();++i)
+        M(i,j) = pM[c++];
+  }
+  
+  mxDestroyArray(ary);
+}
+
+inline void igl::mlgetmatrix(Engine** mlengine, std::string name, Eigen::MatrixXf& M)
+{
+  if (*mlengine == 0)
+    mlinit(mlengine);
+  
+  unsigned long m = 0;
+  unsigned long n = 0;
+  std::vector<double> t;
+  
+  mxArray *ary = engGetVariable(*mlengine, name.c_str());
+  if (ary == NULL)
+  {
+    m = 0;
+    n = 0;
+    M = Eigen::MatrixXf(0,0);
+  }
+  else
+  {
+    m = mxGetM(ary);
+    n = mxGetN(ary);
+    M = Eigen::MatrixXf(m,n);
     
     double *pM = mxGetPr(ary);
     
