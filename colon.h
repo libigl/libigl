@@ -3,6 +3,9 @@
 #include <Eigen/Dense>
 namespace igl
 {
+  // Note:
+  // This should be potentially replaced with eigen's LinSpaced() function
+
   // Colon operator like matlab's colon operator. Enumerats values between low
   // and hi with step step.
   // Templates:

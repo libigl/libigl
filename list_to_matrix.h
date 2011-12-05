@@ -32,7 +32,6 @@ bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Mat & M)
 {
   // number of columns
   int m = V.size();
-  verbose("m = %d\n",m);
   if(m == 0)
   {
     fprintf(stderr,"Error: list_to_matrix() list is empty()\n");
@@ -40,8 +39,6 @@ bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Mat & M)
   }
   // number of rows
   int n = igl::min_size(V);
-  verbose("min = %d\n",igl::min_size(V));
-  verbose("max = %d\n",igl::max_size(V));
   if(n != igl::max_size(V))
   {
     fprintf(stderr,"Error: list_to_matrix()"

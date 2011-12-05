@@ -1,7 +1,7 @@
 #ifndef IGL_AXIS_ANGLE_TO_QUAT_H
 #define IGL_AXIS_ANGLE_TO_QUAT_H
 
-#include <EPS.h>
+#include "EPS.h"
 #include <cmath>
 namespace igl
 {
