@@ -16,9 +16,9 @@ namespace igl
   //
   // See also: edges, cotmatrix, diag, vv
     
-  template <typename T>
+  template <typename T, typename S>
   inline void vf( 
-    const Eigen::MatrixXd & V, 
+    const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> & V, 
     const Eigen::MatrixXi & F, 
     vector<vector<T> >& VF, vector<vector<T> >& VFi);
 }
@@ -26,9 +26,9 @@ namespace igl
 // Implementation
 #include "verbose.h"
 
-template <typename T>
+template <typename T, typename S>
 inline void igl::vf(
-  const Eigen::MatrixXd & V, 
+  const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> & V, 
   const Eigen::MatrixXi & F, 
   vector<vector<T> >& VF, vector<vector<T> >& VFi)
 {

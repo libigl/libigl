@@ -20,14 +20,22 @@ namespace igl
   // 
   // Output:
   // SV: scalar field defined on vertices
-  void moveFV(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::MatrixXd &S, Eigen::MatrixXd &SV);
+  template <typename T>
+  inline void moveFV(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
+              const Eigen::MatrixXi &F,
+              const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &S,
+              Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &SV);
 }
 
-inline void igl::moveFV(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::MatrixXd &S, Eigen::MatrixXd &SV)
+template <typename T>
+inline void igl::moveFV(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
+            const Eigen::MatrixXi &F,
+            const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &S,
+            Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &SV)
 {
   
-  SV = Eigen::MatrixXd::Zero(V.rows(),S.cols());
-  Eigen::VectorXd COUNT = Eigen::VectorXd::Zero(V.rows());
+  SV = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>::Zero(V.rows(),S.cols());
+  Eigen::Matrix<T, Eigen::Dynamic, 1> COUNT = Eigen::Matrix<T, Eigen::Dynamic, 1>::Zero(V.rows());
   for (int i = 0; i <F.rows(); ++i)
   {
     for (int j = 0; j<F.cols(); ++j)

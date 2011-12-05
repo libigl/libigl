@@ -22,12 +22,14 @@ namespace igl
   // Output:
   // NV, NF: new mesh without duplicate vertices
   
-  void removeDuplicates(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::MatrixXd &NV, Eigen::MatrixXi &NF, Eigen::VectorXi &I, const double epsilon);
+  template <typename T>
+  inline void removeDuplicates(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V, const Eigen::MatrixXi &F, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV, Eigen::MatrixXi &NF, Eigen::VectorXi &I, const double epsilon = 2.2204e-15);
   
 }
 
 // Implementation
-inline void igl::removeDuplicates(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::MatrixXd &NV, Eigen::MatrixXi &NF, Eigen::VectorXi &I, const double epsilon = 2.2204e-15)
+template <typename T>
+inline void igl::removeDuplicates(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V, const Eigen::MatrixXi &F, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV, Eigen::MatrixXi &NF, Eigen::VectorXi &I, const double epsilon)
 {
   assert (F.cols() == 3);
   
@@ -41,7 +43,7 @@ inline void igl::removeDuplicates(const Eigen::MatrixXd &V, const Eigen::MatrixX
   for (int i =0; i <n; ++i)
     VISITED[i] = false;
   
-  NV = Eigen::MatrixXd(n,V.cols());
+  NV = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>(n,V.cols());
   int count = 0;
   Eigen::VectorXd d(n);
   for (int i =0; i <n; ++i)
