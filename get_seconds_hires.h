@@ -20,12 +20,11 @@ inline double igl::get_seconds_hires()
 	return double(li_current.QuadPart) / double(li_freq.QuadPart);
 }
 #else
-#  include <sys/time.h>
+#  include "get_seconds.h"
 inline double igl::get_seconds_hires()
 {
 	// Sorry I've no idea how performance counters work on Mac...
-	assert(false);
-	return 0.0;
+	return igl::get_seconds();
 }
 #endif
 #endif
