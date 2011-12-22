@@ -22,9 +22,9 @@ namespace igl
   //   adjacency_list(F,A);
   //
   // See also: edges, cotmatrix, diag
-  template <typename T>
+  template <typename T, typename M>
   inline void adjacency_list(
-                             const Eigen::MatrixXi & F, 
+                             const M & F, 
                              std::vector<std::vector<T> >& A,
                              bool sorted = false
                              );
@@ -33,9 +33,9 @@ namespace igl
 // Implementation
 #include "verbose.h"
 
-template <typename T>
+template <typename T, typename M>
 inline void igl::adjacency_list(
-                                const Eigen::MatrixXi & F, 
+                                const M & F, 
                                 std::vector<std::vector<T> >& A,
                                 bool sorted 
                                 )
