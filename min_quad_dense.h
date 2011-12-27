@@ -8,6 +8,8 @@
 //#include <matlabinterface.h>
 //Engine *g_pEngine;
 
+#include <EPS.h>
+
 namespace igl
 {
 	// MIN_QUAD_WITH_FIXED Minimize quadratic energy Z'*A*Z + Z'*B + C
@@ -30,7 +32,7 @@ namespace igl
 		Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& S)
 	{
 		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> Mat;
-		const T treshold = 10e-4;
+		const T treshold = igl::DOUBLE_EPS;
 
 		const int n = A.rows();
 		assert(A.cols() == n);
@@ -58,6 +60,7 @@ namespace igl
 		{
 			T sv = singVals(i, 0);
 			assert(sv >= 0);			
+                        //printf("sv: %lg ? %lg\n",(double) sv,(double)treshold);
 			if (sv > treshold) pi_singVals(i, 0) = T(1) / sv;
 			else 
 			{
