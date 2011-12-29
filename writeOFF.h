@@ -12,12 +12,16 @@
 namespace igl 
 {
     // write mesh to an ascii off file
-    inline void writeOFF (std::string fname, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
+    inline bool writeOFF (std::string fname, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
     {
         FILE *fp = fopen (fname.c_str(), "w");
+      
         
         if (!fp)
+        {
             fprintf (stderr, "writeOFF(): could not open file %s", fname.c_str());
+          return false;
+        }
         
         fprintf (fp, "OFF\n%d %d 0\n",  (int) V.rows(), (int) F.rows());
         
@@ -28,6 +32,7 @@ namespace igl
             fprintf (fp, "3 %d %d %d\n", F(i,0), F(i,1), F(i,2));
         
         fclose (fp);
+        return true;
     }
 }
 

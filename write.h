@@ -15,7 +15,7 @@
 namespace igl 
 {
     // write mesh to an ascii file with automatic detection of file format. supported: obj, off)
-    inline void write(std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
+    inline bool write(std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
     {
         const char* p;
         for (p = str.c_str(); *p != '\0'; p++)
