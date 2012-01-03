@@ -31,8 +31,6 @@ namespace igl
 template <typename T>
 inline void igl::removeDuplicates(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V, const Eigen::MatrixXi &F, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV, Eigen::MatrixXi &NF, Eigen::VectorXi &I, const double epsilon)
 {
-  assert (F.cols() == 3);
-  
   //// build collapse map
   int n = V.rows();
   
@@ -68,14 +66,20 @@ inline void igl::removeDuplicates(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::
   NV.conservativeResize	(	count , Eigen::NoChange );
 
   count = 0;
-  NF = Eigen::MatrixXi(F.rows(),3);
+  std::vector<int> face;
+  NF = Eigen::MatrixXi(F.rows(),F.cols());
   for (int i =0; i <F.rows(); ++i)
   {
-    int v0 = I[F(i,0)];
-    int v1 = I[F(i,1)];
-    int v2 = I[F(i,2)];
-    if ( (v0 != v1) && (v2 != v1) && (v0 != v2) )
-      NF.row(count++) << v0, v1, v2;
+    face.clear();
+    for (int j = 0; j< F.cols(); ++j)
+      if(std::find(face.begin(), face.end(), I[F(i,j)]) == face.end())
+         face.push_back(I[F(i,j)]);
+    if (face.size() == F.cols())
+    {
+      for (int j = 0; j< F.cols(); ++j)
+        NF(count,j) = face[j];
+      count ++;
+    }
   }
   NF.conservativeResize	(	count , Eigen::NoChange );
   
