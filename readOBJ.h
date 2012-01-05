@@ -17,19 +17,6 @@
 
 namespace igl 
 {
-  //! Read a mesh from an ascii obj file
-  // Inputs:
-  //   str  path to .obj file
-  // Outputs:
-  //   V  eigen double matrix #V by 3
-  //   F  eigen int matrix #F by 3
-  //
-  // KNOWN BUG: This only knows how to read *triangle* meshes. It will probably
-  // crash or give garbage on anything else.
-  //
-  // KNOWN BUG: This only knows how to face lines without normal or texture
-  // indices. It will probably crash or give garbage on anything else.
-  inline bool readOBJ(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F);
   // Read a mesh from an ascii obj file, filling in vertex positions, normals
   // and texture coordinates. Mesh may have faces of any number of degree
   //
@@ -56,6 +43,20 @@ namespace igl
     std::vector<std::vector<Index > > & F,
     std::vector<std::vector<Index > > & FTC,
     std::vector<std::vector<Index > > & FN);
+
+  //! Read a mesh from an ascii obj file
+  // Inputs:
+  //   str  path to .obj file
+  // Outputs:
+  //   V  eigen double matrix #V by 3
+  //   F  eigen int matrix #F by 3
+  //
+  // KNOWN BUG: This only knows how to read *triangle* meshes. It will probably
+  // crash or give garbage on anything else.
+  //
+  // KNOWN BUG: This only knows how to face lines without normal or texture
+  // indices. It will probably crash or give garbage on anything else.
+  inline bool readOBJ(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F);
 }
 
 // Implementation
@@ -63,42 +64,6 @@ namespace igl
 
 #include <iostream>
 #include <fstream>
-
-inline bool igl::readOBJ(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
-{
-  std::vector<std::vector<double> > vV,vTC,vN;
-  std::vector<std::vector<int> > vF,vFTC,vFN;
-  bool success = igl::readOBJ(str,vV,vTC,vN,vF,vFTC,vFN);
-  if(!success)
-  {
-    // readOBJ(str,vV,vTC,vN,vF,vFTC,vFN) should have already printed an error
-    // message to stderr
-    return false;
-  }
-  bool V_rect = igl::list_to_matrix(vV,V);
-  if(!V_rect)
-  {
-    // igl::list_to_matrix(vV,V) already printed error message to std err
-    return false;
-  }
-  bool F_rect = igl::list_to_matrix(vF,F);
-  if(!F_rect)
-  {
-    // igl::list_to_matrix(vF,F) already printed error message to std err
-    return false;
-  }
-  // Legacy
-  if(F.cols() != 3)
-  {
-    fprintf(stderr,
-      "Error: readOBJ(filename,V,F) is meant for reading triangle-only"
-      " meshes. This mesh has faces all with size %d. See readOBJ.h for other"
-      " options.\n",
-      (int)F.cols());
-    return false;
-  }
-  return true;
-}
 
 template <typename Scalar, typename Index>
 inline bool igl::readOBJ(
@@ -292,4 +257,39 @@ inline bool igl::readOBJ(
   return true;
 }
 
+inline bool igl::readOBJ(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
+{
+  std::vector<std::vector<double> > vV,vTC,vN;
+  std::vector<std::vector<int> > vF,vFTC,vFN;
+  bool success = igl::readOBJ(str,vV,vTC,vN,vF,vFTC,vFN);
+  if(!success)
+  {
+    // readOBJ(str,vV,vTC,vN,vF,vFTC,vFN) should have already printed an error
+    // message to stderr
+    return false;
+  }
+  bool V_rect = igl::list_to_matrix(vV,V);
+  if(!V_rect)
+  {
+    // igl::list_to_matrix(vV,V) already printed error message to std err
+    return false;
+  }
+  bool F_rect = igl::list_to_matrix(vF,F);
+  if(!F_rect)
+  {
+    // igl::list_to_matrix(vF,F) already printed error message to std err
+    return false;
+  }
+  // Legacy
+  if(F.cols() != 3)
+  {
+    fprintf(stderr,
+      "Error: readOBJ(filename,V,F) is meant for reading triangle-only"
+      " meshes. This mesh has faces all with size %d. See readOBJ.h for other"
+      " options.\n",
+      (int)F.cols());
+    return false;
+  }
+  return true;
+}
 #endif

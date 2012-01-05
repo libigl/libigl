@@ -4,8 +4,10 @@
 
 namespace igl
 {
-  // Ideally, this becomes a super overloaded function that works with sparse
-  // and dense matrices like the matlab sum function
+  // Note: If your looking for dense matrix matlab like sum for eigen matrics
+  // just use:
+  //   M.colwise().sum() or M.rowwise().sum()
+  // 
 
   // Sum the columns or rows of a sparse matrix
   // Templates:
