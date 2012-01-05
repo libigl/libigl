@@ -32,7 +32,10 @@ namespace igl
 		Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& S)
 	{
 		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> Mat;
-		const T treshold = igl::DOUBLE_EPS;
+                // This threshold seems to matter a lot but I'm not sure how to
+                // set it
+		const T treshold = igl::FLOAT_EPS;
+		//const T treshold = igl::DOUBLE_EPS;
 
 		const int n = A.rows();
 		assert(A.cols() == n);
