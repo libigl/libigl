@@ -34,6 +34,9 @@ namespace igl
     const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & A,
     const int d,
     Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & B);
+  // Wrapper with B as output
+  template <class Mat>
+  inline Mat repdiag(const Mat & A, const int d);
 }
 
 // Implementation
@@ -88,4 +91,12 @@ inline void igl::repdiag(
   }
 }
 
+// Wrapper with B as output
+template <class Mat>
+inline Mat igl::repdiag(const Mat & A, const int d)
+{
+  Mat B;
+  repdiag(A,d,B);
+  return B;
+}
 #endif

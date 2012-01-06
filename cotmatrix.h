@@ -16,119 +16,95 @@ namespace igl
 {
   // Constructs the cotangent stiffness matrix (discrete laplacian) for a given
   // mesh (V,F).
+  //
+  // Templates:
+  //   DerivedV  derived type of eigen matrix for V (e.g. derived from
+  //     MatirxXd)
+  //   DerivedF  derived type of eigen matrix for F (e.g. derived from
+  //     MatrixXi)
+  //   Scalar  scalar type for eigen sparse matrix (e.g. double)
   // Inputs:
   //   V  #V by dim list of mesh vertex positions
-  //   F  #F by 3 list of mesh faces (must be triangles)
+  //   F  #F by simplex_size list of mesh faces (must be triangles)
   // Outputs: 
   //   L  #V by #V cotangent matrix, each row i corresponding to V(i,:)
   //
   // See also: adjacency_matrix
+  //
+  // Known bugs: off by 1e-16 on regular grid. I think its a problem of
+  // arithmetic order in cotangent.h: C(i,e) = (arithmetic)/dblA/4
+  template <typename DerivedV, typename DerivedF, typename Scalar>
   inline void cotmatrix(
-    const Eigen::MatrixXd & V, 
-    const Eigen::MatrixXi & F,
-    Eigen::SparseMatrix<double>& L);
-  // Helper function that computes the cotangent weights for each corner of a
-  // given triangle
-  // Inputs:
-  //   v1  position of corner #1 of triangle
-  //   v2  position of corner #2 of triangle
-  //   v3  position of corner #3 of triangle
-  // Outputs:
-  //   cot1  cotangent of angle at corner #1
-  //   cot2 cotangent of angle at corner #2
-  //   cot3  cotangent of angle at corner #3
-  //   
-  inline void computeCotWeights(
-    const Eigen::Vector3d& v1, 
-    const Eigen::Vector3d& v2, 
-    const Eigen::Vector3d& v3, 
-    double& cot1, 
-    double& cot2, 
-    double& cot3);
+    const Eigen::MatrixBase<DerivedV> & V, 
+    const Eigen::MatrixBase<DerivedF> & F, 
+    Eigen::SparseMatrix<Scalar>& L);
 }
 
 // Implementation
 
 // For error printing
 #include <cstdio>
+#include "cotangent.h"
 
-inline void igl::computeCotWeights(
-  const Eigen::Vector3d& v1, 
-  const Eigen::Vector3d& v2, 
-  const Eigen::Vector3d& v3, 
-  double& cot1, 
-  double& cot2, 
-  double& cot3)
-{
-  Eigen::Vector3d v12 = v2-v1;
-  Eigen::Vector3d v13 = v3-v1;
-  Eigen::Vector3d v23 = v3-v2;
-  
-  double halfArea = (v12.cross(v13)).norm();//squaredNorm();
-  
-  //improve numerical stability
-  const double cotTolerance = 1e-10;
-  if(halfArea < cotTolerance)
-  {
-    fprintf(stderr,"Cot weights are close to singular!\n");
-    halfArea = cotTolerance;
-  }
-  
-  cot1 = (v12.dot(v13)) / halfArea /2;
-  cot2 =  (v23.dot(-v12)) / halfArea /2;
-  cot3 = (-v23.dot(-v13)) / halfArea /2;
-}
-
+template <typename DerivedV, typename DerivedF, typename Scalar>
 inline void igl::cotmatrix(
-  const Eigen::MatrixXd & V, 
-  const Eigen::MatrixXi & F, 
-  Eigen::SparseMatrix<double>& L)
+  const Eigen::MatrixBase<DerivedV> & V, 
+  const Eigen::MatrixBase<DerivedF> & F, 
+  Eigen::SparseMatrix<Scalar>& L)
 {
-  // Assumes vertices are 3D or 2D
-  assert((V.cols() == 3) || (V.cols() == 2));
-  int dim = V.cols();
-  // Assumes faces are triangles
-  assert(F.cols() == 3);
+  using namespace igl;
+  using namespace Eigen;
 
-  Eigen::DynamicSparseMatrix<double, Eigen::RowMajor> dyn_L (V.rows(), V.rows());
-  // This is important! it could decrease the comptuation time by a factor of 2
-  // Laplacian for a closed 2d manifold mesh will have on average 7 entries per
-  // row
-  dyn_L.reserve(7*V.rows());
+  DynamicSparseMatrix<Scalar, RowMajor> dyn_L (V.rows(), V.rows());
+  Matrix<int,Dynamic,2> edges;
+  int simplex_size = F.cols();
+  // 3 for triangles, 4 for tets
+  assert(simplex_size == 3 || simplex_size == 4);
+  if(simplex_size == 3)
+  {
+    // This is important! it could decrease the comptuation time by a factor of 2
+    // Laplacian for a closed 2d manifold mesh will have on average 7 entries per
+    // row
+    dyn_L.reserve(7*V.rows());
+    edges.resize(3,2);
+    edges << 
+      1,2,
+      2,0,
+      0,1;
+  }else if(simplex_size == 4)
+  {
+    dyn_L.reserve(17*V.rows());
+    edges.resize(6,2);
+    edges << 
+      1,2,
+      2,0,
+      0,1,
+      3,0,
+      3,1,
+      3,2;
+  }else
+  {
+    return;
+  }
+  // Gather cotangents
+  Matrix<Scalar,Dynamic,Dynamic> C;
+  cotangent(V,F,C);
   
   // Loop over triangles
-  for (unsigned i = 0; i < F.rows(); i++)
+  for(int i = 0; i < F.rows(); i++)
   {
-    // Corner indices of this triangle
-    int vi1 = F(i,0);
-    int vi2 = F(i,1);
-    int vi3 = F(i,2);
-    // Grab corner positions of this triangle
-    Eigen::Vector3d v1(V(vi1,0), V(vi1,1), (dim==2?0:V(vi1,2)));
-    Eigen::Vector3d v2(V(vi2,0), V(vi2,1), (dim==2?0:V(vi2,2)));
-    Eigen::Vector3d v3(V(vi3,0), V(vi3,1), (dim==2?0:V(vi3,2)));
-    // Compute cotangent of angles at each corner
-    double cot1, cot2, cot3;
-    computeCotWeights(v1, v2, v3, cot1, cot2, cot3);
-    // Throw each corner's cotangent at opposite edge (in both directions)
-    dyn_L.coeffRef(vi1, vi2) += cot3;
-    dyn_L.coeffRef(vi2, vi1) += cot3;
-    dyn_L.coeffRef(vi2, vi3) += cot1;
-    dyn_L.coeffRef(vi3, vi2) += cot1;
-    dyn_L.coeffRef(vi3, vi1) += cot2;
-    dyn_L.coeffRef(vi1, vi3) += cot2;
-  }
-
-  for (int k=0; k < dyn_L.outerSize(); ++k)
-  {
-    double tmp = 0.0f;
-    for(Eigen::DynamicSparseMatrix<double, Eigen::RowMajor>::InnerIterator it (dyn_L, k); it; ++it)
+    // loop over edges of element
+    for(int e = 0;e<edges.rows();e++)
     {
-      tmp += it.value();
+      int source = F(i,edges(e,0));
+      int dest = F(i,edges(e,1));
+      dyn_L.coeffRef(source,dest) += C(i,e);
+      dyn_L.coeffRef(dest,source) += C(i,e);
+      dyn_L.coeffRef(source,source) += -C(i,e);
+      dyn_L.coeffRef(dest,dest) += -C(i,e);
     }
-    dyn_L.coeffRef(k,k) = -tmp;
   }
-  L = Eigen::SparseMatrix<double>(dyn_L);
+    // Corner indices of this triangle
+  L = SparseMatrix<Scalar>(dyn_L);
 }
-
 #endif
