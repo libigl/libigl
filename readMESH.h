@@ -40,7 +40,7 @@ namespace igl
 
 // Implementation
 #include <cstdio>
-#include <verbose.h>;
+#include <verbose.h>
 
 template <typename Scalar, typename Index>
 inline bool igl::readMESH(

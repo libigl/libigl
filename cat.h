@@ -171,7 +171,6 @@ Mat igl::cat(const int dim, const Mat & A, const Mat & B)
 template <class Mat>
 void cat(const std::vector<std::vector< Mat > > & A, Mat & C)
 {
-  assert(dim == 1 || dim == 2);
   using namespace igl;
   using namespace std;
   // Start with empty matrix
