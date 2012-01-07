@@ -98,7 +98,10 @@ inline bool igl::writeMESH(
   for(int i = 0;i<number_of_triangles;i++)
   {
     // loop over vertices in face
-    fprintf(mesh_file,"%ld %ld %ld 1\n", F(i,0)+1, F(i,1)+1, F(i,2)+1);
+    fprintf(mesh_file,"%d %d %d 1\n", 
+      (int)F(i,0)+1, 
+      (int)F(i,1)+1, 
+      (int)F(i,2)+1);
   }
   // print tetrahedra
   fprintf(mesh_file,"Tetrahedra\n");
@@ -109,11 +112,11 @@ inline bool igl::writeMESH(
   for(size_t i = 0; i < number_of_tetrahedra;i++)
   {
     // mesh standard uses 1-based indexing
-    fprintf(mesh_file, "%ld %ld %ld %ld 1\n",
-      T(i,0)+1,
-      T(i,1)+1,
-      T(i,2)+1,
-      T(i,3)+1);
+    fprintf(mesh_file, "%d %d %d %d 1\n",
+      (int)T(i,0)+1,
+      (int)T(i,1)+1,
+      (int)T(i,2)+1,
+      (int)T(i,3)+1);
   }
   fclose(mesh_file);
   return true;

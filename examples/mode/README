@@ -1,0 +1,9 @@
+This is a simple example program that shows how to use the mode function on
+eigen matrices like matlab's mode(X,dim) function
+
+
+To Build:
+  make
+
+To Run:
+  ./example
