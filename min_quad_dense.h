@@ -3,6 +3,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
+#include <Eigen/LU>
 
 //// debug
 //#include <matlabinterface.h>
@@ -49,6 +50,11 @@ namespace igl
 		LM.block(n, 0, m, n) = Aeq;
 		LM.block(n, n, m, m).setZero();
 
+//#define USE_LU_DECOMPOSITION
+#ifdef USE_LU_DECOMPOSITION		
+		// if LM is close to singular, use at your own risk :)
+		Mat LMpinv = LM.inverse();
+#else // use SVD
 		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> Vec; 
 		Vec singValues;
 		Eigen::JacobiSVD<Mat> svd;
@@ -63,7 +69,7 @@ namespace igl
 		{
 			T sv = singVals(i, 0);
 			assert(sv >= 0);			
-                        //printf("sv: %lg ? %lg\n",(double) sv,(double)treshold);
+                       // printf("sv: %lg ? %lg\n",(double) sv,(double)treshold);
 			if (sv > treshold) pi_singVals(i, 0) = T(1) / sv;
 			else 
 			{
@@ -72,10 +78,11 @@ namespace igl
 			}
 		}
 
-		printf("min_quad_dense_precompute: %i singular values zeroed\n", zeroed);
+		printf("min_quad_dense_precompute: %i singular values zeroed (threshold = %e)\n", zeroed, treshold);
 		Eigen::DiagonalMatrix<T, Eigen::Dynamic> pi_diag(pi_singVals);
 
 		Mat LMpinv = v * pi_diag * u.transpose();
+#endif
 		S = LMpinv.block(0, 0, n, n + m);
 
 		//// debug:
