@@ -11,4 +11,5 @@ namespace igl
   const float CYAN_AMBIENT[4] =   {  59.0/255.0, 68.0/255.0,255.0/255.0,1.0f };
   const float CYAN_DIFFUSE[4] =   {  94.0/255.0,185.0/255.0,238.0/255.0,1.0f };
   const float CYAN_SPECULAR[4] =   { 163.0/255.0,221.0/255.0,255.0/255.0,1.0f };
+  const float DENIS_PURPLE_DIFFUSE[4] =   { 80.0/255.0,64.0/255.0,255.0/255.0,1.0f };
 }

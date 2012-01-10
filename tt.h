@@ -39,7 +39,7 @@ namespace igl
   {
     TT = Eigen::MatrixXi::Constant((int)(F.rows()),3,-1);
     
-    for(int i=1;i<TTT.size();++i)
+    for(int i=1;i<(int)TTT.size();++i)
     {
       std::vector<int>& r1 = TTT[i-1];
       std::vector<int>& r2 = TTT[i];
@@ -56,7 +56,7 @@ namespace igl
   {
     TTi = Eigen::MatrixXi::Constant((int)(F.rows()),3,-1);
     
-    for(int i=1;i<TTT.size();++i)
+    for(int i=1;i<(int)TTT.size();++i)
     {
       std::vector<int>& r1 = TTT[i-1];
       std::vector<int>& r2 = TTT[i];

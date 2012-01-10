@@ -1,5 +1,5 @@
-#ifndef IGL_ADJACENCY_MATRIX_H
-#define IGL_ADJACENCY_MATRIX_H
+#ifndef IGL_ADJACENCY_LIST_H
+#define IGL_ADJACENCY_LIST_H
 
 #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #include <Eigen/Dense>
@@ -58,7 +58,7 @@ inline void igl::adjacency_list(
   }
   
   // Remove duplicates
-  for(int i=0; i<A.size();++i)
+  for(int i=0; i<(int)A.size();++i)
   {
     std::sort(A[i].begin(), A[i].end());
     A[i].erase(std::unique(A[i].begin(), A[i].end()), A[i].end());
@@ -91,7 +91,7 @@ inline void igl::adjacency_list(
       }
 	  }
 	  
-    for(int v=0; v<SR.size();++v)
+    for(int v=0; v<(int)SR.size();++v)
     {
       std::vector<int>& vv = A.at(v);
       std::vector<std::vector<int> >& sr = SR[v];
@@ -99,21 +99,21 @@ inline void igl::adjacency_list(
       std::vector<std::vector<int> > pn = sr;
       
       // Compute previous/next for every element in sr
-      for(int i=0;i<sr.size();++i)
+      for(int i=0;i<(int)sr.size();++i)
       {
         int a = sr[i][0];
         int b = sr[i][1];
         
         // search for previous
         int p = -1;
-        for(int j=0;j<sr.size();++j)
+        for(int j=0;j<(int)sr.size();++j)
           if(sr[j][1] == a)
             p = j;
         pn[i][0] = p;
         
         // search for next
         int n = -1;
-        for(int j=0;j<sr.size();++j)
+        for(int j=0;j<(int)sr.size();++j)
           if(sr[j][0] == b)
             n = j;
         pn[i][1] = n;
@@ -122,14 +122,14 @@ inline void igl::adjacency_list(
       
       // assume manifoldness (look for beginning of a single chain)
       int c = 0;
-      for(int j=0; j<=sr.size();++j)
+      for(int j=0; j<=(int)sr.size();++j)
         if (pn[c][0] != -1)
           c = pn[c][0];
       
       if (pn[c][0] == -1) // border case
       {
         // finally produce the new vv relation
-        for(int j=0; j<sr.size();++j)
+        for(int j=0; j<(int)sr.size();++j)
         {
           vv[j] = sr[c][0];
           if (pn[c][1] != -1)
@@ -140,7 +140,7 @@ inline void igl::adjacency_list(
       else
       {
         // finally produce the new vv relation
-        for(int j=0; j<sr.size();++j)
+        for(int j=0; j<(int)sr.size();++j)
         {
           vv[j] = sr[c][0];
           

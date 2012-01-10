@@ -1,9 +1,8 @@
 #ifndef IGL_VF_H
 #define IGL_VF_H
 
-#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #include <Eigen/Dense>
-#include <Eigen/Sparse>
+#include <vector>
 
 namespace igl 
 {
@@ -20,7 +19,7 @@ namespace igl
   inline void vf( 
     const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> & V, 
     const Eigen::MatrixXi & F, 
-    vector<vector<T> >& VF, vector<vector<T> >& VFi);
+    std::vector<std::vector<T> >& VF, std::vector<std::vector<T> >& VFi);
 }
 
 // Implementation
@@ -30,7 +29,7 @@ template <typename T, typename S>
 inline void igl::vf(
   const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> & V, 
   const Eigen::MatrixXi & F, 
-  vector<vector<T> >& VF, vector<vector<T> >& VFi)
+  std::vector<std::vector<T> >& VF, std::vector<std::vector<T> >& VFi)
 {
   VF.clear();
   VFi.clear();
