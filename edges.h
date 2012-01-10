@@ -16,18 +16,14 @@ namespace igl
   //   E #E by 2 list of edges in no particular order
   //
   // See also: adjacency_matrix
-  inline void edges(
-    const Eigen::MatrixXi& F, 
-    Eigen::MatrixXi& E);
+  inline void edges( const Eigen::MatrixXi& F, Eigen::MatrixXi& E);
 }
 
 // Implementation
 #include <map>
-#include "adjacency_matrix.h"
+#include <adjacency_matrix.h>
 
-inline void igl::edges(
-  const Eigen::MatrixXi& F, 
-  Eigen::MatrixXi& E)
+inline void igl::edges( const Eigen::MatrixXi& F, Eigen::MatrixXi& E)
 {
   // build adjacency matrix
   Eigen::SparseMatrix<int> A;

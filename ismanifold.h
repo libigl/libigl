@@ -32,7 +32,7 @@ namespace igl
       }
     std::sort(TTT.begin(),TTT.end());
     
-    for(int i=2;i<TTT.size();++i)
+    for(int i=2;i<(int)TTT.size();++i)
     {
       std::vector<int>& r1 = TTT[i-2];
       std::vector<int>& r2 = TTT[i-1];
