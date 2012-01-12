@@ -76,10 +76,10 @@ inline bool igl::writeMESH(
   // print tet vertices
   fprintf(mesh_file,"Vertices\n");
   // print number of tet vertices
-  size_t number_of_tet_vertices = V.rows();
+  int number_of_tet_vertices = V.rows();
   fprintf(mesh_file,"%ld\n",number_of_tet_vertices);
   // loop over tet vertices
-  for(size_t i = 0;i<number_of_tet_vertices;i++)
+  for(int i = 0;i<number_of_tet_vertices;i++)
   {
     // print position of ith tet vertex
     fprintf(mesh_file,"%lg %lg %lg 1\n",
@@ -92,7 +92,7 @@ inline bool igl::writeMESH(
   // print faces
   fprintf(mesh_file,"Triangles\n");
   // print number of triangles
-  size_t number_of_triangles = F.rows();
+  int number_of_triangles = F.rows();
   fprintf(mesh_file,"%ld\n",number_of_triangles);
   // loop over faces
   for(int i = 0;i<number_of_triangles;i++)
@@ -105,11 +105,11 @@ inline bool igl::writeMESH(
   }
   // print tetrahedra
   fprintf(mesh_file,"Tetrahedra\n");
-  size_t number_of_tetrahedra = T.rows();
+  int number_of_tetrahedra = T.rows();
   // print number of tetrahedra
   fprintf(mesh_file,"%ld\n",number_of_tetrahedra);
   // loop over tetrahedra
-  for(size_t i = 0; i < number_of_tetrahedra;i++)
+  for(int i = 0; i < number_of_tetrahedra;i++)
   {
     // mesh standard uses 1-based indexing
     fprintf(mesh_file, "%d %d %d %d 1\n",

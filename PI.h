@@ -1,3 +1,5 @@
+#ifndef IGL_PI_H
+#define IGL_PI_H
 namespace igl
 {
   // Use standard mathematical constants' M_PI if available
@@ -7,3 +9,4 @@ namespace igl
   const double PI = 3.1415926535897932384626433832795;
 #endif
 }
+#endif
