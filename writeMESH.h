@@ -50,6 +50,7 @@ inline bool igl::writeMESH(
 {
   // not implemented but should be
   assert(false);
+  return false;
 }
 
 #include <Eigen/Core>
@@ -77,7 +78,7 @@ inline bool igl::writeMESH(
   fprintf(mesh_file,"Vertices\n");
   // print number of tet vertices
   int number_of_tet_vertices = V.rows();
-  fprintf(mesh_file,"%ld\n",number_of_tet_vertices);
+  fprintf(mesh_file,"%d\n",number_of_tet_vertices);
   // loop over tet vertices
   for(int i = 0;i<number_of_tet_vertices;i++)
   {
@@ -93,7 +94,7 @@ inline bool igl::writeMESH(
   fprintf(mesh_file,"Triangles\n");
   // print number of triangles
   int number_of_triangles = F.rows();
-  fprintf(mesh_file,"%ld\n",number_of_triangles);
+  fprintf(mesh_file,"%d\n",number_of_triangles);
   // loop over faces
   for(int i = 0;i<number_of_triangles;i++)
   {
@@ -107,7 +108,7 @@ inline bool igl::writeMESH(
   fprintf(mesh_file,"Tetrahedra\n");
   int number_of_tetrahedra = T.rows();
   // print number of tetrahedra
-  fprintf(mesh_file,"%ld\n",number_of_tetrahedra);
+  fprintf(mesh_file,"%d\n",number_of_tetrahedra);
   // loop over tetrahedra
   for(int i = 0; i < number_of_tetrahedra;i++)
   {
