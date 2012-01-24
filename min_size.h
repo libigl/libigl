@@ -14,7 +14,7 @@ namespace igl
   inline int min_size(const std::vector<T> & V);
 }
 
-// implementation 
+// Implementation 
 
 template <typename T>
 inline int igl::min_size(const std::vector<T> & V)

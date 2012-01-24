@@ -1,3 +1,5 @@
+#ifndef IGL_TGA_H
+#define IGL_TGA_H
 #pragma once
 
 // interface for TrueVision (TGA) image file loader
@@ -646,3 +648,4 @@ static void writeTGA( gliGenericImage* image, FILE *fp) {
 }
 
 } // end of namespace
+#endif

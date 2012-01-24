@@ -1,5 +1,5 @@
-#ifndef FILE_CONTENTS_AS_STRING_H
-#define FILE_CONTENTS_AS_STRING_H
+#ifndef IGL_FILE_CONTENTS_AS_STRING_H
+#define IGL_FILE_CONTENTS_AS_STRING_H
 
 #include <string>
 namespace igl

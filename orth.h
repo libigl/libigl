@@ -5,8 +5,8 @@
 //  Copyright (c) 2011 ETH Zurich. All rights reserved.
 //
 
-#ifndef orth_h
-#define orth_h
+#ifndef IGL_ORTH_H
+#define IGL_ORTH_H
 
 #include <Eigen/Core>
 
@@ -24,7 +24,7 @@ namespace igl
 //   provides more reliable and consistent rank determination.
 //   Closely follows MATLAB implementation in orth.m
 //  
-  void orth(const Eigen::MatrixXd &A, Eigen::MatrixXd &Q);
+  inline void orth(const Eigen::MatrixXd &A, Eigen::MatrixXd &Q);
 }
 
 // Implementation

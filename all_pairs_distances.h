@@ -19,7 +19,7 @@ namespace igl
   //     squareed distance between V(i,:) and U(j,:)
   // 
   template <typename Mat>
-  void all_pairs_distances(
+  inline void all_pairs_distances(
     const Mat & V,
     const Mat & U,
     const bool squared, 
@@ -29,7 +29,7 @@ namespace igl
 // Implementation
 
 template <typename Mat>
-void igl::all_pairs_distances(
+inline void igl::all_pairs_distances(
   const Mat & V,
   const Mat & U,
   const bool squared,

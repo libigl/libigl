@@ -1,5 +1,5 @@
-#ifndef EPS_H
-#define EPS_H
+#ifndef IGL_EPS_H
+#define IGL_EPS_H
 // Define a standard value for double epsilon
 namespace igl
 {

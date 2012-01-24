@@ -27,20 +27,20 @@ namespace igl
   //   C  output matrix
   //   
   template <typename Scalar>
-  void cat(
+  inline void cat(
       const int dim, 
       const Eigen::SparseMatrix<Scalar> & A, 
       const Eigen::SparseMatrix<Scalar> & B, 
       Eigen::SparseMatrix<Scalar> & C);
   template <typename Derived, class MatC>
-  void cat(
+  inline void cat(
     const int dim,
     const Eigen::MatrixBase<Derived> & A, 
     const Eigen::MatrixBase<Derived> & B,
     MatC & C);
   // Wrapper that returns C
   template <class Mat>
-  Mat cat(const int dim, const Mat & A, const Mat & B);
+  inline Mat cat(const int dim, const Mat & A, const Mat & B);
 
   // Note: Maybe we can autogenerate a bunch of overloads D = cat(int,A,B,C),
   // E = cat(int,A,B,C,D), etc. 
@@ -53,7 +53,7 @@ namespace igl
   // Output:
   //   C
   template <class Mat>
-    void cat(const std::vector<std::vector< Mat > > & A, Mat & C);
+  inline void cat(const std::vector<std::vector< Mat > > & A, Mat & C);
 }
 
 // Implementation
@@ -62,7 +62,7 @@ namespace igl
 // Template:
 //   Scalar  sparse matrix scalar type, e.g. double
 template <typename Scalar>
-void igl::cat(
+inline void igl::cat(
     const int dim, 
     const Eigen::SparseMatrix<Scalar> & A, 
     const Eigen::SparseMatrix<Scalar> & B, 
@@ -124,7 +124,7 @@ void igl::cat(
 }
 
 template <typename Derived, class MatC>
-void igl::cat(
+inline void igl::cat(
   const int dim,
   const Eigen::MatrixBase<Derived> & A, 
   const Eigen::MatrixBase<Derived> & B,
@@ -160,7 +160,7 @@ void igl::cat(
 }
 
 template <class Mat>
-Mat igl::cat(const int dim, const Mat & A, const Mat & B)
+inline Mat igl::cat(const int dim, const Mat & A, const Mat & B)
 {
   assert(dim == 1 || dim == 2);
   Mat C;
@@ -169,7 +169,7 @@ Mat igl::cat(const int dim, const Mat & A, const Mat & B)
 }
 
 template <class Mat>
-void cat(const std::vector<std::vector< Mat > > & A, Mat & C)
+inline void cat(const std::vector<std::vector< Mat > > & A, Mat & C)
 {
   using namespace igl;
   using namespace std;

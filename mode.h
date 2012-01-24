@@ -14,7 +14,7 @@ namespace igl
   //   M  vector containing mode along dension d, if d==1 then this will be a
   //     n-long vector if d==2 then this will be a m-long vector
   template <typename T>
-  void mode(
+  inline void mode(
     const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,
     const int d, 
     Eigen::Matrix<T,Eigen::Dynamic,1> & M);
@@ -24,7 +24,7 @@ namespace igl
 #include <vector>
 
 template <typename T>
-void igl::mode(
+inline void igl::mode(
   const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,
   const int d, 
   Eigen::Matrix<T,Eigen::Dynamic,1> & M)

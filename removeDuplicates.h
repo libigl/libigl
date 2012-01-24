@@ -6,8 +6,8 @@
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef RemoveDuplicates_h
-#define RemoveDuplicates_h
+#ifndef IGL_REMOVEDUPLICATES_H
+#define IGL_REMOVEDUPLICATES_H
 
 #include <Eigen/Core>
 namespace igl 
@@ -63,7 +63,7 @@ inline void igl::removeDuplicates(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::
     }
   }
   
-  NV.conservativeResize	(	count , Eigen::NoChange );
+  NV.conservativeResize  (  count , Eigen::NoChange );
 
   count = 0;
   std::vector<int> face;
@@ -81,7 +81,7 @@ inline void igl::removeDuplicates(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::
       count ++;
     }
   }
-  NF.conservativeResize	(	count , Eigen::NoChange );
+  NF.conservativeResize  (  count , Eigen::NoChange );
   
   delete [] VISITED;
 }

@@ -24,7 +24,7 @@ namespace igl
   //    and RV(IM,:) = V
   //
   template <typename MatV, typename MatF, typename VecI>
-  void faces_first(
+  inline void faces_first(
     const MatV & V, 
     const MatF & F, 
     MatV & RV, 
@@ -37,7 +37,7 @@ namespace igl
 #include <Eigen/Dense>
 
 template <typename MatV, typename MatF, typename VecI>
-void igl::faces_first(
+inline void igl::faces_first(
   const MatV & V, 
   const MatF & F, 
   MatV & RV, 

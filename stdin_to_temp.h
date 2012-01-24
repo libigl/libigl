@@ -21,7 +21,7 @@ namespace igl
   inline bool stdin_to_temp(FILE ** temp_file);
 }
 
-// IMPLEMENTATION
+// Implementation
 #include <iostream>
 
 inline bool igl::stdin_to_temp(FILE ** temp_file)

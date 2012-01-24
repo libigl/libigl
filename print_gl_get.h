@@ -1,5 +1,5 @@
-#ifndef PRINT_gl_get_H
-#define PRINT_gl_get_H
+#ifndef IGL_PRINT_GL_GET_H
+#define IGL_PRINT_GL_GET_H
 
 #if __APPLE__
 #  include <OpenGL/gl.h>
@@ -21,7 +21,8 @@ namespace igl
 }
 
 
-// implementation
+// Implementation
+
 #include <cstdio>
 inline void igl::print_gl_get(GLenum pname)
 {

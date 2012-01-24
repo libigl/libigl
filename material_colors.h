@@ -1,3 +1,5 @@
+#ifndef IGL_MATERIAL_COLORS_H
+#define IGL_MATERIAL_COLORS_H
 // Define som constant material colors for use with opengl glMaterialfv
 namespace igl
 {
@@ -13,3 +15,4 @@ namespace igl
   const float CYAN_SPECULAR[4] =   { 163.0/255.0,221.0/255.0,255.0/255.0,1.0f };
   const float DENIS_PURPLE_DIFFUSE[4] =   { 80.0/255.0,64.0/255.0,255.0/255.0,1.0f };
 }
+#endif

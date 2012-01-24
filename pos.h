@@ -3,12 +3,10 @@
 //
 //  Copyright 2011, Daniele Panozzo. All rights reserved.
 
-#ifndef POS_H
-#define POS_H
+#ifndef IGL_POS_H
+#define IGL_POS_H
 
 #include <Eigen/Core>
-#include <string>
-#include "ismanifold.h"
 
 #include <vector>
 

@@ -21,14 +21,14 @@ namespace igl
   // Output:
   //  id  of generated openGL texture
   // Returns true on success, false on failure
-  bool texture_from_tga(const std::string tga_file, GLuint & id);
+  inline bool texture_from_tga(const std::string tga_file, GLuint & id);
 }
 
 
 // Implementation
 #include "tga.h"
 
-bool igl::texture_from_tga(const std::string tga_file, GLuint & id)
+inline bool igl::texture_from_tga(const std::string tga_file, GLuint & id)
 {
   using namespace std;
   using namespace igl;

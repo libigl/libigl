@@ -16,7 +16,7 @@ namespace igl
   //   M  an m by n matrix
   // Returns true on success, false on errors
   template <class Row, class Mat>
-  bool rows_to_matrix(const std::vector<Row> & V,Mat & M);
+  inline bool rows_to_matrix(const std::vector<Row> & V,Mat & M);
 }
 
 // Implementation
@@ -27,20 +27,20 @@ namespace igl
 #include "min_size.h"
 
 template <class Row, class Mat>
-bool igl::rows_to_matrix(const std::vector<Row> & V,Mat & M)
+inline bool igl::rows_to_matrix(const std::vector<Row> & V,Mat & M)
 {
   // number of columns
   int m = V.size();
   if(m == 0)
   {
-    fprintf(stderr,"Error: list_to_matrix() list is empty()\n");
+    fprintf(stderr,"Error: rows_to_matrix() list is empty()\n");
     return false;
   }
   // number of rows
   int n = igl::min_size(V);
   if(n != igl::max_size(V))
   {
-    fprintf(stderr,"Error: list_to_matrix()"
+    fprintf(stderr,"Error: rows_to_matrix()"
       " list elements are not all the same size\n");
     return false;
   }

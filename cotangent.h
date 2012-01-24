@@ -16,7 +16,7 @@ namespace igl
   //     for triangles, columns correspond to edges 23,31,12
   //     for tets, columns correspond to edges 23,31,12,41,42,43
   template <class MatV, class MatF, class MatC>
-  void cotangent(const MatV & V, const MatF & F, MatC & C);
+  inline void cotangent(const MatV & V, const MatF & F, MatC & C);
 }
 
 // Implementation
@@ -24,7 +24,7 @@ namespace igl
 #include <Eigen/Dense>
 
 template <class MatV, class MatF, class MatC>
-void igl::cotangent(const MatV & V, const MatF & F, MatC & C)
+inline void igl::cotangent(const MatV & V, const MatF & F, MatC & C)
 {
   using namespace igl;
   using namespace std;

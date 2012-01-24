@@ -4,8 +4,8 @@
 //
 //  Created by Daniele Panozzo on 17/11/11.
 
-#ifndef RemoveUnreferenced_h
-#define RemoveUnreferenced_h
+#ifndef IGL_REMOVEUNREFERENCED_H
+#define IGL_REMOVEUNREFERENCED_H
 
 #include <Eigen/Core>
 namespace igl 

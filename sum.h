@@ -26,6 +26,8 @@ namespace igl
     Eigen::SparseVector<T>& S);
 }
 
+// Implementation
+
 template <typename T>
 inline void igl::sum(
   const Eigen::SparseMatrix<T>& X, 

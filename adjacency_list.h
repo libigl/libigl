@@ -24,10 +24,9 @@ namespace igl
   // See also: edges, cotmatrix, diag
   template <typename T, typename M>
   inline void adjacency_list(
-                             const M & F, 
-                             std::vector<std::vector<T> >& A,
-                             bool sorted = false
-                             );
+    const M & F, 
+    std::vector<std::vector<T> >& A,
+    bool sorted = false);
 }
 
 // Implementation
@@ -35,10 +34,9 @@ namespace igl
 
 template <typename T, typename M>
 inline void igl::adjacency_list(
-                                const M & F, 
-                                std::vector<std::vector<T> >& A,
-                                bool sorted 
-                                )
+    const M & F, 
+    std::vector<std::vector<T> >& A,
+    bool sorted)
 {
   A.clear(); 
   A.resize(F.maxCoeff()+1);
@@ -67,14 +65,14 @@ inline void igl::adjacency_list(
   // If needed, sort every VV
   if (sorted)
   {
-	  // Loop over faces
-	  
-	  // for every vertex v store a set of ordered edges not incident to v that belongs to triangle incident on v.
+    // Loop over faces
+    
+    // for every vertex v store a set of ordered edges not incident to v that belongs to triangle incident on v.
     std::vector<std::vector<std::vector<int> > > SR; 
-	  SR.resize(A.size());
-	  
-	  for(int i = 0;i<F.rows();i++)
-	  {
+    SR.resize(A.size());
+    
+    for(int i = 0;i<F.rows();i++)
+    {
       // Loop over this face
       for(int j = 0;j<F.cols();j++)
       {
@@ -89,8 +87,8 @@ inline void igl::adjacency_list(
         e[1] = v;
         SR[s].push_back(e);
       }
-	  }
-	  
+    }
+    
     for(int v=0; v<(int)SR.size();++v)
     {
       std::vector<int>& vv = A.at(v);

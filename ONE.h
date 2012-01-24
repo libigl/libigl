@@ -1,5 +1,5 @@
-#ifndef ONE_H
-#define ONE_H
+#ifndef IGL_ONE_H
+#define IGL_ONE_H
 // Often one needs a reference to a dummy variable containing zero as its
 // value, for example when using AntTweakBar's
 // TwSetParam( "3D View", "opened", TW_PARAM_INT32, 1, &INT_ONE);

@@ -1,3 +1,5 @@
+#ifndef IGL_TRACKBALL_H
+#define IGL_TRACKBALL_H
 
 namespace igl
 {
@@ -126,3 +128,4 @@ inline void igl::trackball(
     }
   }
 }
+#endif

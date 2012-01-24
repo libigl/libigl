@@ -3,19 +3,29 @@
 //
 //  Copyright 2011, Daniele Panozzo. All rights reserved.
 
-#ifndef ISMANIFOLD_H
-#define ISMANIFOLD_H
+#ifndef IGL_IS_MANIFOLD_H
+#define IGL_IS_MANIFOLD_H
 
 #include <Eigen/Core>
-#include <string>
-
 #include <vector>
 
 namespace igl 
 {
   // check if the mesh is edge-manifold
+  //
+  // Not clear whether this returns true or false if the mesh is disc topology
+  //
+  // Known Bugs:
+  //  Does not check for non-manifold vertices
   template<typename T>
-  inline bool isManifold(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& V, const Eigen::MatrixXi& F)
+  inline bool is_manifold(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& V, const Eigen::MatrixXi& F);
+}
+
+// Implementation
+#include <algorithm>
+
+template<typename T>
+inline bool igl::is_manifold(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& V, const Eigen::MatrixXi& F);
   {
     std::vector<std::vector<int> > TTT;
     for(int f=0;f<F.rows();++f)

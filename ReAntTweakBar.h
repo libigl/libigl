@@ -1,3 +1,5 @@
+#ifndef IGL_REANTTWEAKBAR_H
+#define IGL_REANTTWEAKBAR_H
 // ReAntTweakBar is a minimal wrapper for the AntTweakBar library that allows
 // "bars" to be saved and load from disk. Changing your existing app that users
 // AntTweakBar to use ReAntTweakBar is trivial.
@@ -865,3 +867,4 @@ bool igl::ReTwBar::set_value_from_string(
   }
   return true;
 }
+#endif

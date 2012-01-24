@@ -14,7 +14,7 @@ namespace igl
   inline int max_size(const std::vector<T> & V);
 }
 
-// implementation 
+// Implementation 
 
 template <typename T>
 inline int igl::max_size(const std::vector<T> & V)

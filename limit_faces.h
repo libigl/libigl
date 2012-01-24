@@ -21,7 +21,7 @@ namespace igl
   //   in  #F list of whether given face was included
   //
   template <typename MatF, typename VecL>
-  void limit_faces(
+  inline void limit_faces(
     const MatF & F, 
     const VecL & L, 
     const bool exclusive,
@@ -32,7 +32,7 @@ namespace igl
 #include <vector>
 
 template <typename MatF, typename VecL>
-void igl::limit_faces(
+inline void igl::limit_faces(
   const MatF & F, 
   const VecL & L, 
   const bool exclusive,
