@@ -29,6 +29,8 @@ namespace igl
     Eigen::Matrix<int,Eigen::Dynamic,1> & I);
 }
 
+// Implementation
+
 template <typename T>
 inline void igl::mat_max(
   const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,

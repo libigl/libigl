@@ -15,8 +15,8 @@
 // DYLD_LIBRARY_PATH = /Applications/MATLAB_R2011a.app/bin/maci64
 // PATH = /opt/local/bin:/opt/local/sbin:/Applications/MATLAB_R2011a.app/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/texbin:/usr/X11/bin
 
-#ifndef MATLAB_INTERFACE_H
-#define MATLAB_INTERFACE_H
+#ifndef IGL_MATLAB_INTERFACE_H
+#define IGL_MATLAB_INTERFACE_H
 
 #include <Eigen/Core>
 #include <string>
@@ -67,7 +67,7 @@ namespace igl
   
 }
 
-//Implementation
+// Implementation
 
 // Init the MATLAB engine 
 // (no need to call it directly since it is automatically invoked by any other command)

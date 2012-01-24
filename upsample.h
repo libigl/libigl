@@ -18,10 +18,10 @@ namespace igl
   // NOTE: V should not be the same as NV,
   // NOTE: F should not be the same as NF, use other proto
   template <typename MatV, typename MatF>
-  void upsample( const MatV & V, const MatF & F, MatV & NV, MatF & NF);
+  inline void upsample( const MatV & V, const MatF & F, MatV & NV, MatF & NF);
   // Virtually in place wrapper
   template <typename MatV, typename MatF>
-  void upsample( MatV & V,MatF & F);
+  inline void upsample( MatV & V,MatF & F);
 }
 
 // Implementation
@@ -30,7 +30,7 @@ namespace igl
 #include <Eigen/Dense>
 
 template <typename MatV, typename MatF>
-void igl::upsample( const MatV & V, const MatF & F, MatV & NV, MatF & NF)
+inline void igl::upsample( const MatV & V, const MatF & F, MatV & NV, MatF & NF)
 {
   // Use "in place" wrapper instead
   assert(&V != &NV);
@@ -105,7 +105,7 @@ void igl::upsample( const MatV & V, const MatF & F, MatV & NV, MatF & NF)
 }
 
 template <typename MatV, typename MatF>
-void igl::upsample( MatV & V,MatF & F)
+inline void igl::upsample( MatV & V,MatF & F)
 {
   const MatV V_copy = V;
   const MatF F_copy = F;

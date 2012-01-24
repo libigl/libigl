@@ -18,11 +18,12 @@ namespace igl
   // Inputs:
   //   type  enum value of opengl type
   // Returns size in bytes of type
-  inline int gl_type_size(GLenum type);
+  inline int gl_type_size(const GLenum type);
 }
 
-//Implementation
-inline int igl::gl_type_size(GLenum type)
+// Implementation
+
+inline int igl::gl_type_size(const GLenum type)
 {
   switch(type)
   {

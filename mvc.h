@@ -5,8 +5,8 @@
 //  Copyright (c) 2011 ETH Zurich. All rights reserved.
 //
 
-#ifndef mvc_h
-#define mvc_h
+#ifndef IGL_MVC_H
+#define IGL_MVC_H
 
 #include <Eigen/Core>
 
@@ -24,7 +24,7 @@ namespace igl
 //    W  weights, #V by #C matrix of weights
 //  
     
-  void mvc(const Eigen::MatrixXd &V, const Eigen::MatrixXd &C, Eigen::MatrixXd &W);
+  inline void mvc(const Eigen::MatrixXd &V, const Eigen::MatrixXd &C, Eigen::MatrixXd &W);
   
 }
 

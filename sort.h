@@ -44,7 +44,6 @@ namespace igl
       const bool ascending,
       std::vector<T> &sorted,
       std::vector<size_t> &index_map);
-
 }
 
 // Implementation
@@ -109,15 +108,17 @@ inline void igl::sort(
 
 // Comparison struct used by sort
 // http://bytes.com/topic/c/answers/132045-sort-get-index
-template<class T> struct index_cmp
-{
-  index_cmp(const T arr) : arr(arr) {}
-  bool operator()(const size_t a, const size_t b) const
+namespace igl{
+  template<class T> struct index_cmp
   {
-    return arr[a] < arr[b];
-  }
-  const T arr;
-};
+    index_cmp(const T arr) : arr(arr) {}
+    bool operator()(const size_t a, const size_t b) const
+    {
+      return arr[a] < arr[b];
+    }
+    const T arr;
+  };
+}
 
 template <class T>
 inline void igl::sort(
@@ -136,7 +137,7 @@ inline void igl::sort(
   sort(
     index_map.begin(),
     index_map.end(),
-    index_cmp<const std::vector<T>& >(unsorted));
+    igl::index_cmp<const std::vector<T>& >(unsorted));
 
   // if not ascending then reverse
   if(!ascending)

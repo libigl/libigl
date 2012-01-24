@@ -8,7 +8,8 @@ namespace igl
 
 }
 
-//Implementation
+// Implementation
+
 #if _WIN32
 #  include <ctime>
 inline double igl::get_seconds()

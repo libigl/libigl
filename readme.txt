@@ -1,4 +1,4 @@
-igl Library - A simple c++ mesh library
+e gl Library - A simple c++ mesh library
 Copyright 2011 - Daniele Panozzo, Alec Jacobson, Olga Diamanti
 Interactive Geometry Lab - ETH Zurich
 
@@ -52,7 +52,7 @@ description of each template, input and output in each prototype.
   - Do not use the using namespace directive anywhere. This means never
     write:
     "using namespace std;"
-    or 
+     or 
     "using namespace igl;"
     etc.
 
@@ -82,4 +82,27 @@ description of each template, input and output in each prototype.
   Be generous by templating your inputs and outputs. If you do use
   templates, you must document the template just as you document inputs
   and outputs.
+
+  = Useful checks =
+  
+  Find files that aren't using "inline"
+
+    grep -L inline *
+
+  Find files that aren't using igl namespace
+
+    grep -L "namespace igl" *
+
+  Find files using [TAB] character
+
+    grep -P '\t' *
+
+  Find files that don't contain // Implementation
+
+    grep -L "^\/\/ Implementation" *
+
+  Find files that don't contain #ifndef IGL_
+
+    grep -L "^#ifndef IGL_" *
+
 

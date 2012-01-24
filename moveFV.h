@@ -6,8 +6,8 @@
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef Preview3D_moveFV_h
-#define Preview3D_moveFV_h
+#ifndef IGL_MOVEFV_h
+#define IGL_MOVEFV_h
 
 namespace igl 
 {
@@ -26,6 +26,8 @@ namespace igl
               const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &S,
               Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &SV);
 }
+
+// Implementation
 
 template <typename T>
 inline void igl::moveFV(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,

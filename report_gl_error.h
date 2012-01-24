@@ -23,7 +23,9 @@ namespace igl
   // Inputs:
   //   id   string to appear before any error msgs
   // Returns result of glGetError() 
-  inline GLenum report_gl_error(const std::string id = std::string(""));
+  inline GLenum report_gl_error(const std::string id);
+  // No prefix
+  inline GLenum report_gl_error();
 }
 
 // Implementation
@@ -38,6 +40,11 @@ inline GLenum igl::report_gl_error(const std::string id)
     fprintf(stderr,"%s%s\n",id.c_str(),gluErrorString(err));
   }
   return err;
+}
+
+inline GLenum igl::report_gl_error()
+{
+  return igl::report_gl_error(std::string(""));
 }
 
 #endif

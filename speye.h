@@ -27,6 +27,8 @@ namespace igl
   inline void speye(const int n, Eigen::SparseMatrix<T> & I);
 }
 
+// Implementation
+
 template <typename T>
 inline void igl::speye(const int m, const int n, Eigen::SparseMatrix<T> & I)
 {

@@ -12,8 +12,8 @@
 // Copyright (c) 2003 Song Ho Ahn
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef TIMER_H_DEF
-#define TIMER_H_DEF
+#ifndef IGL_TIMER_H
+#define IGL_TIMER_H
 
 #ifdef WIN32   // Windows system specific
 #include <windows.h>

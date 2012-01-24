@@ -1,4 +1,6 @@
-#include <AntTweakBar.h>
+#ifndef IGL_COCOA_KEY_TO_ANTTWEAKBAR_KEY_H
+#define IGL_COCOA_KEY_TO_ANTTWEAKBAR_KEY_H
+
 
 namespace igl
 {
@@ -12,6 +14,8 @@ namespace igl
 }
 
 // Implementation
+#include <AntTweakBar.h>
+
 inline int igl::cocoa_key_to_anttweakbar_key(int key)
 {
   // I've left commented the AntTweakBar key codes that correspond to keys I
@@ -80,3 +84,4 @@ inline int igl::cocoa_key_to_anttweakbar_key(int key)
   }
   return key;
 }
+#endif

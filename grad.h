@@ -6,8 +6,8 @@
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef Preview3D_grad_h
-#define Preview3D_grad_h
+#ifndef IGL_GRAD_H
+#define IGL_GRAD_H
 
 #include <Eigen/Core>
 
@@ -34,16 +34,18 @@ namespace igl {
   //
   template <typename T>
   inline void grad(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
-                   const Eigen::MatrixXi &F,
-                   const Eigen::Matrix<T, Eigen::Dynamic, 1>&X,
-                   Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &G );
+    const Eigen::MatrixXi &F,
+    const Eigen::Matrix<T, Eigen::Dynamic, 1>&X,
+    Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &G );
 }
+
+// Implementation
 
 template <typename T>
 inline void igl::grad(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
-                 const Eigen::MatrixXi &F,
-                 const Eigen::Matrix<T, Eigen::Dynamic, 1>&X,
-                 Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &G )
+  const Eigen::MatrixXi &F,
+  const Eigen::Matrix<T, Eigen::Dynamic, 1>&X,
+  Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &G )
 {
   G = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>::Zero(F.rows(),3);
   for (int i = 0; i<F.rows(); ++i)

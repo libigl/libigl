@@ -25,7 +25,8 @@ namespace igl
   inline GLuint load_shader(const char *src,const GLenum type);
 }
 
-// Implmentation
+// Implementation
+
 // Copyright Denis Kovacs 4/10/08
 #include "print_shader_info_log.h"
 #include <cstdio>

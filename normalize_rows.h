@@ -13,6 +13,8 @@ namespace igl
   inline void normalize_rows(const Eigen::MatrixXd & A, Eigen::MatrixXd & B);
 }
 
+// Implementation
+
 inline void igl::normalize_rows(const Eigen::MatrixXd & A, Eigen::MatrixXd & B)
 {
   // Resize output

@@ -15,7 +15,7 @@ namespace igl
   //   M  an m by n matrix
   // Returns true on success, false on errors
   template <typename T, class Mat>
-  bool list_to_matrix(const std::vector<std::vector<T > > & V,Mat & M);
+  inline bool list_to_matrix(const std::vector<std::vector<T > > & V,Mat & M);
 }
 
 // Implementation
@@ -28,7 +28,7 @@ namespace igl
 #include "verbose.h"
 
 template <typename T, class Mat>
-bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Mat & M)
+inline bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Mat & M)
 {
   // number of columns
   int m = V.size();

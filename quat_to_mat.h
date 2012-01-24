@@ -1,3 +1,5 @@
+#ifndef IGL_QUAT2MAT_H
+#define IGL_QUAT2MAT_H
 // Name history:
 //   quat2mat  until 16 Sept 2011
 namespace igl
@@ -42,3 +44,4 @@ inline void igl::quat_to_mat(const Q_type * quat, Q_type * mat)
   mat[3*4+0] = mat[3*4+1] = mat[3*4+2] = 0;
   mat[3*4+3] = 1;
 }
+#endif

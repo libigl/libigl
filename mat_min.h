@@ -31,6 +31,7 @@ namespace igl
     Eigen::Matrix<int,Eigen::Dynamic,1> & I);
 }
 
+// Implementation
 #include "verbose.h"
 
 template <typename T>

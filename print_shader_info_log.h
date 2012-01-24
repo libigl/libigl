@@ -1,4 +1,4 @@
-#ifndef  IGL_PRINT_SHADER_INFO_LOG_H
+#ifndef IGL_PRINT_SHADER_INFO_LOG_H
 #define IGL_PRINT_SHADER_INFO_LOG_H
 
 #ifdef __APPLE__
@@ -19,7 +19,7 @@ namespace igl
   inline void print_shader_info_log(const GLuint obj);
 }
 
-// Implmentation
+// Implementation
 #include <cstdio>
 // Copyright Denis Kovacs 4/10/08
 inline void igl::print_shader_info_log(const GLuint obj)
