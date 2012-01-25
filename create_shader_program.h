@@ -104,6 +104,7 @@ inline bool igl::create_shader_program(
   }
   // Link program
   glLinkProgram(id);
+
   // print log if any
   igl::print_program_info_log(id);
 
