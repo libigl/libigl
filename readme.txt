@@ -32,14 +32,17 @@ This library is shared by many people. Each function prototype should be
 well documented.  Write a summary of what the function does and a
 description of each template, input and output in each prototype. 
 
-  - All functions must be inlined, otherwise there is trouble when
+  X- All functions must be inlined, otherwise there is trouble when
     linking included headers used in multiple .cpp files
-  - Use a single .h file with the same name as the function
-  - Do *not* use any .cpp files (this is *header only* library)
+  - Use a single .h/.cpp pair with the same name as the function
+  X- Do *not* use any .cpp files (this is *header only* library)
   - At least one version of the function should use references for all
     outputs
+  - Functions with external dependencies should be a single .h file (no
+    .cpp file) so it won't appear in libigl.a
   - Use wrappers and additional prototypes for returning single-output
-    functions' outputs
+    functions' outputs, but the default is to only use outputs
+  - All inputs should be const when appropriate
   - Use c++ references for inputs and outputs rather than pointers or
     pass-by-copy
   - Take the time to write multiple prototypes if you'd like to have
@@ -55,6 +58,11 @@ description of each template, input and output in each prototype.
      or 
     "using namespace igl;"
     etc.
+  - Function names should either be the same as the corresponding MATLAB
+    function or should use all lowercase separated by underscores: e.g.
+    my_function_name
+  - Classes should be in CamelCase
+  - No tabs, only two spaces per indentation level
 
   = Specific style conventions =
 

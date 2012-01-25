@@ -1,0 +1,96 @@
+####### Compiler, tools and options
+
+
+#---- Release
+CXXCFG   	= -O3 -arch i386 -arch x86_64
+LFLAGS		= -L../lib -arch i386 -arch x86_64
+OUT_DIR		= bin64
+#---- Debug
+#CXXCFG   	= -g -D_DEBUG -arch i386 -arch x86_64
+#LFLAGS		= -Wl -L../lib/debug64 -arch i386 -arch x86_64
+#OUT_DIR	= debug64
+
+
+#BASE		= /Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks
+CXX      	= gcc
+CXXFLAGS 	= $(CXXCFG) -Wall -fno-strict-aliasing -D_MACOSX
+INCPATH  	= -I../include -I/usr/local/include -I/usr/X11R6/include -I/usr/include
+#-I$(BASE)/OpenGL.framework/Headers/ -I$(BASE)/AppKit.framework/Headers/
+
+LIBS		= ../lib/libAntTweakBar.dylib -lpthread -lm -framework AppKit -framework OpenGL
+#LIBS     	= -L/usr/X11R6/lib -lAntTweakBar -lGL -lGLU -lX11 -lXxf86vm -lXext -lXmu -lXrandr -lpthread -lm
+
+DEL_FILE 	= rm -f
+DEL_DIR  	= rmdir
+NO_STDERR	= 2> /dev/null
+EXP_PATH	= 'export DYLD_LIBRARY_PATH=`dirname $$0`/../../lib ; $$0.out'
+
+
+####### Files
+
+
+SRC_FILES	= TwSimpleGLUT.c TwSimpleSDL.c TwSimpleGLFW.c TwAdvanced1.cpp TwString.cpp TwDualGLUT.c
+
+
+####### Build rules
+
+
+#first:	depend all
+first:  all
+
+all: 	Makefile $(SRC_FILES)
+
+	@echo "===== Build TwSimpleGLUT ===="
+	$(CXX) $(CXXFLAGS) $(INCPATH) -I$(BASE)/GLUT.framework/Headers/ TwSimpleGLUT.c $(LFLAGS) $(LIBS) -framework GLUT -o $(OUT_DIR)/TwSimpleGLUT.out
+	@echo $(EXP_PATH) > $(OUT_DIR)/TwSimpleGLUT
+	@chmod +x $(OUT_DIR)/TwSimpleGLUT
+
+	@echo "===== Build TwDualGLUT ===="
+	$(CXX) $(CXXFLAGS) $(INCPATH) -I$(BASE)/GLUT.framework/Headers/ TwDualGLUT.c $(LFLAGS) $(LIBS) -framework GLUT -o $(OUT_DIR)/TwDualGLUT.out
+	@echo $(EXP_PATH) > $(OUT_DIR)/TwDualGLUT
+	@chmod +x $(OUT_DIR)/TwDualGLUT
+
+	@echo "===== Build TwSimpleSDL ===="
+	$(CXX) $(CXXFLAGS) $(INCPATH) -I$(BASE)/SDL.framework/Headers/ TwSimpleSDL.c $(LFLAGS) -framework SDL $(LIBS) -o $(OUT_DIR)/TwSimpleSDL.out
+	@echo $(EXP_PATH) > $(OUT_DIR)/TwSimpleSDL
+	@chmod +x $(OUT_DIR)/TwSimpleSDL
+
+	@echo "===== Build TwSimpleGLFW ===="
+	$(CXX) $(CXXFLAGS) $(INCPATH) TwSimpleGLFW.c $(LFLAGS) -lglfw -framework AGL -framework Carbon $(LIBS) -o $(OUT_DIR)/TwSimpleGLFW.out
+	@echo $(EXP_PATH) > $(OUT_DIR)/TwSimpleGLFW
+	@chmod +x $(OUT_DIR)/TwSimpleGLFW
+
+	@echo "===== Build TwAdvanced1 ===="
+	$(CXX) $(CXXFLAGS) $(INCPATH) TwAdvanced1.cpp $(LFLAGS) -lglfw -framework AGL -framework Carbon $(LIBS) -o $(OUT_DIR)/TwAdvanced1.out
+	@echo $(EXP_PATH) > $(OUT_DIR)/TwAdvanced1
+	@chmod +x $(OUT_DIR)/TwSimpleAdvanced1
+
+	@echo "===== Build TwString ===="
+	$(CXX) $(CXXFLAGS) $(INCPATH) TwString.cpp $(LFLAGS) -lglfw -framework AGL -framework Carbon $(LIBS) -o $(OUT_DIR)/TwString.out
+	@echo $(EXP_PATH) > $(OUT_DIR)/TwString
+	@chmod +x $(OUT_DIR)/TwString
+
+# append dependencies to this Makefile
+#depend:
+#	@echo "===== Make dependencies ====="
+#	makedepend -Y
+#	makedepend -a -Y -- $(CXXFLAGS) $(INCPATH) -- $(SRC_FILES) $(NO_STDERR)
+
+
+# clean temporary files
+clean:
+	@echo "===== Clean ====="
+	-$(DEL_FILE) *.o
+	-$(DEL_FILE) *~ core *.core *.stackdump
+	-$(DEL_FILE) debug64/*
+	-$(DEL_DIR) debug64
+
+	
+####### DEPENDENCIES
+
+TwSimpleGLFW.o: ../include/AntTweakBar.h
+TwSimpleGLUT.o: ../include/AntTweakBar.h
+TwDualGLUT.o:   ../include/AntTweakBar.h
+TwSimpleSDL.o:  ../include/AntTweakBar.h
+TwAdvanced1.o:  ../include/AntTweakBar.h
+TwString.o:     ../include/AntTweakBar.h
