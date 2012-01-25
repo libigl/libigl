@@ -8,5 +8,9 @@ int main(int argc, char * argv[])
   example_fun(d);
   int i = 4;
   example_fun(i);
+#ifdef IGL_HEADER_ONLY
+  const char * s = "string";
+  example_fun(s);
+#endif
   return 0;
 }
