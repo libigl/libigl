@@ -1,5 +1,5 @@
-#ifndef IGL_TEXTURE_FROM_TGA
-#define IGL_TEXTURE_FROM_TGA
+#ifndef IGL_TEXTURE_FROM_TGA_H
+#define IGL_TEXTURE_FROM_TGA_H
 
 #if __APPLE__
 #  include <OpenGL/gl.h>

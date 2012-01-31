@@ -1,5 +1,5 @@
-#ifndef IGL_GL_TYPE_SIZE
-#define IGL_GL_TYPE_SIZE
+#ifndef IGL_GL_TYPE_SIZE_H
+#define IGL_GL_TYPE_SIZE_H
 
 #if __APPLE__
 #  include <OpenGL/gl.h>

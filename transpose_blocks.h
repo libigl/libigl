@@ -1,5 +1,5 @@
-#ifndef IGL_TRANSPOSE_BLOCKS
-#define IGL_TRANSPOSE_BLOCKS
+#ifndef IGL_TRANSPOSE_BLOCKS_H
+#define IGL_TRANSPOSE_BLOCKS_H
 
 #include <Eigen/Core>
 

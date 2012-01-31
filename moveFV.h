@@ -6,8 +6,8 @@
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef IGL_MOVEFV_h
-#define IGL_MOVEFV_h
+#ifndef IGL_MOVEFV_H
+#define IGL_MOVEFV_H
 
 namespace igl 
 {
