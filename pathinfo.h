@@ -1,5 +1,6 @@
 #ifndef IGL_PATHINFO_H
 #define IGL_PATHINFO_H
+#include "igl_inline.h"
 
 #include <string>
 
@@ -23,7 +24,7 @@ namespace igl
   //    '.')
   //
   //  See also: basename, dirname
-  inline void pathinfo(
+  IGL_INLINE void pathinfo(
     const std::string & path,
     std::string & dirname,
     std::string & basename,
@@ -32,39 +33,8 @@ namespace igl
 
 }
 
-// Implementation
-#include "dirname.h"
-#include "basename.h"
-// Verbose should be removed once everythings working correctly
-#include "verbose.h"
-
-inline void igl::pathinfo(
-  const std::string & path,
-  std::string & dirname,
-  std::string & basename,
-  std::string & extension,
-  std::string & filename)
-{
-  dirname = igl::dirname(path);
-  basename = igl::basename(path);
-  std::string::reverse_iterator last_dot =
-    std::find(
-      basename.rbegin(), 
-      basename.rend(), '.');
-  // Was a dot found?
-  if(last_dot == basename.rend())
-  {
-    // filename is same as basename
-    filename = basename;
-    // no extension
-    extension = "";
-  }else
-  {
-  // extension is substring of basename
-    extension = std::string(last_dot.base(),basename.end());
-    // filename is substring of basename
-    filename = std::string(basename.begin(),last_dot.base()-1);
-  }
-}
+#ifdef IGL_HEADER_ONLY
+#  include "pathinfo.cpp"
+#endif
 
 #endif

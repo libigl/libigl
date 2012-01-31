@@ -1,5 +1,6 @@
 #ifndef IGL_IS_FILE_H
 #define IGL_IS_FILE_H
+#include "igl_inline.h"
 namespace igl
 {
   // Act like php's is_file function
@@ -10,22 +11,12 @@ namespace igl
   //     be checked relative to the current working directory. 
   // Returns TRUE if the filename exists and is a regular file, FALSE
   // otherwise.
-  inline bool is_file(const char * filename);
+  IGL_INLINE bool is_file(const char * filename);
 
 }
 
-// Implementation
-#include <sys/stat.h>
-inline bool igl::is_file(const char * filename)
-{
-  struct stat status;
-  if(stat(filename,&status)!=0)
-  {
-    // path does not exist
-    return false;
-  }
-  // Tests whether existing path is a regular file
-  return S_ISREG(status.st_mode);
-}
+#ifdef IGL_HEADER_ONLY
+#  include "is_file.cpp"
+#endif
 
 #endif

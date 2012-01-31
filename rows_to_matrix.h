@@ -1,5 +1,6 @@
 #ifndef IGL_ROWS_TO_MATRIX_H
 #define IGL_ROWS_TO_MATRIX_H
+#include "igl_inline.h"
 #include <vector>
 namespace igl
 {
@@ -16,49 +17,11 @@ namespace igl
   //   M  an m by n matrix
   // Returns true on success, false on errors
   template <class Row, class Mat>
-  inline bool rows_to_matrix(const std::vector<Row> & V,Mat & M);
+  IGL_INLINE bool rows_to_matrix(const std::vector<Row> & V,Mat & M);
 }
 
-// Implementation
-#include <cassert>
-#include <cstdio>
+#ifdef IGL_HEADER_ONLY
+#  include "rows_to_matrix.cpp"
+#endif
 
-#include "max_size.h"
-#include "min_size.h"
-
-template <class Row, class Mat>
-inline bool igl::rows_to_matrix(const std::vector<Row> & V,Mat & M)
-{
-  // number of columns
-  int m = V.size();
-  if(m == 0)
-  {
-    fprintf(stderr,"Error: rows_to_matrix() list is empty()\n");
-    return false;
-  }
-  // number of rows
-  int n = igl::min_size(V);
-  if(n != igl::max_size(V))
-  {
-    fprintf(stderr,"Error: rows_to_matrix()"
-      " list elements are not all the same size\n");
-    return false;
-  }
-  assert(n != -1);
-  // Resize output
-  M.resize(m,n);
-
-  // Loop over rows
-  int i = 0;
-  typename std::vector<Row>::const_iterator iter = V.begin();
-  while(iter != V.end())
-  {
-    M.row(i) = V[i];
-    // increment index and iterator
-    i++;
-    iter++;
-  }
-
-  return true;
-}
 #endif

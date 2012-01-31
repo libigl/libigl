@@ -1,5 +1,6 @@
 #ifndef IGL_REPORT_GL_ERROR_H
 #define IGL_REPORT_GL_ERROR_H
+#include "igl_inline.h"
 
 #ifdef __APPLE__
 #  include <OpenGL/gl.h>
@@ -23,28 +24,13 @@ namespace igl
   // Inputs:
   //   id   string to appear before any error msgs
   // Returns result of glGetError() 
-  inline GLenum report_gl_error(const std::string id);
+  IGL_INLINE GLenum report_gl_error(const std::string id);
   // No prefix
-  inline GLenum report_gl_error();
+  IGL_INLINE GLenum report_gl_error();
 }
 
-// Implementation
-#include "verbose.h"
-
-inline GLenum igl::report_gl_error(const std::string id)
-{
-  GLenum err = glGetError();
-  if(GL_NO_ERROR != err)
-  {
-    verbose("GL_ERROR: ");
-    fprintf(stderr,"%s%s\n",id.c_str(),gluErrorString(err));
-  }
-  return err;
-}
-
-inline GLenum igl::report_gl_error()
-{
-  return igl::report_gl_error(std::string(""));
-}
+#ifdef IGL_HEADER_ONLY
+#  include "report_gl_error.cpp"
+#endif
 
 #endif

@@ -1,5 +1,6 @@
 #ifndef IGL_CONCAT_H
 #define IGL_CONCAT_H
+#include "igl_inline.h"
 #include <Eigen/Dense>
 namespace igl
 {
@@ -13,14 +14,14 @@ namespace igl
   // Output:
   //   O if horiz = false return [A;B] else [A,B]
   template <typename T>
-  inline void concat(
+  IGL_INLINE void concat(
                      const T A, 
                      const T B,
                      const bool horiz,                 
                      T& O);
   
   template <typename T>
-  inline T concat(
+  IGL_INLINE T concat(
                   const T A, 
                   const T B,
                   bool horiz = false
@@ -28,43 +29,8 @@ namespace igl
 
 }
 
-// Implementation
-#include <cstdio>
-
-template <typename T>
-inline void igl::concat(
-                   const T A, 
-                   const T B,
-                   const bool horiz,                 
-                   T& O)
-{
-  if (horiz)
-  {
-    // O = [A,B]
-    assert(A.rows() == B.rows());
-    O = T(A.rows(),A.cols()+B.cols());
-    O << A,B;
-  }
-  else
-  {
-    // O = [A;B]
-    assert(A.cols() == B.cols());
-    O = T(A.rows()+B.rows(),A.cols());
-    O << A,B;
-  }
-}
-
-template <typename T>
-inline T igl::concat(
-                const T A, 
-                const T B,
-                bool horiz
-                )
-{
-  T O = T(1,1);
-  concat(A,B,horiz,O);
-  return O;
-}
-
+#ifdef IGL_HEADER_ONLY
+#  include "concat.cpp"
 #endif
 
+#endif

@@ -1,5 +1,6 @@
 #ifndef IGL_CANONICAL_QUATERNIONS_H
 #define IGL_CANONICAL_QUATERNIONS_H
+#include "igl_inline.h"
 // Define some canonical quaternions for floats and doubles
 // A Quaternion, q, is defined here as an arrays of four scalars (x,y,z,w),
 // such that q = x*i + y*j + z*k + w
@@ -94,8 +95,7 @@ namespace igl
       {             0,-SQRT_2_OVER_2, SQRT_2_OVER_2,             0},
       {           0.5,          -0.5,           0.5,          -0.5}
     };
-
-  const size_t NUM_CANONICAL_VIEW_QUAT = 24;
+#define NUM_CANONICAL_VIEW_QUAT 24
 
   // NOTE: I want to rather be able to return a Q_type[][] but C++ is not
   // making it easy. So instead I've written a per-element accessor
@@ -107,25 +107,18 @@ namespace igl
   //   j  index of coordinate in quaternion i
   // Returns values of CANONICAL_VIEW_QUAT_*[i][j]
   template <typename Q_type> 
-  inline const Q_type CANONICAL_VIEW_QUAT(size_t i, size_t j);
+  IGL_INLINE const Q_type CANONICAL_VIEW_QUAT(int i, int j);
   // Template specializations for float and double
   template <> 
-  inline const float CANONICAL_VIEW_QUAT<float>(size_t i, size_t j);
+  IGL_INLINE const float CANONICAL_VIEW_QUAT<float>(int i, int j);
   template <> 
-  inline const double CANONICAL_VIEW_QUAT<double>(size_t i, size_t j);
+  IGL_INLINE const double CANONICAL_VIEW_QUAT<double>(int i, int j);
 
 #  undef SQRT_2_OVER_2
 }
 
-// Implementation
-
-template <> inline const float igl::CANONICAL_VIEW_QUAT<float>(size_t i, size_t j)
-{
-  return igl::CANONICAL_VIEW_QUAT_F[i][j];
-}
-template <> inline const double igl::CANONICAL_VIEW_QUAT<double>(size_t i, size_t j)
-{
-  return igl::CANONICAL_VIEW_QUAT_D[i][j];
-}
+#ifdef IGL_HEADER_ONLY
+#  include "canonical_quaternions.cpp"
+#endif
 
 #endif

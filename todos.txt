@@ -4,3 +4,6 @@
 - clean up tga.h
 - standardize igl includes #include "cotangent.h" or #include <cotangent.h>
 - implement an IGL_NO_OPENGL and IGL_NO_GLUT compiler option
+- clean up edgetopology.h
+- clean up mvc.h
+- clean up orth.h

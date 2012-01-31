@@ -8,7 +8,9 @@
 
 #ifndef IGL_MOVEFV_H
 #define IGL_MOVEFV_H
+#include "igl_inline.h"
 
+#include <Eigen/Dense>
 namespace igl 
 {
   // moveFV 
@@ -21,34 +23,14 @@ namespace igl
   // Output:
   // SV: scalar field defined on vertices
   template <typename T>
-  inline void moveFV(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
+  IGL_INLINE void moveFV(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
               const Eigen::MatrixXi &F,
               const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &S,
               Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &SV);
 }
 
-// Implementation
-
-template <typename T>
-inline void igl::moveFV(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
-            const Eigen::MatrixXi &F,
-            const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &S,
-            Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &SV)
-{
-  
-  SV = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>::Zero(V.rows(),S.cols());
-  Eigen::Matrix<T, Eigen::Dynamic, 1> COUNT = Eigen::Matrix<T, Eigen::Dynamic, 1>::Zero(V.rows());
-  for (int i = 0; i <F.rows(); ++i)
-  {
-    for (int j = 0; j<F.cols(); ++j)
-    {
-      SV.row(F(i,j)) += S.row(i);
-      COUNT[F(i,j)] ++;
-    }
-  }
-  for (int i = 0; i <V.rows(); ++i)
-    SV.row(i) /= COUNT[i];
-  
-};
+#ifdef IGL_HEADER_ONLY
+#  include "moveFV.cpp"
+#endif
 
 #endif

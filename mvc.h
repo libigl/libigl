@@ -28,7 +28,7 @@ namespace igl
   
 }
 
-// Implementation
+// Broken Implementation
 inline void igl::mvc(const Eigen::MatrixXd &V, const Eigen::MatrixXd &C, Eigen::MatrixXd &W)
 {
   

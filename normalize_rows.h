@@ -1,5 +1,6 @@
 #ifndef IGL_NORMALIZE_ROWS_H
 #define IGL_NORMALIZE_ROWS_H
+#include "igl_inline.h"
 #include <Eigen/Core>
 
 namespace igl
@@ -10,32 +11,11 @@ namespace igl
   //   A  #rows by k input matrix
   // Outputs:
   //   B  #rows by k input matrix, can be the same as A
-  inline void normalize_rows(const Eigen::MatrixXd & A, Eigen::MatrixXd & B);
+  IGL_INLINE void normalize_rows(const Eigen::MatrixXd & A, Eigen::MatrixXd & B);
 }
 
-// Implementation
-
-inline void igl::normalize_rows(const Eigen::MatrixXd & A, Eigen::MatrixXd & B)
-{
-  // Resize output
-  B.resize(A.rows(),A.cols());
-
-  // loop over rows
-  for(int i = 0; i < A.rows();i++)
-  {
-    double length = 0;
-    // loop over cols
-    for(int j = 0; j < A.cols();j++)
-    {
-      length += A(i,j)*A(i,j);
-    }
-    length = sqrt(length);
-    // loop over cols
-    for(int j = 0; j < A.cols();j++)
-    {
-      B(i,j) = A(i,j) / length;
-    }
-  }
-}
+#ifdef IGL_HEADER_ONLY
+#  include "normalize_rows.cpp"
+#endif
 
 #endif

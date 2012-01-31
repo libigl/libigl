@@ -1,5 +1,6 @@
 #ifndef IGL_IS_WRITABLE_H
 #define IGL_IS_WRITABLE_H
+#include "igl_inline.h"
 namespace igl
 {
   // Check if a file exists *and* is writable like PHP's is_writable function:
@@ -10,58 +11,11 @@ namespace igl
   // exist or *is not writable*
   //
   // Note: Windows version will not test group and user id
-  inline bool is_writable(const char * filename);
+  IGL_INLINE bool is_writable(const char * filename);
 }
 
-
-// Implementation
-#ifdef _WIN32
-#include <sys/stat.h>
-#ifndef S_IWUSR
-#  define S_IWUSR S_IWRITE
+#ifdef IGL_HEADER_ONLY
+#  include "is_writable.cpp"
 #endif
-inline bool is_writable(const char* filename)
-{
-  // Check if file already exists
-  struct stat status;
-  if(stat(filename,&status)!=0)
-  {
-    return false;
-  }
 
-  return S_IWUSR & status.st_mode;
-}
-#else
-#include <sys/stat.h>
-#include <unistd.h>
-
-inline bool igl::is_writable(const char* filename)
-{
-  // Check if file already exists
-  struct stat status;
-  if(stat(filename,&status)!=0)
-  {
-    return false;
-  }
-
-  // Get current users uid and gid
-  uid_t this_uid = getuid();
-  gid_t this_gid = getgid();
-
-  // Dealing with owner
-  if( this_uid == status.st_uid )
-  {
-    return S_IWUSR & status.st_mode;
-  }
-
-  // Dealing with group member
-  if( this_gid == status.st_gid )
-  {
-    return S_IWGRP & status.st_mode;
-  }
-
-  // Dealing with other
-  return S_IWOTH & status.st_mode;
-}
-#endif
 #endif

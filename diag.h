@@ -1,5 +1,7 @@
 #ifndef IGL_DIAG_H
 #define IGL_DIAG_H
+#include "igl_inline.h"
+#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #include <Eigen/Sparse>
 
 namespace igl
@@ -15,7 +17,7 @@ namespace igl
   // Outputs:
   //   V  a min(m,n) sparse vector
   template <typename T>
-  inline void diag(
+  IGL_INLINE void diag(
     const Eigen::SparseMatrix<T>& X, 
     Eigen::SparseVector<T>& V);
   // Templates:
@@ -25,52 +27,13 @@ namespace igl
   // Outputs:
   //  X  a m by m sparse matrix
   template <typename T>
-  inline void diag(
+  IGL_INLINE void diag(
     const Eigen::SparseVector<T>& V,
     Eigen::SparseMatrix<T>& X);
 }
 
-// Implementation
-#include "verbose.h"
+#ifdef IGL_HEADER_ONLY
+#  include "diag.cpp"
+#endif
 
-template <typename T>
-inline void igl::diag(
-  const Eigen::SparseMatrix<T>& X, 
-  Eigen::SparseVector<T>& V)
-{
-  // Get size of input
-  int m = X.rows();
-  int n = X.cols();
-  V = Eigen::SparseVector<T>((m>n?n:m));
-
-  // Iterate over outside
-  for(int k=0; k<X.outerSize(); ++k)
-  {
-    // Iterate over inside
-    for(typename Eigen::SparseMatrix<T>::InnerIterator it (X,k); it; ++it)
-    {
-      if(it.col() == it.row())
-      {
-        V.coeffRef(it.col()) += it.value();
-      }
-    }
-  }
-}
-
-template <typename T>
-inline void igl::diag(
-  const Eigen::SparseVector<T>& V,
-  Eigen::SparseMatrix<T>& X)
-{
-  // clear and resize output
-  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> dyn_X(V.size(),V.size());
-
-  // loop over non-zeros
-  for(typename Eigen::SparseVector<T>::InnerIterator it(V); it; ++it)
-  {
-    dyn_X.coeffRef(it.index(),it.index()) += it.value();
-  }
-
-  X = Eigen::SparseMatrix<T>(dyn_X);
-}
 #endif

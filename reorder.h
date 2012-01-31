@@ -1,5 +1,7 @@
 #ifndef IGL_REORDER_H
 #define IGL_REORDER_H
+#include "igl_inline.h"
+#include <vector>
 
 namespace igl
 {
@@ -9,29 +11,14 @@ namespace igl
   // this implies that Y.size() == I.size()
   // X and Y are allowed to be the same reference
   template< class T >
-  inline void reorder(
+  IGL_INLINE void reorder(
     const std::vector<T> & unordered,
     std::vector<size_t> const & index_map,
     std::vector<T> & ordered);
 }
 
-// Implementation
-
-// This implementation is O(n), but also uses O(n) extra memory
-template< class T >
-inline void igl::reorder(
-  const std::vector<T> & unordered,
-  std::vector<size_t> const & index_map,
-  std::vector<T> & ordered)
-{
-  // copy for the reorder according to index_map, because unsorted may also be
-  // sorted
-  std::vector<T> copy = unordered;
-  ordered.resize(index_map.size());
-  for(int i = 0; i<(int)index_map.size();i++)
-  {
-    ordered[i] = copy[index_map[i]];
-  }
-}
+#ifdef IGL_HEADER_ONLY
+#  include "reorder.cpp"
 #endif
 
+#endif

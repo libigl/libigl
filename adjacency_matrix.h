@@ -1,5 +1,6 @@
 #ifndef IGL_ADJACENCY_MATRIX_H
 #define IGL_ADJACENCY_MATRIX_H
+#include "igl_inline.h"
 
 #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #include <Eigen/Dense>
@@ -31,38 +32,13 @@ namespace igl
   //
   // See also: edges, cotmatrix, diag
   template <typename T>
-  inline void adjacency_matrix(
+  IGL_INLINE void adjacency_matrix(
     const Eigen::MatrixXi & F, 
     Eigen::SparseMatrix<T>& A);
 }
 
-// Implementation
-#include "verbose.h"
-
-template <typename T>
-inline void igl::adjacency_matrix(
-  const Eigen::MatrixXi & F, 
-  Eigen::SparseMatrix<T>& A)
-{
-  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> 
-    dyn_A(F.maxCoeff()+1, F.maxCoeff()+1);
-  dyn_A.reserve(6*(F.maxCoeff()+1));
-
-  // Loop over faces
-  for(int i = 0;i<F.rows();i++)
-  {
-    // Loop over this face
-    for(int j = 0;j<F.cols();j++)
-    {
-      // Get indices of edge: s --> d
-      int s = F(i,j);
-      int d = F(i,(j+1)%F.cols());
-      dyn_A.coeffRef(s, d) = 1;
-      dyn_A.coeffRef(d, s) = 1;
-    }
-  }
-
-  A = Eigen::SparseMatrix<T>(dyn_A);
-}
+#ifdef IGL_HEADER_ONLY
+#  include "adjacency_matrix.cpp"
+#endif
 
 #endif

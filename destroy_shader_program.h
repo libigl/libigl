@@ -1,5 +1,6 @@
 #ifndef IGL_DESTROY_SHADER_PROGRAM_H
 #define IGL_DESTROY_SHADER_PROGRAM_H
+#include "igl_inline.h"
 
 #ifdef __APPLE__
 #  include <OpenGL/gl.h>
@@ -24,38 +25,11 @@ namespace igl
   // to use id as if it still contains a program
   // 
   // See also: create_shader_program
-  inline bool destroy_shader_program(const GLuint id);
+  IGL_INLINE bool destroy_shader_program(const GLuint id);
 }
 
-// Implementation
-inline bool igl::destroy_shader_program(const GLuint id)
-{
-  // Don't try to destroy id == 0 (no shader program)
-  if(id == 0)
-  {
-    fprintf(stderr,"Error: destroy_shader_program() id = %d"
-      " but must should be positive\n",id);
-    return false;
-  }
-  // Get each attached shader one by one and detach and delete it
-  GLsizei count;
-  // shader id
-  GLuint s;
-  do
-  {
-    // Try to get at most *1* attached shader
-    glGetAttachedShaders(id,1,&count,&s);
-    // Check that we actually got *1*
-    if(count == 1)
-    {
-      // Detach and delete this shader
-      glDetachShader(id,s);
-      glDeleteShader(s);
-    }
-  }while(count > 0);
-  // Now that all of the shaders are gone we can just delete the program
-  glDeleteProgram(id);
-  return true;
-}
+#ifdef IGL_HEADER_ONLY
+#  include "destroy_shader_program.cpp"
+#endif
 
 #endif

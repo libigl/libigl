@@ -27,7 +27,7 @@ namespace igl
   inline void orth(const Eigen::MatrixXd &A, Eigen::MatrixXd &Q);
 }
 
-// Implementation
+// Broken Implementation
 inline void igl::orth(const Eigen::MatrixXd &A, Eigen::MatrixXd &Q)
 {
 
