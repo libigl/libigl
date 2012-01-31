@@ -23,6 +23,22 @@ span.highlight
 {
   background-color: #4F5;
 }
+a 
+{
+  text-decoration:none;
+  border:none;
+  outline:none;
+  color:#0645AD;
+}
+a:hover 
+{
+  color:#0645AD;
+  text-decoration: underline;
+}
+a:visited
+{
+  color:#0b0080;
+}
 span.todo:before
 {
   font-style: normal;
@@ -43,35 +59,59 @@ pre
   padding-bottom: 4px;
   border: 1px solid #999;
 }
+img.center
+{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
     </style>
   </head>
   <body>
+    <img src=http://igl.ethz.ch/includes/images/logo-igl.gif alt="igl logo"
+    class=center>
     <h1>Using the IGL library</h1>
-    The igl lib is a collection of useful/reusable/sharable C++ functions with
-    very few external <a href="#dependencies">dependencies</a>. The library may
-    be used as a <a href="#header_library">"headers only" library</a> or a <a
-    href=#static_library>statically linked library</a>.
+    <p>
+      The igl lib is a collection of useful/reusable/sharable C++ functions
+      with very few external <a href="#dependencies">dependencies</a>. The
+      library may be used as a <a href="#header_library">"headers only"
+      library</a> or a <a href=#static_library>statically linked library</a>.
+    </p>
+
+    <p>
+      This duality is illustrated in the example
+      <code>examples/example_fun</code>. When built this example compiles two
+      binaries, one using the <code>example_fun</code> routine of the igl
+      library, either as a headers-only library or linking against the igl
+      static library.
+    </p>
 
       <h2 id=header_library>Headers (.h) only library</h2>
-      All classes and functions in the IGL library are written in a way in which
-      the entire library may be compiled <i>just-in-time</i>, effectively
-      behaiving as if it were a "headers only" library (like e.g. Eigen). This is
-      achieved by careful organization of each pair of .h and .cpp files. To take
-      advantage of this one must only include the path to <code>igl_lib</code>
-      directory in one's project's include path and define the preprocessor
-      macro <code>IGL_HEADER_ONLY</code>.
+      <p>
+        All classes and functions in the IGL library are written in a way in
+        which the entire library may be compiled <i>just-in-time</i>,
+        effectively behaiving as if it were a "headers only" library (like e.g.
+        Eigen). This is achieved by careful organization of each pair of .h and
+        .cpp files. To take advantage of this one must only include the path to
+        <code>igl_lib</code> directory in one's project's include path and
+        define the preprocessor macro <code>IGL_HEADER_ONLY</code>.
+      </p>
 
-      Defining <code>IGL_HEADER_ONLY</code> may be done at the project level,
-      prescribing that all included igl headers be treated as code that should be
-      inlined. Consequently all templated functions will be derived at compile
-      time if need be.
+      <p>
+        Defining <code>IGL_HEADER_ONLY</code> may be done at the project level,
+        prescribing that all included igl headers be treated as code that
+        should be inlined. Consequently all templated functions will be derived
+        at compile time if need be.
+      </p>
 
-      One may also define <code>IGL_HEADER_ONLY</code> not only on a per-file
-      basis, but a <i>per-include</i> basis. For example it may be useful for a
-      project to use the static library for most functionality from IGL, but then
-      include a certain IGL function as an inlined function. This may be achieved
-      by surrounding the relevant include with a define and undefine of the
-      <code>IGL_HEADER_ONLY</code> macro. Like so:
+      <p>
+        One may also define <code>IGL_HEADER_ONLY</code> not only on a per-file
+        basis, but a <i>per-include</i> basis. For example it may be useful for a
+        project to use the static library for most functionality from IGL, but then
+        include a certain IGL function as an inlined function. This may be achieved
+        by surrounding the relevant include with a define and undefine of the
+        <code>IGL_HEADER_ONLY</code> macro. Like so:
+      </p>
       <pre><code>
 ...
 #include &lt;some_other_igl_function.h&gt;
@@ -84,45 +124,64 @@ pre
       <span class=todo>example <code>examples/XXX</code> also highlights this feature</span>
 
       <div class=note>This practice is not recommended outside of debugging purposes.</div>
+      
 
       <h3>Benefits of headers-only library</h3>
-      <strong>Easy templates:</strong> When using the IGL library as a
-      headers-only library no special care need be taken when using templated
-      functions.
+      <ul>
+        <li><strong>Easy templates:</strong> When using the IGL library as a
+        headers-only library no special care need be taken when using templated
+        functions.</li>
+      </ul>
       <h3>Drawbacks of headers-only library</h3>
-      As a headers-only library we depend on the compiler to properly inline
-      each function call. This means compile time is high and binary size can be
-      quite large. Further, most compilers do not guarantee that functions will
-      get inlined even if explicitly told to do so. Though we have not yet
-      encountered this problem, it is always a risk.
+      <ul>
+        <li><strong>Inlining not guaranteed:</strong> Most compilers do not
+        guarantee that functions will get inlined even if explicitly told to do
+        so. Though we have not yet encountered this problem, it is always a
+        risk.</li>
+        <li><strong>Long compile, large binary:</strong>As a headers-only
+        library we depend on the compiler to properly inline each function
+        call. This means compile time is high and binary size can be quite
+        large.</li>
+      </ul>
 
       <h2 id=static_library>Statically linked library</h2>
         <h3 id=explicit_specialization_of_templated_functions>Explicit
         specialization of templated functions</h3>
-        Special care must be taken by the developers of each function and class
-        in the IGL library that uses C++ templates. If this function is
-        intended to be compiled into the statically linked igl library then
-        function is only compiled for each <i>explicitly</i> specialized
-        declaration. These should be added at the bottom of the corresponding
-        .cpp file surrounded by a <code>#ifndef IGL_HEADER_ONLY</code>.
+        <p>
+          Special care must be taken by the developers of each function and
+          class in the IGL library that uses C++ templates. If this function is
+          intended to be compiled into the statically linked igl library then
+          function is only compiled for each <i>explicitly</i> specialized
+          declaration. These should be added at the bottom of the corresponding
+          .cpp file surrounded by a <code>#ifndef IGL_HEADER_ONLY</code>.
+        </p>
 
-        Of course, a developer may not know ahead of time which specializations
-        should be explicitly included in the igl static lib. One way to find
-        out is to add one explicit specialization for each call in one's own
-        project. This only ever needs to be done once for each template.
+        <p>
+          Of course, a developer may not know ahead of time which
+          specializations should be explicitly included in the igl static lib.
+          One way to find out is to add one explicit specialization for each
+          call in one's own project. This only ever needs to be done once for
+          each template.
+        </p>
 
-        The process is somewhat mechanical using a linker with reasonable error
-        output.
+        <p>
+          The process is somewhat mechanical using a linker with reasonable error
+          output.
+        </p>
 
-        Supposed for example we have compiled the igl static lib, including the
-        cat.h and cat.cpp functions, without any explicit instanciation. Say
-        using the makefile in the <code>igl_lib</code> directory:
+        <p>
+          Supposed for example we have compiled the igl static lib, including the
+          cat.h and cat.cpp functions, without any explicit instanciation. Say
+          using the makefile in the <code>igl_lib</code> directory:
+        </p>
         <pre><code>
 cd $IGL
 make
         </code></pre>
-        Now we if we try to compile a project and link against it we may get
-        an error like:
+        <p>
+          Now if we try to compile a project and link against it we may get
+          an error like:
+        </p>
         <pre><code>
 Undefined symbols for architecture x86_64:
   "<span class=highlight>Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; igl::cat&lt;Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; &gt;(int, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&)</span>", referenced from:
@@ -131,10 +190,14 @@ Undefined symbols for architecture x86_64:
       covariance_scatter_matrix(Eigen::Matrix&lt;double, -1, -1, 0, -1, -1&gt; const&, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&, ArapEnergy, Eigen::SparseMatrix&lt;double, 0, int&gt;&)in arap_dof.o
       arap_rhs(Eigen::Matrix&lt;double, -1, -1, 0, -1, -1&gt; const&, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&, ArapEnergy, Eigen::SparseMatrix&lt;double, 0, int&gt;&)in arap_dof.o
         </code></pre>
-        This looks like a mess, but luckily we don't really need to read it
-        all. Just copy the first highlighted part in quotes, then append it to
-        the list of explicit templat specializations at the end of
-        <code>cat.cpp</code> after the word <strong><code>template</code></strong> and followed by a semi-colon. Like this:
+        <p>
+          This looks like a mess, but luckily we don't really need to read it
+          all. Just copy the first highlighted part in quotes, then append it
+          to the list of explicit templat specializations at the end of
+          <code>cat.cpp</code> after the word
+          <strong><code>template</code></strong> and followed by a semi-colon.
+          Like this:
+        </p>
         <pre><code>
 ...
 #ifndef IGL_HEADER_ONLY
@@ -142,21 +205,30 @@ Undefined symbols for architecture x86_64:
   <strong>template</strong> <span class=highlight>Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; igl::cat&lt;Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; &gt;(int, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&)</span>;
 #endif
         </code></pre>
-
-        Then you must recompile the IGL static library.
-
+        <p>
+          Then you must recompile the IGL static library.
+        </p>
         <pre><code>
 cd $IGL
 make
         </code></pre>
-
-        And try to compile your project again, potentially repeating this
-        process until no more symbols are undefined.
+        <p>
+          And try to compile your project again, potentially repeating this
+          process until no more symbols are undefined.
+        </p>
 
         <div class=note>It may be useful to check that you code compiles with
         no errors first using the <a href=#header_library>headers-only
         version</a> to be sure that all errors are from missing template
         specializations.</div>
+
+        <p>
+          If you're using make then the following command will
+          reveal each missing symbol on its own line:
+        </p>
+          <pre><code>
+  make 2&gt;&1 | grep "referenced from" | sed -e "s/, referenced from.*//"
+          </code></pre>
 
         <h3>Benefits of static library</h3>
         <ul>
@@ -170,29 +242,50 @@ make
           debugged.</li>
         </ul>
         <h3>Drawbacks of static library</h3>
-        <a href="#explicit_specialization_of_templated_functions">Special care</a>
-        (by the developers of the library) needs to be taken when exposing
-        templated functions. 
+        <ul>
+          <li><strong>Hard to use templates:</strong> <a
+          href="#explicit_specialization_of_templated_functions">Special
+          care</a> (by the developers of the library) needs to be taken when
+          exposing templated functions.</li>
+        </ul>
 
       <h2 id="dependencies">Dependencies</h2>
-      By design the IGL library has very few external dependencies.
+      <p>
+        By design the IGL library has very few external dependencies.
+      </p>
         <h3>Mandatory dependencies</h3>
-        Besides the standard C++ library, there are a few dependencies, without
-        which the main library will not compile or work properly. These are:
+        <p>
+          Besides the standard C++ library, there are a few dependencies,
+          without which the main library will not compile or work properly.
+          These are:
+        </p>
         <ul>
-          <li>Eigen3</li>
+          <li><a href=http://eigen.tuxfamily.org/>Eigen3</a></li>
           <li>OpenGL <span class=todo>implement IGL_NO_OPENGL compiler option</span></li>
           <li>GLUT <span class=todo>implement IGL_NO_GLUT compiler option</span></li>
         </ul>
         <h3>Optional dependencies</h3>
-        Certain functions and classes included the IGL library have external
-        dependencies by construction (e.g. the matlab_interface routines are only
-        useful when matlab is present anyway). These are <strong>never</strong>
-        compiled by default into the static igl library <span class=todo>and are only exposed
-        through compiler options</span>. These are:
+        <p>
+          Certain functions and classes included the IGL library have external
+          dependencies by construction (e.g. the matlab_interface routines are
+          only useful when matlab is present anyway). These are
+          <strong>never</strong> compiled by default into the static igl
+          library <span class=todo>and are only exposed through compiler
+          options</span>. These are:
+        </p>
         <ul>
           <li>MATLAB</li>
           <li><a href="http://www.antisphere.com/Wiki/tools:anttweakbar">AntTweakBar</a></li>
         </ul>
+      <h1>Converting matlab code to C++ using IGL and Eigen</h1>
+      <p>
+        Eigen's matrix API often makes it fairly to translate to and from
+        matlab code (Eigen provides a <a
+        href=http://eigen.tuxfamily.org/dox/AsciiQuickReference.txt>
+        translation table</a>). We have implemented a few additional
+        matlab-esque functions to make the translation even easier. <a
+        href="matlab-to-eigen.html">Our own translation table</a> shows a list
+        of common matlab functions and their igl-eigen equivalents.  
+      </p>
   </body>
 </html>
