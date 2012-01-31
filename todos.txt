@@ -3,3 +3,4 @@
 - standardize headers-only vs. static library
 - clean up tga.h
 - standardize igl includes #include "cotangent.h" or #include <cotangent.h>
+- implement an IGL_NO_OPENGL and IGL_NO_GLUT compiler option
