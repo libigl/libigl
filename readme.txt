@@ -118,3 +118,7 @@ description of each template, input and output in each prototype.
     grep -l "^using namespace" *.cpp
 
 
+  Find .h files that contain ifndef IGL_*[^H]
+
+     grep -l "ifndef IGL_.*[^H] *$" *
+

@@ -1,5 +1,5 @@
-#ifndef IGL_POINT_IN_CIRCLE
-#define IGL_POINT_IN_CIRCLE
+#ifndef IGL_POINT_IN_CIRCLE_H
+#define IGL_POINT_IN_CIRCLE_H
 
 namespace igl
 {

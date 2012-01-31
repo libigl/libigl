@@ -1,5 +1,5 @@
-#ifndef IGL_LIMIT_FACES
-#define IGL_LIMIT_FACES
+#ifndef IGL_LIMIT_FACES_H
+#define IGL_LIMIT_FACES_H
 namespace igl
 {
   // LIMIT_FACES limit given faces F to those which contain (only) indices found

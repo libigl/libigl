@@ -1,5 +1,5 @@
-#ifndef IGL_STDIN_TO_TEMP
-#define IGL_STDIN_TO_TEMP
+#ifndef IGL_STDIN_TO_TEMP_H
+#define IGL_STDIN_TO_TEMP_H
 #include <cstdio>
 namespace igl
 {

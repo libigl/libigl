@@ -1,5 +1,5 @@
-#ifndef IGL_REPORT_GL_ERROR
-#define IGL_REPORT_GL_ERROR
+#ifndef IGL_REPORT_GL_ERROR_H
+#define IGL_REPORT_GL_ERROR_H
 
 #ifdef __APPLE__
 #  include <OpenGL/gl.h>
