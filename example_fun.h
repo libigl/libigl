@@ -1,11 +1,7 @@
 #ifndef IGL_EXAMPLE_FUN_H
 #define IGL_EXAMPLE_FUN_H
 
-#ifdef IGL_HEADER_ONLY
-#  define IGL_INLINE inline
-#else
-#  define IGL_INLINE
-#endif
+#include "igl_inline.h"
 
 namespace igl
 {

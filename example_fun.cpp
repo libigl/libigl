@@ -10,14 +10,6 @@ IGL_INLINE bool igl::example_fun(const Printable & input)
 }
 
 #ifndef IGL_HEADER_ONLY
-
 template bool igl::example_fun<double>(const double& input);
 template bool igl::example_fun<int>(const int& input);
-
-//// List all useful instanciations here
-//namespace igl_explicit_instanciations
-//{
-//  bool (*example_fun_A)(const double &) = &igl::example_fun<double>;
-//  bool (*example_fun_B)(const int &) = &igl::example_fun<int>;
-//}
 #endif
