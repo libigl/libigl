@@ -1,5 +1,5 @@
-#ifndef IGL_QUAT2MAT_H
-#define IGL_QUAT2MAT_H
+#ifndef IGL_QUAT_TO_MAT_H
+#define IGL_QUAT_TO_MAT_H
 // Name history:
 //   quat2mat  until 16 Sept 2011
 namespace igl
