@@ -81,8 +81,8 @@ $after" | sed '1,/endif/d'`;
 #  include \"$filename.cpp\"
 #endif
 
-#endif">before-"$filename".h
+#endif"> "$filename".h
   echo "#include \"$filename.h\"
 
-$after">after-"$filename".cpp
+$after"> "$filename".cpp
 done

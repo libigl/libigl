@@ -12,10 +12,14 @@ all: LFLAGS +=
 all: CFLAGS += -O3 -DNDEBUG
 debug: CFLAGS += -g
 
+# Eigen dependency
+EIGEN3_INC=-I/usr/local/include/eigen3 -I/usr/local/include/eigen3/unsupported
+INC+=$(EIGEN3_INC)
+
+## OpenGL dependency
 #LIB+=-framework OpenGL
 #LIB+=-framework GLUT
 #LIB+=-framework AppKit
-
 
 obj: 
 	mkdir -p obj
