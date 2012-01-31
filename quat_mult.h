@@ -1,5 +1,6 @@
 #ifndef IGL_QUAT_MULT_H
 #define IGL_QUAT_MULT_H
+#include "igl_inline.h"
 
 namespace igl
 {
@@ -12,29 +13,14 @@ namespace igl
   // Outputs:
   //   out  result of multiplication
   template <typename Q_type>
-  inline void quat_mult(
+  IGL_INLINE void quat_mult(
     const Q_type *q1, 
     const Q_type *q2,
     Q_type *out);
 };
 
-// Implementation
-#include <cassert>
-// http://www.antisphere.com/Wiki/tools:anttweakbar
-template <typename Q_type>
-inline void igl::quat_mult(
-  const Q_type *q1, 
-  const Q_type *q2,
-  Q_type *out)
-{
-  // output can't be either of the inputs
-  assert(q1 != out);
-  assert(q2 != out);
-
-  out[0] = q1[3]*q2[0] + q1[0]*q2[3] + q1[1]*q2[2] - q1[2]*q2[1];
-  out[1] = q1[3]*q2[1] + q1[1]*q2[3] + q1[2]*q2[0] - q1[0]*q2[2];
-  out[2] = q1[3]*q2[2] + q1[2]*q2[3] + q1[0]*q2[1] - q1[1]*q2[0];
-  out[3] = q1[3]*q2[3] - (q1[0]*q2[0] + q1[1]*q2[1] + q1[2]*q2[2]);
-}
+#ifdef IGL_HEADER_ONLY
+#  include "quat_mult.cpp"
+#endif
 
 #endif

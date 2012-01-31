@@ -1,5 +1,6 @@
 #ifndef IGL_MAT_MIN_H
 #define IGL_MAT_MIN_H
+#include "igl_inline.h"
 #include <Eigen/Dense>
 
 namespace igl
@@ -24,48 +25,15 @@ namespace igl
   //
   // See also: mat_max
   template <typename T>
-  inline void mat_min(
+  IGL_INLINE void mat_min(
     const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,
     const int dim,
     Eigen::Matrix<T,Eigen::Dynamic,1> & Y,
     Eigen::Matrix<int,Eigen::Dynamic,1> & I);
 }
 
-// Implementation
-#include "verbose.h"
-
-template <typename T>
-inline void igl::mat_min(
-  const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,
-  const int dim,
-  Eigen::Matrix<T,Eigen::Dynamic,1> & Y,
-  Eigen::Matrix<int,Eigen::Dynamic,1> & I)
-{
-  assert(dim==1||dim==2);
-
-  // output size
-  int n = (dim==1?X.cols():X.rows());
-  // resize output
-  Y.resize(n);
-  I.resize(n);
-
-  // loop over dimension opposite of dim
-  for(int j = 0;j<n;j++)
-  {
-    typename Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic>::Index PHONY;
-    typename Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic>::Index i;
-    T m;
-    if(dim==1)
-    {
-      m = X.col(j).minCoeff(&i,&PHONY);
-    }else
-    {
-      m = X.row(j).minCoeff(&PHONY,&i);
-    }
-    Y(j) = m;
-    I(j) = i;
-  }
-}
-
+#ifdef IGL_HEADER_ONLY
+#  include "mat_min.cpp"
 #endif
 
+#endif

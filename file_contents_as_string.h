@@ -1,5 +1,6 @@
 #ifndef IGL_FILE_CONTENTS_AS_STRING_H
 #define IGL_FILE_CONTENTS_AS_STRING_H
+#include "igl_inline.h"
 
 #include <string>
 namespace igl
@@ -10,33 +11,13 @@ namespace igl
   // Outputs:
   //   content  output string containing contents of the given file
   // Returns true on succes, false on error
-  inline bool file_contents_as_string(
+  IGL_INLINE bool file_contents_as_string(
     const std::string file_name,
     std::string & content);
 }
 
-// Implementation
-#include <fstream>
-#include <cstdio>
+#ifdef IGL_HEADER_ONLY
+#  include "file_contents_as_string.cpp"
+#endif
 
-inline bool igl::file_contents_as_string(
-  const std::string file_name,
-  std::string & content)
-{
-  std::ifstream ifs(file_name.c_str());
-  // Check that opening the stream worked successfully
-  if(!ifs.good())
-  {
-    fprintf(
-      stderr,
-      "IOError: file_contents_as_string() cannot open %s\n",
-      file_name.c_str());
-    return false;
-  }
-  // Stream file contents into string
-  content = std::string(
-    (std::istreambuf_iterator<char>(ifs)),
-    (std::istreambuf_iterator<char>()));
-  return true;
-}
 #endif

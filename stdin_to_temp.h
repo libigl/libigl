@@ -1,5 +1,6 @@
 #ifndef IGL_STDIN_TO_TEMP_H
 #define IGL_STDIN_TO_TEMP_H
+#include "igl_inline.h"
 #include <cstdio>
 namespace igl
 {
@@ -18,38 +19,11 @@ namespace igl
   //
   // Note: Caller is responsible for closing the file (tmpfile() automatically
   // unlinks the file so there is no need to remove/delete/unlink the file)
-  inline bool stdin_to_temp(FILE ** temp_file);
+  IGL_INLINE bool stdin_to_temp(FILE ** temp_file);
 }
 
-// Implementation
-#include <iostream>
-
-inline bool igl::stdin_to_temp(FILE ** temp_file)
-{
-  // get a temporary file
-  *temp_file = tmpfile();
-  if(*temp_file == NULL)
-  {
-    fprintf(stderr,"IOError: temp file could not be created.\n");
-    return false;
-  }
-  char c;
-  // c++'s cin handles the stdind input in a reasonable way
-  while (std::cin.good())
-  {
-    c = std::cin.get();
-    if(std::cin.good())
-    {
-      if(1 != fwrite(&c,sizeof(char),1,*temp_file))
-      {
-        fprintf(stderr,"IOError: error writing to tempfile.\n");
-        return false;
-      }
-    }
-  }
-  // rewind file getting it ready to read from
-  rewind(*temp_file);
-  return true;
-}
+#ifdef IGL_HEADER_ONLY
+#  include "stdin_to_temp.cpp"
+#endif
 
 #endif

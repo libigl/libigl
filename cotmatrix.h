@@ -1,5 +1,6 @@
 #ifndef IGL_COTMATRIX_H
 #define IGL_COTMATRIX_H
+#include "igl_inline.h"
 
 #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #include <Eigen/Dense>
@@ -34,77 +35,14 @@ namespace igl
   // Known bugs: off by 1e-16 on regular grid. I think its a problem of
   // arithmetic order in cotangent.h: C(i,e) = (arithmetic)/dblA/4
   template <typename DerivedV, typename DerivedF, typename Scalar>
-  inline void cotmatrix(
+  IGL_INLINE void cotmatrix(
     const Eigen::MatrixBase<DerivedV> & V, 
     const Eigen::MatrixBase<DerivedF> & F, 
     Eigen::SparseMatrix<Scalar>& L);
 }
 
-// Implementation
+#ifdef IGL_HEADER_ONLY
+#  include "cotmatrix.cpp"
+#endif
 
-// For error printing
-#include <cstdio>
-#include "cotangent.h"
-
-template <typename DerivedV, typename DerivedF, typename Scalar>
-inline void igl::cotmatrix(
-  const Eigen::MatrixBase<DerivedV> & V, 
-  const Eigen::MatrixBase<DerivedF> & F, 
-  Eigen::SparseMatrix<Scalar>& L)
-{
-  using namespace igl;
-  using namespace Eigen;
-
-  DynamicSparseMatrix<Scalar, RowMajor> dyn_L (V.rows(), V.rows());
-  Matrix<int,Dynamic,2> edges;
-  int simplex_size = F.cols();
-  // 3 for triangles, 4 for tets
-  assert(simplex_size == 3 || simplex_size == 4);
-  if(simplex_size == 3)
-  {
-    // This is important! it could decrease the comptuation time by a factor of 2
-    // Laplacian for a closed 2d manifold mesh will have on average 7 entries per
-    // row
-    dyn_L.reserve(7*V.rows());
-    edges.resize(3,2);
-    edges << 
-      1,2,
-      2,0,
-      0,1;
-  }else if(simplex_size == 4)
-  {
-    dyn_L.reserve(17*V.rows());
-    edges.resize(6,2);
-    edges << 
-      1,2,
-      2,0,
-      0,1,
-      3,0,
-      3,1,
-      3,2;
-  }else
-  {
-    return;
-  }
-  // Gather cotangents
-  Matrix<Scalar,Dynamic,Dynamic> C;
-  cotangent(V,F,C);
-  
-  // Loop over triangles
-  for(int i = 0; i < F.rows(); i++)
-  {
-    // loop over edges of element
-    for(int e = 0;e<edges.rows();e++)
-    {
-      int source = F(i,edges(e,0));
-      int dest = F(i,edges(e,1));
-      dyn_L.coeffRef(source,dest) += C(i,e);
-      dyn_L.coeffRef(dest,source) += C(i,e);
-      dyn_L.coeffRef(source,source) += -C(i,e);
-      dyn_L.coeffRef(dest,dest) += -C(i,e);
-    }
-  }
-    // Corner indices of this triangle
-  L = SparseMatrix<Scalar>(dyn_L);
-}
 #endif

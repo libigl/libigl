@@ -1,5 +1,6 @@
 #ifndef IGL_ALL_PAIRS_DISTANCES_H
 #define IGL_ALL_PAIRS_DISTANCES_H
+#include "igl_inline.h"
 
 namespace igl
 {
@@ -19,37 +20,15 @@ namespace igl
   //     squareed distance between V(i,:) and U(j,:)
   // 
   template <typename Mat>
-  inline void all_pairs_distances(
+  IGL_INLINE void all_pairs_distances(
     const Mat & V,
     const Mat & U,
     const bool squared, 
     Mat & D);
 }
 
-// Implementation
-
-template <typename Mat>
-inline void igl::all_pairs_distances(
-  const Mat & V,
-  const Mat & U,
-  const bool squared,
-  Mat & D)
-{
-  // dimension should be the same
-  assert(V.cols() == U.cols());
-  // resize output
-  D.resize(V.rows(),U.rows());
-  for(int i = 0;i<V.rows();i++)
-  {
-    for(int j=0;j<U.rows();j++)
-    {
-      D(i,j) = (V.row(i)-U.row(j)).array().pow(2).sum();
-      if(!squared)
-      {
-        D(i,j) = sqrt(D(i,j));
-      }
-    }
-  }
-}
+#ifdef IGL_HEADER_ONLY
+#  include "all_pairs_distances.cpp"
+#endif
 
 #endif

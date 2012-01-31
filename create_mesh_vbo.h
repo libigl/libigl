@@ -1,5 +1,6 @@
 #ifndef IGL_CREATE_MESH_VBO_H
 #define IGL_CREATE_MESH_VBO_H
+#include "igl_inline.h"
 // NOTE: It wouldn't be so hard to template this using Eigen's templates
 
 #include <Eigen/Core>
@@ -31,7 +32,7 @@ namespace igl
   // NOTE: when using glDrawElements VBOs for V and F using MatrixXd and
   // MatrixXi will have types GL_DOUBLE and GL_UNSIGNED_INT respectively
   //
-  inline void create_mesh_vbo(
+  IGL_INLINE void create_mesh_vbo(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
     GLuint & V_vbo_id,
@@ -45,7 +46,7 @@ namespace igl
   //   V_vbo_id  buffer id for vertex positions
   //   F_vbo_id  buffer id for face indices
   //   N_vbo_id  buffer id for vertex positions
-  inline void create_mesh_vbo(
+  IGL_INLINE void create_mesh_vbo(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
     const Eigen::MatrixXd & N,
@@ -55,36 +56,8 @@ namespace igl
 
 }
 
-// Implementation
-#include "create_vector_vbo.h"
-#include "create_index_vbo.h"
-
-// http://www.songho.ca/opengl/gl_vbo.html#create
-inline void igl::create_mesh_vbo(
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
-  GLuint & V_vbo_id,
-  GLuint & F_vbo_id)
-{
-  // Create VBO for vertex position vectors
-  create_vector_vbo(V,V_vbo_id);
-  // Create VBO for face index lists
-  create_index_vbo(F,F_vbo_id);
-}
-
-// http://www.songho.ca/opengl/gl_vbo.html#create
-inline void igl::create_mesh_vbo(
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
-  const Eigen::MatrixXd & N,
-  GLuint & V_vbo_id,
-  GLuint & F_vbo_id,
-  GLuint & N_vbo_id)
-{
-  // Create VBOs for faces and vertices
-  create_mesh_vbo(V,F,V_vbo_id,F_vbo_id);
-  // Create VBO for normal vectors
-  create_vector_vbo(N,N_vbo_id);
-}
+#ifdef IGL_HEADER_ONLY
+#  include "create_mesh_vbo.cpp"
+#endif
 
 #endif

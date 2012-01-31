@@ -1,5 +1,7 @@
 #ifndef IGL_SUM_H
 #define IGL_SUM_H
+#include "igl_inline.h"
+#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #include <Eigen/Sparse>
 
 namespace igl
@@ -20,49 +22,14 @@ namespace igl
   //   or
   //   S  m-long sparse vector (if dim == 2)
   template <typename T>
-  inline void sum(
+  IGL_INLINE void sum(
     const Eigen::SparseMatrix<T>& X, 
     const int dim,
     Eigen::SparseVector<T>& S);
 }
 
-// Implementation
+#ifdef IGL_HEADER_ONLY
+#  include "sum.cpp"
+#endif
 
-template <typename T>
-inline void igl::sum(
-  const Eigen::SparseMatrix<T>& X, 
-  const int dim,
-  Eigen::SparseVector<T>& S)
-{
-  // dim must be 2 or 1
-  assert(dim == 1 || dim == 2);
-  // Get size of input
-  int m = X.rows();
-  int n = X.cols();
-  // resize output
-  if(dim==1)
-  {
-    S = Eigen::SparseVector<T>(n);
-  }else
-  {
-    S = Eigen::SparseVector<T>(m);
-  }
-
-  // Iterate over outside
-  for(int k=0; k<X.outerSize(); ++k)
-  {
-    // Iterate over inside
-    for(typename Eigen::SparseMatrix<T>::InnerIterator it (X,k); it; ++it)
-    {
-      if(dim == 1)
-      {
-        S.coeffRef(it.col()) += it.value();
-      }else
-      {
-        S.coeffRef(it.row()) += it.value();
-      }
-    }
-  }
-
-}
 #endif

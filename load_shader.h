@@ -1,5 +1,6 @@
 #ifndef IGL_LOAD_SHADER_H 
-#define IGL_LOAD_SHADER_H 
+#define IGL_LOAD_SHADER_H
+#include "igl_inline.h" 
 
 #ifdef __APPLE__
 #  include <OpenGL/gl.h>
@@ -22,29 +23,11 @@ namespace igl
   //     GL_FRAGMENT_SHADER
   //     GL_GEOMETRY_SHADER
   // Returns  index id of the newly created shader, 0 on error
-  inline GLuint load_shader(const char *src,const GLenum type);
+  IGL_INLINE GLuint load_shader(const char *src,const GLenum type);
 }
 
-// Implementation
-
-// Copyright Denis Kovacs 4/10/08
-#include "print_shader_info_log.h"
-#include <cstdio>
-inline GLuint igl::load_shader(const char *src,const GLenum type)
-{
-  GLuint s = glCreateShader(type);
-  if(s == 0)
-  {
-    fprintf(stderr,"Error: load_shader() failed to create shader.\n");
-    return 0;
-  }
-  // Pass shader source string
-  glShaderSource(s, 1, &src, NULL);
-  glCompileShader(s);
-  // Print info log (if any)
-  igl::print_shader_info_log(s);
-  return s;
-}
-
+#ifdef IGL_HEADER_ONLY
+#  include "load_shader.cpp"
 #endif
 
+#endif

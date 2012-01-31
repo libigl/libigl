@@ -1,5 +1,6 @@
 #ifndef IGL_SPEYE_H
 #define IGL_SPEYE_H
+#include "igl_inline.h"
 
 #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #include <Eigen/Sparse>
@@ -15,7 +16,7 @@ namespace igl
   // Outputs:
   //   I  m by n sparse matrix with 1's on the main diagonal
   template <typename T>
-  inline void speye(const int n,const int m, Eigen::SparseMatrix<T> & I);
+  IGL_INLINE void speye(const int n,const int m, Eigen::SparseMatrix<T> & I);
   // Builds an n by n sparse identity matrix like matlab's speye function
   // Templates:
   //   T  should be a eigen sparse matrix primitive type like int or double
@@ -24,29 +25,11 @@ namespace igl
   // Outputs:
   //   I  n by n sparse matrix with 1's on the main diagonal
   template <typename T>
-  inline void speye(const int n, Eigen::SparseMatrix<T> & I);
+  IGL_INLINE void speye(const int n, Eigen::SparseMatrix<T> & I);
 }
 
-// Implementation
-
-template <typename T>
-inline void igl::speye(const int m, const int n, Eigen::SparseMatrix<T> & I)
-{
-  // size of diagonal
-  int d = (m<n?m:n);
-  I = Eigen::SparseMatrix<T>(m,n);
-  I.reserve(d);
-  for(int i = 0;i<d;i++)
-  {
-    I.insert(i,i) = 1.0;
-  }
-  I.finalize();
-}
-
-template <typename T>
-inline void igl::speye(const int n, Eigen::SparseMatrix<T> & I)
-{
-  return igl::speye(n,n,I);
-}
+#ifdef IGL_HEADER_ONLY
+#  include "speye.cpp"
+#endif
 
 #endif

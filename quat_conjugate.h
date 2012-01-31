@@ -1,5 +1,6 @@
 #ifndef IGL_QUAT_CONJUGATE_H
 #define IGL_QUAT_CONJUGATE_H
+#include "igl_inline.h"
 
 namespace igl
 {
@@ -12,22 +13,13 @@ namespace igl
   // Outputs:
   //   out  result of conjugation, allowed to be same as input
   template <typename Q_type>
-  inline void quat_conjugate(
+  IGL_INLINE void quat_conjugate(
     const Q_type *q1, 
     Q_type *out);
 };
 
-// Implementation
-template <typename Q_type>
-inline void igl::quat_conjugate(
-  const Q_type *q1, 
-  Q_type *out)
-{
-  out[0] = -q1[0];
-  out[1] = -q1[1];
-  out[2] = -q1[2];
-  out[3] = q1[3];
-}
-
+#ifdef IGL_HEADER_ONLY
+#  include "quat_conjugate.cpp"
 #endif
 
+#endif

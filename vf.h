@@ -1,5 +1,6 @@
 #ifndef IGL_VF_H
 #define IGL_VF_H
+#include "igl_inline.h"
 
 #include <Eigen/Dense>
 #include <vector>
@@ -16,35 +17,14 @@ namespace igl
   // See also: edges, cotmatrix, diag, vv
     
   template <typename T, typename S>
-  inline void vf( 
+  IGL_INLINE void vf( 
     const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> & V, 
     const Eigen::MatrixXi & F, 
     std::vector<std::vector<T> >& VF, std::vector<std::vector<T> >& VFi);
 }
 
-// Implementation
-#include "verbose.h"
-
-template <typename T, typename S>
-inline void igl::vf(
-  const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> & V, 
-  const Eigen::MatrixXi & F, 
-  std::vector<std::vector<T> >& VF, std::vector<std::vector<T> >& VFi)
-{
-  VF.clear();
-  VFi.clear();
-  
-  VF.resize(V.rows());
-  VFi.resize(V.rows());
-  
-  for(int fi=0; fi<F.rows(); ++fi)
-  {
-    for(int i = 0; i < 3; ++i)
-    {
-      VF[F(fi,i)].push_back(fi);
-      VFi[F(fi,i)].push_back(i);
-    }
-  }
-}
+#ifdef IGL_HEADER_ONLY
+#  include "vf.cpp"
+#endif
 
 #endif

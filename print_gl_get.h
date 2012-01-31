@@ -1,5 +1,6 @@
 #ifndef IGL_PRINT_GL_GET_H
 #define IGL_PRINT_GL_GET_H
+#include "igl_inline.h"
 
 #if __APPLE__
 #  include <OpenGL/gl.h>
@@ -17,40 +18,11 @@ namespace igl
   // Prints the value of pname found by issuing glGet*(pname,*)
   // Inputs:
   //   pname  enum key to gl parameter
-  inline void print_gl_get(GLenum pname);
+  IGL_INLINE void print_gl_get(GLenum pname);
 }
 
-
-// Implementation
-
-#include <cstdio>
-inline void igl::print_gl_get(GLenum pname)
-{
-  double dM[16];
-
-  int rows = 4;
-  int cols = 4;
-  switch(pname)
-  {
-    case GL_MODELVIEW_MATRIX:
-    case GL_PROJECTION_MATRIX:
-    {
-      rows = 4;
-      cols = 4;
-      glGetDoublev(pname,dM);
-      for(int i = 0;i<rows;i++)
-      {
-        for(int j = 0;j<cols;j++)
-        {
-          printf("%lg ",dM[j*rows+i]);
-        }
-        printf("\n");
-      }
-      break;
-    }
-    default:
-      fprintf(stderr,"ERROR in print_gl_get(), gl enum not recognized.\n");
-  }
-}
+#ifdef IGL_HEADER_ONLY
+#  include "print_gl_get.cpp"
+#endif
 
 #endif

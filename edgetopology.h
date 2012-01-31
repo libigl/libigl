@@ -27,7 +27,7 @@ namespace igl
     const Eigen::MatrixXi& EF);
 }
 
-// Implementation
+// Broken Implementation
 #include <algorithm>
 #include "is_manifold.h"
 
