@@ -1,5 +1,5 @@
-#ifndef IGL_SNAP_TO_CANONICAL_QUAT_H
-#define IGL_SNAP_TO_CANONICAL_QUAT_H
+#ifndef IGL_SNAP_TO_CANONICAL_VIEW_QUAT_H
+#define IGL_SNAP_TO_CANONICAL_VIEW_QUAT_H
 // A Quaternion, q, is defined here as an arrays of four scalars (x,y,z,w),
 // such that q = x*i + y*j + z*k + w
 namespace igl
