@@ -29,9 +29,9 @@ do
     continue;
   fi
 
-  if ! grep -q "^\/\/ Implementation$" "$i"
+  if ! grep -q "^\/\/ Implementation *$" "$i"
   then
-    echo "Skipping $i because it does not match ^\/\/ Implementation$ "
+    echo "Skipping $i because it does not match ^\/\/ Implementation *$ "
     continue;
   fi
 
@@ -42,15 +42,15 @@ do
 
   before=`sed -n '/^\/\/ Implementation$/q;p' "$i"`;
 
-  if ! echo "$before" | grep -q "^\#ifndef IGL_${FILENAME}_H$"
+  if ! echo "$before" | grep -q "^\#ifndef IGL_${FILENAME}_H"
   then
-    echo "Skipping $i because it does not match ^#ifndef IGL_${FILENAME}_H$ "
+    echo "Skipping $i because it does not match ^#ifndef IGL_${FILENAME}_H "
     continue;
   fi
 
-  if ! echo "$before" | grep -q "^\#define IGL_${FILENAME}_H$"
+  if ! echo "$before" | grep -q "^\#define IGL_${FILENAME}_H"
   then
-    echo "Skipping $i because it does not match ^#define IGL_${FILENAME}_H$ "
+    echo "Skipping $i because it does not match ^#define IGL_${FILENAME}_H "
     continue;
   fi
 

@@ -1,5 +1,5 @@
-#ifndef IGL_CREATE_VECTOR_VBO
-#define IGL_CREATE_VECTOR_VBO
+#ifndef IGL_CREATE_VECTOR_VBO_H
+#define IGL_CREATE_VECTOR_VBO_H
 // NOTE: It wouldn't be so hard to template this using Eigen's templates
 
 #include <Eigen/Core>
