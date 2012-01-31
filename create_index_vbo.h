@@ -1,5 +1,5 @@
-#ifndef IGL_CREATE_INDEX_VBO
-#define IGL_CREATE_INDEX_VBO
+#ifndef IGL_CREATE_INDEX_VBO_H
+#define IGL_CREATE_INDEX_VBO_H
 // NOTE: It wouldn't be so hard to template this using Eigen's templates
 
 #include <Eigen/Core>
