@@ -1,27 +1,137 @@
 #include "readOFF.h"
-
-IGL_INLINE bool igl::readOFF (const std::string meshfile, Eigen::MatrixXd& V, Eigen::MatrixXi& F)
+template <typename Scalar, typename Index>
+IGL_INLINE bool igl::readOFF(
+                             const std::string off_file_name, 
+                             std::vector<std::vector<Scalar > > & V,
+                             std::vector<std::vector<Index > > & F)
 {
-    int vnum, fnum;
-    FILE *fp = fopen (meshfile.c_str(), "r");
-    
-    if (!fp)
+  FILE * off_file = fopen(off_file_name.c_str(),"r");                                       
+  if(NULL==off_file)
+  {
+    printf("IOError: %s could not be opened...",off_file_name.c_str());
+    return false; 
+  }
+  V.clear();
+  F.clear();
+  // First line is always OFF
+  char header[1000];
+  const std::string OFF("OFF");
+  const std::string NOFF("NOFF");
+  if(!fscanf(off_file,"%s\n",header)==1
+     || !(OFF == header || NOFF == header))
+  {
+    printf("Error: %s's first line should be OFF or NOFF not %s...",off_file_name.c_str(),header);
+    fclose(off_file);
+    return false; 
+  }
+  bool has_normals = NOFF==header;
+  // Second line is #vertices #faces #edges
+  int number_of_vertices;
+  int number_of_faces;
+  int number_of_edges;
+  char tic_tac_toe;
+  char line[1000];
+  bool still_comments = true;
+  while(still_comments)
+  {
+    fgets(line,1000,off_file);
+    still_comments = line[0] == '#';
+  }
+  sscanf(line,"%d %d %d",&number_of_vertices,&number_of_faces,&number_of_edges);
+  V.resize(number_of_vertices);
+  F.resize(number_of_faces);
+  //printf("%s %d %d %d\n",(has_normals ? "NOFF" : "OFF"),number_of_vertices,number_of_faces,number_of_edges);
+  // Read vertices
+  for(int i = 0;i<number_of_vertices;)
+  {
+    float x,y,z,nx,ny,nz;
+    if((has_normals && fscanf(off_file, "%g %g %g %g %g %g\n",&x,&y,&z,&nx,&ny,&nz)==6) || 
+       (!has_normals && fscanf(off_file, "%g %g %g\n",&x,&y,&z)==3))
     {
-      fprintf (stderr, "readOFF(): could not open file %s", meshfile.c_str());
+      std::vector<Scalar > vertex;
+      vertex.resize(3);
+      vertex[0] = x;
+      vertex[1] = y;
+      vertex[2] = z;
+      V[i] = vertex;
+      i++;
+    }else if(
+             fscanf(off_file,"%[#]",&tic_tac_toe)==1)
+    {
+      char comment[1000];
+      fscanf(off_file,"%[^\n]",comment);
+    }else
+    {
+      printf("Error: bad line in %s\n",off_file_name.c_str());
+      fclose(off_file);
       return false;
     }
-    
-    fscanf (fp, "OFF\n%d %d 0\n",  &vnum, &fnum);
-    
-    V = Eigen::MatrixXd (vnum, 3);
-    F = Eigen::MatrixXi (fnum, 3);
-    
-    for (unsigned i = 0; i < V.rows(); i++)
-        fscanf (fp, "%lf %lf %lf\n", &V(i,0), &V(i,1), &V(i,2));
-    
-    for (unsigned i = 0; i < F.rows(); i++)
-        fscanf (fp, "3 %d %d %d\n", &F(i,0), &F(i,1), &F(i,2));
-    
-    fclose (fp);
-    return true;
+  }
+  // Read faces
+  for(int i = 0;i<number_of_faces;)
+  {
+    std::vector<Index > face;
+    int valence;
+    if(fscanf(off_file,"%d",&valence)==1)
+    {
+      face.resize(valence);
+      for(int j = 0;j<valence;j++)
+      {
+        int index;
+        if(j<valence-1)
+        {
+          fscanf(off_file,"%d",&index);
+        }else{
+          fscanf(off_file,"%d%*[^\n]",&index);
+        }
+        
+        face[j] = index;
+      }
+      F[i] = face;
+      i++;
+    }else if(
+             fscanf(off_file,"%[#]",&tic_tac_toe)==1)
+    {
+      char comment[1000];
+      fscanf(off_file,"%[^\n]",comment);
+    }else
+    {
+      printf("Error: bad line in %s\n",off_file_name.c_str());
+      fclose(off_file);
+      return false;
+    }
+  }
+  fclose(off_file);
+  return true;
+}
+
+
+template <typename DerivedV, typename DerivedF>
+IGL_INLINE bool igl::readOFF(
+                        const std::string str,
+                        Eigen::PlainObjectBase<DerivedV>& V,
+                        Eigen::PlainObjectBase<DerivedF>& F)
+{
+  std::vector<std::vector<double> > vV;
+  std::vector<std::vector<int> > vF;
+  bool success = igl::readOFF(str,vV,vF);
+  if(!success)
+  {
+    // readOFF(str,vV,vF) should have already printed an error
+    // message to stderr
+    return false;
+  }
+  bool V_rect = igl::list_to_matrix(vV,V);
+  if(!V_rect)
+  {
+    // igl::list_to_matrix(vV,V) already printed error message to std err
+    return false;
+  }
+  bool F_rect = igl::list_to_matrix(vF,F);
+  if(!F_rect)
+  {
+    // igl::list_to_matrix(vF,F) already printed error message to std err
+    return false;
+  }
+  return true;
 }

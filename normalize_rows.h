@@ -11,7 +11,10 @@ namespace igl
   //   A  #rows by k input matrix
   // Outputs:
   //   B  #rows by k input matrix, can be the same as A
-  IGL_INLINE void normalize_rows(const Eigen::MatrixXd & A, Eigen::MatrixXd & B);
+  template <typename DerivedV>
+  IGL_INLINE void normalize_rows(
+                                 const Eigen::PlainObjectBase<DerivedV>& A,
+                                 Eigen::PlainObjectBase<DerivedV> & B);
 }
 
 #ifdef IGL_HEADER_ONLY

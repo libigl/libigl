@@ -49,15 +49,42 @@ namespace igl
   // Inputs:
   //   str  path to .obj file
   // Outputs:
-  //   V  eigen double matrix #V by 3
-  //   F  eigen int matrix #F by 3
+  //   V  eigen matrix #V by 3
+  //   F  eigen matrix #F by 3
   //
   // KNOWN BUG: This only knows how to read *triangle* meshes. It will probably
   // crash or give garbage on anything else.
   //
   // KNOWN BUG: This only knows how to face lines without normal or texture
   // indices. It will probably crash or give garbage on anything else.
-  IGL_INLINE bool readOBJ(const std::string str, Eigen::MatrixXd& V, Eigen::MatrixXi& F);
+  template <typename DerivedV, typename DerivedF, typename DerivedT>
+  IGL_INLINE bool readOBJ(
+                          const std::string str,
+                          Eigen::PlainObjectBase<DerivedV>& V,
+                          Eigen::PlainObjectBase<DerivedF>& F,
+                          Eigen::PlainObjectBase<DerivedV>& CN,
+                          Eigen::PlainObjectBase<DerivedF>& FN,
+                          Eigen::PlainObjectBase<DerivedT>& TC,
+                          Eigen::PlainObjectBase<DerivedF>& FTC);
+
+  //! Read a mesh from an ascii obj file
+  // Inputs:
+  //   str  path to .obj file
+  // Outputs:
+  //   V  eigen matrix #V by 3
+  //   F  eigen matrix #F by 3
+  //
+  // KNOWN BUG: This only knows how to read *triangle* meshes. It will probably
+  // crash or give garbage on anything else.
+  //
+  // KNOWN BUG: This only knows how to face lines without normal or texture
+  // indices. It will probably crash or give garbage on anything else.
+  template <typename DerivedV, typename DerivedF, typename DerivedT>
+  IGL_INLINE bool readOBJ(
+                          const std::string str,
+                          Eigen::PlainObjectBase<DerivedV>& V,
+                          Eigen::PlainObjectBase<DerivedF>& F);
+
 }
 
 #ifdef IGL_HEADER_ONLY

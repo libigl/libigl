@@ -241,11 +241,13 @@ IGL_INLINE bool igl::readMESH(
 #include <Eigen/Core>
 #include "list_to_matrix.h"
 
+
+template <typename DerivedV, typename DerivedF, typename DerivedT>
 IGL_INLINE bool igl::readMESH(
-  const std::string str,
-  Eigen::MatrixXd& V,
-  Eigen::MatrixXi& T,
-  Eigen::MatrixXi& F)
+                         const std::string str,
+                         Eigen::PlainObjectBase<DerivedV>& V,
+                         Eigen::PlainObjectBase<DerivedT>& T,
+                         Eigen::PlainObjectBase<DerivedF>& F)
 {
   std::vector<std::vector<double> > vV,vT,vF;
   bool success = igl::readMESH(str,vV,vT,vF);

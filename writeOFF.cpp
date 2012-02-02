@@ -1,7 +1,11 @@
 #include "writeOFF.h"
 
 // write mesh to an ascii off file
-IGL_INLINE bool igl::writeOFF(const std::string fname, const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
+template <typename DerivedV, typename DerivedF>
+IGL_INLINE bool igl::writeOFF(
+                              const std::string fname,
+                              const Eigen::PlainObjectBase<DerivedV>& V,
+                              const Eigen::PlainObjectBase<DerivedF>& F)
 {
     FILE *fp = fopen (fname.c_str(), "w");
   
