@@ -12,7 +12,11 @@
 
 namespace igl 
 {
-    IGL_INLINE bool writeOFF(const std::string fname, const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
+  template <typename DerivedV, typename DerivedF>
+  IGL_INLINE bool writeOFF(
+                        const std::string str,
+                        const Eigen::PlainObjectBase<DerivedV>& V,
+                        const Eigen::PlainObjectBase<DerivedF>& F);
 }
 
 #ifdef IGL_HEADER_ONLY

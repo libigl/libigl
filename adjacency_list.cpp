@@ -61,7 +61,7 @@ IGL_INLINE void igl::adjacency_list(
     
     for(int v=0; v<(int)SR.size();++v)
     {
-      std::vector<int>& vv = A.at(v);
+      std::vector<T>& vv = A.at(v);
       std::vector<std::vector<int> >& sr = SR[v];
       
       std::vector<std::vector<int> > pn = sr;

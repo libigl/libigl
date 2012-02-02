@@ -16,11 +16,12 @@ namespace igl
   //
   // See also: edges, cotmatrix, diag, vv
     
-  template <typename T, typename S>
-  IGL_INLINE void vf( 
-    const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> & V, 
-    const Eigen::MatrixXi & F, 
-    std::vector<std::vector<T> >& VF, std::vector<std::vector<T> >& VFi);
+  template <typename DerivedV, typename DerivedF, typename IndexType>
+  IGL_INLINE void vf(
+                     const Eigen::PlainObjectBase<DerivedV>& V,
+                     const Eigen::PlainObjectBase<DerivedF>& F,
+                     std::vector<std::vector<IndexType> >& VF,
+                     std::vector<std::vector<IndexType> >& VFi);
 }
 
 #ifdef IGL_HEADER_ONLY
