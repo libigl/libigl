@@ -1,4 +1,5 @@
 #include "readOFF.h"
+#include "list_to_matrix.h"
 template <typename Scalar, typename Index>
 IGL_INLINE bool igl::readOFF(
                              const std::string off_file_name, 
