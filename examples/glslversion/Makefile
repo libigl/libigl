@@ -9,7 +9,7 @@ igl_lib=../../
 
 CFLAGS=-g
 inc=-I$(igl_lib)
-lib=-framework OpenGL -framework GLUT
+lib=-framework OpenGL -framework GLUT -L$(igl_lib) -ligl
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o $(lib)

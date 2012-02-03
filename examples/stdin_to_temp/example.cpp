@@ -34,7 +34,7 @@ int main(int argc,char * argv[])
     fprintf(stderr,"Fatal Error: could not convert stdin to temp file\n");
     // try to close temp file
     fclose(temp_file);
-    exit(1);
+    return 1;
   }
 
   // Do something interesting with the temporary file. 

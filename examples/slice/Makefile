@@ -5,13 +5,13 @@ all: example
 
 .PHONY: example
 
-igl_lib=-I../../
+igl_lib=../../
 eigen=-I/usr/local/include/eigen3 -I/usr/local/include/eigen3/unsupported
 
 #CFLAGS=-g
 CFLAGS=-Os -DNDEBUG
-inc=$(igl_lib) $(eigen)
-lib=
+inc=-I$(igl_lib) $(eigen)
+lib=-L$(igl_lib) -ligl
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o $(lib)

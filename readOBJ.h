@@ -79,7 +79,7 @@ namespace igl
   //
   // KNOWN BUG: This only knows how to face lines without normal or texture
   // indices. It will probably crash or give garbage on anything else.
-  template <typename DerivedV, typename DerivedF, typename DerivedT>
+  template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool readOBJ(
                           const std::string str,
                           Eigen::PlainObjectBase<DerivedV>& V,

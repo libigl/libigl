@@ -6,8 +6,10 @@ eigen_lib=/opt/local/include/eigen3/
 
 CFLAGS=-g
 inc=-I$(igl_lib) -I$(eigen_lib)
+lib=-L$(igl_lib) -ligl
 
-matlablibs=-I/Applications/MATLAB_R2010b.app/extern/include -L/Applications/MATLAB_R2010b.app/bin/maci64/ -leng -lmx
+matlab_inc=-I$(MATLAB)/extern/include 
+matlab_lib=-L$(MATLAB)/bin/maci64/ -leng -lmx
 
 example1: example1.o
 	g++ $(CFLAGS) -o example1 example1.o -framework OpenGL -framework GLUT $(lib)
@@ -17,11 +19,11 @@ example1.o: example1.cpp
 	g++ $(CFLAGS) -c example1.cpp -o example1.o $(inc)
 
 example2: example2.o
-	g++ $(CFLAGS) $(matlablibs) -o example2 example2.o -framework OpenGL -framework GLUT $(lib)
+	g++ $(CFLAGS) $(matlab_lib) -o example2 example2.o -framework OpenGL -framework GLUT $(lib)
 	rm example2.o
 
 example2.o: example2.cpp
-	g++ $(CFLAGS) $(matlablibs) -c example2.cpp -o example2.o $(inc)
+	g++ $(CFLAGS) $(matlab_inc) -c example2.cpp -o example2.o $(inc)
 
 clean:
 	rm -f example1.o

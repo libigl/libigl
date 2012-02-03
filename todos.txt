@@ -7,3 +7,4 @@
 - clean up edgetopology.h
 - clean up mvc.h
 - clean up orth.h
+- fix bugs in examples/Core/example2.cpp
