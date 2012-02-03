@@ -10,6 +10,7 @@ igl_lib=../../
 CFLAGS=-g -Wall 
 #deps=-MMD -MF depends.txt
 inc=-I$(igl_lib)
+lib=-L$(igl_lib) -ligl
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o -framework OpenGL -framework GLUT $(lib)

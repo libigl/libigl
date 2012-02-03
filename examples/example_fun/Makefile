@@ -6,7 +6,6 @@ igl_lib=../../
 
 CFLAGS=-g
 inc=-I$(igl_lib)
-lib=
 
 STATIC_LIB=-ligl -L../../
 HEADER_ONLY_DEF=-DIGL_HEADER_ONLY

@@ -22,21 +22,21 @@ namespace igl
   inline void edgetopology(
     const Eigen::MatrixXd& V, 
     const Eigen::MatrixXi& F, 
-    const Eigen::MatrixXi& EV, 
-    const Eigen::MatrixXi& FE, 
-    const Eigen::MatrixXi& EF);
+    Eigen::MatrixXi& EV, 
+    Eigen::MatrixXi& FE, 
+    Eigen::MatrixXi& EF);
 }
 
 // Broken Implementation
 #include <algorithm>
 #include "is_manifold.h"
 
-inline void edgetopology(
+inline void igl::edgetopology(
   const Eigen::MatrixXd& V, 
   const Eigen::MatrixXi& F, 
-  const Eigen::MatrixXi& EV, 
-  const Eigen::MatrixXi& FE, 
-  const Eigen::MatrixXi& EF)
+  Eigen::MatrixXi& EV, 
+  Eigen::MatrixXi& FE, 
+  Eigen::MatrixXi& EF)
 {
   assert(igl::is_manifold(V,F));
   std::vector<std::vector<int> > ETT;

@@ -5,10 +5,10 @@ all: example
 
 .PHONY: example
 
-igl_lib=-I../../
+igl_lib=../../
 
-lib=-lAntTweakBar -framework AppKit
-inc=$(igl_lib)
+lib=-lAntTweakBar -framework AppKit -L$(igl_lib) -ligl
+inc=-I$(igl_lib)
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o -framework OpenGL -framework GLUT $(lib)

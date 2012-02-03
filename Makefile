@@ -1,8 +1,14 @@
 .PHONY: all
+.PHONY: examples
 
-all: obj libigl.a
+all: lib examples
 
-debug: obj libigl.a
+debug: lib
+
+lib: obj libigl.a
+
+examples:
+	make -C examples
 
 CPP_FILES=$(wildcard ./*.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
@@ -34,3 +40,4 @@ obj/%.o: %.cpp
 clean:
 	rm -f obj/*.o
 	rm -f libigl.a
+	make -C examples clean

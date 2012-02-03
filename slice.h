@@ -22,18 +22,18 @@ namespace igl
     const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
     Eigen::SparseMatrix<T>& Y);
 
-  template <typename T, const int W, const int H>
+  template <typename DerivedX>
   IGL_INLINE void slice(
-    const Eigen::Matrix<T,W,H> & X,
+    const Eigen::PlainObjectBase<DerivedX> & X,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
-    Eigen::Matrix<T,W,H> & Y);
+    Eigen::PlainObjectBase<DerivedX> & Y);
 
-  template <typename T>
+  template <typename DerivedX>
   IGL_INLINE void slice(
-    const Eigen::Matrix<T,Eigen::Dynamic,1> & X,
+    const Eigen::PlainObjectBase<DerivedX> & X,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
-    Eigen::Matrix<T,Eigen::Dynamic,1> & Y);
+    Eigen::PlainObjectBase<DerivedX> & Y);
 }
 
 #ifdef IGL_HEADER_ONLY

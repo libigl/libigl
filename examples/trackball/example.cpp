@@ -16,6 +16,7 @@ using namespace igl;
 #include <stdlib.h>
 #include <cstdio>
 #include <cmath>
+#include <algorithm>
 using namespace std;
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -50,7 +51,7 @@ const float g_LightDirection[] = { -0.57735f, -0.57735f, -0.57735f };
 int down_mouse_x, down_mouse_y;
 // keep track of size
 int width, height;
-double speed_factor = 1;
+float speed_factor = 1;
 
 void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
 {
@@ -162,7 +163,7 @@ int main(int argc, char *argv[])
       help_and_quit = true;
     }else
     {
-      int count = sscanf(argv[1],"%lg",&speed_factor);
+      int count = sscanf(argv[1],"%g",&speed_factor);
       if(count != 1)
       {
         printf("Error: %s is not a valid speed factor.",

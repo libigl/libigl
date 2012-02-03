@@ -10,7 +10,7 @@ eigen=/usr/local/include/eigen3
 
 CFLAGS=-g
 inc=-I$(igl_lib) -I$(eigen)
-lib=
+lib=-L$(igl_lib) -ligl
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o $(lib)
