@@ -175,7 +175,7 @@ img.center
           using the makefile in the <code>igl_lib</code> directory:
         </p>
         <pre><code>
-cd $IGL
+cd $IGL_LIB
 make
         </code></pre>
         <p>
@@ -209,7 +209,7 @@ Undefined symbols for architecture x86_64:
           Then you must recompile the IGL static library.
         </p>
         <pre><code>
-cd $IGL
+cd $IGL_LIB
 make
         </code></pre>
         <p>
@@ -226,9 +226,24 @@ make
           If you're using make then the following command will
           reveal each missing symbol on its own line:
         </p>
-          <pre><code>
-  make 2&gt;&1 | grep "referenced from" | sed -e "s/, referenced from.*//"
-          </code></pre>
+        <pre><code>
+make 2&gt;&1 | grep "referenced from" | sed -e "s/, referenced from.*//"
+        </code></pre>
+
+        <p>
+          Alternatively you can use the <code>autoexplicit.sh</code> function
+          which (for well organized .cpp files in the igl_lib) automatically
+          create explicit instanciations from your compiler's error messages.
+          Repeat this process until convergence:
+        </p>
+        <pre><code>
+cd /to/your/project
+make 2&gt;$IGL_LIB/make.err
+cd $IGL_LIB
+cat make.err | ./autoexplicit.sh
+make clean 
+make
+        </code></pre>
 
         <h3>Benefits of static library</h3>
         <ul>
