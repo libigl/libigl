@@ -12,6 +12,7 @@
 
 #include <Eigen/Core>
 #include <string>
+#include <vector>
 
 namespace igl 
 {
@@ -35,9 +36,9 @@ namespace igl
   // Returns true on success, false on errors
   template <typename Scalar, typename Index>
   IGL_INLINE bool readOFF(
-                          const std::string off_file_name, 
-                          std::vector<std::vector<Scalar > > & V,
-                          std::vector<std::vector<Index > > & F);
+    const std::string off_file_name, 
+    std::vector<std::vector<Scalar > > & V,
+    std::vector<std::vector<Index > > & F);
   
   
   // read mesh from a ascii off file
@@ -48,9 +49,9 @@ namespace igl
   //   F  eigen int matrix #F by 3
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool readOFF(
-                          const std::string str,
-                          Eigen::PlainObjectBase<DerivedV>& V,
-                          Eigen::PlainObjectBase<DerivedF>& F);
+    const std::string str,
+    Eigen::PlainObjectBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedF>& F);
 }
 
 #ifdef IGL_HEADER_ONLY
