@@ -23,4 +23,5 @@ IGL_INLINE void igl::matrix_to_list(
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
 template void igl::matrix_to_list<Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >, int>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&);
+template void igl::matrix_to_list<Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >, double>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&);
 #endif

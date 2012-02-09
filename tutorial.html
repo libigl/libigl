@@ -115,9 +115,14 @@ img.center
       <pre><code>
 ...
 #include &lt;some_other_igl_function.h&gt;
-#define IGL_HEADER_ONLY
+#ifndef IGL_HEADER_ONLY
+#  define IGL_HEADER_ONLY
+#  define IGL_HEADER_ONLY_WAS_NOT_DEFINED
+#endif
 #include &lt;igl_function_to_inline.h&gt;
-#undef IGL_HEADER_ONLY
+#ifdef IGL_HEADER_ONLY_WAS_NOT_DEFINED
+#  undef IGL_HEADER_ONLY
+#endif
 #include &lt;yet_another_igl_function.h&gt;
 ...
       </code></pre>

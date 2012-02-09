@@ -234,9 +234,16 @@ tr.gotcha2 td
       </tr>
 
       <tr class=d0>
-        <td><pre><code>A = arrayfun(FUN, B)</code></pre></td>
+        <td><pre><code>B = arrayfun(FUN, A)</code></pre></td>
         <td><pre><code>B = A.unaryExpr(ptr_fun(FUN))</code></pre></td>
         <td>If FUN is templated, the templates must be fully resolved.</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>B = fliplr(A)<br>B = flipud(A)</code></pre></td>
+        <td><pre><code>B = A.rowwize().reverse().eval()<br>B =
+	A.colwise().reverse().eval()</code></pre></td>
+        <td>The <code>.eval()</code> is not neccessary is A != B</td>
       </tr>
 
       <!-- Insert rows for each command pair -->
