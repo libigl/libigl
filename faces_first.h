@@ -12,8 +12,8 @@ namespace igl
   //
   // Templates:
   //   MatV  matrix for vertex positions, e.g. MatrixXd
-  //   MatF  matrix for vertex positions, e.g. MatrixXi
-  //   VecI  matrix for vertex positions, e.g. VectorXi
+  //   MatF  matrix for face indices, e.g. MatrixXi
+  //   VecI  vector for index map, e.g. VectorXi
   // Input:
   //  V  # vertices by 3 vertex positions
   //  F  # faces by 3 list of face indices
@@ -30,6 +30,12 @@ namespace igl
     const MatF & F, 
     MatV & RV, 
     MatF & RF, 
+    VecI & IM);
+  // Virtual "in place" wrapper
+  template <typename MatV, typename MatF, typename VecI>
+  IGL_INLINE void faces_first(
+    MatV & V, 
+    MatF & F, 
     VecI & IM);
 }
 

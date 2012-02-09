@@ -12,7 +12,9 @@
 #define IGL_READOBJ_H
 #include "igl_inline.h"
 
-#include <Eigen/Core>
+#ifndef IGL_NO_EIGEN
+#  include <Eigen/Core>
+#endif
 #include <string>
 #include <vector>
 
@@ -45,6 +47,7 @@ namespace igl
     std::vector<std::vector<Index > > & FTC,
     std::vector<std::vector<Index > > & FN);
 
+#ifndef IGL_NO_EIGEN
   //! Read a mesh from an ascii obj file
   // Inputs:
   //   str  path to .obj file
@@ -59,13 +62,13 @@ namespace igl
   // indices. It will probably crash or give garbage on anything else.
   template <typename DerivedV, typename DerivedF, typename DerivedT>
   IGL_INLINE bool readOBJ(
-                          const std::string str,
-                          Eigen::PlainObjectBase<DerivedV>& V,
-                          Eigen::PlainObjectBase<DerivedF>& F,
-                          Eigen::PlainObjectBase<DerivedV>& CN,
-                          Eigen::PlainObjectBase<DerivedF>& FN,
-                          Eigen::PlainObjectBase<DerivedT>& TC,
-                          Eigen::PlainObjectBase<DerivedF>& FTC);
+    const std::string str,
+    Eigen::PlainObjectBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedV>& CN,
+    Eigen::PlainObjectBase<DerivedF>& FN,
+    Eigen::PlainObjectBase<DerivedT>& TC,
+    Eigen::PlainObjectBase<DerivedF>& FTC);
 
   //! Read a mesh from an ascii obj file
   // Inputs:
@@ -81,9 +84,10 @@ namespace igl
   // indices. It will probably crash or give garbage on anything else.
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool readOBJ(
-                          const std::string str,
-                          Eigen::PlainObjectBase<DerivedV>& V,
-                          Eigen::PlainObjectBase<DerivedF>& F);
+    const std::string str,
+    Eigen::PlainObjectBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedF>& F);
+#endif
 
 }
 

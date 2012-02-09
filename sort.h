@@ -11,7 +11,8 @@ namespace igl
   // function
   //
   // Templates:
-  //   T  should be a eigen matrix primitive type like int or double
+  //   DerivedX derived scalar type, e.g. MatrixXi or MatrixXd
+  //   DerivedIX derived integer type, e.g. MatrixXi
   // Inputs:
   //   X  m by n matrix whose entries are to be sorted
   //   dim  dimensional along which to sort:
@@ -22,13 +23,13 @@ namespace igl
   //   Y  m by n matrix whose entries are sorted
   //   IX  m by n matrix of indices so that if dim = 1, then in matlab notation
   //     for j = 1:n, Y(:,j) = X(I(:,j),j); end
-  template <typename T>
+  template <typename DerivedX, typename DerivedIX>
   IGL_INLINE void sort(
-    const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,
+    const Eigen::PlainObjectBase<DerivedX>& X,
     const int dim,
     const bool ascending,
-    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & Y,
-    Eigen::MatrixXi & IX);
+    Eigen::PlainObjectBase<DerivedX>& Y,
+    Eigen::PlainObjectBase<DerivedIX>& IX);
 
   // Act like matlab's [Y,I] = SORT(X) for std library vectors
   // Templates:
