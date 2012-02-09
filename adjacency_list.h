@@ -5,7 +5,7 @@
 #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-//#include <plot_vector.h>
+#include <vector>
 namespace igl 
 {
   // Constructs the graph adjacency list of a given mesh (V,F)

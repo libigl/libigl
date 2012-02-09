@@ -20,8 +20,13 @@ namespace igl
   // Output:
   // NV, NF: new mesh without unreferenced vertices
   
-  template <typename T>
-  IGL_INLINE void removeUnreferenced(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V, const Eigen::MatrixXi &F, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV, Eigen::MatrixXi &NF, Eigen::VectorXi &I);
+  template <typename T, typename S>
+  IGL_INLINE void removeUnreferenced(
+                                     const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
+                                     const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
+                                     Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV,
+                                     Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &NF,
+                                     Eigen::Matrix<S, Eigen::Dynamic, 1> &I);
   
 }
 

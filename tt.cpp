@@ -3,8 +3,8 @@
 #include "is_manifold.h"
 #include <algorithm>
 
-template<typename T> 
-IGL_INLINE void igl::tt_preprocess(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& V, const Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT)
+template<typename T, typename S> 
+IGL_INLINE void igl::tt_preprocess(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& V, const Eigen::Matrix<S,Eigen::Dynamic, Eigen::Dynamic>& F, std::vector<std::vector<int> >& TTT)
 {
   for(int f=0;f<F.rows();++f)
     for (int i=0;i<3;++i)
@@ -22,9 +22,10 @@ IGL_INLINE void igl::tt_preprocess(const Eigen::Matrix<T, Eigen::Dynamic, Eigen:
 }
 
 // Extract the face adjacencies
-IGL_INLINE void igl::tt_extractTT(const Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT, Eigen::MatrixXi& TT)
+template<typename S> 
+IGL_INLINE void igl::tt_extractTT(const Eigen::Matrix<S,Eigen::Dynamic, Eigen::Dynamic>& F, std::vector<std::vector<int> >& TTT, Eigen::Matrix<S,Eigen::Dynamic, Eigen::Dynamic>& TT)
 {
-  TT = Eigen::MatrixXi::Constant((int)(F.rows()),3,-1);
+  TT = Eigen::Matrix<S,Eigen::Dynamic, Eigen::Dynamic>::Constant((int)(F.rows()),3,-1);
   
   for(int i=1;i<(int)TTT.size();++i)
   {
@@ -39,9 +40,10 @@ IGL_INLINE void igl::tt_extractTT(const Eigen::MatrixXi& F, std::vector<std::vec
 }
 
 // Extract the face adjacencies indices (needed for fast traversal)
-IGL_INLINE void igl::tt_extractTTi(const Eigen::MatrixXi& F, std::vector<std::vector<int> >& TTT, Eigen::MatrixXi& TTi)
+template<typename S> 
+IGL_INLINE void igl::tt_extractTTi(const Eigen::Matrix<S,Eigen::Dynamic, Eigen::Dynamic>& F, std::vector<std::vector<int> >& TTT, Eigen::Matrix<S,Eigen::Dynamic, Eigen::Dynamic>& TTi)
 {
-  TTi = Eigen::MatrixXi::Constant((int)(F.rows()),3,-1);
+  TTi = Eigen::Matrix<S,Eigen::Dynamic, Eigen::Dynamic>::Constant((int)(F.rows()),3,-1);
   
   for(int i=1;i<(int)TTT.size();++i)
   {
@@ -56,8 +58,8 @@ IGL_INLINE void igl::tt_extractTTi(const Eigen::MatrixXi& F, std::vector<std::ve
 }
 
 // Compute triangle-triangle adjacency
-template<typename T> 
-IGL_INLINE void igl::tt(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& V, const Eigen::MatrixXi& F, Eigen::MatrixXi& TT)
+template<typename T, typename S> 
+IGL_INLINE void igl::tt(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& V, const Eigen::Matrix<S,Eigen::Dynamic, Eigen::Dynamic>& F, Eigen::Matrix<S,Eigen::Dynamic, Eigen::Dynamic>& TT)
 {
   assert(igl::is_manifold(V,F));
   std::vector<std::vector<int> > TTT;
@@ -67,8 +69,8 @@ IGL_INLINE void igl::tt(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& 
 }
 
 // Compute triangle-triangle adjacency with indices
-template<typename T> 
-IGL_INLINE void igl::tt(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& V, const Eigen::MatrixXi& F, Eigen::MatrixXi& TT, Eigen::MatrixXi& TTi)
+template<typename T, typename S> 
+IGL_INLINE void igl::tt(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& V, const Eigen::Matrix<S,Eigen::Dynamic, Eigen::Dynamic>& F, Eigen::Matrix<S,Eigen::Dynamic, Eigen::Dynamic>& TT, Eigen::Matrix<S,Eigen::Dynamic, Eigen::Dynamic>& TTi)
 {
   assert(igl::is_manifold(V,F));
   std::vector<std::vector<int> > TTT;

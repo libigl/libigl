@@ -22,9 +22,9 @@ namespace igl
   // 
   // Output:
   // SV: scalar field defined on vertices
-  template <typename T>
+  template <typename T, typename I>
   IGL_INLINE void moveFV(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
-              const Eigen::MatrixXi &F,
+              const Eigen::Matrix<I, Eigen::Dynamic, Eigen::Dynamic> &F,
               const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &S,
               Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &SV);
 }

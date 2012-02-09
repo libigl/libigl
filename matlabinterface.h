@@ -12,7 +12,7 @@
 
 // MAC ONLY:
 // Add to the environment variables:
-// DYLD_LIBRARY_PATH = /Applications/MATLAB_R2011a.app/bin/maci64
+// DYLD_LIBRARY_PATH =  
 // PATH = /opt/local/bin:/opt/local/sbin:/Applications/MATLAB_R2011a.app/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/texbin:/usr/X11/bin
 
 #ifndef IGL_MATLAB_INTERFACE_H
@@ -47,6 +47,9 @@ namespace igl
   // Send a matrix to MATLAB
   inline void mlsetmatrix(Engine** engine, std::string name, const Eigen::MatrixXi& M);
   
+  // Send a matrix to MATLAB
+  inline void mlsetmatrix(Engine** mlengine, std::string name, const Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic >& M);
+  
   // Receive a matrix from MATLAB
   inline void mlgetmatrix(Engine** engine, std::string name, Eigen::MatrixXd& M);
   
@@ -56,6 +59,9 @@ namespace igl
   // Receive a matrix from MATLAB
   inline void mlgetmatrix(Engine** engine, std::string name, Eigen::MatrixXi& M);
   
+  // Receive a matrix from MATLAB
+  inline void mlgetmatrix(Engine** mlengine, std::string name, Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic >& M);
+
   // Send a single scalar to MATLAB
   inline void mlsetscalar(Engine** engine, std::string name, double s);
   
@@ -121,6 +127,24 @@ inline void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::M
 
 // Send a matrix to MATLAB
 inline void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::MatrixXi& M)
+{
+  if (*mlengine == 0)
+    mlinit(mlengine);
+  
+  mxArray *A = mxCreateDoubleMatrix(M.rows(), M.cols(), mxREAL);
+  double *pM = mxGetPr(A);
+  
+  int c = 0;
+  for(int j=0; j<M.cols();++j)
+    for(int i=0; i<M.rows();++i)
+      pM[c++] = double(M(i,j))+1;
+  
+  engPutVariable(*mlengine, name.c_str(), A);
+  mxDestroyArray(A);
+}
+
+// Send a matrix to MATLAB
+inline void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic >& M)
 {
   if (*mlengine == 0)
     mlinit(mlengine);
@@ -237,6 +261,41 @@ inline void igl::mlgetmatrix(Engine** mlengine, std::string name, Eigen::MatrixX
   
   mxDestroyArray(ary);
 }
+
+// Receive a matrix from MATLAB
+inline void igl::mlgetmatrix(Engine** mlengine, std::string name, Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic >& M)
+{
+  if (*mlengine == 0)
+    mlinit(mlengine);
+  
+  unsigned long m = 0;
+  unsigned long n = 0;
+  std::vector<double> t;
+  
+  mxArray *ary = engGetVariable(*mlengine, name.c_str());
+  if (ary == NULL)
+  {
+    m = 0;
+    n = 0;
+    M = Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic >(0,0);
+  }
+  else
+  {
+    m = mxGetM(ary);
+    n = mxGetN(ary);
+    M = Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic >(m,n);
+    
+    double *pM = mxGetPr(ary);
+    
+    int c = 0;
+    for(int j=0; j<M.cols();++j)
+      for(int i=0; i<M.rows();++i)
+        M(i,j) = (unsigned int)(pM[c++])-1;
+  }
+  
+  mxDestroyArray(ary);
+}
+
 
 // Send a single scalar to MATLAB
 inline void igl::mlsetscalar(Engine** mlengine, std::string name, double s)
