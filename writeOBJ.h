@@ -23,19 +23,19 @@ namespace igl
   // Returns true on success, false on error
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool writeOBJ(
-                        const std::string str,
-                        const Eigen::PlainObjectBase<DerivedV>& V,
-                        const Eigen::PlainObjectBase<DerivedF>& F);
+    const std::string str,
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F);
   
   template <typename DerivedV, typename DerivedF, typename DerivedT>
   IGL_INLINE bool writeOBJ(
-                           const std::string str,
-                           const Eigen::PlainObjectBase<DerivedV>& V,
-                           const Eigen::PlainObjectBase<DerivedF>& F,
-                           const Eigen::PlainObjectBase<DerivedV>& CN,
-                           const Eigen::PlainObjectBase<DerivedF>& FN,
-                           const Eigen::PlainObjectBase<DerivedT>& TC,
-                           const Eigen::PlainObjectBase<DerivedF>& FTC);
+    const std::string str,
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::PlainObjectBase<DerivedV>& CN,
+    const Eigen::PlainObjectBase<DerivedF>& FN,
+    const Eigen::PlainObjectBase<DerivedT>& TC,
+    const Eigen::PlainObjectBase<DerivedF>& FTC);
 
 }
 

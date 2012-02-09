@@ -24,9 +24,9 @@ namespace igl
   //   F  eigen int matrix #F by 3
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool read(
-                       const std::string str,
-                       Eigen::PlainObjectBase<DerivedV>& V,
-                       Eigen::PlainObjectBase<DerivedF>& F);
+    const std::string str,
+    Eigen::PlainObjectBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedF>& F);
 }
 
 #ifdef IGL_HEADER_ONLY

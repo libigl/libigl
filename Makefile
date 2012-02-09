@@ -1,7 +1,7 @@
+all: lib examples
+
 .PHONY: all
 .PHONY: examples
-
-all: lib examples
 
 debug: lib
 
@@ -15,8 +15,8 @@ OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 
 # optimized default settings
 all: LFLAGS +=
-all: CFLAGS += -O3 -DNDEBUG
-debug: CFLAGS += -g
+all: CFLAGS += -O3 -DNDEBUG -Wall
+debug: CFLAGS += -g -Wall -Werror
 
 # Eigen dependency
 EIGEN3_INC=-I/usr/local/include/eigen3 -I/usr/local/include/eigen3/unsupported
@@ -34,7 +34,7 @@ libigl.a: $(OBJ_FILES)
 	rm -f $@
 	ar cqs $@ $(OBJ_FILES)
 
-obj/%.o: %.cpp
+obj/%.o: %.cpp %.h
 	g++ $(CFLAGS) -c -o $@ $< $(INC)
 
 clean:

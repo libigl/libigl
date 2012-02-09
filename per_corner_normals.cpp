@@ -43,12 +43,12 @@ IGL_INLINE void igl::per_corner_normals(
   CN.resize(m*n,3);
 
   // loop over faces
-  for(size_t i = 0;i<m;i++)
+  for(size_t i = 0;int(i)<m;i++)
   {
     // Normal of this face
     Eigen::Matrix<typename DerivedV::Scalar,3,1> fn = FN.row(i);
     // loop over corners
-    for(size_t j = 0;j<n;j++)
+    for(size_t j = 0;int(j)<n;j++)
     {
       const std::vector<IndexType> &incident_faces = VF[F(i,j)];
       // loop over faces sharing vertex of this corner

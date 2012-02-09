@@ -74,6 +74,21 @@ IGL_INLINE void igl::faces_first(
   }
 }
 
+template <typename MatV, typename MatF, typename VecI>
+IGL_INLINE void igl::faces_first(
+  MatV & V, 
+  MatF & F, 
+  VecI & IM)
+{
+  MatV RV;
+  // Copying F may not be needed, seems RF = F is safe (whereas RV = V is not)
+  MatF RF;
+  igl::faces_first(V,F,RV,RF,IM);
+  V = RV;
+  F = RF;
+}
+
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
+template void igl::faces_first<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::Matrix<double, -1, -1, 0, -1, -1>&, Eigen::Matrix<int, -1, -1, 0, -1, -1>&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&);
 #endif

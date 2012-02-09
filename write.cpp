@@ -3,12 +3,15 @@
 #include "writeOBJ.h"
 #include "writeOFF.h"
 
+#include <iostream>
+
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE bool igl::write(
-                      const std::string str,
-                      const Eigen::PlainObjectBase<DerivedV>& V,
-                      const Eigen::PlainObjectBase<DerivedF>& F)
+  const std::string str,
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F)
 {
+  using namespace std;
   const char* p;
   for (p = str.c_str(); *p != '\0'; p++)
     ;
@@ -20,6 +23,9 @@ IGL_INLINE bool igl::write(
   
   if (!strcmp(p, ".off") || !strcmp(p, ".OFF"))
     return igl::writeOFF(str,V,F);
+
+  cerr<<"^write Unsupported extension: "<<string(p)<<endl;
+  return false;
 }
 
 #ifndef IGL_HEADER_ONLY
