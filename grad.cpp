@@ -1,8 +1,8 @@
 #include "grad.h"
 
-template <typename T>
+template <typename T, typename S>
 IGL_INLINE void igl::grad(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
-  const Eigen::MatrixXi &F,
+  const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
   const Eigen::Matrix<T, Eigen::Dynamic, 1>&X,
   Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &G )
 {

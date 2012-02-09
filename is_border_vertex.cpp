@@ -3,10 +3,10 @@
 
 #include "tt.h"
 
-template<typename T>
-IGL_INLINE std::vector<bool> igl::is_border_vertex(const T& V, const Eigen::MatrixXi& F)
+template<typename T, typename S>
+IGL_INLINE std::vector<bool> igl::is_border_vertex(const T& V, const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>& F)
 {
-  Eigen::MatrixXi FF;
+  Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> FF;
   igl::tt(V,F,FF);
   std::vector<bool> ret(V.rows());
   for(int i=0; i<ret.size();++i)

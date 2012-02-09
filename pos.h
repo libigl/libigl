@@ -13,13 +13,14 @@
 namespace igl 
 {
   // Pos - Fake halfedge for fast and easy navigation on triangle meshes with VT and TT adj
+template <typename S>
   class Pos
   {
   public:
     // Init the pos by specifying Face,Edge Index and Orientation
-    Pos(const Eigen::MatrixXi* F, 
-        Eigen::MatrixXi* FF, 
-        Eigen::MatrixXi* FFi, 
+    Pos(const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>* F, 
+        Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>* FF, 
+        Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>* FFi, 
         int fi,
         int ei,
         bool reverse = false
@@ -113,9 +114,9 @@ namespace igl
     int ei;
     bool reverse;
     
-    const Eigen::MatrixXi*     F;
-    Eigen::MatrixXi*     FF;
-    Eigen::MatrixXi*     FFi;
+    const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>*     F;
+    Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>*     FF;
+    Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>*     FFi;
   };
   
 }

@@ -1,11 +1,16 @@
 #include "removeUnreferenced.h"
 
-template <typename T>
-IGL_INLINE void igl::removeUnreferenced(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V, const Eigen::MatrixXi &F, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV, Eigen::MatrixXi &NF, Eigen::VectorXi &I)
+template <typename T, typename S>
+IGL_INLINE void igl::removeUnreferenced(
+                                   const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
+                                   const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
+                                   Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV,
+                                   Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &NF,
+                                   Eigen::Matrix<S, Eigen::Dynamic, 1> &I)
 {
 
   // Mark referenced vertices
-  Eigen::MatrixXi mark = Eigen::MatrixXi::Zero(V.rows(),1);
+  Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> mark = Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>::Zero(V.rows(),1);
   
   for(int i=0; i<F.rows(); ++i)
   {
@@ -20,8 +25,8 @@ IGL_INLINE void igl::removeUnreferenced(const Eigen::Matrix<T, Eigen::Dynamic, E
   int newsize = mark.sum();
   
   NV = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>(newsize,V.cols());
-  NF = Eigen::MatrixXi(F.rows(),F.cols());
-  I  = Eigen::MatrixXi(V.rows(),1);
+  NF = Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>(F.rows(),F.cols());
+  I  = Eigen::Matrix<S, Eigen::Dynamic, 1>(V.rows(),1);
   
   // Do a pass on the marked vector and remove the unreferenced vertices
   int count = 0;

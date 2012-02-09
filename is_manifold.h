@@ -18,8 +18,9 @@ namespace igl
   //
   // Known Bugs:
   //  Does not check for non-manifold vertices
-  template<typename T>
-  IGL_INLINE bool is_manifold(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& V, const Eigen::MatrixXi& F);
+  template<typename T, typename S>
+  IGL_INLINE bool is_manifold(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& V,
+                              const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>& F);
 }
 
 #ifdef IGL_HEADER_ONLY

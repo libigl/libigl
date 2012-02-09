@@ -33,9 +33,9 @@ namespace igl {
   // i, and A is the area of triangle (i,j,k). ^R90 represent a rotation of 
   // 90 degrees
   //
-  template <typename T>
+  template <typename T, typename S>
   IGL_INLINE void grad(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
-    const Eigen::MatrixXi &F,
+    const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
     const Eigen::Matrix<T, Eigen::Dynamic, 1>&X,
     Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &G );
 }

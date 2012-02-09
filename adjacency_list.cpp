@@ -1,6 +1,7 @@
 #include "adjacency_list.h"
 
 #include "verbose.h"
+#include <algorithm>
 
 template <typename T, typename M>
 IGL_INLINE void igl::adjacency_list(
