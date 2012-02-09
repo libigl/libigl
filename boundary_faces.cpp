@@ -1,10 +1,12 @@
 #include "boundary_faces.h"
+#include "face_occurences.h"
 
 // IGL includes
 #include "sort.h"
 
 // STL includes
 #include <map>
+#include <iostream>
 
 template <typename IntegerT, typename IntegerF>
 IGL_INLINE void igl::boundary_faces(
@@ -12,7 +14,6 @@ IGL_INLINE void igl::boundary_faces(
   std::vector<std::vector<IntegerF> > & F)
 {
   using namespace std;
-  using namespace Eigen;
   using namespace igl;
 
   // Get a list of all faces
@@ -22,8 +23,8 @@ IGL_INLINE void igl::boundary_faces(
   {
     assert(T[i].size() == 4);
     // get face in correct order
-    allF[i*4+0][0] = T[i][0];
-    allF[i*4+0][1] = T[i][1];
+    allF[i*4+0][0] = T[i][1];
+    allF[i*4+0][1] = T[i][3];
     allF[i*4+0][2] = T[i][2];
     // get face in correct order
     allF[i*4+1][0] = T[i][0];
@@ -34,49 +35,28 @@ IGL_INLINE void igl::boundary_faces(
     allF[i*4+2][1] = T[i][3];
     allF[i*4+2][2] = T[i][1];
     // get face in correct order
-    allF[i*4+3][0] = T[i][1];
-    allF[i*4+3][1] = T[i][3];
+    allF[i*4+3][0] = T[i][0];
+    allF[i*4+3][1] = T[i][1];
     allF[i*4+3][2] = T[i][2];
   }
-  // Get a list of sorted faces
-  vector<vector<IntegerF> > sortedF = allF;
-  for(int i = 0; i < (int)allF.size();i++)
+  // Counts
+  vector<int> C;
+  face_occurences(allF,C);
+
+  int twos = (int) count(C.begin(),C.end(),2);
+  // Resize output to fit number of ones
+  F.resize(allF.size() - twos);
+  int k = 0;
+  for(int i = 0;i< (int)allF.size();i++)
   {
-    sort(sortedF[i].begin(),sortedF[i].end());
-  }
-  // Count how many times each sorted face occurs
-  map<vector<IntegerF>,int> counts;
-  int twos = 0;
-  for(int i = 0; i < (int)sortedF.size();i++)
-  {
-    if(counts.find(sortedF[i]) == counts.end())
+    if(C[i] == 1)
     {
-      // initialize to count of 1
-      counts[sortedF[i]] = 1;
-    }else
-    {
-      // increment count
-      counts[sortedF[i]]++;
-      assert(counts[sortedF[i]] == 2);
-      // increment number of twos
-      twos++;
+      assert(k<(int)F.size());
+      F[k] = allF[i];
+      k++;
     }
   }
 
-  // Resize output to fit number of ones
-  F.resize(allF.size() - twos*2);
-  int j = 0;
-  for(int i = 0;i< (int)allF.size();i++)
-  {
-    // sorted face should definitely be in counts map
-    assert(counts.find(sortedF[i]) != counts.end());
-    if(counts[sortedF[i]] == 1)
-    {
-      assert(j<(int)F.size());
-      F[j] = allF[i];
-      j++;
-    }
-  }
 }
 
 #ifndef IGL_NO_EIGEN

@@ -1,5 +1,5 @@
-#ifndef IGL_BOUNDARY_FACES_H
-#define IGL_BOUNDARY_FACES_H
+#ifndef IGL_ON_BOUNDARY_H
+#define IGL_ON_BOUNDARY_H
 #include "igl_inline.h"
 
 #ifndef IGL_NO_EIGEN
@@ -18,28 +18,32 @@ namespace igl
   // Input:
   //  T  tetrahedron index list, m by 4, where m is the number of tetrahedra
   // Output:
-  //  F  list of boundary faces, n by 3, where n is the number of boundary faces
+  //  I  m long list of bools whether tet is on boundary
+  //  C  m by 4 list of bools whether opposite face is on boundary
   //
-  //
-  template <typename IntegerT, typename IntegerF>
-  IGL_INLINE void boundary_faces(
+  template <typename IntegerT>
+  IGL_INLINE void on_boundary(
     const std::vector<std::vector<IntegerT> > & T,
-    std::vector<std::vector<IntegerF> > & F);
+    std::vector<bool> & I,
+    std::vector<std::vector<bool> > & C);
 
 #ifndef IGL_NO_EIGEN
   // Templates:
   //   DerivedT  integer-value: i.e. from MatrixXi
-  //   DerivedF  integer-value: i.e. from MatrixXi
-  template <typename DerivedT, typename DerivedF>
-  IGL_INLINE void boundary_faces(
+  //   DerivedI  bool-value: i.e. from MatrixXi
+  //   DerivedC  bool-value: i.e. from MatrixXi
+  template <typename DerivedT, typename DerivedI, typename DerivedC>
+  IGL_INLINE void on_boundary(
     const Eigen::PlainObjectBase<DerivedT>& T,
-    Eigen::PlainObjectBase<DerivedF>& F);
+    Eigen::PlainObjectBase<DerivedI>& I,
+    Eigen::PlainObjectBase<DerivedC>& C);
 #endif
 }
 
 #ifdef IGL_HEADER_ONLY
-#  include "boundary_faces.cpp"
+#  include "on_boundary.cpp"
 #endif
 
 #endif
+
 

@@ -1,7 +1,8 @@
 #include "cotangent.h"
+#include "edge_lengths.h"
 
 #include "verbose.h"
-#include <Eigen/Dense>
+
 
 template <class MatV, class MatF, class MatC>
 IGL_INLINE void igl::cotangent(const MatV & V, const MatF & F, MatC & C)
@@ -17,6 +18,8 @@ IGL_INLINE void igl::cotangent(const MatV & V, const MatF & F, MatC & C)
   if(simplex_size == 3)
   {
     // Triangles
+    //Matrix<typename MatC::Scalar,Dynamic,3> l;
+    //edge_lengths(V,F,l);
     // edge lengths numbered same as opposite vertices
     Matrix<typename MatC::Scalar,Dynamic,3> l(m,3);
     // loop over faces
