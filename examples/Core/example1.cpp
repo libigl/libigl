@@ -8,11 +8,11 @@
 
 #include <iostream>
 #include <string>
-#include <read.h>
-#include <write.h>
-#include <cotmatrix.h>
-#include <tt.h>
-#include <edgetopology.h>
+#include <igl/read.h>
+#include <igl/write.h>
+#include <igl/cotmatrix.h>
+#include <igl/tt.h>
+#include <igl/edgetopology.h>
 
 using namespace std;
 

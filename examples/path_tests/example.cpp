@@ -1,8 +1,8 @@
-#include "file_exists.h"
-#include "is_dir.h"
-#include "is_file.h"
-#include "is_readable.h"
-#include "is_writable.h"
+#include <igl/file_exists.h>
+#include <igl/is_dir.h>
+#include <igl/is_file.h>
+#include <igl/is_readable.h>
+#include <igl/is_writable.h>
 using namespace igl;
 #include <cstdio>
 

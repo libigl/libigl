@@ -13,7 +13,7 @@
  *
  */
 
-#include "stdin_to_temp.h"
+#include <igl/stdin_to_temp.h>
 using namespace igl;
 
 #include <cstdio>

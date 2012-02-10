@@ -1,4 +1,4 @@
-#include "get_seconds.h"
+#include <igl/get_seconds.h>
 using namespace igl;
 #include <cstdio>
 #include <cmath>

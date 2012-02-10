@@ -5,13 +5,16 @@ all: lib examples
 
 debug: lib
 
-lib: obj libigl.a
+lib: obj lib/libigl.a
 
 examples:
 	make -C examples
 
-CPP_FILES=$(wildcard ./*.cpp)
+CPP_FILES=$(wildcard include/igl/*.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
+
+# include igl headers
+INC+=-Iinclude/
 
 # optimized default settings
 all: LFLAGS +=
@@ -35,14 +38,14 @@ INC+=$(ANTTWEAKBAR_INC)
 obj: 
 	mkdir -p obj
 
-libigl.a: $(OBJ_FILES)
+lib/libigl.a: $(OBJ_FILES)
 	rm -f $@
 	ar cqs $@ $(OBJ_FILES)
 
-obj/%.o: %.cpp %.h
+obj/%.o: include/igl/%.cpp include/igl/%.h
 	g++ $(CFLAGS) -c -o $@ $< $(INC)
 
 clean:
 	rm -f obj/*.o
-	rm -f libigl.a
+	rm -f lib/libigl.a
 	make -C examples clean

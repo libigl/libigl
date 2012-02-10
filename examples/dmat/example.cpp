@@ -1,6 +1,6 @@
 #include <Eigen/Core>
-#include "readDMAT.h"
-#include "writeDMAT.h"
+#include <igl/readDMAT.h>
+#include <igl/writeDMAT.h>
 using namespace igl;
 #include <cstdio>
 

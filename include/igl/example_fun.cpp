@@ -1,4 +1,4 @@
-#include "example_fun.h"
+#include "igl/example_fun.h"
 #include <iostream>
 
 template <typename Printable>

@@ -1,4 +1,4 @@
-#include "example_fun.h"
+#include <igl/example_fun.h>
 using namespace igl;
 using namespace std;
 

@@ -5,9 +5,9 @@ all: example_static example_header_only
 igl_lib=../../
 
 CFLAGS=-g
-inc=-I$(igl_lib)
+inc=-I$(igl_lib)/include
 
-STATIC_LIB=-ligl -L../../
+STATIC_LIB=-ligl -L../../lib
 HEADER_ONLY_DEF=-DIGL_HEADER_ONLY
 
 example_static: example_static.o

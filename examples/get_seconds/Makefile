@@ -8,8 +8,8 @@ all: example
 igl_lib=../../
 
 CFLAGS=-g -Wall
-inc=-I$(igl_lib)
-lib=-L$(igl_lib) -ligl
+inc=-I$(igl_lib)/include
+lib=-L$(igl_lib)/lib -ligl
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o $(lib)

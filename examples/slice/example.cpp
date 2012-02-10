@@ -8,9 +8,9 @@ using namespace Eigen;
 #include <iostream>
 using namespace std;
 
-#include "slice.h"
-#include "speye.h"
-#include "print_ijv.h"
+#include <igl/slice.h>
+#include <igl/speye.h>
+#include <igl/print_ijv.h>
 using namespace igl;
 
 int main(int argc, char * argv[])
