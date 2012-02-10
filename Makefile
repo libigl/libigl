@@ -23,8 +23,8 @@ EIGEN3_INC=-I/usr/local/include/eigen3 -I/usr/local/include/eigen3/unsupported
 INC+=$(EIGEN3_INC)
 
 # AntTweakBar dependency
-MY_INC=-I/opt/local/include -I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
-INC+=$(MY_INC)
+ANTTWEAKBAR_INC=-I/opt/local/include
+INC+=$(ANTTWEAKBAR_INC)
 
 
 ## OpenGL dependency
