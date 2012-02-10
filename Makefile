@@ -19,7 +19,7 @@ all: CFLAGS += -O3 -DNDEBUG -Wall
 debug: CFLAGS += -g -Wall -Werror
 
 # Eigen dependency
-EIGEN3_INC=-I/usr/local/include/eigen3 -I/usr/local/include/eigen3/unsupported
+EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 INC+=$(EIGEN3_INC)
 
 # AntTweakBar dependency
