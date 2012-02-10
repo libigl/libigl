@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <iostream>
 using namespace std;
-#include "transpose_blocks.h"
+#include <igl/transpose_blocks.h>
 using namespace igl;
 
 int main(int argc,char * argv[])

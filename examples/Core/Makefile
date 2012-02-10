@@ -5,8 +5,8 @@ igl_lib=../../
 eigen_lib=/opt/local/include/eigen3/
 
 CFLAGS=-g
-inc=-I$(igl_lib) -I$(eigen_lib)
-lib=-L$(igl_lib) -ligl
+inc=-I$(igl_lib)/include -I$(eigen_lib)
+lib=-L$(igl_lib)/lib -ligl
 
 matlab_inc=-I$(MATLAB)/extern/include 
 matlab_lib=-L$(MATLAB)/bin/maci64/ -leng -lmx

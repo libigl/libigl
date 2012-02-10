@@ -1,6 +1,6 @@
 #include <cstdio>
 
-#include "get_seconds.h"
+#include <igl/get_seconds.h>
 using namespace igl;
 #include <cmath>
 using namespace std;

@@ -31,7 +31,7 @@
 //  ---------------------------------------------------------------------------
 
 
-#include "ReAntTweakBar.h"
+#include <igl/ReAntTweakBar.h>
 using namespace igl;
 
 #include <stdlib.h>

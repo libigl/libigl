@@ -1,7 +1,7 @@
 // g++ -o main main.cpp -I. -I/usr/local/include/eigen3
 #include <Eigen/Core>
 #include <iostream>
-#include "cat.h"
+#include <igl/cat.h>
 
 using namespace std;
 using namespace igl;

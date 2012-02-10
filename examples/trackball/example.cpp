@@ -7,10 +7,10 @@
 */
 
 // IGL library
-#include "quat_to_mat.h"
-#include "quat_mult.h"
-#include "axis_angle_to_quat.h"
-#include "trackball.h"
+#include <igl/quat_to_mat.h>
+#include <igl/quat_mult.h>
+#include <igl/axis_angle_to_quat.h>
+#include <igl/trackball.h>
 using namespace igl;
 
 #include <stdlib.h>

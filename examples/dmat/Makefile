@@ -9,8 +9,8 @@ igl_lib=../../
 eigen=/usr/local/include/eigen3
 
 CFLAGS=-g
-inc=-I$(igl_lib) -I$(eigen)
-lib=-L$(igl_lib) -ligl
+inc=-I$(igl_lib)/include -I$(eigen)
+lib=-L$(igl_lib)/lib -ligl
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o $(lib)

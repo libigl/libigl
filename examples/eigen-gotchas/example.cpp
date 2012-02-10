@@ -11,7 +11,7 @@ using namespace Eigen;
 #include <iostream>
 using namespace std;
 
-#include "print_ijv.h"
+#include <igl/print_ijv.h>
 using namespace igl;
 
 // Eigen fails to notice at compile time that the inneriterator used to loop

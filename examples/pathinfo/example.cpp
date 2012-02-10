@@ -1,5 +1,5 @@
 #define VERBOSE
-#include "pathinfo.h"
+#include <igl/pathinfo.h>
 using namespace igl;
 #include <string>
 #include <cstdio>

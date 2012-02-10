@@ -2,7 +2,7 @@
 #include <Eigen/Core>
 #include <iostream>
 using namespace std;
-#include "sort.h"
+#include <igl/sort.h>
 using namespace igl;
 
 

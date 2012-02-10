@@ -1,4 +1,4 @@
-#include "file_contents_as_string.h"
+#include <igl/file_contents_as_string.h>
 using namespace igl;
 #include <cstdio>
 #include <string>

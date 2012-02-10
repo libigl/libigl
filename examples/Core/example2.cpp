@@ -12,9 +12,9 @@
 
 #include <iostream>
 #include <string>
-#include <read.h>
+#include <igl/read.h>
 
-#include <matlabinterface.h>
+#include <igl/matlabinterface.h>
 
 using namespace std;
 

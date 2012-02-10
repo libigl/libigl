@@ -8,8 +8,8 @@ all: example
 igl_lib=../../
 
 CFLAGS=-g
-inc=-I$(igl_lib)
-lib=-framework OpenGL -framework GLUT -L$(igl_lib) -ligl
+inc=-I$(igl_lib)/include
+lib=-framework OpenGL -framework GLUT -L$(igl_lib)/lib -ligl
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o $(lib)

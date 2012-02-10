@@ -55,7 +55,6 @@ IGL_INLINE bool igl::list_to_matrix(const std::vector<T > & V,Mat & M)
     fprintf(stderr,"Error: list_to_matrix() list is empty()\n");
     return false;
   }
-  assert(n != -1);
   // Resize output
   M.resize(m,1);
 
