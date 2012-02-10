@@ -2,6 +2,7 @@
 
 // IGL includes
 #include "sort.h"
+#include "face_occurences.h"
 
 // STL includes
 #include <map>
@@ -50,7 +51,7 @@ IGL_INLINE void igl::on_boundary(
       C[i][j] = FC[i*4+j]==1;
       assert(C[i][j] == 2 || C[i][j] == 1);
       // if any are on boundary set to true
-      I[i] |= C[i][j];
+      I[i] = I[i] || C[i][j];
     }
   }
 
@@ -74,8 +75,8 @@ IGL_INLINE void igl::on_boundary(
   // Cop out: use vector of vectors version
   vector<vector<typename Eigen::PlainObjectBase<DerivedT>::Scalar> > vT;
   matrix_to_list(T,vT);
-  vector<vector<typename Eigen::PlainObjectBase<DerivedI>::Scalar> > vI;
-  vector<vector<typename Eigen::PlainObjectBase<DerivedC>::Scalar> > vC;
+  vector<bool> vI;
+  vector<vector<bool> > vC;
   on_boundary(vT,vI,vC);
   list_to_matrix(vI,I);
   list_to_matrix(vC,C);
@@ -85,6 +86,7 @@ IGL_INLINE void igl::on_boundary(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
+template void igl::on_boundary<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif
 
 

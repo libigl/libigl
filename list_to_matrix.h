@@ -17,6 +17,9 @@ namespace igl
   // Returns true on success, false on errors
   template <typename T, class Mat>
   IGL_INLINE bool list_to_matrix(const std::vector<std::vector<T > > & V,Mat & M);
+  // Vector wrapper
+  template <typename T, class Mat>
+  IGL_INLINE bool list_to_matrix(const std::vector<T > & V,Mat & M);
 }
 
 #ifdef IGL_HEADER_ONLY

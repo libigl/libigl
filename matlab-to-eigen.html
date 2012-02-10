@@ -218,13 +218,15 @@ tr.gotcha2 td
       <tr class=d1>
         <td><pre><code>B = A(I,J)<br>B = A(I,:)</code></pre></td>
         <td><pre><code>igl::slice(A,I,J,B)<br>B = igl::slice(A,I,igl::colon(0,A.cols()-1))</code></pre></td>
-        <td></td>
+        <td>This is only for the case when I and J are lists of indices and
+        not vectors of logicals.</td>
       </tr>
 
       <tr class=d0>
         <td><pre><code>B(I,J) = A<br>B(I,:) = A</code></pre></td>
         <td><pre><code>igl::slice_into(A,I,J,B)<br>B = igl::slice_into(A,I,igl::colon(0,B.cols()-1))</code></pre></td>
-        <td></td>
+        <td>This is only for the case when I and J are lists of indices and
+        not vectors of logicals.</td>
       </tr>
 
       <tr class=d1>
