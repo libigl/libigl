@@ -6,7 +6,7 @@ all: example
 .PHONY: example
 
 igl_lib=../../
-eigen=-I/usr/local/include/eigen3
+eigen=-I/opt/local/include/eigen3
 
 CFLAGS=-g
 inc=-I$(igl_lib)/include $(eigen)

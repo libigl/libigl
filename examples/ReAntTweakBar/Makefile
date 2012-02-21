@@ -7,8 +7,8 @@ all: example
 
 igl_lib=../../
 
-lib=-lAntTweakBar -framework AppKit -L$(igl_lib)/lib -ligl
-inc=-I$(igl_lib)/include
+lib=-lAntTweakBar -framework AppKit -L$(igl_lib)/lib -ligl -L/opt/local/lib
+inc=-I$(igl_lib)/include -I/opt/local/include
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o -framework OpenGL -framework GLUT $(lib)
