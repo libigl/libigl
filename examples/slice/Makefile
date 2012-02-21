@@ -6,7 +6,7 @@ all: example
 .PHONY: example
 
 igl_lib=../../
-eigen=-I/usr/local/include/eigen3 -I/usr/local/include/eigen3/unsupported
+eigen=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 
 #CFLAGS=-g
 CFLAGS=-Os -DNDEBUG

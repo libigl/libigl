@@ -1,5 +1,5 @@
 
-all: example1 example2
+all: example1
 
 igl_lib=../../
 eigen_lib=/opt/local/include/eigen3/
