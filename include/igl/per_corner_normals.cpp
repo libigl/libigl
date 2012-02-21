@@ -23,7 +23,7 @@ IGL_INLINE void igl::per_corner_normals(
 
 template <typename DerivedV, typename DerivedF, typename IndexType>
 IGL_INLINE void igl::per_corner_normals(
-                                   const Eigen::PlainObjectBase<DerivedV>& V,
+                                   const Eigen::PlainObjectBase<DerivedV>& /*V*/,
                                    const Eigen::PlainObjectBase<DerivedF>& F,
                                    const Eigen::PlainObjectBase<DerivedV>& FN,
                                    const std::vector<std::vector<IndexType> >& VF,

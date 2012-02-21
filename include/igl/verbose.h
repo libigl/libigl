@@ -12,7 +12,7 @@
 namespace igl
 {
   IGL_INLINE int verbose(const char * msg,...);
-};
+}
 
 #ifdef IGL_HEADER_ONLY
 #  include "verbose.cpp"

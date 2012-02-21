@@ -45,7 +45,7 @@ IGL_INLINE bool igl::writeOBJ(
     return false;                                              
   }
   // Loop over V
-  for(size_t i = 0;i<V.rows();i++)
+  for(unsigned i = 0;i<V.rows();i++)
   {
     fprintf(obj_file,"v %0.15g %0.15g %0.15g\n",
             V(i,0),
@@ -57,7 +57,7 @@ IGL_INLINE bool igl::writeOBJ(
   
   if(write_N)
   {
-    for(size_t i = 0;i<CN.rows();i++)
+    for(unsigned i = 0;i<CN.rows();i++)
     {
       fprintf(obj_file,"v %0.15g %0.15g %0.15g\n",
               CN(i,0),
@@ -72,7 +72,7 @@ IGL_INLINE bool igl::writeOBJ(
   
   if(write_texture_coords)
   {
-    for(size_t i = 0;i<TC.rows();i++)
+    for(unsigned i = 0;i<TC.rows();i++)
     {
       fprintf(obj_file, "vt %0.15g %0.15g\n",TC(i,0),1-TC(i,1));
     }
@@ -80,10 +80,10 @@ IGL_INLINE bool igl::writeOBJ(
   }
   
   // loop over F
-  for(size_t i = 0;i<F.rows();++i)
+  for(unsigned i = 0;i<F.rows();++i)
   {
     fprintf(obj_file,"f");
-    for(size_t j = 0; j<F.cols();++j)
+    for(unsigned j = 0; j<F.cols();++j)
     {
       // OBJ is 1-indexed
       fprintf(obj_file," %u",F(i,j)+1);
