@@ -1,23 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Timer.h
-// =======
 // High Resolution Timer.
-// This timer is able to measure the elapsed time with 1 micro-second accuracy
-// in both Windows, Linux and Unix system 
 //
-//  AUTHOR: Song Ho Ahn (song.ahn@gmail.com)
-// CREATED: 2003-01-13
-// UPDATED: 2006-01-13
-//
-// Copyright (c) 2003 Song Ho Ahn
-//////////////////////////////////////////////////////////////////////////////
+// Resolution on Mac (clock tick)
+// Resolution on Linux (1 us not tested)
+// Resolution on Windows (clock tick not tested)
 
 #ifndef IGL_TIMER_H
 #define IGL_TIMER_H
 
 #ifdef WIN32   // Windows system specific
 #include <windows.h>
-#else          // Unix based system specific
+#elif __APPLE__ // Unix based system specific
+#include <mach/mach_time.h> // for mach_absolute_time
+#else
 #include <sys/time.h>
 #endif
 
@@ -32,24 +26,49 @@ namespace igl
       QueryPerformanceFrequency(&frequency);
       startCount.QuadPart = 0;
       endCount.QuadPart = 0;
+#elif __APPLE__
+      startCount = 0;
+      endCount = 0;
 #else
       startCount.tv_sec = startCount.tv_usec = 0;
       endCount.tv_sec = endCount.tv_usec = 0;
 #endif
       
       stopped = 0;
-      startTimeInMicroSec = 0;
-      endTimeInMicroSec = 0;
     }
     ~Timer()                                   // default destructor
     {
       
     }
+    
+#ifdef __APPLE__
+    //Raw mach_absolute_times going in, difference in seconds out
+    double subtractTimes( uint64_t endTime, uint64_t startTime )
+    {
+      uint64_t difference = endTime - startTime;
+      static double conversion = 0.0;
+      
+      if( conversion == 0.0 )
+      {
+        mach_timebase_info_data_t info;
+        kern_return_t err = mach_timebase_info( &info );
+        
+        //Convert the timebase into seconds
+        if( err == 0  )
+          conversion = 1e-9 * (double) info.numer / (double) info.denom;
+      }
+      
+      return conversion * (double) difference;
+    }
+#endif
+    
     void   start()                             // start timer
     {
       stopped = 0; // reset stop flag
 #ifdef WIN32
       QueryPerformanceCounter(&startCount);
+#elif __APPLE__
+      startCount = mach_absolute_time();
 #else
       gettimeofday(&startCount, NULL);
 #endif
@@ -62,6 +81,8 @@ namespace igl
       
 #ifdef WIN32
       QueryPerformanceCounter(&endCount);
+#elif __APPLE__
+      endCount = mach_absolute_time();
 #else
       gettimeofday(&endCount, NULL);
 #endif
@@ -82,12 +103,20 @@ namespace igl
     }
     double getElapsedTimeInMicroSec()          // get elapsed time in micro-second
     {
+      double startTimeInMicroSec = 0;
+      double endTimeInMicroSec = 0;
+
 #ifdef WIN32
       if(!stopped)
         QueryPerformanceCounter(&endCount);
       
       startTimeInMicroSec = startCount.QuadPart * (1000000.0 / frequency.QuadPart);
       endTimeInMicroSec = endCount.QuadPart * (1000000.0 / frequency.QuadPart);
+#elif __APPLE__
+      if (!stopped)
+        endCount = mach_absolute_time();
+      
+      return subtractTimes(endCount,startCount)/1e-6;
 #else
       if(!stopped)
         gettimeofday(&endCount, NULL);
@@ -104,13 +133,14 @@ namespace igl
     
     
   private:
-    double startTimeInMicroSec;                 // starting time in micro-second
-    double endTimeInMicroSec;                   // ending time in micro-second
     int    stopped;                             // stop flag 
 #ifdef WIN32
     LARGE_INTEGER frequency;                    // ticks per second
     LARGE_INTEGER startCount;                   //
     LARGE_INTEGER endCount;                     //
+#elif __APPLE__
+    uint64_t startCount;                         //
+    uint64_t endCount;                           //
 #else
     timeval startCount;                         //
     timeval endCount;                           //
