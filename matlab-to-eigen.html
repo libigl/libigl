@@ -1,53 +1,6 @@
 <html> <head>
     <title>MATLAB to Eigen</title>
-    <style type="text/css">
-table
-{
-  border-spacing: 0px;
-}
-tr.header th
-{
-  border-bottom: 1px solid; 
-  background-color: #ffb;
-  padding-left: 10px;
-  padding-right: 20px;
-}
-tr.d0 td 
-{
-  background-color: #EEE; 
-  color: black;
-  padding-left: 10px;
-  padding-right: 20px;
-  min-width: 200px;
-}
-tr.d1 td
-{
-  background-color: #bcf; 
-  color: black;
-  padding-left: 10px;
-  padding-right: 20px;
-  min-width: 200px;
-}
-
-tr.gotcha1 td
-{
-  background-color: #fcb;
-  color: black;
-  padding-left: 10px;
-  padding-right: 20px;
-  min-width: 200px;
-}
-
-tr.gotcha2 td
-{
-  background-color: #fed;
-  color: black;
-  padding-left: 10px;
-  padding-right: 20px;
-  min-width: 200px;
-}
-
-    </style>
+    <link href="./style.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <table>
@@ -245,7 +198,17 @@ tr.gotcha2 td
         <td><pre><code>B = fliplr(A)<br>B = flipud(A)</code></pre></td>
         <td><pre><code>B = A.rowwize().reverse().eval()<br>B =
 	A.colwise().reverse().eval()</code></pre></td>
-        <td>The <code>.eval()</code> is not neccessary is A != B</td>
+        <td>The <code>.eval()</code> is not necessary if A != B</td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>B = IM(A)</code></pre></td>
+        <td><pre><code>B = A.unaryExpr(bind1st(mem_fun( 
+  static_cast&lt;VectorXi::Scalar&amp;(VectorXi::*)(VectorXi::Index)&gt;
+  (&amp;VectorXi::operator())), &amp;IM)).eval();
+  </code></pre></td>
+        <td>Where IM is an "index map" column vector and A is an arbitrary
+        matrix. The <code>.eval()</code> is not necessary if A != B</td>
       </tr>
 
       <!-- Insert rows for each command pair -->
@@ -263,5 +226,7 @@ tr.gotcha2 td
     </table>
     <a href="http://eigen.tuxfamily.org/dox/AsciiQuickReference.txt">Eigen's
     "ASCII Quick Reference" with MATLAB translations</a>
+    <br>
+    <a href="./tutorial.html">IGL Lib Tutorial</a>
   </body>
 </html>

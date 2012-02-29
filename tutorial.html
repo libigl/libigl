@@ -1,71 +1,7 @@
 <html>
   <head>
     <title>igl_lib tutorial</title>
-    <style>
-.note:before
-{
-  font-style: normal;
-  content: "Note: ";
-}
-.note
-{
-  background-color: #ddd;
-  border: 1px solid #bbb;
-  margin-top: 2px;
-  margin-bottom: 2px;
-  font-style: italic;
-  padding-left: 4px;
-  padding-right: 4px;
-  padding-top: 2px;
-  padding-bottom: 2px;
-}
-span.highlight
-{
-  background-color: #4F5;
-}
-a 
-{
-  text-decoration:none;
-  border:none;
-  outline:none;
-  color:#0645AD;
-}
-a:hover 
-{
-  color:#0645AD;
-  text-decoration: underline;
-}
-a:visited
-{
-  color:#0b0080;
-}
-span.todo:before
-{
-  font-style: normal;
-  content: "TODO: ";
-}
-span.todo
-{
-  color: #F54;
-  font-style: italic;
-}
-pre
-{
-  background-color: #c3e0f0;
-  overflow: auto;
-  padding-left: 8px;
-  padding-right: 8px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  border: 1px solid #999;
-}
-img.center
-{
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-    </style>
+    <link href="./style.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <img src=http://igl.ethz.ch/includes/images/logo-igl.gif alt="igl logo"
@@ -114,16 +50,16 @@ img.center
       </p>
       <pre><code>
 ...
-#include &lt;some_other_igl_function.h&gt;
+#include &lt;igl/some_other_igl_function.h&gt;
 #ifndef IGL_HEADER_ONLY
 #  define IGL_HEADER_ONLY
 #  define IGL_HEADER_ONLY_WAS_NOT_DEFINED
 #endif
-#include &lt;igl_function_to_inline.h&gt;
+#include &lt;igl/igl_function_to_inline.h&gt;
 #ifdef IGL_HEADER_ONLY_WAS_NOT_DEFINED
 #  undef IGL_HEADER_ONLY
 #endif
-#include &lt;yet_another_igl_function.h&gt;
+#include &lt;igl/yet_another_igl_function.h&gt;
 ...
       </code></pre>
       <span class=todo>example <code>examples/XXX</code> also highlights this feature</span>
