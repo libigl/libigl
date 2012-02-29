@@ -89,4 +89,5 @@ IGL_INLINE void igl::upsample( MatV & V,MatF & F)
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
+template void igl::upsample<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::Matrix<double, -1, -1, 0, -1, -1>&, Eigen::Matrix<int, -1, -1, 0, -1, -1>&);
 #endif

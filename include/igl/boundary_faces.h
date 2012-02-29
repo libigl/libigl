@@ -13,8 +13,8 @@ namespace igl
   // BOUNDARY_FACES Determine boundary faces of tetrahedra stored in T
   //
   // Templates:
-  //   IntegerT  integer-value: i.e. int
-  //   IntegerF  integer-value: i.e. int
+  //   IntegerT  integer-value: e.g. int
+  //   IntegerF  integer-value: e.g. int
   // Input:
   //  T  tetrahedron index list, m by 4, where m is the number of tetrahedra
   // Output:

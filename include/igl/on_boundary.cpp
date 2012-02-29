@@ -48,8 +48,8 @@ IGL_INLINE void igl::on_boundary(
   {
     for(int j = 0;j<4;j++)
     {
+      assert(FC[i*4+j] == 2 || FC[i*4+j] == 1);
       C[i][j] = FC[i*4+j]==1;
-      assert(C[i][j] == 2 || C[i][j] == 1);
       // if any are on boundary set to true
       I[i] = I[i] || C[i][j];
     }

@@ -16,9 +16,10 @@ OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 # include igl headers
 INC+=-Iinclude/
 
+CFLAGS += -Wall -arch i386 -arch x86_64
 # optimized default settings
 all: LFLAGS +=
-all: CFLAGS += -O3 -DNDEBUG -Wall
+all: CFLAGS += -O3 -DNDEBUG -j 
 debug: CFLAGS += -g -Wall -Werror
 
 # Eigen dependency
