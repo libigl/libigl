@@ -177,7 +177,7 @@ inline void igl::mvc(const Eigen::MatrixXd &V, const Eigen::MatrixXd &C, Eigen::
   
   // handle degenerate cases
   // snap vertices close to corners
-  for (int i = 0; i<on_corner.size(); ++i)
+  for (unsigned i = 0; i<on_corner.size(); ++i)
   {
     int vi = on_corner[i].first;
     int ci = on_corner[i].second;
@@ -186,7 +186,7 @@ inline void igl::mvc(const Eigen::MatrixXd &V, const Eigen::MatrixXd &C, Eigen::
   }
   
   // snap vertices close to segments
-  for (int i = 0; i<on_segment.size(); ++i)
+  for (unsigned i = 0; i<on_segment.size(); ++i)
   {
     int vi = on_segment[i].first;
     int ci = on_segment[i].second;

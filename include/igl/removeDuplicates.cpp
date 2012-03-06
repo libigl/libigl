@@ -1,27 +1,35 @@
 #include "removeDuplicates.h"
 #include <vector>
 
-template <typename T, typename S>
+//template <typename T, typename S>
+//IGL_INLINE void igl::removeDuplicates(
+//                                 const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
+//                                 const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
+//                                 Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV,
+//                                 Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &NF,
+//                                 Eigen::Matrix<S, Eigen::Dynamic, 1> &I,
+//                                 const double epsilon)
+template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::removeDuplicates(
-                                 const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
-                                 const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
-                                 Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV,
-                                 Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &NF,
-                                 Eigen::Matrix<S, Eigen::Dynamic, 1> &I,
-                                 const double epsilon)
+                                      const Eigen::PlainObjectBase<DerivedV> &V,
+                                      const Eigen::PlainObjectBase<DerivedF> &F,
+                                      Eigen::PlainObjectBase<DerivedV> &NV,
+                                      Eigen::PlainObjectBase<DerivedF> &NF,
+                                      Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1> &I,
+                                      const double epsilon)
 {
   using namespace std;
   //// build collapse map
   int n = V.rows();
   
-  I = Eigen::Matrix<S, Eigen::Dynamic, 1>(n);
+  I = Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1>(n);
   I[0] = 0;
   
   bool *VISITED = new bool[n];
   for (int i =0; i <n; ++i)
     VISITED[i] = false;
   
-  NV = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>(n,V.cols());
+  NV.resize(n,V.cols());
   int count = 0;
   Eigen::VectorXd d(n);
   for (int i =0; i <n; ++i)
@@ -46,17 +54,17 @@ IGL_INLINE void igl::removeDuplicates(
   NV.conservativeResize  (  count , Eigen::NoChange );
 
   count = 0;
-  std::vector<S> face;
-  NF = Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>(F.rows(),F.cols());
+  std::vector<typename DerivedF::Scalar> face;
+  NF.resize(F.rows(),F.cols());
   for (int i =0; i <F.rows(); ++i)
   {
     face.clear();
     for (int j = 0; j< F.cols(); ++j)
       if(std::find(face.begin(), face.end(), I[F(i,j)]) == face.end())
          face.push_back(I[F(i,j)]);
-    if (face.size() == F.cols())
+    if (face.size() == size_t(F.cols()))
     {
-      for (int j = 0; j< F.cols(); ++j)
+      for (unsigned j = 0; j< F.cols(); ++j)
         NF(count,j) = face[j];
       count ++;
     }
