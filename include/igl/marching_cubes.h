@@ -1,6 +1,5 @@
 //
-//  removeUnreferenced.h
-//  Preview3D
+//  marching_cubes.h
 //
 //  Created by Olga Diamanti on 05/03/12.
 
@@ -16,8 +15,10 @@ namespace igl
   //
   // Input:
   //  xres, yres, zres: resolutions of the grid in x,y,z dimensions
-  // values: #number_of_grid_points x 1 array -- the scalar values of an implicit function defined on the grid points (<0 in the inside of the surface, 0 on the border, >0 outside)
-  // points: #number_of_grid_points x 3 array -- 3-D positions of the grid points, ordered in x,y,z order:
+  //  
+  //  values: #number_of_grid_points x 1 array -- the scalar values of an implicit function defined on the grid points (<0 in the inside of the surface, 0 on the border, >0 outside)
+  //  
+  //  points: #number_of_grid_points x 3 array -- 3-D positions of the grid points, ordered in x,y,z order:
   //  points[index] = the point at (x,y,z) where :
   //  x = (index % (xres -1), 
   //  y = (index / (xres-1)) %(yres-1),
@@ -26,7 +27,7 @@ namespace igl
   //  i.e. index = x + y*xres + z*xres*yres
   //  
   // Output:
-  // V,F: mesh description (vertices and faces)
+  // vertices,faces: mesh description (vertices and faces)
   
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE void marching_cubes(const Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 1> &values,
@@ -40,7 +41,6 @@ namespace igl
 
 #ifdef IGL_HEADER_ONLY
 #  include "marching_cubes.cpp"
-#  include "MCTables.cc"
 #endif
 
 #endif
