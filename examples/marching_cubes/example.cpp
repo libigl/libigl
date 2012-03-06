@@ -1,5 +1,7 @@
 #include <igl/marching_cubes.h>
 
+#include "igl/MCTables.hh"
+
 typedef float ScalarType;
 typedef unsigned IndexType;
 int main(int argc, char * argv[])
