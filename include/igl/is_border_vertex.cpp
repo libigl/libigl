@@ -9,11 +9,11 @@ IGL_INLINE std::vector<bool> igl::is_border_vertex(const T& V, const Eigen::Matr
   Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> FF;
   igl::tt(V,F,FF);
   std::vector<bool> ret(V.rows());
-  for(int i=0; i<ret.size();++i)
+  for(unsigned i=0; i<ret.size();++i)
     ret[i] = false;
   
-  for(int i=0; i<F.rows();++i)
-    for(int j=0;j<F.cols();++j)
+  for(unsigned i=0; i<F.rows();++i)
+    for(unsigned j=0;j<F.cols();++j)
       if(FF(i,j) == -1)
       {
         ret[F(i,j)]       = true;

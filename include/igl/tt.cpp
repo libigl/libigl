@@ -4,7 +4,7 @@
 #include <algorithm>
 
 template<typename T, typename S> 
-IGL_INLINE void igl::tt_preprocess(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& V, const Eigen::Matrix<S,Eigen::Dynamic, Eigen::Dynamic>& F, std::vector<std::vector<int> >& TTT)
+IGL_INLINE void igl::tt_preprocess(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& , const Eigen::Matrix<S,Eigen::Dynamic, Eigen::Dynamic>& F, std::vector<std::vector<int> >& TTT)
 {
   for(int f=0;f<F.rows();++f)
     for (int i=0;i<3;++i)

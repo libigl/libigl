@@ -23,13 +23,22 @@ namespace igl
   // Output:
   // NV, NF: new mesh without duplicate vertices
   
-  template <typename T, typename S>
+//  template <typename T, typename S>
+//  IGL_INLINE void removeDuplicates(
+//                                   const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
+//                                   const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
+//                                   Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV,
+//                                   Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &NF,
+//                                   Eigen::Matrix<S, Eigen::Dynamic, 1> &I,
+//                                   const double epsilon = 2.2204e-15);
+  
+  template <typename DerivedV, typename DerivedF>
   IGL_INLINE void removeDuplicates(
-                                   const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
-                                   const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
-                                   Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV,
-                                   Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &NF,
-                                   Eigen::Matrix<S, Eigen::Dynamic, 1> &I,
+                                   const Eigen::PlainObjectBase<DerivedV> &V,
+                                   const Eigen::PlainObjectBase<DerivedF> &F,
+                                   Eigen::PlainObjectBase<DerivedV> &NV,
+                                   Eigen::PlainObjectBase<DerivedF> &NF,
+                                   Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1> &I,
                                    const double epsilon = 2.2204e-15);
   
 }
