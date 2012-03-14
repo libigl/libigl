@@ -33,3 +33,7 @@ IGL_INLINE void igl::pathinfo(
     filename = std::string(basename.begin(),last_dot.base()-1);
   }
 }
+
+#ifndef IGL_HEADER_ONLY
+// Explicit template specialization
+#endif

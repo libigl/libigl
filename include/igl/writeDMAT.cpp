@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <Eigen/Dense>
 
-  template <class Mat>
+template <class Mat>
 IGL_INLINE bool igl::writeDMAT(const std::string file_name, const Mat & W)
 {
   FILE * fp = fopen(file_name.c_str(),"w");

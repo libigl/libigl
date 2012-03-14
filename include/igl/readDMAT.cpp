@@ -3,7 +3,10 @@
 #include "verbose.h"
 #include <cstdio>
 
-IGL_INLINE bool igl::readDMAT(const std::string file_name, Eigen::MatrixXd & W)
+#include <Eigen/Dense>
+
+template <class Mat>
+IGL_INLINE bool igl::readDMAT(const std::string file_name, Mat & W)
 {
   FILE * fp = fopen(file_name.c_str(),"r");
   if(fp == NULL)
@@ -58,3 +61,8 @@ IGL_INLINE bool igl::readDMAT(const std::string file_name, Eigen::MatrixXd & W)
   fclose(fp);
   return true;
 }
+
+#ifndef IGL_HEADER_ONLY
+// Explicit template specialization
+template bool igl::readDMAT<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::Matrix<double, -1, -1, 0, -1, -1> &);
+#endif

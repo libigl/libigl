@@ -12,7 +12,6 @@
 //   corresponds to a .dmat file containing:
 //   3 2
 //   1 4 2 5 3 6
-#include <Eigen/Core>
 #include <string>
 namespace igl
 {
@@ -24,7 +23,8 @@ namespace igl
   //   W  eigen matrix containing read-in coefficients
   // Returns true on success, false on error
   //
-  IGL_INLINE bool readDMAT(const std::string file_name, Eigen::MatrixXd & W);
+  template <class Mat>
+  IGL_INLINE bool readDMAT(const std::string file_name, Mat & W);
 }
 
 #ifdef IGL_HEADER_ONLY

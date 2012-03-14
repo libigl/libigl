@@ -1,5 +1,6 @@
 #include "destroy_shader_program.h"
 #include <cstdio>
+#include <igl/report_gl_error.h>
 
 IGL_INLINE bool igl::destroy_shader_program(const GLuint id)
 {
@@ -18,6 +19,11 @@ IGL_INLINE bool igl::destroy_shader_program(const GLuint id)
   {
     // Try to get at most *1* attached shader
     glGetAttachedShaders(id,1,&count,&s);
+    GLenum err = igl::report_gl_error();
+    if (GL_NO_ERROR != err)
+    {
+      return false;
+    }
     // Check that we actually got *1*
     if(count == 1)
     {
