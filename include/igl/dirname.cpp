@@ -30,3 +30,4 @@ IGL_INLINE std::string igl::dirname(const std::string & path)
   }
   return std::string(path.begin(),last_slash.base()-1);
 }
+

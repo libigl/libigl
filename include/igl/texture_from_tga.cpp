@@ -1,6 +1,7 @@
 #include "texture_from_tga.h"
 
 #include "tga.h"
+#include "report_gl_error.h"
 
 IGL_INLINE bool igl::texture_from_tga(const std::string tga_file, GLuint & id)
 {
@@ -48,6 +49,7 @@ IGL_INLINE bool igl::texture_from_tga(const std::string tga_file, GLuint & id)
     img->format == GL_BGR))
   {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    igl::report_gl_error();
   }
 
   // Load texture
