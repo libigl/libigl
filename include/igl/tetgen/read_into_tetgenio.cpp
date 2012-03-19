@@ -1,0 +1,61 @@
+#include "read_into_tetgenio.h"
+#include "mesh_to_tetgenio.h"
+
+// IGL includes
+#include <igl/pathinfo.h>
+#ifndef IGL_NO_EIGEN
+#  define IGL_NO_EIGEN_WAS_NOT_ALREADY_DEFINED
+#  define IGL_NO_EIGEN
+#endif 
+// Include igl headers without including Eigen
+#include <igl/readOBJ.h>
+#ifdef IGL_NO_EIGEN_WAS_NOT_ALREADY_DEFINED
+#  undef IGL_NO_EIGEN
+#endif
+
+// STL includes
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+IGL_INLINE bool igl::read_into_tetgenio(
+  const std::string & path,
+  tetgenio & in)
+{
+  using namespace igl;
+  using namespace std;
+  // get file extension
+  string dirname,basename,ext,filename;
+  pathinfo(path,dirname,basename,ext,filename);
+  // convert to lower case for easy comparison
+  transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+  bool success = false;
+
+  char basename_char[1024];
+  strcpy(basename_char,basename.c_str());
+
+  if(ext == "obj")
+  {
+    // read obj into vertex list and face list
+    vector<vector<REAL> > V,TC,N;
+    vector<vector<int>  > F,FTC,FN;
+    success = readOBJ(path,V,TC,N,F,FTC,FN);
+    success &= mesh_to_tetgenio(V,F,in);
+  }else if(ext == "off")
+  {
+    success = in.load_off(basename_char);
+  }else if(ext == "node")
+  {
+    success = in.load_node(basename_char);
+  }else 
+  {
+    if(ext.length() > 0)
+    {
+      cerr<<"^read_into_tetgenio Warning: Unsupported extension ("<<ext<<
+        "): try to load as basename..."<<endl;
+    }
+    success = in.load_tetmesh(basename_char);
+  }
+
+  return success;
+}

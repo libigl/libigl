@@ -1,0 +1,71 @@
+#include "mesh_to_tetgenio.h"
+
+// IGL includes 
+#include <igl/matrix_to_list.h>
+
+// STL includes
+#include <cassert>
+
+IGL_INLINE bool igl::mesh_to_tetgenio(
+  const std::vector<std::vector<REAL > > & V, 
+  const std::vector<std::vector<int> > & F, 
+  tetgenio & in)
+{
+  using namespace std;
+  // all indices start from 0
+  in.firstnumber = 0;
+
+  in.numberofpoints = V.size();
+  in.pointlist = new REAL[in.numberofpoints * 3];
+  // loop over points
+  for(int i = 0; i < (int)V.size(); i++)
+  {
+    assert(V[i].size() == 3);
+    in.pointlist[i*3+0] = V[i][0];
+    in.pointlist[i*3+1] = V[i][1];
+    in.pointlist[i*3+2] = V[i][2];
+  }
+
+  in.numberoffacets = F.size();
+  in.facetlist = new tetgenio::facet[in.numberoffacets];
+  in.facetmarkerlist = NULL;
+
+  // loop over face
+  for(int i = 0;i < (int)F.size(); i++)
+  {
+    tetgenio::facet * f = &in.facetlist[i];
+    f->numberofpolygons = 1;
+    f->polygonlist = new tetgenio::polygon[f->numberofpolygons];
+    f->numberofholes = 0;
+    f->holelist = NULL;
+    tetgenio::polygon * p = &f->polygonlist[0];
+    p->numberofvertices = F[i].size();
+    p->vertexlist = new int[p->numberofvertices];
+    // loop around face
+    for(int j = 0;j < (int)F[i].size(); j++)
+    {
+      p->vertexlist[j] = F[i][j];
+    }
+  }
+  return true;
+}
+
+template <typename DerivedV, typename DerivedF>
+IGL_INLINE bool igl::mesh_to_tetgenio(
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  tetgenio & in)
+{
+  using namespace igl;
+  using namespace std;
+  vector<vector<REAL> > vV;
+  vector<vector<int> > vF;
+  matrix_to_list(V,vV);
+  matrix_to_list(F,vF);
+  return mesh_to_tetgenio(vV,vF,in);
+}
+
+#ifndef IGL_HEADER_ONLY
+// Explicit template specialization
+template bool igl::mesh_to_tetgenio<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, tetgenio&);
+#endif
