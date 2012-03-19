@@ -18,6 +18,7 @@ namespace igl
 #  include <cstdarg>
 #endif
 
+#include <string>
 // http://channel9.msdn.com/forums/techoff/254707-wrapping-printf-in-c/
 inline  int igl::verbose(const char * msg,...)
 {

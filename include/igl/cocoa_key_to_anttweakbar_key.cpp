@@ -20,6 +20,7 @@ IGL_INLINE int igl::cocoa_key_to_anttweakbar_key(int key)
       return TW_KEY_ESCAPE;
     case 32:
       return TW_KEY_SPACE;
+    case 40:
     case 63272:
       return TW_KEY_DELETE;
     case 63232:
