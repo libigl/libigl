@@ -1,12 +1,13 @@
 #include "project_to_line.h"
 #include <cassert>
+#include <Eigen/Core>
 
 template <
   typename MatP, 
   typename MatL, 
   typename Matt, 
   typename MatsqrD>
-inline void igl::project_to_line(
+IGL_INLINE void igl::project_to_line(
   const MatP & P,
   const MatL & S,
   const MatL & D,
@@ -42,7 +43,7 @@ inline void igl::project_to_line(
 }
 
 template <typename Scalar>
-inline void igl::project_to_line(
+IGL_INLINE void igl::project_to_line(
   const Scalar px,
   const Scalar py,
   const Scalar pz,
@@ -84,4 +85,6 @@ inline void igl::project_to_line(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
+template void igl::project_to_line<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&);
+template void igl::project_to_line<double>(double, double, double, double, double, double, double, double, double, double&, double&);
 #endif

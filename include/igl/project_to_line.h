@@ -1,5 +1,6 @@
 #ifndef IGL_PROJECT_TO_LINE
 #define IGL_PROJECT_TO_LINE
+#include "igl_inline.h"
 
 namespace igl
 {
@@ -30,7 +31,7 @@ namespace igl
     typename MatL, 
     typename Matt, 
     typename MatsqrD>
-  inline void project_to_line(
+  IGL_INLINE void project_to_line(
     const MatP & P,
     const MatL & S,
     const MatL & D,
@@ -39,7 +40,7 @@ namespace igl
   
   // Same as above but for a single query point
   template <typename Scalar>
-  inline void project_to_line(
+  IGL_INLINE void project_to_line(
     const Scalar px,
     const Scalar py,
     const Scalar pz,
