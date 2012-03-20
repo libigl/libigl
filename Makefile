@@ -4,6 +4,11 @@ all: lib examples extras
 # Shared flags etc.
 include Makefile.conf
 
+# optimized default settings
+all: LFLAGS +=
+all: CFLAGS += -O3 -DNDEBUG -j 
+debug: CFLAGS += -g -Wall -Werror
+
 EXTRA_DIRS=
 ifeq ($(IGL_WITH_TETGEN),1)
 	# append tetgen extra dir

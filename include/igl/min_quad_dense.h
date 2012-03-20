@@ -21,6 +21,7 @@ namespace igl
   //   B  n by 1 column of linear coefficients
   //   Aeq  m by n list of linear equality constraint coefficients
   //   Beq  m by 1 list of linear equality constraint constant values
+  //   use_lu_decomposition  use lu rather than SVD
   // Outputs:
   //   S  n by (n + m) "solve" matrix, such that S*[B', Beq'] is a solution
   // Returns true on success, false on error
@@ -28,6 +29,7 @@ namespace igl
   IGL_INLINE void min_quad_dense_precompute(
     const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& A,
     const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& Aeq,    
+    const bool use_lu_decomposition,
     Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& S);
 }
 

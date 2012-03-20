@@ -20,7 +20,7 @@ namespace igl
 
 #include <string>
 // http://channel9.msdn.com/forums/techoff/254707-wrapping-printf-in-c/
-inline  int igl::verbose(const char * msg,...)
+inline int igl::verbose(const char * msg,...)
 {
 #ifdef VERBOSE
   va_list argList;
