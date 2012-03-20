@@ -8,6 +8,7 @@ template <typename T>
 IGL_INLINE void igl::min_quad_dense_precompute(
   const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& A,
   const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& Aeq,    
+  const bool use_lu_decomposition,
   Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& S)
 {
   typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> Mat;
@@ -28,39 +29,42 @@ IGL_INLINE void igl::min_quad_dense_precompute(
   LM.block(n, 0, m, n) = Aeq;
   LM.block(n, n, m, m).setZero();
 
-//#define USE_LU_DECOMPOSITION
-#ifdef USE_LU_DECOMPOSITION    
-  // if LM is close to singular, use at your own risk :)
-  Mat LMpinv = LM.inverse();
-#else // use SVD
-  typedef Eigen::Matrix<T, Eigen::Dynamic, 1> Vec; 
-  Vec singValues;
-  Eigen::JacobiSVD<Mat> svd;
-  svd.compute(LM, Eigen::ComputeFullU | Eigen::ComputeFullV );
-  const Mat& u = svd.matrixU();
-  const Mat& v = svd.matrixV();
-  const Vec& singVals = svd.singularValues();
-
-  Vec pi_singVals(n + m);
-  int zeroed = 0;
-  for (int i=0; i<n + m; i++)
+  Mat LMpinv;
+  if(use_lu_decomposition)
   {
-    T sv = singVals(i, 0);
-    assert(sv >= 0);      
-               // printf("sv: %lg ? %lg\n",(double) sv,(double)treshold);
-    if (sv > treshold) pi_singVals(i, 0) = T(1) / sv;
-    else 
+    // if LM is close to singular, use at your own risk :)
+    LMpinv = LM.inverse();
+  }else
+  {
+    // use SVD
+    typedef Eigen::Matrix<T, Eigen::Dynamic, 1> Vec; 
+    Vec singValues;
+    Eigen::JacobiSVD<Mat> svd;
+    svd.compute(LM, Eigen::ComputeFullU | Eigen::ComputeFullV );
+    const Mat& u = svd.matrixU();
+    const Mat& v = svd.matrixV();
+    const Vec& singVals = svd.singularValues();
+
+    Vec pi_singVals(n + m);
+    int zeroed = 0;
+    for (int i=0; i<n + m; i++)
     {
-      pi_singVals(i, 0) = T(0);
-      zeroed++;
+      T sv = singVals(i, 0);
+      assert(sv >= 0);      
+                 // printf("sv: %lg ? %lg\n",(double) sv,(double)treshold);
+      if (sv > treshold) pi_singVals(i, 0) = T(1) / sv;
+      else 
+      {
+        pi_singVals(i, 0) = T(0);
+        zeroed++;
+      }
     }
+
+    printf("min_quad_dense_precompute: %i singular values zeroed (threshold = %e)\n", zeroed, treshold);
+    Eigen::DiagonalMatrix<T, Eigen::Dynamic> pi_diag(pi_singVals);
+
+    LMpinv = v * pi_diag * u.transpose();
   }
-
-  printf("min_quad_dense_precompute: %i singular values zeroed (threshold = %e)\n", zeroed, treshold);
-  Eigen::DiagonalMatrix<T, Eigen::Dynamic> pi_diag(pi_singVals);
-
-  Mat LMpinv = v * pi_diag * u.transpose();
-#endif
   S = LMpinv.block(0, 0, n, n + m);
 
   //// debug:
@@ -81,5 +85,5 @@ IGL_INLINE void igl::min_quad_dense_precompute(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
-  template void igl::min_quad_dense_precompute<double>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
+template void igl::min_quad_dense_precompute<double>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, bool, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
 #endif
