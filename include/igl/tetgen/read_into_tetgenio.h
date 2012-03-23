@@ -3,6 +3,7 @@
 #include "../igl_inline.h"
 
 #include <string>
+#define TETLIBRARY 
 #include "tetgen.h" // Defined tetgenio, REAL
 
 namespace igl

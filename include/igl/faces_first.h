@@ -24,6 +24,13 @@ namespace igl
   //  IM  # faces by 1 list of indices such that: RF = IM(F) and RT = IM(T)
   //    and RV(IM,:) = V
   //
+  //
+  // Example:
+  //   // Tet mesh in (V,T,F)
+  //   faces_first(V,F,IM);
+  //   T = T.unaryExpr(bind1st(mem_fun( static_cast<VectorXi::Scalar&
+  //     (VectorXi::*)(VectorXi::Index)>(&VectorXi::operator())),
+  //     &IM)).eval();
   template <typename MatV, typename MatF, typename VecI>
   IGL_INLINE void faces_first(
     const MatV & V, 

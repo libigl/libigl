@@ -1,7 +1,6 @@
 #include "upsample.h"
 
 #include "tt.h"
-#include "adjacency_list.h"
 #include <Eigen/Dense>
 
 template <typename MatV, typename MatF>
@@ -40,8 +39,9 @@ IGL_INLINE void igl::upsample( const MatV & V, const MatF & F, MatV & NV, MatF &
   int n_odd = V.rows();
   int n_even = counter;
 
-  Eigen::DynamicSparseMatrix<double> SUBD(V.rows()+n_even,V.rows());
-  SUBD.reserve(15 * (V.rows()+n_even));
+  // Not sure what this is
+  //Eigen::DynamicSparseMatrix<double> SUBD(V.rows()+n_even,V.rows());
+  //SUBD.reserve(15 * (V.rows()+n_even));
   
   // Preallocate NV and NF
   NV = MatV(V.rows()+n_even,V.cols());
