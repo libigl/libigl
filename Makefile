@@ -1,5 +1,5 @@
 .PHONY: all
-all: lib examples extras
+all: lib extras examples
 
 # Shared flags etc.
 include Makefile.conf
@@ -13,6 +13,10 @@ EXTRA_DIRS=
 ifeq ($(IGL_WITH_TETGEN),1)
 	# append tetgen extra dir
 	EXTRA_DIRS+=include/igl/tetgen
+endif
+ifeq ($(IGL_WITH_MATLAB),1)
+	# append matlab extra dir
+	EXTRA_DIRS+=include/igl/matlab
 endif
 
 .PHONY: examples

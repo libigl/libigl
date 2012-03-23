@@ -18,16 +18,8 @@ example1: example1.o
 example1.o: example1.cpp
 	g++ $(CFLAGS) -c example1.cpp -o example1.o $(inc)
 
-example2: example2.o
-	g++ $(CFLAGS) $(matlab_lib) -o example2 example2.o -framework OpenGL -framework GLUT $(lib)
-	rm example2.o
-
-example2.o: example2.cpp
-	g++ $(CFLAGS) $(matlab_inc) -c example2.cpp -o example2.o $(inc)
 
 clean:
 	rm -f example1.o
 	rm -f example1
-	rm -f example2.o
-	rm -f example2
 	rm -f bunny_out.off

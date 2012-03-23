@@ -1,10 +1,7 @@
-// Don't let libigl.a compile anything here
-#ifdef IGL_HEADER_ONLY
-
-#include "MatlabWorkspace.h"
+#include "igl/matlab/MatlabWorkspace.h"
 
 // IGL
-#include "list_to_matrix.h"
+#include "igl/list_to_matrix.h"
 
 // MATLAB
 #include "mat.h"
@@ -132,5 +129,3 @@ IGL_INLINE igl::MatlabWorkspace::MatlabWorkspace& igl::MatlabWorkspace::save_ind
 //    name<<" not saved."<<endl;
 //  return false;
 //}
-
-#endif
