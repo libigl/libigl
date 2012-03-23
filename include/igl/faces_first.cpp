@@ -11,6 +11,8 @@ IGL_INLINE void igl::faces_first(
   MatF & RF, 
   VecI & IM)
 {
+  assert(&V != &RV);
+  assert(&F != &RF);
   using namespace std;
   using namespace Eigen;
   vector<bool> in_face(V.rows());

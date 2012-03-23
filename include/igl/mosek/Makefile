@@ -1,12 +1,10 @@
 include ../../../Makefile.conf
-all: CFLAGS += -O3 -DNDEBUG -j 
-debug: CFLAGS += -g -Wall -Werror
 
 .PHONY: all
-all: libiglmatlab
+all: libiglmosek
 
-.PHONY: libmatlab
-libiglmatlab: obj ../../../lib/libiglmatlab.a
+.PHONY: libiglmosek
+libiglmosek: obj ../../../lib/libiglmosek.a
 
 CPP_FILES=$(wildcard *.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
@@ -20,19 +18,18 @@ INC+=-I../../../include/
 EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 INC+=$(EIGEN3_INC)
 
-# Matlab dependency
-ifndef MATLAB
-  MATLAB=/Applications/MATLAB_R011b.app/
-  $(warning MATLAB undefined. Setting MATLAB=${MATLAB})
-endif
-MATLAB_INC=-I$(MATLAB)/extern/include/
-MATLAB_LIB=-L$(MATLAB)/bin/maci64 -lmx -leng
-INC+=$(MATLAB_INC)
+# mosek dependency
+# TODO: linux, 32 bit etc
+MOSEKPLATFORM=osx64x86
+MOSEK=/usr/local/mosek
+MOSEK_INC=-I$(MOSEK)/6/tools/platform/$(MOSEKPLATFORM)/h
+MOSEK_LIB=-L$(MOSEK)/6/tools/platform/$(MOSEKPLATFORM)/bin -lmosek64
+INC+=$(MOSEK_INC)
 
 obj: 
 	mkdir -p obj
 
-../../../lib/libiglmatlab.a: $(OBJ_FILES)
+../../../lib/libiglmosek.a: $(OBJ_FILES)
 	rm -f $@
 	ar cqs $@ $(OBJ_FILES)
 
@@ -41,4 +38,4 @@ obj/%.o: %.cpp %.h
 
 clean:
 	rm -f obj/*.o
-	rm -f ../../../lib/libiglmatlab.a
+	rm -f ../../../lib/libiglmosek.a

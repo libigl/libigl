@@ -2,26 +2,44 @@
 
 #include <cstdio>
 #include "verbose.h"
+#include "matrix_to_list.h"
+#include <Eigen/Core>
 
 template <typename Scalar, typename Index>
 IGL_INLINE bool igl::writeMESH(
   const std::string mesh_file_name,
-  std::vector<std::vector<Scalar > > & V,
-  std::vector<std::vector<Index > > & T,
-  std::vector<std::vector<Index > > & F)
+  const std::vector<std::vector<Scalar > > & V,
+  const std::vector<std::vector<Index > > & T,
+  const std::vector<std::vector<Index > > & F)
 {
-  // not implemented but should be
-  assert(false);
-  return false;
+  Eigen::MatrixXd mV;
+  Eigen::MatrixXi mT,mF;
+  bool is_rect;
+  is_rect = list_to_matrix(V,mV);
+  if(!is_rect)
+  {
+    return false;
+  }
+  is_rect = list_to_matrix(T,mT);
+  if(!is_rect)
+  {
+    return false;
+  }
+  is_rect = list_to_matrix(F,mF);
+  if(!is_rect)
+  {
+    return false;
+  }
+  return igl::writeMESH(mesh_file_name,mV,mT,mF);
 }
 
-#include <Eigen/Core>
 
+template <typename DerivedV, typename DerivedT, typename DerivedF>
 IGL_INLINE bool igl::writeMESH(
   const std::string str,
-  Eigen::MatrixXd& V,
-  Eigen::MatrixXi& T,
-  Eigen::MatrixXi& F)
+  const Eigen::MatrixBase<DerivedV> & V, 
+  const Eigen::MatrixBase<DerivedT> & T,
+  const Eigen::MatrixBase<DerivedF> & F)
 {
   using namespace std;
   using namespace igl;
@@ -87,4 +105,5 @@ IGL_INLINE bool igl::writeMESH(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
+template bool igl::writeMESH<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
 #endif

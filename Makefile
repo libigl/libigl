@@ -6,8 +6,9 @@ include Makefile.conf
 
 # optimized default settings
 all: LFLAGS +=
-all: CFLAGS += -O3 -DNDEBUG -j 
-debug: CFLAGS += -g -Wall -Werror
+OPTFLAGS=-O3 -DNDEBUG -j
+debug: OPTFLAGS= -g -Wall -Werror
+CFLAGS += $(OPTFLAGS)
 
 EXTRA_DIRS=
 ifeq ($(IGL_WITH_TETGEN),1)
@@ -17,6 +18,10 @@ endif
 ifeq ($(IGL_WITH_MATLAB),1)
 	# append matlab extra dir
 	EXTRA_DIRS+=include/igl/matlab
+endif
+ifeq ($(IGL_WITH_MOSEK),1)
+	# append mosek extra dir
+	EXTRA_DIRS+=include/igl/mosek
 endif
 
 .PHONY: examples

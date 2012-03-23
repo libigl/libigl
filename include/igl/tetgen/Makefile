@@ -1,10 +1,14 @@
-include ../../../Makefile.conf
 
 .PHONY: all
-all: libtetgen
+all: libigltetgen
+debug: libigltetgen
+
+include ../../../Makefile.conf
+all: CFLAGS += -O3 -DNDEBUG -j 
+debug: CFLAGS += -g -Wall -Werror
 
 .PHONY: libtetgen
-libtetgen: obj ../../../lib/libigltetgen.a
+libigltetgen: obj ../../../lib/libigltetgen.a
 
 CPP_FILES=$(wildcard *.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))

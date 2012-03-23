@@ -53,7 +53,7 @@ IGL_INLINE bool igl::tetgenio_to_tetmesh(
   }
   assert(min_index >= 0);
   assert(max_index >= 0);
-  assert(max_index < V.size());
+  assert(max_index < (int)V.size());
 
   return true;
 }

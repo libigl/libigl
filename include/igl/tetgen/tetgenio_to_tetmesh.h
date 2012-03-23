@@ -2,6 +2,7 @@
 #define IGL_TETGENIO_TO_TETMESH_H
 #include "../igl_inline.h"
 
+#define TETLIBRARY 
 #include "tetgen.h" // Defined tetgenio, REAL
 #include <vector>
 #include <Eigen/Core>
