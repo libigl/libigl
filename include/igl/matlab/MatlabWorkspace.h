@@ -1,6 +1,6 @@
 #ifndef IGL_WRITE_MATLAB_WORKSPACE
 #define IGL_WRITE_MATLAB_WORKSPACE
-#include "igl_inline.h"
+#include "igl/igl_inline.h"
 
 #include <string>
 #include <vector>

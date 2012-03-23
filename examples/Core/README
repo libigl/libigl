@@ -5,9 +5,3 @@ Example1.cpp:
 - Compute face and edge topology
 - Compute the cotan matrix of the loaded mesh
 
-Example2.cpp:
-- Shows how it is possible to send/receive matrices to/from matlab
-in order to use the matlab functions in the igl_toolbox
-
-To run example2 you need matlab and to properly configure your PATH and DYLD_PATH.
-See runexample2.sh for an example.

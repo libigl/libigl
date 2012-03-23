@@ -7,7 +7,7 @@
 #  define IGL_HEADER_ONLY
 #  define IGL_HEADER_ONLY_WAS_NOT_DEFINED
 #endif
-#include <igl/MatlabWorkspace.h>
+#include <igl/matlab/MatlabWorkspace.h>
 #include <igl/on_boundary.h>
 #ifdef IGL_HEADER_ONLY_WAS_NOT_DEFINED
 #  undef IGL_HEADER_ONLY
