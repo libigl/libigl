@@ -31,7 +31,7 @@ IGL_INLINE bool igl::MatlabWorkspace::write(const std::string & path) const
   MATFile * mat_file = matOpen(path.c_str(), "w");
   assert(names.size() == data.size());
   // loop over names and data
-  for(int i = 0;i < names.size(); i++)
+  for(int i = 0;i < (int)names.size(); i++)
   {
     // Put variable as LOCAL variable
     int status = matPutVariable(mat_file,names[i].c_str(), data[i]);

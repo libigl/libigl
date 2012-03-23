@@ -19,6 +19,10 @@ EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 INC+=$(EIGEN3_INC)
 
 # Matlab dependency
+ifndef MATLAB
+  MATLAB=/Applications/MATLAB_R011b.app/
+  $(warning MATLAB undefined. Setting MATLAB=${MATLAB})
+endif
 MATLAB_INC=-I$(MATLAB)/extern/include/
 MATLAB_LIB=-L$(MATLAB)/bin/maci64 -lmx -leng
 INC+=$(MATLAB_INC)
