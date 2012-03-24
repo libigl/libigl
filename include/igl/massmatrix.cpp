@@ -77,32 +77,30 @@ IGL_INLINE void igl::massmatrix(
             (l.col(1).array().pow(2)+l.col(0).array().pow(2)-l.col(2).array().pow(2))/(l.col(0).array()*l.col(1).array()*2.0);
           Matrix<Scalar,Dynamic,3> barycentric = cosines.array() * l.array();
           normalize_row_sums(barycentric,barycentric);
-          cout<<"barycentric=["<<barycentric<<"];"<<endl;
           Matrix<Scalar,Dynamic,3> partial = barycentric;
           partial.col(0).array() *= dblA.array() * 0.5;
           partial.col(1).array() *= dblA.array() * 0.5;
           partial.col(2).array() *= dblA.array() * 0.5;
-          cout<<"partial=["<<partial<<"];"<<endl;
           Matrix<Scalar,Dynamic,3> quads(partial.rows(),partial.cols());
           quads.col(0) = (partial.col(1)+partial.col(2))*0.5;
           quads.col(1) = (partial.col(2)+partial.col(0))*0.5;
           quads.col(2) = (partial.col(0)+partial.col(1))*0.5;
-          cout<<"quads=["<<quads<<"];"<<endl;
 
-          Matrix<Scalar,Dynamic,3> quads_clamped(quads.rows(),quads.cols());
-          quads_clamped.col(0) = (cosines.col(0).array()<0).select( 0.25*dblA,quads.col(0));
-          quads_clamped.col(1) = (cosines.col(0).array()<0).select(0.125*dblA,quads.col(1));
-          quads_clamped.col(2) = (cosines.col(0).array()<0).select(0.125*dblA,quads.col(2));
-          quads_clamped.col(0) = (cosines.col(1).array()<0).select(0.125*dblA,quads.col(0));
-          quads_clamped.col(1) = (cosines.col(1).array()<0).select(0.125*dblA,quads.col(1));
-          quads_clamped.col(2) = (cosines.col(1).array()<0).select( 0.25*dblA,quads.col(2));
-          quads_clamped.col(0) = (cosines.col(2).array()<0).select(0.125*dblA,quads.col(0));
-          quads_clamped.col(1) = (cosines.col(2).array()<0).select(0.125*dblA,quads.col(1));
-          quads_clamped.col(2) = (cosines.col(2).array()<0).select( 0.25*dblA,quads.col(2));
+          quads.col(0) = (cosines.col(0).array()<0).select( 0.25*dblA,quads.col(0));
+          quads.col(1) = (cosines.col(0).array()<0).select(0.125*dblA,quads.col(1));
+          quads.col(2) = (cosines.col(0).array()<0).select(0.125*dblA,quads.col(2));
 
-          MV.block(0*m,0,m,1) = quads_clamped.col(0);
-          MV.block(1*m,0,m,1) = quads_clamped.col(1);
-          MV.block(2*m,0,m,1) = quads_clamped.col(2);
+          quads.col(0) = (cosines.col(1).array()<0).select(0.125*dblA,quads.col(0));
+          quads.col(1) = (cosines.col(1).array()<0).select(0.25*dblA,quads.col(1));
+          quads.col(2) = (cosines.col(1).array()<0).select(0.125*dblA,quads.col(2));
+
+          quads.col(0) = (cosines.col(2).array()<0).select(0.125*dblA,quads.col(0));
+          quads.col(1) = (cosines.col(2).array()<0).select(0.125*dblA,quads.col(1));
+          quads.col(2) = (cosines.col(2).array()<0).select( 0.25*dblA,quads.col(2));
+
+          MV.block(0*m,0,m,1) = quads.col(0);
+          MV.block(1*m,0,m,1) = quads.col(1);
+          MV.block(2*m,0,m,1) = quads.col(2);
           
           break;
         }
