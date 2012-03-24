@@ -1,7 +1,7 @@
 #include "per_vertex_normals.h"
 
 #include "per_face_normals.h"
-#include "normalize_rows.h"
+#include "normalize_row_lengths.h"
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::per_vertex_normals(
@@ -25,7 +25,7 @@ IGL_INLINE void igl::per_vertex_normals(
     }
   }
   // normalize each row
-  igl::normalize_rows(N,N);
+  igl::normalize_row_lengths(N,N);
 }
 
 template <typename DerivedV, typename DerivedF>
@@ -48,7 +48,7 @@ IGL_INLINE void igl::per_vertex_normals(
     }
   }
   // normalize each row
-  igl::normalize_rows(N,N);
+  igl::normalize_row_lengths(N,N);
 }
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
