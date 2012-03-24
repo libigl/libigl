@@ -14,7 +14,6 @@ lib=-L$(igl_lib)/lib -ligl
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o -framework OpenGL -framework GLUT $(lib)
-	rm example.o
 
 example.o: example.cpp
 	g++ $(CFLAGS) $(deps) -c example.cpp -o example.o $(inc)

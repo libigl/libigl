@@ -13,7 +13,6 @@ matlab_lib=-L$(MATLAB)/bin/maci64/ -leng -lmx
 
 example1: example1.o
 	g++ $(CFLAGS) -o example1 example1.o -framework OpenGL -framework GLUT $(lib)
-	rm example1.o
 
 example1.o: example1.cpp
 	g++ $(CFLAGS) -c example1.cpp -o example1.o $(inc)

@@ -1,5 +1,5 @@
 #include "massmatrix.h"
-#include "normalize_rows.h"
+#include "normalize_row_sums.h"
 #include "sparse.h"
 #include "repmat.h"
 #include <Eigen/Geometry>
@@ -76,10 +76,7 @@ IGL_INLINE void igl::massmatrix(
           cosines.col(2) = 
             (l.col(1).array().pow(2)+l.col(0).array().pow(2)-l.col(2).array().pow(2))/(l.col(0).array()*l.col(1).array()*2.0);
           Matrix<Scalar,Dynamic,3> barycentric = cosines.array() * l.array();
-
-          WRONG NORMALIZE THIS IS L2 NORMALIZE
-
-          //normalize_rows(barycentric,barycentric);
+          normalize_row_sums(barycentric,barycentric);
           cout<<"barycentric=["<<barycentric<<"];"<<endl;
           Matrix<Scalar,Dynamic,3> partial = barycentric;
           partial.col(0).array() *= dblA.array() * 0.5;
