@@ -20,6 +20,10 @@ namespace igl
   IGL_INLINE void diag(
     const Eigen::SparseMatrix<T>& X, 
     Eigen::SparseVector<T>& V);
+  template <typename T,typename DerivedV>
+  IGL_INLINE void diag(
+    const Eigen::SparseMatrix<T>& X, 
+    Eigen::MatrixBase<DerivedV>& V);
   // Templates:
   //   T  should be a eigen sparse matrix primitive type like int or double
   // Inputs:
@@ -29,6 +33,10 @@ namespace igl
   template <typename T>
   IGL_INLINE void diag(
     const Eigen::SparseVector<T>& V,
+    Eigen::SparseMatrix<T>& X);
+  template <typename T, typename DerivedV>
+  IGL_INLINE void diag(
+    const Eigen::MatrixBase<DerivedV>& V,
     Eigen::SparseMatrix<T>& X);
 }
 

@@ -49,4 +49,5 @@ IGL_INLINE void igl::sparse(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
+template void igl::sparse<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, double>(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, unsigned long, unsigned long, Eigen::SparseMatrix<double, 0, int>&);
 #endif

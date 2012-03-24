@@ -5,9 +5,9 @@
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::per_vertex_normals(
-                                   const Eigen::PlainObjectBase<DerivedV>& V,
-                                   const Eigen::PlainObjectBase<DerivedF>& F,
-                                   Eigen::PlainObjectBase<DerivedV> & N)
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::PlainObjectBase<DerivedV> & N)
 {
   Eigen::PlainObjectBase<DerivedV> PFN;
   igl::per_face_normals(V,F,PFN);
@@ -30,10 +30,10 @@ IGL_INLINE void igl::per_vertex_normals(
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::per_vertex_normals(
-                                        const Eigen::PlainObjectBase<DerivedV>& V,
-                                        const Eigen::PlainObjectBase<DerivedF>& F,
-                                        const Eigen::PlainObjectBase<DerivedV>& FN,
-                                        Eigen::PlainObjectBase<DerivedV> & N)
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  const Eigen::PlainObjectBase<DerivedV>& FN,
+  Eigen::PlainObjectBase<DerivedV> & N)
 {
   // Resize for output
   N = Eigen::PlainObjectBase<DerivedV>::Zero(V.rows(),3);
