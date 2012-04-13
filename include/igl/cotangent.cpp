@@ -116,7 +116,9 @@ IGL_INLINE void igl::cotangent(const MatV & V, const MatF & F, MatC & C)
     }
     if(diag_all_pos)
     {
+#ifdef VERBOSE 
       verbose("cotangent.h: Flipping sign of cotangent, so that cots are positive\n");
+#endif
       C *= -1.0;
     }
   }else
