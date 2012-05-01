@@ -12,12 +12,17 @@ template <typename DerivedV, typename DerivedT, typename DerivedF>
 IGL_INLINE int igl::launch_medit(
   const Eigen::MatrixBase<DerivedV> & V, 
   const Eigen::MatrixBase<DerivedT> & T,
-  const Eigen::MatrixBase<DerivedF> & F)
+  const Eigen::MatrixBase<DerivedF> & F,
+  const bool wait)
 {
   using namespace std;
   // Build medit command, end with & so command returns without waiting
   stringstream command; 
-  command<<MEDIT_PATH<<" "<<TEMP_MESH_FILE<<" "<<TEMP_MEDIT_FILE<<" &"<<endl;
+  command<<MEDIT_PATH<<" "<<TEMP_MESH_FILE<<" "<<TEMP_MEDIT_FILE;
+  if(!wait)
+  {
+    command<<" &";
+  }
   bool mesh_saved = writeMESH(TEMP_MESH_FILE,V,T,F);
   if(!mesh_saved)
   {
@@ -51,6 +56,6 @@ IGL_INLINE int igl::launch_medit(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
-template int igl::launch_medit<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
+template int igl::launch_medit<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, bool);
 #endif
 

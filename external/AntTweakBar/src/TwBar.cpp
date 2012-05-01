@@ -7703,7 +7703,6 @@ bool CTwBar::EditInPlaceGetClipboard(std::string *_OutString)
         }
     }
 // PATCH BEGIN Alec Jacobson, 2012
-// PATCH BEGIN Alec Jacobson, 2012
 #elif defined ANT_OSX
     FILE* pipe = popen("pbpaste", "r");
     if (!pipe)
@@ -7764,7 +7763,6 @@ bool CTwBar::EditInPlaceSetClipboard(const std::string& _String)
         XStoreBytes(g_TwMgr->m_CurrentXDisplay, Text, _String.length());
         delete[] Text;
     }
-// PATCH BEGIN Alec Jacobson, 2012
 // PATCH BEGIN Alec Jacobson, 2012
 #elif defined ANT_OSX
     stringstream cmd;

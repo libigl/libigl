@@ -12,9 +12,9 @@ namespace igl
   //   N  #F by 3 eigen Matrix of mesh face (triangle) 3D normals
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE void per_face_normals(
-                                     const Eigen::PlainObjectBase<DerivedV>& V,
-                                     const Eigen::PlainObjectBase<DerivedF>& F,
-                                     Eigen::PlainObjectBase<DerivedV> & N);
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedV> & N);
 }
 
 #ifdef IGL_HEADER_ONLY

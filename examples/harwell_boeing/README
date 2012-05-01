@@ -1,0 +1,2 @@
+Demonstrates how to use igl/harwell_boeing which computes indices and values of compressed column storage:
+http://eigen.tuxfamily.org/api/classEigen_1_1SparseMatrix.html

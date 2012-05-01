@@ -183,6 +183,12 @@ int igl::ReTwBar::TwRefreshBar()
 {
   return ::TwRefreshBar(this->bar);
 }
+
+int igl::ReTwBar::TwTerminate()
+{
+  return ::TwTerminate();
+}
+
 bool igl::ReTwBar::save(const char *file_name)
 {
   FILE * fp;

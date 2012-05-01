@@ -18,12 +18,16 @@ namespace igl
   //   J  nnz vector of column indices of non zeros entries in X
   //   V  nnz vector of type T non-zeros entries in X
   //
-  template <typename T>
+  template <
+    typename T, 
+    typename DerivedI, 
+    typename DerivedJ,
+    typename DerivedV>
   IGL_INLINE void find(
     const Eigen::SparseMatrix<T>& X,
-    Eigen::Matrix<int,Eigen::Dynamic,1> & I,
-    Eigen::Matrix<int,Eigen::Dynamic,1> & J,
-    Eigen::Matrix<T,Eigen::Dynamic,1> & V);
+    Eigen::MatrixBase<DerivedI> & I,
+    Eigen::MatrixBase<DerivedJ> & J,
+    Eigen::MatrixBase<DerivedV> & V);
   // Find the non-zero entries and there respective indices in a sparse vector.
   // Similar to matlab's [I,J,V] = find(X), but instead of [I,J] being
   // subscripts into X, since X is a vector we just return I, a list of indices

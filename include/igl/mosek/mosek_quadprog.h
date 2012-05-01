@@ -2,8 +2,17 @@
 #define IGL_MOSEK_QUADPROG_H
 #include "../igl_inline.h"
 #include <vector>
+
+
+#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+
 namespace igl
 {
+  struct MosekData
+  {
+  };
   // Solve a convex quadratic optimization problem with linear and constant
   // bounds, that is:
   //
@@ -45,10 +54,10 @@ namespace igl
   //   m  number of constraints, therefore also number of rows in linear
   //     constraint coefficient matrix A, and in linear constraint bound vectors 
   //     lc and uc
+  //   Av  vector of non-zero values of A, in column compressed order
   //   Ari  vector of row indices corresponding to non-zero values of A,
   //   Acp  vector of indices into Ari and Av of the first entry for each column
   //     of A, size(Acp) = (# columns of A) + 1 = n + 1
-  //   Av  vector of non-zero values of A, in column compressed order
   //   lc  vector of m linear constraint lower bounds
   //   uc  vector of m linear constraint upper bounds
   //   lx  vector of n constant lower bounds
@@ -63,20 +72,37 @@ namespace igl
   template <typename Index, typename Scalar>
   IGL_INLINE bool mosek_quadprog(
     const Index n,
-    const std::vector<Index> & Qi,
-    const std::vector<Index> & Qj,
-    const std::vector<Scalar> & Qv,
+    /* mosek won't allow this to be const*/ std::vector<Index> & Qi,
+    /* mosek won't allow this to be const*/ std::vector<Index> & Qj,
+    /* mosek won't allow this to be const*/ std::vector<Scalar> & Qv,
     const std::vector<Scalar> & c,
     const Scalar cf,
     const Index m,
-    const std::vector<Index> & Ari,
+    /* mosek won't allow this to be const*/ std::vector<Scalar> & Ari,
+    /* mosek won't allow this to be const*/ std::vector<Index> & Ari,
     const std::vector<Index> & Acp,
-    const std::vector<Scalar> & Av,
     const std::vector<Scalar> & lc,
     const std::vector<Scalar> & uc,
     const std::vector<Scalar> & lx,
     const std::vector<Scalar> & ux,
+    MosekData & mosek_data,
     std::vector<Scalar> & x);
+
+  // Wrapper with Eigen elements
+  //// Templates:
+  ////   Scalar  Scalar type for sparse matrix  (e.g. double)
+  ////   Derived  dervied type from matrix/vector (e.g. VectorXd)
+  IGL_INLINE bool mosek_quadprog(
+    const Eigen::SparseMatrix<double> & Q,
+    const Eigen::VectorXd & c,
+    const double cf,
+    const Eigen::SparseMatrix<double> & A,
+    const Eigen::VectorXd & lc,
+    const Eigen::VectorXd & uc,
+    const Eigen::VectorXd & lx,
+    const Eigen::VectorXd & ux,
+    MosekData & mosek_data,
+    Eigen::VectorXd & x);
 }
 
 #ifdef IGL_HEADER_ONLY

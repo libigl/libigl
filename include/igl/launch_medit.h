@@ -18,13 +18,15 @@ namespace igl
   //   V  double matrix of vertex positions  #V by 3
   //   T  #T list of tet indices into vertex positions
   //   F  #F list of face indices into vertex positions
-  // Returns returned value of system call (probably not useful because of the
-  //   fork)
+  //   wait  whether to wait for medit process to finish before returning
+  // Returns returned value of system call (probably not useful if wait=false
+  // because of the fork)
   template <typename DerivedV, typename DerivedT, typename DerivedF>
   IGL_INLINE int launch_medit(
     const Eigen::MatrixBase<DerivedV> & V, 
     const Eigen::MatrixBase<DerivedT> & T,
-    const Eigen::MatrixBase<DerivedF> & F);
+    const Eigen::MatrixBase<DerivedF> & F,
+    const bool wait);
 }
 
 #ifdef IGL_HEADER_ONLY
