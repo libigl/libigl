@@ -129,6 +129,7 @@ namespace igl
         unsigned int outValueMaxCount, 
         void *outValues);
       int TwRefreshBar();
+      int TwTerminate();
   
   
     // IO FUNCTIONS
@@ -180,6 +181,7 @@ namespace igl
 //TW_API TwBar *      TW_CALL TwGetBarByIndex(int barIndex);
 //TW_API TwBar *      TW_CALL TwGetBarByName(const char *barName);
 //TW_API int          TW_CALL TwRefreshBar(TwBar *bar);
+//TW_API int          TW_CALL TwTerminate();
 //
 //TW_API int      TW_CALL TwAddVarRW(TwBar *bar, const char *name, TwType type, void *var, const char *def);
 //TW_API int      TW_CALL TwAddVarRO(TwBar *bar, const char *name, TwType type, const void *var, const char *def);

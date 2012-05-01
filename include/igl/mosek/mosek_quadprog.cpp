@@ -1,7 +1,13 @@
 #include "mosek_quadprog.h"
 #include "mosek_guarded.h"
 #include <cstdio>
+#include "../find.h"
 #include "../verbose.h"
+#include "../speye.h"
+#include "../matrix_to_list.h"
+#include "../list_to_matrix.h"
+#include "../harwell_boeing.h"
+#include "../eps.h"
 
 // Little function mosek needs in order to know how to print to std out
 static void MSKAPI printstr(void *handle, char str[])
@@ -12,19 +18,20 @@ static void MSKAPI printstr(void *handle, char str[])
 template <typename Index, typename Scalar>
 IGL_INLINE bool igl::mosek_quadprog(
   const Index n,
-  const std::vector<Index> & Qi,
-  const std::vector<Index> & Qj,
-  const std::vector<Scalar> & Qv,
+  std::vector<Index> & Qi,
+  std::vector<Index> & Qj,
+  std::vector<Scalar> & Qv,
   const std::vector<Scalar> & c,
   const Scalar cf,
   const Index m,
-  const std::vector<Index> & Ari,
+  std::vector<Scalar> & Av,
+  std::vector<Index> & Ari,
   const std::vector<Index> & Acp,
-  const std::vector<Scalar> & Av,
   const std::vector<Scalar> & lc,
   const std::vector<Scalar> & uc,
   const std::vector<Scalar> & lx,
   const std::vector<Scalar> & ux,
+  MosekData & mosek_data,
   std::vector<Scalar> & x)
 {
   // I J V vectors of Q should all be same length
@@ -32,13 +39,13 @@ IGL_INLINE bool igl::mosek_quadprog(
   assert(Qv.size() == Qj.size());
   // number of columns in linear constraint matrix must be ≤ number of
   // variables
-  assert(Acp.size() == (n+1));
+  assert( (int)Acp.size() == (n+1));
   // linear bound vectors must be size of number of constraints or empty
-  assert( (lc.size() == m) || (lc.size() == 0));
-  assert( (uc.size() == m) || (uc.size() == 0));
+  assert( ((int)lc.size() == m) || ((int)lc.size() == 0));
+  assert( ((int)uc.size() == m) || ((int)uc.size() == 0));
   // constant bound vectors must be size of number of variables or empty
-  assert( (lx.size() == n) || (lx.size() == 0));
-  assert( (ux.size() == n) || (ux.size() == 0));
+  assert( ((int)lx.size() == n) || ((int)lx.size() == 0));
+  assert( ((int)ux.size() == n) || ((int)ux.size() == 0));
 
   // allocate space for solution in x
   x.resize(n);
@@ -114,7 +121,7 @@ IGL_INLINE bool igl::mosek_quadprog(
   }
 
   // loop over constraints
-  for(size_t i = 0;i<m;i++)
+  for(int i = 0;i<m;i++)
   {
     // put bounds  on constraints
     mosek_guarded(MSK_putbound(task,MSK_ACC_CON,i,MSK_BK_RA,lc[i],uc[i]));
@@ -221,6 +228,69 @@ IGL_INLINE bool igl::mosek_quadprog(
   return success;
 }
 
+IGL_INLINE bool igl::mosek_quadprog(
+  const Eigen::SparseMatrix<double> & Q,
+  const Eigen::VectorXd & c,
+  const double cf,
+  const Eigen::SparseMatrix<double> & A,
+  const Eigen::VectorXd & lc,
+  const Eigen::VectorXd & uc,
+  const Eigen::VectorXd & lx,
+  const Eigen::VectorXd & ux,
+  MosekData & mosek_data,
+  Eigen::VectorXd & x)
+{
+  using namespace Eigen;
+  using namespace std;
+  using namespace igl;
+
+  // Q should be square
+  assert(Q.rows() == Q.cols());
+  // Q should be symmetric
+  assert( (Q-Q.transpose()).sum() < FLOAT_EPS);
+  // Only keep lower triangular part of Q
+  SparseMatrix<double> QL;
+  //QL = Q.template triangularView<Lower>();
+  QL = Q.triangularView<Lower>();
+  VectorXi Qi,Qj;
+  VectorXd Qv;
+  find(QL,Qi,Qj,Qv);
+  vector<int> vQi = matrix_to_list(Qi);
+  vector<int> vQj = matrix_to_list(Qj);
+  vector<double> vQv = matrix_to_list(Qv);
+
+  // Convert linear term
+  vector<double> vc = matrix_to_list(c);
+
+  assert(lc.size() == A.rows());
+  assert(uc.size() == A.rows());
+  // Convert A to harwell boeing format
+  vector<double> vAv;
+  vector<int> vAr,vAc;
+  int nr;
+  harwell_boeing(A,nr,vAv,vAr,vAc);
+
+  assert(lx.size() == Q.rows());
+  assert(ux.size() == Q.rows());
+  vector<double> vlc = matrix_to_list(lc);
+  vector<double> vuc = matrix_to_list(uc);
+  vector<double> vlx = matrix_to_list(lx);
+  vector<double> vux = matrix_to_list(ux);
+
+  vector<double> vx;
+  bool ret = mosek_quadprog(
+    Q.rows(),vQi,vQj,vQv,
+    vc,
+    cf,
+    nr,
+    vAv, vAr, vAc,
+    vlc,vuc,
+    vlx,vux,
+    mosek_data,
+    vx);
+  list_to_matrix(vx,x);
+  return ret;
+}
 #ifndef IGL_HEADER_ONLY
-// Explicit template specialization
+// Explicit template declarations
 #endif

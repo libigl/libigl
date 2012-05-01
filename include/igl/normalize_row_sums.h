@@ -11,10 +11,10 @@ namespace igl
   //   A  #rows by k input matrix
   // Outputs:
   //   B  #rows by k input matrix, can be the same as A
-  template <typename DerivedV>
+  template <typename DerivedA, typename DerivedB>
   IGL_INLINE void normalize_row_sums(
-   const Eigen::PlainObjectBase<DerivedV>& A,
-   Eigen::PlainObjectBase<DerivedV> & B);
+    const Eigen::MatrixBase<DerivedA>& A,
+    Eigen::MatrixBase<DerivedB> & B);
 }
 
 #ifdef IGL_HEADER_ONLY

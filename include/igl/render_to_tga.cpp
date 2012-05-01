@@ -68,5 +68,5 @@ IGL_INLINE bool igl::render_to_tga(
   writeTGA(genericImage,imgFile);
 
   free(genericImage);
-  return true;
+  return fclose(imgFile) == 0;
 }

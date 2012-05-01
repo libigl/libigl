@@ -2,6 +2,11 @@ include ../../../Makefile.conf
 
 .PHONY: all
 all: libiglmosek
+debug: libiglmosek
+
+include ../../../Makefile.conf
+all: CFLAGS += -O3 -DNDEBUG -j 
+debug: CFLAGS += -g -Wall -Werror
 
 .PHONY: libiglmosek
 libiglmosek: obj ../../../lib/libiglmosek.a
