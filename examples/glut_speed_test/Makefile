@@ -3,6 +3,9 @@
 
 all: example
 
+# Shared flags etc.
+include ../../Makefile.conf
+
 .PHONY: example
 
 igl_lib=../../

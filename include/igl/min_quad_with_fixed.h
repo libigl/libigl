@@ -6,7 +6,10 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include <Eigen/SparseExtra>
+//#include <Eigen/SparseExtra>
+// Bug in unsupported/Eigen/SparseExtra needs iostream first
+#include <iostream>
+#include <unsupported/Eigen/SparseExtra>
 
 namespace igl
 {

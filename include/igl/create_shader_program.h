@@ -5,14 +5,15 @@
 #include <map>
 
 #ifdef __APPLE__
-#   include <OpenGL/gl.h>
-#else
-#  ifdef _WIN32
+#  include <OpenGL/gl.h>
+#elif defined(_WIN32)
 #    define NOMINMAX
 #    include <Windows.h>
 #    undef NOMINMAX
-#  endif
-#   include <GL/gl.h>
+#else
+#define GL_GLEXT_PROTOTYPES
+#  include <GL/gl.h>
+#  include <GL/glext.h>
 #endif
 
 namespace igl

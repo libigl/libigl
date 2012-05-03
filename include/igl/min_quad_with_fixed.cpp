@@ -1,6 +1,9 @@
 #include "min_quad_with_fixed.h"
 
-#include <Eigen/SparseExtra>
+//#include <Eigen/SparseExtra>
+// Bug in unsupported/Eigen/SparseExtra needs iostream first
+#include <iostream>
+#include <unsupported/Eigen/SparseExtra>
 #include <cassert>
 #include <cstdio>
 #include <iostream>

@@ -1,4 +1,6 @@
 #include "get_seconds.h"
+// NULL for Linux
+#include <cstddef>
 
 #if _WIN32
 #  include <ctime>

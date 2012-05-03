@@ -3,6 +3,7 @@
 #include "list_to_matrix.h"
 
 #include <iostream>
+#include <cstdio>
 #include <fstream>
 
 template <typename Scalar, typename Index>

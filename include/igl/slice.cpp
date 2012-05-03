@@ -2,6 +2,10 @@
 
 #include <vector>
 
+// Bug in unsupported/Eigen/SparseExtra needs iostream first
+#include <iostream>
+#include <unsupported/Eigen/SparseExtra>
+
 template <typename T>
 IGL_INLINE void igl::slice(
   const Eigen::SparseMatrix<T>& X,

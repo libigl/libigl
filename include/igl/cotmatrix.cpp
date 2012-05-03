@@ -4,6 +4,10 @@
 #include <cstdio>
 #include "cotangent.h"
 
+// Bug in unsupported/Eigen/SparseExtra needs iostream first
+#include <iostream>
+#include <unsupported/Eigen/SparseExtra>
+
 template <typename DerivedV, typename DerivedF, typename Scalar>
 IGL_INLINE void igl::cotmatrix(
   const Eigen::MatrixBase<DerivedV> & V, 
@@ -12,6 +16,7 @@ IGL_INLINE void igl::cotmatrix(
 {
   using namespace igl;
   using namespace Eigen;
+  Eigen::DynamicSparseMatrix<double> foo;
 
   DynamicSparseMatrix<Scalar, RowMajor> dyn_L (V.rows(), V.rows());
   Matrix<int,Dynamic,2> edges;

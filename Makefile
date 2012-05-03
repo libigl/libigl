@@ -6,7 +6,7 @@ include Makefile.conf
 
 # optimized default settings
 all: LFLAGS +=
-OPTFLAGS=-O3 -DNDEBUG -j
+OPTFLAGS=-O3 -DNDEBUG
 debug: OPTFLAGS= -g -Wall -Werror
 CFLAGS += $(OPTFLAGS)
 
@@ -52,11 +52,11 @@ INC+=-Iinclude/
 #############################################################################
 
 # Eigen dependency
-EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+EIGEN3_INC=-I$(OPT)/local/include/eigen3 -I$(OPT)/local/include/eigen3/unsupported
 INC+=$(EIGEN3_INC)
 
 # AntTweakBar dependency
-ANTTWEAKBAR_INC=-I/opt/local/include
+ANTTWEAKBAR_INC=-I$(OPT)/local/include
 INC+=$(ANTTWEAKBAR_INC)
 
 ## OpenGL dependency

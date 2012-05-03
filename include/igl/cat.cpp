@@ -1,4 +1,9 @@
 #include "cat.h"
+#include <cstdio>
+
+// Bug in unsupported/Eigen/SparseExtra needs iostream first
+#include <iostream>
+#include <unsupported/Eigen/SparseExtra>
 
 // Sparse matrices need to be handled carefully. Because C++ does not 
 // Template:

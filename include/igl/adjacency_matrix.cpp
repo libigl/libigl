@@ -2,6 +2,10 @@
 
 #include "verbose.h"
 
+// Bug in unsupported/Eigen/SparseExtra needs iostream first
+#include <iostream>
+#include <unsupported/Eigen/SparseExtra>
+
 template <typename T>
 IGL_INLINE void igl::adjacency_matrix(
   const Eigen::MatrixXi & F, 

@@ -3,6 +3,7 @@
 #include <Eigen/Core>
 #include <Eigen/LU>
 #include "EPS.h"
+#include <cstdio>
 
 template <typename T>
 IGL_INLINE void igl::min_quad_dense_precompute(

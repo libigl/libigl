@@ -2,6 +2,9 @@
 
 all: example_static example_header_only
 
+# Shared flags etc.
+include ../../Makefile.conf
+
 igl_lib=../../
 
 CFLAGS=-g

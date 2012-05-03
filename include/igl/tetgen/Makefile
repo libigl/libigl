@@ -4,7 +4,7 @@ all: libigltetgen
 debug: libigltetgen
 
 include ../../../Makefile.conf
-all: CFLAGS += -O3 -DNDEBUG -j 
+all: CFLAGS += -O3 -DNDEBUG 
 debug: CFLAGS += -g -Wall -Werror
 
 .PHONY: libtetgen
@@ -19,7 +19,7 @@ INC+=-I../../../include/
 # EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY 
 
 # Eigen dependency
-EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+EIGEN3_INC=-I$(OPT)/local/include/eigen3 -I$(OPT)/local/include/eigen3/unsupported
 INC+=$(EIGEN3_INC)
 
 # Tetgen dependency
