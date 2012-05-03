@@ -1,5 +1,9 @@
 #include "slice_into.h"
 
+// Bug in unsupported/Eigen/SparseExtra needs iostream first
+#include <iostream>
+#include <unsupported/Eigen/SparseExtra>
+
 template <typename T>
 IGL_INLINE void igl::slice_into(
   const Eigen::SparseMatrix<T>& X,

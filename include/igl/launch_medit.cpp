@@ -1,5 +1,6 @@
 #include "launch_medit.h"
 #include "writeMESH.h"
+#include <cstdio>
 #include <iostream>
 #include <string>
 #include <sstream>

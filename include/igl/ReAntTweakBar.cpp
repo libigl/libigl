@@ -1,6 +1,7 @@
 #include "ReAntTweakBar.h"
 
 #include <cstdio>
+#include <cstring>
 #include <sstream>
 #include <map>
 

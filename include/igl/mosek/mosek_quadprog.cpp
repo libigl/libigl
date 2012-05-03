@@ -7,7 +7,7 @@
 #include "../matrix_to_list.h"
 #include "../list_to_matrix.h"
 #include "../harwell_boeing.h"
-#include "../eps.h"
+#include "../EPS.h"
 
 // Little function mosek needs in order to know how to print to std out
 static void MSKAPI printstr(void *handle, char str[])

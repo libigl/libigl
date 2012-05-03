@@ -2,6 +2,7 @@
 
 #include "tga.h"
 #include "report_gl_error.h"
+#include <cstring>
 
 IGL_INLINE bool igl::texture_from_tga(const std::string tga_file, GLuint & id)
 {

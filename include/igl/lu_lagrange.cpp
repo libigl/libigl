@@ -1,7 +1,10 @@
 #include "lu_lagrange.h"
 
 // Cholesky LLT decomposition for symmetric positive definite
-#include <Eigen/SparseExtra>
+//#include <Eigen/SparseExtra>
+// Bug in unsupported/Eigen/SparseExtra needs iostream first
+#include <iostream>
+#include <unsupported/Eigen/SparseExtra>
 #include <cassert>
 #include "find.h"
 #include "sparse.h"
@@ -13,6 +16,10 @@ IGL_INLINE bool igl::lu_lagrange(
   Eigen::SparseMatrix<T> & L,
   Eigen::SparseMatrix<T> & U)
 {
+#if EIGEN_VERSION_AT_LEAST(3,0,92)
+#  warning lu_lagrange has not yet been implemented for your Eigen Version
+  return false;
+#else
   // number of unknowns
   int n = ATA.rows();
   // number of lagrange multipliers
@@ -130,6 +137,7 @@ IGL_INLINE bool igl::lu_lagrange(
   }
 
   return true;
+  #endif
 }
 
 #ifndef IGL_HEADER_ONLY

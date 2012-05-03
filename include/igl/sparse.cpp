@@ -1,5 +1,9 @@
 #include "sparse.h"
 
+// Bug in unsupported/Eigen/SparseExtra needs iostream first
+#include <iostream>
+#include <unsupported/Eigen/SparseExtra>
+
 template <class IndexVector, class ValueVector, typename T>
 IGL_INLINE void igl::sparse(
   const IndexVector & I,

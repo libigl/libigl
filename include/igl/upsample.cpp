@@ -3,6 +3,10 @@
 #include "tt.h"
 #include <Eigen/Dense>
 
+// Bug in unsupported/Eigen/SparseExtra needs iostream first
+#include <iostream>
+#include <unsupported/Eigen/SparseExtra>
+
 template <typename MatV, typename MatF>
 IGL_INLINE void igl::upsample( const MatV & V, const MatF & F, MatV & NV, MatF & NF)
 {

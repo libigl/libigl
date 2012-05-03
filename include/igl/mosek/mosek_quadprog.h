@@ -78,7 +78,7 @@ namespace igl
     const std::vector<Scalar> & c,
     const Scalar cf,
     const Index m,
-    /* mosek won't allow this to be const*/ std::vector<Scalar> & Ari,
+    /* mosek won't allow this to be const*/ std::vector<Scalar> & Av,
     /* mosek won't allow this to be const*/ std::vector<Index> & Ari,
     const std::vector<Index> & Acp,
     const std::vector<Scalar> & lc,

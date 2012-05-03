@@ -2,6 +2,10 @@
 
 #include "readOBJ.h"
 #include "readOFF.h"
+
+#include <cstdio>
+
+
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE bool igl::read(
                      const std::string str,

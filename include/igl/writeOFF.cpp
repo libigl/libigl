@@ -1,4 +1,5 @@
 #include "writeOFF.h"
+#include <cstdio>
 
 // write mesh to an ascii off file
 template <typename DerivedV, typename DerivedF>

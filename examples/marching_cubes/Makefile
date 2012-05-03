@@ -5,8 +5,11 @@ all: example
 
 .PHONY: example
 
+# Shared flags etc.
+include ../../Makefile.conf
+
 igl_lib=../../
-eigen=-I/opt/local/include/eigen3
+eigen=-I$(OPT)/local/include/eigen3
 
 CFLAGS=-g
 inc=-I$(igl_lib)/include $(eigen)

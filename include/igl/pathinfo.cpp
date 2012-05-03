@@ -4,6 +4,7 @@
 #include "basename.h"
 // Verbose should be removed once everythings working correctly
 #include "verbose.h"
+#include <algorithm>
 
 IGL_INLINE void igl::pathinfo(
   const std::string & path,

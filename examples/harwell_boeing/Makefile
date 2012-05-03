@@ -1,12 +1,15 @@
 
 .PHONY: all
 
+# Shared flags etc.
+include ../../Makefile.conf
+
 all: example
 
 .PHONY: example
 
 igl_lib=../../
-eigen=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+eigen=-I$(OPT)/local/include/eigen3 -I$(OPT)/local/include/eigen3/unsupported
 
 CFLAGS=-g
 inc=-I$(igl_lib)/include $(eigen)

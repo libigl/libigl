@@ -95,11 +95,12 @@ IGL_INLINE bool igl::writeOBJ(
       if(write_texture_coords)
         fprintf(obj_file,"/%u",FTC(i,j)+1);
       if(write_N)
+      {
         if (write_texture_coords)
           fprintf(obj_file,"/%u",FN(i,j)+1);
         else
           fprintf(obj_file,"//%u",FN(i,j)+1);
-      
+      }
     }
     fprintf(obj_file,"\n");
   }
