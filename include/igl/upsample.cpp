@@ -4,6 +4,7 @@
 #include <Eigen/Dense>
 
 // Bug in unsupported/Eigen/SparseExtra needs iostream first
+#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #include <iostream>
 #include <unsupported/Eigen/SparseExtra>
 
