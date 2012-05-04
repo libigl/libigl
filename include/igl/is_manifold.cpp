@@ -3,7 +3,7 @@
 #include <algorithm>
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE bool igl::is_manifold(const Eigen::PlainObjectBase<DerivedV>& V,
+IGL_INLINE bool igl::is_manifold(const Eigen::PlainObjectBase<DerivedV>& /*V*/,
                                  const Eigen::PlainObjectBase<DerivedF>& F)
   {
     std::vector<std::vector<int> > TTT;

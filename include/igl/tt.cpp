@@ -4,7 +4,7 @@
 #include <algorithm>
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::tt_preprocess(const Eigen::PlainObjectBase<DerivedV>& V,
+IGL_INLINE void igl::tt_preprocess(const Eigen::PlainObjectBase<DerivedV>& /*V*/,
                                    const Eigen::PlainObjectBase<DerivedF>& F,
                                    std::vector<std::vector<int> >& TTT)
 {
