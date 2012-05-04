@@ -213,7 +213,7 @@ bool igl::ReTwBar::save(const char *file_name)
     it != rw_items.end(); 
     it++)
   {
-    const char * name = (*it).name;
+    const char * name = (*it).name.c_str();
     TwType type = (*it).type;
     void * var = (*it).var;
     fprintf(fp,"%s: %s\n",
@@ -228,7 +228,7 @@ bool igl::ReTwBar::save(const char *file_name)
     it != cb_items.end(); 
     it++)
   {
-    const char * name = it->name;
+    const char * name = it->name.c_str();
     TwType type = it->type;
     //TwSetVarCallback setCallback = it->setCallback;
     TwGetVarCallback getCallback = it->getCallback;
@@ -573,7 +573,7 @@ bool igl::ReTwBar::set_value_from_string(
     it != rw_items.end(); 
     it++)
   {
-    if(strcmp(it->name,name) == 0)
+    if(it->name == name)
     {
       void * var = it->var;
       switch(type)
@@ -669,7 +669,7 @@ bool igl::ReTwBar::set_value_from_string(
       it != cb_items.end(); 
       it++)
     {
-      if(strcmp(it->name,name) == 0)
+      if(it->name==name)
       {
         it->setCallback(value,it->clientData);
         item_found = true;

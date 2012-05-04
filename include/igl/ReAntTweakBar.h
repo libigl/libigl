@@ -44,11 +44,12 @@ namespace igl
   
   struct ReTwRWItem
   {
-    const char * name;
+    //const char * name;
+    std::string name;
     TwType type;
     void * var;
     ReTwRWItem(
-      const char * name,
+      const std::string name,
       TwType type, 
       void *var)
     {
@@ -60,13 +61,14 @@ namespace igl
   
   struct ReTwCBItem
   {
-    const char * name;
+    //const char * name;
+    std::string name;
     TwSetVarCallback setCallback;
     TwGetVarCallback getCallback;
     void * clientData;
     TwType type;
     ReTwCBItem(
-      const char * name,
+      const std::string name,
       TwType type, 
       TwSetVarCallback setCallback,
       TwGetVarCallback getCallback,
@@ -158,7 +160,7 @@ namespace igl
       // Returns
       //   true only if string matched a valid type
       bool type_from_string(const char *type_str, TwType & type);
-      // I realize that I mixing std::string and const char * all over the place.
+      // I realize that I mix std::string and const char * all over the place.
       // What can you do...
       bool set_value_from_string(
         const char * name, 
