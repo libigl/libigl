@@ -6,6 +6,7 @@
 #include <iostream>
 #include <unsupported/Eigen/SparseExtra>
 #include <cassert>
+#include <cstdio>
 #include "find.h"
 #include "sparse.h"
 
