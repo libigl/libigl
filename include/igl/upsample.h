@@ -1,6 +1,11 @@
 #ifndef IGL_UPSAMPLE_H
 #define IGL_UPSAMPLE_H
 #include "igl_inline.h"
+
+#include <Eigen/Core>
+
+// History:
+//  changed templates from generic matrices to PlainObjectBase Alec May 7, 2011
 namespace igl
 {
   // Subdivide a mesh without moving vertices: loop subdivision but odd
@@ -18,11 +23,23 @@ namespace igl
   //
   // NOTE: V should not be the same as NV,
   // NOTE: F should not be the same as NF, use other proto
-  template <typename MatV, typename MatF>
-  IGL_INLINE void upsample( const MatV & V, const MatF & F, MatV & NV, MatF & NF);
+  template <
+    typename DerivedV, 
+    typename DerivedF,
+    typename DerivedNV,
+    typename DerivedNF>
+  IGL_INLINE void upsample(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedNV>& NV,
+    Eigen::PlainObjectBase<DerivedNF>& NF);
   // Virtually in place wrapper
-  template <typename MatV, typename MatF>
-  IGL_INLINE void upsample( MatV & V,MatF & F);
+  template <
+    typename DerivedV, 
+    typename DerivedF>
+  IGL_INLINE void upsample(
+    Eigen::PlainObjectBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedF>& F);
 }
 
 #ifdef IGL_HEADER_ONLY

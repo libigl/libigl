@@ -1,15 +1,24 @@
 #include "upsample.h"
 
 #include "tt.h"
+
+//// Bug in unsupported/Eigen/SparseExtra needs iostream first
+//#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+//#include <iostream>
+//#include <unsupported/Eigen/SparseExtra>
+
 #include <Eigen/Dense>
 
-// Bug in unsupported/Eigen/SparseExtra needs iostream first
-#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-#include <iostream>
-#include <unsupported/Eigen/SparseExtra>
-
-template <typename MatV, typename MatF>
-IGL_INLINE void igl::upsample( const MatV & V, const MatF & F, MatV & NV, MatF & NF)
+template <
+  typename DerivedV, 
+  typename DerivedF,
+  typename DerivedNV,
+  typename DerivedNF>
+IGL_INLINE void igl::upsample(
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::PlainObjectBase<DerivedNV>& NV,
+  Eigen::PlainObjectBase<DerivedNF>& NF)
 {
   // Use "in place" wrapper instead
   assert(&V != &NV);
@@ -18,13 +27,17 @@ IGL_INLINE void igl::upsample( const MatV & V, const MatF & F, MatV & NV, MatF &
   using namespace std;
   using namespace Eigen;
 
-  MatF FF, FFi;
-  tt<double>(V,F,FF,FFi);
+  ////typedef Eigen::PlainObjectBase<DerivedF> MatF;
+  ////typedef Eigen::PlainObjectBase<DerivedNF> MatNF;
+  ////typedef Eigen::PlainObjectBase<DerivedNV> MatNV;
+  ////MatF FF, FFi;
+  Eigen::MatrixXi FF,FFi;
+  tt(V,F,FF,FFi);
 
   // TODO: Cache optimization missing from here, it is a mess
   
   // Compute the number and positions of the vertices to insert (on edges)
-  MatF NI = MatF::Constant(FF.rows(),FF.cols(),-1);
+  Eigen::MatrixXi NI = Eigen::MatrixXi::Constant(FF.rows(),FF.cols(),-1);
   int counter = 0;
   
   for(int i=0;i<FF.rows();++i)
@@ -49,8 +62,8 @@ IGL_INLINE void igl::upsample( const MatV & V, const MatF & F, MatV & NV, MatF &
   //SUBD.reserve(15 * (V.rows()+n_even));
   
   // Preallocate NV and NF
-  NV = MatV(V.rows()+n_even,V.cols());
-  NF = MatF(F.rows()*4,3);
+  NV.resize(V.rows()+n_even,V.cols());
+  NF.resize(F.rows()*4,3);
   
   // Fill the odd vertices position
   NV.block(0,0,V.rows(),V.cols()) = V;
@@ -84,9 +97,15 @@ IGL_INLINE void igl::upsample( const MatV & V, const MatF & F, MatV & NV, MatF &
   
 }
 
-template <typename MatV, typename MatF>
-IGL_INLINE void igl::upsample( MatV & V,MatF & F)
+template <
+  typename DerivedV, 
+  typename DerivedF>
+IGL_INLINE void igl::upsample(
+  Eigen::PlainObjectBase<DerivedV>& V,
+  Eigen::PlainObjectBase<DerivedF>& F)
 {
+  typedef Eigen::PlainObjectBase<DerivedF> MatF;
+  typedef Eigen::PlainObjectBase<DerivedV> MatV;
   const MatV V_copy = V;
   const MatF F_copy = F;
   return upsample(V_copy,F_copy,V,F);
@@ -94,5 +113,5 @@ IGL_INLINE void igl::upsample( MatV & V,MatF & F)
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
-//template void igl::upsample<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::Matrix<double, -1, -1, 0, -1, -1>&, Eigen::Matrix<int, -1, -1, 0, -1, -1>&);
+template void igl::upsample<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif

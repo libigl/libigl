@@ -106,7 +106,7 @@ IGL_INLINE void igl::cotangent(const MatV & V, const MatF & F, MatC & C)
 
       // Kj =  det(JTj)/6 * Ej'Ej 
       Mat4x4 Kj = EjTEj*volume;
-      diag_all_pos &= Kj(0,0)>0 & Kj(1,1)>0 & Kj(2,2)>0 & Kj(3,3)>0;
+      diag_all_pos &= ((Kj(0,0)>0) & (Kj(1,1)>0)) & ((Kj(2,2)>0) & (Kj(3,3)>0));
       C(j,0) = Kj(1,2);
       C(j,1) = Kj(2,0);
       C(j,2) = Kj(0,1);

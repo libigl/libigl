@@ -12,7 +12,7 @@ igl_lib=../../
 
 CFLAGS=-g
 inc=-I$(igl_lib)/include
-lib=-framework OpenGL -framework GLUT -L$(igl_lib)/lib -ligl
+lib=$(OPENGL_LIB) $(GLUT_LIB) -L$(igl_lib)/lib -ligl
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o $(lib)

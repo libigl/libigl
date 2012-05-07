@@ -5,6 +5,7 @@ using namespace std;
 #include <igl/sort.h>
 using namespace igl;
 
+#include <cstdio>
 
 template <typename T>
 void matlab_print(const string name, const T & X)

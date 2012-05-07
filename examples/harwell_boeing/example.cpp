@@ -1,5 +1,6 @@
 #define IGL_HEADER_ONLY
 #include <igl/harwell_boeing.h>
+#include <iostream>
 
 template <typename T>
 void print(T & v)

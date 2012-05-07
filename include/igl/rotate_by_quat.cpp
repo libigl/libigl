@@ -17,8 +17,14 @@ IGL_INLINE void igl::rotate_by_quat(
 
   // normalize input 
   Q_type normalized_q[4];
-  bool normalized = igl::normalize_quat<Q_type>(q,normalized_q);
+
+#ifndef NDEBUG
+  bool normalized = 
+#endif
+  igl::normalize_quat<Q_type>(q,normalized_q);
+#ifndef NDEBUG
   assert(normalized);
+#endif
 
   // Conjugate of q
   Q_type q_conj[4];

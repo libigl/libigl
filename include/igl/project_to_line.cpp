@@ -17,9 +17,11 @@ IGL_INLINE void igl::project_to_line(
   // http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
 
   // number of dimensions
+#ifndef NDEBUG
   int dim = P.cols();
   assert(dim == S.size());
   assert(dim == D.size());
+#endif
   // number of points
   int np  = P.rows();
   // vector from source to destination
