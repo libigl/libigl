@@ -1,4 +1,5 @@
 #include <igl/readOBJ.h>
+#include <iostream>
 
 #include <cstdio>
 #include <vector>

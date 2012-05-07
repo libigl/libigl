@@ -1,4 +1,6 @@
 #include <igl/marching_cubes.h>
+#include <iostream>
+#include <cstdio>
 
 #include "igl/MCTables.hh"
 

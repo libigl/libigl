@@ -106,12 +106,8 @@ IGL_INLINE bool igl::readMESH(
 
   //fgets(line,LINE_MAX,mesh_file);
 
-#ifdef __APPLE__
-  size_t number_of_vertices;
-#else
   int number_of_vertices;
-#endif
-  if(1 != fscanf(mesh_file," %ld",&number_of_vertices) || number_of_vertices > 1000000000)
+  if(1 != fscanf(mesh_file," %d",&number_of_vertices) || number_of_vertices > 1000000000)
   {
     fprintf(stderr,"Error: expecting number of vertices less than 10^9...\n");
     fclose(mesh_file);
@@ -119,15 +115,11 @@ IGL_INLINE bool igl::readMESH(
   }
   // allocate space for vertices
   V.resize(number_of_vertices,vector<Scalar>(3,0));
-#ifdef __APPLE__
-  size_t extra;
-#else
   int extra;
-#endif
-  for(size_t i = 0;i<number_of_vertices;i++)
+  for(int i = 0;i<number_of_vertices;i++)
   {
     double x,y,z;
-    if(4 != fscanf(mesh_file," %lg %lg %lg %ld",&x,&y,&z,&extra))
+    if(4 != fscanf(mesh_file," %lg %lg %lg %d",&x,&y,&z,&extra))
     {
       fprintf(stderr,"Error: expecting vertex position...\n");
       fclose(mesh_file);
@@ -154,12 +146,8 @@ IGL_INLINE bool igl::readMESH(
     fclose(mesh_file);
     return false;
   }
-#ifdef __APPLE__
-  size_t number_of_triangles;
-#else
   int number_of_triangles;
-#endif
-  if(1 != fscanf(mesh_file," %ld",&number_of_triangles))
+  if(1 != fscanf(mesh_file," %d",&number_of_triangles))
   {
     fprintf(stderr,"Error: expecting number of triangles...\n");
     fclose(mesh_file);
@@ -168,19 +156,15 @@ IGL_INLINE bool igl::readMESH(
   // allocate space for triangles
   F.resize(number_of_triangles,vector<Index>(3));
   // triangle indices
-#ifdef __APPLE__
-  size_t tri[3];
-#else
   int tri[3];
-#endif
-  for(size_t i = 0;i<number_of_triangles;i++)
+  for(int i = 0;i<number_of_triangles;i++)
   {
-    if(4 != fscanf(mesh_file," %ld %ld %ld %ld",&tri[0],&tri[1],&tri[2],&extra))
+    if(4 != fscanf(mesh_file," %d %d %d %d",&tri[0],&tri[1],&tri[2],&extra))
     {
       printf("Error: expecting triangle indices...\n");
       return false;
     }
-    for(size_t j = 0;j<3;j++)
+    for(int j = 0;j<3;j++)
     {
       F[i][j] = tri[j]-1;
     }
@@ -202,12 +186,8 @@ IGL_INLINE bool igl::readMESH(
     fclose(mesh_file);
     return false;
   }
-#ifdef __APPLE__
-  size_t number_of_tetrahedra;
-#else
   int number_of_tetrahedra;
-#endif
-  if(1 != fscanf(mesh_file," %ld",&number_of_tetrahedra))
+  if(1 != fscanf(mesh_file," %d",&number_of_tetrahedra))
   {
     fprintf(stderr,"Error: expecting number of tetrahedra...\n");
     fclose(mesh_file);
@@ -216,14 +196,10 @@ IGL_INLINE bool igl::readMESH(
   // allocate space for tetrahedra
   T.resize(number_of_tetrahedra,vector<Index>(4));
   // tet indices
-#ifdef __APPLE__  
-  size_t a,b,c,d;
-#else
   int a,b,c,d;
-#endif 
-  for(size_t i = 0;i<number_of_tetrahedra;i++)
+  for(int i = 0;i<number_of_tetrahedra;i++)
   {
-    if(5 != fscanf(mesh_file," %ld %ld %ld %ld %ld",&a,&b,&c,&d,&extra))
+    if(5 != fscanf(mesh_file," %d %d %d %d %d",&a,&b,&c,&d,&extra))
     {
       fprintf(stderr,"Error: expecting tetrahedra indices...\n");
       fclose(mesh_file);

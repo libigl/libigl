@@ -75,8 +75,10 @@ IGL_INLINE void igl::slice(
   const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
   Eigen::PlainObjectBase<DerivedX> & Y)
 {
+#ifndef NDEBUG
   int xm = X.rows();
   int xn = X.cols();
+#endif
   int ym = R.size();
   int yn = C.size();
 
