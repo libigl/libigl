@@ -13,6 +13,10 @@
 //   3 2
 //   1 4 2 5 3 6
 #include <string>
+#include <vector>
+#ifndef IGL_NO_EIGEN
+#  include <Eigen/Core>
+#endif
 namespace igl
 {
   // Read a matrix from an ascii dmat file
@@ -23,8 +27,16 @@ namespace igl
   //   W  eigen matrix containing read-in coefficients
   // Returns true on success, false on error
   //
-  template <class Mat>
-  IGL_INLINE bool readDMAT(const std::string file_name, Mat & W);
+#ifndef IGL_NO_EIGEN
+  template <typename DerivedW>
+  IGL_INLINE bool readDMAT(const std::string file_name, 
+    Eigen::PlainObjectBase<DerivedW> & W);
+#endif
+  // Wrapper for vector of vectors
+  template <typename Scalar>
+  IGL_INLINE bool readDMAT(
+    const std::string file_name, 
+    std::vector<std::vector<Scalar> > & W);
 }
 
 #ifdef IGL_HEADER_ONLY
