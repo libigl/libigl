@@ -2,8 +2,7 @@
 
 #include "verbose.h"
 #include <cstdio>
-
-#include <Eigen/Dense>
+#include <iostream>
 
 // Static helper method reads the first to elements in the given file
 // Inputs:
