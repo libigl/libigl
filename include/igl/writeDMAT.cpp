@@ -1,7 +1,9 @@
 #include "writeDMAT.h"
 
 #include <cstdio>
-#include <Eigen/Dense>
+#ifndef IGL_NO_EIGEN
+#  include <Eigen/Dense>
+#endif
 
 template <class Mat>
 IGL_INLINE bool igl::writeDMAT(const std::string file_name, const Mat & W)
@@ -21,6 +23,40 @@ IGL_INLINE bool igl::writeDMAT(const std::string file_name, const Mat & W)
     for(int i = 0;i < W.rows();i++)
     {
       fprintf(fp,"%lg\n",(double)W(i,j));
+    }
+  }
+  fclose(fp);
+  return true;
+}
+
+template <typename Scalar>
+IGL_INLINE bool igl::writeDMAT(
+  const std::string file_name, 
+  const std::vector<std::vector<Scalar> > W)
+{
+  FILE * fp = fopen(file_name.c_str(),"w");
+  if(fp == NULL)
+  {
+    fprintf(stderr,"IOError: writeDMAT() could not open %s...",file_name.c_str());
+    return false; 
+  }
+  int num_rows = (int)W.size();
+  int num_cols = 0;
+  if(num_rows > 0)
+  {
+    num_cols = W[0].size();
+  }
+  // first line contains number of rows and number of columns
+  fprintf(fp,"%d %d\n",num_rows,num_cols);
+  // Loop over columns slowly
+  for(int j = 0;j < num_cols;j++)
+  {
+    // loop over rows (down columns) quickly
+    for(int i = 0;i < num_rows;i++)
+    {
+      // better be rectangular
+      assert(W[i].size() > j);
+      fprintf(fp,"%0.15lf\n",(double)W[i][j]);
     }
   }
   fclose(fp);
