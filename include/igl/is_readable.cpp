@@ -15,6 +15,7 @@ IGL_INLINE bool igl::is_readable(const char* filename)
 #else
 #  include <sys/stat.h>
 #  include <unistd.h>
+#  include <iostream>
 IGL_INLINE bool igl::is_readable(const char* filename)
 {
   // Check if file already exists

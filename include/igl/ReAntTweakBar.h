@@ -2,7 +2,7 @@
 #define IGL_REANTTWEAKBAR_H
 #include "igl_inline.h"
 // ReAntTweakBar is a minimal wrapper for the AntTweakBar library that allows
-// "bars" to be saved and load from disk. Changing your existing app that users
+// "bars" to be saved and load from disk. Changing your existing app that uses
 // AntTweakBar to use ReAntTweakBar is trivial.
 // 
 // Many (but not all) variable types are supported. I'll try to keep track them
@@ -25,6 +25,10 @@
 //
 // Copyright Alec Jacobson, 2011
 //
+
+// Known bugs:
+//  TwDefineEnumFromString is not supported (use ReTwDefineEnum instead)
+//  Custom enums should not have spaces in their names
 
 // This allows the user to have a non-global, static installation of
 // AntTweakBar
