@@ -3,6 +3,7 @@
 #include "igl_inline.h"
 // See writeDMAT.h for a description of the .dmat file type
 #include <string>
+#include <vector>
 namespace igl
 {
   // Write a matrix using ascii dmat file type
@@ -16,6 +17,10 @@ namespace igl
   //
   template <class Mat>
   IGL_INLINE bool writeDMAT(const std::string file_name, const Mat & W);
+  template <typename Scalar>
+  IGL_INLINE bool writeDMAT(
+    const std::string file_name, 
+    const std::vector<std::vector<Scalar> > W);
 }
 
 #ifdef IGL_HEADER_ONLY
