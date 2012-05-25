@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstring>
 #include <sstream>
+#include <iomanip>
 #include <map>
 
 #define MAX_CB_VAR_SIZE 10
@@ -316,7 +317,7 @@ std::string igl::ReTwBar::get_value_as_string(
     case TW_TYPE_DOUBLE:
       {
         sstr << "TW_TYPE_DOUBLE" << " ";
-        sstr << *(static_cast<double*>(var));
+        sstr << std::setprecision(15) << *(static_cast<double*>(var));
         break;
       }
     default:
