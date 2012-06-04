@@ -10,7 +10,9 @@
 #define IGL_READOFF_H
 #include "igl_inline.h"
 
-#include <Eigen/Core>
+#ifndef IGL_NO_EIGEN
+#  include <Eigen/Core>
+#endif
 #include <string>
 #include <vector>
 
@@ -36,12 +38,13 @@ namespace igl
   // Returns true on success, false on errors
   template <typename Scalar, typename Index>
   IGL_INLINE bool readOFF(
-                          const std::string off_file_name, 
-                          std::vector<std::vector<Scalar > > & V,
-                          std::vector<std::vector<Index > > & F,
-                          std::vector<std::vector<Scalar > > & N);
+    const std::string off_file_name, 
+    std::vector<std::vector<Scalar > > & V,
+    std::vector<std::vector<Index > > & F,
+    std::vector<std::vector<Scalar > > & N);
   
   
+#ifndef IGL_NO_EIGEN
   // read mesh from a ascii off file
   // Inputs:
   //   str  path to .off file
@@ -50,16 +53,17 @@ namespace igl
   //   F  eigen int matrix #F by 3
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool readOFF(
-                          const std::string str,
-                          Eigen::PlainObjectBase<DerivedV>& V,
-                          Eigen::PlainObjectBase<DerivedF>& F);
+    const std::string str,
+    Eigen::PlainObjectBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedF>& F);
 
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool readOFF(
-                          const std::string str,
-                          Eigen::PlainObjectBase<DerivedV>& V,
-                          Eigen::PlainObjectBase<DerivedF>& F,
-                          Eigen::PlainObjectBase<DerivedV>& N);
+    const std::string str,
+    Eigen::PlainObjectBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedV>& N);
+#endif
 
 }
 
