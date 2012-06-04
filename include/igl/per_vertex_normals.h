@@ -16,16 +16,16 @@ namespace igl
   //   N  #V by 3 eigen Matrix of mesh vertex 3D normals
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE void per_vertex_normals(
-                                   const Eigen::PlainObjectBase<DerivedV>& V,
-                                   const Eigen::PlainObjectBase<DerivedF>& F,
-                                   Eigen::PlainObjectBase<DerivedV> & N);
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedV> & N);
 
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE void per_vertex_normals(
-                                     const Eigen::PlainObjectBase<DerivedV>& V,
-                                     const Eigen::PlainObjectBase<DerivedF>& F,
-                                     const Eigen::PlainObjectBase<DerivedV>& FN,
-                                     Eigen::PlainObjectBase<DerivedV> & N);
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::PlainObjectBase<DerivedV>& FN,
+    Eigen::PlainObjectBase<DerivedV> & N);
 
 }
 
