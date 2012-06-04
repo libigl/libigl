@@ -123,6 +123,7 @@ IGL_INLINE bool igl::readOFF(
 }
 
 
+#ifndef IGL_NO_EIGEN
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE bool igl::readOFF(
                              const std::string str,
@@ -196,6 +197,7 @@ IGL_INLINE bool igl::readOFF(
   }
   return true;
 }
+#endif
 
 
 #ifndef IGL_HEADER_ONLY
