@@ -3,6 +3,7 @@
 #include "igl_inline.h"
 namespace igl
 {
+  //double POINT_COLOR[3] = {239./255.,213./255.,46./255.};
   // Draw a nice looking, colored dot at a given point in 3d.
   //
   // Note: expects that GL_CURRENT_COLOR is set with the desired foreground color
