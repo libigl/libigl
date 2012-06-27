@@ -60,7 +60,7 @@ IGL_INLINE bool igl::render_to_tga(
     imgFile = fopen(tga_file.c_str(),"w");
     if(NULL==imgFile)
     {
-      printf("IOError: %s could not be opened...",tga_file.c_str());
+      printf("IOError: %s could not be opened...\n",tga_file.c_str());
       return false;
     }
   }
