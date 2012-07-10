@@ -107,12 +107,12 @@ namespace igl
   //   j  index of coordinate in quaternion i
   // Returns values of CANONICAL_VIEW_QUAT_*[i][j]
   template <typename Q_type> 
-  IGL_INLINE const Q_type CANONICAL_VIEW_QUAT(int i, int j);
+  IGL_INLINE Q_type CANONICAL_VIEW_QUAT(int i, int j);
   // Template specializations for float and double
   template <> 
-  IGL_INLINE const float CANONICAL_VIEW_QUAT<float>(int i, int j);
+  IGL_INLINE float CANONICAL_VIEW_QUAT<float>(int i, int j);
   template <> 
-  IGL_INLINE const double CANONICAL_VIEW_QUAT<double>(int i, int j);
+  IGL_INLINE double CANONICAL_VIEW_QUAT<double>(int i, int j);
 
 #  undef SQRT_2_OVER_2
 }
