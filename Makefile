@@ -68,6 +68,7 @@ obj:
 	mkdir -p obj
 
 lib/libigl.a: $(OBJ_FILES)
+	mkdir -p lib
 	rm -f $@
 	ar cqs $@ $(OBJ_FILES)
 
