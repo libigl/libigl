@@ -15,5 +15,13 @@ namespace igl
   const float CYAN_SPECULAR[4] =   { 163.0/255.0,221.0/255.0,255.0/255.0,1.0f };
   const float DENIS_PURPLE_DIFFUSE[4] =   { 80.0/255.0,64.0/255.0,255.0/255.0,1.0f };
   const float LADISLAV_ORANGE_DIFFUSE[4] = {1.0f, 125.0f / 255.0f, 19.0f / 255.0f, 0.0f};
+  // FAST armadillos colors
+  const float FAST_GREEN_DIFFUSE[4] = { 113.0f/255.0f, 239.0f/255.0f,  46.0f/255.0f, 1.0f};
+  const float FAST_RED_DIFFUSE[4]   = { 255.0f/255.0f,  65.0f/255.0f,  46.0f/255.0f, 1.0f};
+  const float FAST_BLUE_DIFFUSE[4]  = { 106.0f/255.0f, 106.0f/255.0f, 255.0f/255.0f, 1.0f};
+  const float FAST_GRAY_DIFFUSE[4]  = { 150.0f/255.0f, 150.0f/255.0f, 150.0f/255.0f, 1.0f};
+  const float WHITE_AMBIENT[4] =   { 255.0/255.0,255.0/255.0,255.0/255.0,1.0f };
+  const float WHITE_DIFFUSE[4] =   { 255.0/255.0,255.0/255.0,255.0/255.0,1.0f };
+  const float WHITE_SPECULAR[4] =  { 255.0/255.0,255.0/255.0,255.0/255.0,1.0f };
 }
 #endif

@@ -23,6 +23,10 @@ ifeq ($(IGL_WITH_MOSEK),1)
 	# append mosek extra dir
 	EXTRA_DIRS+=include/igl/mosek
 endif
+ifeq ($(IGL_WITH_PNG),1)
+	# append mosek extra dir
+	EXTRA_DIRS+=include/igl/png
+endif
 
 .PHONY: examples
 .PHONY: extras

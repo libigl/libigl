@@ -60,6 +60,9 @@ namespace igl
   //
   // KNOWN BUG: This only knows how to face lines without normal or texture
   // indices. It will probably crash or give garbage on anything else.
+  //
+  // KNOWN BUG: The order of the attributes is different than the vector
+  // version above
   template <typename DerivedV, typename DerivedF, typename DerivedT>
   IGL_INLINE bool readOBJ(
     const std::string str,
