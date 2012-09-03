@@ -1,0 +1,10 @@
+# use glob syntax.
+syntax: glob
+*.o
+*.a
+*~
+example
+example_static
+example_header_only
+example1
+external/yimg/.git*
