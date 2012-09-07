@@ -8,3 +8,4 @@ example_static
 example_header_only
 example1
 external/yimg/.git*
+.DS_Store
