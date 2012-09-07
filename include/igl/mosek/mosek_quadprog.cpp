@@ -247,7 +247,9 @@ IGL_INLINE bool igl::mosek_quadprog(
   // Q should be square
   assert(Q.rows() == Q.cols());
   // Q should be symmetric
+#ifdef EIGEN_HAS_A_BUG_AND_FAILS_TO_LET_ME_COMPUTE_Q_MINUS_Q_TRANSPOSE
   assert( (Q-Q.transpose()).sum() < FLOAT_EPS);
+#endif
   // Only keep lower triangular part of Q
   SparseMatrix<double> QL;
   //QL = Q.template triangularView<Lower>();

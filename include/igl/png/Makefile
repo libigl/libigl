@@ -22,6 +22,9 @@ YIMG_INC=-I$(YIMG)
 INC+=$(YIMG_INC)
 YIMG_STATIC_LIB=$(YIMG)/libyimg.a
 
+# BOOST dependency
+INC+=-I/opt/local/include/
+
 obj: 
 	mkdir -p obj
 
