@@ -37,7 +37,7 @@ IGL_INLINE void igl::edgetopology(
     if (!((ETT[i][0] == ETT[i+1][0]) && (ETT[i][1] == ETT[i+1][1])))
       ++En;
   
-  EV  = Eigen::MatrixXi::Constant((int)(En),2,-1);
+  EV = Eigen::MatrixXi::Constant((int)(En),2,-1);
   FE = Eigen::MatrixXi::Constant((int)(F.rows()),3,-1);
   EF = Eigen::MatrixXi::Constant((int)(En),2,-1);
   En = 0;
@@ -68,7 +68,30 @@ IGL_INLINE void igl::edgetopology(
       ++i; // skip the next one
     }
     ++En;
-  }    
+  }
+  
+  // Sort the relation EF, accordingly to EV
+  // the first one is the face on the left of the edge
+  
+  for(unsigned i=0; i<EF.rows(); ++i)
+  {
+    int fid = EF(i,0);
+    bool flip = true;
+    // search for edge EV.row(i)
+    for (unsigned j=0; j<3; ++j)
+    {
+      if ((F(fid,j) == EV(i,0)) && (F(fid,(j+1)%3) == EV(i,1)))
+        flip = false;
+    }
+    
+    if (flip)
+    {
+      int tmp = EF(i,0);
+      EF(i,0) = EF(i,1);
+      EF(i,1) = tmp;
+    }
+  }
+  
 }
 
 #ifndef IGL_HEADER_ONLY
