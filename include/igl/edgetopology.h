@@ -18,7 +18,7 @@ namespace igl
   // Output:
   // EV  : #Ex2, Stores the edge description as pair of indices to vertices
   // FE : #Fx3, Stores the Triangle-Edge relation
-  // EF : #Ex2: Stores the Edge-Triangle relation (unsorted)
+  // EF : #Ex2: Stores the Edge-Triangle relation
   IGL_INLINE void edgetopology(
     const Eigen::MatrixXd& V, 
     const Eigen::MatrixXi& F, 
