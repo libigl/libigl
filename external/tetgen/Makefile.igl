@@ -21,7 +21,9 @@ CXX = g++
 # -O2, -O3 ... to find the best optimization level.
 # ===================================================================
 
-CXXFLAGS = -O3
+#CXXFLAGS = -O3
+# Alec: -O3 causes linux machine to crash
+CXXFLAGS = -O2
 
 # PREDCXXFLAGS is for compiling J. Shewchuk's predicates. It should
 # always be equal to -O0 (no optimization). Otherwise, TetGen may not

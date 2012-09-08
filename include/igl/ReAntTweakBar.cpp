@@ -266,6 +266,15 @@ std::string igl::ReTwBar::get_value_as_string(
         sstr << *(static_cast<bool*>(var));
         break;
       }
+    case TW_TYPE_QUAT4D:
+      {
+        sstr << "TW_TYPE_QUAT4D" << " ";
+        // Q: Why does casting to double* work? shouldn't I have to cast to
+        // double**?
+        double * q = static_cast<double*>(var);
+        sstr << q[0] << " " << q[1] << " " << q[2] << " " << q[3];
+        break;
+      }
     case TW_TYPE_QUAT4F:
       {
         sstr << "TW_TYPE_QUAT4F" << " ";
@@ -453,6 +462,7 @@ bool igl::ReTwBar::set_value_from_string(
   float v;
   double dv;
   float f[4];
+  double d[4];
   bool b;
 
   // First try to get value from default types
@@ -465,6 +475,19 @@ bool igl::ReTwBar::set_value_from_string(
         {
           b = ib!=0;
           value = &b;
+        }else
+        {
+          printf("ERROR: Bad value format...\n");
+          return false;
+        }
+        break;
+      }
+    case TW_TYPE_QUAT4D:
+    //case TW_TYPE_COLOR4D:
+      {
+        if(sscanf(value_str," %lf %lf %lf %lf",&d[0],&d[1],&d[2],&d[3]) == 4)
+        {
+          value = &d;
         }else
         {
           printf("ERROR: Bad value format...\n");
@@ -584,6 +607,17 @@ bool igl::ReTwBar::set_value_from_string(
             bool * bvar = static_cast<bool*>(var);
             bool * bvalue = static_cast<bool*>(value);
             *bvar = *bvalue;
+            break;
+          }
+        case TW_TYPE_QUAT4D:
+        //case TW_TYPE_COLOR4D:
+          {
+            double * dvar = static_cast<double*>(var);
+            double * dvalue = static_cast<double*>(value);
+            dvar[0] = dvalue[0];
+            dvar[1] = dvalue[1];
+            dvar[2] = dvalue[2];
+            dvar[3] = dvalue[3];
             break;
           }
         case TW_TYPE_QUAT4F:

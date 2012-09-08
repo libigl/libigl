@@ -1,0 +1,6 @@
+INCLUDEFLAGS += 
+
+LINKTIMEFLAGS += -lz -lpng -lGL -lGLU -lglut \
+		-L/usr/X11R6/lib -lX11 -lXext -lXmu -lXt -lXi -lSM -lICE
+
+FRAMEWORKS =
