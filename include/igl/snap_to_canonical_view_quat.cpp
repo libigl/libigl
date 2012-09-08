@@ -41,9 +41,9 @@ IGL_INLINE bool igl::snap_to_canonical_view_quat(
   const Q_type MAX_DISTANCE = 0.4;
   Q_type min_distance = 2*MAX_DISTANCE;
   int min_index = -1;
-  int min_sign = 0;
+  double min_sign = 0;
   // loop over canonical view quaternions
-  for(int sign = -1;sign<=1;sign+=2)
+  for(double sign = -1;sign<=1;sign+=2)
   {
     for(int i = 0; i<NUM_CANONICAL_VIEW_QUAT; i++)
     {
@@ -51,6 +51,7 @@ IGL_INLINE bool igl::snap_to_canonical_view_quat(
       // loop over coordinates
       for(int j = 0;j<4;j++)
       {
+        // Double cast because of bug in llvm version 4.2 with -O3
         distance += 
           (qn[j]-sign*igl::CANONICAL_VIEW_QUAT<Q_type>(i,j))*
           (qn[j]-sign*igl::CANONICAL_VIEW_QUAT<Q_type>(i,j));

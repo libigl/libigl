@@ -12,6 +12,8 @@ namespace igl
   //   height height of scene and resulting image
   ///  alpha  whether to include alpha channel
   // Returns true only if no errors occured
+  //
+  // See also: png/render_to_png which is slower but writes .png files
   IGL_INLINE bool render_to_tga(
     const std::string tga_file,
     const int width,
