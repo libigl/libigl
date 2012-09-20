@@ -44,7 +44,7 @@ namespace igl
     const char * type_str;
   };
 
-  #define RETW_NUM_DEFAULT_TYPE_STRINGS 23
+  #define RETW_NUM_DEFAULT_TYPE_STRINGS 24
   ReTwTypeString ReTwDefaultTypeStrings[RETW_NUM_DEFAULT_TYPE_STRINGS] = 
   {
     {TW_TYPE_UNDEF,"TW_TYPE_UNDEF"},
@@ -298,6 +298,13 @@ std::string igl::ReTwBar::get_value_as_string(
         sstr << c[0] << " " << c[1] << " " << c[2];
         break;
       }
+    case TW_TYPE_DIR3D:
+      {
+        sstr << "TW_TYPE_DIR3D" << " ";
+        double * d = static_cast<double*>(var);
+        sstr << d[0] << " " << d[1] << " " << d[2];
+        break;
+      }
     case TW_TYPE_DIR3F:
       {
         sstr << "TW_TYPE_DIR3F" << " ";
@@ -508,6 +515,19 @@ bool igl::ReTwBar::set_value_from_string(
         }
         break;
       }
+    //case TW_TYPE_COLOR3D:
+    case TW_TYPE_DIR3D:
+      {
+        if(sscanf(value_str," %lf %lf %lf",&d[0],&d[1],&d[2]) == 3)
+        {
+          value = &d;
+        }else
+        {
+          printf("ERROR: Bad value format...\n");
+          return false;
+        }
+        break;
+      }
     case TW_TYPE_COLOR3F:
     case TW_TYPE_DIR3F:
       {
@@ -629,6 +649,16 @@ bool igl::ReTwBar::set_value_from_string(
             fvar[1] = fvalue[1];
             fvar[2] = fvalue[2];
             fvar[3] = fvalue[3];
+            break;
+          }
+        //case TW_TYPE_COLOR3D:
+        case TW_TYPE_DIR3D:
+          {
+            double * dvar = static_cast<double*>(var);
+            double * dvalue = static_cast<double*>(value);
+            dvar[0] = dvalue[0];
+            dvar[1] = dvalue[1];
+            dvar[2] = dvalue[2];
             break;
           }
         case TW_TYPE_COLOR3F:
