@@ -3,10 +3,10 @@
 
 #include "tt.h"
 
-template<typename T, typename S>
-IGL_INLINE std::vector<bool> igl::is_border_vertex(const T& V, const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>& F)
+template <typename DerivedV, typename DerivedF>
+IGL_INLINE std::vector<bool> igl::is_border_vertex(const Eigen::PlainObjectBase<DerivedV> &V, const Eigen::PlainObjectBase<DerivedF> &F)
 {
-  Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> FF;
+  Eigen::PlainObjectBase<DerivedF> FF;
   igl::tt(V,F,FF);
   std::vector<bool> ret(V.rows());
   for(unsigned i=0; i<ret.size();++i)
@@ -17,7 +17,7 @@ IGL_INLINE std::vector<bool> igl::is_border_vertex(const T& V, const Eigen::Matr
       if(FF(i,j) == -1)
       {
         ret[F(i,j)]       = true;
-        ret[F(i,(j+1)%3)] = true;
+        ret[F(i,(j+1)%F.cols())] = true;
       }
   return ret;
 }
