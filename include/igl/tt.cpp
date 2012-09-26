@@ -9,11 +9,11 @@ IGL_INLINE void igl::tt_preprocess(const Eigen::PlainObjectBase<DerivedV>& /*V*/
                                    std::vector<std::vector<int> >& TTT)
 {
   for(int f=0;f<F.rows();++f)
-    for (int i=0;i<3;++i)
+    for (int i=0;i<F.cols();++i)
     {
       // v1 v2 f ei 
       int v1 = F(f,i);
-      int v2 = F(f,(i+1)%3);
+      int v2 = F(f,(i+1)%F.cols());
       if (v1 > v2) std::swap(v1,v2);
       std::vector<int> r(4);
       r[0] = v1; r[1] = v2;
@@ -29,7 +29,7 @@ IGL_INLINE void igl::tt_extractTT(const Eigen::PlainObjectBase<DerivedF>& F,
                                   std::vector<std::vector<int> >& TTT,
                                   Eigen::PlainObjectBase<DerivedTT>& TT)
 {
-  TT = Eigen::PlainObjectBase<DerivedTT>::Constant((int)(F.rows()),3,-1);
+  TT = Eigen::PlainObjectBase<DerivedTT>::Constant((int)(F.rows()),F.cols(),-1);
   
   for(int i=1;i<(int)TTT.size();++i)
   {
@@ -49,7 +49,7 @@ IGL_INLINE void igl::tt_extractTTi(const Eigen::PlainObjectBase<DerivedF>& F,
                                    std::vector<std::vector<int> >& TTT,
                                    Eigen::PlainObjectBase<DerivedTT>& TTi)
 {
-  TTi = Eigen::PlainObjectBase<DerivedTT>::Constant((int)(F.rows()),3,-1);
+  TTi = Eigen::PlainObjectBase<DerivedTT>::Constant((int)(F.rows()),F.cols(),-1);
   
   for(int i=1;i<(int)TTT.size();++i)
   {
