@@ -55,7 +55,7 @@ IGL_INLINE bool igl::writeDMAT(
     for(int i = 0;i < num_rows;i++)
     {
       // better be rectangular
-      assert(W[i].size() > j);
+      assert((int)W[i].size() > j);
       fprintf(fp,"%0.15lf\n",(double)W[i][j]);
     }
   }
