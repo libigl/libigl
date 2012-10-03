@@ -12,9 +12,9 @@
 
 namespace igl 
 {
-  template<typename T, typename S>
-  IGL_INLINE std::vector<bool> is_border_vertex(const T& V,
-                                                const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>& F);
+  template <typename DerivedV, typename DerivedF>
+  IGL_INLINE std::vector<bool> is_border_vertex(const Eigen::PlainObjectBase<DerivedV> &V,
+                                                const Eigen::PlainObjectBase<DerivedF> &F);
 }
 
 #ifdef IGL_HEADER_ONLY
