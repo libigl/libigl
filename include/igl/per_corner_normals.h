@@ -16,21 +16,29 @@ namespace igl
   //     for corner F(i,j) is at CN(i*3+j,:) 
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE void per_corner_normals(
-                                     const Eigen::PlainObjectBase<DerivedV>& V,
-                                     const Eigen::PlainObjectBase<DerivedF>& F,
-                                     const double corner_threshold,
-                                     Eigen::PlainObjectBase<DerivedV> & CN);
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    const double corner_threshold,
+    Eigen::PlainObjectBase<DerivedV> & CN);
   // Other Inputs:
   //   FN  #F by 3 eigen Matrix of face normals
+  template <typename DerivedV, typename DerivedF, typename DerivedFN, typename DerivedCN>
+  IGL_INLINE void per_corner_normals(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::PlainObjectBase<DerivedFN>& FN,
+    const double corner_threshold,
+    Eigen::PlainObjectBase<DerivedCN> & CN);
+  // Other Inputs:
   //   VF  map from vertices to list of incident faces
   template <typename DerivedV, typename DerivedF, typename IndexType>
   IGL_INLINE void per_corner_normals(
-                                     const Eigen::PlainObjectBase<DerivedV>& V,
-                                     const Eigen::PlainObjectBase<DerivedF>& F,
-                                     const Eigen::PlainObjectBase<DerivedV>& FN,
-                                     const std::vector<std::vector<IndexType> >& VF,
-                                     const double corner_threshold,
-                                     Eigen::PlainObjectBase<DerivedV> & CN);
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::PlainObjectBase<DerivedV>& FN,
+    const std::vector<std::vector<IndexType> >& VF,
+    const double corner_threshold,
+    Eigen::PlainObjectBase<DerivedV> & CN);
 }
 
 #ifdef IGL_HEADER_ONLY
