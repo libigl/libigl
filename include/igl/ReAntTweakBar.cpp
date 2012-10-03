@@ -44,7 +44,7 @@ namespace igl
     const char * type_str;
   };
 
-  #define RETW_NUM_DEFAULT_TYPE_STRINGS 24
+  #define RETW_NUM_DEFAULT_TYPE_STRINGS 23
   ReTwTypeString ReTwDefaultTypeStrings[RETW_NUM_DEFAULT_TYPE_STRINGS] = 
   {
     {TW_TYPE_UNDEF,"TW_TYPE_UNDEF"},
