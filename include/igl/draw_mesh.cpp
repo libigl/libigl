@@ -12,7 +12,16 @@ IGL_INLINE void igl::draw_mesh(
     // loop over corners of triangle
     for(int j = 0;j<3;j++)
     {
-      glNormal3d(N(F(i,j),0),N(F(i,j),1),N(F(i,j),2));
+      if(N.rows() == V.rows())
+      {
+        glNormal3d(N(F(i,j),0),N(F(i,j),1),N(F(i,j),2));
+      }else if(N.rows() == F.rows()*3)
+      {
+        glNormal3d(N(i*3+j,0),N(i*3+j,1),N(i*3+j,2));
+      }else if(N.rows() == F.rows())
+      {
+        glNormal3d(N(i,0),N(i,1),N(i,2));
+      }
       glVertex3d(V(F(i,j),0),V(F(i,j),1),V(F(i,j),2));
     }
   }
@@ -33,7 +42,26 @@ IGL_INLINE void igl::draw_mesh(
     for(int j = 0;j<3;j++)
     {
       glColor3d(C(F(i,j),0),C(F(i,j),1),C(F(i,j),2));
-      glNormal3d(N(F(i,j),0),N(F(i,j),1),N(F(i,j),2));
+      if(C.rows() == V.rows())
+      {
+        glColor3d(C(F(i,j),0),C(F(i,j),1),C(F(i,j),2));
+      }else if(C.rows() == F.rows()*3)
+      {
+        glColor3d(C(i*3+j,0),C(i*3+j,1),C(i*3+j,2));
+      }else if(C.rows() == F.rows())
+      {
+        glColor3d(C(i,0),C(i,1),C(i,2));
+      }
+      if(N.rows() == V.rows())
+      {
+        glNormal3d(N(F(i,j),0),N(F(i,j),1),N(F(i,j),2));
+      }else if(N.rows() == F.rows()*3)
+      {
+        glNormal3d(N(i*3+j,0),N(i*3+j,1),N(i*3+j,2));
+      }else if(N.rows() == F.rows())
+      {
+        glNormal3d(N(i,0),N(i,1),N(i,2));
+      }
       glVertex3d(V(F(i,j),0),V(F(i,j),1),V(F(i,j),2));
     }
   }
