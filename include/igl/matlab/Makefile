@@ -17,7 +17,7 @@ INC+=-I../../../include/
 # EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY 
 
 # Eigen dependency
-EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
 INC+=$(EIGEN3_INC)
 
 # Matlab dependency

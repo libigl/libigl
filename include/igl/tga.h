@@ -10,11 +10,9 @@
 #endif
 
 #ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <GLUT/glut.h>
+#  include <OpenGL/gl.h>
 #else
-#include <GL/gl.h>
-#include <GL/glut.h>
+#  include <GL/gl.h>
 #endif
 
 namespace igl
