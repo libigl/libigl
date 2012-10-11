@@ -1,5 +1,6 @@
 #include "render_to_tga.h"
 #include "tga.h"
+#include <cstdlib>
 
 IGL_INLINE bool igl::render_to_tga(
   const std::string tga_file,
