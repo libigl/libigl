@@ -54,13 +54,15 @@ INC+=-Iinclude/
 #############################################################################
 # DEPENDENCIES
 #############################################################################
+INC+=$(OPENGL_INC)
 
 # Eigen dependency
-EIGEN3_INC=-I$(OPT)/local/include/eigen3 -I$(OPT)/local/include/eigen3/unsupported
+EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
 INC+=$(EIGEN3_INC)
 
 # AntTweakBar dependency
-ANTTWEAKBAR_INC=-I$(OPT)/local/include
+#ANTTWEAKBAR_INC=-I$(DEFAULT_PREFIX)/include
+ANTTWEAKBAR_INC=-Iexternal/AntTweakBar/include
 INC+=$(ANTTWEAKBAR_INC)
 
 ## OpenGL dependency
