@@ -15,9 +15,13 @@ MATLAB_LIB=-L$(MATLAB)/bin/maci64 -lmx -lmat
 LIB+=$(IGL_LIB) $(MATLAB_LIB)
 INC+=$(IGL_INC) $(EIGEN3_INC) $(MATLAB_INC)
 
-all: example 
-
 CFLAGS += -g
+
+ifeq ($(IGL_WITH_MATLAB),1)
+	EXAMPLE=example
+endif
+
+all: $(EXAMPLE)
 
 example: example.o
 	g++ -o example example.o $(LIB)
