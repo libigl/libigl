@@ -40,6 +40,7 @@
 
 #include <vector>
 #include <string>
+#include <cassert>
 
 namespace igl
 {
@@ -52,14 +53,37 @@ namespace igl
     std::string name;
     TwType type;
     void * var;
+    // Default constructor
     ReTwRWItem(
-      const std::string name,
-      TwType type, 
-      void *var)
+      const std::string _name,
+      TwType _type, 
+      void *_var):
+      name(_name),
+      type(_type),
+      var(_var)
     {
-      this->name = name;
-      this->type = type;
-      this->var = var;
+    }
+    // Shallow copy constructor
+    ReTwRWItem(const ReTwRWItem & that):
+      name(that.name),
+      type(that.type),
+      var(that.var)
+    {
+      // I don't think you should be using this!
+      assert(false);
+    }
+    // Shallow assignment 
+    ReTwRWItem & operator=(const ReTwRWItem & that)
+    {
+      // I don't think you should be using this!
+      assert(false);
+      if(this != &that)
+      {
+        this->name = that.name;
+        this->type = that.type;
+        this->var = that.var;
+      }
+      return *this;
     }
   };
   
@@ -67,23 +91,51 @@ namespace igl
   {
     //const char * name;
     std::string name;
+    TwType type;
     TwSetVarCallback setCallback;
     TwGetVarCallback getCallback;
     void * clientData;
-    TwType type;
+    // Default constructor
     ReTwCBItem(
-      const std::string name,
-      TwType type, 
-      TwSetVarCallback setCallback,
-      TwGetVarCallback getCallback,
-      void * clientData)
+      const std::string _name,
+      TwType _type, 
+      TwSetVarCallback _setCallback,
+      TwGetVarCallback _getCallback,
+      void * _clientData):
+      name(_name),
+      type(_type),
+      setCallback(_setCallback),
+      getCallback(_getCallback),
+      clientData(_clientData)
     {
-      this->name = name;
-      this->type = type;
-      this->setCallback = setCallback;
-      this->getCallback = getCallback;
-      this->clientData = clientData;
     }
+    // Shallow copy
+    ReTwCBItem(const ReTwCBItem & that):
+      name(that.name),
+      type(that.type),
+      setCallback(that.setCallback),
+      getCallback(that.getCallback),
+      clientData(that.clientData)
+    {
+      // I don't think you should be using this!
+      assert(false);
+    }
+    // Shallow assignment
+    ReTwCBItem & operator=(const ReTwCBItem & that)
+    {
+      // I don't think you should be using this!
+      assert(false);
+      if(this != &that)
+      {
+        name = that.name;
+        type = that.type;
+        setCallback = that.setCallback;
+        getCallback = that.getCallback;
+        clientData = that.clientData;
+      }
+      return *this;
+    }
+
   };
   
   class ReTwBar
@@ -94,9 +146,17 @@ namespace igl
     // anytime AntTweakBar functions can be called directly on the bar
     public:
       TwBar * bar;
-    private:
+    protected:
       std::vector<ReTwRWItem> rw_items;
       std::vector<ReTwCBItem> cb_items;
+    public:
+      // Default constructor with explicit initialization
+      ReTwBar();
+    private:
+      // Copy constructor does shallow copy
+      ReTwBar(const ReTwBar & that);
+      // Assignment operator does shallow assignment
+      ReTwBar &operator=(const ReTwBar & that);
   
     // WRAPPERS FOR ANTTWEAKBAR FUNCTIONS 
     public:
