@@ -3,6 +3,7 @@ all: lib extras examples
 
 # Shared flags etc.
 include Makefile.conf
+$(info Hello, $(IGL_USERNAME)!)
 
 # optimized default settings
 all: LFLAGS +=
