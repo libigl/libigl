@@ -73,6 +73,30 @@ namespace igl
   };
 }
 
+igl::ReTwBar::ReTwBar():
+ bar(NULL),rw_items(),cb_items()
+{
+}
+
+igl::ReTwBar::ReTwBar(const igl::ReTwBar & that):
+  bar(that.bar),
+  rw_items(that.rw_items),
+  cb_items(that.cb_items)
+{
+}
+
+igl::ReTwBar & igl::ReTwBar::operator=(const igl::ReTwBar & that)
+{
+  // check for self assignment
+  if(this != &that)
+  {
+    bar = that.bar;
+    rw_items = that.rw_items;
+    cb_items = that.cb_items;
+  }
+  return *this;
+}
+
 
 // BAR WRAPPERS
 void igl::ReTwBar::TwNewBar(const char *barName)

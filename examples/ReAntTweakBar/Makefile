@@ -11,8 +11,8 @@ all: example
 igl_lib=../../
 
 APPKIT_LIB =
-lib= $(ANTTWEAKBAR_LIB) -L$(igl_lib)/lib -ligl -L$(OPT)/local/lib $(OPENGL_LIB) $(GLUT_LIB)
-inc=-I$(igl_lib)/include -I$(OPT)/local/include
+lib= $(ANTTWEAKBAR_LIB) -L$(igl_lib)/lib -ligl -L$(DEFAULT_PREFIX)/lib $(OPENGL_LIB) $(GLUT_LIB)
+inc=-I$(igl_lib)/include -I$(DEFAULT_PREFIX)/include
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o $(lib)

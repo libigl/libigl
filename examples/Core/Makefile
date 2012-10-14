@@ -5,7 +5,7 @@ all: example1
 include ../../Makefile.conf
 
 igl_lib=../../
-eigen_lib=$(OPT)/local/include/eigen3/
+eigen_lib=$(DEFAULT_PREFIX)/include/eigen3/
 
 CFLAGS=-g
 inc=-I$(igl_lib)/include -I$(eigen_lib)
