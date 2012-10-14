@@ -2,6 +2,7 @@
 #define IGL_REORDER_H
 #include "igl_inline.h"
 #include <vector>
+#include <cstdlib>
 
 namespace igl
 {
