@@ -52,7 +52,7 @@ IGL_INLINE bool igl::MatlabWorkspace::write(const std::string & path) const
 
 // Treat everything as a double
 template <typename DerivedM>
-IGL_INLINE igl::MatlabWorkspace::MatlabWorkspace& igl::MatlabWorkspace::save(
+IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save(
   const Eigen::PlainObjectBase<DerivedM>& M,
   const std::string & name)
 {
@@ -69,7 +69,7 @@ IGL_INLINE igl::MatlabWorkspace::MatlabWorkspace& igl::MatlabWorkspace::save(
 }
 
 template <typename ScalarM>
-IGL_INLINE igl::MatlabWorkspace::MatlabWorkspace& igl::MatlabWorkspace::save(
+IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save(
   const std::vector<std::vector<ScalarM> > & vM,
   const std::string & name)
 {
@@ -79,7 +79,7 @@ IGL_INLINE igl::MatlabWorkspace::MatlabWorkspace& igl::MatlabWorkspace::save(
 }
 
 template <typename ScalarV>
-IGL_INLINE igl::MatlabWorkspace::MatlabWorkspace& igl::MatlabWorkspace::save(
+IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save(
   const std::vector<ScalarV> & vV,
   const std::string & name)
 {
@@ -89,7 +89,7 @@ IGL_INLINE igl::MatlabWorkspace::MatlabWorkspace& igl::MatlabWorkspace::save(
 }
 
 template <typename DerivedM>
-IGL_INLINE igl::MatlabWorkspace::MatlabWorkspace& 
+IGL_INLINE igl::MatlabWorkspace& 
   igl::MatlabWorkspace::save_index(
     const Eigen::PlainObjectBase<DerivedM>& M,
     const std::string & name)
@@ -100,7 +100,7 @@ IGL_INLINE igl::MatlabWorkspace::MatlabWorkspace&
 }
 
 template <typename ScalarM>
-IGL_INLINE igl::MatlabWorkspace::MatlabWorkspace& igl::MatlabWorkspace::save_index(
+IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save_index(
   const std::vector<std::vector<ScalarM> > & vM,
   const std::string & name)
 {
@@ -110,7 +110,7 @@ IGL_INLINE igl::MatlabWorkspace::MatlabWorkspace& igl::MatlabWorkspace::save_ind
 }
 
 template <typename ScalarV>
-IGL_INLINE igl::MatlabWorkspace::MatlabWorkspace& igl::MatlabWorkspace::save_index(
+IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save_index(
   const std::vector<ScalarV> & vV,
   const std::string & name)
 {
