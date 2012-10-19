@@ -1,5 +1,5 @@
 include ../../../Makefile.conf
-all: CFLAGS += -O3 -DNDEBUG -j 
+all: CFLAGS += -O3 -DNDEBUG 
 debug: CFLAGS += -g -Wall -Werror
 
 .PHONY: all

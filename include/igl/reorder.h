@@ -2,6 +2,8 @@
 #define IGL_REORDER_H
 #include "igl_inline.h"
 #include <vector>
+// For size_t
+#include <stddef.h>
 
 namespace igl
 {

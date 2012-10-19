@@ -7,7 +7,8 @@ include Makefile.conf
 # optimized default settings
 all: LFLAGS +=
 OPTFLAGS=-O3 -DNDEBUG
-debug: OPTFLAGS= -g -Wall -Werror
+#debug: OPTFLAGS= -g -Wall -Werror
+debug: OPTFLAGS= -g -Wall
 CFLAGS += $(OPTFLAGS)
 
 EXTRA_DIRS=
