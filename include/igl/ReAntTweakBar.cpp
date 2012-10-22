@@ -214,7 +214,8 @@ bool igl::ReTwBar::save(const char *file_name)
     it != rw_items.end(); 
     it++)
   {
-    const char * name = (*it).name.c_str();
+    std::string s = (*it).name;
+    const char * name = s.c_str();
     TwType type = (*it).type;
     void * var = (*it).var;
     fprintf(fp,"%s: %s\n",
