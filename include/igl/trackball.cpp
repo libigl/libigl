@@ -35,7 +35,6 @@ IGL_INLINE void igl::trackball(
   const int w,
   const int h,
   const Q_type speed_factor,
-  const Q_type * down_quat,
   const int down_mouse_x,
   const int down_mouse_y,
   const int mouse_x,
@@ -68,34 +67,59 @@ IGL_INLINE void igl::trackball(
     {
       angle *= 1.0 + 0.2f*(sqrt(x*x+y*y)-1.0);
     }
-    double qrot[4], qres[4], qorig[4];
+    double qrot[4];
     axis_angle_to_quat(axis,angle,qrot);
+    quat[0] = qrot[0];
+    quat[1] = qrot[1];
+    quat[2] = qrot[2];
+    quat[3] = qrot[3];
+  }
+}
 
-    double nqorig =
-      sqrt(down_quat[0]*down_quat[0]+
-      down_quat[1]*down_quat[1]+
-      down_quat[2]*down_quat[2]+
-      down_quat[3]*down_quat[3]);
 
-    if( fabs(nqorig)>igl::DOUBLE_EPS_SQ )
-    {
-        qorig[0] = down_quat[0]/nqorig;
-        qorig[1] = down_quat[1]/nqorig;
-        qorig[2] = down_quat[2]/nqorig;
-        qorig[3] = down_quat[3]/nqorig;
-        igl::quat_mult<double>(qrot,qorig,qres);
-        quat[0] = qres[0];
-        quat[1] = qres[1];
-        quat[2] = qres[2];
-        quat[3] = qres[3];
-    }
-    else
-    {
-        quat[0] = qrot[0];
-        quat[1] = qrot[1];
-        quat[2] = qrot[2];
-        quat[3] = qrot[3];
-    }
+template <typename Q_type>
+IGL_INLINE void igl::trackball(
+  const int w,
+  const int h,
+  const Q_type speed_factor,
+  const Q_type * down_quat,
+  const int down_mouse_x,
+  const int down_mouse_y,
+  const int mouse_x,
+  const int mouse_y,
+  Q_type * quat)
+{
+  double qrot[4], qres[4], qorig[4];
+  igl::trackball<double>(
+    w,h,
+    speed_factor,
+    down_mouse_x,down_mouse_y,
+    mouse_x,mouse_y,
+    qrot);
+  double nqorig =
+    sqrt(down_quat[0]*down_quat[0]+
+    down_quat[1]*down_quat[1]+
+    down_quat[2]*down_quat[2]+
+    down_quat[3]*down_quat[3]);
+
+  if( fabs(nqorig)>igl::DOUBLE_EPS_SQ )
+  {
+      qorig[0] = down_quat[0]/nqorig;
+      qorig[1] = down_quat[1]/nqorig;
+      qorig[2] = down_quat[2]/nqorig;
+      qorig[3] = down_quat[3]/nqorig;
+      igl::quat_mult<double>(qrot,qorig,qres);
+      quat[0] = qres[0];
+      quat[1] = qres[1];
+      quat[2] = qres[2];
+      quat[3] = qres[3];
+  }
+  else
+  {
+      quat[0] = qrot[0];
+      quat[1] = qrot[1];
+      quat[2] = qrot[2];
+      quat[3] = qrot[3];
   }
 }
 

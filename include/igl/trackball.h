@@ -4,6 +4,28 @@
 
 namespace igl
 {
+  // Applies a trackball drag to identity
+  // Inputs:
+  //   w  width of the trackball context
+  //   h  height of the trackball context
+  //   speed_factor  controls how fast the trackball feels, 1 is normal
+  //   down_mouse_x  x position of mouse down
+  //   down_mouse_y  y position of mouse down
+  //   mouse_x  current x position of mouse
+  //   mouse_y  current y position of mouse
+  // Outputs:
+  //   quat  the resulting rotation (as quaternion)
+  template <typename Q_type>
+  IGL_INLINE void trackball(
+    const int w,
+    const int h,
+    const Q_type speed_factor,
+    const int down_mouse_x,
+    const int down_mouse_y,
+    const int mouse_x,
+    const int mouse_y,
+    Q_type * quat);
+
   // Applies a trackball drag to a given rotation
   // Inputs:
   //   w  width of the trackball context
