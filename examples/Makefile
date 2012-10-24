@@ -1,6 +1,8 @@
 .PHONY: all
+.NOTPARALLEL: all
 
 DIRS=$(wildcard */)
+
 
 all: $(DIRS) 
 	for p in  $(DIRS); \

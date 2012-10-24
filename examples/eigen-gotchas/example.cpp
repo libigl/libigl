@@ -14,6 +14,9 @@ using namespace std;
 #include <igl/print_ijv.h>
 using namespace igl;
 
+#if EIGEN_VERSION_AT_LEAST(3,0,92)
+#  warning these gotchas have not been verified for your Eigen Version
+#else
 // Eigen fails to notice at compile time that the inneriterator used to loop
 // over the contents of a sparsematrix of type T is a different type
 //
@@ -212,6 +215,7 @@ void sparsellt_succeeded_is_meaningless()
     "B_L=sparse(B_LIJV(:,1),B_LIJV(:,2),B_LIJV(:,3),"<<
     B_L.rows()<<","<<B_L.cols()<<");"<<endl;
 }
+#endif
 
 int main(int argc, char * argv[])
 {

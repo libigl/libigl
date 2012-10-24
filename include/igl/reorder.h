@@ -4,6 +4,7 @@
 #include <vector>
 // For size_t
 #include <stddef.h>
+#include <cstdlib>
 
 namespace igl
 {

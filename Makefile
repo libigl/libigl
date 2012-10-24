@@ -1,8 +1,15 @@
 .PHONY: all
 all: lib extras examples
 
+GG=g++
+#GG=/usr/bin/g++     17s
+#GG=/usr/bin/clang++ 14s
+#GG=g++-mp-4.3       15.5s
+#GG=g++-mp-4.7       19.9s
+
 # Shared flags etc.
 include Makefile.conf
+$(info Hello, $(IGL_USERNAME)!)
 
 # optimized default settings
 all: LFLAGS +=
@@ -80,7 +87,7 @@ lib/libigl.a: $(OBJ_FILES)
 	ar cqs $@ $(OBJ_FILES)
 
 obj/%.o: include/igl/%.cpp include/igl/%.h
-	g++ $(CFLAGS) $(AFLAGS) -c -o $@ $< $(INC)
+	$(GG) $(CFLAGS) $(AFLAGS) -c -o $@ $< $(INC)
 
 clean:
 	rm -f obj/*.o
