@@ -8,7 +8,7 @@ include Makefile.conf
 all: LFLAGS +=
 OPTFLAGS=-O3 -DNDEBUG
 #debug: OPTFLAGS= -g -Wall -Werror
-debug: OPTFLAGS= -g -Wall
+debug: OPTFLAGS= -g -Wall -Weffc++
 CFLAGS += $(OPTFLAGS)
 
 EXTRA_DIRS=

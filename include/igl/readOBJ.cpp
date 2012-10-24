@@ -33,10 +33,6 @@ IGL_INLINE bool igl::readOBJ(
   FN.clear();
   
   // variables an constants to assist parsing the .obj file
-  // flag for whether vertex texture coordinates exist in file
-  bool has_texture = false;
-  // flag for whether vertex normals exist in file
-  bool has_normals = false;
   // Constant strings to compare against
   std::string v("v");
   std::string vn("vn");
@@ -78,7 +74,6 @@ IGL_INLINE bool igl::readOBJ(
         V.push_back(vertex);
       }else if(type == vn)
       {
-        has_normals = true;
         double x[3];
         int count = 
         sscanf(l,"%lf %lf %lf\n",&x[0],&x[1],&x[2]);
@@ -98,7 +93,6 @@ IGL_INLINE bool igl::readOBJ(
         N.push_back(normal);
       }else if(type == vt)
       {
-        has_texture = true;
         double x[3];
         int count = 
         sscanf(l,"%lf %lf %lf\n",&x[0],&x[1],&x[2]);

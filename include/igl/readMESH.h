@@ -35,10 +35,10 @@ namespace igl
   //   F  eigen int matrix #F by 3
   template <typename DerivedV, typename DerivedF, typename DerivedT>
   IGL_INLINE bool readMESH(
-                           const std::string str,
-                           Eigen::PlainObjectBase<DerivedV>& V,
-                           Eigen::PlainObjectBase<DerivedT>& T,
-                           Eigen::PlainObjectBase<DerivedF>& F);
+    const std::string str,
+    Eigen::PlainObjectBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedT>& T,
+    Eigen::PlainObjectBase<DerivedF>& F);
 }
 
 #ifdef IGL_HEADER_ONLY
