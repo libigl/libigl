@@ -220,6 +220,9 @@ IGL_INLINE void igl::draw_beach_ball()
   using namespace std;
 
   CreateSphere();
+  // Keep track of opengl settings
+  int cm;
+  glGetIntegerv(GL_COLOR_MATERIAL,&cm);
   // Draw triangles
   glEnable(GL_COLOR_MATERIAL);
   glColorMaterial(GL_FRONT_AND_BACK,GL_DIFFUSE);
@@ -261,4 +264,6 @@ IGL_INLINE void igl::draw_beach_ball()
     glEnd();
     glPopMatrix();
   }
+
+  (cm ? glEnable(GL_COLOR_MATERIAL):glDisable(GL_COLOR_MATERIAL));
 }
