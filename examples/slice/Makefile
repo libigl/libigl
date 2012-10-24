@@ -9,7 +9,7 @@ all: example
 .PHONY: example
 
 igl_lib=../../
-eigen=-I$(OPT)/local/include/eigen3 -I$(OPT)/local/include/eigen3/unsupported
+eigen=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
 
 #CFLAGS=-g
 CFLAGS=-Os -DNDEBUG
