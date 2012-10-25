@@ -1,6 +1,15 @@
 #include "draw_beach_ball.h"
 
-#include <OpenGL/GL.h>
+#ifdef __APPLE__
+#  include <OpenGL/gl.h>
+#elif defined(_WIN32)
+#  define NOMINMAX
+#  include <Windows.h>
+#  undef NOMINMAX
+#  include <GL/gl.h>
+#else
+#  include <GL/gl.h>
+#endif
 
 #include <vector>
 #include <cmath>

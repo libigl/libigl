@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstring>
 #include <sstream>
+#include <iostream>
 #include <iomanip>
 #include <map>
 
@@ -212,7 +213,10 @@ int igl::ReTwBar::TwRefreshBar()
 
 int igl::ReTwBar::TwTerminate()
 {
-  return ::TwTerminate();
+  std::cout<<"TwTerminate"<<std::endl;
+  int r = ::TwTerminate();
+  std::cout<<"  "<<r<<std::endl;
+  return r;
 }
 
 bool igl::ReTwBar::save(const char *file_name)
