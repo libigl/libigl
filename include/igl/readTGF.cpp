@@ -1,6 +1,6 @@
 #include "readTGF.h"
 
-#include <igl/list_to_matrix.h>
+#include <cstdio>
 
 IGL_INLINE bool igl::readTGF(
   const std::string tgf_filename,
@@ -130,6 +130,8 @@ IGL_INLINE bool igl::readTGF(
 }
 
 #ifndef IGL_NO_EIGEN
+#include <igl/list_to_matrix.h>
+
 IGL_INLINE bool igl::readTGF(
   const std::string tgf_filename,
   Eigen::MatrixXd & C,
