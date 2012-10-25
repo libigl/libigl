@@ -35,7 +35,7 @@ namespace igl
     std::vector<std::vector<int> > & BE,
     std::vector<std::vector<int> > & CE,
     std::vector<std::vector<int> > & PE);
-  
+
   #ifndef IGL_NO_EIGEN
   IGL_INLINE bool readTGF(
     const std::string tgf_filename,
