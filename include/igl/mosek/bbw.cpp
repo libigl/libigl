@@ -88,7 +88,7 @@ IGL_INLINE bool igl::bbw(
     for(int i = 0;i<m;i++)
     {
       verbose("\n^%s: Computing weight for handle %d out of %d.\n\n",
-        __FUNCTION__,i,m);
+        __FUNCTION__,i+1,m);
       // impose boundary conditions
       VectorXd bci = bc.col(i);
       slice_into(bci,b,ux);
