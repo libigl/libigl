@@ -8,11 +8,12 @@ all: example
 
 .PHONY: example
 
-igl_lib=../../
+IGL=../../
 
-APPKIT_LIB =
-lib= $(ANTTWEAKBAR_LIB) -L$(igl_lib)/lib -ligl -L$(DEFAULT_PREFIX)/lib $(OPENGL_LIB) $(GLUT_LIB)
-inc=-I$(igl_lib)/include -I$(DEFAULT_PREFIX)/include
+ANTTWEAKBAR_INC=-I$(IGL)/external/AntTweakBar/include
+ANTTWEAKBAR_LIB=-L$(IGL)/external/AntTweakBar/lib -lAntTweakBar -framework AppKit
+inc=-I$(IGL)/include -I$(DEFAULT_PREFIX)/include $(ANTTWEAKBAR_INC)
+lib=-L$(IGL)/lib -ligl -L$(DEFAULT_PREFIX)/lib $(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB)
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o $(lib)
