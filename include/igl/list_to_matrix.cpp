@@ -17,8 +17,10 @@ IGL_INLINE bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Mat 
   int m = V.size();
   if(m == 0)
   {
-    fprintf(stderr,"Error: list_to_matrix() list is empty()\n");
-    return false;
+    //fprintf(stderr,"Error: list_to_matrix() list is empty()\n");
+    //return false;
+    M.resize(0,0);
+    return true;
   }
   // number of columns
   int n = igl::min_size(V);
@@ -52,8 +54,10 @@ IGL_INLINE bool igl::list_to_matrix(const std::vector<T > & V,Mat & M)
   int m = V.size();
   if(m == 0)
   {
-    fprintf(stderr,"Error: list_to_matrix() list is empty()\n");
-    return false;
+    //fprintf(stderr,"Error: list_to_matrix() list is empty()\n");
+    //return false;
+    M.resize(0,0);
+    return true;
   }
   // Resize output
   M.resize(m,1);

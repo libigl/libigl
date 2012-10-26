@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <map>
+#include <iostream>
 
 IGL_INLINE bool igl::boundary_conditions(
   const Eigen::MatrixXd & V  ,
@@ -41,9 +42,20 @@ IGL_INLINE bool igl::boundary_conditions(
     {
       // Find samples just on pos
       //Vec3 vi(V(i,0),V(i,1),V(i,2));
+      // EIGEN GOTCHA:
+      // double sqrd = (V.row(i)-pos).array().pow(2).sum();
+      // Must first store in temporary
+      VectorXd vi = V.row(i)
       double sqrd = (V.row(i)-pos).array().pow(2).sum();
       if(sqrd <= FLOAT_EPS)
       {
+        cout<<"sum((["<<
+          V(i,0)<<" "<<
+          V(i,1)<<" "<<
+          V(i,2)<<"] - ["<<
+          pos(0)<<" "<<
+          pos(1)<<" "<<
+          pos(2)<<"]).^2) = "<<sqrd<<endl;
         bci.push_back(i);
         bcj.push_back(p);
         bcv.push_back(1.0);
