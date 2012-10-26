@@ -45,8 +45,8 @@ IGL_INLINE bool igl::boundary_conditions(
       // EIGEN GOTCHA:
       // double sqrd = (V.row(i)-pos).array().pow(2).sum();
       // Must first store in temporary
-      VectorXd vi = V.row(i)
-      double sqrd = (V.row(i)-pos).array().pow(2).sum();
+      VectorXd vi = V.row(i);
+      double sqrd = (vi-pos).array().pow(2).sum();
       if(sqrd <= FLOAT_EPS)
       {
         cout<<"sum((["<<
