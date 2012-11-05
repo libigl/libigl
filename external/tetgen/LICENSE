@@ -21,18 +21,25 @@ and  educational purposes it  can be  used at  absolutely no  cost and
 without further arrangements.
 
 
-For details, see http://tetgen.berlios.de
+For details, see http://tetgen.org
 
 ==============================================================================
 
 TetGen
 A Quality Tetrahedral Mesh Generator and 3D Delaunay Triangulator
-Version 1.4 (Released on January 14, 2006).
+Version 1.5 (Released on February 21, 2012).
 
-Copyright 2002, 2004, 2005, 2006 
+Copyright 2002 -- 2012 
+
 Hang Si
-Rathausstr. 9, 10178 Berlin, Germany
-si@wias-berlin.de
+Research Group of Numerical Mathematics and Scientific Computing
+Weierstrass Institute for Applied Analysis and Stochastics
+Mohrenstr. 39
+10117 Berlin, Germany
+
+Phone: +49 (0) 30-20372-446   Fax: +49 (0) 30-2044975
+EMail: <si@wias-berlin.de>
+Web Site: http://www.wias-berlin.de/~si
 
 Permission is hereby granted, free  of charge, to any person obtaining
 a  copy  of this  software  and  associated  documentation files  (the

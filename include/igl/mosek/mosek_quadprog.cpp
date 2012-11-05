@@ -15,6 +15,41 @@ static void MSKAPI printstr(void *handle, char str[])
   printf("%s",str);
 }
 
+igl::MosekData::MosekData()
+{
+  // These are the default settings that worked well for BBW. Your miles may
+  // very well be kilometers.
+
+  // >1e0 NONSOLUTION
+  // 1e-1 artifacts in deformation
+  // 1e-3 artifacts in isolines
+  // 1e-4 seems safe
+  // 1e-8 MOSEK DEFAULT SOLUTION
+  douparam[MSK_DPAR_INTPNT_TOL_REL_GAP]=1e-8;
+  // Force using multiple threads, not sure if MOSEK is properly destorying
+  //extra threads...
+  intparam[MSK_IPAR_INTPNT_NUM_THREADS] = 6;
+  // Turn off presolving
+  // intparam[MSK_IPAR_PRESOLVE_USE] = MSK_PRESOLVE_MODE_OFF;
+  // Force particular matrix reordering method
+  // MSK_ORDER_METHOD_NONE cuts time in half roughly, since half the time is
+  //   usually spent reordering the matrix
+  // !! WARNING Setting this parameter to anything but MSK_ORDER_METHOD_FREE
+  //   seems to have the effect of setting it to MSK_ORDER_METHOD_NONE
+  //   *Or maybe Mosek is spending a bunch of time analyzing the matrix to
+  //   choose the right ordering method when really any of them are
+  //   instantaneous
+  intparam[MSK_IPAR_INTPNT_ORDER_METHOD] = MSK_ORDER_METHOD_NONE;
+  // 1.0 means optimizer is very leniant about declaring model infeasible
+  douparam[MSK_DPAR_INTPNT_TOL_INFEAS] = 1e-8;
+  // Hard to say if this is doing anything, probably nothing dramatic
+  douparam[MSK_DPAR_INTPNT_TOL_PSAFE]= 1e2;
+  // Turn off convexity check
+  intparam[MSK_IPAR_CHECK_CONVEXITY] = MSK_CHECK_CONVEXITY_NONE;
+  // Force turn off data check
+  intparam[MSK_IPAR_DATA_CHECK]=MSK_OFF;
+}
+
 template <typename Index, typename Scalar>
 IGL_INLINE bool igl::mosek_quadprog(
   const Index n,
@@ -130,57 +165,21 @@ IGL_INLINE bool igl::mosek_quadprog(
   // Input Q for the objective (REMEMBER Q SHOULD ONLY BE LOWER TRIANGLE)
   mosek_guarded(MSK_putqobj(task,Qv.size(),&Qi[0],&Qj[0],&Qv[0]));
 
-  //// Set up task parameters
-
-  // set tolerance
-  //mosek_guarded(
-  //  MSK_putdouparam(task,MSK_DPAR_INTPNT_TOL_DFEAS,1e-8));
-  //mosek_guarded(
-  //  MSK_putdouparam(task,MSK_DPAR_INTPNT_TOL_DSAFE,1.0));
-  // 1.0 means optimizer is very leniant about declaring model infeasible
-  //mosek_guarded(
-  //  MSK_putdouparam(task,MSK_DPAR_INTPNT_TOL_INFEAS,1e-8));
-  //mosek_guarded(
-  //  MSK_putdouparam(task,MSK_DPAR_INTPNT_TOL_PATH,1e-8));
-  //mosek_guarded(
-  //  MSK_putdouparam(task,MSK_DPAR_INTPNT_TOL_PFEAS,1e-8));
-
-  // Hard to say if this is doing anything, probably nothing dramatic
-  mosek_guarded(MSK_putdouparam(task,MSK_DPAR_INTPNT_TOL_PSAFE,1e2));
-
-  // >1e0 NONSOLUTION
-  // 1e-1 artifacts in deformation
-  // 1e-3 artifacts in isolines
-  // 1e-4 seems safe
-  // 1e-8 MOSEK DEFAULT SOLUTION
-  mosek_guarded(MSK_putdouparam(task,MSK_DPAR_INTPNT_TOL_REL_GAP,1e-8));
-  //mosek_guarded(MSK_putdouparam(task,MSK_DPAR_INTPNT_TOL_REL_STEP,0.9999));
-
-  // Turn off presolving
-  //mosek_guarded(
-  //  MSK_putintparam(task,MSK_IPAR_PRESOLVE_USE,MSK_PRESOLVE_MODE_OFF));
-
-  // Force particular matrix reordering method
-  // MSK_ORDER_METHOD_NONE cuts time in half roughly, since half the time is
-  //   usually spent reordering the matrix
-  // !! WARNING Setting this parameter to anything but MSK_ORDER_METHOD_FREE
-  //   seems to have the effect of setting it to MSK_ORDER_METHOD_NONE
-  //   *Or maybe Mosek is spending a bunch of time analyzing the matrix to
-  //   choose the right ordering method when really any of them are
-  //   instantaneous
-  mosek_guarded(
-    MSK_putintparam(task,MSK_IPAR_INTPNT_ORDER_METHOD,MSK_ORDER_METHOD_NONE));
-
-  // Turn off convexity check
-  mosek_guarded(
-    MSK_putintparam(task,MSK_IPAR_CHECK_CONVEXITY,MSK_CHECK_CONVEXITY_NONE));
-
-  // Force using multiple threads, not sure if MOSEK is properly destorying
-  //extra threads...
-  mosek_guarded(MSK_putintparam(task,MSK_IPAR_INTPNT_NUM_THREADS,6));
-  
-  // Force turn off data check
-  mosek_guarded(MSK_putintparam(task,MSK_IPAR_DATA_CHECK,MSK_OFF));
+  // Set up task parameters
+  for(
+    std::map<MSKiparame,int>::iterator pit = mosek_data.intparam.begin();
+    pit != mosek_data.intparam.end(); 
+    pit++)
+  {
+    mosek_guarded(MSK_putintparam(task,pit->first,pit->second));
+  }
+  for(
+    std::map<MSKdparame,double>::iterator pit = mosek_data.douparam.begin();
+    pit != mosek_data.douparam.end(); 
+    pit++)
+  {
+    mosek_guarded(MSK_putdouparam(task,pit->first,pit->second));
+  }
 
   // Now the optimizer has been prepared
   MSKrescodee trmcode;

@@ -4,80 +4,22 @@
 //                                                                           //
 // A Quality Tetrahedral Mesh Generator and 3D Delaunay Triangulator         //
 //                                                                           //
-// Version 1.4                                                               //
-// September 6, December 13, 2010                                            //
-// January 19, 2011                                                          //
+// Version 1.5                                                               //
+// October 06, 2012                                                          //
 //                                                                           //
-// Copyright (C) 2002--2011                                                  //
+// Copyright (C) 2002--2012                                                  //
 // Hang Si                                                                   //
 // Research Group: Numerical Mathematics and Scientific Computing            //
 // Weierstrass Institute for Applied Analysis and Stochastics (WIAS)         //
 // Mohrenstr. 39, 10117 Berlin, Germany                                      //
-// si@wias-berlin.de                                                         //
+// Hang.Si@wias-berlin.de                                                    //
 //                                                                           //
-// TetGen is freely available through the website: http://tetgen.berlios.de. //
+// TetGen is freely available through the website: http://www.tetgen.org.    //
 //   It may be copied, modified, and redistributed for non-commercial use.   //
 //   Please consult the file LICENSE for the detailed copyright notices.     //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// TetGen is a library to generate tetrahedral meshes for 3D domains.  It's  //
-//   main purpose is to generate suitable tetrahedral meshes for numerical   //
-//   simulations using finite element and finite volume methods.             //
-//                                                                           //
-// TetGen incorporates a suit of geometrical and mesh generation algorithms. //
-//   A brief description of algorithms used in TetGen is found in the first  //
-//   section of the user's manual.  References are given for users who are   //
-//   interesting in these approaches. The main references are given below:   //
-//                                                                           //
-//   The efficient Delaunay tetrahedralization algorithm is: H. Edelsbrunner //
-//   and N. R. Shah, "Incremental Topological Flipping Works for Regular     //
-//   Triangulations". Algorithmica 15: 223--241, 1996.                       //
-//                                                                           //
-//   The constrained Delaunay tetrahedralization algorithm is described in:  //
-//   H. Si and K. Gaertner,  "Meshing Piecewise Linear Complexes by Constr-  //
-//   ained Delaunay Tetrahedralizations".  In Proceeding of the 14th Inter-  //
-//   national Meshing Roundtable. September 2005.                            //
-//                                                                           //
-//   The mesh refinement algorithm is from:  Hang Si, "Adaptive Tetrahedral  //
-//   Mesh Generation by Constrained Delaunay Refinement".  International     //
-//   Journal for Numerical Methods in Engineering, 75(7): 856--880, 2008.    //
-//                                                                           //
-// The mesh data structure of TetGen is a combination of two types of mesh   //
-//   data structures.  The tetrahedron-based mesh data structure introduced  //
-//   by Shewchuk is eligible for tetrahedralization algorithms. The triangle //
-//   -edge data structure developed by Muecke is adopted for representing    //
-//   boundary elements: subfaces and subsegments.                            //
-//                                                                           //
-//   J. R. Shewchuk, "Delaunay Refinement Mesh Generation". PhD thesis,      //
-//   Carnegie Mellon University, Pittsburgh, PA, 1997.                       //
-//                                                                           //
-//   E. P. Muecke, "Shapes and Implementations in Three-Dimensional          //
-//   Geometry". PhD thesis, Univ. of Illinois, Urbana, Illinois, 1993.       //
-//                                                                           //
-// The research of mesh generation is definitly on the move. Many State-of-  //
-//   the-art algorithms need implementing and evaluating. I heartily welcome //
-//   any new algorithm especially for generating quality conforming Delaunay //
-//   meshes and anisotropic conforming Delaunay meshes.                      //
-//                                                                           //
-// TetGen is supported by the "pdelib" project of Weierstrass Institute for  //
-//   Applied Analysis and Stochastics (WIAS) in Berlin.  It is a collection  //
-//   of software components for solving non-linear partial differential      //
-//   equations including 2D and 3D mesh generators, sparse matrix solvers,   //
-//   and scientific visualization tools, etc.  For more information please   //
-//   visit: http://www.wias-berlin.de/software/pdelib.                       //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// tetgen.h                                                                  //
-//                                                                           //
-// Header file of the TetGen library. Also is the user-level header file.    //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
 
 #ifndef tetgenH
 #define tetgenH
@@ -89,20 +31,32 @@
 #include <time.h>
 #include <assert.h> 
 
+// To compile TetGen as a library instead of an executable program, define
+//   the TETLIBRARY symbol.
+
+// #define TETLIBRARY
+
+// Uncomment the following line to disable assert macros. These macros were
+//   inserted in the code where I hoped to catch bugs. They may slow down the
+//   speed of TetGen.
+
+// #define NDEBUG
+
+// TetGen uses the double precision for a real number. 
+
+#define REAL double
+
 // The types 'intptr_t' and 'uintptr_t' are signed and unsigned integer types,
 //   respectively. They are guaranteed to be the same width as a pointer.
-//   They are defined in <stdint.h> by the C99 Standard.
-//   However, Microsoft Visual C++ doesn't ship with this header file yet. We
-//   need to define them. (Thanks to Steven G. Johnson from MIT for the 
-//   following piece of code.) 
+//   They are defined in <stdint.h> by the C99 Standard. However, Microsoft 
+//   Visual C++ 2003 -- 2008 (Visual C++ 7.1 - 9) doesn't ship with this header
+//   file. In such case, we can define them by ourself. 
+// Update (learned from Stack Overflow): Visual Studio 2010 and Visual C++ 2010
+//   Express both have stdint.h
 
-// Define the _MSC_VER symbol if you are using Microsoft Visual C++.
-
-// #define _MSC_VER
-
-// Define the _WIN64 symbol if you are running TetGen on Win64.
-
-// #define _WIN64
+// The following piece of code was provided by Steven Johnson (MIT). Define the
+//   symbol _MSC_VER if you are using Microsoft Visual C++. Moreover, define 
+//   the _WIN64 symbol if you are running TetGen on Win64 systems.
 
 #ifdef _MSC_VER // Microsoft Visual C++
 #  ifdef _WIN64
@@ -116,116 +70,51 @@
 #  include <stdint.h>
 #endif
 
-// To compile TetGen as a library instead of an executable program, define
-//   the TETLIBRARY symbol.
+// Maximum number of characters in a file name (including the null).
 
-// #define TETLIBRARY
+#define FILENAMESIZE 1024
 
-// Uncomment the following line to disable assert macros. These macros are
-//   inserted in places where I hope to catch bugs.
+// Maximum number of chars in a line read from a file (including the null).
 
-// #define NDEBUG
-
-// To insert lots of self-checks for internal errors, define the SELF_CHECK
-//   symbol.  This will slow down the program a bit. 
-
-// #define SELF_CHECK
-
-// For single precision ( which will save some memory and reduce paging ),
-//   define the symbol SINGLE by using the -DSINGLE compiler switch or by
-//   writing "#define SINGLE" below.
-//
-// For double precision ( which will allow you to refine meshes to a smaller
-//   edge length), leave SINGLE undefined.
-
-// #define SINGLE
-
-#ifdef SINGLE
-  #define REAL float
-#else
-  #define REAL double
-#endif 	// not defined SINGLE
+#define INPUTLINESIZE 2048
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// TetGen Library Overview                                                   //
+// tetgenio                                                                  //
 //                                                                           //
-// TetGen library is comprised by several data types and global functions.   //
+// A structure for transfering data into and out of TetGen's mesh structure. //
 //                                                                           //
-// There are three main data types: tetgenio, tetgenbehavior, and tetgenmesh.//
-// Tetgenio is used to pass data into and out of TetGen library; tetgenbeha- //
-// vior keeps the runtime options and thus controls the behaviors of TetGen; //
-// tetgenmesh, the biggest data type I've ever defined, contains mesh data   //
-// structures and mesh traversing and transformation operators.  The meshing //
-// algorithms are implemented on top of it.  These data types are defined as //
-// C++ classes.                                                              //
-//                                                                           //
-// There are few global functions. tetrahedralize() is provided for calling  //
-// TetGen from another program. Two functions: orient3d() and insphere() are //
-// incorporated from a public C code provided by Shewchuk.  They performing  //
-// exact geometrical tests.                                                  //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Class tetgenio                                                            //
-//                                                                           //
-// The interface for passing data into and out of the library of TetGen.     //
-//                                                                           //
-// The tetgenio data structure is actually a collection of arrays of points, //
-// facets, tetrahedra, and so forth.  The library will read and write these  //
-// arrays according to the options specified in tetgenbehavior structure.    //
-//                                                                           //
-// If you want to program with the library of TetGen, it's necessary for you //
-// to understand this data type,while the other two structures can be hidden //
-// through calling the global function "tetrahedralize()". Each array corre- //
-// sponds to a list of data in the file formats of TetGen.  It is necessary  //
-// to understand TetGen's input/output file formats (see user's manual).     //
+// It holds a collection of arrays of data, i.e., points, facets, tetrahedra,//
+// and so forth. It contains functions to read and write (input and output)  //
+// files of TetGen as well as other supported mesh files.                    //
 //                                                                           //
 // Once an object of tetgenio is declared,  no array is created. One has to  //
-// allocate enough memory for them, e.g., use the "new" operator in C++. On  //
-// deletion of the object, the memory occupied by these arrays needs to be   //
-// freed.  Routine deinitialize() will be automatically called. It will de-  //
-// allocate the memory for an array if it is not a NULL. However, it assumes //
-// that the memory is allocated by the C++ "new" operator. If you use malloc //
-// (), you should free() them and set the pointers to NULLs before reaching  //
-// deinitialize().                                                           //
-//                                                                           //
-// tetgenio ontains routines for reading and writing TetGen's files, i.e.,   //
-// .node, .poly, .smesh, .ele, .face, and .edge files.  Both the library of  //
-// TetGen and TetView use these routines to process input files.             //
+// allocate enough memory for them. On deletion of this object, the memory   //
+// occupied by these arrays needs to be freed.  The routine deinitialize()   //
+// will be automatically called.  It frees the memory for an array if it is  //
+// not a NULL. Note that it assumes that the memory is allocated by the C++  //
+// "new" operator.  Otherwise, the user must priorily free them by theirself //
+// and set the pointers to NULLs.                                            //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
 class tetgenio {
 
-  public:
+public:
 
-  // Maximum number of characters in a file name (including the null).
-  enum {FILENAMESIZE = 1024};
-
-  // Maxi. numbers of chars in a line read from a file (incl. the null).
-  enum {INPUTLINESIZE = 1024};
-
-  // The polygon data structure.  A "polygon" describes a simple polygon
-  //   (no holes). It is not necessarily convex.  Each polygon contains a
-  //   number of corners (points) and the same number of sides (edges).
-  // Note that the points of the polygon must be given in either counter-
-  //   clockwise or clockwise order and they form a ring, so every two
-  //   consective points forms an edge of the polygon.
+  // A "polygon" describes a simple polygon (no holes). It is not necessarily
+  //   convex. Each polygon contains a number of corners (points) and the same
+  //   number of sides (edges).  The points of the polygon must be given in
+  //   either counterclockwise or clockwise order and they form a ring, so 
+  //   every two consective points forms an edge of the polygon.
   typedef struct {
     int *vertexlist;
     int numberofvertices;
   } polygon;
 
-  static void init(polygon* p) {
-    p->vertexlist = (int *) NULL;
-    p->numberofvertices = 0;
-  }
-
-  // The facet data structure.  A "facet" describes a facet. Each facet is 
-  //   a polygonal region possibly with holes, edges, and points in it.
+  // A "facet" describes a polygonal region possibly with holes, edges, and 
+  //   points floating in it.  Each facet consists of a list of polygons and
+  //   a list of hole points (which lie strictly inside holes).
   typedef struct {
     polygon *polygonlist;
     int numberofpolygons;
@@ -233,14 +122,7 @@ class tetgenio {
     int numberofholes;
   } facet;
 
-  static void init(facet* f) {
-    f->polygonlist = (polygon *) NULL;
-    f->numberofpolygons = 0;
-    f->holelist = (REAL *) NULL;
-    f->numberofholes = 0;
-  }
-
-  // A 'voroedge' is an edge of the Voronoi diagram. It corresponds to a
+  // A "voroedge" is an edge of the Voronoi diagram. It corresponds to a
   //   Delaunay face.  Each voroedge is either a line segment connecting
   //   two Voronoi vertices or a ray starting from a Voronoi vertex to an
   //   "infinite vertex".  'v1' and 'v2' are two indices pointing to the
@@ -252,7 +134,7 @@ class tetgenio {
     REAL vnormal[3];
   } voroedge;
 
-  // A 'vorofacet' is an facet of the Voronoi diagram. It corresponds to a
+  // A "vorofacet" is an facet of the Voronoi diagram. It corresponds to a
   //   Delaunay edge.  Each Voronoi facet is a convex polygon formed by a
   //   list of Voronoi edges, it may not be closed.  'c1' and 'c2' are two
   //   indices pointing into the list of Voronoi cells, i.e., the two cells
@@ -278,8 +160,23 @@ class tetgenio {
     int *pointpairlist;
   } pbcgroup;
 
+  // Additional parameters associated with an input (or mesh) vertex.
+  //   These informations are provided by CAD libraries. 
+  typedef struct {
+    REAL uv[2];
+    int tag;
+    int type; // 0, 1, or 2.
+  } pointparam;
+
   // A callback function for mesh refinement.
   typedef bool (* TetSizeFunc)(REAL*, REAL*, REAL*, REAL*, REAL*, REAL);
+
+  // Callback functions for meshing PSCs.
+  typedef REAL (* GetVertexParamOnEdge)(void*, int, int);
+  typedef void (* GetSteinerOnEdge)(void*, int, REAL, REAL*);
+  typedef void (* GetVertexParamOnFace)(void*, int, int, REAL*);
+  typedef void (* GetEdgeSteinerParamOnFace)(void*, int, REAL, int, REAL*);
+  typedef void (* GetSteinerOnFace)(void*, int, REAL*, REAL*);
 
   // Items are numbered starting from 'firstnumber' (0 or 1), default is 0.
   int firstnumber; 
@@ -287,8 +184,8 @@ class tetgenio {
   // Dimension of the mesh (2 or 3), default is 3.
   int mesh_dim;
 
-  // Does the lines in .node file contain index or not, default is TRUE.
-  bool useindex;
+  // Does the lines in .node file contain index or not, default is 1.
+  int useindex;
 
   // 'pointlist':  An array of point coordinates.  The first point's x
   //   coordinate is at index [0] and its y coordinate at index [1], its
@@ -298,67 +195,73 @@ class tetgenio {
   //   attributes occupy 'numberofpointattributes' REALs.
   // 'pointmtrlist': An array of metric tensors at points. Each point's
   //   tensor occupies 'numberofpointmtr' REALs.
-  // `pointmarkerlist':  An array of point markers; one int per point.
+  // 'pointmarkerlist':  An array of point markers; one integer per point.
   REAL *pointlist;
   REAL *pointattributelist;
   REAL *pointmtrlist;
-  int *pointmarkerlist;
+  int  *pointmarkerlist;
+  pointparam *pointparamlist;
   int numberofpoints;
   int numberofpointattributes;
   int numberofpointmtrs;
  
-  // `elementlist':  An array of element (triangle or tetrahedron) corners.
-  //   The first element's first corner is at index [0], followed by its
-  //   other corners in counterclockwise order, followed by any other
-  //   nodes if the element represents a nonlinear element.  Each element
-  //   occupies `numberofcorners' ints.
-  // `elementattributelist':  An array of element attributes.  Each
-  //   element's attributes occupy `numberofelementattributes' REALs.
-  // `elementconstraintlist':  An array of constraints, i.e. triangle's
-  //   area or tetrahedron's volume; one REAL per element.  Input only.
-  // `neighborlist':  An array of element neighbors; 3 or 4 ints per
-  //   element.  Output only.
-  int *tetrahedronlist;
+  // 'elementlist':  An array of element (tetrahedron) corners.  The first 
+  //   element's first corner is at index [0], followed by its other corners,
+  //   followed by any other nodes if the element represents a nonlinear 
+  //   element.  Each element occupies 'numberofcorners' ints.
+  // 'elementattributelist':  An array of element attributes.  Each
+  //   element's attributes occupy 'numberofelementattributes' REALs.
+  // 'elementconstraintlist':  An array of constraints, i.e. tetrahedron's
+  //   volume; one REAL per element.  Input only.
+  // 'neighborlist':  An array of element neighbors; 4 ints per element. 
+  //   Output only.
+  int  *tetrahedronlist;
   REAL *tetrahedronattributelist;
   REAL *tetrahedronvolumelist;
-  int *neighborlist;
+  int  *neighborlist;
   int numberoftetrahedra;
   int numberofcorners;
   int numberoftetrahedronattributes;
 
-  // `facetlist':  An array of facets.  Each entry is a structure of facet.
-  // `facetmarkerlist':  An array of facet markers; one int per facet.
+  // 'facetlist':  An array of facets.  Each entry is a structure of facet.
+  // 'facetmarkerlist':  An array of facet markers; one int per facet.
   facet *facetlist;
   int *facetmarkerlist;
   int numberoffacets;
 
-  // `holelist':  An array of holes.  The first hole's x, y and z
-  //   coordinates  are at indices [0], [1] and [2], followed by the
-  //   remaining holes. Three REALs per hole. 
+  // 'holelist':  An array of holes (in volume).  Each hole is given by a
+  //   seed (point) which lies strictly inside it. The first seed's x, y and z
+  //   coordinates are at indices [0], [1] and [2], followed by the
+  //   remaining seeds.  Three REALs per hole. 
   REAL *holelist;
   int numberofholes;
 
-  // `regionlist': An array of regional attributes and volume constraints.
-  //   The first constraint's x, y and z coordinates are at indices [0],
-  //   [1] and [2], followed by the regional attribute at index [3], foll-
-  //   owed by the maximum volume at index [4]. Five REALs per constraint.
-  // Note that each regional attribute is used only if you select the `A'
+  // 'regionlist': An array of regions (subdomains).  Each region is given by
+  //   a seed (point) which lies strictly inside it. The first seed's x, y and
+  //   z coordinates are at indices [0], [1] and [2], followed by the regional
+  //   attribute at index [3], followed by the maximum volume at index [4]. 
+  //   Five REALs per region.
+  // Note that each regional attribute is used only if you select the 'A'
   //   switch, and each volume constraint is used only if you select the
-  //   `a' switch (with no number following).
+  //   'a' switch (with no number following).
   REAL *regionlist;
   int numberofregions;
 
-  // `facetconstraintlist': An array of facet maximal area constraints.
-  //   Two REALs per constraint. The first (at index [0]) is the facet
-  //   marker (cast it to int), the second (at index [1]) is its maximum
-  //   area bound.
+  // 'facetconstraintlist':  An array of facet constraints.  Each constraint
+  //   specifies a maximum area bound on the subfaces of that facet.  The
+  //   first facet constraint is given by a facet marker at index [0] and its
+  //   maximum area bound at index [1], followed by the remaining facet con-
+  //   straints. Two REALs per facet constraint.  Note: the facet marker is
+  //   actually an integer.
   REAL *facetconstraintlist;
   int numberoffacetconstraints;
 
-  // `segmentconstraintlist': An array of segment max. length constraints.
-  //   Three REALs per constraint. The first two (at indcies [0] and [1]) 
-  //   are the indices of the endpoints of the segment, the third (at index
-  //   [2]) is its maximum length bound.
+  // 'segmentconstraintlist': An array of segment constraints. Each constraint 
+  //   specifies a maximum length bound on the subsegments of that segment.
+  //   The first constraint is given by the two endpoints of the segment at
+  //   index [0] and [1], and the maximum length bound at index [2], followed
+  //   by the remaining segment constraints.  Three REALs per constraint. 
+  //   Note the segment endpoints are actually integers.
   REAL *segmentconstraintlist;
   int numberofsegmentconstraints;
 
@@ -366,15 +269,14 @@ class tetgenio {
   pbcgroup *pbcgrouplist;
   int numberofpbcgroups;
 
-  // `trifacelist':  An array of triangular face endpoints.  The first
-  //   face's endpoints are at indices [0], [1] and [2], followed by the
-  //   remaining faces.  Three ints per face.
-  // `adjtetlist':  An array of adjacent tetrahedra to the faces of
-  //   trifacelist. Each face has at most two adjacent tets, the first
-  //   face's adjacent tets are at [0], [1]. Two ints per face. A '-1'
-  //   indicates outside (no adj. tet). This list is output when '-nn'
-  //   switch is used.
-  // `trifacemarkerlist':  An array of face markers; one int per face.
+  // 'trifacelist':  An array of face (triangle) corners.  The first face's
+  //   corners are at indices [0], [1] and [2], followed by the remaining 
+  //   faces.  Three ints per face.
+  // 'adjtetlist':  An array of adjacent tetrahedra to the faces. The first
+  //   face's two adjacent tetrahedra are at indices [0] and [1], followed by
+  //   the remaining faces.  A '-1' indicates outside (no adj. tet). This list
+  //   is output when '-nn' switch is used. Output only.
+  // 'trifacemarkerlist':  An array of face markers; one int per face.
   int *trifacelist;
   int *adjtetlist;
   int *trifacemarkerlist;
@@ -406,26 +308,39 @@ class tetgenio {
   // A callback function.
   TetSizeFunc tetunsuitable;
 
+  // Variable (and callback functions) for meshing PSCs.
+  void *geomhandle;
+  GetVertexParamOnEdge getvertexparamonedge;
+  GetSteinerOnEdge getsteineronedge;
+  GetVertexParamOnFace getvertexparamonface;
+  GetEdgeSteinerParamOnFace getedgesteinerparamonface;
+  GetSteinerOnFace getsteineronface;
+
   // Input & output routines.
-  bool load_node_call(FILE* infile, int markers, char* nodefilename);
-  bool load_node(char* filebasename);
+  bool load_node_call(FILE* infile, int markers, int uvflag, char*);
+  bool load_node(char*);
+  bool load_edge(char*);
+  bool load_face(char*);
+  bool load_tet(char*);
+  bool load_vol(char*);
   bool load_var(char*);
   bool load_mtr(char*);
-  bool load_poly(char*);
   bool load_pbc(char*);
+  bool load_poly(char*);
   bool load_off(char*);
   bool load_ply(char*);
   bool load_stl(char*);
-  bool load_medit(char*);
   bool load_vtk(char*);
+  bool load_medit(char*, int);
   bool load_plc(char*, int);
-  bool load_tetmesh(char*);
+  bool load_tetmesh(char*, int);
   void save_nodes(char*);
   void save_elements(char*);
   void save_faces(char*);
   void save_edges(char*);
   void save_neighbors(char*);
   void save_poly(char*);
+  void save_faces2smesh(char*);
 
   // Read line and parse string functions.
   char *readline(char* string, FILE* infile, int *linenumber);
@@ -433,17 +348,30 @@ class tetgenio {
   char *readnumberline(char* string, FILE* infile, char* infilename);
   char *findnextnumber(char* string);
 
+  static void init(polygon* p) {
+    p->vertexlist = (int *) NULL;
+    p->numberofvertices = 0;
+  }
+
+  static void init(facet* f) {
+    f->polygonlist = (polygon *) NULL;
+    f->numberofpolygons = 0;
+    f->holelist = (REAL *) NULL;
+    f->numberofholes = 0;
+  }
+
   // Initialize routine.
   void initialize()
   {
     firstnumber = 0; // Default item index is numbered from Zero.
     mesh_dim = 3; // Default mesh dimension is 3.
-    useindex = true;
+    useindex = 1;
 
     pointlist = (REAL *) NULL;
     pointattributelist = (REAL *) NULL;
     pointmtrlist = (REAL *) NULL;
     pointmarkerlist = (int *) NULL;
+    pointparamlist = (pointparam *) NULL;
     numberofpoints = 0;
     numberofpointattributes = 0;
     numberofpointmtrs = 0;
@@ -493,6 +421,13 @@ class tetgenio {
     numberofvcells = 0;
 
     tetunsuitable = NULL;
+
+    geomhandle = NULL;
+    getvertexparamonedge = NULL;
+    getsteineronedge = NULL;
+    getvertexparamonface = NULL;
+    getedgesteinerparamonface = NULL;
+    getsteineronface = NULL;
   }
 
   // Free the memory allocated in 'tetgenio'.  
@@ -503,7 +438,7 @@ class tetgenio {
     pbcgroup *pg;
     int i, j;
 
-    // This routine assumes that the memory was allocated by 
+    // Notice that this routine assumes that the memory was allocated by 
     //   C++ memory allocation operator 'new'.
 
     if (pointlist != (REAL *) NULL) {
@@ -517,6 +452,9 @@ class tetgenio {
     }
     if (pointmarkerlist != (int *) NULL) {
       delete [] pointmarkerlist;
+    }
+    if (pointparamlist != (pointparam *) NULL) {
+      delete [] pointparamlist;
     }
 
     if (tetrahedronlist != (int *) NULL) {
@@ -611,105 +549,104 @@ class tetgenio {
   // Constructor & destructor.
   tetgenio() {initialize();}
   ~tetgenio() {deinitialize();}
-};
+
+}; // class tetgenio
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// Class tetgenbehavior                                                      //
+// tetgenbehavior                                                            //
 //                                                                           //
-// The object holding a collection of options controlling TetGen's behavior. //
-// See "command line switches" in User's manual.                             //
+// A structure for maintaining the switches and parameters used by TetGen's  //
+// meshing algorithms.  They are specified by the command line arguments.    //
 //                                                                           //
-// parse_commandline() provides an simple interface to set the vaules of the //
-// variables.  It accepts the standard parameters (e.g., 'argc' and 'argv')  //
-// that pass to C/C++ main() function. Alternatively a string which contains //
-// the command line options can be used as its parameter.                    //
+// NOTE: Some of the switches are incompatinle to each other, while some are //
+// depend on others.  The routine parse_commandline() sets the switches from //
+// the command line (a list of strings). Morover, it checks the consistency  //
+// of the applied switches.                                                  //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
 class tetgenbehavior {
 
-  public:
+public:
 
-  // Labels define the objects which are acceptable by TetGen. They are 
-  //   recognized by the file extensions.
-  //   - NODES, a list of nodes (.node); 
-  //   - POLY, a piecewise linear complex (.poly or .smesh); 
-  //   - OFF, a polyhedron (.off, Geomview's file format); 
-  //   - PLY, a polyhedron (.ply, file format from gatech);
-  //   - STL, a surface mesh (.stl, stereolithography format);
-  //   - MEDIT, a surface mesh (.mesh, Medit's file format); 
-  //   - MESH, a tetrahedral mesh (.ele).
-  //   If no extension is available, the imposed commandline switch
-  //   (-p or -r) implies the object. 
+  // The list of switches of TetGen. 
+  int plc;                                                         // '-p', 0.
+  int psc;                                                         // '-s', 0.
+  int refine;                                                      // '-r', 0.
+  int quality;                                                     // '-q', 0.
+  int nobisect;                                                    // '-Y', 0.
+  int weighted;                                                    // '-w', 0.
+  int brio_hilbert;                                                // '-b', 1.
+  int incrflip;                                                    // '-l', 0.
+  int flipinsert;                                                  // '-L', 0.
+  int metric;                                                      // '-m', 0.
+  int varvolume;                                                   // '-a', 0.
+  int fixedvolume;                                                 // '-a', 0.
+  int regionattrib;                                                // '-A', 0.
+  int conforming;                                                  // '-D', 0.
+  int insertaddpoints;                                             // '-i', 0.
+  int diagnose;                                                    // '-d', 0.
+  int convex;                                                      // '-c', 0.
+  int nomerge;                                                     // '-M', 0.
+  int noexact;                                                     // '-X', 0.
+  int nostaticfilter;                                              // '-X', 0.
+  int zeroindex;                                                   // '-z', 0.
+  int facesout;                                                    // '-f', 0.
+  int edgesout;                                                    // '-e', 0.
+  int neighout;                                                    // '-n', 0.
+  int voroout;                                                     // '-v', 0.
+  int meditview;                                                   // '-g', 0.
+  int vtkview;                                                     // '-k', 0.
+  int nobound;                                                     // '-B', 0.
+  int nonodewritten;                                               // '-N', 0.
+  int noelewritten;                                                // '-E', 0.
+  int nofacewritten;                                               // '-F', 0.
+  int noiterationnum;                                              // '-I', 0.
+  int nojettison;                                                  // '-J', 0.
+  int reversetetori;                                               // '-R', 0.
+  int docheck;                                                     // '-C', 0.
+  int quiet;                                                       // '-Q', 0.
+  int verbose;                                                     // '-V', 0.
 
-  enum objecttype {NONE, NODES, POLY, OFF, PLY, STL, MEDIT, VTK, MESH};
+  // The list of parameters of TetGen. 
+  int vertexperblock;                                                 // 4092.
+  int tetrahedraperblock;                                             // 8188.
+  int shellfaceperblock;                                              // 4092.
+  int nobisect_param;                                              // '-Y', 1.
+  int weighted_param;                                              // '-w', 0.
+  int hilbert_order;                                                    // -1.
+  int hilbert_limit;                                                    //  8.
+  int fliplinklevel;                                                    // -1.
+  int flipstarsize;                                                     // -1.
+  int fliplinklevelinc;                                                 //  1.
+  int reflevel;                                                    // '-D', 3.
+  int optlevel;                                                    // '-O', 2.
+  int optscheme;                                                   // '-O', 7.
+  int delmaxfliplevel;                                                   // 1.
+  int order;                                                       // '-o', 1.
+  int steinerleft;                                                 // '-S', 0.
+  REAL facet_ang_tol;                                          // '-p', 179.9.
+  REAL maxvolume;                                               // '-a', -1.0.
+  REAL minratio;                                                 // '-q', 0.0.
+  REAL mindihedral;                                              // '-q', 5.0.
+  REAL optmaxdihedral;                                               // 165.0.
+  REAL optminsmtdihed;                                               // 179.0.
+  REAL optminslidihed;                                               // 179.0.  
+  REAL epsilon;                                               // '-T', 1.0e-8.
+  REAL minedgelength;                                                  // 0.0.
 
-  // Variables of command line switches. Each variable corresponds to a
-  //   switch and will be initialized.
-
-  int plc;                                                 // '-p' switch, 0.
-  int quality;                                             // '-q' switch, 0.
-  int refine;                                              // '-r' switch, 0.
-  int coarse;                                              // '-R' switch, 0.
-  int metric;                                              // '-m' switch, 0.
-  int varvolume;                            // '-a' switch without number, 0.
-  int fixedvolume;                             // '-a' switch with number, 0.
-  int insertaddpoints;                                     // '-i' switch, 0.
-  int regionattrib;                                        // '-A' switch, 0.
-  int conformdel;                                          // '-D' switch, 0.
-  int diagnose;                                            // '-d' switch, 0.
-  int zeroindex;                                           // '-z' switch, 0.
-  int btree;                                                        // -u, 1.
-  int max_btreenode_size;                            // number after -u, 100.
-  int optlevel;                     // number specified after '-s' switch, 3.
-  int optpasses;                   // number specified after '-ss' switch, 3.
-  int order;                // element order, specified after '-o' switch, 1.
-  int facesout;                                            // '-f' switch, 0.
-  int edgesout;                                            // '-e' switch, 0.
-  int neighout;                                            // '-n' switch, 0.
-  int voroout;                                             // '-v',switch, 0.
-  int meditview;                                           // '-g' switch, 0.
-  int gidview;                                             // '-G' switch, 0.
-  int geomview;                                            // '-O' switch, 0.
-  int vtkview;                                             // '-K' switch, 0.
-  int nobound;                                             // '-B' switch, 0.
-  int nonodewritten;                                       // '-N' switch, 0.
-  int noelewritten;                                        // '-E' switch, 0.
-  int nofacewritten;                                       // '-F' switch, 0.
-  int noiterationnum;                                      // '-I' switch, 0.
-  int nomerge;                                             // '-M',switch, 0.
-  int nobisect;             // count of how often '-Y' switch is selected, 0.
-  int noflip;                        // do not perform flips. '-X' switch. 0.
-  int nojettison;        // do not jettison redundants nodes. '-J' switch. 0.
-  int steiner;                                // number after '-S' switch. 0.
-  int fliprepair;                                          // '-X' switch, 1.
-  int offcenter;                                           // '-R' switch, 0.
-  int docheck;                                             // '-C' switch, 0.
-  int quiet;                                               // '-Q' switch, 0.
-  int verbose;              // count of how often '-V' switch is selected, 0.
-  int useshelles;               // '-p', '-r', '-q', '-d', or '-R' switch, 0.
-  int maxflipedgelinksize;        // The maximum flippable edge link size 10.
-  REAL minratio;                            // number after '-q' switch, 2.0.
-  REAL goodratio;                  // number calculated from 'minratio', 0.0.
-  REAL minangle;                                // minimum angle bound, 20.0.
-  REAL goodangle;                         // cosine squared of minangle, 0.0.
-  REAL maxvolume;                          // number after '-a' switch, -1.0.
-  REAL mindihedral;                        // number after '-qq' switch, 5.0.
-  REAL maxdihedral;                     // number after '-qqq' switch, 165.0.
-  REAL alpha1;                          // number after '-m' switch, sqrt(2).
-  REAL alpha2;                             // number after '-mm' switch, 1.0.
-  REAL alpha3;                            // number after '-mmm' switch, 0.6.
-  REAL epsilon;                          // number after '-T' switch, 1.0e-8.
-  REAL epsilon2;                        // number after '-TT' switch, 1.0e-5.
-  enum objecttype object;            // determined by -p, or -r switch. NONE.
-
-  // Variables used to save command line switches and in/out file names.
+  // Strings of command line arguments and input/output file names.
   char commandline[1024];
   char infilename[1024];
   char outfilename[1024];
   char addinfilename[1024];
   char bgmeshfilename[1024];
+
+  // The input object of TetGen. They are recognized by either the input 
+  //   file extensions or by the specified options. 
+  enum objecttype {NODES, POLY, OFF, PLY, STL, MEDIT, VTK, MESH} object;
+
 
   void syntax();
   void usage();
@@ -724,362 +661,303 @@ class tetgenbehavior {
   tetgenbehavior()
   {
     plc = 0;
-    quality = 0;
+    psc = 0;
     refine = 0;
-    coarse = 0;
+    quality = 0;
+    nobisect = 0;
     metric = 0;
-    minratio = 2.0;
-    goodratio = 0.0;
-    minangle = 20.0;
-    goodangle = 0.0;
-    maxdihedral = 165.0;
-    mindihedral = 5.0;
+    weighted = 0;
+    brio_hilbert = 1;
+    incrflip = 0;
+    flipinsert = 0;
     varvolume = 0;
     fixedvolume = 0;
-    maxvolume = -1.0;
-    regionattrib = 0;
+    noexact = 0;
+    nostaticfilter = 0;
     insertaddpoints = 0;
+    regionattrib = 0;
+    conforming = 0;
     diagnose = 0;
-    offcenter = 0;
-    conformdel = 0;
-    alpha1 = sqrt(2.0);
-    alpha2 = 1.0;
-    alpha3 = 0.6;
+    convex = 0;
     zeroindex = 0;
-    btree = 1;
-    max_btreenode_size = 100;
     facesout = 0;
     edgesout = 0;
     neighout = 0;
     voroout = 0;
     meditview = 0;
-    gidview = 0;
-    geomview = 0;
     vtkview = 0;
-    optlevel = 3;
-    optpasses = 3;
-    order = 1;
-    nojettison = 0;
     nobound = 0;
     nonodewritten = 0;
     noelewritten = 0;
     nofacewritten = 0;
     noiterationnum = 0;
-    nobisect = 0;
-    noflip = 0;
-    steiner = -1;
-    fliprepair = 1;
     nomerge = 0;
+    nojettison = 0;
+    reversetetori = 0;
     docheck = 0;
     quiet = 0;
     verbose = 0;
-    useshelles = 0;
-    maxflipedgelinksize = 10;
+
+    vertexperblock = 4092;
+    tetrahedraperblock = 8188;
+    shellfaceperblock = 4092;
+    nobisect_param = 1;
+    weighted_param = 0;
+    hilbert_order = -1;
+    hilbert_limit = 8;
+    fliplinklevel = -1; // No limit on linklevel.
+    flipstarsize = -1;  // No limit on flip star size.
+    fliplinklevelinc = 1;
+    reflevel = 3;
+    optscheme = 7;  // 1 & 2 & 4, // min_max_dihedral.
+    optlevel = 2;
+    delmaxfliplevel = 1;
+    order = 1;
+    steinerleft = -1;
+    facet_ang_tol = 179.9;
+    maxvolume = -1.0;
+    minratio = 2.0;
+    mindihedral = 5.0; 
+    optmaxdihedral = 165.00; // without -q, default is 179.0
+    optminsmtdihed = 179.00; // without -q, default is 179.999
+    optminslidihed = 179.00; // without -q, default is 179.999
     epsilon = 1.0e-8;
-    epsilon2 = 1.0e-5;
-    object = NONE;
+    minedgelength = 0.0;
+    object = NODES;
 
     commandline[0] = '\0';
     infilename[0] = '\0';
     outfilename[0] = '\0';
     addinfilename[0] = '\0';
     bgmeshfilename[0] = '\0';
+
   }
-  
-  ~tetgenbehavior() 
-  {
-  }
-};
+
+}; // class tetgenbehavior
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// Class tetgenmesh                                                          //
+// Robust Geometric predicates                                               //
 //                                                                           //
-// The object to store, generate, and refine a tetrahedral mesh.             //
+// Geometric predicates are simple tests of spatial relations of a set of d- //
+// dimensional points, such as the orientation test and the point-in-sphere  //
+// test. Each of these tests is performed by evaluating the sign of a deter- //
+// minant of a matrix whose entries are the coordinates of these points.  If //
+// the computation is performed by using the floating-point numbers, e.g.,   //
+// the single or double numbers in C/C++, roundoff error may cause an incor- //
+// rect result. This may either lead to a wrong result or eventually lead to //
+// a failure of the program.                                                 //
 //                                                                           //
-// It implements the mesh data structures and functions to create and update //
-// a tetrahedral mesh according to the specified options.                    //
+// Various techniques are developed to avoid roundoff errors, such as exact  //
+// multi-precision computations, interval arthmetics, adaptive exact arthme- //
+// tics, and filtered exact arthmetics, etc. Devillers and Pion give a nice  //
+// discussion and comparisons of these techniques for robustly computing the //
+// Delaunay triangulations [Devillers and Pion 2002].                        //
+//                                                                           //
+// The following routines implemented the orientation test and the point-in- //
+// sphere test use the adaptive exact floating-point arithmetics [Shewchuk   //
+// 1997]. They are generously provided by Jonathan Schewchuk in the public   //
+// domain, http://www.cs.cmu.edu/~quake/robust.html. The source code are in  //
+// file "predicates.cxx".                                                    //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+void exactinit(int, int, REAL, REAL, REAL);
+REAL orient3d(REAL *pa, REAL *pb, REAL *pc, REAL *pd);
+REAL insphere(REAL *pa, REAL *pb, REAL *pc, REAL *pd, REAL *pe);
+REAL orient4d(REAL *pa, REAL *pb, REAL *pc, REAL *pd, REAL *pe,
+              REAL ah, REAL bh, REAL ch, REAL dh, REAL eh);
+void predicates_statistics(int weighted);
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// tetgenmesh                                                                //
+//                                                                           //
+// A structure containing the mesh data structure and the implementations of //
+// tetrahedral meshing algorithms of TetGen.                                 //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
 class tetgenmesh {
 
-  public:
-
-  // Maximum number of characters in a file name (including the null).
-  enum {FILENAMESIZE = 1024};
-
-  // For efficiency, a variety of data structures are allocated in bulk.
-  //   The following constants determine how many of each structure is
-  //   allocated at once.
-  enum {VERPERBLOCK = 4092, SUBPERBLOCK = 4092, ELEPERBLOCK = 8188};
-
-  // Used for the point location scheme of Mucke, Saias, and Zhu, to
-  //   decide how large a random sample of tetrahedra to inspect.
-  enum {SAMPLEFACTOR = 11};
-
-  // Labels that signify two edge rings of a triangle (see Muecke's thesis).
-  enum {CCW = 0, CW = 1};
-
-  // Labels that signify whether a record consists primarily of pointers
-  //   or of floating-point words.  Used for data alignment.
-  enum wordtype {POINTER, FLOATINGPOINT};
+public:
 
   // Labels that signify the type of a vertex. 
-  enum verttype {UNUSEDVERTEX, DUPLICATEDVERTEX, NACUTEVERTEX, ACUTEVERTEX,
-    FREESEGVERTEX, FREESUBVERTEX, FREEVOLVERTEX, DEADVERTEX = -32768};
+  enum verttype {UNUSEDVERTEX, DUPLICATEDVERTEX, RIDGEVERTEX, ACUTEVERTEX,
+                 FACETVERTEX, VOLVERTEX, FREESEGVERTEX, FREEFACETVERTEX, 
+                 FREEVOLVERTEX, NREGULARVERTEX, DEADVERTEX};
  
-  // Labels that signify the type of a subface/subsegment.
-  enum shestype {NSHARP, SHARP};
-
-  // Labels that signify the type of flips can be applied on a face.
-  enum fliptype {T23, T32, T22, T44, N32, N40, FORBIDDENFACE, FORBIDDENEDGE};
+  // Labels that signify the type of a subsegment.
+  enum shestype {NSHARP, SHARP, FAKESH};
 
   // Labels that signify the result of triangle-triangle intersection test.
-  enum interresult {DISJOINT, INTERSECT, SHAREVERTEX, SHAREEDGE, SHAREFACE,
-    TOUCHEDGE, TOUCHFACE, INTERVERT, INTEREDGE, INTERFACE, INTERTET,
-    TRIEDGEINT, EDGETRIINT, COLLISIONFACE, INTERSUBSEG, INTERSUBFACE,
-    BELOWHULL2};
+  enum interresult {DISJOINT, INTERSECT, SHAREVERT, SHAREEDGE, SHAREFACE,
+                    TOUCHEDGE, TOUCHFACE, ACROSSVERT, ACROSSEDGE, ACROSSFACE, 
+                    COLLISIONFACE, ACROSSSEG, ACROSSSUB};
 
   // Labels that signify the result of point location.
-  enum locateresult {INTETRAHEDRON, ONFACE, ONEDGE, ONVERTEX, OUTSIDE,
-    ENCSEGMENT};
-
-  // Labels that signify the result of vertex insertion. 
-  enum insertsiteresult {SUCCESSINTET, SUCCESSONFACE, SUCCESSONEDGE,
-    DUPLICATEPOINT, OUTSIDEPOINT};
-
-  // Labels that signify the result of direction finding. 
-  enum finddirectionresult {ACROSSEDGE, ACROSSFACE, LEFTCOLLINEAR,
-    RIGHTCOLLINEAR, TOPCOLLINEAR, BELOWHULL};
+  enum locateresult {OUTSIDE, INTETRAHEDRON, ONFACE, ONEDGE, ONVERTEX, INSTAR,
+                     ENCVERTEX, ENCSEGMENT, ENCSUBFACE, NEARVERTEX,
+                     NONREGULAR, BADELEMENT};
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// Mesh elements                                                             //
+// Mesh data structure                                                       //
 //                                                                           //
-// There are four types of mesh elements: tetrahedra, subfaces, subsegments, //
-// and points,  where subfaces and subsegments are triangles and edges which //
-// appear on boundaries.  A tetrahedralization of a 3D point set comprises   //
-// tetrahedra and points;  a surface mesh of a 3D domain comprises subfaces  //
-// subsegments and points.  The elements of all the four types consist of a  //
-// tetrahedral mesh of a 3D domain.  However, TetGen uses three data types:  //
-// 'tetrahedron', 'shellface', and 'point'. A 'tetrahedron' is a tetrahedron;//
-// while a 'shellface' can be either a subface or a subsegment; and a 'point'//
-// is a point.  These three data types, linked by pointers comprise a mesh.  //
+// A tetrahedral mesh of a 3D domain is a 3D simplicial complex T whose und- //
+// erlying space is homeomorphic to the domain. T contains a 2D subcomplex S //
+// which is a triangular mesh of the boundary of the domain. S contains a 1D //
+// subcomplex L which is a linear mesh of the boundary of the surface. Faces //
+// and edges in S and L are respectivly called subfaces and segments to dis- //
+// tinguish them from others in T.                                           //
 //                                                                           //
-// A tetrahedron primarily consists of a list of 4 pointers to its corners,  //
-// a list of 4 pointers to its adjoining tetrahedra, a list of 4 pointers to //
-// its adjoining subfaces (when subfaces are needed). Optinoally, (depending //
-// on the selected switches), it may contain an arbitrary number of user-    //
-// defined floating-point attributes,  an optional maximum volume constraint //
-// (for -a switch), and a pointer to a list of high-order nodes (-o2 switch).//
-// Since the size of a tetrahedron is not determined until running time.     //
+// TetGen stores the tetrahedra and vertices of T. Each tetrahedron contains //
+// pointers to its vertices and adjacent tetrahedra.  Each vertex stores its //
+// x-, y-, and z-coordinates. The faces and edges of T are implicitly repre- //
+// sented by tetrahedra. 
 //                                                                           //
-// The data structure of tetrahedron also stores the geometrical information.//
-// Let t be a tetrahedron, v0, v1, v2, and v3 be the 4 nodes corresponding   //
-// to the order of their storage in t.  v3 always has a negative orientation //
-// with respect to v0, v1, v2 (ie,, v3 lies above the oriented plane passes  //
-// through v0, v1, v2). Let the 4 faces of t be f0, f1, f2, and f3. Vertices //
-// of each face are stipulated as follows: f0 (v0, v1, v2), f1 (v0, v3, v1), //
-// f2 (v1, v3, v2), f3 (v2, v3, v0).                                         //
+// Each face of T belongs to either two tetrahedra or one tetrahedron. In    //
+// the latter case, the face is an exterior boundary face of T.  TetGen adds //
+// fictitious tetrahedra (one-to-one) at such faces, and connects them to an //
+// "infinite vertex" (which has no geometric coordinates).  One can imagine  //
+// such a vertex lies in 4D space and is visible by all exterior boundary    //
+// faces.  The extended set of tetrahedra (including the infinite vertex) is //
+// a tetrahedralization of a compact 3-manifold without bounday.  It has the //
+// property that every face is shared by exactly two tetrahedra.             // 
 //                                                                           //
-// A subface has 3 pointers to vertices, 3 pointers to adjoining subfaces, 3 //
-// pointers to adjoining subsegments, 2 pointers to adjoining tetrahedra, a  //
-// boundary marker(an integer). Like a tetrahedron, the pointers to vertices,//
-// subfaces, and subsegments are ordered in a way that indicates their geom- //
-// etric relation.  Let s be a subface, v0, v1 and v2 be the 3 nodes corres- //
-// ponding to the order of their storage in s,  e0, e1 and e2 be the 3 edges,//
-// then we have: e0 (v0, v1), e1 (v1, v2), e2 (v2, v0).                      //
-//                                                                           //
-// A subsegment has exactly the same data fields as a subface has, but only  //
-// uses some of them. It has 2 pointers to its endpoints, 2 pointers to its  //
-// adjoining (and collinear) subsegments, a pointer to a subface containing  //
-// it (there may exist any number of subfaces having it, choose one of them  //
-// arbitrarily). The geometric relation between its endpoints and adjoining  //
-// subsegments is kept with respect to the storing order of its endpoints.   //
-//                                                                           //
-// The data structure of point is relatively simple.  A point is a list of   //
-// floating-point numbers, starting with the x, y, and z coords, followed by //
-// an arbitrary number of optional user-defined floating-point attributes,   //
-// an integer boundary marker, an integer for the point type, and a pointer  //
-// to a tetrahedron (used for speeding up point location).                   //
-//                                                                           //
-// For a tetrahedron on a boundary (or a hull) of the mesh, some or all of   //
-// the adjoining tetrahedra may not be present. For an interior tetrahedron, //
-// often no neighboring subfaces are present,  Such absent tetrahedra and    //
-// subfaces are never represented by the NULL pointers; they are represented //
-// by two special records: `dummytet', the tetrahedron fills "outer space",  //
-// and `dummysh',  the vacuous subfaces which are omnipresent.               //
-//                                                                           //
-// Tetrahedra and adjoining subfaces are glued together through the pointers //
-// saved in each data fields of them. Subfaces and adjoining subsegments are //
-// connected in the same fashion.  However, there are no pointers directly   //
-// gluing tetrahedra and adjoining subsegments.  For the purpose of saving   //
-// space, the connections between tetrahedra and subsegments are entirely    //
-// mediated through subfaces.  The following part explains how subfaces are  //
-// connected in TetGen.                                                      //
+// TetGen stores explicitly the subfaces and segments (which are in surface  //
+// mesh S and the linear mesh L, respectively. Additional informations are   //
+// stored in tetrahedra and subfaces to remember their relations.            //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Subface-subface and subface-subsegment connections                        //
-//                                                                           //
-// Adjoining subfaces sharing a common edge are connected in such a way that //
-// they form a face ring around the edge. It is indeed a single linked list  //
-// which is cyclic, e.g., one can start from any subface in it and traverse  //
-// back. When the edge is not a subsegment, the ring only has two coplanar   //
-// subfaces which are pointing to each other. Otherwise, the face ring may   //
-// have any number of subfaces (and are not all coplanar).                   //
-//                                                                           //
-// How is the face ring formed?  Let s be a subsegment, f is one of subfaces //
-// containing s as an edge.  The direction of s is stipulated from its first //
-// endpoint to its second (according to their storage in s). Once the dir of //
-// s is determined, the other two edges of f are oriented to follow this dir.//
-// The "directional normal" N_f is a vector formed from any point in f and a //
-// points orthogonally above f.                                              //
-//                                                                           //
-// The face ring of s is a cyclic ordered set of subfaces containing s, i.e.,//
-// F(s) = {f1, f2, ..., fn}, n >= 1.  Where the order is defined as follows: //
-// let fi, fj be two faces in F(s), the "normal-angle", NAngle(i,j) (range   //
-// from 0 to 360 degree) is the angle between the N_fi and N_fj;  then fi is //
-// in front of fj (or symbolically, fi < fj) if there exists another fk in   //
-// F(s), and NAangle(k, i) < NAngle(k, j).  The face ring of s is: f1 < f2 < //
-// ... < fn < f1.                                                            //
-//                                                                           //
-// The easiest way to imagine how a face ring is formed is to use the right- //
-// hand rule.  Make a fist using your right hand with the thumb pointing to  //
-// the direction of the subsegment. The face ring is connected following the //
-// direction of your fingers.                                                //
-//                                                                           //
-// The subface and subsegment are also connected through pointers stored in  //
-// their own data fields.  Every subface has a pointer to its adjoining sub- //
-// segment. However, a subsegment only has one pointer to a subface which is //
-// containing it. Such subface can be chosen arbitrarily, other subfaces are //
-// found through the face ring.                                              //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-  // The tetrahedron data structure.  Fields of a tetrahedron contains:
+  // The tetrahedron data structure.  It includes the following fields:
   //   - a list of four adjoining tetrahedra;
   //   - a list of four vertices;
-  //   - a list of four subfaces (optional, used for -p switch);
+  //   - a list of four subfaces (optional, for -p switch);
+  //   - a list of  six segments (optional, for -p switch);
   //   - a list of user-defined floating-point attributes (optional);
-  //   - a volume constraint (optional, used for -a switch);
-  //   - an integer of element marker (optional, used for -n switch);
-  //   - a pointer to a list of high-ordered nodes (optional, -o2 switch);
+  //   - a volume constraint (optional, for -a switch);
+  //   - an integer of element marker (and flags);
+  // The structure of a tetrahedron is an array of pointers.  Its actual size
+  //   (the length of the array) is determined at runtime.
 
   typedef REAL **tetrahedron;
 
-  // The shellface data structure.  Fields of a shellface contains:
+  // The subface data structure.  It includes the following fields:
   //   - a list of three adjoining subfaces;
   //   - a list of three vertices;
-  //   - a list of two adjoining tetrahedra;
-  //   - a list of three adjoining subsegments;
-  //   - a pointer to a badface containing it (used for -q);
-  //   - an area constraint (optional, used for -q);
+  //   - a list of three adjoining segments;
+  //   - two adjoining tetrahedra;
+  //   - an area constraint (optional, for -q switch);
   //   - an integer for boundary marker;
   //   - an integer for type: SHARPSEGMENT, NONSHARPSEGMENT, ...;
   //   - an integer for pbc group (optional, if in->pbcgrouplist exists);
 
   typedef REAL **shellface;
 
-  // The point data structure.  It is actually an array of REALs:
+  // The point data structure.  It includes the following fields:
   //   - x, y and z coordinates;
   //   - a list of user-defined point attributes (optional);
-  //   - a list of REALs of a user-defined metric tensor (optional);
-  //   - a pointer to a simplex (tet, tri, edge, or vertex);
-  //   - a pointer to a parent (or duplicate) point;
-  //   - a pointer to a tet in background mesh (optional);
-  //   - a pointer to another pbc point (optional);
-  //   - an integer for boundary marker;
-  //   - an integer for verttype: INPUTVERTEX, FREEVERTEX, ...;
+  //   - u, v coordinates (optional, for -s switch);
+  //   - a metric tensor (optional, for -q or -m switch);
+  //   - a pointer to an adjacent tetrahedron;
+  //   - a pointer to a parent (or a duplicate) point;
+  //   - a pointer to an adjacent subface or segment (optional, -p switch);
+  //   - a pointer to a tet in background mesh (optional, for -m switch);
+  //   - an integer for boundary marker (point index);
+  //   - an integer for point type (and flags).
+  //   - an integer for geometry tag (optional, for -s switch).
+  // The structure of a point is an array of REALs.  Its acutal size is 
+  //   determined at the runtime.
 
   typedef REAL *point;
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// Mesh handles                                                              //
+// Ordered tetrahedra                                                        //
 //                                                                           //
-// Two special data types, 'triface' and 'face' are defined for maintaining  //
-// and updating meshes. They are like pointers (or handles), which allow you //
-// to hold one particular part of the mesh, i.e., a tetrahedron, a triangle, //
-// an edge and a vertex.  However, these data types do not themselves store  //
-// any part of the mesh. The mesh is made of the data types defined above.   //
+// The four vertices of a tetrahedron can be permuted in 24 different seque- //
+// nces.  We call each sequence resulted by an even permutation an "ordered  //
+// tetrahedron".  There are total 12 ordered tetrahedra.  They form a group  //
+// which is isomorphic to the alternating group of 4 elements. Geometrically,//
+// if we direct the three edges within a face of a tetrahedron by the count- //
+// erclockwise order viewed from the opposite vertex of this face (using ei- //
+// ther right-hand or left-hand rule). There are total twelve directed edges //
+// in the tetrahedron. Each of them corresponds to an ordered tetrahedron.   //
 //                                                                           //
-// Muecke's "triangle-edge" data structure is the prototype for these data   //
-// types.  It allows a universal representation for every tetrahedron,       //
-// triangle, edge and vertex.  For understanding the following descriptions  //
-// of these handle data structures,  readers are required to read both the   //
-// introduction and implementation detail of "triangle-edge" data structure  //
-// in Muecke's thesis.                                                       //
+// We represent an order tetrahedron by a pair (t, v), where t is a pointer  //
+// to the tetrahedron and v is a four-bit integer, in the range from 0 to 11,//
+// identifying the ordered version of the tetrahedron.  Assume the faces of  //
+// the tetrahedron is numbered from 0 to 3, and the edges in a face is numb- //
+// ered from 0 to 2.  Then the two lower bits of v encode the face number,   //
+// and the two higher bits of v encode the edge number in that face.         //
 //                                                                           //
-// A 'triface' represents a face of a tetrahedron and an oriented edge of    //
-// the face simultaneously.  It has a pointer 'tet' to a tetrahedron, an     //
-// integer 'loc' (range from 0 to 3) as the face index, and an integer 'ver' //
-// (range from 0 to 5) as the edge version. A face of the tetrahedron can be //
-// uniquly determined by the pair (tet, loc), and an oriented edge of this   //
-// face can be uniquly determined by the triple (tet, loc, ver).  Therefore, //
-// different usages of one triface are possible.  If we only use the pair    //
-// (tet, loc), it refers to a face, and if we add the 'ver' additionally to  //
-// the pair, it is an oriented edge of this face.                            //
+// The four vertices of a tetrahedron are indexed from 0 to 3 (accodring to  //
+// their storage in the data structure).  Give each face the same index as   //
+// the node opposite it in the tetrahedron.  Denote the edge connecting face //
+// i to face j as i/j. We number the twelve versions as follows:             //
 //                                                                           //
-// A 'face' represents a subface and an oriented edge of it simultaneously.  //
-// It has a pointer 'sh' to a subface, an integer 'shver'(range from 0 to 5) //
-// as the edge version.  The pair (sh, shver) determines a unique oriented   //
-// edge of this subface.  A 'face' is also used to represent a subsegment,   //
-// in this case, 'sh' points to the subsegment, and 'shver' indicates the    //
-// one of two orientations of this subsegment, hence, it only can be 0 or 1. //
+//           |   edge 0     edge 1     edge 2                                //
+//   --------|--------------------------------                               //
+//    face 0 |   0 (0/1)    4 (0/3)    8 (0/2)                               //
+//    face 1 |   1 (1/2)    5 (1/3)    9 (1/0)                               //
+//    face 2 |   2 (2/3)    6 (2/1)   10 (2/0)                               //
+//    face 3 |   3 (3/0)    7 (3/1)   11 (3/2)                               //
 //                                                                           //
-// Mesh navigation and updating are accomplished through a set of mesh       //
-// manipulation primitives which operate on trifaces and faces.  They are    //
-// introduced below.                                                         //
+// Ordered triangles                                                         //
+//                                                                           //
+// The three vertices of a triangle can be permuted in 6 different sequences //
+// which form a group isomorphic to the symmetric group of 3 elements. Each  //
+// permutation of the vertices is called an ordered triangle.  The first two //
+// vertices of an ordered triangle defines an directed edge. There are total //
+// six directed edge in the triangle.  They can be divided into two groups,  //
+// which correspond the two orientations of the triangle, respectively.      //
+//                                                                           //
+// We represent an ordered triangle by a pair (s, v),  where s is a pointer  //
+// to the triangle and v is a three-bit integer, in the range from 0 to 5,   //
+// identifying the directed edge of the triangle.  Using the first bit of v  //
+// to identify the orientation, the other two bits of v identify the edge.   //
+//                                                                           //
+// Number the three vertices of a triangle from 0 to 2 (according to their   //
+// storage in the data structure). Give each edge the same index as the node //
+// opposite it in the triangle. The six versions of a triangle are:          //
+//                                                                           //
+//                 | edge 0   edge 1   edge 2                                //
+//  ---------------|--------------------------                               //
+//   ccw orieation |   0        2        4                                   //
+//    cw orieation |   1        3        5                                   //
+//                                                                           //
+// In the following, a 'triface' is an order tetrahedron, and a 'face' is an //
+// orider triangle.                                                          //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
   class triface {
-
-    public:
-
-    tetrahedron* tet;
-    int loc, ver;
-
-    // Constructors;
-    triface() : tet(0), loc(0), ver(0) {}
-    // Operators;
+  public:
+    tetrahedron *tet;
+    int ver; // Range from 0 to 11.
+    triface() : tet(0), ver(0) {}
     triface& operator=(const triface& t) {
-      tet = t.tet; loc = t.loc; ver = t.ver;
+      tet = t.tet; ver = t.ver;
       return *this;
-    }
-    bool operator==(triface& t) {
-      return tet == t.tet && loc == t.loc && ver == t.ver;
-    }
-    bool operator!=(triface& t) {
-      return tet != t.tet || loc != t.loc || ver != t.ver;
     }
   };
 
   class face {
-
-    public:
-
+  public:
     shellface *sh;
-    int shver;
-
-    // Constructors;
+    int shver; // Range from 0 to 5.
     face() : sh(0), shver(0) {}
-    // Operators;
     face& operator=(const face& s) {
       sh = s.sh; shver = s.shver;
       return *this;
     }
-    bool operator==(face& s) {return (sh == s.sh) && (shver == s.shver);}
-    bool operator!=(face& s) {return (sh != s.sh) || (shver != s.shver);}
   };
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// The badface structure                                                     //
+// badface                                                                   //
 //                                                                           //
 // A multiple usages structure. Despite of its name, a 'badface' can be used //
 // to represent the following objects:                                       //
@@ -1087,300 +965,182 @@ class tetgenmesh {
 //   - an encroached subsegment or subface;                                  //
 //   - a bad-quality tetrahedron, i.e, has too large radius-edge ratio;      //
 //   - a sliver, i.e., has good radius-edge ratio but nearly zero volume;    //
-//   - a degenerate tetrahedron (see routine checkdegetet()).                //
 //   - a recently flipped face (saved for undoing the flip later).           //
 //                                                                           //
-// It has the following fields:  'tt' holds a tetrahedron; 'ss' holds a sub- //
-// segment or subface; 'cent' is the circumcent of 'tt' or 'ss', 'key' is a  //
-// special value depending on the use, it can be either the square of the    //
-// radius-edge ratio of 'tt' or the flipped type of 'tt';  'forg', 'fdest',  //
-// 'fapex', and 'foppo' are vertices saved for checking the object in 'tt'   //
-// or 'ss' is still the same when it was stored; 'noppo' is the fifth vertex //
-// of a degenerate point set.  'previtem' and 'nextitem' implement a double  //
-// link for managing many basfaces.                                          //
-//                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-  struct badface {
+  class badface {
+  public:
     triface tt; 
     face ss; 
-    REAL key;
-    REAL cent[3];
-    point forg, fdest, fapex, foppo;
-    point noppo;
-    struct badface *previtem, *nextitem; 
+    REAL key, cent[6];  // circumcenter or cos(dihedral angles) at 6 edges.
+    point forg, fdest, fapex, foppo, noppo;
+    badface *previtem, *nextitem; 
+    badface() : key(0), forg(0), fdest(0), fapex(0), foppo(0), noppo(0),
+      previtem(0), nextitem(0) {}
   };
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// Elementary flip data structure                                            //
+// insertvertexflags                                                         //
 //                                                                           //
-// A data structure to record three types of elementary flips, which are     //
-// 2-to-3, 3-to-2, and 2-to-2 flips.                                         //
+// A collection of flags that pass to the routine insertvertex().            //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-  class elemflip {
+  class insertvertexflags {
 
-    public:
+  public:
 
-    enum fliptype ft; // ft \in {T23, T32, T22}.
-    point pset1[3];
-    point pset2[3];
+    int iloc, bowywat, lawson;
+    int rejflag, chkencflag;
+    int sloc, sbowywat;
+    int splitbdflag, validflag, respectbdflag;
+    int assignmeshsize;
 
-    elemflip() {
-      ft = T23; // Default.
-      pset1[0] = pset1[1] = pset1[2] = (point) NULL;
-      pset2[0] = pset2[1] = pset2[2] = (point) NULL;
+    // Used by Delaunay refinement.
+    int refineflag; // 0, 1, 2, 3
+    triface refinetet;
+    face refinesh;
+
+    insertvertexflags() {
+      // All flags are initialized as 0.
+      iloc = bowywat = lawson = 0;
+      rejflag = chkencflag = 0;
+      sloc = sbowywat = 0;
+      splitbdflag = validflag = respectbdflag = 0;
+      assignmeshsize = 0;
+
+      refineflag = 0;
+      refinetet.tet = NULL;
+      refinesh.sh = NULL;
+    }
+  };
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// flipconstraints                                                           //
+//                                                                           //
+// A structure of a collection of data (options and parameters) which pass   //
+// to the edge flip function flipnm().                                       //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+  class flipconstraints {
+
+  public:
+
+    point seg[2];  // A constraining edge to be recovered.
+    point fac[3];  // A constraining face to be recovered.
+    point remvert; // A vertex to be removed.
+
+    // Control flags
+    int unflip;  // Undo the performed flips.
+    int collectnewtets; // Collect the new tets created by flips.
+    int collectencsegflag;
+
+    // Optimization flags.
+    int remove_ndelaunay_edge; // Remove a non-Delaunay edge.
+    REAL bak_tetprism_vol; // The value to be minimized.
+    int remove_large_angle; // Remove a large dihedral angle at edge.
+    REAL cosdihed_in; // The input cosine of the dihedral angle (> 0).
+    REAL cosdihed_out; // The improved cosine of the dihedral angle.
+
+    // Internal counters.
+    int maxflippedlinklevelcount; // Maximal flipped link levels.
+    int misfliplinklevelcount; // Number of missed flip possibilities.
+    int chrismastreecount; // Number of Chrismas trees (unflippable case).
+    int convexhulledgecount; // Number of convex hull edges (unflippable case).
+    int encsegcount; // Number of hitted segments. 
+    int rejf23count, rejf32count; // Number of rejections by checkflipeligi..
+
+    void clearcounters() {
+      maxflippedlinklevelcount = 0;
+      misfliplinklevelcount = 0;
+      chrismastreecount = 0;
+      convexhulledgecount = 0;
+      encsegcount = 0;
+      rejf23count = rejf32count = 0;
     }
 
+    flipconstraints() {
+      seg[0] = NULL;
+      fac[0] = NULL;
+      remvert = NULL;
+
+      unflip = 0;
+      collectnewtets = 0;
+      collectencsegflag = 0;
+
+      remove_ndelaunay_edge = 0;
+      bak_tetprism_vol = 0.0;
+      remove_large_angle = 0;
+      cosdihed_in = 0.0;
+      cosdihed_out = 0.0;
+
+      clearcounters();
+    }
   };
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// The pbcdata structure                                                     //
+// optparameters                                                             //
 //                                                                           //
-// A pbcdata stores data of a periodic boundary condition defined on a pair  //
-// of facets or segments. Let f1 and f2 define a pbcgroup. 'fmark' saves the //
-// facet markers of f1 and f2;  'ss' contains two subfaces belong to f1 and  //
-// f2, respectively.  Let s1 and s2 define a segment pbcgroup. 'segid' are   //
-// the segment ids of s1 and s2; 'ss' contains two segments belong to s1 and //
-// s2, respectively. 'transmat' are two transformation matrices. transmat[0] //
-// transforms a point of f1 (or s1) into a point of f2 (or s2),  transmat[1] //
-// does the inverse.                                                         //
+// Optimization options and parameters.                                      //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-  struct pbcdata {
-    int fmark[2];
-    int segid[2];
-    face ss[2];
-    REAL transmat[2][4][4];
+  class optparameters {
+
+  public:
+
+    // The one of goals of optimization.
+    int max_min_volume;      // Maximize the minimum volume.
+    int max_min_aspectratio; // Maximize the minimum aspect ratio.
+    int min_max_dihedangle;  // Minimize the maxumum dihedral angle. 
+
+    // The initial and improved value.
+    REAL initval, imprval;
+
+    int numofsearchdirs;
+    REAL searchstep;
+    int maxiter;  // Maximum smoothing iterations (disabled by -1).
+    int smthiter; // Performed iterations.
+
+    int expstarflag;
+    int expstarcount;
+
+    int flipflag;
+    int checkencflag;
+
+    optparameters() {
+      max_min_volume = 0;
+      max_min_aspectratio = 0;
+      min_max_dihedangle = 0;
+
+      initval = imprval = 0.0;
+
+      numofsearchdirs = 10;
+      searchstep = 0.01;
+      maxiter = -1;   // Unlimited smoothing iterations.
+      smthiter = 0;
+
+      expstarflag = 0;
+      expstarcount = 0;
+
+      flipflag = 0;
+      checkencflag = 0;
+    }
   };
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Fast lookup tables for mesh manipulation primitives.                      //
-//                                                                           //
-// Mesh manipulation primitives (given below) are basic operations on mesh   //
-// data structures. They answer basic queries on mesh handles, such as "what //
-// is the origin (or destination, or apex) of the face?", "what is the next  //
-// (or previous) edge in the edge ring?", and "what is the next face in the  //
-// face ring?", and so on.                                                   //
-//                                                                           //
-// The implementation of teste basic queries can take advangtage of the fact //
-// that the mesh data structures additionally store geometric informations.  //
-// For example, we have ordered the 4 vertices (from 0 to 3) and the 4 faces //
-// (from 0 to 3) of a tetrahedron,  and for each face of the tetrahedron, a  //
-// sequence of vertices has stipulated,  therefore the origin of any face of //
-// the tetrahedron can be quickly determined by a table 'locver2org', which  //
-// takes the index of the face and the edge version as inputs.  A list of    //
-// fast lookup tables are defined below. They're just like global variables. //
-// These tables are initialized at the runtime.                              //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-  // For enext() primitive, uses 'ver' as the index. 
-  static int ve[6];
-
-  // For org(), dest() and apex() primitives, uses 'ver' as the index.
-  static int vo[6], vd[6], va[6];
-
-  // For org(), dest() and apex() primitives, uses 'loc' as the first
-  //   index and 'ver' as the second index.
-  static int locver2org[4][6];
-  static int locver2dest[4][6];
-  static int locver2apex[4][6];
-
-  // For oppo() primitives, uses 'loc' as the index.
-  static int loc2oppo[4];
-
-  // For fnext() primitives, uses 'loc' as the first index and 'ver' as
-  //   the second index,  returns an array containing a new 'loc' and a
-  //   new 'ver'. Note: Only valid for 'ver' equals one of {0, 2, 4}.
-  static int locver2nextf[4][6][2];
-
-  // The edge number (from 0 to 5) of a tet is defined as follows:
-  static int locver2edge[4][6];
-  static int edge2locver[6][2];
-
-  // The map from a given face ('loc') to the other three faces in the tet.
-  //   and the map from a given face's edge ('loc', 'ver') to other two
-  //   faces in the tet opposite to this edge. (used in speeding the Bowyer-
-  //   Watson cavity construction).
-  static int locpivot[4][3];
-  static int locverpivot[4][6][2];
-
-  // For enumerating three edges of a triangle.
-  static int plus1mod3[3];
-  static int minus1mod3[3];
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Mesh manipulation primitives                                              //
-//                                                                           //
-// A serial of mesh operations such as topological maintenance,  navigation, //
-// local modification, etc.,  is accomplished through a set of mesh manipul- //
-// ation primitives. These primitives are indeed very simple functions which //
-// take one or two handles ('triface's and 'face's) as parameters,  perform  //
-// basic operations such as "glue two tetrahedra at a face",  "return the    //
-// origin of a tetrahedron", "return the subface adjoining at the face of a  //
-// tetrahedron", and so on.                                                  //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-  // Primitives for tetrahedra.
-  inline void decode(tetrahedron ptr, triface& t);
-  inline tetrahedron encode(triface& t);
-  inline void sym(triface& t1, triface& t2);
-  inline void symself(triface& t);
-  inline void bond(triface& t1, triface& t2);
-  inline void dissolve(triface& t);
-  inline point org(triface& t);
-  inline point dest(triface& t);
-  inline point apex(triface& t);
-  inline point oppo(triface& t);
-  inline void setorg(triface& t, point pointptr);
-  inline void setdest(triface& t, point pointptr);
-  inline void setapex(triface& t, point pointptr);
-  inline void setoppo(triface& t, point pointptr);
-  inline void esym(triface& t1, triface& t2);
-  inline void esymself(triface& t);
-  inline void enext(triface& t1, triface& t2);
-  inline void enextself(triface& t);
-  inline void enext2(triface& t1, triface& t2);
-  inline void enext2self(triface& t);
-  inline bool fnext(triface& t1, triface& t2);
-  inline bool fnextself(triface& t);
-  inline void symedge(triface& t1, triface& t2);
-  inline void symedgeself(triface& t);
-  inline void tfnext(triface& t1, triface& t2);
-  inline void tfnextself(triface& t);
-  inline void enextfnext(triface& t1, triface& t2);
-  inline void enextfnextself(triface& t);
-  inline void enext2fnext(triface& t1, triface& t2);
-  inline void enext2fnextself(triface& t);
-  inline REAL elemattribute(tetrahedron* ptr, int attnum);
-  inline void setelemattribute(tetrahedron* ptr, int attnum, REAL value);
-  inline REAL volumebound(tetrahedron* ptr);
-  inline void setvolumebound(tetrahedron* ptr, REAL value);
-  inline int getelemmarker(tetrahedron* ptr);
-  inline void setelemmarker(tetrahedron* ptr, int value);
-  inline void infect(triface& t);
-  inline void uninfect(triface& t);
-  inline bool infected(triface& t);
-  inline void marktest(triface& t);
-  inline void unmarktest(triface& t);
-  inline bool marktested(triface& t);
-  inline void markface(triface& t);
-  inline void unmarkface(triface& t);
-  inline bool facemarked(triface& t);
-  inline void markedge(triface& t);
-  inline void unmarkedge(triface& t);
-  inline bool edgemarked(triface& t);
- 
-  // Primitives for subfaces and subsegments.
-  inline void sdecode(shellface sptr, face& s);
-  inline shellface sencode(face& s);
-  inline void spivot(face& s1, face& s2);
-  inline void spivotself(face& s);
-  inline void sbond(face& s1, face& s2);
-  inline void sbond1(face& s1, face& s2);
-  inline void sdissolve(face& s);
-  inline point sorg(face& s);
-  inline point sdest(face& s);
-  inline point sapex(face& s);
-  inline void setsorg(face& s, point pointptr);
-  inline void setsdest(face& s, point pointptr);
-  inline void setsapex(face& s, point pointptr);
-  inline void sesym(face& s1, face& s2);
-  inline void sesymself(face& s);
-  inline void senext(face& s1, face& s2);
-  inline void senextself(face& s);
-  inline void senext2(face& s1, face& s2);
-  inline void senext2self(face& s);
-  inline void sfnext(face&, face&);
-  inline void sfnextself(face&);
-  inline badface* shell2badface(face& s);
-  inline void setshell2badface(face& s, badface* value);
-  inline REAL areabound(face& s);
-  inline void setareabound(face& s, REAL value);
-  inline int shellmark(face& s);
-  inline void setshellmark(face& s, int value);
-  inline enum shestype shelltype(face& s);
-  inline void setshelltype(face& s, enum shestype value); 
-  inline int shellpbcgroup(face& s);
-  inline void setshellpbcgroup(face& s, int value);
-  inline void sinfect(face& s);
-  inline void suninfect(face& s);
-  inline bool sinfected(face& s);
-
-  // Primitives for interacting tetrahedra and subfaces.
-  inline void tspivot(triface& t, face& s);
-  inline void stpivot(face& s, triface& t);
-  inline void tsbond(triface& t, face& s);
-  inline void tsdissolve(triface& t);
-  inline void stdissolve(face& s);
-
-  // Primitives for interacting subfaces and subsegs.
-  inline void sspivot(face& s, face& edge);
-  inline void ssbond(face& s, face& edge);
-  inline void ssdissolve(face& s);
-
-  inline void tsspivot1(triface& t, face& seg);
-  inline void tssbond1(triface& t, face& seg);
-  inline void tssdissolve1(triface& t);
-
-  // Primitives for points.
-  inline int  pointmark(point pt);
-  inline void setpointmark(point pt, int value);
-  inline enum verttype pointtype(point pt);
-  inline void setpointtype(point pt, enum verttype value);
-  inline void pinfect(point pt);
-  inline void puninfect(point pt);
-  inline bool pinfected(point pt);
-  inline tetrahedron point2tet(point pt);
-  inline void setpoint2tet(point pt, tetrahedron value);
-  inline shellface point2sh(point pt);
-  inline void setpoint2sh(point pt, shellface value);
-  inline shellface point2seg(point pt);
-  inline void setpoint2seg(point pt, shellface value);
-  inline point point2ppt(point pt);
-  inline void setpoint2ppt(point pt, point value);
-  inline tetrahedron point2bgmtet(point pt);
-  inline void setpoint2bgmtet(point pt, tetrahedron value);
-  inline point point2pbcpt(point pt);
-  inline void setpoint2pbcpt(point pt, point value);
-
-  // Advanced primitives.
-  inline void adjustedgering(triface& t, int direction);
-  inline void adjustedgering(face& s, int direction);
-  inline bool isdead(triface* t);
-  inline bool isdead(face* s);
-  inline bool isfacehaspoint(triface* t, point testpoint);
-  inline bool isfacehaspoint(face* t, point testpoint);
-  inline bool isfacehasedge(face* s, point tend1, point tend2);
-  inline bool issymexist(triface* t);
-  void getnextsface(face*, face*);
-  void tsspivot(triface*, face*);
-  void sstpivot(face*, triface*);
-  void point2tetorg(point, triface&);
-  void point2shorg(point, face&);
-  void point2segorg(point, face&);
-  bool findorg(triface* t, point dorg);
-  bool findorg(face* s, point dorg);
-  void findedge(triface* t, point eorg, point edest);
-  void findedge(face* s, point eorg, point edest);
-  void getonextseg(face* s, face* lseg);
-  void getseghasorg(face* sseg, point dorg);
-  point getsubsegfarorg(face* sseg);
-  point getsubsegfardest(face* sseg);
-  void printtet(triface*);
-  void printsh(face*);
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 // Arraypool                                                                 //
+//                                                                           //
+// A dynamic linear array.                                                   //
+// (It is from Shewchuk's Starbase.c, which is provided as part of Stellar,  //
+// a program for improving tetrahedral meshes.)                              //
 //                                                                           //
 // Each arraypool contains an array of pointers to a number of blocks.  Each //
 // block contains the same fixed number of objects.  Each index of the array //
@@ -1396,7 +1156,7 @@ class tetgenmesh {
 
   class arraypool {
 
-    public:
+  public:
 
     int objectbytes;
     int objectsperblock;
@@ -1424,66 +1184,12 @@ class tetgenmesh {
   (void *) ((pool)->toparray[(index) >> (pool)->log2objectsperblock] + \
             ((index) & ((pool)->objectsperblock - 1)) * (pool)->objectbytes)
 
-
-// A function: int cmp(const T &, const T &),  is said to realize a
-//   linear order on the type T if there is a linear order <= on T such
-//   that for all x and y in T satisfy the following relation:
-//                 -1  if x < y.
-//   comp(x, y) =   0  if x is equivalent to y.
-//                 +1  if x > y.
-// A 'compfunc' is a pointer to a linear-order function. 
-
-  typedef int (*compfunc) (const void *, const void *);
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// List                                                                      //
-//                                                                           //
-// An array of items with automatically reallocation of memory.              //
-//                                                                           //
-// 'base' is the starting address of the array.  'itembytes' is the size of  //
-//   each item in byte.                                                      //
-//                                                                           //
-// 'items' is the number of items stored in list.  'maxitems' indicates how  //
-//   many items can be stored in this list. 'expandsize' is the increasing   //
-//   size (items) when the list is full.                                     //
-//                                                                           //
-// The index of list always starts from zero, i.e., for a list L contains    //
-//   n elements, the first element is L[0], and the last element is L[n-1].  //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-  class list {
-
-    public:
-
-    char *base;
-    int  itembytes;
-    int  items, maxitems, expandsize;
-    compfunc comp;
-
-    list(int itbytes, compfunc pcomp, int mitems = 256, int exsize = 128) {
-      listinit(itbytes, pcomp, mitems, exsize);
-    }
-    ~list() { free(base); }
-
-    void *operator[](int i) { return (void *) (base + i * itembytes); }
-
-    void listinit(int itbytes, compfunc pcomp, int mitems, int exsize);
-    void setcomp(compfunc compf) { comp = compf; }    
-    void clear() { items = 0; }
-    int  len() { return items; }
-    void *append(void* appitem);
-    void *insert(int pos, void* insitem);
-    void del(int pos, int order);
-    int  hasitem(void* checkitem);
-  };
-
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 // Memorypool                                                                //
 //                                                                           //
 // A type used to allocate memory.                                           //
+// (It is from Shewchuk's triangle.c.)                                       //
 //                                                                           //
 // firstblock is the first block of items. nowblock is the block from which  //
 //   items are currently being allocated. nextitem points to the next slab   //
@@ -1512,7 +1218,11 @@ class tetgenmesh {
 
   class memorypool {
 
-    public:
+  public:
+
+    // Labels that signify whether a record consists primarily of pointers
+    //   or of floating-point words.  Used for data alignment.
+    enum wordtype {POINTER, FLOATINGPOINT};
 
     void **firstblock, **nowblock;
     void *nextitem;
@@ -1541,123 +1251,342 @@ class tetgenmesh {
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// Queue                                                                     //
-//                                                                           //
-// A 'queue' is a FIFO data structure.                                       //
+// Class variables                                                           //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-  class queue : public memorypool {
+  // Pointer to the input data (a set of nodes, a PLC, or a mesh).
+  tetgenio *in, *addin;
 
-    public:
+  // Pointer to the switches and parameters.
+  tetgenbehavior *b;
 
-    void **head, **tail;
-    int  linkitembytes;
-    int  linkitems; // Not count 'head' and 'tail'.
+  // Pointer to a background mesh (contains size specification map).
+  tetgenmesh *bgm;
 
-     queue(int bytecount, int itemcount = 256) {
-       linkitembytes = bytecount;
-       poolinit(bytecount + sizeof(void *), itemcount, POINTER, 0);
-       head = (void **) alloc();
-       tail = (void **) alloc();
-       *head = (void *) tail;
-       *tail = NULL;
-       linkitems = 0;
-     }
+  // Memorypools to store mesh elements: tetrahedra, subfaces, segments,
+  //   and vertices. And memorypools for storing pointers which connect 
+  //   tetrahedra and subfaces and segments.
+  memorypool *tetrahedrons, *subfaces, *subsegs, *points;
+  memorypool *tet2subpool, *tet2segpool;
 
-     void clear() {
-       // Reset the pool.
-       restart();
-       // Initialize all variables.
-       head = (void **) alloc();
-       tail = (void **) alloc();
-       *head = (void *) tail;
-       *tail = NULL;
-       linkitems = 0;
-     }
+  // Memorypools to store bad-quality (or encroached) elements.
+  memorypool *badtetrahedrons, *badsubfacs, *badsubsegs;
 
-     long len() { return linkitems; }
-     bool empty() { return linkitems == 0; }
+  // A memorypool to store faces to be flipped.
+  memorypool *flippool;
+  // A stack of faces to be flipped.
+  badface *flipstack;
+  // A queue to store unflippable elements.
+  arraypool *unflipqueue; 
 
-     void *push(void* newitem) {
-       void **newnode = tail;
-       if (newitem != (void *) NULL) {
-         memcpy((void *)(newnode + 1), newitem, linkitembytes);
-       }
-       tail = (void **) alloc();
-       *tail = NULL;
-       *newnode = (void *) tail;
-       linkitems++;
-       return (void *)(newnode + 1);
-     }
+  // Arrays used for point insertion (the Bowyer-Watson algorithm).
+  arraypool *cavetetlist, *cavebdrylist, *caveoldtetlist;
+  arraypool *cavetetshlist, *cavetetseglist, *cavetetvertlist;
+  arraypool *caveencshlist, *caveencseglist;
+  arraypool *caveshlist, *caveshbdlist, *cavesegshlist;
 
-     void *pop() {
-       if (linkitems > 0) {
-         void **deadnode = (void **) *head;
-         *head = *deadnode;
-         dealloc((void *) deadnode);
-         linkitems--;
-         return (void *)(deadnode + 1);
-       } else {
-         return NULL;
-       }
-     }
-  };
+  // Stacks used for CDT construction and boundary recovery.
+  arraypool *subsegstack, *subfacstack, *subvertstack;
+  arraypool *suppsteinerptlist;
+
+  // The infinite vertex.
+  point dummypoint;
+
+  // Two handles used for facet recovery in CDT.
+  triface firsttopface, firstbotface;
+  // Three points define a plane (used in formcavity()).
+  point plane_pa, plane_pb, plane_pc;
+
+  // Two arraies of encroached segments and subfaces (in mesh refinement).
+  arraypool *encseglist, *encshlist;
+
+  // Pointer to a recently visited tetrahedron, subface.
+  triface recenttet;
+  face recentsh;
+
+  // PI is the ratio of a circle's circumference to its diameter.
+  static REAL PI;
+
+  // Array (size = numberoftetrahedra * 6) for storing high-order nodes of
+  //   tetrahedra (only used when -o2 switch is selected).
+  point *highordertable;
+
+  // Other variables.
+  REAL xmax, xmin, ymax, ymin, zmax, zmin;         // Bounding box of points.
+  REAL longest;                          // The longest possible edge length.
+  long hullsize;                           // Number of faces of convex hull.
+  long insegments;                               // Number of input segments.
+  long meshedges;                             // Number of output mesh edges.
+  long meshhulledges;                           // Number of hull mesh edges.
+  int steinerleft;                  // Number of Steiner points not yet used.
+  int numpointattrib;                          // Number of point attributes.
+  int sizeoftensor;                     // Number of REALs per metric tensor.
+  int pointmtrindex;           // Index to find the metric tensor of a point.
+  int pointparamindex;       // Index to find the u,v coordinates of a point.
+  int point2simindex;         // Index to find a simplex adjacent to a point.
+  int pointmarkindex;            // Index to find boundary marker of a point.
+  int numelemattrib;                     // Number of tetrahedron attributes.
+  int elemattribindex;          // Index to find attributes of a tetrahedron.
+  int volumeboundindex;       // Index to find volume bound of a tetrahedron.
+  int elemmarkerindex;              // Index to find marker of a tetrahedron.
+  int shmarkindex;             // Index to find boundary marker of a subface.
+  int areaboundindex;               // Index to find area bound of a subface.
+  int checksubsegflag;   // Are there segments in the tetrahedralization yet?
+  int checksubfaceflag;  // Are there subfaces in the tetrahedralization yet?
+  int checkinverttetflag;       // Are there inverted (degenerated) tets yet?
+  int checkconstraints;  // Are there variant (node, seg, facet) constraints?
+  int nonconvex;                               // Is current mesh non-convex?
+  int dupverts;                             // Are there duplicated vertices?
+  int unuverts;                                 // Are there unused vertices?
+  long samples;               // Number of random samples for point location.
+  unsigned long randomseed;                    // Current random number seed.
+  REAL cosmaxdihed, cosmindihed;    // The cosine values of max/min dihedral.
+  REAL cossmtdihed;      // The cosine value of a bad dihedral tobe smoothed.
+  REAL cosslidihed;      // The cosine value of the max dihedral of a sliver.
+  REAL minfaceang, minfacetdihed;     // The minimum input (dihedral) angles.
+  REAL sintheta_tol;                   // The tolerance for sin(small angle).
+  int autofliplinklevel;    // The increasement of link levels, default is 1.
+  int calc_tetprism_vol;   // Flag to calculate the tetrahedral-prism'volume.
+  REAL tetprism_vol_sum;   // The total volume of tetrahedral-prisms (in 4D).
+
+  // Algorithm statistical counters.
+  int  max_hcurve_depth_count;
+  long ptloc_count, ptloc_max_count;
+  long insphere_sos_count, orient4d_sos_count;
+  long flip14count, flip26count, flipn2ncount;
+  long flip23count, flip32count, flip44count, flip22count;
+  long maxbowatcavsize, totalbowatcavsize, totaldeadtets;
+  long triedgcount, triedgcopcount;
+  long across_face_count, across_edge_count, across_max_count;
+  long fillregioncount, missingsubfacecount, crossingtetcount;
+  long cavitycount, cavityexpcount, maxcavsize, maxregionsize;
+  long maxcrossfacecount, maxflipsequence;
+  long dbg_ignore_facecount, dbg_unflip_facecount;
+  long ccent_relocate_count;
+  long opt_sliver_peels;
+  long r1count, r2count, r3count; 
+  long maxfliplinklevel, maxflipstarsize;
+  long flipstarcount, sucflipstarcount, skpflipstarcount;
+  long st_segref_count, st_facref_count, st_volref_count; 
+  long nonregularcount;
+  long rejrefinetetcount, rejrefineshcount;
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-//  Memory managment routines                                                //
+// Mesh manipulation primitives                                              //
+//                                                                           //
+// Mesh manipulation primitives are indeed very simple functions which take  //
+// one or two handles as parameters,  perform basic operations such as "glue //
+// two tetrahedra at a face",  "return the origin of a tetrahedron", "return //
+// the subface adjoining at the face of a tetrahedron", and so on.           //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-  void dummyinit(int, int);
-  void initializepools();
+  // Fast lookup tables for mesh manipulation primitives.
+  static int mod12[36], mod6[18]; 
+  static int orgpivot[12], destpivot[12], apexpivot[12], oppopivot[12];
+  static int edgepivot[12], ver2edge[12], edge2ver[6];
+  static int sorgpivot [6], sdestpivot[6], sapexpivot[6];
+  static int snextpivot[6], epivot[4];
+
+  // Primitives for tetrahedra.
+  inline void decode(tetrahedron ptr, triface& t);
+  inline tetrahedron encode(triface& t);
+  inline tetrahedron encode2(tetrahedron* ptr, int ver);
+  inline void bond(triface& t1, triface& t2);
+  inline void dissolve(triface& t);
+  inline void fsym(triface& t1, triface& t2);
+  inline void fsymself(triface& t);
+  inline void esym(triface& t1, triface& t2);
+  inline void esymself(triface& t);
+  inline void enext(triface& t1, triface& t2);
+  inline void enextself(triface& t);
+  inline void eprev(triface& t1, triface& t2);
+  inline void eprevself(triface& t);
+  inline void enextesym(triface& t1, triface& t2);
+  inline void enextesymself(triface& t);
+  inline void eprevesym(triface& t1, triface& t2);
+  inline void eprevesymself(triface& t);
+  inline void fnext(triface& t1, triface& t2);
+  inline void fnextself(triface& t);
+  inline point org (triface& t);
+  inline point dest(triface& t);
+  inline point apex(triface& t);
+  inline point oppo(triface& t);
+  inline void setorg (triface& t, point p);
+  inline void setdest(triface& t, point p);
+  inline void setapex(triface& t, point p);
+  inline void setoppo(triface& t, point p);
+  inline REAL elemattribute(tetrahedron* ptr, int attnum);
+  inline void setelemattribute(tetrahedron* ptr, int attnum, REAL value);
+  inline REAL volumebound(tetrahedron* ptr);
+  inline void setvolumebound(tetrahedron* ptr, REAL value);
+  inline int  elemindex(tetrahedron* ptr);
+  inline void setelemindex(tetrahedron* ptr, int value);
+  inline int  elemmarker(tetrahedron* ptr);
+  inline void setelemmarker(tetrahedron* ptr, int value);
+  inline void infect(triface& t);
+  inline void uninfect(triface& t);
+  inline bool infected(triface& t);
+  inline void marktest(triface& t);
+  inline void unmarktest(triface& t);
+  inline bool marktested(triface& t);
+  inline void markface(triface& t);
+  inline void unmarkface(triface& t);
+  inline bool facemarked(triface& t);
+  inline void markedge(triface& t);
+  inline void unmarkedge(triface& t);
+  inline bool edgemarked(triface& t);
+  inline void marktest2(triface& t);
+  inline void unmarktest2(triface& t);
+  inline bool marktest2ed(triface& t);
+  inline int  elemcounter(triface& t);
+  inline void setelemcounter(triface& t, int value);
+  inline void increaseelemcounter(triface& t);
+  inline void decreaseelemcounter(triface& t);
+  inline bool ishulltet(triface& t);
+  inline bool isdeadtet(triface& t);
+ 
+  // Primitives for subfaces and subsegments.
+  inline void sdecode(shellface sptr, face& s);
+  inline shellface sencode(face& s);
+  inline shellface sencode2(shellface *sh, int shver);
+  inline void spivot(face& s1, face& s2);
+  inline void spivotself(face& s);
+  inline void sbond(face& s1, face& s2);
+  inline void sbond1(face& s1, face& s2);
+  inline void sdissolve(face& s);
+  inline point sorg(face& s);
+  inline point sdest(face& s);
+  inline point sapex(face& s);
+  inline void setsorg(face& s, point pointptr);
+  inline void setsdest(face& s, point pointptr);
+  inline void setsapex(face& s, point pointptr);
+  inline void sesym(face& s1, face& s2);
+  inline void sesymself(face& s);
+  inline void senext(face& s1, face& s2);
+  inline void senextself(face& s);
+  inline void senext2(face& s1, face& s2);
+  inline void senext2self(face& s);
+  inline void sfnext(face& s1, face& s2);
+  inline void sfnextself(face& s);
+  inline REAL areabound(face& s);
+  inline void setareabound(face& s, REAL value);
+  inline int shellmark(face& s);
+  inline void setshellmark(face& s, int value);
+  inline enum shestype shelltype(face& s);
+  inline void setshelltype(face& s, enum shestype value); 
+  inline void sinfect(face& s);
+  inline void suninfect(face& s);
+  inline bool sinfected(face& s);
+  inline void smarktest(face& s);
+  inline void sunmarktest(face& s);
+  inline bool smarktested(face& s);
+  inline void smarktest2(face& s);
+  inline void sunmarktest2(face& s);
+  inline bool smarktest2ed(face& s);
+  inline void smarktest3(face& s);
+  inline void sunmarktest3(face& s);
+  inline bool smarktest3ed(face& s);
+
+  // Primitives for interacting tetrahedra and subfaces.
+  inline void tsbond(triface& t, face& s);
+  inline void tsdissolve(triface& t);
+  inline void stdissolve(face& s);
+  inline void tspivot(triface& t, face& s);
+  inline void stpivot(face& s, triface& t);
+
+  // Primitives for interacting tetrahedra and segments.
+  inline void tssbond1(triface& t, face& seg);
+  inline void sstbond1(face& s, triface& t);
+  inline void tssdissolve1(triface& t);
+  inline void sstdissolve1(face& s);
+  inline void tsspivot1(triface& t, face& s);
+  inline void sstpivot1(face& s, triface& t);
+
+  // Primitives for interacting subfaces and segments.
+  inline void ssbond(face& s, face& edge);
+  inline void ssbond1(face& s, face& edge);
+  inline void ssdissolve(face& s);
+  inline void sspivot(face& s, face& edge);
+
+  // Primitives for points.
+  inline int  pointmark(point pt);
+  inline void setpointmark(point pt, int value);
+  inline enum verttype pointtype(point pt);
+  inline void setpointtype(point pt, enum verttype value);
+  inline int  pointgeomtag(point pt);
+  inline void setpointgeomtag(point pt, int value);
+  inline REAL pointgeomuv(point pt, int i);
+  inline void setpointgeomuv(point pt, int i, REAL value);
+  inline void pinfect(point pt);
+  inline void puninfect(point pt);
+  inline bool pinfected(point pt);
+  inline void pmarktest(point pt);
+  inline void punmarktest(point pt);
+  inline bool pmarktested(point pt);
+  inline void pmarktest2(point pt);
+  inline void punmarktest2(point pt);
+  inline bool pmarktest2ed(point pt);
+  inline void pmarktest3(point pt);
+  inline void punmarktest3(point pt);
+  inline bool pmarktest3ed(point pt);
+  inline tetrahedron point2tet(point pt);
+  inline void setpoint2tet(point pt, tetrahedron value);
+  inline shellface point2sh(point pt);
+  inline void setpoint2sh(point pt, shellface value);
+  inline point point2ppt(point pt);
+  inline void setpoint2ppt(point pt, point value);
+  inline tetrahedron point2bgmtet(point pt);
+  inline void setpoint2bgmtet(point pt, tetrahedron value);
+
+  // Advanced primitives.
+  inline void point2tetorg(point pt, triface& t);
+  inline void point2shorg(point pa, face& s);
+  inline point farsorg(face& seg);
+  inline point farsdest(face& seg);
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+//  Memory managment                                                         //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
   void tetrahedrondealloc(tetrahedron*);
   tetrahedron *tetrahedrontraverse();
+  tetrahedron *alltetrahedrontraverse();
   void shellfacedealloc(memorypool*, shellface*);
   shellface *shellfacetraverse(memorypool*);
   void badfacedealloc(memorypool*, badface*);
   badface *badfacetraverse(memorypool*);
   void pointdealloc(point);
   point pointtraverse();
+
+  void makeindex2pointmap(point*&);
+  void makepoint2submap(memorypool*, int*&, face*&);
   void maketetrahedron(triface*);
   void makeshellface(memorypool*, face*);
-  void makepoint(point*);
+  void makepoint(point*, enum verttype);
 
-  void makepoint2tetmap();
-  void makepoint2segmap();
-  void makeindex2pointmap(point*&);
-  void makesegmentmap(int*&, shellface**&);
-  void makesubfacemap(int*&, shellface**&);
-  void maketetrahedronmap(int*&, tetrahedron**&);
+  void initializepools();
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// Geometric functions                                                       //
+// Geometric predicates and calculations                                     //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-  // PI is the ratio of a circle's circumference to its diameter.
-  static REAL PI;
-
-  // Triangle-triangle intersection test
-  enum interresult edge_vert_col_inter(REAL*, REAL*, REAL*);
-  enum interresult edge_edge_cop_inter(REAL*, REAL*, REAL*, REAL*, REAL*);
-  enum interresult tri_vert_cop_inter(REAL*, REAL*, REAL*, REAL*, REAL*);
-  enum interresult tri_edge_cop_inter(REAL*, REAL*, REAL*,REAL*,REAL*,REAL*);
-  enum interresult tri_edge_inter_tail(REAL*, REAL*, REAL*, REAL*, REAL*,
-                                        REAL, REAL);
-  enum interresult tri_edge_inter(REAL*, REAL*, REAL*, REAL*, REAL*);
-  enum interresult tri_tri_inter(REAL*, REAL*, REAL*, REAL*, REAL*, REAL*);
+  // Triangle-edge intersection test
   int tri_edge_2d(point, point, point, point, point, point, int, int*, int*);
+  int tri_edge_tail(point, point, point, point, point, point, REAL, REAL, int, 
+                    int*, int*);
   int tri_edge_test(point, point, point, point, point, point, int, int*, int*);
 
-  // Geometric tests
-  REAL incircle3d(point pa, point pb, point pc, point pd);
-  REAL insphere_s(REAL*, REAL*, REAL*, REAL*, REAL*);
-  bool iscollinear(REAL*, REAL*, REAL*, REAL eps);
-  bool iscoplanar(REAL*, REAL*, REAL*, REAL*, REAL vol6, REAL eps);
-  bool iscospheric(REAL*, REAL*, REAL*, REAL*, REAL*, REAL vol24, REAL eps);
+  // Triangle-triangle intersection test
+  int tri_edge_inter_tail(point, point, point, point, point, REAL, REAL);
+  int tri_tri_inter(point, point, point, point, point, point);
 
   // Linear algebra functions
   inline REAL dot(REAL* v1, REAL* v2);
@@ -1665,290 +1594,261 @@ class tetgenmesh {
   bool lu_decmp(REAL lu[4][4], int n, int* ps, REAL* d, int N);
   void lu_solve(REAL lu[4][4], int n, int* ps, REAL* b, int N);
 
+  // Geometric predicates
+  REAL incircle3d(point pa, point pb, point pc, point pd);
+  REAL insphere_s(REAL*, REAL*, REAL*, REAL*, REAL*);
+  REAL orient4d_s(REAL*, REAL*, REAL*, REAL*, REAL*, 
+                  REAL, REAL, REAL, REAL, REAL);
+
   // Geometric calculations
   inline REAL distance(REAL* p1, REAL* p2);
+  void facenormal(point pa, point pb, point pc, REAL *n, int pivot, REAL *lav);
   REAL shortdistance(REAL* p, REAL* e1, REAL* e2);
-  REAL shortdistance(REAL* p, REAL* e1, REAL* e2, REAL* e3);
+  REAL triarea(REAL* pa, REAL* pb, REAL* pc);
   REAL interiorangle(REAL* o, REAL* p1, REAL* p2, REAL* n);
   void projpt2edge(REAL* p, REAL* e1, REAL* e2, REAL* prj);
   void projpt2face(REAL* p, REAL* f1, REAL* f2, REAL* f3, REAL* prj);
-  void facenormal(REAL* pa, REAL* pb, REAL* pc, REAL* n, REAL* nlen);
-  void facenormal2(point pa, point pb, point pc, REAL *n, int pivot);
-  void edgeorthonormal(REAL* e1, REAL* e2, REAL* op, REAL* n);
   REAL facedihedral(REAL* pa, REAL* pb, REAL* pc1, REAL* pc2);
-  void tetalldihedral(point, point, point, point, REAL*, REAL*, REAL*);
+  bool tetalldihedral(point, point, point, point, REAL*, REAL*, REAL*);
   void tetallnormal(point, point, point, point, REAL N[4][3], REAL* volume);
   REAL tetaspectratio(point, point, point, point);
   bool circumsphere(REAL*, REAL*, REAL*, REAL*, REAL* cent, REAL* radius);
-  void inscribedsphere(REAL*, REAL*, REAL*, REAL*, REAL* cent, REAL* radius);
-  void rotatepoint(REAL* p, REAL rotangle, REAL* p1, REAL* p2);
+  bool orthosphere(REAL*,REAL*,REAL*,REAL*,REAL,REAL,REAL,REAL,REAL*,REAL*);
   void planelineint(REAL*, REAL*, REAL*, REAL*, REAL*, REAL*, REAL*);
-
-  // Point location routines.
-  unsigned long randomnation(unsigned int choices);
-  REAL distance2(tetrahedron* tetptr, point p);
-  void randomsample(point searchpt, triface *searchtet);
-  enum locateresult locate(point searchpt, triface* searchtet);
-  enum locateresult locate2(point searchpt, triface* searchtet, arraypool*);
-  enum locateresult preciselocate(point searchpt, triface* searchtet, long);
-  enum locateresult adjustlocate(point, triface*, enum locateresult, REAL);
-  enum locateresult hullwalk(point searchpt, triface* hulltet);
-  enum locateresult locatesub(point searchpt, face* searchsh, int, REAL);
-  enum locateresult adjustlocatesub(point, face*, enum locateresult, REAL);
-  enum locateresult locateseg(point searchpt, face* searchseg);
-  enum locateresult adjustlocateseg(point, face*, enum locateresult, REAL);
+  REAL tetprismvol(REAL* pa, REAL* pb, REAL* pc, REAL* pd);
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// Mesh update functions                                                     //
+// Local mesh transformations                                                //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-  void enqueueflipface(triface&, queue*);
-  void enqueueflipedge(face&, queue*);
-  void flip23(triface*, queue*);
-  void flip32(triface*, queue*);
-  void flip22(triface*, queue*);
-  void flip22sub(face*, queue*);
-  long lawson3d(queue* flipqueue);
-  long lawson(queue* flipqueue);
+  void flippush(badface*&, triface*);
 
-  bool removetetbypeeloff(triface *striptet, triface*);
-  bool removefacebyflip23(REAL *key, triface*, triface*, queue*);
-  bool removeedgebyflip22(REAL *key, int, triface*, queue*);
-  bool removeedgebyflip32(REAL *key, triface*, triface*, queue*);
-  bool removeedgebytranNM(REAL*,int,triface*,triface*,point,point,queue*);
-  bool removeedgebycombNM(REAL*,int,triface*,int*,triface*,triface*,queue*);
+  // The elementary flips.
+  void flip23(triface*, int, int, int);
+  void flip32(triface*, int, int, int);
+  void flip41(triface*, int, int, int);
 
-  void splittetrahedron(point, triface*, queue*);
-  void splittetface(point, triface*, queue*);
-  void splitsubface(point, face*, queue*);
-  bool splittetedge(point, triface*, queue*);
-  void splitsubedge(point, face*, queue*);
+  // A generalized edge flip.
+  int flipnm(triface*, int n, int level, int, flipconstraints* fc);
+  int flipnm_post(triface*, int n, int nn, int, flipconstraints* fc);
 
-  void formstarpolyhedron(point pt, list* tetlist, list* verlist, bool);
-  void formbowatcavitysub(point, face*, list*, list*);
-  void formbowatcavityquad(point, list*, list*);
-  void formbowatcavitysegquad(point, list*, list*);
-  void formbowatcavity(point bp, face* bpseg, face* bpsh, int* n, int* nmax,
-                       list** sublists, list** subceillists, list** tetlists,
-                       list** ceillists);
-  void releasebowatcavity(face*, int, list**, list**, list**, list**);
-  bool validatebowatcavityquad(point bp, list* ceillist, REAL maxcosd);
-  void updatebowatcavityquad(list* tetlist, list* ceillist);
-  void updatebowatcavitysub(list* sublist, list* subceillist, int* cutcount);
-  bool trimbowatcavity(point bp, face* bpseg, int n, list** sublists,
-                       list** subceillists, list** tetlists,list** ceillists,
-                       REAL maxcosd);
-  void bowatinsertsite(point bp, face* splitseg, int n, list** sublists,
-                       list** subceillists, list** tetlists, list** ceillists,
-                       list* verlist, queue* flipque, bool chkencseg, 
-                       bool chkencsub, bool chkbadtet);
+  // Incremental flips.
+  long lawsonflip3d(point, int flipflag, int, int, int flipedgeflag);
+
+  // Point insertion.
+  int insertvertex(point newpt, triface *searchtet, face *splitsh, face*,
+                   insertvertexflags *ivf);
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// Delaunay tetrahedralization functions                                     //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-  // Point sorting routines.
-  void btree_sort(point*, int, int, REAL, REAL, REAL, REAL, REAL, REAL, int);
-  void btree_insert(point insertpt);
-  void btree_search(point searchpt, triface* searchtet);
-  void ordervertices(point* vertexarray, int arraysize);
-
-  enum locateresult insertvertexbw(point insertpt, triface *searchtet, 
-                                   bool bwflag, bool visflag, 
-                                   bool noencsegflag, bool noencsubflag);
-  bool unifypoint(point testpt, triface*, enum locateresult, REAL);
-  bool incrflipdelaunay(triface*, point*, long, bool, bool, REAL, queue*);
-  long delaunizevertices();
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Surface triangulation functions                                           //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-  enum locateresult sinsertvertex(point insertpt, face *splitsh,face *splitseg,
-                                  bool bwflag, bool cflag);
-  void formstarpolygon(point pt, list* trilist, list* verlist);
-  void getfacetabovepoint(face* facetsh);
-  bool incrflipdelaunaysub(int shmark, REAL eps, list*, int, REAL*, queue*);
-  enum finddirectionresult finddirectionsub(face* searchsh, point tend);
-  void insertsubseg(face* tri);
-  bool scoutsegmentsub(face* searchsh, point tend);
-  void flipedgerecursive(face* flipedge, queue* flipqueue);
-  void constrainededge(face* startsh, point tend, queue* flipqueue);
-  void recoversegment(point tstart, point tend, queue* flipqueue);
-  void infecthullsub(memorypool* viri);
-  void plaguesub(memorypool* viri);
-  void carveholessub(int holes, REAL* holelist, memorypool* viri);
-  void triangulate(int shmark, REAL eps, list* ptlist, list* conlist,int holes,
-                   REAL* holelist, memorypool* viri, queue*);
-  void retrievenewsubs(list* newshlist, bool removeseg);
-  void unifysegments();
-  void assignsegmentmarkers();
-  void mergefacets(queue* flipqueue);
-  long meshsurface();
-
-  // Detect intersecting facets of PLC.
-  void interecursive(shellface** subfacearray, int arraysize, int axis,
-                     REAL bxmin, REAL bxmax, REAL bymin, REAL bymax,
-                     REAL bzmin, REAL bzmax, int* internum);
-  void detectinterfaces(); 
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Constrained Delaunay tetrahedralization functions                         //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-  // Segment recovery routines.
-  void markacutevertices(REAL acuteangle);
-  enum finddirectionresult finddirection(triface* searchtet, point, long);
-  enum interresult finddirection2(triface* searchtet, point);
-  enum interresult finddirection3(triface* searchtet, point);
-  enum interresult scoutsegment2(face*, triface*, point*);
-  void getsegmentsplitpoint2(face* sseg, point refpt, REAL* vt);
-  void getsegmentsplitpoint3(face* sseg, point refpt, REAL* vt);
-  void delaunizesegments2();
-
-  // Facets recovery routines.
-  enum interresult scoutsubface(face* ssub, triface* searchtet, int);
-  enum interresult scoutcrosstet(face* ssub, triface* searchtet, arraypool*);
-  void recoversubfacebyflips(face* pssub, triface* crossface, arraypool*);
-  void formcavity(face*, arraypool*, arraypool*, arraypool*, arraypool*, 
-                  arraypool*, arraypool*, arraypool*);
-  bool delaunizecavity(arraypool*, arraypool*, arraypool*, arraypool*,
-                       arraypool*, arraypool*);
-  bool fillcavity(arraypool*, arraypool*, arraypool*, arraypool*);
-  void carvecavity(arraypool*, arraypool*, arraypool*);
-  void restorecavity(arraypool*, arraypool*, arraypool*);
-  void splitsubedge(point, face*, arraypool*, arraypool*);
-  void constrainedfacets2();
-
-  void formskeleton(clock_t&);
-
-  // Carving out holes and concavities routines.
-  void infecthull(memorypool *viri);
-  void plague(memorypool *viri);
-  void regionplague(memorypool *viri, REAL attribute, REAL volume);
-  void removeholetets(memorypool *viri);
-  void assignregionattribs();
-  void carveholes();
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Steiner points removal functions                                          //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-  void initializecavity(list* floorlist, list* ceillist, list* frontlist,
-                        list* ptlist, list* gluelist);
-  bool delaunizecavvertices(triface*, list*, list*, list*, queue*);
-  void retrievenewtets(list* newtetlist);
-  void insertauxsubface(triface* front, triface* idfront);
-  bool scoutfront(triface* front, triface* idfront);
-  void gluefronts(triface* front, triface* front1, list* gluetetlist,
-                  list* glueshlist);
-  bool identifyfronts(list* frontlist,list* misfrontlist,list* gluetetlist,
-                      list* glueshlist);
-  void detachauxsubfaces(list* newtetlist);
-  bool carvecavity(list* newtetlist, list* outtetlist, list* gluetetlist,
-                   queue* flipque);
-
-  void replacepolygonsubs(list* oldshlist, list* newshlist);
-  void orientnewsubs(list* newshlist, face* orientsh, REAL* norm);
-  bool registerelemflip(enum fliptype ft, point pa1, point pb1, point pc1,
-                        point pa2, point pb2, point pc2);
-  bool check4fixededge(point pa, point pb);
-  bool removeedgebyflips(triface* remedge, int*);
-  bool removefacebyflips(triface* remface, int*);
-  bool recoveredgebyflips(triface* searchtet, point pb, int*);
-  bool recoverfacebyflips(triface* front, int*);
-  bool constrainedcavity(triface* oldtet, list* floorlist, list* ceillist,
-                         list* ptlist, list* frontlist, list* misfrontlist,
-                         list* newtetlist, list* gluetetlist, list* glueshlist,
-                         queue* flipque);
-  bool findrelocatepoint2(point sp, point np, REAL* n, list*, list*);
-  bool relocatepoint(point steinpt, triface* oldtet, list*, list*, queue*);
-  bool findcollapseedge(point suppt, point* conpt, list* oldtetlist, list*);
-  void collapseedge(point suppt, point conpt, list* oldtetlist, list*);
-  void deallocfaketets(list* frontlist);
-  void restorepolyhedron(list* oldtetlist);
-  bool suppressfacetpoint(face* supsh, list* frontlist, list* misfrontlist,
-                          list* ptlist, list* conlist, memorypool* viri,
-                          queue* flipque, bool noreloc, bool optflag);
-  bool suppresssegpoint(face* supseg, list* spinshlist, list* newsegshlist,
-                        list* frontlist, list* misfrontlist, list* ptlist,
-                        list* conlist, memorypool* viri, queue* flipque,
-                        bool noreloc, bool optflag);
-  bool suppressvolpoint(triface* suptet, list* frontlist, list* misfrontlist,
-                        list* ptlist, queue* flipque, bool optflag);
-  void removesteiners2();
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Mesh rebuild functions                                                    //
+// Delaunay tetrahedralization                                               //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
   void transfernodes();
-  long reconstructmesh();
+
+  // Point sorting.
+  int  transgc[8][3][8], tsb1mod3[8];
+  void hilbert_init(int n);
+  int  hilbert_split(point* vertexarray, int arraysize, int gc0, int gc1,
+                     REAL, REAL, REAL, REAL, REAL, REAL);
+  void hilbert_sort3(point* vertexarray, int arraysize, int e, int d,
+                     REAL, REAL, REAL, REAL, REAL, REAL, int depth);
+
+  // Point location.
+  unsigned long randomnation(unsigned int choices);
+  void randomsample(point searchpt, triface *searchtet);
+  enum locateresult locate(point searchpt, triface *searchtet, int);
+
+  // Incremental Delaunay construction.
+  void initialdelaunay(point pa, point pb, point pc, point pd);
+  void incrementaldelaunay(clock_t&);
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// Surface triangulation                                                     //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+  bool calculateabovepoint(arraypool*, point*, point*, point*);
+  void calculateabovepoint4(point, point, point, point);
+
+  void flipshpush(face*);
+  void flip22(face*, int, int);
+  void flip31(face*, int);
+  long lawsonflip();
+  int sinsertvertex(point newpt, face*, face*, int iloc, int bowywat);
+  int sremovevertex(point delpt, face*, face*, int lawson);
+
+  enum locateresult slocate(point, face*, int, int, int);
+  enum interresult sscoutsegment(face*, point);
+  void scarveholes(int, REAL*);
+  void triangulate(int, arraypool*, arraypool*, int, REAL*);
+
+  void unifysubfaces(face*, face*);
+  void unifysegments();
+  void mergefacets();
+  void identifypscedges(point*);
+  void meshsurface();
+
+  void interecursive(shellface** subfacearray, int arraysize, int axis,
+                     REAL, REAL, REAL, REAL, REAL, REAL, int* internum);
+  void detectinterfaces();
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// Constrained Delaunay tetrahedralization                                   //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+  void markacutevertices();
+
+  void reportselfintersect(face *seg, face *shface);
+
+  enum interresult finddirection(triface* searchtet, point endpt);
+  enum interresult scoutsegment(point, point, triface*, point*, arraypool*);
+  void getsteinerptonsegment(face* seg, point refpt, point steinpt);
+  void delaunizesegments();
+
+  enum interresult scoutsubface(face* searchsh, triface* searchtet);
+  void formmissingregion(face*, arraypool*, arraypool*, arraypool*, arraypool*);
+  int scoutcrossedge(triface& crosstet, arraypool*, arraypool*);
+  bool formcavity(triface*, arraypool*, arraypool*, arraypool*, arraypool*, 
+                  arraypool*, arraypool*);
+
+  // Facet recovery by local re-tetrahedralization [Si and Gaertner'05,'11].
+  void delaunizecavity(arraypool*, arraypool*, arraypool*, arraypool*, 
+                       arraypool*, arraypool*);
+  bool fillcavity(arraypool*, arraypool*, arraypool*, arraypool*);
+  void carvecavity(arraypool*, arraypool*, arraypool*);
+  void restorecavity(arraypool*, arraypool*, arraypool*);
+
+  // Facet recovery by flips [Shewchuk'03].
+  void flipcertify(triface *chkface, badface **pqueue);
+  void flipinsertfacet(arraypool*, arraypool*, arraypool*, arraypool*);
+
+  bool fillregion(arraypool* missingshs, arraypool*, arraypool* newshs);
+  void refineregion();
+
+  void constrainedfacets();  
+
+  void constraineddelaunay(clock_t&);
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// Constrained tetrahedralizations.                                          //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+  int checkflipeligibility(int fliptype, point, point, point, point, point,
+                           int level, int edgepivot, flipconstraints* fc);
+
+  int removeedgebyflips(triface*, flipconstraints*);
+  int removefacebyflips(triface*, flipconstraints*);
+
+  int recoveredgebyflips(point, point, triface*, int fullsearch);
+  int add_steinerpt_in_schoenhardtpoly(triface*, int, int chkencflag);
+  int addsteiner4recoversegment(face*, int);
+  int recoversegments(arraypool*, int fullsearch, int steinerflag);
+
+  int recoverfacebyflips(point, point, point, face*, triface*);
+  int recoversubfaces(arraypool*, int steinerflag);
+
+  int getvertexstar(int, point searchpt, arraypool*, arraypool*, arraypool*);
+  int getedge(point, point, triface*);
+  int reduceedgesatvertex(point startpt, arraypool* endptlist);
+  int removevertexbyflips(point steinerpt);
+
+  int suppressssteinerpoint(point steinerpt);
+  int suppresssteinerpoints();
+
+  void recoverboundary(clock_t&);
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// Mesh reconstruction                                                       //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+  void carveholes();
+
+  void reconstructmesh();
+
+  int  scoutpoint(point, triface*, int randflag);
+  REAL getpointmeshsize(point, triface*, int iloc);
+  void interpolatemeshsize();
+
   void insertconstrainedpoints(tetgenio *addio);
-  bool p1interpolatebgm(point pt, triface* bgmtet, long *scount);
-  void interpolatesizemap();
-  void duplicatebgmesh();
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// Mesh refinement functions                                                 //
+// Mesh refinement                                                           //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-  void marksharpsegments(REAL sharpangle);
+  void marksharpsegments();
   void decidefeaturepointsizes();
-  void enqueueencsub(face* ss, point encpt, int quenumber, REAL* cent);
-  badface* dequeueencsub(int* quenumber);
-  void enqueuebadtet(triface* tt, REAL key, REAL* cent);
-  badface* topbadtetra();
-  void dequeuebadtet();
-  bool checkseg4encroach(face* testseg, point testpt, point*, bool enqflag);
-  bool checksub4encroach(face* testsub, point testpt, bool enqflag);
-  bool checktet4badqual(triface* testtet, bool enqflag);
-  bool acceptsegpt(point segpt, point refpt, face* splitseg);
-  bool acceptfacpt(point facpt, list* subceillist, list* verlist);
-  bool acceptvolpt(point volpt, list* ceillist, list* verlist);
-  void getsplitpoint(point e1, point e2, point refpt, point newpt);
-  void setnewpointsize(point newpt, point e1, point e2);
-  bool splitencseg(point, face*, list*, list*, list*,queue*,bool,bool,bool);
-  bool tallencsegs(point testpt, int n, list** ceillists);
-  bool tallencsubs(point testpt, int n, list** ceillists);
-  void tallbadtetrahedrons();
-  void repairencsegs(bool chkencsub, bool chkbadtet);
-  void repairencsubs(bool chkbadtet);
-  void repairbadtets();
-  void enforcequality();
+
+  int checkseg4encroach(point pa, point pb, point checkpt);
+  int checkseg4split(face *chkseg, point&, int&);
+  int splitsegment(face *splitseg, point encpt, int qflag, int chkencflag);
+  void repairencsegs(int chkencflag);
+
+  int checkfac4encroach(point, point, point, point checkpt, REAL*, REAL*);
+  int checkfac4split(face *chkfac, point& encpt, int& qflag, REAL *ccent);
+  int splitsubface(face *splitfac, point encpt, int qflag, REAL *ccent,
+                   int chkencflag);
+  void repairencfacs(int chkencflag);
+
+  int checktet4split(triface *chktet, int& qflag, REAL *ccent);
+  int splittetrahedron(triface* splittet,int qflag,REAL *ccent,int chkencflag);
+  void repairbadtets(int chkencflag);
+  void insertsinks();
+
+  void delaunayrefinement();
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// Mesh optimization routines                                                //
+// Mesh optimization                                                         //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-  bool checktet4ill(triface* testtet, bool enqflag);
-  bool checktet4opt(triface* testtet, bool enqflag);
-  bool removeedge(badface* remedge, bool optflag);
-  bool smoothpoint(point smthpt, point, point, list*, bool, REAL*);
-  bool smoothsliver(badface* remedge, list *starlist);
-  bool splitsliver(badface* remedge, list *tetlist, list *ceillist);
-  void tallslivers(bool optflag);
-  void optimizemesh2(bool optflag);
+  void recoverdelaunay();
+
+  int  gettetrahedron(point, point, point, point, triface *);
+  long improvequalitybyflips();
+
+  int  smoothpoint(point smtpt, arraypool*, int ccw, optparameters *opm);
+  long improvequalitybysmoothing(optparameters *opm);
+
+  int  splitsliver(triface *, REAL, int);
+  long removeslivers(int);
+
+  void optimizemesh();
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// Mesh output functions                                                     //
+// Mesh check and statistics                                                 //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+  // Mesh validations.
+  int checkmesh(int topoflag);
+  int checkshells();
+  int checksegments();
+  int checkdelaunay();
+  int checkregular(int);
+  int checkconforming(int);
+
+  //  Mesh statistics.
+  void qualitystatistics();
+  void statistics();
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// Mesh output                                                               //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1967,319 +1867,104 @@ class tetgenmesh {
   void outvoronoi(tetgenio*);
   void outsmesh(char*);
   void outmesh2medit(char*);
-  void outmesh2gid(char*);
-  void outmesh2off(char*);
   void outmesh2vtk(char*);
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Mesh check functions                                                      //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-  int checkmesh();
-  int checkshells();
-  int checksegments();
-  int checkdelaunay(REAL, queue*);
-  void checkconforming();
-  void algorithmicstatistics();
-  void qualitystatistics();
-  void statistics();
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// Debug functions                                                           //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-  /*
-  void ptet(triface* t);
-  void psh(face* s);
-  int pteti(int i, int j, int k, int l);
-  void pface(int i, int j, int k);
-  bool pedge(int i, int j);
-  int psubface(int i, int j, int k);
-  void psubseg(int i, int j);
-  int pmark(point p);
-  void pvert(point p);
-  int pverti(int i);
-  REAL test_orient3d(int i, int j, int k, int l);
-  REAL test_insphere(int i, int j, int k, int l, int m);
-  REAL test_insphere_s(int i, int j, int k, int l, int m);
-  void print_tetarray(arraypool* tetarray);
-  void print_tetlist(list* tetlist);
-  void print_facearray(arraypool* facearray);
-  void print_facelist(list* facelist);
-  void print_subfacearray(arraypool* subfacearray);
-  void print_subfacelist(list* subfacelist);
-  void dump_facetof(face* pssub);
-  void print_fliptetlist(triface *fliptet);
-  void print_deaditemstack(void* deaditemstack);
-  int check_deaditemstack(void* deaditemstack, uintptr_t addr);
-  void print_abtetlist(triface *abtetlist, int len);
-  int checkpoint2tetmap();
-  int checkpoint2submap();
-  int checkpoint2segmap();
-  */
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Class variables                                                           //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-  // Pointer to the input data (a set of nodes, a PLC, or a mesh).
-  tetgenio *in;
-
-  // Pointer to the options (and filenames).
-  tetgenbehavior *b;
-
-  // Pointer to a background mesh (contains size specification map).
-  tetgenmesh *bgm;
-
-  // Variables used to allocate and access memory for tetrahedra, subfaces
-  //   subsegments, points, encroached subfaces, encroached subsegments,
-  //   bad-quality tetrahedra, and so on.
-  memorypool *tetrahedrons;
-  memorypool *subfaces;
-  memorypool *subsegs;
-  memorypool *points;
-  memorypool *badsubsegs;
-  memorypool *badsubfaces;
-  memorypool *badtetrahedrons;
-  memorypool *tet2segpool, *tet2subpool;
-
-  // Pointer to the 'tetrahedron' that occupies all of "outer space".
-  tetrahedron *dummytet;
-  tetrahedron *dummytetbase; // Keep base address so we can free it later.
-
-  // Pointer to the omnipresent subface.  Referenced by any tetrahedron,
-  //   or subface that isn't connected to a subface at that location.
-  shellface *dummysh;
-  shellface *dummyshbase;    // Keep base address so we can free it later.
-
-  // Entry to find the binary tree nodes (-u option).
-  arraypool *btreenode_list;
-  // The maximum size of a btree node (number after -u option) is
-  int max_btreenode_size; // <= b->max_btreenode_size.
-  // The maximum btree depth (for bookkeeping).
-  int max_btree_depth; 
-
-  // Arrays used by Bowyer-Watson algorithm.
-  arraypool *cavetetlist, *cavebdrylist, *caveoldtetlist;
-  arraypool *caveshlist, *caveshbdlist;
-  // Stacks used by the boundary recovery algorithm.
-  arraypool *subsegstack, *subfacstack;
-
-  // Two handles used in constrained facet recovery.
-  triface firsttopface, firstbotface;
-
-  // An array for registering elementary flips.
-  arraypool *elemfliplist;
-
-  // An array of fixed edges for facet recovering by flips.
-  arraypool *fixededgelist;
-
-  // A point above the plane in which the facet currently being used lies.
-  //   It is used as a reference point for orient3d().
-  point *facetabovepointarray, abovepoint, dummypoint;
-
-  // Array (size = numberoftetrahedra * 6) for storing high-order nodes of
-  //   tetrahedra (only used when -o2 switch is selected).
-  point *highordertable;
-
-  // Arrays for storing and searching pbc data. 'subpbcgrouptable', (size
-  //   is numberofpbcgroups) for pbcgroup of subfaces. 'segpbcgrouptable',
-  //   a list for pbcgroup of segments. Because a segment can have several
-  //   pbcgroup incident on it, its size is unknown on input, it will be
-  //   found in 'createsegpbcgrouptable()'.
-  pbcdata *subpbcgrouptable;
-  list *segpbcgrouptable;
-  // A map for searching the pbcgroups of a given segment. 'idx2segpglist'
-  //   (size = number of input segments + 1), and 'segpglist'.  
-  int *idx2segpglist, *segpglist;
-
-  // Queues that maintain the bad (badly-shaped or too large) tetrahedra.
-  //   The tails are pointers to the pointers that have to be filled in to
-  //   enqueue an item.  The queues are ordered from 63 (highest priority)
-  //   to 0 (lowest priority).
-  badface *subquefront[3], **subquetail[3];
-  badface *tetquefront[64], *tetquetail[64];
-  int nextnonemptyq[64];
-  int firstnonemptyq, recentq;
-
-  // Pointer to a recently visited tetrahedron. Improves point location
-  //   if proximate points are inserted sequentially.
-  triface recenttet;
-
-  REAL xmax, xmin, ymax, ymin, zmax, zmin;         // Bounding box of points.
-  REAL longest;                          // The longest possible edge length.
-  REAL lengthlimit;                     // The limiting length of a new edge.
-  long hullsize;                           // Number of faces of convex hull.
-  long insegments;                               // Number of input segments.
-  long meshedges;                             // Number of output mesh edges.
-  int steinerleft;                  // Number of Steiner points not yet used.
-  int sizeoftensor;                     // Number of REALs per metric tensor.
-  int pointmtrindex;           // Index to find the metric tensor of a point.
-  int point2simindex;         // Index to find a simplex adjacent to a point.
-  int pointmarkindex;            // Index to find boundary marker of a point.
-  int point2pbcptindex;              // Index to find a pbc point to a point.
-  int highorderindex;    // Index to find extra nodes for highorder elements.
-  int elemattribindex;          // Index to find attributes of a tetrahedron.
-  int volumeboundindex;       // Index to find volume bound of a tetrahedron.
-  int elemmarkerindex;              // Index to find marker of a tetrahedron.
-  int shmarkindex;             // Index to find boundary marker of a subface.
-  int areaboundindex;               // Index to find area bound of a subface.
-  int checksubfaces;                   // Are there subfaces in the mesh yet?
-  int checksubsegs;                     // Are there subsegs in the mesh yet?
-  int checkpbcs;                   // Are there periodic boundary conditions?
-  int varconstraint;     // Are there variant (node, seg, facet) constraints?
-  int nonconvex;                               // Is current mesh non-convex?
-  int dupverts;                             // Are there duplicated vertices?
-  int unuverts;                                 // Are there unused vertices?
-  int relverts;                          // The number of relocated vertices.
-  int suprelverts;            // The number of suppressed relocated vertices.
-  int collapverts;             // The number of collapsed relocated vertices.
-  int unsupverts;                     // The number of unsuppressed vertices.
-  int smoothsegverts;                     // The number of smoothed vertices.
-  int jettisoninverts;            // The number of jettisoned input vertices.
-  long samples;               // Number of random samples for point location.
-  unsigned long randomseed;                    // Current random number seed.
-  REAL macheps;                                       // The machine epsilon.
-  REAL cosmaxdihed, cosmindihed;    // The cosine values of max/min dihedral.
-  REAL minfaceang, minfacetdihed;     // The minimum input (dihedral) angles.
-  int maxcavfaces, maxcavverts;            // The size of the largest cavity.
-  bool b_steinerflag;
-
-  // Algorithm statistical counters.
-  long ptloc_count, ptloc_max_count;
-  long orient3dcount;
-  long inspherecount, insphere_sos_count;
-  long flip14count, flip26count, flipn2ncount;
-  long flip22count;
-  long inserthullcount;
-  long maxbowatcavsize, totalbowatcavsize, totaldeadtets;
-  long across_face_count, across_edge_count, across_max_count;
-  long maxcavsize, maxregionsize;
-  long ndelaunayedgecount, cavityexpcount;
-  long opt_tet_peels, opt_face_flips, opt_edge_flips;
-
-  long abovecount;                     // Number of abovepoints calculation.
-  long bowatvolcount, bowatsubcount, bowatsegcount;       // Bowyer-Watsons.
-  long updvolcount, updsubcount, updsegcount;   // Bow-Wat cavities updates.
-  long failvolcount, failsubcount, failsegcount;           // Bow-Wat fails.
-  long outbowatcircumcount;    // Number of circumcenters outside Bowat-cav.
-  long r1count, r2count, r3count;        // Numbers of edge splitting rules.
-  long cdtenforcesegpts;                // Number of CDT enforcement points.
-  long rejsegpts, rejsubpts, rejtetpts;        // Number of rejected points.
-  long optcount[10];            // Numbers of various optimizing operations.
-  long flip23s, flip32s, flip22s, flip44s;     // Number of flips performed.
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Class constructor & destructor                                            //
+// Constructor & destructor                                                  //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
   tetgenmesh()
   {
-    bgm = (tetgenmesh *) NULL;
-    in = (tetgenio *) NULL;
-    b = (tetgenbehavior *) NULL;
+    in  = addin = NULL;
+    b   = NULL;
+    bgm = NULL;
 
-    tetrahedrons = (memorypool *) NULL;
-    subfaces = (memorypool *) NULL;
-    subsegs = (memorypool *) NULL;
-    points = (memorypool *) NULL;
-    badsubsegs = (memorypool *) NULL;
-    badsubfaces = (memorypool *) NULL;
-    badtetrahedrons = (memorypool *) NULL;
-    tet2segpool = NULL;
-    tet2subpool = NULL;
+    tetrahedrons = subfaces = subsegs = points = NULL;
+    badtetrahedrons = badsubfacs = badsubsegs = NULL;
+    tet2segpool = tet2subpool = NULL;
+    flippool = NULL;
 
-    dummytet = (tetrahedron *) NULL;
-    dummytetbase = (tetrahedron *) NULL;
-    dummysh = (shellface *) NULL;
-    dummyshbase = (shellface *) NULL;
-
-    facetabovepointarray = (point *) NULL;
-    abovepoint = (point) NULL;
     dummypoint = NULL;
-    btreenode_list = (arraypool *) NULL;
-    highordertable = (point *) NULL;
-    subpbcgrouptable = (pbcdata *) NULL;
-    segpbcgrouptable = (list *) NULL;
-    idx2segpglist = (int *) NULL;
-    segpglist = (int *) NULL;
+    flipstack = NULL;
+    unflipqueue = NULL;
 
-    cavetetlist = NULL;
-    cavebdrylist = NULL;
-    caveoldtetlist = NULL;
-    caveshlist = caveshbdlist = NULL;
-    subsegstack = subfacstack = NULL;
+    cavetetlist = cavebdrylist = caveoldtetlist = NULL;
+    cavetetshlist = cavetetseglist = cavetetvertlist = NULL;
+    caveencshlist = caveencseglist = NULL;
+    caveshlist = caveshbdlist = cavesegshlist = NULL;
 
-    elemfliplist = (arraypool *) NULL;
-    fixededgelist = (arraypool *) NULL;
+    subsegstack = subfacstack = subvertstack = NULL;
+    suppsteinerptlist = NULL;
+    encseglist = encshlist = NULL;
+
+    highordertable = NULL;
+
+    plane_pa = plane_pb = plane_pc = (point) NULL;
 
     xmax = xmin = ymax = ymin = zmax = zmin = 0.0; 
     longest = 0.0;
     hullsize = 0l;
     insegments = 0l;
-    meshedges = 0l;
+    meshedges = meshhulledges = 0l;
+    steinerleft = -1;
+    numpointattrib = 0;
+    sizeoftensor = 0;
     pointmtrindex = 0;
+    pointparamindex = 0;
     pointmarkindex = 0;
     point2simindex = 0;
-    point2pbcptindex = 0;
-    highorderindex = 0;
+    numelemattrib = 0;
     elemattribindex = 0;
     volumeboundindex = 0;
     shmarkindex = 0;
     areaboundindex = 0;
-    checksubfaces = 0;
-    checksubsegs = 0;
-    checkpbcs = 0;
-    varconstraint = 0;
+    checksubsegflag = 0;
+    checksubfaceflag = 0;
+    checkinverttetflag = 0;
+    checkconstraints = 0;
     nonconvex = 0;
     dupverts = 0;
     unuverts = 0;
-    relverts = 0;
-    suprelverts = 0;
-    collapverts = 0;
-    unsupverts = 0;
-    jettisoninverts = 0;
     samples = 0l;
     randomseed = 1l;
-    macheps = 0.0;
     minfaceang = minfacetdihed = PI;
-    b_steinerflag = false;
+    sintheta_tol = sin(0.001 * PI / 180.0);
+    autofliplinklevel = 1;
+    calc_tetprism_vol = 0;
+    tetprism_vol_sum = 0.0;
 
     ptloc_count = ptloc_max_count = 0l;
-    orient3dcount = 0l;
-    inspherecount = insphere_sos_count = 0l;
+    insphere_sos_count = orient4d_sos_count = 0l;
     flip14count = flip26count = flipn2ncount = 0l;
-    flip22count = 0l;
-    inserthullcount = 0l;
+    flip23count = flip32count = flip44count = flip22count = 0l;
     maxbowatcavsize = totalbowatcavsize = totaldeadtets = 0l;
+    triedgcount = triedgcopcount = 0l;
     across_face_count = across_edge_count = across_max_count = 0l;
+    fillregioncount = missingsubfacecount = crossingtetcount = 0l;
+    cavitycount = cavityexpcount = 0l;
     maxcavsize = maxregionsize = 0l;
-    ndelaunayedgecount = cavityexpcount = 0l;
-    opt_tet_peels = opt_face_flips = opt_edge_flips = 0l;
-
-    maxcavfaces = maxcavverts = 0;
-    abovecount = 0l;
-    bowatvolcount = bowatsubcount = bowatsegcount = 0l;
-    updvolcount = updsubcount = updsegcount = 0l;
-    outbowatcircumcount = 0l;
-    failvolcount = failsubcount = failsegcount = 0l;
+    maxcrossfacecount = maxflipsequence = 0l;
+    dbg_ignore_facecount = dbg_unflip_facecount = 0l;
+    ccent_relocate_count = 0l;
+    opt_sliver_peels = 0l;
     r1count = r2count = r3count = 0l;
-    cdtenforcesegpts = 0l;
-    rejsegpts = rejsubpts = rejtetpts = 0l;
-    flip23s = flip32s = flip22s = flip44s = 0l;
+    st_segref_count = st_facref_count = st_volref_count = 0l;
+    nonregularcount = 0l;
+
+    maxfliplinklevel = maxflipstarsize = 0l;
+    flipstarcount = sucflipstarcount = skpflipstarcount = 0l;
+
+    rejrefinetetcount = rejrefineshcount = 0l;
   } // tetgenmesh()
-    
+
   ~tetgenmesh()
   {
-    bgm = (tetgenmesh *) NULL;
-    in = (tetgenio *) NULL;
-    b = (tetgenbehavior *) NULL;
+    if (bgm != NULL) {
+      delete bgm;
+    }
 
     if (tetrahedrons != (memorypool *) NULL) {
       delete tetrahedrons;
@@ -2299,40 +1984,43 @@ class tetgenmesh {
     if (tet2subpool != NULL) {
       delete tet2subpool;
     }
-    if (dummytetbase != (tetrahedron *) NULL) {
-      delete [] dummytetbase;
+    if (flippool != NULL) {
+      delete flippool;
+      delete unflipqueue;
     }
-    if (dummyshbase != (shellface *) NULL) {
-      delete [] dummyshbase;
-    }
-    if (facetabovepointarray != (point *) NULL) {
-      delete [] facetabovepointarray;
-    }
-    if (dummypoint != NULL) {
+    if (dummypoint != (point) NULL) {
       delete [] dummypoint;
-    }
-    if (highordertable != (point *) NULL) {
-      delete [] highordertable;
-    }
-    if (subpbcgrouptable != (pbcdata *) NULL) {
-      delete [] subpbcgrouptable;
-    }
-    if (segpbcgrouptable != (list *) NULL) {
-      delete segpbcgrouptable;
-      delete [] idx2segpglist;
-      delete [] segpglist;
     }
 
     if (cavetetlist != NULL) {
       delete cavetetlist;
       delete cavebdrylist;
       delete caveoldtetlist;
+      delete cavetetvertlist;
     }
+
+    if (caveshlist != NULL) {
+      delete caveshlist;
+      delete caveshbdlist;
+      delete cavesegshlist;
+      delete cavetetshlist;
+      delete cavetetseglist;
+      delete caveencshlist;
+      delete caveencseglist;
+    }
+
     if (subsegstack != NULL) {
       delete subsegstack;
-    }
-    if (subfacstack != NULL) {
       delete subfacstack;
+      delete subvertstack;
+    }
+
+    if (suppsteinerptlist != NULL) {
+      delete suppsteinerptlist;
+    }
+
+    if (highordertable != NULL) {
+      delete [] highordertable;
     }
   } // ~tetgenmesh()
 
@@ -2377,12 +2065,25 @@ inline void terminatetetgen(int x)
     printf("Error:  Out of memory.\n"); 
     break;
   case 2: // Encounter an internal error.
-    printf("  Please report this bug to sihang@mail.berlios.de. Include\n");
-    printf("    the message above, your input data set, and the exact\n");
-    printf("     command line you used to run this program, thank you.\n");
+    printf("Please report this bug to Hang.Si@wias-berlin.de. Include\n");
+    printf("  the message above, your input data set, and the exact\n");
+    printf("  command line you used to run this program, thank you.\n");
     break;
-  default:
-    printf("Program stopped.\n"); 
+  case 3:
+    printf("A self-intersection was detected. Program stopped.\n");
+    printf("Hint: use -d option to detect all self-intersections.\n"); 
+    break;
+  case 4:
+    printf("A very small input feature was size detected. Program stopped.\n");
+    printf("Hint: use -T option to set a smaller tolerance.\n");
+    break;
+  case 5:
+    printf("Two very clsoe input facets were detected. Program stopped.\n");
+    printf("Hint: use -Y option to avoid adding Steiner points in boundary.\n");
+    break;
+  case 10: 
+    printf("An input error was detected Program stopped.\n"); 
+    break;
   } // switch (x)
   exit(x);
 #endif // #ifdef TETLIBRARY
@@ -2390,359 +2091,195 @@ inline void terminatetetgen(int x)
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// Geometric predicates                                                      //
-//                                                                           //
-// Return one of the values +1, 0, and -1 on basic geometric questions such  //
-// as the orientation of point sets, in-circle, and in-sphere tests.  They   //
-// are basic units for implmenting geometric algorithms.  TetGen uses two 3D //
-// geometric predicates: the orientation and in-sphere tests.                //
-//                                                                           //
-// Orientation test:  let a, b, c be a sequence of 3 non-collinear points in //
-// R^3.  They defines a unique hypeplane H.  Let H+ and H- be the two spaces //
-// separated by H, which are defined as follows (using the left-hand rule):  //
-// make a fist using your left hand in such a way that your fingers follow   //
-// the order of a, b and c, then your thumb is pointing to H+.  Given any    //
-// point d in R^3, the orientation test returns +1 if d lies in H+, -1 if d  //
-// lies in H-, or 0 if d lies on H.                                          //
-//                                                                           //
-// In-sphere test:  let a, b, c, d be 4 non-coplanar points in R^3.  They    //
-// defines a unique circumsphere S.  Given any point e in R^3, the in-sphere //
-// test returns +1 if e lies inside S, or -1 if e lies outside S, or 0 if e  //
-// lies on S.                                                                //
-//                                                                           //
-// The following routines use arbitrary precision floating-point arithmetic. //
-// They are provided by J. R. Schewchuk in public domain (http://www.cs.cmu. //
-// edu/~quake/robust.html). The source code are in "predicates.cxx".         //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-REAL exactinit();
-REAL orient3d(REAL *pa, REAL *pb, REAL *pc, REAL *pd);
-REAL insphere(REAL *pa, REAL *pb, REAL *pc, REAL *pd, REAL *pe);
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
 // Inline functions of mesh data structures                                  //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
-
-// Some macros for convenience
-
-#define Div2  >> 1
-#define Mod2  & 01
-
-// NOTE: These bit operators should only be used in macros below.
-
-// Get orient(Range from 0 to 2) from face version(Range from 0 to 5).
-
-#define Orient(V)   ((V) Div2)
-
-// Determine edge ring(0 or 1) from face version(Range from 0 to 5).
-
-#define EdgeRing(V) ((V) Mod2)
 
 //
 // Begin of primitives for tetrahedra
 // 
 
-// Each tetrahedron contains four pointers to its neighboring tetrahedra,
-//   with face indices.  To save memory, both information are kept in a
-//   single pointer. To make this possible, all tetrahedra are aligned to
-//   eight-byte boundaries, so that the last three bits of each pointer are
-//   zeros. A face index (in the range 0 to 3) is compressed into the last
-//   two bits of each pointer by the function 'encode()'.  The function
-//   'decode()' decodes a pointer, extracting a face index and a pointer to
-//   the beginning of a tetrahedron.
+// decode()  converts a pointer to an ordered tetrahedron. The version is
+//   extracted from the four least significant bits of the pointer.
 
 inline void tetgenmesh::decode(tetrahedron ptr, triface& t) {
-  t.loc = (int) ((uintptr_t) (ptr) & (uintptr_t) 3);
-  t.tet = (tetrahedron *) ((uintptr_t) (ptr) & ~(uintptr_t) 7);
+  (t).ver = (int) ((uintptr_t) (ptr) & (uintptr_t) 15);
+  (t).tet = (tetrahedron *) ((uintptr_t) (ptr) ^ (uintptr_t) (t).ver);
 }
+
+// encode()  compress an ordered tetrahedron into a single pointer.  It
+//   relies on the assumption that all tetrahedra are aligned to sixteen-
+//   byte boundaries, so that the last four significant bits are zero.
 
 inline tetgenmesh::tetrahedron tetgenmesh::encode(triface& t) {
-  return (tetrahedron) ((uintptr_t) t.tet | (uintptr_t) t.loc);
+  return (tetrahedron) ((uintptr_t) (t).tet | (uintptr_t) (t).ver);
 }
 
-// sym() finds the abutting tetrahedron on the same face.
-
-inline void tetgenmesh::sym(triface& t1, triface& t2) {
-  tetrahedron ptr = t1.tet[t1.loc];
-  decode(ptr, t2);
+inline tetgenmesh::tetrahedron tetgenmesh::encode2(tetrahedron* ptr, int ver) {
+  return (tetrahedron) ((uintptr_t) (ptr) | (uintptr_t) (ver));
 }
 
-inline void tetgenmesh::symself(triface& t) {
-  tetrahedron ptr = t.tet[t.loc];
-  decode(ptr, t);
-}
-
-// Bond two tetrahedra together at their faces.
-
+// bond()  connects two adjacent tetrahedra together. t1 and t2 must refer
+//   to the same face and the same edge. Note that the edge directions of
+//   t1 and t2 are reversed. 
+// Since an edge of t1 can be bonded to any of the three edges of t2. We 
+//   choose to bond the edge of t2 which is symmetric to the 0-th edge of
+//   t1, and vice versa. Now assume t1 is at i-th edge and t2 is at j-th
+//   edge, where i, j in {0, 1, 2}. The edge in t2 symmetric to 0-th edge
+//   of t1 is (i + j) modulo 3, and vice versa.  Since the edge number is 
+//   coded in the two higher bits of the version, i.e., i, j in {0, 4, 8}.
+//   Therefore the edge in t2 symmetric to 0-th edge of t1 becomes
+//   (i + j) modulo 12, and vice versa.
+/*
 inline void tetgenmesh::bond(triface& t1, triface& t2) {
-  t1.tet[t1.loc] = encode(t2);
-  t2.tet[t2.loc] = encode(t1);
+  (t1).tet[(t1).ver & 3] = encode2((t2).tet,
+    ((t2).ver & 3) + mod12[((t1).ver & 12) + ((t2).ver & 12)]);
+  (t2).tet[(t2).ver & 3] = encode2((t1).tet,
+    ((t1).ver & 3) + mod12[((t1).ver & 12) + ((t2).ver & 12)]);
+}
+*/
+// Comment:  The following code seems faster than the above code when
+//   it is compiled with the optimization option, e.g., -O3.
+inline void tetgenmesh::bond(triface& t1, triface& t2) {
+  (t1).tet[(t1).ver & 3] = encode2((t2).tet,
+    ((t2).ver & 3) + (((t1).ver & 12) + ((t2).ver & 12)) % 12);
+  (t2).tet[(t2).ver & 3] = encode2((t1).tet,
+    ((t1).ver & 3) + (((t1).ver & 12) + ((t2).ver & 12)) % 12);
 }
 
-// Dissolve a bond (from one side).  Note that the other tetrahedron will
-//   still think it is connected to this tetrahedron.  Usually, however,
-//   the other tetrahedron is being deleted entirely, or bonded to another
-//   tetrahedron, so it doesn't matter.
+// dissolve()  a bond (from one side).
 
 inline void tetgenmesh::dissolve(triface& t) {
-  t.tet[t.loc] = (tetrahedron) dummytet;
+  t.tet[t.ver & 3] = NULL;
 }
 
-// These primitives determine or set the origin, destination, apex or
-//   opposition of a tetrahedron with respect to 'loc' and 'ver'.
+// fsym()  finds the adjacent tetrahedron at the same face and the same edge.
 
-inline tetgenmesh::point tetgenmesh::org(triface& t) {
-  return (point) t.tet[locver2org[t.loc][t.ver] + 4];
+inline void tetgenmesh::fsym(triface& t1, triface& t2) {
+  decode((t1).tet[(t1).ver & 3], t2);
+  (t2).ver = mod12[(t2).ver + 12 - ((t1).ver & 12)];
 }
 
-inline tetgenmesh::point tetgenmesh::dest(triface& t) {
-  return (point) t.tet[locver2dest[t.loc][t.ver] + 4];
+inline void tetgenmesh::fsymself(triface& t) {
+  int offset = 12 - ((t).ver & 12);
+  decode((t).tet[(t).ver & 3], t);
+  (t).ver = mod12[(t).ver + offset];
 }
 
-inline tetgenmesh::point tetgenmesh::apex(triface& t) {
-  return (point) t.tet[locver2apex[t.loc][t.ver] + 4];
-}
-
-inline tetgenmesh::point tetgenmesh::oppo(triface& t) {
-  return (point) t.tet[loc2oppo[t.loc] + 4];
-}
-
-inline void tetgenmesh::setorg(triface& t, point pointptr) {
-  t.tet[locver2org[t.loc][t.ver] + 4] = (tetrahedron) pointptr;
-}
-
-inline void tetgenmesh::setdest(triface& t, point pointptr) {
-  t.tet[locver2dest[t.loc][t.ver] + 4] = (tetrahedron) pointptr;
-}
-
-inline void tetgenmesh::setapex(triface& t, point pointptr) {
-  t.tet[locver2apex[t.loc][t.ver] + 4] = (tetrahedron) pointptr;
-}
-
-inline void tetgenmesh::setoppo(triface& t, point pointptr) {
-  t.tet[loc2oppo[t.loc] + 4] = (tetrahedron) pointptr;
-}
-
-// These primitives were drived from Mucke's triangle-edge data structure
-//   to change face-edge relation in a tetrahedron (esym, enext and enext2)
-//   or between two tetrahedra (fnext).
-
-// If e0 = e(i, j), e1 = e(j, i), that is e0 and e1 are the two directions
-//   of the same undirected edge of a face. e0.sym() = e1 and vice versa.
-
-inline void tetgenmesh::esym(triface& t1, triface& t2) {
-  t2.tet = t1.tet;
-  t2.loc = t1.loc;
-  t2.ver = t1.ver + (EdgeRing(t1.ver) ? -1 : 1);
-}
-
-inline void tetgenmesh::esymself(triface& t) {
-  t.ver += (EdgeRing(t.ver) ? -1 : 1);
-}
-
-// If e0 and e1 are both in the same edge ring of a face, e1 = e0.enext().
+// enext()  finds the next edge (counterclockwise) in the same face.
 
 inline void tetgenmesh::enext(triface& t1, triface& t2) {
-  t2.tet = t1.tet;
-  t2.loc = t1.loc;
-  t2.ver = ve[t1.ver];
+  (t2).tet = (t1).tet;
+  (t2).ver = mod12[(t1).ver + 4];
 }
 
 inline void tetgenmesh::enextself(triface& t) {
-  t.ver = ve[t.ver];
+  (t).ver = mod12[(t).ver + 4];
 }
 
-// enext2() is equal to e2 = e0.enext().enext()
+// eprev()   finds the next edge (clockwise) in the same face.
 
-inline void tetgenmesh::enext2(triface& t1, triface& t2) {
-  t2.tet = t1.tet;
-  t2.loc = t1.loc;
-  t2.ver = ve[ve[t1.ver]];
+inline void tetgenmesh::eprev(triface& t1, triface& t2) {
+  (t2).tet = (t1).tet;
+  (t2).ver = mod12[(t1).ver + 8];
 }
 
-inline void tetgenmesh::enext2self(triface& t) {
-  t.ver = ve[ve[t.ver]];
+inline void tetgenmesh::eprevself(triface& t) {
+  (t).ver = mod12[(t).ver + 8];
 }
 
-// If f0 and f1 are both in the same face ring of a face, f1 = f0.fnext().
-//   If f1 exists, return true. Otherwise, return false, i.e., f0 is a
-//   boundary or hull face.
+// esym()  finds the reversed edge.  It is in the other face of the
+//   same tetrahedron.
 
-inline bool tetgenmesh::fnext(triface& t1, triface& t2) 
-{
-  // Get the next face.
-  t2.loc = locver2nextf[t1.loc][t1.ver][0];
-  // Is the next face in the same tet?
-  if (t2.loc != -1) {
-    // It's in the same tet. Get the edge version.
-    t2.ver = locver2nextf[t1.loc][t1.ver][1];
-    t2.tet = t1.tet;
-  } else {
-    // The next face is in the neigbhour of 't1'.
-    sym(t1, t2);
-    if (t2.tet != dummytet) {
-      // Find the corresponding edge in t2.
-      point torg;
-      int tloc, tver, i;
-      t2.ver = 0;
-      torg = org(t1);
-      for (i = 0; (i < 3) && (org(t2) != torg); i++) {
-        enextself(t2);
-      }
-      // Go to the next face in t2.
-      tloc = t2.loc;
-      tver = t2.ver;
-      t2.loc = locver2nextf[tloc][tver][0];
-      t2.ver = locver2nextf[tloc][tver][1];
-    }
-  }
-  return t2.tet != dummytet;
+inline void tetgenmesh::esym(triface& t1, triface& t2) {
+  (t2).tet = (t1).tet;
+  (t2).ver = edgepivot[(t1).ver];
 }
 
-inline bool tetgenmesh::fnextself(triface& t1) 
-{
-  triface t2;
-
-  // Get the next face.
-  t2.loc = locver2nextf[t1.loc][t1.ver][0];
-  // Is the next face in the same tet?
-  if (t2.loc != -1) {
-    // It's in the same tet. Get the edge version.
-    t2.ver = locver2nextf[t1.loc][t1.ver][1];
-    t1.loc = t2.loc;
-    t1.ver = t2.ver;
-  } else {
-    // The next face is in the neigbhour of 't1'.
-    sym(t1, t2);
-    if (t2.tet != dummytet) {
-      // Find the corresponding edge in t2.
-      point torg;
-      int i;
-      t2.ver = 0;
-      torg = org(t1);
-      for (i = 0; (i < 3) && (org(t2) != torg); i++) {
-        enextself(t2);
-      }
-      t1.loc = locver2nextf[t2.loc][t2.ver][0];
-      t1.ver = locver2nextf[t2.loc][t2.ver][1];
-      t1.tet = t2.tet;
-    }
-  }
-  return t2.tet != dummytet;
+inline void tetgenmesh::esymself(triface& t) {
+  (t).ver = edgepivot[(t).ver];
 }
 
-// Given a face t1, find the face f2 in the adjacent tet. If t2 is not
-//   a dummytet, then t1 and t2 refer to the same edge. Moreover, t2's
-//   edge must be in 0th edge ring, e.g., t2.ver is one of {0, 2, 4}.
-//   No matter what edge version t1 is.
+// enextesym()  finds the reversed edge of the next edge. It is in the other
+//   face of the same tetrahedron. It is the combination esym() * enext(). 
 
-inline void tetgenmesh::symedge(triface& t1, triface& t2)
-{
-  decode(t1.tet[t1.loc], t2);
-  if (t2.tet != dummytet) {
-    // Search the edge of t1 in t2.
-    point tapex = apex(t1);
-    if ((point) (t2.tet[locver2apex[t2.loc][0] + 4]) == tapex) {
-      t2.ver = 0;
-    } else if ((point) (t2.tet[locver2apex[t2.loc][2] + 4]) == tapex) {
-      t2.ver = 2;
-    } else {
-      assert((point) (t2.tet[locver2apex[t2.loc][4] + 4]) == tapex);
-      t2.ver = 4;
-    }
-  }
-}
-
-inline void tetgenmesh::symedgeself(triface& t)
-{
-  tetrahedron ptr;
-  point tapex;
-
-  ptr = t.tet[t.loc];
-  tapex = apex(t);
-
-  decode(ptr, t);
-  if (t.tet != dummytet) {
-    // Search the edge of t1 in t2.
-    if ((point) (t.tet[locver2apex[t.loc][0] + 4]) == tapex) {
-      t.ver = 0;
-    } else if ((point) (t.tet[locver2apex[t.loc][2] + 4]) == tapex) {
-      t.ver = 2;
-    } else {
-      assert((point) (t.tet[locver2apex[t.loc][4] + 4]) == tapex);
-      t.ver = 4;
-    }
-  }
-}
-
-// Given a face t1, find the next face t2 in the face ring, t1 and t2
-//   are in two different tetrahedra. If the next face is a hull face,
-//   t2 is dummytet.
-
-inline void tetgenmesh::tfnext(triface& t1, triface& t2)
-{
-  int *iptr;
-
-  if ((t1.ver & 1) == 0) {
-    t2.tet = t1.tet;
-    iptr = locver2nextf[t1.loc][t1.ver];
-    t2.loc = iptr[0];
-    t2.ver = iptr[1];
-    symedgeself(t2);  // t2.tet may be dummytet.
-  } else {
-    symedge(t1, t2);
-    if (t2.tet != dummytet) {
-      iptr = locver2nextf[t2.loc][t2.ver];
-      t2.loc = iptr[0];
-      t2.ver = iptr[1];
-    }
-  }
-}
-
-inline void tetgenmesh::tfnextself(triface& t)
-{
-  int *iptr;
-
-  if ((t.ver & 1) == 0) {
-    iptr = locver2nextf[t.loc][t.ver];
-    t.loc = iptr[0];
-    t.ver = iptr[1];
-    symedgeself(t); // t.tet may be dummytet.
-  } else {
-    symedgeself(t);
-    if (t.tet != dummytet) {
-      iptr = locver2nextf[t.loc][t.ver];
-      t.loc = iptr[0];
-      t.ver = iptr[1];
-    }
-  }
-}
-
-// enextfnext() and enext2fnext() are combination primitives of enext(),
-//   enext2() and fnext().
-
-inline void tetgenmesh::enextfnext(triface& t1, triface& t2) {
+inline void tetgenmesh::enextesym(triface& t1, triface& t2) {
   enext(t1, t2);
-  fnextself(t2);
+  esymself(t2);
 }
 
-inline void tetgenmesh::enextfnextself(triface& t) {
+inline void tetgenmesh::enextesymself(triface& t) {
   enextself(t);
-  fnextself(t);
+  esymself(t);
 }
 
-inline void tetgenmesh::enext2fnext(triface& t1, triface& t2) {
-  enext2(t1, t2);
-  fnextself(t2);
+// eprevesym()  finds the reversed edge of the previous edge.
+
+inline void tetgenmesh::eprevesym(triface& t1, triface& t2) {
+  eprev(t1, t2);
+  esymself(t2);
 }
 
-inline void tetgenmesh::enext2fnextself(triface& t) {
-  enext2self(t);
-  fnextself(t);
+inline void tetgenmesh::eprevesymself(triface& t) {
+  eprevself(t);
+  esymself(t);
 }
+
+// fnext()  finds the next face while rotating about an edge according to
+//   a right-hand rule. The face is in the adjacent tetrahedron.  It is
+//   the combination: fsym() * esym().
+
+inline void tetgenmesh::fnext(triface& t1, triface& t2) {
+  esym(t1, t2);
+  fsymself(t2);
+}
+
+inline void tetgenmesh::fnextself(triface& t) {
+  esymself(t);
+  fsymself(t);
+}
+
+
+// The following primtives get or set the origin, destination, face apex,
+//   or face opposite of an ordered tetrahedron.
+
+inline tetgenmesh::point tetgenmesh::org(triface& t) {
+  return (point) (t).tet[orgpivot[(t).ver]];
+}
+
+inline tetgenmesh::point tetgenmesh:: dest(triface& t) {
+  return (point) (t).tet[destpivot[(t).ver]];
+}
+
+inline tetgenmesh::point tetgenmesh:: apex(triface& t) {
+  return (point) (t).tet[apexpivot[(t).ver]];
+}
+
+inline tetgenmesh::point tetgenmesh:: oppo(triface& t) {
+  return (point) (t).tet[oppopivot[(t).ver]];
+}
+
+inline void tetgenmesh:: setorg(triface& t, point p) {
+  (t).tet[orgpivot[(t).ver]] = (tetrahedron) (p);
+}
+
+inline void tetgenmesh:: setdest(triface& t, point p) {
+  (t).tet[destpivot[(t).ver]] = (tetrahedron) (p);
+}
+
+inline void tetgenmesh:: setapex(triface& t, point p) {
+  (t).tet[apexpivot[(t).ver]] = (tetrahedron) (p);
+}
+
+inline void tetgenmesh:: setoppo(triface& t, point p) {
+  (t).tet[oppopivot[(t).ver]] = (tetrahedron) (p);
+}
+
+#define setvertices(t, torg, tdest, tapex, toppo) \
+  (t).tet[orgpivot[(t).ver]] = (tetrahedron) (torg);\
+  (t).tet[destpivot[(t).ver]] = (tetrahedron) (tdest); \
+  (t).tet[apexpivot[(t).ver]] = (tetrahedron) (tapex); \
+  (t).tet[oppopivot[(t).ver]] = (tetrahedron) (toppo)
 
 // Check or set a tetrahedron's attributes.
 
@@ -2750,8 +2287,8 @@ inline REAL tetgenmesh::elemattribute(tetrahedron* ptr, int attnum) {
   return ((REAL *) (ptr))[elemattribindex + attnum];
 }
 
-inline void tetgenmesh::
-setelemattribute(tetrahedron* ptr, int attnum, REAL value){
+inline void tetgenmesh::setelemattribute(tetrahedron* ptr, int attnum, 
+  REAL value) {
   ((REAL *) (ptr))[elemattribindex + attnum] = value;
 }
 
@@ -2765,9 +2302,23 @@ inline void tetgenmesh::setvolumebound(tetrahedron* ptr, REAL value) {
   ((REAL *) (ptr))[volumeboundindex] = value;
 }
 
-// Check or set a tetrahedron's marker.
+// Get or set a tetrahedron's index (only used for output).
+//    These two routines use the reserved slot ptr[10].
 
-inline int tetgenmesh::getelemmarker(tetrahedron* ptr) {
+inline int tetgenmesh::elemindex(tetrahedron* ptr) {
+  int *iptr = (int *) &(ptr[10]);
+  return iptr[0];
+}
+
+inline void tetgenmesh::setelemindex(tetrahedron* ptr, int value) {
+  int *iptr = (int *) &(ptr[10]);
+  iptr[0] = value;
+}
+
+// Get or set a tetrahedron's marker. 
+//   Set 'value = 0' cleans all the face/edge flags.
+
+inline int tetgenmesh::elemmarker(tetrahedron* ptr) {
   return ((int *) (ptr))[elemmarkerindex];
 }
 
@@ -2780,73 +2331,120 @@ inline void tetgenmesh::setelemmarker(tetrahedron* ptr, int value) {
 //   or unflagged (0).
 
 inline void tetgenmesh::infect(triface& t) {
-  ((int *) (t.tet))[elemmarkerindex] |= (int) 1;
+  ((int *) (t.tet))[elemmarkerindex] |= 1;
 }
 
 inline void tetgenmesh::uninfect(triface& t) {
-  ((int *) (t.tet))[elemmarkerindex] &= ~(int) 1;
+  ((int *) (t.tet))[elemmarkerindex] &= ~1;
 }
 
 // Test a tetrahedron for viral infection.
 
 inline bool tetgenmesh::infected(triface& t) {
-  return (((int *) (t.tet))[elemmarkerindex] & (int) 1) != 0;
+  return (((int *) (t.tet))[elemmarkerindex] & 1) != 0;
 }
 
 // marktest(), marktested(), unmarktest() -- primitives to flag or unflag a
-//   tetrahedron.  The last second bit of the element marker is marked (1)
-//   or unmarked (0).
-// One needs them in forming Bowyer-Watson cavity, to mark a tetrahedron if
-//   it has been checked (for Delaunay case) so later check can be avoided.
+//   tetrahedron.  Use the second lowerest bit of the element marker.
 
 inline void tetgenmesh::marktest(triface& t) {
-  ((int *) (t.tet))[elemmarkerindex] |= (int) 2;
+  ((int *) (t.tet))[elemmarkerindex] |= 2;
 }
 
 inline void tetgenmesh::unmarktest(triface& t) {
-  ((int *) (t.tet))[elemmarkerindex] &= ~(int) 2;
+  ((int *) (t.tet))[elemmarkerindex] &= ~2;
 }
     
 inline bool tetgenmesh::marktested(triface& t) {
-  return (((int *) (t.tet))[elemmarkerindex] & (int) 2) != 0;
+  return (((int *) (t.tet))[elemmarkerindex] & 2) != 0;
 }
 
 // markface(), unmarkface(), facemarked() -- primitives to flag or unflag a
 //   face of a tetrahedron.  From the last 3rd to 6th bits are used for
 //   face markers, e.g., the last third bit corresponds to loc = 0. 
-// One use of the face marker is in flip algorithm. Each queued face (check
-//   for locally Delaunay) is marked.
 
 inline void tetgenmesh::markface(triface& t) {
-  ((int *) (t.tet))[elemmarkerindex] |= (int) (4<<(t).loc);
+  ((int *) (t.tet))[elemmarkerindex] |= (4 << (t.ver & 3));
 }
 
 inline void tetgenmesh::unmarkface(triface& t) {
-  ((int *) (t.tet))[elemmarkerindex] &= ~(int) (4<<(t).loc);
+  ((int *) (t.tet))[elemmarkerindex] &= ~(4 << (t.ver & 3));
 }
 
 inline bool tetgenmesh::facemarked(triface& t) {
-  return (((int *) (t.tet))[elemmarkerindex] & (int) (4<<(t).loc)) != 0;
+  return (((int *) (t.tet))[elemmarkerindex] & (4 << (t.ver & 3))) != 0;
 }
 
 // markedge(), unmarkedge(), edgemarked() -- primitives to flag or unflag an
 //   edge of a tetrahedron.  From the last 7th to 12th bits are used for
 //   edge markers, e.g., the last 7th bit corresponds to the 0th edge, etc. 
-// Remark: The last 7th bit is marked by 2^6 = 64.
+//   Remark: The last 7th bit is marked by 2^6 = 64.
 
 inline void tetgenmesh::markedge(triface& t) {
-  ((int *) (t.tet))[elemmarkerindex] |= 
-    (int) (64<<locver2edge[(t).loc][(t).ver]);
+  ((int *) (t.tet))[elemmarkerindex] |= (int) (64 << ver2edge[(t).ver]);
 }
 
 inline void tetgenmesh::unmarkedge(triface& t) {
-  ((int *) (t.tet))[elemmarkerindex] &= 
-    ~(int) (64<<locver2edge[(t).loc][(t).ver]);
+  ((int *) (t.tet))[elemmarkerindex] &= ~(int) (64 << ver2edge[(t).ver]);
 }
 
 inline bool tetgenmesh::edgemarked(triface& t) {
   return (((int *) (t.tet))[elemmarkerindex] & 
-            (int) (64<<locver2edge[(t).loc][(t).ver])) != 0;
+           (int) (64 << ver2edge[(t).ver])) != 0;
+}
+
+// marktest2(), unmarktest2(), marktest2ed() -- primitives to flag and unflag
+//   a tetrahedron. The 13th bit (2^12 = 4096) is used for this flag.
+
+inline void tetgenmesh::marktest2(triface& t) {
+  ((int *) (t.tet))[elemmarkerindex] |= (int) (4096);
+}
+
+inline void tetgenmesh::unmarktest2(triface& t) {
+  ((int *) (t.tet))[elemmarkerindex] &= ~(int) (4096);
+}
+
+inline bool tetgenmesh::marktest2ed(triface& t) {
+  return (((int *) (t.tet))[elemmarkerindex] & (int) (4096)) != 0;
+}
+
+// elemcounter(), setelemcounter() -- primitives to read or ser a (samll)
+//   integer counter in this tet. It is saved from the 16th bit. On 32 bit
+//   system, the range of the counter is [0, 2^15 = 32768]. 
+
+inline int tetgenmesh::elemcounter(triface& t) {
+  return (((int *) (t.tet))[elemmarkerindex]) >> 16;
+}
+
+inline void tetgenmesh::setelemcounter(triface& t, int value) {
+  int c = ((int *) (t.tet))[elemmarkerindex];
+  // Clear the old counter while keep the other flags.
+  c &= 65535; // sum_{i=0^15} 2^i
+  c |= (value << 16);
+  ((int *) (t.tet))[elemmarkerindex] = c;
+}
+
+inline void tetgenmesh::increaseelemcounter(triface& t) {
+  int c = elemcounter(t);
+  setelemcounter(t, c + 1);
+}
+
+inline void tetgenmesh::decreaseelemcounter(triface& t) {
+  int c = elemcounter(t);
+  assert(c > 0); // Never get a negative counter.
+  setelemcounter(t, c - 1);
+}
+
+// ishulltet()  tests if t is a hull tetrahedron.
+
+inline bool tetgenmesh::ishulltet(triface& t) {
+  return (point) (t).tet[7] == dummypoint;
+}
+
+// isdeadtet()  tests if t is a tetrahedron is dead.
+
+inline bool tetgenmesh::isdeadtet(triface& t) {
+  return ((t.tet == NULL) || (t.tet[4] == NULL));
 }
 
 //
@@ -2867,203 +2465,322 @@ inline bool tetgenmesh::edgemarked(triface& t) {
 
 inline void tetgenmesh::sdecode(shellface sptr, face& s) {
   s.shver = (int) ((uintptr_t) (sptr) & (uintptr_t) 7);
-  s.sh = (shellface *) ((uintptr_t) (sptr) & ~ (uintptr_t) 7);
+  s.sh = (shellface *) ((uintptr_t) (sptr) ^ (uintptr_t) (s.shver));
 }
 
 inline tetgenmesh::shellface tetgenmesh::sencode(face& s) {
   return (shellface) ((uintptr_t) s.sh | (uintptr_t) s.shver);
 }
 
-// spivot() finds the other subface (from this subface) that shares the
-//   same edge.
-
-inline void tetgenmesh::spivot(face& s1, face& s2) {
-  shellface sptr = s1.sh[Orient(s1.shver)];
-  sdecode(sptr, s2);
+inline tetgenmesh::shellface tetgenmesh::sencode2(shellface *sh, int shver) {
+  return (shellface) ((uintptr_t) sh | (uintptr_t) shver);
 }
 
-inline void tetgenmesh::spivotself(face& s) {
-  shellface sptr = s.sh[Orient(s.shver)];
-  sdecode(sptr, s);
+// sbond() bonds two subfaces (s1) and (s2) together. s1 and s2 must refer
+//   to the same edge. No requirement is needed on their orientations.
+
+inline void tetgenmesh::sbond(face& s1, face& s2) 
+{
+  s1.sh[s1.shver >> 1] = sencode(s2);
+  s2.sh[s2.shver >> 1] = sencode(s1);
 }
 
-// sbond() bonds two subfaces together, i.e., after bonding, both faces
-//   are pointing to each other.
+// sbond1() bonds s1 <== s2, i.e., after bonding, s1 is pointing to s2,
+//   but s2 is not pointing to s1.  s1 and s2 must refer to the same edge.
+//   No requirement is needed on their orientations.
 
-inline void tetgenmesh::sbond(face& s1, face& s2) {
-  s1.sh[Orient(s1.shver)] = sencode(s2);
-  s2.sh[Orient(s2.shver)] = sencode(s1);
-}
-
-// sbond1() only bonds s2 to s1, i.e., after bonding, s1 is pointing to s2,
-//   but s2 is not pointing to s1.
-
-inline void tetgenmesh::sbond1(face& s1, face& s2) {
-  s1.sh[Orient(s1.shver)] = sencode(s2);
+inline void tetgenmesh::sbond1(face& s1, face& s2) 
+{
+  s1.sh[s1.shver >> 1] = sencode(s2);
 }
 
 // Dissolve a subface bond (from one side).  Note that the other subface
 //   will still think it's connected to this subface.
 
-inline void tetgenmesh::sdissolve(face& s) {
-  s.sh[Orient(s.shver)] = (shellface) dummysh;
+inline void tetgenmesh::sdissolve(face& s)
+{
+  s.sh[s.shver >> 1] = NULL;
+}
+
+// spivot() finds the adjacent subface (s2) for a given subface (s1).
+//   s1 and s2 share at the same edge.
+
+inline void tetgenmesh::spivot(face& s1, face& s2) 
+{
+  shellface sptr = s1.sh[s1.shver >> 1];
+  sdecode(sptr, s2);
+}
+
+inline void tetgenmesh::spivotself(face& s) 
+{
+  shellface sptr = s.sh[s.shver >> 1];
+  sdecode(sptr, s);
 }
 
 // These primitives determine or set the origin, destination, or apex
 //   of a subface with respect to the edge version.
 
-inline tetgenmesh::point tetgenmesh::sorg(face& s) {
-  return (point) s.sh[3 + vo[s.shver]];
+inline tetgenmesh::point tetgenmesh::sorg(face& s) 
+{
+  return (point) s.sh[sorgpivot[s.shver]];
 }
 
-inline tetgenmesh::point tetgenmesh::sdest(face& s) {
-  return (point) s.sh[3 + vd[s.shver]];
+inline tetgenmesh::point tetgenmesh::sdest(face& s) 
+{
+  return (point) s.sh[sdestpivot[s.shver]];
 }
 
-inline tetgenmesh::point tetgenmesh::sapex(face& s) {
-  return (point) s.sh[3 + va[s.shver]];
+inline tetgenmesh::point tetgenmesh::sapex(face& s) 
+{
+  return (point) s.sh[sapexpivot[s.shver]];
 }
 
-inline void tetgenmesh::setsorg(face& s, point pointptr) {
-  s.sh[3 + vo[s.shver]] = (shellface) pointptr;
+inline void tetgenmesh::setsorg(face& s, point pointptr) 
+{
+  s.sh[sorgpivot[s.shver]] = (shellface) pointptr;
 }
 
-inline void tetgenmesh::setsdest(face& s, point pointptr) {
-  s.sh[3 + vd[s.shver]] = (shellface) pointptr;
+inline void tetgenmesh::setsdest(face& s, point pointptr) 
+{
+  s.sh[sdestpivot[s.shver]] = (shellface) pointptr;
 }
 
-inline void tetgenmesh::setsapex(face& s, point pointptr) {
-  s.sh[3 + va[s.shver]] = (shellface) pointptr;
+inline void tetgenmesh::setsapex(face& s, point pointptr) 
+{
+  s.sh[sapexpivot[s.shver]] = (shellface) pointptr;
 }
 
-// These primitives were drived from Mucke[2]'s triangle-edge data structure
-//   to change face-edge relation in a subface (sesym, senext and senext2).
+#define setshvertices(s, pa, pb, pc)\
+  setsorg(s, pa);\
+  setsdest(s, pb);\
+  setsapex(s, pc)
 
-inline void tetgenmesh::sesym(face& s1, face& s2) {
+// sesym()  reserves the direction of the lead edge.
+
+inline void tetgenmesh::sesym(face& s1, face& s2) 
+{
   s2.sh = s1.sh;
-  s2.shver = s1.shver + (EdgeRing(s1.shver) ? -1 : 1);
+  s2.shver = (s1.shver ^ 1);  // Inverse the last bit.
 }
 
-inline void tetgenmesh::sesymself(face& s) {
-  s.shver += (EdgeRing(s.shver) ? -1 : 1);
+inline void tetgenmesh::sesymself(face& s) 
+{
+  s.shver ^= 1;
 }
 
-inline void tetgenmesh::senext(face& s1, face& s2) {
+// senext()  finds the next edge (counterclockwise) in the same orientaion
+//   of this face.
+
+inline void tetgenmesh::senext(face& s1, face& s2) 
+{
   s2.sh = s1.sh;
-  s2.shver = ve[s1.shver];
+  s2.shver = snextpivot[s1.shver];
 }
 
-inline void tetgenmesh::senextself(face& s) { 
-  s.shver = ve[s.shver]; 
+inline void tetgenmesh::senextself(face& s) 
+{
+  s.shver = snextpivot[s.shver];
 }
 
-inline void tetgenmesh::senext2(face& s1, face& s2) {
+inline void tetgenmesh::senext2(face& s1, face& s2) 
+{
   s2.sh = s1.sh;
-  s2.shver = ve[ve[s1.shver]];
+  s2.shver = snextpivot[snextpivot[s1.shver]];
 }
 
-inline void tetgenmesh::senext2self(face& s) {
-  s.shver = ve[ve[s.shver]];
+inline void tetgenmesh::senext2self(face& s) 
+{
+  s.shver = snextpivot[snextpivot[s.shver]];
 }
 
-// If f0 and f1 are both in the same face ring, then f1 = f0.fnext(),
+// sfnext()  finds the next face (s2) in the same face ring of s1.
+//           s2 and s1 have the same edge orientation.
+// s2 is found through the following determinations.
+//   If the edge of s1 is not a segment, then s2 = spivot(s1).
+//   Otherwise, suppose the segment's 0th version is [a,b]. 
+//   To find the next face in the face ring we have two cases:
+//   (1) s1 is edge [a,b], then s2 = spivot(s1).
+//   (2) s1 is edge [b,a], then s1 = spivot(s2).
+//   In the case (2), we need to travese in the face ring of [a,b] to
+//   get s2.
+// Comment: The correctness of this function is guaranteed by the
+//   surface mesh data structure, i.e., all subfaces at the face ring
+//   of [a,b] have the same edge orientation as [a,b].
 
-inline void tetgenmesh::sfnext(face& s1, face& s2) {
-  getnextsface(&s1, &s2);
+inline void tetgenmesh::sfnext(face& s1, face& s2)
+{
+  face seg, s3;
+
+  spivot(s1, s2);
+
+  if (s2.sh != NULL) {
+    sspivot(s1, seg);
+    if (seg.sh != NULL) {
+      seg.shver = 0;
+      if (sorg(s1) != sorg(seg)) {      
+        while (1) {
+          spivot(s2, s3);
+          if (s3.sh == s1.sh) break;
+          s2 = s3;
+        }
+        sesymself(s2);
+      }
+    } else {
+      if (sorg(s2) != sorg(s1)) {
+        sesymself(s2);
+      }
+    }
+  }
 }
 
-inline void tetgenmesh::sfnextself(face& s) {
-  getnextsface(&s, NULL);
-}
+inline void tetgenmesh::sfnextself(face& s)
+{
+  face seg, s2, s3;
 
-// These primitives read or set a pointer of the badface structure.  The
-//   pointer is stored sh[11].
+  spivot(s, s2);
 
-inline tetgenmesh::badface* tetgenmesh::shell2badface(face& s) {
-  return (badface*) s.sh[11];
-}
+  if (s2.sh != NULL) {
+    sspivot(s, seg);
+    if (seg.sh != NULL) {
+      seg.shver = 0;
+      if (sorg(s) != sorg(seg)) {      
+        while (1) {
+          spivot(s2, s3);
+          if (s3.sh == s.sh) break;
+          s2 = s3;
+        }
+        sesymself(s2);
+      }
+    } else {
+      if (sorg(s2) != sorg(s)) {
+        sesymself(s2);
+      }
+    }
+  }
 
-inline void tetgenmesh::setshell2badface(face& s, badface* value) {
-  s.sh[11] = (shellface) value;
+  s = s2;
 }
 
 // Check or set a subface's maximum area bound.
 
-inline REAL tetgenmesh::areabound(face& s) {
+inline REAL tetgenmesh::areabound(face& s) 
+{
   return ((REAL *) (s.sh))[areaboundindex];
 }
 
-inline void tetgenmesh::setareabound(face& s, REAL value) {
+inline void tetgenmesh::setareabound(face& s, REAL value) 
+{
   ((REAL *) (s.sh))[areaboundindex] = value;
 }
 
 // These two primitives read or set a shell marker.  Shell markers are used
 //   to hold user boundary information.
-// The last two bits of the int ((int *) ((s).sh))[shmarkindex] are used
-//   by sinfect() and smarktest().
 
-inline int tetgenmesh::shellmark(face& s) {
-  return (((int *) ((s).sh))[shmarkindex]) >> (int) 2; 
-  // return ((int *) (s.sh))[shmarkindex];
+inline int tetgenmesh::shellmark(face& s) 
+{
+  return ((int *) (s.sh))[shmarkindex];
 }
 
-inline void tetgenmesh::setshellmark(face& s, int value) {
-  ((int *) ((s).sh))[shmarkindex] = (value << (int) 2) + 
-    ((((int *) ((s).sh))[shmarkindex]) & (int) 3);
-  // ((int *) (s.sh))[shmarkindex] = value;
+inline void tetgenmesh::setshellmark(face& s, int value) 
+{
+  ((int *) (s.sh))[shmarkindex] = value;
 }
+
 
 // These two primitives set or read the type of the subface or subsegment.
 
-inline enum tetgenmesh::shestype tetgenmesh::shelltype(face& s) {
-  return (enum shestype) ((int *) (s.sh))[shmarkindex + 1];
+inline enum tetgenmesh::shestype tetgenmesh::shelltype(face& s) 
+{
+  return (enum shestype) ((((int *) (s.sh))[shmarkindex + 1]) >> 8);
 }
 
-inline void tetgenmesh::setshelltype(face& s, enum shestype value) {
-  ((int *) (s.sh))[shmarkindex + 1] = (int) value;
+inline void tetgenmesh::setshelltype(face& s, enum shestype value) 
+{
+  ((int *) (s.sh))[shmarkindex + 1] = ((int) value << 8) +
+    ((((int *) ((s).sh))[shmarkindex + 1]) & 255);
 }
 
-// These two primitives set or read the pbc group of the subface.
-
-inline int tetgenmesh::shellpbcgroup(face& s) {
-  return ((int *) (s.sh))[shmarkindex + 2];
-}
-
-inline void tetgenmesh::setshellpbcgroup(face& s, int value) {
-  ((int *) (s.sh))[shmarkindex + 2] = value;
-}
 
 // sinfect(), sinfected(), suninfect() -- primitives to flag or unflag a
-//   subface. The last bit of ((int *) ((s).sh))[shmarkindex] is flaged.
+//   subface. The last bit of ((int *) ((s).sh))[shmarkindex+1] is flaged.
 
-inline void tetgenmesh::sinfect(face& s) {
-  ((int *) ((s).sh))[shmarkindex] = 
-    (((int *) ((s).sh))[shmarkindex] | (int) 1);
-  // s.sh[6] = (shellface) ((unsigned long) s.sh[6] | (unsigned long) 4l);
+inline void tetgenmesh::sinfect(face& s) 
+{
+  ((int *) ((s).sh))[shmarkindex+1] = 
+    (((int *) ((s).sh))[shmarkindex+1] | (int) 1);
 }
 
-inline void tetgenmesh::suninfect(face& s) {
-  ((int *) ((s).sh))[shmarkindex] = 
-    (((int *) ((s).sh))[shmarkindex] & ~(int) 1);
-  // s.sh[6] = (shellface)((unsigned long) s.sh[6] & ~(unsigned long) 4l);
+inline void tetgenmesh::suninfect(face& s) 
+{
+  ((int *) ((s).sh))[shmarkindex+1] = 
+    (((int *) ((s).sh))[shmarkindex+1] & ~(int) 1);
 }
 
 // Test a subface for viral infection.
 
-inline bool tetgenmesh::sinfected(face& s) {
-  return (((int *) ((s).sh))[shmarkindex] & (int) 1) != 0;
+inline bool tetgenmesh::sinfected(face& s) 
+{
+  return (((int *) ((s).sh))[shmarkindex+1] & (int) 1) != 0;
 }
 
 // smarktest(), smarktested(), sunmarktest() -- primitives to flag or unflag
-//   a subface. The last 2nd bit of ((int *) ((s).sh))[shmarkindex] is flaged.
+//   a subface.The last 2nd bit of the integer is flaged.
 
-#define smarktest(s) \
-  ((int *) ((s).sh))[shmarkindex] = (((int *)((s).sh))[shmarkindex] | (int) 2)
+inline void tetgenmesh::smarktest(face& s) 
+{
+  ((int *) ((s).sh))[shmarkindex+1] = 
+    (((int *)((s).sh))[shmarkindex+1] | (int) 2);
+}
 
-#define sunmarktest(s) \
-  ((int *) ((s).sh))[shmarkindex] = (((int *)((s).sh))[shmarkindex] & ~(int) 2)
+inline void tetgenmesh::sunmarktest(face& s) 
+{
+  ((int *) ((s).sh))[shmarkindex+1] = 
+    (((int *)((s).sh))[shmarkindex+1] & ~(int)2);
+}
 
-#define smarktested(s) ((((int *) ((s).sh))[shmarkindex] & (int) 2) != 0)
+inline bool tetgenmesh::smarktested(face& s) 
+{
+  return ((((int *) ((s).sh))[shmarkindex+1] & (int) 2) != 0);
+}
+
+// smarktest2(), smarktest2ed(), sunmarktest2() -- primitives to flag or 
+//   unflag a subface. The last 3rd bit of the integer is flaged.
+
+inline void tetgenmesh::smarktest2(face& s) 
+{
+  ((int *) ((s).sh))[shmarkindex+1] = 
+    (((int *)((s).sh))[shmarkindex+1] | (int) 4);
+}
+
+inline void tetgenmesh::sunmarktest2(face& s) 
+{
+  ((int *) ((s).sh))[shmarkindex+1] = 
+    (((int *)((s).sh))[shmarkindex+1] & ~(int)4);
+}
+
+inline bool tetgenmesh::smarktest2ed(face& s) 
+{
+  return ((((int *) ((s).sh))[shmarkindex+1] & (int) 4) != 0);
+}
+
+// The last 4th bit of ((int *) ((s).sh))[shmarkindex+1] is flaged.
+
+inline void tetgenmesh::smarktest3(face& s) 
+{
+  ((int *) ((s).sh))[shmarkindex+1] = 
+    (((int *)((s).sh))[shmarkindex+1] | (int) 8);
+}
+
+inline void tetgenmesh::sunmarktest3(face& s) 
+{
+  ((int *) ((s).sh))[shmarkindex+1] = 
+    (((int *)((s).sh))[shmarkindex+1] & ~(int)8);
+}
+
+inline bool tetgenmesh::smarktest3ed(face& s) 
+{
+  return ((((int *) ((s).sh))[shmarkindex+1] & (int) 8) != 0);
+}
 
 //
 // End of primitives for subfaces/subsegments
@@ -3072,56 +2789,108 @@ inline bool tetgenmesh::sinfected(face& s) {
 //
 // Begin of primitives for interacting between tetrahedra and subfaces
 //
+// tsbond() bond a tetrahedron (t) and a subface (s) together.
+// Note that t and s must be the same face and the same edge. Moreover,
+//   t and s have the same orientation. 
+// Since the edge number in t and in s can be any number in {0,1,2}. We bond
+//   the edge in s which corresponds to t's 0th edge, and vice versa.
 
-// tspivot() finds a subface abutting on this tetrahdera.
+inline void tetgenmesh::tsbond(triface& t, face& s) 
+{
+  int soffset, toffset, ver;
 
-inline void tetgenmesh::tspivot(triface& t, face& s) {
-  if ((t).tet[9] != NULL) {
-    sdecode(((shellface *) (t).tet[9])[(t).loc], s);
-  } else {
-    (s).sh = dummysh;
-  }
-  //shellface sptr = (shellface) t.tet[8 + t.loc];
-  //sdecode(sptr, s);
-}
-
-// stpivot() finds a tetrahedron abutting a subface.
-
-inline void tetgenmesh::stpivot(face& s, triface& t) {
-  tetrahedron ptr = (tetrahedron) s.sh[6 + EdgeRing(s.shver)];
-  decode(ptr, t);
-}
-
-// tsbond() bond a tetrahedron to a subface.
-
-inline void tetgenmesh::tsbond(triface& t, face& s) {
   if ((t).tet[9] == NULL) {
     // Allocate space for this tet.
     (t).tet[9] = (tetrahedron) tet2subpool->alloc();
     // NULL all fields in this space.
     for (int i = 0; i < 4; i++) {
-      ((shellface *) (t).tet[9])[i] = (shellface) dummysh;
+      ((shellface *) (t).tet[9])[i] = NULL;
     }
   }
-  // Bond t <==> s.
-  ((shellface *) (t).tet[9])[(t).loc] = sencode(s);
-  //t.tet[8 + t.loc] = (tetrahedron) sencode(s);
-  s.sh[6 + EdgeRing(s.shver)] = (shellface) encode(t);
+
+  assert(org(t) == sorg(s)); // FOR DEBUG
+
+  if (((s).shver & 1) == 0) {
+    // t and s have the same orientation.
+    soffset = mod6[6 - (((t).ver & 12) >> 1)]; // {0,2,4}
+    toffset = mod12[12 - (((s).shver & 6) << 1)]; // {0,4,8}
+  } else {
+    // t and s have revsered orientations.
+    soffset = (((t).ver & 12) >> 1); // {0,2,4}
+    toffset = (((s).shver & 6) << 1); // {0,4,8}
+  }
+
+  // Bond t <== s.
+  ver = ((s).shver & 1) + mod6[((s).shver & 6) + soffset];
+  ((shellface *) (t).tet[9])[(t).ver & 3] = sencode2((s).sh, ver);
+  // Bond s <== t.
+  ver = ((t).ver & 3) + mod12[((t).ver & 12) + toffset];
+  s.sh[9 + ((s).shver & 1)] = (shellface) encode2((t).tet, ver);
+}
+
+// tspivot() finds a subface (s) abutting on the given tetrahdera (t).
+//   Return s.sh = NULL if there is no subface at t. Otherwise, return
+//   the subface s, and s and t must be at the same edge wth the same
+//   orientation.
+
+inline void tetgenmesh::tspivot(triface& t, face& s) 
+{
+  int soffset;
+
+  if ((t).tet[9] == NULL) {
+    (s).sh = NULL;
+    return;
+  }
+
+  // Get the attached subface s.
+  sdecode(((shellface *) (t).tet[9])[(t).ver & 3], (s));
+
+  // Set the right edge in s.
+  if (((s).shver & 1) == 0) {
+    soffset = (((t).ver & 12) >> 1); // {0,2,4}
+  } else {
+    soffset = mod6[6 - (((t).ver & 12) >> 1)]; // {0,2,4}
+  }
+  (s).shver = ((s).shver & 1) + mod6[((s).shver & 6) + soffset];
+}
+
+// stpivot() finds a tetrahedron (t) abutting a given subface (s).
+//   Return the t (if it exists) with the same edge and the same
+//   orientation of s.
+
+inline void tetgenmesh::stpivot(face& s, triface& t) 
+{
+  int toffset;
+
+  decode((tetrahedron) s.sh[9 + (s.shver & 1)], t);
+
+  if ((t).tet == NULL) {
+    return;
+  }
+
+  if (((s).shver & 1) == 0) {
+    toffset = (((s).shver & 6) << 1); // {0,4,8}
+  } else {
+    toffset = mod12[12 - (((s).shver & 6) << 1)]; // {0,4,8}
+  }
+  (t).ver = ((t).ver & 3) + mod12[((t).ver & 12) + toffset];
 }
 
 // tsdissolve() dissolve a bond (from the tetrahedron side).
 
-inline void tetgenmesh::tsdissolve(triface& t) {
+inline void tetgenmesh::tsdissolve(triface& t) 
+{
   if ((t).tet[9] != NULL) {
-    ((shellface *) (t).tet[9])[(t).loc] = (shellface) dummysh;
+    ((shellface *) (t).tet[9])[(t).ver & 3] = NULL;
   }
-  // t.tet[8 + t.loc] = (tetrahedron) dummysh;
 }
 
 // stdissolve() dissolve a bond (from the subface side).
 
-inline void tetgenmesh::stdissolve(face& s) {
-  s.sh[6 + EdgeRing(s.shver)] = (shellface) dummytet;
+inline void tetgenmesh::stdissolve(face& s) 
+{
+  (s).sh[9] = NULL;
+  (s).sh[10] = NULL;
 }
 
 //
@@ -3132,24 +2901,33 @@ inline void tetgenmesh::stdissolve(face& s) {
 // Begin of primitives for interacting between subfaces and subsegs
 //
 
-// sspivot() finds a subsegment abutting a subface.
-
-inline void tetgenmesh::sspivot(face& s, face& edge) {
-  shellface sptr = (shellface) s.sh[8 + Orient(s.shver)];
-  sdecode(sptr, edge);
-}
-
 // ssbond() bond a subface to a subsegment.
 
-inline void tetgenmesh::ssbond(face& s, face& edge) {
-  s.sh[8 + Orient(s.shver)] = sencode(edge);
+inline void tetgenmesh::ssbond(face& s, face& edge) 
+{
+  s.sh[6 + (s.shver >> 1)] = sencode(edge);
   edge.sh[0] = sencode(s);
+}
+
+inline void tetgenmesh::ssbond1(face& s, face& edge) 
+{
+  s.sh[6 + (s.shver >> 1)] = sencode(edge);
+  //edge.sh[0] = sencode(s);
 }
 
 // ssdisolve() dissolve a bond (from the subface side)
 
-inline void tetgenmesh::ssdissolve(face& s) {
-  s.sh[8 + Orient(s.shver)] = (shellface) dummysh;
+inline void tetgenmesh::ssdissolve(face& s) 
+{
+  s.sh[6 + (s.shver >> 1)] = NULL;
+}
+
+// sspivot() finds a subsegment abutting a subface.
+
+inline void tetgenmesh::sspivot(face& s, face& edge) 
+{
+  shellface sptr = (shellface) s.sh[6 + (s.shver >> 1)];
+  sdecode(sptr, edge);
 }
 
 //
@@ -3160,19 +2938,6 @@ inline void tetgenmesh::ssdissolve(face& s) {
 // Begin of primitives for interacting between tet and subsegs.
 //
 
-inline void tetgenmesh::tsspivot1(triface& t, face& s)
-{
-  if ((t).tet[8] != NULL) {
-    sdecode(((shellface *) (t).tet[8])[locver2edge[(t).loc][(t).ver]], s);
-  } else {
-    (s).sh = dummysh;
-  }
-  // shellface sptr = (shellface) t.tet[8 + locver2edge[t.loc][t.ver]];
-  // sdecode(sptr, seg);
-}
-
-// Only bond/dissolve at tet's side, but not vice versa.
-
 inline void tetgenmesh::tssbond1(triface& t, face& s)
 {
   if ((t).tet[8] == NULL) {
@@ -3180,21 +2945,41 @@ inline void tetgenmesh::tssbond1(triface& t, face& s)
     (t).tet[8] = (tetrahedron) tet2segpool->alloc();
     // NULL all fields in this space.
     for (int i = 0; i < 6; i++) {
-      ((shellface *) (t).tet[8])[i] = (shellface) dummysh;
+      ((shellface *) (t).tet[8])[i] = NULL;
     }
   }
-  // Bond the segment.
-  ((shellface *) (t).tet[8])[locver2edge[(t).loc][(t).ver]] = sencode((s));
-  // t.tet[8 + locver2edge[t.loc][t.ver]] = (tetrahedron) sencode(seg);
+  ((shellface *) (t).tet[8])[ver2edge[(t).ver]] = sencode((s)); 
+}
+
+inline void tetgenmesh::sstbond1(face& s, triface& t) 
+{
+  ((tetrahedron *) (s).sh)[9] = encode(t);
 }
 
 inline void tetgenmesh::tssdissolve1(triface& t)
 {
   if ((t).tet[8] != NULL) {
-    ((shellface *) (t).tet[8])[locver2edge[(t).loc][(t).ver]] 
-      = (shellface) dummysh;
+    ((shellface *) (t).tet[8])[ver2edge[(t).ver]] = NULL;
   }
-  // t.tet[8 + locver2edge[t.loc][t.ver]] = (tetrahedron) dummysh;
+}
+
+inline void tetgenmesh::sstdissolve1(face& s) 
+{
+  ((tetrahedron *) (s).sh)[9] = NULL;
+}
+
+inline void tetgenmesh::tsspivot1(triface& t, face& s)
+{
+  if ((t).tet[8] != NULL) {
+    sdecode(((shellface *) (t).tet[8])[ver2edge[(t).ver]], s);
+  } else {
+    (s).sh = NULL;
+  }
+}
+
+inline void tetgenmesh::sstpivot1(face& s, triface& t) 
+{
+  decode((tetrahedron) s.sh[9], t);
 }
 
 //
@@ -3213,16 +2998,36 @@ inline void tetgenmesh::setpointmark(point pt, int value) {
   ((int *) (pt))[pointmarkindex] = value;
 }
 
+
 // These two primitives set and read the type of the point.
-// The last significant bit of this integer is used by pinfect/puninfect.
 
 inline enum tetgenmesh::verttype tetgenmesh::pointtype(point pt) {
-  return (enum verttype) (((int *) (pt))[pointmarkindex + 1] >> (int) 1);
+  return (enum verttype) (((int *) (pt))[pointmarkindex + 1] >> (int) 8);
 }
 
 inline void tetgenmesh::setpointtype(point pt, enum verttype value) {
   ((int *) (pt))[pointmarkindex + 1] = 
-    ((int) value << 1) + (((int *) (pt))[pointmarkindex + 1] & (int) 1);
+    ((int) value << 8) + (((int *) (pt))[pointmarkindex + 1] & (int) 255);
+}
+
+// Read and set the geometry tag of the point (used by -s option).
+
+inline int tetgenmesh::pointgeomtag(point pt) { 
+  return ((int *) (pt))[pointmarkindex + 2]; 
+}
+
+inline void tetgenmesh::setpointgeomtag(point pt, int value) {
+  ((int *) (pt))[pointmarkindex + 2] = value;
+}
+
+// Read and set the u,v coordinates of the point (used by -s option).
+
+inline REAL tetgenmesh::pointgeomuv(point pt, int i) {
+  return pt[pointparamindex + i];
+}
+
+inline void tetgenmesh::setpointgeomuv(point pt, int i, REAL value) {
+  pt[pointparamindex + i] = value;
 }
 
 // pinfect(), puninfect(), pinfected() -- primitives to flag or unflag
@@ -3240,6 +3045,50 @@ inline bool tetgenmesh::pinfected(point pt) {
   return (((int *) (pt))[pointmarkindex + 1] & (int) 1) != 0;
 }
 
+// pmarktest(), punmarktest(), pmarktested() -- primitives to mark or unmark
+//   a point. 
+
+inline void tetgenmesh::pmarktest(point pt) {
+  ((int *) (pt))[pointmarkindex + 1] |= (int) 2;
+}
+
+inline void tetgenmesh::punmarktest(point pt) {
+  ((int *) (pt))[pointmarkindex + 1] &= ~(int) 2;
+}
+
+inline bool tetgenmesh::pmarktested(point pt) {
+  return (((int *) (pt))[pointmarkindex + 1] & (int) 2) != 0;
+}
+
+// pmarktest2(), ...
+
+inline void tetgenmesh::pmarktest2(point pt) {
+  ((int *) (pt))[pointmarkindex + 1] |= (int) 4;
+}
+
+inline void tetgenmesh::punmarktest2(point pt) {
+  ((int *) (pt))[pointmarkindex + 1] &= ~(int) 4;
+}
+
+inline bool tetgenmesh::pmarktest2ed(point pt) {
+  return (((int *) (pt))[pointmarkindex + 1] & (int) 4) != 0;
+}
+
+// pmarktest3(), ...
+
+inline void tetgenmesh::pmarktest3(point pt) {
+  ((int *) (pt))[pointmarkindex + 1] |= (int) 8;
+}
+
+inline void tetgenmesh::punmarktest3(point pt) {
+  ((int *) (pt))[pointmarkindex + 1] &= ~(int) 8;
+}
+
+inline bool tetgenmesh::pmarktest3ed(point pt) {
+  return (((int *) (pt))[pointmarkindex + 1] & (int) 8) != 0;
+}
+
+
 // These following primitives set and read a pointer to a tetrahedron
 //   a subface/subsegment, a point, or a tet of background mesh.
 
@@ -3251,112 +3100,102 @@ inline void tetgenmesh::setpoint2tet(point pt, tetrahedron value) {
   ((tetrahedron *) (pt))[point2simindex] = value;
 }
 
-inline tetgenmesh::shellface tetgenmesh::point2sh(point pt) {
-  return (shellface) ((tetrahedron *) (pt))[point2simindex + 1];
-}
-
-inline void tetgenmesh::setpoint2sh(point pt, shellface value) {
-  ((tetrahedron *) (pt))[point2simindex + 1] = (tetrahedron) value;
-}
-
-inline tetgenmesh::shellface tetgenmesh::point2seg(point pt) {
-  return (shellface) ((tetrahedron *) (pt))[point2simindex + 2];
-}
-
-inline void tetgenmesh::setpoint2seg(point pt, shellface value) {
-  ((tetrahedron *) (pt))[point2simindex + 2] = (tetrahedron) value;
-}
-
 inline tetgenmesh::point tetgenmesh::point2ppt(point pt) {
-  return (point) ((tetrahedron *) (pt))[point2simindex + 3];
+  return (point) ((tetrahedron *) (pt))[point2simindex + 1];
 }
 
 inline void tetgenmesh::setpoint2ppt(point pt, point value) {
-  ((tetrahedron *) (pt))[point2simindex + 3] = (tetrahedron) value;
+  ((tetrahedron *) (pt))[point2simindex + 1] = (tetrahedron) value;
 }
 
+inline tetgenmesh::shellface tetgenmesh::point2sh(point pt) {
+  return (shellface) ((tetrahedron *) (pt))[point2simindex + 2];
+}
+
+inline void tetgenmesh::setpoint2sh(point pt, shellface value) {
+  ((tetrahedron *) (pt))[point2simindex + 2] = (tetrahedron) value;
+}
+
+
 inline tetgenmesh::tetrahedron tetgenmesh::point2bgmtet(point pt) {
-  return ((tetrahedron *) (pt))[point2simindex + 4];
+  return ((tetrahedron *) (pt))[point2simindex + 3];
 }
 
 inline void tetgenmesh::setpoint2bgmtet(point pt, tetrahedron value) {
-  ((tetrahedron *) (pt))[point2simindex + 4] = value;
+  ((tetrahedron *) (pt))[point2simindex + 3] = value;
 }
 
-// These primitives set and read a pointer to its pbc point.
 
-inline tetgenmesh::point tetgenmesh::point2pbcpt(point pt) {
-  return (point) ((tetrahedron *) (pt))[point2pbcptindex];
+// point2tetorg()    Get the tetrahedron whose origin is the point.
+
+inline void tetgenmesh::point2tetorg(point pa, triface& searchtet)
+{
+  decode(point2tet(pa), searchtet);
+  if ((point) searchtet.tet[4] == pa) {
+    searchtet.ver = 11;
+  } else if ((point) searchtet.tet[5] == pa) {
+    searchtet.ver = 3;
+  } else if ((point) searchtet.tet[6] == pa) {
+    searchtet.ver = 7;
+  } else {
+    assert((point) searchtet.tet[7] == pa); // SELF_CHECK
+    searchtet.ver = 0;
+  }
 }
 
-inline void tetgenmesh::setpoint2pbcpt(point pt, point value) {
-  ((tetrahedron *) (pt))[point2pbcptindex] = (tetrahedron) value;
+// point2shorg()    Get the subface/segment whose origin is the point.
+
+inline void tetgenmesh::point2shorg(point pa, face& searchsh)
+{
+  sdecode(point2sh(pa), searchsh);
+  if ((point) searchsh.sh[3] == pa) {
+    searchsh.shver = 0;
+  } else if ((point) searchsh.sh[4] == pa) {
+    searchsh.shver = (searchsh.sh[5] != NULL ? 2 : 1); 
+  } else {
+    assert((point) searchsh.sh[5] == pa); // SELF_CHECK
+    searchsh.shver = 4;
+  }
+}
+
+// farsorg()    Return the origin of the subsegment.
+// farsdest()   Return the destination of the subsegment.
+
+inline tetgenmesh::point tetgenmesh::farsorg(face& s)
+{
+  face travesh, neighsh;
+
+  travesh = s;
+  while (1) {
+    senext2(travesh, neighsh);
+    spivotself(neighsh); 
+    if (neighsh.sh == NULL) break;
+    if (sorg(neighsh) != sorg(travesh)) sesymself(neighsh);
+    assert(sorg(neighsh) == sorg(travesh)); // SELF_CHECK
+    senext2(neighsh, travesh); 
+  }
+  return sorg(travesh);
+}
+
+inline tetgenmesh::point tetgenmesh::farsdest(face& s) 
+{
+  face travesh, neighsh;
+
+  travesh = s;
+  while (1) {
+    senext(travesh, neighsh);
+    spivotself(neighsh); 
+    if (neighsh.sh == NULL) break;
+    if (sdest(neighsh) != sdest(travesh)) sesymself(neighsh);
+    assert(sdest(neighsh) == sdest(travesh)); // SELF_CHECK
+    senext(neighsh, travesh); 
+  }
+  return sdest(travesh);
 }
 
 //
 // End of primitives for points
 //
-
-//
-// Begin of advanced primitives
-//
-
-// adjustedgering() adjusts the edge version so that it belongs to the
-//   indicated edge ring.  The 'direction' only can be 0(CCW) or 1(CW).
-//   If the edge is not in the wanted edge ring, reverse it.
-
-inline void tetgenmesh::adjustedgering(triface& t, int direction) {
-  if (EdgeRing(t.ver) != direction) {
-    esymself(t);
-  }
-}
-
-inline void tetgenmesh::adjustedgering(face& s, int direction) {
-  if (EdgeRing(s.shver) != direction) {
-    sesymself(s);
-  }
-}
-
-// isdead() returns TRUE if the tetrahedron or subface has been dealloced.
-
-inline bool tetgenmesh::isdead(triface* t) {
-  if (t->tet == (tetrahedron *) NULL) return true;
-  else return t->tet[4] == (tetrahedron) NULL;
-}
-
-inline bool tetgenmesh::isdead(face* s) {
-  if (s->sh == (shellface *) NULL) return true;
-  else return s->sh[3] == (shellface) NULL;
-}
-
-// isfacehaspoint() returns TRUE if the 'testpoint' is one of the vertices
-//   of the tetface 't' subface 's'.
-
-inline bool tetgenmesh::isfacehaspoint(triface* t, point testpoint) {
-  return ((org(*t) == testpoint) || (dest(*t) == testpoint) ||
-          (apex(*t) == testpoint));
-}
-
-inline bool tetgenmesh::isfacehaspoint(face* s, point testpoint) {
-  return (s->sh[3] == (shellface) testpoint) || 
-         (s->sh[4] == (shellface) testpoint) ||
-         (s->sh[5] == (shellface) testpoint);
-}
-
-// isfacehasedge() returns TRUE if the edge (given by its two endpoints) is
-//   one of the three edges of the subface 's'.
-
-inline bool tetgenmesh::isfacehasedge(face* s, point tend1, point tend2) {
-  return (isfacehaspoint(s, tend1) && isfacehaspoint(s, tend2));
-}
-
-// issymexist() returns TRUE if the adjoining tetrahedron is not 'duumytet'.
-
-inline bool tetgenmesh::issymexist(triface* t) {
-  tetrahedron *ptr = (tetrahedron *) 
-    ((unsigned long)(t->tet[t->loc]) & ~(unsigned long)7l);
-  return ptr != dummytet;
-}
 
 // dot() returns the dot product: v1 dot v2.
 
@@ -3375,6 +3214,7 @@ inline void tetgenmesh::cross(REAL* v1, REAL* v2, REAL* n)
 }
 
 // distance() computs the Euclidean distance between two points.
+
 inline REAL tetgenmesh::distance(REAL* p1, REAL* p2)
 {
   return sqrt((p2[0] - p1[0]) * (p2[0] - p1[0]) +
@@ -3401,31 +3241,5 @@ inline REAL tetgenmesh::distance(REAL* p1, REAL* p2)
 
 #define SWAP2(a0, a1, tmp) (tmp) = (a0); (a0) = (a1); (a1) = (tmp)
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Two inline functions used in read/write VTK files.                        //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-inline void swapBytes(unsigned char* var, int size)
-{
-  int i = 0;
-  int j = size - 1;
-  char c;
-
-  while (i < j) {
-    c = var[i]; var[i] = var[j]; var[j] = c;
-    i++, j--;
-  }
-}
-
-inline bool testIsBigEndian()
-{
-  short word = 0x4321;
-  if((*(char *)& word) != 0x21)
-    return true;
-  else 
-    return false;
-}
-
 #endif // #ifndef tetgenH
+
