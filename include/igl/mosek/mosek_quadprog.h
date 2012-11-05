@@ -2,6 +2,8 @@
 #define IGL_MOSEK_QUADPROG_H
 #include "../igl_inline.h"
 #include <vector>
+#include <map>
+#include "mosek.h"
 
 
 #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
@@ -12,6 +14,12 @@ namespace igl
 {
   struct MosekData
   {
+    // Integer parameters
+    std::map<MSKiparame,int> intparam;
+    // Double parameters
+    std::map<MSKdparame,double> douparam;
+    // Default values
+    MosekData();
   };
   // Solve a convex quadratic optimization problem with linear and constant
   // bounds, that is:

@@ -1,6 +1,5 @@
 #include "edges.h"
 
-#include <map>
 #include "adjacency_matrix.h"
 
 IGL_INLINE void igl::edges( const Eigen::MatrixXi& F, Eigen::MatrixXi& E)

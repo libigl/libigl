@@ -23,5 +23,7 @@ namespace igl
   const float WHITE_AMBIENT[4] =   { 255.0/255.0,255.0/255.0,255.0/255.0,1.0f };
   const float WHITE_DIFFUSE[4] =   { 255.0/255.0,255.0/255.0,255.0/255.0,1.0f };
   const float WHITE_SPECULAR[4] =  { 255.0/255.0,255.0/255.0,255.0/255.0,1.0f };
+  const float BBW_POINT_COLOR[4] = {239./255.,213./255.,46./255.,255.0/255.0};
+  const float BBW_LINE_COLOR[4] = {106./255.,106./255.,255./255.,255./255.};
 }
 #endif

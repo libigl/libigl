@@ -16,8 +16,6 @@
 
 #include <Eigen/Dense>
 
-#include <Eigen/Dense>
-
 #include <iostream>
 #include <string>
 

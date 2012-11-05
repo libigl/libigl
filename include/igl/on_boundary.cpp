@@ -5,7 +5,6 @@
 #include "face_occurences.h"
 
 // STL includes
-#include <map>
 
 template <typename IntegerT>
 IGL_INLINE void igl::on_boundary(
