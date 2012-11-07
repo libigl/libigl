@@ -54,7 +54,14 @@ IGL_INLINE bool igl::read_into_tetgenio(
       cerr<<"^read_into_tetgenio Warning: Unsupported extension ("<<ext<<
         "): try to load as basename..."<<endl;
     }
-    success = in.load_tetmesh(basename_char);
+    // This changed as of (the so far unreleased) tetgen 1.5
+    //success = in.load_tetmesh(basename_char);
+    int object = tetgenbehavior::NODES;
+    if(ext == "mesh")
+    {
+      object = tetgenbehavior::MEDIT;
+    }
+    success = in.load_tetmesh(basename_char,!tetgenbehavior::MEDIT);
   }
 
   return success;
