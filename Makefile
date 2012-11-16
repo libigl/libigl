@@ -40,9 +40,9 @@ endif
 .PHONY: extras
 debug: lib
 lib: obj lib/libigl.a
-examples:
+examples: lib
 	make -C examples
-extras:
+extras: extras
 	for p in  $(EXTRA_DIRS); \
 	do \
 	echo "cd $$p" ; \
@@ -86,7 +86,7 @@ lib/libigl.a: $(OBJ_FILES)
 	rm -f $@
 	ar cqs $@ $(OBJ_FILES)
 
-obj/%.o: include/igl/%.cpp include/igl/%.h
+obj/%.o: include/igl/%.cpp include/igl/%.h obj
 	$(GG) $(CFLAGS) $(AFLAGS) -c -o $@ $< $(INC)
 
 clean:
