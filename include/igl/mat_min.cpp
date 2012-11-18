@@ -1,7 +1,5 @@
 #include "mat_min.h"
 
-#include "verbose.h"
-
 template <typename T>
 IGL_INLINE void igl::mat_min(
   const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,

@@ -15,7 +15,7 @@ $(info Hello, $(IGL_USERNAME)!)
 all: LFLAGS +=
 OPTFLAGS=-O3 -DNDEBUG
 #debug: OPTFLAGS= -g -Wall -Werror
-debug: OPTFLAGS= -g -Wall -Weffc++
+debug: OPTFLAGS= -g -Wall
 CFLAGS += $(OPTFLAGS)
 
 EXTRA_DIRS=
@@ -39,10 +39,10 @@ endif
 .PHONY: examples
 .PHONY: extras
 debug: lib
-lib: obj lib/libigl.a
-examples: lib
+lib: lib/libigl.a
+examples: lib extras
 	make -C examples
-extras: extras
+extras:
 	for p in  $(EXTRA_DIRS); \
 	do \
 	echo "cd $$p" ; \
@@ -86,7 +86,7 @@ lib/libigl.a: $(OBJ_FILES)
 	rm -f $@
 	ar cqs $@ $(OBJ_FILES)
 
-obj/%.o: include/igl/%.cpp include/igl/%.h obj
+obj/%.o: include/igl/%.cpp include/igl/%.h
 	$(GG) $(CFLAGS) $(AFLAGS) -c -o $@ $< $(INC)
 
 clean:

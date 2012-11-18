@@ -46,6 +46,7 @@ namespace igl
       const bool ascending,
       std::vector<T> &sorted,
       std::vector<size_t> &index_map);
+
 }
 
 #ifdef IGL_HEADER_ONLY
