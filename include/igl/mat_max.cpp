@@ -18,9 +18,9 @@ IGL_INLINE void igl::mat_max(
   // loop over dimension opposite of dim
   for(int j = 0;j<n;j++)
   {
-    int PHONY;
-    int i;
-    int m;
+    typename Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic>::Index PHONY;
+    typename Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic>::Index i;
+    T m;
     if(dim==1)
     {
       m = X.col(j).maxCoeff(&i,&PHONY);
@@ -35,4 +35,5 @@ IGL_INLINE void igl::mat_max(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
+template void igl::mat_max<double>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, int, Eigen::Matrix<double, -1, 1, 0, -1, 1>&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&);
 #endif

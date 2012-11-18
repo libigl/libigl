@@ -1,0 +1,35 @@
+#ifndef IGL_SORTROWS_H
+#define IGL_SORTROWS_H
+#include "igl_inline.h"
+
+#include <vector>
+#include <Eigen/Core>
+namespace igl
+{
+  // Act like matlab's [Y,I] = sortrows(X)
+  //
+  // Templates:
+  //   DerivedX derived scalar type, e.g. MatrixXi or MatrixXd
+  //   DerivedIX derived integer type, e.g. MatrixXi
+  // Inputs:
+  //   X  m by n matrix whose entries are to be sorted
+  //   ascending  sort ascending (true, matlab default) or descending (false)
+  // Outputs:
+  //   Y  m by n matrix whose entries are sorted
+  //   IX  m by n matrix of indices so that if dim = 1, then in matlab notation
+  //     for j = 1:n, Y(:,j) = X(I(:,j),j); end
+  template <typename DerivedX, typename DerivedIX>
+  IGL_INLINE void sortrows(
+    const Eigen::PlainObjectBase<DerivedX>& X,
+    const bool ascending,
+    Eigen::PlainObjectBase<DerivedX>& Y,
+    Eigen::PlainObjectBase<DerivedIX>& IX);
+
+}
+
+#ifdef IGL_HEADER_ONLY
+#  include "sortrows.cpp"
+#endif
+
+#endif
+
