@@ -11,12 +11,12 @@
 //                                 const double epsilon)
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::removeDuplicates(
-                                      const Eigen::PlainObjectBase<DerivedV> &V,
-                                      const Eigen::PlainObjectBase<DerivedF> &F,
-                                      Eigen::PlainObjectBase<DerivedV> &NV,
-                                      Eigen::PlainObjectBase<DerivedF> &NF,
-                                      Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1> &I,
-                                      const double epsilon)
+  const Eigen::PlainObjectBase<DerivedV> &V,
+  const Eigen::PlainObjectBase<DerivedF> &F,
+  Eigen::PlainObjectBase<DerivedV> &NV,
+  Eigen::PlainObjectBase<DerivedF> &NF,
+  Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1> &I,
+  const double epsilon)
 {
   using namespace std;
   //// build collapse map
@@ -76,4 +76,5 @@ IGL_INLINE void igl::removeDuplicates(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
+template void igl::removeDuplicates<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::Matrix<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, -1, 1, 0, -1, 1>&, double);
 #endif
