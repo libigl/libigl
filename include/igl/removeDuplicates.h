@@ -34,12 +34,12 @@ namespace igl
   
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE void removeDuplicates(
-                                   const Eigen::PlainObjectBase<DerivedV> &V,
-                                   const Eigen::PlainObjectBase<DerivedF> &F,
-                                   Eigen::PlainObjectBase<DerivedV> &NV,
-                                   Eigen::PlainObjectBase<DerivedF> &NF,
-                                   Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1> &I,
-                                   const double epsilon = 2.2204e-15);
+    const Eigen::PlainObjectBase<DerivedV> &V,
+    const Eigen::PlainObjectBase<DerivedF> &F,
+    Eigen::PlainObjectBase<DerivedV> &NV,
+    Eigen::PlainObjectBase<DerivedF> &NF,
+    Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1> &I,
+    const double epsilon = 2.2204e-15);
   
 }
 
