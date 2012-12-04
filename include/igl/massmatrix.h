@@ -21,7 +21,7 @@ namespace igl
   //
   // Templates:
   //   DerivedV  derived type of eigen matrix for V (e.g. derived from
-  //     MatirxXd)
+  //     MatrixXd)
   //   DerivedF  derived type of eigen matrix for F (e.g. derived from
   //     MatrixXi)
   //   Scalar  scalar type for eigen sparse matrix (e.g. double)
