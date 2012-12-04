@@ -3,11 +3,9 @@
 #include <igl/readOBJ.h>
 #include <igl/readOFF.h>
 #include <igl/readMESH.h>
-#include <igl/sample_edges.h>
-#include <igl/cat.h>
+#include <igl/tetgen/mesh_with_skeleton.h>
 #include <igl/faces_first.h>
 #include <igl/readTGF.h>
-#include <igl/tetgen/tetrahedralize.h>
 #include <igl/launch_medit.h>
 #include <igl/boundary_conditions.h>
 #include <igl/mosek/bbw.h>
@@ -119,93 +117,6 @@ bool load_skeleton_from_file(
   return success;
 }
 
-// Mesh the interior of a given surface with tetrahedra which are graded (tend
-// to be small near the surface and large inside) and conform to the given
-// handles and samplings thereof.
-//
-// Inputs:
-//  V  #V by 3 list of mesh vertex positions
-//  F  #F by 3 list of triangle indices
-//  C  #C by 3 list of vertex positions
-//  P  #P list of point handle indices
-//  BE #BE by 2 list of bone-edge indices
-//  CE #CE by 2 list of cage-edge indices
-// Outputs:
-//  VV  #VV by 3 list of tet-mesh vertex positions
-//  TT  #TT by 4 list of tetrahedra indices
-//  FF  #FF by 3 list of surface triangle indices
-// Returns true only on success
-bool mesh_with_skeleton(
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
-  const Eigen::MatrixXd & C,
-  const Eigen::VectorXi & /*P*/,
-  const Eigen::MatrixXi & BE,
-  const Eigen::MatrixXi & CE,
-  Eigen::MatrixXd & VV,
-  Eigen::MatrixXi & TT,
-  Eigen::MatrixXi & FF)
-{
-  using namespace Eigen;
-  using namespace igl;
-  using namespace std;
-  // Collect all edges that need samples:
-  MatrixXi BECE = cat(1,BE,CE);
-  MatrixXd S;
-  // Sample each edge with 10 samples. (Choice of 10 doesn't seem to matter so
-  // much, but could under some circumstances)
-  sample_edges(C,BECE,10,S);
-  // Vertices we'll constrain tet mesh to meet
-  MatrixXd VS = cat(1,V,S);
-  // Boundary faces
-  MatrixXi BF;
-  // Use tetgen to mesh the interior of surface, this assumes surface:
-  //   * has no holes
-  //   * has no non-manifold edges or vertices
-  //   * has consistent orientation
-  //   * has no self-intersections
-  //   * has no 0-volume pieces
-  // Default settings pq100 tell tetgen to mesh interior of triangle mesh and
-  // to produce a graded tet mesh
-  cerr<<"tetgen begin()"<<endl;
-  int status = tetrahedralize( VS,F,"pq100",VV,TT,FF);
-  cerr<<"tetgen end()"<<endl;
-  if(FF.rows() != F.rows())
-  {
-    // Issue a warning if the surface has changed
-    cerr<<"mesh_with_skeleton: Warning: boundary faces != input faces"<<endl;
-  }
-  if(status != 0)
-  {
-    cerr<<
-      "***************************************************************"<<endl<<
-      "***************************************************************"<<endl<<
-      "***************************************************************"<<endl<<
-      "***************************************************************"<<endl<<
-      "* mesh_with_skeleton: tetgen failed. Just meshing convex hull *"<<endl<<
-      "***************************************************************"<<endl<<
-      "***************************************************************"<<endl<<
-      "***************************************************************"<<endl<<
-      "***************************************************************"<<endl;
-    // If meshing convex hull then use more regular mesh
-    status = tetrahedralize(VS,F,"q1.414",VV,TT,FF);
-    // I suppose this will fail if the skeleton is outside the mesh
-    assert(FF.maxCoeff() < VV.rows());
-    if(status != 0)
-    {
-      cerr<<"mesh_with_skeleton: tetgen failed again."<<endl;
-      return false;
-    }
-  }
-  // If you have medit installed then it's convenient to visualize the tet mesh
-  // at this point
-  if(WITH_MEDIT)
-  {
-    launch_medit(VV,TT,FF,false);
-  }
-  return true;
-}
-
 // Writes output files to /path/to/input/mesh-skeleton.dmat,
 // mesh-volume.dmat, mesh-volume.mesh if input mesh was
 // located at /path/to/input/mesh.obj and input skeleton was at
@@ -313,9 +224,15 @@ int main(int argc, char * argv[])
   MatrixXi TT;
   // New surface faces FF
   MatrixXi FF;
-  if(!mesh_with_skeleton(V,F,C,P,BE,CE,VV,TT,FF))
+  if(!mesh_with_skeleton(V,F,C,P,BE,CE,10,VV,TT,FF))
   {
     return 1;
+  }
+  // If you have medit installed then it's convenient to visualize the tet mesh
+  // at this point
+  if(WITH_MEDIT)
+  {
+    launch_medit(VV,TT,FF,false);
   }
   // Compute boundary conditions (aka fixed value constraints)
   // List of boundary indices (aka fixed value indices into VV)

@@ -1,0 +1,1 @@
+/usr/local/bin/c++   -dynamiclib -Wl,-headerpad_max_install_names   -compatibility_version 1.0.0 -current_version 1.0.9 -o libtinyxml2.1.0.9.dylib -install_name /usr/local/igl/igl_lib/external/tinyxml2/libtinyxml2.1.dylib CMakeFiles/tinyxml2.dir/tinyxml2.cpp.o 

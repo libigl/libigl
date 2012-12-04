@@ -1,0 +1,4 @@
+/usr/local/igl/igl_lib/external/tinyxml2/CMakeFiles/DATA_COPY.dir
+/usr/local/igl/igl_lib/external/tinyxml2/CMakeFiles/test.dir
+/usr/local/igl/igl_lib/external/tinyxml2/CMakeFiles/tinyxml2.dir
+/usr/local/igl/igl_lib/external/tinyxml2/CMakeFiles/tinyxml2static.dir

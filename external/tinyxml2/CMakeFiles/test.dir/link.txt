@@ -1,0 +1,1 @@
+/usr/local/bin/c++    -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/test.dir/xmltest.cpp.o  -o test  libtinyxml2.1.0.9.dylib 
