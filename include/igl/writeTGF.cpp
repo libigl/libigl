@@ -1,4 +1,5 @@
 #include "writeTGF.h"
+#include <cstdio>
 
 IGL_INLINE bool igl::writeTGF(
   const std::string tgf_filename,

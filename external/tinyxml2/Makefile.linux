@@ -1,0 +1,10 @@
+.PHONY: all
+all: libtinyxml2.so
+
+libtinyxml2.so:
+	g++ -c tinyxml2.cpp -O3 -o tinyxml2.o
+	rm -f libtinyxml2.so
+	ar cqs libtinyxml2.so tinyxml2.o
+
+clean:
+	rm -f libtinyxml2.so

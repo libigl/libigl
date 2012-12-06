@@ -5,150 +5,46 @@
 # error "A C compiler has been selected for C++."
 #endif
 
-/* Version number components: V=Version, R=Revision, P=Patch
-   Version date components:   YYYY=Year, MM=Month,   DD=Day  */
-
 #if defined(__COMO__)
 # define COMPILER_ID "Comeau"
 
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
 # define COMPILER_ID "Intel"
-  /* __INTEL_COMPILER = VRP */
-# define COMPILER_VERSION_MAJOR DEC(__INTEL_COMPILER/100)
-# define COMPILER_VERSION_MINOR DEC(__INTEL_COMPILER/10 % 10)
-# define COMPILER_VERSION_PATCH DEC(__INTEL_COMPILER    % 10)
-# if defined(__INTEL_COMPILER_BUILD_DATE)
-  /* __INTEL_COMPILER_BUILD_DATE = YYYYMMDD */
-#  define COMPILER_VERSION_TWEAK DEC(__INTEL_COMPILER_BUILD_DATE)
-# endif
-
-#elif defined(__clang__)
-# define COMPILER_ID "Clang"
-# define COMPILER_VERSION_MAJOR DEC(__clang_major__)
-# define COMPILER_VERSION_MINOR DEC(__clang_minor__)
-# define COMPILER_VERSION_PATCH DEC(__clang_patchlevel__)
-
-#elif defined(__BORLANDC__) && defined(__CODEGEARC_VERSION__)
-# define COMPILER_ID "Embarcadero"
-# define COMPILER_VERSION_MAJOR HEX(__CODEGEARC_VERSION__>>24 & 0x00FF)
-# define COMPILER_VERSION_MINOR HEX(__CODEGEARC_VERSION__>>16 & 0x00FF)
-# define COMPILER_VERSION_PATCH HEX(__CODEGEARC_VERSION__     & 0xFFFF)
 
 #elif defined(__BORLANDC__)
 # define COMPILER_ID "Borland"
-  /* __BORLANDC__ = 0xVRR */
-# define COMPILER_VERSION_MAJOR HEX(__BORLANDC__>>8)
-# define COMPILER_VERSION_MINOR HEX(__BORLANDC__ & 0xFF)
 
 #elif defined(__WATCOMC__)
 # define COMPILER_ID "Watcom"
-  /* __WATCOMC__ = VVRR */
-# define COMPILER_VERSION_MAJOR DEC(__WATCOMC__ / 100)
-# define COMPILER_VERSION_MINOR DEC(__WATCOMC__ % 100)
 
 #elif defined(__SUNPRO_CC)
 # define COMPILER_ID "SunPro"
-# if __SUNPRO_CC >= 0x5100
-   /* __SUNPRO_CC = 0xVRRP */
-#  define COMPILER_VERSION_MAJOR HEX(__SUNPRO_CC>>12)
-#  define COMPILER_VERSION_MINOR HEX(__SUNPRO_CC>>4 & 0xFF)
-#  define COMPILER_VERSION_PATCH HEX(__SUNPRO_CC    & 0xF)
-# else
-   /* __SUNPRO_CC = 0xVRP */
-#  define COMPILER_VERSION_MAJOR HEX(__SUNPRO_CC>>8)
-#  define COMPILER_VERSION_MINOR HEX(__SUNPRO_CC>>4 & 0xF)
-#  define COMPILER_VERSION_PATCH HEX(__SUNPRO_CC    & 0xF)
-# endif
 
 #elif defined(__HP_aCC)
 # define COMPILER_ID "HP"
-  /* __HP_aCC = VVRRPP */
-# define COMPILER_VERSION_MAJOR DEC(__HP_aCC/10000)
-# define COMPILER_VERSION_MINOR DEC(__HP_aCC/100 % 100)
-# define COMPILER_VERSION_PATCH DEC(__HP_aCC     % 100)
 
 #elif defined(__DECCXX)
 # define COMPILER_ID "Compaq"
 
 #elif defined(__IBMCPP__)
-# if defined(__COMPILER_VER__)
-#  define COMPILER_ID "zOS"
-# else
-#  if __IBMCPP__ >= 800
-#   define COMPILER_ID "XL"
-#  else
-#   define COMPILER_ID "VisualAge"
-#  endif
-   /* __IBMCPP__ = VRP */
-#  define COMPILER_VERSION_MAJOR DEC(__IBMCPP__/100)
-#  define COMPILER_VERSION_MINOR DEC(__IBMCPP__/10 % 10)
-#  define COMPILER_VERSION_PATCH DEC(__IBMCPP__    % 10)
-# endif
+# define COMPILER_ID "VisualAge"
 
 #elif defined(__PGI)
 # define COMPILER_ID "PGI"
-# define COMPILER_VERSION_MAJOR DEC(__PGIC__)
-# define COMPILER_VERSION_MINOR DEC(__PGIC_MINOR__)
-# if defined(__PGIC_PATCHLEVEL__)
-#  define COMPILER_VERSION_PATCH DEC(__PGIC_PATCHLEVEL__)
-# endif
-
-#elif defined(__PATHSCALE__)
-# define COMPILER_ID "PathScale"
-
-#elif defined(_CRAYC)
-# define COMPILER_ID "Cray"
-
-#elif defined(__TI_COMPILER_VERSION__)
-# define COMPILER_ID "TI_DSP"
-
-#elif defined(__SCO_VERSION__)
-# define COMPILER_ID "SCO"
 
 #elif defined(__GNUC__)
 # define COMPILER_ID "GNU"
-# define COMPILER_VERSION_MAJOR DEC(__GNUC__)
-# define COMPILER_VERSION_MINOR DEC(__GNUC_MINOR__)
-# if defined(__GNUC_PATCHLEVEL__)
-#  define COMPILER_VERSION_PATCH DEC(__GNUC_PATCHLEVEL__)
-# endif
 
 #elif defined(_MSC_VER)
 # define COMPILER_ID "MSVC"
-  /* _MSC_VER = VVRR */
-# define COMPILER_VERSION_MAJOR DEC(_MSC_VER / 100)
-# define COMPILER_VERSION_MINOR DEC(_MSC_VER % 100)
-# if defined(_MSC_FULL_VER)
-#  if _MSC_VER >= 1400
-    /* _MSC_FULL_VER = VVRRPPPPP */
-#   define COMPILER_VERSION_PATCH DEC(_MSC_FULL_VER % 100000)
-#  else
-    /* _MSC_FULL_VER = VVRRPPPP */
-#   define COMPILER_VERSION_PATCH DEC(_MSC_FULL_VER % 10000)
-#  endif
-# endif
-# if defined(_MSC_BUILD)
-#  define COMPILER_VERSION_TWEAK DEC(_MSC_BUILD)
-# endif
 
 #elif defined(__ADSPBLACKFIN__) || defined(__ADSPTS__) || defined(__ADSP21000__)
 /* Analog Devices C++ compiler for Blackfin, TigerSHARC and
    SHARC (21000) DSPs */
 # define COMPILER_ID "ADSP"
 
-#elif defined(_SGI_COMPILER_VERSION) || defined(_COMPILER_VERSION)
+#elif defined(_COMPILER_VERSION)
 # define COMPILER_ID "MIPSpro"
-# if defined(_SGI_COMPILER_VERSION)
-  /* _SGI_COMPILER_VERSION = VRP */
-#  define COMPILER_VERSION_MAJOR DEC(_SGI_COMPILER_VERSION/100)
-#  define COMPILER_VERSION_MINOR DEC(_SGI_COMPILER_VERSION/10 % 10)
-#  define COMPILER_VERSION_PATCH DEC(_SGI_COMPILER_VERSION    % 10)
-# else
-  /* _COMPILER_VERSION = VRP */
-#  define COMPILER_VERSION_MAJOR DEC(_COMPILER_VERSION/100)
-#  define COMPILER_VERSION_MINOR DEC(_COMPILER_VERSION/10 % 10)
-#  define COMPILER_VERSION_PATCH DEC(_COMPILER_VERSION    % 10)
-# endif
 
 /* This compiler is either not known or is too old to define an
    identification macro.  Try to identify the platform and guess that
@@ -168,7 +64,7 @@
    getting matched.  Store it in a pointer rather than an array
    because some compilers will just produce instructions to fill the
    array rather than assigning a pointer to a static array.  */
-char const* info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";
+char* info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";
 
 /* Identify known platforms by name.  */
 #if defined(__linux) || defined(__linux__) || defined(linux)
@@ -254,79 +150,11 @@ char const* info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";
 
 #endif
 
-/* For windows compilers MSVC and Intel we can determine
-   the architecture of the compiler being used.  This is because
-   the compilers do not have flags that can change the architecture,
-   but rather depend on which compiler is being used
-*/
-#if defined(_WIN32) && defined(_MSC_VER)
-# if defined(_M_IA64)
-#  define ARCHITECTURE_ID "IA64"
-
-# elif defined(_M_X64) || defined(_M_AMD64)
-#  define ARCHITECTURE_ID "x64" 
-
-# elif defined(_M_IX86)
-#  define ARCHITECTURE_ID "X86"
-
-# elif defined(_M_ARM)
-#  define ARCHITECTURE_ID "ARM"
-
-# else /* unknown architecture */
-#  define ARCHITECTURE_ID ""
-# endif
-
-#else
-#  define ARCHITECTURE_ID ""
-#endif
-
-/* Convert integer to decimal digit literals.  */
-#define DEC(n)                   \
-  ('0' + (((n) / 10000000)%10)), \
-  ('0' + (((n) / 1000000)%10)),  \
-  ('0' + (((n) / 100000)%10)),   \
-  ('0' + (((n) / 10000)%10)),    \
-  ('0' + (((n) / 1000)%10)),     \
-  ('0' + (((n) / 100)%10)),      \
-  ('0' + (((n) / 10)%10)),       \
-  ('0' +  ((n) % 10))
-
-/* Convert integer to hex digit literals.  */
-#define HEX(n)             \
-  ('0' + ((n)>>28 & 0xF)), \
-  ('0' + ((n)>>24 & 0xF)), \
-  ('0' + ((n)>>20 & 0xF)), \
-  ('0' + ((n)>>16 & 0xF)), \
-  ('0' + ((n)>>12 & 0xF)), \
-  ('0' + ((n)>>8  & 0xF)), \
-  ('0' + ((n)>>4  & 0xF)), \
-  ('0' + ((n)     & 0xF))
-
-/* Construct a string literal encoding the version number components. */
-#ifdef COMPILER_VERSION_MAJOR
-char const info_version[] = {
-  'I', 'N', 'F', 'O', ':',
-  'c','o','m','p','i','l','e','r','_','v','e','r','s','i','o','n','[',
-  COMPILER_VERSION_MAJOR,
-# ifdef COMPILER_VERSION_MINOR
-  '.', COMPILER_VERSION_MINOR,
-#  ifdef COMPILER_VERSION_PATCH
-   '.', COMPILER_VERSION_PATCH,
-#   ifdef COMPILER_VERSION_TWEAK
-    '.', COMPILER_VERSION_TWEAK,
-#   endif
-#  endif
-# endif
-  ']','\0'};
-#endif
-
 /* Construct the string literal in pieces to prevent the source from
    getting matched.  Store it in a pointer rather than an array
    because some compilers will just produce instructions to fill the
    array rather than assigning a pointer to a static array.  */
-char const* info_platform = "INFO" ":" "platform[" PLATFORM_ID "]";
-char const* info_arch = "INFO" ":" "arch[" ARCHITECTURE_ID "]";
-
+char* info_platform = "INFO" ":" "platform[" PLATFORM_ID "]";
 
 
 /*--------------------------------------------------------------------------*/
@@ -336,9 +164,6 @@ int main(int argc, char* argv[])
   int require = 0;
   require += info_compiler[argc];
   require += info_platform[argc];
-#ifdef COMPILER_VERSION_MAJOR
-  require += info_version[argc];
-#endif
   (void)argv;
   return require;
 }
