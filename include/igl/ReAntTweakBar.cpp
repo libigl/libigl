@@ -213,9 +213,9 @@ int igl::ReTwBar::TwRefreshBar()
 
 int igl::ReTwBar::TwTerminate()
 {
-  std::cout<<"TwTerminate"<<std::endl;
+  //std::cout<<"TwTerminate"<<std::endl;
   int r = ::TwTerminate();
-  std::cout<<"  "<<r<<std::endl;
+  //std::cout<<"  "<<r<<std::endl;
   return r;
 }
 
