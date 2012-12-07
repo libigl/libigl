@@ -4,12 +4,11 @@ IGL=../../
 IGL_INC=-I${IGL}/include
 IGL_LIB=-L${IGL}/lib -ligl
 
-MOSEKPLATFORM=osx64x86
 MOSEK=/usr/local/mosek
 MOSEK_INC=-I$(MOSEK)/6/tools/platform/$(MOSEKPLATFORM)/h
 MOSEK_LIB=-L$(MOSEK)/6/tools/platform/$(MOSEKPLATFORM)/bin -lmosek64 -liglmosek
 
-EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
 
 TETGEN=$(IGL)/external/tetgen
 TETGEN_LIB=-L$(TETGEN) -ligltetgen -ltet 

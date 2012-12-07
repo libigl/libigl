@@ -22,7 +22,7 @@ INC+=$(EIGEN3_INC)
 
 # Matlab dependency
 ifndef MATLAB
-  MATLAB=/Applications/MATLAB_R011b.app/
+  MATLAB=/Applications/MATLAB_R2012a.app/
   $(warning MATLAB undefined. Setting MATLAB=${MATLAB})
 endif
 MATLAB_INC=-I$(MATLAB)/extern/include/
