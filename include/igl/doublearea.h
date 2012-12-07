@@ -8,11 +8,11 @@ namespace igl
   //
   // Templates:
   //   DerivedV  derived type of eigen matrix for V (e.g. derived from
-  //     MatirxXd)
+  //     MatrixXd)
   //   DerivedF  derived type of eigen matrix for F (e.g. derived from
   //     MatrixXi)
   //   DeriveddblA  derived type of eigen matrix for dblA (e.g. derived from
-  //     MatirxXd)
+  //     MatrixXd)
   // Inputs:
   //   V  #V by dim list of mesh vertex positions
   //   F  #F by simplex_size list of mesh faces (must be triangles)
@@ -26,11 +26,11 @@ namespace igl
   // Same as above but use instrinsic edge lengths rather than (V,F) mesh
   // Templates:
   //   DerivedV  derived type of eigen matrix for V (e.g. derived from
-  //     MatirxXd)
+  //     MatrixXd)
   //   DerivedF  derived type of eigen matrix for F (e.g. derived from
   //     MatrixXi)
   //   DeriveddblA  derived type of eigen matrix for dblA (e.g. derived from
-  //     MatirxXd)
+  //     MatrixXd)
   // Inputs:
   //   l  #F by dim list of edge lengths using 
   //     for triangles, columns correspond to edges 23,31,12

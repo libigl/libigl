@@ -30,11 +30,11 @@ namespace igl
   // set of boundary conditions
   //
   // Templates
-  //   DerivedV  derived type of eigen matrix for V (e.g. MatirxXd)
-  //   DerivedF  derived type of eigen matrix for F (e.g. MatirxXi)
+  //   DerivedV  derived type of eigen matrix for V (e.g. MatrixXd)
+  //   DerivedF  derived type of eigen matrix for F (e.g. MatrixXi)
   //   Derivedb  derived type of eigen matrix for b (e.g. VectorXi)
-  //   Derivedbc  derived type of eigen matrix for bc (e.g. MatirxXd)
-  //   DerivedW  derived type of eigen matrix for W (e.g. MatirxXd)
+  //   Derivedbc  derived type of eigen matrix for bc (e.g. MatrixXd)
+  //   DerivedW  derived type of eigen matrix for W (e.g. MatrixXd)
   // Inputs:
   //   V  #V by dim vertex positions
   //   Ele  #Elements by simplex-size list of element indices
