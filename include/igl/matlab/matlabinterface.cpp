@@ -112,7 +112,7 @@ IGL_INLINE void igl::mlgetmatrix(Engine** mlengine, std::string name, Eigen::Mat
     M = Eigen::MatrixXd(m,n);
     
     double *pM = mxGetPr(ary);
-    
+
     int c = 0;
     for(int j=0; j<M.cols();++j)
       for(int i=0; i<M.rows();++i)
