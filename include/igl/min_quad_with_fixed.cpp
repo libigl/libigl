@@ -141,6 +141,12 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     // Get transpose of Aequ
     Eigen::SparseMatrix<T> AequT = Aequ.transpose();
     // Compute LU decomposition
+    // TODO: This should be using SimplicialLDLT
+    // Q: Does SimplicialLDLT work on "Hermitian indefinite matrices" the way
+    // that matlabs ldl does?
+    // A: Maybe not. The eigen documentation writes, "This class provides a
+    // LDL^T Cholesky factorizations without square root of sparse matrices
+    // that are selfadjoint and positive definite"
     bool lu_success = igl::lu_lagrange(Auu,AequT,data.L,data.U);
     if(!lu_success)
     {

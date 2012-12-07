@@ -64,6 +64,7 @@ IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save(
   data.push_back(mx_data);
   names.push_back(name);
   // Copy data immediately
+  // Q: Won't this be incorrect for integers?
   copy(M.data(),M.data()+M.size(),mxGetPr(mx_data));
   return *this;
 }
