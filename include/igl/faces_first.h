@@ -21,7 +21,7 @@ namespace igl
   //  RV  # vertices by 3 vertex positions, order such that if the jth vertex is
   //    some face in F, and the kth vertex is not then j comes before k
   //  RF  # faces by 3 list of face indices, reindexed to use RV
-  //  IM  # faces by 1 list of indices such that: RF = IM(F) and RT = IM(T)
+  //  IM  #V by 1 list of indices such that: RF = IM(F) and RT = IM(T)
   //    and RV(IM,:) = V
   //
   //

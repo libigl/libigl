@@ -4,15 +4,15 @@
 
 template <typename Scalar, typename Index>
 IGL_INLINE bool igl::readOFF(
-                             const std::string off_file_name, 
-                             std::vector<std::vector<Scalar > > & V,
-                             std::vector<std::vector<Index > > & F,
-                             std::vector<std::vector<Scalar > > & N)
+  const std::string off_file_name, 
+  std::vector<std::vector<Scalar > > & V,
+  std::vector<std::vector<Index > > & F,
+  std::vector<std::vector<Scalar > > & N)
 {
   FILE * off_file = fopen(off_file_name.c_str(),"r");                                       
   if(NULL==off_file)
   {
-    printf("IOError: %s could not be opened...",off_file_name.c_str());
+    printf("IOError: %s could not be opened...\n",off_file_name.c_str());
     return false; 
   }
   V.clear();
@@ -126,9 +126,9 @@ IGL_INLINE bool igl::readOFF(
 #ifndef IGL_NO_EIGEN
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE bool igl::readOFF(
-                             const std::string str,
-                             Eigen::PlainObjectBase<DerivedV>& V,
-                             Eigen::PlainObjectBase<DerivedF>& F)
+  const std::string str,
+  Eigen::PlainObjectBase<DerivedV>& V,
+  Eigen::PlainObjectBase<DerivedF>& F)
 {
   std::vector<std::vector<double> > vV;
   std::vector<std::vector<double> > vN;  

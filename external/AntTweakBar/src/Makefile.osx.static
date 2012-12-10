@@ -6,14 +6,15 @@ SO_EXT          = .a
 CXXCFG   	= -O3 -arch i386 -arch x86_64
 LFLAGS		= -arch i386 -arch x86_64
 OUT_DIR		= ../lib
-#---- Debug
+##---- Debug
 #CXXCFG   	= -g -D_DEBUG -arch i386 -arch x86_64
 #LFLAGS		= -arch i386 -arch x86_64
-#OUT_DIR	= ../lib/debug
+#OUT_DIR	= ../lib/
 
 #BASE		= /Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks
-CXX      	= gcc
-CXXFLAGS 	= $(CXXCFG) -Wall -fPIC -fno-strict-aliasing -D_MACOSX -ObjC++  -D__PLACEMENT_NEW_INLINE
+CXX      	= /usr/bin/gcc
+#CXXFLAGS 	= $(CXXCFG) -Wall -fPIC -fno-strict-aliasing -D_MACOSX -ObjC++  -D__PLACEMENT_NEW_INLINE
+CXXFLAGS 	= $(CXXCFG) -Wall -fPIC -fno-strict-aliasing -D_MACOSX -x objective-c++ -D__PLACEMENT_NEW_INLINE
 INCPATH  	= -I../include -I/usr/local/include -I/usr/X11R6/include -I/usr/include
 #-I$(BASE)/OpenGL.framework/Headers/ -I$(BASE)/GLUT.framework/Headers/ -I$(BASE)/AppKit.framework/Headers/
 LINK     	= gcc
@@ -64,6 +65,7 @@ all: 	Makefile $(TARGET)
 
 $(TARGET): $(OBJS)
 	@echo "===== Archive $@ ====="
+	rm -f $(OUT_DIR)/lib$(TARGET)$(SO_EXT)
 	$(AR) $(OUT_DIR)/lib$(TARGET)$(SO_EXT) $(OBJS)
 
 .cpp.o:

@@ -2055,6 +2055,10 @@ int ANT_CALL TwDraw()
         {
             g_TwMgr->m_IsRepeatingMousePressed = true;
             g_TwMgr->m_LastMousePressedTime = g_TwMgr->m_Timer.GetTime();
+            // Alec: First call mouse motion so that
+            // m_HighlightedLine is not                            
+            // confused by any keys pressed during mouse click+hold
+            TwMouseMotion(g_TwMgr->m_LastMouseX,g_TwMgr->m_LastMouseY);
             TwMouseButton(TW_MOUSE_PRESSED, g_TwMgr->m_LastMousePressedButtonID);
         }
     }
