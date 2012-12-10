@@ -2,10 +2,13 @@
 syntax: glob
 *.o
 *.a
+*.dylib
 *~
 example
 example_static
 example_header_only
 example1
 external/yimg/.git*
+external/tinyxml2/CMakeFiles*
+external/tinyxml2/CMakeCache.txt
 .DS_Store

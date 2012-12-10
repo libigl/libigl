@@ -2,6 +2,7 @@
 
 #include "per_face_normals.h"
 #include "normalize_row_lengths.h"
+#include <omp.h>
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::per_vertex_normals(
@@ -11,21 +12,22 @@ IGL_INLINE void igl::per_vertex_normals(
 {
   Eigen::PlainObjectBase<DerivedV> PFN;
   igl::per_face_normals(V,F,PFN);
+  return igl::per_vertex_normals(V,F,PFN,N);
 
-  // Resize for output
-  N = Eigen::PlainObjectBase<DerivedV>::Zero(V.rows(),3);
+  //// Resize for output
+  //N = Eigen::PlainObjectBase<DerivedV>::Zero(V.rows(),3);
 
-  // loop over faces
-  for(int i = 0; i < F.rows();i++)
-  {
-    // throw normal at each corner
-    for(int j = 0; j < 3;j++)
-    {
-      N.row(F(i,j)) += PFN.row(i);
-    }
-  }
-  // normalize each row
-  igl::normalize_row_lengths(N,N);
+  //// loop over faces
+  //for(int i = 0; i < F.rows();i++)
+  //{
+  //  // throw normal at each corner
+  //  for(int j = 0; j < 3;j++)
+  //  {
+  //    N.row(F(i,j)) += PFN.row(i);
+  //  }
+  //}
+  //// normalize each row
+  //igl::normalize_row_lengths(N,N);
 }
 
 template <typename DerivedV, typename DerivedF>
@@ -36,10 +38,12 @@ IGL_INLINE void igl::per_vertex_normals(
   Eigen::PlainObjectBase<DerivedV> & N)
 {
   // Resize for output
-  N = Eigen::PlainObjectBase<DerivedV>::Zero(V.rows(),3);
+  N.resize(V.rows(),3);
   
   // loop over faces
-  for(int i = 0; i < F.rows();i++)
+  int Frows = F.rows();
+#pragma omp parallel for
+  for(int i = 0; i < Frows;i++)
   {
     // throw normal at each corner
     for(int j = 0; j < 3;j++)
