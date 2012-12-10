@@ -1,7 +1,7 @@
 prefix=/usr/local
 exec_prefix=${prefix}
-libdir=/usr/local/
-includedir=/usr/local/
+libdir=/usr/local/lib
+includedir=/usr/local/include
 
 Name: TinyXML2
 Description: simple, small, C++ XML parser

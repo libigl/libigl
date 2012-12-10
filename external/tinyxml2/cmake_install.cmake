@@ -40,11 +40,11 @@ IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
       )
     IF(EXISTS "${file}" AND
        NOT IS_SYMLINK "${file}")
-      EXECUTE_PROCESS(COMMAND "/usr/local/bin/install_name_tool"
+      EXECUTE_PROCESS(COMMAND "/opt/local/bin/install_name_tool"
         -id "libtinyxml2.1.dylib"
         "${file}")
       IF(CMAKE_INSTALL_DO_STRIP)
-        EXECUTE_PROCESS(COMMAND "/usr/local/bin/strip" "${file}")
+        EXECUTE_PROCESS(COMMAND "/opt/local/bin/strip" "${file}")
       ENDIF(CMAKE_INSTALL_DO_STRIP)
     ENDIF()
   ENDFOREACH()
@@ -54,7 +54,7 @@ IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
   FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/usr/local/igl/igl_lib/external/tinyxml2/libtinyxml2.a")
   IF(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libtinyxml2.a" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libtinyxml2.a")
-    EXECUTE_PROCESS(COMMAND "/usr/local/bin/ranlib" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libtinyxml2.a")
+    EXECUTE_PROCESS(COMMAND "/opt/local/bin/ranlib" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libtinyxml2.a")
   ENDIF()
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 

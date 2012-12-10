@@ -1,5 +1,6 @@
 #include "per_face_normals.h"
 #include <Eigen/Geometry>
+#include <omp.h>
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::per_face_normals(
@@ -9,7 +10,9 @@ IGL_INLINE void igl::per_face_normals(
 {
   N.resize(F.rows(),3);
   // loop over faces
-  for(int i = 0; i < F.rows();i++)
+  int Frows = F.rows();
+#pragma omp parallel for
+  for(int i = 0; i < Frows;i++)
   {
     Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v1 = V.row(F(i,1)) - V.row(F(i,0));
     Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v2 = V.row(F(i,2)) - V.row(F(i,0));
