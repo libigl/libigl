@@ -13,7 +13,7 @@ $(info Hello, $(IGL_USERNAME)!)
 
 # optimized default settings
 all: LFLAGS +=
-OPTFLAGS+=-O3 -DNDEBUG $(OPENMP)
+OPTFLAGS+=-O3 -DNDEBUG $(OPENMP) $(SSE) 
 #debug: OPTFLAGS= -g -Wall -Werror
 debug: OPTFLAGS+= -g -Wall
 CFLAGS += $(OPTFLAGS)
