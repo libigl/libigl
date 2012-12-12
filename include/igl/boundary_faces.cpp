@@ -31,7 +31,7 @@ IGL_INLINE void igl::boundary_faces(
   // Gather faces, loop over tets
   for(int i = 0; i< (int)T.size();i++)
   {
-    assert(T[i].size() == simplex_size);
+    assert((int)T[i].size() == simplex_size);
     switch(simplex_size)
     {
       case 4:
@@ -53,33 +53,42 @@ IGL_INLINE void igl::boundary_faces(
         allF[i*simplex_size+3][2] = T[i][2];
         break;
       case 3:
-        allF[i*simplex_size+0][0] = T[i][0];
-        allF[i*simplex_size+0][1] = T[i][1];
-        allF[i*simplex_size+1][0] = T[i][1];
-        allF[i*simplex_size+1][1] = T[i][2];
-        allF[i*simplex_size+2][0] = T[i][2];
-        allF[i*simplex_size+2][1] = T[i][0];
+        allF[i*simplex_size+0][0] = T[i][1];
+        allF[i*simplex_size+0][1] = T[i][2];
+        allF[i*simplex_size+1][0] = T[i][2];
+        allF[i*simplex_size+1][1] = T[i][0];
+        allF[i*simplex_size+2][0] = T[i][0];
+        allF[i*simplex_size+2][1] = T[i][1];
         break;
     }
   }
+
   // Counts
   vector<int> C;
   face_occurences(allF,C);
 
   // Q: Why not just count the number of ones?
+  // A: because we are including non-manifold edges as boundary edges
   int twos = (int) count(C.begin(),C.end(),2);
+  //int ones = (int) count(C.begin(),C.end(),1);
   // Resize output to fit number of ones
   F.resize(allF.size() - twos);
+  //F.resize(ones);
   int k = 0;
   for(int i = 0;i< (int)allF.size();i++)
   {
-    if(C[i] == 1)
+    if(C[i] != 2)
     {
       assert(k<(int)F.size());
       F[k] = allF[i];
       k++;
     }
   }
+  assert(k==F.size());
+  //if(k != F.size())
+  //{
+  //  printf("%d =? %d\n",k,F.size());
+  //}
 
 }
 
@@ -104,11 +113,11 @@ IGL_INLINE void igl::boundary_faces(
   list_to_matrix(vF,F);
 }
 
-template <typename DerivedT, typename DerivedF>
-IGL_INLINE Eigen::PlainObjectBase<DerivedF> igl::boundary_faces(
+template <typename DerivedT, typename Ret>
+Ret igl::boundary_faces(
   const Eigen::PlainObjectBase<DerivedT>& T)
 {
-  Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, Eigen::Dynamic> F;
+  Ret F; 
   igl::boundary_faces(T,F);
   return F;
 }
@@ -119,6 +128,7 @@ IGL_INLINE Eigen::PlainObjectBase<DerivedF> igl::boundary_faces(
 // Explicit template specialization
 template void igl::boundary_faces<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template void igl::boundary_faces<int, int>(std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > const&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&);
-template Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > igl::boundary_faces(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
+//template Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > igl::boundary_faces(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
+template Eigen::Matrix<int, -1, -1, 0, -1, -1> igl::boundary_faces<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
 #endif
 

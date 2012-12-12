@@ -36,8 +36,8 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedT>& T,
     Eigen::PlainObjectBase<DerivedF>& F);
   // Same as above but returns F
-  template <typename DerivedT, typename DerivedF>
-  IGL_INLINE Eigen::PlainObjectBase<DerivedF> boundary_faces(
+  template <typename DerivedT, typename Ret>
+  Ret boundary_faces(
     const Eigen::PlainObjectBase<DerivedT>& T);
 #endif
 }
