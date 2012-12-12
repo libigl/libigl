@@ -27,7 +27,8 @@ IGL_INLINE bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Mat 
   if(n != igl::max_size(V))
   {
     fprintf(stderr,"Error: list_to_matrix()"
-      " list elements are not all the same size\n");
+      " list elements are not all the same size: (min: %d, max: %d)\n",
+      n,igl::max_size(V));
     return false;
   }
   assert(n != -1);

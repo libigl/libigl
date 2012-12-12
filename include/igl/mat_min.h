@@ -30,6 +30,12 @@ namespace igl
     const int dim,
     Eigen::Matrix<T,Eigen::Dynamic,1> & Y,
     Eigen::Matrix<int,Eigen::Dynamic,1> & I);
+  // Use Y = X.colwise().minCoeff() instead
+  //// In-line wrapper
+  //template <typename T>
+  //IGL_INLINE Eigen::Matrix<T,Eigen::Dynamic,1> mat_min(
+  //  const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,
+  //  const int dim);
 }
 
 #ifdef IGL_HEADER_ONLY
