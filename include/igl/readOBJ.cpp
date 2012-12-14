@@ -8,13 +8,13 @@
 
 template <typename Scalar, typename Index>
 IGL_INLINE bool igl::readOBJ(
-                             const std::string obj_file_name, 
-                             std::vector<std::vector<Scalar > > & V,
-                             std::vector<std::vector<Scalar > > & TC,
-                             std::vector<std::vector<Scalar > > & N,
-                             std::vector<std::vector<Index > > & F,
-                             std::vector<std::vector<Index > > & FTC,
-                             std::vector<std::vector<Index > > & FN)
+  const std::string obj_file_name, 
+  std::vector<std::vector<Scalar > > & V,
+  std::vector<std::vector<Scalar > > & TC,
+  std::vector<std::vector<Scalar > > & N,
+  std::vector<std::vector<Index > > & F,
+  std::vector<std::vector<Index > > & FTC,
+  std::vector<std::vector<Index > > & FN)
 {
   // Open file, and check for error
   FILE * obj_file = fopen(obj_file_name.c_str(),"r");
@@ -278,9 +278,9 @@ IGL_INLINE bool igl::readOBJ(
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE bool igl::readOBJ(
-                             const std::string str,
-                             Eigen::PlainObjectBase<DerivedV>& V,
-                             Eigen::PlainObjectBase<DerivedF>& F)
+  const std::string str,
+  Eigen::PlainObjectBase<DerivedV>& V,
+  Eigen::PlainObjectBase<DerivedF>& F)
 {
   std::vector<std::vector<double> > vV,vTC,vN;
   std::vector<std::vector<int> > vF,vFTC,vFN;

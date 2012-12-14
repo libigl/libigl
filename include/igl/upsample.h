@@ -35,11 +35,11 @@ namespace igl
     Eigen::PlainObjectBase<DerivedNF>& NF);
   // Virtually in place wrapper
   template <
-    typename DerivedV, 
-    typename DerivedF>
+    typename MatV, 
+    typename MatF>
   IGL_INLINE void upsample(
-    Eigen::PlainObjectBase<DerivedV>& V,
-    Eigen::PlainObjectBase<DerivedF>& F);
+    MatV& V,
+    MatF& F);
 }
 
 #ifdef IGL_HEADER_ONLY

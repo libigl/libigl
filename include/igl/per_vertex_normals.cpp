@@ -2,7 +2,6 @@
 
 #include "per_face_normals.h"
 #include "normalize_row_lengths.h"
-#include <omp.h>
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::per_vertex_normals(
