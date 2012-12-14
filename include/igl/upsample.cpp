@@ -98,14 +98,12 @@ IGL_INLINE void igl::upsample(
 }
 
 template <
-  typename DerivedV, 
-  typename DerivedF>
+  typename MatV, 
+  typename MatF>
 IGL_INLINE void igl::upsample(
-  Eigen::PlainObjectBase<DerivedV>& V,
-  Eigen::PlainObjectBase<DerivedF>& F)
+  MatV& V,
+  MatF& F)
 {
-  typedef Eigen::PlainObjectBase<DerivedF> MatF;
-  typedef Eigen::PlainObjectBase<DerivedV> MatV;
   const MatV V_copy = V;
   const MatF F_copy = F;
   return upsample(V_copy,F_copy,V,F);
@@ -113,5 +111,5 @@ IGL_INLINE void igl::upsample(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
-template void igl::upsample<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::upsample<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::Matrix<double, -1, -1, 0, -1, -1>&, Eigen::Matrix<int, -1, -1, 0, -1, -1>&);
 #endif

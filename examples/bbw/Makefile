@@ -4,6 +4,9 @@ IGL=../../
 IGL_INC=-I${IGL}/include
 IGL_LIB=-L${IGL}/lib -ligl
 
+ifndef MOSEKPLATFORM
+  MOSEKPLATFORM=osx64x86
+endif
 MOSEK=/usr/local/mosek
 MOSEK_INC=-I$(MOSEK)/6/tools/platform/$(MOSEKPLATFORM)/h
 MOSEK_LIB=-L$(MOSEK)/6/tools/platform/$(MOSEKPLATFORM)/bin -lmosek64 -liglmosek

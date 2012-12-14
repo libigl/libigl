@@ -1,6 +1,5 @@
 #include "per_face_normals.h"
 #include <Eigen/Geometry>
-#include <omp.h>
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::per_face_normals(

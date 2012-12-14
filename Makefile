@@ -1,7 +1,8 @@
 .PHONY: all
 all: lib extras examples
 
-GG=g++
+#GG=g++
+GG=clang++
 #GG=/usr/bin/g++     17s
 #GG=/usr/bin/clang++ 14s
 #GG=g++-mp-4.3       15.5s
@@ -15,7 +16,7 @@ $(info Hello, $(IGL_USERNAME)!)
 all: LFLAGS +=
 OPTFLAGS+=-O3 -DNDEBUG $(OPENMP) $(SSE) 
 #debug: OPTFLAGS= -g -Wall -Werror
-debug: OPTFLAGS+= -g -Wall
+debug: OPTFLAGS= -g -Wall
 CFLAGS += $(OPTFLAGS)
 
 EXTRA_DIRS=
