@@ -11,6 +11,9 @@ namespace igl
   // Returns true if the matrix is square and symmetric
   template <typename T>
   IGL_INLINE bool is_symmetric(const Eigen::SparseMatrix<T>& A);
+  template <typename DerivedA>
+  IGL_INLINE bool is_symmetric(
+    const Eigen::PlainObjectBase<DerivedA>& A);
 }
 
 #ifdef IGL_HEADER_ONLY
