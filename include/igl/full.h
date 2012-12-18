@@ -17,6 +17,11 @@ namespace igl
   IGL_INLINE void full(
     const Eigen::SparseMatrix<T> & A,
     Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & B);
+  // If already full then this will just be a copy by assignment
+  template <typename DerivedA,typename DerivedB>
+  IGL_INLINE bool full(
+    const Eigen::PlainObjectBase<DerivedA>& A,
+    Eigen::PlainObjectBase<DerivedB>& B);
 }
 
 #ifdef IGL_HEADER_ONLY
