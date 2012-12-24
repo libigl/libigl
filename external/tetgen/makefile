@@ -19,7 +19,8 @@ CXX = g++
 # -O2, -O3 ... to find the best optimization level.
 # ===================================================================
 
-CXXFLAGS = -g
+#CXXFLAGS = -g
+CXXFLAGS = -O2
 
 # PREDCXXFLAGS is for compiling J. Shewchuk's predicates. It should
 # always be equal to -O0 (no optimization). Otherwise, TetGen may not

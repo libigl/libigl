@@ -1,5 +1,7 @@
 include ../../Makefile.conf
 
+CXX=g++
+
 IGL=../../
 IGL_INC=-I${IGL}/include
 IGL_LIB=-L${IGL}/lib -ligl
@@ -31,7 +33,7 @@ OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 CFLAGS+=-DSHADER_DIR="\"./GLSL\""
 
 bbw_demo: obj $(OBJ_FILES)
-	g++ -o bbw_demo $(CFLAGS) $(OBJ_FILES) $(LIB)
+	$(CXX) -o bbw_demo $(CFLAGS) $(OBJ_FILES) $(LIB)
 
 obj:
 	mkdir -p obj
@@ -39,9 +41,9 @@ obj:
 #obj/%.o: %.c %.h
 #	gcc $(CFLAGS) -o $@ -c $< $(INC)
 obj/%.o: %.cpp %.h
-	g++ $(CFLAGS) -o $@ -c $< $(INC)
+	$(CXX) $(CFLAGS) -o $@ -c $< $(INC)
 obj/%.o: %.cpp
-	g++ $(CFLAGS) -o $@ -c $< $(INC)
+	$(CXX) $(CFLAGS) -o $@ -c $< $(INC)
 
 .PHONY: clean
 clean:
