@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' type='text/css' href='../style.css' >
+    <title>IGL_LIB file formats | .bf</title>
+  </head>
+  <body>
+    <h1>.bf - bone forests</h1>
+    <hr>
+    <p>
+A .bf file contains a bone forest. That is possibly multiple bone trees, or
+skeletons. Singleton trees will be interpreted as point handles. Otherwise
+each edge in a tree will be interpreted as a bone segment.
+    </p>
+    <p>
+Each line contains data about a vertex (joint) of a bone tree:
+    </p>
+    <pre><code>[weight index] [parent index] [x] [y] [z] [undocument optional data]</code></pre>
+    <p>
+Indices begin with 0.  The weight index is -1 if the bone does not have an
+associated weight. The parent index is -1 for root nodes.
+    </p>
+  </body>
+</html>
+

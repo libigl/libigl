@@ -23,6 +23,10 @@ This will produce at least 2 files:
   examples/brick-volume.mesh  Tetrahedral mesh over which weights were computed
   examples/brick-volume.dmat  Coefficients of weights defined over .mesh
 
+= File Formats =
+
+See file-formats/index.html
+
 The dependencies are:
   igl_lib
     eigen3
