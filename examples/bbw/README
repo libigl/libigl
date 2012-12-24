@@ -1,0 +1,85 @@
+This is a small program that illustrates how to compute Bounded Biharmonic
+Weights (BBW) for a given surface mesh and skeleton description. This only
+supports point handles and skeleton trees (bones). Cages are not supported.
+This program only computes and outputs the weight function values. You should
+be able to load them into matlab or maya or whatever.
+
+= COMPILE =
+
+First install the dependencies (e.g. mosek).  If your on a mac, and why
+wouldn't you be, then you *should* with any luck and by the grace of God be
+able to compile with:
+
+  make
+
+= RUN =
+
+Then run an example with (e.g.):
+
+  ./bbw_demo examples/brick.obj examples/brick.tgf
+
+This will produce at least 2 files:
+
+  examples/brick-volume.mesh  Tetrahedral mesh over which weights were computed
+  examples/brick-volume.dmat  Coefficients of weights defined over .mesh
+
+The dependencies are:
+  igl_lib
+    eigen3
+    tetgen
+    mosek
+
+= Igl lib =
+IGL_lib is our groups internal library. It will someday be publically
+available, but not yet. Thus I only include here a bare minimum to get this
+demo to work. The library functions as an inlined header library. All the
+source is located in ./igl_lib/include/igl
+
+  = Eigen3 =
+  The igl dependencies rely on a depracted version of the Sparse Matrix suite
+  in eigen 3. Thus you need the correct version of eigen. To make this easier I
+  have included the necessary version of eigen here: ./eigen3
+
+  = Mosek =
+  Mosek is free for academics and has its own installation instructions. Adjust
+  your makefile accordingly.
+
+  = Tetgen =
+  Tetgen is also free and easy to install. Be sure to compile the library
+  version, i.e.: 
+    make tetlib
+
+  To make life a little easier I include a working version of tetgen in
+  ./igl_lib/external/tetgen/. You can go there and compile libtet.a or download
+  the tetgen source and do that on your own. Whatever.
+
+
+You can try to email Alec Jacobson (alecjacobson@gmail.com) with questions.
+Especially regarding the algorithm described in "Bounded biharmonic weights for
+real-time deformation" by [Jacobson et al. 2011].  However, please
+please
+please
+please
+please
+please
+please
+please
+please
+please
+please
+please
+please
+please
+please
+please
+please
+please
+try to solve compilation troubles on your own. I didn't intend for this code to
+be machine independent or even necessarily easy to compile. This is a quick and
+dirty demo because so many people requested it.
+
+Sometime in the not too distant future I still plan to release a *nice* 3d, C++
+demo. 
+
+Love,
+Alec
