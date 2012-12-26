@@ -1,0 +1,58 @@
+#ifndef IGL_REMOVE_DUPLICATE_VERTICES_H
+#define IGL_REMOVE_DUPLICATE_VERTICES_H
+#include "igl_inline.h"
+#include <Eigen/Dense>
+namespace igl
+{
+  // REMOVE_DUPLICATE_VERTICES Remove duplicate vertices upto a uniqueness
+  // tolerance (epsilon)
+  //
+  // Inputs:
+  //   V  #V by dim list of vertex positions
+  //   epsilon  uniqueness tolerance (significant digit), can probably think of
+  //     this as a tolerance on L1 distance
+  // Outputs:
+  //   SV  #SV by dim new list of vertex positions
+  //   SVI #V by 1 list of indices so SV = V(SVI,:) 
+  //   SVJ #SV by 1 list of indices so V = SV(SVJ,:)
+  //
+  // Example:
+  //   % Mesh in (V,F)
+  //   [SV,SVI,SVJ] = remove_duplicate_vertices(V,1e-7);
+  //   % remap faces
+  //   SF = SVJ(F);
+  //
+  template <
+    typename DerivedV, 
+    typename DerivedSV, 
+    typename DerivedSVI, 
+    typename DerivedSVJ>
+  IGL_INLINE void remove_duplicate_vertices(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const double epsilon,
+    Eigen::PlainObjectBase<DerivedSV>& SV,
+    Eigen::PlainObjectBase<DerivedSVI>& SVI,
+    Eigen::PlainObjectBase<DerivedSVJ>& SVJ);
+  // Wrapper that also remaps given faces (F) --> (SF) so that SF index SV
+  template <
+    typename DerivedV, 
+    typename DerivedF,
+    typename DerivedSV, 
+    typename DerivedSVI, 
+    typename DerivedSVJ,
+    typename DerivedSF>
+  IGL_INLINE void remove_duplicate_vertices(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    const double epsilon,
+    Eigen::PlainObjectBase<DerivedSV>& SV,
+    Eigen::PlainObjectBase<DerivedSVI>& SVI,
+    Eigen::PlainObjectBase<DerivedSVJ>& SVJ,
+    Eigen::PlainObjectBase<DerivedSF>& SF);
+}
+
+#ifdef IGL_HEADER_ONLY
+#  include "remove_duplicate_vertices.cpp"
+#endif
+
+#endif
