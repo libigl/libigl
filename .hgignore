@@ -5,6 +5,8 @@ syntax: glob
 *.dylib
 *~
 example
+examples/bbw/bbw_demo_selfcontained/*
+examples/bbw/bbw_demo_selfcontained.zip
 example_static
 example_header_only
 example1

@@ -8,7 +8,10 @@ namespace igl
   //
   // Insert at the beginning of mexFunction():
   //  mexStream mout;
-  //  std::cout.rdbuf(&mout); 
+  //  std::streambuf *outbuf = std::cout.rdbuf(&mout); 
+  //  ...
+  //  ALWAYS restore original buffer to avoid memory leak problems in matlab
+  //  std::cout.rdbuf(outbuf);
   //
   class mexStream : public std::streambuf
   {

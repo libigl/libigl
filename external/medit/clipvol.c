@@ -173,6 +173,10 @@ GLuint capTetraMap(pMesh mesh) {
   if ( ddebug ) printf("create capping map list / TETRA\n");
   sc  = cv.scene[currentScene()];
   if ( egal(sc->iso.val[0],sc->iso.val[MAXISO-1]) )  return(0);
+  //
+  // By Leo: get number of triangles to render tet colors correctly
+  int boundary_faces = mesh->nt;
+  printf("boundary_faces = %d \n", boundary_faces);
 
   /* build display list */
   clip = sc->clip;
@@ -222,7 +226,7 @@ GLuint capTetraMap(pMesh mesh) {
             sol[l] = ps0->bb+cc*(ps1->bb-ps0->bb);
           }
           else {
-            ps0 = &mesh->sol[k];
+            ps0 = &mesh->sol[k+boundary_faces];
             sol[l] = ps0->bb;
           }
         }
@@ -293,7 +297,7 @@ GLuint capTetraMap(pMesh mesh) {
             sol[l] = ps0->bb+cc*(ps1->bb-ps0->bb);
           }
           else {
-            ps0 = &mesh->sol[k];
+            ps0 = &mesh->sol[k+boundary_faces];
             sol[l] = ps0->bb;
           }
         }
