@@ -257,6 +257,10 @@ int parsop(pScene sc,pMesh mesh) {
       fscanf(in,"%d %d",&xs,&ys);
       sc->par.xs = (short)xs;  sc->par.ys = (short)ys;
     }
+    else if ( !strcmp(key,"windowposition") ) {
+      fscanf(in,"%d %d",&xs,&ys);
+      sc->par.pxs = (short)xs;  sc->par.pys = (short)ys;
+    }
     else if ( !strcmp(key,"rendermode") ) {
       fscanf(in,"%s",buf);
       for (i=0; i<strlen(buf); i++) buf[i] = tolower(buf[i]);
@@ -337,6 +341,25 @@ int parsop(pScene sc,pMesh mesh) {
     /* stereo mode */
     else if ( !strcmp(key,"eyesep") ) {
       fscanf(in,"%f",&sc->par.eyesep);
+    }
+    //// Alec: send key commands
+    //else if ( !strcmp(key,"keyscene") )
+    //{
+    //  char key[256];
+    //  if(fscanf(in,"%1s",key) == 1)
+    //  {
+    //    keyScene(key[0],0,0);
+    //  }
+    //}
+    else if(!strcmp(key,"mode"))
+    {
+      char mode[255];
+      fscanf(in,"%s",mode);
+      if(!strcmp(mode,"S_MAP"))
+      {
+        // Alec: Q: Why doesn't this work?
+        //sc->mode |= S_MAP;
+      }
     }
 
   }

@@ -141,7 +141,7 @@ typedef struct sparam {
   float     back[4],line[4],edge[4],sunpos[4],clip[6];
   float     cm,dpi,coeff,cumtim,cumpertime,maxtime,pertime,dt;
   float     eyesep,linewidth,pointsize;
-  short     xi,yi,xs,ys;
+  short     xi,yi,xs,ys,pxs,pys;
   int       nbmat;
   char      pscolor[10];
   ubyte     sunp,linc,advtim,nbpart;

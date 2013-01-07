@@ -1,0 +1,51 @@
+		SuperLU EXAMPLES
+
+This directory contains sample programs to illustrate how to use
+various functions provded in SuperLU. You can modify these
+examples to suit your applications.
+
+Here are the descriptions of the double precision examples:
+
+    dlinsol : use simple driver DGSSV to solve a linear system one time.
+    dlinsol1: use simple driver DGSSV in the symmetric mode.
+    dlinsolx: use DGSSVX with the full (default) options to solve a
+              linear system.
+    dlinsolx1: use DGSSVX to factorize A first, then solve the system later.
+    dlinsolx2: use DGSSVX to solve systems repeatedly with the same sparsity
+	       pattern of matrix A.
+
+    superlu  : the small 5x5 sample program in Section 2 of the Users' Guide.
+
+    ditersol: use GMRES with ILU preconditioner to solve a linear system.
+              ILU is computed from the equilibrated matrix, and the 
+              preconditioned GMRES is applied to the equilibrated system.
+              ( The ILU is computed by the routine SRC/dgsitrf.c, the driver	
+	        routine is SRC/dgsisx.c. )
+    ditersol1: use GMRES with ILU preconditioner to solve a linear system.
+              ILU is computed from the equilibrated matrix, but the 
+              preconditioned GMRES is applied to the original system.
+
+
+To compile all the examples, type:
+	% make
+
+To run the small 5x5 sample program in Section 1 of the Users' Guide, type:
+    	% superlu
+
+To run the real version examples, type:
+        % dlinsol < g20.rua      (or, % slinsol < g20.rua)
+        % dlinsolx  < g20.rua     (or, % slinsolx < g20.rua)
+        % dlinsolx1 < g20.rua    (or, % slinsolx1 < g20.rua)
+        % dlinsolx2 < g20.rua    (or, % slinsolx2 < g20.rua)
+
+To run the complex version examples, type:
+        % zlinsol < cg20.cua      (or, % clinsol < cg20.cua)
+        % zlinsolx < cg20.cua     (or, % clinsolx < cg20.cua)
+        % zlinsolx1 < cg20.cua    (or, % clinsolx1 < cg20.cua)
+        % zlinsolx2 < cg20.cua    (or, % clinsolx2 < cg20.cua)
+
+To run the ILU preconditioner example, type:
+        % ditersol -h < g20.rua
+	% ditersol1 -h < g20.rua
+        % zitersol -h < cg20.cua
+	% zitersol1 -h < cg20.cua

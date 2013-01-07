@@ -852,6 +852,7 @@ int createScene(pScene sc,int idmesh) {
 
   /* create window */
   glutInitWindowSize(sc->par.xs,sc->par.ys);
+  glutInitWindowPosition(sc->par.pxs,sc->par.pys);
   sc->idwin = glutCreateWindow("");
   assert(sc->idwin != 0);
   if ( fullscreen ) {

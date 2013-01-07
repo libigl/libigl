@@ -1,0 +1,10 @@
+		FORTRAN INTERFACE
+
+This directory contains the Fortran example interface to use the
+C routines in SuperLU.
+
+To compile the examples, type:
+	% make
+
+To run the examples, type:
+  	% f77exm < ../EXAMPLE/g10
