@@ -10,7 +10,8 @@ ANTTWEAKBAR_LIB=-L$(ANTTWEAKBAR)/lib -lAntTweakBar -framework  AppKit
 
 INC = -I${LIBMESH} $(IGL_INC) $(ANTTWEAKBAR_INC)
 LIBS  = -framework OpenGL -framework GLUT -L${LIBMESH} -lmesh $(IGL_LIB) $(ANTTWEAKBAR_LIB)
-CFLAGS = -Wall -O3 -DIGL
+#CFLAGS = -Wall -O3 -DIGL
+CFLAGS = -Wall -g -DIGL
 
 C_FILES=$(wildcard *.c)
 OBJ_FILES=$(notdir $(C_FILES:.c=.o))

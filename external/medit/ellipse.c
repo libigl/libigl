@@ -56,9 +56,9 @@ void drawEllipsoid(pScene sc,pMesh mesh,int typel,int k) {
     else if ( lambda[0] <= 0.0 || lambda[1] <= 0.0 || lambda[2] <= 0.0)
       return;
 
-    lambda[0] = max(EPS,0.5/sqrt(lambda[0]));
-    lambda[1] = max(EPS,0.5/sqrt(lambda[1]));
-    lambda[2] = max(EPS,0.5/sqrt(lambda[2]));
+    lambda[0] = MEDIT_MAX(EPS,0.5/sqrt(lambda[0]));
+    lambda[1] = MEDIT_MAX(EPS,0.5/sqrt(lambda[1]));
+    lambda[2] = MEDIT_MAX(EPS,0.5/sqrt(lambda[2]));
     memcpy(mat,IdMatrix,16*sizeof(GLfloat));
     for (j=0; j<3; j++) 
       for (l=0; l<3; l++)
@@ -99,9 +99,9 @@ void drawEllipsoid(pScene sc,pMesh mesh,int typel,int k) {
     for (j=0; j<6; j++)  m[j] /= 6.;
 
     if ( !eigenv(1,m,lambda,v) )  return;
-    lambda[0] = max(EPS,0.5/sqrt(lambda[0]));
-    lambda[1] = max(EPS,0.5/sqrt(lambda[1]));
-    lambda[2] = max(EPS,0.5/sqrt(lambda[2]));
+    lambda[0] = MEDIT_MAX(EPS,0.5/sqrt(lambda[0]));
+    lambda[1] = MEDIT_MAX(EPS,0.5/sqrt(lambda[1]));
+    lambda[2] = MEDIT_MAX(EPS,0.5/sqrt(lambda[2]));
 
     memcpy(mat,IdMatrix,16*sizeof(GLfloat));
     for (j=0; j<3; j++) 
@@ -143,9 +143,9 @@ void drawEllipsoid(pScene sc,pMesh mesh,int typel,int k) {
     for (j=0; j<6; j++)  m[j] /= 6.;
 
     if ( !eigenv(1,m,lambda,v) )  return;
-    lambda[0] = max(EPS,0.5/sqrt(lambda[0]));
-    lambda[1] = max(EPS,0.5/sqrt(lambda[1]));
-    lambda[2] = max(EPS,0.5/sqrt(lambda[2]));
+    lambda[0] = MEDIT_MAX(EPS,0.5/sqrt(lambda[0]));
+    lambda[1] = MEDIT_MAX(EPS,0.5/sqrt(lambda[1]));
+    lambda[2] = MEDIT_MAX(EPS,0.5/sqrt(lambda[2]));
 
     memcpy(mat,IdMatrix,16*sizeof(GLfloat));
     for (j=0; j<3; j++) 

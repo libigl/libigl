@@ -592,8 +592,8 @@ void keyView(unsigned char key,int x,int y) {
   case 'R':
     sc->type |= S_RESET;
     dmax = mesh->xmax - mesh->xmin;
-    dmax = max(dmax,mesh->ymax - mesh->ymin);
-    dmax = max(dmax,mesh->zmax - mesh->zmin);
+    dmax = MEDIT_MAX(dmax,mesh->ymax - mesh->ymin);
+    dmax = MEDIT_MAX(dmax,mesh->zmax - mesh->zmin);
     sc->cx = sc->cy = sc->cz = 0.0f;
     sc->dmax = fabs(dmax);
     if ( sc->persp->pmode == PERSPECTIVE ) {
@@ -970,7 +970,7 @@ void keyMetric(unsigned char key,int x,int y) {
     if ( mesh->dim != 2 )  return;
     sc->mode ^= S_ALTITUDE;
     if ( altcoef == 0.0 ) {
-      maxd = max(mesh->xmax-mesh->xmin,mesh->ymax-mesh->ymin);
+      maxd = MEDIT_MAX(mesh->xmax-mesh->xmin,mesh->ymax-mesh->ymin);
       altcoef = 0.3*maxd / mesh->bbmax;
     }
     if ( !(sc->mode & S_ALTITUDE) ) 

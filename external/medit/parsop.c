@@ -229,12 +229,12 @@ int parsop(pScene sc,pMesh mesh) {
     }
     else if ( !strcmp(key,"linewidth") ) {
       fscanf(in,"%f",&r);
-      sc->par.linewidth = max(1.0,min(10.0,r));
+      sc->par.linewidth = MEDIT_MAX(1.0,MEDIT_MIN(10.0,r));
       sc->par.linc = 1;
     }
     else if ( !strcmp(key,"pointsize") ) {
       fscanf(in,"%f",&r);
-      sc->par.pointsize = max(1.0,min(10.0,r));
+      sc->par.pointsize = MEDIT_MAX(1.0,MEDIT_MIN(10.0,r));
       sc->par.linc = 1;
     }
     else if ( !strcmp(key,"edgecolor") ) {
@@ -245,8 +245,8 @@ int parsop(pScene sc,pMesh mesh) {
     else if ( !strcmp(key,"sunposition") ) {
       fscanf(in,"%f %f %f",&r,&g,&b);
       sc->dmax = mesh->xmax - mesh->xmin;
-      sc->dmax = max(sc->dmax,mesh->ymax - mesh->ymin);
-      sc->dmax = max(sc->dmax,mesh->zmax - mesh->zmin);
+      sc->dmax = MEDIT_MAX(sc->dmax,mesh->ymax - mesh->ymin);
+      sc->dmax = MEDIT_MAX(sc->dmax,mesh->zmax - mesh->zmin);
       sc->dmax = fabs(sc->dmax);
       sc->par.sunpos[0] = 2.0*sc->dmax*r;  
       sc->par.sunpos[1] = 2.0*sc->dmax*g;
@@ -302,12 +302,12 @@ int parsop(pScene sc,pMesh mesh) {
       ret = fscanf(in,"%f %f %f",&sc->par.maxtime,&sc->par.pertime,&sc->par.dt);
       if ( !EatSpace(in) ) {
         fscanf(in,"%c",&ub);
-        sc->par.nbpart = max(atoi(&ub),1);
+        sc->par.nbpart = MEDIT_MAX(atoi(&ub),1);
       }
     }
     else if ( !strcmp(key,"nbmaterial") ) {
       fscanf(in,"%d",&nbmat);
-      sc->par.nbmat = max(2,nbmat);
+      sc->par.nbmat = MEDIT_MAX(2,nbmat);
       matInit(sc);
     }
     else if ( !strcmp(key,"material") ) {
@@ -333,8 +333,8 @@ int parsop(pScene sc,pMesh mesh) {
       if ( pm->dif[3] == 0.0 )  pm->dif[3] = 1.0;
       if ( pm->spe[3] == 0.0 )  pm->spe[3] = 1.0;
       if ( pm->emi[3] == 0.0 )  pm->emi[3] = 1.0;
-      pm->shininess = min(fabs(pm->shininess),128.0f);
-      pm->shininess = max(pm->shininess,3.0f);
+      pm->shininess = MEDIT_MIN(fabs(pm->shininess),128.0f);
+      pm->shininess = MEDIT_MAX(pm->shininess,3.0f);
       ++m;
     }
     

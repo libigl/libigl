@@ -60,12 +60,16 @@
 #define M_PI            3.14159265358979323846   /* pi   */
 #define M_PI_2          1.57079632679489661923   /* pi/2 */
 
-#ifdef min
-#undef min
-#undef max
-#endif
-#define  min(a,b)       ( ((a) < (b)) ? (a) : (b) )
-#define  max(a,b)       ( ((b) > (a)) ? (b) : (a) )
+
+// Alec: THIS IS SUCH A HORRIBLE IDEA
+//#ifdef min
+//#undef min
+//#undef max
+//#endif
+//#define  min(a,b)       ( ((a) < (b)) ? (a) : (b) )
+//#define  max(a,b)       ( ((b) > (a)) ? (b) : (a) )
+#define  MEDIT_MIN(a,b)       ( ((a) < (b)) ? (a) : (b) )
+#define  MEDIT_MAX(a,b)       ( ((b) > (a)) ? (b) : (a) )
 
 /* check if numbers are equal */ 
 #define egal(x,y)   ( \

@@ -134,9 +134,9 @@ void computeTetraParticle(pScene sc,pMesh mesh,int k) {
 
     /* vector field interpolation */
     pp->norm = field3DInterp(mesh,pp->nsdep,pp->cb,v);
-    pp->step = HSIZ*min(pp->size,pp->norm);
+    pp->step = HSIZ*MEDIT_MIN(pp->size,pp->norm);
     if ( sc->par.maxtime < FLT_MAX )
-      pp->step = min(0.05*sc->par.dt,pp->step);
+      pp->step = MEDIT_MIN(0.05*sc->par.dt,pp->step);
     if ( pp->step == 0.0 ) {
       pp->flag = 0;
       return;
@@ -279,8 +279,8 @@ int createParticle(pScene sc,pMesh mesh) {
     if ( pp->size == 0.0 )
       pp->step = EPS*sc->dmax;
     else
-      pp->step = HSIZ * min(pp->size,pp->norm);
-    pp->step = min(0.05*sc->par.dt,pp->step);
+      pp->step = HSIZ * MEDIT_MIN(pp->size,pp->norm);
+    pp->step = MEDIT_MIN(0.05*sc->par.dt,pp->step);
     pp->flag =  1;
     pp->cur  =  1;
     colorParticle(sc,pp);
@@ -368,8 +368,8 @@ int advectParticle(pScene sc,pMesh mesh) {
     if ( pp->size == 0.0 )
       pp->step = EPS*sc->dmax;
     else
-      pp->step = HSIZ * min(pp->size,pp->norm);
-    pp->step = min(0.05*sc->par.dt,pp->step);
+      pp->step = HSIZ * MEDIT_MIN(pp->size,pp->norm);
+    pp->step = MEDIT_MIN(0.05*sc->par.dt,pp->step);
     pp->flag =  1;
     pp->cur  =  1;
     colorParticle(sc,pp);

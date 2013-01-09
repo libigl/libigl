@@ -8,6 +8,7 @@
 #  include <igl/quat_to_mat.h>
 #  include <igl/mat_to_quat.h>
 #  include <igl/snap_to_canonical_view_quat.h>
+#  include <igl/C_STR.h>
 #endif
 
 extern GLboolean  hasStereo;
@@ -120,7 +121,7 @@ void reshapeScene(int width,int height) {
   sc->rebar.TwGetParam(NULL, "size", TW_PARAM_INT32, 2, size);
   int pos[2];
   // Place bar on right side of opengl rect (padded by 10 pixels)
-  pos[0] = max(10,(int)width - size[0] - 10);
+  pos[0] = MEDIT_MAX(10,(int)width - size[0] - 10);
   // place bar at top (padded by 10 pixels)
   pos[1] = 10;
   // Set height to new height of window (padded by 10 pixels on bottom)
@@ -958,6 +959,7 @@ void TW_CALL snap_rotation_to_canonical_clip_quat(void *clientData)
       sc->clip->cliptr->rot[i*4+j] = mat[i*4+j];
   update_clip(sc);
 }
+
 void TW_CALL set_clip_rotation(const void *value, void *clientData)
 {
   pScene sc = static_cast<const pScene>(clientData);
@@ -976,10 +978,55 @@ void TW_CALL get_clip_rotation(void *value, void *clientData)
   float * q = (float *)(value);
   igl::mat4_to_quat(sc->clip->cliptr->rot,q);
 }
+void TW_CALL set_clip_tra12(const void *value, void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  const float * tra12 = (const float*)(value);
+  sc->clip->cliptr->tra[12] = tra12[0];
+  sc->clip->cliptr->tra[12] = tra12[1];
+  sc->clip->cliptr->tra[13] = tra12[2];
+  update_clip(sc);
+}
+void TW_CALL get_clip_tra12(void *value, void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  float * tra12 = (float *)(value);
+  tra12[0] = sc->clip->cliptr->tra[12];
+  tra12[1] = sc->clip->cliptr->tra[12];
+  tra12[2] = sc->clip->cliptr->tra[13];
+}
+
 void TW_CALL invert_clip(void *clientData)
 {
   pScene sc = static_cast<const pScene>(clientData);
   invertClip(sc,sc->clip);
+  sc->clip->active |= C_REDO;
+}
+
+void TW_CALL set_hot_dog_view(const void *value, void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  sc->igl_params->hot_dog_view = *(const bool*)(value);
+  printf("set_hot_dog_view\n");
+  sc->clip->active |= C_REDO;
+}
+void TW_CALL get_hot_dog_view(void *value, void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  *(bool *)(value) = sc->igl_params->hot_dog_view;
+  sc->clip->active |= C_REDO;
+}
+
+void TW_CALL set_num_hot_dog_slices(const void *value, void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  sc->igl_params->num_hot_dog_slices = *(const int*)(value);
+  sc->clip->active |= C_REDO;
+}
+void TW_CALL get_num_hot_dog_slices(void *value, void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  *(int *)(value) = sc->igl_params->num_hot_dog_slices;
   sc->clip->active |= C_REDO;
 }
 
@@ -1020,19 +1067,25 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     "group='View' "
     "help='Display lines on cap when showing lines' ");
 
-  sc->rebar.TwAddVarRW(
+  sc->rebar.TwAddVarCB(
     "hot_dog_view",
     TW_TYPE_BOOLCPP,
-    &(sc->igl_params->hot_dog_view),
+    set_hot_dog_view,
+    get_hot_dog_view,
+    sc,
     "group='View' "
+    "key=H "
     "help='Display many evenly spaced cuts' ");
 
-  sc->rebar.TwAddVarRW(
+  sc->rebar.TwAddVarCB(
     "num_hot_dog_slices",
     TW_TYPE_INT32,
-    &(sc->igl_params->num_hot_dog_slices),
-    "group='View' "
-    "help='number of hot_dog_slices' ");
+    set_num_hot_dog_slices,
+    get_num_hot_dog_slices,
+    sc,
+    C_STR("group='View' "
+    "min=1 max="<<MAX_HOT_DOG_SLICES<<" step=1"
+    "help='number of hot_dog_slices' "));
 
   sc->rebar.TwAddButton(
     "view_xy",
@@ -1112,6 +1165,14 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     "group='Clip' "
     "key='ALT+Z' "
     "help='Snap clip rotation to nearest canonical view' ");
+  sc->rebar.TwAddVarCB(
+    "clip_tra12",
+    TW_TYPE_DIR3F,
+    set_clip_tra12,
+    get_clip_tra12,
+    sc,
+    "help='Translation component of clip (dont touch)' "
+    "group='Clip' readonly=true");
 
 
   sc->rebar.TwAddVarRW(
@@ -1275,11 +1336,11 @@ int createScene(pScene sc,int idmesh) {
 
   /* compute scene depth */
   sc->dmax = sc->dmin= mesh->xmax - mesh->xmin;
-  sc->dmax = max(sc->dmax,mesh->ymax - mesh->ymin);
-  sc->dmin = min(sc->dmin,mesh->ymax - mesh->ymin);
+  sc->dmax = MEDIT_MAX(sc->dmax,mesh->ymax - mesh->ymin);
+  sc->dmin = MEDIT_MIN(sc->dmin,mesh->ymax - mesh->ymin);
   if ( mesh->dim == 3 ) {
-    sc->dmax = max(sc->dmax,mesh->zmax - mesh->zmin);
-    sc->dmin = min(sc->dmin,mesh->zmax - mesh->zmin);
+    sc->dmax = MEDIT_MAX(sc->dmax,mesh->zmax - mesh->zmin);
+    sc->dmin = MEDIT_MIN(sc->dmin,mesh->zmax - mesh->zmin);
   }
   sc->dmax = fabs(sc->dmax);
   sc->dmin = fabs(sc->dmin);

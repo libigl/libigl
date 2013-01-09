@@ -15,6 +15,9 @@ typedef unsigned char  ubyte;
 typedef unsigned short uShort;
 #endif
 
+#if IGL
+#  define MAX_HOT_DOG_SLICES 20
+#endif
 
 typedef struct spoint {
   double    c[3];
@@ -22,6 +25,11 @@ typedef struct spoint {
   short     ref;
   uShort    mark;
   char      tag,clip,flag;
+#ifdef IGL
+  // Distance to plane
+  char   hd_clip[MAX_HOT_DOG_SLICES];
+  double hd_dd1 [MAX_HOT_DOG_SLICES];
+#endif
 } Point;
 typedef Point     * pPoint;
 

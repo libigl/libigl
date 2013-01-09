@@ -551,7 +551,7 @@ void keyScene(unsigned char key,int x,int y) {
     if ( p->rubber == 2 )
       setPersp(sc,p,1);
         else 
-          p->fovy = max(0.9*p->fovy,1e-05);
+          p->fovy = MEDIT_MAX(0.9*p->fovy,1e-05);
         farclip(1);
       }
       post = TRUE;
@@ -709,7 +709,7 @@ void keyScene(unsigned char key,int x,int y) {
         if ( p->rubber == 2 )
           setPersp(sc,p,0);
         else 
-          p->fovy = min(1.1*p->fovy,179.0);
+          p->fovy = MEDIT_MIN(1.1*p->fovy,179.0);
         farclip(1);
       }
       post = TRUE;
@@ -757,7 +757,7 @@ void keyScene(unsigned char key,int x,int y) {
       if ( p->rubber == 2 )
         setPersp(sc,p,0);
       else 
-        p->fovy = min(1.1*p->fovy,179.0);
+        p->fovy = MEDIT_MIN(1.1*p->fovy,179.0);
       farclip(1);
       post = TRUE;
       */
@@ -800,7 +800,7 @@ void keyScene(unsigned char key,int x,int y) {
       if ( p->rubber == 2 )
     setPersp(sc,p,1);
       else 
-      p->fovy = max(0.9*p->fovy,1e-05);
+      p->fovy = MEDIT_MAX(0.9*p->fovy,1e-05);
       farclip(1);
       post = TRUE;
 */      

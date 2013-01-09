@@ -96,8 +96,8 @@ void updateClip(pClip clip,pMesh mesh) {
 
     /* truncation */
     dmax = mesh->xmax - mesh->xmin;
-    dmax = max(dmax,mesh->ymax - mesh->ymin);
-    dmax = max(dmax,mesh->zmax - mesh->zmin) / 1.8;
+    dmax = MEDIT_MAX(dmax,mesh->ymax - mesh->ymin);
+    dmax = MEDIT_MAX(dmax,mesh->zmax - mesh->zmin) / 1.8;
     if ( fabs(cliptr->tra[12]) > dmax || fabs(cliptr->tra[13]) > dmax ||
          fabs(cliptr->tra[14]) > dmax ) {
       if ( cliptr->manim == GL_TRUE ) {
@@ -105,9 +105,9 @@ void updateClip(pClip clip,pMesh mesh) {
         cliptr->pany = -cliptr->pany;
       }
       else {
-        cliptr->tra[12] = max(-dmax,min(dmax,cliptr->tra[12]));
-        cliptr->tra[13] = max(-dmax,min(dmax,cliptr->tra[13]));
-        cliptr->tra[14] = max(-dmax,min(dmax,cliptr->tra[14]));
+        cliptr->tra[12] = MEDIT_MAX(-dmax,MEDIT_MIN(dmax,cliptr->tra[12]));
+        cliptr->tra[13] = MEDIT_MAX(-dmax,MEDIT_MIN(dmax,cliptr->tra[13]));
+        cliptr->tra[14] = MEDIT_MAX(-dmax,MEDIT_MIN(dmax,cliptr->tra[14]));
       }
     }
 
@@ -164,6 +164,46 @@ void clipVertices(pMesh mesh,pScene sc,pClip clip) {
   double     dd1,zero;
   int        k,l,nbpos,nbneg,nbnul;
 
+#ifdef IGL
+  if(sc->igl_params->hot_dog_view)
+  {
+    /* check points in plane */
+    zero = sc->dmax*1.e-13;
+    double width = sc->igl_params->width(mesh);
+    for (k=1; k<=mesh->np; k++) {
+      for(int h = 0;h<sc->igl_params->num_hot_dog_slices;h++)
+      {
+        p0 = &mesh->point[k];
+        p0->clip = 0;
+        if ( p0->tag & M_UNUSED )  continue;
+        p0->hd_dd1[h] = p0->c[0]*clip->eqn[0] + p0->c[1]*clip->eqn[1] \
+            + p0->c[2]*clip->eqn[2] + clip->eqn[3] + width*h;
+        if ( p0->hd_dd1[h] > zero )      p0->hd_clip[h] = 2;
+        else if ( p0->hd_dd1[h] < zero ) p0->hd_clip[h] = 1;
+        else                   p0->hd_clip[h] = 0;
+      }
+    }
+
+    /* update tetrahedra */
+    for (k=1; k<=mesh->ntet; k++) {
+      pt = &mesh->tetra[k];
+      pt->clip = 0;
+
+      for(int h = 0;h<sc->igl_params->num_hot_dog_slices;h++)
+      {
+        nbpos = nbneg = nbnul = 0;
+        for (l=0; l<4; l++) {
+          p0  = &mesh->point[pt->v[l]];
+          if ( p0->hd_clip[h]== 2 )       nbpos++;
+          else if ( p0->hd_clip[h] == 1 )  nbneg++;
+          else                       nbnul++;
+        }
+        if ( nbpos && nbpos+nbnul < 4 )  pt->clip = 1;
+      }
+    }
+  }else{
+#endif
+
   /* check points in plane */
   zero = sc->dmax*1.e-13;
   for (k=1; k<=mesh->np; k++) {
@@ -189,6 +229,9 @@ void clipVertices(pMesh mesh,pScene sc,pClip clip) {
     }
     if ( nbpos && nbpos+nbnul < 4 )  pt->clip = 1;
   }
+#ifdef IGL
+  }
+#endif
 
   /* update hexahedra */
   for (k=1; k<=mesh->nhex; k++) {

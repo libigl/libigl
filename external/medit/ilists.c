@@ -244,9 +244,9 @@ GLuint listTetraIso(pScene sc,pMesh mesh) {
     /*hsv[0] = 240.0f*(1.0f - (iso-sc->iso.val[0])/delta);*/
     hsv[0] = sc->iso.col[i];
     hsvrgb(hsv,rgb);
-    rgb[0] = min(1.0,rgb[0]+BASETR);
-    rgb[1] = min(1.0,rgb[1]+BASETR);
-    rgb[2] = min(1.0,rgb[2]+BASETR);
+    rgb[0] = MEDIT_MIN(1.0,rgb[0]+BASETR);
+    rgb[1] = MEDIT_MIN(1.0,rgb[1]+BASETR);
+    rgb[2] = MEDIT_MIN(1.0,rgb[2]+BASETR);
     rgb[3] = BASETR + (float)(i-1)/(float)MAXISO*(1.0-BASETR);
     /*rgb[3] = 0.5; */  
     glColor4dv(rgb);

@@ -60,7 +60,7 @@ void drawAxis(pScene sc,int dim) {
                1.01*(mesh->ymin-mesh->ytra),
                1.01*(mesh->zmin-mesh->ztra));
   glScalef(0.6*sc->dmin,0.6*sc->dmin,0.6*sc->dmin);
-  glLineWidth(max(2,sc->par.linewidth));
+  glLineWidth(MEDIT_MAX(2,sc->par.linewidth));
   glColor3f(1.0,0.,0.);
   if ( mesh->dim == 2 ) {
     glBegin(GL_LINE_STRIP);

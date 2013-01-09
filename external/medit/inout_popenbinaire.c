@@ -776,7 +776,7 @@ int loadScaVecTen_bin(pMesh mesh, int numsol, int dim, int ver, int nel, int typ
 	for (i=0; i<3; i++)
 	  mesh->sol[k].m[i] = m[i] = fbuf[off+i];
 	iord = eigen2(m,lambda,vp);
-	mesh->sol[k].bb = min(lambda[0],lambda[1]);
+	mesh->sol[k].bb = MEDIT_MIN(lambda[0],lambda[1]);
 	if ( mesh->sol[k].bb < mesh->bbmin )  mesh->bbmin = mesh->sol[k].bb;
 	if ( mesh->sol[k].bb > mesh->bbmax )  mesh->bbmax = mesh->sol[k].bb;
       }
@@ -789,8 +789,8 @@ int loadScaVecTen_bin(pMesh mesh, int numsol, int dim, int ver, int nel, int typ
 	iord = eigenv(1,m,lambda,eigv);
 	if ( iord ) {
 	  mesh->sol[k].bb = lambda[0];
-	  mesh->sol[k].bb = max(mesh->sol[k].bb,lambda[1]);
-	  mesh->sol[k].bb = max(mesh->sol[k].bb,lambda[2]);
+	  mesh->sol[k].bb = MEDIT_MAX(mesh->sol[k].bb,lambda[1]);
+	  mesh->sol[k].bb = MEDIT_MAX(mesh->sol[k].bb,lambda[2]);
 	  if ( mesh->sol[k].bb < mesh->bbmin )  mesh->bbmin = mesh->sol[k].bb;
 	  if ( mesh->sol[k].bb > mesh->bbmax )  mesh->bbmax = mesh->sol[k].bb;
 	}

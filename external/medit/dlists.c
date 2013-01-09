@@ -458,7 +458,7 @@ GLuint listTetra(pScene sc,pMesh mesh,ubyte clip) {
   dlist = glGenLists(1);
   glNewList(dlist,GL_COMPILE);
   if ( glGetError() )  return(0);
-  shrink = min(sc->shrink,0.995);
+  shrink = MEDIT_MIN(sc->shrink,0.995f);
 
   /* scan tetra */
   for (m=0; m<sc->par.nbmat; m++) {
@@ -564,7 +564,7 @@ GLuint listHexa(pScene sc,pMesh mesh,ubyte clip) {
   dlist = glGenLists(1);
   glNewList(dlist,GL_COMPILE);
   if ( glGetError() )  return(0);
-  shrink = min(sc->shrink,0.995);
+  shrink = MEDIT_MIN(sc->shrink,0.995f);
 
   /* scan hexa */
   for (m=0; m<sc->par.nbmat; m++) {

@@ -37,9 +37,9 @@ int hashTetra(pMesh mesh) {
   }
 
   /* memory alloc */
-  hcode = (int*)M_calloc(max(100,mesh->ntet+1),sizeof(int),"hash.tetra");
-  link  = (int*)M_calloc(4*max(100,mesh->ntet+1),sizeof(int),"hash.tetra");
-  hsize = max(100,mesh->ntet);
+  hcode = (int*)M_calloc(  MEDIT_MAX(100,mesh->ntet+1),sizeof(int),"hash.tetra");
+  link  = (int*)M_calloc(4*MEDIT_MAX(100,mesh->ntet+1),sizeof(int),"hash.tetra");
+  hsize = MEDIT_MAX(100,mesh->ntet);
   assert(hcode);
   assert(link);
 
@@ -58,10 +58,10 @@ int hashTetra(pMesh mesh) {
       i1 = idirt[i+1];
       i2 = idirt[i+2];
       i3 = idirt[i+3];
-      mins = min(pt->v[i1],pt->v[i2]);
-      mins = min(mins,pt->v[i3]);
-      maxs = max(pt->v[i1],pt->v[i2]);
-      maxs = max(maxs,pt->v[i3]);
+      mins = MEDIT_MIN(pt->v[i1],pt->v[i2]);
+      mins = MEDIT_MIN(mins,pt->v[i3]);
+      maxs = MEDIT_MAX(pt->v[i1],pt->v[i2]);
+      maxs = MEDIT_MAX(maxs,pt->v[i3]);
 
       /* compute key */
       sum = pt->v[i1] + pt->v[i2] + pt->v[i3];
@@ -90,10 +90,10 @@ int hashTetra(pMesh mesh) {
     pt = &mesh->tetra[k];
 
     sum  = pt->v[i1] + pt->v[i2] + pt->v[i3];
-    mins = min(pt->v[i1],pt->v[i2]);
-    mins = min(mins,pt->v[i3]);
-    maxs = max(pt->v[i1],pt->v[i2]);
-    maxs = max(maxs,pt->v[i3]);
+    mins = MEDIT_MIN(pt->v[i1],pt->v[i2]);
+    mins = MEDIT_MIN(mins,pt->v[i3]);
+    maxs = MEDIT_MAX(pt->v[i1],pt->v[i2]);
+    maxs = MEDIT_MAX(maxs,pt->v[i3]);
 
     /* accross link */
     ll = -link[l];
@@ -109,11 +109,11 @@ int hashTetra(pMesh mesh) {
       pt1  = &mesh->tetra[kk];
       sum1 = pt1->v[i1] + pt1->v[i2] + pt1->v[i3];
       if ( sum1 == sum ) {
-        mins1 = min(pt1->v[i1],pt1->v[i2]);
-        mins1 = min(mins1,pt1->v[i3]);
+        mins1 = MEDIT_MIN(pt1->v[i1],pt1->v[i2]);
+        mins1 = MEDIT_MIN(mins1,pt1->v[i3]);
         if ( mins1 == mins ) {
-          maxs1 = max(pt1->v[i1],pt1->v[i2]);
-          maxs1 = max(maxs1,pt1->v[i3]);
+          maxs1 = MEDIT_MAX(pt1->v[i1],pt1->v[i2]);
+          maxs1 = MEDIT_MAX(maxs1,pt1->v[i3]);
           if ( maxs1 == maxs ) {
             /* adjacent found */
             if ( pp != 0 )  link[pp] = link[ll];
@@ -163,18 +163,18 @@ int hashHexa(pMesh mesh) {
 /* bug fixe: 17/04/2007
   hcode = (int*)M_calloc(max(11,mesh->nhex+1),sizeof(int),"hash.hexa");
   link  = (int*)M_calloc(6*max(11,mesh->nhex+1),sizeof(int),"hash.hexa");
-  hsize = max(10,mesh->nhex);
+  hsize = MEDIT_MAX(10,mesh->nhex);
   if ( !hcode || !link ) {
     myerror.coderr = 1000;
     return(0);
   }
   hvoy = (char*)hcode;
 */
-  hcode = (int*)M_calloc(max(10,6*mesh->nhex/4+1),sizeof(int),"hash.hexa");
+  hcode = (int*)M_calloc(MEDIT_MAX(10,6*mesh->nhex/4+1),sizeof(int),"hash.hexa");
   assert(hcode);
-  link  = (int*)M_calloc(max(10,6*mesh->nhex+1),sizeof(int),"hash.hexa");
+  link  = (int*)M_calloc(MEDIT_MAX(10,6*mesh->nhex+1),sizeof(int),"hash.hexa");
   assert(link);
-  hsize = max(2,mesh->nhex);
+  hsize = MEDIT_MAX(2,mesh->nhex);
   hvoy  = (char*)hcode;
 
   /* init */
@@ -290,9 +290,9 @@ int hashTria(pMesh mesh) {
   }
 
   /* memory alloc */
-  hcode = (int*)M_calloc(max(1,3*mesh->nt/4)+1,sizeof(int),"hash.tria");
+  hcode = (int*)M_calloc(MEDIT_MAX(1,3*mesh->nt/4)+1,sizeof(int),"hash.tria");
   link  = (int*)M_calloc(3*mesh->nt+1,sizeof(int),"hash.tria");
-  hsize = max(2,3*mesh->nt/4-1);
+  hsize = MEDIT_MAX(2,3*mesh->nt/4-1);
   assert(hcode);
   assert(link);
   hvoy = (char*)hcode;
@@ -309,8 +309,8 @@ int hashTria(pMesh mesh) {
     for (i=0; i<3; i++) {
       i1 = idir[i+1];
       i2 = idir[i+2];
-      mins = min(pt->v[i1],pt->v[i2]);
-      maxs = max(pt->v[i1],pt->v[i2]);
+      mins = MEDIT_MIN(pt->v[i1],pt->v[i2]);
+      maxs = MEDIT_MAX(pt->v[i1],pt->v[i2]);
 
       /* compute key */
       key = KA*mins + KB*maxs;
@@ -336,8 +336,8 @@ int hashTria(pMesh mesh) {
     i2 = idir[i+2];
     pt = &mesh->tria[k];
 
-    mins = min(pt->v[i1],pt->v[i2]);
-    maxs = max(pt->v[i1],pt->v[i2]);
+    mins = MEDIT_MIN(pt->v[i1],pt->v[i2]);
+    maxs = MEDIT_MAX(pt->v[i1],pt->v[i2]);
 
     /* accross link */
     ll = -link[l];
@@ -350,8 +350,8 @@ int hashTria(pMesh mesh) {
       i1 = idir[ii+1];
       i2 = idir[ii+2];
       pt1   = &mesh->tria[kk];
-      mins1 = min(pt1->v[i1],pt1->v[i2]);
-      maxs1 = max(pt1->v[i1],pt1->v[i2]);
+      mins1 = MEDIT_MIN(pt1->v[i1],pt1->v[i2]);
+      maxs1 = MEDIT_MAX(pt1->v[i1],pt1->v[i2]);
       
       /* adjacent found */
       if ( mins1 == mins && maxs1 == maxs ) {

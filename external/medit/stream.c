@@ -514,7 +514,7 @@ double sizeTetra(pMesh mesh,int k) {
     ay = p[idire[i][0]]->c[1] - p[idire[i][1]]->c[1];
     az = p[idire[i][0]]->c[2] - p[idire[i][1]]->c[2];
     dd = ax*ax + ay*ay + az*az;
-    hmin = min(dd,hmin);
+    hmin = MEDIT_MIN(dd,hmin);
   }
   return(sqrt(hmin));
 }
@@ -537,7 +537,7 @@ double sizeHexa(pMesh mesh,int k) {
     ay = p[idire[i][0]]->c[1] - p[idire[i][1]]->c[1];
     az = p[idire[i][0]]->c[2] - p[idire[i][1]]->c[2];
     dd = ax*ax + ay*ay + az*az;
-    hmin = min(dd,hmin);
+    hmin = MEDIT_MIN(dd,hmin);
   }
   return(sqrt(hmin));
 }
@@ -558,7 +558,7 @@ double sizeTria(pMesh mesh,int k) {
     ax = p0->c[0] - p1->c[0];
     ay = p0->c[1] - p1->c[1];
     dd = ax*ax + ay*ay;
-    hmin = min(dd,hmin);
+    hmin = MEDIT_MIN(dd,hmin);
   }
   return(sqrt(hmin));
 }
@@ -579,7 +579,7 @@ double sizeQuad(pMesh mesh,int k) {
     ax = p0->c[0] - p1->c[0];
     ay = p0->c[1] - p1->c[1];
     dd = ax*ax + ay*ay;
-    hmin = min(dd,hmin);
+    hmin = MEDIT_MIN(dd,hmin);
   }
   return(sqrt(hmin));
 }
@@ -1002,7 +1002,7 @@ int listTetraStream(pScene sc,pMesh mesh,float *pp,int squiet) {
   st->nbstl++;
 printf("\n%d: pp = %f %f %f\n",st->nbstl,st->listp[k+0],st->listp[k+1],st->listp[k+2]);
 
-  maxpts = max(MAX_PTS,5*mesh->ntet);
+  maxpts = MEDIT_MAX(MAX_PTS,5*mesh->ntet);
   glLineWidth(2.0);
 
   /* compute streamline */
@@ -1047,7 +1047,7 @@ printf("depart = %d\n",depart);
   if ( st->size == 0.0 )
     step = EPS*sc->dmax;
   else
-    step = HSIZ * min(st->size,st->norm);
+    step = HSIZ * MEDIT_MIN(st->size,st->norm);
 
   /* build display list incrementally */
   nsdep = nsold = depart;
@@ -1057,7 +1057,7 @@ printf("depart = %d\n",depart);
 
   if ( sc->par.maxtime < FLT_MAX ) {
     sc->par.cumtim = 0.0;
-    step = min(0.05*sc->par.dt,step);
+    step = MEDIT_MIN(0.05*sc->par.dt,step);
     out  = fopen("particules.dat","a+");
     assert(out);
     fprintf(out,"\n%8.2f  %f %f %f\n",
@@ -1109,9 +1109,9 @@ printf("depart = %d\n",depart);
 
     /* vector field interpolation */
     st->norm = field3DInterp(mesh,nsdep,cb,v);
-    step     = HSIZ*min(st->size,st->norm);
+    step     = HSIZ*MEDIT_MIN(st->size,st->norm);
     if ( sc->par.maxtime < FLT_MAX )
-      step = min(0.05*sc->par.dt,step);
+      step = MEDIT_MIN(0.05*sc->par.dt,step);
     if ( step == 0.0 )  break;
 
     nbp += filterPoint(sc,st,p,0);
@@ -1146,7 +1146,7 @@ printf("depart = %d\n",depart);
   if ( st->size == 0.0 )
     step = EPS * sc->dmax;
   else
-    step = HSIZ * min(st->size,st->norm);
+    step = HSIZ * MEDIT_MIN(st->size,st->norm);
 
   /* build display list incrementally */
   nsdep = nsold = depart;
@@ -1180,7 +1180,7 @@ printf("depart = %d\n",depart);
 
     /* vector field interpolation */
     st->norm = field3DInterp(mesh,nsdep,cb,v);
-    step = HSIZ * min(st->size,st->norm);
+    step = HSIZ * MEDIT_MIN(st->size,st->norm);
     if ( step == 0.0 )  break;
 
     nbp += filterPoint(sc,st,p,0);
@@ -1241,7 +1241,7 @@ int listHexaStream(pScene sc,pMesh mesh,float *pp,int squiet) {
   st->listp[k+1] = pp[1];
   st->listp[k+2] = pp[2];
 
-  maxpts = max(MAX_PTS,5*mesh->nhex);
+  maxpts = MEDIT_MAX(MAX_PTS,5*mesh->nhex);
   glLineWidth(2.0);
 
   /* compute streamline */
@@ -1321,7 +1321,7 @@ ph->v[0],ph->v[1],ph->v[2],ph->v[3],ph->v[4],ph->v[5],ph->v[6],ph->v[7]);
     /* vector field interpolation */
     st->norm = vector3DInterp(mesh,pt,cb,v);
     if ( st->norm < EPS*step )  break;
-    step = min(step,st->norm);
+    step = MEDIT_MIN(step,st->norm);
     if ( step == 0.0f )  break; /*step = 1.0e-06*sc->dmax;*/
 
     nbp += filterPoint(sc,st,p,0);
@@ -1386,7 +1386,7 @@ ph->v[0],ph->v[1],ph->v[2],ph->v[3],ph->v[4],ph->v[5],ph->v[6],ph->v[7]);
     /* vector field interpolation */
     st->norm = vector3DInterp(mesh,pt,cb,v);
     if ( st->norm < EPS*step )   break;
-    step = min(step,st->norm);
+    step = MEDIT_MIN(step,st->norm);
     if ( step == 0.0f )  break; /*step = 1.e-06 * sc->dmax;*/
 
     nbp += filterPoint(sc,st,p,0);
@@ -1456,7 +1456,7 @@ int listTriaStream(pScene sc,pMesh mesh,float *pp) {
   st->listp[k+1] = pp[1];
   st->listp[k+2] = pp[2];
 
-  maxpts = max(MAX_PTS,5*mesh->nt);
+  maxpts = MEDIT_MAX(MAX_PTS,5*mesh->nt);
   glLineWidth(2.0);
 
   /* compute streamlines */
@@ -1503,7 +1503,7 @@ int listTriaStream(pScene sc,pMesh mesh,float *pp) {
   if ( st->size == 0.0 )
     step = EPS * sc->dmax;
   else 
-    step = HSIZ * min(st->size,st->norm);
+    step = HSIZ * MEDIT_MIN(st->size,st->norm);
 
   /* build display list incrementally */
   nsdep = nsold = depart;
@@ -1513,7 +1513,7 @@ int listTriaStream(pScene sc,pMesh mesh,float *pp) {
 
   if ( sc->par.maxtime < FLT_MAX ) {
     sc->par.cumtim = 0.0;
-    step = min(0.05*sc->par.dt,step);
+    step = MEDIT_MIN(0.05*sc->par.dt,step);
     out  = fopen("particules.dat","a+");
     assert(out);
     fprintf(out,"\n%8.2f  %f %f\n",
@@ -1561,9 +1561,9 @@ int listTriaStream(pScene sc,pMesh mesh,float *pp) {
 
     /* vector field interpolation */
     st->norm = field2DInterp(mesh,nsdep,cb,v);
-    step     = HSIZ * min(st->size,st->norm);
+    step     = HSIZ * MEDIT_MIN(st->size,st->norm);
     if ( sc->par.maxtime < FLT_MAX )
-      step = min(0.05*sc->par.dt,step);
+      step = MEDIT_MIN(0.05*sc->par.dt,step);
     if ( step == 0.0 )   break;
 
     nbp += filterPoint(sc,st,p,0);
@@ -1627,7 +1627,7 @@ int listTriaStream(pScene sc,pMesh mesh,float *pp) {
 
     /* vector field interpolation */
     st->norm = field2DInterp(mesh,nsdep,cb,v);
-    step = HSIZ * min(st->size,st->norm);
+    step = HSIZ * MEDIT_MIN(st->size,st->norm);
     if ( step == 0.0 )  break;
 
     nbp += filterPoint(sc,st,p,0);
@@ -1673,7 +1673,7 @@ int listSaddleStream(pScene sc,pMesh mesh,int depart,
   sc->slist[st->nbstl] = glGenLists(1);
   glNewList(sc->slist[st->nbstl],GL_COMPILE);
   if ( glGetError() )  return(0);
-  maxpts = max(MAX_PTS,5*mesh->nt);
+  maxpts = MEDIT_MAX(MAX_PTS,5*mesh->nt);
   glLineWidth(2.0);
 
   st->nbstl++;
@@ -1733,7 +1733,7 @@ int listSaddleStream(pScene sc,pMesh mesh,int depart,
     /* vector field interpolation */
     st->norm = field2DInterp(mesh,nsdep,cb,v);
     if ( st->norm < EPS*step )  break;
-    step = min(step,st->norm);
+    step = MEDIT_MIN(step,st->norm);
     if ( step == 0.0f )  break;
 
     nbp += filterPoint(sc,st,p,1);

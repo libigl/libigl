@@ -139,10 +139,10 @@ void zoomMotion(int x,int y) {
     if ( p->fovy < 1.0e-02 )  
       return;
     else 
-      p->fovy = max(0.95*p->fovy,1e-05);
+      p->fovy = MEDIT_MAX(0.95*p->fovy,1e-05);
   else if ( p->fovy > 160.0 )  return;
   else
-    p->fovy = min(1.1*p->fovy,179.0);
+    p->fovy = MEDIT_MIN(1.1*p->fovy,179.0);
 
   farclip(1);
   starty = y;

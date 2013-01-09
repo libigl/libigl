@@ -206,7 +206,7 @@ int bbfile(pMesh mesh) {
       m[1] = b;
       m[2] = c;
       eigen2(m,lambda,vp);
-      ps->bb = min(lambda[0],lambda[1]);
+      ps->bb = MEDIT_MIN(lambda[0],lambda[1]);
       if ( ps->bb < mesh->bbmin )  mesh->bbmin = ps->bb;
       if ( ps->bb > mesh->bbmax )  mesh->bbmax = ps->bb;
       for (j=1; j<nf; j++)  fscanf(in,"%f",&dummy);
@@ -235,8 +235,8 @@ int bbfile(pMesh mesh) {
       iord = eigenv(1,m,lambda,eigv);
       if ( iord ) {
         ps->bb = lambda[0];
-        ps->bb = max(ps->bb,lambda[1]);
-        ps->bb = max(ps->bb,lambda[2]);
+        ps->bb = MEDIT_MAX(ps->bb,lambda[1]);
+        ps->bb = MEDIT_MAX(ps->bb,lambda[2]);
         if ( ps->bb < mesh->bbmin )  mesh->bbmin = ps->bb;
         if ( ps->bb > mesh->bbmax )  mesh->bbmax = ps->bb;
       }

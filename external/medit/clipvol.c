@@ -52,7 +52,110 @@ GLuint capTetra(pMesh mesh) {
     glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,pm->spe);
     glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,pm->emi);
     glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&pm->shininess);
- 
+
+#ifdef IGL
+    if(sc->igl_params->hot_dog_view)
+    {
+      while ( k != 0 ) {
+        pt = &mesh->tetra[k];
+        if ( !pt->v[0] || !pt->clip ) {
+          k = pt->nxt;
+          continue;
+        }
+        
+        // loop over slices
+        for(int h = 0;h<sc->igl_params->num_hot_dog_slices;h++)
+        {
+          nbpos = nbneg = nbnul = 0;
+          for (l=0; l<4; l++) {
+            p0 = &mesh->point[pt->v[l]];
+            if ( p0->hd_clip[h] == 2 )      pos[nbpos++] = l;
+            else if (p0->hd_clip[h] == 1 )  neg[nbneg++] = l;
+            else                            nbnul++;
+            dd1[l] = p0->hd_dd1[h];
+            //dd1[l] = p0->c[0]*clip->eqn[0] + p0->c[1]*clip->eqn[1] \
+            //      + p0->c[2]*clip->eqn[2] + clip->eqn[3];
+          }
+
+          if ( nbneg == 2 && nbpos == 2 ) {
+            /* display quadrilateral */
+            for (l=0; l<4; l++) {
+              k1 = neg[tn[l]];
+              k2 = pos[tp[l]];
+              p0 = &mesh->point[pt->v[k1]];
+              p1 = &mesh->point[pt->v[k2]];
+              cc = 1.0f;
+              if ( dd1[k2]-dd1[k1] != 0.0f )
+                cc = fabs(dd1[k1] / (dd1[k2]-dd1[k1]));
+              cx[l] = p0->c[0]+cc*(p1->c[0]-p0->c[0]);
+              cy[l] = p0->c[1]+cc*(p1->c[1]-p0->c[1]);
+              cz[l] = p0->c[2]+cc*(p1->c[2]-p0->c[2]);
+            }
+
+            /* compute face normal */
+            ax = cx[1]-cx[0]; ay = cy[1]-cy[0]; az = cz[1]-cz[0];
+            bx = cx[2]-cx[0]; by = cy[2]-cy[0]; bz = cz[2]-cz[0];
+            n[0] = ay*bz - az*by;
+            n[1] = az*bx - ax*bz;
+            n[2] = ax*by - ay*bx;
+            d = n[0]*n[0] + n[1]*n[1] + n[2]*n[2];
+            if ( d > 0.0f ) {
+              d = 1.0f / sqrt(d);
+              n[0] *= d;  
+              n[1] *= d;  
+              n[2] *= d;
+            }
+            glBegin(GL_QUADS);
+            glNormal3fv(n);
+            glVertex3f(cx[0],cy[0],cz[0]);
+            glVertex3f(cx[1],cy[1],cz[1]);
+            glVertex3f(cx[2],cy[2],cz[2]);
+            glVertex3f(cx[3],cy[3],cz[3]);
+            glEnd();
+          }
+          else if(nbneg == 3 || nbpos == 3){
+            /* display triangle */
+            for (l=0; l<3; l++) {
+              k1 = nbneg == 3 ? neg[l] : pos[l];
+              k2 = nbneg == 3 ? pos[0] : neg[0];
+              p0 = &mesh->point[pt->v[k1]];
+              p1 = &mesh->point[pt->v[k2]];
+              cc = fabs(dd1[k1] / (dd1[k2]-dd1[k1]));
+              cx[l] = p0->c[0]+cc*(p1->c[0]-p0->c[0]);
+              cy[l] = p0->c[1]+cc*(p1->c[1]-p0->c[1]);
+              cz[l] = p0->c[2]+cc*(p1->c[2]-p0->c[2]);
+            }
+            /* compute face normal */
+            ax = cx[1]-cx[0]; ay = cy[1]-cy[0]; az = cz[1]-cz[0];
+            bx = cx[2]-cx[0]; by = cy[2]-cy[0]; bz = cz[2]-cz[0];
+            n[0] = ay*bz - az*by;
+            n[1] = az*bx - ax*bz;
+            n[2] = ax*by - ay*bx;
+            d = n[0]*n[0] + n[1]*n[1] + n[2]*n[2];
+            if ( d > 0.0f ) {
+              d = 1.0f / sqrt(d);
+              n[0] *= d;
+              n[1] *= d;
+              n[2] *= d;
+            }
+            glBegin(GL_TRIANGLES);
+            glNormal3fv(n);
+              glVertex3f(cx[0],cy[0],cz[0]);
+              glVertex3f(cx[1],cy[1],cz[1]);
+              glVertex3f(cx[2],cy[2],cz[2]);
+            glEnd();
+          }
+          else
+          {
+            // Some tets will occur on multiple maybe even all cuts. But most
+            // won't. Hence this case
+          }
+        }
+
+        k = pt->nxt;
+      }
+    }else{
+#endif
     while ( k != 0 ) {
       pt = &mesh->tetra[k];
       if ( !pt->v[0] || !pt->clip ) {
@@ -105,7 +208,6 @@ GLuint capTetra(pMesh mesh) {
         glVertex3f(cx[3],cy[3],cz[3]);
         glEnd();
       }
-      
       else {
         /* display triangle */
         for (l=0; l<3; l++) {
@@ -137,9 +239,12 @@ GLuint capTetra(pMesh mesh) {
           glVertex3f(cx[1],cy[1],cz[1]);
           glVertex3f(cx[2],cy[2],cz[2]);
         glEnd();
-      } 
+      }
       k = pt->nxt;
     }
+#ifdef IGL
+    }
+#endif
     if ( transp ) {
       glDepthMask(GL_TRUE);
       glDisable(GL_BLEND);

@@ -280,8 +280,8 @@ int imgHard(pScene sc,char *data,char key) {
   if ( abs(p->rubfx-p->rubix) > 0 ) {
     ww  = abs(p->rubfx-p->rubix)-2;
     hh  = abs(p->rubfy-p->rubiy)-2;
-    xx0 = min(p->rubix,p->rubfx)+1;
-    yy0 = min(p->rubiy,p->rubfy)+1;
+    xx0 = MEDIT_MIN(p->rubix,p->rubfx)+1;
+    yy0 = MEDIT_MIN(p->rubiy,p->rubfy)+1;
   }
   else {
     glGetIntegerv(GL_VIEWPORT,viewport);
