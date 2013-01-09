@@ -1,0 +1,8 @@
+"Capping" seems to mean cutting a planar slice. *Not* the mountain top view. So
+capTetraMap creates a display list for the planar slice view. And listTetraMap
+creates one for the mountain top view.
+
+pXYZ is a pointer to XYZ.
+
+Love,
+Alec Jacobson
