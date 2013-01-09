@@ -78,4 +78,5 @@ IGL_INLINE void igl::mat4_to_quat(const Q_type * mat, Q_type * q)
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
 template void igl::mat4_to_quat<double>(double const*, double*);
+template void igl::mat4_to_quat<float>(float const*, float*);
 #endif
