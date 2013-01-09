@@ -336,11 +336,19 @@ void keyScene(unsigned char key,int x,int y) {
   int         k,keyact,numit,idw = currentScene();
   ubyte       post = FALSE,dolist = FALSE;
 
+
   if ( idw < 0 ) exit(0);
 
   /* ESC = end medit */
   if ( key == 'q' || key == 27 ) 
+#ifdef IGL
+  {
+    deleteScene(cv.scene[idw]);
     exit(0);
+  }
+#else
+    exit(0);
+#endif
   else if ( key == 'h' || key == '?' )
     usage();
 
@@ -350,6 +358,20 @@ void keyScene(unsigned char key,int x,int y) {
   clip = sc->clip;
   cube = sc->cube;
   p    = sc->persp;
+
+#ifdef IGL
+  // Tweakbar has precedence over everything else
+  if(TwEventKeyboardGLUT(key,x,y))
+  {
+    dolist = TRUE;
+    post = TRUE;
+    goto keySceneFinish;
+  }
+
+  // Hack so that '=/+' acts like zoom in/out
+  key = (key == '+' || key == '=' ? 'z' : key);
+  key = (key == '-' || key == '_' ? 'Z' : key);
+#endif
 
   keyact = glutGetModifiers();
   if ( key == ' ' ) {
@@ -850,6 +872,9 @@ void keyScene(unsigned char key,int x,int y) {
       break;
     }
   }
+#ifdef IGL
+keySceneFinish:
+#endif
   
   if ( dolist ) {
     doLists(sc,mesh);

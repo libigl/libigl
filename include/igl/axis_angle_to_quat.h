@@ -2,8 +2,6 @@
 #define IGL_AXIS_ANGLE_TO_QUAT_H
 #include "igl_inline.h"
 
-#include "EPS.h"
-#include <cmath>
 namespace igl
 {
   // Convert axis angle representation of a rotation to a quaternion

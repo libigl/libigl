@@ -4,5 +4,8 @@ creates one for the mountain top view.
 
 pXYZ is a pointer to XYZ.
 
+pTransform contains many members that are really just deltas (changes) in
+axis-angle, pan etc.
+
 Love,
 Alec Jacobson

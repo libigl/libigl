@@ -2,6 +2,13 @@
 #include "extern.h"
 #include "sproto.h"
 
+#ifdef IGL
+#  include "IGLParams.h"
+#  include <igl/canonical_quaternions.h>
+#  include <igl/quat_to_mat.h>
+#  include <igl/mat_to_quat.h>
+#  include <igl/snap_to_canonical_view_quat.h>
+#endif
 
 extern GLboolean  hasStereo;
 extern int       *pilmat,ipilmat,refmat,reftype,refitem;
@@ -104,6 +111,23 @@ void reshapeScene(int width,int height) {
 
   glViewport(0,0,width,height);
   farclip(GL_TRUE);
+#ifdef IGL
+  // Tell AntTweakBar about new size
+  TwWindowSize(width, height);
+  // Keep AntTweakBar on right side of screen and height == opengl height
+  // get the current position of a bar
+  int size[2];
+  sc->rebar.TwGetParam(NULL, "size", TW_PARAM_INT32, 2, size);
+  int pos[2];
+  // Place bar on right side of opengl rect (padded by 10 pixels)
+  pos[0] = max(10,(int)width - size[0] - 10);
+  // place bar at top (padded by 10 pixels)
+  pos[1] = 10;
+  // Set height to new height of window (padded by 10 pixels on bottom)
+  size[1] = height-pos[1]-10;
+  sc->rebar.TwSetParam( NULL, "position", TW_PARAM_INT32, 2, pos);
+  sc->rebar.TwSetParam( NULL, "size", TW_PARAM_INT32, 2,size);
+#endif
 }
 
 
@@ -169,6 +193,7 @@ static void displayScene(pScene sc,int mode,int clip) {
   
   map = mode & S_MAP;
 
+
   switch(mode) {
   case FILL:  /* solid fill */
     if ( ddebug ) printf("solid fill\n");
@@ -215,6 +240,9 @@ static void displayScene(pScene sc,int mode,int clip) {
 #ifdef ppc
     bogusQuad(sc);
 #endif
+#ifdef IGL
+    if(!sc->igl_params->lines_on_cap && (clip && sc->clip->active & C_CAP)) break;
+#endif
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
     glColor4fv(sc->par.line);
       drawList(sc,clip,0);
@@ -231,6 +259,10 @@ static void displayScene(pScene sc,int mode,int clip) {
     glDisable(GL_POLYGON_OFFSET_FILL);
 #ifdef ppc
     bogusQuad(sc);
+#endif
+
+#ifdef IGL
+    if(!sc->igl_params->lines_on_cap && (clip && sc->clip->active & C_CAP)) break;
 #endif
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
     glColor4fv(sc->par.line);
@@ -420,11 +452,39 @@ void setupView(pScene sc) {
   glLoadIdentity();
   if ( p->pmode != CAMERA ) {
     glTranslatef(view->panx,view->pany,0.0);
+    if(ddebug)
+    {
+      printf("%g %g %g\n", -view->panx,-view->pany,0.);
+    }
     if ( mesh->dim == 3 || sc->mode & S_ALTITUDE )
+    {
       glRotatef(view->angle,view->axis[0],view->axis[1],view->axis[2]);
+      if(ddebug)
+      {
+        printf("%g, %g %g %g\n",
+            view->angle,view->axis[0],view->axis[1],view->axis[2]);
+      }
+    }
     glTranslatef(-view->opanx,-view->opany,0.);
+    if(ddebug)
+    {
+      printf("%g %g %g\n",
+          -view->opanx,-view->opany,0.);
+    }
     glMultMatrixf(view->matrix);
     glGetFloatv(GL_MODELVIEW_MATRIX,view->matrix);
+    if(ddebug)
+    {
+      int i,j;
+      for(i = 0;i<4;i++)
+      {
+        for(j = 0;j<4;j++)
+        {
+          printf("%g ",view->matrix[i+4*j]);
+        }
+        printf("\n");
+      }
+    }
   }
   else if ( animate ) {
     c->eye[0] += c->spmod*c->speed[0];
@@ -703,6 +763,9 @@ void redrawScene() {
     drawModel(sc);
     if ( sc->type & S_DECO )  redrawStatusBar(sc);
   }
+#ifdef IGL
+  TwDraw();
+#endif
 
   /* refresh screen */
   if ( saveimg && animate )
@@ -745,8 +808,14 @@ void redrawSchnauzer() {
 
 
 void deleteScene(pScene sc) {
+  // Alec: This isn't actually called on exit
   /* default */
   if ( ddebug) printf("deleteScene\n");
+
+  // try to save rebar
+#ifdef IGL
+  sc->rebar.save("rebar.rbr");
+#endif
 
   M_free(sc->view);
   M_free(sc->clip);
@@ -756,6 +825,250 @@ void deleteScene(pScene sc) {
   M_free(sc->matsort);
   M_free(sc);
 }
+
+#ifdef IGL
+void initIGL(pScene sc,pMesh mesh)
+{
+  sc->igl_params = new IGLParams();
+}
+
+// No-op setter, does nothing
+void TW_CALL no_op(const void *value, void *clientData){}
+// No-op getter, does nothing
+void TW_CALL no_op(void *value, void *clientData){}
+// Snap XY plane
+void TW_CALL view_xy_plane(void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+
+  float mat[16];
+  igl::quat_to_mat( igl::XY_PLANE_QUAT_F, mat);
+  // Copy 3x3 linear block
+  for(int i = 0;i<3;i++)
+    for(int j = 0;j<3;j++)
+      sc->view->matrix[i*4+j] = mat[i*4+j];
+}
+// Snap XZ plane
+void TW_CALL view_xz_plane(void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  float mat[16];
+  igl::quat_to_mat( igl::XZ_PLANE_QUAT_F, mat);
+  // Copy 3x3 linear block
+  for(int i = 0;i<3;i++)
+    for(int j = 0;j<3;j++)
+      sc->view->matrix[i*4+j] = mat[i*4+j];
+}
+// Snap YZ plane
+void TW_CALL view_yz_plane(void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  float mat[16];
+  igl::quat_to_mat( igl::YZ_PLANE_QUAT_F, mat);
+  // Copy 3x3 linear block
+  for(int i = 0;i<3;i++)
+    for(int j = 0;j<3;j++)
+      sc->view->matrix[i*4+j] = mat[i*4+j];
+}
+
+void TW_CALL snap_rotation_to_canonical_view_quat(void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  float q[4];
+  igl::mat4_to_quat(sc->view->matrix,q);
+  igl::snap_to_canonical_view_quat<float>(q,1.0,q);
+  float mat[16];
+  igl::quat_to_mat(q, mat);
+  // Copy 3x3 linear block
+  for(int i = 0;i<3;i++)
+    for(int j = 0;j<3;j++)
+      sc->view->matrix[i*4+j] = mat[i*4+j];
+}
+
+void TW_CALL set_rotation(const void *value, void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  const float * q = (const float*)(value);
+  float mat[16];
+  igl::quat_to_mat(q, mat);
+  // Copy 3x3 linear block
+  for(int i = 0;i<3;i++)
+    for(int j = 0;j<3;j++)
+      sc->view->matrix[i*4+j] = mat[i*4+j];
+}
+void TW_CALL get_rotation(void *value, void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  float * q = (float *)(value);
+  igl::mat4_to_quat(sc->view->matrix,q);
+}
+
+void initAntTweakBar(pScene sc,pMesh mesh)
+{
+  printf("initAntTweakBar\n");
+  TwInit(TW_OPENGL, NULL);
+  sc->rebar.TwNewBar("bar");
+  TwDefine("bar label='Release' size='200 550' text=light alpha='200' color='68 68 68'");
+
+  sc->rebar.TwAddVarRW(
+    "camera_eye",
+    TW_TYPE_DIR3F,
+    sc->camera->eye,
+    "group='View' ");
+  sc->rebar.TwAddVarRW(
+    "back",
+    TW_TYPE_COLOR4F,
+    sc->par.back,
+    "group='View' "
+    "label='background color' "
+    "open "
+    "colormode=hls ");
+  sc->rebar.TwAddVarRW(
+    "line",
+    TW_TYPE_COLOR4F,
+    sc->par.line,
+    "group='View' "
+    "label='line color' "
+    "open "
+    "colormode=hls ");
+
+  sc->rebar.TwAddVarRW(
+    "lines_on_cap",
+    TW_TYPE_BOOLCPP,
+    &(sc->igl_params->lines_on_cap),
+    "group='View' "
+    "help='Display lines on cap when showing lines' ");
+
+  sc->rebar.TwAddVarRW(
+    "hot_dog_view",
+    TW_TYPE_BOOLCPP,
+    &(sc->igl_params->hot_dog_view),
+    "group='View' "
+    "help='Display many evenly spaced cuts' ");
+
+  sc->rebar.TwAddVarRW(
+    "num_hot_dog_slices",
+    TW_TYPE_INT32,
+    &(sc->igl_params->num_hot_dog_slices),
+    "group='View' "
+    "help='number of hot_dog_slices' ");
+
+  sc->rebar.TwAddButton(
+    "view_xy",
+    view_xy_plane,
+    sc,
+    "group='View' "
+    "key='z' "
+    "help='Set view rotation to view xy plane' ");
+
+  sc->rebar.TwAddButton(
+    "view_xz",
+    view_xz_plane,
+    sc,
+    "group='View' "
+    "key='y' "
+    "help='Set view rotation to view xz plane' ");
+
+  sc->rebar.TwAddButton(
+    "view_yz",
+    view_yz_plane,
+    sc,
+    "group='View' "
+    "key='x' "
+    "help='Set view rotation to view yz plane' ");
+
+  sc->rebar.TwAddButton(
+    "snap",
+    snap_rotation_to_canonical_view_quat,
+    sc,
+    "group='View' "
+    "key='Z' "
+    "help='Snap view rotation to nearest canonical view' ");
+
+  sc->rebar.TwAddVarCB(
+    "rotation",
+    TW_TYPE_QUAT4F,
+    set_rotation,
+    get_rotation,
+    sc,
+    "group='View' open ");
+
+  sc->rebar.TwAddVarRW(
+    "mat_amb",
+    TW_TYPE_COLOR4F,
+    sc->material->amb,
+    "group='Material' "
+    "label='Ambient' "
+    "colormode=hls ");
+
+  //sc->rebar.TwAddVarRW(
+  //  "mat_emi",
+  //  TW_TYPE_COLOR4F,
+  //  sc->material->emi,
+  //  "group='Material (double-tap e)' "
+  //  "label='Emission' "
+  //  "colormode=hls ");
+
+  sc->rebar.TwAddVarRW(
+    "mat_dif",
+    TW_TYPE_COLOR4F,
+    sc->material->dif,
+    "group='Material (double-tap e)' "
+    "label='Diffusion' "
+    "colormode=hls ");
+
+  sc->rebar.TwAddVarRW(
+    "mat_spe",
+    TW_TYPE_COLOR4F,
+    sc->material->spe,
+    "group='Material (double-tap e)' "
+    "label='Specular' "
+    "colormode=hls ");
+
+  sc->rebar.TwAddVarRW(
+    "mat_shininess",
+    TW_TYPE_FLOAT,
+    &(sc->material->shininess),
+    "group='Material (double-tap e)' "
+    "label='Specular' ");
+
+  sc->rebar.TwAddVarRW(
+    "scene_type",
+    TW_TYPE_UINT8,
+    &(sc->type),
+    "group='Scene' "
+    "readonly=true "
+    "label='type' ");
+
+  sc->rebar.TwAddVarRW(
+    "scene_mode",
+    TW_TYPE_UINT8,
+    &(sc->mode),
+    "group='Scene' "
+    "readonly=true "
+    "label='mode' ");
+
+  sc->rebar.TwAddVarRW(
+    "clip",
+    TW_TYPE_UINT8,
+    &(sc->clip->active),
+    "group='Scene' "
+    "readonly=true "
+    "label='clip->active' ");
+
+  // Try to load previous bar
+  if(!sc->rebar.load("rebar.rbr"))
+  {
+    fprintf(stderr,"Error: could not reload rebar.rbr\n");
+  }else
+  {
+    if(sc->clip->active & C_ON ) 
+    {
+      sc->clip->active |= C_REDO;
+    }
+  }
+}
+#endif
 
 
 void initGrafix(pScene sc,pMesh mesh) {
@@ -905,6 +1218,9 @@ int createScene(pScene sc,int idmesh) {
     glutMotionFunc(motion);
     glutDisplayFunc(redrawScene);
   }
+#ifdef IGL
+  glutPassiveMotionFunc(passive_motion); // same as MouseMotion
+#endif
   glutReshapeFunc(reshapeScene);
   glutKeyboardFunc(keyScene);
   glutSpecialFunc(special);
@@ -927,5 +1243,9 @@ int createScene(pScene sc,int idmesh) {
   sc->stream = NULL;
 
   initGrafix(sc,mesh);
+#ifdef IGL
+  initIGL(sc,mesh);
+  initAntTweakBar(sc,mesh);
+#endif
   return(1);
 }

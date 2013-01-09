@@ -160,6 +160,7 @@ int    modeMorphing();
  
 /* mouse.c */
 void   mouse(int button,int state,int x,int y);
+void   passive_motion(int x,int y);
 void   motion(int x,int y);
 void   redrawOverlay(int stretchX,int stretchY);
 void   motionCamera(int x,int y);

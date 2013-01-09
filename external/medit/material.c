@@ -97,6 +97,7 @@ cell shininess[1] = {
 
 
 void matInit(pScene sc) {
+  printf("matInit\n");
   pMaterial  pm;
   int        m,mm;
 

@@ -347,6 +347,13 @@ std::string igl::ReTwBar::get_value_as_string(
         sstr << *(static_cast<int*>(var));
         break;
       }
+    case TW_TYPE_UINT8:
+      {
+        sstr << "TW_TYPE_UINT8" << " ";
+        // Cast to int so that it's human readable
+        sstr << (int)*(static_cast<unsigned char*>(var));
+        break;
+      }
     case TW_TYPE_INT32:
       {
         sstr << "TW_TYPE_INT32" << " ";
@@ -442,7 +449,7 @@ bool igl::ReTwBar::load(const char *file_name)
     }
 
     sscanf(line,"%[^:]: %s %[^\n]",name,type_str,value_str);
-    //printf("%s: %s %s\n",name, type_str,value_str);
+    printf("%s: %s %s\n",name, type_str,value_str);
 
     TwType type;
     if(!type_from_string(type_str,type))
@@ -500,6 +507,7 @@ bool igl::ReTwBar::set_value_from_string(
   float f[4];
   double d[4];
   bool b;
+  unsigned char uc;
 
   // First try to get value from default types
   switch(type)
@@ -563,6 +571,20 @@ bool igl::ReTwBar::set_value_from_string(
         if(sscanf(value_str," %f %f %f",&f[0],&f[1],&f[2]) == 3)
         {
           value = &f;
+        }else
+        {
+          printf("ERROR: Bad value format...\n");
+          return false;
+        }
+        break;
+      }
+    case TW_TYPE_UINT8:
+      {
+        if(sscanf(value_str," %d",&i) == 1)
+        {
+          // Cast to unsigned char
+          uc = (unsigned char) i;
+          value = &uc;
         }else
         {
           printf("ERROR: Bad value format...\n");
@@ -698,6 +720,13 @@ bool igl::ReTwBar::set_value_from_string(
             fvar[0] = fvalue[0];
             fvar[1] = fvalue[1];
             fvar[2] = fvalue[2];
+            break;
+          }
+        case TW_TYPE_UINT8:
+          {
+            unsigned char * ucvar = static_cast<unsigned char*>(var);
+            unsigned char * ucvalue = static_cast<unsigned char*>(value);
+            *ucvar = *ucvalue;
             break;
           }
         case TW_TYPE_BOOL32:

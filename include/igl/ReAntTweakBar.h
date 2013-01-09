@@ -9,13 +9,17 @@
 // here:
 //   TW_TYPE_BOOLCPP
 //   TW_TYPE_QUAT4F
+//   TW_TYPE_QUAT4D
 //   TW_TYPE_COLOR4F
+//   TW_TYPE_COLOR4D
 //   TW_TYPE_COLOR3F
 //   TW_TYPE_DIR3F
+//   TW_TYPE_DIR3D
 //   TW_TYPE_BOOL32
 //   TW_TYPE_INT32
 //   TW_TYPE_FLOAT
 //   TW_TYPE_DOUBLE
+//   TW_TYPE_UINT8
 //   and
 //   custom TwTypes made with TwDefineEnum
 // 

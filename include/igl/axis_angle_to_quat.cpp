@@ -1,4 +1,6 @@
 #include "axis_angle_to_quat.h"
+#include "EPS.h"
+#include <cmath>
 
 // http://www.antisphere.com/Wiki/tools:anttweakbar
 template <typename Q_type>

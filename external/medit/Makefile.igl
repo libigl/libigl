@@ -4,8 +4,12 @@ IGL=/usr/local/igl/igl_lib
 IGL_INC=-I$(IGL)/include
 IGL_LIB=-L$(IGL)/lib -ligl
 
-INC = -I${LIBMESH} $(IGL_INC)
-LIBS  = -framework OpenGL -framework GLUT -L${LIBMESH} -lmesh $(IGL_LIB)
+ANTTWEAKBAR=/usr/local/igl/igl_lib/external/AntTweakBar/
+ANTTWEAKBAR_INC=-I$(ANTTWEAKBAR)/include
+ANTTWEAKBAR_LIB=-L$(ANTTWEAKBAR)/lib -lAntTweakBar -framework  AppKit
+
+INC = -I${LIBMESH} $(IGL_INC) $(ANTTWEAKBAR_INC)
+LIBS  = -framework OpenGL -framework GLUT -L${LIBMESH} -lmesh $(IGL_LIB) $(ANTTWEAKBAR_LIB)
 CFLAGS = -Wall -O3 -DIGL
 
 C_FILES=$(wildcard *.c)

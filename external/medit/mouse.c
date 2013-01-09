@@ -157,8 +157,13 @@ void mouse(int button,int state,int x,int y) {
   pPersp      p;
   int         keyact,idw = currentScene();
   static int  olds = -1;
-  
-  picking=GL_FALSE;
+#ifdef IGL
+  // Tweakbar has precedence over everything else
+  if(TwEventMouseButtonGLUT(button,state,x,y) && state == GLUT_DOWN)
+  {
+    return;
+  }
+#endif
 
   /* default */
   if ( ddebug ) printf("control mouse %d\n",state);
@@ -177,6 +182,8 @@ void mouse(int button,int state,int x,int y) {
   keyact = glutGetModifiers();
 
   if ( state == GLUT_DOWN ) {
+  
+  picking=GL_FALSE;
     tracking = GL_TRUE;
     lasttime = glutGet(GLUT_ELAPSED_TIME);
 
@@ -272,6 +279,17 @@ void mouse(int button,int state,int x,int y) {
   olds = idw;
 }
 
+#ifdef IGL
+void passive_motion(int x,int y)
+{
+  // Tweakbar has precedence over everything else
+  if(TwEventMouseMotionGLUT(x,y))
+  {
+    glutPostRedisplay();
+  }
+}
+#endif
+
 void motion(int x,int y) {
   pScene      sc;
   pTransform  tr;
@@ -284,6 +302,17 @@ void motion(int x,int y) {
   /* default */
   if ( picking )  return;
   if ( ddebug ) fprintf(stdout,"motion\n");
+
+#ifdef IGL
+  // Tweakbar has precedence over everything else
+  if(TwEventMouseMotionGLUT(x,y))
+  {
+    if(!tracking)
+    {
+      glutPostRedisplay();
+    }
+  }
+#endif
 
   if ( tracking == GL_FALSE )  return;
   sc = cv.scene[idw];

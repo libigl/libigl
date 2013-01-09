@@ -2,6 +2,7 @@
 #define _GRAFIC_H
 
 #ifdef IGL
+#  include "IGLParams.h"
 #  include <igl/ReAntTweakBar.h>
 #endif
 
@@ -110,8 +111,8 @@ typedef struct _cell {
 
 typedef struct transform {
   float    pos[3];                /* current mouse position */
-  float    angle,axis[3];         /* rotation angle + axis  */
-  float    panx,pany,opanx,opany; /* screen translation     */
+  float    angle,axis[3];         /* rotation angle + axis  */ // Alec: really this is delta-angle+axis
+  float    panx,pany,opanx,opany; /* screen translation     */ // Alec: also this is delta
   float    matrix[16],oldmat[16]; /* transformation matrix  */
   float    rot[16],tra[16];
   int      mstate,mbutton,manim;
@@ -149,9 +150,6 @@ typedef struct sparam {
   int       nbmat;
   char      pscolor[10];
   ubyte     sunp,linc,advtim,nbpart;
-#ifdef IGL
-  //igl::ReTwBar rebar;
-#endif
 } Param;
 
 /* trajectoire */
@@ -225,6 +223,11 @@ typedef struct scene {
   ubyte      type;
   ubyte      isotyp;
   ubyte      picked;
+#ifdef IGL
+  igl::ReTwBar rebar;
+  // Pointer so recompiling is easier
+  IGLParams * igl_params; 
+#endif
 } Scene;
 typedef Scene * pScene;
 
