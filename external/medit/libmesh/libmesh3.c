@@ -423,7 +423,11 @@ int LM_write_field(LM_mesh_struct *mesh, int kw_code, int nbl, void *buffer, ...
 
 		nbsol = va_arg(pa, int);
 
+#ifdef IGL
 		if(!(mesh->sol_headers[ kw_code ] = malloc((nbsol+2) * sizeof(int))))
+#else
+		if(!(mesh->sol_headers[ kw_code ] = malloc((nbsol+2) * sizeof(int))))
+#endif
 			return(0);
 
 		mesh->sol_headers[ kw_code ][0] = nbsol;

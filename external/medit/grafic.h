@@ -1,6 +1,10 @@
 #ifndef _GRAFIC_H
 #define _GRAFIC_H
 
+#ifdef IGL
+#  include <igl/ReAntTweakBar.h>
+#endif
+
 #define MAX_LIST  4
 #define MAXISO    5
 
@@ -145,6 +149,9 @@ typedef struct sparam {
   int       nbmat;
   char      pscolor[10];
   ubyte     sunp,linc,advtim,nbpart;
+#ifdef IGL
+  //igl::ReTwBar rebar;
+#endif
 } Param;
 
 /* trajectoire */

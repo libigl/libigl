@@ -141,7 +141,11 @@ int medit0() {
   k = 0;
   do {
     if ( !cv.mesh[k] ) {
+#ifdef IGL
+      cv.mesh[k] = static_cast<pMesh>(M_calloc(1,sizeof(Mesh),"medit0.mesh"));
+#else
       cv.mesh[k] = M_calloc(1,sizeof(Mesh),"medit0.mesh");
+#endif
       if ( !cv.mesh[k] )  return(0);
     }
     mesh = cv.mesh[k];
@@ -214,7 +218,7 @@ int medit0_popen() {
   do {
     // printf("mesh number %i\n",k+1);
     if ( !cv.mesh[k] ) {
-      cv.mesh[k] = M_calloc(1,sizeof(Mesh),"medit0.mesh");
+      cv.mesh[k] = static_cast<pMesh>(M_calloc(1,sizeof(Mesh),"medit0.mesh"));
       if ( !cv.mesh[k] )  return(0);
     }
     mesh = cv.mesh[k];

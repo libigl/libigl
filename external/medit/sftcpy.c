@@ -1,5 +1,7 @@
+#ifndef IGL
 #ifdef __cplusplus
 extern "C" {
+#endif
 #endif
 
 #include "medit.h"
@@ -324,6 +326,8 @@ int sftcpy(pScene sc,pMesh mesh) {
 }
 
 
+#ifndef IGL
 #ifdef __cplusplus
 }
+#endif
 #endif

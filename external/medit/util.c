@@ -1,5 +1,7 @@
+#ifndef IGL
 #ifdef __cplusplus
 extern "C" {
+#endif
 #endif
 
 #include <math.h>
@@ -273,6 +275,8 @@ int filnum(char *data,int numdep,char *ext) {
   return(-1);
 }
 
+#ifndef IGL
 #ifdef __cplusplus
 }
+#endif
 #endif

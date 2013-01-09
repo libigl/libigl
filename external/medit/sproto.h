@@ -3,6 +3,7 @@ int    loadNextMesh(pMesh ,int ,int );
 int    animat();
 int    playAnim(pScene ,pMesh ,int ,int );
 void   glutIdle(void);
+int animParticle(pScene sc,pMesh mesh);
 
 /* camera.c */
 double  Azimuth(pCamera );
@@ -18,8 +19,11 @@ void   invertClip(pScene sc,pClip );
 void   drawClip(pScene ,pClip ,pMesh ,GLboolean );
 void   copyClip(pClip );
 int    pasteClip(pClip );
+void tiltClip(pScene sc,pClip clip);
 void   resetClip(pScene ,pClip ,pMesh );
 pClip  createClip(pScene ,pMesh );
+void resetCube(pScene sc,pCube cube,pMesh mesh);
+void dumpCube(pScene sc,pMesh mesh,pCube cube);
 
 void   updateCube(pCube ,pMesh );
 pCube  createCube(pScene ,pMesh );
@@ -38,9 +42,6 @@ GLuint  listQuad(pScene ,pMesh );
 GLuint  listTetra(pScene ,pMesh ,ubyte );
 GLuint  listHexa(pScene ,pMesh ,ubyte );
 
-/* eigenv.c */
-int    eigenv(int sym,double mat[6],double lambda[3],double v[3][3]);
-
 /* geometry.c */
 GLuint geomList(pScene ,pMesh );
 
@@ -50,6 +51,7 @@ int loadGIS(pMesh );
 /* hash.c */
 int hashTria(pMesh );
 int hashTetra(pMesh );
+int hashHexa(pMesh mesh);
 
 /* image.c */
 PPMimage *loadPPM(const char *imgname,int *type);
@@ -70,6 +72,7 @@ int    loadMesh_popen(pMesh); //pour popen
 GLuint listTriaIso(pScene ,pMesh );
 GLuint listQuadIso(pScene ,pMesh );
 GLuint listTetraIso(pScene ,pMesh );
+int tetraIsoPOVray(pScene sc,pMesh mesh);
 
 /* items.c */
 void   drawAxis(pScene ,int );
@@ -126,6 +129,7 @@ void   keyColor(unsigned char ,int ,int );
 void   menuColor(int );
 void   keyClip(unsigned char ,int ,int );
 void   menuClip(int );
+void keyCube(unsigned char key,int x,int y);
 void   keyFeature(unsigned char ,int ,int );
 void   menuFeature(int );
 void   menuImage(int );
@@ -178,6 +182,11 @@ int    parsop(pScene ,pMesh );
 
 /* particle.c */
 int createParticle(pScene ,pMesh );
+#ifdef IGL
+int advectParticle(pScene sc,pMesh mesh);
+int displayParticle(pScene sc,pMesh mesh);
+#endif
+
 
 /* path.c */
 int    pathAdd(pScene ,int, int);
@@ -194,6 +203,7 @@ pPersp initPersp(pPersp ,float );
 GLuint pickingList(pScene ,int ,int );
 GLuint pickingPoint(pScene sc,int x,int y);
 GLuint pickItem(pMesh ,pScene ,int );
+GLuint pickingScene(pScene sc,int x,int y,int ident);
  
 /* prierr.c */
 void   prierr(int typerr,int indice);
@@ -251,6 +261,8 @@ double  field3DInterp(pMesh mesh,int iel,double *cb,double *v);
 double  sizeTria(pMesh mesh,int k);
 double  sizeQuad(pMesh mesh,int k);
 double  sizeTetra(pMesh mesh,int k);
+int streamIsoPoint(pScene sc,pMesh mesh);
+int inTetra(pMesh mesh,int nsdep,float *p,double *cb);
 
 
 /* tensor.c */
@@ -273,6 +285,7 @@ void   output2(GLfloat x,GLfloat y,char *format,...);
 void   output3(GLfloat x,GLfloat y,GLfloat z,char *format,...);
 void   hsvrgb(double *hsv,double *rgb);
 void   transformPoint(double u[4],float v[4],float m[16]);
+void transformPoint2(double u[4],float v[4],float m[16]) ;
 void   transformPointd(double u[4],double v[4],double m[16]);
 void   transformVector(float u[4],float v[4],float m[16]); 
 void   multMatrix(GLfloat *p,GLfloat *a,GLfloat *b);
@@ -287,6 +300,7 @@ GLuint listTria2dVector(pMesh mesh);
 GLuint listTria3dVector(pMesh mesh);
 GLuint listClipTetraVector(pMesh mesh);
 GLuint listClipHexaVector(pMesh mesh);
+GLuint listQuad2dVector(pMesh mesh);
 
 /* view.c */
 void   copyView(pTransform view,pCamera cam,pPersp persp);
@@ -297,3 +311,24 @@ void   unlinkView(pScene sc1);
 /* zaldy.c */
 int    zaldy1(pMesh mesh);
 int    zaldy2(pMesh mesh);
+
+#ifdef IGL
+/* cenrad.c */
+int cenrad(pMesh mesh,int iel,double *c,double *rad);
+/* param.c */
+void parEdit(pScene sc);
+/* inout_popenbinaire.c */
+int loadMesh_popen_bin(pMesh mesh);
+int loadSol_popen_bin(pMesh mesh,char *filename,int numsol);
+/* inout_morice.c */
+int loadSol_popen(pMesh mesh,char *filename,int numsol);
+/* sftcpy.c */
+int sftcpy(pScene sc,pMesh mesh);
+/* ellipse.c */
+void drawEllipsoid(pScene sc,pMesh mesh,int typel,int k);
+void drawEllipse(pScene sc,pMesh mesh,int typel,int k);
+GLuint drawAllEllipse(pScene sc,pMesh mesh);
+void circumSphere(pScene sc,pMesh mesh,int typel,int k);
+/* bbfile.c */
+int EatSpace(FILE  *in);
+#endif

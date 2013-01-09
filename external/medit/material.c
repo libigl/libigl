@@ -536,6 +536,8 @@ void matEdit(pScene sc) {
 }
 
 
+#ifndef IGL
 #ifdef __cplusplus
 }
+#endif
 #endif

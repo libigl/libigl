@@ -1,0 +1,22 @@
+LIBMESH = ./libmesh/
+
+IGL=/usr/local/igl/igl_lib
+IGL_INC=-I$(IGL)/include
+IGL_LIB=-L$(IGL)/lib -ligl
+
+INC = -I${LIBMESH} $(IGL_INC)
+LIBS  = -framework OpenGL -framework GLUT -L${LIBMESH} -lmesh $(IGL_LIB)
+CFLAGS = -Wall -O3 -DIGL
+
+C_FILES=$(wildcard *.c)
+OBJ_FILES=$(notdir $(C_FILES:.c=.o))
+
+%.o : %.c grafic.h sproto.h medit.h
+	g++ -c $(CFLAGS) -x c++ $< -o $@ $(INC)
+
+medit: $(OBJ_FILES)
+	g++ -o $@ $^ $(CFLAGS) $(LIBS)
+
+.PHONY: clean
+clean:
+	rm -f $(OBJ_FILES) medit

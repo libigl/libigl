@@ -243,7 +243,11 @@ int createParticle(pScene sc,pMesh mesh) {
   if ( !st->nbstl )  return(0);
 
   /* init positions */
+#ifdef IGL
+  tp = static_cast<pParticle>(calloc((st->nbstl+1),sizeof(Particle)));
+#else
   tp = calloc((st->nbstl+1),sizeof(Particle));
+#endif
   assert(tp);
   for (k=1; k<=st->nbstl; k++)
     tp[k].nsdep = mesh->ntet / 2;
