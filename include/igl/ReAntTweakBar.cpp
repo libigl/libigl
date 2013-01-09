@@ -449,7 +449,7 @@ bool igl::ReTwBar::load(const char *file_name)
     }
 
     sscanf(line,"%[^:]: %s %[^\n]",name,type_str,value_str);
-    printf("%s: %s %s\n",name, type_str,value_str);
+    //printf("%s: %s %s\n",name, type_str,value_str);
 
     TwType type;
     if(!type_from_string(type_str,type))

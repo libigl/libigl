@@ -836,11 +836,11 @@ void initIGL(pScene sc,pMesh mesh)
 void TW_CALL no_op(const void *value, void *clientData){}
 // No-op getter, does nothing
 void TW_CALL no_op(void *value, void *clientData){}
+
 // Snap XY plane
 void TW_CALL view_xy_plane(void *clientData)
 {
   pScene sc = static_cast<const pScene>(clientData);
-
   float mat[16];
   igl::quat_to_mat( igl::XY_PLANE_QUAT_F, mat);
   // Copy 3x3 linear block
@@ -870,7 +870,6 @@ void TW_CALL view_yz_plane(void *clientData)
     for(int j = 0;j<3;j++)
       sc->view->matrix[i*4+j] = mat[i*4+j];
 }
-
 void TW_CALL snap_rotation_to_canonical_view_quat(void *clientData)
 {
   pScene sc = static_cast<const pScene>(clientData);
@@ -884,7 +883,6 @@ void TW_CALL snap_rotation_to_canonical_view_quat(void *clientData)
     for(int j = 0;j<3;j++)
       sc->view->matrix[i*4+j] = mat[i*4+j];
 }
-
 void TW_CALL set_rotation(const void *value, void *clientData)
 {
   pScene sc = static_cast<const pScene>(clientData);
@@ -903,12 +901,95 @@ void TW_CALL get_rotation(void *value, void *clientData)
   igl::mat4_to_quat(sc->view->matrix,q);
 }
 
+// Update clip after it changed
+void update_clip(pScene sc)
+{
+  if ( sc->clip->active & C_ON && 
+                 (sc->clip->active & C_EDIT || sc->clip->active & C_FREEZE) )
+    sc->clip->active |= C_UPDATE;
+}
+// Snap XY plane
+void TW_CALL clip_xy_plane(void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  float mat[16];
+  igl::quat_to_mat( igl::CANONICAL_VIEW_QUAT_F[5], mat);
+  // Copy 3x3 linear block
+  for(int i = 0;i<3;i++)
+    for(int j = 0;j<3;j++)
+      sc->clip->cliptr->rot[i*4+j] = mat[i*4+j];
+  update_clip(sc);
+}
+// Snap XZ plane
+void TW_CALL clip_xz_plane(void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  float mat[16];
+  igl::quat_to_mat( igl::XZ_PLANE_QUAT_F, mat);
+  // Copy 3x3 linear block
+  for(int i = 0;i<3;i++)
+    for(int j = 0;j<3;j++)
+      sc->clip->cliptr->rot[i*4+j] = mat[i*4+j];
+  update_clip(sc);
+}
+// Snap YZ plane
+void TW_CALL clip_yz_plane(void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  float mat[16];
+  igl::quat_to_mat( igl::YZ_PLANE_QUAT_F, mat);
+  // Copy 3x3 linear block
+  for(int i = 0;i<3;i++)
+    for(int j = 0;j<3;j++)
+      sc->clip->cliptr->rot[i*4+j] = mat[i*4+j];
+  update_clip(sc);
+}
+void TW_CALL snap_rotation_to_canonical_clip_quat(void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  float q[4];
+  igl::mat4_to_quat(sc->clip->cliptr->rot,q);
+  igl::snap_to_canonical_view_quat<float>(q,1.0,q);
+  float mat[16];
+  igl::quat_to_mat(q, mat);
+  // Copy 3x3 linear block
+  for(int i = 0;i<3;i++)
+    for(int j = 0;j<3;j++)
+      sc->clip->cliptr->rot[i*4+j] = mat[i*4+j];
+  update_clip(sc);
+}
+void TW_CALL set_clip_rotation(const void *value, void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  const float * q = (const float*)(value);
+  float mat[16];
+  igl::quat_to_mat(q, mat);
+  // Copy 3x3 linear block
+  for(int i = 0;i<3;i++)
+    for(int j = 0;j<3;j++)
+      sc->clip->cliptr->rot[i*4+j] = mat[i*4+j];
+  update_clip(sc);
+}
+void TW_CALL get_clip_rotation(void *value, void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  float * q = (float *)(value);
+  igl::mat4_to_quat(sc->clip->cliptr->rot,q);
+}
+void TW_CALL invert_clip(void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  invertClip(sc,sc->clip);
+  sc->clip->active |= C_REDO;
+}
+
 void initAntTweakBar(pScene sc,pMesh mesh)
 {
   printf("initAntTweakBar\n");
   TwInit(TW_OPENGL, NULL);
   sc->rebar.TwNewBar("bar");
   TwDefine("bar label='Release' size='200 550' text=light alpha='200' color='68 68 68'");
+  TwGLUTModifiersFunc(glutGetModifiers);
 
   sc->rebar.TwAddVarRW(
     "camera_eye",
@@ -960,7 +1041,6 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     "group='View' "
     "key='z' "
     "help='Set view rotation to view xy plane' ");
-
   sc->rebar.TwAddButton(
     "view_xz",
     view_xz_plane,
@@ -968,7 +1048,6 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     "group='View' "
     "key='y' "
     "help='Set view rotation to view xz plane' ");
-
   sc->rebar.TwAddButton(
     "view_yz",
     view_yz_plane,
@@ -976,7 +1055,6 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     "group='View' "
     "key='x' "
     "help='Set view rotation to view yz plane' ");
-
   sc->rebar.TwAddButton(
     "snap",
     snap_rotation_to_canonical_view_quat,
@@ -984,7 +1062,6 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     "group='View' "
     "key='Z' "
     "help='Snap view rotation to nearest canonical view' ");
-
   sc->rebar.TwAddVarCB(
     "rotation",
     TW_TYPE_QUAT4F,
@@ -992,6 +1069,50 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     get_rotation,
     sc,
     "group='View' open ");
+
+  sc->rebar.TwAddButton(
+    "clip_xy",
+    clip_xy_plane,
+    sc,
+    "group='Clip' "
+    "key='ALT+x' "
+    "help='Set clip rotation to clip xy plane' ");
+  sc->rebar.TwAddButton(
+    "clip_xz",
+    clip_xz_plane,
+    sc,
+    "group='Clip' "
+    "key='ALT+z' "
+    "help='Set clip rotation to clip xz plane' ");
+  sc->rebar.TwAddButton(
+    "clip_yz",
+    clip_yz_plane,
+    sc,
+    "group='Clip' "
+    "key='ALT+y' "
+    "help='Set clip rotation to clip yz plane' ");
+  sc->rebar.TwAddButton(
+    "invert_clip",
+    invert_clip,
+    sc,
+    "group='Clip' "
+    "key='I' "
+    "help='invert clip direction' ");
+  sc->rebar.TwAddVarCB(
+    "clip_rotation",
+    TW_TYPE_QUAT4F,
+    set_clip_rotation,
+    get_clip_rotation,
+    sc,
+    "group='Clip' ");
+  sc->rebar.TwAddButton(
+    "clip_snap",
+    snap_rotation_to_canonical_clip_quat,
+    sc,
+    "group='Clip' "
+    "key='ALT+Z' "
+    "help='Snap clip rotation to nearest canonical view' ");
+
 
   sc->rebar.TwAddVarRW(
     "mat_amb",
@@ -1030,7 +1151,7 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     TW_TYPE_FLOAT,
     &(sc->material->shininess),
     "group='Material (double-tap e)' "
-    "label='Specular' ");
+    "label='shininess' ");
 
   sc->rebar.TwAddVarRW(
     "scene_type",
@@ -1062,9 +1183,15 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     fprintf(stderr,"Error: could not reload rebar.rbr\n");
   }else
   {
+    // Redo clipping to get proper clip
     if(sc->clip->active & C_ON ) 
     {
       sc->clip->active |= C_REDO;
+    }
+    // Recompile lists to get proper colors
+    if(~(sc->mode & S_MATERIAL))
+    {
+      doLists(sc,mesh);
     }
   }
 }
