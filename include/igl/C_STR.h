@@ -5,7 +5,7 @@
 //   void func(const char * c);
 // Then you can write:
 //   func(C_STR("foo"<<1<<"bar"));
-#include <string>
 #include <sstream>
+#include <string>
 #define C_STR(X) static_cast<std::ostringstream&>(std::ostringstream().seekp(0) << X).str().c_str()
 #endif
