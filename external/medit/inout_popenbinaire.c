@@ -1,9 +1,18 @@
 #include "medit.h"
+#ifdef IGL
+extern "C"{
+#endif
 #include "libmesh5.h"
+#ifdef IGL
+}
+#endif
 #include "extern.h"
 #include "string.h"
 #ifdef WIN32
 #include <fcntl.h>
+#endif
+#ifdef IGL
+#include "eigenv.h"
 #endif
 
 #define WrdSiz 4
@@ -874,7 +883,11 @@ int loadSol_popen_bin(pMesh mesh,char *filename,int numsol) {
 	natureread = "SolAtTriangles";
 	fread( (unsigned char *)&NulPos ,WrdSiz, 1, stdin);
 	fread( (unsigned char *)&nel ,WrdSiz, 1, stdin);
+#ifdef IGL
+	if(debug) printf("SolAtTriangles : nel %d, mesh->nt %d \n",nel,mesh->nt);
+#else
 	if(debug) printf(stdout,"SolAtTriangles : nel %d, mesh->nt %d \n",nel,mesh->nt);
+#endif
 	if ( nel && nel != mesh->nt ) {
 	  fprintf(stderr,"  %%%% Wrong number %d.\n",nel);
 	  retcode=0;

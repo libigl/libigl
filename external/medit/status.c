@@ -1,5 +1,7 @@
+#ifndef IGL
 #ifdef __cplusplus
 extern "C" {
+#endif
 #endif
 
 #include "medit.h"
@@ -177,6 +179,8 @@ void mouseStatus(int button,int state,int x,int y) {
 }
 
 
+#ifndef IGL
 #ifdef __cplusplus
 }
+#endif
 #endif

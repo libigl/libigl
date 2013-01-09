@@ -2,6 +2,10 @@
 #include "extern.h"
 #include "sproto.h"
 
+#ifdef IGL
+#include "eigenv.h"
+#endif
+
 int EatLine(FILE  *in) {
   int    k,c;  
   

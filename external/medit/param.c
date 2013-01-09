@@ -1,5 +1,7 @@
+#ifndef IGL
 #ifdef __cplusplus
 extern "C" {
+#endif
 #endif
 
 #include "medit.h"
@@ -61,6 +63,8 @@ void parEdit(pScene sc) {
 }
 
 
+#ifndef IGL
 #ifdef __cplusplus
 }
+#endif
 #endif

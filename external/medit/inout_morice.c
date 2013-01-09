@@ -1,7 +1,16 @@
 #include "medit.h"
+#ifdef IGL
+extern "C"{
+#endif
 #include "libmesh5.h"
+#ifdef IGL
+}
+#endif
 #include "extern.h"
 #include "string.h"
+#ifdef IGL
+#include "eigenv.h"
+#endif
 static  int debug=0;
 void getline_number(char *nature, int *nb){
   char    data[256];

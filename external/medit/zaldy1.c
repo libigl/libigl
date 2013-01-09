@@ -5,8 +5,10 @@
  *  Copyright (c) Inria, 1999.  All rights reserved. 
 */
 
+#ifndef IGL
 #ifdef __cplusplus
 extern "C" {
+#endif
 #endif
 
 #include <assert.h>

@@ -41,7 +41,7 @@ int pasteView(pTransform view,pCamera cam,pPersp persp) {
  
   view  = (pTransform)memcpy(view,cview,sizeof(struct transform));
   cam   = (pCamera)memcpy(cam,ccam,sizeof(struct camera));
-  persp = memcpy(persp,cpersp,sizeof(struct sperspective));
+  persp = (pPersp)memcpy(persp,cpersp,sizeof(struct sperspective));
   
   if ( !view || !cam || !persp )  exit(2);
   curview = 0;

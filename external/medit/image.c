@@ -45,7 +45,11 @@ PPMimage *loadPPM(const char *imgname,int *type) {
   }
   
   /* allocate memory to store imagee */
+#ifdef IGL
+  result = static_cast<pPPMimage>(malloc(sizeof(PPMimage)));
+#else
   result = malloc(sizeof(PPMimage));
+#endif
   if ( !result ) {
     fprintf(stderr,"  ## Unable to load image.\n");
     return(0);

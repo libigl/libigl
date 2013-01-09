@@ -566,7 +566,6 @@ GLuint listTetraMap(pScene sc,pMesh mesh,ubyte clip) {
 
   // By Leo: get number of triangles to render tet colors correctly
   int boundary_faces = mesh->nt;
-  printf("boundary_faces = %d \n", boundary_faces);
 
   /* build display list */
   dlist = glGenLists(1);

@@ -27,23 +27,63 @@ static int getmesh(pMesh mesh,int range) {
     if ( mesh->extra->iq )  M_free(mesh->extra->nq);
     if ( mesh->extra->n )   M_free(mesh->extra->n);
     M_free(mesh->extra);
+#ifdef IGL
+    mesh->extra = NULL;
+#else
     mesh->extra = (void*)0;
+#endif
   }
   if ( mesh->sol && mesh->nbb ) {
     if ( (mesh->dim==2 && mesh->nfield==3) || (mesh->dim==3 && mesh->nfield==6) )
       for (k=1; k<=mesh->nbb; k++)
         free(mesh->sol[k].m);
     M_free(mesh->sol);
+#ifdef IGL
+    mesh->sol = NULL;
+#else
     mesh->sol = (void*)0;
+#endif
   }
+#ifdef IGL
+  mesh->point = NULL;
+#else
   mesh->point = (void*)0;
+#endif
+#ifdef IGL
+  mesh->tria  = NULL;
+#else
   mesh->tria  = (void*)0;
+#endif
+#ifdef IGL
+  mesh->quad  = NULL;
+#else
   mesh->quad  = (void*)0;
+#endif
+#ifdef IGL
+  mesh->edge  = NULL;
+#else
   mesh->edge  = (void*)0;
+#endif
+#ifdef IGL
+  mesh->tetra = NULL;
+#else
   mesh->tetra = (void*)0;
+#endif
+#ifdef IGL
+  mesh->hexa  = NULL;
+#else
   mesh->hexa  = (void*)0;
+#endif
+#ifdef IGL
+  mesh->adja  = NULL;
+#else
   mesh->adja  = (void*)0;
+#endif
+#ifdef IGL
+  mesh->voy   = NULL;
+#else
   mesh->voy   = (void*)0;
+#endif
   mesh->np = mesh->nt = mesh->nq = mesh->ne = 0;
   mesh->ntet = mesh->nhex = mesh->nbb = 0;
 
@@ -245,3 +285,4 @@ int animat() {
   quiet = 1;
   return(1);
 }
+

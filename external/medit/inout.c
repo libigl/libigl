@@ -1,6 +1,15 @@
 #include "medit.h"
+#ifdef IGL
+extern "C"{
+#endif
 #include "libmesh5.h"
+#ifdef IGL
+}
+#endif
 #include "extern.h"
+#ifdef IGL
+#include "eigenv.h"
+#endif
 
 
 int loadMesh(pMesh mesh) {
