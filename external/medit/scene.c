@@ -525,16 +525,67 @@ void drawModel(pScene sc) {
   clip = sc->clip;
   if ( ddebug ) printf("\n-- redraw scene %d, mesh %d\n",sc->idwin,sc->idmesh);
 
+#ifdef IGL
+  const bool hot_dog_view = sc->igl_params->hot_dog_view;
+  const double width = sc->igl_params->width(mesh);
+  const double hot_dog_ratio = sc->igl_params->hot_dog_ratio;
+  int eff_slices = 1;
+  if(hot_dog_view)
+  {
+    eff_slices = sc->igl_params->num_hot_dog_slices+1;
+  }
+  for(int h = 0; h < eff_slices ;h+=2)
+  {
+#endif
+
   glDisable(GL_LIGHTING);
 
   /* draw clipping plane */
   if ( clip->active & C_ON ) {
+#ifdef IGL
+    if(hot_dog_view)
+    {
+      drawClip(sc,clip,mesh,0);
+      // first clipping plane
+      GLdouble eqn1[4];
+      for(int c = 0;c<3;c++) eqn1[c] = clip->eqn[c];
+      eqn1[3] = clip->eqn[3] + width*h;
+      
+      glClipPlane(GL_CLIP_PLANE0,eqn1);
+      glEnable(GL_CLIP_PLANE0);
+
+      // second clipping plane
+      if(h>0)
+      {
+        GLdouble eqn2[4];
+        for(int c = 0;c<3;c++) eqn2[c] = -clip->eqn[c];
+        eqn2[3] = -clip->eqn[3] - width*(h) + (1.-hot_dog_ratio)*width*2;
+        //eqn2[3] = -clip->eqn[3] - width*(h-1);
+
+        glClipPlane(GL_CLIP_PLANE1,eqn2);
+        glEnable(GL_CLIP_PLANE1);
+      }else
+      {
+        glDisable(GL_CLIP_PLANE1);
+      }
+
+    }else
+    {
+#endif
     drawClip(sc,clip,mesh,0);
     glClipPlane(GL_CLIP_PLANE0,clip->eqn);
     glEnable(GL_CLIP_PLANE0);
+#ifdef IGL
+    }
+#endif
   }
   else
+  {
+#ifdef IGL
+    glDisable(GL_CLIP_PLANE1);
+#endif
     glDisable(GL_CLIP_PLANE0);
+  }
 
   /* draw object if static scene */
   sstatic = view->mstate > 0 && clip->cliptr->mstate > 0;
@@ -562,6 +613,10 @@ void drawModel(pScene sc) {
     glDisable(GL_COLOR_MATERIAL);
     glCallList(sc->glist);
   }
+#ifdef IGL
+  }
+  glDisable(GL_CLIP_PLANE1);
+#endif
 
   glDisable(GL_CLIP_PLANE0);
   if ( clip->active & C_EDIT || sc->item & S_BOX )
@@ -905,8 +960,7 @@ void TW_CALL get_rotation(void *value, void *clientData)
 // Update clip after it changed
 void update_clip(pScene sc)
 {
-  if ( sc->clip->active & C_ON && 
-                 (sc->clip->active & C_EDIT || sc->clip->active & C_FREEZE) )
+  if ( sc->clip->active & C_ON )
     sc->clip->active |= C_UPDATE;
 }
 // Snap XY plane
@@ -1030,6 +1084,34 @@ void TW_CALL get_num_hot_dog_slices(void *value, void *clientData)
   sc->clip->active |= C_REDO;
 }
 
+void TW_CALL set_hot_dog_ratio(const void *value, void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  sc->igl_params->hot_dog_ratio = *(const double*)(value);
+  sc->clip->active |= C_REDO;
+}
+void TW_CALL get_hot_dog_ratio(void *value, void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  *(double *)(value) = sc->igl_params->hot_dog_ratio;
+  sc->clip->active |= C_REDO;
+}
+
+void TW_CALL set_C_HIDE(const void *value, void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  bool v = *(const bool*)(value);
+  if(v != (0!=(sc->clip->active & C_HIDE)))
+  {
+    sc->clip->active ^= C_HIDE;
+  }
+}
+void TW_CALL get_C_HIDE(void *value, void *clientData)
+{
+  pScene sc = static_cast<const pScene>(clientData);
+  *(bool *)(value) = sc->clip->active & C_HIDE;
+}
+
 void initAntTweakBar(pScene sc,pMesh mesh)
 {
   printf("initAntTweakBar\n");
@@ -1087,6 +1169,16 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     "min=1 max="<<MAX_HOT_DOG_SLICES<<" step=1"
     "help='number of hot_dog_slices' "));
 
+  sc->rebar.TwAddVarCB(
+    "hot_dog_ratio",
+    TW_TYPE_DOUBLE,
+    set_hot_dog_ratio,
+    get_hot_dog_ratio,
+    sc,
+    "group='View' "
+    "min=0 max=1 step=0.1"
+    "help='ratio of in to out hot dog slice sizes' ");
+
   sc->rebar.TwAddButton(
     "view_xy",
     view_xy_plane,
@@ -1122,6 +1214,11 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     get_rotation,
     sc,
     "group='View' open ");
+  sc->rebar.TwAddVarRW(
+    "fov_y",
+    TW_TYPE_FLOAT,
+    &(sc->persp->fovy),
+    "group='View' readonly=true");
 
   sc->rebar.TwAddButton(
     "clip_xy",
@@ -1173,6 +1270,15 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     sc,
     "help='Translation component of clip (dont touch)' "
     "group='Clip' readonly=true");
+  sc->rebar.TwAddVarCB(
+    "clip_C_HIDE",
+    TW_TYPE_BOOLCPP,
+    set_C_HIDE,
+    get_C_HIDE,
+    sc,
+    "help='Hide clipping plane ' "
+    "key='P' "
+    "group='Clip' ");
 
 
   sc->rebar.TwAddVarRW(
@@ -1245,15 +1351,16 @@ void initAntTweakBar(pScene sc,pMesh mesh)
   }else
   {
     // Redo clipping to get proper clip
-    if(sc->clip->active & C_ON ) 
-    {
-      sc->clip->active |= C_REDO;
-    }
+    ubyte old_ca = sc->clip->active;
+    sc->clip->active |= C_REDO;
+    sc->clip->active |= C_UPDATE;
+    sc->clip->active |= C_EDIT;
+    updateClip(sc->clip,mesh);
+    sc->clip->active = old_ca;
+
     // Recompile lists to get proper colors
-    if(~(sc->mode & S_MATERIAL))
-    {
-      doLists(sc,mesh);
-    }
+    doLists(sc,mesh);
+    doMapLists(sc,mesh,true);
   }
 }
 #endif

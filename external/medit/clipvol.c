@@ -296,6 +296,173 @@ GLuint capTetraMap(pMesh mesh) {
     k  = pm->depmat[LTets];
     if ( !k || pm->flag )  continue;
  
+#ifdef IGL
+    if(sc->igl_params->hot_dog_view)
+    {
+      while ( k != 0 ) {
+        pt = &mesh->tetra[k];
+        if ( !pt->v[0] || !pt->clip ) {
+          k = pt->nxt;
+          continue;
+        }
+        // loop over slices
+        for(int h = 0;h<sc->igl_params->num_hot_dog_slices;h++)
+        {
+          nbpos = nbneg = nbnul = 0;
+          for (l=0; l<4; l++) {
+            p0 = &mesh->point[pt->v[l]];
+            if ( p0->hd_clip[h] == 2 )      pos[nbpos++] = l;
+            else if (p0->hd_clip[h] == 1 )  neg[nbneg++] = l;
+            else                            nbnul++;
+            dd1[l] = p0->hd_dd1[h];
+            //dd1[l] = p0->c[0]*clip->eqn[0] + p0->c[1]*clip->eqn[1] \
+            //      + p0->c[2]*clip->eqn[2] + clip->eqn[3];
+          }
+
+          if ( nbneg == 2 && nbpos == 2 ) {
+            /* display quadrilateral */
+            for (l=0; l<4; l++) {
+              k1 = neg[tn[l]];
+              k2 = pos[tp[l]];
+              p0 = &mesh->point[pt->v[k1]];
+              p1 = &mesh->point[pt->v[k2]];
+              cc = 1.0f;
+              if ( dd1[k2]-dd1[k1] != 0.0f )
+                cc = fabs(dd1[k1] / (dd1[k2]-dd1[k1]));
+              cx[l] = p0->c[0]+cc*(p1->c[0]-p0->c[0]);
+              cy[l] = p0->c[1]+cc*(p1->c[1]-p0->c[1]);
+              cz[l] = p0->c[2]+cc*(p1->c[2]-p0->c[2]);
+              if ( mesh->typage == 2 ) {
+                ps0 = &mesh->sol[pt->v[k1]];
+                ps1 = &mesh->sol[pt->v[k2]];
+                sol[l] = ps0->bb+cc*(ps1->bb-ps0->bb);
+              }
+              else {
+                ps0 = &mesh->sol[k+boundary_faces];
+                sol[l] = ps0->bb;
+              }
+            }
+
+            /* compute face normal */
+            ax = cx[1]-cx[0]; ay = cy[1]-cy[0]; az = cz[1]-cz[0];
+            bx = cx[2]-cx[0]; by = cy[2]-cy[0]; bz = cz[2]-cz[0];
+            n[0] = ay*bz - az*by;
+            n[1] = az*bx - ax*bz;
+            n[2] = ax*by - ay*bx;
+            d = n[0]*n[0] + n[1]*n[1] + n[2]*n[2];
+            if ( d > 0.0f ) {
+              d = 1.0f / sqrt(d);
+              n[0] *= d;  
+              n[1] *= d;  
+              n[2] *= d;
+            }
+
+            /* store triangles */
+            t1.a[0] = t2.a[0] = cx[0];
+            t1.a[1] = t2.a[1] = cy[0];
+            t1.a[2] = t2.a[2] = cz[0];
+
+            t1.b[0] = cx[1];
+            t1.b[1] = cy[1];
+            t1.b[2] = cz[1];
+
+            t1.c[0] = t2.b[0] = cx[2]; 
+            t1.c[1] = t2.b[1] = cy[2]; 
+            t1.c[2] = t2.b[2] = cz[2]; 
+
+            t2.c[0] = cx[3]; 
+            t2.c[1] = cy[3]; 
+            t2.c[2] = cz[3]; 
+
+            /* store normals */
+            memcpy(t1.na,n,3*sizeof(float));
+            memcpy(t1.nb,n,3*sizeof(float));
+            memcpy(t1.nc,n,3*sizeof(float));
+            memcpy(t2.na,n,3*sizeof(float));
+            memcpy(t2.nb,n,3*sizeof(float));
+            memcpy(t2.nc,n,3*sizeof(float));
+
+            /* store solutions */
+            t1.va = t2.va = sol[0];
+            t1.vb = sol[1];
+            t1.vc = t2.vb = sol[2];
+            t2.vc = sol[3];
+            /* color interpolation */
+            cutTriangle(sc,t1);
+            cutTriangle(sc,t2);
+          }
+          else if(nbneg == 3 || nbpos == 3){
+            /* display triangle */
+            for (l=0; l<3; l++) {
+              k1 = nbneg == 3 ? neg[l] : pos[l];
+              k2 = nbneg == 3 ? pos[0] : neg[0];
+              p0 = &mesh->point[pt->v[k1]];
+              p1 = &mesh->point[pt->v[k2]];
+              cc = fabs(dd1[k1] / (dd1[k2]-dd1[k1]));
+              cx[l] = p0->c[0]+cc*(p1->c[0]-p0->c[0]);
+              cy[l] = p0->c[1]+cc*(p1->c[1]-p0->c[1]);
+              cz[l] = p0->c[2]+cc*(p1->c[2]-p0->c[2]);
+              if ( mesh->typage == 2 ) {
+                ps0 = &mesh->sol[pt->v[k1]];
+                ps1 = &mesh->sol[pt->v[k2]];
+                sol[l] = ps0->bb+cc*(ps1->bb-ps0->bb);
+              }
+              else {
+                ps0 = &mesh->sol[k+boundary_faces];
+                sol[l] = ps0->bb;
+              }
+            }
+
+            /* compute face normal */
+            ax = cx[1]-cx[0]; ay = cy[1]-cy[0]; az = cz[1]-cz[0];
+            bx = cx[2]-cx[0]; by = cy[2]-cy[0]; bz = cz[2]-cz[0];
+            n[0] = ay*bz - az*by;
+            n[1] = az*bx - ax*bz;
+            n[2] = ax*by - ay*bx;
+            d = n[0]*n[0] + n[1]*n[1] + n[2]*n[2];
+            if ( d > 0.0f ) {
+              d = 1.0f / sqrt(d);
+              n[0] *= d;
+              n[1] *= d;
+              n[2] *= d;
+            }
+
+            /* store triangle */
+            t1.a[0] = cx[0];
+            t1.a[1] = cy[0];
+            t1.a[2] = cz[0];
+
+            t1.b[0] = cx[1];
+            t1.b[1] = cy[1];
+            t1.b[2] = cz[1];
+
+            t1.c[0] = cx[2];
+            t1.c[1] = cy[2]; 
+            t1.c[2] = cz[2]; 
+
+            /* store normal */
+            memcpy(t1.na,n,3*sizeof(float));
+            memcpy(t1.nb,n,3*sizeof(float));
+            memcpy(t1.nc,n,3*sizeof(float));
+
+            /* store solutions */
+            t1.va = sol[0];
+            t1.vb = sol[1];
+            t1.vc = sol[2];
+
+            /* color interpolation */
+            cutTriangle(sc,t1);
+          }     
+          else
+          {
+            // Some tets will occur on multiple maybe even all cuts. But most
+            // won't. Hence this case
+          }
+        }
+        k = pt->nxt;
+      }
+    }else{
+#endif
     while ( k != 0 ) {
       pt = &mesh->tetra[k];
       if ( !pt->v[0] || !pt->clip ) {
@@ -449,6 +616,9 @@ GLuint capTetraMap(pMesh mesh) {
       }     
       k = pt->nxt;
     }
+#ifdef IGL
+  }
+#endif
   }
   
   glEnd();

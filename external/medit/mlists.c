@@ -13,7 +13,8 @@ void cutTriangle(pScene sc,triangle t) {
   triangle      t1,t2;
   double        kc,x,dd,rgb[4],maxe;
   int           i,ia,ib,ic,iedge;
-  static double hsv[3] = { 0.0f, 1.0f, 0.80f };
+  // Alec: hard coded pallete
+  static double hsv[3] = { 0.0f, 0.2f, 0.50f };
 
   /* analyze triangle edges */
   if ( t.va < sc->iso.val[0] )  

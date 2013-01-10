@@ -121,7 +121,11 @@ void matInit(pScene sc) {
     /* emission: null (pas un neon!) */
     pm->emi[0] = pm->emi[1] = pm->emi[2] = 0.0;  pm->emi[3] = 1.0;
     /* specular: soleil blanc */
+#ifdef IGL
+    pm->spe[0] = pm->spe[1] = pm->spe[2] = 0.07;  pm->spe[3] = 1.0;
+#else
     pm->spe[0] = pm->spe[1] = pm->spe[2] = 0.4;  pm->spe[3] = 1.0;
+#endif
     /* shininess: etalement des reflections spec. */
     pm->shininess = 80.0;
     if ( m != DEFAULT_MAT )

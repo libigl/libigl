@@ -169,7 +169,8 @@ void clipVertices(pMesh mesh,pScene sc,pClip clip) {
   {
     /* check points in plane */
     zero = sc->dmax*1.e-13;
-    double width = sc->igl_params->width(mesh);
+    const double width = sc->igl_params->width(mesh);
+    const double hot_dog_ratio = sc->igl_params->hot_dog_ratio;
     for (k=1; k<=mesh->np; k++) {
       for(int h = 0;h<sc->igl_params->num_hot_dog_slices;h++)
       {
@@ -177,7 +178,8 @@ void clipVertices(pMesh mesh,pScene sc,pClip clip) {
         p0->clip = 0;
         if ( p0->tag & M_UNUSED )  continue;
         p0->hd_dd1[h] = p0->c[0]*clip->eqn[0] + p0->c[1]*clip->eqn[1] \
-            + p0->c[2]*clip->eqn[2] + clip->eqn[3] + width*h;
+          + p0->c[2]*clip->eqn[2] + clip->eqn[3] + 
+          (h%2==0 ?  width*h : width*(h-1) + width*hot_dog_ratio*2);
         if ( p0->hd_dd1[h] > zero )      p0->hd_clip[h] = 2;
         else if ( p0->hd_dd1[h] < zero ) p0->hd_clip[h] = 1;
         else                   p0->hd_clip[h] = 0;

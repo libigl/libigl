@@ -14,11 +14,14 @@ class IGLParams
     bool hot_dog_view;
     // Number of hot-dog slices
     int num_hot_dog_slices;
+    // ratio of in to out hot dog slice widths
+    double hot_dog_ratio;
   public:
     IGLParams():
       lines_on_cap(false),
       hot_dog_view(false),
-      num_hot_dog_slices(10)
+      num_hot_dog_slices(10),
+      hot_dog_ratio(0.5)
     {};
     // width of one hot dog slice
     double width(pMesh mesh) const
