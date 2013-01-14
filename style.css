@@ -85,6 +85,10 @@ a:hover
   color:#0645AD;
   text-decoration: underline;
 }
+a.missing
+{
+  color:#F32;
+}
 a:visited
 {
   color:#0b0080;

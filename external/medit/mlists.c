@@ -7,6 +7,54 @@ static int ct[4][3] = { {0,1,2}, {0,3,1}, {1,3,2}, {0,2,3} };
 static int ch[6][4] = { {0,1,2,3}, {4,5,6,7}, {0,1,5,4}, 
             {1,2,6,5}, {2,3,7,6}, {0,3,7,4} };
 
+#ifdef IGL
+#include <igl/jet.h>
+#include <igl/rgb_to_hsv.h>
+void IGLParams::rgb(const double x, double * rgb)
+{
+
+  double hsv[3];
+  igl::rgb_to_hsv(this->easter_red,hsv);
+  //hsv[0] = 0;
+  //hsv[1] = this->easter_s;
+  //hsv[2] = this->easter_v;
+  switch(color_map)
+  {
+    case COLOR_MAP_JET:
+      igl::jet(x,rgb);
+      return;
+    case COLOR_MAP_EASTER:
+    {
+      hsv[0] = x*360;
+      hsvrgb(hsv,rgb);
+      return;
+    }
+    case COLOR_MAP_WINDING_THEN_EASTER:
+    {
+      if(x == 0)
+      {
+        rgb[0] = 1;
+        rgb[1] = 0;
+        rgb[2] = 0;
+      }else
+      {
+        hsv[0] = x*360;
+        hsvrgb(hsv,rgb);
+      }
+      return;
+    }
+    case COLOR_MAP_DEFAULT:
+    default:
+    {
+      double def[3] = { 0.0, 1.0, 0.80 };
+      def[0] = 240.0-x*240.0;
+      hsvrgb(def,rgb);
+      return;
+    }
+  }
+}
+#endif
+
 
 /* recursively subdivide a triangle */
 void cutTriangle(pScene sc,triangle t) {
@@ -14,7 +62,7 @@ void cutTriangle(pScene sc,triangle t) {
   double        kc,x,dd,rgb[4],maxe;
   int           i,ia,ib,ic,iedge;
   // Alec: hard coded pallete
-  static double hsv[3] = { 0.0f, 0.2f, 0.50f };
+  static double hsv[3] = { 0.0, 1.0, 0.80 };
 
   /* analyze triangle edges */
   if ( t.va < sc->iso.val[0] )  
@@ -112,8 +160,13 @@ void cutTriangle(pScene sc,triangle t) {
   else if ( t.va > sc->iso.val[MAXISO-1] )
     t.va = sc->iso.val[MAXISO-1];
   kc = (t.va-sc->iso.val[ia-1]) / (sc->iso.val[ia] - sc->iso.val[ia-1]);
+#ifdef IGL
+  sc->igl_params->rgb(
+    1.0-(sc->iso.col[ia-1]*(1.0-kc)+sc->iso.col[ia]*kc)/240.0,rgb);
+#else
   hsv[0] = sc->iso.col[ia-1]*(1.0-kc)+sc->iso.col[ia]*kc;
   hsvrgb(hsv,rgb);
+#endif
 
   glColor4dv(rgb);
   glNormal3fv(t.na);
@@ -124,8 +177,13 @@ void cutTriangle(pScene sc,triangle t) {
   else if ( t.vb > sc->iso.val[MAXISO-1] )
     t.vb = sc->iso.val[MAXISO-1];
   kc = (t.vb-sc->iso.val[ib-1]) / (sc->iso.val[ib] - sc->iso.val[ib-1]);
+#ifdef IGL
+  sc->igl_params->rgb(
+    1.0-(sc->iso.col[ib-1]*(1.0-kc)+sc->iso.col[ib]*kc)/240.0,rgb);
+#else
   hsv[0] = sc->iso.col[ib-1]*(1.0-kc)+sc->iso.col[ib]*kc;
   hsvrgb(hsv,rgb);
+#endif
 
   glColor4dv(rgb);
   glNormal3fv(t.nb);
@@ -136,8 +194,13 @@ void cutTriangle(pScene sc,triangle t) {
   else if ( t.vc > sc->iso.val[MAXISO-1] )
     t.vc = sc->iso.val[MAXISO-1];
   kc = (t.vc-sc->iso.val[ic-1]) / (sc->iso.val[ic] - sc->iso.val[ic-1]);
+#ifdef IGL
+  sc->igl_params->rgb(
+    1.0-(sc->iso.col[ic-1]*(1.0-kc)+sc->iso.col[ic]*kc)/240.0,rgb);
+#else
   hsv[0] = sc->iso.col[ic-1]*(1.0-kc)+sc->iso.col[ic]*kc;
   hsvrgb(hsv,rgb);
+#endif
 
   glColor4dv(rgb);
   glNormal3fv(t.nc);
@@ -1170,14 +1233,22 @@ GLuint drawPalette(pScene sc) {
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
     glBegin(GL_QUADS);
     for (i=1; i<MAXISO; i++) {
+#ifdef IGL
+    sc->igl_params->rgb( 1.0-(sc->iso.col[i-1])/240.0,rgb);
+#else
       hsv[0] = sc->iso.col[i-1];
       hsvrgb(hsv,rgb);
+#endif
       glColor3dv(rgb);
       glVertex2f(xpos,bottom);
       glVertex2f(xpos,top);
 
+#ifdef IGL
+    sc->igl_params->rgb( 1.0-(sc->iso.col[i])/240.0,rgb);
+#else
       hsv[0] = sc->iso.col[i];
       hsvrgb(hsv,rgb);
+#endif
       glColor3dv(rgb);
       glVertex2f(xpos+inc,top);
       glVertex2f(xpos+inc,bottom);
@@ -1227,14 +1298,22 @@ GLuint drawPalette(pScene sc) {
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
     glBegin(GL_QUADS);
     for (i=1; i<MAXISO; i++) {
+#ifdef IGL
+    sc->igl_params->rgb( 1.0-(sc->iso.col[i-1])/240.0,rgb);
+#else
       hsv[0] = sc->iso.col[i-1];
       hsvrgb(hsv,rgb);
+#endif
       glColor3dv(rgb);
       glVertex2f(left,ypos);
       glVertex2f(right,ypos);
 
+#ifdef IGL
+      sc->igl_params->rgb( 1.0-(sc->iso.col[i])/240.0,rgb);
+#else
       hsv[0] = sc->iso.col[i];
       hsvrgb(hsv,rgb);
+#endif
       glColor3dv(rgb);
       glVertex2f(right,ypos+inc);
       glVertex2f(left,ypos+inc);
@@ -1273,14 +1352,22 @@ GLuint drawPalette(pScene sc) {
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
     glBegin(GL_QUADS);
     for (i=1; i<MAXISO; i++) {
+#ifdef IGL
+      sc->igl_params->rgb( 1.0-(sc->iso.col[i-1])/240.0,rgb);
+#else
       hsv[0] = sc->iso.col[i-1];
       hsvrgb(hsv,rgb);
+#endif
       glColor3dv(rgb);
       glVertex2f(left,ypos);
       glVertex2f(right,ypos);
 
+#ifdef IGL
+      sc->igl_params->rgb( 1.0-(sc->iso.col[i])/240.0,rgb);
+#else
       hsv[0] = sc->iso.col[i];
       hsvrgb(hsv,rgb);
+#endif
       glColor3dv(rgb);
       glVertex2f(right,ypos+inc);
       glVertex2f(left,ypos+inc);

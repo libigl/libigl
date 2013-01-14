@@ -4,6 +4,13 @@
 
 // Defines pMesh
 #include "grafic.h"
+enum ColorMap {
+  COLOR_MAP_DEFAULT = 0,
+  COLOR_MAP_JET = 1,
+  COLOR_MAP_EASTER = 2,
+  COLOR_MAP_WINDING_THEN_EASTER = 3,
+  NUM_COLOR_MAP = 4,
+};
 
 class IGLParams
 {
@@ -16,13 +23,24 @@ class IGLParams
     int num_hot_dog_slices;
     // ratio of in to out hot dog slice widths
     double hot_dog_ratio;
+    ColorMap color_map;
+    float easter_red[3];
+    float easter_s;
+    float easter_v;
   public:
     IGLParams():
       lines_on_cap(false),
       hot_dog_view(false),
       num_hot_dog_slices(10),
-      hot_dog_ratio(0.5)
-    {};
+      hot_dog_ratio(0.5),
+      color_map(COLOR_MAP_DEFAULT)
+    {
+      easter_red[0] = 0.8;
+      easter_red[1] = 0.1;
+      easter_red[2] = 0.8;
+      easter_s = 0.1;
+      easter_v = 0.8;
+    };
     // width of one hot dog slice
     double width(pMesh mesh) const
     {
@@ -40,6 +58,12 @@ class IGLParams
                   mesh->zmax-mesh->zmin)) /
         (double)num_hot_dog_slices;
     };
+    // get color from colormap, mlist.c
+    //
+    // Inputs:
+    //   x  value between 0 and 1
+    void rgb(const double x, double * rgb);
+    ;
 };
 #endif
 #endif

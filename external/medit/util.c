@@ -86,7 +86,12 @@ void output3(GLfloat x,GLfloat y,GLfloat z,char *format,...) {
 }
 
 /* color converter */
+#ifdef IGL
+template <typename T>
+void hsvrgb(T *hsv,double *rgb) {
+#else
 void hsvrgb(double *hsv,double *rgb) {
+#endif
   double f,p,q,t;
   int    i;
 
@@ -106,6 +111,10 @@ void hsvrgb(double *hsv,double *rgb) {
   case 5: rgb[0] = hsv[2]; rgb[1] = p;      rgb[2] = q; break;
   }
 }
+#ifdef IGL
+template void hsvrgb<double>(double*, double*);
+template void hsvrgb<float>(float*, double*);
+#endif
 
 /* transform: u = MxV */
 void transformPoint(double u[4],float v[4],float m[16]) {

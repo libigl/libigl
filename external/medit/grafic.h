@@ -182,6 +182,7 @@ typedef Strgrd * pStrgrd;
 
 typedef struct siso {
   float  val[MAXISO+2];
+  // Alec: ranges from 0 to 240
   float  col[MAXISO+2];
   ubyte  palette,ptyp;
 } Iso;

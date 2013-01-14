@@ -379,6 +379,9 @@ int main(int argc,char *argv[]) {
   else
     type = GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_STEREO;
   glutInitDisplayMode(type);
+#ifdef IGL
+  glutInitDisplayString( "rgba depth double samples>=8 ");
+#endif
   if ( infogl )  grInfo();
 
   /* call animate or normal mode */

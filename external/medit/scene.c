@@ -234,6 +234,9 @@ static void displayScene(pScene sc,int mode,int clip) {
     glDisable(GL_LIGHTING);
     glDisable(GL_COLOR_MATERIAL);
     glEnable(GL_POLYGON_OFFSET_FILL);
+#ifdef IGL
+    if(!sc->igl_params->lines_on_cap && (clip && sc->clip->active & C_CAP)) glDisable(GL_POLYGON_OFFSET_FILL);
+#endif
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
     glColor3fv(sc->par.back);
       drawList(sc,clip,0);
@@ -255,6 +258,9 @@ static void displayScene(pScene sc,int mode,int clip) {
     glEnable(GL_LIGHTING);
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
     glEnable(GL_POLYGON_OFFSET_FILL);
+#ifdef IGL
+    if(!sc->igl_params->lines_on_cap && (clip && sc->clip->active & C_CAP)) glDisable(GL_POLYGON_OFFSET_FILL);
+#endif
       drawList(sc,clip,0);
     glDisable(GL_LIGHTING);
     glDisable(GL_POLYGON_OFFSET_FILL);
@@ -302,8 +308,14 @@ static void displayScene(pScene sc,int mode,int clip) {
       if ( sc->mode & S_COLOR )  glEnable(GL_LIGHTING);
       glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
       glEnable(GL_POLYGON_OFFSET_FILL);
+#ifdef IGL
+    if(!sc->igl_params->lines_on_cap && (clip && sc->clip->active & C_CAP)) glDisable(GL_POLYGON_OFFSET_FILL);
+#endif
       if ( sc->mode & S_MAP ) {
         glEnable(GL_COLOR_MATERIAL);
+#ifdef IGL
+    if(!sc->igl_params->lines_on_cap && (clip && sc->clip->active & C_CAP)) glDisable(GL_LIGHTING);
+#endif
 	drawList(sc,clip,map);
         glDisable(GL_COLOR_MATERIAL);
       }
@@ -319,6 +331,12 @@ static void displayScene(pScene sc,int mode,int clip) {
     glDisable(GL_POLYGON_OFFSET_FILL);
 #ifdef ppc
     bogusQuad(sc);
+#endif
+#ifdef IGL
+    if(
+        //(mode==31) // Seems to be data+cap
+        //&&
+        !sc->igl_params->lines_on_cap && (clip && sc->clip->active & C_CAP)) break;
 #endif
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
     if ( !(sc->mode & S_BDRY) )  break;
@@ -619,7 +637,11 @@ void drawModel(pScene sc) {
 #endif
 
   glDisable(GL_CLIP_PLANE0);
+#if IGL
+  if ( sc->item & S_BOX )
+#else
   if ( clip->active & C_EDIT || sc->item & S_BOX )
+#endif
     drawBox(sc,mesh,0);
   if ( sc->item & S_AXIS )
     drawAxis(sc,mesh->dim);
@@ -1219,6 +1241,43 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     TW_TYPE_FLOAT,
     &(sc->persp->fovy),
     "group='View' readonly=true");
+  TwEnumVal ColorMapTypeEV[NUM_COLOR_MAP] = 
+  {
+    {COLOR_MAP_DEFAULT,"DEFAULT"},
+    {COLOR_MAP_JET,"JET"},
+    {COLOR_MAP_EASTER,"EASTER"},
+    {COLOR_MAP_WINDING_THEN_EASTER,"WN_EASTER"},
+  };
+  TwType ColorMapTypeTW = 
+    igl::ReTwDefineEnum(
+      "ColorMapType", 
+      ColorMapTypeEV, 
+      NUM_COLOR_MAP);
+  sc->rebar.TwAddVarRW(
+    "color_map",
+    ColorMapTypeTW,
+    &(sc->igl_params->color_map),
+    "group=View "
+    "keydecr='<' keyincr='>' "
+    "help='Colormap for data vis.' ");
+  sc->rebar.TwAddVarRW(
+    "easter_red",
+    TW_TYPE_COLOR3F,
+    &(sc->igl_params->easter_red),
+    "group=View "
+    "help='Colormap easter hsv for red.' colormode=hls");
+  //sc->rebar.TwAddVarRW(
+  //  "easter_s",
+  //  TW_TYPE_DOUBLE,
+  //  &(sc->igl_params->easter_s),
+  //  "group=View "
+  //  "help='Colormap easter hsv for red.' colormode=hls");
+  //sc->rebar.TwAddVarRW(
+  //  "easter_v",
+  //  TW_TYPE_DOUBLE,
+  //  &(sc->igl_params->easter_v),
+  //  "group=View "
+  //  "help='Colormap easter hsv for red.' ");
 
   sc->rebar.TwAddButton(
     "clip_xy",

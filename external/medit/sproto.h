@@ -284,7 +284,12 @@ void   setFont(char* name,int size);
 void   drwstr(GLuint x,GLuint y,char* format, ...);
 void   output2(GLfloat x,GLfloat y,char *format,...); 
 void   output3(GLfloat x,GLfloat y,GLfloat z,char *format,...);
+#ifdef IGL
+template <typename T>
+void hsvrgb(T *hsv,double *rgb);
+#else
 void   hsvrgb(double *hsv,double *rgb);
+#endif
 void   transformPoint(double u[4],float v[4],float m[16]);
 void transformPoint2(double u[4],float v[4],float m[16]) ;
 void   transformPointd(double u[4],double v[4],double m[16]);
