@@ -41,10 +41,18 @@ GLuint listTria(pScene sc,pMesh mesh) {
     if ( !(sc->mode & S_MATERIAL) )
       pm = &sc->material[DEFAULT_MAT];
     transp = pm->amb[3] < 0.999 || pm->dif[3] < 0.999 || pm->spe[3] < 0.999;
+#ifdef IGL
+    int old_depth_func =0;
+    glGetIntegerv(GL_DEPTH_FUNC,&old_depth_func);
+#endif
     if ( transp ) {
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+#ifdef IGL
+      glDepthFunc(GL_ALWAYS);
+#else
       glDepthMask(GL_FALSE);
+#endif
     }
     glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,pm->amb);
     glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,pm->spe);
@@ -204,7 +212,11 @@ GLuint listTria(pScene sc,pMesh mesh) {
     }
     glEnd();
     if ( transp ) {
+#ifdef IGL
+      glDepthFunc(old_depth_func);
+#else
       glDepthMask(GL_TRUE);
+#endif
       glDisable(GL_BLEND);
     }
   }
@@ -480,7 +492,11 @@ GLuint listTetra(pScene sc,pMesh mesh,ubyte clip) {
       glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&pm->shininess);
     }
     else
+#ifdef IGL
+      glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,sc->igl_params->tet_color);
+#else
       glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,redcol);
+#endif
     
     /* display triangular faces */
     glBegin(GL_TRIANGLES);

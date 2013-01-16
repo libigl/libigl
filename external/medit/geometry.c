@@ -72,9 +72,28 @@ GLuint geomList(pScene sc,pMesh mesh) {
   }
 
   /* draw edges */
+#ifdef IGL
+  for(int pass = 0;pass<2;pass++)
+  {
+#endif
+#ifdef IGL
+  glEnable(GL_LINE_SMOOTH);
+  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+#endif
   if ( ddebug )  printf("construct edge list\n");
   glLineWidth(sc->par.linewidth);
-  glBegin(GL_LINES);
+#ifdef IGL
+  if(pass == 0)
+  {
+    glPointSize(sc->par.linewidth);
+    glEnable( GL_POINT_SMOOTH );
+    glBegin(GL_POINTS);
+  }else
+  {
+    glBegin(GL_LINES);
+  }
+#endif
+  //glBegin(GL_LINES);
   for (k=1; k<=mesh->na; k++) {
     pr = &mesh->edge[k];
     if ( pr->v[0] > mesh->np || pr->v[1] > mesh->np )
@@ -95,6 +114,17 @@ GLuint geomList(pScene sc,pMesh mesh) {
       glColor3fv(pm->dif);
     }
     if ( sc->par.linc == 1 )  glColor3fv(sc->par.edge);
+#ifdef IGL
+      if(pr->ref == 1)
+      {
+        // Non-manifold
+        glColor3fv(sc->igl_params->nme_color);
+      }else if(pr->ref == 2)
+      {
+        // Boundary
+        glColor3fv(sc->igl_params->open_color);
+      }
+#endif
     pp0 = &mesh->point[pr->v[0]];
     pp1 = &mesh->point[pr->v[1]];
     glVertex3f(pp0->c[0],pp0->c[1],pp0->c[2]);
@@ -102,6 +132,9 @@ GLuint geomList(pScene sc,pMesh mesh) {
     it++;
   }
   glEnd();
+#ifdef IGL
+  }
+#endif
   glLineWidth(1.0);
   glEndList();
 

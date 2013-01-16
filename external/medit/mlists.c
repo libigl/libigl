@@ -10,7 +10,7 @@ static int ch[6][4] = { {0,1,2,3}, {4,5,6,7}, {0,1,5,4},
 #ifdef IGL
 #include <igl/jet.h>
 #include <igl/rgb_to_hsv.h>
-void IGLParams::rgb(const double x, double * rgb)
+void IGLParams::rgb(double x, double * rgb)
 {
 
   double hsv[3];
@@ -63,6 +63,9 @@ void cutTriangle(pScene sc,triangle t) {
   int           i,ia,ib,ic,iedge;
   // Alec: hard coded pallete
   static double hsv[3] = { 0.0, 1.0, 0.80 };
+#ifdef IGL
+  rgb[3] = sc->material->dif[3];
+#endif
 
   /* analyze triangle edges */
   if ( t.va < sc->iso.val[0] )  
@@ -230,6 +233,17 @@ GLuint listTriaMap(pScene sc,pMesh mesh) {
   dlist = glGenLists(1);
   glNewList(dlist,GL_COMPILE);
   if ( glGetError() )  return(0);
+#ifdef IGL
+  bool transp = sc->material->dif[3] < 0.999;
+  int old_depth_func =0;
+  glGetIntegerv(GL_DEPTH_FUNC,&old_depth_func);
+  if ( transp )
+  {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glDepthFunc(GL_ALWAYS);
+  }
+#endif
 
   /* build list */
   for (m=0; m<sc->par.nbmat; m++) {
@@ -307,7 +321,27 @@ GLuint listTriaMap(pScene sc,pMesh mesh) {
           ps0 = &mesh->sol[k];
           t.va = t.vb = t.vc = ps0->bb;
         }
+#ifdef IGL
+        if(pt->ref == 1)
+        {
+          // Self-intersection
+          float red[4] = {1.0, 0.0, 0.0, 1.0};
+          red[3] = sc->material->dif[3];
+          glColor4fv(red);
+          glNormal3fv(n);
+          glVertex3fv(t.a);
+          glColor4fv(red);
+          glNormal3fv(n);
+          glVertex3fv(t.b);
+          glColor4fv(red);
+          glNormal3fv(n);
+          glVertex3fv(t.c);
+        }else{
+#endif
         cutTriangle(sc,t);
+#ifdef IGL
+        }
+#endif
         k = pt->nxt;
       }
       glEnd();
@@ -422,6 +456,13 @@ GLuint listTriaMap(pScene sc,pMesh mesh) {
       glEnd();
     }
   }
+#ifdef IGL
+  if(transp)
+  {
+    glDepthFunc(old_depth_func);
+    glDisable(GL_BLEND);
+  }
+#endif
 
   glEndList();
   return(dlist);

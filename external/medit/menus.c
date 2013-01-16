@@ -34,6 +34,12 @@ void doLists(pScene sc,pMesh mesh) {
   if ( sc->clip->active & C_VOL )  sc->clip->active |= C_REDO;
   glutSetCursor(GLUT_CURSOR_INHERIT);
   checkErrors();
+
+#ifdef IGL
+  /* create display lists by geom type */
+  glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+  sc->glist = geomList(sc,mesh);
+#endif
 }
 
 
@@ -336,6 +342,12 @@ void keyItem(unsigned char key,int x,int y) {
   case 'g':  /* const. items */
     if ( !sc->glist )  post = FALSE;
     sc->item ^= S_GEOM;
+#ifdef IGL
+    if(sc->item | S_GEOM)
+    {
+      doLists(sc,mesh);
+    }
+#endif
     break;
   case 'N':
     if ( mesh->nvn )

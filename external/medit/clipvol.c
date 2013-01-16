@@ -52,6 +52,11 @@ GLuint capTetra(pMesh mesh) {
     glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,pm->spe);
     glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,pm->emi);
     glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&pm->shininess);
+#ifdef IGL
+    glDisable(GL_LIGHTING);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,sc->igl_params->tet_color);
+    glColor4fv(sc->igl_params->tet_color);
+#endif
 
 #ifdef IGL
     if(sc->igl_params->hot_dog_view)

@@ -27,6 +27,9 @@ class IGLParams
     float easter_red[3];
     float easter_s;
     float easter_v;
+    float tet_color[4];
+    float open_color[4];
+    float nme_color[4];
   public:
     IGLParams():
       lines_on_cap(false),
@@ -38,8 +41,21 @@ class IGLParams
       easter_red[0] = 0.8;
       easter_red[1] = 0.1;
       easter_red[2] = 0.8;
+      easter_red[3] = 1.0;
       easter_s = 0.1;
       easter_v = 0.8;
+      tet_color[0] = 1.0;
+      tet_color[1] = 0.0;
+      tet_color[2] = 0.0;
+      tet_color[3] = 1.0;
+      nme_color[0] = 0.22;
+      nme_color[1] = 1.0;
+      nme_color[2] = 0.2;
+      nme_color[3] = 1.0;
+      open_color[0] = 0.2;
+      open_color[1] = 0.22;
+      open_color[2] = 1.0;
+      open_color[3] = 1.0;
     };
     // width of one hot dog slice
     double width(pMesh mesh) const
@@ -62,7 +78,7 @@ class IGLParams
     //
     // Inputs:
     //   x  value between 0 and 1
-    void rgb(const double x, double * rgb);
+    void rgb(double x, double * rgb);
     ;
 };
 #endif

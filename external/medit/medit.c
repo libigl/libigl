@@ -174,7 +174,7 @@ int medit0() {
       //meshSurf(mesh);
     }
     meshBox(mesh,1);
-    if ( !quiet )  meshInfo(mesh);
+    if ( !quiet || true)  meshInfo(mesh);
 
     /* read metric  */   
     if ( !loadSol(mesh,mesh->name,1) )
@@ -243,7 +243,7 @@ int medit0_popen() {
     if ( (mesh->ntet && !mesh->nt) || (mesh->nhex && !mesh->nq) )  
       meshSurf(mesh);
     meshBox(mesh,1);
-    if ( !quiet )  meshInfo(mesh);
+    if ( !quiet || true)  meshInfo(mesh);
 
     /*  /\* read metric *\/     // a changer lecture .sol et .bb */
     /*    if ( !loadSol_popen(mesh,mesh->name,1) ) */

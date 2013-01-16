@@ -8,8 +8,12 @@ ANTTWEAKBAR=/usr/local/igl/igl_lib/external/AntTweakBar/
 ANTTWEAKBAR_INC=-I$(ANTTWEAKBAR)/include
 ANTTWEAKBAR_LIB=-L$(ANTTWEAKBAR)/lib -lAntTweakBar -framework  AppKit
 
-INC = -I${LIBMESH} $(IGL_INC) $(ANTTWEAKBAR_INC)
-LIBS  = -framework OpenGL -framework GLUT -L${LIBMESH} -lmesh $(IGL_LIB) $(ANTTWEAKBAR_LIB)
+GL2PS=/opt/local/
+GL2PS_INC=-I$(GL2PS)/include
+GL2PS_LIB=-L$(GL2PS)/lib -lgl2ps
+
+INC = -I${LIBMESH} $(IGL_INC) $(ANTTWEAKBAR_INC) $(GL2PS_INC)
+LIBS  = -framework OpenGL -framework GLUT -L${LIBMESH} -lmesh $(IGL_LIB) $(ANTTWEAKBAR_LIB) $(GL2PS_LIB)
 #CFLAGS = -Wall -O3 -DIGL
 CFLAGS = -Wall -g -DIGL
 

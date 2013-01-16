@@ -8,6 +8,9 @@ extern "C" {
 #include "extern.h"
 #include "sproto.h"
 
+#ifdef IGL
+#include "gl2ps.h"
+#endif
 
 /* OpenGL's GL_3D_COLOR feedback vertex format */
 typedef struct Feedback3Dcolor {
@@ -259,20 +262,49 @@ int sftcpy(pScene sc,pMesh mesh) {
   /* default */
   if ( ddebug ) printf("soft copy\n");
 
+//#ifdef IGL
+//#define SFT_EXT "ps"
+//#define GL2PS_EXT GL2PS_EPS
+//#else
+#define SFT_EXT "ps"
+//#endif
   /* get file name */
   strcpy(data,mesh->name);
   ptr = (char*)strstr(data,".mesh");
   if ( ptr ) *ptr = '\0';
-  nfree = filnum(data,nfree,"ps");
+  nfree = filnum(data,nfree,SFT_EXT);
   if ( nfree == -1 )  return(0);
 
   /* open PS file */
-  sprintf(data,"%s.%.3d.ps",data,nfree);
+  sprintf(data,"%s.%.3d." SFT_EXT,data,nfree);
   file = fopen(data,"w");
   if ( !file ) {
     fprintf(stdout,"  Unable to open %s\n",data);
     return(0);
   }
+
+//#ifdef IGL
+//  // http://www.geuz.org/gl2ps/#tth_sEc3
+//  GLint buffsize = 0, state = GL2PS_OVERFLOW;
+//  GLint viewport[4];
+//
+//  glGetIntegerv(GL_VIEWPORT, viewport);
+//
+//  while( state == GL2PS_OVERFLOW ){
+//    buffsize += 1024*1024;
+//    gl2psBeginPage (mesh->name, "medit", viewport,
+//        GL2PS_EXT, GL2PS_BSP_SORT, GL2PS_SILENT |
+//        GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT,
+//        GL_RGBA, 0, NULL, 0, 0, 0, buffsize,
+//        file, data );
+//    drawModel(sc);
+//    if ( sc->type & S_DECO )  redrawStatusBar(sc);
+//    state = gl2psEndPage();
+//  }
+//
+//  fclose(file);
+//
+//#else
 
   /* size for feedback buffer */
   size    =  0;
@@ -321,6 +353,7 @@ int sftcpy(pScene sc,pMesh mesh) {
 
   if ( ddebug ) fprintf(stdout,"%s written\n",data);
   glutSetCursor(GLUT_CURSOR_INHERIT);
+//#endif
 
   return(1);
 }

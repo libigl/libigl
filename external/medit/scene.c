@@ -152,7 +152,12 @@ static void drawList(pScene sc,int clip,int map) {
   }
   else if ( map ) {
     if ( mesh->nt+mesh->nq ) {
+//#ifdef IGL
+//      // Hack for winding figures to show usual mesh
+//      if ( sc->dlist[LTria] ) glCallList(sc->dlist[LTria]);
+//#else
       if ( sc->mlist[LTria] ) glCallList(sc->mlist[LTria]);
+//#endif
       if ( sc->mlist[LQuad] ) glCallList(sc->mlist[LQuad]);
     }
     else {
@@ -311,8 +316,14 @@ static void displayScene(pScene sc,int mode,int clip) {
 #ifdef IGL
     if(!sc->igl_params->lines_on_cap && (clip && sc->clip->active & C_CAP)) glDisable(GL_POLYGON_OFFSET_FILL);
 #endif
-      if ( sc->mode & S_MAP ) {
+#ifdef IGL
+      if ( sc->mode & S_MAP && (~(sc->clip->active & C_ON) || clip) ) {
         glEnable(GL_COLOR_MATERIAL);
+      }
+#else
+    if ( sc->mode & S_MAP ) {
+      glEnable(GL_COLOR_MATERIAL);
+#endif
 #ifdef IGL
     if(!sc->igl_params->lines_on_cap && (clip && sc->clip->active & C_CAP)) glDisable(GL_LIGHTING);
 #endif
@@ -323,7 +334,6 @@ static void displayScene(pScene sc,int mode,int clip) {
  	glColor4fv(sc->par.back);
 	drawList(sc,clip,0);
       }
-    }
 
     /* boundary */
     glDisable(GL_LIGHTING);
@@ -1241,6 +1251,35 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     TW_TYPE_FLOAT,
     &(sc->persp->fovy),
     "group='View' readonly=true");
+
+  sc->rebar.TwAddVarRW(
+    "open_color",
+    TW_TYPE_COLOR3F,
+    &(sc->igl_params->open_color),
+    "group=View "
+    "help='Color of open boundaries.' colormode=hls");
+
+  sc->rebar.TwAddVarRW(
+    "line_width",
+    TW_TYPE_FLOAT,
+    &(sc->par.linewidth),
+    "group=View "
+    "help='Width of lines.' ");
+
+  sc->rebar.TwAddVarRW(
+    "nme_color",
+    TW_TYPE_COLOR3F,
+    &(sc->igl_params->nme_color),
+    "group=View "
+    "help='Color of nonmanifold edges.' colormode=hls");
+
+  sc->rebar.TwAddVarRW(
+    "tet_color",
+    TW_TYPE_COLOR3F,
+    &(sc->igl_params->tet_color),
+    "group=View "
+    "help='Color of tets.' colormode=hls");
+
   TwEnumVal ColorMapTypeEV[NUM_COLOR_MAP] = 
   {
     {COLOR_MAP_DEFAULT,"DEFAULT"},
@@ -1361,7 +1400,7 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     TW_TYPE_COLOR4F,
     sc->material->dif,
     "group='Material (double-tap e)' "
-    "label='Diffusion' "
+    "label='Diffuse' "
     "colormode=hls ");
 
   sc->rebar.TwAddVarRW(
@@ -1580,10 +1619,12 @@ int createScene(pScene sc,int idmesh) {
   glutSpecialFunc(special);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
 
+#ifndef IGL
   /* create display lists by geom type */
   glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
   doLists(sc,mesh);
   sc->glist = geomList(sc,mesh);
+#endif
   sc->type |= S_FOLLOW;
 
   /* local stack */
@@ -1601,5 +1642,12 @@ int createScene(pScene sc,int idmesh) {
   initIGL(sc,mesh);
   initAntTweakBar(sc,mesh);
 #endif
+
+#ifdef IGL
+  /* create display lists by geom type */
+  glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+  doLists(sc,mesh);
+#endif
+
   return(1);
 }
