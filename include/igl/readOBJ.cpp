@@ -276,6 +276,60 @@ IGL_INLINE bool igl::readOBJ(
   return true;
 }
 
+template <typename DerivedV, typename DerivedF, typename DerivedT, typename Index>
+IGL_INLINE bool igl::readOBJPoly(
+                             const std::string str,
+                             Eigen::PlainObjectBase<DerivedV>& V,
+                             vector<vector< Index > >& F,
+                             Eigen::PlainObjectBase<DerivedV>& CN,
+                             Eigen::PlainObjectBase<DerivedF>& FN,
+                             Eigen::PlainObjectBase<DerivedT>& TC,
+                             Eigen::PlainObjectBase<DerivedF>& FTC)
+{
+  std::vector<std::vector<double> > vV,vTC,vN;
+  std::vector<std::vector<Index> > vF,vFTC,vFN;
+  bool success = igl::readOBJ(str,vV,vTC,vN,vF,vFTC,vFN);
+  if(!success)
+    return false;
+
+  bool V_rect = igl::list_to_matrix(vV,V);
+  if(!V_rect)
+    return false;
+
+  F = vF;
+  
+  if(!vN.empty())
+  {
+    bool VN_rect = igl::list_to_matrix(vN,CN);
+    if(!VN_rect)
+      return false;
+  }
+  
+  if(!vFN.empty())
+  {
+    bool FN_rect = igl::list_to_matrix(vFN,FN);
+    if(!FN_rect)
+      return false;
+  }
+  
+  if(!vTC.empty())
+  {
+    
+    bool T_rect = igl::list_to_matrix(vTC,TC);
+    if(!T_rect)
+      return false;
+  }
+  if(!vFTC.empty())
+  {
+    
+    bool FTC_rect = igl::list_to_matrix(vFTC,FTC);
+    if(!FTC_rect)
+      return false;
+  }
+
+  return true;
+}
+
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE bool igl::readOBJ(
   const std::string str,
