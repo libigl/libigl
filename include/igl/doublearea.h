@@ -18,6 +18,8 @@ namespace igl
   //   F  #F by simplex_size list of mesh faces (must be triangles)
   // Outputs:
   //   dblA  #F list of triangle double areas
+  //
+  // Note: THESE ARE *NOT* SIGNED. In matlab doublearea is signed in 2d
   template <typename DerivedV, typename DerivedF, typename DeriveddblA>
   IGL_INLINE void doublearea( 
     const Eigen::PlainObjectBase<DerivedV> & V, 

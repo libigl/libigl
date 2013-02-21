@@ -44,7 +44,6 @@
 
 #include <vector>
 #include <string>
-#include <cassert>
 
 namespace igl
 {
@@ -68,19 +67,17 @@ namespace igl
     {
     }
     // Shallow copy constructor
+    // I solemnly swear it's OK to copy var this way
     ReTwRWItem(const ReTwRWItem & that):
       name(that.name),
       type(that.type),
       var(that.var)
     {
-      // I don't think you should be using this!
-      assert(false);
     }
     // Shallow assignment 
+    // I solemnly swear it's OK to copy var this way
     ReTwRWItem & operator=(const ReTwRWItem & that)
     {
-      // I don't think you should be using this!
-      assert(false);
       if(this != &that)
       {
         this->name = that.name;
@@ -114,6 +111,7 @@ namespace igl
     {
     }
     // Shallow copy
+    // I solemnly swear it's OK to copy clientData this way
     ReTwCBItem(const ReTwCBItem & that):
       name(that.name),
       type(that.type),
@@ -121,14 +119,11 @@ namespace igl
       getCallback(that.getCallback),
       clientData(that.clientData)
     {
-      // I don't think you should be using this!
-      assert(false);
     }
     // Shallow assignment
+    // I solemnly swear it's OK to copy clientData this way
     ReTwCBItem & operator=(const ReTwCBItem & that)
     {
-      // I don't think you should be using this!
-      assert(false);
       if(this != &that)
       {
         name = that.name;
