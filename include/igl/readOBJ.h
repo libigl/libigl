@@ -73,6 +73,29 @@ namespace igl
     Eigen::PlainObjectBase<DerivedT>& TC,
     Eigen::PlainObjectBase<DerivedF>& FTC);
 
+  //! Read a poly mesh from an ascii obj file
+  // Inputs:
+  //   str  path to .obj file
+  // Outputs:
+  //   V  eigen matrix #V by 3
+  //   POLYF vector of vector with face indices
+  //
+  //
+  // KNOWN BUG: This only knows how to face lines without normal or texture
+  // indices. It will probably crash or give garbage on anything else.
+  //
+  // KNOWN BUG: The order of the attributes is different than the vector
+  // version above
+  template <typename DerivedV, typename DerivedF, typename DerivedT, typename Index>
+  IGL_INLINE bool readOBJPoly(
+                          const std::string str,
+                          Eigen::PlainObjectBase<DerivedV>& V,
+                          vector<vector<Index> >& F,
+                          Eigen::PlainObjectBase<DerivedV>& CN,
+                          Eigen::PlainObjectBase<DerivedF>& FN,
+                          Eigen::PlainObjectBase<DerivedT>& TC,
+                          Eigen::PlainObjectBase<DerivedF>& FTC);
+  
   //! Read a mesh from an ascii obj file
   // Inputs:
   //   str  path to .obj file
