@@ -90,7 +90,7 @@ namespace igl
   IGL_INLINE bool readOBJPoly(
                           const std::string str,
                           Eigen::PlainObjectBase<DerivedV>& V,
-                          vector<vector<Index> >& F,
+                          std::vector<std::vector<Index> >& F,
                           Eigen::PlainObjectBase<DerivedV>& CN,
                           Eigen::PlainObjectBase<DerivedF>& FN,
                           Eigen::PlainObjectBase<DerivedT>& TC,
