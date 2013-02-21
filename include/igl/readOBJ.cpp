@@ -280,7 +280,7 @@ template <typename DerivedV, typename DerivedF, typename DerivedT, typename Inde
 IGL_INLINE bool igl::readOBJPoly(
                              const std::string str,
                              Eigen::PlainObjectBase<DerivedV>& V,
-                             vector<vector< Index > >& F,
+                             std::vector<std::vector< Index > >& F,
                              Eigen::PlainObjectBase<DerivedV>& CN,
                              Eigen::PlainObjectBase<DerivedF>& FN,
                              Eigen::PlainObjectBase<DerivedT>& TC,
