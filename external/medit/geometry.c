@@ -85,7 +85,7 @@ GLuint geomList(pScene sc,pMesh mesh) {
 #ifdef IGL
   if(pass == 0)
   {
-    glPointSize(sc->par.linewidth);
+    glPointSize(sc->igl_params->dot_size);
     glEnable( GL_POINT_SMOOTH );
     glBegin(GL_POINTS);
   }else

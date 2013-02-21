@@ -1267,6 +1267,13 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     "help='Width of lines.' ");
 
   sc->rebar.TwAddVarRW(
+    "dot_size",
+    TW_TYPE_FLOAT,
+    &(sc->igl_params->dot_size),
+    "group=View "
+    "help='size of dots.' ");
+
+  sc->rebar.TwAddVarRW(
     "nme_color",
     TW_TYPE_COLOR3F,
     &(sc->igl_params->nme_color),

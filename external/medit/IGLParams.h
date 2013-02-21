@@ -30,6 +30,7 @@ class IGLParams
     float tet_color[4];
     float open_color[4];
     float nme_color[4];
+    float dot_size;
   public:
     IGLParams():
       lines_on_cap(false),
@@ -56,6 +57,7 @@ class IGLParams
       open_color[1] = 0.22;
       open_color[2] = 1.0;
       open_color[3] = 1.0;
+      dot_size = 10;
     };
     // width of one hot dog slice
     double width(pMesh mesh) const
