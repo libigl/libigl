@@ -1,0 +1,190 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>IGL LIB - Style Guidelines</title>
+    <link href="./style.css" rel="stylesheet" type="text/css">
+  <body>
+    <img src=http://igl.ethz.ch/includes/images/logo-igl.gif alt="igl logo"
+    class=center>
+    <h1>igl_lib Style Guidelines</h1>
+    <p>
+This library is shared by many people. This document highlights some style
+guidelines for <i>developers</i> of the igl library.
+   </p>
+   <p>
+Each function prototype should be well documented.  Write a summary of what
+the function does and a description of each template, input and output in
+each prototype. 
+    </p>
+
+    <h2>Example</h2>
+    <p>
+Here is an example function defined in <code>include/igl/example_fun.h</code> and
+implemented in <code>include/igl/example_fun.cpp</code>.
+    </p>
+    <h3>example_fun.h</h3>
+    <pre><code>
+#ifndef IGL_EXAMPLE_FUN_H
+#define IGL_EXAMPLE_FUN_H
+
+#include "igl_inline.h"
+
+namespace igl
+{
+  // This is an example of a function, it takes a templated parameter and
+  // shovels it into cout
+  //
+  // Templates:
+  //   T  type that supports
+  // Input:
+  //   input  some input of a Printable type
+  // Returns true for the sake of returning something
+  template &lt;typename Printable&gt;
+  IGL_INLINE bool example_fun(const Printable & input);
+}
+
+#ifdef IGL_HEADER_ONLY
+#  include "example_fun.cpp"
+#endif
+
+#endif
+    </code></pre>
+    <h3>example_fun.cpp</h3>
+    <pre><code>
+#include "igl/example_fun.h"
+#include &lt;iostream&gt;
+
+template &lt;typename Printable&gt;
+IGL_INLINE bool igl::example_fun(const Printable & input)
+{
+  using namespace std;
+  cout&lt;&lt;"example_fun: "&lt;&lt;input&lt;&lt;endl;
+  return true;
+}
+
+#ifndef IGL_HEADER_ONLY
+template bool igl::example_fun&lt;double&gt;(const double& input);
+template bool igl::example_fun&lt;int&gt;(const int& input);
+#endif
+    </code></pre>
+
+
+
+    <h2>General rules</h2>
+    <ul>
+      <li> Use a single .h/.cpp pair with the same name as the function </li>
+      <li>
+At least one version of the function should use references for all outputs
+      </li>
+      <li>
+Functions with external dependencies should be a single .h file (no .cpp file)
+  so it won't appear in libigl.a
+      </li>
+      <li>
+Use wrappers and additional prototypes for returning single-output functions'
+outputs, but the default is to only use outputs
+      </li>
+      <li> All inputs should be const when appropriate </li>
+      <li>
+Use c++ references for inputs and outputs rather than pointers or pass-by-copy
+      </li>
+      <li>
+Take the time to write multiple prototypes if you'd like to have optional
+parameters with default values
+      </li>
+      <li>
+External dependencies (besides Eigen, OpenGL, etc.) are discouraged
+      </li>
+      <li>
+External dependencies must be clearly identified at the top of each file.
+      </li>
+      <li>
+External dependencies can go in the external/ directory
+      </li>
+      <li>
+Do not use the using namespace directive anywhere outside a local scope. This
+means never write: <code>using namespace std;</code> or <code>using namespace igl;</code> etc.
+      </li>
+      <li>
+Function names should either be the same as the corresponding MATLAB function
+or should use all lowercase separated by underscores: e.g.
+<code>my_function_name</code>
+      </li>
+      <li> Classes should be in <code>CamelCase</code></li>
+      <li> No tabs, only two spaces per indentation level </li>
+  </ul>
+
+    <h2>Specific rules</h2>
+    <p>
+Each file should be wrapped in an ifndef compiler directive. If the
+file's (and function's) name is example.h, then the ifndef should
+always begin with IGL_, then the function/file name in all caps then
+_H. As in:
+    </p>
+    <pre><code>
+#ifndef IGL_EXAMPLE_H
+#define IGL_EXAMPLE_H
+...
+#endif</code></pre>
+  
+    <p>
+Each file should begin with prototypes *without implementations* of
+each version of the function. All defined in the igl namespace. Each
+prototype should have its own comments describing what it is doing,
+and its templates, inputs, outputs.
+    </p>
+
+    <p>
+Implementation should be separated from prototypes in a .cpp file.
+    </p>
+
+    <p>
+Any includes, such as std libraries etc. should be in the .cpp file not the
+header .h file (whenever feasibly possible).
+    </p>
+
+    <p>
+Be generous by templating your inputs and outputs. If you do use
+templates, you must document the template just as you document inputs
+and outputs.
+    </p>
+
+    <h2>Useful scripts to check style</h2>
+  
+    <table>
+      <tr>
+        <th>script</th>
+        <th>Description</th>
+      <tr class=d0>
+        <td><code>grep -L inline *</code></td>
+        <td>Find files that aren't using "inline"</td>
+      </tr>
+      <tr class=d1>
+        <td><code>grep -L "namespace igl" *</code></td>
+        <td>Find files that aren't using igl namespace</td>
+      </tr>
+      <tr class=d0>
+        <td><code>grep -P '\t' *</code></td>
+        <td>Find files using [TAB] character</td>
+      </tr>
+      <tr class=d1>
+        <td><code>grep -L "^\/\/ Implementation" *</code></td>
+        <td>Find files that don't contain // Implementation</td>
+      </tr>
+      <tr class=d0>
+        <td><code>grep -L "^#ifndef IGL_" *</code></td>
+        <td>Find files that don't contain #ifndef IGL_</td>
+      </tr>
+      <tr class=d1>
+        <td><code>grep -l "^using namespace" *.cpp</code></td>
+        <td>Find .cpp files that contain ^using namespace</td>
+      </tr>
+      <tr class=d0>
+        <td><code>grep -l "ifndef IGL_.*[^H] *$" *</code></td>
+        <td>Find .h files that contain ifndef IGL_*[^H]</td>
+      </tr>
+    </table>
+
+    <p>See also: <a href=tutorial.html>tutorial</a></p>
+  </body>
+</html>
