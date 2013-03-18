@@ -59,6 +59,12 @@ void updateClip(pClip clip,pMesh mesh) {
   sc     = cv.scene[idw];
   view   = sc->view;
   cliptr = clip->cliptr;
+#ifdef IGL
+  if(sc->igl_params->render_on_C_UPDATE)
+  {
+    sc->igl_params->render_on_next = true;
+  }
+#endif
 
   /* compute clip transform */
   if ( clip->active & C_EDIT ) {

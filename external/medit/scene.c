@@ -9,6 +9,7 @@
 #  include <igl/mat_to_quat.h>
 #  include <igl/snap_to_canonical_view_quat.h>
 #  include <igl/C_STR.h>
+#  include <igl/png/render_to_png_async.h>
 #endif
 
 extern GLboolean  hasStereo;
@@ -782,7 +783,7 @@ void redrawScene() {
   if ( stereoMode == MONO || !hasStereo ) {
     glDrawBuffer(GL_BACK_LEFT);
     glClearColor(sc->par.back[0],sc->par.back[1],
-                 sc->par.back[2],sc->par.back[3]);
+                 sc->par.back[2],0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
@@ -852,6 +853,27 @@ void redrawScene() {
     if ( sc->type & S_DECO )  redrawStatusBar(sc);
   }
 #ifdef IGL
+  if(sc->igl_params->render_on_next)
+  {
+    printf("FUCK SHIT\n");
+    char path[1024];
+    pMesh mesh;
+    mesh = cv.mesh[sc->idmesh];
+    strcpy(path,mesh->name);
+    static int numdep = 0;
+#define PNG "png"
+    numdep = filnum(path,numdep,PNG);
+    if ( numdep == -1)
+    {
+      glClearColor(1,0,0,1);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }else
+    {
+      sprintf(path,"%s.%.3d." PNG,path,numdep);
+      igl::render_to_png_async(std::string(path),sc->par.xs,sc->par.ys,true,false);
+    }
+    sc->igl_params->render_on_next = false;
+  }
   TwDraw();
 #endif
 
@@ -1449,6 +1471,15 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     "readonly=true "
     "label='clip->active' ");
 
+  sc->rebar.TwAddVarRW(
+    "render_on_C_UPDATE",
+    TW_TYPE_BOOLCPP,
+    &(sc->igl_params->render_on_C_UPDATE),
+    "group='Render' "
+    "help='Write a png screenshot each time the clip is moved' ",
+    false
+    );
+
   // Try to load previous bar
   if(!sc->rebar.load("rebar.rbr"))
   {
@@ -1581,7 +1612,7 @@ int createScene(pScene sc,int idmesh) {
  
  /* required! to change background color */
   glClearColor(sc->par.back[0],sc->par.back[1],
-               sc->par.back[2],sc->par.back[3]);
+               sc->par.back[2],0);
 
   /* init perspective */
   sc->persp  = initPersp(0,sc->dmax);

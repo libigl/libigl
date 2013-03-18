@@ -30,14 +30,21 @@ class IGLParams
     float tet_color[4];
     float open_color[4];
     float nme_color[4];
+<<<<<<< local
+    bool render_on_C_UPDATE;
+    bool render_on_next;
+=======
     float dot_size;
+>>>>>>> other
   public:
     IGLParams():
       lines_on_cap(false),
       hot_dog_view(false),
       num_hot_dog_slices(10),
       hot_dog_ratio(0.5),
-      color_map(COLOR_MAP_DEFAULT)
+      color_map(COLOR_MAP_DEFAULT),
+      render_on_C_UPDATE(false),
+      render_on_next(false)
     {
       easter_red[0] = 0.8;
       easter_red[1] = 0.1;
