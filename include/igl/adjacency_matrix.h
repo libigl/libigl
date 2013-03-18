@@ -12,7 +12,7 @@ namespace igl
   // Templates:
   //   T  should be a eigen sparse matrix primitive type like int or double
   // Inputs:
-  //   F  #F by dim list of mesh faces (must be triangles)
+  //   F  #F by dim list of mesh simplices
   // Outputs: 
   //   A  max(F) by max(F) cotangent matrix, each row i corresponding to V(i,:)
   //
