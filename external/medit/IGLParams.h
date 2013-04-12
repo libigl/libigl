@@ -30,12 +30,9 @@ class IGLParams
     float tet_color[4];
     float open_color[4];
     float nme_color[4];
-<<<<<<< local
     bool render_on_C_UPDATE;
     bool render_on_next;
-=======
     float dot_size;
->>>>>>> other
   public:
     IGLParams():
       lines_on_cap(false),
