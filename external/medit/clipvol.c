@@ -55,7 +55,7 @@ GLuint capTetra(pMesh mesh) {
 #ifdef IGL
     glDisable(GL_LIGHTING);
     glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,sc->igl_params->tet_color);
-    glColor4fv(sc->igl_params->tet_color);
+    glColor3fv(sc->igl_params->tet_color);
 #endif
 
 #ifdef IGL

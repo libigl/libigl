@@ -33,6 +33,8 @@ class IGLParams
     bool render_on_C_UPDATE;
     bool render_on_next;
     float dot_size;
+    // Place holder alpha value used in cutTriangle
+    float alpha_holder;
   public:
     IGLParams():
       lines_on_cap(false),
@@ -41,7 +43,8 @@ class IGLParams
       hot_dog_ratio(0.5),
       color_map(COLOR_MAP_DEFAULT),
       render_on_C_UPDATE(false),
-      render_on_next(false)
+      render_on_next(false),
+      alpha_holder(1.0)
     {
       easter_red[0] = 0.8;
       easter_red[1] = 0.1;

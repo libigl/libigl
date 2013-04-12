@@ -41,6 +41,7 @@ GLuint listTria(pScene sc,pMesh mesh) {
     if ( !(sc->mode & S_MATERIAL) )
       pm = &sc->material[DEFAULT_MAT];
     transp = pm->amb[3] < 0.999 || pm->dif[3] < 0.999 || pm->spe[3] < 0.999;
+
 #ifdef IGL
     int old_depth_func =0;
     glGetIntegerv(GL_DEPTH_FUNC,&old_depth_func);
@@ -54,6 +55,7 @@ GLuint listTria(pScene sc,pMesh mesh) {
       glDepthMask(GL_FALSE);
 #endif
     }
+
     glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,pm->amb);
     glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,pm->spe);
     glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,pm->emi);
@@ -479,12 +481,29 @@ GLuint listTetra(pScene sc,pMesh mesh,ubyte clip) {
     k  = pm->depmat[LTets];
     if ( !k || pm->flag )  continue;
 
+    bool transp = 0;
+#ifdef IGL
+    int old_depth_func =0;
+    glGetIntegerv(GL_DEPTH_FUNC,&old_depth_func);
+#endif
+
+    transp = sc->igl_params->tet_color[3]<0.999;
+    if ( transp ) {
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+#ifdef IGL
+      glDepthFunc(GL_ALWAYS);
+#else
+      glDepthMask(GL_FALSE);
+#endif
+    }
     if ( sc->mode & S_MATERIAL ) {
-      if ( pm->dif[3] < 0.999 ) {
-        glDepthMask(GL_FALSE);
-        glBlendFunc(GL_DST_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_BLEND);
-      }
+
+      //if ( pm->dif[3] < 0.999 ) {
+      //  glDepthMask(GL_FALSE);
+      //  glBlendFunc(GL_DST_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+      //  glEnable(GL_BLEND);
+      //}
       glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,pm->dif);
       glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,pm->amb);
       glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,pm->spe);
@@ -552,8 +571,12 @@ GLuint listTetra(pScene sc,pMesh mesh,ubyte clip) {
       k = pt->nxt;
     }
     glEnd();
-    if ( sc->mode & S_MATERIAL && pm->dif[3] < 0.999 ) {
+    if ( transp ) {
+#ifdef IGL
+      glDepthFunc(old_depth_func);
+#else
       glDepthMask(GL_TRUE);
+#endif
       glDisable(GL_BLEND);
     }
   }

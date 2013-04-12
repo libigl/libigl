@@ -55,6 +55,15 @@ void IGLParams::rgb(double x, double * rgb)
 }
 #endif
 
+#ifdef IGL
+double filter(double s)
+{
+  double ss = s;
+  ss = -2*ss*ss*ss+3*ss*ss;
+  double mn = 0.01;
+  return (ss>0.75)?1:((ss<0.25)? mn : (1.0-mn)*((ss-0.25)/0.5) + mn);
+}
+#endif
 
 /* recursively subdivide a triangle */
 void cutTriangle(pScene sc,triangle t) {
@@ -64,7 +73,7 @@ void cutTriangle(pScene sc,triangle t) {
   // Alec: hard coded pallete
   static double hsv[3] = { 0.0, 1.0, 0.80 };
 #ifdef IGL
-  rgb[3] = sc->material->dif[3];
+  rgb[3] = sc->igl_params->alpha_holder;
 #endif
 
   /* analyze triangle edges */
@@ -164,8 +173,11 @@ void cutTriangle(pScene sc,triangle t) {
     t.va = sc->iso.val[MAXISO-1];
   kc = (t.va-sc->iso.val[ia-1]) / (sc->iso.val[ia] - sc->iso.val[ia-1]);
 #ifdef IGL
-  sc->igl_params->rgb(
-    1.0-(sc->iso.col[ia-1]*(1.0-kc)+sc->iso.col[ia]*kc)/240.0,rgb);
+  {
+    double s = 1.0-(sc->iso.col[ia-1]*(1.0-kc)+sc->iso.col[ia]*kc)/240.0;
+    //rgb[3] = filter(s);
+    sc->igl_params->rgb(s,rgb);
+  }
 #else
   hsv[0] = sc->iso.col[ia-1]*(1.0-kc)+sc->iso.col[ia]*kc;
   hsvrgb(hsv,rgb);
@@ -181,8 +193,11 @@ void cutTriangle(pScene sc,triangle t) {
     t.vb = sc->iso.val[MAXISO-1];
   kc = (t.vb-sc->iso.val[ib-1]) / (sc->iso.val[ib] - sc->iso.val[ib-1]);
 #ifdef IGL
-  sc->igl_params->rgb(
-    1.0-(sc->iso.col[ib-1]*(1.0-kc)+sc->iso.col[ib]*kc)/240.0,rgb);
+  {
+    double s  = 1.0-(sc->iso.col[ib-1]*(1.0-kc)+sc->iso.col[ib]*kc)/240.0;
+    //rgb[3] = filter(s);
+    sc->igl_params->rgb( s,rgb);
+  }
 #else
   hsv[0] = sc->iso.col[ib-1]*(1.0-kc)+sc->iso.col[ib]*kc;
   hsvrgb(hsv,rgb);
@@ -198,8 +213,11 @@ void cutTriangle(pScene sc,triangle t) {
     t.vc = sc->iso.val[MAXISO-1];
   kc = (t.vc-sc->iso.val[ic-1]) / (sc->iso.val[ic] - sc->iso.val[ic-1]);
 #ifdef IGL
-  sc->igl_params->rgb(
-    1.0-(sc->iso.col[ic-1]*(1.0-kc)+sc->iso.col[ic]*kc)/240.0,rgb);
+  {
+    double s = 1.0-(sc->iso.col[ic-1]*(1.0-kc)+sc->iso.col[ic]*kc)/240.0;
+    sc->igl_params->rgb( s,rgb);
+    //rgb[3] = filter(s);
+  }
 #else
   hsv[0] = sc->iso.col[ic-1]*(1.0-kc)+sc->iso.col[ic]*kc;
   hsvrgb(hsv,rgb);
@@ -241,7 +259,11 @@ GLuint listTriaMap(pScene sc,pMesh mesh) {
   {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    glDepthFunc(GL_ALWAYS);
+    //glDepthFunc(GL_ALWAYS);
+    sc->igl_params->alpha_holder = sc->material->dif[3];
+  }else
+  {
+    sc->igl_params->alpha_holder = 1.0;
   }
 #endif
 
@@ -676,6 +698,21 @@ GLuint listTetraMap(pScene sc,pMesh mesh,ubyte clip) {
   dlist = glGenLists(1);
   glNewList(dlist,GL_COMPILE);
   if ( glGetError() )  return(0);
+#ifdef IGL
+  bool transp = sc->igl_params->tet_color[3] < 0.999;
+  int old_depth_func =0;
+  glGetIntegerv(GL_DEPTH_FUNC,&old_depth_func);
+  if ( transp )
+  {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    //glDepthFunc(GL_ALWAYS);
+    sc->igl_params->alpha_holder = sc->igl_params->tet_color[3];
+  }else
+  {
+    sc->igl_params->alpha_holder = 1.0;
+  }
+#endif
   
   /* build list */
   for (m=0; m<sc->par.nbmat; m++) {
@@ -760,6 +797,13 @@ GLuint listTetraMap(pScene sc,pMesh mesh,ubyte clip) {
     }
     glEnd();
   }
+#ifdef IGL
+  if(transp)
+  {
+    glDepthFunc(old_depth_func);
+    glDisable(GL_BLEND);
+  }
+#endif
 
   glEndList();
   return(dlist);

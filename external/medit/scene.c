@@ -1304,7 +1304,7 @@ void initAntTweakBar(pScene sc,pMesh mesh)
 
   sc->rebar.TwAddVarRW(
     "tet_color",
-    TW_TYPE_COLOR3F,
+    TW_TYPE_COLOR4F,
     &(sc->igl_params->tet_color),
     "group=View "
     "help='Color of tets.' colormode=hls");
