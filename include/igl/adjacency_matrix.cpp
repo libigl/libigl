@@ -13,7 +13,15 @@ IGL_INLINE void igl::adjacency_matrix(
 {
   Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> 
     dyn_A(F.maxCoeff()+1, F.maxCoeff()+1);
-  dyn_A.reserve(6*(F.maxCoeff()+1));
+  switch(F.cols())
+  {
+    case 3:
+      dyn_A.reserve(6*(F.maxCoeff()+1));
+      break;
+    case 4:
+      dyn_A.reserve(26*(F.maxCoeff()+1));
+      break;
+  }
 
   // Loop over faces
   for(int i = 0;i<F.rows();i++)

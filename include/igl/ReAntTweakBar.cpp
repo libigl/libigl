@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <map>
 
-#define MAX_CB_VAR_SIZE 10
+#define MAX_CB_VAR_SIZE 1000
 // Max line size for reading files
 #define MAX_LINE 1000
 #define MAX_WORD 100
@@ -372,6 +372,13 @@ std::string igl::ReTwBar::get_value_as_string(
         sstr << std::setprecision(15) << *(static_cast<double*>(var));
         break;
       }
+    case TW_TYPE_STDSTRING:
+      {
+        sstr << "TW_TYPE_STDSTRING" << " ";
+        std::string *destPtr = static_cast<std::string *>(var);
+        sstr << destPtr->c_str();
+        break;
+      }
     default:
       {
         std::map<TwType,std::pair<const char *,std::vector<TwEnumVal> > >::iterator iter = 
@@ -508,6 +515,7 @@ bool igl::ReTwBar::set_value_from_string(
   double d[4];
   bool b;
   unsigned char uc;
+  std::string s;
 
   // First try to get value from default types
   switch(type)
@@ -627,6 +635,12 @@ bool igl::ReTwBar::set_value_from_string(
           printf("ERROR: Bad value format...\n");
           return false;
         }
+        break;
+      }
+    case TW_TYPE_STDSTRING:
+      {
+        s  = value_str;
+        value = &s;
         break;
       }
     default:
@@ -749,6 +763,13 @@ bool igl::ReTwBar::set_value_from_string(
             double * dvar =   static_cast<double*>(var);
             double * fvalue = static_cast<double*>(value);
             *dvar = *fvalue;
+            break;
+          }
+        case TW_TYPE_STDSTRING:
+          {
+            std::string * svar =   static_cast<std::string*>(var);
+            std::string * svalue = static_cast<std::string*>(value);
+            *svar = *svalue;
             break;
           }
         default:
