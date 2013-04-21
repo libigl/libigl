@@ -220,17 +220,16 @@ IGL_INLINE bool igl::readMESH(
 
 template <typename DerivedV, typename DerivedF, typename DerivedT>
 IGL_INLINE bool igl::readMESH(
-  const std::string str,
+  const std::string mesh_file_name,
   Eigen::PlainObjectBase<DerivedV>& V,
   Eigen::PlainObjectBase<DerivedT>& T,
   Eigen::PlainObjectBase<DerivedF>& F)
 {
   std::vector<std::vector<double> > vV,vT,vF;
-  bool success = igl::readMESH(str,vV,vT,vF);
+  bool success = igl::readMESH(mesh_file_name,vV,vT,vF);
   if(!success)
   {
-    // readOBJ(str,vV,vTC,vN,vF,vFTC,vFN) should have already printed an error
-    // message to stderr
+    // readMESH already printed error message to std err
     return false;
   }
   bool V_rect = igl::list_to_matrix(vV,V);

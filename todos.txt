@@ -12,3 +12,4 @@
 - clean up mvc.h
 - clean up orth.h
 - fix bugs in examples/Core/example2.cpp
+- replace generic names read.h/write.h with something like read_poly_mesh.h
