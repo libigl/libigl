@@ -15,9 +15,25 @@
     <li><a href="http://www.ann.jussieu.fr/frey/publications/RT-0253.pdf#page=33">.mesh</a> Medit's triangle surface mesh + tetrahedral volume mesh file format, see page 33, section 7.2.1</li>
     <li><i>.poly</i> Piecewise-linear complex. This format comes in many similar but importantly different flavors: 
       <a href="https://www.cs.cmu.edu/~quake/triangle.poly.html">triangle's</a>, <a href="http://tetgen.berlios.de/fformats.poly.html">tetgen's</a>, <a href="http://sparse-meshing.com/svr/0.2.1/format-poly.html">pyramid/SVR's</a></li>
-    <li><a href=? class=missing>.node</a></li>
-    <li><a href=? class=missing>.ele</a></li>
-    <li><a href=? class=missing>.face</a></li>
+    <li><i>.node</i> List of points (vertices). Described indentically (upto
+        accepted dimensions, use of attributes and boundary markers) by <a
+    href="https://www.cs.cmu.edu/~quake/triangle.node.html">Triangle</a>, <a
+    href=http://tetgen.berlios.de/fformats.node.html>TetGen</a>, and <a
+    href=http://www.cs.berkeley.edu/~jrs/stellar/#fileformats>Stellar</a>.
+    </li>
+    <li><i>.ele</i> Element (triangle or tet) list. This format comes in similar flavors: <a
+    href=http://tetgen.berlios.de/fformats.ele.html>tetgen's</a>, <a
+    href=http://www.cs.berkeley.edu/~jrs/stellar/#fileformats>stellar's</a>,
+    and <a href=https://www.cs.cmu.edu/~quake/triangle.ele.html>triangle's</a>.
+    The formats of TetGen and stellar are identical upto conventions on index
+    ordering and number of allowed attributes (unverified).</li>
+    <li><a href=http://tetgen.berlios.de/fformats.face.html class=missing>.face</a> TetGen's file format for simplicial facets.</li>
+    <li><a href=http://en.wikipedia.org/wiki/Truevision_TGA>.tga</a> Truevision TGA or TARGA image file format. IGLLIB supports only very basic reading and writing RGB/RGBA files without colormaps and (unverified) run-length compression.</li>
+    <li><a
+    href=https://en.wikipedia.org/wiki/Portable_Network_Graphics>.png</a>
+    Portable Network Graphics image file. IGLLIB (in the libiglpng extra)
+  supports png image files via the <a href=https://github.com/yig/yimg>yimg</a>
+  library. Alpha channels and compression are suppported.</li>
   </ul>
   </body>
 </html>

@@ -2,11 +2,11 @@
 
 template <typename T, typename S>
 IGL_INLINE void igl::removeUnreferenced(
-                                   const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
-                                   const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
-                                   Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV,
-                                   Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &NF,
-                                   Eigen::Matrix<S, Eigen::Dynamic, 1> &I)
+  const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
+  const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
+  Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV,
+  Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &NF,
+  Eigen::Matrix<S, Eigen::Dynamic, 1> &I)
 {
 
   // Mark referenced vertices
@@ -46,6 +46,7 @@ IGL_INLINE void igl::removeUnreferenced(
   
   // Apply I on F
       
+  // Why is this also removing combinatorially degenerate faces?
   count = 0;
   for (int i =0; i<F.rows(); ++i)
   {
