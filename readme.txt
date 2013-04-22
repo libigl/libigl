@@ -107,6 +107,13 @@ For now, all files are Copyright 2013 - Alec Jacobson, Daniele Panozzo, Olga
 Diamanti, Kenshi Takayama, Leo Sacht, Interactive Geometry Lab - ETH Zurich
 unless otherwise noted. Soon we hope to upgrade to a more liberal license.
 
+= Zipping =
+Zip this directory without .hg litter using:
+
+make clean
+zip -9 -r --exclude=*.hg*  libigl.zip ../libigl
+
+
 = Contact =
 libigl is a group endeavor led by Alec Jacobson and Daniele Panozzo. Please
 contact alecjacobson@gmail.com if you have questions or comments. We are happy
