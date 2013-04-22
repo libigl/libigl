@@ -56,12 +56,29 @@ void IGLParams::rgb(double x, double * rgb)
 #endif
 
 #ifdef IGL
-double filter(double s)
+double filter(pScene sc, double ss)
 {
-  double ss = s;
-  ss = -2*ss*ss*ss+3*ss*ss;
-  double mn = 0.01;
-  return (ss>0.75)?1:((ss<0.25)? mn : (1.0-mn)*((ss-0.25)/0.5) + mn);
+  double s = ss;
+  if(sc->igl_params->fade_flip)
+  {
+    s = 1.0-s;
+  }
+  const double & max_s = sc->igl_params->fade_max_s;
+  const double & min_s = sc->igl_params->fade_min_s;
+  const double & max_v = sc->igl_params->fade_max_v;
+  const double & min_v = sc->igl_params->fade_min_v;
+  if(s>max_s)
+  {
+    return max_v;
+  }else if(s<=min_s)
+  {
+    return min_v;
+  }else
+  {
+    double f = (s-min_s)/(max_s-min_s);
+    f = -2*f*f*f+3*f*f;
+    return f*(max_v-min_v)+min_v;
+  }
 }
 #endif
 
@@ -175,7 +192,7 @@ void cutTriangle(pScene sc,triangle t) {
 #ifdef IGL
   {
     double s = 1.0-(sc->iso.col[ia-1]*(1.0-kc)+sc->iso.col[ia]*kc)/240.0;
-    //rgb[3] = filter(s);
+    rgb[3] = filter(sc,s)*sc->igl_params->alpha_holder;
     sc->igl_params->rgb(s,rgb);
   }
 #else
@@ -195,7 +212,7 @@ void cutTriangle(pScene sc,triangle t) {
 #ifdef IGL
   {
     double s  = 1.0-(sc->iso.col[ib-1]*(1.0-kc)+sc->iso.col[ib]*kc)/240.0;
-    //rgb[3] = filter(s);
+    rgb[3] = filter(sc,s)*sc->igl_params->alpha_holder;
     sc->igl_params->rgb( s,rgb);
   }
 #else
@@ -215,8 +232,8 @@ void cutTriangle(pScene sc,triangle t) {
 #ifdef IGL
   {
     double s = 1.0-(sc->iso.col[ic-1]*(1.0-kc)+sc->iso.col[ic]*kc)/240.0;
+    rgb[3] = filter(sc,s)*sc->igl_params->alpha_holder;
     sc->igl_params->rgb( s,rgb);
-    //rgb[3] = filter(s);
   }
 #else
   hsv[0] = sc->iso.col[ic-1]*(1.0-kc)+sc->iso.col[ic]*kc;
@@ -259,7 +276,7 @@ GLuint listTriaMap(pScene sc,pMesh mesh) {
   {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    //glDepthFunc(GL_ALWAYS);
+    glDepthFunc(GL_ALWAYS);
     sc->igl_params->alpha_holder = sc->material->dif[3];
   }else
   {
@@ -706,14 +723,14 @@ GLuint listTetraMap(pScene sc,pMesh mesh,ubyte clip) {
   {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    //glDepthFunc(GL_ALWAYS);
+    glDepthFunc(GL_ALWAYS);
     sc->igl_params->alpha_holder = sc->igl_params->tet_color[3];
   }else
   {
     sc->igl_params->alpha_holder = 1.0;
   }
 #endif
-  
+
   /* build list */
   for (m=0; m<sc->par.nbmat; m++) {
     pm = &sc->material[m];

@@ -6,7 +6,7 @@ To Build:
   make
 
 To Run:
-  ./example [input path] [output path]
+  ./example [input.dmat] [output.mat]
 
 Example Run #1:
   Issuing:

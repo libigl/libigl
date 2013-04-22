@@ -1,0 +1,6 @@
+# This file should contain the current version number of libigl
+# Major.Minor.Tick
+# Anyone may increment Tick to indicate a small change.
+# Minor indicates small changes that do not amount to new uploaded versions
+# Major indicates new uploaded version
+0.1.1

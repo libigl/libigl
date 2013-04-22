@@ -286,13 +286,29 @@ GLuint capTetraMap(pMesh mesh) {
   //
   // By Leo: get number of triangles to render tet colors correctly
   int boundary_faces = mesh->nt;
-  printf("boundary_faces = %d \n", boundary_faces);
+  //printf("boundary_faces = %d \n", boundary_faces);
 
   /* build display list */
   clip = sc->clip;
   dlist = glGenLists(1);
   glNewList(dlist,GL_COMPILE);
   if ( glGetError() )  return(0);
+
+#ifdef IGL
+  bool transp = sc->igl_params->tet_color[3] < 0.999;
+  int old_depth_func =0;
+  glGetIntegerv(GL_DEPTH_FUNC,&old_depth_func);
+  if ( transp )
+  {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glDepthFunc(GL_ALWAYS);
+    sc->igl_params->alpha_holder = sc->igl_params->tet_color[3];
+  }else
+  {
+    sc->igl_params->alpha_holder = 1.0;
+  }
+#endif
 
   /* build list */
   glBegin(GL_TRIANGLES);
@@ -627,6 +643,13 @@ GLuint capTetraMap(pMesh mesh) {
   }
   
   glEnd();
+#ifdef IGL
+  if(transp)
+  {
+    glDepthFunc(old_depth_func);
+    glDisable(GL_BLEND);
+  }
+#endif
   glEndList();
   return(dlist);
 }

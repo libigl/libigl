@@ -35,6 +35,12 @@ class IGLParams
     float dot_size;
     // Place holder alpha value used in cutTriangle
     float alpha_holder;
+    // Fade parameters
+    double fade_flip;
+    double fade_max_s;
+    double fade_min_s;
+    double fade_max_v;
+    double fade_min_v;
   public:
     IGLParams():
       lines_on_cap(false),
@@ -44,7 +50,12 @@ class IGLParams
       color_map(COLOR_MAP_DEFAULT),
       render_on_C_UPDATE(false),
       render_on_next(false),
-      alpha_holder(1.0)
+      alpha_holder(1.0),
+      fade_flip(false),
+      fade_max_s(0.5),
+      fade_min_s(0.25),
+      fade_max_v(0.5),
+      fade_min_v(0.01)
     {
       easter_red[0] = 0.8;
       easter_red[1] = 0.1;

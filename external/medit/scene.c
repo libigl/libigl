@@ -661,6 +661,11 @@ void drawModel(pScene sc) {
   if ( sc->cube->active & C_ON )
     drawCube(sc,mesh);
 
+  //glColorMask(false, false, false, true);//This ensures that only alpha will be effected
+  //glClearColor(0, 0, 0, 1);//alphaValue - Value to which you need to clear
+  //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  //glColorMask(true, true, true, true);//This ensures that only alpha will be effected
+
   sstatic |= tiling;
   if ( sstatic && clip->active & C_ON && clip->active & C_VOL )
     displayScene(sc,sc->mode,1);
@@ -1309,6 +1314,32 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     "group=View "
     "help='Color of tets.' colormode=hls");
 
+  sc->rebar.TwAddVarRW(
+    "fade_flip",
+    TW_TYPE_BOOLCPP,
+    &(sc->igl_params->fade_flip),
+    "group=Fade ");
+  sc->rebar.TwAddVarRW(
+    "fade_max_s",
+    TW_TYPE_DOUBLE,
+    &(sc->igl_params->fade_max_s),
+    "step=0.01 max=1 min=0 group=Fade ");
+  sc->rebar.TwAddVarRW(
+    "fade_min_s",
+    TW_TYPE_DOUBLE,
+    &(sc->igl_params->fade_min_s),
+    "step=0.01 max=1 min=0 group=Fade ");
+  sc->rebar.TwAddVarRW(
+    "fade_max_v",
+    TW_TYPE_DOUBLE,
+    &(sc->igl_params->fade_max_v),
+    "step=0.01 max=1 min=0 group=Fade ");
+  sc->rebar.TwAddVarRW(
+    "fade_min_v",
+    TW_TYPE_DOUBLE,
+    &(sc->igl_params->fade_min_v),
+    "step=0.01 max=1 min=0 group=Fade ");
+
   TwEnumVal ColorMapTypeEV[NUM_COLOR_MAP] = 
   {
     {COLOR_MAP_DEFAULT,"DEFAULT"},
@@ -1509,7 +1540,8 @@ void initGrafix(pScene sc,pMesh mesh) {
 
   if ( ddebug )  printf("initGrafix\n");
   glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LEQUAL);
+  //glDepthFunc(GL_LEQUAL);
+  glDepthFunc(GL_LESS);
   glPolygonOffset(1.0, 1.0 / (float)0x10000);
   glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 

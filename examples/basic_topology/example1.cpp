@@ -10,7 +10,6 @@
 #include <string>
 #include <igl/read.h>
 #include <igl/write.h>
-#include <igl/cotmatrix.h>
 #include <igl/tt.h>
 #include <igl/edgetopology.h>
 
@@ -20,7 +19,7 @@ int main (int argc, const char * argv[])
 {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
-    igl::read("bunny.off",V,F);
+    igl::read("TinyTorus.obj",V,F);
 
     std::cout << "Mesh loaded!\n";
     cout << "Vertex Array:" << endl;
@@ -28,12 +27,6 @@ int main (int argc, const char * argv[])
     cout << "-------------" << endl;
     cout << "Face Array:" << endl;
     cout << F << endl;
-    cout << "-------------" << endl;
-
-    cout << "CotMatrix:" << endl;
-    Eigen::SparseMatrix<double> L;
-    igl::cotmatrix(V,F,L);
-    cout << L << endl;
     cout << "-------------" << endl;
     
     igl::write("bunny_out.off",V,F);
