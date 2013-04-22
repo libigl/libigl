@@ -19,7 +19,7 @@ int main (int argc, const char * argv[])
 {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
-    igl::read("TinyTorus.obj",V,F);
+    igl::read("../shared/TinyTorus.obj",V,F);
 
     std::cout << "Mesh loaded!\n";
     cout << "Vertex Array:" << endl;
