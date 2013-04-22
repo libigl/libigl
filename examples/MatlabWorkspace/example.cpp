@@ -19,7 +19,7 @@ int main(int argc, char * argv[])
   using namespace Eigen;
   if(argc <= 2)
   {
-    printf("USAGE:\n  ./example [input path] [output path]\n");
+    printf("USAGE:\n  ./example [input.dmat] [output.mat]\n");
     return 1;
   }
   MatrixXd M;
