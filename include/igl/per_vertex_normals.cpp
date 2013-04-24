@@ -37,8 +37,8 @@ IGL_INLINE void igl::per_vertex_normals(
   Eigen::PlainObjectBase<DerivedV> & N)
 {
   // Resize for output
-  N.resize(V.rows(),3);
-  
+  N.setZero(V.rows(),3);
+
   // loop over faces
   int Frows = F.rows();
 #pragma omp parallel for
@@ -50,6 +50,7 @@ IGL_INLINE void igl::per_vertex_normals(
       N.row(F(i,j)) += FN.row(i);
     }
   }
+  cout << "N.row()" << N.row(0) << endl;
   // normalize each row
   igl::normalize_row_lengths(N,N);
 }
