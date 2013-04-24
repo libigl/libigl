@@ -50,7 +50,6 @@ IGL_INLINE void igl::per_vertex_normals(
       N.row(F(i,j)) += FN.row(i);
     }
   }
-  cout << "N.row()" << N.row(0) << endl;
   // normalize each row
   igl::normalize_row_lengths(N,N);
 }
