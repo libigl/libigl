@@ -22,7 +22,11 @@ namespace igl
     Eigen::PlainObjectBase<DerivedV> & CN);
   // Other Inputs:
   //   FN  #F by 3 eigen Matrix of face normals
-  template <typename DerivedV, typename DerivedF, typename DerivedFN, typename DerivedCN>
+  template <
+    typename DerivedV, 
+    typename DerivedF, 
+    typename DerivedFN, 
+    typename DerivedCN>
   IGL_INLINE void per_corner_normals(
     const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedF>& F,

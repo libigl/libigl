@@ -12,7 +12,7 @@ namespace igl
   template <typename T>
   IGL_INLINE void plot_vector( std::vector< std::vector<T> >& v);
   template <typename T>
-  IGL_INLINE void plot_vector( std::vector< std::vector< std::vector<T> > >& v);
+  IGL_INLINE void plot_vector(std::vector< std::vector< std::vector<T> > >& v);
 }
 
 #ifdef IGL_HEADER_ONLY

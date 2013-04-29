@@ -119,3 +119,23 @@ img.center
   margin-left: auto;
   margin-right: auto;
 }
+
+.article_body
+{
+  margin: 0px;
+  padding: 0px;
+  text-align: center;
+  background-color: #bbb;
+}
+
+.article
+{
+  font-size: 14pt;
+  background-color: #fff;
+  margin:0px auto;
+  padding: 20px;
+  border-left: 1px solid #888;
+  border-right: 1px solid #888;
+  width: 960px;
+  text-align: left;
+}

@@ -1,5 +1,7 @@
 libigl - A simple c++ geometry processing library
 
+http://igl.ethz.ch/projects/libigl/
+
 Copyright 2013 - Alec Jacobson, Daniele Panozzo, Olga Diamanti, Kenshi
 Takayama, Leo Sacht, Interactive Geometry Lab - ETH Zurich
 
@@ -99,7 +101,7 @@ To get started, we advise that you take a look at a few examples:
   ./examples/ReAntTweakBar/
 
 = Development =
-Further documentation is listed for developers in tutorial.html,
+Further documentation for developers is listed in tutorial.html,
 style_guidelines.html
 
 = License =
@@ -112,7 +114,6 @@ Zip this directory without .hg litter using:
 
 make clean
 zip -9 -r --exclude=*.hg*  libigl.zip ../libigl
-
 
 = Contact =
 libigl is a group endeavor led by Alec Jacobson and Daniele Panozzo. Please
