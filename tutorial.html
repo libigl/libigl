@@ -24,12 +24,12 @@
 
       <h2 id=header_library>Headers (.h) only library</h2>
       <p>
-        All classes and functions in the IGL library are written in a way in
+        All classes and functions in the libigl library are written in a way in
         which the entire library may be compiled <i>just-in-time</i>,
         effectively behaiving as if it were a "headers only" library (like e.g.
         Eigen). This is achieved by careful organization of each pair of .h and
         .cpp files. To take advantage of this one must only include the path to
-        <code>igl_lib</code> directory in one's project's include path and
+        <code>libigl</code> directory in one's project's include path and
         define the preprocessor macro <code>IGL_HEADER_ONLY</code>.
       </p>
 
@@ -63,14 +63,16 @@
 #include &lt;igl/yet_another_igl_function.h&gt;
 ...
       </code></pre>
-      <span class=todo>example <code>examples/XXX</code> also highlights this feature</span>
+      <span class=todo>example <code>examples/XXX</code> also highlights this
+      feature</span>
 
-      <div class=note>This practice is not recommended outside of debugging purposes.</div>
+      <div class=note>This practice is not recommended outside of debugging
+      purposes.</div>
       
 
       <h3>Benefits of headers-only library</h3>
       <ul>
-        <li><strong>Easy templates:</strong> When using the IGL library as a
+        <li><strong>Easy templates:</strong> When using the libigl library as a
         headers-only library no special care need be taken when using templated
         functions.</li>
       </ul>
@@ -91,9 +93,9 @@
         specialization of templated functions</h3>
         <p>
           Special care must be taken by the developers of each function and
-          class in the IGL library that uses C++ templates. If this function is
-          intended to be compiled into the statically linked igl library then
-          function is only compiled for each <i>explicitly</i> specialized
+          class in the libigl library that uses C++ templates. If this function
+          is intended to be compiled into the statically linked libigl library
+          then function is only compiled for each <i>explicitly</i> specialized
           declaration. These should be added at the bottom of the corresponding
           .cpp file surrounded by a <code>#ifndef IGL_HEADER_ONLY</code>.
         </p>
@@ -114,10 +116,10 @@
         <p>
           Supposed for example we have compiled the igl static lib, including the
           cat.h and cat.cpp functions, without any explicit instanciation. Say
-          using the makefile in the <code>igl_lib</code> directory:
+          using the makefile in the <code>libigl</code> directory:
         </p>
         <pre><code>
-cd $IGL_LIB
+cd $LIBIGL
 make
         </code></pre>
         <p>
@@ -151,7 +153,7 @@ Undefined symbols for architecture x86_64:
           Then you must recompile the IGL static library.
         </p>
         <pre><code>
-cd $IGL_LIB
+cd $LIBIGL
 make
         </code></pre>
         <p>
@@ -174,14 +176,14 @@ make 2&gt;&1 | grep "referenced from" | sed -e "s/, referenced from.*//"
 
         <p>
           Alternatively you can use the <code>autoexplicit.sh</code> function
-          which (for well organized .cpp files in the igl_lib) automatically
+          which (for well organized .h/.cpp pairs in libigl) automatically
           create explicit instanciations from your compiler's error messages.
           Repeat this process until convergence:
         </p>
         <pre><code>
 cd /to/your/project
-make 2&gt;$IGL_LIB/make.err
-cd $IGL_LIB
+make 2&gt;$LIBIGL/make.err
+cd $LIBIGL
 cat make.err | ./autoexplicit.sh
 make clean 
 make
@@ -189,10 +191,10 @@ make
 
         <h3>Benefits of static library</h3>
         <ul>
-          <li><strong>Faster compile time:</strong> Because the igl library is
-          already compiled, only the new code in ones project must be compiled
-          and then linked to IGL. This means compile times are generally
-          faster.</li>
+          <li><strong>Faster compile time:</strong> Because the libigl library
+          is already compiled, only the new code in ones project must be
+          compiled and then linked to IGL. This means compile times are
+          generally faster.</li>
           <li><strong>Debug <i>or</i> optimized:</strong> The IGL static
           library may be compiled in debug mode or optimized release mode
           regardless of whether one's project is being optimized or
@@ -208,7 +210,7 @@ make
 
       <h2 id="dependencies">Dependencies</h2>
       <p>
-        By design the IGL library has very few external dependencies.
+        By design the libigl library has very few external dependencies.
       </p>
         <h3>Mandatory dependencies</h3>
         <p>
@@ -223,9 +225,9 @@ make
         </ul>
         <h3>Optional dependencies</h3>
         <p>
-          Certain functions and classes included the IGL library have external
-          dependencies by construction (e.g. the matlab_interface routines are
-          only useful when matlab is present anyway). These are
+          Certain functions and classes included the libigl library have
+          external dependencies by construction (e.g. the matlab_interface
+          routines are only useful when matlab is present anyway). These are
           <strong>never</strong> compiled by default into the static igl
           library <span class=todo>and are only exposed through compiler
           options</span>. These are:
@@ -244,7 +246,9 @@ make
         href="matlab-to-eigen.html">Our own translation table</a> shows a list
         of common matlab functions and their igl-eigen equivalents.  
       </p>
-      <p>See also: <a href=style_guidelines.html>style guidlines</a>, <a href=doc.html>auto-documentation</a></p>
+      <p>See also: <a href=style_guidelines.html>style guidlines</a>, <a
+      href=doc.html>auto-documentation</a>, <a
+      href=file-formats/index.html>file formats</a></p>
   </div>
   </body>
 </html>

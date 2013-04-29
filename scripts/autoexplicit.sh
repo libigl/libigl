@@ -1,6 +1,6 @@
 #!/bin/bash
 # Usage:
-#   cd $IGL_LIB/include/igl
+#   cd $LIBIGL/include/igl
 #   make -C [your_project] 2>&1 | ../../scripts/autoexplicit.sh
 
 
