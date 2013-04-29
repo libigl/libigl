@@ -1,5 +1,6 @@
 #ifndef IGL_TGA_H
 #define IGL_TGA_H
+// See license in tga.cpp
 
 /* tga.h - interface for TrueVision (TGA) image file loader */
 

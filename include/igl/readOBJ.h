@@ -86,15 +86,19 @@ namespace igl
   //
   // KNOWN BUG: The order of the attributes is different than the vector
   // version above
-  template <typename DerivedV, typename DerivedF, typename DerivedT, typename Index>
+  template <
+    typename DerivedV, 
+    typename DerivedF, 
+    typename DerivedT, 
+    typename Index>
   IGL_INLINE bool readOBJPoly(
-                          const std::string str,
-                          Eigen::PlainObjectBase<DerivedV>& V,
-                          std::vector<std::vector<Index> >& F,
-                          Eigen::PlainObjectBase<DerivedV>& CN,
-                          Eigen::PlainObjectBase<DerivedF>& FN,
-                          Eigen::PlainObjectBase<DerivedT>& TC,
-                          Eigen::PlainObjectBase<DerivedF>& FTC);
+    const std::string str,
+    Eigen::PlainObjectBase<DerivedV>& V,
+    std::vector<std::vector<Index> >& F,
+    Eigen::PlainObjectBase<DerivedV>& CN,
+    Eigen::PlainObjectBase<DerivedF>& FN,
+    Eigen::PlainObjectBase<DerivedT>& TC,
+    Eigen::PlainObjectBase<DerivedF>& FTC);
   
   //! Read a mesh from an ascii obj file
   // Inputs:

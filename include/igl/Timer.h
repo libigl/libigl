@@ -20,7 +20,8 @@ namespace igl
   class Timer
   {
   public:
-    Timer()                                     // default constructor
+    // default constructor
+    Timer()                       
     {
 #ifdef WIN32
       QueryPerformanceFrequency(&frequency);
@@ -36,7 +37,8 @@ namespace igl
       
       stopped = 0;
     }
-    ~Timer()                                   // default destructor
+    // default destructor
+    ~Timer()                     
     {
       
     }
@@ -62,7 +64,8 @@ namespace igl
     }
 #endif
     
-    void   start()                             // start timer
+    // start timer
+    void   start()               
     {
       stopped = 0; // reset stop flag
 #ifdef WIN32
@@ -75,7 +78,8 @@ namespace igl
       
     }
     
-    void   stop()                              // stop the timer
+    // stop the timer
+    void   stop()                
     {
       stopped = 1; // set timer stopped flag
       
@@ -88,20 +92,24 @@ namespace igl
 #endif
       
     }
-    double getElapsedTime()                    // get elapsed time in second
+    // get elapsed time in second
+    double getElapsedTime()      
     {
       return this->getElapsedTimeInSec();
     }
-    double getElapsedTimeInSec()               // get elapsed time in second (same as getElapsedTime)
+    // get elapsed time in second (same as getElapsedTime)
+    double getElapsedTimeInSec() 
     {
       return this->getElapsedTimeInMicroSec() * 0.000001;
     }
     
-    double getElapsedTimeInMilliSec()          // get elapsed time in milli-second
+    // get elapsed time in milli-second
+    double getElapsedTimeInMilliSec()
     {
       return this->getElapsedTimeInMicroSec() * 0.001;
     }
-    double getElapsedTimeInMicroSec()          // get elapsed time in micro-second
+    // get elapsed time in micro-second
+    double getElapsedTimeInMicroSec()          
     {
       double startTimeInMicroSec = 0;
       double endTimeInMicroSec = 0;
@@ -110,7 +118,8 @@ namespace igl
       if(!stopped)
         QueryPerformanceCounter(&endCount);
       
-      startTimeInMicroSec = startCount.QuadPart * (1000000.0 / frequency.QuadPart);
+      startTimeInMicroSec = 
+        startCount.QuadPart * (1000000.0 / frequency.QuadPart);
       endTimeInMicroSec = endCount.QuadPart * (1000000.0 / frequency.QuadPart);
 #elif __APPLE__
       if (!stopped)
@@ -121,7 +130,8 @@ namespace igl
       if(!stopped)
         gettimeofday(&endCount, NULL);
       
-      startTimeInMicroSec = (startCount.tv_sec * 1000000.0) + startCount.tv_usec;
+      startTimeInMicroSec = 
+        (startCount.tv_sec * 1000000.0) + startCount.tv_usec;
       endTimeInMicroSec = (endCount.tv_sec * 1000000.0) + endCount.tv_usec;
 #endif
       
@@ -133,17 +143,19 @@ namespace igl
     
     
   private:
-    int    stopped;                             // stop flag 
+    // stop flag 
+    int    stopped;               
 #ifdef WIN32
-    LARGE_INTEGER frequency;                    // ticks per second
-    LARGE_INTEGER startCount;                   //
-    LARGE_INTEGER endCount;                     //
+    // ticks per second
+    LARGE_INTEGER frequency;      
+    LARGE_INTEGER startCount;     
+    LARGE_INTEGER endCount;       
 #elif __APPLE__
-    uint64_t startCount;                         //
-    uint64_t endCount;                           //
+    uint64_t startCount;           
+    uint64_t endCount;             
 #else
-    timeval startCount;                         //
-    timeval endCount;                           //
+    timeval startCount;           
+    timeval endCount;             
 #endif
   };
 }

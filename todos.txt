@@ -1,6 +1,7 @@
 - compile on Linux, Mac OS X, Windows
 - unit tests for all functions
-- standardize name of library: IGL LIB, igl_lib, igl lib, IGL Library, etc.
+- standardize name of library "libigl", purge IGL LIB, igl_lib, igl lib, IGL
+    Library, etc.
 - clean up examples
 - standardize use of string/char *, add to style conventions
 - standardize Eigen Templates, add to style conventions
@@ -9,7 +10,14 @@
 + standardize igl includes #include "cotangent.h" or #include <cotangent.h>
 - implement an IGL_NO_OPENGL and IGL_NO_GLUT compiler option
 - clean up edgetopology.h
-- clean up mvc.h
++ clean up mvc.h
 - clean up orth.h
+- clean up and rename pos.h
 - fix bugs in examples/Core/example2.cpp
 - replace generic names read.h/write.h with something like read_poly_mesh.h
+- create libigltga extra
+- rename moveFV.h
+- is_border_vertex.h should not require V
+- consistent checks/asserts for: manifoldness, closedness, triangles-only
+    e.g. check_mesh(V,F,MANIFOLD | CLOSED | TRIANGLES_ONLY)
+- clean up Timer.h
