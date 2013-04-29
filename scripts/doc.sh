@@ -42,7 +42,7 @@ do
 done
 
 echo "    </table>"
-echo "    <p>See also: <a href=tutorial.html>tutorial</a>, <a href=style_guidelines.html>style guidelines</a></p>"
+echo "    <p>See also: <a href=tutorial.html>tutorial</a>, <a href=style_guidelines.html>style guidelines</a>, <a href=file-formats/index.html>file formats</a></p>"
 echo "    <p>Automatically generated on `date` by scripts/doc.sh.</p>"
 echo "  </div>"
 echo "  </body>"

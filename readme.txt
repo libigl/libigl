@@ -51,7 +51,7 @@ int main(int argc, char * argv[])
 
 using gcc (replacing appropriate paths):
 
-g++ -DIGL_HEADER_ONLY -I/usr/local/igl/igl_lib/include \
+g++ -DIGL_HEADER_ONLY -I/usr/local/igl/libigl/include \
   -I/opt/local/include/eigen3 example.cpp -o example
 
 Then run this example with:
