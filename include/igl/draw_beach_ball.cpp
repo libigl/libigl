@@ -11,6 +11,14 @@
 #  include <GL/gl.h>
 #endif
 
+// I'm not sure why windows would need it this way:
+// http://lists.cairographics.org/archives/cairo/2008-January/012722.html
+#ifdef _MSC_VER
+#define SAFE_INLINE __inline
+#else
+#define SAFE_INLINE inline
+#endif
+
 #include <vector>
 #include <cmath>
 #include <iostream>
@@ -26,7 +34,7 @@ static const float  FLOAT_EPS_SQ  = 1.0e-14f;
 static const float  FLOAT_PI      = 3.14159265358979323846f;
 enum EArrowParts     { ARROW_CONE, ARROW_CONE_CAP, ARROW_CYL, ARROW_CYL_CAP };
 
-template <typename _T> inline const _T& TClamp(const _T& _X, const _T& _Limit1, const _T& _Limit2)
+template <typename _T> SAFE_INLINE const _T& TClamp(const _T& _X, const _T& _Limit1, const _T& _Limit2)
 {
     if( _Limit1<_Limit2 )
         return (_X<=_Limit1) ? _Limit1 : ( (_X>=_Limit2) ? _Limit2 : _X );
@@ -35,17 +43,17 @@ template <typename _T> inline const _T& TClamp(const _T& _X, const _T& _Limit1, 
 }
 
 typedef unsigned int color32;
-static inline color32 Color32FromARGBi(int _A, int _R, int _G, int _B)
+static SAFE_INLINE color32 Color32FromARGBi(int _A, int _R, int _G, int _B)
 {
     return (((color32)TClamp(_A, 0, 255))<<24) | (((color32)TClamp(_R, 0, 255))<<16) | (((color32)TClamp(_G, 0, 255))<<8) | ((color32)TClamp(_B, 0, 255));
 }
 
-static inline color32 Color32FromARGBf(float _A, float _R, float _G, float _B)
+static SAFE_INLINE color32 Color32FromARGBf(float _A, float _R, float _G, float _B)
 {
     return (((color32)TClamp(_A*256.0f, 0.0f, 255.0f))<<24) | (((color32)TClamp(_R*256.0f, 0.0f, 255.0f))<<16) | (((color32)TClamp(_G*256.0f, 0.0f, 255.0f))<<8) | ((color32)TClamp(_B*256.0f, 0.0f, 255.0f));
 }
 
-static inline void Color32ToARGBi(color32 _Color, int *_A, int *_R, int *_G, int *_B)
+static SAFE_INLINE void Color32ToARGBi(color32 _Color, int *_A, int *_R, int *_G, int *_B)
 {
     if(_A) *_A = (_Color>>24)&0xff;
     if(_R) *_R = (_Color>>16)&0xff;
@@ -53,7 +61,7 @@ static inline void Color32ToARGBi(color32 _Color, int *_A, int *_R, int *_G, int
     if(_B) *_B = _Color&0xff;
 }
 
-static inline void Color32ToARGBf(color32 _Color, float *_A, float *_R, float *_G, float *_B)
+static SAFE_INLINE void Color32ToARGBf(color32 _Color, float *_A, float *_R, float *_G, float *_B)
 {
     if(_A) *_A = (1.0f/255.0f)*float((_Color>>24)&0xff);
     if(_R) *_R = (1.0f/255.0f)*float((_Color>>16)&0xff);

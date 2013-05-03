@@ -211,6 +211,14 @@
         matrix. The <code>.eval()</code> is not necessary if A != B</td>
       </tr>
 
+      <tr class=d1>
+        <td><pre><code>A = sparse(I,J,V)</code></pre></td>
+        <td><pre><code>// build std::vector&ltEigen::Triplet&gt; IJV
+A.setFromTriplets(IJV);
+        </code></pre></td>
+        <td>IJV and A should not be empty!</td>
+      </tr>
+
       <!-- Insert rows for each command pair -->
 
       <!-- Leave this here for copy and pasting
