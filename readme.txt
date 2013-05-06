@@ -59,35 +59,64 @@ Then run this example with:
 ./example examples/shared/TinyTorus.obj
 
 = Compile =
-libigl may also be compiled to a static library. This is advantageous when
-building a project with libigl, since the header only directive can slow down
-compile times.
 
-To build the entire libigl library producing lib/libigl.a, issue:
+  = Linux/Mac OS X/Cygwin =
+  
+  libigl may also be compiled to a static library. This is advantageous when
+  building a project with libigl, since the header only directive can slow down
+  compile times.
+  
+  To build the entire libigl library producing lib/libigl.a, issue:
+  
+  make lib
+  
+  You may need to edit Makefile.conf accordingly. Best to give yourself an
+  IGL_USERNAME and add a custom install suite for yourself. Then you can enable
+  appropriate extras.
+  
+    = Extras =
+    Once you've set up an IGL_USERNAME and enabled extras within Makefile.conf.
+    You can build the extra libraries (into lib/ligiglpng.a, lib/libiglmatlab.a,
+    lib/libigltetgen.a and lib/libiglmosek.a) by issuing:
+  
+    make extras
+  
+    = Examples =
+    You can make a slew of examples by issuing:
+  
+    make examples
+  
+    = External =
+    Finally there are a number of external libraries that we include in
+    ./external/ because they are either difficult to obtain or they have been
+    patched for easier use with libigl. Please see the respective readmes in
+    those directories.
 
-make lib
+  = Windows (Experimental) =
+  To build a static library (.lib) on windows, open Visual Studio 2010.
 
-You may need to edit Makefile.conf accordingly. Best to give yourself an
-IGL_USERNAME and add a custom install suite for yourself. Then you can enable
-appropriate extras.
+  New > Project ...
+  Visual C++ > Win32
+  Win32 Console Application
+  Name: libiglVisualStudio
+  Uncheck "Create directory for solution"
+  
+  Then hit OK, and then Next
 
-  = Extras =
-  Once you've set up an IGL_USERNAME and enabled extras within Makefile.conf.
-  You can build the extra libraries (into lib/ligiglpng.a, lib/libiglmatlab.a,
-  lib/libigltetgen.a and lib/libiglmosek.a) by issuing:
+  Check "Static Library"
+  Uncheck "Precompiled headers"
 
-  make extras
+  Add all include/igl/*.cpp to the sources directory
+  Add all include/igl/*.h to the headers directory
 
-  = Examples =
-  You can make a slew of examples by issuing:
+  Open Project > libigl Properties...
+  Add the path to eigen3 to the include paths
+  Change the target name to libigl
 
-  make examples
+  Build and pray (this should create libigl.lib
 
-  = External =
-  Finally there are a number of external libraries that we include in
-  ./external/ because they are either difficult to obtain or they have been
-  patched for easier use with libigl. Please see the respective readmes in
-  those directories.
+    = Source =
+    http://msdn.microsoft.com/en-us/library/ms235627(v=vs.80).aspx
 
 = Examples =
 To get started, we advise that you take a look at a few examples:
@@ -113,7 +142,7 @@ unless otherwise noted. Soon we hope to upgrade to a more liberal license.
 Zip this directory without .hg litter using:
 
 make clean
-zip -9 -r --exclude=*.hg*  libigl.zip ../libigl
+zip -9 -r --exclude=@exclude.lst  libigl.zip ../libigl
 
 = Contact =
 libigl is a group endeavor led by Alec Jacobson and Daniele Panozzo. Please
