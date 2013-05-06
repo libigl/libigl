@@ -15,6 +15,7 @@
 - clean up and rename pos.h
 - fix bugs in examples/Core/example2.cpp
 - replace generic names read.h/write.h with something like read_poly_mesh.h
+- replace DynamicSparseMatrix: coeffRef += ---> setFromTriplets()
 - create libigltga extra
 - rename moveFV.h
 - is_border_vertex.h should not require V
