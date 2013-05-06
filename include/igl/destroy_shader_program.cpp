@@ -1,6 +1,6 @@
 #include "destroy_shader_program.h"
 #include <cstdio>
-#include <igl/report_gl_error.h>
+#include "report_gl_error.h"
 
 IGL_INLINE bool igl::destroy_shader_program(const GLuint id)
 {

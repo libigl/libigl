@@ -1,7 +1,8 @@
+// This only works on MAC ...
+#ifdef __APPLE__
 #include "svd.h"
-
-#include <cstdlib>
 #include <Accelerate/Accelerate.h>
+#include <cstdlib>
 #include <cstdio>
 
 bool igl::svd3x3(double * a, double * u, double * s, double * vt)
@@ -36,3 +37,4 @@ bool igl::svd3x3(double * a, double * u, double * s, double * vt)
   free( (void*)work );
   return true;
 }
+#endif

@@ -10,10 +10,18 @@
 #include <windows.h>
 #endif
 
-#ifdef __APPLE__
+#if __APPLE__
 #  include <OpenGL/gl.h>
+#elif defined(_WIN32)
+#    define NOMINMAX
+#    include <Windows.h>
+#    undef NOMINMAX
+#    include <GL/glew.h>
+#    include <GL/gl.h>
 #else
+#  define GL_GLEXT_PROTOTYPES
 #  include <GL/gl.h>
+#  include <GL/glext.h>
 #endif
 
 namespace igl

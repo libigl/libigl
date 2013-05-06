@@ -50,9 +50,23 @@ IGL_INLINE void igl::remove_duplicate_vertices(
   using namespace std;
   remove_duplicate_vertices(V,epsilon,SV,SVI,SVJ);
   // remap faces
+#ifndef _WIN32
   SF = F.unaryExpr(bind1st(mem_fun( 
     static_cast<VectorXi::Scalar&(VectorXi::*)(VectorXi::Index)>
       (&VectorXi::operator())), &SVJ)).eval();
+#else
+  // Why doesn't the above compile on windows?
+#define __STR2__(x) #x
+#define __STR1__(x) __STR2__(x)
+#define __LOC__ __FILE__ "("__STR1__(__LINE__)") : Warning Msg: "
+#pragma message(__LOC__"Using untested Windows-only code")
+  // This needs to be tested.
+  SF.resize(F.rows(),F.cols());
+  for(int f = 0;f<SF.size();f++)
+  {
+	  SF(f) = SVJ(f);
+  }
+#endif
 }
 
 #ifndef IGL_HEADER_ONLY
