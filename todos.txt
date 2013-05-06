@@ -21,3 +21,4 @@
 - consistent checks/asserts for: manifoldness, closedness, triangles-only
     e.g. check_mesh(V,F,MANIFOLD | CLOSED | TRIANGLES_ONLY)
 - clean up Timer.h
+- svd.* depends on lapack, should use eigen...

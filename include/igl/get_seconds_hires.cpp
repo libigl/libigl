@@ -2,6 +2,7 @@
 
 #if _WIN32
 #  include <windows.h>
+#  include <cassert>
 IGL_INLINE double igl::get_seconds_hires()
 {
   LARGE_INTEGER li_freq, li_current;

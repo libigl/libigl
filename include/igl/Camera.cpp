@@ -1,5 +1,5 @@
 #include "Camera.h"
-#include <igl/canonical_quaternions.h>
+#include "canonical_quaternions.h"
 #include <algorithm>
 
 igl::Camera::Camera():

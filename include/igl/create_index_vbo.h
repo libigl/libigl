@@ -11,6 +11,7 @@
 #  define NOMINMAX
 #  include <Windows.h>
 #  undef NOMINMAX
+#  include <GL/glew.h>
 #  include <GL/gl.h>
 #else
 #  define GL_GLEXT_PROTOTYPES

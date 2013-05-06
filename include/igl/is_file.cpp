@@ -1,6 +1,11 @@
 #include "is_file.h"
 
 #include <sys/stat.h>
+#ifdef _WIN32
+#  ifndef S_ISREG
+#    define S_ISREG(mode)  (((mode) & S_IFMT) == S_IFREG)
+#  endif
+#endif
 IGL_INLINE bool igl::is_file(const char * filename)
 {
   struct stat status;

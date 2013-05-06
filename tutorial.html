@@ -249,6 +249,26 @@ make
       <p>See also: <a href=style_guidelines.html>style guidlines</a>, <a
       href=doc.html>auto-documentation</a>, <a
       href=file-formats/index.html>file formats</a></p>
+      <h3>Including OpenGL</h3>
+      <p>
+      A standard include for the OpenGL headers should be placed in the .cpp file if possible. To ensure compilability on Mac OS X, Windows and Linux, use:
+      <pre><code>
+#if __APPLE__
+#  include &lt;OpenGL/gl.h&gt;
+#elif defined(_WIN32)
+#    define NOMINMAX
+#    include &lt;Windows.h&gt;
+#    undef NOMINMAX
+#    include &lt;GL/glew.h&gt;
+#    include &lt;GL/gl.h&gt;
+#else
+#  define GL_GLEXT_PROTOTYPES
+#  include &lt;GL/gl.h&gt;
+#  include &lt;GL/glext.h&gt;
+#endif
+      </code></pre>
+      </p>
+      <p><span class=todo>This should be encapsulated in a single utility header</span></p>
   </div>
   </body>
 </html>
