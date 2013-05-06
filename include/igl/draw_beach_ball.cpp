@@ -34,49 +34,50 @@ static const float  FLOAT_EPS_SQ  = 1.0e-14f;
 static const float  FLOAT_PI      = 3.14159265358979323846f;
 enum EArrowParts     { ARROW_CONE, ARROW_CONE_CAP, ARROW_CYL, ARROW_CYL_CAP };
 
-template <typename _T> SAFE_INLINE const _T& TClamp(const _T& _X, const _T& _Limit1, const _T& _Limit2)
+template <typename T> SAFE_INLINE const T& TClamp(const T& X, const T& Limit1, const T& Limit2)
 {
-    if( _Limit1<_Limit2 )
-        return (_X<=_Limit1) ? _Limit1 : ( (_X>=_Limit2) ? _Limit2 : _X );
+    if( Limit1<Limit2 )
+        return (X<=Limit1) ? Limit1 : ( (X>=Limit2) ? Limit2 : X );
     else
-        return (_X<=_Limit2) ? _Limit2 : ( (_X>=_Limit1) ? _Limit1 : _X );
+        return (X<=Limit2) ? Limit2 : ( (X>=Limit1) ? Limit1 : X );
 }
 
 typedef unsigned int color32;
-static SAFE_INLINE color32 Color32FromARGBi(int _A, int _R, int _G, int _B)
+static SAFE_INLINE color32 Color32FromARGBi(int A, int R, int G, int B)
 {
-    return (((color32)TClamp(_A, 0, 255))<<24) | (((color32)TClamp(_R, 0, 255))<<16) | (((color32)TClamp(_G, 0, 255))<<8) | ((color32)TClamp(_B, 0, 255));
+    return (((color32)TClamp(A, 0, 255))<<24) | (((color32)TClamp(R, 0, 255))<<16) | (((color32)TClamp(G, 0, 255))<<8) | ((color32)TClamp(B, 0, 255));
 }
 
-static SAFE_INLINE color32 Color32FromARGBf(float _A, float _R, float _G, float _B)
+static SAFE_INLINE color32 Color32FromARGBf(float A, float R, float G, float B)
 {
-    return (((color32)TClamp(_A*256.0f, 0.0f, 255.0f))<<24) | (((color32)TClamp(_R*256.0f, 0.0f, 255.0f))<<16) | (((color32)TClamp(_G*256.0f, 0.0f, 255.0f))<<8) | ((color32)TClamp(_B*256.0f, 0.0f, 255.0f));
+    return (((color32)TClamp(A*256.0f, 0.0f, 255.0f))<<24) | (((color32)TClamp(R*256.0f, 0.0f, 255.0f))<<16) | (((color32)TClamp(G*256.0f, 0.0f, 255.0f))<<8) | ((color32)TClamp(B*256.0f, 0.0f, 255.0f));
 }
 
-static SAFE_INLINE void Color32ToARGBi(color32 _Color, int *_A, int *_R, int *_G, int *_B)
+static SAFE_INLINE void Color32ToARGBi(color32 Color, int *A, int *R, int *G, int *B)
 {
-    if(_A) *_A = (_Color>>24)&0xff;
-    if(_R) *_R = (_Color>>16)&0xff;
-    if(_G) *_G = (_Color>>8)&0xff;
-    if(_B) *_B = _Color&0xff;
+    if(A) *A = (Color>>24)&0xff;
+    if(R) *R = (Color>>16)&0xff;
+    if(G) *G = (Color>>8)&0xff;
+    if(B) *B = Color&0xff;
 }
 
-static SAFE_INLINE void Color32ToARGBf(color32 _Color, float *_A, float *_R, float *_G, float *_B)
+static SAFE_INLINE void Color32ToARGBf(color32 Color, float *A, float *R, float *G, float *B)
 {
-    if(_A) *_A = (1.0f/255.0f)*float((_Color>>24)&0xff);
-    if(_R) *_R = (1.0f/255.0f)*float((_Color>>16)&0xff);
-    if(_G) *_G = (1.0f/255.0f)*float((_Color>>8)&0xff);
-    if(_B) *_B = (1.0f/255.0f)*float(_Color&0xff);
+    if(A) *A = (1.0f/255.0f)*float((Color>>24)&0xff);
+    if(R) *R = (1.0f/255.0f)*float((Color>>16)&0xff);
+    if(G) *G = (1.0f/255.0f)*float((Color>>8)&0xff);
+    if(B) *B = (1.0f/255.0f)*float(Color&0xff);
 }
 
-static color32 ColorBlend(color32 _Color1, color32 _Color2, float _S)
+static color32 ColorBlend(color32 Color1, color32 Color2, float S)
 {
     float a1, r1, g1, b1, a2, r2, g2, b2;
-    Color32ToARGBf(_Color1, &a1, &r1, &g1, &b1);
-    Color32ToARGBf(_Color2, &a2, &r2, &g2, &b2);
-    float t = 1.0f-_S;
-    return Color32FromARGBf(t*a1+_S*a2, t*r1+_S*r2, t*g1+_S*g2, t*b1+_S*b2);
+    Color32ToARGBf(Color1, &a1, &r1, &g1, &b1);
+    Color32ToARGBf(Color2, &a2, &r2, &g2, &b2);
+    float t = 1.0f-S;
+    return Color32FromARGBf(t*a1+S*a2, t*r1+S*r2, t*g1+S*g2, t*b1+S*b2);
 }
+
 static std::vector<float>   s_SphTri;
 static std::vector<color32> s_SphCol;
 static void CreateSphere()
