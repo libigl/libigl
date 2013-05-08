@@ -232,6 +232,8 @@ namespace igl
         const char * name, 
         TwType type, 
         const char * value_str);
+      const std::vector<ReTwRWItem> & get_rw_items();
+      const std::vector<ReTwCBItem> & get_cb_items();
   };
 
 };
