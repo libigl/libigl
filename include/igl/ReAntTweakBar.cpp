@@ -828,3 +828,13 @@ bool igl::ReTwBar::set_value_from_string(
   }
   return true;
 }
+
+const std::vector<igl::ReTwRWItem> & igl::ReTwBar::get_rw_items()
+{
+  return rw_items;
+}
+
+const std::vector<igl::ReTwCBItem> & igl::ReTwBar::get_cb_items()
+{
+  return cb_items;
+}
