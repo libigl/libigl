@@ -40,7 +40,7 @@ bool igl::mesh_with_skeleton(
   //   * has no 0-volume pieces
   // Default settings pq100 tell tetgen to mesh interior of triangle mesh and
   // to produce a graded tet mesh
-  writeOFF("mesh_with_skeleton.off",VS,F);
+  //writeOFF("mesh_with_skeleton.off",VS,F);
   cerr<<"tetgen begin()"<<endl;
   int status = tetrahedralize( VS,F,"pq100Y",VV,TT,FF);
   cerr<<"tetgen end()"<<endl;

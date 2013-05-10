@@ -18,7 +18,7 @@
 #include <string>
 
 // Whether medit program is install
-const bool WITH_MEDIT = true;
+//#define WITH_MEDIT
 
 const char * USAGE=
 "Usage:\n"
@@ -228,12 +228,11 @@ int main(int argc, char * argv[])
   {
     return 1;
   }
+#ifdef WITH_MEDIT
   // If you have medit installed then it's convenient to visualize the tet mesh
   // at this point
-  if(WITH_MEDIT)
-  {
-    launch_medit(VV,TT,FF,false);
-  }
+  launch_medit(VV,TT,FF,false);
+#endif
   // Compute boundary conditions (aka fixed value constraints)
   // List of boundary indices (aka fixed value indices into VV)
   VectorXi b;
