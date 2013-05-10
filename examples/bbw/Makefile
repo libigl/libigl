@@ -2,10 +2,11 @@ include ../../Makefile.conf
 
 CXX=g++
 
-IGL=../../
-IGL_INC=-I${IGL}/include
-IGL_LIB=-L${IGL}/lib -ligl
+LIBIGL=../../
+LIBIGL_INC=-I${LIBIGL}/include
+LIBIGL_LIB=-L${LIBIGL}/lib -ligl
 
+# Adjust your mosek paths etc. accordingly
 ifndef MOSEKPLATFORM
   MOSEKPLATFORM=osx64x86
 endif
@@ -15,22 +16,20 @@ MOSEK_LIB=-L$(MOSEK)/6/tools/platform/$(MOSEKPLATFORM)/bin -lmosek64 -liglmosek
 
 EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
 
-TETGEN=$(IGL)/external/tetgen
+# By default I'm using the libigl version. Adjust accordingly
+TETGEN=$(LIBIGL)/external/tetgen
 TETGEN_LIB=-L$(TETGEN) -ligltetgen -ltet 
 TETGEN_INC=-I$(TETGEN)
 
-INC=-I. ${EIGEN3_INC} ${IGL_INC} ${TETGEN_INC} ${MOSEK_INC} 
-LIB=${TETGEN_LIB} ${MOSEK_LIB} ${OPENGL_LIB} ${GLUT_LIB} ${IGL_LIB} 
+INC=-I. ${EIGEN3_INC} ${LIBIGL_INC} ${TETGEN_INC} ${MOSEK_INC} 
+LIB=${TETGEN_LIB} ${MOSEK_LIB} ${OPENGL_LIB} ${GLUT_LIB} ${LIBIGL_LIB} 
 
 # Make file for bbw_demo
 .PHONY: all
 all: bbw_demo
 
 CPP_FILES=$(wildcard ./*.cpp)
-#C_FILES=$(wildcard ./*.c)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o))) 
-#$(addprefix obj/,$(notdir $(C_FILES:.c=.o)))
-CFLAGS+=-DSHADER_DIR="\"./GLSL\""
 
 bbw_demo: obj $(OBJ_FILES)
 	$(CXX) -o bbw_demo $(CFLAGS) $(OBJ_FILES) $(LIB)
@@ -38,8 +37,6 @@ bbw_demo: obj $(OBJ_FILES)
 obj:
 	mkdir -p obj
 
-#obj/%.o: %.c %.h
-#	gcc $(CFLAGS) -o $@ -c $< $(INC)
 obj/%.o: %.cpp %.h
 	$(CXX) $(CFLAGS) -o $@ -c $< $(INC)
 obj/%.o: %.cpp
