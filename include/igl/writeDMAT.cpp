@@ -37,6 +37,7 @@ IGL_INLINE bool igl::writeDMAT(
     // first line contains number of rows and number of columns
     fprintf(fp,"%d %d\n",(int)W.cols(),(int)W.rows());
     Eigen::MatrixXd Wd = W.template cast<double>();
+    fwrite(Wd.data(),sizeof(double),Wd.size(),fp);
     //// Loop over columns slowly
     //for(int j = 0;j < W.cols();j++)
     //{
@@ -47,7 +48,6 @@ IGL_INLINE bool igl::writeDMAT(
     //    fwrite(&d,sizeof(double),1,fp);
     //  }
     //}
-    fwrite(Wd.data(),sizeof(double),Wd.size(),fp);
   }
   fclose(fp);
   return true;

@@ -2,7 +2,7 @@
 #define IGL_LAUNCH_MEDIT_H
 #include "igl_inline.h"
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 namespace igl 
 {
@@ -23,9 +23,9 @@ namespace igl
   // because of the fork)
   template <typename DerivedV, typename DerivedT, typename DerivedF>
   IGL_INLINE int launch_medit(
-    const Eigen::MatrixBase<DerivedV> & V, 
-    const Eigen::MatrixBase<DerivedT> & T,
-    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::PlainObjectBase<DerivedV> & V, 
+    const Eigen::PlainObjectBase<DerivedT> & T,
+    const Eigen::PlainObjectBase<DerivedF> & F,
     const bool wait);
 }
 
