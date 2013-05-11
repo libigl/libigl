@@ -20,6 +20,8 @@ namespace igl
   //   V  double matrix of vertex positions  #V by 3
   //   T  #T list of tet indices into vertex positions
   //   F  #F list of face indices into vertex positions
+  //
+  // Known bugs: Holes and regions are not supported
   template <typename Scalar, typename Index>
   IGL_INLINE bool readMESH(
     const std::string mesh_file_name,

@@ -278,13 +278,13 @@ IGL_INLINE bool igl::readOBJ(
 
 template <typename DerivedV, typename DerivedF, typename DerivedT, typename Index>
 IGL_INLINE bool igl::readOBJPoly(
-                             const std::string str,
-                             Eigen::PlainObjectBase<DerivedV>& V,
-                             std::vector<std::vector< Index > >& F,
-                             Eigen::PlainObjectBase<DerivedV>& CN,
-                             Eigen::PlainObjectBase<DerivedF>& FN,
-                             Eigen::PlainObjectBase<DerivedT>& TC,
-                             Eigen::PlainObjectBase<DerivedF>& FTC)
+  const std::string str,
+  Eigen::PlainObjectBase<DerivedV>& V,
+  std::vector<std::vector< Index > >& F,
+  Eigen::PlainObjectBase<DerivedV>& CN,
+  Eigen::PlainObjectBase<DerivedF>& FN,
+  Eigen::PlainObjectBase<DerivedT>& TC,
+  Eigen::PlainObjectBase<DerivedF>& FTC)
 {
   std::vector<std::vector<double> > vV,vTC,vN;
   std::vector<std::vector<Index> > vF,vFTC,vFN;
