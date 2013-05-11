@@ -11,9 +11,9 @@
 
 template <typename DerivedV, typename DerivedT, typename DerivedF>
 IGL_INLINE int igl::launch_medit(
-  const Eigen::MatrixBase<DerivedV> & V, 
-  const Eigen::MatrixBase<DerivedT> & T,
-  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::PlainObjectBase<DerivedV> & V, 
+  const Eigen::PlainObjectBase<DerivedT> & T,
+  const Eigen::PlainObjectBase<DerivedF> & F,
   const bool wait)
 {
   using namespace std;
@@ -57,6 +57,6 @@ IGL_INLINE int igl::launch_medit(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
-template int igl::launch_medit<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, bool);
+template int igl::launch_medit<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, bool);
 #endif
 

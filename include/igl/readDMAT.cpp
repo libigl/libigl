@@ -16,10 +16,11 @@
 //   1  did not find header
 //   2  bad num_cols
 //   3  bad num_rows
+//   4  bad line ending
 static inline int readDMAT_read_header(FILE * fp, int & num_rows, int & num_cols)
 {
   // first line contains number of rows and number of columns
-  int res = fscanf(fp,"%d %d\n",&num_cols,&num_rows);
+  int res = fscanf(fp,"%d %d",&num_cols,&num_rows);
   if(res != 2)
   {
     return 1;
@@ -35,6 +36,14 @@ static inline int readDMAT_read_header(FILE * fp, int & num_rows, int & num_cols
     fprintf(stderr,"IOError: readDMAT() number of rows %d < 0\n",num_rows);
     return 3;
   }
+  // finish reading header
+  char lf;
+  if(fread(&lf, sizeof(char), 1, fp)!=1 || lf != '\n')
+  {
+    fprintf(stderr,"IOError: bad line ending in header\n");
+    return 4;
+  }
+
   return 0;
 }
 
