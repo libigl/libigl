@@ -1,9 +1,12 @@
 #include "writeMESH.h"
 
-#include <cstdio>
 #include "verbose.h"
 #include "matrix_to_list.h"
 #include <Eigen/Core>
+
+#include <iostream>
+#include <fstream>
+#include <cstdio>
 
 template <typename Scalar, typename Index>
 IGL_INLINE bool igl::writeMESH(
@@ -37,13 +40,35 @@ IGL_INLINE bool igl::writeMESH(
 template <typename DerivedV, typename DerivedT, typename DerivedF>
 IGL_INLINE bool igl::writeMESH(
   const std::string str,
-  const Eigen::MatrixBase<DerivedV> & V, 
-  const Eigen::MatrixBase<DerivedT> & T,
-  const Eigen::MatrixBase<DerivedF> & F)
+  const Eigen::PlainObjectBase<DerivedV> & V, 
+  const Eigen::PlainObjectBase<DerivedT> & T,
+  const Eigen::PlainObjectBase<DerivedF> & F)
 {
   using namespace std;
   using namespace igl;
   using namespace Eigen;
+
+  //// This is (surprisingly) slower than the C-ish code below
+  //ofstream mesh_file;
+  //mesh_file.open(str.c_str());
+  //if(!mesh_file.is_open())
+  //{
+  //  cerr<<"IOError: "<<str<<" could not be opened..."<<endl;
+  //  return false;
+  //}
+  //IOFormat format(FullPrecision,DontAlignCols," ","\n",""," 1","","");
+  //mesh_file<<"MeshVersionFormatted 1\n";
+  //mesh_file<<"Dimension 3\n";
+  //mesh_file<<"Vertices\n";
+  //mesh_file<<V.rows()<<"\n";
+  //mesh_file<<V.format(format)<<"\n";
+  //mesh_file<<"Triangles\n";
+  //mesh_file<<F.rows()<<"\n";
+  //mesh_file<<(F.array()+1).eval().format(format)<<"\n";
+  //mesh_file<<"Tetrahedra\n";
+  //mesh_file<<T.rows()<<"\n";
+  //mesh_file<<(T.array()+1).eval().format(format)<<"\n";
+  //mesh_file.close();
 
   FILE * mesh_file = fopen(str.c_str(),"w");
   if(NULL==mesh_file)
@@ -105,5 +130,6 @@ IGL_INLINE bool igl::writeMESH(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
-template bool igl::writeMESH<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
+//template bool igl::writeMESH<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
+template bool igl::writeMESH<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
 #endif

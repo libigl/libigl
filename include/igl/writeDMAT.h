@@ -13,10 +13,14 @@ namespace igl
   // Inputs:
   //   file_name  path to .dmat file
   //   W  eigen matrix containing to-be-written coefficients
+  //   ascii  write ascii file {true}
   // Returns true on success, false on error
   //
   template <class Mat>
-  IGL_INLINE bool writeDMAT(const std::string file_name, const Mat & W);
+  IGL_INLINE bool writeDMAT(
+    const std::string file_name, 
+    const Mat & W,
+    const bool ascii=true);
   template <typename Scalar>
   IGL_INLINE bool writeDMAT(
     const std::string file_name, 

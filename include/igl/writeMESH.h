@@ -18,6 +18,8 @@ namespace igl
   //   V  double matrix of vertex positions  #V by 3
   //   T  #T list of tet indices into vertex positions
   //   F  #F list of face indices into vertex positions
+  //
+  // Known bugs: Holes and regions are not supported
   template <typename Scalar, typename Index>
   IGL_INLINE bool writeMESH(
     const std::string mesh_file_name,
@@ -37,9 +39,9 @@ namespace igl
   template <typename DerivedV, typename DerivedT, typename DerivedF>
   IGL_INLINE bool writeMESH(
     const std::string str,
-    const Eigen::MatrixBase<DerivedV> & V, 
-    const Eigen::MatrixBase<DerivedT> & T,
-    const Eigen::MatrixBase<DerivedF> & F);
+    const Eigen::PlainObjectBase<DerivedV> & V, 
+    const Eigen::PlainObjectBase<DerivedT> & T,
+    const Eigen::PlainObjectBase<DerivedF> & F);
 }
 
 #ifdef IGL_HEADER_ONLY

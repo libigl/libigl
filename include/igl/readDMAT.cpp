@@ -85,6 +85,26 @@ IGL_INLINE bool igl::readDMAT(const std::string file_name,
     }
   }
 
+  // Try to read header for binary part
+  head_success = readDMAT_read_header(fp,num_rows,num_cols);
+  if(head_success == 0)
+  {
+    assert(W.size() == 0);
+    // Resize for output
+    W.resize(num_rows,num_cols);
+    double * Wraw = new double[num_rows*num_cols];
+    fread(Wraw, sizeof(double), num_cols*num_rows, fp);
+    // Loop over columns slowly
+    for(int j = 0;j < num_cols;j++)
+    {
+      // loop over rows (down columns) quickly
+      for(int i = 0;i < num_rows;i++)
+      {
+        W(i,j) = Wraw[j*num_rows+i];
+      }
+    }
+  }
+
   fclose(fp);
   return true;
 }
@@ -145,7 +165,7 @@ IGL_INLINE bool igl::readDMAT(
     // Resize for output
     W.resize(num_rows,typename std::vector<Scalar>(num_cols));
     double * Wraw = new double[num_rows*num_cols];
-    fread(Wraw, 8, num_cols*num_rows, fp);
+    fread(Wraw, sizeof(double), num_cols*num_rows, fp);
     // Loop over columns slowly
     for(int j = 0;j < num_cols;j++)
     {
@@ -165,4 +185,5 @@ IGL_INLINE bool igl::readDMAT(
 // Explicit template specialization
 template bool igl::readDMAT<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template bool igl::readDMAT<double>(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&);
+template bool igl::readDMAT<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif
