@@ -21,7 +21,19 @@ namespace igl
   {
   public:
     // default constructor
-    Timer()                       
+    Timer():
+      stopped(0),
+#ifdef WIN32
+      frequency(0),
+      startCount(0),
+      endCount(0)
+#elif __APPLE__
+      startCount(0),
+      endCount(0)
+#else
+      startCount(),
+      endCount()
+#endif
     {
 #ifdef WIN32
       QueryPerformanceFrequency(&frequency);
