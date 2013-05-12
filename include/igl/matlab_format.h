@@ -5,6 +5,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/Sparse>
+#include <string>
 
 namespace igl
 {
