@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="12.0"
+	Name="sys"
+	ProjectGUID="{F0A5DB19-52B4-4162-8202-5FF775128120}"
+	VCNestedProjectGUID="{B118AB3D-AB5B-4D86-90C2-8E91E8457710}"
+	VCNestedProjectFileName="sys.vcproj"
+	>
+	<Configurations/>
+	<Files/>
+</VisualStudioProject>

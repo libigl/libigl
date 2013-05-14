@@ -1,0 +1,7 @@
+/usr/local/igl/libigl/external/embree/bin/viewer/CMakeFiles/embree.dir
+/usr/local/igl/libigl/external/embree/bin/common/image/CMakeFiles/image.dir
+/usr/local/igl/libigl/external/embree/bin/common/lexers/CMakeFiles/lexers.dir
+/usr/local/igl/libigl/external/embree/bin/common/loaders/CMakeFiles/loaders.dir
+/usr/local/igl/libigl/external/embree/bin/renderer/CMakeFiles/renderer.dir
+/usr/local/igl/libigl/external/embree/bin/rtcore/CMakeFiles/rtcore.dir
+/usr/local/igl/libigl/external/embree/bin/common/sys/CMakeFiles/sys.dir

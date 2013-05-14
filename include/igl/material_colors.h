@@ -1,6 +1,7 @@
 #ifndef IGL_MATERIAL_COLORS_H
 #define IGL_MATERIAL_COLORS_H
-// Define som constant material colors for use with opengl glMaterialfv
+// Define constant material colors for use with opengl glMaterialfv
+// Most of these colors come from IGL publications
 namespace igl
 {
   // Gold/Silver used in BBW/MONO/STBS/FAST
@@ -28,5 +29,9 @@ namespace igl
   const float BBW_POINT_COLOR[4] = {239./255.,213./255.,46./255.,255.0/255.0};
   const float BBW_LINE_COLOR[4] = {106./255.,106./255.,255./255.,255./255.};
   const float MIDNIGHT_BLUE_DIFFUSE[4]  = { 21.0f/255.0f, 27.0f/255.0f, 84.0f/255.0f, 1.0f};
+  // Winding number colors
+  const float EASTER_RED_DIFFUSE[4] = {0.603922,0.494118f,0.603922f,1.0f};
+  const float WN_OPEN_BOUNDARY_COLOR[4] = {154./255.,0./255.,0./255.,1.0f};
+  const float WN_NON_MANIFOLD_EDGE_COLOR[4] = {201./255., 51./255.,255./255.,1.0f};
 }
 #endif

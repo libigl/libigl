@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer
+END
+renderer.vcxproj
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/renderer.vcxproj
+END
+renderer.vcproj
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/renderer.vcproj
+END
+default.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/default.h
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/CMakeLists.txt
+END

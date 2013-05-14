@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs
+END
+transmission.h
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/transmission.h
+END
+reflection.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/reflection.h
+END
+microfacet.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/microfacet.h
+END
+brdf.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/brdf.h
+END
+minnaert.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/minnaert.h
+END
+lambertian.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/lambertian.h
+END
+specular.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/specular.h
+END
+velvety.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/velvety.h
+END
+conductor.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/conductor.h
+END
+optics.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/optics.h
+END
+compositedbrdf.h
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/compositedbrdf.h
+END
+dielectriclayer.h
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/dielectriclayer.h
+END
+dielectric.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/dielectric.h
+END

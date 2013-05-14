@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/image
+END
+exr.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/image/exr.cpp
+END
+FindOpenEXR.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/image/FindOpenEXR.cmake
+END
+image.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/image/image.cpp
+END
+pfm.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/image/pfm.cpp
+END
+image.vcproj
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/image/image.vcproj
+END
+image.icproj
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/image/image.icproj
+END
+image.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/image/image.h
+END
+image.vcxproj
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/image/image.vcxproj
+END
+magick.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/image/magick.cpp
+END
+tga.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/image/tga.cpp
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/image/CMakeLists.txt
+END
+ppm.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/image/ppm.cpp
+END
+FindImageMagick.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/image/FindImageMagick.cmake
+END

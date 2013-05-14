@@ -1,0 +1,2 @@
+/usr/local/bin/ar cr ../../libimage.a  CMakeFiles/image.dir/image.o CMakeFiles/image.dir/ppm.o CMakeFiles/image.dir/pfm.o CMakeFiles/image.dir/tga.o CMakeFiles/image.dir/exr.o CMakeFiles/image.dir/magick.o
+/usr/local/bin/ranlib ../../libimage.a

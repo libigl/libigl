@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/embree/embree.git/!svn/ver/12/branches/v1.1/rtcore
+END
+rtcore.vcproj
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/rtcore.vcproj
+END
+rtcore.icproj
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/rtcore.icproj
+END
+rtcore.vcxproj
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/rtcore.vcxproj
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/CMakeLists.txt
+END

@@ -1,0 +1,179 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/embree/embree.git/!svn/ver/12/branches/v1.1/rtcore/common
+END
+primrefgen.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/primrefgen.cpp
+END
+alloc.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/alloc.h
+END
+ray.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/ray.h
+END
+heuristic_binning.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/heuristic_binning.cpp
+END
+primrefgen.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/primrefgen.h
+END
+intersector.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/intersector.h
+END
+splitter.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/splitter.cpp
+END
+accel.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/accel.cpp
+END
+heuristic_binning.h
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/embree/embree.git/!svn/ver/6/branches/v1.1/rtcore/common/heuristic_binning.h
+END
+primref.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/primref.h
+END
+splitter.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/splitter.h
+END
+stat.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/stat.cpp
+END
+heuristic_spatial.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/heuristic_spatial.cpp
+END
+accel.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/accel.h
+END
+stat.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/stat.h
+END
+heuristic_spatial.h
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/embree/embree.git/!svn/ver/6/branches/v1.1/rtcore/common/heuristic_spatial.h
+END
+splitter_parallel.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/embree/embree.git/!svn/ver/12/branches/v1.1/rtcore/common/splitter_parallel.cpp
+END
+primrefalloc.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/primrefalloc.h
+END
+primrefblock.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/primrefblock.h
+END
+basenode.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/basenode.h
+END
+splitter_fallback.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/splitter_fallback.cpp
+END
+heuristics.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/heuristics.h
+END
+splitter_parallel.h
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/splitter_parallel.h
+END
+stack_item.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/stack_item.h
+END
+hit.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/hit.h
+END
+default.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/default.h
+END
+alloc.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/alloc.cpp
+END
+splitter_fallback.h
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/common/splitter_fallback.h
+END
+atomic_set.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/embree/embree.git/!svn/ver/5/branches/v1.1/rtcore/common/atomic_set.h
+END

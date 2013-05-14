@@ -1,0 +1,161 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle
+END
+triangle4.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle4.h
+END
+triangle1i_intersector1_pluecker.h
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle1i_intersector1_pluecker.h
+END
+triangle1v_intersector1_moeller.h
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle1v_intersector1_moeller.h
+END
+triangle8.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle8.h
+END
+triangle4i_intersector1_pluecker.h
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle4i_intersector1_pluecker.h
+END
+triangle1i.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle1i.h
+END
+triangle4v_intersector1_moeller.h
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle4v_intersector1_moeller.h
+END
+triangle4i_intersector1_moeller_mb.h
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle4i_intersector1_moeller_mb.h
+END
+triangle1xfm.h
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle1xfm.h
+END
+triangle4i.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle4i.h
+END
+triangle4xfm.h
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle4xfm.h
+END
+triangle.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle.h
+END
+triangle1_intersector1_moeller.h
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle1_intersector1_moeller.h
+END
+triangle1v_intersector1_pluecker.h
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle1v_intersector1_pluecker.h
+END
+triangle4_intersector1_moeller.h
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle4_intersector1_moeller.h
+END
+triangle4v_intersector1_pluecker.h
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle4v_intersector1_pluecker.h
+END
+triangle1v.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle1v.h
+END
+triangle4i_intersector1_pluecker_mb.h
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle4i_intersector1_pluecker_mb.h
+END
+triangle8_intersector1_moeller.h
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle8_intersector1_moeller.h
+END
+triangle4v.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle4v.h
+END
+triangle1i_intersector1_moeller.h
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle1i_intersector1_moeller.h
+END
+triangle1xfm_intersector1_moeller.h
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle1xfm_intersector1_moeller.h
+END
+triangle4i_intersector1_moeller.h
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle4i_intersector1_moeller.h
+END
+triangle4xfm_intersector1_moeller.h
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle4xfm_intersector1_moeller.h
+END
+triangle1.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangle1.h
+END
+triangles.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/rtcore/triangle/triangles.h
+END

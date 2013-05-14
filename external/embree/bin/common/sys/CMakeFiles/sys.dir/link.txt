@@ -1,0 +1,2 @@
+/usr/local/bin/ar cr ../../libsys.a  CMakeFiles/sys.dir/platform.o CMakeFiles/sys.dir/sysinfo.o CMakeFiles/sys.dir/filename.o CMakeFiles/sys.dir/library.o CMakeFiles/sys.dir/thread.o CMakeFiles/sys.dir/taskscheduler_standard.o CMakeFiles/sys.dir/sync/mutex.o CMakeFiles/sys.dir/sync/condition.o CMakeFiles/sys.dir/stl/string.o
+/usr/local/bin/ranlib ../../libsys.a

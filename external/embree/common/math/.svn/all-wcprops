@@ -1,0 +1,95 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math
+END
+math.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/math.h
+END
+bbox.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/bbox.h
+END
+vec2.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/vec2.h
+END
+vec3.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/vec3.h
+END
+col3.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/col3.h
+END
+vec4.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/vec4.h
+END
+affinespace.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/affinespace.h
+END
+permutation.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/permutation.h
+END
+linearspace3.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/linearspace3.h
+END
+vec3b_sse.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/vec3b_sse.h
+END
+vec3f_sse.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/vec3f_sse.h
+END
+random.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/random.h
+END
+col3f_sse.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/col3f_sse.h
+END
+vec3i_sse.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/vec3i_sse.h
+END
+quaternion.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/math/quaternion.h
+END
