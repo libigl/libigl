@@ -32,6 +32,7 @@ IGL_INLINE void igl::project_to_line(
   t.resize(np,1);
   sqrD.resize(np,1);
   // loop over points 
+#pragma omp parallel for
   for(int i = 0;i<np;i++)
   {
     MatL Pi = P.row(i);
@@ -55,6 +56,9 @@ IGL_INLINE void igl::project_to_line(
   const Scalar dx,
   const Scalar dy,
   const Scalar dz,
+  Scalar & projpx,
+  Scalar & projpy,
+  Scalar & projpz,
   Scalar & t,
   Scalar & sqrd)
 {
@@ -73,20 +77,42 @@ IGL_INLINE void igl::project_to_line(
   smp[2] = sz-pz;
   t = -(dms[0]*smp[0]+dms[1]*smp[1]+dms[2]*smp[2])/v_sqrlen;
   // P projectred onto line
-  Scalar projp[3];
-  projp[0] = (1.0-t)*sx + t*dx;
-  projp[1] = (1.0-t)*sy + t*dy;
-  projp[2] = (1.0-t)*sz + t*dz;
+  projpx = (1.0-t)*sx + t*dx;
+  projpy = (1.0-t)*sy + t*dy;
+  projpz = (1.0-t)*sz + t*dz;
   // vector from projected point to p
   Scalar pmprojp[3];
-  pmprojp[0] = px-projp[0];
-  pmprojp[1] = py-projp[1];
-  pmprojp[2] = pz-projp[2];
+  pmprojp[0] = px-projpx;
+  pmprojp[1] = py-projpy;
+  pmprojp[2] = pz-projpz;
   sqrd = pmprojp[0]*pmprojp[0] + pmprojp[1]*pmprojp[1] + pmprojp[2]*pmprojp[2];
+}
+
+template <typename Scalar>
+IGL_INLINE void igl::project_to_line(
+  const Scalar px,
+  const Scalar py,
+  const Scalar pz,
+  const Scalar sx,
+  const Scalar sy,
+  const Scalar sz,
+  const Scalar dx,
+  const Scalar dy,
+  const Scalar dz,
+  Scalar & t,
+  Scalar & sqrd)
+{
+  Scalar projpx;
+  Scalar projpy;
+  Scalar projpz;
+  return igl::project_to_line(
+    px, py, pz, sx, sy, sz, dx, dy, dz,
+    projpx, projpy, projpz, t, sqrd);
 }
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
 template void igl::project_to_line<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&);
 template void igl::project_to_line<double>(double, double, double, double, double, double, double, double, double, double&, double&);
+template void igl::project_to_line<double>(double, double, double, double, double, double, double, double, double, double&, double&,double&,double&, double&);
 #endif
