@@ -4,29 +4,26 @@
 //  @brief      An example that uses AntTweakBar with OpenGL Core Profile 
 //              and SDL 1.3.
 //
-//              AntTweakBar: http://www.antisphere.com/Wiki/tools:anttweakbar
+//              AntTweakBar: http://anttweakbar.sourceforge.net/doc
 //              OpenGL:      http://www.opengl.org
 //              SDL:         http://www.libsdl.org
 //  
-//  @author     Philippe Decaudin - http://www.antisphere.com
-//
-//  Compilation:
-//  http://www.antisphere.com/Wiki/tools:anttweakbar:examples#twsimplesdl
+//  @author     Philippe Decaudin
 //
 //  ---------------------------------------------------------------------------
 
 
 #include <AntTweakBar.h>
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef _WIN32
 //  MiniSDL13.h is provided to avoid the need of having SDL installed to 
 //  recompile this example. Do not use it in your own programs, better
 //  install and use the actual SDL library SDK.
 #   define USE_MINI_SDL
 #endif
 
-#define GL3_PROTOTYPES 1 ////
-#include <GL3/gl3.h> ////
+//#define GL3_PROTOTYPES 1 ////
+//#include <GL3/gl3.h>     ////
 
 #ifdef USE_MINI_SDL
 #   include "../src/MiniSDL13.h"
@@ -37,18 +34,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-/*
-#if defined(_WIN32) || defined(_WIN64)
+
+#ifdef _WIN32
 #   include <windows.h> // required by gl.h
 #endif
 #include <GL/gl.h>
 #include <GL/glu.h>
-*/
 
-// In this example, we draw a simple rectangle using the OpenGL core profile
+
+// In this example, we draw a simple rotating square using the OpenGL core profile
 // (which requires much more code than with the compatibility profile).
-// A tweak bar is created to allow the user to change the size and color
-// of the rectangle.
+// A tweak bar is created to allow the user to change the color of the 
+// rectangle and see its rotation.
 
 // Part of OpenGL core interface is not directly accessible from the common
 // OpenGL header and library (at least on windows) so we have to retrieve the
@@ -67,7 +64,7 @@
 #endif
 typedef GLuint (APIENTRY *PFNGLCreateShader)(GLenum type);
 typedef void (APIENTRY *PFNGLDeleteShader)(GLuint shader);
-typedef void (APIENTRY *PFNGLShaderSource)(GLuint shader, GLsizei count, const GLchar* *string, const GLint *length);
+typedef void (APIENTRY *PFNGLShaderSource)(GLuint shader, GLsizei count, const char* *str, const GLint *length);
 typedef void (APIENTRY *PFNGLCompileShader)(GLuint shader);
 typedef void (APIENTRY *PFNGLAttachShader)(GLuint program, GLuint shader);
 typedef GLuint (APIENTRY *PFNGLCreateProgram)(void);
@@ -81,8 +78,11 @@ typedef void (APIENTRY *PFNGLEnableVertexAttribArray)(GLuint index);
 typedef void (APIENTRY *PFNGLGenVertexArrays)(GLsizei n, GLuint *arrays);
 typedef void (APIENTRY *PFNGLBindVertexArray)(GLuint array);
 typedef void (APIENTRY *PFNGLDeleteVertexArrays)(GLsizei n, const GLuint *arrays);
-typedef GLint (APIENTRY *PFNGLGetAttribLocation)(GLuint program, const GLchar *name);
-typedef void (APIENTRY *PFNGLBufferData)(GLenum target, GLsizeiptr size, const GLvoid *data, GLenum usage);
+typedef GLint (APIENTRY *PFNGLGetAttribLocation)(GLuint program, const char *name);
+typedef GLint (APIENTRY *PFNGLGetUniformLocation)(GLuint program, const char *name);
+typedef void (APIENTRY *PFNGLUniform1f)(GLint location, GLfloat v0);
+typedef void (APIENTRY *PFNGLUniform3f)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
+typedef void (APIENTRY *PFNGLBufferData)(GLenum target, ptrdiff_t size, const GLvoid *data, GLenum usage);
 typedef void (APIENTRY *PFNGLDeleteBuffers)(GLsizei n, const GLuint *buffers);
 PFNGLCreateShader _glCreateShader;
 PFNGLDeleteShader _glDeleteShader;
@@ -101,8 +101,23 @@ PFNGLGenVertexArrays _glGenVertexArrays;
 PFNGLBindVertexArray _glBindVertexArray;
 PFNGLDeleteVertexArrays _glDeleteVertexArrays;
 PFNGLGetAttribLocation _glGetAttribLocation;
+PFNGLGetUniformLocation _glGetUniformLocation;
+PFNGLUniform1f _glUniform1f;
+PFNGLUniform3f _glUniform3f;
 PFNGLBufferData _glBufferData;
 PFNGLDeleteBuffers _glDeleteBuffers;
+#ifndef GL_ARRAY_BUFFER
+#   define GL_ARRAY_BUFFER      0x8892
+#endif
+#ifndef GL_STATIC_DRAW
+#   define GL_STATIC_DRAW       0x88E4
+#endif
+#ifndef GL_VERTEX_SHADER
+#   define GL_VERTEX_SHADER     0x8B31
+#endif
+#ifndef GL_FRAGMENT_SHADER
+#   define GL_FRAGMENT_SHADER   0x8B30
+#endif
 
 int LoadGLCoreFunctions()
 {
@@ -123,6 +138,9 @@ int LoadGLCoreFunctions()
     _glBindVertexArray = (PFNGLBindVertexArray)glGetProcAddress("glBindVertexArray");
     _glDeleteVertexArrays = (PFNGLDeleteVertexArrays)glGetProcAddress("glDeleteVertexArrays");
     _glGetAttribLocation = (PFNGLGetAttribLocation)glGetProcAddress("glGetAttribLocation");
+    _glGetUniformLocation = (PFNGLGetUniformLocation)glGetProcAddress("glGetUniformLocation");
+    _glUniform1f = (PFNGLUniform1f)glGetProcAddress("glUniform1f");
+    _glUniform3f = (PFNGLUniform3f)glGetProcAddress("glUniform3f");
     _glBufferData = (PFNGLBufferData)glGetProcAddress("glBufferData");
     _glDeleteBuffers = (PFNGLDeleteBuffers)glGetProcAddress("glDeleteBuffers");
 
@@ -130,27 +148,36 @@ int LoadGLCoreFunctions()
         || _glAttachShader == NULL || _glCreateProgram == NULL || _glLinkProgram == NULL || _glUseProgram  == NULL
         || _glDeleteProgram == NULL || _glGenBuffers == NULL || _glBindBuffer == NULL || _glVertexAttribPointer == NULL
         || _glEnableVertexAttribArray == NULL || _glGenVertexArrays == NULL || _glBindVertexArray == NULL
-        || _glDeleteVertexArrays == NULL || _glGetAttribLocation == NULL || _glBufferData == NULL || _glDeleteBuffers == NULL)
+        || _glDeleteVertexArrays == NULL || _glGetAttribLocation == NULL || _glGetUniformLocation == NULL
+        || _glUniform1f == NULL || _glUniform3f == NULL || _glBufferData == NULL || _glDeleteBuffers == NULL)
         return 0;
     else 
         return 1;
 }
 
+
+// Shaders globals
 GLuint vshader, fshader, program, varray, buffer;
+GLint cosa, sina, colorloc;
+float angle = 0, quat[4];
+float color[] = {0.8f, 1.0f, 0.2f};
+float FLOAT_PI = 3.14159265f;
 
 void InitRender()
 {
-    // vertex shader
-    GLchar *vsource[] = {
+    // Vertex shader
+    char *vsource[] = {
         "#version 150 core\n"
+        "uniform float cosa, sina;"
         "in vec3 vertex;"
-        "void main() { gl_Position = vec4(vertex, 1); }"
+        "void main() { gl_Position = vec4(cosa*vertex.x-sina*vertex.y, sina*vertex.x+cosa*vertex.y, 0, 1); }"
     };
-    // fragment shader
-    GLchar *fsource[] = {
+    // Fragment shader
+    char *fsource[] = {
         "#version 150 core\n"
-        "out vec4 color;"
-        "void main() { color = vec4(0, 0, 1, 0); }"
+        "uniform vec3 color;"
+        "out vec4 fcolor;"
+        "void main() { fcolor = vec4(color, 1); }"
     };
     // Geometry vertex array
     GLfloat vertices[] = { 
@@ -174,6 +201,10 @@ void InitRender()
     _glLinkProgram(program);
     _glUseProgram(program);
 
+    cosa = _glGetUniformLocation(program, "cosa");
+    sina = _glGetUniformLocation(program, "sina");
+    colorloc = _glGetUniformLocation(program, "color");
+
     // Create and bind vertex buffer
     _glGenVertexArrays(1, &varray);
     _glBindVertexArray(varray);
@@ -185,7 +216,7 @@ void InitRender()
     _glEnableVertexAttribArray(vlocation);
 
     // GL states
-    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 }
 
@@ -198,37 +229,27 @@ void UninitRender()
     _glDeleteVertexArrays(1, &varray);
 }
 
+void Render()
+{
+    _glUniform1f(cosa, (float)cos(angle));
+    _glUniform1f(sina, (float)sin(angle));
+    _glUniform3f(colorloc, color[0], color[1], color[2]);
+    _glBindVertexArray(varray);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+
+
 TwBar *CreateTweakBar()
 {
     TwBar *bar;
 
     // Create a tweak bar
     bar = TwNewBar("TweakBar");
-    TwDefine(" GLOBAL help='This example shows how to integrate AntTweakBar with SDL and OpenGL Core Profile.\nPress [Space] to toggle fullscreen.' "); // Message added to the help bar.
-/*
-    // Add 'numCurves' to 'bar': this is a modifiable variable of type TW_TYPE_INT32. Its shortcuts are [c] and [C].
-    TwAddVarRW(bar, "NumCubes", TW_TYPE_INT32, &numCubes, 
-               " label='Number of cubes' min=1 max=100 keyIncr=c keyDecr=C help='Defines the number of cubes in the scene.' ");
+    TwDefine(" GLOBAL help='This example shows how to integrate AntTweakBar with SDL and OpenGL Core Profile.\n' "); // Message added to the help bar.
 
-    // Add 'ka', 'kb and 'kc' to 'bar': they are modifiable variables of type TW_TYPE_DOUBLE
-    TwAddVarRW(bar, "ka", TW_TYPE_DOUBLE, &ka, 
-               " label='X path coeff' keyIncr=1 keyDecr=CTRL+1 min=-10 max=10 step=0.01 ");
-    TwAddVarRW(bar, "kb", TW_TYPE_DOUBLE, &kb, 
-               " label='Y path coeff' keyIncr=2 keyDecr=CTRL+2 min=-10 max=10 step=0.01 ");
-    TwAddVarRW(bar, "kc", TW_TYPE_DOUBLE, &kc, 
-               " label='Z path coeff' keyIncr=3 keyDecr=CTRL+3 min=-10 max=10 step=0.01 ");
-
-    // Add 'color0' and 'color1' to 'bar': they are modifable variables of type TW_TYPE_COLOR3F (3 floats color)
-    TwAddVarRW(bar, "color0", TW_TYPE_COLOR3F, &color0, 
-               " label='Start color' help='Color of the first cube.' ");
-    TwAddVarRW(bar, "color1", TW_TYPE_COLOR3F, &color1, 
-               " label='End color' help='Color of the last cube. Cube colors are interpolated between the Start and End colors.' ");
-
-    // Add 'quit' to 'bar': this is a modifiable (RW) variable of type TW_TYPE_BOOL32 
-    // (a boolean stored in a 32 bits integer). Its shortcut is [ESC].
-    TwAddVarRW(bar, "Quit", TW_TYPE_BOOL32, &quit, 
-               " label='Quit?' true='+' false='-' key='ESC' help='Quit program.' ");
-*/
+    // Add variables
+    TwAddVarRW(bar, "Rotation", TW_TYPE_QUAT4F, &quat, " opened=true help='Rectangle rotation' ");
+    TwAddVarRW(bar, "Color", TW_TYPE_COLOR3F, &color, " opened=true help='Rectangle color' ");
  
     return bar;
 }
@@ -242,7 +263,7 @@ TwBar *CreateTweakBar()
 int main()
 {
     const SDL_VideoInfo* video = NULL;
-    int width  = 640, height = 480;
+    int width  = 480, height = 480;
     int bpp, flags;
     int quit = 0;
 
@@ -264,21 +285,20 @@ int main()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
     // Other GL attributes
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+    //SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     bpp = video->vfmt->BitsPerPixel;
-    flags = SDL_OPENGL | SDL_HWSURFACE | SDL_RESIZABLE;
-    //flags |= SDL_FULLSCREEN;
+    flags = SDL_OPENGL | SDL_HWSURFACE;
     if (!SDL_SetVideoMode(width, height, bpp, flags))
     {
         fprintf(stderr, "Video mode set failed: %s\n", SDL_GetError());
         SDL_Quit();
         exit(1);
     }
-    SDL_WM_SetCaption("AntTweakBar example using SDL and OpenGL Core Profile", "AntTweakBar+SDL+GLCore");
+    SDL_WM_SetCaption("AntTweakBar example using OpenGL Core Profile and SDL", "AntTweakBar+GLCore+SDL");
 
     // Enable SDL unicode and key-repeat
     SDL_EnableUNICODE(1);
@@ -322,9 +342,12 @@ int main()
         glClearColor(0.5f, 0.75f, 0.8f, 1);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-        // Draw geometry
-//        _glBindVertexArray(varray);
-//        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        // Update angle and draw geometry
+        angle = (float)SDL_GetTicks()/25.0f * (FLOAT_PI/180.0f);
+        quat[0] = quat[1] = 0;
+        quat[2] = (float)sin(angle/2.0f);
+        quat[3] = (float)cos(angle/2.0f);
+        Render();
 
         // Draw tweak bars
         TwDraw();
@@ -363,20 +386,6 @@ int main()
                     // TwWindowSize has been called by TwEventSDL, 
                     // so it is not necessary to call it again here.
 
-                    break;
-
-                case SDL_KEYDOWN:
-                    if (event.key.keysym.sym==' ') // toggle fullscreen if Space key is pressed
-                    {
-                        flags ^= SDL_FULLSCREEN;
-                        SDL_SetVideoMode(800, 600, bpp, flags);
-
-                        // Push a resize event because SDL does not do it for us
-                        event.type = SDL_VIDEORESIZE;
-                        event.resize.w = 800;
-                        event.resize.h = 600;
-                        SDL_PushEvent(&event);
-                    }
                     break;
                 }
             }

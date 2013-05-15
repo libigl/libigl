@@ -3,14 +3,11 @@
 //  @file       TwSimpleSDL.c
 //  @brief      A simple example that uses AntTweakBar with OpenGL and SDL 1.2
 //
-//              AntTweakBar: http://www.antisphere.com/Wiki/tools:anttweakbar
+//              AntTweakBar: http://anttweakbar.sourceforge.net/doc
 //              OpenGL:      http://www.opengl.org
 //              SDL:         http://www.libsdl.org
 //  
-//  @author     Philippe Decaudin - http://www.antisphere.com
-//
-//  Compilation:
-//  http://www.antisphere.com/Wiki/tools:anttweakbar:examples#twsimplesdl
+//  @author     Philippe Decaudin
 //
 //  ---------------------------------------------------------------------------
 

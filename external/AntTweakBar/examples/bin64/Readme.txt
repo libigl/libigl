@@ -17,7 +17,7 @@ License & copyright notices
 - AntTweakBar
 
 AntTweakBar.dll and Tw* files are part of the AntTweakBar library.
-http://www.antisphere.com/Wiki/tools:anttweakbar
+http://anttweakbar.sourceforge.net/doc
 
 AntTweakBar is a free software released under the zlib license.
 For conditions of distribution and use, see ../../License.txt
@@ -26,7 +26,7 @@ For conditions of distribution and use, see ../../License.txt
 - glfw.dll
 
 GLFW is licensed under the zlib/libpng license:
-http://glfw.sourceforge.net/documentation.html#license
+http://www.glfw.org/license.html
 
 
 - SDL.dll / SDL-1.3.dll

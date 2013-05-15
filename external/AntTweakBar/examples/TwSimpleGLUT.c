@@ -3,15 +3,12 @@
 //  @file       TwSimpleGLUT.c
 //  @brief      A simple example that uses AntTweakBar with OpenGL and GLUT.
 //
-//              AntTweakBar: http://www.antisphere.com/Wiki/tools:anttweakbar
+//              AntTweakBar: http://anttweakbar.sourceforge.net/doc
 //              OpenGL:      http://www.opengl.org
 //              GLUT:        http://opengl.org/resources/libraries/glut
 //  
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @date       2006/05/20
-//
-//  Compilation:
-//  http://www.antisphere.com/Wiki/tools:anttweakbar:examples#twsimpleglut
 //
 //  ---------------------------------------------------------------------------
 

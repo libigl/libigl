@@ -6,9 +6,9 @@
 //              that can be readily integrated into OpenGL and DirectX 
 //              applications in order to interactively tweak parameters.
 //
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //
-//  @doc        http://www.antisphere.com/Wiki/tools:anttweakbar
+//  @doc        http://anttweakbar.sourceforge.net/doc
 //
 //  @license    This file is part of the AntTweakBar library.
 //              AntTweakBar is a free software released under the zlib license.
@@ -22,7 +22,7 @@
 
 #include <stddef.h>
 
-#define TW_VERSION  114 // Version Mmm : M=Major mm=minor (e.g., 102 is version 1.02)
+#define TW_VERSION  116 // Version Mmm : M=Major mm=minor (e.g., 102 is version 1.02)
 
 
 #ifdef  __cplusplus
@@ -42,7 +42,7 @@
 //  OS specific definitions
 // ----------------------------------------------------------------------------
 
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(TW_STATIC)
 #   define TW_CALL          __stdcall
 #   define TW_CDECL_CALL    __cdecl
 #   define TW_EXPORT_API    __declspec(dllexport)
@@ -90,12 +90,11 @@ TW_API int          TW_CALL TwSetTopBar(const TwBar *bar);
 TW_API TwBar *      TW_CALL TwGetTopBar();
 TW_API int          TW_CALL TwSetBottomBar(const TwBar *bar);
 TW_API TwBar *      TW_CALL TwGetBottomBar();
-TW_API const char * TW_CALL TwGetBarName(TwBar *bar);
+TW_API const char * TW_CALL TwGetBarName(const TwBar *bar);
 TW_API int          TW_CALL TwGetBarCount();
 TW_API TwBar *      TW_CALL TwGetBarByIndex(int barIndex);
 TW_API TwBar *      TW_CALL TwGetBarByName(const char *barName);
 TW_API int          TW_CALL TwRefreshBar(TwBar *bar);
-
 
 // ----------------------------------------------------------------------------
 //  Var functions and definitions
@@ -124,7 +123,11 @@ typedef enum ETwType
     TW_TYPE_COLOR4F,    // 4 floats color. Order is RGBA.
     TW_TYPE_CDSTRING,   // Null-terminated C Dynamic String (pointer to an array of char dynamically allocated with malloc/realloc/strdup)
 #ifdef __cplusplus
+# if defined(_MSC_VER) && (_MSC_VER == 1600)
+    TW_TYPE_STDSTRING = (0x2ffe0000+sizeof(std::string)),  // VS2010 C++ STL string (std::string)
+# else
     TW_TYPE_STDSTRING = (0x2fff0000+sizeof(std::string)),  // C++ STL string (std::string)
+# endif
 #endif // __cplusplus
     TW_TYPE_QUAT4F = TW_TYPE_CDSTRING+2, // 4 floats encoding a quaternion {qx,qy,qz,qs}
     TW_TYPE_QUAT4D,     // 4 doubles encoding a quaternion {qx,qy,qz,qs}
@@ -193,7 +196,8 @@ typedef enum ETwGraphAPI
     TW_OPENGL           = 1,
     TW_DIRECT3D9        = 2,
     TW_DIRECT3D10       = 3,
-    TW_DIRECT3D11       = 4
+    TW_DIRECT3D11       = 4,
+    TW_OPENGL_CORE      = 5
 } TwGraphAPI;
 
 TW_API int      TW_CALL TwInit(TwGraphAPI graphAPI, void *device);
@@ -297,7 +301,7 @@ TW_API void     TW_CALL TwHandleErrors(TwErrorHandler errorHandler);
 TW_API int      TW_CALL TwEventSDL(const void *sdlEvent, unsigned char sdlMajorVersion, unsigned char sdlMinorVersion);
 
 // For GLFW event callbacks
-// Define GLFW_CDECL before including AntTweakBar.h if your version of GLFW uses cdecl calling convensions
+// You should define GLFW_CDECL before including AntTweakBar.h if your version of GLFW uses cdecl calling convensions
 #ifdef GLFW_CDECL
     TW_API int TW_CDECL_CALL TwEventMouseButtonGLFWcdecl(int glfwButton, int glfwAction);
     TW_API int TW_CDECL_CALL TwEventKeyGLFWcdecl(int glfwKey, int glfwAction);
@@ -336,6 +340,10 @@ typedef void (TW_GLUT_CALL *GLUTspecialfun)(int glutKey, int mouseX, int mouseY)
 // For SFML event loop
 TW_API int      TW_CALL TwEventSFML(const void *sfmlEvent, unsigned char sfmlMajorVersion, unsigned char sfmlMinorVersion);
 
+// For X11 event loop
+#if defined(_UNIX)
+    TW_API int TW_CDECL_CALL TwEventX11(void *xevent);
+#endif
 
 // ----------------------------------------------------------------------------
 //  Make sure the types have the right sizes

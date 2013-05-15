@@ -15,13 +15,10 @@
 //              Menger sponge generation. AntTweakBar calls are localized
 //              in the WinMain function.
 //
-//              AntTweakBar: http://www.antisphere.com/Wiki/tools:anttweakbar
+//              AntTweakBar: http://anttweakbar.sourceforge.net/doc
 //              DirectX:     http://msdn.microsoft.com/directx
 //  
-//  @author     Philippe Decaudin - http://www.antisphere.com
-//
-//  Compilation:
-//  http://www.antisphere.com/Wiki/tools:anttweakbar:examples#twsimpledx11
+//  @author     Philippe Decaudin
 //
 //  ---------------------------------------------------------------------------
 

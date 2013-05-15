@@ -1,7 +1,7 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       TwMgr.cpp
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
@@ -14,7 +14,7 @@
 #include "TwBar.h"
 #include "TwFonts.h"
 #include "TwOpenGL.h"
-//#include "TwOpenGLCore.h"
+#include "TwOpenGLCore.h"
 #ifdef ANT_WINDOWS
 #   include "TwDirect3D9.h"
 #   include "TwDirect3D10.h"
@@ -41,6 +41,7 @@ int g_InitWndWidth = -1;
 int g_InitWndHeight = -1;
 TwCopyCDStringToClient  g_InitCopyCDStringToClient = NULL;
 TwCopyStdStringToClient g_InitCopyStdStringToClient = NULL;
+float g_FontScaling = 1.0f;
 
 // multi-windows
 const int TW_MASTER_WINDOW_ID = 0;
@@ -734,7 +735,7 @@ void ANT_CALL CQuaternionExt::SummaryCB(char *_SummaryString, size_t _SummaryMax
     if( ext )
     {
         if( ext->m_AAMode )
-            _snprintf(_SummaryString, _SummaryMaxLength, "V={%.2f,%.2f,%.2f} A=%.0f°", ext->Vx, ext->Vy, ext->Vz, ext->Angle);
+            _snprintf(_SummaryString, _SummaryMaxLength, "V={%.2f,%.2f,%.2f} A=%.0f%c", ext->Vx, ext->Vy, ext->Vz, ext->Angle, 176);
         else if( ext->m_IsDir )
         {
             //float d[] = {1, 0, 0};
@@ -1624,8 +1625,56 @@ void CQuaternionExt::MouseLeaveCB(void *structExtValue, void *clientData, TwBar 
 //  ---------------------------------------------------------------------------
 //  Convertion between VC++ Debug/Release std::string
 //  (Needed because VC++ adds some extra info to std::string in Debug mode!)
+//  And resolve binary std::string incompatibility between VS2010 and other VS versions
 //  ---------------------------------------------------------------------------
 
+#ifdef _MSC_VER
+// VS2010 store the string allocator pointer at the end
+// VS2008 VS2012 and others store the string allocator pointer at the beginning
+static void FixVS2010StdStringLibToClient(void *strPtr)
+{
+    char *ptr = (char *)strPtr;
+    const size_t SizeOfUndecoratedString = 16 + 2*sizeof(size_t) + sizeof(void *); // size of a VS std::string without extra debug iterator and info.
+    assert(SizeOfUndecoratedString <= sizeof(std::string));
+    TwType LibStdStringBaseType = (TwType)(TW_TYPE_STDSTRING&0xffff0000);
+    void **allocAddress2008 = (void **)(ptr + sizeof(std::string) - SizeOfUndecoratedString);
+    void **allocAddress2010 = (void **)(ptr + sizeof(std::string) - sizeof(void *));
+    if (LibStdStringBaseType == TW_TYPE_STDSTRING_VS2008 && g_TwMgr->m_ClientStdStringBaseType == TW_TYPE_STDSTRING_VS2010)
+    {
+        void *allocator = *allocAddress2008;
+        memmove(allocAddress2008, allocAddress2008 + 1, SizeOfUndecoratedString - sizeof(void *));
+        *allocAddress2010 = allocator;
+    }
+    else if (LibStdStringBaseType == TW_TYPE_STDSTRING_VS2010 && g_TwMgr->m_ClientStdStringBaseType == TW_TYPE_STDSTRING_VS2008)
+    {
+        void *allocator = *allocAddress2010;
+        memmove(allocAddress2008 + 1, allocAddress2008, SizeOfUndecoratedString - sizeof(void *));
+        *allocAddress2008 = allocator;
+    }
+}
+
+static void FixVS2010StdStringClientToLib(void *strPtr)
+{
+    char *ptr = (char *)strPtr;
+    const size_t SizeOfUndecoratedString = 16 + 2*sizeof(size_t) + sizeof(void *); // size of a VS std::string without extra debug iterator and info.
+    assert(SizeOfUndecoratedString <= sizeof(std::string));
+    TwType LibStdStringBaseType = (TwType)(TW_TYPE_STDSTRING&0xffff0000);
+    void **allocAddress2008 = (void **)(ptr + sizeof(std::string) - SizeOfUndecoratedString);
+    void **allocAddress2010 = (void **)(ptr + sizeof(std::string) - sizeof(void *));
+    if (LibStdStringBaseType == TW_TYPE_STDSTRING_VS2008 && g_TwMgr->m_ClientStdStringBaseType == TW_TYPE_STDSTRING_VS2010)
+    {
+        void *allocator = *allocAddress2010;
+        memmove(allocAddress2008 + 1, allocAddress2008, SizeOfUndecoratedString - sizeof(void *));
+        *allocAddress2008 = allocator;
+    }
+    else if (LibStdStringBaseType == TW_TYPE_STDSTRING_VS2010 && g_TwMgr->m_ClientStdStringBaseType == TW_TYPE_STDSTRING_VS2008)
+    {
+        void *allocator = *allocAddress2008;
+        memmove(allocAddress2008, allocAddress2008 + 1, SizeOfUndecoratedString - sizeof(void *));
+        *allocAddress2010 = allocator;
+    }
+}
+#endif // _MSC_VER
 
 CTwMgr::CClientStdString::CClientStdString()
 {
@@ -1636,6 +1685,9 @@ void CTwMgr::CClientStdString::FromLib(const char *libStr)
 {
     m_LibStr = libStr; // it is ok to have a local copy here
     memcpy(m_Data + sizeof(void *), &m_LibStr, sizeof(std::string));
+#ifdef _MSC_VER
+    FixVS2010StdStringLibToClient(m_Data + sizeof(void *));
+#endif
 }
 
 std::string& CTwMgr::CClientStdString::ToClient() 
@@ -1662,6 +1714,9 @@ void CTwMgr::CLibStdString::FromClient(const std::string& clientStr)
 {
     assert( g_TwMgr!=NULL );
     memcpy(m_Data + sizeof(void *), &clientStr, g_TwMgr->m_ClientStdStringStructSize);
+#ifdef _MSC_VER
+    FixVS2010StdStringClientToLib(m_Data + sizeof(void *));
+#endif
 }
 
 std::string& CTwMgr::CLibStdString::ToLib()
@@ -1693,11 +1748,9 @@ static int TwCreateGraph(ETwGraphAPI _GraphAPI)
     case TW_OPENGL:
         g_TwMgr->m_Graph = new CTwGraphOpenGL;
         break;
-    /* WIP
     case TW_OPENGL_CORE:
         g_TwMgr->m_Graph = new CTwGraphOpenGLCore;
         break;
-    */
     case TW_DIRECT3D9:
         #ifdef ANT_WINDOWS
             if( g_TwMgr->m_Device!=NULL )
@@ -1863,7 +1916,7 @@ int ANT_CALL TwInit(ETwGraphAPI _GraphAPI, void *_Device)
     g_Wnds[TW_MASTER_WINDOW_ID] = g_TwMasterMgr;
     g_TwMgr = g_TwMasterMgr;
 
-    TwGenerateDefaultFonts();
+    TwGenerateDefaultFonts(g_FontScaling);
     g_TwMgr->m_CurrentFont = g_DefaultNormalFont;
 
     int Res = TwCreateGraph(_GraphAPI);
@@ -2055,9 +2108,6 @@ int ANT_CALL TwDraw()
         {
             g_TwMgr->m_IsRepeatingMousePressed = true;
             g_TwMgr->m_LastMousePressedTime = g_TwMgr->m_Timer.GetTime();
-            // Alec: First call mouse motion so that
-            // m_HighlightedLine is not                            
-            // confused by any keys pressed during mouse click+hold
             TwMouseMotion(g_TwMgr->m_LastMouseX,g_TwMgr->m_LastMouseY);
             TwMouseButton(TW_MOUSE_PRESSED, g_TwMgr->m_LastMousePressedButtonID);
         }
@@ -2260,6 +2310,7 @@ CTwMgr::CTwMgr(ETwGraphAPI _GraphAPI, void *_Device, int _WndID)
     m_CopyCDStringToClient = g_InitCopyCDStringToClient;
     m_CopyStdStringToClient = g_InitCopyStdStringToClient;
     m_ClientStdStringStructSize = 0;
+    m_ClientStdStringBaseType = (TwType)0;
 }
 
 //  ---------------------------------------------------------------------------
@@ -2291,6 +2342,8 @@ int CTwMgr::HasAttrib(const char *_Attrib, bool *_HasValue) const
         return MGR_HELP;
     else if( _stricmp(_Attrib, "fontsize")==0 )
         return MGR_FONT_SIZE;
+    else if( _stricmp(_Attrib, "fontstyle")==0 )
+        return MGR_FONT_STYLE;
     else if( _stricmp(_Attrib, "iconpos")==0 )
         return MGR_ICON_POS;
     else if( _stricmp(_Attrib, "iconalign")==0 )
@@ -2341,6 +2394,39 @@ int CTwMgr::SetAttrib(int _AttribID, const char *_Value)
                     SetFont(g_DefaultNormalFont, true);
                 else if( s==3 )
                     SetFont(g_DefaultLargeFont, true);
+                return 1;
+            }
+            else
+            {
+                SetLastError(g_ErrBadValue);
+                return 0;
+            }
+        }
+        else
+        {
+            SetLastError(g_ErrNoValue);
+            return 0;
+        }
+    case MGR_FONT_STYLE:
+        if( _Value && strlen(_Value)>0 )
+        {
+            if( _stricmp(_Value, "fixed")==0 )
+            {
+                if( m_CurrentFont!=g_DefaultFixed1Font )
+                {
+                    SetFont(g_DefaultFixed1Font, true);
+                    m_FontResizable = false; // for now fixed font is not resizable
+                }
+                return 1;
+            } 
+            else if( _stricmp(_Value, "default")==0 )
+            {
+                if( m_CurrentFont!=g_DefaultSmallFont && m_CurrentFont!=g_DefaultNormalFont && m_CurrentFont!=g_DefaultLargeFont )
+                {
+                    if( m_CurrentFont == g_DefaultFixed1Font )
+                        m_FontResizable = true;
+                    SetFont(g_DefaultNormalFont, true);
+                }
                 return 1;
             }
             else
@@ -2580,6 +2666,12 @@ ERetType CTwMgr::GetAttrib(int _AttribID, std::vector<double>& outDoubles, std::
         else
             outDoubles.push_back(0); // should not happened
         return RET_DOUBLE;
+    case MGR_FONT_STYLE:
+        if( m_CurrentFont==g_DefaultFixed1Font )
+            outString << "fixed";
+        else 
+            outString << "default";
+        return RET_STRING;
     case MGR_ICON_POS:
         if( m_IconPos==0 )
             outString << "bottomleft";
@@ -3048,7 +3140,7 @@ int ANT_CALL TwDeleteAllBars()
 
     if( n==0 )
     {
-        g_TwMgr->SetLastError(g_ErrNthToDo);
+        //g_TwMgr->SetLastError(g_ErrNthToDo);
         return 0;
     }
     else
@@ -3264,7 +3356,7 @@ TwState ANT_CALL TwGetBarState(const TwBar *_Bar)
 
 //  ---------------------------------------------------------------------------
 
-const char * ANT_CALL TwGetBarName(TwBar *_Bar)
+const char * ANT_CALL TwGetBarName(const TwBar *_Bar)
 {
     if( g_TwMgr==NULL )
     {
@@ -3982,8 +4074,13 @@ static int AddVar(TwBar *_Bar, const char *_Name, ETwType _Type, void *_VarPtr, 
 
     // VC++ uses a different definition of std::string in Debug and Release modes.
     // sizeof(std::string) is encoded in TW_TYPE_STDSTRING to overcome this issue.
-    if( (_Type&0xffff0000)==(TW_TYPE_STDSTRING&0xffff0000) )
+    // With VS2010 the binary representation of std::string has changed too. This is
+    // also detected here.
+    if( (_Type&0xffff0000)==(TW_TYPE_STDSTRING&0xffff0000) || (_Type&0xffff0000)==TW_TYPE_STDSTRING_VS2010 || (_Type&0xffff0000)==TW_TYPE_STDSTRING_VS2008 )
     {
+        if( g_TwMgr->m_ClientStdStringBaseType==0 )
+            g_TwMgr->m_ClientStdStringBaseType = (TwType)(_Type&0xffff0000);
+
         size_t clientStdStringStructSize = (_Type&0xffff);
         if( g_TwMgr->m_ClientStdStringStructSize==0 )
             g_TwMgr->m_ClientStdStringStructSize = clientStdStringStructSize;
@@ -3994,6 +4091,7 @@ static int AddVar(TwBar *_Bar, const char *_Name, ETwType _Type, void *_VarPtr, 
             g_TwMgr->SetLastError(g_ErrStdString);
             return 0;
         }
+
         _Type = TW_TYPE_STDSTRING; // force type to be our TW_TYPE_STDSTRING
     }
 
@@ -4362,7 +4460,6 @@ int ParseToken(string& _Token, const char *_Def, int& Line, int& Column, bool _K
     }
     // read token
     int QuoteLine=0, QuoteColumn=0;
-    const char *QuoteCur;
     char Quote = 0;
     bool AddChar;
     bool LineJustIncremented = false;
@@ -4376,7 +4473,6 @@ int ParseToken(string& _Token, const char *_Def, int& Line, int& Column, bool _K
             Quote = *Cur;
             QuoteLine = Line;
             QuoteColumn = Column;
-            QuoteCur = Cur;
             AddChar = _KeepQuotes;
         }
         else if ( Quote!=0 && *Cur==Quote )
@@ -4543,6 +4639,33 @@ static inline std::string ErrorPosition(bool _MultiLine, int _Line, int _Column)
 int ANT_CALL TwDefine(const char *_Def)
 {
     CTwFPU fpu; // force fpu precision
+
+    // hack to scale fonts artificially (for retina display for instance)
+    if( g_TwMgr==NULL && _Def!=NULL )
+    {
+        size_t l = strlen(_Def);
+        const char *eq = strchr(_Def, '=');
+        if( eq!=NULL && eq!=_Def && l>0 && l<512 )
+        {
+            char *a = new char[l+1];
+            char *b = new char[l+1];
+            if( sscanf(_Def, "%s%s", a, b)==2 && strcmp(a, "GLOBAL")==0 )
+            {
+                if( strchr(b, '=') != NULL )
+                    *strchr(b, '=') = '\0';
+                double scal = 1.0;
+                if( _stricmp(b, "fontscaling")==0 && sscanf(eq+1, "%lf", &scal)==1 && scal>0 )
+                {
+                    g_FontScaling = (float)scal;
+                    delete[] a;
+                    delete[] b;
+                    return 1;
+                }
+            }
+            delete[] a;
+            delete[] b;
+        }
+    }
 
     if( g_TwMgr==NULL )
     {

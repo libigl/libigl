@@ -6,13 +6,10 @@
 //              two sub-windows, each sub-window has a tweak bar.
 //              This example extends the TwSimpleGLUT example.
 //
-//              AntTweakBar: http://www.antisphere.com/Wiki/tools:anttweakbar
+//              AntTweakBar: http://anttweakbar.sourceforge.net/doc
 //              OpenGL:      http://www.opengl.org
 //              GLUT:        http://opengl.org/resources/libraries/glut
 //  
-//  Compilation:
-//  http://www.antisphere.com/Wiki/tools:anttweakbar:examples#twdualglut
-//
 //  ---------------------------------------------------------------------------
 
 
@@ -46,7 +43,7 @@ typedef struct
 {
 	int   WinID;
 	TwBar *Bar;
-	Shape Shape;
+	Shape ObjectShape;
 	float Zoom;
 	float Rotation[4];
 	int   AutoRotate;
@@ -219,7 +216,7 @@ void DisplaySubWindow(void)
     ConvertQuaternionToMatrix(win->Rotation, mat);
     glMultMatrixf(mat);
     glScalef(win->Zoom, win->Zoom, win->Zoom);
-    glCallList(win->Shape);
+    glCallList(win->ObjectShape);
     glPopMatrix();
 
     // Draw tweak bars
@@ -343,7 +340,7 @@ void SetupSubWindow(int subWinIdx)
     SubWindowData *win;
     
     win = &g_SubWindowData[subWinIdx];
-    win->Shape = (subWinIdx == 0) ? SHAPE_TEAPOT : SHAPE_TORUS;
+    win->ObjectShape = (subWinIdx == 0) ? SHAPE_TEAPOT : SHAPE_TORUS;
 	win->Zoom = 1;
 	win->AutoRotate = (subWinIdx == 0);
     win->MatAmbient[0] = (subWinIdx == 1) ? 0.0f : 0.5f;; win->MatAmbient[1] = win->MatAmbient[2] = 0.2f; win->MatAmbient[3] = 1;
@@ -422,7 +419,7 @@ void SetupSubWindow(int subWinIdx)
     // and is inserted into group 'Material'.
     TwAddVarRW(win->Bar, "Diffuse", TW_TYPE_COLOR3F, &win->MatDiffuse, " group='Material' ");
 
-    // Add the enum variable 'win->CurrentShape' to 'bar'
+    // Add the enum variable 'win->ObjectShape' to 'bar'
     // (before adding an enum variable, its enum type must be declared to AntTweakBar as follow)
     {
         // ShapeEV associates Shape enum values with labels that will be displayed instead of enum values
@@ -430,7 +427,7 @@ void SetupSubWindow(int subWinIdx)
         // Create a type for the enum shapeEV
         TwType shapeType = TwDefineEnum("ShapeType", shapeEV, NUM_SHAPES);
         // add 'win->CurrentShape' to 'bar': this is a variable of type ShapeType. Its key shortcuts are [<] and [>].
-        TwAddVarRW(win->Bar, "Shape", shapeType, &win->Shape, " keyIncr='<' keyDecr='>' help='Change object shape.' ");
+        TwAddVarRW(win->Bar, "Shape", shapeType, &win->ObjectShape, " keyIncr='<' keyDecr='>' help='Change object shape.' ");
     }
 }
 

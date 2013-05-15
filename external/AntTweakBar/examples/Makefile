@@ -11,7 +11,7 @@ OUT_DIR		= bin64
 #OUT_DIR	= debug64
 
 
-CXX      	= gcc
+CXX      	= g++
 CXXFLAGS 	= $(CXXCFG) -Wall -fno-strict-aliasing
 INCPATH  	= -I../include -I/usr/local/include -I/usr/X11R6/include -I/usr/include
 LIBS     	= -L/usr/X11R6/lib -lAntTweakBar -lGL -lGLU -lX11 -lXext -lXmu -lXrandr -lpthread -lm
@@ -41,36 +41,42 @@ all: 	Makefile $(SRC_FILES)
 	@echo $(EXP_SH) > $(OUT_DIR)/TwSimpleGLUT
 	@echo $(EXP_PATH) >> $(OUT_DIR)/TwSimpleGLUT
 	@chmod +x $(OUT_DIR)/TwSimpleGLUT
+	@echo "To execute the example, run " $(OUT_DIR)/TwSimpleGLUT
 
 	@echo "===== Build TwSimpleSDL ===="
 	$(CXX) $(CXXFLAGS) $(INCPATH) TwSimpleSDL.c $(LFLAGS) -lSDL $(LIBS) -o $(OUT_DIR)/TwSimpleSDL.out
 	@echo $(EXP_SH) > $(OUT_DIR)/TwSimpleSDL
 	@echo $(EXP_PATH) >> $(OUT_DIR)/TwSimpleSDL
 	@chmod +x $(OUT_DIR)/TwSimpleSDL
+	@echo "To execute the example, run " $(OUT_DIR)/TwSimpleSDL
 
 	@echo "===== Build TwSimpleGLFW ===="
 	$(CXX) $(CXXFLAGS) $(INCPATH) TwSimpleGLFW.c $(LFLAGS) -lglfw $(LIBS) -o $(OUT_DIR)/TwSimpleGLFW.out
 	@echo $(EXP_SH) > $(OUT_DIR)/TwSimpleGLFW
 	@echo $(EXP_PATH) >> $(OUT_DIR)/TwSimpleGLFW
 	@chmod +x $(OUT_DIR)/TwSimpleGLFW
+	@echo "To execute the example, run " $(OUT_DIR)/TwSimpleGLFW
 
 	@echo "===== Build TwDualGLUT ===="
 	$(CXX) $(CXXFLAGS) $(INCPATH) TwDualGLUT.c $(LFLAGS) -lglut $(LIBS) -o $(OUT_DIR)/TwDualGLUT.out
 	@echo $(EXP_SH) > $(OUT_DIR)/TwDualGLUT
 	@echo $(EXP_PATH) >> $(OUT_DIR)/TwDualGLUT
 	@chmod +x $(OUT_DIR)/TwDualGLUT
+	@echo "To execute the example, run " $(OUT_DIR)/TwDualGLUT
 
 	@echo "===== Build TwAdvanced1 ===="
 	$(CXX) $(CXXFLAGS) $(INCPATH) TwAdvanced1.cpp $(LFLAGS) -lglfw $(LIBS) -o $(OUT_DIR)/TwAdvanced1.out
 	@echo $(EXP_SH) > $(OUT_DIR)/TwAdvanced1
 	@echo $(EXP_PATH) >> $(OUT_DIR)/TwAdvanced1
 	@chmod +x $(OUT_DIR)/TwAdvanced1
+	@echo "To execute the example, run " $(OUT_DIR)/TwAdvanced1
 
 	@echo "===== Build TwString ===="
-	$(CXX) $(CXXFLAGS) $(INCPATH) TwString.cpp $(LFLAGS) -lglfw $(LIBS) -o $(OUT_DIR)/TwString.out
+	$(CXX) $(CXXFLAGS) $(INCPATH) TwString.cpp $(LFLAGS) -lglut $(LIBS) -o $(OUT_DIR)/TwString.out
 	@echo $(EXP_SH) > $(OUT_DIR)/TwString
 	@echo $(EXP_PATH) >> $(OUT_DIR)/TwString
 	@chmod +x $(OUT_DIR)/TwString
+	@echo "To execute the example, run " $(OUT_DIR)/TwString
 
 # append dependencies to this Makefile
 #depend:

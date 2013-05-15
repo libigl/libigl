@@ -11,7 +11,7 @@
 //              installed to recompile AntTweakBar.
 //            - Do not use this header in your own programs, better use the
 //              glfw.h header from the actual GLFW library SDK :
-//              http://glfw.sourceforge.net/
+//              http://www.glfw.org
 //
 //  ---------------------------------------------------------------------------
 

@@ -7,9 +7,9 @@
 //              It also uses OpenGL and GLFW windowing system
 //              but could be easily adapted to other frameworks.
 //
-//              AntTweakBar: http://www.antisphere.com/Wiki/tools:anttweakbar
+//              AntTweakBar: http://anttweakbar.sourceforge.net/doc
 //              OpenGL:      http://www.opengl.org
-//              GLFW:        http://glfw.sourceforge.net
+//              GLFW:        http://www.glfw.org
 //  
 //
 //              This example draws a simple scene that can be re-tesselated 
@@ -17,11 +17,8 @@
 //              number of moving lights.
 //
 //
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @date       2006/05/20
-//
-//  Compilation:
-//  http://www.antisphere.com/Wiki/tools:anttweakbar:examples#twadvanced1
 //
 //  ---------------------------------------------------------------------------
 

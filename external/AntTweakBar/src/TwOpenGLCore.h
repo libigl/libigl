@@ -2,12 +2,11 @@
 //
 //  @file       TwOpenGLCore.h
 //  @brief      OpenGL Core graph functions
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
-//  notes:      Private header,
-//              Work In Progress, Disabled.
+//  note:       Private header
 //
 //  ---------------------------------------------------------------------------
 
@@ -41,6 +40,7 @@ public:
 
     virtual void        ChangeViewport(int _X0, int _Y0, int _Width, int _Height, int _OffsetX, int _OffsetY);
     virtual void        RestoreViewport();
+    virtual void        SetScissor(int _X0, int _Y0, int _Width, int _Height);
 
 protected:
     bool                m_Drawing;
@@ -48,31 +48,55 @@ protected:
     const CTexFont *    m_FontTex;
     
     GLfloat             m_PrevLineWidth;
-    GLint               m_PrevTexture;
-    GLint               m_PrevArrayBuffer;
-    GLint               m_PrevElementArrayBuffer;
-    GLboolean           m_PrevVertexProgram;
-    GLboolean           m_PrevFragmentProgram;
-    GLuint              m_PrevProgramObject;
-    GLboolean           m_PrevTexture3D;
-    GLboolean           m_PrevActiveTexture1D[32];
-    GLboolean           m_PrevActiveTexture2D[32];
-    GLboolean           m_PrevActiveTexture3D[32];
     GLint               m_PrevActiveTexture;
-    GLboolean           m_PrevTexRect;
-    GLint               m_PrevBlendEquation;
-    GLint               m_PrevBlendEquationRGB;
-    GLint               m_PrevBlendEquationAlpha;
-    GLint               m_PrevBlendSrcRGB;
-    GLint               m_PrevBlendDstRGB;
-    GLint               m_PrevBlendSrcAlpha;
-    GLint               m_PrevBlendDstAlpha;
-    GLint               m_ViewportInit[4];
+    GLint               m_PrevTexture;
+    GLint               m_PrevVArray;
+    GLboolean           m_PrevLineSmooth;
+    GLboolean           m_PrevCullFace;
+    GLboolean           m_PrevDepthTest;
+    GLboolean           m_PrevBlend;
+    GLint               m_PrevSrcBlend;
+    GLint               m_PrevDstBlend;
+    GLboolean           m_PrevScissorTest;
+    GLint               m_PrevScissorBox[4];
+    GLint               m_PrevViewport[4];
+    GLuint              m_PrevProgramObject;
+
     GLuint              m_LineRectVS;
     GLuint              m_LineRectFS;
     GLuint              m_LineRectProgram;
     GLuint              m_LineRectVArray;
-    GLuint              m_LineRectBuffer;
+    GLuint              m_LineRectVertices;
+    GLuint              m_LineRectColors;
+    GLuint              m_TriVS;
+    GLuint              m_TriFS;
+    GLuint              m_TriProgram;
+    GLuint              m_TriUniVS;
+    GLuint              m_TriUniFS;
+    GLuint              m_TriUniProgram;
+    GLuint              m_TriTexVS;
+    GLuint              m_TriTexFS;
+    GLuint              m_TriTexProgram;
+    GLuint              m_TriTexUniVS;
+    GLuint              m_TriTexUniFS;
+    GLuint              m_TriTexUniProgram;
+    GLuint              m_TriVArray;
+    GLuint              m_TriVertices;
+    GLuint              m_TriUVs;
+    GLuint              m_TriColors;
+    GLint               m_TriLocationOffset;
+    GLint               m_TriLocationWndSize;
+    GLint               m_TriUniLocationOffset;
+    GLint               m_TriUniLocationWndSize;
+    GLint               m_TriUniLocationColor;
+    GLint               m_TriTexLocationOffset;
+    GLint               m_TriTexLocationWndSize;
+    GLint               m_TriTexLocationTexture;
+    GLint               m_TriTexUniLocationOffset;
+    GLint               m_TriTexUniLocationWndSize;
+    GLint               m_TriTexUniLocationColor;
+    GLint               m_TriTexUniLocationTexture;
+    size_t              m_TriBufferSize;
 
     int                 m_WndWidth;
     int                 m_WndHeight;
@@ -88,6 +112,7 @@ protected:
         std::vector<color32>m_Colors;
         std::vector<color32>m_BgColors;
     };
+    void                ResizeTriBuffers(size_t _NewSize);
 };
 
 //  ---------------------------------------------------------------------------

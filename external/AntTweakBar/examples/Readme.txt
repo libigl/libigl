@@ -9,7 +9,7 @@ but type make -f Makefile.osx instead of make.
 To recompile the examples you also need the following external libraries
 (for convenience Windows versions are included in the examples directory).
 
-- GLFW : http://glfw.sourceforge.net
+- GLFW : http://www.glfw.org
  
 - GLUT : http://opengl.org/resources/libraries/glut 
          the windows version can be found at 
@@ -21,4 +21,6 @@ To recompile the examples you also need the following external libraries
  
 - DirectX SDK if you want to recompile the Windows library & DX examples
   http://msdn.microsoft.com/directx
+  The path to the DirectX shader compiler fxc.exe (included in the DirectX SDK)
+  must be listed in the VC++ directories.
 

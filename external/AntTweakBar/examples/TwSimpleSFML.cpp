@@ -5,14 +5,11 @@
 //              This example draws moving cubic particles with some
 //              interactive control on particles generation.
 //
-//              AntTweakBar: http://www.antisphere.com/Wiki/tools:anttweakbar
+//              AntTweakBar: http://anttweakbar.sourceforge.net/doc
 //              OpenGL:      http://www.opengl.org
 //              SFML:        http://www.sfml-dev.org
 //  
-//  @author     Philippe Decaudin - http://www.antisphere.com
-//
-//  Compilation:
-//  http://www.antisphere.com/Wiki/tools:anttweakbar:examples#twsimplesfml
+//  @author     Philippe Decaudin
 //
 //  ---------------------------------------------------------------------------
 

@@ -1,7 +1,7 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       TwDirect3D9.cpp
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
@@ -32,7 +32,16 @@ static IDirect3DTexture9 *BindFont(IDirect3DDevice9 *_Dev, const CTexFont *_Font
     assert(_Font!=NULL);
 
     IDirect3DTexture9 *Tex = NULL;
-    HRESULT hr = _Dev->CreateTexture(_Font->m_TexWidth, _Font->m_TexHeight, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &Tex, NULL);
+    IDirect3DDevice9Ex *D3DDev9Ex = NULL;
+    bool IsD3DDev9Ex = SUCCEEDED(_Dev->QueryInterface(__uuidof(IDirect3DDevice9Ex), (void **)&D3DDev9Ex)) && D3DDev9Ex != NULL;
+    HRESULT hr;
+    if (IsD3DDev9Ex)
+    {
+        hr = _Dev->CreateTexture(_Font->m_TexWidth, _Font->m_TexHeight, 1, 	D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &Tex, NULL);
+        D3DDev9Ex->Release();
+    }
+    else
+        hr = _Dev->CreateTexture(_Font->m_TexWidth, _Font->m_TexHeight, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &Tex, NULL);
     if( FAILED(hr) )
         return NULL;
 

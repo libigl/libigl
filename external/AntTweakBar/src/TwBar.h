@@ -2,7 +2,7 @@
 //
 //  @file       TwBar.h
 //  @brief      Tweak bar and var classes.
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
@@ -174,6 +174,7 @@ struct CTwBar
     const CTexFont *        m_Font;
     int                     m_ValuesWidth;
     int                     m_Sep;
+    int                     m_LineSep;
     int                     m_FirstLine;
     float                   m_UpdatePeriod;
     bool                    m_IsHelpBar;

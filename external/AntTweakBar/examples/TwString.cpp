@@ -2,24 +2,33 @@
 //
 //  @file       TwString.cpp
 //  @brief      This example illustrates the use of the different types of
-//              AntTweakBar string variables
+//              AntTweakBar string variables.
+//              The graphic window is created by GLUT.
 //
-//              AntTweakBar: http://www.antisphere.com/Wiki/tools:anttweakbar
+//              AntTweakBar: http://anttweakbar.sourceforge.net/doc
 //              OpenGL:      http://www.opengl.org
-//              GLFW:        http://glfw.sourceforge.net
+//              GLUT:        http://opengl.org/resources/libraries/glut
 //  
-//  @author     Philippe Decaudin - http://www.antisphere.com
-//  @date       2006/05/20
-//
-//  Compilation:
-//  http://www.antisphere.com/Wiki/tools:anttweakbar:examples#twstring
+//  @author     Philippe Decaudin
 //
 //  ---------------------------------------------------------------------------
 
 #include <AntTweakBar.h>
 
-#define GLFW_DLL
-#include "glfw.h"
+#if defined(_WIN32) || defined(_WIN64)
+//  MiniGLUT.h is provided to avoid the need of having GLUT installed to 
+//  recompile this example. Do not use it in your own programs, better
+//  install and use the actual GLUT library SDK.
+#   define USE_MINI_GLUT
+#endif
+
+#if defined(USE_MINI_GLUT)
+#   include "../src/MiniGLUT.h"
+#elif defined(_MACOSX)
+#   include <GLUT/glut.h>
+#else
+#   include <GL/glut.h>
+#endif
 
 #include <sstream>
 #include <vector>
@@ -199,49 +208,109 @@ void TW_CALL GetCapStrCB(void *value, void *clientData)
 
 
 // ---------------------------------------------------------------------------
-// Main function (application based on GLFW)
+// GLUT callbacks
 // ---------------------------------------------------------------------------
 
-int main() 
+// Callback function called by GLUT to render screen
+void OnDisplay(void)
 {
-    // Intialize GLFW   
-    if( !glfwInit() )
-    {
-        // An error occured
-        fprintf(stderr, "GLFW initialization failed\n");
-        return 1;
-    }
+    // Clear frame buffer
+    glClearColor(0.5f, 0.5f, 0.6f, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    // App drawing here
+    // ...
 
-    // Create a window
-    GLFWvidmode mode;
-    glfwGetDesktopMode(&mode);
-    if( !glfwOpenWindow(640, 480, mode.RedBits, mode.GreenBits, mode.BlueBits, 0, 16, 0, GLFW_WINDOW /* or GLFW_FULLSCREEN */) )
-    {
-        // A fatal error occured    
-        fprintf(stderr, "Cannot open GLFW window\n");
-        glfwTerminate();
-        return 1;
-    }
-    glfwEnable(GLFW_MOUSE_CURSOR);
-    glfwEnable(GLFW_KEY_REPEAT);
-    glfwSetWindowTitle("AntTweakBar string example");
+    // Draw tweak bars
+    TwDraw();
+
+    // Present frame buffer
+    glutSwapBuffers();
+}
+
+// Callback function called by GLUT when window size changes
+void OnReshape(int width, int height)
+{
+    // Set OpenGL viewport
+    glViewport(0, 0, width, height);
+
+    // Send the new window size to AntTweakBar
+    TwWindowSize(width, height);
+}
+
+// Function called at exit
+void OnTerminate(void)
+{ 
+    // terminate AntTweakBar
+    TwTerminate();
+}
+
+// Event callbacks
+void OnMouseButton(int glutButton, int glutState, int mouseX, int mouseY)
+{
+    // send event to AntTweakBar
+    if (TwEventMouseButtonGLUT(glutButton, glutState, mouseX, mouseY))
+        glutPostRedisplay(); // request redraw if event has been handled
+}
+
+void OnMouseMotion(int mouseX, int mouseY)
+{
+    // send event to AntTweakBar
+    if (TwEventMouseMotionGLUT(mouseX, mouseY))
+        glutPostRedisplay(); // request redraw if event has been handled
+}
+
+void OnKeyboard(unsigned char glutKey, int mouseX, int mouseY)
+{
+    // send event to AntTweakBar
+    if (TwEventKeyboardGLUT(glutKey, mouseX, mouseY))
+        glutPostRedisplay(); // request redraw if event has been handled
+}
+
+void OnSpecial(int glutKey, int mouseX, int mouseY)
+{
+    // send event to AntTweakBar
+    if (TwEventSpecialGLUT(glutKey, mouseX, mouseY))
+        glutPostRedisplay(); // request redraw if event has been handled
+}
+
+
+// ---------------------------------------------------------------------------
+// Main function (application based on GLUT)
+// ---------------------------------------------------------------------------
+
+int main(int argc, char *argv[]) 
+{
+    // Initialize GLUT
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(640, 480);
+    glutCreateWindow("AntTweakBar string example");
+    glutCreateMenu(NULL);
+
+    // Set GLUT callbacks
+    glutDisplayFunc(OnDisplay);
+    glutReshapeFunc(OnReshape);
+    atexit(OnTerminate);  // Called after glutMainLoop ends
 
     // Initialize AntTweakBar
     TwInit(TW_OPENGL, NULL);
 
-    // Set GLFW event callbacks
-    // - Directly redirect window size events to AntTweakBar
-    glfwSetWindowSizeCallback((GLFWwindowsizefun)TwWindowSize);
-    // - Directly redirect GLFW mouse button events to AntTweakBar
-    glfwSetMouseButtonCallback((GLFWmousebuttonfun)TwEventMouseButtonGLFW);
-    // - Directly redirect GLFW mouse position events to AntTweakBar
-    glfwSetMousePosCallback((GLFWmouseposfun)TwEventMousePosGLFW);
-    // - Directly redirect GLFW mouse wheel events to AntTweakBar
-    glfwSetMouseWheelCallback((GLFWmousewheelfun)TwEventMouseWheelGLFW);
-    // - Directly redirect GLFW key events to AntTweakBar
-    glfwSetKeyCallback((GLFWkeyfun)TwEventKeyGLFW);
-    // - Directly redirect GLFW char events to AntTweakBar
-    glfwSetCharCallback((GLFWcharfun)TwEventCharGLFW);
+    // Set GLUT event callbacks
+    // - Directly redirect GLUT mouse button events to AntTweakBar
+    glutMouseFunc(OnMouseButton);
+    // - Directly redirect GLUT mouse motion events to AntTweakBar
+    glutMotionFunc(OnMouseMotion);
+    // - Directly redirect GLUT mouse "passive" motion events to AntTweakBar (same as MouseMotion)
+    glutPassiveMotionFunc(OnMouseMotion);
+    // - Directly redirect GLUT key events to AntTweakBar
+    glutKeyboardFunc(OnKeyboard);
+    // - Directly redirect GLUT special key events to AntTweakBar
+    glutSpecialFunc(OnSpecial);
+    // - Send 'glutGetModifers' function pointer to AntTweakBar;
+    //   required because the GLUT key event functions do not report key modifiers states.
+    TwGLUTModifiersFunc(glutGetModifiers);
+
 
     // Create a tweak bar
     TwBar *bar = TwNewBar("Main");
@@ -333,26 +402,8 @@ int main()
     TwAddSeparator(bar, "Sep3", "");
 
 
-    // Main loop (repeated while window is not closed and [ESC] is not pressed)
-    while( glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC) )
-    {
-        // Clear frame buffer using bgColor
-        glClearColor(0.5f, 0.5f, 0.6f, 1);
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    
-        // App drawing here
-        // ...
-
-        // Draw tweak bars
-        TwDraw();
-
-        // Present frame buffer
-        glfwSwapBuffers();
-    }
-
-    // Terminate AntTweakBar and GLFW
-    TwTerminate();
-    glfwTerminate();
+    // Call the GLUT main loop
+    glutMainLoop();
 
     return 0;
 }

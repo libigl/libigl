@@ -5,13 +5,10 @@
 //              This example draws a triangle and allow the user to tweak its
 //              vertex positions and colors.
 //
-//              AntTweakBar: http://www.antisphere.com/Wiki/tools:anttweakbar
+//              AntTweakBar: http://anttweakbar.sourceforge.net/doc
 //              DirectX:     http://msdn.microsoft.com/directx
 //  
-//  @author     Philippe Decaudin - http://www.antisphere.com
-//
-//  Compilation:
-//  http://www.antisphere.com/Wiki/tools:anttweakbar:examples#twsimpledx10
+//  @author     Philippe Decaudin
 //
 //  ---------------------------------------------------------------------------
 

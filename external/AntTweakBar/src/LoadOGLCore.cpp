@@ -1,7 +1,7 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       LoadOGLCore.cpp
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
@@ -232,6 +232,7 @@ ANT_GL_CORE_IMPL(glVertexAttrib4ubv)
 ANT_GL_CORE_IMPL(glVertexAttrib4uiv)
 ANT_GL_CORE_IMPL(glVertexAttrib4usv)
 ANT_GL_CORE_IMPL(glVertexAttribPointer)
+/*
 // GL 2.1
 ANT_GL_CORE_IMPL(glUniformMatrix2x3fv)
 ANT_GL_CORE_IMPL(glUniformMatrix3x2fv)
@@ -307,14 +308,28 @@ ANT_GL_CORE_IMPL(glPrimitiveRestartIndex)
 //ANT_GL_CORE_IMPL(glGetInteger64i_v)
 //ANT_GL_CORE_IMPL(glGetBufferParameteri64v)
 ANT_GL_CORE_IMPL(glFramebufferTexture)
+*/
+
 // GL_ARB_vertex_array_object
-ANT_GL_CORE_IMPL(glBindVertexArray)
-ANT_GL_CORE_IMPL(glDeleteVertexArrays)
-ANT_GL_CORE_IMPL(glGenVertexArrays)
-ANT_GL_CORE_IMPL(glIsVertexArray)
+#if defined(ANT_WINDOWS)
+    ANT_GL_CORE_IMPL(glBindVertexArray)
+    ANT_GL_CORE_IMPL(glDeleteVertexArrays)
+    ANT_GL_CORE_IMPL(glGenVertexArrays)
+    ANT_GL_CORE_IMPL(glIsVertexArray)
+#else
+    // these extensions are loaded explicitely by LoadOpenGLCore
+    // because they may not be avialable on non-OpenGL 3.2 environments
+    namespace GLCore 
+    { 
+        PFNglBindVertexArray _glBindVertexArray = NULL; 
+        PFNglDeleteVertexArrays _glDeleteVertexArrays = NULL; 
+        PFNglGenVertexArrays _glGenVertexArrays = NULL; 
+        PFNglIsVertexArray _glIsVertexArray = NULL; 
+    }
+#endif
 
 #if defined(ANT_WINDOWS)
-ANT_GL_CORE_IMPL(wglGetProcAddress)
+    ANT_GL_CORE_IMPL(wglGetProcAddress)
 #endif
 
 namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
@@ -439,12 +454,23 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
     {
         _glGetProcAddress = reinterpret_cast<GLCore::PFNGLGetProcAddress>(glXGetProcAddressARB);
 
-        return 1; // "OpenGL library is statically linked"
+        _glBindVertexArray = reinterpret_cast<PFNglBindVertexArray>(_glGetProcAddress("glBindVertexArray"));
+        _glDeleteVertexArrays = reinterpret_cast<PFNglDeleteVertexArrays>(_glGetProcAddress("glDeleteVertexArrays"));
+        _glGenVertexArrays = reinterpret_cast<PFNglGenVertexArrays>(_glGetProcAddress("glGenVertexArrays"));
+        _glIsVertexArray = reinterpret_cast<PFNglIsVertexArray>(_glGetProcAddress("glIsVertexArray"));
+
+        if( _glBindVertexArray==NULL || _glDeleteVertexArrays==NULL || _glGenVertexArrays==NULL || _glIsVertexArray==NULL )
+        {
+            fprintf(stderr, "AntTweakBar: OpenGL Core Profile functions cannot be loaded.\n");
+            return 0;
+        }
+        else
+            return 1;
     }
     
     int UnloadOpenGLCore()
     {
-        return 1; // "OpenGL library is statically linked"
+        return 1;
     }
     
 #elif defined(ANT_OSX)
@@ -452,7 +478,8 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
     #include <dlfcn.h>
 
     static void *gl_dyld = NULL;
-    void *NSGLGetProcAddressNew(const GLubyte *name) 
+    static const char *gl_prefix = "_";
+    void *NSGLCoreGetProcAddressNew(const GLubyte *name)
     {
         void *proc=NULL;
         if (gl_dyld == NULL) 
@@ -461,7 +488,7 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
         }
         if (gl_dyld) 
         {
-            NSString *sym = [[NSString alloc] initWithFormat: @"_%s",name];
+            NSString *sym = [[NSString alloc] initWithFormat: @"%s%s",gl_prefix,name];
             proc = dlsym(gl_dyld,[sym UTF8String]);
             [sym release];
         }
@@ -470,7 +497,30 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
 
     int LoadOpenGLCore() 
     {
-        _glGetProcAddress = reinterpret_cast<GL::PFNGLGetProcAddress>(NSGLGetProcAddressNew);
+        _glGetProcAddress = reinterpret_cast<GLCore::PFNGLGetProcAddress>(NSGLCoreGetProcAddressNew);
+
+        _glBindVertexArray = reinterpret_cast<PFNglBindVertexArray>(_glGetProcAddress("glBindVertexArray"));
+        _glDeleteVertexArrays = reinterpret_cast<PFNglDeleteVertexArrays>(_glGetProcAddress("glDeleteVertexArrays"));
+        _glGenVertexArrays = reinterpret_cast<PFNglGenVertexArrays>(_glGetProcAddress("glGenVertexArrays"));
+        _glIsVertexArray = reinterpret_cast<PFNglIsVertexArray>(_glGetProcAddress("glIsVertexArray"));
+        
+        if( _glBindVertexArray==NULL || _glDeleteVertexArrays==NULL || _glGenVertexArrays==NULL || _glIsVertexArray==NULL )
+        {
+			// remove the symbols underscore prefix (OSX 10.7 and later)
+			gl_prefix = "";
+            
+            _glBindVertexArray = reinterpret_cast<PFNglBindVertexArray>(_glGetProcAddress("glBindVertexArray"));
+            _glDeleteVertexArrays = reinterpret_cast<PFNglDeleteVertexArrays>(_glGetProcAddress("glDeleteVertexArrays"));
+            _glGenVertexArrays = reinterpret_cast<PFNglGenVertexArrays>(_glGetProcAddress("glGenVertexArrays"));
+            _glIsVertexArray = reinterpret_cast<PFNglIsVertexArray>(_glGetProcAddress("glIsVertexArray"));
+
+            if( _glBindVertexArray==NULL || _glDeleteVertexArrays==NULL || _glGenVertexArrays==NULL || _glIsVertexArray==NULL )
+			{
+                fprintf(stderr, "AntTweakBar: OpenGL Core Profile functions cannot be loaded.\n");
+                return 0;                
+			}
+        }
+        
         return 1;
     }
 
@@ -484,6 +534,6 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
        return 1;
    }    
    
-#endif // defined(ANT_UNIX)
+#endif
 
 //  ---------------------------------------------------------------------------

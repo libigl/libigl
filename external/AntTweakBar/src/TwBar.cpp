@@ -1,7 +1,7 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       TwBar.cpp
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
@@ -2990,6 +2990,8 @@ CTwBar::CTwBar(const char *_Name)
     //m_Font = g_DefaultLargeFont;
     m_TitleWidth = 0;
     m_Sep = 1;
+//#pragma warning "lineSep WIP"
+    m_LineSep = 1;
     m_ValuesWidth = 10*(m_Font->m_CharHeight/2); // about 10 characters
     m_NbHierLines = 0;
     m_NbDisplayedLines = 0;
@@ -3121,6 +3123,7 @@ enum EBarAttribs
     BAR_POSITION,
     BAR_REFRESH,
     BAR_FONT_SIZE,
+    BAR_FONT_STYLE,
     BAR_VALUES_WIDTH,
     BAR_ICON_POS,
     BAR_ICON_ALIGN,
@@ -3157,6 +3160,8 @@ int CTwBar::HasAttrib(const char *_Attrib, bool *_HasValue) const
         return BAR_REFRESH;
     else if( _stricmp(_Attrib, "fontsize")==0 )
         return BAR_FONT_SIZE;
+    else if( _stricmp(_Attrib, "fontstyle")==0 )
+        return BAR_FONT_STYLE;
     else if( _stricmp(_Attrib, "valueswidth")==0 )
         return BAR_VALUES_WIDTH;
     else if( _stricmp(_Attrib, "iconpos")==0 )
@@ -3392,6 +3397,8 @@ int CTwBar::SetAttrib(int _AttribID, const char *_Value)
         }
     case BAR_FONT_SIZE:
         return g_TwMgr->SetAttrib(MGR_FONT_SIZE, _Value);
+    case BAR_FONT_STYLE:
+        return g_TwMgr->SetAttrib(MGR_FONT_STYLE, _Value);
     case BAR_ICON_POS:
         return g_TwMgr->SetAttrib(MGR_ICON_POS, _Value);
     case BAR_ICON_ALIGN:
@@ -3699,6 +3706,8 @@ ERetType CTwBar::GetAttrib(int _AttribID, std::vector<double>& outDoubles, std::
         return RET_DOUBLE;
     case BAR_FONT_SIZE:
         return g_TwMgr->GetAttrib(MGR_FONT_SIZE, outDoubles, outString);
+    case BAR_FONT_STYLE:
+        return g_TwMgr->GetAttrib(MGR_FONT_STYLE, outDoubles, outString);
     case BAR_ICON_POS:
         return g_TwMgr->GetAttrib(MGR_ICON_POS, outDoubles, outString);
     case BAR_ICON_ALIGN:
@@ -3791,7 +3800,7 @@ void CTwBar::UpdateColors()
 
     m_ColShortcutText = lightText ? 0xffffb060 : 0xff802000;
     m_ColShortcutBg = lightText ? Color32FromARGBf(0.4f*a, 0.2f, 0.2f, 0.2f) : Color32FromARGBf(0.4f*a, 0.8f, 0.8f, 0.8f);
-    m_ColInfoText = lightText ? Color32FromARGBf(1.0f, 0.7f, 0.7f, 0.7f) : Color32FromARGBf(1.0f, 0.3f, 0.3f, 0.3f);
+    m_ColInfoText = Color32FromARGBf(1.0f, 0.5f, 0.5f, 0.5f);
 
     m_ColRoto = lightText ? Color32FromARGBf(0.8f, 0.85f, 0.85f, 0.85f) : Color32FromARGBf(0.8f, 0.1f, 0.1f, 0.1f);
     m_ColRotoVal = Color32FromARGBf(1, 1.0f, 0.2f, 0.2f);
@@ -4307,6 +4316,9 @@ void CTwBar::Update()
     assert(m_Font);
     ITwGraph *Gr = g_TwMgr->m_Graph;
 
+    if( g_TwMgr->m_WndWidth<=0 || g_TwMgr->m_WndHeight<=0 )
+        return; // graphic window is not ready
+
     bool DoEndDraw = false;
     if( !Gr->IsDrawing() )
     {
@@ -4421,7 +4433,7 @@ void CTwBar::Update()
         m_VarY2 = m_Height-1;
     }
 
-    int NbLines = (m_VarY1-m_VarY0+1)/(m_Font->m_CharHeight+m_Sep);
+    int NbLines = (m_VarY1-m_VarY0+1)/(m_Font->m_CharHeight+m_LineSep);
     if( NbLines<= 0 )
         NbLines = 1;
     if( !m_IsMinimized )
@@ -4498,9 +4510,9 @@ void CTwBar::Update()
         ListLabels(Labels, Colors, BgColors, &HasBgColors, m_Font, m_VarX1-m_VarX0, m_VarX2-m_VarX0);
         assert( Labels.size()==Colors.size() && Labels.size()==BgColors.size() );
         if( Labels.size()>0 )
-            Gr->BuildText(m_LabelsTextObj, &(Labels[0]), &(Colors[0]), &(BgColors[0]), (int)Labels.size(), m_Font, 1, HasBgColors ? m_VarX1-m_VarX0-m_Font->m_CharHeight+2 : 0);
+            Gr->BuildText(m_LabelsTextObj, &(Labels[0]), &(Colors[0]), &(BgColors[0]), (int)Labels.size(), m_Font, m_LineSep, HasBgColors ? m_VarX1-m_VarX0-m_Font->m_CharHeight+2 : 0);
         else
-            Gr->BuildText(m_LabelsTextObj, NULL, NULL, NULL, 0, m_Font, 1, 0);
+            Gr->BuildText(m_LabelsTextObj, NULL, NULL, NULL, 0, m_Font, m_LineSep, 0);
 
         // Should draw click button?
         m_DrawClickBtn    = ( m_VarX2-m_VarX1>4*IncrBtnWidth(m_Font->m_CharHeight)
@@ -4562,9 +4574,9 @@ void CTwBar::Update()
         ListValues(Values, Colors, BgColors, m_Font, m_VarX2-m_VarX1);
         assert( BgColors.size()==Values.size() && Colors.size()==Values.size() );
         if( Values.size()>0 )
-            Gr->BuildText(m_ValuesTextObj, &(Values[0]), &(Colors[0]), &(BgColors[0]), (int)Values.size(), m_Font, 1, m_VarX2-m_VarX1);
+            Gr->BuildText(m_ValuesTextObj, &(Values[0]), &(Colors[0]), &(BgColors[0]), (int)Values.size(), m_Font, m_LineSep, m_VarX2-m_VarX1);
         else
-            Gr->BuildText(m_ValuesTextObj, NULL, NULL, NULL, 0, m_Font, 1, m_VarX2-m_VarX1);
+            Gr->BuildText(m_ValuesTextObj, NULL, NULL, NULL, 0, m_Font, m_LineSep, m_VarX2-m_VarX1);
 
         // Build key shortcut text
         string Shortcut;
@@ -4654,7 +4666,7 @@ void CTwBar::DrawHierHandle()
                 {
                     color32 cb = (Grp->m_StructType==TW_TYPE_HELP_STRUCT) ? m_ColStructBg : m_ColGrpBg;
                     //Gr->DrawRect(x0+dx-1, y0, m_PosX+m_VarX2, y0+m_Font->m_CharHeight-1, cb);
-                    Gr->DrawRect(x2+dx+3, y0, m_PosX+m_VarX2, y0+m_Font->m_CharHeight-1, cb);
+                    Gr->DrawRect(x2+dx+3, y0, m_PosX+m_VarX2, y0+m_Font->m_CharHeight-1+m_LineSep-1, cb);
                 }
 
                 if( m_DrawHandles )
@@ -4664,7 +4676,7 @@ void CTwBar::DrawHierHandle()
                 }
 
                 //Gr->DrawRect(x0+1,y0+dh0+1,x2-1,y0+dh1-1, (h==m_HighlightedLine) ? m_ColHighBtn : m_ColBtn);
-                Gr->DrawRect(dx+x0,y0+dh0, dx+x2,y0+dh1, (h==m_HighlightedLine) ? m_ColHighFold : m_ColFold);
+                Gr->DrawRect(dx+x0, y0+dh0, dx+x2, y0+dh1, (h==m_HighlightedLine) ? m_ColHighFold : m_ColFold);
                 if( m_DrawHandles )
                 {
                     Gr->DrawLine(dx+x0,y0+dh0, dx+x2,y0+dh0, m_ColLine);
@@ -4715,7 +4727,7 @@ void CTwBar::DrawHierHandle()
             }
             */
 
-            y0 = y1+1;
+            y0 = y1+m_LineSep;
         }
     }
 
@@ -4918,22 +4930,22 @@ void CTwBar::Draw(int _DrawPart)
                     || (!static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var)->m_ReadOnly && !m_IsHelpBar 
                         && !m_HierTags[m_HighlightedLine].m_Var->IsCustom() ) ) ) // !(static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var)->m_Type>=TW_TYPE_CUSTOM_BASE && static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var)->m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()))) )
             {
-                int y0 = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_Sep);
-                Gr->DrawRect(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+1, m_PosX+m_VarX2, y0+m_Font->m_CharHeight-1, m_ColHighBg0, m_ColHighBg0, m_ColHighBg1, m_ColHighBg1);
+                int y0 = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_LineSep);
+                Gr->DrawRect(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+1, m_PosX+m_VarX2, y0+m_Font->m_CharHeight-1+m_LineSep-1, m_ColHighBg0, m_ColHighBg0, m_ColHighBg1, m_ColHighBg1);
                 int eps = (g_TwMgr->m_GraphAPI==TW_OPENGL || g_TwMgr->m_GraphAPI==TW_OPENGL_CORE) ? 1 : 0;
                 if( !m_EditInPlace.m_Active )
-                    Gr->DrawLine(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+m_Font->m_CharHeight+eps, m_PosX+m_VarX2, y0+m_Font->m_CharHeight+eps, m_ColUnderline);
+                    Gr->DrawLine(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+m_Font->m_CharHeight+m_LineSep-1+eps, m_PosX+m_VarX2, y0+m_Font->m_CharHeight+m_LineSep-1+eps, m_ColUnderline);
             }
             else if( m_HighlightedLine>=0 && m_HighlightedLine<(int)m_HierTags.size() && !m_HierTags[m_HighlightedLine].m_Var->IsGroup() )
             {
-                int y0 = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_Sep);
+                int y0 = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_LineSep);
                 color32 col = ColorBlend(m_ColHighBg0, m_ColHighBg1, 0.5f);
                 CTwVarAtom *Atom = static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var);
                 if( !Atom->IsCustom() // !(Atom->m_Type>=TW_TYPE_CUSTOM_BASE && Atom->m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()) 
                     && !(Atom->m_Type==TW_TYPE_BUTTON && Atom->m_Val.m_Button.m_Callback==NULL) )
-                    Gr->DrawRect(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+1, m_PosX+m_VarX2, y0+m_Font->m_CharHeight-1, col);
+                    Gr->DrawRect(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+1, m_PosX+m_VarX2, y0+m_Font->m_CharHeight-1+m_LineSep-1, col);
                 else
-                    Gr->DrawRect(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+1, m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level+4, y0+m_Font->m_CharHeight-1, col);
+                    Gr->DrawRect(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+1, m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level+4, y0+m_Font->m_CharHeight-1+m_LineSep-1, col);
             }
             color32 clight = 0x5FFFFFFF; // bar contour
             Gr->DrawLine(m_PosX, m_PosY, m_PosX, m_PosY+m_Height, clight);
@@ -5096,7 +5108,7 @@ void CTwBar::Draw(int _DrawPart)
                     }
                 }
 
-                yh += m_Font->m_CharHeight+m_Sep;
+                yh += m_Font->m_CharHeight+m_LineSep;
             }
 
             // Draw custom types
@@ -5107,8 +5119,8 @@ void CTwBar::Draw(int _DrawPart)
                 CCustomRecord& r = it->second;
                 if( sProxy->m_CustomDrawCallback!=NULL )
                 {
-                    int y0 = r.m_YMin - max(r.m_IndexMin - sProxy->m_CustomIndexFirst, 0)*(m_Font->m_CharHeight + m_Sep);
-                    int y1 = y0 + max(sProxy->m_CustomIndexLast - sProxy->m_CustomIndexFirst + 1, 0)*(m_Font->m_CharHeight + m_Sep) - 2;
+                    int y0 = r.m_YMin - max(r.m_IndexMin - sProxy->m_CustomIndexFirst, 0)*(m_Font->m_CharHeight + m_LineSep);
+                    int y1 = y0 + max(sProxy->m_CustomIndexLast - sProxy->m_CustomIndexFirst + 1, 0)*(m_Font->m_CharHeight + m_LineSep) - 2;
                     if( y0<y1 )
                     {
                         r.m_Y0 = y0;
@@ -5125,7 +5137,7 @@ void CTwBar::Draw(int _DrawPart)
                 // Draw -/+/o/click/v buttons
                 if( (m_DrawIncrDecrBtn || m_DrawClickBtn || m_DrawListBtn || m_DrawBoolBtn || m_DrawRotoBtn) && m_HighlightedLine>=0 && m_HighlightedLine<(int)m_HierTags.size() )
                 {
-                    int y0 = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_Sep);
+                    int y0 = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_LineSep);
                     if( m_DrawIncrDecrBtn )
                     {
                         bool IsMin = false;
@@ -5273,9 +5285,9 @@ void CTwBar::Draw(int _DrawPart)
                 {
                     if( g_TwMgr->m_InfoBuildText )
                     {
-                        string Info = "> AntTweakBar";
+                        string Info = "atb ";
                         char Ver[64];
-                        sprintf(Ver, " (v%d.%02d)", TW_VERSION/100, TW_VERSION%100);
+                        sprintf(Ver, " %d.%02d", TW_VERSION/100, TW_VERSION%100);
                         Info += Ver;
                         ClampText(Info, m_Font, m_Width-2*m_Font->m_CharHeight);
                         g_TwMgr->m_Graph->BuildText(g_TwMgr->m_InfoTextObj, &Info, NULL, NULL, 1, g_TwMgr->m_HelpBar->m_Font, 0, 0);
@@ -5498,7 +5510,7 @@ bool CTwBar::MouseMotion(int _X, int _Y)
             //if( InBar && _X>m_PosX+m_Font->m_CharHeight+1 && _X<m_PosX+m_VarX2 && _Y>=m_PosY+m_VarY0 && _Y<m_PosY+m_VarY1 )
             if( InBar && _X>m_PosX+2 && _X<m_PosX+m_VarX2 && _Y>=m_PosY+m_VarY0 && _Y<m_PosY+m_VarY1 )
             {   // mouse over var line
-                m_HighlightedLine = (_Y-m_PosY-m_VarY0)/(m_Font->m_CharHeight+m_Sep);
+                m_HighlightedLine = (_Y-m_PosY-m_VarY0)/(m_Font->m_CharHeight+m_LineSep);
                 if( m_HighlightedLine>=(int)m_HierTags.size() )
                     m_HighlightedLine = -1;
                 else if(m_HighlightedLine>=0)
@@ -6001,7 +6013,8 @@ static void ANT_CALL PopupCallback(void *_ClientData)
             Bar->HaveFocus(true);
             Bar->NotUpToDate();
         }
-        TwDeleteBar(g_TwMgr->m_PopupBar);
+        if( g_TwMgr->m_PopupBar!=NULL ) // check again because it might have been destroyed by an enum callback
+            TwDeleteBar(g_TwMgr->m_PopupBar);
         g_TwMgr->m_PopupBar = NULL;
     }
 }
@@ -6025,9 +6038,10 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
         Handled = (_X>=m_PosX && _X<m_PosX+m_Width && _Y>=m_PosY && _Y<m_PosY+m_Height);
         if( _Button==TW_MOUSE_LEFT && m_HighlightedLine>=0 && m_HighlightedLine<(int)m_HierTags.size() && m_HierTags[m_HighlightedLine].m_Var )
         {
+            bool OnFocus = (m_HighlightedLine==(_Y-m_PosY-m_VarY0)/(m_Font->m_CharHeight+m_LineSep) && Handled);
             if( m_HierTags[m_HighlightedLine].m_Var->IsGroup() )
             {
-                if( _Pressed && !g_TwMgr->m_IsRepeatingMousePressed )
+                if( _Pressed && !g_TwMgr->m_IsRepeatingMousePressed && OnFocus )
                 {
                     CTwVarGroup *Grp = static_cast<CTwVarGroup *>(m_HierTags[m_HighlightedLine].m_Var);
                     Grp->m_Open = !Grp->m_Open;
@@ -6060,14 +6074,14 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
                 if( !Var->m_NoSlider && !Var->m_ReadOnly && m_HighlightRotoBtn )
                 {
                     // begin rotoslider
-                    if( _X>m_PosX+m_VarX1 )
+                    if( _X>m_PosX+m_VarX1 && OnFocus )
                         RotoOnLButtonDown(m_PosX+m_VarX2-(1*IncrBtnWidth(m_Font->m_CharHeight))/2, _Y);
                     else
                         RotoOnLButtonDown(_X, _Y);
                     m_MouseDrag = true;
                     m_MouseDragVar = true;
                 }
-                else if( (Var->m_Type==TW_TYPE_BOOL8 || Var->m_Type==TW_TYPE_BOOL16 || Var->m_Type==TW_TYPE_BOOL32 || Var->m_Type==TW_TYPE_BOOLCPP) && !Var->m_ReadOnly )
+                else if( (Var->m_Type==TW_TYPE_BOOL8 || Var->m_Type==TW_TYPE_BOOL16 || Var->m_Type==TW_TYPE_BOOL32 || Var->m_Type==TW_TYPE_BOOLCPP) && !Var->m_ReadOnly && OnFocus )
                 {
                     Var->Increment(1);
                     //m_HighlightClickBtn = true;
@@ -6083,7 +6097,7 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
                     m_MouseDrag = false;
                 }
                 //else if( (Var->m_Type==TW_TYPE_ENUM8 || Var->m_Type==TW_TYPE_ENUM16 || Var->m_Type==TW_TYPE_ENUM32) && !Var->m_ReadOnly )
-                else if( IsEnumType(Var->m_Type) && !Var->m_ReadOnly && !g_TwMgr->m_IsRepeatingMousePressed )
+                else if( IsEnumType(Var->m_Type) && !Var->m_ReadOnly && !g_TwMgr->m_IsRepeatingMousePressed && OnFocus )
                 {
                     m_MouseDragVar = false;
                     m_MouseDrag = false;
@@ -6099,8 +6113,9 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
                     g_TwMgr->m_PopupBar->m_Color = m_Color;
                     g_TwMgr->m_PopupBar->m_DarkText = m_DarkText;
                     g_TwMgr->m_PopupBar->m_PosX = m_PosX + m_VarX1 - 2;
-                    g_TwMgr->m_PopupBar->m_PosY = m_PosY + m_VarY0 + (m_HighlightedLine+1)*(m_Font->m_CharHeight+m_Sep);
+                    g_TwMgr->m_PopupBar->m_PosY = m_PosY + m_VarY0 + (m_HighlightedLine+1)*(m_Font->m_CharHeight+m_LineSep);
                     g_TwMgr->m_PopupBar->m_Width = m_Width - 2*m_Font->m_CharHeight;
+                    g_TwMgr->m_PopupBar->m_LineSep = g_TwMgr->m_PopupBar->m_Sep;
                     int popHeight0 = (int)e.m_Entries.size()*(m_Font->m_CharHeight+m_Sep) + m_Font->m_CharHeight/2+2;
                     int popHeight = popHeight0;
                     if( g_TwMgr->m_PopupBar->m_PosY+popHeight+2 > g_TwMgr->m_WndHeight )
@@ -6140,7 +6155,7 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
                         //  dw = 2*IncrBtnWidth(m_Font->m_CharHeight);
                         if( !m_EditInPlace.m_Active || m_EditInPlace.m_Var!=Var )
                         {
-                            EditInPlaceStart(Var, m_VarX1, m_VarY0+(m_HighlightedLine)*(m_Font->m_CharHeight+m_Sep), m_VarX2-m_VarX1-dw-1);
+                            EditInPlaceStart(Var, m_VarX1, m_VarY0+(m_HighlightedLine)*(m_Font->m_CharHeight+m_LineSep), m_VarX2-m_VarX1-dw-1);
                             if( EditInPlaceIsReadOnly() )
                                 EditInPlaceMouseMove(_X, _Y, false);
                             m_MouseDrag = false;
@@ -6407,7 +6422,7 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
         else if( m_IsHelpBar && _Pressed && !g_TwMgr->m_IsRepeatingMousePressed && _X>=m_PosX+m_VarX0 && _X<m_PosX+m_Width-m_Font->m_CharHeight && _Y>m_PosY+m_Height-m_Font->m_CharHeight && _Y<m_PosY+m_Height )
         {
             /*
-            const char *WebPage = "http://www.antisphere.com/Wiki/tools:anttweakbar";
+            const char *WebPage = "http://";
             #if defined ANT_WINDOWS
                 ShellExecute(NULL, "open", WebPage, NULL, NULL, SW_SHOWNORMAL);
             #elif defined ANT_UNIX
@@ -6729,7 +6744,7 @@ bool CTwBar::KeyPressed(int _Key, int _Modifiers)
                             else // if( IsEnumType(Atom->m_Type) )
                             {
                                 // simulate a mouse click
-                                int y = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_Sep) + m_Font->m_CharHeight/2;
+                                int y = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_LineSep) + m_Font->m_CharHeight/2;
                                 int x = m_PosX + m_VarX1 + 2;
                                 if( x>m_PosX+m_VarX2-2 ) 
                                     x = m_PosX + m_VarX2 - 2;
@@ -6862,7 +6877,7 @@ bool CTwBar::Show(CTwVar *_Var)
         int l = LineInHier(&m_VarRoot, _Var);
         if( l>=0 )
         {
-            int NbLines = (m_VarY1-m_VarY0+1)/(m_Font->m_CharHeight+m_Sep);
+            int NbLines = (m_VarY1-m_VarY0+1)/(m_Font->m_CharHeight+m_LineSep);
             if( NbLines<= 0 )
                 NbLines = 1;
             if( l<m_FirstLine || l>=m_FirstLine+NbLines )
@@ -7205,7 +7220,7 @@ void CTwBar::RotoOnLButtonDown(int _X, int _Y)
     if( !m_Roto.m_Active && m_HighlightedLine>=0 && m_HighlightedLine<(int)m_HierTags.size() && m_HierTags[m_HighlightedLine].m_Var && !m_HierTags[m_HighlightedLine].m_Var->IsGroup() )
     {
         m_Roto.m_Var = static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var);
-        int y = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_Sep) + m_Font->m_CharHeight/2;
+        int y = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_LineSep) + m_Font->m_CharHeight/2;
         m_Roto.m_Origin = CPoint(p.x, y); //r.CenterPoint().y);
         m_Roto.m_Current = p;
         m_Roto.m_Active = true;
@@ -7702,25 +7717,6 @@ bool CTwBar::EditInPlaceGetClipboard(std::string *_OutString)
             XFree(Buffer);
         }
     }
-// PATCH BEGIN Alec Jacobson, 2012
-#elif defined ANT_OSX
-    FILE* pipe = popen("pbpaste", "r");
-    if (!pipe)
-    {
-        return false;
-    }
-    char buffer[128];
-    string result = "";
-    while(!feof(pipe))
-    {
-        if(fgets(buffer, 128, pipe) != NULL)
-        {
-            result += buffer;
-        }
-    }
-    pclose(pipe);
-    *_OutString = result.c_str();
-// PATCH END
 
 #endif
 
@@ -7763,16 +7759,6 @@ bool CTwBar::EditInPlaceSetClipboard(const std::string& _String)
         XStoreBytes(g_TwMgr->m_CurrentXDisplay, Text, _String.length());
         delete[] Text;
     }
-// PATCH BEGIN Alec Jacobson, 2012
-#elif defined ANT_OSX
-    stringstream cmd;
-    cmd << "echo \"" << _String << "\" | pbcopy";
-    FILE* pipe = popen(cmd.str().c_str(), "r");
-    if (!pipe)
-    {
-        return false;
-    }
-// PATCH END
 
 #endif
 

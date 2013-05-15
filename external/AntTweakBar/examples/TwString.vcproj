@@ -66,7 +66,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="glfwdll.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="glut32.lib opengl32.lib glu32.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../lib/debug,../lib"
@@ -98,7 +98,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="if exist c:\sdk\glfw\lib\win32\glfw.dll  xcopy /y /f c:\sdk\glfw\lib\win32\glfw.dll debug32\.&#x0D;&#x0A;if exist bin32\glfw.dll  xcopy /y /f bin32\glfw.dll debug32\.&#x0D;&#x0A;"
+				CommandLine="if exist c:\sdk\glut\lib\glut32.dll  xcopy /y /f c:\sdk\glut\lib\glut32.dll debug32\.&#x0D;&#x0A;if exist bin32\glut32.dll  xcopy /y /f bin32\glut32.dll debug32\."
 			/>
 		</Configuration>
 		<Configuration
@@ -150,7 +150,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="glfwdll64.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="glut64.lib opengl32.lib glu32.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../lib/debug,../lib"
@@ -182,7 +182,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="if exist c:\sdk\glfw\lib\win64\glfw.dll  xcopy /y /f c:\sdk\glfw\lib\win64\glfw.dll debug64\.&#x0D;&#x0A;if exist bin64\glfw.dll  xcopy /y /f bin64\glfw.dll debug64\.&#x0D;&#x0A;"
+				CommandLine="if exist c:\sdk\glut\lib\glut64.dll  xcopy /y /f c:\sdk\glut\lib\glut64.dll debug64\.&#x0D;&#x0A;if exist bin64\glut64.dll  xcopy /y /f bin64\glut64.dll debug64\.&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -237,7 +237,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="glfwdll.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="glut32.lib opengl32.lib glu32.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../lib"
@@ -271,7 +271,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="if exist c:\sdk\glfw\lib\win32\glfw.dll  xcopy /y /f c:\sdk\glfw\lib\win32\glfw.dll bin32\."
+				CommandLine="if exist c:\sdk\glut\lib\glut32.dll  xcopy /y /f c:\sdk\glut\lib\glut32.dll bin32\."
 			/>
 		</Configuration>
 		<Configuration
@@ -327,7 +327,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="glfwdll64.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="glut64.lib opengl32.lib glu32.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../lib"
@@ -361,7 +361,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="if exist c:\sdk\glfw\lib\win64\glfw.dll  xcopy /y /f c:\sdk\glfw\lib\win64\glfw.dll bin64\."
+				CommandLine="if exist c:\sdk\glut\lib\glut64.dll  xcopy /y /f c:\sdk\glut\lib\glut64.dll bin64\."
 			/>
 		</Configuration>
 	</Configurations>

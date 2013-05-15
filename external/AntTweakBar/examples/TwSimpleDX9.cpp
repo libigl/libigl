@@ -3,14 +3,11 @@
 //  @file       TwSimpleDX9.cpp
 //  @brief      A simple example that uses AntTweakBar with DirectX9
 //
-//              AntTweakBar: http://www.antisphere.com/Wiki/tools:anttweakbar
+//              AntTweakBar: http://anttweakbar.sourceforge.net/doc
 //              DirectX:     http://msdn.microsoft.com/directx
 //  
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @date       2006/05/20
-//
-//  Compilation:
-//  http://www.antisphere.com/Wiki/tools:anttweakbar:examples#twsimpledx9
 //
 //  ---------------------------------------------------------------------------
 

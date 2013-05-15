@@ -1,0 +1,6 @@
+IGL xml serializer
+
+Dependencies:
+  tinyxml2  
+  
+Travel to $IGL/external/tinyxml2

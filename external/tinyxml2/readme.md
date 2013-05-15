@@ -45,7 +45,7 @@ TinyXML-2 attempts to be a flexible parser, but with truly correct and
 compliant XML output. TinyXML-2 should compile on any reasonably C++
 compliant system. It does not rely on exceptions, RTTI, or the STL.
 
-What it doesn’t do.
+What it doesn't do.
 -------------------
 
 TinyXML-2 doesn't parse or use DTDs (Document Type Definitions) or XSLs
@@ -62,7 +62,7 @@ TinyXML-1 vs. TinyXML-2
 Which should you use? TinyXML-2 uses a similar API to TinyXML-1 and the same
 rich test cases. But the implementation of the parser is completely re-written
 to make it more appropriate for use in a game. It uses less memory, is faster,
-and uses far few memory allocations.
+and uses far fewer memory allocations.
 
 TinyXML-2 has no requirement for STL, but has also dropped all STL support. All
 strings are query and set as 'const char*'. This allows the use of internal 
@@ -262,8 +262,9 @@ And additionally a test file:
 * xmltest.cpp
 
 Simply compile and run. There is a visual studio 2010 project included, a simple Makefile, 
-an XCode project, and a cmake CMakeLists.txt included to help you. The top of tinyxml.h
-even has a simple g++ command line if you are are *nix and don't want to use a build system.
+an XCode project, a Code::Blocks project, and a cmake CMakeLists.txt included to help you. 
+The top of tinyxml.h even has a simple g++ command line if you are are *nix and don't want 
+to use a build system.
 
 Documentation
 -------------

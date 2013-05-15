@@ -5,7 +5,7 @@
 //              translate and re-send mouse and keyboard events 
 //              from SDL 1.2 event loop to AntTweakBar
 //  
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @date       2006/05/10
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt

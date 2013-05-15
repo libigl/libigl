@@ -1,7 +1,7 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       TwOpenGL.cpp
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
@@ -35,6 +35,10 @@ typedef void (APIENTRY * PFNGLClientActiveTextureARB)(GLenum texture);
 typedef void (APIENTRY * PFNGLBlendEquation)(GLenum mode);
 typedef void (APIENTRY * PFNGLBlendEquationSeparate)(GLenum srcMode, GLenum dstMode);
 typedef void (APIENTRY * PFNGLBlendFuncSeparate)(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
+typedef void (APIENTRY * PFNGLBindVertexArray)(GLuint array);
+typedef void (APIENTRY * PFNGLEnableVertexAttribArray) (GLuint index);
+typedef void (APIENTRY * PFNGLDisableVertexAttribArray) (GLuint index);
+typedef void (APIENTRY * PFNGLGetVertexAttribiv) (GLuint, GLenum, GLint*);
 PFNGLBindBufferARB _glBindBufferARB = NULL;
 PFNGLBindProgramARB _glBindProgramARB = NULL;
 PFNGLGetHandleARB _glGetHandleARB = NULL;
@@ -45,6 +49,10 @@ PFNGLClientActiveTextureARB _glClientActiveTextureARB = NULL;
 PFNGLBlendEquation _glBlendEquation = NULL;
 PFNGLBlendEquationSeparate _glBlendEquationSeparate = NULL;
 PFNGLBlendFuncSeparate _glBlendFuncSeparate = NULL;
+PFNGLBindVertexArray _glBindVertexArray = NULL;
+PFNGLEnableVertexAttribArray _glEnableVertexAttribArray = NULL;
+PFNGLDisableVertexAttribArray _glDisableVertexAttribArray = NULL;
+PFNGLGetVertexAttribiv _glGetVertexAttribiv = NULL;
 #ifndef GL_ARRAY_BUFFER_ARB
 #   define GL_ARRAY_BUFFER_ARB 0x8892
 #endif
@@ -110,6 +118,15 @@ PFNGLBlendFuncSeparate _glBlendFuncSeparate = NULL;
 #endif
 #ifndef GL_BLEND_DST_ALPHA
 #   define GL_BLEND_DST_ALPHA 0x80CA
+#endif
+#ifndef GL_VERTEX_ARRAY_BINDING
+#   define GL_VERTEX_ARRAY_BINDING 0x85B5
+#endif
+#ifndef GL_MAX_VERTEX_ATTRIBS
+#    define GL_MAX_VERTEX_ATTRIBS 0x8869
+#endif
+#ifndef GL_VERTEX_ATTRIB_ARRAY_ENABLED
+#    define GL_VERTEX_ATTRIB_ARRAY_ENABLED 0x8622
 #endif
 
 //  ---------------------------------------------------------------------------
@@ -202,6 +219,10 @@ int CTwGraphOpenGL::Init()
     _glBlendEquation = reinterpret_cast<PFNGLBlendEquation>(_glGetProcAddress("glBlendEquation"));
     _glBlendEquationSeparate = reinterpret_cast<PFNGLBlendEquationSeparate>(_glGetProcAddress("glBlendEquationSeparate"));
     _glBlendFuncSeparate = reinterpret_cast<PFNGLBlendFuncSeparate>(_glGetProcAddress("glBlendFuncSeparate"));
+    _glBindVertexArray = reinterpret_cast<PFNGLBindVertexArray>(_glGetProcAddress("glBindVertexArray"));
+    _glEnableVertexAttribArray = reinterpret_cast<PFNGLEnableVertexAttribArray>(_glGetProcAddress("glEnableVertexAttribArray"));
+    _glDisableVertexAttribArray = reinterpret_cast<PFNGLDisableVertexAttribArray>(_glGetProcAddress("glDisableVertexAttribArray"));
+    _glGetVertexAttribiv = reinterpret_cast<PFNGLGetVertexAttribiv>(_glGetProcAddress("glGetVertexAttribiv"));
 
     m_SupportTexRect = false; // updated in BeginDraw
 
@@ -357,6 +378,12 @@ void CTwGraphOpenGL::BeginDraw(int _WndWidth, int _WndHeight)
     _glDisableClientState(GL_COLOR_ARRAY);
     _glDisableClientState(GL_EDGE_FLAG_ARRAY);
 
+    if( _glBindVertexArray!=NULL )
+    {
+        m_PrevVertexArray = 0;
+        _glGetIntegerv(GL_VERTEX_ARRAY_BINDING, (GLint*)&m_PrevVertexArray);
+        _glBindVertexArray(0);
+    }
     if( _glBindBufferARB!=NULL )
     {
         m_PrevArrayBufferARB = m_PrevElementArrayBufferARB = 0;
@@ -409,6 +436,19 @@ void CTwGraphOpenGL::BeginDraw(int _WndWidth, int _WndHeight)
         _glGetIntegerv(GL_BLEND_EQUATION, &m_PrevBlendEquation);
         _glBlendEquation(GL_FUNC_ADD);
     }
+    if( _glDisableVertexAttribArray!=NULL )
+    {
+        GLint maxVertexAttribs;
+        _glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVertexAttribs);
+        if(maxVertexAttribs>MAX_VERTEX_ATTRIBS)
+            maxVertexAttribs=MAX_VERTEX_ATTRIBS;
+       
+        for(int i=0; i<maxVertexAttribs; i++)
+        {
+            _glGetVertexAttribiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &m_PrevEnabledVertexAttrib[i]);
+            _glDisableVertexAttribArray(i);
+        }
+    }
 
     CHECK_GL_ERROR;
 }
@@ -421,6 +461,8 @@ void CTwGraphOpenGL::EndDraw()
     m_Drawing = false;
 
     _glBindTexture(GL_TEXTURE_2D, m_PrevTexture);
+    if( _glBindVertexArray!=NULL )
+        _glBindVertexArray(m_PrevVertexArray);
     if( _glBindBufferARB!=NULL )
     {
         _glBindBufferARB(GL_ARRAY_BUFFER_ARB, m_PrevArrayBufferARB);
@@ -487,6 +529,19 @@ void CTwGraphOpenGL::EndDraw()
                 _glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         }
         _glClientActiveTextureARB(m_PrevClientActiveTextureARB);
+    }
+    if(_glEnableVertexAttribArray)
+    {
+        GLint maxVertexAttribs;
+        _glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVertexAttribs);
+        if(maxVertexAttribs>MAX_VERTEX_ATTRIBS)
+            maxVertexAttribs=MAX_VERTEX_ATTRIBS;
+       
+        for(int i=0; i<maxVertexAttribs; i++)
+        {
+            if(m_PrevEnabledVertexAttrib[i]!=0)
+                _glEnableVertexAttribArray(i);
+        }
     }
 
     CHECK_GL_ERROR;

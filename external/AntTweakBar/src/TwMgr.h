@@ -2,12 +2,11 @@
 //
 //  @file       TwMgr.h
 //  @brief      Tweak bar manager.
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
-//  notes:      Private header
-//              TAB=4
+//  note:       Private header
 //
 //  ---------------------------------------------------------------------------
 
@@ -320,6 +319,7 @@ struct CTwMgr
     TwCopyCDStringToClient  m_CopyCDStringToClient;
     TwCopyStdStringToClient m_CopyStdStringToClient;
     size_t              m_ClientStdStringStructSize;
+    TwType              m_ClientStdStringBaseType;
 
 protected:
     int                 m_NbMinimizedBars;
@@ -353,10 +353,12 @@ const TwType TW_TYPE_CSSTRING_BASE  = TW_TYPE_CSSTRING(0);          // defined a
 const TwType TW_TYPE_CSSTRING_MAX   = TW_TYPE_CSSTRING(0xfffffff);
 #define TW_CSSTRING_SIZE(type)      ((int)((type)&0xfffffff))
 const TwType TW_TYPE_CUSTOM_BASE    = TwType(0x40000000);
+const TwType TW_TYPE_STDSTRING_VS2008 = TwType(0x2fff0000);
+const TwType TW_TYPE_STDSTRING_VS2010 = TwType(0x2ffe0000);
 
 extern "C" int ANT_CALL TwSetLastError(const char *_StaticErrorMessage);
 
-const TwGraphAPI TW_OPENGL_CORE = (TwGraphAPI)5; // WIP (note: OpenGL Core Profil requires OpenGL 3.2 or later)
+//const TwGraphAPI TW_OPENGL_CORE = (TwGraphAPI)5; // WIP (note: OpenGL Core Profil requires OpenGL 3.2 or later)
 
 // Clipping helper
 struct CRect 
@@ -380,6 +382,7 @@ enum EMgrAttribs
 {
     MGR_HELP = 1,
     MGR_FONT_SIZE,
+    MGR_FONT_STYLE,
     MGR_ICON_POS,
     MGR_ICON_ALIGN,
     MGR_ICON_MARGIN,

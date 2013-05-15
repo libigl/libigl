@@ -100,11 +100,12 @@ igl::ReTwBar & igl::ReTwBar::operator=(const igl::ReTwBar & that)
 
 
 // BAR WRAPPERS
-void igl::ReTwBar::TwNewBar(const char *barName)
+void igl::ReTwBar::TwNewBar(const char *name)
 {
   // double colon without anything in front of it means look for this in the
   // global namespace... I hope...
-  this->bar = ::TwNewBar(barName);
+  this->name = name;
+  this->bar = ::TwNewBar(name);
 }
 
 int igl::ReTwBar::TwAddVarRW(

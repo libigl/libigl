@@ -1,6 +1,6 @@
 ﻿--- AntTweakBar license ---
 
-Copyright (C) 2005-2011 Philippe Decaudin
+Copyright (C) 2005-2013 Philippe Decaudin
 
 This software is provided 'as-is', without any express or implied warranty. 
 In no event will the authors be held liable for any damages arising from the
@@ -20,5 +20,3 @@ misrepresented as being the original software.
 
 3. This notice may not be removed or altered from any source distribution.
 
-
-http://www.antisphere.com 

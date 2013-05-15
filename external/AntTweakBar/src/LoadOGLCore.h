@@ -2,7 +2,7 @@
 //
 //  @file       LoadOGLCore.h
 //  @brief      OpenGL Core Profile declarations for dynamic loading
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
@@ -15,20 +15,25 @@
 #define ANT_LOAD_OGL_CORE_INCLUDED
 
 
-#define ANT_GL_CORE_DECL(_Ret, _Fct, _Params) \
+#define ANT_GL_CORE_DECL_NO_FORWARD(_Ret, _Fct, _Params) \
     extern "C" { typedef _Ret (APIENTRY* PFN##_Fct)_Params; } \
     namespace GLCore { extern PFN##_Fct _##_Fct; } \
     using GLCore::_##_Fct;
 
 #if defined(ANT_WINDOWS)
+#   define ANT_GL_CORE_DECL(_Ret, _Fct, _Params) \
+        ANT_GL_CORE_DECL_NO_FORWARD(_Ret, _Fct, _Params)
 #   define ANT_GL_CORE_IMPL(_Fct) \
         namespace GLCore { PFN##_Fct _##_Fct = (PFN##_Fct)Record(#_Fct, (PFNOpenGL*)(&_##_Fct)); }
 #elif defined(ANT_UNIX) || defined(ANT_OSX)
-#   define ANT_GL_CORE_IMPL(_Fct) \
-        namespace GLCore { PFN##_Fct _##_Fct = _Fct; }
 #   if !defined(APIENTRY)
 #       define APIENTRY
 #   endif
+#   define ANT_GL_CORE_DECL(_Ret, _Fct, _Params) \
+        ANT_GL_CORE_DECL_NO_FORWARD(_Ret, _Fct, _Params) \
+        extern "C" { _Ret APIENTRY _Fct _Params; }
+#   define ANT_GL_CORE_IMPL(_Fct) \
+        namespace GLCore { PFN##_Fct _##_Fct = _Fct; }
 #endif
 
 
@@ -58,8 +63,8 @@ ANT_GL_CORE_DECL(void, glTexParameterf, (GLenum target, GLenum pname, GLfloat pa
 ANT_GL_CORE_DECL(void, glTexParameterfv, (GLenum target, GLenum pname, const GLfloat *params))
 ANT_GL_CORE_DECL(void, glTexParameteri, (GLenum target, GLenum pname, GLint param))
 ANT_GL_CORE_DECL(void, glTexParameteriv, (GLenum target, GLenum pname, const GLint *params))
-#if defined(ANT_OSX)
-// Mac OSX redefined these OpenGL calls: glTexImage1D, glTexImage2D
+#if defined(ANT_OSX) && (MAC_OS_X_VERSION_MAX_ALLOWED < 1070)
+// Mac OSX < 10.7 redefines these OpenGL calls: glTexImage1D, glTexImage2D
 ANT_GL_CORE_DECL(void, glTexImage1D, (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const GLvoid *pixels))
 ANT_GL_CORE_DECL(void, glTexImage2D, (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels))
 #else
@@ -120,7 +125,12 @@ ANT_GL_CORE_DECL(GLboolean, glIsTexture, (GLuint texture))
 ANT_GL_CORE_DECL(void, glBlendColor, (GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha))
 ANT_GL_CORE_DECL(void, glBlendEquation, (GLenum mode))
 ANT_GL_CORE_DECL(void, glDrawRangeElements, (GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid *indices))
+#if defined(ANT_OSX) && (MAC_OS_X_VERSION_MAX_ALLOWED < 1070)
+// Mac OSX < 10.7 redefines this OpenGL call: glTexImage3D
+ANT_GL_CORE_DECL(void, glTexImage3D, (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid *pixels))
+#else
 ANT_GL_CORE_DECL(void, glTexImage3D, (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid *pixels))
+#endif
 ANT_GL_CORE_DECL(void, glTexSubImage3D, (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid *pixels))
 ANT_GL_CORE_DECL(void, glCopyTexSubImage3D, (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height))
 // GL 1.3
@@ -142,8 +152,10 @@ ANT_GL_CORE_DECL(void, glPointParameterfv, (GLenum pname, const GLfloat *params)
 ANT_GL_CORE_DECL(void, glPointParameteri, (GLenum pname, GLint param))
 ANT_GL_CORE_DECL(void, glPointParameteriv, (GLenum pname, const GLint *params))
 // GL 1.5
-typedef ptrdiff_t GLintptr;
-typedef ptrdiff_t GLsizeiptr;
+#ifndef ANT_OSX
+    typedef ptrdiff_t GLintptr;
+    typedef ptrdiff_t GLsizeiptr;
+#endif
 ANT_GL_CORE_DECL(void, glGenQueries, (GLsizei n, GLuint *ids))
 ANT_GL_CORE_DECL(void, glDeleteQueries, (GLsizei n, const GLuint *ids))
 ANT_GL_CORE_DECL(GLboolean, glIsQuery, (GLuint id))
@@ -258,6 +270,7 @@ ANT_GL_CORE_DECL(void, glVertexAttrib4ubv, (GLuint index, const GLubyte *v))
 ANT_GL_CORE_DECL(void, glVertexAttrib4uiv, (GLuint index, const GLuint *v))
 ANT_GL_CORE_DECL(void, glVertexAttrib4usv, (GLuint index, const GLushort *v))
 ANT_GL_CORE_DECL(void, glVertexAttribPointer, (GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer))
+/*
 // GL 2.1
 ANT_GL_CORE_DECL(void, glUniformMatrix2x3fv, (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value))
 ANT_GL_CORE_DECL(void, glUniformMatrix3x2fv, (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value))
@@ -334,16 +347,57 @@ ANT_GL_CORE_DECL(void, glPrimitiveRestartIndex, (GLuint index))
 //ANT_GL_CORE_DECL(void, glGetInteger64i_v, (GLenum target, GLuint index, GLint64 *data))
 //ANT_GL_CORE_DECL(void, glGetBufferParameteri64v, (GLenum target, GLenum pname, GLint64 *params))
 ANT_GL_CORE_DECL(void, glFramebufferTexture, (GLenum target, GLenum attachment, GLuint texture, GLint level))
-
+*/
 // GL_ARB_vertex_array_object
-ANT_GL_CORE_DECL(void, glBindVertexArray, (GLuint array))
-ANT_GL_CORE_DECL(void, glDeleteVertexArrays, (GLsizei n, const GLuint *arrays))
-ANT_GL_CORE_DECL(void, glGenVertexArrays, (GLsizei n, GLuint *arrays))
-ANT_GL_CORE_DECL(GLboolean, glIsVertexArray, (GLuint array))
+ANT_GL_CORE_DECL_NO_FORWARD(void, glBindVertexArray, (GLuint array))
+ANT_GL_CORE_DECL_NO_FORWARD(void, glDeleteVertexArrays, (GLsizei n, const GLuint *arrays))
+ANT_GL_CORE_DECL_NO_FORWARD(void, glGenVertexArrays, (GLsizei n, GLuint *arrays))
+ANT_GL_CORE_DECL_NO_FORWARD(GLboolean, glIsVertexArray, (GLuint array))
+
 
 #ifdef ANT_WINDOWS
 ANT_GL_CORE_DECL(PROC, wglGetProcAddress, (LPCSTR))
 #endif                                                                                                                                                                                                                                                                                                                                                
+
+#ifndef GL_CLAMP_TO_EDGE
+#   define GL_CLAMP_TO_EDGE     0x812F
+#endif
+#ifndef GL_COMPILE_STATUS
+#   define GL_COMPILE_STATUS    0x8B81
+#endif
+#ifndef GL_INFO_LOG_LENGTH
+#   define GL_INFO_LOG_LENGTH   0x8B84
+#endif
+#ifndef GL_LINK_STATUS
+#   define GL_LINK_STATUS       0x8B82
+#endif
+#ifndef GL_ARRAY_BUFFER
+#   define GL_ARRAY_BUFFER      0x8892
+#endif
+#ifndef GL_DYNAMIC_DRAW
+#   define GL_DYNAMIC_DRAW      0x88E8
+#endif
+#ifndef GL_VERTEX_SHADER
+#   define GL_VERTEX_SHADER     0x8B31
+#endif
+#ifndef GL_FRAGMENT_SHADER
+#   define GL_FRAGMENT_SHADER   0x8B30
+#endif
+#ifndef GL_VERTEX_ARRAY_BINDING
+#   define GL_VERTEX_ARRAY_BINDING  0x85B5
+#endif
+#ifndef GL_CURRENT_PROGRAM
+#   define GL_CURRENT_PROGRAM   0x8B8D
+#endif
+#ifndef GL_ACTIVE_TEXTURE
+#   define GL_ACTIVE_TEXTURE    0x84E0
+#endif
+#ifndef GL_TEXTURE0
+#   define GL_TEXTURE0          0x84C0
+#endif
+#ifndef GL_BGRA
+#   define GL_BGRA              0x80E1
+#endif
 
 
 #endif // !defined ANT_LOAD_OGL_CORE_INCLUDED

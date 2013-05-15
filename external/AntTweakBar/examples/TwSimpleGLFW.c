@@ -4,15 +4,12 @@
 //  @brief      A simple example that uses AntTweakBar with 
 //              OpenGL and the GLFW windowing system.
 //
-//              AntTweakBar: http://www.antisphere.com/Wiki/tools:anttweakbar
+//              AntTweakBar: http://anttweakbar.sourceforge.net/doc
 //              OpenGL:      http://www.opengl.org
-//              GLFW:        http://glfw.sourceforge.net
+//              GLFW:        http://www.glfw.org
 //  
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @date       2006/05/20
-//
-//  Compilation:
-//  http://www.antisphere.com/Wiki/tools:anttweakbar:examples#twsimpleglfw
 //
 //  ---------------------------------------------------------------------------
 

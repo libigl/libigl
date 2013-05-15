@@ -2,12 +2,11 @@
 //
 //  @file       TwOpenGL.h
 //  @brief      OpenGL graph functions
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
-//  notes:      Private header
-//              TAB=4
+//  note:       Private header
 //
 //  ---------------------------------------------------------------------------
 
@@ -74,8 +73,11 @@ protected:
     GLint               m_PrevBlendDstRGB;
     GLint               m_PrevBlendSrcAlpha;
     GLint               m_PrevBlendDstAlpha;
+    GLuint              m_PrevVertexArray;
     GLint               m_ViewportInit[4];
     GLfloat             m_ProjMatrixInit[16];
+    enum EMaxVtxAttribs { MAX_VERTEX_ATTRIBS = 128 };
+    GLint               m_PrevEnabledVertexAttrib[MAX_VERTEX_ATTRIBS];
     int                 m_WndWidth;
     int                 m_WndHeight;
 
