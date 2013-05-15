@@ -35,6 +35,9 @@ namespace igl
   //void DecodeXMLElementName(std::string& name);
   void ReplaceSubString(std::string& str, const std::string& search, const std::string& replace);
 
+  // Forward declaration
+  class XMLSerializer;
+
   /**
      * interface XMLSerializable
      * Inherit from this interface to have full control over the serialization of you user defined class.

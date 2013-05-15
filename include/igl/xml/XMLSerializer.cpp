@@ -1,5 +1,7 @@
 #include "XMLSerializer.h"
 
+//TODO: these should probably be static. Do they need to be in the igl
+//namespace?
 namespace igl
 {
   int numForbiddenChars = 8;

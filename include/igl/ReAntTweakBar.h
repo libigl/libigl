@@ -45,6 +45,11 @@
 #include <vector>
 #include <string>
 
+#define REANTTWEAKBAR_MAX_CB_VAR_SIZE 1000
+// Max line size for reading files
+#define REANTTWEAKBAR_MAX_LINE 1000
+#define REANTTWEAKBAR_MAX_WORD 100
+
 namespace igl
 {
 

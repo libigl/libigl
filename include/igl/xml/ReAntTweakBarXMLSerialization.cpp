@@ -1,6 +1,7 @@
 #include "ReAntTweakBarXMLSerialization.h"
+#include "XMLSerializer.h"
 
-#include "igl/ReAntTweakBar.h"
+#include <igl/ReAntTweakBar.h>
 
 IGL_INLINE bool igl::save_ReAntTweakBar(igl::ReTwBar* bar, const char* file_name)
 {
@@ -13,7 +14,7 @@ IGL_INLINE bool igl::save_ReAntTweakBar(igl::ReTwBar* bar, const char* file_name
 		igl::XMLSerializer::SaveObject(val,it->name,name,file_name,false);
 	}
 
-	char var[MAX_CB_VAR_SIZE];
+	char var[REANTTWEAKBAR_MAX_CB_VAR_SIZE];
 	// Print all CB variables
   const std::vector<igl::ReTwCBItem>& cb_items = bar->get_cb_items();
   for(std::vector<ReTwCBItem>::const_iterator it = cb_items.begin(); it != cb_items.end(); it++)
@@ -52,7 +53,7 @@ IGL_INLINE bool igl::save_ReAntTweakBar(igl::ReTwBar* bar, tinyxml2::XMLDocument
 		s->Add(*cval,it->name);
 	}
 
-	char var[MAX_CB_VAR_SIZE];
+	char var[REANTTWEAKBAR_MAX_CB_VAR_SIZE];
 	// Print all CB variables
   const std::vector<igl::ReTwCBItem>& cb_items = bar->get_cb_items();
 	for(std::vector<ReTwCBItem>::const_iterator it = cb_items.begin(); it != cb_items.end(); it++)
@@ -90,8 +91,8 @@ IGL_INLINE bool igl::save_ReAntTweakBar(igl::ReTwBar* bar, tinyxml2::XMLDocument
 
 IGL_INLINE bool igl::load_ReAntTweakBar(igl::ReTwBar* bar, const char *file_name)
 {
-	char type_str[MAX_WORD];
-	char value_str[MAX_WORD];
+	char type_str[REANTTWEAKBAR_MAX_WORD];
+	char value_str[REANTTWEAKBAR_MAX_WORD];
 	TwType type;
 	
   std::string name = bar->name + "_AntTweakBar";
@@ -162,8 +163,8 @@ IGL_INLINE bool igl::load_ReAntTweakBar(igl::ReTwBar* bar, tinyxml2::XMLDocument
 	s->LoadFromXMLDoc(doc);
 
 	// Set loaded values
-	char type_str[MAX_WORD];
-	char value_str[MAX_WORD];
+	char type_str[REANTTWEAKBAR_MAX_WORD];
+	char value_str[REANTTWEAKBAR_MAX_WORD];
 	TwType type;
 
 	for(iter = variables.begin(); iter != variables.end(); iter++)

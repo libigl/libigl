@@ -7,11 +7,6 @@
 #include <iomanip>
 #include <map>
 
-#define MAX_CB_VAR_SIZE 1000
-// Max line size for reading files
-#define MAX_LINE 1000
-#define MAX_WORD 100
-
 // GLOBAL WRAPPERS
 namespace igl
 {
@@ -252,7 +247,7 @@ bool igl::ReTwBar::save(const char *file_name)
       get_value_as_string(var,type).c_str());
   }
 
-  char var[MAX_CB_VAR_SIZE];
+  char var[REANTTWEAKBAR_MAX_CB_VAR_SIZE];
   // Print all CB variables
   for(
     std::vector<ReTwCBItem>::iterator it = cb_items.begin(); 
@@ -426,11 +421,11 @@ bool igl::ReTwBar::load(const char *file_name)
   }
 
   // go through file line by line
-  char line[MAX_LINE];
+  char line[REANTTWEAKBAR_MAX_LINE];
   bool still_comments;
-  char name[MAX_WORD];
-  char type_str[MAX_WORD];
-  char value_str[MAX_WORD];
+  char name[REANTTWEAKBAR_MAX_WORD];
+  char type_str[REANTTWEAKBAR_MAX_WORD];
+  char value_str[REANTTWEAKBAR_MAX_WORD];
 
 
   // line number
@@ -442,7 +437,7 @@ bool igl::ReTwBar::load(const char *file_name)
     still_comments = true;
     while(still_comments)
     {
-      if(fgets(line,MAX_LINE,fp) == NULL)
+      if(fgets(line,REANTTWEAKBAR_MAX_LINE,fp) == NULL)
       {
         finished = true;
         break;
