@@ -23,7 +23,7 @@ SET(CMAKE_DEPENDS_CHECK_CXX
   "/usr/local/igl/libigl/external/embree/rtcore/common/splitter_parallel.cpp" "/usr/local/igl/libigl/external/embree/bin/rtcore/CMakeFiles/rtcore.dir/common/splitter_parallel.o"
   "/usr/local/igl/libigl/external/embree/rtcore/common/stat.cpp" "/usr/local/igl/libigl/external/embree/bin/rtcore/CMakeFiles/rtcore.dir/common/stat.o"
   )
-SET(CMAKE_CXX_COMPILER_ID "GNU")
+SET(CMAKE_CXX_COMPILER_ID "Clang")
 
 # Targets to which this target links.
 SET(CMAKE_TARGET_LINKED_INFO_FILES

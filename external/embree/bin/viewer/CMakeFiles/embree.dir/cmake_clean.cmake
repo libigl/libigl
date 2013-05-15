@@ -2,7 +2,7 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/embree.dir/embree.o"
   "CMakeFiles/embree.dir/glutdisplay.o"
   "CMakeFiles/embree.dir/regression.o"
-  "../embree.pdb"
+  "embree.pdb"
   "../embree"
 )
 

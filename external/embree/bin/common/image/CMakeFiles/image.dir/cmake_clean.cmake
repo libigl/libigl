@@ -5,7 +5,7 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/image.dir/tga.o"
   "CMakeFiles/image.dir/exr.o"
   "CMakeFiles/image.dir/magick.o"
-  "../../libimage.pdb"
+  "libimage.pdb"
   "../../libimage.a"
 )
 

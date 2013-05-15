@@ -8,7 +8,7 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/sys.dir/sync/mutex.o"
   "CMakeFiles/sys.dir/sync/condition.o"
   "CMakeFiles/sys.dir/stl/string.o"
-  "../../libsys.pdb"
+  "libsys.pdb"
   "../../libsys.a"
 )
 

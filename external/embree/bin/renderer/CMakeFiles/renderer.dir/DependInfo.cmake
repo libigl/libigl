@@ -18,7 +18,7 @@ SET(CMAKE_DEPENDS_CHECK_CXX
   "/usr/local/igl/libigl/external/embree/renderer/shapes/trianglemesh.cpp" "/usr/local/igl/libigl/external/embree/bin/renderer/CMakeFiles/renderer.dir/shapes/trianglemesh.o"
   "/usr/local/igl/libigl/external/embree/renderer/shapes/trianglemesh_normals.cpp" "/usr/local/igl/libigl/external/embree/bin/renderer/CMakeFiles/renderer.dir/shapes/trianglemesh_normals.o"
   )
-SET(CMAKE_CXX_COMPILER_ID "GNU")
+SET(CMAKE_CXX_COMPILER_ID "Clang")
 
 # Targets to which this target links.
 SET(CMAKE_TARGET_LINKED_INFO_FILES

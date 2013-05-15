@@ -26,16 +26,16 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/local/bin/cmake
+CMAKE_COMMAND = /opt/local/bin/cmake
 
 # The command to remove a file.
-RM = /usr/local/bin/cmake -E remove -f
+RM = /opt/local/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The program to use to edit the cache.
-CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
+CMAKE_EDIT_COMMAND = /opt/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
 CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree
@@ -141,13 +141,13 @@ embree: libimage.a
 embree: librenderer.a
 embree: liblexers.a
 embree: libimage.a
-embree: /usr/local/lib/libHalf.dylib
-embree: /usr/local/lib/libIex.dylib
-embree: /usr/local/lib/libImath.dylib
-embree: /usr/local/lib/libIlmImf.dylib
-embree: /usr/local/lib/libIlmThread.dylib
-embree: /usr/local/lib/libMagick++.dylib
-embree: /usr/local/lib/libMagickCore.dylib
+embree: /opt/local/lib/libHalf.dylib
+embree: /opt/local/lib/libIex.dylib
+embree: /opt/local/lib/libImath.dylib
+embree: /opt/local/lib/libIlmImf.dylib
+embree: /opt/local/lib/libIlmThread.dylib
+embree: /opt/local/lib/libMagick++.dylib
+embree: /opt/local/lib/libMagickCore.dylib
 embree: librtcore.a
 embree: libsys.a
 embree: viewer/CMakeFiles/embree.dir/link.txt

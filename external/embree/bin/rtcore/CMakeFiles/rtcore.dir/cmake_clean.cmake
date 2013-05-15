@@ -17,7 +17,7 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/rtcore.dir/bvh4mb/bvh4mb.o"
   "CMakeFiles/rtcore.dir/bvh4mb/bvh4mb_builder.o"
   "CMakeFiles/rtcore.dir/bvh4mb/bvh4mb_intersector.o"
-  "../librtcore.pdb"
+  "librtcore.pdb"
   "../librtcore.a"
 )
 

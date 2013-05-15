@@ -14,7 +14,7 @@ SET(CMAKE_DEPENDS_CHECK_CXX
   "/usr/local/igl/libigl/external/embree/common/sys/taskscheduler_standard.cpp" "/usr/local/igl/libigl/external/embree/bin/common/sys/CMakeFiles/sys.dir/taskscheduler_standard.o"
   "/usr/local/igl/libigl/external/embree/common/sys/thread.cpp" "/usr/local/igl/libigl/external/embree/bin/common/sys/CMakeFiles/sys.dir/thread.o"
   )
-SET(CMAKE_CXX_COMPILER_ID "GNU")
+SET(CMAKE_CXX_COMPILER_ID "Clang")
 
 # Targets to which this target links.
 SET(CMAKE_TARGET_LINKED_INFO_FILES

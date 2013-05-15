@@ -1,6 +1,0 @@
--i cornell_box.obj
--quadlight 213 548.77 227 130 0 0 0 0 105 50 50 50
--vp 278 273 -800 -vi 278 273 0 -vu 0 1 0 -fov 37 
--renderer pathtracer { depth = 2 }
-
-

@@ -50,8 +50,27 @@ namespace igl
     const Scalar dx,
     const Scalar dy,
     const Scalar dz,
+    Scalar & projpx,
+    Scalar & projpy,
+    Scalar & projpz,
     Scalar & t,
     Scalar & sqrd);
+  
+  // Same as above but for a single query point
+  template <typename Scalar>
+  IGL_INLINE void project_to_line(
+    const Scalar px,
+    const Scalar py,
+    const Scalar pz,
+    const Scalar sx,
+    const Scalar sy,
+    const Scalar sz,
+    const Scalar dx,
+    const Scalar dy,
+    const Scalar dz,
+    Scalar & t,
+    Scalar & sqrd);
+
 }
 
 #ifdef IGL_HEADER_ONLY

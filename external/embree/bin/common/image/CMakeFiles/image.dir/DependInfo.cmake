@@ -11,10 +11,12 @@ SET(CMAKE_DEPENDS_CHECK_CXX
   "/usr/local/igl/libigl/external/embree/common/image/ppm.cpp" "/usr/local/igl/libigl/external/embree/bin/common/image/CMakeFiles/image.dir/ppm.o"
   "/usr/local/igl/libigl/external/embree/common/image/tga.cpp" "/usr/local/igl/libigl/external/embree/bin/common/image/CMakeFiles/image.dir/tga.o"
   )
-SET(CMAKE_CXX_COMPILER_ID "GNU")
+SET(CMAKE_CXX_COMPILER_ID "Clang")
 
 # Preprocessor definitions for this target.
 SET(CMAKE_TARGET_DEFINITIONS
+  "USE_OPENEXR"
+  "USE_IMAGEMAGICK"
   "USE_OPENEXR"
   "USE_IMAGEMAGICK"
   )
@@ -28,8 +30,8 @@ SET(CMAKE_TARGET_LINKED_INFO_FILES
 SET(CMAKE_C_TARGET_INCLUDE_PATH
   ".."
   "../common"
-  "/usr/local/include/OpenEXR"
-  "/usr/local/include/ImageMagick"
+  "/opt/local/include/OpenEXR"
+  "/opt/local/include/ImageMagick"
   )
 SET(CMAKE_CXX_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
 SET(CMAKE_Fortran_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})

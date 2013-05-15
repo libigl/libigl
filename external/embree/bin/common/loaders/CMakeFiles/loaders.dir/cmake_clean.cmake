@@ -3,7 +3,7 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/loaders.dir/obj_loader.o"
   "CMakeFiles/loaders.dir/xml_loader.o"
   "CMakeFiles/loaders.dir/xml_parser.o"
-  "../../libloaders.pdb"
+  "libloaders.pdb"
   "../../libloaders.a"
 )
 

@@ -8,7 +8,7 @@ SET(CMAKE_DEPENDS_CHECK_CXX
   "/usr/local/igl/libigl/external/embree/viewer/glutdisplay.cpp" "/usr/local/igl/libigl/external/embree/bin/viewer/CMakeFiles/embree.dir/glutdisplay.o"
   "/usr/local/igl/libigl/external/embree/viewer/regression.cpp" "/usr/local/igl/libigl/external/embree/bin/viewer/CMakeFiles/embree.dir/regression.o"
   )
-SET(CMAKE_CXX_COMPILER_ID "GNU")
+SET(CMAKE_CXX_COMPILER_ID "Clang")
 
 # Targets to which this target links.
 SET(CMAKE_TARGET_LINKED_INFO_FILES

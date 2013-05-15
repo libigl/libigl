@@ -1,7 +1,7 @@
 FILE(REMOVE_RECURSE
   "CMakeFiles/lexers.dir/stringstream.o"
   "CMakeFiles/lexers.dir/tokenstream.o"
-  "../../liblexers.pdb"
+  "liblexers.pdb"
   "../../liblexers.a"
 )
 

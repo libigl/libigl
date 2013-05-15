@@ -7,7 +7,7 @@ SET(CMAKE_DEPENDS_CHECK_CXX
   "/usr/local/igl/libigl/external/embree/common/lexers/stringstream.cpp" "/usr/local/igl/libigl/external/embree/bin/common/lexers/CMakeFiles/lexers.dir/stringstream.o"
   "/usr/local/igl/libigl/external/embree/common/lexers/tokenstream.cpp" "/usr/local/igl/libigl/external/embree/bin/common/lexers/CMakeFiles/lexers.dir/tokenstream.o"
   )
-SET(CMAKE_CXX_COMPILER_ID "GNU")
+SET(CMAKE_CXX_COMPILER_ID "Clang")
 
 # Targets to which this target links.
 SET(CMAKE_TARGET_LINKED_INFO_FILES

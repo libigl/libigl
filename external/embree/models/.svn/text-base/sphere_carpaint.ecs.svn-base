@@ -1,3 +1,0 @@
--i sphere_carpaint.xml
--c sphere_view.ecs
--renderer pathtracer

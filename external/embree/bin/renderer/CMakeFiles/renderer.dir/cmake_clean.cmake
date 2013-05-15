@@ -12,7 +12,7 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/renderer.dir/renderers/debugrenderer.o"
   "CMakeFiles/renderer.dir/renderers/integratorrenderer.o"
   "CMakeFiles/renderer.dir/renderers/progress.o"
-  "../librenderer.pdb"
+  "librenderer.pdb"
   "../librenderer.a"
 )
 
