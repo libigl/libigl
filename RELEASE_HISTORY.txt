@@ -1,2 +1,3 @@
+0.1.8  Embree and xml (windows only) extras
 0.1.5  Compilation on windows, bug fix for compilation with cygwin
 0.1.1  Alpha release with core functions, extras, examples
