@@ -25,6 +25,8 @@ GLEW  Windows only
 
   = Optional (included in external/ =
   TetGen  libigltetgen extra only
+  Embree  libiglembree extra only
+  tinyxml2  libiglxml extra only
 
 = Header only =
 libigl is designed to work "out-of-the-box" as a headers only library. To
@@ -77,7 +79,7 @@ Then run this example with:
     = Extras =
     Once you've set up an IGL_USERNAME and enabled extras within Makefile.conf.
     You can build the extra libraries (into lib/ligiglpng.a, lib/libiglmatlab.a,
-    lib/libigltetgen.a and lib/libiglmosek.a) by issuing:
+    lib/libigltetgen.a, lib/libiglmosek.a, etc.) by issuing:
   
     make extras
   
