@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/stl
+END
+string.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/stl/string.cpp
+END
+vector.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/stl/vector.h
+END
+array2d.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/stl/array2d.h
+END
+string.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/stl/string.h
+END

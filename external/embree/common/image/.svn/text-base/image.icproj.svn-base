@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="12.0"
+	Name="image"
+	ProjectGUID="{F4E8530B-9825-4D93-B423-F8529A93637F}"
+	VCNestedProjectGUID="{46A3A15E-AE35-41E9-824A-C542F8BA226E}"
+	VCNestedProjectFileName="image.vcproj"
+	>
+	<Configurations/>
+	<Files/>
+</VisualStudioProject>

@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/shapes
+END
+trianglemesh.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/shapes/trianglemesh.cpp
+END
+trianglemesh_normals.h
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/shapes/trianglemesh_normals.h
+END
+shape.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/shapes/shape.h
+END
+trianglemesh.h
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/shapes/trianglemesh.h
+END
+triangle.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/shapes/triangle.h
+END
+sphere.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/shapes/sphere.h
+END
+differentialgeometry.h
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/shapes/differentialgeometry.h
+END
+trianglemesh_normals.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/shapes/trianglemesh_normals.cpp
+END

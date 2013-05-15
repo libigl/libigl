@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/textures
+END
+nearestneighbor.h
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/textures/nearestneighbor.h
+END
+texture.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/textures/texture.h
+END

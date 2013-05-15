@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/sync
+END
+atomic.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/sync/atomic.h
+END
+mutex.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/sync/mutex.cpp
+END
+condition.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/sync/condition.cpp
+END
+mutex.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/sync/mutex.h
+END
+barrier.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/sync/barrier.h
+END
+condition.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/sync/condition.h
+END

@@ -1,0 +1,125 @@
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/embree/embree.git/!svn/ver/5/branches/v1.1/common/sys
+END
+sysinfo.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/sysinfo.h
+END
+sys.vcproj
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/sys.vcproj
+END
+library.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/library.cpp
+END
+taskscheduler.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/taskscheduler.h
+END
+thread.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/thread.cpp
+END
+library.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/library.h
+END
+thread.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/thread.h
+END
+filename.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/filename.cpp
+END
+ref.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/ref.h
+END
+constants.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/constants.h
+END
+taskscheduler_standard.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/taskscheduler_standard.cpp
+END
+sys.icproj
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/sys.icproj
+END
+platform.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/platform.cpp
+END
+filename.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/filename.h
+END
+taskscheduler_standard.h
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/taskscheduler_standard.h
+END
+sys.vcxproj
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/sys.vcxproj
+END
+platform.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/platform.h
+END
+sysinfo.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/sysinfo.cpp
+END
+intrinsics.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/embree/embree.git/!svn/ver/5/branches/v1.1/common/sys/intrinsics.h
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/sys/CMakeLists.txt
+END

@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/samplers
+END
+sampler.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/samplers/sampler.cpp
+END
+distribution1d.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/samplers/distribution1d.cpp
+END
+distribution2d.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/samplers/distribution2d.cpp
+END
+patterns.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/samplers/patterns.h
+END
+sample.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/samplers/sample.h
+END
+sampler.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/samplers/sampler.h
+END
+distribution1d.h
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/samplers/distribution1d.h
+END
+shapesampler.h
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/samplers/shapesampler.h
+END
+distribution2d.h
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/samplers/distribution2d.h
+END

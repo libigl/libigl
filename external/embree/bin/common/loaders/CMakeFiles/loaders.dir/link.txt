@@ -1,2 +1,0 @@
-/usr/bin/ar cr ../../libloaders.a  CMakeFiles/loaders.dir/loaders.o CMakeFiles/loaders.dir/obj_loader.o CMakeFiles/loaders.dir/xml_loader.o CMakeFiles/loaders.dir/xml_parser.o
-/usr/bin/ranlib ../../libloaders.a

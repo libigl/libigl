@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<scene>
+  <Transform>
+    <AffineSpace scale="1 50 1"/>
+    <Sphere>
+      <position>0 0 0</position>
+      <radius>1</radius>
+      <numTheta>2</numTheta>
+      <numPhi>500</numPhi>
+      <material>
+        <code>"MetallicPaint"</code>
+        <parameters>
+          <float name="eta">1.45</float>
+          <float3 name="shadeColor">0.5 0.0 0.0</float3>
+        </parameters>
+      </material>
+    </Sphere>
+  </Transform>
+<!--
+  <Transform>
+    <AffineSpace translate="1000000 0 0"/>
+    <Sphere>
+      <position>0 0 0</position>
+      <radius>1</radius>
+      <numTheta>50</numTheta>
+      <numPhi>50</numPhi>
+      <material>
+        <code>"MetallicPaint"</code>
+        <parameters>
+          <float name="eta">1.45</float>
+          <float3 name="shadeColor">0.5 0.0 0.0</float3>
+        </parameters>
+      </material>
+    </Sphere>
+  </Transform>
+-->
+</scene>

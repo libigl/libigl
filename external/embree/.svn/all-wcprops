@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/embree/embree.git/!svn/ver/12/branches/v1.1
+END
+.gitignore
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/embree/embree.git/!svn/ver/2/branches/v1.1/.gitignore
+END
+embree_vs2010.sln
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/embree/embree.git/!svn/ver/2/branches/v1.1/embree_vs2010.sln
+END
+.gitattributes
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/embree/embree.git/!svn/ver/2/branches/v1.1/.gitattributes
+END
+Doxygen.txt
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/embree/embree.git/!svn/ver/2/branches/v1.1/Doxygen.txt
+END
+README.txt
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/embree/embree.git/!svn/ver/2/branches/v1.1/README.txt
+END
+embree_vs2008.sln
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/embree/embree.git/!svn/ver/2/branches/v1.1/embree_vs2008.sln
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/embree/embree.git/!svn/ver/2/branches/v1.1/CMakeLists.txt
+END

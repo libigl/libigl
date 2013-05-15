@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/embree/embree.git/!svn/ver/11/branches/v1.1/common/loaders
+END
+loaders.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/loaders/loaders.h
+END
+obj_loader.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/loaders/obj_loader.cpp
+END
+xml_parser.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/loaders/xml_parser.h
+END
+obj_loader.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/loaders/obj_loader.h
+END
+xml_loader.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/embree/embree.git/!svn/ver/11/branches/v1.1/common/loaders/xml_loader.cpp
+END
+loaders.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/loaders/loaders.cpp
+END
+xml_loader.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/loaders/xml_loader.h
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/loaders/CMakeLists.txt
+END
+xml_parser.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/embree/embree.git/!svn/ver/2/branches/v1.1/common/loaders/xml_parser.cpp
+END

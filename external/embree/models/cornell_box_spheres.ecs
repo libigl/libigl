@@ -1,0 +1,5 @@
+-i cornell_box_spheres.xml
+-vp 278 273 -800 -vi 278 273 0 -vu 0 1 0 -fov 37 
+-renderer pathtracer { spp = 1 depth = 2 }
+
+

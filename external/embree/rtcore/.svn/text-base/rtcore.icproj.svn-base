@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="12.1"
+	Name="rtcore"
+	ProjectGUID="{0874728E-9A57-49C0-B8F1-A8311B98E97B}"
+	VCNestedProjectGUID="{ED858C9A-C161-4036-8DF7-EB169BCB81BC}"
+	VCNestedProjectFileName="rtcore.vcproj"
+	>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			>
+			<Tool
+				Name="CppCmplrTool"
+				InterproceduralOptimization="0"
+				UseProcessorExtensions="6"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|x64"
+			>
+			<Tool
+				Name="CppCmplrTool"
+				InterproceduralOptimization="0"
+				UseProcessorExtensions="6"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			>
+			<Tool
+				Name="CppCmplrTool"
+				InterproceduralOptimization="0"
+				UseProcessorExtensions="6"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|x64"
+			>
+			<Tool
+				Name="CppCmplrTool"
+				InterproceduralOptimization="0"
+				UseProcessorExtensions="6"
+			/>
+		</Configuration>
+	</Configurations>
+	<Files/>
+</VisualStudioProject>

@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/embree/embree.git/!svn/ver/2/branches/v1.1/viewer/freeglut/x64
+END
+freeglut.lib
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/embree/embree.git/!svn/ver/2/branches/v1.1/viewer/freeglut/x64/freeglut.lib
+END
+freeglut.dll
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/embree/embree.git/!svn/ver/2/branches/v1.1/viewer/freeglut/x64/freeglut.dll
+END

@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/microfacet
+END
+power_cosine_distribution.h
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/microfacet/power_cosine_distribution.h
+END
+beckmann_distribution.h
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/microfacet/beckmann_distribution.h
+END
+fresnel.h
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/microfacet/fresnel.h
+END
+anisotropic_power_cosine_distribution.h
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/microfacet/anisotropic_power_cosine_distribution.h
+END
+anisotropic_beckmann_distribution.h
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/embree/embree.git/!svn/ver/2/branches/v1.1/renderer/brdfs/microfacet/anisotropic_beckmann_distribution.h
+END
