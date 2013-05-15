@@ -2,6 +2,16 @@
 #define IGL_REANTTWEAKBAR_XML_SERIALIZATION_H
 #include "../igl_inline.h"
 
+// Forward declarations
+namespace igl
+{
+  class ReTwBar;
+};
+namespace tinyxml2
+{
+  class XMLDocument;
+};
+
 namespace igl
 {  
   IGL_INLINE bool save_ReAntTweakBar(igl::ReTwBar* bar, const char* file_name);

@@ -269,6 +269,26 @@ make
       </code></pre>
       </p>
       <p><span class=todo>This should be encapsulated in a single utility header</span></p>
+      <h3>Including headers to other igl functions</h3>
+      <p>
+      Source files in the main igl directory should include other libigl headers using the name of the file in quotation marks:
+      </p>
+      <pre><code>
+#include "other_function.h"
+      </code></pre>
+
+      <p>
+      Source files in your project and in libigl <i>extras</i> should include libigl headers using the igl directory and name file in angle brackets:
+      </p>
+      <pre><code>
+#include &lt;igl/some_function.h&gt;
+      </code></pre>
+      <p>
+      libigl headers of extras can then be included using:
+      </p>
+      <pre><code>
+#include &lt;igl/extra/some_extra_function.h&gt;
+      </code></pre>
   </div>
   </body>
 </html>
