@@ -23,12 +23,15 @@ INC+=-I../../../include/
 EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
 INC+=$(EIGEN3_INC)
 
+#AntTweakbar dependency
+ANTTWEAKBAR_INC=-I../../../external/AntTweakBar/include
+
 # xml dependency
 # TODO: linux, 32 bit etc
 TINYXML2=../../../external/tinyxml2
 TINYXML2_INC=-I$(TINYXML2)
 #TINYXML2_LIB=-L$(TINYXML2) -ltinyxml2
-INC+=$(TINYXML2_INC)
+INC+=$(TINYXML2_INC) $(ANTTWEAKBAR_INC)
 
 CFLAGS+=-std=c++11
 
