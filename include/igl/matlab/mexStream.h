@@ -1,3 +1,5 @@
+#ifndef IGL_MEX_STREAM_H
+#define IGL_MEX_STREAM_H
 #include <iostream>
 namespace igl
 {
@@ -21,3 +23,7 @@ namespace igl
       virtual int overflow(int c = EOF);
   }; 
 }
+#ifdef IGL_HEADER_ONLY
+#  include "mexStream.cpp"
+#endif
+#endif
