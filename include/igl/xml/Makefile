@@ -30,6 +30,10 @@ TINYXML2_INC=-I$(TINYXML2)
 #TINYXML2_LIB=-L$(TINYXML2) -ltinyxml2
 INC+=$(TINYXML2_INC)
 
+# AntTweakBar dependency
+ANTTWEAKBAR_INC=-I../../../external/AntTweakBar/include
+INC+=$(ANTTWEAKBAR_INC)
+
 CFLAGS+=-std=c++11
 
 obj: 

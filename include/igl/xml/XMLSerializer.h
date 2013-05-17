@@ -126,77 +126,135 @@ namespace igl
     void GetAttribute(const char* src, float& dest);
     void GetAttribute(const char* src, double& dest);
 
-    // initialize objects   
+    // Initialization
+
+    // Basic data types
+    void Init(char& val);
+    void Init(char*& val);
+    void Init(std::string& val);
+    void Init(bool& val);
+    void Init(unsigned int& val);
+    void Init(int& val);
+    void Init(float& val);
+    void Init(double& val);
+
+    // XMLSerializable*
     template<typename T>
     void Init(T& obj);
     template<typename T>
     void Init(T*& obj);
+
+    // STL containers
     template<typename T, int S>
     void Init(std::array<T,S>& obj);
     template<typename T0, typename T1>
     void Init(std::pair<T0,T1>& obj);
     template<typename T>
     void Init(std::vector<T>& obj);
+    
+    // Eigen types
     template<typename T, int R, int C>
     void Init(Eigen::Matrix<T,R,C>& obj);
     template<typename T>
     void Init(Eigen::SparseMatrix<T>& obj);
 
-    // base types and XMLSerializable objects
+    // Serialization
+
+    // Basic data types
+    bool Serialize(char& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    bool Serialize(char*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    bool Serialize(std::string& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    bool Serialize(std::string*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    bool Serialize(bool& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    bool Serialize(bool*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    bool Serialize(unsigned int& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    bool Serialize(unsigned int*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    bool Serialize(int& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    bool Serialize(int*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    bool Serialize(float& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    bool Serialize(float*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    bool Serialize(double& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    bool Serialize(double*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    
+    // XMLSerializable*
     template<typename T>
     bool Serialize(T& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
     template<typename T>
     bool Serialize(T*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+
+    // STL containers
+    template<typename T, size_t S>
+    bool Serialize(std::array<T,S>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    template<typename T, size_t S>
+    bool Serialize(std::array<T,S>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+   
+    template<typename T0, typename T1>
+    bool Serialize(std::pair<T0,T1>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    template<typename T0, typename T1>
+    bool Serialize(std::pair<T0,T1>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    
+    template<typename T>
+    bool Serialize(std::vector<T>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    template<typename T>
+    bool Serialize(std::vector<T>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    
+    // Eigen types
+    template<typename T, int R, int C>
+    bool Serialize(Eigen::Matrix<T,R,C>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    template<typename T, int R, int C>
+    bool Serialize(Eigen::Matrix<T,R,C>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    
+    template<typename T>
+    bool Serialize(Eigen::SparseMatrix<T>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    template<typename T>
+    bool Serialize(Eigen::SparseMatrix<T>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+
+    // Serialization
+
+    // Basic data types
+    bool Deserialize(char& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+    bool Deserialize(char*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+    bool Deserialize(std::string& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+    bool Deserialize(std::string*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+    bool Deserialize(bool& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+    bool Deserialize(bool*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+    bool Deserialize(unsigned int& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+    bool Deserialize(unsigned int*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+    bool Deserialize(int& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+    bool Deserialize(int*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+    bool Deserialize(float& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+    bool Deserialize(float*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+    bool Deserialize(double& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+    bool Deserialize(double*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+
+    // XMLSerializable*
     template<typename T>
     bool Deserialize(T& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
     template<typename T>
     bool Deserialize(T*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
 
-    // std::array<T>
-    template<typename T, int S>
-    bool Serialize(std::array<T,S>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
-    template<typename T, int S>
-    bool Serialize(std::array<T,S>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
-    template<typename T, int S>
+    // STL containers
+    template<typename T, size_t S>
     bool Deserialize(std::array<T,S>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
-    template<typename T, int S>
+    template<typename T, size_t S>
     bool Deserialize(std::array<T,S>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
-
-    // std::pair<T0,T1>
-    template<typename T0, typename T1>
-    bool Serialize(std::pair<T0,T1>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
-    template<typename T0, typename T1>
-    bool Serialize(std::pair<T0,T1>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    
     template<typename T0, typename T1>
     bool Deserialize(std::pair<T0,T1>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
     template<typename T0, typename T1>
     bool Deserialize(std::pair<T0,T1>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
 
-    // std::vector<T>
-    template<typename T>
-    bool Serialize(std::vector<T>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
-    template<typename T>
-    bool Serialize(std::vector<T>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
     template<typename T>
     bool Deserialize(std::vector<T>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
     template<typename T>
     bool Deserialize(std::vector<T>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
-   
-    // Eigen dense matrix
-    template<typename T, int R, int C>
-    bool Serialize(Eigen::Matrix<T,R,C>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
-    template<typename T, int R, int C>
-    bool Serialize(Eigen::Matrix<T,R,C>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    
+    // Eigen types
     template<typename T, int R, int C>
     bool Deserialize(Eigen::Matrix<T,R,C>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
     template<typename T, int R, int C>
     bool Deserialize(Eigen::Matrix<T,R,C>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
-
-    // Eigen sparse matrix
-    template<typename T>
-    bool Serialize(Eigen::SparseMatrix<T>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
-    template<typename T>
-    bool Serialize(Eigen::SparseMatrix<T>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    
     template<typename T>
     bool Deserialize(Eigen::SparseMatrix<T>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
     template<typename T>
@@ -324,13 +382,34 @@ namespace igl
      * Also pointers to those objects can be used (for instance like vector<vector<pair<int,float>*>*>).
      * char* is also possible as base type and represents a array of chars, but be carefull that the pointer is not just a copy but a valid instance in the current programm scope.
      */
+
+    // Basic types
+    bool Add(char& obj, const std::string& name);
+    bool Add(char*& obj, const std::string& name);
+    bool Add(std::string& obj, const std::string& name);
+    bool Add(bool& obj, const std::string& name);
+    bool Add(unsigned int& obj, const std::string& name);
+    bool Add(int& obj, const std::string& name);
+    bool Add(float& obj, const std::string& name);
+    bool Add(double& obj, const std::string& name);
+
+    bool Add(char& obj, const std::string& name, char defaultValue);
+    bool Add(char*& obj, const std::string& name, char* defaultValue);
+    bool Add(std::string& obj, const std::string& name, std::string defaultValue);
+    bool Add(bool& obj, const std::string& name, bool defaultValue);
+    bool Add(unsigned int& obj, const std::string& name, unsigned int defaultValue);
+    bool Add(int& obj, const std::string& name, int defaultValue);
+    bool Add(float& obj, const std::string& name, float defaultValue);
+    bool Add(double& obj, const std::string& name, double defaultValue);
+
+    // XMLSerializable*
     template<typename T>
     bool Add(T& object, const std::string& name);
     template<typename T>
     bool Add(T& object, const std::string& name, T defaultValue);
 
-    // stl containers
-    template<typename T, int S>
+    // STL containers
+    template<typename T, size_t S>
     bool Add(std::array<T,S>& obj, const std::string& name);
     template<typename T0, typename T1>
     bool Add(std::pair<T0,T1>& obj, const std::string& name);
@@ -338,7 +417,7 @@ namespace igl
     bool Add(std::vector<T>& obj, const std::string& name);
     template<typename T, int R, int C>
     
-    // eigen matrices
+    // Eigen types
     bool Add(Eigen::Matrix<T,R,C>& obj, const std::string& name);
     template<typename T>
     bool Add(Eigen::SparseMatrix<T>& obj, const std::string& name);

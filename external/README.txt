@@ -10,7 +10,19 @@ and for building with Mesa (AntTweakBar/src/Makefile.mesa.igl)
 
 
 = TinyXML2 =
-Todo: Christian please describe the patch here
+double precision bug fixes:
+
+tinyxml2.h line 1286 add function:
+
+void SetAttribute( const char* name, float value ) {
+	XMLAttribute* a = FindOrCreateAttribute( name );
+	a->SetAttribute( value );
+}
+
+tinyxml2.cpp line 434 replace with:
+
+TIXML_SNPRINTF( buffer, bufferSize, "%.15e", v );
+
 
 = Medit =
 Heavily modified version with many exposed parameters and new features (e.g.

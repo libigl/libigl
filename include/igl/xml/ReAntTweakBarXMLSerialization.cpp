@@ -78,7 +78,7 @@ IGL_INLINE bool igl::save_ReAntTweakBar(igl::ReTwBar* bar, tinyxml2::XMLDocument
 	s->SaveToXMLDoc(name,doc);
 
 	// delete pointer buffers
-	for(int i=0;i<buffer.size();i++)
+	for(unsigned int i=0;i<buffer.size();i++)
 	{
 		delete[] *buffer[i];
 		delete buffer[i];
