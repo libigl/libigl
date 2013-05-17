@@ -24,9 +24,9 @@ namespace igl
     Timer():
       stopped(0),
 #ifdef WIN32
-      frequency(0),
-      startCount(0),
-      endCount(0)
+      frequency(),
+      startCount(),
+      endCount()
 #elif __APPLE__
       startCount(0),
       endCount(0)

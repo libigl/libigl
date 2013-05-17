@@ -45,7 +45,7 @@ void igl::EncodeXMLElementName(std::string& name)
     name.replace(0,3,"");
 
   std::stringstream stream;
-  for(int i=0;i<numForbiddenChars;i++)
+  for(unsigned int i=0;i<numForbiddenChars;i++)
   {
     std::stringstream searchs;
     searchs << ":" << (int)forbiddenChars[i];
@@ -63,7 +63,7 @@ void igl::XMLSerialization::Init()
 
 bool igl::XMLSerialization::Serialize(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element)
 {
-  bool serialized;
+  bool serialized = false;
   
   if(BeforeSerialization())
   {
@@ -76,7 +76,7 @@ bool igl::XMLSerialization::Serialize(tinyxml2::XMLDocument* doc, tinyxml2::XMLE
 
 bool igl::XMLSerialization::Deserialize(tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element)
 {
-  bool serialized;
+  bool serialized = false;
   
   if(BeforeDeserialization())
   {
@@ -216,6 +216,46 @@ void igl::XMLSerializableObject::GetAttribute(const char* src, double& dest)
 }
 
 // specify default value of types
+void igl::XMLSerializableObject::Init(char& val)
+{
+  val = '0';
+}
+
+void igl::XMLSerializableObject::Init(char*& val)
+{
+  val = NULL;
+}
+
+void igl::XMLSerializableObject::Init(std::string& val)
+{
+  val = "";
+}
+
+void igl::XMLSerializableObject::Init(bool& val)
+{
+  val = false;
+}
+
+void igl::XMLSerializableObject::Init(unsigned int& val)
+{
+  val = 0;
+}
+
+void igl::XMLSerializableObject::Init(int& val)
+{
+  val = 0;
+}
+
+void igl::XMLSerializableObject::Init(float& val)
+{
+  val = 0.0f;
+}
+
+void igl::XMLSerializableObject::Init(double& val)
+{
+  val = 0.000000000000000;
+}
+
 template<typename T>
 void igl::XMLSerializableObject::Init(T*& obj)
 {
@@ -223,58 +263,10 @@ void igl::XMLSerializableObject::Init(T*& obj)
   object->Init();  
 }
 
-template<>
-void igl::XMLSerializableObject::Init(char& val)
-{
-  val = '0';
-}
-
-template<>
-void igl::XMLSerializableObject::Init(char*& val)
-{
-  val = NULL;
-}
-
-template<>
-void igl::XMLSerializableObject::Init(std::string& val)
-{
-  val = "";
-}
-
-template<>
-void igl::XMLSerializableObject::Init(bool& val)
-{
-  val = false;
-}
-
-template<>
-void igl::XMLSerializableObject::Init(unsigned int& val)
-{
-  val = 0;
-}
-
-template<>
-void igl::XMLSerializableObject::Init(int& val)
-{
-  val = 0;
-}
-
-template<>
-void igl::XMLSerializableObject::Init(float& val)
-{
-  val = 0.0f;
-}
-
-template<>
-void igl::XMLSerializableObject::Init(double& val)
-{
-  val = 0.000000000000000;
-}
-
 template<typename T, int S>
 void igl::XMLSerializableObject::Init(std::array<T,S>& obj)
 {
-  for(int i=0;i<obj.size();i++)
+  for(unsigned int i=0;i<obj.size();i++)
     Init(obj[i]);  
 }
 
@@ -303,6 +295,77 @@ void  igl::XMLSerializableObject::Init(Eigen::SparseMatrix<T>& obj)
   obj.setZero();
 }
 
+bool igl::XMLSerializableObject::Serialize(char& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+{
+  return setElementAttribute(obj,doc,element,name);
+}
+
+// overload function for char*, it interpreted as char array and can be used to handle strings
+bool igl::XMLSerializableObject::Serialize(char*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+{
+  return setElementAttribute(obj,doc,element,name);
+}
+
+bool igl::XMLSerializableObject::Serialize(std::string& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+{
+  return setElementAttribute(obj,doc,element,name);
+}
+
+bool igl::XMLSerializableObject::Serialize(std::string*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+{
+  return Serialize(*obj,doc,element,name);
+}
+
+bool igl::XMLSerializableObject::Serialize(bool& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+{
+  return setElementAttribute(obj,doc,element,name);
+}
+
+bool igl::XMLSerializableObject::Serialize(bool*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+{
+  return Serialize(*obj,doc,element,name);
+}
+
+bool igl::XMLSerializableObject::Serialize(unsigned int& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+{
+  return setElementAttribute(obj,doc,element,name);
+}
+
+bool igl::XMLSerializableObject::Serialize(unsigned int*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+{
+  return Serialize(*obj,doc,element,name);
+}
+
+bool igl::XMLSerializableObject::Serialize(int& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+{
+  return setElementAttribute(obj,doc,element,name);
+}
+
+bool igl::XMLSerializableObject::Serialize(int*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+{
+  return Serialize(*obj,doc,element,name);
+}
+
+bool igl::XMLSerializableObject::Serialize(float& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+{
+  return setElementAttribute(obj,doc,element,name);
+}
+
+bool igl::XMLSerializableObject::Serialize(float*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+{
+  return Serialize(*obj,doc,element,name);
+}
+
+bool igl::XMLSerializableObject::Serialize(double& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+{
+  return setElementAttribute(obj,doc,element,name);
+}
+
+bool igl::XMLSerializableObject::Serialize(double*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+{
+  return Serialize(*obj,doc,element,name);
+}
+
 template<typename T>
 bool igl::XMLSerializableObject::Serialize(T& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
 { 
@@ -321,89 +384,75 @@ bool igl::XMLSerializableObject::Serialize(T*& obj, tinyxml2::XMLDocument* doc, 
   return object->Serialize(doc,child);
 }
 
-template<>
-bool igl::XMLSerializableObject::Serialize(char& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+bool igl::XMLSerializableObject::Deserialize(char& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  return setElementAttribute(obj,doc,element,name);
+  return getElementAttribute(obj,doc,element,name);      
 }
 
 // template specialisation for char*, it interpreted as char array and can be used to handle strings
-template<>
-bool igl::XMLSerializableObject::Serialize(char*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+bool igl::XMLSerializableObject::Deserialize(char*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  return setElementAttribute(obj,doc,element,name);
+  return getElementAttribute(obj,doc,element,name);    
 }
 
-template<>
-bool igl::XMLSerializableObject::Serialize(std::string& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+bool igl::XMLSerializableObject::Deserialize(std::string& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  return setElementAttribute(obj,doc,element,name);
+  return getElementAttribute(obj,doc,element,name);
 }
 
-template<>
-bool igl::XMLSerializableObject::Serialize(std::string*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+bool igl::XMLSerializableObject::Deserialize(std::string*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  return Serialize(*obj,doc,element,name);
+  return Deserialize(*obj,doc,element,name);
 }
 
-template<>
-bool igl::XMLSerializableObject::Serialize(bool& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+bool igl::XMLSerializableObject::Deserialize(bool& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  return setElementAttribute(obj,doc,element,name);
+  return getElementAttribute(obj,doc,element,name);
 }
 
-template<>
-bool igl::XMLSerializableObject::Serialize(bool*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+bool igl::XMLSerializableObject::Deserialize(bool*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  return Serialize(*obj,doc,element,name);
+  return Deserialize(*obj,doc,element,name);
 }
 
-template<>
-bool igl::XMLSerializableObject::Serialize(unsigned int& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+bool igl::XMLSerializableObject::Deserialize(unsigned int& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  return setElementAttribute(obj,doc,element,name);
+  return getElementAttribute(obj,doc,element,name);
 }
 
-template<>
-bool igl::XMLSerializableObject::Serialize(unsigned int*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+bool igl::XMLSerializableObject::Deserialize(unsigned int*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  return Serialize(*obj,doc,element,name);
+  return Deserialize(*obj,doc,element,name);
 }
 
-template<>
-bool igl::XMLSerializableObject::Serialize(int& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+bool igl::XMLSerializableObject::Deserialize(int& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  return setElementAttribute(obj,doc,element,name);
+  return getElementAttribute(obj,doc,element,name);
 }
 
-template<>
-bool igl::XMLSerializableObject::Serialize(int*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+bool igl::XMLSerializableObject::Deserialize(int*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  return Serialize(*obj,doc,element,name);
+  return Deserialize(*obj,doc,element,name);
 }
 
-template<>
-bool igl::XMLSerializableObject::Serialize(float& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+bool igl::XMLSerializableObject::Deserialize(float& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  return setElementAttribute(obj,doc,element,name);
+  return getElementAttribute(obj,doc,element,name);
 }
 
-template<>
-bool igl::XMLSerializableObject::Serialize(float*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+bool igl::XMLSerializableObject::Deserialize(float*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  return Serialize(*obj,doc,element,name);
+  return Deserialize(*obj,doc,element,name);
 }
 
-template<>
-bool igl::XMLSerializableObject::Serialize(double& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+bool igl::XMLSerializableObject::Deserialize(double& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  return setElementAttribute(obj,doc,element,name);
+  return getElementAttribute(obj,doc,element,name);
 }
 
-template<>
-bool igl::XMLSerializableObject::Serialize(double*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+bool igl::XMLSerializableObject::Deserialize(double*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  return Serialize(*obj,doc,element,name);
+  return Deserialize(*obj,doc,element,name);
 }
 
 template<typename T>
@@ -431,103 +480,20 @@ bool igl::XMLSerializableObject::Deserialize(T*& obj, tinyxml2::XMLDocument* doc
     obj->Init();
     return false;
   }
+
+  return true;
 }
 
-template<>
-bool igl::XMLSerializableObject::Deserialize(char& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
-{
-  return getElementAttribute(obj,doc,element,name);      
-}
-
-// template specialisation for char*, it interpreted as char array and can be used to handle strings
-template<>
-bool igl::XMLSerializableObject::Deserialize(char*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
-{
-  return getElementAttribute(obj,doc,element,name);    
-}
-
-template<>
-bool igl::XMLSerializableObject::Deserialize(std::string& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
-{
-  return getElementAttribute(obj,doc,element,name);
-}
-
-template<>
-bool igl::XMLSerializableObject::Deserialize(std::string*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
-{
-  return Deserialize(*obj,doc,element,name);
-}
-
-template<>
-bool igl::XMLSerializableObject::Deserialize(bool& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
-{
-  return getElementAttribute(obj,doc,element,name);
-}
-
-template<>
-bool igl::XMLSerializableObject::Deserialize(bool*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
-{
-  return Deserialize(*obj,doc,element,name);
-}
-
-template<>
-bool igl::XMLSerializableObject::Deserialize(unsigned int& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
-{
-  return getElementAttribute(obj,doc,element,name);
-}
-
-template<>
-bool igl::XMLSerializableObject::Deserialize(unsigned int*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
-{
-  return Deserialize(*obj,doc,element,name);
-}
-
-template<>
-bool igl::XMLSerializableObject::Deserialize(int& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
-{
-  return getElementAttribute(obj,doc,element,name);
-}
-
-template<>
-bool igl::XMLSerializableObject::Deserialize(int*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
-{
-  return Deserialize(*obj,doc,element,name);
-}
-
-template<>
-bool igl::XMLSerializableObject::Deserialize(float& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
-{
-  return getElementAttribute(obj,doc,element,name);
-}
-
-template<>
-bool igl::XMLSerializableObject::Deserialize(float*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
-{
-  return Deserialize(*obj,doc,element,name);
-}
-
-template<>
-bool igl::XMLSerializableObject::Deserialize(double& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
-{
-  return getElementAttribute(obj,doc,element,name);
-}
-
-template<>
-bool igl::XMLSerializableObject::Deserialize(double*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
-{
-  return Deserialize(*obj,doc,element,name);
-}
-
-template<typename T, int S>
+template<typename T, size_t S>
 bool igl::XMLSerializableObject::Serialize(std::array<T,S>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
 {
   tinyxml2::XMLElement* ar = doc->NewElement(name.c_str());
   element->InsertEndChild(ar);
   
-  ar->SetAttribute("size",obj.size());
+  ar->SetAttribute("size",(unsigned int)obj.size());
     
   std::stringstream num;
-  for(int i=0;i<obj.size();i++)
+  for(unsigned int i=0;i<obj.size();i++)
   {
     num.str("");
     num << "value" << i;
@@ -537,13 +503,13 @@ bool igl::XMLSerializableObject::Serialize(std::array<T,S>& obj, tinyxml2::XMLDo
   return true;
 }
 
-template<typename T, int S>
+template<typename T, size_t S>
 bool igl::XMLSerializableObject::Serialize(std::array<T,S>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
 {
   return Serialize(*obj,doc,element,name);
 }
 
-template<typename T, int S>
+template<typename T, size_t S>
 bool igl::XMLSerializableObject::Deserialize(std::array<T,S>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
   bool res = true;
@@ -552,11 +518,11 @@ bool igl::XMLSerializableObject::Deserialize(std::array<T,S>& obj, tinyxml2::XML
   if(child != NULL)
   {  
     int size = child->UnsignedAttribute("size");
-    size = std::min(S,size);
+    size = S < size ? S : size;
 
     std::stringstream num;
     const tinyxml2::XMLAttribute* attribute = NULL;
-    for(int i=0;i<size;i++)
+    for(unsigned int i=0;i<size;i++)
     {
       num.str("");
       num << "value" << i;
@@ -570,7 +536,7 @@ bool igl::XMLSerializableObject::Deserialize(std::array<T,S>& obj, tinyxml2::XML
   return res;
 }
 
-template<typename T, int S>
+template<typename T, size_t S>
 bool igl::XMLSerializableObject::Deserialize(std::array<T,S>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
   obj = new std::array<T,S>();
@@ -631,10 +597,10 @@ bool igl::XMLSerializableObject::Serialize(std::vector<T>& obj, tinyxml2::XMLDoc
   tinyxml2::XMLElement* vector = doc->NewElement(name.c_str());
   element->InsertEndChild(vector);
   
-  vector->SetAttribute("size",obj.size());
+  vector->SetAttribute("size",(unsigned int)obj.size());
     
   std::stringstream num;
-  for(int i=0;i<obj.size();i++)
+  for(unsigned int i=0;i<obj.size();i++)
   {
     num.str("");
     num << "value" << i;
@@ -653,12 +619,11 @@ bool igl::XMLSerializableObject::Deserialize(std::vector<T>& obj, tinyxml2::XMLD
   const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
   if(child != NULL)
   {  
-    int size = child->UnsignedAttribute("size");
+    unsigned int size = child->UnsignedAttribute("size");
     obj.resize(size);
 
     std::stringstream num;
-    const tinyxml2::XMLAttribute* attribute = NULL;
-    for(int i=0;i<size;i++)
+    for(unsigned int i=0;i<size;i++)
     {
       num.str("");
       num << "value" << i;
@@ -681,7 +646,7 @@ bool igl::XMLSerializableObject::Serialize(std::vector<T>*& obj, tinyxml2::XMLDo
 template<typename T>
 bool igl::XMLSerializableObject::Deserialize(std::vector<T>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
 {
-  obj = new vector<T>();
+  obj = new std::vector<T>();
   return Deserialize(*obj,doc,element,name);
 }
 
@@ -691,17 +656,17 @@ bool igl::XMLSerializableObject::Serialize(Eigen::Matrix<T,R,C>& obj, tinyxml2::
   tinyxml2::XMLElement* matrix = doc->NewElement(name.c_str());
   element->InsertEndChild(matrix);
   
-  const int rows = obj.rows();
-  const int cols = obj.cols();
+  const unsigned int rows = obj.rows();
+  const unsigned int cols = obj.cols();
 
   matrix->SetAttribute("rows",rows);
   matrix->SetAttribute("cols",cols);
 
   std::stringstream ms;
   ms << "\n";
-  for(int r=0;r<rows;r++)
+  for(unsigned int r=0;r<rows;r++)
   {
-    for(int c=0;c<cols;c++)
+    for(unsigned int c=0;c<cols;c++)
     {
       ms << obj(r,c) << ",";
     }
@@ -729,8 +694,8 @@ bool igl::XMLSerializableObject::Deserialize(Eigen::Matrix<T,R,C>& obj, tinyxml2
   const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
   if(child != NULL)
   {
-    const int rows = child->UnsignedAttribute("rows");
-    const int cols = child->UnsignedAttribute("cols");
+    const unsigned int rows = child->UnsignedAttribute("rows");
+    const unsigned int cols = child->UnsignedAttribute("cols");
     
     obj.resize(rows,cols);
     
@@ -757,7 +722,7 @@ bool igl::XMLSerializableObject::Deserialize(Eigen::Matrix<T,R,C>& obj, tinyxml2
       // get current line
       std::stringstream liness(line);
 
-      for(int c=0;c<cols-1;c++)
+      for(unsigned int c=0;c<cols-1;c++)
       {
         // split line
         getline(liness, val, ',');
@@ -795,8 +760,8 @@ bool igl::XMLSerializableObject::Serialize(Eigen::SparseMatrix<T>& obj, tinyxml2
   tinyxml2::XMLElement* matrix = doc->NewElement(name.c_str());
   element->InsertEndChild(matrix);
 
-  const int rows = obj.rows();
-  const int cols = obj.cols();
+  const unsigned int rows = obj.rows();
+  const unsigned int cols = obj.cols();
 
   matrix->SetAttribute("rows",rows);
   matrix->SetAttribute("cols",cols);
@@ -805,7 +770,7 @@ bool igl::XMLSerializableObject::Serialize(Eigen::SparseMatrix<T>& obj, tinyxml2
   ms << "\n";
   for (int k=0;k<obj.outerSize();++k)
   {
-    for (Eigen::SparseMatrix<T>::InnerIterator it(obj,k);it;++it)
+    for (typename Eigen::SparseMatrix<T>::InnerIterator it(obj,k);it;++it)
     {
       ms << it.row() << "," << it.col() << "," << it.value() << "\n";
     }
@@ -832,8 +797,8 @@ bool igl::XMLSerializableObject::Deserialize(Eigen::SparseMatrix<T>& obj, tinyxm
   const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
   if(child != NULL)
   {
-    const int rows = child->UnsignedAttribute("rows");
-    const int cols = child->UnsignedAttribute("cols");
+    const unsigned int rows = child->UnsignedAttribute("rows");
+    const unsigned int cols = child->UnsignedAttribute("cols");
     
     obj.resize(rows,cols);
     obj.setZero();
@@ -960,13 +925,13 @@ bool igl::XMLSerializableInstance<T>::Deserialize(tinyxml2::XMLDocument* doc, co
 }
 
 template<typename T>
-static bool igl::XMLSerializer::SaveObject(T& object, const char* filename)
+bool igl::XMLSerializer::SaveObject(T& object, const char* filename)
 {
   return SaveObject(object,"Object","Serialization",filename,true);
 }
 
 template<typename T>
-static bool igl::XMLSerializer::SaveObject(T& object, const std::string& objectName, const std::string& groupName, const char* filename, bool overwrite)
+bool igl::XMLSerializer::SaveObject(T& object, const std::string& objectName, const std::string& groupName, const char* filename, bool overwrite)
 {
   bool result = true;
   XMLSerializer* serializer = new XMLSerializer(groupName);
@@ -977,13 +942,13 @@ static bool igl::XMLSerializer::SaveObject(T& object, const std::string& objectN
 }
 
 template<typename T>
-static bool igl::XMLSerializer::LoadObject(T& object, const char* filename)
+bool igl::XMLSerializer::LoadObject(T& object, const char* filename)
 {
   return LoadObject(object,"Object","Serialization",filename);
 }
 
 template<typename T>
-static bool igl::XMLSerializer::LoadObject(T& object, const std::string& objectName, const std::string& groupName, const char* filename)
+bool igl::XMLSerializer::LoadObject(T& object, const std::string& objectName, const std::string& groupName, const char* filename)
 {
   bool result = true;
   XMLSerializer* serializer = new XMLSerializer(groupName);
@@ -1054,7 +1019,7 @@ bool igl::XMLSerializer::SaveToXMLDoc(tinyxml2::XMLDocument* doc)
     }
 
     std::vector<XMLSerializable*>* group = it->second->Objects;
-    for(int i=0;i<group->size();i++)
+    for(unsigned  int i=0;i<group->size();i++)
     {
       if((*group)[i]->Serialize(doc,element) == false)
         return false;
@@ -1114,7 +1079,7 @@ bool igl::XMLSerializer::SaveToXMLDoc(const std::string& groupName, tinyxml2::XM
   }
     
   std::vector<XMLSerializable*>* groups = it->second->Objects;
-  for(int i=0;i<groups->size();i++)
+  for(unsigned int i=0;i<groups->size();i++)
   {
     if((*groups)[i]->Serialize(doc,element) == false)
       return false;
@@ -1169,7 +1134,7 @@ bool igl::XMLSerializer::SaveToXMLDoc(const std::string& objectName, const std::
   // Serialize
   std::vector<XMLSerializable*>* groups = it->second->Objects;
   bool found = false;
-  for(int i=0;i<groups->size();i++)
+  for(unsigned int i=0;i<groups->size();i++)
   {
     if((*groups)[i]->Name == on)
     {
@@ -1208,7 +1173,7 @@ bool igl::XMLSerializer::SaveGroupToXMLElement(const std::string& groupName, tin
   element->InsertEndChild(group);
     
   std::vector<XMLSerializable*>* groups = it->second->Objects;
-  for(int i=0;i<groups->size();i++)
+  for(unsigned int i=0;i<groups->size();i++)
   {
     if((*groups)[i]->Serialize(doc,group) == false)
       return false;
@@ -1242,7 +1207,7 @@ bool igl::XMLSerializer::LoadFromXMLDoc(tinyxml2::XMLDocument* doc)
       
     // Deserialize
     std::vector<XMLSerializable*>* group = it->second->Objects;
-    for(int i=0;i<group->size();i++)
+    for(unsigned int i=0;i<group->size();i++)
     {
       if(element == NULL || (*group)[i]->Deserialize(doc,element) == false)
         (*group)[i]->Init(); // Load default value;
@@ -1281,7 +1246,7 @@ bool igl::XMLSerializer::LoadFromXMLDoc(const std::string& groupName, tinyxml2::
 
   // Deserialize
   std::vector<XMLSerializable*>* groups = it->second->Objects;
-  for(int i=0;i<groups->size();i++)
+  for(unsigned int i=0;i<groups->size();i++)
   {
     if(element == NULL || (*groups)[i]->Deserialize(doc,element) == false)
       (*groups)[i]->Init(); // Load default value;
@@ -1323,7 +1288,7 @@ bool igl::XMLSerializer::LoadFromXMLDoc(const std::string& objectName, const std
   // Deserialize
   std::vector<XMLSerializable*>* groups = it->second->Objects;
   bool found = false;
-  for(int i=0;i<groups->size();i++)
+  for(unsigned int i=0;i<groups->size();i++)
   {
     if((*groups)[i]->Name == on)
     {
@@ -1351,7 +1316,7 @@ bool igl::XMLSerializer::LoadGroupFromXMLElement(const std::string& groupName, t
 
   // Deserialize
   std::vector<XMLSerializable*>* groups = it->second->Objects;
-  for(int i=0;i<groups->size();i++)
+  for(unsigned int i=0;i<groups->size();i++)
   {
     if(element == NULL || (*groups)[i]->Deserialize(doc,group) == false)
       (*groups)[i]->Init(); // Load default value;
@@ -1379,55 +1344,47 @@ bool igl::XMLSerializer::Add(T& obj, const std::string& name)
   return addObjectToGroup(object,currentGroup);  
 }
 
-template<>
 bool igl::XMLSerializer::Add(char& obj, const std::string& name)
 {
   return add(obj,name);
 }
 
-template<>
 bool igl::XMLSerializer::Add(char*& obj, const std::string& name)
 {
   return add(obj,name);
 }
 
-template<>
 bool igl::XMLSerializer::Add(std::string& obj, const std::string& name)
 {
   return add(obj,name);
 }
 
-template<>
 bool igl::XMLSerializer::Add(bool& obj, const std::string& name)
 {
   return add(obj,name);
 }
 
-template<>
 bool igl::XMLSerializer::Add(unsigned int& obj, const std::string& name)
 {
   return add(obj,name);
 }
 
-template<>
 bool igl::XMLSerializer::Add(int& obj, const std::string& name)
 {
   return add(obj,name);
 }
 
-template<>
 bool igl::XMLSerializer::Add(float& obj, const std::string& name)
 {
   return add(obj,name);
 }
 
-template<>
 bool igl::XMLSerializer::Add(double& obj, const std::string& name)
 {
   return add(obj,name);
 }
 
-template<typename T, int S>
+template<typename T, size_t S>
 bool igl::XMLSerializer::Add(std::array<T,S>& obj, const std::string& name)
 {
   return add(obj,name);
@@ -1460,52 +1417,44 @@ bool igl::XMLSerializer::Add(Eigen::SparseMatrix<T>& obj, const std::string& nam
 template<typename T>
 bool igl::XMLSerializer::Add(T& object, const std::string& name, T defaultValue)
 {
-    
+  return false;    
 }
 
-template<>
 bool igl::XMLSerializer::Add(char& obj, const std::string& name, char defaultValue)
 {
   return add(obj,name,defaultValue);
 }
 
-template<>
 bool igl::XMLSerializer::Add(char*& obj, const std::string& name, char* defaultValue)
 {
   return add(obj,name,defaultValue);
 }
 
-template<>
 bool igl::XMLSerializer::Add(std::string& obj, const std::string& name, std::string defaultValue)
 {
   return add(obj,name,defaultValue);
 }
 
-template<>
 bool igl::XMLSerializer::Add(bool& obj, const std::string& name, bool defaultValue)
 {
   return add(obj,name,defaultValue);
 }
 
-template<>
 bool igl::XMLSerializer::Add(unsigned int& obj, const std::string& name, unsigned int defaultValue)
 {
   return add(obj,name,defaultValue);
 }
 
-template<>
 bool igl::XMLSerializer::Add(int& obj, const std::string& name, int defaultValue)
 {
   return add(obj,name,defaultValue);
 }
 
-template<>
 bool igl::XMLSerializer::Add(float& obj, const std::string& name, float defaultValue)
 {
   return add(obj,name,defaultValue);
 }
 
-template<>
 bool igl::XMLSerializer::Add(double& obj, const std::string& name, double defaultValue)
 {
   return add(obj,name,defaultValue);
@@ -1534,7 +1483,7 @@ bool igl::XMLSerializer::addObjectToGroup(XMLSerializable* obj, const std::strin
 bool igl::XMLSerializer::addObjectToGroup(XMLSerializable* object, std::map<std::string,XMLSerializerGroup*>::iterator it)
 {
   std::vector<XMLSerializable*>* objects = it->second->Objects;
-  for(int i=0;i<objects->size();i++)
+  for(unsigned int i=0;i<objects->size();i++)
   {
     if((*objects)[i]->Name == object->Name)
       return false;
@@ -1599,7 +1548,13 @@ igl::XMLSerializerTest::XMLSerializerTest()
   testVector.push_back(2.0001f);
   testVector.push_back(3.0001f);
 }
+/*
+Use the following lines to run the XMLSerializer tests:
 
+igl::XMLSerializerTest* test = new igl::XMLSerializerTest();
+bool success = test->Test();
+delete test;
+*/
 bool igl::XMLSerializerTest::Test()
 {
   // test vars 0
@@ -1612,7 +1567,7 @@ bool igl::XMLSerializerTest::Test()
   float testFloat0 = 0.00001f;
   double testDouble0 = 0.01000000005;
 
-  std::array<float,2> testArray0 = {0.001f,1.001f};
+  std::array<float,2> testArray0 = {{0.001f,1.001f}};
 
   std::pair<int,bool> testPair0;
   testPair0.first = 5;
@@ -1653,7 +1608,7 @@ bool igl::XMLSerializerTest::Test()
   float testFloat1 = -0.00001f;
   double testDouble1 = -0.000000000001;
 
-  std::array<float,2> testArray1 = {-0.001f,-1.001f};
+  std::array<float,2> testArray1 = {{-0.001f,-1.001f}};
 
   std::pair<int,bool> testPair1;
   testPair1.first = -5;
@@ -1749,31 +1704,31 @@ bool igl::XMLSerializerTest::Test()
   testResult &= testInt0 == testInt1;
   testResult &= testFloat0 == testFloat1;
   testResult &= testDouble0 == testDouble1;
-  for(int i=0;i<testArray0.size();i++)
+  for(unsigned int i=0;i<testArray0.size();i++)
     testResult &= testArray0[i] == testArray1[i];
   testResult &= testPair0.first == testPair1.first;
   testResult &= testPair0.second == testPair1.second;
   testResult &= testVector0.size() == testVector1.size();
-  for(int i=0;i<testVector0.size();i++)
+  for(unsigned int i=0;i<testVector0.size();i++)
     testResult &= testVector0[i] == testVector1[i];
   testResult &= (testDenseMatrix0-testDenseMatrix1).sum() == 0;
   testResult &= (testSparseMatrix0-testSparseMatrix1).norm() == 0;
   testResult &= testObject0->testInt == testObject1->testInt;
   testResult &= testObject0->testVector.size() == testObject1->testVector.size();
-  for(int i=0;i<testObject0->testVector.size();i++)
+  for(unsigned int i=0;i<testObject0->testVector.size();i++)
     testResult &= testObject0->testVector[i] == testObject1->testVector[i];
   testResult &= testComplex10.size() == testComplex11.size();
-  for(int i=0;i<testComplex10.size();i++)
+  for(unsigned int i=0;i<testComplex10.size();i++)
   {
     testResult &= testComplex10[i]->first == testComplex11[0]->first;
     testResult &= testComplex10[i]->second == testComplex11[0]->second;
   }
   testResult &= testComplex20.size() == testComplex21.size();
-  for(int i=0;i<testComplex20.size();i++)
+  for(unsigned int i=0;i<testComplex20.size();i++)
   {
     testResult &= ((XMLSerializerTest*)testComplex20[i])->testInt == ((XMLSerializerTest*)testComplex21[i])->testInt;
     testResult &= ((XMLSerializerTest*)testComplex20[i])->testVector.size() == ((XMLSerializerTest*)testComplex21[i])->testVector.size();
-    for(int j=0;j<((XMLSerializerTest*)testComplex20[i])->testVector.size();j++)
+    for(unsigned int j=0;j<((XMLSerializerTest*)testComplex20[i])->testVector.size();j++)
        testResult &= ((XMLSerializerTest*)testComplex20[i])->testVector[j] == ((XMLSerializerTest*)testComplex21[i])->testVector[j];
   }
 
@@ -1807,11 +1762,11 @@ bool igl::XMLSerializerTest::Test()
   testResult &= s->Load("testComplex2","test1","test.xml");
   
   testResult &= testComplex20.size() == testComplex21.size();
-  for(int i=0;i<testComplex20.size();i++)
+  for(unsigned int i=0;i<testComplex20.size();i++)
   {
     testResult &= ((XMLSerializerTest*)testComplex20[i])->testInt == ((XMLSerializerTest*)testComplex21[i])->testInt;
     testResult &= ((XMLSerializerTest*)testComplex20[i])->testVector.size() == ((XMLSerializerTest*)testComplex21[i])->testVector.size();
-    for(int j=0;j<((XMLSerializerTest*)testComplex20[i])->testVector.size();j++)
+    for(unsigned int j=0;j<((XMLSerializerTest*)testComplex20[i])->testVector.size();j++)
         testResult &= ((XMLSerializerTest*)testComplex20[i])->testVector[j] == ((XMLSerializerTest*)testComplex21[i])->testVector[j];
   }
 
@@ -1841,31 +1796,31 @@ bool igl::XMLSerializerTest::Test()
   testResult &= testInt0 == testInt1;
   testResult &= testFloat0 == testFloat1;
   testResult &= testDouble0 == testDouble1;
-  for(int i=0;i<testArray0.size();i++)
+  for(unsigned int i=0;i<testArray0.size();i++)
     testResult &= testArray0[i] == testArray1[i];
   testResult &= testPair0.first == testPair1.first;
   testResult &= testPair0.second == testPair1.second;
   testResult &= testVector0.size() == testVector1.size();
-  for(int i=0;i<testVector0.size();i++)
+  for(unsigned int i=0;i<testVector0.size();i++)
     testResult &= testVector0[i] == testVector1[i];
   testResult &= (testDenseMatrix0-testDenseMatrix1).sum() == 0;
   testResult &= (testSparseMatrix0-testSparseMatrix1).norm() == 0;
   testResult &= testObject0->testInt == testObject1->testInt;
   testResult &= testObject0->testVector.size() == testObject1->testVector.size();
-  for(int i=0;i<testObject0->testVector.size();i++)
+  for(unsigned int i=0;i<testObject0->testVector.size();i++)
     testResult &= testObject0->testVector[i] == testObject1->testVector[i];
   testResult &= testComplex10.size() == testComplex11.size();
-  for(int i=0;i<testComplex10.size();i++)
+  for(unsigned int i=0;i<testComplex10.size();i++)
   {
     testResult &= testComplex10[i]->first == testComplex11[0]->first;
     testResult &= testComplex10[i]->second == testComplex11[0]->second;
   }
   testResult &= testComplex20.size() == testComplex21.size();
-  for(int i=0;i<testComplex20.size();i++)
+  for(unsigned int i=0;i<testComplex20.size();i++)
   {
     testResult &= ((XMLSerializerTest*)testComplex20[i])->testInt == ((XMLSerializerTest*)testComplex21[i])->testInt;
     testResult &= ((XMLSerializerTest*)testComplex20[i])->testVector.size() == ((XMLSerializerTest*)testComplex21[i])->testVector.size();
-    for(int j=0;j<((XMLSerializerTest*)testComplex20[i])->testVector.size();j++)
+    for(unsigned int j=0;j<((XMLSerializerTest*)testComplex20[i])->testVector.size();j++)
         testResult &= ((XMLSerializerTest*)testComplex20[i])->testVector[j] == ((XMLSerializerTest*)testComplex21[i])->testVector[j];
   }
 

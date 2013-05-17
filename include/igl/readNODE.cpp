@@ -1,6 +1,6 @@
 #include "readNODE.h"
 #include "matrix_to_list.h"
-#include <iostream>
+#include <stdio.h>
 
 template <typename Scalar, typename Index>
 IGL_INLINE bool readNODE(
