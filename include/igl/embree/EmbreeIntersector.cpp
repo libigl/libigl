@@ -1,4 +1,5 @@
 #include "EmbreeIntersector.h"
+#include <igl/EPS.h>
 
 template <typename RowVector3>
 inline embree::Vec3f toVec3f(const RowVector3 &p) { return embree::Vec3f((float)p[0], (float)p[1], (float)p[2]); }
@@ -71,18 +72,43 @@ igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
   const RowVector3& direction, 
   std::vector<embree::Hit > &hits) const
 {
+  using namespace std;
   hits.clear();
-  embree::Hit hit;
   embree::Vec3f o = toVec3f(origin);
   embree::Vec3f d = toVec3f(direction);
+  int last_id0 = -1;
+  double self_hits = 0;
+  const double eps = FLOAT_EPS*2.0;
   while(true)
   {
+    //cout<<
+    //  o[0]<<" "<<o[1]<<" "<<o[2]<<" + t*"<<
+    //  d[0]<<" "<<d[1]<<" "<<d[2]<<" ---> "<<
+    //  endl;
+    embree::Hit hit;
     embree::Ray ray(o,d,embree::zero);
     _intersector->intersect(ray, hit);
     if(hit)
     {
-      hits.push_back(hit);
-      o = o+hit.t*d;
+      // Hit self again
+      if(hit.id0 == last_id0)
+      {
+        // sanity check
+        assert(hit.t<1);
+        // move off origin
+        double t_push = pow(2.0,self_hits)*(hit.t<eps?eps:hit.t);
+        o = o+t_push*d;
+        self_hits++;
+      }else
+      {
+        hits.push_back(hit);
+        //cout<<"  t: "<<hit.t<<endl;
+        o = o+hit.t*d;
+        // reset t_scale
+        self_hits = 0;
+      }
+      last_id0 = hit.id0;
+      //cout<<"  id0: "<<hit.id0<<endl;
     }else
     {
       break;
