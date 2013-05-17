@@ -4,8 +4,7 @@
 #include <cmath>
 
 IGL_INLINE double igl::bounding_box_diagonal(
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F)
+  const Eigen::MatrixXd & V)
 {
   using namespace igl;
   using namespace Eigen;
