@@ -20,9 +20,13 @@ void bone_visible(
   using namespace std;
   using namespace Eigen;
   flag.resize(V.rows());
+  // "double sided lighting"
+  Eigen::PlainObjectBase<DerivedF> FF;
+  FF.resize(F.rows()*2,F.cols());
+  FF << F, F.rowwise().reverse();
   // Initialize intersector
   const EmbreeIntersector<MatrixXd,MatrixXi,Vector3d> ei = 
-        EmbreeIntersector<MatrixXd,MatrixXi,Vector3d>(V,F);
+        EmbreeIntersector<MatrixXd,MatrixXi,Vector3d>(V,FF);
   const double sd_norm = (s-d).norm();
   // loop over mesh vertices
   // TODO: openmp?
@@ -64,9 +68,11 @@ void bone_visible(
     const Vector3d dir = (Vv-projv)*1.0;
     if(ei.intersectSegment(projv,dir, hit))
     {
+      // mod for double sided lighting
+      const int fi = hit.id0 % F.rows();
+
       //if(v == 1228-1)
       //{
-      //  int fi = hit.id0;
       //  Vector3d bc,P;
       //  bc << 1 - hit.u - hit.v, hit.u, hit.v; // barycentric
       //  P = V.row(F(fi,0))*bc(0) + 
@@ -75,10 +81,11 @@ void bone_visible(
       //  cout<<(fi+1)<<endl;
       //  cout<<bc.transpose()<<endl;
       //  cout<<P.transpose()<<endl;
+      //  cout<<hit.t<<endl;
+      //  cout<<(projv + dir*hit.t).transpose()<<endl;
       //  cout<<Vv.transpose()<<endl;
       //}
 
-      const int fi = hit.id0; // face id
       // Assume hit is valid, so not visible
       flag(v) = false;
       // loop around corners of triangle
