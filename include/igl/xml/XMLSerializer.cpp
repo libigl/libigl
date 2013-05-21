@@ -263,12 +263,12 @@ void igl::XMLSerializableObject::Init(T*& obj)
   object->Init();  
 }
 
-template<typename T, int S>
+/*template<typename T, int S>
 void igl::XMLSerializableObject::Init(std::array<T,S>& obj)
 {
   for(unsigned int i=0;i<obj.size();i++)
     Init(obj[i]);  
-}
+}*/
 
 template<typename T0, typename T1>
 void igl::XMLSerializableObject::Init(std::pair<T0,T1>& obj)
@@ -484,7 +484,7 @@ bool igl::XMLSerializableObject::Deserialize(T*& obj, tinyxml2::XMLDocument* doc
   return true;
 }
 
-template<typename T, size_t S>
+/*template<typename T, size_t S>
 bool igl::XMLSerializableObject::Serialize(std::array<T,S>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
 {
   tinyxml2::XMLElement* ar = doc->NewElement(name.c_str());
@@ -541,7 +541,7 @@ bool igl::XMLSerializableObject::Deserialize(std::array<T,S>*& obj, tinyxml2::XM
 {
   obj = new std::array<T,S>();
   return Deserialize(*obj,doc,element,name);
-}
+}*/
 
 template<typename T0, typename T1>
 bool igl::XMLSerializableObject::Serialize(std::pair<T0,T1>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
@@ -817,7 +817,7 @@ bool igl::XMLSerializableObject::Deserialize(Eigen::SparseMatrix<T>& obj, tinyxm
     std::stringstream mats;
     mats.str(matTemp);
 
-    std::vector<Eigen::Triplet<T>> triplets;
+    std::vector<Eigen::Triplet<T> > triplets;
     int r=0;
     std::string val;
 
@@ -1384,11 +1384,11 @@ bool igl::XMLSerializer::Add(double& obj, const std::string& name)
   return add(obj,name);
 }
 
-template<typename T, size_t S>
+/*template<typename T, size_t S>
 bool igl::XMLSerializer::Add(std::array<T,S>& obj, const std::string& name)
 {
   return add(obj,name);
-}
+}*/
 
 template<typename T0, typename T1>
 bool igl::XMLSerializer::Add(std::pair<T0,T1>& obj, const std::string& name)
@@ -1567,7 +1567,7 @@ bool igl::XMLSerializerTest::Test()
   float testFloat0 = 0.00001f;
   double testDouble0 = 0.01000000005;
 
-  std::array<float,2> testArray0 = {{0.001f,1.001f}};
+  //std::array<float,2> testArray0 = {{0.001f,1.001f}};
 
   std::pair<int,bool> testPair0;
   testPair0.first = 5;
@@ -1582,7 +1582,7 @@ bool igl::XMLSerializerTest::Test()
   testDenseMatrix0 = Eigen::Matrix3i::Identity();
 
   Eigen::SparseMatrix<double> testSparseMatrix0(3,3);
-  std::vector<Eigen::Triplet<double>> triplets;
+  std::vector<Eigen::Triplet<double> > triplets;
   triplets.push_back(Eigen::Triplet<double>(0,0,1));
   triplets.push_back(Eigen::Triplet<double>(1,1,2));
   triplets.push_back(Eigen::Triplet<double>(2,2,3));
@@ -1608,7 +1608,7 @@ bool igl::XMLSerializerTest::Test()
   float testFloat1 = -0.00001f;
   double testDouble1 = -0.000000000001;
 
-  std::array<float,2> testArray1 = {{-0.001f,-1.001f}};
+  //std::array<float,2> testArray1 = {{-0.001f,-1.001f}};
 
   std::pair<int,bool> testPair1;
   testPair1.first = -5;
@@ -1670,7 +1670,7 @@ bool igl::XMLSerializerTest::Test()
   testResult &= igl::XMLSerializer::SaveObject(testInt0,"testInt","test0","test.xml",false);
   testResult &= igl::XMLSerializer::SaveObject(testFloat0,"testFloat","test0","test.xml",false);
   testResult &= igl::XMLSerializer::SaveObject(testDouble0,"testDouble","test0","test.xml",false);
-  testResult &= igl::XMLSerializer::SaveObject(testArray0,"testArray","test1","test.xml",false);
+  //testResult &= igl::XMLSerializer::SaveObject(testArray0,"testArray","test1","test.xml",false);
   testResult &= igl::XMLSerializer::SaveObject(testPair0,"testPair","test1","test.xml",false);
   testResult &= igl::XMLSerializer::SaveObject(testVector0,"testVector","test1","test.xml",false);
   testResult &= igl::XMLSerializer::SaveObject(testDenseMatrix0,"testDense","test1","test.xml",false);
@@ -1687,7 +1687,7 @@ bool igl::XMLSerializerTest::Test()
   testResult &= igl::XMLSerializer::LoadObject(testInt1,"testInt","test0","test.xml");
   testResult &= igl::XMLSerializer::LoadObject(testFloat1,"testFloat","test0","test.xml");
   testResult &= igl::XMLSerializer::LoadObject(testDouble1,"testDouble","test0","test.xml");
-  testResult &= igl::XMLSerializer::LoadObject(testArray1,"testArray","test1","test.xml");
+  //testResult &= igl::XMLSerializer::LoadObject(testArray1,"testArray","test1","test.xml");
   testResult &= igl::XMLSerializer::LoadObject(testPair1,"testPair","test1","test.xml");
   testResult &= igl::XMLSerializer::LoadObject(testVector1,"testVector","test1","test.xml");
   testResult &= igl::XMLSerializer::LoadObject(testDenseMatrix1,"testDense","test1","test.xml");
@@ -1704,8 +1704,8 @@ bool igl::XMLSerializerTest::Test()
   testResult &= testInt0 == testInt1;
   testResult &= testFloat0 == testFloat1;
   testResult &= testDouble0 == testDouble1;
-  for(unsigned int i=0;i<testArray0.size();i++)
-    testResult &= testArray0[i] == testArray1[i];
+  /*for(unsigned int i=0;i<testArray0.size();i++)
+    testResult &= testArray0[i] == testArray1[i];*/
   testResult &= testPair0.first == testPair1.first;
   testResult &= testPair0.second == testPair1.second;
   testResult &= testVector0.size() == testVector1.size();
@@ -1748,7 +1748,7 @@ bool igl::XMLSerializerTest::Test()
 
   s->SetCurrentGroup("test1");
 
-  testResult &= s->Add(testArray0,"testArray");
+  //testResult &= s->Add(testArray0,"testArray");
   testResult &= s->Add(testPair0,"testPair");
   testResult &= s->Add(testVector0,"testVector");
   testResult &= s->Add(testDenseMatrix0,"testDenseMatrix");
@@ -1796,8 +1796,8 @@ bool igl::XMLSerializerTest::Test()
   testResult &= testInt0 == testInt1;
   testResult &= testFloat0 == testFloat1;
   testResult &= testDouble0 == testDouble1;
-  for(unsigned int i=0;i<testArray0.size();i++)
-    testResult &= testArray0[i] == testArray1[i];
+  /*for(unsigned int i=0;i<testArray0.size();i++)
+    testResult &= testArray0[i] == testArray1[i];*/
   testResult &= testPair0.first == testPair1.first;
   testResult &= testPair0.second == testPair1.second;
   testResult &= testVector0.size() == testVector1.size();

@@ -19,7 +19,7 @@ You can find examples how to use it in the test case class XMLSerializerTest.
 #define XML_SERIALIZER_H
 
 #include <iostream>
-#include <array>
+//#include <array>
 #include <vector>
 #include <map>
 
@@ -145,8 +145,8 @@ namespace igl
     void Init(T*& obj);
 
     // STL containers
-    template<typename T, int S>
-    void Init(std::array<T,S>& obj);
+    /*template<typename T, int S>
+    void Init(std::array<T,S>& obj);*/
     template<typename T0, typename T1>
     void Init(std::pair<T0,T1>& obj);
     template<typename T>
@@ -183,10 +183,10 @@ namespace igl
     bool Serialize(T*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
 
     // STL containers
-    template<typename T, size_t S>
+    /*template<typename T, size_t S>
     bool Serialize(std::array<T,S>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
     template<typename T, size_t S>
-    bool Serialize(std::array<T,S>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+    bool Serialize(std::array<T,S>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);*/
    
     template<typename T0, typename T1>
     bool Serialize(std::pair<T0,T1>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
@@ -234,10 +234,10 @@ namespace igl
     bool Deserialize(T*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
 
     // STL containers
-    template<typename T, size_t S>
+    /*template<typename T, size_t S>
     bool Deserialize(std::array<T,S>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
     template<typename T, size_t S>
-    bool Deserialize(std::array<T,S>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+    bool Deserialize(std::array<T,S>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);*/
     
     template<typename T0, typename T1>
     bool Deserialize(std::pair<T0,T1>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
@@ -409,8 +409,8 @@ namespace igl
     bool Add(T& object, const std::string& name, T defaultValue);
 
     // STL containers
-    template<typename T, size_t S>
-    bool Add(std::array<T,S>& obj, const std::string& name);
+    /*template<typename T, size_t S>
+    bool Add(std::array<T,S>& obj, const std::string& name);*/
     template<typename T0, typename T1>
     bool Add(std::pair<T0,T1>& obj, const std::string& name);
     template<typename T>

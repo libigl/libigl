@@ -37,7 +37,7 @@ INC+=$(TINYXML2_INC) $(ANTTWEAKBAR_INC)
 ANTTWEAKBAR_INC=-I../../../external/AntTweakBar/include
 INC+=$(ANTTWEAKBAR_INC)
 
-CFLAGS+=-std=c++11
+#CFLAGS+=-std=c++11
 
 obj: 
 	mkdir -p obj
