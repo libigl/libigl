@@ -26,7 +26,7 @@ You can find examples how to use it in the test case class XMLSerializerTest.
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#include "tinyxml2.h"
+#include <tinyxml2.h>
 
 namespace igl
 {
@@ -415,9 +415,9 @@ namespace igl
     bool Add(std::pair<T0,T1>& obj, const std::string& name);
     template<typename T>
     bool Add(std::vector<T>& obj, const std::string& name);
-    template<typename T, int R, int C>
     
     // Eigen types
+    template<typename T, int R, int C>
     bool Add(Eigen::Matrix<T,R,C>& obj, const std::string& name);
     template<typename T>
     bool Add(Eigen::SparseMatrix<T>& obj, const std::string& name);
@@ -457,6 +457,7 @@ namespace igl
 
 #ifdef IGL_HEADER_ONLY
 #include "XMLSerializer.cpp"
+#else
 #endif
 
 #endif

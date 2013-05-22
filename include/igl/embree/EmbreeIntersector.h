@@ -46,11 +46,13 @@ namespace igl
     //   direction  3d (not necessarily normalized) direction vector of ray
     // Output:
     //   hit  embree information about hit
+    //   num_rays  number of rays shot (at least one)
     // Returns true if and only if there was a hit
     bool intersectRay(
       const RowVector3& origin, 
       const RowVector3& direction, 
-      std::vector<embree::Hit > &hits) const;
+      std::vector<embree::Hit > &hits,
+      int & num_rays) const;
   
     // Given a ray find the first *front-facing* hit
     // 
