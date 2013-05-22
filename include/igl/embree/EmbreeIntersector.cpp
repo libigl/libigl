@@ -70,39 +70,53 @@ igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
 ::intersectRay(
   const RowVector3& origin, 
   const RowVector3& direction, 
-  std::vector<embree::Hit > &hits) const
+  std::vector<embree::Hit > &hits,
+  int & num_rays) const
 {
   using namespace std;
+  num_rays = 0;
   hits.clear();
   embree::Vec3f o = toVec3f(origin);
   embree::Vec3f d = toVec3f(direction);
   int last_id0 = -1;
   double self_hits = 0;
-  const double eps = FLOAT_EPS*2.0;
+  // This epsilon is directly correleated to the number of missed hits, smaller
+  // means more accurate and slower
+  //const double eps = DOUBLE_EPS;
+  const double eps = FLOAT_EPS;
   while(true)
   {
-    //cout<<
-    //  o[0]<<" "<<o[1]<<" "<<o[2]<<" + t*"<<
-    //  d[0]<<" "<<d[1]<<" "<<d[2]<<" ---> "<<
-    //  endl;
+#ifdef VERBOSE
+    cout<<
+      o[0]<<" "<<o[1]<<" "<<o[2]<<" + t*"<<
+      d[0]<<" "<<d[1]<<" "<<d[2]<<" ---> "<<
+      endl;
+#endif
     embree::Hit hit;
     embree::Ray ray(o,d,embree::zero);
+    num_rays++;
     _intersector->intersect(ray, hit);
     if(hit)
     {
-      // Hit self again
+      // Hit self again, progressively advance
       if(hit.id0 == last_id0)
       {
         // sanity check
         assert(hit.t<1);
         // move off origin
-        double t_push = pow(2.0,self_hits)*(hit.t<eps?eps:hit.t);
+        //double t_push = pow(2.0,self_hits-4)*(hit.t<eps?eps:hit.t);
+        double t_push = pow(2.0,self_hits)*eps;
+#ifdef VERBOSE
+        cout<<"  t_push: "<<t_push<<endl;
+#endif
         o = o+t_push*d;
         self_hits++;
       }else
       {
         hits.push_back(hit);
-        //cout<<"  t: "<<hit.t<<endl;
+#ifdef VERBOSE
+        cout<<"  t: "<<hit.t<<endl;
+#endif
         o = o+hit.t*d;
         // reset t_scale
         self_hits = 0;

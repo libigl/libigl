@@ -14,6 +14,7 @@ IGL_INLINE const Eigen::WithFormat< DerivedM > igl::matlab_format(
   {
     prefix = name + " = ";
   }
+
   return M.format(Eigen::IOFormat(
     Eigen::FullPrecision,
     0,

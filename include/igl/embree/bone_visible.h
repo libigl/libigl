@@ -1,5 +1,6 @@
 #ifndef IGL_BONE_VISIBLE_H
 #define IGL_BONE_VISIBLE_H
+#include <igl/igl_inline.h>
 #include <Eigen/Core>
 //
 // BONE_VISIBLE  test whether vertices of mesh are "visible" to a given bone,
@@ -22,17 +23,20 @@
 // Note: This checks for hits along the segment which are facing in *any*
 // direction from the ray.
 //
-template <
-  typename DerivedV, 
-  typename DerivedF, 
-  typename DerivedSD,
-  typename Derivedflag>
-void bone_visible(
-  const Eigen::PlainObjectBase<DerivedV> & V,
-  const Eigen::PlainObjectBase<DerivedF> & F,
-  const Eigen::PlainObjectBase<DerivedSD> & s,
-  const Eigen::PlainObjectBase<DerivedSD> & d,
-  Eigen::PlainObjectBase<Derivedflag>  & flag);
+namespace igl
+{
+  template <
+    typename DerivedV, 
+    typename DerivedF, 
+    typename DerivedSD,
+    typename Derivedflag>
+  IGL_INLINE void bone_visible(
+    const Eigen::PlainObjectBase<DerivedV> & V,
+    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::PlainObjectBase<DerivedSD> & s,
+    const Eigen::PlainObjectBase<DerivedSD> & d,
+    Eigen::PlainObjectBase<Derivedflag>  & flag);
+}
 #ifdef IGL_HEADER_ONLY
 #  include "bone_visible.cpp"
 #endif
