@@ -30,7 +30,7 @@ IGL_INLINE int igl::tetrahedralize(
   try
   {
     char * cswitches = new char[switches.size() + 1];
-    std::copy(switches.begin(), switches.end(), cswitches);
+    std::strcpy(cswitches,switches.c_str());
     ::tetrahedralize(cswitches,&in, &out);
     delete[] cswitches;
   }catch(int e)
