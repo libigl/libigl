@@ -1,0 +1,16 @@
+Small example to show how to use render_to_png inside a glut application.
+
+Compile with:
+
+make
+
+Run with:
+
+./example
+
+Then hit [space] to take a screen shot. Hit 's' to change the shape.
+
+Produces files in the working directory named:
+render_to_png-example-example-0000.png,
+render_to_png-example-example-0001.png,
+and so on

@@ -84,6 +84,8 @@ igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
   // means more accurate and slower
   //const double eps = DOUBLE_EPS;
   const double eps = FLOAT_EPS;
+  double min_t = embree::zero;
+  bool large_hits_warned = false;
   while(true)
   {
 #ifdef VERBOSE
@@ -93,23 +95,24 @@ igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
       endl;
 #endif
     embree::Hit hit;
-    embree::Ray ray(o,d,embree::zero);
+    embree::Ray ray(o,d,min_t);
     num_rays++;
     _intersector->intersect(ray, hit);
     if(hit)
     {
       // Hit self again, progressively advance
-      if(hit.id0 == last_id0)
+      if(hit.id0 == last_id0 || hit.t <= min_t)
       {
         // sanity check
         assert(hit.t<1);
-        // move off origin
+        // push min_t a bit more
         //double t_push = pow(2.0,self_hits-4)*(hit.t<eps?eps:hit.t);
         double t_push = pow(2.0,self_hits)*eps;
 #ifdef VERBOSE
         cout<<"  t_push: "<<t_push<<endl;
 #endif
-        o = o+t_push*d;
+        //o = o+t_push*d;
+        min_t += t_push;
         self_hits++;
       }else
       {
@@ -117,7 +120,10 @@ igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
 #ifdef VERBOSE
         cout<<"  t: "<<hit.t<<endl;
 #endif
-        o = o+hit.t*d;
+        // Instead of moving origin, just change min_t. That way calculations
+        // all use exactly same origin values
+        min_t = hit.t;
+
         // reset t_scale
         self_hits = 0;
       }
@@ -126,6 +132,29 @@ igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
     }else
     {
       break;
+    }
+    if(hits.size()>1000 && !large_hits_warned)
+    {
+      cerr<<"Warning: Large number of hits..."<<endl;
+      cerr<<"[ ";
+      for(vector<embree::Hit>::iterator hit = hits.begin();
+          hit != hits.end();
+          hit++)
+      {
+        cerr<<(hit->id0+1)<<" ";
+      }
+      cerr.precision(std::numeric_limits< double >::digits10);
+      cerr<<"[ ";
+      for(vector<embree::Hit>::iterator hit = hits.begin();
+          hit != hits.end();
+          hit++)
+      {
+        cerr<<(hit->t)<<endl;;
+      }
+
+      cerr<<"]"<<endl;
+      large_hits_warned = true;
+      return hits.empty();
     }
   }
   return hits.empty();

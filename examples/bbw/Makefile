@@ -32,15 +32,15 @@ CPP_FILES=$(wildcard ./*.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o))) 
 
 bbw_demo: obj $(OBJ_FILES)
-	$(CXX) -o bbw_demo $(CFLAGS) $(OBJ_FILES) $(LIB)
+	$(CXX) -o bbw_demo $(CFLAGS) $(AFLAGS) $(OPENMP) $(OBJ_FILES) $(LIB)
 
 obj:
 	mkdir -p obj
 
 obj/%.o: %.cpp %.h
-	$(CXX) $(CFLAGS) -o $@ -c $< $(INC)
+	$(CXX) $(CFLAGS) $(AFLAGS) $(OPENMP) -o $@ -c $< $(INC)
 obj/%.o: %.cpp
-	$(CXX) $(CFLAGS) -o $@ -c $< $(INC)
+	$(CXX) $(CFLAGS) $(AFLAGS) $(OPENMP) -o $@ -c $< $(INC)
 
 .PHONY: clean
 clean:
