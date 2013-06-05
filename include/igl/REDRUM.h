@@ -11,6 +11,7 @@
 #ifdef IGL_REDRUM_NOOP
 
 // Bold Red, etc.
+#define NORUM(X)     X
 #define REDRUM(X)     X
 #define GREENRUM(X)   X
 #define YELLOWRUM(X)  X
@@ -28,6 +29,7 @@
 #else
 
 // Bold Red, etc.
+#define NORUM(X)       ""<<X<<""
 #define REDRUM(X)      "\e[1m\e[31m"<<X<<"\e[m"
 #define GREENRUM(X)    "\e[1m\e[32m"<<X<<"\e[m"
 #define YELLOWRUM(X)   "\e[1m\e[33m"<<X<<"\e[m"
