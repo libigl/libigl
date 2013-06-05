@@ -16,10 +16,10 @@ void igl::hsv_to_rgb(
   T & r, T & g, T & b)
 {
   // From medit
-  double f,p,q,t;
-  int    i,hh;
+  double f,p,q,t,hh;
+  int    i;
   hh = ((int)h % 360) / 60.;
-  i = (int)floor((double)hh);    /* largest int <= h     */
+  i = (int)floor(hh);    /* largest int <= h     */
   f = hh - i;                    /* fractional part of h */
   p = v * (1.0 - s);
   q = v * (1.0 - (s * f));
