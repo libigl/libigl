@@ -1,15 +1,9 @@
-//
-//  gradMat.h
-//
-//  Created by Christian Schüller on 07/03/13.
-//  Copyright (c) 2013 ETHZ IGL. All rights reserved.
-//
-
 #ifndef IGL_GRAD_MAT_H
 #define IGL_GRAD_MAT_H
 #include "igl_inline.h"
 
 #include <Eigen/Core>
+#include <Eigen/Sparse>
 
 namespace igl {
   // GRAD
