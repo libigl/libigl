@@ -56,15 +56,13 @@ IGL_INLINE void igl::remove_duplicate_vertices(
       (&VectorXi::operator())), &SVJ)).eval();
 #else
   // Why doesn't the above compile on windows?
-#define __STR2__(x) #x
-#define __STR1__(x) __STR2__(x)
-#define __LOC__ __FILE__ "("__STR1__(__LINE__)") : Warning Msg: "
-#pragma message(__LOC__"Using untested Windows-only code")
-  // This needs to be tested.
   SF.resize(F.rows(),F.cols());
-  for(int f = 0;f<SF.size();f++)
+  for(int f = 0;f<F.rows();f++)
   {
-	  SF(f) = SVJ(f);
+    for(int c = 0;c<F.cols();c++)
+    {
+      SF(f,c) = SVJ(F(f,c));
+    }
   }
 #endif
 }
