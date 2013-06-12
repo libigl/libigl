@@ -1,4 +1,5 @@
 #include "gradMat.h"
+#include <vector>
 
 template <typename T, typename S>
 IGL_INLINE void igl::gradMat(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
