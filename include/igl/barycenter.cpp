@@ -5,7 +5,7 @@ IGL_INLINE void igl::barycenter(
   const Eigen::MatrixXi & F,
   Eigen::MatrixXd & BC)
 {
-  BC.resize(F.rows(),V.cols());
+  BC.setZero(F.rows(),V.cols());
   // Loop over faces
   for(int i = 0;i<F.rows();i++)
   {

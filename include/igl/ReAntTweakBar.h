@@ -153,7 +153,8 @@ namespace igl
     // anytime AntTweakBar functions can be called directly on the bar
     public:
       TwBar * bar;
-	  std::string name;
+      // Alec: This causes trouble (not sure why)
+	  //std::string name;
     protected:
       std::vector<ReTwRWItem> rw_items;
       std::vector<ReTwCBItem> cb_items;
