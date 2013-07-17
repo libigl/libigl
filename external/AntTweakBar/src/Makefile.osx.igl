@@ -65,8 +65,8 @@ all: 	Makefile $(TARGET)
 #	makedepend -a -Y -- $(CXXFLAGS) $(INCPATH) -- $(SRC_FILES) $(NO_STDERR)
 
 $(TARGET): $(OBJS)
-	@echo "===== Link $@ ====="
-	$(LINK) $(LFLAGS) -dynamiclib -Wl,-undefined -Wl,dynamic_lookup  -o $(OUT_DIR)/lib$(TARGET)$(SO_EXT) $(OBJS) $(LIBS)
+	#@echo "===== Link $@ ====="
+	#$(LINK) $(LFLAGS) -dynamiclib -Wl,-undefined -Wl,dynamic_lookup  -o $(OUT_DIR)/lib$(TARGET)$(SO_EXT) $(OBJS) $(LIBS)
 	rm -f $(OUT_DIR)/lib$(TARGET)$(AR_EXT)
 	$(AR) $(OUT_DIR)/lib$(TARGET)$(AR_EXT) $(OBJS)
 

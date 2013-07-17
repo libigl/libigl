@@ -192,7 +192,8 @@ void cutTriangle(pScene sc,triangle t) {
 #ifdef IGL
   {
     double s = 1.0-(sc->iso.col[ia-1]*(1.0-kc)+sc->iso.col[ia]*kc)/240.0;
-    rgb[3] = filter(sc,s)*sc->igl_params->alpha_holder;
+    // Alpha mess
+    //rgb[3] = filter(sc,s)*sc->igl_params->alpha_holder;
     sc->igl_params->rgb(s,rgb);
   }
 #else
@@ -212,7 +213,8 @@ void cutTriangle(pScene sc,triangle t) {
 #ifdef IGL
   {
     double s  = 1.0-(sc->iso.col[ib-1]*(1.0-kc)+sc->iso.col[ib]*kc)/240.0;
-    rgb[3] = filter(sc,s)*sc->igl_params->alpha_holder;
+    // Alpha mess
+    //rgb[3] = filter(sc,s)*sc->igl_params->alpha_holder;
     sc->igl_params->rgb( s,rgb);
   }
 #else
@@ -232,7 +234,8 @@ void cutTriangle(pScene sc,triangle t) {
 #ifdef IGL
   {
     double s = 1.0-(sc->iso.col[ic-1]*(1.0-kc)+sc->iso.col[ic]*kc)/240.0;
-    rgb[3] = filter(sc,s)*sc->igl_params->alpha_holder;
+    // Alpha mess
+    // rgb[3] = filter(sc,s)*sc->igl_params->alpha_holder;
     sc->igl_params->rgb( s,rgb);
   }
 #else

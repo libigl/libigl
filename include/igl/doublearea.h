@@ -45,7 +45,7 @@ namespace igl
 }
 
 #ifdef IGL_HEADER_ONLY
-#  include "doublearea.h"
+#  include "doublearea.cpp"
 #endif
 
 #endif
