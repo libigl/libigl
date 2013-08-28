@@ -1,8 +1,3 @@
-//
-//  IGL Lib - Simple C++ mesh library 
-//
-//  Copyright 2011, Daniele Panozzo. All rights reserved.
-
 #include "edgetopology.h"
 #include <algorithm>
 #include "is_manifold.h"
@@ -15,6 +10,7 @@ IGL_INLINE void igl::edgetopology(
   Eigen::MatrixXi& FE, 
   Eigen::MatrixXi& EF)
 {
+  // Only needs to be edge-manifold
   assert(igl::is_manifold(V,F));
   std::vector<std::vector<int> > ETT;
   for(int f=0;f<F.rows();++f)
