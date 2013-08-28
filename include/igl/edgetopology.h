@@ -1,8 +1,3 @@
-//
-//  IGL Lib - Simple C++ mesh library 
-//
-//  Copyright 2011, Daniele Panozzo. All rights reserved.
-
 #ifndef IGL_EDGETOPOLOGY_H
 #define IGL_EDGETOPOLOGY_H
 
