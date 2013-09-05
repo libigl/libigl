@@ -59,13 +59,50 @@ IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save(
   using namespace std;
   const int m = M.rows();
   const int n = M.cols();
-
   mxArray * mx_data = mxCreateDoubleMatrix(m,n,mxREAL);
   data.push_back(mx_data);
   names.push_back(name);
   // Copy data immediately
   // Q: Won't this be incorrect for integers?
   copy(M.data(),M.data()+M.size(),mxGetPr(mx_data));
+  return *this;
+}
+
+// Treat everything as a double
+template <typename MT>
+IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save(
+  const Eigen::SparseMatrix<MT>& M,
+  const std::string & name)
+{
+  using namespace std;
+  const int m = M.rows();
+  const int n = M.cols();
+  // THIS WILL NOT WORK FOR ROW-MAJOR
+  assert(n==M.outerSize());
+  const int nzmax = M.nonZeros();
+  mxArray * mx_data = mxCreateSparse(m, n, nzmax, mxREAL);
+  data.push_back(mx_data);
+  names.push_back(name);
+  // Copy data immediately
+  double * pr = mxGetPr(mx_data);
+  mwIndex * ir = mxGetIr(mx_data);
+  mwIndex * jc = mxGetJc(mx_data);
+
+  // Iterate over outside
+  int k = 0;
+  for(int j=0; j<M.outerSize();j++)
+  {
+    jc[j] = k;
+    // Iterate over inside
+    for(typename Eigen::SparseMatrix<MT>::InnerIterator it (M,j); it; ++it)
+    {
+      pr[k] = it.value();
+      ir[k] = it.row();
+      k++;
+    }
+  }
+  jc[M.outerSize()] = k;
+
   return *this;
 }
 

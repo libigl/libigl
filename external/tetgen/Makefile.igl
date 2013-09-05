@@ -56,20 +56,37 @@ SWITCHES = -Wall -DSELF_CHECK
 RM = /bin/rm
 
 # The action starts here.
+CXX_FILES=$(wildcard src/*.cxx)
+OBJ_FILES=$(addprefix obj/,$(notdir $(CXX_FILES:.cxx=.o)))
 
-tetgen:	tetgen.cxx predicates.o
-	$(CXX) $(CXXFLAGS) $(SWITCHES) $(AFLAGS) -o tetgen tetgen.cxx predicates.o -lm
 
-tetlib: tetgen.cxx predicates.o
-	$(CXX) $(CXXFLAGS) $(SWITCHES) $(AFLAGS) -DTETLIBRARY -c tetgen.cxx
+all: tetgen
+
+tetlib: CXXFLAGS+=-DTETLIBRARY
+
+obj:
+	mkdir -p obj
+
+tetgen:	obj $(OBJ_FILES) predicates.o
+	$(CXX) $(CXXFLAGS) $(SWITCHES) $(AFLAGS) -o tetgen $(OBJ_FILES) predicates.o -lm
+
+tetlib: $(OBJ_FILES) predicates.o
 	rm -f libtet.a
-	ar r libtet.a tetgen.o predicates.o
+	ar r libtet.a $(OBJ_FILES) predicates.o
 
-predicates.o: predicates.cxx
-	$(CXX) $(PREDCXXFLAGS) $(AFLAGS) -c predicates.cxx
+# Blank dummy build for tetgen.cxx
+obj/tetgen.o: tetgen.cxx
+	echo "" | ${CXX} $(CXXFLAGS) $(AFLAGS) -c -o $@ -x c++ - $(INC) 
+
+# special build for predicates
+obj/predicates.o: predicates.cxx
+	$(CXX) $(PREDCXXFLAGS) $(AFLAGS) -c predicates.cxx -o $@
+
+obj/%.o: src/%.cxx
+	${CXX} $(CXXFLAGS) $(AFLAGS) -o $@ -c $< $(INC) 
 
 clean:
-	$(RM) *.o *.a tetgen *~
+	$(RM) -f *.o *.a tetgen obj/*.o
 
 
 

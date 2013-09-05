@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
 
 #include "mat.h"
 
@@ -51,6 +52,12 @@ namespace igl
       template <typename DerivedM>
       IGL_INLINE MatlabWorkspace& save(
         const Eigen::PlainObjectBase<DerivedM>& M,
+        const std::string & name);
+      // Template:
+      //   MT  sparse matrix type (e.g. double)
+      template <typename MT>
+      IGL_INLINE MatlabWorkspace& save(
+        const Eigen::SparseMatrix<MT>& M,
         const std::string & name);
       // Templates:
       //   ScalarM  scalar type, e.g. double
