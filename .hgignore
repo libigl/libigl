@@ -18,3 +18,5 @@ external/embree/bin/*
 external/embree/doc/html/*
 external/embree/doc/latex/*
 .DS_Store
+libigl.zip
+*tags
