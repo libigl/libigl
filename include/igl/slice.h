@@ -7,6 +7,8 @@
 
 namespace igl
 {
+  // THIS MAY HAVE BEEN SUPERSEDED BY EIGEN'S select FUNCTION
+  // 
   // Act like the matlab X(row_indices,col_indices) operator
   // 
   // Inputs:
