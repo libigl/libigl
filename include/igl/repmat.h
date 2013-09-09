@@ -22,12 +22,12 @@ namespace igl
   // Outputs:
   //   B  r*m by c*n output matrix
   //
-  template <typename DerivedA>
+  template <typename DerivedA,typename DerivedB>
   IGL_INLINE void repmat(
     const Eigen::PlainObjectBase<DerivedA> & A,
     const int r,
     const int c,
-    Eigen::PlainObjectBase<DerivedA> & B);
+    Eigen::PlainObjectBase<DerivedB> & B);
   template <typename T>
   IGL_INLINE void repmat(
     const Eigen::SparseMatrix<T> & A,

@@ -13,10 +13,10 @@ namespace igl
   //   A  m by n sparse matrix
   // Output:
   //   B  m by n dense/full matrix
-  template <typename T>
+  template <typename T,typename DerivedB>
   IGL_INLINE void full(
     const Eigen::SparseMatrix<T> & A,
-    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & B);
+    Eigen::PlainObjectBase<DerivedB> & B);
   // If already full then this will just be a copy by assignment
   template <typename DerivedA,typename DerivedB>
   IGL_INLINE void full(

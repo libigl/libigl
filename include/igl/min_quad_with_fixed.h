@@ -44,18 +44,23 @@ namespace igl
     );
 
   // Solves a system previously factored using min_quad_with_fixed_precompute
+  // 
+  // Template:
+  //   T  type of sparse matrix (e.g. double) 
+  //   DerivedY  type of Y (e.g. derived from VectorXd or MatrixXd)
+  //   DerivedZ  type of Z (e.g. derived from VectorXd or MatrixXd)
   // Inputs:
   //   data  factorization struct with all necessary precomputation to solve
   // Outputs:
   //   Z  n by cols solution
   // Returns true on success, false on error
-  template <typename T>
+  template <typename T,typename DerivedY,typename DerivedZ>
   IGL_INLINE bool min_quad_with_fixed_solve(
     const min_quad_with_fixed_data<T> & data,
     const Eigen::Matrix<T,Eigen::Dynamic,1> & B,
-    const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & Y,
+    const Eigen::PlainObjectBase<DerivedY> & Y,
     const Eigen::Matrix<T,Eigen::Dynamic,1> & Beq,
-    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & Z);
+    Eigen::PlainObjectBase<DerivedZ> & Z);
 }
 
 template <typename T>

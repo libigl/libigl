@@ -25,3 +25,4 @@
 - svd.* depends on lapack, should use eigen...
 - use preprocessor macros to automatically include .cpp files at end of .h
 - unify include opengl with convenience includes
+- MatrixBase --> PlainObjectBase

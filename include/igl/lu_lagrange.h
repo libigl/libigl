@@ -7,6 +7,8 @@
 #include <Eigen/Sparse>
 namespace igl
 {
+  // KNOWN BUGS: This does not seem to be correct for non-empty C
+  //
   // LU_LAGRANGE Compute a LU decomposition for a special type of
   // matrix Q that is symmetric but not positive-definite:
   // Q = [A'*A C

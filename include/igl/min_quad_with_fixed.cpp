@@ -1,13 +1,5 @@
 #include "min_quad_with_fixed.h"
 
-//#include <Eigen/SparseExtra>
-// Bug in unsupported/Eigen/SparseExtra needs iostream first
-#include <iostream>
-#include <unsupported/Eigen/SparseExtra>
-#include <cassert>
-#include <cstdio>
-#include <iostream>
-
 #include "slice.h"
 #include "is_symmetric.h"
 #include "find.h"
@@ -15,6 +7,15 @@
 #include "repmat.h"
 #include "lu_lagrange.h"
 #include "full.h"
+#include "EPS.h"
+
+//#include <Eigen/SparseExtra>
+// Bug in unsupported/Eigen/SparseExtra needs iostream first
+#include <iostream>
+#include <unsupported/Eigen/SparseExtra>
+#include <cassert>
+#include <cstdio>
+#include <iostream>
 
 template <typename T>
 IGL_INLINE bool igl::min_quad_with_fixed_precompute(
@@ -25,6 +26,8 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   igl::min_quad_with_fixed_data<T> & data
   )
 {
+  using namespace Eigen;
+  using namespace std;
   // number of rows
   int n = A.rows();
   // cache problem size
@@ -76,31 +79,31 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   data.unknown_lagrange.resize(data.unknown.size()+data.lagrange.size());
   data.unknown_lagrange << data.unknown, data.lagrange;
 
-  Eigen::SparseMatrix<T> Auu;
+  SparseMatrix<T> Auu;
   igl::slice(A,data.unknown,data.unknown,Auu);
 
   // determine if A(unknown,unknown) is symmetric and/or positive definite
-  data.Auu_sym = igl::is_symmetric(Auu);
+  data.Auu_sym = igl::is_symmetric(Auu,igl::EPS<double>());
   // Positive definiteness is *not* determined, rather it is given as a
   // parameter
   data.Auu_pd = pd;
 
   // Append lagrange multiplier quadratic terms
-  Eigen::SparseMatrix<T> new_A;
-  Eigen::Matrix<int,Eigen::Dynamic,1> AI;
-  Eigen::Matrix<int,Eigen::Dynamic,1> AJ;
-  Eigen::Matrix<T,Eigen::Dynamic,1> AV;
+  SparseMatrix<T> new_A;
+  Matrix<int,Dynamic,1> AI;
+  Matrix<int,Dynamic,1> AJ;
+  Matrix<T,Dynamic,1> AV;
   igl::find(A,AI,AJ,AV);
-  Eigen::Matrix<int,Eigen::Dynamic,1> AeqI(0,1);
-  Eigen::Matrix<int,Eigen::Dynamic,1> AeqJ(0,1);
-  Eigen::Matrix<T,Eigen::Dynamic,1> AeqV(0,1);
+  Matrix<int,Dynamic,1> AeqI(0,1);
+  Matrix<int,Dynamic,1> AeqJ(0,1);
+  Matrix<T,Dynamic,1> AeqV(0,1);
   if(neq > 0)
   {
     igl::find(Aeq,AeqI,AeqJ,AeqV);
   }
-  Eigen::Matrix<int,Eigen::Dynamic,1> new_AI(AV.size()+AeqV.size()*2);
-  Eigen::Matrix<int,Eigen::Dynamic,1> new_AJ(AV.size()+AeqV.size()*2);
-  Eigen::Matrix<T,Eigen::Dynamic,1>   new_AV(AV.size()+AeqV.size()*2);
+  Matrix<int,Dynamic,1> new_AI(AV.size()+AeqV.size()*2);
+  Matrix<int,Dynamic,1> new_AJ(AV.size()+AeqV.size()*2);
+  Matrix<T,Dynamic,1>   new_AV(AV.size()+AeqV.size()*2);
   new_AI << AI, (AeqI.array()+n).matrix(), AeqJ;
   new_AJ << AJ, AeqJ, (AeqI.array()+n).matrix();
   new_AV << AV, AeqV, AeqV;
@@ -109,14 +112,14 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   // precompute RHS builders
   if(kr > 0)
   {
-    Eigen::SparseMatrix<T> Aulk;
+    SparseMatrix<T> Aulk;
     igl::slice(new_A,data.unknown_lagrange,data.known,Aulk);
-    Eigen::SparseMatrix<T> Akul;
+    SparseMatrix<T> Akul;
     igl::slice(new_A,data.known,data.unknown_lagrange,Akul);
 
     //// This doesn't work!!!
     //data.preY = Aulk + Akul.transpose();
-    Eigen::SparseMatrix<T> AkulT = Akul.transpose();
+    SparseMatrix<T> AkulT = Akul.transpose();
     data.preY = Aulk + AkulT;
   }else
   {
@@ -124,46 +127,60 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   }
 
   // Create factorization
-  if(data.Auu_sym && data.Auu_pd)
+  //if(data.Auu_sym && data.Auu_pd)
+  //{
+  //  data.sparse = true;
+  //  SparseMatrix<T> Aequ(0,0);
+  //  if(neq>0)
+  //  {
+  //    Matrix<int,Dynamic,1> Aeq_rows;
+  //    Aeq_rows.resize(neq);
+  //    for(int i = 0;i<neq;i++)
+  //    {
+  //      Aeq_rows(i) = i;
+  //    }
+  //    igl::slice(Aeq,Aeq_rows,data.unknown,Aequ);
+  //  }
+  //  // Get transpose of Aequ
+  //  SparseMatrix<T> AequT = Aequ.transpose();
+  //  // Compute LU decomposition
+  //  // TODO: This should be using SimplicialLDLT
+  //  // Q: Does SimplicialLDLT work on "Hermitian indefinite matrices" the way
+  //  // that matlabs ldl does?
+  //  // A: Maybe not. The eigen documentation writes, "This class provides a
+  //  // LDL^T Cholesky factorizations without square root of sparse matrices
+  //  // that are selfadjoint and positive definite"
+  //  bool lu_success = igl::lu_lagrange(Auu,AequT,data.L,data.U);
+  //  if(!lu_success)
+  //  {
+  //    return false;
+  //  }
+  //}else
+  //{
+  SparseMatrix<T> NA;
+  igl::slice(new_A,data.unknown_lagrange,data.unknown_lagrange,NA);
+  if(data.Auu_sym)
   {
-    data.sparse = true;
-    Eigen::SparseMatrix<T> Aequ(0,0);
-    if(neq>0)
-    {
-      Eigen::Matrix<int,Eigen::Dynamic,1> Aeq_rows;
-      Aeq_rows.resize(neq);
-      for(int i = 0;i<neq;i++)
-      {
-        Aeq_rows(i) = i;
-      }
-      igl::slice(Aeq,Aeq_rows,data.unknown,Aequ);
-    }
-    // Get transpose of Aequ
-    Eigen::SparseMatrix<T> AequT = Aequ.transpose();
-    // Compute LU decomposition
-    // TODO: This should be using SimplicialLDLT
-    // Q: Does SimplicialLDLT work on "Hermitian indefinite matrices" the way
-    // that matlabs ldl does?
-    // A: Maybe not. The eigen documentation writes, "This class provides a
-    // LDL^T Cholesky factorizations without square root of sparse matrices
-    // that are selfadjoint and positive definite"
-    bool lu_success = igl::lu_lagrange(Auu,AequT,data.L,data.U);
-    if(!lu_success)
+    SimplicialLDLT<SparseMatrix<T> > ldlt_solver;
+    ldlt_solver.compute(NA);
+    if(ldlt_solver.info() != Eigen::Success)
     {
       return false;
     }
+    // Implementation incomplete
+    assert(false);
+    cerr<<"ERROR min_quad_with_fixed_precompute implementation incomplete"<<endl;
+    return false;
   }else
   {
-    Eigen::SparseMatrix<T> NA;
-    igl::slice(new_A,data.unknown_lagrange,data.unknown_lagrange,NA);
     // Build LU decomposition of NA
     data.sparse = false;
     fprintf(stderr,
       "Warning: min_quad_with_fixed_precompute() resorting to dense LU\n");
-    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> NAfull;
+    Matrix<T,Dynamic,Dynamic> NAfull;
     igl::full(NA,NAfull);
     data.lu = 
-      Eigen::FullPivLU<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> >(NAfull);
+      FullPivLU<Matrix<T,Dynamic,Dynamic> >(NAfull);
     if(!data.lu.isInvertible())
     {
       fprintf(stderr,
@@ -171,17 +188,19 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
       return false;
     }
   }
+  //}
+
   return true;
 }
 
 
-template <typename T>
+template <typename T, typename DerivedY, typename DerivedZ>
 IGL_INLINE bool igl::min_quad_with_fixed_solve(
   const igl::min_quad_with_fixed_data<T> & data,
   const Eigen::Matrix<T,Eigen::Dynamic,1> & B,
-  const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & Y,
+  const Eigen::PlainObjectBase<DerivedY> & Y,
   const Eigen::Matrix<T,Eigen::Dynamic,1> & Beq,
-  Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & Z)
+  Eigen::PlainObjectBase<DerivedZ> & Z)
 {
   // number of known rows
   int kr = data.known.size();
@@ -257,4 +276,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
+template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template bool igl::min_quad_with_fixed_precompute<double>(Eigen::SparseMatrix<double, 0, int> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::SparseMatrix<double, 0, int> const&, bool, igl::min_quad_with_fixed_data<double>&);
 #endif
+
