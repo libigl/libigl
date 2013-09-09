@@ -40,6 +40,23 @@ namespace igl
     const size_t m,
     const size_t n,
     Eigen::SparseMatrix<T>& X);
+  // Convert a full, dense matrix to a sparse one
+  //
+  // Templates:
+  //   T  should be a eigen sparse matrix primitive type like int or double
+  // Input:
+  //   D  m by n full, dense matrix
+  // Output:
+  //   X  m by n sparse matrix
+  template <typename DerivedD, typename T>
+  IGL_INLINE void sparse(
+    const Eigen::PlainObjectBase<DerivedD>& D,
+    Eigen::SparseMatrix<T>& X);
+  // Wrapper with return
+  template <typename DerivedD>
+  IGL_INLINE Eigen::SparseMatrix<typename DerivedD::Scalar > sparse(
+    const Eigen::PlainObjectBase<DerivedD>& D);
+
 }
 
 #ifdef IGL_HEADER_ONLY

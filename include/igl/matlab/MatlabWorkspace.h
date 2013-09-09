@@ -24,6 +24,8 @@ namespace igl
   class MatlabWorkspace
   {
     private:
+      // KNOWN BUG: Why not use a map? Any reason to allow duplicate names?
+      //
       // List of names
       std::vector<std::string> names;
       // List of data pointers
@@ -39,6 +41,12 @@ namespace igl
       //   path  path to .mat file
       // Returns true on success, false on failure
       IGL_INLINE bool write(const std::string & path) const;
+      // Load list of variables from .mat file
+      //
+      // Inputs:
+      //   path  path to .mat file
+      // Returns true on success, false on failure
+      IGL_INLINE bool read(const std::string & path);
       // Assign data to a variable name in the workspace
       //
       // Template: 
@@ -85,6 +93,30 @@ namespace igl
       IGL_INLINE MatlabWorkspace& save_index(
         const std::vector<ScalarV> & vV,
         const std::string & name);
+      // Find a certain matrix by name.
+      //
+      // KNOWN BUG: Outputs the first found (not necessarily unique lists).
+      //
+      // Template: 
+      //   DerivedM  eigen matrix (e.g. MatrixXd)
+      // Inputs:
+      //   name  exact name of matrix as string
+      // Outputs:
+      //   M  matrix
+      // Returns true only if found.
+      template <typename DerivedM>
+      IGL_INLINE bool find( 
+        const std::string & name,
+        Eigen::PlainObjectBase<DerivedM>& M);
+      template <typename MT>
+      IGL_INLINE bool find( 
+        const std::string & name,
+        Eigen::SparseMatrix<MT>& M);
+      // Subtracts 1 from all entries
+      template <typename DerivedM>
+      IGL_INLINE bool find_index( 
+        const std::string & name,
+        Eigen::PlainObjectBase<DerivedM>& M);
   };
 }
 

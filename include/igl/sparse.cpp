@@ -2,6 +2,7 @@
 
 // Bug in unsupported/Eigen/SparseExtra needs iostream first
 #include <iostream>
+#include <vector>
 #include <unsupported/Eigen/SparseExtra>
 
 template <class IndexVector, class ValueVector, typename T>
@@ -26,6 +27,8 @@ IGL_INLINE void igl::sparse(
   const size_t n,
   Eigen::SparseMatrix<T>& X)
 {
+  using namespace std;
+  using namespace Eigen;
   assert((int)I.maxCoeff() < (int)m);
   assert((int)I.minCoeff() >= 0);
   assert((int)J.maxCoeff() < (int)n);
@@ -37,21 +40,64 @@ IGL_INLINE void igl::sparse(
   assert(J.rows() == V.rows());
   assert(I.cols() == J.cols());
   assert(J.cols() == V.cols());
-  // number of values
-  int nv = V.size();
+  //// number of values
+  //int nv = V.size();
 
-  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> dyn_X(m,n);
-  // over estimate the number of entries
-  dyn_X.reserve(I.size());
-  for(int i = 0;i < nv;i++)
+  //Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> dyn_X(m,n);
+  //// over estimate the number of entries
+  //dyn_X.reserve(I.size());
+  //for(int i = 0;i < nv;i++)
+  //{
+  //  dyn_X.coeffRef((int)I(i),(int)J(i)) += (T)V(i);
+  //}
+  //X = Eigen::SparseMatrix<T>(dyn_X);
+  vector<Triplet<T> > IJV;
+  IJV.reserve(I.size());
+  for(int x = 0;x<I.size();x++)
   {
-    dyn_X.coeffRef((int)I(i),(int)J(i)) += (T)V(i);
+    IJV.push_back(Triplet<T >(I(x),J(x),V(x)));
   }
-  X = Eigen::SparseMatrix<T>(dyn_X);
+  X.resize(m,n);
+  X.setFromTriplets(IJV.begin(),IJV.end());
+}
 
+template <typename DerivedD, typename T>
+IGL_INLINE void igl::sparse(
+  const Eigen::PlainObjectBase<DerivedD>& D,
+  Eigen::SparseMatrix<T>& X)
+{
+  using namespace std;
+  using namespace Eigen;
+  vector<Triplet<T> > DIJV;
+  const int m = D.rows();
+  const int n = D.cols();
+  for(int i = 0;i<m;i++)
+  {
+    for(int j = 0;j<n;j++)
+    {
+      if(D(i,j)!=0)
+      {
+        DIJV.push_back(Triplet<T>(i,j,D(i,j)));
+      }
+    }
+  }
+  X.resize(m,n);
+  X.setFromTriplets(DIJV.begin(),DIJV.end());
+}
+
+template <typename DerivedD>
+IGL_INLINE Eigen::SparseMatrix<typename DerivedD::Scalar > igl::sparse(
+  const Eigen::PlainObjectBase<DerivedD>& D)
+{
+  Eigen::SparseMatrix<typename DerivedD::Scalar > X;
+  igl::sparse(D,X);
+  return X;
 }
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
 template void igl::sparse<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, double>(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, size_t, size_t, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::sparse<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&);
+template Eigen::SparseMatrix<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, 0, int> igl::sparse<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&);
+template Eigen::SparseMatrix<Eigen::Matrix<double, -1, 1, 0, -1, 1>::Scalar, 0, int> igl::sparse<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&);
 #endif
