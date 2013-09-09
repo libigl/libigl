@@ -94,4 +94,5 @@ template bool igl::writeDMAT<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::bas
 template bool igl::writeDMAT<double>(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >);
 template bool igl::writeDMAT<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, bool);
 template bool igl::writeDMAT<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, bool);
+template bool igl::writeDMAT<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, bool);
 #endif

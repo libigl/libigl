@@ -6,6 +6,7 @@
 
 #include <cassert>
 #include <algorithm>
+#include <iostream>
 
 template <typename DerivedX, typename DerivedIX>
 IGL_INLINE void igl::sort(
@@ -15,17 +16,22 @@ IGL_INLINE void igl::sort(
   Eigen::PlainObjectBase<DerivedX>& Y,
   Eigen::PlainObjectBase<DerivedIX>& IX)
 {
+  // get number of rows (or columns)
+  int num_inner = (dim == 1 ? X.rows() : X.cols() );
+  // Special case for swapping
+  if(num_inner == 2)
+  {
+    return igl::sort2(X,dim,ascending,Y,IX);
+  }
   using namespace Eigen;
+  // get number of columns (or rows)
+  int num_outer = (dim == 1 ? X.cols() : X.rows() );
   // dim must be 2 or 1
   assert(dim == 1 || dim == 2);
   // Resize output
   Y.resize(X.rows(),X.cols());
   IX.resize(X.rows(),X.cols());
   // idea is to process each column (or row) as a std vector
-  // get number of columns (or rows)
-  int num_outer = (dim == 1 ? X.cols() : X.rows() );
-  // get number of rows (or columns)
-  int num_inner = (dim == 1 ? X.rows() : X.cols() );
   // loop over columns (or rows)
   for(int i = 0; i<num_outer;i++)
   {
@@ -56,6 +62,49 @@ IGL_INLINE void igl::sort(
         Y(i,j) = data[j];
         IX(i,j) = index_map[j];
       }
+    }
+  }
+}
+
+template <typename DerivedX, typename DerivedIX>
+IGL_INLINE void igl::sort2(
+  const Eigen::PlainObjectBase<DerivedX>& X,
+  const int dim,
+  const bool ascending,
+  Eigen::PlainObjectBase<DerivedX>& Y,
+  Eigen::PlainObjectBase<DerivedIX>& IX)
+{
+  using namespace Eigen;
+  using namespace std;
+  Y = X;
+  // get number of columns (or rows)
+  int num_outer = (dim == 1 ? X.cols() : X.rows() );
+  // get number of rows (or columns)
+  int num_inner = (dim == 1 ? X.rows() : X.cols() );
+  assert(num_inner == 2);
+  typedef typename Eigen::PlainObjectBase<DerivedX>::Scalar Scalar;
+  typedef typename Eigen::PlainObjectBase<DerivedIX>::Scalar Index;
+  IX.resize(X.rows(),X.cols());
+  if(dim==1)
+  {
+    IX.row(0) = Eigen::PlainObjectBase<DerivedIX>::Zero(1,IX.cols());
+    IX.row(1) = Eigen::PlainObjectBase<DerivedIX>::Ones (1,IX.cols());
+  }else
+  {
+    IX.col(0) = Eigen::PlainObjectBase<DerivedIX>::Zero(IX.rows(),1);
+    IX.col(1) = Eigen::PlainObjectBase<DerivedIX>::Ones (IX.rows(),1);
+  }
+  // loop over columns (or rows)
+  for(int i = 0;i<num_outer;i++)
+  {
+    Scalar & a = (dim==1 ? Y(0,i) : Y(i,0));
+    Scalar & b = (dim==1 ? Y(1,i) : Y(i,1));
+    Index & ai = (dim==1 ? IX(0,i) : IX(i,0));
+    Index & bi = (dim==1 ? IX(1,i) : IX(i,1));
+    if((ascending && a>b) || (!ascending && a<b))
+    {
+      swap(a,b);
+      swap(ai,bi);
     }
   }
 }
@@ -98,4 +147,6 @@ template void igl::sort<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int
 template void igl::sort<SortableRow<Eigen::Matrix<int, -1, 1, 0, -1, 1> > >(std::vector<SortableRow<Eigen::Matrix<int, -1, 1, 0, -1, 1> >, std::allocator<SortableRow<Eigen::Matrix<int, -1, 1, 0, -1, 1> > > > const&, bool, std::vector<SortableRow<Eigen::Matrix<int, -1, 1, 0, -1, 1> >, std::allocator<SortableRow<Eigen::Matrix<int, -1, 1, 0, -1, 1> > > >&, std::vector<unsigned long, std::allocator<unsigned long> >&);
 template void igl::sort<int>(std::vector<int, std::allocator<int> > const&, bool, std::vector<int, std::allocator<int> >&, std::vector<unsigned long, std::allocator<unsigned long> >&);
 template void igl::sort<SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> > >(std::vector<SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> >, std::allocator<SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> > > > const&, bool, std::vector<SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> >, std::allocator<SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> > > >&, std::vector<unsigned long, std::allocator<unsigned long> >&);
+template void igl::sort2<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort2<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif
