@@ -30,6 +30,14 @@ namespace igl
     const bool ascending,
     Eigen::PlainObjectBase<DerivedX>& Y,
     Eigen::PlainObjectBase<DerivedIX>& IX);
+  template <typename DerivedX, typename DerivedIX>
+  // Only better if size(X,dim) is small
+  IGL_INLINE void sort_new(
+    const Eigen::PlainObjectBase<DerivedX>& X,
+    const int dim,
+    const bool ascending,
+    Eigen::PlainObjectBase<DerivedX>& Y,
+    Eigen::PlainObjectBase<DerivedIX>& IX);
   // Special case if size(X,dim) == 2
   template <typename DerivedX, typename DerivedIX>
   IGL_INLINE void sort2(
