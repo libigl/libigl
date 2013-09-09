@@ -92,4 +92,5 @@ template std::basic_string<char, std::char_traits<char>, std::allocator<char> > 
 template Eigen::WithFormat<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const igl::matlab_format<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, std::string);
 template Eigen::WithFormat<Eigen::Array<int, -1, -1, 0, -1, -1> > const igl::matlab_format<Eigen::Array<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Array<int, -1, -1, 0, -1, -1> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
 template Eigen::WithFormat<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const igl::matlab_format<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
+template Eigen::WithFormat<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const igl::matlab_format<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
 #endif

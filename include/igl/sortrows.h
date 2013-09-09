@@ -24,7 +24,6 @@ namespace igl
     const bool ascending,
     Eigen::PlainObjectBase<DerivedX>& Y,
     Eigen::PlainObjectBase<DerivedIX>& IX);
-
 }
 
 #ifdef IGL_HEADER_ONLY

@@ -41,14 +41,6 @@ namespace igl
     Eigen::PlainObjectBase<DerivedA>& C,
     Eigen::PlainObjectBase<DerivedIA>& IA,
     Eigen::PlainObjectBase<DerivedIC>& IC);
-  // Faster if there are expected to be many matches
-  template <typename DerivedA, typename DerivedIA, typename DerivedIC>
-  IGL_INLINE void unique_rows_many(
-    const Eigen::PlainObjectBase<DerivedA>& A,
-    Eigen::PlainObjectBase<DerivedA>& C,
-    Eigen::PlainObjectBase<DerivedIA>& IA,
-    Eigen::PlainObjectBase<DerivedIC>& IC);
-
 }
 
 #ifdef IGL_HEADER_ONLY
