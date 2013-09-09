@@ -30,6 +30,14 @@ namespace igl
     const bool ascending,
     Eigen::PlainObjectBase<DerivedX>& Y,
     Eigen::PlainObjectBase<DerivedIX>& IX);
+  // Special case if size(X,dim) == 2
+  template <typename DerivedX, typename DerivedIX>
+  IGL_INLINE void sort2(
+    const Eigen::PlainObjectBase<DerivedX>& X,
+    const int dim,
+    const bool ascending,
+    Eigen::PlainObjectBase<DerivedX>& Y,
+    Eigen::PlainObjectBase<DerivedIX>& IX);
 
   // Act like matlab's [Y,I] = SORT(X) for std library vectors
   // Templates:
