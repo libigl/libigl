@@ -73,23 +73,29 @@ struct igl::min_quad_with_fixed_data
   // Whether A(unknown,unknown) is symmetric
   bool Auu_sym;
   // Indices of known variables
-  Eigen::Matrix<int,Eigen::Dynamic,1> known;
+  Eigen::VectorXi known;
   // Indices of unknown variables
-  Eigen::Matrix<int,Eigen::Dynamic,1> unknown;
+  Eigen::VectorXi unknown;
   // Indices of lagrange variables
-  Eigen::Matrix<int,Eigen::Dynamic,1> lagrange;
+  Eigen::VectorXi lagrange;
   // Indices of unknown variable followed by Indices of lagrange variables
-  Eigen::Matrix<int,Eigen::Dynamic,1> unknown_lagrange;
+  Eigen::VectorXi unknown_lagrange;
   // Matrix multiplied against Y when constructing right hand side
   Eigen::SparseMatrix<T> preY;
-  // Tells whether system is sparse
-  bool sparse;
-  // Lower triangle of LU decomposition of final system matrix
-  Eigen::SparseMatrix<T> L;
-  // Upper triangle of LU decomposition of final system matrix
-  Eigen::SparseMatrix<T> U;
-  // Dense LU factorization
-  Eigen::FullPivLU<Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> > lu;
+  enum SolverType
+  {
+    LLT = 0,
+    LDLT = 1,
+    LU = 2,
+    NUM_SOLVER_TYPES = 3
+  } solver_type;
+  // Solvers
+  Eigen::SimplicialLLT <Eigen::SparseMatrix<T > > llt;
+  Eigen::SimplicialLDLT<Eigen::SparseMatrix<T > > ldlt;
+  Eigen::SparseLU<Eigen::SparseMatrix<T, Eigen::ColMajor>, Eigen::COLAMDOrdering<int> >   lu;
+  // Debug
+  Eigen::SparseMatrix<T> NA;
+  Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> NB;
 };
 
 #ifdef IGL_HEADER_ONLY
