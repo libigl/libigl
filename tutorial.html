@@ -289,6 +289,27 @@ make
       <pre><code>
 #include &lt;igl/extra/some_extra_function.h&gt;
       </code></pre>
+
+      <h2 id=compress>Compressing into a single  .h/.cpp pair</h2>
+      <p>Calling the script:</p>
+      <pre><code>scripts/compress.sh igl.h igl.cpp</code></pre>
+      <p>will create a single header
+      <code>igl.h</code> and a single cpp file <code>igl.cpp</code>. This can
+      be easily incorporated into external projects. The disadvantage of this
+      seems to be that even to use a single function (e.g.
+      <code>cotmatrix</code>), compiling and linking against
+      <code>igl.cpp</code> will require linking to all of <code>libigl</code>'s
+      dependencies (<code>OpenGL</code>, <code>GLUT</code>,
+      <code>AntTweakBar</code>, <code>BLAS</code>).</p>
+
+      <p>Alternatively, you can compress everything into a single header file (analagous to IGL_HEADER_ONLY):</p>
+      <pre><code>scripts/compress.sh igl.h</code></pre>
+      <p>This seems to have the seem linking dependency troubles as above.</p>
+
+      <p><span class=todo>One option would be to be better about enclosing
+      things in <code>#ifndef IGL_NO_ANTTWEAKBAR</code> type guards.</span></p>
+
+
   </div>
   </body>
 </html>
