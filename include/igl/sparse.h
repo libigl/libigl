@@ -40,6 +40,7 @@ namespace igl
     const size_t m,
     const size_t n,
     Eigen::SparseMatrix<T>& X);
+  // THIS MAY BE SUPERSEDED BY EIGEN'S .sparseView
   // Convert a full, dense matrix to a sparse one
   //
   // Templates:
