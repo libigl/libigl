@@ -249,7 +249,7 @@ IGL_INLINE bool igl::MatlabWorkspace::find(
   // Handle vectors
   if(DerivedM::IsVectorAtCompileTime)
   {
-    assert(m==1 || n==1);
+    assert(m==1 || n==1 || (m==0 && n==0));
     M.resize(m*n);
   }else
   {
@@ -276,6 +276,12 @@ IGL_INLINE bool igl::MatlabWorkspace::find(
   }
   assert(i<=(int)data.size());
   mxArray * mx_data = data[i];
+  // Handle boring case where matrix is actually an empty dense matrix
+  if(mxGetNumberOfElements(mx_data) == 0)
+  {
+    M.resize(0,0);
+    return true;
+  }
   assert(mxIsSparse(mx_data));
   assert(mxGetNumberOfDimensions(mx_data) == 2);
   //cout<<name<<": "<<mxGetM(mx_data)<<" "<<mxGetN(mx_data)<<endl;
