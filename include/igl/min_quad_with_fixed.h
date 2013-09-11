@@ -23,21 +23,22 @@ namespace igl
   //   T  should be a eigen matrix primitive type like int or double
   // Inputs:
   //   A  n by n matrix of quadratic coefficients
-  //   B  n by 1 column of linear coefficients
   //   known list of indices to known rows in Z
   //   Y  list of fixed values corresponding to known rows in Z
-  //   Optional:
-  //     Aeq  m by n list of linear equality constraint coefficients
-  //     Beq  m by 1 list of linear equality constraint constant values
-  //     pd flag specifying whether A(unknown,unknown) is positive definite
+  //   Aeq  m by n list of linear equality constraint coefficients
+  //   pd flag specifying whether A(unknown,unknown) is positive definite
   // Outputs:
   //   data  factorization struct with all necessary information to solve
   //     using min_quad_with_fixed_solve
   // Returns true on success, false on error
-  template <typename T>
+  //
+  // Benchmark: For a harmonic solve on a mesh with 325K facets, matlab 2.2
+  // secs, igl/min_quad_with_fixed.h 7.1 secs
+  //
+  template <typename T, typename Derivedknown>
   IGL_INLINE bool min_quad_with_fixed_precompute(
     const Eigen::SparseMatrix<T>& A,
-    const Eigen::Matrix<int,Eigen::Dynamic,1> & known,
+    const Eigen::PlainObjectBase<Derivedknown> & known,
     const Eigen::SparseMatrix<T>& Aeq,
     const bool pd,
     min_quad_with_fixed_data<T> & data
@@ -51,15 +52,22 @@ namespace igl
   //   DerivedZ  type of Z (e.g. derived from VectorXd or MatrixXd)
   // Inputs:
   //   data  factorization struct with all necessary precomputation to solve
+  //   B  n by 1 column of linear coefficients
+  //   Beq  m by 1 list of linear equality constraint constant values
   // Outputs:
   //   Z  n by cols solution
   // Returns true on success, false on error
-  template <typename T,typename DerivedY,typename DerivedZ>
+  template <
+    typename T,
+    typename DerivedB, 
+    typename DerivedY,
+    typename DerivedBeq, 
+    typename DerivedZ>
   IGL_INLINE bool min_quad_with_fixed_solve(
     const min_quad_with_fixed_data<T> & data,
-    const Eigen::Matrix<T,Eigen::Dynamic,1> & B,
+    const Eigen::PlainObjectBase<DerivedB> & B,
     const Eigen::PlainObjectBase<DerivedY> & Y,
-    const Eigen::Matrix<T,Eigen::Dynamic,1> & Beq,
+    const Eigen::PlainObjectBase<DerivedBeq> & Beq,
     Eigen::PlainObjectBase<DerivedZ> & Z);
 }
 

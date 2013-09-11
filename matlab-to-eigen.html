@@ -216,9 +216,16 @@
         <td><pre><code>// build std::vector&ltEigen::Triplet&gt; IJV
 A.setFromTriplets(IJV);
         </code></pre></td>
-        <td>IJV and A should not be empty!</td>
+        <td>IJV and A should not be empty! (this might be fixed)</td>
       </tr>
 
+
+      <tr class=d0>
+        <td><pre><code>A = min(A,c);</code></pre></td>
+        <td><pre><code>C.array() = A.array().min(c);
+        </code></pre></td>
+        <td>Coefficient-wise minimum of matrix and scalar (or matching size matrix)</td>
+      </tr>
       <!-- Insert rows for each command pair -->
 
       <!-- Leave this here for copy and pasting
