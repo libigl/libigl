@@ -66,6 +66,8 @@ IGL_INLINE void igl::sparse(
   const Eigen::PlainObjectBase<DerivedD>& D,
   Eigen::SparseMatrix<T>& X)
 {
+#warning "This is obsolete. Call .sparseView() instead"
+  assert(false);
   using namespace std;
   using namespace Eigen;
   vector<Triplet<T> > DIJV;
@@ -89,6 +91,8 @@ template <typename DerivedD>
 IGL_INLINE Eigen::SparseMatrix<typename DerivedD::Scalar > igl::sparse(
   const Eigen::PlainObjectBase<DerivedD>& D)
 {
+#warning "This is obsolete. Call .sparseView() instead"
+  assert(false);
   Eigen::SparseMatrix<typename DerivedD::Scalar > X;
   igl::sparse(D,X);
   return X;
