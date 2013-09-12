@@ -1,4 +1,5 @@
 #include "texture_from_tga.h"
+#ifndef IGL_NO_OPENGL
 
 #include "tga.h"
 #include "report_gl_error.h"
@@ -59,3 +60,5 @@ IGL_INLINE bool igl::texture_from_tga(const std::string tga_file, GLuint & id)
     img->pixels);
   return id;
 }
+
+#endif

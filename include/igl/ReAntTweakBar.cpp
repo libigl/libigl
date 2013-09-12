@@ -1,4 +1,5 @@
 #include "ReAntTweakBar.h"
+#ifndef IGL_NO_ANTTWEAKBAR
 
 #include <cstdio>
 #include <cstring>
@@ -834,3 +835,4 @@ const std::vector<igl::ReTwCBItem> & igl::ReTwBar::get_cb_items()
 {
   return cb_items;
 }
+#endif

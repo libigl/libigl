@@ -1,18 +1,7 @@
 #include "up_axis.h"
+#ifndef IGL_NO_OPENGL
 
-#if __APPLE__
-#  include <OpenGL/gl.h>
-#elif defined(_WIN32)
-#    define NOMINMAX
-#    include <Windows.h>
-#    undef NOMINMAX
-#    include <GL/glew.h>
-#    include <GL/gl.h>
-#else
-#  define GL_GLEXT_PROTOTYPES
-#  include <GL/gl.h>
-#  include <GL/glext.h>
-#endif
+#include "OpenGL_convenience.h"
 
 IGL_INLINE void igl::up_axis(double * x, double * y, double * z)
 {
@@ -28,3 +17,4 @@ IGL_INLINE void igl::up_axis(const double *mv, double * x, double * y, double * 
   *z = -mv[2*4+1];
 }
 
+#endif

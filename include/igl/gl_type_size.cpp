@@ -1,4 +1,5 @@
 #include "gl_type_size.h"
+#ifndef IGL_NO_OPENGL
 #include <cassert>
 
 IGL_INLINE int igl::gl_type_size(const GLenum type)
@@ -21,3 +22,4 @@ IGL_INLINE int igl::gl_type_size(const GLenum type)
   }
   return -1;
 }
+#endif

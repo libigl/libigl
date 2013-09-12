@@ -1,20 +1,9 @@
 #ifndef IGL_TEXTURE_FROM_TGA_H
 #define IGL_TEXTURE_FROM_TGA_H
+#ifndef IGL_NO_OPENGL
 #include "igl_inline.h"
 
-#ifdef __APPLE__
-#  include <OpenGL/gl.h>
-#elif defined(_WIN32)
-#  define NOMINMAX
-#  include <Windows.h>
-#  undef NOMINMAX
-#  include <GL/glew.h>
-#  include <GL/gl.h>
-#else
-#  define GL_GLEXT_PROTOTYPES
-#  include <GL/gl.h>
-#  include <GL/glext.h>
-#endif
+#include "OpenGL_convenience.h"
 
 #include <string>
 
@@ -34,4 +23,5 @@ namespace igl
 #  include "texture_from_tga.cpp"
 #endif
 
+#endif
 #endif

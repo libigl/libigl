@@ -1,4 +1,5 @@
 #include "report_gl_error.h"
+#ifndef IGL_NO_OPENGL
 
 #include "verbose.h"
 
@@ -17,3 +18,4 @@ IGL_INLINE GLenum igl::report_gl_error()
 {
   return igl::report_gl_error(std::string(""));
 }
+#endif

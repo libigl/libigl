@@ -46,6 +46,7 @@
 #include <assert.h>
 
 #include "tga.h"
+#ifndef IGL_NO_OPENGL
 
 
 static char error[256];
@@ -548,3 +549,4 @@ void igl::writeTGA( igl::gliGenericImage* image, FILE *fp) {
   fwrite(image->pixels, image->height*image->width*image->components, sizeof(char),fp);
 }
 
+#endif

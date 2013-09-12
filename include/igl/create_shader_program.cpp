@@ -1,4 +1,5 @@
 #include "create_shader_program.h"
+#ifndef IGL_NO_OPENGL
 
 #include "load_shader.h"
 #include "print_program_info_log.h"
@@ -70,3 +71,4 @@ IGL_INLINE bool igl::create_shader_program(
 
   return true;
 }
+#endif

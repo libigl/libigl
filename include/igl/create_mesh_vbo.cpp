@@ -1,4 +1,5 @@
 #include "create_mesh_vbo.h"
+#ifndef IGL_NO_OPENGL
 
 #include "create_vector_vbo.h"
 #include "create_index_vbo.h"
@@ -33,4 +34,5 @@ IGL_INLINE void igl::create_mesh_vbo(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
+#endif
 #endif

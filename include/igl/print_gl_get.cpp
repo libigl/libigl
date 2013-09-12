@@ -1,4 +1,5 @@
 #include "print_gl_get.h"
+#ifndef IGL_NO_OPENGL
 
 #include <cstdio>
 IGL_INLINE void igl::print_gl_get(GLenum pname)
@@ -29,3 +30,4 @@ IGL_INLINE void igl::print_gl_get(GLenum pname)
       fprintf(stderr,"ERROR in print_gl_get(), gl enum not recognized.\n");
   }
 }
+#endif

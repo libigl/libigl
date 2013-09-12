@@ -3,24 +3,53 @@
     <title>libigl developer tutorial</title>
     <link href="./style.css" rel="stylesheet" type="text/css">
   </head>
-  <body class=article_body>
-    <div class=article>
-    <a href=.><img src=libigl-logo.jpg alt="igl logo" class=center></a>
-    <h1>Using the libigl library</h1>
-    <p>
-      The <a href=.>libigl</a> library is a collection of useful/reusable/sharable C++ functions
-      with very few external <a href="#dependencies">dependencies</a>. The
-      library may be used as a <a href="#header_library">"headers only"
-      library</a> or a <a href=#static_library>statically linked library</a>.
-    </p>
+  <body>
+    <div id=fixed_sidebar>
+      <ul>
+        <li>
+          <a href=#header_library>Headers (.h) only library</a>
+          <ul>
+            <li><a href=#widget>IGL_HEADER_ONLY widget</a></li>
+            <li><a href=#header_benefits_drawbacks>Benefits and drawbacks</a></li>
+          </ul>
+        </li>
+        <li> 
+          <a href=#static_library>Statically linked library (libigl.a)</a>
+          <ul>
+            <li><a href=#static_benefits_drawbacks>Benefits and drawbacks</a></li>
+          </ul>
+        </li>
+        <li> 
+          <a href=#compress>Compressed igl.h/igl.cpp pair</a>
+          <ul>
+            <li><a href=#compress_benefits_drawbacks>Benefits and drawbacks</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href=#dependencies>Dependencies</a>
+        </li>
+        <li><a href=#matlab>Conversion from matlab</a>
+      <ul>
+    </div> 
+    <div id=container>
+    <div class=article_outer>
+    <div class=article_inner>
+      <a href=.><img src=libigl-logo.jpg alt="igl logo" class=center></a>
+      <h1>Using the libigl library</h1>
+      <p>
+        The <a href=.>libigl</a> library is a collection of useful/reusable/sharable C++ functions
+        with very few external <a href="#dependencies">dependencies</a>. The
+        library may be used as a <a href="#header_library">"headers only"
+        library</a>, a <a href=#static_library>statically linked library</a>, or as a compressed <a href="#compress">.h/.cpp pair</a>.
+      </p>
 
-    <p>
-      This duality is illustrated in the example
-      <code>examples/example_fun</code>. When built this example compiles two
-      binaries, one using the <code>example_fun</code> routine of the igl
-      library, either as a headers-only library or linking against the igl
-      static library.
-    </p>
+      <p>
+        This duality between statically compiled and header-only is illustrated
+        in the example <code>examples/example_fun</code>. When built, this example
+        compiles two binaries, one using the <code>example_fun</code> routine of
+        the igl library, either as a headers-only library or linking against the
+        igl static library.
+      </p>
 
       <h2 id=header_library>Headers (.h) only library</h2>
       <p>
@@ -40,7 +69,7 @@
         at compile time if need be.
       </p>
 
-      <p>
+      <p id=widget>
         One may also define <code>IGL_HEADER_ONLY</code> not only on a per-file
         basis, but a <i>per-include</i> basis. For example it may be useful for a
         project to use the static library for most functionality from IGL, but then
@@ -70,7 +99,7 @@
       purposes.</div>
       
 
-      <h3>Benefits of headers-only library</h3>
+      <h3 id=header_benefits_drawbacks>Benefits of headers-only library</h3>
       <ul>
         <li><strong>Easy templates:</strong> When using the libigl library as a
         headers-only library no special care need be taken when using templated
@@ -189,7 +218,7 @@ make clean
 make
         </code></pre>
 
-        <h3>Benefits of static library</h3>
+        <h3 id=static_benefits_drawbacks>Benefits of static library</h3>
         <ul>
           <li><strong>Faster compile time:</strong> Because the libigl library
           is already compiled, only the new code in ones project must be
@@ -208,35 +237,107 @@ make
           exposing templated functions.</li>
         </ul>
 
+      <h2 id=compress>Compressed .h/.cpp pair</h2>
+      <p>Calling the script:</p>
+      <pre><code>scripts/compress.sh igl.h igl.cpp</code></pre>
+      <p>will create a single header
+      <code>igl.h</code> and a single cpp file <code>igl.cpp</code>. 
+
+      <p>Alternatively, you can also compress everything into a single header file (analagous to IGL_HEADER_ONLY):</p>
+      <pre><code>scripts/compress.sh igl.h</code></pre>
+      
+      <h3 id=compress_benefits_drawbacks>Benefits of compressed .h/.cpp pair</h3>
+      <ul>
+        <li><strong>Easy incorporation:</strong> This can be easily incorporated
+        into external projects.</li>
+      </ul>
+      <h3>Drawbacks of compressed .h/.cpp pair</h3>
+      <ul>
+        <li><strong>Hard to debug/edit:</strong> The compressed files are
+        automatically generated. They're huge and should not be edited. Thus
+        debugging and editting are near impossible.</li>
+        <li><strong>Compounded dependencies:</strong>
+        An immediate disadvantage of this
+        seems to be that even to use a single function (e.g.
+        <code>cotmatrix</code>), compiling and linking against
+        <code>igl.cpp</code> will require linking to all of <code>libigl</code>'s
+        dependencies (<code>OpenGL</code>, <code>GLUT</code>,
+        <code>AntTweakBar</code>, <code>BLAS</code>). However, because all
+        depencies other than Eigen should be encapsulated between
+        <code>#ifndef</code> guards (e.g. <code>#ifndef IGL_NO_OPENGL</code>, it
+        is possible to ignore certain functions that have such dependencies.</li>
+        <li><strong>Long compile:</strong> Compiling <code>igl.cpp</code> takes a long time and isn't easily parallelized (no <code>make -j12</code> equivalent).</li>
+      </ul>
+
+      <p>Here's a tiny test example using <code>igl.h</code> and <code>igl.cpp</code>. Save the following in <code>test.cpp</code>:</p>
+      <pre><code>
+#include &lt;igl.h&gt;
+#include &lt;Eigen/Core&gt;
+
+int main(int argc, char * argv[])
+{
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi F;
+  return (argc&gt;=2 &amp;&amp; igl::read(argv[1],V,F)?0:1);
+}
+      </code></pre>
+      <p>Then compile <code>igl.cpp</code> with:
+      <pre><code>
+g++ -o igl.o -c igl.cpp -I/opt/local/include/eigen3 -DIGL_NO_OPENGL -DIGL_NO_ANTTWEAKBAR
+      </code></pre>
+      <p>Notice that we're using <code>-DIGL_NO_OPENGL -DIGL_NO_ANTTWEAKBAR</code> to disable any libigl dependencies on OpenGL and AntTweakBar.</p>
+
+      <p>Now compile <code>test.cpp</code> with:
+      <pre><code>
+g++ -g -I/opt/local/include/eigen3/ -I/usr/local/igl/libigl/ -L/usr/local/igl/libigl/ -ligl -DIGL_NO_OPENGL -DIGL_NO_ANTTWEAKBAR -o test
+      </code></pre>
+
+      <p>Try running it with:</p>
+      <pre><code>
+./test path/to/mesh.obj
+      </code></pre>
+
       <h2 id="dependencies">Dependencies</h2>
       <p>
         By design the libigl library has very few external dependencies.
       </p>
         <h3>Mandatory dependencies</h3>
-        <p>
-          Besides the standard C++ library, there are a few dependencies,
-          without which the main library will not compile or work properly.
-          These are:
+        <p> <a href=http://eigen.tuxfamily.org/>Eigen3</a> and the Standard
+        Template Library (STL) are the only truly mandatory dependencies.
+        Without them libigl will not compile or work properly.</p>
+        <p> OpenGL is an <i>assumed</i> dependency, but is in fact also
+        optional. All OpenGL-dependent functions may be disabled by defining
+        the <code>IGL_NO_OPENGL</code> preprocessor macro.</p>
         </p>
-        <ul>
-          <li><a href=http://eigen.tuxfamily.org/>Eigen3</a></li>
-          <li>OpenGL <span class=todo>implement IGL_NO_OPENGL compiler option</span></li>
-          <li>GLUT <span class=todo>implement IGL_NO_GLUT compiler option</span></li>
-        </ul>
+        <p> Likewise, 
+          <a href="http://www.antisphere.com/Wiki/tools:anttweakbar">AntTweakBar</a>
+          is an 
+        <i>assumed</i> dependency, similarly diabled by defining 
+        the <code>IGL_NO_ANTTWEAKBAR</code> preprocessor macro.</p>
+
+        <p><span class=todo>Each IGL_NO_XXX should just be replaced by a libiglXXX.a extra</span></p>
         <h3>Optional dependencies</h3>
         <p>
-          Certain functions and classes included the libigl library have
-          external dependencies by construction (e.g. the matlab_interface
-          routines are only useful when matlab is present anyway). These are
-          <strong>never</strong> compiled by default into the static igl
-          library <span class=todo>and are only exposed through compiler
-          options</span>. These are:
+          Certain <i>extra</i> functions and classes included the libigl
+          library have external dependencies by construction (e.g. the
+          matlab_interface routines are only useful when matlab is present
+          anyway). These are <strong>never</strong> compiled by default into
+          the static igl library, rather they are compiled as "extras" (e.g.
+          libiglmatlab.a contains the MATLAB-dependent functions).
         </p>
-        <ul>
-          <li>MATLAB</li>
-          <li><a href="http://www.antisphere.com/Wiki/tools:anttweakbar">AntTweakBar</a></li>
-        </ul>
-      <h1>Converting matlab code to C++ using IGL and Eigen</h1>
+        <p>Currently these include:<p>
+        <table>
+          <tr class=header><th>Extra</th><th>Dependency</th></tr>
+          <tr class=d0><td>libiglmatlab.a</td><td>MATLAB</td></tr>
+          <tr class=d1><td>libiglmosek.a</td><td>Mosek</td></tr>
+          <tr class=d0><td>libigltetgen.a</td><td>TetGen</td></tr>
+          <tr class=d1><td>libiglxml.a</td><td>TinyXml2</td></tr>
+          <tr class=d0><td>libiglpng.a</td><td>LibPNG</td></tr>
+          <tr class=d1><td>libiglembree.a</td><td>Embree</td></tr>
+        </table>
+        <p>Some of our examples (<code>libigl/examples</code>) also depend on GLUT.</p>
+
+      <h2 id=matlab>Converting matlab code to C++ using IGL and Eigen</h2>
       <p>
         Eigen's matrix API often makes it fairly to translate to and from
         matlab code (Eigen provides a <a
@@ -246,10 +347,17 @@ make
         href="matlab-to-eigen.html">Our own translation table</a> shows a list
         of common matlab functions and their igl-eigen equivalents.  
       </p>
-      <p>See also: <a href=style_guidelines.html>style guidlines</a>, <a
-      href=doc.html>auto-documentation</a>, <a
-      href=file-formats/index.html>file formats</a></p>
+
       <h3>Including OpenGL</h3>
+      <p>Just include the convenience header, which takes care of system dependent paths, <code>glew</code>, etc.:</p>
+      <pre><code>
+#include "OpenGL_convenience.h"
+      </code></pre>
+      <!--<p>Likewise for GLUT:</p>
+      <pre><code>
+#include "GLUT_convenience.h"
+      </code></pre>-->
+      <del>
       <p>
       A standard include for the OpenGL headers should be placed in the .cpp file if possible. To ensure compilability on Mac OS X, Windows and Linux, use:
       <pre><code>
@@ -268,7 +376,7 @@ make
 #endif
       </code></pre>
       </p>
-      <p><span class=todo>This should be encapsulated in a single utility header</span></p>
+      </del>
       <h3>Including headers to other igl functions</h3>
       <p>
       Source files in the main igl directory should include other libigl headers using the name of the file in quotation marks:
@@ -290,26 +398,14 @@ make
 #include &lt;igl/extra/some_extra_function.h&gt;
       </code></pre>
 
-      <h2 id=compress>Compressing into a single  .h/.cpp pair</h2>
-      <p>Calling the script:</p>
-      <pre><code>scripts/compress.sh igl.h igl.cpp</code></pre>
-      <p>will create a single header
-      <code>igl.h</code> and a single cpp file <code>igl.cpp</code>. This can
-      be easily incorporated into external projects. The disadvantage of this
-      seems to be that even to use a single function (e.g.
-      <code>cotmatrix</code>), compiling and linking against
-      <code>igl.cpp</code> will require linking to all of <code>libigl</code>'s
-      dependencies (<code>OpenGL</code>, <code>GLUT</code>,
-      <code>AntTweakBar</code>, <code>BLAS</code>).</p>
 
-      <p>Alternatively, you can compress everything into a single header file (analagous to IGL_HEADER_ONLY):</p>
-      <pre><code>scripts/compress.sh igl.h</code></pre>
-      <p>This seems to have the seem linking dependency troubles as above.</p>
+      <hr>
+      <p>See also: <a href=style_guidelines.html>style guidlines</a>, <a
+      href=doc.html>auto-documentation</a>, <a
+      href=file-formats/index.html>file formats</a></p>
 
-      <p><span class=todo>One option would be to be better about enclosing
-      things in <code>#ifndef IGL_NO_ANTTWEAKBAR</code> type guards.</span></p>
-
-
+  </div>
+  </div>
   </div>
   </body>
 </html>

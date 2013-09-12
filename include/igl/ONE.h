@@ -1,6 +1,6 @@
 #ifndef IGL_ONE_H
 #define IGL_ONE_H
-// Often one needs a reference to a dummy variable containing zero as its
+// Often one needs a reference to a dummy variable containing one as its
 // value, for example when using AntTweakBar's
 // TwSetParam( "3D View", "opened", TW_PARAM_INT32, 1, &INT_ONE);
 namespace igl

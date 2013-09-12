@@ -1,22 +1,11 @@
 #ifndef IGL_UNIFORM_TYPE_TO_STRING_H
 #define IGL_UNIFORM_TYPE_TO_STRING_H
+#ifndef IGL_NO_OPENGL
 #include "igl_inline.h"
 
 #include <string>
 
-#ifdef __APPLE__
-#  include <OpenGL/gl.h>
-#elif defined(_WIN32)
-#  define NOMINMAX
-#  include <Windows.h>
-#  undef NOMINMAX
-#  include <GL/glew.h>
-#  include <GL/gl.h>
-#else
-#  define GL_GLEXT_PROTOTYPES
-#  include <GL/gl.h>
-#  include <GL/glext.h>
-#endif
+#include "OpenGL_convenience.h"
 
 namespace igl
 {
@@ -32,4 +21,5 @@ namespace igl
 #  include "uniform_type_to_string.cpp"
 #endif
 
+#endif
 #endif

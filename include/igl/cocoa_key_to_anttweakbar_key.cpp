@@ -1,4 +1,5 @@
 #include "cocoa_key_to_anttweakbar_key.h"
+#ifndef IGL_NO_ANTTWEAKBAR
 
 #include <AntTweakBar.h>
 
@@ -72,3 +73,4 @@ IGL_INLINE int igl::cocoa_key_to_anttweakbar_key(int key)
   }
   return key;
 }
+#endif

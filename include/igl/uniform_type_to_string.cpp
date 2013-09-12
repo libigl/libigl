@@ -1,4 +1,5 @@
 #include "uniform_type_to_string.h"
+#ifndef IGL_NO_OPENGL
 
 IGL_INLINE std::string igl::uniform_type_to_string(const GLenum type)
 {
@@ -62,3 +63,4 @@ IGL_INLINE std::string igl::uniform_type_to_string(const GLenum type)
       return "UNKNOWN_TYPE";
   }
 }
+#endif

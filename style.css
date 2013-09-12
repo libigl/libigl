@@ -8,6 +8,7 @@ tr.header th
   background-color: #ffb;
   padding-left: 10px;
   padding-right: 20px;
+  text-align: left;
 }
 tr.d0 td 
 {
@@ -120,22 +121,70 @@ img.center
   margin-right: auto;
 }
 
-.article_body
+body, html
 {
   margin: 0px;
   padding: 0px;
-  text-align: center;
   background-color: #bbb;
+  font-family: "HelveticaNeueLight", "HelveticaNeue-Light", "Helvetica Neue Light", "HelveticaNeue", "Helvetica Neue", 'TeXGyreHerosRegular', "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif; font-weight:300; font-stretch:normal;
+  height: 100%;
 }
 
-.article
+.article_outer
 {
+  padding: 0px;
+  margin:0px auto;
+  /* 600px = 2*300px wider that article_inner*/
+  width: 1415px;
+}
+
+.article_inner
+{
+  padding: 20px;
+  position:relative;
   font-size: 14pt;
   background-color: #fff;
   margin:0px auto;
-  padding: 20px;
   border-left: 1px solid #888;
   border-right: 1px solid #888;
-  width: 960px;
+  width: 815px;
   text-align: left;
 }
+
+#container
+{
+  position:absolute;
+  top:0px;
+  bottom: -0px;
+  left:0px;
+  right:0px;
+  overflow:auto;
+}
+
+#fixed_sidebar
+{
+  margin: 0px;
+  position:absolute;
+  padding: 5px 10px;
+  top:10px;
+  left:0px;
+  right:0px;
+  background-color: #fff;
+  overflow:hidden;
+  width: 250px;
+  z-index:100;
+  border-right: 1px solid #888;
+  border-top: 1px solid #888;
+  border-bottom: 1px solid #888;
+}
+ul
+{
+  margin:0px;
+  padding: 0px 20px;
+  list-style-type:none;
+}
+li { font-size: 100% }
+li li { font-size: 90% }
+li li li { font-size: 80% }
+li li li li { font-size: 70% }
+li li li li li { font-size: 60%}

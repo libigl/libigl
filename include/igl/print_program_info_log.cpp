@@ -1,4 +1,5 @@
 #include "print_program_info_log.h"
+#ifndef IGL_NO_OPENGL
 
 #include <cstdio>
 #include <stdlib.h>
@@ -19,3 +20,4 @@ IGL_INLINE void igl::print_program_info_log(const GLuint obj)
     free(infoLog);
   }
 }
+#endif

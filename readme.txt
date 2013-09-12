@@ -14,7 +14,6 @@ listed below.
 Eigen3  Last tested with Eigen Version 3.1.2
 AntTweakBar  Last tested 1.14 (see External)
 OpenGL
-GLUT
 GLEW  Windows only
 
   = Optional =
