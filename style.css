@@ -2,6 +2,13 @@ table
 {
   border-spacing: 0px;
 }
+
+table.full
+{
+  width: 100%;
+  table-layout: fixed;
+}
+
 tr.header th
 {
   border-bottom: 1px solid; 
@@ -48,9 +55,9 @@ tr.gotcha2 td
 tr pre
 {
   background-color: inherit;
+  border: 1px dashed #888;
   overflow: auto;
   padding: none;
-  border: none;
 }
 
 .note:before
@@ -188,3 +195,4 @@ li li { font-size: 90% }
 li li li { font-size: 80% }
 li li li li { font-size: 70% }
 li li li li li { font-size: 60%}
+
