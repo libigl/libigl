@@ -1,5 +1,6 @@
 #ifndef IGL_DRAW_BEACH_BALL_H
 #define IGL_DRAW_BEACH_BALL_H
+#ifndef IGL_NO_OPENGL
 #include "igl_inline.h"
 
 namespace igl
@@ -13,4 +14,5 @@ namespace igl
   #endif
 }
 
+#endif
 #endif

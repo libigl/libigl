@@ -1,5 +1,6 @@
 #ifndef IGL_REANTTWEAKBAR_H
 #define IGL_REANTTWEAKBAR_H
+#ifndef IGL_NO_ANTTWEAKBAR
 #include "igl_inline.h"
 // ReAntTweakBar is a minimal wrapper for the AntTweakBar library that allows
 // "bars" to be saved and load from disk. Changing your existing app that uses
@@ -272,4 +273,5 @@ namespace igl
 #  include "ReAntTweakBar.cpp"
 #endif
 
+#endif
 #endif

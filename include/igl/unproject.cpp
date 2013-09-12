@@ -1,17 +1,7 @@
 #include "unproject.h"
+#ifndef IGL_NO_OPENGL
 
-#ifdef __APPLE__
-# include <OpenGL/gl.h>
-# include <OpenGL/glu.h>
-#else
-#  ifdef _WIN32
-#    define NOMINMAX
-#    include <Windows.h>
-#    undef NOMINMAX
-#  endif
-# include <GL/gl.h>
-# include <GL/glu.h>
-#endif
+#include "OpenGL_convenience.h"
 
 IGL_INLINE int igl::unproject(
   const double winX,
@@ -30,3 +20,4 @@ IGL_INLINE int igl::unproject(
   glGetIntegerv(GL_VIEWPORT, VP);
   return gluUnProject(winX,winY,winZ,MV,P,VP,objX,objY,objZ);
 }
+#endif

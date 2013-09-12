@@ -1,3 +1,4 @@
+0.2.3  More explicits, active set method, opengl/anttweakbar guards
 0.2.2  More explicit instanciations, faster sorts and uniques
 0.2.1  Bug fixes in barycenter and doublearea found by Martin Bisson
 0.2.0  XML serializer more stable and fixed bug in remove_duplicate_vertices

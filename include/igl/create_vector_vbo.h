@@ -1,23 +1,12 @@
 #ifndef IGL_CREATE_VECTOR_VBO_H
 #define IGL_CREATE_VECTOR_VBO_H
+#ifndef IGL_NO_OPENGL
 #include "igl_inline.h"
 // NOTE: It wouldn't be so hard to template this using Eigen's templates
 
 #include <Eigen/Core>
 
-#ifdef __APPLE__
-#  include <OpenGL/gl.h>
-#elif defined(_WIN32)
-#  define NOMINMAX
-#  include <Windows.h>
-#  undef NOMINMAX
-#  include <GL/glew.h>
-#  include <GL/gl.h>
-#else
-#  define GL_GLEXT_PROTOTYPES
-#  include <GL/gl.h>
-#  include <GL/glext.h>
-#endif
+#include "OpenGL_convenience.h"
 
 // Create a VBO (Vertex Buffer Object) for a list of vectors:
 // GL_ARRAY_BUFFER for the vectors (V)
@@ -41,4 +30,5 @@ namespace igl
 #  include "create_vector_vbo.cpp"
 #endif
 
+#endif
 #endif

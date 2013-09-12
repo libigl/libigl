@@ -1,5 +1,6 @@
 #ifndef IGL_COCOA_KEY_TO_ANTTWEAKBAR_KEY_H
 #define IGL_COCOA_KEY_TO_ANTTWEAKBAR_KEY_H
+#ifndef IGL_NO_ANTTWEAKBAR
 #include "igl_inline.h"
 
 
@@ -18,4 +19,5 @@ namespace igl
 #  include "cocoa_key_to_anttweakbar_key.cpp"
 #endif
 
+#endif
 #endif

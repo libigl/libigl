@@ -1,5 +1,6 @@
 #ifndef IGL_DRAW_POINT_H
 #define IGL_DRAW_POINT_H
+#ifndef IGL_NO_OPENGL
 #include "igl_inline.h"
 namespace igl
 {
@@ -27,4 +28,5 @@ namespace igl
 #  include "draw_point.cpp"
 #endif
 
+#endif
 #endif

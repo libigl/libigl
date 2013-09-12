@@ -1,19 +1,9 @@
 #include "project.h"
+#ifndef IGL_NO_OPENGL
 #include <iostream>
 #include "report_gl_error.h"
 
-#ifdef __APPLE__
-#  include <OpenGL/gl.h>
-#  include <OpenGL/glu.h>
-#else
-#  ifdef _WIN32
-#    define NOMINMAX
-#    include <Windows.h>
-#    undef NOMINMAX
-#  endif
-#  include <GL/gl.h>
-#  include <GL/glu.h>
-#endif
+#include "OpenGL_convenience.h"
 
 IGL_INLINE int igl::project(
   const double objX,
@@ -72,3 +62,4 @@ IGL_INLINE int igl::project(
 
   return gluProject(objX,objY,objZ,MV,P,VP,winX,winY,winZ);
 }
+#endif

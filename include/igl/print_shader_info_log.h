@@ -1,20 +1,9 @@
 #ifndef IGL_PRINT_SHADER_INFO_LOG_H
 #define IGL_PRINT_SHADER_INFO_LOG_H
+#ifndef IGL_NO_OPENGL
 #include "igl_inline.h"
 
-#ifdef __APPLE__
-#  include <OpenGL/gl.h>
-#elif defined(_WIN32)
-#  define NOMINMAX
-#  include <Windows.h>
-#  undef NOMINMAX
-#  include <GL/glew.h>
-#  include <GL/gl.h>
-#else
-#  define GL_GLEXT_PROTOTYPES
-#  include <GL/gl.h>
-#  include <GL/glext.h>
-#endif
+#include "OpenGL_convenience.h"
 
 namespace igl
 {
@@ -27,4 +16,5 @@ namespace igl
 #  include "print_shader_info_log.cpp"
 #endif
 
+#endif
 #endif

@@ -14,10 +14,11 @@ $(info Hello, $(IGL_USERNAME)!)
 
 # optimized default settings
 all: LFLAGS +=
-OPTFLAGS+=-O3 -DNDEBUG $(OPENMP) $(SSE) 
+OPTFLAGS+=-O3 -DNDEBUG $(OPENMP)
 #debug: OPTFLAGS= -g -Wall -Werror
 debug: OPTFLAGS= -g -Wall
 CFLAGS += $(OPTFLAGS)
+#CFLAGS += -DIGL_NO_OPENGL -DIGL_NO_ANTTWEAKBAR
 
 EXTRA_DIRS=
 ifeq ($(IGL_WITH_TETGEN),1)

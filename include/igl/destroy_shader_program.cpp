@@ -1,4 +1,5 @@
 #include "destroy_shader_program.h"
+#ifndef IGL_NO_OPENGL
 #include <cstdio>
 #include "report_gl_error.h"
 
@@ -36,3 +37,4 @@ IGL_INLINE bool igl::destroy_shader_program(const GLuint id)
   glDeleteProgram(id);
   return true;
 }
+#endif

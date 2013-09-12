@@ -1,15 +1,7 @@
 #include "draw_beach_ball.h"
+#ifndef IGL_NO_OPENGL
 
-#ifdef __APPLE__
-#  include <OpenGL/gl.h>
-#elif defined(_WIN32)
-#  define NOMINMAX
-#  include <Windows.h>
-#  undef NOMINMAX
-#  include <GL/gl.h>
-#else
-#  include <GL/gl.h>
-#endif
+#include "OpenGL_convenience.h"
 
 // I'm not sure why windows would need it this way:
 // http://lists.cairographics.org/archives/cairo/2008-January/012722.html
@@ -285,3 +277,4 @@ IGL_INLINE void igl::draw_beach_ball()
 
   (cm ? glEnable(GL_COLOR_MATERIAL):glDisable(GL_COLOR_MATERIAL));
 }
+#endif

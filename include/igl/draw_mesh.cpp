@@ -1,4 +1,5 @@
 #include "draw_mesh.h"
+#ifndef IGL_NO_OPENGL
 
 IGL_INLINE void igl::draw_mesh(
   const Eigen::MatrixXd & V,
@@ -337,3 +338,4 @@ IGL_INLINE void igl::draw_mesh(
   glEnd();
 }
 
+#endif

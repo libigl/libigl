@@ -1,20 +1,8 @@
 #include "draw_point.h"
+#ifndef IGL_NO_OPENGL
 
 // Implementation
-
-#if __APPLE__
-#  include <OpenGL/gl.h>
-#elif defined(_WIN32)
-#    define NOMINMAX
-#    include <Windows.h>
-#    undef NOMINMAX
-#    include <GL/glew.h>
-#    include <GL/gl.h>
-#else
-#  define GL_GLEXT_PROTOTYPES
-#  include <GL/gl.h>
-#  include <GL/glext.h>
-#endif
+#include "OpenGL_convenience.h"
 
 #include <cassert>
 #include <cmath>
@@ -85,3 +73,4 @@ IGL_INLINE void igl::draw_point(
   //if(old_depth_test) glEnable(GL_DEPTH_TEST);
 }
 
+#endif

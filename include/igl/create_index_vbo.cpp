@@ -1,5 +1,6 @@
 #include "create_index_vbo.h"
 
+#ifndef IGL_NO_OPENGL
 // http://www.songho.ca/opengl/gl_vbo.html#create
 IGL_INLINE void igl::create_index_vbo(
   const Eigen::MatrixXi & F,
@@ -33,6 +34,7 @@ IGL_INLINE void igl::create_index_vbo(
   // bind with 0, so, switch back to normal pointer operation
   glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 }
+#endif
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization

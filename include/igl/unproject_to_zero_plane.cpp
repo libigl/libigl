@@ -1,17 +1,7 @@
 #include "unproject_to_zero_plane.h"
+#ifndef IGL_NO_OPENGL
 
-#ifdef __APPLE__
-# include <OpenGL/gl.h>
-# include <OpenGL/glu.h>
-#else
-#  ifdef _WIN32
-#    define NOMINMAX
-#    include <Windows.h>
-#    undef NOMINMAX
-#  endif
-# include <GL/gl.h>
-# include <GL/glu.h>
-#endif
+#include "OpenGL_convenience.h"
 
 #include "project.h"
 #include "unproject.h"
@@ -28,3 +18,4 @@ IGL_INLINE int igl::unproject_to_zero_plane(
   return igl::unproject(winX, winY, winOrigin[2], objX, objY, objZ);
 }
 
+#endif
