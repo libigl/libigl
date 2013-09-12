@@ -202,8 +202,6 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
       // Resort to LU
       // Bottleneck >1/2
       data.lu.compute(NA); 
-      MatrixXd NAf;
-      full(NA,NAf);
       //std::cout<<"NA=["<<std::endl<<NA<<std::endl<<"];"<<std::endl;
       switch(data.lu.info())
       {
