@@ -1,4 +1,5 @@
 ../libigl/exclude.lst
+../libigl/external/SuperLU*
 ../libigl/exclude.lst*
 *.hg*
 *.git*
