@@ -5,6 +5,8 @@ IGL_INLINE void igl::full(
   const Eigen::SparseMatrix<T> & A,
   Eigen::PlainObjectBase<DerivedB>& B)
 {
+#warning "Obsolete. Just call B = Matrix(A)"
+  assert(false);
   using namespace Eigen;
   B = PlainObjectBase<DerivedB >::Zero(A.rows(),A.cols());
   // Iterate over outside
@@ -23,6 +25,8 @@ IGL_INLINE void igl::full(
   const Eigen::PlainObjectBase<DerivedA>& A,
   Eigen::PlainObjectBase<DerivedB>& B)
 {
+#warning "Obsolete. Just call B = Matrix(A)"
+  assert(false);
   B = A;
 }
 

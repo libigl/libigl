@@ -77,17 +77,25 @@ namespace igl
 struct igl::active_set_params
 {
   // Input parameters for active_set:
-  //   Auu_pd  whethter Auu is positive definite {false}
+  //   Auu_pd  whether Auu is positive definite {false}
   //   max_iter  Maximum number of iterations ({0} = Infinity)
   //   inactive_threshold  Threshold on Lagrange multiplier values to determine
   //     whether to keep constraints active {EPS}
+  //   constraint_threshold  Threshold on whether constraints are violated (0
+  //     is perfect) {EPS}
+  //   solution_diff_threshold  Threshold on the squared norm of the difference
+  //     between two consecutive solutions {EPS}
   bool Auu_pd;
   int max_iter;
   double inactive_threshold;
+  double constraint_threshold;
+  double solution_diff_threshold;
   active_set_params():
     Auu_pd(false),
     max_iter(-1),
-    inactive_threshold(igl::DOUBLE_EPS)
+    inactive_threshold(igl::DOUBLE_EPS),
+    constraint_threshold(igl::DOUBLE_EPS),
+    solution_diff_threshold(igl::DOUBLE_EPS)
     {};
 };
 

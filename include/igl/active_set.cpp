@@ -1,6 +1,7 @@
 #include "active_set.h"
 #include "min_quad_with_fixed.h"
 #include "slice.h"
+#include "matlab_format.h"
 
 #include <iostream>
 #include <limits>
@@ -79,42 +80,70 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     assert(Z.rows() == n);
     assert(Z.cols() == 1);
   }
+  assert(known.cols() == 1);
+  // Number of knowns
+  const int nk = known.size();
 
   // Initialize active sets
-  Matrix<bool,Dynamic,1> as_lx(n,1);
-  Matrix<bool,Dynamic,1> as_ux(n,1);
-  Matrix<bool,Dynamic,1> as_ieq(Aieq.rows(),1);
+  typedef bool BOOL;
+#define TRUE true
+#define FALSE false
+  Matrix<BOOL,Dynamic,1> as_lx = Matrix<BOOL,Dynamic,1>::Constant(n,1,FALSE);
+  Matrix<BOOL,Dynamic,1> as_ux = Matrix<BOOL,Dynamic,1>::Constant(n,1,FALSE);
+  Matrix<BOOL,Dynamic,1> as_ieq(Aieq.rows(),1);
+
+  // Keep track of previous Z for comparison
+  Eigen::PlainObjectBase<DerivedZ> old_Z;
+  old_Z = PlainObjectBase<DerivedZ>::Constant(
+      n,1,numeric_limits<typename DerivedZ::Scalar>::max());
 
   int iter = 0;
   while(true)
   {
     // FIND BREACHES OF CONSTRAINTS
+    int new_as_lx = 0;
+    int new_as_ux = 0;
     if(Z.size() > 0)
     {
       for(int z = 0;z < n;z++)
       {
         if(Z(z) < lx(z))
         {
-          as_lx(z) = true;
+          new_as_lx += (as_lx(z)?0:1);
+          //new_as_lx++;
+          as_lx(z) = TRUE;
         }
         if(Z(z) > ux(z))
         {
-          as_ux(z) = true;
+          new_as_ux += (as_ux(z)?0:1);
+          //new_as_ux++;
+          as_ux(z) = TRUE;
         }
       }
+      //cout<<"new_as_lx: "<<new_as_lx<<endl;
+      //cout<<"new_as_ux: "<<new_as_ux<<endl;
+      const double diff = (Z-old_Z).squaredNorm();
+      //cout<<"diff: "<<diff<<endl;
+      if(diff < params.solution_diff_threshold)
+      {
+        ret = SOLVER_STATUS_CONVERGED;
+        break;
+      }
+      old_Z = Z;
     }
 
-    const int as_lx_count = count(as_lx.data(),as_lx.data()+n,true);
-    const int as_ux_count = count(as_ux.data(),as_ux.data()+n,true);
+    const int as_lx_count = count(as_lx.data(),as_lx.data()+n,TRUE);
+    const int as_ux_count = count(as_ux.data(),as_ux.data()+n,TRUE);
+
     // PREPARE FIXED VALUES
     Eigen::PlainObjectBase<Derivedknown> known_i;
-    known_i.resize((int)known.size() + as_lx_count + as_ux_count,1);
+    known_i.resize(nk + as_lx_count + as_ux_count,1);
     Eigen::PlainObjectBase<DerivedY> Y_i;
-    Y_i.resize((int)known.size() + as_lx_count + as_ux_count,1);
+    Y_i.resize(nk + as_lx_count + as_ux_count,1);
     {
       known_i.block(0,0,known.rows(),known.cols()) = known;
       Y_i.block(0,0,Y.rows(),Y.cols()) = Y;
-      int k = known.size();
+      int k = nk;
       // Then all lx
       for(int z = 0;z < n;z++)
       {
@@ -138,6 +167,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       assert(k==Y_i.size());
       assert(k==known_i.size());
     }
+    //cout<<matlab_format((known_i.array()+1).eval(),"known_i")<<endl;
 
     min_quad_with_fixed_data<AT> data;
     if(!min_quad_with_fixed_precompute(A,known_i,Aeq,params.Auu_pd,data))
@@ -163,35 +193,36 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     slice(B,known_i,Bk);
     MatrixXd Lambda_known_i = -(Ak*Z + 0.5*Bk);
     // reverse the lambda values for lx
-    Lambda_known_i.block(known.size(),0,as_lx_count,1) = 
-      (-1*Lambda_known_i.block(known.size(),0,as_lx_count,1)).eval();
+    Lambda_known_i.block(nk,0,as_lx_count,1) = 
+      (-1*Lambda_known_i.block(nk,0,as_lx_count,1)).eval();
     
     // Remove from active set
-    for(int z = 0;z<as_lx_count;z++)
+    for(int l = 0;l<as_lx_count;l++)
     {
-      if(Lambda_known_i(known.size() + z) < params.inactive_threshold)
+      if(Lambda_known_i(nk + l) < params.inactive_threshold)
       {
-        as_lx(known_i(z)) = false;
+        as_lx(known_i(nk + l)) = FALSE;
       }
     }
-    for(int z = 0;z<as_ux_count;z++)
+    for(int u = 0;u<as_ux_count;u++)
     {
-      if(Lambda_known_i(known.size() + as_lx_count + z) < 
+      if(Lambda_known_i(nk + as_lx_count + u) < 
         params.inactive_threshold)
       {
-        as_ux(known_i(z)) = false;
+        as_ux(known_i(nk + as_lx_count + u)) = FALSE;
       }
     }
 
     iter++;
+    //cout<<iter<<endl;
     if(params.max_iter>0 && iter>=params.max_iter)
     {
       ret = SOLVER_STATUS_MAX_ITER;
       break;
     }
+
   }
 
-finish:
   return ret;
 }
 

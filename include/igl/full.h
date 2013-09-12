@@ -6,7 +6,10 @@
 #include <Eigen/Sparse>
 namespace igl
 {
+  // This is totally unnecessary. You can just call MatrixXd B = MatrixXd(A);
+  //
   // Convert a sparsematrix into a full one
+  //
   // Templates:
   //   T  should be a eigen sparse matrix primitive type like int or double
   // Input:
