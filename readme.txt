@@ -11,12 +11,13 @@ should use the igl namespace and should adhere to the conventions and styles
 listed below. 
 
 = Dependencies =
-Eigen3  Last tested with Eigen Version 3.1.2
-AntTweakBar  Last tested 1.14 (see External)
-OpenGL
-GLEW  Windows only
+Eigen3  Last tested with Eigen Version 3.2
 
   = Optional =
+  OpenGL (IGL_NO_OPENGL)
+  AntTweakBar  (IGL_NO_ANTTWEAKBAR) Last tested 1.16 (see
+    libigl/external/AntTweakBar)
+  GLEW  Windows only
   OpenMP  
   libpng  libiglpng extra only
   Mosek  libiglmosek extra only
