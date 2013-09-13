@@ -15,6 +15,10 @@ namespace igl
 {
   template <typename T>
   struct min_quad_with_fixed_data;
+  // Known Bugs: rows of Aeq **must** be linearly independent. Should be using
+  // QR decomposition otherwise:
+  //   http://www.okstate.edu/sas/v8/sashtml/ormp/chap5/sect32.htm
+  //
   // MIN_QUAD_WITH_FIXED Minimize quadratic energy Z'*A*Z + Z'*B + C with
   // constraints that Z(known) = Y, optionally also subject to the constraints
   // Aeq*Z = Beq

@@ -18,6 +18,10 @@ namespace igl
     NUM_SOLVER_STATUSES = 3,
   };
   struct active_set_params;
+  // Known Bugs: rows of [Aeq;Aieq] **must** be linearly independent. Should be
+  // using QR decomposition otherwise:
+  //   http://www.okstate.edu/sas/v8/sashtml/ormp/chap5/sect32.htm
+  //
   // ACTIVE_SET Minimize quadratic energy Z'*A*Z + Z'*B + C with constraints
   // that Z(known) = Y, optionally also subject to the constraints Aeq*Z = Beq,
   // and further optionally subject to the linear inequality constraints that
