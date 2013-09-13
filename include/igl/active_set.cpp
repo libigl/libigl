@@ -1,6 +1,7 @@
 #include "active_set.h"
 #include "min_quad_with_fixed.h"
 #include "slice.h"
+#include "cat.h"
 #include "matlab_format.h"
 
 #include <iostream>
@@ -38,9 +39,6 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   using namespace igl;
   using namespace Eigen;
   using namespace std;
-  // Linear inequality constraints are not supported yet
-  assert(Aieq.size() == 0);
-  assert(Bieq.size() == 0);
   SolverStatus ret = SOLVER_STATUS_ERROR;
   const int n = A.rows();
   assert(n == A.cols());
@@ -93,7 +91,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   Matrix<BOOL,Dynamic,1> as_ieq(Aieq.rows(),1);
 
   // Keep track of previous Z for comparison
-  Eigen::PlainObjectBase<DerivedZ> old_Z;
+  PlainObjectBase<DerivedZ> old_Z;
   old_Z = PlainObjectBase<DerivedZ>::Constant(
       n,1,numeric_limits<typename DerivedZ::Scalar>::max());
 
@@ -103,6 +101,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     // FIND BREACHES OF CONSTRAINTS
     int new_as_lx = 0;
     int new_as_ux = 0;
+    int new_as_ieq = 0;
     if(Z.size() > 0)
     {
       for(int z = 0;z < n;z++)
@@ -120,6 +119,16 @@ IGL_INLINE igl::SolverStatus igl::active_set(
           as_ux(z) = TRUE;
         }
       }
+      PlainObjectBase<DerivedZ> AieqZ;
+      AieqZ = Aieq*Z;
+      for(int a = 0;a<Aieq.rows();a++)
+      {
+        if(AieqZ(a) > Bieq(a))
+        {
+          new_as_ieq += (as_ieq(a)?0:1);
+          as_ieq(a) = TRUE;
+        }
+      }
       //cout<<"new_as_lx: "<<new_as_lx<<endl;
       //cout<<"new_as_ux: "<<new_as_ux<<endl;
       const double diff = (Z-old_Z).squaredNorm();
@@ -134,11 +143,12 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 
     const int as_lx_count = count(as_lx.data(),as_lx.data()+n,TRUE);
     const int as_ux_count = count(as_ux.data(),as_ux.data()+n,TRUE);
+    const int as_ieq_count = count(as_ieq.data(),as_ieq.data()+n,TRUE);
 
     // PREPARE FIXED VALUES
-    Eigen::PlainObjectBase<Derivedknown> known_i;
+    PlainObjectBase<Derivedknown> known_i;
     known_i.resize(nk + as_lx_count + as_ux_count,1);
-    Eigen::PlainObjectBase<DerivedY> Y_i;
+    PlainObjectBase<DerivedY> Y_i;
     Y_i.resize(nk + as_lx_count + as_ux_count,1);
     {
       known_i.block(0,0,known.rows(),known.cols()) = known;
@@ -168,15 +178,40 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       assert(k==known_i.size());
     }
     //cout<<matlab_format((known_i.array()+1).eval(),"known_i")<<endl;
+    // PREPARE EQUALITY CONSTRAINTS
+    VectorXi as_ieq_list(as_ieq_count,1);
+    // Gather active constraints and resp. rhss
+    PlainObjectBase<DerivedBeq> Beq_i;
+    Beq_i.resize(Beq.rows()+as_ieq_count,1);
+    {
+      int k =0;
+      for(int a=0;a<as_ieq.size();a++)
+      {
+        if(a)
+        {
+          as_ieq_list(k)=a;
+          Beq_i(Beq.rows()+k,1) = Bieq(k,1);
+          k++;
+        }
+      }
+      assert(k == as_ieq_count);
+    }
+    // extract active constraint rows
+    SparseMatrix<AeqT> Aeq_i,Aieq_i;
+    slice(Aieq,as_ieq_list,1,Aieq_i);
+    // Append to equality constraints
+    cat(1,Aeq,Aieq_i,Aeq_i);
+
 
     min_quad_with_fixed_data<AT> data;
-    if(!min_quad_with_fixed_precompute(A,known_i,Aeq,params.Auu_pd,data))
+    if(!min_quad_with_fixed_precompute(A,known_i,Aeq_i,params.Auu_pd,data))
     {
       cerr<<"Error: min_quad_with_fixed precomputation failed."<<endl;
       ret = SOLVER_STATUS_ERROR;
       break;
     }
-    if(!min_quad_with_fixed_solve(data,B,Y_i,Beq,Z))
+    Eigen::PlainObjectBase<DerivedZ> sol;
+    if(!min_quad_with_fixed_solve(data,B,Y_i,Beq_i,Z,sol))
     {
       cerr<<"Error: min_quad_with_fixed solve failed."<<endl;
       ret = SOLVER_STATUS_ERROR;
@@ -195,6 +230,13 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     // reverse the lambda values for lx
     Lambda_known_i.block(nk,0,as_lx_count,1) = 
       (-1*Lambda_known_i.block(nk,0,as_lx_count,1)).eval();
+
+    // Extract Lagrange multipliers for Aieq_i (always at back of sol)
+    VectorXd Lambda_Aieq_i(Aieq_i.rows(),1);
+    for(int l = 0;l<Aieq_i.rows();l++)
+    {
+      Lambda_Aieq_i(Aieq_i.rows()-1-l) = sol(sol.rows()-1-l);
+    }
     
     // Remove from active set
     for(int l = 0;l<as_lx_count;l++)
@@ -210,6 +252,13 @@ IGL_INLINE igl::SolverStatus igl::active_set(
         params.inactive_threshold)
       {
         as_ux(known_i(nk + as_lx_count + u)) = FALSE;
+      }
+    }
+    for(int a = 0;a<as_ieq_count;a++)
+    {
+      if(Lambda_Aieq_i(a) < params.inactive_threshold)
+      {
+        as_ieq(as_ieq_list(a)) = FALSE;
       }
     }
 

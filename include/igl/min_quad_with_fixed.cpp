@@ -230,13 +230,15 @@ template <
   typename DerivedB, 
   typename DerivedY,
   typename DerivedBeq, 
-  typename DerivedZ>
+  typename DerivedZ,
+  typename Derivedsol>
 IGL_INLINE bool igl::min_quad_with_fixed_solve(
   const min_quad_with_fixed_data<T> & data,
   const Eigen::PlainObjectBase<DerivedB> & B,
   const Eigen::PlainObjectBase<DerivedY> & Y,
   const Eigen::PlainObjectBase<DerivedBeq> & Beq,
-  Eigen::PlainObjectBase<DerivedZ> & Z)
+  Eigen::PlainObjectBase<DerivedZ> & Z,
+  Eigen::PlainObjectBase<Derivedsol> & sol)
 {
   using namespace std;
   // number of known rows
@@ -285,7 +287,6 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
 
   //std::cout<<"NB=["<<std::endl<<NB<<std::endl<<"];"<<std::endl;
 
-  Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> sol;
   //cout<<matlab_format(NB,"NB")<<endl;
   switch(data.solver_type)
   {
@@ -316,6 +317,23 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
     }
   }
   return true;
+}
+
+template <
+  typename T,
+  typename DerivedB, 
+  typename DerivedY,
+  typename DerivedBeq, 
+  typename DerivedZ>
+IGL_INLINE bool igl::min_quad_with_fixed_solve(
+  const min_quad_with_fixed_data<T> & data,
+  const Eigen::PlainObjectBase<DerivedB> & B,
+  const Eigen::PlainObjectBase<DerivedY> & Y,
+  const Eigen::PlainObjectBase<DerivedBeq> & Beq,
+  Eigen::PlainObjectBase<DerivedZ> & Z)
+{
+  Eigen::PlainObjectBase<DerivedZ> sol;
+  return min_quad_with_fixed_solve(data,B,Y,Beq,Z,sol);
 }
 
 #ifndef IGL_HEADER_ONLY
