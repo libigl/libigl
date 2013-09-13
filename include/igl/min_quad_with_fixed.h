@@ -56,7 +56,23 @@ namespace igl
   //   Beq  m by 1 list of linear equality constraint constant values
   // Outputs:
   //   Z  n by cols solution
+  //   sol  #unknowns+#lagrange by cols solution to linear system
   // Returns true on success, false on error
+  template <
+    typename T,
+    typename DerivedB, 
+    typename DerivedY,
+    typename DerivedBeq, 
+    typename DerivedZ,
+    typename Derivedsol>
+  IGL_INLINE bool min_quad_with_fixed_solve(
+    const min_quad_with_fixed_data<T> & data,
+    const Eigen::PlainObjectBase<DerivedB> & B,
+    const Eigen::PlainObjectBase<DerivedY> & Y,
+    const Eigen::PlainObjectBase<DerivedBeq> & Beq,
+    Eigen::PlainObjectBase<DerivedZ> & Z,
+    Eigen::PlainObjectBase<Derivedsol> & sol);
+  // Wrapper without sol
   template <
     typename T,
     typename DerivedB, 
@@ -69,6 +85,7 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedY> & Y,
     const Eigen::PlainObjectBase<DerivedBeq> & Beq,
     Eigen::PlainObjectBase<DerivedZ> & Z);
+
 }
 
 template <typename T>
