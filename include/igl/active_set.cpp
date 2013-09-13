@@ -30,8 +30,8 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   const Eigen::PlainObjectBase<DerivedBeq> & Beq,
   const Eigen::SparseMatrix<AieqT>& Aieq,
   const Eigen::PlainObjectBase<DerivedBieq> & Bieq,
-  const Eigen::PlainObjectBase<Derivedlx> & lx,
-  const Eigen::PlainObjectBase<Derivedux> & ux,
+  const Eigen::PlainObjectBase<Derivedlx> & p_lx,
+  const Eigen::PlainObjectBase<Derivedux> & p_ux,
   const igl::active_set_params & params,
   Eigen::PlainObjectBase<DerivedZ> & Z
   )
@@ -56,17 +56,24 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   assert((Aieq.size() == 0 && Bieq.size() == 0) || Aieq.cols() == n);
   assert((Aieq.size() == 0 && Bieq.size() == 0) || Aieq.rows() == Bieq.rows());
   assert((Aieq.size() == 0 && Bieq.size() == 0) || Bieq.cols() == 1);
-  // Discard const qualifiers
-  //if(lx.size() == 0)
-  //{
-  //  lx = Eigen::PlainObjectBase<Derivedlx>::Constant(
-  //    n,1,numeric_limits<typename Derivedlx::Scalar>::min());
-  //}
-  //if(ux.size() == 0)
-  //{
-  //  ux = Eigen::PlainObjectBase<Derivedux>::Constant(
-  //    n,1,numeric_limits<typename Derivedux::Scalar>::max());
-  //}
+  Eigen::PlainObjectBase<Derivedlx> lx;
+  Eigen::PlainObjectBase<Derivedux> ux;
+  if(p_lx.size() == 0)
+  {
+    lx = Eigen::PlainObjectBase<Derivedlx>::Constant(
+      n,1,-numeric_limits<typename Derivedlx::Scalar>::max());
+  }else
+  {
+    lx = p_lx;
+  }
+  if(ux.size() == 0)
+  {
+    ux = Eigen::PlainObjectBase<Derivedux>::Constant(
+      n,1,numeric_limits<typename Derivedux::Scalar>::max());
+  }else
+  {
+    ux = p_ux;
+  }
   assert(lx.rows() == n);
   assert(ux.rows() == n);
   assert(ux.cols() == 1);
@@ -83,12 +90,12 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   const int nk = known.size();
 
   // Initialize active sets
-  typedef bool BOOL;
-#define TRUE true
-#define FALSE false
+  typedef int BOOL;
+#define TRUE 1
+#define FALSE 0
   Matrix<BOOL,Dynamic,1> as_lx = Matrix<BOOL,Dynamic,1>::Constant(n,1,FALSE);
   Matrix<BOOL,Dynamic,1> as_ux = Matrix<BOOL,Dynamic,1>::Constant(n,1,FALSE);
-  Matrix<BOOL,Dynamic,1> as_ieq(Aieq.rows(),1);
+  Matrix<BOOL,Dynamic,1> as_ieq = Matrix<BOOL,Dynamic,1>::Constant(Aieq.rows(),1,FALSE);
 
   // Keep track of previous Z for comparison
   PlainObjectBase<DerivedZ> old_Z;
@@ -143,7 +150,22 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 
     const int as_lx_count = count(as_lx.data(),as_lx.data()+n,TRUE);
     const int as_ux_count = count(as_ux.data(),as_ux.data()+n,TRUE);
-    const int as_ieq_count = count(as_ieq.data(),as_ieq.data()+n,TRUE);
+    const int as_ieq_count = 
+      count(as_ieq.data(),as_ieq.data()+as_ieq.size(),TRUE);
+#ifndef NDEBUG
+    {
+      int count = 0;
+      for(int a = 0;a<as_ieq.size();a++)
+      {
+        if(as_ieq(a))
+        {
+          assert(as_ieq(a) == TRUE);
+          count++;
+        }
+      }
+      assert(as_ieq_count == count);
+    }
+#endif
 
     // PREPARE FIXED VALUES
     PlainObjectBase<Derivedknown> known_i;
@@ -187,10 +209,11 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       int k =0;
       for(int a=0;a<as_ieq.size();a++)
       {
-        if(a)
+        if(as_ieq(a))
         {
+          assert(k<as_ieq_list.size());
           as_ieq_list(k)=a;
-          Beq_i(Beq.rows()+k,1) = Bieq(k,1);
+          Beq_i(Beq.rows()+k,0) = Bieq(k,0);
           k++;
         }
       }
@@ -204,9 +227,26 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 
 
     min_quad_with_fixed_data<AT> data;
+#ifndef NDEBUG
+    {
+      // NO DUPES!
+      Matrix<BOOL,Dynamic,1> fixed = Matrix<BOOL,Dynamic,1>::Constant(n,1,FALSE);
+      for(int k = 0;k<known_i.size();k++)
+      {
+        assert(!fixed[known_i(k)]);
+        fixed[known_i(k)] = TRUE;
+      }
+    }
+#endif
+    
     if(!min_quad_with_fixed_precompute(A,known_i,Aeq_i,params.Auu_pd,data))
     {
       cerr<<"Error: min_quad_with_fixed precomputation failed."<<endl;
+      if(iter > 0 && Aeq_i.rows() > Aeq.rows())
+      {
+        cerr<<"  *Are you sure rows of [Aeq;Aieq] are linearly independent?*"<<
+          endl;
+      }
       ret = SOLVER_STATUS_ERROR;
       break;
     }
