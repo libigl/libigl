@@ -3,8 +3,9 @@
   <head>
     <title>libigl - Style Guidelines</title>
     <link href="./style.css" rel="stylesheet" type="text/css">
-  <body class=article_body>
-  <div class=article>
+  <body>
+    <div id=container>
+    <div class=article_inner>
     <a href=.><img src=libigl-logo.jpg alt="igl logo" class=center></a>
     <h1>libigl Style Guidelines</h1>
     <p>
@@ -103,7 +104,8 @@ External dependencies can go in the external/ directory
       </li>
       <li>
 Do not use the using namespace directive anywhere outside a local scope. This
-means never write: <code>using namespace std;</code> or <code>using namespace igl;</code> etc.
+means never write: <code>using namespace std;</code> or <code>using namespace
+igl;</code> etc. at the top of a file.
       </li>
       <li>
 Function names should either be the same as the corresponding MATLAB function
@@ -112,6 +114,8 @@ or should use all lowercase separated by underscores: e.g.
       </li>
       <li> Classes should be in <code>CamelCase</code></li>
       <li> No tabs, only two spaces per indentation level </li>
+      <li> Be generous with assertions, but always identify them with strings:
+      <br> e.g. <code>assert(m&lt;n && "m must be less than n");</code></li>
   </ul>
 
     <h2>Specific rules</h2>
@@ -156,8 +160,8 @@ and outputs.
         <th>script</th>
         <th>Description</th>
       <tr class=d0>
-        <td><code>grep -L inline *</code></td>
-        <td>Find files that aren't using "inline"</td>
+        <td><code>grep -L IGL_INLINE *</code></td>
+        <td>Find files that aren't using "IGL_INLINE"</td>
       </tr>
       <tr class=d1>
         <td><code>grep -L "namespace igl" *</code></td>
@@ -168,26 +172,27 @@ and outputs.
         <td>Find files using [TAB] character</td>
       </tr>
       <tr class=d1>
-        <td><code>grep -L "^\/\/ Implementation" *</code></td>
-        <td>Find files that don't contain // Implementation</td>
-      </tr>
-      <tr class=d0>
-        <td><code>grep -L "^#ifndef IGL_" *</code></td>
-        <td>Find files that don't contain #ifndef IGL_</td>
-      </tr>
-      <tr class=d1>
         <td><code>grep -l "^using namespace" *.cpp</code></td>
         <td>Find .cpp files that contain ^using namespace</td>
       </tr>
       <tr class=d0>
+        <td><code>grep -l 'assert([^"]*);' *</code></td>
+        <td>Find files using asserts without identifier strings</td>
+      </tr>
+      <tr class=d1>
         <td><code>grep -l "ifndef IGL_.*[^H] *$" *</code></td>
         <td>Find .h files that contain ifndef IGL_*[^H]</td>
+      </tr>
+      <tr class=d0>
+        <td><code>grep -L "^#ifndef IGL_" *</code></td>
+        <td>Find files that don't contain #ifndef IGL_</td>
       </tr>
     </table>
 
     <p>See also: <a href=tutorial.html>tutorial</a>, <a
     href=doc.html>auto-documentation</a>, <a href=file-formats/index.html>file
     formats</a></p>
+  </div>
   </div>
   </body>
 </html>

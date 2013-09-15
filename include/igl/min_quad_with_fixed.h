@@ -116,12 +116,30 @@ struct igl::min_quad_with_fixed_data
     LLT = 0,
     LDLT = 1,
     LU = 2,
-    NUM_SOLVER_TYPES = 3
+    QR_LLT = 3,
+    NUM_SOLVER_TYPES = 4
   } solver_type;
   // Solvers
   Eigen::SimplicialLLT <Eigen::SparseMatrix<T > > llt;
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<T > > ldlt;
   Eigen::SparseLU<Eigen::SparseMatrix<T, Eigen::ColMajor>, Eigen::COLAMDOrdering<int> >   lu;
+  // QR factorization
+  // Are rows of Aeq linearly independent?
+  bool Aeq_li;
+  // Columns of Aeq corresponding to unknowns
+  int neq;
+  Eigen::SparseQR<Eigen::SparseMatrix<T>, Eigen::COLAMDOrdering<int> >  AeqTQR;
+  Eigen::SparseMatrix<T> Aeqk;
+  Eigen::SparseMatrix<T> Aequ;
+  Eigen::SparseMatrix<T> Auu;
+  Eigen::SparseMatrix<T> AeqTQ1;
+  Eigen::SparseMatrix<T> AeqTQ1T;
+  Eigen::SparseMatrix<T> AeqTQ2;
+  Eigen::SparseMatrix<T> AeqTQ2T;
+  Eigen::SparseMatrix<T> AeqTR1;
+  Eigen::SparseMatrix<T> AeqTR1T;
+  Eigen::SparseMatrix<T> AeqTE;
+  Eigen::SparseMatrix<T> AeqTET;
   // Debug
   Eigen::SparseMatrix<T> NA;
   Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> NB;

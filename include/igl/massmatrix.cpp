@@ -105,10 +105,10 @@ IGL_INLINE void igl::massmatrix(
           break;
         }
       case MASSMATRIX_FULL:
-        assert(false);
+        assert(false && "Implementation incomplete");
         break;
       default:
-        assert(false);
+        assert(false && "Unknown Mass matrix type");
     }
 
   }else if(simplex_size == 4)
@@ -137,7 +137,7 @@ IGL_INLINE void igl::massmatrix(
   }else
   {
     // Unsupported simplex size
-    assert(false);
+    assert(false && "Unsupported simplex size");
   }
   sparse(MI,MJ,MV,n,n,M);
 }

@@ -17,7 +17,7 @@ IGL_INLINE int igl::gl_type_size(const GLenum type)
       break;
     default:
       // should handle all other GL_[types]
-      assert(false);
+      assert(false && "Implementation incomplete.");
       break;
   }
   return -1;
