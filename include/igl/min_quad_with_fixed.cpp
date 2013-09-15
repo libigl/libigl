@@ -31,6 +31,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   using namespace Eigen;
   using namespace std;
   using namespace igl;
+  //cout<<"    pre"<<endl;
   // number of rows
   int n = A.rows();
   // cache problem size
@@ -83,7 +84,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   data.unknown_lagrange << data.unknown, data.lagrange;
 
   SparseMatrix<T> Auu;
-  igl::slice(A,data.unknown,data.unknown,Auu);
+  slice(A,data.unknown,data.unknown,Auu);
 
   // Positive definiteness is *not* determined, rather it is given as a
   // parameter
@@ -92,144 +93,227 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   {
     // PD implies symmetric
     data.Auu_sym = true;
-    assert(igl::is_symmetric(Auu,igl::EPS<double>()));
+    assert(is_symmetric(Auu,EPS<double>()));
   }else
   {
     // determine if A(unknown,unknown) is symmetric and/or positive definite
-    data.Auu_sym = igl::is_symmetric(Auu,igl::EPS<double>());
+    data.Auu_sym = is_symmetric(Auu,EPS<double>());
   }
 
-  // Append lagrange multiplier quadratic terms
-  SparseMatrix<T> new_A;
-  SparseMatrix<T> AeqT = Aeq.transpose();
-  SparseMatrix<T> Z(neq,neq);
-  // This is a bit slower. But why isn't cat fast?
-  new_A = 
-    cat(1,
-      cat(2,   A, AeqT ),
-      cat(2, Aeq,    Z ));
-  //cout<<matlab_format(new_A,"new_A")<<endl;
-  //Matrix<int,Dynamic,1> AI;
-  //Matrix<int,Dynamic,1> AJ;
-  //Matrix<T,Dynamic,1> AV;
-  //// Slow
-  //igl::find(A,AI,AJ,AV);
-  //Matrix<int,Dynamic,1> AeqI(0,1);
-  //Matrix<int,Dynamic,1> AeqJ(0,1);
-  //Matrix<T,Dynamic,1> AeqV(0,1);
-  //if(neq > 0)
-  //{
-  //  // Slow
-  //  igl::find(Aeq,AeqI,AeqJ,AeqV);
-  //}
-  //Matrix<int,Dynamic,1> new_AI(AV.size()+AeqV.size()*2);
-  //Matrix<int,Dynamic,1> new_AJ(AV.size()+AeqV.size()*2);
-  //Matrix<T,Dynamic,1>   new_AV(AV.size()+AeqV.size()*2);
-  //new_AI << AI, (AeqI.array()+n).matrix(), AeqJ;
-  //new_AJ << AJ, AeqJ, (AeqI.array()+n).matrix();
-  //new_AV << AV, AeqV, AeqV;
-  //// Slow
-  //igl::sparse(new_AI,new_AJ,new_AV,n+neq,n+neq,new_A);
-  //cout<<matlab_format(new_A,"new_A")<<endl;
-
-  // precompute RHS builders
-  if(kr > 0)
+  //cout<<"    qr"<<endl;
+  // Determine number of linearly independent constraints
+  int nc = 0;
+  if(neq>0)
   {
-    SparseMatrix<T> Aulk,Akul;
-    // Slow
-    igl::slice(new_A,data.unknown_lagrange,data.known,Aulk);
-
-    //// This doesn't work!!!
-    //data.preY = Aulk + Akul.transpose();
-    // Slow
-    if(data.Auu_sym)
-    {
-      data.preY = Aulk*2;
-    }else
-    {
-      igl::slice(new_A,data.known,data.unknown_lagrange,Akul);
-      SparseMatrix<T> AkulT = Akul.transpose();
-      data.preY = Aulk + AkulT;
-    }
-  }else
-  {
-    data.preY.resize(data.unknown_lagrange.size(),0);
-  }
-
-  // Positive definite and no equality constraints (Postive definiteness
-  // implies symmetric)
-  if(data.Auu_pd && neq == 0)
-  {
-    data.llt.compute(Auu);
-    switch(data.llt.info())
+    // QR decomposition to determine row rank in Aequ
+    slice(Aeq,data.unknown,2,data.Aequ);
+    assert(data.Aequ.rows() == neq);
+    assert(data.Aequ.cols() == data.unknown.size());
+    data.AeqTQR.compute(data.Aequ.transpose().eval());
+    switch(data.AeqTQR.info())
     {
       case Eigen::Success:
         break;
       case Eigen::NumericalIssue:
         cerr<<"Error: Numerical issue."<<endl;
         return false;
+      case Eigen::InvalidInput:
+        cerr<<"Error: Invalid input."<<endl;
+        return false;
       default:
         cerr<<"Error: Other."<<endl;
         return false;
     }
-    data.solver_type = igl::min_quad_with_fixed_data<T>::LLT; 
+    nc = data.AeqTQR.rank();
+    assert(nc<=neq);
+    data.Aeq_li = nc == neq;
   }else
   {
-    // Either not PD or there are equality constraints
-    SparseMatrix<T> NA;
-    igl::slice(new_A,data.unknown_lagrange,data.unknown_lagrange,NA);
-    data.NA = NA;
-    // Ideally we'd use LDLT but Eigen doesn't support positive semi-definite
-    // matrices:
-    // http://forum.kde.org/viewtopic.php?f=74&t=106962&p=291990#p291990
-    if(data.Auu_sym && false)
-    {
-      data.ldlt.compute(NA);
-      switch(data.ldlt.info())
-      {
-        case Eigen::Success:
-          break;
-        case Eigen::NumericalIssue:
-          cerr<<"Error: Numerical issue."<<endl;
-          return false;
-        default:
-          cerr<<"Error: Other."<<endl;
-          return false;
-      }
-      data.solver_type = igl::min_quad_with_fixed_data<T>::LDLT; 
-    }else
-    {
-      // Resort to LU
-      // Bottleneck >1/2
-      data.lu.compute(NA); 
-      //std::cout<<"NA=["<<std::endl<<NA<<std::endl<<"];"<<std::endl;
-      switch(data.lu.info())
-      {
-        case Eigen::Success:
-          break;
-        case Eigen::NumericalIssue:
-          cerr<<"Error: Numerical issue."<<endl;
-          return false;
-        case Eigen::InvalidInput:
-          cerr<<"Error: Invalid Input."<<endl;
-          return false;
-        default:
-          cerr<<"Error: Other."<<endl;
-          return false;
-      }
-      data.solver_type = igl::min_quad_with_fixed_data<T>::LU; 
-    }
+    data.Aeq_li = true;
   }
 
+  if(data.Aeq_li)
+  {
+    //cout<<"    Aeq_li=true"<<endl;
+    // Append lagrange multiplier quadratic terms
+    SparseMatrix<T> new_A;
+    SparseMatrix<T> AeqT = Aeq.transpose();
+    SparseMatrix<T> Z(neq,neq);
+    // This is a bit slower. But why isn't cat fast?
+    new_A = cat(1, cat(2,   A, AeqT ),
+                   cat(2, Aeq,    Z ));
+
+    // precompute RHS builders
+    if(kr > 0)
+    {
+      SparseMatrix<T> Aulk,Akul;
+      // Slow
+      slice(new_A,data.unknown_lagrange,data.known,Aulk);
+      //// This doesn't work!!!
+      //data.preY = Aulk + Akul.transpose();
+      // Slow
+      if(data.Auu_sym)
+      {
+        data.preY = Aulk*2;
+      }else
+      {
+        slice(new_A,data.known,data.unknown_lagrange,Akul);
+        SparseMatrix<T> AkulT = Akul.transpose();
+        data.preY = Aulk + AkulT;
+      }
+    }else
+    {
+      data.preY.resize(data.unknown_lagrange.size(),0);
+    }
+
+    // Positive definite and no equality constraints (Postive definiteness
+    // implies symmetric)
+    //cout<<"    factorize"<<endl;
+    if(data.Auu_pd && neq == 0)
+    {
+      data.llt.compute(Auu);
+      switch(data.llt.info())
+      {
+        case Eigen::Success:
+          break;
+        case Eigen::NumericalIssue:
+          cerr<<"Error: Numerical issue."<<endl;
+          return false;
+        default:
+          cerr<<"Error: Other."<<endl;
+          return false;
+      }
+      data.solver_type = min_quad_with_fixed_data<T>::LLT;
+    }else
+    {
+      // Either not PD or there are equality constraints
+      SparseMatrix<T> NA;
+      slice(new_A,data.unknown_lagrange,data.unknown_lagrange,NA);
+      data.NA = NA;
+      // Ideally we'd use LDLT but Eigen doesn't support positive semi-definite
+      // matrices:
+      // http://forum.kde.org/viewtopic.php?f=74&t=106962&p=291990#p291990
+      if(data.Auu_sym && false)
+      {
+        data.ldlt.compute(NA);
+        switch(data.ldlt.info())
+        {
+          case Eigen::Success:
+            break;
+          case Eigen::NumericalIssue:
+            cerr<<"Error: Numerical issue."<<endl;
+            return false;
+          default:
+            cerr<<"Error: Other."<<endl;
+            return false;
+        }
+        data.solver_type = min_quad_with_fixed_data<T>::LDLT;
+      }else
+      {
+        // Resort to LU
+        // Bottleneck >1/2
+        data.lu.compute(NA);
+        //std::cout<<"NA=["<<std::endl<<NA<<std::endl<<"];"<<std::endl;
+        switch(data.lu.info())
+        {
+          case Eigen::Success:
+            break;
+          case Eigen::NumericalIssue:
+            cerr<<"Error: Numerical issue."<<endl;
+            return false;
+          case Eigen::InvalidInput:
+            cerr<<"Error: Invalid Input."<<endl;
+            return false;
+          default:
+            cerr<<"Error: Other."<<endl;
+            return false;
+        }
+        data.solver_type = min_quad_with_fixed_data<T>::LU;
+      }
+    }
+  }else
+  {
+    //cout<<"    Aeq_li=false"<<endl;
+    data.neq = neq;
+    const int nu = data.unknown.size();
+    //cout<<"nu: "<<nu<<endl;
+    //cout<<"neq: "<<neq<<endl;
+    //cout<<"nc: "<<nc<<endl;
+    //cout<<"    matrixR"<<endl;
+    SparseMatrix<T> AeqTR,AeqTQ;
+    AeqTR = data.AeqTQR.matrixR();
+    // This shouldn't be necessary
+    AeqTR.prune(0.0);
+    //cout<<"    matrixQ"<<endl;
+    // THIS IS ESSENTIALLY DENSE AND THIS IS BY FAR THE BOTTLENECK
+    // http://forum.kde.org/viewtopic.php?f=74&t=117500
+    AeqTQ = data.AeqTQR.matrixQ();
+    // This shouldn't be necessary
+    AeqTQ.prune(0.0);
+    //cout<<"AeqTQ: "<<AeqTQ.rows()<<" "<<AeqTQ.cols()<<endl;
+    //cout<<matlab_format(AeqTQ,"AeqTQ")<<endl;
+    //cout<<"    perms"<<endl;
+    SparseMatrix<double> I(neq,neq);
+    I.setIdentity();
+    data.AeqTE = data.AeqTQR.colsPermutation() * I;
+    data.AeqTET = data.AeqTQR.colsPermutation().transpose() * I;
+    assert(AeqTR.rows() == neq);
+    assert(AeqTQ.rows() == nu);
+    assert(AeqTQ.cols() == nu);
+    assert(AeqTR.cols() == neq);
+    //cout<<"    slice"<<endl;
+    data.AeqTQ1 = AeqTQ.topLeftCorner(nu,nc);
+    data.AeqTQ1T = data.AeqTQ1.transpose().eval();
+    // ALREADY TRIM (Not 100% sure about this)
+    data.AeqTR1 = AeqTR.topLeftCorner(nc,nc);
+    data.AeqTR1T = data.AeqTR1.transpose().eval();
+    //cout<<"AeqTR1T.size() "<<data.AeqTR1T.rows()<<" "<<data.AeqTR1T.cols()<<endl;
+    // Null space
+    data.AeqTQ2 = AeqTQ.bottomRightCorner(nu,nu-nc);
+    data.AeqTQ2T = data.AeqTQ2.transpose().eval();
+    //cout<<"    proj"<<endl;
+    // Projected hessian
+    SparseMatrix<T> QRAuu = data.AeqTQ2T * Auu * data.AeqTQ2;
+    {
+      //cout<<"    factorize"<<endl;
+      // QRAuu should always be PD
+      data.llt.compute(QRAuu);
+      switch(data.llt.info())
+      {
+        case Eigen::Success:
+          break;
+        case Eigen::NumericalIssue:
+          cerr<<"Error: Numerical issue."<<endl;
+          return false;
+        default:
+          cerr<<"Error: Other."<<endl;
+          return false;
+      }
+      data.solver_type = min_quad_with_fixed_data<T>::QR_LLT;
+    }
+    //cout<<"    smash"<<endl;
+    // Known value multiplier
+    SparseMatrix<T> Auk;
+    slice(A,data.unknown,data.known,Auk);
+    SparseMatrix<T> Aku;
+    slice(A,data.known,data.unknown,Aku);
+    SparseMatrix<T> AkuT = Aku.transpose();
+    data.preY = Auk + AkuT;
+    // Needed during solve
+    data.Auu = Auu;
+    slice(Aeq,data.known,2,data.Aeqk);
+    assert(data.Aeqk.rows() == neq);
+    assert(data.Aeqk.cols() == data.known.size());
+  }
   return true;
 }
 
 
 template <
   typename T,
-  typename DerivedB, 
+  typename DerivedB,
   typename DerivedY,
-  typename DerivedBeq, 
+  typename DerivedBeq,
   typename DerivedZ,
   typename Derivedsol>
 IGL_INLINE bool igl::min_quad_with_fixed_solve(
@@ -241,6 +325,8 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
   Eigen::PlainObjectBase<Derivedsol> & sol)
 {
   using namespace std;
+  using namespace Eigen;
+  using namespace igl;
   // number of known rows
   int kr = data.known.size();
   if(kr!=0)
@@ -252,13 +338,25 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
   assert(B.cols() == 1);
   assert(Beq.size() == 0 || Beq.cols() == 1);
 
+  // resize output
+  Z.resize(data.n,cols);
+  // Set known values
+  for(int i = 0;i < kr;i++)
+  {
+    for(int j = 0;j < cols;j++)
+    {
+      Z(data.known(i),j) = Y(i,j);
+    }
+  }
+
+  if(data.Aeq_li)
+  {
+
   // number of lagrange multipliers aka linear equality constraints
   int neq = data.lagrange.size();
-
   // append lagrange multiplier rhs's
   Eigen::Matrix<T,Eigen::Dynamic,1> BBeq(B.size() + Beq.size());
   BBeq << B, (Beq*-2.0);
-
   // Build right hand side
   Eigen::Matrix<T,Eigen::Dynamic,1> BBequl;
   igl::slice(BBeq,data.unknown_lagrange,BBequl);
@@ -273,20 +371,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
     NB = data.preY * Y + BBequlcols;
   }
 
-  // resize output
-  Z.resize(data.n,cols);
-
-  // Set known values
-  for(int i = 0;i < kr;i++)
-  {
-    for(int j = 0;j < cols;j++)
-    {
-      Z(data.known(i),j) = Y(i,j);
-    }
-  }
-
   //std::cout<<"NB=["<<std::endl<<NB<<std::endl<<"];"<<std::endl;
-
   //cout<<matlab_format(NB,"NB")<<endl;
   switch(data.solver_type)
   {
@@ -316,14 +401,72 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
       Z(data.unknown_lagrange(i),j) = sol(i,j);
     }
   }
+  }else
+  {
+    assert(data.solver_type == min_quad_with_fixed_data<T>::QR_LLT);
+    PlainObjectBase<DerivedBeq> eff_Beq;
+    // Adjust Aeq rhs to include known parts
+    eff_Beq = 
+      //data.AeqTQR.colsPermutation().transpose() * (-data.Aeqk * Y + Beq);
+      data.AeqTET * (-data.Aeqk * Y + Beq);
+    // Where did this -0.5 come from? Probably the same place as above.
+    PlainObjectBase<DerivedB> Bu;
+    slice(B,data.unknown,Bu);
+    PlainObjectBase<DerivedB> NB;
+    NB = -0.5*(Bu + data.preY * Y);
+    // Trim eff_Beq
+    const int nc = data.AeqTQR.rank();
+    const int neq = Beq.rows();
+    eff_Beq = eff_Beq.topLeftCorner(nc,1).eval();
+    data.AeqTR1T.template triangularView<Lower>().solveInPlace(eff_Beq);
+    // Now eff_Beq = (data.AeqTR1T \ (data.AeqTET * (-data.Aeqk * Y + Beq)))
+    PlainObjectBase<DerivedB> lambda_0;
+    lambda_0 = data.AeqTQ1 * eff_Beq;
+    //cout<<matlab_format(lambda_0,"lambda_0")<<endl;
+    PlainObjectBase<DerivedB> QRB;
+    QRB = -data.AeqTQ2T * (data.Auu * lambda_0) + data.AeqTQ2T * NB;
+    PlainObjectBase<Derivedsol> lambda;
+    lambda = data.llt.solve(QRB);
+    // prepare output
+    PlainObjectBase<Derivedsol> solu;
+    solu = data.AeqTQ2 * lambda + lambda_0;
+    //  http://www.math.uh.edu/~rohop/fall_06/Chapter3.pdf
+    PlainObjectBase<Derivedsol> solLambda;
+    {
+      PlainObjectBase<Derivedsol> temp1,temp2;
+      temp1 = (data.AeqTQ1T * NB - data.AeqTQ1T * data.Auu * solu);
+      data.AeqTR1.template triangularView<Upper>().solveInPlace(temp1);
+      //cout<<matlab_format(temp1,"temp1")<<endl;
+      temp2 = PlainObjectBase<Derivedsol>::Zero(neq,1);
+      temp2.topLeftCorner(nc,1) = temp1;
+      //solLambda = data.AeqTQR.colsPermutation() * temp2;
+      solLambda = data.AeqTE * temp2;
+    }
+    // sol is [Z(unknown);Lambda]
+    assert(data.unknown.size() == solu.rows());
+    assert(cols == solu.cols());
+    assert(data.neq == neq);
+    assert(data.neq == solLambda.rows());
+    assert(cols == solLambda.cols());
+    sol.resize(data.unknown.size()+data.neq,cols);
+    sol.block(0,0,solu.rows(),solu.cols()) = solu;
+    sol.block(solu.rows(),0,solLambda.rows(),solLambda.cols()) = solLambda;
+    for(int u = 0;u<data.unknown.size();u++)
+    {
+      for(int j = 0;j<Z.cols();j++)
+      {
+        Z(data.unknown(u),j) = solu(u,j);
+      }
+    }
+  }
   return true;
 }
 
 template <
   typename T,
-  typename DerivedB, 
+  typename DerivedB,
   typename DerivedY,
-  typename DerivedBeq, 
+  typename DerivedBeq,
   typename DerivedZ>
 IGL_INLINE bool igl::min_quad_with_fixed_solve(
   const min_quad_with_fixed_data<T> & data,

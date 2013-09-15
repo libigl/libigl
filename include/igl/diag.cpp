@@ -11,24 +11,26 @@ IGL_INLINE void igl::diag(
   const Eigen::SparseMatrix<T>& X, 
   Eigen::SparseVector<T>& V)
 {
-  // Get size of input
-  int m = X.rows();
-  int n = X.cols();
-  V = Eigen::SparseVector<T>((m>n?n:m));
-  V.reserve(V.size());
+  assert(false && "Just call X.diagonal().sparseView() directly");
+  V = X.diagonal().sparseView();
+  //// Get size of input
+  //int m = X.rows();
+  //int n = X.cols();
+  //V = Eigen::SparseVector<T>((m>n?n:m));
+  //V.reserve(V.size());
 
-  // Iterate over outside
-  for(int k=0; k<X.outerSize(); ++k)
-  {
-    // Iterate over inside
-    for(typename Eigen::SparseMatrix<T>::InnerIterator it (X,k); it; ++it)
-    {
-      if(it.col() == it.row())
-      {
-        V.coeffRef(it.col()) += it.value();
-      }
-    }
-  }
+  //// Iterate over outside
+  //for(int k=0; k<X.outerSize(); ++k)
+  //{
+  //  // Iterate over inside
+  //  for(typename Eigen::SparseMatrix<T>::InnerIterator it (X,k); it; ++it)
+  //  {
+  //    if(it.col() == it.row())
+  //    {
+  //      V.coeffRef(it.col()) += it.value();
+  //    }
+  //  }
+  //}
 }
 
 template <typename T,typename DerivedV>
@@ -36,23 +38,25 @@ IGL_INLINE void igl::diag(
   const Eigen::SparseMatrix<T>& X, 
   Eigen::MatrixBase<DerivedV> & V)
 {
-  // Get size of input
-  int m = X.rows();
-  int n = X.cols();
-  V.derived().resize((m>n?n:m),1);
+  assert(false && "Just call X.diagonal() directly");
+  V = X.diagonal();
+  //// Get size of input
+  //int m = X.rows();
+  //int n = X.cols();
+  //V.derived().resize((m>n?n:m),1);
 
-  // Iterate over outside
-  for(int k=0; k<X.outerSize(); ++k)
-  {
-    // Iterate over inside
-    for(typename Eigen::SparseMatrix<T>::InnerIterator it (X,k); it; ++it)
-    {
-      if(it.col() == it.row())
-      {
-        V(it.col()) = it.value();
-      }
-    }
-  }
+  //// Iterate over outside
+  //for(int k=0; k<X.outerSize(); ++k)
+  //{
+  //  // Iterate over inside
+  //  for(typename Eigen::SparseMatrix<T>::InnerIterator it (X,k); it; ++it)
+  //  {
+  //    if(it.col() == it.row())
+  //    {
+  //      V(it.col()) = it.value();
+  //    }
+  //  }
+  //}
 }
 
 template <typename T>

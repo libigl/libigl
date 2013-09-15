@@ -6,6 +6,13 @@
 
 namespace igl
 {
+  // http://forum.kde.org/viewtopic.php?f=74&t=117476&p=292388#p292388
+  //
+  // This is superceded by 
+  //   VectorXd d = X.diagonal() and 
+  //   SparseVector<double> d = X.diagonal().sparseView()
+  //
+  //
   // Either extracts the main diagonal of a matrix as a vector OR converts a
   // vector into a matrix with vector along the main diagonal. Like matlab's
   // diag function

@@ -190,6 +190,7 @@ ul
   padding: 0px 20px;
   list-style-type:none;
 }
+li { padding-left: 30px;text-indent: -30px;}
 li { font-size: 100% }
 li li { font-size: 90% }
 li li li { font-size: 80% }

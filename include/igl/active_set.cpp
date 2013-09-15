@@ -41,15 +41,15 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   using namespace std;
   SolverStatus ret = SOLVER_STATUS_ERROR;
   const int n = A.rows();
-  assert(n == A.cols());
+  assert(n == A.cols() && "A must be square");
   // Discard const qualifiers
   //if(B.size() == 0)
   //{
   //  B = Eigen::PlainObjectBase<DerivedB>::Zero(n,1);
   //}
-  assert(n == B.rows());
-  assert(B.cols() == 1);
-  assert(Y.cols() == 1);
+  assert(n == B.rows() && "B.rows() must match A.rows()");
+  assert(B.cols() == 1 && "B must be a column vector");
+  assert(Y.cols() == 1 && "Y must be a column vector");
   assert((Aeq.size() == 0 && Beq.size() == 0) || Aeq.cols() == n);
   assert((Aeq.size() == 0 && Beq.size() == 0) || Aeq.rows() == Beq.rows());
   assert((Aeq.size() == 0 && Beq.size() == 0) || Beq.cols() == 1);
@@ -74,18 +74,18 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   {
     ux = p_ux;
   }
-  assert(lx.rows() == n);
-  assert(ux.rows() == n);
-  assert(ux.cols() == 1);
-  assert(lx.cols() == 1);
-  assert((ux.array()-lx.array()).minCoeff() > 0);
+  assert(lx.rows() == n && "lx must have n rows");
+  assert(ux.rows() == n && "ux must have n rows");
+  assert(ux.cols() == 1 && "lx must be a column vector");
+  assert(lx.cols() == 1 && "ux must be a column vector");
+  assert((ux.array()-lx.array()).minCoeff() > 0 && "ux(i) must be > lx(i)");
   if(Z.size() != 0)
   {
     // Initial guess should have correct size
-    assert(Z.rows() == n);
-    assert(Z.cols() == 1);
+    assert(Z.rows() == n && "Z must have n rows");
+    assert(Z.cols() == 1 && "Z must be a column vector");
   }
-  assert(known.cols() == 1);
+  assert(known.cols() == 1 && "known must be a column vector");
   // Number of knowns
   const int nk = known.size();
 
@@ -105,6 +105,8 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   int iter = 0;
   while(true)
   {
+    //cout<<iter<<":"<<endl;
+    //cout<<"  pre"<<endl;
     // FIND BREACHES OF CONSTRAINTS
     int new_as_lx = 0;
     int new_as_ux = 0;
@@ -239,6 +241,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     }
 #endif
     
+    //cout<<"  min_quad_with_fixed_precompute"<<endl;
     if(!min_quad_with_fixed_precompute(A,known_i,Aeq_i,params.Auu_pd,data))
     {
       cerr<<"Error: min_quad_with_fixed precomputation failed."<<endl;
@@ -250,6 +253,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       ret = SOLVER_STATUS_ERROR;
       break;
     }
+    //cout<<"  min_quad_with_fixed_solve"<<endl;
     Eigen::PlainObjectBase<DerivedZ> sol;
     if(!min_quad_with_fixed_solve(data,B,Y_i,Beq_i,Z,sol))
     {
@@ -257,6 +261,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       ret = SOLVER_STATUS_ERROR;
       break;
     }
+    //cout<<"  post"<<endl;
 
     // Compute Lagrange multiplier values for known_i
     // This needs to be adjusted slightly if A is not symmetric

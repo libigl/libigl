@@ -87,7 +87,7 @@ IGL_INLINE void igl::slice(
       igl::colon(0,X.rows()-1,C);
       return slice(X,C,R,Y);
     default:
-      assert(false);
+      assert(false && "Unsupported dimension");
       return;
   }
 }
