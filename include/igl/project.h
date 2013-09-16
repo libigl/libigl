@@ -1,6 +1,7 @@
 #ifndef IGL_PROJECT_H
 #define IGL_PROJECT_H
 #include "igl_inline.h"
+#include <Eigen/Dense>
 namespace igl
 {
   // Wrapper for gluProject that uses the current GL_MODELVIEW_MATRIX,
@@ -17,6 +18,11 @@ namespace igl
     double* winX,
     double* winY,
     double* winZ);
+  // Eigen wrapper
+  template <typename Derivedobj, typename Derivedwin>
+  IGL_INLINE int project(
+    const Eigen::PlainObjectBase<Derivedobj> & obj,
+    Eigen::PlainObjectBase<Derivedwin> & win);
 }
 
 #ifdef IGL_HEADER_ONLY

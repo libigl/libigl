@@ -2,6 +2,7 @@
 #define IGL_MESH_WITH_SKELETON_H
 #include "../igl_inline.h"
 #include <Eigen/Dense>
+#include <string>
 
 namespace igl
 {
@@ -17,11 +18,26 @@ namespace igl
 //  BE #BE by 2 list of bone-edge indices
 //  CE #CE by 2 list of cage-edge indices
 //  samples_per_bone  #samples to add per bone
+//  tetgen_flags  flags to pass to tetgen {""-->"pq2Y"} otherwise you're on
+//    your own and it's your funeral if you pass nonsense flags
 // Outputs:
 //  VV  #VV by 3 list of tet-mesh vertex positions
 //  TT  #TT by 4 list of tetrahedra indices
 //  FF  #FF by 3 list of surface triangle indices
 // Returns true only on success
+bool mesh_with_skeleton(
+  const Eigen::MatrixXd & V,
+  const Eigen::MatrixXi & F,
+  const Eigen::MatrixXd & C,
+  const Eigen::VectorXi & /*P*/,
+  const Eigen::MatrixXi & BE,
+  const Eigen::MatrixXi & CE,
+  const int samples_per_bone,
+  const std::string & tetgen_flags,
+  Eigen::MatrixXd & VV,
+  Eigen::MatrixXi & TT,
+  Eigen::MatrixXi & FF);
+// Wrapper using default tetgen_flags
 bool mesh_with_skeleton(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,

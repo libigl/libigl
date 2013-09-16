@@ -4,9 +4,21 @@
 
 #include <Eigen/Dense>
 #include "mosek_quadprog.h"
+#include <igl/active_set.h>
 
 namespace igl
 {
+  enum QPSolver
+  {
+    QP_SOLVER_IGL_ACTIVE_SET = 0,
+    QP_SOLVER_MOSEK = 1,
+    NUM_QP_SOLVERS = 2
+  };
+  const char * const QPSolverNames[NUM_QP_SOLVERS] =
+  {
+    "QP_SOLVER_IGL_ACTIVE_SET",
+    "QP_SOLVER_MOSEK"
+  };
   // Container for BBW computation related data and flags
   class BBWData
   {
@@ -20,6 +32,9 @@ namespace igl
       // TODO: Mosek options
       igl::MosekData mosek_data;
       // TODO: Active set options
+      igl::active_set_params active_set_params;
+      // Which solver
+      QPSolver qp_solver;
     public:
       BBWData();
       // Print current state of object
@@ -51,12 +66,12 @@ namespace igl
     typename Derivedbc, 
     typename DerivedW>
   IGL_INLINE bool bbw(
-    const Eigen::MatrixBase<DerivedV> & V, 
-    const Eigen::MatrixBase<DerivedEle> & Ele, 
-    const Eigen::MatrixBase<Derivedb> & b, 
-    const Eigen::MatrixBase<Derivedbc> & bc, 
+    const Eigen::PlainObjectBase<DerivedV> & V, 
+    const Eigen::PlainObjectBase<DerivedEle> & Ele, 
+    const Eigen::PlainObjectBase<Derivedb> & b, 
+    const Eigen::PlainObjectBase<Derivedbc> & bc, 
     BBWData & data,
-    Eigen::MatrixBase<DerivedW> & W);
+    Eigen::PlainObjectBase<DerivedW> & W);
 }
   
 #ifdef IGL_HEADER_ONLY
