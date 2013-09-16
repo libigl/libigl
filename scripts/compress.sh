@@ -16,6 +16,18 @@ Compresses all headers *and* sources into igl.h (IGL_HEADER_ONLY)
   exit 1
 fi
 
+#while getopts "I:" opt; do
+#  case $opt in
+#    I)
+#      LIBIGL_INCLUDE=$OPTARG
+#      ;;
+#    \?)
+#    echo "Invalid option: -$OPTARG"
+#      ;;
+#  esac
+#done
+#shift $((OPTIND-1))
+
 if [ "$#" -eq 1 ]
 then
   H_OUT=$1

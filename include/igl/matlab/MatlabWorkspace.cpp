@@ -9,6 +9,7 @@
 // STL
 #include <iostream>
 #include <algorithm>
+#include <vector>
 
 IGL_INLINE igl::MatlabWorkspace::MatlabWorkspace()
 {
