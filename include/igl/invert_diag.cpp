@@ -1,5 +1,4 @@
 #include "invert_diag.h"
-#include "diag.h"
 
 template <typename T>
 IGL_INLINE void igl::invert_diag(
@@ -7,8 +6,7 @@ IGL_INLINE void igl::invert_diag(
   Eigen::SparseMatrix<T>& Y)
 {
 #ifndef NDEBUG
-  typename Eigen::SparseVector<T> dX;
-  igl::diag(X,dX);
+  typename Eigen::SparseVector<T> dX = X.diagonal().sparseView();
   // Check that there are no zeros along the diagonal
   assert(dX.nonZeros() == dX.size());
 #endif
