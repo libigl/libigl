@@ -17,7 +17,8 @@
 
 
 igl::BBWData::BBWData():
-  partition_unity(false)
+  partition_unity(false),
+  qp_solver(QP_SOLVER_IGL_ACTIVE_SET)
 {}
 
 void igl::BBWData::print()
@@ -25,6 +26,7 @@ void igl::BBWData::print()
   using namespace std;
   cout<<"partition_unity: "<<partition_unity<<endl;
   cout<<"W0=["<<endl<<W0<<endl<<"];"<<endl;
+  cout<<"qp_solver: "<<QPSolverNames[qp_solver]<<endl;
 }
 
 
@@ -35,12 +37,12 @@ template <
   typename Derivedbc, 
   typename DerivedW>
 IGL_INLINE bool igl::bbw(
-  const Eigen::MatrixBase<DerivedV> & V, 
-  const Eigen::MatrixBase<DerivedEle> & Ele, 
-  const Eigen::MatrixBase<Derivedb> & b, 
-  const Eigen::MatrixBase<Derivedbc> & bc, 
+  const Eigen::PlainObjectBase<DerivedV> & V, 
+  const Eigen::PlainObjectBase<DerivedEle> & Ele, 
+  const Eigen::PlainObjectBase<Derivedb> & b, 
+  const Eigen::PlainObjectBase<Derivedbc> & bc, 
   igl::BBWData & data,
-  Eigen::MatrixBase<DerivedW> & W
+  Eigen::PlainObjectBase<DerivedW> & W
   )
 {
   using namespace igl;
@@ -78,9 +80,8 @@ IGL_INLINE bool igl::bbw(
     // No linear terms
     VectorXd c = VectorXd::Zero(n);
     // No linear constraints
-    SparseMatrix<typename DerivedW::Scalar> A(0,n);
-    VectorXd uc(0,1);
-    VectorXd lc(0,1);
+    SparseMatrix<typename DerivedW::Scalar> A(0,n),Aeq(0,n),Aieq(0,n);
+    VectorXd uc(0,1),Beq(0,1),Bieq(0,1),lc(0,1);
     // Upper and lower box constraints (Constant bounds)
     VectorXd ux = VectorXd::Ones(n);
     VectorXd lx = VectorXd::Zero(n);
@@ -89,15 +90,45 @@ IGL_INLINE bool igl::bbw(
     {
       verbose("\n^%s: Computing weight for handle %d out of %d.\n\n",
         __FUNCTION__,i+1,m);
-      // impose boundary conditions
       VectorXd bci = bc.col(i);
-      slice_into(bci,b,ux);
-      slice_into(bci,b,lx);
       VectorXd Wi;
-      bool r = igl::mosek_quadprog(Q,c,0,A,lc,uc,lx,ux,data.mosek_data,Wi);
-      if(!r)
+      switch(data.qp_solver)
       {
-        return false;
+        case QP_SOLVER_IGL_ACTIVE_SET:
+        {
+          SolverStatus ret = active_set(
+            Q,c,b,bci,Aeq,Beq,Aieq,Bieq,lx,ux,data.active_set_params,Wi);
+          switch(ret)
+          {
+            case SOLVER_STATUS_CONVERGED:
+              break;
+            case SOLVER_STATUS_MAX_ITER:
+              cout<<"active_set: max iter without convergence."<<endl;
+              break;
+            case SOLVER_STATUS_ERROR:
+            default:
+              cout<<"active_set error."<<endl;
+              return false;
+          }
+          break;
+        }
+        case QP_SOLVER_MOSEK:
+        {
+          // impose boundary conditions via bounds
+          slice_into(bci,b,ux);
+          slice_into(bci,b,lx);
+          bool r = mosek_quadprog(Q,c,0,A,lc,uc,lx,ux,data.mosek_data,Wi);
+          if(!r)
+          {
+            return false;
+          }
+          break;
+        }
+        default:
+        {
+          assert(false && "Unknown qp_solver");
+          return false;
+        }
       }
       W.col(i) = Wi;
     }
@@ -110,5 +141,5 @@ IGL_INLINE bool igl::bbw(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
-template bool igl::bbw<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, igl::BBWData&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template bool igl::bbw<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, igl::BBWData&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

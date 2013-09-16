@@ -28,10 +28,13 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   min_quad_with_fixed_data<T> & data
   )
 {
+#define MIN_QUAD_WITH_FIXED_CPP_DEBUG
   using namespace Eigen;
   using namespace std;
   using namespace igl;
-  //cout<<"    pre"<<endl;
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+  cout<<"    pre"<<endl;
+#endif
   // number of rows
   int n = A.rows();
   // cache problem size
@@ -100,7 +103,9 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     data.Auu_sym = is_symmetric(Auu,EPS<double>());
   }
 
-  //cout<<"    qr"<<endl;
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+  cout<<"    qr"<<endl;
+#endif
   // Determine number of linearly independent constraints
   int nc = 0;
   if(neq>0)
@@ -134,7 +139,9 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
 
   if(data.Aeq_li)
   {
-    //cout<<"    Aeq_li=true"<<endl;
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+    cout<<"    Aeq_li=true"<<endl;
+#endif
     // Append lagrange multiplier quadratic terms
     SparseMatrix<T> new_A;
     SparseMatrix<T> AeqT = Aeq.transpose();
@@ -168,9 +175,14 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
 
     // Positive definite and no equality constraints (Postive definiteness
     // implies symmetric)
-    //cout<<"    factorize"<<endl;
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+    cout<<"    factorize"<<endl;
+#endif
     if(data.Auu_pd && neq == 0)
     {
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+    cout<<"    llt"<<endl;
+#endif
       data.llt.compute(Auu);
       switch(data.llt.info())
       {
@@ -186,6 +198,9 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
       data.solver_type = min_quad_with_fixed_data<T>::LLT;
     }else
     {
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+    cout<<"    ldlt"<<endl;
+#endif
       // Either not PD or there are equality constraints
       SparseMatrix<T> NA;
       slice(new_A,data.unknown_lagrange,data.unknown_lagrange,NA);
@@ -210,6 +225,9 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
         data.solver_type = min_quad_with_fixed_data<T>::LDLT;
       }else
       {
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+    cout<<"    lu"<<endl;
+#endif
         // Resort to LU
         // Bottleneck >1/2
         data.lu.compute(NA);
@@ -233,7 +251,9 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     }
   }else
   {
-    //cout<<"    Aeq_li=false"<<endl;
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+    cout<<"    Aeq_li=false"<<endl;
+#endif
     data.neq = neq;
     const int nu = data.unknown.size();
     //cout<<"nu: "<<nu<<endl;
@@ -244,7 +264,9 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     AeqTR = data.AeqTQR.matrixR();
     // This shouldn't be necessary
     AeqTR.prune(0.0);
-    //cout<<"    matrixQ"<<endl;
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+    cout<<"    matrixQ"<<endl;
+#endif
     // THIS IS ESSENTIALLY DENSE AND THIS IS BY FAR THE BOTTLENECK
     // http://forum.kde.org/viewtopic.php?f=74&t=117500
     AeqTQ = data.AeqTQR.matrixQ();
@@ -271,11 +293,15 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     // Null space
     data.AeqTQ2 = AeqTQ.bottomRightCorner(nu,nu-nc);
     data.AeqTQ2T = data.AeqTQ2.transpose().eval();
-    //cout<<"    proj"<<endl;
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+    cout<<"    proj"<<endl;
+#endif
     // Projected hessian
     SparseMatrix<T> QRAuu = data.AeqTQ2T * Auu * data.AeqTQ2;
     {
-      //cout<<"    factorize"<<endl;
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+      cout<<"    factorize"<<endl;
+#endif
       // QRAuu should always be PD
       data.llt.compute(QRAuu);
       switch(data.llt.info())
@@ -291,7 +317,9 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
       }
       data.solver_type = min_quad_with_fixed_data<T>::QR_LLT;
     }
-    //cout<<"    smash"<<endl;
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+    cout<<"    smash"<<endl;
+#endif
     // Known value multiplier
     SparseMatrix<T> Auk;
     slice(A,data.unknown,data.known,Auk);

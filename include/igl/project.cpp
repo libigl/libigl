@@ -62,4 +62,18 @@ IGL_INLINE int igl::project(
 
   return gluProject(objX,objY,objZ,MV,P,VP,winX,winY,winZ);
 }
+
+template <typename Derivedobj, typename Derivedwin>
+IGL_INLINE int igl::project(
+  const Eigen::PlainObjectBase<Derivedobj> & obj,
+  Eigen::PlainObjectBase<Derivedwin> & win)
+{
+  return igl::project(obj(0),obj(1),obj(2),&win(0),&win(1),&win(2));
+}
+
+#ifndef IGL_HEADER_ONLY
+// Explicit template instanciations
+template int igl::project<Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
+#endif
+
 #endif

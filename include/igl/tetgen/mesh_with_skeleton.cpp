@@ -6,6 +6,9 @@
 #include <igl/writeOFF.h>
 
 #include <iostream>
+// Default settings pq2Y tell tetgen to mesh interior of triangle mesh and
+// to produce a graded tet mesh
+const static std::string DEFAULT_TETGEN_FLAGS = "pq2Y";
 
 bool igl::mesh_with_skeleton(
   const Eigen::MatrixXd & V,
@@ -15,6 +18,7 @@ bool igl::mesh_with_skeleton(
   const Eigen::MatrixXi & BE,
   const Eigen::MatrixXi & CE,
   const int samples_per_bone,
+  const std::string & tetgen_flags,
   Eigen::MatrixXd & VV,
   Eigen::MatrixXi & TT,
   Eigen::MatrixXi & FF)
@@ -22,6 +26,8 @@ bool igl::mesh_with_skeleton(
   using namespace Eigen;
   using namespace igl;
   using namespace std;
+  const string eff_tetgen_flags = 
+    (tetgen_flags.length() == 0?DEFAULT_TETGEN_FLAGS:tetgen_flags);
   // Collect all edges that need samples:
   MatrixXi BECE = cat(1,BE,CE);
   MatrixXd S;
@@ -38,11 +44,9 @@ bool igl::mesh_with_skeleton(
   //   * has consistent orientation
   //   * has no self-intersections
   //   * has no 0-volume pieces
-  // Default settings pq100 tell tetgen to mesh interior of triangle mesh and
-  // to produce a graded tet mesh
   //writeOFF("mesh_with_skeleton.off",VS,F);
   cerr<<"tetgen begin()"<<endl;
-  int status = tetrahedralize( VS,F,"pq100Y",VV,TT,FF);
+  int status = tetrahedralize( VS,F,eff_tetgen_flags,VV,TT,FF);
   cerr<<"tetgen end()"<<endl;
   if(FF.rows() != F.rows())
   {
@@ -75,3 +79,18 @@ bool igl::mesh_with_skeleton(
   return true;
 }
 
+bool igl::mesh_with_skeleton(
+  const Eigen::MatrixXd & V,
+  const Eigen::MatrixXi & F,
+  const Eigen::MatrixXd & C,
+  const Eigen::VectorXi & P,
+  const Eigen::MatrixXi & BE,
+  const Eigen::MatrixXi & CE,
+  const int samples_per_bone,
+  Eigen::MatrixXd & VV,
+  Eigen::MatrixXi & TT,
+  Eigen::MatrixXi & FF)
+{
+  return igl::mesh_with_skeleton(
+    V,F,C,P,BE,CE,samples_per_bone,DEFAULT_TETGEN_FLAGS,VV,TT,FF);
+}

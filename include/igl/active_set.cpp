@@ -36,6 +36,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   Eigen::PlainObjectBase<DerivedZ> & Z
   )
 {
+#define ACTIVE_SET_CPP_DEBUG
   using namespace igl;
   using namespace Eigen;
   using namespace std;
@@ -105,8 +106,10 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   int iter = 0;
   while(true)
   {
-    //cout<<iter<<":"<<endl;
-    //cout<<"  pre"<<endl;
+#ifdef ACTIVE_SET_CPP_DEBUG
+    cout<<iter<<":"<<endl;
+    cout<<"  pre"<<endl;
+#endif
     // FIND BREACHES OF CONSTRAINTS
     int new_as_lx = 0;
     int new_as_ux = 0;
@@ -138,10 +141,14 @@ IGL_INLINE igl::SolverStatus igl::active_set(
           as_ieq(a) = TRUE;
         }
       }
-      //cout<<"new_as_lx: "<<new_as_lx<<endl;
-      //cout<<"new_as_ux: "<<new_as_ux<<endl;
+#ifdef ACTIVE_SET_CPP_DEBUG
+      cout<<"  new_as_lx: "<<new_as_lx<<endl;
+      cout<<"  new_as_ux: "<<new_as_ux<<endl;
+#endif
       const double diff = (Z-old_Z).squaredNorm();
-      //cout<<"diff: "<<diff<<endl;
+#ifdef ACTIVE_SET_CPP_DEBUG
+      cout<<"diff: "<<diff<<endl;
+#endif
       if(diff < params.solution_diff_threshold)
       {
         ret = SOLVER_STATUS_CONVERGED;
@@ -241,7 +248,9 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     }
 #endif
     
-    //cout<<"  min_quad_with_fixed_precompute"<<endl;
+#ifdef ACTIVE_SET_CPP_DEBUG
+    cout<<"  min_quad_with_fixed_precompute"<<endl;
+#endif
     if(!min_quad_with_fixed_precompute(A,known_i,Aeq_i,params.Auu_pd,data))
     {
       cerr<<"Error: min_quad_with_fixed precomputation failed."<<endl;
@@ -253,7 +262,9 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       ret = SOLVER_STATUS_ERROR;
       break;
     }
-    //cout<<"  min_quad_with_fixed_solve"<<endl;
+#ifdef ACTIVE_SET_CPP_DEBUG
+    cout<<"  min_quad_with_fixed_solve"<<endl;
+#endif
     Eigen::PlainObjectBase<DerivedZ> sol;
     if(!min_quad_with_fixed_solve(data,B,Y_i,Beq_i,Z,sol))
     {
@@ -261,7 +272,9 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       ret = SOLVER_STATUS_ERROR;
       break;
     }
-    //cout<<"  post"<<endl;
+#ifdef ACTIVE_SET_CPP_DEBUG
+    cout<<"  post"<<endl;
+#endif
 
     // Compute Lagrange multiplier values for known_i
     // This needs to be adjusted slightly if A is not symmetric
