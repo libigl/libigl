@@ -1,0 +1,90 @@
+\documentclass{diary}
+\title{Active set solver for quadratic programming}
+\author{Alec Jacobson}
+\date{18 September 2013}
+
+\renewcommand{\A}{\mat{A}}
+\renewcommand{\Q}{\mat{Q}}
+\newcommand{\Aeq}{\mat{A}_\text{eq}}
+\newcommand{\Aieq}{\mat{A}_\text{ieq}}
+\newcommand{\Beq}{\vc{B}_\text{eq}}
+\newcommand{\Bieq}{\vc{B}_\text{ieq}}
+\newcommand*\Bell{\ensuremath{\boldsymbol\ell}}
+\newcommand{\lx}{\Bell}
+\newcommand{\ux}{\vc{u}}
+
+\begin{document}
+Quadratic programming problems (QPs) can be written in general as:
+\begin{align}
+\argmin \limits_\Z &
+  \Z^\transpose \A \Z + \Z^\transpose \B + \text{ constant}\\
+\text{subject to } & \Aieq \Z ≤ \Bieq,
+\end{align}
+where $\Z \in \R^n$ is a vector of unknowns,  $\A \in \R^{n \times n}$ is a (in
+our case sparse) matrix of quadratic coefficients, $\B \in \R^n$ is a vector of
+linear coefficients, $\Aieq \in \R^{m_\text{ieq} \times n}$ is a matrix (also
+sparse) linear inequality coefficients and $\Bieq \in \R^{m_\text{ieq}}$ is a
+vector of corresponding right-hand sides. Each row in $\Aieq \Z ≤ \Bieq$
+corresponds to a single linear inequality constraint.
+
+Though representable by the linear inequality constraints above---linear
+\emph{equality} constraints, constant bounds, and constant fixed values appear
+so often that we can write a more practical form
+\begin{align}
+\argmin \limits_\Z &
+  \Z^\transpose \A \Z + \Z^\transpose \B + \text{ constant}\\
+\text{subject to } & \Z_\text{known} = \Y,\\
+                   & \Aeq \Z = \Beq,\\
+                   & \Aieq \Z ≤ \Bieq,\\
+                   & \Z ≥ \lx,\\
+                   & \Z ≤ \ux,
+\end{align}
+where $\Z_\text{known} \in \R^{n_\text{known}}$ is a subvector of our unknowns $\Z$ which
+are known or fixed to obtain corresponding values $\Y \in \R^{n_\text{known}}$,
+$\Aeq \in \R^{m_\text{eq} \times n}$ and $\Beq \in \R^{m_\text{eq} \times n}$
+are linear \emph{equality} coefficients and right-hand sides respectively, and
+$\lx, \ux \in \R^n$ are vectors of constant lower and upper bound constraints.
+
+\todo{This notation is unfortunate. Too many bold A's and too many capitals.}
+
+This description exactly matches the prototype used by the
+\texttt{igl::active\_set()} function.
+
+The active set method works by iteratively treating a subset (some rows) of the
+inequality constraints as equality constraints. These are called the ``active
+set'' of constraints. So at any given iterations $i$ we might have a new
+problem:
+\begin{align}
+\argmin \limits_\Z &
+  \Z^\transpose \A \Z + \Z^\transpose \B + \text{ constant}\\
+\text{subject to } & \Z_\text{known}^i = \Y^i,\\
+                   & \Aeq^i \Z = \Beq^i,
+\end{align}
+where the active rows from 
+$\lx ≤ \Z ≤ \ux$ and $\Aieq \Z ≤ \Bieq$  have been appended into
+$\Z_\text{known}^i = \Y^i$ and $\Aeq^i \Z = \Beq^i$ respectively.
+
+This may be optimized by solving a sparse linear system, resulting in the
+current solution $\Z^i$. For equality constraint we can also find a
+corresponding Lagrange multiplier value. The active set method works by adding
+to the active set all linear inequality constraints which are violated by the
+previous solution $\Z^{i-1}$ before this solve and then after the solve
+removing from the active set any constraints with negative Lagrange multiplier
+values.
+
+%\begin{pullout}
+%while not converged
+%  add to active set all rows where $\Aieq \Z > \Bieq$, $\Z < \lx$ or $\Z > \ux$
+%  solve problem treating active constraints as equality constraints
+%  remove from active set all rwos 
+%end
+%\end{pullout}
+
+The fixed values constraints of $\Z_\text{known}^i = \Y^i$ may be obtained by
+substituting $\Z_\text{known}^i$ for $\Y^i$ in the energy directly.
+Corresponding Lagrange multiplier values $\lambda_\text{known}^i$ can be
+recovered after the fact.
+
+% HURRY UP AND GET TO THE QR DECOMPOSITION
+
+\end{document}
