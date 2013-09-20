@@ -132,6 +132,12 @@ IGL_INLINE bool igl::bbw(
       }
       W.col(i) = Wi;
     }
+    const double min_rowsum = W.rowwise().sum().array().abs().minCoeff();
+    if(min_rowsum < 0.1)
+    {
+      cerr<<"bbw.cpp: Warning, row sum is very low. Consider more iterations "
+        "or enforcing partition of unity."<<endl;
+    }
     // Need to normalize
     igl::normalize_row_sums(W,W); 
   }

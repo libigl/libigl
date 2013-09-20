@@ -112,6 +112,12 @@ namespace igl
       IGL_INLINE bool find( 
         const std::string & name,
         Eigen::SparseMatrix<MT>& M);
+      IGL_INLINE bool find( 
+        const std::string & name,
+        double & d);
+      IGL_INLINE bool find( 
+        const std::string & name,
+        int & v);
       // Subtracts 1 from all entries
       template <typename DerivedM>
       IGL_INLINE bool find_index( 
@@ -371,7 +377,6 @@ IGL_INLINE bool igl::MatlabWorkspace::find(
   //cout<<name<<": "<<mxGetM(mx_data)<<" "<<mxGetN(mx_data)<<endl;
   const int m = mxGetM(mx_data);
   const int n = mxGetN(mx_data);
-
   // Handle vectors
   if(DerivedM::IsVectorAtCompileTime)
   {
@@ -440,6 +445,52 @@ IGL_INLINE bool igl::MatlabWorkspace::find(
   M.setFromTriplets(MIJV.begin(),MIJV.end());
   return true;
 
+}
+
+IGL_INLINE bool igl::MatlabWorkspace::find( 
+  const std::string & name,
+  int & v)
+{
+  using namespace std;
+  const int i = std::find(names.begin(), names.end(), name)-names.begin();
+  if(i>=(int)names.size())
+  {
+    return false;
+  }
+  assert(i<=(int)data.size());
+  mxArray * mx_data = data[i];
+  assert(!mxIsSparse(mx_data));
+  assert(mxGetNumberOfDimensions(mx_data) == 2);
+  //cout<<name<<": "<<mxGetM(mx_data)<<" "<<mxGetN(mx_data)<<endl;
+  assert(mxGetNumberOfElements(mx_data) == 1);
+  copy(
+    mxGetPr(mx_data),
+    mxGetPr(mx_data)+mxGetNumberOfElements(mx_data),
+    &v);
+  return true;
+}
+
+IGL_INLINE bool igl::MatlabWorkspace::find( 
+  const std::string & name,
+  double & d)
+{
+  using namespace std;
+  const int i = std::find(names.begin(), names.end(), name)-names.begin();
+  if(i>=(int)names.size())
+  {
+    return false;
+  }
+  assert(i<=(int)data.size());
+  mxArray * mx_data = data[i];
+  assert(!mxIsSparse(mx_data));
+  assert(mxGetNumberOfDimensions(mx_data) == 2);
+  //cout<<name<<": "<<mxGetM(mx_data)<<" "<<mxGetN(mx_data)<<endl;
+  assert(mxGetNumberOfElements(mx_data) == 1);
+  copy(
+    mxGetPr(mx_data),
+    mxGetPr(mx_data)+mxGetNumberOfElements(mx_data),
+    &d);
+  return true;
 }
 
 template <typename DerivedM>

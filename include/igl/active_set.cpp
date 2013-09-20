@@ -131,14 +131,17 @@ IGL_INLINE igl::SolverStatus igl::active_set(
           as_ux(z) = TRUE;
         }
       }
-      PlainObjectBase<DerivedZ> AieqZ;
-      AieqZ = Aieq*Z;
-      for(int a = 0;a<Aieq.rows();a++)
+      if(Aieq.rows() > 0)
       {
-        if(AieqZ(a) > Bieq(a))
+        PlainObjectBase<DerivedZ> AieqZ;
+        AieqZ = Aieq*Z;
+        for(int a = 0;a<Aieq.rows();a++)
         {
-          new_as_ieq += (as_ieq(a)?0:1);
-          as_ieq(a) = TRUE;
+          if(AieqZ(a) > Bieq(a))
+          {
+            new_as_ieq += (as_ieq(a)?0:1);
+            as_ieq(a) = TRUE;
+          }
         }
       }
 #ifdef ACTIVE_SET_CPP_DEBUG

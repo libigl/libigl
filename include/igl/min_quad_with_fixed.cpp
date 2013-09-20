@@ -96,7 +96,9 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   {
     // PD implies symmetric
     data.Auu_sym = true;
-    assert(is_symmetric(Auu,EPS<double>()));
+    // This is an annoying assertion unless EPS can be chosen in a nicer way.
+    //assert(is_symmetric(Auu,EPS<double>()));
+    assert(is_symmetric(Auu,1.0));
   }else
   {
     // determine if A(unknown,unknown) is symmetric and/or positive definite
