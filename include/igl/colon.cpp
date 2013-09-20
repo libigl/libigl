@@ -18,6 +18,7 @@ IGL_INLINE void igl::colon(
         (double)low,
         (double)hi,
         (double)step);
+      assert(false && "low<hi but step<0");
       return;
     }
   }
@@ -26,10 +27,11 @@ IGL_INLINE void igl::colon(
     if(step > 0)
     {
       I.resize(0);
-      fprintf(stderr,"Error: colon() low(%g)>hi(%g) but step(%g)<0\n",
+      fprintf(stderr,"Error: colon() low(%g)>hi(%g) but step(%g)>0\n",
         (double)low,
         (double)hi,
         (double)step);
+      assert(false && "low>hi but step<0");
       return;
     }
   }

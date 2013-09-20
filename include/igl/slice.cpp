@@ -76,14 +76,25 @@ IGL_INLINE void igl::slice(
   const int dim,
   Eigen::SparseMatrix<T>& Y)
 {
-  
   Eigen::VectorXi C;
   switch(dim)
   {
     case 1:
+      // boring base case
+      if(X.cols() == 0)
+      {
+        Y.resize(R.size(),0);
+        return;
+      }
       igl::colon(0,X.cols()-1,C);
       return slice(X,R,C,Y);
     case 2:
+      // boring base case
+      if(X.rows() == 0)
+      {
+        Y.resize(0,R.size());
+        return;
+      }
       igl::colon(0,X.rows()-1,C);
       return slice(X,C,R,Y);
     default:
