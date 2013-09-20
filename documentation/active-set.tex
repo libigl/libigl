@@ -5,41 +5,44 @@
 
 \renewcommand{\A}{\mat{A}}
 \renewcommand{\Q}{\mat{Q}}
-\newcommand{\Aeq}{\mat{A}_\text{eq}}
-\newcommand{\Aieq}{\mat{A}_\text{ieq}}
-\newcommand{\Beq}{\vc{B}_\text{eq}}
-\newcommand{\Bieq}{\vc{B}_\text{ieq}}
-\newcommand*\Bell{\ensuremath{\boldsymbol\ell}}
+\newcommand{\RR}{\mat{R}}
+\newcommand{\Aeq}{\mat{A}_\textrm{eq}}
+\newcommand{\Aieq}{\mat{A}_\textrm{ieq}}
+\newcommand{\Beq}{\vc{B}_\textrm{eq}}
+\newcommand{\Bieq}{\vc{B}_\textrm{ieq}}
 \newcommand{\lx}{\Bell}
 \newcommand{\ux}{\vc{u}}
+\newcommand{\lameq} {\lambda_\textrm{eq}}
+\newcommand{\lamieq}{\lambda_\textrm{ieq}}
+\newcommand{\lamlu}  {\lambda_\textrm{lu}}
 
 \begin{document}
 Quadratic programming problems (QPs) can be written in general as:
 \begin{align}
-\argmin \limits_\Z &
-  \Z^\transpose \A \Z + \Z^\transpose \B + \text{ constant}\\
-\text{subject to } & \Aieq \Z ≤ \Bieq,
+\argmin \limits_\z &
+  \z^\transpose \A \z + \z^\transpose \B + \text{ constant}\\
+\text{subject to } & \Aieq \z ≤ \Bieq,
 \end{align}
-where $\Z \in \R^n$ is a vector of unknowns,  $\A \in \R^{n \times n}$ is a (in
+where $\z \in \R^n$ is a vector of unknowns,  $\A \in \R^{n \times n}$ is a (in
 our case sparse) matrix of quadratic coefficients, $\B \in \R^n$ is a vector of
 linear coefficients, $\Aieq \in \R^{m_\text{ieq} \times n}$ is a matrix (also
 sparse) linear inequality coefficients and $\Bieq \in \R^{m_\text{ieq}}$ is a
-vector of corresponding right-hand sides. Each row in $\Aieq \Z ≤ \Bieq$
+vector of corresponding right-hand sides. Each row in $\Aieq \z ≤ \Bieq$
 corresponds to a single linear inequality constraint.
 
 Though representable by the linear inequality constraints above---linear
 \emph{equality} constraints, constant bounds, and constant fixed values appear
 so often that we can write a more practical form
 \begin{align}
-\argmin \limits_\Z &
-  \Z^\transpose \A \Z + \Z^\transpose \B + \text{ constant}\\
-\text{subject to } & \Z_\text{known} = \Y,\\
-                   & \Aeq \Z = \Beq,\\
-                   & \Aieq \Z ≤ \Bieq,\\
-                   & \Z ≥ \lx,\\
-                   & \Z ≤ \ux,
+\argmin \limits_\z &
+  \z^\transpose \A \z + \z^\transpose \B + \text{ constant}\\
+\text{subject to } & \z_\text{known} = \Y,\\
+                   & \Aeq \z = \Beq,\\
+                   & \Aieq \z ≤ \Bieq,\\
+                   & \z ≥ \lx,\\
+                   & \z ≤ \ux,
 \end{align}
-where $\Z_\text{known} \in \R^{n_\text{known}}$ is a subvector of our unknowns $\Z$ which
+where $\z_\text{known} \in \R^{n_\text{known}}$ is a subvector of our unknowns $\z$ which
 are known or fixed to obtain corresponding values $\Y \in \R^{n_\text{known}}$,
 $\Aeq \in \R^{m_\text{eq} \times n}$ and $\Beq \in \R^{m_\text{eq} \times n}$
 are linear \emph{equality} coefficients and right-hand sides respectively, and
@@ -55,36 +58,177 @@ inequality constraints as equality constraints. These are called the ``active
 set'' of constraints. So at any given iterations $i$ we might have a new
 problem:
 \begin{align}
-\argmin \limits_\Z &
-  \Z^\transpose \A \Z + \Z^\transpose \B + \text{ constant}\\
-\text{subject to } & \Z_\text{known}^i = \Y^i,\\
-                   & \Aeq^i \Z = \Beq^i,
+\argmin \limits_\z &
+  \z^\transpose \A \z + \z^\transpose \B + \text{ constant}\\
+\text{subject to } & \z_\text{known}^i = \Y^i,\\
+                   & \Aeq^i \z = \Beq^i,
 \end{align}
 where the active rows from 
-$\lx ≤ \Z ≤ \ux$ and $\Aieq \Z ≤ \Bieq$  have been appended into
-$\Z_\text{known}^i = \Y^i$ and $\Aeq^i \Z = \Beq^i$ respectively.
+$\lx ≤ \z ≤ \ux$ and $\Aieq \z ≤ \Bieq$  have been appended into
+$\z_\text{known}^i = \Y^i$ and $\Aeq^i \z = \Beq^i$ respectively.
 
 This may be optimized by solving a sparse linear system, resulting in the
-current solution $\Z^i$. For equality constraint we can also find a
+current solution $\z^i$. For equality constraint we can also find a
 corresponding Lagrange multiplier value. The active set method works by adding
 to the active set all linear inequality constraints which are violated by the
-previous solution $\Z^{i-1}$ before this solve and then after the solve
+previous solution $\z^{i-1}$ before this solve and then after the solve
 removing from the active set any constraints with negative Lagrange multiplier
-values.
+values. Let's declare that $\lameq \in \R^{m_\text{eq}}$, $\lamieq \in
+\R^{m_\text{ieq}}$, and $\lamlu \in \R^{n}$ are the Lagrange multipliers
+corresponding to the linear equality, linear inequality and constant bound
+constraints respectively. Then the abridged active set method proceeds as
+follows:
 
-%\begin{pullout}
-%while not converged
-%  add to active set all rows where $\Aieq \Z > \Bieq$, $\Z < \lx$ or $\Z > \ux$
-%  solve problem treating active constraints as equality constraints
-%  remove from active set all rwos 
-%end
-%\end{pullout}
+\begin{lstlisting}[keywordstyle=,mathescape]
+while not converged
+  add to active set all rows where $\Aieq \z > \Bieq$, $\z < \lx$ or $\z > \ux$
+    $\Aeq^i,\Beq^i \leftarrow \Aeq,\Beq + \text{active rows of} \Aieq,\Bieq$
+    $\z_\text{known}^i,\Y^i \leftarrow \z_\text{known},\Y + \text{active indices and values of} \lx,\ux$
+  solve problem treating active constraints as equality constraints $\rightarrow \z,\lamieq,\lamlu$
+  remove from active set all rows with $\lamieq < 0$ or $\lamlu < 0$
+end
+\end{lstlisting}
 
-The fixed values constraints of $\Z_\text{known}^i = \Y^i$ may be obtained by
-substituting $\Z_\text{known}^i$ for $\Y^i$ in the energy directly.
-Corresponding Lagrange multiplier values $\lambda_\text{known}^i$ can be
-recovered after the fact.
+The fixed values constraints of $\z_\text{known}^i = \Y^i$ may be enforced by
+substituting $\z_\text{known}^i$ for $\Y^i$ in the energy directly during the
+solve.  Corresponding Lagrange multiplier values $\lambda_\text{known}^i$ can
+be recovered after we've found the rest of $\z$.
 
-% HURRY UP AND GET TO THE QR DECOMPOSITION
+The linear equality constraints $\Aeq^i \z = \Beq^i$ are a little trickier. If
+the rows of 
+$\Aeq^i \in \R^{(<m_\text{eq}+ m_\text{ieq}) \times n}$ are linearly
+independent then it is straightforward how to build a Lagrangian which enforces
+each constraint. This results in solving a system roughly of the form:
+\begin{equation}
+\left(
+\begin{array}{cc}
+\A      & {\Aeq^i}^\transpose \\
+\Aeq^i  & \mat{0}
+\end{array}
+\right)
+\left(
+\begin{array}{l}
+\z\\\lambda^i_\text{eq}
+\end{array}
+\right)
+=
+\left(
+\begin{array}{l}
+-2\B\\
+-\Beq^i
+\end{array}
+\right)
+\end{equation}
+\todo{Double check. Could be missing a sign or factor of 2 here.}
+
+If the rows of $\Aeq^i$ are linearly dependent then the system matrix above
+will be singular. Because we may always assume that the constraints are not
+contradictory, this system can still be solved. But it will take some care.
+Some linear solvers, e.g.\ \textsc{MATLAB}'s, seem to deal with these OK.
+\textsc{Eigen}'s does not.
+
+Without loss of generality, let us assume that there are no inequality
+constraints and it's the rows of $\Aeq$ which might be linearly dependent.
+Let's also assume we have no fixed or known values. Then the linear system
+above corresponds to the following optimization problem:
+\begin{align}
+\argmin \limits_\z &
+  \z^\transpose \A \z + \z^\transpose \B + \text{ constant}\\
+\text{subject to } & \Aeq \z = \Beq.
+\end{align}
+For the sake of cleaner notation, let $m = m_\text{eq}$ so that $\Aeq \in \R^{m
+\times n}$ and $\Beq \in \R^m$.
+
+We can construct the null space of the constraints by computing a QR
+decomposition of $\Aeq^\transpose$:
+\begin{equation}
+\Aeq^\transpose \P = \Q \RR =
+\left(\begin{array}{cc}
+\Q_1 & \Q_2
+\end{array}\right)
+\left(\begin{array}{c}
+\RR\\
+\mat{0}
+\end{array}\right)=
+\Q_1 \RR
+\end  {equation}
+where $\P \in \R^{m \times m}$ is a sparse permutation matrix, $\Q \in \R^{n
+\times n}$ is orthonormal, $\RR \in \R^{n \times m}$ is upper triangular. Let
+$r$ be the row rank of $\Aeq$---the number of linearly independent rows---then
+we split $\Q$ and $\RR$ into $\Q_1 \in \R^{n \times r}$, $\Q_2 \in \R^{n \times
+n-r}$, and $\R_1 \in \RR^{r \times m}$.
+
+Notice that 
+\begin{align}
+\Aeq \z &= \Beq \\
+\P \P^\transpose \Aeq \z &= \\
+\P \left(\Aeq^\transpose \P\right)^\transpose \z &= \\
+\P\left(\Q\RR\right)^\transpose \z &= \\
+\P \RR^\transpose \Q^\transpose \z &= \\
+\P \RR^\transpose \Q \z &= \\
+\P \left(\RR_1^\transpose \mat{0}\right)
+  \left(\begin{array}{c}
+  \Q_1^\transpose\\
+  \Q_2^\transpose
+  \end{array}\right) \z &=\\
+\P \RR_1^\transpose \Q_1^\transpose \z + \P \0 \Q_2^\transpose \z &= .
+\end{align}
+Here we see that $\Q_1^\transpose \z$ affects this equality but
+$\Q_2^\transpose \z$ does not. Thus
+we say that $\Q_2$ forms a basis that spans the null space of $\Aeq$. That is, $\Aeq \Q_2 \w =
+\vc{0},
+\forall \w \in \R^{n-r}$. Let's write 
+\begin{equation}
+\z = \Q_1 \w_1 + \Q_2 \w_2.
+\end{equation}
+We're only interested in solutions $\z$ which satisfy our equality constraints
+$\Aeq \z = \Beq$. If we plug in the above then we get
+
+
+% P RT Q1T z = Beq
+% RT Q1T z = PT Beq
+% Q1T z = RT \ PT Beq
+% w1 = RT \ PT * Beq
+% z = Q2 w2 + Q1 * w1 
+% z = Q2 w2 + Q1 * RT \ P * Beq
+% z = Q2 w2 + lambda0
+
+% Aeq z = Beq
+% Aeq (Q2 w2 + Q1 w1) = Beq
+% Aeq Q1 w1 = Beq
+
+
+The following table describes the translation between the entities described in
+this document and those used in \texttt{igl/active\_set} and
+\texttt{igl/min\_quad\_with\_fixed}.
+\begin{lstlisting}[keywordstyle=,mathescape]
+$\A$: A
+$\B$: B
+$\z$: Z
+$\Aeq$: Aeq
+$\Aieq$: Aieq
+$\Beq$: Beq
+$\Bieq$: Bieq
+$\lx$: lx
+$\ux$: ux
+$\lamieq$: ~Lambda_Aieq_i
+$\lamlu$: ~Lambda_known_i
+$\P$: AeqTE
+$\Q$: AeqTQ
+$\RR$: AeqTR
+$\RR^\transpose$: AeqTRT
+$\Q_1$: AeqTQ1
+$\Q_1^\transpose$: AeqTQ1T
+$\Q_2$: AeqTQ2
+$\Q_2^\transpose$: AeqTQ2T
+$w_2$: lambda
+\end{lstlisting}
+
+
+% Resources
+%  http://www.cs.cornell.edu/courses/cs322/2007sp/notes/qr.pdf
+%  http://www.math.uh.edu/~rohop/fall_06/Chapter2.pdf
+%  http://www.math.uh.edu/~rohop/fall_06/Chapter3.pdf
+
 
 \end{document}
