@@ -1,6 +1,7 @@
 #ifndef IGL_UNPROJECT_H
 #define IGL_UNPROJECT_H
 #include "igl_inline.h"
+#include <Eigen/Core>
 namespace igl
 {
   // Wrapper for gluUnproject that uses the current GL_MODELVIEW_MATRIX,
@@ -17,6 +18,10 @@ namespace igl
     double* objX,
     double* objY,
     double* objZ);
+  template <typename Derivedwin, typename Derivedobj>
+  IGL_INLINE int unproject(
+    const Eigen::PlainObjectBase<Derivedwin> & win,
+    Eigen::PlainObjectBase<Derivedobj> & obj);
 }
 
 #ifdef IGL_HEADER_ONLY

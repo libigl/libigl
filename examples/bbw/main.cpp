@@ -11,6 +11,7 @@
 #include <igl/mosek/bbw.h>
 #include <igl/writeDMAT.h>
 #include <igl/writeMESH.h>
+#include <igl/normalize_row_sums.h>
 
 #include <Eigen/Dense>
 
@@ -255,6 +256,8 @@ int main(int argc, char * argv[])
   {
     return 1;
   }
+  // Normalize weights to sum to one
+  normalize_row_sums(W,W);
   // Save output
   save_output(argv[1],argv[2],V,F,VV,TT,FF,W);
   return 0;

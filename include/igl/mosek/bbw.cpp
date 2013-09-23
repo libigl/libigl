@@ -8,6 +8,7 @@
 #include <igl/slice_into.h>
 #include <igl/normalize_row_sums.h>
 #include <igl/verbose.h>
+#include <igl/min_quad_with_fixed.h>
 
 #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #include <Eigen/Sparse>
@@ -85,19 +86,36 @@ IGL_INLINE bool igl::bbw(
     // Upper and lower box constraints (Constant bounds)
     VectorXd ux = VectorXd::Ones(n);
     VectorXd lx = VectorXd::Zero(n);
-    // Loop over handles
-    for(int i = 0;i<m;i++)
+    active_set_params eff_params = data.active_set_params;
+    switch(data.qp_solver)
     {
-      verbose("\n^%s: Computing weight for handle %d out of %d.\n\n",
-        __FUNCTION__,i+1,m);
-      VectorXd bci = bc.col(i);
-      VectorXd Wi;
-      switch(data.qp_solver)
+      case QP_SOLVER_IGL_ACTIVE_SET:
       {
-        case QP_SOLVER_IGL_ACTIVE_SET:
+        verbose("\n^%s: Computing initial weights for %d handle%s.\n\n",
+          __FUNCTION__,m,(m!=1?"s":""));
+        min_quad_with_fixed_data<typename DerivedW::Scalar > mqwf;
+        min_quad_with_fixed_precompute(Q,b,Aeq,true,mqwf);
+        min_quad_with_fixed_solve(mqwf,c,bc,Beq,W);
+        // decrement
+        eff_params.max_iter--;
+        bool error = false;
+        // Loop over handles
+#pragma omp parallel for
+        for(int i = 0;i<m;i++)
         {
+          // Quicker exit for openmp
+          if(error)
+          {
+            continue;
+          }
+          verbose("\n^%s: Computing weight for handle %d out of %d.\n\n",
+              __FUNCTION__,i+1,m);
+          VectorXd bci = bc.col(i);
+          VectorXd Wi;
+          // use initial guess
+          Wi = W.col(i);
           SolverStatus ret = active_set(
-            Q,c,b,bci,Aeq,Beq,Aieq,Bieq,lx,ux,data.active_set_params,Wi);
+              Q,c,b,bci,Aeq,Beq,Aieq,Bieq,lx,ux,eff_params,Wi);
           switch(ret)
           {
             case SOLVER_STATUS_CONVERGED:
@@ -108,12 +126,25 @@ IGL_INLINE bool igl::bbw(
             case SOLVER_STATUS_ERROR:
             default:
               cout<<"active_set error."<<endl;
-              return false;
+              error = true;
           }
-          break;
+          W.col(i) = Wi;
         }
-        case QP_SOLVER_MOSEK:
+        if(error)
         {
+          return false;
+        }
+        break;
+      }
+      case QP_SOLVER_MOSEK:
+      {
+        // Loop over handles
+        for(int i = 0;i<m;i++)
+        {
+          verbose("\n^%s: Computing weight for handle %d out of %d.\n\n",
+              __FUNCTION__,i+1,m);
+          VectorXd bci = bc.col(i);
+          VectorXd Wi;
           // impose boundary conditions via bounds
           slice_into(bci,b,ux);
           slice_into(bci,b,lx);
@@ -122,24 +153,24 @@ IGL_INLINE bool igl::bbw(
           {
             return false;
           }
-          break;
+          W.col(i) = Wi;
         }
-        default:
-        {
-          assert(false && "Unknown qp_solver");
-          return false;
-        }
+        break;
       }
-      W.col(i) = Wi;
+      default:
+      {
+        assert(false && "Unknown qp_solver");
+        return false;
+      }
     }
+#ifndef NDEBUG
     const double min_rowsum = W.rowwise().sum().array().abs().minCoeff();
     if(min_rowsum < 0.1)
     {
-      cerr<<"bbw.cpp: Warning, row sum is very low. Consider more iterations "
-        "or enforcing partition of unity."<<endl;
+      cerr<<"bbw.cpp: Warning, minimum row sum is very low. Consider more "
+        "active set iterations or enforcing partition of unity."<<endl;
     }
-    // Need to normalize
-    igl::normalize_row_sums(W,W); 
+#endif
   }
 
   return true;

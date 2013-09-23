@@ -5,8 +5,9 @@ all: libiglmosek
 debug: libiglmosek
 
 include ../../../Makefile.conf
-all: CFLAGS += -O3 -DNDEBUG
-debug: CFLAGS += -g -Wall -Werror
+all: OPTFLAGS += -O3 -DNDEBUG $(OPENMP)
+debug: OPTFLAGS += -g -Wall -Werror
+CFLAGS += $(OPTFLAGS)
 
 .PHONY: libiglmosek
 libiglmosek: obj ../../../lib/libiglmosek.a
