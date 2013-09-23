@@ -57,7 +57,8 @@ namespace igl
   //   bc #b by #W list of boundary values
   //   data  object containing options, intial guess --> solution and results
   // Outputs:
-  //   W  #V by #W list of weights
+  //   W  #V by #W list of *unnormalized* weights to normalize use 
+  //    igl::normalize_row_sums(W,W); 
   // Returns true on success, false on failure
   template <
     typename DerivedV, 
