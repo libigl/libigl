@@ -1,6 +1,5 @@
 #ifndef IGL_WRITE_MATLAB_WORKSPACE
 #define IGL_WRITE_MATLAB_WORKSPACE
-#include "igl/igl_inline.h"
 
 #include <string>
 #include <vector>
@@ -34,19 +33,19 @@ namespace igl
       MatlabWorkspace();
       ~MatlabWorkspace();
       // Clear names and data of variables in workspace
-      IGL_INLINE void clear();
+      inline void clear();
       // Save current list of variables
       //
       // Inputs:
       //   path  path to .mat file
       // Returns true on success, false on failure
-      IGL_INLINE bool write(const std::string & path) const;
+      inline bool write(const std::string & path) const;
       // Load list of variables from .mat file
       //
       // Inputs:
       //   path  path to .mat file
       // Returns true on success, false on failure
-      IGL_INLINE bool read(const std::string & path);
+      inline bool read(const std::string & path);
       // Assign data to a variable name in the workspace
       //
       // Template: 
@@ -58,39 +57,52 @@ namespace igl
       //
       // Known Bugs: Assumes Eigen is using column major ordering
       template <typename DerivedM>
-      IGL_INLINE MatlabWorkspace& save(
+      inline MatlabWorkspace& save(
         const Eigen::PlainObjectBase<DerivedM>& M,
         const std::string & name);
       // Template:
       //   MT  sparse matrix type (e.g. double)
       template <typename MT>
-      IGL_INLINE MatlabWorkspace& save(
+      inline MatlabWorkspace& save(
         const Eigen::SparseMatrix<MT>& M,
         const std::string & name);
       // Templates:
       //   ScalarM  scalar type, e.g. double
       template <typename ScalarM>
-      IGL_INLINE MatlabWorkspace& save(
+      inline MatlabWorkspace& save(
         const std::vector<std::vector<ScalarM> > & vM,
         const std::string & name);
       // Templates:
       //   ScalarV  scalar type, e.g. double
       template <typename ScalarV>
-      IGL_INLINE MatlabWorkspace& save(
+      inline MatlabWorkspace& save(
         const std::vector<ScalarV> & vV,
+        const std::string & name);
+      // NOTE: Eigen stores quaternions coefficients as (i,j,k,1), but most of
+      // our matlab code stores them as (1,i,j,k) This takes a quaternion and
+      // saves it as a (1,i,j,k) row vector
+      //
+      // Templates:
+      //   Q  quaternion type
+      template <typename Q>
+      inline MatlabWorkspace& save(
+        const Eigen::Quaternion<Q> & q,
+        const std::string & name);
+      inline MatlabWorkspace& save(
+        const double d,
         const std::string & name);
       // Same as save() but adds 1 to each element, useful for saving "index"
       // matrices like lists of faces or elements
       template <typename DerivedM>
-      IGL_INLINE MatlabWorkspace& save_index(
+      inline MatlabWorkspace& save_index(
         const Eigen::PlainObjectBase<DerivedM>& M,
         const std::string & name);
       template <typename ScalarM>
-      IGL_INLINE MatlabWorkspace& save_index(
+      inline MatlabWorkspace& save_index(
         const std::vector<std::vector<ScalarM> > & vM,
         const std::string & name);
       template <typename ScalarV>
-      IGL_INLINE MatlabWorkspace& save_index(
+      inline MatlabWorkspace& save_index(
         const std::vector<ScalarV> & vV,
         const std::string & name);
       // Find a certain matrix by name.
@@ -105,22 +117,22 @@ namespace igl
       //   M  matrix
       // Returns true only if found.
       template <typename DerivedM>
-      IGL_INLINE bool find( 
+      inline bool find( 
         const std::string & name,
         Eigen::PlainObjectBase<DerivedM>& M);
       template <typename MT>
-      IGL_INLINE bool find( 
+      inline bool find( 
         const std::string & name,
         Eigen::SparseMatrix<MT>& M);
-      IGL_INLINE bool find( 
+      inline bool find( 
         const std::string & name,
         double & d);
-      IGL_INLINE bool find( 
+      inline bool find( 
         const std::string & name,
         int & v);
       // Subtracts 1 from all entries
       template <typename DerivedM>
-      IGL_INLINE bool find_index( 
+      inline bool find_index( 
         const std::string & name,
         Eigen::PlainObjectBase<DerivedM>& M);
   };
@@ -142,24 +154,24 @@ namespace igl
 #include <algorithm>
 #include <vector>
 
-IGL_INLINE igl::MatlabWorkspace::MatlabWorkspace()
+inline igl::MatlabWorkspace::MatlabWorkspace()
 {
 }
 
-IGL_INLINE igl::MatlabWorkspace::~MatlabWorkspace()
+inline igl::MatlabWorkspace::~MatlabWorkspace()
 {
   // clean up data
   clear();
 }
 
-IGL_INLINE void igl::MatlabWorkspace::clear()
+inline void igl::MatlabWorkspace::clear()
 {
   for_each(data.begin(),data.end(),&mxDestroyArray);
   data.clear();
   names.clear();
 }
 
-IGL_INLINE bool igl::MatlabWorkspace::write(const std::string & path) const
+inline bool igl::MatlabWorkspace::write(const std::string & path) const
 {
   using namespace std;
   MATFile * mat_file = matOpen(path.c_str(), "w");
@@ -184,7 +196,7 @@ IGL_INLINE bool igl::MatlabWorkspace::write(const std::string & path) const
   return true;
 }
 
-IGL_INLINE bool igl::MatlabWorkspace::read(const std::string & path)
+inline bool igl::MatlabWorkspace::read(const std::string & path)
 {
   using namespace std;
 
@@ -254,7 +266,7 @@ IGL_INLINE bool igl::MatlabWorkspace::read(const std::string & path)
 
 // Treat everything as a double
 template <typename DerivedM>
-IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save(
+inline igl::MatlabWorkspace& igl::MatlabWorkspace::save(
   const Eigen::PlainObjectBase<DerivedM>& M,
   const std::string & name)
 {
@@ -272,7 +284,7 @@ IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save(
 
 // Treat everything as a double
 template <typename MT>
-IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save(
+inline igl::MatlabWorkspace& igl::MatlabWorkspace::save(
   const Eigen::SparseMatrix<MT>& M,
   const std::string & name)
 {
@@ -309,7 +321,7 @@ IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save(
 }
 
 template <typename ScalarM>
-IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save(
+inline igl::MatlabWorkspace& igl::MatlabWorkspace::save(
   const std::vector<std::vector<ScalarM> > & vM,
   const std::string & name)
 {
@@ -319,7 +331,7 @@ IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save(
 }
 
 template <typename ScalarV>
-IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save(
+inline igl::MatlabWorkspace& igl::MatlabWorkspace::save(
   const std::vector<ScalarV> & vV,
   const std::string & name)
 {
@@ -328,8 +340,30 @@ IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save(
   return this->save(V,name);
 }
 
+template <typename Q>
+inline igl::MatlabWorkspace& igl::MatlabWorkspace::save(
+  const Eigen::Quaternion<Q> & q,
+  const std::string & name)
+{
+  Eigen::Matrix<Q,1,4> qm;
+  qm(0,0) = q.w();
+  qm(0,1) = q.x();
+  qm(0,2) = q.y();
+  qm(0,3) = q.z();
+  return save(qm,name);
+}
+
+inline igl::MatlabWorkspace& igl::MatlabWorkspace::save(
+  const double d,
+  const std::string & name)
+{
+  Eigen::VectorXd v(1);
+  v(0) = d;
+  return save(v,name);
+}
+
 template <typename DerivedM>
-IGL_INLINE igl::MatlabWorkspace& 
+inline igl::MatlabWorkspace& 
   igl::MatlabWorkspace::save_index(
     const Eigen::PlainObjectBase<DerivedM>& M,
     const std::string & name)
@@ -340,7 +374,7 @@ IGL_INLINE igl::MatlabWorkspace&
 }
 
 template <typename ScalarM>
-IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save_index(
+inline igl::MatlabWorkspace& igl::MatlabWorkspace::save_index(
   const std::vector<std::vector<ScalarM> > & vM,
   const std::string & name)
 {
@@ -350,7 +384,7 @@ IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save_index(
 }
 
 template <typename ScalarV>
-IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save_index(
+inline igl::MatlabWorkspace& igl::MatlabWorkspace::save_index(
   const std::vector<ScalarV> & vV,
   const std::string & name)
 {
@@ -360,7 +394,7 @@ IGL_INLINE igl::MatlabWorkspace& igl::MatlabWorkspace::save_index(
 }
 
 template <typename DerivedM>
-IGL_INLINE bool igl::MatlabWorkspace::find( 
+inline bool igl::MatlabWorkspace::find( 
   const std::string & name,
   Eigen::PlainObjectBase<DerivedM>& M)
 {
@@ -394,7 +428,7 @@ IGL_INLINE bool igl::MatlabWorkspace::find(
 }
 
 template <typename MT>
-IGL_INLINE bool igl::MatlabWorkspace::find( 
+inline bool igl::MatlabWorkspace::find( 
   const std::string & name,
   Eigen::SparseMatrix<MT>& M)
 {
@@ -447,7 +481,7 @@ IGL_INLINE bool igl::MatlabWorkspace::find(
 
 }
 
-IGL_INLINE bool igl::MatlabWorkspace::find( 
+inline bool igl::MatlabWorkspace::find( 
   const std::string & name,
   int & v)
 {
@@ -470,7 +504,7 @@ IGL_INLINE bool igl::MatlabWorkspace::find(
   return true;
 }
 
-IGL_INLINE bool igl::MatlabWorkspace::find( 
+inline bool igl::MatlabWorkspace::find( 
   const std::string & name,
   double & d)
 {
@@ -494,7 +528,7 @@ IGL_INLINE bool igl::MatlabWorkspace::find(
 }
 
 template <typename DerivedM>
-IGL_INLINE bool igl::MatlabWorkspace::find_index( 
+inline bool igl::MatlabWorkspace::find_index( 
   const std::string & name,
   Eigen::PlainObjectBase<DerivedM>& M)
 {
