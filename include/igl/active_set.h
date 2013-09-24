@@ -1,22 +1,13 @@
-#ifndef ACTIVE_SET_H
-#define ACTIVE_SET_H
+#ifndef IGL_ACTIVE_SET_H
+#define IGL_ACTIVE_SET_H
 
 #include "igl_inline.h"
+#include "SolverStatus.h"
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 
 namespace igl
 {
-  enum SolverStatus
-  {
-    // Good
-    SOLVER_STATUS_CONVERGED = 0,
-    // OK
-    SOLVER_STATUS_MAX_ITER = 1,
-    // Bad
-    SOLVER_STATUS_ERROR = 2,
-    NUM_SOLVER_STATUSES = 3,
-  };
   struct active_set_params;
   // Known Bugs: rows of [Aeq;Aieq] **must** be linearly independent. Should be
   // using QR decomposition otherwise:
