@@ -11,7 +11,10 @@ namespace igl
   //   q  4-element  quaternion (not normalized)
   template <typename Q_type>
   IGL_INLINE void mat4_to_quat(const Q_type * m, Q_type * q);
-  // TODO: implement for mat3 etc.
+  // Input:
+  //   m  9-element opengl rotation matrix
+  template <typename Q_type>
+  IGL_INLINE void mat3_to_quat(const Q_type * m, Q_type * q);
 }
 
 #ifdef IGL_HEADER_ONLY

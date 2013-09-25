@@ -154,7 +154,9 @@ namespace igl
 #include <algorithm>
 #include <vector>
 
-inline igl::MatlabWorkspace::MatlabWorkspace()
+inline igl::MatlabWorkspace::MatlabWorkspace():
+  names(),
+  data()
 {
 }
 

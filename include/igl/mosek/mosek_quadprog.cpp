@@ -91,15 +91,15 @@ IGL_INLINE bool igl::mosek_quadprog(
 
   // Create the MOSEK environment
   mosek_guarded(MSK_makeenv(&env,NULL,NULL,NULL,NULL));
-  /* Directs the log stream to the 'printstr' function. */
-  mosek_guarded(MSK_linkfunctoenvstream(env,MSK_STREAM_LOG,NULL,printstr));
+  ///* Directs the log stream to the 'printstr' function. */
+  //mosek_guarded(MSK_linkfunctoenvstream(env,MSK_STREAM_LOG,NULL,printstr));
   // initialize mosek environment
   mosek_guarded(MSK_initenv(env));
   // Create the optimization task
   mosek_guarded(MSK_maketask(env,m,n,&task));
   verbose("Creating task with %ld linear constraints and %ld variables...\n",m,n);
-  // Tell mosek how to print to std out
-  mosek_guarded(MSK_linkfunctotaskstream(task,MSK_STREAM_LOG,NULL,printstr));
+  //// Tell mosek how to print to std out
+  //mosek_guarded(MSK_linkfunctotaskstream(task,MSK_STREAM_LOG,NULL,printstr));
   // Give estimate of number of variables
   mosek_guarded(MSK_putmaxnumvar(task,n));
   if(m>0)
@@ -186,9 +186,9 @@ IGL_INLINE bool igl::mosek_quadprog(
   // run the optimizer
   mosek_guarded(MSK_optimizetrm(task,&trmcode));
 
-  // Print a summary containing information about the solution for debugging
-  // purposes
-  MSK_solutionsummary(task,MSK_STREAM_LOG);
+  //// Print a summary containing information about the solution for debugging
+  //// purposes
+  //MSK_solutionsummary(task,MSK_STREAM_LOG);
 
   // Get status of solution
   MSKsolstae solsta;
@@ -200,7 +200,7 @@ IGL_INLINE bool igl::mosek_quadprog(
     case MSK_SOL_STA_OPTIMAL:   
     case MSK_SOL_STA_NEAR_OPTIMAL:
       MSK_getsolutionslice(task,MSK_SOL_ITR,MSK_SOL_ITEM_XX,0,n,&x[0]);
-      printf("Optimal primal solution\n");
+      //printf("Optimal primal solution\n");
       //for(size_t j=0; j<n; ++j)
       //{
       //  printf("x[%ld]: %g\n",j,x[j]);
@@ -211,13 +211,13 @@ IGL_INLINE bool igl::mosek_quadprog(
     case MSK_SOL_STA_PRIM_INFEAS_CER:
     case MSK_SOL_STA_NEAR_DUAL_INFEAS_CER:
     case MSK_SOL_STA_NEAR_PRIM_INFEAS_CER:  
-      printf("Primal or dual infeasibility certificate found.\n");
+      //printf("Primal or dual infeasibility certificate found.\n");
       break;
     case MSK_SOL_STA_UNKNOWN:
-      printf("The status of the solution could not be determined.\n");
+      //printf("The status of the solution could not be determined.\n");
       break;
     default:
-      printf("Other solution status.");
+      //printf("Other solution status.");
       break;
   }
 
