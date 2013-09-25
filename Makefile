@@ -70,7 +70,9 @@ INC+=-Iinclude/
 INC+=$(OPENGL_INC)
 
 # Eigen dependency
-EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
+ifndef EIGEN3_INC
+	EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
+endif
 INC+=$(EIGEN3_INC)
 
 # AntTweakBar dependency

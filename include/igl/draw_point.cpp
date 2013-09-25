@@ -19,6 +19,7 @@ IGL_INLINE void igl::draw_point(
   //glGetBooleanv(GL_DEPTH_TEST,&old_depth_test);
   GLboolean old_lighting;
   glGetBooleanv(GL_LIGHTING,&old_lighting);
+  glEnable( GL_POINT_SMOOTH );
 
   float f;
   glGetFloatv(GL_POINT_SIZE_MAX,&f);

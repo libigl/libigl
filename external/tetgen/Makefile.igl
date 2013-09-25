@@ -67,12 +67,12 @@ tetlib: CXXFLAGS+=-DTETLIBRARY
 obj:
 	mkdir -p obj
 
-tetgen:	obj $(OBJ_FILES) predicates.o
-	$(CXX) $(CXXFLAGS) $(SWITCHES) $(AFLAGS) -o tetgen $(OBJ_FILES) predicates.o -lm
+tetgen:	obj $(OBJ_FILES) obj/predicates.o
+	$(CXX) $(CXXFLAGS) $(SWITCHES) $(AFLAGS) -o tetgen $(OBJ_FILES) obj/predicates.o -lm
 
-tetlib: $(OBJ_FILES) predicates.o
+tetlib: $(OBJ_FILES) obj/predicates.o
 	rm -f libtet.a
-	ar r libtet.a $(OBJ_FILES) predicates.o
+	ar r libtet.a $(OBJ_FILES) obj/predicates.o
 
 # Blank dummy build for tetgen.cxx
 obj/tetgen.o: tetgen.cxx
