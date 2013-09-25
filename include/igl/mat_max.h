@@ -17,9 +17,9 @@ namespace igl
   //   X  m by n matrix
   //   dim  dimension along which to take max
   // Outputs:
-  //   Y  n-long sparse vector (if dim == 1) 
+  //   Y  n-long vector (if dim == 1) 
   //   or
-  //   Y  m-long sparse vector (if dim == 2)
+  //   Y  m-long vector (if dim == 2)
   //   I  vector the same size as Y containing the indices along dim of maximum
   //     entries
   template <typename T>

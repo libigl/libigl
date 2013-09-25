@@ -6,7 +6,7 @@ debug: libiglmosek
 
 include ../../../Makefile.conf
 all: OPTFLAGS += -O3 -DNDEBUG $(OPENMP)
-debug: OPTFLAGS += -g -Wall -Werror
+debug: OPTFLAGS += -g -Wall
 CFLAGS += $(OPTFLAGS)
 
 .PHONY: libiglmosek
