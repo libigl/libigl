@@ -5,6 +5,10 @@
 
 IGL_INLINE void igl::draw_floor(const float * colorA, const float * colorB)
 {
+  // old settings
+  int old_lighting=0,old_color_material=0;
+  glGetIntegerv(GL_LIGHTING,&old_lighting);
+  glGetIntegerv(GL_COLOR_MATERIAL,&old_color_material);
   glDisable(GL_LIGHTING);
   glColorMaterial( GL_FRONT, GL_EMISSION);
   glEnable(GL_COLOR_MATERIAL);
@@ -43,15 +47,16 @@ IGL_INLINE void igl::draw_floor(const float * colorA, const float * colorB)
       {
         glColor4fv(colorB);
       }
-      glVertex3f(    x*SizeX,0,    y*SizeY);
-      glVertex3f((x+1)*SizeX,0,    y*SizeY);
-      glVertex3f((x+1)*SizeX,0,(y+1)*SizeY);
       glVertex3f(    x*SizeX,0,(y+1)*SizeY);
+      glVertex3f((x+1)*SizeX,0,(y+1)*SizeY);
+      glVertex3f((x+1)*SizeX,0,    y*SizeY);
+      glVertex3f(    x*SizeX,0,    y*SizeY);
     }
   }
   glEnd();
-  glDisable(GL_COLOR_MATERIAL);
-} 
+  (old_lighting ? glEnable(GL_LIGHTING) : glDisable(GL_LIGHTING));
+  (old_color_material? glEnable(GL_COLOR_MATERIAL) : glDisable(GL_COLOR_MATERIAL));
+}
 
 IGL_INLINE void igl::draw_floor()
 {
