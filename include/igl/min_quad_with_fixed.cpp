@@ -117,6 +117,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     assert(data.Aequ.rows() == neq);
     assert(data.Aequ.cols() == data.unknown.size());
     data.AeqTQR.compute(data.Aequ.transpose().eval());
+    cout<<endl<<matlab_format(SparseMatrix<T>(data.Aequ.transpose().eval()),"AeqT")<<endl<<endl;
     switch(data.AeqTQR.info())
     {
       case Eigen::Success:
@@ -272,11 +273,19 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     // THIS IS ESSENTIALLY DENSE AND THIS IS BY FAR THE BOTTLENECK
     // http://forum.kde.org/viewtopic.php?f=74&t=117500
     AeqTQ = data.AeqTQR.matrixQ();
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+    cout<<"    prune"<<endl;
+    cout<<"      nnz: "<<AeqTQ.nonZeros()<<endl;
+#endif
     // This shouldn't be necessary
     AeqTQ.prune(0.0);
     //cout<<"AeqTQ: "<<AeqTQ.rows()<<" "<<AeqTQ.cols()<<endl;
     //cout<<matlab_format(AeqTQ,"AeqTQ")<<endl;
     //cout<<"    perms"<<endl;
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+    cout<<"      nnz: "<<AeqTQ.nonZeros()<<endl;
+    cout<<"    perm"<<endl;
+#endif
     SparseMatrix<double> I(neq,neq);
     I.setIdentity();
     data.AeqTE = data.AeqTQR.colsPermutation() * I;
@@ -286,6 +295,9 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     assert(AeqTQ.cols() == nu);
     assert(AeqTR.cols() == neq);
     //cout<<"    slice"<<endl;
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+    cout<<"    slice"<<endl;
+#endif
     data.AeqTQ1 = AeqTQ.topLeftCorner(nu,nc);
     data.AeqTQ1T = data.AeqTQ1.transpose().eval();
     // ALREADY TRIM (Not 100% sure about this)
