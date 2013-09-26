@@ -417,7 +417,7 @@ inline bool igl::MatlabWorkspace::find(
   if(DerivedM::IsVectorAtCompileTime)
   {
     assert(m==1 || n==1 || (m==0 && n==0));
-    M.resize(m*n);
+    M.resize(m*n,1);
   }else
   {
     M.resize(m,n);

@@ -11,11 +11,42 @@ namespace igl
   // Outputs:
   //   R  3 by 3 rotation matrix part of decomposition
   //   T  3 by 3 stretch matrix part of decomposition
+  //   U  3 by 3 left-singular vectors
+  //   S  3 by 1 singular values
+  //   V  3 by 3 right-singular vectors
   //
-  IGL_INLINE void polar_svd(const Eigen::Matrix3f& A, Eigen::Matrix3f& R, Eigen::Matrix3f& T);
-  IGL_INLINE void polar_svd(const Eigen::Matrix2f& A, Eigen::Matrix2f& R, Eigen::Matrix2f& T);
-  template<typename Mat>
-  IGL_INLINE void polar_svd(const Mat& A, Mat& R, Mat& T);
+  // Example:
+  //   polar_svd(A,R,T,U,S,V);
+  //   // Check if R is a reflection
+  //   if(R.determinant() < ))
+  //   {
+  //     // flip last column of U and rebuild to get rotation
+  //     U.col(U.cols()-1) *= -1.0;
+  //     R = U * V.transpose();
+  //   }
+  //
+  template <
+    typename DerivedA,
+    typename DerivedR,
+    typename DerivedT,
+    typename DerivedU,
+    typename DerivedS,
+    typename DerivedV>
+  IGL_INLINE void polar_svd(
+    const Eigen::PlainObjectBase<DerivedA> & A,
+    Eigen::PlainObjectBase<DerivedR> & R,
+    Eigen::PlainObjectBase<DerivedT> & T,
+    Eigen::PlainObjectBase<DerivedU> & U,
+    Eigen::PlainObjectBase<DerivedS> & S,
+    Eigen::PlainObjectBase<DerivedV> & V);
+  template <
+    typename DerivedA,
+    typename DerivedR,
+    typename DerivedT>
+  IGL_INLINE void polar_svd(
+    const Eigen::PlainObjectBase<DerivedA> & A,
+    Eigen::PlainObjectBase<DerivedR> & R,
+    Eigen::PlainObjectBase<DerivedT> & T);
 }
 #ifdef IGL_HEADER_ONLY
 #  include "polar_svd.cpp"

@@ -6,7 +6,7 @@ debug: libiglxml
 
 include ../../../Makefile.conf
 all: CFLAGS += -O3 -DNDEBUG
-debug: CFLAGS += -g -Wall -Werror
+debug: CFLAGS += -g -Wall
 
 .PHONY: libiglxml
 libiglxml: obj ../../../lib/libiglxml.a

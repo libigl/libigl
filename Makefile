@@ -17,6 +17,7 @@ all: LFLAGS +=
 OPTFLAGS+=-O3 -DNDEBUG $(OPENMP)
 #debug: OPTFLAGS= -g -Wall -Werror
 debug: OPTFLAGS= -g -Wall
+debug: DEBUG=debug
 CFLAGS += $(OPTFLAGS)
 #CFLAGS += -DIGL_NO_OPENGL -DIGL_NO_ANTTWEAKBAR
 
@@ -43,7 +44,7 @@ endif
 
 .PHONY: examples
 .PHONY: extras
-debug: lib
+debug: lib extras
 lib: lib/libigl.a
 examples: lib extras
 	make -C examples
@@ -51,7 +52,7 @@ extras:
 	for p in  $(EXTRA_DIRS); \
 	do \
 	echo "cd $$p" ; \
-	$(MAKE) -C $$p ; \
+	$(MAKE) -C $$p $(DEBUG); \
 	done
 
 

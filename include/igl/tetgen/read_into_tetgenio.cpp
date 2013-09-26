@@ -56,11 +56,11 @@ IGL_INLINE bool igl::read_into_tetgenio(
     }
     // This changed as of (the so far unreleased) tetgen 1.5
     //success = in.load_tetmesh(basename_char);
-    int object = tetgenbehavior::NODES;
-    if(ext == "mesh")
-    {
-      object = tetgenbehavior::MEDIT;
-    }
+    //int object = tetgenbehavior::NODES;
+    //if(ext == "mesh")
+    //{
+    //  object = tetgenbehavior::MEDIT;
+    //}
     success = in.load_tetmesh(basename_char,!tetgenbehavior::MEDIT);
   }
 
