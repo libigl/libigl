@@ -6,7 +6,7 @@ debug: libiglembree
 
 include ../../../Makefile.conf
 all: CFLAGS += -O3 -DNDEBUG
-debug: CFLAGS += -g -Wall -Werror
+debug: CFLAGS += -g -Wall 
 
 .PHONY: libiglembree
 libiglembree: obj ../../../lib/libiglembree.a

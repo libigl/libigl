@@ -36,7 +36,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   Eigen::PlainObjectBase<DerivedZ> & Z
   )
 {
-//#define ACTIVE_SET_CPP_DEBUG
+#define ACTIVE_SET_CPP_DEBUG
   using namespace igl;
   using namespace Eigen;
   using namespace std;

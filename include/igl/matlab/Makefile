@@ -4,6 +4,7 @@ debug: CFLAGS += -g -Wall -Werror
 
 .PHONY: all
 all: libiglmatlab
+debug: libiglmatlab
 
 .PHONY: libmatlab
 libiglmatlab: obj ../../../lib/libiglmatlab.a

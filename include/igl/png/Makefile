@@ -4,6 +4,7 @@ debug: CFLAGS += -g -Wall -Werror
 
 .PHONY: all
 all: libiglpng
+debug: libiglpng
 
 .PHONY: libpng
 libiglpng: obj ../../../lib/libiglpng.a

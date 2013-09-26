@@ -28,7 +28,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   min_quad_with_fixed_data<T> & data
   )
 {
-//#define MIN_QUAD_WITH_FIXED_CPP_DEBUG
+#define MIN_QUAD_WITH_FIXED_CPP_DEBUG
   using namespace Eigen;
   using namespace std;
   using namespace igl;
