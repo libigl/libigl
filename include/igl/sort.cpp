@@ -145,7 +145,7 @@ IGL_INLINE void igl::sort2(
   int num_outer = (dim == 1 ? X.cols() : X.rows() );
   // get number of rows (or columns)
   int num_inner = (dim == 1 ? X.rows() : X.cols() );
-  assert(num_inner == 2);
+  assert(num_inner == 2);(void)num_inner;
   typedef typename Eigen::PlainObjectBase<DerivedX>::Scalar Scalar;
   typedef typename Eigen::PlainObjectBase<DerivedIX>::Scalar Index;
   IX.resize(X.rows(),X.cols());
