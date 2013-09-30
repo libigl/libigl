@@ -7,6 +7,8 @@
 #include <igl/unproject.h>
 #include <igl/quat_to_mat.h>
 #include <igl/embree/EmbreeIntersector.h>
+#include <igl/trackball.h>
+#include <igl/report_gl_error.h>
 
 #ifdef __APPLE__
 #  include <GLUT/glut.h>
@@ -15,28 +17,94 @@
 #endif
 #include <Eigen/Core>
 
+#include <vector>
 #include <iostream>
 
+// Width and height of window
 int width,height;
+// Rotation of scene
 float scene_rot[4] = {0,0,0,1};
+// information at mouse down
+float down_scene_rot[4] = {0,0,0,1};
+bool trackball_on = false;
+int down_mouse_x,down_mouse_y;
+// Position of light
 float light_pos[4] = {0.1,0.1,-0.9,0};
+// Vertex positions, normals, colors and centroid
 Eigen::MatrixXd V,N,C,mean;
+// Bounding box diagonal length
 double bbd;
+// Faces
 Eigen::MatrixXi F;
+// Embree intersection structure
 igl::EmbreeIntersector<Eigen::MatrixXd,Eigen::MatrixXi,Eigen::Vector3d> ei;
-// Ray
-Eigen::Vector3d s,d,dir;
+// Hits collected
+std::vector<embree::Hit > hits;
+// Ray information, "projection screen" corners
+Eigen::Vector3d win_s,s,d,dir,NW,NE,SE,SW;
+// Textures and framebuffers for "projection screen"
+GLuint tex_id = 0, fbo_id = 0, dfbo_id = 0;
+
+// Initialize textures and framebuffers. Must be called if window changes
+// dimension
+void init_texture()
+{
+  using namespace igl;
+  using namespace std;
+  // Set up a "render-to-texture" frame buffer and texture combo
+  glDeleteTextures(1,&tex_id);
+  glDeleteFramebuffersEXT(1,&fbo_id);
+  glDeleteFramebuffersEXT(1,&dfbo_id);
+  // http://www.opengl.org/wiki/Framebuffer_Object_Examples#Quick_example.2C_render_to_texture_.282D.29
+  glGenTextures(1, &tex_id);
+  glBindTexture(GL_TEXTURE_2D, tex_id);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  //NULL means reserve texture memory, but texels are undefined
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  //-------------------------
+  glGenFramebuffersEXT(1, &fbo_id);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
+  //Attach 2D texture to this FBO
+  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, tex_id, 0);
+  glGenRenderbuffersEXT(1, &dfbo_id);
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, dfbo_id);
+  glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, width, height);
+  //-------------------------
+  //Attach depth buffer to FBO
+  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, dfbo_id);
+  //-------------------------
+  //Does the GPU support current FBO configuration?
+  GLenum status;
+  status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+  switch(status)
+  {
+    case GL_FRAMEBUFFER_COMPLETE_EXT:
+      break;
+    default:
+      cout<<"error"<<endl;
+  }
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+}
 
 void reshape(int width,int height)
 {
   using namespace std;
+  // Save width and height
   ::width = width;
   ::height = height;
+  // Re-initialize textures and frame bufferes
+  init_texture();
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glViewport(0,0,width,height);
 }
 
+// Set up double-sided lights
 void lights()
 {
   using namespace std;
@@ -61,10 +129,12 @@ void lights()
   glLightfv(GL_LIGHT1,GL_POSITION,pos);
 }
 
+// Set up projection and model view of scene
 void push_scene()
 {
   using namespace igl;
-  //gluOrtho2D(0,width,0,height);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
   gluPerspective(45,(double)width/(double)height,1e-2,100);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -75,16 +145,17 @@ void push_scene()
   glMultMatrixf(mat);
 }
 
+void pop_scene()
+{
+  glPopMatrix();
+}
+
+// Scale and shift for object
 void push_object()
 {
   glPushMatrix();
   glScaled(2./bbd,2./bbd,2./bbd);
   glTranslated(-mean(0,0),-mean(0,1),-mean(0,2));
-}
-
-void pop_scene()
-{
-  glPopMatrix();
 }
 
 void pop_object()
@@ -97,56 +168,135 @@ void display()
 {
   using namespace Eigen;
   using namespace igl;
+  using namespace std;
   glClearColor(back[0],back[1],back[2],0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  // All smooth points
+  glEnable( GL_POINT_SMOOTH );
 
   lights();
   push_scene();
-
   glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LEQUAL);
   glEnable(GL_NORMALIZE);
   glEnable(GL_COLOR_MATERIAL);
   glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
-  //glColorMaterial(GL_FRONT, GL_DIFFUSE);
-  //glColorMaterial(GL_FRONT, GL_AMBIENT);
-  //glColorMaterial(GL_FRONT, GL_SPECULAR);
-
-
   push_object();
+
+  if(trackball_on)
+  {
+    // Draw a "laser" line
+    glLineWidth(3.0);
+    glDisable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+    glBegin(GL_LINES);
+    glColor3f(1,0,0);
+    glVertex3dv(s.data());
+    glColor3f(1,0,0);
+    glVertex3dv(d.data());
+    glEnd();
+
+    // Draw the start and end points used for ray
+    glPointSize(10.0);
+    glBegin(GL_POINTS);
+    glColor3f(1,0,0);
+    glVertex3dv(s.data());
+    glColor3f(0,0,1);
+    glVertex3dv(d.data());
+    glEnd();
+  }
+
+  // Draw the model
+  glEnable(GL_LIGHTING);
   draw_mesh(V,F,N,C);
 
-  glDisable(GL_COLOR_MATERIAL);
-  glDisable(GL_LIGHTING);
+  // Draw all hits
   glBegin(GL_POINTS);
-  glColor3f(1,0,0);
-  glVertex3dv(s.data());
-  glColor3f(0,0,1);
-  glVertex3dv(d.data());
-  glEnd();
-  Vector3d n,f;
-  n = s+1000.0*dir;
-  f = d-1000.0*dir;
-  glBegin(GL_LINE);
-  glColor3f(1,0,0);
-  glVertex3dv(n.data());
-  glColor3f(1,0,0);
-  glVertex3dv(f.data());
+  glColor3f(0,0.2,0.2);
+  for(vector<embree::Hit>::iterator hit = hits.begin();
+      hit != hits.end();
+      hit++)
+  {
+    const double w0 = (1.0-hit->u-hit->v);
+    const double w1 = hit->u;
+    const double w2 = hit->v;
+    VectorXd hitP = 
+      w0 * V.row(F(hit->id0,0)) + 
+      w1 * V.row(F(hit->id0,1)) + 
+      w2 * V.row(F(hit->id0,2));
+    glVertex3dv(hitP.data());
+  }
   glEnd();
 
   pop_object();
 
+  // Draw a nice floor
   glPushMatrix();
   glEnable(GL_LIGHTING);
   glTranslated(0,-1,0);
   draw_floor();
   glPopMatrix();
 
+  // draw a transparent "projection screen" show model at time of hit (aka
+  // mouse down)
+  push_object();
+  if(trackball_on)
+  {
+    glColor4f(0,0,0,1.0);
+    glPointSize(10.0);
+    glBegin(GL_POINTS);
+    glVertex3dv(SW.data());
+    glVertex3dv(SE.data());
+    glVertex3dv(NE.data());
+    glVertex3dv(NW.data());
+    glEnd();
+
+    glDisable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tex_id);
+    glColor4f(1,1,1,0.7);
+    glBegin(GL_QUADS);
+    glTexCoord2d(0,0);
+    glVertex3dv(SW.data());
+    glTexCoord2d(1,0);
+    glVertex3dv(SE.data());
+    glTexCoord2d(1,1);
+    glVertex3dv(NE.data());
+    glTexCoord2d(0,1);
+    glVertex3dv(NW.data());
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+  }
+  pop_object();
   pop_scene();
+
+  // Draw a faint point over mouse
+  if(!trackball_on)
+  {
+    glDisable(GL_LIGHTING);
+    glDisable(GL_COLOR_MATERIAL);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+    glColor4f(1.0,0.3,0.3,0.6);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0,width,0,height);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glPointSize(20.0);
+    glBegin(GL_POINTS);
+    glVertex2dv(win_s.data());
+    glEnd();
+  }
+  report_gl_error();
 
   glutSwapBuffers();
   glutPostRedisplay();
 }
 
+// Initialize colors to a boring green
 void init_C()
 {
   C.col(0).setConstant(0.4);
@@ -159,24 +309,110 @@ void mouse_move(int mouse_x, int mouse_y)
   using namespace std;
   using namespace Eigen;
   using namespace igl;
+  using namespace std;
   init_C();
+  glutSetCursor(GLUT_CURSOR_CROSSHAIR);
+  // Push scene and object
   push_scene();
   push_object();
-  Vector3d win_s(mouse_x,height-mouse_y,0);
+  // Unproject mouse at 0 depth and some positive depth
+  win_s = Vector3d(mouse_x,height-mouse_y,0);
   Vector3d win_d(mouse_x,height-mouse_y,1);
   unproject(win_s,s);
   unproject(win_d,d);
-  dir = d-s;
-  embree::Hit hit;
-  if(ei.intersectRay(s,d,hit))
-  {
-    cout<<"hit!"<<endl;
-    C(hit.id0 % F.rows(),0) = 1;
-    C(hit.id0 % F.rows(),1) = 0.4;
-    C(hit.id0 % F.rows(),2) = 0.4;
-  }
   pop_object();
   pop_scene();
+  report_gl_error();
+  // Shoot ray at unprojected mouse in view direction
+  dir = d-s;
+  int num_rays_shot;
+  ei.intersectRay(s,dir,hits,num_rays_shot);
+  for(vector<embree::Hit>::iterator hit = hits.begin();
+      hit != hits.end();
+      hit++)
+  {
+    // Change color of hit faces
+    C(hit->id0,0) = 1;
+    C(hit->id0,1) = 0.4;
+    C(hit->id0,2) = 0.4;
+  }
+}
+
+void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
+{
+  using namespace std;
+  using namespace Eigen;
+  using namespace igl;
+  switch(glutState)
+  {
+    case 1:
+      // up
+      glutSetCursor(GLUT_CURSOR_CROSSHAIR);
+      trackball_on = false;
+      hits.clear();
+      init_C();
+      break;
+    case 0:
+      // be sure this has been called recently
+      mouse_move(mouse_x,mouse_y);
+      // down
+      glutSetCursor(GLUT_CURSOR_CYCLE);
+      // collect information for trackball
+      trackball_on = true;
+      copy(scene_rot,scene_rot+4,down_scene_rot);
+      down_mouse_x = mouse_x;
+      down_mouse_y = mouse_y;
+      // Collect "projection screen" locations
+      push_scene();
+      push_object();
+      // unproject corners of window
+      const double depth = 0.999;
+      Vector3d win_NW(    0,height,depth);
+      Vector3d win_NE(width,height,depth);
+      Vector3d win_SE(width,0,depth);
+      Vector3d win_SW(0,0,depth);
+      unproject(win_NW,NW);
+      unproject(win_NE,NE);
+      unproject(win_SE,SE);
+      unproject(win_SW,SW);
+      // render to framebuffer
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
+      glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, dfbo_id);
+      glClearColor(0,0,0,1);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      // Render the model ---> to the framebuffer attached to the "projection
+      // screen" texture
+      glEnable(GL_COLOR_MATERIAL);
+      glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
+      glEnable(GL_LIGHTING);
+      glEnable(GL_DEPTH_TEST);
+      draw_mesh(V,F,N,C);
+      pop_object();
+      pop_scene();
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+      glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+    break;
+  }
+}
+
+void mouse_drag(int mouse_x, int mouse_y)
+{
+  using namespace igl;
+
+  if(trackball_on)
+  {
+    // Rotate according to trackball
+    trackball<float>(
+      width,
+      height,
+      2,
+      down_scene_rot,
+      down_mouse_x,
+      down_mouse_y,
+      mouse_x,
+      mouse_y,
+      scene_rot);
+  }
 }
 
 
@@ -185,6 +421,8 @@ void key(unsigned char key, int mouse_x, int mouse_y)
   using namespace std;
   switch(key)
   {
+    // Ctrl-c and esc exit
+    case char(3):
     case char(27):
       exit(0);
     default:
@@ -200,36 +438,33 @@ int main(int argc, char * argv[])
   using namespace std;
 
   // init mesh
-  if(!read("../shared/cheburashka.obj",V,F))
+  if(!read("../shared/decimated-knight.obj",V,F))
   {
     return 1;
   }
+  // Compute normals, centroid, colors, bounding box diagonal
   per_face_normals(V,F,N);
+  normalize_row_lengths(N,N);
   mean = V.colwise().mean();
   C.resize(F.rows(),3);
   init_C();
   bbd = 
     (V.colwise().maxCoeff() -
     V.colwise().minCoeff()).maxCoeff();
-  normalize_row_lengths(N,N);
 
   // Init embree
-  cout<<"Flipping faces..."<<endl;
-  MatrixXi FF;
-  FF.resize(F.rows()*2,F.cols());
-  FF << F, F.rowwise().reverse().eval();
-  cout<<"Initializing Embree..."<<endl;
-  ei = EmbreeIntersector<MatrixXd,MatrixXi,Vector3d>(V,FF);
+  ei = EmbreeIntersector<MatrixXd,MatrixXi,Vector3d>(V,F);
 
   // Init glut
   glutInit(&argc,argv);
   glutInitDisplayString( "rgba depth double samples>=8 ");
-  glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH),glutGet(GLUT_SCREEN_HEIGHT));
-  glutInitWindowSize(450,300);
+  glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH)/2.0,glutGet(GLUT_SCREEN_HEIGHT));
   glutCreateWindow("embree");
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(key);
+  glutMouseFunc(mouse);
+  glutMotionFunc(mouse_drag);
   glutPassiveMotionFunc(mouse_move);
   glutMainLoop();
   return 0;
