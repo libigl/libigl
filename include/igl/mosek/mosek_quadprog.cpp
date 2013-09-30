@@ -91,15 +91,15 @@ IGL_INLINE bool igl::mosek_quadprog(
 
   // Create the MOSEK environment
   mosek_guarded(MSK_makeenv(&env,NULL,NULL,NULL,NULL));
-  /* Directs the log stream to the 'printstr' function. */
-  mosek_guarded(MSK_linkfunctoenvstream(env,MSK_STREAM_LOG,NULL,printstr));
+  ///* Directs the log stream to the 'printstr' function. */
+  //mosek_guarded(MSK_linkfunctoenvstream(env,MSK_STREAM_LOG,NULL,printstr));
   // initialize mosek environment
   mosek_guarded(MSK_initenv(env));
   // Create the optimization task
   mosek_guarded(MSK_maketask(env,m,n,&task));
   verbose("Creating task with %ld linear constraints and %ld variables...\n",m,n);
-  // Tell mosek how to print to std out
-  mosek_guarded(MSK_linkfunctotaskstream(task,MSK_STREAM_LOG,NULL,printstr));
+  //// Tell mosek how to print to std out
+  //mosek_guarded(MSK_linkfunctotaskstream(task,MSK_STREAM_LOG,NULL,printstr));
   // Give estimate of number of variables
   mosek_guarded(MSK_putmaxnumvar(task,n));
   if(m>0)
@@ -171,8 +171,7 @@ IGL_INLINE bool igl::mosek_quadprog(
     pit != mosek_data.intparam.end(); 
     pit++)
   {
-    const MSKrescodee r = MSK_putintparam(task,pit->first,pit->second);
-    mosek_guarded(r);
+    mosek_guarded(MSK_putintparam(task,pit->first,pit->second));
   }
   for(
     std::map<MSKdparame,double>::iterator pit = mosek_data.douparam.begin();
@@ -187,9 +186,9 @@ IGL_INLINE bool igl::mosek_quadprog(
   // run the optimizer
   mosek_guarded(MSK_optimizetrm(task,&trmcode));
 
-  // Print a summary containing information about the solution for debugging
-  // purposes
-  MSK_solutionsummary(task,MSK_STREAM_LOG);
+  //// Print a summary containing information about the solution for debugging
+  //// purposes
+  //MSK_solutionsummary(task,MSK_STREAM_LOG);
 
   // Get status of solution
   MSKsolstae solsta;
