@@ -15,3 +15,11 @@ To install issue:
 
 This will copy the directory ./Mesh.qlgenerator/ into /Library/QuickLook/ and
 reload the Quicklook Manager (so that you see your changes in Finder).
+
+= Dependencies =
+
+Install Mesa3D using macports. 
+
+    sudo port install mesa
+
+Then re-install mesa's GLU à la http://www.alecjacobson.com/weblog/?p=2827

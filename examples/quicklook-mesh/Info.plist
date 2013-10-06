@@ -14,6 +14,7 @@
 				<string>org.mesh</string>
 				<string>org.obj</string>
 				<string>org.off</string>
+				<string>org.wrl</string>
 			</array>
 		</dict>
 	</array>
@@ -117,6 +118,25 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>off</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.image</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Virtual Reality Modeling Language</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.wrl</string>
+			<key>UTTypeReferenceURL</key>
+			<string>http://en.wikipedia.org/wiki/VRML#WRL_File_Format</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>wrl</string>
 				</array>
 			</dict>
 		</dict>

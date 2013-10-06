@@ -13,6 +13,8 @@ extern "C" {
 #include <igl/material_colors.h>
 #include <igl/pathinfo.h>
 #include <igl/readOBJ.h>
+#include <igl/readWRL.h>
+#include <igl/triangulate.h>
 #include <igl/readOFF.h>
 #include <igl/readMESH.h>
 #include <igl/boundary_faces.h>
@@ -34,6 +36,7 @@ static Eigen::MatrixXi F;
 static double bbd;
 static Eigen::Vector3d Vmean, Vmax,Vmin;
 static bool invert = false;
+static float background_color[4] = {0,0,0,1};
 
 // Small viewports struct for keeping track of size and camera info
 #define NUM_VIEWPORTS 6
@@ -243,7 +246,11 @@ void display()
 {
   using namespace std;
   using namespace igl;
-  glClearColor(0,0,0,0);
+  glClearColor(
+    background_color[0],
+    background_color[1],
+    background_color[2],
+    background_color[3]);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
@@ -329,6 +336,7 @@ void display()
 
 bool render_to_buffer(
   const char * filename,
+  const float * background_color,
   const int width,
   const int height,
   GLubyte * buffer)
@@ -338,16 +346,20 @@ bool render_to_buffer(
   using namespace Eigen;
   double ts = get_seconds();
 
+  copy(background_color,background_color+4,::background_color);
+
   // Read and prepare mesh
   // dirname, basename, extension and filename
   string d,b,ext,f;
   pathinfo(filename,d,b,ext,f);
   // Convert extension to lower case
   transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+  vector<vector<double > > vV,vN,vTC;
+  vector<vector<int > > vF,vFTC,vFN;
   if(ext == "obj")
   {
     // Convert extension to lower case
-    if(!igl::readOBJ(filename,V,F))
+    if(!igl::readOBJ(filename,vV,vTC,vN,vF,vFTC,vFN))
     {
       red(width,height,buffer);
       return false;
@@ -355,7 +367,15 @@ bool render_to_buffer(
   }else if(ext == "off")
   {
     // Convert extension to lower case
-    if(!igl::readOFF(filename,V,F))
+    if(!igl::readOFF(filename,vV,vF,vN))
+    {
+      red(width,height,buffer);
+      return false;
+    }
+  }else if(ext == "wrl")
+  {
+    // Convert extension to lower case
+    if(!igl::readWRL(filename,vV,vF))
     {
       red(width,height,buffer);
       return false;
@@ -373,6 +393,15 @@ bool render_to_buffer(
     {
       boundary_faces(T,F);
     }
+  }
+  if(vV.size() > 0)
+  {
+    if(!list_to_matrix(vV,V))
+    {
+      red(width,height,buffer);
+      return false;
+    }
+    triangulate(vF,F);
   }
   cout<<"IO: "<<(get_seconds()-ts)<<"s"<<endl;
   ts = get_seconds();

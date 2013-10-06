@@ -47,7 +47,8 @@ OSStatus GeneratePreviewForURL(
       cs = cs_buf;
     }
 
-    render_to_buffer(cs,bwidth,bheight,buffer);
+    const float TRANSPARENT_BLACK[4] = {0,0,0,0};
+    render_to_buffer(cs,TRANSPARENT_BLACK,bwidth,bheight,buffer);
     CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
     CFDataRef rgbData = CFDataCreate(NULL, buffer, bwidth * bheight * 4);
     CGDataProviderRef provider = CGDataProviderCreateWithCFData(rgbData);
