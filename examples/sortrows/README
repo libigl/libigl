@@ -1,0 +1,9 @@
+This is a simple example program that shows how to use the sort function on
+eigen matrices like matlab's sort function
+
+
+To Build:
+  make
+
+To Run:
+  ./example

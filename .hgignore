@@ -8,6 +8,7 @@ syntax: glob
 example
 examples/bbw/bbw_demo_selfcontained/*
 examples/bbw/bbw_demo_selfcontained.zip
+examples/quicklook-mesh/Mesh.qlgenerator/*
 example_static
 example_header_only
 example1

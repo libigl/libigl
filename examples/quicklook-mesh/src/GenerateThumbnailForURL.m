@@ -114,7 +114,8 @@ OSStatus GenerateThumbnailForURL(
       CFStringGetCString(file, cs_buf, [(NSString*)file length]+1, kCFStringEncodingUTF8);
       cs = cs_buf;
     }
-    render_to_buffer(cs,bwidth,bheight,buffer);
+    const float OPAQUE_WHITE[4] = {1,1,1,1};
+    render_to_buffer(cs,OPAQUE_WHITE,bwidth,bheight,buffer);
     CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
     CFDataRef rgbData = CFDataCreate(NULL, buffer, bwidth * bheight * 4);
     CGDataProviderRef provider = CGDataProviderCreateWithCFData(rgbData);

@@ -49,7 +49,7 @@ INC+=$(EIGEN3_INC) $(LIBIGL_INC) $(GLU_INC) $(MESA_INC)
 .PHONY:
 
 Mesh.qlgenerator: Mesh.qlgenerator/Contents/MacOS/ \
-  Mesh.qlgenerator/Contents/Resources \
+  Mesh.qlgenerator/Contents/Resources/ \
   Mesh.qlgenerator/Contents/MacOS/Mesh \
   Mesh.qlgenerator/Contents/Info.plist
 
