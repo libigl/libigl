@@ -1,0 +1,17 @@
+This is a small application which builds a "QuickLook generator" for Mac OS.
+This will generate previews (selecting a file in Finder and hitting space) and
+thumbnails ("Cover flow" view in Finder) for .obj, .off and .mesh 3D model
+files.
+
+To build issue:
+
+    make
+
+This will compile the source and build the application in ./Mesh.qlgenerator/
+
+To install issue:
+
+    sudo make install
+
+This will copy the directory ./Mesh.qlgenerator/ into /Library/QuickLook/ and
+reload the Quicklook Manager (so that you see your changes in Finder).
