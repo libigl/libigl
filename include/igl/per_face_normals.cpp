@@ -1,6 +1,7 @@
 #include "per_face_normals.h"
 #include <Eigen/Geometry>
 
+#define SQRT_ONE_OVER_THREE 0.57735026918962573
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::per_face_normals(
   const Eigen::PlainObjectBase<DerivedV>& V,
@@ -15,7 +16,16 @@ IGL_INLINE void igl::per_face_normals(
   {
     Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v1 = V.row(F(i,1)) - V.row(F(i,0));
     Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v2 = V.row(F(i,2)) - V.row(F(i,0));
-    N.row(i) = (v1.cross(v2)).normalized();
+    N.row(i) = v1.cross(v2);//.normalized();
+    if(N.row(i).sum() == 0)
+    {
+      N(i,0) = SQRT_ONE_OVER_THREE;
+      N(i,1) = SQRT_ONE_OVER_THREE;
+      N(i,2) = SQRT_ONE_OVER_THREE;
+    }else
+    {
+      N.row(i) = N.row(i).normalized().eval();
+    }
   }
 }
 #ifndef IGL_HEADER_ONLY
