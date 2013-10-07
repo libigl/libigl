@@ -5,7 +5,8 @@
 
 IGL_INLINE bool igl::save_ReAntTweakBar(igl::ReTwBar* bar, const char* file_name)
 {
-  std::string name = bar->name + "_AntTweakBar";
+  const char * name_chars = TwGetBarName(bar->bar);
+  std::string name = std::string(name_chars) + "_AntTweakBar";
 	
   const std::vector<igl::ReTwRWItem>& rw_items = bar->get_rw_items();
 	for(std::vector<ReTwRWItem>::const_iterator it = rw_items.begin(); it != rw_items.end(); it++)
@@ -39,7 +40,8 @@ IGL_INLINE bool igl::save_ReAntTweakBar(igl::ReTwBar* bar, tinyxml2::XMLDocument
 {
   std::vector<char**> buffer;
 	
-	std::string name = bar->name + "_AntTweakBar";
+  const char * name_chars = TwGetBarName(bar->bar);
+  std::string name = std::string(name_chars) + "_AntTweakBar";
 	igl::XMLSerializer* s = new igl::XMLSerializer(name);
 	
   const std::vector<igl::ReTwRWItem>& rw_items = bar->get_rw_items();
@@ -95,7 +97,8 @@ IGL_INLINE bool igl::load_ReAntTweakBar(igl::ReTwBar* bar, const char *file_name
 	char value_str[REANTTWEAKBAR_MAX_WORD];
 	TwType type;
 	
-  std::string name = bar->name + "_AntTweakBar";
+  const char * name_chars = TwGetBarName(bar->bar);
+  std::string name = std::string(name_chars) + "_AntTweakBar";
 
   const std::vector<igl::ReTwRWItem>& rw_items = bar->get_rw_items();
 	for(std::vector<ReTwRWItem>::const_iterator it = rw_items.begin(); it != rw_items.end(); it++)
@@ -139,7 +142,8 @@ IGL_INLINE bool igl::load_ReAntTweakBar(igl::ReTwBar* bar, tinyxml2::XMLDocument
 	std::map<std::string,char*> variables;
 	std::map<std::string,char*> cbVariables;
 
-	std::string name = bar->name + "_AntTweakBar";
+  const char * name_chars = TwGetBarName(bar->bar);
+  std::string name = std::string(name_chars) + "_AntTweakBar";
 	igl::XMLSerializer* s = new igl::XMLSerializer(name);
 	
 	std::map<std::string,char*>::iterator iter;
