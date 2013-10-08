@@ -8,8 +8,8 @@ C=llvm-gcc
 EIGEN=/opt/local/include/eigen3/
 EIGEN3_INC=-I$(EIGEN) -I$(EIGEN)/unsupported
 
-LIBIGL=/usr/local/igl/libigl/
-LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglmatlab
+LIBIGL=../../
+LIBIGL_LIB=-L$(LIBIGL)/lib -ligl
 LIBIGL_INC=-I $(LIBIGL)/include
 
 # Do not use the GLU that comes with the macports Mesa:
