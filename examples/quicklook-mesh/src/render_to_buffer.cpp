@@ -33,7 +33,6 @@ extern "C" {
 static int width,height;
 static Eigen::MatrixXd V,N;
 static Eigen::MatrixXi F;
-static double bbd;
 static Eigen::Vector3d Vmean, Vmax,Vmin;
 static bool invert = false;
 static float background_color[4] = {0,0,0,1};
@@ -216,7 +215,6 @@ void push_object(const Viewport & vp)
   Vector3d eff_Vmax  = m*Vmax;
   Vector3d eff_Vmin  = m*Vmin;
   Vector3d eff_Vmean = m*Vmean;
-  //glScaled(2./bbd,2./bbd,2./bbd);
   const double dy = fabs(eff_Vmax(1,0)-eff_Vmin(1,0));
   const double dx = fabs(eff_Vmax(0,0)-eff_Vmin(0,0));
   //const double dz = fabs(eff_Vmax(2,0)-eff_Vmin(2,0));
@@ -412,7 +410,6 @@ bool render_to_buffer(
   Vmax = V.colwise().maxCoeff();
   Vmin = V.colwise().minCoeff();
   Vmean = 0.5*(Vmax + Vmin);
-  bbd = (Vmax - Vmin).maxCoeff();
 
   // Figure out if normals should be flipped (hopefully this is never a
   // bottleneck)
