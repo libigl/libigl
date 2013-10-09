@@ -37,7 +37,7 @@ obj:
 	ar cqs $@ $(OBJ_FILES)
 
 obj/%.o: %.cpp %.h
-	g++ $(AFLAGS) $(CFLAGS) -c -o $@ $< $(INC)
+	g++ $(AFLAGS) $(OPENMP) $(CFLAGS) -c -o $@ $< $(INC)
 
 clean:
 	rm -f obj/*.o
