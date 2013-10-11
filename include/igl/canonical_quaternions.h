@@ -20,35 +20,35 @@ namespace igl
   const float YZ_PLANE_QUAT_F[4] = {-0.5,-0.5,-0.5,0.5};
   const float CANONICAL_VIEW_QUAT_F[][4] = 
     {
-      {             0,             0,             0,             1},
-      {             0,             0, SQRT_2_OVER_2, SQRT_2_OVER_2},
-      {             0,             0,             1,             0},
-      {             0,             0, SQRT_2_OVER_2,-SQRT_2_OVER_2},
-  
-      {             0,            -1,             0,             0},
-      {-SQRT_2_OVER_2, SQRT_2_OVER_2,             0,             0},
-      {            -1,             0,             0,             0},
-      {-SQRT_2_OVER_2,-SQRT_2_OVER_2,             0,             0},
-  
-      {          -0.5,          -0.5,          -0.5,           0.5},
-      {             0,-SQRT_2_OVER_2,             0, SQRT_2_OVER_2},
-      {           0.5,          -0.5,           0.5,           0.5},
-      { SQRT_2_OVER_2,             0, SQRT_2_OVER_2,             0},
-  
-      { SQRT_2_OVER_2,             0,-SQRT_2_OVER_2,             0},
-      {           0.5,           0.5,          -0.5,           0.5},
-      {             0, SQRT_2_OVER_2,             0, SQRT_2_OVER_2},
-      {          -0.5,           0.5,           0.5,           0.5},
-  
-      {             0, SQRT_2_OVER_2, SQRT_2_OVER_2,             0},
-      {          -0.5,           0.5,           0.5,          -0.5},
-      {-SQRT_2_OVER_2,             0,             0,-SQRT_2_OVER_2},
-      {          -0.5,          -0.5,          -0.5,          -0.5},
-  
-      {-SQRT_2_OVER_2,             0,             0, SQRT_2_OVER_2},
-      {          -0.5,          -0.5,           0.5,           0.5},
-      {             0,-SQRT_2_OVER_2, SQRT_2_OVER_2,             0},
-      {           0.5,          -0.5,           0.5,          -0.5}
+      {             0,             0,             0,             1}, // 0
+      {             0,             0, SQRT_2_OVER_2, SQRT_2_OVER_2}, // 1
+      {             0,             0,             1,             0}, // 2
+      {             0,             0, SQRT_2_OVER_2,-SQRT_2_OVER_2}, // 3
+
+      {             0,            -1,             0,             0}, // 4
+      {-SQRT_2_OVER_2, SQRT_2_OVER_2,             0,             0}, // 5
+      {            -1,             0,             0,             0}, // 6
+      {-SQRT_2_OVER_2,-SQRT_2_OVER_2,             0,             0}, // 7
+
+      {          -0.5,          -0.5,          -0.5,           0.5}, // 8
+      {             0,-SQRT_2_OVER_2,             0, SQRT_2_OVER_2}, // 9
+      {           0.5,          -0.5,           0.5,           0.5}, // 10
+      { SQRT_2_OVER_2,             0, SQRT_2_OVER_2,             0}, // 11
+
+      { SQRT_2_OVER_2,             0,-SQRT_2_OVER_2,             0}, // 12
+      {           0.5,           0.5,          -0.5,           0.5}, // 13
+      {             0, SQRT_2_OVER_2,             0, SQRT_2_OVER_2}, // 14
+      {          -0.5,           0.5,           0.5,           0.5}, // 15
+
+      {             0, SQRT_2_OVER_2, SQRT_2_OVER_2,             0}, // 16
+      {          -0.5,           0.5,           0.5,          -0.5}, // 17
+      {-SQRT_2_OVER_2,             0,             0,-SQRT_2_OVER_2}, // 18
+      {          -0.5,          -0.5,          -0.5,          -0.5}, // 19
+
+      {-SQRT_2_OVER_2,             0,             0, SQRT_2_OVER_2}, // 20
+      {          -0.5,          -0.5,           0.5,           0.5}, // 21
+      {             0,-SQRT_2_OVER_2, SQRT_2_OVER_2,             0}, // 22
+      {           0.5,          -0.5,           0.5,          -0.5}  // 23
     };
 #  undef SQRT_2_OVER_2
 

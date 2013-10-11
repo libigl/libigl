@@ -15,10 +15,14 @@ namespace igl
   //   F #F x simplex_size  matrix of indices of triangle corners
   // Output:
   //   BC a #F x dim matrix of 3d vertices
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedBC>
   IGL_INLINE void barycenter(
-      const Eigen::MatrixXd & V,
-      const Eigen::MatrixXi & F,
-      Eigen::MatrixXd & BC);
+      const Eigen::PlainObjectBase<DerivedV> & V,
+      const Eigen::PlainObjectBase<DerivedF> & F,
+      Eigen::PlainObjectBase<DerivedBC> & BC);
 }
 
 #ifdef IGL_HEADER_ONLY

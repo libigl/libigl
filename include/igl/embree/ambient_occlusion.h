@@ -36,4 +36,8 @@ namespace igl
 
 
 };
+#ifdef IGL_HEADER_ONLY
+#  include "ambient_occlusion.cpp"
+#endif
+
 #endif
