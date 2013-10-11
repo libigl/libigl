@@ -27,12 +27,14 @@ namespace igl
   //
   // Inputs:
   //   dim  dimension to slice in 1 or 2, dim=1 --> X(R,:), dim=2 --> X(:,R)
-  template <typename T>
+  //
+  // Note: For now this is just a cheap wrapper.
+  template <typename Mat>
   IGL_INLINE void slice(
-    const Eigen::SparseMatrix<T>& X,
+    const Mat& X,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
     const int dim,
-    Eigen::SparseMatrix<T>& Y);
+    Mat& Y);
 
   template <typename DerivedX>
   IGL_INLINE void slice(

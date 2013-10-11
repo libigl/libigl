@@ -68,7 +68,8 @@ IGL_INLINE int igl::project(
   const Eigen::PlainObjectBase<Derivedobj> & obj,
   Eigen::PlainObjectBase<Derivedwin> & win)
 {
-  return igl::project(obj(0),obj(1),obj(2),&win(0),&win(1),&win(2));
+  return igl::project(obj(0),obj(1),obj(2),
+      &win(0),&win(1),&win(2));
 }
 
 #ifndef IGL_HEADER_ONLY
