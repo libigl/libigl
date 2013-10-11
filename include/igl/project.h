@@ -23,6 +23,10 @@ namespace igl
   IGL_INLINE int project(
     const Eigen::PlainObjectBase<Derivedobj> & obj,
     Eigen::PlainObjectBase<Derivedwin> & win);
+  // Eigen wrapper  with return
+  template <typename Derivedobj>
+  IGL_INLINE Eigen::PlainObjectBase<Derivedobj> project(
+    const Eigen::PlainObjectBase<Derivedobj> & obj);
 }
 
 #ifdef IGL_HEADER_ONLY
