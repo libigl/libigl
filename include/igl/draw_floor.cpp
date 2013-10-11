@@ -3,14 +3,16 @@
 
 #include "OpenGL_convenience.h"
 
+static const int GridSizeX = 100;
+static const int GridSizeY = 100;
+static const float SizeX = 0.5f;
+static const float SizeY = 0.5f;
 IGL_INLINE void igl::draw_floor(const float * colorA, const float * colorB)
 {
   // old settings
   int old_lighting=0,old_color_material=0;
-  float old_line_width =0;
   glGetIntegerv(GL_LIGHTING,&old_lighting);
   glGetIntegerv(GL_COLOR_MATERIAL,&old_color_material);
-  glGetFloatv(GL_LINE_WIDTH,&old_line_width);
   glDisable(GL_LIGHTING);
   glColorMaterial( GL_FRONT, GL_EMISSION);
   glEnable(GL_COLOR_MATERIAL);
@@ -31,12 +33,6 @@ IGL_INLINE void igl::draw_floor(const float * colorA, const float * colorB)
     glDisable(GL_LIGHTING);
   }
 
-  int GridSizeX = 100;
-  int GridSizeY = 100;
-  //int GridSizeX = 5;
-  //int GridSizeY = 5;
-  float SizeX = 0.5f;
-  float SizeY = 0.5f;
 
   glBegin(GL_QUADS);
   glNormal3f(0,1,0);
@@ -58,6 +54,42 @@ IGL_INLINE void igl::draw_floor(const float * colorA, const float * colorB)
     }
   }
   glEnd();
+
+  (old_lighting ? glEnable(GL_LIGHTING) : glDisable(GL_LIGHTING));
+  (old_color_material? glEnable(GL_COLOR_MATERIAL) : glDisable(GL_COLOR_MATERIAL));
+}
+
+IGL_INLINE void igl::draw_floor()
+{
+  const float grey[] = {0.80,0.80,0.80,1.};
+  const float white[] = {0.95,0.95,0.95,1.};
+  igl::draw_floor(grey,white);
+}
+
+IGL_INLINE void igl::draw_floor_outline(const float * colorA, const float * colorB)
+{
+  float old_line_width =0;
+  // old settings
+  int old_lighting=0,old_color_material=0;
+  glGetIntegerv(GL_LIGHTING,&old_lighting);
+  glGetIntegerv(GL_COLOR_MATERIAL,&old_color_material);
+  glDisable(GL_LIGHTING);
+
+  // Set material
+  const float black[] = {0.,0.,0.,1.};
+  glMaterialfv(GL_FRONT, GL_AMBIENT, black);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, black);
+  glMaterialfv(GL_FRONT, GL_SPECULAR, black);
+  glMaterialfv(GL_FRONT, GL_EMISSION, black);
+  glMaterialf(GL_FRONT, GL_SHININESS,0);
+  const bool use_lighting = false;
+  if(use_lighting)
+  {
+    glEnable(GL_LIGHTING);
+  }else
+  {
+    glDisable(GL_LIGHTING);
+  }
 
   glLineWidth(2.0f);
   glBegin(GL_LINES);
@@ -103,15 +135,16 @@ IGL_INLINE void igl::draw_floor(const float * colorA, const float * colorB)
   }
   glEnd();
 
+  glGetFloatv(GL_LINE_WIDTH,&old_line_width);
+  glLineWidth(old_line_width);
   (old_lighting ? glEnable(GL_LIGHTING) : glDisable(GL_LIGHTING));
   (old_color_material? glEnable(GL_COLOR_MATERIAL) : glDisable(GL_COLOR_MATERIAL));
-  glLineWidth(old_line_width);
 }
 
-IGL_INLINE void igl::draw_floor()
+IGL_INLINE void igl::draw_floor_outline()
 {
   const float grey[] = {0.80,0.80,0.80,1.};
   const float white[] = {0.95,0.95,0.95,1.};
-  igl::draw_floor(grey,white);
+  igl::draw_floor_outline(grey,white);
 }
 #endif

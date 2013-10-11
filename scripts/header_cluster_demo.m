@@ -41,7 +41,7 @@ P = rand(numel(H),2);
 E = [EJ EI];
 L = (A-diag(sum(A,2)));
 I = 0*speye(size(L));
-[EV,ED] = eigs(L+I,ceil(sqrt(size(A,1))),'sm');
+[EV,ED] = eigs(L+I,size(A,1),'sm');
 EV = EV(:,2:end);
 ED = ED(2:end, 2:end);
 p = 1;
@@ -53,7 +53,7 @@ B = EV * (inv(abs(ED))^(p/2));
 %subplot(1,nsp,2);
 plot_edges(B(:,1:3),E);
 
-C = kmeans(B,size(B,2));
+C = kmeans(B,20);
 
 for c = 1:max(C)
   fprintf('%s\n',H{C==c});

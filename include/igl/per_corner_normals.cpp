@@ -55,8 +55,8 @@ IGL_INLINE void igl::per_corner_normals(
   // valence of faces
   const int n = F.cols();
 
-  // initialize output to zero
-  CN.resize(m*n,3);
+  // initialize output to ***zero***
+  CN.setZero(m*n,3);
 
   // loop over faces
   for(size_t i = 0;int(i)<m;i++)
