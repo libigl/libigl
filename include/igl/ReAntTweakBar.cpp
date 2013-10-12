@@ -821,7 +821,7 @@ bool igl::ReTwBar::set_value_from_string(
 
   if(!item_found)
   {
-    printf("ERROR: item not found\n");
+    printf("ERROR: item '%s' not found\n",name);
   }
   return true;
 }
