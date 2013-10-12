@@ -36,6 +36,9 @@ namespace igl
       this->width = width;
       this->height = height;
     };
+    // Given mouse_x,mouse_y on the entire window return mouse_x, mouse_y in
+    // this viewport.
+    //
     // Inputs:
     //   my  mouse y-coordinate
     //   wh  window weight

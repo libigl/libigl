@@ -2,6 +2,7 @@
 #define IGL_DRAW_POINT_H
 #ifndef IGL_NO_OPENGL
 #include "igl_inline.h"
+#include <Eigen/Core>
 namespace igl
 {
   //double POINT_COLOR[3] = {239./255.,213./255.,46./255.};
@@ -20,6 +21,11 @@ namespace igl
     const double x,
     const double y,
     const double z,
+    const double requested_r = 7,
+    const bool selected = false);
+  template <typename DerivedP>
+  IGL_INLINE void draw_point(
+    const Eigen::PlainObjectBase<DerivedP> & P,
     const double requested_r = 7,
     const bool selected = false);
 }

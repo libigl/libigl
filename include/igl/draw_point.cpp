@@ -74,4 +74,17 @@ IGL_INLINE void igl::draw_point(
   //if(old_depth_test) glEnable(GL_DEPTH_TEST);
 }
 
+template <typename DerivedP>
+IGL_INLINE void igl::draw_point(
+  const Eigen::PlainObjectBase<DerivedP> & P,
+  const double requested_r,
+  const bool selected)
+{
+  return draw_point(P(0),P(1),P(2),requested_r,selected);
+}
+
+#ifndef IGL_HEADER_ONLY
+template void igl::draw_point<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, double, bool);
+#endif
+
 #endif
