@@ -8,11 +8,27 @@ template <
   typename FaceMatrixType,
   typename RowVector3,
   typename Derivedobj>
-bool igl::unproject_in_mesh(
+int igl::unproject_in_mesh(
   const int x,
   const int y,
   const igl::EmbreeIntersector<PointMatrixType,FaceMatrixType,RowVector3> & ei,
   Eigen::PlainObjectBase<Derivedobj> & obj)
+{
+  std::vector<embree::Hit> hits;
+  return igl::unproject_in_mesh(x,y,ei,obj,hits);
+}
+
+template <
+  typename PointMatrixType,
+  typename FaceMatrixType,
+  typename RowVector3,
+  typename Derivedobj>
+int igl::unproject_in_mesh(
+  const int x,
+  const int y,
+  const igl::EmbreeIntersector<PointMatrixType,FaceMatrixType,RowVector3> & ei,
+  Eigen::PlainObjectBase<Derivedobj> & obj,
+  std::vector<embree::Hit > & hits)
 {
   using namespace igl;
   using namespace std;
@@ -27,12 +43,12 @@ bool igl::unproject_in_mesh(
   dir = d-s;
   // Shoot ray, collect all hits (could just collect first two)
   int num_rays_shot;
-  vector<embree::Hit > hits;
+  hits.clear();
   ei.intersectRay(s,dir,hits,num_rays_shot);
   switch(hits.size())
   {
     case 0:
-      return false;
+      break;
     case 1:
     {
       obj = s + dir*hits[0].t;
@@ -41,13 +57,13 @@ bool igl::unproject_in_mesh(
     case 2:
     default:
     {
-      obj = 0.5*((s + dir*hits[0].t) + (s + dir*hits[hits.size()-1].t));
+      obj = 0.5*((s + dir*hits[0].t) + (s + dir*hits[1].t));
       break;
     }
   }
-  return true;
+  return hits.size();
 }
 
 #ifndef IGL_HEADER_ONLY
-template bool igl::unproject_in_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(int, int, igl::EmbreeIntersector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
+template int igl::unproject_in_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(int, int, igl::EmbreeIntersector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
 #endif

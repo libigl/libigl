@@ -1,31 +1,6 @@
 #ifndef IGL_EMBREE_INTERSECTOR_H
 #define IGL_EMBREE_INTERSECTOR_H
-
-#undef interface
-#undef near
-#undef far
-
-// Why are these in quotes? isn't that a bad idea?
-#ifdef __GNUC__
-// This is how it should be done
-#  if __GNUC__ >= 4
-#    if __GNUC_MINOR__ >= 6
-#      pragma GCC diagnostic push
-#      pragma GCC diagnostic ignored "-Weffc++"
-#    endif
-#  endif
-// This is a hack
-#  pragma GCC system_header
-#endif
-#include "common/intersector.h"
-#include "common/accel.h"
-#ifdef __GNUC__
-#  if __GNUC__ >= 4
-#    if __GNUC_MINOR__ >= 6
-#      pragma GCC diagnostic pop
-#    endif
-#  endif
-#endif
+#include "Embree_convenience.h"
 
 #include <vector>
 //#include "types.h"
@@ -44,8 +19,7 @@ namespace igl
     //
     // Note: this will only find front-facing hits. To consider all hits then
     // pass [F;fliplr(F)]
-    EmbreeIntersector();
-    EmbreeIntersector(const PointMatrixType & V, const FaceMatrixType & F);
+    EmbreeIntersector(const PointMatrixType & V = PointMatrixType(), const FaceMatrixType &  F = FaceMatrixType());
     virtual ~EmbreeIntersector();
   
     // Given a ray find the first *front-facing* hit
@@ -84,10 +58,9 @@ namespace igl
     //   hit  embree information about hit
     // Returns true if and only if there was a hit
     bool intersectSegment(const RowVector3& a, const RowVector3& ab, embree::Hit &hit) const;
+    //RowVector3 hit_position(const embree::Hit & hit) const;
     
   private:
-    embree::BuildTriangle *triangles;
-    embree::BuildVertex *vertices;
     embree::Ref<embree::Accel> _accel;
     embree::Ref<embree::Intersector> _intersector;
   };
@@ -104,22 +77,10 @@ typename PointMatrixType,
 typename FaceMatrixType,
 typename RowVector3>
 igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
-::EmbreeIntersector()
-{
-  static bool inited = false;
-  if(!inited)
-  {
-	//embree::TaskScheduler::start();//init();
-    inited = true;
-  }
-}
-
-template <
-typename PointMatrixType,
-typename FaceMatrixType,
-typename RowVector3>
-igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
 ::EmbreeIntersector(const PointMatrixType & V, const FaceMatrixType & F)
+  :
+    _accel(),
+    _intersector()
 {
   static bool inited = false;
   if(!inited)
@@ -128,9 +89,15 @@ igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
     inited = true;
   }
   
+  if(V.size() == 0 || F.size() == 0)
+  {
+    return;
+  }
   size_t numVertices = 0;
   size_t numTriangles = 0;
   
+  embree::BuildTriangle *triangles;
+  embree::BuildVertex *vertices;
   triangles = (embree::BuildTriangle*) embree::rtcMalloc(sizeof(embree::BuildTriangle) * F.rows());
   vertices = (embree::BuildVertex*) embree::rtcMalloc(sizeof(embree::BuildVertex) * V.rows());
 
@@ -282,5 +249,29 @@ igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
   _intersector->intersect(ray, hit);
   return hit ; 
 }
+
+//template <
+//typename PointMatrixType,
+//typename FaceMatrixType,
+//typename RowVector3>
+//RowVector3 
+//igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
+//::hit_position(const embree::Hit & hit) const
+//{
+//  // Barycenteric coordinates
+//  const double w0 = (1.0-hit.u-hit.v);
+//  const double w1 = hit.u;
+//  const double w2 = hit.v;
+//  RowVector3 hitP;
+//  hitP.resize(3);
+//  for(int d = 0;d<3;d++)
+//  {
+//    hitP(d) = 
+//    w0 * vertices[triangles[hit.id0](0)](d) + 
+//    w1 * vertices[triangles[hit.id0](1)](d) + 
+//    w2 * vertices[triangles[hit.id0](2)](d);
+//  }
+//  return hitP;
+//}
 
 #endif //EMBREE_INTERSECTOR_H

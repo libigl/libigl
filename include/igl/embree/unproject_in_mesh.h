@@ -1,8 +1,10 @@
 #ifndef IGL_UNPROJECT_IN_MESH
 #define IGL_UNPROJECT_IN_MESH
-
 #include <igl/igl_inline.h>
 #include <Eigen/Core>
+
+#include <vector>
+#include "Embree_convenience.h"
 
 namespace igl
 {
@@ -21,19 +23,30 @@ namespace igl
   //    ei  EmbreeIntersector containing (V,F)
   // Outputs:
   //    obj  3d unprojected mouse point in mesh
-  // Returns true only if ray through (x,y) hits (V,F) at least
-  // once
+  // Returns number of hits
   //
   template <
     typename PointMatrixType,
     typename FaceMatrixType,
     typename RowVector3,
     typename Derivedobj>
-  bool unproject_in_mesh(
+  int unproject_in_mesh(
     const int x,
     const int y,
     const igl::EmbreeIntersector<PointMatrixType,FaceMatrixType,RowVector3> & ei,
     Eigen::PlainObjectBase<Derivedobj> & obj);
+
+  template <
+    typename PointMatrixType,
+    typename FaceMatrixType,
+    typename RowVector3,
+    typename Derivedobj>
+  int unproject_in_mesh(
+    const int x,
+    const int y,
+    const igl::EmbreeIntersector<PointMatrixType,FaceMatrixType,RowVector3> & ei,
+    Eigen::PlainObjectBase<Derivedobj> & obj,
+    std::vector<embree::Hit > & hits);
 }
 #ifdef IGL_HEADER_ONLY
 #  include "unproject_in_mesh.cpp"
