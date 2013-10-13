@@ -33,8 +33,21 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedN> & N,
     const int num_samples,
     Eigen::PlainObjectBase<DerivedS> & S);
-
-
+  // Wrapper which builds new EmbreeIntersector for (V,F). That's expensive so
+  // avoid this if repeatedly calling.
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedP,
+    typename DerivedN,
+    typename DerivedS >
+  void ambient_occlusion(
+    const Eigen::PlainObjectBase<DerivedV> & V,
+    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::PlainObjectBase<DerivedP> & P,
+    const Eigen::PlainObjectBase<DerivedN> & N,
+    const int num_samples,
+    Eigen::PlainObjectBase<DerivedS> & S);
 };
 #ifdef IGL_HEADER_ONLY
 #  include "ambient_occlusion.cpp"
