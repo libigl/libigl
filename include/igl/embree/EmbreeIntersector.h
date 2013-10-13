@@ -68,6 +68,8 @@ namespace igl
 
 // Implementation
 #include <igl/EPS.h>
+#include <iostream>
+#include <sstream>
 
 template <typename RowVector3>
 inline embree::Vec3f toVec3f(const RowVector3 &p) { return embree::Vec3f((float)p[0], (float)p[1], (float)p[2]); }
@@ -82,6 +84,7 @@ igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
     _accel(),
     _intersector()
 {
+  using namespace std;
   static bool inited = false;
   if(!inited)
   {
@@ -111,8 +114,14 @@ igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
     triangles[numTriangles++] = embree::BuildTriangle((int)F(i,0),(int)F(i,1),(int)F(i,2),i);
   }
   
+  // turn off verbose output by disabling cout
+  // http://stackoverflow.com/a/8246536/148668
+  streambuf *old = cout.rdbuf(); // <-- save        
+  stringstream ss;
+  cout.rdbuf (ss.rdbuf());       // <-- redirect
   _accel = embree::rtcCreateAccel("default", "default", triangles, numTriangles, vertices, numVertices);
   _intersector = _accel->queryInterface<embree::Intersector>();
+  cout.rdbuf (old);  
 }
 
 template <
