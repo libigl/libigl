@@ -198,17 +198,17 @@ void display()
   glEnable(GL_COLOR_MATERIAL);
   draw_mesh(V,F,N,C);
 
+  pop_object();
 
   // Draw a nice floor
   glPushMatrix();
-  const double floor_offset = -V.col(1).minCoeff();
+  const double floor_offset =
+    -2./bbd*(V.col(1).maxCoeff()-mid(1));
   glTranslated(0,floor_offset,0);
-  glScaled(bbd/2.0,bbd/2.0,bbd/2.0);
   const float GREY[4] = {0.5,0.5,0.6,1.0};
   const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
   draw_floor(GREY,DARK_GREY);
   glPopMatrix();
-  pop_object();
 
   pop_scene();
 
