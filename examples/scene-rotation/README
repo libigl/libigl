@@ -1,0 +1,16 @@
+This is a small program that demonstrates various 2D mouse input interfaces for
+control a 3D world-in-hand rotation.
+
+So far this implements:
+  ROTATION_TYPE_IGL_TRACKBALL  Continuous, "wrap-around" trackball, as seen in
+    AntTweakBar.
+  ROTATION_TYPE_BELL_TRACKBALL  De facto "Standard" trackball, limited to 180°
+    rotations.
+  ROTATION_TYPE_TWO_AXIS_VALUATOR   Rotate around drag vector by amount
+    proportional to drag length.
+  ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP  Rotate around fixed up-vector by x
+    drag length and around y drag vector by y drag length. As seen in Maya, 3D
+    Studio Max, etc.
+
+More trackball variantes could be snatched from here:
+  http://opentissue.org/svn/OpenTissue/archieve/grid3d/OpenTissue/trackball/
