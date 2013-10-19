@@ -26,15 +26,22 @@ IGL_INLINE int igl::unproject(
   const Eigen::PlainObjectBase<Derivedwin> & win,
   Eigen::PlainObjectBase<Derivedobj> & obj)
 {
-  return unproject(win(0),win(1),win(2),
-      &obj.data()[0],
-      &obj.data()[1],
-      &obj.data()[2]);
+  Eigen::Vector3d dwin(win(0),win(1),win(2));
+  Eigen::Vector3d dobj;
+  int ret = unproject(dwin(0),dwin(1),dwin(2),
+      &dobj.data()[0],
+      &dobj.data()[1],
+      &dobj.data()[2]);
+  obj(0) = dobj(0);
+  obj(1) = dobj(1);
+  obj(2) = dobj(2);
+  return ret;
 }
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template instanciation
 template int igl::unproject<Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
+template int igl::unproject<Eigen::Matrix<float, 3, 1, 0, 3, 1>, Eigen::Matrix<float, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> >&);
 #endif
 
 #endif

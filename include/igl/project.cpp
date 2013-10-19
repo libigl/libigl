@@ -68,8 +68,16 @@ IGL_INLINE int igl::project(
   const Eigen::PlainObjectBase<Derivedobj> & obj,
   Eigen::PlainObjectBase<Derivedwin> & win)
 {
-  return igl::project(obj(0),obj(1),obj(2),
-      &win(0),&win(1),&win(2));
+  Eigen::Vector3d dobj(obj(0),obj(1),obj(2));
+  Eigen::Vector3d dwin;
+  int ret = project(dobj(0),dobj(1),dobj(2),
+      &dwin.data()[0],
+      &dwin.data()[1],
+      &dwin.data()[2]);
+  win(0) = dwin(0);
+  win(1) = dwin(1);
+  win(2) = dwin(2);
+  return ret;
 }
 
 template <typename Derivedobj>
@@ -85,6 +93,7 @@ IGL_INLINE Eigen::PlainObjectBase<Derivedobj> igl::project(
 // Explicit template instanciations
 template int igl::project<Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
 template Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > igl::project<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&);
+template int igl::project<Eigen::Matrix<float, 3, 1, 0, 3, 1>, Eigen::Matrix<float, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> >&);
 #endif
 
 #endif

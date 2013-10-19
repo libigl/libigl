@@ -6,14 +6,19 @@
 #include <igl/draw_floor.h>
 #include <igl/quat_to_mat.h>
 #include <igl/report_gl_error.h>
-#include <igl/read.h>
+#include <igl/readOBJ.h>
+#include <igl/readOFF.h>
+#include <igl/readWRL.h>
 #include <igl/trackball.h>
+#include <igl/list_to_matrix.h>
+#include <igl/triangulate.h>
 #include <igl/material_colors.h>
 #include <igl/barycenter.h>
 #include <igl/matlab_format.h>
 #include <igl/embree/EmbreeIntersector.h>
 #include <igl/embree/ambient_occlusion.h>
 #include <igl/ReAntTweakBar.h>
+#include <igl/pathinfo.h>
 
 #ifdef __APPLE__
 #  include <GLUT/glut.h>
@@ -25,6 +30,7 @@
 
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 // Width and height of window
 int width,height;
@@ -300,10 +306,67 @@ int main(int argc, char * argv[])
   using namespace std;
 
   // init mesh
-  if(!read("../shared/beast.obj",V,F))
+  string filename = "../shared/beast.obj";
+  if(argc < 2)
   {
-    return 1;
+    cerr<<"Usage:"<<endl<<"    ./example input.obj"<<endl;
+    cout<<endl<<"Opening default mesh..."<<endl;
+  }else
+  {
+    // Read and prepare mesh
+    filename = argv[1];
   }
+
+  // dirname, basename, extension and filename
+  string d,b,ext,f;
+  pathinfo(filename,d,b,ext,f);
+  // Convert extension to lower case
+  transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+  vector<vector<double > > vV,vN,vTC;
+  vector<vector<int > > vF,vFTC,vFN;
+  if(ext == "obj")
+  {
+    // Convert extension to lower case
+    if(!igl::readOBJ(filename,vV,vTC,vN,vF,vFTC,vFN))
+    {
+      return 1;
+    }
+  }else if(ext == "off")
+  {
+    // Convert extension to lower case
+    if(!igl::readOFF(filename,vV,vF,vN))
+    {
+      return 1;
+    }
+  }else if(ext == "wrl")
+  {
+    // Convert extension to lower case
+    if(!igl::readWRL(filename,vV,vF))
+    {
+      return 1;
+    }
+  //}else
+  //{
+  //  // Convert extension to lower case
+  //  MatrixXi T;
+  //  if(!igl::readMESH(filename,V,T,F))
+  //  {
+  //    return 1;
+  //  }
+  //  //if(F.size() > T.size() || F.size() == 0)
+  //  {
+  //    boundary_faces(T,F);
+  //  }
+  }
+  if(vV.size() > 0)
+  {
+    if(!list_to_matrix(vV,V))
+    {
+      return 1;
+    }
+    triangulate(vF,F);
+  }
+
   // Compute normals, centroid, colors, bounding box diagonal
   per_vertex_normals(V,F,N);
   mid = 0.5*(V.colwise().maxCoeff() + V.colwise().minCoeff());
