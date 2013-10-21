@@ -60,7 +60,21 @@ IGL_INLINE int igl::project(
   igl::report_gl_error();
 #endif
 
-  return gluProject(objX,objY,objZ,MV,P,VP,winX,winY,winZ);
+#ifdef EXTREME_VERBOSE
+  cout<<"obj=["<<endl<<
+    objX<<" "<< objY<<" "<< objZ<<endl<<
+    "];"<<endl;
+#endif
+
+
+  int ret = gluProject(objX,objY,objZ,MV,P,VP,winX,winY,winZ);
+
+#ifdef EXTREME_VERBOSE
+  cout<<"win=["<<endl<<
+    *winX<<" "<< *winY<<" "<< *winZ<<endl<<
+    "];"<<endl;
+#endif
+  return ret;
 }
 
 template <typename Derivedobj, typename Derivedwin>

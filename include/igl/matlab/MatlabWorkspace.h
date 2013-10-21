@@ -1,12 +1,13 @@
 #ifndef IGL_WRITE_MATLAB_WORKSPACE
 #define IGL_WRITE_MATLAB_WORKSPACE
 
-#include <string>
-#include <vector>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#include "mat.h"
+#include <mat.h>
+
+#include <string>
+#include <vector>
 
 namespace igl
 {

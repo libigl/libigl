@@ -6,6 +6,8 @@
 #include "shine_textures.h"
 #include "flare_textures.h"
 
+#include <iostream>
+
 // http://www.opengl.org/archives/resources/features/KilgardTechniques/LensFlare/glflare.c
 
 static void setup_texture(
@@ -55,6 +57,7 @@ void igl::lens_flare_create(
   std::vector<igl::Flare> & flares)
 {
   using namespace igl;
+  using namespace std;
   flares.resize(12);
   /* Shines */
   flares[0] = Flare(-1, 1.0f, 0.1f, C, 1.0);
@@ -81,79 +84,76 @@ void igl::lens_flare_draw(
   const float near_clip,
   int & shine_tic)
 {
-  bool ot2,ob,odt;
-  int obsa,obda;
-  ot2 = glIsEnabled(GL_TEXTURE_2D);
-  ob = glIsEnabled(GL_BLEND);
-  odt = glIsEnabled(GL_DEPTH_TEST);
+  bool ot2 = glIsEnabled(GL_TEXTURE_2D);
+  bool ob = glIsEnabled(GL_BLEND);
+  bool odt = glIsEnabled(GL_DEPTH_TEST);
+  bool ocm = glIsEnabled(GL_COLOR_MATERIAL);
+  bool ol = glIsEnabled(GL_LIGHTING);
+  int obsa,obda,odf,odwm;
   glGetIntegerv(GL_BLEND_SRC_ALPHA,&obsa);
   glGetIntegerv(GL_BLEND_DST_ALPHA,&obda);
+  glGetIntegerv(GL_DEPTH_FUNC,&odf);
+  glGetIntegerv(GL_DEPTH_WRITEMASK,&odwm);
 
+  glDisable(GL_COLOR_MATERIAL);
+  glEnable(GL_DEPTH_TEST);
+  //glDepthFunc(GL_LEQUAL);
+  glDepthMask(GL_FALSE);
   glEnable(GL_TEXTURE_2D);
-  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_LIGHTING);
   glEnable(GL_BLEND);
   glBlendFunc(GL_ONE, GL_ONE);
 
   using namespace Eigen;
   using namespace igl;
+  using namespace std;
 
-  // Assuming scene is pushed
-  Vector3f win_o,from,at;
-  project(Vector3f(0,0,0),win_o);
-  win_o(2) = -1e26;
-  unproject(win_o,from);
-  win_o(2) = 1;
-  unproject(win_o,at);
+  //// view_dir  direction from eye to position is is looking at
+  //const Vector3f view_dir =  (at - from).normalized();
 
-  Vector3f view_dir, tmp, light0, light_dir, position, dx, dy,
-    center, axis, sx, sy;
-  GLfloat dot, global_scale = 1.0;
-  int i;
+  //// near_clip  distance from eye to near clipping plane along view_dir
+  //// center   position on near clipping plane along viewdir from eye
+  //const Vector3f center =  from + near_clip*view_dir;
 
-  /* view_dir = normalize(at-from) */
-  view_dir =  at -  from;
-  view_dir.normalize();
+  Vector3f plight = project(light);
+  // Orthogonal vectors to view direction at light
+  Vector3f psx = plight;
+  psx(0) += 1;
+  Vector3f psy = plight;
+  psy(1) += 1;
 
-  /* center = from + near_clip * view_dir */
-  tmp =  near_clip* view_dir;
-  center =  from +  tmp;
+  // axis toward center
+  int vp[4];
+  glGetIntegerv(GL_VIEWPORT,vp);
+  Vector3f center = unproject(Vector3f(0.5*vp[2],0.5*vp[3],plight[2]-1e-3));
+  //Vector3f center(0,0,1);
+  Vector3f axis = light-center;
+  glLineWidth(4.);
+  glColor3f(1,0,0);
+  glBegin(GL_LINES);
+  glVertex3fv(center.data());
+  glVertex3fv(light.data());
+  glEnd();
 
-  /* light_dir = normalize(light-from) */
-  light_dir =  light -  from;
-  light_dir.normalize();
+  const Vector3f SX = unproject(psx).normalized();
+  const Vector3f SY = unproject(psy).normalized();
 
-  /* light0 = from + dot(light,view_dir)*near_clip*light_dir */
-  dot = light_dir.dot( view_dir);
-  tmp =  near_clip / dot* light_dir;
-  light0 =  from + light_dir;
-
-  /* axis = light - center */
-  axis =  light0 -  center;
-  dx =  axis;
-
-  /* dx = normalize(axis) */
-  dx.normalize();
-
-  /* dy = cross(dx,view_dir) */
-  dy =  dx.cross( view_dir);
-
-
-  for (i = 0; i < (int)flares.size(); i++)
+  for(int i = 0; i < (int)flares.size(); i++)
   {
-    sx =  flares[i].scale * global_scale* dx;
-    sy =  flares[i].scale * global_scale* dy;
-
+    const Vector3f sx = flares[i].scale * SX;
+    const Vector3f sy = flares[i].scale * SY;
     glColor3fv(flares[i].color);
     if (flares[i].type < 0) {
       glBindTexture(GL_TEXTURE_2D, shine_ids[shine_tic]);
       shine_tic = (shine_tic + 1) % shine_ids.size();
-    } else {
+    } else 
+    {
       glBindTexture(GL_TEXTURE_2D, flare_ids[flares[i].type]);
     }
 
     /* position = center + flare[i].loc * axis */
-    tmp =  flares[i].loc* axis;
-    position =  center +  tmp;
+    const Vector3f position = center + flares[i].loc * axis;
+    Vector3f tmp;
 
     glBegin(GL_QUADS);
     glTexCoord2f(0.0, 0.0);
@@ -180,5 +180,9 @@ void igl::lens_flare_draw(
   ot2?glEnable(GL_TEXTURE_2D):glDisable(GL_TEXTURE_2D);
   ob?glEnable(GL_BLEND):glDisable(GL_BLEND);
   odt?glEnable(GL_DEPTH_TEST):glDisable(GL_DEPTH_TEST);
+  ocm?glEnable(GL_COLOR_MATERIAL):glDisable(GL_COLOR_MATERIAL);
+  ol?glEnable(GL_LIGHTING):glDisable(GL_LIGHTING);
   glBlendFunc(obsa,obda);
+  glDepthFunc(odf);
+  glDepthMask(odwm);
 }

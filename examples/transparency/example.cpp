@@ -11,12 +11,13 @@
 #include <igl/trackball.h>
 #include <igl/report_gl_error.h>
 #include <igl/matlab_format.h>
-#include <igl/sort_triangles.h>
 #include <igl/colon.h>
 #include <igl/slice.h>
 #include <igl/report_gl_error.h>
 #include <igl/ReAntTweakBar.h>
 #include <igl/EPS.h>
+#define IGL_HEADER_ONLY
+#include <igl/sort_triangles.h>
 
 #ifdef __APPLE__
 #  include <GLUT/glut.h>
@@ -154,7 +155,7 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
       // sort!
       push_scene();
       push_object();
-      sort_triangles(V,F,sorted_F,I);
+      sort_triangles_robust(V,F,sorted_F,I);
       slice(N,I,1,sorted_N);
       init_C(I);
       pop_object();

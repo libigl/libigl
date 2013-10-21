@@ -48,5 +48,5 @@ obj/%.o: %.cpp %.h
 	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -c $< -o $@ $(INC)
 
 clean:
-	rm -f example.o
+	rm -f $(OBJ_FILES)
 	rm -f example
