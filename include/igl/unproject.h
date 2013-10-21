@@ -22,6 +22,9 @@ namespace igl
   IGL_INLINE int unproject(
     const Eigen::PlainObjectBase<Derivedwin> & win,
     Eigen::PlainObjectBase<Derivedobj> & obj);
+  template <typename Derivedwin>
+  IGL_INLINE Eigen::PlainObjectBase<Derivedwin> unproject(
+    const Eigen::PlainObjectBase<Derivedwin> & win);
 }
 
 #ifdef IGL_HEADER_ONLY

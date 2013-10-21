@@ -22,6 +22,8 @@
 #include <igl/Camera.h>
 #include <igl/ReAntTweakBar.h>
 #include <igl/PI.h>
+#include <igl/render_to_tga.h>
+#include <igl/STR.h>
 #define IGL_HEADER_ONLY
 #include <igl/lens_flare.h>
 
@@ -34,6 +36,7 @@
 
 #include <string>
 #include <vector>
+#include <iomanip>
 #include <stack>
 #include <iostream>
 
@@ -43,8 +46,9 @@ double x=6,y=232,z=61;
 std::vector<igl::Flare> flares;
 std::vector<GLuint> shine_ids;
 std::vector<GLuint> flare_ids;
-int shine_tic;
+int shine_tic = 0;
 
+GLuint list_id = 0;
 Eigen::MatrixXd V,N;
 Eigen::VectorXd Vmid,Vmin,Vmax;
 double bbd = 1.0;
@@ -68,6 +72,8 @@ std::stack<State> redo_stack;
 bool is_rotating = false;
 int down_x,down_y;
 igl::Camera down_camera;
+bool render_to_png_on_next = false;
+int render_count = 0;
 
 int width,height;
 Eigen::Vector4f light_pos(-0.1,-0.1,0.9,0);
@@ -75,9 +81,12 @@ Eigen::Vector4f light_pos(-0.1,-0.1,0.9,0);
 #define REBAR_NAME "temp.rbr"
 igl::ReTwBar rebar;
 
-// No-op setter, does nothing
-void TW_CALL no_op(const void * /*value*/, void * /*clientData*/)
+void TW_CALL set_camera_rotation(const void * value, void *clientData)
 {
+  using namespace std;
+  // case current value to double
+  const double * quat = (const double *)(value);
+  std::copy(quat,quat+4,s.camera.rotation);
 }
 
 void TW_CALL get_camera_rotation(void * value, void *clientData)
@@ -181,12 +190,12 @@ void lights()
   glEnable(GL_LIGHT0);
   glEnable(GL_LIGHT1);
   float WHITE[4] =  {0.8,0.8,0.8,1.};
-  float GREY[4] =  {0.4,0.4,0.4,1.};
+  float GREY[4] =  {0.2,0.2,0.2,1.};
   float BLACK[4] =  {0.,0.,0.,1.};
   Vector4f pos = light_pos;
   glLightfv(GL_LIGHT0,GL_AMBIENT,GREY);
   glLightfv(GL_LIGHT0,GL_DIFFUSE,WHITE);
-  glLightfv(GL_LIGHT0,GL_SPECULAR,BLACK);
+  glLightfv(GL_LIGHT0,GL_SPECULAR,GREY);
   glLightfv(GL_LIGHT0,GL_POSITION,pos.data());
   pos(0) *= -1;
   pos(1) *= -1;
@@ -207,7 +216,8 @@ void draw_flare()
   using namespace Eigen;
   glPushMatrix();
   glScaled(bbd*0.5,bbd*0.5,bbd*0.5);
-  Vector3f light(0,0.1,0);
+  glScaled(0.2,0.2,0.2);
+  Vector3f light(0,0,0);
   lens_flare_draw(flares,shine_ids,flare_ids,light,1.0,shine_tic);
   glPopMatrix();
 }
@@ -282,7 +292,7 @@ void display()
 {
   using namespace igl;
   using namespace std;
-  glClearColor(0,0,0,0);
+  glClearColor(0.03,0.03,0.04,0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glEnable(GL_DEPTH_TEST);
@@ -291,37 +301,59 @@ void display()
   glEnable(GL_NORMALIZE);
   lights();
   push_scene();
-  push_object();
 
-  // Set material properties
-  glDisable(GL_COLOR_MATERIAL);
-  const float NEAR_BLACK[4] = {0.1,0.1,0.1,1.0};
-  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,  NEAR_BLACK);
-  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,  MIDNIGHT_BLUE_DIFFUSE);
-  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, SILVER_SPECULAR);
-  glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128);
 
   
-  draw_mesh(V,F,N);
+  if(list_id == 0)
+  {
+    list_id = glGenLists(1);
+    glNewList(list_id,GL_COMPILE);
+
+    push_object();
+    // Set material properties
+    glDisable(GL_COLOR_MATERIAL);
+    const float NEAR_BLACK[4] = {0.1,0.1,0.1,1.0};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,  NEAR_BLACK);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,  MIDNIGHT_BLUE_DIFFUSE);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, SILVER_SPECULAR);
+    glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128);
+    draw_mesh(V,F,N);
+    pop_object();
+    // Draw a nice floor
+    glPushMatrix();
+    const double floor_offset =
+      -2./bbd*(V.col(1).maxCoeff()-Vmid(1));
+    glTranslated(0,floor_offset,0);
+    const float GREY[4] = {0.5,0.5,0.6,1.0};
+    const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
+    draw_floor(GREY,DARK_GREY);
+    glPopMatrix();
+
+    glEndList();
+  }
+  glCallList(list_id);
+
+
+  push_object();
   if(eyes_visible)
   {
     draw_eyes();
   }
   pop_object();
 
-  // Draw a nice floor
-  glPushMatrix();
-  const double floor_offset =
-    -2./bbd*(V.col(1).maxCoeff()-Vmid(1));
-  glTranslated(0,floor_offset,0);
-  const float GREY[4] = {0.5,0.5,0.6,1.0};
-  const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
-  draw_floor(GREY,DARK_GREY);
-  glPopMatrix();
-
   pop_scene();
 
   report_gl_error();
+
+  if(render_to_png_on_next)
+  {
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    render_to_tga(
+      STR("./"<< "flare-eyes-" << setw(4) << setfill('0') << render_count++ << ".tga"),
+      viewport[2],viewport[3],true);
+    //render_to_png_on_next = false;
+  }
 
   TwDraw();
   glutSwapBuffers();
@@ -658,7 +690,7 @@ int main(int argc, char * argv[])
   }
   // Create a tweak bar
   rebar.TwNewBar("TweakBar");
-  rebar.TwAddVarCB("camera_rotation", TW_TYPE_QUAT4D, no_op,get_camera_rotation, NULL, "open readonly=true");
+  rebar.TwAddVarCB("camera_rotation", TW_TYPE_QUAT4D, set_camera_rotation,get_camera_rotation, NULL, "open");
   TwEnumVal RotationTypesEV[NUM_ROTATION_TYPES] = 
   {
     {ROTATION_TYPE_IGL_TRACKBALL,"igl trackball"},
@@ -692,7 +724,12 @@ int main(int argc, char * argv[])
   const float RED[3] = {1,0,0};
   const float GREEN[3] = {0,1,0};
   const float BLUE[3] = {0,0,1};
-  lens_flare_create(RED,GREEN,BLUE,flares);
+  //lens_flare_create(RED,GREEN,BLUE,flares);
+  flares.resize(4);
+  flares[0] = Flare(-1, 1.0f, 1.*0.1f,  BLUE, 1.0);
+  flares[1] = Flare(-1, 1.0f, 1.*0.15f, GREEN, 1.0);
+  flares[2] = Flare(-1, 1.0f, 1.*0.35f, RED, 1.0);
+  flares[3] = Flare( 2, 1.0f, 1.*0.1f, RED, 0.4);
 
   glutMainLoop();
 
