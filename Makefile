@@ -41,6 +41,9 @@ endif
 ifeq ($(IGL_WITH_EMBREE),1)
 	EXTRA_DIRS+=include/igl/embree
 endif
+ifeq ($(IGL_WITH_BOOST),1)
+	EXTRA_DIRS+=include/igl/boost
+endif
 
 .PHONY: examples
 .PHONY: extras

@@ -10,7 +10,7 @@ all: obj example
 
 LIBIGL=../../
 LIBIGL_INC=-I$(LIBIGL)/include
-LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglmatlab -liglembree
+LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglmatlab -liglembree -liglboost
 
 EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 
@@ -20,19 +20,12 @@ ANTTWEAKBAR_LIB=-L$(LIBIGL)/external/AntTweakBar/lib -lAntTweakBar -framework Ap
 MATLAB_INC=-I$(MATLAB)/extern/include/
 MATLAB_LIB=-L$(MATLAB)/bin/maci64 -lmx -lmat -lmex -lstdc++
 
-CARBON_LIB=-framework Carbon
-
-## Use free glut for mouse scrolling
-#FREE_GLUT=/opt/local/
-#FREE_GLUT_INC=-I$(FREE_GLUT)/include
-#FREE_GLUT_LIB=-L$(FREE_GLUT)/lib -lglut
-#GLUT_LIB=$(FREE_GLUT_LIB)
-#GLUT_INC=$(FREE_GLUT_INC)
+# Use free glut for mouse scrolling
 GLUT_LIB=-framework GLUT
-GLUT_INC=
+GLUT_INC=-framework GLUT
 
 INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC) $(MATLAB_INC) $(GLUT_INC)
-LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB) $(MATLAB_LIB) $(CARBON_LIB)
+LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB) $(MATLAB_LIB)
 
 CPP_FILES=$(wildcard ./*.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o))) 
@@ -50,5 +43,5 @@ obj/%.o: %.cpp %.h
 	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -c $< -o $@ $(INC)
 
 clean:
-	rm -f $(OBJ_FILES)
+	rm -f example.o
 	rm -f example

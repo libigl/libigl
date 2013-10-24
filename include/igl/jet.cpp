@@ -63,29 +63,29 @@ void igl::jet(const T x, T & r, T & g, T & b)
   const double gone = 1.0;
   const double bone = 1.0;
 
-  if(x<1/8.)
+  if(x<1./8.)
   {
     r = 0;
     g = 0;
-    b = bone*(0.5+(x)/(1/8.)*0.5);
-  }else if(x<3/8.)
+    b = bone*(0.5+(x)/(1./8.)*0.5);
+  }else if(x<3./8.)
   {
     r = 0;
-    g = gone*(x-1/8.)/(3/8.-1/8.);
+    g = gone*(x-1./8.)/(3./8.-1./8.);
     b = bone; 
-  }else if(x<5/8.)
+  }else if(x<5./8.)
   {
-    r = rone*(x-3/8.)/(5/8.-3/8.);
+    r = rone*(x-3./8.)/(5./8.-3./8.);
     g = gone;
-    b = (bone-(x-3/8.)/(5/8.-3/8.));
-  }else if(x<7/8.)
+    b = (bone-(x-3./8.)/(5./8.-3./8.));
+  }else if(x<7./8.)
   {
     r = rone;
-    g = (gone-(x-5/8.)/(7/8.-5/8.));
+    g = (gone-(x-5./8.)/(7./8.-5./8.));
     b = 0;
   }else
   {
-    r = (bone-(x-7/8.)/(1.-7/8.)*0.5);
+    r = (bone-(x-7./8.)/(1.-7./8.)*0.5);
     g = 0;
     b = 0;
   }
