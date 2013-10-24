@@ -18,12 +18,13 @@ void igl::manifold_patches(
 
   // List of all "half"-edges: 3*#F by 2
   Matrix<typename DerivedF::Scalar, Dynamic, 2> allE,sortallE,uE;
+  allE.resize(F.rows()*3,2);
   VectorXi IC,_;
-  allE.block(0*F.rows(),0,F.rows(),0) = F.col(1);
+  allE.block(0*F.rows(),0,F.rows(),1) = F.col(1);
   allE.block(0*F.rows(),0,F.rows(),1) = F.col(2);
-  allE.block(1*F.rows(),0,F.rows(),0) = F.col(2);
+  allE.block(1*F.rows(),0,F.rows(),1) = F.col(2);
   allE.block(1*F.rows(),0,F.rows(),1) = F.col(0);
-  allE.block(2*F.rows(),0,F.rows(),0) = F.col(0);
+  allE.block(2*F.rows(),0,F.rows(),1) = F.col(0);
   allE.block(2*F.rows(),0,F.rows(),1) = F.col(1);
   // Sort each row
   sort(allE,2,true,sortallE,_);

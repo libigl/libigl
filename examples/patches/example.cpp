@@ -23,6 +23,7 @@
 #include <igl/ReAntTweakBar.h>
 #include <igl/get_seconds.h>
 #include <igl/jet.h>
+#include <igl/randperm.h>
 #include <igl/boost/manifold_patches.h>
 #include <igl/boost/components.h>
 
@@ -37,13 +38,14 @@
 #include <iostream>
 
 
-Eigen::MatrixXd V,N,C;
+Eigen::MatrixXd V,C;
 Eigen::VectorXd Vmid,Vmin,Vmax;
 double bbd = 1.0;
 Eigen::MatrixXi F;
 struct State
 {
   igl::Camera camera;
+  Eigen::MatrixXd N;
 } s;
 
 // See README for descriptions
@@ -222,14 +224,14 @@ void lights()
   glLightfv(GL_LIGHT0,GL_DIFFUSE,WHITE);
   glLightfv(GL_LIGHT0,GL_SPECULAR,BLACK);
   glLightfv(GL_LIGHT0,GL_POSITION,pos.data());
-  glEnable(GL_LIGHT1);
-  pos(0) *= -1;
-  pos(1) *= -1;
-  pos(2) *= -1;
-  glLightfv(GL_LIGHT1,GL_AMBIENT,BLACK);
-  glLightfv(GL_LIGHT1,GL_DIFFUSE,NEAR_BLACK);
-  glLightfv(GL_LIGHT1,GL_SPECULAR,BLACK);
-  glLightfv(GL_LIGHT1,GL_POSITION,pos.data());
+  //glEnable(GL_LIGHT1);
+  //pos(0) *= -1;
+  //pos(1) *= -1;
+  //pos(2) *= -1;
+  //glLightfv(GL_LIGHT1,GL_AMBIENT,BLACK);
+  //glLightfv(GL_LIGHT1,GL_DIFFUSE,NEAR_BLACK);
+  //glLightfv(GL_LIGHT1,GL_SPECULAR,BLACK);
+  //glLightfv(GL_LIGHT1,GL_POSITION,pos.data());
 }
 
 void display()
@@ -264,7 +266,7 @@ void display()
   // Set material properties
   glEnable(GL_COLOR_MATERIAL);
   glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
-  draw_mesh(V,F,N,C);
+  draw_mesh(V,F,s.N,C);
   pop_object();
 
   // Draw a nice floor
@@ -448,7 +450,7 @@ void init_relative()
 {
   using namespace Eigen;
   using namespace igl;
-  per_face_normals(V,F,N);
+  per_face_normals(V,F,s.N);
   Vmax = V.colwise().maxCoeff();
   Vmin = V.colwise().minCoeff();
   Vmid = 0.5*(Vmax + Vmin);
@@ -462,14 +464,16 @@ void init_patches()
   using namespace std;
   VectorXi CC;
   SparseMatrix<int> A;
-  //manifold_patches(F,CC,A);
-  components(F,CC);
+  manifold_patches(F,CC,A);
+  //components(F,CC);
   C.resize(CC.rows(),3);
   double num_cc = (double)CC.maxCoeff()+1.0;
+  VectorXi I;
+  randperm(num_cc,I);
   for(int f = 0;f<CC.rows();f++)
   {
     jet(
-      (double)CC(f)/num_cc,
+      (double)I(CC(f))/num_cc,
       C(f,0),
       C(f,1),
       C(f,2));
@@ -510,6 +514,13 @@ void key(unsigned char key, int mouse_x, int mouse_y)
     // ^C
     case char(3):
       exit(0);
+    case 'I':
+    case 'i':
+      {
+        push_undo();
+        s.N *= -1.0;
+        break;
+      }
     case 'z':
     case 'Z':
       if(mod & GLUT_ACTIVE_COMMAND)
