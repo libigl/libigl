@@ -129,6 +129,7 @@ namespace igl
     // Initialization
 
     // Basic data types
+    using XMLSerializable::Init;
     void Init(char& val);
     void Init(char*& val);
     void Init(std::string& val);
@@ -161,6 +162,7 @@ namespace igl
     // Serialization
 
     // Basic data types
+    using XMLSerializable::Serialize;
     bool Serialize(char& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
     bool Serialize(char*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
     bool Serialize(std::string& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
@@ -212,6 +214,7 @@ namespace igl
     // Serialization
 
     // Basic data types
+    using XMLSerializable::Deserialize;
     bool Deserialize(char& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
     bool Deserialize(char*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
     bool Deserialize(std::string& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
