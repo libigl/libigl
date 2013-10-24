@@ -16,11 +16,13 @@ namespace igl
   };
 
   template <
-  typename PointMatrixType,
-  typename FaceMatrixType,
-  typename RowVector3>
+  typename Scalar,
+  typename Index>
   class EmbreeIntersector
   {
+    typedef Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> PointMatrixType;
+    typedef Eigen::Matrix<Index,Eigen::Dynamic,Eigen::Dynamic>  FaceMatrixType;
+    typedef Eigen::Matrix<Scalar,1,3> RowVector3;
   public:
     // V  #V by 3 list of vertex positions
     // F  #F by 3 list of Oriented triangles
@@ -90,10 +92,9 @@ template <typename RowVector3>
 inline embree::Vector3f toVector3f(const RowVector3 &p) { return embree::Vector3f((float)p[0], (float)p[1], (float)p[2]); }
 
 template <
-typename PointMatrixType,
-typename FaceMatrixType,
-typename RowVector3>
-igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
+typename Scalar,
+typename Index>
+igl::EmbreeIntersector < Scalar, Index>
 ::EmbreeIntersector()
 {
   static bool inited = false;
@@ -106,15 +107,14 @@ igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
 }
 
 template <
-typename PointMatrixType,
-typename FaceMatrixType,
-typename RowVector3>
-igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
+typename Scalar,
+typename Index>
+igl::EmbreeIntersector < Scalar, Index>
 ::EmbreeIntersector(const PointMatrixType & V,
                     const FaceMatrixType & F,
-                    const char* structure = "default",
-                    const char* builder = "default",
-                    const char* traverser = "default")
+                    const char* structure,
+                    const char* builder,
+                    const char* traverser)
 {
   static bool inited = false;
   if(!inited)
@@ -152,31 +152,29 @@ igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
 }
 
 template <
-typename PointMatrixType,
-typename FaceMatrixType,
-typename RowVector3>
-igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
+typename Scalar,
+typename Index>
+igl::EmbreeIntersector < Scalar, Index>
 ::~EmbreeIntersector()
 {
   embree::rtcDeleteIntersector1(intersector);
   embree::rtcDeleteGeometry(mesh);
-  embree::rtcStopThreads();
-  embree::rtcExit();
-  embree::rtcFreeMemory();
+//  embree::rtcStopThreads();
+//  embree::rtcExit();
+//  embree::rtcFreeMemory();
 }
 
 template <
-typename PointMatrixType,
-typename FaceMatrixType,
-typename RowVector3>
+typename Scalar,
+typename Index>
 bool 
-igl::EmbreeIntersector< PointMatrixType, FaceMatrixType, RowVector3>
+igl::EmbreeIntersector< Scalar, Index>
 ::intersectRay(
   const RowVector3& origin,
   const RowVector3& direction,
   Hit& hit,
-  float tnear = 0,
-  float tfar = embree::inf) const
+  float tnear,
+  float tfar) const
 {
   embree::Ray ray(toVector3f(origin), toVector3f(direction), tnear, tfar);
   intersector->intersect(ray);
@@ -194,18 +192,17 @@ igl::EmbreeIntersector< PointMatrixType, FaceMatrixType, RowVector3>
 }
 
 template <
-typename PointMatrixType,
-typename FaceMatrixType,
-typename RowVector3>
+typename Scalar,
+typename Index>
 bool 
-igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
+igl::EmbreeIntersector < Scalar, Index>
 ::intersectRay(
   const RowVector3& origin, 
   const RowVector3& direction,
   std::vector<Hit > &hits,
   int& num_rays,
-  float tnear = 0,
-  float tfar = embree::inf) const
+  float tnear,
+  float tfar) const
 {
   using namespace std;
   num_rays = 0;
@@ -222,12 +219,6 @@ igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
 
   while(true)
   {
-#ifdef VERBOSE
-    cout<<
-      o[0]<<" "<<o[1]<<" "<<o[2]<<" + t*"<<
-      d[0]<<" "<<d[1]<<" "<<d[2]<<" ---> "<<
-      endl;
-#endif
     ray.tnear = min_t;
     ray.tfar = tfar;
     ray.id0 = -1;
@@ -299,11 +290,10 @@ igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
 }
 
 template <
-typename PointMatrixType,
-typename FaceMatrixType,
-typename RowVector3>
+typename Scalar,
+typename Index>
 bool 
-igl::EmbreeIntersector < PointMatrixType, FaceMatrixType, RowVector3>
+igl::EmbreeIntersector < Scalar, Index>
 ::intersectSegment(const RowVector3& a, const RowVector3& ab, Hit &hit) const
 {
   embree::Ray ray(toVector3f(a), toVector3f(ab), embree::zero, embree::one);
