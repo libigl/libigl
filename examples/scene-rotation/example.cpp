@@ -23,6 +23,7 @@
 #include <igl/REDRUM.h>
 #include <igl/Camera.h>
 #include <igl/ReAntTweakBar.h>
+#include <igl/get_seconds.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -47,7 +48,7 @@ struct State
 } s;
 
 // See README for descriptions
-enum ROTATION_TYPE
+enum RotationType
 {
   ROTATION_TYPE_IGL_TRACKBALL = 0,
   ROTATION_TYPE_BELL_TRACKBALL = 1,
@@ -63,15 +64,61 @@ bool is_rotating = false;
 int down_x,down_y;
 igl::Camera down_camera;
 
+bool is_animating = false;
+double animation_start_time = 0;
+double ANIMATION_DURATION = 0.5;
+Eigen::Quaterniond animation_from_quat;
+Eigen::Quaterniond animation_to_quat;
+
 int width,height;
 Eigen::Vector4f light_pos(-0.1,-0.1,0.9,0);
 
 #define REBAR_NAME "temp.rbr"
 igl::ReTwBar rebar;
 
+void push_undo()
+{
+  undo_stack.push(s);
+  // Clear
+  redo_stack = std::stack<State>();
+}
+
 // No-op setter, does nothing
 void TW_CALL no_op(const void * /*value*/, void * /*clientData*/)
 {
+}
+
+void TW_CALL set_rotation_type(const void * value, void * clientData)
+{
+  using namespace Eigen;
+  using namespace std;
+  using namespace igl;
+  const RotationType old_rotation_type = rotation_type;
+  rotation_type = *(const RotationType *)(value);
+  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP && 
+    old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
+  {
+    push_undo();
+    copy(s.camera.rotation,s.camera.rotation+4,animation_from_quat.coeffs().data());
+    const Vector3d up = animation_from_quat.matrix() * Vector3d(0,1,0);
+    Vector3d proj_up(0,up(1),up(2));
+    if(proj_up.norm() == 0)
+    {
+      proj_up = Vector3d(0,1,0);
+    }
+    proj_up.normalize();
+    Quaterniond dq;
+    dq = Quaterniond::FromTwoVectors(up,proj_up);
+    animation_to_quat = dq * animation_from_quat;
+    // start animation
+    animation_start_time = get_seconds();
+    is_animating = true;
+  }
+}
+void TW_CALL get_rotation_type(void * value, void *clientData)
+{
+  RotationType * rt = (RotationType *)(value);
+  *rt = rotation_type;
 }
 
 void TW_CALL get_camera_rotation(void * value, void *clientData)
@@ -80,13 +127,6 @@ void TW_CALL get_camera_rotation(void * value, void *clientData)
   // case current value to double
   double * quat = (double *)(value);
   std::copy(s.camera.rotation,s.camera.rotation+4,quat);
-}
-
-void push_undo()
-{
-  undo_stack.push(s);
-  // Clear
-  redo_stack = std::stack<State>();
 }
 
 void reshape(int width, int height)
@@ -195,8 +235,24 @@ void display()
 {
   using namespace igl;
   using namespace std;
+  using namespace Eigen;
   glClearColor(1,1,1,0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  if(is_animating)
+  {
+    double t = (get_seconds() - animation_start_time)/ANIMATION_DURATION;
+    if(t > 1)
+    {
+      t = 1;
+      is_animating = false;
+    }
+    Quaterniond q;
+    q.coeffs() = 
+      animation_to_quat.coeffs()*t + animation_from_quat.coeffs()*(1.-t);
+    q.normalize();
+    copy(q.coeffs().data(),q.coeffs().data()+4,s.camera.rotation);
+  }
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
@@ -624,12 +680,13 @@ int main(int argc, char * argv[])
         "RotationType", 
         RotationTypesEV, 
         NUM_ROTATION_TYPES);
-  rebar.TwAddVarRW( "rotation_type", RotationTypeTW, &rotation_type,"keyIncr=] keyDecr=[");
+  rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
+    set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
   rebar.load(REBAR_NAME);
 
   // Init antweakbar
   glutInitDisplayString( "rgba depth double samples>=8 ");
-  glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH)/2.0,glutGet(GLUT_SCREEN_HEIGHT));
+  glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH)/2.0,glutGet(GLUT_SCREEN_HEIGHT)/2.0);
   glutCreateWindow("upright");
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);

@@ -42,4 +42,5 @@ IGL_INLINE void igl::adjacency_matrix(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
+template void igl::adjacency_matrix<int>(Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::SparseMatrix<int, 0, int>&);
 #endif

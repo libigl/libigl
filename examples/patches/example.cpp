@@ -21,35 +21,23 @@
 #include <igl/REDRUM.h>
 #include <igl/Camera.h>
 #include <igl/ReAntTweakBar.h>
-#include <igl/PI.h>
-#include <igl/render_to_tga.h>
-#include <igl/STR.h>
-#define IGL_HEADER_ONLY
-#include <igl/lens_flare.h>
+#include <igl/get_seconds.h>
+#include <igl/jet.h>
+#include <igl/boost/manifold_patches.h>
+#include <igl/boost/components.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
 #include <GLUT/glut.h>
 
-#include <Carbon/Carbon.h>
-
 #include <string>
 #include <vector>
-#include <iomanip>
 #include <stack>
 #include <iostream>
 
-bool eyes_visible = true;
-double x=6,y=232,z=61;
 
-std::vector<igl::Flare> flares;
-std::vector<GLuint> shine_ids;
-std::vector<GLuint> flare_ids;
-int shine_tic = 0;
-
-GLuint list_id = 0;
-Eigen::MatrixXd V,N;
+Eigen::MatrixXd V,N,C;
 Eigen::VectorXd Vmid,Vmin,Vmax;
 double bbd = 1.0;
 Eigen::MatrixXi F;
@@ -59,7 +47,7 @@ struct State
 } s;
 
 // See README for descriptions
-enum ROTATION_TYPE
+enum RotationType
 {
   ROTATION_TYPE_IGL_TRACKBALL = 0,
   ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP = 1,
@@ -72,14 +60,25 @@ std::stack<State> redo_stack;
 bool is_rotating = false;
 int down_x,down_y;
 igl::Camera down_camera;
-bool render_to_png_on_next = false;
-int render_count = 0;
+
+bool is_animating = false;
+double animation_start_time = 0;
+double ANIMATION_DURATION = 0.5;
+Eigen::Quaterniond animation_from_quat;
+Eigen::Quaterniond animation_to_quat;
 
 int width,height;
 Eigen::Vector4f light_pos(-0.1,-0.1,0.9,0);
 
 #define REBAR_NAME "temp.rbr"
 igl::ReTwBar rebar;
+
+void push_undo()
+{
+  undo_stack.push(s);
+  // Clear
+  redo_stack = std::stack<State>();
+}
 
 void TW_CALL set_camera_rotation(const void * value, void *clientData)
 {
@@ -89,19 +88,45 @@ void TW_CALL set_camera_rotation(const void * value, void *clientData)
   std::copy(quat,quat+4,s.camera.rotation);
 }
 
+void TW_CALL set_rotation_type(const void * value, void * clientData)
+{
+  using namespace Eigen;
+  using namespace std;
+  using namespace igl;
+  const RotationType old_rotation_type = rotation_type;
+  rotation_type = *(const RotationType *)(value);
+  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP && 
+    old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
+  {
+    push_undo();
+    copy(s.camera.rotation,s.camera.rotation+4,animation_from_quat.coeffs().data());
+    const Vector3d up = animation_from_quat.matrix() * Vector3d(0,1,0);
+    Vector3d proj_up(0,up(1),up(2));
+    if(proj_up.norm() == 0)
+    {
+      proj_up = Vector3d(0,1,0);
+    }
+    proj_up.normalize();
+    Quaterniond dq;
+    dq = Quaterniond::FromTwoVectors(up,proj_up);
+    animation_to_quat = dq * animation_from_quat;
+    // start animation
+    animation_start_time = get_seconds();
+    is_animating = true;
+  }
+}
+void TW_CALL get_rotation_type(void * value, void *clientData)
+{
+  RotationType * rt = (RotationType *)(value);
+  *rt = rotation_type;
+}
+
 void TW_CALL get_camera_rotation(void * value, void *clientData)
 {
   using namespace std;
   // case current value to double
   double * quat = (double *)(value);
   std::copy(s.camera.rotation,s.camera.rotation+4,quat);
-}
-
-void push_undo()
-{
-  undo_stack.push(s);
-  // Clear
-  redo_stack = std::stack<State>();
 }
 
 void reshape(int width, int height)
@@ -186,174 +211,75 @@ void lights()
   using namespace std;
   using namespace Eigen;
   glEnable(GL_LIGHTING);
-  glLightModelf(GL_LIGHT_MODEL_TWO_SIDE,GL_TRUE);
+  //glLightModelf(GL_LIGHT_MODEL_TWO_SIDE,GL_TRUE);
   glEnable(GL_LIGHT0);
-  glEnable(GL_LIGHT1);
-  float WHITE[4] =  {0.8,0.8,0.8,1.};
-  float GREY[4] =  {0.2,0.2,0.2,1.};
+  float WHITE[4] =  {0.7,0.7,0.7,1.};
+  float GREY[4] =  {0.4,0.4,0.4,1.};
   float BLACK[4] =  {0.,0.,0.,1.};
+  float NEAR_BLACK[4] =  {0.1,0.1,0.1,1.};
   Vector4f pos = light_pos;
   glLightfv(GL_LIGHT0,GL_AMBIENT,GREY);
   glLightfv(GL_LIGHT0,GL_DIFFUSE,WHITE);
-  glLightfv(GL_LIGHT0,GL_SPECULAR,GREY);
+  glLightfv(GL_LIGHT0,GL_SPECULAR,BLACK);
   glLightfv(GL_LIGHT0,GL_POSITION,pos.data());
+  glEnable(GL_LIGHT1);
   pos(0) *= -1;
   pos(1) *= -1;
   pos(2) *= -1;
-  glLightfv(GL_LIGHT1,GL_AMBIENT,GREY);
-  glLightfv(GL_LIGHT1,GL_DIFFUSE,WHITE);
+  glLightfv(GL_LIGHT1,GL_AMBIENT,BLACK);
+  glLightfv(GL_LIGHT1,GL_DIFFUSE,NEAR_BLACK);
   glLightfv(GL_LIGHT1,GL_SPECULAR,BLACK);
   glLightfv(GL_LIGHT1,GL_POSITION,pos.data());
-}
-
-void init_flare()
-{
-}
-
-void draw_flare()
-{
-  using namespace igl;
-  using namespace Eigen;
-  glPushMatrix();
-  glScaled(bbd*0.5,bbd*0.5,bbd*0.5);
-  glScaled(0.2,0.2,0.2);
-  Vector3f light(0,0,0);
-  lens_flare_draw(flares,shine_ids,flare_ids,light,1.0,shine_tic);
-  glPopMatrix();
-}
-
-void draw_eyes()
-{
-  using namespace Eigen;
-  using namespace std;
-  using namespace igl;
-#define NUM_LEDS 2
-  Vector3d LED_pos[NUM_LEDS];
-  LED_pos[0] = Vector3d( x,y,z);
-  LED_pos[1] = Vector3d(-x,y,z);
-  enum LEDMethod
-  {
-    LED_METHOD_COLORED_CIRCLE = 0,
-    LED_METHOD_OUTLINED_CIRCLE = 1,
-    LED_METHOD_TEXTURE_FLARE = 2
-  } method = LED_METHOD_TEXTURE_FLARE;
-
-  
-  for(int l = 0;l<NUM_LEDS;l++)
-  {
-    glPushMatrix();
-    glTranslated(LED_pos[l](0), LED_pos[l](1), LED_pos[l](2));
-    const double r = 2.0;
-    const float color[4] = {1,0,0,1};
-    glScaled(r,r,r);
-    switch(method)
-    {
-      case LED_METHOD_COLORED_CIRCLE:
-      {
-        glEnable(GL_COLOR_MATERIAL);
-        glColorMaterial(GL_FRONT,GL_AMBIENT);
-        glColor4fv(color);
-        glBegin(GL_TRIANGLE_FAN);
-        glVertex3d(0,0,0);
-        for(double theta = 0;theta<2.*PI;theta+=2.*PI/15.)
-        {
-          glVertex3d(cos(theta),sin(theta),0);
-        }
-        glEnd();
-        break;
-      }
-      case LED_METHOD_OUTLINED_CIRCLE:
-      {
-        glEnable(GL_COLOR_MATERIAL);
-        glDisable(GL_LIGHTING);
-        glColorMaterial(GL_FRONT,GL_DIFFUSE);
-        glBegin(GL_TRIANGLE_FAN);
-        glColor4fv(color);
-        glVertex3d(0,0,0);
-        glColor4f(0,0,0,1);
-        for(double theta = 0;theta<2.*PI;theta+=2.*PI/15.)
-        {
-          glVertex3d(cos(theta),sin(theta),0);
-        }
-        glEnd();
-        break;
-      }
-      case LED_METHOD_TEXTURE_FLARE:
-      {
-        draw_flare();
-        break;
-      }
-    }
-    glPopMatrix();
-  }
 }
 
 void display()
 {
   using namespace igl;
   using namespace std;
-  glClearColor(0.03,0.03,0.04,0);
+  using namespace Eigen;
+  glClearColor(1,1,1,0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  if(is_animating)
+  {
+    double t = (get_seconds() - animation_start_time)/ANIMATION_DURATION;
+    if(t > 1)
+    {
+      t = 1;
+      is_animating = false;
+    }
+    Quaterniond q;
+    q.coeffs() = 
+      animation_to_quat.coeffs()*t + animation_from_quat.coeffs()*(1.-t);
+    q.normalize();
+    copy(q.coeffs().data(),q.coeffs().data()+4,s.camera.rotation);
+  }
+
   glEnable(GL_DEPTH_TEST);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_NORMALIZE);
   lights();
   push_scene();
-
-
-  
-  if(list_id == 0)
-  {
-    list_id = glGenLists(1);
-    glNewList(list_id,GL_COMPILE);
-
-    push_object();
-    // Set material properties
-    glDisable(GL_COLOR_MATERIAL);
-    const float NEAR_BLACK[4] = {0.1,0.1,0.1,1.0};
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,  NEAR_BLACK);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,  MIDNIGHT_BLUE_DIFFUSE);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, SILVER_SPECULAR);
-    glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128);
-    draw_mesh(V,F,N);
-    pop_object();
-    // Draw a nice floor
-    glPushMatrix();
-    const double floor_offset =
-      -2./bbd*(V.col(1).maxCoeff()-Vmid(1));
-    glTranslated(0,floor_offset,0);
-    const float GREY[4] = {0.5,0.5,0.6,1.0};
-    const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
-    draw_floor(GREY,DARK_GREY);
-    glPopMatrix();
-
-    glEndList();
-  }
-  glCallList(list_id);
-
-
   push_object();
-  if(eyes_visible)
-  {
-    draw_eyes();
-  }
+
+  // Set material properties
+  glEnable(GL_COLOR_MATERIAL);
+  glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
+  draw_mesh(V,F,N,C);
   pop_object();
+
+  // Draw a nice floor
+  glPushMatrix();
+  const double floor_offset =
+    -2./bbd*(V.col(1).maxCoeff()-Vmid(1));
+  glTranslated(0,floor_offset,0);
+  const float GREY[4] = {0.5,0.5,0.6,1.0};
+  const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
+  draw_floor(GREY,DARK_GREY);
+  glPopMatrix();
 
   pop_scene();
 
   report_gl_error();
-
-  if(render_to_png_on_next)
-  {
-    GLint viewport[4];
-    glGetIntegerv(GL_VIEWPORT,viewport);
-    render_to_tga(
-      STR("./"<< "flare-eyes-" << setw(4) << setfill('0') << render_count++ << ".tga"),
-      viewport[2],viewport[3],true);
-    //render_to_png_on_next = false;
-  }
 
   TwDraw();
   glutSwapBuffers();
@@ -402,7 +328,6 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
   using namespace std;
   using namespace Eigen;
   using namespace igl;
-
   bool tw_using = TwEventMouseButtonGLUT(glutButton,glutState,mouse_x,mouse_y);
   switch(glutButton)
   {
@@ -430,30 +355,30 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
         break;
       }
       break;
-    }
-    // Scroll down
-    case GLUT_WHEEL_DOWN:
-    {
-      mouse_wheel(0,-1,mouse_x,mouse_y);
-      break;
-    }
-    // Scroll up
-    case GLUT_WHEEL_UP:
-    {
-      mouse_wheel(0,1,mouse_x,mouse_y);
-      break;
-    }
-    // Scroll left
-    case GLUT_WHEEL_LEFT:
-    {
-      mouse_wheel(1,-1,mouse_x,mouse_y);
-      break;
-    }
-    // Scroll right
-    case GLUT_WHEEL_RIGHT:
-    {
-      mouse_wheel(1,1,mouse_x,mouse_y);
-      break;
+      // Scroll down
+      case GLUT_WHEEL_DOWN:
+      {
+        mouse_wheel(0,-1,mouse_x,mouse_y);
+        break;
+      }
+      // Scroll up
+      case GLUT_WHEEL_UP:
+      {
+        mouse_wheel(0,1,mouse_x,mouse_y);
+        break;
+      }
+      // Scroll left
+      case GLUT_WHEEL_LEFT:
+      {
+        mouse_wheel(1,-1,mouse_x,mouse_y);
+        break;
+      }
+      // Scroll right
+      case GLUT_WHEEL_RIGHT:
+      {
+        mouse_wheel(1,1,mouse_x,mouse_y);
+        break;
+      }
     }
   }
 }
@@ -523,7 +448,6 @@ void init_relative()
 {
   using namespace Eigen;
   using namespace igl;
-  using namespace std;
   per_face_normals(V,F,N);
   Vmax = V.colwise().maxCoeff();
   Vmin = V.colwise().minCoeff();
@@ -531,13 +455,25 @@ void init_relative()
   bbd = (Vmax-Vmin).norm();
 }
 
-
-KeyMap keyStates ;
-bool IS_KEYDOWN( uint16_t vKey )
+void init_patches()
 {
-  uint8_t index = vKey / 32 ;
-  uint8_t shift = vKey % 32 ;
-  return keyStates[index].bigEndianValue & (1 << shift) ;
+  using namespace Eigen;
+  using namespace igl;
+  using namespace std;
+  VectorXi CC;
+  SparseMatrix<int> A;
+  //manifold_patches(F,CC,A);
+  components(F,CC);
+  C.resize(CC.rows(),3);
+  double num_cc = (double)CC.maxCoeff()+1.0;
+  for(int f = 0;f<CC.rows();f++)
+  {
+    jet(
+      (double)CC(f)/num_cc,
+      C(f,0),
+      C(f,1),
+      C(f,2));
+  }
 }
 
 void undo()
@@ -609,7 +545,7 @@ int main(int argc, char * argv[])
   using namespace std;
   using namespace Eigen;
   using namespace igl;
-  string filename = "../shared/beast.obj";
+  string filename = "../shared/cheburashka.obj";
   if(argc < 2)
   {
     cerr<<"Usage:"<<endl<<"    ./example input.obj"<<endl;
@@ -677,6 +613,8 @@ int main(int argc, char * argv[])
     triangulate(vF,F);
   }
 
+  init_patches();
+
   init_relative();
 
   // Init glut
@@ -693,43 +631,27 @@ int main(int argc, char * argv[])
   TwEnumVal RotationTypesEV[NUM_ROTATION_TYPES] = 
   {
     {ROTATION_TYPE_IGL_TRACKBALL,"igl trackball"},
-    {ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP,"two a... fixed up"},
+    {ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP,"two axis fixed up"}
   };
   TwType RotationTypeTW = 
     ReTwDefineEnum(
         "RotationType", 
         RotationTypesEV, 
         NUM_ROTATION_TYPES);
-  rebar.TwAddVarRW( "rotation_type", RotationTypeTW, &rotation_type,"keyIncr=] keyDecr=[");
-  rebar.TwAddVarRW( "x",TW_TYPE_DOUBLE, &x,"");
-  rebar.TwAddVarRW( "y",TW_TYPE_DOUBLE, &y,"");
-  rebar.TwAddVarRW( "z",TW_TYPE_DOUBLE, &z,"");
-  rebar.TwAddVarRW( "eyes_visible",TW_TYPE_BOOLCPP, &eyes_visible,"key=e");
+  rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
+    set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
   rebar.load(REBAR_NAME);
-
 
   // Init antweakbar
   glutInitDisplayString( "rgba depth double samples>=8 ");
   glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH)/2.0,glutGet(GLUT_SCREEN_HEIGHT)/2.0);
-  glutCreateWindow("upright");
+  glutCreateWindow("patches");
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(key);
   glutMouseFunc(mouse);
   glutMotionFunc(mouse_drag);
   glutPassiveMotionFunc((GLUTmousemotionfun)TwEventMouseMotionGLUT);
-  // Init flares
-  lens_flare_load_textures(shine_ids,flare_ids);
-  const float RED[3] = {1,0,0};
-  const float GREEN[3] = {0,1,0};
-  const float BLUE[3] = {0,0,1};
-  //lens_flare_create(RED,GREEN,BLUE,flares);
-  flares.resize(4);
-  flares[0] = Flare(-1, 1.0f, 1.*0.1f,  RED, 1.0);
-  flares[1] = Flare(-1, 1.0f, 1.*0.15f, GREEN, 1.0);
-  flares[2] = Flare(-1, 1.0f, 1.*0.35f, BLUE, 1.0);
-  flares[3] = Flare( 2, 1.0f, 1.*0.1f, BLUE, 0.4);
-
   glutMainLoop();
 
   return 0;

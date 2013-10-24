@@ -13,7 +13,11 @@ namespace igl
     float scale;
     float loc;            /* postion on axis */
     float color[3];
-    Flare(){}
+    Flare():
+      type(-1),
+      scale(0),
+      loc(0)
+    {}
     Flare(int type, float location, float scale, const float color[3], float colorScale) :
       type(type),
       scale(scale),

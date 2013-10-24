@@ -14,8 +14,8 @@ namespace igl
   //   A  #A vector of type T
   // Outputs:
   //   C  #C vector of unique entries in A
-  //   IA  #A index vector so that C = A(IA);
-  //   IC  #C index vector so that A = C(IC);
+  //   IA  #C index vector so that C = A(IA);
+  //   IC  #A index vector so that A = C(IC);
   template <typename T>
   IGL_INLINE void unique(
     const std::vector<T> & A,
@@ -33,8 +33,8 @@ namespace igl
   //   A  m by n matrix whose entries are to unique'd according to rows
   // Outputs:
   //   C  #C vector of unique rows in A
-  //   IA  #A index vector so that C = A(IA,:);
-  //   IC  #C index vector so that A = C(IC,:);
+  //   IA  #C index vector so that C = A(IA,:);
+  //   IC  #A index vector so that A = C(IC,:);
   template <typename DerivedA, typename DerivedIA, typename DerivedIC>
   IGL_INLINE void unique_rows(
     const Eigen::PlainObjectBase<DerivedA>& A,
