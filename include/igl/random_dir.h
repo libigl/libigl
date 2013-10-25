@@ -17,4 +17,8 @@ namespace igl
   Eigen::MatrixXd random_dir_stratified(const int n);
 }
 
+#ifdef IGL_HEADER_ONLY
+#  include "random_dir.cpp"
+#endif
+
 #endif
