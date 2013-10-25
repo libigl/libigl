@@ -2,6 +2,7 @@
 #include "per_face_normals.h"
 #include "barycenter.h"
 #include "doublearea.h"
+#include "matlab_format.h"
 #include <iostream>
 
 template <
@@ -39,6 +40,8 @@ IGL_INLINE void igl::orient_outward(
   barycenter(V,F,BC);
   doublearea(V,F,A);
   BCmean.setConstant(num_cc,3,0);
+  dot.setConstant(num_cc,1,0);
+  totA.setConstant(num_cc,1,0);
   // loop over faces
   for(int f = 0;f<m;f++)
   {
