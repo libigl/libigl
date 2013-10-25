@@ -62,6 +62,9 @@ enum RotationType
 std::stack<State> undo_stack;
 std::stack<State> redo_stack;
 
+bool wireframe_visible = false;
+bool fill_visible = true;
+
 bool is_rotating = false;
 int down_x,down_y;
 igl::Camera down_camera;
@@ -269,7 +272,25 @@ void display()
   // Set material properties
   glEnable(GL_COLOR_MATERIAL);
   glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
-  draw_mesh(V,F,s.N,C);
+  if(wireframe_visible)
+  {
+    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+    if(fill_visible)
+    {
+      glColor3f(0,0,0);
+      draw_mesh(V,F,s.N);
+    }else
+    {
+      draw_mesh(V,F,s.N,C);
+    }
+  }
+  glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+  if(fill_visible)
+  {
+    glEnable(GL_POLYGON_OFFSET_FILL); // Avoid Stitching!
+    glPolygonOffset(1.0, 0);
+    draw_mesh(V,F,s.N,C);
+  }
 
   pop_object();
 
@@ -394,6 +415,7 @@ void mouse_drag(int mouse_x, int mouse_y)
   using namespace igl;
   using namespace std;
   using namespace Eigen;
+  bool tw_using = TwMouseMotion(mouse_x,mouse_y);
 
   if(is_rotating)
   {
@@ -647,7 +669,7 @@ int main(int argc, char * argv[])
   }
   // Create a tweak bar
   rebar.TwNewBar("TweakBar");
-  rebar.TwAddVarCB("camera_rotation", TW_TYPE_QUAT4D, set_camera_rotation,get_camera_rotation, NULL, "open");
+  rebar.TwAddVarCB("camera_rotation", TW_TYPE_QUAT4D, set_camera_rotation,get_camera_rotation, NULL, "open readonly=true");
   TwEnumVal RotationTypesEV[NUM_ROTATION_TYPES] = 
   {
     {ROTATION_TYPE_IGL_TRACKBALL,"igl trackball"},
@@ -660,7 +682,14 @@ int main(int argc, char * argv[])
         NUM_ROTATION_TYPES);
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
+  rebar.TwAddVarRW("wireframe_visible",TW_TYPE_BOOLCPP,&wireframe_visible,"key=l");
+  rebar.TwAddVarRW("fill_visible",TW_TYPE_BOOLCPP,&fill_visible,"key=f");
   rebar.load(REBAR_NAME);
+
+
+  animation_from_quat = Quaterniond(1,0,0,0);
+  copy(s.camera.rotation,s.camera.rotation+4,animation_to_quat.coeffs().data());
+  animation_start_time = get_seconds();
 
   // Init antweakbar
   glutInitDisplayString( "rgba depth double samples>=8 ");

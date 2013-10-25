@@ -1,3 +1,5 @@
-camera_rotation: TW_TYPE_QUAT4D -0.0878474 0.235658 0.0213947 -0.967621
+wireframe_visible: TW_TYPE_BOOLCPP 1
+fill_visible: TW_TYPE_BOOLCPP 1
+camera_rotation: TW_TYPE_QUAT4D 0.0504783 -0.948499 -0.242586 0.197368
 rotation_type: RotationType two axis fixed up
 
