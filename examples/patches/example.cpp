@@ -28,6 +28,7 @@
 #include <igl/boost/components.h>
 #include <igl/boost/bfs_orient.h>
 #include <igl/orient_outward.h>
+#include <igl/orient_outward_ao.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -519,7 +520,7 @@ void randomly_color(
   }
 }
 
-void randomize_colors(void * /*clientData*/)
+void TW_CALL randomize_colors(void * /*clientData*/)
 {
   push_undo();
   randomly_color(CC,s.C);
