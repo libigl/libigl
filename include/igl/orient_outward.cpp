@@ -46,7 +46,7 @@ IGL_INLINE void igl::orient_outward(
   for(int f = 0;f<m;f++)
   {
     BCmean.row(C(f)) += A(f)*BC.row(f);
-    totA(C(f))++;
+    totA(C(f))+=A(f);
   }
   // take area weighted average
   for(int c = 0;c<num_cc;c++)
