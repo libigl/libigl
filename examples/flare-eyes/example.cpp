@@ -72,7 +72,7 @@ std::stack<State> redo_stack;
 bool is_rotating = false;
 int down_x,down_y;
 igl::Camera down_camera;
-bool render_to_png_on_next = false;
+bool render_to_tga_on_next = false;
 int render_count = 0;
 
 int width,height;
@@ -236,7 +236,7 @@ void draw_eyes()
     LED_METHOD_COLORED_CIRCLE = 0,
     LED_METHOD_OUTLINED_CIRCLE = 1,
     LED_METHOD_TEXTURE_FLARE = 2
-  } method = LED_METHOD_TEXTURE_FLARE;
+  } method = LED_METHOD_COLORED_CIRCLE;
 
   
   for(int l = 0;l<NUM_LEDS;l++)
@@ -345,14 +345,14 @@ void display()
 
   report_gl_error();
 
-  if(render_to_png_on_next)
+  if(render_to_tga_on_next)
   {
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT,viewport);
     render_to_tga(
       STR("./"<< "flare-eyes-" << setw(4) << setfill('0') << render_count++ << ".tga"),
       viewport[2],viewport[3],true);
-    //render_to_png_on_next = false;
+    //render_to_tga_on_next = false;
   }
 
   TwDraw();
@@ -595,6 +595,9 @@ void key(unsigned char key, int mouse_x, int mouse_y)
           s.camera.rotation);
         break;
       }
+    case ' ':
+      render_to_tga_on_next = !render_to_tga_on_next;
+      break;
     default:
       if(!TwEventKeyboardGLUT(key,mouse_x,mouse_y))
       {

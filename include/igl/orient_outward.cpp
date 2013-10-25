@@ -1,0 +1,85 @@
+#include "orient_outward.h"
+#include "per_face_normals.h"
+#include "barycenter.h"
+#include "doublearea.h"
+#include <iostream>
+
+template <
+  typename DerivedV, 
+  typename DerivedF, 
+  typename DerivedC, 
+  typename DerivedFF, 
+  typename DerivedI>
+IGL_INLINE void igl::orient_outward(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::PlainObjectBase<DerivedC> & C,
+  Eigen::PlainObjectBase<DerivedFF> & FF,
+  Eigen::PlainObjectBase<DerivedI> & I)
+{
+  using namespace Eigen;
+  using namespace std;
+  assert(C.rows() == F.rows());
+  assert(F.cols() == 3);
+  assert(V.cols() == 3);
+
+  // number of faces
+  const int m = F.rows();
+  // number of patches
+  const int num_cc = C.maxCoeff()+1;
+  I.resize(num_cc);
+  if(&FF != &F)
+  {
+    FF = F;
+  }
+  PlainObjectBase<DerivedV> N,BC,BCmean;
+  Matrix<typename DerivedV::Scalar,Dynamic,1> A;
+  VectorXd totA(num_cc), dot(num_cc);
+  per_face_normals(V,F,N);
+  barycenter(V,F,BC);
+  doublearea(V,F,A);
+  BCmean.setConstant(num_cc,3,0);
+  // loop over faces
+  for(int f = 0;f<m;f++)
+  {
+    BCmean.row(C(f)) += A(f)*BC.row(f);
+    totA(C(f))++;
+  }
+  // take area weighted average
+  for(int c = 0;c<num_cc;c++)
+  {
+    BCmean.row(c) /= (typename DerivedV::Scalar) totA(c);
+  }
+  // subtract bcmean
+  for(int f = 0;f<m;f++)
+  {
+    BC.row(f) -= BCmean.row(C(f));
+    dot(C(f)) += A(f)*N.row(f).dot(BC.row(f));
+  }
+  // take area weighted average
+  for(int c = 0;c<num_cc;c++)
+  {
+    dot(c) /= (typename DerivedV::Scalar) totA(c);
+    if(dot(c) < 0)
+    {
+      I(c) = true;
+    }else
+    {
+      I(c) = false;
+    }
+  }
+  // flip according to I
+  for(int f = 0;f<m;f++)
+  {
+    if(I(C(f)))
+    {
+      FF.row(f) = FF.row(f).reverse().eval();
+    }
+  }
+}
+
+#ifndef IGL_HEADER_ONLY
+// Explicit template specialization
+template void igl::orient_outward<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+#endif
+

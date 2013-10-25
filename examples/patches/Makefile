@@ -8,6 +8,8 @@ all: obj example
 
 .PHONY: example
 
+CFLAGS=-g
+
 LIBIGL=../../
 LIBIGL_INC=-I$(LIBIGL)/include
 LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglmatlab -liglembree -liglboost
@@ -43,5 +45,5 @@ obj/%.o: %.cpp %.h
 	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -c $< -o $@ $(INC)
 
 clean:
-	rm -f example.o
+	rm -f $(OBJ_FILES)
 	rm -f example

@@ -23,8 +23,12 @@
 #include <igl/ReAntTweakBar.h>
 #include <igl/get_seconds.h>
 #include <igl/jet.h>
+#include <igl/randperm.h>
+#include <igl/normalize_row_lengths.h>
 #include <igl/boost/manifold_patches.h>
 #include <igl/boost/components.h>
+#include <igl/boost/bfs_orient.h>
+#include <igl/orient_outward.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -37,13 +41,14 @@
 #include <iostream>
 
 
-Eigen::MatrixXd V,N,C;
+Eigen::MatrixXd V,C;
 Eigen::VectorXd Vmid,Vmin,Vmax;
 double bbd = 1.0;
 Eigen::MatrixXi F;
 struct State
 {
   igl::Camera camera;
+  Eigen::MatrixXd N;
 } s;
 
 // See README for descriptions
@@ -213,23 +218,23 @@ void lights()
   glEnable(GL_LIGHTING);
   //glLightModelf(GL_LIGHT_MODEL_TWO_SIDE,GL_TRUE);
   glEnable(GL_LIGHT0);
-  float WHITE[4] =  {0.7,0.7,0.7,1.};
-  float GREY[4] =  {0.4,0.4,0.4,1.};
-  float BLACK[4] =  {0.,0.,0.,1.};
+  float WHITE[4] = {1,1,1,1.};
+  float GREY[4] = {0.4,0.4,0.4,1.};
+  float BLACK[4] = {0.,0.,0.,1.};
   float NEAR_BLACK[4] =  {0.1,0.1,0.1,1.};
   Vector4f pos = light_pos;
-  glLightfv(GL_LIGHT0,GL_AMBIENT,GREY);
+  glLightfv(GL_LIGHT0,GL_AMBIENT,BLACK);
   glLightfv(GL_LIGHT0,GL_DIFFUSE,WHITE);
   glLightfv(GL_LIGHT0,GL_SPECULAR,BLACK);
   glLightfv(GL_LIGHT0,GL_POSITION,pos.data());
-  glEnable(GL_LIGHT1);
-  pos(0) *= -1;
-  pos(1) *= -1;
-  pos(2) *= -1;
-  glLightfv(GL_LIGHT1,GL_AMBIENT,BLACK);
-  glLightfv(GL_LIGHT1,GL_DIFFUSE,NEAR_BLACK);
-  glLightfv(GL_LIGHT1,GL_SPECULAR,BLACK);
-  glLightfv(GL_LIGHT1,GL_POSITION,pos.data());
+  //glEnable(GL_LIGHT1);
+  //pos(0) *= -1;
+  //pos(1) *= -1;
+  //pos(2) *= -1;
+  //glLightfv(GL_LIGHT1,GL_AMBIENT,BLACK);
+  //glLightfv(GL_LIGHT1,GL_DIFFUSE,NEAR_BLACK);
+  //glLightfv(GL_LIGHT1,GL_SPECULAR,BLACK);
+  //glLightfv(GL_LIGHT1,GL_POSITION,pos.data());
 }
 
 void display()
@@ -264,7 +269,8 @@ void display()
   // Set material properties
   glEnable(GL_COLOR_MATERIAL);
   glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
-  draw_mesh(V,F,N,C);
+  draw_mesh(V,F,s.N,C);
+
   pop_object();
 
   // Draw a nice floor
@@ -448,7 +454,8 @@ void init_relative()
 {
   using namespace Eigen;
   using namespace igl;
-  per_face_normals(V,F,N);
+  per_face_normals(V,F,s.N);
+  normalize_row_lengths(s.N,s.N);
   Vmax = V.colwise().maxCoeff();
   Vmin = V.colwise().minCoeff();
   Vmid = 0.5*(Vmax + Vmin);
@@ -462,14 +469,20 @@ void init_patches()
   using namespace std;
   VectorXi CC;
   SparseMatrix<int> A;
-  //manifold_patches(F,CC,A);
   components(F,CC);
+  cout<<"There are "<<CC.maxCoeff()+1<<" connected components."<<endl;
+  //manifold_patches(F,CC,A);
+  bfs_orient(F,F,CC);
+  VectorXi I;
+  orient_outward(V,F,CC,F,I);
   C.resize(CC.rows(),3);
   double num_cc = (double)CC.maxCoeff()+1.0;
+  cout<<"There are "<<num_cc<<" 'manifold/orientable' patches."<<endl;
+  randperm(num_cc,I);
   for(int f = 0;f<CC.rows();f++)
   {
     jet(
-      (double)CC(f)/num_cc,
+      (double)I(CC(f))/num_cc,
       C(f,0),
       C(f,1),
       C(f,2));
@@ -510,6 +523,13 @@ void key(unsigned char key, int mouse_x, int mouse_y)
     // ^C
     case char(3):
       exit(0);
+    case 'I':
+    case 'i':
+      {
+        push_undo();
+        s.N *= -1.0;
+        break;
+      }
     case 'z':
     case 'Z':
       if(mod & GLUT_ACTIVE_COMMAND)
@@ -545,7 +565,7 @@ int main(int argc, char * argv[])
   using namespace std;
   using namespace Eigen;
   using namespace igl;
-  string filename = "../shared/cheburashka.obj";
+  string filename = "../shared/truck.obj";
   if(argc < 2)
   {
     cerr<<"Usage:"<<endl<<"    ./example input.obj"<<endl;
