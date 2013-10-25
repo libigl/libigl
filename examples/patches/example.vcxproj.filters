@@ -2,5 +2,16 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="example.cpp" />
+    <ClCompile Include="..\..\include\igl\orient_outward.cpp" />
+    <ClCompile Include="..\..\include\igl\orient_outward_ao.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="igl">
+      <UniqueIdentifier>{53eff656-6473-409c-9ad5-cac1983d91e1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\igl\orient_outward_ao.h" />
+    <ClInclude Include="..\..\include\igl\orient_outward.h" />
   </ItemGroup>
 </Project>
