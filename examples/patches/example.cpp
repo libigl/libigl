@@ -25,7 +25,6 @@
 #include <igl/jet.h>
 #include <igl/randperm.h>
 #include <igl/normalize_row_lengths.h>
-#include <igl/boost/manifold_patches.h>
 #include <igl/boost/components.h>
 #include <igl/boost/bfs_orient.h>
 #include <igl/orient_outward.h>
@@ -47,20 +46,23 @@
 #define GLUT_ACTIVE_COMMAND 1
 #endif
 
+#include <ctime>
 #include <string>
 #include <vector>
 #include <stack>
 #include <iostream>
 
 
-Eigen::MatrixXd V,C;
+Eigen::MatrixXd V;
 Eigen::VectorXd Vmid,Vmin,Vmax;
 double bbd = 1.0;
 Eigen::MatrixXi F;
+Eigen::VectorXi CC;
 struct State
 {
   igl::Camera camera;
   Eigen::MatrixXd N;
+  Eigen::MatrixXd C;
 } s;
 
 // See README for descriptions
@@ -293,7 +295,7 @@ void display()
       draw_mesh(V,F,s.N);
     }else
     {
-      draw_mesh(V,F,s.N,C);
+      draw_mesh(V,F,s.N,s.C);
     }
   }
   glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
@@ -301,7 +303,7 @@ void display()
   {
     glEnable(GL_POLYGON_OFFSET_FILL); // Avoid Stitching!
     glPolygonOffset(1.0, 0);
-    draw_mesh(V,F,s.N,C);
+    draw_mesh(V,F,s.N,s.C);
   }
 
   pop_object();
@@ -328,7 +330,6 @@ void display()
 void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
 {
   using namespace std;
-  push_undo();
   if(wheel == 0)
   {
     static double mouse_scroll_y = 0;
@@ -496,23 +497,18 @@ void init_relative()
   bbd = (Vmax-Vmin).norm();
 }
 
-void init_patches()
+void randomly_color(
+  const Eigen::VectorXi & CC,
+  Eigen::MatrixXd & C)
 {
   using namespace Eigen;
   using namespace igl;
   using namespace std;
-  VectorXi CC;
-  SparseMatrix<int> A;
-  components(F,CC);
-  cout<<"There are "<<CC.maxCoeff()+1<<" connected components."<<endl;
-  //manifold_patches(F,CC,A);
-  bfs_orient(F,F,CC);
   VectorXi I;
-  orient_outward(V,F,CC,F,I);
-  C.resize(CC.rows(),3);
+  srand ( unsigned ( time(0) ) );
   double num_cc = (double)CC.maxCoeff()+1.0;
-  cout<<"There are "<<num_cc<<" 'manifold/orientable' patches."<<endl;
   randperm(num_cc,I);
+  C.resize(CC.rows(),3);
   for(int f = 0;f<CC.rows();f++)
   {
     jet(
@@ -521,6 +517,30 @@ void init_patches()
       C(f,1),
       C(f,2));
   }
+}
+
+void randomize_colors(void * /*clientData*/)
+{
+  push_undo();
+  randomly_color(CC,s.C);
+}
+
+void init_patches()
+{
+  using namespace Eigen;
+  using namespace igl;
+  using namespace std;
+  {
+    VectorXi VCC;
+    components(F,VCC);
+    cout<<"There are "<<VCC.maxCoeff()+1<<" connected components of vertices."<<endl;
+  }
+  bfs_orient(F,F,CC);
+  VectorXi I;
+  orient_outward(V,F,CC,F,I);
+  double num_cc = (double)CC.maxCoeff()+1.0;
+  cout<<"There are "<<num_cc<<" 'manifold/orientable' patches of faces."<<endl;
+  randomly_color(CC,s.C);
 }
 
 void undo()
@@ -696,6 +716,7 @@ int main(int argc, char * argv[])
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
   rebar.TwAddVarRW("wireframe_visible",TW_TYPE_BOOLCPP,&wireframe_visible,"key=l");
   rebar.TwAddVarRW("fill_visible",TW_TYPE_BOOLCPP,&fill_visible,"key=f");
+  rebar.TwAddButton("randomize colors",randomize_colors,NULL,"key=c");
   rebar.load(REBAR_NAME);
 
 

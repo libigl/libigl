@@ -1,7 +1,8 @@
 #include "components.h"
 #include <igl/adjacency_matrix.h>
 
-#include <boost/graph/adjacency_matrix.hpp>
+//#include <boost/graph/adjacency_matrix.hpp>
+#include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>
 #include <iostream>
 #include <vector>
@@ -14,7 +15,9 @@ IGL_INLINE void igl::components(
 {
   assert(A.rows() == A.cols());
   using namespace Eigen;
-  boost::adjacency_matrix<boost::undirectedS> bA(A.rows());
+  // THIS IS DENSE:
+  //boost::adjacency_matrix<boost::undirectedS> bA(A.rows());
+  boost::adjacency_list<boost::vecS,boost::vecS,boost::undirectedS> bA(A.rows());
   for(int j=0; j<A.outerSize();j++)
   {
     // Iterate over inside

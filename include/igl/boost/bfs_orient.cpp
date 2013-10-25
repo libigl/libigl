@@ -29,6 +29,7 @@ void igl::bfs_orient(
     FF = F;
   }
   // loop over patches
+#pragma omp parallel for
   for(int c = 0;c<num_cc;c++)
   {
     queue<int> Q;
