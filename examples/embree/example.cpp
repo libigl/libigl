@@ -438,7 +438,17 @@ int main(int argc, char * argv[])
   using namespace std;
 
   // init mesh
-  if(!read("../shared/decimated-knight.obj",V,F))
+  string filename = "../shared/decimated-knight.obj";
+  if(argc < 2)
+  {
+    cerr<<"Usage:"<<endl<<"    ./example input.obj"<<endl;
+    cout<<endl<<"Opening default mesh..."<<endl;
+  }else
+  {
+    // Read and prepare mesh
+    filename = argv[1];
+  }
+  if(!read(filename,V,F))
   {
     return 1;
   }

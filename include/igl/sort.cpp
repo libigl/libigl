@@ -151,12 +151,12 @@ IGL_INLINE void igl::sort2(
   IX.resize(X.rows(),X.cols());
   if(dim==1)
   {
-    IX.row(0) = Eigen::PlainObjectBase<DerivedIX>::Zero(1,IX.cols());
-    IX.row(1) = Eigen::PlainObjectBase<DerivedIX>::Ones (1,IX.cols());
+    IX.row(0).setConstant(0);// = Eigen::PlainObjectBase<DerivedIX>::Zero(1,IX.cols());
+    IX.row(1).setConstant(1);// = Eigen::PlainObjectBase<DerivedIX>::Ones (1,IX.cols());
   }else
   {
-    IX.col(0) = Eigen::PlainObjectBase<DerivedIX>::Zero(IX.rows(),1);
-    IX.col(1) = Eigen::PlainObjectBase<DerivedIX>::Ones (IX.rows(),1);
+    IX.col(0).setConstant(0);// = Eigen::PlainObjectBase<DerivedIX>::Zero(IX.rows(),1);
+    IX.col(1).setConstant(1);// = Eigen::PlainObjectBase<DerivedIX>::Ones (IX.rows(),1);
   }
   // loop over columns (or rows)
   for(int i = 0;i<num_outer;i++)
@@ -216,4 +216,6 @@ template void igl::sort2<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix
 template void igl::sort_new<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template void igl::sort<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 template void igl::sort<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::sort<Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::sort<Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, 2, 0, -1, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&);
 #endif
