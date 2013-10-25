@@ -5,7 +5,7 @@
 template <typename DerivedM>
 IGL_INLINE const Eigen::WithFormat< DerivedM > igl::matlab_format(
   const Eigen::PlainObjectBase<DerivedM> & M,
-  const std::string name = "")
+  const std::string name)
 {
   using namespace igl;
   using namespace std;
@@ -32,7 +32,7 @@ template <typename DerivedS>
 IGL_INLINE const std::string
 igl::matlab_format(
   const Eigen::SparseMatrix<DerivedS> & S,
-  const std::string name = "")
+  const std::string name)
 {
   using namespace Eigen;
   using namespace igl;
