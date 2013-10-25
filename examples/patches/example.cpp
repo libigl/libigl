@@ -33,7 +33,19 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
+#ifdef WIN32
+#include <GL/glut.h>
+#else
 #include <GLUT/glut.h>
+#endif
+
+#ifndef GLUT_WHEEL_UP
+#define GLUT_WHEEL_UP    3
+#define GLUT_WHEEL_DOWN  4
+#define GLUT_WHEEL_RIGHT 5
+#define GLUT_WHEEL_LEFT  6
+#define GLUT_ACTIVE_COMMAND 1
+#endif
 
 #include <string>
 #include <vector>
