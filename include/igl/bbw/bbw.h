@@ -3,7 +3,9 @@
 #include "../igl_inline.h"
 
 #include <Eigen/Dense>
-#include "mosek_quadprog.h"
+#ifndef IGL_NO_MOSEK
+#  include <igl/mosek/mosek_quadprog.h>
+#endif
 #include <igl/active_set.h>
 
 namespace igl
@@ -26,15 +28,19 @@ namespace igl
       // Enforce partition of unity during optimization (optimize all weight
       // simultaneously)
       bool partition_unity;
-      // TODO: Is it safe if this is a reference?
       // Initial guess
       Eigen::MatrixXd W0;
-      // TODO: Mosek options
+#ifndef IGL_NO_MOSEK
       igl::MosekData mosek_data;
-      // TODO: Active set options
+#endif
       igl::active_set_params active_set_params;
       // Which solver
       QPSolver qp_solver;
+      // Verbosity level
+      // 0: quiet
+      // 1: loud
+      // 2: louder
+      int verbosity;
     public:
       BBWData();
       // Print current state of object
