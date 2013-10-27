@@ -29,6 +29,9 @@ endif
 ifeq ($(IGL_WITH_MATLAB),1)
 	EXTRA_DIRS+=include/igl/matlab
 endif
+ifeq ($(IGL_WITH_BBW),1)
+	EXTRA_DIRS+=include/igl/BBW
+endif
 ifeq ($(IGL_WITH_MOSEK),1)
 	EXTRA_DIRS+=include/igl/mosek
 endif
