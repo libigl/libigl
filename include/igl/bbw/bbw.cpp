@@ -1,4 +1,3 @@
-#define VERBOSE
 #include "bbw.h"
 
 #include <igl/cotmatrix.h>
@@ -7,7 +6,6 @@
 #include <igl/speye.h>
 #include <igl/slice_into.h>
 #include <igl/normalize_row_sums.h>
-#include <igl/verbose.h>
 #include <igl/min_quad_with_fixed.h>
 
 #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
@@ -19,8 +17,17 @@
 
 igl::BBWData::BBWData():
   partition_unity(false),
-  qp_solver(QP_SOLVER_IGL_ACTIVE_SET)
-{}
+  W0(),
+#ifndef IGL_NO_MOSEK
+  mosek_data(),
+#endif
+  active_set_params(),
+  qp_solver(QP_SOLVER_IGL_ACTIVE_SET),
+  verbosity(0)
+{
+  // We know that the Bilaplacian is positive semi-definite
+  active_set_params.Auu_pd = true;
+}
 
 void igl::BBWData::print()
 {
@@ -91,8 +98,11 @@ IGL_INLINE bool igl::bbw(
     {
       case QP_SOLVER_IGL_ACTIVE_SET:
       {
-        verbose("\n^%s: Computing initial weights for %d handle%s.\n\n",
-          __FUNCTION__,m,(m!=1?"s":""));
+        if(data.verbosity >= 1)
+        {
+          cout<<"BBW: Computing initial weights for "<<m<<" handle"<<
+            (m!=1?"s":"")<<"."<<endl;
+        }
         min_quad_with_fixed_data<typename DerivedW::Scalar > mqwf;
         min_quad_with_fixed_precompute(Q,b,Aeq,true,mqwf);
         min_quad_with_fixed_solve(mqwf,c,bc,Beq,W);
@@ -108,8 +118,11 @@ IGL_INLINE bool igl::bbw(
           {
             continue;
           }
-          verbose("\n^%s: Computing weight for handle %d out of %d.\n\n",
-              __FUNCTION__,i+1,m);
+          if(data.verbosity >= 1)
+          {
+            cout<<"BBW: Computing weight for handle "<<i+1<<" out of "<<m<<
+              "."<<endl;
+          }
           VectorXd bci = bc.col(i);
           VectorXd Wi;
           // use initial guess
@@ -121,11 +134,11 @@ IGL_INLINE bool igl::bbw(
             case SOLVER_STATUS_CONVERGED:
               break;
             case SOLVER_STATUS_MAX_ITER:
-              cout<<"active_set: max iter without convergence."<<endl;
+              cerr<<"active_set: max iter without convergence."<<endl;
               break;
             case SOLVER_STATUS_ERROR:
             default:
-              cout<<"active_set error."<<endl;
+              cerr<<"active_set error."<<endl;
               error = true;
           }
           W.col(i) = Wi;
@@ -138,11 +151,19 @@ IGL_INLINE bool igl::bbw(
       }
       case QP_SOLVER_MOSEK:
       {
+#ifdef IGL_NO_MOSEK
+        assert(false && "Use another QPSolver. Recompile without IGL_NO_MOSEK defined.");
+        cerr<<"Use another QPSolver. Recompile without IGL_NO_MOSEK defined."<<endl;
+        return false;
+#else
         // Loop over handles
         for(int i = 0;i<m;i++)
         {
-          verbose("\n^%s: Computing weight for handle %d out of %d.\n\n",
-              __FUNCTION__,i+1,m);
+          if(data.verbosity >= 1)
+          {
+            cout<<"BBW: Computing weight for handle "<<i+1<<" out of "<<m<<
+              "."<<endl;
+          }
           VectorXd bci = bc.col(i);
           VectorXd Wi;
           // impose boundary conditions via bounds
@@ -155,6 +176,7 @@ IGL_INLINE bool igl::bbw(
           }
           W.col(i) = Wi;
         }
+#endif
         break;
       }
       default:

@@ -105,13 +105,13 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     data.Auu_sym = is_symmetric(Auu,EPS<double>());
   }
 
-#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
-  cout<<"    qr"<<endl;
-#endif
   // Determine number of linearly independent constraints
   int nc = 0;
   if(neq>0)
   {
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+    cout<<"    qr"<<endl;
+#endif
     // QR decomposition to determine row rank in Aequ
     slice(Aeq,data.unknown,2,data.Aequ);
     assert(data.Aequ.rows() == neq);

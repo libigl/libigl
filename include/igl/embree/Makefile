@@ -5,8 +5,8 @@ all: libiglembree
 debug: libiglembree
 
 include ../../../Makefile.conf
-all: CFLAGS += -O3 -DNDEBUG
-debug: CFLAGS += -g -Wall 
+all: CFLAGS += -O3 -DNDEBUG -std=c++11
+debug: CFLAGS += -g -Wall -std=c++11
 
 .PHONY: libiglembree
 libiglembree: obj ../../../lib/libiglembree.a

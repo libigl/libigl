@@ -4,15 +4,26 @@ CXX=g++
 
 LIBIGL=../../
 LIBIGL_INC=-I${LIBIGL}/include
-LIBIGL_LIB=-L${LIBIGL}/lib -ligl
+LIBIGL_LIB=-L${LIBIGL}/lib -ligl -liglmosek -liglbbw
 
+ifdef IGL_NO_MOSEK
+CFLAGS+=-DIGL_NO_MOSEK
+else
 # Adjust your mosek paths etc. accordingly
 ifndef MOSEKPLATFORM
   MOSEKPLATFORM=osx64x86
 endif
+ifndef MOSEKVERSION
+  MOSEKVERSION=6
+endif
+IGLMOSEK=../mosek/
+IGLMOSEK_INC=-I$(IGLMOSEK)/
+INC+=${IGLMOSEK_INC}
 MOSEK=/usr/local/mosek
-MOSEK_INC=-I$(MOSEK)/6/tools/platform/$(MOSEKPLATFORM)/h
-MOSEK_LIB=-L$(MOSEK)/6/tools/platform/$(MOSEKPLATFORM)/bin -lmosek64 -liglmosek
+MOSEK_INC=-I$(MOSEK)/$(MOSEKVERSION)/tools/platform/$(MOSEKPLATFORM)/h
+MOSEK_LIB=-L$(MOSEK)/$(MOSEKVERSION)/tools/platform/$(MOSEKPLATFORM)/bin -lmosek64
+INC+=$(MOSEK_INC)
+endif
 
 EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
 
