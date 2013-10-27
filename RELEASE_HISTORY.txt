@@ -1,3 +1,6 @@
+0.3.6  boost extra, patches, mosek 7 support, libiglbbw (mosek optional)
+0.3.5  More examples, naive primitive sorting
+0.3.3  Many more examples, ambient occlusion with Embree.
 0.3.1  Linearly dependent constraints in min_quad_with_fixed, SparseQR buggy
 0.3.0  Better active set method support
 0.2.3  More explicits, active set method, opengl/anttweakbar guards

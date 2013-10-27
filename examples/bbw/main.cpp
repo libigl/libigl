@@ -8,7 +8,7 @@
 #include <igl/readTGF.h>
 #include <igl/launch_medit.h>
 #include <igl/boundary_conditions.h>
-#include <igl/mosek/bbw.h>
+#include <igl/bbw/bbw.h>
 #include <igl/writeDMAT.h>
 #include <igl/writeMESH.h>
 #include <igl/normalize_row_sums.h>
@@ -188,10 +188,16 @@ int main(int argc, char * argv[])
   using namespace std;
   using namespace Eigen;
   using namespace igl;
+  string mesh_filename = "examples/brick.obj";
+  string skeleton_filename = "examples/brick.tgf";
   if(argc<3)
   {
     cerr<<USAGE<<endl;
-    return 1;
+    cout<<endl<<"Using defaults..."<<endl;
+  }else
+  {
+    mesh_filename = argv[1];
+    skeleton_filename = argv[2];
   }
 
   // #V by 3 list of mesh vertex positions
@@ -199,7 +205,7 @@ int main(int argc, char * argv[])
   // #F by 3 list of triangle indices
   MatrixXi F;
   // load mesh from .obj, .off or .mesh
-  if(!load_mesh_from_file(argv[1],V,F))
+  if(!load_mesh_from_file(mesh_filename,V,F))
   {
     return 1;
   }
@@ -213,7 +219,7 @@ int main(int argc, char * argv[])
   // List of cage edges indexing *P*
   MatrixXi CE;
   // load skeleton (.tgf or .bf)
-  if(!load_skeleton_from_file(argv[2],C,P,BE,CE))
+  if(!load_skeleton_from_file(skeleton_filename,C,P,BE,CE))
   {
     return 1;
   }
@@ -250,6 +256,8 @@ int main(int argc, char * argv[])
   // compute BBW 
   // Default bbw data and flags
   BBWData bbw_data;
+  bbw_data.qp_solver = QP_SOLVER_IGL_ACTIVE_SET;
+  //bbw_data.qp_solver = QP_SOLVER_MOSEK;
   // Weights matrix
   MatrixXd W;
   if(!bbw(VV,TT,b,bc,bbw_data,W))
@@ -259,6 +267,6 @@ int main(int argc, char * argv[])
   // Normalize weights to sum to one
   normalize_row_sums(W,W);
   // Save output
-  save_output(argv[1],argv[2],V,F,VV,TT,FF,W);
+  save_output(mesh_filename,skeleton_filename,V,F,VV,TT,FF,W);
   return 0;
 }

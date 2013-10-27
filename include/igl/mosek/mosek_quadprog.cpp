@@ -28,7 +28,15 @@ igl::MosekData::MosekData()
   douparam[MSK_DPAR_INTPNT_TOL_REL_GAP]=1e-8;
   // Force using multiple threads, not sure if MOSEK is properly destorying
   //extra threads...
+#if MSK_VERSION_MAJOR >= 7
+  intparam[MSK_IPAR_NUM_THREADS] = 6;
+#elif MSK_VERSION_MAJOR == 6
   intparam[MSK_IPAR_INTPNT_NUM_THREADS] = 6;
+#endif
+#if MSK_VERSION_MAJOR == 6
+  // Force turn off data check
+  intparam[MSK_IPAR_DATA_CHECK]=MSK_OFF;
+#endif
   // Turn off presolving
   // intparam[MSK_IPAR_PRESOLVE_USE] = MSK_PRESOLVE_MODE_OFF;
   // Force particular matrix reordering method
@@ -46,8 +54,6 @@ igl::MosekData::MosekData()
   douparam[MSK_DPAR_INTPNT_TOL_PSAFE]= 1e2;
   // Turn off convexity check
   intparam[MSK_IPAR_CHECK_CONVEXITY] = MSK_CHECK_CONVEXITY_NONE;
-  // Force turn off data check
-  intparam[MSK_IPAR_DATA_CHECK]=MSK_OFF;
 }
 
 template <typename Index, typename Scalar>
@@ -90,7 +96,11 @@ IGL_INLINE bool igl::mosek_quadprog(
   MSKtask_t task;
 
   // Create the MOSEK environment
+#if MSK_VERSION_MAJOR >= 7
+  mosek_guarded(MSK_makeenv(&env,NULL));
+#elif MSK_VERSION_MAJOR == 6
   mosek_guarded(MSK_makeenv(&env,NULL,NULL,NULL,NULL));
+#endif
   ///* Directs the log stream to the 'printstr' function. */
   //mosek_guarded(MSK_linkfunctoenvstream(env,MSK_STREAM_LOG,NULL,printstr));
   // initialize mosek environment
@@ -115,10 +125,18 @@ IGL_INLINE bool igl::mosek_quadprog(
   {
     // Append 'm' empty constraints, the constrainst will initially have no
     // bounds
+#if MSK_VERSION_MAJOR >= 7
+    mosek_guarded(MSK_appendcons(task,m));
+#elif MSK_VERSION_MAJOR == 6
     mosek_guarded(MSK_append(task,MSK_ACC_CON,m));
+#endif
   }
   // Append 'n' variables
+#if MSK_VERSION_MAJOR >= 7
+  mosek_guarded(MSK_appendvars(task,n));
+#elif MSK_VERSION_MAJOR == 6
   mosek_guarded(MSK_append(task,MSK_ACC_VAR,n));
+#endif
   // add a contant term to the objective
   mosek_guarded(MSK_putcfix(task,cf));
 
@@ -143,6 +161,16 @@ IGL_INLINE bool igl::mosek_quadprog(
     if(m>0)
     {
       // Input column j of A
+#if MSK_VERSION_MAJOR >= 7
+      mosek_guarded(
+        MSK_putacol(
+          task,
+          j,
+          Acp[j+1]-Acp[j],
+          &Ari[Acp[j]],
+          &Av[Acp[j]])
+        );
+#elif MSK_VERSION_MAJOR == 6
       mosek_guarded(
         MSK_putavec(
           task,
@@ -152,6 +180,7 @@ IGL_INLINE bool igl::mosek_quadprog(
           &Ari[Acp[j]],
           &Av[Acp[j]])
         );
+#endif
     }
   }
 
@@ -192,7 +221,11 @@ IGL_INLINE bool igl::mosek_quadprog(
 
   // Get status of solution
   MSKsolstae solsta;
+#if MSK_VERSION_MAJOR >= 7
+  MSK_getsolsta (task,MSK_SOL_ITR,&solsta);
+#elif MSK_VERSION_MAJOR == 6
   MSK_getsolutionstatus(task,MSK_SOL_ITR,NULL,&solsta);
+#endif
 
   bool success = false;
   switch(solsta)

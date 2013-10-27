@@ -4,6 +4,7 @@
 #include "../doublearea.h"
 #include "../matlab_format.h"
 #include "ambient_occlusion.h"
+#include "EmbreeIntersector.h"
 #include <iostream>
 #include <random>
 
@@ -47,7 +48,7 @@ IGL_INLINE void igl::orient_outward_ao(
   double minarea = A.minCoeff();
   mt19937 engine;
   engine.seed(time(0));
-  Matrix<int, Dynamic, 1> A_int = (A * 100.0 / minarea).cast<int>();
+  Matrix<int, Dynamic, 1> A_int = (A * 100.0 / minarea).template cast<int>();
   auto ddist_func = [&] (double i) { return A_int(static_cast<int>(i)); };
   discrete_distribution<int> ddist(m, 0, m, ddist_func);      // simple ctor of (Iter, Iter) not provided by the stupid VC11 impl...
   uniform_real_distribution<double> rdist;
@@ -116,3 +117,8 @@ IGL_INLINE void igl::orient_outward_ao(
     Matrix<typename DerivedV::Scalar,3,1> > ei(V,F);
   return orient_outward_ao(V, F, C, ei, num_samples, FF, I);
 }
+
+#ifndef IGL_HEADER_ONLY
+// Explicit template specialization
+template void igl::orient_outward_ao<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+#endif

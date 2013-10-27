@@ -22,6 +22,7 @@ Eigen3  Last tested with Eigen Version 3.2
   libpng  libiglpng extra only
   Mosek  libiglmosek extra only
   Matlab  libiglmatlab extra only
+  boost  libboost extra only
 
   = Optional (included in external/ =
   TetGen  libigltetgen extra only
