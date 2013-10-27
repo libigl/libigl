@@ -41,9 +41,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\kenshi\dev\igl_hg\ext_toolboxes\embree-1.1beta\common;$(IncludePath)</IncludePath>
+    <OutDir>$(ProjectDir)\</OutDir>
+    <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Users\kenshi\dev\igl_hg\ext_toolboxes\embree-1.1beta\common;$(IncludePath)</IncludePath>
+    <OutDir>$(ProjectDir)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -80,19 +85,37 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\include\igl\orient_outward.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\include\igl\orient_outward_ao.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\filename.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\library.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\platform.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\stl\string.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\sync\condition.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\sync\mutex.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\sysinfo.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\taskscheduler_standard.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\thread.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh2\bvh2.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh2\bvh2_builder.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh2\bvh2_intersector.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4mb\bvh4mb.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4mb\bvh4mb_builder.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4mb\bvh4mb_intersector.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4\bvh4.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4\bvh4_builder.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4\bvh4_intersector.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\accel.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\alloc.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\heuristic_binning.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\heuristic_spatial.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\primrefgen.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\splitter.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\splitter_fallback.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\splitter_parallel.cpp" />
+    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\stat.cpp" />
     <ClCompile Include="example.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\igl\orient_outward.h" />
-    <ClInclude Include="..\..\include\igl\orient_outward_ao.h" />
+    <ClInclude Include="..\..\include\igl\embree\orient_outward_ao.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

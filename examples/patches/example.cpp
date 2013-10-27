@@ -28,7 +28,7 @@
 #include <igl/boost/components.h>
 #include <igl/boost/bfs_orient.h>
 #include <igl/orient_outward.h>
-#include <igl/orient_outward_ao.h>
+#include <igl/embree/orient_outward_ao.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -316,7 +316,7 @@ void display()
   glTranslated(0,floor_offset,0);
   const float GREY[4] = {0.5,0.5,0.6,1.0};
   const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
-  draw_floor(GREY,DARK_GREY);
+  //draw_floor(GREY,DARK_GREY);
   glPopMatrix();
 
   pop_scene();
@@ -538,7 +538,17 @@ void init_patches()
   }
   bfs_orient(F,F,CC);
   VectorXi I;
-  orient_outward(V,F,CC,F,I);
+  char c;
+  cout << "use ambient occlusion to determine patch orientation? (y/n):";
+  cin >> c;
+  if (c == 'y')
+  {
+    orient_outward_ao(V,F,CC,F.rows() * 100,F,I);
+  }
+  else
+  {
+    orient_outward(V,F,CC,F,I);
+  }
   double num_cc = (double)CC.maxCoeff()+1.0;
   cout<<"There are "<<num_cc<<" 'manifold/orientable' patches of faces."<<endl;
   randomly_color(CC,s.C);
@@ -726,7 +736,7 @@ int main(int argc, char * argv[])
   animation_start_time = get_seconds();
 
   // Init antweakbar
-  glutInitDisplayString( "rgba depth double samples>=8 ");
+  glutInitDisplayString( "rgba depth double ");   // samples>=8 somehow not supported on Kenshi's machines...?
   glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH)/2.0,glutGet(GLUT_SCREEN_HEIGHT)/2.0);
   glutCreateWindow("patches");
   glutDisplayFunc(display);
