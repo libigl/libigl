@@ -1,3 +1,4 @@
+#if false
 #ifndef IGL_ORIENT_OUTWARD_AO_H
 #define IGL_ORIENT_OUTWARD_AO_H
 #include "igl_inline.h"
@@ -43,4 +44,5 @@ namespace igl
 #  include "orient_outward_ao.cpp"
 #endif
 
+#endif
 #endif
