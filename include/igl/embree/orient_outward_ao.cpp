@@ -1,9 +1,9 @@
 #include "orient_outward_ao.h"
-#include "per_face_normals.h"
-#include "barycenter.h"
-#include "doublearea.h"
-#include "matlab_format.h"
-#include "embree/ambient_occlusion.h"
+#include "../per_face_normals.h"
+#include "../barycenter.h"
+#include "../doublearea.h"
+#include "../matlab_format.h"
+#include "ambient_occlusion.h"
 #include <iostream>
 #include <random>
 
@@ -11,6 +11,9 @@ template <
   typename DerivedV, 
   typename DerivedF, 
   typename DerivedC, 
+  typename PointMatrixType,
+  typename FaceMatrixType,
+  typename RowVector3,
   typename DerivedFF, 
   typename DerivedI>
 IGL_INLINE void igl::orient_outward_ao(
@@ -44,16 +47,16 @@ IGL_INLINE void igl::orient_outward_ao(
   double minarea = A.minCoeff();
   mt19937 engine;
   engine.seed(time(0));
-  vector<int> ddist_probability(m);
-  for (int f = 0; f < m; ++f)
-      ddist_probability[f] = static_cast<int>(A(f) * 100. / minarea);
-  discrete_distribution<int> ddist(dist_probability.begin(), dist_probability.end());
+  Matrix<int, Dynamic, 1> A_int = (A * 100.0 / minarea).cast<int>();
+  auto ddist_func = [&] (double i) { return A_int(static_cast<int>(i)); };
+  discrete_distribution<int> ddist(m, 0, m, ddist_func);      // simple ctor of (Iter, Iter) not provided by the stupid VC11 impl...
   uniform_real_distribution<double> rdist;
-  VectorXi face_occluded_front(m, 0);
-  VectorXi face_occluded_back (m, 0);
-#pragma omp parallel for
-  for (int i = 0; i < num_samples; ++i) {
-    int f = dist(engine);   // select face with probability proportional to face area
+  Matrix<int, Dynamic, 1> C_occlude_count;        // +1 when front ray is occluded, -1 when back ray is occluded
+  C_occlude_count.setZero(m, 1);
+//#pragma omp parallel for
+  for (int i = 0; i < num_samples; ++i)
+  {
+    int f = ddist(engine);   // select face with probability proportional to face area
     double t0 = rdist(engine);
     double t1 = rdist(engine);
     double t2 = rdist(engine);
@@ -65,18 +68,20 @@ IGL_INLINE void igl::orient_outward_ao(
     RowVector3d n = N.row(f);
     bool is_backside = rdist(engine) < 0.5;
     if (is_backside)
+    {
         n *= -1;
+    }
     Matrix<typename DerivedV::Scalar,Dynamic,1> S;
     ambient_occlusion(ei, p, n, 1, S);
-  
+    if (S(0) > 0)
+    {
+      C_occlude_count(C(f)) += is_backside ? -1 : 1;
+    }
+
   }
-  // take area weighted average
   for(int c = 0;c<num_cc;c++)
   {
-    //dot(c) /= (typename DerivedV::Scalar) totA(c);
-    //if(dot(c) < 0)
-    bool b = true;
-    I(c) = b;
+    I(c) = C_occlude_count(c) > 0;
   }
   // flip according to I
   for(int f = 0;f<m;f++)
@@ -88,8 +93,26 @@ IGL_INLINE void igl::orient_outward_ao(
   }
 }
 
-#ifndef IGL_HEADER_ONLY
-// Explicit template specialization
-template void igl::orient_outward_ao<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-#endif
-
+// EmbreeIntersector generated on the fly
+template <
+  typename DerivedV, 
+  typename DerivedF, 
+  typename DerivedC, 
+  typename DerivedFF, 
+  typename DerivedI>
+IGL_INLINE void igl::orient_outward_ao(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::PlainObjectBase<DerivedC> & C,
+  const int num_samples,
+  Eigen::PlainObjectBase<DerivedFF> & FF,
+  Eigen::PlainObjectBase<DerivedI> & I)
+{
+  using namespace igl;
+  using namespace Eigen;
+  EmbreeIntersector<
+    PlainObjectBase<DerivedV>,
+    PlainObjectBase<DerivedF>,
+    Matrix<typename DerivedV::Scalar,3,1> > ei(V,F);
+  return orient_outward_ao(V, F, C, ei, num_samples, FF, I);
+}

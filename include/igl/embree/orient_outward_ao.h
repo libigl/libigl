@@ -1,6 +1,6 @@
 #ifndef IGL_ORIENT_OUTWARD_AO_H
 #define IGL_ORIENT_OUTWARD_AO_H
-#include "igl_inline.h"
+#include "../igl_inline.h"
 #include <Eigen/Core>
 namespace igl
 {
@@ -10,8 +10,8 @@ namespace igl
     typename FaceMatrixType,
     typename RowVector3>
   class EmbreeIntersector;
-  // Orient each component (identified by C) of a mesh (V,F) so the normals on
-  // average point away from the patch's centroid.
+  // Orient each component (identified by C) of a mesh (V,F) using ambient occlusion 
+  // such that the front side is less occluded than back side
   //
   // Inputs:
   //   V            #V by 3 list of vertex positions
@@ -27,6 +27,9 @@ namespace igl
     typename DerivedV, 
     typename DerivedF, 
     typename DerivedC, 
+    typename PointMatrixType,
+    typename FaceMatrixType,
+    typename RowVector3,
     typename DerivedFF, 
     typename DerivedI>
   IGL_INLINE void orient_outward_ao(
@@ -34,6 +37,21 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedF> & F,
     const Eigen::PlainObjectBase<DerivedC> & C,
     const igl::EmbreeIntersector<PointMatrixType,FaceMatrixType,RowVector3> & ei,
+    const int num_samples,
+    Eigen::PlainObjectBase<DerivedFF> & FF,
+    Eigen::PlainObjectBase<DerivedI> & I);
+  
+  // EmbreeIntersector generated on the fly
+  template <
+    typename DerivedV, 
+    typename DerivedF, 
+    typename DerivedC, 
+    typename DerivedFF, 
+    typename DerivedI>
+  IGL_INLINE void orient_outward_ao(
+    const Eigen::PlainObjectBase<DerivedV> & V,
+    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::PlainObjectBase<DerivedC> & C,
     const int num_samples,
     Eigen::PlainObjectBase<DerivedFF> & FF,
     Eigen::PlainObjectBase<DerivedI> & I);
