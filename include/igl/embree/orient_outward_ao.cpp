@@ -66,9 +66,11 @@ IGL_INLINE void igl::orient_outward_ao(
   // uniform real between in [0, 1]
   vector<uniform_real_distribution<double>> rdist(max_threads);
   
-  // occlusion count per component: +1 when front ray is occluded, -1 when back ray is occluded
-  Matrix<int, Dynamic, 1> C_occlude_count;
-  C_occlude_count.setZero(m, 1);
+  //// occlusion count per component: +1 when front ray is occluded, -1 when back ray is occluded
+  // occlussion count per component, per back/front: C(c,0) --> number of
+  // front-side rays occluded, C(c,1) --> number of back-side rays occluded
+  Matrix<int, Dynamic, 2> C_occlude_count;
+  C_occlude_count.setZero(num_cc, 2);
   
 #pragma omp parallel for
   for (int i = 0; i < num_samples; ++i)
@@ -84,24 +86,29 @@ IGL_INLINE void igl::orient_outward_ao(
     t2 /= t_sum;
     RowVector3d p = t0 * V.row(F(f,0)) + t1 * V.row(F(f,1)) + t1 * V.row(F(f,2));
     RowVector3d n = N.row(f);
-    bool is_backside = rdist[thread_num](engine[thread_num]) < 0.5;
-    if (is_backside)
+    //bool is_backside = rdist[thread_num](engine[thread_num]) < 0.5;
+    // Loop over front or back side
+    for(int s = 0;s<2;s++)
     {
-        n *= -1;
-    }
-    Matrix<typename DerivedV::Scalar,Dynamic,1> S;
-    ambient_occlusion(ei, p, n, 1, S);
-    if (S(0) > 0)
-    {
+      if(s==1)
+      {
+          n *= -1;
+      }
+      Matrix<typename DerivedV::Scalar,Dynamic,1> S;
+      ambient_occlusion(ei, p, n, 1, S);
+      if (S(0) > 0)
+      {
 #pragma omp atomic
-        C_occlude_count(C(f)) += is_backside ? -1 : 1;
+        C_occlude_count(C(f),s)++;
+      }
     }
 
   }
   
   for(int c = 0;c<num_cc;c++)
   {
-    I(c) = C_occlude_count(c) > 0;
+    //I(c) = C_occlude_count(c) > 0;
+    I(c) = C_occlude_count(c,0) > C_occlude_count(c,1);
   }
   // flip according to I
   for(int f = 0;f<m;f++)
@@ -130,10 +137,14 @@ IGL_INLINE void igl::orient_outward_ao(
 {
   using namespace igl;
   using namespace Eigen;
+  // Both sides
+  MatrixXi F2;
+  F2.resize(F.rows()*2,F.cols());
+  F2 << F, F.rowwise().reverse().eval();
   EmbreeIntersector<
     PlainObjectBase<DerivedV>,
     PlainObjectBase<DerivedF>,
-    Matrix<typename DerivedV::Scalar,3,1> > ei(V,F);
+    Matrix<typename DerivedV::Scalar,3,1> > ei(V,F2);
   return orient_outward_ao(V, F, C, ei, num_samples, FF, I);
 }
 
