@@ -1,5 +1,5 @@
 ## ======================================================================== ##
-## Copyright 2009-2012 Intel Corporation                                    ##
+## Copyright 2009-2013 Intel Corporation                                    ##
 ##                                                                          ##
 ## Licensed under the Apache License, Version 2.0 (the "License");          ##
 ## you may not use this file except in compliance with the License.         ##
@@ -16,78 +16,85 @@
 
 PROJECT(embree)
 
-##############################################################
-# Configuration
-##############################################################
-
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 IF(COMMAND cmake_policy)
   CMAKE_POLICY(SET CMP0003 NEW)
 ENDIF(COMMAND cmake_policy)
 
-IF(NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release." FORCE)
-ENDIF(NOT CMAKE_BUILD_TYPE)
-
-SET(USE_INTEL_COMPILER 0 CACHE BOOL "Set to 1 to use the Intel Compiler")
-SET(SSE_VERSION "SSE4.2" CACHE INT "SSE version to use (SSSE3,SSE4.1,SSE4.2,AVX)")
-SET(CMAKE_VERBOSE_MAKEFILE false)
+MARK_AS_ADVANCED(CMAKE_BACKWARDS_COMPATIBILITY)
+MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)
+MARK_AS_ADVANCED(EXECUTABLE_OUTPUT_PATH)
+MARK_AS_ADVANCED(LIBRARY_OUTPUT_PATH)
+MARK_AS_ADVANCED(USE_STAT_COUNTERS)
+MARK_AS_ADVANCED(CLEAR CMAKE_VERBOSE_MAKEFILE)
 
 ##############################################################
-# Compiler
+# configuration
 ##############################################################
 
-IF (USE_INTEL_COMPILER)
+MACRO( CONFIGURE_CPU )
+  IF (${TARGET_CPU} STREQUAL "xeon")
+    SET(__XEON__ ON)
+    SET(__XEON_PHI__ OFF)
+    SET(EXT "")
+  ELSEIF (${TARGET_CPU} STREQUAL "xeon_phi")
+    INCLUDE (build_icc_mic)
+    SET(__XEON__ OFF)
+    SET(__XEON_PHI__ ON)
+    SET(EXT "_knc")
+  ELSE ()
+    MESSAGE(FATAL_ERROR "Unknown CPU type: " ${TARGET_CPU})
+  ENDIF ()
+ENDMACRO( CONFIGURE_CPU )
 
-  IF(SSE_VERSION STREQUAL "SSSE3")
-    SET(SSE_FLAGS "-xssse3")
-  ELSEIF(SSE_VERSION STREQUAL "SSE4.1")
-    SET(SSE_FLAGS "-xsse4.1")
-  ELSEIF(SSE_VERSION STREQUAL "SSE4.2")
-    SET(SSE_FLAGS "-xsse4.2")
-  ELSEIF(SSE_VERSION STREQUAL "AVX")
-    SET(SSE_FLAGS "-xAVX")
-  ELSE()
-    MESSAGE(FATAL_ERROR "SSE Version ${SSE_VERSION} not supported use SSSE3, SSE4.1, SSE4.2 or AVX" )
-  ENDIF()
-  
-  SET(CMAKE_CXX_COMPILER "icpc")
-  SET(CMAKE_C_COMPILER "icc")
-  SET(CMAKE_CXX_FLAGS "-Wall -fp-model fast -fvisibility-inlines-hidden -fvisibility=hidden ${SSE_FLAGS}")
-  SET(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -g -O0")
-  SET(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -g -O2")
-  SET(CMAKE_EXE_LINKER_FLAGS "") 
-
-ELSE(USE_INTEL_COMPILER)
-
-  IF(SSE_VERSION STREQUAL "SSSE3")
-    SET(SSE_FLAGS "-mssse3")
-  ELSEIF(SSE_VERSION STREQUAL "SSE4.1")
-    SET(SSE_FLAGS "-msse4.1")
-  ELSEIF(SSE_VERSION STREQUAL "SSE4.2")
-    SET(SSE_FLAGS "-msse4.2")
-  ELSEIF(SSE_VERSION STREQUAL "AVX")
-    SET(SSE_FLAGS "-mavx")
-  ELSE()
-    MESSAGE(FATAL_ERROR "SSE Version ${SSE_VERSION} not supported use SSSE3, SSE4.1, SSE4.2 or AVX" )
-  ENDIF()
-
-  SET(CMAKE_CXX_COMPILER "g++")
-  SET(CMAKE_C_COMPILER "gcc")
-  SET(CMAKE_CXX_FLAGS "-Wall -ffast-math -fvisibility-inlines-hidden -fvisibility=hidden ${SSE_FLAGS}")
-  SET(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -g -O0 -ftree-ter")
-  SET(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -g -O2")
-  SET(CMAKE_EXE_LINKER_FLAGS "")
-
-ENDIF(USE_INTEL_COMPILER)
+MACRO( CONFIGURE_SPMD )
+  IF (${TARGET_SPMD} STREQUAL "sse")
+    SET(__XEON__ ON)
+    SET(__XEON_PHI__ OFF)
+    SET (EXT "_sse")
+  ELSEIF (${TARGET_SPMD} STREQUAL "avx")
+    SET(__XEON__ ON)
+    SET(__XEON_PHI__ OFF)
+    SET (EXT "_avx")
+  ELSEIF (${TARGET_SPMD} STREQUAL "knc")
+    SET(__XEON__ OFF)
+    SET(__XEON_PHI__ ON)
+    SET (EXT "_knc")
+  ELSE ()
+    MESSAGE(FATAL_ERROR "Unknown SPMD target: " ${TARGET_SPMD})
+  ENDIF ()
+ENDMACRO( CONFIGURE_SPMD )
 
 ##############################################################
 # search paths
 ##############################################################
 
 LINK_DIRECTORIES(${EXECUTABLE_OUTPUT_PATH})
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/common)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${PROJECT_SOURCE_DIR}/embree) 
+SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+
+##############################################################
+# Compiler
+##############################################################
+
+IF(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
+ENDIF(NOT CMAKE_BUILD_TYPE)
+
+SET(CMAKE_VERBOSE_MAKEFILE false CACHE BOOL "Enables verbose mode.")
+
+SET(COMPILER "GCC" CACHE STRING "Set to GCC, CLANG, ICC, or ICC-MIC")
+
+IF (COMPILER STREQUAL "GCC") 
+  INCLUDE (build_gcc)
+ELSEIF (COMPILER STREQUAL "CLANG") 
+  INCLUDE (build_clang)
+ELSEIF (COMPILER STREQUAL "ICC") 
+  INCLUDE (build_icc)
+ELSE ()
+  MESSAGE(FATAL_ERROR "Unknown compiler specified: " ${COMPILER})
+ENDIF ()
 
 ##############################################################
 # output paths
@@ -101,7 +108,28 @@ SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 # directories to compile
 ##############################################################
 
-ADD_SUBDIRECTORY(common)
-ADD_SUBDIRECTORY(rtcore)
-ADD_SUBDIRECTORY(renderer)
-ADD_SUBDIRECTORY(viewer)
+SET(TARGET_CPU "xeon")
+ADD_SUBDIRECTORY(embree)
+ADD_SUBDIRECTORY(examples)
+
+IF (BUILD_SINGLERAY_DEVICE_KNC OR BUILD_ISPC_DEVICE_KNC)
+  SET(TARGET_CPU "xeon_phi")
+  ADD_SUBDIRECTORY(embree embree_knc)
+ENDIF ()
+
+IF (BUILD_ISPC_DEVICE_SSE OR BUILD_TUTORIALS_SSE)
+  SET(TARGET_SPMD "sse")
+  ADD_SUBDIRECTORY(embree_ispc embree_ispc_sse)
+ENDIF ()
+
+IF (BUILD_ISPC_DEVICE_AVX OR BUILD_TUTORIALS_AVX)
+  SET(TARGET_SPMD "avx")
+  ADD_SUBDIRECTORY(embree_ispc embree_ispc_avx)
+ENDIF ()
+
+IF (BUILD_ISPC_DEVICE_KNC)
+  SET(TARGET_SPMD "knc")
+  ADD_SUBDIRECTORY(embree_ispc embree_ispc_knc)
+ENDIF ()
+
+FILE(WRITE "${CMAKE_BINARY_DIR}/CMakeDefines.h" "#define CMAKE_BUILD_DIR \"${CMAKE_BINARY_DIR}\"\n")

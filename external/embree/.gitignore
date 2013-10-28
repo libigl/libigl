@@ -1,3 +1,5 @@
 .svn
 *~
-.*.swp
+*.orig
+*.swp
+/bin

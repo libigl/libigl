@@ -1,14 +1,14 @@
 10
 
 dir
-12
-https://github.com/embree/embree.git/branches/v1.1
+51
+https://github.com/embree/embree.git/branches/v2.0
 https://github.com/embree/embree.git
 
 
 
-2013-03-15T06:27:48.000000Z
-12
+2013-10-23T11:55:36.000000Z
+47
 sven.woop
 
 
@@ -26,13 +26,13 @@ sven.woop
 
 805a0351-d790-0c91-761a-ce57b7db7bff
 
-viewer
+embree
+dir
+
+cmake
 dir
 
 models
-dir
-
-doc
 dir
 
 .gitignore
@@ -41,10 +41,10 @@ file
 
 
 
-2013-05-15T10:26:24.000000Z
-e84e21d014fce18de0cd86879a1ecd7d
-2013-03-15T06:27:48.000000Z
-2
+2013-10-28T17:22:19.000000Z
+77c4a1b71319ae20a8fbd8cf1f5f1c3e
+2013-10-23T11:55:36.000000Z
+17
 sven.woop
 
 
@@ -67,47 +67,7 @@ sven.woop
 
 
 
-15
-
-embree_vs2010.sln
-file
-
-
-
-
-2013-05-15T10:26:24.000000Z
-7919d58e6f9273bc4fc962a2effdb505
-2013-03-15T06:27:48.000000Z
-2
-sven.woop
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-3612
-
-renderer
-dir
-
-common
-dir
+26
 
 .gitattributes
 file
@@ -115,10 +75,10 @@ file
 
 
 
-2013-05-15T10:26:24.000000Z
-a8937bdecc02077c3f2ba6bf737bae0e
-2013-03-15T06:27:48.000000Z
-2
+2013-10-28T17:22:19.000000Z
+c01db3aa32759c667480cf6a01b3052c
+2013-10-23T11:55:36.000000Z
+17
 sven.woop
 
 
@@ -141,18 +101,18 @@ sven.woop
 
 
 
-189
+206
 
-Doxygen.txt
+embree_ispc.sln
 file
 
 
 
 
-2013-05-15T10:26:24.000000Z
-df0ab3f5051adc19927e91da4487e891
-2013-03-15T06:27:48.000000Z
-2
+2013-10-28T17:22:19.000000Z
+74644da1a57aa310bc1dce134a0e3c64
+2013-10-23T11:55:36.000000Z
+17
 sven.woop
 
 
@@ -175,7 +135,41 @@ sven.woop
 
 
 
-70685
+18833
+
+embree.sln
+file
+
+
+
+
+2013-10-28T17:22:19.000000Z
+30d0593209ab2bb2e7959c67c46518d1
+2013-10-23T11:55:36.000000Z
+17
+sven.woop
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+11155
 
 README.txt
 file
@@ -183,11 +177,12 @@ file
 
 
 
-2013-05-15T10:26:24.000000Z
-5ff9a7f994ece83aaf5e121df7e03c1f
-2013-03-15T06:27:48.000000Z
-2
+2013-10-28T17:22:19.000000Z
+c667ca41bac95b44275de429953e833e
+2013-10-23T11:55:36.000000Z
+17
 sven.woop
+has-props
 
 
 
@@ -208,42 +203,10 @@ sven.woop
 
 
 
-
-9990
+11165
 
-embree_vs2008.sln
-file
-
-
-
-
-2013-05-15T10:26:24.000000Z
-5b236a15b3315975d887fd289f34f64e
-2013-03-15T06:27:48.000000Z
-2
-sven.woop
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-4167
+embree_ispc
+dir
 
 CMakeLists.txt
 file
@@ -251,11 +214,12 @@ file
 
 
 
-2013-05-15T10:26:24.000000Z
-8e190b524918d049b9a4aad08525cb01
-2013-03-15T06:27:48.000000Z
-2
+2013-10-28T17:22:19.000000Z
+c1c26699c4a5b7273d8f50164541c5d1
+2013-10-23T11:55:36.000000Z
+33
 sven.woop
+has-props
 
 
 
@@ -276,9 +240,8 @@ sven.woop
 
 
 
-
-4258
+4784
 
-rtcore
+examples
 dir
 

@@ -1,0 +1,3 @@
+-i sphere_mirror.xml
+-c sphere_view.ecs
+-renderer pathtracer

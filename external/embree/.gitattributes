@@ -2,6 +2,7 @@
 
 *.txt       text
 *.ivl       text
+*.ispc      text
 *.cpp       text
 *.h         text
 *.cc        text
