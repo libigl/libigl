@@ -29,6 +29,7 @@
 #include <igl/boost/bfs_orient.h>
 #include <igl/orient_outward.h>
 #include <igl/embree/orient_outward_ao.h>
+#include <igl/unique_simplices.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -697,6 +698,9 @@ int main(int argc, char * argv[])
     }
     triangulate(vF,F);
   }
+  MatrixXi F_unique;
+  unique_simplices(F, F_unique);
+  F = F_unique;
 
   init_patches();
 
