@@ -7,6 +7,7 @@
 #include "EmbreeIntersector.h"
 #include <iostream>
 #include <random>
+#include <omp.h>
 
 template <
   typename DerivedV, 
@@ -31,7 +32,7 @@ IGL_INLINE void igl::orient_outward_ao(
   assert(C.rows() == F.rows());
   assert(F.cols() == 3);
   assert(V.cols() == 3);
-
+  
   // number of faces
   const int m = F.rows();
   // number of patches
@@ -41,33 +42,46 @@ IGL_INLINE void igl::orient_outward_ao(
   {
     FF = F;
   }
+  
+  // face normal
   PlainObjectBase<DerivedV> N;
-  Matrix<typename DerivedV::Scalar,Dynamic,1> A;
   per_face_normals(V,F,N);
+  
+  // discrete distribution for random selection of faces with probability proportional to their areas
+  Matrix<typename DerivedV::Scalar,Dynamic,1> A;
   doublearea(V,F,A);
   double minarea = A.minCoeff();
-  mt19937 engine;
-  engine.seed(time(0));
-  Matrix<int, Dynamic, 1> A_int = (A * 100.0 / minarea).template cast<int>();
+  Matrix<int, Dynamic, 1> A_int = (A * 100.0 / minarea).template cast<int>();       // only integer is allowed for weight
   auto ddist_func = [&] (double i) { return A_int(static_cast<int>(i)); };
   discrete_distribution<int> ddist(m, 0, m, ddist_func);      // simple ctor of (Iter, Iter) not provided by the stupid VC11 impl...
+  
   uniform_real_distribution<double> rdist;
-  Matrix<int, Dynamic, 1> C_occlude_count;        // +1 when front ray is occluded, -1 when back ray is occluded
+  
+  // occlusion count per component: +1 when front ray is occluded, -1 when back ray is occluded
+  Matrix<int, Dynamic, 1> C_occlude_count;
   C_occlude_count.setZero(m, 1);
-//#pragma omp parallel for
+  
+  // prng for each omp thread
+  int max_threads = omp_get_max_threads();
+  vector<mt19937> engine(max_threads);
+  for (int i = 0; i < max_threads; ++i)
+      engine[i].seed(time(0) * (i + 1));
+  
+#pragma omp parallel for
   for (int i = 0; i < num_samples; ++i)
   {
-    int f = ddist(engine);   // select face with probability proportional to face area
-    double t0 = rdist(engine);
-    double t1 = rdist(engine);
-    double t2 = rdist(engine);
+    int thread_num = omp_get_thread_num();
+    int f     = ddist(engine[thread_num]);   // select face with probability proportional to face area
+    double t0 = rdist(engine[thread_num]);
+    double t1 = rdist(engine[thread_num]);
+    double t2 = rdist(engine[thread_num]);
     double t_sum = t0 + t1 + t2;
     t0 /= t_sum;
     t1 /= t_sum;
     t2 /= t_sum;
     RowVector3d p = t0 * V.row(F(f,0)) + t1 * V.row(F(f,1)) + t1 * V.row(F(f,2));
     RowVector3d n = N.row(f);
-    bool is_backside = rdist(engine) < 0.5;
+    bool is_backside = rdist(engine[thread_num]) < 0.5;
     if (is_backside)
     {
         n *= -1;
@@ -76,10 +90,12 @@ IGL_INLINE void igl::orient_outward_ao(
     ambient_occlusion(ei, p, n, 1, S);
     if (S(0) > 0)
     {
-      C_occlude_count(C(f)) += is_backside ? -1 : 1;
+#pragma omp atomic
+        C_occlude_count(C(f)) += is_backside ? -1 : 1;
     }
 
   }
+  
   for(int c = 0;c<num_cc;c++)
   {
     I(c) = C_occlude_count(c) > 0;
