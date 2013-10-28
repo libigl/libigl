@@ -16,8 +16,7 @@
 // This is a hack
 #  pragma GCC system_header
 #endif
-#include <common/intersector.h>
-#include <common/accel.h>
+#include <common/ray.h>
 #ifdef __GNUC__
 #  if __GNUC__ >= 4
 #    if __GNUC_MINOR__ >= 6

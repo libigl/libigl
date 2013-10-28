@@ -1,3 +1,4 @@
+#define IGL_HEADER_ONLY
 #include <igl/OpenGL_convenience.h>
 #include <igl/per_face_normals.h>
 #include <igl/read.h>
@@ -37,9 +38,9 @@ double bbd;
 // Faces
 Eigen::MatrixXi F;
 // Embree intersection structure
-igl::EmbreeIntersector<Eigen::MatrixXd,Eigen::MatrixXi,Eigen::Vector3d> ei;
+igl::EmbreeIntersector<double,int> ei;
 // Hits collected
-std::vector<embree::Hit > hits;
+std::vector<igl::Hit > hits;
 // Ray information, "projection screen" corners
 Eigen::Vector3d win_s,s,d,dir,NW,NE,SE,SW;
 // Textures and framebuffers for "projection screen"
@@ -213,7 +214,7 @@ void display()
   // Draw all hits
   glBegin(GL_POINTS);
   glColor3f(0,0.2,0.2);
-  for(vector<embree::Hit>::iterator hit = hits.begin();
+  for(vector<igl::Hit>::iterator hit = hits.begin();
       hit != hits.end();
       hit++)
   {
@@ -221,9 +222,9 @@ void display()
     const double w1 = hit->u;
     const double w2 = hit->v;
     VectorXd hitP = 
-      w0 * V.row(F(hit->id0,0)) + 
-      w1 * V.row(F(hit->id0,1)) + 
-      w2 * V.row(F(hit->id0,2));
+      w0 * V.row(F(hit->id,0)) + 
+      w1 * V.row(F(hit->id,1)) + 
+      w2 * V.row(F(hit->id,2));
     glVertex3dv(hitP.data());
   }
   glEnd();
@@ -327,14 +328,14 @@ void mouse_move(int mouse_x, int mouse_y)
   dir = d-s;
   int num_rays_shot;
   ei.intersectRay(s,dir,hits,num_rays_shot);
-  for(vector<embree::Hit>::iterator hit = hits.begin();
+  for(vector<igl::Hit>::iterator hit = hits.begin();
       hit != hits.end();
       hit++)
   {
     // Change color of hit faces
-    C(hit->id0,0) = 1;
-    C(hit->id0,1) = 0.4;
-    C(hit->id0,2) = 0.4;
+    C(hit->id,0) = 1;
+    C(hit->id,1) = 0.4;
+    C(hit->id,2) = 0.4;
   }
 }
 
@@ -463,7 +464,7 @@ int main(int argc, char * argv[])
     V.colwise().minCoeff()).maxCoeff();
 
   // Init embree
-  ei = EmbreeIntersector<MatrixXd,MatrixXi,Vector3d>(V,F);
+  ei = EmbreeIntersector<double,int>(V,F);
 
   // Init glut
   glutInit(&argc,argv);
