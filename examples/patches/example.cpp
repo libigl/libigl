@@ -544,7 +544,10 @@ void init_patches()
   cin >> c;
   if (c == 'y')
   {
-    orient_outward_ao(V,F,CC,F.rows() * 100,F,I);
+    cout << "min_num_rays_per_component=";
+    int min_num_rays_per_component;
+    cin >> min_num_rays_per_component;
+    orient_outward_ao(V,F,CC,min_num_rays_per_component,F.rows() * 100,F,I);
   }
   else
   {

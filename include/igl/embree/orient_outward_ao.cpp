@@ -1,28 +1,24 @@
 #include "orient_outward_ao.h"
 #include "../per_face_normals.h"
-#include "../barycenter.h"
 #include "../doublearea.h"
-#include "../matlab_format.h"
-#include "ambient_occlusion.h"
+#include "../random_dir.h"
 #include "EmbreeIntersector.h"
 #include <iostream>
 #include <random>
-#include <omp.h>
+#include <limits>
 
 template <
   typename DerivedV, 
   typename DerivedF, 
   typename DerivedC, 
-  typename Scalar,
-  typename Index,
   typename DerivedFF, 
   typename DerivedI>
 IGL_INLINE void igl::orient_outward_ao(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::PlainObjectBase<DerivedF> & F,
   const Eigen::PlainObjectBase<DerivedC> & C,
-  const igl::EmbreeIntersector<Scalar,Index> & ei,
-  const int num_samples,
+  const int min_num_rays_per_component,
+  const int total_num_rays,
   Eigen::PlainObjectBase<DerivedFF> & FF,
   Eigen::PlainObjectBase<DerivedI> & I)
 {
@@ -31,6 +27,12 @@ IGL_INLINE void igl::orient_outward_ao(
   assert(C.rows() == F.rows());
   assert(F.cols() == 3);
   assert(V.cols() == 3);
+  
+  // pass both sides of faces to Embree
+  MatrixXi F2;
+  F2.resize(F.rows()*2,F.cols());
+  F2 << F, F.rowwise().reverse().eval();
+  EmbreeIntersector<typename DerivedV::Scalar, typename DerivedF::Scalar> ei(V,F2);
   
   // number of faces
   const int m = F.rows();
@@ -46,68 +48,114 @@ IGL_INLINE void igl::orient_outward_ao(
   PlainObjectBase<DerivedV> N;
   per_face_normals(V,F,N);
   
-  // random number generator/distribution for each thread
-  int max_threads = omp_get_max_threads();
-  
-  // prng
-  vector<mt19937> engine(max_threads);
-  for (int i = 0; i < max_threads; ++i)
-      engine[i].seed(time(0) * (i + 1));
-  
-  // discrete distribution for random selection of faces with probability proportional to their areas
+  // face area
   Matrix<typename DerivedV::Scalar,Dynamic,1> A;
   doublearea(V,F,A);
-  double minarea = A.minCoeff();
-  Matrix<int, Dynamic, 1> A_int = (A * 100.0 / minarea).template cast<int>();       // only integer is allowed for weight
-  auto ddist_func = [&] (double i) { return A_int(static_cast<int>(i)); };
-  vector<discrete_distribution<int>> ddist(max_threads, discrete_distribution<int>(m, 0, m, ddist_func));      // simple ctor of (Iter, Iter) not provided by the stupid VC11 impl...
+  double area_min = A.minCoeff();
+  double area_total = A.sum();
   
-  // uniform real between in [0, 1]
-  vector<uniform_real_distribution<double>> rdist(max_threads);
-  
-  //// occlusion count per component: +1 when front ray is occluded, -1 when back ray is occluded
-  // occlussion count per component, per back/front: C(c,0) --> number of
-  // front-side rays occluded, C(c,1) --> number of back-side rays occluded
-  Matrix<int, Dynamic, 2> C_occlude_count;
-  C_occlude_count.setZero(num_cc, 2);
-  
-#pragma omp parallel for
-  for (int i = 0; i < num_samples; ++i)
+  // determine number of rays per component according to its area
+  VectorXd area_per_component;
+  area_per_component.setZero(num_cc);
+  for (int f = 0; f < m; ++f)
   {
-    int thread_num = omp_get_thread_num();
-    int f     = ddist[thread_num](engine[thread_num]);   // select face with probability proportional to face area
-    double t0 = rdist[thread_num](engine[thread_num]);
-    double t1 = rdist[thread_num](engine[thread_num]);
-    double t2 = rdist[thread_num](engine[thread_num]);
-    double t_sum = t0 + t1 + t2;
-    t0 /= t_sum;
-    t1 /= t_sum;
-    t2 /= t_sum;
-    RowVector3d p = t0 * V.row(F(f,0)) + t1 * V.row(F(f,1)) + t1 * V.row(F(f,2));
-    RowVector3d n = N.row(f);
-    //bool is_backside = rdist[thread_num](engine[thread_num]) < 0.5;
-    // Loop over front or back side
-    for(int s = 0;s<2;s++)
+    area_per_component(C(f)) += A(f);
+  }
+  VectorXi num_rays_per_component;
+  num_rays_per_component.setZero(num_cc);
+  for (int c = 0; c < num_cc; ++c)
+  {
+    num_rays_per_component(c) = max<int>(min_num_rays_per_component, static_cast<int>(total_num_rays * area_per_component(c) / area_total));
+  }
+  
+  // generate all the rays
+  uniform_real_distribution<double> rdist;
+  mt19937 prng;
+  prng.seed(time(0));
+  vector<int     > ray_face;
+  vector<Vector3d> ray_ori;
+  vector<Vector3d> ray_dir;
+  ray_face.reserve(total_num_rays);
+  ray_ori .reserve(total_num_rays);
+  ray_dir .reserve(total_num_rays);
+  for (int c = 0; c < num_cc; ++c)
+  {
+    vector<int> CF;     // set of faces per component
+    vector<int> CF_area;
+    for (int f = 0; f < m; ++f)
     {
-      if(s==1)
+      if (C(f)==c)
       {
-          n *= -1;
-      }
-      Matrix<typename DerivedV::Scalar,Dynamic,1> S;
-      ambient_occlusion(ei, p, n, 1, S);
-      if (S(0) > 0)
-      {
-#pragma omp atomic
-        C_occlude_count(C(f),s)++;
+        CF.push_back(f);
+        CF_area.push_back(static_cast<int>(100 * A(f) / area_min));
       }
     }
+    // discrete distribution for random selection of faces with probability proportional to their areas
+    auto ddist_func = [&] (double i) { return CF_area[static_cast<int>(i)]; };
+    discrete_distribution<int> ddist(CF.size(), 0, CF.size(), ddist_func);      // simple ctor of (Iter, Iter) not provided by the stupid VC11 impl...
+    for (int i = 0; i < num_rays_per_component[c]; ++i)
+    {
+      int f     = CF[ddist(prng)];    // select face with probability proportional to face area
+      double t0 = rdist(prng);        // random barycentric coordinate
+      double t1 = rdist(prng);
+      double t2 = rdist(prng);
+      double t_sum = t0 + t1 + t2;
+      t0 /= t_sum;
+      t1 /= t_sum;
+      t2 /= t_sum;
+      Vector3d p = t0 * V.row(F(f,0))       // be careful with the index!!!
+                 + t1 * V.row(F(f,1))
+                 + t2 * V.row(F(f,2));
+      Vector3d n = N.row(f);
+      Vector3d d = random_dir();
+      if (n.dot(d) < 0)
+      {
+        d *= -1;
+      }
+      ray_face.push_back(f);
+      ray_ori .push_back(p);
+      ray_dir .push_back(d);
+    }
+  }
+  
+  // occlusion count per component
+  vector<int> C_occlude_count_front(num_cc, 0);
+  vector<int> C_occlude_count_back (num_cc, 0);
 
+  //auto dbg_get_hit_point = [&] (embree::Hit hit) {
+  //  RowVector3d p0 = V.row(F2(hit.id0, 0));
+  //  RowVector3d p1 = V.row(F2(hit.id0, 1));
+  //  RowVector3d p2 = V.row(F2(hit.id0, 2));
+  //  RowVector3d p = (1 - hit.u - hit.v) * p0 + hit.u * p1 + hit.v * p2;
+  //  return p;
+  //};
+
+#pragma omp parallel for
+  for (int i = 0; i < ray_face.size(); ++i)
+  {
+    int      f = ray_face[i];
+    Vector3d o = ray_ori [i];
+    Vector3d d = ray_dir [i];
+    int c = C(f);
+    Hit hit_front;
+    if (ei.intersectRay(o, d, hit_front))
+    {
+#pragma omp atomic
+      //RowVector3d hit_point = dbg_get_hit_point(hit_front);
+      C_occlude_count_front[c]++;
+    }
+    Hit hit_back;
+    if (ei.intersectRay(o, -d, hit_back))
+    {
+#pragma omp atomic
+      //RowVector3d hit_point = dbg_get_hit_point(hit_back);
+      C_occlude_count_back[c]++;
+    }
   }
   
   for(int c = 0;c<num_cc;c++)
   {
-    //I(c) = C_occlude_count(c) > 0;
-    I(c) = C_occlude_count(c,0) > C_occlude_count(c,1);
+    I(c) = C_occlude_count_front[c] > C_occlude_count_back[c];
   }
   // flip according to I
   for(int f = 0;f<m;f++)
@@ -119,7 +167,7 @@ IGL_INLINE void igl::orient_outward_ao(
   }
 }
 
-// EmbreeIntersector generated on the fly
+// Call with default parameters
 template <
   typename DerivedV, 
   typename DerivedF, 
@@ -130,20 +178,10 @@ IGL_INLINE void igl::orient_outward_ao(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::PlainObjectBase<DerivedF> & F,
   const Eigen::PlainObjectBase<DerivedC> & C,
-  const int num_samples,
   Eigen::PlainObjectBase<DerivedFF> & FF,
   Eigen::PlainObjectBase<DerivedI> & I)
 {
-  using namespace igl;
-  using namespace Eigen;
-  // Both sides
-  MatrixXi F2;
-  F2.resize(F.rows()*2,F.cols());
-  F2 << F, F.rowwise().reverse().eval();
-  EmbreeIntersector<
-    typename DerivedV::Scalar,
-    typename DerivedF::Scalar > ei(V,F2);
-  return orient_outward_ao(V, F, C, ei, num_samples, FF, I);
+  return orient_outward_ao(V, F, C, 100, F.rows() * 100, FF, I);
 }
 
 #ifndef IGL_HEADER_ONLY
