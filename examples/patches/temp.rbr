@@ -1,5 +1,6 @@
 wireframe_visible: TW_TYPE_BOOLCPP 1
 fill_visible: TW_TYPE_BOOLCPP 1
-camera_rotation: TW_TYPE_QUAT4D 0.20801 0.244181 0.0537125 0.945633
+camera_rotation: TW_TYPE_QUAT4D 0.0807446 0.213478 0.0177076 0.973444
 rotation_type: RotationType two axis fixed up
+orient_method: OrientMethod ambient occlusion
 
