@@ -2,100 +2,154 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="example.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh2\bvh2_builder.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\builders\primrefgen.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh2\bvh2_intersector.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\builders\splitter.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh2\bvh2.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\builders\splitter_fallback.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4\bvh4_intersector.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\builders\splitter_parallel.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4\bvh4.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\builders\heuristic_binning.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4\bvh4_builder.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\builders\heuristic_spatial.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4mb\bvh4mb_intersector.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh2\bvh2_intersector4.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4mb\bvh4mb.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh2\bvh2_intersector8.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4mb\bvh4mb_builder.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh2\bvh2.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\splitter_fallback.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh2\bvh2_intersector1.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\splitter_parallel.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector4_chunk.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\stat.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector4_hybrid.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\accel.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector4_single.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\alloc.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector8_chunk.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\heuristic_binning.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector8_hybrid.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\heuristic_spatial.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector8_single.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\primrefgen.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\splitter.cpp">
-      <Filter>embree-1.1beta\rtcore</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector1.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\platform.cpp">
-      <Filter>embree-1.1beta\common</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector1_avx.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\sysinfo.cpp">
-      <Filter>embree-1.1beta\common</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4i\bvh4i.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\taskscheduler_standard.cpp">
-      <Filter>embree-1.1beta\common</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4i\bvh4i_intersector1.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\thread.cpp">
-      <Filter>embree-1.1beta\common</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4mb\bvh4mb_intersector1.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\filename.cpp">
-      <Filter>embree-1.1beta\common</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4mb\bvh4mb_intersector4.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\library.cpp">
-      <Filter>embree-1.1beta\common</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4mb\bvh4mb_intersector8.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\stl\string.cpp">
-      <Filter>embree-1.1beta\common</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4mb\bvh4mb.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\sync\mutex.cpp">
-      <Filter>embree-1.1beta\common</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh4mb\bvh4mb_builder.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\sync\condition.cpp">
-      <Filter>embree-1.1beta\common</Filter>
+    <ClCompile Include="..\..\external\embree\embree\bvh8\bvh8.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\bvh8\bvh8_intersector1.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\common\registry_intersector.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\common\stat.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\common\accel.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\common\alloc.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\common\registry_accel.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\common\registry_builder.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\geometry\virtual_scene.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\geometry\triangle_mesh.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\sys\taskscheduler.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\sys\taskscheduler_mic.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\sys\taskscheduler_sys.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\sys\thread.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\sys\filename.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\sys\platform.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\sys\sysinfo.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\sys\stl\string.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\sys\sync\mutex.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\sys\sync\condition.cpp">
+      <Filter>embree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\external\embree\embree\embree.cpp">
+      <Filter>embree</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="igl">
       <UniqueIdentifier>{53eff656-6473-409c-9ad5-cac1983d91e1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="embree-1.1beta">
-      <UniqueIdentifier>{6d281f01-62c5-4083-90e7-1e9d55cf793c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="embree-1.1beta\rtcore">
-      <UniqueIdentifier>{ded8eb8e-e3c8-4405-9234-dd048cbb197d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="embree-1.1beta\common">
-      <UniqueIdentifier>{0c5327d6-c9c7-4e16-a8e3-d3ae7f7b42d9}</UniqueIdentifier>
+    <Filter Include="embree">
+      <UniqueIdentifier>{6a04be79-a793-4c4a-a5c0-5d40f1f2ca7f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
