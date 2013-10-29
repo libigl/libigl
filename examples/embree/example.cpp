@@ -38,7 +38,7 @@ double bbd;
 // Faces
 Eigen::MatrixXi F;
 // Embree intersection structure
-igl::EmbreeIntersector<double,int> ei;
+igl::EmbreeIntersector<double,int> * ei;
 // Hits collected
 std::vector<igl::Hit > hits;
 // Ray information, "projection screen" corners
@@ -327,7 +327,7 @@ void mouse_move(int mouse_x, int mouse_y)
   // Shoot ray at unprojected mouse in view direction
   dir = d-s;
   int num_rays_shot;
-  ei.intersectRay(s,dir,hits,num_rays_shot);
+  ei->intersectRay(s,dir,hits,num_rays_shot);
   for(vector<igl::Hit>::iterator hit = hits.begin();
       hit != hits.end();
       hit++)
@@ -464,7 +464,7 @@ int main(int argc, char * argv[])
     V.colwise().minCoeff()).maxCoeff();
 
   // Init embree
-  ei = EmbreeIntersector<double,int>(V,F);
+  ei = new EmbreeIntersector<double,int>(V,F);
 
   // Init glut
   glutInit(&argc,argv);
@@ -478,5 +478,6 @@ int main(int argc, char * argv[])
   glutMotionFunc(mouse_drag);
   glutPassiveMotionFunc(mouse_move);
   glutMainLoop();
+  delete ei;
   return 0;
 }
