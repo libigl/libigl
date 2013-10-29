@@ -673,8 +673,8 @@ int main(int argc, char * argv[])
   // print key commands
   cout<<"[Click] and [drag]  Rotate model using trackball."<<endl;
   cout<<"[Z,z]               Snap rotation to canonical view."<<endl;
-  cout<<"[⌘ Z]               Undo."<<endl;
-  cout<<"[⇧ ⌘ Z]             Redo."<<endl;
+  cout<<"[�Z]               Undo."<<endl;
+  cout<<"[⇧ �Z]             Redo."<<endl;
   cout<<"[^C,ESC]            Exit."<<endl;
 
   // dirname, basename, extension and filename
