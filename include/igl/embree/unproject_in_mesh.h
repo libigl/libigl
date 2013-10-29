@@ -4,15 +4,14 @@
 #include <Eigen/Core>
 
 #include <vector>
-#include "Embree_convenience.h"
+#include "Hit.h"
 
 namespace igl
 {
   // Forward define
   template <
-    typename PointMatrixType,
-    typename FaceMatrixType,
-    typename RowVector3>
+    typename Scalar,
+    typename Index>
   class EmbreeIntersector;
   // Unproject a screen location (using current opengl viewport, projection, and
   // model view) to a 3D position 
@@ -26,27 +25,25 @@ namespace igl
   // Returns number of hits
   //
   template <
-    typename PointMatrixType,
-    typename FaceMatrixType,
-    typename RowVector3,
+    typename Scalar,
+    typename Index,
     typename Derivedobj>
   int unproject_in_mesh(
     const int x,
     const int y,
-    const igl::EmbreeIntersector<PointMatrixType,FaceMatrixType,RowVector3> & ei,
+    const igl::EmbreeIntersector<Scalar,Index> & ei,
     Eigen::PlainObjectBase<Derivedobj> & obj);
 
   template <
-    typename PointMatrixType,
-    typename FaceMatrixType,
-    typename RowVector3,
+    typename Scalar,
+    typename Index,
     typename Derivedobj>
   int unproject_in_mesh(
     const int x,
     const int y,
-    const igl::EmbreeIntersector<PointMatrixType,FaceMatrixType,RowVector3> & ei,
+    const igl::EmbreeIntersector<Scalar,Index> & ei,
     Eigen::PlainObjectBase<Derivedobj> & obj,
-    std::vector<embree::Hit > & hits);
+    std::vector<igl::Hit > & hits);
 }
 #ifdef IGL_HEADER_ONLY
 #  include "unproject_in_mesh.cpp"

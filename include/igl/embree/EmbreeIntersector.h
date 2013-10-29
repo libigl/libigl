@@ -7,20 +7,15 @@
 #ifndef IGL_EMBREE_INTERSECTOR_H
 #define IGL_EMBREE_INTERSECTOR_H
 
-#include "include/embree.h"
-#include "include/intersector1.h"
-#include "common/ray.h"
+#include "Hit.h"
+#include <Eigen/Core>
+#include <embree/include/embree.h>
+#include <embree/include/intersector1.h>
+#include <embree/common/ray.h>
 #include <vector>
 
 namespace igl
 {
-  struct Hit
-  {
-    int id; // primitive id
-    float u,v; // barycentric coordinates
-    float t; // distance = direction*t to intersection
-  };
-
   template <
   typename Scalar,
   typename Index>
@@ -32,10 +27,9 @@ namespace igl
   public:
     // V  #V by 3 list of vertex positions
     // F  #F by 3 list of Oriented triangles
-    EmbreeIntersector();
     EmbreeIntersector(
-      const PointMatrixType & V,
-      const FaceMatrixType & F,
+      const PointMatrixType & V = PointMatrixType(),
+      const FaceMatrixType & F = FaceMatrixType(),
       const char* structure = "default",
       const char* builder = "default",
       const char* traverser = "default");
@@ -101,40 +95,35 @@ template <
 typename Scalar,
 typename Index>
 igl::EmbreeIntersector < Scalar, Index>
-::EmbreeIntersector()
-{
-  static bool inited = false;
-  if(!inited)
-  {
-    embree::rtcInit();
-#ifdef VERBOSE
-  embree::rtcSetVerbose(3);
-#endif
-    embree::rtcStartThreads();
-    inited = true;
-  }
-}
-
-template <
-typename Scalar,
-typename Index>
-igl::EmbreeIntersector < Scalar, Index>
 ::EmbreeIntersector(const PointMatrixType & V,
                     const FaceMatrixType & F,
                     const char* structure,
                     const char* builder,
                     const char* traverser)
+  :
+    mesh(NULL),
+    triangles(NULL),
+    vertices(NULL),
+    intersector(NULL)
 {
+  using namespace std;
   static bool inited = false;
   if(!inited)
   {
+    cout<<"before rtcInit()"<<endl;
     embree::rtcInit();
+    cout<<"after rtcInit()"<<endl;
 #ifdef VERBOSE
     embree::rtcSetVerbose(3);
 #endif
     embree::rtcStartThreads();
     inited = true;
   }
+
+   if(V.size() == 0 || F.size() == 0)
+   {
+     return;
+   }
   
   mesh = embree::rtcNewTriangleMesh(F.rows(),V.rows(),structure);
 

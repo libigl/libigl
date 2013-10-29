@@ -6,9 +6,8 @@ namespace igl
 {
   // Forward define
   template <
-    typename PointMatrixType,
-    typename FaceMatrixType,
-    typename RowVector3>
+    typename Scalar,
+    typename Index>
   class EmbreeIntersector;
   // Orient each component (identified by C) of a mesh (V,F) using ambient occlusion 
   // such that the front side is less occluded than back side
@@ -27,16 +26,15 @@ namespace igl
     typename DerivedV, 
     typename DerivedF, 
     typename DerivedC, 
-    typename PointMatrixType,
-    typename FaceMatrixType,
-    typename RowVector3,
+    typename Scalar,
+    typename Index,
     typename DerivedFF, 
     typename DerivedI>
   IGL_INLINE void orient_outward_ao(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
     const Eigen::PlainObjectBase<DerivedC> & C,
-    const igl::EmbreeIntersector<PointMatrixType,FaceMatrixType,RowVector3> & ei,
+    const igl::EmbreeIntersector<Scalar,Index> & ei,
     const int num_samples,
     Eigen::PlainObjectBase<DerivedFF> & FF,
     Eigen::PlainObjectBase<DerivedI> & I);

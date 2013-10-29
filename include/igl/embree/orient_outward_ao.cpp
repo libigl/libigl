@@ -13,16 +13,15 @@ template <
   typename DerivedV, 
   typename DerivedF, 
   typename DerivedC, 
-  typename PointMatrixType,
-  typename FaceMatrixType,
-  typename RowVector3,
+  typename Scalar,
+  typename Index,
   typename DerivedFF, 
   typename DerivedI>
 IGL_INLINE void igl::orient_outward_ao(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::PlainObjectBase<DerivedF> & F,
   const Eigen::PlainObjectBase<DerivedC> & C,
-  const igl::EmbreeIntersector<PointMatrixType,FaceMatrixType,RowVector3> & ei,
+  const igl::EmbreeIntersector<Scalar,Index> & ei,
   const int num_samples,
   Eigen::PlainObjectBase<DerivedFF> & FF,
   Eigen::PlainObjectBase<DerivedI> & I)
@@ -142,9 +141,8 @@ IGL_INLINE void igl::orient_outward_ao(
   F2.resize(F.rows()*2,F.cols());
   F2 << F, F.rowwise().reverse().eval();
   EmbreeIntersector<
-    PlainObjectBase<DerivedV>,
-    PlainObjectBase<DerivedF>,
-    Matrix<typename DerivedV::Scalar,3,1> > ei(V,F2);
+    typename DerivedV::Scalar,
+    typename DerivedF::Scalar > ei(V,F2);
   return orient_outward_ao(V, F, C, ei, num_samples, FF, I);
 }
 

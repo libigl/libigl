@@ -24,8 +24,10 @@ EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3
 INC+=$(EIGEN3_INC)
 
 # embree dependency
-EMBREE=../../../external/embree
-EMBREE_INC=-I$(EMBREE)/common -I$(EMBREE)/rtcore/
+#EMBREE=../../../external/embree
+#EMBREE_INC=-I$(EMBREE)/common -I$(EMBREE)/rtcore/
+EMBREE=../../../external/embree/
+EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/embree
 #EMBREE_LIB=-L$(EMBREE)/bin -lrtcore -lsys
 INC+=$(EMBREE_INC)
 

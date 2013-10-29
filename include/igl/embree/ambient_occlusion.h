@@ -6,9 +6,8 @@ namespace igl
 {
   // Forward define
   template <
-    typename PointMatrixType,
-    typename FaceMatrixType,
-    typename RowVector3>
+    typename Scalar,
+    typename Index>
   class EmbreeIntersector;
   // Compute ambient occlusion per given point
   //
@@ -21,14 +20,13 @@ namespace igl
   //      (not occluded)
   //
   template <
-    typename PointMatrixType,
-    typename FaceMatrixType,
-    typename RowVector3,
+    typename Scalar,
+    typename Index,
     typename DerivedP,
     typename DerivedN,
     typename DerivedS >
   void ambient_occlusion(
-    const igl::EmbreeIntersector<PointMatrixType,FaceMatrixType,RowVector3> & ei,
+    const igl::EmbreeIntersector<Scalar,Index> & ei,
     const Eigen::PlainObjectBase<DerivedP> & P,
     const Eigen::PlainObjectBase<DerivedN> & N,
     const int num_samples,
