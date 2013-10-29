@@ -4,7 +4,6 @@ syntax: glob
 *.a
 *.dylib
 *~
-*CMakeFiles*
 example
 examples/bbw/bbw_demo_selfcontained/*
 examples/bbw/bbw_demo_selfcontained.zip
@@ -15,11 +14,6 @@ example1
 external/yimg/.git*
 external/tinyxml2/CMakeFiles*
 external/tinyxml2/CMakeCache.txt
-external/embree/bin/*
-external/embree/bin
-external/embree/doc/html/*
-external/embree/doc/latex/*
-*.cmake
 .DS_Store
 libigl.zip
 *tags
