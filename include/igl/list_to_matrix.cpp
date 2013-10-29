@@ -7,8 +7,6 @@
 
 #include "max_size.h"
 #include "min_size.h"
-#define VERBOSE
-#include "verbose.h"
 
 template <typename T, class Mat>
 IGL_INLINE bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Mat & M)

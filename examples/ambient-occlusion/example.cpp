@@ -15,10 +15,10 @@
 #include <igl/material_colors.h>
 #include <igl/barycenter.h>
 #include <igl/matlab_format.h>
-#include <igl/embree/EmbreeIntersector.h>
-#include <igl/embree/ambient_occlusion.h>
 #include <igl/ReAntTweakBar.h>
 #include <igl/pathinfo.h>
+#include <igl/embree/EmbreeIntersector.h>
+#include <igl/embree/ambient_occlusion.h>
 
 #ifdef __APPLE__
 #  include <GLUT/glut.h>
@@ -48,7 +48,7 @@ Eigen::MatrixXd V,N,C,mid;
 Eigen::MatrixXi F;
 // Bounding box diagonal length
 double bbd;
-igl::EmbreeIntersector<Eigen::MatrixXd::Scalar,Eigen::MatrixXi::Scalar> ei;
+igl::EmbreeIntersector<Eigen::MatrixXd::Scalar,Eigen::MatrixXi::Scalar> * ei;
 // Running ambient occlusion
 Eigen::VectorXd S;
 int tot_num_samples = 0;
@@ -154,7 +154,7 @@ void display()
     }
     VectorXd Si;
     const int num_samples = 20;
-    ambient_occlusion(ei,V,N,num_samples,Si);
+    ambient_occlusion(*ei,V,N,num_samples,Si);
     S *= (double)tot_num_samples;
     S += Si*(double)num_samples;
     tot_num_samples += num_samples;
@@ -373,8 +373,7 @@ int main(int argc, char * argv[])
   bbd = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
 
   // Init embree
-  cout<<"init embree..."<<endl;
-  ei = EmbreeIntersector<MatrixXd::Scalar,MatrixXi::Scalar>(V,F);
+  ei = new EmbreeIntersector<MatrixXd::Scalar,MatrixXi::Scalar>(V,F);
 
   // Init glut
   glutInit(&argc,argv);
@@ -406,5 +405,6 @@ int main(int argc, char * argv[])
   glutMotionFunc(mouse_drag);
   glutPassiveMotionFunc((GLUTmousemotionfun)TwEventMouseMotionGLUT);
   glutMainLoop();
+  delete ei;
   return 0;
 }
