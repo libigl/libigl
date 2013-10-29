@@ -20,8 +20,19 @@ ANTTWEAKBAR_INC=-I$(LIBIGL)/external/AntTweakBar/include
 ANTTWEAKBAR_LIB=-L$(LIBIGL)/external/AntTweakBar/lib -lAntTweakBar -framework AppKit
 
 EMBREE=$(LIBIGL)/external/embree
+<<<<<<< local
+<<<<<<< local
+EMBREE_INC=-I$(EMBREE)/rtcore -I$(EMBREE)/common
+EMBREE_LIB=-L$(EMBREE)/bin -lrtcore -lsys
+=======
+=======
+>>>>>>> other
 EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/embree
 EMBREE_LIB=-L$(EMBREE)/bin -lembree -lsys
+<<<<<<< local
+>>>>>>> other
+=======
+>>>>>>> other
 
 MATLAB_INC=-I$(MATLAB)/extern/include/
 MATLAB_LIB=-L$(MATLAB)/bin/maci64 -lmx -lmat -lmex -lstdc++

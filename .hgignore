@@ -16,6 +16,7 @@ external/yimg/.git*
 external/tinyxml2/CMakeFiles*
 external/tinyxml2/CMakeCache.txt
 external/embree/bin/*
+external/embree/bin
 external/embree/doc/html/*
 external/embree/doc/latex/*
 *.cmake
