@@ -1,0 +1,13 @@
+* text=auto
+
+*.txt       text
+*.ivl       text
+*.ispc      text
+*.cpp       text
+*.h         text
+*.cc        text
+*.cxx       text
+*.c         text
+*.jpg       binary
+*.png       binary
+*.pdf       binary
