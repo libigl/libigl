@@ -75,6 +75,13 @@ enum RotationType
   NUM_ROTATION_TYPES = 2,
 } rotation_type;
 
+enum OrientMethod
+{
+  ORIENT_METHOD_OUTWARD = 0,
+  ORIENT_METHOD_AO = 1,
+  NUM_ORIENT_METHODS = 2,
+} orient_method = ORIENT_METHOD_AO;
+
 std::stack<State> undo_stack;
 std::stack<State> redo_stack;
 
@@ -97,6 +104,10 @@ Eigen::Vector4f light_pos(-0.1,-0.1,0.9,0);
 #define REBAR_NAME "temp.rbr"
 igl::ReTwBar rebar;
 
+// Forward
+void init_patches();
+void init_relative();
+
 void push_undo()
 {
   undo_stack.push(s);
@@ -110,6 +121,23 @@ void TW_CALL set_camera_rotation(const void * value, void *clientData)
   // case current value to double
   const double * quat = (const double *)(value);
   std::copy(quat,quat+4,s.camera.rotation);
+}
+
+void TW_CALL set_orient_method(const void * value, void * clientData)
+{
+  const OrientMethod old_orient_method = orient_method;
+  orient_method = *(const OrientMethod *)value;
+  if(orient_method != old_orient_method)
+  {
+    init_patches();
+    init_relative();
+  }
+}
+
+void TW_CALL get_orient_method(void * value, void *clientData)
+{
+  OrientMethod * om = (OrientMethod *)(value);
+  *om = orient_method;
 }
 
 void TW_CALL set_rotation_type(const void * value, void * clientData)
@@ -539,20 +567,20 @@ void init_patches()
   }
   bfs_orient(F,F,CC);
   VectorXi I;
-  char c;
-  cout << "use ambient occlusion to determine patch orientation? (y/n):";
-  cin >> c;
-  if (c == 'y')
+  switch(orient_method)
   {
-    orient_outward_ao(V,F,CC,F.rows() * 100,F,I);
-  }
-  else
-  {
-    orient_outward(V,F,CC,F,I);
+    case ORIENT_METHOD_AO:
+      cout<<"orient_outward_ao()"<<endl;
+      orient_outward_ao(V,F,CC,F.rows() * 100,F,I);
+      break;
+    case ORIENT_METHOD_OUTWARD:
+    default:
+      cout<<"orient_outward()"<<endl;
+      orient_outward(V,F,CC,F,I);
+      break;
   }
   double num_cc = (double)CC.maxCoeff()+1.0;
   cout<<"There are "<<num_cc<<" 'manifold/orientable' patches of faces."<<endl;
-  randomly_color(CC,s.C);
 }
 
 void undo()
@@ -703,8 +731,8 @@ int main(int argc, char * argv[])
   F = F_unique;
 
   init_patches();
-
   init_relative();
+  randomly_color(CC,s.C);
 
   // Init glut
   glutInit(&argc,argv);
@@ -729,6 +757,19 @@ int main(int argc, char * argv[])
         NUM_ROTATION_TYPES);
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
+  TwEnumVal OrientMethodEV[NUM_ORIENT_METHODS] = 
+  {
+    {ORIENT_METHOD_OUTWARD,"outward"},
+    {ORIENT_METHOD_AO,"ambient occlusion"}
+  };
+  TwType OrientMethodTW = 
+    ReTwDefineEnum(
+        "OrientMethod", 
+        OrientMethodEV, 
+        NUM_ROTATION_TYPES);
+  rebar.TwAddVarCB( "orient_method", OrientMethodTW,
+    set_orient_method,get_orient_method,NULL,"keyIncr=< keyDecr=>");
+
   rebar.TwAddVarRW("wireframe_visible",TW_TYPE_BOOLCPP,&wireframe_visible,"key=l");
   rebar.TwAddVarRW("fill_visible",TW_TYPE_BOOLCPP,&fill_visible,"key=f");
   rebar.TwAddButton("randomize colors",randomize_colors,NULL,"key=c");
