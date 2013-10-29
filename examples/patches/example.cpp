@@ -740,7 +740,11 @@ int main(int argc, char * argv[])
   animation_start_time = get_seconds();
 
   // Init antweakbar
+#ifdef __APPLE__
+  glutInitDisplayString( "rgba depth double samples>=8");
+#else
   glutInitDisplayString( "rgba depth double ");   // samples>=8 somehow not supported on Kenshi's machines...?
+#endif
   glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH)/2.0,glutGet(GLUT_SCREEN_HEIGHT)/2.0);
   glutCreateWindow("patches");
   glutDisplayFunc(display);

@@ -1,4 +1,5 @@
 #define IGL_HEADER_ONLY
+#include <igl/embree/EmbreeIntersector.h>
 #include <igl/OpenGL_convenience.h>
 #include <igl/per_face_normals.h>
 #include <igl/read.h>
@@ -7,7 +8,6 @@
 #include <igl/draw_floor.h>
 #include <igl/unproject.h>
 #include <igl/quat_to_mat.h>
-#include <igl/embree/EmbreeIntersector.h>
 #include <igl/trackball.h>
 #include <igl/report_gl_error.h>
 
@@ -417,6 +417,12 @@ void mouse_drag(int mouse_x, int mouse_y)
 }
 
 
+void cleanup()
+{
+  using namespace std;
+  delete ei;
+}
+
 void key(unsigned char key, int mouse_x, int mouse_y)
 {
   using namespace std;
@@ -425,6 +431,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
     // Ctrl-c and esc exit
     case char(3):
     case char(27):
+      cleanup();
       exit(0);
     default:
       cout<<"Unknown key command: "<<key<<" "<<int(key)<<endl;
@@ -478,6 +485,6 @@ int main(int argc, char * argv[])
   glutMotionFunc(mouse_drag);
   glutPassiveMotionFunc(mouse_move);
   glutMainLoop();
-  delete ei;
+  cleanup();
   return 0;
 }

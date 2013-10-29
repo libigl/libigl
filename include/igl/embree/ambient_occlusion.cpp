@@ -1,6 +1,7 @@
 #include "ambient_occlusion.h"
 #include "EmbreeIntersector.h"
 #include <igl/random_dir.h>
+#include <igl/EPS.h>
 
 template <
   typename Scalar,
@@ -39,7 +40,8 @@ void igl::ambient_occlusion(
         d *= -1;
       }
       igl::Hit hit;
-      if(ei.intersectRay(origin,d,hit))
+      const float tnear = 1e-4f;
+      if(ei.intersectRay(origin,d,hit,tnear))
       {
         num_hits++;
       }
@@ -66,12 +68,16 @@ void igl::ambient_occlusion(
   using namespace Eigen;
   EmbreeIntersector<
     typename DerivedV::Scalar,
-    typename DerivedF::Scalar > ei(V,F);
-  return ambient_occlusion(ei,P,N,num_samples,S);
+    typename DerivedF::Scalar > * ei = new EmbreeIntersector<
+    typename DerivedV::Scalar,
+    typename DerivedF::Scalar >(V,F);
+  ambient_occlusion(*ei,P,N,num_samples,S);
+  delete ei;
 }
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template instanciation
 template void igl::ambient_occlusion<double, int, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(igl::EmbreeIntersector<double, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 template void igl::ambient_occlusion<double, int, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(igl::EmbreeIntersector<double, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template void igl::ambient_occlusion<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 #endif

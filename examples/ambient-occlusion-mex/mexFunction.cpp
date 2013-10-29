@@ -37,16 +37,14 @@ void mexFunction(int nlhs, mxArray *plhs[],
   //read("../shared/cheburashka.obj",V,F);
   //P = V;
   //per_vertex_normals(V,F,N);
-  EmbreeIntersector<::MatrixXd::Scalar,::MatrixXi::Scalar> ei;
-  ei = EmbreeIntersector<MatrixXd::Scalar,MatrixXi::Scalar>(V,F);
-  ambient_occlusion(ei,P,N,num_samples,S);
-  MatlabWorkspace mw;
-  mw.save(V,"V");
-  mw.save(P,"P");
-  mw.save(N,"N");
-  mw.save_index(F,"F");
-  mw.save(S,"S");
-  mw.write("out.mat");
+  ambient_occlusion(V,F,P,N,num_samples,S);
+  //MatlabWorkspace mw;
+  //mw.save(V,"V");
+  //mw.save(P,"P");
+  //mw.save(N,"N");
+  //mw.save_index(F,"F");
+  //mw.save(S,"S");
+  //mw.write("out.mat");
 
   plhs[0] = mxCreateDoubleMatrix(S.rows(),S.cols(), mxREAL);
   copy(S.data(),S.data()+S.size(),mxGetPr(plhs[0]));

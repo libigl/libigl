@@ -110,10 +110,8 @@ igl::EmbreeIntersector < Scalar, Index>
   static bool inited = false;
   if(!inited)
   {
-    cout<<"before rtcInit()"<<endl;
     embree::rtcInit();
-    cout<<"after rtcInit()"<<endl;
-#ifdef VERBOSE
+#ifdef IGL_VERBOSE
     embree::rtcSetVerbose(3);
 #endif
     embree::rtcStartThreads();
@@ -230,7 +228,7 @@ igl::EmbreeIntersector < Scalar, Index>
         // push min_t a bit more
         //double t_push = pow(2.0,self_hits-4)*(hit.t<eps?eps:hit.t);
         double t_push = pow(2.0,self_hits)*eps;
-#ifdef VERBOSE
+#ifdef IGL_VERBOSE
         cout<<"  t_push: "<<t_push<<endl;
 #endif
         //o = o+t_push*d;
@@ -245,7 +243,7 @@ igl::EmbreeIntersector < Scalar, Index>
         hit.v = ray.v;
         hit.t = ray.tfar;
         hits.push_back(hit);
-#ifdef VERBOSE
+#ifdef IGL_VERBOSE
         cout<<"  t: "<<hit.t<<endl;
 #endif
         // Instead of moving origin, just change min_t. That way calculations
