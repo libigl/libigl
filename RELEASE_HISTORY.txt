@@ -1,3 +1,4 @@
+0.3.7  Embree2.0 support
 0.3.6  boost extra, patches, mosek 7 support, libiglbbw (mosek optional)
 0.3.5  More examples, naive primitive sorting
 0.3.3  Many more examples, ambient occlusion with Embree.
