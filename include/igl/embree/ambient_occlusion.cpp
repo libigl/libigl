@@ -3,14 +3,13 @@
 #include <igl/random_dir.h>
 
 template <
-  typename PointMatrixType,
-  typename FaceMatrixType,
-  typename RowVector3,
+  typename Scalar,
+  typename Index,
   typename DerivedP,
   typename DerivedN,
   typename DerivedS >
 void igl::ambient_occlusion(
-  const igl::EmbreeIntersector<PointMatrixType,FaceMatrixType,RowVector3> & ei,
+  const igl::EmbreeIntersector<Scalar,Index> & ei,
   const Eigen::PlainObjectBase<DerivedP> & P,
   const Eigen::PlainObjectBase<DerivedN> & N,
   const int num_samples,
@@ -39,7 +38,7 @@ void igl::ambient_occlusion(
         // reverse ray
         d *= -1;
       }
-      embree::Hit hit;
+      igl::Hit hit;
       if(ei.intersectRay(origin,d,hit))
       {
         num_hits++;
@@ -66,15 +65,13 @@ void igl::ambient_occlusion(
   using namespace igl;
   using namespace Eigen;
   EmbreeIntersector<
-    PlainObjectBase<DerivedV>,
-    PlainObjectBase<DerivedF>,
-    Matrix<typename DerivedP::Scalar,3,1> > ei(V,F);
+    typename DerivedV::Scalar,
+    typename DerivedF::Scalar > ei(V,F);
   return ambient_occlusion(ei,P,N,num_samples,S);
 }
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template instanciation
-template void igl::ambient_occlusion<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(igl::EmbreeIntersector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, const int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
-template void igl::ambient_occlusion<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
-template void igl::ambient_occlusion<Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >, Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(igl::EmbreeIntersector<Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >, Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template void igl::ambient_occlusion<double, int, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(igl::EmbreeIntersector<double, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template void igl::ambient_occlusion<double, int, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(igl::EmbreeIntersector<double, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 #endif

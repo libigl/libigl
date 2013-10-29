@@ -42,10 +42,10 @@ EQUALS = =
 CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree2
+CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree2/bin
+CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree/bin
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -72,14 +72,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles /usr/local/igl/libigl/external/embree2/bin/examples/renderer/renderer/CMakeFiles/progress.marks
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/renderer/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles 0
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles /usr/local/igl/libigl/external/embree/bin/examples/renderer/renderer/CMakeFiles/progress.marks
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/renderer/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/renderer/clean
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/renderer/clean
 .PHONY : clean
 
 # The main clean target
@@ -88,22 +88,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/renderer/preinstall
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/renderer/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/renderer/preinstall
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/renderer/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 examples/renderer/renderer/CMakeFiles/renderer.dir/rule:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/renderer/CMakeFiles/renderer.dir/rule
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/renderer/CMakeFiles/renderer.dir/rule
 .PHONY : examples/renderer/renderer/CMakeFiles/renderer.dir/rule
 
 # Convenience name for target.
@@ -112,52 +112,52 @@ renderer: examples/renderer/renderer/CMakeFiles/renderer.dir/rule
 
 # fast build rule for target.
 renderer/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/build
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/build
 .PHONY : renderer/fast
 
 # target to build an object file
 glutdisplay.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/glutdisplay.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/glutdisplay.o
 .PHONY : glutdisplay.o
 
 # target to preprocess a source file
 glutdisplay.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/glutdisplay.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/glutdisplay.i
 .PHONY : glutdisplay.i
 
 # target to generate assembly for a file
 glutdisplay.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/glutdisplay.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/glutdisplay.s
 .PHONY : glutdisplay.s
 
 # target to build an object file
 regression.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/regression.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/regression.o
 .PHONY : regression.o
 
 # target to preprocess a source file
 regression.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/regression.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/regression.i
 .PHONY : regression.i
 
 # target to generate assembly for a file
 regression.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/regression.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/regression.s
 .PHONY : regression.s
 
 # target to build an object file
 renderer.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/renderer.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/renderer.o
 .PHONY : renderer.o
 
 # target to preprocess a source file
 renderer.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/renderer.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/renderer.i
 .PHONY : renderer.i
 
 # target to generate assembly for a file
 renderer.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/renderer.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/renderer/CMakeFiles/renderer.dir/build.make examples/renderer/renderer/CMakeFiles/renderer.dir/renderer.s
 .PHONY : renderer.s
 
 # Help Target
@@ -189,6 +189,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

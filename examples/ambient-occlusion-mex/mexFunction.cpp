@@ -37,8 +37,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
   //read("../shared/cheburashka.obj",V,F);
   //P = V;
   //per_vertex_normals(V,F,N);
-  EmbreeIntersector<Eigen::MatrixXd,Eigen::MatrixXi,Eigen::Vector3d> ei;
-  ei = EmbreeIntersector<MatrixXd,MatrixXi,Vector3d>(V,F);
+  EmbreeIntersector<::MatrixXd::Scalar,::MatrixXi::Scalar> ei;
+  ei = EmbreeIntersector<MatrixXd::Scalar,MatrixXi::Scalar>(V,F);
   ambient_occlusion(ei,P,N,num_samples,S);
   MatlabWorkspace mw;
   mw.save(V,"V");

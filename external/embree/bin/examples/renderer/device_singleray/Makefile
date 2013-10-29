@@ -42,10 +42,10 @@ EQUALS = =
 CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree2
+CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree2/bin
+CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree/bin
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -72,14 +72,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles /usr/local/igl/libigl/external/embree2/bin/examples/renderer/device_singleray/CMakeFiles/progress.marks
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_singleray/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles 0
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles /usr/local/igl/libigl/external/embree/bin/examples/renderer/device_singleray/CMakeFiles/progress.marks
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_singleray/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_singleray/clean
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_singleray/clean
 .PHONY : clean
 
 # The main clean target
@@ -88,22 +88,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_singleray/preinstall
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_singleray/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_singleray/preinstall
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_singleray/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/rule:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/rule
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/rule
 .PHONY : examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/rule
 
 # Convenience name for target.
@@ -112,187 +112,187 @@ device_singleray: examples/renderer/device_singleray/CMakeFiles/device_singleray
 
 # fast build rule for target.
 device_singleray/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build
 .PHONY : device_singleray/fast
 
 # target to build an object file
 api/singleray_device.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/api/singleray_device.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/api/singleray_device.o
 .PHONY : api/singleray_device.o
 
 # target to preprocess a source file
 api/singleray_device.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/api/singleray_device.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/api/singleray_device.i
 .PHONY : api/singleray_device.i
 
 # target to generate assembly for a file
 api/singleray_device.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/api/singleray_device.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/api/singleray_device.s
 .PHONY : api/singleray_device.s
 
 # target to build an object file
 filters/filter.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/filters/filter.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/filters/filter.o
 .PHONY : filters/filter.o
 
 # target to preprocess a source file
 filters/filter.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/filters/filter.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/filters/filter.i
 .PHONY : filters/filter.i
 
 # target to generate assembly for a file
 filters/filter.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/filters/filter.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/filters/filter.s
 .PHONY : filters/filter.s
 
 # target to build an object file
 integrators/pathtraceintegrator.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/integrators/pathtraceintegrator.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/integrators/pathtraceintegrator.o
 .PHONY : integrators/pathtraceintegrator.o
 
 # target to preprocess a source file
 integrators/pathtraceintegrator.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/integrators/pathtraceintegrator.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/integrators/pathtraceintegrator.i
 .PHONY : integrators/pathtraceintegrator.i
 
 # target to generate assembly for a file
 integrators/pathtraceintegrator.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/integrators/pathtraceintegrator.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/integrators/pathtraceintegrator.s
 .PHONY : integrators/pathtraceintegrator.s
 
 # target to build an object file
 lights/hdrilight.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/lights/hdrilight.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/lights/hdrilight.o
 .PHONY : lights/hdrilight.o
 
 # target to preprocess a source file
 lights/hdrilight.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/lights/hdrilight.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/lights/hdrilight.i
 .PHONY : lights/hdrilight.i
 
 # target to generate assembly for a file
 lights/hdrilight.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/lights/hdrilight.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/lights/hdrilight.s
 .PHONY : lights/hdrilight.s
 
 # target to build an object file
 renderers/debugrenderer.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/debugrenderer.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/debugrenderer.o
 .PHONY : renderers/debugrenderer.o
 
 # target to preprocess a source file
 renderers/debugrenderer.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/debugrenderer.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/debugrenderer.i
 .PHONY : renderers/debugrenderer.i
 
 # target to generate assembly for a file
 renderers/debugrenderer.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/debugrenderer.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/debugrenderer.s
 .PHONY : renderers/debugrenderer.s
 
 # target to build an object file
 renderers/integratorrenderer.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/integratorrenderer.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/integratorrenderer.o
 .PHONY : renderers/integratorrenderer.o
 
 # target to preprocess a source file
 renderers/integratorrenderer.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/integratorrenderer.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/integratorrenderer.i
 .PHONY : renderers/integratorrenderer.i
 
 # target to generate assembly for a file
 renderers/integratorrenderer.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/integratorrenderer.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/integratorrenderer.s
 .PHONY : renderers/integratorrenderer.s
 
 # target to build an object file
 renderers/progress.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/progress.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/progress.o
 .PHONY : renderers/progress.o
 
 # target to preprocess a source file
 renderers/progress.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/progress.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/progress.i
 .PHONY : renderers/progress.i
 
 # target to generate assembly for a file
 renderers/progress.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/progress.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/renderers/progress.s
 .PHONY : renderers/progress.s
 
 # target to build an object file
 samplers/distribution1d.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/distribution1d.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/distribution1d.o
 .PHONY : samplers/distribution1d.o
 
 # target to preprocess a source file
 samplers/distribution1d.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/distribution1d.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/distribution1d.i
 .PHONY : samplers/distribution1d.i
 
 # target to generate assembly for a file
 samplers/distribution1d.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/distribution1d.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/distribution1d.s
 .PHONY : samplers/distribution1d.s
 
 # target to build an object file
 samplers/distribution2d.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/distribution2d.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/distribution2d.o
 .PHONY : samplers/distribution2d.o
 
 # target to preprocess a source file
 samplers/distribution2d.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/distribution2d.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/distribution2d.i
 .PHONY : samplers/distribution2d.i
 
 # target to generate assembly for a file
 samplers/distribution2d.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/distribution2d.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/distribution2d.s
 .PHONY : samplers/distribution2d.s
 
 # target to build an object file
 samplers/sampler.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/sampler.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/sampler.o
 .PHONY : samplers/sampler.o
 
 # target to preprocess a source file
 samplers/sampler.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/sampler.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/sampler.i
 .PHONY : samplers/sampler.i
 
 # target to generate assembly for a file
 samplers/sampler.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/sampler.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/samplers/sampler.s
 .PHONY : samplers/sampler.s
 
 # target to build an object file
 shapes/trianglemesh_full.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/shapes/trianglemesh_full.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/shapes/trianglemesh_full.o
 .PHONY : shapes/trianglemesh_full.o
 
 # target to preprocess a source file
 shapes/trianglemesh_full.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/shapes/trianglemesh_full.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/shapes/trianglemesh_full.i
 .PHONY : shapes/trianglemesh_full.i
 
 # target to generate assembly for a file
 shapes/trianglemesh_full.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/shapes/trianglemesh_full.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/shapes/trianglemesh_full.s
 .PHONY : shapes/trianglemesh_full.s
 
 # target to build an object file
 shapes/trianglemesh_normals.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/shapes/trianglemesh_normals.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/shapes/trianglemesh_normals.o
 .PHONY : shapes/trianglemesh_normals.o
 
 # target to preprocess a source file
 shapes/trianglemesh_normals.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/shapes/trianglemesh_normals.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/shapes/trianglemesh_normals.i
 .PHONY : shapes/trianglemesh_normals.i
 
 # target to generate assembly for a file
 shapes/trianglemesh_normals.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/shapes/trianglemesh_normals.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/build.make examples/renderer/device_singleray/CMakeFiles/device_singleray.dir/shapes/trianglemesh_normals.s
 .PHONY : shapes/trianglemesh_normals.s
 
 # Help Target
@@ -351,6 +351,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

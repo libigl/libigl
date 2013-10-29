@@ -42,10 +42,10 @@ EQUALS = =
 CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree2
+CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree2/bin
+CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree/bin
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -72,9 +72,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles /usr/local/igl/libigl/external/embree2/bin/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles /usr/local/igl/libigl/external/embree/bin/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

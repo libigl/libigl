@@ -42,10 +42,10 @@ EQUALS = =
 CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree2
+CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree2/bin
+CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree/bin
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -72,14 +72,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles /usr/local/igl/libigl/external/embree2/bin/examples/tutorials/CMakeFiles/progress.marks
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/tutorials/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles 0
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles /usr/local/igl/libigl/external/embree/bin/examples/tutorials/CMakeFiles/progress.marks
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/tutorials/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/tutorials/clean
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/tutorials/clean
 .PHONY : clean
 
 # The main clean target
@@ -88,22 +88,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/tutorials/preinstall
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/tutorials/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/tutorials/preinstall
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/tutorials/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 examples/tutorials/CMakeFiles/tutorial_host_device.dir/rule:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/tutorials/CMakeFiles/tutorial_host_device.dir/rule
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/tutorials/CMakeFiles/tutorial_host_device.dir/rule
 .PHONY : examples/tutorials/CMakeFiles/tutorial_host_device.dir/rule
 
 # Convenience name for target.
@@ -112,12 +112,12 @@ tutorial_host_device: examples/tutorials/CMakeFiles/tutorial_host_device.dir/rul
 
 # fast build rule for target.
 tutorial_host_device/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorial_host_device.dir/build.make examples/tutorials/CMakeFiles/tutorial_host_device.dir/build
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorial_host_device.dir/build.make examples/tutorials/CMakeFiles/tutorial_host_device.dir/build
 .PHONY : tutorial_host_device/fast
 
 # Convenience name for target.
 examples/tutorials/CMakeFiles/tutorials.dir/rule:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/tutorials/CMakeFiles/tutorials.dir/rule
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/tutorials/CMakeFiles/tutorials.dir/rule
 .PHONY : examples/tutorials/CMakeFiles/tutorials.dir/rule
 
 # Convenience name for target.
@@ -126,52 +126,52 @@ tutorials: examples/tutorials/CMakeFiles/tutorials.dir/rule
 
 # fast build rule for target.
 tutorials/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorials.dir/build.make examples/tutorials/CMakeFiles/tutorials.dir/build
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorials.dir/build.make examples/tutorials/CMakeFiles/tutorials.dir/build
 .PHONY : tutorials/fast
 
 # target to build an object file
 glutdisplay.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorials.dir/build.make examples/tutorials/CMakeFiles/tutorials.dir/glutdisplay.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorials.dir/build.make examples/tutorials/CMakeFiles/tutorials.dir/glutdisplay.o
 .PHONY : glutdisplay.o
 
 # target to preprocess a source file
 glutdisplay.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorials.dir/build.make examples/tutorials/CMakeFiles/tutorials.dir/glutdisplay.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorials.dir/build.make examples/tutorials/CMakeFiles/tutorials.dir/glutdisplay.i
 .PHONY : glutdisplay.i
 
 # target to generate assembly for a file
 glutdisplay.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorials.dir/build.make examples/tutorials/CMakeFiles/tutorials.dir/glutdisplay.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorials.dir/build.make examples/tutorials/CMakeFiles/tutorials.dir/glutdisplay.s
 .PHONY : glutdisplay.s
 
 # target to build an object file
 obj_loader.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorials.dir/build.make examples/tutorials/CMakeFiles/tutorials.dir/obj_loader.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorials.dir/build.make examples/tutorials/CMakeFiles/tutorials.dir/obj_loader.o
 .PHONY : obj_loader.o
 
 # target to preprocess a source file
 obj_loader.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorials.dir/build.make examples/tutorials/CMakeFiles/tutorials.dir/obj_loader.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorials.dir/build.make examples/tutorials/CMakeFiles/tutorials.dir/obj_loader.i
 .PHONY : obj_loader.i
 
 # target to generate assembly for a file
 obj_loader.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorials.dir/build.make examples/tutorials/CMakeFiles/tutorials.dir/obj_loader.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorials.dir/build.make examples/tutorials/CMakeFiles/tutorials.dir/obj_loader.s
 .PHONY : obj_loader.s
 
 # target to build an object file
 tutorials_host_device.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorial_host_device.dir/build.make examples/tutorials/CMakeFiles/tutorial_host_device.dir/tutorials_host_device.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorial_host_device.dir/build.make examples/tutorials/CMakeFiles/tutorial_host_device.dir/tutorials_host_device.o
 .PHONY : tutorials_host_device.o
 
 # target to preprocess a source file
 tutorials_host_device.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorial_host_device.dir/build.make examples/tutorials/CMakeFiles/tutorial_host_device.dir/tutorials_host_device.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorial_host_device.dir/build.make examples/tutorials/CMakeFiles/tutorial_host_device.dir/tutorials_host_device.i
 .PHONY : tutorials_host_device.i
 
 # target to generate assembly for a file
 tutorials_host_device.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorial_host_device.dir/build.make examples/tutorials/CMakeFiles/tutorial_host_device.dir/tutorials_host_device.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/tutorials/CMakeFiles/tutorial_host_device.dir/build.make examples/tutorials/CMakeFiles/tutorial_host_device.dir/tutorials_host_device.s
 .PHONY : tutorials_host_device.s
 
 # Help Target
@@ -204,6 +204,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

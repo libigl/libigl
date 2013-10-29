@@ -48,7 +48,7 @@ Eigen::MatrixXd V,N,C,mid;
 Eigen::MatrixXi F;
 // Bounding box diagonal length
 double bbd;
-igl::EmbreeIntersector<Eigen::MatrixXd,Eigen::MatrixXi,Eigen::Vector3d> ei;
+igl::EmbreeIntersector<Eigen::MatrixXd::Scalar,Eigen::MatrixXi::Scalar> ei;
 // Running ambient occlusion
 Eigen::VectorXd S;
 int tot_num_samples = 0;
@@ -373,7 +373,8 @@ int main(int argc, char * argv[])
   bbd = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
 
   // Init embree
-  ei = EmbreeIntersector<MatrixXd,MatrixXi,Vector3d>(V,F);
+  cout<<"init embree..."<<endl;
+  ei = EmbreeIntersector<MatrixXd::Scalar,MatrixXi::Scalar>(V,F);
 
   // Init glut
   glutInit(&argc,argv);

@@ -42,10 +42,10 @@ EQUALS = =
 CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree2
+CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree2/bin
+CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree/bin
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -72,14 +72,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles /usr/local/igl/libigl/external/embree2/bin/examples/renderer/device_network/CMakeFiles/progress.marks
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_network/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles 0
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles /usr/local/igl/libigl/external/embree/bin/examples/renderer/device_network/CMakeFiles/progress.marks
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_network/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_network/clean
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_network/clean
 .PHONY : clean
 
 # The main clean target
@@ -88,22 +88,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_network/preinstall
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_network/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_network/preinstall
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_network/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 examples/renderer/device_network/CMakeFiles/device_network.dir/rule:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_network/CMakeFiles/device_network.dir/rule
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_network/CMakeFiles/device_network.dir/rule
 .PHONY : examples/renderer/device_network/CMakeFiles/device_network.dir/rule
 
 # Convenience name for target.
@@ -112,12 +112,12 @@ device_network: examples/renderer/device_network/CMakeFiles/device_network.dir/r
 
 # fast build rule for target.
 device_network/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/device_network.dir/build.make examples/renderer/device_network/CMakeFiles/device_network.dir/build
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/device_network.dir/build.make examples/renderer/device_network/CMakeFiles/device_network.dir/build
 .PHONY : device_network/fast
 
 # Convenience name for target.
 examples/renderer/device_network/CMakeFiles/renderer_server.dir/rule:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_network/CMakeFiles/renderer_server.dir/rule
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device_network/CMakeFiles/renderer_server.dir/rule
 .PHONY : examples/renderer/device_network/CMakeFiles/renderer_server.dir/rule
 
 # Convenience name for target.
@@ -126,52 +126,52 @@ renderer_server: examples/renderer/device_network/CMakeFiles/renderer_server.dir
 
 # fast build rule for target.
 renderer_server/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/renderer_server.dir/build.make examples/renderer/device_network/CMakeFiles/renderer_server.dir/build
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/renderer_server.dir/build.make examples/renderer/device_network/CMakeFiles/renderer_server.dir/build
 .PHONY : renderer_server/fast
 
 # target to build an object file
 network_device.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/device_network.dir/build.make examples/renderer/device_network/CMakeFiles/device_network.dir/network_device.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/device_network.dir/build.make examples/renderer/device_network/CMakeFiles/device_network.dir/network_device.o
 .PHONY : network_device.o
 
 # target to preprocess a source file
 network_device.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/device_network.dir/build.make examples/renderer/device_network/CMakeFiles/device_network.dir/network_device.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/device_network.dir/build.make examples/renderer/device_network/CMakeFiles/device_network.dir/network_device.i
 .PHONY : network_device.i
 
 # target to generate assembly for a file
 network_device.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/device_network.dir/build.make examples/renderer/device_network/CMakeFiles/device_network.dir/network_device.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/device_network.dir/build.make examples/renderer/device_network/CMakeFiles/device_network.dir/network_device.s
 .PHONY : network_device.s
 
 # target to build an object file
 network_server.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/renderer_server.dir/build.make examples/renderer/device_network/CMakeFiles/renderer_server.dir/network_server.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/renderer_server.dir/build.make examples/renderer/device_network/CMakeFiles/renderer_server.dir/network_server.o
 .PHONY : network_server.o
 
 # target to preprocess a source file
 network_server.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/renderer_server.dir/build.make examples/renderer/device_network/CMakeFiles/renderer_server.dir/network_server.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/renderer_server.dir/build.make examples/renderer/device_network/CMakeFiles/renderer_server.dir/network_server.i
 .PHONY : network_server.i
 
 # target to generate assembly for a file
 network_server.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/renderer_server.dir/build.make examples/renderer/device_network/CMakeFiles/renderer_server.dir/network_server.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/renderer_server.dir/build.make examples/renderer/device_network/CMakeFiles/renderer_server.dir/network_server.s
 .PHONY : network_server.s
 
 # target to build an object file
 network_server_main.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/renderer_server.dir/build.make examples/renderer/device_network/CMakeFiles/renderer_server.dir/network_server_main.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/renderer_server.dir/build.make examples/renderer/device_network/CMakeFiles/renderer_server.dir/network_server_main.o
 .PHONY : network_server_main.o
 
 # target to preprocess a source file
 network_server_main.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/renderer_server.dir/build.make examples/renderer/device_network/CMakeFiles/renderer_server.dir/network_server_main.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/renderer_server.dir/build.make examples/renderer/device_network/CMakeFiles/renderer_server.dir/network_server_main.i
 .PHONY : network_server_main.i
 
 # target to generate assembly for a file
 network_server_main.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/renderer_server.dir/build.make examples/renderer/device_network/CMakeFiles/renderer_server.dir/network_server_main.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device_network/CMakeFiles/renderer_server.dir/build.make examples/renderer/device_network/CMakeFiles/renderer_server.dir/network_server_main.s
 .PHONY : network_server_main.s
 
 # Help Target
@@ -204,6 +204,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

@@ -42,10 +42,10 @@ EQUALS = =
 CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree2
+CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree2/bin
+CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree/bin
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -72,14 +72,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles /usr/local/igl/libigl/external/embree2/bin/embree/sys/CMakeFiles/progress.marks
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/sys/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles 0
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles /usr/local/igl/libigl/external/embree/bin/embree/sys/CMakeFiles/progress.marks
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/sys/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/sys/clean
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/sys/clean
 .PHONY : clean
 
 # The main clean target
@@ -88,22 +88,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/sys/preinstall
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/sys/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/sys/preinstall
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/sys/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 embree/sys/CMakeFiles/sys.dir/rule:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/sys/CMakeFiles/sys.dir/rule
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/sys/CMakeFiles/sys.dir/rule
 .PHONY : embree/sys/CMakeFiles/sys.dir/rule
 
 # Convenience name for target.
@@ -112,187 +112,187 @@ sys: embree/sys/CMakeFiles/sys.dir/rule
 
 # fast build rule for target.
 sys/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/build
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/build
 .PHONY : sys/fast
 
 # target to build an object file
 filename.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/filename.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/filename.o
 .PHONY : filename.o
 
 # target to preprocess a source file
 filename.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/filename.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/filename.i
 .PHONY : filename.i
 
 # target to generate assembly for a file
 filename.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/filename.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/filename.s
 .PHONY : filename.s
 
 # target to build an object file
 library.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/library.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/library.o
 .PHONY : library.o
 
 # target to preprocess a source file
 library.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/library.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/library.i
 .PHONY : library.i
 
 # target to generate assembly for a file
 library.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/library.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/library.s
 .PHONY : library.s
 
 # target to build an object file
 network.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/network.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/network.o
 .PHONY : network.o
 
 # target to preprocess a source file
 network.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/network.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/network.i
 .PHONY : network.i
 
 # target to generate assembly for a file
 network.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/network.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/network.s
 .PHONY : network.s
 
 # target to build an object file
 platform.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/platform.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/platform.o
 .PHONY : platform.o
 
 # target to preprocess a source file
 platform.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/platform.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/platform.i
 .PHONY : platform.i
 
 # target to generate assembly for a file
 platform.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/platform.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/platform.s
 .PHONY : platform.s
 
 # target to build an object file
 stl/string.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/stl/string.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/stl/string.o
 .PHONY : stl/string.o
 
 # target to preprocess a source file
 stl/string.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/stl/string.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/stl/string.i
 .PHONY : stl/string.i
 
 # target to generate assembly for a file
 stl/string.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/stl/string.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/stl/string.s
 .PHONY : stl/string.s
 
 # target to build an object file
 sync/condition.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sync/condition.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sync/condition.o
 .PHONY : sync/condition.o
 
 # target to preprocess a source file
 sync/condition.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sync/condition.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sync/condition.i
 .PHONY : sync/condition.i
 
 # target to generate assembly for a file
 sync/condition.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sync/condition.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sync/condition.s
 .PHONY : sync/condition.s
 
 # target to build an object file
 sync/mutex.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sync/mutex.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sync/mutex.o
 .PHONY : sync/mutex.o
 
 # target to preprocess a source file
 sync/mutex.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sync/mutex.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sync/mutex.i
 .PHONY : sync/mutex.i
 
 # target to generate assembly for a file
 sync/mutex.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sync/mutex.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sync/mutex.s
 .PHONY : sync/mutex.s
 
 # target to build an object file
 sysinfo.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sysinfo.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sysinfo.o
 .PHONY : sysinfo.o
 
 # target to preprocess a source file
 sysinfo.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sysinfo.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sysinfo.i
 .PHONY : sysinfo.i
 
 # target to generate assembly for a file
 sysinfo.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sysinfo.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/sysinfo.s
 .PHONY : sysinfo.s
 
 # target to build an object file
 taskscheduler.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler.o
 .PHONY : taskscheduler.o
 
 # target to preprocess a source file
 taskscheduler.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler.i
 .PHONY : taskscheduler.i
 
 # target to generate assembly for a file
 taskscheduler.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler.s
 .PHONY : taskscheduler.s
 
 # target to build an object file
 taskscheduler_mic.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler_mic.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler_mic.o
 .PHONY : taskscheduler_mic.o
 
 # target to preprocess a source file
 taskscheduler_mic.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler_mic.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler_mic.i
 .PHONY : taskscheduler_mic.i
 
 # target to generate assembly for a file
 taskscheduler_mic.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler_mic.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler_mic.s
 .PHONY : taskscheduler_mic.s
 
 # target to build an object file
 taskscheduler_sys.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler_sys.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler_sys.o
 .PHONY : taskscheduler_sys.o
 
 # target to preprocess a source file
 taskscheduler_sys.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler_sys.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler_sys.i
 .PHONY : taskscheduler_sys.i
 
 # target to generate assembly for a file
 taskscheduler_sys.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler_sys.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/taskscheduler_sys.s
 .PHONY : taskscheduler_sys.s
 
 # target to build an object file
 thread.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/thread.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/thread.o
 .PHONY : thread.o
 
 # target to preprocess a source file
 thread.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/thread.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/thread.i
 .PHONY : thread.i
 
 # target to generate assembly for a file
 thread.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/thread.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/sys/CMakeFiles/sys.dir/build.make embree/sys/CMakeFiles/sys.dir/thread.s
 .PHONY : thread.s
 
 # Help Target
@@ -351,6 +351,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

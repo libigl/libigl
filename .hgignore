@@ -18,6 +18,7 @@ external/tinyxml2/CMakeCache.txt
 external/embree/bin/*
 external/embree/doc/html/*
 external/embree/doc/latex/*
+*.cmake
 .DS_Store
 libigl.zip
 *tags

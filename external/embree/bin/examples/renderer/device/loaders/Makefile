@@ -42,10 +42,10 @@ EQUALS = =
 CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree2
+CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree2/bin
+CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree/bin
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -72,14 +72,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles /usr/local/igl/libigl/external/embree2/bin/examples/renderer/device/loaders/CMakeFiles/progress.marks
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device/loaders/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles 0
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles /usr/local/igl/libigl/external/embree/bin/examples/renderer/device/loaders/CMakeFiles/progress.marks
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device/loaders/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device/loaders/clean
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device/loaders/clean
 .PHONY : clean
 
 # The main clean target
@@ -88,22 +88,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device/loaders/preinstall
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device/loaders/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device/loaders/preinstall
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device/loaders/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 examples/renderer/device/loaders/CMakeFiles/loaders.dir/rule:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device/loaders/CMakeFiles/loaders.dir/rule
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 examples/renderer/device/loaders/CMakeFiles/loaders.dir/rule
 .PHONY : examples/renderer/device/loaders/CMakeFiles/loaders.dir/rule
 
 # Convenience name for target.
@@ -112,67 +112,67 @@ loaders: examples/renderer/device/loaders/CMakeFiles/loaders.dir/rule
 
 # fast build rule for target.
 loaders/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/build
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/build
 .PHONY : loaders/fast
 
 # target to build an object file
 loaders.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/loaders.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/loaders.o
 .PHONY : loaders.o
 
 # target to preprocess a source file
 loaders.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/loaders.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/loaders.i
 .PHONY : loaders.i
 
 # target to generate assembly for a file
 loaders.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/loaders.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/loaders.s
 .PHONY : loaders.s
 
 # target to build an object file
 obj_loader.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/obj_loader.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/obj_loader.o
 .PHONY : obj_loader.o
 
 # target to preprocess a source file
 obj_loader.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/obj_loader.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/obj_loader.i
 .PHONY : obj_loader.i
 
 # target to generate assembly for a file
 obj_loader.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/obj_loader.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/obj_loader.s
 .PHONY : obj_loader.s
 
 # target to build an object file
 xml_loader.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/xml_loader.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/xml_loader.o
 .PHONY : xml_loader.o
 
 # target to preprocess a source file
 xml_loader.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/xml_loader.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/xml_loader.i
 .PHONY : xml_loader.i
 
 # target to generate assembly for a file
 xml_loader.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/xml_loader.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/xml_loader.s
 .PHONY : xml_loader.s
 
 # target to build an object file
 xml_parser.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/xml_parser.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/xml_parser.o
 .PHONY : xml_parser.o
 
 # target to preprocess a source file
 xml_parser.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/xml_parser.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/xml_parser.i
 .PHONY : xml_parser.i
 
 # target to generate assembly for a file
 xml_parser.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/xml_parser.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f examples/renderer/device/loaders/CMakeFiles/loaders.dir/build.make examples/renderer/device/loaders/CMakeFiles/loaders.dir/xml_parser.s
 .PHONY : xml_parser.s
 
 # Help Target
@@ -207,6 +207,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

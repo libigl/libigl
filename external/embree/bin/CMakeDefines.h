@@ -1,1 +1,1 @@
-#define CMAKE_BUILD_DIR "/usr/local/igl/libigl/external/embree2/bin"
+#define CMAKE_BUILD_DIR "/usr/local/igl/libigl/external/embree/bin"

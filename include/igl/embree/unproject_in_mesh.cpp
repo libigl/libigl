@@ -4,31 +4,29 @@
 #include <vector>
 
 template <
-  typename PointMatrixType,
-  typename FaceMatrixType,
-  typename RowVector3,
+  typename Scalar,
+  typename Index,
   typename Derivedobj>
 int igl::unproject_in_mesh(
   const int x,
   const int y,
-  const igl::EmbreeIntersector<PointMatrixType,FaceMatrixType,RowVector3> & ei,
+  const igl::EmbreeIntersector<Scalar,Index> & ei,
   Eigen::PlainObjectBase<Derivedobj> & obj)
 {
-  std::vector<embree::Hit> hits;
+  std::vector<igl::Hit> hits;
   return igl::unproject_in_mesh(x,y,ei,obj,hits);
 }
 
 template <
-  typename PointMatrixType,
-  typename FaceMatrixType,
-  typename RowVector3,
+  typename Scalar,
+  typename Index,
   typename Derivedobj>
 int igl::unproject_in_mesh(
   const int x,
   const int y,
-  const igl::EmbreeIntersector<PointMatrixType,FaceMatrixType,RowVector3> & ei,
+  const igl::EmbreeIntersector<Scalar,Index> & ei,
   Eigen::PlainObjectBase<Derivedobj> & obj,
-  std::vector<embree::Hit > & hits)
+  std::vector<igl::Hit > & hits)
 {
   using namespace igl;
   using namespace std;
@@ -65,5 +63,4 @@ int igl::unproject_in_mesh(
 }
 
 #ifndef IGL_HEADER_ONLY
-template int igl::unproject_in_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(int, int, igl::EmbreeIntersector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
 #endif

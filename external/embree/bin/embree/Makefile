@@ -42,10 +42,10 @@ EQUALS = =
 CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree2
+CMAKE_SOURCE_DIR = /usr/local/igl/libigl/external/embree
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree2/bin
+CMAKE_BINARY_DIR = /usr/local/igl/libigl/external/embree/bin
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -72,14 +72,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles /usr/local/igl/libigl/external/embree2/bin/embree/CMakeFiles/progress.marks
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree2/bin/CMakeFiles 0
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles /usr/local/igl/libigl/external/embree/bin/embree/CMakeFiles/progress.marks
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /usr/local/igl/libigl/external/embree/bin/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/clean
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/clean
 .PHONY : clean
 
 # The main clean target
@@ -88,22 +88,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/preinstall
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/preinstall
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 embree/CMakeFiles/embree.dir/rule:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/CMakeFiles/embree.dir/rule
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f CMakeFiles/Makefile2 embree/CMakeFiles/embree.dir/rule
 .PHONY : embree/CMakeFiles/embree.dir/rule
 
 # Convenience name for target.
@@ -112,517 +112,517 @@ embree: embree/CMakeFiles/embree.dir/rule
 
 # fast build rule for target.
 embree/fast:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/build
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/build
 .PHONY : embree/fast
 
 # target to build an object file
 builders/heuristic_binning.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/heuristic_binning.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/heuristic_binning.o
 .PHONY : builders/heuristic_binning.o
 
 # target to preprocess a source file
 builders/heuristic_binning.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/heuristic_binning.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/heuristic_binning.i
 .PHONY : builders/heuristic_binning.i
 
 # target to generate assembly for a file
 builders/heuristic_binning.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/heuristic_binning.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/heuristic_binning.s
 .PHONY : builders/heuristic_binning.s
 
 # target to build an object file
 builders/heuristic_spatial.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/heuristic_spatial.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/heuristic_spatial.o
 .PHONY : builders/heuristic_spatial.o
 
 # target to preprocess a source file
 builders/heuristic_spatial.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/heuristic_spatial.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/heuristic_spatial.i
 .PHONY : builders/heuristic_spatial.i
 
 # target to generate assembly for a file
 builders/heuristic_spatial.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/heuristic_spatial.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/heuristic_spatial.s
 .PHONY : builders/heuristic_spatial.s
 
 # target to build an object file
 builders/primrefgen.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/primrefgen.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/primrefgen.o
 .PHONY : builders/primrefgen.o
 
 # target to preprocess a source file
 builders/primrefgen.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/primrefgen.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/primrefgen.i
 .PHONY : builders/primrefgen.i
 
 # target to generate assembly for a file
 builders/primrefgen.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/primrefgen.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/primrefgen.s
 .PHONY : builders/primrefgen.s
 
 # target to build an object file
 builders/splitter.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter.o
 .PHONY : builders/splitter.o
 
 # target to preprocess a source file
 builders/splitter.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter.i
 .PHONY : builders/splitter.i
 
 # target to generate assembly for a file
 builders/splitter.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter.s
 .PHONY : builders/splitter.s
 
 # target to build an object file
 builders/splitter_fallback.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter_fallback.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter_fallback.o
 .PHONY : builders/splitter_fallback.o
 
 # target to preprocess a source file
 builders/splitter_fallback.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter_fallback.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter_fallback.i
 .PHONY : builders/splitter_fallback.i
 
 # target to generate assembly for a file
 builders/splitter_fallback.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter_fallback.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter_fallback.s
 .PHONY : builders/splitter_fallback.s
 
 # target to build an object file
 builders/splitter_parallel.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter_parallel.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter_parallel.o
 .PHONY : builders/splitter_parallel.o
 
 # target to preprocess a source file
 builders/splitter_parallel.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter_parallel.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter_parallel.i
 .PHONY : builders/splitter_parallel.i
 
 # target to generate assembly for a file
 builders/splitter_parallel.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter_parallel.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/builders/splitter_parallel.s
 .PHONY : builders/splitter_parallel.s
 
 # target to build an object file
 bvh2/bvh2.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2.o
 .PHONY : bvh2/bvh2.o
 
 # target to preprocess a source file
 bvh2/bvh2.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2.i
 .PHONY : bvh2/bvh2.i
 
 # target to generate assembly for a file
 bvh2/bvh2.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2.s
 .PHONY : bvh2/bvh2.s
 
 # target to build an object file
 bvh2/bvh2_intersector1.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector1.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector1.o
 .PHONY : bvh2/bvh2_intersector1.o
 
 # target to preprocess a source file
 bvh2/bvh2_intersector1.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector1.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector1.i
 .PHONY : bvh2/bvh2_intersector1.i
 
 # target to generate assembly for a file
 bvh2/bvh2_intersector1.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector1.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector1.s
 .PHONY : bvh2/bvh2_intersector1.s
 
 # target to build an object file
 bvh2/bvh2_intersector4.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector4.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector4.o
 .PHONY : bvh2/bvh2_intersector4.o
 
 # target to preprocess a source file
 bvh2/bvh2_intersector4.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector4.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector4.i
 .PHONY : bvh2/bvh2_intersector4.i
 
 # target to generate assembly for a file
 bvh2/bvh2_intersector4.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector4.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector4.s
 .PHONY : bvh2/bvh2_intersector4.s
 
 # target to build an object file
 bvh2/bvh2_intersector8.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector8.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector8.o
 .PHONY : bvh2/bvh2_intersector8.o
 
 # target to preprocess a source file
 bvh2/bvh2_intersector8.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector8.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector8.i
 .PHONY : bvh2/bvh2_intersector8.i
 
 # target to generate assembly for a file
 bvh2/bvh2_intersector8.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector8.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh2/bvh2_intersector8.s
 .PHONY : bvh2/bvh2_intersector8.s
 
 # target to build an object file
 bvh4/bvh4.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4.o
 .PHONY : bvh4/bvh4.o
 
 # target to preprocess a source file
 bvh4/bvh4.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4.i
 .PHONY : bvh4/bvh4.i
 
 # target to generate assembly for a file
 bvh4/bvh4.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4.s
 .PHONY : bvh4/bvh4.s
 
 # target to build an object file
 bvh4/bvh4_intersector1.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector1.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector1.o
 .PHONY : bvh4/bvh4_intersector1.o
 
 # target to preprocess a source file
 bvh4/bvh4_intersector1.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector1.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector1.i
 .PHONY : bvh4/bvh4_intersector1.i
 
 # target to generate assembly for a file
 bvh4/bvh4_intersector1.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector1.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector1.s
 .PHONY : bvh4/bvh4_intersector1.s
 
 # target to build an object file
 bvh4/bvh4_intersector4_chunk.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_chunk.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_chunk.o
 .PHONY : bvh4/bvh4_intersector4_chunk.o
 
 # target to preprocess a source file
 bvh4/bvh4_intersector4_chunk.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_chunk.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_chunk.i
 .PHONY : bvh4/bvh4_intersector4_chunk.i
 
 # target to generate assembly for a file
 bvh4/bvh4_intersector4_chunk.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_chunk.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_chunk.s
 .PHONY : bvh4/bvh4_intersector4_chunk.s
 
 # target to build an object file
 bvh4/bvh4_intersector4_hybrid.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_hybrid.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_hybrid.o
 .PHONY : bvh4/bvh4_intersector4_hybrid.o
 
 # target to preprocess a source file
 bvh4/bvh4_intersector4_hybrid.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_hybrid.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_hybrid.i
 .PHONY : bvh4/bvh4_intersector4_hybrid.i
 
 # target to generate assembly for a file
 bvh4/bvh4_intersector4_hybrid.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_hybrid.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_hybrid.s
 .PHONY : bvh4/bvh4_intersector4_hybrid.s
 
 # target to build an object file
 bvh4/bvh4_intersector4_single.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_single.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_single.o
 .PHONY : bvh4/bvh4_intersector4_single.o
 
 # target to preprocess a source file
 bvh4/bvh4_intersector4_single.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_single.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_single.i
 .PHONY : bvh4/bvh4_intersector4_single.i
 
 # target to generate assembly for a file
 bvh4/bvh4_intersector4_single.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_single.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector4_single.s
 .PHONY : bvh4/bvh4_intersector4_single.s
 
 # target to build an object file
 bvh4/bvh4_intersector8_chunk.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_chunk.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_chunk.o
 .PHONY : bvh4/bvh4_intersector8_chunk.o
 
 # target to preprocess a source file
 bvh4/bvh4_intersector8_chunk.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_chunk.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_chunk.i
 .PHONY : bvh4/bvh4_intersector8_chunk.i
 
 # target to generate assembly for a file
 bvh4/bvh4_intersector8_chunk.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_chunk.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_chunk.s
 .PHONY : bvh4/bvh4_intersector8_chunk.s
 
 # target to build an object file
 bvh4/bvh4_intersector8_hybrid.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_hybrid.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_hybrid.o
 .PHONY : bvh4/bvh4_intersector8_hybrid.o
 
 # target to preprocess a source file
 bvh4/bvh4_intersector8_hybrid.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_hybrid.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_hybrid.i
 .PHONY : bvh4/bvh4_intersector8_hybrid.i
 
 # target to generate assembly for a file
 bvh4/bvh4_intersector8_hybrid.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_hybrid.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_hybrid.s
 .PHONY : bvh4/bvh4_intersector8_hybrid.s
 
 # target to build an object file
 bvh4/bvh4_intersector8_single.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_single.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_single.o
 .PHONY : bvh4/bvh4_intersector8_single.o
 
 # target to preprocess a source file
 bvh4/bvh4_intersector8_single.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_single.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_single.i
 .PHONY : bvh4/bvh4_intersector8_single.i
 
 # target to generate assembly for a file
 bvh4/bvh4_intersector8_single.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_single.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4/bvh4_intersector8_single.s
 .PHONY : bvh4/bvh4_intersector8_single.s
 
 # target to build an object file
 bvh4i/bvh4i.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4i/bvh4i.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4i/bvh4i.o
 .PHONY : bvh4i/bvh4i.o
 
 # target to preprocess a source file
 bvh4i/bvh4i.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4i/bvh4i.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4i/bvh4i.i
 .PHONY : bvh4i/bvh4i.i
 
 # target to generate assembly for a file
 bvh4i/bvh4i.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4i/bvh4i.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4i/bvh4i.s
 .PHONY : bvh4i/bvh4i.s
 
 # target to build an object file
 bvh4i/bvh4i_intersector1.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4i/bvh4i_intersector1.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4i/bvh4i_intersector1.o
 .PHONY : bvh4i/bvh4i_intersector1.o
 
 # target to preprocess a source file
 bvh4i/bvh4i_intersector1.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4i/bvh4i_intersector1.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4i/bvh4i_intersector1.i
 .PHONY : bvh4i/bvh4i_intersector1.i
 
 # target to generate assembly for a file
 bvh4i/bvh4i_intersector1.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4i/bvh4i_intersector1.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4i/bvh4i_intersector1.s
 .PHONY : bvh4i/bvh4i_intersector1.s
 
 # target to build an object file
 bvh4mb/bvh4mb.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb.o
 .PHONY : bvh4mb/bvh4mb.o
 
 # target to preprocess a source file
 bvh4mb/bvh4mb.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb.i
 .PHONY : bvh4mb/bvh4mb.i
 
 # target to generate assembly for a file
 bvh4mb/bvh4mb.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb.s
 .PHONY : bvh4mb/bvh4mb.s
 
 # target to build an object file
 bvh4mb/bvh4mb_builder.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_builder.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_builder.o
 .PHONY : bvh4mb/bvh4mb_builder.o
 
 # target to preprocess a source file
 bvh4mb/bvh4mb_builder.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_builder.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_builder.i
 .PHONY : bvh4mb/bvh4mb_builder.i
 
 # target to generate assembly for a file
 bvh4mb/bvh4mb_builder.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_builder.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_builder.s
 .PHONY : bvh4mb/bvh4mb_builder.s
 
 # target to build an object file
 bvh4mb/bvh4mb_intersector1.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector1.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector1.o
 .PHONY : bvh4mb/bvh4mb_intersector1.o
 
 # target to preprocess a source file
 bvh4mb/bvh4mb_intersector1.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector1.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector1.i
 .PHONY : bvh4mb/bvh4mb_intersector1.i
 
 # target to generate assembly for a file
 bvh4mb/bvh4mb_intersector1.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector1.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector1.s
 .PHONY : bvh4mb/bvh4mb_intersector1.s
 
 # target to build an object file
 bvh4mb/bvh4mb_intersector4.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector4.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector4.o
 .PHONY : bvh4mb/bvh4mb_intersector4.o
 
 # target to preprocess a source file
 bvh4mb/bvh4mb_intersector4.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector4.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector4.i
 .PHONY : bvh4mb/bvh4mb_intersector4.i
 
 # target to generate assembly for a file
 bvh4mb/bvh4mb_intersector4.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector4.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector4.s
 .PHONY : bvh4mb/bvh4mb_intersector4.s
 
 # target to build an object file
 bvh4mb/bvh4mb_intersector8.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector8.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector8.o
 .PHONY : bvh4mb/bvh4mb_intersector8.o
 
 # target to preprocess a source file
 bvh4mb/bvh4mb_intersector8.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector8.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector8.i
 .PHONY : bvh4mb/bvh4mb_intersector8.i
 
 # target to generate assembly for a file
 bvh4mb/bvh4mb_intersector8.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector8.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/bvh4mb/bvh4mb_intersector8.s
 .PHONY : bvh4mb/bvh4mb_intersector8.s
 
 # target to build an object file
 common/accel.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/accel.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/accel.o
 .PHONY : common/accel.o
 
 # target to preprocess a source file
 common/accel.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/accel.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/accel.i
 .PHONY : common/accel.i
 
 # target to generate assembly for a file
 common/accel.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/accel.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/accel.s
 .PHONY : common/accel.s
 
 # target to build an object file
 common/alloc.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/alloc.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/alloc.o
 .PHONY : common/alloc.o
 
 # target to preprocess a source file
 common/alloc.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/alloc.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/alloc.i
 .PHONY : common/alloc.i
 
 # target to generate assembly for a file
 common/alloc.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/alloc.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/alloc.s
 .PHONY : common/alloc.s
 
 # target to build an object file
 common/registry_accel.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_accel.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_accel.o
 .PHONY : common/registry_accel.o
 
 # target to preprocess a source file
 common/registry_accel.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_accel.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_accel.i
 .PHONY : common/registry_accel.i
 
 # target to generate assembly for a file
 common/registry_accel.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_accel.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_accel.s
 .PHONY : common/registry_accel.s
 
 # target to build an object file
 common/registry_builder.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_builder.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_builder.o
 .PHONY : common/registry_builder.o
 
 # target to preprocess a source file
 common/registry_builder.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_builder.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_builder.i
 .PHONY : common/registry_builder.i
 
 # target to generate assembly for a file
 common/registry_builder.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_builder.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_builder.s
 .PHONY : common/registry_builder.s
 
 # target to build an object file
 common/registry_intersector.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_intersector.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_intersector.o
 .PHONY : common/registry_intersector.o
 
 # target to preprocess a source file
 common/registry_intersector.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_intersector.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_intersector.i
 .PHONY : common/registry_intersector.i
 
 # target to generate assembly for a file
 common/registry_intersector.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_intersector.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/registry_intersector.s
 .PHONY : common/registry_intersector.s
 
 # target to build an object file
 common/stat.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/stat.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/stat.o
 .PHONY : common/stat.o
 
 # target to preprocess a source file
 common/stat.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/stat.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/stat.i
 .PHONY : common/stat.i
 
 # target to generate assembly for a file
 common/stat.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/stat.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/common/stat.s
 .PHONY : common/stat.s
 
 # target to build an object file
 embree.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/embree.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/embree.o
 .PHONY : embree.o
 
 # target to preprocess a source file
 embree.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/embree.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/embree.i
 .PHONY : embree.i
 
 # target to generate assembly for a file
 embree.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/embree.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/embree.s
 .PHONY : embree.s
 
 # target to build an object file
 geometry/triangle_mesh.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/geometry/triangle_mesh.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/geometry/triangle_mesh.o
 .PHONY : geometry/triangle_mesh.o
 
 # target to preprocess a source file
 geometry/triangle_mesh.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/geometry/triangle_mesh.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/geometry/triangle_mesh.i
 .PHONY : geometry/triangle_mesh.i
 
 # target to generate assembly for a file
 geometry/triangle_mesh.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/geometry/triangle_mesh.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/geometry/triangle_mesh.s
 .PHONY : geometry/triangle_mesh.s
 
 # target to build an object file
 geometry/virtual_scene.o:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/geometry/virtual_scene.o
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/geometry/virtual_scene.o
 .PHONY : geometry/virtual_scene.o
 
 # target to preprocess a source file
 geometry/virtual_scene.i:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/geometry/virtual_scene.i
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/geometry/virtual_scene.i
 .PHONY : geometry/virtual_scene.i
 
 # target to generate assembly for a file
 geometry/virtual_scene.s:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/geometry/virtual_scene.s
+	cd /usr/local/igl/libigl/external/embree/bin && $(MAKE) -f embree/CMakeFiles/embree.dir/build.make embree/CMakeFiles/embree.dir/geometry/virtual_scene.s
 .PHONY : geometry/virtual_scene.s
 
 # Help Target
@@ -747,6 +747,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /usr/local/igl/libigl/external/embree2/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /usr/local/igl/libigl/external/embree/bin && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
