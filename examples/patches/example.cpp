@@ -571,7 +571,7 @@ void init_patches()
   {
     case ORIENT_METHOD_AO:
       cout<<"orient_outward_ao()"<<endl;
-      orient_outward_ao(V,F,CC,F.rows() * 100,F,I);
+      orient_outward_ao(V,F,CC,100, F.rows() * 100,F,I);
       break;
     case ORIENT_METHOD_OUTWARD:
     default:
@@ -673,8 +673,8 @@ int main(int argc, char * argv[])
   // print key commands
   cout<<"[Click] and [drag]  Rotate model using trackball."<<endl;
   cout<<"[Z,z]               Snap rotation to canonical view."<<endl;
-  cout<<"[âŒZ]               Undo."<<endl;
-  cout<<"[â‡§ âŒZ]             Redo."<<endl;
+  cout<<"[Command+Z]         Undo."<<endl;
+  cout<<"[Shift+Command+Z]   Redo."<<endl;
   cout<<"[^C,ESC]            Exit."<<endl;
 
   // dirname, basename, extension and filename
