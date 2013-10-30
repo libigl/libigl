@@ -645,6 +645,12 @@ void key(unsigned char key, int mouse_x, int mouse_y)
           s.camera.rotation);
         break;
       }
+    case 'u':
+        mouse_wheel(0, 1,mouse_x,mouse_y);
+        break;
+    case 'j':
+        mouse_wheel(0,-1,mouse_x,mouse_y);
+        break;
     default:
       if(!TwEventKeyboardGLUT(key,mouse_x,mouse_y))
       {

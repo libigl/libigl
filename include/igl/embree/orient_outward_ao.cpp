@@ -69,6 +69,7 @@ IGL_INLINE void igl::orient_outward_ao(
   }
   
   // generate all the rays
+  cout << "generating rays... ";
   uniform_real_distribution<double> rdist;
   mt19937 prng;
   prng.seed(time(0));
@@ -118,18 +119,20 @@ IGL_INLINE void igl::orient_outward_ao(
     }
   }
   
-  // occlusion count per component
-  vector<int> C_occlude_count_front(num_cc, 0);
-  vector<int> C_occlude_count_back (num_cc, 0);
+  // per component accumulation of occlusion distance
+  double dist_large = (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm() * 1000;
+  vector<double> C_occlude_dist_front(num_cc, 0);
+  vector<double> C_occlude_dist_back (num_cc, 0);
 
-  //auto dbg_get_hit_point = [&] (embree::Hit hit) {
-  //  RowVector3d p0 = V.row(F2(hit.id0, 0));
-  //  RowVector3d p1 = V.row(F2(hit.id0, 1));
-  //  RowVector3d p2 = V.row(F2(hit.id0, 2));
-  //  RowVector3d p = (1 - hit.u - hit.v) * p0 + hit.u * p1 + hit.v * p2;
-  //  return p;
-  //};
-
+  auto get_dist = [&] (Hit hit, const Vector3d& origin) {
+    Vector3d p0 = V.row(F2(hit.id, 0));
+    Vector3d p1 = V.row(F2(hit.id, 1));
+    Vector3d p2 = V.row(F2(hit.id, 2));
+    Vector3d p = (1 - hit.u - hit.v) * p0 + hit.u * p1 + hit.v * p2;
+    return (p - origin).norm();
+  };
+  
+  cout << "shooting rays... ";
 #pragma omp parallel for
   for (int i = 0; i < ray_face.size(); ++i)
   {
@@ -138,24 +141,18 @@ IGL_INLINE void igl::orient_outward_ao(
     Vector3d d = ray_dir [i];
     int c = C(f);
     Hit hit_front;
-    if (ei.intersectRay(o, d, hit_front))
-    {
-#pragma omp atomic
-      //RowVector3d hit_point = dbg_get_hit_point(hit_front);
-      C_occlude_count_front[c]++;
-    }
     Hit hit_back;
-    if (ei.intersectRay(o, -d, hit_back))
-    {
+    double dist_front = ei.intersectRay(o,  d, hit_front) ? get_dist(hit_front, o) : dist_large;
+    double dist_back  = ei.intersectRay(o, -d, hit_back ) ? get_dist(hit_back , o) : dist_large;
 #pragma omp atomic
-      //RowVector3d hit_point = dbg_get_hit_point(hit_back);
-      C_occlude_count_back[c]++;
-    }
+    C_occlude_dist_front[c] += dist_front;
+#pragma omp atomic
+    C_occlude_dist_back [c] += dist_back;
   }
   
   for(int c = 0;c<num_cc;c++)
   {
-    I(c) = C_occlude_count_front[c] > C_occlude_count_back[c];
+    I(c) = C_occlude_dist_front[c] < C_occlude_dist_back[c];
   }
   // flip according to I
   for(int f = 0;f<m;f++)
@@ -165,6 +162,7 @@ IGL_INLINE void igl::orient_outward_ao(
       FF.row(f) = FF.row(f).reverse().eval();
     }
   }
+  cout << "done!\n";
 }
 
 // Call with default parameters
