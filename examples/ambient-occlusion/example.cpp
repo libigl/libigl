@@ -48,7 +48,7 @@ Eigen::MatrixXd V,N,C,mid;
 Eigen::MatrixXi F;
 // Bounding box diagonal length
 double bbd;
-igl::EmbreeIntersector<Eigen::MatrixXd::Scalar,Eigen::MatrixXi::Scalar> ei;
+igl::EmbreeIntersector ei;
 // Running ambient occlusion
 Eigen::VectorXd S;
 int tot_num_samples = 0;
@@ -373,7 +373,7 @@ int main(int argc, char * argv[])
   bbd = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
 
   // Init embree
-  ei.init(V,F);
+  ei.init(V.cast<float>(),F.cast<int>());
 
   // Init glut
   glutInit(&argc,argv);

@@ -26,8 +26,8 @@ IGL_INLINE void igl::bone_visible(
   FF.resize(F.rows()*2,F.cols());
   FF << F, F.rowwise().reverse();
   // Initialize intersector
-  EmbreeIntersector<double,int> ei;
-  ei.init(V,FF);
+  EmbreeIntersector ei;
+  ei.init(V.template cast<float>(),FF.template cast<int>());
   const double sd_norm = (s-d).norm();
   // Embree seems to be parallel when constructing but not when tracing rays
 #pragma omp parallel for
@@ -68,7 +68,10 @@ IGL_INLINE void igl::bone_visible(
     // perhaps 1.0 should be 1.0-epsilon, or actually since we checking the
     // incident face, perhaps 1.0 should be 1.0+eps
     const Vector3d dir = (Vv-projv)*1.0;
-    if(ei.intersectSegment(projv,dir, hit))
+    if(ei.intersectSegment(
+       projv.template cast<float>(),
+       dir.template cast<float>(), 
+       hit))
     {
       // mod for double sided lighting
       const int fi = hit.id % F.rows();

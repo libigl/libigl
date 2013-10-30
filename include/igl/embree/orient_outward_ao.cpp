@@ -32,8 +32,8 @@ IGL_INLINE void igl::orient_outward_ao(
   MatrixXi F2;
   F2.resize(F.rows()*2,F.cols());
   F2 << F, F.rowwise().reverse().eval();
-  EmbreeIntersector<typename DerivedV::Scalar, typename DerivedF::Scalar> ei;
-  ei.init(V,F2);
+  EmbreeIntersector ei;
+  ei.init(V.template cast<float>(),F2.template cast<int>());
   
   // number of faces
   const int m = F.rows();
@@ -143,8 +143,8 @@ IGL_INLINE void igl::orient_outward_ao(
     int c = C(f);
     Hit hit_front;
     Hit hit_back;
-    double dist_front = ei.intersectRay(o,  d, hit_front) ? get_dist(hit_front, o) : dist_large;
-    double dist_back  = ei.intersectRay(o, -d, hit_back ) ? get_dist(hit_back , o) : dist_large;
+    double dist_front = ei.intersectRay(o.template cast<float>(),  d.template cast<float>(), hit_front) ? get_dist(hit_front, o) : dist_large;
+    double dist_back  = ei.intersectRay(o.template cast<float>(), -d.template cast<float>(), hit_back ) ? get_dist(hit_back , o) : dist_large;
 #pragma omp atomic
     C_occlude_dist_front[c] += dist_front;
 #pragma omp atomic
