@@ -16,7 +16,8 @@ LIBIGL_INC=-I $(LIBIGL)/include
 # http://www.alecjacobson.com/weblog/?p=2827
 GLU=/usr/local/
 GLU_INC=-I$(GLU)/include
-GLU_LIB=-L$(GLU)/lib -lGLU
+#GLU_LIB=-L$(GLU)/lib -lGLU
+GLU_LIB=$(GLU)/lib/libGLU.a
 
 MESA=/opt/local/
 MESA_INC=-I$(MESA)/include
