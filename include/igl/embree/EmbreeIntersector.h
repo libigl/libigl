@@ -9,9 +9,7 @@
 
 #include "Hit.h"
 #include <Eigen/Core>
-#include <embree/include/embree.h>
-#include <embree/include/intersector1.h>
-#include <embree/common/ray.h>
+#include "Embree_convenience.h"
 #include <vector>
 
 namespace igl
@@ -21,19 +19,45 @@ namespace igl
   typename Index>
   class EmbreeIntersector
   {
+  public:
+    // Initialize embree engine. This will be called on instance `init()`
+    // calls. If already inited then this function does nothing: it is harmless
+    // to call more than once.
+    static void global_init();
+  private:
+    // Deinitialize the embree engine. This should probably never be called by
+    // the user. Hence it's private. Do you really want to do this?
+    static void global_deinit();
+  public:
     typedef Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> PointMatrixType;
     typedef Eigen::Matrix<Index,Eigen::Dynamic,Eigen::Dynamic>  FaceMatrixType;
     typedef Eigen::Matrix<Scalar,1,3> RowVector3;
   public:
-    // V  #V by 3 list of vertex positions
-    // F  #F by 3 list of Oriented triangles
-    EmbreeIntersector(
-      const PointMatrixType & V = PointMatrixType(),
-      const FaceMatrixType & F = FaceMatrixType(),
+    EmbreeIntersector();
+  private:
+    // Copying and assignment are not allowed.
+    EmbreeIntersector(const EmbreeIntersector & that);
+    EmbreeIntersector operator=(const EmbreeIntersector &);
+  public:
+    virtual ~EmbreeIntersector();
+      
+    // Initialize with a given mesh.
+    //
+    // Inputs:
+    //   V  #V by 3 list of vertex positions
+    //   F  #F by 3 list of Oriented triangles
+    // Side effects:
+    //   The first time this is ever called the embree engine is initialized.
+    void init(
+      const PointMatrixType & V,
+      const FaceMatrixType & F,
       const char* structure = "default",
       const char* builder = "default",
       const char* traverser = "default");
-    virtual ~EmbreeIntersector();
+    // Deinitialize embree datasctructures for current mesh.  Also called on
+    // destruction: no need to call if you just want to init() once and
+    // destroy.
+    void deinit();
   
     // Given a ray find the first hit
     // 
@@ -87,6 +111,16 @@ namespace igl
 
 // Implementation
 #include <igl/EPS.h>
+// This unfortunately cannot be a static field of EmbreeIntersector because it
+// would depend on the template and then we might end up with initializing
+// embree twice. If only there was a way to ask embree if it's already
+// initialized...
+namespace igl
+{
+  // Keeps track of whether the **Global** Embree intersector has been
+  // initialized. This should never been done at the global scope.
+  static bool EmbreeIntersector_inited = false;
+}
 
 template <typename RowVector3>
 inline embree::Vector3f toVector3f(const RowVector3 &p) { return embree::Vector3f((float)p[0], (float)p[1], (float)p[2]); }
@@ -94,34 +128,80 @@ inline embree::Vector3f toVector3f(const RowVector3 &p) { return embree::Vector3
 template <
 typename Scalar,
 typename Index>
-igl::EmbreeIntersector < Scalar, Index>
-::EmbreeIntersector(const PointMatrixType & V,
-                    const FaceMatrixType & F,
-                    const char* structure,
-                    const char* builder,
-                    const char* traverser)
-  :
-    mesh(NULL),
-    triangles(NULL),
-    vertices(NULL),
-    intersector(NULL)
+void igl::EmbreeIntersector < Scalar, Index>::global_init()
 {
-  using namespace std;
-  static bool inited = false;
-  if(!inited)
+  if(!EmbreeIntersector_inited)
   {
     embree::rtcInit();
 #ifdef IGL_VERBOSE
     embree::rtcSetVerbose(3);
 #endif
     embree::rtcStartThreads();
-    inited = true;
+    EmbreeIntersector_inited = true;
   }
+}
 
-   if(V.size() == 0 || F.size() == 0)
-   {
-     return;
-   }
+template <
+typename Scalar,
+typename Index>
+void igl::EmbreeIntersector < Scalar, Index>::global_deinit()
+{
+  EmbreeIntersector_inited = false;
+  embree::rtcStopThreads();
+  embree::rtcExit();
+  embree::rtcFreeMemory();
+}
+
+template <
+typename Scalar,
+typename Index>
+igl::EmbreeIntersector < Scalar, Index>::EmbreeIntersector()
+  :
+  mesh(NULL),
+  triangles(NULL),
+  vertices(NULL),
+  intersector(NULL)
+{
+}
+
+template <
+typename Scalar,
+typename Index>
+igl::EmbreeIntersector < Scalar, Index>::EmbreeIntersector(
+  const EmbreeIntersector & that)
+{
+  assert(false && "Copying EmbreeIntersector is not allowed");
+}
+
+template <
+typename Scalar,
+typename Index>
+igl::EmbreeIntersector <Scalar,Index> 
+igl::EmbreeIntersector < Scalar, Index>::operator=(
+  const EmbreeIntersector<Scalar, Index> & that)
+{
+  assert(false && "Assigning an EmbreeIntersector is not allowed");
+  return *this;
+}
+
+
+template <
+typename Scalar,
+typename Index>
+void igl::EmbreeIntersector < Scalar, Index>::init(
+  const PointMatrixType & V,
+  const FaceMatrixType & F,
+  const char* structure,
+  const char* builder,
+  const char* traverser)
+{
+  using namespace std;
+  global_init();
+
+  if(V.size() == 0 || F.size() == 0)
+  {
+    return;
+  }
   
   mesh = embree::rtcNewTriangleMesh(F.rows(),V.rows(),structure);
 
@@ -153,11 +233,16 @@ typename Index>
 igl::EmbreeIntersector < Scalar, Index>
 ::~EmbreeIntersector()
 {
+  deinit();
+}
+
+template <
+typename Scalar,
+typename Index>
+void igl::EmbreeIntersector < Scalar, Index>::deinit()
+{
   embree::rtcDeleteIntersector1(intersector);
   embree::rtcDeleteGeometry(mesh);
-//  embree::rtcStopThreads();
-//  embree::rtcExit();
-//  embree::rtcFreeMemory();
 }
 
 template <

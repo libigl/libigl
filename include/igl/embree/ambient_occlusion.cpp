@@ -68,11 +68,9 @@ void igl::ambient_occlusion(
   using namespace Eigen;
   EmbreeIntersector<
     typename DerivedV::Scalar,
-    typename DerivedF::Scalar > * ei = new EmbreeIntersector<
-    typename DerivedV::Scalar,
-    typename DerivedF::Scalar >(V,F);
-  ambient_occlusion(*ei,P,N,num_samples,S);
-  delete ei;
+    typename DerivedF::Scalar > ei;
+  ei.init(V,F);
+  ambient_occlusion(ei,P,N,num_samples,S);
 }
 
 #ifndef IGL_HEADER_ONLY
