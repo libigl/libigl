@@ -32,7 +32,8 @@ IGL_INLINE void igl::orient_outward_ao(
   MatrixXi F2;
   F2.resize(F.rows()*2,F.cols());
   F2 << F, F.rowwise().reverse().eval();
-  EmbreeIntersector<typename DerivedV::Scalar, typename DerivedF::Scalar> ei(V,F2);
+  EmbreeIntersector<typename DerivedV::Scalar, typename DerivedF::Scalar> ei;
+  ei.init(V,F2);
   
   // number of faces
   const int m = F.rows();

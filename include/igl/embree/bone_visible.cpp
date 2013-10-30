@@ -26,8 +26,8 @@ IGL_INLINE void igl::bone_visible(
   FF.resize(F.rows()*2,F.cols());
   FF << F, F.rowwise().reverse();
   // Initialize intersector
-  const EmbreeIntersector<double,int> ei = 
-        EmbreeIntersector<double,int>(V,FF);
+  EmbreeIntersector<double,int> ei;
+  ei.init(V,FF);
   const double sd_norm = (s-d).norm();
   // Embree seems to be parallel when constructing but not when tracing rays
 #pragma omp parallel for

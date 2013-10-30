@@ -1,4 +1,3 @@
-#define IGL_HEADER_ONLY
 #include <igl/embree/EmbreeIntersector.h>
 #include <igl/OpenGL_convenience.h>
 #include <igl/per_face_normals.h>
@@ -38,7 +37,7 @@ double bbd;
 // Faces
 Eigen::MatrixXi F;
 // Embree intersection structure
-igl::EmbreeIntersector<double,int> * ei;
+igl::EmbreeIntersector<double,int> ei;
 // Hits collected
 std::vector<igl::Hit > hits;
 // Ray information, "projection screen" corners
@@ -327,7 +326,7 @@ void mouse_move(int mouse_x, int mouse_y)
   // Shoot ray at unprojected mouse in view direction
   dir = d-s;
   int num_rays_shot;
-  ei->intersectRay(s,dir,hits,num_rays_shot);
+  ei.intersectRay(s,dir,hits,num_rays_shot);
   for(vector<igl::Hit>::iterator hit = hits.begin();
       hit != hits.end();
       hit++)
@@ -417,12 +416,6 @@ void mouse_drag(int mouse_x, int mouse_y)
 }
 
 
-void cleanup()
-{
-  using namespace std;
-  delete ei;
-}
-
 void key(unsigned char key, int mouse_x, int mouse_y)
 {
   using namespace std;
@@ -431,7 +424,6 @@ void key(unsigned char key, int mouse_x, int mouse_y)
     // Ctrl-c and esc exit
     case char(3):
     case char(27):
-      cleanup();
       exit(0);
     default:
       cout<<"Unknown key command: "<<key<<" "<<int(key)<<endl;
@@ -471,7 +463,7 @@ int main(int argc, char * argv[])
     V.colwise().minCoeff()).maxCoeff();
 
   // Init embree
-  ei = new EmbreeIntersector<double,int>(V,F);
+  ei.init(V,F);
 
   // Init glut
   glutInit(&argc,argv);
@@ -485,6 +477,5 @@ int main(int argc, char * argv[])
   glutMotionFunc(mouse_drag);
   glutPassiveMotionFunc(mouse_move);
   glutMainLoop();
-  cleanup();
   return 0;
 }
