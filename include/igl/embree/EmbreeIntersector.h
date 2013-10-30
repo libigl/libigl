@@ -14,32 +14,29 @@
 
 namespace igl
 {
-  template <
-  typename Scalar,
-  typename Index>
   class EmbreeIntersector
   {
   public:
     // Initialize embree engine. This will be called on instance `init()`
     // calls. If already inited then this function does nothing: it is harmless
     // to call more than once.
-    static void global_init();
+    static inline void global_init();
   private:
     // Deinitialize the embree engine. This should probably never be called by
     // the user. Hence it's private. Do you really want to do this?
-    static void global_deinit();
+    static inline void global_deinit();
   public:
-    typedef Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> PointMatrixType;
-    typedef Eigen::Matrix<Index,Eigen::Dynamic,Eigen::Dynamic>  FaceMatrixType;
-    typedef Eigen::Matrix<Scalar,1,3> RowVector3;
+    typedef Eigen::Matrix<float,Eigen::Dynamic,Eigen::Dynamic> PointMatrixType;
+    typedef Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>  FaceMatrixType;
+    typedef Eigen::Matrix<float,1,3> RowVector3;
   public:
-    EmbreeIntersector();
+    inline EmbreeIntersector();
   private:
     // Copying and assignment are not allowed.
-    EmbreeIntersector(const EmbreeIntersector & that);
-    EmbreeIntersector operator=(const EmbreeIntersector &);
+    inline EmbreeIntersector(const EmbreeIntersector & that);
+    inline EmbreeIntersector operator=(const EmbreeIntersector &);
   public:
-    virtual ~EmbreeIntersector();
+    virtual inline ~EmbreeIntersector();
       
     // Initialize with a given mesh.
     //
@@ -48,7 +45,7 @@ namespace igl
     //   F  #F by 3 list of Oriented triangles
     // Side effects:
     //   The first time this is ever called the embree engine is initialized.
-    void init(
+    inline void init(
       const PointMatrixType & V,
       const FaceMatrixType & F,
       const char* structure = "default",
@@ -57,7 +54,7 @@ namespace igl
     // Deinitialize embree datasctructures for current mesh.  Also called on
     // destruction: no need to call if you just want to init() once and
     // destroy.
-    void deinit();
+    inline void deinit();
   
     // Given a ray find the first hit
     // 
@@ -67,7 +64,7 @@ namespace igl
     // Output:
     //   hit        information about hit
     // Returns true if and only if there was a hit
-    bool intersectRay(
+    inline bool intersectRay(
       const RowVector3& origin, 
       const RowVector3& direction,
       Hit& hit,
@@ -83,7 +80,7 @@ namespace igl
     //   hit        information about hit
     //   num_rays   number of rays shot (at least one)
     // Returns true if and only if there was a hit
-    bool intersectRay(
+    inline bool intersectRay(
       const RowVector3& origin,
       const RowVector3& direction,
       std::vector<Hit > &hits,
@@ -99,7 +96,7 @@ namespace igl
     // Output:
     //   hit  information about hit
     // Returns true if and only if there was a hit
-    bool intersectSegment(const RowVector3& a, const RowVector3& ab, Hit &hit) const;
+    inline bool intersectSegment(const RowVector3& a, const RowVector3& ab, Hit &hit) const;
     
   private:
     embree::RTCGeometry* mesh;
@@ -125,10 +122,7 @@ namespace igl
 template <typename RowVector3>
 inline embree::Vector3f toVector3f(const RowVector3 &p) { return embree::Vector3f((float)p[0], (float)p[1], (float)p[2]); }
 
-template <
-typename Scalar,
-typename Index>
-void igl::EmbreeIntersector < Scalar, Index>::global_init()
+inline void igl::EmbreeIntersector::global_init()
 {
   if(!EmbreeIntersector_inited)
   {
@@ -141,10 +135,7 @@ void igl::EmbreeIntersector < Scalar, Index>::global_init()
   }
 }
 
-template <
-typename Scalar,
-typename Index>
-void igl::EmbreeIntersector < Scalar, Index>::global_deinit()
+inline void igl::EmbreeIntersector::global_deinit()
 {
   EmbreeIntersector_inited = false;
   embree::rtcStopThreads();
@@ -152,10 +143,7 @@ void igl::EmbreeIntersector < Scalar, Index>::global_deinit()
   embree::rtcFreeMemory();
 }
 
-template <
-typename Scalar,
-typename Index>
-igl::EmbreeIntersector < Scalar, Index>::EmbreeIntersector()
+inline igl::EmbreeIntersector::EmbreeIntersector()
   :
   mesh(NULL),
   triangles(NULL),
@@ -164,31 +152,21 @@ igl::EmbreeIntersector < Scalar, Index>::EmbreeIntersector()
 {
 }
 
-template <
-typename Scalar,
-typename Index>
-igl::EmbreeIntersector < Scalar, Index>::EmbreeIntersector(
+inline igl::EmbreeIntersector::EmbreeIntersector(
   const EmbreeIntersector & that)
 {
   assert(false && "Copying EmbreeIntersector is not allowed");
 }
 
-template <
-typename Scalar,
-typename Index>
-igl::EmbreeIntersector <Scalar,Index> 
-igl::EmbreeIntersector < Scalar, Index>::operator=(
-  const EmbreeIntersector<Scalar, Index> & that)
+inline igl::EmbreeIntersector igl::EmbreeIntersector::operator=(
+  const EmbreeIntersector & that)
 {
   assert(false && "Assigning an EmbreeIntersector is not allowed");
   return *this;
 }
 
 
-template <
-typename Scalar,
-typename Index>
-void igl::EmbreeIntersector < Scalar, Index>::init(
+inline void igl::EmbreeIntersector::init(
   const PointMatrixType & V,
   const FaceMatrixType & F,
   const char* structure,
@@ -227,30 +205,19 @@ void igl::EmbreeIntersector < Scalar, Index>::init(
   intersector = embree::rtcQueryIntersector1(mesh,traverser);
 }
 
-template <
-typename Scalar,
-typename Index>
-igl::EmbreeIntersector < Scalar, Index>
+igl::EmbreeIntersector
 ::~EmbreeIntersector()
 {
   deinit();
 }
 
-template <
-typename Scalar,
-typename Index>
-void igl::EmbreeIntersector < Scalar, Index>::deinit()
+void igl::EmbreeIntersector::deinit()
 {
   embree::rtcDeleteIntersector1(intersector);
   embree::rtcDeleteGeometry(mesh);
 }
 
-template <
-typename Scalar,
-typename Index>
-bool 
-igl::EmbreeIntersector< Scalar, Index>
-::intersectRay(
+inline bool igl::EmbreeIntersector::intersectRay(
   const RowVector3& origin,
   const RowVector3& direction,
   Hit& hit,
@@ -272,11 +239,8 @@ igl::EmbreeIntersector< Scalar, Index>
   return false;
 }
 
-template <
-typename Scalar,
-typename Index>
-bool 
-igl::EmbreeIntersector < Scalar, Index>
+inline bool 
+igl::EmbreeIntersector
 ::intersectRay(
   const RowVector3& origin, 
   const RowVector3& direction,
@@ -370,11 +334,8 @@ igl::EmbreeIntersector < Scalar, Index>
   return hits.empty();
 }
 
-template <
-typename Scalar,
-typename Index>
-bool 
-igl::EmbreeIntersector < Scalar, Index>
+inline bool 
+igl::EmbreeIntersector
 ::intersectSegment(const RowVector3& a, const RowVector3& ab, Hit &hit) const
 {
   embree::Ray ray(toVector3f(a), toVector3f(ab), embree::zero, embree::one);
