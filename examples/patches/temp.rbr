@@ -1,6 +1,6 @@
 wireframe_visible: TW_TYPE_BOOLCPP 0
 fill_visible: TW_TYPE_BOOLCPP 1
-camera_rotation: TW_TYPE_QUAT4D 0.0143118 -0.420487 0.907043 0.0161202
+camera_rotation: TW_TYPE_QUAT4D 0.416858 0.0264188 -0.0596578 0.906627
 rotation_type: RotationType igl trackball
-orient_method: OrientMethod outward
+orient_method: OrientMethod ambient occlusion
 
