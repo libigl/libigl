@@ -30,6 +30,8 @@
 #include <igl/orient_outward.h>
 #include <igl/embree/orient_outward_ao.h>
 #include <igl/unique_simplices.h>
+#include <igl/C_STR.h>
+#include <igl/write.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -66,6 +68,7 @@ struct State
   Eigen::MatrixXd N;
   Eigen::MatrixXd C;
 } s;
+std::string out_filename;
 
 // See README for descriptions
 enum RotationType
@@ -605,6 +608,26 @@ void redo()
   }
 }
 
+bool save(const std::string & out_filename)
+{
+  using namespace std;
+  using namespace igl;
+  if(write(out_filename,V,F))
+  {
+    cout<<GREENGIN("Saved mesh to `"<<out_filename<<"` successfully.")<<endl;
+    return true;
+  }else
+  {
+    cout<<REDRUM("Failed to save mesh to `"<<out_filename<<"`.")<<endl;
+    return false;
+  }
+}
+
+void TW_CALL saveCB(void * /*clientData*/)
+{
+  save(out_filename);
+}
+
 void key(unsigned char key, int mouse_x, int mouse_y)
 {
   using namespace std;
@@ -622,6 +645,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
       {
         push_undo();
         s.N *= -1.0;
+        F = F.rowwise().reverse().eval();
         break;
       }
     case 'z':
@@ -666,14 +690,18 @@ int main(int argc, char * argv[])
   using namespace Eigen;
   using namespace igl;
   string filename = "../shared/truck.obj";
-  if(argc < 2)
+  switch(argc)
   {
-    cerr<<"Usage:"<<endl<<"    ./example input.obj"<<endl;
-    cout<<endl<<"Opening default mesh..."<<endl;
-  }else
-  {
-    // Read and prepare mesh
-    filename = argv[1];
+    case 3:
+      out_filename = argv[2];
+    case 2:
+      // Read and prepare mesh
+      filename = argv[1];
+      break;
+    default:
+      cerr<<"Usage:"<<endl<<"    ./example input.obj (output.obj)"<<endl;
+      cout<<endl<<"Opening default mesh..."<<endl;
+      break;
   }
 
   // print key commands
@@ -749,7 +777,8 @@ int main(int argc, char * argv[])
     return 1;
   }
   // Create a tweak bar
-  rebar.TwNewBar("TweakBar");
+  rebar.TwNewBar("bar");
+  TwDefine("bar label='Patches' size='200 550' text=light alpha='200' color='68 68 68'");
   rebar.TwAddVarCB("camera_rotation", TW_TYPE_QUAT4D, set_camera_rotation,get_camera_rotation, NULL, "open readonly=true");
   TwEnumVal RotationTypesEV[NUM_ROTATION_TYPES] = 
   {
@@ -778,7 +807,14 @@ int main(int argc, char * argv[])
 
   rebar.TwAddVarRW("wireframe_visible",TW_TYPE_BOOLCPP,&wireframe_visible,"key=l");
   rebar.TwAddVarRW("fill_visible",TW_TYPE_BOOLCPP,&fill_visible,"key=f");
-  rebar.TwAddButton("randomize colors",randomize_colors,NULL,"key=c");
+  rebar.TwAddButton("randomize_colors",randomize_colors,NULL,"key=c");
+  if(out_filename != "")
+  {
+    rebar.TwAddButton("save",
+      saveCB,NULL,
+      C_STR("label='Save to `"<<out_filename<<"`' "<<
+      "key=s"));
+  }
   rebar.load(REBAR_NAME);
 
 
