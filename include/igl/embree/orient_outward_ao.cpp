@@ -3,6 +3,7 @@
 #include "../doublearea.h"
 #include "../random_dir.h"
 #include "EmbreeIntersector.h"
+#include <kt84/dbg.h>
 #include <iostream>
 #include <random>
 #include <limits>
@@ -28,10 +29,7 @@ IGL_INLINE void igl::orient_outward_ao(
   assert(F.cols() == 3);
   assert(V.cols() == 3);
   
-  // pass both sides of faces to Embree
-  MatrixXi F2;
-  F2.resize(F.rows()*2,F.cols());
-  F2 << F, F.rowwise().reverse().eval();
+  EmbreeIntersector<float, int> ei(V.cast<float>(),F);
   EmbreeIntersector ei;
   ei.init(V.template cast<float>(),F2.template cast<int>());
   
@@ -46,7 +44,7 @@ IGL_INLINE void igl::orient_outward_ao(
   }
   
   // face normal
-  PlainObjectBase<DerivedV> N;
+  MatrixXd N;
   per_face_normals(V,F,N);
   
   // face area
@@ -71,12 +69,12 @@ IGL_INLINE void igl::orient_outward_ao(
   
   // generate all the rays
   cout << "generating rays... ";
-  uniform_real_distribution<double> rdist;
+  uniform_real_distribution<float> rdist;
   mt19937 prng;
-  prng.seed(time(0));
+  prng.seed(0);
   vector<int     > ray_face;
-  vector<Vector3d> ray_ori;
-  vector<Vector3d> ray_dir;
+  vector<Vector3f> ray_ori;
+  vector<Vector3f> ray_dir;
   ray_face.reserve(total_num_rays);
   ray_ori .reserve(total_num_rays);
   ray_dir .reserve(total_num_rays);
@@ -98,21 +96,32 @@ IGL_INLINE void igl::orient_outward_ao(
     for (int i = 0; i < num_rays_per_component[c]; ++i)
     {
       int f     = CF[ddist(prng)];    // select face with probability proportional to face area
-      double t0 = rdist(prng);        // random barycentric coordinate
-      double t1 = rdist(prng);
-      double t2 = rdist(prng);
-      double t_sum = t0 + t1 + t2;
+      float t0 = rdist(prng);        // random barycentric coordinate
+      float t1 = rdist(prng);
+      float t2 = rdist(prng);
+      float t_sum = t0 + t1 + t2;
       t0 /= t_sum;
       t1 /= t_sum;
       t2 /= t_sum;
-      Vector3d p = t0 * V.row(F(f,0))       // be careful with the index!!!
-                 + t1 * V.row(F(f,1))
-                 + t2 * V.row(F(f,2));
-      Vector3d n = N.row(f);
-      Vector3d d = random_dir();
-      if (n.dot(d) < 0)
-      {
-        d *= -1;
+      Vector3f p = t0 * V.row(F(f,0)).cast<float>().eval()       // be careful with the index!!!
+                 + t1 * V.row(F(f,1)).cast<float>().eval()
+                 + t2 * V.row(F(f,2)).cast<float>().eval();
+      Vector3f n = N.row(f).cast<float>();
+      assert(n != Vector3f::Zero());
+      // random direction in hemisphere around n (avoid too grazing angle)
+      Vector3f d;
+      while (true) {
+        d = random_dir().cast<float>();
+        float ndotd = n.dot(d);
+        if (fabsf(ndotd) < 0.1f)
+        {
+          continue;
+        }
+        if (ndotd < 0)
+        {
+          d *= -1.0f;
+        }
+        break;
       }
       ray_face.push_back(f);
       ray_ori .push_back(p);
@@ -120,17 +129,16 @@ IGL_INLINE void igl::orient_outward_ao(
     }
   }
   
-  // per component accumulation of occlusion distance
-  double dist_large = (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm() * 1000;
-  vector<double> C_occlude_dist_front(num_cc, 0);
-  vector<double> C_occlude_dist_back (num_cc, 0);
-
-  auto get_dist = [&] (Hit hit, const Vector3d& origin) {
-    Vector3d p0 = V.row(F2(hit.id, 0));
-    Vector3d p1 = V.row(F2(hit.id, 1));
-    Vector3d p2 = V.row(F2(hit.id, 2));
-    Vector3d p = (1 - hit.u - hit.v) * p0 + hit.u * p1 + hit.v * p2;
-    return (p - origin).norm();
+  // per component voting: positive for front side, negative for back side
+  vector<float> C_vote_distance(num_cc, 0);     // sum of distance between ray origin and intersection
+  vector<int  > C_vote_infinity(num_cc, 0);     // number of rays reaching infinity
+  
+  auto get_hit_point = [&] (Hit hit) -> Vector3f
+  {
+    Vector3f p0 = V.row(F(hit.id, 0)).cast<float>();
+    Vector3f p1 = V.row(F(hit.id, 1)).cast<float>();
+    Vector3f p2 = V.row(F(hit.id, 2)).cast<float>();
+    return (1.0f - hit.u - hit.v) * p0 + hit.u * p1 + hit.v * p2;
   };
   
   cout << "shooting rays... ";
@@ -138,22 +146,57 @@ IGL_INLINE void igl::orient_outward_ao(
   for (int i = 0; i < (int)ray_face.size(); ++i)
   {
     int      f = ray_face[i];
-    Vector3d o = ray_ori [i];
-    Vector3d d = ray_dir [i];
+    Vector3f o = ray_ori [i];
+    Vector3f d = ray_dir [i];
     int c = C(f);
+    if (c==65)
+      c=c;
+    
+    // shoot ray toward front & back
     Hit hit_front;
+    bool is_hit_front;
+    for (float offset = numeric_limits<float>::min(); ; offset *= 10.0f) {
+      hit_front.id = -1;
+      is_hit_front = ei.intersectRay(o + offset * d, d, hit_front);
+      if (!is_hit_front) break;
+      if (hit_front.id != f) break;
+    }
     Hit hit_back;
-    double dist_front = ei.intersectRay(o.template cast<float>(),  d.template cast<float>(), hit_front) ? get_dist(hit_front, o) : dist_large;
-    double dist_back  = ei.intersectRay(o.template cast<float>(), -d.template cast<float>(), hit_back ) ? get_dist(hit_back , o) : dist_large;
+    bool is_hit_back;
+    for (float offset = numeric_limits<float>::min(); ; offset *= 10.0f) {
+      hit_back.id = -1;
+      is_hit_back = ei.intersectRay(o - offset * d, -d, hit_back);
+      if (!is_hit_back) break;
+      if (hit_back.id != f) break;
+    }
+    if (hit_front.id == f || hit_back.id == f)
+    {
+      // due to numerical error, ray origin was detected as intersection -> ignore this ray
+      continue;
+    }
+    
+    if (is_hit_front)
+    {
 #pragma omp atomic
-    C_occlude_dist_front[c] += dist_front;
+      C_vote_distance[c] += (get_hit_point(hit_front) - o).norm();
+    } else {
 #pragma omp atomic
-    C_occlude_dist_back [c] += dist_back;
+      C_vote_infinity[c]++;
+    }
+    
+    if (is_hit_back)
+    {
+#pragma omp atomic
+      C_vote_distance[c] -= (get_hit_point(hit_back) - o).norm();
+    } else {
+#pragma omp atomic
+      C_vote_infinity[c]--;
+    }
   }
   
   for(int c = 0;c<num_cc;c++)
   {
-    I(c) = C_occlude_dist_front[c] < C_occlude_dist_back[c];
+    I(c) = C_vote_infinity[c] < 0;// || C_vote_distance[c] < 0;
   }
   // flip according to I
   for(int f = 0;f<m;f++)
