@@ -3,10 +3,8 @@
 #include "../doublearea.h"
 #include "../random_dir.h"
 #include "EmbreeIntersector.h"
-#include <kt84/dbg.h>
 #include <iostream>
 #include <random>
-#include <limits>
 
 template <
   typename DerivedV, 
@@ -29,9 +27,8 @@ IGL_INLINE void igl::orient_outward_ao(
   assert(F.cols() == 3);
   assert(V.cols() == 3);
   
-  EmbreeIntersector<float, int> ei(V.cast<float>(),F);
   EmbreeIntersector ei;
-  ei.init(V.template cast<float>(),F2.template cast<int>());
+  ei.init(V.template cast<float>(),F);
   
   // number of faces
   const int m = F.rows();
@@ -129,17 +126,9 @@ IGL_INLINE void igl::orient_outward_ao(
     }
   }
   
-  // per component voting: positive for front side, negative for back side
-  vector<float> C_vote_distance(num_cc, 0);     // sum of distance between ray origin and intersection
-  vector<int  > C_vote_infinity(num_cc, 0);     // number of rays reaching infinity
-  
-  auto get_hit_point = [&] (Hit hit) -> Vector3f
-  {
-    Vector3f p0 = V.row(F(hit.id, 0)).cast<float>();
-    Vector3f p1 = V.row(F(hit.id, 1)).cast<float>();
-    Vector3f p2 = V.row(F(hit.id, 2)).cast<float>();
-    return (1.0f - hit.u - hit.v) * p0 + hit.u * p1 + hit.v * p2;
-  };
+  // per component voting: first=front, second=back
+  vector<pair<float, float>> C_vote_distance(num_cc, make_pair(0, 0));     // sum of distance between ray origin and intersection
+  vector<pair<int  , int  >> C_vote_infinity(num_cc, make_pair(0, 0));     // number of rays reaching infinity
   
   cout << "shooting rays... ";
 #pragma omp parallel for
@@ -149,54 +138,41 @@ IGL_INLINE void igl::orient_outward_ao(
     Vector3f o = ray_ori [i];
     Vector3f d = ray_dir [i];
     int c = C(f);
-    if (c==65)
-      c=c;
     
     // shoot ray toward front & back
-    Hit hit_front;
-    bool is_hit_front;
-    for (float offset = numeric_limits<float>::min(); ; offset *= 10.0f) {
-      hit_front.id = -1;
-      is_hit_front = ei.intersectRay(o + offset * d, d, hit_front);
-      if (!is_hit_front) break;
-      if (hit_front.id != f) break;
-    }
-    Hit hit_back;
-    bool is_hit_back;
-    for (float offset = numeric_limits<float>::min(); ; offset *= 10.0f) {
-      hit_back.id = -1;
-      is_hit_back = ei.intersectRay(o - offset * d, -d, hit_back);
-      if (!is_hit_back) break;
-      if (hit_back.id != f) break;
-    }
-    if (hit_front.id == f || hit_back.id == f)
-    {
-      // due to numerical error, ray origin was detected as intersection -> ignore this ray
-      continue;
-    }
+    vector<Hit> hits_front;
+    vector<Hit> hits_back;
+    int num_rays_front;
+    int num_rays_back;
+    ei.intersectRay(o,  d, hits_front, num_rays_front);
+    ei.intersectRay(o, -d, hits_back , num_rays_back );
+    if (!hits_front.empty() && hits_front[0].id == f) hits_front.erase(hits_front.begin());
+    if (!hits_back .empty() && hits_back [0].id == f) hits_back .erase(hits_back .begin());
     
-    if (is_hit_front)
+    if (hits_front.empty())
     {
 #pragma omp atomic
-      C_vote_distance[c] += (get_hit_point(hit_front) - o).norm();
+      C_vote_infinity[c].first++;
     } else {
 #pragma omp atomic
-      C_vote_infinity[c]++;
+      C_vote_distance[c].first += hits_front[0].t;
     }
     
-    if (is_hit_back)
+    if (hits_back.empty())
     {
 #pragma omp atomic
-      C_vote_distance[c] -= (get_hit_point(hit_back) - o).norm();
+      C_vote_infinity[c].second++;
     } else {
 #pragma omp atomic
-      C_vote_infinity[c]--;
+      C_vote_distance[c].second += hits_back[0].t;
     }
   }
   
   for(int c = 0;c<num_cc;c++)
   {
-    I(c) = C_vote_infinity[c] < 0;// || C_vote_distance[c] < 0;
+    I(c) = C_vote_infinity[c].first == C_vote_infinity[c].second &&
+           C_vote_distance[c].first <  C_vote_distance[c].second ||
+           C_vote_infinity[c].first <  C_vote_infinity[c].second;
   }
   // flip according to I
   for(int f = 0;f<m;f++)
