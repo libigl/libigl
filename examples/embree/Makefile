@@ -9,6 +9,8 @@ all: example
 .PHONY: example
 
 LIBIGL=../../
+#LIBIGL_INC=-I$(LIBIGL)/include -DIGL_HEADER_ONLY
+#LIBIGL_LIB=
 LIBIGL_INC=-I$(LIBIGL)/include
 LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglembree
 

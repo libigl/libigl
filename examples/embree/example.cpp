@@ -1,4 +1,3 @@
-#define IGL_HEADER_ONLY
 #include <igl/embree/EmbreeIntersector.h>
 #include <igl/OpenGL_convenience.h>
 #include <igl/per_face_normals.h>
@@ -38,11 +37,11 @@ double bbd;
 // Faces
 Eigen::MatrixXi F;
 // Embree intersection structure
-igl::EmbreeIntersector<double,int> * ei;
+igl::EmbreeIntersector ei;
 // Hits collected
 std::vector<igl::Hit > hits;
 // Ray information, "projection screen" corners
-Eigen::Vector3d win_s,s,d,dir,NW,NE,SE,SW;
+Eigen::Vector3f win_s,s,d,dir,NW,NE,SE,SW;
 // Textures and framebuffers for "projection screen"
 GLuint tex_id = 0, fbo_id = 0, dfbo_id = 0;
 
@@ -192,18 +191,18 @@ void display()
     glEnable(GL_DEPTH_TEST);
     glBegin(GL_LINES);
     glColor3f(1,0,0);
-    glVertex3dv(s.data());
+    glVertex3fv(s.data());
     glColor3f(1,0,0);
-    glVertex3dv(d.data());
+    glVertex3fv(d.data());
     glEnd();
 
     // Draw the start and end points used for ray
     glPointSize(10.0);
     glBegin(GL_POINTS);
     glColor3f(1,0,0);
-    glVertex3dv(s.data());
+    glVertex3fv(s.data());
     glColor3f(0,0,1);
-    glVertex3dv(d.data());
+    glVertex3fv(d.data());
     glEnd();
   }
 
@@ -246,10 +245,10 @@ void display()
     glColor4f(0,0,0,1.0);
     glPointSize(10.0);
     glBegin(GL_POINTS);
-    glVertex3dv(SW.data());
-    glVertex3dv(SE.data());
-    glVertex3dv(NE.data());
-    glVertex3dv(NW.data());
+    glVertex3fv(SW.data());
+    glVertex3fv(SE.data());
+    glVertex3fv(NE.data());
+    glVertex3fv(NW.data());
     glEnd();
 
     glDisable(GL_LIGHTING);
@@ -258,13 +257,13 @@ void display()
     glColor4f(1,1,1,0.7);
     glBegin(GL_QUADS);
     glTexCoord2d(0,0);
-    glVertex3dv(SW.data());
+    glVertex3fv(SW.data());
     glTexCoord2d(1,0);
-    glVertex3dv(SE.data());
+    glVertex3fv(SE.data());
     glTexCoord2d(1,1);
-    glVertex3dv(NE.data());
+    glVertex3fv(NE.data());
     glTexCoord2d(0,1);
-    glVertex3dv(NW.data());
+    glVertex3fv(NW.data());
     glEnd();
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
@@ -288,7 +287,7 @@ void display()
     glLoadIdentity();
     glPointSize(20.0);
     glBegin(GL_POINTS);
-    glVertex2dv(win_s.data());
+    glVertex2fv(win_s.data());
     glEnd();
   }
   report_gl_error();
@@ -317,8 +316,8 @@ void mouse_move(int mouse_x, int mouse_y)
   push_scene();
   push_object();
   // Unproject mouse at 0 depth and some positive depth
-  win_s = Vector3d(mouse_x,height-mouse_y,0);
-  Vector3d win_d(mouse_x,height-mouse_y,1);
+  win_s = Vector3f(mouse_x,height-mouse_y,0);
+  Vector3f win_d(mouse_x,height-mouse_y,1);
   unproject(win_s,s);
   unproject(win_d,d);
   pop_object();
@@ -327,7 +326,7 @@ void mouse_move(int mouse_x, int mouse_y)
   // Shoot ray at unprojected mouse in view direction
   dir = d-s;
   int num_rays_shot;
-  ei->intersectRay(s,dir,hits,num_rays_shot);
+  ei.intersectRay(s,dir,hits,num_rays_shot);
   for(vector<igl::Hit>::iterator hit = hits.begin();
       hit != hits.end();
       hit++)
@@ -417,12 +416,6 @@ void mouse_drag(int mouse_x, int mouse_y)
 }
 
 
-void cleanup()
-{
-  using namespace std;
-  delete ei;
-}
-
 void key(unsigned char key, int mouse_x, int mouse_y)
 {
   using namespace std;
@@ -431,7 +424,6 @@ void key(unsigned char key, int mouse_x, int mouse_y)
     // Ctrl-c and esc exit
     case char(3):
     case char(27):
-      cleanup();
       exit(0);
     default:
       cout<<"Unknown key command: "<<key<<" "<<int(key)<<endl;
@@ -471,7 +463,7 @@ int main(int argc, char * argv[])
     V.colwise().minCoeff()).maxCoeff();
 
   // Init embree
-  ei = new EmbreeIntersector<double,int>(V,F);
+  ei.init(V.cast<float>(),F.cast<int>());
 
   // Init glut
   glutInit(&argc,argv);
@@ -485,6 +477,5 @@ int main(int argc, char * argv[])
   glutMotionFunc(mouse_drag);
   glutPassiveMotionFunc(mouse_move);
   glutMainLoop();
-  cleanup();
   return 0;
 }

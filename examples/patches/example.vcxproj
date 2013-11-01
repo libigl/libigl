@@ -20,14 +20,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -58,7 +58,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>IGL_HEADER_ONLY;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>C:\Users\kenshi\dev\igl_hg\ext_toolboxes\embree-1.1beta\rtcore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\external\embree;..\..\external\embree\embree;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
@@ -71,49 +71,70 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>IGL_HEADER_ONLY;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>C:\Users\kenshi\dev\igl_hg\ext_toolboxes\embree-1.1beta\rtcore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\external\embree;..\..\external\embree\embree;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
+      <OptimizeReferences>false</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\filename.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\library.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\platform.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\stl\string.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\sync\condition.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\sync\mutex.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\sysinfo.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\taskscheduler_standard.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\common\sys\thread.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh2\bvh2.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh2\bvh2_builder.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh2\bvh2_intersector.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4mb\bvh4mb.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4mb\bvh4mb_builder.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4mb\bvh4mb_intersector.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4\bvh4.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4\bvh4_builder.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\bvh4\bvh4_intersector.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\accel.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\alloc.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\heuristic_binning.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\heuristic_spatial.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\primrefgen.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\splitter.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\splitter_fallback.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\splitter_parallel.cpp" />
-    <ClCompile Include="..\..\..\ext_toolboxes\embree-1.1beta\rtcore\common\stat.cpp" />
+    <ClCompile Include="..\..\..\kt84\dbg.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\builders\heuristic_binning.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\builders\heuristic_spatial.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\builders\primrefgen.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\builders\splitter.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\builders\splitter_fallback.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\builders\splitter_parallel.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh2\bvh2.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh2\bvh2_intersector1.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh2\bvh2_intersector4.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh2\bvh2_intersector8.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4i\bvh4i.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4i\bvh4i_intersector1.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4mb\bvh4mb.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4mb\bvh4mb_builder.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4mb\bvh4mb_intersector1.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4mb\bvh4mb_intersector4.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4mb\bvh4mb_intersector8.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector1.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector1_avx.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector4_chunk.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector4_hybrid.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector4_single.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector8_chunk.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector8_hybrid.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh4\bvh4_intersector8_single.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh8\bvh8.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\bvh8\bvh8_intersector1.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\common\accel.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\common\alloc.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\common\registry_accel.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\common\registry_builder.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\common\registry_intersector.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\common\stat.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\embree.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\geometry\triangle_mesh.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\geometry\virtual_scene.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\sys\filename.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\sys\platform.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\sys\stl\string.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\sys\sync\condition.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\sys\sync\mutex.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\sys\sysinfo.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\sys\taskscheduler.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\sys\taskscheduler_mic.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\sys\taskscheduler_sys.cpp" />
+    <ClCompile Include="..\..\external\embree\embree\sys\thread.cpp" />
     <ClCompile Include="example.cpp" />
   </ItemGroup>
   <ItemGroup>

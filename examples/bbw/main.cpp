@@ -257,7 +257,7 @@ int main(int argc, char * argv[])
   // Default bbw data and flags
   BBWData bbw_data;
   bbw_data.qp_solver = QP_SOLVER_IGL_ACTIVE_SET;
-  //bbw_data.qp_solver = QP_SOLVER_MOSEK;
+  bbw_data.qp_solver = QP_SOLVER_MOSEK;
   // Weights matrix
   MatrixXd W;
   if(!bbw(VV,TT,b,bc,bbw_data,W))
