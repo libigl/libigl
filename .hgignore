@@ -23,3 +23,17 @@ external/embree/doc/latex/*
 .DS_Store
 libigl.zip
 *tags
+*.exe
+*.pdb
+*.sdf
+*.suo
+*.ilk
+*.log
+*.tlog
+Debug/
+Release/
+*.orig
+*.user
+*.vsp
+*.opensdf
+*.psess
