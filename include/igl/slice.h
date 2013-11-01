@@ -35,19 +35,22 @@ namespace igl
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
     const int dim,
     Mat& Y);
-
   template <typename DerivedX>
   IGL_INLINE void slice(
     const Eigen::PlainObjectBase<DerivedX> & X,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
     Eigen::PlainObjectBase<DerivedX> & Y);
-
   template <typename DerivedX>
   IGL_INLINE void slice(
     const Eigen::PlainObjectBase<DerivedX> & X,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
     Eigen::PlainObjectBase<DerivedX> & Y);
+  // VectorXi Y = slice(X,R);
+  template <typename DerivedX>
+  IGL_INLINE Eigen::PlainObjectBase<DerivedX> slice(
+    const Eigen::PlainObjectBase<DerivedX> & X,
+    const Eigen::Matrix<int,Eigen::Dynamic,1> & R);
 }
 
 #ifdef IGL_HEADER_ONLY
