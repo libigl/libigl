@@ -143,6 +143,7 @@
     <ClCompile Include="..\..\external\embree\embree\embree.cpp">
       <Filter>embree</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\kt84\dbg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="igl">

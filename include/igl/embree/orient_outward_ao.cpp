@@ -5,7 +5,6 @@
 #include "EmbreeIntersector.h"
 #include <iostream>
 #include <random>
-#include <limits>
 
 template <
   typename DerivedV, 
@@ -28,12 +27,8 @@ IGL_INLINE void igl::orient_outward_ao(
   assert(F.cols() == 3);
   assert(V.cols() == 3);
   
-  // pass both sides of faces to Embree
-  MatrixXi F2;
-  F2.resize(F.rows()*2,F.cols());
-  F2 << F, F.rowwise().reverse().eval();
   EmbreeIntersector ei;
-  ei.init(V.template cast<float>(),F2.template cast<int>());
+  ei.init(V.template cast<float>(),F);
   
   // number of faces
   const int m = F.rows();
@@ -46,7 +41,7 @@ IGL_INLINE void igl::orient_outward_ao(
   }
   
   // face normal
-  PlainObjectBase<DerivedV> N;
+  MatrixXd N;
   per_face_normals(V,F,N);
   
   // face area
@@ -71,12 +66,12 @@ IGL_INLINE void igl::orient_outward_ao(
   
   // generate all the rays
   cout << "generating rays... ";
-  uniform_real_distribution<double> rdist;
+  uniform_real_distribution<float> rdist;
   mt19937 prng;
-  prng.seed(time(0));
+  prng.seed(0);
   vector<int     > ray_face;
-  vector<Vector3d> ray_ori;
-  vector<Vector3d> ray_dir;
+  vector<Vector3f> ray_ori;
+  vector<Vector3f> ray_dir;
   ray_face.reserve(total_num_rays);
   ray_ori .reserve(total_num_rays);
   ray_dir .reserve(total_num_rays);
@@ -98,21 +93,32 @@ IGL_INLINE void igl::orient_outward_ao(
     for (int i = 0; i < num_rays_per_component[c]; ++i)
     {
       int f     = CF[ddist(prng)];    // select face with probability proportional to face area
-      double t0 = rdist(prng);        // random barycentric coordinate
-      double t1 = rdist(prng);
-      double t2 = rdist(prng);
-      double t_sum = t0 + t1 + t2;
+      float t0 = rdist(prng);        // random barycentric coordinate
+      float t1 = rdist(prng);
+      float t2 = rdist(prng);
+      float t_sum = t0 + t1 + t2;
       t0 /= t_sum;
       t1 /= t_sum;
       t2 /= t_sum;
-      Vector3d p = t0 * V.row(F(f,0))       // be careful with the index!!!
-                 + t1 * V.row(F(f,1))
-                 + t2 * V.row(F(f,2));
-      Vector3d n = N.row(f);
-      Vector3d d = random_dir();
-      if (n.dot(d) < 0)
-      {
-        d *= -1;
+      Vector3f p = t0 * V.row(F(f,0)).template cast<float>().eval()       // be careful with the index!!!
+                 + t1 * V.row(F(f,1)).template cast<float>().eval()
+                 + t2 * V.row(F(f,2)).template cast<float>().eval();
+      Vector3f n = N.row(f).cast<float>();
+      assert(n != Vector3f::Zero());
+      // random direction in hemisphere around n (avoid too grazing angle)
+      Vector3f d;
+      while (true) {
+        d = random_dir().cast<float>();
+        float ndotd = n.dot(d);
+        if (fabsf(ndotd) < 0.1f)
+        {
+          continue;
+        }
+        if (ndotd < 0)
+        {
+          d *= -1.0f;
+        }
+        break;
       }
       ray_face.push_back(f);
       ray_ori .push_back(p);
@@ -120,40 +126,53 @@ IGL_INLINE void igl::orient_outward_ao(
     }
   }
   
-  // per component accumulation of occlusion distance
-  double dist_large = (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm() * 1000;
-  vector<double> C_occlude_dist_front(num_cc, 0);
-  vector<double> C_occlude_dist_back (num_cc, 0);
-
-  auto get_dist = [&] (Hit hit, const Vector3d& origin) {
-    Vector3d p0 = V.row(F2(hit.id, 0));
-    Vector3d p1 = V.row(F2(hit.id, 1));
-    Vector3d p2 = V.row(F2(hit.id, 2));
-    Vector3d p = (1 - hit.u - hit.v) * p0 + hit.u * p1 + hit.v * p2;
-    return (p - origin).norm();
-  };
+  // per component voting: first=front, second=back
+  vector<pair<float, float>> C_vote_distance(num_cc, make_pair(0, 0));     // sum of distance between ray origin and intersection
+  vector<pair<int  , int  >> C_vote_infinity(num_cc, make_pair(0, 0));     // number of rays reaching infinity
   
   cout << "shooting rays... ";
 #pragma omp parallel for
   for (int i = 0; i < (int)ray_face.size(); ++i)
   {
     int      f = ray_face[i];
-    Vector3d o = ray_ori [i];
-    Vector3d d = ray_dir [i];
+    Vector3f o = ray_ori [i];
+    Vector3f d = ray_dir [i];
     int c = C(f);
-    Hit hit_front;
-    Hit hit_back;
-    double dist_front = ei.intersectRay(o.template cast<float>(),  d.template cast<float>(), hit_front) ? get_dist(hit_front, o) : dist_large;
-    double dist_back  = ei.intersectRay(o.template cast<float>(), -d.template cast<float>(), hit_back ) ? get_dist(hit_back , o) : dist_large;
+    
+    // shoot ray toward front & back
+    vector<Hit> hits_front;
+    vector<Hit> hits_back;
+    int num_rays_front;
+    int num_rays_back;
+    ei.intersectRay(o,  d, hits_front, num_rays_front);
+    ei.intersectRay(o, -d, hits_back , num_rays_back );
+    if (!hits_front.empty() && hits_front[0].id == f) hits_front.erase(hits_front.begin());
+    if (!hits_back .empty() && hits_back [0].id == f) hits_back .erase(hits_back .begin());
+    
+    if (hits_front.empty())
+    {
 #pragma omp atomic
-    C_occlude_dist_front[c] += dist_front;
+      C_vote_infinity[c].first++;
+    } else {
 #pragma omp atomic
-    C_occlude_dist_back [c] += dist_back;
+      C_vote_distance[c].first += hits_front[0].t;
+    }
+    
+    if (hits_back.empty())
+    {
+#pragma omp atomic
+      C_vote_infinity[c].second++;
+    } else {
+#pragma omp atomic
+      C_vote_distance[c].second += hits_back[0].t;
+    }
   }
   
   for(int c = 0;c<num_cc;c++)
   {
-    I(c) = C_occlude_dist_front[c] < C_occlude_dist_back[c];
+    I(c) = C_vote_infinity[c].first == C_vote_infinity[c].second &&
+           C_vote_distance[c].first <  C_vote_distance[c].second ||
+           C_vote_infinity[c].first <  C_vote_infinity[c].second;
   }
   // flip according to I
   for(int f = 0;f<m;f++)

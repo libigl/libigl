@@ -56,6 +56,7 @@
 #include <stack>
 #include <iostream>
 
+int cc_selected = -1;
 
 Eigen::MatrixXd V;
 Eigen::VectorXd Vmid,Vmin,Vmax;
@@ -330,6 +331,38 @@ void display()
     {
       draw_mesh(V,F,s.N,s.C);
     }
+  
+    // visualize selected patch
+    glLineWidth(10);
+    glBegin(GL_TRIANGLES);
+    glColor3d(0, 0, 0);
+    // loop over faces
+    for(int i = 0; i<F.rows();i++)
+    {
+      if (CC(i) != cc_selected) continue;
+      // loop over corners of triangle
+      for(int j = 0;j<3;j++)
+      {
+        glVertex3d(V(F(i,j),0),V(F(i,j),1),V(F(i,j),2));
+      }
+    }
+    glEnd();
+    glLineWidth(1);
+    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+    glBegin(GL_TRIANGLES);
+    glColor3d(1, 0, 0);
+    // loop over faces
+    for(int i = 0; i<F.rows();i++)
+    {
+      if (CC(i) != cc_selected) continue;
+      // loop over corners of triangle
+      glNormal3d(s.N(i,0),s.N(i,1),s.N(i,2));
+      for(int j = 0;j<3;j++)
+      {
+        glVertex3d(V(F(i,j),0),V(F(i,j),1),V(F(i,j),2));
+      }
+    }
+    glEnd();
   }
   glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
   if(fill_visible)
@@ -675,6 +708,11 @@ void key(unsigned char key, int mouse_x, int mouse_y)
     case 'j':
         mouse_wheel(0,-1,mouse_x,mouse_y);
         break;
+    case 'n':
+      cc_selected = (cc_selected + 1) % (CC.maxCoeff() + 2);
+      cout << "selected cc: " << cc_selected << endl;
+      glutPostRedisplay();
+      break;
     default:
       if(!TwEventKeyboardGLUT(key,mouse_x,mouse_y))
       {
