@@ -3,10 +3,10 @@
 #include "verbose.h"
 #include <algorithm>
 
-template <typename T, typename M>
+template <typename Index, typename IndexVector>
 IGL_INLINE void igl::adjacency_list(
-    const M & F, 
-    std::vector<std::vector<T> >& A,
+    const Eigen::PlainObjectBase<Index>  & F,
+    std::vector<std::vector<IndexVector> >& A,
     bool sorted)
 {
   A.clear(); 
@@ -62,7 +62,7 @@ IGL_INLINE void igl::adjacency_list(
     
     for(int v=0; v<(int)SR.size();++v)
     {
-      std::vector<T>& vv = A.at(v);
+      std::vector<IndexVector>& vv = A.at(v);
       std::vector<std::vector<int> >& sr = SR[v];
       
       std::vector<std::vector<int> > pn = sr;
@@ -120,7 +120,37 @@ IGL_INLINE void igl::adjacency_list(
   }
 }
 
+template <typename Index>
+IGL_INLINE void igl::adjacency_list(
+  const std::vector<std::vector<Index> > & F,
+  std::vector<std::vector<Index> >& A)
+{
+  A.clear(); 
+  A.resize(F.maxCoeff()+1);
+  
+  // Loop over faces
+  for(int i = 0;i<F.size();i++)
+  {
+    // Loop over this face
+    for(int j = 0;j<F[i].size();j++)
+    {
+      // Get indices of edge: s --> d
+      int s = F(i,j);
+      int d = F(i,(j+1)%F[i].size());
+      A.at(s).push_back(d);
+      A.at(d).push_back(s);
+    }
+  }
+  
+  // Remove duplicates
+  for(int i=0; i<(int)A.size();++i)
+  {
+    std::sort(A[i].begin(), A[i].end());
+    A[i].erase(std::unique(A[i].begin(), A[i].end()), A[i].end());
+  }
+  
+}
+
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
-template void igl::adjacency_list<unsigned int, Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1> >(Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1> const&, std::vector<std::vector<unsigned int, std::allocator<unsigned int> >, std::allocator<std::vector<unsigned int, std::allocator<unsigned int> > > >&, bool);
 #endif
