@@ -4,20 +4,15 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Forward define
-  template <
-    typename Scalar,
-    typename Index>
-  class EmbreeIntersector;
   // Orient each component (identified by C) of a mesh (V,F) using ambient occlusion 
   // such that the front side is less occluded than back side
   //
   // Inputs:
-  //   V            #V by 3 list of vertex positions
-  //   F            #F by 3 list of triangle indices
-  //   C            #F list of components
-  //   ei           EmbreeIntersector containing (V,F)
-  //   num_samples  total number of rays to be shot
+  //   V                            #V by 3 list of vertex positions
+  //   F                            #F by 3 list of triangle indices
+  //   C                            #F list of components
+  //   min_num_rays_per_component   Each component receives at least this number of rays
+  //   total_num_rays               Total number of rays that will be shot
   // Outputs:
   //   FF  #F by 3 list of new triangle indices such that FF(~I,:) = F(~I,:) and
   //     FF(I,:) = fliplr(F(I,:)) (OK if &FF = &F)
@@ -26,20 +21,18 @@ namespace igl
     typename DerivedV, 
     typename DerivedF, 
     typename DerivedC, 
-    typename Scalar,
-    typename Index,
     typename DerivedFF, 
     typename DerivedI>
   IGL_INLINE void orient_outward_ao(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
     const Eigen::PlainObjectBase<DerivedC> & C,
-    const igl::EmbreeIntersector<Scalar,Index> & ei,
-    const int num_samples,
+    const int min_num_rays_per_component,
+    const int total_num_rays,
     Eigen::PlainObjectBase<DerivedFF> & FF,
     Eigen::PlainObjectBase<DerivedI> & I);
   
-  // EmbreeIntersector generated on the fly
+  // Call with default number of rays
   template <
     typename DerivedV, 
     typename DerivedF, 
@@ -50,7 +43,6 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
     const Eigen::PlainObjectBase<DerivedC> & C,
-    const int num_samples,
     Eigen::PlainObjectBase<DerivedFF> & FF,
     Eigen::PlainObjectBase<DerivedI> & I);
 };

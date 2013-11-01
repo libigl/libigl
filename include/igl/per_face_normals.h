@@ -7,14 +7,27 @@ namespace igl
   // Compute face normals via vertex position list, face list
   // Inputs:
   //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
-  //   F  #F by 3 eigne Matrix of face (triangle) indices
+  //   F  #F by 3 eigen Matrix of face (triangle) indices
+  //   Z  3 vector normal given to faces with degenerate normal.
   // Output:
   //   N  #F by 3 eigen Matrix of mesh face (triangle) 3D normals
-  template <typename DerivedV, typename DerivedF>
+  //
+  // Example:
+  //   // Give degenerate faces (1/3,1/3,1/3)^0.5
+  //   per_face_normals(V,F,Vector3d(1,1,1).normalized(),N);
+  template <typename DerivedV, typename DerivedF, typename DerivedZ, typename DerivedN>
   IGL_INLINE void per_face_normals(
     const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedF>& F,
-    Eigen::PlainObjectBase<DerivedV> & N);
+    const Eigen::PlainObjectBase<DerivedZ> & Z,
+    Eigen::PlainObjectBase<DerivedN> & N);
+  // Wrapper with Z = (0,0,0). Note that this means that row norms will be zero
+  // (i.e. not 1) for degenerate normals.
+  template <typename DerivedV, typename DerivedF, typename DerivedN>
+  IGL_INLINE void per_face_normals(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedN> & N);
 }
 
 #ifdef IGL_HEADER_ONLY
