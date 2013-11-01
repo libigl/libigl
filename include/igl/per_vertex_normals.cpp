@@ -12,21 +12,6 @@ IGL_INLINE void igl::per_vertex_normals(
   Eigen::PlainObjectBase<DerivedV> PFN;
   igl::per_face_normals(V,F,PFN);
   return igl::per_vertex_normals(V,F,PFN,N);
-
-  //// Resize for output
-  //N = Eigen::PlainObjectBase<DerivedV>::Zero(V.rows(),3);
-
-  //// loop over faces
-  //for(int i = 0; i < F.rows();i++)
-  //{
-  //  // throw normal at each corner
-  //  for(int j = 0; j < 3;j++)
-  //  {
-  //    N.row(F(i,j)) += PFN.row(i);
-  //  }
-  //}
-  //// normalize each row
-  //igl::normalize_row_lengths(N,N);
 }
 
 template <typename DerivedV, typename DerivedF>

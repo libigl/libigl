@@ -10,14 +10,12 @@ namespace igl
     int x,y,width,height;
     igl::Camera camera;
     // Constructors
-    Viewport():
-      x(0),y(0),width(0),height(0),camera(){};
     Viewport(
-      const int x, 
-      const int y, 
-      const int width,
-      const int height, 
-      const igl::Camera & camera):
+      const int x=0, 
+      const int y=0, 
+      const int width=0,
+      const int height=0, 
+      const igl::Camera & camera = igl::Camera()):
       x(x),
       y(y),
       width(width),

@@ -16,7 +16,9 @@
 // This is a hack
 #  pragma GCC system_header
 #endif
-#include <common/ray.h>
+#include <embree/include/embree.h>
+#include <embree/include/intersector1.h>
+#include <embree/common/ray.h>
 #ifdef __GNUC__
 #  if __GNUC__ >= 4
 #    if __GNUC_MINOR__ >= 6

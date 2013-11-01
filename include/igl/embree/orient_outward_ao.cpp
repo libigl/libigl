@@ -1,28 +1,23 @@
 #include "orient_outward_ao.h"
 #include "../per_face_normals.h"
-#include "../barycenter.h"
 #include "../doublearea.h"
-#include "../matlab_format.h"
-#include "ambient_occlusion.h"
+#include "../random_dir.h"
 #include "EmbreeIntersector.h"
 #include <iostream>
 #include <random>
-#include <omp.h>
 
 template <
   typename DerivedV, 
   typename DerivedF, 
   typename DerivedC, 
-  typename Scalar,
-  typename Index,
   typename DerivedFF, 
   typename DerivedI>
 IGL_INLINE void igl::orient_outward_ao(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::PlainObjectBase<DerivedF> & F,
   const Eigen::PlainObjectBase<DerivedC> & C,
-  const igl::EmbreeIntersector<Scalar,Index> & ei,
-  const int num_samples,
+  const int min_num_rays_per_component,
+  const int total_num_rays,
   Eigen::PlainObjectBase<DerivedFF> & FF,
   Eigen::PlainObjectBase<DerivedI> & I)
 {
@@ -31,6 +26,9 @@ IGL_INLINE void igl::orient_outward_ao(
   assert(C.rows() == F.rows());
   assert(F.cols() == 3);
   assert(V.cols() == 3);
+  
+  EmbreeIntersector ei;
+  ei.init(V.template cast<float>(),F);
   
   // number of faces
   const int m = F.rows();
@@ -43,71 +41,138 @@ IGL_INLINE void igl::orient_outward_ao(
   }
   
   // face normal
-  PlainObjectBase<DerivedV> N;
+  MatrixXd N;
   per_face_normals(V,F,N);
   
-  // random number generator/distribution for each thread
-  int max_threads = omp_get_max_threads();
-  
-  // prng
-  vector<mt19937> engine(max_threads);
-  for (int i = 0; i < max_threads; ++i)
-      engine[i].seed(time(0) * (i + 1));
-  
-  // discrete distribution for random selection of faces with probability proportional to their areas
+  // face area
   Matrix<typename DerivedV::Scalar,Dynamic,1> A;
   doublearea(V,F,A);
-  double minarea = A.minCoeff();
-  Matrix<int, Dynamic, 1> A_int = (A * 100.0 / minarea).template cast<int>();       // only integer is allowed for weight
-  auto ddist_func = [&] (double i) { return A_int(static_cast<int>(i)); };
-  vector<discrete_distribution<int>> ddist(max_threads, discrete_distribution<int>(m, 0, m, ddist_func));      // simple ctor of (Iter, Iter) not provided by the stupid VC11 impl...
+  double area_min = A.minCoeff();
+  double area_total = A.sum();
   
-  // uniform real between in [0, 1]
-  vector<uniform_real_distribution<double>> rdist(max_threads);
-  
-  //// occlusion count per component: +1 when front ray is occluded, -1 when back ray is occluded
-  // occlussion count per component, per back/front: C(c,0) --> number of
-  // front-side rays occluded, C(c,1) --> number of back-side rays occluded
-  Matrix<int, Dynamic, 2> C_occlude_count;
-  C_occlude_count.setZero(num_cc, 2);
-  
-#pragma omp parallel for
-  for (int i = 0; i < num_samples; ++i)
+  // determine number of rays per component according to its area
+  VectorXd area_per_component;
+  area_per_component.setZero(num_cc);
+  for (int f = 0; f < m; ++f)
   {
-    int thread_num = omp_get_thread_num();
-    int f     = ddist[thread_num](engine[thread_num]);   // select face with probability proportional to face area
-    double t0 = rdist[thread_num](engine[thread_num]);
-    double t1 = rdist[thread_num](engine[thread_num]);
-    double t2 = rdist[thread_num](engine[thread_num]);
-    double t_sum = t0 + t1 + t2;
-    t0 /= t_sum;
-    t1 /= t_sum;
-    t2 /= t_sum;
-    RowVector3d p = t0 * V.row(F(f,0)) + t1 * V.row(F(f,1)) + t1 * V.row(F(f,2));
-    RowVector3d n = N.row(f);
-    //bool is_backside = rdist[thread_num](engine[thread_num]) < 0.5;
-    // Loop over front or back side
-    for(int s = 0;s<2;s++)
+    area_per_component(C(f)) += A(f);
+  }
+  VectorXi num_rays_per_component;
+  num_rays_per_component.setZero(num_cc);
+  for (int c = 0; c < num_cc; ++c)
+  {
+    num_rays_per_component(c) = max<int>(min_num_rays_per_component, static_cast<int>(total_num_rays * area_per_component(c) / area_total));
+  }
+  
+  // generate all the rays
+  cout << "generating rays... ";
+  uniform_real_distribution<float> rdist;
+  mt19937 prng;
+  prng.seed(0);
+  vector<int     > ray_face;
+  vector<Vector3f> ray_ori;
+  vector<Vector3f> ray_dir;
+  ray_face.reserve(total_num_rays);
+  ray_ori .reserve(total_num_rays);
+  ray_dir .reserve(total_num_rays);
+  for (int c = 0; c < num_cc; ++c)
+  {
+    vector<int> CF;     // set of faces per component
+    vector<int> CF_area;
+    for (int f = 0; f < m; ++f)
     {
-      if(s==1)
+      if (C(f)==c)
       {
-          n *= -1;
-      }
-      Matrix<typename DerivedV::Scalar,Dynamic,1> S;
-      ambient_occlusion(ei, p, n, 1, S);
-      if (S(0) > 0)
-      {
-#pragma omp atomic
-        C_occlude_count(C(f),s)++;
+        CF.push_back(f);
+        CF_area.push_back(static_cast<int>(100 * A(f) / area_min));
       }
     }
-
+    // discrete distribution for random selection of faces with probability proportional to their areas
+    auto ddist_func = [&] (double i) { return CF_area[static_cast<int>(i)]; };
+    discrete_distribution<int> ddist(CF.size(), 0, CF.size(), ddist_func);      // simple ctor of (Iter, Iter) not provided by the stupid VC11 impl...
+    for (int i = 0; i < num_rays_per_component[c]; ++i)
+    {
+      int f     = CF[ddist(prng)];    // select face with probability proportional to face area
+      float t0 = rdist(prng);        // random barycentric coordinate
+      float t1 = rdist(prng);
+      float t2 = rdist(prng);
+      float t_sum = t0 + t1 + t2;
+      t0 /= t_sum;
+      t1 /= t_sum;
+      t2 /= t_sum;
+      Vector3f p = t0 * V.row(F(f,0)).template cast<float>().eval()       // be careful with the index!!!
+                 + t1 * V.row(F(f,1)).template cast<float>().eval()
+                 + t2 * V.row(F(f,2)).template cast<float>().eval();
+      Vector3f n = N.row(f).cast<float>();
+      assert(n != Vector3f::Zero());
+      // random direction in hemisphere around n (avoid too grazing angle)
+      Vector3f d;
+      while (true) {
+        d = random_dir().cast<float>();
+        float ndotd = n.dot(d);
+        if (fabsf(ndotd) < 0.1f)
+        {
+          continue;
+        }
+        if (ndotd < 0)
+        {
+          d *= -1.0f;
+        }
+        break;
+      }
+      ray_face.push_back(f);
+      ray_ori .push_back(p);
+      ray_dir .push_back(d);
+    }
+  }
+  
+  // per component voting: first=front, second=back
+  vector<pair<float, float>> C_vote_distance(num_cc, make_pair(0, 0));     // sum of distance between ray origin and intersection
+  vector<pair<int  , int  >> C_vote_infinity(num_cc, make_pair(0, 0));     // number of rays reaching infinity
+  
+  cout << "shooting rays... ";
+#pragma omp parallel for
+  for (int i = 0; i < (int)ray_face.size(); ++i)
+  {
+    int      f = ray_face[i];
+    Vector3f o = ray_ori [i];
+    Vector3f d = ray_dir [i];
+    int c = C(f);
+    
+    // shoot ray toward front & back
+    vector<Hit> hits_front;
+    vector<Hit> hits_back;
+    int num_rays_front;
+    int num_rays_back;
+    ei.intersectRay(o,  d, hits_front, num_rays_front);
+    ei.intersectRay(o, -d, hits_back , num_rays_back );
+    if (!hits_front.empty() && hits_front[0].id == f) hits_front.erase(hits_front.begin());
+    if (!hits_back .empty() && hits_back [0].id == f) hits_back .erase(hits_back .begin());
+    
+    if (hits_front.empty())
+    {
+#pragma omp atomic
+      C_vote_infinity[c].first++;
+    } else {
+#pragma omp atomic
+      C_vote_distance[c].first += hits_front[0].t;
+    }
+    
+    if (hits_back.empty())
+    {
+#pragma omp atomic
+      C_vote_infinity[c].second++;
+    } else {
+#pragma omp atomic
+      C_vote_distance[c].second += hits_back[0].t;
+    }
   }
   
   for(int c = 0;c<num_cc;c++)
   {
-    //I(c) = C_occlude_count(c) > 0;
-    I(c) = C_occlude_count(c,0) > C_occlude_count(c,1);
+    I(c) = C_vote_infinity[c].first == C_vote_infinity[c].second &&
+           C_vote_distance[c].first <  C_vote_distance[c].second ||
+           C_vote_infinity[c].first <  C_vote_infinity[c].second;
   }
   // flip according to I
   for(int f = 0;f<m;f++)
@@ -117,9 +182,10 @@ IGL_INLINE void igl::orient_outward_ao(
       FF.row(f) = FF.row(f).reverse().eval();
     }
   }
+  cout << "done!\n";
 }
 
-// EmbreeIntersector generated on the fly
+// Call with default parameters
 template <
   typename DerivedV, 
   typename DerivedF, 
@@ -130,23 +196,13 @@ IGL_INLINE void igl::orient_outward_ao(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::PlainObjectBase<DerivedF> & F,
   const Eigen::PlainObjectBase<DerivedC> & C,
-  const int num_samples,
   Eigen::PlainObjectBase<DerivedFF> & FF,
   Eigen::PlainObjectBase<DerivedI> & I)
 {
-  using namespace igl;
-  using namespace Eigen;
-  // Both sides
-  MatrixXi F2;
-  F2.resize(F.rows()*2,F.cols());
-  F2 << F, F.rowwise().reverse().eval();
-  EmbreeIntersector<
-    typename DerivedV::Scalar,
-    typename DerivedF::Scalar > ei(V,F2);
-  return orient_outward_ao(V, F, C, ei, num_samples, FF, I);
+  return orient_outward_ao(V, F, C, 100, F.rows() * 100, FF, I);
 }
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
-template void igl::orient_outward_ao<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::orient_outward_ao<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif

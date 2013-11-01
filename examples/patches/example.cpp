@@ -30,6 +30,8 @@
 #include <igl/orient_outward.h>
 #include <igl/embree/orient_outward_ao.h>
 #include <igl/unique_simplices.h>
+#include <igl/C_STR.h>
+#include <igl/write.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -54,6 +56,7 @@
 #include <stack>
 #include <iostream>
 
+int cc_selected = -1;
 
 Eigen::MatrixXd V;
 Eigen::VectorXd Vmid,Vmin,Vmax;
@@ -66,6 +69,7 @@ struct State
   Eigen::MatrixXd N;
   Eigen::MatrixXd C;
 } s;
+std::string out_filename;
 
 // See README for descriptions
 enum RotationType
@@ -74,6 +78,13 @@ enum RotationType
   ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP = 1,
   NUM_ROTATION_TYPES = 2,
 } rotation_type;
+
+enum OrientMethod
+{
+  ORIENT_METHOD_OUTWARD = 0,
+  ORIENT_METHOD_AO = 1,
+  NUM_ORIENT_METHODS = 2,
+} orient_method = ORIENT_METHOD_AO;
 
 std::stack<State> undo_stack;
 std::stack<State> redo_stack;
@@ -97,6 +108,10 @@ Eigen::Vector4f light_pos(-0.1,-0.1,0.9,0);
 #define REBAR_NAME "temp.rbr"
 igl::ReTwBar rebar;
 
+// Forward
+void init_patches();
+void init_relative();
+
 void push_undo()
 {
   undo_stack.push(s);
@@ -110,6 +125,23 @@ void TW_CALL set_camera_rotation(const void * value, void *clientData)
   // case current value to double
   const double * quat = (const double *)(value);
   std::copy(quat,quat+4,s.camera.rotation);
+}
+
+void TW_CALL set_orient_method(const void * value, void * clientData)
+{
+  const OrientMethod old_orient_method = orient_method;
+  orient_method = *(const OrientMethod *)value;
+  if(orient_method != old_orient_method)
+  {
+    init_patches();
+    init_relative();
+  }
+}
+
+void TW_CALL get_orient_method(void * value, void *clientData)
+{
+  OrientMethod * om = (OrientMethod *)(value);
+  *om = orient_method;
 }
 
 void TW_CALL set_rotation_type(const void * value, void * clientData)
@@ -299,6 +331,38 @@ void display()
     {
       draw_mesh(V,F,s.N,s.C);
     }
+  
+    // visualize selected patch
+    glLineWidth(10);
+    glBegin(GL_TRIANGLES);
+    glColor3d(0, 0, 0);
+    // loop over faces
+    for(int i = 0; i<F.rows();i++)
+    {
+      if (CC(i) != cc_selected) continue;
+      // loop over corners of triangle
+      for(int j = 0;j<3;j++)
+      {
+        glVertex3d(V(F(i,j),0),V(F(i,j),1),V(F(i,j),2));
+      }
+    }
+    glEnd();
+    glLineWidth(1);
+    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+    glBegin(GL_TRIANGLES);
+    glColor3d(1, 0, 0);
+    // loop over faces
+    for(int i = 0; i<F.rows();i++)
+    {
+      if (CC(i) != cc_selected) continue;
+      // loop over corners of triangle
+      glNormal3d(s.N(i,0),s.N(i,1),s.N(i,2));
+      for(int j = 0;j<3;j++)
+      {
+        glVertex3d(V(F(i,j),0),V(F(i,j),1),V(F(i,j),2));
+      }
+    }
+    glEnd();
   }
   glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
   if(fill_visible)
@@ -539,20 +603,20 @@ void init_patches()
   }
   bfs_orient(F,F,CC);
   VectorXi I;
-  char c;
-  cout << "use ambient occlusion to determine patch orientation? (y/n):";
-  cin >> c;
-  if (c == 'y')
+  switch(orient_method)
   {
-    orient_outward_ao(V,F,CC,F.rows() * 100,F,I);
-  }
-  else
-  {
-    orient_outward(V,F,CC,F,I);
+    case ORIENT_METHOD_AO:
+      cout<<"orient_outward_ao()"<<endl;
+      orient_outward_ao(V,F,CC,100, F.rows() * 100,F,I);
+      break;
+    case ORIENT_METHOD_OUTWARD:
+    default:
+      cout<<"orient_outward()"<<endl;
+      orient_outward(V,F,CC,F,I);
+      break;
   }
   double num_cc = (double)CC.maxCoeff()+1.0;
   cout<<"There are "<<num_cc<<" 'manifold/orientable' patches of faces."<<endl;
-  randomly_color(CC,s.C);
 }
 
 void undo()
@@ -577,6 +641,26 @@ void redo()
   }
 }
 
+bool save(const std::string & out_filename)
+{
+  using namespace std;
+  using namespace igl;
+  if(write(out_filename,V,F))
+  {
+    cout<<GREENGIN("Saved mesh to `"<<out_filename<<"` successfully.")<<endl;
+    return true;
+  }else
+  {
+    cout<<REDRUM("Failed to save mesh to `"<<out_filename<<"`.")<<endl;
+    return false;
+  }
+}
+
+void TW_CALL saveCB(void * /*clientData*/)
+{
+  save(out_filename);
+}
+
 void key(unsigned char key, int mouse_x, int mouse_y)
 {
   using namespace std;
@@ -594,6 +678,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
       {
         push_undo();
         s.N *= -1.0;
+        F = F.rowwise().reverse().eval();
         break;
       }
     case 'z':
@@ -617,6 +702,17 @@ void key(unsigned char key, int mouse_x, int mouse_y)
           s.camera.rotation);
         break;
       }
+    case 'u':
+        mouse_wheel(0, 1,mouse_x,mouse_y);
+        break;
+    case 'j':
+        mouse_wheel(0,-1,mouse_x,mouse_y);
+        break;
+    case 'n':
+      cc_selected = (cc_selected + 1) % (CC.maxCoeff() + 2);
+      cout << "selected cc: " << cc_selected << endl;
+      glutPostRedisplay();
+      break;
     default:
       if(!TwEventKeyboardGLUT(key,mouse_x,mouse_y))
       {
@@ -632,21 +728,25 @@ int main(int argc, char * argv[])
   using namespace Eigen;
   using namespace igl;
   string filename = "../shared/truck.obj";
-  if(argc < 2)
+  switch(argc)
   {
-    cerr<<"Usage:"<<endl<<"    ./example input.obj"<<endl;
-    cout<<endl<<"Opening default mesh..."<<endl;
-  }else
-  {
-    // Read and prepare mesh
-    filename = argv[1];
+    case 3:
+      out_filename = argv[2];
+    case 2:
+      // Read and prepare mesh
+      filename = argv[1];
+      break;
+    default:
+      cerr<<"Usage:"<<endl<<"    ./example input.obj (output.obj)"<<endl;
+      cout<<endl<<"Opening default mesh..."<<endl;
+      break;
   }
 
   // print key commands
   cout<<"[Click] and [drag]  Rotate model using trackball."<<endl;
   cout<<"[Z,z]               Snap rotation to canonical view."<<endl;
-  cout<<"[⌘ Z]               Undo."<<endl;
-  cout<<"[⇧ ⌘ Z]             Redo."<<endl;
+  cout<<"[Command+Z]         Undo."<<endl;
+  cout<<"[Shift+Command+Z]   Redo."<<endl;
   cout<<"[^C,ESC]            Exit."<<endl;
 
   // dirname, basename, extension and filename
@@ -703,8 +803,8 @@ int main(int argc, char * argv[])
   F = F_unique;
 
   init_patches();
-
   init_relative();
+  randomly_color(CC,s.C);
 
   // Init glut
   glutInit(&argc,argv);
@@ -715,7 +815,8 @@ int main(int argc, char * argv[])
     return 1;
   }
   // Create a tweak bar
-  rebar.TwNewBar("TweakBar");
+  rebar.TwNewBar("bar");
+  TwDefine("bar label='Patches' size='200 550' text=light alpha='200' color='68 68 68'");
   rebar.TwAddVarCB("camera_rotation", TW_TYPE_QUAT4D, set_camera_rotation,get_camera_rotation, NULL, "open readonly=true");
   TwEnumVal RotationTypesEV[NUM_ROTATION_TYPES] = 
   {
@@ -729,9 +830,29 @@ int main(int argc, char * argv[])
         NUM_ROTATION_TYPES);
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
+  TwEnumVal OrientMethodEV[NUM_ORIENT_METHODS] = 
+  {
+    {ORIENT_METHOD_OUTWARD,"outward"},
+    {ORIENT_METHOD_AO,"ambient occlusion"}
+  };
+  TwType OrientMethodTW = 
+    ReTwDefineEnum(
+        "OrientMethod", 
+        OrientMethodEV, 
+        NUM_ROTATION_TYPES);
+  rebar.TwAddVarCB( "orient_method", OrientMethodTW,
+    set_orient_method,get_orient_method,NULL,"keyIncr=< keyDecr=>");
+
   rebar.TwAddVarRW("wireframe_visible",TW_TYPE_BOOLCPP,&wireframe_visible,"key=l");
   rebar.TwAddVarRW("fill_visible",TW_TYPE_BOOLCPP,&fill_visible,"key=f");
-  rebar.TwAddButton("randomize colors",randomize_colors,NULL,"key=c");
+  rebar.TwAddButton("randomize_colors",randomize_colors,NULL,"key=c");
+  if(out_filename != "")
+  {
+    rebar.TwAddButton("save",
+      saveCB,NULL,
+      C_STR("label='Save to `"<<out_filename<<"`' "<<
+      "key=s"));
+  }
   rebar.load(REBAR_NAME);
 
 
