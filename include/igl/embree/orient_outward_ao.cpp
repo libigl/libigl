@@ -5,6 +5,8 @@
 #include "EmbreeIntersector.h"
 #include <iostream>
 #include <random>
+#include <ctime>
+#include <limits>
 
 template <
   typename DerivedV, 
@@ -47,7 +49,11 @@ IGL_INLINE void igl::orient_outward_ao(
   // face area
   Matrix<typename DerivedV::Scalar,Dynamic,1> A;
   doublearea(V,F,A);
-  double area_min = A.minCoeff();
+  double area_min = numeric_limits<double>::max();
+  for (int f = 0; f < m; ++f)
+  {
+    area_min = A(f) != 0 && A(f) < area_min ? A(f) : area_min;
+  }
   double area_total = A.sum();
   
   // determine number of rays per component according to its area
@@ -68,7 +74,7 @@ IGL_INLINE void igl::orient_outward_ao(
   cout << "generating rays... ";
   uniform_real_distribution<float> rdist;
   mt19937 prng;
-  prng.seed(0);
+  prng.seed(time(nullptr));
   vector<int     > ray_face;
   vector<Vector3f> ray_ori;
   vector<Vector3f> ray_dir;
@@ -77,6 +83,10 @@ IGL_INLINE void igl::orient_outward_ao(
   ray_dir .reserve(total_num_rays);
   for (int c = 0; c < num_cc; ++c)
   {
+    if (area_per_component[c] == 0)
+    {
+      continue;
+    }
     vector<int> CF;     // set of faces per component
     vector<int> CF_area;
     for (int f = 0; f < m; ++f)
@@ -92,7 +102,7 @@ IGL_INLINE void igl::orient_outward_ao(
     discrete_distribution<int> ddist(CF.size(), 0, CF.size(), ddist_func);      // simple ctor of (Iter, Iter) not provided by the stupid VC11 impl...
     for (int i = 0; i < num_rays_per_component[c]; ++i)
     {
-      int f     = CF[ddist(prng)];    // select face with probability proportional to face area
+      int f    = CF[ddist(prng)];    // select face with probability proportional to face area
       float t0 = rdist(prng);        // random barycentric coordinate
       float t1 = rdist(prng);
       float t2 = rdist(prng);
@@ -104,7 +114,6 @@ IGL_INLINE void igl::orient_outward_ao(
                  + t1 * V.row(F(f,1)).template cast<float>().eval()
                  + t2 * V.row(F(f,2)).template cast<float>().eval();
       Vector3f n = N.row(f).cast<float>();
-      assert(n != Vector3f::Zero());
       // random direction in hemisphere around n (avoid too grazing angle)
       Vector3f d;
       while (true) {
