@@ -87,7 +87,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\kt84\dbg.cpp" />
     <ClCompile Include="..\..\external\embree\embree\builders\heuristic_binning.cpp" />
     <ClCompile Include="..\..\external\embree\embree\builders\heuristic_spatial.cpp" />
     <ClCompile Include="..\..\external\embree\embree\builders\primrefgen.cpp" />
