@@ -102,4 +102,5 @@ template void igl::sparse<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<dou
 template void igl::sparse<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&);
 template Eigen::SparseMatrix<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, 0, int> igl::sparse<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&);
 template Eigen::SparseMatrix<Eigen::Matrix<double, -1, 1, 0, -1, 1>::Scalar, 0, int> igl::sparse<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&);
+template void igl::sparse<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >, double>(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, unsigned long, unsigned long, Eigen::SparseMatrix<double, 0, int>&);
 #endif

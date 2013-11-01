@@ -13,6 +13,9 @@ IGL_INLINE void igl::normalize_row_lengths(
   {
     B.row(i) = A.row(i).normalized();
   }
+  //// Or just:
+  //B = A;
+  //B.rowwise().normalize();
 }
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization

@@ -226,6 +226,17 @@ A.setFromTriplets(IJV);
         </code></pre></td>
         <td>Coefficient-wise minimum of matrix and scalar (or matching size matrix)</td>
       </tr>
+
+      <tr class=d1>
+        <td><pre><code>IP = I(P==0);</code></pre></td>
+        <td><pre><code>VectorXi IP = I;
+IP.conservativeResize(stable_partition(
+  IP.data(), 
+  IP.data()+IP.size(), 
+  [&amp;P](int i){return P(i)==0;})-IP.data());
+        </code></pre></td>
+        <td>Where I and P are vectors. <i>Requires C++11 and <code>#include &lt;algorithm&gt;</code></i></td>
+      </tr>
       <!-- Insert rows for each command pair -->
 
       <!-- Leave this here for copy and pasting
