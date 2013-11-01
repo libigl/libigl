@@ -36,7 +36,8 @@ IGL_INLINE void igl::orient_outward(
   PlainObjectBase<DerivedV> N,BC,BCmean;
   Matrix<typename DerivedV::Scalar,Dynamic,1> A;
   VectorXd totA(num_cc), dot(num_cc);
-  per_face_normals(V,F,N);
+  Matrix<typename DerivedV::Scalar,3,1> Z(1,1,1);
+  per_face_normals(V,F,Z.normalized(),N);
   barycenter(V,F,BC);
   doublearea(V,F,A);
   BCmean.setConstant(num_cc,3,0);
