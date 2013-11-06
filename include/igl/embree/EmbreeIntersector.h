@@ -103,6 +103,7 @@ namespace igl
     embree::RTCTriangle* triangles;
     embree::RTCVertex *vertices;
     embree::Intersector1 *intersector;
+    bool initialized;
   };
 }
 
@@ -148,7 +149,8 @@ inline igl::EmbreeIntersector::EmbreeIntersector()
   mesh(NULL),
   triangles(NULL),
   vertices(NULL),
-  intersector(NULL)
+  intersector(NULL),
+  initialized(false)
 {
 }
 
@@ -173,6 +175,10 @@ inline void igl::EmbreeIntersector::init(
   const char* builder,
   const char* traverser)
 {
+  
+  if (initialized)
+    deinit();
+  
   using namespace std;
   global_init();
 
@@ -203,12 +209,15 @@ inline void igl::EmbreeIntersector::init(
   embree::rtcCleanupGeometry(mesh);
   
   intersector = embree::rtcQueryIntersector1(mesh,traverser);
+  
+  initialized = true;
 }
 
 igl::EmbreeIntersector
 ::~EmbreeIntersector()
 {
-  deinit();
+  if (initialized)
+    deinit();
 }
 
 void igl::EmbreeIntersector::deinit()
