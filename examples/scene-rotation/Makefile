@@ -9,7 +9,7 @@ all: obj example
 .PHONY: example
 
 LIBIGL=../../
-LIBIGL_INC=-I$(LIBIGL)/include
+LIBIGL_INC=-I$(LIBIGL)/include -DIGL_HEADER_ONLY
 LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglmatlab -liglembree
 
 EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
@@ -23,11 +23,11 @@ MATLAB_LIB=-L$(MATLAB)/bin/maci64 -lmx -lmat -lmex -lstdc++
 CARBON_LIB=-framework Carbon
 
 # Use free glut for mouse scrolling
-FREE_GLUT=/opt/local/
-FREE_GLUT_INC=-I$(FREE_GLUT)/include
-FREE_GLUT_LIB=-L$(FREE_GLUT)/lib -lglut
-GLUT_LIB=$(FREE_GLUT_LIB)
-GLUT_INC=$(FREE_GLUT_INC)
+#FREE_GLUT=/opt/local/
+#FREE_GLUT_INC=-I$(FREE_GLUT)/include
+#FREE_GLUT_LIB=-L$(FREE_GLUT)/lib -lglut
+GLUT_LIB=-framework GLUT
+GLUT_INC=
 
 INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC) $(MATLAB_INC) $(GLUT_INC)
 LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB) $(MATLAB_LIB) $(CARBON_LIB)
@@ -48,5 +48,5 @@ obj/%.o: %.cpp %.h
 	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -c $< -o $@ $(INC)
 
 clean:
-	rm -f example.o
+	rm -f $(OBJ_FILES)
 	rm -f example
