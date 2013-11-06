@@ -71,7 +71,7 @@ IGL_INLINE void igl::orient_outward_ao(
   }
   
   // generate all the rays
-  cout << "generating rays... ";
+  //cout << "generating rays... ";
   uniform_real_distribution<float> rdist;
   mt19937 prng;
   prng.seed(time(nullptr));
@@ -139,7 +139,7 @@ IGL_INLINE void igl::orient_outward_ao(
   vector<pair<float, float>> C_vote_distance(num_cc, make_pair(0, 0));     // sum of distance between ray origin and intersection
   vector<pair<int  , int  >> C_vote_infinity(num_cc, make_pair(0, 0));     // number of rays reaching infinity
   
-  cout << "shooting rays... ";
+  //cout << "shooting rays... ";
 #pragma omp parallel for
   for (int i = 0; i < (int)ray_face.size(); ++i)
   {
@@ -191,7 +191,7 @@ IGL_INLINE void igl::orient_outward_ao(
       FF.row(f) = FF.row(f).reverse().eval();
     }
   }
-  cout << "done!\n";
+  //cout << "done!\n";
 }
 
 // Call with default parameters

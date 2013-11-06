@@ -34,7 +34,7 @@ static int width,height;
 static Eigen::MatrixXd V,N;
 static Eigen::MatrixXi F;
 static Eigen::Vector3d Vmean, Vmax,Vmin;
-static bool invert = false;
+//static bool invert = false;
 static float background_color[4] = {0,0,0,1};
 
 // Small viewports struct for keeping track of size and camera info
@@ -268,27 +268,36 @@ void display()
     push_scene(viewports[vp]);
     push_object(viewports[vp]);
 
+    // Draw the mesh, inverted if need be.
     // Set material properties
     glDisable(GL_COLOR_MATERIAL);
-    glMaterialfv(GL_FRONT, GL_AMBIENT,  GOLD_AMBIENT);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE,  GOLD_DIFFUSE  );
-    glMaterialfv(GL_FRONT, GL_SPECULAR, GOLD_SPECULAR);
-    glMaterialf (GL_FRONT, GL_SHININESS, 128);
-    glMaterialfv(GL_BACK, GL_AMBIENT,  SILVER_AMBIENT);
-    glMaterialfv(GL_BACK, GL_DIFFUSE,  FAST_GREEN_DIFFUSE  );
-    glMaterialfv(GL_BACK, GL_SPECULAR, SILVER_SPECULAR);
-    glMaterialf (GL_BACK, GL_SHININESS, 128);
-
-    // Draw the mesh, inverted if need be.
-    if(invert)
-    {
-      glFrontFace(GL_CW);
-    }
+    //if(invert)
+    //{
+    //  glFrontFace(GL_CW);
+    //  glMaterialfv(GL_FRONT, GL_AMBIENT,  CYAN_AMBIENT);
+    //  glMaterialfv(GL_FRONT, GL_DIFFUSE,  CYAN_DIFFUSE  );
+    //  glMaterialfv(GL_FRONT, GL_SPECULAR, CYAN_SPECULAR);
+    //  glMaterialf (GL_FRONT, GL_SHININESS, 128);
+    //  glMaterialfv(GL_BACK, GL_AMBIENT,  SILVER_AMBIENT);
+    //  glMaterialfv(GL_BACK, GL_DIFFUSE,  FAST_RED_DIFFUSE);
+    //  glMaterialfv(GL_BACK, GL_SPECULAR, SILVER_SPECULAR);
+    //  glMaterialf (GL_BACK, GL_SHININESS, 128);
+    //}else
+    //{
+      glMaterialfv(GL_FRONT, GL_AMBIENT,  GOLD_AMBIENT);
+      glMaterialfv(GL_FRONT, GL_DIFFUSE,  GOLD_DIFFUSE  );
+      glMaterialfv(GL_FRONT, GL_SPECULAR, GOLD_SPECULAR);
+      glMaterialf (GL_FRONT, GL_SHININESS, 128);
+      glMaterialfv(GL_BACK, GL_AMBIENT,  SILVER_AMBIENT);
+      glMaterialfv(GL_BACK, GL_DIFFUSE,  FAST_GREEN_DIFFUSE  );
+      glMaterialfv(GL_BACK, GL_SPECULAR, SILVER_SPECULAR);
+      glMaterialf (GL_BACK, GL_SHININESS, 128);
+    //}
     draw_mesh(V,F,N);
-    if(invert)
-    {
-      glFrontFace(GL_CCW);
-    }
+    //if(invert)
+    //{
+    //  glFrontFace(GL_CCW);
+    //}
     pop_object();
 
     // Draw a nice floor unless we're looking from beneath it
@@ -411,20 +420,20 @@ bool render_to_buffer(
   Vmin = V.colwise().minCoeff();
   Vmean = 0.5*(Vmax + Vmin);
 
-  // Figure out if normals should be flipped (hopefully this is never a
-  // bottleneck)
-  MatrixXd BC;
-  VectorXd dblA;
-  barycenter(V,F,BC);
-  BC.col(0).array() -= Vmean(0,0);
-  BC.col(1).array() -= Vmean(1,0);
-  BC.col(2).array() -= Vmean(2,0);
-  doublearea(V,F,dblA);
-  VectorXd BCDN = (BC.array() * N.array()).rowwise().sum();
-  const double tot_dp = dblA.transpose() * BCDN;
-  invert = tot_dp < 0;
-  cout<<"Normals: "<<(get_seconds()-ts)<<"s"<<endl;
-  ts = get_seconds();
+  //// Figure out if normals should be flipped (hopefully this is never a
+  //// bottleneck)
+  //MatrixXd BC;
+  //VectorXd dblA;
+  //barycenter(V,F,BC);
+  //BC.col(0).array() -= Vmean(0,0);
+  //BC.col(1).array() -= Vmean(1,0);
+  //BC.col(2).array() -= Vmean(2,0);
+  //doublearea(V,F,dblA);
+  //VectorXd BCDN = (BC.array() * N.array()).rowwise().sum();
+  //const double tot_dp = dblA.transpose() * BCDN;
+  //invert = tot_dp < 0;
+  //cout<<"Normals: "<<(get_seconds()-ts)<<"s"<<endl;
+  //ts = get_seconds();
 
   // Initialize MESA
   OSMesaContext ctx;
