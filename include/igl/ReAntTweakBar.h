@@ -66,7 +66,7 @@ namespace igl
     TwType type;
     void * var;
     // Default constructor
-    ReTwRWItem(
+    IGL_INLINE ReTwRWItem(
       const std::string _name,
       TwType _type, 
       void *_var):
@@ -77,7 +77,7 @@ namespace igl
     }
     // Shallow copy constructor
     // I solemnly swear it's OK to copy var this way
-    ReTwRWItem(const ReTwRWItem & that):
+    IGL_INLINE ReTwRWItem(const ReTwRWItem & that):
       name(that.name),
       type(that.type),
       var(that.var)
@@ -85,7 +85,7 @@ namespace igl
     }
     // Shallow assignment 
     // I solemnly swear it's OK to copy var this way
-    ReTwRWItem & operator=(const ReTwRWItem & that)
+    IGL_INLINE ReTwRWItem & operator=(const ReTwRWItem & that)
     {
       if(this != &that)
       {
@@ -106,7 +106,7 @@ namespace igl
     TwGetVarCallback getCallback;
     void * clientData;
     // Default constructor
-    ReTwCBItem(
+    IGL_INLINE ReTwCBItem(
       const std::string _name,
       TwType _type, 
       TwSetVarCallback _setCallback,
@@ -121,7 +121,7 @@ namespace igl
     }
     // Shallow copy
     // I solemnly swear it's OK to copy clientData this way
-    ReTwCBItem(const ReTwCBItem & that):
+    IGL_INLINE ReTwCBItem(const ReTwCBItem & that):
       name(that.name),
       type(that.type),
       setCallback(that.setCallback),
@@ -131,7 +131,7 @@ namespace igl
     }
     // Shallow assignment
     // I solemnly swear it's OK to copy clientData this way
-    ReTwCBItem & operator=(const ReTwCBItem & that)
+    IGL_INLINE ReTwCBItem & operator=(const ReTwCBItem & that)
     {
       if(this != &that)
       {
@@ -161,23 +161,23 @@ namespace igl
       std::vector<ReTwCBItem> cb_items;
     public:
       // Default constructor with explicit initialization
-      ReTwBar();
+      IGL_INLINE ReTwBar();
     private:
       // Copy constructor does shallow copy
-      ReTwBar(const ReTwBar & that);
+      IGL_INLINE ReTwBar(const ReTwBar & that);
       // Assignment operator does shallow assignment
-      ReTwBar &operator=(const ReTwBar & that);
+      IGL_INLINE ReTwBar &operator=(const ReTwBar & that);
   
     // WRAPPERS FOR ANTTWEAKBAR FUNCTIONS 
     public:
       void TwNewBar(const char *barName);
-      int TwAddVarRW(
+      IGL_INLINE int TwAddVarRW(
         const char *name, 
         TwType type, 
         void *var, 
         const char *def,
         const bool record=true);
-      int TwAddVarCB(
+      IGL_INLINE int TwAddVarCB(
         const char *name, 
         TwType type, 
         TwSetVarCallback setCallback, 
@@ -186,26 +186,26 @@ namespace igl
         const char *def,
         const bool record=true);
       // Wrappers for convenience (not recorded, just passed on)
-      int TwAddVarRO(const char *name, TwType type, void *var, const char *def);
-      int TwAddButton(
+      IGL_INLINE int TwAddVarRO(const char *name, TwType type, void *var, const char *def);
+      IGL_INLINE int TwAddButton(
         const char *name, 
         TwButtonCallback buttonCallback, 
         void *clientData, 
         const char *def);
-      int TwSetParam(
+      IGL_INLINE int TwSetParam(
         const char *varName, 
         const char *paramName, 
         TwParamValueType paramValueType, 
         unsigned int inValueCount, 
         const void *inValues);
-      int TwGetParam(
+      IGL_INLINE int TwGetParam(
         const char *varName, 
         const char *paramName, 
         TwParamValueType paramValueType, 
         unsigned int outValueMaxCount, 
         void *outValues);
-      int TwRefreshBar();
-      int TwTerminate();
+      IGL_INLINE int TwRefreshBar();
+      IGL_INLINE int TwTerminate();
   
   
     // IO FUNCTIONS
@@ -216,7 +216,7 @@ namespace igl
       //   to stdout
       // Return:
       //   true only if there were no (fatal) errors
-      bool save(const char *file_name);
+      IGL_INLINE bool save(const char *file_name);
       std::string get_value_as_string(
         void * var, 
         TwType type);
@@ -225,7 +225,7 @@ namespace igl
       //   file_name  name of input file to load
       // Return:
       //   true only if there were no (fatal) errors
-      bool load(const char *file_name);
+      IGL_INLINE bool load(const char *file_name);
       // Get TwType from string
       // Input
       //   type_str  string of type 
@@ -233,10 +233,10 @@ namespace igl
       //   type  TwType converted from string
       // Returns
       //   true only if string matched a valid type
-      bool type_from_string(const char *type_str, TwType & type);
+      IGL_INLINE bool type_from_string(const char *type_str, TwType & type);
       // I realize that I mix std::string and const char * all over the place.
       // What can you do...
-      bool set_value_from_string(
+      IGL_INLINE bool set_value_from_string(
         const char * name, 
         TwType type, 
         const char * value_str);
