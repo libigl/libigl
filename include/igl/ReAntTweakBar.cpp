@@ -9,12 +9,12 @@
 #include <map>
 
 // GLOBAL WRAPPERS
-namespace igl
+namespace 
 {
   std::map<TwType,std::pair<const char *,std::vector<TwEnumVal> > > ReTw_custom_types;
 }
 
-TwType igl::ReTwDefineEnum(
+IGL_INLINE TwType igl::ReTwDefineEnum(
   const char *name, 
   const TwEnumVal *enumValues, 
   unsigned int nbValues)
@@ -33,7 +33,7 @@ TwType igl::ReTwDefineEnum(
   return type;
 }
 
-namespace igl
+namespace
 {
   struct ReTwTypeString
   {
@@ -70,19 +70,19 @@ namespace igl
   };
 }
 
-igl::ReTwBar::ReTwBar():
+IGL_INLINE igl::ReTwBar::ReTwBar():
  bar(NULL),rw_items(),cb_items()
 {
 }
 
-igl::ReTwBar::ReTwBar(const igl::ReTwBar & that):
+IGL_INLINE igl::ReTwBar::ReTwBar(const igl::ReTwBar & that):
   bar(that.bar),
   rw_items(that.rw_items),
   cb_items(that.cb_items)
 {
 }
 
-igl::ReTwBar & igl::ReTwBar::operator=(const igl::ReTwBar & that)
+IGL_INLINE igl::ReTwBar & igl::ReTwBar::operator=(const igl::ReTwBar & that)
 {
   // check for self assignment
   if(this != &that)
@@ -96,7 +96,7 @@ igl::ReTwBar & igl::ReTwBar::operator=(const igl::ReTwBar & that)
 
 
 // BAR WRAPPERS
-void igl::ReTwBar::TwNewBar(const char *name)
+IGL_INLINE void igl::ReTwBar::TwNewBar(const char *name)
 {
   // double colon without anything in front of it means look for this in the
   // global namespace... I hope...
@@ -104,7 +104,7 @@ void igl::ReTwBar::TwNewBar(const char *name)
   this->bar = ::TwNewBar(name);
 }
 
-int igl::ReTwBar::TwAddVarRW(
+IGL_INLINE int igl::ReTwBar::TwAddVarRW(
   const char *name, 
   TwType type, 
   void *var, 
@@ -119,7 +119,7 @@ int igl::ReTwBar::TwAddVarRW(
   return ret;
 }
 
-int igl::ReTwBar::TwAddVarCB(
+IGL_INLINE int igl::ReTwBar::TwAddVarCB(
   const char *name, 
   TwType type, 
   TwSetVarCallback setCallback, 
@@ -137,7 +137,7 @@ int igl::ReTwBar::TwAddVarCB(
   return ret;
 }
 
-int igl::ReTwBar::TwAddVarRO(
+IGL_INLINE int igl::ReTwBar::TwAddVarRO(
   const char *name, 
   TwType type, 
   void *var, 
@@ -152,7 +152,7 @@ int igl::ReTwBar::TwAddVarRO(
   return ret;
 }
 
-int igl::ReTwBar::TwAddButton(
+IGL_INLINE int igl::ReTwBar::TwAddButton(
   const char *name, 
   TwButtonCallback buttonCallback, 
   void *clientData, 
@@ -168,7 +168,7 @@ int igl::ReTwBar::TwAddButton(
   return ret;
 }
 
-int igl::ReTwBar::TwSetParam(
+IGL_INLINE int igl::ReTwBar::TwSetParam(
   const char *varName, 
   const char *paramName, 
   TwParamValueType paramValueType, 
@@ -186,7 +186,7 @@ int igl::ReTwBar::TwSetParam(
       inValues);
 }
 
-int igl::ReTwBar::TwGetParam(
+IGL_INLINE int igl::ReTwBar::TwGetParam(
   const char *varName, 
   const char *paramName, 
   TwParamValueType paramValueType, 
@@ -203,12 +203,12 @@ int igl::ReTwBar::TwGetParam(
       outValues);
 }
 
-int igl::ReTwBar::TwRefreshBar()
+IGL_INLINE int igl::ReTwBar::TwRefreshBar()
 {
   return ::TwRefreshBar(this->bar);
 }
 
-int igl::ReTwBar::TwTerminate()
+IGL_INLINE int igl::ReTwBar::TwTerminate()
 {
   //std::cout<<"TwTerminate"<<std::endl;
   int r = ::TwTerminate();
@@ -216,7 +216,7 @@ int igl::ReTwBar::TwTerminate()
   return r;
 }
 
-bool igl::ReTwBar::save(const char *file_name)
+IGL_INLINE bool igl::ReTwBar::save(const char *file_name)
 {
   FILE * fp;
   if(file_name == NULL)
@@ -279,7 +279,7 @@ bool igl::ReTwBar::save(const char *file_name)
   return true;
 }
 
-std::string igl::ReTwBar::get_value_as_string(
+IGL_INLINE std::string igl::ReTwBar::get_value_as_string(
   void * var, 
   TwType type)
 {
@@ -410,7 +410,7 @@ std::string igl::ReTwBar::get_value_as_string(
   return sstr.str();
 }
 
-bool igl::ReTwBar::load(const char *file_name)
+IGL_INLINE bool igl::ReTwBar::load(const char *file_name)
 {
   FILE * fp;
   fp = fopen(file_name,"r");
@@ -471,7 +471,7 @@ bool igl::ReTwBar::load(const char *file_name)
   return true;
 }
 
-bool igl::ReTwBar::type_from_string(const char *type_str, TwType & type)
+IGL_INLINE bool igl::ReTwBar::type_from_string(const char *type_str, TwType & type)
 {
   // first check default types
   for(int j = 0; j < RETW_NUM_DEFAULT_TYPE_STRINGS; j++)
@@ -826,12 +826,12 @@ bool igl::ReTwBar::set_value_from_string(
   return true;
 }
 
-const std::vector<igl::ReTwRWItem> & igl::ReTwBar::get_rw_items()
+IGL_INLINE const std::vector<igl::ReTwRWItem> & igl::ReTwBar::get_rw_items()
 {
   return rw_items;
 }
 
-const std::vector<igl::ReTwCBItem> & igl::ReTwBar::get_cb_items()
+IGL_INLINE const std::vector<igl::ReTwCBItem> & igl::ReTwBar::get_cb_items()
 {
   return cb_items;
 }
