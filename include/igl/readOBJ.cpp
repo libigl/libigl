@@ -167,9 +167,13 @@ IGL_INLINE bool igl::readOBJ(
           fclose(obj_file);
           return false;
         }
-      }else if(strlen(type) >= 1 && type[0] == '#')
+      }else if(strlen(type) >= 1 && (type[0] == '#' || 
+            type[0] == 'g'  ||
+            type[0] == 's'  ||
+            strcmp("usemtl",type)==0 ||
+            strcmp("mtllib",type)==0))
       {
-        //ignore comments
+        //ignore comments or other shit
       }else
       {
         //ignore any other lines
