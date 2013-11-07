@@ -1,5 +1,6 @@
 #include "lens_flare.h"
 
+#ifndef IGL_NO_OPENGL
 #include "C_STR.h"
 #include "unproject.h"
 #include "project.h"
@@ -186,3 +187,4 @@ void igl::lens_flare_draw(
   glDepthFunc(odf);
   glDepthMask(odwm);
 }
+#endif

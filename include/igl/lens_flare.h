@@ -1,6 +1,7 @@
 #ifndef IGL_LENS_FLARE_H
 #define IGL_LENS_FLARE_H
 
+#ifndef IGL_NO_OPENGL
 #include <igl/OpenGL_convenience.h>
 #include <Eigen/Core>
 
@@ -79,4 +80,5 @@ namespace igl
 #  include "lens_flare.cpp"
 #endif
 
+#endif
 #endif
