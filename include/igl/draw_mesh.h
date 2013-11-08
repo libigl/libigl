@@ -14,7 +14,7 @@ namespace igl
   // Inputs:
   //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F  #F by 3 eigne Matrix of face (triangle) indices
-  //   N  #V by 3 eigen Matrix of mesh vertex 3D normals
+  //   N  #V|#F by 3 eigen Matrix of 3D normals
   IGL_INLINE void draw_mesh(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
@@ -26,13 +26,25 @@ namespace igl
   // Inputs:
   //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F  #F by 3 eigne Matrix of face (triangle) indices
-  //   N  #V by 3 eigen Matrix of mesh vertex 3D normals
-  //   C  #V by 3 eigen Matrix of mesh vertex RGB colors
+  //   N  #V|#F by 3 eigen Matrix of 3D normals
+  //   C  #V|#F|1 by 3 eigen Matrix of RGB colors
   IGL_INLINE void draw_mesh(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
     const Eigen::MatrixXd & N,
     const Eigen::MatrixXd & C);
+  // Inputs:
+  //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F  #F by 3 eigne Matrix of face (triangle) indices
+  //   N  #V|#F by 3 eigen Matrix of 3D normals
+  //   C  #V|#F|1 by 3 eigen Matrix of RGB colors
+  //   TC  #V|#F|1 by 3 eigen Matrix of Texture Coordinates
+  IGL_INLINE void draw_mesh(
+    const Eigen::MatrixXd & V,
+    const Eigen::MatrixXi & F,
+    const Eigen::MatrixXd & N,
+    const Eigen::MatrixXd & C,
+    const Eigen::MatrixXd & TC);
   
   // Draw OpenGL commands needed to display a mesh with normals, per-vertex
   // colors and LBS weights
