@@ -50,7 +50,7 @@ IGL_INLINE void igl::remove_duplicate_vertices(
   using namespace std;
   remove_duplicate_vertices(V,epsilon,SV,SVI,SVJ);
   // remap faces
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__arm__)
   SF = F.unaryExpr(bind1st(mem_fun( 
     static_cast<VectorXi::Scalar&(VectorXi::*)(VectorXi::Index)>
       (&VectorXi::operator())), &SVJ)).eval();
