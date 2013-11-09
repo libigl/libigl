@@ -118,6 +118,9 @@ obj/%.o: include/igl/%.cpp include/igl/%.h
 lib/igl.framework/:
 	mkdir -p $@
 	cp lib/*.a $@
+	mv $@/libigl.a $@/igl
+	mkdir -p $@/Libraries
+	mv $@/*.a $@/Libraries
 	mkdir -p $@/Headers
 	cp $(H_FILES) $@/Headers
 	for p in $(EXTRAS); \
