@@ -1,5 +1,6 @@
 .PHONY: all
 all: lib extras examples
+ios: lib extras lib/igl.framework/
 
 GG=g++
 #GG=clang++
@@ -68,6 +69,7 @@ extras:
 # SOURCE 
 #############################################################################
 CPP_FILES=$(wildcard include/igl/*.cpp)
+H_FILES=$(wildcard include/igl/*.h)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 
 # include igl headers
@@ -105,7 +107,20 @@ lib/libigl.a: $(OBJ_FILES)
 obj/%.o: include/igl/%.cpp include/igl/%.h
 	$(GG) $(CFLAGS) $(AFLAGS) -c -o $@ $< $(INC)
 
+lib/igl.framework/:
+	rm -rf 
+	mkdir -p $@
+	cp lib/* $@
+	cp $(H_FILES) $@/Headers
+	for p in  $(EXTRA_DIRS); \
+	do \
+	echo "cd $$p" ; \
+	cp *.h ../../$@/Headers/bbw; \
+	done
+
+
 clean:
+	rm -rf lib/igl.framework/
 	rm -f obj/*.o
 	rm -f lib/libigl.a
 	make -C examples clean
