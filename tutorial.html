@@ -297,6 +297,11 @@ g++ -g -I/opt/local/include/eigen3/ -I/usr/local/igl/libigl/ -L/usr/local/igl/li
 ./test path/to/mesh.obj
       </code></pre>
 
+      <p>The following bash one-liner will find all source files that contain the string <code>OpenGL</code> but don't contain and <code>IGL_NO_OPENGL</code> guard:
+      <pre><code>
+grep OpenGL `grep -L IGL_NO_OPENGL include/igl/*`
+      </code></pre>
+
       <h2 id="dependencies">Dependencies</h2>
       <p>
         By design the libigl library has very few external dependencies.
