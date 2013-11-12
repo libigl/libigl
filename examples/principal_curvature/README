@@ -1,0 +1,9 @@
+This is a simple example program that shows how to use the mesh IO functions of
+readOBJ.h etc. in the igl library.
+
+
+To Build:
+  make
+
+To Run:
+  ./example [path_1] [path_2] ... [path_n]
