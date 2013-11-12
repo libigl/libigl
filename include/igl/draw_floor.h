@@ -5,7 +5,8 @@
 namespace igl
 {
   // Draw a checkerboard floor aligned with current (X,Z) plane using OpenGL
-  // calls.
+  // calls. side=50 centered at (0,0):
+  //   (-25,-25)-->(-25,25)-->(25,25)-->(25,-25)
   //
   // Use glPushMatrix(), glScaled(), glTranslated() to arrange the floor.
   // 

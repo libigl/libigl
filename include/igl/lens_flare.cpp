@@ -1,5 +1,6 @@
 #include "lens_flare.h"
 
+#ifndef IGL_NO_OPENGL
 #include "C_STR.h"
 #include "unproject.h"
 #include "project.h"
@@ -128,12 +129,12 @@ void igl::lens_flare_draw(
   Vector3f center = unproject(Vector3f(0.5*vp[2],0.5*vp[3],plight[2]-1e-3));
   //Vector3f center(0,0,1);
   Vector3f axis = light-center;
-  glLineWidth(4.);
-  glColor3f(1,0,0);
-  glBegin(GL_LINES);
-  glVertex3fv(center.data());
-  glVertex3fv(light.data());
-  glEnd();
+  //glLineWidth(4.);
+  //glColor3f(1,0,0);
+  //glBegin(GL_LINES);
+  //glVertex3fv(center.data());
+  //glVertex3fv(light.data());
+  //glEnd();
 
   const Vector3f SX = unproject(psx).normalized();
   const Vector3f SY = unproject(psy).normalized();
@@ -186,3 +187,4 @@ void igl::lens_flare_draw(
   glDepthFunc(odf);
   glDepthMask(odwm);
 }
+#endif

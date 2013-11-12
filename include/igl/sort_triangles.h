@@ -28,6 +28,7 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedP> & P,
     Eigen::PlainObjectBase<DerivedFF> & FF,
     Eigen::PlainObjectBase<DerivedI> & I);
+#ifndef IGL_NO_OPENGL
   template <
     typename DerivedV,
     typename DerivedF,
@@ -72,6 +73,7 @@ namespace igl
   //  const Eigen::PlainObjectBase<DerivedF> & F,
   //  Eigen::PlainObjectBase<DerivedFF> & FF,
   //  Eigen::PlainObjectBase<DerivedI> & I);
+#endif
 }
 
 #ifdef IGL_HEADER_ONLY
