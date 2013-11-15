@@ -7,7 +7,8 @@
  char, char*, std::string, bool, uint, int, float, double to and from a xml file.
  Containers like std::vector, std::std::pair, Eigen dense and sparse matrices are supported
  as well as combinations of them (like vector<pair<string,bool>> or vector<vector<int>>).
- To serialize an arbitary object use the XMLSerializable interface.
+ To serialize an arbitary object use the XMLSerializable interface or even simpler the
+ XMLSerialization class.
  
  The serialized objects are organised in groups in the xml file and have
  their own names which must be unique within one group.
@@ -519,6 +520,7 @@ namespace igl
       std::vector<float> testVector;
       
       XMLSerializerTest();
+      void InitSerialization();
       
       bool Test();
     };
@@ -2088,7 +2090,6 @@ namespace igl
       EncodeXMLElementName(gn);
       
       std::map<std::string,XMLSerializerGroup*>::iterator it = groups.find(gn);
-      std::cerr << it-> first << std::endl;
       
       if(it == groups.end())
         return false;
@@ -2334,6 +2335,10 @@ namespace igl
     XMLSerializerTest::XMLSerializerTest()
     : XMLSerialization("testObject")
     {
+    }
+
+    void XMLSerializerTest::InitSerialization()
+    {
       xmlSerializer->Add(testInt,"testInt");
       xmlSerializer->Add(testVector,"testVector");
       
@@ -2343,7 +2348,6 @@ namespace igl
       testVector.push_back(2.0001f);
       testVector.push_back(3.0001f);
     }
-    
   }
 }
 #endif
