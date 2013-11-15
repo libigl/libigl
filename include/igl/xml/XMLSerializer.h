@@ -6,7 +6,7 @@
  This class allows to save and load a serialization of basic c++ data types like
  char, char*, std::string, bool, uint, int, float, double to and from a xml file.
  Containers like std::vector, std::std::pair, Eigen dense and sparse matrices are supported
- as well as combination of them (like vector<pair<string,bool>> or vector<vector<int>>).
+ as well as combinations of them (like vector<pair<string,bool>> or vector<vector<int>>).
  To serialize an arbitary object use the XMLSerializable interface.
  
  The serialized objects are organised in groups in the xml file and have
@@ -23,6 +23,7 @@
 #include <iostream>
 //#include <array>
 #include <vector>
+#include <set>
 #include <map>
 
 #include <Eigen/Dense>
@@ -74,6 +75,11 @@ namespace igl
     /**
      * class XMLSerialization
      * Inherit from this class to have the easiest way to serialize your user defined class.
+     * 1) Pass the default name of your class to the base constructor.
+     * 2) Override InitSerialization() and add your variables to serialize like:
+     * xmlSerializer->Add(var1,"name1");
+     * xmlSerializer->Add(var2,"name2");
+     * ...
      */
     class XMLSerialization : public XMLSerializable
     {
@@ -87,9 +93,27 @@ namespace igl
       virtual bool Serialize(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element);
       virtual bool Deserialize(tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element);
       
+      /**
+      * Default constructor, destructor, assignment and copy constructor
+      */
       XMLSerialization(const std::string& name);
       ~XMLSerialization();
+      XMLSerialization(const XMLSerialization& obj);
+      XMLSerialization& operator=(const XMLSerialization& obj);
       
+      /**
+      * Function which must be overriden in the subclass if you dont use
+      * heap allocations (new) to create new instances.
+      * It will get called if the assignment operator or copy constructor
+      * is involved to update the references to the new copied data structures
+      *
+      * Add in this fucntion all the variables you wanna serialize like:
+      * xmlSerializer->Add(var1);
+      * xmlSerializer->Add(varw);
+      * ...
+      */
+      virtual void InitSerialization();
+
       /**
        * Following functions can be overwritten to handle the specific events.
        * Return false to prevent serialization of object.
@@ -98,9 +122,11 @@ namespace igl
       virtual void AfterSerialization();
       virtual bool BeforeDeserialization();
       virtual void AfterDeserialization();
+
+    private:
+      void initXMLSerializer();
     };
-    
-    
+
     /**
      * class XMLSerializableObject
      * internal usage
@@ -158,6 +184,10 @@ namespace igl
       void Init(std::pair<T0,T1>& obj);
       template<typename T>
       void Init(std::vector<T>& obj);
+      template<typename T>
+      void Init(std::set<T>& obj);
+      template<typename T0, typename T1>
+      void Init(std::map<T0,T1>& obj);
       
       // Eigen types
       template<typename T, int R, int C>
@@ -191,6 +221,7 @@ namespace igl
       bool Serialize(T*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
       
       // STL containers
+      
       /*template<typename T, size_t S>
        bool Serialize(std::array<T,S>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
        template<typename T, size_t S>
@@ -205,9 +236,18 @@ namespace igl
       bool Serialize(std::vector<T>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
       template<typename T>
       bool Serialize(std::vector<T>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
-
       bool Serialize(std::vector<bool>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
       bool Serialize(std::vector<bool>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+
+      template<typename T>
+      bool Serialize(std::set<T>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+      template<typename T>
+      bool Serialize(std::set<T>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+
+      template<typename T0, typename T1>
+      bool Serialize(std::map<T0,T1>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+      template<typename T0, typename T1>
+      bool Serialize(std::map<T0,T1>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
       
       // Eigen types
       template<typename T, int R, int C>
@@ -220,7 +260,7 @@ namespace igl
       template<typename T>
       bool Serialize(Eigen::SparseMatrix<T>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
       
-      // Serialization
+      // Deserialization
       
       // Basic data types
       using XMLSerializable::Deserialize;
@@ -246,6 +286,7 @@ namespace igl
       bool Deserialize(T*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
       
       // STL containers
+      
       /*template<typename T, size_t S>
        bool Deserialize(std::array<T,S>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
        template<typename T, size_t S>
@@ -260,9 +301,18 @@ namespace igl
       bool Deserialize(std::vector<T>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
       template<typename T>
       bool Deserialize(std::vector<T>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
-
       bool Deserialize(std::vector<bool>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
       bool Deserialize(std::vector<bool>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+
+      template<typename T>
+      bool Deserialize(std::set<T>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+      template<typename T>
+      bool Deserialize(std::set<T>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+
+      template<typename T0, typename T1>
+      bool Deserialize(std::map<T0,T1>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+      template<typename T0, typename T1>
+      bool Deserialize(std::map<T0,T1>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
       
       // Eigen types
       template<typename T, int R, int C>
@@ -430,6 +480,10 @@ namespace igl
       bool Add(std::pair<T0,T1>& obj, const std::string& name);
       template<typename T>
       bool Add(std::vector<T>& obj, const std::string& name);
+      template<typename T>
+      bool Add(std::set<T>& obj, const std::string& name);
+      template<typename T0, typename T1>
+      bool Add(std::map<T0,T1>& obj, const std::string& name);
       
       // Eigen types
       template<typename T, int R, int C>
@@ -531,10 +585,15 @@ namespace igl
     {
       bool serialized = false;
       
-      if(BeforeSerialization())
+      if(this->BeforeSerialization())
       {
+        if(xmlSerializer == NULL)
+        {
+          xmlSerializer = new XMLSerializer(Name);
+          this->InitSerialization();
+        }
         serialized = xmlSerializer->SaveGroupToXMLElement(doc,element,Name);
-        AfterSerialization();
+        this->AfterSerialization();
       }
       
       return serialized;
@@ -544,24 +603,57 @@ namespace igl
     {
       bool serialized = false;
       
-      if(BeforeDeserialization())
+      if(this->BeforeDeserialization())
       {
+        if(xmlSerializer == NULL)
+        {
+          xmlSerializer = new XMLSerializer(Name);
+          this->InitSerialization();
+        }
         serialized = xmlSerializer->LoadGroupFromXMLElement(Name,doc,element);
-        AfterDeserialization();
+        this->AfterDeserialization();
       }
       
       return serialized;
+    }
+
+    void XMLSerialization::InitSerialization()
+    {
+      std::cout << "You have to override InitSerialization()" << "\n";
+      assert(false);
     }
     
     XMLSerialization::XMLSerialization(const std::string& name)
     {
       Name = name;
-      xmlSerializer = new XMLSerializer(name);
+      xmlSerializer = NULL;
     }
-    
+
     XMLSerialization::~XMLSerialization()
     {
-      delete xmlSerializer;
+      if(xmlSerializer != NULL)
+        delete xmlSerializer;
+      xmlSerializer = NULL;
+    }
+
+    XMLSerialization::XMLSerialization(const XMLSerialization& obj)
+    {
+      Name = obj.Name;
+      xmlSerializer = NULL;
+    }
+
+    XMLSerialization& XMLSerialization::operator=(const XMLSerialization& obj)
+    {
+      if(this != &obj)
+      {
+        Name = obj.Name;
+        if(xmlSerializer != NULL)
+        {
+          delete obj.xmlSerializer;
+          xmlSerializer = NULL;
+        }
+      }
+      return *this;
     }
     
     bool XMLSerialization::BeforeSerialization()
@@ -721,6 +813,13 @@ namespace igl
     {
       val = 0.000000000000000;
     }
+
+    template<typename T>
+    void XMLSerializableObject::Init(T& obj)
+    {
+      XMLSerializable* object = static_cast<XMLSerializable*>(&obj);
+      object->Init();
+    }
     
     template<typename T>
     void XMLSerializableObject::Init(T*& obj)
@@ -745,6 +844,18 @@ namespace igl
     
     template<typename T>
     void XMLSerializableObject::Init(std::vector<T>& obj)
+    {
+      obj.clear();
+    }
+
+    template<typename T>
+    void XMLSerializableObject::Init(std::set<T>& obj)
+    {
+      obj.clear();
+    }
+
+    template<typename T0, typename T1>
+    void XMLSerializableObject::Init(std::map<T0,T1>& obj)
     {
       obj.clear();
     }
@@ -835,7 +946,13 @@ namespace igl
     template<typename T>
     bool XMLSerializableObject::Serialize(T& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
     {
-      return false;
+      // Serialize object implementing XMLSerializable interface
+      XMLSerializable* object = static_cast<XMLSerializable*>(&obj);
+      
+      tinyxml2::XMLElement* child = doc->NewElement(name.c_str());
+      element->InsertEndChild(child);
+      
+      return object->Serialize(doc,child);
     }
     
     template<typename T>
@@ -924,7 +1041,24 @@ namespace igl
     template<typename T>
     bool XMLSerializableObject::Deserialize(T& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
     {
-      return false;
+      obj = T();
+      XMLSerializable* object = static_cast<XMLSerializable*>(&obj);
+      
+      const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
+      
+      object->Name = child->FirstChild()->Value();
+      
+      if(child != NULL)
+      {
+        obj.Deserialize(doc,child);
+      }
+      else
+      {
+        obj.Init();
+        return false;
+      }
+      
+      return true;
     }
     
     template<typename T>
@@ -1076,6 +1210,35 @@ namespace igl
       
       return true;
     }
+
+    template<typename T>
+    bool XMLSerializableObject::Serialize(std::vector<T>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+    {
+      return Serialize(*obj,doc,element,name);
+    }
+
+    bool XMLSerializableObject::Serialize(std::vector<bool>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+    {
+      tinyxml2::XMLElement* vector = doc->NewElement(name.c_str());
+      element->InsertEndChild(vector);
+      
+      vector->SetAttribute("size",(unsigned int)obj.size());
+      
+      std::stringstream num;
+      for(unsigned int i=0;i<obj.size();i++)
+      {
+        num.str("");
+        num << "value" << i;
+        Serialize(obj[i],doc,vector,num.str());
+      }
+      
+      return true;
+    }
+
+    bool XMLSerializableObject::Serialize(std::vector<bool>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+    {
+      return Serialize(*obj,doc,element,name);
+    }
     
     template<typename T>
     bool XMLSerializableObject::Deserialize(std::vector<T>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
@@ -1104,24 +1267,13 @@ namespace igl
       return res;
     }
 
-    bool XMLSerializableObject::Serialize(std::vector<bool>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+    template<typename T>
+    bool XMLSerializableObject::Deserialize(std::vector<T>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
     {
-      tinyxml2::XMLElement* vector = doc->NewElement(name.c_str());
-      element->InsertEndChild(vector);
-      
-      vector->SetAttribute("size",(unsigned int)obj.size());
-      
-      std::stringstream num;
-      for(unsigned int i=0;i<obj.size();i++)
-      {
-        num.str("");
-        num << "value" << i;
-        Serialize(obj[i],doc,vector,num.str());
-      }
-      
-      return true;
+      obj = new std::vector<T>();
+      return Deserialize(*obj,doc,element,name);
     }
-    
+
     bool XMLSerializableObject::Deserialize(std::vector<bool>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
     {
       bool res = true;
@@ -1148,28 +1300,134 @@ namespace igl
       
       return res;
     }
-    
+
+    bool XMLSerializableObject::Deserialize(std::vector<bool>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
+    {
+      obj = new std::vector<bool>();
+      return Deserialize(*obj,doc,element,name);
+    }
+
     template<typename T>
-    bool XMLSerializableObject::Serialize(std::vector<T>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+    bool XMLSerializableObject::Serialize(std::set<T>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+    {
+      tinyxml2::XMLElement* vector = doc->NewElement(name.c_str());
+      element->InsertEndChild(vector);
+      
+      vector->SetAttribute("size",(unsigned int)obj.size());
+      
+      std::stringstream num;
+      std::set<T>::iterator iter = obj.begin();
+      for(int i=0;iter!=obj.end();iter++,i++)
+      {
+        num.str("");
+        num << "value" << i;
+        Serialize((T)*iter,doc,vector,num.str());
+      }
+      
+      return true;
+    }
+
+    template<typename T>
+    bool XMLSerializableObject::Serialize(std::set<T>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
     {
       return Serialize(*obj,doc,element,name);
     }
 
-    bool XMLSerializableObject::Serialize(std::vector<bool>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
-    {
-      return Serialize(*obj,doc,element,name);
-    }
-    
     template<typename T>
-    bool XMLSerializableObject::Deserialize(std::vector<T>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
+    bool XMLSerializableObject::Deserialize(std::set<T>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
+    {
+      bool res = true;
+      obj.clear();
+      
+      const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
+      if(child != NULL)
+      {
+        unsigned int size = child->UnsignedAttribute("size");
+        
+        std::stringstream num;
+        std::set<T>::iterator iter = obj.begin();
+        for(int i=0;i<size;i++)
+        {
+          num.str("");
+          num << "value" << i;
+          
+          T val;
+          res &= Deserialize(val,doc,child,num.str());
+          obj.insert(val);
+        }
+      }
+      else
+        return false;
+      
+      return res;
+    }
+
+    template<typename T>
+    bool XMLSerializableObject::Deserialize(std::set<T>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
     {
       obj = new std::vector<T>();
       return Deserialize(*obj,doc,element,name);
     }
 
-    bool XMLSerializableObject::Deserialize(std::vector<bool>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
+    template<typename T0, typename T1>
+    bool XMLSerializableObject::Serialize(std::map<T0,T1>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
     {
-      obj = new std::vector<bool>();
+      tinyxml2::XMLElement* vector = doc->NewElement(name.c_str());
+      element->InsertEndChild(vector);
+      
+      vector->SetAttribute("size",(unsigned int)obj.size());
+      
+      std::stringstream num;
+      std::map<T0,T1>::iterator iter = obj.begin();
+      for(int i=0;iter!=obj.end();iter++,i++)
+      {
+        num.str("");
+        num << "value" << i;
+        Serialize((std::pair<T0,T1>)*iter,doc,vector,num.str());
+      }
+      
+      return true;
+    }
+
+    template<typename T0, typename T1>
+    bool XMLSerializableObject::Serialize(std::map<T0,T1>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+    {
+      return Serialize(*obj,doc,element,name);
+    }
+
+    template<typename T0, typename T1>
+    bool XMLSerializableObject::Deserialize(std::map<T0,T1>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
+    {
+      bool res = true;
+      obj.clear();
+      
+      const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
+      if(child != NULL)
+      {
+        unsigned int size = child->UnsignedAttribute("size");
+        
+        std::stringstream num;
+        std::map<T0,T1>::iterator iter = obj.begin();
+        for(int i=0;i<size;i++)
+        {
+          num.str("");
+          num << "value" << i;
+          
+          std::pair<T0,T1> pair;
+          res &= Deserialize(pair,doc,child,num.str());
+          obj.insert(pair);
+        }
+      }
+      else
+        return false;
+      
+      return res;
+    }
+
+    template<typename T0, typename T1>
+    bool XMLSerializableObject::Deserialize(std::map<T0,T1>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
+    {
+      obj = new std::vector<T>();
       return Deserialize(*obj,doc,element,name);
     }
 
@@ -1923,6 +2181,18 @@ namespace igl
     
     template<typename T>
     bool XMLSerializer::Add(std::vector<T>& obj, const std::string& name)
+    {
+      return add(obj,name);
+    }
+
+    template<typename T>
+    bool XMLSerializer::Add(std::set<T>& obj, const std::string& name)
+    {
+      return add(obj,name);
+    }
+
+    template<typename T0, typename T1>
+    bool XMLSerializer::Add(std::map<T0,T1>& obj, const std::string& name)
     {
       return add(obj,name);
     }
