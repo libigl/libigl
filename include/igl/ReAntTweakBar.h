@@ -53,7 +53,6 @@
 
 namespace igl
 {
-
   TwType ReTwDefineEnum(
     const char *name, 
     const TwEnumVal *enumValues, 
@@ -155,7 +154,7 @@ namespace igl
     public:
       TwBar * bar;
       // Alec: This causes trouble (not sure why)
-	  //std::string name;
+      std::string name;
     protected:
       std::vector<ReTwRWItem> rw_items;
       std::vector<ReTwCBItem> cb_items;
@@ -243,8 +242,7 @@ namespace igl
       const std::vector<ReTwRWItem> & get_rw_items();
       const std::vector<ReTwCBItem> & get_cb_items();
   };
-
-};
+}
 
 // List of TwBar functions
 //TW_API TwBar *      TW_CALL TwNewBar(const char *barName);

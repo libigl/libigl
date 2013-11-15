@@ -100,7 +100,7 @@ IGL_INLINE void igl::ReTwBar::TwNewBar(const char *name)
 {
   // double colon without anything in front of it means look for this in the
   // global namespace... I hope...
-  //this->name = name;
+  this->name = name;
   this->bar = ::TwNewBar(name);
 }
 

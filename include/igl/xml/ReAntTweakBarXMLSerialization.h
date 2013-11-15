@@ -198,11 +198,17 @@ namespace igl
       
       for(iter = variables.begin(); iter != variables.end(); iter++)
       {
+        if(iter->second == NULL)
+        {
+          printf("ERROR: '%s' entry not found... Skipping...\n",iter->first.c_str());
+          continue;
+        }
+        
         sscanf(iter->second,"%s %[^\n]",type_str,value_str);
         
         if(!bar->type_from_string(type_str,type))
         {
-          printf("ERROR: %s type not found... Skipping...\n",type_str);
+          printf("ERROR: Type '%s' of '%s' not found... Skipping...\n",type_str,iter->first.c_str());
           continue;
         }
         
@@ -211,11 +217,17 @@ namespace igl
       
       for(iter = cbVariables.begin(); iter != cbVariables.end(); iter++)
       {
+        if(iter->second == NULL)
+        {
+          printf("ERROR: '%s' entry not found... Skipping...\n",iter->first.c_str());
+          continue;
+        }
+
         sscanf(iter->second,"%s %[^\n]",type_str,value_str);
         
         if(!bar->type_from_string(type_str,type))
         {
-          printf("ERROR: %s type not found... Skipping...\n",type_str);
+          printf("ERROR: Type '%s' of '%s' not found... Skipping...\n",type_str,iter->first.c_str());
           continue;
         }
         
