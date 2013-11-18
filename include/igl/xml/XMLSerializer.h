@@ -1367,7 +1367,7 @@ namespace igl
     template<typename T>
     bool XMLSerializableObject::Deserialize(std::set<T>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
     {
-      obj = new std::vector<T>();
+      obj = new std::set<T>();
       return Deserialize(*obj,doc,element,name);
     }
 
@@ -1429,7 +1429,7 @@ namespace igl
     template<typename T0, typename T1>
     bool XMLSerializableObject::Deserialize(std::map<T0,T1>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
     {
-      obj = new std::vector<T1>();
+      obj = new std::map<T0,T1>();
       return Deserialize(*obj,doc,element,name);
     }
 
