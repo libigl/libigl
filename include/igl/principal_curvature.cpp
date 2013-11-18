@@ -13,8 +13,8 @@
 #include <igl/adjacency_list.h>
 #include <igl/per_face_normals.h>
 #include <igl/per_vertex_normals.h>
+#include <igl/avg_edge_length.h>
 #include <igl/vf.h>
-
 
 using std::setfill;
 using std::setw;
@@ -105,6 +105,11 @@ public:
     IGL_INLINE static Quadric fit(vector<Eigen::Vector3d> &VV, bool zeroDetCheck, bool svd)
     {
       assert(VV.size() >= 5);
+      if (VV.size() < 5)
+      {
+        cerr << "ASSERT FAILED!" << endl;
+        exit(0);
+      }
       Eigen::MatrixXd A(VV.size(),5);
       Eigen::MatrixXd b(VV.size(),1);
       Eigen::MatrixXd sol(5,1);
@@ -133,6 +138,17 @@ public:
       {
         printf("Quadric: unsolvable vertex %d %d\n", count, ++index);
         sol=A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
+
+//        sol=A.jacobiSvd().solve(b);
+//        double res = (A*sol-b).norm();
+//        if (res > 10e-6)
+//        {
+//          cerr << "Norm residuals: " << res << endl;
+//          cerr << "A:" << A << endl;
+//          cerr << "sol:" << sol << endl;
+//          cerr << "b:" << b << endl;
+//        }
+        
         return Quadric(sol(0),sol(1),sol(2),sol(3),sol(4));
       }
       count++;
@@ -147,352 +163,6 @@ public:
       }
       
       return Quadric(sol(0),sol(1),sol(2),sol(3),sol(4));
-    }
-  };
-  
-  class Quadric6
-  {
-  public:
-    
-    IGL_INLINE Quadric6 ()
-    {
-      a() = b() = c() = d() = e() = f() = 1.0;
-    }
-    
-    IGL_INLINE Quadric6 (double av, double bv, double cv, double dv, double ev, double fv)
-    {
-      a() = av;
-      b() = bv;
-      c() = cv;
-      d() = dv;
-      e() = ev;
-      f() = fv;
-    }
-    
-    IGL_INLINE double& a() { return data[0];}
-    IGL_INLINE double& b() { return data[1];}
-    IGL_INLINE double& c() { return data[2];}
-    IGL_INLINE double& d() { return data[3];}
-    IGL_INLINE double& e() { return data[4];}
-    IGL_INLINE double& f() { return data[5];}
-    
-    double data[6];
-    
-    IGL_INLINE double evaluate(double u, double v)
-    {
-      return a()*u*u + b()*u*v + c()*v*v + d()*u + e()*v + f();
-    }
-    
-    IGL_INLINE double du(double u, double v)
-    {
-      return 2.0*a()*u + b()*v + d();
-    }
-    
-    IGL_INLINE double dv(double u, double v)
-    {
-      return 2.0*c()*v + b()*u + e();
-    }
-    
-    IGL_INLINE double duv(double u, double v)
-    {
-      return b();
-    }
-    
-    IGL_INLINE double duu(double u, double v)
-    {
-      return 2.0*a();
-    }
-    
-    IGL_INLINE double dvv(double u, double v)
-    {
-      return 2.0*c();
-    }
-    
-    
-    IGL_INLINE static Quadric6 fit(vector<Eigen::Vector3d> &VV, bool zeroDetCheck, bool svd)
-    {
-      assert(VV.size() >= 6);
-      Eigen::MatrixXd A(VV.size(),6);
-      Eigen::MatrixXd b(VV.size(),1);
-      Eigen::MatrixXd sol(VV.size(),1);
-      
-      for(unsigned int c=0; c < VV.size(); ++c)
-      {
-        double u = VV[c][0];
-        double v = VV[c][1];
-        double n = VV[c][2];
-        
-        A(c,0) = u*u;
-        A(c,1) = u*v;
-        A(c,2) = v*v;
-        A(c,3) = u;
-        A(c,4) = v;
-        A(c,5) = 1;
-        
-        b(c) = n;
-      }
-      
-      
-      static int count = 0, index = 0;
-      double min = 0.000000000001; //1.0e-12
-      /*
-       if (!count)
-       printf("GNE %e\n", min);
-       */
-      
-      if (zeroDetCheck && ((A.transpose()*A).determinant() < min && (A.transpose()*A).determinant() > -min))
-      {
-        //A.svd().solve(b, &sol); A.svd().solve(b, &sol);
-        //cout << sol << endl;
-        printf("Quadric: unsolvable vertex %d %d\n", count, ++index);
-        //return Quadric6 (1, 1, 1, 1, 1, 1);
-        sol=A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
-        return Quadric6(sol(0),sol(1),sol(2),sol(3),sol(4),sol(5));
-      }
-      count++;
-      
-      if (svd)
-        sol=A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
-      else
-        sol = ((A.transpose()*A).inverse()*A.transpose())*b;
-      
-      return Quadric6(sol(0),sol(1),sol(2),sol(3),sol(4),sol(5));
-    }
-  };
-  
-  class Linear
-  {
-  public:
-    
-    IGL_INLINE Linear ()
-    {
-      a() = b() = c() = 1.0;
-    }
-    
-    IGL_INLINE Linear (double av, double bv, double cv)
-    {
-      a() = av;
-      b() = bv;
-      c() = cv;
-    }
-    
-    IGL_INLINE double& a() { return data[0];}
-    IGL_INLINE double& b() { return data[1];}
-    IGL_INLINE double& c() { return data[2];}
-    
-    double data[3];
-    
-    IGL_INLINE double evaluate(double u, double v)
-    {
-      return a()*u + b()*v + c();
-    }
-    
-    IGL_INLINE double du()
-    {
-      return a();
-    }
-    
-    IGL_INLINE double dv()
-    {
-      return b();
-    }
-    
-    IGL_INLINE static Linear fit(vector<Eigen::Vector3d> &VV, bool svdRes, bool zeroDetCheck)
-    {
-      assert(VV.size() >= 3);
-      Eigen::MatrixXd A(VV.size(),3);
-      Eigen::MatrixXd b(VV.size(),1);
-      Eigen::MatrixXd sol(VV.size(),1);
-      
-      for(unsigned int c=0; c < VV.size(); ++c)
-      {
-        double u = VV[c][0];
-        double v = VV[c][1];
-        double n = VV[c][2];
-        
-        A(c,0) = u;
-        A(c,1) = v;
-        A(c,2) = 1;
-        
-        b(c) = n;
-      }
-      
-      static int count = 0, index = 0;
-      double min = 0.000000000001; //1.0e-12
-      /*
-       if (!count)
-       printf("GNE %e\n", min);
-       */
-      
-      if (zeroDetCheck && ((A.transpose()*A).determinant() < min && (A.transpose()*A).determinant() > -min))
-      {
-        //A.svd().solve(b, &sol); A.svd().solve(b, &sol);
-        //cout << sol << endl;
-        printf("Quadric: unsolvable vertex %d %d\n", count, ++index);
-        //return Linear (1, 1, 1);
-        sol=A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
-        return Linear(sol(0),sol(1),sol(2));
-      }
-      count++;
-      
-      if (svdRes)
-        sol=A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
-      else
-        sol = ((A.transpose()*A).inverse()*A.transpose())*b;
-      
-      return Linear(sol(0),sol(1),sol(2));
-    }
-  };
-  
-  class Discrete
-  {
-  public:
-    
-    IGL_INLINE Discrete ()
-    {
-      a() = b() = 1.0;
-    }
-    
-    IGL_INLINE Discrete (double av, double bv)
-    {
-      a() = av;
-      b() = bv;
-    }
-    
-    IGL_INLINE double& a() { return data[0];}
-    IGL_INLINE double& b() { return data[1];}
-    
-    double data[2];
-    
-    IGL_INLINE static Discrete fit(vector<Eigen::Vector3d> &VV, bool svdRes, bool detCheck)
-    {
-      assert(VV.size() >= 2);
-      Eigen::MatrixXd A(VV.size(),2);
-      Eigen::MatrixXd b(VV.size(),1);
-      Eigen::MatrixXd sol(2/*VV.size()*/,1);
-      
-      for(unsigned int c=0; c < VV.size(); ++c)
-      {
-        double u = VV[c][0];
-        double v = VV[c][1];
-        double n = VV[c][2];
-        
-        A(c,0) = u;
-        A(c,1) = v;
-        
-        b(c) = n;
-      }
-      
-      static int count = 0, index = 0;
-      double min = 0.000000000001; //1.0e-12
-      /*
-       if (!count)
-       printf("GNE %e\n", min);
-       */
-      
-      if (detCheck && ((A.transpose()*A).determinant() < min && (A.transpose()*A).determinant() > -min))
-      {
-        //A.svd().solve(b, &sol); A.svd().solve(b, &sol);
-        //cout << sol << endl;
-        printf("Discrete: unsolvable vertex %d %d\n", count, ++index);
-        //return Discrete (1, 1);
-        sol=A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
-        return Discrete (sol(0),sol(1));
-      }
-      count++;
-      
-      if (svdRes)
-      {
-        //printf ("SSSVVVDDDDDDIIIIIIII!!!!!1!!!!!!1111!1!!111\n");
-        sol=A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
-      }
-      else
-        sol = ((A.transpose()*A).inverse()*A.transpose())*b;
-      
-      return Discrete (sol(0),sol(1));
-    }
-  };
-  
-  class Bicubic
-  {
-  public:
-    
-    IGL_INLINE Bicubic ()
-    {
-      a() = b() = c() = d() = 1.0;
-    }
-    
-    IGL_INLINE Bicubic (double av, double bv, double cv, double dv)
-    {
-      a() = av;
-      b() = bv;
-      c() = cv;
-      d() = dv;
-    }
-    
-    IGL_INLINE double& a() { return data[0];}
-    IGL_INLINE double& b() { return data[1];}
-    IGL_INLINE double& c() { return data[2];}
-    IGL_INLINE double& d() { return data[3];}
-    
-    double data[4];
-    
-    IGL_INLINE double du()
-    {
-      return 6.0 * a();
-    }
-    
-    IGL_INLINE double dv()
-    {
-      return 6.0 * b();
-    }
-    
-    IGL_INLINE static Bicubic fit(vector<Eigen::Vector3d> &VV, bool svdRes, bool detCheck)
-    {
-      assert(VV.size() >= 4);
-      Eigen::MatrixXd A(VV.size(),4);
-      Eigen::MatrixXd b(VV.size(),1);
-      Eigen::MatrixXd sol(4,1);
-      
-      for(unsigned int c=0; c < VV.size(); ++c)
-      {
-        double u = VV[c][0];
-        double v = VV[c][1];
-        double n = VV[c][2];
-        
-        
-        A(c,0) = u*u*u;
-        A(c,1) = v*v*v;
-        A(c,2) = u*u*v;
-        A(c,3) = u*v*v;
-        
-        b(c) = n;
-      }
-      
-      static int count = 0, index = 0;
-      double min = 0.000000000001; //1.0e-12
-      /*
-       if (!count)
-       printf("GNE %e\n", min);
-       */
-      
-      if (detCheck && ((A.transpose()*A).determinant() < min && (A.transpose()*A).determinant() > -min))
-      {
-        //A.svd().solve(b, &sol); A.svd().solve(b, &sol);
-        //cout << sol << endl;
-        printf("Bicubic: unsolvable vertex %d %d\n", count, ++index);
-        //return Bicubic (1, 1, 1, 1, 1, 1);
-        sol=A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
-        return Bicubic(sol(0),sol(1),sol(2),sol(3));
-      }
-      count++;
-      
-      if (svdRes)
-        sol=A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
-      else
-        sol = ((A.transpose()*A).inverse()*A.transpose())*b;
-      
-      return Bicubic(sol(0),sol(1),sol(2),sol(3));
     }
   };
   
@@ -683,7 +353,13 @@ IGL_INLINE CurvatureCalculator::CurvatureCalculator()
 
 IGL_INLINE void CurvatureCalculator::init(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
 {
+  // Normalize vertices
   vertices = V;
+  
+//  vertices = vertices.array() - vertices.minCoeff();
+//  vertices = vertices.array() / vertices.maxCoeff();
+//  vertices = vertices.array() * (1.0/igl::avg_edge_length(V,F));
+  
   faces = F;
   igl::adjacency_list(F, vertex_to_vertices);
   igl::vf(V, F, vertex_to_faces, vertex_to_faces_index);
@@ -1148,6 +824,13 @@ IGL_INLINE void igl::principal_curvature(
     d2 *= cc.curv[i][1];
     PD1.row(i) = d1;
     PD2.row(i) = d2;
+    
+    if (PD1.row(i) * PD2.row(i).transpose() > 10e-6)
+    {
+      cerr << "Something is wrong, vertex: i" << endl;
+      PD1.row(i) *= 0;
+      PD2.row(i) *= 0;
+    }
   }
   
 }
