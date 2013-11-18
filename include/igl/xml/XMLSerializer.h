@@ -1318,7 +1318,7 @@ namespace igl
       vector->SetAttribute("size",(unsigned int)obj.size());
       
       std::stringstream num;
-      std::set<T>::iterator iter = obj.begin();
+      typename std::set<T>::iterator iter = obj.begin();
       for(int i=0;iter!=obj.end();iter++,i++)
       {
         num.str("");
@@ -1347,7 +1347,7 @@ namespace igl
         unsigned int size = child->UnsignedAttribute("size");
         
         std::stringstream num;
-        std::set<T>::iterator iter = obj.begin();
+        typename std::set<T>::iterator iter = obj.begin();
         for(int i=0;i<size;i++)
         {
           num.str("");
@@ -1380,7 +1380,7 @@ namespace igl
       vector->SetAttribute("size",(unsigned int)obj.size());
       
       std::stringstream num;
-      std::map<T0,T1>::iterator iter = obj.begin();
+      typename std::map<T0,T1>::iterator iter = obj.begin();
       for(int i=0;iter!=obj.end();iter++,i++)
       {
         num.str("");
@@ -1409,7 +1409,7 @@ namespace igl
         unsigned int size = child->UnsignedAttribute("size");
         
         std::stringstream num;
-        std::map<T0,T1>::iterator iter = obj.begin();
+        typename std::map<T0,T1>::iterator iter = obj.begin();
         for(int i=0;i<size;i++)
         {
           num.str("");
@@ -1429,7 +1429,7 @@ namespace igl
     template<typename T0, typename T1>
     bool XMLSerializableObject::Deserialize(std::map<T0,T1>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
     {
-      obj = new std::vector<T>();
+      obj = new std::vector<T1>();
       return Deserialize(*obj,doc,element,name);
     }
 
