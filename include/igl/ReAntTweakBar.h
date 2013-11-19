@@ -57,6 +57,7 @@ namespace igl
     const char *name, 
     const TwEnumVal *enumValues, 
     unsigned int nbValues);
+  TwType ReTwDefineEnum(const char * name,const char * enumString);
   
   struct ReTwRWItem
   {

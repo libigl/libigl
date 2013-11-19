@@ -11,6 +11,7 @@ IGL_INLINE void igl::add_barycenter(
     Eigen::PlainObjectBase<Scalar> & VD, 
     Eigen::PlainObjectBase<Index> & FD)
 {
+  using namespace Eigen;
 	// Compute face barycenter
 	Eigen::MatrixXd BC;
 	igl::barycenter(V,F,BC);

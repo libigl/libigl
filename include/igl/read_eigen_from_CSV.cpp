@@ -3,14 +3,12 @@
 #include <sstream>
 #include <string>
 #include <fstream>
+#include <iostream>
 
 #include <vector>
 
-namespace igl
-{
-
 template <typename Scalar>
-IGL_INLINE bool read_eigen_from_CSV(const std::string str, Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& M)
+IGL_INLINE bool igl::read_eigen_from_CSV(const std::string str, Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& M)
 {
   using namespace std;
   using namespace igl;
@@ -54,8 +52,6 @@ IGL_INLINE bool read_eigen_from_CSV(const std::string str, Eigen::Matrix<Scalar,
   
   infile.close();
   return false;
-}
-
 }
 
 #ifndef IGL_HEADER_ONLY
