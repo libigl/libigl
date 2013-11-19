@@ -3,10 +3,11 @@
  // Author: Christian Schüller on 08/05/13.
  ------------------------------------------------------------------------------
  
- This class allows to save and load a serialization of basic c++ data types like
- char, char*, std::string, bool, uint, int, float, double to and from a xml file.
+ Small neader library which allows to save and load a serialization of basic c++ data
+ types like char, char*, std::string, bool, uint, int, float, double to and from a xml file.
  Containers like std::vector, std::std::pair, Eigen dense and sparse matrices are supported
  as well as combinations of them (like vector<pair<string,bool>> or vector<vector<int>>).
+ 
  To serialize an arbitary object use the XMLSerializable interface or even simpler the
  XMLSerialization class.
  
@@ -20,6 +21,7 @@
 #define XML_SERIALIZER_H
 
 #include <igl/igl_inline.h>
+#include <igl/xml/XMLSerializable.h>
 
 #include <iostream>
 //#include <array>
@@ -32,13 +34,11 @@
 
 #include <tinyxml2.h>
 
-
 namespace igl
 {
-  
   namespace
   {
-  
+    // Utility functions
     void EncodeXMLElementName(std::string& name);
     void DecodeXMLElementName(std::string& name);
     void ReplaceSubString(std::string& str, const std::string& search, const std::string& replace);
@@ -47,92 +47,10 @@ namespace igl
     class XMLSerializer;
     
     /**
-     * interface XMLSerializable
-     * Inherit from this interface to have full control over the serialization of you user defined class.
-     */
-    class XMLSerializable
-    {
-    public:
-      std::string Name;
-      
-      /**
-       * This function gets called if the objects were not found during deserialization.
-       * Initialize your objects as you like.
-       */
-      virtual void Init() = 0;
-      /**
-       * Serialize your stuff within this function.
-       * It contains the current serialization xml file. You can use SaveToXMLDoc or SaveGroupToXMLElement to add your objects.
-       */
-      virtual bool Serialize(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element) = 0;
-      
-      /**
-       * Deserialize your stuff within this function.
-       * It contains the current serialization xml file. You can use LoadFromXMLDoc or LoadGroupFromXMLElement to read out your objects.
-       */
-      virtual bool Deserialize(tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element) = 0;
-    };
-    
-    /**
-     * class XMLSerialization
-     * Inherit from this class to have the easiest way to serialize your user defined class.
-     * 1) Pass the default name of your class to the base constructor.
-     * 2) Override InitSerialization() and add your variables to serialize like:
-     * xmlSerializer->Add(var1,"name1");
-     * xmlSerializer->Add(var2,"name2");
-     * ...
-     */
-    class XMLSerialization : public XMLSerializable
-    {
-    public:
-      XMLSerializer* xmlSerializer;
-      
-      /**
-       * Default implementation of XMLSerializable interface
-       */
-      virtual void Init();
-      virtual bool Serialize(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element);
-      virtual bool Deserialize(tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element);
-      
-      /**
-      * Default constructor, destructor, assignment and copy constructor
-      */
-      XMLSerialization(const std::string& name);
-      ~XMLSerialization();
-      XMLSerialization(const XMLSerialization& obj);
-      XMLSerialization& operator=(const XMLSerialization& obj);
-      
-      /**
-      * Function which must be overriden in the subclass if you dont use
-      * heap allocations (new) to create new instances.
-      * It will get called if the assignment operator or copy constructor
-      * is involved to update the references to the new copied data structures
-      *
-      * Add in this fucntion all the variables you wanna serialize like:
-      * xmlSerializer->Add(var1);
-      * xmlSerializer->Add(varw);
-      * ...
-      */
-      virtual void InitSerialization();
-
-      /**
-       * Following functions can be overwritten to handle the specific events.
-       * Return false to prevent serialization of object.
-       */
-      virtual bool BeforeSerialization();
-      virtual void AfterSerialization();
-      virtual bool BeforeDeserialization();
-      virtual void AfterDeserialization();
-
-    private:
-      void initXMLSerializer();
-    };
-
-    /**
      * class XMLSerializableObject
      * internal usage
      */
-    class XMLSerializableObject : public XMLSerializable
+    class XMLSerializableObject : public ::igl::XMLSerializable
     {
     public:
       
@@ -508,25 +426,6 @@ namespace igl
       tinyxml2::XMLElement* findAddGroup(tinyxml2::XMLDocument* doc, const char* groupName);
     };
     
-    /**
-     * class XMLSerializerTest
-     * Used to test the functionality of the library and also shows howto use it.
-     */
-    class XMLSerializerTest : public XMLSerialization
-    {
-    public:
-      
-      int testInt;
-      std::vector<float> testVector;
-      
-      XMLSerializerTest();
-      void InitSerialization();
-      
-      bool Test();
-    };
-    
-    
-    
     int numForbiddenChars = 8;
     char forbiddenChars[] = {' ','/','~','#','&','>','<','='};
     
@@ -577,103 +476,6 @@ namespace igl
         
         ReplaceSubString(name,search,replace);
       }
-    }
-    
-    void XMLSerialization::Init()
-    {
-    }
-    
-    bool XMLSerialization::Serialize(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element)
-    {
-      bool serialized = false;
-      
-      if(this->BeforeSerialization())
-      {
-        if(xmlSerializer == NULL)
-        {
-          xmlSerializer = new XMLSerializer(Name);
-          this->InitSerialization();
-        }
-        serialized = xmlSerializer->SaveGroupToXMLElement(doc,element,Name);
-        this->AfterSerialization();
-      }
-      
-      return serialized;
-    }
-    
-    bool XMLSerialization::Deserialize(tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element)
-    {
-      bool serialized = false;
-      
-      if(this->BeforeDeserialization())
-      {
-        if(xmlSerializer == NULL)
-        {
-          xmlSerializer = new XMLSerializer(Name);
-          this->InitSerialization();
-        }
-        serialized = xmlSerializer->LoadGroupFromXMLElement(Name,doc,element);
-        this->AfterDeserialization();
-      }
-      
-      return serialized;
-    }
-
-    void XMLSerialization::InitSerialization()
-    {
-      std::cout << "You have to override InitSerialization()" << "\n";
-      assert(false);
-    }
-    
-    XMLSerialization::XMLSerialization(const std::string& name)
-    {
-      Name = name;
-      xmlSerializer = NULL;
-    }
-
-    XMLSerialization::~XMLSerialization()
-    {
-      if(xmlSerializer != NULL)
-        delete xmlSerializer;
-      xmlSerializer = NULL;
-    }
-
-    XMLSerialization::XMLSerialization(const XMLSerialization& obj)
-    {
-      Name = obj.Name;
-      xmlSerializer = NULL;
-    }
-
-    XMLSerialization& XMLSerialization::operator=(const XMLSerialization& obj)
-    {
-      if(this != &obj)
-      {
-        Name = obj.Name;
-        if(xmlSerializer != NULL)
-        {
-          delete obj.xmlSerializer;
-          xmlSerializer = NULL;
-        }
-      }
-      return *this;
-    }
-    
-    bool XMLSerialization::BeforeSerialization()
-    {
-      return true;
-    }
-    
-    void XMLSerialization::AfterSerialization()
-    {
-    }
-    
-    bool XMLSerialization::BeforeDeserialization()
-    {
-      return true;
-    }
-    
-    void XMLSerialization::AfterDeserialization()
-    {
     }
     
     XMLSerializableObject::XMLSerializableObject(const std::string& name, const std::string& group)
@@ -2372,23 +2174,6 @@ namespace igl
         doc->InsertEndChild(group);
       }
       return group;
-    }
-    
-    XMLSerializerTest::XMLSerializerTest()
-    : XMLSerialization("testObject")
-    {
-    }
-
-    void XMLSerializerTest::InitSerialization()
-    {
-      xmlSerializer->Add(testInt,"testInt");
-      xmlSerializer->Add(testVector,"testVector");
-      
-      testInt = 10;
-      
-      testVector.push_back(1.0001f);
-      testVector.push_back(2.0001f);
-      testVector.push_back(3.0001f);
     }
   }
 }
