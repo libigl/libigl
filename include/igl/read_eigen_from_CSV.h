@@ -1,13 +1,5 @@
-//
-//  IGL Lib - Simple C++ mesh library 
-//
-//  Copyright 2011, Daniele Panozzo. All rights reserved.
-
-// History:
-
-
-#ifndef IGL_READEIGENFROMCSV_H
-#define IGL_READEIGENFROMCSV_H
+#ifndef IGL_READ_EIGEN_FROM_CSV_H
+#define IGL_READ_EIGEN_FROM_CSV_H
 
 #include "igl/igl_inline.h"
 #include <Eigen/Core>
@@ -27,8 +19,8 @@ namespace igl
   IGL_INLINE bool read_eigen_from_CSV(const std::string str, Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& M);
 }
 
-//#ifdef IGL_HEADER_ONLY
+#ifdef IGL_HEADER_ONLY
 #  include "read_eigen_from_CSV.cpp"
-//#endif
+#endif
 
 #endif

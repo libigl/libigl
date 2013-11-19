@@ -23,6 +23,7 @@ namespace igl
       camera(camera)
     {
     };
+    virtual ~Viewport(){}
     void reshape(
       const int x, 
       const int y, 

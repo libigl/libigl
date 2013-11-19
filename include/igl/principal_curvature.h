@@ -1,5 +1,5 @@
-#ifndef PRINCIPAL_CURVATURE_H
-#define PRINCIPAL_CURVATURE_H
+#ifndef IGL_PRINCIPAL_CURVATURE_H
+#define IGL_PRINCIPAL_CURVATURE_H
 
 
 #include <Eigen/Geometry>
@@ -8,13 +8,11 @@
 #include <stdio.h>
 #include <map>
 
-#define IGL_HEADER_ONLY
 #include <igl/igl_inline.h>
 #include <igl/cotmatrix.h>
 #include <igl/writeOFF.h>
 
 
-using std::vector;
 
 namespace igl
 {

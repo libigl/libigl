@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <queue>
 #include <list>
 #include <cmath>
@@ -15,11 +16,6 @@
 #include <igl/per_vertex_normals.h>
 #include <igl/avg_edge_length.h>
 #include <igl/vf.h>
-
-using std::setfill;
-using std::setw;
-using std::cout;
-using std::endl;
 
 typedef enum
 {
@@ -102,8 +98,9 @@ public:
     }
     
     
-    IGL_INLINE static Quadric fit(vector<Eigen::Vector3d> &VV, bool zeroDetCheck, bool svd)
+    IGL_INLINE static Quadric fit(std::vector<Eigen::Vector3d> &VV, bool zeroDetCheck, bool svd)
     {
+      using namespace std;
       assert(VV.size() >= 5);
       if (VV.size() < 5)
       {
@@ -205,7 +202,7 @@ public:
   IGL_INLINE CurvatureCalculator();
   IGL_INLINE void init(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
   
-  IGL_INLINE void finalEigenStuff (int, vector<Eigen::Vector3d>, Quadric );
+  IGL_INLINE void finalEigenStuff (int, std::vector<Eigen::Vector3d>, Quadric );
   IGL_INLINE void fitQuadric (Eigen::Vector3d, std::vector<Eigen::Vector3d> ref, const  std::vector<int>& , Quadric *);
   IGL_INLINE void applyProjOnPlane(Eigen::Vector3d, std::vector<int>, std::vector<int>&);
   IGL_INLINE void getSphere(const int, const double, std::vector<int>&, int min);
@@ -369,7 +366,7 @@ IGL_INLINE void CurvatureCalculator::init(const Eigen::MatrixXd& V, const Eigen:
 
 IGL_INLINE void CurvatureCalculator::fitQuadric (Eigen::Vector3d v, std::vector<Eigen::Vector3d> ref, const std::vector<int>& vv, Quadric *q)
 {
-  vector<Eigen::Vector3d> points;
+  std::vector<Eigen::Vector3d> points;
   points.reserve (vv.size());
   
   for (unsigned int i = 0; i < vv.size(); ++i) {
@@ -387,7 +384,7 @@ IGL_INLINE void CurvatureCalculator::fitQuadric (Eigen::Vector3d v, std::vector<
   *q = Quadric::fit (points, zeroDetCheck, svd);
 }
 
-IGL_INLINE void CurvatureCalculator::finalEigenStuff (int i, vector<Eigen::Vector3d> ref, Quadric q)
+IGL_INLINE void CurvatureCalculator::finalEigenStuff (int i, std::vector<Eigen::Vector3d> ref, Quadric q)
 {
   double a = q.a();
   double b = q.b();
@@ -501,7 +498,7 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
   queue->push_back(start);
   visited[start]=true;
   Eigen::Vector3d me=vertices.row(start);
-  std::priority_queue<std::pair<int, double>, vector<std::pair<int, double> >, comparer >* extra_candidates= new  std::priority_queue<std::pair<int, double>, vector<std::pair<int, double> >, comparer >();
+  std::priority_queue<std::pair<int, double>, std::vector<std::pair<int, double> >, comparer >* extra_candidates= new  std::priority_queue<std::pair<int, double>, std::vector<std::pair<int, double> >, comparer >();
   while (!queue->empty())
   {
     int toVisit=queue->front();
@@ -544,7 +541,7 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
   free(visited);
 }
 
-IGL_INLINE inline Eigen::Vector3d CurvatureCalculator::project(Eigen::Vector3d v, Eigen::Vector3d  vp, Eigen::Vector3d ppn)
+IGL_INLINE Eigen::Vector3d CurvatureCalculator::project(Eigen::Vector3d v, Eigen::Vector3d  vp, Eigen::Vector3d ppn)
 {
   return (vp - (ppn * ((vp - v).dot(ppn))));
 }
@@ -644,7 +641,7 @@ IGL_INLINE double CurvatureCalculator::getAverageEdge()
 
 IGL_INLINE void CurvatureCalculator::applyProjOnPlane(Eigen::Vector3d ppn, std::vector<int> vin, std::vector<int> &vout)
 {
-  for (vector<int>::iterator vpi = vin.begin(); vpi != vin.end(); ++vpi)
+  for (std::vector<int>::iterator vpi = vin.begin(); vpi != vin.end(); ++vpi)
     if (vertex_normals.row(*vpi) * ppn > 0.0f)
       vout.push_back (*vpi);
 }
@@ -670,6 +667,7 @@ IGL_INLINE void CurvatureCalculator::applyMontecarlo(std::vector<int>& vin, std:
 
 IGL_INLINE void CurvatureCalculator::computeCurvature()
 {
+  using namespace std;
   
   //CHECK che esista la mesh
   size_t vertices_count=vertices.rows() ;
@@ -765,6 +763,7 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
 
 IGL_INLINE void CurvatureCalculator::printCurvature(std::string outpath)
 {
+  using namespace std;
   if (!curvatureComputed)
     return;
   
@@ -798,6 +797,7 @@ IGL_INLINE void igl::principal_curvature(
                                          unsigned radius
                                          )
 {
+  using namespace std;
   
   // Preallocate memory
   PD1.resize(V.rows(),3);

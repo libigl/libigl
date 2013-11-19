@@ -275,6 +275,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       ret = SOLVER_STATUS_ERROR;
       break;
     }
+    //cout<<matlab_format(Z,"Z")<<endl;
 #ifdef ACTIVE_SET_CPP_DEBUG
     cout<<"  post"<<endl;
 #endif

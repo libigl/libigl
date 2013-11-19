@@ -33,6 +33,44 @@ IGL_INLINE TwType igl::ReTwDefineEnum(
   return type;
 }
 
+IGL_INLINE TwType igl::ReTwDefineEnum(
+  const char * _Name,
+  const char * _EnumString)
+{
+  // Taken directly from TwMgr.cpp, just replace TwDefineEnum with
+  // ReTwDefineEnum
+  using namespace std;
+  {
+    if (_EnumString == NULL) 
+        return ReTwDefineEnum(_Name, NULL, 0);
+
+    // split enumString
+    stringstream EnumStream(_EnumString);
+    string Label;
+    vector<string> Labels;
+    while( getline(EnumStream, Label, ',') ) {
+        // trim Label
+        size_t Start = Label.find_first_not_of(" \n\r\t");
+        size_t End = Label.find_last_not_of(" \n\r\t");
+        if( Start==string::npos || End==string::npos )
+            Label = "";
+        else
+            Label = Label.substr(Start, (End-Start)+1);
+        // store Label
+        Labels.push_back(Label);
+    }
+    // create TwEnumVal array
+    vector<TwEnumVal> Vals(Labels.size());
+    for( int i=0; i<(int)Labels.size(); i++ )
+    {
+        Vals[i].Value = i;
+        Vals[i].Label = Labels[i].c_str();
+    }
+
+    return ReTwDefineEnum(_Name, Vals.empty() ? NULL : &(Vals[0]), (unsigned int)Vals.size());
+  }
+}
+
 namespace
 {
   struct ReTwTypeString
