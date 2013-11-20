@@ -19,6 +19,7 @@ IGL_INLINE TwType igl::ReTwDefineEnum(
   const TwEnumVal *enumValues, 
   unsigned int nbValues)
 {
+  using namespace std;
   // copy enum valus into vector
   std::vector<TwEnumVal> enum_vals;
   enum_vals.resize(nbValues);
@@ -30,6 +31,7 @@ IGL_INLINE TwType igl::ReTwDefineEnum(
 
   ReTw_custom_types[type] = 
     std::pair<const char *,std::vector<TwEnumVal> >(name,enum_vals);
+
   return type;
 }
 
@@ -64,10 +66,17 @@ IGL_INLINE TwType igl::ReTwDefineEnum(
     for( int i=0; i<(int)Labels.size(); i++ )
     {
         Vals[i].Value = i;
-        Vals[i].Label = Labels[i].c_str();
+        // Wrong:
+        //Vals[i].Label = Labels[i].c_str();
+        // Allocate char on heap
+        // http://stackoverflow.com/a/10050258/148668
+        char * c_label = new char[Labels[i].length()+1];
+        std::strcpy(c_label, Labels[i].c_str());
+        Vals[i].Label = c_label;
     }
 
-    return ReTwDefineEnum(_Name, Vals.empty() ? NULL : &(Vals[0]), (unsigned int)Vals.size());
+    const TwType type = ReTwDefineEnum(_Name, Vals.empty() ? NULL : &(Vals[0]), (unsigned int)Vals.size());
+    return type;
   }
 }
 
@@ -416,14 +425,15 @@ IGL_INLINE std::string igl::ReTwBar::get_value_as_string(
       }
     default:
       {
-        std::map<TwType,std::pair<const char *,std::vector<TwEnumVal> > >::iterator iter = 
+        using namespace std;
+        std::map<TwType,std::pair<const char *,std::vector<TwEnumVal> > >::const_iterator iter = 
           ReTw_custom_types.find(type);
         if(iter != ReTw_custom_types.end())
         {
           sstr << (*iter).second.first << " ";
           int enum_val = *(static_cast<int*>(var));
           // try find display name for enum value
-          std::vector<TwEnumVal>::iterator eit = (*iter).second.second.begin();
+          std::vector<TwEnumVal>::const_iterator eit = (*iter).second.second.begin();
           bool found = false;
           for(;eit<(*iter).second.second.end();eit++)
           {
@@ -523,7 +533,7 @@ IGL_INLINE bool igl::ReTwBar::type_from_string(const char *type_str, TwType & ty
   }
 
   // then check custom types
-  std::map<TwType,std::pair<const char *,std::vector<TwEnumVal> > >::iterator iter = 
+  std::map<TwType,std::pair<const char *,std::vector<TwEnumVal> > >::const_iterator iter = 
     ReTw_custom_types.begin();
   for(;iter != ReTw_custom_types.end(); iter++)
   {
@@ -680,11 +690,11 @@ bool igl::ReTwBar::set_value_from_string(
       }
     default:
       // Try to find type in custom enum types
-      std::map<TwType,std::pair<const char *,std::vector<TwEnumVal> > >::iterator iter = 
+      std::map<TwType,std::pair<const char *,std::vector<TwEnumVal> > >::const_iterator iter = 
         ReTw_custom_types.find(type);
       if(iter != ReTw_custom_types.end())
       {
-        std::vector<TwEnumVal>::iterator eit = (*iter).second.second.begin();
+        std::vector<TwEnumVal>::const_iterator eit = (*iter).second.second.begin();
         bool found = false;
         for(;eit<(*iter).second.second.end();eit++)
         {
