@@ -3,8 +3,6 @@
 #include "igl_inline.h"
 #include <Eigen/Dense>
 
-// Note: the elements field is currently unused but is left her for consistency
-// with the matlab version (where it is also unused). 10/25/2012
 namespace igl
 {
 
@@ -15,7 +13,7 @@ namespace igl
   //   C  #C by dim list of handle positions
   //   P  #P by 1 list of point handle indices into C
   //   BE  #BE by 2 list of bone edge indices into C
-  //   CE  #CE by 2 list of cage edge indices into *P*, unused
+  //   CE  #CE by 2 list of cage edge indices into *P*
   // Outputs:
   //   b  #b list of boundary indices (indices into V of vertices which have
   //     known, fixed values)

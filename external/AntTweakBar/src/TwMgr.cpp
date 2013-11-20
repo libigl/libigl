@@ -4906,7 +4906,10 @@ TwType TW_CALL TwDefineEnumFromString(const char *_Name, const char *_EnumString
     for( int i=0; i<(int)Labels.size(); i++ )
     {
         Vals[i].Value = i;
-        Vals[i].Label = Labels[i].c_str();
+        //Vals[i].Label = Labels[i].c_str();
+        char * c_label = new char[Labels[i].length()+1];
+        std::strcpy(c_label, Labels[i].c_str());
+        Vals[i].Label = c_label;
     }
 
     return TwDefineEnum(_Name, Vals.empty() ? NULL : &(Vals[0]), (unsigned int)Vals.size());
