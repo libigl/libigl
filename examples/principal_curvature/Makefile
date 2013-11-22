@@ -11,7 +11,7 @@ all: curvature
 igl_lib=../../
 eigen=-I$(DEFAULT_PREFIX)/include/eigen3
 
-CFLAGS=-g
+CFLAGS=-g -O3
 inc=-I$(igl_lib)/include $(eigen)
 
 curvature: curvature.o
