@@ -107,6 +107,7 @@ public:
         cerr << "ASSERT FAILED!" << endl;
         exit(0);
       }
+
       Eigen::MatrixXd A(VV.size(),5);
       Eigen::MatrixXd b(VV.size(),1);
       Eigen::MatrixXd sol(5,1);
@@ -126,39 +127,8 @@ public:
         b(c) = n;
       }
       
-      
-      static int count = 0, index = 0;
-      double min = 0.000000000001; //1.0e-12
-      
-      //Devo fare solving svd del sistema A*sol=b
-      if (zeroDetCheck && ((A.transpose()*A).determinant() < min && (A.transpose()*A).determinant() > -min))
-      {
-        printf("Quadric: unsolvable vertex %d %d\n", count, ++index);
-        sol=A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
+      sol=A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
 
-//        sol=A.jacobiSvd().solve(b);
-//        double res = (A*sol-b).norm();
-//        if (res > 10e-6)
-//        {
-//          cerr << "Norm residuals: " << res << endl;
-//          cerr << "A:" << A << endl;
-//          cerr << "sol:" << sol << endl;
-//          cerr << "b:" << b << endl;
-//        }
-        
-        return Quadric(sol(0),sol(1),sol(2),sol(3),sol(4));
-      }
-      count++;
-      
-      //for (int i = 0; i < 100; i++)
-      {
-        if (svd)
-          sol=A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
-        else
-          sol = ((A.transpose()*A).inverse()*A.transpose())*b;
-        
-      }
-      
       return Quadric(sol(0),sol(1),sol(2),sol(3),sol(4));
     }
   };
@@ -386,12 +356,20 @@ IGL_INLINE void CurvatureCalculator::fitQuadric (Eigen::Vector3d v, std::vector<
 
 IGL_INLINE void CurvatureCalculator::finalEigenStuff (int i, std::vector<Eigen::Vector3d> ref, Quadric q)
 {
+  
   double a = q.a();
   double b = q.b();
   double c = q.c();
   double d = q.d();
   double e = q.e();
   
+
+  if (fabs(a) < 10e-8 || fabs(b) < 10e-8)
+  {
+    std::cout << "Degenerate quadric: " << i << std::endl;
+  }
+
+
   double E = 1.0 + d*d;
   double F = d*e;
   double G = 1.0 + e*e;
@@ -411,21 +389,26 @@ IGL_INLINE void CurvatureCalculator::finalEigenStuff (int i, std::vector<Eigen::
   
   Eigen::Vector2d c_val = eig.eigenvalues();
   Eigen::Matrix2d c_vec = eig.eigenvectors();
+
+  // std::cerr << "c_val:" << c_val << std::endl;
+  // std::cerr << "c_vec:" << c_vec << std::endl;
   
+  // std::cerr << "c_vec:" << c_vec(0) << " "  << c_vec(1) << std::endl;
+
   c_val = -c_val;
   
   Eigen::Vector3d v1, v2;
   v1[0] = c_vec(0);
   v1[1] = c_vec(1);
-  v1[2] = d * v1[0] + e * v1[1];
+  v1[2] = 0; //d * v1[0] + e * v1[1];
   
   v2[0] = c_vec(2);
   v2[1] = c_vec(3);
-  v2[2] = d * v2[0] + e * v2[1];
+  v2[2] = 0; //d * v2[0] + e * v2[1];
   
   
-  v1 = v1.normalized();
-  v2 = v2.normalized();
+  // v1 = v1.normalized();
+  // v2 = v2.normalized();
   
   Eigen::Vector3d v1global = ref[0] * v1[0] + ref[1] * v1[1] + ref[2] * v1[2];
   Eigen::Vector3d v2global = ref[0] * v2[0] + ref[1] * v2[1] + ref[2] * v2[2];
