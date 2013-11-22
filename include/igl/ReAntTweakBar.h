@@ -31,10 +31,6 @@
 // Copyright Alec Jacobson, 2011
 //
 
-// Known bugs:
-//  TwDefineEnumFromString is not supported (use ReTwDefineEnum instead)
-//  Custom enums should not have spaces in their names
-
 // This allows the user to have a non-global, static installation of
 // AntTweakBar
 #ifdef STATIC_ANTTWEAKBAR
@@ -57,7 +53,7 @@ namespace igl
     const char *name, 
     const TwEnumVal *enumValues, 
     unsigned int nbValues);
-  TwType ReTwDefineEnum(const char * name,const char * enumString);
+  TwType ReTwDefineEnumFromString(const char * name,const char * enumString);
   
   struct ReTwRWItem
   {
