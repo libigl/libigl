@@ -35,7 +35,7 @@ IGL_INLINE TwType igl::ReTwDefineEnum(
   return type;
 }
 
-IGL_INLINE TwType igl::ReTwDefineEnum(
+IGL_INLINE TwType igl::ReTwDefineEnumFromString(
   const char * _Name,
   const char * _EnumString)
 {
