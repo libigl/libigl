@@ -132,6 +132,9 @@ IGL_INLINE void igl::draw_mesh(
       }else if(N.rows() == F.rows())
       {
         glNormal3d(N(i,0),N(i,1),N(i,2));
+      }else
+      {
+        assert(N.size() == 0);
       }
       glVertex3d(V(F(i,j),0),V(F(i,j),1),V(F(i,j),2));
     }
