@@ -508,7 +508,7 @@ unsigned char TGAHeaderBW[12] =
 // image size is written in correct format 
 // and byte order (least first)
 void write16bit(int n, FILE* fp) { 
-  unsigned char bytes[] = { n % 256, n / 256 };
+  unsigned char bytes[] = { static_cast<unsigned char>(n % 256), static_cast<unsigned char>(n / 256) };
   fwrite(bytes, 2, sizeof(unsigned char),fp);
 }
 
