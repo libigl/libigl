@@ -1,5 +1,5 @@
-#ifndef IGL_POINT_IN_CIRCLE_H
-#define IGL_POINT_IN_CIRCLE_H
+#ifndef IGL_POINT_IN_POLY_H
+#define IGL_POINT_IN_POLY_H
 #include "igl_inline.h"
 
 #include <vector>
