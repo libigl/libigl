@@ -25,6 +25,13 @@ implemented in <code>include/igl/example_fun.cpp</code>.
     </p>
     <h3>example_fun.h</h3>
     <pre><code>
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2013 Alec Jacobson &lt;alecjacobson@gmail.com&gt;
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_EXAMPLE_FUN_H
 #define IGL_EXAMPLE_FUN_H
 
@@ -41,7 +48,7 @@ namespace igl
   //   input  some input of a Printable type
   // Returns true for the sake of returning something
   template &lt;typename Printable&gt;
-  IGL_INLINE bool example_fun(const Printable & input);
+  IGL_INLINE bool example_fun(const Printable &amp; input);
 }
 
 #ifdef IGL_HEADER_ONLY
@@ -52,11 +59,17 @@ namespace igl
     </code></pre>
     <h3>example_fun.cpp</h3>
     <pre><code>
-#include "igl/example_fun.h"
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2013 Alec Jacobson &lt;alecjacobson@gmail.com&gt;
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.#include "igl/example_fun.h"
 #include &lt;iostream&gt;
 
 template &lt;typename Printable&gt;
-IGL_INLINE bool igl::example_fun(const Printable & input)
+IGL_INLINE bool igl::example_fun(const Printable &amp; input)
 {
   using namespace std;
   cout&lt;&lt;"example_fun: "&lt;&lt;input&lt;&lt;endl;
@@ -64,46 +77,44 @@ IGL_INLINE bool igl::example_fun(const Printable & input)
 }
 
 #ifndef IGL_HEADER_ONLY
-template bool igl::example_fun&lt;double&gt;(const double& input);
-template bool igl::example_fun&lt;int&gt;(const int& input);
+template bool igl::example_fun&lt;double&gt;(const double&amp; input);
+template bool igl::example_fun&lt;int&gt;(const int&amp; input);
 #endif
     </code></pre>
 
 
 
-    <h2>General rules</h2>
+    <h2 id=general_rules>General rules</h2>
     <ul>
       <li> Use a single .h/.cpp pair with the same name as the function </li>
       <li>
 At least one version of the function should use references for all outputs
       </li>
       <li>
-Functions with external dependencies should be a single .h file (no .cpp file)
-  so it won't appear in libigl.a
-      </li>
-      <li>
 Use wrappers and additional prototypes for returning single-output functions'
 outputs, but the default is to only use outputs
       </li>
-      <li> All inputs should be const when appropriate </li>
+      <li> All inputs should be <code>const</code>.</li>
       <li>
-Use c++ references for inputs and outputs rather than pointers or pass-by-copy
+Use C++ references (e.g. <code>Matrix &amp; mat</code>) for inputs and outputs
+rather than pointers (e.g. <code>Matrix * mat</code>) or pass-by-copy (e.g.
+<code>Matrix mat</code>).
       </li>
       <li>
-Take the time to write multiple prototypes if you'd like to have optional
-parameters with default values
+Write multiple prototypes if you'd like to have optional parameters with
+default values.
       </li>
       <li>
-External dependencies (besides Eigen, OpenGL, etc.) are discouraged
+External dependencies (besides Eigen and OpenGL) are only allowed within extras.
       </li>
       <li>
-External dependencies must be clearly identified at the top of each file.
+New extras and their dependencies must be discussed first.
       </li>
       <li>
-External dependencies can go in the external/ directory
+Hard-to-compile or obscure external dependencies can go in the <code>external/</code> directory.
       </li>
       <li>
-Do not use the using namespace directive anywhere outside a local scope. This
+Do not use the <code>using namespace</code> directive anywhere outside a local scope. This
 means never write: <code>using namespace std;</code> or <code>using namespace
 igl;</code> etc. at the top of a file.
       </li>
@@ -114,8 +125,8 @@ or should use all lowercase separated by underscores: e.g.
       </li>
       <li> Classes should be in <code>CamelCase</code></li>
       <li> No tabs, only two spaces per indentation level </li>
-      <li> Be generous with assertions, but always identify them with strings:
-      <br> e.g. <code>assert(m&lt;n && "m must be less than n");</code></li>
+      <li> Be generous with assertions and always identify them with strings:
+      <br> e.g. <code>assert(m&lt;n &amp;&amp; "m must be less than n");</code></li>
   </ul>
 
     <h2>Specific rules</h2>
@@ -186,6 +197,9 @@ and outputs.
       <tr class=d0>
         <td><code>grep -L "^#ifndef IGL_" *</code></td>
         <td>Find files that don't contain #ifndef IGL_</td>
+      </tr>
+      <tr class=d1>
+        <td><code>grep -L "^This file is part of libigl" *</code></td>
       </tr>
     </table>
 

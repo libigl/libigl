@@ -28,7 +28,6 @@
 // requires changes in a few places...
 // 
 //
-// Copyright Alec Jacobson, 2011
 //
 
 // This allows the user to have a non-global, static installation of

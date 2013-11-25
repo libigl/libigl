@@ -1,11 +1,3 @@
-//
-//  removeDuplicates.h
-//  Preview3D
-//
-//  Created by Olga Diamanti on 17/11/11.
-//  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
-//
-
 #ifndef IGL_REMOVEDUPLICATES_H
 #define IGL_REMOVEDUPLICATES_H
 #include "igl_inline.h"

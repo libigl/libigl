@@ -1,12 +1,6 @@
 #ifndef IGL_MATLAB_INTERFACE_H
 #define IGL_MATLAB_INTERFACE_H
 #include "../igl_inline.h"
-
-//
-//  IGL Lib - Simple C++ mesh library 
-//
-//  Copyright 2011, Daniele Panozzo. All rights reserved.
-
 // WARNING: These functions require matlab installed
 // Additional header folder required:
 //   /Applications/MATLAB_R2011a.app/extern/include
