@@ -53,8 +53,12 @@ libigl - A simple c++ geometry processing library
 
 http://igl.ethz.ch/projects/libigl/
 
-Copyright 2013 - Alec Jacobson, Daniele Panozzo, Olga Diamanti, Kenshi
+Copyright (C) 2013 - Alec Jacobson, Daniele Panozzo, Olga Diamanti, Kenshi
 Takayama, Leo Sacht, Interactive Geometry Lab - ETH Zurich
+
+This Source Code Form is subject to the terms of the Mozilla Public License 
+v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+obtain one at http://mozilla.org/MPL/2.0/.
 
 `cat $LIBIGL/VERSION.txt | sed -ne "s/^\([^\#]\)/VERSION \1/p"`
 

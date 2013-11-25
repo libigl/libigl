@@ -24,7 +24,6 @@ namespace igl
   //   T  #P by 1 list of parameters
   //   sqrD  #P by 1 list of squared distances
   //
-  // Copyright 2011, Alec Jacobson (jacobson@inf.ethz.ch)
   //
   template <
     typename MatP, 

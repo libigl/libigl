@@ -1,14 +1,8 @@
-//
-//  IGL Lib - Simple C++ mesh library 
-//
-//  Copyright 2011, Daniele Panozzo. All rights reserved.
-
-// History:
-//  return type changed from void to bool  Alec 18 Sept 2011
-
 #ifndef IGL_READOFF_H
 #define IGL_READOFF_H
 #include "igl_inline.h"
+// History:
+//  return type changed from void to bool  Alec 18 Sept 2011
 
 #ifndef IGL_NO_EIGEN
 #  include <Eigen/Core>

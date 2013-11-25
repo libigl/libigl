@@ -1,8 +1,3 @@
-//
-//  IGL Lib - Simple C++ mesh library 
-//
-//  Copyright 2011, Daniele Panozzo. All rights reserved.
-
 #ifndef IGL_WRITE_H
 #define IGL_WRITE_H
 #include "igl_inline.h"
