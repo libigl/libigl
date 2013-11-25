@@ -1,5 +1,6 @@
 .PHONY: all
 all: lib extras examples
+framework: lib extras lib/igl.framework/
 
 GG=g++
 #GG=clang++
@@ -27,27 +28,35 @@ EXTRA_DIRS=
 ifeq ($(IGL_WITH_TETGEN),1)
 	# append tetgen extra dir
 	EXTRA_DIRS+=include/igl/tetgen
+	EXTRAS += tetgen
 endif
 ifeq ($(IGL_WITH_MATLAB),1)
 	EXTRA_DIRS+=include/igl/matlab
+	EXTRAS += matlab
 endif
 ifeq ($(IGL_WITH_BBW),1)
-	EXTRA_DIRS+=include/igl/BBW
+	EXTRA_DIRS+=include/igl/bbw
+	EXTRAS += bbw
 endif
 ifeq ($(IGL_WITH_MOSEK),1)
 	EXTRA_DIRS+=include/igl/mosek
+	EXTRAS += mosek
 endif
 ifeq ($(IGL_WITH_PNG),1)
 	EXTRA_DIRS+=include/igl/png
+	EXTRAS += png
 endif
 ifeq ($(IGL_WITH_XML),1)
 	EXTRA_DIRS+=include/igl/xml
+	EXTRAS += xml
 endif
 ifeq ($(IGL_WITH_EMBREE),1)
 	EXTRA_DIRS+=include/igl/embree
+	EXTRAS += embree
 endif
 ifeq ($(IGL_WITH_BOOST),1)
 	EXTRA_DIRS+=include/igl/boost
+	EXTRAS += boost
 endif
 
 .PHONY: examples
@@ -68,6 +77,7 @@ extras:
 # SOURCE 
 #############################################################################
 CPP_FILES=$(wildcard include/igl/*.cpp)
+H_FILES=$(wildcard include/igl/*.h)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 
 # include igl headers
@@ -105,7 +115,23 @@ lib/libigl.a: $(OBJ_FILES)
 obj/%.o: include/igl/%.cpp include/igl/%.h
 	$(GG) $(CFLAGS) $(AFLAGS) -c -o $@ $< $(INC)
 
+lib/igl.framework/:
+	mkdir -p $@
+	cp lib/*.a $@
+	mv $@/libigl.a $@/igl
+	mkdir -p $@/Libraries
+	mv $@/*.a $@/Libraries
+	mkdir -p $@/Headers
+	cp $(H_FILES) $@/Headers
+	for p in $(EXTRAS); \
+	do \
+	mkdir $@/Headers/$$p; \
+	cp include/igl/$$p/*.h $@/Headers/$$p; \
+	done
+
+
 clean:
+	rm -rf lib/igl.framework/
 	rm -f obj/*.o
 	rm -f lib/libigl.a
 	make -C examples clean
