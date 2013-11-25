@@ -9,6 +9,8 @@ example
 examples/bbw/bbw_demo_selfcontained/*
 examples/bbw/bbw_demo_selfcontained.zip
 examples/quicklook-mesh/Mesh.qlgenerator/*
+examples/*/*.mexmaci64
+examples/*/*.rbr
 example_static
 example_header_only
 example1
@@ -37,3 +39,6 @@ Release/
 *.vsp
 *.opensdf
 *.psess
+documentation/*.aux
+documentation/*.out
+documentation/*.log
