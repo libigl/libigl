@@ -1,6 +1,6 @@
 .PHONY: all
 all: lib extras examples
-ios: lib extras lib/igl.framework/
+framework: lib extras lib/igl.framework/
 
 GG=g++
 #GG=clang++
@@ -35,8 +35,8 @@ ifeq ($(IGL_WITH_MATLAB),1)
 	EXTRAS += matlab
 endif
 ifeq ($(IGL_WITH_BBW),1)
-	EXTRA_DIRS+=include/igl/BBW
-	EXTRAS += BBW
+	EXTRA_DIRS+=include/igl/bbw
+	EXTRAS += bbw
 endif
 ifeq ($(IGL_WITH_MOSEK),1)
 	EXTRA_DIRS+=include/igl/mosek
