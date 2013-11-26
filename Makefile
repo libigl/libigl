@@ -2,13 +2,6 @@
 all: lib extras examples
 framework: lib extras lib/igl.framework/
 
-GG=g++
-#GG=clang++
-#GG=/usr/bin/g++     17s
-#GG=/usr/bin/clang++ 14s
-#GG=g++-mp-4.3       15.5s
-#GG=g++-mp-4.7       19.9s
-
 # Shared flags etc.
 include Makefile.conf
 $(info Hello, $(IGL_USERNAME)!)
