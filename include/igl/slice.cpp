@@ -167,8 +167,19 @@ IGL_INLINE Eigen::PlainObjectBase<DerivedX> igl::slice(
   const Eigen::Matrix<int,Eigen::Dynamic,1> & R)
 {
   Eigen::PlainObjectBase<DerivedX> Y;
-  // phony column indices
   igl::slice(X,R,Y);
+  return Y;
+}
+
+template <typename DerivedX>
+IGL_INLINE Eigen::PlainObjectBase<DerivedX> igl::slice(
+  const Eigen::PlainObjectBase<DerivedX>& X,
+  const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
+  const int dim)
+{
+  Eigen::PlainObjectBase<DerivedX> Y;
+  // phony column indices
+  igl::slice(X,R,dim,Y);
   return Y;
 }
 
@@ -188,4 +199,6 @@ template void igl::slice<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainOb
 template void igl::slice<Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template void igl::slice<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
 template void igl::slice<Eigen::SparseMatrix<double, 0, int> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int, Eigen::SparseMatrix<double, 0, int>&);
+template Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > igl::slice<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int);
+template Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > igl::slice<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int);
 #endif
