@@ -58,6 +58,11 @@ namespace igl
   IGL_INLINE Eigen::PlainObjectBase<DerivedX> slice(
     const Eigen::PlainObjectBase<DerivedX> & X,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R);
+  template <typename DerivedX>
+  IGL_INLINE Eigen::PlainObjectBase<DerivedX> slice(
+    const Eigen::PlainObjectBase<DerivedX>& X,
+    const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
+    const int dim);
 }
 
 #ifdef IGL_HEADER_ONLY
