@@ -43,7 +43,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   Eigen::PlainObjectBase<DerivedZ> & Z
   )
 {
-#define ACTIVE_SET_CPP_DEBUG
+//#define ACTIVE_SET_CPP_DEBUG
   using namespace igl;
   using namespace Eigen;
   using namespace std;
@@ -114,7 +114,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   while(true)
   {
 #ifdef ACTIVE_SET_CPP_DEBUG
-    cout<<iter<<":"<<endl;
+    cout<<"Iteration: "<<iter<<":"<<endl;
     cout<<"  pre"<<endl;
 #endif
     // FIND BREACHES OF CONSTRAINTS
