@@ -56,16 +56,110 @@
 #include <stack>
 #include <iostream>
 
+
+
+// Initialize shadow textures. Should be called on reshape()
+//
+// Inputs:
+//   windowWidth  width of viewport
+//   windowHeight  width of viewport
+//   factor  up-/down-sampling factor {1}
+// Outputs:
+//   shadowMapTexture  texture id of shadow map
+//   fbo  buffer id of depth frame buffer
+//   cfbo  buffer id of color frame buffer
+bool initialize_shadows(
+  const double windowWidth,
+  const double windowHeight,
+  const double factor,
+  GLuint & shadowMapTexture,
+  GLuint & fbo,
+  GLuint & cfbo);
+// Implementation
+bool initialize_shadows(
+  const double windowWidth,
+  const double windowHeight,
+  const double factor,
+  GLuint & shadowMapTexture,
+  GLuint & fbo,
+  GLuint & cfbo)
+{
+  //Create the shadow map texture
+  glDeleteTextures(1,&shadowMapTexture);
+  glGenTextures(1, &shadowMapTexture);
+  glBindTexture(GL_TEXTURE_2D, shadowMapTexture);
+  glTexImage2D(
+    GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 
+    factor*windowWidth,
+    factor*windowHeight, 
+    0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  // Frame buffer
+  glGenFramebuffersEXT(1, &fbo);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
+  glFramebufferTexture2DEXT(
+    GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, 
+    shadowMapTexture,0);
+  // Attach color render buffer
+  glGenRenderbuffersEXT(1,&cfbo);
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT,cfbo);
+  glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGBA8, 
+    factor*windowWidth, factor*windowHeight);
+  //-------------------------
+  //Attach color buffer to FBO
+  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, 
+    GL_RENDERBUFFER_EXT, cfbo);
+  //-------------------------
+  //Does the GPU support current FBO configuration?
+  GLenum status;
+  status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+  switch(status)
+  {
+    case GL_FRAMEBUFFER_COMPLETE_EXT:
+      break;
+    default:
+      assert(false);
+      return false;
+  }
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+  return true;
+}
+
+GLuint shadowMapTexture=0,fbo=0,cfbo=0;
+
+#define MAX_SPEED 0.01
 struct Mesh
 {
   Eigen::MatrixXd V,N;
   Eigen::MatrixXi F;
+  Eigen::Affine3d a,da;
+  Mesh():V(),N(),F(),a(Eigen::Affine3d::Identity()),da(Eigen::Affine3d::Identity())
+  { 
+    using namespace Eigen;
+    Quaterniond r(Eigen::Vector4d::Random());
+    Quaterniond i(1,0,0,0);
+    const double speed = 0.001;
+    Quaterniond q = Quaterniond((   speed)*r.coeffs() + (1.-speed)*i.coeffs()).normalized();
+    da.rotate(q);
+    da.translate(Eigen::Vector3d::Random().normalized()*MAX_SPEED);
+  }
 };
 std::vector<Mesh> meshes;
 
 struct State
 {
   igl::Camera camera;
+  State():
+    camera()
+  {
+    camera.pan[1] = 1;
+  }
 } s;
 
 // See README for descriptions
@@ -90,7 +184,8 @@ Eigen::Quaterniond animation_from_quat;
 Eigen::Quaterniond animation_to_quat;
 
 int width,height;
-Eigen::Vector4f light_pos(-0.1,-0.1,0.9,0);
+bool is_view_from_light = false;
+Eigen::Vector4f light_pos(9,9,1,1);
 
 #define REBAR_NAME "temp.rbr"
 igl::ReTwBar rebar;
@@ -105,39 +200,6 @@ void push_undo()
   redo_stack = std::stack<State>();
 }
 
-void TW_CALL set_rotation_type(const void * value, void * clientData)
-{
-  using namespace Eigen;
-  using namespace std;
-  using namespace igl;
-  const RotationType old_rotation_type = rotation_type;
-  rotation_type = *(const RotationType *)(value);
-  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP && 
-    old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
-  {
-    push_undo();
-    copy(s.camera.rotation,s.camera.rotation+4,animation_from_quat.coeffs().data());
-    const Vector3d up = animation_from_quat.matrix() * Vector3d(0,1,0);
-    Vector3d proj_up(0,up(1),up(2));
-    if(proj_up.norm() == 0)
-    {
-      proj_up = Vector3d(0,1,0);
-    }
-    proj_up.normalize();
-    Quaterniond dq;
-    dq = Quaterniond::FromTwoVectors(up,proj_up);
-    animation_to_quat = dq * animation_from_quat;
-    // start animation
-    animation_start_time = get_seconds();
-    is_animating = true;
-  }
-}
-void TW_CALL get_rotation_type(void * value, void *clientData)
-{
-  RotationType * rt = (RotationType *)(value);
-  *rt = rotation_type;
-}
-
 void reshape(int width, int height)
 {
   ::width = width;
@@ -145,18 +207,26 @@ void reshape(int width, int height)
   glViewport(0,0,width,height);
   // Send the new window size to AntTweakBar
   TwWindowSize(width, height);
+  if(!initialize_shadows(width,height,1,shadowMapTexture,fbo,cfbo))
+  {
+    assert(false);
+    exit(-1);
+  }
 }
 
-void push_scene()
+void push_scene(
+  const int width,
+  const int height,
+  const double angle,
+  const double zNear = 1e-2,
+  const double zFar = 100,
+  const bool correct_perspective_scaling = true)
 {
   using namespace igl;
   using namespace std;
-  const double angle = s.camera.angle;
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
   glLoadIdentity();
-  double zNear = 1e-2;
-  double zFar = 100;
   double aspect = ((double)width)/((double)height);
   // Amount of scaling needed to "fix" perspective z-shift
   double z_fix = 1.0;
@@ -177,20 +247,51 @@ void push_scene()
     // Make sure aspect is sane
     aspect = aspect < 0.01 ? 0.01 : aspect;
     gluPerspective(angle,aspect,zNear,zFar);
-    z_fix = 2.*tan(angle/2./360.*2.*M_PI);
+    if(correct_perspective_scaling)
+    {
+      z_fix = 2.*tan(angle/2./360.*2.*M_PI);
+    }
   }
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
-  gluLookAt(0,0,camera_z,0,0,0,0,1,0);
+  glTranslatef(0,0,-camera_z);
   // Adjust scale to correct perspective
-  glScaled(z_fix,z_fix,z_fix);
+  if(correct_perspective_scaling)
+  {
+    glScaled(z_fix,z_fix,z_fix);
+  }
+}
+
+void push_lightview_camera(const Eigen::Vector4f & light_pos)
+{
+  using namespace igl;
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  //glTranslatef(-light_pos(0),-light_pos(1),-light_pos(2));
+  gluLookAt(
+    light_pos(0), light_pos(1), light_pos(2),
+    0,0,0,
+    0,1,0);
+}
+
+void push_camera(const igl::Camera & camera)
+{
+  using namespace igl;
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
   // scale, pan
-  glScaled( s.camera.zoom, s.camera.zoom, s.camera.zoom);
+  glScaled(camera.zoom, camera.zoom, camera.zoom);
   double mat[4*4];
-  quat_to_mat(s.camera.rotation,mat);
+  quat_to_mat(camera.rotation,mat);
   glMultMatrixd(mat);
+}
+
+void pop_camera()
+{
+  glMatrixMode(GL_MODELVIEW);
+  glPopMatrix();
 }
 
 void pop_scene()
@@ -202,7 +303,7 @@ void pop_scene()
 }
 
 // Set up double-sided lights
-void lights()
+void lights(const Eigen::Vector4f & pos)
 {
   using namespace std;
   using namespace Eigen;
@@ -211,11 +312,127 @@ void lights()
   glEnable(GL_LIGHT0);
   float WHITE[4] = {1,1,1,1.};
   float BLACK[4] = {0.,0.,0.,1.};
-  Vector4f pos = light_pos;
   glLightfv(GL_LIGHT0,GL_AMBIENT,BLACK);
   glLightfv(GL_LIGHT0,GL_DIFFUSE,WHITE);
   glLightfv(GL_LIGHT0,GL_SPECULAR,BLACK);
   glLightfv(GL_LIGHT0,GL_POSITION,pos.data());
+}
+
+void update_meshes()
+{
+  using namespace Eigen;
+  for(auto & mesh : meshes)
+  {
+    //mesh.da.translate(Vector3d::Random()*0.001);
+    mesh.a = mesh.a * mesh.da;
+    Vector3d o = mesh.a.translation();
+    const Vector3d xo(5,5,5);
+    const Vector3d no(5,0,5);
+    for(int d = 0;d<3;d++)
+    {
+      if(o(d) > xo(d))
+      {
+        o(d) = xo(d);
+        mesh.da.translation()(d) *= -1.;
+      }
+      if(o(d) < -no(d))
+      {
+        o(d) = -no(d);
+        mesh.da.translation()(d) *= -1.;
+      }
+    }
+    mesh.a.translation() = o;
+    mesh.da.translation() = MAX_SPEED*mesh.da.translation().normalized();
+  }
+}
+
+void draw_objects()
+{
+  using namespace igl;
+  using namespace std;
+  using namespace Eigen;
+
+  for(int m = 0;m<(int)meshes.size();m++)
+  {
+    Mesh & mesh = meshes[m];
+    Vector4f color(0,0,0,1);
+    jet(1.f-(float)m/(float)meshes.size(),color.data());
+    // Set material properties
+    glDisable(GL_COLOR_MATERIAL);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,  SILVER_AMBIENT);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,  color.data());
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, SILVER_SPECULAR);
+    glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128);
+    glPushMatrix();
+    glMultMatrixd(mesh.a.matrix().data());
+    draw_mesh(mesh.V,mesh.F,mesh.N);
+    glPopMatrix();
+  }
+  
+  // Draw a nice floor
+  glPushMatrix();
+  {
+    const float GREY[4] = {0.5,0.5,0.6,1.0};
+    const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
+    //draw_floor(GREY,DARK_GREY);
+    glTranslatef(0,0.3,0);
+    glScaled(10,0.1,10);
+    glDisable(GL_COLOR_MATERIAL);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,  DARK_GREY);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,  GREY);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, SILVER_SPECULAR);
+    glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128);
+    glutSolidCube(1.0);
+  }
+  glPopMatrix();
+
+}
+
+void draw_scene()
+{
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_NORMALIZE);
+  push_scene(width,height,s.camera.angle,1e-2,100,true);
+  if(is_view_from_light)
+  {
+    push_lightview_camera(light_pos);
+  }else
+  {
+    push_camera(s.camera);
+  }
+  lights(light_pos);
+  draw_objects();
+  glPushMatrix();
+    glTranslatef(light_pos(0),light_pos(1),light_pos(2));
+    glutWireSphere(1,20,20);
+  glPopMatrix();
+  pop_camera();
+  pop_scene();
+
+  ////First pass - from light's point of view
+  //glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
+  //glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, cfbo);
+  //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  //glMatrixMode(GL_PROJECTION);
+  //glLoadMatrixf(lightProjectionMatrix);
+  //glMatrixMode(GL_MODELVIEW);
+  //glLoadMatrixf(lightViewMatrix);
+  ////Use viewport the same size as the shadow map
+  //glViewport(0, 0, factor*windowWidth, factor*windowHeight);
+  ////Draw back faces into the shadow map
+  //glEnable(GL_CULL_FACE);
+  //glCullFace(GL_FRONT);
+  ////Disable color writes, and use flat shading for speed
+  //glShadeModel(GL_FLAT);
+  //glColorMask(0, 0, 0, 0);
+  ////Draw the scene
+  //draw_objects();
+  //////Read the depth buffer into the shadow map texture
+  ////glBindTexture(GL_TEXTURE_2D, shadowMapTexture);
+  ////glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, factor*windowWidth, factor*windowHeight);
+  //glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+  //glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
 }
 
 void display()
@@ -225,7 +442,6 @@ void display()
   using namespace Eigen;
   glClearColor(1,1,1,0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   if(is_animating)
   {
     double t = (get_seconds() - animation_start_time)/ANIMATION_DURATION;
@@ -240,40 +456,11 @@ void display()
     q.normalize();
     copy(q.coeffs().data(),q.coeffs().data()+4,s.camera.rotation);
   }
+  update_meshes();
 
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_NORMALIZE);
-  lights();
-  push_scene();
-
-  for(auto & mesh : meshes)
-  {
-    // Set material properties
-    glDisable(GL_COLOR_MATERIAL);
-    glMaterialfv(GL_FRONT, GL_AMBIENT,  GOLD_AMBIENT);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE,  GOLD_DIFFUSE  );
-    glMaterialfv(GL_FRONT, GL_SPECULAR, GOLD_SPECULAR);
-    glMaterialf (GL_FRONT, GL_SHININESS, 128);
-    glMaterialfv(GL_BACK, GL_AMBIENT,  SILVER_AMBIENT);
-    glMaterialfv(GL_BACK, GL_DIFFUSE,  FAST_GREEN_DIFFUSE  );
-    glMaterialfv(GL_BACK, GL_SPECULAR, SILVER_SPECULAR);
-    glMaterialf (GL_BACK, GL_SHININESS, 128);
-    draw_mesh(mesh.V,mesh.F,mesh.N);
-  }
-  
-  // Draw a nice floor
-  glPushMatrix();
-  {
-    const float GREY[4] = {0.5,0.5,0.6,1.0};
-    const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
-    draw_floor(GREY,DARK_GREY);
-  }
-  glPopMatrix();
-
-  pop_scene();
+  draw_scene();
 
   report_gl_error();
-
   TwDraw();
   glutSwapBuffers();
   glutPostRedisplay();
@@ -514,6 +701,38 @@ void key(unsigned char key, int mouse_x, int mouse_y)
       }
   }
 }
+void TW_CALL set_rotation_type(const void * value, void * clientData)
+{
+  using namespace Eigen;
+  using namespace std;
+  using namespace igl;
+  const RotationType old_rotation_type = rotation_type;
+  rotation_type = *(const RotationType *)(value);
+  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP && 
+    old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
+  {
+    push_undo();
+    copy(s.camera.rotation,s.camera.rotation+4,animation_from_quat.coeffs().data());
+    const Vector3d up = animation_from_quat.matrix() * Vector3d(0,1,0);
+    Vector3d proj_up(0,up(1),up(2));
+    if(proj_up.norm() == 0)
+    {
+      proj_up = Vector3d(0,1,0);
+    }
+    proj_up.normalize();
+    Quaterniond dq;
+    dq = Quaterniond::FromTwoVectors(up,proj_up);
+    animation_to_quat = dq * animation_from_quat;
+    // start animation
+    animation_start_time = get_seconds();
+    is_animating = true;
+  }
+}
+void TW_CALL get_rotation_type(void * value, void *clientData)
+{
+  RotationType * rt = (RotationType *)(value);
+  *rt = rotation_type;
+}
 
 int main(int argc, char * argv[])
 {
@@ -523,14 +742,13 @@ int main(int argc, char * argv[])
   vector<string> filenames;
   switch(argc)
   {
-    case 2:
+    default:
       // Read and prepare meshes
       for(int a = 1;a<argc;a++)
       {
         filenames.push_back(argv[a]);
       }
       break;
-    default:
     case 1:
       cerr<<"Usage:"<<endl<<
         "    ./example input1.obj input2.obj input3.obj ..."<<endl;
@@ -551,6 +769,10 @@ int main(int argc, char * argv[])
   {
     meshes.push_back(Mesh());
     Mesh & mesh = meshes.back();
+    mesh.a.translate(Vector3d(0,1,0));
+    Vector3d offset = Vector3d::Random()*3;
+    offset(1) = 0;
+    mesh.a.translate(offset);
     // dirname, basename, extension and filename
     string d,b,ext,f;
     pathinfo(filename,d,b,ext,f);
@@ -602,10 +824,13 @@ int main(int argc, char * argv[])
   // Create a tweak bar
   rebar.TwNewBar("bar");
   TwDefine("bar label='Shadow Mapping' size='200 550' text=light alpha='200' color='68 68 68'");
+  rebar.TwAddVarRW("camera_zoom", TW_TYPE_DOUBLE,&s.camera.zoom,"");
   rebar.TwAddVarRW("camera_rotation", TW_TYPE_QUAT4D,s.camera.rotation,"");
   TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType","igl_trackball,two_axis_fixed_up");
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
+  rebar.TwAddVarRW( "is_view_from_light",TW_TYPE_BOOLCPP,&is_view_from_light,
+    "key=l");
   rebar.load(REBAR_NAME);
 
   animation_from_quat = Quaterniond(1,0,0,0);
@@ -624,6 +849,7 @@ int main(int argc, char * argv[])
   glutMouseFunc(mouse);
   glutMotionFunc(mouse_drag);
   glutPassiveMotionFunc((GLUTmousemotionfun)TwEventMouseMotionGLUT);
+
   glutMainLoop();
 
   return 0;

@@ -101,4 +101,5 @@ void igl::jet(const T x, T & r, T & g, T & b)
 #ifndef IGL_NO_HEADER
 template void igl::jet<double>(double, double*);
 template void igl::jet<double>(double, double&, double&, double&);
+template void igl::jet<float>(float, float*);
 #endif
