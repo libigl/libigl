@@ -8,6 +8,8 @@
 #ifndef IGL_TRACKBALL_H
 #define IGL_TRACKBALL_H
 #include "igl_inline.h"
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
 namespace igl
 {
@@ -57,6 +59,17 @@ namespace igl
     const int mouse_x,
     const int mouse_y,
     Q_type * quat);
+  // Eigen wrapper.
+  IGL_INLINE void trackball(
+    const int w,
+    const int h,
+    const double speed_factor,
+    const Eigen::Quaterniond & down_quat,
+    const int down_mouse_x,
+    const int down_mouse_y,
+    const int mouse_x,
+    const int mouse_y,
+    Eigen::Quaterniond & quat);
 }
 
 #ifdef IGL_HEADER_ONLY

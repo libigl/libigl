@@ -32,6 +32,7 @@
 #include <igl/unique_simplices.h>
 #include <igl/C_STR.h>
 #include <igl/write.h>
+#include <igl/snap_to_fixed_up.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -156,16 +157,8 @@ void TW_CALL set_rotation_type(const void * value, void * clientData)
   {
     push_undo();
     copy(s.camera.rotation,s.camera.rotation+4,animation_from_quat.coeffs().data());
-    const Vector3d up = animation_from_quat.matrix() * Vector3d(0,1,0);
-    Vector3d proj_up(0,up(1),up(2));
-    if(proj_up.norm() == 0)
-    {
-      proj_up = Vector3d(0,1,0);
-    }
-    proj_up.normalize();
-    Quaterniond dq;
-    dq = Quaterniond::FromTwoVectors(up,proj_up);
-    animation_to_quat = dq * animation_from_quat;
+    snap_to_fixed_up(animation_from_quat,animation_to_quat);
+
     // start animation
     animation_start_time = get_seconds();
     is_animating = true;
@@ -381,7 +374,7 @@ void display()
   glTranslated(0,floor_offset,0);
   const float GREY[4] = {0.5,0.5,0.6,1.0};
   const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
-  //draw_floor(GREY,DARK_GREY);
+  draw_floor(GREY,DARK_GREY);
   glPopMatrix();
 
   pop_scene();
