@@ -2,9 +2,11 @@
 #include <igl/report_gl_error.h>
 #include <igl/ReAntTweakBar.h>
 #include <igl/trackball.h>
+#include <igl/two_axis_valuator_fixed_up.h>
 #include <igl/PI.h>
 #include <igl/EPS.h>
 #include <igl/get_seconds.h>
+#include <igl/draw_floor.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -23,41 +25,71 @@ class Camera
 {
   public:
     //  m_zoom   Zoom of camera lens {1}
-    //  m_angle  Field of view angle in degrees {15}
+    //  m_angle  Field of view angle in degrees {45}
     //  m_aspect  Aspect ratio {1}
     //  m_near  near clipping plane {1e-2}
     //  m_far  far clipping plane {100}
-    //  m_rotation  Rotation part of rigid transformation of camera {identity}
+    //  m_at_dist  distance of looking at point {1}
+    //  m_rotation  Rotation part of rigid transformation of camera {identity}.
+    //    Note that this seems to the inverse of what's stored in the old
+    //    igl::Camera class.
     //  m_translation  Translation part of rigid transformation of camera
     //    {(0,0,1)}
-    double m_zoom, m_angle, m_aspect, m_near, m_far;
+    double m_zoom, m_angle, m_aspect, m_near, m_far, m_at_dist;
     Eigen::Quaterniond m_rotation;
     Eigen::Vector3d m_translation;
     Camera():
-      m_zoom(1), m_angle(15.0), m_aspect(1), m_near(1e-2), m_far(100),
+      m_zoom(1),m_angle(45.0),m_aspect(1),m_near(1e-2),m_far(100),m_at_dist(1),
       m_rotation(1,0,0,0),
       m_translation(0,0,1)
     {
     }
 
+    // Return projection matrix that takes relative camera coordinates and
+    // transforms it to viewport coordinates
+    Eigen::Matrix4d projection() const
+    {
+      Eigen::Matrix4d P;
+      using namespace std;
+      using namespace igl;
+      // http://stackoverflow.com/a/3738696/148668
+      const double yScale = tan(PI*0.5 - 0.5*m_angle*PI/180.);
+      // http://stackoverflow.com/a/14975139/148668
+      const double xScale = yScale/m_aspect;
+      P<< 
+        xScale, 0, 0, 0,
+        0, yScale, 0, 0,
+        0, 0, -(m_far+m_near)/(m_far-m_near), -1,
+        0, 0, -2.*m_near*m_far/(m_far-m_near), 0;
+      return P.transpose();
+    }
+
+    // Return an Affine transformation that takes a world 3d coordinate and
+    // transforms it into the relative camera coordinates.
+    Eigen::Affine3d affine() const
+    {
+      using namespace Eigen;
+      Affine3d t = Affine3d::Identity();
+      t.rotate(m_rotation);
+      t.translate(m_translation);
+      return t;
+    }
+
+    // Returns world coordinates position of center or "eye" of camera.
     Eigen::Vector3d eye() const
     {
       using namespace Eigen;
-      Affine3d t = Affine3d::Identity();
-      t.rotate(m_rotation);
-      t.translate(m_translation);
-      return t * Vector3d(0,0,0);
+      return affine() * Vector3d(0,0,0);
     }
 
+    // Returns world coordinate position of a point "eye" is looking at.
     Eigen::Vector3d at() const
     {
       using namespace Eigen;
-      Affine3d t = Affine3d::Identity();
-      t.rotate(m_rotation);
-      t.translate(m_translation);
-      return t * Vector3d(0,0,-1);
+      return affine() * (Vector3d(0,0,-1)*m_at_dist);
     }
 
+    // Returns world coordinate unit vector of "up" vector
     Eigen::Vector3d up() const
     {
       using namespace Eigen;
@@ -66,13 +98,79 @@ class Camera
       return t * Vector3d(0,1,0);
     }
 
-    void dolly(const double d)
+    // Move dv in the relative coordinate frame of the camera (move the FPS)
+    //
+    // Inputs:
+    //   dv  (x,y,z) displacement vector
+    //
+    void dolly(const Eigen::Vector3d & dv)
     {
-      using namespace Eigen;
-      Vector3d dv(0,0,d);
-      m_translation += m_rotation.conjugate() * dv;
+      m_translation += dv;
     }
 
+    // "Scale zoom": Move `eye`, but leave `at`
+    //
+    // Input:
+    //   s  amount to scale distance to at
+    void push_away(const double s)
+    {
+      using namespace Eigen;
+#ifndef NDEBUG
+      Vector3d old_at = camera.at();
+#endif
+      const double old_at_dist = m_at_dist;
+      m_at_dist = old_at_dist * s;
+      dolly(Vector3d(0,0,1)*(m_at_dist - old_at_dist));
+      assert((old_at-camera.at()).squaredNorm() < DOUBLE_EPS);
+    }
+
+    // Aka "Hitchcock", "Vertigo", "Spielberg" or "Trombone" zoom:
+    // simultaneously dolly while changing angle so that `at` not only stays
+    // put in relative coordinates but also projected coordinates. That is
+    //
+    // Inputs:
+    //   da  change in angle in degrees
+    void dolly_zoom(const double da)
+    {
+      using namespace std;
+      using namespace Eigen;
+#ifndef NDEBUG
+      Vector3d old_at = camera.at();
+#endif
+      const double old_angle = m_angle;
+      m_angle += da;
+      m_angle = min(89.,max(5.,m_angle));
+      const double s = 
+        (2.*tan(old_angle/2./180.*M_PI)) /
+        (2.*tan(m_angle/2./180.*M_PI)) ;
+      const double old_at_dist = m_at_dist;
+      m_at_dist = old_at_dist * s;
+      dolly(Vector3d(0,0,1)*(m_at_dist - old_at_dist));
+      assert((old_at-camera.at()).squaredNorm() < DOUBLE_EPS);
+    }
+
+    // Return top right corner of unit plane in relative coordinates, that is
+    // (w/2,h/2,1)
+    Eigen::Vector3d unit_plane() const
+    {
+      using namespace igl;
+      // Distance of center pixel to eye
+      const double d = 1.0;
+      const double a = m_aspect;
+      const double theta = m_angle*PI/180.;
+      const double w =
+        2.*sqrt(-d*d/(a*a*pow(tan(0.5*theta),2.)-1.))*a*tan(0.5*theta);
+      const double h = w/a;
+      return Eigen::Vector3d(w*0.5,h*0.5,-d);
+    }
+
+    // Rotate and translate so that camera is situated at "eye" looking at "at"
+    // with "up" pointing up.
+    //
+    // Inputs:
+    //   eye  (x,y,z) coordinates of eye position
+    //   at   (x,y,z) coordinates of at position
+    //   up   (x,y,z) coordinates of up vector
     void look_at(
       const Eigen::Vector3d & eye,
       const Eigen::Vector3d & at,
@@ -83,7 +181,9 @@ class Camera
       using namespace igl;
       // http://www.opengl.org/sdk/docs/man2/xhtml/gluLookAt.xml
       // Normalize vector from at to eye
-      const Vector3d F = (eye-at).normalized();
+      Vector3d F = eye-at;
+      m_at_dist = F.norm();
+      F.normalize();
       // Project up onto plane orthogonal to F and normalize
       const Vector3d proj_up = (up-(up.dot(F))*F).normalized();
       Quaterniond a,b;
@@ -92,7 +192,9 @@ class Camera
       m_rotation = a*b;
       m_translation = m_rotation.conjugate() * eye;
       assert(           (eye-this->eye()).squaredNorm() < DOUBLE_EPS);
-      assert((F-(this->eye()-this->at())).squaredNorm() < DOUBLE_EPS);
+      assert((F-(this->eye()-this->at()).normalized()).squaredNorm() < 
+        DOUBLE_EPS);
+      assert(           (at-this->at()).squaredNorm() < DOUBLE_EPS);
       assert(        (proj_up-this->up()).squaredNorm() < DOUBLE_EPS);
     }
 
@@ -105,6 +207,13 @@ enum RotationType
   NUM_ROTATION_TYPES = 2,
 } rotation_type = ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP;
 
+enum CenterType
+{
+  CENTER_TYPE_ORBIT = 0,
+  CENTER_TYPE_FPS  = 1,
+  NUM_CENTER_TYPES = 2,
+} center_type = CENTER_TYPE_ORBIT;
+
 int width,height;
 #define REBAR_NAME "temp.rbr"
 igl::ReTwBar rebar;
@@ -112,8 +221,16 @@ struct State
 {
   int viewing_camera;
   std::vector<Camera> cameras;
-  State():viewing_camera(0),cameras(2){}
+  std::vector<GLuint> tex_ids;
+  std::vector<GLuint> fbo_ids;
+  std::vector<GLuint> dfbo_ids;
+  State():viewing_camera(0),cameras(4),
+    tex_ids(cameras.size()),
+    fbo_ids(cameras.size()),
+    dfbo_ids(cameras.size())
+    {}
 } s;
+const Eigen::Vector4d back(1,1,1,1);
 std::stack<State> undo_stack;
 bool is_rotating = false;
 Camera down_camera;
@@ -167,11 +284,68 @@ void init_cameras()
     Vector3d(0,0,1),
     Vector3d(0,0,0),
     Vector3d(0,1,0));
-  print(s.cameras[0]);
-  //s.cameras[1].look_at(
-  //  Vector3d(0,0,-1),
-  //  Vector3d(0,0,0),
-  //  Vector3d(0,1,0));
+  s.cameras[1].look_at(
+    Vector3d(0,0,-1),
+    Vector3d(0,0,0),
+    Vector3d(0,1,0));
+  s.cameras[2].look_at(
+    Vector3d(-2,0,0),
+    Vector3d(0,0,0),
+    Vector3d(0,1,0));
+  s.cameras[3].look_at(
+    Vector3d(3,0,0),
+    Vector3d(0,0,0),
+    Vector3d(0,1,0));
+}
+
+bool init_render_to_texture(
+  const int width, 
+  const int height, 
+  GLuint & tex_id, 
+  GLuint & fbo_id, 
+  GLuint & dfbo_id)
+{
+  using namespace igl;
+  using namespace std;
+  // Set up a "render-to-texture" frame buffer and texture combo
+  glDeleteTextures(1,&tex_id);
+  glDeleteFramebuffersEXT(1,&fbo_id);
+  glDeleteFramebuffersEXT(1,&dfbo_id);
+  // http://www.opengl.org/wiki/Framebuffer_Object_Examples#Quick_example.2C_render_to_texture_.282D.29
+  glGenTextures(1, &tex_id);
+  glBindTexture(GL_TEXTURE_2D, tex_id);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  //NULL means reserve texture memory, but texels are undefined
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  //-------------------------
+  glGenFramebuffersEXT(1, &fbo_id);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
+  //Attach 2D texture to this FBO
+  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, tex_id, 0);
+  glGenRenderbuffersEXT(1, &dfbo_id);
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, dfbo_id);
+  glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, width, height);
+  //-------------------------
+  //Attach depth buffer to FBO
+  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, dfbo_id);
+  //-------------------------
+  //Does the GPU support current FBO configuration?
+  GLenum status;
+  status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+  switch(status)
+  {
+    case GL_FRAMEBUFFER_COMPLETE_EXT:
+      break;
+    default:
+      return false;
+  }
+  glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+  return true;
 }
 
 void reshape(int width, int height)
@@ -184,61 +358,130 @@ void reshape(int width, int height)
 }
 
 
-void display()
+void draw_scene(const Camera & v_camera,
+  const bool render_to_texture,
+  const GLuint & v_tex_id, 
+  const GLuint & v_fbo_id, 
+  const GLuint & v_dfbo_id)
 {
   using namespace igl;
   using namespace std;
   using namespace Eigen;
-  glClearColor(1,1,1,0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  // Update aspect ratios (may have changed since undo/redo)
-  const double aspect = (double)width/(double)height;
-  for(auto & camera : s.cameras)
+  if(render_to_texture)
   {
-    camera.m_aspect = aspect;
+    // render to framebuffer
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, v_fbo_id);
+    glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, v_dfbo_id);
+    glClearColor(back(0),back(1),back(2),1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   }
-
-  //camera.m_rotation *= Quaterniond(AngleAxisd(0.01,Vector3d(0,1,0)));
-
-  auto & camera = s.cameras[s.viewing_camera];
-  const double theta = cos(2.0*PI*get_seconds()*0.1)*PI*0.05;
-  const Quaterniond R(AngleAxisd(theta,Vector3d(0,1,0)));
-  //// Orbit
-  //camera.look_at(
-  //    R*Vector3d(0,0,1),
-  //    Vector3d(0,0,0),
-  //    Vector3d(0,1,0));
-  // First person, head rotate
-  //camera.look_at(
-  //    Vector3d(0,0,1),
-  //    Vector3d(0,0,1)-R*Vector3d(0,0,1),
-  //    Vector3d(0,1,0));
 
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
   glLoadIdentity();
-  gluPerspective(camera.m_angle,camera.m_aspect,camera.m_near,camera.m_far);
+  //gluPerspective(v_camera.m_angle,v_camera.m_aspect,v_camera.m_near,v_camera.m_far);
+  glMultMatrixd(v_camera.projection().data());
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
   gluLookAt(
-    camera.eye()(0), camera.eye()(1), camera.eye()(2),
-    camera.at()(0), camera.at()(1), camera.at()(2),
-    camera.up()(0), camera.up()(1), camera.up()(2));
+    v_camera.eye()(0), v_camera.eye()(1), v_camera.eye()(2),
+    v_camera.at()(0), v_camera.at()(1), v_camera.at()(2),
+    v_camera.up()(0), v_camera.up()(1), v_camera.up()(2));
 
   for(int c = 0;c<(int)s.cameras.size();c++)
   {
+    auto & camera = s.cameras[c];
+    if(&v_camera == &camera)
+    {
+      continue;
+    }
     // draw camera
+    glPushMatrix();
+    glMultMatrixd(camera.affine().matrix().data());
+    // eye
+    glColor4f(0,0,0,1);
+    glPointSize(10.f);
+    glBegin(GL_POINTS);
+    glVertex3f(0,0,0);
+    glEnd();
+    // frustrum
+    const Vector3d u = camera.unit_plane();
+    glBegin(GL_LINES);
+    for(int x = -1;x<=1;x+=2)
+    {
+      for(int y = -1;y<=1;y+=2)
+      {
+        glVertex3f(0,0,0);
+        glVertex3f(x*u(0),y*u(1),u(2));
+      }
+    }
+    glEnd();
+    const Vector3d n = u*(camera.m_near-FLOAT_EPS);
+    glBegin(GL_QUADS);
+      glVertex3f( n(0),-n(1),n(2));
+      glVertex3f(-n(0),-n(1),n(2));
+      glVertex3f(-n(0), n(1),n(2));
+      glVertex3f( n(0), n(1),n(2));
+    glEnd();
+    for(int pass = 0;pass<2;pass++)
+    {
+      switch(pass)
+      {
+        case 1:
+          glColor4f(1,1,1,0.5);
+          glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+          //glEnable(GL_BLEND);
+          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+          glEnable(GL_TEXTURE_2D);
+          glBindTexture(GL_TEXTURE_2D,s.tex_ids[c]);
+          break;
+        default:
+        case 0:
+          glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+          glColor4f(0,0,0,1);
+          break;
+      }
+      glBegin(GL_QUADS);
+        glTexCoord2d(1,0);
+        glVertex3f( 0.5*u(0),-0.5*u(1),0.5*u(2));
+        glTexCoord2d(0,0);
+        glVertex3f(-0.5*u(0),-0.5*u(1),0.5*u(2));
+        glTexCoord2d(0,1);
+        glVertex3f(-0.5*u(0), 0.5*u(1),0.5*u(2));
+        glTexCoord2d(1,1);
+        glVertex3f( 0.5*u(0), 0.5*u(1),0.5*u(2));
+      glEnd();
+      switch(pass)
+      {
+        case 1:
+          glBindTexture(GL_TEXTURE_2D, 0);
+          glDisable(GL_TEXTURE_2D);
+          glDisable(GL_BLEND);
+          break;
+        default:
+          break;
+      }
+    }
+
+    glPopMatrix();
   }
 
   glDisable(GL_LIGHTING);
   glEnable(GL_COLOR_MATERIAL);
   glLineWidth(3.f);
-  glColor4f(0,0,0,1);
+  glColor4f(1,0,1,1);
   glutWireCube(0.25);
   glColor4f(1,0.5,0.5,1);
-  glutWireSphere(0.125,20,20);
+  //glutWireSphere(0.125,20,20);
+  {
+    glPushMatrix();
+    glTranslated(0,-1,0);
+    draw_floor();
+    glPopMatrix();
+  }
+  
   // Axes
   for(int d = 0;d<3;d++)
   {
@@ -253,38 +496,94 @@ void display()
   glPopMatrix();
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
-
   report_gl_error();
+
+  if(render_to_texture)
+  {
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+  }
+}
+
+void display()
+{
+  using namespace igl;
+  using namespace std;
+  using namespace Eigen;
+  glClearColor(back(0),back(1),back(2),0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glEnable(GL_DEPTH_TEST);
+
+  // Update aspect ratios (may have changed since undo/redo)
+  {
+    const double aspect = (double)width/(double)height;
+    for(int c = 0;c<(int)s.cameras.size();c++)
+    {
+      auto & camera = s.cameras[c];
+      auto & tex_id = s.tex_ids[c];
+      auto & fbo_id = s.fbo_ids[c];
+      auto & dfbo_id = s.dfbo_ids[c];
+      if(aspect != camera.m_aspect)
+      {
+        cout<<"Initializing camera #"<<c<<"..."<<endl;
+        camera.m_aspect = aspect;
+        bool ret = init_render_to_texture(width,height,tex_id,fbo_id,dfbo_id);
+        assert(ret);
+      }
+      draw_scene(camera,true,tex_id,fbo_id,dfbo_id);
+    }
+  }
+  {
+    auto & camera = s.cameras[s.viewing_camera];
+    draw_scene(camera,false,0,0,0);
+  }
+
+
   TwDraw();
   glutSwapBuffers();
   glutPostRedisplay();
 }
 
+
 void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
 {
   using namespace std;
-  if(wheel == 0)
+  using namespace igl;
+  using namespace Eigen;
+  GLint viewport[4];
+  glGetIntegerv(GL_VIEWPORT,viewport);
+  if(wheel == 0 && TwMouseMotion(mouse_x, viewport[3] - mouse_y))
   {
     static double mouse_scroll_y = 0;
     const double delta_y = 0.125*direction;
     mouse_scroll_y += delta_y;
-    // absolute scale difference when changing zooms (+1)
-    const double z_diff = 0.01;
-    GLint viewport[4];
-    glGetIntegerv(GL_VIEWPORT,viewport);
-    if(TwMouseMotion(mouse_x, viewport[3] - mouse_y))
-    {
-      TwMouseWheel(mouse_scroll_y);
-    }else
-    {
-      auto & camera = s.cameras[s.viewing_camera];
-      camera.dolly(double(direction)*z_diff);
-      //const double min_zoom = 0.01;
-      //const double max_zoom = 10.0;
-      //s.camera.zoom = min(max_zoom,max(min_zoom,s.camera.zoom));
-    }
-  }else
+    TwMouseWheel(mouse_scroll_y);
+  }
+  auto & camera = s.cameras[s.viewing_camera];
+  switch(center_type)
   {
+    case CENTER_TYPE_ORBIT:
+      if(wheel==0)
+      {
+        // factor of zoom change
+        double s = (1.-0.01*direction);
+        //// FOV zoom: just widen angle. This is hardly ever appropriate.
+        //camera.m_angle *= s;
+        //camera.m_angle = min(max(camera.m_angle,1),89);
+        camera.push_away(s);
+        // Rotation should stay around at
+      }else
+      {
+        // Dolly zoom:
+        camera.dolly_zoom((double)direction*1.0);
+      }
+      break;
+    default:
+    case CENTER_TYPE_FPS:
+      // Move `eye` and `at` 
+      Vector3d diff = (wheel==0?Vector3d(0,0,1):Vector3d(-1,0,0))*0.1;
+      camera.dolly(diff*direction);
+      break;
   }
 }
 
@@ -359,68 +658,64 @@ void mouse_drag(int mouse_x, int mouse_y)
   {
     glutSetCursor(GLUT_CURSOR_CYCLE);
     auto & camera = s.cameras[s.viewing_camera];
+    Quaterniond q;
     switch(rotation_type)
     {
       case ROTATION_TYPE_IGL_TRACKBALL:
       {
         // Rotate according to trackball
-        igl::trackball<double>(
+        igl::trackball(
           width,
           height,
           2.0,
-          down_camera.m_rotation.coeffs().data(),
+          down_camera.m_rotation.conjugate(),
           down_x,
           down_y,
           mouse_x,
           mouse_y,
-          camera.m_rotation.coeffs().data());
+          q);
           break;
       }
       case ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
       {
-        Quaterniond down_q = down_camera.m_rotation;
-        Vector3d axis(0,1,0);
-        const double speed = 2.0;
-        Quaterniond q;
-        q = down_q * 
-          Quaterniond(
-            AngleAxisd(
-              M_PI*((double)(mouse_x-down_x))/(double)width*speed/2.0,
-              axis.normalized()));
-        q.normalize();
-        {
-          Vector3d axis(1,0,0);
-          const double speed = 2.0;
-          if(axis.norm() != 0)
-          {
-            q = 
-              Quaterniond(
-                AngleAxisd(
-                  M_PI*(mouse_y-down_y)/(double)width*speed/2.0,
-                  axis.normalized())) * q;
-            q.normalize();
-          }
-        }
-        camera.m_rotation = q;
+        two_axis_valuator_fixed_up(
+          width,
+          height,
+          2.0,
+          down_camera.m_rotation.conjugate(),
+          down_x,
+          down_y,
+          mouse_x,
+          mouse_y,
+          q);
         break;
       }
       default:
         break;
     }
-    const bool orbit = true;
-    if(orbit)
+    camera.m_rotation = q.conjugate();
+    switch(center_type)
     {
-      // at should be fixed
-      // Undo rotation from translation part: translation along view (from
-      // `at`)
-      Vector3d t = down_camera.m_rotation * down_camera.m_translation;
-      // Rotate to match new rotation
-      camera.m_translation = camera.m_rotation * t;
-      //assert((down_camera.at() - camera.at()).squaredNorm() < DOUBLE_EPS);
-    }else
-    {
-      // eye should be fixed
-      // flip rotation?
+      default:
+      case CENTER_TYPE_ORBIT:
+        // at should be fixed
+        //
+        // at_1 = R_1 * t_1 - R_1 * z = at_0
+        // t_1 = R_1' * (at_0 + R_1 * z)
+        camera.m_translation = 
+          camera.m_rotation.conjugate() * 
+            (down_camera.at() + 
+               camera.m_rotation * Vector3d(0,0,1) * camera.m_at_dist);
+        assert((down_camera.at() - camera.at()).squaredNorm() < DOUBLE_EPS);
+        break;
+      case CENTER_TYPE_FPS:
+        // eye should be fixed
+        //
+        // eye_1 = R_1 * t_1 = eye_0
+        // t_1 = R_1' * eye_0
+        camera.m_translation = camera.m_rotation.conjugate() * down_camera.eye();
+        assert((down_camera.eye() - camera.eye()).squaredNorm() < DOUBLE_EPS);
+        break;
     }
   }
 }
@@ -481,6 +776,12 @@ int main(int argc, char * argv[])
   // Create a tweak bar
   rebar.TwNewBar("bar");
   TwDefine("bar label='camera' size='200 550' text=light alpha='200' color='68 68 68'");
+  TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType","igl_trackball,two_axis_fixed_up");
+  rebar.TwAddVarRW("rotation_type", RotationTypeTW,&rotation_type,
+    "keyIncr=] keyDecr=[");
+  TwType CenterTypeTW = ReTwDefineEnumFromString("CenterType","orbit,fps");
+  rebar.TwAddVarRW("center_type", CenterTypeTW,&center_type,
+    "keyIncr={ keyDecr=}");
   rebar.load(REBAR_NAME);
   init_cameras();
 
