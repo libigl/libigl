@@ -20,6 +20,7 @@
 #include <vector>
 #include <stack>
 #include <iostream>
+#include <algorithm>
 
 class Camera
 {
@@ -115,13 +116,55 @@ class Camera
     void push_away(const double s)
     {
       using namespace Eigen;
+      using namespace igl;
 #ifndef NDEBUG
-      Vector3d old_at = camera.at();
+      Vector3d old_at = at();
 #endif
       const double old_at_dist = m_at_dist;
       m_at_dist = old_at_dist * s;
       dolly(Vector3d(0,0,1)*(m_at_dist - old_at_dist));
-      assert((old_at-camera.at()).squaredNorm() < DOUBLE_EPS);
+      assert((old_at-at()).squaredNorm() < DOUBLE_EPS);
+    }
+
+    // Turn around eye so that rotation is now q
+    //
+    // Inputs:
+    //   q  new rotation as quaternion
+    void turn_eye(const Eigen::Quaterniond & q)
+    {
+      using namespace Eigen;
+      using namespace igl;
+      Vector3d old_eye = eye();
+      // eye should be fixed
+      //
+      // eye_1 = R_1 * t_1 = eye_0
+      // t_1 = R_1' * eye_0
+      m_rotation = q;
+      m_translation = m_rotation.conjugate() * old_eye;
+      assert((old_eye - eye()).squaredNorm() < DOUBLE_EPS);
+    }
+
+    // Orbit around at so that rotation is now q
+    //
+    // Inputs:
+    //   q  new rotation as quaternion
+    void orbit(const Eigen::Quaterniond & q)
+    {
+      using namespace Eigen;
+      using namespace igl;
+#ifndef NDEBUG
+      Vector3d old_at = at();
+#endif
+      // at should be fixed
+      //
+      // at_1 = R_1 * t_1 - R_1 * z = at_0
+      // t_1 = R_1' * (at_0 + R_1 * z)
+      m_rotation = q;
+      m_translation = 
+        m_rotation.conjugate() * 
+          (old_at + 
+             m_rotation * Vector3d(0,0,1) * m_at_dist);
+      assert((old_at - at()).squaredNorm() < DOUBLE_EPS);
     }
 
     // Aka "Hitchcock", "Vertigo", "Spielberg" or "Trombone" zoom:
@@ -133,9 +176,10 @@ class Camera
     void dolly_zoom(const double da)
     {
       using namespace std;
+      using namespace igl;
       using namespace Eigen;
 #ifndef NDEBUG
-      Vector3d old_at = camera.at();
+      Vector3d old_at = at();
 #endif
       const double old_angle = m_angle;
       m_angle += da;
@@ -146,7 +190,7 @@ class Camera
       const double old_at_dist = m_at_dist;
       m_at_dist = old_at_dist * s;
       dolly(Vector3d(0,0,1)*(m_at_dist - old_at_dist));
-      assert((old_at-camera.at()).squaredNorm() < DOUBLE_EPS);
+      assert((old_at-at()).squaredNorm() < DOUBLE_EPS);
     }
 
     // Return top right corner of unit plane in relative coordinates, that is
@@ -558,7 +602,9 @@ void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
     const double delta_y = 0.125*direction;
     mouse_scroll_y += delta_y;
     TwMouseWheel(mouse_scroll_y);
+    return;
   }
+
   auto & camera = s.cameras[s.viewing_camera];
   switch(center_type)
   {
@@ -571,7 +617,6 @@ void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
         //camera.m_angle *= s;
         //camera.m_angle = min(max(camera.m_angle,1),89);
         camera.push_away(s);
-        // Rotation should stay around at
       }else
       {
         // Dolly zoom:
@@ -581,8 +626,7 @@ void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
     default:
     case CENTER_TYPE_FPS:
       // Move `eye` and `at` 
-      Vector3d diff = (wheel==0?Vector3d(0,0,1):Vector3d(-1,0,0))*0.1;
-      camera.dolly(diff*direction);
+      camera.dolly((wheel==0?Vector3d(0,0,1):Vector3d(-1,0,0))*0.1*direction);
       break;
   }
 }
@@ -665,56 +709,35 @@ void mouse_drag(int mouse_x, int mouse_y)
       {
         // Rotate according to trackball
         igl::trackball(
-          width,
-          height,
+          width, height,
           2.0,
           down_camera.m_rotation.conjugate(),
-          down_x,
-          down_y,
-          mouse_x,
-          mouse_y,
+          down_x, down_y, mouse_x, mouse_y,
           q);
           break;
       }
       case ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
       {
+        // Rotate according to two axis valuator with fixed up vector 
         two_axis_valuator_fixed_up(
-          width,
-          height,
+          width, height,
           2.0,
           down_camera.m_rotation.conjugate(),
-          down_x,
-          down_y,
-          mouse_x,
-          mouse_y,
+          down_x, down_y, mouse_x, mouse_y,
           q);
         break;
       }
       default:
         break;
     }
-    camera.m_rotation = q.conjugate();
     switch(center_type)
     {
       default:
       case CENTER_TYPE_ORBIT:
-        // at should be fixed
-        //
-        // at_1 = R_1 * t_1 - R_1 * z = at_0
-        // t_1 = R_1' * (at_0 + R_1 * z)
-        camera.m_translation = 
-          camera.m_rotation.conjugate() * 
-            (down_camera.at() + 
-               camera.m_rotation * Vector3d(0,0,1) * camera.m_at_dist);
-        assert((down_camera.at() - camera.at()).squaredNorm() < DOUBLE_EPS);
+        camera.orbit(q.conjugate());
         break;
       case CENTER_TYPE_FPS:
-        // eye should be fixed
-        //
-        // eye_1 = R_1 * t_1 = eye_0
-        // t_1 = R_1' * eye_0
-        camera.m_translation = camera.m_rotation.conjugate() * down_camera.eye();
-        assert((down_camera.eye() - camera.eye()).squaredNorm() < DOUBLE_EPS);
+        camera.turn_eye(q.conjugate());
         break;
     }
   }
@@ -754,6 +777,36 @@ void key(unsigned char key, int mouse_x, int mouse_y)
 }
 
 
+void TW_CALL set_rotation(const void * value, void * clientData)
+{
+  using namespace std;
+  using namespace Eigen;
+  const double * rt  = (const double*)(value);
+  Quaterniond conj;
+  copy(rt,rt+4,conj.coeffs().data());
+  auto & camera = s.cameras[s.viewing_camera];
+  switch(center_type)
+  {
+    default:
+    case CENTER_TYPE_ORBIT:
+      camera.orbit(conj.conjugate());
+      break;
+    case CENTER_TYPE_FPS:
+      camera.turn_eye(conj.conjugate());
+      break;
+  }
+}
+
+void TW_CALL get_rotation(void * value, void *clientData)
+{
+  using namespace std;
+  using namespace Eigen;
+  const auto & camera = s.cameras[s.viewing_camera];
+  double * rt  = (double*)(value);
+  Quaterniond conj = camera.m_rotation.conjugate();
+  copy(conj.coeffs().data(),conj.coeffs().data()+4,rt);
+}
+
 int main(int argc, char * argv[])
 {
   using namespace std;
@@ -780,6 +833,7 @@ int main(int argc, char * argv[])
   rebar.TwAddVarRW("rotation_type", RotationTypeTW,&rotation_type,
     "keyIncr=] keyDecr=[");
   TwType CenterTypeTW = ReTwDefineEnumFromString("CenterType","orbit,fps");
+  rebar.TwAddVarCB("rotation", TW_TYPE_QUAT4D,set_rotation,get_rotation,NULL,"");
   rebar.TwAddVarRW("center_type", CenterTypeTW,&center_type,
     "keyIncr={ keyDecr=}");
   rebar.load(REBAR_NAME);
