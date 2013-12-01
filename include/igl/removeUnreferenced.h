@@ -27,15 +27,23 @@ namespace igl
   // Output:
   // NV, NF: new mesh without unreferenced vertices
   //
-  // Known bugs:
-  //   Also removes combinatorially degenerate faces in NF
-  template <typename T, typename S>
+  template <typename Scalar, typename Index>
   IGL_INLINE void removeUnreferenced(
-    const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
-    const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
-    Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV,
-    Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &NF,
-    Eigen::Matrix<S, Eigen::Dynamic, 1> &I);
+    const Eigen::PlainObjectBase<Scalar> &V,
+    const Eigen::PlainObjectBase<Index> &F,
+    Eigen::PlainObjectBase<Scalar> &NV,
+    Eigen::PlainObjectBase<Index> &NF,
+    Eigen::PlainObjectBase<Index> &I
+
+                                     );
+ 
+// template <typename T, typename S>
+//  IGL_INLINE void removeUnreferenced(
+//    const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
+//    const vector<vector<S> > &F,
+//    Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV,
+//    const vector<vector<S> > &NF,
+//    Eigen::Matrix<S, Eigen::Dynamic, 1> &I);
   
 }
 
