@@ -1,4 +1,7 @@
+#include "Camera.h"
+
 #include <igl/Viewport.h>
+#include <igl/matlab_format.h>
 #include <igl/report_gl_error.h>
 #include <igl/ReAntTweakBar.h>
 #include <igl/trackball.h>
@@ -6,6 +9,10 @@
 #include <igl/PI.h>
 #include <igl/EPS.h>
 #include <igl/get_seconds.h>
+#include <igl/material_colors.h>
+#include <igl/draw_mesh.h>
+#include <igl/readOBJ.h>
+#include <igl/per_face_normals.h>
 #include <igl/draw_floor.h>
 
 #include <Eigen/Core>
@@ -22,227 +29,6 @@
 #include <iostream>
 #include <algorithm>
 
-class Camera
-{
-  public:
-    //  m_zoom   Zoom of camera lens {1}
-    //  m_angle  Field of view angle in degrees {45}
-    //  m_aspect  Aspect ratio {1}
-    //  m_near  near clipping plane {1e-2}
-    //  m_far  far clipping plane {100}
-    //  m_at_dist  distance of looking at point {1}
-    //  m_rotation  Rotation part of rigid transformation of camera {identity}.
-    //    Note that this seems to the inverse of what's stored in the old
-    //    igl::Camera class.
-    //  m_translation  Translation part of rigid transformation of camera
-    //    {(0,0,1)}
-    double m_zoom, m_angle, m_aspect, m_near, m_far, m_at_dist;
-    Eigen::Quaterniond m_rotation;
-    Eigen::Vector3d m_translation;
-    Camera():
-      m_zoom(1),m_angle(45.0),m_aspect(1),m_near(1e-2),m_far(100),m_at_dist(1),
-      m_rotation(1,0,0,0),
-      m_translation(0,0,1)
-    {
-    }
-
-    // Return projection matrix that takes relative camera coordinates and
-    // transforms it to viewport coordinates
-    Eigen::Matrix4d projection() const
-    {
-      Eigen::Matrix4d P;
-      using namespace std;
-      using namespace igl;
-      // http://stackoverflow.com/a/3738696/148668
-      const double yScale = tan(PI*0.5 - 0.5*m_angle*PI/180.);
-      // http://stackoverflow.com/a/14975139/148668
-      const double xScale = yScale/m_aspect;
-      P<< 
-        xScale, 0, 0, 0,
-        0, yScale, 0, 0,
-        0, 0, -(m_far+m_near)/(m_far-m_near), -1,
-        0, 0, -2.*m_near*m_far/(m_far-m_near), 0;
-      return P.transpose();
-    }
-
-    // Return an Affine transformation that takes a world 3d coordinate and
-    // transforms it into the relative camera coordinates.
-    Eigen::Affine3d affine() const
-    {
-      using namespace Eigen;
-      Affine3d t = Affine3d::Identity();
-      t.rotate(m_rotation);
-      t.translate(m_translation);
-      return t;
-    }
-
-    // Returns world coordinates position of center or "eye" of camera.
-    Eigen::Vector3d eye() const
-    {
-      using namespace Eigen;
-      return affine() * Vector3d(0,0,0);
-    }
-
-    // Returns world coordinate position of a point "eye" is looking at.
-    Eigen::Vector3d at() const
-    {
-      using namespace Eigen;
-      return affine() * (Vector3d(0,0,-1)*m_at_dist);
-    }
-
-    // Returns world coordinate unit vector of "up" vector
-    Eigen::Vector3d up() const
-    {
-      using namespace Eigen;
-      Affine3d t = Affine3d::Identity();
-      t.rotate(m_rotation);
-      return t * Vector3d(0,1,0);
-    }
-
-    // Move dv in the relative coordinate frame of the camera (move the FPS)
-    //
-    // Inputs:
-    //   dv  (x,y,z) displacement vector
-    //
-    void dolly(const Eigen::Vector3d & dv)
-    {
-      m_translation += dv;
-    }
-
-    // "Scale zoom": Move `eye`, but leave `at`
-    //
-    // Input:
-    //   s  amount to scale distance to at
-    void push_away(const double s)
-    {
-      using namespace Eigen;
-      using namespace igl;
-#ifndef NDEBUG
-      Vector3d old_at = at();
-#endif
-      const double old_at_dist = m_at_dist;
-      m_at_dist = old_at_dist * s;
-      dolly(Vector3d(0,0,1)*(m_at_dist - old_at_dist));
-      assert((old_at-at()).squaredNorm() < DOUBLE_EPS);
-    }
-
-    // Turn around eye so that rotation is now q
-    //
-    // Inputs:
-    //   q  new rotation as quaternion
-    void turn_eye(const Eigen::Quaterniond & q)
-    {
-      using namespace Eigen;
-      using namespace igl;
-      Vector3d old_eye = eye();
-      // eye should be fixed
-      //
-      // eye_1 = R_1 * t_1 = eye_0
-      // t_1 = R_1' * eye_0
-      m_rotation = q;
-      m_translation = m_rotation.conjugate() * old_eye;
-      assert((old_eye - eye()).squaredNorm() < DOUBLE_EPS);
-    }
-
-    // Orbit around at so that rotation is now q
-    //
-    // Inputs:
-    //   q  new rotation as quaternion
-    void orbit(const Eigen::Quaterniond & q)
-    {
-      using namespace Eigen;
-      using namespace igl;
-#ifndef NDEBUG
-      Vector3d old_at = at();
-#endif
-      // at should be fixed
-      //
-      // at_1 = R_1 * t_1 - R_1 * z = at_0
-      // t_1 = R_1' * (at_0 + R_1 * z)
-      m_rotation = q;
-      m_translation = 
-        m_rotation.conjugate() * 
-          (old_at + 
-             m_rotation * Vector3d(0,0,1) * m_at_dist);
-      assert((old_at - at()).squaredNorm() < DOUBLE_EPS);
-    }
-
-    // Aka "Hitchcock", "Vertigo", "Spielberg" or "Trombone" zoom:
-    // simultaneously dolly while changing angle so that `at` not only stays
-    // put in relative coordinates but also projected coordinates. That is
-    //
-    // Inputs:
-    //   da  change in angle in degrees
-    void dolly_zoom(const double da)
-    {
-      using namespace std;
-      using namespace igl;
-      using namespace Eigen;
-#ifndef NDEBUG
-      Vector3d old_at = at();
-#endif
-      const double old_angle = m_angle;
-      m_angle += da;
-      m_angle = min(89.,max(5.,m_angle));
-      const double s = 
-        (2.*tan(old_angle/2./180.*M_PI)) /
-        (2.*tan(m_angle/2./180.*M_PI)) ;
-      const double old_at_dist = m_at_dist;
-      m_at_dist = old_at_dist * s;
-      dolly(Vector3d(0,0,1)*(m_at_dist - old_at_dist));
-      assert((old_at-at()).squaredNorm() < DOUBLE_EPS);
-    }
-
-    // Return top right corner of unit plane in relative coordinates, that is
-    // (w/2,h/2,1)
-    Eigen::Vector3d unit_plane() const
-    {
-      using namespace igl;
-      // Distance of center pixel to eye
-      const double d = 1.0;
-      const double a = m_aspect;
-      const double theta = m_angle*PI/180.;
-      const double w =
-        2.*sqrt(-d*d/(a*a*pow(tan(0.5*theta),2.)-1.))*a*tan(0.5*theta);
-      const double h = w/a;
-      return Eigen::Vector3d(w*0.5,h*0.5,-d);
-    }
-
-    // Rotate and translate so that camera is situated at "eye" looking at "at"
-    // with "up" pointing up.
-    //
-    // Inputs:
-    //   eye  (x,y,z) coordinates of eye position
-    //   at   (x,y,z) coordinates of at position
-    //   up   (x,y,z) coordinates of up vector
-    void look_at(
-      const Eigen::Vector3d & eye,
-      const Eigen::Vector3d & at,
-      const Eigen::Vector3d & up)
-    {
-      using namespace Eigen;
-      using namespace std;
-      using namespace igl;
-      // http://www.opengl.org/sdk/docs/man2/xhtml/gluLookAt.xml
-      // Normalize vector from at to eye
-      Vector3d F = eye-at;
-      m_at_dist = F.norm();
-      F.normalize();
-      // Project up onto plane orthogonal to F and normalize
-      const Vector3d proj_up = (up-(up.dot(F))*F).normalized();
-      Quaterniond a,b;
-      a.setFromTwoVectors(Vector3d(0,0,-1),-F);
-      b.setFromTwoVectors(a*Vector3d(0,1,0),proj_up);
-      m_rotation = a*b;
-      m_translation = m_rotation.conjugate() * eye;
-      assert(           (eye-this->eye()).squaredNorm() < DOUBLE_EPS);
-      assert((F-(this->eye()-this->at()).normalized()).squaredNorm() < 
-        DOUBLE_EPS);
-      assert(           (at-this->at()).squaredNorm() < DOUBLE_EPS);
-      assert(        (proj_up-this->up()).squaredNorm() < DOUBLE_EPS);
-    }
-
-};
 
 enum RotationType
 {
@@ -280,6 +66,9 @@ bool is_rotating = false;
 Camera down_camera;
 int down_x,down_y;
 std::stack<State> redo_stack;
+Eigen::MatrixXd V,N;
+Eigen::MatrixXi F;
+Eigen::Vector4f light_pos(-0.1,-0.1,0.9,0);
 
 void push_undo()
 {
@@ -402,6 +191,24 @@ void reshape(int width, int height)
 }
 
 
+// Set up double-sided lights
+void lights()
+{
+  using namespace std;
+  using namespace Eigen;
+  glEnable(GL_LIGHTING);
+  glLightModelf(GL_LIGHT_MODEL_TWO_SIDE,GL_TRUE);
+  glEnable(GL_LIGHT0);
+  float WHITE[4] =  {0.8,0.8,0.8,1.};
+  float GREY[4] =  {0.4,0.4,0.4,1.};
+  float BLACK[4] =  {0.,0.,0.,1.};
+  Vector4f pos = light_pos;
+  glLightfv(GL_LIGHT0,GL_AMBIENT,GREY);
+  glLightfv(GL_LIGHT0,GL_DIFFUSE,WHITE);
+  glLightfv(GL_LIGHT0,GL_SPECULAR,BLACK);
+  glLightfv(GL_LIGHT0,GL_POSITION,pos.data());
+}
+
 void draw_scene(const Camera & v_camera,
   const bool render_to_texture,
   const GLuint & v_tex_id, 
@@ -428,11 +235,14 @@ void draw_scene(const Camera & v_camera,
   glMultMatrixd(v_camera.projection().data());
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
+  //glLoadIdentity();
+  //gluLookAt(
+  //  v_camera.eye()(0), v_camera.eye()(1), v_camera.eye()(2),
+  //  v_camera.at()(0), v_camera.at()(1), v_camera.at()(2),
+  //  v_camera.up()(0), v_camera.up()(1), v_camera.up()(2));
   glLoadIdentity();
-  gluLookAt(
-    v_camera.eye()(0), v_camera.eye()(1), v_camera.eye()(2),
-    v_camera.at()(0), v_camera.at()(1), v_camera.at()(2),
-    v_camera.up()(0), v_camera.up()(1), v_camera.up()(2));
+  glMultMatrixd(v_camera.inverse().matrix().data());
+
 
   for(int c = 0;c<(int)s.cameras.size();c++)
   {
@@ -512,13 +322,26 @@ void draw_scene(const Camera & v_camera,
     glPopMatrix();
   }
 
+  // Set material properties
+  lights();
+  glEnable(GL_LIGHTING);
+  glDisable(GL_COLOR_MATERIAL);
+  glMaterialfv(GL_FRONT, GL_AMBIENT,  GOLD_AMBIENT);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE,  GOLD_DIFFUSE  );
+  glMaterialfv(GL_FRONT, GL_SPECULAR, GOLD_SPECULAR);
+  glMaterialf (GL_FRONT, GL_SHININESS, 128);
+  glMaterialfv(GL_BACK, GL_AMBIENT,  SILVER_AMBIENT);
+  glMaterialfv(GL_BACK, GL_DIFFUSE,  FAST_GREEN_DIFFUSE  );
+  glMaterialfv(GL_BACK, GL_SPECULAR, SILVER_SPECULAR);
+  glMaterialf (GL_BACK, GL_SHININESS, 128);
+  draw_mesh(V,F,N);
   glDisable(GL_LIGHTING);
   glEnable(GL_COLOR_MATERIAL);
-  glLineWidth(3.f);
-  glColor4f(1,0,1,1);
-  glutWireCube(0.25);
-  glColor4f(1,0.5,0.5,1);
-  //glutWireSphere(0.125,20,20);
+  //glLineWidth(3.f);
+  //glColor4f(1,0,1,1);
+  //glutWireCube(0.25);
+  //glColor4f(1,0.5,0.5,1);
+  ////glutWireSphere(0.125,20,20);
   {
     glPushMatrix();
     glTranslated(0,-1,0);
@@ -817,6 +640,14 @@ int main(int argc, char * argv[])
   cout<<"[Command+Z]         Undo."<<endl;
   cout<<"[Shift+Command+Z]   Redo."<<endl;
   cout<<"[^C,ESC]            Exit."<<endl;
+
+  if(!readOBJ("../shared/cheburashka.obj",V,F))
+  {
+    cerr<<"Failed to read in mesh..."<<endl;
+    return 1;
+  }
+  V.rowwise() -= V.colwise().minCoeff().eval();
+  per_face_normals(V,F,N);
 
   // Init glut
   glutInit(&argc,argv);
