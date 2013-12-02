@@ -352,7 +352,7 @@ IGL_INLINE std::string igl::ReTwBar::get_value_as_string(
         // Q: Why does casting to double* work? shouldn't I have to cast to
         // double**?
         double * q = static_cast<double*>(var);
-        sstr << q[0] << " " << q[1] << " " << q[2] << " " << q[3];
+        sstr << std::setprecision(15) << q[0] << " " << q[1] << " " << q[2] << " " << q[3];
         break;
       }
     case TW_TYPE_QUAT4F:
@@ -382,7 +382,7 @@ IGL_INLINE std::string igl::ReTwBar::get_value_as_string(
       {
         sstr << "TW_TYPE_DIR3D" << " ";
         double * d = static_cast<double*>(var);
-        sstr << d[0] << " " << d[1] << " " << d[2];
+        sstr << std::setprecision(15) << d[0] << " " << d[1] << " " << d[2];
         break;
       }
     case TW_TYPE_DIR3F:
