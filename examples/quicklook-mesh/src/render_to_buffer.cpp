@@ -21,7 +21,7 @@ extern "C" {
 #include <igl/barycenter.h>
 #include <igl/doublearea.h>
 #include <igl/EPS.h>
-#include <igl/camera.h>
+#include <igl/Camera.h>
 #include <igl/canonical_quaternions.h>
 #include <igl/quat_to_mat.h>
 

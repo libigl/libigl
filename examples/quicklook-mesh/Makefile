@@ -2,8 +2,10 @@
 
 # Seems that we unfortunately must use llvm or else we get issues trying to
 # include the Foundation headers
-CXX=llvm-g++
-C=llvm-gcc
+#CXX=llvm-g++
+#C=llvm-gcc
+CXX=clang
+C=clang
 
 EIGEN=/opt/local/include/eigen3/
 EIGEN3_INC=-I$(EIGEN) -I$(EIGEN)/unsupported
@@ -35,6 +37,8 @@ install:
 #CFLAGS += -Wall -g -O0
 # openmp is unfortunately not supported by llvm
 CFLAGS += -O3 -Wall -DNDEBUG -Winvalid-pch -m64 -msse4.2
+CXXFLAGS += -stdlib=libc++ -std=c++11
+OBJCFLAGS += -O3 -Wall -DNDEBUG -Winvalid-pch -m64 -msse4.2
 
 CPP_FILES=$(wildcard src/*.cpp)
 C_FILES=$(wildcard src/*.c)
@@ -44,7 +48,7 @@ OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o))) \
   $(addprefix obj/,$(notdir $(C_FILES:.c=.o)))
 
 LIB+=$(LIBIGL_LIB) $(GLU_LIB) $(MESA_LIB) $(OBJC_LIB) -framework Foundation \
-  -framework AppKit -framework QuickLook
+  -framework AppKit -framework QuickLook -lc++
 INC+=$(EIGEN3_INC) $(LIBIGL_INC) $(GLU_INC) $(MESA_INC)
 
 .PHONY:
@@ -64,16 +68,16 @@ Mesh.qlgenerator/Contents/Resources/:
 	mkdir -p $@
 
 Mesh.qlgenerator/Contents/MacOS/Mesh: $(OBJ_FILES)
-	${CXX} $(CFLAGS) -bundle -o $@ $(OBJ_FILES) $(LIB)
+	${CXX} $(CFLAGS) $(CXXFLAGS) -bundle -o $@ $(OBJ_FILES) $(LIB)
 
 obj:
 	mkdir -p obj
 
 obj/%.o: src/%.cpp src/%.h
-	${CXX} $(CFLAGS) -o $@ -c $< $(INC) 
+	${CXX} $(CFLAGS) $(CXXFLAGS) -o $@ -c $< $(INC) 
 
 obj/%.o: src/%.m
-	${CXX} $(CFLAGS) -o $@ -c $< $(INC)
+	${CXX} $(OBJCFLAGS) -o $@ -c $< $(INC)
 
 obj/%.o: src/%.c
 	${C} $(CFLAGS) -o $@ -c $< $(INC)
