@@ -24,6 +24,16 @@ Install Mesa3D using macports.
 
 Then re-install GLU à la http://www.alecjacobson.com/weblog/?p=2827
 
+= Testing =
+
+After installing you can test previews with:
+
+    /usr/bin/qlmanage -p ../shared/cheburashka.obj
+
+and thumbnails with:
+
+    /usr/bin/qlmanage -t ../shared/cheburashka.obj
+
 = Note about Mesa =
 
 If things look weird (too far away, blank, etc.) then maybe you should

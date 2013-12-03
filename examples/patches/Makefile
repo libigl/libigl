@@ -8,7 +8,7 @@ all: obj example
 
 .PHONY: example
 
-CFLAGS=-g
+CFLAGS=-g -std=c++11
 
 LIBIGL=../../
 LIBIGL_INC=-I$(LIBIGL)/include

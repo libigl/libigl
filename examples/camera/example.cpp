@@ -1,6 +1,6 @@
-#include "Camera.h"
 
 #include <igl/Viewport.h>
+#include <igl/Camera.h>
 #include <igl/matlab_format.h>
 #include <igl/report_gl_error.h>
 #include <igl/ReAntTweakBar.h>
@@ -49,12 +49,11 @@ int width,height;
 igl::ReTwBar rebar;
 struct State
 {
-  int viewing_camera;
-  std::vector<Camera> cameras;
+  std::vector<igl::Camera> cameras;
   std::vector<GLuint> tex_ids;
   std::vector<GLuint> fbo_ids;
   std::vector<GLuint> dfbo_ids;
-  State():viewing_camera(0),cameras(4),
+  State():cameras(4),
     tex_ids(cameras.size()),
     fbo_ids(cameras.size()),
     dfbo_ids(cameras.size())
@@ -63,7 +62,7 @@ struct State
 const Eigen::Vector4d back(1,1,1,1);
 std::stack<State> undo_stack;
 bool is_rotating = false;
-Camera down_camera;
+igl::Camera down_camera;
 int down_x,down_y;
 std::stack<State> redo_stack;
 Eigen::MatrixXd V,N;
@@ -97,11 +96,11 @@ void redo()
   }
 }
 
-void print(const Camera & camera)
+void print(const igl::Camera & camera)
 {
   using namespace std;
   cout<<
-    "rotation:    "<<camera.m_rotation.coeffs().transpose()<<endl<<
+    "rotation:    "<<camera.m_rotation_conj.conjugate().coeffs().transpose()<<endl<<
     "translation: "<<camera.m_translation.transpose()<<endl<<
     "eye:         "<<camera.eye().transpose()<<endl<<
     "at:          "<<camera.at().transpose()<<endl<<
@@ -209,7 +208,7 @@ void lights()
   glLightfv(GL_LIGHT0,GL_POSITION,pos.data());
 }
 
-void draw_scene(const Camera & v_camera,
+void draw_scene(const igl::Camera & v_camera,
   const bool render_to_texture,
   const GLuint & v_tex_id, 
   const GLuint & v_fbo_id, 
@@ -231,8 +230,32 @@ void draw_scene(const Camera & v_camera,
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
   glLoadIdentity();
-  //gluPerspective(v_camera.m_angle,v_camera.m_aspect,v_camera.m_near,v_camera.m_far);
+  if(v_camera.m_angle > Camera::MIN_ANGLE)
+  {
+    gluPerspective(v_camera.m_angle,v_camera.m_aspect,v_camera.m_near,v_camera.m_far);
+  }else
+  {
+    glOrtho(
+      -0.5*v_camera.m_aspect,
+      0.5*v_camera.m_aspect,
+      -0.5,
+      0.5,
+      v_camera.m_near,
+      v_camera.m_far);
+  }
+  //{
+  //  Matrix4d m;
+  //  glGetDoublev(GL_PROJECTION_MATRIX,m.data());
+  //  cout<<matlab_format(m,"glu")<<endl;
+  //}
+
+  glLoadIdentity();
   glMultMatrixd(v_camera.projection().data());
+  //{
+  //  Matrix4d m;
+  //  glGetDoublev(GL_PROJECTION_MATRIX,m.data());
+  //  cout<<matlab_format(m,"Camera")<<endl;
+  //}
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   //glLoadIdentity();
@@ -401,7 +424,7 @@ void display()
     }
   }
   {
-    auto & camera = s.cameras[s.viewing_camera];
+    auto & camera = s.cameras[0];
     draw_scene(camera,false,0,0,0);
   }
 
@@ -428,7 +451,7 @@ void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
     return;
   }
 
-  auto & camera = s.cameras[s.viewing_camera];
+  auto & camera = s.cameras[0];
   switch(center_type)
   {
     case CENTER_TYPE_ORBIT:
@@ -479,7 +502,7 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
             glutSetCursor(GLUT_CURSOR_CYCLE);
             // collect information for trackball
             is_rotating = true;
-            down_camera = s.cameras[s.viewing_camera];
+            down_camera = s.cameras[0];
             down_x = mouse_x;
             down_y = mouse_y;
           }
@@ -524,7 +547,7 @@ void mouse_drag(int mouse_x, int mouse_y)
   if(is_rotating)
   {
     glutSetCursor(GLUT_CURSOR_CYCLE);
-    auto & camera = s.cameras[s.viewing_camera];
+    auto & camera = s.cameras[0];
     Quaterniond q;
     switch(rotation_type)
     {
@@ -534,7 +557,7 @@ void mouse_drag(int mouse_x, int mouse_y)
         igl::trackball(
           width, height,
           2.0,
-          down_camera.m_rotation.conjugate(),
+          down_camera.m_rotation_conj,
           down_x, down_y, mouse_x, mouse_y,
           q);
           break;
@@ -545,7 +568,7 @@ void mouse_drag(int mouse_x, int mouse_y)
         two_axis_valuator_fixed_up(
           width, height,
           2.0,
-          down_camera.m_rotation.conjugate(),
+          down_camera.m_rotation_conj,
           down_x, down_y, mouse_x, mouse_y,
           q);
         break;
@@ -599,37 +622,6 @@ void key(unsigned char key, int mouse_x, int mouse_y)
   }
 }
 
-
-void TW_CALL set_rotation(const void * value, void * clientData)
-{
-  using namespace std;
-  using namespace Eigen;
-  const double * rt  = (const double*)(value);
-  Quaterniond conj;
-  copy(rt,rt+4,conj.coeffs().data());
-  auto & camera = s.cameras[s.viewing_camera];
-  switch(center_type)
-  {
-    default:
-    case CENTER_TYPE_ORBIT:
-      camera.orbit(conj.conjugate());
-      break;
-    case CENTER_TYPE_FPS:
-      camera.turn_eye(conj.conjugate());
-      break;
-  }
-}
-
-void TW_CALL get_rotation(void * value, void *clientData)
-{
-  using namespace std;
-  using namespace Eigen;
-  const auto & camera = s.cameras[s.viewing_camera];
-  double * rt  = (double*)(value);
-  Quaterniond conj = camera.m_rotation.conjugate();
-  copy(conj.coeffs().data(),conj.coeffs().data()+4,rt);
-}
-
 int main(int argc, char * argv[])
 {
   using namespace std;
@@ -664,9 +656,9 @@ int main(int argc, char * argv[])
   rebar.TwAddVarRW("rotation_type", RotationTypeTW,&rotation_type,
     "keyIncr=] keyDecr=[");
   TwType CenterTypeTW = ReTwDefineEnumFromString("CenterType","orbit,fps");
-  rebar.TwAddVarCB("rotation", TW_TYPE_QUAT4D,set_rotation,get_rotation,NULL,"");
   rebar.TwAddVarRW("center_type", CenterTypeTW,&center_type,
     "keyIncr={ keyDecr=}");
+  rebar.TwAddVarRW("rotation", TW_TYPE_QUAT4D,s.cameras[0].m_rotation_conj.coeffs().data(),"");
   rebar.load(REBAR_NAME);
   init_cameras();
 

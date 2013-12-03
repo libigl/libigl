@@ -1,6 +1,7 @@
+camera_rotation: TW_TYPE_QUAT4D -0.174598206033656 0.778057756210189 0.215373556063922 0.563698346457904
+center_type: CenterType orbit
 wireframe_visible: TW_TYPE_BOOLCPP 0
 fill_visible: TW_TYPE_BOOLCPP 1
-camera_rotation: TW_TYPE_QUAT4D 0.0458853 -0.838173 0.0713855 -0.538762
-rotation_type: RotationType two axis fixed up
-orient_method: OrientMethod ambient occlusion
+rotation_type: RotationType igl_trackball
+orient_method: OrientMethod ambient-occlusion
 

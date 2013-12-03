@@ -1,6 +1,3 @@
-// Small GLUT application to test different scene rotation paradigms 
-//
-
 #include <igl/readOBJ.h>
 #include <igl/writeOBJ.h>
 #include <igl/writeOFF.h>
@@ -24,8 +21,10 @@
 #include <igl/PI.h>
 #include <igl/render_to_tga.h>
 #include <igl/STR.h>
-#define IGL_HEADER_ONLY
+#include <igl/two_axis_valuator_fixed_up.h>
+#include <igl/snap_to_fixed_up.h>
 #include <igl/lens_flare.h>
+#include <igl/get_seconds.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -59,7 +58,7 @@ struct State
 } s;
 
 // See README for descriptions
-enum ROTATION_TYPE
+enum RotationType
 {
   ROTATION_TYPE_IGL_TRACKBALL = 0,
   ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP = 1,
@@ -81,27 +80,41 @@ Eigen::Vector4f light_pos(-0.1,-0.1,0.9,0);
 #define REBAR_NAME "temp.rbr"
 igl::ReTwBar rebar;
 
-void TW_CALL set_camera_rotation(const void * value, void *clientData)
-{
-  using namespace std;
-  // case current value to double
-  const double * quat = (const double *)(value);
-  std::copy(quat,quat+4,s.camera.rotation);
-}
-
-void TW_CALL get_camera_rotation(void * value, void *clientData)
-{
-  using namespace std;
-  // case current value to double
-  double * quat = (double *)(value);
-  std::copy(s.camera.rotation,s.camera.rotation+4,quat);
-}
+bool is_animating = false;
+double animation_start_time = 0;
+double ANIMATION_DURATION = 0.5;
+Eigen::Quaterniond animation_from_quat;
+Eigen::Quaterniond animation_to_quat;
 
 void push_undo()
 {
   undo_stack.push(s);
   // Clear
   redo_stack = std::stack<State>();
+}
+
+void TW_CALL set_rotation_type(const void * value, void * clientData)
+{
+  using namespace Eigen;
+  using namespace std;
+  using namespace igl;
+  const RotationType old_rotation_type = rotation_type;
+  rotation_type = *(const RotationType *)(value);
+  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP && 
+    old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
+  {
+    push_undo();
+    animation_from_quat = s.camera.m_rotation_conj;
+    snap_to_fixed_up(animation_from_quat,animation_to_quat);
+    // start animation
+    animation_start_time = get_seconds();
+    is_animating = true;
+  }
+}
+void TW_CALL get_rotation_type(void * value, void *clientData)
+{
+  RotationType * rt = (RotationType *)(value);
+  *rt = rotation_type;
 }
 
 void reshape(int width, int height)
@@ -111,52 +124,25 @@ void reshape(int width, int height)
   glViewport(0,0,width,height);
   // Send the new window size to AntTweakBar
   TwWindowSize(width, height);
+  s.camera.m_aspect = (double)width/(double)height;
 }
 
 void push_scene()
 {
   using namespace igl;
   using namespace std;
-  const double angle = s.camera.angle;
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
   glLoadIdentity();
-  double zNear = 1e-2;
-  double zFar = 100;
-  double aspect = ((double)width)/((double)height);
-  // Amount of scaling needed to "fix" perspective z-shift
-  double z_fix = 1.0;
-  // 5 is far enough to see unit "things" well
-  const double camera_z = 2;
-  // Test if should be using true orthographic projection
-  if(angle == 0)
-  {
-    glOrtho(
-      -0.5*camera_z*aspect,
-      0.5*camera_z*aspect,
-      -0.5*camera_z,
-      0.5*camera_z,
-      zNear,
-      zFar);
-  }else
-  {
-    // Make sure aspect is sane
-    aspect = aspect < 0.01 ? 0.01 : aspect;
-    gluPerspective(angle,aspect,zNear,zFar);
-    z_fix = 2.*tan(angle/2./360.*2.*M_PI);
-  }
-
+  auto & camera = s.camera;
+  glMultMatrixd(camera.projection().data());
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
-  gluLookAt(0,0,camera_z,0,0,0,0,1,0);
-  // Adjust scale to correct perspective
-  glScaled(z_fix,z_fix,z_fix);
-  // scale, pan
-  glScaled( s.camera.zoom, s.camera.zoom, s.camera.zoom);
-  double mat[4*4];
-  quat_to_mat(s.camera.rotation,mat);
-  glMultMatrixd(mat);
+  gluLookAt(
+    camera.eye()(0), camera.eye()(1), camera.eye()(2),
+    camera.at()(0), camera.at()(1), camera.at()(2),
+    camera.up()(0), camera.up()(1), camera.up()(2));
 }
 
 void push_object()
@@ -236,7 +222,7 @@ void draw_eyes()
     LED_METHOD_COLORED_CIRCLE = 0,
     LED_METHOD_OUTLINED_CIRCLE = 1,
     LED_METHOD_TEXTURE_FLARE = 2
-  } method = LED_METHOD_COLORED_CIRCLE;
+  } method = LED_METHOD_TEXTURE_FLARE;
 
   
   for(int l = 0;l<NUM_LEDS;l++)
@@ -291,9 +277,23 @@ void draw_eyes()
 void display()
 {
   using namespace igl;
+  using namespace Eigen;
   using namespace std;
   glClearColor(0.03,0.03,0.04,0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  if(is_animating)
+  {
+    double t = (get_seconds() - animation_start_time)/ANIMATION_DURATION;
+    if(t > 1)
+    {
+      t = 1;
+      is_animating = false;
+    }
+    Quaterniond q = animation_from_quat.slerp(t,animation_to_quat).normalized();
+    auto & camera = s.camera;
+    camera.orbit(q.conjugate());
+  }
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
@@ -363,37 +363,33 @@ void display()
 void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
 {
   using namespace std;
-  push_undo();
-  if(wheel == 0)
+  using namespace igl;
+  using namespace Eigen;
+  GLint viewport[4];
+  glGetIntegerv(GL_VIEWPORT,viewport);
+  if(wheel == 0 && TwMouseMotion(mouse_x, viewport[3] - mouse_y))
   {
     static double mouse_scroll_y = 0;
     const double delta_y = 0.125*direction;
     mouse_scroll_y += delta_y;
-    // absolute scale difference when changing zooms (+1)
-    const double z_diff = 0.01;
-    GLint viewport[4];
-    glGetIntegerv(GL_VIEWPORT,viewport);
-    if(TwMouseMotion(mouse_x, viewport[3] - mouse_y))
-    {
-      TwMouseWheel(mouse_scroll_y);
-    }else
-    {
-      s.camera.zoom *= (1.0+double(direction)*z_diff);
-      const double min_zoom = 0.01;
-      const double max_zoom = 10.0;
-      s.camera.zoom = min(max_zoom,max(min_zoom,s.camera.zoom));
-    }
+    TwMouseWheel(mouse_scroll_y);
+    return;
+  }
+  push_undo();
+
+  auto & camera = s.camera;
+  if(wheel==0)
+  {
+    // factor of zoom change
+    double s = (1.-0.01*direction);
+    //// FOV zoom: just widen angle. This is hardly ever appropriate.
+    //camera.m_angle *= s;
+    //camera.m_angle = min(max(camera.m_angle,1),89);
+    camera.push_away(s);
   }else
   {
-    if(!is_rotating)
-    {
-      // Change viewing angle (reshape will take care of adjust zoom)
-      const double a_diff = 1.0;
-      s.camera.angle += double(direction)*a_diff;
-      const double min_angle = 15.0;
-      s.camera.angle = 
-        min(90.0,max(min_angle,s.camera.angle));
-    }
+    // Dolly zoom:
+    camera.dolly_zoom((double)direction*1.0);
   }
 }
 
@@ -463,10 +459,13 @@ void mouse_drag(int mouse_x, int mouse_y)
   using namespace igl;
   using namespace std;
   using namespace Eigen;
+  /*bool tw_using =*/ TwMouseMotion(mouse_x,mouse_y);
 
   if(is_rotating)
   {
     glutSetCursor(GLUT_CURSOR_CYCLE);
+    Quaterniond q;
+    auto & camera = s.camera;
     switch(rotation_type)
     {
       case ROTATION_TYPE_IGL_TRACKBALL:
@@ -476,46 +475,29 @@ void mouse_drag(int mouse_x, int mouse_y)
           width,
           height,
           2.0,
-          down_camera.rotation,
+          down_camera.m_rotation_conj.coeffs().data(),
           down_x,
           down_y,
           mouse_x,
           mouse_y,
-          s.camera.rotation);
+          q.coeffs().data());
           break;
       }
       case ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
       {
-        Quaterniond down_q;
-        copy(down_camera.rotation,down_camera.rotation+4,down_q.coeffs().data());
-        Vector3d axis(0,1,0);
-        const double speed = 2.0;
-        Quaterniond q;
-        q = down_q * 
-          Quaterniond(
-            AngleAxisd(
-              M_PI*((double)(mouse_x-down_x))/(double)width*speed/2.0,
-              axis.normalized()));
-        q.normalize();
-        {
-          Vector3d axis(1,0,0);
-          const double speed = 2.0;
-          if(axis.norm() != 0)
-          {
-            q = 
-              Quaterniond(
-                AngleAxisd(
-                  M_PI*(mouse_y-down_y)/(double)width*speed/2.0,
-                  axis.normalized())) * q;
-            q.normalize();
-          }
-        }
-        copy(q.coeffs().data(),q.coeffs().data()+4,s.camera.rotation);
+        // Rotate according to two axis valuator with fixed up vector 
+        two_axis_valuator_fixed_up(
+          width, height,
+          2.0,
+          down_camera.m_rotation_conj,
+          down_x, down_y, mouse_x, mouse_y,
+          q);
         break;
       }
       default:
         break;
     }
+    camera.orbit(q.conjugate());
   }
 }
 
@@ -565,6 +547,8 @@ void redo()
 void key(unsigned char key, int mouse_x, int mouse_y)
 {
   using namespace std;
+  using namespace igl;
+  using namespace Eigen;
   int mod = glutGetModifiers();
   switch(key)
   {
@@ -589,10 +573,9 @@ void key(unsigned char key, int mouse_x, int mouse_y)
       }else
       {
         push_undo();
-        igl::snap_to_canonical_view_quat<double>(
-          s.camera.rotation,
-          1.0,
-          s.camera.rotation);
+        Quaterniond q;
+        snap_to_canonical_view_quat(s.camera.m_rotation_conj,1.0,q);
+        s.camera.orbit(q.conjugate());
         break;
       }
     case ' ':
@@ -692,23 +675,22 @@ int main(int argc, char * argv[])
   }
   // Create a tweak bar
   rebar.TwNewBar("TweakBar");
-  rebar.TwAddVarCB("camera_rotation", TW_TYPE_QUAT4D, set_camera_rotation,get_camera_rotation, NULL, "open");
-  TwEnumVal RotationTypesEV[NUM_ROTATION_TYPES] = 
-  {
-    {ROTATION_TYPE_IGL_TRACKBALL,"igl trackball"},
-    {ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP,"two a... fixed up"},
-  };
-  TwType RotationTypeTW = 
-    ReTwDefineEnum(
-        "RotationType", 
-        RotationTypesEV, 
-        NUM_ROTATION_TYPES);
-  rebar.TwAddVarRW( "rotation_type", RotationTypeTW, &rotation_type,"keyIncr=] keyDecr=[");
+  rebar.TwAddVarRW("camera_rotation", TW_TYPE_QUAT4D, 
+    s.camera.m_rotation_conj.coeffs().data(),"open readonly=true");
+  TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType",
+    "igl_trackball,two-axis-valuator-fixed-up");
+  rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
+    set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
   rebar.TwAddVarRW( "x",TW_TYPE_DOUBLE, &x,"");
   rebar.TwAddVarRW( "y",TW_TYPE_DOUBLE, &y,"");
   rebar.TwAddVarRW( "z",TW_TYPE_DOUBLE, &z,"");
   rebar.TwAddVarRW( "eyes_visible",TW_TYPE_BOOLCPP, &eyes_visible,"key=e");
   rebar.load(REBAR_NAME);
+
+  animation_from_quat = Quaterniond(1,0,0,0);
+  s.camera.m_rotation_conj = animation_from_quat;
+  animation_start_time = get_seconds();
+
 
 
   // Init antweakbar

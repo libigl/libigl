@@ -8,6 +8,7 @@
 #ifndef IGL_SNAP_TO_CANONICAL_VIEW_QUAT_H
 #define IGL_SNAP_TO_CANONICAL_VIEW_QUAT_H
 #include "igl_inline.h"
+#include <Eigen/Geometry>
 // A Quaternion, q, is defined here as an arrays of four scalars (x,y,z,w),
 // such that q = x*i + y*j + z*k + w
 namespace igl
@@ -21,6 +22,10 @@ namespace igl
     const Q_type q[4],
     const Q_type threshold,
     Q_type s[4]);
+  IGL_INLINE bool snap_to_canonical_view_quat(
+    const Eigen::Quaterniond & q,
+    const double threshold,
+    Eigen::Quaterniond & s);
 }
 
 #ifdef IGL_HEADER_ONLY

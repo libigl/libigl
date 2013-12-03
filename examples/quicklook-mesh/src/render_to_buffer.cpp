@@ -24,6 +24,7 @@ extern "C" {
 #include <igl/Camera.h>
 #include <igl/canonical_quaternions.h>
 #include <igl/quat_to_mat.h>
+#include <igl/Viewport.h>
 
 #include <Eigen/Core>
 #include <GL/glu.h>
@@ -39,36 +40,10 @@ static float background_color[4] = {0,0,0,1};
 
 // Small viewports struct for keeping track of size and camera info
 #define NUM_VIEWPORTS 6
-struct Viewport
+class AugViewport : public igl::Viewport
 {
-  int x,y,width,height;
-  igl::Camera camera;
-  Viewport():
-    x(0),y(0),width(0),height(0),camera(){};
-  Viewport(
-    const int x, 
-    const int y, 
-    const int width,
-    const int height, 
-    const igl::Camera & camera):
-    x(x),
-    y(y),
-    width(width),
-    height(height),
-    camera(camera)
-  {
-  };
-  void reshape(
-    const int x, 
-    const int y, 
-    const int width,
-    const int height)
-  {
-    this->x = x;
-    this->y = y;
-    this->width = width;
-    this->height = height;
-  };
+  public:
+    igl::Camera camera;
 } viewports[NUM_VIEWPORTS];
 
 // Red screen for errors
@@ -97,34 +72,42 @@ void init_viewports()
 {
   using namespace igl;
   using namespace std;
-  viewports[0].camera.angle = 10;
-  viewports[1].camera.angle = 10;
-  viewports[2].camera.angle = 10;
-  viewports[3].camera.angle = 10;
-  viewports[4].camera.angle = 10;
-  viewports[5].camera.angle = 10;
+  for(auto & vp : viewports)
+  {
+    vp.camera.push_away(3.);
+    vp.camera.dolly_zoom(10.-vp.camera.m_angle);
+  }
   // Above view
   double XZ_PLANE_QUAT_D_FLIP[4];
   copy(XZ_PLANE_QUAT_D,XZ_PLANE_QUAT_D+4,XZ_PLANE_QUAT_D_FLIP);
   XZ_PLANE_QUAT_D_FLIP[0] *= -1.0;
   // Straight on
-  copy(XY_PLANE_QUAT_D,XY_PLANE_QUAT_D+4,viewports[0].camera.rotation);
+  copy(
+    XY_PLANE_QUAT_D,
+    XY_PLANE_QUAT_D+4,
+    viewports[0].camera.m_rotation_conj.coeffs().data());
   // Left side view
   copy(
     CANONICAL_VIEW_QUAT_D[9],
     CANONICAL_VIEW_QUAT_D[9]+4,
-    viewports[1].camera.rotation);
+    viewports[1].camera.m_rotation_conj.coeffs().data());
   copy(
     CANONICAL_VIEW_QUAT_D[14],
     CANONICAL_VIEW_QUAT_D[14]+4,
-    viewports[2].camera.rotation);
+    viewports[2].camera.m_rotation_conj.coeffs().data());
   // Straight on
   copy(
     CANONICAL_VIEW_QUAT_D[4],
     CANONICAL_VIEW_QUAT_D[4]+4,
-    viewports[3].camera.rotation);
-  copy(XZ_PLANE_QUAT_D,XZ_PLANE_QUAT_D+4,viewports[4].camera.rotation);
-  copy(XZ_PLANE_QUAT_D_FLIP,XZ_PLANE_QUAT_D_FLIP+4,viewports[5].camera.rotation);
+    viewports[3].camera.m_rotation_conj.coeffs().data());
+  copy(
+    XZ_PLANE_QUAT_D,
+    XZ_PLANE_QUAT_D+4,
+    viewports[4].camera.m_rotation_conj.coeffs().data());
+  copy(
+    XZ_PLANE_QUAT_D_FLIP,
+    XZ_PLANE_QUAT_D_FLIP+4,
+    viewports[5].camera.m_rotation_conj.coeffs().data());
 }
 
 // Viewports are arranged to see all sides
@@ -146,6 +129,10 @@ void reshape_viewports()
   viewports[3].reshape(          0, 2./3.*height,1./3.*width,1./3.*height);
   viewports[4].reshape(          0, 1./3.*height,1./3.*width,1./3.*height);
   viewports[5].reshape(          0,            0,1./3.*width,1./3.*height);
+  for(auto & vp : viewports)
+  {
+    vp.camera.m_aspect = (double)vp.width/(double)vp.height;
+  }
 }
 
 void reshape(int width, int height)
@@ -184,34 +171,30 @@ void lights()
 }
 
 // Push scene based on viewport
-void push_scene(const Viewport & vp)
+void push_scene(const AugViewport & vp)
 {
   using namespace igl;
+  using namespace std;
   glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
   glLoadIdentity();
-  const double angle = vp.camera.angle;
-  const double * rot = vp.camera.rotation;
-  gluPerspective(angle,(double)width/(double)height,1e-2,10);
-  const double z_fix = 2.*tan(angle/2./360.*2.*M_PI);
+  auto & camera = vp.camera;
+  glMultMatrixd(camera.projection().data());
   glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
   glLoadIdentity();
   // -1 because buffer y-coordinates are flipped
-  gluLookAt(0,0,2.3,0,0,0,0,-1,0);
-  glPushMatrix();
-  double mat[4*4];
-  quat_to_mat(rot,mat);
-  glMultMatrixd(mat);
-  glScaled(z_fix,z_fix,z_fix);
+  gluLookAt(
+    camera.eye()(0), camera.eye()(1), camera.eye()(2),
+    camera.at()(0), camera.at()(1), camera.at()(2),
+    camera.up()(0), -1*camera.up()(1), camera.up()(2));
 }
-
 // Scale and shift for object so that it fits current view
-void push_object(const Viewport & vp)
+void push_object(const AugViewport & vp)
 {
   using namespace Eigen;
   glPushMatrix();
-  const double * rot = vp.camera.rotation;
-  Quaterniond q(rot[3],rot[0],rot[1],rot[2]);
-  Matrix3d m = q.matrix();
+  Matrix3d m = vp.camera.m_rotation_conj.matrix();
   Vector3d eff_Vmax  = m*Vmax;
   Vector3d eff_Vmin  = m*Vmin;
   Vector3d eff_Vmean = m*Vmean;
@@ -237,6 +220,9 @@ void pop_object()
 
 void pop_scene()
 {
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
 }
 

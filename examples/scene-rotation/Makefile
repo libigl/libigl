@@ -35,6 +35,8 @@ LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB) $(MATLAB_LIB) $(C
 CPP_FILES=$(wildcard ./*.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o))) 
 
+CFLAGS+=-std=c++11
+
 example: obj $(OBJ_FILES)
 	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -o example $(OBJ_FILES) $(LIB)
 
