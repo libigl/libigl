@@ -3,6 +3,7 @@
 #include <Eigen/Geometry>
 #include <Eigen/Core>
 
+#define IGL_CAMERA_MIN_ANGLE 5.0
 namespace igl
 {
 
@@ -14,7 +15,7 @@ namespace igl
   {
     public:
       // On windows you might need: -fno-delayed-template-parsing
-      static constexpr double MIN_ANGLE = 5.;
+      //static constexpr double IGL_CAMERA_MIN_ANGLE = 5.;
       //  m_angle  Field of view angle in degrees {45}
       //  m_aspect  Aspect ratio {1}
       //  m_near  near clipping plane {1e-2}
@@ -29,7 +30,7 @@ namespace igl
       Eigen::Quaterniond m_rotation_conj;
       Eigen::Vector3d m_translation;
     private:
-      // m_at_dist_min_angle  m_at_dist from last time m_angle set to <= MIN_ANGLE
+      // m_at_dist_min_angle  m_at_dist from last time m_angle set to <= IGL_CAMERA_MIN_ANGLE
       double m_at_dist_min_angle;
       double m_angle_min_angle;
     //  // m_last_positive_m_angle
@@ -148,7 +149,7 @@ inline Eigen::Matrix4d igl::Camera::projection() const
   using namespace std;
   using namespace igl;
   // http://stackoverflow.com/a/3738696/148668
-  if(m_angle >= MIN_ANGLE)
+  if(m_angle >= IGL_CAMERA_MIN_ANGLE)
   {
     const double yScale = tan(PI*0.5 - 0.5*m_angle*PI/180.);
     // http://stackoverflow.com/a/14975139/148668
@@ -265,8 +266,8 @@ inline void igl::Camera::dolly_zoom(const double da)
   const double old_angle = m_angle;
   m_angle += da;
   m_angle = min(89.,max(0.,m_angle));
-  const double eff_angle = (MIN_ANGLE > m_angle ? MIN_ANGLE : m_angle);
-  if(old_angle >= MIN_ANGLE)
+  const double eff_angle = (IGL_CAMERA_MIN_ANGLE > m_angle ? IGL_CAMERA_MIN_ANGLE : m_angle);
+  if(old_angle >= IGL_CAMERA_MIN_ANGLE)
   {
     // change in distance
     const double s = 
@@ -275,13 +276,13 @@ inline void igl::Camera::dolly_zoom(const double da)
     const double old_at_dist = m_at_dist;
     m_at_dist = old_at_dist * s;
     dolly(Vector3d(0,0,1)*(m_at_dist - old_at_dist));
-    if(eff_angle == MIN_ANGLE)
+    if(eff_angle == IGL_CAMERA_MIN_ANGLE)
     {
       m_at_dist_min_angle = m_at_dist;
       m_angle_min_angle = eff_angle;
     }
     assert((old_at-at()).squaredNorm() < DOUBLE_EPS);
-  }else if(old_angle < MIN_ANGLE && m_angle >= MIN_ANGLE)
+  }else if(old_angle < IGL_CAMERA_MIN_ANGLE && m_angle >= IGL_CAMERA_MIN_ANGLE)
   {
     // Restore decent length
     const double z_fix = 
