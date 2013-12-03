@@ -186,9 +186,8 @@ IGL_INLINE void igl::orient_outward_ao(
   
   for(int c = 0;c<num_cc;c++)
   {
-    I(c) = C_vote_infinity[c].first == C_vote_infinity[c].second &&
-           C_vote_distance[c].first <  C_vote_distance[c].second ||
-           C_vote_infinity[c].first <  C_vote_infinity[c].second;
+    I(c) = (C_vote_infinity[c].first == C_vote_infinity[c].second && C_vote_distance[c].first <  C_vote_distance[c].second) ||
+            C_vote_infinity[c].first <  C_vote_infinity[c].second;
   }
   // flip according to I
   for(int f = 0;f<m;f++)
