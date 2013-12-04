@@ -1,5 +1,12 @@
 #ifndef IGL_CAMERA_H
 #define IGL_CAMERA_H
+
+// you're idiot, M$!
+#if defined(_WIN32)
+#undef far
+#undef near
+#endif
+
 #include <Eigen/Geometry>
 #include <Eigen/Core>
 

@@ -110,16 +110,15 @@ IGL_INLINE void igl::orient_outward_ao(
     for (int i = 0; i < num_rays_per_component[c]; ++i)
     {
       int f    = CF[ddist(prng)];    // select face with probability proportional to face area
-      float t0 = rdist(prng);        // random barycentric coordinate
-      float t1 = rdist(prng);
-      float t2 = rdist(prng);
-      float t_sum = t0 + t1 + t2;
-      t0 /= t_sum;
-      t1 /= t_sum;
-      t2 /= t_sum;
-      Vector3f p = t0 * V.row(F(f,0)).template cast<float>().eval()       // be careful with the index!!!
-                 + t1 * V.row(F(f,1)).template cast<float>().eval()
-                 + t2 * V.row(F(f,2)).template cast<float>().eval();
+      float s = rdist(prng);            // random barycentric coordinate (reference: Generating Random Points in Triangles [Turk, Graphics Gems I 1990])
+      float t = rdist(prng);
+      float sqrt_t = sqrtf(t);
+      float a = 1 - sqrt_t;
+      float b = (1 - s) * sqrt_t;
+      float c = s * sqrt_t;
+      Vector3f p = a * V.row(F(f,0)).template cast<float>().eval()       // be careful with the index!!!
+                 + b * V.row(F(f,1)).template cast<float>().eval()
+                 + c * V.row(F(f,2)).template cast<float>().eval();
       Vector3f n = N.row(f).cast<float>();
       // random direction in hemisphere around n (avoid too grazing angle)
       Vector3f d;
