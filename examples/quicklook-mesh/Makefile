@@ -2,10 +2,11 @@
 
 # Seems that we unfortunately must use llvm or else we get issues trying to
 # include the Foundation headers
-#CXX=llvm-g++
-#C=llvm-gcc
-CXX=clang
-C=clang
+%CXX=llvm-g++
+%C=llvm-gcc
+CXX=clang++-mp-3.4
+C=clang-mp-3.4
+CXXFLAGS += -stdlib=libc++ -std=c++11
 
 EIGEN=/opt/local/include/eigen3/
 EIGEN3_INC=-I$(EIGEN) -I$(EIGEN)/unsupported
@@ -37,7 +38,6 @@ install:
 #CFLAGS += -Wall -g -O0
 # openmp is unfortunately not supported by llvm
 CFLAGS += -O3 -Wall -DNDEBUG -Winvalid-pch -m64 -msse4.2
-CXXFLAGS += -stdlib=libc++ -std=c++11
 OBJCFLAGS += -O3 -Wall -DNDEBUG -Winvalid-pch -m64 -msse4.2
 
 CPP_FILES=$(wildcard src/*.cpp)

@@ -74,6 +74,8 @@ void init_viewports()
   using namespace std;
   for(auto & vp : viewports)
   {
+    // Reset. I guess Mac is keeping global variables alive...
+    vp.camera = Camera();
     vp.camera.push_away(3.);
     vp.camera.dolly_zoom(10.-vp.camera.m_angle);
   }
