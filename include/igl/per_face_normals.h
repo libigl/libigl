@@ -8,7 +8,6 @@
 #ifndef IGL_PER_FACE_NORMALS_H
 #define IGL_PER_FACE_NORMALS_H
 #include "igl_inline.h"
-#include <utility>
 #include <Eigen/Core>
 namespace igl
 {
