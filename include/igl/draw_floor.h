@@ -36,10 +36,18 @@ namespace igl
   //   glPopMatrix();
   //   glDisable(GL_CULL_FACE);
   //
-  IGL_INLINE void draw_floor(const float * colorA, const float * colorB);
+  IGL_INLINE void draw_floor(
+    const float * colorA, 
+    const float * colorB, 
+    const int GridSizeX=100, 
+    const int GridSizeY=100);
   // Wrapper with default colors
   IGL_INLINE void draw_floor();
-  IGL_INLINE void draw_floor_outline(const float * colorA, const float * colorB);
+  IGL_INLINE void draw_floor_outline(
+    const float * colorA, 
+    const float * colorB, 
+    const int GridSizeX=100, 
+    const int GridSizeY=100);
   // Wrapper with default colors
   IGL_INLINE void draw_floor_outline();
 }

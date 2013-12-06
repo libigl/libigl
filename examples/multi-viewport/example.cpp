@@ -131,6 +131,10 @@ void reshape_viewports()
   viewports[1].reshape(         0,eff_h*height,     eff_v*width,(1.-eff_h)*height);
   viewports[2].reshape(         0,           0,     eff_v*width,eff_h*height);
   viewports[3].reshape(eff_v*width,           0,(1.-eff_v)*width,eff_h*height);
+  for(auto & vp : viewports)
+  {
+    vp.camera.m_aspect = (double)vp.width/(double)vp.height;
+  }
 }
 
 void reshape(int width,int height)

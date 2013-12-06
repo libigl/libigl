@@ -351,8 +351,14 @@ inline void igl::Camera::look_at(
   Quaterniond a,b;
   a.setFromTwoVectors(Vector3d(0,0,-1),-F);
   b.setFromTwoVectors(a*Vector3d(0,1,0),proj_up);
-  m_rotation_conj = (a*b).conjugate();
+  m_rotation_conj = (b*a).conjugate();
   m_translation = m_rotation_conj * eye;
+  //cout<<"m_at_dist: "<<m_at_dist<<endl;
+  //cout<<"proj_up: "<<proj_up.transpose()<<endl;
+  //cout<<"F: "<<F.transpose()<<endl;
+  //cout<<"eye(): "<<this->eye().transpose()<<endl;
+  //cout<<"at(): "<<this->at().transpose()<<endl;
+  //cout<<"eye()-at(): "<<(this->eye()-this->at()).normalized().transpose()<<endl;
   assert(           (eye-this->eye()).squaredNorm() < DOUBLE_EPS);
   assert((F-(this->eye()-this->at()).normalized()).squaredNorm() < 
     DOUBLE_EPS);
