@@ -2,10 +2,12 @@
 
 # Seems that we unfortunately must use llvm or else we get issues trying to
 # include the Foundation headers
-%CXX=llvm-g++
-%C=llvm-gcc
-CXX=clang++-mp-3.4
-C=clang-mp-3.4
+#CXX=llvm-g++
+#C=llvm-gcc
+CXX=clang++
+C=clang
+#CXX=clang++-mp-3.4
+#C=clang-mp-3.4
 CXXFLAGS += -stdlib=libc++ -std=c++11
 
 EIGEN=/opt/local/include/eigen3/
