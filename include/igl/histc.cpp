@@ -8,15 +8,35 @@ IGL_INLINE void igl::histc(
   Eigen::PlainObjectBase<DerivedN > & N,
   Eigen::PlainObjectBase<DerivedB > & B)
 {
-  const int m = X.size();
+  histc(X,E,B);
   const int n = E.size();
+  const int m = X.size();
+  assert(m == B.size());
+  N.resize(n,1);
+  N.setConstant(0);
+#pragma omp parallel for
+  for(int j = 0;j<m;j++)
+  {
+    if(B(j) >= 0)
+    {
+#pragma omp atomic
+      N(B(j))++;
+    }
+  }
+}
+
+template <typename DerivedX, typename DerivedE, typename DerivedB>
+IGL_INLINE void igl::histc(
+  const Eigen::PlainObjectBase<DerivedX > & X,
+  const Eigen::PlainObjectBase<DerivedE > & E,
+  Eigen::PlainObjectBase<DerivedB > & B)
+{
+  const int m = X.size();
   assert( 
     (E.topLeftCorner(E.size()-1) - 
       E.bottomRightCorner(E.size()-1)).maxCoeff() >= 0 && 
     "E should be monotonically increasing");
-  N.resize(n,1);
   B.resize(m,1);
-  N.setConstant(0);
 #pragma omp parallel for
   for(int j = 0;j<m;j++)
   {
@@ -52,10 +72,20 @@ IGL_INLINE void igl::histc(
       k = l;
     }
     B(j) = k;
-    // Not sure if this pragma is needed
-#pragma omp atomic
-    N(k)++;
   }
+}
+
+template <typename DerivedX, typename DerivedE, typename DerivedB>
+IGL_INLINE void igl::histc(
+    const typename DerivedE::Scalar & x,
+    const Eigen::PlainObjectBase<DerivedE > & E,
+    typename DerivedE::Index & b)
+{
+  Eigen::Matrix<typename DerivedE::Scalar,1,1> X;
+  X(0) = x;
+  Eigen::Matrix<typename DerivedE::Index,1,1> B;
+  hist(X,E,B);
+  b = B(0);
 }
 
 #ifndef IGL_HEADER_ONLY

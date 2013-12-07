@@ -25,12 +25,25 @@ namespace igl
   //   B  m-long vector of bin ids so that B(j) = k if E(k) <= X(j) < E(k+1).
   //     B(j) = -1 if X(j) is outside of E.
   //
+  // O(n+m*log(n))
   template <typename DerivedX, typename DerivedE, typename DerivedN, typename DerivedB>
   IGL_INLINE void histc(
     const Eigen::PlainObjectBase<DerivedX > & X,
     const Eigen::PlainObjectBase<DerivedE > & E,
     Eigen::PlainObjectBase<DerivedN > & N,
     Eigen::PlainObjectBase<DerivedB > & B);
+  // Truly O(m*log(n))
+  template <typename DerivedX, typename DerivedE, typename DerivedB>
+  IGL_INLINE void histc(
+    const Eigen::PlainObjectBase<DerivedX > & X,
+    const Eigen::PlainObjectBase<DerivedE > & E,
+    Eigen::PlainObjectBase<DerivedB > & B);
+  // Scalar search wrapper
+  template <typename DerivedE>
+  IGL_INLINE void histc(
+    const typename DerivedE::Scalar & x,
+    const Eigen::PlainObjectBase<DerivedE > & E,
+    typename DerivedE::Index & b);
 }
 
 #ifdef IGL_HEADER_ONLY
