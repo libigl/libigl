@@ -503,13 +503,13 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
         float distance=(me-neigh).norm();
         if (distance<r)
           queue->push_back(neighbor);
-        else if (vv.size()<min)
+        else if ((int)vv.size()<min)
           extra_candidates->push(std::pair<int,double>(neighbor,distance));
         visited[neighbor]=true;
       }
     }
   }
-  while (!extra_candidates->empty() && vv.size()<min)
+  while (!extra_candidates->empty() && (int)vv.size()<min)
   {
     std::pair<int, double> cand=extra_candidates->top();
     extra_candidates->pop();
@@ -676,8 +676,8 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
   std::vector<int> vvtmp;
   Eigen::Vector3d normal;
   
-  double time_spent;
-  double searchtime=0, ref_time=0, fit_time=0, final_time=0;
+  //double time_spent;
+  //double searchtime=0, ref_time=0, fit_time=0, final_time=0;
   
   for (size_t i=0; i<vertices_count; ++i)
   {
