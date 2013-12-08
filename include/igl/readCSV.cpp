@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "read_eigen_from_CSV.h"
+#include "readCSV.h"
 
 #include <sstream>
 #include <string>
@@ -15,7 +15,9 @@
 #include <vector>
 
 template <typename Scalar>
-IGL_INLINE bool igl::read_eigen_from_CSV(const std::string str, Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& M)
+IGL_INLINE bool igl::readCSV(
+  const std::string str, 
+  Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& M)
 {
   using namespace std;
   using namespace igl;
