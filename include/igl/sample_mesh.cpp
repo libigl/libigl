@@ -2,6 +2,8 @@
 #include "doublearea.h"
 #include "cumsum.h"
 #include "histc.h"
+#include "matlab_format.h"
+#include <iostream>
 #include <cassert>
 
 template <typename DerivedV, typename DerivedF, typename DerivedB, typename DerivedFI>
@@ -13,6 +15,7 @@ IGL_INLINE void igl::sample_mesh(
   Eigen::PlainObjectBase<DerivedFI > & FI)
 {
   using namespace Eigen;
+  using namespace std;
   typedef typename DerivedV::Scalar Scalar;
   typedef Matrix<Scalar,Dynamic,1> VectorXs;
   VectorXs A;
@@ -28,8 +31,7 @@ IGL_INLINE void igl::sample_mesh(
   const VectorXs R = (VectorXs::Random(n,1).array() + 1.)/2.;
   assert(R.minCoeff() >= 0);
   assert(R.maxCoeff() <= 1);
-  VectorXi _;
-  histc(R,C,_,FI);
+  histc(R,C,FI);
   const VectorXs S = (VectorXs::Random(n,1).array() + 1.)/2.;
   const VectorXs T = (VectorXs::Random(n,1).array() + 1.)/2.;
   B.resize(n,3);

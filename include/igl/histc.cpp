@@ -1,5 +1,7 @@
 #include "histc.h"
+#include "matlab_format.h"
 #include <cassert>
+#include <iostream>
 
 template <typename DerivedX, typename DerivedE, typename DerivedN, typename DerivedB>
 IGL_INLINE void igl::histc(
@@ -32,9 +34,10 @@ IGL_INLINE void igl::histc(
   Eigen::PlainObjectBase<DerivedB > & B)
 {
   const int m = X.size();
+  using namespace std;
   assert( 
-    (E.topLeftCorner(E.size()-1) - 
-      E.bottomRightCorner(E.size()-1)).maxCoeff() >= 0 && 
+    (E.bottomRightCorner(E.size()-1,1) -
+      E.topLeftCorner(E.size()-1,1)).maxCoeff() >= 0 && 
     "E should be monotonically increasing");
   B.resize(m,1);
 #pragma omp parallel for
