@@ -5,37 +5,28 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "read_eigen_from_CSV.h"
-
-#include <sstream>
-#include <string>
-#include <fstream>
+#include "avg_edge_length.h"
 
 #include <vector>
 
-namespace igl
+template <typename DerivedV, typename DerivedF>
+double igl::avg_edge_length(
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F)
 {
+  double avg = 0;
+  long int count = 0;
 
-  template <typename DerivedV, typename DerivedF>
-  double avg_edge_length(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F)
+  for (unsigned i=0;i<F.rows();++i)
   {
-    double avg = 0;
-    long int count = 0;
-
-    for (unsigned i=0;i<F.rows();++i)
+    for (unsigned j=0;j<3;++j)
     {
-      for (unsigned j=0;j<3;++j)
-      {
-        ++count;
-        avg += (V.row(F(i,j)) - V.row(F(i,(j+1)%3))).norm();
-      }
+      ++count;
+      avg += (V.row(F(i,j)) - V.row(F(i,(j+1)%3))).norm();
     }
-
-    return avg / (double) count;
   }
 
+  return avg / (double) count;
 }
 
 #ifndef IGL_HEADER_ONLY

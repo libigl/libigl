@@ -34,8 +34,8 @@ namespace igl
 
 }
 
-//#ifdef IGL_HEADER_ONLY
+#ifdef IGL_HEADER_ONLY
 #  include "avg_edge_length.cpp"
-//#endif
+#endif
 
 #endif
