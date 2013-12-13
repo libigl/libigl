@@ -15,6 +15,9 @@
 
 namespace igl
 {
+  // At least for Dense matrices this is replaced by `replicate` e.g., dst = src.replicate(n,m);
+  // http://forum.kde.org/viewtopic.php?f=74&t=90876#p173517
+
   // Ideally this is a super overloaded function that behaves just like
   // matlab's repmat
 
