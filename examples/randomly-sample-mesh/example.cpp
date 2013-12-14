@@ -21,14 +21,12 @@
 #include <igl/Camera.h>
 #include <igl/ReAntTweakBar.h>
 #include <igl/get_seconds.h>
-#include <igl/sample_mesh.h>
+#include <igl/random_points_on_mesh.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
 #include <GLUT/glut.h>
-
-#include <Carbon/Carbon.h>
 
 #include <string>
 #include <vector>
@@ -413,17 +411,8 @@ void init_samples()
   const int n = V.rows()*10;
   SparseMatrix<double> B;
   VectorXi FI;
-  sample_mesh(n,V,F,B,FI);
+  random_points_on_mesh(n,V,F,B,FI);
   S = B*V;
-}
-
-
-KeyMap keyStates ;
-bool IS_KEYDOWN( uint16_t vKey )
-{
-  uint8_t index = vKey / 32 ;
-  uint8_t shift = vKey % 32 ;
-  return keyStates[index].bigEndianValue & (1 << shift) ;
 }
 
 void undo()

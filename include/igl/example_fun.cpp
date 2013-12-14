@@ -17,6 +17,7 @@ IGL_INLINE bool igl::example_fun(const Printable & input)
 }
 
 #ifndef IGL_HEADER_ONLY
+// Explicit template specialization
 template bool igl::example_fun<double>(const double& input);
 template bool igl::example_fun<int>(const int& input);
 #endif

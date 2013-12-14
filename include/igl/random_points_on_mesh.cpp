@@ -1,4 +1,4 @@
-#include "sample_mesh.h"
+#include "random_points_on_mesh.h"
 #include "doublearea.h"
 #include "cumsum.h"
 #include "histc.h"
@@ -7,7 +7,7 @@
 #include <cassert>
 
 template <typename DerivedV, typename DerivedF, typename DerivedB, typename DerivedFI>
-IGL_INLINE void igl::sample_mesh(
+IGL_INLINE void igl::random_points_on_mesh(
   const int n,
   const Eigen::PlainObjectBase<DerivedV > & V,
   const Eigen::PlainObjectBase<DerivedF > & F,
@@ -41,7 +41,7 @@ IGL_INLINE void igl::sample_mesh(
 }
 
 template <typename DerivedV, typename DerivedF, typename ScalarB, typename DerivedFI>
-IGL_INLINE void igl::sample_mesh(
+IGL_INLINE void igl::random_points_on_mesh(
   const int n,
   const Eigen::PlainObjectBase<DerivedV > & V,
   const Eigen::PlainObjectBase<DerivedF > & F,
@@ -51,7 +51,7 @@ IGL_INLINE void igl::sample_mesh(
   using namespace Eigen;
   using namespace std;
   Matrix<ScalarB,Dynamic,3> BC;
-  sample_mesh(n,V,F,BC,FI);
+  random_points_on_mesh(n,V,F,BC,FI);
   vector<Triplet<ScalarB> > BIJV;
   BIJV.reserve(n*3);
   for(int s = 0;s<n;s++)
@@ -71,6 +71,6 @@ IGL_INLINE void igl::sample_mesh(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
-template void igl::sample_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::sample_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::random_points_on_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::random_points_on_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif
