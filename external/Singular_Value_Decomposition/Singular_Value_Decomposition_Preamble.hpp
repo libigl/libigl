@@ -40,6 +40,9 @@
 #endif
 
 #ifdef USE_SCALAR_IMPLEMENTATION
+// Alec: Why is this using sse intrinsics if it's supposed to be the scalar
+// implementation?
+#ifdef __SSE__
 #include <mmintrin.h>
 // Changed to inline
 inline float rsqrt(const float f)
@@ -51,6 +54,13 @@ inline float rsqrt(const float f)
     _mm_storeu_ps(buf,v);
     return buf[0];
 }
+#else
+#include <cmath>
+inline float rsqrt(const float f)
+{
+  return 1./sqrtf(f);
+}
+#endif
 #endif
 
 
