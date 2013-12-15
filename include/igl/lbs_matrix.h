@@ -32,7 +32,6 @@ namespace igl
   //       reshape(permute(Astack,[3 1 2]),n*dim*(dim+1),1)
   //     or A = [Lxx;Lyx;Lxy;Lyy;tx;ty], and likewise for other dim
   //     if Astack(:,:,i) is the dim by (dim+1) transformation at handle i
-  //
   IGL_INLINE void lbs_matrix(
     const Eigen::MatrixXd & V, 
     const Eigen::MatrixXd & W,
@@ -68,6 +67,25 @@ namespace igl
     const Eigen::MatrixXd & V, 
     const Eigen::MatrixXd & W,
     const Eigen::MatrixXi & WI,
+    Eigen::MatrixXd & M);
+  // LBS_MATRIX Linear blend skinning can be expressed by V' = M * T where V' is
+  // a #V by dim matrix of deformed vertex positions (one vertex per row), M is a
+  // #V by (dim+1)*#T (composed of weights and rest positions) and T is a
+  // #T*(dim+1) by dim matrix of #T stacked transposed transformation matrices.
+  // See equations (1) and (2) in "Fast Automatic Skinning Transformations"
+  // [Jacobson et al 2012]
+  //
+  // Inputs:
+  //   V  #V by dim list of rest positions
+  //   W  #V+ by #T  list of weights
+  // Outputs:
+  //   M  #V by #T*(dim+1)
+  //
+  // In MATLAB:
+  //   kron(ones(1,size(W,2)),[V ones(size(V,1),1)]).*kron(W,ones(1,size(V,2)+1))
+  IGL_INLINE void lbs_matrix(
+    const Eigen::MatrixXd & V, 
+    const Eigen::MatrixXd & W,
     Eigen::MatrixXd & M);
 }
 #ifdef IGL_HEADER_ONLY
