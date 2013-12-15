@@ -7,7 +7,7 @@ debug: libiglsvd3x3
 include ../../../Makefile.conf
 all: OPTFLAGS += -O3 -DNDEBUG $(OPENMP)
 debug: OPTFLAGS += -g -Wall
-CFLAGS += $(OPTFLAGS)
+CFLAGS += $(OPTFLAGS) -std=c++11
 
 .PHONY: libiglsvd3x3
 libiglsvd3x3: obj ../../../lib/libiglsvd3x3.a
