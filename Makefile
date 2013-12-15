@@ -51,6 +51,10 @@ ifeq ($(IGL_WITH_BOOST),1)
 	EXTRA_DIRS+=include/igl/boost
 	EXTRAS += boost
 endif
+ifeq ($(IGL_WITH_SVD3X3),1)
+	EXTRA_DIRS+=include/igl/svd3x3
+	EXTRAS += svd3x3
+endif
 
 .PHONY: examples
 .PHONY: extras
