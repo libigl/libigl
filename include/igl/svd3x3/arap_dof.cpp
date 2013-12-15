@@ -736,8 +736,7 @@ IGL_INLINE bool igl::arap_dof_update(
       fit_rotations_planar(S,R);
     }else
     {
-#ifdef __SSE__
-      // fit_rotations_SSE will convert to float if necessary
+#ifdef __SSE__ // fit_rotations_SSE will convert to float if necessary
       fit_rotations_SSE(S,R);
 #else
       fit_rotations(S,R);
@@ -808,8 +807,8 @@ IGL_INLINE bool igl::arap_dof_update(
 
       assert(data.fext.rows() == temp_g.rows());
       assert(data.fext.cols() == temp_g.cols());
-      MatrixXd temp2 = data.Mass_tilde * temp_d + temp_g + data.fext;
-      MatrixXS temp2_f = temp2.cast<SSCALAR>();
+      MatrixXd temp2 = data.Mass_tilde * temp_d + temp_g + data.fext.template cast<double>();
+      MatrixXS temp2_f = temp2.template cast<SSCALAR>();
       L_part1_dyn = data.Pi_1 * temp2_f;
       L_part1.array() = L_part1.array() + L_part1_dyn.array();
     }
@@ -881,4 +880,7 @@ IGL_INLINE bool igl::arap_dof_update(
 template bool igl::arap_dof_update<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(ArapDOFData<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, int, double, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
 template bool igl::arap_dof_recomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::SparseMatrix<double, 0, int> const&, ArapDOFData<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>&);
 template bool igl::arap_dof_precomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, ArapDOFData<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>&);
+template bool igl::arap_dof_update<Eigen::Matrix<double, -1, -1, 0, -1, -1>, float>(igl::ArapDOFData<Eigen::Matrix<double, -1, -1, 0, -1, -1>, float> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, int, double, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
+template bool igl::arap_dof_recomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, float>(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::SparseMatrix<double, 0, int> const&, igl::ArapDOFData<Eigen::Matrix<double, -1, -1, 0, -1, -1>, float>&);
+template bool igl::arap_dof_precomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, float>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, igl::ArapDOFData<Eigen::Matrix<double, -1, -1, 0, -1, -1>, float>&);
 #endif
