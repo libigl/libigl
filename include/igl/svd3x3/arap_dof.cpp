@@ -340,11 +340,16 @@ namespace igl
     return mD;
   }
   
-  // converts CSM_M_SSCALAR[0], CSM_M_SSCALAR[1], CSM_M_SSCALAR[2] into one "condensed" matrix CSM while checking we're not 
-  // loosing any information by this process; specifically, returns maximal difference from scaled 3x3 identity blocks,
-  // which should be pretty small number
+  // converts CSM_M_SSCALAR[0], CSM_M_SSCALAR[1], CSM_M_SSCALAR[2] into one
+  // "condensed" matrix CSM while checking we're not loosing any information by
+  // this process; specifically, returns maximal difference from scaled 3x3
+  // identity blocks, which should be pretty small number
   template <typename MatrixXS>
-  static typename MatrixXS::Scalar condense_CSM(const std::vector<MatrixXS> &CSM_M_SSCALAR, int numBones, int dim, MatrixXS &CSM)
+  static typename MatrixXS::Scalar condense_CSM(
+    const std::vector<MatrixXS> &CSM_M_SSCALAR, 
+    int numBones, 
+    int dim, 
+    MatrixXS &CSM)
   {
     const int numRows = CSM_M_SSCALAR[0].rows();
     assert(CSM_M_SSCALAR[0].cols() == dim*(dim+1)*numBones);
