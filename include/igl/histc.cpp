@@ -78,7 +78,7 @@ IGL_INLINE void igl::histc(
   }
 }
 
-template <typename DerivedX, typename DerivedE, typename DerivedB>
+template <typename DerivedE>
 IGL_INLINE void igl::histc(
     const typename DerivedE::Scalar & x,
     const Eigen::PlainObjectBase<DerivedE > & E,
