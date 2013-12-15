@@ -82,7 +82,7 @@ namespace igl
   //     arap_dof_update
   // Returns true on success, false on error
   //
-  // See also: lbs_matrix
+  // See also: lbs_matrix_column
   template <typename LbsMatrixType, typename SSCALAR>
   IGL_INLINE bool arap_dof_precomputation(
     const Eigen::MatrixXd & V, 
@@ -111,7 +111,7 @@ namespace igl
   //     arap_dof_update
   // Returns true on success, false on error
   //
-  // See also: lbs_matrix
+  // See also: lbs_matrix_column
   template <typename LbsMatrixType, typename SSCALAR>
   IGL_INLINE bool arap_dof_recomputation(
     const Eigen::Matrix<int,Eigen::Dynamic,1> & fixed_dim,
