@@ -162,13 +162,13 @@ inline igl::EmbreeIntersector::EmbreeIntersector()
 }
 
 inline igl::EmbreeIntersector::EmbreeIntersector(
-  const EmbreeIntersector & that)
+  const EmbreeIntersector & /*that*/)
 {
   assert(false && "Copying EmbreeIntersector is not allowed");
 }
 
 inline igl::EmbreeIntersector igl::EmbreeIntersector::operator=(
-  const EmbreeIntersector & that)
+  const EmbreeIntersector & /*that*/)
 {
   assert(false && "Assigning an EmbreeIntersector is not allowed");
   return *this;
