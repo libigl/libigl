@@ -35,7 +35,8 @@
 #include <immintrin.h>
 #define ENABLE_AVX_IMPLEMENTATION(X) X
 #else
-#include <xmmintrin.h>
+// Stefan: removed include. Why does it import MMX instructions, shouldn't this be under the #ifdef USE_SSE_IMPLEMENTATION above?
+//#include <xmmintrin.h>
 #define ENABLE_AVX_IMPLEMENTATION(X)
 #endif
 
