@@ -41,7 +41,7 @@ namespace igl
   private:
     // Copying and assignment are not allowed.
     inline EmbreeIntersector(const EmbreeIntersector & that);
-    inline EmbreeIntersector operator=(const EmbreeIntersector &);
+    inline EmbreeIntersector & operator=(const EmbreeIntersector &);
   public:
     virtual inline ~EmbreeIntersector();
       
@@ -163,11 +163,17 @@ inline igl::EmbreeIntersector::EmbreeIntersector()
 
 inline igl::EmbreeIntersector::EmbreeIntersector(
   const EmbreeIntersector & /*that*/)
+  :// To make -Weffc++ happy
+  mesh(NULL),
+  triangles(NULL),
+  vertices(NULL),
+  intersector(NULL),
+  initialized(false)
 {
   assert(false && "Copying EmbreeIntersector is not allowed");
 }
 
-inline igl::EmbreeIntersector igl::EmbreeIntersector::operator=(
+inline igl::EmbreeIntersector & igl::EmbreeIntersector::operator=(
   const EmbreeIntersector & /*that*/)
 {
   assert(false && "Assigning an EmbreeIntersector is not allowed");
