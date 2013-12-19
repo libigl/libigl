@@ -155,7 +155,7 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
       // sort!
       push_scene();
       push_object();
-      sort_triangles_robust(V,F,sorted_F,I);
+      sort_triangles(V,F,sorted_F,I);
       slice(N,I,1,sorted_N);
       init_C(I);
       pop_object();
