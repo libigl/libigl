@@ -16,10 +16,11 @@ namespace igl
   // according to the current orientation: ball has radius 0.75 and axis have
   // length 1.15
   IGL_INLINE void draw_beach_ball();
-  #ifdef IGL_HEADER
-  #  include "draw_beach_ball.cpp"
-  #endif
 }
+
+#ifdef IGL_HEADER_ONLY
+#  include "draw_beach_ball.cpp"
+#endif
 
 #endif
 #endif
