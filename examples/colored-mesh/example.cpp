@@ -10,6 +10,7 @@
 #include <igl/readDMAT.h>
 #include <igl/readOFF.h>
 #include <igl/readMESH.h>
+#include <igl/jet.h>
 #include <igl/readWRL.h>
 #include <igl/trackball.h>
 #include <igl/list_to_matrix.h>
@@ -45,7 +46,8 @@ int down_mouse_x,down_mouse_y;
 // Position of light
 float light_pos[4] = {0.1,0.1,-0.9,0};
 // Vertex positions, normals, colors and centroid
-Eigen::MatrixXd V,N,C,mid;
+Eigen::MatrixXd V,N,C,Z,mid;
+int selected_col = 0;
 // Faces
 Eigen::MatrixXi F;
 // Bounding box diagonal length
@@ -61,7 +63,7 @@ Eigen::Vector4f color(0.4,0.8,0.3,1.0);
 double ao_factor = 1.0;
 bool ao_normalize = false;
 bool ao_on = true;
-double light_intensity = 1.0;
+double light_intensity = 0.0;
 
 void reshape(int width,int height)
 {
@@ -147,41 +149,41 @@ void display()
   using namespace igl;
   using namespace std;
 
-  if(!trackball_on && tot_num_samples < 10000)
-  {
-    if(S.size() == 0)
-    {
-      S.resize(V.rows());
-      S.setZero();
-    }
-    VectorXd Si;
-    const int num_samples = 20;
-    ambient_occlusion(ei,V,N,num_samples,Si);
-    S *= (double)tot_num_samples;
-    S += Si*(double)num_samples;
-    tot_num_samples += num_samples;
-    S /= (double)tot_num_samples;
-  }
+  //if(!trackball_on && tot_num_samples < 10000)
+  //{
+  //  if(S.size() == 0)
+  //  {
+  //    S.resize(V.rows());
+  //    S.setZero();
+  //  }
+  //  VectorXd Si;
+  //  const int num_samples = 20;
+  //  ambient_occlusion(ei,V,N,num_samples,Si);
+  //  S *= (double)tot_num_samples;
+  //  S += Si*(double)num_samples;
+  //  tot_num_samples += num_samples;
+  //  S /= (double)tot_num_samples;
+  //}
 
-  // Convert to 1-intensity
-  C.conservativeResize(S.rows(),3);
-  if(ao_on)
-  {
-    C<<S,S,S;
-    C.array() = (1.0-ao_factor*C.array());
-  }else
-  {
-    C.setConstant(1.0);
-  }
-  if(ao_normalize)
-  {
-    C.col(0) *= ((double)C.rows())/C.col(0).sum();
-    C.col(1) *= ((double)C.rows())/C.col(1).sum();
-    C.col(2) *= ((double)C.rows())/C.col(2).sum();
-  }
-  C.col(0) *= color(0);
-  C.col(1) *= color(1);
-  C.col(2) *= color(2);
+  //// Convert to 1-intensity
+  //C.conservativeResize(S.rows(),3);
+  //if(ao_on)
+  //{
+  //  C<<S,S,S;
+  //  C.array() = (1.0-ao_factor*C.array());
+  //}else
+  //{
+  //  C.setConstant(1.0);
+  //}
+  //if(ao_normalize)
+  //{
+  //  C.col(0) *= ((double)C.rows())/C.col(0).sum();
+  //  C.col(1) *= ((double)C.rows())/C.col(1).sum();
+  //  C.col(2) *= ((double)C.rows())/C.col(2).sum();
+  //}
+  //C.col(0) *= color(0);
+  //C.col(1) *= color(1);
+  //C.col(2) *= color(2);
 
   glClearColor(back[0],back[1],back[2],0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -280,11 +282,35 @@ void mouse_drag(int mouse_x, int mouse_y)
 }
 
 
+
+void initC(
+  const Eigen::MatrixXd & Z,
+  const int selected_col,
+  Eigen::MatrixXd & C)
+{
+  using namespace igl;
+  C.resize(Z.rows(),3);
+  const double min_z = Z.minCoeff();
+  const double max_z = Z.maxCoeff();
+  for(int r = 0;r<Z.rows();r++)
+  {
+    jet((Z(r,selected_col)-min_z)/(max_z-min_z),C(r,0),C(r,1),C(r,2));
+  }
+}
+
 void key(unsigned char key, int mouse_x, int mouse_y)
 {
   using namespace std;
   switch(key)
   {
+    case '.':
+      selected_col = (selected_col+1)%Z.cols();
+      initC(Z,selected_col,C);
+      break;
+    case ',':
+      selected_col = (selected_col+Z.cols()-1)%Z.cols();
+      initC(Z,selected_col,C);
+      break;
     // ESC
     case char(27):
       rebar.save(REBAR_NAME);
@@ -300,7 +326,6 @@ void key(unsigned char key, int mouse_x, int mouse_y)
   
 }
 
-
 int main(int argc, char * argv[])
 {
   using namespace Eigen;
@@ -309,14 +334,16 @@ int main(int argc, char * argv[])
 
   // init mesh
   string filename = "../shared/beast.obj";
-  if(argc < 2)
+  string cfilename = "../shared/beast-z.dmat";
+  if(argc < 3)
   {
-    cerr<<"Usage:"<<endl<<"    ./example input.obj"<<endl;
+    cerr<<"Usage:"<<endl<<"    ./example input.obj color.dmat"<<endl;
     cout<<endl<<"Opening default mesh..."<<endl;
   }else
   {
     // Read and prepare mesh
     filename = argv[1];
+    cfilename = argv[2];
   }
 
   // dirname, basename, extension and filename
@@ -368,11 +395,16 @@ int main(int argc, char * argv[])
     }
     triangulate(vF,F);
   }
+  if(!readDMAT(cfilename,Z))
+  {
+    return 1;
+  }
 
   // Compute normals, centroid, colors, bounding box diagonal
   per_vertex_normals(V,F,N);
   mid = 0.5*(V.colwise().maxCoeff() + V.colwise().minCoeff());
   bbd = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
+  initC(Z,selected_col,C);
 
   // Init embree
   ei.init(V.cast<float>(),F.cast<int>());
