@@ -18,6 +18,9 @@
 
 namespace igl
 {
+  // It would be really great to replicate this for a simple XML-based
+  // workspace.
+  //
   // Class which contains data of a matlab workspace which can be written to a
   // .mat file and loaded from matlab
   // 

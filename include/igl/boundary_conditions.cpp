@@ -56,13 +56,13 @@ IGL_INLINE bool igl::boundary_conditions(
       double sqrd = (vi-pos).array().pow(2).sum();
       if(sqrd <= FLOAT_EPS)
       {
-        cout<<"sum((["<<
-          V(i,0)<<" "<<
-          V(i,1)<<" "<<
-          V(i,2)<<"] - ["<<
-          pos(0)<<" "<<
-          pos(1)<<" "<<
-          pos(2)<<"]).^2) = "<<sqrd<<endl;
+        //cout<<"sum((["<<
+        //  V(i,0)<<" "<<
+        //  V(i,1)<<" "<<
+        //  V(i,2)<<"] - ["<<
+        //  pos(0)<<" "<<
+        //  pos(1)<<" "<<
+        //  pos(2)<<"]).^2) = "<<sqrd<<endl;
         bci.push_back(i);
         bcj.push_back(p);
         bcv.push_back(1.0);

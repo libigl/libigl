@@ -131,6 +131,7 @@ IGL_INLINE bool igl::bbw(
           }
           if(data.verbosity >= 1)
           {
+#pragma omp critical
             cout<<"BBW: Computing weight for handle "<<i+1<<" out of "<<m<<
               "."<<endl;
           }
