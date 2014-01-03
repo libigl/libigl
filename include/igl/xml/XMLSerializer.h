@@ -39,7 +39,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#include <tinyxml2.h>
+#include "tinyxml2.h"
 
 namespace igl
 {

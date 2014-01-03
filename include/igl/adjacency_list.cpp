@@ -160,4 +160,5 @@ IGL_INLINE void igl::adjacency_list(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
+template void igl::adjacency_list<Eigen::Matrix<int, -1, 3, 0, -1, 3>, int>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, bool);
 #endif
