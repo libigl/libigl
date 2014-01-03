@@ -26,8 +26,8 @@ IGL_INLINE bool igl::render_to_png(
   const bool alpha,
   const bool fast)
 {
-  YImage img;
-  img.resize(width,height);
+  YImage *img = new YImage();
+  img->resize(width,height);
   glReadPixels(
     0,
     0,
@@ -35,15 +35,17 @@ IGL_INLINE bool igl::render_to_png(
     height,
     GL_RGBA,
     GL_UNSIGNED_BYTE,
-    img.data());
-  img.flip();
+    img->data());
+  img->flip();
   if(!alpha)
   {
     for(int i = 0;i<width;i++)
     for(int j = 0;j<height;j++)
     {
-      img.at(i,j).a = 255;
+      img->at(i,j).a = 255;
     }
   }
-  return img.save(png_file.c_str(),fast);
+  bool ret = img->save(png_file.c_str(),fast);
+  delete img;
+  return ret;
 }
