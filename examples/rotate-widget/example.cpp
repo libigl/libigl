@@ -270,7 +270,6 @@ void display()
 
   TwDraw();
   glutSwapBuffers();
-  glutPostRedisplay();
 }
 
 void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
@@ -304,6 +303,7 @@ void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
     // Dolly zoom:
     camera.dolly_zoom((double)direction*1.0);
   }
+  glutPostRedisplay();
 }
 
 void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
@@ -374,6 +374,7 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
   }
   pop_object();
   pop_scene();
+  glutPostRedisplay();
 }
 
 void mouse_drag(int mouse_x, int mouse_y)
@@ -426,6 +427,7 @@ void mouse_drag(int mouse_x, int mouse_y)
     }
     camera.orbit(q.conjugate());
   }
+  glutPostRedisplay();
 }
 
 void init_relative()
@@ -504,6 +506,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
       }
   }
   
+  glutPostRedisplay();
 }
 
 int main(int argc, char * argv[])
@@ -610,8 +613,23 @@ int main(int argc, char * argv[])
   glutKeyboardFunc(key);
   glutMouseFunc(mouse);
   glutMotionFunc(mouse_drag);
-  glutPassiveMotionFunc((GLUTmousemotionfun)TwEventMouseMotionGLUT);
+  glutPassiveMotionFunc(
+    [](int x, int y){
+      TwEventMouseMotionGLUT(x,y);
+      glutPostRedisplay();
+    });
+  static std::function<void(int)> timer_dummy;
+  auto timer = [] (int ms) {
+    timer_dummy(ms);
+  };
+  timer_dummy = [&] (int ms) {
+    glutTimerFunc(ms, timer, ms);
+    glutPostRedisplay();
+  };
+  glutTimerFunc(500, timer, 500);
+
   glutMainLoop();
+
 
   return 0;
 }

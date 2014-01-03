@@ -122,10 +122,11 @@ bool RotateWidget::down(const int x, const int y)
     auto on_meridian = [&](
       const Vector3d & hit, 
       const Quaterniond & rot, 
-      const Quaterniond m) -> bool
+      const Quaterniond m,
+      Vector3d & pl_hit) -> bool
     {
       // project onto rotate plane
-      Vector3d pl_hit = hit-pos;
+      pl_hit = hit-pos;
       pl_hit = (m.conjugate()*rot.conjugate()*pl_hit).eval();
       pl_hit(2) = 0;
       pl_hit = (rot*m*pl_hit).eval();
@@ -138,8 +139,11 @@ bool RotateWidget::down(const int x, const int y)
     udrag = udown;
     for(int a = 0;a<3;a++)
     {
-      if(on_meridian(hit,rot,Quaterniond(axis_q[a])))
+      Vector3d pl_hit;
+      if(on_meridian(hit,rot,Quaterniond(axis_q[a]),pl_hit))
       {
+        udown = (pl_hit-pos).normalized()/outer_radius_on_screen;
+        udrag = udown;
         down_type = DownType(DOWN_TYPE_X+a);
         selected_type = down_type;
         {
@@ -151,7 +155,6 @@ bool RotateWidget::down(const int x, const int y)
           // flip y because y coordinate is going to be given backwards in
           // drag()
           down_dir(1) *= -1;
-          cout<<"down_dir: "<<down_dir.transpose()<<endl;
         }
         return true;
       }
