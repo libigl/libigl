@@ -1,5 +1,70 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
+#ifndef IGL_HEADER_ONLY
+#define IGL_HEADER_ONLY
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+#include <vector>
+
+namespace igl
+{
+  // 3D Rotate tool widget 
+  class RotateWidget
+  {
+    public:
+      inline static Eigen::Quaterniond axis_q(const int a);
+      inline static Eigen::Vector3d view_direction(const int x, const int y);
+      inline static Eigen::Vector3d view_direction(const Eigen::Vector3d & pos);
+      Eigen::Vector3d pos;
+      Eigen::Quaterniond rot,down_rot;
+      Eigen::Vector2d down_xy,drag_xy,down_dir;
+      Eigen::Vector3d udown,udrag;
+      double outer_radius_on_screen;
+      double outer_over_inner;
+      enum DownType
+      {
+        DOWN_TYPE_X = 0,
+        DOWN_TYPE_Y = 1,
+        DOWN_TYPE_Z = 2,
+        DOWN_TYPE_OUTLINE = 3,
+        DOWN_TYPE_TRACKBALL = 4,
+        DOWN_TYPE_NONE = 5,
+        NUM_DOWN_TYPES = 6
+      } down_type, selected_type;
+      inline RotateWidget();
+      // Vector from origin to mouse click "Unprojected" onto plane with depth of
+      // origin and scale to so that outer radius is 1
+      // 
+      // Inputs:
+      //   x  mouse x position
+      //   y  mouse y position
+      // Returns vector
+      inline Eigen::Vector3d unproject_onto(const int x, const int y);
+      // Shoot ray from mouse click to sphere
+      //
+      // Inputs:
+      //   x  mouse x position
+      //   y  mouse y position
+      // Outputs:
+      //   hit  position of hit
+      // Returns true only if there was a hit
+      inline bool intersect(const int x, const int y, Eigen::Vector3d & hit);
+      inline double unprojected_inner_radius();
+      inline bool down(const int x, const int y);
+      inline bool drag(const int x, const int y);
+      inline bool up(const int x, const int y);
+      inline bool is_down();
+      inline void draw();
+      inline void draw_guide();
+  };
+}
+
 // Implementation
-#include "RotateWidget.h"
 #include <igl/OpenGL_convenience.h>
 #include <igl/PI.h>
 #include <igl/EPS.h>
@@ -9,13 +74,19 @@
 #include <igl/trackball.h>
 #include <igl/unproject.h>
 #include <iostream>
+#include <cassert>
 
-Eigen::Quaterniond RotateWidget::axis_q[3] = {
-  Eigen::Quaterniond(Eigen::AngleAxisd(igl::PI*0.5,Eigen::Vector3d(0,1,0))),
-  Eigen::Quaterniond(Eigen::AngleAxisd(igl::PI*0.5,Eigen::Vector3d(1,0,0))),
-  Eigen::Quaterniond::Identity()};
+inline Eigen::Quaterniond igl::RotateWidget::axis_q(const int a)
+{
+  assert(a<3 && a>=0);
+  const Eigen::Quaterniond axes[3] = {
+    Eigen::Quaterniond(Eigen::AngleAxisd(igl::PI*0.5,Eigen::Vector3d(0,1,0))),
+    Eigen::Quaterniond(Eigen::AngleAxisd(igl::PI*0.5,Eigen::Vector3d(1,0,0))),
+    Eigen::Quaterniond::Identity()};
+  return axes[a];
+}
 
-Eigen::Vector3d RotateWidget::view_direction(const int x, const int y)
+inline Eigen::Vector3d igl::RotateWidget::view_direction(const int x, const int y)
 {
   using namespace Eigen;
   using namespace igl;
@@ -28,7 +99,7 @@ Eigen::Vector3d RotateWidget::view_direction(const int x, const int y)
   return d-s;
 }
 
-Eigen::Vector3d RotateWidget::view_direction(const Eigen::Vector3d & pos)
+inline Eigen::Vector3d igl::RotateWidget::view_direction(const Eigen::Vector3d & pos)
 {
   using namespace Eigen;
   using namespace igl;
@@ -36,7 +107,7 @@ Eigen::Vector3d RotateWidget::view_direction(const Eigen::Vector3d & pos)
   return view_direction(ppos(0),ppos(1));
 }
 
-RotateWidget::RotateWidget():
+inline igl::RotateWidget::RotateWidget():
   pos(0,0,0),
   rot(Eigen::Quaterniond::Identity()),
   down_rot(rot),
@@ -48,7 +119,7 @@ RotateWidget::RotateWidget():
 {
 }
 
-bool RotateWidget::intersect(const int x, const int y, Eigen::Vector3d & hit)
+inline bool igl::RotateWidget::intersect(const int x, const int y, Eigen::Vector3d & hit)
 {
   using namespace Eigen;
   using namespace igl;
@@ -66,7 +137,7 @@ bool RotateWidget::intersect(const int x, const int y, Eigen::Vector3d & hit)
   return true;
 }
 
-double RotateWidget::unprojected_inner_radius()
+inline double igl::RotateWidget::unprojected_inner_radius()
 {
   using namespace Eigen;
   using namespace igl;
@@ -78,7 +149,7 @@ double RotateWidget::unprojected_inner_radius()
   return (pos-pos_off).norm();
 }
 
-Eigen::Vector3d RotateWidget::unproject_onto(const int x, const int y)
+inline Eigen::Vector3d igl::RotateWidget::unproject_onto(const int x, const int y)
 {
   using namespace Eigen;
   using namespace igl;
@@ -90,7 +161,7 @@ Eigen::Vector3d RotateWidget::unproject_onto(const int x, const int y)
   return uxy;
 }
 
-bool RotateWidget::down(const int x, const int y)
+inline bool igl::RotateWidget::down(const int x, const int y)
 {
   using namespace Eigen;
   using namespace igl;
@@ -140,16 +211,16 @@ bool RotateWidget::down(const int x, const int y)
     for(int a = 0;a<3;a++)
     {
       Vector3d pl_hit;
-      if(on_meridian(hit,rot,Quaterniond(axis_q[a]),pl_hit))
+      if(on_meridian(hit,rot,Quaterniond(axis_q(a)),pl_hit))
       {
         udown = (pl_hit-pos).normalized()/outer_radius_on_screen;
         udrag = udown;
         down_type = DownType(DOWN_TYPE_X+a);
         selected_type = down_type;
         {
-          Vector3d dir3 = axis_q[a].conjugate()*down_rot.conjugate()*(hit-pos);
+          Vector3d dir3 = axis_q(a).conjugate()*down_rot.conjugate()*(hit-pos);
           dir3 = AngleAxisd(-PI*0.5,Vector3d(0,0,1))*dir3;
-          dir3 = (rot*axis_q[a]*dir3).eval();
+          dir3 = (rot*axis_q(a)*dir3).eval();
           down_dir = (project((hit+dir3).eval())-project(hit)).head(2);
           down_dir.normalize();
           // flip y because y coordinate is going to be given backwards in
@@ -169,7 +240,7 @@ bool RotateWidget::down(const int x, const int y)
   }
 }
 
-bool RotateWidget::drag(const int x, const int y)
+inline bool igl::RotateWidget::drag(const int x, const int y)
 {
   using namespace igl;
   using namespace std;
@@ -181,30 +252,7 @@ bool RotateWidget::drag(const int x, const int y)
       return false;
     default:
     {
-      const Quaterniond & q = axis_q[down_type-DOWN_TYPE_X];
-      //auto ray_plane_intersect = [&](
-      //  const Vector3d & o,
-      //  const Vector3d & d,
-      //  const Quaterniond & rot, 
-      //  const Quaterniond m) -> Vector3d
-      //{
-      //  const Vector3d eff_o = m.conjugate()*rot.conjugate()*o;
-      //  const Vector3d eff_d = m.conjugate()*rot.conjugate()*d;
-      //  const double t = eff_o(2)/eff_d(2);
-      //  Vector3d p = eff_o+t*eff_d;
-      //  p = (rot*m*p).eval();
-      //  return p;
-      //};
-      //Vector3d view = view_direction(x,y);
-      //Vector4i vp;
-      //glGetIntegerv(GL_VIEWPORT,vp.data());
-      //const Vector3d ppos = project(pos);
-      //Vector3d uxy = unproject(Vector3d(x,vp(3)-y,ppos(2)));
-      //udrag = ray_plane_intersect(uxy-pos,view,rot,q);
-      //debug_points.clear();
-      //debug_points.push_back(udrag+pos);
-      // project onto rotate plane
-
+      const Quaterniond & q = axis_q(down_type-DOWN_TYPE_X);
       const double dtheta = -(drag_xy - down_xy).dot(down_dir)/
         outer_radius_on_screen/outer_over_inner*PI/2.;
       Quaterniond dq(AngleAxisd(dtheta,down_rot*q*Vector3d(0,0,1)));
@@ -228,8 +276,8 @@ bool RotateWidget::drag(const int x, const int y)
     case DOWN_TYPE_TRACKBALL:
       {
         Vector3d ppos = project(pos);
-        const int w = outer_radius_on_screen/outer_over_inner;//vp(2);
-        const int h = w;//vp(3);
+        const int w = outer_radius_on_screen/outer_over_inner;
+        const int h = w;
         Quaterniond dq;
         trackball(
           w,h,
@@ -258,18 +306,18 @@ bool RotateWidget::drag(const int x, const int y)
   }
 }
 
-bool RotateWidget::up(const int x, const int y)
+inline bool igl::RotateWidget::up(const int x, const int y)
 {
   down_type = DOWN_TYPE_NONE;
   return false;
 }
 
-bool RotateWidget::is_down()
+inline bool igl::RotateWidget::is_down()
 {
   return down_type != DOWN_TYPE_NONE;
 }
 
-void RotateWidget::draw()
+inline void igl::RotateWidget::draw()
 {
   using namespace Eigen;
   using namespace std;
@@ -309,15 +357,6 @@ void RotateWidget::draw()
     glEnd();
   };
 
-
-  glPointSize(5.);
-  glColor4dv(MAYA_PURPLE.data());
-  glBegin(GL_POINTS);
-  for(auto & p : debug_points)
-  {
-    glVertex3dv(p.data());
-  }
-  glEnd();
 
   glPushMatrix();
   glTranslated(pos(0),pos(1),pos(2));
@@ -380,7 +419,7 @@ void RotateWidget::draw()
   glEnable(GL_DEPTH_TEST);
 };
 
-void RotateWidget::draw_guide()
+inline void igl::RotateWidget::draw_guide()
 {
   using namespace Eigen;
   using namespace std;
@@ -448,3 +487,4 @@ void RotateWidget::draw_guide()
   glPopMatrix();
 }
 
+#endif
