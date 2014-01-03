@@ -52,6 +52,10 @@ namespace igl
     Eigen::MatrixXi & BE,
     Eigen::MatrixXi & CE,
     Eigen::MatrixXi & PE);
+  IGL_INLINE bool readTGF(
+    const std::string tgf_filename,
+    Eigen::MatrixXd & C,
+    Eigen::MatrixXi & E);
   #endif
 }
 
