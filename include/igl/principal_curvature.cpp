@@ -370,12 +370,10 @@ IGL_INLINE void CurvatureCalculator::finalEigenStuff (int i, std::vector<Eigen::
   double d = q.d();
   double e = q.e();
   
-
-  if (fabs(a) < 10e-8 || fabs(b) < 10e-8)
-  {
-    std::cout << "Degenerate quadric: " << i << std::endl;
-  }
-
+//  if (fabs(a) < 10e-8 || fabs(b) < 10e-8)
+//  {
+//    std::cout << "Degenerate quadric: " << i << std::endl;
+//  }
 
   double E = 1.0 + d*d;
   double F = d*e;
