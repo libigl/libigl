@@ -1,4 +1,4 @@
-#include "RotateWidget.h"
+#include <igl/RotateWidget.h>
 #include <igl/two_axis_valuator_fixed_up.h>
 #include <igl/readOBJ.h>
 #include <igl/readTGF.h>
@@ -43,7 +43,7 @@ Eigen::VectorXi P;
 struct State
 {
   igl::Camera camera;
-  RotateWidget widget;
+  igl::RotateWidget widget;
 } s;
 
 bool wireframe = false;
