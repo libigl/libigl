@@ -188,4 +188,14 @@ IGL_INLINE bool igl::readTGF(
 
   return true;
 }
+
+IGL_INLINE bool igl::readTGF(
+  const std::string tgf_filename,
+  Eigen::MatrixXd & C,
+  Eigen::MatrixXi & E)
+{
+  Eigen::VectorXi P;
+  Eigen::MatrixXi BE,CE,PE;
+  return readTGF(tgf_filename,C,E,P,BE,CE,PE);
+}
 #endif

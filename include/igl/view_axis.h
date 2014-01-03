@@ -8,6 +8,7 @@
 #ifndef IGL_VIEW_AXIS_H
 #define IGL_VIEW_AXIS_H 
 #include "igl_inline.h"
+#include <Eigen/Core>
 
 namespace igl
 {
@@ -24,6 +25,8 @@ namespace igl
   // Note: View axis is returned *UN-normalized*
   IGL_INLINE void view_axis(double * x, double * y, double * z);
   IGL_INLINE void view_axis(const double * mv, double * x, double * y, double * z);
+  template <typename DerivedV>
+  IGL_INLINE void view_axis(Eigen::PlainObjectBase<DerivedV> & V);
 };
 
 

@@ -23,4 +23,20 @@ IGL_INLINE void igl::view_axis(const double * mv, double * x, double * y, double
   *y = -mv[1*4+2];
   *z = -mv[2*4+2];
 }
+
+template <typename DerivedV>
+IGL_INLINE void igl::view_axis(Eigen::PlainObjectBase<DerivedV> & V)
+{
+  double x,y,z;
+  view_axis(&x,&y,&z);
+  V(0) = x;
+  V(1) = y;
+  V(2) = z;
+}
+
+#ifndef IGL_HEADER_ONLY
+// Explicit template instanciation
+template void igl::view_axis<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
+#endif
+
 #endif

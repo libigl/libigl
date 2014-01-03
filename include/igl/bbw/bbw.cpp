@@ -12,7 +12,6 @@
 #include <igl/invert_diag.h>
 #include <igl/speye.h>
 #include <igl/slice_into.h>
-#include <igl/normalize_row_sums.h>
 #include <igl/min_quad_with_fixed.h>
 
 #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET

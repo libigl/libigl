@@ -101,3 +101,7 @@ bool igl::mesh_with_skeleton(
   return igl::mesh_with_skeleton(
     V,F,C,P,BE,CE,samples_per_bone,DEFAULT_TETGEN_FLAGS,VV,TT,FF);
 }
+
+#ifndef IGL_HEADER_ONLY
+// Explicit template instanciation
+#endif
