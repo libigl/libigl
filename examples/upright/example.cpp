@@ -222,7 +222,6 @@ void display()
   pop_scene();
 
   glutSwapBuffers();
-  glutPostRedisplay();
 }
 
 void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
@@ -247,6 +246,7 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
       down_y = mouse_y;
     break;
   }
+  glutPostRedisplay();
 }
 
 void mouse_drag(int mouse_x, int mouse_y)
@@ -268,6 +268,7 @@ void mouse_drag(int mouse_x, int mouse_y)
       mouse_y,
       s.rot.coeffs().data());
   }
+  glutPostRedisplay();
 }
 
 // Bake rotation and scale into V
@@ -429,6 +430,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
       cout<<"Unknown key command: '"<<key<<"' ("<<int(key)<<")"<<endl;
   }
   
+  glutPostRedisplay();
 }
 
 int main(int argc, char * argv[])
