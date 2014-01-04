@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_MATERIAL_COLORS_H
 #define IGL_MATERIAL_COLORS_H
+#include <Eigen/Core>
 // Define constant material colors for use with opengl glMaterialfv
 // Most of these colors come from IGL publications
 namespace igl

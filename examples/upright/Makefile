@@ -21,6 +21,8 @@ ANTTWEAKBAR_LIB=-L$(LIBIGL)/external/AntTweakBar/lib -lAntTweakBar -framework Ap
 INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC)
 LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB) $(CARBON_LIB)
 
+CFLAGS+=-g
+
 upright: upright.o
 	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -o upright upright.o $(LIB)
 

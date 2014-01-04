@@ -675,7 +675,7 @@ int main(int argc, char * argv[])
   rebar.TwAddVarRW("skeleton_on_top", TW_TYPE_BOOLCPP,&skeleton_on_top,"key=O");
   rebar.TwAddVarRW("wireframe", TW_TYPE_BOOLCPP,&wireframe,"key=l");
   TwType SkelStyleTypeTW = ReTwDefineEnumFromString("SkelStyleType",
-    "3d,vector graphics");
+    "3d,vector-graphics");
   rebar.TwAddVarRW("style",SkelStyleTypeTW,&skel_style,"key=s");
   rebar.load(REBAR_NAME);
 

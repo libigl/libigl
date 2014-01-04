@@ -125,12 +125,13 @@ namespace
 }
 
 IGL_INLINE igl::ReTwBar::ReTwBar():
- bar(NULL),rw_items(),cb_items()
+ bar(NULL),name(),rw_items(),cb_items()
 {
 }
 
 IGL_INLINE igl::ReTwBar::ReTwBar(const igl::ReTwBar & that):
   bar(that.bar),
+  name(that.name),
   rw_items(that.rw_items),
   cb_items(that.cb_items)
 {
@@ -150,12 +151,10 @@ IGL_INLINE igl::ReTwBar & igl::ReTwBar::operator=(const igl::ReTwBar & that)
 
 
 // BAR WRAPPERS
-IGL_INLINE void igl::ReTwBar::TwNewBar(const char *name)
+IGL_INLINE void igl::ReTwBar::TwNewBar(const char * _name)
 {
-  // double colon without anything in front of it means look for this in the
-  // global namespace... I hope...
-  this->name = name;
-  this->bar = ::TwNewBar(name);
+  this->name = _name;
+  this->bar = ::TwNewBar(_name);
 }
 
 IGL_INLINE int igl::ReTwBar::TwAddVarRW(

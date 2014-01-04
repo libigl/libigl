@@ -328,7 +328,7 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
           is_rotating = false;
           break;
         case 0:
-          bool widget_using = s.widget.down(mouse_x,mouse_y);
+          bool widget_using = s.widget.down(mouse_x,height-mouse_y);
           if(widget_using)
           {
             push_undo();
@@ -385,7 +385,7 @@ void mouse_drag(int mouse_x, int mouse_y)
 
   push_scene();
   push_object();
-  s.widget.drag(mouse_x,mouse_y);
+  s.widget.drag(mouse_x,height-mouse_y);
   pop_object();
   pop_scene();
 
@@ -439,7 +439,7 @@ void init_relative()
   Vmin = V.colwise().minCoeff();
   Vmid = 0.5*(Vmax + Vmin);
   bbd = (Vmax-Vmin).norm();
-  s.widget.pos = Vmid;
+  s.widget.pos = Vmin+0.3*(Vmax-Vmin);
 }
 
 void undo()
@@ -607,7 +607,7 @@ int main(int argc, char * argv[])
   // Init antweakbar
   glutInitDisplayString( "rgba depth double samples>=8 ");
   glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH)/2.0,glutGet(GLUT_SCREEN_HEIGHT)/2.0);
-  glutCreateWindow("upright");
+  glutCreateWindow("rotate-widget");
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(key);
@@ -629,6 +629,7 @@ int main(int argc, char * argv[])
   };
   glutTimerFunc(500, timer, 500);
 
+  s.camera.dolly_zoom(25-s.camera.m_angle);
   glutMainLoop();
 
 

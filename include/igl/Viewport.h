@@ -42,7 +42,7 @@ namespace igl
     //
     // Inputs:
     //   my  mouse y-coordinate
-    //   wh  window weight
+    //   wh  window height
     // Returns y-coordinate in viewport
     int mouse_y(const int my,const int wh)
     {
