@@ -514,7 +514,7 @@ int main(int argc, char * argv[])
   using namespace std;
   using namespace Eigen;
   using namespace igl;
-  string filename = "../shared/cheburashka.obj";
+  string filename = "../shared/cheburashka.off";
   if(argc < 3)
   {
     cerr<<"Usage:"<<endl<<"    ./example input.obj"<<endl;

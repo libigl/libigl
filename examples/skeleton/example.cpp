@@ -1,4 +1,5 @@
-#include "draw_skeleton.h"
+#include <igl/draw_skeleton_3d.h>
+#include <igl/draw_skeleton_vector_graphics.h>
 #include <igl/two_axis_valuator_fixed_up.h>
 #include <igl/readOBJ.h>
 #include <igl/readTGF.h>
@@ -40,6 +41,12 @@
 #include <stack>
 #include <iostream>
 
+enum SkelStyleType
+{
+  SKEL_STYLE_TYPE_3D = 0,
+  SKEL_STYLE_TYPE_VECTOR_GRAPHICS = 1,
+  NUM_SKEL_STYLE_TYPE = 2
+}skel_style;
 
 Eigen::MatrixXd V,N,C,W,M;
 Eigen::VectorXd Vmid,Vmin,Vmax;
@@ -274,7 +281,16 @@ void display()
     glDisable(GL_DEPTH_TEST);
   }
 
-  draw_skeleton(C,BE,T);
+  switch(skel_style)
+  {
+    default:
+    case SKEL_STYLE_TYPE_3D:
+      draw_skeleton_3d(C,BE,T);
+      break;
+    case SKEL_STYLE_TYPE_VECTOR_GRAPHICS:
+      draw_skeleton_vector_graphics(C,BE,T);
+      break;
+  }
 
   pop_object();
 
@@ -550,7 +566,7 @@ int main(int argc, char * argv[])
   using namespace std;
   using namespace Eigen;
   using namespace igl;
-  string filename = "../shared/cheburashka.obj";
+  string filename = "../shared/cheburashka.off";
   string skel_filename = "../shared/cheburashka.tgf";
   if(argc < 3)
   {
@@ -658,6 +674,9 @@ int main(int argc, char * argv[])
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
   rebar.TwAddVarRW("skeleton_on_top", TW_TYPE_BOOLCPP,&skeleton_on_top,"key=O");
   rebar.TwAddVarRW("wireframe", TW_TYPE_BOOLCPP,&wireframe,"key=l");
+  TwType SkelStyleTypeTW = ReTwDefineEnumFromString("SkelStyleType",
+    "3d,vector graphics");
+  rebar.TwAddVarRW("style",SkelStyleTypeTW,&skel_style,"key=s");
   rebar.load(REBAR_NAME);
 
   // Init antweakbar

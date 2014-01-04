@@ -1,4 +1,4 @@
-[V,F] = load_mesh('../shared/cheburashka.obj');
+[V,F] = load_mesh('../shared/cheburashka.off');
 N = per_vertex_normals(V,F);
 S = ambient_occlusion(V,F,V,N,1000);
 L = cotmatrix(V,F);

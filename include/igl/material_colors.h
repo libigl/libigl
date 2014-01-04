@@ -30,6 +30,8 @@ namespace igl
   const float FAST_BLUE_DIFFUSE[4]  = { 106.0f/255.0f, 106.0f/255.0f, 255.0f/255.0f, 1.0f};
   const float FAST_GRAY_DIFFUSE[4]  = { 150.0f/255.0f, 150.0f/255.0f, 150.0f/255.0f, 1.0f};
   // Basic colors
+  const float WHITE[4] =   { 255.0/255.0,255.0/255.0,255.0/255.0,1.0f };
+  const float BLACK[4] =   { 0.0/255.0,0.0/255.0,0.0/255.0,1.0f };
   const float WHITE_AMBIENT[4] =   { 255.0/255.0,255.0/255.0,255.0/255.0,1.0f };
   const float WHITE_DIFFUSE[4] =   { 255.0/255.0,255.0/255.0,255.0/255.0,1.0f };
   const float WHITE_SPECULAR[4] =  { 255.0/255.0,255.0/255.0,255.0/255.0,1.0f };
@@ -40,5 +42,14 @@ namespace igl
   const float EASTER_RED_DIFFUSE[4] = {0.603922,0.494118f,0.603922f,1.0f};
   const float WN_OPEN_BOUNDARY_COLOR[4] = {154./255.,0./255.,0./255.,1.0f};
   const float WN_NON_MANIFOLD_EDGE_COLOR[4] = {201./255., 51./255.,255./255.,1.0f};
+  const Eigen::Vector4f 
+    MAYA_GREEN(128./255.,242./255.,0./255.,1.),
+    MAYA_YELLOW(255./255.,247./255.,50./255.,1.),
+    MAYA_RED(234./255.,63./255.,52./255.,1.),
+    MAYA_BLUE(0./255.,73./255.,252./255.,1.),
+    MAYA_PURPLE(180./255.,73./255.,200./255.,1.),
+    MAYA_GREY(0.5,0.5,0.5,1.0),
+    MAYA_CYAN(131./255.,219./255.,252./255.,1.),
+    MAYA_SEA_GREEN(70./255.,252./255.,167./255.,1.);
 }
 #endif

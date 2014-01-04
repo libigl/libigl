@@ -1,26 +1,19 @@
-#include <Eigen/Core>
-// Draw a skeleton
-//
-// Inputs:
-//   C  #C by dim List of joint rest positions
-//   BE  #BE by 2 list of bone edge indices into C
-template <typename DerivedC, typename DerivedBE>
-void draw_skeleton(
-  const Eigen::PlainObjectBase<DerivedC> & C,
-  const Eigen::PlainObjectBase<DerivedBE> & BE);
-template <typename DerivedC, typename DerivedBE, typename DerivedT>
-void draw_skeleton(
-  const Eigen::PlainObjectBase<DerivedC> & C,
-  const Eigen::PlainObjectBase<DerivedBE> & BE,
-  const Eigen::PlainObjectBase<DerivedT> & T);
-
-// Implementation
-#include <igl/PI.h>
-#include <igl/OpenGL_convenience.h>
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
+#include "draw_skeleton_3d.h"
+#include "PI.h"
+#include "OpenGL_convenience.h"
+#include "material_colors.h"
 #include <Eigen/Geometry>
 #include <iostream>
+
 template <typename DerivedC, typename DerivedBE>
-void draw_skeleton(
+IGL_INLINE void igl::draw_skeleton_3d(
   const Eigen::PlainObjectBase<DerivedC> & C,
   const Eigen::PlainObjectBase<DerivedBE> & BE)
 {
@@ -28,11 +21,11 @@ void draw_skeleton(
   typedef Eigen::Matrix<typename DerivedC::Scalar,Dynamic,Dynamic> Mat;
   Mat I = Mat::Identity(C.cols()+1,C.cols());
   Mat T = I.replicate(BE.rows(),1);
-  return draw_skeleton(C,BE,T);
+  return draw_skeleton_3d(C,BE,T);
 }
 
 template <typename DerivedC, typename DerivedBE, typename DerivedT>
-void draw_skeleton(
+IGL_INLINE void igl::draw_skeleton_3d(
   const Eigen::PlainObjectBase<DerivedC> & C,
   const Eigen::PlainObjectBase<DerivedBE> & BE,
   const Eigen::PlainObjectBase<DerivedT> & T)
@@ -40,8 +33,8 @@ void draw_skeleton(
   using namespace Eigen;
   using namespace std;
   glDisable(GL_LIGHTING);
-  glColor3d(70./255.,252./255.,167./255.);
-  glLineWidth(2.0);
+  glColor4fv(MAYA_SEA_GREEN.data());
+  glLineWidth(1.0);
 
   auto draw_sphere = [](const double r)
   {
@@ -117,3 +110,8 @@ void draw_skeleton(
     glPopMatrix();
   }
 }
+
+#ifndef IGL_HEADER_ONLY
+// Explicit template instanciation
+template void igl::draw_skeleton_3d<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&);
+#endif

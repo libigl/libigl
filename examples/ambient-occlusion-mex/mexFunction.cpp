@@ -31,7 +31,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   // Prepare left-hand side
   nlhs = 1;
 
-  //read("../shared/cheburashka.obj",V,F);
+  //read("../shared/cheburashka.off",V,F);
   //P = V;
   //per_vertex_normals(V,F,N);
   ambient_occlusion(V,F,P,N,num_samples,S);
