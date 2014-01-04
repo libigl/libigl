@@ -32,9 +32,14 @@ IGL_INLINE void igl::draw_skeleton_3d(
 {
   using namespace Eigen;
   using namespace std;
+  // old settings
+  int old_lighting=0;
+  double old_line_width=1;
+  glGetIntegerv(GL_LIGHTING,&old_lighting);
+  glGetDoublev(GL_LINE_WIDTH,&old_line_width);
   glDisable(GL_LIGHTING);
-  glColor4fv(MAYA_SEA_GREEN.data());
   glLineWidth(1.0);
+  glColor4fv(MAYA_SEA_GREEN.data());
 
   auto draw_sphere = [](const double r)
   {
@@ -109,9 +114,13 @@ IGL_INLINE void igl::draw_skeleton_3d(
     draw_sphere(r);
     glPopMatrix();
   }
+  // Reset settings
+  (old_lighting ? glEnable(GL_LIGHTING) : glDisable(GL_LIGHTING));
+  glLineWidth(old_line_width);
 }
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template instanciation
 template void igl::draw_skeleton_3d<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&);
+template void igl::draw_skeleton_3d<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
 #endif

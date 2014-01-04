@@ -5,16 +5,17 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_HEADER_ONLY
-#define IGL_HEADER_ONLY
-#include <Eigen/Core>
+#ifndef IGL_ROTATE_WIDGET_H
+#define IGL_ROTATE_WIDGET_H
 #include <Eigen/Geometry>
+#include <Eigen/Core>
 #include <vector>
 #include <igl/material_colors.h>
 
 namespace igl
 {
-  // 3D Rotate tool widget 
+  // 3D Rotate tool widget similar to Maya's. Works best if field of view angle
+  // is less than ~25.
   class RotateWidget
   {
     public:
@@ -23,6 +24,7 @@ namespace igl
       inline static Eigen::Vector3d view_direction(const Eigen::Vector3d & pos);
       Eigen::Vector3d pos;
       Eigen::Quaterniond rot,down_rot;
+      // This line causes trouble if RotateWidget.h is included before bbw.h
       Eigen::Vector2d down_xy,drag_xy,down_dir;
       Eigen::Vector3d udown,udrag;
       double outer_radius_on_screen;
@@ -91,10 +93,7 @@ inline Eigen::Vector3d igl::RotateWidget::view_direction(const int x, const int 
 {
   using namespace Eigen;
   using namespace igl;
-  Vector4i vp;
-  glGetIntegerv(GL_VIEWPORT,vp.data());
-  const int height = vp(3);
-  const Vector3d win_s(x,height-y,0), win_d(x,height-y,1);
+  const Vector3d win_s(x,y,0), win_d(x,y,1);
   const Vector3d s = unproject(win_s);
   const Vector3d d = unproject(win_d);
   return d-s;
@@ -125,10 +124,8 @@ inline bool igl::RotateWidget::intersect(const int x, const int y, Eigen::Vector
   using namespace Eigen;
   using namespace igl;
   Vector3d view = view_direction(x,y);
-  Vector4i vp;
-  glGetIntegerv(GL_VIEWPORT,vp.data());
   const Vector3d ppos = project(pos);
-  Vector3d uxy = unproject(Vector3d(x,vp(3)-y,ppos(2)));
+  Vector3d uxy = unproject(Vector3d(x,y,ppos(2)));
   double t0,t1;
   if(!ray_sphere_intersect(uxy,view,pos,unprojected_inner_radius(),t0,t1))
   {
@@ -150,16 +147,31 @@ inline double igl::RotateWidget::unprojected_inner_radius()
   return (pos-pos_off).norm();
 }
 
-inline Eigen::Vector3d igl::RotateWidget::unproject_onto(const int x, const int y)
+inline Eigen::Vector3d igl::RotateWidget::unproject_onto(
+  const int x, 
+  const int y)
 {
   using namespace Eigen;
   using namespace igl;
-  Vector4i vp;
-  glGetIntegerv(GL_VIEWPORT,vp.data());
-  const Vector3d ppos = project(pos);
-  Vector3d uxy = unproject( Vector3d(x,vp(3)-y,ppos(2)))-pos;
-  uxy /= unprojected_inner_radius()*outer_over_inner*outer_over_inner;
-  return uxy;
+  // KNOWN BUG: This projects to same depths as pos. I think what we actually
+  // want is The intersection with the plane perpendicular to the view
+  // direction at pos. If the field of view angle is small then this difference
+  // is negligible.
+  //const Vector3d ppos = project(pos);
+  //const Vector3d uxy = unproject( Vector3d(x,y,ppos(2)));
+  // http://en.wikipedia.org/wiki/Line-plane_intersection
+  //
+  // Hrrmmm. There's still something wrong here if the ball's in the corner of
+  // the screen. Am I somehow not accounting for perspective correctly?
+  //
+  // Q: What about just projecting the circle's equation and solving for the
+  // distance?
+  const Vector3d l0 = unproject(Vector3d(x,y,0));
+  const Vector3d l = unproject(Vector3d(x,y,1))-l0;
+  const Vector3d n = view_direction(pos);
+  const double t = (pos-l0).dot(n)/l.dot(n);
+  const Vector3d uxy = l0+t*l;
+  return (uxy-pos)/unprojected_inner_radius()*outer_over_inner*outer_over_inner;
 }
 
 inline bool igl::RotateWidget::down(const int x, const int y)
@@ -189,7 +201,7 @@ inline bool igl::RotateWidget::down(const int x, const int y)
     const bool is_hit = intersect(down_xy(0),down_xy(1),hit);
     if(!is_hit)
     {
-      cout<<"~~~!is_hit"<<endl;
+      //cout<<"~~~!is_hit"<<endl;
     }
     auto on_meridian = [&](
       const Vector3d & hit, 
@@ -224,9 +236,9 @@ inline bool igl::RotateWidget::down(const int x, const int y)
           dir3 = (rot*axis_q(a)*dir3).eval();
           down_dir = (project((hit+dir3).eval())-project(hit)).head(2);
           down_dir.normalize();
-          // flip y because y coordinate is going to be given backwards in
-          // drag()
-          down_dir(1) *= -1;
+          //// flip y because y coordinate is going to be given backwards in
+          //// drag()
+          //down_dir(1) *= -1;
         }
         return true;
       }
@@ -269,25 +281,30 @@ inline bool igl::RotateWidget::drag(const int x, const int y)
         const Vector2d A = down_xy - ppos.head(2);
         const Vector2d B = drag_xy - ppos.head(2);
         const double dtheta = atan2(A(0)*B(1)-A(1)*B(0),A(0)*B(0)+A(1)*B(1));
-        Vector3d view = view_direction(pos).normalized();
-        Quaterniond dq(AngleAxisd(dtheta,view));
+        Vector3d n = view_direction(pos).normalized();
+        Quaterniond dq(AngleAxisd(dtheta,-n));
+        //Vector3d n = udrag.cross(udown).normalized();
+        //Quaterniond dq(AngleAxisd(fabs(dtheta),-n));
         rot = dq * down_rot;
       }
       return true;
     case DOWN_TYPE_TRACKBALL:
       {
         Vector3d ppos = project(pos);
-        const int w = outer_radius_on_screen/outer_over_inner;
-        const int h = w;
+        const double r = (double)outer_radius_on_screen/outer_over_inner*2.0;
+        //const int h = w;
+        Vector4i vp;
+        glGetIntegerv(GL_VIEWPORT,vp.data());
+        const int h = vp(3);
         Quaterniond dq;
         trackball(
-          w,h,
+          r,r,
           1,
           Quaterniond::Identity(),
-          (down_xy(0)-ppos(0)+w/2),
-          (down_xy(1)-ppos(1)+h/2),
-          (     x-ppos(0)+w/2),
-          (     y-ppos(1)+h/2),
+          double(    down_xy(0)-ppos(0)    )+r/2.,
+          double((h-down_xy(1))-(h-ppos(1)))+r/2.,
+          double(             x-ppos(0)    )+r/2.,
+          double(         (h-y)-(h-ppos(1)))+r/2.,
           dq);
         // We've computed change in rotation according to this view:
         // R = mv * r, R' = rot * (mv * r)
@@ -307,7 +324,7 @@ inline bool igl::RotateWidget::drag(const int x, const int y)
   }
 }
 
-inline bool igl::RotateWidget::up(const int x, const int y)
+inline bool igl::RotateWidget::up(const int /*x*/, const int /*y*/)
 {
   down_type = DOWN_TYPE_NONE;
   return false;
@@ -323,6 +340,11 @@ inline void igl::RotateWidget::draw()
   using namespace Eigen;
   using namespace std;
   using namespace igl;
+  int l,dt;
+  glGetIntegerv(GL_LIGHTING,&l);
+  glGetIntegerv(GL_DEPTH_TEST,&dt);
+  double lw;
+  glGetDoublev(GL_LINE_WIDTH,&lw);
 
   glDisable(GL_LIGHTING);
   glDisable(GL_DEPTH_TEST);
@@ -408,7 +430,10 @@ inline void igl::RotateWidget::draw()
   glColor4fv(MAYA_GREY.data());
   draw_guide();
   glPopMatrix();
-  glEnable(GL_DEPTH_TEST);
+
+  glLineWidth(lw);
+  (l ? glEnable(GL_LIGHTING):glDisable(GL_LIGHTING));
+  (dt ? glEnable(GL_DEPTH_TEST):glDisable(GL_DEPTH_TEST));
 };
 
 inline void igl::RotateWidget::draw_guide()
@@ -416,6 +441,12 @@ inline void igl::RotateWidget::draw_guide()
   using namespace Eigen;
   using namespace std;
   using namespace igl;
+  int posm,post,cf;
+  glGetIntegerv(GL_CULL_FACE,&cf);
+  glGetIntegerv(GL_POINT_SMOOTH,&posm);
+  glGetIntegerv(GL_POLYGON_STIPPLE,&post);
+  double posi;
+  glGetDoublev(GL_POINT_SIZE,&posi);
   // http://www.codeproject.com/Articles/23444/A-Simple-OpenGL-Stipple-Polygon-Example-EP_OpenGL_
   const GLubyte halftone[] = {
     0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
@@ -450,6 +481,7 @@ inline void igl::RotateWidget::draw_guide()
   const Vector3d nudown(udown.normalized()), 
     nudrag(udrag.normalized());
   glPushMatrix();
+  glDisable(GL_CULL_FACE);
   glDisable(GL_POINT_SMOOTH);
   glPointSize(5.);
   glBegin(GL_POINTS);
@@ -475,8 +507,11 @@ inline void igl::RotateWidget::draw_guide()
   }
   glVertex3dv(nudrag.data());
   glEnd();
-  glDisable(GL_POLYGON_STIPPLE);
   glPopMatrix();
+  glPointSize(posi);
+  (cf?glEnable(GL_CULL_FACE):glDisable(GL_CULL_FACE));
+  (posm?glEnable(GL_POINT_SMOOTH):glDisable(GL_POINT_SMOOTH));
+  (post?glEnable(GL_POLYGON_STIPPLE):glDisable(GL_POLYGON_STIPPLE));
 }
 
 #endif

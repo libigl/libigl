@@ -24,14 +24,18 @@ IGL_INLINE void igl::draw_skeleton_vector_graphics(
   const float * line_color)
 {
   using namespace Eigen;
-  glLineWidth(10.0);
 
+  int old_lighting=0;
+  double old_line_width=1;
+  glGetIntegerv(GL_LIGHTING,&old_lighting);
+  glGetDoublev(GL_LINE_WIDTH,&old_line_width);
   int cm;
   glGetIntegerv(GL_COLOR_MATERIAL,&cm);
   glDisable(GL_LIGHTING);
   glDisable(GL_LINE_STIPPLE);
   //glEnable(GL_POLYGON_OFFSET_FILL);
   glEnable(GL_COLOR_MATERIAL);
+  glLineWidth(10.0);
   glColorMaterial(GL_FRONT_AND_BACK,GL_DIFFUSE);
   float mat_ambient[4] = {0.1,0.1,0.1,1.0};
   float mat_specular[4] = {0.0,0.0,0.0,1.0};
@@ -71,6 +75,8 @@ IGL_INLINE void igl::draw_skeleton_vector_graphics(
   (cm ? glEnable(GL_COLOR_MATERIAL):glDisable(GL_COLOR_MATERIAL));
   //glDisable(GL_POLYGON_OFFSET_FILL);
   glEnable(GL_LIGHTING);
+  (old_lighting ? glEnable(GL_LIGHTING) : glDisable(GL_LIGHTING));
+  glLineWidth(old_line_width);
 }
 
 template <typename DerivedC, typename DerivedBE, typename DerivedT>
@@ -78,6 +84,17 @@ IGL_INLINE void igl::draw_skeleton_vector_graphics(
   const Eigen::PlainObjectBase<DerivedC> & C,
   const Eigen::PlainObjectBase<DerivedBE> & BE,
   const Eigen::PlainObjectBase<DerivedT> & T)
+{
+  return draw_skeleton_vector_graphics(C,BE,T,BBW_POINT_COLOR,BBW_LINE_COLOR);
+}
+
+template <typename DerivedC, typename DerivedBE, typename DerivedT>
+IGL_INLINE void igl::draw_skeleton_vector_graphics(
+  const Eigen::PlainObjectBase<DerivedC> & C,
+  const Eigen::PlainObjectBase<DerivedBE> & BE,
+  const Eigen::PlainObjectBase<DerivedT> & T,
+  const float * point_color,
+  const float * line_color)
 {
   Eigen::PlainObjectBase<DerivedC> CT;
   Eigen::PlainObjectBase<DerivedBE> BET;
@@ -96,7 +113,7 @@ IGL_INLINE void igl::draw_skeleton_vector_graphics(
     CT.row(2*e) =   c0 * L + t;
     CT.row(2*e+1) = c1 * L + t;
   }
-  draw_skeleton_vector_graphics(CT,BET);
+  draw_skeleton_vector_graphics(CT,BET,point_color,line_color);
 }
 
 #ifndef IGL_HEADER_ONLY
