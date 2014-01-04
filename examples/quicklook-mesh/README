@@ -28,7 +28,7 @@ Then re-install GLU à la http://www.alecjacobson.com/weblog/?p=2827
 
 After installing you can test previews with:
 
-    /usr/bin/qlmanage -p ../shared/cheburashka.obj
+    /usr/bin/qlmanage -p ../shared/cheburashka.off
 
 and thumbnails with:
 

@@ -10,6 +10,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <vector>
+#include <igl/material_colors.h>
 
 namespace igl
 {
@@ -323,15 +324,6 @@ inline void igl::RotateWidget::draw()
   using namespace std;
   using namespace igl;
 
-  const Vector4d 
-    MAYA_GREEN(128./255.,242./255.,0./255.,1.),
-    MAYA_YELLOW(255./255.,247./255.,50./255.,1.),
-    MAYA_RED(234./255.,63./255.,52./255.,1.),
-    MAYA_BLUE(0./255.,73./255.,252./255.,1.),
-    MAYA_PURPLE(180./255.,73./255.,200./255.,1.),
-    MAYA_GREY(0.5,0.5,0.5,1.0),
-    MAYA_CYAN(131./255.,219./255.,252./255.,1.);
-
   glDisable(GL_LIGHTING);
   glDisable(GL_DEPTH_TEST);
   glLineWidth(2.0);
@@ -365,7 +357,7 @@ inline void igl::RotateWidget::draw()
   // Draw outlines
   {
     glPushMatrix();
-    glColor4dv(MAYA_GREY.data());
+    glColor4fv(MAYA_GREY.data());
     Quaterniond q;
     q.setFromTwoVectors(Vector3d(0,0,1),view);
     glMultMatrixd(Affine3d(q).matrix().data());
@@ -373,10 +365,10 @@ inline void igl::RotateWidget::draw()
     glScaled(outer_over_inner,outer_over_inner,outer_over_inner);
     if(selected_type == DOWN_TYPE_OUTLINE)
     {
-      glColor4dv(MAYA_YELLOW.data());
+      glColor4fv(MAYA_YELLOW.data());
     }else
     {
-      glColor4dv(MAYA_CYAN.data());
+      glColor4fv(MAYA_CYAN.data());
     }
     draw_circle(false);
     glPopMatrix();
@@ -387,33 +379,33 @@ inline void igl::RotateWidget::draw()
     glMultMatrixd(Affine3d(rot).matrix().data());
     if(selected_type == DOWN_TYPE_Z)
     {
-      glColor4dv(MAYA_YELLOW.data());
+      glColor4fv(MAYA_YELLOW.data());
     }else
     {
-      glColor4dv(MAYA_BLUE.data());
+      glColor4fv(MAYA_BLUE.data());
     }
     draw_circle(true);
     if(selected_type == DOWN_TYPE_Y)
     {
-      glColor4dv(MAYA_YELLOW.data());
+      glColor4fv(MAYA_YELLOW.data());
     }else
     {
-      glColor4dv(MAYA_GREEN.data());
+      glColor4fv(MAYA_GREEN.data());
     }
     glRotated(90.0,1.0,0.0,0.0);
     draw_circle(true);
     if(selected_type == DOWN_TYPE_X)
     {
-      glColor4dv(MAYA_YELLOW.data());
+      glColor4fv(MAYA_YELLOW.data());
     }else
     {
-      glColor4dv(MAYA_RED.data());
+      glColor4fv(MAYA_RED.data());
     }
     glRotated(90.0,0.0,1.0,0.0);
     draw_circle(true);
     glPopMatrix();
   }
-  glColor3dv(MAYA_GREY.data());
+  glColor4fv(MAYA_GREY.data());
   draw_guide();
   glPopMatrix();
   glEnable(GL_DEPTH_TEST);

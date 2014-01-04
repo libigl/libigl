@@ -11,7 +11,7 @@
 #include <igl/get_seconds.h>
 #include <igl/material_colors.h>
 #include <igl/draw_mesh.h>
-#include <igl/readOBJ.h>
+#include <igl/readOFF.h>
 #include <igl/per_face_normals.h>
 #include <igl/draw_floor.h>
 
@@ -633,7 +633,7 @@ int main(int argc, char * argv[])
   cout<<"[Shift+Command+Z]   Redo."<<endl;
   cout<<"[^C,ESC]            Exit."<<endl;
 
-  if(!readOBJ("../shared/cheburashka.obj",V,F))
+  if(!readOFF("../shared/cheburashka.off",V,F))
   {
     cerr<<"Failed to read in mesh..."<<endl;
     return 1;
