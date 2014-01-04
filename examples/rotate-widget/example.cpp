@@ -618,11 +618,12 @@ int main(int argc, char * argv[])
       TwEventMouseMotionGLUT(x,y);
       glutPostRedisplay();
     });
-  static std::function<void(int)> timer_dummy;
+
+  static std::function<void(int)> timer_bounce;
   auto timer = [] (int ms) {
-    timer_dummy(ms);
+    timer_bounce(ms);
   };
-  timer_dummy = [&] (int ms) {
+  timer_bounce = [&] (int ms) {
     glutTimerFunc(ms, timer, ms);
     glutPostRedisplay();
   };
