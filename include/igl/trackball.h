@@ -26,13 +26,13 @@ namespace igl
   //   quat  the resulting rotation (as quaternion)
   template <typename Q_type>
   IGL_INLINE void trackball(
-    const int w,
-    const int h,
+    const double w,
+    const double h,
     const Q_type speed_factor,
-    const int down_mouse_x,
-    const int down_mouse_y,
-    const int mouse_x,
-    const int mouse_y,
+    const double down_mouse_x,
+    const double down_mouse_y,
+    const double mouse_x,
+    const double mouse_y,
     Q_type * quat);
 
   // Applies a trackball drag to a given rotation
@@ -50,25 +50,25 @@ namespace igl
   //   quat  the resulting rotation (as quaternion)
   template <typename Q_type>
   IGL_INLINE void trackball(
-    const int w,
-    const int h,
+    const double w,
+    const double h,
     const Q_type speed_factor,
     const Q_type * down_quat,
-    const int down_mouse_x,
-    const int down_mouse_y,
-    const int mouse_x,
-    const int mouse_y,
+    const double down_mouse_x,
+    const double down_mouse_y,
+    const double mouse_x,
+    const double mouse_y,
     Q_type * quat);
   // Eigen wrapper.
   IGL_INLINE void trackball(
-    const int w,
-    const int h,
+    const double w,
+    const double h,
     const double speed_factor,
     const Eigen::Quaterniond & down_quat,
-    const int down_mouse_x,
-    const int down_mouse_y,
-    const int mouse_x,
-    const int mouse_y,
+    const double down_mouse_x,
+    const double down_mouse_y,
+    const double mouse_x,
+    const double mouse_y,
     Eigen::Quaterniond & quat);
 }
 
