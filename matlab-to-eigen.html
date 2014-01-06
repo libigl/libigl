@@ -237,6 +237,13 @@ IP.conservativeResize(stable_partition(
         </code></pre></td>
         <td>Where I and P are vectors. <i>Requires C++11 and <code>#include &lt;algorithm&gt;</code></i></td>
       </tr>
+
+      <tr class=d0>
+        <td><pre><code>a = any(A(:))</code></pre></td>
+        <td><pre><code>bool a = any_of(A.data(),A.data()+A.size(),[](bool a){ return a;});</code></pre></td>
+        <td>Casts <code>Matrix::Scalar<code> to <code>bool</code>.</td>
+      </tr>
+
       <!-- Insert rows for each command pair -->
 
       <!-- Leave this here for copy and pasting
