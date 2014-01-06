@@ -47,7 +47,7 @@ namespace igl
       //   x  mouse x position
       //   y  mouse y position
       // Returns vector
-      inline Eigen::Vector3d unproject_onto(const int x, const int y);
+      inline Eigen::Vector3d unproject_onto(const int x, const int y) const;
       // Shoot ray from mouse click to sphere
       //
       // Inputs:
@@ -56,14 +56,17 @@ namespace igl
       // Outputs:
       //   hit  position of hit
       // Returns true only if there was a hit
-      inline bool intersect(const int x, const int y, Eigen::Vector3d & hit);
-      inline double unprojected_inner_radius();
+      inline bool intersect(
+        const int x, 
+        const int y, 
+        Eigen::Vector3d & hit) const;
+      inline double unprojected_inner_radius() const;
       inline bool down(const int x, const int y);
       inline bool drag(const int x, const int y);
       inline bool up(const int x, const int y);
-      inline bool is_down();
-      inline void draw();
-      inline void draw_guide();
+      inline bool is_down() const;
+      inline void draw() const;
+      inline void draw_guide() const;
   };
 }
 
@@ -119,37 +122,9 @@ inline igl::RotateWidget::RotateWidget():
 {
 }
 
-inline bool igl::RotateWidget::intersect(const int x, const int y, Eigen::Vector3d & hit)
-{
-  using namespace Eigen;
-  using namespace igl;
-  Vector3d view = view_direction(x,y);
-  const Vector3d ppos = project(pos);
-  Vector3d uxy = unproject(Vector3d(x,y,ppos(2)));
-  double t0,t1;
-  if(!ray_sphere_intersect(uxy,view,pos,unprojected_inner_radius(),t0,t1))
-  {
-    return false;
-  }
-  hit = uxy+t0*view;
-  return true;
-}
-
-inline double igl::RotateWidget::unprojected_inner_radius()
-{
-  using namespace Eigen;
-  using namespace igl;
-  Vector3d off,ppos,ppos_off,pos_off;
-  project(pos,ppos);
-  ppos_off = ppos;
-  ppos_off(0) += outer_radius_on_screen/outer_over_inner;
-  unproject(ppos_off,pos_off);
-  return (pos-pos_off).norm();
-}
-
 inline Eigen::Vector3d igl::RotateWidget::unproject_onto(
   const int x, 
-  const int y)
+  const int y) const
 {
   using namespace Eigen;
   using namespace igl;
@@ -174,6 +149,37 @@ inline Eigen::Vector3d igl::RotateWidget::unproject_onto(
   return (uxy-pos)/unprojected_inner_radius()*outer_over_inner*outer_over_inner;
 }
 
+inline bool igl::RotateWidget::intersect(
+  const int x, 
+  const int y,
+  Eigen::Vector3d & hit) const
+{
+  using namespace Eigen;
+  using namespace igl;
+  Vector3d view = view_direction(x,y);
+  const Vector3d ppos = project(pos);
+  Vector3d uxy = unproject(Vector3d(x,y,ppos(2)));
+  double t0,t1;
+  if(!ray_sphere_intersect(uxy,view,pos,unprojected_inner_radius(),t0,t1))
+  {
+    return false;
+  }
+  hit = uxy+t0*view;
+  return true;
+}
+
+
+inline double igl::RotateWidget::unprojected_inner_radius() const
+{
+  using namespace Eigen;
+  using namespace igl;
+  Vector3d off,ppos,ppos_off,pos_off;
+  project(pos,ppos);
+  ppos_off = ppos;
+  ppos_off(0) += outer_radius_on_screen/outer_over_inner;
+  unproject(ppos_off,pos_off);
+  return (pos-pos_off).norm();
+}
 inline bool igl::RotateWidget::down(const int x, const int y)
 {
   using namespace Eigen;
@@ -330,12 +336,12 @@ inline bool igl::RotateWidget::up(const int /*x*/, const int /*y*/)
   return false;
 }
 
-inline bool igl::RotateWidget::is_down()
+inline bool igl::RotateWidget::is_down() const
 {
   return down_type != DOWN_TYPE_NONE;
 }
 
-inline void igl::RotateWidget::draw()
+inline void igl::RotateWidget::draw() const
 {
   using namespace Eigen;
   using namespace std;
@@ -436,7 +442,7 @@ inline void igl::RotateWidget::draw()
   (dt ? glEnable(GL_DEPTH_TEST):glDisable(GL_DEPTH_TEST));
 };
 
-inline void igl::RotateWidget::draw_guide()
+inline void igl::RotateWidget::draw_guide() const
 {
   using namespace Eigen;
   using namespace std;
