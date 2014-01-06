@@ -12,26 +12,34 @@
 #include <Eigen/Geometry>
 #include <iostream>
 
-template <typename DerivedC, typename DerivedBE>
-IGL_INLINE void igl::draw_skeleton_3d(
-  const Eigen::PlainObjectBase<DerivedC> & C,
-  const Eigen::PlainObjectBase<DerivedBE> & BE)
-{
-  using namespace Eigen;
-  typedef Eigen::Matrix<typename DerivedC::Scalar,Dynamic,Dynamic> Mat;
-  Mat I = Mat::Identity(C.cols()+1,C.cols());
-  Mat T = I.replicate(BE.rows(),1);
-  return draw_skeleton_3d(C,BE,T);
-}
-
-template <typename DerivedC, typename DerivedBE, typename DerivedT>
+template <
+  typename DerivedC, 
+  typename DerivedBE, 
+  typename DerivedT, 
+  typename Derivedcolor>
 IGL_INLINE void igl::draw_skeleton_3d(
   const Eigen::PlainObjectBase<DerivedC> & C,
   const Eigen::PlainObjectBase<DerivedBE> & BE,
-  const Eigen::PlainObjectBase<DerivedT> & T)
+  const Eigen::PlainObjectBase<DerivedT> & T,
+  const Eigen::PlainObjectBase<Derivedcolor> & color)
 {
+  // Note: Maya's skeleton *does* scale with the mesh suggesting a scale
+  // parameter. Further, its joint balls are not rotated with the bones.
   using namespace Eigen;
   using namespace std;
+  assert(color.cols() == 4);
+  if(T.size() == 0)
+  {
+    typedef Eigen::Matrix<typename DerivedT::Scalar,Dynamic,Dynamic> Mat;
+    Mat I = Mat::Identity(C.cols()+1,C.cols());
+    Mat T = I.replicate(BE.rows(),1);
+    // insane base case
+    if(T.size() == 0)
+    {
+      return;
+    }
+    return draw_skeleton_3d(C,BE,T,MAYA_SEA_GREEN);
+  }
   // old settings
   int old_lighting=0;
   double old_line_width=1;
@@ -39,7 +47,6 @@ IGL_INLINE void igl::draw_skeleton_3d(
   glGetDoublev(GL_LINE_WIDTH,&old_line_width);
   glDisable(GL_LIGHTING);
   glLineWidth(1.0);
-  glColor4fv(MAYA_SEA_GREEN.data());
 
   auto draw_sphere = [](const double r)
   {
@@ -98,6 +105,13 @@ IGL_INLINE void igl::draw_skeleton_3d(
     glPushMatrix();
     glMultMatrixd(Te.data());
     glTranslated(s(0),s(1),s(2));
+    if(color.rows() > 1)
+    {
+      glColor4d( color(e,0), color(e,1), color(e,2), color(e,3));
+    }else
+    {
+      glColor4d( color(0,0), color(0,1), color(0,2), color(0,3));
+    }
     draw_sphere(r);
     const double len = b.norm()-2.*r;
     if(len>=0)
@@ -119,8 +133,26 @@ IGL_INLINE void igl::draw_skeleton_3d(
   glLineWidth(old_line_width);
 }
 
+template <typename DerivedC, typename DerivedBE, typename DerivedT>
+IGL_INLINE void igl::draw_skeleton_3d(
+  const Eigen::PlainObjectBase<DerivedC> & C,
+  const Eigen::PlainObjectBase<DerivedBE> & BE,
+  const Eigen::PlainObjectBase<DerivedT> & T)
+{
+  return draw_skeleton_3d(C,BE,T,MAYA_SEA_GREEN);
+}
+
+template <typename DerivedC, typename DerivedBE>
+IGL_INLINE void igl::draw_skeleton_3d(
+  const Eigen::PlainObjectBase<DerivedC> & C,
+  const Eigen::PlainObjectBase<DerivedBE> & BE)
+{
+  return draw_skeleton_3d(C,BE,Eigen::MatrixXd(),MAYA_SEA_GREEN);
+}
+
 #ifndef IGL_HEADER_ONLY
 // Explicit template instanciation
-template void igl::draw_skeleton_3d<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&);
 template void igl::draw_skeleton_3d<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
+template void igl::draw_skeleton_3d<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&);
+template void igl::draw_skeleton_3d<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&);
 #endif
