@@ -44,6 +44,15 @@
 #else
 #  include <AntTweakBar.h>
 #endif
+// Instead of including AntTweakBar.h, just define the necessary types
+// Types used:
+//   - TwType
+//   - TwEnumVal
+//   - TwSetVarCallback
+//   - TwGetVarCallback
+//   - TwBar
+//   - TwButtonCallback
+
 
 #include <vector>
 #include <string>

@@ -614,7 +614,8 @@ int main(int argc, char * argv[])
   glutMouseFunc(mouse);
   glutMotionFunc(mouse_drag);
   glutPassiveMotionFunc(
-    [](int x, int y){
+    [](int x, int y)
+    {
       TwEventMouseMotionGLUT(x,y);
       glutPostRedisplay();
     });
