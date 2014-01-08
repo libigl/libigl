@@ -25,7 +25,7 @@ IGL_INLINE void igl::project_to_line_segment(
   project_to_line(P,S,D,t,sqrD);
   const int np = P.rows();
   // loop over points and fix those that projected beyond endpoints
-#pragma omp parallel for
+#pragma omp parallel for if (np>10000)
   for(int p = 0;p<np;p++)
   {
     if(t(p)<0)

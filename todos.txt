@@ -27,3 +27,6 @@
 - unify include opengl with convenience includes
 - MatrixBase --> PlainObjectBase
 - min_quad_with_fixed should probably be a class
+- everywhere appropriate change:
+  `#pragma omp parallel for` to `#pragma omp parallel for if (n>10000)` where
+  `n` and `1000` are replaced accordingly

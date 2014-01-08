@@ -62,11 +62,26 @@ IGL_INLINE bool igl::list_to_matrix(const std::vector<T > & V,Mat & M)
   {
     //fprintf(stderr,"Error: list_to_matrix() list is empty()\n");
     //return false;
-    M.resize(0,0);
+    if(Mat::ColsAtCompileTime == 1)
+    {
+      M.resize(0,1);
+    }else if(Mat::RowsAtCompileTime == 1)
+    {
+      M.resize(1,0);
+    }else
+    {
+      M.resize(0,0);
+    }
     return true;
   }
   // Resize output
-  M.resize(m,1);
+  if(Mat::RowsAtCompileTime == 1)
+  {
+    M.resize(1,m);
+  }else
+  {
+    M.resize(m,1);
+  }
 
   // Loop over rows
   for(int i = 0;i<m;i++)
@@ -105,4 +120,5 @@ template bool igl::list_to_matrix<int, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(std
 template bool igl::list_to_matrix<int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > >(std::vector<int, std::allocator<int> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 template bool igl::list_to_matrix<double, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > >(std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
 template bool igl::list_to_matrix<int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > >(std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
+template bool igl::list_to_matrix<double, Eigen::Matrix<double, 1, -1, 1, 1, -1> >(std::vector<double, std::allocator<double> > const&, Eigen::Matrix<double, 1, -1, 1, 1, -1>&);
 #endif
