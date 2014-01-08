@@ -91,7 +91,7 @@ IGL_INLINE void igl::boundary_faces(
       k++;
     }
   }
-  assert(k==F.size());
+  assert(k==(int)F.size());
   //if(k != F.size())
   //{
   //  printf("%d =? %d\n",k,F.size());
