@@ -88,6 +88,7 @@ namespace igl
     }
     // Shallow copy constructor
     // I solemnly swear it's OK to copy var this way
+    // Q: Is it really?
     IGL_INLINE ReTwRWItem(const ReTwRWItem & that):
       name(that.name),
       type(that.type),
