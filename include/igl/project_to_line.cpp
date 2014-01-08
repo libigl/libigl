@@ -39,7 +39,7 @@ IGL_INLINE void igl::project_to_line(
   t.resize(np,1);
   sqrD.resize(np,1);
   // loop over points 
-#pragma omp parallel for
+#pragma omp parallel for if (np>10000)
   for(int i = 0;i<np;i++)
   {
     MatL Pi = P.row(i);

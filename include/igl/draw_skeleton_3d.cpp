@@ -27,7 +27,7 @@ IGL_INLINE void igl::draw_skeleton_3d(
   // parameter. Further, its joint balls are not rotated with the bones.
   using namespace Eigen;
   using namespace std;
-  assert(color.cols() == 4);
+  assert(color.cols() == 4 || color.size() == 4);
   if(T.size() == 0)
   {
     typedef Eigen::Matrix<typename DerivedT::Scalar,Dynamic,Dynamic> Mat;
@@ -40,6 +40,8 @@ IGL_INLINE void igl::draw_skeleton_3d(
     }
     return draw_skeleton_3d(C,BE,T,MAYA_SEA_GREEN);
   }
+  assert(T.rows() == BE.rows()*(C.cols()+1));
+  assert(T.cols() == C.cols());
   // old settings
   int old_lighting=0;
   double old_line_width=1;
@@ -105,12 +107,13 @@ IGL_INLINE void igl::draw_skeleton_3d(
     glPushMatrix();
     glMultMatrixd(Te.data());
     glTranslated(s(0),s(1),s(2));
-    if(color.rows() > 1)
+    if(color.size() == 4)
     {
-      glColor4d( color(e,0), color(e,1), color(e,2), color(e,3));
+      Vector4d d = color.template cast<double>();
+      glColor4dv(d.data());
     }else
     {
-      glColor4d( color(0,0), color(0,1), color(0,2), color(0,3));
+      glColor4d( color(e,0), color(e,1), color(e,2), color(e,3));
     }
     draw_sphere(r);
     const double len = b.norm()-2.*r;
