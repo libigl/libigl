@@ -33,8 +33,9 @@ IGL_INLINE void igl::dqs(
   }
 
   // Loop over vertices
-//#pragma omp parallel for
-  for(int i = 0;i<V.rows();i++)
+  const int nv = V.rows();
+#pragma omp parallel for if (nv>10000)
+  for(int i = 0;i<nv;i++)
   {
     Q b0(0,0,0,0);
     Q be(0,0,0,0);
