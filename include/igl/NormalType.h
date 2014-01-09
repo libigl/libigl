@@ -14,7 +14,7 @@ namespace igl
   {
     PER_VERTEX_NORMALS,
     PER_FACE_NORMALS,
-    PER_CORNER_NORMALS,
+    PER_CORNER_NORMALS
   };
 #  define NUM_NORMAL_TYPE 3
 }
