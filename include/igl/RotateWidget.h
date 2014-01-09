@@ -18,6 +18,8 @@ namespace igl
   // is less than ~25.
   class RotateWidget
   {
+      // If a is true then use A else use desaturated A
+      static inline void glColor4fv(const bool a, const Eigen::Vector4f & A);
     public:
       inline static Eigen::Quaterniond axis_q(const int a);
       inline static Eigen::Vector3d view_direction(const int x, const int y);
@@ -29,6 +31,7 @@ namespace igl
       Eigen::Vector3d udown,udrag;
       double outer_radius_on_screen;
       double outer_over_inner;
+      bool m_is_enabled;
       enum DownType
       {
         DOWN_TYPE_X = 0,
@@ -82,6 +85,24 @@ namespace igl
 #include <iostream>
 #include <cassert>
 
+inline void igl::RotateWidget::glColor4fv(
+    const bool a,
+    const Eigen::Vector4f & A)
+{
+  if(a)
+  {
+    ::glColor4fv(A.data());
+  }else
+  {
+    Eigen::Vector4f B;
+    const double f = 0.95; // desaturate by 95%
+    const double L = 0.3*A(0) + 0.6*A(1) + 0.1*A(2);
+    B.head(3) = A.head(3).array() + f*(L-A.head(3).array());
+    B(3) = A(3);
+    ::glColor4fv(B.data());
+  }
+}
+
 inline Eigen::Quaterniond igl::RotateWidget::axis_q(const int a)
 {
   assert(a<3 && a>=0);
@@ -118,7 +139,8 @@ inline igl::RotateWidget::RotateWidget():
   outer_radius_on_screen(91.),
   outer_over_inner(1.13684210526),
   down_type(DOWN_TYPE_NONE), 
-  selected_type(DOWN_TYPE_NONE)
+  selected_type(DOWN_TYPE_NONE),
+  m_is_enabled(true)
 {
 }
 
@@ -185,6 +207,10 @@ inline bool igl::RotateWidget::down(const int x, const int y)
   using namespace Eigen;
   using namespace igl;
   using namespace std;
+  if(!m_is_enabled)
+  {
+    return false;
+  }
   down_type = DOWN_TYPE_NONE;
   selected_type = DOWN_TYPE_NONE;
   down_xy = Vector2d(x,y);
@@ -264,6 +290,10 @@ inline bool igl::RotateWidget::drag(const int x, const int y)
   using namespace igl;
   using namespace std;
   using namespace Eigen;
+  if(!m_is_enabled)
+  {
+    return false;
+  }
   drag_xy = Vector2d(x,y);
   switch(down_type)
   {
@@ -332,6 +362,7 @@ inline bool igl::RotateWidget::drag(const int x, const int y)
 
 inline bool igl::RotateWidget::up(const int /*x*/, const int /*y*/)
 {
+  // even if disabled process up
   down_type = DOWN_TYPE_NONE;
   return false;
 }
@@ -385,7 +416,7 @@ inline void igl::RotateWidget::draw() const
   // Draw outlines
   {
     glPushMatrix();
-    glColor4fv(MAYA_GREY.data());
+    glColor4fv(m_is_enabled,MAYA_GREY);
     Quaterniond q;
     q.setFromTwoVectors(Vector3d(0,0,1),view);
     glMultMatrixd(Affine3d(q).matrix().data());
@@ -393,10 +424,10 @@ inline void igl::RotateWidget::draw() const
     glScaled(outer_over_inner,outer_over_inner,outer_over_inner);
     if(selected_type == DOWN_TYPE_OUTLINE)
     {
-      glColor4fv(MAYA_YELLOW.data());
+      glColor4fv(m_is_enabled,MAYA_YELLOW);
     }else
     {
-      glColor4fv(MAYA_CYAN.data());
+      glColor4fv(m_is_enabled,MAYA_CYAN);
     }
     draw_circle(false);
     glPopMatrix();
@@ -407,33 +438,33 @@ inline void igl::RotateWidget::draw() const
     glMultMatrixd(Affine3d(rot).matrix().data());
     if(selected_type == DOWN_TYPE_Z)
     {
-      glColor4fv(MAYA_YELLOW.data());
+      glColor4fv(m_is_enabled,MAYA_YELLOW);
     }else
     {
-      glColor4fv(MAYA_BLUE.data());
+      glColor4fv(m_is_enabled,MAYA_BLUE);
     }
     draw_circle(true);
     if(selected_type == DOWN_TYPE_Y)
     {
-      glColor4fv(MAYA_YELLOW.data());
+      glColor4fv(m_is_enabled,MAYA_YELLOW);
     }else
     {
-      glColor4fv(MAYA_GREEN.data());
+      glColor4fv(m_is_enabled,MAYA_GREEN);
     }
     glRotated(90.0,1.0,0.0,0.0);
     draw_circle(true);
     if(selected_type == DOWN_TYPE_X)
     {
-      glColor4fv(MAYA_YELLOW.data());
+      glColor4fv(m_is_enabled,MAYA_YELLOW);
     }else
     {
-      glColor4fv(MAYA_RED.data());
+      glColor4fv(m_is_enabled,MAYA_RED);
     }
     glRotated(90.0,0.0,1.0,0.0);
     draw_circle(true);
     glPopMatrix();
   }
-  glColor4fv(MAYA_GREY.data());
+  glColor4fv(m_is_enabled,MAYA_GREY);
   draw_guide();
   glPopMatrix();
 
