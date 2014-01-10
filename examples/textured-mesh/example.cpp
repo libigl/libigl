@@ -137,6 +137,7 @@ int tot_num_samples = 0;
 #define REBAR_NAME "temp.rbr"
 igl::ReTwBar rebar; // Pointer to the tweak bar
 bool flip_y = false;
+bool rotate_xy = false;
 
 void reshape(int width,int height)
 {
@@ -278,6 +279,11 @@ void display()
   {
     glTranslated(0,1,0);
     glScaled(1,-1,1);
+  }
+  if(rotate_xy)
+  {
+    glRotated(90,0,0,1);
+    glTranslated(-1,0,0);
   }
   glMatrixMode(GL_MODELVIEW);
 
@@ -523,6 +529,7 @@ int main(int argc, char * argv[])
   {
     if(!list_to_matrix(vV,V))
     {
+      cerr<<"Bad V"<<endl;
       return 1;
     }
     triangulate(vF,F);
@@ -531,6 +538,7 @@ int main(int argc, char * argv[])
   {
     if(!list_to_matrix(vTC,TC))
     {
+      cerr<<"Bad TC"<<endl;
       return 1;
     }
   }
@@ -538,6 +546,7 @@ int main(int argc, char * argv[])
   {
     if(!list_to_matrix(vTF,TF))
     {
+      cerr<<"Bad TF"<<endl;
       return 1;
     }
   }
@@ -577,6 +586,7 @@ int main(int argc, char * argv[])
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
   rebar.TwAddVarRW("flip_y", TW_TYPE_BOOLCPP, &flip_y,"key=f");
+  rebar.TwAddVarRW("rotate_xy", TW_TYPE_BOOLCPP, &rotate_xy,"key=r");
   rebar.load(REBAR_NAME);
 
   glutInitDisplayString( "rgba depth double samples>=8 ");
