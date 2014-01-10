@@ -1,0 +1,98 @@
+#Copyright (c) 2004-2010, Bruno Levy
+#All rights reserved.
+#
+#Redistribution and use in source and binary forms, with or without
+#modification, are permitted provided that the following conditions are met:
+#
+#    * Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+#    * Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#    * Neither the name of the ALICE Project-Team nor the names of its
+#    contributors may be used to endorse or promote products derived from this
+#    software without specific prior written permission.
+#
+#THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+#ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+#FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+#CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+#OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+#OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+##################################################################
+#                         Options
+# Use this file as a template to create CMakeOptions.txt
+# 
+# Set the appropriate variables to tweak the build, then run 
+# ./configure on GNU/Linux plateforms or configure.bat on Windows
+# plateforms.
+##################################################################
+
+# build exemple programs
+SET(BUILD_EXAMPLES TRUE)
+
+# To enable (expensive) runtime checks in debug mode, uncomment next line.
+# This can be used to detect out of bounds indices.
+#SET(PARANOID_DEBUG TRUE)
+
+##################################################################
+#                           Extensions
+##################################################################
+
+###########
+# SuperLU
+###########
+# To enable SuperLU support, uncomment next line.
+# Note: check in SUPERLUHOME/make.inc that CDEFS = -DAdd_
+# (with a single underscore) rather than -DAdd__ (with two
+# underscores). If you got two underscores, remove the 
+# second one, make clean and re-make SuperLU.
+#SET(USE_SUPERLU TRUE)
+
+# Edit these lines to match your installation
+SET(SUPERLU_HOME /home/yourself/SuperLU_4.0 )
+SET(SUPERLU_NAME superlu_4.0)
+
+###########
+#  CNC
+###########
+# Concurrent Number Cruncher (CNC): a general purpose symmetric sparse solver
+# on the GPU.
+# Uncomment this line to enable CNC support. 
+#SET(USE_CNC TRUE)
+
+# Uncomment the line corresponding to your device.
+# For the complete list of compute capability of all CUDA-enabled products,
+# see Appendix A.1 of the NVIDIA CUDA Programming Guide.
+#SET(CNC_NVCC_FLAGS -arch=sm_10)
+#SET(CNC_NVCC_FLAGS -arch=sm_11)
+#SET(CNC_NVCC_FLAGS -arch=sm_12)
+#SET(CNC_NVCC_FLAGS -arch=sm_13)
+#SET(CNC_NVCC_FLAGS -arch=sm_20;-Xptxas;-dlcm=cg)
+
+# DEPRECATED Uncomment to enable automatic optimisations for your machine. If you
+# don't use this, you could have to set the values yourself (cf doc/README.txt).
+#SET(CNC_OPTIMIZE_FOR_THIS_MACHINE TRUE)
+
+# If you are using a recent version of gcc, you may need to use an older one
+# with nvcc (e.g. gcc 4.3 for nvcc 3.0). In this case, create symlinks named
+# gcc and g++ in a folder, and add the name of this folder here.
+#SET(CNC_NVCC_FLAGS ${CNC_NVCC_FLAGS};--compiler-bindir=/opt/gcc-4.3)
+
+# Uncomment to enable thread debugging in CUDA
+#SET(CUDA_DEBUG_THREADS TRUE)
+
+# Uncomment to enable emulation of CUDA device (very slow but works on machines
+# without a CUDA-enabled device)
+#SET(CUDA_BUILD_EMULATION TRUE)
+
+###########
+# ATLAS
+###########
+# If your BLAS implementation is ATLAS, uncomment the next line.
+#SET(USE_ATLAS TRUE)

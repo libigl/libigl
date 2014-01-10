@@ -1,0 +1,54 @@
+From 1.1 to 1.2
+
+- dijkstraGraph
+  - added methods getNodes() and getNumNodes()
+
+----------------------------------------------------------------------
+
+From 1.0 to 1.1
+
+- SymMatrix3x3
+  - added == and != operators
+  - added method 'determinant'
+  - added = operator
+  - added trace method
+  - added /= operator
+  - added lrMultiply for different vectors
+
+- Matrix3x3
+  - added constructor from vector product
+  - added lrMultiply for different vectors
+  - added = operator
+  - added /= operator
+  - added transpose
+
+- SymMatrix4x4
+  - added == and != operators
+
+- List
+  - Added method 'popTail()'
+  - Corrected List::joinTailList(l) (buggy when l was empty)
+  - removeNode now returns the index of the removed element
+  - Added method 'getNode'
+
+- Triangulation
+  - Clone constructor does no longer destroy info fields
+  - Clone constructor allows to clone info fiels too (setting non-default second par)
+  - CreateEdge modified. e0 pointer for vertices now points to new edge after creation.
+  - CheckConnectivity does no longer exit in case of error. Now it returns the error string.
+
+- I/O
+  - Updates for 64bit systems (to be checked carefully !)
+  - Small bug-fix in ply loader
+
+- selectConnectedComponent and selectBoundaryTriangles return the # of selected tris
+- growSelection returns the # of newly selected tris
+
+- Point.cpp
+ - getAngle() does no longer exit with error. Warning + return -1 now.
+
+- splitTriangle
+ - Bug-fix: when splitEdge was invoked for robustness the method crashed
+
+- JMesh
+ - added 'quiet' field to prevent message reporting

@@ -31,7 +31,8 @@ IGL_INLINE bool igl::texture_from_file(const std::string filename, GLuint & id)
 #ifdef __APPLE__
     // Convert to a temporary png file
     string tmp = "/var/tmp/.texture_from_file.png";
-    string command = STR("/opt/local/bin/convert "<<filename<<" "<<tmp);
+#define PATH_TO_CONVERT "/opt/local/bin/convert"
+    string command = STR(PATH_TO_CONVERT<<" \""<<filename<<"\" \""<<tmp<<"\"");
     try
     {
       if(system(command.c_str())==0)

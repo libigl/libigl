@@ -1,0 +1,263 @@
+================================================================================
+                                    Compilation 
+================================================================================
+
+--------------------------------------------------------------------------------
+1) Prerequisites
+--------------------------------------------------------------------------------
+
+ - CMake >= 2.4
+
+ Additional requirements if you want to enable CNC:
+ - a CUDA-enabled device with 1.0 capabilities for floating point computation,
+   or with 1.3 capabilities for double precision computation.
+   (see Apendix A of the "NVIDIA CUDA Programming guide")
+ - CMake >= 2.6.3
+ - CUDA toolkit (tested on 2.3 and 3.1)
+
+ Additional requirements if you want to enable SuperLU:
+ - SuperLU 4.0
+ 
+--------------------------------------------------------------------------------
+2) Configuration
+--------------------------------------------------------------------------------
+
+ OpenNL can be configured using a file named "CMakeOptions.txt". If you are
+ only interested in getting the minimal version of the library, you can go to 
+ next step.
+
+ In the base directory <base_dir> of the sources, copy "CMakeOptions.txt.sample"
+ and rename the copy to "CMakeOptions.txt".
+
+ This file is composed of two parts: the first one is used to set options for
+ OpenNL core, and the second is dedicated to the extensions. Before changing any
+ setting, please read all corresponding comments.
+
+  -PARANOID_DEBUG : enables a high level of (time consumming) assertion checks.
+   If your code core dumps or gives unexpected results, I recommand trying to
+   recompile it with a version of OpenNL compiled with this flag set, as it
+   turns out all range assertion checks (and can detect a wrongly intialized
+   index, which is the most common bug in numerical code)
+
+ Options related to SuperLU:
+
+  -USE_SUPERLU : activates support for SuperLU 4.0 sparse direct solver
+   (in most cases it is much more efficient that OpenNL built-in direct solvers) 
+   To activate this option, you need the SuperLU library.  The latest version
+   can be downloaded from http://crd.lbl.gov/~xiaoye/SuperLU/
+
+   Note1: check in SUPERLUHOME/make.inc that 
+ 
+    CDEFS = -DAdd_  (with a single underscore) 
+ 
+   rather than -DAdd__ (with two  underscores). If you got two underscores, 
+   remove the second one, make clean and re-make SuperLU. See also the example 
+   Makefile.
+
+   Note2: client code can check at run time whether OpenNL was compiled with 
+   SuperLU support with the nlInitExtension() function (see the example program)
+
+
+ Options related to the CNC[4] plugin :
+   
+   -USE_CNC: please uncomment the following line, 
+        
+	 SET(USE_CNC TRUE)
+    
+    if you want to enable the CNC plugin in OpenNL.
+
+   -SET CNC_NVCC_FLAGS : you should indicate what version of CUDA is
+    supported by your hardware (see Compute Capabilities in Appendix A of
+    the "NVIDIA CUDA Programming guide" to find out), by uncommenting the
+    corresponding line
+      SET(CNC_NVCC_FLAGS -arch=sm_XX) where XX belongs to {10, 11 , 12, 13, 20}  
+
+    Please note that if you want to use the double precision solvers
+    ( DOUBLE_CRS, DOUBLE_BCRS2, DOUBLE_ELL, DOUBLE_HYB) you need to have a 
+    device that supports at least compute capabilities 1.3 (ie -arch=sm_13 or
+    -arch=sm_20)
+    
+   -CUDA_BUILD_EMULATION : set this variable to TRUE if you want to emulate a 
+    CUDA device instead of using a physical one. This option should be used
+    only when debugging.
+
+   -CNC_OPTIMIZE_FOR_THIS_MACHINE : DEPRECATED setting this variable to TRUE
+    will enable a CMake command that will try to determine some compilation 
+    directives to optimize for you hardware.
+    On some systems, it may cause a crash at the end of the configuration, but
+    it does not seem to impact the project, as it happens after CMake has
+    written the project files.
+    On other systems, this option may fail completely (telling you that the
+    commande cmCUDA_DISCOVER_DEVICE_FLAGS does not exist).
+    
+    If you prefer not to (or cannot) use this command, you can edit the
+    following options in src/plugins/cnc-kernels.h:
+     
+       - USE_TEXTURE: this directive enables the use of textures for caching
+       the vector of current entries 'x' (speedup of about 10%).
+
+       - USE_CRS_SHARED: for {FLOAT | DOUBLE}_CRS solvers, OpenNL uses an
+       optimization taken from Nathan Bell Article[3] to speed-up the sparse 
+       matrix vector product; it is very efficient, but you need to have
+       enough non-zero entries by row in your matrix, at least as much as 
+       WARP_SIZE (which is 32).
+
+       - MAX_THREADS: the maximum number of coresidents threads; it corresponds
+       to the number of multiprocessors times the maximum number of active 
+       threads per multiprocessor. You can find these informations in 
+       Appendix A of NVIDIA CUDA Programmation Guide; 
+       "A.1 General specifications" or you could run the deviceQuery example 
+       in the NVIDIA_GPU_Computing_SDK.
+       For Compute capabilities 1.0 and 1.1, the maximum number of active
+       threads per multiprocessor is 768, and for 1.2 and 1.3 it is 1024.
+         Examples:
+         for a Quadro FX 3700: #define MAX_THREADS (14*768)
+         for a Tesla C1060:    #define MAX_THREADS (30*1024)
+
+  See comments in CMakeOptions.txt.sample for more details.
+
+--------------------------------------------------------------------------------
+3) Building 
+--------------------------------------------------------------------------------
+
+ The installation process varies a little between plateforms. Refer to the
+ appropriate sub-section for GNU/Linux and various Windows flavors.
+ 
+*** On GNU/Linux plateforms:
+
+    cd <base_dir>
+    ./configure
+    cd build/Linux-Release/
+    make
+ 
+ Executables are put in <base_dir>/build/Linux-Release/binaries/bin/.   
+
+ To ensure that all went well, try to run the basic tests:
+
+    cd ../../examples
+    ./make_test [option]
+
+  Note : if the time of CNC solver is longer than time for CG solver 
+  in basic tests, it is normal. basic tests ensure just computations are
+  rights.
+
+  options of make_test are as follow:
+    -h  display help message.
+    -f  perform tests with simple precision floating point versions of 
+        cnc solvers (default).
+    -d  perform tests with double precision floating point versions of 
+        cnc solvers. You can cumulate -f and -d to test both versions.
+    -s  serious tests (with large systems). Takes more time than
+        the basic tests.
+    -S  very serious tests (with quite large systems). Takes way more time 
+        than the serious tests and only works in double precision (-d).
+        For these tests, you need to download additional data sets at
+        http://alice.loria.fr/software/OpenNL/
+        and uncompress them in <base_dir>/examples/DATA.
+    -i <file> : test on the given file only.
+
+*** On Windows plateforms, with Visual C++ 2008:
+
+ ** For XP_32 bits:
+
+ - in <base_dir> folder, run "configure.bat" (if needed, edit it to reflect
+   your CMake installation directory)
+ - open <base_dir>\build\windows\OpenNL.sln in VC++
+ - build the solution in the desired configuration.
+ 
+ You can run some examples with <base_dir>/examples/make_test.bat
+ Feel free to edit make_test.bat to try other examples.
+
+ ** For XP_64 bits :
+ We only tested compilation with a VC++ Express 2008 tweaked to support 64 bits
+ compilation (which seems to cause some trouble with CMake commands...). It
+ should work out of the box with Visual Studio 2008.
+
+ Modify "configure.bat" and set
+    GENERATOR="Visual Studio 9 2008 Win64"
+ Then, follow the same installation process as for XP_32 bits.
+
+ ** Other Windows and Visual Studio / Visual C++ Express versions have not been
+ tested yet, but it should not be so much different. We appreciate feedback and
+ would love to include contributions to this project and documentation.
+
+================================================================================
+                                    Examples    
+================================================================================
+
+
+   To show how to use OpenNL, we put two examples in the examples sub-directory: 
+     
+     - mmtx : a basic program who loads a sparse matrix A from a file .mtx
+       (Matrix Market format[2]), generates a random right hand side b and 
+       solves the corresponding linear system ( A x = b ) with OpenNL. Note
+       that, if the matrix is not square or not symmetric, OpenNL will solve
+       the least-squares systeme A'*A x = A'*b
+     
+     - parameterize : this example implements the lscm [3] algorithm using 
+     OpenNL to solve the linear least-squares problem.
+
+   For the mmtx example, the syntax is the following, 
+
+   mmtx <solver_type> <max_iterations> <precision> <input_file>
+
+   - solver_type  must belong to { CG | BICGSTAB | GMRES | SUPERLU |FLOAT_CRS 
+      | DOUBLE_CRS | FLOAT_BCRS2 | DOUBLE_BCRS2 | FLOAT_ELL | DOUBLE_ELL | 
+       FLOAT_HYB | DOUBLE_HYB }
+   
+   - max_iterations is the maximal number of iterations  
+
+   - precision is the error bound precision for the ratio |Ax-b|/|b| with the
+     euclidean norm |.|
+   
+   - input_file is the name of the file containing the matrix and possibly the
+     rhs 
+
+   For the parameterize example (lscm_NL) 
+
+   parameterize <solver_type> <input_file> <output_file>
+
+    - solver_type is the same as the previous example
+
+    - input_file is the name of the file containing the input object (.obj)
+
+    - output_file is the name of the output file (.obj)  
+
+
+    You can download additional data sets at
+        http://alice.loria.fr/software/OpenNL/
+    and uncompress them in <base_dir>/examples/DATA 
+
+
+================================================================================
+                                    Known bugs  
+================================================================================
+
+   - For the 8800 GPU architecture, FLOAT_HYB and DOUBLE_HYB solvers may
+   encounter some problems. Use it only if you have a nvidia GPU architecture
+   >=1.1!
+   - On some plateforms (win64 with VC++Express tweaked for 64bit compilation),
+   the option CNC_OPTIMIZE_FOR_THIS_MACHINE must not be set.
+   - On some plateforms, configuring sometimes outputs a segfault of CMake,
+   but the build seems to work fine anyway.
+
+================================================================================
+                                    References   
+================================================================================
+
+   [1] Implementing Sparse Matrix-Vector Multiplication on Throughput-Oriented 
+   Processors
+   Nathan Bell and Michael Garland
+   Proc. Supercomputing '09", November 2009,
+
+   [2] “Least Squares Conformal Maps for Automatic Texture Atlas Generation”
+   Bruno Lévy, Sylvain Petitjean, Nicolas Ray and Jérome Maillot
+   ACM SIGGRAPH conference proceedings, 2002
+
+   [3] http://math.nist.gov/MatrixMarket/
+
+   [4] “Concurrent number cruncher - A GPU implementation of a general sparse
+   linear solver”
+   Luc Buatois, Guillaume Caumon and Bruno Levy
+   International Journal of Parallel, Emergent and Distributed Systems
+    

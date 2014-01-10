@@ -1,0 +1,192 @@
+User's guide
+============
+
+  No user guide for the moment, sorry about that.
+  Please have a look at the example programs and at the short
+  note below.
+
+  OpenNL is a state machine, i.e. its functions need to be called
+  in a specific order (for instance, you cannot query the solution 
+  of a linear problem before having solved it). The functions
+  nlBegin() and nlEnd() control the transitions between the different
+  states. To make debugging easier, OpenNL provides an assertion 
+  checking mechanism, that stops the program if the calling sequence 
+  is not respected.
+
+  Here is list of OpenNL functions, presented in an order corresponding 
+  to a typical scenario (see also main.cpp for an example)
+
+  Basic functions
+  ---------------
+
+  nlNewContext() ;
+  void nlSolverParameteri(NL_NB_VARIABLES, NLint number_of_variables) ;
+      specifies the total number of variables. Note: some variables can
+      be transformed into constants (see nlLockVariable())
+
+  void nlSolverParameteri(NL_SOLVER, NLenum solver) ;
+      where solver is one of NL_BICGSTAB (default), NL_CG, NL_GMRES, or one of
+      the solvers from the plugins (see nl.h for the complete list).
+
+  void nlSolverParameteri(NL_LEAST_SQUARES, NLboolean least_squares) ;
+      where least_squares is one of NL_FALSE (default), NL_TRUE. Note : 
+      you can use that parameter when you problem is not square, OpenNL
+      will solve the system A'*A x = A'*b
+
+  void nlSolverParameteri(NL_MAX_ITERATIONS, NLint max_iterations) ;
+      where max_iterations is the maximum number of iterations
+      used by the solver (default = 100)
+
+  void nlSolverParameterd(NL_THRESHOLD, NLdouble threshold) ;
+      convergence is reached when  ||A.x - b || / || b || < threshold
+  
+  void nlBegin(NL_SYSTEM) ;
+ 
+     void nlSetVariable(NLuint variable_index, NLdouble variable_value) ;
+         sets the initial value of the variable (used by iterative solvers, and
+         by locked variables)
+
+     void nlLockVariable(NLuint variable_index) ;
+         locks the specified variables (i.e. transforms it into a constant). It 
+         means that the solver puts this variable in the right-hand-side (this
+         is done automatically)
+
+     void nlUnlockVariable(NLuint variable_index) ;
+         unlocks the specified variable (i.e. you can change your mind before 
+         calling nlBegin(NL_MATRIX)).
+
+     NLboolean nlVariableIsLocked(NLuint variable_index) ;
+
+     void nlBegin(NL_MATRIX) ;
+    
+
+          void nlRowParameterd(NL_RIGHT_HAND_SIZE, NLdouble rhs) ;
+             specifies the right hand side for the next row
+             (default value is 0.0)
+
+          void nlRowParameterd(NL_ROW_SCALING, NLdouble w) ;
+             all coefficients of the next row (including the
+             right hand side) will be multiplied by w 
+             (default is 1.0)
+
+          NOTE: nlRowParameterd() is only set for the next row (i.e.
+              nlEnd(NL_ROW) resets row parameters to their default values).
+
+          void nlBegin(NL_ROW) ;
+
+              nlCoefficient(NLuint variable_index, NLdouble coefficient) ;
+                * Adds a coefficient to the current row of the matrix.
+                * In least-squares mode, it constructs the matrix A^t.A
+                * Coefficients corresponding to locked variables are
+                  substracted by the row's right-hand-side (in least-squares
+                  mode, something slightly more complicated is done).
+
+          void nlEnd(NL_ROW) ;
+
+
+     void nlEnd(NL_MATRIX) ;
+
+
+  nlEnd(NL_SYSTEM) ;
+  nlSolve() ;
+  
+  NLdouble nlGetVariable(NLuint variable_index) ;  
+
+  nlDeleteContext(nlGetCurrent()) ;
+
+  Advanced functions
+  ------------------
+
+  void nlSolverParameteri(NL_PRECONDITIONER, NLenum precond) ;
+      where precond is one of NL_PRECOND_NONE (default), NL_PRECOND_JACOBI,
+      NL_PRECOND_SSOR can be called before nlBegin(NL_SYSTEM)
+
+  NLboolean nlInitExtension(char* extension_name) ;
+      Attemps to initialize an OpenNL extension. Returns NL_TRUE on success.
+      Existing OpenNL extensions are:
+           "SUPERLU" (faster solver than built-in OpenNL solvers)
+            If nlInitExtension("SUPERLU") succeeds, 
+            nlSolverParameteri(NL_SOLVER, superlu_solver) can be called,
+            where superlu_solver is one of
+             NL_SUPERLU_EXT           : plain SuperNodal solver
+             NL_PERM_SUPERLU_EXT      : SuperNodal solver with permutation
+                                        matrix (I recommand this one)
+             NL_SYMMETRIC_SUPERLU_EXT : SuperNodal solver in symmetric mode
+                                        (can speed-up computations on some
+                                        matrices)
+
+  void nlEnable(NL_NORMALIZE_ROWS) ;
+    If set, the coefficients of each row k (included the right-hand-side bk)
+    are divided by sqrt(sum(aki^2)). Row scaling is subsequently applied
+    (see nlRowParameterd()).
+
+  void nlGetBooleanv(nlEnum, nlBoolean*) 
+  void nlGetIntergerv(nlEnum, nlInt*) 
+  void nlGetDoublev(nlEnum, nlDouble*) 
+  nlBoolean nlIsEnabled(nlEnum) 
+      Queries OpenNL's state.
+  Note : as an example you can retrieve the Elapsed Solving Time by 
+      
+      nlGetDoublev(NL_ELAPSED_TIME, &time) ;
+      
+      or the number of used iterations by
+      
+      nlGetIntergerv(NL_USED_ITERATIONS, &iterations);
+
+  NLContext nlNewContext() ;
+  nlMakeCurrent(NLContext) ;
+  nlDeleteContext(NLContext) ;
+  NLContext nlMakeCurrent() ;
+       Some programs may need to construct and solve multiple systems, in an
+       interleaved way. These functions make it possible to manage multiple
+       OpenNL contexts.
+
+
+  CNC Plugin 
+  -----------
+
+  Here are some information about the CNC plugin:
+
+  - solver_type:
+    The name of the CNC solver identifiers when used in
+    nlSolverParameteri(NL_SOLVER, NLenum solver) are constructed this way:
+    
+        NL_CNC_<type>_<solver_format>
+    
+    The types are FLOAT or DOUBLE.
+    Solver formats are CRS, BRCS2, ELL and HYB.
+    
+    * CRS format corresponds to the Compress Row Storage format which
+    is use by programs such as matlab. Unfortunately, this format is
+    not very efficient using GPU programming due to the acces 
+    in global which are not contiguous. 
+    
+    * BCRS2 is a version of the previous format using 2x2 blocks of non-zero
+    data. Sometimes is as efficient as the ELL format.
+
+    * ELL is a format where there is a fixed number of nonzero entries by row;
+    thus, if in a row there are less than this fix number, zero are padded to
+    complete the row. Therefore, there is a contiguous acces in global memory, 
+    the GPU kernel is very often the best.
+
+    * HYB is a format combining two formats : ELL for the main part of the
+    matrix and a internal COO (coordinate sparse format) format. The number of
+    non-zero entries per row for COO is computed to maximize the portion of the
+    matrix that will be treated with ELL while minimizing the number of zeroes
+    added as padding. On rows with too many elements, the exceeding ones are
+    treated separately with the COO format. For very large problems and for
+    matrices with a few rows with a quite bigger number of non-zero entries
+    than the others, it can converge faster than the other alternatives.
+
+
+    About using FLOAT solvers : 
+
+    - OpenNL was programmed in C, and the floating precision is double by
+      default. So If your using a float solver, the precision is double, but
+      computations in CNC plugin are done in float, so you can obtain a result
+      with an error greater than requested. 
+
+    - due to rounding errors, the FLOAT solvers need more iterations to
+      converge.
+     
+
