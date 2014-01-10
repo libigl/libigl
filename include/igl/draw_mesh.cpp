@@ -235,16 +235,19 @@ IGL_INLINE void igl::draw_mesh(
         {
           glTexCoord2d(TC(tc,0),TC(tc,1));
         }
-        switch(cC)
+        if(rC>0)
         {
-          case 3:
-            glColor3dv(color.data());
-            break;
-          case 4:
-            glColor4dv(color.data());
-            break;
-          default:
-            break;
+          switch(cC)
+          {
+            case 3:
+              glColor3dv(color.data());
+              break;
+            case 4:
+              glColor4dv(color.data());
+              break;
+            default:
+              break;
+          }
         }
         if(n != -1)
         {
