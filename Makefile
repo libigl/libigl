@@ -15,7 +15,6 @@ debug: DEBUG=debug
 CFLAGS += $(OPTFLAGS)
 #CFLAGS += -DIGL_NO_OPENGL -DIGL_NO_ANTTWEAKBAR
 # We use well-supported features of c++11
-CFLAGS += -std=c++11
 
 EXTRA_DIRS=
 ifeq ($(IGL_WITH_TETGEN),1)
