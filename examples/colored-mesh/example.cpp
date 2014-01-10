@@ -1,6 +1,7 @@
 #include <igl/OpenGL_convenience.h>
 #include <igl/per_face_normals.h>
 #include <igl/per_vertex_normals.h>
+#include <igl/two_axis_valuator_fixed_up.h>
 #include <igl/normalize_row_lengths.h>
 #include <igl/draw_mesh.h>
 #include <igl/draw_floor.h>
@@ -14,14 +15,16 @@
 #include <igl/readWRL.h>
 #include <igl/trackball.h>
 #include <igl/list_to_matrix.h>
+#include <igl/snap_to_canonical_view_quat.h>
+#include <igl/snap_to_fixed_up.h>
 #include <igl/triangulate.h>
 #include <igl/material_colors.h>
 #include <igl/barycenter.h>
 #include <igl/matlab_format.h>
 #include <igl/ReAntTweakBar.h>
 #include <igl/pathinfo.h>
-#include <igl/embree/EmbreeIntersector.h>
-#include <igl/embree/ambient_occlusion.h>
+#include <igl/Camera.h>
+#include <igl/get_seconds.h>
 
 #ifdef __APPLE__
 #  include <GLUT/glut.h>
@@ -35,14 +38,84 @@
 #include <iostream>
 #include <algorithm>
 
+struct State
+{
+  igl::Camera camera;
+} s;
+enum RotationType
+{
+  ROTATION_TYPE_IGL_TRACKBALL = 0,
+  ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP = 1,
+  NUM_ROTATION_TYPES = 2,
+} rotation_type;
+bool is_rotating = false;
+int down_x,down_y;
+igl::Camera down_camera;
+bool is_animating = false;
+double animation_start_time = 0;
+double ANIMATION_DURATION = 0.5;
+Eigen::Quaterniond animation_from_quat;
+Eigen::Quaterniond animation_to_quat;
+// Use vector for range-based `for`
+std::vector<State> undo_stack;
+std::vector<State> redo_stack;
+
+void push_undo()
+{
+  undo_stack.push_back(s);
+  // Clear
+  redo_stack = std::vector<State>();
+}
+
+void undo()
+{
+  using namespace std;
+  if(!undo_stack.empty())
+  {
+    redo_stack.push_back(s);
+    s = undo_stack.front();
+    undo_stack.pop_back();
+  }
+}
+
+void redo()
+{
+  using namespace std;
+  if(!redo_stack.empty())
+  {
+    undo_stack.push_back(s);
+    s = redo_stack.front();
+    redo_stack.pop_back();
+  }
+}
+
+void TW_CALL set_rotation_type(const void * value, void * clientData)
+{
+  using namespace Eigen;
+  using namespace std;
+  using namespace igl;
+  const RotationType old_rotation_type = rotation_type;
+  rotation_type = *(const RotationType *)(value);
+  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP && 
+    old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
+  {
+    push_undo();
+    animation_from_quat = s.camera.m_rotation_conj;
+    snap_to_fixed_up(animation_from_quat,animation_to_quat);
+    // start animation
+    animation_start_time = get_seconds();
+    is_animating = true;
+  }
+}
+
+void TW_CALL get_rotation_type(void * value, void *clientData)
+{
+  RotationType * rt = (RotationType *)(value);
+  *rt = rotation_type;
+}
+
 // Width and height of window
 int width,height;
-// Rotation of scene
-float scene_rot[4] = {0,0,0,1};
-// information at mouse down
-float down_scene_rot[4] = {0,0,0,1};
-bool trackball_on = false;
-int down_mouse_x,down_mouse_y;
 // Position of light
 float light_pos[4] = {0.1,0.1,-0.9,0};
 // Vertex positions, normals, colors and centroid
@@ -52,18 +125,11 @@ int selected_col = 0;
 Eigen::MatrixXi F;
 // Bounding box diagonal length
 double bbd;
-igl::EmbreeIntersector ei;
 // Running ambient occlusion
 Eigen::VectorXd S;
 int tot_num_samples = 0;
 #define REBAR_NAME "temp.rbr"
 igl::ReTwBar rebar; // Pointer to the tweak bar
-bool lights_on = true;
-Eigen::Vector4f color(0.4,0.8,0.3,1.0);
-double ao_factor = 1.0;
-bool ao_normalize = false;
-bool ao_on = true;
-double light_intensity = 0.0;
 
 void reshape(int width,int height)
 {
@@ -76,25 +142,45 @@ void reshape(int width,int height)
   glViewport(0,0,width,height);
   // Send the new window size to AntTweakBar
   TwWindowSize(width, height);
+  // Set aspect for all cameras
+  s.camera.m_aspect = (double)width/(double)height;
+  for(auto & s : undo_stack)
+  {
+    s.camera.m_aspect = (double)width/(double)height;
+  }
+  for(auto & s : redo_stack)
+  {
+    s.camera.m_aspect = (double)width/(double)height;
+  }
 }
 
-// Set up projection and model view of scene
 void push_scene()
 {
   using namespace igl;
+  using namespace std;
   glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(45,(double)width/(double)height,1e-2,100);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  gluLookAt(0,0,3,0,0,0,0,1,0);
   glPushMatrix();
-  float mat[4*4];
-  quat_to_mat(scene_rot,mat);
-  glMultMatrixf(mat);
+  glLoadIdentity();
+  auto & camera = s.camera;
+  gluPerspective(camera.m_angle,camera.m_aspect,camera.m_near,camera.m_far);
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  gluLookAt(
+    camera.eye()(0), camera.eye()(1), camera.eye()(2),
+    camera.at()(0), camera.at()(1), camera.at()(2),
+    camera.up()(0), camera.up()(1), camera.up()(2));
 }
 
 void pop_scene()
+{
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glMatrixMode(GL_MODELVIEW);
+  glPopMatrix();
+}
+
+void pop_object()
 {
   glPopMatrix();
 }
@@ -107,11 +193,6 @@ void push_object()
   glTranslated(-mid(0,0),-mid(0,1),-mid(0,2));
 }
 
-void pop_object()
-{
-  glPopMatrix();
-}
-
 // Set up double-sided lights
 void lights()
 {
@@ -121,10 +202,10 @@ void lights()
   glEnable(GL_LIGHT0);
   glEnable(GL_LIGHT1);
   float amb[4];
-  amb[0] = amb[1] = amb[2] = light_intensity;
+  amb[0] = amb[1] = amb[2] = 0;
   amb[3] = 1.0;
   float diff[4] = {0.0,0.0,0.0,0.0};
-  diff[0] = diff[1] = diff[2] = (1.0 - light_intensity/0.4);;
+  diff[0] = diff[1] = diff[2] = (1.0 - 0/0.4);;
   diff[3] = 1.0;
   float zeros[4] = {0.0,0.0,0.0,0.0};
   float pos[4];
@@ -149,52 +230,23 @@ void display()
   using namespace igl;
   using namespace std;
 
-  //if(!trackball_on && tot_num_samples < 10000)
-  //{
-  //  if(S.size() == 0)
-  //  {
-  //    S.resize(V.rows());
-  //    S.setZero();
-  //  }
-  //  VectorXd Si;
-  //  const int num_samples = 20;
-  //  ambient_occlusion(ei,V,N,num_samples,Si);
-  //  S *= (double)tot_num_samples;
-  //  S += Si*(double)num_samples;
-  //  tot_num_samples += num_samples;
-  //  S /= (double)tot_num_samples;
-  //}
-
-  //// Convert to 1-intensity
-  //C.conservativeResize(S.rows(),3);
-  //if(ao_on)
-  //{
-  //  C<<S,S,S;
-  //  C.array() = (1.0-ao_factor*C.array());
-  //}else
-  //{
-  //  C.setConstant(1.0);
-  //}
-  //if(ao_normalize)
-  //{
-  //  C.col(0) *= ((double)C.rows())/C.col(0).sum();
-  //  C.col(1) *= ((double)C.rows())/C.col(1).sum();
-  //  C.col(2) *= ((double)C.rows())/C.col(2).sum();
-  //}
-  //C.col(0) *= color(0);
-  //C.col(1) *= color(1);
-  //C.col(2) *= color(2);
-
   glClearColor(back[0],back[1],back[2],0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  // All smooth points
-  glEnable( GL_POINT_SMOOTH );
+
+  if(is_animating)
+  {
+    double t = (get_seconds() - animation_start_time)/ANIMATION_DURATION;
+    if(t > 1)
+    {
+      t = 1;
+      is_animating = false;
+    }
+    const Quaterniond q = animation_from_quat.slerp(t,animation_to_quat).normalized();
+    s.camera.orbit(q.conjugate());
+  }
 
   glDisable(GL_LIGHTING);
-  if(lights_on)
-  {
-    lights();
-  }
+  lights();
   push_scene();
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);
@@ -226,7 +278,42 @@ void display()
 
   TwDraw();
   glutSwapBuffers();
-  glutPostRedisplay();
+  if(is_animating)
+  {
+    glutPostRedisplay();
+  }
+}
+
+void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
+{
+  using namespace std;
+  using namespace igl;
+  using namespace Eigen;
+  GLint viewport[4];
+  glGetIntegerv(GL_VIEWPORT,viewport);
+  if(wheel == 0 && TwMouseMotion(mouse_x, viewport[3] - mouse_y))
+  {
+    static double mouse_scroll_y = 0;
+    const double delta_y = 0.125*direction;
+    mouse_scroll_y += delta_y;
+    TwMouseWheel(mouse_scroll_y);
+    return;
+  }
+  push_undo();
+  auto & camera = s.camera;
+  if(wheel==0)
+  {
+    // factor of zoom change
+    double s = (1.-0.01*direction);
+    //// FOV zoom: just widen angle. This is hardly ever appropriate.
+    //camera.m_angle *= s;
+    //camera.m_angle = min(max(camera.m_angle,1),89);
+    camera.push_away(s);
+  }else
+  {
+    // Dolly zoom:
+    camera.dolly_zoom((double)direction*1.0);
+  }
 }
 
 void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
@@ -235,50 +322,107 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
   using namespace Eigen;
   using namespace igl;
   bool tw_using = TwEventMouseButtonGLUT(glutButton,glutState,mouse_x,mouse_y);
-  switch(glutState)
+  switch(glutButton)
   {
-    case 1:
-      // up
-      glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
-      trackball_on = false;
-      break;
-    case 0:
-      // down
-      if(!tw_using)
+    case GLUT_RIGHT_BUTTON:
+    case GLUT_LEFT_BUTTON:
+    {
+      switch(glutState)
       {
-        glutSetCursor(GLUT_CURSOR_CYCLE);
-        // collect information for trackball
-        trackball_on = true;
-        copy(scene_rot,scene_rot+4,down_scene_rot);
-        down_mouse_x = mouse_x;
-        down_mouse_y = mouse_y;
+        case 1:
+          // up
+          glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+          is_rotating = false;
+          break;
+        case 0:
+          // down
+          if(!tw_using)
+          {
+            glutSetCursor(GLUT_CURSOR_CYCLE);
+            // collect information for trackball
+            is_rotating = true;
+            down_camera = s.camera;
+            down_x = mouse_x;
+            down_y = mouse_y;
+          }
+        break;
       }
-    break;
+    }
+    // Scroll down
+    case 3:
+    {
+      mouse_wheel(0,-1,mouse_x,mouse_y);
+      break;
+    }
+    // Scroll up
+    case 4:
+    {
+      mouse_wheel(0,1,mouse_x,mouse_y);
+      break;
+    }
+    // Scroll left
+    case 5:
+    {
+      mouse_wheel(1,-1,mouse_x,mouse_y);
+      break;
+    }
+    // Scroll right
+    case 6:
+    {
+      mouse_wheel(1,1,mouse_x,mouse_y);
+      break;
+    }
   }
+  glutPostRedisplay();
 }
 
 void mouse_drag(int mouse_x, int mouse_y)
 {
   using namespace igl;
+  using namespace Eigen;
 
-
-  if(trackball_on)
+  if(is_rotating)
   {
-    // Rotate according to trackball
-    trackball<float>(
-      width,
-      height,
-      2,
-      down_scene_rot,
-      down_mouse_x,
-      down_mouse_y,
-      mouse_x,
-      mouse_y,
-      scene_rot);
+    glutSetCursor(GLUT_CURSOR_CYCLE);
+    Quaterniond q;
+    auto & camera = s.camera;
+    switch(rotation_type)
+    {
+      case ROTATION_TYPE_IGL_TRACKBALL:
+      {
+        // Rotate according to trackball
+        igl::trackball<double>(
+          width,
+          height,
+          2.0,
+          down_camera.m_rotation_conj.coeffs().data(),
+          down_x,
+          down_y,
+          mouse_x,
+          mouse_y,
+          q.coeffs().data());
+          break;
+      }
+      case ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
+      {
+        // Rotate according to two axis valuator with fixed up vector 
+        two_axis_valuator_fixed_up(
+          width, height,
+          2.0,
+          down_camera.m_rotation_conj,
+          down_x, down_y, mouse_x, mouse_y,
+          q);
+        break;
+      }
+      default:
+        break;
+    }
+    camera.orbit(q.conjugate());
   }else
   {
     TwEventMouseMotionGLUT(mouse_x, mouse_y);
   }
+  glutPostRedisplay();
 }
 
 
@@ -324,6 +468,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
       }
   }
   
+  glutPostRedisplay();
 }
 
 int main(int argc, char * argv[])
@@ -406,9 +551,6 @@ int main(int argc, char * argv[])
   bbd = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
   initC(Z,selected_col,C);
 
-  // Init embree
-  ei.init(V.cast<float>(),F.cast<int>());
-
   // Init glut
   glutInit(&argc,argv);
 
@@ -420,24 +562,40 @@ int main(int argc, char * argv[])
   }
   // Create a tweak bar
   rebar.TwNewBar("TweakBar");
-  rebar.TwAddVarRW("scene_rot", TW_TYPE_QUAT4F, &scene_rot, "");
-  rebar.TwAddVarRW("lights_on", TW_TYPE_BOOLCPP, &lights_on, "key=l");
-  rebar.TwAddVarRW("color", TW_TYPE_COLOR4F, color.data(), "colormode=hls");
-  rebar.TwAddVarRW("ao_factor", TW_TYPE_DOUBLE, &ao_factor, "min=0 max=1 step=0.2 keyIncr=] keyDecr=[ ");
-  rebar.TwAddVarRW("ao_normalize", TW_TYPE_BOOLCPP, &ao_normalize, "key=n");
-  rebar.TwAddVarRW("ao_on", TW_TYPE_BOOLCPP, &ao_on, "key=a");
-  rebar.TwAddVarRW("light_intensity", TW_TYPE_DOUBLE, &light_intensity, "min=0 max=0.4 step=0.1 keyIncr=} keyDecr={ ");
+  rebar.TwAddVarRW("camera_rotation", TW_TYPE_QUAT4D, 
+    s.camera.m_rotation_conj.coeffs().data(), "open readonly=true");
+  s.camera.push_away(3);
+  s.camera.dolly_zoom(25-s.camera.m_angle);
+  TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType",
+    "igl_trackball,two-a...-fixed-up");
+  rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
+    set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
   rebar.load(REBAR_NAME);
 
   glutInitDisplayString( "rgba depth double samples>=8 ");
   glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH)/2.0,glutGet(GLUT_SCREEN_HEIGHT));
-  glutCreateWindow("ambient-occlusion");
+  glutCreateWindow("colored-mesh");
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(key);
   glutMouseFunc(mouse);
   glutMotionFunc(mouse_drag);
-  glutPassiveMotionFunc((GLUTmousemotionfun)TwEventMouseMotionGLUT);
+  glutPassiveMotionFunc(
+    [](int x, int y)
+    {
+      TwEventMouseMotionGLUT(x,y);
+      glutPostRedisplay();
+    });
+  static std::function<void(int)> timer_bounce;
+  auto timer = [] (int ms) {
+    timer_bounce(ms);
+  };
+  timer_bounce = [&] (int ms) {
+    glutTimerFunc(ms, timer, ms);
+    glutPostRedisplay();
+  };
+  glutTimerFunc(500, timer, 500);
+
   glutMainLoop();
   return 0;
 }
