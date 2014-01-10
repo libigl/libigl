@@ -347,6 +347,7 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
           }
         break;
       }
+      break;
     }
     // Scroll down
     case 3:
