@@ -9,7 +9,9 @@
 
 namespace igl
 {
-  // Read an image from an image  ile and use it as a texture
+  // Read an image from an image file and use it as a texture. Officially, only
+  // .tga and .png are supported. Any filetype read by ImageMagick's `convert`
+  // will work via an unsafe system call.
   //
   // Input:
   //  filename  path to image file
