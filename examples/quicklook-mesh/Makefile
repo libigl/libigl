@@ -14,8 +14,9 @@ EIGEN=/opt/local/include/eigen3/
 EIGEN3_INC=-I$(EIGEN) -I$(EIGEN)/unsupported
 
 LIBIGL=../../
-LIBIGL_LIB=-L$(LIBIGL)/lib -ligl
-LIBIGL_INC=-I $(LIBIGL)/include
+#LIBIGL_LIB=-L$(LIBIGL)/lib -ligl
+LIBIGL_LIB=
+LIBIGL_INC=-DIGL_HEADER_ONLY -I $(LIBIGL)/include
 
 # Do not use the GLU that comes with the macports Mesa:
 # http://www.alecjacobson.com/weblog/?p=2827
@@ -71,6 +72,7 @@ Mesh.qlgenerator/Contents/Resources/:
 
 Mesh.qlgenerator/Contents/MacOS/Mesh: $(OBJ_FILES)
 	${CXX} $(CFLAGS) $(CXXFLAGS) -bundle -o $@ $(OBJ_FILES) $(LIB)
+	#dylibbundler -od -b -x ./Mesh.qlgenerator/Contents/MacOS/Mesh -d ./Mesh.qlgenerator/Contents/libs/
 
 obj:
 	mkdir -p obj
