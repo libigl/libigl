@@ -109,10 +109,10 @@ IGL_INLINE bool igl::arap_dof_precomputation(
     {
       GG=G;
     }
-
     //printf("group_sum_matrix()\n");
     group_sum_matrix(GG,G_sum);
   }
+
 #ifdef EXTREME_VERBOSE
   cout<<"G_sumIJV=["<<endl;print_ijv(G_sum,1);cout<<endl<<"];"<<
     endl<<"G_sum=sparse(G_sumIJV(:,1),G_sumIJV(:,2),G_sumIJV(:,3),"<<
