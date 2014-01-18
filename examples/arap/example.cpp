@@ -1,4 +1,9 @@
 #include <igl/svd3x3/arap.h>
+#include <igl/writeDMAT.h>
+#include <igl/partition.h>
+#include <igl/cotmatrix.h>
+#include <igl/massmatrix.h>
+#include <igl/invert_diag.h>
 #include <igl/OpenGL_convenience.h>
 #include <igl/per_face_normals.h>
 #include <igl/per_vertex_normals.h>
@@ -150,6 +155,44 @@ int num_in_selection(const Eigen::VectorXi & S)
   return count;
 }
 
+bool harmonic(
+  const Eigen::MatrixXd & V,
+  const Eigen::MatrixXi & F,
+  const Eigen::VectorXi & b,
+  const Eigen::MatrixXd & bc,
+  const int k,
+  Eigen::MatrixXd & W)
+{
+  using namespace igl;
+  using namespace Eigen;
+  SparseMatrix<double> L,M,Mi;
+  cotmatrix(V,F,L);
+  massmatrix(V,F,MASSMATRIX_VORONOI,M);
+  invert_diag(M,Mi);
+  SparseMatrix<double> Q = -L;
+  for(int p = 1;p<k;p++)
+  {
+    Q = (Q*Mi*-L).eval();
+  }
+  const VectorXd B = VectorXd::Zero(V.rows(),1);
+  min_quad_with_fixed_data<double> data;
+  min_quad_with_fixed_precompute(Q,b,SparseMatrix<double>(),true,data);
+  W.resize(V.rows(),bc.cols());
+  for(int w = 0;w<bc.cols();w++)
+  {
+    const VectorXd bcw = bc.col(w);
+    VectorXd Ww;
+    if(!min_quad_with_fixed_solve(data,B,bcw,VectorXd(),Ww))
+    {
+      return false;
+    }
+    W.col(w) = Ww;
+  }
+  writeDMAT("W.dmat",W);
+  return true;
+}
+
+
 bool init_arap()
 {
   using namespace igl;
@@ -157,6 +200,7 @@ bool init_arap()
   using namespace std;
   VectorXi b(num_in_selection(S));
   assert(S.rows() == V.rows());
+  MatrixXd bc = MatrixXd::Zero(b.size(),S.maxCoeff()+1);
   // get b from S
   {
     int bi = 0;
@@ -164,12 +208,22 @@ bool init_arap()
     {
       if(S(v) >= 0)
       {
-        b(bi++) = v;
+        b(bi) = v;
+        bc(bi,S(v)) = 1;
+        bi++;
       }
     }
   }
   // Store current mesh
   U = V;
+  VectorXi _S;
+  VectorXd _D;
+  MatrixXd W;
+  if(!harmonic(V,F,b,bc,1,W))
+  {
+    return false;
+  }
+  partition(W,100,arap_data.G,_S,_D);
   return arap_precomputation(V,F,b,arap_data);
 }
 
