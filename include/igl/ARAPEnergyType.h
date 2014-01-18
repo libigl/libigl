@@ -21,12 +21,16 @@ namespace igl
   //       [Liu et al.  2010] or "A simple geometric model for elastic
   //       deformation" by [Chao et al.  2010], rotations defined at elements
   //       (triangles or tets) 
+  //     ARAP_ENERGY_TYPE_DEFAULT  Choose one automatically: spokes and rims
+  //       for surfaces, elements for planar meshes and test (not fully
+  //       supported)
   enum ARAPEnergyType
   {
     ARAP_ENERGY_TYPE_SPOKES = 0,
     ARAP_ENERGY_TYPE_SPOKES_AND_RIMS = 1,
     ARAP_ENERGY_TYPE_ELEMENTS = 2,
-    NUM_ARAP_ENERGY_TYPES = 3
+    ARAP_ENERGY_TYPE_DEFAULT = 3,
+    NUM_ARAP_ENERGY_TYPES = 4
   };
 }
 #endif
