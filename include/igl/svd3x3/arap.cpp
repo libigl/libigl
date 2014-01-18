@@ -16,7 +16,7 @@
 #include <igl/arap_rhs.h>
 #include <igl/repdiag.h>
 #include <igl/columnize.h>
-#include <igl/svd3x3/fit_rotations.h>
+#include "fit_rotations.h"
 #include <cassert>
 #include <iostream>
 

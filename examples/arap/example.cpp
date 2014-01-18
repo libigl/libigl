@@ -1,4 +1,4 @@
-#include "arap.h"
+#include <igl/svd3x3/arap.h>
 #include <igl/OpenGL_convenience.h>
 #include <igl/per_face_normals.h>
 #include <igl/per_vertex_normals.h>

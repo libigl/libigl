@@ -31,7 +31,7 @@ ANTTWEAKBAR_LIB=-L$(LIBIGL)/external/AntTweakBar/lib -lAntTweakBar -framework Ap
 INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC) $(YIMG_INC)
 LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB) $(YIMG_LIB)
 
-example: example.o arap.o
+example: example.o
 	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) $(LIB) -o example $^
 
 %.o: %.cpp
