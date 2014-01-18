@@ -188,7 +188,6 @@ bool harmonic(
     }
     W.col(w) = Ww;
   }
-  writeDMAT("W.dmat",W);
   return true;
 }
 
