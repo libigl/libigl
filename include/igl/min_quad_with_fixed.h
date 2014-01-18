@@ -64,6 +64,7 @@ namespace igl
   // Inputs:
   //   data  factorization struct with all necessary precomputation to solve
   //   B  n by 1 column of linear coefficients
+  //   Y  b by 1 list of constant fixed values
   //   Beq  m by 1 list of linear equality constraint constant values
   // Outputs:
   //   Z  n by cols solution
