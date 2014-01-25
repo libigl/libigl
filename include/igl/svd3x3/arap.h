@@ -82,4 +82,8 @@ namespace igl
     Eigen::PlainObjectBase<DerivedU> & U);
 };
 
+#ifdef IGL_HEADER_ONLY
+#include "arap.cpp"
+#endif
+
 #endif
