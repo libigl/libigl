@@ -12,7 +12,6 @@
 
 #include "OpenGL_convenience.h"
 
-#include <cstdio>
 #include <string>
 
 namespace igl

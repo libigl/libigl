@@ -354,6 +354,7 @@ inline void igl::Camera::look_at(
   m_at_dist = F.norm();
   F.normalize();
   // Project up onto plane orthogonal to F and normalize
+  assert(up.cross(F).norm() > DOUBLE_EPS && "(eye-at) x up ≈ 0");
   const Vector3d proj_up = (up-(up.dot(F))*F).normalized();
   Quaterniond a,b;
   a.setFromTwoVectors(Vector3d(0,0,-1),-F);
@@ -366,6 +367,7 @@ inline void igl::Camera::look_at(
   //cout<<"eye(): "<<this->eye().transpose()<<endl;
   //cout<<"at(): "<<this->at().transpose()<<endl;
   //cout<<"eye()-at(): "<<(this->eye()-this->at()).normalized().transpose()<<endl;
+  //cout<<"eye-this->eye(): "<<(eye-this->eye()).squaredNorm()<<endl;
   assert(           (eye-this->eye()).squaredNorm() < DOUBLE_EPS);
   assert((F-(this->eye()-this->at()).normalized()).squaredNorm() < 
     DOUBLE_EPS);
