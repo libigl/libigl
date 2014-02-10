@@ -51,7 +51,8 @@ IGL_INLINE void principal_curvature(
                                      const Eigen::PlainObjectBase<DerivedF>& F,
                                      Eigen::PlainObjectBase<DerivedV>& PD1,
                                      Eigen::PlainObjectBase<DerivedV>& PD2,
-                                     unsigned radius = 5
+                                     unsigned radius = 5,
+                                     bool useKring = true
                                      );
 }
 
