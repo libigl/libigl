@@ -76,7 +76,7 @@ IGL_INLINE void igl::tt(const Eigen::PlainObjectBase<Scalar>& V,
                         const Eigen::PlainObjectBase<Index>& F,
                         Eigen::PlainObjectBase<Index>& TT)
 {
-  assert(igl::is_manifold(V,F));
+  //assert(igl::is_manifold(V,F));
   std::vector<std::vector<int> > TTT;
   
   tt_preprocess(V,F,TTT);
@@ -90,7 +90,7 @@ IGL_INLINE void igl::tt(const Eigen::PlainObjectBase<Scalar>& V,
                         Eigen::PlainObjectBase<Index>& TT,
                         Eigen::PlainObjectBase<Index>& TTi)
 {
-  assert(igl::is_manifold(V,F));
+  //assert(igl::is_manifold(V,F));
   std::vector<std::vector<int> > TTT;
   
   tt_preprocess(V,F,TTT);
