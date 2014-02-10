@@ -782,7 +782,8 @@ IGL_INLINE void igl::principal_curvature(
                                          const Eigen::PlainObjectBase<DerivedF>& F,
                                          Eigen::PlainObjectBase<DerivedV>& PD1,
                                          Eigen::PlainObjectBase<DerivedV>& PD2,
-                                         unsigned radius
+                                         unsigned radius,
+                                         bool useKring
                                          )
 {
   using namespace std;
@@ -795,6 +796,12 @@ IGL_INLINE void igl::principal_curvature(
   CurvatureCalculator cc;
   cc.init(V.template cast<double>(),F.template cast<int>());
   cc.sphereRadius = radius;
+  
+  if (useKring)
+  {
+    cc.kRing = radius;
+    cc.st = K_RING_SEARCH;
+  }
   
   // Compute
   cc.computeCurvature();
