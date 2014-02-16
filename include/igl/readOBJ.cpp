@@ -38,7 +38,7 @@ IGL_INLINE bool igl::readOBJ(
   F.clear();
   FTC.clear();
   FN.clear();
-  
+
   // variables an constants to assist parsing the .obj file
   // Constant strings to compare against
   std::string v("v");
@@ -46,15 +46,15 @@ IGL_INLINE bool igl::readOBJ(
   std::string vt("vt");
   std::string f("f");
   std::string tic_tac_toe("#");
-#ifndef LINE_MAX
-#  define LINE_MAX 2048
+#ifndef IGL_LINE_MAX
+#  define IGL_LINE_MAX 2048
 #endif
-  
-  char line[LINE_MAX];
+
+  char line[IGL_LINE_MAX];
   int line_no = 1;
-  while (fgets(line, LINE_MAX, obj_file) != NULL) 
+  while (fgets(line, IGL_LINE_MAX, obj_file) != NULL) 
   {
-    char type[LINE_MAX];
+    char type[IGL_LINE_MAX];
     // Read first word containing type
     if(sscanf(line, "%s",type) == 1)
     {
@@ -123,7 +123,7 @@ IGL_INLINE bool igl::readOBJ(
         std::vector<Index > ftc;
         std::vector<Index > fn;
         // Read each "word" after type
-        char word[LINE_MAX];
+        char word[IGL_LINE_MAX];
         int offset;
         while(sscanf(l,"%s%n",word,&offset) == 1)
         {
@@ -196,10 +196,10 @@ IGL_INLINE bool igl::readOBJ(
     line_no++;
   }
   fclose(obj_file);
-  
+
   assert(F.size() == FN.size());
   assert(F.size() == FTC.size());
-  
+
   return true;
 }
 
@@ -243,7 +243,7 @@ IGL_INLINE bool igl::readOBJ(
       return false;
     }
   }
-  
+
   if(!vFN.empty())
   {
     bool FN_rect = igl::list_to_matrix(vFN,FN);
@@ -253,10 +253,10 @@ IGL_INLINE bool igl::readOBJ(
       return false;
     }
   }
-  
+
   if(!vTC.empty())
   {
-    
+
     bool T_rect = igl::list_to_matrix(vTC,TC);
     if(!T_rect)
     {
@@ -266,7 +266,7 @@ IGL_INLINE bool igl::readOBJ(
   }
   if(!vFTC.empty())
   {
-    
+
     bool FTC_rect = igl::list_to_matrix(vFTC,FTC);
     if(!FTC_rect)
     {
@@ -308,31 +308,31 @@ IGL_INLINE bool igl::readOBJPoly(
     return false;
 
   F = vF;
-  
+
   if(!vN.empty())
   {
     bool VN_rect = igl::list_to_matrix(vN,CN);
     if(!VN_rect)
       return false;
   }
-  
+
   if(!vFN.empty())
   {
     bool FN_rect = igl::list_to_matrix(vFN,FN);
     if(!FN_rect)
       return false;
   }
-  
+
   if(!vTC.empty())
   {
-    
+
     bool T_rect = igl::list_to_matrix(vTC,TC);
     if(!T_rect)
       return false;
   }
   if(!vFTC.empty())
   {
-    
+
     bool FTC_rect = igl::list_to_matrix(vFTC,FTC);
     if(!FTC_rect)
       return false;
