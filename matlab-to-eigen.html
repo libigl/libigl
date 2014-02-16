@@ -6,7 +6,7 @@
     <table>
       <tr class="header">
         <th>MATLAB</th>
-        <th>Eigen</th>
+        <th>Eigen with libigl</th>
         <th>Notes</th>
       </tr>
 
@@ -202,13 +202,19 @@
       </tr>
 
       <tr class=d0>
-        <td><pre><code>B = IM(A)</code></pre></td>
+        <td><pre><code>B = IM(A)
+
+A = IM(A);
+  </code></pre></td>
         <td><pre><code>B = A.unaryExpr(bind1st(mem_fun( 
   static_cast&lt;VectorXi::Scalar&amp;(VectorXi::*)(VectorXi::Index)&gt;
   (&amp;VectorXi::operator())), &amp;IM)).eval();
+
+for_each(A.data(),A.data()+A.size(),[&amp;IM](int &amp; a){a=IM(a);});
   </code></pre></td>
         <td>Where IM is an "index map" column vector and A is an arbitrary
-        matrix. The <code>.eval()</code> is not necessary if A != B</td>
+        matrix. The <code>.eval()</code> is not necessary if A != B, but then
+        the second option should be used.</td>
       </tr>
 
       <tr class=d1>
