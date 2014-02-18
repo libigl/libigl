@@ -17,7 +17,10 @@ namespace igl
   // Inputs:
   //   V                            #V by 3 list of vertex positions
   //   F                            #F by 3 list of triangle indices
-  //   num_rays                     Total number of rays that will be shot
+  //   rays_total                   Total number of rays that will be shot
+  //   rays_minimum                 Minimum number of rays that each patch should receive
+  //   use_parity                   Flag for using parity mode
+  //   is_verbose                   Flag for verbose output to cout
   // Outputs:
   //   I                            #F list of whether face has been flipped
   template <
@@ -27,7 +30,8 @@ namespace igl
   IGL_INLINE void reorient_facets_raycast(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
-    int num_rays,
+    int rays_total,
+    int rays_minimum,
     bool use_parity,
     bool is_verbose,
     Eigen::PlainObjectBase<DerivedI> & I);

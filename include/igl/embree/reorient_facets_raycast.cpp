@@ -24,7 +24,8 @@
   IGL_INLINE void igl::reorient_facets_raycast(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
-    int num_rays,
+    int rays_total,
+    int rays_minimum,
     bool use_parity,
     bool is_verbose,
     Eigen::PlainObjectBase<DerivedI> & I)
@@ -72,12 +73,11 @@
     area_per_component(C(f)) += A(f);
   }
   VectorXi num_rays_per_component(num_cc);
-  num_rays_per_component.fill(100);     // Minimum number of rays per component (predefined)
   for (int c = 0; c < num_cc; ++c)
   {
-    num_rays_per_component(c) += static_cast<int>(num_rays * area_per_component(c) / area_total);
+    num_rays_per_component(c) = max<int>(static_cast<int>(rays_total * area_per_component(c) / area_total), rays_minimum);
   }
-  num_rays = num_rays_per_component.sum();
+  rays_total = num_rays_per_component.sum();
   
   // generate all the rays
   if (is_verbose) cout << "generating rays... ";
@@ -87,9 +87,9 @@
   vector<int     > ray_face;
   vector<Vector3f> ray_ori;
   vector<Vector3f> ray_dir;
-  ray_face.reserve(num_rays);
-  ray_ori .reserve(num_rays);
-  ray_dir .reserve(num_rays);
+  ray_face.reserve(rays_total);
+  ray_ori .reserve(rays_total);
+  ray_dir .reserve(rays_total);
   for (int c = 0; c < num_cc; ++c)
   {
     if (area_per_component[c] == 0)
@@ -142,7 +142,7 @@
       ray_ori .push_back(p);
       ray_dir .push_back(d);
 
-      if (is_verbose && ray_face.size() % (num_rays / 10) == 0) cout << ".";
+      if (is_verbose && ray_face.size() % (rays_total / 10) == 0) cout << ".";
     }
   }
   if (is_verbose) cout << ray_face.size()  << " rays. ";
