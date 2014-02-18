@@ -122,6 +122,7 @@
                  + b * V.row(FF(f,1)).template cast<float>().eval()
                  + c * V.row(FF(f,2)).template cast<float>().eval();
       Vector3f n = N.row(f).cast<float>();
+      if (n.isZero()) continue;
       // random direction in hemisphere around n (avoid too grazing angle)
       Vector3f d;
       while (true) {
