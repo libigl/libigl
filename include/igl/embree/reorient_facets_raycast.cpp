@@ -25,6 +25,7 @@
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
     int num_rays,
+    bool use_parity,
     bool is_verbose,
     Eigen::PlainObjectBase<DerivedI> & I)
 {
@@ -40,6 +41,7 @@
   VectorXi C;
   MatrixXi FF = F;
   bfs_orient(F,FF,C);
+  if (is_verbose) cout << (C.maxCoeff() + 1)  << " components. ";
   
   // number of patches
   const int num_cc = C.maxCoeff()+1;
@@ -75,6 +77,7 @@
   {
     num_rays_per_component(c) += static_cast<int>(num_rays * area_per_component(c) / area_total);
   }
+  num_rays = num_rays_per_component.sum();
   
   // generate all the rays
   if (is_verbose) cout << "generating rays... ";
@@ -137,12 +140,16 @@
       ray_face.push_back(f);
       ray_ori .push_back(p);
       ray_dir .push_back(d);
+
+      if (is_verbose && ray_face.size() % (num_rays / 10) == 0) cout << ".";
     }
   }
+  if (is_verbose) cout << ray_face.size()  << " rays. ";
   
   // per component voting: first=front, second=back
-  vector<pair<float, float>> C_vote_distance(num_cc, make_pair(0, 0));     // sum of distance between ray origin and intersection
-  vector<pair<int  , int  >> C_vote_infinity(num_cc, make_pair(0, 0));     // number of rays reaching infinity
+  vector<pair<float, float>> C_vote_distance(num_cc, make_pair(0, 0));      // sum of distance between ray origin and intersection
+  vector<pair<int  , int  >> C_vote_infinity(num_cc, make_pair(0, 0));      // number of rays reaching infinity
+  vector<pair<int  , int  >> C_vote_parity(num_cc, make_pair(0, 0));        // sum of parity count for each ray
   
   if (is_verbose) cout << "shooting rays... ";
 #pragma omp parallel for
@@ -163,22 +170,30 @@
     if (!hits_front.empty() && hits_front[0].id == f) hits_front.erase(hits_front.begin());
     if (!hits_back .empty() && hits_back [0].id == f) hits_back .erase(hits_back .begin());
     
-    if (hits_front.empty())
-    {
+    if (use_parity) {
 #pragma omp atomic
-      C_vote_infinity[c].first++;
-    } else {
+      C_vote_parity[c].first  += hits_front.size() % 2;
 #pragma omp atomic
-      C_vote_distance[c].first += hits_front[0].t;
-    }
+      C_vote_parity[c].second += hits_back .size() % 2;
     
-    if (hits_back.empty())
-    {
-#pragma omp atomic
-      C_vote_infinity[c].second++;
     } else {
+      if (hits_front.empty())
+      {
 #pragma omp atomic
-      C_vote_distance[c].second += hits_back[0].t;
+        C_vote_infinity[c].first++;
+      } else {
+#pragma omp atomic
+        C_vote_distance[c].first += hits_front[0].t;
+      }
+    
+      if (hits_back.empty())
+      {
+#pragma omp atomic
+        C_vote_infinity[c].second++;
+      } else {
+#pragma omp atomic
+        C_vote_distance[c].second += hits_back[0].t;
+      }
     }
   }
   
@@ -186,9 +201,14 @@
   for(int f = 0; f < m; ++f)
   {
     int c = C(f);
-    I(f) = (C_vote_infinity[c].first == C_vote_infinity[c].second && C_vote_distance[c].first <  C_vote_distance[c].second) ||
-            C_vote_infinity[c].first <  C_vote_infinity[c].second
-            ? 1 : 0;
+    if (use_parity) {
+      I(f) = C_vote_parity[c].first > C_vote_parity[c].second ? 1 : 0;      // Ideally, parity for the front/back side should be 1/0 (i.e., parity sum for all rays should be smaller on the front side)
+    
+    } else {
+      I(f) = (C_vote_infinity[c].first == C_vote_infinity[c].second && C_vote_distance[c].first <  C_vote_distance[c].second) ||
+              C_vote_infinity[c].first <  C_vote_infinity[c].second
+              ? 1 : 0;
+    }
   }
   if (is_verbose) cout << "done!" << endl;
 }
