@@ -26,6 +26,7 @@
     const Eigen::PlainObjectBase<DerivedF> & F,
     int rays_total,
     int rays_minimum,
+    bool face_wise,
     bool use_parity,
     bool is_verbose,
     Eigen::PlainObjectBase<DerivedI> & I)
@@ -38,10 +39,16 @@
   // number of faces
   const int m = F.rows();
   
-  if (is_verbose) cout << "extracting patches... ";
   VectorXi C;
   MatrixXi FF = F;
-  bfs_orient(F,FF,C);
+  if (face_wise) {
+    C.resize(m);
+    for (int i = 0; i < m; ++i) C(i) = i;
+  
+  } else {
+    if (is_verbose) cout << "extracting patches... ";
+    bfs_orient(F,FF,C);
+  }
   if (is_verbose) cout << (C.maxCoeff() + 1)  << " components. ";
   
   // number of patches

@@ -19,8 +19,9 @@ namespace igl
   //   F                            #F by 3 list of triangle indices
   //   rays_total                   Total number of rays that will be shot
   //   rays_minimum                 Minimum number of rays that each patch should receive
-  //   use_parity                   Flag for using parity mode
-  //   is_verbose                   Flag for verbose output to cout
+  //   face_wise                    Decision made for each face independently, no use of patches (i.e., each face is treated as a patch)
+  //   use_parity                   Use parity mode
+  //   is_verbose                   Verbose output to cout
   // Outputs:
   //   I                            #F list of whether face has been flipped
   template <
@@ -32,6 +33,7 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedF> & F,
     int rays_total,
     int rays_minimum,
+    bool face_wise,
     bool use_parity,
     bool is_verbose,
     Eigen::PlainObjectBase<DerivedI> & I);
