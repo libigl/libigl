@@ -28,6 +28,7 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
     int num_rays,
+    bool is_verbose,
     Eigen::PlainObjectBase<DerivedI> & I);
 };
 
