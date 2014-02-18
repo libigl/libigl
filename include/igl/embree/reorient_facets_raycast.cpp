@@ -25,6 +25,7 @@
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
     int num_rays,
+    bool is_verbose,
     Eigen::PlainObjectBase<DerivedI> & I)
 {
   using namespace Eigen;
@@ -35,6 +36,7 @@
   // number of faces
   const int m = F.rows();
   
+  if (is_verbose) cout << "extracting patches... ";
   VectorXi C;
   MatrixXi FF = F;
   bfs_orient(F,FF,C);
@@ -75,7 +77,7 @@
   }
   
   // generate all the rays
-  //cout << "generating rays... ";
+  if (is_verbose) cout << "generating rays... ";
   uniform_real_distribution<float> rdist;
   mt19937 prng;
   prng.seed(time(nullptr));
@@ -92,13 +94,13 @@
       continue;
     }
     vector<int> CF;     // set of faces per component
-    vector<int> CF_area;
+    vector<unsigned long long> CF_area;
     for (int f = 0; f < m; ++f)
     {
       if (C(f)==c)
       {
         CF.push_back(f);
-        CF_area.push_back(static_cast<int>(100 * A(f) / area_min));
+        CF_area.push_back(static_cast<unsigned long long>(100 * A(f) / area_min));
       }
     }
     // discrete distribution for random selection of faces with probability proportional to their areas
@@ -142,7 +144,7 @@
   vector<pair<float, float>> C_vote_distance(num_cc, make_pair(0, 0));     // sum of distance between ray origin and intersection
   vector<pair<int  , int  >> C_vote_infinity(num_cc, make_pair(0, 0));     // number of rays reaching infinity
   
-  //cout << "shooting rays... ";
+  if (is_verbose) cout << "shooting rays... ";
 #pragma omp parallel for
   for (int i = 0; i < (int)ray_face.size(); ++i)
   {
@@ -188,6 +190,7 @@
             C_vote_infinity[c].first <  C_vote_infinity[c].second
             ? 1 : 0;
   }
+  if (is_verbose) cout << "done!" << endl;
 }
 
 #ifndef IGL_HEADER_ONLY
