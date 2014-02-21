@@ -28,6 +28,7 @@
 #include <igl/material_colors.h>
 #include <igl/barycenter.h>
 #include <igl/matlab_format.h>
+#include <igl/material_colors.h>
 #include <igl/ReAntTweakBar.h>
 #include <igl/pathinfo.h>
 #include <igl/Camera.h>
@@ -129,7 +130,7 @@ int width,height;
 // Position of light
 float light_pos[4] = {0.1,0.1,-0.9,0};
 // Vertex positions, normals, colors and centroid
-Eigen::MatrixXd V,U,N,mid;
+Eigen::MatrixXd V,U,N,C,mid;
 Eigen::VectorXi S;
 igl::ARAPData arap_data;
 Eigen::MatrixXi F;
@@ -163,6 +164,7 @@ bool init_arap()
   using namespace std;
   VectorXi b(num_in_selection(S));
   assert(S.rows() == V.rows());
+  C.resize(S.rows(),3);
   MatrixXd bc = MatrixXd::Zero(b.size(),S.maxCoeff()+1);
   // get b from S
   {
@@ -174,6 +176,19 @@ bool init_arap()
         b(bi) = v;
         bc(bi,S(v)) = 1;
         bi++;
+        if(S(v) == 0)
+        {
+          C.row(v) = RowVector3d(0.039,0.31,1);
+        }else
+        {
+          C.row(v) = RowVector3d(1,0.41,0.70);
+        }
+      }else
+      {
+        C.row(v) = RowVector3d(
+          GOLD_DIFFUSE[0],
+          GOLD_DIFFUSE[1],
+          GOLD_DIFFUSE[2]);
       }
     }
   }
@@ -208,16 +223,27 @@ bool update_arap()
         {
           case 0:
           {
-            const double r = mid(0)*0.25;
-            bc(bi,0) += r*cos(0.5*get_seconds()*2.*PI);
-            bc(bi,1) -= r+r*sin(0.5*get_seconds()*2.*PI);
+            //const double r = mid(0)*0.25;
+            //bc(bi,0) += r*cos(0.5*get_seconds()*2.*PI);
+            //bc(bi,1) -= r+r*sin(0.5*get_seconds()*2.*PI);
             break;
           }
           case 1:
           {
-            const double r = mid(1)*0.15;
-            bc(bi,1) += r+r*cos(0.15*get_seconds()*2.*PI);
-            bc(bi,2) -= r*sin(0.15*get_seconds()*2.*PI);
+            //const double r = mid(1)*0.15;
+            //bc(bi,1) += r+r*cos(0.15*get_seconds()*2.*PI);
+            //bc(bi,2) -= r*sin(0.15*get_seconds()*2.*PI);
+
+            //// Pull-up
+            //bc(bi,0) += 0.42;//mid(0)*0.5;
+            //bc(bi,1) += 0.55;//mid(0)*0.5;
+            // Bend
+            Vector3d t(-1,0,0);
+            Quaterniond q(AngleAxisd(PI/1.5,Vector3d(0,1.0,0.1).normalized()));
+            const Vector3d a = bc.row(bi);
+            bc.row(bi) = (q*(a-t) + t) + Vector3d(1.5,0.1,0.9);
+                
+
             break;
           }
           default:
@@ -304,7 +330,7 @@ void lights()
   using namespace std;
   glEnable(GL_LIGHTING);
   glLightModelf(GL_LIGHT_MODEL_TWO_SIDE,GL_TRUE);
-  glEnable(GL_LIGHT0);
+  //glEnable(GL_LIGHT0);
   glEnable(GL_LIGHT1);
   float amb[4];
   amb[0] = amb[1] = amb[2] = 0;
@@ -328,7 +354,8 @@ void lights()
   glLightfv(GL_LIGHT1,GL_POSITION,pos);
 }
 
-const float back[4] = {30.0/255.0,30.0/255.0,50.0/255.0,0};
+//const float back[4] = {30.0/255.0,30.0/255.0,50.0/255.0,0};
+const float back[4] = {255.0/255.0,255.0/255.0,255.0/255.0,0};
 void display()
 {
   using namespace Eigen;
@@ -363,17 +390,18 @@ void display()
 
   // Draw the model
   // Set material properties
-  glDisable(GL_COLOR_MATERIAL);
-  glMaterialfv(GL_FRONT, GL_AMBIENT,  GOLD_AMBIENT);
-  glMaterialfv(GL_FRONT, GL_DIFFUSE,  GOLD_DIFFUSE  );
-  glMaterialfv(GL_FRONT, GL_SPECULAR, GOLD_SPECULAR);
-  glMaterialf (GL_FRONT, GL_SHININESS, 128);
-  glMaterialfv(GL_BACK, GL_AMBIENT,  SILVER_AMBIENT);
-  glMaterialfv(GL_BACK, GL_DIFFUSE,  FAST_GREEN_DIFFUSE  );
-  glMaterialfv(GL_BACK, GL_SPECULAR, SILVER_SPECULAR);
-  glMaterialf (GL_BACK, GL_SHININESS, 128);
+  //glDisable(GL_COLOR_MATERIAL);
+  //glMaterialfv(GL_FRONT, GL_AMBIENT,  GOLD_AMBIENT);
+  //glMaterialfv(GL_FRONT, GL_DIFFUSE,  GOLD_DIFFUSE  );
+  //glMaterialfv(GL_FRONT, GL_SPECULAR, GOLD_SPECULAR);
+  //glMaterialf (GL_FRONT, GL_SHININESS, 128);
+  //glMaterialfv(GL_BACK, GL_AMBIENT,  SILVER_AMBIENT);
+  //glMaterialfv(GL_BACK, GL_DIFFUSE,  FAST_GREEN_DIFFUSE  );
+  //glMaterialfv(GL_BACK, GL_SPECULAR, SILVER_SPECULAR);
+  //glMaterialf (GL_BACK, GL_SHININESS, 128);
+  glEnable(GL_COLOR_MATERIAL);
 
-  draw_mesh(U,F,N);
+  draw_mesh(U,F,N,C);
   glDisable(GL_COLOR_MATERIAL);
 
   pop_object();
@@ -387,7 +415,8 @@ void display()
   const float GREY[4] = {0.5,0.5,0.6,1.0};
   const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
 
-  draw_floor(GREY,DARK_GREY);
+  //draw_floor(GREY,DARK_GREY);
+  draw_floor();
   glPopMatrix();
 
   pop_scene();

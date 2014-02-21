@@ -22,6 +22,7 @@ IGL_INLINE void igl::cotangent(const MatV & V, const MatF & F, MatC & C)
   // Number of elements
   int m = F.rows();
 
+  // Law of cosines + law of sines
   if(simplex_size == 3)
   {
     // Triangles
@@ -39,7 +40,7 @@ IGL_INLINE void igl::cotangent(const MatV & V, const MatF & F, MatC & C)
     // semiperimeters
     Matrix<typename MatC::Scalar,Dynamic,1> s = l.rowwise().sum()*0.5;
     assert(s.rows() == m);
-    // Heron's forumal for area
+    // Heron's formula for area
     Matrix<typename MatC::Scalar,Dynamic,1> dblA(m);
     for(int i = 0;i<m;i++)
     {
