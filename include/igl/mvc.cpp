@@ -119,7 +119,7 @@ IGL_INLINE void igl::mvc(const Eigen::MatrixXd &V, const Eigen::MatrixXd &C, Eig
   
   // vectors from V to every C, where CmV(i,j,:) is the vector from domain
   // vertex j to handle i
-  double EPSILON = 1e-10;
+  double EPS = 1e-10;
   Eigen::MatrixXd WW = Eigen::MatrixXd(C1.rows(), V1.rows());
   Eigen::MatrixXd dist_C_V (C1.rows(), V1.rows());
   std::vector< std::pair<int,int> > on_corner(0);
@@ -145,7 +145,7 @@ IGL_INLINE void igl::mvc(const Eigen::MatrixXd &V, const Eigen::MatrixXd &C, Eig
       // mean value coordinates
       WW(i,j) = (std::tan(a_prev/2.0) + std::tan(a_next/2.0)) / dist_C_V(i,j);
       
-      if (dist_C_V(i,j) < EPSILON)
+      if (dist_C_V(i,j) < EPS)
         on_corner.push_back(std::make_pair(j,i));
       else
         // only in case of no-corner (no need for checking for multiple segments afterwards --
@@ -153,7 +153,7 @@ IGL_INLINE void igl::mvc(const Eigen::MatrixXd &V, const Eigen::MatrixXd &C, Eig
         // handled that)
         // domain vertex j is on the segment from i to i+1 if the distances from vj to
         // pi and pi+1 are about 
-        if(abs((dist_C_V(i,j) + dist_C_V_next) / edge_length - 1) < EPSILON)
+        if(abs((dist_C_V(i,j) + dist_C_V_next) / edge_length - 1) < EPS)
           on_segment.push_back(std::make_pair(j,i));
       
     }

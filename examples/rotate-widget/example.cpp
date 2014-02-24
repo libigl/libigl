@@ -27,7 +27,11 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include <GLUT/glut.h>
+#if defined(__APPLE__)
+# include <GLUT/glut.h>
+#else
+# include <GL/glut.h>
+#endif
 
 #include <string>
 #include <vector>
