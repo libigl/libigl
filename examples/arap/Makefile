@@ -24,10 +24,11 @@ EMBREE_LIB=-L$(EMBREE)/bin -lembree -lsys
 # YIMAGE Library
 YIMG=$(LIBIGL)/external/yimg/
 YIMG_LIB=-L$(YIMG) -lyimg -lz -L/usr/X11/lib -lpng -bind_at_load
-YIMG_INC=-I/usr/X11/include -I$(YIMG) 
+YIMG_INC=-I/usr/X11/include -I$(YIMG)
 
 ANTTWEAKBAR_INC=-I$(LIBIGL)/external/AntTweakBar/include
 ANTTWEAKBAR_LIB=-L$(LIBIGL)/external/AntTweakBar/lib -lAntTweakBar -framework AppKit
+
 INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC) $(YIMG_INC)
 LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB) $(YIMG_LIB)
 

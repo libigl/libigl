@@ -29,9 +29,12 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
+#ifdef __APPLE__
 #include <GLUT/glut.h>
-
 #include <Carbon/Carbon.h>
+#else
+#include <GL/glut.h>
+#endif
 
 #include <string>
 #include <vector>
@@ -427,30 +430,38 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
       }
       break;
     }
+#ifdef GLUT_WHEEL_DOWN
     // Scroll down
     case GLUT_WHEEL_DOWN:
     {
       mouse_wheel(0,-1,mouse_x,mouse_y);
       break;
     }
+#endif
+#ifdef GLUT_WHEEL_UP
     // Scroll up
     case GLUT_WHEEL_UP:
     {
       mouse_wheel(0,1,mouse_x,mouse_y);
       break;
     }
+#endif
+#ifdef GLUT_WHEEL_LEFT
     // Scroll left
     case GLUT_WHEEL_LEFT:
     {
       mouse_wheel(1,-1,mouse_x,mouse_y);
       break;
     }
+#endif
+#ifdef GLUT_WHEEL_RIGHT
     // Scroll right
     case GLUT_WHEEL_RIGHT:
     {
       mouse_wheel(1,1,mouse_x,mouse_y);
       break;
     }
+#endif
   }
 }
 
