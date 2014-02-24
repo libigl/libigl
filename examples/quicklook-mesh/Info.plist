@@ -13,6 +13,7 @@
 			<array>
 				<string>org.mesh</string>
 				<string>org.obj</string>
+				<string>org.stl</string>
 				<string>org.off</string>
 				<string>org.wrl</string>
 			</array>
@@ -99,6 +100,25 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>obj</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.image</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Stereolithography CAD model</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.stl</string>
+			<key>UTTypeReferenceURL</key>
+			<string>http://en.wikipedia.org/wiki/STL_(file_format)</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>stl</string>
 				</array>
 			</dict>
 		</dict>

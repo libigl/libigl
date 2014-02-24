@@ -13,6 +13,7 @@ extern "C" {
 #include <igl/material_colors.h>
 #include <igl/pathinfo.h>
 #include <igl/readOBJ.h>
+#include <igl/readSTL.h>
 #include <igl/readWRL.h>
 #include <igl/triangulate.h>
 #include <igl/readOFF.h>
@@ -371,6 +372,14 @@ bool render_to_buffer(
   {
     // Convert extension to lower case
     if(!igl::readWRL(filename,vV,vF))
+    {
+      red(width,height,buffer);
+      return false;
+    }
+  }else if(ext == "stl")
+  {
+    // Convert extension to lower case
+    if(!igl::readSTL(filename,vV,vF,vN))
     {
       red(width,height,buffer);
       return false;
