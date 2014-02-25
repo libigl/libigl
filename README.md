@@ -5,7 +5,7 @@ libigl - A simple c++ geometry processing library
 <https://github.com/alecjacobson/libigl/>
 
 Copyright 2013 - Alec Jacobson, Daniele Panozzo, Olga Diamanti, Kenshi
-Takayama, Leo Sacht
+Takayama, Leo Sacht 
 
 This is first and foremost a *header* library. Each header file should contain
 a single function.  The function may have multiple prototypes. All functions
