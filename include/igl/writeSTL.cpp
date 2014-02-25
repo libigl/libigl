@@ -1,4 +1,5 @@
 #include "writeSTL.h"
+#include <iostream>
 
 template <typename DerivedV, typename DerivedF, typename DerivedN>
 IGL_INLINE bool igl::writeSTL(

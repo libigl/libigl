@@ -16,10 +16,10 @@ EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 
 #EMBREE=$(LIBIGL)/external/embree
 #EMBREE_INC=-I$(EMBREE)/rtcore -I$(EMBREE)/common
-#EMBREE_LIB=-L$(EMBREE)/bin -lrtcore -lsys
+#EMBREE_LIB=-L$(EMBREE)/build -lrtcore -lsys
 EMBREE=$(LIBIGL)/external/embree
 EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/embree
-EMBREE_LIB=-L$(EMBREE)/bin -lembree -lsys
+EMBREE_LIB=-L$(EMBREE)/build -lembree -lsys
 
 ANTTWEAKBAR_INC=-I$(LIBIGL)/external/AntTweakBar/include
 ANTTWEAKBAR_LIB=-L$(LIBIGL)/external/AntTweakBar/lib -lAntTweakBar -framework AppKit
