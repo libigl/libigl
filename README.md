@@ -2,6 +2,7 @@ libigl - A simple c++ geometry processing library
 =================================================
 
 <http://igl.ethz.ch/projects/libigl/>
+<https://github.com/alecjacobson/libigl/>
 
 Copyright 2013 - Alec Jacobson, Daniele Panozzo, Olga Diamanti, Kenshi
 Takayama, Leo Sacht
