@@ -1,3 +1,6 @@
+- clean up externals
+  - What's there for convenience?
+  - What's there because it's patched/
 - compile on Linux, Mac OS X, Windows
 - unit tests for all functions
 - standardize name of library "libigl", purge IGL LIB, igl_lib, igl lib, IGL

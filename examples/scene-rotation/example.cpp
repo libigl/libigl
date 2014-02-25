@@ -491,6 +491,18 @@ bool IS_KEYDOWN( uint16_t vKey )
   return keyStates[index].bigEndianValue & (1 << shift) ;
 }
 
+
+void undo()
+{
+  using namespace std;
+  if(!undo_stack.empty())
+  {
+    redo_stack.push(s);
+    s = undo_stack.top();
+    undo_stack.pop();
+  }
+}
+
 void redo()
 {
   using namespace std;

@@ -21,7 +21,7 @@ ANTTWEAKBAR_LIB=-L$(LIBIGL)/external/AntTweakBar/lib -lAntTweakBar -framework Ap
 
 EMBREE=$(LIBIGL)/external/embree
 EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/embree
-EMBREE_LIB=-L$(EMBREE)/bin -lembree -lsys
+EMBREE_LIB=-L$(EMBREE)/build -lembree -lsys
 
 MATLAB_INC=-I$(MATLAB)/extern/include/
 MATLAB_LIB=-L$(MATLAB)/bin/maci64 -lmx -lmat -lmex -lstdc++

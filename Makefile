@@ -100,10 +100,11 @@ INC+=$(ANTTWEAKBAR_INC)
 #LIB+=-framework GLUT
 #LIB+=-framework AppKit
 
+.PHONY: obj
 obj: 
 	mkdir -p obj
 
-lib/libigl.a: $(OBJ_FILES)
+lib/libigl.a: obj $(OBJ_FILES)
 	mkdir -p lib
 	rm -f $@
 	ar cqs $@ $(OBJ_FILES)
