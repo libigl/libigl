@@ -145,7 +145,7 @@ To build the a static YImg library on Mac OS X issue:
     make
 
 
-## Windows (Experimental) ##
+### Windows (Experimental) ###
 To build a static library (.lib) on windows, open Visual Studio 2010.
 
 - New > Project ...
