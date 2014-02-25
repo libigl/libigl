@@ -111,10 +111,9 @@ To build the tetgen library and executable on Mac OS X issue:
     cd external/tetgen
     make clean
     rm -f obj/*.o
-    make -f Makefile.igl tetlib
-    rm -f obj/*.o
-    rm tetgen
     make -f Makefile.igl tetgen
+    rm -f obj/*.o
+    make -f Makefile.igl tetlib
 
 ##### Installing Embree 2.0 #####
 To build the embree library and executables on Mac OS X issue:
