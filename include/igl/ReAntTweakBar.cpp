@@ -125,7 +125,9 @@ namespace
 }
 
 IGL_INLINE igl::ReTwBar::ReTwBar():
- bar(NULL),name(),rw_items(),cb_items()
+ bar(NULL),
+  name(),
+  rw_items(),cb_items()
 {
 }
 
@@ -153,8 +155,12 @@ IGL_INLINE igl::ReTwBar & igl::ReTwBar::operator=(const igl::ReTwBar & that)
 // BAR WRAPPERS
 IGL_INLINE void igl::ReTwBar::TwNewBar(const char * _name)
 {
-  this->name = _name;
   this->bar = ::TwNewBar(_name);
+  // Alec: This causes trouble (not sure why) in multiple applications
+  // (medit, puppet) Probably there is some sort of memory corrpution.
+  // this->name = _name;
+  // Suspiciously this also fails:
+  //this->name = "foobar";
 }
 
 IGL_INLINE int igl::ReTwBar::TwAddVarRW(

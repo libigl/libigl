@@ -39,11 +39,7 @@
 
 // This allows the user to have a non-global, static installation of
 // AntTweakBar
-#ifdef STATIC_ANTTWEAKBAR
-#  include "AntTweakBar.h"
-#else
-#  include <AntTweakBar.h>
-#endif
+#include <AntTweakBar.h>
 // Instead of including AntTweakBar.h, just define the necessary types
 // Types used:
 //   - TwType
@@ -166,7 +162,6 @@ namespace igl
     // anytime AntTweakBar functions can be called directly on the bar
     public:
       TwBar * bar;
-      // Alec: This causes trouble (not sure why)
       std::string name;
     protected:
       std::vector<ReTwRWItem> rw_items;
@@ -182,7 +177,7 @@ namespace igl
   
     // WRAPPERS FOR ANTTWEAKBAR FUNCTIONS 
     public:
-      void TwNewBar(const char *barName);
+      IGL_INLINE void TwNewBar(const char *_name);
       IGL_INLINE int TwAddVarRW(
         const char *name, 
         TwType type, 

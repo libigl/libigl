@@ -3,6 +3,8 @@ git clone git@github.com:libigl/libigl.git
 cd libigl/
 make -C external/AntTweakBar/src -f Makefile.osx.igl
 make -C external/yimg
+make -C external/medit/libmesh
+make -C external/medit/ -f Makefile.igl medit
 cd external/tetgen
 make clean
 mkdir obj
