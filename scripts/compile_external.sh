@@ -5,10 +5,10 @@ make -C external/AntTweakBar/src -f Makefile.osx.igl
 make -C external/yimg
 cd external/tetgen
 make clean
-make -f Makefile.igl tetlib
-rm -f obj/*.o
-rm tetgen
+mkdir obj
 make -f Makefile.igl tetgen
+rm -f obj/*.o
+make -f Makefile.igl tetlib
 mkdir -p ../embree/build
 cd ../embree/build
 cmake .. -DCMAKE_C_COMPILER=/opt/local/bin/gcc -DCMAKE_CXX_COMPILER=/opt/local/bin/g++
