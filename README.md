@@ -116,6 +116,13 @@ To build the tetgen library and executable on Mac OS X issue:
     rm tetgen
     make -f Makefile.igl tetgen
 
+##### Installing medit #####
+To build the igl version of the medit executable on Mac OS X issue:
+
+    cd external/medit
+    make -C libmesh 
+    make -f Makefile.igl medit
+
 ##### Installing Embree 2.0 #####
 To build the embree library and executables on Mac OS X issue:
 
