@@ -138,6 +138,10 @@ namespace igl
         const Eigen::Vector3d & eye,
         const Eigen::Vector3d & at,
         const Eigen::Vector3d & up);
+    // Needed any time Eigen Structures are used as class members
+    // http://eigen.tuxfamily.org/dox-devel/group__TopicStructHavingEigenMembers.html
+    public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
