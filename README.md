@@ -115,6 +115,13 @@ To build the tetgen library and executable on Mac OS X issue:
     rm -f obj/*.o
     make -f Makefile.igl tetlib
 
+##### Installing medit #####
+To build the igl version of the medit executable on Mac OS X issue:
+
+    cd external/medit
+    make -C libmesh 
+    make -f Makefile.igl medit
+
 ##### Installing Embree 2.0 #####
 To build the embree library and executables on Mac OS X issue:
 
@@ -183,12 +190,11 @@ style_guidelines.html
 See `LICENSE.txt`
 
 ## Zipping ##
-Zip this directory without .hg litter using:
+Zip this directory without .git litter and binaries using:
 
-    make clean
-    zip -9 -r --exclude=@exclude.lst  libigl.zip ../libigl
+    git archive —prefix=libigl/ -o libigl.zip master
 
 ## Contact ##
 libigl is a group endeavor led by Alec Jacobson and Daniele Panozzo. Please
-contact [alecjacobson@gmail.com](mailto:alecjacobson@gmail.com) if you have questions or comments. We are happy
-to get feedback! Enjoy!
+contact [alecjacobson@gmail.com](mailto:alecjacobson@gmail.com) if you have
+questions or comments. We are happy to get feedback! Enjoy!
