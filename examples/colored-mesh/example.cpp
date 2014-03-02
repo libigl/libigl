@@ -480,7 +480,7 @@ int main(int argc, char * argv[])
 
   // init mesh
   string filename = "../shared/beast.obj";
-  string cfilename = "../shared/beast-z.dmat";
+  string cfilename = "../shared/beast-xyz.dmat";
   if(argc < 3)
   {
     cerr<<"Usage:"<<endl<<"    ./example input.obj color.dmat"<<endl;
@@ -573,7 +573,7 @@ int main(int argc, char * argv[])
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
   rebar.load(REBAR_NAME);
 
-  glutInitDisplayString( "rgba depth double samples>=8 ");
+  glutInitDisplayString("rgba depth double samples>=8 ");
   glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH)/2.0,glutGet(GLUT_SCREEN_HEIGHT));
   glutCreateWindow("colored-mesh");
   glutDisplayFunc(display);
