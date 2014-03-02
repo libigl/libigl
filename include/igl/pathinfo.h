@@ -27,7 +27,7 @@ namespace igl
   //  dirname  string containing dirname (see dirname.h)
   //  basename  string containing basename (see basename.h)
   //  extension  string containing extension (characters after last '.')
-  //  filename  string containing extension (characters of basename before last
+  //  filename  string containing filename (characters of basename before last
   //    '.')
   //
   //  See also: basename, dirname
