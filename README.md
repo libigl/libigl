@@ -198,3 +198,6 @@ Zip this directory without .git litter and binaries using:
 libigl is a group endeavor led by Alec Jacobson and Daniele Panozzo. Please
 contact [alecjacobson@gmail.com](mailto:alecjacobson@gmail.com) if you have
 questions or comments. We are happy to get feedback! Enjoy!
+
+If you find bugs or have problems please use our [github issue tracking
+page](https://github.com/libigl/libigl/issues). 
