@@ -111,10 +111,9 @@ To build the tetgen library and executable on Mac OS X issue:
     cd external/tetgen
     make clean
     rm -f obj/*.o
-    make -f Makefile.igl tetlib
-    rm -f obj/*.o
-    rm tetgen
     make -f Makefile.igl tetgen
+    rm -f obj/*.o
+    make -f Makefile.igl tetlib
 
 ##### Installing medit #####
 To build the igl version of the medit executable on Mac OS X issue:
