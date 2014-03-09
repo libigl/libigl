@@ -23,6 +23,9 @@ namespace igl
   //   C  #F by {3|6} list of cotangents corresponding angles
   //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
   //     for tets, columns correspond to edges [1,2],[2,0],[0,1],[3,0],[3,1],[3,2]
+  //
+  // Known bug:
+  //   This computes 0.5*cotangent
   template <class MatV, class MatF, class MatC>
   IGL_INLINE void cotangent(const MatV & V, const MatF & F, MatC & C);
 }
