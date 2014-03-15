@@ -18,12 +18,13 @@ namespace igl
     typename DerivedV,
     typename DerivedW,
     typename Q,
+    typename QAlloc,
     typename T,
     typename DerivedU>
   IGL_INLINE void dqs(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedW> & W,
-    const std::vector<Q> & vQ,
+    const std::vector<Q,QAlloc> & vQ,
     const std::vector<T> & vT,
     Eigen::PlainObjectBase<DerivedU> & U);
 };

@@ -49,3 +49,9 @@ examples/bbw/examples/*-volume.dmat
 examples/bbw/examples/*-volume.mesh
 examples/upright/upright
 examples/principal_curvature/curvature
+external/MeshFix/meshfix
+external/embree/build/*
+external/tetgen/tetgen
+external/tinyxml2/test
+external/tinyxml2/tinyxml2.pc
+external/yimg/showpng

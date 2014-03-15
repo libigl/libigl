@@ -12,8 +12,10 @@ void igl::forward_kinematics(
   const Eigen::MatrixXd & C,
   const Eigen::MatrixXi & BE,
   const Eigen::VectorXi & P,
-  const std::vector<Eigen::Quaterniond> & dQ,
-  std::vector<Eigen::Quaterniond> & vQ,
+  const std::vector<
+    Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> > & dQ,
+  std::vector<
+    Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> > & vQ,
   std::vector<Eigen::Vector3d> & vT)
 {
   using namespace std;
