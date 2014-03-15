@@ -138,9 +138,9 @@ inline igl::RotateWidget::RotateWidget():
   down_xy(-1,-1),drag_xy(-1,-1),
   outer_radius_on_screen(91.),
   outer_over_inner(1.13684210526),
+  m_is_enabled(true),
   down_type(DOWN_TYPE_NONE), 
-  selected_type(DOWN_TYPE_NONE),
-  m_is_enabled(true)
+  selected_type(DOWN_TYPE_NONE)
 {
 }
 
