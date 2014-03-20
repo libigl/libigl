@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_FORWARD_KINEMATICS_H
 #define IGL_FORWARD_KINEMATICS_H
+#include "igl_inline.h"
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
@@ -25,7 +26,7 @@ namespace igl
   // Outputs:
   //   vQ  #BE list of absolute rotations
   //   vT  #BE list of absolute translations
-  void forward_kinematics(
+  IGL_INLINE void forward_kinematics(
     const Eigen::MatrixXd & C,
     const Eigen::MatrixXi & BE,
     const Eigen::VectorXi & P,

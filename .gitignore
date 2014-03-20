@@ -39,6 +39,8 @@ Release/
 *.vsp
 *.opensdf
 *.psess
+*.swp
+*.swo
 documentation/*.aux
 documentation/*.out
 documentation/*.log

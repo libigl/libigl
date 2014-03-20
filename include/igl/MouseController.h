@@ -77,11 +77,11 @@ namespace igl
     public:
       MouseController();
       // Returns const reference to m_selection
-      const inline VectorXb & selection() const{return m_selection;};
+      inline const VectorXb & selection() const{return m_selection;};
       //                          〃 m_is_selecting
-      const inline bool & is_selecting() const{return m_is_selecting;}
+      inline const bool & is_selecting() const{return m_is_selecting;}
       //                          〃 m_rotations
-      const inline RotationList & rotations() const{return m_rotations;}
+      inline const RotationList & rotations() const{return m_rotations;}
       // Returns non-const reference to m_root_enabled
       inline bool & root_enabled(){ return m_root_enabled;}
       inline void reshape(const int w, const int h);
@@ -122,6 +122,7 @@ namespace igl
       inline void set_size(const int n);
       // Resets m_rotation elements to identity
       inline void reset_rotations();
+      inline bool set_rotations(const RotationList & vQ);
       // Sets all entries in m_selection to false
       inline void clear_selection();
       // Returns true iff some element in m_selection is true
@@ -498,6 +499,16 @@ inline void igl::MouseController::reset_rotations()
   fill(m_rotations.begin(),m_rotations.end(),Quaterniond::Identity());
   // cop out. just clear selection
   clear_selection();
+}
+inline bool igl::MouseController::set_rotations(const RotationList & vQ)
+{
+  if(vQ.size() != m_rotations.size())
+  {
+    return false;
+  }
+  assert(!any_selection());
+  m_rotations = vQ;
+  return true;
 }
 
 inline void igl::MouseController::clear_selection()
