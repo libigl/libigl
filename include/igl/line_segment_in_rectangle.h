@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_LINE_SEGMENT_IN_RECTANGLE_H
 #define IGL_LINE_SEGMENT_IN_RECTANGLE_H
+#include "igl_inline.h"
 #include <Eigen/Core>
 namespace igl
 {
@@ -18,7 +19,7 @@ namespace igl
   //   A  first corner of rectangle
   //   B  opposite corner of rectangle
   // Returns true if line segment is at all inside rectangle
-  bool line_segment_in_rectangle(
+  IGL_INLINE bool line_segment_in_rectangle(
     const Eigen::Vector2d & s,
     const Eigen::Vector2d & d,
     const Eigen::Vector2d & A,

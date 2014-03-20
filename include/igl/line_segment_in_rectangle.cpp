@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "line_segment_in_rectangle.h"
 
-bool igl::line_segment_in_rectangle(
+IGL_INLINE bool igl::line_segment_in_rectangle(
   const Eigen::Vector2d & s,
   const Eigen::Vector2d & d,
   const Eigen::Vector2d & A,
