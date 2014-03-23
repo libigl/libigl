@@ -26,7 +26,7 @@
     const Eigen::PlainObjectBase<DerivedF> & F,
     int rays_total,
     int rays_minimum,
-    bool face_wise,
+    bool facet_wise,
     bool use_parity,
     bool is_verbose,
     Eigen::PlainObjectBase<DerivedI> & I)
@@ -41,7 +41,7 @@
   
   VectorXi C;
   MatrixXi FF = F;
-  if (face_wise) {
+  if (facet_wise) {
     C.resize(m);
     for (int i = 0; i < m; ++i) C(i) = i;
   
@@ -217,6 +217,9 @@
               C_vote_infinity[c].first <  C_vote_infinity[c].second
               ? 1 : 0;
     }
+    // To account for the effect of bfs_orient
+    if (F.row(f) != FF.row(f))
+      I(f) = 1 - I(f);
   }
   if (is_verbose) cout << "done!" << endl;
 }
