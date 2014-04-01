@@ -8,9 +8,9 @@
 /* ---------------------------------------------------------------------------
  // XMLSerializer.h
  // Author: Christian Schüller on 08/05/13.
- ------------------------------------------------------------------------------
+ -----------------------------------------------------------------------------
  
- Small neader library which allows to save and load a serialization of basic c++ data
+ Header library which allows to save and load a serialization of basic c++ data
  types like char, char*, std::string, bool, uint, int, float, double to and from a xml file.
  Containers like std::vector, std::std::pair, Eigen dense and sparse matrices are supported
  as well as combinations of them (like vector<pair<string,bool>> or vector<vector<int>>).
@@ -23,7 +23,16 @@
  
  You can find examples how to use it in the test case class XMLSerializerTest.
  
- ----------------------------------------------------------------------------*/
+ -----------------------------------------------------------------------------
+TODO's:
+* handle memory leak when deserialing to pointers
+* loops of pointers and from multiple objects
+* NULL pointers
+* Versioning
+ -----------------------------------------------------------------------------
+Bug's:
+* Doesn't handle RowMajor Eigen matrices
+ ----------------------------------------------------------------------------- */
 #ifndef XML_SERIALIZER_H
 #define XML_SERIALIZER_H
 
@@ -164,6 +173,8 @@ namespace igl
       bool Serialize(std::vector<T>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
       bool Serialize(std::vector<bool>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
       bool Serialize(std::vector<bool>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+      bool Serialize(std::vector<int>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+      bool Serialize(std::vector<int>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
 
       template<typename T>
       bool Serialize(std::set<T>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
@@ -174,6 +185,8 @@ namespace igl
       bool Serialize(std::map<T0,T1>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
       template<typename T0, typename T1>
       bool Serialize(std::map<T0,T1>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+      bool Serialize(std::map<int,int>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
+      bool Serialize(std::map<int,int>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name);
       
       // Eigen types
       template<typename T, int R, int C>
@@ -229,6 +242,8 @@ namespace igl
       bool Deserialize(std::vector<T>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
       bool Deserialize(std::vector<bool>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
       bool Deserialize(std::vector<bool>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+      bool Deserialize(std::vector<int>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+      bool Deserialize(std::vector<int>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
 
       template<typename T>
       bool Deserialize(std::set<T>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
@@ -239,6 +254,8 @@ namespace igl
       bool Deserialize(std::map<T0,T1>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
       template<typename T0, typename T1>
       bool Deserialize(std::map<T0,T1>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+      bool Deserialize(std::map<int,int>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
+      bool Deserialize(std::map<int,int>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name);
       
       // Eigen types
       template<typename T, int R, int C>
@@ -775,7 +792,10 @@ namespace igl
       tinyxml2::XMLElement* child = doc->NewElement(name.c_str());
       element->InsertEndChild(child);
       
-      return object->Serialize(doc,child);
+      if(object != NULL)
+        return object->Serialize(doc,child);
+      
+      return false;
     }
     
     bool XMLSerializableObject::Deserialize(char& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
@@ -875,24 +895,29 @@ namespace igl
     template<typename T>
     bool XMLSerializableObject::Deserialize(T*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
     {
-      obj = new T();
-      XMLSerializable* object = static_cast<XMLSerializable*>(obj);
-      
+      obj = NULL;
       const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
-      
-      object->Name = child->FirstChild()->Value();
       
       if(child != NULL)
       {
-        obj->Deserialize(doc,child);
+        const tinyxml2::XMLNode* node = child->FirstChild();
+
+        if(node != NULL)
+        {
+          obj = new T();
+          static_cast<XMLSerializable*>(obj)->Name = node->Value();
+          obj->Deserialize(doc,child);
+          
+          return true;
+        }
       }
       else
       {
+        obj = new T();
         obj->Init();
-        return false;
       }
       
-      return true;
+      return false;
     }
     
     /*
@@ -1030,12 +1055,12 @@ namespace igl
 
     bool XMLSerializableObject::Serialize(std::vector<bool>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
     {
-      tinyxml2::XMLElement* matrix = doc->NewElement(name.c_str());
-      element->InsertEndChild(matrix);
+      tinyxml2::XMLElement* vector = doc->NewElement(name.c_str());
+      element->InsertEndChild(vector);
       
       const unsigned int size = obj.size();
       
-      matrix->SetAttribute("size",size);
+      vector->SetAttribute("size",size);
       
       std::stringstream ms;
       ms << "\n";
@@ -1047,12 +1072,41 @@ namespace igl
       if(mString.size() > 1)
         mString[mString.size()-2] = '\0';
       
-      matrix->SetAttribute("vector_bool",mString.c_str());
+      vector->SetAttribute("vector_bool",mString.c_str());
       
       return true;
     }
 
     bool XMLSerializableObject::Serialize(std::vector<bool>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+    {
+      return Serialize(*obj,doc,element,name);
+    }
+
+    bool XMLSerializableObject::Serialize(std::vector<int>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+    {
+      tinyxml2::XMLElement* vector = doc->NewElement(name.c_str());
+      element->InsertEndChild(vector);
+      
+      const unsigned int size = obj.size();
+      
+      vector->SetAttribute("size",size);
+      
+      std::stringstream ms;
+      ms << "\n";
+      for(unsigned int i=0;i<size;i++)
+        ms << obj[i] << ",";
+      ms << "\n";
+      
+      std::string mString = ms.str();
+      if(mString.size() > 1)
+        mString[mString.size()-2] = '\0';
+      
+      vector->SetAttribute("vector_int",mString.c_str());
+      
+      return true;
+    }
+
+    bool XMLSerializableObject::Serialize(std::vector<int>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
     {
       return Serialize(*obj,doc,element,name);
     }
@@ -1160,13 +1214,82 @@ namespace igl
       return Deserialize(*obj,doc,element,name);
     }
 
+    bool XMLSerializableObject::Deserialize(std::vector<int>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
+    {
+      const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
+      if(child != NULL)
+      {
+        const unsigned int size = child->UnsignedAttribute("size");
+        
+        obj.resize(size);
+        
+        const tinyxml2::XMLAttribute* attribute = child->FindAttribute("vector_int");
+        if(attribute == NULL)
+        {
+          Init(obj);
+          return false;
+        }
+        
+        char* matTemp;
+        GetAttribute(attribute->Value(),matTemp);
+        
+        std::string line, ssize;
+        std::stringstream mats;
+        mats.str(matTemp);
+        
+        int r=0;
+        std::string val;
+        // for each line
+        getline(mats,line); // matrix starts with an empty line
+        while(getline(mats,line))
+        {
+          // get current line
+          std::stringstream liness(line);
+          
+          for(unsigned int c=0;c<size-1;c++)
+          {
+            // split line
+            getline(liness, val, ',');
+            
+            // push pack the data if any
+            if(!val.empty())
+            {
+              int t;
+              GetAttribute(val.c_str(),t);
+              obj[c] = t;
+            }
+          }
+          
+          getline(liness, val);
+          int t;
+          GetAttribute(val.c_str(),t);
+          obj[size-1] = t;
+          
+          r++;
+        }
+      }
+      else
+      {
+        Init(obj);
+        return false;
+      }
+      
+      return true;
+    }
+
+    bool XMLSerializableObject::Deserialize(std::vector<int>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
+    {
+      obj = new std::vector<int>();
+      return Deserialize(*obj,doc,element,name);
+    }
+
     template<typename T>
     bool XMLSerializableObject::Serialize(std::set<T>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
     {
-      tinyxml2::XMLElement* vector = doc->NewElement(name.c_str());
-      element->InsertEndChild(vector);
+      tinyxml2::XMLElement* set = doc->NewElement(name.c_str());
+      element->InsertEndChild(set);
       
-      vector->SetAttribute("size",(unsigned int)obj.size());
+      set->SetAttribute("size",(unsigned int)obj.size());
       
       std::stringstream num;
       typename std::set<T>::iterator iter = obj.begin();
@@ -1174,7 +1297,7 @@ namespace igl
       {
         num.str("");
         num << "value" << i;
-        Serialize((T)*iter,doc,vector,num.str());
+        Serialize((T)*iter,doc,set,num.str());
       }
       
       return true;
@@ -1225,10 +1348,10 @@ namespace igl
     template<typename T0, typename T1>
     bool XMLSerializableObject::Serialize(std::map<T0,T1>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
     {
-      tinyxml2::XMLElement* vector = doc->NewElement(name.c_str());
-      element->InsertEndChild(vector);
+      tinyxml2::XMLElement* map = doc->NewElement(name.c_str());
+      element->InsertEndChild(map);
       
-      vector->SetAttribute("size",(unsigned int)obj.size());
+      map->SetAttribute("size",(unsigned int)obj.size());
       
       std::stringstream num;
       typename std::map<T0,T1>::iterator iter = obj.begin();
@@ -1244,6 +1367,34 @@ namespace igl
 
     template<typename T0, typename T1>
     bool XMLSerializableObject::Serialize(std::map<T0,T1>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+    {
+      return Serialize(*obj,doc,element,name);
+    }
+
+    bool XMLSerializableObject::Serialize(std::map<int,int>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
+    {
+      tinyxml2::XMLElement* map = doc->NewElement(name.c_str());
+      element->InsertEndChild(map);
+      
+      const unsigned int size = obj.size();
+      map->SetAttribute("size",size);
+      
+      std::stringstream ms;
+      ms << "\n";
+      for(std::map<int,int>::iterator it=obj.begin();it!=obj.end();it++)
+        ms << it->first << "," << it->second << ";";
+      ms << "\n";
+
+      std::string mString = ms.str();
+      if(mString.size() > 1)
+        mString[mString.size()-2] = '\0';
+      
+      map->SetAttribute("map_int_int",mString.c_str());
+
+      return true;
+    }
+
+    bool XMLSerializableObject::Serialize(std::map<int,int>*& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
     {
       return Serialize(*obj,doc,element,name);
     }
@@ -1284,6 +1435,77 @@ namespace igl
       return Deserialize(*obj,doc,element,name);
     }
 
+    bool XMLSerializableObject::Deserialize(std::map<int,int>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
+    {
+      bool res = true;
+      
+      const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
+      if(child != NULL)
+      {
+        unsigned int size = child->UnsignedAttribute("size");
+
+        obj.clear();
+        
+        const tinyxml2::XMLAttribute* attribute = child->FindAttribute("map_int_int");
+        if(attribute == NULL)
+        {
+          Init(obj);
+          return false;
+        }
+
+        char* matTemp;
+        GetAttribute(attribute->Value(),matTemp);
+        
+        std::string line, ssize;
+        std::stringstream mats;
+        mats.str(matTemp);
+        
+        int r=0;
+        std::string val;
+        // for each line
+        getline(mats,line); // starts with an empty line
+        while(getline(mats,line))
+        {
+          // get current line
+          std::stringstream liness(line);
+          
+          for(unsigned int c=0;c<size;c++)
+          {
+            std::pair<int,int> pair;
+            
+            // split line
+            getline(liness, val, ',');
+            
+            // push pack the data if any
+            if(!val.empty())
+              GetAttribute(val.c_str(),pair.first);
+
+            // split line
+            getline(liness, val, ';');
+
+            // push pack the data if any
+            if(!val.empty())
+              GetAttribute(val.c_str(),pair.second);
+
+            obj.insert(pair);
+          }
+        }
+      }
+      else
+      {
+        Init(obj);
+        return false;
+      }
+      
+      return res;
+    }
+
+    bool XMLSerializableObject::Deserialize(std::map<int,int>*& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
+    {
+      obj = new std::map<int,int>();
+      return Deserialize(*obj,doc,element,name);
+    }
+
     template<typename T, int R, int C>
     bool XMLSerializableObject::Serialize(Eigen::Matrix<T,R,C>& obj, tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
     {
@@ -1296,13 +1518,15 @@ namespace igl
       matrix->SetAttribute("rows",rows);
       matrix->SetAttribute("cols",cols);
       
+      char buffer[200];
       std::stringstream ms;
       ms << "\n";
       for(unsigned int r=0;r<rows;r++)
       {
         for(unsigned int c=0;c<cols;c++)
         {
-          ms << obj(r,c) << ",";
+          tinyxml2::XMLUtil::ToStr(obj(r,c),buffer,200);
+          ms << buffer << ",";
         }
         ms << "\n";
       }
@@ -1326,53 +1550,59 @@ namespace igl
     bool XMLSerializableObject::Deserialize(Eigen::Matrix<T,R,C>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
     {
       const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
+      bool initialized = false;
       if(child != NULL)
       {
         const unsigned int rows = child->UnsignedAttribute("rows");
         const unsigned int cols = child->UnsignedAttribute("cols");
         
-        obj.resize(rows,cols);
-        
-        const tinyxml2::XMLAttribute* attribute = child->FindAttribute("matrix");
-        if(attribute == NULL)
+        if(rows > 0 && cols > 0)
         {
-          Init(obj);
-          return false;
-        }
+          obj.resize(rows,cols);
         
-        char* matTemp;
-        GetAttribute(attribute->Value(),matTemp);
-        
-        std::string line, srows, scols;
-        std::stringstream mats;
-        mats.str(matTemp);
-        
-        int r=0;
-        std::string val;
-        // for each line
-        getline(mats,line);
-        while(getline(mats,line))
-        {
-          // get current line
-          std::stringstream liness(line);
-          
-          for(unsigned int c=0;c<cols-1;c++)
+          const tinyxml2::XMLAttribute* attribute = child->FindAttribute("matrix");
+          if(attribute == NULL)
           {
-            // split line
-            getline(liness, val, ',');
-            
-            // push pack the data if any
-            if(!val.empty())
-              GetAttribute(val.c_str(),obj.coeffRef(r,c));
+            Init(obj);
+            return false;
           }
+        
+          char* matTemp;
+          GetAttribute(attribute->Value(),matTemp);
+        
+          std::string line, srows, scols;
+          std::stringstream mats;
+          mats.str(matTemp);
+        
+          int r=0;
+          std::string val;
+          // for each line
+          getline(mats,line);
+          while(getline(mats,line))
+          {
+            // get current line
+            std::stringstream liness(line);
           
-          getline(liness, val);
-          GetAttribute(val.c_str(),obj.coeffRef(r,cols-1));
+            for(unsigned int c=0;c<cols-1;c++)
+            {
+              // split line
+              getline(liness, val, ',');
+            
+              // push pack the data if any
+              if(!val.empty())
+                GetAttribute(val.c_str(),obj.coeffRef(r,c));
+            }
           
-          r++;
+            getline(liness, val);
+            GetAttribute(val.c_str(),obj.coeffRef(r,cols-1));
+          
+            r++;
+          }
+          initialized = true;
         }
       }
-      else
+      
+      if(!initialized)
       {
         Init(obj);
         return false;
@@ -1400,13 +1630,15 @@ namespace igl
       matrix->SetAttribute("rows",rows);
       matrix->SetAttribute("cols",cols);
       
+      char buffer[200];
       std::stringstream ms;
       ms << "\n";
       for (int k=0;k<obj.outerSize();++k)
       {
         for (typename Eigen::SparseMatrix<T>::InnerIterator it(obj,k);it;++it)
         {
-          ms << it.row() << "," << it.col() << "," << it.value() << "\n";
+          tinyxml2::XMLUtil::ToStr(it.value(),buffer,200);
+          ms << it.row() << "," << it.col() << "," << buffer << "\n";
         }
       }
       
@@ -1429,58 +1661,64 @@ namespace igl
     bool XMLSerializableObject::Deserialize(Eigen::SparseMatrix<T>& obj, tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element, const std::string& name)
     {
       const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
+      bool initialized = false;
       if(child != NULL)
       {
         const unsigned int rows = child->UnsignedAttribute("rows");
         const unsigned int cols = child->UnsignedAttribute("cols");
         
-        obj.resize(rows,cols);
-        obj.setZero();
-        
-        const tinyxml2::XMLAttribute* attribute = child->FindAttribute("matrix");
-        if(attribute == NULL)
+        if(rows > 0 && cols > 0)
         {
-          Init(obj);
-          return false;
+          obj.resize(rows,cols);
+          obj.setZero();
+        
+          const tinyxml2::XMLAttribute* attribute = child->FindAttribute("matrix");
+          if(attribute == NULL)
+          {
+            Init(obj);
+            return false;
+          }
+        
+          char* matTemp;
+          GetAttribute(attribute->Value(),matTemp);
+        
+          std::string line, srows, scols;
+          std::stringstream mats;
+          mats.str(matTemp);
+        
+          std::vector<Eigen::Triplet<T> > triplets;
+          int r=0;
+          std::string val;
+        
+          // for each line
+          getline(mats,line);
+          while(getline(mats,line))
+          {
+            // get current line
+            std::stringstream liness(line);
+          
+            // row
+            getline(liness, val, ',');
+            int row = atoi(val.c_str());
+            // col
+            getline(liness, val, ',');
+            int col = atoi(val.c_str());
+            // val
+            getline(liness, val);
+            T value;
+            GetAttribute(val.c_str(),value);
+          
+            triplets.push_back(Eigen::Triplet<T>(row,col,value));
+          
+            r++;
+          }
+        
+          obj.setFromTriplets(triplets.begin(),triplets.end());
+          initialized = true;
         }
-        
-        char* matTemp;
-        GetAttribute(attribute->Value(),matTemp);
-        
-        std::string line, srows, scols;
-        std::stringstream mats;
-        mats.str(matTemp);
-        
-        std::vector<Eigen::Triplet<T> > triplets;
-        int r=0;
-        std::string val;
-        
-        // for each line
-        getline(mats,line);
-        while(getline(mats,line))
-        {
-          // get current line
-          std::stringstream liness(line);
-          
-          // row
-          getline(liness, val, ',');
-          int row = atoi(val.c_str());
-          // col
-          getline(liness, val, ',');
-          int col = atoi(val.c_str());
-          // val
-          getline(liness, val);
-          T value;
-          GetAttribute(val.c_str(),value);
-          
-          triplets.push_back(Eigen::Triplet<T>(row,col,value));
-          
-          r++;
-        }
-        
-        obj.setFromTriplets(triplets.begin(),triplets.end());
       }
-      else
+      
+      if(!initialized)
       {
         Init(obj);
         return false;
@@ -1790,6 +2028,7 @@ namespace igl
     
     bool XMLSerializer::SaveGroupToXMLElement(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element, const std::string& name)
     {
+      std::string test = currentGroup->first;
       return SaveGroupToXMLElement(currentGroup->first,doc,element,name);
     }
     
@@ -1836,8 +2075,8 @@ namespace igl
       for (it=groups.begin();it!=groups.end();it++)
       {
         tinyxml2::XMLElement* element = doc->FirstChildElement(it->first.c_str());
-        if(element == NULL)
-          return false;
+        /*if(element == NULL)
+          return false;*/
         
         // Deserialize
         std::vector<XMLSerializable*>* group = it->second->Objects;
@@ -1875,8 +2114,8 @@ namespace igl
         return false;
       
       tinyxml2::XMLElement* element = doc->FirstChildElement(it->first.c_str());
-      if(element == NULL)
-        return false;
+      /*if(element == NULL)
+        return false;*/
       
       // Deserialize
       std::vector<XMLSerializable*>* groups = it->second->Objects;
@@ -1916,8 +2155,8 @@ namespace igl
         return false;
       
       tinyxml2::XMLElement* element = doc->FirstChildElement(it->first.c_str());
-      if(element == NULL)
-        return false;
+      /*if(element == NULL)
+        return false;*/
       
       // Deserialize
       std::vector<XMLSerializable*>* groups = it->second->Objects;
