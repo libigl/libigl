@@ -11,20 +11,21 @@
 
 void tetgenbehavior::syntax()
 {
-  printf("  tetgen [-pYq_Aa_mriO_S_T_XMwcdzfenvgKJBNEFICQVh] input_file\n");
+  printf("  tetgen [-pYrq_Aa_miO_S_T_XMwcdzfenvgkJBNEFICQVh] input_file\n");
   printf("    -p  Tetrahedralizes a piecewise linear complex (PLC).\n");
   printf("    -Y  Preserves the input surface mesh (does not modify it).\n");
+  printf("    -r  Reconstructs a previously generated mesh.\n");
   printf("    -q  Refines mesh (to improve mesh quality).\n");
+  printf("    -R  Mesh coarsening (to reduce the mesh elements).\n");
   printf("    -A  Assigns attributes to tetrahedra in different regions.\n");
   printf("    -a  Applies a maximum tetrahedron volume constraint.\n");
   printf("    -m  Applies a mesh sizing function.\n");
-  printf("    -r  Reconstructs a previously generated mesh.\n");
   printf("    -i  Inserts a list of additional points.\n");
   printf("    -O  Specifies the level of mesh optimization.\n");
   printf("    -S  Specifies maximum number of added points.\n");
   printf("    -T  Sets a tolerance for coplanar test (default 1e-8).\n");
   printf("    -X  Suppresses use of exact arithmetic.\n");
-  printf("    -M  No merge of coplanar facets.\n");
+  printf("    -M  No merge of coplanar facets or very close vertices.\n");
   printf("    -w  Generates weighted Delaunay (regular) triangulation.\n");
   printf("    -c  Retains the convex hull of the PLC.\n");
   printf("    -d  Detects self-intersections of facets of the PLC.\n");
@@ -34,12 +35,12 @@ void tetgenbehavior::syntax()
   printf("    -n  Outputs tetrahedra neighbors to .neigh file.\n");
   printf("    -v  Outputs Voronoi diagram to files.\n");
   printf("    -g  Outputs mesh to .mesh file for viewing by Medit.\n");
-  printf("    -K  Outputs mesh to .vtk file for viewing by Paraview.\n");
+  printf("    -k  Outputs mesh to .vtk file for viewing by Paraview.\n");
   printf("    -J  No jettison of unused vertices from output .node file.\n");
   printf("    -B  Suppresses output of boundary information.\n");
   printf("    -N  Suppresses output of .node file.\n");
   printf("    -E  Suppresses output of .ele file.\n");
-  printf("    -F  Suppresses output of .face file.\n");
+  printf("    -F  Suppresses output of .face and .edge file.\n");
   printf("    -I  Suppresses mesh iteration numbers.\n");
   printf("    -C  Checks the consistency of the final mesh.\n");
   printf("    -Q  Quiet:  No terminal output except errors.\n");
@@ -58,20 +59,13 @@ void tetgenbehavior::usage()
   printf("TetGen\n");
   printf("A Quality Tetrahedral Mesh Generator and 3D Delaunay ");
   printf("Triangulator\n");
-  printf("Version 1.5 (February 21, 2012).\n");
-  printf("\n");
-  printf("Copyright (C) 2002 - 2012\n");
-  printf("Hang Si\n");
-  printf("Mohrenstr. 39, 10117 Berlin, Germany\n");
-  printf("Hang.Si@wias-berlin.de\n");
+  printf("Version 1.5\n");
+  printf("November 4, 2013\n");
   printf("\n");
   printf("What Can TetGen Do?\n");
   printf("\n");
-  printf("  TetGen generates exact Delaunay tetrahedralizations, exact\n");
-  printf("  constrained Delaunay tetrahedralizations, and quality ");
-  printf("tetrahedral\n  meshes. The latter are nicely graded and whose ");
-  printf("tetrahedra have\n  radius-edge ratio bounded, thus are suitable ");
-  printf("for finite element and\n  finite volume analysis.\n"); 
+  printf("  TetGen generates Delaunay tetrahedralizations, constrained\n");
+  printf("  Delaunay tetrahedralizations, and quality tetrahedral meshes.\n");
   printf("\n");
   printf("Command Line Syntax:\n");
   printf("\n");
@@ -92,22 +86,24 @@ void tetgenbehavior::usage()
   printf("Examples of How to Use TetGen:\n");
   printf("\n");
   printf("  \'tetgen object\' reads vertices from object.node, and writes ");
-  printf("their\n  Delaunay tetrahedralization to object.1.node and ");
-  printf("object.1.ele.\n");
+  printf("their\n  Delaunay tetrahedralization to object.1.node, ");
+  printf("object.1.ele\n  (tetrahedra), and object.1.face");
+  printf(" (convex hull faces).\n");
   printf("\n");
   printf("  \'tetgen -p object\' reads a PLC from object.poly or object.");
   printf("smesh (and\n  possibly object.node) and writes its constrained ");
-  printf("Delaunay\n  tetrahedralization to object.1.node, object.1.ele and ");
-  printf("object.1.face.\n");
+  printf("Delaunay\n  tetrahedralization to object.1.node, object.1.ele, ");
+  printf("object.1.face,\n");
+  printf("  (boundary faces) and object.1.edge (boundary edges).\n");
   printf("\n");
   printf("  \'tetgen -pq1.414a.1 object\' reads a PLC from object.poly or\n");
   printf("  object.smesh (and possibly object.node), generates a mesh ");
   printf("whose\n  tetrahedra have radius-edge ratio smaller than 1.414 and ");
   printf("have volume\n  of 0.1 or less, and writes the mesh to ");
-  printf("object.1.node, object.1.ele\n  and object.1.face.\n");
+  printf("object.1.node, object.1.ele,\n  object.1.face, and object.1.edge\n");
   printf("\n");
   printf("Please send bugs/comments to Hang Si <si@wias-berlin.de>\n");
-  terminatetetgen(0);
+  terminatetetgen(NULL, 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -176,6 +172,13 @@ bool tetgenbehavior::parse_commandline(int argc, char **argv)
           nobisect_param = (argv[i][j + 1] - '0');
           j++;
         }
+        if ((argv[i][j + 1] == '/') || (argv[i][j + 1] == ',')) {
+          j++;
+          if ((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) {
+            addsteiner_algo = (argv[i][j + 1] - '0');
+            j++;
+          }
+        }
       } else if (argv[i][j] == 'r') {
         refine = 1;
       } else if (argv[i][j] == 'q') {
@@ -222,6 +225,27 @@ bool tetgenbehavior::parse_commandline(int argc, char **argv)
             optmaxdihedral = (REAL) strtod(workstring, (char **) NULL);
           }
         }
+      } else if (argv[i][j] == 'R') {
+        coarsen = 1;
+        if ((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) {
+          coarsen_param = (argv[i][j + 1] - '0');
+          j++;
+        }
+        if ((argv[i][j + 1] == '/') || (argv[i][j + 1] == ',')) {
+          j++;
+          if (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+              (argv[i][j + 1] == '.')) {
+            k = 0;
+            while (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+                   (argv[i][j + 1] == '.')) {
+              j++;
+              workstring[k] = argv[i][j];
+              k++;
+            }
+            workstring[k] = '\0';
+            coarsen_percent = (REAL) strtod(workstring, (char **) NULL);
+          }
+        }
       } else if (argv[i][j] == 'w') {
         weighted = 1;
         if ((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) {
@@ -229,10 +253,71 @@ bool tetgenbehavior::parse_commandline(int argc, char **argv)
           j++;
         }
       } else if (argv[i][j] == 'b') {
+        // -b(brio_threshold/brio_ratio/hilbert_limit/hilbert_order)
         brio_hilbert = 1;
-        if (argv[i][j + 1] == '0') { // -b0
-          brio_hilbert = 0; // Turn off BRIO sorting.
+        if (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+            (argv[i][j + 1] == '.')) {
+          k = 0;
+          while (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+                 (argv[i][j + 1] == '.')) {
+            j++;
+            workstring[k] = argv[i][j];
+            k++;
+          }
+          workstring[k] = '\0';
+          brio_threshold = (int) strtol(workstring, (char **) &workstring, 0);
+        }
+        if ((argv[i][j + 1] == '/') || (argv[i][j + 1] == ',')) {
           j++;
+          if (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+              (argv[i][j + 1] == '.')) {
+            k = 0;
+            while (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+                   (argv[i][j + 1] == '.')) {
+              j++;
+              workstring[k] = argv[i][j];
+              k++;
+            }
+            workstring[k] = '\0';
+            brio_ratio = (REAL) strtod(workstring, (char **) NULL);
+          }
+        }
+        if ((argv[i][j + 1] == '/') || (argv[i][j + 1] == ',')) {
+          j++;
+          if (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+              (argv[i][j + 1] == '.') || (argv[i][j + 1] == '-')) {
+            k = 0;
+            while (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+                   (argv[i][j + 1] == '.') || (argv[i][j + 1] == '-')) {
+              j++;
+              workstring[k] = argv[i][j];
+              k++;
+            }
+            workstring[k] = '\0';
+            hilbert_limit = (int) strtol(workstring, (char **) &workstring, 0);
+          }
+        }
+        if ((argv[i][j + 1] == '/') || (argv[i][j + 1] == ',')) {
+          j++;
+          if (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+              (argv[i][j + 1] == '.') || (argv[i][j + 1] == '-')) {
+            k = 0;
+            while (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+                   (argv[i][j + 1] == '.') || (argv[i][j + 1] == '-')) {
+              j++;
+              workstring[k] = argv[i][j];
+              k++;
+            }
+            workstring[k] = '\0';
+            hilbert_order = (REAL) strtod(workstring, (char **) NULL);
+          }
+        }
+        if (brio_threshold == 0) { // -b0
+          brio_hilbert = 0; // Turn off BRIO-Hilbert sorting. 
+        }
+        if (brio_ratio >= 1.0) { // -b/1
+          no_sort = 1;
+          brio_hilbert = 0; // Turn off BRIO-Hilbert sorting.
         }
       } else if (argv[i][j] == 'l') {
         incrflip = 1;
@@ -272,7 +357,19 @@ bool tetgenbehavior::parse_commandline(int argc, char **argv)
       } else if (argv[i][j] == 'c') {
         convex = 1;
       } else if (argv[i][j] == 'M') {
-        nomerge = 1;
+        nomergefacet = 1;
+        nomergevertex = 1;
+        if ((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '1')) {
+          nomergefacet = (argv[i][j + 1] - '0');
+          j++;
+        }
+        if ((argv[i][j + 1] == '/') || (argv[i][j + 1] == ',')) {
+          j++;
+          if ((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '1')) {
+            nomergevertex = (argv[i][j + 1] - '0');
+            j++;
+          }
+        }
       } else if (argv[i][j] == 'X') {
         if (argv[i][j + 1] == '1') {
           nostaticfilter = 1;
@@ -374,6 +471,26 @@ bool tetgenbehavior::parse_commandline(int argc, char **argv)
         quiet = 1;
       } else if (argv[i][j] == 'V') {
         verbose++;
+      } else if (argv[i][j] == 'x') {
+        if (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+            (argv[i][j + 1] == '.')) {
+          k = 0;
+          while (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+                 (argv[i][j + 1] == '.') || (argv[i][j + 1] == 'e') ||
+                 (argv[i][j + 1] == '-') || (argv[i][j + 1] == '+')) {
+            j++;
+            workstring[k] = argv[i][j];
+            k++;
+          }
+          workstring[k] = '\0';
+          tetrahedraperblock = (int) strtol(workstring, (char **) NULL, 0);
+          if (tetrahedraperblock > 8188) {
+            vertexperblock = tetrahedraperblock / 2;
+            shellfaceperblock = vertexperblock / 2;
+          } else {
+            tetrahedraperblock = 8188;
+          }
+        }
       } else if ((argv[i][j] == 'h') || (argv[i][j] == 'H') ||
                  (argv[i][j] == '?')) {
         usage();
@@ -390,7 +507,7 @@ bool tetgenbehavior::parse_commandline(int argc, char **argv)
     if (infilename[0] == '\0') {
       // No input file name. Print the syntax and exit.
       syntax();
-      terminatetetgen(0);
+      terminatetetgen(NULL, 0);
     }
     // Recognize the object from file extension if it is available.
     if (!strcmp(&infilename[strlen(infilename) - 5], ".node")) {
@@ -440,35 +557,40 @@ bool tetgenbehavior::parse_commandline(int argc, char **argv)
   if (diagnose && !plc) { // -d
     plc = 1;
   }
-  if (plc && !quality && !nobisect) { // -p only
-    // Create a CDT, do not do mesh optimization.
+  if (refine && !quality) { // -r only
+    // Reconstruct a mesh, no mesh optimization.
     optlevel = 0;
+  }
+  if (insertaddpoints && (optlevel == 0)) { // with -i option
+    optlevel = 2;
+  }
+  if (coarsen && (optlevel == 0)) { // with -R option
+    optlevel = 2;
   }
 
   // Detect improper combinations of switches.
-  if (plc && refine) {
-    printf("Error:  Switch -r cannot use together with -p.\n");
-    return false;
-  }
-  if (refine && (plc || noiterationnum)) {
-    printf("Error:  Switches %s cannot use together with -r.\n",
-           "-p, -d, and -I");
-    return false;
-  }
   if ((refine || plc) && weighted) {
     printf("Error:  Switches -w cannot use together with -p or -r.\n");
     return false;
   }
 
-  // Be careful not to allocate space for element area constraints that 
-  //   will never be assigned any value (other than the default -1.0).
-  if (!refine && !plc) {
-    varvolume = 0;
+  if (convex) { // -c
+    if (plc && !regionattrib) {
+      // -A (region attribute) is needed for marking exterior tets (-1).
+      regionattrib = 1; 
+    }
   }
+
+  // Note: -A must not used together with -r option. 
   // Be careful not to add an extra attribute to each element unless the
   //   input supports it (PLC in, but not refining a preexisting mesh).
   if (refine || !plc) {
     regionattrib = 0;
+  }
+  // Be careful not to allocate space for element area constraints that 
+  //   will never be assigned any value (other than the default -1.0).
+  if (!refine && !plc) {
+    varvolume = 0;
   }
   // If '-a' or '-aa' is in use, enable '-q' option too.
   if (fixedvolume || varvolume) {
@@ -482,7 +604,11 @@ bool tetgenbehavior::parse_commandline(int argc, char **argv)
   // No user-specified dihedral angle bound. Use default ones.
   if (!quality) {
     if (optmaxdihedral < 179.0) {
-      optmaxdihedral = 179.0;
+      if (nobisect) {  // with -Y option
+        optmaxdihedral = 179.0;
+      } else { // -p only
+        optmaxdihedral = 179.999;
+      }
     }
     if (optminsmtdihed < 179.999) {
       optminsmtdihed = 179.999;

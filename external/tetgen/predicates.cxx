@@ -125,6 +125,13 @@
 
 #include "tetgen.h"            // Defines the symbol REAL (float or double).
 
+#ifdef USE_CGAL_PREDICATES
+  #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+  typedef CGAL::Exact_predicates_inexact_constructions_kernel cgalEpick;
+  typedef cgalEpick::Point_3 Point;
+  cgalEpick cgal_pred_obj;
+#endif // #ifdef USE_CGAL_PREDICATES
+
 /* On some machines, the exact arithmetic routines might be defeated by the  */
 /*   use of internal extended precision floating-point registers.  Sometimes */
 /*   this problem can be fixed by defining certain values to be volatile,    */
@@ -378,286 +385,141 @@ static REAL isperrboundA, isperrboundB, isperrboundC;
 // Options to choose types of geometric computtaions. 
 // Added by H. Si, 2012-08-23.
 static int  _use_inexact_arith; // -X option.
-static int  _use_static_filter; // -S option.
+static int  _use_static_filter; // Default option, disable it by -X1
 
-// Static filters. Added by H. Si, 2012-08-23.
+// Static filters for orient3d() and insphere(). 
+// They are pre-calcualted and set in exactinit().
+// Added by H. Si, 2012-08-23.
 static REAL o3dstaticfilter;
 static REAL ispstaticfilter;
 
-#ifndef NDEBUG
-// Counters for counting the number of calls. Added by H. Si, 2012-08-23.
-long ori3dcount, ori3dadaptcount;
-long insphcount, insphadaptcount, insphexactcount;
-long ori4dcount, ori4dadaptcount, ori4dexactcount;
-long o3dfilterfailscount;
-long ispfilterfailscount;
-#endif // #ifndef NDEBUG
 
-/*****************************************************************************/
-/*                                                                           */
-/*  doubleprint()   Print the bit representation of a double.                */
-/*                                                                           */
-/*  Useful for debugging exact arithmetic routines.                          */
-/*                                                                           */
-/*****************************************************************************/
 
-/*
-void doubleprint(number)
-double number;
+// The following codes were part of "IEEE 754 floating-point test software"
+//          http://www.math.utah.edu/~beebe/software/ieee/
+// The original program was "fpinfo2.c".
+
+double fppow2(int n)
 {
-  unsigned long long no;
-  unsigned long long sign, expo;
-  int exponent;
-  int i, bottomi;
+  double x, power;
+  x = (n < 0) ? ((double)1.0/(double)2.0) : (double)2.0;
+  n = (n < 0) ? -n : n;
+  power = (double)1.0;
+  while (n-- > 0)
+	power *= x;
+  return (power);
+}
 
-  no = *(unsigned long long *) &number;
-  sign = no & 0x8000000000000000ll;
-  expo = (no >> 52) & 0x7ffll;
-  exponent = (int) expo;
-  exponent = exponent - 1023;
-  if (sign) {
-    printf("-");
+#ifdef SINGLE
+
+float fstore(float x)
+{
+  return (x);
+}
+
+int test_float(int verbose)
+{
+  float x;
+  int pass = 1;
+
+  //(void)printf("float:\n");
+
+  if (verbose) {
+    (void)printf("  sizeof(float) = %2u\n", (unsigned int)sizeof(float));
+#ifdef CPU86  // <float.h>
+    (void)printf("  FLT_MANT_DIG = %2d\n", FLT_MANT_DIG);
+#endif
+  }
+
+  x = (float)1.0;
+  while (fstore((float)1.0 + x/(float)2.0) != (float)1.0)
+    x /= (float)2.0;
+  if (verbose)
+    (void)printf("  machine epsilon = %13.5e  ", x);
+
+  if (x == (float)fppow2(-23)) {
+    if (verbose)
+      (void)printf("[IEEE 754 32-bit macheps]\n");
   } else {
-    printf(" ");
+    (void)printf("[not IEEE 754 conformant] !!\n");
+    pass = 0;
   }
-  if (exponent == -1023) {
-    printf(
-      "0.0000000000000000000000000000000000000000000000000000_     (   )");
+
+  x = (float)1.0;
+  while (fstore(x / (float)2.0) != (float)0.0)
+    x /= (float)2.0;
+  if (verbose)
+    (void)printf("  smallest positive number =  %13.5e  ", x);
+
+  if (x == (float)fppow2(-149)) {
+    if (verbose)
+      (void)printf("[smallest 32-bit subnormal]\n");
+  } else if (x == (float)fppow2(-126)) {
+    if (verbose)
+      (void)printf("[smallest 32-bit normal]\n");
   } else {
-    printf("1.");
-    bottomi = -1;
-    for (i = 0; i < 52; i++) {
-      if (no & 0x0008000000000000ll) {
-        printf("1");
-        bottomi = i;
-      } else {
-        printf("0");
-      }
-      no <<= 1;
-    }
-    printf("_%d  (%d)", exponent, exponent - 1 - bottomi);
+	(void)printf("[not IEEE 754 conformant] !!\n");
+    pass = 0;
   }
+
+  return pass;
 }
-*/
 
-/*****************************************************************************/
-/*                                                                           */
-/*  floatprint()   Print the bit representation of a float.                  */
-/*                                                                           */
-/*  Useful for debugging exact arithmetic routines.                          */
-/*                                                                           */
-/*****************************************************************************/
+# else
 
-/*
-void floatprint(number)
-float number;
+double dstore(double x)
 {
-  unsigned no;
-  unsigned sign, expo;
-  int exponent;
-  int i, bottomi;
+  return (x);
+}
 
-  no = *(unsigned *) &number;
-  sign = no & 0x80000000;
-  expo = (no >> 23) & 0xff;
-  exponent = (int) expo;
-  exponent = exponent - 127;
-  if (sign) {
-    printf("-");
+int test_double(int verbose)
+{
+  double x;
+  int pass = 1;
+
+  // (void)printf("double:\n");
+  if (verbose) {
+    (void)printf("  sizeof(double) = %2u\n", (unsigned int)sizeof(double));
+#ifdef CPU86  // <float.h>
+    (void)printf("  DBL_MANT_DIG = %2d\n", DBL_MANT_DIG);
+#endif
+  }
+
+  x = 1.0;
+  while (dstore(1.0 + x/2.0) != 1.0)
+    x /= 2.0;
+  if (verbose) 
+    (void)printf("  machine epsilon = %13.5le ", x);
+
+  if (x == (double)fppow2(-52)) {
+    if (verbose)
+      (void)printf("[IEEE 754 64-bit macheps]\n");
   } else {
-    printf(" ");
+    (void)printf("[not IEEE 754 conformant] !!\n");
+    pass = 0;
   }
-  if (exponent == -127) {
-    printf("0.00000000000000000000000_     (   )");
+
+  x = 1.0;
+  while (dstore(x / 2.0) != 0.0)
+    x /= 2.0;
+  //if (verbose)
+  //  (void)printf("  smallest positive number = %13.5le ", x);
+
+  if (x == (double)fppow2(-1074)) {
+    //if (verbose)
+    //  (void)printf("[smallest 64-bit subnormal]\n");
+  } else if (x == (double)fppow2(-1022)) {
+    //if (verbose)
+    //  (void)printf("[smallest 64-bit normal]\n");
   } else {
-    printf("1.");
-    bottomi = -1;
-    for (i = 0; i < 23; i++) {
-      if (no & 0x00400000) {
-        printf("1");
-        bottomi = i;
-      } else {
-        printf("0");
-      }
-      no <<= 1;
-    }
-    printf("_%3d  (%3d)", exponent, exponent - 1 - bottomi);
+    (void)printf("[not IEEE 754 conformant] !!\n");
+    pass = 0;
   }
+
+  return pass;
 }
-*/
 
-/*****************************************************************************/
-/*                                                                           */
-/*  expansion_print()   Print the bit representation of an expansion.        */
-/*                                                                           */
-/*  Useful for debugging exact arithmetic routines.                          */
-/*                                                                           */
-/*****************************************************************************/
-
-/*
-void expansion_print(elen, e)
-int elen;
-REAL *e;
-{
-  int i;
-
-  for (i = elen - 1; i >= 0; i--) {
-    REALPRINT(e[i]);
-    if (i > 0) {
-      printf(" +\n");
-    } else {
-      printf("\n");
-    }
-  }
-}
-*/
-
-/*****************************************************************************/
-/*                                                                           */
-/*  doublerand()   Generate a double with random 53-bit significand and a    */
-/*                 random exponent in [0, 511].                              */
-/*                                                                           */
-/*****************************************************************************/
-
-/*
-double doublerand()
-{
-  double result;
-  double expo;
-  long a, b, c;
-  long i;
-
-  a = random();
-  b = random();
-  c = random();
-  result = (double) (a - 1073741824) * 8388608.0 + (double) (b >> 8);
-  for (i = 512, expo = 2; i <= 131072; i *= 2, expo = expo * expo) {
-    if (c & i) {
-      result *= expo;
-    }
-  }
-  return result;
-}
-*/
-
-/*****************************************************************************/
-/*                                                                           */
-/*  narrowdoublerand()   Generate a double with random 53-bit significand    */
-/*                       and a random exponent in [0, 7].                    */
-/*                                                                           */
-/*****************************************************************************/
-
-/*
-double narrowdoublerand()
-{
-  double result;
-  double expo;
-  long a, b, c;
-  long i;
-
-  a = random();
-  b = random();
-  c = random();
-  result = (double) (a - 1073741824) * 8388608.0 + (double) (b >> 8);
-  for (i = 512, expo = 2; i <= 2048; i *= 2, expo = expo * expo) {
-    if (c & i) {
-      result *= expo;
-    }
-  }
-  return result;
-}
-*/
-
-/*****************************************************************************/
-/*                                                                           */
-/*  uniformdoublerand()   Generate a double with random 53-bit significand.  */
-/*                                                                           */
-/*****************************************************************************/
-
-/*
-double uniformdoublerand()
-{
-  double result;
-  long a, b;
-
-  a = random();
-  b = random();
-  result = (double) (a - 1073741824) * 8388608.0 + (double) (b >> 8);
-  return result;
-}
-*/
-
-/*****************************************************************************/
-/*                                                                           */
-/*  floatrand()   Generate a float with random 24-bit significand and a      */
-/*                random exponent in [0, 63].                                */
-/*                                                                           */
-/*****************************************************************************/
-
-/*
-float floatrand()
-{
-  float result;
-  float expo;
-  long a, c;
-  long i;
-
-  a = random();
-  c = random();
-  result = (float) ((a - 1073741824) >> 6);
-  for (i = 512, expo = 2; i <= 16384; i *= 2, expo = expo * expo) {
-    if (c & i) {
-      result *= expo;
-    }
-  }
-  return result;
-}
-*/
-
-/*****************************************************************************/
-/*                                                                           */
-/*  narrowfloatrand()   Generate a float with random 24-bit significand and  */
-/*                      a random exponent in [0, 7].                         */
-/*                                                                           */
-/*****************************************************************************/
-
-/*
-float narrowfloatrand()
-{
-  float result;
-  float expo;
-  long a, c;
-  long i;
-
-  a = random();
-  c = random();
-  result = (float) ((a - 1073741824) >> 6);
-  for (i = 512, expo = 2; i <= 2048; i *= 2, expo = expo * expo) {
-    if (c & i) {
-      result *= expo;
-    }
-  }
-  return result;
-}
-*/
-
-/*****************************************************************************/
-/*                                                                           */
-/*  uniformfloatrand()   Generate a float with random 24-bit significand.    */
-/*                                                                           */
-/*****************************************************************************/
-
-/*
-float uniformfloatrand()
-{
-  float result;
-  long a;
-
-  a = random();
-  result = (float) ((a - 1073741824) >> 6);
-  return result;
-}
-*/
+#endif
 
 /*****************************************************************************/
 /*                                                                           */
@@ -678,7 +540,8 @@ float uniformfloatrand()
 /*                                                                           */
 /*****************************************************************************/
 
-void exactinit(int noexact, int nofilter, REAL maxx, REAL maxy, REAL maxz)
+void exactinit(int verbose, int noexact, int nofilter, REAL maxx, REAL maxy, 
+               REAL maxz)
 {
   REAL half;
   REAL check, lastcheck;
@@ -704,6 +567,24 @@ void exactinit(int noexact, int nofilter, REAL maxx, REAL maxy, REAL maxz)
 #endif /* not SINGLE */
   _FPU_SETCW(cword);
 #endif /* LINUX */
+
+  if (verbose) {
+    printf("  Initializing robust predicates.\n");
+  }
+
+#ifdef USE_CGAL_PREDICATES
+  if (cgal_pred_obj.Has_static_filters) {
+    printf("  Use static filter.\n");
+  } else {
+    printf("  No static filter.\n");
+  }
+#endif // USE_CGAL_PREDICATES
+
+#ifdef SINGLE
+  test_float(verbose);
+#else
+  test_double(verbose);
+#endif
 
   every_other = 1;
   half = 0.5;
@@ -740,8 +621,12 @@ void exactinit(int noexact, int nofilter, REAL maxx, REAL maxy, REAL maxz)
   isperrboundB = (5.0 + 72.0 * epsilon) * epsilon;
   isperrboundC = (71.0 + 1408.0 * epsilon) * epsilon * epsilon;
 
+  // Set TetGen options.  Added by H. Si, 2012-08-23.
   _use_inexact_arith = noexact;
   _use_static_filter = !nofilter;
+
+  // Calculate the two static filters for orient3d() and insphere() tests.
+  // Added by H. Si, 2012-08-23.
 
   // Sort maxx < maxy < maxz. Re-use 'half' for swapping.
   assert(maxx > 0);
@@ -758,18 +643,9 @@ void exactinit(int noexact, int nofilter, REAL maxx, REAL maxy, REAL maxz)
     half = maxy; maxy = maxx; maxx = half;
   }
 
-  // Calculate the static filters.
   o3dstaticfilter = 5.1107127829973299e-15 * maxx * maxy * maxz;
   ispstaticfilter = 1.2466136531027298e-13 * maxx * maxy * maxz * (maxz * maxz);
 
-#ifndef NDEBUG
-  // Clear the counters.
-  ori3dcount = ori3dadaptcount = 0l;
-  insphcount = insphadaptcount = insphexactcount = 0l;
-  ori4dcount = ori4dadaptcount = ori4dexactcount = 0l;
-  o3dfilterfailscount = 0l;
-  ispfilterfailscount = 0l;
-#endif // #ifndef NDEBUG
 }
 
 /*****************************************************************************/
@@ -1953,9 +1829,6 @@ REAL orient3dadapt(REAL *pa, REAL *pb, REAL *pc, REAL *pd, REAL permanent)
   INEXACT REAL _i, _j, _k;
   REAL _0;
 
-#ifndef NDEBUG
-  ori3dadaptcount++;
-#endif // #ifndef NDEBUG
 
   adx = (REAL) (pa[0] - pd[0]);
   bdx = (REAL) (pb[0] - pd[0]);
@@ -2304,25 +2177,35 @@ REAL orient3dadapt(REAL *pa, REAL *pb, REAL *pc, REAL *pd, REAL permanent)
   return finnow[finlength - 1];
 }
 
+#ifdef USE_CGAL_PREDICATES
+
+REAL orient3d(REAL *pa, REAL *pb, REAL *pc, REAL *pd)
+{
+  return (REAL) 
+    - cgal_pred_obj.orientation_3_object()
+        (Point(pa[0], pa[1], pa[2]), 
+         Point(pb[0], pb[1], pb[2]),
+         Point(pc[0], pc[1], pc[2]),
+         Point(pd[0], pd[1], pd[2]));
+}
+
+#else
+
 REAL orient3d(REAL *pa, REAL *pb, REAL *pc, REAL *pd)
 {
   REAL adx, bdx, cdx, ady, bdy, cdy, adz, bdz, cdz;
   REAL bdxcdy, cdxbdy, cdxady, adxcdy, adxbdy, bdxady;
   REAL det;
-  REAL permanent, errbound;
 
-#ifndef NDEBUG
-  ori3dcount++;
-#endif // #ifndef NDEBUG
 
   adx = pa[0] - pd[0];
-  bdx = pb[0] - pd[0];
-  cdx = pc[0] - pd[0];
   ady = pa[1] - pd[1];
-  bdy = pb[1] - pd[1];
-  cdy = pc[1] - pd[1];
   adz = pa[2] - pd[2];
+  bdx = pb[0] - pd[0];
+  bdy = pb[1] - pd[1];
   bdz = pb[2] - pd[2];
+  cdx = pc[0] - pd[0];
+  cdy = pc[1] - pd[1];
   cdz = pc[2] - pd[2];
 
   bdxcdy = bdx * cdy;
@@ -2343,13 +2226,13 @@ REAL orient3d(REAL *pa, REAL *pb, REAL *pc, REAL *pd)
   }
 
   if (_use_static_filter) {
-    if (fabs(det) > o3dstaticfilter) return det;
-    //if (det > o3dstaticfilter) return det;
-    //if (det < minus_o3dstaticfilter) return det;
-#ifndef NDEBUG
-    o3dfilterfailscount++;
-#endif // #ifndef NDEBUG
+    //if (fabs(det) > o3dstaticfilter) return det;
+    if (det > o3dstaticfilter) return det;
+    if (det < -o3dstaticfilter) return det;
   }
+
+
+  REAL permanent, errbound;
 
   permanent = (Absolute(bdxcdy) + Absolute(cdxbdy)) * Absolute(adz)
             + (Absolute(cdxady) + Absolute(adxcdy)) * Absolute(bdz)
@@ -2361,6 +2244,8 @@ REAL orient3d(REAL *pa, REAL *pb, REAL *pc, REAL *pd)
 
   return orient3dadapt(pa, pb, pc, pd, permanent);
 }
+
+#endif // #ifdef USE_CGAL_PREDICATES
 
 /*****************************************************************************/
 /*                                                                           */
@@ -3393,9 +3278,6 @@ REAL insphereexact(REAL *pa, REAL *pb, REAL *pc, REAL *pd, REAL *pe)
   INEXACT REAL _i, _j;
   REAL _0;
 
-#ifndef NDEBUG
-  insphexactcount++;
-#endif // #ifndef NDEBUG
 
   Two_Product(pa[0], pb[1], axby1, axby0);
   Two_Product(pb[0], pa[1], bxay1, bxay0);
@@ -3973,9 +3855,6 @@ REAL insphereadapt(REAL *pa, REAL *pb, REAL *pc, REAL *pd, REAL *pe,
   INEXACT REAL _i, _j;
   REAL _0;
 
-#ifndef NDEBUG
-  insphadaptcount++;
-#endif // #ifndef NDEBUG
 
   aex = (REAL) (pa[0] - pe[0]);
   bex = (REAL) (pb[0] - pe[0]);
@@ -4153,6 +4032,21 @@ REAL insphereadapt(REAL *pa, REAL *pb, REAL *pc, REAL *pd, REAL *pe,
   return insphereexact(pa, pb, pc, pd, pe);
 }
 
+#ifdef USE_CGAL_PREDICATES
+
+REAL insphere(REAL *pa, REAL *pb, REAL *pc, REAL *pd, REAL *pe)
+{
+  return (REAL)
+    - cgal_pred_obj.side_of_oriented_sphere_3_object()
+        (Point(pa[0], pa[1], pa[2]),
+         Point(pb[0], pb[1], pb[2]),
+         Point(pc[0], pc[1], pc[2]),
+         Point(pd[0], pd[1], pd[2]),
+         Point(pe[0], pe[1], pe[2]));
+}
+
+#else
+
 REAL insphere(REAL *pa, REAL *pb, REAL *pc, REAL *pd, REAL *pe)
 {
   REAL aex, bex, cex, dex;
@@ -4165,9 +4059,6 @@ REAL insphere(REAL *pa, REAL *pb, REAL *pc, REAL *pd, REAL *pe)
   REAL abc, bcd, cda, dab;
   REAL det;
 
-#ifndef NDEBUG
-  insphcount++;
-#endif // #ifndef NDEBUG
 
   aex = pa[0] - pe[0];
   bex = pb[0] - pe[0];
@@ -4222,9 +4113,7 @@ REAL insphere(REAL *pa, REAL *pb, REAL *pc, REAL *pd, REAL *pe)
     if (fabs(det) > ispstaticfilter) return det;
     //if (det > ispstaticfilter) return det;
     //if (det < minus_ispstaticfilter) return det;
-#ifndef NDEBUG
-    ispfilterfailscount++;
-#endif // #ifndef NDEBUG
+
   }
 
   REAL aezplus, bezplus, cezplus, dezplus;
@@ -4272,6 +4161,8 @@ REAL insphere(REAL *pa, REAL *pb, REAL *pc, REAL *pd, REAL *pe)
 
   return insphereadapt(pa, pb, pc, pd, pe, permanent);
 }
+
+#endif // #ifdef USE_CGAL_PREDICATES
 
 /*****************************************************************************/
 /*                                                                           */
@@ -4336,9 +4227,6 @@ REAL orient4dexact(REAL* pa, REAL* pb, REAL* pc, REAL* pd, REAL* pe,
   INEXACT REAL _i, _j;
   REAL _0;
 
-#ifndef NDEBUG
-  ori4dexactcount++;
-#endif // #ifndef NDEBUG
 
   Two_Product(pa[0], pb[1], axby1, axby0);
   Two_Product(pb[0], pa[1], bxay1, bxay0);
@@ -4553,9 +4441,6 @@ REAL orient4dadapt(REAL* pa, REAL* pb, REAL* pc, REAL* pd, REAL* pe,
   INEXACT REAL _i, _j;
   REAL _0;
 
-#ifndef NDEBUG
-  ori4dadaptcount++;
-#endif // #ifndef NDEBUG
 
   aex = (REAL) (pa[0] - pe[0]);
   bex = (REAL) (pb[0] - pe[0]);
@@ -4731,9 +4616,6 @@ REAL orient4d(REAL* pa, REAL* pb, REAL* pc, REAL* pd, REAL* pe,
  REAL det;
  REAL permanent, errbound;
 
-#ifndef NDEBUG
- ori4dcount++;
-#endif // #ifndef NDEBUG
 
  aex = pa[0] - pe[0];
  bex = pb[0] - pe[0];
@@ -4821,30 +4703,4 @@ REAL orient4d(REAL* pa, REAL* pb, REAL* pc, REAL* pd, REAL* pe,
 }
 
 
-void predicates_statistics(int weighted)
-{
-#ifndef NDEBUG
-  printf("  Number of orient3d      tests: %ld\n", ori3dcount);
-  if (_use_static_filter) {
-    printf("  Number of static filter fails: %ld\n", o3dfilterfailscount);
-  }
-  if (!_use_inexact_arith) {
-    printf("  Number of orient3dadapt tests: %ld\n", ori3dadaptcount);
-  }
-  if (!weighted) {
-    printf("  Number of insphere      tests: %ld\n", insphcount);
-    if (_use_static_filter) {
-      printf("  Number of static filter fails: %ld\n", ispfilterfailscount);
-    }
-    if (!_use_inexact_arith) {
-      printf("  Number of insphereadapt tests: %ld\n", insphadaptcount);
-      printf("  Number of insphereexact tests: %ld\n", insphexactcount);
-    }
-  } else {
-    printf("  Number of orient4d      tests: %ld\n", ori4dcount);
-    printf("  Number of orient4dadapt tests: %ld\n", ori4dadaptcount);
-    printf("  Number of orient4dexact tests: %ld\n", ori4dexactcount);
-  }
-#endif // #ifndef NDEBUG
-}
 

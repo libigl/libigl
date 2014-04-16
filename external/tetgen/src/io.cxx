@@ -31,24 +31,24 @@ bool tetgenio::load_node_call(FILE* infile, int markers, int uvflag,
   // Initialize 'pointlist', 'pointattributelist', and 'pointmarkerlist'.
   pointlist = new REAL[numberofpoints * 3];
   if (pointlist == (REAL *) NULL) {
-    terminatetetgen(1);
+    terminatetetgen(NULL, 1);
   }
   if (numberofpointattributes > 0) {
     pointattributelist = new REAL[numberofpoints * numberofpointattributes];
     if (pointattributelist == (REAL *) NULL) {
-      terminatetetgen(1);
+      terminatetetgen(NULL, 1);
     }
   }
   if (markers) {
     pointmarkerlist = new int[numberofpoints];
     if (pointmarkerlist == (int *) NULL) {
-      terminatetetgen(1);
+      terminatetetgen(NULL, 1);
     }
   }
   if (uvflag) {
     pointparamlist = new pointparam[numberofpoints];
     if (pointparamlist == NULL) {
-      terminatetetgen(1);
+      terminatetetgen(NULL, 1);
     }
   }
 
@@ -196,11 +196,11 @@ bool tetgenio::load_node(char* filebasename)
   mesh_dim = 3;
   numberofpointattributes = 0;  // no point attribute.
   markers = 0;  // no boundary marker.
-  uvflag = 0; // no uv parameters (reuqired by a PSC). 
+  uvflag = 0; // no uv parameters (required by a PSC). 
 
   // Read the first line of the file.
   stringptr = readnumberline(inputline, infile, innodefilename);
-  // Does this file contain an index colume?
+  // Does this file contain an index column?
   stringptr = strstr(inputline, "rbox");
   if (stringptr == NULL) {
     // Read number of points, number of dimensions, number of point
@@ -275,7 +275,7 @@ bool tetgenio::load_edge(char* filebasename)
   if (numberofedges > 0) {
     edgelist = new int[numberofedges * 2];
     if (edgelist == (int *) NULL) {
-      terminatetetgen(1);
+      terminatetetgen(NULL, 1);
     }
     stringptr = findnextnumber(stringptr);
     if (*stringptr == '\0') {
@@ -298,13 +298,13 @@ bool tetgenio::load_edge(char* filebasename)
       if (*stringptr == '\0') {
         printf("Error:  Edge %d is missing vertex %d in %s.\n",
                i + firstnumber, j + 1, inedgefilename);
-        terminatetetgen(1);
+        terminatetetgen(NULL, 1);
       }
       corner = (int) strtol(stringptr, &stringptr, 0);
       if (corner < firstnumber || corner >= numberofpoints + firstnumber) {
         printf("Error:  Edge %d has an invalid vertex index.\n",
                i + firstnumber);
-        terminatetetgen(1);
+        terminatetetgen(NULL, 1);
       }
       edgelist[index++] = corner;
     }
@@ -366,12 +366,12 @@ bool tetgenio::load_face(char* filebasename)
   if (numberoftrifaces > 0) {
     trifacelist = new int[numberoftrifaces * 3];
     if (trifacelist == (int *) NULL) {
-      terminatetetgen(1);
+      terminatetetgen(NULL, 1);
     }
     if (markers) {
       trifacemarkerlist = new int[numberoftrifaces];
       if (trifacemarkerlist == (int *) NULL) {
-        terminatetetgen(1);
+        terminatetetgen(NULL, 1);
       }
     }
   }
@@ -386,13 +386,13 @@ bool tetgenio::load_face(char* filebasename)
       if (*stringptr == '\0') {
         printf("Error:  Face %d is missing vertex %d in %s.\n",
                i + firstnumber, j + 1, infilename);
-        terminatetetgen(1);
+        terminatetetgen(NULL, 1);
       }
       corner = (int) strtol(stringptr, &stringptr, 0);
       if (corner < firstnumber || corner >= numberofpoints + firstnumber) {
         printf("Error:  Face %d has an invalid vertex index.\n",
                i + firstnumber);
-        terminatetetgen(1);
+        terminatetetgen(NULL, 1);
       }
       trifacelist[index++] = corner;
     }
@@ -477,14 +477,14 @@ bool tetgenio::load_tet(char* filebasename)
   // Allocate memory for tetrahedra.
   tetrahedronlist = new int[numberoftetrahedra * numberofcorners]; 
   if (tetrahedronlist == (int *) NULL) {
-    terminatetetgen(1);
+    terminatetetgen(NULL, 1);
   }
   // Allocate memory for output tetrahedron attributes if necessary.
   if (numberoftetrahedronattributes > 0) {
     tetrahedronattributelist = new REAL[numberoftetrahedra *
                                         numberoftetrahedronattributes];
     if (tetrahedronattributelist == (REAL *) NULL) {
-      terminatetetgen(1);
+      terminatetetgen(NULL, 1);
     }
   }
 
@@ -499,13 +499,13 @@ bool tetgenio::load_tet(char* filebasename)
       if (*stringptr == '\0') {
         printf("Error:  Tetrahedron %d is missing vertex %d in %s.\n",
                i + firstnumber, j + 1, infilename);
-        terminatetetgen(1);
+        terminatetetgen(NULL, 1);
       }
       corner = (int) strtol(stringptr, &stringptr, 0);
       if (corner < firstnumber || corner >= numberofpoints + firstnumber) {
         printf("Error:  Tetrahedron %d has an invalid vertex index.\n",
                i + firstnumber);
-        terminatetetgen(1);
+        terminatetetgen(NULL, 1);
       }
       tetrahedronlist[index++] = corner;
     }
@@ -567,7 +567,7 @@ bool tetgenio::load_vol(char* filebasename)
 
   tetrahedronvolumelist = new REAL[volelements];
   if (tetrahedronvolumelist == (REAL *) NULL) {
-    terminatetetgen(1);
+    terminatetetgen(NULL, 1);
   }
 
   // Read the list of volume constraints.
@@ -746,7 +746,7 @@ bool tetgenio::load_mtr(char* filebasename)
   // Allocate space for pointmtrlist.
   pointmtrlist = new REAL[numberofpoints * numberofpointmtrs];
   if (pointmtrlist == (REAL *) NULL) {
-    terminatetetgen(1);
+    terminatetetgen(NULL, 1);
   }
   mtrindex = 0;
   for (i = 0; i < numberofpoints; i++) {
@@ -756,7 +756,7 @@ bool tetgenio::load_mtr(char* filebasename)
       if (*stringptr == '\0') {
         printf("Error:  Metric %d is missing value #%d in %s.\n",
                i + firstnumber, j + 1, mtrfilename);
-        terminatetetgen(1);
+        terminatetetgen(NULL, 1);
       }
       mtr = (REAL) strtod(stringptr, &stringptr);
       pointmtrlist[mtrindex++] = mtr;
@@ -813,10 +813,10 @@ bool tetgenio::load_poly(char* filebasename)
   }
 
   // Initialize the default values.
-  mesh_dim = 3;  // Three-dimemsional accoordinates.
+  mesh_dim = 3;  // Three-dimensional coordinates.
   numberofpointattributes = 0;  // no point attribute.
   markers = 0;  // no boundary marker.
-  uvflag = 0; // no uv parameters (reuqired by a PSC).
+  uvflag = 0; // no uv parameters (required by a PSC).
 
   // Read number of points, number of dimensions, number of point
   //   attributes, and number of boundary markers.
@@ -2067,7 +2067,7 @@ bool tetgenio::load_medit(char* filebasename, int istetmesh)
 //                                                                           //
 // load_vtk()    Load VTK surface mesh from file (.vtk ascii or binary).     //
 //                                                                           //
-// This function is contributed by: Bryn Lloyd, Computer Vision Laborator,   //
+// This function is contributed by: Bryn Lloyd, Computer Vision Laboratory,  //
 // ETH, Zuerich. May 7, 2007.                                                //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////

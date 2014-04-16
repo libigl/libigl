@@ -5,34 +5,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// flippush()    Push a face (possibly will be flipped) into flipstack.      //
-//                                                                           //
-// The face is marked. The flag is used to check the validity of the face on //
-// its popup.  Some other flips may change it already.                       //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-void tetgenmesh::flippush(badface*& fstack, triface* flipface)
-{
-  badface *newflipface;
-
-  if (!facemarked(*flipface)) {
-    newflipface = (badface *) flippool->alloc();
-    newflipface->tt = *flipface;
-    markface(newflipface->tt);
-    // Push this face into stack.
-    newflipface->nextitem = fstack;
-    fstack = newflipface;
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
 // flip23()    Perform a 2-to-3 flip (face-to-edge flip).                    //
 //                                                                           //
-// 'fliptets' is an array of tetrahedra.  On input it contains two tets      //
-// [a,b,c,d] and [b,a,c,e]. It returns three new tets: [e,d,a,b], [e,d,b,c], //
-// [e,d,c,a]. The face [a,b,c] is removed, and the edge [d,e] is created.    //
+// 'fliptets' is an array of three tets (handles), where the [0] and [1] are  //
+// [a,b,c,d] and [b,a,c,e].  The three new tets: [e,d,a,b], [e,d,b,c], and   //
+// [e,d,c,a] are returned in [0], [1], and [2] of 'fliptets'.  As a result,  //
+// The face [a,b,c] is removed, and the edge [d,e] is created.               //
 //                                                                           //
 // If 'hullflag' > 0, hull tets may be involved in this flip, i.e., one of   //
 // the five vertices may be 'dummypoint'. There are two canonical cases:     //
@@ -43,27 +21,18 @@ void tetgenmesh::flippush(badface*& fstack, triface* flipface)
 //       rotate the three input tets counterclockwisely (right-hand rule)    //
 //       until a or b is in c's position.                                    //
 //                                                                           //
-// If 'flipflag > 0', faces on the convex hull of the five vertices might    //
-// need to be flipped, e.g., for incremental DT construction or mesh quality //
-// improvement. They will be queued in 'flipstack'.                          //
-//                                                                           //
-// If 'flipflag = 1', it is in the process of incrmental flip DT algorithm,  //
-// and we assume that 'd' must be the newly inserted vertex.  In such case,  //
-// only the link faces at 'd', i.e., three faces [a,b,e], [b,c,e], and [c,a, //
-// e] needs to be queued ([Edelsbrunner & Shah'1996] and [M\"ucke'1998]).    //
+// If 'fc->enqflag' is set, convex hull faces will be queued for flipping.   //
+// In particular, if 'fc->enqflag' is 1, it is called by incrementalflip()   //
+// after the insertion of a new point.  It is assumed that 'd' is the new    //
+// point. IN this case, only link faces of 'd' are queued.                   //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-void tetgenmesh::flip23(triface* fliptets, int hullflag, int flipflag, 
-                        int chkencflag)
+void tetgenmesh::flip23(triface* fliptets, int hullflag, flipconstraints *fc)
 {
   triface topcastets[3], botcastets[3];
   triface newface, casface;
-  face checksh;
-  face checkseg;
-  badface *bface; // used by chkencflag
   point pa, pb, pc, pd, pe;
-  REAL volneg[2], volpos[3], vol_diff; // volumes of involved tet-prisms.
   REAL attrib, volume;
   int dummyflag = 0;  // range = {-1, 0, 1, 2}.
   int i;
@@ -92,16 +61,12 @@ void tetgenmesh::flip23(triface* fliptets, int hullflag, int flipflag,
     }
   }
 
-  pa = org(fliptets[0]);
+  pa =  org(fliptets[0]);
   pb = dest(fliptets[0]);
   pc = apex(fliptets[0]);
   pd = oppo(fliptets[0]);
   pe = oppo(fliptets[1]);
 
-  if (b->verbose > 3) {
-    printf("        flip 2-to-3: (%d, %d, %d, %d, %d)\n", pointmark(pa),
-           pointmark(pb), pointmark(pc), pointmark(pd), pointmark(pe));
-  }
   flip23count++;
 
   // Get the outer boundary faces.
@@ -186,7 +151,8 @@ void tetgenmesh::flip23(triface* fliptets, int hullflag, int flipflag,
     setvertices(fliptets[2], pe, pd, pc, pa); // [e,d,c,a] *
   }
 
-  if (calc_tetprism_vol) {
+  if (fc->remove_ndelaunay_edge) { // calc_tetprism_vol
+    REAL volneg[2], volpos[3], vol_diff;
     if (pd != dummypoint) {
       if (pc != dummypoint) {
         volpos[0] = tetprismvol(pe, pd, pa, pb);
@@ -209,8 +175,8 @@ void tetgenmesh::flip23(triface* fliptets, int hullflag, int flipflag,
       volneg[1] = tetprismvol(pb, pa, pc, pe);
     }
     vol_diff = volpos[0] + volpos[1] + volpos[2] - volneg[0] - volneg[1];
-    tetprism_vol_sum  += vol_diff; // Update the total sum.
-  } // if (check_tetprism_vol_diff)
+    fc->tetprism_vol_sum  += vol_diff; // Update the total sum.
+  }
 
   // Bond three new tets together.
   for (i = 0; i < 3; i++) {
@@ -219,43 +185,36 @@ void tetgenmesh::flip23(triface* fliptets, int hullflag, int flipflag,
   }
   // Bond to top outer boundary faces (at [a,b,c,d]).
   for (i = 0; i < 3; i++) {
-    enextesym(fliptets[i], newface);
-    eprevself(newface); // At edges [b,a], [c,b], [a,c].
+    eorgoppo(fliptets[i], newface); // At edges [b,a], [c,b], [a,c].
     bond(newface, topcastets[i]);
   }
   // Bond bottom outer boundary faces (at [b,a,c,e]).
   for (i = 0; i < 3; i++) {
-    eprevesym(fliptets[i], newface);
-    enextself(newface); // At edges [a,b], [b,c], [c,a].
+    edestoppo(fliptets[i], newface); // At edges [a,b], [b,c], [c,a].
     bond(newface, botcastets[i]);
   }
 
-  // Bond 15 subsegments if there are.
   if (checksubsegflag) {
+    // Bond subsegments if there are.
+    // Each new tet has 5 edges to be checked (except the edge [e,d]). 
+    face checkseg;
     // The middle three: [a,b], [b,c], [c,a].
-    for (i = 0; i < 3; i++) {
-      tsspivot1(topcastets[i], checkseg);
-      if (checkseg.sh != NULL) {
-        enextesym(fliptets[i], newface);
-        eprevself(newface); // At edges [b,a], [c,b], [a,c].
+    for (i = 0; i < 3; i++) {      
+      if (issubseg(topcastets[i])) {
+        tsspivot1(topcastets[i], checkseg);
+        eorgoppo(fliptets[i], newface);
         tssbond1(newface, checkseg);
         sstbond1(checkseg, newface);
-        if (chkencflag & 1) {
-          // Skip it if it has already queued.
-          if (!smarktest2ed(checkseg)) {
-            bface = (badface *) badsubsegs->alloc();
-            bface->ss = checkseg;
-            smarktest2(bface->ss); // Only queue it once.
-            bface->forg = sorg(checkseg); // An alive badface.
-          }
+        if (fc->chkencflag & 1) {
+          enqueuesubface(badsubsegs, &checkseg);
         }
       }
     }
     // The top three: [d,a], [d,b], [d,c]. Two tets per edge.
     for (i = 0; i < 3; i++) {
-      eprev(topcastets[i], casface);
-      tsspivot1(casface, checkseg);
-      if (checkseg.sh != NULL) {
+      eprev(topcastets[i], casface);      
+      if (issubseg(casface)) {
+        tsspivot1(casface, checkseg);
         enext(fliptets[i], newface);
         tssbond1(newface, checkseg);
         sstbond1(checkseg, newface);
@@ -263,22 +222,16 @@ void tetgenmesh::flip23(triface* fliptets, int hullflag, int flipflag,
         eprevself(newface);
         tssbond1(newface, checkseg);
         sstbond1(checkseg, newface);
-        if (chkencflag & 1) {
-          // Skip it if it has already queued.
-          if (!smarktest2ed(checkseg)) {
-            bface = (badface *) badsubsegs->alloc();
-            bface->ss = checkseg;
-            smarktest2(bface->ss); // Only queue it once.
-            bface->forg = sorg(checkseg); // An alive badface.
-          }
+        if (fc->chkencflag & 1) {
+          enqueuesubface(badsubsegs, &checkseg);
         }
       }
     }
     // The bot three: [a,e], [b,e], [c,e]. Two tets per edge.
     for (i = 0; i < 3; i++) {
       enext(botcastets[i], casface);
-      tsspivot1(casface, checkseg);
-      if (checkseg.sh != NULL) {
+      if (issubseg(casface)) {
+        tsspivot1(casface, checkseg);
         eprev(fliptets[i], newface);
         tssbond1(newface, checkseg);
         sstbond1(checkseg, newface);
@@ -286,75 +239,53 @@ void tetgenmesh::flip23(triface* fliptets, int hullflag, int flipflag,
         enextself(newface);
         tssbond1(newface, checkseg);
         sstbond1(checkseg, newface);
-        if (chkencflag & 1) {
-          // Skip it if it has already queued.
-          if (!smarktest2ed(checkseg)) {
-            bface = (badface *) badsubsegs->alloc();
-            bface->ss = checkseg;
-            smarktest2(bface->ss); // Only queue it once.
-            bface->forg = sorg(checkseg); // An alive badface.
-          }
+        if (fc->chkencflag & 1) {
+          enqueuesubface(badsubsegs, &checkseg);
         }
       }
     }
-  }
+  } // if (checksubsegflag)
 
-  // Bond 6 subfaces if there are.
   if (checksubfaceflag) {
-    for (i = 0; i < 3; i++) {
-      tspivot(topcastets[i], checksh);
-      if (checksh.sh != NULL) {
-        enextesym(fliptets[i], newface);
-        eprevself(newface); // At edge [b,a], [c,b], [a,c].
+    // Bond 6 subfaces if there are.
+    face checksh;
+    for (i = 0; i < 3; i++) {      
+      if (issubface(topcastets[i])) {
+        tspivot(topcastets[i], checksh);
+        eorgoppo(fliptets[i], newface);
         sesymself(checksh);
         tsbond(newface, checksh);
-        if (chkencflag & 2) {
-          if (!smarktest2ed(checksh)) {
-            bface = (badface *) badsubfacs->alloc();
-            bface->ss = checksh;
-            smarktest2(bface->ss); // Only queue it once.
-            bface->forg = sorg(checksh); // An alive badface
-          }
+        if (fc->chkencflag & 2) {
+          enqueuesubface(badsubfacs, &checksh);
         }
       }
     }
     for (i = 0; i < 3; i++) {
-      tspivot(botcastets[i], checksh);
-      if (checksh.sh != NULL) {
-        eprevesym(fliptets[i], newface);
-        enextself(newface); // At edge [a,b], [b,c], [c,a]
+      if (issubface(botcastets[i])) {
+        tspivot(botcastets[i], checksh);
+        edestoppo(fliptets[i], newface);
         sesymself(checksh);
         tsbond(newface, checksh);
-        if (chkencflag & 2) {
-          if (!smarktest2ed(checksh)) {
-            bface = (badface *) badsubfacs->alloc();
-            bface->ss = checksh;
-            smarktest2(bface->ss); // Only queue it once.
-            bface->forg = sorg(checksh); // An alive badface
-          }
+        if (fc->chkencflag & 2) {
+          enqueuesubface(badsubfacs, &checksh);
         }
       }
     }
-  }
+  } // if (checksubfaceflag)
 
-  if (chkencflag & 4) {
+  if (fc->chkencflag & 4) {
     // Put three new tets into check list.
     for (i = 0; i < 3; i++) {
-      if (!marktest2ed(fliptets[i])) {
-        bface = (badface *) badtetrahedrons->alloc();
-        bface->tt = fliptets[i];
-        marktest2(bface->tt);
-        bface->forg = org(fliptets[i]);
-      }
+      enqueuetetrahedron(&(fliptets[i]));
     }
   }
 
   // Update the point-to-tet map.
-  setpoint2tet(pa, encode(fliptets[0]));
-  setpoint2tet(pb, encode(fliptets[0]));
-  setpoint2tet(pc, encode(fliptets[1]));
-  setpoint2tet(pd, encode(fliptets[0]));
-  setpoint2tet(pe, encode(fliptets[0]));
+  setpoint2tet(pa, (tetrahedron) fliptets[0].tet);
+  setpoint2tet(pb, (tetrahedron) fliptets[0].tet);
+  setpoint2tet(pc, (tetrahedron) fliptets[1].tet);
+  setpoint2tet(pd, (tetrahedron) fliptets[0].tet);
+  setpoint2tet(pe, (tetrahedron) fliptets[0].tet);
 
   if (hullflag > 0) {
     if (dummyflag != 0) {
@@ -387,13 +318,13 @@ void tetgenmesh::flip23(triface* fliptets, int hullflag, int flipflag,
     }
   }
 
-  if (flipflag > 0) {
+  if (fc->enqflag > 0) {
     // Queue faces which may be locally non-Delaunay.  
     for (i = 0; i < 3; i++) {
       eprevesym(fliptets[i], newface);
       flippush(flipstack, &newface);
     }
-    if (flipflag > 1) {
+    if (fc->enqflag > 1) {
       for (i = 0; i < 3; i++) {
         enextesym(fliptets[i], newface);
         flippush(flipstack, &newface);
@@ -408,9 +339,10 @@ void tetgenmesh::flip23(triface* fliptets, int hullflag, int flipflag,
 //                                                                           //
 // flip32()    Perform a 3-to-2 flip (edge-to-face flip).                    //
 //                                                                           //
-// 'fliptets' is an array of three tetrahedra. On input, it contains three   //
-// tets: [e,d,a,b], [e,d,b,c], and [e,d,c,a]. It returns tw tets: [a,b,c,d], //
-// and [b,a,c,e]. The edge [e,d] is replaced by the face [a,b,c].            //
+// 'fliptets' is an array of three tets (handles),  which are [e,d,a,b],     //
+// [e,d,b,c], and [e,d,c,a].  The two new tets: [a,b,c,d] and [b,a,c,e] are  //
+// returned in [0] and [1] of 'fliptets'.  As a result, the edge [e,d] is    //
+// replaced by the face [a,b,c].                                             //
 //                                                                           //
 // If 'hullflag' > 0, hull tets may be involved in this flip, i.e., one of   //
 // the five vertices may be 'dummypoint'. There are two canonical cases:     //
@@ -421,46 +353,32 @@ void tetgenmesh::flip23(triface* fliptets, int hullflag, int flipflag,
 //       three old tets counterclockwisely (right-hand rule) until a or b    //
 //       is in c's position.                                                 //
 //                                                                           //
-// If 'flipflag > 0', faces on the convex hull of the five vertices might    //
-// need to be flipped, e.g., for incremental DT construction or mesh quality //
-// improvement. They will be queued in 'flipstack'.                          //
-//                                                                           //
-// If 'flipflag = 1', it is in the process of incrmental flip DT algorithm,  //
-// and we assume that 'a' must be the newly inserted vertex.  In such case,  //
-// only the link faces at 'a', i.e., two faces [c,b,d] and [b,c,e] needs to  //
-// be queued ( [Edelsbrunner & Shah'1996] and [M\"ucke'1998]).               //
+// If 'fc->enqflag' is set, convex hull faces will be queued for flipping.   //
+// In particular, if 'fc->enqflag' is 1, it is called by incrementalflip()   //
+// after the insertion of a new point.  It is assumed that 'a' is the new    //
+// point. In this case, only link faces of 'a' are queued.                   //
 //                                                                           //
 // If 'checksubfaceflag' is on (global variable), and assume [e,d] is not a  //
 // segment. There may be two (interior) subfaces sharing at [e,d], which are //
 // [e,d,p] and [e,d,q], where the pair (p,q) may be either (a,b), or (b,c),  //
 // or (c,a)  In such case, a 2-to-2 flip is performed on these two subfaces  //
 // and two new subfaces [p,q,e] and [p,q,d] are created. They are inserted   //
-// back into the tetrahedralization.  However, it is possible that the new   //
-// subface ([p,q,e] or [p,q,d] already exists. In such case, we just delete  //
-// the conflict subface. As a result, either 'd' or 'e' is removed from the  //
-// surface mesh.  A better solution would be to detect and perform a 3-to-1  //
-// flip to remove 'd' or 'e' (see also 2011-11-15).                          //
+// back into the tetrahedralization.                                         //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-void tetgenmesh::flip32(triface* fliptets, int hullflag, int flipflag,
-                        int chkencflag)
+void tetgenmesh::flip32(triface* fliptets, int hullflag, flipconstraints *fc)
 {
   triface topcastets[3], botcastets[3];
   triface newface, casface;
-  face checksh; 
+  face flipshs[3]; 
   face checkseg; 
-  badface *bface; // used by chkencflag
   point pa, pb, pc, pd, pe;
-  REAL volneg[3], volpos[2], vol_diff; // volumes of involved tet-prisms.
   REAL attrib, volume;
   int dummyflag = 0;  // Rangle = {-1, 0, 1, 2}
+  int spivot = -1, scount = 0; // for flip22()
+  int t1ver; 
   int i, j;
-
-  // For 2-to-2 flip (subfaces).
-  face flipshs[3], flipfaces[2];
-  point rempt;
-  int spivot = -1, scount = 0;
 
   if (hullflag > 0) {
     // Check if e is 'dummypoint'.
@@ -500,36 +418,24 @@ void tetgenmesh::flip32(triface* fliptets, int hullflag, int flipflag,
   pd = dest(fliptets[0]);
   pe = org(fliptets[0]);
 
-  if (b->verbose > 3) {
-    printf("        flip 3-to-2: (%d, %d, %d, %d, %d)\n", pointmark(pa),
-           pointmark(pb), pointmark(pc), pointmark(pd), pointmark(pe));
-  }
   flip32count++;
 
   // Get the outer boundary faces.
   for (i = 0; i < 3; i++) {
-    enextesym(fliptets[i], casface);
-    eprevself(casface);
+    eorgoppo(fliptets[i], casface);
     fsym(casface, topcastets[i]);
   }
   for (i = 0; i < 3; i++) {
-    eprevesym(fliptets[i], casface);
-    enextself(casface);
+    edestoppo(fliptets[i], casface);
     fsym(casface, botcastets[i]);
   }
 
   if (checksubfaceflag) {
     // Check if there are interior subfaces at the edge [e,d].
-    spivot = -1;
-    scount = 0;
     for (i = 0; i < 3; i++) {
       tspivot(fliptets[i], flipshs[i]);
       if (flipshs[i].sh != NULL) {
-        if (b->verbose > 3) {
-          printf("        Found an interior subface (%d, %d, %d).\n",
-                 pointmark(sorg(flipshs[i])), pointmark(sdest(flipshs[i])),
-                 pointmark(sapex(flipshs[i])));
-        }
+        // Found an interior subface.
         stdissolve(flipshs[i]); // Disconnect the sub-tet bond.
         scount++;
       } else {
@@ -543,28 +449,6 @@ void tetgenmesh::flip32(triface* fliptets, int hullflag, int flipflag,
   fliptets[1].ver = 11;
   setelemmarker(fliptets[0].tet, 0); // Clear all flags.
   setelemmarker(fliptets[1].tet, 0);
-  // NOTE: the element attributes and volume constraint must be set correctly.
-  if (checksubfaceflag) {
-    if (scount > 0) {
-      // There are two subfaces involved in this flip. The three tets are
-      //   separated into two different regions, one may be exterior. The
-      //   first region has two tets, and the second region has only one.
-      //   The two created tets must be in the same region as the first region. 
-      //   The element attributes and volume constraint must be set correctly.
-      //assert(spivot != -1);
-      // The tet fliptets[spivot] is in the first region.
-      for (j = 0; j < 2; j++) {
-        for (i = 0; i < numelemattrib; i++) {
-          attrib = elemattribute(fliptets[spivot].tet, i);
-          setelemattribute(fliptets[j].tet, i, attrib);
-        }
-        if (b->varvolume) {
-          volume = volumebound(fliptets[spivot].tet);
-          setvolumebound(fliptets[j].tet, volume);
-        }
-      }
-    }
-  }
   if (checksubsegflag) {
     // Dealloc the space to subsegments.
     if (fliptets[0].tet[8] != NULL) {
@@ -587,7 +471,28 @@ void tetgenmesh::flip32(triface* fliptets, int hullflag, int flipflag,
       fliptets[1].tet[9] = NULL;
     }
   }
-
+  if (checksubfaceflag) {
+    if (scount > 0) {
+      // The element attributes and volume constraint must be set correctly.
+      // There are two subfaces involved in this flip. The three tets are
+      //   separated into two different regions, one may be exterior. The
+      //   first region has two tets, and the second region has only one.
+      //   The two created tets must be in the same region as the first region. 
+      //   The element attributes and volume constraint must be set correctly.
+      //assert(spivot != -1);
+      // The tet fliptets[spivot] is in the first region.
+      for (j = 0; j < 2; j++) {
+        for (i = 0; i < numelemattrib; i++) {
+          attrib = elemattribute(fliptets[spivot].tet, i);
+          setelemattribute(fliptets[j].tet, i, attrib);
+        }
+        if (b->varvolume) {
+          volume = volumebound(fliptets[spivot].tet);
+          setvolumebound(fliptets[j].tet, volume);
+        }
+      }
+    }
+  }
   // Delete an old tet.
   tetrahedrondealloc(fliptets[2].tet);
 
@@ -611,14 +516,15 @@ void tetgenmesh::flip32(triface* fliptets, int hullflag, int flipflag,
       esymself(fliptets[0]);
       // Adjust abec -> bace.
       esymself(fliptets[1]);
-      // The hullsize does not changle.
+      // The hullsize does not change.
     }
   } else {
     setvertices(fliptets[0], pa, pb, pc, pd);
     setvertices(fliptets[1], pb, pa, pc, pe);
   }
 
-  if (calc_tetprism_vol) {
+  if (fc->remove_ndelaunay_edge) { // calc_tetprism_vol
+    REAL volneg[3], volpos[2], vol_diff;
     if (pc != dummypoint) {
       if (pd != dummypoint) {
         volneg[0] = tetprismvol(pe, pd, pa, pb);
@@ -641,7 +547,7 @@ void tetgenmesh::flip32(triface* fliptets, int hullflag, int flipflag,
       volpos[1] = 0.;
     }
     vol_diff = volpos[0] + volpos[1] - volneg[0] - volneg[1] - volneg[2];
-    tetprism_vol_sum  += vol_diff; // Update the total sum.
+    fc->tetprism_vol_sum  += vol_diff; // Update the total sum.
   }
 
   // Bond abcd <==> bace.
@@ -660,133 +566,89 @@ void tetgenmesh::flip32(triface* fliptets, int hullflag, int flipflag,
   }
 
   if (checksubsegflag) {
-    // Bond segments to new (flipped) tets.
-    for (i = 0; i < 3; i++) {
-      tsspivot1(topcastets[i], checkseg);
-      if (checkseg.sh != NULL) {
+    // Bond 9 segments to new (flipped) tets.
+    for (i = 0; i < 3; i++) { // edges a->b, b->c, c->a.      
+      if (issubseg(topcastets[i])) {
+        tsspivot1(topcastets[i], checkseg);
         tssbond1(fliptets[0], checkseg);
         sstbond1(checkseg, fliptets[0]);
-        if (chkencflag & 1) {
-          // Skip it if it has already queued.
-          if (!smarktest2ed(checkseg)) {
-            bface = (badface *) badsubsegs->alloc();
-            bface->ss = checkseg;
-            smarktest2(bface->ss); // Only queue it once.
-            bface->forg = sorg(checkseg); // An alive badface.
-          }
-        }
-      }
-      enextself(fliptets[0]);
-    }
-    // The three top edges.
-    for (i = 0; i < 3; i++) {
-      esym(fliptets[0], newface);
-      eprevself(newface); // edge b->d, c->d, a->d.
-      enext(topcastets[i], casface);
-      tsspivot1(casface, checkseg);
-      if (checkseg.sh != NULL) {
-        tssbond1(newface, checkseg);
-        sstbond1(checkseg, newface);
-        if (chkencflag & 1) {
-          // Skip it if it has already queued.
-          if (!smarktest2ed(checkseg)) {
-            bface = (badface *) badsubsegs->alloc();
-            bface->ss = checkseg;
-            smarktest2(bface->ss); // Only queue it once.
-            bface->forg = sorg(checkseg); // An alive badface.
-          }
-        }
-      }
-      enextself(fliptets[0]);
-    }
-    // Process the bottom tet bace.
-    for (i = 0; i < 3; i++) {
-      tsspivot1(botcastets[i], checkseg);
-      if (checkseg.sh != NULL) {
         tssbond1(fliptets[1], checkseg);
         sstbond1(checkseg, fliptets[1]);
-        if (chkencflag & 1) {
-          // Skip it if it has already queued.
-          if (!smarktest2ed(checkseg)) {
-            bface = (badface *) badsubsegs->alloc();
-            bface->ss = checkseg;
-            smarktest2(bface->ss); // Only queue it once.
-            bface->forg = sorg(checkseg); // An alive badface.
-          }
+        if (fc->chkencflag & 1) {
+          enqueuesubface(badsubsegs, &checkseg);
         }
       }
+      enextself(fliptets[0]);
       eprevself(fliptets[1]);
     }
-    // The three bot edges.
-    for (i = 0; i < 3; i++) {
-      esym(fliptets[1], newface);
-      enextself(newface); // edge b<-e, c<-e, a<-e.
-      eprev(botcastets[i], casface);
-      tsspivot1(casface, checkseg);
-      if (checkseg.sh != NULL) {
+    // The three top edges.
+    for (i = 0; i < 3; i++) { // edges b->d, c->d, a->d.
+      esym(fliptets[0], newface);
+      eprevself(newface); 
+      enext(topcastets[i], casface);      
+      if (issubseg(casface)) {
+        tsspivot1(casface, checkseg);
         tssbond1(newface, checkseg);
         sstbond1(checkseg, newface);
-        if (chkencflag & 1) {
-          // Skip it if it has already queued.
-          if (!smarktest2ed(checkseg)) {
-            bface = (badface *) badsubsegs->alloc();
-            bface->ss = checkseg;
-            smarktest2(bface->ss); // Only queue it once.
-            bface->forg = sorg(checkseg); // An alive badface.
-          }
+        if (fc->chkencflag & 1) {
+          enqueuesubface(badsubsegs, &checkseg);
+        }
+      }
+      enextself(fliptets[0]);
+    }
+    // The three bot edges.
+    for (i = 0; i < 3; i++) { // edges b<-e, c<-e, a<-e.
+      esym(fliptets[1], newface);
+      enextself(newface); 
+      eprev(botcastets[i], casface);
+      if (issubseg(casface)) {
+        tsspivot1(casface, checkseg);
+        tssbond1(newface, checkseg);
+        sstbond1(checkseg, newface);
+        if (fc->chkencflag & 1) {
+          enqueuesubface(badsubsegs, &checkseg);
         }
       }
       eprevself(fliptets[1]);
     }
-  }
+  } // if (checksubsegflag)
 
   if (checksubfaceflag) {
+    face checksh;
     // Bond the top three casing subfaces.
-    for (i = 0; i < 3; i++) {
-      tspivot(topcastets[i], checksh);
-      if (checksh.sh != NULL) {
-        esym(fliptets[0], newface); // At edge [b,a], [c,b], [a,c]
+    for (i = 0; i < 3; i++) { // At edges [b,a], [c,b], [a,c]
+      if (issubface(topcastets[i])) {
+        tspivot(topcastets[i], checksh);
+        esym(fliptets[0], newface); 
         sesymself(checksh);
         tsbond(newface, checksh);
-        if (chkencflag & 2) {
-          if (!smarktest2ed(checksh)) {
-            bface = (badface *) badsubfacs->alloc();
-            bface->ss = checksh;
-            smarktest2(bface->ss); // Only queue it once.
-            bface->forg = sorg(checksh); // An alive badface
-          }
+        if (fc->chkencflag & 2) {
+          enqueuesubface(badsubfacs, &checksh);
         }
       }
       enextself(fliptets[0]);
     }
     // Bond the bottom three casing subfaces.
-    for (i = 0; i < 3; i++) {
-      tspivot(botcastets[i], checksh);
-      if (checksh.sh != NULL) {
-        esym(fliptets[1], newface); // // At edge [a,b], [b,c], [c,a]
+    for (i = 0; i < 3; i++) { // At edges [a,b], [b,c], [c,a]
+      if (issubface(botcastets[i])) {
+        tspivot(botcastets[i], checksh);
+        esym(fliptets[1], newface); 
         sesymself(checksh);
         tsbond(newface, checksh);
-        if (chkencflag & 2) {
-          if (!smarktest2ed(checksh)) {
-            bface = (badface *) badsubfacs->alloc();
-            bface->ss = checksh;
-            smarktest2(bface->ss); // Only queue it once.
-            bface->forg = sorg(checksh); // An alive badface
-          }
+        if (fc->chkencflag & 2) {
+          enqueuesubface(badsubfacs, &checksh);
         }
       }
       eprevself(fliptets[1]);
     }
-  }
 
-  if (checksubfaceflag) {
     if (scount > 0) {
-      assert(spivot != -1); // spivot = i, in {0,1,2}
+      face flipfaces[2];
       // Perform a 2-to-2 flip in subfaces.
       flipfaces[0] = flipshs[(spivot + 1) % 3];
       flipfaces[1] = flipshs[(spivot + 2) % 3];
       sesymself(flipfaces[1]);
-      flip22(flipfaces, 0, chkencflag);
+      flip22(flipfaces, 0, fc->chkencflag);
       // Connect the flipped subfaces to flipped tets.
       // First go to the corresponding flipping edge.
       //   Re-use top- and botcastets[0].
@@ -807,49 +669,9 @@ void tetgenmesh::flip32(triface* fliptets, int hullflag, int flipflag,
         sesymself(flipfaces[0]);
         tsbond(topcastets[0], flipfaces[0]);
       } else {
-        // Found two subfaces are duplicated at the same tet face. 
-        //   Due to the same reason explained below.
-        assert(sapex(checksh) == sapex(flipfaces[0]));
-        sspivot(checksh, checkseg);
-        assert(checkseg.sh == NULL);
-        // Delete the two duplicated subfaces.
-        rempt = sapex(checksh);
-        if (b->verbose > 2) {
-          printf("      Remove vertex %d from surface.\n", pointmark(rempt));
-        }
-        // Make sure we do not delete a Steiner points in segment.
-        assert(pointtype(rempt) == FREEFACETVERTEX);
-        setpointtype(rempt, FREEVOLVERTEX);
-        // Re-use flipshs.
-        //spivot(checksh, flipshs[0]);
-        flipshs[0] = checksh; 
-        spivotself(flipshs[0]);
-        if (flipshs[0].sh == flipfaces[0].sh) {
-          sesym(checksh, flipshs[0]);
-          spivotself(flipshs[0]);
-        }
-        assert(flipshs[0].sh != flipfaces[0].sh);
-        //spivot(flipfaces[0], flipshs[1]);
-        flipshs[1] = flipfaces[0];
-        spivotself(flipshs[1]);
-        if (flipshs[1].sh == checksh.sh) {
-          sesym(flipfaces[0], flipshs[1]);
-          spivotself(flipshs[1]);
-        }
-        assert(flipshs[1].sh != checksh.sh);
-        // Bond the two subfaces together.
-        sbond(flipshs[0], flipshs[1]);
-        // Detach 'checksh' from the adjacent tets.
-        tsdissolve(topcastets[0]);
-        fsymself(topcastets[0]);
-        tsdissolve(topcastets[0]);
-        // Delete the two duplicated subfaces.
-        shellfacedealloc(subfaces, checksh.sh);
-        shellfacedealloc(subfaces, flipfaces[0].sh);
+        // An invalid 2-to-2 flip. Report a bug.
+        terminatetetgen(this, 2); 
       }
-      // // Push topcastets[0] into queue for checking new sliver.
-      // assert(oppo(topcastets[0]) != dummypoint);
-      // flippush(&(topcastets[0]), oppo(topcastets[0]));
       // Connect the bot subface to the bottom tets.
       esymself(botcastets[0]);
       sesymself(flipfaces[1]);
@@ -861,74 +683,24 @@ void tetgenmesh::flip32(triface* fliptets, int hullflag, int flipflag,
         sesymself(flipfaces[1]);
         tsbond(botcastets[0], flipfaces[1]);
       } else {
-        // Found two subfaces are duplicated at the same tet face. 
-        assert(sapex(checksh) == sapex(flipfaces[1]));
-        // This happens in case when a Steiner point is not exactly coplanar
-        //   or collinear with the subface or subedge where it was added.
-        //   See figs illustrated in 2011-11-09.
-        sspivot(checksh, checkseg);
-        assert(checkseg.sh == NULL); 
-        // Since the edge [p,q] is not a segment, both subfaces must be 
-        //   removed. The effect is that the Steiner point is removed from
-        //   the surface triangulation.
-        // Delete the two duplicated subfaces.
-        rempt = sapex(checksh);
-        if (b->verbose > 2) {
-          printf("      Remove vertex %d from surface.\n", pointmark(rempt));
-        }
-        // Make sure we do not delete a Steiner points in segment.
-        assert(pointtype(rempt) == FREEFACETVERTEX);
-        setpointtype(rempt, FREEVOLVERTEX);
-        // Re-use flipshs.
-        //spivot(checksh, flipshs[0]);
-        flipshs[0] = checksh;
-        spivotself(flipshs[0]);
-        if (flipshs[0].sh == flipfaces[1].sh) {
-          sesym(checksh, flipshs[0]);
-          spivotself(flipshs[0]);
-        }
-        assert(flipshs[0].sh != flipfaces[1].sh);
-        //spivot(flipfaces[1], flipshs[1]);
-        flipshs[1] = flipfaces[1];
-        spivotself(flipshs[1]);
-        if (flipshs[1].sh == checksh.sh) {
-          sesym(flipfaces[1], flipshs[1]);
-          spivotself(flipshs[1]);
-        }
-        assert(flipshs[1].sh != checksh.sh);
-        // Bond the two subfaces together.
-        sbond(flipshs[0], flipshs[1]);
-        // Detach 'checksh' from the adjacent tets.
-        tsdissolve(botcastets[0]);
-        fsymself(botcastets[0]);
-        tsdissolve(botcastets[0]);
-        // Delete the two duplicated subfaces.
-        shellfacedealloc(subfaces, checksh.sh);
-        shellfacedealloc(subfaces, flipfaces[1].sh);
+        // An invalid 2-to-2 flip. Report a bug.
+        terminatetetgen(this, 2);  
       }
-      // // Push botcastets[0] into queue for checking new sliver.
-      // assert(oppo(botcastets[0]) != dummypoint);
-      // flippush(&(botcastets[0]), oppo(botcastets[0]));
-    }
-  }
+    } // if (scount > 0)
+  } // if (checksubfaceflag)
 
-  if (chkencflag & 4) {
+  if (fc->chkencflag & 4) {
     // Put two new tets into check list.
     for (i = 0; i < 2; i++) {
-      if (!marktest2ed(fliptets[i])) {
-        bface = (badface *) badtetrahedrons->alloc();
-        bface->tt = fliptets[i];
-        marktest2(bface->tt);
-        bface->forg = org(fliptets[i]);
-      }
+      enqueuetetrahedron(&(fliptets[i]));
     }
   }
 
-  setpoint2tet(pa, encode(fliptets[0]));
-  setpoint2tet(pb, encode(fliptets[0]));
-  setpoint2tet(pc, encode(fliptets[0]));
-  setpoint2tet(pd, encode(fliptets[0]));
-  setpoint2tet(pe, encode(fliptets[1]));
+  setpoint2tet(pa, (tetrahedron) fliptets[0].tet);
+  setpoint2tet(pb, (tetrahedron) fliptets[0].tet);
+  setpoint2tet(pc, (tetrahedron) fliptets[0].tet);
+  setpoint2tet(pd, (tetrahedron) fliptets[0].tet);
+  setpoint2tet(pe, (tetrahedron) fliptets[1].tet);
 
   if (hullflag > 0) {
     if (dummyflag != 0) {
@@ -951,14 +723,14 @@ void tetgenmesh::flip32(triface* fliptets, int hullflag, int flipflag,
     }
   }
   
-  if (flipflag > 0) {
+  if (fc->enqflag > 0) {
     // Queue faces which may be locally non-Delaunay.
     // pa = org(fliptets[0]); // 'a' may be a new vertex.
     enextesym(fliptets[0], newface);
     flippush(flipstack, &newface);
     eprevesym(fliptets[1], newface);
     flippush(flipstack, &newface);
-    if (flipflag > 1) {
+    if (fc->enqflag > 1) {
       //pb = dest(fliptets[0]);
       eprevesym(fliptets[0], newface);
       flippush(flipstack, &newface);
@@ -984,28 +756,28 @@ void tetgenmesh::flip32(triface* fliptets, int hullflag, int flipflag,
 // four tets in 'fliptets' are: [p,d,a,b], [p,d,b,c], [p,d,c,a], and [a,b,c, //
 // p].  On return, 'fliptets[0]' is the new tet [a,b,c,d].                   //
 //                                                                           //
-// If 'hullflag' is set (> 0), one of the four vertices may be 'duumypoint'. //
-// The 'hullsize' may be changed.                                            //
+// If 'hullflag' is set (> 0), one of the five vertices may be 'dummypoint'. //
+// The 'hullsize' may be changed.  Note that p may be dummypoint.  In this   //
+// case, four hull tets are replaced by one real tet.                        //
 //                                                                           //
 // If 'checksubface' flag is set (>0), it is possible that there are three   //
 // interior subfaces connecting at p.  If so, a 3-to-1 flip is performed to  //
 // to remove p from the surface triangulation.                               //
 //                                                                           //
+// If it is called by the routine incrementalflip(), we assume that d is the //
+// newly inserted vertex.                                                    //
+//                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-void tetgenmesh::flip41(triface* fliptets, int hullflag, int flipflag,
-                        int chkencflag)
+void tetgenmesh::flip41(triface* fliptets, int hullflag, flipconstraints *fc)
 {
   triface topcastets[3], botcastet;
   triface newface, neightet;
   face flipshs[4];
-  face checksh;
-  face checkseg;
   point pa, pb, pc, pd, pp;
-  badface *bface; // used by chkencflag
-  REAL volneg[4], volpos[1], vol_diff; // volumes of involved tet-prisms.
   int dummyflag = 0; // in {0, 1, 2, 3, 4}
   int spivot = -1, scount = 0;
+  int t1ver; 
   int i;
 
   pa =  org(fliptets[3]);
@@ -1014,11 +786,7 @@ void tetgenmesh::flip41(triface* fliptets, int hullflag, int flipflag,
   pd = dest(fliptets[0]);
   pp =  org(fliptets[0]); // The removing vertex.
 
-  if (b->verbose > 3) {
-    printf("        flip 4-to-1: (%d, %d, %d, %d, %d)\n", pointmark(pa),
-           pointmark(pb), pointmark(pc), pointmark(pd), pointmark(pp));
-  }
-  // flip41count++;
+  flip41count++;
 
   // Get the outer boundary faces.
   for (i = 0; i < 3; i++) {
@@ -1031,8 +799,6 @@ void tetgenmesh::flip41(triface* fliptets, int hullflag, int flipflag,
   if (checksubfaceflag) {
     // Check if there are three subfaces at 'p'.
     //   Re-use 'newface'.
-    spivot = -1;
-    scount = 0;
     for (i = 0; i < 3; i++) {
       fnext(fliptets[3], newface); // [a,b,p,d],[b,c,p,d],[c,a,p,d].
       tspivot(newface, flipshs[i]);
@@ -1062,6 +828,7 @@ void tetgenmesh::flip41(triface* fliptets, int hullflag, int flipflag,
     }
   } // if (checksubfaceflag)
 
+
   // Re-use fliptets[0] for [a,b,c,d].
   fliptets[0].ver = 11;
   setelemmarker(fliptets[0].tet, 0); // Clean all flags.
@@ -1080,19 +847,20 @@ void tetgenmesh::flip41(triface* fliptets, int hullflag, int flipflag,
       fliptets[0].tet[9] = NULL;
     }
   }
-
   // Delete the other three tets.
   for (i = 1; i < 4; i++) {
     tetrahedrondealloc(fliptets[i].tet);
   }
 
-  // Mark the point pp as unused.
-  setpointtype(pp, UNUSEDVERTEX);
-  unuverts++;
+  if (pp != dummypoint) {
+    // Mark the point pp as unused.
+    setpointtype(pp, UNUSEDVERTEX);
+    unuverts++;
+  }
 
   // Create the new tet [a,b,c,d].
   if (hullflag > 0) {
-    // One of the four vertices may be 'dummypoint'.
+    // One of the five vertices may be 'dummypoint'.
     if (pa == dummypoint) {
       // pa is dummypoint.
       setvertices(fliptets[0], pc, pb, pd, pa);
@@ -1113,17 +881,26 @@ void tetgenmesh::flip41(triface* fliptets, int hullflag, int flipflag,
       dummyflag = 4;
     } else {
       setvertices(fliptets[0], pa, pb, pc, pd);
-      dummyflag = 0;
+      if (pp == dummypoint) {
+        dummyflag = -1;
+      } else {
+        dummyflag = 0;
+      }
     }
     if (dummyflag > 0) {
-      // We delete 3 hull tets, and create 1 hull tet.
+      // We deleted 3 hull tets, and create 1 hull tet.
       hullsize -= 2;
+    } else if (dummyflag < 0) {
+      // We deleted 4 hull tets.
+      hullsize -= 4;
+      // meshedges does not change.
     }
   } else {
     setvertices(fliptets[0], pa, pb, pc, pd);
   }
 
-  if (calc_tetprism_vol) {
+  if (fc->remove_ndelaunay_edge) { // calc_tetprism_vol
+    REAL volneg[4], volpos[1], vol_diff;
     if (dummyflag > 0) {
       if (pa == dummypoint) {
         volneg[0] = 0.;
@@ -1147,6 +924,12 @@ void tetgenmesh::flip41(triface* fliptets, int hullflag, int flipflag,
         volneg[3] = tetprismvol(pa, pb, pc, pp);
       }
       volpos[0] = 0.;
+    } else if (dummyflag < 0) {
+      volneg[0] = 0.;
+      volneg[1] = 0.;
+      volneg[2] = 0.;
+      volneg[3] = 0.;
+      volpos[0] = tetprismvol(pa, pb, pc, pd);
     } else {
       volneg[0] = tetprismvol(pp, pd, pa, pb);
       volneg[1] = tetprismvol(pp, pd, pb, pc);
@@ -1155,7 +938,7 @@ void tetgenmesh::flip41(triface* fliptets, int hullflag, int flipflag,
       volpos[0] = tetprismvol(pa, pb, pc, pd);
     }
     vol_diff = volpos[0] - volneg[0] - volneg[1] - volneg[2] - volneg[3];
-    tetprism_vol_sum  += vol_diff; // Update the total sum.
+    fc->tetprism_vol_sum  += vol_diff; // Update the total sum.
   }
 
   // Bond the new tet to adjacent tets.
@@ -1167,40 +950,29 @@ void tetgenmesh::flip41(triface* fliptets, int hullflag, int flipflag,
   bond(fliptets[0], botcastet);
 
   if (checksubsegflag) {
+    face checkseg;
     // Bond 6 segments (at edges of [a,b,c,d]) if there there are.
     for (i = 0; i < 3; i++) {
       eprev(topcastets[i], newface); // At edges [d,a],[d,b],[d,c].
-      tsspivot1(newface, checkseg);
-      if (checkseg.sh != NULL) {
+      if (issubseg(newface)) {
+        tsspivot1(newface, checkseg);
         esym(fliptets[0], newface);
         enextself(newface); // At edges [a,d], [b,d], [c,d].
         tssbond1(newface, checkseg);
         sstbond1(checkseg, newface);
-        if (chkencflag & 1) {
-          // Skip it if it has already queued.
-          if (!smarktest2ed(checkseg)) {
-            bface = (badface *) badsubsegs->alloc();
-            bface->ss = checkseg;
-            smarktest2(bface->ss); // Only queue it once.
-            bface->forg = sorg(checkseg); // An alive badface.
-          }
+        if (fc->chkencflag & 1) {
+          enqueuesubface(badsubsegs, &checkseg);
         }
       }
       enextself(fliptets[0]);
     }
     for (i = 0; i < 3; i++) {
-      tsspivot1(topcastets[i], checkseg); // At edges [a,b],[b,c],[c,a].
-      if (checkseg.sh != NULL) {
+      if (issubseg(topcastets[i])) {
+        tsspivot1(topcastets[i], checkseg); // At edges [a,b],[b,c],[c,a].
         tssbond1(fliptets[0], checkseg);
         sstbond1(checkseg, fliptets[0]);
-        if (chkencflag & 1) {
-          // Skip it if it has already queued.
-          if (!smarktest2ed(checkseg)) {
-            bface = (badface *) badsubsegs->alloc();
-            bface->ss = checkseg;
-            smarktest2(bface->ss); // Only queue it once.
-            bface->forg = sorg(checkseg); // An alive badface.
-          }
+        if (fc->chkencflag & 1) {
+          enqueuesubface(badsubsegs, &checkseg);
         }
       }
       enextself(fliptets[0]);
@@ -1208,40 +980,29 @@ void tetgenmesh::flip41(triface* fliptets, int hullflag, int flipflag,
   }
 
   if (checksubfaceflag) {
+    face checksh;
     // Bond 4 subfaces (at faces of [a,b,c,d]) if there are.
     for (i = 0; i < 3; i++) {
-      tspivot(topcastets[i], checksh); // At faces [a,b,d],[b,c,d],[c,a,d]
-      if (checksh.sh != NULL) {
+      if (issubface(topcastets[i])) {
+        tspivot(topcastets[i], checksh); // At faces [a,b,d],[b,c,d],[c,a,d]
         esym(fliptets[0], newface); // At faces [b,a,d],[c,b,d],[a,c,d]
         sesymself(checksh);
         tsbond(newface, checksh);
-        if (chkencflag & 2) {
-          if (!smarktest2ed(checksh)) {
-            bface = (badface *) badsubfacs->alloc();
-            bface->ss = checksh;
-            smarktest2(bface->ss); // Only queue it once.
-            bface->forg = sorg(checksh); // An alive badface
-          }
+        if (fc->chkencflag & 2) {
+          enqueuesubface(badsubfacs, &checksh);
         }
       }
       enextself(fliptets[0]);
     }
-    tspivot(botcastet, checksh); // At face [b,a,c]
-    if (checksh.sh != NULL) {
+    if (issubface(botcastet)) {
+      tspivot(botcastet, checksh); // At face [b,a,c]
       sesymself(checksh);
       tsbond(fliptets[0], checksh);
-      if (chkencflag & 2) {
-        if (!smarktest2ed(checksh)) {
-          bface = (badface *) badsubfacs->alloc();
-          bface->ss = checksh;
-          smarktest2(bface->ss); // Only queue it once.
-          bface->forg = sorg(checksh); // An alive badface
-        }
+      if (fc->chkencflag & 2) {
+        enqueuesubface(badsubfacs, &checksh);
       }
     }
-  }
 
-  if (checksubfaceflag) {
     if (spivot >= 0) {
       // Perform a 3-to-1 flip in surface triangulation.
       // Depending on the value of 'spivot', the three subfaces are:
@@ -1275,30 +1036,26 @@ void tetgenmesh::flip41(triface* fliptets, int hullflag, int flipflag,
     } // if (spivot > 0)
   } // if (checksubfaceflag)
 
-  if (chkencflag & 4) {
-    // Put the new tet into check list.
-    if (!marktest2ed(fliptets[0])) {
-      bface = (badface *) badtetrahedrons->alloc();
-      bface->tt = fliptets[0];
-      marktest2(bface->tt);
-      bface->forg = org(fliptets[0]);
-    }
+  if (fc->chkencflag & 4) {
+    enqueuetetrahedron(&(fliptets[0]));
   }
 
   // Update the point-to-tet map.
-  setpoint2tet(pa, encode(fliptets[0]));
-  setpoint2tet(pb, encode(fliptets[0]));
-  setpoint2tet(pc, encode(fliptets[0]));
-  setpoint2tet(pd, encode(fliptets[0]));
+  setpoint2tet(pa, (tetrahedron) fliptets[0].tet);
+  setpoint2tet(pb, (tetrahedron) fliptets[0].tet);
+  setpoint2tet(pc, (tetrahedron) fliptets[0].tet);
+  setpoint2tet(pd, (tetrahedron) fliptets[0].tet);
 
-  if (flipflag > 0) {
+  if (fc->enqflag > 0) {
     // Queue faces which may be locally non-Delaunay.
-    for (i = 0; i < 3; i++) {
-      esym(fliptets[0], newface);
-      flippush(flipstack, &newface);
-      enextself(fliptets[0]);
+    flippush(flipstack, &(fliptets[0])); // [a,b,c] (opposite to new point).
+    if (fc->enqflag > 1) {
+      for (i = 0; i < 3; i++) {
+        esym(fliptets[0], newface);
+        flippush(flipstack, &newface);
+        enextself(fliptets[0]);
+      }
     }
-    flippush(flipstack, &(fliptets[0]));
   }
 
   recenttet = fliptets[0];
@@ -1306,7 +1063,7 @@ void tetgenmesh::flip41(triface* fliptets, int hullflag, int flipflag,
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// flipnm()    Try to flip an edge through a sequence of elementary flips.   //
+// flipnm()    Flip an edge through a sequence of elementary flips.          //
 //                                                                           //
 // 'abtets' is an array of 'n' tets in the star of edge [a,b].These tets are //
 // ordered in a counterclockwise cycle with respect to the vector a->b, i.e.,//
@@ -1331,7 +1088,6 @@ void tetgenmesh::flip41(triface* fliptets, int hullflag, int flipflag,
 //  - Neither a nor b is 'dummypoint'.                                       //
 //  - [a,b] must not be a segment.                                           //
 //                                                                           //
-//                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
 int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
@@ -1339,26 +1095,18 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
 {
   triface fliptets[3], spintet, flipedge;
   triface *tmpabtets, *parytet;
-  face checksh;
-  face checkseg, *paryseg;
   point pa, pb, pc, pd, pe, pf;
-  point tmppts[3];
-  REAL abovept[3];
-  REAL ori, ori1, ori2;
+  REAL ori;
+  int hullflag, hulledgeflag;
   int reducflag, rejflag;
-  int hullflag;
   int reflexlinkedgecount;
   int edgepivot;
   int n1, nn;
+  int t1ver;
   int i, j;
 
   pa = org(abtets[0]);
   pb = dest(abtets[0]);
-
-  if (b->verbose > 2) {
-    printf("      flipnm(%d): (%d, %d) - n(%d), e(%d).\n", level, pointmark(pa),
-           pointmark(pb), n, abedgepivot);
-  }
 
   if (n > 3) {
     // Try to reduce the size of the Star(ab) by flipping a face in it. 
@@ -1367,9 +1115,7 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
     for (i = 0; i < n; i++) {
       // Let the face of 'abtets[i]' be [a,b,c].
       if (checksubfaceflag) {
-        // Do not flip this face if it is a constraining face.
-        tspivot(abtets[i], checksh);
-        if (checksh.sh != NULL) {
+        if (issubface(abtets[i])) {
           continue; // Skip a subface.
         }
       }
@@ -1378,32 +1124,20 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
           (elemcounter(abtets[(i - 1 + n) % n]) > 1)) {
         continue;
       }
+
       pc = apex(abtets[i]); 
       pd = apex(abtets[(i + 1) % n]);
       pe = apex(abtets[(i - 1 + n) % n]);
       if ((pd == dummypoint) || (pe == dummypoint)) {
-        // [a,b,c] is a hull face, it is not flipable.
-        continue;
+        continue; // [a,b,c] is a hull face.
       }
-      if (checkinverttetflag) {
-        // The mesh contains inverted (or degenerated) elements.
-        // Only do check if both elements are valid.
-        if (pc != dummypoint) {
-          ori = orient3d(pa, pb, pc, pd);
-          if (ori < 0) {
-            ori = orient3d(pb, pa, pc, pe);
-          }
-          if (ori >= 0) {
-            continue; // An invalid tet.
-          }
-        } else {
-          continue;
-        }
-      } // if (checkinverttetflag)
 
-      reducflag = 0; // Not reducible.
+
+      // Decide whether [a,b,c] is flippable or not.
+      reducflag = 0; 
 
       hullflag = (pc == dummypoint); // pc may be dummypoint.
+      hulledgeflag = 0;
       if (hullflag == 0) {
         ori = orient3d(pb, pc, pd, pe); // Is [b,c] locally convex?
         if (ori > 0) {
@@ -1417,8 +1151,11 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
             } else if (ori == 0) {
               // [a,b] is flat.
               if (n == 4) {
-                // The "flat" tet can be removed immedately by a 3-to-2 flip.
+                // The "flat" tet can be removed immediately by a 3-to-2 flip.
                 reducflag = 1;
+                // Check if [e,d] is a hull edge.
+                pf = apex(abtets[(i + 2) % n]);
+                hulledgeflag = (pf == dummypoint);
               }
             }
           }
@@ -1443,16 +1180,27 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
             if (ori < 0) {
               // Found a 4-to-4 flip: [a,b] => [e,d]
               reducflag = 1;
-              ori = 0; // Signal as a 4-to-4 flip (like a co-palanar case).
+              ori = 0; // Signal as a 4-to-4 flip (like a co-planar case).
+              hulledgeflag = 1; // [e,d] is a hull edge.
             }
           }
         }
       } // if (hullflag)
 
       if (reducflag) {
+        if (nonconvex && hulledgeflag) {
+          // We will create a hull edge [e,d]. Make sure it does not exist.
+          if (getedge(pe, pd, &spintet)) {
+            // The 2-to-3 flip is not a topological valid flip. 
+            reducflag = 0;
+          }
+        }
+      }
+
+      if (reducflag) {
         // [a,b,c] could be removed by a 2-to-3 flip.
         rejflag = 0;
-        if (fc != NULL) {
+        if (fc->checkflipeligibility) {
           // Check if the flip can be performed.
           rejflag = checkflipeligibility(1, pa, pb, pc, pd, pe, level,
                                          abedgepivot, fc);
@@ -1461,7 +1209,7 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
           // Do flip: [a,b,c] => [e,d].
           fliptets[0] = abtets[i];
           fsym(fliptets[0], fliptets[1]); // abtets[i-1].
-          flip23(fliptets, hullflag, 0, 0);
+          flip23(fliptets, hullflag, fc);
 
           // Shrink the array 'abtets', maintain the original order.
           //   Two tets 'abtets[i-1] ([a,b,e,c])' and 'abtets[i] ([a,b,c,d])'
@@ -1479,21 +1227,19 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
           //   [n-2] |___________|      [n-2] |___________| 
           //   [n-1] |___________|      [n-1] |_[i]_2-t-3_|
           //
-          eprevself(fliptets[0]);
-          esymself(fliptets[0]);
-          enextself(fliptets[0]); // [a,b,e,d]
+          edestoppoself(fliptets[0]); // [a,b,e,d]
           // Increase the counter of this new tet (it is in Star(ab)).
-          increaseelemcounter(fliptets[0]); //marktest(fliptets[0]);
+          increaseelemcounter(fliptets[0]); 
           abtets[(i - 1 + n) % n] = fliptets[0];
           for (j = i; j < n - 1; j++) {
             abtets[j] = abtets[j + 1];  // Upshift
           }
           // The last entry 'abtets[n-1]' is empty. It is used in two ways:
-          //   (i) it remebers the vertex 'c' (in 'abtets[n-1].tet'), and
-          //  (ii) it remebers the position [i] where this flip took place.
+          //   (i) it remembers the vertex 'c' (in 'abtets[n-1].tet'), and
+          //  (ii) it remembers the position [i] where this flip took place.
           // These informations let us to either undo this flip or recover
           //   the original edge link (for collecting new created tets).
-          //abtets[n - 1] = fliptets[1]; // [e,d,b,c] is remebered.
+          //abtets[n - 1] = fliptets[1]; // [e,d,b,c] is remembered.
           abtets[n - 1].tet = (tetrahedron *) pc;
           abtets[n - 1].ver = 0; // Clear it.
           // 'abtets[n - 1].ver' is in range [0,11] -- only uses 4 bits.
@@ -1514,27 +1260,28 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
           // Star(ab) is reduced. Try to flip the edge [a,b].
           nn = flipnm(abtets, n - 1, level, abedgepivot, fc);
 
-          if (nn > 2) {
+          if (nn == 2) {
+            // The edge has been flipped.
+            return nn;
+          } else { // if (nn > 2)
             // The edge is not flipped.
             if (fc->unflip || (ori == 0)) {
               // Undo the previous 2-to-3 flip, i.e., do a 3-to-2 flip to 
               //   transform [e,d] => [a,b,c].
-              // 'ori == 0' means that the previous flip created a degenrated
+              // 'ori == 0' means that the previous flip created a degenerated
               //   tet. It must be removed. 
-              // Remeber that 'abtets[i-1]' is [a,b,e,d]. We can use it to
+              // Remember that 'abtets[i-1]' is [a,b,e,d]. We can use it to
               //   find another two tets [e,d,b,c] and [e,d,c,a].
               fliptets[0] = abtets[(i-1 + (n-1)) % (n-1)]; // [a,b,e,d]
-              eprevself(fliptets[0]);
-              esymself(fliptets[0]);
-              enextself(fliptets[0]); // [e,d,a,b]
+              edestoppoself(fliptets[0]); // [e,d,a,b]
               fnext(fliptets[0], fliptets[1]); // [1] is [e,d,b,c]
               fnext(fliptets[1], fliptets[2]); // [2] is [e,d,c,a]
               assert(apex(fliptets[0]) == oppo(fliptets[2])); // SELF_CHECK
               // Restore the two original tets in Star(ab). 
-              flip32(fliptets, hullflag, 0, 0);
+              flip32(fliptets, hullflag, fc);
               // Marktest the two restored tets in Star(ab).
               for (j = 0; j < 2; j++) {
-                increaseelemcounter(fliptets[j]); //marktest(fliptets[j]);
+                increaseelemcounter(fliptets[j]);
               }
               // Expand the array 'abtets', maintain the original order.
               for (j = n - 2; j>= i; j--) {
@@ -1550,30 +1297,17 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
                 // Pop two (flipped) tets from the stack.
                 cavetetlist->objects -= 2;
               }
-            } // if (upflip || (ori == 0))
+            } // if (unflip || (ori == 0))
           } // if (nn > 2)
 
-          if (nn == 2) { //if ((nn == 2) || !fullsearch) {
-            // The edge has been flipped.
-            return nn;
-          }
           if (!fc->unflip) {
             // The flips are not reversed. The current Star(ab) can not be
-            //   further reduced. Return its size (# of tets).
+            //   further reduced. Return its current size (# of tets).
             return nn; 
           }
           // unflip is set. 
           // Continue the search for flips.
-        } else {
-          if (b->verbose > 2) {
-            printf("      -- Reject a 2-to-3 flip at star face (%d, %d, %d)",
-                   pointmark(pa), pointmark(pb), pointmark(pc));
-            printf(", link (%d)\n", level);
-          }
-          if (fc != NULL) {
-            fc->rejf23count++;
-          }
-        } // if (rejflag)
+        }
       } // if (reducflag)
     } // i
 
@@ -1582,16 +1316,6 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
       // There are reflex edges in the Link(ab).
       if (((b->fliplinklevel < 0) && (level < autofliplinklevel)) || 
           ((b->fliplinklevel >= 0) && (level < b->fliplinklevel))) {
-        // Record the largest level.
-        if ((level + 1) > maxfliplinklevel) {
-          maxfliplinklevel = level + 1;
-        }
-        if (fc != NULL) {
-          // Increase the link level counter.
-          if ((level + 1) > fc->maxflippedlinklevelcount) {
-            fc->maxflippedlinklevelcount = level + 1;
-          }
-        }
         // Try to reduce the Star(ab) by flipping a reflex edge in Link(ab).
         for (i = 0; i < n; i++) {
           // Do not flip this face [a,b,c] if there are two Stars involved.
@@ -1601,25 +1325,14 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
           }
           pc = apex(abtets[i]);
           if (pc == dummypoint) {
-            continue; // [a,b,dummypoint] is a hull edge.
+            continue; // [a,b] is a hull edge.
           }
           pd = apex(abtets[(i + 1) % n]);
           pe = apex(abtets[(i - 1 + n) % n]);
           if ((pd == dummypoint) || (pe == dummypoint)) {
             continue; // [a,b,c] is a hull face.
           }
-          if (checkinverttetflag) {
-            // The mesh contains inverted (or degenerated) elements.
-            // Only do check if both elements are valid.
-            // assert(pc != dummypoint);
-            ori = orient3d(pa, pb, pc, pd);
-            if (ori < 0) {
-              ori = orient3d(pb, pa, pc, pe);
-            }
-            if (ori >= 0) {
-              continue; // An invalid tet.
-            }
-          } // if (checkinverttetflag)
+
 
           edgepivot = 0; // No edge is selected yet.
 
@@ -1645,21 +1358,15 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
           // An edge is selected.
           if (checksubsegflag) {
             // Do not flip it if it is a segment.
-            tsspivot1(flipedge, checkseg);
-            if (checkseg.sh != NULL) {
-              if (b->verbose > 2) {
-                printf("      -- Can't flip a link(%d) segment (%d, %d).\n",
-                  level, pointmark(org(flipedge)), pointmark(dest(flipedge)));
-              }
-              if (fc != NULL) {
-                fc->encsegcount++;
-                if (fc->collectencsegflag) {
-                  if (!sinfected(checkseg)) {
-                    // Queue this segment in list.
-                    sinfect(checkseg);                
-                    caveencseglist->newindex((void **) &paryseg);
-                    *paryseg = checkseg;
-                  }
+            if (issubseg(flipedge)) {
+              if (fc->collectencsegflag) {
+                face checkseg, *paryseg;
+                tsspivot1(flipedge, checkseg);
+                if (!sinfected(checkseg)) {
+                  // Queue this segment in list.
+                  sinfect(checkseg);                
+                  caveencseglist->newindex((void **) &paryseg);
+                  *paryseg = checkseg;
                 }
               }
               continue;
@@ -1674,7 +1381,7 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
           spintet = flipedge;
           while (1) {
             n1++;
-            j += (elemcounter(spintet)); //if (marktested(spintet)) j++;
+            j += (elemcounter(spintet)); 
             fnextself(spintet);
             if (spintet.tet == flipedge.tet) break;
           }
@@ -1686,14 +1393,8 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
           // Only two tets can be marktested.
           assert(j == 2); 
 
-          flipstarcount++;
-          // Record the maximum star size.
-          if (n1 > maxflipstarsize) {
-            maxflipstarsize = n1;
-          }
           if ((b->flipstarsize > 0) && (n1 > b->flipstarsize)) {
-            // The star size exceeds the given limit (-LL__).
-            skpflipstarcount++;
+            // The star size exceeds the given limit.
             continue; // Do not flip it.
           }
 
@@ -1709,15 +1410,6 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
             j++;
             fnextself(spintet);
             if (spintet.tet == flipedge.tet) break;
-          }
-          // SELF_CHECK BEGIN
-          // These two tets are inside both of the Stars.
-          assert(elemcounter(tmpabtets[0]) == 2);
-          assert(elemcounter(tmpabtets[1]) == 2);
-          // Marktest the tets in Star(flipedge) but not in Star(ab).
-          for (j = 2; j < n1; j++) {
-            assert(elemcounter(tmpabtets[j]) == 1);
-            //marktest(tmpabtets[j]);
           }
 
           // Try to flip the selected edge away.
@@ -1739,10 +1431,8 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
               esymself(spintet);
               eprevself(spintet); // [a,b,e,d]
             } // edgepivot == 2
-            //assert(!marktested(spintet)); // It's a new tet.
-            assert(elemcounter(spintet) == 0);
-            //marktest(spintet); // It is in Star(ab).
-            increaseelemcounter(spintet);
+            assert(elemcounter(spintet) == 0); // It's a new tet.
+            increaseelemcounter(spintet); // It is in Star(ab).
             // Put the new tet at [i-1]-th entry.
             abtets[(i - 1 + n) % n] = spintet;
             for (j = i; j < n - 1; j++) {
@@ -1769,7 +1459,10 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
             // Continue to flip the edge [a,b].
             nn = flipnm(abtets, n - 1, level, abedgepivot, fc);
 
-            if (nn > 2) {
+            if (nn == 2) { 
+              // The edge has been flipped.
+              return nn;
+            } else { // if (nn > 2) {
               // The edge is not flipped.
               if (fc->unflip) {
                 // Recover the flipped edge ([c,b] or [a,c]).
@@ -1823,7 +1516,6 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
                   enextself(fliptets[1]); // [a,b,c,d]
                 } // edgepivot == 2
                 for (j = 0; j < 2; j++) {
-                  assert(elemcounter(fliptets[j]) == 0); // SELF_CHECK
                   increaseelemcounter(fliptets[j]);
                 }
                 // Insert the two recovered tets into Star(ab).
@@ -1835,10 +1527,6 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
               } // if (unflip)
             } // if (nn > 2)
 
-            if (nn == 2) { //if ((nn == 2) || !fullsearch) {
-              // The edge has been flipped.
-              return nn;
-            }
             if (!fc->unflip) {
               // The flips are not reversed. The current Star(ab) can not be
               //   further reduced. Return its size (# of tets).
@@ -1847,7 +1535,7 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
             // unflip is set. 
             // Continue the search for flips.
           } else {
-            // The seclected edge is not flipped.
+            // The selected edge is not flipped.
             if (fc->unflip) {
               // The memory should already be freed.
               assert(nn == n1);
@@ -1864,72 +1552,34 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
             delete [] tmpabtets;
           }
         } // i
-      } else {
-        if (b->verbose > 2) {
-          printf("      -- Maximal link level (%d) reached at edge (%d, %d).\n",
-                 level, pointmark(org(abtets[0])), pointmark(dest(abtets[0])));
-        }
-        if (fc != NULL) {
-          fc->misfliplinklevelcount++;
-        }
       } // if (level...)
     } // if (reflexlinkedgecount > 0)
   } else {
     // Check if a 3-to-2 flip is possible.
-    pc = apex(abtets[0]);
-    pd = apex(abtets[1]);
-    pe = apex(abtets[2]);
-
-    // Check if one of them is dummypoint. If so, we rearrange the vertices
-    //   c, d, and e into p0, p1, and p2, such that p2 is the dummypoint.
+    // Let the three apexes be c, d,and e. Hull tets may be involved. If so, 
+    //   we rearrange them such that the vertex e is dummypoint. 
     hullflag = 0;
-    if (pc == dummypoint) {
+
+    if (apex(abtets[0]) == dummypoint) {
+      pc = apex(abtets[1]);
+      pd = apex(abtets[2]);
+      pe = apex(abtets[0]);
       hullflag = 1;
-      tmppts[0] = pd;
-      tmppts[1] = pe;
-      tmppts[2] = pc;
-    } else if (pd == dummypoint) {
-      hullflag = 1;
-      tmppts[0] = pe;
-      tmppts[1] = pc;
-      tmppts[2] = pd;
-    } else if (pe == dummypoint) {
-      hullflag = 1;
-      tmppts[0] = pc;
-      tmppts[1] = pd;
-      tmppts[2] = pe;
+    } else if (apex(abtets[1]) == dummypoint) {
+      pc = apex(abtets[2]);
+      pd = apex(abtets[0]);
+      pe = apex(abtets[1]);
+      hullflag = 2;
     } else {
-      tmppts[0] = pc;
-      tmppts[1] = pd;
-      tmppts[2] = pe;
+      pc = apex(abtets[0]);
+      pd = apex(abtets[1]);
+      pe = apex(abtets[2]);
+      hullflag = (pe == dummypoint) ? 3 : 0;
     }
 
     reducflag = 0;
     rejflag = 0;
 
-    if (checkinverttetflag) {
-      // Only do flip if no tet is inverted (or degenerated).
-      if (hullflag == 0) {
-        ori = orient3d(pa, pb, pc, pd);
-        if (ori < 0) {
-          ori = orient3d(pa, pb, pd, pe);
-          if (ori < 0) {
-            ori = orient3d(pa, pb, pe, pc);
-          }
-        }
-      } else {
-        ori = orient3d(pa, pb, tmppts[0], tmppts[1]);
-      }
-      if (ori >= 0) {
-        if (b->verbose > 2) {
-          printf("      -- Hit a non-valid tet (%d, %d) - (%d, %d, %d)",
-                 pointmark(pa), pointmark(pb), pointmark(pc), pointmark(pd),
-                 pointmark(pe));
-          printf(" at link(%d)\n", level);
-        }
-        return 3;
-      }
-    } // if (checkinverttetflag)
 
     if (hullflag == 0) {
       // Make sure that no inverted tet will be created, i.e. the new tets
@@ -1940,98 +1590,63 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
         if (ori < 0) {
           reducflag = 1;
         }
-      } else {
-        if (b->verbose > 2) {
-          printf("      -- Hit a chrismastree (%d, %d) - (%d, %d, %d)",
-                 pointmark(pa), pointmark(pb), pointmark(pc), pointmark(pd),
-                 pointmark(pe));
-          printf(" at link(%d)\n", level);
-        }
-        if (fc != NULL) {
-          fc->chrismastreecount++;
-        }
       }
     } else {
-      // [a,b] is a hull edge. Moreover, the tet [a,b,p0,p1] is a hull tet
-      //   ([a,b,p0] and [a,b,p1] are two hull faces). 
-      //   This can happen when it is in the middle of a 4-to-4 flip.
-      //   Note that [a,b] may even be a non-convex hull edge.
+      // [a,b] is a hull edge.
+      //   Note: This can happen when it is in the middle of a 4-to-4 flip.
+      //   Note: [a,b] may even be a non-convex hull edge.
       if (!nonconvex) {
-        // [a,b], [a,b,p0] and [a,b,p1] are on the convex hull.
-        ori = orient3d(pa, pb, tmppts[0], tmppts[1]);
+        //  The mesh is convex, only do flip if it is a coplanar hull edge.
+        ori = orient3d(pa, pb, pc, pd); 
         if (ori == 0) {
-          // They four vertices are coplanar. A 2-to-2 flip is possible if
-          //   [a,b] and [p0,p1] are intersecting each other. 
-          // NOTE: The following test is not robust, should be replaced in 
-          //   the future. 2011-12-01.
-          calculateabovepoint4(pa, pb, tmppts[0], tmppts[1]);
-          for (j = 0; j < 3; j++) {
-            abovept[j] = dummypoint[j];
-          }
-          // Make sure that no inverted face will be created, i.e., [p1,p0,
-          //   abvpt,pa] and [p0,p1,abvpt,pb] must be valid tets.
-          ori1 = orient3d(tmppts[0], tmppts[1], abovept, pa);
-          ori2 = orient3d(tmppts[0], tmppts[1], abovept, pb);
-          if (ori1 * ori2 < 0) {
-            reducflag = 1; // Flipable.
-          }
-          if (!reducflag) {
-            if (b->verbose > 2) {
-              printf("      -- Hit a degenerate chrismastree (%d, %d)",
-                     pointmark(pa), pointmark(pb));
-              printf(" - (%d, %d, -1) at link(%d)\n", 
-                     pointmark(tmppts[0]), pointmark(tmppts[1]), level);
-            }
-            if (fc != NULL) {
-              fc->chrismastreecount++;
-            }
-          }
-        } else {
-          if (b->verbose > 2) {
-            printf("      -- Hit a convex hull edge (%d, %d) at link(%d).\n",
-                   pointmark(pa), pointmark(pb), level);
-          }
-          if (fc != NULL) {
-            fc->convexhulledgecount++;
-          }
-        }
-      } else { // if (nonconvex)
-        // [a,b,p0] and [a,b,p1] must be two subfaces.
-        // Since [a,b] is not a segment. A 3-to-2 flip (including a 2-to-2
-        //   flip) is possible.
-        // Here we only do flip if there are exactly three tets containing
-        //   the edge [p0,p1]. In this case, the other two tets at [p0,p1]
-        //   (not [a,b,p0,p1]) must be valid. Since they already exist.
-        for (j = 0; j < 3; j++) {
-          if (apex(abtets[j]) == dummypoint) {
-            flipedge = abtets[(j + 1) % 3]; // [a,b,p0,p1].
-            break;
-          }
-        }
-        // assert(j < 3);
-        eprevself(flipedge);
-        esymself(flipedge);
-        enextself(flipedge); // [p0,p1,a,b].
-        assert(apex(flipedge) == pa);
-        spintet = flipedge;
-        j = 0;
-        while (1) {
-          j++;
-          fnextself(spintet);
-          if (spintet.tet == flipedge.tet) break;
-        }
-        if (j == 3) {
           reducflag = 1;
-        } else {
-          if (b->verbose > 2) {
-            printf("      -- Hit a hull edge (%d, %d) at link(%d).\n",
-                   pointmark(pa), pointmark(pb), level);
-          }
-          //if (fc != NULL) {
-          //  fc->convexhulledgecount++;
-          //}
         }
+      } else { // nonconvex
+        reducflag = 1;
       }
+      if (reducflag == 1) {
+        // [a,b], [a,b,c] and [a,b,d] are on the convex hull.
+        // Make sure that no inverted tet will be created.
+        point searchpt = NULL, chkpt;
+        REAL bigvol = 0.0, ori1, ori2;
+        // Search an interior vertex which is an apex of edge [c,d].
+        //   In principle, it can be arbitrary interior vertex.  To avoid
+        //   numerical issue, we choose the vertex which belongs to a tet
+        //   't' at edge [c,d] and 't' has the biggest volume.  
+        fliptets[0] = abtets[hullflag % 3]; // [a,b,c,d].
+        eorgoppoself(fliptets[0]);  // [d,c,b,a]
+        spintet = fliptets[0];
+        while (1) {
+          fnextself(spintet);
+          chkpt = oppo(spintet);
+          if (chkpt == pb) break;
+          if ((chkpt != dummypoint) && (apex(spintet) != dummypoint)) {
+            ori = -orient3d(pd, pc, apex(spintet), chkpt);
+            assert(ori > 0);
+            if (ori > bigvol) {
+              bigvol = ori;
+              searchpt = chkpt;
+            }
+          }
+        }
+        if (searchpt != NULL) { 
+          // Now valid the configuration.
+          ori1 = orient3d(pd, pc, searchpt, pa);
+          ori2 = orient3d(pd, pc, searchpt, pb);
+          if (ori1 * ori2 >= 0.0) {
+            reducflag = 0; // Not valid. 
+          } else {
+            ori1 = orient3d(pa, pb, searchpt, pc);
+            ori2 = orient3d(pa, pb, searchpt, pd);
+            if (ori1 * ori2 >= 0.0) {
+              reducflag = 0; // Not valid.
+            }
+          }
+        } else {
+          // No valid searchpt is found.
+          reducflag = 0; // Do not flip it.
+        }
+      } // if (reducflag == 1)
     } // if (hullflag == 1)
 
     if (reducflag) {
@@ -2042,10 +1657,12 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
         //   the surface mesh will be automatically performed within the 
         //   3-to-2 flip.
         nn = 0;
+        edgepivot = -1; // Re-use it.
         for (j = 0; j < 3; j++) {
-          tspivot(abtets[j], checksh);
-          if (checksh.sh != NULL) {
+          if (issubface(abtets[j])) {
             nn++; // Found a subface.
+          } else {
+            edgepivot = j;
           }
         }
         assert(nn < 3);
@@ -2054,32 +1671,39 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
           //   the boundary recovery phase. The neighbor subface is not yet 
           //   recovered. This edge should not be flipped at this moment.
           rejflag = 1; 
+        } else if (nn == 2) {
+          // Found two subfaces. A 2-to-2 flip is possible. Validate it.
+          // Below we check if the two faces [p,q,a] and [p,q,b] are subfaces.
+          eorgoppo(abtets[(edgepivot + 1) % 3], spintet); // [q,p,b,a]
+          if (issubface(spintet)) {
+            rejflag = 1; // Conflict to a 2-to-2 flip.
+          } else {
+            esymself(spintet);
+            if (issubface(spintet)) {
+              rejflag = 1; // Conflict to a 2-to-2 flip.
+            }
+          }
         }
       }
-      if (!rejflag && (fc != NULL)) {
+      if (!rejflag && fc->checkflipeligibility) {
         // Here we must exchange 'a' and 'b'. Since in the check... function,
         //   we assume the following point sequence, 'a,b,c,d,e', where
         //   the face [a,b,c] will be flipped and the edge [e,d] will be
         //   created. The two new tets are [a,b,c,d] and [b,a,c,e]. 
-        rejflag = checkflipeligibility(2, tmppts[0], tmppts[1], tmppts[2], 
-                                       pb, pa, level, abedgepivot, fc);
+        rejflag = checkflipeligibility(2, pc, pd, pe, pb, pa, level, 
+                                       abedgepivot, fc);
       }
       if (!rejflag) {
         // Do flip: [a,b] => [c,d,e]
-        flip32(abtets, hullflag, 0, 0);
-        sucflipstarcount++;
+        flip32(abtets, hullflag, fc);
         if (fc->remove_ndelaunay_edge) {
           if (level == 0) {
-            // It is the desired removing edge.
-            if (tetprism_vol_sum >= fc->bak_tetprism_vol) {
-              if (b->verbose > 2) {
-                printf("      -- Reject to flip (%d, %d) at link(%d)\n",
-                       pointmark(pa), pointmark(pb), level);
-                printf("         due to an increased volume (%.17g).\n",
-                       tetprism_vol_sum - fc->bak_tetprism_vol);
-              }
-              // flip back: [c,d,e] => [a,b].
-              flip23(abtets, hullflag, 0, 0);
+            // It is the desired removing edge. Check if we have improved
+            //   the objective function.
+            if ((fc->tetprism_vol_sum >= 0.0) ||
+                (fabs(fc->tetprism_vol_sum) < fc->bak_tetprism_vol)) {
+              // No improvement! flip back: [c,d,e] => [a,b].
+              flip23(abtets, hullflag, fc);
               // Increase the element counter -- They are in cavity.
               for (j = 0; j < 3; j++) {
                 increaseelemcounter(abtets[j]); 
@@ -2109,15 +1733,7 @@ int tetgenmesh::flipnm(triface* abtets, int n, int level, int abedgepivot,
           }
         } // if (fc->collectnewtets)
         return 2;
-      } else {
-        if (b->verbose > 2) {
-          printf("      -- Reject a 3-to-2 flip (%d, %d) at link(%d).\n",
-                 pointmark(pa), pointmark(pb), level);
-        }
-        if (fc != NULL) {
-          fc->rejf32count++;
-        }
-      } // if (rejflag)
+      }
     } // if (reducflag)
   } // if (n == 3)
 
@@ -2172,7 +1788,7 @@ int tetgenmesh::flipnm_post(triface* abtets, int n, int nn, int abedgepivot,
     // 'abtets[1]' is [d,c,e,a] or [#,#,#,a].
     if (fc->unflip) {
       // Do a 2-to-3 flip to recover the edge [a,b]. There may be hull tets.
-      flip23(abtets, 1, 0, 0);
+      flip23(abtets, 1, fc);
       if (fc->collectnewtets) {
         // Pop up new (flipped) tets from the stack.
         if (abedgepivot == 0) {
@@ -2212,7 +1828,7 @@ int tetgenmesh::flipnm_post(triface* abtets, int n, int nn, int abedgepivot,
         fnext(fliptets[1], fliptets[2]); // [e,d,c,a]
         // Do a 3-to-2 flip: [e,d] => [a,b,c].
         // NOTE: hull tets may be invloved.
-        flip32(fliptets, 1, 0, 0);
+        flip32(fliptets, 1, fc);
         // Expand the array 'abtets', maintain the original order.
         // The new array length is (i+1).
         for (j = i - 1; j >= t; j--) {
@@ -2299,9 +1915,6 @@ int tetgenmesh::flipnm_post(triface* abtets, int n, int nn, int abedgepivot,
         printf("      Release %d spaces at f[%d].\n", n1, i);
       }
       delete [] tmpabtets;
-    } else {
-      assert(fliptype == 0); // Not a saved flip.
-      assert(0); // Should be not possible.
     }
   } // i
 
@@ -2310,668 +1923,7 @@ int tetgenmesh::flipnm_post(triface* abtets, int n, int nn, int abedgepivot,
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// lawsonflip3d()    A three-dimensional Lawson's flip algorithm.            //
-//                                                                           //
-// The basic idea of Lawson's algorithm is to flip every face of the triang- //
-// ulation which is not locally Delaunay until no such face exists, then the //
-// triangulation is a DT. However, in 3D, it is common that a face which is  //
-// not locally Delaunay and is not flippable. Hence, Laowson's algorithm may //
-// get stuck. It is still an open problem, whether there exists a flip algo- //
-// rithm which has a guarantee to create a DT in 3D.                         //
-//                                                                           //
-// If only one vertex is added into a DT, then Lawson's flip algorithm is    //
-// guaranteed to transform it into a new DT [Joe'91]. Moreover, an arbitrary //
-// order of flips is sufficient [Edelsbrunner & Shah'96].                    //
-//                                                                           //
-// In practice, it is desired to remove not locally Delaunay faces by flips  //
-// as many as possible. For this purpose, a second queue is used to store    //
-// the not locally Delaunay faces which are not flippable, and try them at a //
-// later time.                                                               //
-//                                                                           //
-// If 'newpt' (p) is not NULL, it is a new vertex just inserted into the     //
-// tetrahedralization T.                                                     //
-//                                                                           //
-// 'flipflag' indicates the property of the tetrahedralization 'T' which     //
-// does not include 'p' yet.                                                 //
-//                                                                           //
-// If 'peelsliverflag' is set, the purpose of calling Lawson's flip is to    //
-// remove "hull slivers". This flag only works with a non-convex mesh, i.e., //
-// the mesh must contains boundaries (segments and subfaces).                //
-//                                                                           //
-// 'chkencflag' indicates whether segments, subfaces, and tets should be     //
-//  checked (for encroaching and quality) after flips.                       //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-long tetgenmesh::lawsonflip3d(point newpt, int flipflag, int peelsliverflag, 
-                              int chkencflag, int flipedgeflag)
-{
-  badface *popface, *bface;
-  triface fliptets[5], baktets[2];
-  triface fliptet, neightet, *parytet;
-  face checksh, *parysh;
-  face checkseg, *paryseg;
-  point *ppt, pd, pe, pf;
-  long flipcount;
-  REAL sign, ori;
-  int convflag;
-  int n, i;
-
-  // For removing hull slivers.
-  face neighsh; 
-  point p1, p2;
-  point pa, pb, pc, rempt;
-  REAL ang; 
-  long tetpeelcount; 
-  int remflag;
-
-  flipconstraints fc;
-
-  if (b->verbose > 2) {
-    printf("      Lawson flip %ld faces.\n", flippool->items);
-  }
-
-  flipcount = flip23count + flip32count + flip44count;
-  tetpeelcount = opt_sliver_peels;
-
-  if (flipedgeflag) {
-    fc.remove_ndelaunay_edge = 1;
-    fc.unflip = 1; // Unflip if the edge is not flipped.
-    fc.collectnewtets = 1;
-    assert(cavetetlist->objects == 0l);
-    assert(calc_tetprism_vol == 1); // Swith on.
-  } else {
-    assert(unflipqueue->objects == 0); // The second queue must be empty.
-  }
-
-  while (1) {
-
-    while (flipstack != (badface *) NULL) {
-
-      // Pop a face from the stack.
-      popface = flipstack;
-      flipstack = flipstack->nextitem; // The next top item in stack.
-      fliptet = popface->tt;
-      flippool->dealloc((void *) popface);
-
-      // Skip it if it is a dead tet (destroyed by previous flips).
-      if (isdeadtet(fliptet)) continue;
-      // Skip it if it is not the same tet as we saved.
-      if (!facemarked(fliptet)) continue;
-
-      unmarkface(fliptet);
-
-      if (ishulltet(fliptet)) {
-        // It is a hull tet.
-        if (((flipflag == 4) || peelsliverflag) && !b->convex) {
-          fliptet.ver = epivot[fliptet.ver & 3];
-          if (oppo(fliptet) == dummypoint) {
-            // It's a hull face (oppo(fliptet) == dummypoint).
-            // Check if there exists a "hull sliver".
-            fsymself(fliptet);
-            tspivot(fliptet, checksh);
-            assert(checksh.sh != NULL);
-            for (i = 0; i < 3; i++) {
-              sspivot(checksh, checkseg);
-              if (checkseg.sh == NULL) {
-                spivot(checksh, neighsh);
-                assert(neighsh.sh != NULL);
-                if (sorg(checksh) != sdest(neighsh)) {
-                  sesymself(neighsh);
-                }
-                stpivot(neighsh, neightet);
-                if (neightet.tet == fliptet.tet) {
-                  // Found a hull sliver 'neightet' [d,e,a,b], where [d,e,a] 
-                  //   and [e,d,b] are two hull faces. Normally, a 3-to-2 flip
-                  //   (including a 2-to-2 flip on hull subfaces) can remove 
-                  //   this hull sliver.
-                  // A special case is the existence of a hull tet [b,a,d,-1]
-                  //   or [a,b,e,-1]. It was creared by a previous hull tet
-                  //   removal. Moreover, 'd' or 'e' might be Steiner points
-                  //   on segments [a,b]. In this case, eithe [a,d],[b,d] or 
-                  //   [a,e],[b,e] are subsegments. If so, a 4-to-1 flip
-                  //   (including a 3-to-1, and maybe a 2-to-1 flip) should be
-                  //   applied to remove an exterior vertex.
-                  // First check if the face [b,a,d] is a hull face.
-                  eprev(neightet, fliptets[0]);
-                  esymself(fliptets[0]);  // [d,a,b,e]
-                  enextself(fliptets[0]); // [a,b,d,e]
-                  fsymself(fliptets[0]);  // [b,a,d,#]
-                  if (oppo(fliptets[0]) != dummypoint) {
-                    // Second check if the face [a,b,e] is a hull face.
-                    enext(neightet, fliptets[0]);
-                    esymself(fliptets[0]);  // [a,e,b,d]
-                    eprevself(fliptets[0]); // [b,a,e,d]
-                    fsymself(fliptets[0]);  // [b,a,e,#]
-                  }
-
-                  if (oppo(fliptets[0]) != dummypoint) {
-                    // Make sure we do not create an "inverted triangle" in the
-                    //   boundary, i.e., in exactly planar case, d and e must
-                    //   lie in the different sides of the edge [a,b]. 
-                    // If the dihedral angle formed by [a,b,e] and [a,b,d] is
-                    //   larger than 90 degree, we can remove [a,b,e,d].  
-                    fliptets[0] = neightet; // [e,d,a,b]
-                    eprevself(fliptets[0]);
-                    esymself(fliptets[0]);
-                    enextself(fliptets[0]); // [a,b,e,d].
-                    pa = org(fliptets[0]);
-                    pb = dest(fliptets[0]);
-                    p1 = apex(fliptets[0]); // pe
-                    p2 = oppo(fliptets[0]); // pd
-                    ang = facedihedral(pa, pb, p1, p2);
-                    ang *= 2.0;
-                    if (ang > PI) {
-                      if (b->verbose > 2) {
-                        printf("      Remove a hull sliver (%d, %d, %d, %d).\n",
-                          pointmark(org(fliptet)), pointmark(dest(fliptet)),
-                          pointmark(apex(fliptet)), pointmark(oppo(fliptet)));
-                      }
-                      // Remove the ill tet from bounday.
-                      fliptets[0] = neightet;          // [e,d,a,b]
-                      fnext(fliptets[0], fliptets[1]); // [e,d,b,c]
-                      fnext(fliptets[1], fliptets[2]); // [e,d,c,a]
-                      // FOR DEBUG
-                      fnext(fliptets[2], fliptets[3]);
-                      assert(fliptets[3].tet == neightet.tet);
-                      assert(oppo(fliptets[1]) == dummypoint);
-                      // Do a 3-to-2 flip to remove the ill tet. Two hull tets
-                      // are removed toether. Two hull subfaces are flipped.
-                      flip32(fliptets, 1, flipflag, 0);
-                      // Update counters.
-                      flip32count--;
-                      flip22count--;
-                      opt_sliver_peels++;
-                    }
-                  } else {
-                    // There exists a thrid hull tet at vertex.
-                    rempt = apex(fliptets[0]);
-                    if (pointmark(rempt) > 
-                      (in->numberofpoints - (in->firstnumber ? 0 : 1))) {
-                      if (pointtype(rempt) == FREESEGVERTEX) {
-                        st_segref_count--;
-                      } else if (pointtype(rempt) == FREEFACETVERTEX) {
-                        st_facref_count--;
-                      } else {
-                        assert(0); // Impossible.
-                      }
-                      if (b->verbose > 2) {
-                        printf("      Remove an exterior Steiner vertex %d.\n", 
-                               pointmark(rempt));
-                      }
-                      if (removevertexbyflips(rempt)) {
-                        // exsteinercount++;
-                      } else {
-                        assert(0); // Not possible.
-                      }
-                    } else {
-                      //if (b->verbose > 2) {
-                      //  printf("      Remove an exterior input vertex %d.\n", 
-                      //         pointmark(rempt));
-                      //}
-                      // Comment: We do not remove an input point.
-                    }
-                  }
-                  break;
-                }
-              } // if (checkseg.sh == NULL)
-              senextself(checksh);
-            } // i
-          } else {
-            // It's a hull edge.
-            assert(apex(fliptet) == dummypoint);
-            if (!peelsliverflag) { 
-              // The hull edge may be not locally Delaunay. Put interior
-              //   faces at this edge into 'flipstack' for flipping.
-              neightet = fliptet;  // [a,b,c,d] ('c' is dummypoint).
-              fnextself(neightet); // [a,b,d,#1] ([a,b,d] is a hull face).
-              while (1) {
-                fnextself(neightet); // [a,b,#1,#2]
-                if (oppo(neightet) != dummypoint) {
-                  // It is an interior face.
-                  flippush(flipstack, &neightet);
-                } else {
-                  // We assume the interior of the domain is connected.
-                  // Hence we can hit hull faces only twice.
-                  break;
-                }
-              } // while (1)
-            } // if (!peelsliverflag)
-          }
-        } // if ((flipflag == 4) || peelsliverflag)
-
-        // Do not flip a hull face/edge UNLESS it is in the process of
-        //   incrementally creating a DT in which the convex hull may be
-        //   enlarged by the flips (when p lies outside of it).
-        if (flipflag != 1) {
-          continue;
-        }
-      } // if (ishulltet(fliptet))
-
-      if (peelsliverflag) {
-        continue; // Only check hull tets.
-      }
-
-      // Let 'fliptet' be [a,b,c,d], the face [a,b,c] is the flip face.
-      // Get its opposite tet [b,a,c,e].
-      fsym(fliptet, neightet);
-
-      if (ishulltet(neightet)) {
-        // It is a hull tet.
-        if (flipflag == 1) {
-          // Check if the new point is visible by the hull face.
-          ppt = (point *) neightet.tet;
-          ori = orient3d(ppt[4], ppt[5], ppt[6], newpt); 
-          if (ori < 0) {
-            // Visible. Perform a 2-to-3 flip on the flip face.
-            fliptets[0] = fliptet;  // [a,b,c,d], d = newpt.
-            fliptets[1] = neightet; // [b,a,c,e], c = dummypoint.
-            flip23(fliptets, 1, flipflag, chkencflag); // flip a hull tet.
-            //recenttet = fliptets[0];
-          } else if (ori == 0) {
-            // Handle degenerate case ori == 0.
-            if (oppo(neightet) == newpt) {
-              // Two hull tets have the same base face.
-              if (b->verbose > 2) {
-                printf("      Close an open face (%d, %d, %d)\n", 
-                       pointmark(org(fliptet)), pointmark(dest(fliptet)),
-                       pointmark(apex(fliptet)));
-              }
-              // The following code connect adjacent tets at corresponding
-              //   sides of the two hull tets. It is hard to understand.
-              //   See an example in 2011-11-11.
-              // First infect the two hull tets (they will be deleted).
-              infect(fliptet);
-              infect(neightet);
-              // Connect the actual adjacent tets.
-              for (i = 0; i < 3; i++) {
-                fnext(fliptet, fliptets[0]);
-                fnext(neightet, fliptets[1]);
-                if (!infected(fliptets[0])) {
-                  assert(!infected(fliptets[1]));
-                  bond(fliptets[0], fliptets[1]);
-                  // Update the point-to-tet map.
-                  pa = org(fliptet);
-                  pb = dest(fliptet);
-                  setpoint2tet(pa, encode(fliptets[0]));
-                  setpoint2tet(pb, encode(fliptets[0]));
-                  // Remeber a recent tet for point location.
-                  recenttet = fliptets[0];
-                  // apex(fliptets[0]) is the new point. The opposite face may
-                  // be not locally Delaunay. Put it in flip stack.
-                  assert(apex(fliptets[0]) == newpt); // SELF_CHECK
-                  esymself(fliptets[0]);
-                  flippush(flipstack, &(fliptets[0]));
-                  assert(apex(fliptets[1]) == newpt); // SELF_CHECK
-                  esymself(fliptets[1]);
-                  flippush(flipstack, &(fliptets[1]));                  
-                }
-                enextself(fliptet);
-                eprevself(neightet);
-              }
-              // Delete the two tets.
-              tetrahedrondealloc(fliptet.tet);
-              tetrahedrondealloc(neightet.tet);
-              // Update the hull size.
-              hullsize -= 2;
-            }
-          }
-        } // if (flipflag == 1)
- 
-        continue; // Do not flip a hull face.
-      } // if (ishulltet(neightet))
-
-      if (ishulltet(fliptet)) {
-        continue; // Do not flip a hull tet.
-      }
-      
-      if ((flipflag == 3) || (flipflag == 4)) {
-        if (checksubfaceflag) {
-          // Do not flip a subface.
-          tspivot(fliptet, checksh);
-          if (checksh.sh != NULL) {
-            if (chkencflag & 2) {
-              // Mesh refinement.
-              // Put this subface into list.
-              if (!smarktest2ed(checksh)) {
-                bface = (badface *) badsubfacs->alloc();
-                bface->ss = checksh;
-                smarktest2(checksh); // Only queue it once.
-                bface->forg = sorg(checksh); // An alive badface.
-              }
-            }
-            continue;
-          }
-        }
-      } // if ((flipflag == 3) || (flipflag == 4))
-
-      ppt = (point *) fliptet.tet;
-      pe = oppo(neightet);
-
-      sign = insphere_s(ppt[4], ppt[5], ppt[6], ppt[7], pe);
-
-      if (sign < 0) {
-        if (b->verbose > 3) {
-          printf("        A non-Delaunay face (%d, %d, %d) - %d, %d\n",
-                 pointmark(org(fliptet)), pointmark(dest(fliptet)),
-                 pointmark(apex(fliptet)), pointmark(oppo(fliptet)),
-                 pointmark(pe));
-        }
-
-        // Try to flip this face.
-        pd = oppo(fliptet);
-        // Check the convexity of its three edges.
-        convflag = 1;
-        for (i = 0; i < 3; i++) {
-          p1 = org(fliptet);
-          p2 = dest(fliptet);
-          ori = orient3d(p1, p2, pd, pe); 
-          if (ori < 0) {
-            // A locally non-convex edge.
-            convflag = -1;
-            break;  
-          } else if (ori == 0) {
-            // A locally flat edge.
-            convflag = 0;
-            break;
-          }
-          enextself(fliptet);
-        }
-
-        if (convflag > 0) {
-          // A 2-to-3 flip is found.
-          fliptets[0] = fliptet; // abcd, d may be the new vertex.
-          fliptets[1] = neightet; // bace.
-          if ((flipflag == 1) || (flipflag == 2)) { // CDT boundary recovery.
-            if (checksubfaceflag) {
-              // Check if a subface will be flipped.
-              tspivot(fliptets[0], checksh);
-              if (checksh.sh != NULL) {
-                assert(flipflag < 3); // 1 or 2.
-                // It is updateing a conforming DT or a CDT.
-                if (b->verbose > 3) {
-                  printf("        Queue a flipped subface (%d, %d, %d).\n",
-                         pointmark(sorg(checksh)), pointmark(sdest(checksh)),
-                         pointmark(sapex(checksh)));
-                }
-                for (i = 0; i < 2; i++) {
-                  tsdissolve(fliptets[i]); // Disconnect the tet->sub bond.
-                }
-                stdissolve(checksh); // Disconnect the sub->tet bond.
-                // Add the missing subface into list.
-                subfacstack->newindex((void **) &parysh);
-                *parysh = checksh;
-              } // if (checksh.sh != NULL)
-            }
-          } // if ((flipflag == 1) || (flipflag == 2))
-          flip23(fliptets, 0, flipflag, chkencflag);
-          //recenttet = fliptets[0]; // for point location.
-        } else {
-          // The edge ('fliptet') is non-convex or flat.
-          if ((flipflag == 3) || (flipflag == 4)) {
-            // Do not flip a subsegment.
-            tsspivot1(fliptet, checkseg);
-            if (checkseg.sh != NULL) {
-              if (b->verbose > 3) {
-                printf("        Found a non-Delaunay segment (%d, %d).\n",
-                       pointmark(sorg(checkseg)), pointmark(sdest(checkseg)));
-              }
-              // Comment: this should be only possible when a new Steiner
-              //   point is inserted on a segment nearby.
-              if (chkencflag & 1) {
-                // Put this segment into list.
-                if (!smarktest2ed(checkseg)) {
-                  bface = (badface *) badsubsegs->alloc();
-                  bface->ss = checkseg;
-                  smarktest2(checkseg); // Only queue it once.
-                  bface->forg = sorg(checkseg); // An alive badface.
-                }
-              }
-              continue;
-            }
-          }
-
-          // A 3-to-2 or 4-to-4 may be possible.
-          esym(fliptet, fliptets[0]); // [b,a,d,c]
-          // assert(apex(fliptets[0]) == pd);
-          n = 0;
-          do {
-            fnext(fliptets[n], fliptets[n + 1]);
-            n++;
-          } while ((fliptets[n].tet != fliptet.tet) && (n < 5));
-
-          if (n == 3) {
-            // Found a 3-to-2 flip.
-            if ((flipflag == 1) || (flipflag == 2)) { // CDT boundary recovery.
-              if (checksubsegflag) {
-                // Check if the flip edge is subsegment.
-                tsspivot1(fliptets[0], checkseg);
-                if (checkseg.sh != NULL) {
-                  if (!sinfected(checkseg)) {
-                    // This subsegment will be flipped. Queue it.
-                    if (b->verbose > 3) {
-                      printf("        Queue a flipped segment (%d, %d).\n",
-                        pointmark(sorg(checkseg)), pointmark(sdest(checkseg)));
-                    }
-                    sinfect(checkseg);  // Only save it once.
-                    subsegstack->newindex((void **) &paryseg);
-                    *paryseg = checkseg;
-                  }
-                  // Clean tet-to-seg pointers.
-                  for (i = 0; i < 3; i++) {
-                    tssdissolve1(fliptets[i]);
-                  }
-                  // Clean the seg-to-tet pointer.
-                  sstdissolve1(checkseg);
-                }
-              }
-              if (checksubfaceflag) {
-                // Check if there are subfaces to be flipped.
-                for (i = 0; i < 3; i++) {
-                  tspivot(fliptets[i], checksh);
-                  if (checksh.sh != NULL) {//if (flipshs[i].sh != NULL) {
-                    if (b->verbose > 2) {
-                      printf("        Queue a flipped subface (%d, %d, %d).\n",
-                        pointmark(sorg(checksh)), pointmark(sdest(checksh)),
-                        pointmark(sapex(checksh)));
-                    }
-                    tsdissolve(fliptets[i]); // Disconnect the tet->sub bond.
-                    stdissolve(checksh); // Disconnect the sub->tet bond.
-                    // Add the missing subface into list.
-                    subfacstack->newindex((void **) &parysh);
-                    *parysh = checksh;
-                  }
-                }
-              }
-            } // if ((flipflag == 1) || (flipflag == 2))
-
-            // Now flip the edge.
-            flip32(fliptets, 0, flipflag, chkencflag);
-            //recenttet = fliptets[0]; // for point location.
-          } else {
-            // There are more than 3 tets shared at this edge.
-            if ((n == 4) && (convflag < 0)) {
-              // Check if a 4-to-4 flip is possible.
-              pf = apex(fliptets[3]);
-              if (pf == dummypoint) {
-                // It is a non-convex hull edge shared by four tets (two hull
-                //   tets and two interior tets). 
-                // Let the two interior tets be [a,b,c,d] and [b,a,c,e] where
-                //   [a,b] be the hull edge, [a,b,c] be the interior face.
-                //   [a,b,d] and [a,b,e] are two hull faces.
-                //   A 4-to-4 flip is possible if the two new tets [e,d,b,c]
-                //   and [e,d,c,a] are valid tets.
-                // Current status:
-                //   'fliptets[0]' is [a,b,e,c]
-                //   'fliptets[1]' is [a,b,c,d]
-                //   'fliptets[2]' is [a,b,d,f] (hull tet)
-                //   'fliptets[3]' is [a,b,f,e] (hull tet)
-                pa =  org(fliptets[1]);
-                pb = dest(fliptets[1]);
-                pc = apex(fliptets[1]);
-                p1 = oppo(fliptets[1]); // pd
-                p2 = apex(fliptets[0]); // pe
-                ori = orient3d(p2, p1, pb, pc);
-                if (ori < 0) {
-                  ori = orient3d(p2, p1, pc, pa);
-                  if (ori < 0) {
-                    convflag = -2; // A 4-to-4 flip is possible.
-                  }
-                }
-              }
-	    } // if ((n == 4) && (convflag < 0))
-            if ((n == 4) && ((convflag == 0) || (convflag == -2))) {
-              // Found a 4-to-4 flip.
-              if (b->verbose > 3) {
-                printf("        A 4-to-4 flip (%d, %d) - (%d, %d).\n",
-                       pointmark(org(fliptet)), pointmark(dest(fliptet)),
-                       pointmark(pd), pointmark(pe));
-              }
-              if ((flipflag == 1) || (flipflag == 2)) { // CDT boundary recovery
-                if (checksubsegflag) {
-                  // Check if the flip edge is subsegment.
-                  tsspivot1(fliptets[0], checkseg);
-                  if (checkseg.sh != NULL) {
-                    if (!sinfected(checkseg)) {
-                      // This subsegment will be flipped. Queue it.
-                      if (b->verbose > 3) {
-                        printf("        Queue a flipped segment (%d, %d).\n",
-                         pointmark(sorg(checkseg)), pointmark(sdest(checkseg)));
-                      }
-                      sinfect(checkseg);  // Only save it once.
-                      subsegstack->newindex((void **) &paryseg);
-                      *paryseg = checkseg;
-                    }
-                    // Clean the tet-to-seg pointers.
-                    for (i = 0; i < 4; i++) {
-                      tssdissolve1(fliptets[i]);
-                    }
-                    // Clean the seg-to-tet pointer.
-                    sstdissolve1(checkseg);
-                  }
-                }
-                if (checksubfaceflag) {
-                  // Check if there are subfaces to be flipped.
-                  for (i = 0; i < 4; i++) {
-                    tspivot(fliptets[i], checksh);
-                    if (checksh.sh != NULL) {
-                      if (b->verbose > 3) {
-                        printf("        Queue a flipped subface (%d,%d,%d).\n",
-                          pointmark(sorg(checksh)), pointmark(sdest(checksh)),
-                          pointmark(sapex(checksh)));
-                      }
-                      tsdissolve(fliptets[i]); // Disconnect the tet->sub bond.
-                      stdissolve(checksh); // Disconnect the sub->tet bond.
-                      // Add the missing subface into list.
-                      subfacstack->newindex((void **) &parysh);
-                      *parysh = checksh;
-                    }
-                  }
-                }
-              } // if ((flipflag == 1) || (flipflag == 2))
-
-              // First do a 2-to-3 flip.
-              // Comment: This flip temporarily creates either a degenerated
-              //   tet (convflag == 0) or an inverted tet (convflag < 0).
-              //   It is removed by the followed 3-to-2 flip.
-              fliptets[0] = fliptet; // tet abcd, d is the new vertex.
-              baktets[0] = fliptets[2];
-              baktets[1] = fliptets[3];
-              // The flip may involve hull tets.
-              flip23(fliptets, 1, flipflag, chkencflag);
-              // Then do a 3-to-2 flip.
-              enextesymself(fliptets[0]);  // fliptets[0] is edab.
-              eprevself(fliptets[0]); // tet badc, d is the new vertex.
-              fliptets[1] = baktets[0];
-              fliptets[2] = baktets[1];
-              flip32(fliptets, 1, flipflag, chkencflag);
-              flip23count--;
-              flip32count--;
-              flip44count++;
-              //recenttet = fliptets[0]; // for point location.
-            } else {
-              // This edge is shared by more than 4 tets.
-              if (b->verbose > 2) {
-                printf("        An unflippable non-Delaunay edge (%d,%d).\n",
-                       pointmark(org(fliptet)), pointmark(dest(fliptet)));
-              }
-              remflag = 0;
-              if (flipedgeflag == 2) {
-                // Try to flip this edge by my edge flip algorithm.
-                // Remember the the objective value (volume of all tetprisms).
-                fc.bak_tetprism_vol = tetprism_vol_sum; 
-                if (removeedgebyflips(&fliptet, &fc) == 2) {
-                  if (b->verbose > 2) {
-                    printf("      Decreased quantity: %.17g.\n", 
-                           fc.bak_tetprism_vol - tetprism_vol_sum);
-                  }
-                  // Queue new faces in flipstack.
-                  for (i = 0; i < cavetetlist->objects; i++) {
-                    parytet = (triface *) fastlookup(cavetetlist, i);
-                    if (!isdeadtet(*parytet)) { // Skip a dead tet.
-                      for (parytet->ver = 0; parytet->ver < 4; parytet->ver++) {
-                        // Avoid queue a face twice.
-                        fsym(*parytet, neightet);
-                        if (!facemarked(neightet)) {
-                          //flippush(flipstack, parytet);
-                          bface = (badface *) flippool->alloc();
-                          bface->tt = *parytet;
-                          markface(bface->tt);
-                          bface->forg = org(bface->tt); // An alive badface.
-                          bface->fdest = dest(bface->tt); 
-                          bface->fapex = apex(bface->tt); 
-                          // bface->foppo = oppo(bface->tt);
-                          // Push this face into stack.
-                          bface->nextitem = flipstack;
-                          flipstack = bface;
-                        }
-                      } // parytet->ver
-                    }
-                  } // i
-                  cavetetlist->restart();
-                  remflag = 1;
-                }
-              }
-              if (!remflag) {
-                // Found an unflippable non-Delaunay edge.
-                if (flipedgeflag > 0) { // if (flipflag > 1) {
-                  // Save this face (of the edge) in a second queue.
-                  unflipqueue->newindex((void **) &bface);
-                  bface->tt = fliptet;
-                  bface->forg = org(fliptet);
-                  bface->fdest = dest(fliptet);
-                  bface->fapex = apex(fliptet); // FOR DEBUG.
-                }
-              }
-            }
-          } // if (n > 3)
-        } // if (convflag <= 0)
-      } // if (sign < 0)
-
-    } // while (flipstack != NULL)
-
-
-    break;
-
-  } // while (1)
-
-
-  if (b->verbose > 2) {
-    printf("      Total %ld flips", flip23count + flip32count + flip44count
-           - flipcount);
-    if ((flipflag == 4) || peelsliverflag) {
-      printf(", %ld sliver peels", opt_sliver_peels - tetpeelcount);
-    }
-    printf("\n");
-  }
-
-
-  return flip23count + flip32count + flip44count - flipcount;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// insertvertex()    Insert a point into current tetrahedralization.         //
+// insertpoint()    Insert a point into current tetrahedralization.          //
 //                                                                           //
 // The Bowyer-Watson (B-W) algorithm is used to add a new point p into the   //
 // tetrahedralization T. It first finds a "cavity", denoted as C, in T,  C   //
@@ -2982,74 +1934,47 @@ long tetgenmesh::lawsonflip3d(point newpt, int flipflag, int peelsliverflag,
 // C and p.  If T is not a DT, then C may be not star-shaped.  It must be    //
 // modified so that it becomes star-shaped.                                  //
 //                                                                           //
-//                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
-                             face *splitseg, insertvertexflags *ivf)
+int tetgenmesh::insertpoint(point insertpt, triface *searchtet, face *splitsh,
+                            face *splitseg, insertvertexflags *ivf)
 {
-  arraypool *swaplist; // for updating cavity.
+  arraypool *swaplist;
   triface *cavetet, spintet, neightet, neineitet, *parytet;
   triface oldtet, newtet, newneitet;
-  face checksh, *parysh, neighsh, spinsh;
+  face checksh, neighsh, *parysh;
   face checkseg, *paryseg;
   point *pts, pa, pb, pc, *parypt;
-  badface *bface;
-  enum locateresult loc;
+  enum locateresult loc = OUTSIDE;
   REAL sign, ori;
-  REAL rd, cent[3];
   REAL attrib, volume;
-  long cutcount, cutshcount, tetcount = 0;
-  long bakhullsize;
   bool enqflag;
+  int t1ver;
   int i, j, k, s;
-
-  int rejptflag, encptflag; // for protecting balls.
-  int bgmloc;
-
 
   if (b->verbose > 2) {
     printf("      Insert point %d\n", pointmark(insertpt));
   }
 
-
   // Locate the point.
-  loc = OUTSIDE; // Set a default value.
-
   if (searchtet->tet != NULL) {
     loc = (enum locateresult) ivf->iloc;
   }
 
   if (loc == OUTSIDE) {
-    tetcount = ptloc_count; // Count the number of visited tets.
     if (searchtet->tet == NULL) {
       if (!b->weighted) {
-        if (b->brio_hilbert) { // -b
-          *searchtet = recenttet;
-        } else { // -b0
-          randomsample(insertpt, searchtet);
-        }
+        randomsample(insertpt, searchtet);
       } else {
-        // There may exist dangling vertex. 
+        // Weighted DT. There may exist dangling vertex. 
         *searchtet = recenttet;
       }
     }
     // Locate the point.
-    loc = locate(insertpt, searchtet, ivf->chkencflag); 
-    if (b->verbose > 3) {
-        printf("        Walk distance (# tets): %ld\n", ptloc_count-tetcount);
-    }
-    if (ptloc_max_count < (ptloc_count - tetcount)) {
-      ptloc_max_count = (ptloc_count - tetcount);
-    }
+    loc = locate(insertpt, searchtet); 
   }
 
-  if (b->verbose > 3) {
-    printf("        Located tet (%d, %d, %d, %d).\n",
-           pointmark(org(*searchtet)), pointmark(dest(*searchtet)), 
-           pointmark(apex(*searchtet)), pointmark(oppo(*searchtet)));
-  }
-
+  ivf->iloc = (int) loc; // The return value.
 
   if (b->weighted) {
     if (loc != OUTSIDE) {
@@ -3061,92 +1986,71 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
                         insertpt[3]);
       if (sign > 0) {
         // This new vertex does not lie below the lower hull. Skip it.
-        if (b->verbose > 1) {
-	  printf("    Point #%d is non-regular, skipped.\n",
-                 pointmark(insertpt));
-	}
         setpointtype(insertpt, NREGULARVERTEX);
         nonregularcount++;
-        return NONREGULAR;
+        ivf->iloc = (int) NONREGULAR;
+        return 0;
       }
     }
   }
 
-  // Create the initial cavity C(p) which contains all tetrahedra directly
-  //   intersect with p.
-
-  // Remember the current hullsize. It is used to restore the hullsize
-  //   if the new point is rejected for insertion.
-  bakhullsize = hullsize;
+  // Create the initial cavity C(p) which contains all tetrahedra that
+  //   intersect p. It may include 1, 2, or n tetrahedra.
+  // If p lies on a segment or subface, also create the initial sub-cavity
+  //   sC(p) which contains all subfaces (and segment) which intersect p.
 
   if (loc == OUTSIDE) {
-    if (b->verbose > 3) {
-      printf("        Outside hull.\n");
-    }
+    flip14count++;
     // The current hull will be enlarged.
     // Add four adjacent boundary tets into list.
     for (i = 0; i < 4; i++) {
       decode(searchtet->tet[i], neightet);
-      neightet.ver = epivot[neightet.ver & 3];
-      cavetetlist->newindex((void **) &parytet);
+      neightet.ver = epivot[neightet.ver];
+      cavebdrylist->newindex((void **) &parytet);
       *parytet = neightet;
     }
-    if ((point) searchtet->tet[7] == dummypoint) hullsize--;
-    // tetrahedrondealloc(searchtet->tet);
     infect(*searchtet);
     caveoldtetlist->newindex((void **) &parytet);
     *parytet = *searchtet;
-    flip14count++;
   } else if (loc == INTETRAHEDRON) {
-    if (b->verbose > 3) {
-      printf("        Inside tet.\n");
-    }
+    flip14count++;
     // Add four adjacent boundary tets into list.
     for (i = 0; i < 4; i++) {
       decode(searchtet->tet[i], neightet);
-      neightet.ver = epivot[neightet.ver & 3];
-      cavetetlist->newindex((void **) &parytet);
+      neightet.ver = epivot[neightet.ver];
+      cavebdrylist->newindex((void **) &parytet);
       *parytet = neightet;
     }
-    // tetrahedrondealloc(searchtet->tet);
     infect(*searchtet);
     caveoldtetlist->newindex((void **) &parytet);
     *parytet = *searchtet;
-    flip14count++;
   } else if (loc == ONFACE) {
-    if (b->verbose > 3) {
-      printf("        On face.\n");
-    }
+    flip26count++;
     // Add six adjacent boundary tets into list.
     j = (searchtet->ver & 3); // The current face number.
     for (i = 1; i < 4; i++) { 
       decode(searchtet->tet[(j + i) % 4], neightet);
-      neightet.ver = epivot[neightet.ver & 3];
-      cavetetlist->newindex((void **) &parytet);
+      neightet.ver = epivot[neightet.ver];
+      cavebdrylist->newindex((void **) &parytet);
       *parytet = neightet;
     }
     decode(searchtet->tet[j], spintet);
     j = (spintet.ver & 3); // The current face number.
     for (i = 1; i < 4; i++) {
       decode(spintet.tet[(j + i) % 4], neightet);
-      neightet.ver = epivot[neightet.ver & 3];
-      cavetetlist->newindex((void **) &parytet);
+      neightet.ver = epivot[neightet.ver];
+      cavebdrylist->newindex((void **) &parytet);
       *parytet = neightet;
     }
-    if ((point) spintet.tet[7] == dummypoint) hullsize--;
-    if ((point) searchtet->tet[7] == dummypoint) hullsize--;
-    // tetrahedrondealloc(spintet.tet);
     infect(spintet);
     caveoldtetlist->newindex((void **) &parytet);
     *parytet = spintet;
-    // tetrahedrondealloc(searchtet->tet);
     infect(*searchtet);
     caveoldtetlist->newindex((void **) &parytet);
     *parytet = *searchtet;
-    flip26count++;
 
-    if (ivf->splitbdflag) { //if (bowywat > 2) {
-      if (splitsh != NULL) {
+    if (ivf->splitbdflag) { 
+      if ((splitsh != NULL) && (splitsh->sh != NULL)) {
         // Create the initial sub-cavity sC(p).
         smarktest(*splitsh);
         caveshlist->newindex((void **) &parysh);
@@ -3154,35 +2058,30 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
       }
     } // if (splitbdflag)
   } else if (loc == ONEDGE) {
-    if (b->verbose > 3) {
-      printf("        On edge.\n");
-    }
+    flipn2ncount++;
     // Add all adjacent boundary tets into list.
     spintet = *searchtet;
     while (1) {
-      enextesym(spintet, neightet);
-      fsymself(neightet);
-      neightet.ver = epivot[neightet.ver & 3];
-      cavetetlist->newindex((void **) &parytet);
+      eorgoppo(spintet, neightet);
+      decode(neightet.tet[neightet.ver & 3], neightet);
+      neightet.ver = epivot[neightet.ver];
+      cavebdrylist->newindex((void **) &parytet);
       *parytet = neightet;
-      eprevesym(spintet, neightet);
-      fsymself(neightet);
-      neightet.ver = epivot[neightet.ver & 3];
-      cavetetlist->newindex((void **) &parytet);
+      edestoppo(spintet, neightet);
+      decode(neightet.tet[neightet.ver & 3], neightet);
+      neightet.ver = epivot[neightet.ver];
+      cavebdrylist->newindex((void **) &parytet);
       *parytet = neightet;
-      if ((point) spintet.tet[7] == dummypoint) hullsize--;
-      // tetrahedrondealloc(spintet.tet);
       infect(spintet);
       caveoldtetlist->newindex((void **) &parytet);
       *parytet = spintet;
       fnextself(spintet);
       if (spintet.tet == searchtet->tet) break;
     } // while (1)
-    flipn2ncount++;
 
-    if (ivf->splitbdflag) { //if (bowywat > 2) {
+    if (ivf->splitbdflag) {
       // Create the initial sub-cavity sC(p).
-      if (splitseg != NULL) {
+      if ((splitseg != NULL) && (splitseg->sh != NULL)) {
         smarktest(*splitseg);
         splitseg->shver = 0;
         spivot(*splitseg, *splitsh);
@@ -3214,9 +2113,6 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
       }
     } // if (splitbdflag)
   } else if (loc == INSTAR) {
-    if (b->verbose > 3) {
-      printf("        Inside star.\n");
-    }
     // We assume that all tets in the star are given in 'caveoldtetlist',
     //   and they are all infected.
     assert(caveoldtetlist->objects > 0);
@@ -3228,75 +2124,24 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
         decode(cavetet->tet[j], neightet);
         if (!infected(neightet)) {
           // It's a boundary face.
-          neightet.ver = epivot[neightet.ver & 3];
-          cavetetlist->newindex((void **) &parytet);
+          neightet.ver = epivot[neightet.ver];
+          cavebdrylist->newindex((void **) &parytet);
           *parytet = neightet;
         }
       }
     }
   } else if (loc == ONVERTEX) {
-    pa = org(*searchtet);
-    if (b->verbose > 3) {
-      printf("        On vertex %d.\n", pointmark(pa));
-    }
-    if (insertpt != pa) {
-      // Remember it is a duplicated point.
-      setpointtype(insertpt, DUPLICATEDVERTEX);
-      // Set a pointer to the point it duplicates.
-      setpoint2ppt(insertpt, pa);
-    }
     // The point already exist. Do nothing and return.
-    return (int) loc;
-  } else if (loc == ENCSUBFACE) {
-    if (b->verbose > 3) {
-      printf("        Beyond boundary.\n");
-    }
-    // The vertex lies outside of the region boundary.
-    if (ivf->rejflag & 2) {
-      // Check if this vertex lies very close to the boundary face.
-      // This case needs to be handled due to the rounding off error.
-      tspivot(*searchtet, checksh);
-      assert(checksh.sh != NULL);
-      pa = sorg(checksh);
-      pb = sdest(checksh);
-      pc = sapex(checksh);
-      ori = orient3d(pa, pb, pc, insertpt);
-      // Re-use cent[3].
-      cent[0] = distance(pa, insertpt);
-      cent[1] = distance(pb, insertpt);
-      cent[2] = distance(pb, insertpt);
-      // Choose the largest distance.
-      if (cent[0] < cent[1]) cent[0] = cent[1];
-      if (cent[0] < cent[2]) cent[0] = cent[2];
-      if (fabs(ori) / (cent[0] * cent[0] * cent[0]) < b->epsilon) {
-        // A nearly co-planar subface. We treat this case as coplanar, so
-        //   the insertion point does not lie outside of the domain. 
-        // Queue an encroached subface.
-        // Calculate the circumcenter of this subface (for refinement).
-        circumsphere(pa, pb, pc, NULL, cent, &rd);
-        encshlist->newindex((void **) &bface);
-        bface->ss = checksh;
-        bface->forg = pa; // Not a dad one.
-        for (j = 0; j < 3; j++) bface->cent[j] = cent[j];
-        bface->key = rd;
-        return (int) ENCSUBFACE;
-      }
-    }
-    // Treated it as outside
-    loc = OUTSIDE;
-    return (int) loc;
-  } else {
-    assert(0); // Unknown type.
-  }
+    return 0;
+  } 
 
 
   if (ivf->assignmeshsize) {
     // Assign mesh size for the new point.
     if (bgm != NULL) {
       // Interpolate the mesh size from the background mesh. 
-      pa = org(*searchtet);
-      bgm->decode(point2bgmtet(pa), neightet); // neightet is in 'bgm'!
-      bgmloc = bgm->scoutpoint(insertpt, &neightet, 0); // randflag = 0
+      bgm->decode(point2bgmtet(org(*searchtet)), neightet);
+      int bgmloc = (int) bgm->scoutpoint(insertpt, &neightet, 0);
       if (bgmloc != (int) OUTSIDE) {
         insertpt[pointmtrindex] =  
           bgm->getpointmeshsize(insertpt, &neightet, bgmloc);
@@ -3307,84 +2152,21 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
     }
   } // if (assignmeshsize)
 
-  if (ivf->validflag) { //if (bowywat > 2) { 
-    // Validate the initial C(p). Enlarge it at a face which is not visible
-    //   by p. This removes (interior) slivers. Re-use 'cavebdrylist'.
-    tetcount = 0l;
-
+  if (ivf->bowywat) {
+    // Update the cavity C(p) using the Bowyer-Watson algorithm.
+    swaplist = cavetetlist;
+    cavetetlist = cavebdrylist;
+    cavebdrylist = swaplist;
     for (i = 0; i < cavetetlist->objects; i++) {
+      // 'cavetet' is an adjacent tet at outside of the cavity.
       cavetet = (triface *) fastlookup(cavetetlist, i);
-      // Other expansions may make this face inside C(p).
+      // The tet may be tested and included in the (enlarged) cavity.
       if (!infected(*cavetet)) {
-        pc = apex(*cavetet);
-        // Do valid if it is a face (not a hull edge).
-        if (pc != dummypoint) {
-          pa = org(*cavetet);
-          pb = dest(*cavetet);
-          ori = orient3d(pa, pb, pc, insertpt); 
-          if (ori <= 0) {
-            // An invalid face. Enlarge the cavity.
-              if (b->verbose > 3) {
-                printf("        Enlarge cavity at (%d, %d, %d)\n",
-                       pointmark(pa), pointmark(pb), pointmark(pc));
-              }
-              // Add the other three faces into list.
-              j = (cavetet->ver & 3); // The current face number.
-              for (k = 1; k < 4; k++) { 
-                decode(cavetet->tet[(j + k) % 4], neightet);
-                neightet.ver = epivot[neightet.ver & 3];
-                cavetetlist->newindex((void **) &parytet);
-                *parytet = neightet;
-              }
-              if ((point) cavetet->tet[7] == dummypoint) hullsize--;
-              infect(*cavetet);
-              caveoldtetlist->newindex((void **) &parytet);
-              *parytet = *cavetet;
-              tetcount++;
-          } else {
-            // A valid face.
-            cavebdrylist->newindex((void **) &parytet);
-            *parytet = *cavetet;
-          }
-        } else {
-          // A hull edge is valid.
-          cavebdrylist->newindex((void **) &parytet);
-          *parytet = *cavetet;
-        }
-      } // if (!infected(*cavetet))
-    } // i
-
-    if (tetcount > 0l) {
-      // The cavity has been enlarged. Update it.
-      cavetetlist->restart();
-      for (i = 0; i < cavebdrylist->objects; i++) {
-        cavetet = (triface *) fastlookup(cavebdrylist, i);
-        if (!infected(*cavetet)) {
-          cavetetlist->newindex((void **) &parytet);
-          *parytet = *cavetet;
-        }
-      } // i
-    } // if (tetcount)
-
-    cavebdrylist->restart();
-    tetcount = 0l;
-  } // if (bowywat > 2)
-
-  // Update the cavity C(p) using the Bowyer-Watson approach (bowywat > 0). 
-
-  for (i = 0; i < cavetetlist->objects; i++) {
-    // 'cavetet' is an adjacent tet at outside of the cavity.
-    cavetet = (triface *) fastlookup(cavetetlist, i);
-    // The tet may be tested and included in the (enlarged) cavity.
-    if (!infected(*cavetet)) {
-      // Check for two possible cases for this tet: 
-      //   (1) It is a cavity tet, or
-      //   (2) it is a cavity boundary face.
-      // In case (1), this tet is grabbed in the cavity and three adjacent 
-      //   tets on other faces of this tet are added into 'cavetetlist'.
-      enqflag = false;
-      if (!marktested(*cavetet)) {
-        if (ivf->bowywat) {
+        // Check for two possible cases for this tet: 
+        //   (1) It is a cavity tet, or
+        //   (2) it is a cavity boundary face.
+        enqflag = false;
+        if (!marktested(*cavetet)) {
           // Do Delaunay (in-sphere) test.
           pts = (point *) cavetet->tet;
           if (pts[7] != dummypoint) {
@@ -3406,14 +2188,12 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
                 //if (!nonconvex) { 
                 // Include it in the cavity. The convex hull will be enlarged.
                 enqflag = true; // (ori < 0.0);
-		//}
+		        //}
               } else if (ori == 0.0) {
                 // A coplanar hull face. We need to test if this hull face is
                 //   Delaunay or not. We test if the adjacent tet (not faked)
                 //   of this hull face is Delaunay or not.
-                neightet = *cavetet;
-                neightet.ver = 3; // The face opposite to dummypoint.
-                fsym(neightet, neineitet);
+                decode(cavetet->tet[3], neineitet);
                 if (!infected(neineitet)) {
                   if (!marktested(neineitet)) {
                     // Do Delaunay test on this tet.
@@ -3427,12 +2207,7 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
                       sign = insphere_s(pts[4],pts[5],pts[6],pts[7], insertpt);
                     }
                     enqflag = (sign < 0.0);
-                  } else {
-                    // The adjacent tet has been tested (marktested), and it
-                    //   is Delaunay (not get infected). Hence the the hull
-                    //   face is Delaunay as well.
-                    // enqflag = false;
-                  }
+                  } 
                 } else {
                   // The adjacent tet is non-Delaunay. The hull face is non-
                   //   Delaunay as well. Include it in the cavity.
@@ -3441,15 +2216,11 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
               } // if (ori == 0.0)
             } else {
               // A hull face (must be a subface).
-              assert(checksubfaceflag);
-              assert(ivf->validflag);
               // We FIRST include it in the initial cavity if the adjacent tet
               //   (not faked) of this hull face is not Delaunay wrt p.
               //   Whether it belongs to the final cavity will be determined
               //   during the validation process. 'validflag'.
-              neightet = *cavetet;
-              neightet.ver = 3; // The face opposite to dummypoint.
-              fsym(neightet, neineitet);
+              decode(cavetet->tet[3], neineitet);
               if (!infected(neineitet)) {
                 if (!marktested(neineitet)) {
                   // Do Delaunay test on this tet.
@@ -3463,12 +2234,7 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
                     sign = insphere_s(pts[4],pts[5],pts[6],pts[7], insertpt);
                   }
                   enqflag = (sign < 0.0);
-                } else {
-                  // The adjacent tet has been tested (marktested), and it
-                  //   is Delaunay (not get infected). Hence the the hull
-                  //   face is Delaunay as well.
-                  // enqflag = false;
-                } // if (marktested(neineitet))
+                } 
               } else {
                 // The adjacent tet is non-Delaunay. The hull face is non-
                 //   Delaunay as well. Include it in the cavity.
@@ -3476,200 +2242,131 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
               } // if (infected(neineitet))
             } // if (nonconvex)
           } // if (pts[7] != dummypoint)
-        } // if (bowywat)
-        marktest(*cavetet); // Only test it once.
-      } // if (!marktested(*cavetet))
+          marktest(*cavetet); // Only test it once.
+        } // if (!marktested(*cavetet))
 
-      if (enqflag) {
-        // Found a tet in the cavity. Put other three faces in check list.
-        k = (cavetet->ver & 3); // The current face number
-        for (j = 1; j < 4; j++) {
-          decode(cavetet->tet[(j + k) % 4], neightet);
-          neightet.ver = epivot[neightet.ver & 3];
-          cavetetlist->newindex((void **) &parytet);
-          *parytet = neightet;
+        if (enqflag) {
+          // Found a tet in the cavity. Put other three faces in check list.
+          k = (cavetet->ver & 3); // The current face number
+          for (j = 1; j < 4; j++) {
+            decode(cavetet->tet[(j + k) % 4], neightet);
+            cavetetlist->newindex((void **) &parytet);
+            *parytet = neightet;
+          }
+          infect(*cavetet);
+          caveoldtetlist->newindex((void **) &parytet);
+          *parytet = *cavetet;
+        } else {
+          // Found a boundary face of the cavity. 
+          cavetet->ver = epivot[cavetet->ver];
+          cavebdrylist->newindex((void **) &parytet);
+          *parytet = *cavetet;
         }
-        if ((point) cavetet->tet[7] == dummypoint) hullsize--;
-        // tetrahedrondealloc(cavetet->tet);
-        infect(*cavetet);
-        caveoldtetlist->newindex((void **) &parytet);
-        *parytet = *cavetet;
-      } else {
-        // Found a boundary face of the cavity. It may be a face of a hull
-        //   tet which contains 'dummypoint'. Choose the edge in the face 
-        //   such that its endpoints are not 'dummypoint', while its apex
-        //   may be 'dummypoint'.
-        //j = (cavetet->ver & 3); // j is the face number.
-        //cavetet->ver = epivot[j]; // [4,5,2,11]
-        cavebdrylist->newindex((void **) &parytet);
-        *parytet = *cavetet;
-      }
-    } // if (!infected(*cavetet))
-  } // i
+      } // if (!infected(*cavetet))
+    } // i
 
-  if (b->verbose > 3) {
-    printf("        Initial cavity size: %ld tets, %ld faces.\n", 
-           caveoldtetlist->objects, cavebdrylist->objects);
-  }
-
+    cavetetlist->restart(); // Clear the working list.
+  } // if (ivf->bowywat)
 
   if (checksubsegflag) {
     // Collect all segments of C(p).
+    shellface *ssptr;
     for (i = 0; i < caveoldtetlist->objects; i++) {
       cavetet = (triface *) fastlookup(caveoldtetlist, i);
-      for (j = 0; j < 6; j++) {
-        cavetet->ver = edge2ver[j];
-        tsspivot1(*cavetet, checkseg);
-        if (checkseg.sh != NULL) {
-          if (!sinfected(checkseg)) {
-            sinfect(checkseg);
-            cavetetseglist->newindex((void **) &paryseg);
-            *paryseg = checkseg;
+      if ((ssptr = (shellface*) cavetet->tet[8]) != NULL) {
+        for (j = 0; j < 6; j++) {
+          if (ssptr[j]) {
+            sdecode(ssptr[j], checkseg);
+            if (!sinfected(checkseg)) {
+              sinfect(checkseg);
+              cavetetseglist->newindex((void **) &paryseg);
+              *paryseg = checkseg;
+            }
           }
-        }
+        } // j
       }
-    }
+    } // i
     // Uninfect collected segments.
     for (i = 0; i < cavetetseglist->objects; i++) {
-      checkseg = * (face *) fastlookup(cavetetseglist, i);
-      suninfect(checkseg);
+      paryseg = (face *) fastlookup(cavetetseglist, i);
+      suninfect(*paryseg);
+    }
+
+    if (ivf->rejflag & 1) {
+      // Reject this point if it encroaches upon any segment.
+      face *paryseg1;
+      for (i = 0; i < cavetetseglist->objects; i++) {
+        paryseg1 = (face *) fastlookup(cavetetseglist, i);
+        if (checkseg4encroach((point) paryseg1->sh[3], (point) paryseg1->sh[4], 
+                              insertpt)) {
+          encseglist->newindex((void **) &paryseg);
+          *paryseg = *paryseg1;
+        }
+      } // i
+      if (encseglist->objects > 0) {
+        insertpoint_abort(splitseg, ivf);
+        ivf->iloc = (int) ENCSEGMENT;
+        return 0;
+      }
     }
   } // if (checksubsegflag)
 
   if (checksubfaceflag) {
     // Collect all subfaces of C(p).
+    shellface *sptr;
     for (i = 0; i < caveoldtetlist->objects; i++) {
       cavetet = (triface *) fastlookup(caveoldtetlist, i);
-      oldtet = *cavetet;
-      for (oldtet.ver = 0; oldtet.ver < 4; oldtet.ver++) {
-        tspivot(oldtet, checksh);
-        if (checksh.sh != NULL) {
-          if (!sinfected(checksh)) {
-            sinfect(checksh);
-            cavetetshlist->newindex((void **) &parysh);
-            *parysh = checksh;
+      if ((sptr = (shellface*) cavetet->tet[9]) != NULL) {
+        for (j = 0; j < 4; j++) {
+          if (sptr[j]) {
+            sdecode(sptr[j], checksh);
+            if (!sinfected(checksh)) {
+              sinfect(checksh);
+              cavetetshlist->newindex((void **) &parysh);
+              *parysh = checksh;
+            }
           }
-        }
+        } // j
       }
-    }
+    } // i
     // Uninfect collected subfaces.
     for (i = 0; i < cavetetshlist->objects; i++) {
-      checksh = * (face *) fastlookup(cavetetshlist, i);
-      suninfect(checksh);
+      parysh = (face *) fastlookup(cavetetshlist, i);
+      suninfect(*parysh);
+    }
+
+    if (ivf->rejflag & 2) {
+      REAL rd, cent[3];
+      badface *bface;
+      // Reject this point if it encroaches upon any subface.
+      for (i = 0; i < cavetetshlist->objects; i++) {
+        parysh = (face *) fastlookup(cavetetshlist, i);
+        if (checkfac4encroach((point) parysh->sh[3], (point) parysh->sh[4], 
+                              (point) parysh->sh[5], insertpt, cent, &rd)) {
+          encshlist->newindex((void **) &bface);
+          bface->ss = *parysh;
+          bface->forg = (point) parysh->sh[3]; // Not a dad one.
+          for (j = 0; j < 3; j++) bface->cent[j] = cent[j];
+          bface->key = rd;
+        }
+      }
+      if (encshlist->objects > 0) {
+        insertpoint_abort(splitseg, ivf);
+        ivf->iloc = (int) ENCSUBFACE;
+        return 0;
+      }
     }
   } // if (checksubfaceflag)
 
-  if (ivf->rejflag & 1) {
-    // Reject insertion of this point if it encroaches upon any segment.
-    for (i = 0; i < cavetetseglist->objects; i++) {
-      checkseg = * (face *) fastlookup(cavetetseglist, i);
-      pa = sorg(checkseg);
-      pb = sdest(checkseg);
-      if (checkseg4encroach(pa, pb, insertpt)) {
-        if (b->verbose > 3) {
-          printf("        Found an encroached seg (%d, %d).\n",
-                 pointmark(pa), pointmark(pb));
-        }
-        encseglist->newindex((void **) &paryseg);
-        *paryseg = checkseg;
-      }
-    } // i
-    if (encseglist->objects > 0) {
-      if (b->verbose > 3) {
-        printf("        Found %ld encroached segments. Reject it.\n",
-               encseglist->objects);
-      }
-      for (i = 0; i < caveoldtetlist->objects; i++) {
-        cavetet = (triface *) fastlookup(caveoldtetlist, i);
-        uninfect(*cavetet);
-        unmarktest(*cavetet);
-      }
-      for (i = 0; i < cavebdrylist->objects; i++) {
-        cavetet = (triface *) fastlookup(cavebdrylist, i);
-        unmarktest(*cavetet); // Unmark it.
-      }
-      // Clear working lists.
-      cavetetlist->restart();
-      cavebdrylist->restart();
-      caveoldtetlist->restart();
-      cavetetseglist->restart();
-      cavetetshlist->restart();
-      if (ivf->splitbdflag) { //if (bowywat > 2) {
-        if (splitseg != NULL) {
-          sunmarktest(*splitseg);
-        }
-        for (i = 0; i < caveshlist->objects; i++) {
-          parysh = (face *) fastlookup(caveshlist, i);
-          assert(smarktested(*parysh));
-          sunmarktest(*parysh);
-        }
-        caveshlist->restart();
-        cavesegshlist->restart();
-      }
-      // Restore the hullsize.
-      hullsize = bakhullsize;
-      return (int) ENCSEGMENT;
-    }
-  } // if (reject & 1)
+  if ((ivf->iloc == (int) OUTSIDE) && ivf->refineflag) {
+    // The vertex lies outside of the domain. And it does not encroach
+    //   upon any boundary segment or subface. Do not insert it.
+    insertpoint_abort(splitseg, ivf);
+    return 0;
+  }
 
-  if (ivf->rejflag & 2) {
-    // Reject insertion of this point if it encroaches upon any subface.
-    for (i = 0; i < cavetetshlist->objects; i++) {
-      checksh = * (face *) fastlookup(cavetetshlist, i);
-      pa = sorg(checksh);
-      pb = sdest(checksh);
-      pc = sapex(checksh);
-      if (checkfac4encroach(pa, pb, pc, insertpt, cent, &rd)) {
-        if (b->verbose > 3) {
-          printf("        Found an encroached subface (%d, %d, %d).\n",
-                 pointmark(pa), pointmark(pb), pointmark(pc));
-        }
-        encshlist->newindex((void **) &bface);
-        bface->ss = checksh;
-        bface->forg = pa; // Not a dad one.
-        for (j = 0; j < 3; j++) bface->cent[j] = cent[j];
-        bface->key = rd;
-      }
-    } // i
-    if (encshlist->objects > 0) {
-      if (b->verbose > 3) {
-        printf("        Found %ld encroached subfaces. Reject it.\n",
-               encshlist->objects);
-      }
-      for (i = 0; i < caveoldtetlist->objects; i++) {
-        cavetet = (triface *) fastlookup(caveoldtetlist, i);
-        uninfect(*cavetet);
-        unmarktest(*cavetet);
-      }
-      for (i = 0; i < cavebdrylist->objects; i++) {
-        cavetet = (triface *) fastlookup(cavebdrylist, i);
-        unmarktest(*cavetet); // Unmark it.
-      }
-      cavetetlist->restart();
-      cavebdrylist->restart();
-      caveoldtetlist->restart();
-      cavetetseglist->restart();
-      cavetetshlist->restart();
-      if (ivf->splitbdflag) { //if (bowywat > 2) {
-        if (splitseg != NULL) {
-          sunmarktest(*splitseg);
-        }
-        for (i = 0; i < caveshlist->objects; i++) {
-          parysh = (face *) fastlookup(caveshlist, i);
-          assert(smarktested(*parysh));
-          sunmarktest(*parysh);
-        }
-        caveshlist->restart();
-        cavesegshlist->restart();
-      }
-      // Restore the hullsize.
-      hullsize = bakhullsize;
-      return (int) ENCSUBFACE;
-    }
-  } // if (reject & 2)
-
-  if (ivf->splitbdflag) { //if (bowywat > 2) { // if (bowywat == 3) {
-    // Update the sC(p). 
+  if (ivf->splitbdflag) { 
+    // The new point locates in surface mesh. Update the sC(p). 
     // We have already 'smarktested' the subfaces which directly intersect
     //   with p in 'caveshlist'. From them, we 'smarktest' their neighboring
     //   subfaces which are included in C(p). Do not across a segment.
@@ -3678,8 +2375,7 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
       assert(smarktested(*parysh));
       checksh = *parysh;
       for (j = 0; j < 3; j++) {
-        sspivot(checksh, checkseg);
-        if (checkseg.sh == NULL) {
+        if (!isshsubseg(checksh)) {
           spivot(checksh, neighsh);
           assert(neighsh.sh != NULL);
           if (!smarktested(neighsh)) {
@@ -3689,10 +2385,10 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
               if (infected(neightet)) {
                 // This subface is inside C(p). 
                 // Check if its diametrical circumsphere encloses 'p'.
-                pa = sorg(neighsh);
-                pb = sdest(neighsh);
-                pc = sapex(neighsh);
-                sign = incircle3d(pa, pb, pc, insertpt);
+                //   The purpose of this check is to avoid forming invalid
+                //   subcavity in surface mesh.
+                sign = incircle3d(sorg(neighsh), sdest(neighsh),
+                                  sapex(neighsh), insertpt);
                 if (sign < 0) {
                   smarktest(neighsh);
                   caveshlist->newindex((void **) &parysh);
@@ -3705,48 +2401,34 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
         senextself(checksh);
       } // j
     } // i
-    if (b->verbose > 3) {
-      printf("        Initial subcavity size: %ld subfacess.\n", 
-             caveshlist->objects);
-    }
-  }
+  } // if (ivf->splitbdflag)
 
-  cutcount = 0l;
+  if (ivf->validflag) {
+    // Validate C(p) and update it if it is not star-shaped.
+    int cutcount = 0;
 
-  if (ivf->validflag) { 
-    //if (bowywat > 1) { // if (bowywat == 2 || bowywat == 3) {
-    // T is a CT. Validation is needed (fig/dump-cavity-case8).
-    cavetetlist->restart(); // Re-use it.
-
-    //if (splitbdflag) { //if (bowywat > 2) { // if (bowywat == 3) {
     if (ivf->respectbdflag) {
       // The initial cavity may include subfaces which are not on the facets
-      //   being splitting. Find them and make them as boundary of C(p).      
-      // Comment: We have already 'smarktested' the subfaces in sC(p).
-      //   It is needed by 'splitbdflag'.
+      //   being splitting. Find them and make them as boundary of C(p). 
+      // Comment: We have already 'smarktested' the subfaces in sC(p). They
+      //   are completely inside C(p). 
       for (i = 0; i < cavetetshlist->objects; i++) {
         parysh = (face *) fastlookup(cavetetshlist, i);
         stpivot(*parysh, neightet);
         if (infected(neightet)) {
           fsymself(neightet);
           if (infected(neightet)) {
+            // Found a subface inside C(p).
             if (!smarktested(*parysh)) {
-              if (b->verbose > 3) {
-                printf("        Found a subface (%d, %d, %d) inside cavity.\n", 
-                       pointmark(sorg(*parysh)), pointmark(sdest(*parysh)),
-                       pointmark(sapex(*parysh)));
-              }
               // It is possible that this face is a boundary subface.
               // Check if it is a hull face.
-              assert(apex(neightet) != dummypoint);
+              //assert(apex(neightet) != dummypoint);
               if (oppo(neightet) != dummypoint) {
                 fsymself(neightet);
               }
               if (oppo(neightet) != dummypoint) {
-                pa = org(neightet);
-                pb = dest(neightet);
-                pc = apex(neightet);
-                ori = orient3d(pa, pb, pc, insertpt);
+                ori = orient3d(org(neightet), dest(neightet), apex(neightet),
+                               insertpt);
                 if (ori < 0) {
                   // A visible face, get its neighbor face.
                   fsymself(neightet);
@@ -3758,27 +2440,20 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
               }
               // Cut this tet if it is either invisible by or coplanar with p.
               if (ori >= 0) {
-                if (b->verbose > 3) {
-                  printf("        Cut tet (%d, %d, %d, %d)\n", 
-                         pointmark(org(neightet)), pointmark(dest(neightet)),
-                         pointmark(apex(neightet)), pointmark(oppo(neightet)));
-                }
                 uninfect(neightet);
                 unmarktest(neightet);
                 cutcount++;
-                neightet.ver = epivot[neightet.ver & 3];
+                neightet.ver = epivot[neightet.ver];
                 cavebdrylist->newindex((void **) &parytet);
                 *parytet = neightet;
                 // Add three new faces to find new boundaries.
                 for (j = 0; j < 3; j++) {
                   esym(neightet, neineitet);
-                  neineitet.ver = epivot[neineitet.ver & 3];
+                  neineitet.ver = epivot[neineitet.ver];
                   cavebdrylist->newindex((void **) &parytet);
                   *parytet = neineitet;
                   enextself(neightet);
                 }
-                // Update hullsize.
-                if (oppo(neightet) == dummypoint) hullsize++;
               } // if (ori >= 0) 
             }
           }
@@ -3800,10 +2475,6 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
             if (spintet.tet == neightet.tet) break;
           }
           if (infected(spintet)) {
-            if (b->verbose > 3) {
-              printf("        Found an interior segment (%d, %d).\n", 
-                     pointmark(sorg(*paryseg)), pointmark(sdest(*paryseg)));
-            }
             // Find an adjacent tet at this segment such that both faces
             //   at this segment are not visible by p.
             pa = org(neightet);
@@ -3828,7 +2499,6 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
                     }
                   }
                 }
-              } else {
               }
               fnextself(spintet);
               if (spintet.tet == neightet.tet) break;
@@ -3846,42 +2516,34 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
             uninfect(neightet);
             unmarktest(neightet);
             cutcount++;
-            neightet.ver = epivot[neightet.ver & 3];
+            neightet.ver = epivot[neightet.ver];
             cavebdrylist->newindex((void **) &parytet);
             *parytet = neightet;
             // Add three new faces to find new boundaries.
             for (j = 0; j < 3; j++) {
               esym(neightet, neineitet);
-              neineitet.ver = epivot[neineitet.ver & 3];
+              neineitet.ver = epivot[neineitet.ver];
               cavebdrylist->newindex((void **) &parytet);
               *parytet = neineitet;
               enextself(neightet);
             }
-            // Update hullsize.
-            //if (oppo(neightet) == dummypoint) hullsize++;
-            if ((point) (neightet.tet[7]) == dummypoint) hullsize++;
           }
         }
       } // i
-    } // if (bowywat > 2)
+    } // if (ivf->respectbdflag)
 
     // Update the cavity by removing invisible faces until it is star-shaped.
     for (i = 0; i < cavebdrylist->objects; i++) {
       cavetet = (triface *) fastlookup(cavebdrylist, i);
-      // 'cavetet' is an exterior tet adjacent to the cavity.      
-      assert(cavetet->ver == epivot[cavetet->ver & 3]); // SELF_CHECK
-      // It must be not inside the cavity (since we only cut tets).
-      assert(!infected(*cavetet));
+      // 'cavetet' is an exterior tet adjacent to the cavity.
       // Check if its neighbor is inside C(p).
       fsym(*cavetet, neightet);
       if (infected(neightet)) {        
         if (apex(*cavetet) != dummypoint) {
           // It is a cavity boundary face. Check its visibility.
           if (oppo(neightet) != dummypoint) {
-            pa = org(*cavetet);
-            pb = dest(*cavetet);
-            pc = apex(*cavetet);
-            ori = orient3d(pa, pb, pc, insertpt); 
+            ori = orient3d(org(*cavetet), dest(*cavetet), apex(*cavetet),
+                           insertpt); 
             enqflag = (ori > 0);
             // Comment: if ori == 0 (coplanar case), we also cut the tet.
           } else {
@@ -3898,24 +2560,17 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
           cavetetlist->newindex((void **) &parytet);
           *parytet = *cavetet; 
         } else {
-          if (b->verbose > 3) {
-            printf("        Cut tet (%d, %d, %d, %d)\n", 
-                   pointmark(org(neightet)), pointmark(dest(neightet)),
-                   pointmark(apex(neightet)), pointmark(oppo(neightet)));
-          }
           uninfect(neightet);
           unmarktest(neightet);
           cutcount++;
           // Add three new faces to find new boundaries.
           for (j = 0; j < 3; j++) {
             esym(neightet, neineitet);
-            neineitet.ver = epivot[neineitet.ver & 3];
+            neineitet.ver = epivot[neineitet.ver];
             cavebdrylist->newindex((void **) &parytet);
             *parytet = neineitet;
             enextself(neightet);
           }
-          // Update the hullsize.
-          if (oppo(neightet) == dummypoint) hullsize++;
           // 'cavetet' is not on the cavity boundary anymore.
           unmarktest(*cavetet);
         }
@@ -3927,14 +2582,11 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
 
     if (cutcount > 0) {
       // The cavity has been updated.
-
       // Update the cavity boundary faces.
       cavebdrylist->restart();
       for (i = 0; i < cavetetlist->objects; i++) {
         cavetet = (triface *) fastlookup(cavetetlist, i);
         // 'cavetet' was an exterior tet adjacent to the cavity.
-        assert(cavetet->ver == epivot[cavetet->ver & 3]); // SELF_CHECK
-        assert(!infected(*cavetet));
         fsym(*cavetet, neightet);
         if (infected(neightet)) {
           // It is a cavity boundary face.
@@ -3962,31 +2614,13 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
 
       // The cavity should contain at least one tet.
       if (caveoldtetlist->objects == 0l) {
-        assert(cavebdrylist->objects == 0l);
-        cavetetlist->restart();
-        cavebdrylist->restart();
-        caveoldtetlist->restart();
-        cavetetseglist->restart();
-        cavetetshlist->restart();
-        if (ivf->splitbdflag) { //if (bowywat > 2) {
-          if (splitseg != NULL) {
-            sunmarktest(*splitseg);
-          }
-          for (i = 0; i < caveshlist->objects; i++) {
-            parysh = (face *) fastlookup(caveshlist, i);
-            assert(smarktested(*parysh));
-            sunmarktest(*parysh);
-          }
-          caveshlist->restart();
-          cavesegshlist->restart();
-        }
-        // Restore the hullsize.
-        hullsize = bakhullsize;
-        return (int) BADELEMENT;
+        insertpoint_abort(splitseg, ivf);
+        ivf->iloc = (int) BADELEMENT;
+        return 0;
       }
 
-      if (ivf->splitbdflag) { //if (bowywat > 2) { // if (bowywat == 3) {
-        cutshcount = 0;
+      if (ivf->splitbdflag) { 
+        int cutshcount = 0;
         // Update the sub-cavity sC(p).
         for (i = 0; i < caveshlist->objects; i++) {
           parysh = (face *) fastlookup(caveshlist, i);
@@ -4000,11 +2634,6 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
               }
             }
             if (!enqflag) {
-              if (b->verbose > 3) {
-                printf("        Cut subface (%d, %d, %d).\n",
-                       pointmark(sorg(*parysh)), pointmark(sdest(*parysh)),
-                       pointmark(sapex(*parysh)));
-              }
               sunmarktest(*parysh);
               // Use the last entry of this array to fill this entry.
               j = caveshlist->objects - 1;
@@ -4021,16 +2650,16 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
           i = 0; // Count the number of invalid subfaces/segments.
           // Valid the updated sub-cavity sC(p).
           if (loc == ONFACE) {
-            if (splitsh != NULL) {
+            if ((splitsh != NULL) && (splitsh->sh != NULL)) {
               // The to-be split subface should be in sC(p).
               if (!smarktested(*splitsh)) i++;
             }
           } else if (loc == ONEDGE) {
-            if (splitseg != NULL) {
+            if ((splitseg != NULL) && (splitseg->sh != NULL)) {
               // The to-be split segment should be in sC(p).
               if (!smarktested(*splitseg)) i++;
             }
-            if (splitsh != NULL) {
+            if ((splitsh != NULL) && (splitsh->sh != NULL)) {
               // All subfaces at this edge should be in sC(p).
               pa = sorg(*splitsh);
               neighsh = *splitsh;
@@ -4052,127 +2681,140 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
 
           if (i > 0) {
             // The updated sC(p) is invalid. Do not insert this vertex.
-            if (b->verbose > 3) {
-              printf("        Found %d invalid items. Reject it.\n", i);
-            }
-            for (i = 0; i < caveoldtetlist->objects; i++) {
-              cavetet = (triface *) fastlookup(caveoldtetlist, i);
-              uninfect(*cavetet);
-              unmarktest(*cavetet);
-            }
-            for (i = 0; i < cavebdrylist->objects; i++) {
-              cavetet = (triface *) fastlookup(cavebdrylist, i);
-              unmarktest(*cavetet); // Unmark it.
-            }
-            cavetetlist->restart();
-            cavebdrylist->restart();
-            caveoldtetlist->restart();
-            cavetetseglist->restart();
-            cavetetshlist->restart();
-            if (ivf->splitbdflag) { //if (bowywat > 2) {
-              if (splitseg != NULL) {
-                sunmarktest(*splitseg);
-              }
-              for (i = 0; i < caveshlist->objects; i++) {
-                parysh = (face *) fastlookup(caveshlist, i);
-                assert(smarktested(*parysh));
-                sunmarktest(*parysh);
-              }
-              caveshlist->restart();
-              cavesegshlist->restart();
-            }
-            // Restore the hullsize.
-            hullsize = bakhullsize;
-            return (int) BADELEMENT;
+            insertpoint_abort(splitseg, ivf);
+            ivf->iloc = (int) BADELEMENT;
+            return 0;
           }
         } // if (cutshcount > 0)
-      } // if (bowywat > 2)
-
+      } // if (ivf->splitbdflag)
     } // if (cutcount > 0)
 
-  } // if (validflag) // if (bowywat > 1)
-
-  if (b->verbose > 3) {
-    printf("        Final cavity: %ld tets, %ld faces.", 
-           caveoldtetlist->objects, cavebdrylist->objects);
-    if (cutcount > 0l) {
-      printf(" Updated %ld times.", cutcount);
-    }
-    printf("\n");
-  }
-
+  } // if (ivf->validflag)
 
   if (ivf->refineflag) {
     // The new point is inserted by Delaunay refinement, i.e., it is the 
     //   circumcenter of a tetrahedron, or a subface, or a segment.
     //   Do not insert this point if the tetrahedron, or subface, or segment
     //   is not inside the final cavity.
-    rejptflag = 0;
-    if (ivf->refineflag == 1) {
-      // The new point is the circumcenter of a tetrahedron.
-      assert(!isdeadtet(ivf->refinetet));
-      if (!infected(ivf->refinetet)) {
-        rejrefinetetcount++;
-        rejptflag = 1;
-      }
-    } else if (ivf->refineflag == 2) {
-      // The new point is the circumcenter of a subface.
-      assert(ivf->refinesh.sh != NULL);
-      if (!smarktested(ivf->refinesh)) {
-        rejrefineshcount++;
-        rejptflag = 1;
-      }
+    if (((ivf->refineflag == 1) && !infected(ivf->refinetet)) ||
+        ((ivf->refineflag == 2) && !smarktested(ivf->refinesh))) {
+      insertpoint_abort(splitseg, ivf);
+      ivf->iloc = (int) BADELEMENT;
+      return 0;
     }
-    if (rejptflag) {
-      if (b->verbose > 2) {
-        printf("      Point %d does not refine its element. Rejected.\n",
-               pointmark(insertpt));
-      }
-      // Restore the original status.
-      for (i = 0; i < caveoldtetlist->objects; i++) {
-        cavetet = (triface *) fastlookup(caveoldtetlist, i);
-        uninfect(*cavetet);
-        unmarktest(*cavetet);
-      }
-      for (i = 0; i < cavebdrylist->objects; i++) {
-        cavetet = (triface *) fastlookup(cavebdrylist, i);
-        unmarktest(*cavetet); // Unmark it.
-      }
-      // Clear working lists.
-      cavetetlist->restart();
-      cavebdrylist->restart();
-      caveoldtetlist->restart();
-      cavetetshlist->restart();
-      cavetetseglist->restart();
-      cavetetvertlist->restart();
-      if (ivf->splitbdflag) { //if (bowywat > 2) { // if (bowywat == 3) {
-        if (splitseg != NULL) {
-          sunmarktest(*splitseg);
-        }
-        for (i = 0; i < caveshlist->objects; i++) {
-          parysh = (face *) fastlookup(caveshlist, i);
-          assert(smarktested(*parysh));
-          sunmarktest(*parysh);
-        }
-        caveshlist->restart();
-        cavesegshlist->restart();
-      }
-
-      // Restore the hullsize.
-      hullsize = bakhullsize;
-      loc = BADELEMENT;
-      return (int) loc;
-    } // if (rejptflag)
   } // if (ivf->refineflag)
 
-  rejptflag = (ivf->rejflag & 4);
-  encptflag = 0;
+  if (b->plc && (loc != INSTAR)) {
+    // Reject the new point if it lies too close to an existing point (b->plc),
+    // or it lies inside a protecting ball of near vertex (ivf->rejflag & 4).
+    // Collect the list of vertices of the initial cavity.
+    if (loc == OUTSIDE) {
+      pts = (point *) &(searchtet->tet[4]);
+      for (i = 0; i < 3; i++) {
+        cavetetvertlist->newindex((void **) &parypt);
+        *parypt = pts[i];
+      }
+    } else if (loc == INTETRAHEDRON) {
+      pts = (point *) &(searchtet->tet[4]);
+      for (i = 0; i < 4; i++) {
+        cavetetvertlist->newindex((void **) &parypt);
+        *parypt = pts[i];
+      } 
+    } else if (loc == ONFACE) {
+      pts = (point *) &(searchtet->tet[4]);
+      for (i = 0; i < 3; i++) {
+        cavetetvertlist->newindex((void **) &parypt);
+        *parypt = pts[i];
+      }
+      if (pts[3] != dummypoint) {
+        cavetetvertlist->newindex((void **) &parypt);
+        *parypt = pts[3];
+      }
+      fsym(*searchtet, spintet);
+      if (oppo(spintet) != dummypoint) {
+        cavetetvertlist->newindex((void **) &parypt);
+        *parypt = oppo(spintet);
+      }
+    } else if (loc == ONEDGE) {
+      spintet = *searchtet;
+      cavetetvertlist->newindex((void **) &parypt);
+      *parypt = org(spintet);
+      cavetetvertlist->newindex((void **) &parypt);
+      *parypt = dest(spintet);
+      while (1) {
+        if (apex(spintet) != dummypoint) {
+          cavetetvertlist->newindex((void **) &parypt);
+          *parypt = apex(spintet);
+        }
+        fnextself(spintet);
+        if (spintet.tet == searchtet->tet) break;
+      }
+    }
 
-  if (b->weighted || b->plc || rejptflag) {
+    int rejptflag = (ivf->rejflag & 4);
+    REAL rd;
+    pts = NULL;
+
+    for (i = 0; i < cavetetvertlist->objects; i++) {
+      parypt = (point *) fastlookup(cavetetvertlist, i);
+      rd = distance(*parypt, insertpt);
+      // Is the point very close to an existing point?
+      if (rd < b->minedgelength) {
+        pts = parypt; 
+        loc = NEARVERTEX;
+        break;
+      }
+      if (rejptflag) {
+        // Is the point encroaches upon an existing point?
+        if (rd < (0.5 * (*parypt)[pointmtrindex])) {
+          pts = parypt;
+          loc = ENCVERTEX; 
+          break;
+        }
+      }
+    }
+    cavetetvertlist->restart(); // Clear the work list.
+
+    if (pts != NULL) {
+      // The point is either too close to an existing vertex (NEARVERTEX)
+      //   or encroaches upon (inside the protecting ball) of that vertex.
+      if (loc == NEARVERTEX) {
+        if (b->nomergevertex) { // -M0/1 option.
+          // In this case, we still insert this vertex. Although it is very
+          //   close to an existing vertex. Give a warning, anyway.
+          if (!b->quiet) {
+            printf("Warning:  Two points, %d and %d, are very close.\n",
+                   pointmark(insertpt), pointmark(*pts));
+            printf("  Creating a very short edge (len = %g) (< %g).\n",
+                   rd, b->minedgelength);
+            printf("  You may try a smaller tolerance (-T) (current is %g)\n", 
+                   b->epsilon);
+            printf("  to avoid this warning.\n");
+          }
+        } else {
+          insertpt[3] = rd; // Only for reporting.
+          setpoint2ppt(insertpt, *pts);
+          insertpoint_abort(splitseg, ivf);
+          ivf->iloc = (int) loc;
+          return 0;
+        }
+      } else { // loc == ENCVERTEX
+        // The point lies inside the protection ball.
+        setpoint2ppt(insertpt, *pts);
+        insertpoint_abort(splitseg, ivf);
+        ivf->iloc = (int) loc;
+        return 0;
+      }
+    }
+  } // if (b->plc && (loc != INSTAR))
+
+  if (b->weighted || ivf->cdtflag || ivf->smlenflag
+      ) {
+    // There may be other vertices inside C(p). We need to find them.
     // Collect all vertices of C(p).
     for (i = 0; i < caveoldtetlist->objects; i++) {
       cavetet = (triface *) fastlookup(caveoldtetlist, i);
-      assert(infected(*cavetet));
+      //assert(infected(*cavetet));
       pts = (point *) &(cavetet->tet[4]);
       for (j = 0; j < 4; j++) {
         if (pts[j] != dummypoint) {
@@ -4184,118 +2826,48 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
         }
       } // j
     } // i
-    if (b->verbose > 3) {
-      printf("        %ld cavity vertices.\n", cavetetvertlist->objects);
-    }
     // Uninfect all collected (cavity) vertices.
     for (i = 0; i < cavetetvertlist->objects; i++) {
       parypt = (point *) fastlookup(cavetetvertlist, i);
       puninfect(*parypt);
     }
-    if (b->plc || rejptflag) {
-      // Check if p is too close to an existing vertex.
-      pts = NULL;
-      for (i = 0; i < cavetetvertlist->objects; i++) {
+    if (ivf->smlenflag) {
+      REAL len;
+      // Get the length of the shortest edge connecting to 'newpt'.
+      parypt = (point *) fastlookup(cavetetvertlist, 0);
+      ivf->smlen = distance(*parypt, insertpt);
+      ivf->parentpt = *parypt;
+      for (i = 1; i < cavetetvertlist->objects; i++) {
         parypt = (point *) fastlookup(cavetetvertlist, i);
-        rd = distance(*parypt, insertpt);
-        // Is the point very close to an existing point?
-        if (rd < b->minedgelength) {
-          pts = parypt; 
-          break;
+        len = distance(*parypt, insertpt);
+        if (len < ivf->smlen) {
+          ivf->smlen = len;
+          ivf->parentpt = *parypt;
         }
-        if (rejptflag) {
-          // Is the point encroaches upon an existing point?
-          if (rd < (*parypt)[pointmtrindex]) {
-            // The point lies inside the protection ball.
-            if (b->verbose > 2) {
-              printf("      Point %d lies in protball of %d. Rejected.\n",
-                     pointmark(insertpt), pointmark(*parypt));
-            }
-            pts = parypt;
-            encptflag = 1; 
-            break;
-          }
-        }
-      } // i
-      if (pts != NULL) {
-        // p is too close to *pts.
-        if (ivf->iloc != (int) INSTAR) {
-          if (pointmark(insertpt) <= in->numberofpoints) {
-            // It's an input point.
-            if (!b->quiet) {
-              printf("Warning:  Point %d is replaced by point %d.\n",
-                     pointmark(insertpt), pointmark(*pts));
-            }
-            // Count the number of duplicated points.
-            dupverts++;
-          } else { // It's a Steiner point.
-            if (b->verbose) {
-              if (!rejptflag) {
-                printf("Warning:  Reject a Steiner point %d (close to %d).\n",
-                       pointmark(insertpt), pointmark(*pts));
-              }
-            }
-          }
-          // Remember it is a duplicated point.
-          setpointtype(insertpt, DUPLICATEDVERTEX);
-          // Set a pointer to the point it duplicates.
-          setpoint2ppt(insertpt, *pts);
+      } 
+    }
+  }
 
-          // Restore the original status.
-          for (i = 0; i < caveoldtetlist->objects; i++) {
-            cavetet = (triface *) fastlookup(caveoldtetlist, i);
-            uninfect(*cavetet);
-            unmarktest(*cavetet);
-          }
-          for (i = 0; i < cavebdrylist->objects; i++) {
-            cavetet = (triface *) fastlookup(cavebdrylist, i);
-            unmarktest(*cavetet); // Unmark it.
-          }
-          // Clear working lists.
-          cavetetlist->restart();
-          cavebdrylist->restart();
-          caveoldtetlist->restart();
-          cavetetshlist->restart();
-          cavetetseglist->restart();
-          cavetetvertlist->restart();
-          if (ivf->splitbdflag) { //if (bowywat > 2) { // if (bowywat == 3) {
-            if (splitseg != NULL) {
-              sunmarktest(*splitseg);
-            }
-            for (i = 0; i < caveshlist->objects; i++) {
-              parysh = (face *) fastlookup(caveshlist, i);
-              assert(smarktested(*parysh));
-              sunmarktest(*parysh);
-            }
-            caveshlist->restart();
-            cavesegshlist->restart();
-          }
 
-          // Restore the hullsize.
-          hullsize = bakhullsize;
-          if (!encptflag) {
-            loc = NEARVERTEX;
-          } else {
-            loc = ENCVERTEX; 
-          }
-          return (int) loc;
-        } else {  // (iloc == (int) INSTAR)
-          // The cavity is guaranteed to be valid by the caller of this 
-          //   function. We still insert this vertex.
-          if (b->verbose) {
-            printf("Warning:  The Steiner point %d is very close to %d.\n",
-                   pointmark(insertpt), pointmark(*pts));
-          }
-        }
-      } // if (pts != NULL)
-    } 
-  } 
-
-  // The new point will be inserted.
-  totaldeadtets += caveoldtetlist->objects;
-  totalbowatcavsize += cavebdrylist->objects;
-  if (maxbowatcavsize < cavebdrylist->objects) {
-    maxbowatcavsize = cavebdrylist->objects;
+  if (ivf->cdtflag) {
+    // Unmark tets.
+    for (i = 0; i < caveoldtetlist->objects; i++) {
+      cavetet = (triface *) fastlookup(caveoldtetlist, i);
+      unmarktest(*cavetet);
+    }
+    for (i = 0; i < cavebdrylist->objects; i++) {
+      cavetet = (triface *) fastlookup(cavebdrylist, i);
+      unmarktest(*cavetet);
+    }
+    // Clean up arrays which are not needed.
+    cavetetlist->restart();
+    if (checksubsegflag) {
+      cavetetseglist->restart();
+    }
+    if (checksubfaceflag) {
+      cavetetshlist->restart();
+    }
+    return 1;
   }
 
   // Before re-mesh C(p). Process the segments and subfaces which are on the
@@ -4317,7 +2889,7 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
         while (1) {
           j++;
           if (!infected(spintet)) {
-            neineitet =  spintet; // An outer tet. Remember it.
+            neineitet = spintet; // An outer tet. Remember it.
           } else {
             k++; // An in tet.
           }
@@ -4338,12 +2910,8 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
           sstbond1(*paryseg, neineitet);
         } else { // k == j
           // The segment is inside C(p).
-          if (!ivf->splitbdflag) {//if (bowywat < 3) { // if (bowywat == 2) {
+          if (!ivf->splitbdflag) {
             checkseg = *paryseg;
-            if (b->verbose > 3) {
-              printf("        Queueing a missing seg (%d, %d)\n", 
-	             pointmark(sorg(checkseg)), pointmark(sdest(checkseg)));
-            }
             sinfect(checkseg); // Flag it as an interior segment.
             caveencseglist->newindex((void **) &paryseg);
             *paryseg = checkseg;
@@ -4358,10 +2926,6 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
         sinfect(*paryseg);
       }
     } // i
-    if (b->verbose > 3) {
-      printf("        %ld (%ld) cavity (interior) segments.\n", 
-             cavetetseglist->objects, caveencseglist->objects);
-    }
   } // if (checksubsegflag)
 
   if (checksubfaceflag) {
@@ -4374,7 +2938,7 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
         for (j = 0; j < 2; j++) {
           stpivot(*parysh, neightet);
           if (!infected(neightet)) {
-            checksh = *parysh; // Remeber this side.
+            checksh = *parysh; // Remember this side.
           } else {
             k++;
           }
@@ -4391,13 +2955,8 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
           // This side is the outer boundary of C(p).
           *parysh = checksh;
         } else { // k == 2
-          if (!ivf->splitbdflag) { //if (bowywat < 3) { // if (bowywat == 2) {
+          if (!ivf->splitbdflag) {
             checksh = *parysh;
-            if (b->verbose > 3) {
-              printf("        Queueing a missing subface (%d, %d, %d)\n", 
-                     pointmark(sorg(checksh)), pointmark(sdest(checksh)),
-                     pointmark(sapex(checksh)));
-            }
             sinfect(checksh); // Flag it.
             caveencshlist->newindex((void **) &parysh);
             *parysh = checksh;
@@ -4412,31 +2971,26 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
         sinfect(*parysh);
       }
     } // i
-    if (b->verbose > 3) {
-      printf("        %ld (%ld) cavity (interior) subfaces.\n", 
-             cavetetshlist->objects, caveencshlist->objects);
-    }
-  } // if (checksubfaceflag) {
+  } // if (checksubfaceflag)
 
   // Create new tetrahedra to fill the cavity.
 
   for (i = 0; i < cavebdrylist->objects; i++) {
     cavetet = (triface *) fastlookup(cavebdrylist, i);
     neightet = *cavetet;
-    assert(!infected(neightet));
     unmarktest(neightet); // Unmark it.
     // Get the oldtet (inside the cavity).
     fsym(neightet, oldtet);
     if (apex(neightet) != dummypoint) {
-      // Create a new tet in the cavity (see Fig. bowyerwatson 1 or 3).
+      // Create a new tet in the cavity.
       maketetrahedron(&newtet);
       setorg(newtet, dest(neightet));
       setdest(newtet, org(neightet));
       setapex(newtet, apex(neightet));
       setoppo(newtet, insertpt);
     } else {
-      // Create a new hull tet (see Fig. bowyerwatson 2).
-      hullsize++;
+      // Create a new hull tet.
+      hullsize++; 
       maketetrahedron(&newtet);
       setorg(newtet, org(neightet));
       setdest(newtet, dest(neightet));
@@ -4465,10 +3019,8 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
   //setpoint2tet(insertpt, encode(newtet));
   setpoint2tet(insertpt, (tetrahedron) (newtet.tet));
 
-  if (ivf->lawson > 1) { // if (lawson == 2 || lawson == 3) {
-    // Re-use this list to save new interior cavity faces.
-    cavetetlist->restart();
-  }
+  // Re-use this list to save new interior cavity faces.
+  cavetetlist->restart();
 
   // Connect adjacent new tetrahedra together.
   for (i = 0; i < cavebdrylist->objects; i++) {
@@ -4490,11 +3042,9 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
         }
         fsym(spintet, newneitet);
         esymself(newneitet);
-        assert(newneitet.tet[newneitet.ver & 3] == NULL); // FOR DEBUG
+        assert(newneitet.tet[newneitet.ver & 3] == NULL);
         bond(neightet, newneitet);
-        if (ivf->lawson > 1) {
-          // We are updateing a CDT. Queue the internal face.
-          //   See also fig/dump-cavity-case13, -case21.
+        if (ivf->lawson > 1) { 
           cavetetlist->newindex((void **) &parytet);
           *parytet = neightet;
         }
@@ -4538,13 +3088,14 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
     }
   }
 
-  if (splitsh != NULL) {
+  if (((splitsh != NULL) && (splitsh->sh != NULL)) ||
+      ((splitseg != NULL) && (splitseg->sh != NULL))) {
     // Split a subface or a segment.
-    sinsertvertex(insertpt, splitsh, splitseg, ivf->sloc, ivf->sbowywat);
+    sinsertvertex(insertpt, splitsh, splitseg, ivf->sloc, ivf->sbowywat, 0);
   }
 
   if (checksubfaceflag) {
-    if (ivf->splitbdflag) { //if (bowywat > 2) { // if (bowywat == 3) {
+    if (ivf->splitbdflag) {
       // Recover new subfaces in C(p).
       for (i = 0; i < caveshbdlist->objects; i++) {
         // Get an old subface at edge [a, b].
@@ -4589,8 +3140,7 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
       // There should be no missing interior subfaces in C(p).
       assert(caveencshlist->objects == 0l);
     } else { 
-      // bowywat = 1 or bowywat = 2.
-      // The Boundary reocvery phase.
+      // The Boundary recovery phase.
       // Put all new subfaces into stack for recovery.
       for (i = 0; i < caveshbdlist->objects; i++) {
         // Get an old subface at edge [a, b].
@@ -4598,12 +3148,6 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
         spivot(*parysh, checksh); // The new subface [a, b, p].
         // Do not recover a deleted new face (degenerated).
         if (checksh.sh[3] != NULL) {
-          if (b->verbose > 3) {
-            printf("        Queue new subface (%d, %d, %d).\n",
-                   pointmark(sorg(checksh)), pointmark(sdest(checksh)),
-                   pointmark(sapex(checksh)));
-          }
-          //sdissolve(checksh); // It has not been connected yet.
           subfacstack->newindex((void **) &parysh);
           *parysh = checksh;
         }
@@ -4615,11 +3159,6 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
         // Some subfaces inside C(p) might be split in sinsertvertex().
         //   Only queue those faces which are not split.
         if (!smarktested(*parysh)) {
-          if (b->verbose > 3) {
-            printf("        Queue a missing subface (%d, %d, %d) x%lx.\n",
-                   pointmark(sorg(*parysh)), pointmark(sdest(*parysh)),
-                   pointmark(sapex(*parysh)), (uintptr_t) parysh->sh);
-          }
           checksh = *parysh;
           suninfect(checksh);
           stdissolve(checksh); // Detach connections to old tets.
@@ -4631,7 +3170,7 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
   } // if (checksubfaceflag)
 
   if (checksubsegflag) {
-    if (ivf->splitbdflag) { //if (bowywat > 2) { // if (bowywat == 3) {
+    if (ivf->splitbdflag) {
       if (splitseg != NULL) {
         // Recover the two new subsegments in C(p).
         for (i = 0; i < cavesegshlist->objects; i++) {
@@ -4646,11 +3185,9 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
             stpivot(checksh, neightet);
           } else {
             // It's a dangling segment.
-            pa = sorg(checkseg);
-            pb = sdest(checkseg);
-            point2tetorg(pa, neightet);
-            finddirection(&neightet, pb);
-            assert(dest(neightet) == pb);
+            point2tetorg(sorg(checkseg), neightet);
+            finddirection(&neightet, sdest(checkseg));
+            assert(dest(neightet) == sdest(checkseg));
           }
           assert(!infected(neightet));
           sstbond1(checkseg, neightet);
@@ -4665,17 +3202,12 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
       // There should be no interior segment in C(p).
       assert(caveencseglist->objects == 0l);
     } else {
-      // bowywat == 1 or bowywat == 2;
       // The Boundary Recovery Phase.  
       // Queue missing segments in C(p) for recovery.
       if (splitseg != NULL) {
         // Queue two new subsegments in C(p) for recovery.
         for (i = 0; i < cavesegshlist->objects; i++) {
           paryseg = (face *) fastlookup(cavesegshlist, i);
-          if (b->verbose > 3) {
-            printf("        Queue new subseg (%d, %d)\n", 
-                   pointmark(sorg(*paryseg)), pointmark(sdest(*paryseg)));
-          }
           checkseg = *paryseg;
           //sstdissolve1(checkseg); // It has not been connected yet.
           s = randomnation(subsegstack->objects + 1);
@@ -4689,10 +3221,6 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
         paryseg = (face *) fastlookup(caveencseglist, i);
         assert(sinfected(*paryseg));
         if (!smarktested(*paryseg)) { // It may be split.
-          if (b->verbose > 3) {
-            printf("        Queue a missing segment (%d, %d).\n",
-                   pointmark(sorg(*paryseg)), pointmark(sdest(*paryseg)));
-          }
           checkseg = *paryseg;
           suninfect(checkseg);
           sstdissolve1(checkseg); // Detach connections to old tets.
@@ -4706,12 +3234,10 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
     }
   } // if (checksubsegflag)
 
-  if (b->plc || b->weighted) {
+  if (b->weighted
+      ) {
     // Some vertices may be completed inside the cavity. They must be
     //   detected and added to recovering list.
-    if (b->plc) {
-      tetcount = subvertstack->objects; // Re-use tetcount;
-    }
     // Since every "live" vertex must contain a pointer to a non-dead
     //   tetrahedron, we can check for each vertex this pointer.
     for (i = 0; i < cavetetvertlist->objects; i++) {
@@ -4723,24 +3249,10 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
           if (b->verbose > 1) {
             printf("    Point #%d is non-regular after the insertion of #%d.\n",
                    pointmark(*pts), pointmark(insertpt));
-	  }
+          }
           setpointtype(*pts, NREGULARVERTEX);
           nonregularcount++;
-        } else {
-          if (b->verbose > 3) {
-            printf("        Queue a dangling vertex %d.\n", pointmark(*pts));
-          }
-          subvertstack->newindex((void **) &parypt);
-          *parypt = *pts;
         }
-      }
-    }
-    if (b->plc) {
-      if (subvertstack->objects > tetcount) {
-        // There are missing vertices after inserting the new point.
-        printf("DBG: Insert %d. Found %ld interior vertices.\n",
-               pointmark(insertpt), subvertstack->objects);
-        assert(0); // NEED TO DEBUG.
       }
     }
   }
@@ -4751,23 +3263,14 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
       paryseg = (face *) fastlookup(cavetetseglist, i);
       // Skip if it is the split segment.
       if (!sinfected(*paryseg)) {
-        // Skip it if it has already queued.
-        if (!smarktest2ed(*paryseg)) {
-          bface = (badface *) badsubsegs->alloc();
-          bface->ss = *paryseg;
-          smarktest2(bface->ss); // Only queue it once.
-          bface->forg = sorg(*paryseg); // An alive badface.
-        }
+        enqueuesubface(badsubsegs, paryseg);
       }
     }
     if (splitseg != NULL) {
       // Queue the two new subsegments inside C(p).
       for (i = 0; i < cavesegshlist->objects; i++) {
         paryseg = (face *) fastlookup(cavesegshlist, i);
-        bface = (badface *) badsubsegs->alloc();
-        bface->ss = *paryseg;
-        smarktest2(bface->ss); // Only queue it once.
-        bface->forg = sorg(*paryseg); // An alive badface.
+        enqueuesubface(badsubsegs, paryseg);
       }
     }
   } // if (chkencflag & 1)
@@ -4778,15 +3281,7 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
       parysh = (face *) fastlookup(cavetetshlist, i);
       // Skip if it is a split subface.
       if (!sinfected(*parysh)) {
-        // Skip it if it has already queued.
-        if (!smarktest2ed(*parysh)) {
-          bface = (badface *) badsubfacs->alloc();
-          bface->ss = *parysh;
-          smarktest2(bface->ss); // Only queue it once.
-          bface->forg = sorg(*parysh); // An alive badface.
-          //bface->fdest = sdest(*parysh);
-          //bface->fapex = sapex(*parysh);
-        }
+        enqueuesubface(badsubfacs, parysh);
       }
     }
     // Queue all new subfaces inside C(p).
@@ -4796,11 +3291,7 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
       spivot(*parysh, checksh); // checksh is a new subface [a, b, p].
       // Do not recover a deleted new face (degenerated).
       if (checksh.sh[3] != NULL) {
-        //assert(!smarktest2ed(checksh));
-        bface = (badface *) badsubfacs->alloc();
-        bface->ss = checksh;
-        smarktest2(bface->ss); // Only queue it once.
-        bface->forg = sorg(checksh); // An alive badface.
+        enqueuesubface(badsubfacs, &checksh);
       }
     }
   } // if (chkencflag & 2)
@@ -4809,23 +3300,23 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
     // Queue all new tetrahedra in C(p).
     for (i = 0; i < cavebdrylist->objects; i++) {
       cavetet = (triface *) fastlookup(cavebdrylist, i);
-      //assert(!marktest2ed(*cavetet));
-      bface = (badface *) badtetrahedrons->alloc();
-      bface->tt = *cavetet;
-      marktest2(bface->tt);
-      bface->forg = org(*cavetet);
+      enqueuetetrahedron(cavetet);
     }
   }
 
-  // C(p) is re-meshed successfully. 
+  // C(p) is re-meshed successfully.
 
-  // Deleted the old tets in C(p).
+  // Delete the old tets in C(p).
   for (i = 0; i < caveoldtetlist->objects; i++) {
     searchtet = (triface *) fastlookup(caveoldtetlist, i);
+    if (ishulltet(*searchtet)) {
+      hullsize--;
+    }
     tetrahedrondealloc(searchtet->tet);
   }
 
-  if (splitsh != NULL) {
+  if (((splitsh != NULL) && (splitsh->sh != NULL)) ||
+      ((splitseg != NULL) && (splitseg->sh != NULL))) {
     // Delete the old subfaces in sC(p).
     for (i = 0; i < caveshlist->objects; i++) {
       parysh = (face *) fastlookup(caveshlist, i);
@@ -4847,7 +3338,7 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
       }
       shellfacedealloc(subfaces, parysh->sh);
     }
-    if (splitseg != NULL) {
+    if ((splitseg != NULL) && (splitseg->sh != NULL)) {
       // Delete the old segment in sC(p).
       shellfacedealloc(subsegs, splitseg->sh);
     }
@@ -4856,21 +3347,15 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
   if (ivf->lawson) {
     for (i = 0; i < cavebdrylist->objects; i++) {
       searchtet = (triface *) fastlookup(cavebdrylist, i);
-      //flippush(flipstack, searchtet, insertpt);
       flippush(flipstack, searchtet);
     }
     if (ivf->lawson > 1) {
       for (i = 0; i < cavetetlist->objects; i++) {
         searchtet = (triface *) fastlookup(cavetetlist, i);
-        //flippush(flipstack, searchtet, oppo(*searchtet));
         flippush(flipstack, searchtet);
       }
     }
   }
-
-  // The vertex should already have a type.
-  assert(pointtype(insertpt) != UNUSEDVERTEX);
-
 
 
   // Clean the working lists.
@@ -4889,17 +3374,60 @@ int tetgenmesh::insertvertex(point insertpt, triface *searchtet, face *splitsh,
     caveencshlist->restart();
   }
   
-  if (b->plc || b->weighted) {
+  if (b->weighted || ivf->validflag) {
     cavetetvertlist->restart();
   }
   
-  if (splitsh != NULL) {
+  if (((splitsh != NULL) && (splitsh->sh != NULL)) ||
+      ((splitseg != NULL) && (splitseg->sh != NULL))) {
     caveshlist->restart();
     caveshbdlist->restart();
     cavesegshlist->restart();
   }
 
-  return (int) loc;
+  return 1; // Point is inserted.
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// insertpoint_abort()    Abort the insertion of a new vertex.               //
+//                                                                           //
+// The cavity will be restored.  All working lists are cleared.              //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+void tetgenmesh::insertpoint_abort(face *splitseg, insertvertexflags *ivf)
+{
+  triface *cavetet;
+  face *parysh;
+  int i;
+
+  for (i = 0; i < caveoldtetlist->objects; i++) {
+    cavetet = (triface *) fastlookup(caveoldtetlist, i);
+    uninfect(*cavetet);
+    unmarktest(*cavetet);
+  }
+  for (i = 0; i < cavebdrylist->objects; i++) {
+    cavetet = (triface *) fastlookup(cavebdrylist, i);
+    unmarktest(*cavetet); 
+  }
+  cavetetlist->restart();
+  cavebdrylist->restart();
+  caveoldtetlist->restart();
+  cavetetseglist->restart();
+  cavetetshlist->restart();
+  if (ivf->splitbdflag) { 
+    if ((splitseg != NULL) && (splitseg->sh != NULL)) {
+      sunmarktest(*splitseg);
+    }
+    for (i = 0; i < caveshlist->objects; i++) {
+      parysh = (face *) fastlookup(caveshlist, i);
+      assert(smarktested(*parysh));
+      sunmarktest(*parysh);
+    }
+    caveshlist->restart();
+    cavesegshlist->restart();
+  }
 }
 
 ////                                                                       ////
