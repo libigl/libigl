@@ -43,8 +43,8 @@ namespace igl
   // arithmetic order in cotangent.h: C(i,e) = (arithmetic)/dblA/4
   template <typename DerivedV, typename DerivedF, typename Scalar>
   IGL_INLINE void cotmatrix(
-    const Eigen::MatrixBase<DerivedV> & V, 
-    const Eigen::MatrixBase<DerivedF> & F, 
+    const Eigen::PlainObjectBase<DerivedV> & V, 
+    const Eigen::PlainObjectBase<DerivedF> & F, 
     Eigen::SparseMatrix<Scalar>& L);
 }
 
