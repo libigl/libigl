@@ -8,6 +8,7 @@
 #ifndef IGL_COTANGENT_H
 #define IGL_COTANGENT_H
 #include "igl_inline.h"
+#include <Eigen/Core>
 namespace igl
 {
   // COTANGENT compute the cotangents of each angle in mesh (V,F)
@@ -22,12 +23,17 @@ namespace igl
   // Outputs:
   //   C  #F by {3|6} list of cotangents corresponding angles
   //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
-  //     for tets, columns correspond to edges [1,2],[2,0],[0,1],[3,0],[3,1],[3,2]
+  //     for tets, columns correspond to edges
+  //     [1,2],[2,0],[0,1],[3,0],[3,1],[3,2] **times corresponding edge
+  //     lengths**
   //
   // Known bug:
   //   This computes 0.5*cotangent
-  template <class MatV, class MatF, class MatC>
-  IGL_INLINE void cotangent(const MatV & V, const MatF & F, MatC & C);
+  template <typename DerivedV, typename DerivedF, typename DerivedC>
+  IGL_INLINE void cotangent(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedC>& C);
 }
 
 #ifdef IGL_HEADER_ONLY
