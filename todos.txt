@@ -1,10 +1,9 @@
+- sort out `grad.*` vs `gradMat.*`
 - clean up externals
   - What's there for convenience?
   - What's there because it's patched/
 - compile on Linux, Mac OS X, Windows
 - unit tests for all functions
-- standardize name of library "libigl", purge IGL LIB, igl_lib, igl lib, IGL
-    Library, etc.
 - clean up examples
 - standardize use of string/char *, add to style conventions
 - standardize Eigen Templates, add to style conventions
@@ -19,13 +18,13 @@
 - fix bugs in examples/Core/example2.cpp
 - replace generic names read.h/write.h with something like read_poly_mesh.h
 - replace DynamicSparseMatrix: coeffRef += ---> setFromTriplets()
-- create libigltga extra
+- create libigltga extra...why? license?
 - rename moveFV.h
 - is_border_vertex.h should not require V
 - consistent checks/asserts for: manifoldness, closedness, triangles-only
-    e.g. check_mesh(V,F,MANIFOLD | CLOSED | TRIANGLES_ONLY)
+    e.g. check_mesh(V,F,IS_MANIFOLD | IS_CLOSED | IS_TRIANGLES_ONLY)
 - clean up Timer.h
-- svd.* depends on lapack, should use eigen...
+x svd.* depends on lapack, should use eigen...
 - use preprocessor macros to automatically include .cpp files at end of .h
 - unify include opengl with convenience includes
 - MatrixBase --> PlainObjectBase
@@ -33,3 +32,5 @@
 - everywhere appropriate change:
   `#pragma omp parallel for` to `#pragma omp parallel for if (n>10000)` where
   `n` and `1000` are replaced accordingly
++ standardize name of library "libigl", purge IGL LIB, igl_lib, igl lib, IGL
+    Library, etc.

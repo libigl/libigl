@@ -3,7 +3,7 @@
 
 \title{Papers implemented in \textsc{libigl}}
 \author{Alec Jacobson}
-\date{4 April 2014}
+\date{last revised 22 April 2014}
 
 \begin{document}
 This document serves as a companion reference to better list the references to
@@ -12,7 +12,9 @@ incomplete.
 
 \paragraph{\texttt{cotmatrix}, \texttt{massmatrix}}
 build discrete operators on triangle and tetrahedral meshes. 
-\cite{Pinkall:1993:CDM,meyer03ddo,Jacobson:THESIS:2013}. 
+\cite{Pinkall:1993:CDM,meyer03ddo,Jacobson:THESIS:2013}. For tet meshes, we no
+longer use the ``by the book'' FEM construction \`a la \cite{Sharf:2007vv},
+rather a purely geometric approach \cite{Barth:1994,Xu:1999}.
 
 \paragraph{\texttt{harmonic}} solves a Laplace problem (equivalently
 minimizes the Dirichlet energy) with some simple boundary conditions
@@ -37,17 +39,6 @@ choosing skinning transformations \cite{Jacobson:FAST:2012}.
 \paragraph{\texttt{lbs}} implements ``linear blend skinning'', also known as
 ``skeletal subspace deformation'', or ``enveloping''. This technique is often
 attributed to \cite{Magnenat-Thalmann:1988:JLD}.
-
-  % appears in the appendix of: ``Interactive Topology-aware Surface
-  % Reconstruction,'' by Sharf, A. et al
-  %
-  % versus
-  %
-  % ND derivation given in "A MONOTONE FINITE ELEMENT SCHEME FOR
-  % CONVECTION-DIFFUSION EQUATIONS" [Xu & ZIKATANOV 1999]
-  %
-  % 3D derivation given in "Aspects of unstructured grids and finite-volume
-  % solvers for the Euler and Navier-Stokes equations" [Barth 1992]
 
 \bibliographystyle{acmsiggraph}
 \bibliography{references} 
