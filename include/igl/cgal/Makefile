@@ -22,9 +22,11 @@ INC+=-I../../../include/
 EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
 INC+=$(EIGEN3_INC)
 
-# Tetgen dependency
+# CGAL dependency
 CGAL=$(DEFAULT_PREFIX)
 CGAL_INC=-I$(CGAL)/include
+CGAL_FLAGS=-frounding-math -fsignaling-nans 
+CFLAGS+=$(CGAL_FLAGS)
 INC+=$(CGAL_INC)
 
 obj: 
