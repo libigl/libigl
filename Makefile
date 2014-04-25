@@ -17,18 +17,25 @@ CFLAGS += $(OPTFLAGS)
 # We use well-supported features of c++11
 
 EXTRA_DIRS=
-ifeq ($(IGL_WITH_TETGEN),1)
-	# append tetgen extra dir
-	EXTRA_DIRS+=include/igl/tetgen
-	EXTRAS += tetgen
+ifeq ($(IGL_WITH_BBW),1)
+	EXTRA_DIRS+=include/igl/bbw
+	EXTRAS += bbw
+endif
+ifeq ($(IGL_WITH_BOOST),1)
+	EXTRA_DIRS+=include/igl/boost
+	EXTRAS += boost
+endif
+ifeq ($(IGL_WITH_CGAL),1)
+	EXTRA_DIRS+=include/igl/cgal
+	EXTRAS += cgal
+endif
+ifeq ($(IGL_WITH_EMBREE),1)
+	EXTRA_DIRS+=include/igl/embree
+	EXTRAS += embree
 endif
 ifeq ($(IGL_WITH_MATLAB),1)
 	EXTRA_DIRS+=include/igl/matlab
 	EXTRAS += matlab
-endif
-ifeq ($(IGL_WITH_BBW),1)
-	EXTRA_DIRS+=include/igl/bbw
-	EXTRAS += bbw
 endif
 ifeq ($(IGL_WITH_MOSEK),1)
 	EXTRA_DIRS+=include/igl/mosek
@@ -38,21 +45,18 @@ ifeq ($(IGL_WITH_PNG),1)
 	EXTRA_DIRS+=include/igl/png
 	EXTRAS += png
 endif
-ifeq ($(IGL_WITH_XML),1)
-	EXTRA_DIRS+=include/igl/xml
-	EXTRAS += xml
-endif
-ifeq ($(IGL_WITH_EMBREE),1)
-	EXTRA_DIRS+=include/igl/embree
-	EXTRAS += embree
-endif
-ifeq ($(IGL_WITH_BOOST),1)
-	EXTRA_DIRS+=include/igl/boost
-	EXTRAS += boost
-endif
 ifeq ($(IGL_WITH_SVD3X3),1)
 	EXTRA_DIRS+=include/igl/svd3x3
 	EXTRAS += svd3x3
+endif
+ifeq ($(IGL_WITH_TETGEN),1)
+	# append tetgen extra dir
+	EXTRA_DIRS+=include/igl/tetgen
+	EXTRAS += tetgen
+endif
+ifeq ($(IGL_WITH_XML),1)
+	EXTRA_DIRS+=include/igl/xml
+	EXTRAS += xml
 endif
 
 .PHONY: examples
