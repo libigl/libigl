@@ -58,9 +58,9 @@ IGL_INLINE bool igl::readOFF(
   // Read vertices
   for(int i = 0;i<number_of_vertices;)
   {
+    fgets(line, 1000, off_file);
     double x,y,z,nx,ny,nz;
-    if((has_normals && fscanf(off_file, "%lg %lg %lg %lg %lg %lg\n",&x,&y,&z,&nx,&ny,&nz)==6) || 
-       (!has_normals && fscanf(off_file, "%lg %lg %lg\n",&x,&y,&z)==3))
+    if(sscanf(line, "%lg %lg %lg %lg %lg %lg",&x,&y,&z,&nx,&ny,&nz)>= 3)
     {
       std::vector<Scalar > vertex;
       vertex.resize(3);
