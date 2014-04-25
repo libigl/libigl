@@ -17,19 +17,21 @@
 #include <ctime>
 #include <limits>
 
-  template <
-    typename DerivedV, 
-    typename DerivedF, 
-    typename DerivedI>
-  IGL_INLINE void igl::reorient_facets_raycast(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    int rays_total,
-    int rays_minimum,
-    bool facet_wise,
-    bool use_parity,
-    bool is_verbose,
-    Eigen::PlainObjectBase<DerivedI> & I)
+template <
+  typename DerivedV, 
+  typename DerivedF, 
+  typename DerivedI,
+  typename DerivedC>
+IGL_INLINE void igl::reorient_facets_raycast(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
+  int rays_total,
+  int rays_minimum,
+  bool facet_wise,
+  bool use_parity,
+  bool is_verbose,
+  Eigen::PlainObjectBase<DerivedI> & I,
+  Eigen::PlainObjectBase<DerivedC> & C)
 {
   using namespace Eigen;
   using namespace std;
@@ -39,7 +41,6 @@
   // number of faces
   const int m = F.rows();
   
-  VectorXi C;
   MatrixXi FF = F;
   if (facet_wise) {
     C.resize(m);
@@ -65,11 +66,6 @@
   // face area
   Matrix<typename DerivedV::Scalar,Dynamic,1> A;
   doublearea(V,FF,A);
-  double area_min = numeric_limits<double>::max();
-  for (int f = 0; f < m; ++f)
-  {
-    area_min = A(f) != 0 && A(f) < area_min ? A(f) : area_min;
-  }
   double area_total = A.sum();
   
   // determine number of rays per component according to its area
@@ -104,18 +100,17 @@
       continue;
     }
     vector<int> CF;     // set of faces per component
-    vector<unsigned long long> CF_area;
+    vector<double> CF_area;
     for (int f = 0; f < m; ++f)
     {
       if (C(f)==c)
       {
         CF.push_back(f);
-        CF_area.push_back(static_cast<unsigned long long>(100 * A(f) / area_min));
+        CF_area.push_back(A(f));
       }
     }
     // discrete distribution for random selection of faces with probability proportional to their areas
-    auto ddist_func = [&] (double i) { return CF_area[static_cast<int>(i)]; };
-    discrete_distribution<int> ddist(CF.size(), 0, CF.size(), ddist_func);      // simple ctor of (Iter, Iter) not provided by the stupid VC11 impl...
+    discrete_distribution<int> ddist(CF.size(), 0, CF.size(), [&](double i){ return CF_area[static_cast<int>(i)]; });       // simple ctor of (Iter, Iter) not provided by the stupid VC11/12
     for (int i = 0; i < num_rays_per_component[c]; ++i)
     {
       int f = CF[ddist(prng)];          // select face with probability proportional to face area
