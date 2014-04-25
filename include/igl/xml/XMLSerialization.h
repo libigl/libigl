@@ -152,7 +152,7 @@ namespace igl
         Name = obj.Name;
         if(xmlSerializer != NULL)
         {
-          delete obj.xmlSerializer;
+          delete xmlSerializer;
           xmlSerializer = NULL;
         }
       }

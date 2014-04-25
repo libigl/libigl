@@ -16,7 +16,7 @@
 #define XML_SERIALIZABLE_H
 
 #include <iostream>
-#include "tinyxml2.h"
+#include <tinyxml2.h>
 
 namespace igl
 {
