@@ -38,6 +38,7 @@ namespace igl
   //   lx  n by 1 list of lower bounds [] implies -Inf
   //   ux  n by 1 list of upper bounds [] implies Inf
   //   params  struct of additional parameters (see below)
+  //   Z, if not empty, is taken to be an n by 1 list of initial guess values
   // Outputs:
   //   Z  n by 1 list of solution values
   // Returns true on success, false on error
