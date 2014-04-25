@@ -14,14 +14,21 @@
 
 namespace igl 
 {
-  // Constructs the vertex-face topology of a given mesh (V,F)
+  // TODO: This function is badly named.
+  //
+  // VF Constructs the vertex-face topology of a given mesh (V,F)
+  //
   // Inputs:
   //   V  #V by 3 list of vertex coordinates
   //   F  #F by dim list of mesh faces (must be triangles)
   // Outputs: 
-  // 
+  //   VF  #V list of lists of incident faces (adjacency list)
+  //   VI  #V list of lists of index of incidence within incident faces listed
+  //     in VF
   //
   // See also: edges, cotmatrix, diag, vv
+  //
+  // Known bugs: this should not take V as an input parameter.
     
   template <typename DerivedV, typename DerivedF, typename IndexType>
   IGL_INLINE void vf(

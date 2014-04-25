@@ -1,13 +1,13 @@
 LIBMESH = ./libmesh/
 
-IGL=/usr/local/igl/igl_lib
+IGL=../..
 IGL_INC=-I$(IGL)/include
 IGL_LIB=-L$(IGL)/lib -ligl
 
 EIGEN=/opt/local/include/eigen3
 EIGEN_INC=-I$(EIGEN)
 
-ANTTWEAKBAR=/usr/local/igl/igl_lib/external/AntTweakBar/
+ANTTWEAKBAR=$(IGL)/external/AntTweakBar/
 ANTTWEAKBAR_INC=-I$(ANTTWEAKBAR)/include
 ANTTWEAKBAR_LIB=-L$(ANTTWEAKBAR)/lib -lAntTweakBar -framework  AppKit
 
@@ -17,9 +17,9 @@ GL2PS_LIB=-L$(GL2PS)/lib -lgl2ps
 
 INC = -I${LIBMESH} $(IGL_INC) $(ANTTWEAKBAR_INC) $(GL2PS_INC) ${EIGEN_INC}
 LIBS  = -framework OpenGL -framework GLUT -L${LIBMESH} -lmesh $(IGL_LIB) $(ANTTWEAKBAR_LIB) $(GL2PS_LIB)\
-  -liglpng -L/usr/local/igl/igl_lib/external/yimg/ -lyimg\
+  -liglpng -L$(LIBIGL)/external/yimg/ -lyimg\
   -L/usr/X11/lib -lpng \
-  -L/usr/local/igl/igl_lib/external/AntTweakBar -lAntTweakBar \
+  -L$(LIBIGL)/external/AntTweakBar -lAntTweakBar \
   -I/opt/local/include -L/opt/local/lib -lboost_thread-mt -lboost_system-mt \
 #CFLAGS = -Wall -g -DIGL
 CFLAGS=-Wall -O3 -DIGL
