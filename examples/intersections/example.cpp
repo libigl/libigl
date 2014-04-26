@@ -25,6 +25,7 @@
 #include <igl/Camera.h>
 #include <igl/get_seconds.h>
 #include <igl/cgal/selfintersect.h>
+#include <igl/cgal/intersect_other.h>
 
 #ifdef __APPLE__
 #  include <GLUT/glut.h>
@@ -118,11 +119,17 @@ void TW_CALL get_rotation_type(void * value, void *clientData)
 int width,height;
 // Position of light
 float light_pos[4] = {0.1,0.1,-0.9,0};
-// Vertex positions, normals, colors and centroid
-Eigen::MatrixXd V,N,C,Z,mid;
+// V,U  Vertex positions
+// C,D  Colors
+// N,W  Normals
+// mid  combined "centroid"
+Eigen::MatrixXd V,N,C,Z,mid,U,W,D;
+// F,G  faces
+Eigen::MatrixXi F,G;
+bool has_other = false;
+bool show_A = true;
+bool show_B = true;
 int selected_col = 0;
-// Faces
-Eigen::MatrixXi F;
 // Bounding box diagonal length
 double bbd;
 // Running ambient occlusion
@@ -258,7 +265,40 @@ void display()
   // Draw the model
   // Set material properties
   glEnable(GL_COLOR_MATERIAL);
-  draw_mesh(V,F,N,C);
+
+  const auto draw = [](
+    const MatrixXd & V,
+    const MatrixXi & F,
+    const MatrixXd & N,
+    const MatrixXd & C)
+  {
+    glEnable(GL_POLYGON_OFFSET_FILL); // Avoid Stitching!
+    glPolygonOffset(1.0,1);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    draw_mesh(V,F,N,C);
+    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+    glDisable(GL_COLOR_MATERIAL);
+    const float black[4] = {0,0,0,1};
+    glColor4fv(black);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,  black);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,  black);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, black);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, black);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, black);
+    glLineWidth(1.0);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    draw_mesh(V,F,N,C);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glEnable(GL_COLOR_MATERIAL);
+  };
+  if(show_A)
+  {
+    draw(V,F,N,C);
+  }
+  if(show_B)
+  {
+    draw(U,G,W,D);
+  }
 
   pop_object();
 
@@ -449,7 +489,34 @@ void color_selfintersections(
     C.row(IF(f,0)) = RowVector3d(1,0.4,0.4);
     C.row(IF(f,1)) = RowVector3d(1,0.4,0.4);
   }
+}
 
+void color_intersections(
+  const Eigen::MatrixXd & V,
+  const Eigen::MatrixXi & F,
+  const Eigen::MatrixXd & U,
+  const Eigen::MatrixXi & G,
+  Eigen::MatrixXd & C,
+  Eigen::MatrixXd & D)
+{
+  using namespace igl;
+  using namespace Eigen;
+  MatrixXi IF;
+  const bool first_only = false;
+  intersect_other(V,F,U,G,first_only,IF);
+  C.resize(F.rows(),3);
+  C.col(0).setConstant(0.4);
+  C.col(1).setConstant(0.8);
+  C.col(2).setConstant(0.3);
+  D.resize(G.rows(),3);
+  D.col(0).setConstant(0.4);
+  D.col(1).setConstant(0.3);
+  D.col(2).setConstant(0.8);
+  for(int f = 0;f<IF.rows();f++)
+  {
+    C.row(IF(f,0)) = RowVector3d(1,0.4,0.4);
+    D.row(IF(f,1)) = RowVector3d(0.8,0.7,0.3);
+  }
 }
 
 void key(unsigned char key, int mouse_x, int mouse_y)
@@ -481,72 +548,102 @@ int main(int argc, char * argv[])
 
   // init mesh
   string filename = "../shared/truck.obj";
-  if(argc < 3)
+  string filename_other = "";
+  switch(argc)
   {
-    cerr<<"Usage:"<<endl<<"    ./example input.obj color.dmat"<<endl;
+    case 3:
+      // Read and prepare mesh
+      filename_other = argv[2];
+      has_other=true;
+      // fall through
+    case 2:
+      // Read and prepare mesh
+      filename = argv[1];
+      break;
+    default:
+    cerr<<"Usage:"<<endl<<"    ./example input.obj [other.obj]"<<endl;
     cout<<endl<<"Opening default mesh..."<<endl;
+  }
+
+  const auto read = []
+    (const string & filename, MatrixXd & V, MatrixXi & F, MatrixXd & N) -> bool
+  {
+    // dirname, basename, extension and filename
+    string d,b,ext,f;
+    pathinfo(filename,d,b,ext,f);
+    // Convert extension to lower case
+    transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+    vector<vector<double > > vV,vN,vTC;
+    vector<vector<int > > vF,vFTC,vFN;
+    if(ext == "obj")
+    {
+      // Convert extension to lower case
+      if(!igl::readOBJ(filename,vV,vTC,vN,vF,vFTC,vFN))
+      {
+        return false;
+      }
+    }else if(ext == "off")
+    {
+      // Convert extension to lower case
+      if(!igl::readOFF(filename,vV,vF,vN))
+      {
+        return false;
+      }
+    }else if(ext == "wrl")
+    {
+      // Convert extension to lower case
+      if(!igl::readWRL(filename,vV,vF))
+      {
+        return false;
+      }
+    //}else
+    //{
+    //  // Convert extension to lower case
+    //  MatrixXi T;
+    //  if(!igl::readMESH(filename,V,T,F))
+    //  {
+    //    return false;
+    //  }
+    //  //if(F.size() > T.size() || F.size() == 0)
+    //  {
+    //    boundary_faces(T,F);
+    //  }
+    }
+    if(vV.size() > 0)
+    {
+      if(!list_to_matrix(vV,V))
+      {
+        return false;
+      }
+      triangulate(vF,F);
+    }
+    // Compute normals, centroid, colors, bounding box diagonal
+    per_face_normals(V,F,N);
+    return true;
+  };
+
+  if(!read(filename,V,F,N))
+  {
+    return 1;
+  }
+  if(has_other)
+  {
+    if(!read(argv[2],U,G,W))
+    {
+      return 1;
+    }
+    mid = 0.25*(V.colwise().maxCoeff() + V.colwise().minCoeff()) +
+      0.25*(U.colwise().maxCoeff() + U.colwise().minCoeff());
+    bbd = max(
+      (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff(),
+      (U.colwise().maxCoeff() - U.colwise().minCoeff()).maxCoeff());
+    color_intersections(V,F,U,G,C,D);
   }else
   {
-    // Read and prepare mesh
-    filename = argv[1];
+    mid = 0.5*(V.colwise().maxCoeff() + V.colwise().minCoeff());
+    bbd = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
+    color_selfintersections(V,F,C);
   }
-
-  // dirname, basename, extension and filename
-  string d,b,ext,f;
-  pathinfo(filename,d,b,ext,f);
-  // Convert extension to lower case
-  transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-  vector<vector<double > > vV,vN,vTC;
-  vector<vector<int > > vF,vFTC,vFN;
-  if(ext == "obj")
-  {
-    // Convert extension to lower case
-    if(!igl::readOBJ(filename,vV,vTC,vN,vF,vFTC,vFN))
-    {
-      return 1;
-    }
-  }else if(ext == "off")
-  {
-    // Convert extension to lower case
-    if(!igl::readOFF(filename,vV,vF,vN))
-    {
-      return 1;
-    }
-  }else if(ext == "wrl")
-  {
-    // Convert extension to lower case
-    if(!igl::readWRL(filename,vV,vF))
-    {
-      return 1;
-    }
-  //}else
-  //{
-  //  // Convert extension to lower case
-  //  MatrixXi T;
-  //  if(!igl::readMESH(filename,V,T,F))
-  //  {
-  //    return 1;
-  //  }
-  //  //if(F.size() > T.size() || F.size() == 0)
-  //  {
-  //    boundary_faces(T,F);
-  //  }
-  }
-  if(vV.size() > 0)
-  {
-    if(!list_to_matrix(vV,V))
-    {
-      return 1;
-    }
-    triangulate(vF,F);
-  }
-
-
-  // Compute normals, centroid, colors, bounding box diagonal
-  per_face_normals(V,F,N);
-  mid = 0.5*(V.colwise().maxCoeff() + V.colwise().minCoeff());
-  bbd = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
-  color_selfintersections(V,F,C);
 
   // Init glut
   glutInit(&argc,argv);
@@ -567,11 +664,16 @@ int main(int argc, char * argv[])
     "igl_trackball,two-a...-fixed-up");
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
+  if(has_other)
+  {
+    rebar.TwAddVarRW("show_A",TW_TYPE_BOOLCPP,&show_A, "key=a",false);
+    rebar.TwAddVarRW("show_B",TW_TYPE_BOOLCPP,&show_B, "key=b",false);
+  }
   rebar.load(REBAR_NAME);
 
   glutInitDisplayString("rgba depth double samples>=8 ");
   glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH)/2.0,glutGet(GLUT_SCREEN_HEIGHT));
-  glutCreateWindow("selfintersect-mesh");
+  glutCreateWindow("mesh-intersections");
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(key);
