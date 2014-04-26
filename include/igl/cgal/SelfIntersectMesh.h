@@ -9,6 +9,10 @@
 #include <map>
 #include <vector>
 
+#ifndef IGL_FIRST_HIT_EXCEPTION
+#define IGL_FIRST_HIT_EXCEPTION 10
+#endif
+
 // The easiest way to keep track of everything is to use a class
 
 namespace igl
@@ -49,17 +53,7 @@ namespace igl
       typedef 
         CGAL::Box_intersection_d::Box_with_handle_d<double,3,TrianglesIterator> 
         Box;
-      // Axis-aligned bounding box tree
-      typedef CGAL::AABB_triangle_primitive<Kernel,TrianglesIterator> Primitive;
-      typedef CGAL::AABB_traits<Kernel, Primitive> Traits;
-      typedef CGAL::AABB_tree<Traits> Tree;
-      typedef typename Tree::Object_and_primitive_id Object_and_primitive_id;
-      typedef typename Tree::Primitive_id Primitive_id;
-      // 3D Delaunay Triangulation
-      typedef CGAL::Delaunay_triangulation_3<Kernel> Delaunay_triangulation_3;
-      typedef typename Delaunay_triangulation_3::Finite_cells_iterator 
-        Delaunay3CellIterator;
-  
+
       // Input mesh
       const Eigen::MatrixXd & V;
       const Eigen::MatrixXi & F;
@@ -157,7 +151,7 @@ namespace igl
           const Triangle_3 & B,
           const int fa,
           const int fb);
-  
+
     public:
       // Callback function called during box self intersections test. Means
       // boxes a and b intersect. This method then checks if the triangles in
@@ -242,8 +236,6 @@ inline void igl::SelfIntersectMesh<Kernel>::box_intersect(
   SIM->box_intersect(a,b);
 }
 
-#define FIRST_HIT_EXCEPTION 10
-
 template <typename Kernel>
 inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
   const Eigen::MatrixXd & V,
@@ -287,8 +279,8 @@ inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
     CGAL::box_self_intersection_d(boxes.begin(), boxes.end(),cb);
   }catch(int e)
   {
-    // Rethrow if not FIRST_HIT_EXCEPTION
-    if(e != FIRST_HIT_EXCEPTION)
+    // Rethrow if not IGL_FIRST_HIT_EXCEPTION
+    if(e != IGL_FIRST_HIT_EXCEPTION)
     {
       throw e;
     }
@@ -548,7 +540,7 @@ inline void igl::SelfIntersectMesh<Kernel>::count_intersection(
   // We found the first intersection
   if(params.first_only && this->count >= 1)
   {
-    throw FIRST_HIT_EXCEPTION;
+    throw IGL_FIRST_HIT_EXCEPTION;
   }
 }
 

@@ -4,10 +4,7 @@
 
 #include <Eigen/Dense>
 
-// IGL LIB includes
-// Use header only so that asserts get guarded.
 #ifdef MEX
-//#  define IGL_HEADER_ONLY
 #  include <mex.h>
 #  include <cassert>
 #  undef assert

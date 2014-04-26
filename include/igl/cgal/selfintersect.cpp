@@ -14,8 +14,8 @@ IGL_INLINE void igl::selfintersect(
   using namespace std;
   if(params.detect_only)
   {
-    // This is probably a terrible idea, but CGAL is throwing floating point
-    // exceptions.
+    //// This is probably a terrible idea, but CGAL is throwing floating point
+    //// exceptions.
 
 //#ifdef __APPLE__
 //#define IGL_THROW_FPE 11

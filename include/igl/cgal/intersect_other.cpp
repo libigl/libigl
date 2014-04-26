@@ -1,4 +1,4 @@
-#include "intersect.h"
+#include "intersect_other.h"
 #include "CGAL_includes.hpp"
 #include "mesh_to_cgal_triangle_list.h"
 
@@ -6,7 +6,7 @@
 #define IGL_FIRST_HIT_EXCEPTION 10
 #endif
 
-IGL_INLINE void igl::intersect(
+IGL_INLINE void igl::intersect_other(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   const Eigen::MatrixXd & U,
