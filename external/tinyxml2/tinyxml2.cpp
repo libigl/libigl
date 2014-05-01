@@ -425,13 +425,13 @@ void XMLUtil::ToStr( bool v, char* buffer, int bufferSize )
 
 void XMLUtil::ToStr( float v, char* buffer, int bufferSize )
 {
-    TIXML_SNPRINTF( buffer, bufferSize, "%g", v );
+    TIXML_SNPRINTF( buffer, bufferSize, "%.8g", v );
 }
 
 
 void XMLUtil::ToStr( double v, char* buffer, int bufferSize )
 {
-    TIXML_SNPRINTF( buffer, bufferSize, "%.15e", v );
+    TIXML_SNPRINTF( buffer, bufferSize, "%.17g", v );
 }
 
 

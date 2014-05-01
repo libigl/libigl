@@ -101,7 +101,7 @@ IGL_INLINE void igl::sort_new(
   // loop over columns (or rows)
   for(int i = 0; i<num_outer;i++)
   {
-    VectorXi ix;
+    Eigen::VectorXi ix;
     colon(0,num_inner-1,ix);
     // Sort the index map, using unsorted for comparison
     if(dim == 1)
