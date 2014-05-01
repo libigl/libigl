@@ -33,8 +33,8 @@ namespace igl
   //   Y  list of fixed values corresponding to known rows in Z
   //   Aeq  meq by n list of linear equality constraint coefficients
   //   Beq  meq by 1 list of linear equality constraint constant values
-  //   Aieq  mieq by n list of linear equality constraint coefficients
-  //   Bieq  mieq by 1 list of linear equality constraint constant values
+  //   Aieq  mieq by n list of linear inequality constraint coefficients
+  //   Bieq  mieq by 1 list of linear inequality constraint constant values
   //   lx  n by 1 list of lower bounds [] implies -Inf
   //   ux  n by 1 list of upper bounds [] implies Inf
   //   params  struct of additional parameters (see below)
