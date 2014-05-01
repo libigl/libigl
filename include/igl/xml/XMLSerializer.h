@@ -1358,7 +1358,7 @@ namespace igl
       {
         num.str("");
         num << "value" << i;
-        Serialize((std::pair<T0,T1>)*iter,doc,vector,num.str());
+        Serialize((std::pair<T0,T1>)*iter,doc,map,num.str());
       }
       
       return true;
