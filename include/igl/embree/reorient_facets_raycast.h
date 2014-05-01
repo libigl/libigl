@@ -19,24 +19,27 @@ namespace igl
   //   F                            #F by 3 list of triangle indices
   //   rays_total                   Total number of rays that will be shot
   //   rays_minimum                 Minimum number of rays that each patch should receive
-  //   face_wise                    Decision made for each face independently, no use of patches (i.e., each face is treated as a patch)
+  //   faceg_wise                   Decision made for each face independently, no use of patches (i.e., each face is treated as a patch)
   //   use_parity                   Use parity mode
   //   is_verbose                   Verbose output to cout
   // Outputs:
   //   I                            #F list of whether face has been flipped
+  //   C                            #F list of patch ID
   template <
     typename DerivedV, 
     typename DerivedF, 
-    typename DerivedI>
+    typename DerivedI,
+    typename DerivedC>
   IGL_INLINE void reorient_facets_raycast(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
     int rays_total,
     int rays_minimum,
-    bool face_wise,
+    bool facet_wise,
     bool use_parity,
     bool is_verbose,
-    Eigen::PlainObjectBase<DerivedI> & I);
+    Eigen::PlainObjectBase<DerivedI> & I,
+    Eigen::PlainObjectBase<DerivedC> & C);
 };
 
 #ifdef IGL_HEADER_ONLY
