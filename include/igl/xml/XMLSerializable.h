@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 /* ---------------------------------------------------------------------------
  // XMLSerializable.h
- // Author: Christian Schüller on 19/11/13.
+ // Author: Christian Schüller <schuellchr@gmail.com>
  ------------------------------------------------------------------------------
  Inherit from this abstract class to have full control over the serialization
  of your user defined class.

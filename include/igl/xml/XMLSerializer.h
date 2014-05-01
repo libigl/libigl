@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 /* ---------------------------------------------------------------------------
  // XMLSerializer.h
- // Author: Christian Schüller on 08/05/13.
+ // Author: Christian Schüller <schuellchr@gmail.com>
  -----------------------------------------------------------------------------
  
  Header library which allows to save and load a serialization of basic c++ data
@@ -15,7 +15,7 @@
  Containers like std::vector, std::std::pair, Eigen dense and sparse matrices are supported
  as well as combinations of them (like vector<pair<string,bool>> or vector<vector<int>>).
  
- To serialize an arbitary object use the XMLSerializable interface or even simpler the
+ To serialize an arbitrary object use the XMLSerializable interface or even simpler the
  XMLSerialization class.
  
  The serialized objects are organised in groups in the xml file and have
@@ -25,7 +25,7 @@
  
  -----------------------------------------------------------------------------
 TODO's:
-* handle memory leak when deserialing to pointers
+* handle memory leak when deserializing to pointers
 * loops of pointers and from multiple objects
 * NULL pointers
 * Versioning
@@ -877,10 +877,9 @@ namespace igl
       
       const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
       
-      object->Name = child->FirstChild()->Value();
-      
       if(child != NULL)
       {
+        object->Name = child->FirstChild()->Value();
         obj.Deserialize(doc,child);
       }
       else
