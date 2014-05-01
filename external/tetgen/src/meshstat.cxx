@@ -5,6 +5,32 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
+// printfcomma()    Print a (large) number with the 'thousands separator'.   // 
+//                                                                           //
+// The following code was simply copied from "stackoverflow".                //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+void tetgenmesh::printfcomma(unsigned long n)
+{
+  unsigned long n2 = 0;
+  int scale = 1;
+  while (n >= 1000) {
+    n2 = n2 + scale * (n % 1000);
+    n /= 1000;
+    scale *= 1000;
+  }
+  printf ("%ld", n);
+  while (scale != 1) {
+    scale /= 1000;
+    n = n2 / scale;
+    n2 = n2  % scale;
+    printf (",%03ld", n);
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
 // checkmesh()    Test the mesh for topological consistency.                 //
 //                                                                           //
 // If 'topoflag' is set, only check the topological connection of the mesh,  //
@@ -148,12 +174,12 @@ int tetgenmesh::checkmesh(int topoflag)
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-int tetgenmesh::checkshells(/*int sub2tet*/)
+int tetgenmesh::checkshells()
 {
   triface neightet, symtet;
   face shloop, spinsh, nextsh;
   face checkseg;
-  point pa, pb; //, *ppt;
+  point pa, pb;
   int bakcount;
   int horrors, i;
 
@@ -181,10 +207,10 @@ int tetgenmesh::checkshells(/*int sub2tet*/)
       while ((nextsh.sh != NULL) && (nextsh.sh != shloop.sh)) {
         if (nextsh.sh[3] == NULL) {
           printf("  !! !! Wrong subface-subface connection (Dead subface).\n");
-          printf("    First: x%lx (%d, %d, %d).\n", (unsigned long) spinsh.sh,
+          printf("    First: x%lx (%d, %d, %d).\n", (uintptr_t) spinsh.sh,
                  pointmark(sorg(spinsh)), pointmark(sdest(spinsh)), 
                  pointmark(sapex(spinsh)));
-          printf("    Second: x%lx (DEAD)\n", (unsigned long) nextsh.sh);
+          printf("    Second: x%lx (DEAD)\n", (uintptr_t) nextsh.sh);
           horrors++;
           break;
         }
@@ -192,10 +218,10 @@ int tetgenmesh::checkshells(/*int sub2tet*/)
         if (!(((sorg(nextsh) == pa) && (sdest(nextsh) == pb)) ||
               ((sorg(nextsh) == pb) && (sdest(nextsh) == pa)))) {
            printf("  !! !! Wrong subface-subface connection.\n");
-           printf("    First: x%lx (%d, %d, %d).\n", (unsigned long) spinsh.sh,
+           printf("    First: x%lx (%d, %d, %d).\n", (uintptr_t) spinsh.sh,
                   pointmark(sorg(spinsh)), pointmark(sdest(spinsh)), 
                   pointmark(sapex(spinsh)));
-           printf("    Scond: x%lx (%d, %d, %d).\n", (unsigned long) nextsh.sh,
+           printf("    Scond: x%lx (%d, %d, %d).\n", (uintptr_t) nextsh.sh,
                   pointmark(sorg(nextsh)), pointmark(sdest(nextsh)), 
                   pointmark(sapex(nextsh)));
            horrors++;
@@ -204,10 +230,10 @@ int tetgenmesh::checkshells(/*int sub2tet*/)
         // Check they should not have the same apex.
         if (sapex(nextsh) == sapex(spinsh)) {
            printf("  !! !! Existing two duplicated subfaces.\n");
-           printf("    First: x%lx (%d, %d, %d).\n", (unsigned long) spinsh.sh,
+           printf("    First: x%lx (%d, %d, %d).\n", (uintptr_t) spinsh.sh,
                   pointmark(sorg(spinsh)), pointmark(sdest(spinsh)), 
                   pointmark(sapex(spinsh)));
-           printf("    Scond: x%lx (%d, %d, %d).\n", (unsigned long) nextsh.sh,
+           printf("    Scond: x%lx (%d, %d, %d).\n", (uintptr_t) nextsh.sh,
                   pointmark(sorg(nextsh)), pointmark(sdest(nextsh)), 
                   pointmark(sapex(nextsh)));
            horrors++;
@@ -221,19 +247,19 @@ int tetgenmesh::checkshells(/*int sub2tet*/)
       if (checkseg.sh != NULL) {
         if (checkseg.sh[3] == NULL) {
           printf("  !! !! Wrong subface-subseg connection (Dead subseg).\n");
-          printf("    Sub: x%lx (%d, %d, %d).\n", (unsigned long) shloop.sh,
+          printf("    Sub: x%lx (%d, %d, %d).\n", (uintptr_t) shloop.sh,
                  pointmark(sorg(shloop)), pointmark(sdest(shloop)), 
                  pointmark(sapex(shloop)));
-          printf("    Sub: x%lx (Dead)\n", (unsigned long) checkseg.sh);
+          printf("    Sub: x%lx (Dead)\n", (uintptr_t) checkseg.sh);
           horrors++;
         } else {
           if (!(((sorg(checkseg) == pa) && (sdest(checkseg) == pb)) ||
                 ((sorg(checkseg) == pb) && (sdest(checkseg) == pa)))) {
             printf("  !! !! Wrong subface-subseg connection.\n");
-            printf("    Sub: x%lx (%d, %d, %d).\n", (unsigned long) shloop.sh,
+            printf("    Sub: x%lx (%d, %d, %d).\n", (uintptr_t) shloop.sh,
                    pointmark(sorg(shloop)), pointmark(sdest(shloop)), 
                    pointmark(sapex(shloop)));
-            printf("    Seg: x%lx (%d, %d).\n", (unsigned long) checkseg.sh,
+            printf("    Seg: x%lx (%d, %d).\n", (uintptr_t) checkseg.sh,
                    pointmark(sorg(checkseg)), pointmark(sdest(checkseg)));
             horrors++;
           }
@@ -247,20 +273,20 @@ int tetgenmesh::checkshells(/*int sub2tet*/)
     if (neightet.tet != NULL) {
       if (neightet.tet[4] == NULL) {
         printf("  !! !! Wrong sub-to-tet connection (Dead tet)\n");
-        printf("    Sub: x%lx (%d, %d, %d).\n", (unsigned long) shloop.sh,
+        printf("    Sub: x%lx (%d, %d, %d).\n", (uintptr_t) shloop.sh,
                pointmark(sorg(shloop)), pointmark(sdest(shloop)), 
                pointmark(sapex(shloop)));
-        printf("    Tet: x%lx (DEAD)\n", (unsigned long) neightet.tet);
+        printf("    Tet: x%lx (DEAD)\n", (uintptr_t) neightet.tet);
         horrors++;
       } else {
         if (!((sorg(shloop) == org(neightet)) && 
               (sdest(shloop) == dest(neightet)))) {
           printf("  !! !! Wrong sub-to-tet connection\n");
-          printf("    Sub: x%lx (%d, %d, %d).\n", (unsigned long) shloop.sh,
+          printf("    Sub: x%lx (%d, %d, %d).\n", (uintptr_t) shloop.sh,
                  pointmark(sorg(shloop)), pointmark(sdest(shloop)), 
                  pointmark(sapex(shloop)));
           printf("    Tet: x%lx (%d, %d, %d, %d).\n",
-                 (unsigned long) neightet.tet, pointmark(org(neightet)), 
+                 (uintptr_t) neightet.tet, pointmark(org(neightet)), 
                  pointmark(dest(neightet)), pointmark(apex(neightet)),
                  pointmark(oppo(neightet)));
           horrors++;
@@ -269,11 +295,11 @@ int tetgenmesh::checkshells(/*int sub2tet*/)
         if (!((sorg(spinsh) == org(neightet)) && 
               (sdest(spinsh) == dest(neightet)))) {
           printf("  !! !! Wrong tet-sub connection.\n");
-          printf("    Sub: x%lx (%d, %d, %d).\n", (unsigned long) spinsh.sh,
+          printf("    Sub: x%lx (%d, %d, %d).\n", (uintptr_t) spinsh.sh,
                  pointmark(sorg(spinsh)), pointmark(sdest(spinsh)), 
                  pointmark(sapex(spinsh)));
           printf("    Tet: x%lx (%d, %d, %d, %d).\n", 
-                 (unsigned long) neightet.tet, pointmark(org(neightet)), 
+                 (uintptr_t) neightet.tet, pointmark(org(neightet)), 
                  pointmark(dest(neightet)), pointmark(apex(neightet)), 
                  pointmark(oppo(neightet)));
           horrors++;
@@ -284,11 +310,11 @@ int tetgenmesh::checkshells(/*int sub2tet*/)
           if (!((sorg(spinsh) == org(symtet)) && 
                 (sdest(spinsh) == dest(symtet)))) {
             printf("  !! !! Wrong tet-sub connection.\n");
-            printf("    Sub: x%lx (%d, %d, %d).\n", (unsigned long) spinsh.sh,
+            printf("    Sub: x%lx (%d, %d, %d).\n", (uintptr_t) spinsh.sh,
                    pointmark(sorg(spinsh)), pointmark(sdest(spinsh)), 
                    pointmark(sapex(spinsh)));
             printf("    Tet: x%lx (%d, %d, %d, %d).\n", 
-                   (unsigned long) symtet.tet, pointmark(org(symtet)), 
+                   (uintptr_t) symtet.tet, pointmark(org(symtet)), 
                    pointmark(dest(symtet)), pointmark(apex(symtet)), 
                    pointmark(oppo(symtet)));
             horrors++;
@@ -343,7 +369,9 @@ int tetgenmesh::checksegments()
   face sseg, checkseg;
   point pa, pb;
   int miscount;
+  int t1ver;
   int horrors, i;
+
 
   if (!b->quiet) {
     printf("  Checking tet->seg connections...\n");
@@ -368,9 +396,9 @@ int tetgenmesh::checksegments()
                 ((org(tetloop) == pb) && (dest(tetloop) == pa)))) {
             printf("  !! Wrong tet-seg connection.\n");
             printf("    Tet: x%lx (%d, %d, %d, %d) - Seg: x%lx (%d, %d).\n", 
-                   (unsigned long) tetloop.tet, pointmark(org(tetloop)),
+                   (uintptr_t) tetloop.tet, pointmark(org(tetloop)),
                    pointmark(dest(tetloop)), pointmark(apex(tetloop)),
-                   pointmark(oppo(tetloop)), (unsigned long) sseg.sh,
+                   pointmark(oppo(tetloop)), (uintptr_t) sseg.sh,
                    pointmark(pa), pointmark(pb));
             horrors++;
           } else {
@@ -381,11 +409,11 @@ int tetgenmesh::checksegments()
               if (checkseg.sh != sseg.sh) {
                 printf("  !! Wrong tet->seg connection.\n");
                 printf("    Tet: x%lx (%d, %d, %d, %d) - ", 
-                       (unsigned long) neightet.tet, pointmark(org(neightet)),
+                       (uintptr_t) neightet.tet, pointmark(org(neightet)),
                        pointmark(dest(neightet)), pointmark(apex(neightet)),
                        pointmark(oppo(neightet)));
                 if (checkseg.sh != NULL) {
-                  printf("Seg x%lx (%d, %d).\n", (unsigned long) checkseg.sh,
+                  printf("Seg x%lx (%d, %d).\n", (uintptr_t) checkseg.sh,
                          pointmark(sorg(checkseg)),pointmark(sdest(checkseg))); 
                 } else {
                   printf("Seg: NULL.\n");
@@ -405,9 +433,9 @@ int tetgenmesh::checksegments()
                 ((org(neightet) == pb) && (dest(neightet) == pa)))) {
               printf("  !! Wrong seg->tet connection (Wrong edge).\n");
               printf("    Tet: x%lx (%d, %d, %d, %d) - Seg: x%lx (%d, %d).\n", 
-                     (unsigned long) neightet.tet, pointmark(org(neightet)),
+                     (uintptr_t) neightet.tet, pointmark(org(neightet)),
                      pointmark(dest(neightet)), pointmark(apex(neightet)),
-                     pointmark(oppo(neightet)), (unsigned long) sseg.sh,
+                     pointmark(oppo(neightet)), (uintptr_t) sseg.sh,
                      pointmark(pa), pointmark(pb));
               horrors++;
             }
@@ -424,7 +452,7 @@ int tetgenmesh::checksegments()
         printf("  !! A marked edge: (%d, %d, %d, %d) -- x%lx %d.\n",
                pointmark(org(neightet)), pointmark(dest(neightet)),
                pointmark(apex(neightet)), pointmark(oppo(neightet)),
-               (unsigned long) neightet.tet, neightet.ver);
+               (uintptr_t) neightet.tet, neightet.ver);
         // Check if all tets at the edge are marked.
         spintet = neightet;
         while (1) {
@@ -433,7 +461,7 @@ int tetgenmesh::checksegments()
             printf("  !! !! An unmarked edge (%d, %d, %d, %d) -- x%lx %d.\n",
                    pointmark(org(spintet)), pointmark(dest(spintet)),
                    pointmark(apex(spintet)), pointmark(oppo(spintet)),
-                   (unsigned long) spintet.tet, spintet.ver);
+                   (uintptr_t) spintet.tet, spintet.ver);
             horrors++;
           }
           if (spintet.tet == neightet.tet) break;
@@ -466,7 +494,7 @@ int tetgenmesh::checksegments()
           //  sesymself(spinsh);
           //  printf("  !! Wrong ori at subface (%d, %d, %d) -- x%lx %d\n",
           //         pointmark(sorg(spinsh)), pointmark(sdest(spinsh)),
-          //         pointmark(sapex(spinsh)), (unsigned long) spinsh.sh,
+          //         pointmark(sapex(spinsh)), (uintptr_t) spinsh.sh,
           //         spinsh.shver);
           //  horrors++;
           //}
@@ -479,7 +507,7 @@ int tetgenmesh::checksegments()
                 printf("  !! !! No seg at tet (%d, %d, %d, %d) -- x%lx %d\n",
                        pointmark(org(spintet)), pointmark(dest(spintet)),
                        pointmark(apex(spintet)), pointmark(oppo(spintet)),
-                       (unsigned long) spintet.tet, spintet.ver);
+                       (uintptr_t) spintet.tet, spintet.ver);
                 horrors++;
               }
               if (checkseg.sh != sseg.sh) {
@@ -498,7 +526,7 @@ int tetgenmesh::checksegments()
         } else { 
           printf("  !! Wrong seg-subface (%d, %d, %d) -- x%lx %d connect\n",
                  pointmark(sorg(spinsh)), pointmark(sdest(spinsh)),
-                 pointmark(sapex(spinsh)), (unsigned long) spinsh.sh,
+                 pointmark(sapex(spinsh)), (uintptr_t) spinsh.sh,
                  spinsh.shver);
           horrors++;
           break;
@@ -779,6 +807,7 @@ int tetgenmesh::checkconforming(int flag)
   REAL cent[3], radius, dist, diff, rd, len;
   bool enq;
   int encsubsegs, encsubfaces;
+  int t1ver; 
   int i;
 
   REAL A[4][4], rhs[4], D;
@@ -934,10 +963,10 @@ void tetgenmesh::qualitystatistics()
   REAL tetaspect, tetradius;
   REAL smalldiangle, bigdiangle;
   REAL smallfaangle, bigfaangle;
-  int radiustable[12];
-  int aspecttable[16];
-  int dihedangletable[18];
-  int faceangletable[18];
+  unsigned long radiustable[12];
+  unsigned long aspecttable[16];
+  unsigned long dihedangletable[18];
+  unsigned long faceangletable[18];
   int indx[4];
   int radiusindex;
   int aspectindex;
@@ -965,10 +994,10 @@ void tetgenmesh::qualitystatistics()
   aspectratiotable[8]  =     25.0;    aspectratiotable[9]  =    50.0;
   aspectratiotable[10] =    100.0;    aspectratiotable[11] =     0.0;
   
-  for (i = 0; i < 12; i++) radiustable[i] = 0;
-  for (i = 0; i < 12; i++) aspecttable[i] = 0;
-  for (i = 0; i < 18; i++) dihedangletable[i] = 0;
-  for (i = 0; i < 18; i++) faceangletable[i] = 0;
+  for (i = 0; i < 12; i++) radiustable[i] = 0l;
+  for (i = 0; i < 12; i++) aspecttable[i] = 0l;
+  for (i = 0; i < 18; i++) dihedangletable[i] = 0l;
+  for (i = 0; i < 18; i++) faceangletable[i] = 0l;
 
   minaltitude = xmax - xmin + ymax - ymin + zmax - zmin;
   minaltitude = minaltitude * minaltitude;
@@ -982,16 +1011,26 @@ void tetgenmesh::qualitystatistics()
   biggestdiangle = biggestfaangle = 0.0;
 
 
+  int attrnum = numelemattrib - 1;
+
   // Loop all elements, calculate quality parameters for each element.
   tetrahedrons->traversalinit();
   tetloop.tet = tetrahedrontraverse();
   while (tetloop.tet != (tetrahedron *) NULL) {
 
+    if (b->convex) {
+      // Skip tets in the exterior.
+      if (elemattribute(tetloop.tet, attrnum) == -1.0) {
+        tetloop.tet = tetrahedrontraverse();
+        continue;
+      }
+    }
+
     // Get four vertices: p0, p1, p2, p3.
     for (i = 0; i < 4; i++) p[i] = (point) tetloop.tet[4 + i];
 
     // Get the tet volume.
-    tetvol = orient3d(p[1], p[0], p[2], p[3]) / 6.0;
+    tetvol = orient3dfast(p[1], p[0], p[2], p[3]) / 6.0;
     total_tet_vol += tetvol;
     total_tetprism_vol += tetprismvol(p[0], p[1], p[2], p[3]);
 
@@ -1011,7 +1050,7 @@ void tetgenmesh::qualitystatistics()
     for (i = 0; i < 3; i++) V[4][i] = p[2][i] - p[1][i]; // V[4]: p1->p2.
     for (i = 0; i < 3; i++) V[5][i] = p[0][i] - p[2][i]; // V[5]: p2->p0.
 
-    // Get the squares of the edge lengthes.
+    // Get the squares of the edge lengths.
     for (i = 0; i < 6; i++) edgelength[i] = dot(V[i], V[i]);
 
     // Calculate the longest and shortest edge length.
@@ -1153,7 +1192,7 @@ void tetgenmesh::qualitystatistics()
 
 
 
-    // Calulate the largest and smallest face angles.
+    // Calculate the largest and smallest face angles.
     for (tetloop.ver = 0; tetloop.ver < 4; tetloop.ver++) {
       fsym(tetloop, neightet);
       // Only do the calulation once for a face.
@@ -1240,16 +1279,16 @@ void tetgenmesh::qualitystatistics()
          smallestdiangle, sbuf);
 
   printf("  Aspect ratio histogram:\n");
-  printf("         < %-6.6g    :  %8d      | %6.6g - %-6.6g     :  %8d\n",
+  printf("         < %-6.6g    :  %8ld      | %6.6g - %-6.6g     :  %8ld\n",
          aspectratiotable[0], aspecttable[0], aspectratiotable[5],
          aspectratiotable[6], aspecttable[6]);
   for (i = 1; i < 5; i++) {
-    printf("  %6.6g - %-6.6g    :  %8d      | %6.6g - %-6.6g     :  %8d\n",
+    printf("  %6.6g - %-6.6g    :  %8ld      | %6.6g - %-6.6g     :  %8ld\n",
            aspectratiotable[i - 1], aspectratiotable[i], aspecttable[i],
            aspectratiotable[i + 5], aspectratiotable[i + 6],
            aspecttable[i + 6]);
   }
-  printf("  %6.6g - %-6.6g    :  %8d      | %6.6g -            :  %8d\n",
+  printf("  %6.6g - %-6.6g    :  %8ld      | %6.6g -            :  %8ld\n",
          aspectratiotable[4], aspectratiotable[5], aspecttable[5],
          aspectratiotable[10], aspecttable[11]);
   printf("  (A tetrahedron's aspect ratio is its longest edge length");
@@ -1258,7 +1297,7 @@ void tetgenmesh::qualitystatistics()
 
   printf("  Face angle histogram:\n");
   for (i = 0; i < 9; i++) {
-    printf("    %3d - %3d degrees:  %8d      |    %3d - %3d degrees:  %8d\n",
+    printf("    %3d - %3d degrees:  %8ld      |    %3d - %3d degrees:  %8ld\n",
            i * 10, i * 10 + 10, faceangletable[i],
            i * 10 + 90, i * 10 + 100, faceangletable[i + 9]);
   }
@@ -1270,20 +1309,20 @@ void tetgenmesh::qualitystatistics()
 
   printf("  Dihedral angle histogram:\n");
   // Print the three two rows:
-  printf("     %3d - %2d degrees:  %8d      |    %3d - %3d degrees:  %8d\n",
+  printf("     %3d - %2d degrees:  %8ld      |    %3d - %3d degrees:  %8ld\n",
          0, 5, dihedangletable[0], 80, 110, dihedangletable[9]);
-  printf("     %3d - %2d degrees:  %8d      |    %3d - %3d degrees:  %8d\n",
+  printf("     %3d - %2d degrees:  %8ld      |    %3d - %3d degrees:  %8ld\n",
          5, 10, dihedangletable[1], 110, 120, dihedangletable[10]);
   // Print the third to seventh rows.
   for (i = 2; i < 7; i++) {
-    printf("     %3d - %2d degrees:  %8d      |    %3d - %3d degrees:  %8d\n",
+    printf("     %3d - %2d degrees:  %8ld      |    %3d - %3d degrees:  %8ld\n",
            (i - 1) * 10, (i - 1) * 10 + 10, dihedangletable[i],
            (i - 1) * 10 + 110, (i - 1) * 10 + 120, dihedangletable[i + 9]);
   }
   // Print the last two rows.
-  printf("     %3d - %2d degrees:  %8d      |    %3d - %3d degrees:  %8d\n",
+  printf("     %3d - %2d degrees:  %8ld      |    %3d - %3d degrees:  %8ld\n",
          60, 70, dihedangletable[7], 170, 175, dihedangletable[16]);
-  printf("     %3d - %2d degrees:  %8d      |    %3d - %3d degrees:  %8d\n",
+  printf("     %3d - %2d degrees:  %8ld      |    %3d - %3d degrees:  %8ld\n",
          70, 80, dihedangletable[8], 175, 180, dihedangletable[17]);
   if (minfacetdihed != PI) {
     printf("  Minimum input dihedral angle is %g (degree).\n",
@@ -1294,6 +1333,96 @@ void tetgenmesh::qualitystatistics()
   printf("\n");
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// memorystatistics()    Report the memory usage.                            //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+void tetgenmesh::memorystatistics()
+{
+  printf("Memory usage statistics:\n\n");
+ 
+  // Count the number of blocks of tetrahedra. 
+  int tetblocks = 0;
+  tetrahedrons->pathblock = tetrahedrons->firstblock;
+  while (tetrahedrons->pathblock != NULL) {
+    tetblocks++;
+    tetrahedrons->pathblock = (void **) *(tetrahedrons->pathblock);  
+  }
+
+  // Calculate the total memory (in bytes) used by storing meshes.
+  unsigned long totalmeshmemory = 0l, totalt2shmemory = 0l;
+  totalmeshmemory = points->maxitems * points->itembytes +
+                    tetrahedrons->maxitems * tetrahedrons->itembytes;
+  if (b->plc || b->refine) {
+    totalmeshmemory += (subfaces->maxitems * subfaces->itembytes +
+                        subsegs->maxitems * subsegs->itembytes);
+    totalt2shmemory = (tet2subpool->maxitems * tet2subpool->itembytes +
+                       tet2segpool->maxitems * tet2segpool->itembytes);
+  }
+
+  unsigned long totalalgomemory = 0l;
+  totalalgomemory = cavetetlist->totalmemory + cavebdrylist->totalmemory +
+                    caveoldtetlist->totalmemory + 
+                    flippool->maxitems * flippool->itembytes;
+  if (b->plc || b->refine) {
+    totalalgomemory += (subsegstack->totalmemory + subfacstack->totalmemory +
+                        subvertstack->totalmemory + 
+                        caveshlist->totalmemory + caveshbdlist->totalmemory +
+                        cavesegshlist->totalmemory +
+                        cavetetshlist->totalmemory + 
+                        cavetetseglist->totalmemory +
+                        caveencshlist->totalmemory +
+                        caveencseglist->totalmemory +
+                        cavetetvertlist->totalmemory +
+                        unflipqueue->totalmemory);
+  }
+
+  printf("  Maximum number of tetrahedra:  %ld\n", tetrahedrons->maxitems);
+  printf("  Maximum number of tet blocks (blocksize = %d):  %d\n",
+         b->tetrahedraperblock, tetblocks);
+  /*
+  if (b->plc || b->refine) {
+    printf("  Approximate memory for tetrahedral mesh (bytes):  %ld\n",
+           totalmeshmemory);
+    
+    printf("  Approximate memory for extra pointers (bytes):  %ld\n",
+           totalt2shmemory);
+  } else {
+    printf("  Approximate memory for tetrahedralization (bytes):  %ld\n",
+           totalmeshmemory);
+  }
+  printf("  Approximate memory for algorithms (bytes):  %ld\n",
+         totalalgomemory);
+  printf("  Approximate memory for working arrays (bytes):  %ld\n",
+         totalworkmemory);
+  printf("  Approximate total used memory (bytes):  %ld\n",
+         totalmeshmemory + totalt2shmemory + totalalgomemory + 
+         totalworkmemory);
+  */
+  if (b->plc || b->refine) {
+    printf("  Approximate memory for tetrahedral mesh (bytes):  ");
+    printfcomma(totalmeshmemory); printf("\n");
+    
+    printf("  Approximate memory for extra pointers (bytes):  ");
+    printfcomma(totalt2shmemory); printf("\n");
+  } else {
+    printf("  Approximate memory for tetrahedralization (bytes):  ");
+    printfcomma(totalmeshmemory); printf("\n");
+  }
+  printf("  Approximate memory for algorithms (bytes):  ");
+  printfcomma(totalalgomemory); printf("\n");
+  printf("  Approximate memory for working arrays (bytes):  ");
+  printfcomma(totalworkmemory); printf("\n");
+  printf("  Approximate total used memory (bytes):  ");
+  printfcomma(totalmeshmemory + totalt2shmemory + totalalgomemory + 
+              totalworkmemory);
+  printf("\n");
+
+  printf("\n");
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
@@ -1327,23 +1456,34 @@ void tetgenmesh::statistics()
   }
   printf("  Mesh tetrahedra: %ld\n", tetnumber);
   printf("  Mesh faces: %ld\n", facenumber);
-  printf("  Mesh edges: %ld\n", meshedges);
+  if (meshedges > 0l) {
+    printf("  Mesh edges: %ld\n", meshedges);
+  } else {
+    if (!nonconvex) {
+      long vsize = points->items - dupverts - unuverts;
+      if (b->weighted) vsize -= nonregularcount;
+      meshedges = vsize + facenumber - tetnumber - 1;
+      printf("  Mesh edges: %ld\n", meshedges);
+    }
+  }
 
   if (b->plc || b->refine) {
-    printf("  Mesh boundary faces: %ld\n", subfaces->items);
-    printf("  Mesh boundary edges: %ld\n", subsegs->items);
-    if (st_segref_count > 0l) {
-      printf("  Steiner points on boundary edges: %ld\n", st_segref_count);
+    printf("  Mesh faces on facets: %ld\n", subfaces->items);
+    printf("  Mesh edges on segments: %ld\n", subsegs->items);
+    if (st_volref_count > 0l) {
+      printf("  Steiner points inside domain: %ld\n", st_volref_count);
     }
     if (st_facref_count > 0l) {
-      printf("  Steiner points on boundary faces: %ld\n", st_facref_count);
+      printf("  Steiner points on facets:  %ld\n", st_facref_count);
     }
-    if (st_volref_count > 0l) {
-      printf("  Steiner points in mesh domain: %ld\n", st_volref_count);
+    if (st_segref_count > 0l) {
+      printf("  Steiner points on segments:  %ld\n", st_segref_count);
     }
   } else {
     printf("  Convex hull faces: %ld\n", hullsize);
-    printf("  Convex hull edges: %ld\n", meshhulledges);
+    if (meshhulledges > 0l) {
+      printf("  Convex hull edges: %ld\n", meshhulledges);
+    }
   }
   if (b->weighted) { // -w option
     printf("  Skipped non-regular points: %ld\n", nonregularcount);
@@ -1356,6 +1496,9 @@ void tetgenmesh::statistics()
       if (tetrahedrons->items > 0l) {
         qualitystatistics();
       }
+    }
+    if (tetrahedrons->items > 0l) {
+      memorystatistics();
     }
   }
 }

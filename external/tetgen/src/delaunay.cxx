@@ -23,6 +23,9 @@ void tetgenmesh::transfernodes()
   int mtrindex;
   int i, j;
 
+  if (b->psc) {
+    assert(in->pointparamlist != NULL);
+  }
 
   // Read the points.
   coordindex = 0;
@@ -60,7 +63,7 @@ void tetgenmesh::transfernodes()
         pointloop[3] = w;  // Regular tetrahedralization.
       }
     }
-    // Determine the smallest and largests x, y and z coordinates.
+    // Determine the smallest and largest x, y and z coordinates.
     if (i == 0) {
       xmin = xmax = x;
       ymin = ymax = y;
@@ -97,7 +100,7 @@ void tetgenmesh::transfernodes()
   longest = sqrt(x * x + y * y + z * z);
   if (longest == 0.0) {
     printf("Error:  The point set is trivial.\n");
-    terminatetetgen(3);
+    terminatetetgen(this, 3);
   }
 
   // Two identical points are distinguished by 'lengthlimit'.
@@ -201,12 +204,12 @@ int tetgenmesh::hilbert_split(point* vertexarray,int arraysize,int gc0,int gc1,
   d = ((gc0 & (1<<axis)) == 0) ? 1 : -1;
 
 
-  // Partition the vertices into left- and right-arraies such that left points
+  // Partition the vertices into left- and right-arrays such that left points
   //   have Hilbert indices lower than the right points.
   i = 0;
   j = arraysize - 1;
 
-  // Partition the vertices into left- and right-arraies.
+  // Partition the vertices into left- and right-arrays.
   if (d > 0) {
     do {
       for (; i < arraysize; i++) {      
@@ -252,12 +255,6 @@ void tetgenmesh::hilbert_sort3(point* vertexarray, int arraysize, int e, int d,
   int p[9], w, e_w, d_w, k, ei, di;
   int n = 3, mask = 7;
 
-
-  // Record the highest order of the curve.
-  if (depth + 1 > max_hcurve_depth_count) {
-    max_hcurve_depth_count = depth + 1;
-  }
-
   p[0] = 0;
   p[8] = arraysize;
 
@@ -289,13 +286,14 @@ void tetgenmesh::hilbert_sort3(point* vertexarray, int arraysize, int e, int d,
     }
   }
 
-  // Recursivly sort the points in sub-boxes.
+  // Recursively sort the points in sub-boxes.
   for (w = 0; w < 8; w++) {
     // w is the local Hilbert index (NOT Gray code).
     // Sort into the sub-box either there are more than 2 points in it, or
     //   the prescribed order of the curve is not reached yet.
-    if ((p[w+1] - p[w] > b->hilbert_limit) || (b->hilbert_order > 0)) {
-      // Calulcate the start point (ei) of the curve in this sub-box.
+    //if ((p[w+1] - p[w] > b->hilbert_limit) || (b->hilbert_order > 0)) {
+    if ((p[w+1] - p[w]) > b->hilbert_limit) {
+      // Calculcate the start point (ei) of the curve in this sub-box.
       //   update e = e ^ (e(w) left_rotate (d+1)).
       if (w == 0) {
         e_w = 0;
@@ -345,6 +343,28 @@ void tetgenmesh::hilbert_sort3(point* vertexarray, int arraysize, int e, int d,
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
+// brio_multiscale_sort()    Sort the points using BRIO and Hilbert curve.   //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+void tetgenmesh::brio_multiscale_sort(point* vertexarray, int arraysize, 
+                                      int threshold, REAL ratio, int *depth)
+{
+  int middle;
+
+  middle = 0;
+  if (arraysize >= threshold) {
+    (*depth)++;
+    middle = arraysize * ratio;
+    brio_multiscale_sort(vertexarray, middle, threshold, ratio, depth);
+  }
+  // Sort the right-array (rnd-th round) using the Hilbert curve.
+  hilbert_sort3(&(vertexarray[middle]), arraysize - middle, 0, 0, // e, d
+                xmin, xmax, ymin, ymax, zmin, zmax, 0); // depth.
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
 // randomnation()    Generate a random number between 0 and 'choices' - 1.   //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
@@ -375,11 +395,11 @@ unsigned long tetgenmesh::randomnation(unsigned int choices)
 // Searching begins from one of handles:  the input 'searchtet', a recently  //
 // encountered tetrahedron 'recenttet',  or from one chosen from a random    //
 // sample.  The choice is made by determining which one's origin is closest  //
-// to the point we are searcing for.                                         //
+// to the point we are searching for.                                        //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-void tetgenmesh::randomsample(point searchpt, triface *searchtet)
+void tetgenmesh::randomsample(point searchpt,triface *searchtet)
 {
   tetrahedron *firsttet, *tetptr;
   point torg;
@@ -394,44 +414,40 @@ void tetgenmesh::randomsample(point searchpt, triface *searchtet)
            pointmark(searchpt));
   }
 
-  if (searchtet->tet == NULL) {
-    // A null tet. Choose the recenttet as the starting tet.
-    *searchtet = recenttet;
-    // Recenttet should not be dead.
-    assert(recenttet.tet[4] != NULL);
-  }
-
-  // 'searchtet' should be a valid tetrahedron. Choose the base face
-  //   whose vertices must not be 'dummypoint'.
-  searchtet->ver = 3;
-  // Record the distance from its origin to the searching point.
-  torg = org(*searchtet);
-  searchdist = (searchpt[0] - torg[0]) * (searchpt[0] - torg[0]) +
-               (searchpt[1] - torg[1]) * (searchpt[1] - torg[1]) +
-               (searchpt[2] - torg[2]) * (searchpt[2] - torg[2]);
-  if (b->verbose > 3) {
-    printf("        Dist %g from tet (%d, %d, %d, %d).\n", searchdist,
-           pointmark(torg), pointmark(dest(*searchtet)), 
-           pointmark(apex(*searchtet)), pointmark(oppo(*searchtet)));
-  }
-
-  // If a recently encountered tetrahedron has been recorded and has not
-  //   been deallocated, test it as a good starting point.
-  if (recenttet.tet != searchtet->tet) {
-    recenttet.ver = 3;
-    torg = org(recenttet);
-    dist = (searchpt[0] - torg[0]) * (searchpt[0] - torg[0]) +
-           (searchpt[1] - torg[1]) * (searchpt[1] - torg[1]) +
-           (searchpt[2] - torg[2]) * (searchpt[2] - torg[2]);
-    if (dist < searchdist) {
+  if (!nonconvex) {
+    if (searchtet->tet == NULL) {
+      // A null tet. Choose the recenttet as the starting tet.
       *searchtet = recenttet;
-      searchdist = dist;
-      if (b->verbose > 3) {
-        printf("        Dist %g from recent tet (%d, %d, %d, %d).\n", 
-               searchdist, pointmark(torg), pointmark(dest(*searchtet)), 
-               pointmark(apex(*searchtet)), pointmark(oppo(*searchtet)));
+      // Recenttet should not be dead.
+      assert(recenttet.tet[4] != NULL);
+    }
+
+    // 'searchtet' should be a valid tetrahedron. Choose the base face
+    //   whose vertices must not be 'dummypoint'.
+    searchtet->ver = 3;
+    // Record the distance from its origin to the searching point.
+    torg = org(*searchtet);
+    searchdist = (searchpt[0] - torg[0]) * (searchpt[0] - torg[0]) +
+                 (searchpt[1] - torg[1]) * (searchpt[1] - torg[1]) +
+                 (searchpt[2] - torg[2]) * (searchpt[2] - torg[2]);
+
+    // If a recently encountered tetrahedron has been recorded and has not
+    //   been deallocated, test it as a good starting point.
+    if (recenttet.tet != searchtet->tet) {
+      recenttet.ver = 3;
+      torg = org(recenttet);
+      dist = (searchpt[0] - torg[0]) * (searchpt[0] - torg[0]) +
+             (searchpt[1] - torg[1]) * (searchpt[1] - torg[1]) +
+             (searchpt[2] - torg[2]) * (searchpt[2] - torg[2]);
+      if (dist < searchdist) {
+        *searchtet = recenttet;
+        searchdist = dist;
       }
     }
+  } else {
+    // The mesh is non-convex. Do not use 'recenttet'.
+    assert(samples >= 1l); // Make sure at least 1 sample.
+    searchdist = longest;
   }
 
   // Select "good" candidate using k random samples, taking the closest one.
@@ -471,11 +487,6 @@ void tetgenmesh::randomsample(point searchpt, triface *searchtet)
           searchtet->tet = tetptr;
           searchtet->ver = 11; // torg = org(t);
           searchdist = dist;
-          if (b->verbose > 3) {
-            printf("        Dist %g from tet (%d, %d, %d, %d).\n", searchdist,
-               pointmark(torg), pointmark(dest(*searchtet)), 
-               pointmark(apex(*searchtet)), pointmark(oppo(*searchtet)));
-          }
         }
       } else {
         // A dead tet. Re-sample it.
@@ -490,7 +501,6 @@ void tetgenmesh::randomsample(point searchpt, triface *searchtet)
 //                                                                           //
 // locate()    Find a tetrahedron containing a given point.                  //
 //                                                                           //
-// This routine implements the simple Walk-through point location algorithm. //
 // Begins its search from 'searchtet', assume there is a line segment L from //
 // a vertex of 'searchtet' to the query point 'searchpt', and simply walk    //
 // towards 'searchpt' by traversing all faces intersected by L.              //
@@ -509,22 +519,19 @@ void tetgenmesh::randomsample(point searchpt, triface *searchtet)
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-enum tetgenmesh::locateresult 
-  tetgenmesh::locate(point searchpt, triface* searchtet, int chkencflag)
+enum tetgenmesh::locateresult tetgenmesh::locate(point searchpt, 
+                                                 triface* searchtet)
 {
-  triface neightet; 
-  face checksh;
   point torg, tdest, tapex, toppo;
   enum {ORGMOVE, DESTMOVE, APEXMOVE} nextmove;
   REAL ori, oriorg, oridest, oriapex;
-  enum locateresult loc;
+  enum locateresult loc = OUTSIDE;
+  int t1ver;
   int s;
 
   if (searchtet->tet == NULL) {
     // A null tet. Choose the recenttet as the starting tet.
-    *searchtet = recenttet;
-    // Recenttet should not be dead.
-    assert(recenttet.tet[4] != NULL);
+    searchtet->tet = recenttet.tet;
   }
 
   // Check if we are in the outside of the convex hull.
@@ -532,7 +539,6 @@ enum tetgenmesh::locateresult
     // Get its adjacent tet (inside the hull).
     searchtet->ver = 3;
     fsymself(*searchtet);
-    assert(!ishulltet(*searchtet));
   }
 
   // Let searchtet be the face such that 'searchpt' lies above to it.
@@ -543,16 +549,10 @@ enum tetgenmesh::locateresult
     ori = orient3d(torg, tdest, tapex, searchpt); 
     if (ori < 0.0) break;
   }
-  if (searchtet->ver == 4) { // SELF_CHECK
-    assert(0);
-  }
-
-  loc = OUTSIDE; // Set a default return value.
+  assert(searchtet->ver != 4);
 
   // Walk through tetrahedra to locate the point.
   while (true) {
-
-    ptloc_count++;  // Count the number of visited tets.
 
     toppo = oppo(*searchtet);
     
@@ -586,8 +586,8 @@ enum tetgenmesh::locateresult
           }
         } else {
           // Two faces, opposite to origin and destination, are viable.
-          s = randomnation(2); // 's' is in {0,1}.
-          if (s == 0) {
+          //s = randomnation(2); // 's' is in {0,1}.
+          if (randomnation(2)) {
             nextmove = ORGMOVE;
           } else {
             nextmove = DESTMOVE;
@@ -596,8 +596,8 @@ enum tetgenmesh::locateresult
       } else {
         if (oriapex < 0) {
           // Two faces, opposite to origin and apex, are viable.
-          s = randomnation(2); // 's' is in {0,1}.
-          if (s == 0) {
+          //s = randomnation(2); // 's' is in {0,1}.
+          if (randomnation(2)) {
             nextmove = ORGMOVE;
           } else {
             nextmove = APEXMOVE;
@@ -611,8 +611,8 @@ enum tetgenmesh::locateresult
       if (oridest < 0) {
         if (oriapex < 0) {
           // Two faces, opposite to destination and apex, are viable.
-          s = randomnation(2); // 's' is in {0,1}.
-          if (s == 0) {
+          //s = randomnation(2); // 's' is in {0,1}.
+          if (randomnation(2)) {
             nextmove = DESTMOVE;
           } else {
             nextmove = APEXMOVE;
@@ -630,10 +630,8 @@ enum tetgenmesh::locateresult
           //   tetrahedron. Check for boundary cases.
           if (oriorg == 0) {
             // Go to the face opposite to origin.
-            //enextfnextself(*searchtet);
             enextesymself(*searchtet);
             if (oridest == 0) {
-              //enextself(*searchtet); // edge apex->oppo
               eprevself(*searchtet); // edge oppo->apex
               if (oriapex == 0) {
                 // oppo is duplicated with p.
@@ -644,7 +642,6 @@ enum tetgenmesh::locateresult
               break;
             }
             if (oriapex == 0) {
-              //enext2self(*searchtet);
               enextself(*searchtet); // edge dest->oppo
               loc = ONEDGE; // return ONEDGE;
               break;
@@ -654,10 +651,8 @@ enum tetgenmesh::locateresult
           }
           if (oridest == 0) {
             // Go to the face opposite to destination.
-            //enext2fnextself(*searchtet);
             eprevesymself(*searchtet);
             if (oriapex == 0) {
-              //enextself(*searchtet);
               eprevself(*searchtet); // edge oppo->org
               loc = ONEDGE; // return ONEDGE;
               break;
@@ -667,7 +662,6 @@ enum tetgenmesh::locateresult
           }
           if (oriapex == 0) {
             // Go to the face opposite to apex
-            //fnextself(*searchtet);
             esymself(*searchtet);
             loc = ONFACE; // return ONFACE;
             break;
@@ -686,14 +680,6 @@ enum tetgenmesh::locateresult
     } else {
       esymself(*searchtet);
     }
-    if (chkencflag) {
-      // Check if we are walking across a subface.
-      tspivot(*searchtet, checksh);
-      if (checksh.sh != NULL) {
-        loc = ENCSUBFACE;
-        break;
-      }
-    }
     // Move to the adjacent tetrahedron (maybe a hull tetrahedron).
     fsymself(*searchtet);
     if (oppo(*searchtet) == dummypoint) {
@@ -709,6 +695,275 @@ enum tetgenmesh::locateresult
   } // while (true)
 
   return loc;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// flippush()    Push a face (possibly will be flipped) into flipstack.      //
+//                                                                           //
+// The face is marked. The flag is used to check the validity of the face on //
+// its popup.  Some other flips may change it already.                       //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+void tetgenmesh::flippush(badface*& fstack, triface* flipface)
+{
+  if (!facemarked(*flipface)) {
+    badface *newflipface = (badface *) flippool->alloc();
+    newflipface->tt = *flipface;
+    markface(newflipface->tt);
+    // Push this face into stack.
+    newflipface->nextitem = fstack;
+    fstack = newflipface;
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// incrementalflip()    Incrementally flipping to construct DT.              //
+//                                                                           //
+// Faces need to be checked for flipping are already queued in 'flipstack'.  //
+// Return the total number of performed flips.                               //
+//                                                                           //
+// Comment:  This routine should be only used in the incremental Delaunay    //
+// construction.  In other cases, lawsonflip3d() should be used.             // 
+//                                                                           //
+// If the new point lies outside of the convex hull ('hullflag' is set). The //
+// incremental flip algorithm still works as usual.  However, we must ensure //
+// that every flip (2-to-3 or 3-to-2) does not create a duplicated (existing)//
+// edge or face. Otherwise, the underlying space of the triangulation becomes//
+// non-manifold and it is not possible to flip further.                      //
+// Thanks to Joerg Rambau and Frank Lutz for helping in this issue.          //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+int tetgenmesh::incrementalflip(point newpt, int hullflag, flipconstraints *fc)
+{
+  badface *popface;
+  triface fliptets[5], *parytet;
+  point *pts, *parypt, pe;
+  REAL sign, ori;
+  int flipcount = 0;
+  int t1ver;
+  int i;
+
+  if (b->verbose > 2) {
+    printf("      Lawson flip (%ld faces).\n", flippool->items);
+  }
+
+  if (hullflag) {
+    // 'newpt' lies in the outside of the convex hull. 
+    // Mark all hull vertices which are connecting to it.
+    popface = flipstack;
+    while (popface != NULL) {
+      pts = (point *) popface->tt.tet;
+      for (i = 4; i < 8; i++) {
+        if ((pts[i] != newpt) && (pts[i] != dummypoint)) {
+          if (!pinfected(pts[i])) {
+            pinfect(pts[i]);
+            cavetetvertlist->newindex((void **) &parypt);
+            *parypt = pts[i];
+          }
+        } 
+      }
+      popface = popface->nextitem;
+    }
+  }
+
+  // Loop until the queue is empty.
+  while (flipstack != NULL) {
+
+    // Pop a face from the stack.
+    popface = flipstack;
+    fliptets[0] = popface->tt;
+    flipstack = flipstack->nextitem; // The next top item in stack.
+    flippool->dealloc((void *) popface);
+
+    // Skip it if it is a dead tet (destroyed by previous flips).
+    if (isdeadtet(fliptets[0])) continue;
+    // Skip it if it is not the same tet as we saved.
+    if (!facemarked(fliptets[0])) continue;
+
+    unmarkface(fliptets[0]);    
+
+    if ((point) fliptets[0].tet[7] == dummypoint) {
+      // It must be a hull edge.
+      fliptets[0].ver = epivot[fliptets[0].ver];
+      // A hull edge. The current convex hull may be enlarged.
+      fsym(fliptets[0], fliptets[1]);
+      pts = (point *) fliptets[1].tet;
+      ori = orient3d(pts[4], pts[5], pts[6], newpt);
+      if (ori < 0) {
+        // Visible. The convex hull will be enlarged.
+        // Decide which flip (2-to-3, 3-to-2, or 4-to-1) to use.
+        // Check if the tet [a,c,e,d] or [c,b,e,d] exists.
+        enext(fliptets[1], fliptets[2]); 
+        eprev(fliptets[1], fliptets[3]); 
+        fnextself(fliptets[2]); // [a,c,e,*]
+        fnextself(fliptets[3]); // [c,b,e,*]
+        if (oppo(fliptets[2]) == newpt) {
+          if (oppo(fliptets[3]) == newpt) {
+            // Both tets exist! A 4-to-1 flip is found.
+            terminatetetgen(this, 2); // Report a bug.
+          } else {
+            esym(fliptets[2], fliptets[0]);
+            fnext(fliptets[0], fliptets[1]); 
+            fnext(fliptets[1], fliptets[2]); 
+            // Perform a 3-to-2 flip. Replace edge [c,a] by face [d,e,b].
+            // This corresponds to my standard labels, where edge [e,d] is
+            //   repalced by face [a,b,c], and a is the new vertex. 
+            //   [0] [c,a,d,e] (d = newpt)
+            //   [1] [c,a,e,b] (c = dummypoint)
+            //   [2] [c,a,b,d]
+            flip32(fliptets, 1, fc);
+          }
+        } else {
+          if (oppo(fliptets[3]) == newpt) {
+            fnext(fliptets[3], fliptets[0]);
+            fnext(fliptets[0], fliptets[1]); 
+            fnext(fliptets[1], fliptets[2]); 
+            // Perform a 3-to-2 flip. Replace edge [c,b] by face [d,a,e].
+            //   [0] [c,b,d,a] (d = newpt)
+            //   [1] [c,b,a,e] (c = dummypoint)
+            //   [2] [c,b,e,d]
+            flip32(fliptets, 1, fc);
+          } else {
+            if (hullflag) {
+              // Reject this flip if pe is already marked.
+              pe = oppo(fliptets[1]);
+              if (!pinfected(pe)) {
+                pinfect(pe);
+                cavetetvertlist->newindex((void **) &parypt);
+                *parypt = pe;
+                // Perform a 2-to-3 flip.
+                flip23(fliptets, 1, fc);
+              } else {
+                // Reject this flip.
+                flipcount--;
+              }
+            } else {
+              // Perform a 2-to-3 flip. Replace face [a,b,c] by edge [e,d].
+              //   [0] [a,b,c,d], d = newpt.
+              //   [1] [b,a,c,e], c = dummypoint.
+              flip23(fliptets, 1, fc);
+            }
+          }
+        }
+        flipcount++;
+      } 
+      continue;
+    } // if (dummypoint)
+
+    fsym(fliptets[0], fliptets[1]);
+    if ((point) fliptets[1].tet[7] == dummypoint) {
+      // A hull face is locally Delaunay.
+      continue;
+    }
+    // Check if the adjacent tet has already been tested.
+    if (marktested(fliptets[1])) {
+      // It has been tested and it is Delaunay.
+      continue;
+    }
+
+    // Test whether the face is locally Delaunay or not.
+    pts = (point *) fliptets[1].tet; 
+    if (b->weighted) {
+      sign = orient4d_s(pts[4], pts[5], pts[6], pts[7], newpt,
+                        pts[4][3], pts[5][3], pts[6][3], pts[7][3],
+                        newpt[3]);
+    } else {
+      sign = insphere_s(pts[4], pts[5], pts[6], pts[7], newpt);
+    }
+
+
+    if (sign < 0) {
+      point pd = newpt;
+      point pe = oppo(fliptets[1]);
+      // Check the convexity of its three edges. Stop checking either a
+      //   locally non-convex edge (ori < 0) or a flat edge (ori = 0) is
+      //   encountered, and 'fliptet' represents that edge.
+      for (i = 0; i < 3; i++) {
+        ori = orient3d(org(fliptets[0]), dest(fliptets[0]), pd, pe);
+        if (ori <= 0) break;
+        enextself(fliptets[0]);
+      }
+      if (ori > 0) {
+        // A 2-to-3 flip is found.
+        //   [0] [a,b,c,d], 
+        //   [1] [b,a,c,e]. no dummypoint.
+        flip23(fliptets, 0, fc);
+        flipcount++;
+      } else { // ori <= 0
+        // The edge ('fliptets[0]' = [a',b',c',d]) is non-convex or flat,
+        //   where the edge [a',b'] is one of [a,b], [b,c], and [c,a].
+        // Check if there are three or four tets sharing at this edge.        
+        esymself(fliptets[0]); // [b,a,d,c]
+        for (i = 0; i < 3; i++) {
+          fnext(fliptets[i], fliptets[i+1]);
+        }
+        if (fliptets[3].tet == fliptets[0].tet) {
+          // A 3-to-2 flip is found. (No hull tet.)
+          flip32(fliptets, 0, fc); 
+          flipcount++;
+        } else {
+          // There are more than 3 tets at this edge.
+          fnext(fliptets[3], fliptets[4]);
+          if (fliptets[4].tet == fliptets[0].tet) {
+            if (ori == 0) {
+              // A 4-to-4 flip is found. (Two hull tets may be involved.)
+              // Current tets in 'fliptets':
+              //   [0] [b,a,d,c] (d may be newpt)
+              //   [1] [b,a,c,e]
+              //   [2] [b,a,e,f] (f may be dummypoint)
+              //   [3] [b,a,f,d]
+              esymself(fliptets[0]); // [a,b,c,d] 
+              // A 2-to-3 flip replaces face [a,b,c] by edge [e,d].
+              //   This creates a degenerate tet [e,d,a,b] (tmpfliptets[0]).
+              //   It will be removed by the followed 3-to-2 flip.
+              flip23(fliptets, 0, fc); // No hull tet.
+              fnext(fliptets[3], fliptets[1]);
+              fnext(fliptets[1], fliptets[2]);
+              // Current tets in 'fliptets':
+              //   [0] [...]
+              //   [1] [b,a,d,e] (degenerated, d may be new point).
+              //   [2] [b,a,e,f] (f may be dummypoint)
+              //   [3] [b,a,f,d]
+              // A 3-to-2 flip replaces edge [b,a] by face [d,e,f].
+              //   Hull tets may be involved (f may be dummypoint).
+              flip32(&(fliptets[1]), (apex(fliptets[3]) == dummypoint), fc);
+              flipcount++;
+            }
+          }
+        }
+      } // ori
+    } else {
+      // The adjacent tet is Delaunay. Mark it to avoid testing it again.
+      marktest(fliptets[1]);
+      // Save it for unmarking it later.
+      cavebdrylist->newindex((void **) &parytet);
+      *parytet = fliptets[1];
+    }
+
+  } // while (flipstack)
+
+  // Unmark saved tetrahedra.
+  for (i = 0; i < cavebdrylist->objects; i++) {
+    parytet = (triface *) fastlookup(cavebdrylist, i);
+    unmarktest(*parytet);
+  }
+  cavebdrylist->restart();
+
+  if (hullflag) {
+    // Unmark infected vertices.
+    for (i = 0; i < cavetetvertlist->objects; i++) {
+      parypt = (point *) fastlookup(cavetetvertlist, i);
+      puninfect(*parypt);
+    }
+    cavetetvertlist->restart();
+  }
+
+
+  return flipcount;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -803,15 +1058,15 @@ void tetgenmesh::initialdelaunay(point pa, point pb, point pc, point pd)
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
+
 void tetgenmesh::incrementaldelaunay(clock_t& tv)
 {
   triface searchtet;
   point *permutarray, swapvertex;
-  insertvertexflags ivf;
   REAL v1[3], v2[3], n[3];
   REAL bboxsize, bboxsize2, bboxsize3, ori;
-  int randindex, loc; 
-  int ngroup, nstart, nend;
+  int randindex; 
+  int ngroup = 0;
   int i, j;
 
   if (!b->quiet) {
@@ -822,82 +1077,81 @@ void tetgenmesh::incrementaldelaunay(clock_t& tv)
   permutarray = new point[in->numberofpoints];
   points->traversalinit();
 
-  if (b->verbose) {
-    printf("  Permuting vertices.\n"); 
-  }
-  srand(in->numberofpoints);
-  for (i = 0; i < in->numberofpoints; i++) {
-    randindex = rand() % (i + 1); // randomnation(i + 1);
-    permutarray[i] = permutarray[randindex];
-    permutarray[randindex] = (point) points->traverse();
-  }
-  if (b->brio_hilbert) { // -b option
+  if (b->no_sort) {
     if (b->verbose) {
-      printf("  Sort the points using simple BRIO and Hilbert curve L(%d).\n",
-             b->hilbert_limit); 
+      printf("  Using the input order.\n"); 
     }
-    hilbert_init(in->mesh_dim);
-    max_hcurve_depth_count = 0;
-
-    ngroup = (int) log((double) in->numberofpoints); 
-    nstart = 0;
-    for (i = 0; i < ngroup; i++) {
-      nend = in->numberofpoints >> (ngroup - 1 - i);
-      hilbert_sort3(&(permutarray[nstart]), nend - nstart, 0, 0, // e, d
-                    xmin, xmax, ymin, ymax, zmin, zmax, 0);
-      nstart = nend;
+    for (i = 0; i < in->numberofpoints; i++) {
+      permutarray[i] = (point) points->traverse();
     }
+  } else {
     if (b->verbose) {
-      printf("  Number of sorted subsets: %d.\n", ngroup);
-      printf("  Maximum curve order: %d.\n", max_hcurve_depth_count);
+      printf("  Permuting vertices.\n"); 
+    }
+    srand(in->numberofpoints);
+    for (i = 0; i < in->numberofpoints; i++) {
+      randindex = rand() % (i + 1); // randomnation(i + 1);
+      permutarray[i] = permutarray[randindex];
+      permutarray[randindex] = (point) points->traverse();
+    }
+    if (b->brio_hilbert) { // -b option
+      if (b->verbose) {
+        printf("  Sorting vertices.\n"); 
+      }
+      hilbert_init(in->mesh_dim);
+      brio_multiscale_sort(permutarray, in->numberofpoints, b->brio_threshold, 
+                           b->brio_ratio, &ngroup);
     }
   }
 
   tv = clock(); // Remember the time for sorting points.
 
   // Calculate the diagonal size of its bounding box.
-  bboxsize = sqrt(NORM2(xmax - xmin, ymax - ymin, zmax - zmin));
+  bboxsize = sqrt(norm2(xmax - xmin, ymax - ymin, zmax - zmin));
   bboxsize2 = bboxsize * bboxsize;
   bboxsize3 = bboxsize2 * bboxsize;
 
   // Make sure the second vertex is not identical with the first one.
   i = 1;
-  while ((DIST(permutarray[0], permutarray[i]) / bboxsize) < b->epsilon) {
+  while ((distance(permutarray[0],permutarray[i])/bboxsize)<b->epsilon) {
     i++;
     if (i == in->numberofpoints - 1) {
       printf("Exception:  All vertices are (nearly) identical (Tol = %g).\n",
              b->epsilon);
-      terminatetetgen(10);
+      terminatetetgen(this, 10);
     }
   }
   if (i > 1) {
-    // Swap to move the non-indetical vertex from index i to index 1.
+    // Swap to move the non-identical vertex from index i to index 1.
     swapvertex = permutarray[i];
     permutarray[i] = permutarray[1];
     permutarray[1] = swapvertex;
   }
 
   // Make sure the third vertex is not collinear with the first two.
+  // Acknowledgement:  Thanks Jan Pomplun for his correction by using 
+  //   epsilon^2 and epsilon^3 (instead of epsilon). 2013-08-15.
   i = 2;
   for (j = 0; j < 3; j++) {
     v1[j] = permutarray[1][j] - permutarray[0][j];
     v2[j] = permutarray[i][j] - permutarray[0][j];
   }
-  CROSS(v1, v2, n);
-  while ((sqrt(NORM2(n[0], n[1], n[2])) / bboxsize2) < b->epsilon) {
+  cross(v1, v2, n);
+  while ((sqrt(norm2(n[0], n[1], n[2])) / bboxsize2) < 
+         (b->epsilon * b->epsilon)) {
     i++;
     if (i == in->numberofpoints - 1) {
       printf("Exception:  All vertices are (nearly) collinear (Tol = %g).\n",
              b->epsilon);
-      terminatetetgen(10);
+      terminatetetgen(this, 10);
     }
     for (j = 0; j < 3; j++) {
       v2[j] = permutarray[i][j] - permutarray[0][j];
     }
-    CROSS(v1, v2, n);
+    cross(v1, v2, n);
   }
   if (i > 2) {
-    // Swap to move the non-indetical vertex from index i to index 1.
+    // Swap to move the non-identical vertex from index i to index 1.
     swapvertex = permutarray[i];
     permutarray[i] = permutarray[2];
     permutarray[2] = swapvertex;
@@ -905,20 +1159,20 @@ void tetgenmesh::incrementaldelaunay(clock_t& tv)
 
   // Make sure the fourth vertex is not coplanar with the first three.
   i = 3;
-  ori = orient3d(permutarray[0], permutarray[1], permutarray[2], 
-                 permutarray[i]);
-  while ((fabs(ori) / bboxsize3) < b->epsilon) {
+  ori = orient3dfast(permutarray[0], permutarray[1], permutarray[2], 
+                     permutarray[i]);
+  while ((fabs(ori) / bboxsize3) < (b->epsilon * b->epsilon * b->epsilon)) {
     i++;
     if (i == in->numberofpoints) {
       printf("Exception:  All vertices are coplanar (Tol = %g).\n",
              b->epsilon);
-      terminatetetgen(10);
+      terminatetetgen(this, 10);
     }
-    ori = orient3d(permutarray[0], permutarray[1], permutarray[2], 
-                   permutarray[i]);
+    ori = orient3dfast(permutarray[0], permutarray[1], permutarray[2], 
+                       permutarray[i]);
   }
   if (i > 3) {
-    // Swap to move the non-indetical vertex from index i to index 1.
+    // Swap to move the non-identical vertex from index i to index 1.
     swapvertex = permutarray[i];
     permutarray[i] = permutarray[3];
     permutarray[3] = swapvertex;
@@ -940,11 +1194,14 @@ void tetgenmesh::incrementaldelaunay(clock_t& tv)
   if (b->verbose) {
     printf("  Incrementally inserting vertices.\n");
   }
+  insertvertexflags ivf;
+  flipconstraints fc;
 
   // Choose algorithm: Bowyer-Watson (default) or Incremental Flip
   if (b->incrflip) {
     ivf.bowywat = 0;
     ivf.lawson = 1;
+    fc.enqflag = 1;
   } else {
     ivf.bowywat = 1;
     ivf.lawson = 0;
@@ -952,44 +1209,57 @@ void tetgenmesh::incrementaldelaunay(clock_t& tv)
 
 
   for (i = 4; i < in->numberofpoints; i++) {
-    if (b->verbose > 2) printf("      #%d", i);
     if (pointtype(permutarray[i]) == UNUSEDVERTEX) {
       setpointtype(permutarray[i], VOLVERTEX);
     }
-    // Auto choose the starting tet for point location.
-    searchtet.tet = NULL;
+    if (b->brio_hilbert || b->no_sort) { // -b or -b/1
+      // Start the last updated tet.
+      searchtet.tet = recenttet.tet;
+    } else { // -b0
+      // Randomly choose the starting tet for point location.
+      searchtet.tet = NULL;
+    }
     ivf.iloc = (int) OUTSIDE;
     // Insert the vertex.
-    loc = insertvertex(permutarray[i], &searchtet, NULL, NULL, &ivf);
-    if (loc == (int) ONVERTEX) {
-      // The point already exists. Mark it and do nothing on it.
-      swapvertex = org(searchtet);
-      assert(swapvertex != permutarray[i]); // SELF_CHECK
-      if (b->object != tetgenbehavior::STL) {
-        if (!b->quiet) {
-          printf("Warning:  Point #%d is coincident with #%d. Ignored!\n",
-                 pointmark(permutarray[i]), pointmark(swapvertex));
-        }
+    if (insertpoint(permutarray[i], &searchtet, NULL, NULL, &ivf)) {
+      if (flipstack != NULL) {
+        // Perform flip to recover Delaunayness.
+        incrementalflip(permutarray[i], (ivf.iloc == (int) OUTSIDE), &fc);
       }
-      setpoint2ppt(permutarray[i], swapvertex);
-      setpointtype(permutarray[i], DUPLICATEDVERTEX);
-      dupverts++;
-      continue;
-    } else if (loc == (int) NREGULARVERTEX) {
-      // The point is non-regular. Skipped.
-      continue;
-    }
-    if (ivf.lawson) {
-      // Perform flip to recover Delaunayness.
-      lawsonflip3d(permutarray[i], ivf.lawson, 0, 0, 0);
+    } else {
+      if (ivf.iloc == (int) ONVERTEX) {
+        // The point already exists. Mark it and do nothing on it.
+        swapvertex = org(searchtet);
+        assert(swapvertex != permutarray[i]); // SELF_CHECK
+        if (b->object != tetgenbehavior::STL) {
+          if (!b->quiet) {
+            printf("Warning:  Point #%d is coincident with #%d. Ignored!\n",
+                   pointmark(permutarray[i]), pointmark(swapvertex));
+          }
+        }
+        setpoint2ppt(permutarray[i], swapvertex);
+        setpointtype(permutarray[i], DUPLICATEDVERTEX);
+        dupverts++;
+      } else if (ivf.iloc == (int) NEARVERTEX) {
+        swapvertex = point2ppt(permutarray[i]);
+        if (!b->quiet) {
+          printf("Warning:  Point %d is replaced by point %d.\n",
+                 pointmark(permutarray[i]), pointmark(swapvertex));
+          printf("  Avoid creating a very short edge (len = %g) (< %g).\n",
+                 permutarray[i][3], b->minedgelength);
+          printf("  You may try a smaller tolerance (-T) (current is %g)\n", 
+                 b->epsilon);
+          printf("  or use the option -M0/1 to avoid such replacement.\n");
+        }
+        // Remember it is a duplicated point.
+        setpointtype(permutarray[i], DUPLICATEDVERTEX);
+        // Count the number of duplicated points.
+        dupverts++;
+      }
     }
   }
 
 
-
-  if (b->brio_hilbert) {
-    b->brio_hilbert = 0; // Disable it.
-  }
 
   delete [] permutarray;
 }

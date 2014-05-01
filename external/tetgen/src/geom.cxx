@@ -4,8 +4,147 @@
 ////                                                                       ////
 
 // PI is the ratio of a circle's circumference to its diameter.
-
 REAL tetgenmesh::PI = 3.14159265358979323846264338327950288419716939937510582;
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// insphere_s()    Insphere test with symbolic perturbation.                 //
+//                                                                           //
+// Given four points pa, pb, pc, and pd, test if the point pe lies inside or //
+// outside the circumscribed sphere of the four points.                      //
+//                                                                           //
+// Here we assume that the 3d orientation of the point sequence {pa, pb, pc, //
+// pd} is positive (NOT zero), i.e., pd lies above the plane passing through //
+// points pa, pb, and pc. Otherwise, the returned sign is flipped.           //
+//                                                                           //
+// Return a positive value (> 0) if pe lies inside, a negative value (< 0)   //
+// if pe lies outside the sphere, the returned value will not be zero.       //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+REAL tetgenmesh::insphere_s(REAL* pa, REAL* pb, REAL* pc, REAL* pd, REAL* pe)
+{
+  REAL sign;
+
+  sign = insphere(pa, pb, pc, pd, pe);
+  if (sign != 0.0) {
+    return sign;
+  }
+
+  // Symbolic perturbation.
+  point pt[5], swappt;
+  REAL oriA, oriB;
+  int swaps, count;
+  int n, i;
+
+  pt[0] = pa;
+  pt[1] = pb;
+  pt[2] = pc;
+  pt[3] = pd;
+  pt[4] = pe;
+  
+  // Sort the five points such that their indices are in the increasing
+  //   order. An optimized bubble sort algorithm is used, i.e., it has
+  //   the worst case O(n^2) runtime, but it is usually much faster.
+  swaps = 0; // Record the total number of swaps.
+  n = 5;
+  do {
+    count = 0;
+    n = n - 1;
+    for (i = 0; i < n; i++) {
+      if (pointmark(pt[i]) > pointmark(pt[i+1])) {
+        swappt = pt[i]; pt[i] = pt[i+1]; pt[i+1] = swappt;
+        count++;
+      }
+    }
+    swaps += count;
+  } while (count > 0); // Continue if some points are swapped.
+
+  oriA = orient3d(pt[1], pt[2], pt[3], pt[4]);
+  if (oriA != 0.0) {
+    // Flip the sign if there are odd number of swaps.
+    if ((swaps % 2) != 0) oriA = -oriA;
+    return oriA;
+  }
+  
+  oriB = -orient3d(pt[0], pt[2], pt[3], pt[4]);
+  assert(oriB != 0.0); // SELF_CHECK
+  // Flip the sign if there are odd number of swaps.
+  if ((swaps % 2) != 0) oriB = -oriB;
+  return oriB;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// orient4d_s()    4d orientation test with symbolic perturbation.           //
+//                                                                           //
+// Given four lifted points pa', pb', pc', and pd' in R^4,test if the lifted //
+// point pe' in R^4 lies below or above the hyperplane passing through the   //
+// four points pa', pb', pc', and pd'.                                       //
+//                                                                           //
+// Here we assume that the 3d orientation of the point sequence {pa, pb, pc, //
+// pd} is positive (NOT zero), i.e., pd lies above the plane passing through //
+// the points pa, pb, and pc. Otherwise, the returned sign is flipped.       //
+//                                                                           //
+// Return a positive value (> 0) if pe' lies below, a negative value (< 0)   //
+// if pe' lies above the hyperplane, the returned value should not be zero.  //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+REAL tetgenmesh::orient4d_s(REAL* pa, REAL* pb, REAL* pc, REAL* pd, REAL* pe,
+                            REAL aheight, REAL bheight, REAL cheight, 
+                            REAL dheight, REAL eheight)
+{
+  REAL sign;
+
+  sign = orient4d(pa, pb, pc, pd, pe, 
+                  aheight, bheight, cheight, dheight, eheight);
+  if (sign != 0.0) {
+    return sign;
+  }
+
+  // Symbolic perturbation.
+  point pt[5], swappt;
+  REAL oriA, oriB;
+  int swaps, count;
+  int n, i;
+
+  pt[0] = pa;
+  pt[1] = pb;
+  pt[2] = pc;
+  pt[3] = pd;
+  pt[4] = pe;
+  
+  // Sort the five points such that their indices are in the increasing
+  //   order. An optimized bubble sort algorithm is used, i.e., it has
+  //   the worst case O(n^2) runtime, but it is usually much faster.
+  swaps = 0; // Record the total number of swaps.
+  n = 5;
+  do {
+    count = 0;
+    n = n - 1;
+    for (i = 0; i < n; i++) {
+      if (pointmark(pt[i]) > pointmark(pt[i+1])) {
+        swappt = pt[i]; pt[i] = pt[i+1]; pt[i+1] = swappt;
+        count++;
+      }
+    }
+    swaps += count;
+  } while (count > 0); // Continue if some points are swapped.
+
+  oriA = orient3d(pt[1], pt[2], pt[3], pt[4]);
+  if (oriA != 0.0) {
+    // Flip the sign if there are odd number of swaps.
+    if ((swaps % 2) != 0) oriA = -oriA;
+    return oriA;
+  }
+  
+  oriB = -orient3d(pt[0], pt[2], pt[3], pt[4]);
+  assert(oriB != 0.0); // SELF_CHECK
+  // Flip the sign if there are odd number of swaps.
+  if ((swaps % 2) != 0) oriB = -oriB;
+  return oriB;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
@@ -20,7 +159,7 @@ REAL tetgenmesh::PI = 3.14159265358979323846264338327950288419716939937510582;
 // If T and E intersect each other, they may intersect in different ways. If //
 // 'level' > 0, their intersection type will be reported 'types' and 'pos'.  //
 //                                                                           //
-// The retrun value indicates one of the following cases:                    //
+// The return value indicates one of the following cases:                    //
 //   - 0, T and E are disjoint.                                              //
 //   - 1, T and E intersect each other.                                      //
 //   - 2, T and E are not coplanar. They intersect at a single point.        //
@@ -28,6 +167,10 @@ REAL tetgenmesh::PI = 3.14159265358979323846264338327950288419716939937510582;
 //        segment (if types[1] != DISJOINT).                                 //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
+
+#define SETVECTOR3(V, a0, a1, a2) (V)[0] = (a0); (V)[1] = (a1); (V)[2] = (a2)
+
+#define SWAP2(a0, a1, tmp) (tmp) = (a0); (a0) = (a1); (a1) = (tmp)
 
 int tetgenmesh::tri_edge_2d(point A, point B, point C, point P, point Q, 
                             point R, int level, int *types, int *pos)
@@ -45,14 +188,14 @@ int tetgenmesh::tri_edge_2d(point A, point B, point C, point P, point Q,
       REAL n[3], len;
       // Calculate a lift point, saved in dummypoint.
       facenormal(A, B, C, n, 1, NULL);
-      len = sqrt(DOT(n, n));
+      len = sqrt(dot(n, n));
       if (len != 0) {
         n[0] /= len;
         n[1] /= len;
         n[2] /= len;
-        len = DIST(A, B);
-        len += DIST(B, C);
-        len += DIST(C, A);
+        len = distance(A, B);
+        len += distance(B, C);
+        len += distance(C, A);
         len /= 3.0;
         R = abovept; //dummypoint;
         R[0] = A[0] + len * n[0];
@@ -73,7 +216,6 @@ int tetgenmesh::tri_edge_2d(point A, point B, point C, point P, point Q,
   sB = orient3d(P, Q, R, B);
   sC = orient3d(P, Q, R, C);
 
-  triedgcopcount++;
 
   if (sA < 0) {
     if (sB < 0) {
@@ -657,7 +799,6 @@ int tetgenmesh::tri_edge_tail(point A,point B,point C,point P,point Q,point R,
   REAL s1, s2, s3;
   int z1;
 
-  triedgcount++;
 
   if (sP < 0) {
     if (sQ < 0) { // (--) disjoint
@@ -1152,6 +1293,9 @@ void tetgenmesh::lu_solve(REAL lu[4][4], int n, int* ps, REAL* b, int N)
 // Return a negative value if pd is inside the circumcircle of the triangle  //
 // pa, pb, and pc.                                                           //
 //                                                                           //
+// IMPORTANT: It assumes that [a,b] is the common edge, i.e., the two input  //
+// triangles are [a,b,c] and [b,a,d].                                        //
+//                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
 REAL tetgenmesh::incircle3d(point pa, point pb, point pc, point pd)
@@ -1161,19 +1305,19 @@ REAL tetgenmesh::incircle3d(point pa, point pb, point pc, point pd)
 
   // Calculate the areas of the two triangles [a, b, c] and [b, a, d].
   facenormal(pa, pb, pc, n1, 1, NULL);
-  area2[0] = DOT(n1, n1);
+  area2[0] = dot(n1, n1);
   facenormal(pb, pa, pd, n2, 1, NULL);
-  area2[1] = DOT(n2, n2);
+  area2[1] = dot(n2, n2);
 
   if (area2[0] > area2[1]) {
     // Choose [a, b, c] as the base triangle.
     circumsphere(pa, pb, pc, NULL, c, &r);
-    d = DIST(c, pd);
+    d = distance(c, pd);
   } else {
     // Choose [b, a, d] as the base triangle.
     if (area2[1] > 0) {
       circumsphere(pb, pa, pd, NULL, c, &r);
-      d = DIST(c, pc);
+      d = distance(c, pc);
     } else {
       // The four points are collinear. This case only happens on the boundary.
       return 0; // Return "not inside".
@@ -1186,150 +1330,6 @@ REAL tetgenmesh::incircle3d(point pa, point pb, point pc, point pd)
   }
 
   return sign;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// insphere_s()    Insphere test with symbolic perturbation.                 //
-//                                                                           //
-// Given four points pa, pb, pc, and pd, test if the point pe lies inside or //
-// outside the circumscirbed sphere of the four points.                      //
-//                                                                           //
-// Here we assume that the 3d orientation of the point sequence {pa, pb, pc, //
-// pd} is positive (NOT zero), i.e., pd lies above the plane passing through //
-// points pa, pb, and pc. Otherwise, the returned sign is flipped.           //
-//                                                                           //
-// Return a positive value (> 0) if pe lies inside, a negative value (< 0)   //
-// if pe lies outside the sphere, the returned value will not be zero.       //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-REAL tetgenmesh::insphere_s(REAL* pa, REAL* pb, REAL* pc, REAL* pd, REAL* pe)
-{
-  REAL sign;
-
-  sign = insphere(pa, pb, pc, pd, pe);
-  if (sign != 0.0) {
-    return sign;
-  }
-
-  insphere_sos_count++;
-
-  // Symbolic perturbation.
-  point pt[5], swappt;
-  REAL oriA, oriB;
-  int swaps, count;
-  int n, i;
-
-  pt[0] = pa;
-  pt[1] = pb;
-  pt[2] = pc;
-  pt[3] = pd;
-  pt[4] = pe;
-  
-  // Sort the five points such that their indices are in the increasing
-  //   order. An optimized bubble sort algorithm is used, i.e., it has
-  //   the worst case O(n^2) runtime, but it is usually much faster.
-  swaps = 0; // Record the total number of swaps.
-  n = 5;
-  do {
-    count = 0;
-    n = n - 1;
-    for (i = 0; i < n; i++) {
-      if (pointmark(pt[i]) > pointmark(pt[i+1])) {
-        swappt = pt[i]; pt[i] = pt[i+1]; pt[i+1] = swappt;
-        count++;
-      }
-    }
-    swaps += count;
-  } while (count > 0); // Continue if some points are swapped.
-
-  oriA = orient3d(pt[1], pt[2], pt[3], pt[4]);
-  if (oriA != 0.0) {
-    // Flip the sign if there are odd number of swaps.
-    if ((swaps % 2) != 0) oriA = -oriA;
-    return oriA;
-  }
-  
-  oriB = -orient3d(pt[0], pt[2], pt[3], pt[4]);
-  assert(oriB != 0.0); // SELF_CHECK
-  // Flip the sign if there are odd number of swaps.
-  if ((swaps % 2) != 0) oriB = -oriB;
-  return oriB;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// orient4d_s()    4d orientation test with symbolic perturbation.           //
-//                                                                           //
-// Given four lifted points pa', pb', pc', and pd' in R^4,test if the lifted //
-// point pe' in R^4 lies below or above the hyperplance passing through the  //
-// four points pa', pb', pc', and pd'.                                       //
-//                                                                           //
-// Here we assume that the 3d orientation of the point sequence {pa, pb, pc, //
-// pd} is positive (NOT zero), i.e., pd lies above the plane passing through //
-// the points pa, pb, and pc. Otherwise, the returned sign is flipped.       //
-//                                                                           //
-// Return a positive value (> 0) if pe' lies below, a negative value (< 0)   //
-// if pe' lies above the hyperplane, the returned value should not be zero.  //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-REAL tetgenmesh::orient4d_s(REAL* pa, REAL* pb, REAL* pc, REAL* pd, REAL* pe,
-                            REAL aheight, REAL bheight, REAL cheight, 
-                            REAL dheight, REAL eheight)
-{
-  REAL sign;
-
-  sign = orient4d(pa, pb, pc, pd, pe, 
-                  aheight, bheight, cheight, dheight, eheight);
-  if (sign != 0.0) {
-    return sign;
-  }
-
-  orient4d_sos_count++;
-
-  // Symbolic perturbation.
-  point pt[5], swappt;
-  REAL oriA, oriB;
-  int swaps, count;
-  int n, i;
-
-  pt[0] = pa;
-  pt[1] = pb;
-  pt[2] = pc;
-  pt[3] = pd;
-  pt[4] = pe;
-  
-  // Sort the five points such that their indices are in the increasing
-  //   order. An optimized bubble sort algorithm is used, i.e., it has
-  //   the worst case O(n^2) runtime, but it is usually much faster.
-  swaps = 0; // Record the total number of swaps.
-  n = 5;
-  do {
-    count = 0;
-    n = n - 1;
-    for (i = 0; i < n; i++) {
-      if (pointmark(pt[i]) > pointmark(pt[i+1])) {
-        swappt = pt[i]; pt[i] = pt[i+1]; pt[i+1] = swappt;
-        count++;
-      }
-    }
-    swaps += count;
-  } while (count > 0); // Continue if some points are swapped.
-
-  oriA = orient3d(pt[1], pt[2], pt[3], pt[4]);
-  if (oriA != 0.0) {
-    // Flip the sign if there are odd number of swaps.
-    if ((swaps % 2) != 0) oriA = -oriA;
-    return oriA;
-  }
-  
-  oriB = -orient3d(pt[0], pt[2], pt[3], pt[4]);
-  assert(oriB != 0.0); // SELF_CHECK
-  // Flip the sign if there are odd number of swaps.
-  if ((swaps % 2) != 0) oriB = -oriB;
-  return oriB;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1368,9 +1368,9 @@ void tetgenmesh::facenormal(point pa, point pb, point pc, REAL *n, int pivot,
     v3[0] = pc[0] - pb[0];  // edge vector v3: b->c
     v3[1] = pc[1] - pb[1];
     v3[2] = pc[2] - pb[2];
-    L1 = DOT(v1, v1);
-    L2 = DOT(v2, v2);
-    L3 = DOT(v3, v3);
+    L1 = dot(v1, v1);
+    L2 = dot(v2, v2);
+    L3 = dot(v3, v3);
     // Sort the three edge lengths.
     if (L1 < L2) {
       if (L2 < L3) {
@@ -1394,7 +1394,7 @@ void tetgenmesh::facenormal(point pa, point pb, point pc, REAL *n, int pivot,
   }
 
   // Calculate the face normal.
-  CROSS(pv1, pv2, n);
+  cross(pv1, pv2, n);
   // Inverse the direction;
   n[0] = -n[0];
   n[1] = -n[1];
@@ -1428,9 +1428,8 @@ REAL tetgenmesh::shortdistance(REAL* p, REAL* e1, REAL* e2)
   v2[2] = p[2] - e1[2];
 
   len = sqrt(dot(v1, v1));
-#ifdef SELF_CHECK
   assert(len != 0.0);
-#endif
+
   v1[0] /= len;
   v1[1] /= len;
   v1[2] /= len;
@@ -1462,6 +1461,27 @@ REAL tetgenmesh::triarea(REAL* pa, REAL* pb, REAL* pc)
   return 0.5 * sqrt(dot(A[2], A[2])); // The area of [a,b,c].
 }
 
+REAL tetgenmesh::orient3dfast(REAL *pa, REAL *pb, REAL *pc, REAL *pd)
+{
+  REAL adx, bdx, cdx;
+  REAL ady, bdy, cdy;
+  REAL adz, bdz, cdz;
+
+  adx = pa[0] - pd[0];
+  bdx = pb[0] - pd[0];
+  cdx = pc[0] - pd[0];
+  ady = pa[1] - pd[1];
+  bdy = pb[1] - pd[1];
+  cdy = pc[1] - pd[1];
+  adz = pa[2] - pd[2];
+  bdz = pb[2] - pd[2];
+  cdz = pc[2] - pd[2];
+
+  return adx * (bdy * cdz - bdz * cdy)
+       + bdx * (cdy * adz - cdz * ady)
+       + cdx * (ady * bdz - adz * bdy);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 // interiorangle()    Return the interior angle (0 - 2 * PI) between vectors //
@@ -1491,9 +1511,8 @@ REAL tetgenmesh::interiorangle(REAL* o, REAL* p1, REAL* p2, REAL* n)
   len1 = sqrt(dot(v1, v1));
   len2 = sqrt(dot(v2, v2));
   lenlen = len1 * len2;
-#ifdef SELF_CHECK
   assert(lenlen != 0.0);
-#endif
+
   costheta = dot(v1, v2) / lenlen;
   if (costheta > 1.0) {
     costheta = 1.0; // Roundoff. 
@@ -1630,7 +1649,7 @@ bool tetgenmesh::tetalldihedral(point pa, point pb, point pc, point pd,
                                 REAL* cosdd, REAL* cosmaxd, REAL* cosmind)
 {
   REAL N[4][3], vol, cosd, len;
-  int f1, f2, i, j;
+  int f1 = 0, f2 = 0, i, j;
 
   vol = 0; // Check if the tet is valid or not.
 
@@ -1686,7 +1705,7 @@ bool tetgenmesh::tetalldihedral(point pa, point pb, point pc, point pd,
     }
   }
 
-  // Calculate the consine of the dihedral angles of the edges.
+  // Calculate the cosine of the dihedral angles of the edges.
   for (i = 0; i < 6; i++) {
     switch (i) {
     case 0: f1 = 0; f2 = 1; break; // [c,d].
@@ -1698,6 +1717,7 @@ bool tetgenmesh::tetalldihedral(point pa, point pb, point pc, point pd,
     }
     cosd = -dot(N[f1], N[f2]);
     if (cosd < -1.0) cosd = -1.0; // Rounding.
+    if (cosd >  1.0) cosd =  1.0; // Rounding.
     if (cosdd) cosdd[i] = cosd;
     if (cosmaxd || cosmind) {
       if (i == 0) {
@@ -1715,7 +1735,7 @@ bool tetgenmesh::tetalldihedral(point pa, point pb, point pc, point pd,
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-// tetallnormal()    Get the in-noramls of the four faces of a given tet.    //
+// tetallnormal()    Get the in-normals of the four faces of a given tet.    //
 //                                                                           //
 // Let tet be abcd. N[4][3] returns the four normals, which are: N[0] cbd,   //
 // N[1] acd, N[2] bad, N[3] abc (exactly corresponding to the face indices   //
@@ -1834,7 +1854,7 @@ REAL tetgenmesh::tetaspectratio(point pa, point pb, point pc, point pd)
 //                                                                           //
 // Return TRUE if the input points are not degenerate and the circumcenter   //
 // and circumradius are returned in 'cent' and 'radius' respectively if they //
-// are not NULLs. Otherwise, return FALSE indicated the points are degenrate.//
+// are not NULLs.  Otherwise, return FALSE, the four points are co-planar.   //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1988,6 +2008,56 @@ void tetgenmesh::planelineint(REAL* pa, REAL* pb, REAL* pc, REAL* e1, REAL* e2,
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
+// linelineint()    Calculate the intersection(s) of two line segments.      //
+//                                                                           //
+// Calculate the line segment [P, Q] that is the shortest route between two  //
+// lines from A to B and C to D. Calculate also the values of tp and tq      //
+// where: P = A + tp (B - A), and Q = C + tq (D - C).                        //
+//                                                                           //
+// Return 1 if the line segment exists. Otherwise, return 0.                 //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+int tetgenmesh::linelineint(REAL* A, REAL* B, REAL* C, REAL* D, REAL* P, 
+		            REAL* Q, REAL* tp, REAL* tq)
+{
+  REAL vab[3], vcd[3], vca[3];
+  REAL vab_vab, vcd_vcd, vab_vcd;
+  REAL vca_vab, vca_vcd;
+  REAL det, eps;
+  int i;
+
+  for (i = 0; i < 3; i++) {
+    vab[i] = B[i] - A[i];
+    vcd[i] = D[i] - C[i];
+    vca[i] = A[i] - C[i];
+  }
+
+  vab_vab = dot(vab, vab);
+  vcd_vcd = dot(vcd, vcd);
+  vab_vcd = dot(vab, vcd);
+
+  det = vab_vab * vcd_vcd - vab_vcd * vab_vcd;
+  // Round the result.
+  eps = det / (fabs(vab_vab * vcd_vcd) + fabs(vab_vcd * vab_vcd));
+  if (eps < b->epsilon) {
+    return 0;
+  }
+
+  vca_vab = dot(vca, vab);
+  vca_vcd = dot(vca, vcd);
+
+  *tp = (vcd_vcd * (- vca_vab) + vab_vcd * vca_vcd) / det;
+  *tq = (vab_vcd * (- vca_vab) + vab_vab * vca_vcd) / det;
+
+  for (i = 0; i < 3; i++) P[i] = A[i] + (*tp) * vab[i];
+  for (i = 0; i < 3; i++) Q[i] = C[i] + (*tq) * vcd[i];
+
+  return 1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
 // tetprismvol()    Calculate the volume of a tetrahedral prism in 4D.       //
 //                                                                           //
 // A tetrahedral prism is a convex uniform polychoron (four dimensional poly-//
@@ -2031,6 +2101,129 @@ REAL tetgenmesh::tetprismvol(REAL* p0, REAL* p1, REAL* p2, REAL* p3)
   vol[3] = orient4d(p6, p5, p4, p3, p1, w6, w5, w4, 0,  0);
 
   return fabs(vol[0]) + fabs(vol[1]) + fabs(vol[2]) + fabs(vol[3]);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// calculateabovepoint()    Calculate a point above a facet in 'dummypoint'. //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+bool tetgenmesh::calculateabovepoint(arraypool *facpoints, point *ppa,
+                                     point *ppb, point *ppc)
+{
+  point *ppt, pa, pb, pc;
+  REAL v1[3], v2[3], n[3];
+  REAL lab, len, A, area;
+  REAL x, y, z;
+  int i;
+
+  ppt = (point *) fastlookup(facpoints, 0);
+  pa = *ppt; // a is the first point.
+  pb = pc = NULL; // Avoid compiler warnings.
+
+  // Get a point b s.t. the length of [a, b] is maximal.
+  lab = 0;
+  for (i = 1; i < facpoints->objects; i++) {
+    ppt = (point *) fastlookup(facpoints, i);
+    x = (*ppt)[0] - pa[0];
+    y = (*ppt)[1] - pa[1];
+    z = (*ppt)[2] - pa[2];
+    len = x * x + y * y + z * z;
+    if (len > lab) {
+      lab = len;
+      pb = *ppt;
+    }
+  }
+  lab = sqrt(lab);
+  if (lab == 0) {
+    if (!b->quiet) {
+      printf("Warning:  All points of a facet are coincident with %d.\n",
+        pointmark(pa));
+    }
+    return false;
+  }
+
+  // Get a point c s.t. the area of [a, b, c] is maximal.
+  v1[0] = pb[0] - pa[0];
+  v1[1] = pb[1] - pa[1];
+  v1[2] = pb[2] - pa[2];
+  A = 0;
+  for (i = 1; i < facpoints->objects; i++) {
+    ppt = (point *) fastlookup(facpoints, i);
+    v2[0] = (*ppt)[0] - pa[0];
+    v2[1] = (*ppt)[1] - pa[1];
+    v2[2] = (*ppt)[2] - pa[2];
+    cross(v1, v2, n);
+    area = dot(n, n);
+    if (area > A) {
+      A = area;
+      pc = *ppt;
+    }
+  }
+  if (A == 0) {
+    // All points are collinear. No above point.
+    if (!b->quiet) {
+      printf("Warning:  All points of a facet are collinaer with [%d, %d].\n",
+        pointmark(pa), pointmark(pb));
+    }
+    return false;
+  }
+
+  // Calculate an above point of this facet.
+  facenormal(pa, pb, pc, n, 1, NULL);
+  len = sqrt(dot(n, n));
+  n[0] /= len;
+  n[1] /= len;
+  n[2] /= len;
+  lab /= 2.0; // Half the maximal length.
+  dummypoint[0] = pa[0] + lab * n[0];
+  dummypoint[1] = pa[1] + lab * n[1];
+  dummypoint[2] = pa[2] + lab * n[2];
+
+  if (ppa != NULL) {
+    // Return the three points.
+    *ppa = pa;
+    *ppb = pb;
+    *ppc = pc;
+  }
+
+  return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// Calculate an above point. It lies above the plane containing  the subface //
+//   [a,b,c], and save it in dummypoint. Moreover, the vector pa->dummypoint //
+//   is the normal of the plane.                                             //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+void tetgenmesh::calculateabovepoint4(point pa, point pb, point pc, point pd)
+{
+  REAL n1[3], n2[3], *norm;
+  REAL len, len1, len2;
+
+  // Select a base.
+  facenormal(pa, pb, pc, n1, 1, NULL);
+  len1 = sqrt(dot(n1, n1));
+  facenormal(pa, pb, pd, n2, 1, NULL);
+  len2 = sqrt(dot(n2, n2));
+  if (len1 > len2) {
+    norm = n1;
+    len = len1;
+  } else {
+    norm = n2;
+    len = len2;
+  }
+  assert(len > 0);
+  norm[0] /= len;
+  norm[1] /= len;
+  norm[2] /= len;
+  len = distance(pa, pb);
+  dummypoint[0] = pa[0] + len * norm[0];
+  dummypoint[1] = pa[1] + len * norm[1];
+  dummypoint[2] = pa[2] + len * norm[2];
 }
 
 ////                                                                       ////

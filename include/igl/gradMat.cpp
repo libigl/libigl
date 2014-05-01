@@ -103,3 +103,4 @@ IGL_INLINE void igl::gradMat(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynam
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
 #endif
+

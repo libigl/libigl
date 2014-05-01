@@ -252,7 +252,10 @@ void display()
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, SILVER_SPECULAR);
   glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128);
 
-  vector<Quaterniond> dQ(BE.rows(),Quaterniond::Identity()),vQ;
+  typedef std::vector<
+    Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> >
+    RotationList;
+  RotationList dQ(BE.rows(),Quaterniond::Identity()),vQ;
   vector<Vector3d> vT;
   Matrix3d A = Matrix3d::Identity();
   for(int e = 0;e<BE.rows();e++)

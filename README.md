@@ -24,7 +24,11 @@ listed below.
 - libpng  libiglpng extra only
 - Mosek  libiglmosek extra only
 - Matlab  libiglmatlab extra only
-- boost  libboost extra only
+- boost  libiglboost, libiglcgal extra only
+- CGAL  libiglcgal extra only
+    * boost 
+    * gmp
+    * mpfr
 
 ### Optional (included in external/) ###
 - TetGen  libigltetgen extra only

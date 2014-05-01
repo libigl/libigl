@@ -5,16 +5,25 @@
 
 // Initialize fast lookup tables for mesh maniplulation primitives.
 
-int tetgenmesh::mod12[36] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-                             0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-                             0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-int tetgenmesh::mod6[18]  = {0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5,
-                             0, 1, 2, 3, 4, 5};
+int tetgenmesh::bondtbl[12][12] = {{0,},};
+int tetgenmesh::enexttbl[12] = {0,};
+int tetgenmesh::eprevtbl[12] = {0,};
+int tetgenmesh::enextesymtbl[12] = {0,};
+int tetgenmesh::eprevesymtbl[12] = {0,};
+int tetgenmesh::eorgoppotbl[12] = {0,};
+int tetgenmesh::edestoppotbl[12] = {0,};
+int tetgenmesh::fsymtbl[12][12] = {{0,},};
+int tetgenmesh::facepivot1[12] = {0,};
+int tetgenmesh::facepivot2[12][12] = {{0,},};
+int tetgenmesh::tsbondtbl[12][6] = {{0,},};
+int tetgenmesh::stbondtbl[12][6] = {{0,},};
+int tetgenmesh::tspivottbl[12][6] = {{0,},};
+int tetgenmesh::stpivottbl[12][6] = {{0,},};
 
-// Table 'edgepivot' takes an directed edge (version) as input, returns the
+// Table 'esymtbl' takes an directed edge (version) as input, returns the
 //   inversed edge (version) of it.
 
-int tetgenmesh::edgepivot[12] = {9, 6, 11, 4, 3, 7, 1, 5, 10, 0, 8, 2};
+int tetgenmesh::esymtbl[12] = {9, 6, 11, 4, 3, 7, 1, 5, 10, 0, 8, 2};
 
 // The following four tables give the 12 permutations of the set {0,1,2,3}.
 //   An offset 4 is added to each element for a direct access of the points
@@ -31,6 +40,11 @@ int tetgenmesh::oppopivot[12] = {4, 5, 6, 7, 4, 5, 6, 7, 4, 5, 6, 7};
 int tetgenmesh::ver2edge[12] = {0, 1, 2, 3, 3, 5, 1, 5, 4, 0, 4, 2};
 int tetgenmesh::edge2ver[ 6] = {0, 1, 2, 3, 8, 5};
 
+// Edge versions whose apex or opposite may be dummypoint.
+
+int tetgenmesh::epivot[12] = {4, 5, 2, 11, 4, 5, 2, 11, 4, 5, 2, 11};
+
+
 // Table 'snextpivot' takes an edge version as input, returns the next edge
 //   version in the same edge ring.
 
@@ -44,9 +58,91 @@ int tetgenmesh::sorgpivot [6] = {3, 4, 4, 5, 5, 3};
 int tetgenmesh::sdestpivot[6] = {4, 3, 5, 4, 3, 5};
 int tetgenmesh::sapexpivot[6] = {5, 5, 3, 3, 4, 4};
 
-// Edge versions whose apex or opposite may be dummypoint.
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+// inittable()    Initialize the look-up tables.                             //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
 
-int tetgenmesh::epivot[4] = {4, 5, 2, 11};
+void tetgenmesh::inittables()
+{
+  int i, j;
+
+
+  // i = t1.ver; j = t2.ver;
+  for (i = 0; i < 12; i++) {
+    for (j = 0; j < 12; j++) {
+      bondtbl[i][j] = (j & 3) + (((i & 12) + (j & 12)) % 12);
+    }
+  }
+
+
+  // i = t1.ver; j = t2.ver
+  for (i = 0; i < 12; i++) {
+    for (j = 0; j < 12; j++) {
+      fsymtbl[i][j] = (j + 12 - (i & 12)) % 12;
+    }
+  }
+
+
+  for (i = 0; i < 12; i++) {
+    facepivot1[i] = (esymtbl[i] & 3);
+  }
+
+  for (i = 0; i < 12; i++) {
+    for (j = 0; j < 12; j++) {
+      facepivot2[i][j] = fsymtbl[esymtbl[i]][j];
+    }
+  }
+
+  for (i = 0; i < 12; i++) {
+    enexttbl[i] = (i + 4) % 12;
+    eprevtbl[i] = (i + 8) % 12;
+  }
+
+  for (i = 0; i < 12; i++) {
+    enextesymtbl[i] = esymtbl[enexttbl[i]];
+    eprevesymtbl[i] = esymtbl[eprevtbl[i]];
+  }
+
+  for (i = 0; i < 12; i++) {
+    eorgoppotbl [i] = eprevtbl[esymtbl[enexttbl[i]]];
+    edestoppotbl[i] = enexttbl[esymtbl[eprevtbl[i]]];
+  }
+
+  int soffset, toffset;
+
+  // i = t.ver, j = s.shver
+  for (i = 0; i < 12; i++) {
+    for (j = 0; j < 6; j++) {
+      if ((j & 1) == 0) {
+        soffset = (6 - ((i & 12) >> 1)) % 6;
+        toffset = (12 - ((j & 6) << 1)) % 12;
+      } else {
+        soffset = (i & 12) >> 1;
+        toffset = (j & 6) << 1;
+      }
+      tsbondtbl[i][j] = (j & 1) + (((j & 6) + soffset) % 6);
+      stbondtbl[i][j] = (i & 3) + (((i & 12) + toffset) % 12);
+    }
+  }
+
+
+  // i = t.ver, j = s.shver
+  for (i = 0; i < 12; i++) {
+    for (j = 0; j < 6; j++) {
+      if ((j & 1) == 0) {
+        soffset = (i & 12) >> 1;
+        toffset = (j & 6) << 1;
+      } else {
+        soffset = (6 - ((i & 12) >> 1)) % 6;
+        toffset = (12 - ((j & 6) << 1)) % 12;
+      }
+      tspivottbl[i][j] = (j & 1) + (((j & 6) + soffset) % 6);
+      stpivottbl[i][j] = (i & 3) + (((i & 12) + toffset) % 12);
+    }
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
@@ -80,6 +176,7 @@ void tetgenmesh::arraypool::poolinit(int sizeofobject, int log2objperblk)
   log2objectsperblock = log2objperblk;
   // Compute the number of objects in each block.
   objectsperblock = ((int) 1) << log2objectsperblock;
+  objectsperblockmark = objectsperblock - 1;
 
   // No memory has been allocated.
   totalmemory = 0l;
@@ -237,25 +334,21 @@ void* tetgenmesh::arraypool::lookup(int objectindex)
 //                                                                           //
 // newindex()    Allocate space for a fresh object from the pool.            //
 //                                                                           //
+// 'newptr' returns a pointer to the new object (it must not be a NULL).     //
+//                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
 int tetgenmesh::arraypool::newindex(void **newptr)
 {
-  void *newobject;
-  int newindex;
-
   // Allocate an object at index 'firstvirgin'.
-  newindex = objects;
-  newobject = (void *) (getblock(objects) +
+  int newindex = objects;
+  *newptr = (void *) (getblock(objects) +
     (objects & (objectsperblock - 1)) * objectbytes);
   objects++;
 
-  // If 'newptr' is not NULL, use it to return a pointer to the object.
-  if (newptr != (void **) NULL) {
-    *newptr = newobject;
-  }
   return newindex;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
@@ -270,7 +363,6 @@ tetgenmesh::memorypool::memorypool()
   deaditemstack = (void *) NULL;
   pathblock = (void **) NULL;
   pathitem = (void *) NULL;
-  itemwordtype = POINTER;
   alignbytes = 0;
   itembytes = itemwords = 0;
   itemsperblock = 0;
@@ -279,10 +371,10 @@ tetgenmesh::memorypool::memorypool()
   pathitemsleft = 0;
 }
 
-tetgenmesh::memorypool::
-memorypool(int bytecount, int itemcount, enum wordtype wtype, int alignment)
+tetgenmesh::memorypool::memorypool(int bytecount, int itemcount, int wsize, 
+                                   int alignment)
 {
-  poolinit(bytecount, itemcount, wtype, alignment);
+  poolinit(bytecount, itemcount, wsize, alignment);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -316,14 +408,9 @@ tetgenmesh::memorypool::~memorypool()
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-void tetgenmesh::memorypool::
-poolinit(int bytecount, int itemcount, enum wordtype wtype, int alignment)
+void tetgenmesh::memorypool::poolinit(int bytecount,int itemcount,int wordsize,
+                                      int alignment)
 {
-  int wordsize;
-
-  // Initialize values in the pool.
-  itemwordtype = wtype;
-  wordsize = (itemwordtype == POINTER) ? sizeof(void *) : sizeof(REAL);
   // Find the proper alignment, which must be at least as large as:
   //   - The parameter `alignment'.
   //   - The primary word type, to avoid unaligned accesses.
@@ -348,7 +435,7 @@ poolinit(int bytecount, int itemcount, enum wordtype wtype, int alignment)
   firstblock = (void **) malloc(itemsperblock * itembytes + sizeof(void *)
                                 + alignbytes); 
   if (firstblock == (void **) NULL) {
-    terminatetetgen(1);
+    terminatetetgen(NULL, 1);
   }
   // Set the next block pointer to NULL.
   *(firstblock) = (void *) NULL;
@@ -412,7 +499,7 @@ void* tetgenmesh::memorypool::alloc()
         newblock = (void **) malloc(itemsperblock * itembytes + sizeof(void *) 
                                     + alignbytes);
         if (newblock == (void **) NULL) {
-          terminatetetgen(1);
+          terminatetetgen(NULL, 1);
         }
         *nowblock = (void *) newblock;
         // The next block pointer is NULL.
@@ -433,11 +520,7 @@ void* tetgenmesh::memorypool::alloc()
     // Allocate a new item.
     newitem = nextitem;
     // Advance `nextitem' pointer to next free item in block.
-    if (itemwordtype == POINTER) {
-      nextitem = (void *) ((void **) nextitem + itemwords);
-    } else {
-      nextitem = (void *) ((REAL *) nextitem + itemwords);
-    }
+    nextitem = (void *) ((uintptr_t) nextitem + itembytes);
     unallocateditems--;
     maxitems++;
   }
@@ -521,11 +604,7 @@ void* tetgenmesh::memorypool::traverse()
   }
   newitem = pathitem;
   // Find the next item in the block.
-  if (itemwordtype == POINTER) {
-    pathitem = (void *) ((void **) pathitem + itemwords);
-  } else {
-    pathitem = (void *) ((REAL *) pathitem + itemwords);
-  }
+  pathitem = (void *) ((uintptr_t) pathitem + itembytes);
   pathitemsleft--;
   return newitem;
 }
@@ -536,8 +615,7 @@ void* tetgenmesh::memorypool::traverse()
 //                                                                           //
 // 'idx2verlist' returns the created map.  Traverse all vertices, a pointer  //
 // to each vertex is set into the array.  The pointer to the first vertex is //
-// saved in 'idx2verlist[0]'.  Don't forget to minus 'in->firstnumber' when  //
-// to get the vertex form its index.                                         //
+// saved in 'idx2verlist[in->firstnumber]'.                                  //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -554,7 +632,7 @@ void tetgenmesh::makeindex2pointmap(point*& idx2verlist)
 
   points->traversalinit();
   pointloop = pointtraverse();
-  idx =  in->firstnumber;;
+  idx =  in->firstnumber;
   while (pointloop != (point) NULL) {
     idx2verlist[idx++] = pointloop;
     pointloop = pointtraverse();
@@ -743,38 +821,6 @@ tetgenmesh::shellface* tetgenmesh::shellfacetraverse(memorypool *pool)
   return newshellface;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// badfacedealloc()    Deallocate space for a badface, marking it dead.      //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-void tetgenmesh::badfacedealloc(memorypool *pool, badface *dying)
-{
-  // Set badface's forg to NULL. This makes it possible to detect dead
-  //   ones when traversing the list of all items.
-  dying->forg = (point) NULL;
-  pool->dealloc((void *) dying);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// badfacetraverse()    Traverse the pools, skipping dead ones.              //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-
-tetgenmesh::badface* tetgenmesh::badfacetraverse(memorypool *pool)
-{
-  badface *newsh;
-
-  do {
-    newsh = (badface *) pool->traverse();
-    if (newsh == (badface *) NULL) {
-      return (badface *) NULL;
-    }
-  } while (newsh->forg == (point) NULL);               // Skip dead ones.
-  return newsh;
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
@@ -829,7 +875,7 @@ void tetgenmesh::maketetrahedron(triface *newtet)
   newtet->tet[5] = NULL;
   newtet->tet[6] = NULL;
   newtet->tet[7] = NULL;
-  // No attached segments and sbfaces yet.
+  // No attached segments and subfaces yet.
   newtet->tet[8] = NULL; 
   newtet->tet[9] = NULL; 
   // Initialize the marker (clear all flags).
@@ -848,7 +894,7 @@ void tetgenmesh::maketetrahedron(triface *newtet)
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 // makeshellface()    Create a new shellface with version zero. Used for     //
-//                    both subfaces and seusegments.                         //
+//                    both subfaces and subsegments.                         //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -871,18 +917,17 @@ void tetgenmesh::makeshellface(memorypool *pool, face *newface)
   // No adjoining tetrahedra.
   newface->sh[9] = NULL;
   newface->sh[10] = NULL;
-  if (b->quality && checkconstraints) {
+  if (checkconstraints) {
     // Initialize the maximum area bound.
     setareabound(*newface, 0.0);
   }
-
   // Clear the infection and marktest bits.
   ((int *) (newface->sh))[shmarkindex + 1] = 0;
-  
+  if (useinsertradius) {
+    setfacetindex(*newface, 0);
+  }
   // Set the boundary marker to zero.
   setshellmark(*newface, 0);
-  // Set the default face type.
-  setshelltype(*newface, NSHARP);
 
   newface->shver = 0;
 }
@@ -909,7 +954,7 @@ void tetgenmesh::makepoint(point* pnewpoint, enum verttype vtype)
   }
   setpoint2tet(*pnewpoint, NULL);
   setpoint2ppt(*pnewpoint, NULL);
-  if (b->plc || b->psc || b->refine) {
+  if (b->plc || b->refine) {
     // Initialize the point-to-simplex field.
     setpoint2sh(*pnewpoint, NULL);
     if (b->metric && (bgm != NULL)) {
@@ -917,20 +962,11 @@ void tetgenmesh::makepoint(point* pnewpoint, enum verttype vtype)
     }
   }
   // Initialize the point marker (starting from in->firstnumber).
-  i = (int) points->items - (in->firstnumber == 1 ? 0 : 1);
-  setpointmark(*pnewpoint, i);
-  // Initialize the point type.
+  setpointmark(*pnewpoint, (int) (points->items) - (!in->firstnumber));
+  // Clear all flags.
+  ((int *) (*pnewpoint))[pointmarkindex + 1] = 0;
+  // Initialize (set) the point type. 
   setpointtype(*pnewpoint, vtype);
-  // Clear the point flags.
-  puninfect(*pnewpoint);
-  punmarktest(*pnewpoint);
-  if (b->psc) {
-    // Initialize the u,v coordinates.
-    setpointgeomuv(*pnewpoint, 0, 0);
-    setpointgeomuv(*pnewpoint, 1, 0);
-    // Initialize the geometry tag.
-    setpointgeomtag(*pnewpoint, 0);
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -946,12 +982,15 @@ void tetgenmesh::makepoint(point* pnewpoint, enum verttype vtype)
 
 void tetgenmesh::initializepools()
 {
-  enum memorypool::wordtype wtype;
-  int pointsize, elesize, shsize;
+  int pointsize = 0, elesize = 0, shsize = 0;
+  int i;
 
   if (b->verbose) {
     printf("  Initializing memorypools.\n");
+    printf("  tetrahedron per block: %d.\n", b->tetrahedraperblock);
   }
+
+  inittables();
 
   // There are three input point lists available, which are in, addin,
   //   and bgm->in. These point lists may have different number of 
@@ -979,17 +1018,25 @@ void tetgenmesh::initializepools()
   if (in->segmentconstraintlist || in->facetconstraintlist) {
     checkconstraints = 1;
   }
+  if (b->plc || b->refine) {
+    // Save the insertion radius for Steiner points if boundaries
+    //   are allowed be split.
+    if (!b->nobisect || checkconstraints) {
+      useinsertradius = 1;
+    }
+  }
 
   // The index within each point at which its metric tensor is found. 
   // Each vertex has three coordinates.
   if (b->psc) {
     // '-s' option (PSC), the u,v coordinates are provided.
     pointmtrindex = 5 + numpointattrib;
+    // The index within each point at which its u, v coordinates are found.
+    // Comment: They are saved after the list of point attributes.
+    pointparamindex = pointmtrindex - 2;
   } else {
     pointmtrindex = 3 + numpointattrib;
   }
-  // The index within each point at which its u, v coordinates are found.
-  pointparamindex = 3 + (numpointattrib > 0);
   // For '-m' option. A tensor field is provided (*.mtr or *.b.mtr file).
   if (b->metric) {
     // Decide the size (1, 3, or 6) of the metric tensor.
@@ -1006,6 +1053,11 @@ void tetgenmesh::initializepools()
   } else {
     // For '-q' option. Make sure to have space for saving a scalar value.
     sizeoftensor = b->quality ? 1 : 0;
+  }
+  if (useinsertradius) {
+    // Increase a space (REAL) for saving point insertion radius, it is
+    //   saved directly after the metric. 
+    sizeoftensor++;
   }
   // The index within each point at which an element pointer is found, where
   //   the index is measured in pointers. Ensure the index is aligned to a
@@ -1032,17 +1084,14 @@ void tetgenmesh::initializepools()
   // The index within each point at which the boundary marker is found,
   //   Ensure the point marker is aligned to a sizeof(int)-byte address.
   pointmarkindex = (pointsize + sizeof(int) - 1) / sizeof(int);
-  // Now point size is the ints (inidcated by pointmarkindex) plus:
+  // Now point size is the ints (indicated by pointmarkindex) plus:
   //   - an integer for boundary marker;
   //   - an integer for vertex type;
   //   - an integer for geometry tag (optional, -s option).
   pointsize = (pointmarkindex + 2 + (b->psc ? 1 : 0)) * sizeof(tetrahedron);
 
-  // Decide the wordtype used in vertex pool.
-  wtype = (sizeof(REAL) >= sizeof(tetrahedron)) ? 
-    memorypool::FLOATINGPOINT : memorypool::POINTER;
   // Initialize the pool of vertices.
-  points = new memorypool(pointsize, b->vertexperblock, wtype, 0);
+  points = new memorypool(pointsize, b->vertexperblock, sizeof(REAL), 0);
 
   if (b->verbose) {
     printf("  Size of a point: %d bytes.\n", points->itembytes);
@@ -1050,7 +1099,32 @@ void tetgenmesh::initializepools()
 
   // Initialize the infinite vertex.
   dummypoint = (point) new char[pointsize];
-  setpointmark(dummypoint, -1);
+  // Initialize all fields of this point.
+  dummypoint[0] = 0.0;
+  dummypoint[1] = 0.0;
+  dummypoint[2] = 0.0;
+  for (i = 0; i < numpointattrib; i++) {
+    dummypoint[3 + i] = 0.0;
+  }
+  // Initialize the metric tensor.
+  for (i = 0; i < sizeoftensor; i++) {
+    dummypoint[pointmtrindex + i] = 0.0;
+  }
+  setpoint2tet(dummypoint, NULL);
+  setpoint2ppt(dummypoint, NULL);
+  if (b->plc || b->psc || b->refine) {
+    // Initialize the point-to-simplex field.
+    setpoint2sh(dummypoint, NULL);
+    if (b->metric && (bgm != NULL)) {
+      setpoint2bgmtet(dummypoint, NULL);
+    }
+  }
+  // Initialize the point marker (starting from in->firstnumber).
+  setpointmark(dummypoint, -1); // The unique marker for dummypoint.
+  // Clear all flags.
+  ((int *) (dummypoint))[pointmarkindex + 1] = 0;
+  // Initialize (set) the point type. 
+  setpointtype(dummypoint, UNUSEDVERTEX); // Does not matter.
 
   // The number of bytes occupied by a tetrahedron is varying by the user-
   //   specified options. The contents of the first 12 pointers are listed
@@ -1083,7 +1157,7 @@ void tetgenmesh::initializepools()
   // The index within each element at which its attributes are found, where
   //   the index is measured in REALs. 
   elemattribindex = (elesize + sizeof(REAL) - 1) / sizeof(REAL);
-  // The index within each element at which the maximum voulme bound is
+  // The index within each element at which the maximum volume bound is
   //   found, where the index is measured in REALs.
   volumeboundindex = elemattribindex + numelemattrib;
   // If element attributes or an constraint are needed, increase the number
@@ -1096,8 +1170,8 @@ void tetgenmesh::initializepools()
 
 
   // Having determined the memory size of an element, initialize the pool.
-  tetrahedrons = new memorypool(elesize, b->tetrahedraperblock, 
-                                memorypool::POINTER, 16);
+  tetrahedrons = new memorypool(elesize, b->tetrahedraperblock, sizeof(void *),
+                                16);
 
   if (b->verbose) {
     printf("  Size of a tetrahedron: %d (%d) bytes.\n", elesize,
@@ -1114,7 +1188,7 @@ void tetgenmesh::initializepools()
     areaboundindex = (shsize + sizeof(REAL) - 1) / sizeof(REAL);
     // If -q switch is in use, increase the number of bytes occupied by
     //   a subface for saving maximum area bound.
-    if (b->quality && checkconstraints) {
+    if (checkconstraints) { 
       shsize = (areaboundindex + 1) * sizeof(REAL);
     } else {
       shsize = areaboundindex * sizeof(REAL);
@@ -1125,12 +1199,16 @@ void tetgenmesh::initializepools()
     // Increase the number of bytes by two or three integers, one for facet
     //   marker, one for shellface type, and optionally one for pbc group.
     shsize = (shmarkindex + 2) * sizeof(shellface);
+    if (useinsertradius) {
+      // Increase the number of byte by one integer for storing facet index.
+      //    set/read by setfacetindex() and getfacetindex.
+      shsize = (shmarkindex + 3) * sizeof(shellface);
+    }
 
     // Initialize the pool of subfaces. Each subface record is eight-byte
     //   aligned so it has room to store an edge version (from 0 to 5) in
     //   the least three bits.
-    subfaces = new memorypool(shsize, b->shellfaceperblock, 
-                              memorypool::POINTER, 8);
+    subfaces = new memorypool(shsize, b->shellfaceperblock, sizeof(void *), 8);
 
     if (b->verbose) {
       printf("  Size of a shellface: %d (%d) bytes.\n", shsize,
@@ -1139,40 +1217,36 @@ void tetgenmesh::initializepools()
 
     // Initialize the pool of subsegments. The subsegment's record is same
     //   with subface.
-    subsegs = new memorypool(shsize, b->shellfaceperblock, 
-                             memorypool::POINTER, 8);
+    subsegs = new memorypool(shsize, b->shellfaceperblock, sizeof(void *), 8);
 
     // Initialize the pool for tet-subseg connections.
     tet2segpool = new memorypool(6 * sizeof(shellface), b->shellfaceperblock, 
-                                 memorypool::POINTER, 0);
+                                 sizeof(void *), 0);
     // Initialize the pool for tet-subface connections.
     tet2subpool = new memorypool(4 * sizeof(shellface), b->shellfaceperblock, 
-                                 memorypool::POINTER, 0);
+                                 sizeof(void *), 0);
 
     // Initialize arraypools for segment & facet recovery.
     subsegstack = new arraypool(sizeof(face), 10);
     subfacstack = new arraypool(sizeof(face), 10);
     subvertstack = new arraypool(sizeof(point), 8);
 
-    suppsteinerptlist = new arraypool(sizeof(point), 8);
-
-    // Initialize arraypools for surface Bowyer-Watson algorithm.
+    // Initialize arraypools for surface point insertion/deletion.
     caveshlist = new arraypool(sizeof(face), 8);
     caveshbdlist = new arraypool(sizeof(face), 8);
     cavesegshlist = new arraypool(sizeof(face), 4);
 
     cavetetshlist = new arraypool(sizeof(face), 8);
     cavetetseglist = new arraypool(sizeof(face), 8);
-
     caveencshlist = new arraypool(sizeof(face), 8);
     caveencseglist = new arraypool(sizeof(face), 8);
   }
 
   // Initialize the pools for flips.
-  flippool = new memorypool(sizeof(badface), 1024, memorypool::POINTER, 0);
+  flippool = new memorypool(sizeof(badface), 1024, sizeof(void *), 0);
   unflipqueue = new arraypool(sizeof(badface), 10);
 
-  // Initialize the arraypools for Bowyer-Watson algorithm.
+  // Initialize the arraypools for point insertion.
   cavetetlist = new arraypool(sizeof(triface), 10);
   cavebdrylist = new arraypool(sizeof(triface), 10);
   caveoldtetlist = new arraypool(sizeof(triface), 10);

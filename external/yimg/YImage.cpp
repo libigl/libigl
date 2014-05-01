@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cassert>
 #include <cstdlib>
+#include <cstring>
 
 #include <png.h>
 #include <zlib.h> // For Z_BEST_SPEED
