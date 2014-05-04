@@ -9,7 +9,7 @@
 #include <igl/PI.h>
 #include <cmath>
 
-Eigen::Vector3d igl::random_dir()
+IGL_INLINE Eigen::Vector3d igl::random_dir()
 {
   using namespace Eigen;
   using namespace igl;
@@ -22,7 +22,7 @@ Eigen::Vector3d igl::random_dir()
   return Vector3d(x,y,z); 
 }
 
-Eigen::MatrixXd igl::random_dir_stratified(const int n)
+IGL_INLINE Eigen::MatrixXd igl::random_dir_stratified(const int n)
 {
   using namespace Eigen;
   using namespace igl;

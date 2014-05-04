@@ -9,7 +9,7 @@
 #include "OpenGL_convenience.h"
 #include "material_colors.h"
 
-void igl::draw_rectangular_marquee(
+IGL_INLINE void igl::draw_rectangular_marquee(
   const int from_x,
   const int from_y,
   const int to_x,

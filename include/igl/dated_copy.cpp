@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <iostream>
 
-bool igl::dated_copy(const std::string & src_path, const std::string & dir)
+IGL_INLINE bool igl::dated_copy(const std::string & src_path, const std::string & dir)
 {
   using namespace std;
   using namespace igl;
@@ -75,7 +75,7 @@ bool igl::dated_copy(const std::string & src_path, const std::string & dir)
   return true;
 }
 
-bool igl::dated_copy(const std::string & src_path)
+IGL_INLINE bool igl::dated_copy(const std::string & src_path)
 {
   return dated_copy(src_path,dirname(src_path));
 }

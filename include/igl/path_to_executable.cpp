@@ -2,7 +2,7 @@
 #ifdef __APPLE__
 #  include <mach-o/dyld.h>
 #endif
-std::string igl::path_to_executable()
+IGL_INLINE std::string igl::path_to_executable()
 {
   // http://pastebin.com/ffzzxPzi
   using namespace std;

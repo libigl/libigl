@@ -13,7 +13,7 @@ namespace igl
 {
   // Return the path of the current executable.
   // Note: Tested for Mac OS X
-  std::string path_to_executable();
+  IGL_INLINE std::string path_to_executable();
 }
 #ifdef IGL_HEADER_ONLY
 #  include "path_to_executable.cpp"

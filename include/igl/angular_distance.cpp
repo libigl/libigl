@@ -8,7 +8,7 @@
 #include "angular_distance.h"
 #include <igl/EPS.h>
 #include <igl/PI.h>
-double igl::angular_distance(
+IGL_INLINE double igl::angular_distance(
   const Eigen::Quaterniond & A,
   const Eigen::Quaterniond & B)
 {

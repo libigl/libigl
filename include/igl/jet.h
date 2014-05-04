@@ -33,9 +33,9 @@ namespace igl
   //   g  green value
   //   b  blue value
   template <typename T>
-  void jet(const T f, T * rgb);
+  IGL_INLINE void jet(const T f, T * rgb);
   template <typename T>
-  void jet(const T f, T & r, T & g, T & b);
+  IGL_INLINE void jet(const T f, T & r, T & g, T & b);
 };
 
 #ifdef IGL_HEADER_ONLY
