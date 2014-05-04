@@ -54,13 +54,13 @@
 
 
 template <typename T>
-void igl::jet(const T x, T * rgb)
+IGL_INLINE void igl::jet(const T x, T * rgb)
 {
   igl::jet(x,rgb[0],rgb[1],rgb[2]);
 }
 
 template <typename T>
-void igl::jet(const T x, T & r, T & g, T & b)
+IGL_INLINE void igl::jet(const T x, T & r, T & g, T & b)
 {
   // Only important if the number of colors is small. In which case the rest is
   // still wrong anyway

@@ -11,6 +11,7 @@
 #ifndef IGL_NO_OPENGL
 #include <igl/OpenGL_convenience.h>
 #include <Eigen/Core>
+#include "igl_inline.h"
 
 #include <vector>
 
@@ -45,7 +46,7 @@ namespace igl
   // Outputs:
   //   shine  list of texture ids for shines
   //   flare  list of texture ids for flares
-  void lens_flare_load_textures(
+  IGL_INLINE void lens_flare_load_textures(
     std::vector<GLuint> & shine_ids,
     std::vector<GLuint> & flare_ids);
   
@@ -57,7 +58,7 @@ namespace igl
   //   C  secondary color
   // Outputs:
   //   flares  list of flare objects
-  void lens_flare_create(
+  IGL_INLINE void lens_flare_create(
     const float * A,
     const float * B,
     const float * C,
@@ -74,7 +75,7 @@ namespace igl
   //   shine_tic  current "tic" in shine textures
   // Outputs:
   //   shine_tic  current "tic" in shine textures
-  void lens_flare_draw(
+  IGL_INLINE void lens_flare_draw(
     const std::vector<Flare> & flares,
     const std::vector<GLuint> & shine_ids,
     const std::vector<GLuint> & flare_ids,
