@@ -30,7 +30,7 @@ namespace igl
   //
   template <
     typename Derivedobj>
-  int unproject_in_mesh(
+  IGL_INLINE int unproject_in_mesh(
     const int x,
     const int y,
     const igl::EmbreeIntersector & ei,
@@ -38,7 +38,7 @@ namespace igl
 
   template <
     typename Derivedobj>
-  int unproject_in_mesh(
+  IGL_INLINE int unproject_in_mesh(
     const int x,
     const int y,
     const igl::EmbreeIntersector & ei,

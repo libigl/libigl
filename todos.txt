@@ -1,3 +1,4 @@
+- reorient_facets_raycast depends on boost and embree
 - sort out `grad.*` vs `gradMat.*`
 - clean up externals
   - What's there for convenience?

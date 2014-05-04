@@ -11,7 +11,7 @@
 #include <queue>
 
 template <typename DerivedF, typename DerivedFF, typename DerivedC>
-void igl::bfs_orient(
+IGL_INLINE void igl::bfs_orient(
   const Eigen::PlainObjectBase<DerivedF> & F,
   Eigen::PlainObjectBase<DerivedFF> & FF,
   Eigen::PlainObjectBase<DerivedC> & C)

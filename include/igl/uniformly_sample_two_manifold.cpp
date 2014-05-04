@@ -191,8 +191,8 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
         {
           // Randomly sample unit square
           double u,v;
-//		  double ru = fgenrand();
-//		  double rv = fgenrand();
+//      double ru = fgenrand();
+//      double rv = fgenrand();
           double ru = (double)rand() / RAND_MAX;
           double rv = (double)rand() / RAND_MAX;
           // Reflect to lower triangle if above
