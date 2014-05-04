@@ -11,12 +11,13 @@
  -----------------------------------------------------------------------------
  
  Header library which allows to save and load a serialization of basic c++ data
- types like char, char*, std::string, bool, uint, int, float, double to and from a xml file.
- Containers like std::vector, std::std::pair, Eigen dense and sparse matrices are supported
- as well as combinations of them (like vector<pair<string,bool>> or vector<vector<int>>).
+ types like char, char*, std::string, bool, uint, int, float, double to and
+ from a xml file.  Containers like std::vector, std::std::pair, Eigen dense and
+ sparse matrices are supported as well as combinations of them (like
+ vector<pair<string,bool>> or vector<vector<int>>).
  
- To serialize an arbitrary object use the XMLSerializable interface or even simpler the
- XMLSerialization class.
+ To serialize an arbitrary object use the XMLSerializable interface or even
+ simpler the XMLSerialization class.
  
  The serialized objects are organised in groups in the xml file and have
  their own names which must be unique within one group.
@@ -24,17 +25,17 @@
  You can find examples how to use it in the test case class XMLSerializerTest.
  
  -----------------------------------------------------------------------------
-TODO's:
+TODOs:
 * handle memory leak when deserializing to pointers
 * loops of pointers and from multiple objects
 * NULL pointers
 * Versioning
  -----------------------------------------------------------------------------
-Bug's:
+Bugs:
 * Doesn't handle RowMajor Eigen matrices
  ----------------------------------------------------------------------------- */
-#ifndef XML_SERIALIZER_H
-#define XML_SERIALIZER_H
+#ifndef IGL_XML_SERIALIZER_H
+#define IGL_XML_SERIALIZER_H
 
 #include <igl/igl_inline.h>
 #include <igl/xml/XMLSerializable.h>

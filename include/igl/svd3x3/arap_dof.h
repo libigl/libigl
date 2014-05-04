@@ -98,8 +98,8 @@ namespace igl
   // Inputs:
   //   fixed_dim  list of transformation element indices for fixed (or partailly
   //   fixed) handles: not necessarily the complement of 'free'
-  //	  NOTE: the constraints for fixed transformations still need to be
-  //	  present in A_eq
+  //    NOTE: the constraints for fixed transformations still need to be
+  //    present in A_eq
   //   A_eq  dim*#constraint_points by m*dim*(dim+1)  matrix of linear equality
   //     constraint coefficients. Each row corresponds to a linear constraint,
   //     so that A_eq * L = Beq says that the linear transformation entries in
