@@ -141,8 +141,6 @@ double bbd;
 int tot_num_samples = 0;
 #define REBAR_NAME "temp.rbr"
 igl::ReTwBar rebar; // Pointer to the tweak bar
-bool flip_y = false;
-bool rotate_xy = false;
 
 int num_in_selection(const Eigen::VectorXi & S)
 {
@@ -176,12 +174,17 @@ bool init_arap()
         b(bi) = v;
         bc(bi,S(v)) = 1;
         bi++;
-        if(S(v) == 0)
+        switch(S(v))
         {
-          C.row(v) = RowVector3d(0.039,0.31,1);
-        }else
-        {
-          C.row(v) = RowVector3d(1,0.41,0.70);
+          case 0:
+            C.row(v) = RowVector3d(0.039,0.31,1);
+            break;
+          case 1:
+            C.row(v) = RowVector3d(1,0.41,0.70);
+            break;
+          default:
+            C.row(v) = RowVector3d(0.4,0.8,0.3);
+            break;
         }
       }else
       {
@@ -223,25 +226,25 @@ bool update_arap()
         {
           case 0:
           {
-            //const double r = mid(0)*0.25;
-            //bc(bi,0) += r*cos(0.5*get_seconds()*2.*PI);
-            //bc(bi,1) -= r+r*sin(0.5*get_seconds()*2.*PI);
+            const double r = mid(0)*0.25;
+            bc(bi,0) += r*cos(0.5*get_seconds()*2.*PI);
+            bc(bi,1) -= r+r*sin(0.5*get_seconds()*2.*PI);
             break;
           }
           case 1:
           {
-            //const double r = mid(1)*0.15;
-            //bc(bi,1) += r+r*cos(0.15*get_seconds()*2.*PI);
-            //bc(bi,2) -= r*sin(0.15*get_seconds()*2.*PI);
+            const double r = mid(1)*0.15;
+            bc(bi,1) += r+r*cos(0.15*get_seconds()*2.*PI);
+            bc(bi,2) -= r*sin(0.15*get_seconds()*2.*PI);
 
             //// Pull-up
             //bc(bi,0) += 0.42;//mid(0)*0.5;
             //bc(bi,1) += 0.55;//mid(0)*0.5;
-            // Bend
-            Vector3d t(-1,0,0);
-            Quaterniond q(AngleAxisd(PI/1.5,Vector3d(0,1.0,0.1).normalized()));
-            const Vector3d a = bc.row(bi);
-            bc.row(bi) = (q*(a-t) + t) + Vector3d(1.5,0.1,0.9);
+            //// Bend
+            //Vector3d t(-1,0,0);
+            //Quaterniond q(AngleAxisd(PI/1.5,Vector3d(0,1.0,0.1).normalized()));
+            //const Vector3d a = bc.row(bi);
+            //bc.row(bi) = (q*(a-t) + t) + Vector3d(1.5,0.1,0.9);
                 
 
             break;
@@ -660,8 +663,6 @@ int main(int argc, char * argv[])
     "igl_trackball,two-a...-fixed-up");
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
-  rebar.TwAddVarRW("flip_y", TW_TYPE_BOOLCPP, &flip_y,"key=f");
-  rebar.TwAddVarRW("rotate_xy", TW_TYPE_BOOLCPP, &rotate_xy,"key=r");
   rebar.load(REBAR_NAME);
 
   glutInitDisplayString( "rgba depth double samples>=8 ");

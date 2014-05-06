@@ -25,6 +25,7 @@ listed below.
 - Mosek  libiglmosek extra only
 - Matlab  libiglmatlab extra only
 - boost  libiglboost, libiglcgal extra only
+- SSE/AVX  libiglsvd3x3 extra only
 - CGAL  libiglcgal extra only
     * boost 
     * gmp
