@@ -34,6 +34,7 @@ IGL_INLINE void igl::random_points_on_mesh(
   VectorXs A0(A.size()+1);
   A0(0) = 0;
   A0.bottomRightCorner(A.size(),1) = A;
+  // Even faster would be to use the "Alias Table Method"
   cumsum(A0,1,C);
   const VectorXs R = (VectorXs::Random(n,1).array() + 1.)/2.;
   assert(R.minCoeff() >= 0);
