@@ -59,6 +59,7 @@ extern CTexFont *g_DefaultSmallFont;
 extern CTexFont *g_DefaultNormalFont;
 extern CTexFont *g_DefaultLargeFont;
 extern CTexFont *g_DefaultFixed1Font;
+extern CTexFont *g_DefaultFixedRuFont;
 
 void TwGenerateDefaultFonts(float _Scaling=1.0f);
 void TwDeleteDefaultFonts();

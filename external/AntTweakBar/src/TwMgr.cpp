@@ -2410,7 +2410,16 @@ int CTwMgr::SetAttrib(int _AttribID, const char *_Value)
     case MGR_FONT_STYLE:
         if( _Value && strlen(_Value)>0 )
         {
-            if( _stricmp(_Value, "fixed")==0 )
+            if( _stricmp(_Value, "fixedru")==0 )
+            {
+                if( m_CurrentFont!=g_DefaultFixedRuFont )
+                {
+                    SetFont(g_DefaultFixedRuFont, true);
+                    m_FontResizable = false; // for now fixed font is not resizable
+                }
+                return 1;
+            } 
+            else if( _stricmp(_Value, "fixed")==0 )
             {
                 if( m_CurrentFont!=g_DefaultFixed1Font )
                 {
@@ -3468,6 +3477,24 @@ int ANT_CALL TwRefreshBar(TwBar *bar)
 
 //  ---------------------------------------------------------------------------
 
+TwBar * ANT_CALL TwGetActiveBar()
+{
+    if( g_TwMgr==NULL )
+    {
+        TwGlobalError(g_ErrNotInit);
+        return NULL; // not initialized
+    }
+
+    vector<TwBar*>::iterator BarIt;
+    for( BarIt=g_TwMgr->m_Bars.begin(); BarIt!=g_TwMgr->m_Bars.end(); ++BarIt )
+        if( *BarIt!=NULL && !(*BarIt)->IsMinimized() && !(*BarIt)->m_IsPopupList && (*BarIt)->GetFocus()==true )
+            return *BarIt;
+
+    return NULL;
+}
+
+//  ---------------------------------------------------------------------------
+
 int BarVarHasAttrib(CTwBar *_Bar, CTwVar *_Var, const char *_Attrib, bool *_HasValue);
 int BarVarSetAttrib(CTwBar *_Bar, CTwVar *_Var, CTwVarGroup *_VarParent, int _VarIndex, int _AttribID, const char *_Value);
 ERetType BarVarGetAttrib(CTwBar *_Bar, CTwVar *_Var, CTwVarGroup *_VarParent, int _VarIndex, int _AttribID, std::vector<double>& outDouble, std::ostringstream& outString);
@@ -4167,6 +4194,13 @@ static int AddVar(TwBar *_Bar, const char *_Name, ETwType _Type, void *_VarPtr, 
         }
 
         _Bar->m_VarRoot.m_Vars.push_back(Var);
+        int LineInHier = _Bar->LineInHier(&(_Bar->m_VarRoot), Var);
+        if( LineInHier>=0 )
+        {
+            if( LineInHier<_Bar->m_FirstLine )
+                _Bar->m_FirstLine++; // if the added var is before the first visible var, then increment m_FirstLine
+            _Bar->CheckScrollbar(+1);
+        }
         _Bar->NotUpToDate();
         g_TwMgr->m_HelpBarNotUpToDate = true;
 
@@ -4387,10 +4421,17 @@ int ANT_CALL TwRemoveVar(TwBar *_Bar, const char *_Name)
             return 0;
         }
 
+        int LineInHier = _Bar->LineInHier(&(_Bar->m_VarRoot), Var);
         delete Var;
         Parent->m_Vars.erase(Parent->m_Vars.begin()+Index);
         if( Parent!=&(_Bar->m_VarRoot) && Parent->m_Vars.size()<=0 )
             TwRemoveVar(_Bar, Parent->m_Name.c_str());
+        if( LineInHier>=0 )
+        {
+            if ( LineInHier<_Bar->m_FirstLine )
+                _Bar->m_FirstLine--; // if the removed var is before the first visible var, then decrement m_FirstLine
+            _Bar->CheckScrollbar(-1);
+        }
         _Bar->NotUpToDate();
         if( _Bar!=g_TwMgr->m_HelpBar )
             g_TwMgr->m_HelpBarNotUpToDate = true;
@@ -4431,6 +4472,7 @@ int ANT_CALL TwRemoveAllVars(TwBar *_Bar)
             *it = NULL;
         }
     _Bar->m_VarRoot.m_Vars.resize(0);
+    _Bar->m_FirstLine = 0;  // reset scrollbar
     _Bar->NotUpToDate();
     g_TwMgr->m_HelpBarNotUpToDate = true;
     return 1;
@@ -4906,10 +4948,7 @@ TwType TW_CALL TwDefineEnumFromString(const char *_Name, const char *_EnumString
     for( int i=0; i<(int)Labels.size(); i++ )
     {
         Vals[i].Value = i;
-        //Vals[i].Label = Labels[i].c_str();
-        char * c_label = new char[Labels[i].length()+1];
-        std::strcpy(c_label, Labels[i].c_str());
-        Vals[i].Label = c_label;
+        Vals[i].Label = Labels[i].c_str();
     }
 
     return TwDefineEnum(_Name, Vals.empty() ? NULL : &(Vals[0]), (unsigned int)Vals.size());
