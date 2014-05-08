@@ -16,7 +16,8 @@ IGL_INLINE void igl::selfintersect(
   const SelfintersectParam & params,
   Eigen::MatrixXd & VV,
   Eigen::MatrixXi & FF,
-  Eigen::MatrixXi & IF)
+  Eigen::MatrixXi & IF,
+  Eigen::VectorXi & J)
 {
   using namespace std;
   if(params.detect_only)
@@ -34,7 +35,7 @@ IGL_INLINE void igl::selfintersect(
 //#endif
 
     typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-    SelfIntersectMesh<Kernel> SIM = SelfIntersectMesh<Kernel>(V,F,params,VV,FF,IF);
+    SelfIntersectMesh<Kernel> SIM = SelfIntersectMesh<Kernel>(V,F,params,VV,FF,IF,J);
 
 //#ifdef __APPLE__
 //    signal(SIGFPE,SIG_DFL);
@@ -43,6 +44,6 @@ IGL_INLINE void igl::selfintersect(
   }else
   {
     typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
-    SelfIntersectMesh<Kernel> SIM = SelfIntersectMesh<Kernel>(V,F,params,VV,FF,IF);
+    SelfIntersectMesh<Kernel> SIM = SelfIntersectMesh<Kernel>(V,F,params,VV,FF,IF,J);
   }
 }

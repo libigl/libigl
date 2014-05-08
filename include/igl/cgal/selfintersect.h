@@ -46,13 +46,15 @@ namespace igl
   //   FF  #FF by 3 list of triangle indices into V
   //   IF  #intersecting face pairs by 2  list of intersecting face pairs,
   //     indexing F
+  //   J  #FF list of indices into F denoting birth triangle
   IGL_INLINE void selfintersect(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
     const SelfintersectParam & params,
     Eigen::MatrixXd & VV,
     Eigen::MatrixXi & FF,
-    Eigen::MatrixXi & IF);
+    Eigen::MatrixXi & IF,
+    Eigen::VectorXi & J);
 }
 
 #ifdef IGL_HEADER_ONLY
