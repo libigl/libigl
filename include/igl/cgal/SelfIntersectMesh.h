@@ -91,7 +91,8 @@ namespace igl
         const SelfintersectParam & params,
         Eigen::MatrixXd & VV,
         Eigen::MatrixXi & FF,
-        Eigen::MatrixXi & IF);
+        Eigen::MatrixXi & IF,
+        Eigen::VectorXi & J);
     private:
       // Helper function to mark a face as offensive
       //
@@ -250,7 +251,8 @@ inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
   const SelfintersectParam & params,
   Eigen::MatrixXd & VV,
   Eigen::MatrixXi & FF,
-  Eigen::MatrixXi & IF):
+  Eigen::MatrixXi & IF,
+  Eigen::VectorXi & J):
   V(V),
   F(F),
   count(0),
@@ -449,6 +451,7 @@ inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
 #endif
   // Append faces
   FF.resize(F.rows()-offending.size()+NF_count,3);
+  J.resize(FF.rows());
   // First append non-offending original faces
   // There's an Eigen way to do this in one line but I forget
   int off = 0;
@@ -456,7 +459,9 @@ inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
   {
     if(!offensive[f])
     {
-      FF.row(off++) = F.row(f);
+      FF.row(off) = F.row(f);
+      J(off) = f;
+      off++;
     }
   }
   assert(off == (int)(F.rows()-offending.size()));
@@ -464,6 +469,7 @@ inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
   for(int o = 0;o<(int)offending.size();o++)
   {
     FF.block(off,0,NF[o].rows(),3) = NF[o];
+    J.block(off,0,NF[o].rows(),1).setConstant(offending[o]);
     off += NF[o].rows();
   }
   // Append vertices
