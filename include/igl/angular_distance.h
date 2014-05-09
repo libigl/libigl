@@ -18,7 +18,7 @@ namespace igl
   //   A  unit quaternion
   //   B  unit quaternion
   // Returns angular distance
-  double angular_distance(
+  IGL_INLINE double angular_distance(
     const Eigen::Quaterniond & A,
     const Eigen::Quaterniond & B);
 }

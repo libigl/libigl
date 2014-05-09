@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #include "selfintersect.h"
 #include "SelfIntersectMesh.h"
 #include <igl/C_STR.h>
@@ -9,7 +16,8 @@ IGL_INLINE void igl::selfintersect(
   const SelfintersectParam & params,
   Eigen::MatrixXd & VV,
   Eigen::MatrixXi & FF,
-  Eigen::MatrixXi & IF)
+  Eigen::MatrixXi & IF,
+  Eigen::VectorXi & J)
 {
   using namespace std;
   if(params.detect_only)
@@ -27,7 +35,7 @@ IGL_INLINE void igl::selfintersect(
 //#endif
 
     typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-    SelfIntersectMesh<Kernel> SIM = SelfIntersectMesh<Kernel>(V,F,params,VV,FF,IF);
+    SelfIntersectMesh<Kernel> SIM = SelfIntersectMesh<Kernel>(V,F,params,VV,FF,IF,J);
 
 //#ifdef __APPLE__
 //    signal(SIGFPE,SIG_DFL);
@@ -36,6 +44,6 @@ IGL_INLINE void igl::selfintersect(
   }else
   {
     typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
-    SelfIntersectMesh<Kernel> SIM = SelfIntersectMesh<Kernel>(V,F,params,VV,FF,IF);
+    SelfIntersectMesh<Kernel> SIM = SelfIntersectMesh<Kernel>(V,F,params,VV,FF,IF,J);
   }
 }

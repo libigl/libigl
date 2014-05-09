@@ -23,11 +23,18 @@ EMBREE_LIB=-L$(EMBREE)/build -lembree -lsys
 
 # YIMAGE Library
 YIMG=$(LIBIGL)/external/yimg/
-YIMG_LIB=-L$(YIMG) -lyimg -lz -L/usr/X11/lib -lpng -bind_at_load
+YIMG_LIB=-L$(YIMG) -lyimg -lz -L/opt/local/lib -lpng
 YIMG_INC=-I/usr/X11/include -I$(YIMG)
 
 ANTTWEAKBAR_INC=-I$(LIBIGL)/external/AntTweakBar/include
-ANTTWEAKBAR_LIB=-L$(LIBIGL)/external/AntTweakBar/lib -lAntTweakBar -framework AppKit
+ANTTWEAKBAR_LIB=-L$(LIBIGL)/external/AntTweakBar/lib -lAntTweakBar
+UNAME := $(shell uname)
+# Apple needs to load the AppKit framework for anttweakbar and maybe bind at
+# load for png
+ifeq ($(UNAME), Darwin)
+	YIMG_LIB+=-bind_at_load
+	ANTTWEAKBAR_LIB+=-framework AppKit
+endif
 
 INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC) $(YIMG_INC)
 LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB) $(YIMG_LIB)

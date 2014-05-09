@@ -85,8 +85,8 @@ template <typename S>
       {
         do
         {
-					flipF();
-					flipE();
+          flipF();
+          flipE();
         } while (!isBorder());
         flipE();
         return false;

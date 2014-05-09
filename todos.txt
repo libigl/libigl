@@ -1,3 +1,6 @@
+- extras should be in namespaces, i.e. igl::tetgen::tetrahedralize
+- extra header blocks should be verbose, i.e. IGL_TETGEN_TETRAHEDRALIZE_H
+- reorient_facets_raycast depends on boost and embree
 - sort out `grad.*` vs `gradMat.*`
 - clean up externals
   - What's there for convenience?
