@@ -319,12 +319,12 @@ ANT_GL_CORE_IMPL(glFramebufferTexture)
 #else
     // these extensions are loaded explicitely by LoadOpenGLCore
     // because they may not be avialable on non-OpenGL 3.2 environments
-    namespace GLCore 
-    { 
-        PFNglBindVertexArray _glBindVertexArray = NULL; 
-        PFNglDeleteVertexArrays _glDeleteVertexArrays = NULL; 
-        PFNglGenVertexArrays _glGenVertexArrays = NULL; 
-        PFNglIsVertexArray _glIsVertexArray = NULL; 
+    namespace GLCore
+    {
+        PFNglBindVertexArray _glBindVertexArray = NULL;
+        PFNglDeleteVertexArrays _glDeleteVertexArrays = NULL;
+        PFNglGenVertexArrays _glGenVertexArrays = NULL;
+        PFNglIsVertexArray _glIsVertexArray = NULL;
     }
 #endif
 
@@ -339,19 +339,19 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
 #if defined(ANT_WINDOWS)
 
     //  ---------------------------------------------------------------------------
-    
+
     int LoadOpenGLCore()
     {
         if( g_OGLCoreModule!=NULL )
         {
             return 1; // "OpenGL library already loaded"
         }
-    
+
         g_OGLCoreModule = LoadLibrary("OPENGL32.DLL");
         if( g_OGLCoreModule )
         {
             // Info(VERB_LOW, "Load %d OpenGL Core functions", g_NbOGLCoreFunc);
-    
+
             int Res = 1;
 
             // Use wglGetProcAddress to retreive Core functions
@@ -365,7 +365,7 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
                     assert(strlen(g_OGLCoreFuncRec[i].m_Name)>0);
                     // Try to get the function pointer with wglGetProcAddress
                     *(g_OGLCoreFuncRec[i].m_FuncPtr) = reinterpret_cast<GLCore::PFNOpenGL>(_glGetProcAddress(g_OGLCoreFuncRec[i].m_Name));
-                    if( *(g_OGLCoreFuncRec[i].m_FuncPtr)==NULL ) 
+                    if( *(g_OGLCoreFuncRec[i].m_FuncPtr)==NULL )
                     {
                         // Try to get the function pointer with GetProcAddress
                         *(g_OGLCoreFuncRec[i].m_FuncPtr) = reinterpret_cast<GLCore::PFNOpenGL>(GetProcAddress(g_OGLCoreModule, g_OGLCoreFuncRec[i].m_Name));
@@ -377,7 +377,7 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
                             Res = 0; // Error("cannot find OpenGL Core function");
                         }
                     }
-        
+
                 }
 
             return Res;
@@ -388,16 +388,16 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
             return 0;   // cannot load DLL
         }
     }
-    
+
     //  ---------------------------------------------------------------------------
-    
+
     int UnloadOpenGLCore()
     {
         if( g_OGLCoreModule==NULL )
         {
             return 1; // "OpenGL library not loaded"
         }
-    
+
         // Info(VERB_LOW, "Unload %d OpenGL Core functions", g_NbOGLCoreFunc);
         for(int i=0; i<g_NbOGLCoreFunc; ++i)
         {
@@ -419,12 +419,12 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
             return 0; // cannot unload opengl32.dll
         }
     }
-    
+
     //  ---------------------------------------------------------------------------
-    
+
     namespace GLCore
     {
-    
+
         PFNOpenGL Record(const char *_FuncName, PFNOpenGL *_FuncPtr)
         {
             if( g_NbOGLCoreFunc>=ANT_NB_OGL_CORE_FUNC_MAX )
@@ -432,16 +432,16 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
                 fprintf(stderr, "Too many OpenGL Core functions declared. Change ANT_NB_OGL_CORE_FUNC_MAX.");
                 exit(-1);
             }
-    
+
             g_OGLCoreFuncRec[g_NbOGLCoreFunc].m_Name = _FuncName;
             g_OGLCoreFuncRec[g_NbOGLCoreFunc].m_FuncPtr = _FuncPtr;
             ++g_NbOGLCoreFunc;
-    
+
             return NULL;
         }
-    
+
     } // namespace GL
-    
+
     //  ---------------------------------------------------------------------------
 
 #endif // defined(ANT_WINDOWS)
@@ -449,7 +449,7 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
 //  ---------------------------------------------------------------------------
 
 #if defined(ANT_UNIX)
-    
+
     int LoadOpenGLCore()
     {
         _glGetProcAddress = reinterpret_cast<GLCore::PFNGLGetProcAddress>(glXGetProcAddressARB);
@@ -467,12 +467,12 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
         else
             return 1;
     }
-    
+
     int UnloadOpenGLCore()
     {
         return 1;
     }
-    
+
 #elif defined(ANT_OSX)
 
     #include <dlfcn.h>
@@ -482,11 +482,11 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
     void *NSGLCoreGetProcAddressNew(const GLubyte *name)
     {
         void *proc=NULL;
-        if (gl_dyld == NULL) 
+        if (gl_dyld == NULL)
         {
-            gl_dyld = dlopen("OpenGL",RTLD_LAZY);
+            gl_dyld = dlopen("/System/Library/Frameworks/OpenGL.framework/OpenGL",RTLD_LAZY);
         }
-        if (gl_dyld) 
+        if (gl_dyld)
         {
             NSString *sym = [[NSString alloc] initWithFormat: @"%s%s",gl_prefix,name];
             proc = dlsym(gl_dyld,[sym UTF8String]);
@@ -495,7 +495,7 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
         return proc;
     }
 
-    int LoadOpenGLCore() 
+    int LoadOpenGLCore()
     {
         _glGetProcAddress = reinterpret_cast<GLCore::PFNGLGetProcAddress>(NSGLCoreGetProcAddressNew);
 
@@ -503,12 +503,12 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
         _glDeleteVertexArrays = reinterpret_cast<PFNglDeleteVertexArrays>(_glGetProcAddress("glDeleteVertexArrays"));
         _glGenVertexArrays = reinterpret_cast<PFNglGenVertexArrays>(_glGetProcAddress("glGenVertexArrays"));
         _glIsVertexArray = reinterpret_cast<PFNglIsVertexArray>(_glGetProcAddress("glIsVertexArray"));
-        
+
         if( _glBindVertexArray==NULL || _glDeleteVertexArrays==NULL || _glGenVertexArrays==NULL || _glIsVertexArray==NULL )
         {
 			// remove the symbols underscore prefix (OSX 10.7 and later)
 			gl_prefix = "";
-            
+
             _glBindVertexArray = reinterpret_cast<PFNglBindVertexArray>(_glGetProcAddress("glBindVertexArray"));
             _glDeleteVertexArrays = reinterpret_cast<PFNglDeleteVertexArrays>(_glGetProcAddress("glDeleteVertexArrays"));
             _glGenVertexArrays = reinterpret_cast<PFNglGenVertexArrays>(_glGetProcAddress("glGenVertexArrays"));
@@ -517,23 +517,23 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
             if( _glBindVertexArray==NULL || _glDeleteVertexArrays==NULL || _glGenVertexArrays==NULL || _glIsVertexArray==NULL )
 			{
                 fprintf(stderr, "AntTweakBar: OpenGL Core Profile functions cannot be loaded.\n");
-                return 0;                
+                return 0;
 			}
         }
-        
+
         return 1;
     }
 
-    int UnloadOpenGLCore() 
+    int UnloadOpenGLCore()
     {
-       if (gl_dyld) 
+       if (gl_dyld)
        {
            dlclose(gl_dyld);
            gl_dyld = NULL;
        }
        return 1;
-   }    
-   
+   }
+
 #endif
 
 //  ---------------------------------------------------------------------------
