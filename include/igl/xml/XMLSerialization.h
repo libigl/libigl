@@ -21,8 +21,8 @@
  Restrictions on Native C++ Expressions (Anonymous Namespaces):
  http://msdn.microsoft.com/en-us/library/0888kc6a%28VS.80%29.aspx
  ----------------------------------------------------------------------------*/
-#ifndef XML_SERIALIZATION_H
-#define XML_SERIALIZATION_H
+#ifndef IGL_XML_SERIALIZATION_H
+#define IGL_XML_SERIALIZATION_H
 
 #include <igl/xml/XMLSerializer.h>
 

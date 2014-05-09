@@ -1018,6 +1018,10 @@
 				RelativePath="FontSmall.pgm"
 				>
 			</File>
+			<File
+				RelativePath=".\res\RuFont.txt"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

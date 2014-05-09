@@ -188,7 +188,7 @@ ul
 {
   margin:0px;
   padding: 0px 20px;
-  list-style-type:none;
+  /*list-style-type:none;*/
 }
 li { font-size: 100% }
 li li { font-size: 90% }

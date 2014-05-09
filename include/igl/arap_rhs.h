@@ -27,7 +27,7 @@ namespace igl
   //     b = K * reshape(permute(R,[3 1 2]),size(V|F,1)*size(V,2)*size(V,2),1);
   //   
   // See also: arap_linear_block
-  void arap_rhs(
+  IGL_INLINE void arap_rhs(
     const Eigen::MatrixXd & V, 
     const Eigen::MatrixXi & F,
     const igl::ARAPEnergyType energy,

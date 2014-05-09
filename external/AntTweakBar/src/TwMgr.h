@@ -31,6 +31,14 @@
 #   define PERF(cmd)
 #endif  // BENCH
 
+#ifdef __MINGW32__ // MinGW patches
+#undef MAKEINTRESOURCE
+#define MAKEINTRESOURCE(a) "a"
+#ifndef MCW_PC
+#define MCW_PC _MCW_PC // For some reason _PC_24 is OK but MCW_PC is not
+#endif
+#endif
+
 const int NB_ROTO_CURSORS = 12;
 
 

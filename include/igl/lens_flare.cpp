@@ -18,25 +18,26 @@
 
 // http://www.opengl.org/archives/resources/features/KilgardTechniques/LensFlare/glflare.c
 
-static void setup_texture(
-  const uint8_t * texture, 
-  const int width,
-  const int height,
-  GLuint texobj,
-  GLenum minFilter, GLenum maxFilter)
-{
-  glBindTexture(GL_TEXTURE_2D, texobj);
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, maxFilter);
-  glTexImage2D(GL_TEXTURE_2D, 0, 1, width, height, 0,
-    GL_LUMINANCE, GL_UNSIGNED_BYTE, texture);
-}
-
-void igl::lens_flare_load_textures(
+IGL_INLINE void igl::lens_flare_load_textures(
   std::vector<GLuint> & shine_id,
   std::vector<GLuint> & flare_id)
 {
+
+  const auto setup_texture =[](
+    const uint8_t * texture, 
+    const int width,
+    const int height,
+    GLuint texobj,
+    GLenum minFilter, GLenum maxFilter)
+  {
+    glBindTexture(GL_TEXTURE_2D, texobj);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, maxFilter);
+    glTexImage2D(GL_TEXTURE_2D, 0, 1, width, height, 0,
+      GL_LUMINANCE, GL_UNSIGNED_BYTE, texture);
+  };
+
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   shine_id.resize(10);
   glGenTextures(10,&shine_id[0]);
@@ -58,7 +59,7 @@ void igl::lens_flare_load_textures(
   }
 }
 
-void igl::lens_flare_create(
+IGL_INLINE void igl::lens_flare_create(
   const float * A,
   const float * B,
   const float * C,
@@ -84,7 +85,7 @@ void igl::lens_flare_create(
   flares[11] = Flare(5, -1.0f, 0.03f, A, 0.2);
 }
 
-void igl::lens_flare_draw(
+IGL_INLINE void igl::lens_flare_draw(
   const std::vector<igl::Flare> & flares,
   const std::vector<GLuint> & shine_ids,
   const std::vector<GLuint> & flare_ids,

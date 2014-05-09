@@ -14,8 +14,7 @@ OUT_DIR		= ../lib
 
 #BASE		= /Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks
 CXX      	= g++
-#CXXFLAGS 	= $(CXXCFG) -Wall -fPIC -fno-strict-aliasing -D_MACOSX -ObjC++  -D__PLACEMENT_NEW_INLINE
-CXXFLAGS = $(CXXCFG) -Wall -fPIC -fno-strict-aliasing -D_MACOSX -x objective-c++ -D__PLACEMENT_NEW_INLINE
+CXXFLAGS 	= $(CXXCFG) -Wall -fPIC -fno-strict-aliasing -D_MACOSX -ObjC++  -D__PLACEMENT_NEW_INLINE
 INCPATH  	= -I../include -I/usr/local/include -I/usr/X11R6/include -I/usr/include
 #-I$(BASE)/OpenGL.framework/Headers/ -I$(BASE)/GLUT.framework/Headers/ -I$(BASE)/AppKit.framework/Headers/
 LINK     	= g++

@@ -21,7 +21,7 @@ namespace igl
   //   s  saturation value ([0,1])
   //   v  value value ([0,1])
   template <typename R,typename H>
-  void rgb_to_hsv(const R * rgb, H * hsv);
+  IGL_INLINE void rgb_to_hsv(const R * rgb, H * hsv);
 };
 
 #ifdef IGL_HEADER_ONLY

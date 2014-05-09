@@ -24,7 +24,7 @@ namespace igl
   // Output:
   //   S  sampled vertices, size less than # edges * (2+k) by dim always begins
   //        with V so that E is also defined over S
-  void sample_edges(
+  IGL_INLINE void sample_edges(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & E,
     const int k,

@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_DRAW_RECTANGULAR_MARQUEE_H
 #define IGL_DRAW_RECTANGULAR_MARQUEE_H
+#include "igl_inline.h"
 namespace igl
 {
   // Draw a rectangular marquee (selection box) in screen space. This sets up
@@ -17,7 +18,7 @@ namespace igl
   //   from_y  y coordinate of from point
   //   to_x  x coordinate of to point
   //   to_y  y coordinate of to point
-  void draw_rectangular_marquee(
+  IGL_INLINE void draw_rectangular_marquee(
     const int from_x,
     const int from_y,
     const int to_x,

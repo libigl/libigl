@@ -12,7 +12,7 @@
 
 template <
   typename Derivedobj>
-int igl::unproject_in_mesh(
+IGL_INLINE int igl::unproject_in_mesh(
   const int x,
   const int y,
   const igl::EmbreeIntersector & ei,
@@ -24,7 +24,7 @@ int igl::unproject_in_mesh(
 
 template <
   typename Derivedobj>
-int igl::unproject_in_mesh(
+IGL_INLINE int igl::unproject_in_mesh(
   const int x,
   const int y,
   const igl::EmbreeIntersector & ei,
