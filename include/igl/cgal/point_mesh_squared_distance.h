@@ -12,7 +12,7 @@
 #include "CGAL_includes.hpp"
 namespace igl
 {
-  // Convert a mesh (V,F) to a list of CGAL triangles
+  // Compute distances from a set of points P to a triangle mesh (V,F)
   //
   // Templates:
   //   Kernal  CGAL computation and construction kernel (e.g.
