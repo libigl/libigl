@@ -15,6 +15,7 @@ IGL_INLINE bool igl::is_symmetric(const Eigen::SparseMatrix<T>& A)
   {
     return false;
   }
+  assert(A.size() != 0);
   Eigen::SparseMatrix<T> AT = A.transpose();
   Eigen::SparseMatrix<T> AmAT = A-AT;
   //// Eigen screws up something with LLT if you try to do
@@ -32,6 +33,7 @@ IGL_INLINE bool igl::is_symmetric(
   {
     return false;
   }
+  assert(A.size() != 0);
   const typename Eigen::PlainObjectBase<DerivedA>& AT = A.transpose();
   const typename Eigen::PlainObjectBase<DerivedA>& AmAT = A-AT;
   //// Eigen screws up something with LLT if you try to do
@@ -52,6 +54,7 @@ IGL_INLINE bool igl::is_symmetric(
   {
     return false;
   }
+  assert(A.size() != 0);
   SparseMatrix<AType> AT = A.transpose();
   SparseMatrix<AType> AmAT = A-AT;
   VectorXi AmATI,AmATJ;
