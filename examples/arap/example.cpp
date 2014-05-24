@@ -28,7 +28,6 @@
 #include <igl/material_colors.h>
 #include <igl/barycenter.h>
 #include <igl/matlab_format.h>
-#include <igl/material_colors.h>
 #include <igl/ReAntTweakBar.h>
 #include <igl/pathinfo.h>
 #include <igl/Camera.h>
@@ -133,7 +132,7 @@ float light_pos[4] = {0.1,0.1,-0.9,0};
 Eigen::MatrixXd V,U,N,C,mid;
 Eigen::VectorXi S;
 igl::ARAPData arap_data;
-Eigen::MatrixXi F;
+Eigen::MatrixXi F,T;
 int selected_col = 0;
 // Faces
 // Bounding box diagonal length
@@ -164,6 +163,14 @@ bool init_arap()
   assert(S.rows() == V.rows());
   C.resize(S.rows(),3);
   MatrixXd bc = MatrixXd::Zero(b.size(),S.maxCoeff()+1);
+  MatrixXi * Ele;
+  if(T.rows()>0)
+  {
+    Ele = &T;
+  }else
+  {
+    Ele = &F;
+  }
   // get b from S
   {
     int bi = 0;
@@ -200,12 +207,12 @@ bool init_arap()
   VectorXi _S;
   VectorXd _D;
   MatrixXd W;
-  if(!harmonic(V,F,b,bc,1,W))
+  if(!harmonic(V,*Ele,b,bc,1,W))
   {
     return false;
   }
   partition(W,100,arap_data.G,_S,_D);
-  return arap_precomputation(V,F,b,arap_data);
+  return arap_precomputation(V,*Ele,b,arap_data);
 }
 
 bool update_arap()
@@ -606,6 +613,8 @@ int main(int argc, char * argv[])
   // init mesh
   string filename = "../shared/decimated-knight.obj";
   string sfilename = "../shared/decimated-knight-selection.dmat";
+  //string filename = "../shared/decimated-knight.mesh";
+  //string sfilename = "../shared/decimated-knight-1-selection.dmat";
   if(argc < 3)
   {
     cerr<<"Usage:"<<endl<<"    ./example input.obj selection.dmat"<<endl;
@@ -616,11 +625,27 @@ int main(int argc, char * argv[])
     filename = argv[1];
     sfilename = argv[2];
   }
+  string d,b,ext,f;
+  pathinfo(filename,d,b,ext,f);
+  // Convert extension to lower case
+  transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   vector<vector<double > > vV,vN,vTC;
   vector<vector<int > > vF,vTF,vFN;
   // Convert extension to lower case
-  if(!igl::readOBJ(filename,vV,vTC,vN,vF,vTF,vFN))
+  if(ext == "obj")
+  {
+    if(!igl::readOBJ(filename,vV,vTC,vN,vF,vTF,vFN))
+    {
+      return 1;
+    }
+  }else if(ext == "mesh")
+  {
+    if(!igl::readMESH(filename,V,T,F))
+    {
+      return 1;
+    }
+  }else
   {
     return 1;
   }

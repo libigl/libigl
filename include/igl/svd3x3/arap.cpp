@@ -40,7 +40,7 @@ IGL_INLINE bool igl::arap_precomputation(
   assert((b.size() == 0 || b.minCoeff() >=0) && "b out of bounds");
   // remember b
   data.b = b;
-  assert(F.cols() == 3 && "For now only triangles");
+  //assert(F.cols() == 3 && "For now only triangles");
   // dimension
   const int dim = V.cols();
   assert(dim == 3 && "Only 3d supported");
@@ -66,14 +66,15 @@ IGL_INLINE bool igl::arap_precomputation(
         break;
       case 4:
         eff_energy = ARAP_ENERGY_TYPE_ELEMENTS;
+        break;
       default:
         assert(false);
     }
   }
 
 
-  // Get covariance scatter matrix, when applied collects the covariance matrices
-  // used to fit rotations to during optimization
+  // Get covariance scatter matrix, when applied collects the covariance
+  // matrices used to fit rotations to during optimization
   covariance_scatter_matrix(V,F,eff_energy,data.CSM);
 
   // Get group sum scatter matrix, when applied sums all entries of the same
@@ -81,7 +82,13 @@ IGL_INLINE bool igl::arap_precomputation(
   SparseMatrix<double> G_sum;
   if(data.G.size() == 0)
   {
-    speye(n,G_sum);
+    if(eff_energy == ARAP_ENERGY_TYPE_ELEMENTS)
+    {
+      speye(F.rows(),G_sum);
+    }else
+    {
+      speye(n,G_sum);
+    }
   }else
   {
     // groups are defined per vertex, convert to per face using mode
@@ -105,6 +112,7 @@ IGL_INLINE bool igl::arap_precomputation(
   }
   SparseMatrix<double> G_sum_dim;
   repdiag(G_sum,dim,G_sum_dim);
+  assert(G_sum_dim.cols() == data.CSM.rows());
   data.CSM = (G_sum_dim * data.CSM).eval();
 
   arap_rhs(V,F,eff_energy,data.K);
@@ -165,8 +173,8 @@ IGL_INLINE bool igl::arap_solve(
       eff_R = R;
     }else
     {
-      eff_R.resize(dim,dim*n);
-      for(int v = 0;v<n;v++)
+      eff_R.resize(dim,data.CSM.rows());
+      for(int v = 0;v<data.CSM.rows()/dim;v++)
       {
         eff_R.block(0,dim*v,dim,dim) = 
           R.block(0,dim*data.G(v),dim,dim);
@@ -174,7 +182,7 @@ IGL_INLINE bool igl::arap_solve(
     }
 
     VectorXd Rcol;
-    columnize(eff_R,n,2,Rcol);
+    columnize(eff_R,data.CSM.rows()/dim,2,Rcol);
     VectorXd Bcol = -data.K * Rcol;
     for(int c = 0;c<dim;c++)
     {
