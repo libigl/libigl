@@ -24,7 +24,16 @@ IGL_INLINE bool igl::harmonic(
   using namespace Eigen;
   SparseMatrix<double> L,M,Mi;
   cotmatrix(V,F,L);
-  massmatrix(V,F,MASSMATRIX_VORONOI,M);
+  switch(F.cols())
+  {
+    case 3:
+      massmatrix(V,F,MASSMATRIX_VORONOI,M);
+      break;
+    case 4:
+    default:
+      massmatrix(V,F,MASSMATRIX_BARYCENTRIC,M);
+      break;
+  }
   invert_diag(M,Mi);
   SparseMatrix<double> Q = -L;
   for(int p = 1;p<k;p++)
