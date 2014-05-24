@@ -92,9 +92,9 @@ IGL_INLINE bool igl::arap_precomputation(
   }else
   {
     // groups are defined per vertex, convert to per face using mode
-    Eigen::Matrix<int,Eigen::Dynamic,1> GG;
     if(eff_energy == ARAP_ENERGY_TYPE_ELEMENTS)
     {
+      Eigen::Matrix<int,Eigen::Dynamic,1> GG;
       MatrixXi GF(F.rows(),F.cols());
       for(int j = 0;j<F.cols();j++)
       {
@@ -103,12 +103,10 @@ IGL_INLINE bool igl::arap_precomputation(
         GF.col(j) = GFj;
       }
       mode<int>(GF,2,GG);
-    }else
-    {
-      GG=data.G;
+      data.G=GG;
     }
     //printf("group_sum_matrix()\n");
-    group_sum_matrix(GG,G_sum);
+    group_sum_matrix(data.G,G_sum);
   }
   SparseMatrix<double> G_sum_dim;
   repdiag(G_sum,dim,G_sum_dim);
@@ -165,6 +163,8 @@ IGL_INLINE bool igl::arap_solve(
     //}
 
 
+    // Number of rotations: #vertices or #elements
+    int num_rots = data.K.cols()/dim/dim;
     // distribute group rotations to vertices in each group
     MatrixXd eff_R;
     if(data.G.size() == 0)
@@ -173,16 +173,16 @@ IGL_INLINE bool igl::arap_solve(
       eff_R = R;
     }else
     {
-      eff_R.resize(dim,data.CSM.rows());
-      for(int v = 0;v<data.CSM.rows()/dim;v++)
+      eff_R.resize(dim,num_rots*dim);
+      for(int r = 0;r<num_rots;r++)
       {
-        eff_R.block(0,dim*v,dim,dim) = 
-          R.block(0,dim*data.G(v),dim,dim);
+        eff_R.block(0,dim*r,dim,dim) = 
+          R.block(0,dim*data.G(r),dim,dim);
       }
     }
 
     VectorXd Rcol;
-    columnize(eff_R,data.CSM.rows()/dim,2,Rcol);
+    columnize(eff_R,num_rots,2,Rcol);
     VectorXd Bcol = -data.K * Rcol;
     for(int c = 0;c<dim;c++)
     {
