@@ -69,6 +69,9 @@ Eigen::Quaterniond animation_to_quat;
 // Use vector for range-based `for`
 std::vector<State> undo_stack;
 std::vector<State> redo_stack;
+bool paused = false;
+double t = 0;
+double pause_time = 0.0;
 
 void push_undo()
 {
@@ -211,7 +214,10 @@ bool init_arap()
   {
     return false;
   }
-  partition(W,100,arap_data.G,_S,_D);
+  //arap_data.with_dynamics = true;
+  //arap_data.h = 0.5;
+  //arap_data.max_iter = 100;
+  //partition(W,100,arap_data.G,_S,_D);
   return arap_precomputation(V,*Ele,b,arap_data);
 }
 
@@ -223,6 +229,10 @@ bool update_arap()
   MatrixXd bc(num_in_selection(S),V.cols());
   // get b from S
   {
+    if(!paused)
+    {
+      t = get_seconds()-pause_time;
+    }
     int bi = 0;
     for(int v = 0;v<S.rows(); v++)
     {
@@ -234,15 +244,15 @@ bool update_arap()
           case 0:
           {
             const double r = mid(0)*0.25;
-            bc(bi,0) += r*cos(0.5*get_seconds()*2.*PI);
-            bc(bi,1) -= r+r*sin(0.5*get_seconds()*2.*PI);
+            bc(bi,0) += r*cos(0.5*t*2.*PI);
+            bc(bi,1) -= r+r*sin(0.5*t*2.*PI);
             break;
           }
           case 1:
           {
             const double r = mid(1)*0.15;
-            bc(bi,1) += r+r*cos(0.15*get_seconds()*2.*PI);
-            bc(bi,2) -= r*sin(0.15*get_seconds()*2.*PI);
+            bc(bi,1) += r+r*cos(0.15*t*2.*PI);
+            bc(bi,2) -= r*sin(0.15*t*2.*PI);
 
             //// Pull-up
             //bc(bi,0) += 0.42;//mid(0)*0.5;
@@ -586,6 +596,7 @@ void mouse_drag(int mouse_x, int mouse_y)
 void key(unsigned char key, int mouse_x, int mouse_y)
 {
   using namespace std;
+  using namespace igl;
   switch(key)
   {
     // ESC
@@ -594,6 +605,20 @@ void key(unsigned char key, int mouse_x, int mouse_y)
     // ^C
     case char(3):
       exit(0);
+    case ' ':
+      {
+        static double pause_start,pause_stop;
+        paused = !paused;
+        if(paused)
+        {
+          pause_start = get_seconds();
+        }else
+        {
+          pause_stop = get_seconds();
+          pause_time += (pause_stop-pause_start);
+        }
+        break;
+      }
     default:
       if(!TwEventKeyboardGLUT(key,mouse_x,mouse_y))
       {
