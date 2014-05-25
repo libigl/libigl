@@ -21,21 +21,24 @@ namespace igl
     // G  #V list of group indices (1 to k) for each vertex, such that vertex i
     //    is assigned to group G(i)
     // energy  type of energy to use
-    // with_dynamics  whether using dynamics 
+    // with_dynamics  whether using dynamics (need to call arap_precomputation
+    //   after changing)
     // f_ext  #V by dim list of external forces
+    // vel  #V by dim list of velocities
     // h  dynamics time step
     // max_iter  maximum inner iterations
     // K  rhs pre-multiplier
+    // M  mass matrix
     // solver_data  quadratic solver data
     // b  list of boundary indices into V
     int n;
     Eigen::VectorXi G;
     ARAPEnergyType energy;
     bool with_dynamics;
-    Eigen::MatrixXd f_ext;
+    Eigen::MatrixXd f_ext,vel;
     double h;
     int max_iter;
-    Eigen::SparseMatrix<double> K;
+    Eigen::SparseMatrix<double> K,M;
     Eigen::SparseMatrix<double> CSM;
     min_quad_with_fixed_data<double> solver_data;
     Eigen::VectorXi b;

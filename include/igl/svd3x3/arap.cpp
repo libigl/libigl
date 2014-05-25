@@ -8,6 +8,7 @@
 #include "arap.h"
 #include <igl/colon.h>
 #include <igl/cotmatrix.h>
+#include <igl/massmatrix.h>
 #include <igl/group_sum_matrix.h>
 #include <igl/covariance_scatter_matrix.h>
 #include <igl/speye.h>
@@ -113,9 +114,24 @@ IGL_INLINE bool igl::arap_precomputation(
   assert(G_sum_dim.cols() == data.CSM.rows());
   data.CSM = (G_sum_dim * data.CSM).eval();
 
+
   arap_rhs(V,F,eff_energy,data.K);
 
   SparseMatrix<double> Q = (-0.5*L).eval();
+
+  if(data.with_dynamics)
+  {
+    const double h = data.h;
+    assert(h != 0);
+    SparseMatrix<double> M;
+    massmatrix(V,F,MASSMATRIX_DEFAULT,data.M);
+    SparseMatrix<double> DQ = 0.5/(h*h)*data.M;
+    Q += DQ;
+    // Dummy external forces
+    data.f_ext = MatrixXd::Zero(n,dim);
+    data.vel = MatrixXd::Zero(n,dim);
+  }
+
   return min_quad_with_fixed_precompute(
     Q,b,SparseMatrix<double>(),true,data.solver_data);
 }
@@ -140,7 +156,14 @@ IGL_INLINE bool igl::arap_solve(
     // terrible initial guess.. should at least copy input mesh
     U = MatrixXd::Zero(data.n,dim);
   }
+  // changes each arap iteration
   MatrixXd U_prev = U;
+  // doesn't change for fixed with_dynamics timestep
+  MatrixXd U0;
+  if(data.with_dynamics)
+  {
+    U0 = U_prev;
+  }
   while(iter < data.max_iter)
   {
     U_prev = U;
@@ -181,6 +204,21 @@ IGL_INLINE bool igl::arap_solve(
       }
     }
 
+    MatrixXd Dl;
+    if(data.with_dynamics)
+    {
+      assert(M.rows() == n && 
+        "No mass matrix. Call arap_precomputation if changing with_dynamics");
+      const double h = data.h;
+      assert(h != 0);
+      //Dl = 1./(h*h*h)*M*(-2.*V0 + Vm1) - fext;
+      // data.vel = (V0-Vm1)/h
+      // h*data.vel = (V0-Vm1)
+      // -h*data.vel = -V0+Vm1)
+      // -V0-h*data.vel = -2V0+Vm1
+      Dl = 1./(h*h)*data.M*(-U0 - h*data.vel) - data.f_ext;
+    }
+
     VectorXd Rcol;
     columnize(eff_R,num_rots,2,Rcol);
     VectorXd Bcol = -data.K * Rcol;
@@ -188,6 +226,10 @@ IGL_INLINE bool igl::arap_solve(
     {
       VectorXd Uc,Bc,bcc,Beq;
       Bc = Bcol.block(c*n,0,n,1);
+      if(data.with_dynamics)
+      {
+        Bc += Dl.col(c);
+      }
       bcc = bc.col(c);
       min_quad_with_fixed_solve(
         data.solver_data,
@@ -195,9 +237,13 @@ IGL_INLINE bool igl::arap_solve(
         Uc);
       U.col(c) = Uc;
     }
-    
 
     iter++;
+  }
+  if(data.with_dynamics)
+  {
+    // Keep track of velocity for next time
+    data.vel = (U-U0)/data.h;
   }
   return true;
 }

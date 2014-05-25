@@ -18,11 +18,12 @@ namespace igl
 
   enum MassMatrixType
   {
-    MASSMATRIX_BARYCENTRIC,
-    MASSMATRIX_VORONOI,
-    MASSMATRIX_FULL
+    MASSMATRIX_BARYCENTRIC = 0,
+    MASSMATRIX_VORONOI = 1,
+    MASSMATRIX_FULL = 2,
+    MASSMATRIX_DEFAULT = 3,
+    NUM_MASSMATRIX = 4
   };
-#define NUM_MASSMATRIXTYPE 3
 
   // Constructs the mass (area) matrix for a given mesh (V,F).
   //
