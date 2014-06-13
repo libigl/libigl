@@ -85,6 +85,8 @@ namespace igl
     public:
       // Constructs (VV,FF) a new mesh with self-intersections of (V,F)
       // subdivided
+      //
+      // See also: selfintersect.h
       inline SelfIntersectMesh(
         const Eigen::MatrixXd & V,
         const Eigen::MatrixXi & F,
@@ -92,7 +94,9 @@ namespace igl
         Eigen::MatrixXd & VV,
         Eigen::MatrixXi & FF,
         Eigen::MatrixXi & IF,
-        Eigen::VectorXi & J);
+        Eigen::VectorXi & J,
+        Eigen::VectorXi & IM
+        );
     private:
       // Helper function to mark a face as offensive
       //
@@ -252,7 +256,8 @@ inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
   Eigen::MatrixXd & VV,
   Eigen::MatrixXi & FF,
   Eigen::MatrixXi & IF,
-  Eigen::VectorXi & J):
+  Eigen::VectorXi & J,
+  Eigen::VectorXi & IM):
   V(V),
   F(F),
   count(0),
@@ -357,8 +362,8 @@ inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
           //  P[o].to_3d(vit->point())<<endl;
 #ifndef NDEBUG
           // I want to be sure that the original corners really show up as the
-          // original corners of the CDT. I.e. I don't trust CGAL to maintain the
-          // order
+          // original corners of the CDT. I.e. I don't trust CGAL to maintain
+          // the order
           assert(T[f].vertex(i) == P[o].to_3d(vit->point()));
 #endif
           // For first three, use original index in F
@@ -494,6 +499,38 @@ inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
 //#endif
       }
       i++;
+    }
+  }
+  IM.resize(VV.rows(),1);
+  map<Point_3,int> vv2i;
+  // Safe to check for duplicates using double for original vertices: if
+  // incoming reps are different then the points are unique.
+  for(int v = 0;v<V.rows();v++)
+  {
+    const Point_3 p(V(v,0),V(v,1),V(v,2));
+    if(vv2i.count(p)==0)
+    {
+      vv2i[p] = v;
+    }
+    assert(vv2i.count(p) == 1);
+    IM(v) = vv2i[p];
+  }
+  // Must check for duplicates of new vertices using exact.
+  {
+    int v = V.rows();
+    for(
+      typename list<Point_3>::const_iterator nvit = NV.begin();
+      nvit != NV.end();
+      nvit++)
+    {
+      const Point_3 & p = *nvit;
+      if(vv2i.count(p)==0)
+      {
+        vv2i[p] = v;
+      }
+      assert(vv2i.count(p) == 1);
+      IM(v) = vv2i[p];
+      v++;
     }
   }
 
