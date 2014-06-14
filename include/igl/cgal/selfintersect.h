@@ -47,6 +47,12 @@ namespace igl
   //   IF  #intersecting face pairs by 2  list of intersecting face pairs,
   //     indexing F
   //   J  #FF list of indices into F denoting birth triangle
+  //   IM  #VV list of indices into VV of unique vertices.
+  //
+  // Known bugs: If an existing edge in (V,F) lies exactly on another face then
+  // any resulting additional vertices along that edge may not get properly
+  // connected so that the output mesh has the same global topology. This is
+  // because 
   IGL_INLINE void selfintersect(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
@@ -54,7 +60,8 @@ namespace igl
     Eigen::MatrixXd & VV,
     Eigen::MatrixXi & FF,
     Eigen::MatrixXi & IF,
-    Eigen::VectorXi & J);
+    Eigen::VectorXi & J,
+    Eigen::VectorXi & IM);
 }
 
 #ifdef IGL_HEADER_ONLY

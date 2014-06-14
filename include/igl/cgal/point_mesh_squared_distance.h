@@ -5,31 +5,40 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_MESH_TO_CGAL_TRIANGLE_LIST_H
-#define IGL_MESH_TO_CGAL_TRIANGLE_LIST_H
+#ifndef IGL_POINT_MESH_SQUARED_DISTANCE_H
+#define IGL_POINT_MESH_SQUARED_DISTANCE_H
 #include <igl/igl_inline.h>
 #include <Eigen/Core>
 #include "CGAL_includes.hpp"
 namespace igl
 {
-  // Convert a mesh (V,F) to a list of CGAL triangles
+  // Compute distances from a set of points P to a triangle mesh (V,F)
   //
   // Templates:
   //   Kernal  CGAL computation and construction kernel (e.g.
-  //     CGAL::Exact_predicates_exact_constructions_kernel)
+  //     CGAL::Simple_cartesian<double>)
   // Inputs:
+  //   P  #P by 3 list of query point positions
   //   V  #V by 3 list of vertex positions
   //   F  #F by 3 list of triangle indices
   // Outputs:
-  //   T  #F list of CGAL triangles
+  //   sqrD  #P list of smallest squared distances
+  //   I  #P list of facet indices corresponding to smallest distances
+  //   C  #P by 3 list of closest points
+  //
+  // Known bugs: This only computes distances to triangles. So unreferenced
+  // vertices are ignored.
   template <typename Kernel>
-  IGL_INLINE void mesh_to_cgal_triangle_list(
+  IGL_INLINE void point_mesh_squared_distance(
+    const Eigen::MatrixXd & P,
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
-    std::vector<CGAL::Triangle_3<Kernel> > & T);
+    Eigen::VectorXd & sqrD,
+    Eigen::VectorXi & I,
+    Eigen::MatrixXd & C);
 }
 #ifdef IGL_HEADER_ONLY
-#  include "mesh_to_cgal_triangle_list.cpp"
+#  include "point_mesh_squared_distance.cpp"
 #endif
 
 #endif

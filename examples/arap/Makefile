@@ -14,6 +14,7 @@ LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglpng -liglsvd3x3
 
 EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 
+
 #EMBREE=$(LIBIGL)/external/embree
 #EMBREE_INC=-I$(EMBREE)/rtcore -I$(EMBREE)/common
 #EMBREE_LIB=-L$(EMBREE)/build -lrtcore -lsys
@@ -36,8 +37,8 @@ ifeq ($(UNAME), Darwin)
 	ANTTWEAKBAR_LIB+=-framework AppKit
 endif
 
-INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC) $(YIMG_INC)
-LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB) $(YIMG_LIB)
+INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC) $(YIMG_INC) 
+LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB) $(YIMG_LIB) 
 
 example: example.o
 	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) $(LIB) -o example $^

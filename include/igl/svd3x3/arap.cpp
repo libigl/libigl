@@ -8,6 +8,7 @@
 #include "arap.h"
 #include <igl/colon.h>
 #include <igl/cotmatrix.h>
+#include <igl/massmatrix.h>
 #include <igl/group_sum_matrix.h>
 #include <igl/covariance_scatter_matrix.h>
 #include <igl/speye.h>
@@ -40,7 +41,7 @@ IGL_INLINE bool igl::arap_precomputation(
   assert((b.size() == 0 || b.minCoeff() >=0) && "b out of bounds");
   // remember b
   data.b = b;
-  assert(F.cols() == 3 && "For now only triangles");
+  //assert(F.cols() == 3 && "For now only triangles");
   // dimension
   const int dim = V.cols();
   assert(dim == 3 && "Only 3d supported");
@@ -66,14 +67,15 @@ IGL_INLINE bool igl::arap_precomputation(
         break;
       case 4:
         eff_energy = ARAP_ENERGY_TYPE_ELEMENTS;
+        break;
       default:
         assert(false);
     }
   }
 
 
-  // Get covariance scatter matrix, when applied collects the covariance matrices
-  // used to fit rotations to during optimization
+  // Get covariance scatter matrix, when applied collects the covariance
+  // matrices used to fit rotations to during optimization
   covariance_scatter_matrix(V,F,eff_energy,data.CSM);
 
   // Get group sum scatter matrix, when applied sums all entries of the same
@@ -81,13 +83,19 @@ IGL_INLINE bool igl::arap_precomputation(
   SparseMatrix<double> G_sum;
   if(data.G.size() == 0)
   {
-    speye(n,G_sum);
+    if(eff_energy == ARAP_ENERGY_TYPE_ELEMENTS)
+    {
+      speye(F.rows(),G_sum);
+    }else
+    {
+      speye(n,G_sum);
+    }
   }else
   {
     // groups are defined per vertex, convert to per face using mode
-    Eigen::Matrix<int,Eigen::Dynamic,1> GG;
     if(eff_energy == ARAP_ENERGY_TYPE_ELEMENTS)
     {
+      Eigen::Matrix<int,Eigen::Dynamic,1> GG;
       MatrixXi GF(F.rows(),F.cols());
       for(int j = 0;j<F.cols();j++)
       {
@@ -96,20 +104,34 @@ IGL_INLINE bool igl::arap_precomputation(
         GF.col(j) = GFj;
       }
       mode<int>(GF,2,GG);
-    }else
-    {
-      GG=data.G;
+      data.G=GG;
     }
     //printf("group_sum_matrix()\n");
-    group_sum_matrix(GG,G_sum);
+    group_sum_matrix(data.G,G_sum);
   }
   SparseMatrix<double> G_sum_dim;
   repdiag(G_sum,dim,G_sum_dim);
+  assert(G_sum_dim.cols() == data.CSM.rows());
   data.CSM = (G_sum_dim * data.CSM).eval();
+
 
   arap_rhs(V,F,eff_energy,data.K);
 
   SparseMatrix<double> Q = (-0.5*L).eval();
+
+  if(data.with_dynamics)
+  {
+    const double h = data.h;
+    assert(h != 0);
+    SparseMatrix<double> M;
+    massmatrix(V,F,MASSMATRIX_DEFAULT,data.M);
+    SparseMatrix<double> DQ = 0.5/(h*h)*data.M;
+    Q += DQ;
+    // Dummy external forces
+    data.f_ext = MatrixXd::Zero(n,dim);
+    data.vel = MatrixXd::Zero(n,dim);
+  }
+
   return min_quad_with_fixed_precompute(
     Q,b,SparseMatrix<double>(),true,data.solver_data);
 }
@@ -134,7 +156,14 @@ IGL_INLINE bool igl::arap_solve(
     // terrible initial guess.. should at least copy input mesh
     U = MatrixXd::Zero(data.n,dim);
   }
+  // changes each arap iteration
   MatrixXd U_prev = U;
+  // doesn't change for fixed with_dynamics timestep
+  MatrixXd U0;
+  if(data.with_dynamics)
+  {
+    U0 = U_prev;
+  }
   while(iter < data.max_iter)
   {
     U_prev = U;
@@ -157,6 +186,8 @@ IGL_INLINE bool igl::arap_solve(
     //}
 
 
+    // Number of rotations: #vertices or #elements
+    int num_rots = data.K.cols()/dim/dim;
     // distribute group rotations to vertices in each group
     MatrixXd eff_R;
     if(data.G.size() == 0)
@@ -165,21 +196,40 @@ IGL_INLINE bool igl::arap_solve(
       eff_R = R;
     }else
     {
-      eff_R.resize(dim,dim*n);
-      for(int v = 0;v<n;v++)
+      eff_R.resize(dim,num_rots*dim);
+      for(int r = 0;r<num_rots;r++)
       {
-        eff_R.block(0,dim*v,dim,dim) = 
-          R.block(0,dim*data.G(v),dim,dim);
+        eff_R.block(0,dim*r,dim,dim) = 
+          R.block(0,dim*data.G(r),dim,dim);
       }
     }
 
+    MatrixXd Dl;
+    if(data.with_dynamics)
+    {
+      assert(M.rows() == n && 
+        "No mass matrix. Call arap_precomputation if changing with_dynamics");
+      const double h = data.h;
+      assert(h != 0);
+      //Dl = 1./(h*h*h)*M*(-2.*V0 + Vm1) - fext;
+      // data.vel = (V0-Vm1)/h
+      // h*data.vel = (V0-Vm1)
+      // -h*data.vel = -V0+Vm1)
+      // -V0-h*data.vel = -2V0+Vm1
+      Dl = 1./(h*h)*data.M*(-U0 - h*data.vel) - data.f_ext;
+    }
+
     VectorXd Rcol;
-    columnize(eff_R,n,2,Rcol);
+    columnize(eff_R,num_rots,2,Rcol);
     VectorXd Bcol = -data.K * Rcol;
     for(int c = 0;c<dim;c++)
     {
       VectorXd Uc,Bc,bcc,Beq;
       Bc = Bcol.block(c*n,0,n,1);
+      if(data.with_dynamics)
+      {
+        Bc += Dl.col(c);
+      }
       bcc = bc.col(c);
       min_quad_with_fixed_solve(
         data.solver_data,
@@ -187,9 +237,13 @@ IGL_INLINE bool igl::arap_solve(
         Uc);
       U.col(c) = Uc;
     }
-    
 
     iter++;
+  }
+  if(data.with_dynamics)
+  {
+    // Keep track of velocity for next time
+    data.vel = (U-U0)/data.h;
   }
   return true;
 }

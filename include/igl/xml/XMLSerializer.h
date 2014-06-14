@@ -1460,7 +1460,6 @@ namespace igl
         std::stringstream mats;
         mats.str(matTemp);
         
-        int r=0;
         std::string val;
         // for each line
         getline(mats,line); // starts with an empty line

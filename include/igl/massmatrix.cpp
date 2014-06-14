@@ -21,11 +21,20 @@ IGL_INLINE void igl::massmatrix(
 {
   using namespace Eigen;
   using namespace std;
-  assert(type!=MASSMATRIX_FULL);
 
   const int n = V.rows();
   const int m = F.rows();
   const int simplex_size = F.cols();
+
+  MassMatrixType eff_type = type;
+  // Use voronoi of for triangles by default, otherwise barycentric
+  if(type == MASSMATRIX_DEFAULT)
+  {
+    eff_type = (simplex_size == 3?MASSMATRIX_VORONOI:MASSMATRIX_BARYCENTRIC);
+  }
+
+  // Not yet supported
+  assert(type!=MASSMATRIX_FULL);
 
   Matrix<int,Dynamic,1> MI;
   Matrix<int,Dynamic,1> MJ;
@@ -52,7 +61,7 @@ IGL_INLINE void igl::massmatrix(
       dblA(i) = 2.0*sqrt(s(i)*(s(i)-l(i,0))*(s(i)-l(i,1))*(s(i)-l(i,2)));
     }
 
-    switch(type)
+    switch(eff_type)
     {
       case MASSMATRIX_BARYCENTRIC:
         // diagonal entries for each face corner
@@ -115,13 +124,13 @@ IGL_INLINE void igl::massmatrix(
         assert(false && "Implementation incomplete");
         break;
       default:
-        assert(false && "Unknown Mass matrix type");
+        assert(false && "Unknown Mass matrix eff_type");
     }
 
   }else if(simplex_size == 4)
   {
     assert(V.cols() == 3);
-    assert(type == MASSMATRIX_BARYCENTRIC);
+    assert(eff_type == MASSMATRIX_BARYCENTRIC);
     MI.resize(m*4,1); MJ.resize(m*4,1); MV.resize(m*4,1);
     MI.block(0*m,0,m,1) = F.col(0);
     MI.block(1*m,0,m,1) = F.col(1);
