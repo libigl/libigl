@@ -322,6 +322,7 @@ inline double igl::WindingNumberTree<Point>::winding_number_boundary(const Point
   using namespace std;
 
   double w = 0;
+  // `cap` is already flipped inside out, so we don't need to flip sign of w
   igl::winding_number_3(
     V.data(),
     V.rows(),
