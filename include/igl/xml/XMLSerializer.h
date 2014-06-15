@@ -2211,7 +2211,7 @@ namespace igl
     template<typename T>
     bool XMLSerializer::Add(T& obj, const std::string& name)
     {
-      XMLSerializable* object = static_cast<XMLSerializable*>(&obj);
+      XMLSerializable* object = dynamic_cast<XMLSerializable*>(&obj);
       
       object->Name = name;
       return addObjectToGroup(object,currentGroup);
