@@ -1,0 +1,7 @@
+GL_ARB_indirect_parameters
+http://www.opengl.org/registry/specs/gl/ARB/indirect_parameters.txt
+GL_ARB_indirect_parameters
+	GL_PARAMETER_BUFFER_ARB 0x80EE
+	GL_PARAMETER_BUFFER_BINDING_ARB 0x80EF
+	void glMultiDrawArraysIndirectCountARB (GLenum mode, const GLvoid *indirect, GLintptr drawcount, GLsizei maxdrawcount, GLsizei stride)
+	void glMultiDrawElementsIndirectCountARB (GLenum mode, GLenum type, const GLvoid *indirect, GLintptr drawcount, GLsizei maxdrawcount, GLsizei stride)
