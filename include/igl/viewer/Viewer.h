@@ -6,6 +6,7 @@
 #include <AntTweakBar.h>
 
 #include <vector>
+#include <string>
 
 #define IGL_MOD_SHIFT           0x0001
 #define IGL_MOD_CONTROL         0x0002
@@ -353,6 +354,10 @@ namespace igl
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B);
+
+    void draw_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
+    void draw_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
+    void draw_label (const Eigen::VectorXd& P,  const std::string& str);
 
     // Save the OpenGL transformation matrices used for the previous rendering pass
     Eigen::Matrix4f view;
