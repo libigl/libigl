@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "file_dialog_open.h"
 #include <cstdio>
+#include <cstring>
 
 
 #ifdef _WIN32
