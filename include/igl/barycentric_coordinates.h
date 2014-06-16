@@ -36,6 +36,29 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedC> & C,
     const Eigen::PlainObjectBase<DerivedD> & D,
     Eigen::PlainObjectBase<DerivedL> & L);
+  // Compute barycentric coordinates in a triangle
+  //
+  // Inputs:
+  //   P  #P by 2 Query points in 2d
+  //   A  #P by 2 Triangle corners in 2d
+  //   B  #P by 2 Triangle corners in 2d
+  //   C  #P by 2 Triangle corners in 2d
+  // Outputs:
+  //   L  #P by e list of barycentric coordinates
+  //   
+  template <
+    typename DerivedP,
+    typename DerivedA,
+    typename DerivedB,
+    typename DerivedC,
+    typename DerivedL>
+  IGL_INLINE void barycentric_coordinates(
+    const Eigen::PlainObjectBase<DerivedP> & P,
+    const Eigen::PlainObjectBase<DerivedA> & A,
+    const Eigen::PlainObjectBase<DerivedB> & B,
+    const Eigen::PlainObjectBase<DerivedC> & C,
+    Eigen::PlainObjectBase<DerivedL> & L);
+
 }
 
 #ifdef IGL_HEADER_ONLY

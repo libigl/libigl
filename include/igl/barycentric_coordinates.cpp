@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "barycentric_coordinates.h"
 #include "volume.h"
+#include "doublearea.h"
 
 template <
   typename DerivedP,
@@ -45,6 +46,40 @@ IGL_INLINE void igl::barycentric_coordinates(
   L.resize(P.rows(),4);
   L<<LA,LB,LC,LD;
   L.array().colwise() /= vol.array();
+}
+
+template <
+  typename DerivedP,
+  typename DerivedA,
+  typename DerivedB,
+  typename DerivedC,
+  typename DerivedL>
+IGL_INLINE void igl::barycentric_coordinates(
+  const Eigen::PlainObjectBase<DerivedP> & P,
+  const Eigen::PlainObjectBase<DerivedA> & A,
+  const Eigen::PlainObjectBase<DerivedB> & B,
+  const Eigen::PlainObjectBase<DerivedC> & C,
+  Eigen::PlainObjectBase<DerivedL> & L)
+{
+  using namespace Eigen;
+  assert(P.cols() == 2 && "query must be in 2d");
+  assert(A.cols() == 2 && "corners must be in 2d");
+  assert(B.cols() == 2 && "corners must be in 2d");
+  assert(C.cols() == 2 && "corners must be in 2d");
+  assert(P.rows() == A.rows() && "Must have same number of queries as corners");
+  assert(A.rows() == B.rows() && "Corners must be same size");
+  assert(A.rows() == C.rows() && "Corners must be same size");
+  typedef Matrix<typename DerivedL::Scalar,DerivedL::RowsAtCompileTime,1> 
+    VectorXS;
+  // Total area
+  VectorXS dblA,LA,LB,LC;
+  doublearea(P,B,C,LA);
+  doublearea(A,P,C,LB);
+  doublearea(A,B,P,LC);
+  doublearea(A,B,C,dblA);
+  L.resize(P.rows(),3);
+  L<<LA,LB,LC;
+  L.array().colwise() /= dblA.array();
 }
 
 #ifndef IGL_HEADER_ONLY
