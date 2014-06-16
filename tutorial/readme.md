@@ -1,3 +1,5 @@
+xhtml header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 # Introduction
 
 TODO
@@ -22,3 +24,6 @@ Every example can be compiled by using the cmake file provided in its folder.
 On Linux and MacOSX, you can use the provided bash script:
 
     sh ../compile_example.sh
+
+This is an equation
+ $a = bx$ 
