@@ -7,9 +7,9 @@ set(CMAKE_COLOR_MAKEFILE ON)
 ## SEPARATE BUILD OPTIONS ##
 ############################
 
+find_package(ANTTWEAKBAR REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
-find_package(ANTTWEAKBAR REQUIRED)
 find_package(EIGEN REQUIRED)
 find_package(LIBIGL REQUIRED)
 find_package(TINYXML2 REQUIRED)
@@ -19,22 +19,22 @@ if(APPLE)
 	set(CMAKE_CXX_LINK_FLAGS "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
 endif (APPLE) #APPLE
 
+include_directories( ${ANT_TWEAK_BAR_INCLUDE_DIR} )
+
+# message(FATAL_ERROR ${ANT_TWEAK_BAR_INCLUDE_DIR})
+
+
+include_directories( ${GLEW_INCLUDE_DIR} )
+include_directories( ${EIGEN_INCLUDE_DIR})
+include_directories( ${LIBIGL_INCLUDE_DIR})
+include_directories( ${TINYXML2_INCLUDE_DIR})
+include_directories( ${GLFW_INCLUDE_DIR})
 include_directories(
 	/usr/local/include
 	/opt/local/include
     ${PROJECT_SOURCE_DIR}
     ${OPENGL_INCLUDE_DIR}
 )
-
-# message(FATAL_ERROR ${ANT_TWEAK_BAR_INCLUDE_DIR})
-
-
-include_directories( ${GLEW_INCLUDE_DIR} )
-include_directories( ${ANT_TWEAK_BAR_INCLUDE_DIR} )
-include_directories( ${EIGEN_INCLUDE_DIR})
-include_directories( ${LIBIGL_INCLUDE_DIR})
-include_directories( ${TINYXML2_INCLUDE_DIR})
-include_directories( ${GLFW_INCLUDE_DIR})
 
 link_directories(
 	/usr/local/lib

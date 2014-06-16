@@ -13,7 +13,8 @@ FIND_PATH(ANT_TWEAK_BAR_INCLUDE_DIR AntTweakBar.h
       ${PROJECT_SOURCE_DIR}/../../external/AntTweakBar/include/
       /usr/local/include
       /usr/X11/include
-      /usr/include)
+      /usr/include
+      NO_DEFAULT_PATH)
 
 set(ANT_TWEAK_BAR_INCLUDE_DIR ${ANT_TWEAK_BAR_INCLUDE_DIR} ${ANT_TWEAK_BAR_INCLUDE_DIR}/../src/)
 
@@ -29,6 +30,7 @@ FIND_LIBRARY( ANT_TWEAK_BAR_LIBRARY AntTweakBar
     lib64
     lib
     dylib
+    NO_DEFAULT_PATH
 )
 
 # message(FATAL_ERROR ${ANT_TWEAK_BAR_LIBRARY})
