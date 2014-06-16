@@ -1,0 +1,7 @@
+GL_ARB_clear_buffer_object
+http://www.opengl.org/registry/specs/gl/ARB/clear_buffer_object.txt
+GL_ARB_clear_buffer_object
+	void glClearBufferData (GLenum target, GLenum internalformat, GLenum format, GLenum type, const GLvoid* data)
+	void glClearBufferSubData (GLenum target, GLenum internalformat, GLintptr offset, GLsizeiptr size, GLenum format, GLenum type, const GLvoid* data)
+	void glClearNamedBufferDataEXT (GLuint buffer, GLenum internalformat, GLenum format, GLenum type, const GLvoid* data)
+	void glClearNamedBufferSubDataEXT (GLuint buffer, GLenum internalformat, GLintptr offset, GLsizeiptr size, GLenum format, GLenum type, const GLvoid* data)
