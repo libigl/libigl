@@ -551,7 +551,7 @@ namespace igl
     TwAddButton(bar,"Load Scene", load_scene_cb,    this, "group='Workspace'");
     TwAddButton(bar,"Save Scene", save_scene_cb,    this, "group='Workspace'");
     #endif
-    
+
     #ifdef ENABLE_IO
     TwAddButton(bar,"Load Mesh",  open_dialog_mesh, this, "group='Mesh' key=o");
     #endif
@@ -1886,7 +1886,7 @@ namespace igl
       {
         __font_renderer.BeginDraw(view*model, proj, viewport, data.object_scale);
         for (int i=0; i<data.labels_positions.rows(); ++i)
-          __font_renderer.DrawText(data.labels_positions.row(i), Eigen::Vector3d(0.0),
+          __font_renderer.DrawText(data.labels_positions.row(i), Eigen::Vector3d(0.0,0.0,0.0),
               data.labels_strings[i]);
         __font_renderer.EndDraw();
       }
@@ -2202,6 +2202,29 @@ namespace igl
     data.dirty |= DIRTY_TEXTURE;
   }
 
+  void Viewer::draw_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
+  {
+    int lastid = data.points.rows();
+    data.points.conservativeResize(data.points.rows() + P.rows(),6);
+    for (unsigned i=0; i<P.rows(); ++i)
+      data.points.row(lastid+i) << P.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
+  }
+
+  void Viewer::draw_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
+  {
+    int lastid = data.lines.rows();
+    data.lines.conservativeResize(data.lines.rows() + P1.rows(),9);
+    for (unsigned i=0; i<P1.rows(); ++i)
+      data.lines.row(lastid+i) << P1.row(i), P2.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
+  }
+
+  void Viewer::draw_label (const Eigen::VectorXd& P,  const std::string& str)
+  {
+    int lastid = data.labels_positions.rows();
+    data.labels_positions.conservativeResize(lastid+1, 3);
+    data.labels_positions.row(lastid) = P;
+    data.labels_strings.push_back(str);
+  }
 
   void Viewer::launch(string filename)
   {
