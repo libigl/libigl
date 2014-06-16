@@ -63,6 +63,27 @@ IGL_INLINE void igl::doublearea(
 template <
   typename DerivedA,
   typename DerivedB,
+  typename DerivedC,
+  typename DerivedD>
+IGL_INLINE void doublearea( 
+  const Eigen::PlainObjectBase<DerivedA> & A, 
+  const Eigen::PlainObjectBase<DerivedB> & B, 
+  const Eigen::PlainObjectBase<DerivedC> & C,
+  Eigen::PlainObjectBase<DerivedD> & D)
+{
+  assert(A.cols() == 2 && "corners should be 2d");
+  assert(B.cols() == 2 && "corners should be 2d");
+  assert(C.cols() == 2 && "corners should be 2d");
+  assert(A.rows() == B.rows() && "corners should have same length");
+  assert(A.rows() == C.rows() && "corners should have same length");
+  const auto & R = A-C;
+  const auto & S = B-C;
+  D = R.col(0).array()*S.col(1).array() - R.col(1).array()*S.col(0).array();
+}
+
+template <
+  typename DerivedA,
+  typename DerivedB,
   typename DerivedC>
 IGL_INLINE typename DerivedA::Scalar igl::doublearea_single(
   const Eigen::PlainObjectBase<DerivedA> & A, 

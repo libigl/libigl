@@ -31,6 +31,17 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedV> & V, 
     const Eigen::PlainObjectBase<DerivedF> & F, 
     Eigen::PlainObjectBase<DeriveddblA> & dblA);
+  // Stream of triangles
+  template <
+    typename DerivedA,
+    typename DerivedB,
+    typename DerivedC,
+    typename DerivedD>
+  IGL_INLINE void doublearea( 
+    const Eigen::PlainObjectBase<DerivedA> & A, 
+    const Eigen::PlainObjectBase<DerivedB> & B, 
+    const Eigen::PlainObjectBase<DerivedC> & C,
+    Eigen::PlainObjectBase<DerivedD> & D);
   // Single triangle in 2D!
   //
   // This should handle streams of corners not just single corners
