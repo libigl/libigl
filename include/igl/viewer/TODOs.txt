@@ -1,0 +1,4 @@
+- Rewrite in libigl style
+- zoom with pan rather than scaling
+- don't zoom on horizontal scale
+- trackball mouseup captured by tweakbar
