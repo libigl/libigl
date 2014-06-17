@@ -30,7 +30,7 @@
 #include <string>
 #include <vector>
 
-#include "engine.h"  // Matlab engine header
+#include <engine.h>  // Matlab engine header
 
 namespace igl
 {

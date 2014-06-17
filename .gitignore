@@ -57,3 +57,7 @@ external/tetgen/tetgen
 external/tinyxml2/test
 external/tinyxml2/tinyxml2.pc
 external/yimg/showpng
+README.html
+tutorial/readme.html
+tutorial/*/build/*
+tutorial/*/Makefile
