@@ -315,6 +315,7 @@ namespace igl
     // Pointer to the plugin_manager (usually it will be a global variable)
     Plugin_manager* plugin_manager;
     void init_plugins();
+    void shutdown_plugins();
 
     // Temporary data stored when the mouse button is pressed
     Eigen::Vector4f down_rotation;
@@ -454,19 +455,24 @@ namespace igl
 
     ~Viewer_plugin(){};
 
-    // It is called when the viewer is initialized (no mesh will be loaded at this stage)
+    // This function is called when the viewer is initialized (no mesh will be loaded at this stage)
     virtual void init(igl::Viewer *_viewer)
     {
       viewer = _viewer;
     }
 
-    // It is called before a mesh is loaded
+    // This function is called before shutdown
+    virtual void shutdown()
+    {
+    }
+
+    // This function is called before a mesh is loaded
     virtual bool load(std::string filename)
     {
       return false;
     }
 
-    // It is called before a mesh is saved
+    // This function is called before a mesh is saved
     virtual bool save(std::string filename)
     {
       return false;
@@ -478,19 +484,19 @@ namespace igl
       return false;
     }
 
-    // It is called before the draw procedure of Preview3D
+    // This function is called before the draw procedure of Preview3D
     virtual bool pre_draw()
     {
       return false;
     }
 
-    // It is called after the draw procedure of Preview3D
+    // This function is called after the draw procedure of Preview3D
     virtual bool post_draw()
     {
       return false;
     }
 
-    // It is called when the mouse button is pressed
+    // This function is called when the mouse button is pressed
     // - button can be GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON or GLUT_RIGHT_BUTTON
     // - modifiers is a bitfield that might one or more of the following bits Preview3D::NO_KEY, Preview3D::SHIFT, Preview3D::CTRL, Preview3D::ALT;
     virtual bool mouse_down(int button, int modifier)
@@ -498,7 +504,7 @@ namespace igl
       return false;
     }
 
-    // It is called when the mouse button is released
+    // This function is called when the mouse button is released
     // - button can be GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON or GLUT_RIGHT_BUTTON
     // - modifiers is a bitfield that might one or more of the following bits Preview3D::NO_KEY, Preview3D::SHIFT, Preview3D::CTRL, Preview3D::ALT;
     virtual bool mouse_up(int button, int modifier)
@@ -506,28 +512,28 @@ namespace igl
       return false;
     }
 
-    // It is called every time the mouse is moved
+    // This function is called every time the mouse is moved
     // - mouse_x and mouse_y are the new coordinates of the mouse pointer in screen coordinates
     virtual bool mouse_move(int mouse_x, int mouse_y)
     {
       return false;
     }
 
-    // It is called every time the scroll wheel is moved
+    // This function is called every time the scroll wheel is moved
     // Note: this callback is not working with every glut implementation
     virtual bool mouse_scroll(float delta_y)
     {
       return false;
     }
 
-    // It is called when a keyboard key is pressed
+    // This function is called when a keyboard key is pressed
     // - modifiers is a bitfield that might one or more of the following bits Preview3D::NO_KEY, Preview3D::SHIFT, Preview3D::CTRL, Preview3D::ALT;
     virtual bool key_down(unsigned char key, int modifiers)
     {
       return false;
     }
 
-    // It is called when a keyboard key is release
+    // This function is called when a keyboard key is release
     // - modifiers is a bitfield that might one or more of the following bits Preview3D::NO_KEY, Preview3D::SHIFT, Preview3D::CTRL, Preview3D::ALT;
     virtual bool key_up(unsigned char key, int modifiers)
     {

@@ -185,14 +185,14 @@ Eigen::Matrix4f translate(
 #include <igl/snap_to_canonical_view_quat.h>
 #include <TwOpenGLCore.h>
 
-// This is needed for glfw event handling
-
-// main.cpp
-igl::Viewer * __viewer;
+// Plugin manager (exported to other compilation units)
 igl::Plugin_manager igl_viewer_plugin_manager;
-double highdpi = 1;
-double scroll_x = 0;
-double scroll_y = 0;
+
+// Internal global variables used for glfw event handling
+static igl::Viewer * __viewer;
+static double highdpi = 1;
+static double scroll_x = 0;
+static double scroll_y = 0;
 
 /* This class extends the font rendering code in AntTweakBar
    so that it can be used to render text at arbitrary 3D positions */
@@ -698,6 +698,13 @@ namespace igl
 
   Viewer::~Viewer()
   {
+  }
+
+  void Viewer::shutdown_plugins()
+  {
+    if (plugin_manager)
+      for (unsigned int i = 0; i<plugin_manager->plugin_list.size(); ++i)
+        plugin_manager->plugin_list[i]->shutdown();
   }
 
   bool Viewer::load_mesh_from_file(const char* mesh_file_name)
@@ -2264,9 +2271,10 @@ namespace igl
     // Initialize AntTweakBar
     TwInit(TW_OPENGL_CORE, NULL);
 
-    //      // Initialize IGL viewer
+    // Initialize IGL viewer
     init(&igl_viewer_plugin_manager);
     __viewer = this;
+
     // Register callbacks
     glfwSetKeyCallback(window, glfw_key_callback);
     glfwSetCursorPosCallback(window,glfw_mouse_move);
@@ -2290,19 +2298,20 @@ namespace igl
 
     // Load the mesh passed as input
     if (filename.size() > 0)
-      __viewer->load_mesh_from_file(filename.c_str());
+      load_mesh_from_file(filename.c_str());
 
     // Rendering loop
     while (!glfwWindowShouldClose(window))
     {
-      __viewer->draw();
+      draw();
 
       glfwSwapBuffers(window);
       //glfwPollEvents();
       glfwWaitEvents();
     }
 
-    __viewer->free_opengl();
+    free_opengl();
+    shutdown_plugins();
 
     glfwDestroyWindow(window);
     glfwTerminate();
