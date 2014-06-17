@@ -23,9 +23,9 @@ IGL_INLINE void igl::cotmatrix(
 {
   using namespace igl;
   using namespace Eigen;
-  Eigen::DynamicSparseMatrix<double> foo;
+  Eigen::SparseMatrix<double> foo;
 
-  DynamicSparseMatrix<Scalar, RowMajor> dyn_L (V.rows(), V.rows());
+  SparseMatrix<Scalar, RowMajor> dyn_L (V.rows(), V.rows());
   Matrix<int,Dynamic,2> edges;
   int simplex_size = F.cols();
   // 3 for triangles, 4 for tets
