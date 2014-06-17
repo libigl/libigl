@@ -2,3 +2,11 @@
 - zoom with pan rather than scaling
 - don't zoom on horizontal scale
 - trackball mouseup captured by tweakbar
++ remove global `using namespace std`
++ remove `#define IGL_HEADER_ONLY`
++ guard `#undef max`
++ fix all -Wsign-compare
++ missing `#include <iostream>`
++ missing `#include <fstream>`
++ fix all -Wunused-but-set-variable
++ makefile for libiglviewer.a
