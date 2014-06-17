@@ -9,7 +9,7 @@ Eigen::MatrixXi F;
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::readOFF("cube.off", V, F);
+  igl::readOFF("../shared/cube.off", V, F);
 
   // Plot the vertices and faces matrices
   std::cerr << "Vertices: " << std::endl << V << std::endl;

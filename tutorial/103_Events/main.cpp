@@ -30,8 +30,8 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 int main(int argc, char *argv[])
 {
   // Load two meshes
-  igl::readOFF("bumpy.off", V1, F1);
-  igl::readOFF("fertility.off", V2, F2);
+  igl::readOFF("../shared/bumpy.off", V1, F1);
+  igl::readOFF("../shared/fertility.off", V2, F2);
 
   igl::Viewer viewer;
   // Register a keyboard callback that allows to switch between
