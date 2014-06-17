@@ -315,20 +315,26 @@ static TextRenderer __font_renderer;
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
-  if (!TwEventMouseButtonGLFW(button, action))
-  {
-    igl::Viewer::MouseButton mb;
-    if (button == GLFW_MOUSE_BUTTON_1)
-      mb = igl::Viewer::IGL_LEFT;
-    else if (button == GLFW_MOUSE_BUTTON_2)
-      mb = igl::Viewer::IGL_RIGHT;
-    else //if (button == GLFW_MOUSE_BUTTON_3)
-      mb = igl::Viewer::IGL_MIDDLE;
+  bool tw_used = TwEventMouseButtonGLFW(button, action);
+  igl::Viewer::MouseButton mb;
 
-    if (action == GLFW_PRESS)
+  if (button == GLFW_MOUSE_BUTTON_1)
+    mb = igl::Viewer::IGL_LEFT;
+  else if (button == GLFW_MOUSE_BUTTON_2)
+    mb = igl::Viewer::IGL_RIGHT;
+  else //if (button == GLFW_MOUSE_BUTTON_3)
+    mb = igl::Viewer::IGL_MIDDLE;
+
+  if (action == GLFW_PRESS)
+  {
+    if(!tw_used)
+    {
       __viewer->mouse_down(mb,modifier);
-    else
-      __viewer->mouse_up(mb,modifier);
+    }
+  } else
+  {
+    // Always call mouse_up on up
+    __viewer->mouse_up(mb,modifier);
   }
 
 }
@@ -504,12 +510,29 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
   __viewer->resize(w, h);
 
   TwWindowSize(w, h);
+  const auto & bar = __viewer->bar;
+  // Keep AntTweakBar on right side of screen and height == opengl height
+  // get the current position of a bar
+  int size[2];
+  TwGetParam(bar, NULL, "size", TW_PARAM_INT32, 2, size);
+  int pos[2];
+  // Place bar on left side of opengl rect (padded by 10 pixels)
+  pos[0] = 10;//max(10,(int)width - size[0] - 10);
+  // place bar at top (padded by 10 pixels)
+  pos[1] = 10;
+  // Set height to new height of window (padded by 10 pixels on bottom)
+  size[1] = height-pos[1]-10;
+  TwSetParam(bar, NULL, "position", TW_PARAM_INT32, 2, pos);
+  TwSetParam(bar, NULL, "size", TW_PARAM_INT32, 2,size);
 }
 
 static void glfw_mouse_move(GLFWwindow* window, double x, double y)
 {
-  if (!TwEventMousePosGLFW(x*highdpi,y*highdpi))
+  if(!TwEventMousePosGLFW(x*highdpi,y*highdpi) || __viewer->down)
+  {
+    // Call if TwBar hasn't used or if down
     __viewer->mouse_move(x*highdpi, y*highdpi);
+  }
 }
 
 static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
@@ -517,7 +540,6 @@ static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
   using namespace std;
   scroll_x += x;
   scroll_y += y;
-  cout<<"scroll: "<<x<<","<<y<<endl;
 
   if (!TwEventMouseWheelGLFW(scroll_y))
     __viewer->mouse_scroll(y);
@@ -633,7 +655,7 @@ namespace igl
     options.line_color << 0.0f, 0.0f, 0.0f;
 
     // Default lights settings
-    options.light_position << 0.0f, 0.30f, 5.0f;
+    options.light_position << 0.0f, -0.30f, -5.0f;
 
     // Default trackball
     options.trackball_angle << 0.0f, 0.0f, 0.0f, 1.0f;
@@ -1082,9 +1104,13 @@ namespace igl
         if (plugin_manager->plugin_list[i]->mouse_scroll(delta_y))
           return true;
 
-    float mult = (1.0+((delta_y>0)?1.:-1.)*0.05);
-    const float min_zoom = 0.1f;
-    options.camera_zoom = (options.camera_zoom * mult > min_zoom ? options.camera_zoom * mult : min_zoom);
+    // Only zoom if there's actually a change
+    if(delta_y != 0)
+    {
+      float mult = (1.0+((delta_y>0)?1.:-1.)*0.05);
+      const float min_zoom = 0.1f;
+      options.camera_zoom = (options.camera_zoom * mult > min_zoom ? options.camera_zoom * mult : min_zoom);
+    }
     return true;
   }
 
@@ -1724,6 +1750,7 @@ namespace igl
   void Viewer::draw()
   {
     using namespace std;
+    using namespace Eigen;
     glClearColor(options.background_color[0],
                  options.background_color[1],
                  options.background_color[2],
@@ -1804,7 +1831,8 @@ namespace igl
     GLint texture_factori       = opengl.shader_mesh.uniform("texture_factor");
 
     glUniform1f(specular_exponenti, options.shininess);
-    glUniform3fv(light_position_worldi, 1, options.light_position.data());
+    Vector3f rev_light = -1.*options.light_position;
+    glUniform3fv(light_position_worldi, 1, rev_light.data());
     glUniform1f(lighting_factori, 1.0f); // enables lighting
     glUniform4f(fixed_colori, 0.0, 0.0, 0.0, 0.0);
 
