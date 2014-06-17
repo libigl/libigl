@@ -16,19 +16,20 @@
 #include <GLFW/glfw3.h>
 
 #ifdef _WIN32
-#include <windows.h>
-#include <GL/glew.h>
+#  include <windows.h>
+#  undef max
+#  undef min
+#  include <GL/glew.h>
 #endif
 
 #include <cmath>
 #include <cstdio>
-#include <string>
 #include <sstream>
 #include <iomanip>
+#include <iostream>
+#include <fstream>
 
 #include <algorithm>
-
-using namespace std;
 
 //OK NV
 Eigen::Vector3f project(const Eigen::Vector3f&  obj,
@@ -154,14 +155,8 @@ Eigen::Matrix4f translate(
 }
 
 
-// Undef Visual Studio macros...
-#undef max
-#undef min
-
 #include <limits>
 #include <cassert>
-
-#define IGL_HEADER_ONLY
 
 #ifdef ENABLE_XML_SERIALIZATION
   #include "igl/xml/XMLSerializer.h"
@@ -519,8 +514,10 @@ static void glfw_mouse_move(GLFWwindow* window, double x, double y)
 
 static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
 {
+  using namespace std;
   scroll_x += x;
   scroll_y += y;
+  cout<<"scroll: "<<x<<","<<y<<endl;
 
   if (!TwEventMouseWheelGLFW(scroll_y))
     __viewer->mouse_scroll(y);
@@ -814,8 +811,8 @@ namespace igl
       data.dirty |= DIRTY_TEXTURE;
     }
 
-    int size = 128;
-    int size2 = size/2;
+    unsigned size = 128;
+    unsigned size2 = size/2;
     data.texture_R.resize(size, size);
     for (unsigned i=0; i<size; ++i)
     {
@@ -1039,7 +1036,7 @@ namespace igl
                          mouse_x,
                          mouse_y,
                          options.trackball_angle.data());
-          Eigen::Vector4f snapq = options.trackball_angle;
+          //Eigen::Vector4f snapq = options.trackball_angle;
 
           break;
         }
@@ -1057,6 +1054,7 @@ namespace igl
         }
         case ZOOM:
         {
+          //float delta = 0.001f * (mouse_x - down_mouse_x + mouse_y - down_mouse_y);
           float delta = 0.001f * (mouse_x - down_mouse_x + mouse_y - down_mouse_y);
           options.camera_zoom *= 1 + delta;
           down_mouse_x = mouse_x;
@@ -1084,13 +1082,15 @@ namespace igl
         if (plugin_manager->plugin_list[i]->mouse_scroll(delta_y))
           return true;
 
-    float mult = (delta_y>0)?1.1:0.9;
-    options.camera_zoom = (options.camera_zoom * mult > 0.1f ? options.camera_zoom * mult : 0.1f);
+    float mult = (1.0+((delta_y>0)?1.:-1.)*0.05);
+    const float min_zoom = 0.1f;
+    options.camera_zoom = (options.camera_zoom * mult > min_zoom ? options.camera_zoom * mult : min_zoom);
     return true;
   }
 
   static GLuint create_shader_helper(GLint type, const std::string &shader_string)
   {
+    using namespace std;
     if (shader_string.empty())
       return (GLuint) 0;
 
@@ -1150,6 +1150,7 @@ namespace igl
     const std::string &geometry_shader_string,
     int geometry_shader_max_vertices)
   {
+    using namespace std;
     vertex_shader = create_shader_helper(GL_VERTEX_SHADER, vertex_shader_string);
     geometry_shader = create_shader_helper(GL_GEOMETRY_SHADER, geometry_shader_string);
     fragment_shader = create_shader_helper(GL_FRAGMENT_SHADER, fragment_shader_string);
@@ -1722,6 +1723,7 @@ namespace igl
 
   void Viewer::draw()
   {
+    using namespace std;
     glClearColor(options.background_color[0],
                  options.background_color[1],
                  options.background_color[2],
@@ -2107,6 +2109,7 @@ namespace igl
   // Helpers that draws the most common meshes
   void Viewer::draw_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
   {
+    using namespace std;
     if (data.V.rows() == 0 && data.F.rows() == 0)
     {
       clear_mesh();
@@ -2137,6 +2140,7 @@ namespace igl
 
   void Viewer::draw_normals(const Eigen::MatrixXd& N)
   {
+    using namespace std;
     if (N.rows() == data.V.rows())
     {
       options.face_based = false;
@@ -2154,6 +2158,7 @@ namespace igl
 
   void Viewer::draw_colors(Eigen::MatrixXd C)
   {
+    using namespace std;
     if (C.rows() == 1)
     {
       for (unsigned i=0;i<data.V_material_diffuse.rows();++i)
@@ -2179,6 +2184,7 @@ namespace igl
 
   void Viewer::draw_UV(const Eigen::MatrixXd& UV)
   {
+    using namespace std;
     if (UV.rows() == data.V.rows())
     {
       options.face_based = false;
@@ -2233,7 +2239,7 @@ namespace igl
     data.labels_strings.push_back(str);
   }
 
-  void Viewer::launch(string filename)
+  void Viewer::launch(std::string filename)
   {
     GLFWwindow* window;
 
@@ -2255,12 +2261,11 @@ namespace igl
     }
     glfwMakeContextCurrent(window);
 
-    int major, minor, rev;
-    major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
-    minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
-    rev = glfwGetWindowAttrib(window, GLFW_CONTEXT_REVISION);
-
     #ifdef DEBUG
+      int major, minor, rev;
+      major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
+      minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
+      rev = glfwGetWindowAttrib(window, GLFW_CONTEXT_REVISION);
       printf("OpenGL version recieved: %d.%d.%d\n", major, minor, rev);
       printf("Supported OpenGL is %s\n", (const char*)glGetString(GL_VERSION));
       printf("Supported GLSL is %s\n", (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
