@@ -9,7 +9,7 @@ Eigen::MatrixXi F;
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::readOFF("bunny.off", V, F);
+  igl::readOFF("../shared/bunny.off", V, F);
 
   // Find the bounding box
   Eigen::Vector3d m = V.colwise().minCoeff();
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
   std::stringstream l2;
   l2 << M(0) << ", " << M(1) << ", " << M(2);
   viewer.draw_label(M,l2.str());
-  
+
   // Launch the viewer
   viewer.launch();
 }
