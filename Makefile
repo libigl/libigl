@@ -54,6 +54,10 @@ ifeq ($(IGL_WITH_TETGEN),1)
 	EXTRA_DIRS+=include/igl/tetgen
 	EXTRAS += tetgen
 endif
+ifeq ($(IGL_WITH_VIEWER),1)
+	EXTRA_DIRS+=include/igl/viewer
+	EXTRAS += viewer
+endif
 ifeq ($(IGL_WITH_XML),1)
 	EXTRA_DIRS+=include/igl/xml
 	EXTRAS += xml
