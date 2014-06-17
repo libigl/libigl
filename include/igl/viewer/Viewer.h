@@ -577,4 +577,9 @@ namespace igl
 
 
 } // end namespace
+
+#ifdef IGL_HEADER_ONLY
+#  include "Viewer.cpp"
+#endif
+
 #endif

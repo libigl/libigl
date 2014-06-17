@@ -24,10 +24,10 @@ FIND_PATH(LIBIGL_INCLUDE_DIR igl/readOBJ.h
 
 if(LIBIGL_INCLUDE_DIR)
    set(LIBIGL_FOUND TRUE)
-#   add_definitions(-DIGL_HEADER_ONLY)
-   set(LIBIGL_SOURCES
-      ${LIBIGL_INCLUDE_DIR}/igl/viewer/Viewer.cpp
-   )
+   add_definitions(-DIGL_HEADER_ONLY)
+   #set(LIBIGL_SOURCES
+   #   ${LIBIGL_INCLUDE_DIR}/igl/viewer/Viewer.cpp
+   #)
 endif(LIBIGL_INCLUDE_DIR)
 
 if(LIBIGL_FOUND)
