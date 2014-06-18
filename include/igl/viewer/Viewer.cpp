@@ -2135,7 +2135,7 @@ namespace igl
   }
 
   // Helpers that draws the most common meshes
-  void Viewer::draw_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
+  void Viewer::set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
   {
     using namespace std;
     if (data.V.rows() == 0 && data.F.rows() == 0)
@@ -2161,7 +2161,7 @@ namespace igl
         alignCameraCenter();
       }
       else
-        cerr << "ERROR (draw_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting.";
+        cerr << "ERROR (set_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting.";
     }
     data.dirty |= DIRTY_FACE | DIRTY_POSITION;
   }

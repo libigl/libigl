@@ -346,7 +346,7 @@ namespace igl
     void alignCameraCenter(); // Adjust the view to see the entire model
 
     // Helpers that can draw the most common meshes
-    void draw_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
+    void set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
     void set_normals(const Eigen::MatrixXd& N);
     // Set the color of the mesh 
     //
