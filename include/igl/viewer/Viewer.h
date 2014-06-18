@@ -345,10 +345,13 @@ namespace igl
     void clear_mesh();      // Clear the mesh data
     void alignCameraCenter(); // Adjust the view to see the entire model
 
+    // Change the visualization mode, invalidating the cache if necessary
+    void set_face_based(bool newvalue);
+
     // Helpers that can draw the most common meshes
     void set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
     void set_normals(const Eigen::MatrixXd& N);
-    // Set the color of the mesh 
+    // Set the color of the mesh
     //
     // Inputs:
     //   C  #V|#F|1 by 3 list of colors
