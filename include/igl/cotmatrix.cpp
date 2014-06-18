@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "cotmatrix.h"
+#include <vector>
 
 // For error printing
 #include <cstdio>
@@ -23,9 +24,9 @@ IGL_INLINE void igl::cotmatrix(
 {
   using namespace igl;
   using namespace Eigen;
-  Eigen::SparseMatrix<double> foo;
+  using namespace std;
 
-  SparseMatrix<Scalar, RowMajor> dyn_L (V.rows(), V.rows());
+  L.resize(V.rows(),V.rows());
   Matrix<int,Dynamic,2> edges;
   int simplex_size = F.cols();
   // 3 for triangles, 4 for tets
@@ -35,7 +36,7 @@ IGL_INLINE void igl::cotmatrix(
     // This is important! it could decrease the comptuation time by a factor of 2
     // Laplacian for a closed 2d manifold mesh will have on average 7 entries per
     // row
-    dyn_L.reserve(7*V.rows());
+    L.reserve(10*V.rows());
     edges.resize(3,2);
     edges << 
       1,2,
@@ -43,7 +44,7 @@ IGL_INLINE void igl::cotmatrix(
       0,1;
   }else if(simplex_size == 4)
   {
-    dyn_L.reserve(17*V.rows());
+    L.reserve(17*V.rows());
     edges.resize(6,2);
     edges << 
       1,2,
@@ -60,6 +61,8 @@ IGL_INLINE void igl::cotmatrix(
   Matrix<Scalar,Dynamic,Dynamic> C;
   cotangent(V,F,C);
   
+  vector<Triplet<Scalar> > IJV;
+  IJV.reserve(F.rows()*edges.rows()*4);
   // Loop over triangles
   for(int i = 0; i < F.rows(); i++)
   {
@@ -68,14 +71,13 @@ IGL_INLINE void igl::cotmatrix(
     {
       int source = F(i,edges(e,0));
       int dest = F(i,edges(e,1));
-      dyn_L.coeffRef(source,dest) += C(i,e);
-      dyn_L.coeffRef(dest,source) += C(i,e);
-      dyn_L.coeffRef(source,source) += -C(i,e);
-      dyn_L.coeffRef(dest,dest) += -C(i,e);
+      IJV.push_back(Triplet<Scalar>(source,dest,C(i,e)));
+      IJV.push_back(Triplet<Scalar>(dest,source,C(i,e)));
+      IJV.push_back(Triplet<Scalar>(source,source,-C(i,e)));
+      IJV.push_back(Triplet<Scalar>(dest,dest,-C(i,e)));
     }
   }
-    // Corner indices of this triangle
-  L = SparseMatrix<Scalar>(dyn_L);
+  L.setFromTriplets(IJV.begin(),IJV.end());
 }
 
 #ifndef IGL_HEADER_ONLY
