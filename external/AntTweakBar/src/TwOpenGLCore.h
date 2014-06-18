@@ -16,31 +16,69 @@
 
 #include "TwGraph.h"
 
+// ----------------------------------------------------------------------------
+//  OS specific definitions
+// ----------------------------------------------------------------------------
+
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(TW_STATIC)
+#   define TW_CALL          __stdcall
+#   define TW_CDECL_CALL    __cdecl
+#   define TW_EXPORT_API    __declspec(dllexport)
+#   define TW_IMPORT_API    __declspec(dllimport)
+#else
+#   define TW_CALL
+#   define TW_CDECL_CALL
+#   define TW_EXPORT_API
+#   define TW_IMPORT_API
+#endif
+
+#if defined TW_EXPORTS
+#   define TW_API TW_EXPORT_API
+#elif defined TW_STATIC
+#   define TW_API
+#   if defined(_MSC_VER) && !defined(TW_NO_LIB_PRAGMA)
+#       ifdef _WIN64
+#           pragma comment(lib, "AntTweakBarStatic64")
+#       else
+#           pragma comment(lib, "AntTweakBarStatic")
+#       endif
+#   endif
+#else
+#   define TW_API TW_IMPORT_API
+#   if defined(_MSC_VER) && !defined(TW_NO_LIB_PRAGMA)
+#       ifdef _WIN64
+#           pragma comment(lib, "AntTweakBar64")
+#       else
+#           pragma comment(lib, "AntTweakBar")
+#       endif
+#   endif
+#endif
+
 //  ---------------------------------------------------------------------------
 
 class CTwGraphOpenGLCore : public ITwGraph
 {
 public:
-    virtual int         Init();
-    virtual int         Shut();
-    virtual void        BeginDraw(int _WndWidth, int _WndHeight);
-    virtual void        EndDraw();
-    virtual bool        IsDrawing();
-    virtual void        Restore();
-    virtual void        DrawLine(int _X0, int _Y0, int _X1, int _Y1, color32 _Color0, color32 _Color1, bool _AntiAliased=false);
-    virtual void        DrawLine(int _X0, int _Y0, int _X1, int _Y1, color32 _Color, bool _AntiAliased=false) { DrawLine(_X0, _Y0, _X1, _Y1, _Color, _Color, _AntiAliased); }
-    virtual void        DrawRect(int _X0, int _Y0, int _X1, int _Y1, color32 _Color00, color32 _Color10, color32 _Color01, color32 _Color11);
-    virtual void        DrawRect(int _X0, int _Y0, int _X1, int _Y1, color32 _Color) { DrawRect(_X0, _Y0, _X1, _Y1, _Color, _Color, _Color, _Color); }
-    virtual void        DrawTriangles(int _NumTriangles, int *_Vertices, color32 *_Colors, Cull _CullMode);
-
-    virtual void *      NewTextObj();
-    virtual void        DeleteTextObj(void *_TextObj);
-    virtual void        BuildText(void *_TextObj, const std::string *_TextLines, color32 *_LineColors, color32 *_LineBgColors, int _NbLines, const CTexFont *_Font, int _Sep, int _BgWidth);
-    virtual void        DrawText(void *_TextObj, int _X, int _Y, color32 _Color, color32 _BgColor);
-
-    virtual void        ChangeViewport(int _X0, int _Y0, int _Width, int _Height, int _OffsetX, int _OffsetY);
-    virtual void        RestoreViewport();
-    virtual void        SetScissor(int _X0, int _Y0, int _Width, int _Height);
+	TW_API virtual int         Init();
+	TW_API virtual int         Shut();
+	TW_API virtual void        BeginDraw(int _WndWidth, int _WndHeight);
+	TW_API virtual void        EndDraw();
+	TW_API virtual bool        IsDrawing();
+	TW_API virtual void        Restore();
+	TW_API virtual void        DrawLine(int _X0, int _Y0, int _X1, int _Y1, color32 _Color0, color32 _Color1, bool _AntiAliased = false);
+	TW_API virtual void        DrawLine(int _X0, int _Y0, int _X1, int _Y1, color32 _Color, bool _AntiAliased = false) { DrawLine(_X0, _Y0, _X1, _Y1, _Color, _Color, _AntiAliased); }
+	TW_API virtual void        DrawRect(int _X0, int _Y0, int _X1, int _Y1, color32 _Color00, color32 _Color10, color32 _Color01, color32 _Color11);
+	TW_API virtual void        DrawRect(int _X0, int _Y0, int _X1, int _Y1, color32 _Color) { DrawRect(_X0, _Y0, _X1, _Y1, _Color, _Color, _Color, _Color); }
+	TW_API virtual void        DrawTriangles(int _NumTriangles, int *_Vertices, color32 *_Colors, Cull _CullMode);
+    
+	TW_API virtual void *      NewTextObj();
+	TW_API virtual void        DeleteTextObj(void *_TextObj);
+	TW_API virtual void        BuildText(void *_TextObj, const std::string *_TextLines, color32 *_LineColors, color32 *_LineBgColors, int _NbLines, const CTexFont *_Font, int _Sep, int _BgWidth);
+	TW_API virtual void        DrawText(void *_TextObj, int _X, int _Y, color32 _Color, color32 _BgColor);
+	
+	TW_API virtual void        ChangeViewport(int _X0, int _Y0, int _Width, int _Height, int _OffsetX, int _OffsetY);
+	TW_API virtual void        RestoreViewport();
+	TW_API virtual void        SetScissor(int _X0, int _Y0, int _Width, int _Height);
 
 protected:
     bool                m_Drawing;

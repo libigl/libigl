@@ -1,5 +1,12 @@
 #include "Viewer.h"
 
+#ifdef _WIN32
+#  include <windows.h>
+#  undef max
+#  undef min
+#  include <GL/glew.h>
+#endif
+
 #ifdef __APPLE__
 #   include <OpenGL/gl3.h>
 #   define __gl_h_ /* Prevent inclusion of the old gl.h */
@@ -14,13 +21,6 @@
 
 #define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
-
-#ifdef _WIN32
-#  include <windows.h>
-#  undef max
-#  undef min
-#  include <GL/glew.h>
-#endif
 
 #include <cmath>
 #include <cstdio>
@@ -2326,7 +2326,19 @@ namespace igl
       glfwTerminate();
       exit(EXIT_FAILURE);
     }
-    glfwMakeContextCurrent(window);
+
+	glfwMakeContextCurrent(window);
+
+#ifdef _WIN32
+	glewExperimental = true;
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		/* Problem: glewInit failed, something is seriously wrong. */
+		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+	}
+	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+#endif
 
     #ifdef DEBUG
       int major, minor, rev;
