@@ -2187,27 +2187,53 @@ namespace igl
   void Viewer::set_colors(const Eigen::MatrixXd &C)
   {
     using namespace std;
+    using namespace Eigen;
+    // Ambient color should be darker color
+    const auto ambient = [](const MatrixXd & C)->MatrixXd
+    {
+      return 0.1*C;
+    };
+    // Specular color should be a less saturated and darker color: dampened
+    // highlights
+    const auto specular = [](const MatrixXd & C)->MatrixXd
+    {
+      const double grey = 0.3;
+      return grey+0.1*(C.array()-grey);
+    };
     if (C.rows() == 1)
     {
       for (unsigned i=0;i<data.V_material_diffuse.rows();++i)
+      {
         data.V_material_diffuse.row(i) = C.row(0);
+      }
+      data.V_material_ambient = ambient(data.V_material_diffuse);
+      data.V_material_specular = specular(data.V_material_diffuse);
 
       for (unsigned i=0;i<data.F_material_diffuse.rows();++i)
+      {
         data.F_material_diffuse.row(i) = C.row(0);
+      }
+      data.F_material_ambient = ambient(data.F_material_diffuse);
+      data.F_material_specular = specular(data.F_material_diffuse);
     }
     else if (C.rows() == data.V.rows())
     {
       options.face_based = false;
       data.V_material_diffuse = C;
+      data.V_material_ambient = ambient(data.V_material_diffuse);
+      data.V_material_specular = specular(data.V_material_diffuse);
     }
     else if (C.rows() == data.F.rows())
     {
       options.face_based = true;
       data.F_material_diffuse = C;
+      data.F_material_ambient = ambient(data.F_material_diffuse);
+      data.F_material_specular = specular(data.F_material_diffuse);
     }
     else
       cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex.";
     data.dirty |= DIRTY_DIFFUSE;
+
   }
 
   void Viewer::set_UV(const Eigen::MatrixXd& UV)
