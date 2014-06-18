@@ -693,7 +693,7 @@ namespace igl
     scroll_position = 0.0f;
 
     // Per face
-    options.face_based = false;
+    set_face_based(false);
 
     // C-style callbacks
     callback_pre_draw     = 0;
@@ -1332,6 +1332,8 @@ namespace igl
   void Viewer::OpenGL_state::set_data(const Data &data, bool face_based, bool invert_normals)
   {
     bool per_corner_uv = (data.F_uv.rows() == data.F.rows());
+    bool per_corner_normals = (data.F_normals.rows() == 3 * data.F.rows());
+
     dirty |= data.dirty;
 
     if (!face_based)
@@ -1467,7 +1469,10 @@ namespace igl
         V_normals_vbo.resize(3,data.F.rows()*3);
         for (unsigned i=0; i<data.F.rows();++i)
           for (unsigned j=0;j<3;++j)
-            V_normals_vbo.col (i*3+j) = data.F_normals.row(i).transpose().cast<float>();
+            V_normals_vbo.col (i*3+j) =
+               per_corner_normals ?
+                 data.F_normals.row(i*3+j).transpose().cast<float>() :
+                 data.F_normals.row(i).transpose().cast<float>();
 
         if (invert_normals)
           V_normals_vbo = -V_normals_vbo;
@@ -2051,8 +2056,7 @@ namespace igl
   void TW_CALL Viewer::set_face_based_cb(const void *param, void *clientData)
   {
     Viewer *viewer = static_cast<Viewer *>(clientData);
-    viewer->data.dirty = Viewer::DIRTY_ALL;
-    viewer->options.face_based = *((bool *) param);
+    viewer->set_face_based(*((bool *) param));
   }
 
   void TW_CALL Viewer::get_face_based_cb(void *param, void *clientData)
@@ -2134,6 +2138,15 @@ namespace igl
     #endif
   }
 
+  void Viewer::set_face_based(bool newvalue)
+  {
+    if (options.face_based != newvalue)
+    {
+      options.face_based = newvalue;
+      data.dirty = DIRTY_ALL;
+    }
+  }
+
   // Helpers that draws the most common meshes
   void Viewer::set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
   {
@@ -2171,16 +2184,16 @@ namespace igl
     using namespace std;
     if (N.rows() == data.V.rows())
     {
-      options.face_based = false;
+      set_face_based(false);
       data.V_normals = N;
     }
-    else if (N.rows() == data.F.rows())
+    else if (N.rows() == data.F.rows() || N.rows() == data.F.rows()*3)
     {
-      options.face_based = true;
+      set_face_based(true);
       data.F_normals = N;
     }
     else
-      cerr << "ERROR (set_normals): Please provide a normal per face or a normal per vertex.";
+      cerr << "ERROR (set_normals): Please provide a normal per face, per corner or per vertex.";
     data.dirty |= DIRTY_NORMAL;
   }
 
@@ -2218,14 +2231,14 @@ namespace igl
     }
     else if (C.rows() == data.V.rows())
     {
-      options.face_based = false;
+      set_face_based(false);
       data.V_material_diffuse = C;
       data.V_material_ambient = ambient(data.V_material_diffuse);
       data.V_material_specular = specular(data.V_material_diffuse);
     }
     else if (C.rows() == data.F.rows())
     {
-      options.face_based = true;
+      set_face_based(true);
       data.F_material_diffuse = C;
       data.F_material_ambient = ambient(data.F_material_diffuse);
       data.F_material_specular = specular(data.F_material_diffuse);
@@ -2241,7 +2254,7 @@ namespace igl
     using namespace std;
     if (UV.rows() == data.V.rows())
     {
-      options.face_based = false;
+      set_face_based(false);
       data.V_uv = UV;
     }
     else
@@ -2251,7 +2264,7 @@ namespace igl
 
   void Viewer::set_UV(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
   {
-    options.face_based = true;
+    set_face_based(true);
     data.V_uv = UV_V;
     data.F_uv = UV_F;
     data.dirty |= DIRTY_UV;
