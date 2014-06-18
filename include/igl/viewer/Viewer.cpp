@@ -2184,7 +2184,7 @@ namespace igl
     data.dirty |= DIRTY_NORMAL;
   }
 
-  void Viewer::set_colors(Eigen::MatrixXd C)
+  void Viewer::set_colors(const Eigen::MatrixXd &C)
   {
     using namespace std;
     if (C.rows() == 1)
