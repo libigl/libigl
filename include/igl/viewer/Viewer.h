@@ -363,9 +363,9 @@ namespace igl
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B);
 
-    void draw_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
-    void draw_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
-    void draw_label (const Eigen::VectorXd& P,  const std::string& str);
+    void add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
+    void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
+    void add_label (const Eigen::VectorXd& P,  const std::string& str);
 
     // Save the OpenGL transformation matrices used for the previous rendering pass
     Eigen::Matrix4f view;
