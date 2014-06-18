@@ -346,12 +346,16 @@ namespace igl
     void alignCameraCenter(); // Adjust the view to see the entire model
 
     // Helpers that can draw the most common meshes
-    void draw_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
-    void draw_normals(const Eigen::MatrixXd& N);
-    void draw_colors(Eigen::MatrixXd C);
-    void draw_UV(const Eigen::MatrixXd& UV);
-    void draw_UV(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
-    void draw_texture(
+    void set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
+    void set_normals(const Eigen::MatrixXd& N);
+    // Set the color of the mesh 
+    //
+    // Inputs:
+    //   C  #V|#F|1 by 3 list of colors
+    void set_colors(const Eigen::MatrixXd &C);
+    void set_UV(const Eigen::MatrixXd& UV);
+    void set_UV(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
+    void set_texture(
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B);

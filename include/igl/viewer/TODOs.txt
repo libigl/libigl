@@ -1,4 +1,5 @@
 - rewrite in libigl style
+- separate various class into their own .h/.cpp pairs
 - remove use of double underscores (http://stackoverflow.com/a/224420/148668)
 - document inputs and outputs to all functions
 - document all member fields

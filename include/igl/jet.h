@@ -9,7 +9,7 @@
 #define IGL_JET_H
 #include "igl_inline.h"
 //#ifndef IGL_NO_EIGEN
-//#  include <Eigen/Dense>
+#  include <Eigen/Dense>
 //#endif
 namespace igl
 {
@@ -36,6 +36,16 @@ namespace igl
   IGL_INLINE void jet(const T f, T * rgb);
   template <typename T>
   IGL_INLINE void jet(const T f, T & r, T & g, T & b);
+  // Inputs:
+  //   Z  #Z list of factos 
+  //   normalize  whether to normalize Z to be tightly between [0,1]
+  // Outputs:
+  //   C  #C by 3 list of rgb colors
+  template <typename DerivedZ, typename DerivedC>
+  IGL_INLINE void jet(
+    const Eigen::PlainObjectBase<DerivedZ> & Z,
+    const bool normalize,
+    Eigen::PlainObjectBase<DerivedC> & C);
 };
 
 #ifdef IGL_HEADER_ONLY

@@ -2135,7 +2135,7 @@ namespace igl
   }
 
   // Helpers that draws the most common meshes
-  void Viewer::draw_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
+  void Viewer::set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
   {
     using namespace std;
     if (data.V.rows() == 0 && data.F.rows() == 0)
@@ -2161,12 +2161,12 @@ namespace igl
         alignCameraCenter();
       }
       else
-        cerr << "ERROR (draw_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting.";
+        cerr << "ERROR (set_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting.";
     }
     data.dirty |= DIRTY_FACE | DIRTY_POSITION;
   }
 
-  void Viewer::draw_normals(const Eigen::MatrixXd& N)
+  void Viewer::set_normals(const Eigen::MatrixXd& N)
   {
     using namespace std;
     if (N.rows() == data.V.rows())
@@ -2180,37 +2180,63 @@ namespace igl
       data.F_normals = N;
     }
     else
-      cerr << "ERROR (draw_normals): Please provide a normal per face or a normal per vertex.";
+      cerr << "ERROR (set_normals): Please provide a normal per face or a normal per vertex.";
     data.dirty |= DIRTY_NORMAL;
   }
 
-  void Viewer::draw_colors(Eigen::MatrixXd C)
+  void Viewer::set_colors(const Eigen::MatrixXd &C)
   {
     using namespace std;
+    using namespace Eigen;
+    // Ambient color should be darker color
+    const auto ambient = [](const MatrixXd & C)->MatrixXd
+    {
+      return 0.1*C;
+    };
+    // Specular color should be a less saturated and darker color: dampened
+    // highlights
+    const auto specular = [](const MatrixXd & C)->MatrixXd
+    {
+      const double grey = 0.3;
+      return grey+0.1*(C.array()-grey);
+    };
     if (C.rows() == 1)
     {
       for (unsigned i=0;i<data.V_material_diffuse.rows();++i)
+      {
         data.V_material_diffuse.row(i) = C.row(0);
+      }
+      data.V_material_ambient = ambient(data.V_material_diffuse);
+      data.V_material_specular = specular(data.V_material_diffuse);
 
       for (unsigned i=0;i<data.F_material_diffuse.rows();++i)
+      {
         data.F_material_diffuse.row(i) = C.row(0);
+      }
+      data.F_material_ambient = ambient(data.F_material_diffuse);
+      data.F_material_specular = specular(data.F_material_diffuse);
     }
     else if (C.rows() == data.V.rows())
     {
       options.face_based = false;
       data.V_material_diffuse = C;
+      data.V_material_ambient = ambient(data.V_material_diffuse);
+      data.V_material_specular = specular(data.V_material_diffuse);
     }
     else if (C.rows() == data.F.rows())
     {
       options.face_based = true;
       data.F_material_diffuse = C;
+      data.F_material_ambient = ambient(data.F_material_diffuse);
+      data.F_material_specular = specular(data.F_material_diffuse);
     }
     else
-      cerr << "ERROR (draw_colors): Please provide a single color, or a color per face or per vertex.";
+      cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex.";
     data.dirty |= DIRTY_DIFFUSE;
+
   }
 
-  void Viewer::draw_UV(const Eigen::MatrixXd& UV)
+  void Viewer::set_UV(const Eigen::MatrixXd& UV)
   {
     using namespace std;
     if (UV.rows() == data.V.rows())
@@ -2219,11 +2245,11 @@ namespace igl
       data.V_uv = UV;
     }
     else
-      cerr << "ERROR (draw_UV): Please provide uv per vertex.";
+      cerr << "ERROR (set_UV): Please provide uv per vertex.";
     data.dirty |= DIRTY_UV;
   }
 
-  void Viewer::draw_UV(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
+  void Viewer::set_UV(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
   {
     options.face_based = true;
     data.V_uv = UV_V;
@@ -2232,7 +2258,7 @@ namespace igl
   }
 
 
-  void Viewer::draw_texture(
+  void Viewer::set_texture(
     const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
     const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
     const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B)
