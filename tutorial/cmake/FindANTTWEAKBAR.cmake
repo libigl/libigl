@@ -7,6 +7,26 @@
 # ANT_TWEAK_BAR_LIBRARY
 #
 
+IF (WIN32)
+	IF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+	  SET( BITS "64" )
+    ELSE( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+      SET( BITS "" )
+    ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+	
+	FIND_PATH( ANT_TWEAK_BAR_INCLUDE_DIR AntTweakBar.h
+      PATHS
+		${PROJECT_SOURCE_DIR}/../../external/AntTweakBar/include
+		$ENV{ANT_TWEAK_BAR_ROOT}/include
+		DOC "The directory where AntTweakBar.h resides")
+
+    FIND_LIBRARY( ANT_TWEAK_BAR_LIBRARY AntTweakBar${BITS}
+        PATHS
+		${PROJECT_SOURCE_DIR}/../../external/AntTweakBar/lib
+        $ENV{ANT_TWEAK_BAR_ROOT}/lib
+        DOC "The AntTweakBar library")
+ELSE (WIN32)
+
 FIND_PATH(ANT_TWEAK_BAR_INCLUDE_DIR AntTweakBar.h
       PATHS
 	    ${PROJECT_SOURCE_DIR}/../libigl/external/AntTweakBar/include/
@@ -15,8 +35,6 @@ FIND_PATH(ANT_TWEAK_BAR_INCLUDE_DIR AntTweakBar.h
       /usr/X11/include
       /usr/include
       NO_DEFAULT_PATH)
-
-set(ANT_TWEAK_BAR_INCLUDE_DIR ${ANT_TWEAK_BAR_INCLUDE_DIR} ${ANT_TWEAK_BAR_INCLUDE_DIR}/../src/)
 
 FIND_LIBRARY( ANT_TWEAK_BAR_LIBRARY AntTweakBar
   PATHS
@@ -32,6 +50,10 @@ FIND_LIBRARY( ANT_TWEAK_BAR_LIBRARY AntTweakBar
     dylib
     NO_DEFAULT_PATH
 )
+
+ENDIF (WIN32)
+
+set(ANT_TWEAK_BAR_INCLUDE_DIR ${ANT_TWEAK_BAR_INCLUDE_DIR} ${ANT_TWEAK_BAR_INCLUDE_DIR}/../src/)
 
 # message(FATAL_ERROR ${ANT_TWEAK_BAR_LIBRARY})
 

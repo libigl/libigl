@@ -20,6 +20,7 @@ FIND_PATH(GLFW_INCLUDE_DIR GLFW/glfw3.h
 FIND_LIBRARY( GLFW_LIBRARIES NAMES glfw glfw3
   PATHS
     ${PROJECT_SOURCE_DIR}/../../external/glfw/src
+	${PROJECT_SOURCE_DIR}/../../external/glfw/lib/x64
     /usr/local
     /usr/X11
     /usr
