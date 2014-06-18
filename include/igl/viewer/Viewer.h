@@ -347,11 +347,11 @@ namespace igl
 
     // Helpers that can draw the most common meshes
     void draw_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
-    void draw_normals(const Eigen::MatrixXd& N);
-    void draw_colors(Eigen::MatrixXd C);
-    void draw_UV(const Eigen::MatrixXd& UV);
-    void draw_UV(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
-    void draw_texture(
+    void set_normals(const Eigen::MatrixXd& N);
+    void set_colors(Eigen::MatrixXd C);
+    void set_UV(const Eigen::MatrixXd& UV);
+    void set_UV(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
+    void set_texture(
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B);

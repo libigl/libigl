@@ -2166,7 +2166,7 @@ namespace igl
     data.dirty |= DIRTY_FACE | DIRTY_POSITION;
   }
 
-  void Viewer::draw_normals(const Eigen::MatrixXd& N)
+  void Viewer::set_normals(const Eigen::MatrixXd& N)
   {
     using namespace std;
     if (N.rows() == data.V.rows())
@@ -2180,11 +2180,11 @@ namespace igl
       data.F_normals = N;
     }
     else
-      cerr << "ERROR (draw_normals): Please provide a normal per face or a normal per vertex.";
+      cerr << "ERROR (set_normals): Please provide a normal per face or a normal per vertex.";
     data.dirty |= DIRTY_NORMAL;
   }
 
-  void Viewer::draw_colors(Eigen::MatrixXd C)
+  void Viewer::set_colors(Eigen::MatrixXd C)
   {
     using namespace std;
     if (C.rows() == 1)
@@ -2206,11 +2206,11 @@ namespace igl
       data.F_material_diffuse = C;
     }
     else
-      cerr << "ERROR (draw_colors): Please provide a single color, or a color per face or per vertex.";
+      cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex.";
     data.dirty |= DIRTY_DIFFUSE;
   }
 
-  void Viewer::draw_UV(const Eigen::MatrixXd& UV)
+  void Viewer::set_UV(const Eigen::MatrixXd& UV)
   {
     using namespace std;
     if (UV.rows() == data.V.rows())
@@ -2219,11 +2219,11 @@ namespace igl
       data.V_uv = UV;
     }
     else
-      cerr << "ERROR (draw_UV): Please provide uv per vertex.";
+      cerr << "ERROR (set_UV): Please provide uv per vertex.";
     data.dirty |= DIRTY_UV;
   }
 
-  void Viewer::draw_UV(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
+  void Viewer::set_UV(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
   {
     options.face_based = true;
     data.V_uv = UV_V;
@@ -2232,7 +2232,7 @@ namespace igl
   }
 
 
-  void Viewer::draw_texture(
+  void Viewer::set_texture(
     const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
     const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
     const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B)
