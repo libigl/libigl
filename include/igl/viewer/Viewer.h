@@ -357,8 +357,8 @@ namespace igl
     // Inputs:
     //   C  #V|#F|1 by 3 list of colors
     void set_colors(const Eigen::MatrixXd &C);
-    void set_UV(const Eigen::MatrixXd& UV);
-    void set_UV(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
+    void set_uv(const Eigen::MatrixXd& UV);
+    void set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
     void set_texture(
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
