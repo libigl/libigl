@@ -348,7 +348,11 @@ namespace igl
     // Helpers that can draw the most common meshes
     void draw_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
     void set_normals(const Eigen::MatrixXd& N);
-    void set_colors(Eigen::MatrixXd C);
+    // Set the color of the mesh 
+    //
+    // Inputs:
+    //   C  #V|#F|1 by 3 list of colors
+    void set_colors(const Eigen::MatrixXd &C);
     void set_UV(const Eigen::MatrixXd& UV);
     void set_UV(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
     void set_texture(
