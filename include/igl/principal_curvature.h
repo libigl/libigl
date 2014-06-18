@@ -47,13 +47,12 @@ namespace igl
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void principal_curvature(
-                                     const Eigen::PlainObjectBase<DerivedV>& V,
-                                     const Eigen::PlainObjectBase<DerivedF>& F,
-                                     Eigen::PlainObjectBase<DerivedV>& PD1,
-                                     Eigen::PlainObjectBase<DerivedV>& PD2,
-                                     unsigned radius = 5,
-                                     bool useKring = true
-                                     );
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::PlainObjectBase<DerivedV>& PD1,
+  Eigen::PlainObjectBase<DerivedV>& PD2,
+  unsigned radius = 5,
+  bool useKring = true);
 }
 
 

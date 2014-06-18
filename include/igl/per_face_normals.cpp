@@ -22,8 +22,8 @@ IGL_INLINE void igl::per_face_normals(
 #pragma omp parallel for
   for(int i = 0; i < Frows;i++)
   {
-    Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v1 = V.row(F(i,1)) - V.row(F(i,0));
-    Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v2 = V.row(F(i,2)) - V.row(F(i,0));
+    const Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v1 = V.row(F(i,1)) - V.row(F(i,0));
+    const Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v2 = V.row(F(i,2)) - V.row(F(i,0));
     N.row(i) = v1.cross(v2);//.normalized();
     typename DerivedV::Scalar r = N.row(i).norm();
     if(r == 0)
