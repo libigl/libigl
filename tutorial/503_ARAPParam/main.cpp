@@ -34,6 +34,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 
 int main(int argc, char *argv[])
 {
+  using namespace std;
   // Load a mesh in OFF format
   igl::readOFF("../shared/camelhead.off", V, F);
 
@@ -52,9 +53,9 @@ int main(int argc, char *argv[])
   Eigen::MatrixXd bc = Eigen::MatrixXd::Zero(0,0);
   
   // Initialize ARAP
-  arap_data.max_iter = 1000;
-  Eigen::MatrixXd V_2d = V.block(0,0,V.rows(),2);
-  arap_precomputation(V_2d,F,b,arap_data);
+  arap_data.max_iter = 100;
+  // 2 means that we're going to *solve* in 2d
+  arap_precomputation(V,F,2,b,arap_data);
 
 
   // Solve arap using the harmonic map as initial guess
@@ -64,7 +65,7 @@ int main(int argc, char *argv[])
 
 
   // Scale UV to make the texture more clear
-  // V_uv *= 5;
+  V_uv *= 20;
 
   // Plot the mesh
   igl::Viewer viewer;

@@ -18,6 +18,8 @@ All examples depends on glfw, glew and anttweakbar. A copy
 of the sourcecode of each library is provided together with libigl
 and they can be precompiled using:
 
+** Alec: Is this just compiling the dependencies? Then perhaps rename `compile_dependencies_*`**
+
     sh compile_macosx.sh (MACOSX)
     sh compile_linux.sh (LINUX)
     compile_windows.bat (Visual Studio 2012)
@@ -26,6 +28,10 @@ Every example can be compiled by using the cmake file provided in its folder.
 On Linux and MacOSX, you can use the provided bash script:
 
     sh ../compile_example.sh
+
+## Optional compilation with libigl as static library
+
+    ../compile_example.sh -DLIBIGL_USE_STATIC_LIBRARY=ON
 
 # Chapter 2: Discrete Geometric Quantities and Operators
 This chapter illustrates a few discrete quantities that libigl can compute on a
