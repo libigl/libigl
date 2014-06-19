@@ -20,7 +20,6 @@ INC+=-I../../../include/
 
 # EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY 
 
-
 # SVD 
 SINGULAR_VALUE_DECOMPOSITION_INC=\
 	-I../../../external/Singular_Value_Decomposition/

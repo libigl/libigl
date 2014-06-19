@@ -21,6 +21,7 @@
 #include <cassert>
 #include <iostream>
 
+
 template <
   typename DerivedV,
   typename DerivedF,
@@ -32,6 +33,7 @@ IGL_INLINE bool igl::arap_precomputation(
   ARAPData & data)
 {
   using namespace igl;
+  using namespace std;
   using namespace Eigen;
   typedef typename DerivedV::Scalar Scalar;
   // number of vertices
@@ -44,7 +46,7 @@ IGL_INLINE bool igl::arap_precomputation(
   //assert(F.cols() == 3 && "For now only triangles");
   // dimension
   const int dim = V.cols();
-  assert(dim == 3 && "Only 3d supported");
+  //assert(dim == 3 && "Only 3d supported");
   // Defaults
   data.f_ext = Eigen::MatrixXd::Zero(n,dim);
 
@@ -154,7 +156,10 @@ IGL_INLINE bool igl::arap_solve(
   if(U.size() == 0)
   {
     // terrible initial guess.. should at least copy input mesh
+#ifndef NDEBUG
+    cerr<<"arap_solve: Using terrible initial guess for U. Try U = V."<<endl;
     U = MatrixXd::Zero(data.n,dim);
+#endif
   }
   // changes each arap iteration
   MatrixXd U_prev = U;
@@ -173,13 +178,21 @@ IGL_INLINE bool igl::arap_solve(
       U.row(data.b(bi)) = bc.row(bi);
     }
 
-    MatrixXd S = data.CSM * U.replicate(dim,1);
+    const auto & Udim = U.replicate(dim,1);
+    MatrixXd S = data.CSM * Udim;
+
     MatrixXd R(dim,data.CSM.rows());
+    if(dim == 2)
+    {
+      fit_rotations_planar(S,R);
+    }else
+    {
 #ifdef __SSE__ // fit_rotations_SSE will convert to float if necessary
-    fit_rotations_SSE(S,R);
+      fit_rotations_SSE(S,R);
 #else
-    fit_rotations(S,R);
+      fit_rotations(S,R);
 #endif
+    }
     //for(int k = 0;k<(data.CSM.rows()/dim);k++)
     //{
     //  R.block(0,dim*k,dim,dim) = MatrixXd::Identity(dim,dim);
@@ -207,7 +220,7 @@ IGL_INLINE bool igl::arap_solve(
     MatrixXd Dl;
     if(data.with_dynamics)
     {
-      assert(M.rows() == n && 
+      assert(data.M.rows() == n && 
         "No mass matrix. Call arap_precomputation if changing with_dynamics");
       const double h = data.h;
       assert(h != 0);

@@ -13,6 +13,7 @@ LIBIGL_INC=-I$(LIBIGL)/include
 LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglpng -liglsvd3x3
 
 EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+CFLAGS+=-DIGL_HEADER_ONLY
 
 
 #EMBREE=$(LIBIGL)/external/embree
@@ -37,7 +38,11 @@ ifeq ($(UNAME), Darwin)
 	ANTTWEAKBAR_LIB+=-framework AppKit
 endif
 
-INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC) $(YIMG_INC) 
+# SVD 
+SINGULAR_VALUE_DECOMPOSITION_INC=\
+	-I$(LIBIGL)/external/Singular_Value_Decomposition/
+
+INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC) $(YIMG_INC) $(SINGULAR_VALUE_DECOMPOSITION_INC)
 LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB) $(YIMG_LIB) 
 
 example: example.o

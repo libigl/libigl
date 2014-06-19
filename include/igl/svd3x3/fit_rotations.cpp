@@ -11,6 +11,7 @@
 #include <igl/verbose.h>
 #include <igl/polar_dec.h>
 #include <igl/polar_svd.h>
+#include <igl/matlab_format.h>
 #include <iostream>
 
 template <typename DerivedS, typename DerivedD>
@@ -42,21 +43,8 @@ IGL_INLINE void igl::fit_rotations(
     }
     Eigen::Matrix<typename DerivedD::Scalar,3,3> ri;
     Eigen::Matrix<typename DerivedD::Scalar,3,3> ti;
-    //polar_dec(si,ri,ti);
-    //polar_svd(si,ri,ti);
     polar_svd3x3(si, ri);
     assert(ri.determinant() >= 0);
-#ifndef FIT_ROTATIONS_ALLOW_FLIPS
-    // Check for reflection
-    if(ri.determinant() < 0)
-    {
-      cerr<<"Error: Warning: flipping is wrong..."<<endl;
-      assert(false && "This is wrong. Need to flip column in U and recompute R = U*V'");
-      // flip sign of last row
-      ri.row(2) *= -1;
-    }
-    assert(ri.determinant() >= 0);
-#endif  
     // Not sure why polar_dec computes transpose...
     R.block(0,r*dim,dim,dim) = ri.block(0,0,dim,dim).transpose();
   }
@@ -70,6 +58,7 @@ IGL_INLINE void igl::fit_rotations_planar(
   using namespace std;
   const int dim = S.cols();
   const int nr = S.rows()/dim;
+  assert(dim == 2 && "_planar input should be 2D");
   assert(nr * dim == S.rows());
 
   // resize output
@@ -87,28 +76,24 @@ IGL_INLINE void igl::fit_rotations_planar(
         si(i,j) = S(i*nr+r,j);
       }
     }
-    Eigen::Matrix<typename DerivedD::Scalar,2,2> ri;
-    Eigen::Matrix<typename DerivedD::Scalar,2,2> ti;
-    igl::polar_svd(si,ri,ti);
+    typedef Eigen::Matrix<typename DerivedD::Scalar,2,2> Mat2;
+    typedef Eigen::Matrix<typename DerivedD::Scalar,2,1> Vec2;
+    Mat2 ri,ti,ui,vi;
+    Vec2 _;
+    igl::polar_svd(si,ri,ti,ui,_,vi);
+
 #ifndef FIT_ROTATIONS_ALLOW_FLIPS
     // Check for reflection
     if(ri.determinant() < 0)
     {
-      cerr<<"Error: Warning: flipping is wrong..."<<endl;
-      assert(false && "This is wrong. Need to flip column in U and recompute R = U*V'");
-      // flip sign of last row
-      ri.row(1) *= -1;
+      vi.col(1) *= -1.;
+      ri = ui * vi.transpose();
     }
     assert(ri.determinant() >= 0);
 #endif  
+
     // Not sure why polar_dec computes transpose...
-    R.block(0,r*dim,2,2) = ri.block(0,0,2,2).transpose();
-    // Set remaining part to identity
-    R(0,r*3+2) = 0;
-    R(1,r*3+2) = 0;
-    R(2,r*3+0) = 0;
-    R(2,r*3+1) = 0;
-    R(2,r*3+2) = 1;
+    R.block(0,r*dim,2,2) = ri.transpose();
   }
 }
 
