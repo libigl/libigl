@@ -7,8 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "boundary_vertices_sorted.h"
 
-#include "igl/tt.h"
-#include "igl/vf.h"
+#include "tt.h"
+#include "vf.h"
 
 IGL_INLINE void igl::boundary_vertices_sorted(
     const Eigen::MatrixXd& V,
@@ -19,6 +19,10 @@ IGL_INLINE void igl::boundary_vertices_sorted(
   bnd.clear();
   std::vector<bool> isVisited(V.rows(),false);
 
+  // Actually mesh only needs to be manifold near boundary, so this is
+  // over zealous (see gptoolbox's outline_loop for a more general
+  // (and probably faster) implementation)
+  assert(is_manifold(V,F) && "Mesh must be manifold");
   Eigen::MatrixXi TT,TTi;
   std::vector<std::vector<int> > VF, VFi;
   igl::tt(V,F,TT,TTi);
