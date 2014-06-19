@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_BOUNDARYVERTICESSORTED_H
-#define IGL_BOUNDARYVERTICESSORTED_H
+#ifndef IGL_BOUNDARY_VERTICES_SORTED_H
+#define IGL_BOUNDARY_VERTICES_SORTED_H
 #include <igl/igl_inline.h>
 
 #include <Eigen/Dense>
@@ -15,7 +15,8 @@
 namespace igl
 {
 
-  // Compute sorted list of boundary vertices for mesh with single boundary.
+  // Compute sorted list of boundary vertices for a manifold mesh with single
+  // boundary.
   //
   // Inputs:
   //   V  #V by dim list of mesh vertex positions
