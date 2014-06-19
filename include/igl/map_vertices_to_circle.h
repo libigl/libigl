@@ -26,7 +26,6 @@ namespace igl
   //   UV   #W by 2 list of 2D position on the unit circle for the vertices in b
   IGL_INLINE void map_vertices_to_circle(
   	const Eigen::MatrixXd& V,
-  	const Eigen::MatrixXi& F,
     const Eigen::VectorXi& bnd,
   	Eigen::MatrixXd& UV);
 }
