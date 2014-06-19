@@ -123,7 +123,7 @@ IGL_INLINE bool igl::arap_dof_precomputation(
   // used to fit rotations to during optimization
   SparseMatrix<double> CSM;
   //printf("covariance_scatter_matrix()\n");
-  covariance_scatter_matrix(V,F,data.energy,CSM);
+  covariance_scatter_matrix(V,F,V.cols(),data.energy,CSM);
 #ifdef EXTREME_VERBOSE
   cout<<"CSMIJV=["<<endl;print_ijv(CSM,1);cout<<endl<<"];"<<
     endl<<"CSM=sparse(CSMIJV(:,1),CSMIJV(:,2),CSMIJV(:,3),"<<
@@ -226,7 +226,7 @@ IGL_INLINE bool igl::arap_dof_precomputation(
   // precompute arap_rhs matrix
   //printf("arap_rhs()\n");
   SparseMatrix<double> K;
-  arap_rhs(V,F,data.energy,K);
+  arap_rhs(V,F,V.cols(),data.energy,K);
 //#ifdef EXTREME_VERBOSE
 //  cout<<"KIJV=["<<endl;print_ijv(K,1);cout<<endl<<"];"<<
 //    endl<<"K=sparse(KIJV(:,1),KIJV(:,2),KIJV(:,3),"<<

@@ -218,7 +218,7 @@ bool init_arap()
   //arap_data.h = 0.5;
   //arap_data.max_iter = 100;
   //partition(W,100,arap_data.G,_S,_D);
-  return arap_precomputation(V,*Ele,b,arap_data);
+  return arap_precomputation(V,*Ele,V.cols(),b,arap_data);
 }
 
 bool update_arap()

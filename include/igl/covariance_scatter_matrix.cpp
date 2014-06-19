@@ -17,6 +17,7 @@
 IGL_INLINE void igl::covariance_scatter_matrix(
   const Eigen::MatrixXd & V, 
   const Eigen::MatrixXi & F,
+  const int dim,
   const ARAPEnergyType energy,
   Eigen::SparseMatrix<double>& CSM)
 {
@@ -25,8 +26,8 @@ IGL_INLINE void igl::covariance_scatter_matrix(
   // number of mesh vertices
   int n = V.rows();
   assert(n > F.maxCoeff());
-  // dimension of mesh
-  int dim = V.cols();
+  //// dimension of mesh
+  //int dim = V.cols();
   // Number of mesh elements
   int m = F.rows();
 

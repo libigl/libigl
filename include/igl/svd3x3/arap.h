@@ -31,6 +31,7 @@ namespace igl
     // M  mass matrix
     // solver_data  quadratic solver data
     // b  list of boundary indices into V
+    // dim  dimension being used for solving
     int n;
     Eigen::VectorXi G;
     ARAPEnergyType energy;
@@ -42,6 +43,7 @@ namespace igl
     Eigen::SparseMatrix<double> CSM;
     min_quad_with_fixed_data<double> solver_data;
     Eigen::VectorXi b;
+    int dim;
       ARAPData():
         n(0),
         G(),
@@ -53,7 +55,8 @@ namespace igl
         K(),
         CSM(),
         solver_data(),
-        b()
+        b(),
+        dim(-1) // force this to be set by _precomputation
     {
     };
   };
@@ -63,6 +66,8 @@ namespace igl
   // Inputs:
   //   V  #V by dim list of mesh positions
   //   F  #F by simplex-size list of triangle|tet indices into V
+  //   dim  dimension being used at solve time. For deformation usually dim =
+  //     V.cols(), for surface parameterization V.cols() = 3 and dim = 2
   //   b  #b list of "boundary" fixed vertex indices into V
   // Outputs:
   //   data  struct containing necessary precomputation
@@ -73,6 +78,7 @@ namespace igl
   IGL_INLINE bool arap_precomputation(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
+    const int dim,
     const Eigen::PlainObjectBase<Derivedb> & b,
     ARAPData & data);
   // Inputs:

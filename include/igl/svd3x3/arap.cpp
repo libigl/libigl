@@ -29,6 +29,7 @@ template <
 IGL_INLINE bool igl::arap_precomputation(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::PlainObjectBase<DerivedF> & F,
+  const int dim,
   const Eigen::PlainObjectBase<Derivedb> & b,
   ARAPData & data)
 {
@@ -45,10 +46,12 @@ IGL_INLINE bool igl::arap_precomputation(
   data.b = b;
   //assert(F.cols() == 3 && "For now only triangles");
   // dimension
-  const int dim = V.cols();
+  //const int dim = V.cols();
+  assert((dim == 3 || dim ==2) && "dim should be 2 or 3");
+  data.dim = dim;
   //assert(dim == 3 && "Only 3d supported");
   // Defaults
-  data.f_ext = Eigen::MatrixXd::Zero(n,dim);
+  data.f_ext = Eigen::MatrixXd::Zero(n,data.dim);
 
   SparseMatrix<Scalar> L;
   cotmatrix(V,F,L);
@@ -59,7 +62,7 @@ IGL_INLINE bool igl::arap_precomputation(
     switch(F.cols())
     {
       case 3:
-        if(dim == 3)
+        if(data.dim == 3)
         {
           eff_energy = ARAP_ENERGY_TYPE_SPOKES_AND_RIMS;
         }else
@@ -78,7 +81,7 @@ IGL_INLINE bool igl::arap_precomputation(
 
   // Get covariance scatter matrix, when applied collects the covariance
   // matrices used to fit rotations to during optimization
-  covariance_scatter_matrix(V,F,eff_energy,data.CSM);
+  covariance_scatter_matrix(V,F,data.dim,eff_energy,data.CSM);
 
   // Get group sum scatter matrix, when applied sums all entries of the same
   // group according to G
@@ -112,12 +115,12 @@ IGL_INLINE bool igl::arap_precomputation(
     group_sum_matrix(data.G,G_sum);
   }
   SparseMatrix<double> G_sum_dim;
-  repdiag(G_sum,dim,G_sum_dim);
+  repdiag(G_sum,data.dim,G_sum_dim);
   assert(G_sum_dim.cols() == data.CSM.rows());
   data.CSM = (G_sum_dim * data.CSM).eval();
 
 
-  arap_rhs(V,F,eff_energy,data.K);
+  arap_rhs(V,F,data.dim,eff_energy,data.K);
 
   SparseMatrix<double> Q = (-0.5*L).eval();
 
@@ -130,8 +133,8 @@ IGL_INLINE bool igl::arap_precomputation(
     SparseMatrix<double> DQ = 0.5/(h*h)*data.M;
     Q += DQ;
     // Dummy external forces
-    data.f_ext = MatrixXd::Zero(n,dim);
-    data.vel = MatrixXd::Zero(n,dim);
+    data.f_ext = MatrixXd::Zero(n,data.dim);
+    data.vel = MatrixXd::Zero(n,data.dim);
   }
 
   return min_quad_with_fixed_precompute(
@@ -150,7 +153,10 @@ IGL_INLINE bool igl::arap_solve(
   using namespace Eigen;
   using namespace std;
   assert(data.b.size() == bc.rows());
-  const int dim = bc.cols();
+  if(bc.size() > 0)
+  {
+    assert(bc.cols() == data.dim && "bc.cols() match data.dim");
+  }
   const int n = data.n;
   int iter = 0;
   if(U.size() == 0)
@@ -158,8 +164,11 @@ IGL_INLINE bool igl::arap_solve(
     // terrible initial guess.. should at least copy input mesh
 #ifndef NDEBUG
     cerr<<"arap_solve: Using terrible initial guess for U. Try U = V."<<endl;
-    U = MatrixXd::Zero(data.n,dim);
 #endif
+    U = MatrixXd::Zero(data.n,data.dim);
+  }else
+  {
+    assert(U.cols() == data.dim && "U.cols() match data.dim");
   }
   // changes each arap iteration
   MatrixXd U_prev = U;
@@ -178,11 +187,11 @@ IGL_INLINE bool igl::arap_solve(
       U.row(data.b(bi)) = bc.row(bi);
     }
 
-    const auto & Udim = U.replicate(dim,1);
+    const auto & Udim = U.replicate(data.dim,1);
     MatrixXd S = data.CSM * Udim;
 
-    MatrixXd R(dim,data.CSM.rows());
-    if(dim == 2)
+    MatrixXd R(data.dim,data.CSM.rows());
+    if(data.dim == 2)
     {
       fit_rotations_planar(S,R);
     }else
@@ -200,7 +209,7 @@ IGL_INLINE bool igl::arap_solve(
 
 
     // Number of rotations: #vertices or #elements
-    int num_rots = data.K.cols()/dim/dim;
+    int num_rots = data.K.cols()/data.dim/data.dim;
     // distribute group rotations to vertices in each group
     MatrixXd eff_R;
     if(data.G.size() == 0)
@@ -209,11 +218,11 @@ IGL_INLINE bool igl::arap_solve(
       eff_R = R;
     }else
     {
-      eff_R.resize(dim,num_rots*dim);
+      eff_R.resize(data.dim,num_rots*data.dim);
       for(int r = 0;r<num_rots;r++)
       {
-        eff_R.block(0,dim*r,dim,dim) = 
-          R.block(0,dim*data.G(r),dim,dim);
+        eff_R.block(0,data.dim*r,data.dim,data.dim) = 
+          R.block(0,data.dim*data.G(r),data.dim,data.dim);
       }
     }
 
@@ -235,7 +244,7 @@ IGL_INLINE bool igl::arap_solve(
     VectorXd Rcol;
     columnize(eff_R,num_rots,2,Rcol);
     VectorXd Bcol = -data.K * Rcol;
-    for(int c = 0;c<dim;c++)
+    for(int c = 0;c<data.dim;c++)
     {
       VectorXd Uc,Bc,bcc,Beq;
       Bc = Bcol.block(c*n,0,n,1);
@@ -262,6 +271,6 @@ IGL_INLINE bool igl::arap_solve(
 }
 
 #ifndef IGL_HEADER_ONLY
-template bool igl::arap_precomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, igl::ARAPData&);
 template bool igl::arap_solve<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, igl::ARAPData&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template bool igl::arap_precomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, igl::ARAPData&);
 #endif
