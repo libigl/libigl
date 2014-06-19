@@ -12,7 +12,6 @@
 
 IGL_INLINE void igl::map_vertices_to_circle(
   const Eigen::MatrixXd& V,
-  const Eigen::MatrixXi& F,
   const Eigen::VectorXi& bnd,
   Eigen::MatrixXd& UV)
 {
