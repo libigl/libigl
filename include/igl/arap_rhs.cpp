@@ -20,8 +20,8 @@ IGL_INLINE void igl::arap_rhs(
 {
   using namespace igl;
   using namespace Eigen;
-  //// Number of dimensions
-  //int dim = V.cols();
+  // Number of dimensions
+  int Vdim = V.cols();
   //// Number of mesh vertices
   //int n = V.rows();
   //// Number of mesh elements
@@ -42,7 +42,7 @@ IGL_INLINE void igl::arap_rhs(
     default:
       fprintf(
         stderr,
-        "covariance_scatter_matrix.h: Error: Unsupported arap energy %d\n",
+        "arap_rhs.h: Error: Unsupported arap energy %d\n",
         energy);
       return;
   }
@@ -50,19 +50,37 @@ IGL_INLINE void igl::arap_rhs(
   SparseMatrix<double> KX,KY,KZ;
   arap_linear_block(V,F,0,energy,KX);
   arap_linear_block(V,F,1,energy,KY);
-  if(dim == 2)
+  if(Vdim == 2)
   {
     K = cat(2,repdiag(KX,dim),repdiag(KY,dim));
-  }else if(dim == 3)
+  }else if(Vdim == 3)
   {
     arap_linear_block(V,F,2,energy,KZ);
-    K = cat(2,cat(2,repdiag(KX,dim),repdiag(KY,dim)),repdiag(KZ,dim));
+    if(dim == 3)
+    {
+      K = cat(2,cat(2,repdiag(KX,dim),repdiag(KY,dim)),repdiag(KZ,dim));
+    }else if(dim ==2)
+    {
+      SparseMatrix<double> ZZ(KX.rows()*2,KX.cols());
+      K = cat(2,cat(2,
+            cat(2,repdiag(KX,dim),ZZ),
+            cat(2,repdiag(KY,dim),ZZ)),
+            cat(2,repdiag(KZ,dim),ZZ));
+    }else
+    {
+      assert(false);
+      fprintf(
+      stderr,
+      "arap_rhs.h: Error: Unsupported dimension %d\n",
+      dim);
+    }
   }else
   {
+    assert(false);
     fprintf(
      stderr,
-     "covariance_scatter_matrix.h: Error: Unsupported dimension %d\n",
-     dim);
+     "arap_rhs.h: Error: Unsupported dimension %d\n",
+     Vdim);
     return;
   }
   

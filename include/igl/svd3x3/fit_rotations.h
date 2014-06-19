@@ -17,12 +17,14 @@ namespace igl
   // 
   // Inputs:
   //   S  nr*dim by dim stack of covariance matrices
+  //   single_precision  whether to use single precision (faster)
   // Outputs:
   //   R  dim by dim * nr list of rotations
   //
   template <typename DerivedS, typename DerivedD>
   IGL_INLINE void fit_rotations(
     const Eigen::PlainObjectBase<DerivedS> & S,
+    const bool single_precision,
           Eigen::PlainObjectBase<DerivedD> & R);
   
   // FIT_ROTATIONS Given an input mesh and new positions find 2D rotations for
