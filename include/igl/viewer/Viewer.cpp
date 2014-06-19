@@ -1616,7 +1616,7 @@ namespace igl
 
   void Viewer::OpenGL_state::draw_overlay_lines()
   {
-    glDrawElements(GL_LINES, 2*lines_F_vbo.cols(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_LINES, lines_F_vbo.cols(), GL_UNSIGNED_INT, 0);
   }
 
   void Viewer::OpenGL_state::draw_overlay_points()
@@ -2151,10 +2151,22 @@ namespace igl
   void Viewer::set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
   {
     using namespace std;
+
+    Eigen::MatrixXd V_temp;
+    
+    // If V only has two columns, pad with a column of zeros
+    if (V.cols() == 2)
+    {
+      V_temp = Eigen::MatrixXd::Zero(V.rows(),3);
+      V_temp.block(0,0,V.rows(),2) = V;
+    }
+    else
+      V_temp = V;
+
     if (data.V.rows() == 0 && data.F.rows() == 0)
     {
       clear_mesh();
-      data.V = V;
+      data.V = V_temp;
       data.F = F;
 
       compute_normals();
@@ -2169,7 +2181,7 @@ namespace igl
     {
       if (data.V.rows() == V.rows() && data.F.rows() == F.rows())
       {
-        data.V = V;
+        data.V = V_temp;
         data.F = F;
         alignCameraCenter();
       }
@@ -2249,7 +2261,7 @@ namespace igl
 
   }
 
-  void Viewer::set_UV(const Eigen::MatrixXd& UV)
+  void Viewer::set_uv(const Eigen::MatrixXd& UV)
   {
     using namespace std;
     if (UV.rows() == data.V.rows())
@@ -2262,7 +2274,7 @@ namespace igl
     data.dirty |= DIRTY_UV;
   }
 
-  void Viewer::set_UV(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
+  void Viewer::set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
   {
     set_face_based(true);
     data.V_uv = UV_V;
@@ -2282,23 +2294,27 @@ namespace igl
     data.dirty |= DIRTY_TEXTURE;
   }
 
-  void Viewer::draw_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
+  void Viewer::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
   {
     int lastid = data.points.rows();
     data.points.conservativeResize(data.points.rows() + P.rows(),6);
     for (unsigned i=0; i<P.rows(); ++i)
       data.points.row(lastid+i) << P.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
+
+    data.dirty |= DIRTY_OVERLAY_POINTS;
   }
 
-  void Viewer::draw_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
+  void Viewer::add_edges(const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
   {
     int lastid = data.lines.rows();
     data.lines.conservativeResize(data.lines.rows() + P1.rows(),9);
     for (unsigned i=0; i<P1.rows(); ++i)
       data.lines.row(lastid+i) << P1.row(i), P2.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
+
+    data.dirty |= DIRTY_OVERLAY_LINES;
   }
 
-  void Viewer::draw_label (const Eigen::VectorXd& P,  const std::string& str)
+  void Viewer::add_label(const Eigen::VectorXd& P,  const std::string& str)
   {
     int lastid = data.labels_positions.rows();
     data.labels_positions.conservativeResize(lastid+1, 3);

@@ -357,16 +357,16 @@ namespace igl
     // Inputs:
     //   C  #V|#F|1 by 3 list of colors
     void set_colors(const Eigen::MatrixXd &C);
-    void set_UV(const Eigen::MatrixXd& UV);
-    void set_UV(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
+    void set_uv(const Eigen::MatrixXd& UV);
+    void set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
     void set_texture(
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B);
 
-    void draw_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
-    void draw_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
-    void draw_label (const Eigen::VectorXd& P,  const std::string& str);
+    void add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
+    void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
+    void add_label (const Eigen::VectorXd& P,  const std::string& str);
 
     // Save the OpenGL transformation matrices used for the previous rendering pass
     Eigen::Matrix4f view;
