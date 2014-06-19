@@ -45,14 +45,14 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   igl::Viewer viewer;
-  viewer.draw_mesh(V, F);
+  viewer.set_mesh(V, F);
 
   // Plot the corners of the bounding box as points
-  viewer.draw_points(V_box,Eigen::RowVector3d(1,0,0));
+  viewer.add_points(V_box,Eigen::RowVector3d(1,0,0));
 
   // Plot the edges of the bounding box
   for (unsigned i=0;i<E_box.rows(); ++i)
-    viewer.draw_edges
+    viewer.add_edges
     (
       V_box.row(E_box(i,0)),
       V_box.row(E_box(i,1)),
@@ -65,10 +65,10 @@ int main(int argc, char *argv[])
   // Plot labels with the coordinates of bounding box vertices
   std::stringstream l1;
   l1 << m(0) << ", " << m(1) << ", " << m(2);
-  viewer.draw_label(m,l1.str());
+  viewer.add_label(m,l1.str());
   std::stringstream l2;
   l2 << M(0) << ", " << M(1) << ", " << M(2);
-  viewer.draw_label(M,l2.str());
+  viewer.add_label(M,l2.str());
 
   // Launch the viewer
   viewer.launch();

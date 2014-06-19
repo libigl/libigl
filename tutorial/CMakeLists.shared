@@ -9,11 +9,14 @@ set(CMAKE_COLOR_MAKEFILE ON)
 
 find_package(ANTTWEAKBAR REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(GLEW REQUIRED)
 find_package(EIGEN REQUIRED)
 find_package(LIBIGL REQUIRED)
 find_package(TINYXML2 REQUIRED)
 find_package(GLFW REQUIRED)
+
+if(WIN32)
+	find_package(GLEW REQUIRED)
+endif(WIN32)
 
 if(APPLE)
 	set(CMAKE_CXX_LINK_FLAGS "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
@@ -23,8 +26,10 @@ include_directories( ${ANT_TWEAK_BAR_INCLUDE_DIR} )
 
 # message(FATAL_ERROR ${ANT_TWEAK_BAR_INCLUDE_DIR})
 
+if(WIN32)
+	include_directories( ${GLEW_INCLUDE_DIR} )
+endif(WIN32)
 
-include_directories( ${GLEW_INCLUDE_DIR} )
 include_directories( ${EIGEN_INCLUDE_DIR})
 include_directories( ${LIBIGL_INCLUDE_DIR})
 include_directories( ${TINYXML2_INCLUDE_DIR})
@@ -50,7 +55,11 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" ST
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-register")
 endif()
 
-set(SHARED_SOURCES ${LIBIGL_SOURCES} ${GLEW_SOURCES})
+set(SHARED_SOURCES ${LIBIGL_SOURCES})
+
+if(WIN32)
+	set(SHARED_SOURCES ${SHARED_SOURCES} ${GLEW_SOURCES})
+endif(WIN32)
 
 # message(FATAL_ERROR ${LIBIGL_SOURCES})
 
