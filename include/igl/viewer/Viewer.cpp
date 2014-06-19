@@ -935,14 +935,13 @@ namespace igl
     if (key == 'A')
       mouse_scroll(-1);
 
-    // Why aren't these handled view AntTweakBar?
-    if (key == 'z') // Don't use 'Z' because that clobbers snap_to_canonical_view_quat
+    if (key == 'Z')
       options.trackball_angle << 0.0f, 0.0f, 0.0f, 1.0f;
 
-    if (key == 'y')
+    if (key == 'Y')
       options.trackball_angle << -sqrt(2.0f)/2.0f, 0.0f, 0.0f, sqrt(2.0f)/2.0f;
 
-    if (key == 'x')
+    if (key == 'X')
       options.trackball_angle << -0.5f, -0.5f, -0.5f, 0.5f;
 
 

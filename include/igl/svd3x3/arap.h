@@ -32,7 +32,6 @@ namespace igl
     // solver_data  quadratic solver data
     // b  list of boundary indices into V
     // dim  dimension being used for solving
-    // Vdim  dimension of original V (determines dimension of rotation fitting)
     int n;
     Eigen::VectorXi G;
     ARAPEnergyType energy;
@@ -45,7 +44,6 @@ namespace igl
     min_quad_with_fixed_data<double> solver_data;
     Eigen::VectorXi b;
     int dim;
-    int Vdim;
       ARAPData():
         n(0),
         G(),
@@ -58,8 +56,7 @@ namespace igl
         CSM(),
         solver_data(),
         b(),
-        dim(-1), // force this to be set by _precomputation
-        Vdim(-1) // force this to be set by _precomputation
+        dim(-1) // force this to be set by _precomputation
     {
     };
   };

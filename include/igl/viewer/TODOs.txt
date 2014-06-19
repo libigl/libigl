@@ -1,5 +1,3 @@
-- snap to canonical recenters origin but trackball does not
-+ snap to canonical view key shortcut is not working
 - rewrite in libigl style
 - separate various class into their own .h/.cpp pairs
 - remove use of double underscores (http://stackoverflow.com/a/224420/148668)
