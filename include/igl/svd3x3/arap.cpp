@@ -21,7 +21,6 @@
 #include <cassert>
 #include <iostream>
 
-
 template <
   typename DerivedV,
   typename DerivedF,
@@ -49,6 +48,7 @@ IGL_INLINE bool igl::arap_precomputation(
   //const int dim = V.cols();
   assert((dim == 3 || dim ==2) && "dim should be 2 or 3");
   data.dim = dim;
+  data.Vdim = V.cols();
   //assert(dim == 3 && "Only 3d supported");
   // Defaults
   data.f_ext = Eigen::MatrixXd::Zero(n,data.dim);
@@ -81,7 +81,7 @@ IGL_INLINE bool igl::arap_precomputation(
 
   // Get covariance scatter matrix, when applied collects the covariance
   // matrices used to fit rotations to during optimization
-  covariance_scatter_matrix(V,F,data.dim,eff_energy,data.CSM);
+  covariance_scatter_matrix(V,F,eff_energy,data.CSM);
 
   // Get group sum scatter matrix, when applied sums all entries of the same
   // group according to G
@@ -115,12 +115,13 @@ IGL_INLINE bool igl::arap_precomputation(
     group_sum_matrix(data.G,G_sum);
   }
   SparseMatrix<double> G_sum_dim;
-  repdiag(G_sum,data.dim,G_sum_dim);
+  repdiag(G_sum,data.Vdim,G_sum_dim);
   assert(G_sum_dim.cols() == data.CSM.rows());
   data.CSM = (G_sum_dim * data.CSM).eval();
 
 
   arap_rhs(V,F,data.dim,eff_energy,data.K);
+  assert(data.K.rows() == data.n*data.dim);
 
   SparseMatrix<double> Q = (-0.5*L).eval();
 
@@ -187,19 +188,25 @@ IGL_INLINE bool igl::arap_solve(
       U.row(data.b(bi)) = bc.row(bi);
     }
 
-    const auto & Udim = U.replicate(data.dim,1);
-    MatrixXd S = data.CSM * Udim;
+    const auto & Udim = U.replicate(data.Vdim,1);
+    assert(U.cols() == data.dim);
+    assert(data.Vdim >= data.dim);
+    // As if U.col(2) was 0
+    MatrixXd S = MatrixXd::Zero(data.CSM.rows(),data.Vdim);
+    S.leftCols(data.dim) = data.CSM * Udim;
 
-    MatrixXd R(data.dim,data.CSM.rows());
-    if(data.dim == 2)
+    const int Rdim = data.Vdim;
+    MatrixXd R(Rdim,data.CSM.rows());
+    if(R.rows() == 2)
     {
       fit_rotations_planar(S,R);
+      cerr<<"PLANAR"<<endl;
     }else
     {
 #ifdef __SSE__ // fit_rotations_SSE will convert to float if necessary
-      fit_rotations_SSE(S,R);
+    fit_rotations_SSE(S,R);
 #else
-      fit_rotations(S,R);
+    fit_rotations(S,true,R);
 #endif
     }
     //for(int k = 0;k<(data.CSM.rows()/dim);k++)
@@ -209,7 +216,7 @@ IGL_INLINE bool igl::arap_solve(
 
 
     // Number of rotations: #vertices or #elements
-    int num_rots = data.K.cols()/data.dim/data.dim;
+    int num_rots = data.K.cols()/Rdim/Rdim;
     // distribute group rotations to vertices in each group
     MatrixXd eff_R;
     if(data.G.size() == 0)
@@ -218,11 +225,11 @@ IGL_INLINE bool igl::arap_solve(
       eff_R = R;
     }else
     {
-      eff_R.resize(data.dim,num_rots*data.dim);
+      eff_R.resize(Rdim,num_rots*Rdim);
       for(int r = 0;r<num_rots;r++)
       {
-        eff_R.block(0,data.dim*r,data.dim,data.dim) = 
-          R.block(0,data.dim*data.G(r),data.dim,data.dim);
+        eff_R.block(0,Rdim*r,Rdim,Rdim) = 
+          R.block(0,Rdim*data.G(r),Rdim,Rdim);
       }
     }
 
@@ -244,6 +251,7 @@ IGL_INLINE bool igl::arap_solve(
     VectorXd Rcol;
     columnize(eff_R,num_rots,2,Rcol);
     VectorXd Bcol = -data.K * Rcol;
+    assert(Bcol.size() == data.n*data.dim);
     for(int c = 0;c<data.dim;c++)
     {
       VectorXd Uc,Bc,bcc,Beq;
@@ -252,7 +260,10 @@ IGL_INLINE bool igl::arap_solve(
       {
         Bc += Dl.col(c);
       }
-      bcc = bc.col(c);
+      if(bc.size()>0)
+      {
+        bcc = bc.col(c);
+      }
       min_quad_with_fixed_solve(
         data.solver_data,
         Bc,bcc,Beq,
