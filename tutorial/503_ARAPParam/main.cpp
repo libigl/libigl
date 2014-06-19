@@ -3,19 +3,29 @@
 #include <igl/boundary_vertices_sorted.h>
 #include <igl/map_vertices_to_circle.h>
 #include <igl/harmonic.h>
+#include <igl/svd3x3/arap.h>
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 Eigen::MatrixXd V_uv;
+Eigen::MatrixXd initial_guess;
+
+bool show_uv = false;
 
 bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key == '1')
-    // Plot the 3D mesh
-    viewer.set_mesh(V,F);
+    show_uv = false;
   else if (key == '2')
-    // Plot the mesh in 2D using the UV coordinates as vertex coordinates
+    show_uv = true;
+
+  if (key == 'q')
+    V_uv = initial_guess;
+
+  if (show_uv)
     viewer.set_mesh(V_uv,F);
+  else
+    viewer.set_mesh(V,F);
 
   viewer.compute_normals();
 
@@ -27,19 +37,34 @@ int main(int argc, char *argv[])
   // Load a mesh in OFF format
   igl::readOFF("../shared/camelhead.off", V, F);
 
-  // Find the open boundary
+  // Compute the initial solution for ARAP (harmonic parametrization)
   Eigen::VectorXi bnd;
   igl::boundary_vertices_sorted(V,F,bnd);
-
-  // Map the boundary to a circle, preserving edge proportions
   Eigen::MatrixXd bnd_uv;
   igl::map_vertices_to_circle(V,bnd,bnd_uv);
 
-  // Harmonic parametrization for the internal vertices
-  igl::harmonic(V,F,bnd,bnd_uv,1,V_uv);
+  igl::harmonic(V,F,bnd,bnd_uv,1,initial_guess);
+
+  // Add dynamic regularization to avoid to specify boundary conditions
+  igl::ARAPData arap_data;
+  arap_data.with_dynamics = true;
+  Eigen::VectorXi b  = Eigen::VectorXi::Zero(0);
+  Eigen::MatrixXd bc = Eigen::MatrixXd::Zero(0,0);
+  
+  // Initialize ARAP
+  arap_data.max_iter = 1000;
+  Eigen::MatrixXd V_2d = V.block(0,0,V.rows(),2);
+  arap_precomputation(V_2d,F,b,arap_data);
+
+
+  // Solve arap using the harmonic map as initial guess
+  V_uv = initial_guess;
+
+  arap_solve(bc,arap_data,V_uv);
+
 
   // Scale UV to make the texture more clear
-  V_uv *= 5;
+  // V_uv *= 5;
 
   // Plot the mesh
   igl::Viewer viewer;

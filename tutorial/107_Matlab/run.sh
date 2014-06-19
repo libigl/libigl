@@ -5,6 +5,6 @@
 
 # Tested on MAC only
 
-DYLD_LIBRARY_PATH=/Applications/MATLAB_R2012b.app/bin/maci64/
+export DYLD_LIBRARY_PATH=/Applications/MATLAB_R2012b.app/bin/maci64/
 
-./build/106_Matlab
+./build/107_Matlab
