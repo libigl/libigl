@@ -18,8 +18,10 @@ namespace igl
   // ARAP_RHS build right-hand side constructor of global poisson solve for
   // various Arap energies
   // Inputs:
-  //   V  #V by dim list of initial domain positions
+  //   V  #V by Vdim list of initial domain positions
   //   F  #F by 3 list of triangle indices into V
+  //   dim  dimension being used at solve time. For deformation usually dim =
+  //     V.cols(), for surface parameterization V.cols() = 3 and dim = 2
   //   energy  igl::ARAPEnergyType enum value defining which energy is being
   //     used. See igl::ARAPEnergyType.h for valid options and explanations.
   // Outputs:
@@ -30,6 +32,7 @@ namespace igl
   IGL_INLINE void arap_rhs(
     const Eigen::MatrixXd & V, 
     const Eigen::MatrixXi & F,
+    const int dim,
     const igl::ARAPEnergyType energy,
     Eigen::SparseMatrix<double>& K);
 }

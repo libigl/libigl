@@ -14,13 +14,14 @@
 IGL_INLINE void igl::arap_rhs(
   const Eigen::MatrixXd & V, 
   const Eigen::MatrixXi & F,
+  const int dim,
   const igl::ARAPEnergyType energy,
   Eigen::SparseMatrix<double>& K)
 {
   using namespace igl;
   using namespace Eigen;
-  // Number of dimensions
-  int dim = V.cols();
+  //// Number of dimensions
+  //int dim = V.cols();
   //// Number of mesh vertices
   //int n = V.rows();
   //// Number of mesh elements

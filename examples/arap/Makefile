@@ -13,7 +13,7 @@ LIBIGL_INC=-I$(LIBIGL)/include
 LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglpng -liglsvd3x3
 
 EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
-CFLAGS+=-DIGL_HEADER_ONLY
+#CFLAGS+=-DIGL_HEADER_ONLY
 
 
 #EMBREE=$(LIBIGL)/external/embree

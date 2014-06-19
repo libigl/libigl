@@ -19,6 +19,8 @@ namespace igl
   // Inputs:
   //   V  #V by dim list of initial domain positions
   //   F  #F by 3 list of triangle indices into V
+  //   dim  dimension being used at solve time. For deformation usually dim =
+  //     V.cols(), for surface parameterization V.cols() = 3 and dim = 2
   //   energy  ARAPEnergyType enum value defining which energy is being used.
   //     See ARAPEnergyType.h for valid options and explanations.
   // Outputs:
@@ -28,6 +30,7 @@ namespace igl
   IGL_INLINE void covariance_scatter_matrix(
     const Eigen::MatrixXd & V, 
     const Eigen::MatrixXi & F,
+    const int dim,
     const ARAPEnergyType energy,
     Eigen::SparseMatrix<double>& CSM);
 }
