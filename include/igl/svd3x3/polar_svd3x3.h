@@ -22,7 +22,8 @@ namespace igl
   //
   //  This means that det(R) = 1. Technically it's not polar decomposition
   //  which guarantees positive semidefinite stretch factor (at the cost of
-  //  having det(R) = -1).
+  //  having det(R) = -1). "• The orthogonal factors U and V will be true
+  //  rotation matrices..." [McAdams, Selle, Tamstorf, Teran, Sefakis 2011]
   //
   template<typename Mat>
   IGL_INLINE void polar_svd3x3(const Mat& A, Mat& R);

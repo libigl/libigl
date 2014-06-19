@@ -75,7 +75,10 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedF> & F,
     const Eigen::PlainObjectBase<Derivedb> & b,
     ARAPData & data);
-
+  // Inputs:
+  //   bc  #b by dim list of boundary conditions
+  //   data  struct containing necessary precomputation and parameters
+  //   U  #V by dim initial guess
   template <
     typename Derivedbc,
     typename DerivedU>
