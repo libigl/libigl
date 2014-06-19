@@ -26,7 +26,7 @@ IGL_INLINE void igl::map_vertices_to_circle(
     map_ij[bnd[i]] = i;
   }
 
-  for (int i = 0; i < isOnBnd.size(); i++)
+  for (int i = 0; i < (int)isOnBnd.size(); i++)
   {
     if (!isOnBnd[i])
     {
