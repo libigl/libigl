@@ -28,10 +28,10 @@ namespace igl
 
     for (unsigned i=0;i<F.rows();++i)
     {
-      RowVector3d v1 = (V.row(F(i,1)) - V.row(F(i,0))).normalized();
-      RowVector3d t = V.row(F(i,2)) - V.row(F(i,0));
-      RowVector3d v3 = v1.cross(t).normalized();
-      RowVector3d v2 = v1.cross(v3).normalized();
+      Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v1 = (V.row(F(i,1)) - V.row(F(i,0))).normalized();
+      Eigen::Matrix<typename DerivedV::Scalar, 1, 3> t = V.row(F(i,2)) - V.row(F(i,0));
+      Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v3 = v1.cross(t).normalized();
+      Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v2 = v1.cross(v3).normalized();
 
       B1.row(i) = v1;
       B2.row(i) = v2;
