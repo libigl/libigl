@@ -55,7 +55,7 @@ namespace igl
                                               int localIter = 5, bool DoRound = true,
                                               std::vector<int> roundVertices = std::vector<int>(),
                                               std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
-}
+};
 #ifdef IGL_HEADER_ONLY
 #include "mixed_integer_quadrangulate.cpp"
 #endif

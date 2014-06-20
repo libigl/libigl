@@ -13,8 +13,6 @@
 #include <ConstrainedSolver.hh>
 #include <MISolver.hh>
 #include <GMM_Tools.hh>
-//#include "auxmath.h"
-//#include "sparsesystemdata.h"
 #include "doublearea.h"
 #include "per_face_normals.h"
 
@@ -34,17 +32,17 @@ namespace igl {
   protected:
     unsigned int m_nrows;
     unsigned int m_ncols;
-    vector<unsigned int> m_rowind;
-    vector<unsigned int> m_colind;
-    vector<double>       m_vals;
+    std::vector<unsigned int> m_rowind;
+    std::vector<unsigned int> m_colind;
+    std::vector<double>       m_vals;
     
   public:
     unsigned int   nrows()    { return m_nrows      ; }
     unsigned int   ncols()    { return m_ncols      ; }
     unsigned int   nentries() { return m_vals.size(); }
-    vector<unsigned int>&  rowind()   { return m_rowind     ; }
-    vector<unsigned int>&  colind()   { return m_colind     ; }
-    vector<double>&        vals()     { return m_vals       ; }
+    std::vector<unsigned int>&  rowind()   { return m_rowind     ; }
+    std::vector<unsigned int>&  colind()   { return m_colind     ; }
+    std::vector<double>&        vals()     { return m_vals       ; }
     
     // create an empty matrix with a fixed number of rows
     SparseMatrixData()
@@ -300,8 +298,8 @@ namespace igl {
                       bool direct_round=true,
                       int localIter=0,
                       bool _integer_rounding=true,
-                      vector<int> roundVertices = vector<int>(),
-                      vector<vector<int> > hardFeatures = vector<vector<int> >());
+                      std::vector<int> roundVertices = std::vector<int>(),
+                      std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
     
     PoissonSolver(const Eigen::PlainObjectBase<DerivedV> &_V,
                   const Eigen::PlainObjectBase<DerivedF> &_F,
@@ -486,7 +484,7 @@ namespace igl {
     //set the singularity round to integer location
     void AddSingularityRound();
     
-    void AddToRoundVertices(vector<int> ids);
+    void AddToRoundVertices(std::vector<int> ids);
     
     ///START GENERIC SYSTEM FUNCTIONS
     //build the laplacian matrix cyclyng over all rangemaps
@@ -565,19 +563,19 @@ namespace igl {
                    Eigen::PlainObjectBase<DerivedF> &FUV_out);
     
   private:
-    int NumFlips(const MatrixXd& WUV);
+    int NumFlips(const Eigen::MatrixXd& WUV);
     
-    double Distortion(int f, double h, const MatrixXd& WUV);
+    double Distortion(int f, double h, const Eigen::MatrixXd& WUV);
     
-    double LaplaceDistortion(const int f, double h, const MatrixXd& WUV);
+    double LaplaceDistortion(const int f, double h, const Eigen::MatrixXd& WUV);
     
-    bool updateStiffeningJacobianDistorsion(double grad_size, const MatrixXd& WUV);
+    bool updateStiffeningJacobianDistorsion(double grad_size, const Eigen::MatrixXd& WUV);
     
-    inline bool IsFlipped(const Vector2d &uv0,
-                          const Vector2d &uv1,
-                          const Vector2d &uv2);
+    inline bool IsFlipped(const Eigen::Vector2d &uv0,
+                          const Eigen::Vector2d &uv1,
+                          const Eigen::Vector2d &uv2);
     
-    inline bool IsFlipped(const int i, const MatrixXd& WUV);
+    inline bool IsFlipped(const int i, const Eigen::MatrixXd& WUV);
     
   };
 };
@@ -963,8 +961,8 @@ void igl::PoissonSolver<DerivedV, DerivedF>::SolvePoisson(Eigen::VectorXd Stiffn
                                                           bool direct_round,
                                                           int localIter,
                                                           bool _integer_rounding,
-                                                          vector<int> roundVertices,
-                                                          vector<vector<int> > hardFeatures)
+                                                          std::vector<int> roundVertices,
+                                                          std::vector<std::vector<int> > hardFeatures)
 {
   Handle_Stiffness = Stiffness;
   
@@ -1373,7 +1371,7 @@ void igl::PoissonSolver<DerivedV, DerivedF>::FindFixedVertField()
   ///if anything fixed fix the first
   AddFixedVertex(0); // TODO HERE IT ISSSSSS
   UV.row(0) << 0,0;
-  cerr << "No vertices to fix, I am fixing the first vertex to the origin!" << endl;
+  std::cerr << "No vertices to fix, I am fixing the first vertex to the origin!" << std::endl;
 }
 
 ///find hard constraint depending if using or not
@@ -1444,12 +1442,12 @@ void igl::PoissonSolver<DerivedV, DerivedF>::AddSingularityRound()
 }
 
 template <typename DerivedV, typename DerivedF>
-void igl::PoissonSolver<DerivedV, DerivedF>::AddToRoundVertices(vector<int> ids)
+void igl::PoissonSolver<DerivedV, DerivedF>::AddToRoundVertices(std::vector<int> ids)
 {
   for (int i = 0; i < ids.size(); ++i)
   {
     if (ids[i] < 0 || ids[i] >= V.rows())
-      cerr << "WARNING: Ignored round vertex constraint, vertex " << ids[i] << " does not exist in the mesh." << endl;
+      std::cerr << "WARNING: Ignored round vertex constraint, vertex " << ids[i] << " does not exist in the mesh." << std::endl;
     int index0 = GetFirstVertexIndex(ids[i]);
     ids_to_round.push_back( index0*2   );
     ids_to_round.push_back((index0*2)+1);
@@ -1788,7 +1786,7 @@ template <typename DerivedV, typename DerivedF>
 void igl::PoissonSolver<DerivedV, DerivedF>::addSharpEdgeConstraint(int fid, int vid)
 {
   // prepare constraint
-  vector<int> c(Handle_SystemInfo.num_vert_variables*2 + 1);
+  std::vector<int> c(Handle_SystemInfo.num_vert_variables*2 + 1);
   
   for (int i = 0; i < c.size(); ++i)
   {
@@ -1894,7 +1892,7 @@ F(F_)
                                             VInd.HandleS_Index,
                                             VInd.Handle_Singular,
                                             VInd.Handle_SystemInfo);
-  Handle_Stiffness = VectorXd::Constant(F.rows(),1);
+  Handle_Stiffness = Eigen::VectorXd::Constant(F.rows(),1);
   
   
   if (iter > 0) // do stiffening
@@ -1991,7 +1989,7 @@ void igl::MIQ<DerivedV, DerivedF, DerivedU>::extractUV(Eigen::PlainObjectBase<De
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-int igl::MIQ<DerivedV, DerivedF, DerivedU>::NumFlips(const MatrixXd& WUV)
+int igl::MIQ<DerivedV, DerivedF, DerivedU>::NumFlips(const Eigen::MatrixXd& WUV)
 {
   int numFl=0;
   for (unsigned int i=0;i<F.rows();i++)
@@ -2003,11 +2001,11 @@ int igl::MIQ<DerivedV, DerivedF, DerivedU>::NumFlips(const MatrixXd& WUV)
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-double igl::MIQ<DerivedV, DerivedF, DerivedU>::Distortion(int f, double h, const MatrixXd& WUV)
+double igl::MIQ<DerivedV, DerivedF, DerivedU>::Distortion(int f, double h, const Eigen::MatrixXd& WUV)
 {
   assert(h > 0);
   
-  Vector2d uv0,uv1,uv2;
+  Eigen::Vector2d uv0,uv1,uv2;
   
   uv0 << WUV(f,0), WUV(f,1);
   uv1 << WUV(f,2), WUV(f,3);
@@ -2091,7 +2089,7 @@ double igl::MIQ<DerivedV, DerivedF, DerivedU>::Distortion(int f, double h, const
 //  @return     distortion laplacian for f
 ///////////////////////////////////////////////////////////////////////////
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-double igl::MIQ<DerivedV, DerivedF, DerivedU>::LaplaceDistortion(const int f, double h, const MatrixXd& WUV)
+double igl::MIQ<DerivedV, DerivedF, DerivedU>::LaplaceDistortion(const int f, double h, const Eigen::MatrixXd& WUV)
 {
   double mydist = Distortion(f, h, WUV);
   double lapl=0;
@@ -2104,7 +2102,7 @@ double igl::MIQ<DerivedV, DerivedF, DerivedU>::LaplaceDistortion(const int f, do
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-bool igl::MIQ<DerivedV, DerivedF, DerivedU>::updateStiffeningJacobianDistorsion(double grad_size, const MatrixXd& WUV)
+bool igl::MIQ<DerivedV, DerivedF, DerivedU>::updateStiffeningJacobianDistorsion(double grad_size, const Eigen::MatrixXd& WUV)
 {
   bool flipped = NumFlips(WUV)>0;
   
@@ -2140,21 +2138,21 @@ bool igl::MIQ<DerivedV, DerivedF, DerivedU>::updateStiffeningJacobianDistorsion(
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-inline bool igl::MIQ<DerivedV, DerivedF, DerivedU>::IsFlipped(const Vector2d &uv0,
-                                                              const Vector2d &uv1,
-                                                              const Vector2d &uv2)
+inline bool igl::MIQ<DerivedV, DerivedF, DerivedU>::IsFlipped(const Eigen::Vector2d &uv0,
+                                                              const Eigen::Vector2d &uv1,
+                                                              const Eigen::Vector2d &uv2)
 {
-  Vector2d e0 = (uv1-uv0);
-  Vector2d e1 = (uv2-uv0);
+  Eigen::Vector2d e0 = (uv1-uv0);
+  Eigen::Vector2d e1 = (uv2-uv0);
   
   double Area = e0(0)*e1(1) - e0(1)*e1(0);
   return (Area<=0);
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-inline bool igl::MIQ<DerivedV, DerivedF, DerivedU>::IsFlipped(const int i, const MatrixXd& WUV)
+inline bool igl::MIQ<DerivedV, DerivedF, DerivedU>::IsFlipped(const int i, const Eigen::MatrixXd& WUV)
 {
-  Vector2d uv0,uv1,uv2;
+  Eigen::Vector2d uv0,uv1,uv2;
   uv0 << WUV(i,0), WUV(i,1);
   uv1 << WUV(i,2), WUV(i,3);
   uv2 << WUV(i,4), WUV(i,5);

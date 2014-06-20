@@ -28,7 +28,7 @@
 #include <igl/boost/components.h>
 #include <igl/boost/bfs_orient.h>
 #include <igl/orient_outward.h>
-#include <igl/embree/orient_outward_ao.h>
+//#include <igl/embree/orient_outward_ao.h>
 #include <igl/unique_simplices.h>
 #include <igl/C_STR.h>
 #include <igl/write.h>
