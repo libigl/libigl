@@ -28,7 +28,6 @@
 #include <igl/material_colors.h>
 #include <igl/barycenter.h>
 #include <igl/matlab_format.h>
-#include <igl/material_colors.h>
 #include <igl/ReAntTweakBar.h>
 #include <igl/pathinfo.h>
 #include <igl/Camera.h>
@@ -70,6 +69,9 @@ Eigen::Quaterniond animation_to_quat;
 // Use vector for range-based `for`
 std::vector<State> undo_stack;
 std::vector<State> redo_stack;
+bool paused = false;
+double t = 0;
+double pause_time = 0.0;
 
 void push_undo()
 {
@@ -133,7 +135,7 @@ float light_pos[4] = {0.1,0.1,-0.9,0};
 Eigen::MatrixXd V,U,N,C,mid;
 Eigen::VectorXi S;
 igl::ARAPData arap_data;
-Eigen::MatrixXi F;
+Eigen::MatrixXi F,T;
 int selected_col = 0;
 // Faces
 // Bounding box diagonal length
@@ -141,8 +143,6 @@ double bbd;
 int tot_num_samples = 0;
 #define REBAR_NAME "temp.rbr"
 igl::ReTwBar rebar; // Pointer to the tweak bar
-bool flip_y = false;
-bool rotate_xy = false;
 
 int num_in_selection(const Eigen::VectorXi & S)
 {
@@ -166,6 +166,14 @@ bool init_arap()
   assert(S.rows() == V.rows());
   C.resize(S.rows(),3);
   MatrixXd bc = MatrixXd::Zero(b.size(),S.maxCoeff()+1);
+  MatrixXi * Ele;
+  if(T.rows()>0)
+  {
+    Ele = &T;
+  }else
+  {
+    Ele = &F;
+  }
   // get b from S
   {
     int bi = 0;
@@ -176,12 +184,17 @@ bool init_arap()
         b(bi) = v;
         bc(bi,S(v)) = 1;
         bi++;
-        if(S(v) == 0)
+        switch(S(v))
         {
-          C.row(v) = RowVector3d(0.039,0.31,1);
-        }else
-        {
-          C.row(v) = RowVector3d(1,0.41,0.70);
+          case 0:
+            C.row(v) = RowVector3d(0.039,0.31,1);
+            break;
+          case 1:
+            C.row(v) = RowVector3d(1,0.41,0.70);
+            break;
+          default:
+            C.row(v) = RowVector3d(0.4,0.8,0.3);
+            break;
         }
       }else
       {
@@ -197,12 +210,15 @@ bool init_arap()
   VectorXi _S;
   VectorXd _D;
   MatrixXd W;
-  if(!harmonic(V,F,b,bc,1,W))
+  if(!harmonic(V,*Ele,b,bc,1,W))
   {
     return false;
   }
-  partition(W,100,arap_data.G,_S,_D);
-  return arap_precomputation(V,F,b,arap_data);
+  //arap_data.with_dynamics = true;
+  //arap_data.h = 0.5;
+  //arap_data.max_iter = 100;
+  //partition(W,100,arap_data.G,_S,_D);
+  return arap_precomputation(V,*Ele,V.cols(),b,arap_data);
 }
 
 bool update_arap()
@@ -213,6 +229,10 @@ bool update_arap()
   MatrixXd bc(num_in_selection(S),V.cols());
   // get b from S
   {
+    if(!paused)
+    {
+      t = get_seconds()-pause_time;
+    }
     int bi = 0;
     for(int v = 0;v<S.rows(); v++)
     {
@@ -223,25 +243,25 @@ bool update_arap()
         {
           case 0:
           {
-            //const double r = mid(0)*0.25;
-            //bc(bi,0) += r*cos(0.5*get_seconds()*2.*PI);
-            //bc(bi,1) -= r+r*sin(0.5*get_seconds()*2.*PI);
+            const double r = mid(0)*0.25;
+            bc(bi,0) += r*cos(0.5*t*2.*PI);
+            bc(bi,1) -= r+r*sin(0.5*t*2.*PI);
             break;
           }
           case 1:
           {
-            //const double r = mid(1)*0.15;
-            //bc(bi,1) += r+r*cos(0.15*get_seconds()*2.*PI);
-            //bc(bi,2) -= r*sin(0.15*get_seconds()*2.*PI);
+            const double r = mid(1)*0.15;
+            bc(bi,1) += r+r*cos(0.15*t*2.*PI);
+            bc(bi,2) -= r*sin(0.15*t*2.*PI);
 
             //// Pull-up
             //bc(bi,0) += 0.42;//mid(0)*0.5;
             //bc(bi,1) += 0.55;//mid(0)*0.5;
-            // Bend
-            Vector3d t(-1,0,0);
-            Quaterniond q(AngleAxisd(PI/1.5,Vector3d(0,1.0,0.1).normalized()));
-            const Vector3d a = bc.row(bi);
-            bc.row(bi) = (q*(a-t) + t) + Vector3d(1.5,0.1,0.9);
+            //// Bend
+            //Vector3d t(-1,0,0);
+            //Quaterniond q(AngleAxisd(PI/1.5,Vector3d(0,1.0,0.1).normalized()));
+            //const Vector3d a = bc.row(bi);
+            //bc.row(bi) = (q*(a-t) + t) + Vector3d(1.5,0.1,0.9);
                 
 
             break;
@@ -576,6 +596,7 @@ void mouse_drag(int mouse_x, int mouse_y)
 void key(unsigned char key, int mouse_x, int mouse_y)
 {
   using namespace std;
+  using namespace igl;
   switch(key)
   {
     // ESC
@@ -584,6 +605,20 @@ void key(unsigned char key, int mouse_x, int mouse_y)
     // ^C
     case char(3):
       exit(0);
+    case ' ':
+      {
+        static double pause_start,pause_stop;
+        paused = !paused;
+        if(paused)
+        {
+          pause_start = get_seconds();
+        }else
+        {
+          pause_stop = get_seconds();
+          pause_time += (pause_stop-pause_start);
+        }
+        break;
+      }
     default:
       if(!TwEventKeyboardGLUT(key,mouse_x,mouse_y))
       {
@@ -603,6 +638,8 @@ int main(int argc, char * argv[])
   // init mesh
   string filename = "../shared/decimated-knight.obj";
   string sfilename = "../shared/decimated-knight-selection.dmat";
+  //string filename = "../shared/decimated-knight.mesh";
+  //string sfilename = "../shared/decimated-knight-1-selection.dmat";
   if(argc < 3)
   {
     cerr<<"Usage:"<<endl<<"    ./example input.obj selection.dmat"<<endl;
@@ -613,11 +650,27 @@ int main(int argc, char * argv[])
     filename = argv[1];
     sfilename = argv[2];
   }
+  string d,b,ext,f;
+  pathinfo(filename,d,b,ext,f);
+  // Convert extension to lower case
+  transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   vector<vector<double > > vV,vN,vTC;
   vector<vector<int > > vF,vTF,vFN;
   // Convert extension to lower case
-  if(!igl::readOBJ(filename,vV,vTC,vN,vF,vTF,vFN))
+  if(ext == "obj")
+  {
+    if(!igl::readOBJ(filename,vV,vTC,vN,vF,vTF,vFN))
+    {
+      return 1;
+    }
+  }else if(ext == "mesh")
+  {
+    if(!igl::readMESH(filename,V,T,F))
+    {
+      return 1;
+    }
+  }else
   {
     return 1;
   }
@@ -660,8 +713,6 @@ int main(int argc, char * argv[])
     "igl_trackball,two-a...-fixed-up");
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
-  rebar.TwAddVarRW("flip_y", TW_TYPE_BOOLCPP, &flip_y,"key=f");
-  rebar.TwAddVarRW("rotate_xy", TW_TYPE_BOOLCPP, &rotate_xy,"key=r");
   rebar.load(REBAR_NAME);
 
   glutInitDisplayString( "rgba depth double samples>=8 ");

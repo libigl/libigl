@@ -25,6 +25,7 @@ listed below.
 - Mosek  libiglmosek extra only
 - Matlab  libiglmatlab extra only
 - boost  libiglboost, libiglcgal extra only
+- SSE/AVX  libiglsvd3x3 extra only
 - CGAL  libiglcgal extra only
     * boost 
     * gmp
@@ -153,6 +154,9 @@ To build the a static YImg library on Mac OS X issue:
 
     cd external/yimg
     make
+
+You may need to install libpng. Systems with X11 might find this already
+installed at `/usr/X11/lib`.
 
 
 ### Windows (Experimental) ###

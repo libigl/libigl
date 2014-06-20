@@ -24,14 +24,35 @@ namespace igl
   //   V  #V by dim list of mesh vertex positions
   //   F  #F by simplex_size list of mesh faces (must be triangles)
   // Outputs:
-  //   dblA  #F list of triangle double areas
+  //   dblA  #F list of triangle double areas (SIGNED only for 2D input)
   //
-  // Note: THESE ARE *NOT* SIGNED. In matlab doublearea is signed in 2d
   template <typename DerivedV, typename DerivedF, typename DeriveddblA>
   IGL_INLINE void doublearea( 
     const Eigen::PlainObjectBase<DerivedV> & V, 
     const Eigen::PlainObjectBase<DerivedF> & F, 
     Eigen::PlainObjectBase<DeriveddblA> & dblA);
+  // Stream of triangles
+  template <
+    typename DerivedA,
+    typename DerivedB,
+    typename DerivedC,
+    typename DerivedD>
+  IGL_INLINE void doublearea( 
+    const Eigen::PlainObjectBase<DerivedA> & A, 
+    const Eigen::PlainObjectBase<DerivedB> & B, 
+    const Eigen::PlainObjectBase<DerivedC> & C,
+    Eigen::PlainObjectBase<DerivedD> & D);
+  // Single triangle in 2D!
+  //
+  // This should handle streams of corners not just single corners
+  template <
+    typename DerivedA,
+    typename DerivedB,
+    typename DerivedC>
+  IGL_INLINE typename DerivedA::Scalar doublearea_single( 
+    const Eigen::PlainObjectBase<DerivedA> & A, 
+    const Eigen::PlainObjectBase<DerivedB> & B, 
+    const Eigen::PlainObjectBase<DerivedC> & C);
   // Same as above but use instrinsic edge lengths rather than (V,F) mesh
   // Templates:
   //   DerivedV  derived type of eigen matrix for V (e.g. derived from

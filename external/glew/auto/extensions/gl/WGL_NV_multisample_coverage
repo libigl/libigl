@@ -1,0 +1,5 @@
+WGL_NV_multisample_coverage
+http://www.opengl.org/registry/specs/gl/NV/multisample_coverage.txt
+WGL_NV_multisample_coverage
+	WGL_COVERAGE_SAMPLES_NV 0x2042
+	WGL_COLOR_SAMPLES_NV 0x20B9

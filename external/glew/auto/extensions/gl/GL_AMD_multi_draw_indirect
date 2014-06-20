@@ -1,0 +1,5 @@
+GL_AMD_multi_draw_indirect
+http://www.opengl.org/registry/specs/gl/AMD/multi_draw_indirect.txt
+GL_AMD_multi_draw_indirect
+	void glMultiDrawArraysIndirectAMD (GLenum mode, const GLvoid *indirect, GLsizei primcount, GLsizei stride)
+	void glMultiDrawElementsIndirectAMD (GLenum mode, GLenum type, const GLvoid *indirect, GLsizei primcount, GLsizei stride)

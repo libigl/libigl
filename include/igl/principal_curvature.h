@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
-// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// Copyright (C) 2013 Daniele Panozzo <daniele.panozzo@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_PRINCIPAL_CURVATURE_H
 #define IGL_PRINCIPAL_CURVATURE_H
@@ -34,8 +34,9 @@ namespace igl
   //
   // Outputs:
   //   PD1 #V by 3 maximal curvature direction for each vertex.
-  //   PD2 #V by 3 minimal curvature direction for each vertex.  
-  //  Note that to maximal/minimal curvature value is the rowise norm of PD1/PD2
+  //   PD2 #V by 3 minimal curvature direction for each vertex.
+  //   PV1 #V by 1 maximal curvature value for each vertex.
+  //   PV2 #V by 1 minimal curvature value for each vertex.
   //
   // See also: moveVF, moveFV
   //
@@ -47,13 +48,14 @@ namespace igl
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void principal_curvature(
-                                     const Eigen::PlainObjectBase<DerivedV>& V,
-                                     const Eigen::PlainObjectBase<DerivedF>& F,
-                                     Eigen::PlainObjectBase<DerivedV>& PD1,
-                                     Eigen::PlainObjectBase<DerivedV>& PD2,
-                                     unsigned radius = 5,
-                                     bool useKring = true
-                                     );
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::PlainObjectBase<DerivedV>& PD1,
+  Eigen::PlainObjectBase<DerivedV>& PD2,
+  Eigen::PlainObjectBase<DerivedV>& PV1,
+  Eigen::PlainObjectBase<DerivedV>& PV2,
+  unsigned radius = 5,
+  bool useKring = true);
 }
 
 

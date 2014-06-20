@@ -146,7 +146,13 @@ ANT_GL_CORE_DECL(void, glGetCompressedTexImage, (GLenum target, GLint level, GLv
 // GL 1.4
 ANT_GL_CORE_DECL(void, glBlendFuncSeparate, (GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha))
 ANT_GL_CORE_DECL(void, glMultiDrawArrays, (GLenum mode, const GLint *first, const GLsizei *count, GLsizei primcount))
+#if defined(ANT_OSX) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 1080)
+// Mac OSX 10.8 SDK from March 2013 redefines this OpenGL call: glMultiDrawElements
+// if it doesn't compile, please update XCode.
+ANT_GL_CORE_DECL(void, glMultiDrawElements, (GLenum mode, const GLsizei *count, GLenum type, const GLvoid* const*indices, GLsizei primcount))
+#else
 ANT_GL_CORE_DECL(void, glMultiDrawElements, (GLenum mode, const GLsizei *count, GLenum type, const GLvoid* *indices, GLsizei primcount))
+#endif
 ANT_GL_CORE_DECL(void, glPointParameterf, (GLenum pname, GLfloat param))
 ANT_GL_CORE_DECL(void, glPointParameterfv, (GLenum pname, const GLfloat *params))
 ANT_GL_CORE_DECL(void, glPointParameteri, (GLenum pname, GLint param))
@@ -211,7 +217,13 @@ ANT_GL_CORE_DECL(void, glGetVertexAttribPointerv, (GLuint index, GLenum pname, G
 ANT_GL_CORE_DECL(GLboolean, glIsProgram, (GLuint program))
 ANT_GL_CORE_DECL(GLboolean, glIsShader, (GLuint shader))
 ANT_GL_CORE_DECL(void, glLinkProgram, (GLuint program))
+#if defined(ANT_OSX) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 1080)
+// Mac OSX 10.8 SDK from March 2013 redefines this OpenGL call: glShaderSource
+// if it doesn't compile, please update XCode.
+ANT_GL_CORE_DECL(void, glShaderSource, (GLuint shader, GLsizei count, const GLchar* const*string, const GLint *length))
+#else
 ANT_GL_CORE_DECL(void, glShaderSource, (GLuint shader, GLsizei count, const GLchar* *string, const GLint *length))
+#endif
 ANT_GL_CORE_DECL(void, glUseProgram, (GLuint program))
 ANT_GL_CORE_DECL(void, glUniform1f, (GLint location, GLfloat v0))
 ANT_GL_CORE_DECL(void, glUniform2f, (GLint location, GLfloat v0, GLfloat v1))

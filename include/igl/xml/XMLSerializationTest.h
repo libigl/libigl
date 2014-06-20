@@ -7,12 +7,12 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 /* ---------------------------------------------------------------------------
 // XMLSerializationTest.h
-// Author: Christian Schüller on 19/11/13.
+// Author: Christian Schüller <schuellchr@gmail.com>
 ------------------------------------------------------------------------------
  Used to demonstrates howto use the XMLSerialization class.
 ----------------------------------------------------------------------------*/
-#ifndef XML_SERIALIZABLE_H
-#define XML_SERIALIZABLE_H  
+#ifndef IGL_XML_SERIALIZATION_TEST_H
+#define IGL_XML_SERIALIZATION_TEST_H
 
 #include <igl/xml/XMLSerialization.h>
 

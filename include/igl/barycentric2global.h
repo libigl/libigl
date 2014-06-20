@@ -14,24 +14,25 @@
 
 namespace igl 
 {
-	// Converts barycentric coordinates in the embree form to 3D coordinates
-	// Embree stores barycentric coordinates as triples: fid, bc1, bc2
-	// fid is the id of a face, bc1 is the displacement of the point wrt the 
-	// first vertex v0 and the edge v1-v0. Similarly, bc2 is the displacement
-	// wrt v2-v0.
-  	// 
-  	// Input:
-  	// V:  #Vx3 Vertices of the mesh
-  	// F:  #Fxe Faces of the mesh
-  	// bc: #Xx3 Barycentric coordinates, one row per point
-  	//
-  	// Output:
-  	// #X: #Xx3 3D coordinates of all points in bc
+  // Converts barycentric coordinates in the embree form to 3D coordinates
+  // Embree stores barycentric coordinates as triples: fid, bc1, bc2
+  // fid is the id of a face, bc1 is the displacement of the point wrt the 
+  // first vertex v0 and the edge v1-v0. Similarly, bc2 is the displacement
+  // wrt v2-v0.
+  // 
+  // Input:
+  // V:  #Vx3 Vertices of the mesh
+  // F:  #Fxe Faces of the mesh
+  // bc: #Xx3 Barycentric coordinates, one row per point
+  //
+  // Output:
+  // #X: #Xx3 3D coordinates of all points in bc
   template <typename Scalar, typename Index>
-  IGL_INLINE Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> barycentric2global(
-    const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> & V, 
-	  const Eigen::Matrix<Index,Eigen::Dynamic,Eigen::Dynamic>   & F, 
-    const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>  & bc);
+  IGL_INLINE Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> 
+    barycentric2global(
+      const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> & V, 
+      const Eigen::Matrix<Index,Eigen::Dynamic,Eigen::Dynamic>   & F, 
+      const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>  & bc);
 }
 
 #ifdef IGL_HEADER_ONLY

@@ -60,6 +60,41 @@ IGL_INLINE void igl::doublearea(
   }
 }
 
+template <
+  typename DerivedA,
+  typename DerivedB,
+  typename DerivedC,
+  typename DerivedD>
+IGL_INLINE void doublearea( 
+  const Eigen::PlainObjectBase<DerivedA> & A, 
+  const Eigen::PlainObjectBase<DerivedB> & B, 
+  const Eigen::PlainObjectBase<DerivedC> & C,
+  Eigen::PlainObjectBase<DerivedD> & D)
+{
+  assert(A.cols() == 2 && "corners should be 2d");
+  assert(B.cols() == 2 && "corners should be 2d");
+  assert(C.cols() == 2 && "corners should be 2d");
+  assert(A.rows() == B.rows() && "corners should have same length");
+  assert(A.rows() == C.rows() && "corners should have same length");
+  const auto & R = A-C;
+  const auto & S = B-C;
+  D = R.col(0).array()*S.col(1).array() - R.col(1).array()*S.col(0).array();
+}
+
+template <
+  typename DerivedA,
+  typename DerivedB,
+  typename DerivedC>
+IGL_INLINE typename DerivedA::Scalar igl::doublearea_single(
+  const Eigen::PlainObjectBase<DerivedA> & A, 
+  const Eigen::PlainObjectBase<DerivedB> & B, 
+  const Eigen::PlainObjectBase<DerivedC> & C)
+{
+  auto r = A-C;
+  auto s = B-C;
+  return r(0)*s(1) - r(1)*s(0);
+}
+
 template <typename Derivedl, typename DeriveddblA>
 IGL_INLINE void igl::doublearea( 
   const Eigen::PlainObjectBase<Derivedl> & ul,
@@ -108,4 +143,5 @@ template void igl::doublearea<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::M
 template void igl::doublearea<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 template void igl::doublearea<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 template void igl::doublearea<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template Eigen::Matrix<double, 2, 1, 0, 2, 1>::Scalar igl::doublearea_single<Eigen::Matrix<double, 2, 1, 0, 2, 1>, Eigen::Matrix<double, 2, 1, 0, 2, 1>, Eigen::Matrix<double, 2, 1, 0, 2, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&);
 #endif

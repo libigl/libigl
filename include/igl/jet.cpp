@@ -54,13 +54,13 @@
 
 
 template <typename T>
-void igl::jet(const T x, T * rgb)
+IGL_INLINE void igl::jet(const T x, T * rgb)
 {
   igl::jet(x,rgb[0],rgb[1],rgb[2]);
 }
 
 template <typename T>
-void igl::jet(const T x, T & r, T & g, T & b)
+IGL_INLINE void igl::jet(const T x_in, T & r, T & g, T & b)
 {
   // Only important if the number of colors is small. In which case the rest is
   // still wrong anyway
@@ -69,6 +69,8 @@ void igl::jet(const T x, T & r, T & g, T & b)
   const double rone = 0.8;
   const double gone = 1.0;
   const double bone = 1.0;
+  T x = x_in;
+  x = (x_in<0?0:(x>1?1:x));
 
   if(x<1./8.)
   {
@@ -95,6 +97,21 @@ void igl::jet(const T x, T & r, T & g, T & b)
     r = (bone-(x-7./8.)/(1.-7./8.)*0.5);
     g = 0;
     b = 0;
+  }
+}
+
+template <typename DerivedZ, typename DerivedC>
+IGL_INLINE void igl::jet(
+  const Eigen::PlainObjectBase<DerivedZ> & Z,
+  const bool normalize,
+  Eigen::PlainObjectBase<DerivedC> & C)
+{
+  C.resize(Z.rows(),3);
+  const double min_z = (normalize?Z.minCoeff():0);
+  const double max_z = (normalize?Z.maxCoeff():-1);
+  for(int r = 0;r<Z.rows();r++)
+  {
+    jet((Z(r,0)-min_z)/(max_z-min_z),C(r,0),C(r,1),C(r,2));
   }
 }
 

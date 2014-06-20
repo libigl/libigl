@@ -11,17 +11,21 @@
 #include <igl/verbose.h>
 #include <igl/polar_dec.h>
 #include <igl/polar_svd.h>
+#include <igl/matlab_format.h>
+#include <igl/C_STR.h>
 #include <iostream>
 
 template <typename DerivedS, typename DerivedD>
 IGL_INLINE void igl::fit_rotations(
   const Eigen::PlainObjectBase<DerivedS> & S,
+  const bool single_precision,
         Eigen::PlainObjectBase<DerivedD> & R)
 {
   using namespace std;
   const int dim = S.cols();
   const int nr = S.rows()/dim;
   assert(nr * dim == S.rows());
+  assert(dim == 3);
 
   // resize output
   R.resize(dim,dim*nr); // hopefully no op (should be already allocated)
@@ -40,25 +44,29 @@ IGL_INLINE void igl::fit_rotations(
         si(i,j) = S(i*nr+r,j);
       }
     }
-    Eigen::Matrix<typename DerivedD::Scalar,3,3> ri;
-    Eigen::Matrix<typename DerivedD::Scalar,3,3> ti;
-    //polar_dec(si,ri,ti);
-    //polar_svd(si,ri,ti);
-    polar_svd3x3(si, ri);
-    assert(ri.determinant() >= 0);
-#ifndef FIT_ROTATIONS_ALLOW_FLIPS
-    // Check for reflection
-    if(ri.determinant() < 0)
+    typedef Eigen::Matrix<typename DerivedD::Scalar,3,3> Mat3;
+    typedef Eigen::Matrix<typename DerivedD::Scalar,3,1> Vec3;
+    Mat3 ri;
+    if(single_precision)
     {
-      cerr<<"Error: Warning: flipping is wrong..."<<endl;
-      assert(false && "This is wrong. Need to flip column in U and recompute R = U*V'");
-      // flip sign of last row
-      ri.row(2) *= -1;
+      polar_svd3x3(si, ri);
+    }else
+    {
+      Mat3 ti,ui,vi;
+      Vec3 _;
+      igl::polar_svd(si,ri,ti,ui,_,vi);
+      // Check for reflection
+      if(ri.determinant() < 0)
+      {
+        vi.col(1) *= -1.;
+        ri = ui * vi.transpose();
+      }
     }
     assert(ri.determinant() >= 0);
-#endif  
     // Not sure why polar_dec computes transpose...
     R.block(0,r*dim,dim,dim) = ri.block(0,0,dim,dim).transpose();
+    //cout<<matlab_format(si,C_STR("si_"<<r))<<endl;
+    //cout<<matlab_format(ri.transpose().eval(),C_STR("ri_"<<r))<<endl;
   }
 }
 
@@ -70,6 +78,7 @@ IGL_INLINE void igl::fit_rotations_planar(
   using namespace std;
   const int dim = S.cols();
   const int nr = S.rows()/dim;
+  assert(dim == 2 && "_planar input should be 2D");
   assert(nr * dim == S.rows());
 
   // resize output
@@ -87,28 +96,23 @@ IGL_INLINE void igl::fit_rotations_planar(
         si(i,j) = S(i*nr+r,j);
       }
     }
-    Eigen::Matrix<typename DerivedD::Scalar,2,2> ri;
-    Eigen::Matrix<typename DerivedD::Scalar,2,2> ti;
-    igl::polar_svd(si,ri,ti);
+    typedef Eigen::Matrix<typename DerivedD::Scalar,2,2> Mat2;
+    typedef Eigen::Matrix<typename DerivedD::Scalar,2,1> Vec2;
+    Mat2 ri,ti,ui,vi;
+    Vec2 _;
+    igl::polar_svd(si,ri,ti,ui,_,vi);
 #ifndef FIT_ROTATIONS_ALLOW_FLIPS
     // Check for reflection
     if(ri.determinant() < 0)
     {
-      cerr<<"Error: Warning: flipping is wrong..."<<endl;
-      assert(false && "This is wrong. Need to flip column in U and recompute R = U*V'");
-      // flip sign of last row
-      ri.row(1) *= -1;
+      vi.col(1) *= -1.;
+      ri = ui * vi.transpose();
     }
     assert(ri.determinant() >= 0);
 #endif  
+
     // Not sure why polar_dec computes transpose...
-    R.block(0,r*dim,2,2) = ri.block(0,0,2,2).transpose();
-    // Set remaining part to identity
-    R(0,r*3+2) = 0;
-    R(1,r*3+2) = 0;
-    R(2,r*3+0) = 0;
-    R(2,r*3+1) = 0;
-    R(2,r*3+2) = 1;
+    R.block(0,r*dim,2,2) = ri.transpose();
   }
 }
 
@@ -221,7 +225,7 @@ IGL_INLINE void igl::fit_rotations_AVX(
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template instanciation
-template void igl::fit_rotations<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::fit_rotations<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template void igl::fit_rotations_planar<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template void igl::fit_rotations_planar<Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> >&);
 #endif

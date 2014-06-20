@@ -17,7 +17,7 @@
 // to produce a graded tet mesh
 const static std::string DEFAULT_TETGEN_FLAGS = "pq2Y";
 
-bool igl::mesh_with_skeleton(
+IGL_INLINE bool igl::mesh_with_skeleton(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   const Eigen::MatrixXd & C,
@@ -86,7 +86,7 @@ bool igl::mesh_with_skeleton(
   return true;
 }
 
-bool igl::mesh_with_skeleton(
+IGL_INLINE bool igl::mesh_with_skeleton(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   const Eigen::MatrixXd & C,

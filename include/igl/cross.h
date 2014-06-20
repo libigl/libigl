@@ -8,6 +8,7 @@
 #ifndef IGL_CROSS_H
 #define IGL_CROSS_H
 #include "igl_inline.h"
+#include <Eigen/Core>
 namespace igl
 {
   // Computes out = cross(a,b)
@@ -16,10 +17,22 @@ namespace igl
   //   b  right 3d vector
   // Outputs:
   //   out  result 3d vector
+  IGL_INLINE void cross( const double *a, const double *b, double *out);
+  // Computes C = cross(A,B,2);
+  //
+  // Inputs:
+  //   A  #A by 3 list of row-vectors
+  //   B  #A by 3 list of row-vectors
+  // Outputs:
+  //   C  #A by 3 list of row-vectors
+  template <
+    typename DerivedA,
+    typename DerivedB,
+    typename DerivedC>
   IGL_INLINE void cross(
-    const double *a, 
-    const double *b,
-    double *out);
+    const Eigen::PlainObjectBase<DerivedA> & A,
+    const Eigen::PlainObjectBase<DerivedB> & B,
+    Eigen::PlainObjectBase<DerivedC> & C);
 }
 
 #ifdef IGL_HEADER_ONLY

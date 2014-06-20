@@ -17,12 +17,12 @@ namespace igl
 {
   // Construct the covariance scatter matrix for a given arap energy
   // Inputs:
-  //   V  #V by dim list of initial domain positions
+  //   V  #V by Vdim list of initial domain positions
   //   F  #F by 3 list of triangle indices into V
   //   energy  ARAPEnergyType enum value defining which energy is being used.
   //     See ARAPEnergyType.h for valid options and explanations.
   // Outputs:
-  //   CSM dim*#V by dim*#V sparse matrix containing special laplacians along
+  //   CSM dim*#V/#F by dim*#V sparse matrix containing special laplacians along
   //     the diagonal so that when multiplied by V gives covariance matrix
   //     elements, can be used to speed up covariance matrix computation
   IGL_INLINE void covariance_scatter_matrix(

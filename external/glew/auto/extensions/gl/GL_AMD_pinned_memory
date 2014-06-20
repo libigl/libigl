@@ -1,0 +1,4 @@
+GL_AMD_pinned_memory
+http://www.opengl.org/registry/specs/gl/AMD/pinned_memory.txt
+GL_AMD_pinned_memory
+	GL_EXTERNAL_VIRTUAL_MEMORY_BUFFER_AMD 0x9160

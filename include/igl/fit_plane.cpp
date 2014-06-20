@@ -14,36 +14,37 @@ void igl::fit_plane(
     Eigen::RowVector3d & N,
     Eigen::RowVector3d & C)
 {
-    assert(V.rows()>0);
+  assert(V.rows()>0);
 
-    Eigen::Vector3d sum = V.colwise().sum();
+  Eigen::Vector3d sum = V.colwise().sum();
 
-    Eigen::Vector3d center = sum.array()/(double(V.rows()));
+  Eigen::Vector3d center = sum.array()/(double(V.rows()));
 
-    C = center;
+  C = center;
 
-    double sumXX=0.0f,sumXY=0.0f,sumXZ=0.0f;
-    double sumYY=0.0f,sumYZ=0.0f;
-    double sumZZ=0.0f;
+  double sumXX=0.0f,sumXY=0.0f,sumXZ=0.0f;
+  double sumYY=0.0f,sumYZ=0.0f;
+  double sumZZ=0.0f;
 
-    for(int i=0;i<V.rows();i++){
-        double diffX=V(i,0)-center(0);
-        double diffY=V(i,1)-center(1);
-        double diffZ=V(i,2)-center(2);
-        sumXX+=diffX*diffX;
-        sumXY+=diffX*diffY;
-        sumXZ+=diffX*diffZ;
-        sumYY+=diffY*diffY;
-        sumYZ+=diffY*diffZ;
-        sumZZ+=diffZ*diffZ;
-    }
+  for(int i=0;i<V.rows();i++)
+  {
+    double diffX=V(i,0)-center(0);
+    double diffY=V(i,1)-center(1);
+    double diffZ=V(i,2)-center(2);
+    sumXX+=diffX*diffX;
+    sumXY+=diffX*diffY;
+    sumXZ+=diffX*diffZ;
+    sumYY+=diffY*diffY;
+    sumYZ+=diffY*diffZ;
+    sumZZ+=diffZ*diffZ;
+  }
 
-    Eigen::MatrixXd m(3,3);
-    m << sumXX,sumXY,sumXZ,
-        sumXY,sumYY,sumYZ,
-        sumXZ,sumYZ,sumZZ;
+  Eigen::MatrixXd m(3,3);
+  m << sumXX,sumXY,sumXZ,
+    sumXY,sumYY,sumYZ,
+    sumXZ,sumYZ,sumZZ;
 
-	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(m);
+  Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(m);
   
   N = es.eigenvectors().col(0);
 }

@@ -13,11 +13,18 @@
 // such that q = x*i + y*j + z*k + w
 namespace igl
 {
-  // Snap a given quaternion to the "canonical quaternion" rotations.
-  // Inputs:
-  //   q  input quaternion
-  //   threshold  threshold between 0 and 1, where 0 means
-  template <typename Q_type>
+  // Snap the quaternion q to the nearest canonical view quaternion
+  // Input:
+  //   q  quaternion to be snapped (also see Outputs)
+  //   threshold  (optional) threshold:
+  //     1.0 --> snap any input
+  //     0.5 --> snap inputs somewhat close to canonical views
+  //     0.0 --> snap no input
+  // Output:
+  //   q  quaternion possibly set to nearest canonical view
+  // Return:
+  //   true only if q was snapped to the nearest canonical view
+template <typename Q_type>
   IGL_INLINE bool snap_to_canonical_view_quat(
     const Q_type q[4],
     const Q_type threshold,

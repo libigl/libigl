@@ -33,6 +33,44 @@ Last pixel row of a line of characters is a delimiter with color=zero at the las
 
 */
 
+// ----------------------------------------------------------------------------
+//  OS specific definitions
+// ----------------------------------------------------------------------------
+
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(TW_STATIC)
+#   define TW_CALL          __stdcall
+#   define TW_CDECL_CALL    __cdecl
+#   define TW_EXPORT_API    __declspec(dllexport)
+#   define TW_IMPORT_API    __declspec(dllimport)
+#else
+#   define TW_CALL
+#   define TW_CDECL_CALL
+#   define TW_EXPORT_API
+#   define TW_IMPORT_API
+#endif
+
+#if defined TW_EXPORTS
+#   define TW_API TW_EXPORT_API
+#elif defined TW_STATIC
+#   define TW_API
+#   if defined(_MSC_VER) && !defined(TW_NO_LIB_PRAGMA)
+#       ifdef _WIN64
+#           pragma comment(lib, "AntTweakBarStatic64")
+#       else
+#           pragma comment(lib, "AntTweakBarStatic")
+#       endif
+#   endif
+#else
+#   define TW_API TW_IMPORT_API
+#   if defined(_MSC_VER) && !defined(TW_NO_LIB_PRAGMA)
+#       ifdef _WIN64
+#           pragma comment(lib, "AntTweakBar64")
+#       else
+#           pragma comment(lib, "AntTweakBar")
+#       endif
+#   endif
+#endif
+
 
 struct CTexFont
 {
@@ -55,10 +93,11 @@ struct CTexFont
 CTexFont *TwGenerateFont(const unsigned char *_Bitmap, int _BmWidth, int _BmHeight, float _Scaling=1.0f);
 
 
-extern CTexFont *g_DefaultSmallFont;
-extern CTexFont *g_DefaultNormalFont;
-extern CTexFont *g_DefaultLargeFont;
-extern CTexFont *g_DefaultFixed1Font;
+TW_API extern CTexFont *g_DefaultSmallFont;
+TW_API extern CTexFont *g_DefaultNormalFont;
+TW_API extern CTexFont *g_DefaultLargeFont;
+TW_API extern CTexFont *g_DefaultFixed1Font;
+TW_API extern CTexFont *g_DefaultFixedRuFont;
 
 void TwGenerateDefaultFonts(float _Scaling=1.0f);
 void TwDeleteDefaultFonts();

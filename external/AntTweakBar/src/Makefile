@@ -21,7 +21,7 @@ INCPATH  	= -I../include -I/usr/local/include -I/usr/X11R6/include -I/usr/includ
 LINK     	= gcc
 #LIBS     	= -L/usr/X11R6/lib -L. -lglfw -lGL -lGLU -lX11 -lXxf86vm -lXext -lpthread -lm
 #LIBS     	= -L/usr/X11R6/lib -lGL -lX11 -lXxf86vm -lXext -lpthread -lm
-LIBS 		=
+LIBS 		= -lGL -lstdc++
 AR       	= ar cqs
 RANLIB   	=
 TAR      	= tar -cf
@@ -68,7 +68,7 @@ $(TARGET): $(OBJS)
 	@echo "===== Link $@ ====="
 	$(LINK) $(LFLAGS) -shared -Wl,-soname,lib$(TARGET)$(SO_EXT).$(SO_VERSION) -o $(OUT_DIR)/lib$(TARGET)$(SO_EXT) $(OBJS) $(LIBS)
 	$(SYMLINK) $(OUT_DIR)/lib$(TARGET)$(SO_EXT) $(OUT_DIR)/lib$(TARGET)$(SO_EXT).$(SO_VERSION)
-	$(AR) $(OUT_DIR)/lib$(TARGET)$(AR_EXT) $(OBJS) $(LIBS)
+	$(AR) $(OUT_DIR)/lib$(TARGET)$(AR_EXT) $(OBJS)
 
 .cpp.o:
 	@echo "===== Compile $< ====="

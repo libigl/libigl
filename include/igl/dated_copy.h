@@ -20,9 +20,9 @@ namespace igl
   // Example:
   //   dated_copy("/path/to/foo","/bar/");
   //   // copies /path/to/foo to /bar/foo-2013-12-12T18-10-56
-  bool dated_copy(const std::string & src_path, const std::string & dir);
+  IGL_INLINE bool dated_copy(const std::string & src_path, const std::string & dir);
   // Wrapper using directory of source file
-  bool dated_copy(const std::string & src_path);
+  IGL_INLINE bool dated_copy(const std::string & src_path);
 }
 #ifdef IGL_HEADER_ONLY
 #  include "dated_copy.cpp"

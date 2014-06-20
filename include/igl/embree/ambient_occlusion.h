@@ -27,7 +27,7 @@ namespace igl
     typename DerivedP,
     typename DerivedN,
     typename DerivedS >
-  void ambient_occlusion(
+  IGL_INLINE void ambient_occlusion(
     const igl::EmbreeIntersector & ei,
     const Eigen::PlainObjectBase<DerivedP> & P,
     const Eigen::PlainObjectBase<DerivedN> & N,
@@ -41,7 +41,7 @@ namespace igl
     typename DerivedP,
     typename DerivedN,
     typename DerivedS >
-  void ambient_occlusion(
+  IGL_INLINE void ambient_occlusion(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
     const Eigen::PlainObjectBase<DerivedP> & P,

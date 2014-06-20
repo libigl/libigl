@@ -10,7 +10,6 @@
 #include "../doublearea.h"
 #include "../random_dir.h"
 #include "../boost/bfs_orient.h"
-//#include "orient_outward_ao.h"
 #include "EmbreeIntersector.h"
 #include <iostream>
 #include <random>

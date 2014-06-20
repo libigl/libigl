@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_SELFINTERSECTMESH_H
 #define IGL_SELFINTERSECTMESH_H
 
@@ -78,13 +85,18 @@ namespace igl
     public:
       // Constructs (VV,FF) a new mesh with self-intersections of (V,F)
       // subdivided
+      //
+      // See also: selfintersect.h
       inline SelfIntersectMesh(
         const Eigen::MatrixXd & V,
         const Eigen::MatrixXi & F,
         const SelfintersectParam & params,
         Eigen::MatrixXd & VV,
         Eigen::MatrixXi & FF,
-        Eigen::MatrixXi & IF);
+        Eigen::MatrixXi & IF,
+        Eigen::VectorXi & J,
+        Eigen::VectorXi & IM
+        );
     private:
       // Helper function to mark a face as offensive
       //
@@ -243,7 +255,9 @@ inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
   const SelfintersectParam & params,
   Eigen::MatrixXd & VV,
   Eigen::MatrixXi & FF,
-  Eigen::MatrixXi & IF):
+  Eigen::MatrixXi & IF,
+  Eigen::VectorXi & J,
+  Eigen::VectorXi & IM):
   V(V),
   F(F),
   count(0),
@@ -348,8 +362,8 @@ inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
           //  P[o].to_3d(vit->point())<<endl;
 #ifndef NDEBUG
           // I want to be sure that the original corners really show up as the
-          // original corners of the CDT. I.e. I don't trust CGAL to maintain the
-          // order
+          // original corners of the CDT. I.e. I don't trust CGAL to maintain
+          // the order
           assert(T[f].vertex(i) == P[o].to_3d(vit->point()));
 #endif
           // For first three, use original index in F
@@ -442,6 +456,7 @@ inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
 #endif
   // Append faces
   FF.resize(F.rows()-offending.size()+NF_count,3);
+  J.resize(FF.rows());
   // First append non-offending original faces
   // There's an Eigen way to do this in one line but I forget
   int off = 0;
@@ -449,7 +464,9 @@ inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
   {
     if(!offensive[f])
     {
-      FF.row(off++) = F.row(f);
+      FF.row(off) = F.row(f);
+      J(off) = f;
+      off++;
     }
   }
   assert(off == (int)(F.rows()-offending.size()));
@@ -457,6 +474,7 @@ inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
   for(int o = 0;o<(int)offending.size();o++)
   {
     FF.block(off,0,NF[o].rows(),3) = NF[o];
+    J.block(off,0,NF[o].rows(),1).setConstant(offending[o]);
     off += NF[o].rows();
   }
   // Append vertices
@@ -481,6 +499,38 @@ inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
 //#endif
       }
       i++;
+    }
+  }
+  IM.resize(VV.rows(),1);
+  map<Point_3,int> vv2i;
+  // Safe to check for duplicates using double for original vertices: if
+  // incoming reps are different then the points are unique.
+  for(int v = 0;v<V.rows();v++)
+  {
+    const Point_3 p(V(v,0),V(v,1),V(v,2));
+    if(vv2i.count(p)==0)
+    {
+      vv2i[p] = v;
+    }
+    assert(vv2i.count(p) == 1);
+    IM(v) = vv2i[p];
+  }
+  // Must check for duplicates of new vertices using exact.
+  {
+    int v = V.rows();
+    for(
+      typename list<Point_3>::const_iterator nvit = NV.begin();
+      nvit != NV.end();
+      nvit++)
+    {
+      const Point_3 & p = *nvit;
+      if(vv2i.count(p)==0)
+      {
+        vv2i[p] = v;
+      }
+      assert(vv2i.count(p) == 1);
+      IM(v) = vv2i[p];
+      v++;
     }
   }
 
