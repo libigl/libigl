@@ -7,28 +7,34 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_KRONECKERPRODUCT_H
 #define IGL_KRONECKERPRODUCT_H
-#include "igl_inline.h"
 
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
+// Obsolete: Use 
+// #include <unsupported/Eigen/src/KroneckerProduct>
+// ...
+// Eigen::kroneckerProduct(A,B,C);
 
-namespace igl
-{
-  // Computes the Kronecker product between sparse matrices A and B.
-  //
-  // Inputs:
-  //   A  #M by #N sparse matrix
-  //   B  #P by #Q sparse matrix
-  // Returns #M*#P by #N*#Q sparse matrix
-  //
-  template <typename Scalar>
-  IGL_INLINE Eigen::SparseMatrix<Scalar> kronecker_product(
-    const Eigen::SparseMatrix<Scalar> & A,
-    const Eigen::SparseMatrix<Scalar> & B);
-}
-
-#ifdef IGL_HEADER_ONLY
-#  include "kronecker_product.cpp"
-#endif
+//#include "igl_inline.h"
+//
+//#include <Eigen/Dense>
+//#include <Eigen/Sparse>
+//
+//namespace igl
+//{
+//  // Computes the Kronecker product between sparse matrices A and B.
+//  //
+//  // Inputs:
+//  //   A  #M by #N sparse matrix
+//  //   B  #P by #Q sparse matrix
+//  // Returns #M*#P by #N*#Q sparse matrix
+//  //
+//  template <typename Scalar>
+//  IGL_INLINE Eigen::SparseMatrix<Scalar> kronecker_product(
+//    const Eigen::SparseMatrix<Scalar> & A,
+//    const Eigen::SparseMatrix<Scalar> & B);
+//}
+//
+//#ifdef IGL_HEADER_ONLY
+//#  include "kronecker_product.cpp"
+//#endif
 
 #endif
