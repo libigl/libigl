@@ -9,10 +9,6 @@
 
 #include "verbose.h"
 
-// Bug in unsupported/Eigen/SparseExtra needs iostream first
-#include <iostream>
-#include <unsupported/Eigen/SparseExtra>
-#warning "old includes"
 #include <vector>
 
 template <typename T>
@@ -21,21 +17,11 @@ IGL_INLINE void igl::adjacency_matrix(
   Eigen::SparseMatrix<T>& A)
 {
   using namespace std;
-  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> 
-    dyn_A(F.maxCoeff()+1, F.maxCoeff()+1);
-  switch(F.cols())
-  {
-    case 3:
-      dyn_A.reserve(8*(F.maxCoeff()+1));
-      break;
-    case 4:
-      dyn_A.reserve(26*(F.maxCoeff()+1));
-      break;
-  }
+  using namespace Eigen;
 
-  //typedef Triplet<T> IJV;
-  //vector<IJV > ijv;
-  //ijv.reserve(F.size()*2);
+  typedef Triplet<T> IJV;
+  vector<IJV > ijv;
+  ijv.reserve(F.size()*2);
   // Loop over faces
   for(int i = 0;i<F.rows();i++)
   {
@@ -45,15 +31,40 @@ IGL_INLINE void igl::adjacency_matrix(
       // Get indices of edge: s --> d
       int s = F(i,j);
       int d = F(i,(j+1)%F.cols());
-      dyn_A.coeffRef(s, d) = 1;
-      dyn_A.coeffRef(d, s) = 1;
+      ijv.push_back(IJV(s,d,1));
+      ijv.push_back(IJV(d,s,1));
     }
   }
 
-  A = Eigen::SparseMatrix<T>(dyn_A);
+  const int n = F.maxCoeff()+1;
+  A.resize(n,n);
+  switch(F.cols())
+  {
+    case 3:
+      A.reserve(6*(F.maxCoeff()+1));
+      break;
+    case 4:
+      A.reserve(26*(F.maxCoeff()+1));
+      break;
+  }
+  A.setFromTriplets(ijv.begin(),ijv.end());
+
+  // Force all non-zeros to be one
+
+  // Iterate over outside
+  for(int k=0; k<A.outerSize(); ++k)
+  {
+    // Iterate over inside
+    for(typename Eigen::SparseMatrix<T>::InnerIterator it (A,k); it; ++it)
+    {
+      assert(it.value() != 0);
+      A.coeffRef(it.row(),it.col()) = 1;
+    }
+  }
 }
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
 template void igl::adjacency_matrix<int>(Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::SparseMatrix<int, 0, int>&);
+template void igl::adjacency_matrix<double>(Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::SparseMatrix<double, 0, int>&);
 #endif
