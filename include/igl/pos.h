@@ -16,14 +16,19 @@
 namespace igl 
 {
   // Pos - Fake halfedge for fast and easy navigation on triangle meshes with VT and TT adj
-template <typename S>
+//template <typename S>
+  template <typename DerivedF>
   class Pos
   {
   public:
     // Init the pos by specifying Face,Edge Index and Orientation
-    Pos(const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>* F, 
-        Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>* FF, 
-        Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>* FFi, 
+    Pos(
+//        const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>* F,
+//        Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>* FF, 
+//        Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>* FFi, 
+        const Eigen::PlainObjectBase<DerivedF>* F,
+        const Eigen::PlainObjectBase<DerivedF>* FF,
+        const Eigen::PlainObjectBase<DerivedF>* FFi,
         int fi,
         int ei,
         bool reverse = false
@@ -144,9 +149,12 @@ template <typename S>
     int ei;
     bool reverse;
     
-    const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>*     F;
-    const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>*     FF;
-    const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>*     FFi;
+    const Eigen::PlainObjectBase<DerivedF>* F;
+    const Eigen::PlainObjectBase<DerivedF>* FF;
+    const Eigen::PlainObjectBase<DerivedF>* FFi;
+//    const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>*     F;
+//    const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>*     FF;
+//    const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>*     FFi;
   };
   
 }
