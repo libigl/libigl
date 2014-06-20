@@ -14,9 +14,8 @@
 
 namespace igl
 {
-  // Constructs the symmetric area matrix A, s.t.
-  // [V.col(0)' V.col(1)'] * A * [V.col(0); V.col(1)] is the area of the planar mesh (V,F).
-  // Note: (V,F) must be a genus-0 mesh, with a single boundary
+  // Constructs the symmetric area matrix A, s.t.  [V.col(0)' V.col(1)'] * A *
+  // [V.col(0); V.col(1)] is the **vector area** of the mesh (V,F).
   //
   // Templates:
   //   DerivedV  derived type of eigen matrix for V (e.g. derived from
@@ -25,14 +24,12 @@ namespace igl
   //     MatrixXi)
   //   Scalar  scalar type for eigen sparse matrix (e.g. double)
   // Inputs:
-  //   V  #V by 2 list of mesh vertex positions
   //   F  #F by 3 list of mesh faces (must be triangles)
   // Outputs:
   //   A  #Vx2 by #Vx2 area matrix
   //
-  template <typename DerivedV, typename DerivedF, typename Scalar>
+  template <typename DerivedF, typename Scalar>
   IGL_INLINE void areamatrix(
-    const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
     Eigen::SparseMatrix<Scalar>& A);
 }

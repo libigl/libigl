@@ -19,8 +19,7 @@ namespace igl
   // Inputs:
   //   A  #M by #N sparse matrix
   //   B  #P by #Q sparse matrix
-  // Outputs:
-  //      #M*#P by #N*#Q sparse matrix
+  // Returns #M*#P by #N*#Q sparse matrix
   //
   template <typename Scalar>
   IGL_INLINE Eigen::SparseMatrix<Scalar> kronecker_product(
