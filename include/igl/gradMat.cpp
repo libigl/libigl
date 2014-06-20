@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "gradMat.h"
+#include <Eigen/Geometry>
 #include <vector>
 
 template <typename T, typename S>
@@ -93,7 +94,7 @@ IGL_INLINE void igl::gradMat(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynam
   // create sparse gradient operator matrix
   G.resize(3*F.rows(),V.rows()); 
   std::vector<Eigen::Triplet<T> > triplets;
-  for (int i=0;i<vs.size();++i)
+  for (int i=0;i<(int)vs.size();++i)
   {
     triplets.push_back(Eigen::Triplet<T>(rs[i],cs[i],vs[i]));
   }
@@ -102,5 +103,6 @@ IGL_INLINE void igl::gradMat(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynam
 
 #ifndef IGL_HEADER_ONLY
 // Explicit template specialization
+template void igl::gradMat<double, int>(Eigen::Matrix<double, -1, -1, 0, -1,-1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&,Eigen::SparseMatrix<double, 0, int>&);
 #endif
 

@@ -4,7 +4,6 @@
 #include <igl/per_face_normals.h>
 #include <igl/per_corner_normals.h>
 #include <igl/avg_edge_length.h>
-#include <igl/barycenter.h>
 #include <igl/principal_curvature.h>
 #include <igl/jet.h>
 #include <igl/cotmatrix.h>
@@ -26,8 +25,10 @@ int main(int argc, char *argv[])
   igl::cotmatrix(V,F,L);
   igl::massmatrix(V,F,igl::MASSMATRIX_VORONOI,M);
   igl::invert_diag(M,Minv);
+  // Laplace-Beltrami of position
   HN = -Minv*(L*V);
-  H = (HN.rowwise().squaredNorm()).array().sqrt();
+  // Extract magnitude as mean curvature
+  H = HN.rowwise().norm();
 
   // Compute curvature directions via quadric fitting
   MatrixXd PD1,PD2;
