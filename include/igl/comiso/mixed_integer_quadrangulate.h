@@ -1,6 +1,6 @@
 #ifndef IGL_MIXED_INTEGER_QUADRANGULATE_H
 #define IGL_MIXED_INTEGER_QUADRANGULATE_H
-#include "igl_inline.h"
+#include <igl/igl_inline.h>
 #include <Eigen/Core>
 #include <vector>
 
@@ -10,7 +10,7 @@ namespace igl
   // per face, using the algorithm described in the paper
   // "Mixed-Integer Quadrangulation" by D. Bommes, H. Zimmer, L. Kobbelt
   // ACM SIGGRAPH 2009, Article No. 77 (http://dl.acm.org/citation.cfm?id=1531383)
-  
+
   // Inputs:
   //   Vin        #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F          #F by 4 eigen Matrix of face (quad) indices
@@ -19,7 +19,7 @@ namespace igl
   // Output:
   //   Vout       #V by 3 eigen Matrix of planar mesh vertex 3D positions
   //
-  
+
   template <typename DerivedV, typename DerivedF, typename DerivedU>
   IGL_INLINE void mixed_integer_quadrangulate(const Eigen::PlainObjectBase<DerivedV> &V,
                                               const Eigen::PlainObjectBase<DerivedF> &F,

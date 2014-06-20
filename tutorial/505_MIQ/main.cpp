@@ -1,7 +1,7 @@
 #define IGL_HEADER_ONLY
 #include <igl/readOBJ.h>
 #include <igl/viewer/Viewer.h>
-#include <igl/mixed_integer_quadrangulate.h>
+#include <igl/comiso/mixed_integer_quadrangulate.h>
 #include <igl/barycenter.h>
 #include <igl/avg_edge_length.h>
 #include <sstream>
@@ -74,7 +74,7 @@ void writePolyVf(const char *fname,
     fprintf(fp, "\n");
   }
   fclose(fp);
-  
+
 }
 
 
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
   Eigen::VectorXi isConstrained;
   std::vector<Eigen::MatrixXd> polyVF;
   readPolyVf("../shared/lilium.crossfield", isConstrained, polyVF);
-  
+
   Eigen::MatrixXd UV;
   Eigen::MatrixXi FUV;
 
