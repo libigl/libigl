@@ -36,9 +36,15 @@ IGL_INLINE bool igl::writeOFF(
       (double)V(i,2));
   }
   
+//  for (int i = 0; i < F.rows(); i++)
+//      fprintf (fp, "3 %d %d %d\n", F(i,0), F(i,1), F(i,2));
   for (int i = 0; i < F.rows(); i++)
-      fprintf (fp, "3 %d %d %d\n", F(i,0), F(i,1), F(i,2));
-  
+  {
+    fprintf (fp, "%d", F.cols());
+    for (int j = 0; j < F.cols(); j++)
+      fprintf (fp, " %d", F(i,j));
+    fprintf (fp, "\n");
+  }
   fclose (fp);
   return true;
 }
