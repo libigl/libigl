@@ -17,24 +17,28 @@ namespace igl
   // Compute a Least-squares conformal map parametrization following the algorithm
   // presented in: Spectral Conformal Parameterization,
   //               Patrick Mullen, Yiying Tong, Pierre Alliez and Mathieu Desbrun
-  // Note: (V,F) must be a genus-0 mesh, with a single boundary
   //
   // Inputs:
   //   V  #V by 3 list of mesh vertex positions
   //   F  #F by 3 list of mesh faces (must be triangles)
   //   b  #b boundary indices into V
-  //   bc #b by #W list of boundary values
-// Outputs:
+  //   bc #b by 3 list of boundary values
+  // Outputs:
   //   UV #V by 2 list of 2D mesh vertex positions in UV space
   //
-  // Note: if b and bc are empty, lscm automatically removes the null space
-  //       by fixing two farthest points on the boundary
-
-  IGL_INLINE Eigen::MatrixXd lscm(
+  // X  Note: if b and bc are empty, lscm automatically removes the null space
+  // X        by fixing two farthest points on the boundary
+  // Boundary conditions are part of the api. It would be strange to secretly
+  // use other boundary conditions. This is also weird if there's more than one
+  // boundary loop.
+  // X  Note: (V,F) must be a genus-0 mesh, with a single boundary
+  // No longer the case. Should probably just be manifold.
+  IGL_INLINE void lscm(
     const Eigen::MatrixXd& V,
     const Eigen::MatrixXi& F,
     const Eigen::VectorXi& b,
-    const Eigen::MatrixXd& bc);
+    const Eigen::MatrixXd& bc,
+    Eigen::MatrixXd& V_uv);
 }
 
 #ifdef IGL_HEADER_ONLY

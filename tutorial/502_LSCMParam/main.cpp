@@ -1,5 +1,6 @@
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
+#include <igl/boundary_vertices_sorted.h>
 
 #include <igl/lscm.h>
 
@@ -30,8 +31,16 @@ int main(int argc, char *argv[])
   // Load a mesh in OFF format
   igl::readOFF("../shared/camelhead.off", V, F);
 
+  // Fix two points on the boundary
+  VectorXi bnd,b(2,1);
+  igl::boundary_vertices_sorted(V,F,bnd);
+  b(0) = bnd(0);
+  b(1) = bnd(round(bnd.size()/2));
+  MatrixXd bc(2,2);
+  bc<<0,0,1,0;
+
   // LSCM parametrization
-  V_uv = igl::lscm(V,F,Eigen::VectorXi(),Eigen::MatrixXd());
+  igl::lscm(V,F,b,bc,V_uv);
 
   // Scale the uv
   V_uv *= 5;
