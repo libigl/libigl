@@ -46,14 +46,20 @@ namespace igl
   // Daniele Panozzo, Enrico Puppo, Luigi Rocca
   // GraVisMa, 2010
 
-template <typename DerivedV, typename DerivedF>
+template <
+  typename DerivedV, 
+  typename DerivedF,
+  typename DerivedPD1, 
+  typename DerivedPD2, 
+  typename DerivedPV1, 
+  typename DerivedPV2>
 IGL_INLINE void principal_curvature(
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F,
-  Eigen::PlainObjectBase<DerivedV>& PD1,
-  Eigen::PlainObjectBase<DerivedV>& PD2,
-  Eigen::PlainObjectBase<DerivedV>& PV1,
-  Eigen::PlainObjectBase<DerivedV>& PV2,
+  Eigen::PlainObjectBase<DerivedPD1>& PD1,
+  Eigen::PlainObjectBase<DerivedPD2>& PD2,
+  Eigen::PlainObjectBase<DerivedPV1>& PV1,
+  Eigen::PlainObjectBase<DerivedPV2>& PV2,
   unsigned radius = 5,
   bool useKring = true);
 }

@@ -15,7 +15,7 @@ while read line; do
   #echo "symbol = $symbol"
   filename=`echo "$symbol" | perl -pe "s#.*?igl::([A-z0-9_]*).*$'$'#\1#"`
   #echo "filename = $filename"
-  cpp="$filename.cpp"
+  cpp="$LIBIGL/include/igl/$filename.cpp"
   # append .cpp and check that file exists
   if [ ! -e "$cpp" ]
   then
