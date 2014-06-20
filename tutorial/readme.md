@@ -1,5 +1,8 @@
-xhtml header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 css: style.css
+html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
+<script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 
 # Introduction
 
@@ -18,7 +21,7 @@ All examples depends on glfw, glew and anttweakbar. A copy
 of the sourcecode of each library is provided together with libigl
 and they can be precompiled using:
 
-** Alec: Is this just compiling the dependencies? Then perhaps rename `compile_dependencies_*`**
+**Alec: Is this just compiling the dependencies? Then perhaps rename `compile_dependencies_*`**
 
     sh compile_macosx.sh (MACOSX)
     sh compile_linux.sh (LINUX)
@@ -29,7 +32,13 @@ On Linux and MacOSX, you can use the provided bash script:
 
     sh ../compile_example.sh
 
-## Optional compilation with libigl as static library
+## (Optional: compilation with libigl as static library)
+
+By default, libigl is a _headers only_ library, thus it does not require
+compilation. However, one can precompile libigl as a statically linked library.
+See `../README.md` in the main directory for compilations instructions to
+produce `libigl.a` and other libraries. Once compiled, these examples can be
+compiled using the `CMAKE` flag `-DLIBIGL_USE_STATIC_LIBRARY=ON`:
 
     ../compile_example.sh -DLIBIGL_USE_STATIC_LIBRARY=ON
 
@@ -66,3 +75,13 @@ elliptic, hyperbolic and parabolic vertices on the domain.
 
 ![The `GaussianCurvature` example computes discrete Gaussian curvature and visualizes it in
 pseudocolor.](images/bumpy-gaussian-curvature.jpg)
+
+
+This is an example of syntax highlighted code:
+```cpp
+#include <foo.html>
+int main(int argc, char * argv[])
+{
+  return 0;
+}
+```

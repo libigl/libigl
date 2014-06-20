@@ -13,6 +13,7 @@
 #include <igl/covariance_scatter_matrix.h>
 #include <igl/speye.h>
 #include <igl/mode.h>
+#include <igl/plane_project.h>
 #include <igl/slice.h>
 #include <igl/arap_rhs.h>
 #include <igl/repdiag.h>
@@ -32,7 +33,6 @@ IGL_INLINE bool igl::arap_precomputation(
   const Eigen::PlainObjectBase<Derivedb> & b,
   ARAPData & data)
 {
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
   typedef typename DerivedV::Scalar Scalar;
@@ -48,12 +48,25 @@ IGL_INLINE bool igl::arap_precomputation(
   //const int dim = V.cols();
   assert((dim == 3 || dim ==2) && "dim should be 2 or 3");
   data.dim = dim;
-  data.Vdim = V.cols();
   //assert(dim == 3 && "Only 3d supported");
   // Defaults
-  data.f_ext = Eigen::MatrixXd::Zero(n,data.dim);
+  data.f_ext = MatrixXd::Zero(n,data.dim);
 
-  SparseMatrix<Scalar> L;
+  assert(data.dim <= V.cols() && "solve dim should be <= embedding");
+  bool flat = (V.cols() - data.dim)==1;
+
+  PlainObjectBase<DerivedV> plane_V;
+  PlainObjectBase<DerivedF> plane_F;
+  typedef SparseMatrix<Scalar> SparseMatrixS;
+  SparseMatrixS ref_map,ref_map_dim;
+  if(flat)
+  {
+    plane_project(V,F,plane_V,plane_F,ref_map);
+    repdiag(ref_map,dim,ref_map_dim);
+  }
+  const PlainObjectBase<DerivedV>& ref_V = (flat?plane_V:V);
+  const PlainObjectBase<DerivedF>& ref_F = (flat?plane_F:F);
+  SparseMatrixS L;
   cotmatrix(V,F,L);
 
   ARAPEnergyType eff_energy = data.energy;
@@ -81,7 +94,11 @@ IGL_INLINE bool igl::arap_precomputation(
 
   // Get covariance scatter matrix, when applied collects the covariance
   // matrices used to fit rotations to during optimization
-  covariance_scatter_matrix(V,F,eff_energy,data.CSM);
+  covariance_scatter_matrix(ref_V,ref_F,eff_energy,data.CSM);
+  assert(data.CSM.rows() == ref_F.rows()*data.dim);
+  data.CSM = (data.CSM * ref_map_dim.transpose()).eval();
+  assert(data.CSM.cols() == V.rows()*data.dim);
+  assert(data.CSM.rows() == ref_F.rows()*data.dim);
 
   // Get group sum scatter matrix, when applied sums all entries of the same
   // group according to G
@@ -115,12 +132,13 @@ IGL_INLINE bool igl::arap_precomputation(
     group_sum_matrix(data.G,G_sum);
   }
   SparseMatrix<double> G_sum_dim;
-  repdiag(G_sum,data.Vdim,G_sum_dim);
+  repdiag(G_sum,data.dim,G_sum_dim);
   assert(G_sum_dim.cols() == data.CSM.rows());
   data.CSM = (G_sum_dim * data.CSM).eval();
 
 
-  arap_rhs(V,F,data.dim,eff_energy,data.K);
+  arap_rhs(ref_V,ref_F,data.dim,eff_energy,data.K);
+  data.K = (ref_map_dim * data.K).eval();
   assert(data.K.rows() == data.n*data.dim);
 
   SparseMatrix<double> Q = (-0.5*L).eval();
@@ -188,19 +206,16 @@ IGL_INLINE bool igl::arap_solve(
       U.row(data.b(bi)) = bc.row(bi);
     }
 
-    const auto & Udim = U.replicate(data.Vdim,1);
+    const auto & Udim = U.replicate(data.dim,1);
     assert(U.cols() == data.dim);
-    assert(data.Vdim >= data.dim);
     // As if U.col(2) was 0
-    MatrixXd S = MatrixXd::Zero(data.CSM.rows(),data.Vdim);
-    S.leftCols(data.dim) = data.CSM * Udim;
+    MatrixXd S = data.CSM * Udim;
 
-    const int Rdim = data.Vdim;
+    const int Rdim = data.dim;
     MatrixXd R(Rdim,data.CSM.rows());
     if(R.rows() == 2)
     {
       fit_rotations_planar(S,R);
-      cerr<<"PLANAR"<<endl;
     }else
     {
 #ifdef __SSE__ // fit_rotations_SSE will convert to float if necessary
