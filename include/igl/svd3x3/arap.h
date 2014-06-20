@@ -21,24 +21,29 @@ namespace igl
     // G  #V list of group indices (1 to k) for each vertex, such that vertex i
     //    is assigned to group G(i)
     // energy  type of energy to use
-    // with_dynamics  whether using dynamics 
+    // with_dynamics  whether using dynamics (need to call arap_precomputation
+    //   after changing)
     // f_ext  #V by dim list of external forces
+    // vel  #V by dim list of velocities
     // h  dynamics time step
     // max_iter  maximum inner iterations
     // K  rhs pre-multiplier
+    // M  mass matrix
     // solver_data  quadratic solver data
     // b  list of boundary indices into V
+    // dim  dimension being used for solving
     int n;
     Eigen::VectorXi G;
     ARAPEnergyType energy;
     bool with_dynamics;
-    Eigen::MatrixXd f_ext;
+    Eigen::MatrixXd f_ext,vel;
     double h;
     int max_iter;
-    Eigen::SparseMatrix<double> K;
+    Eigen::SparseMatrix<double> K,M;
     Eigen::SparseMatrix<double> CSM;
     min_quad_with_fixed_data<double> solver_data;
     Eigen::VectorXi b;
+    int dim;
       ARAPData():
         n(0),
         G(),
@@ -50,7 +55,8 @@ namespace igl
         K(),
         CSM(),
         solver_data(),
-        b()
+        b(),
+        dim(-1) // force this to be set by _precomputation
     {
     };
   };
@@ -60,6 +66,8 @@ namespace igl
   // Inputs:
   //   V  #V by dim list of mesh positions
   //   F  #F by simplex-size list of triangle|tet indices into V
+  //   dim  dimension being used at solve time. For deformation usually dim =
+  //     V.cols(), for surface parameterization V.cols() = 3 and dim = 2
   //   b  #b list of "boundary" fixed vertex indices into V
   // Outputs:
   //   data  struct containing necessary precomputation
@@ -70,9 +78,13 @@ namespace igl
   IGL_INLINE bool arap_precomputation(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
+    const int dim,
     const Eigen::PlainObjectBase<Derivedb> & b,
     ARAPData & data);
-
+  // Inputs:
+  //   bc  #b by dim list of boundary conditions
+  //   data  struct containing necessary precomputation and parameters
+  //   U  #V by dim initial guess
   template <
     typename Derivedbc,
     typename DerivedU>

@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #include "dated_copy.h"
 #include "dirname.h"
 #include "basename.h"
@@ -9,7 +16,7 @@
 #include <unistd.h>
 #include <iostream>
 
-bool igl::dated_copy(const std::string & src_path, const std::string & dir)
+IGL_INLINE bool igl::dated_copy(const std::string & src_path, const std::string & dir)
 {
   using namespace std;
   using namespace igl;
@@ -75,7 +82,7 @@ bool igl::dated_copy(const std::string & src_path, const std::string & dir)
   return true;
 }
 
-bool igl::dated_copy(const std::string & src_path)
+IGL_INLINE bool igl::dated_copy(const std::string & src_path)
 {
   return dated_copy(src_path,dirname(src_path));
 }

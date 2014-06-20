@@ -10,7 +10,7 @@
 
 
 template <typename T>
-void igl::hsv_to_rgb(const T * hsv, T * rgb)
+IGL_INLINE void igl::hsv_to_rgb(const T * hsv, T * rgb)
 {
   igl::hsv_to_rgb( 
       hsv[0],hsv[1],hsv[2],
@@ -18,7 +18,7 @@ void igl::hsv_to_rgb(const T * hsv, T * rgb)
 }
 
 template <typename T>
-void igl::hsv_to_rgb( 
+IGL_INLINE void igl::hsv_to_rgb( 
   const T & h, const T & s, const T & v, 
   T & r, T & g, T & b)
 {

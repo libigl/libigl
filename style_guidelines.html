@@ -179,7 +179,7 @@ and outputs.
         <td>Find files that aren't using igl namespace</td>
       </tr>
       <tr class=d0>
-        <td><code>grep -P '\t' *</code></td>
+        <td><code>grep -lP '\t' *</code></td>
         <td>Find files using [TAB] character</td>
       </tr>
       <tr class=d1>
@@ -191,7 +191,7 @@ and outputs.
         <td>Find files using asserts without identifier strings</td>
       </tr>
       <tr class=d1>
-        <td><code>grep -l "ifndef IGL_.*[^H] *$" *</code></td>
+        <td><code>grep -l "ifndef IGL_.*[^H] *$" *.h</code></td>
         <td>Find .h files that contain ifndef IGL_*[^H]</td>
       </tr>
       <tr class=d0>
@@ -199,7 +199,7 @@ and outputs.
         <td>Find files that don't contain #ifndef IGL_</td>
       </tr>
       <tr class=d1>
-        <td><code>grep -L "^This file is part of libigl" *</code></td>
+        <td><code>grep -L "^// This file is part of libigl" *</code></td>
       </tr>
     </table>
 

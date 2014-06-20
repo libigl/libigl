@@ -39,6 +39,7 @@ IGL_INLINE void igl::polar_svd(
   Eigen::PlainObjectBase<DerivedS> & S,
   Eigen::PlainObjectBase<DerivedV> & V)
 {
+  using namespace std;
   Eigen::JacobiSVD<DerivedA> svd;
   svd.compute(A, Eigen::ComputeFullU | Eigen::ComputeFullV );
   U = svd.matrixU();

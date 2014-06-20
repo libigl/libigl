@@ -43,7 +43,7 @@ namespace igl
 }
 
 #ifdef IGL_HEADER_ONLY
-#  include "project_to_line.cpp"
+#  include "project_to_line_segment.cpp"
 #endif
 
 #endif

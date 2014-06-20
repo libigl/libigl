@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef C_STR_H
-#define C_STR_H
+#ifndef IGL_C_STR_H
+#define IGL_C_STR_H
 // http://stackoverflow.com/a/2433143/148668
 // Suppose you have a function:
 //   void func(const char * c);

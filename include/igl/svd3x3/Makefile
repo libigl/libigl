@@ -20,13 +20,21 @@ INC+=-I../../../include/
 
 # EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY 
 
-
 # SVD 
 SINGULAR_VALUE_DECOMPOSITION_INC=\
 	-I../../../external/Singular_Value_Decomposition/
 # Eigen dependency
 EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
 INC+=$(EIGEN3_INC) $(SINGULAR_VALUE_DECOMPOSITION_INC)
+
+# Matlab dependency
+ifndef MATLAB
+  MATLAB=/Applications/MATLAB_R2013b.app/
+  $(warning MATLAB undefined. Setting MATLAB=${MATLAB})
+endif
+MATLAB_INC=-I$(MATLAB)/extern/include/
+MATLAB_LIB=-L$(MATLAB)/bin/maci64 -lmx -leng
+INC+=$(MATLAB_INC)
 
 obj: 
 	mkdir -p obj

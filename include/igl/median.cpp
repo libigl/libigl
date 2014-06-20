@@ -24,6 +24,13 @@ IGL_INLINE bool igl::median(const Eigen::VectorXd & V, double & m)
   // http://stackoverflow.com/a/1719155/148668
   size_t n = vV.size()/2;
   nth_element(vV.begin(),vV.begin()+n,vV.end());
-  m = vV[n];
+  if(vV.size()%2==0)
+  {
+    nth_element(vV.begin(),vV.begin()+n-1,vV.end());
+    m = 0.5*(vV[n]+vV[n-1]);
+  }else
+  {
+    m = vV[n];
+  }
   return true;
 }

@@ -27,9 +27,32 @@ namespace igl
     typename DerivedT, 
     typename Derivedvol>
   IGL_INLINE void volume(
-    Eigen::PlainObjectBase<DerivedV>& V,
-    Eigen::PlainObjectBase<DerivedT>& T,
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedT>& T,
     Eigen::PlainObjectBase<Derivedvol>& vol);
+  template <
+    typename DerivedA,
+    typename DerivedB,
+    typename DerivedC,
+    typename DerivedD,
+    typename Derivedvol>
+  IGL_INLINE void volume(
+    const Eigen::PlainObjectBase<DerivedA> & A,
+    const Eigen::PlainObjectBase<DerivedB> & B,
+    const Eigen::PlainObjectBase<DerivedC> & C,
+    const Eigen::PlainObjectBase<DerivedD> & D,
+    Eigen::PlainObjectBase<Derivedvol> & vol);
+  // Single tet
+  template <
+    typename VecA,
+    typename VecB,
+    typename VecC,
+    typename VecD>
+  IGL_INLINE typename VecA::Scalar volume_single(
+    const VecA & a,
+    const VecB & b,
+    const VecC & c,
+    const VecD & d);
   // Intrinsic version:
   //
   // Inputs:
@@ -38,7 +61,7 @@ namespace igl
     typename DerivedL, 
     typename Derivedvol>
   IGL_INLINE void volume(
-    Eigen::PlainObjectBase<DerivedL>& L,
+    const Eigen::PlainObjectBase<DerivedL>& L,
     Eigen::PlainObjectBase<Derivedvol>& vol);
 }
 

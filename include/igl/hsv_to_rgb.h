@@ -21,9 +21,9 @@ namespace igl
   //   g  green value ([0,1])
   //   b  blue value ([0,1])
   template <typename T>
-  void hsv_to_rgb(const T * hsv, T * rgb);
+  IGL_INLINE void hsv_to_rgb(const T * hsv, T * rgb);
   template <typename T>
-  void hsv_to_rgb( 
+  IGL_INLINE void hsv_to_rgb( 
     const T & h, const T & s, const T & v, 
     T & r, T & g, T & b);
 };

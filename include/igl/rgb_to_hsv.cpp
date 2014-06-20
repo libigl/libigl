@@ -8,7 +8,7 @@
 #include "rgb_to_hsv.h"
 
 template <typename R,typename H>
-void igl::rgb_to_hsv(const R * rgb, H * hsv)
+IGL_INLINE void igl::rgb_to_hsv(const R * rgb, H * hsv)
 {
   // http://en.literateprograms.org/RGB_to_HSV_color_space_conversion_%28C%29
   R rgb_max = 0.0;

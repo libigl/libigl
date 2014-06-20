@@ -1,8 +1,10 @@
 include ../../../Makefile.conf
 
 .PHONY: all
-all: libiglxml
-debug: libiglxml
+all: 
+debug:
+#all: libiglxml
+#debug: libiglxml
 
 include ../../../Makefile.conf
 all: CFLAGS += -O3 -DNDEBUG

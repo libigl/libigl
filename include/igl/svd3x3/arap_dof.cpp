@@ -226,7 +226,7 @@ IGL_INLINE bool igl::arap_dof_precomputation(
   // precompute arap_rhs matrix
   //printf("arap_rhs()\n");
   SparseMatrix<double> K;
-  arap_rhs(V,F,data.energy,K);
+  arap_rhs(V,F,V.cols(),data.energy,K);
 //#ifdef EXTREME_VERBOSE
 //  cout<<"KIJV=["<<endl;print_ijv(K,1);cout<<endl<<"];"<<
 //    endl<<"K=sparse(KIJV(:,1),KIJV(:,2),KIJV(:,3),"<<
