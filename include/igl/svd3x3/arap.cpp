@@ -96,7 +96,10 @@ IGL_INLINE bool igl::arap_precomputation(
   // matrices used to fit rotations to during optimization
   covariance_scatter_matrix(ref_V,ref_F,eff_energy,data.CSM);
   assert(data.CSM.rows() == ref_F.rows()*data.dim);
-  data.CSM = (data.CSM * ref_map_dim.transpose()).eval();
+  if(flat)
+  {
+    data.CSM = (data.CSM * ref_map_dim.transpose()).eval();
+  }
   assert(data.CSM.cols() == V.rows()*data.dim);
   assert(data.CSM.rows() == ref_F.rows()*data.dim);
 
@@ -138,7 +141,10 @@ IGL_INLINE bool igl::arap_precomputation(
 
 
   arap_rhs(ref_V,ref_F,data.dim,eff_energy,data.K);
-  data.K = (ref_map_dim * data.K).eval();
+  if(flat)
+  {
+    data.K = (ref_map_dim * data.K).eval();
+  }
   assert(data.K.rows() == data.n*data.dim);
 
   SparseMatrix<double> Q = (-0.5*L).eval();
