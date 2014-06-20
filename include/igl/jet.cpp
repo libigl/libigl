@@ -122,4 +122,5 @@ template void igl::jet<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<dou
 template void igl::jet<double>(double, double*);
 template void igl::jet<double>(double, double&, double&, double&);
 template void igl::jet<float>(float, float*);
+template void igl::jet<Eigen::Array<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Array<double, -1, 1, 0, -1, 1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

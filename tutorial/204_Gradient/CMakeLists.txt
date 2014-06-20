@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(201_Normals)
+project(204_Gradient)
 
 include("../CMakeLists.shared")
 
