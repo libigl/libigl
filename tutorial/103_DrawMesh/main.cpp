@@ -11,6 +11,6 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   igl::Viewer viewer;
-  viewer.draw_mesh(V, F);
+  viewer.set_mesh(V, F);
   viewer.launch();
 }
