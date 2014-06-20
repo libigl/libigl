@@ -68,7 +68,7 @@ on a triangle mesh is via a vertex's _angular deficit_:
  $k_G(v_i) = 2π - \sum\limits_{j\in N(i)}θ_{ij},$
 
 where $N(i)$ are the triangles incident on vertex $i$ and $θ_{ij}$ is the angle
-at vertex $i$ in triangle $j$.
+at vertex $i$ in triangle $j$. (**Alec: cite Meyer or something**)
 
 Just like the continuous analog, our discrete Gaussian curvature reveals
 elliptic, hyperbolic and parabolic vertices on the domain.
@@ -76,8 +76,56 @@ elliptic, hyperbolic and parabolic vertices on the domain.
 ![The `GaussianCurvature` example computes discrete Gaussian curvature and visualizes it in
 pseudocolor.](images/bumpy-gaussian-curvature.jpg)
 
+## <a id=principal></a> Curvature Directions
+The two principal curvatures $(k_1,k_2)$ at a point on a surface measure how much the
+surface bends in different directions. The directions of maximum and minimum
+(signed) bending are call principal directions and are always
+orthogonal.
+
+Mean curvature is defined simply as the average of principal curvatures:
+
+ $H = \frac{1}{2}(k_1 + k_2).$ 
+
+One way to extract mean curvature is by examining the Laplace-Beltrami operator
+applied to the surface positions. The result is a so-called mean-curvature
+normal:
+
+  $-\Delta \mathbf{x} = H \mathbf{n}.$ 
+
+It is easy to compute this on a discrete triangle mesh in libigl using the cotangent
+Laplace-Beltrami operator (**Alec: cite Meyer**):
+
+```cpp
+#include <igl/cotmatrix.h>
+#include <igl/massmatrix.h>
+#include <igl/invert_diag.h>
+...
+MatrixXd HN;
+SparseMatrix<double> L,M,Minv;
+igl::cotmatrix(V,F,L);
+igl::massmatrix(V,F,igl::MASSMATRIX_VORONOI,M);
+igl::invert_diag(M,Minv);
+HN = -Minv*(L*V);
+H = (HN.rowwise().squaredNorm()).array().sqrt();
+```
+
+Combined with the angle defect definition of discrete Gaussian curvature, one
+can define principal curvatures and use least squares fitting to find
+directions (**Alec: cite meyer**).
+
+Alternatively, a robust method for determining principal curvatures is via
+quadric fitting (**Alec: cite whatever we're using**). In the neighborhood
+around every vertex, a best-fit quadric is found and principal curvature values
+and directions are sampled from this quadric. With these in tow, one can
+compute mean curvature and Gaussian curvature as sums and products
+respectively.
+
+![The `CurvatureDirections` example computes principal curvatures via quadric
+fitting and visualizes mean curvature in pseudocolor and principal directions
+with a cross field.](images/fertility-principal-curvature.jpg)
 
 This is an example of syntax highlighted code:
+
 ```cpp
 #include <foo.html>
 int main(int argc, char * argv[])

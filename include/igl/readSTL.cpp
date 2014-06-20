@@ -171,7 +171,7 @@ IGL_INLINE bool igl::readSTL(
     V.resize(num_tri*3,vector<TypeV >(3,0));
     N.resize(num_tri,vector<TypeN >(3,0));
     F.resize(num_tri,vector<TypeF >(3,0));
-    for(int t = 0;t<num_tri;t++)
+    for(int t = 0;t<(int)num_tri;t++)
     {
       // Read normal
       float n[3];

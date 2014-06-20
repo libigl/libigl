@@ -12,24 +12,30 @@
 // Bug in unsupported/Eigen/SparseExtra needs iostream first
 #include <iostream>
 #include <unsupported/Eigen/SparseExtra>
+#warning "old includes"
+#include <vector>
 
 template <typename T>
 IGL_INLINE void igl::adjacency_matrix(
   const Eigen::MatrixXi & F, 
   Eigen::SparseMatrix<T>& A)
 {
+  using namespace std;
   Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> 
     dyn_A(F.maxCoeff()+1, F.maxCoeff()+1);
   switch(F.cols())
   {
     case 3:
-      dyn_A.reserve(6*(F.maxCoeff()+1));
+      dyn_A.reserve(8*(F.maxCoeff()+1));
       break;
     case 4:
       dyn_A.reserve(26*(F.maxCoeff()+1));
       break;
   }
 
+  //typedef Triplet<T> IJV;
+  //vector<IJV > ijv;
+  //ijv.reserve(F.size()*2);
   // Loop over faces
   for(int i = 0;i<F.rows();i++)
   {

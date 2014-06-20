@@ -17,6 +17,36 @@
    on the URL you're *sending* from, not the URL where the recipient views it.
 */
 /* .markdown-here-wrapper[data-md-url*="mail.yahoo."] ul { color: red; } */
+html
+{
+  margin: 0px;
+  padding: 0px;
+  /*background-color: #bbb;*/
+  background-image: url(images/background.gif);
+  font-weight: 300;
+  height: 100%;
+}
+body
+{
+  font-size: 11pt;
+  background-color: #fff;
+  padding: 10px;
+  margin:0px auto;
+  border-left: 1px solid #888;
+  border-right: 1px solid #888;
+  width: 765px;
+  text-align: left;
+}
+
+img
+{
+  max-width: 650px;
+}
+
+figcaption
+{
+  font-style: italic;
+}
 
 pre, code {
   font-size: 0.85em;
