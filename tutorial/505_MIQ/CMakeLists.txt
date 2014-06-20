@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 2.6)
-project(XXX_MIQ)
+project(505_MIQ)
 
 include("../CMakeLists.shared")
-include_directories("/Users/olkido/Documents/igl/MIQ/src/CoMISo/Solver")
-include_directories("/Users/olkido/Documents/igl/MIQ/src/CoMISo/gmm/include")
-include_directories("/Users/olkido/Documents/igl/MIQ/src")
+
+find_package(LIBCOMISO REQUIRED)
+
+include_directories( ${LIBCOMISO_INCLUDE_DIR} )
+
 set(SOURCES
 ${PROJECT_SOURCE_DIR}/main.cpp
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DINCLUDE_TEMPLATES")
-
-add_executable(XXX_MIQ ${SOURCES} ${SHARED_SOURCES})
-target_link_libraries(XXX_MIQ ${SHARED_LIBRARIES} "/Users/olkido/Documents/igl/MIQ/src/CoMISo/build/libCoMISo.dylib")
+add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${SHARED_SOURCES})
+target_link_libraries(${CMAKE_PROJECT_NAME} ${SHARED_LIBRARIES} ${LIBCOMISO_LIBRARY})
