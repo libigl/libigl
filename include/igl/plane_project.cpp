@@ -16,7 +16,7 @@ IGL_INLINE void igl::plane_project(
 {
   using namespace std;
   using namespace Eigen;
-  assert(F.rows() == 3 && "F should contain triangles");
+  assert(F.cols() == 3 && "F should contain triangles");
   typedef Eigen::PlainObjectBase<DerivedV> MatrixX;
   MatrixX l;
   edge_lengths(V,F,l);
