@@ -162,17 +162,18 @@ Eigen::Matrix4f translate(
   #include "igl/xml/XMLSerializer.h"
 #endif
 
-#include "igl/readOBJ.h"
-#include "igl/readOFF.h"
-#include "igl/per_face_normals.h"
-#include "igl/per_vertex_normals.h"
-#include "igl/per_corner_normals.h"
-#include "igl/vf.h"
-#include "igl/adjacency_list.h"
-#include "igl/writeOBJ.h"
-#include "igl/writeOFF.h"
-#include "igl/file_dialog_open.h"
-#include "igl/file_dialog_save.h"
+#include <igl/readOBJ.h>
+#include <igl/readOFF.h>
+#include <igl/per_face_normals.h>
+#include <igl/per_vertex_normals.h>
+#include <igl/per_corner_normals.h>
+#include <igl/vf.h>
+#include <igl/adjacency_list.h>
+#include <igl/writeOBJ.h>
+#include <igl/writeOFF.h>
+#include <igl/massmatrix.h>
+#include <igl/file_dialog_open.h>
+#include <igl/file_dialog_save.h>
 #include <igl/quat_to_mat.h>
 #include <igl/quat_mult.h>
 #include <igl/axis_angle_to_quat.h>
@@ -777,7 +778,7 @@ namespace igl
     if (data.V_uv.rows() == 0)
       grid_texture();
 
-    alignCameraCenter();
+    align_camera_center();
 
     if (plugin_manager)
       for (unsigned int i = 0; i<plugin_manager->plugin_list.size(); ++i)
@@ -1991,9 +1992,9 @@ namespace igl
     return true;
   }
 
-  void Viewer::alignCameraCenter()
+  void Viewer::align_camera_center()
   {
-    get_scale_and_shift_to_fit_mesh(data.V,options.model_zoom,options.model_translation);
+    get_scale_and_shift_to_fit_mesh(data.V,data.F,options.model_zoom,options.model_translation);
     data.object_scale = (data.V.colwise().maxCoeff() - data.V.colwise().minCoeff()).norm();
   }
 
@@ -2004,16 +2005,21 @@ namespace igl
     viewport = Eigen::Vector4f(0,0,width,height);
   }
 
-  void Viewer::get_scale_and_shift_to_fit_mesh(const Eigen::MatrixXd& vertices,
-                                               float& zoom,
-                                               Eigen::Vector3f& shift)
+  void Viewer::get_scale_and_shift_to_fit_mesh(
+    const Eigen::MatrixXd& V,
+    const Eigen::MatrixXi& F,
+    float& zoom,
+    Eigen::Vector3f& shift)
   {
-    if (vertices.rows() == 0)
+    if (V.rows() == 0)
       return;
     //Compute mesh centroid
-    Eigen::RowVector3d centroid  = vertices.colwise().sum()/vertices.rows();
-    Eigen::RowVector3d min_point = vertices.colwise().minCoeff();
-    Eigen::RowVector3d max_point = vertices.colwise().maxCoeff();
+    Eigen::SparseMatrix<double> M;
+    igl::massmatrix(V,F,igl::MASSMATRIX_VORONOI,M);
+    const auto & MV = M*V;
+    Eigen::RowVector3d centroid  = MV.colwise().sum()/M.diagonal().sum();
+    Eigen::RowVector3d min_point = V.colwise().minCoeff();
+    Eigen::RowVector3d max_point = V.colwise().maxCoeff();
 
     shift = -centroid.cast<float>();
     double x_scale = fabs(max_point[0] - min_point[0]);
@@ -2029,7 +2035,7 @@ namespace igl
   }
   void TW_CALL Viewer::align_camera_center_cb(void *clientData)
   {
-    static_cast<Viewer *>(clientData)->alignCameraCenter();
+    static_cast<Viewer *>(clientData)->align_camera_center();
   }
 
   void TW_CALL Viewer::save_scene_cb(void *clientData)
@@ -2176,7 +2182,7 @@ namespace igl
                      Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
 
       grid_texture();
-      alignCameraCenter();
+      align_camera_center();
     }
     else
     {
@@ -2184,12 +2190,19 @@ namespace igl
       {
         data.V = V_temp;
         data.F = F;
-        alignCameraCenter();
+        align_camera_center();
       }
       else
         cerr << "ERROR (set_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting.";
     }
     data.dirty |= DIRTY_FACE | DIRTY_POSITION;
+  }
+
+  void Viewer::set_vertices(const Eigen::MatrixXd& V)
+  {
+    data.V = V;
+    assert(F.empty() || F.maxCoeff() < V.rows());
+    data.dirty |= DIRTY_POSITION;
   }
 
   void Viewer::set_normals(const Eigen::MatrixXd& N)
