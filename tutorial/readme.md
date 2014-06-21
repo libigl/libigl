@@ -33,6 +33,7 @@ applications for each topic.
 * **100_FileIO**: Example of reading/writing mesh files
 * **101_Serialization**: Example of using the XML serialization framework
 * **102_DrawMesh**: Example of plotting a mesh
+* [201 Normals](#norm)
 * [202 Gaussian Curvature](#gaus)
 * [203 Curvature Directions](#curv)
 * [204 Gradient](#grad)
@@ -70,6 +71,64 @@ This chapter illustrates a few discrete quantities that libigl can compute on a
 mesh. This also provides an introduction to basic drawing and coloring routines
 in our example viewer. Finally, we construct popular discrete differential
 geometry operators.
+
+## <a id=norm></a> Normals
+
+### Per-face 
+Well defined normal orthogonal to triangle's plane. Produces piecewise-flat
+rending: not smooth.
+
+### Per-vertex
+Using per-vertex normals, Phong or Gouraud shading will produce smooth(er)
+renderings. Most techniques for computing per-vertex normals take an average of
+incident face normals. The techniques vary with respect to their different
+weighting schemes. Uniform weighting is heavily biased by the discretization
+choice, where as area-based or angle-based weighting is more forgiving.
+
+The typical half-edge style computation of area-based weights might look
+something like this:
+
+```cpp
+N.setZero(V.rows(),3);
+for(int i : vertices)
+{
+  for(face : incident_faces(i))
+  {
+    N.row(i) += face.area * face.normal;
+  }
+}
+N.rowwise().normalize();
+```
+
+Without a half-edge data-structure it may seem at first glance that looping
+over incident faces---and thus constructing the per-vertex normals---would be
+inefficient. However, per-vertex normals may be _throwing_ each face normal to
+running sums on its corner vertices:
+
+```cpp
+N.setZero(V.rows(),3);
+for(int f = 0; f < F.rows();f++)
+{
+  for(int c = 0; c < 3;c++)
+  {
+    N.row(F(f,c)) += area(f) * face_normal.row(f);
+  }
+}
+N.rowwise().normalize();
+```
+
+### Per-corner
+
+Storing normals per-corner is an efficient an convenient way of supporting both
+smooth and sharp (e.g. creases and corners) rendering. This format is common to
+OpenGL and the .obj mesh file format. Often such normals are tuned by the mesh
+designer, but creases and corners can also be computed automatically. Libigl
+implements a simple scheme which computes corner normals as averages of
+normals of faces incident on the corresponding vertex which do not deviate by a
+specified dihedral angle (e.g. 20°).
+
+![The `Normals` example computes per-face (left), per-vertex (middle) and
+per-corner (right) normals](images/fandisk-normals.jpg)
 
 ## <a id=gaus></a> Gaussian Curvature
 Gaussian curvature on a continuous surface is defined as the product of the

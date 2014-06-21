@@ -16,6 +16,8 @@
 
 namespace igl
 {
+  // Obsolete: just use A.rowwise().normalize() or B=A.rowwise().normalized();
+  //
   // Normalize the rows in A so that their lengths are each 1 and place the new
   // entries in B
   // Inputs:
