@@ -1,3 +1,11 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>, Olga Diamanti <olga.diam@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
+
 #include "find_cross_field_singularities.h"
 #include "cross_field_missmatch.h"
 
@@ -64,3 +72,7 @@ IGL_INLINE void igl::find_cross_field_singularities(const Eigen::PlainObjectBase
   igl::cross_field_missmatch<DerivedV, DerivedF, DerivedO>(V, F, PD1, PD2, Handle_MMatch);
   igl::find_cross_field_singularities(V, F, Handle_MMatch, isSingularity, singularityIndex);
 }
+
+#ifndef IGL_HEADER_ONLY
+// Explicit template specialization
+#endif

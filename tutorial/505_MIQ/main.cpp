@@ -1,7 +1,7 @@
 #define IGL_HEADER_ONLY
 #include <igl/readOBJ.h>
 #include <igl/viewer/Viewer.h>
-#include <igl/comiso/mixed_integer_quadrangulate.h>
+#include <igl/comiso/miq.h>
 #include <igl/barycenter.h>
 #include <igl/avg_edge_length.h>
 #include <sstream>

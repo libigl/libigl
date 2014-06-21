@@ -1,5 +1,5 @@
-#ifndef IGL_MIXED_INTEGER_QUADRANGULATE_H
-#define IGL_MIXED_INTEGER_QUADRANGULATE_H
+#ifndef IGL_MIQ_H
+#define IGL_MIQ_H
 #include <igl/igl_inline.h>
 #include <Eigen/Core>
 #include <vector>
@@ -21,7 +21,7 @@ namespace igl
   //
 
   template <typename DerivedV, typename DerivedF, typename DerivedU>
-  IGL_INLINE void mixed_integer_quadrangulate(const Eigen::PlainObjectBase<DerivedV> &V,
+  IGL_INLINE void miq(const Eigen::PlainObjectBase<DerivedV> &V,
                                               const Eigen::PlainObjectBase<DerivedF> &F,
                                               const Eigen::PlainObjectBase<DerivedV> &PD1,
                                               const Eigen::PlainObjectBase<DerivedV> &PD2,
@@ -36,7 +36,7 @@ namespace igl
                                               std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
 
   template <typename DerivedV, typename DerivedF, typename DerivedU>
-  IGL_INLINE void mixed_integer_quadrangulate(const Eigen::PlainObjectBase<DerivedV> &V,
+  IGL_INLINE void miq(const Eigen::PlainObjectBase<DerivedV> &V,
                                               const Eigen::PlainObjectBase<DerivedF> &F,
                                               const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
                                               const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
@@ -57,7 +57,7 @@ namespace igl
                                               std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
 };
 #ifdef IGL_HEADER_ONLY
-#include "mixed_integer_quadrangulate.cpp"
+#include "miq.cpp"
 #endif
 
 #endif

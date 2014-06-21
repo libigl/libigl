@@ -3,7 +3,7 @@
 
 #include <Eigen/Core>
 #include <memory>
-
+#include <vector>
 namespace igl
 {
   class InElementAABB

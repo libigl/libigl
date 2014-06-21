@@ -1,3 +1,11 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>, Olga Diamanti <olga.diam@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
+
 #ifndef IGL_CUT_MESH_FROM_SINGULARITIES_H
 #define IGL_CUT_MESH_FROM_SINGULARITIES_H
 #include "igl_inline.h"
@@ -5,19 +13,6 @@
 namespace igl
 {
   //todo
-  // Creates a quad mesh from a triangular mesh and a set of two directions
-  // per face, using the algorithm described in the paper
-  // "Mixed-Integer Quadrangulation" by D. Bommes, H. Zimmer, L. Kobbelt
-  // ACM SIGGRAPH 2009, Article No. 77 (http://dl.acm.org/citation.cfm?id=1531383)
-  
-  // Inputs:
-  //   Vin        #V by 3 eigen Matrix of mesh vertex 3D positions
-  //   F          #F by 4 eigen Matrix of face (quad) indices
-  //   maxIter    maximum numbers of iterations
-  //   threshold  minimum allowed threshold for non-planarity
-  // Output:
-  //   Vout       #V by 3 eigen Matrix of planar mesh vertex 3D positions
-  //
   
   template <typename DerivedV, typename DerivedF, typename DerivedM, typename DerivedS, typename DerivedO>
   IGL_INLINE void cut_mesh_from_singularities(const Eigen::PlainObjectBase<DerivedV> &V,

@@ -1,3 +1,11 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>, Olga Diamanti <olga.diam@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
+
 #include "cut_mesh_from_singularities.h"
 
 #include <vector>
@@ -27,13 +35,13 @@ namespace igl {
 
   protected:
     
-    bool IsRotSeam(const int f0,const int edge)
+    inline bool IsRotSeam(const int f0,const int edge)
     {
       unsigned char MM = Handle_MMatch(f0,edge);
       return (MM!=0);
     }
     
-    void FloodFill(const int start, Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
+    inline void FloodFill(const int start, Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
     {
       std::deque<int> d;
       ///clean the visited flag
@@ -65,7 +73,7 @@ namespace igl {
       }
     }
     
-    void Retract(Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
+    inline void Retract(Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
     {
       std::vector<int> e(V.rows(),0); // number of edges per vert
       
@@ -116,7 +124,7 @@ namespace igl {
 
   public:
    
-    MeshCutter(const Eigen::PlainObjectBase<DerivedV> &V_,
+    inline MeshCutter(const Eigen::PlainObjectBase<DerivedV> &V_,
                const Eigen::PlainObjectBase<DerivedF> &F_,
                const Eigen::PlainObjectBase<DerivedM> &Handle_MMatch_,
                const Eigen::PlainObjectBase<DerivedS> &Handle_Singular_,
@@ -130,7 +138,7 @@ namespace igl {
       tt(V,F,TT,TTi);
     };
     
-    void cut(Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
+    inline void cut(Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
     {
       F_visited.setConstant(F.rows(),0);
       Handle_Seams.setConstant(F.rows(),3,1);
@@ -175,3 +183,6 @@ IGL_INLINE void igl::cut_mesh_from_singularities(const Eigen::PlainObjectBase<De
   mc.cut(Handle_Seams);
 
 }
+#ifndef IGL_HEADER_ONLY
+// Explicit template specialization
+#endif
