@@ -344,13 +344,14 @@ namespace igl
     void grid_texture(); // Generate a default grid texture
 
     void clear_mesh();      // Clear the mesh data
-    void alignCameraCenter(); // Adjust the view to see the entire model
+    void align_camera_center(); // Adjust the view to see the entire model
 
     // Change the visualization mode, invalidating the cache if necessary
     void set_face_based(bool newvalue);
 
     // Helpers that can draw the most common meshes
     void set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
+    void set_vertices(const Eigen::MatrixXd& V);
     void set_normals(const Eigen::MatrixXd& N);
     // Set the color of the mesh
     //
@@ -403,9 +404,11 @@ namespace igl
 
     // Determines how much to zoom and shift such that the mesh fills the unit
     // box (centered at the origin)
-    static void get_scale_and_shift_to_fit_mesh(const Eigen::MatrixXd& vertices,
-                                                float & zoom,
-                                                Eigen::Vector3f& shift);
+    static void get_scale_and_shift_to_fit_mesh(
+      const Eigen::MatrixXd& V,
+      const Eigen::MatrixXi& F,
+      float & zoom,
+      Eigen::Vector3f& shift);
 
 
     // Init opengl shaders and VBOs

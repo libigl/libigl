@@ -36,6 +36,7 @@ applications for each topic.
 * [202 Gaussian Curvature](#gaus)
 * [203 Curvature Directions](#curv)
 * [204 Gradient](#grad)
+* [204 Laplacian](#lapl)
 
 # Compilation Instructions
 
@@ -192,6 +193,101 @@ triangle and tetrahedral meshes:
 ![The `Gradient` example computes gradients of an input function on a mesh and
 visualizes the vector field.](images/cheburashka-gradient.jpg)
 
+## <a id=lapl></a> Laplacian
+
+The discrete Laplacian is an essential geometry processing tool. Many
+interpretations and flavors of the Laplace and Laplace-Beltrami operator exist. 
+
+In open Euclidean space, the _Laplace_ operator is the usual divergence of gradient
+(or equivalently the Laplacian of a function is the trace of its Hessian):
+
+ $\Delta f = 
+ \frac{\partial^2 f}{\partial x^2} +
+ \frac{\partial^2 f}{\partial y^2} +
+ \frac{\partial^2 f}{\partial z^2}.$
+
+The _Laplace-Beltrami_ operator generalizes this to surfaces.
+
+When considering piecewise-linear functions on a triangle mesh, a discrete Laplacian may
+be derived in a variety of ways. The most popular in geometry processing is the
+so-called ``cotangent Laplacian'' $\mathbf{L}$, arising simultaneously from FEM, DEC and
+applying divergence theorem to vertex one-rings. As a linear operator taking
+vertex values to vertex values, the Laplacian $\mathbf{L}$ is a $n\times n$
+matrix with elements:
+
+$L_{ij} = \begin{cases}j \in N(i) &\cot \alpha_{ij} + \cot \beta_{ij},\\
+j \notin N(i) & 0,\\
+i = j & -\sum\limits_{k\neq i} L_{ik},
+\end{cases}$
+
+where $N(i)$ are the vertices adjacent to (neighboring) vertex $i$, and
+$\alpha_{ij},\beta_{ij}$ are the angles opposite edge ${ij}$.
+This oft
+produced formula leads to a typical half-edge style implementation for
+constructing $\mathbf{L}$:
+
+```cpp
+for(int i : vertices)
+{
+  for(int j : one_ring(i))
+  {
+    for(int k : triangle_on_edge(i,j))
+    {
+      L(i,j) = cot(angle(i,j,k));
+      L(i,i) -= cot(angle(i,j,k));
+    }
+  }
+}
+```
+
+Without a half-edge data-structure it may seem at first glance that looping
+over one-rings, and thus constructing the Laplacian would be inefficient.
+However, the Laplacian may be built by summing together contributions for each
+triangle, much in spirit with its FEM discretization of the Dirichlet energy
+(sum of squared gradients):
+
+```cpp
+for(triangle t : triangles)
+{
+  for(edge i,j : t)
+  {
+    L(i,j) += cot(angle(i,j,k));
+    L(j,i) += cot(angle(i,j,k));
+    L(i,i) -= cot(angle(i,j,k));
+    L(j,j) -= cot(angle(i,j,k));
+  }
+}
+```
+
+Libigl implements discrete "cotangent" Laplacians for triangles meshes and
+tetrahedral meshes, building both with fast geometric rules rather than "by the
+book" FEM construction which involves many (small) matrix inversions, cf.
+**Alec: cite Ariel reconstruction paper**.
+
+The operator applied to mesh vertex positions amounts to smoothing by _flowing_
+the surface along the mean curvature normal direction. This is equivalent to
+minimizing surface area.
+
+![The `Laplacian` example computes conformalized mean curvature flow using the
+cotangent Laplacian [#kazhdan_2012][].](images/cow-curvature-flow.jpg)
+
+### Mass matrix
+The mass matrix $\mathbf{M}$ is another $n \times n$ matrix which takes vertex
+values to vertex values. From an FEM point of view, it is a discretization of
+the inner-product: it accounts for the area around each vertex. Consequently,
+$\mathbf{M}$ is often a diagonal matrix, such that $M_{ii}$ is the barycentric
+or voronoi area around vertex $i$ in the mesh [#meyer_2003][]. The inverse of
+this matrix is also very useful as it transforms integrated quantities into
+point-wise quantities, e.g.:
+
+ $\nabla f \approx \mathbf{M}^{-1} \mathbf{L} \mathbf{f}.$
+
+In general, when encountering squared quantities integrated over the surface,
+the mass matrix will be used as the discretization of the inner product when
+sampling function values at vertices:
+
+ $\int_S x\, y\ dA \approx \mathbf{x}^T\mathbf{M}\,\mathbf{y}.$
+
 [#meyer_2003]: Mark Meyer and Mathieu Desbrun and Peter Schröder and Alan H.  Barr,
 "Discrete Differential-Geometry Operators for Triangulated
 2-Manifolds," 2003.
@@ -200,3 +296,5 @@ visualizes the vector field.](images/cheburashka-gradient.jpg)
 [#jacobson_thesis_2013]: Alec Jacobson,
 _Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
 2013.
+[#kazhdan_2012]: Michael Kazhdan, Jake Solomon, Mirela Ben-Chen,
+"Can Mean-Curvature Flow Be Made Non-Singular," 2012.
