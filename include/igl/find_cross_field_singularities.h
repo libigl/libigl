@@ -1,25 +1,29 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>, Olga Diamanti <olga.diam@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
+
 #ifndef IGL_FIND_CROSS_FIELD_SINGULARITIES_H
 #define IGL_FIND_CROSS_FIELD_SINGULARITIES_H
 #include "igl_inline.h"
 #include <Eigen/Core>
 namespace igl
 {
-  //todo
-  // Creates a quad mesh from a triangular mesh and a set of two directions
-  // per face, using the algorithm described in the paper
-  // "Mixed-Integer Quadrangulation" by D. Bommes, H. Zimmer, L. Kobbelt
-  // ACM SIGGRAPH 2009, Article No. 77 (http://dl.acm.org/citation.cfm?id=1531383)
+  // Computes singularities of a cross field, assumed combed
+  
   
   // Inputs:
-  //   Vin        #V by 3 eigen Matrix of mesh vertex 3D positions
-  //   F          #F by 4 eigen Matrix of face (quad) indices
-  //   maxIter    maximum numbers of iterations
-  //   threshold  minimum allowed threshold for non-planarity
+  //   V                #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F                #F by 3 eigen Matrix of face (quad) indices
+  //   Handle_MMatch    #F by 3 eigen Matrix containing the integer missmatch of the cross field
+  //                    across all face edges
   // Output:
-  //   Vout       #V by 3 eigen Matrix of planar mesh vertex 3D positions
+  //   isSingularity    #V by 1 boolean eigen Vector indicating the presence of a singularity on a vertex
+  //   singularityIndex #V by 1 integer eigen Vector containing the singularity indices
   //
-  
-  
   template <typename DerivedV, typename DerivedF, typename DerivedM, typename DerivedO>
   IGL_INLINE void find_cross_field_singularities(const Eigen::PlainObjectBase<DerivedV> &V,
                                                  const Eigen::PlainObjectBase<DerivedF> &F,
@@ -27,8 +31,16 @@ namespace igl
                                                  Eigen::PlainObjectBase<DerivedO> &isSingularity,
                                                  Eigen::PlainObjectBase<DerivedO> &singularityIndex);
 
-  
-  // TODO: this returns singularity index modulo 4. It may need to be modified to cover indices
+  // Wrapper that calculates the missmatch if it is not provided
+  // Inputs:
+  //   V                #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F                #F by 3 eigen Matrix of face (quad) indices
+  //   PD1              #F by 3 eigen Matrix of the first per face cross field vector
+  //   PD2              #F by 3 eigen Matrix of the second per face  cross field vector
+  // Output:
+  //   isSingularity    #V by 1 boolean eigen Vector indicating the presence of a singularity on a vertex
+  //   singularityIndex #V by 1 integer eigen Vector containing the singularity indices
+  //
   template <typename DerivedV, typename DerivedF, typename DerivedO>
   IGL_INLINE void find_cross_field_singularities(const Eigen::PlainObjectBase<DerivedV> &V,
                                                  const Eigen::PlainObjectBase<DerivedF> &F,
