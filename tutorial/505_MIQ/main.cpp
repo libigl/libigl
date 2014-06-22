@@ -98,16 +98,16 @@ int main(int argc, char *argv[])
   double quadIter = 0;
   double stiffness = 5.0;
   bool directRound = 1;
-  igl::mixed_integer_quadrangulate(V,
-                                 F,
-                                 polyVF[0],
-                                 polyVF[1],
-                                 UV,
-                                 FUV,
-                                 gradientSize,
-                                 stiffness,
-                                 directRound,
-                                 quadIter);
+  igl::miq(V,
+           F,
+           polyVF[0],
+           polyVF[1],
+           UV,
+           FUV,
+           gradientSize,
+           stiffness,
+           directRound,
+           quadIter);
 
 
   // Face barycenters

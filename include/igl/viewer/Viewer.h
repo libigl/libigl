@@ -432,6 +432,17 @@ namespace igl
     bool (*callback_key_down)(Viewer& viewer, unsigned char key, int modifiers);
     bool (*callback_key_up)(Viewer& viewer, unsigned char key, int modifiers);
 
+    // Pointers to per-callback data
+    void* callback_pre_draw_data;
+    void* callback_post_draw_data;
+    void* callback_mouse_down_data;
+    void* callback_mouse_up_data;
+    void* callback_mouse_move_data;
+    void* callback_mouse_scroll_data;
+    void* callback_key_down_data;
+    void* callback_key_up_data;
+
+
     /********* AntTweakBar callbacks *********/
     static void TW_CALL snap_to_canonical_quaternion_cb(void *clientData);
     static void TW_CALL save_scene_cb(void *clientData);

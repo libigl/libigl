@@ -706,6 +706,14 @@ namespace igl
     callback_key_down     = 0;
     callback_key_up       = 0;
 
+    callback_pre_draw_data = 0;
+    callback_post_draw     = 0;
+    callback_mouse_down    = 0;
+    callback_mouse_up      = 0;
+    callback_mouse_move    = 0;
+    callback_mouse_scroll  = 0;
+    callback_key_down      = 0;
+    callback_key_up        = 0;
   }
 
   void Viewer::init_plugins()
@@ -2160,7 +2168,7 @@ namespace igl
     using namespace std;
 
     Eigen::MatrixXd V_temp;
-    
+
     // If V only has two columns, pad with a column of zeros
     if (V.cols() == 2)
     {
@@ -2201,7 +2209,7 @@ namespace igl
   void Viewer::set_vertices(const Eigen::MatrixXd& V)
   {
     data.V = V;
-    assert(F.empty() || F.maxCoeff() < V.rows());
+    assert(data.F.size() == 0 || data.F.maxCoeff() < data.V.rows());
     data.dirty |= DIRTY_POSITION;
   }
 
