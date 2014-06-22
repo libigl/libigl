@@ -1,12 +1,26 @@
-#define IGL_HEADER_ONLY
-#include <igl/readOBJ.h>
+#include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
 #include <igl/comiso/miq.h>
 #include <igl/barycenter.h>
 #include <igl/avg_edge_length.h>
+#include <igl/comiso/nrosy.h>
 #include <sstream>
+#include <igl/rotate_vectors.h>
 
 
+Eigen::VectorXi Seams;
+
+// Cuts
+Eigen::VectorXi C;
+
+// Singularities
+Eigen::VectorXd S;
+
+// Cross field
+Eigen::MatrixXd X;
+Eigen::MatrixXd X2;
+
+// Create a texture that hides the integer translation in the parametrization
 void line_texture(Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> &texture_R,
                   Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> &texture_G,
                   Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> &texture_B)
@@ -26,88 +40,47 @@ void line_texture(Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> &texture_R,
     texture_B = texture_R;
   }
 
-
-bool readPolyVf(const char *fname,
-                Eigen::VectorXi &isConstrained,
-                std::vector<Eigen::MatrixXd> &polyVF)
-{
-  FILE *fp = fopen(fname,"r");
-  if (!fp)
-    return false;
-  int degree, numF;
-  if (fscanf(fp,"%d %d", &degree, &numF) !=2)
-    return false;
-  polyVF.resize(degree, Eigen::MatrixXd::Zero(numF, 3));
-  isConstrained.setZero(numF,1);
-  int vali; float u0,u1,u2;
-  for (int i = 0; i<numF; ++i)
-  {
-    if (fscanf(fp,"%d", &vali)!=1)
-      return false;
-    isConstrained[i] = vali;
-    for (int j = 0; j<degree; ++j)
-    {
-      if (fscanf(fp,"%g %g %g", &u0, &u1, &u2) !=3)
-        return false;
-      polyVF[j](i,0) = u0;
-      polyVF[j](i,1) = u1;
-      polyVF[j](i,2) = u2;
-    }
-  }
-  fclose(fp);
-  return true;
-}
-
-void writePolyVf(const char *fname,
-                 const Eigen::VectorXi &isConstrained,
-                 const std::vector<Eigen::MatrixXd> &polyVF)
-{
-  int numF = polyVF[0].rows();
-  int degree = polyVF.size();
-  FILE *fp = fopen(fname,"w");
-  fprintf(fp,"%d %d\n", degree,numF);
-  for (int i = 0; i<numF; ++i)
-  {
-    fprintf(fp,"%d ", isConstrained[i]);
-    for (int j = 0; j<degree; ++j)
-      fprintf(fp,"%.15g %.15g %.15g ", polyVF[j](i,0), polyVF[j](i,1), polyVF[j](i,2));
-    fprintf(fp, "\n");
-  }
-  fclose(fp);
-
-}
-
-
 int main(int argc, char *argv[])
 {
+  using namespace Eigen;
+
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
+
   // Load a mesh in OFF format
-  igl::readOBJ("../shared/lilium.obj", V, F);
+  igl::readOFF("../shared/3holes.off", V, F);
 
+  // Contrain one face
+  VectorXi b(1);
+  b << 0;
+  MatrixXd bc(1,3);
+  bc << 1, 0, 0;
 
-  // Load a frame field
-  Eigen::VectorXi isConstrained;
-  std::vector<Eigen::MatrixXd> polyVF;
-  readPolyVf("../shared/lilium.crossfield", isConstrained, polyVF);
+  // Create a smooth 4-RoSy field
+  igl::nrosy(V,F,b,bc,VectorXi(),VectorXd(),MatrixXd(),4,0.5,X,S);
 
+  // Find the the orthogonal vector
+  MatrixXd B1,B2,B3;
+  igl::local_basis(V,F,B1,B2,B3);
+  X2 = igl::rotate_vectors(X, VectorXd::Constant(1,M_PI/2), B1, B2);
+  
   Eigen::MatrixXd UV;
   Eigen::MatrixXi FUV;
 
-  double gradientSize = 50;
-  double quadIter = 0;
+  double gradient_size = 50;
+  double iter = 0;
   double stiffness = 5.0;
-  bool directRound = 1;
+  bool direct_round = 0;
   igl::miq(V,
            F,
-           polyVF[0],
-           polyVF[1],
+           X,
+           X2,
            UV,
            FUV,
-           gradientSize,
+           gradient_size,
            stiffness,
-           directRound,
-           quadIter);
+           direct_round,
+           iter);
 
 
   // Face barycenters
@@ -121,8 +94,8 @@ int main(int argc, char *argv[])
   viewer.set_mesh(V, F);
 
   // Plot the field
-  viewer.add_edges (MF, MF+scale*polyVF[0],Eigen::RowVector3d(1,0,1));
-  viewer.add_edges (MF, MF+scale*polyVF[1],Eigen::RowVector3d(1,0,1));
+  viewer.add_edges (MF, MF+scale*X ,Eigen::RowVector3d(1,0,1));
+  viewer.add_edges (MF, MF+scale*X2,Eigen::RowVector3d(1,0,1));
   viewer.set_uv(UV,FUV);
   viewer.options.show_texture = true;
 
