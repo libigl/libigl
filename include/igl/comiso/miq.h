@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>, Olga Diamanti <olga.diam@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_MIQ_H
 #define IGL_MIQ_H
 #include <igl/igl_inline.h>
@@ -10,6 +17,8 @@ namespace igl
   // The algorithm is based on
   // "Mixed-Integer Quadrangulation" by D. Bommes, H. Zimmer, L. Kobbelt
   // ACM SIGGRAPH 2009, Article No. 77 (http://dl.acm.org/citation.cfm?id=1531383)
+  // We thank Nico Pietroni for providing a reference implementation of MIQ
+  // on which our code is based.
 
   // Inputs:
   //   V              #V by 3 list of mesh vertex 3D positions
