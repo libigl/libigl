@@ -34,20 +34,20 @@ namespace igl {
     Eigen::PlainObjectBase<DerivedF> TTi;
 
   protected:
-    
+
     inline bool IsRotSeam(const int f0,const int edge)
     {
       unsigned char MM = Handle_MMatch(f0,edge);
       return (MM!=0);
     }
-    
+
     inline void FloodFill(const int start, Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
     {
       std::deque<int> d;
       ///clean the visited flag
       F_visited(start) = true;
       d.push_back(start);
-      
+
       while (!d.empty())
       {
         int f = d.at(0); d.pop_front();
@@ -55,13 +55,13 @@ namespace igl {
         {
           int g = TT(f,s); // f->FFp(s);
           int j = TTi(f,s); // f->FFi(s);
-          
+
           if (j == -1)
           {
             g = f;
             j = s;
           }
-          
+
           if ((!(IsRotSeam(f,s))) && (!(IsRotSeam(g,j)))  && (!F_visited(g)) )
           {
             Handle_Seams(f,s)=false;
@@ -72,11 +72,11 @@ namespace igl {
         }
       }
     }
-    
+
     inline void Retract(Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
     {
       std::vector<int> e(V.rows(),0); // number of edges per vert
-      
+
       for (unsigned f=0; f<F.rows(); f++)
       {
         for (int s = 0; s<3; s++)
@@ -89,7 +89,7 @@ namespace igl {
             }
         }
       }
-      
+
       bool over=true;
       int guard = 0;
       do
@@ -107,7 +107,7 @@ namespace igl {
                   Handle_Seams(f,s)=false;
                   if (TT(f,s) != -1)
                     Handle_Seams(TT(f,s),TTi(f,s))=false;
-                  
+
                   e[ F(f,s)] --;
                   e[ F(f,(s+1)%3) ] --;
                   over = false;
@@ -115,15 +115,15 @@ namespace igl {
               }
           }
         }
-        
+
         if (guard++>10000)
           over = true;
-        
+
       } while (!over);
     }
 
   public:
-   
+
     inline MeshCutter(const Eigen::PlainObjectBase<DerivedV> &V_,
                const Eigen::PlainObjectBase<DerivedF> &F_,
                const Eigen::PlainObjectBase<DerivedM> &Handle_MMatch_,
@@ -137,12 +137,12 @@ namespace igl {
     {
       tt(V,F,TT,TTi);
     };
-    
+
     inline void cut(Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
     {
       F_visited.setConstant(F.rows(),0);
       Handle_Seams.setConstant(F.rows(),3,1);
-      
+
       int index=0;
       for (unsigned f = 0; f<F.rows(); f++)
       {
@@ -152,7 +152,7 @@ namespace igl {
           FloodFill(f, Handle_Seams);
         }
       }
-      
+
       Retract(Handle_Seams);
 
       for (unsigned int f=0;f<F.rows();f++)
@@ -162,9 +162,9 @@ namespace igl {
 
     }
 
-    
-    
-  
+
+
+
   };
 }
 template <typename DerivedV,

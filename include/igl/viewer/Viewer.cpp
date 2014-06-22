@@ -2318,29 +2318,67 @@ namespace igl
 
   void Viewer::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
   {
+    Eigen::MatrixXd P_temp;
+    
+    // If P only has two columns, pad with a column of zeros
+    if (P.cols() == 2)
+    {
+      P_temp = Eigen::MatrixXd::Zero(P.rows(),3);
+      P_temp.block(0,0,P.rows(),2) = P;
+    }
+    else
+      P_temp = P;
+
     int lastid = data.points.rows();
-    data.points.conservativeResize(data.points.rows() + P.rows(),6);
-    for (unsigned i=0; i<P.rows(); ++i)
-      data.points.row(lastid+i) << P.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
+    data.points.conservativeResize(data.points.rows() + P_temp.rows(),6);
+    for (unsigned i=0; i<P_temp.rows(); ++i)
+      data.points.row(lastid+i) << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
 
     data.dirty |= DIRTY_OVERLAY_POINTS;
   }
 
   void Viewer::add_edges(const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
   {
+    Eigen::MatrixXd P1_temp,P2_temp;
+    
+    // If P1 only has two columns, pad with a column of zeros
+    if (P1.cols() == 2)
+    {
+      P1_temp = Eigen::MatrixXd::Zero(P1.rows(),3);
+      P1_temp.block(0,0,P1.rows(),2) = P1;
+      P2_temp = Eigen::MatrixXd::Zero(P2.rows(),3);
+      P2_temp.block(0,0,P2.rows(),2) = P2;
+    }
+    else
+    {
+      P1_temp = P1;
+      P2_temp = P2;
+    }
+
     int lastid = data.lines.rows();
-    data.lines.conservativeResize(data.lines.rows() + P1.rows(),9);
-    for (unsigned i=0; i<P1.rows(); ++i)
-      data.lines.row(lastid+i) << P1.row(i), P2.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
+    data.lines.conservativeResize(data.lines.rows() + P1_temp.rows(),9);
+    for (unsigned i=0; i<P1_temp.rows(); ++i)
+      data.lines.row(lastid+i) << P1_temp.row(i), P2_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
 
     data.dirty |= DIRTY_OVERLAY_LINES;
   }
 
   void Viewer::add_label(const Eigen::VectorXd& P,  const std::string& str)
   {
+    Eigen::MatrixXd P_temp;
+    
+    // If P only has two columns, pad with a column of zeros
+    if (P.cols() == 2)
+    {
+      P_temp = Eigen::MatrixXd::Zero(P.rows(),3);
+      P_temp.block(0,0,P.rows(),2) = P;
+    }
+    else
+      P_temp = P;
+
     int lastid = data.labels_positions.rows();
     data.labels_positions.conservativeResize(lastid+1, 3);
-    data.labels_positions.row(lastid) = P;
+    data.labels_positions.row(lastid) = P_temp;
     data.labels_strings.push_back(str);
   }
 
