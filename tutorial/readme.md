@@ -42,6 +42,8 @@ of these lecture notes links to a cross-platform example application.
     * [301 Slice](#slice)
     * [301 Sort](#sort)
         * [Other Matlab-style functions](#othermatlab-stylefunctions) 
+    * [301 Laplace Equation](#laplaceequation)
+        * [Quadratic energy minimization](#quadraticenergyminimization)
 
 # Compilation Instructions
 
@@ -493,7 +495,139 @@ functionality as common matlab functions.
 - `igl::median` Compute the median per column
 - `igl::mode` Compute the mode per column
 - `igl::orth` Orthogonalization of a basis
+- `igl::setdiff` Set difference of matrix elements
 - `igl::speye` Identity as sparse matrix
+
+## Laplace Equation
+A common linear system in geometry processing is the Laplace equation:
+
+ $∆z = 0$
+
+subject to some boundary conditions, for example Dirichlet boundary conditions
+(fixed value):
+
+ $\left.z\right|_{\partial{S}} = z_{bc}$
+
+In the discrete setting, this begins with the linear system:
+
+ $\mathbf{L} \mathbf{z} = \mathbf{0}$
+
+where $\mathbf{L}$ is the $n \times n$ discrete Laplacian and $\mathbf{z}$ is a
+vector of per-vertex values. Most of $\mathbf{z}$ correspond to interior
+vertices and are unknown, but some of $\mathbf{z}$ represent values at boundary
+vertices. Their values are known so we may move their corresponding terms to
+the right-hand side.
+
+Conceptually, this is very easy if we have sorted $\mathbf{z}$ so that interior
+vertices come first and then boundary vertices:
+
+ $$\left(\begin{array}{cc}
+ \mathbf{L}_{in,in} & \mathbf{L}_{in,b}\\
+ \mathbf{L}_{b,in} & \mathbf{L}_{b,b}\end{array}\right) 
+ \left(\begin{array}{c}
+ \mathbf{z}_{in}\\
+ \mathbf{L}_{b}\end{array}\right) = 
+ \left(\begin{array}{c}
+ \mathbf{0}_{in}\\
+ \mathbf{*}_{b}\end{array}\right)$$ 
+
+The bottom block of equations is no longer meaningful so we'll only consider
+the top block:
+
+ $$\left(\begin{array}{cc}
+ \mathbf{L}_{in,in} & \mathbf{L}_{in,b}\end{array}\right) 
+ \left(\begin{array}{c}
+ \mathbf{z}_{in}\\
+ \mathbf{z}_{b}\end{array}\right) = 
+ \mathbf{0}_{in}$$
+
+Where now we can move known values to the right-hand side:
+
+ $$\mathbf{L}_{in,in} 
+ \mathbf{z}_{in} = -
+ \mathbf{L}_{in,b}
+ \mathbf{z}_{b}$$
+
+Finally we can solve this equation for the unknown values at interior vertices
+$\mathbf{z}_{in}$.
+
+However, probably our vertices are not sorted. One option would be to sort `V`,
+then proceed as above and then _unsort_ the solution `Z` to match `V`. However,
+this solution is not very general.
+
+With array slicing no explicit sort is needed. Instead we can _slice-out_
+submatrix blocks ($\mathbf{L}_{in,in}$, $\mathbf{L}_{in,b}$, etc.) and follow
+the linear algebra above directly. Then we can slice the solution _into_ the
+rows of `Z` corresponding to the interior vertices.
+
+![The `LaplaceEquation` example solves a Laplace equation with Dirichlet
+boundary conditions.](images/camelhead-laplace-equation.jpg)
+
+### Quadratic energy minimization
+
+The same Laplace equation may be equivalently derived by minimizing Dirichlet
+energy subject to the same boundary conditions:
+
+ $\mathop{\text{minimize }}_z \int\limits_S \|\nabla z\|^2 dA$
+
+On our discrete mesh, recall that this becomes
+
+ $\mathop{\text{minimize }}_\mathbf{z}  \mathbf{z}^T \mathbf{G}^T \mathbf{D}
+ \mathbf{G} \mathbf{z} \rightarrow \mathop{\text{minimize }}_\mathbf{z} \mathbf{z}^T \mathbf{L} \mathbf{z}$
+
+The general problem of minimizing some energy over a mesh subject to fixed
+value boundary conditions is so wide spread that libigl has a dedicated api for
+solving such systems. 
+
+Let's consider a general quadratic minimization problem subject to different
+common constraints:
+
+ $$\mathop{\text{minimize }}_\mathbf{z}  \mathbf{z}^T \mathbf{Q} \mathbf{z} +
+ \mathbf{z}^T \mathbf{B} + \text{constant},$$
+
+ subject to
+ 
+ $$\mathbf{z}_b = \mathbf{z}_{bc} \text{ and } \mathbf{A}_{eq} \mathbf{z} =
+ \mathbf{B}_{eq},$$
+
+where 
+
+  - $\mathbf{Q}$ is a (usually sparse) $n \times n$ positive semi-definite
+    matrix of quadratic coefficients (Hessian), 
+  - $\mathbf{B}$ is a $n \times 1$ vector of linear coefficients, 
+  - $\mathbf{z}_b$ is a $|b| \times 1$ portion of
+$\mathbf{z}$ corresponding to boundary or _fixed_ vertices,
+  - $\mathbf{z}_{bc}$ is a $|b| \times 1$ vector of known values corresponding to
+    $\mathbf{z}_b$,
+  - $\mathbf{A}_{eq}$ is a (usually sparse) $m \times n$ matrix of linear
+    equality constraint coefficients (one row per constraint), and
+  - $\mathbf{B}_{eq}$ is a $m \times 1$ vector of linear equality constraint
+    right-hand side values.
+
+This specification is overly general as we could write $\mathbf{z}_b =
+\mathbf{z}_{bc}$ as rows of $\mathbf{A}_{eq} \mathbf{z} =
+\mathbf{B}_{eq}$, but these fixed value constraints appear so often that they
+merit a dedicated place in the API.
+
+In libigl, solving such quadratic optimization problems is split into two
+routines: precomputation and solve. Precomputation only depends on the
+quadratic coefficients, known value indices and linear constraint coefficients:
+
+```cpp
+igl::min_quad_with_fixed_data mqwf;
+igl::min_quad_with_fixed_precompute(Q,b,Aeq,true,mqwf);
+```
+
+The output is a struct `mqwf` which contains the system matrix factorization
+and is used during solving with arbitrary linear terms, known values, and
+constraint right-hand sides:
+
+```cpp
+igl::min_quad_with_fixed_solve(mqwf,B,bc,Beq,Z);
+```
+
+The output `Z` is a $n \times 1$ vector of solutions with fixed values
+correctly placed to match the mesh vertices `V`.
 
 
 [#meyer_2003]: Mark Meyer and Mathieu Desbrun and Peter Schröder and Alan H.  Barr,

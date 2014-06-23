@@ -10,6 +10,7 @@ template <class M>
 IGL_INLINE void igl::intersect(const M & A, const M & B, M & C)
 {
   // Stupid O(size(A) * size(B)) to do it
+  // Alec: This should be implemented by using unique and sort like `setdiff`
   M dyn_C(A.size() > B.size() ? A.size() : B.size(),1);
   // count of intersects
   int c = 0;

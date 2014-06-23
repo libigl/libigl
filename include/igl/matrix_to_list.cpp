@@ -35,9 +35,12 @@ IGL_INLINE void igl::matrix_to_list(
   using namespace std;
   V.resize(M.size());
   // loop over rows
-  for(int i = 0;i<M.size();i++)
+  for(int j = 0;j<M.cols();j++)
   {
-    V[i] = M[i];
+    for(int i = 0;i<M.rows();i++)
+    {
+      V[i+j*M.rows()] = M(i,j);
+    }
   }
 }
 
@@ -61,4 +64,6 @@ template std::vector<Eigen::Matrix<int, -1, 1, 0, -1, 1>::Scalar, std::allocator
 template void igl::matrix_to_list<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, std::vector<std::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, std::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar> >, std::allocator<std::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, std::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar> > > >&);
 template void igl::matrix_to_list<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::vector<std::vector<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, std::allocator<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar> >, std::allocator<std::vector<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, std::allocator<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar> > > >&);
 template void igl::matrix_to_list<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, std::vector<Eigen::Matrix<double, -1, 1, 0, -1, 1>::Scalar, std::allocator<Eigen::Matrix<double, -1, 1, 0, -1, 1>::Scalar> >&);
+template void igl::matrix_to_list<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::vector<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, std::allocator<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar> >&);
+template void igl::matrix_to_list<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, std::vector<Eigen::Matrix<int, -1, 1, 0, -1, 1>::Scalar, std::allocator<Eigen::Matrix<int, -1, 1, 0, -1, 1>::Scalar> >&);
 #endif
