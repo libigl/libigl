@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "igl/dot_row.h"
 
-template <typename DerivedA, typename DerivedB, typename Derv>
+template <typename DerivedV>
 IGL_INLINE Eigen::PlainObjectBase<DerivedV> igl::dot_row(
   const Eigen::PlainObjectBase<DerivedV>& A,
   const Eigen::PlainObjectBase<DerivedV>& B
