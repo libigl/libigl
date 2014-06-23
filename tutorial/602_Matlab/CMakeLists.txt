@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(107_Matlab)
+project(602_Matlab)
 
 include("../CMakeLists.shared")
 
@@ -14,7 +14,5 @@ if(APPLE)
   set(CMAKE_EXE_LINKER_FLAGS "-rpath ${MATLAB_INCLUDE_DIR}/../../bin/maci64"})
 endif (APPLE) #APPLE
 
-#message(FATAL_ERROR ${CMAKE_EXE_LINKER_FLAGS})
-
-add_executable(107_Matlab ${SOURCES} ${SHARED_SOURCES})
-target_link_libraries(107_Matlab ${SHARED_LIBRARIES} ${MATLAB_LIBRARIES})
+add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${SHARED_SOURCES})
+target_link_libraries(${CMAKE_PROJECT_NAME} ${SHARED_LIBRARIES} ${MATLAB_LIBRARIES})
