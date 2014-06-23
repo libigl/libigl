@@ -11,6 +11,7 @@
 #include <Eigen/Sparse>
 #include <vector>
 
+#include <igl/cotangent.h>
 #include <igl/cotmatrix.h>
 #include <igl/vf.h>
 #include <igl/tt.h>
@@ -326,7 +327,7 @@ IGL_INLINE void Frame_field_deformer::compute_optimal_positions()
 		P.col(0) = (V.row(i1)-V.row(i0)).transpose();
 		P.col(1) = (V.row(i2)-V.row(i0)).transpose();
 		P.col(2) = P.col(0).cross(P.col(1));
-    
+
 		// output triangle brought to origin
 		PP.col(0) = (V_w.row(i1)-V_w.row(i0)).transpose();
 		PP.col(1) = (V_w.row(i2)-V_w.row(i0)).transpose();
@@ -342,7 +343,7 @@ IGL_INLINE void Frame_field_deformer::compute_optimal_positions()
   IGL_INLINE void Frame_field_deformer::compute_idealWarp(std::vector< Eigen::Matrix<double,3,3> > & WW)
 {
   using namespace Eigen;
-  
+
   WW.resize(F.rows());
 	for (int i=0;i<FF.size();i++)
 	{
