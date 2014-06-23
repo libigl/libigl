@@ -305,7 +305,7 @@ IGL_INLINE void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eige
 //        ++count;
   
   Eigen::MatrixXd T(M.nonZeros(),3);
-  for (unsigned k=0; k<M.outerSize(); ++k)
+  for (unsigned k=0; k<(unsigned)M.outerSize(); ++k)
   {
     for (Eigen::SparseMatrix<double>::InnerIterator it(M,k); it; ++it)
     {

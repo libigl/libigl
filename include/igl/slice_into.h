@@ -36,6 +36,18 @@ namespace igl
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
     Eigen::PlainObjectBase<DerivedX> & Y);
+  // Wrapper to only slice in one direction
+  //
+  // Inputs:
+  //   dim  dimension to slice in 1 or 2, dim=1 --> X(R,:), dim=2 --> X(:,R)
+  //
+  // Note: For now this is just a cheap wrapper.
+  template <typename Mat>
+  IGL_INLINE void slice_into(
+    const Mat& X,
+    const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
+    const int dim,
+    Mat& Y);
 
   template <typename DerivedX>
   IGL_INLINE void slice_into(

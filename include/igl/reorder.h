@@ -15,7 +15,7 @@
 
 namespace igl
 {
-  // Act like matlab's Y = X[I] for std vectors
+  // Act like matlab's Y = X(I) for std vectors
   // where I contains a vector of indices so that after,
   // Y[j] = X[I[j]] for index j
   // this implies that Y.size() == I.size()

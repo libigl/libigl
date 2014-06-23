@@ -12,10 +12,13 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Rotate the vectors V by A radiants on the tangent plane spanned by B1 and B2
+  // Rotate the vectors V by A radiants on the tangent plane spanned by B1 and
+  // B2
+  //
   // Inputs:
   //   V     #V by 3 eigen Matrix of vectors
-  //   A     #V eigen vector of rotation angles or a single angle to be applied to all vectors
+  //   A     #V eigen vector of rotation angles or a single angle to be applied
+  //     to all vectors
   //   B1    #V by 3 eigen Matrix of base vector 1
   //   B2    #V by 3 eigen Matrix of base vector 2
   //
