@@ -30,7 +30,7 @@ namespace igl
 //           (0 -> smoothness only, 1->constraints only)
 
 // Outputs:
-//   R       #V by 3 the representative vectors of the interpolated field
+//   R       #F by 3 the representative vectors of the interpolated field
 //   S       #V by 1 the singularity index for each vertex (0 = regular)
 
 IGL_INLINE void nrosy(
