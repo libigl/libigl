@@ -2,6 +2,9 @@
 #include <igl/readDMAT.h>
 #include <igl/cotmatrix.h>
 #include <igl/massmatrix.h>
+#include <igl/gradMat.h>
+#include <igl/doublearea.h>
+#include <igl/repdiag.h>
 #include <igl/jet.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/viewer/Viewer.h>
@@ -23,6 +26,20 @@ int main(int argc, char *argv[])
 
   // Compute Laplace-Beltrami operator: #V by #V
   igl::cotmatrix(V,F,L);
+
+  // Alternative construction of same Laplacian
+  SparseMatrix<double> G,K;
+  // Gradient/Divergence
+  igl::gradMat(V,F,G);
+  // Diagonal per-triangle "mass matrix"
+  VectorXd dblA;
+  igl::doublearea(V,F,dblA);
+  // Place areas along diagonal #dim times
+  const auto & T = 1.*(dblA.replicate(3,1)*0.5).asDiagonal();
+  // Laplacian K built as discrete divergence of gradient or equivalently
+  // discrete Dirichelet energy Hessian
+  K = -G.transpose() * T * G;
+  cout<<"|K-L|: "<<(K-L).norm()<<endl;
 
   const auto &key_down = [](igl::Viewer &viewer,unsigned char key,int mod)->bool
   {
@@ -70,5 +87,5 @@ int main(int argc, char *argv[])
 
   cout<<"Press [space] to smooth."<<endl;;
   cout<<"Press [r] to reset."<<endl;;
-  viewer.launch();
+  return viewer.launch();
 }
