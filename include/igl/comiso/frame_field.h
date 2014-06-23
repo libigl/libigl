@@ -27,8 +27,8 @@ namespace igl
 //   bc2     #B by 3 list of the constrained second representative vector of the frame field (up to permutation and sign)
 //
 // Outputs:
-//   F1      #F by 3 the first representative vector of the frame field (up to permutation and sign)
-//   F2      #F by 3 the second representative vector of the frame field (up to permutation and sign)
+//   FF1      #F by 3 the first representative vector of the frame field (up to permutation and sign)
+//   FF2      #F by 3 the second representative vector of the frame field (up to permutation and sign)
 //
 // TODO: it now supports only soft constraints, should be extended to support both hard and soft constraints
 IGL_INLINE void frame_field(
@@ -37,8 +37,8 @@ IGL_INLINE void frame_field(
   const Eigen::VectorXi& b,
   const Eigen::MatrixXd& bc1,
   const Eigen::MatrixXd& bc2,
-  Eigen::MatrixXd& F1,
-  Eigen::MatrixXd& F2
+  Eigen::MatrixXd& FF1,
+  Eigen::MatrixXd& FF2
   );
 }
 
