@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
   igl::slice(L,in,in,L_in_in);
   igl::slice(L,in,b,L_in_b);
 
-  // Dirichelet boundary conditions from z-coordinate
+  // Dirichlet boundary conditions from z-coordinate
   VectorXd bc;
   VectorXd Z = V.col(2);
   igl::slice(Z,b,bc);
