@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
-// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #ifndef IGL_POS_H
@@ -13,19 +13,15 @@
 
 #include <vector>
 
-namespace igl 
+namespace igl
 {
-  // Pos - Fake halfedge for fast and easy navigation on triangle meshes with VT and TT adj
-//template <typename S>
+  // Pos - Fake halfedge for fast and easy navigation on triangle meshes with VT and TT adjacency
   template <typename DerivedF>
   class Pos
   {
   public:
     // Init the pos by specifying Face,Edge Index and Orientation
-    Pos(
-//        const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>* F,
-//        Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>* FF, 
-//        Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>* FFi, 
+    IGL_INLINE Pos(
         const Eigen::PlainObjectBase<DerivedF>* F,
         const Eigen::PlainObjectBase<DerivedF>* FF,
         const Eigen::PlainObjectBase<DerivedF>* FFi,
@@ -35,24 +31,24 @@ namespace igl
         )
     : F(F), FF(FF), FFi(FFi), fi(fi), ei(ei), reverse(reverse)
     {}
-    
+
     // Change Face
-    void flipF()
+    IGL_INLINE void flipF()
     {
       if (isBorder())
         return;
-      
+
       int fin = (*FF)(fi,ei);
       int ein = (*FFi)(fi,ei);
       int reversen = !reverse;
-      
+
       fi = fin;
       ei = ein;
       reverse = reversen;
     }
-    
+
     // Change Edge
-    void flipE()
+    IGL_INLINE void flipE()
     {
       if (!reverse)
         ei = (ei+2)%3; // ei-1
@@ -61,18 +57,18 @@ namespace igl
 
       reverse = !reverse;
     }
-    
+
     // Change Vertex
-    void flipV()
+    IGL_INLINE void flipV()
     {
       reverse = !reverse;
     }
-    
-    bool isBorder()
+
+    IGL_INLINE bool isBorder()
     {
       return (*FF)(fi,ei) == -1;
     }
-    
+
     /*!
      * Returns the next edge skipping the border
      *      _________
@@ -84,7 +80,7 @@ namespace igl
      * In this example, if a and d are of-border and the pos is iterating counterclockwise, this method iterate through the faces incident on vertex v,
      * producing the sequence a, b, c, d, a, b, c, ...
      */
-    bool NextFE()
+    IGL_INLINE bool NextFE()
     {
       if ( isBorder() ) // we are on a border
       {
@@ -103,37 +99,37 @@ namespace igl
         return true;
       }
     }
-    
+
     // Get vertex index
-    int Vi()
+    IGL_INLINE int Vi()
     {
       assert(fi >= 0);
       assert(fi < F->rows());
       assert(ei >= 0);
       assert(ei <= 2);
-      
+
       if (!reverse)
         return (*F)(fi,ei);
       else
         return (*F)(fi,(ei+1)%3);
     }
-    
+
     // Get face index
-    int Fi()
+    IGL_INLINE int Fi()
     {
       return fi;
     }
 
     // Get edge index
-    int Ei()
+    IGL_INLINE int Ei()
     {
       return ei;
     }
 
-    
-    bool operator==(Pos& p2)
+
+    IGL_INLINE bool operator==(Pos& p2)
     {
-      return 
+      return
       (
        (fi == p2.fi) &&
        (ei == p2.ei) &&
@@ -143,20 +139,17 @@ namespace igl
        (FFi == p2.FFi)
        );
     }
-    
+
   private:
     int fi;
     int ei;
     bool reverse;
-    
+
     const Eigen::PlainObjectBase<DerivedF>* F;
     const Eigen::PlainObjectBase<DerivedF>* FF;
     const Eigen::PlainObjectBase<DerivedF>* FFi;
-//    const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>*     F;
-//    const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>*     FF;
-//    const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic>*     FFi;
   };
-  
+
 }
 
 #endif
