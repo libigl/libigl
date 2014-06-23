@@ -16,19 +16,16 @@ namespace igl
   // Compute the dot product between each row of A and B
   // Templates:
   //   DerivedV derived from vertex positions matrix type: i.e. MatrixXd
-  //   DerivedF derived from face indices matrix type: i.e. MatrixXi
   // Inputs:
   //   A  eigen matrix r by c
   //   B  eigen matrix r by c
-  // Outputs:
+  // Returns:
   //   d a column vector with r entries that contains the dot product of each corresponding row of A and B
   //
-  // See also: adjacency_matrix
   template <typename DerivedV>
   IGL_INLINE Eigen::PlainObjectBase<DerivedV> dot_row(
     const Eigen::PlainObjectBase<DerivedV>& A,
-    const Eigen::PlainObjectBase<DerivedV>& B
-    );
+    const Eigen::PlainObjectBase<DerivedV>& B);
 
 }
 
