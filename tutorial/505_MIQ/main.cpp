@@ -67,11 +67,11 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key <'1' || key >'7')
     return false;
-  
+
   viewer.clear_mesh();
   viewer.options.show_lines = false;
   viewer.options.show_texture = false;
-  
+
   if (key == '1')
   {
     // Cross field
@@ -79,7 +79,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     viewer.add_edges (B, B + global_scale*X1 ,Eigen::RowVector3d(1,0,0));
     viewer.add_edges (B, B + global_scale*X2 ,Eigen::RowVector3d(0,0,1));
   }
-  
+
   if (key == '2')
   {
     // Bisector field
@@ -87,7 +87,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     viewer.add_edges (B, B + global_scale*BIS1 ,Eigen::RowVector3d(1,0,0));
     viewer.add_edges (B, B + global_scale*BIS2 ,Eigen::RowVector3d(0,0,1));
   }
-  
+
   if (key == '3')
   {
     // Bisector field combed
@@ -95,7 +95,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     viewer.add_edges (B, B + global_scale*BIS1_combed ,Eigen::RowVector3d(1,0,0));
     viewer.add_edges (B, B + global_scale*BIS2_combed ,Eigen::RowVector3d(0,0,1));
   }
-  
+
   if (key == '4')
   {
     // Singularities and cuts
@@ -105,7 +105,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     int l_count = Seams.sum();
     Eigen::MatrixXd P1(l_count,3);
     Eigen::MatrixXd P2(l_count,3);
-    
+
     for (unsigned i=0; i<Seams.rows(); ++i)
     {
       for (unsigned j=0; j<Seams.cols(); ++j)
@@ -120,7 +120,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     }
 
     viewer.add_edges(P1, P2, Eigen::RowVector3d(1, 0, 0));
-    
+
     // Plot the singularities as colored dots (red for negative, blue for positive)
     for (unsigned i=0; i<singularityIndex.size();++i)
     {
@@ -129,9 +129,9 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
       else if (singularityIndex(i) > 2)
         viewer.add_points(V.row(i),Eigen::RowVector3d(0,1,0));
     }
-    
+
   }
-  
+
   if (key == '5')
   {
     // Singularities and cuts, original field
@@ -139,12 +139,12 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     viewer.set_mesh(V, F);
     viewer.add_edges (B, B + global_scale*X1_combed ,Eigen::RowVector3d(1,0,0));
     viewer.add_edges (B, B + global_scale*X2_combed ,Eigen::RowVector3d(0,0,1));
-    
+
     // Plot cuts
     int l_count = Seams.sum();
     Eigen::MatrixXd P1(l_count,3);
     Eigen::MatrixXd P2(l_count,3);
-    
+
     for (unsigned i=0; i<Seams.rows(); ++i)
     {
       for (unsigned j=0; j<Seams.cols(); ++j)
@@ -157,9 +157,9 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
         }
       }
     }
-    
+
     viewer.add_edges(P1, P2, Eigen::RowVector3d(1, 0, 0));
-    
+
     // Plot the singularities as colored dots (red for negative, blue for positive)
     for (unsigned i=0; i<singularityIndex.size();++i)
     {
@@ -169,7 +169,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
         viewer.add_points(V.row(i),Eigen::RowVector3d(0,1,0));
     }
   }
-  
+
   if (key == '6')
   {
     // Global parametrization UV
@@ -188,6 +188,11 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 
   viewer.set_colors(Eigen::RowVector3d(1,1,1));
 
+  // Replace the standard texture with an integer shift invariant texture
+  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> texture_R, texture_G, texture_B;
+  line_texture(texture_R, texture_G, texture_B);
+  viewer.set_texture(texture_R, texture_B, texture_G);
+
   return false;
 }
 
@@ -200,7 +205,7 @@ int main(int argc, char *argv[])
 
   // Compute face barycenters
   igl::barycenter(V, F, B);
-  
+
   // Compute scale for visualizing fields
   global_scale =  .5*igl::avg_edge_length(V, F);
 
@@ -266,14 +271,9 @@ int main(int argc, char *argv[])
   // Plot the mesh
   igl::Viewer viewer;
 
-  // Replace the standard texture with an integer shift invariant texture
-  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> texture_R, texture_G, texture_B;
-  line_texture(texture_R, texture_G, texture_B);
-  viewer.set_texture(texture_R, texture_B, texture_G);
-  
   // Plot the original mesh with a texture parametrization
   key_down(viewer,'7',0);
-  
+
   // Launch the viewer
   viewer.callback_key_down = &key_down;
   viewer.launch();
