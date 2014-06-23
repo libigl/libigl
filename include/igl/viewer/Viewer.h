@@ -31,7 +31,7 @@ namespace igl
   {
   public:
 
-    void launch(std::string filename = "");
+    int launch(std::string filename = "");
     void init(Plugin_manager* pm);
 
     class Options

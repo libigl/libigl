@@ -11,7 +11,7 @@
       </tr>
 
       <tr class=d0>
-        <td><pre><code>[Y,IX] = sort(Y,dim,mode)</code></pre></td>
+        <td><pre><code>[Y,IX] = sort(X,dim,mode)</code></pre></td>
         <td><pre><code>igl::sort(X,dim,mode,Y,IX)</code></pre></td>
         <td>MATLAB version allows Y to be a multidimensional matrix, but the
         Eigen version is only for 1D or 2D matrices.</td>
@@ -45,7 +45,7 @@
 
       <tr class=d1>
         <td><pre><code>A(i:(i+w),j:(j+h)) = eye(w,h)</code></pre></td>
-        <td><pre><code>A.setIdentity()</code></pre></td>
+        <td><pre><code>A.block(i,j,w,h).setIdentity()</code></pre></td>
         <td></td>
       </tr>
 

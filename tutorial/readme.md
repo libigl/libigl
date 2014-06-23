@@ -9,35 +9,39 @@ html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathja
 
 # Introduction
 Libigl is an open source C++ library for geometry processing research and
-development.
-Dropping the heavy data structures of tradition geometry libraries, libigl is
-a simple header-only library of encapsulated functions. 
-%
-This combines the rapid prototyping familiar to \textsc{Matlab} or
-\textsc{Python} programmers
-with the performance and versatility of C++.
-%
-The tutorial is a self-contained, hands-on introduction to \libigl. 
-%
-Via live coding and interactive examples, we demonstrate how to accomplish
-various common geometry processing tasks such as computation of differential
-quantities and operators, real-time deformation, global parametrization,
-numerical optimization and mesh repair.
-%
-Accompanying lecture notes contain further details and cross-platform example
-applications for each topic.
-\end{abstract}
+development.  Dropping the heavy data structures of tradition geometry
+libraries, libigl is a simple header-only library of encapsulated functions.
+This combines the rapid prototyping familiar to Matlab or Python programmers
+with the performance and versatility of C++.  The tutorial is a self-contained,
+hands-on introduction to libigl.  Via live coding and interactive examples, we
+demonstrate how to accomplish various common geometry processing tasks such as
+computation of differential quantities and operators, real-time deformation,
+global parametrization, numerical optimization and mesh repair.  Each section
+of these lecture notes links to a cross-platform example application.
 
-# Index
+# Table of Contents
 
-* **100_FileIO**: Example of reading/writing mesh files
-* **101_Serialization**: Example of using the XML serialization framework
-* **102_DrawMesh**: Example of plotting a mesh
-* [201 Normals](#norm)
-* [202 Gaussian Curvature](#gaus)
-* [203 Curvature Directions](#curv)
-* [204 Gradient](#grad)
-* [204 Laplacian](#lapl)
+* Basic Usage
+    * **100_FileIO**: Example of reading/writing mesh files
+    * **101_Serialization**: Example of using the XML serialization framework
+    * **102_DrawMesh**: Example of plotting a mesh
+* [Chapter 2: Discrete Geometric Quantities and
+  Operators](#chapter2:discretegeometricquantitiesandoperators)
+    * [201 Normals](#normals)
+        * [Per-face](#per-face)
+        * [Per-vertex](#per-vertex)
+        * [Per-corner](#per-corner)
+    * [202 Gaussian Curvature](#gaussiancurvature)
+    * [203 Curvature Directions](#curvaturedirections)
+    * [204 Gradient](#gradient)
+    * [204 Laplacian](#laplacian)
+        * [Mass matrix](#massmatrix)
+        * [Alternative construction of
+          Laplacian](#alternativeconstuctionoflaplacian)
+* [Chapter 3: Matrices and Linear Algebra](#chapter3:matricesandlinearalgebra)
+    * [301 Slice](#slice)
+    * [301 Sort](#sort)
+        * [Other Matlab-style functions](#othermatlab-stylefunctions) 
 
 # Compilation Instructions
 
@@ -72,18 +76,23 @@ mesh. This also provides an introduction to basic drawing and coloring routines
 in our example viewer. Finally, we construct popular discrete differential
 geometry operators.
 
-## <a id=norm></a> Normals
+## Normals
+Surface normals are a basic quantity necessary for rendering a surface. There
+are a variety of ways to compute and store normals on a triangle mesh.
 
-### Per-face 
-Well defined normal orthogonal to triangle's plane. Produces piecewise-flat
-rending: not smooth.
+### Per-face
+Normals are well defined on each triangle of a mesh as the vector orthogonal to
+triangle's plane. These piecewise constant normals produce piecewise-flat
+renderings: the surface appears non-smooth and reveals its underlying
+discretization.
 
 ### Per-vertex
-Using per-vertex normals, Phong or Gouraud shading will produce smooth(er)
-renderings. Most techniques for computing per-vertex normals take an average of
-incident face normals. The techniques vary with respect to their different
-weighting schemes. Uniform weighting is heavily biased by the discretization
-choice, where as area-based or angle-based weighting is more forgiving.
+Storing normals at vertices, Phong or Gouraud shading will interpolate shading
+inside mesh triangles to produce smooth(er) renderings. Most techniques for
+computing per-vertex normals take an average of incident face normals. The
+techniques vary with respect to their different weighting schemes. Uniform
+weighting is heavily biased by the discretization choice, where as area-based
+or angle-based weighting is more forgiving.
 
 The typical half-edge style computation of area-based weights might look
 something like this:
@@ -130,7 +139,7 @@ specified dihedral angle (e.g. 20°).
 ![The `Normals` example computes per-face (left), per-vertex (middle) and
 per-corner (right) normals](images/fandisk-normals.jpg)
 
-## <a id=gaus></a> Gaussian Curvature
+## Gaussian Curvature
 Gaussian curvature on a continuous surface is defined as the product of the
 principal curvatures:
 
@@ -158,7 +167,7 @@ elliptic, hyperbolic and parabolic vertices on the domain.
 ![The `GaussianCurvature` example computes discrete Gaussian curvature and visualizes it in
 pseudocolor.](images/bumpy-gaussian-curvature.jpg)
 
-## <a id=curv></a> Curvature Directions
+## Curvature Directions
 The two principal curvatures $(k_1,k_2)$ at a point on a surface measure how much the
 surface bends in different directions. The directions of maximum and minimum
 (signed) bending are call principal directions and are always
@@ -216,7 +225,7 @@ int main(int argc, char * argv[])
 }
 ```
 
-## <a id=grad></a> Gradient
+## Gradient
 Scalar functions on a surface can be discretized as a piecewise linear function
 with values defined at each mesh vertex:
 
@@ -243,7 +252,7 @@ as a matrix multiplication taking vertex values to triangle values:
 
  $\nabla f \approx \mathbf{G}\,\mathbf{f},$
 
-where $\mathbf{f}$ is $n\times 1$ and $\mathbf{G}$ is an $m\times n$ sparse
+where $\mathbf{f}$ is $n\times 1$ and $\mathbf{G}$ is an $md\times n$ sparse
 matrix. This matrix $\mathbf{G}$ can be derived geometrically, e.g.
 [ch. 2][#jacobson_thesis_2013].
 Libigl's `gradMat`**Alec: check name** function computes $\mathbf{G}$ for
@@ -252,7 +261,7 @@ triangle and tetrahedral meshes:
 ![The `Gradient` example computes gradients of an input function on a mesh and
 visualizes the vector field.](images/cheburashka-gradient.jpg)
 
-## <a id=lapl></a> Laplacian
+## Laplacian
 
 The discrete Laplacian is an essential geometry processing tool. Many
 interpretations and flavors of the Laplace and Laplace-Beltrami operator exist. 
@@ -346,6 +355,146 @@ the mass matrix will be used as the discretization of the inner product when
 sampling function values at vertices:
 
  $\int_S x\, y\ dA \approx \mathbf{x}^T\mathbf{M}\,\mathbf{y}.$
+
+An alternative mass matrix $\mathbf{T}$ is a $md \times md$ matrix which takes
+triangle vector values to triangle vector values. This matrix represents an
+inner-product accounting for the area associated with each triangle (i.e. the
+triangles true area).
+
+### Alternative construction of Laplacian
+
+An alternative construction of the discrete cotangent Laplacian is by
+"squaring" the discrete gradient operator. This may be derived by applying
+Green's identity (ignoring boundary conditions for the moment):
+
+  $\int_S \nabla f \nabla f dA = \int_S f \Delta f dA$
+
+Or in matrix form which is immediately translatable to code:
+
+  $\mathbf{f}^T \mathbf{G}^T \mathbf{T} \mathbf{G} \mathbf{f} = 
+  \mathbf{f}^T \mathbf{M} \mathbf{M}^{-1} \mathbf{L} \mathbf{f} = 
+  \mathbf{f}^T \mathbf{L} \mathbf{f}.$
+
+So we have that $\mathbf{L} = \mathbf{G}^T \mathbf{T} \mathbf{G}$. This also
+hints that we may consider $\mathbf{G}^T$ as a discrete _divergence_ operator,
+since the Laplacian is the divergence of gradient. Naturally, $\mathbf{G}^T$ is
+$n \times md$ sparse matrix which takes vector values stored at triangle faces
+to scalar divergence values at vertices.
+
+# Chapter 3: Matrices and Linear Algebra
+Libigl relies heavily on the Eigen library for dense and sparse linear algebra
+routines. Besides geometry processing routines, libigl has a few linear algebra
+routines which bootstrap Eigen and make Eigen feel even more like a high-level
+algebra library like Matlab.
+
+## Slice
+A very familiar and powerful routine in Matlab is array slicing. This allows
+reading from or writing to a possibly non-contiguous sub-matrix. Let's consider
+the matlab code:
+
+```matlab
+B = A(R,C);
+```
+
+If `A` is a $m \times n$ matrix and `R` is a $j$-long list of row-indices
+(between 1 and $m$) and `C` is a $k$-long list of column-indices, then as a
+result `B` will be a $j \times k$ matrix drawing elements from `A` according to
+`R` and `C`. In libigl, the same functionality is provided by the `slice`
+function:
+
+```cpp
+VectorXi R,C;
+MatrixXd A,B;
+...
+igl::slice(A,R,C,B);
+```
+
+`A` and `B` could also be sparse matrices.
+
+Similarly, consider the matlab code:
+
+```matlab
+A(R,C) = B;
+```
+
+Now, the selection is on the left-hand side so the $j \times k$ matrix  `B` is
+being _written into_ the submatrix of `A` determined by `R` and `C`. This
+functionality is provided in libigl using `slice_into`:
+
+```cpp
+igl::slice_into(B,R,C,A);
+```
+
+![The example `Slice` shows how to use `igl::slice` to change the colors for triangles
+on a mesh.](images/decimated-knight-slice-color.jpg)
+
+## Sort
+
+Matlab and other higher-level languages make it very easy to extract indices of
+sorting and comparison routines. For example in Matlab, one can write:
+
+```matlab
+[Y,I] = sort(X,1,'ascend');
+```
+
+so if `X` is a $m \times n$ matrix then `Y` will also be an $m \times n$ matrix
+with entries sorted along dimension `1` in `'ascend'`ing order. The second
+output `I` is a $m \times n$ matrix of indices such that `Y(i,j) =
+X(I(i,j),j);`. That is, `I` reveals how `X` is sorted into `Y`.
+
+This same functionality is supported in libigl:
+
+```cpp
+igl::sort(X,1,true,Y,I);
+```
+
+Similarly, sorting entire rows can be accomplished in matlab using:
+
+```matlab
+[Y,I] = sortrows(X,'ascend');
+```
+
+where now `I` is a $m$ vector of indices such that `Y = X(I,:)`.
+
+In libigl, this is supported with
+
+```cpp
+igl::sortrows(X,true,Y,I);
+```
+where again `I` reveals the index of sort so that it can be reproduced with
+`igl::slice(X,I,1,Y)`.
+
+Analogous functions are available in libigl for: `max`, `min`, and `unique`.
+
+![The example `Sort` shows how to use `igl::sortrows` to 
+pseudocolor triangles according to their barycenters' sorted
+order.](images/decimated-knight-sort-color.jpg)
+
+
+### Other Matlab-style functions
+Libigl implements a variety of other routines with the same api and
+functionality as common matlab functions.
+
+- `igl::any_of` Whether any elements are non-zero (true)
+- `igl::cat` Concatenate two matrices (especially useful for dealing with Eigen
+  sparse matrices)
+- `igl::ceil` Round entries up to nearest integer
+- `igl::cumsum` Cumulative sum of matrix elements
+- `igl::colon` Act like Matlab's `:`, similar to Eigen's `LinSpaced`
+- `igl::cross` Cross product per-row
+- `igl::dot` dot product per-row
+- `igl::find` Find subscripts of non-zero entries
+- `igl::floot` Round entries down to nearest integer
+- `igl::histc` Counting occurrences for building a histogram
+- `igl::hsv_to_rgb` Convert HSV colors to RGB (cf. Matlab's `hsv2rgb`)
+- `igl::intersect` Set intersection of matrix elements.
+- `igl::jet` Quantized colors along the rainbow.
+- `igl::kronecker_product` Compare to Matlab's `kronprod`
+- `igl::median` Compute the median per column
+- `igl::mode` Compute the mode per column
+- `igl::orth` Orthogonalization of a basis
+- `igl::speye` Identity as sparse matrix
+
 
 [#meyer_2003]: Mark Meyer and Mathieu Desbrun and Peter Schröder and Alan H.  Barr,
 "Discrete Differential-Geometry Operators for Triangulated
