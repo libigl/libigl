@@ -209,7 +209,7 @@ void FrameInterpolator::interpolateCross()
 
   MatrixXd R = nrosy.getFieldPerFace();
   assert(R.rows() == F.rows());
-  
+
   for (unsigned i=0; i<F.rows(); ++i)
     thetas(i) = vector2theta(TPs[i],R.row(i));
 }
@@ -633,8 +633,8 @@ IGL_INLINE void igl::frame_field(
                                  const Eigen::VectorXi& b,
                                  const Eigen::MatrixXd& bc1,
                                  const Eigen::MatrixXd& bc2,
-                                 Eigen::MatrixXd& F1,
-                                 Eigen::MatrixXd& F2
+                                 Eigen::MatrixXd& FF1,
+                                 Eigen::MatrixXd& FF2
                                  )
 
 {
@@ -657,6 +657,6 @@ IGL_INLINE void igl::frame_field(
 
   // Copy back
   MatrixXd R = field.getFieldPerFace();
-  F1 = R.block(0, 0, R.rows(), 3);
-  F2 = R.block(0, 3, R.rows(), 3);
+  FF1 = R.block(0, 0, R.rows(), 3);
+  FF2 = R.block(0, 3, R.rows(), 3);
 }
