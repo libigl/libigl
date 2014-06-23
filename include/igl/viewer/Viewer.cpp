@@ -2382,13 +2382,13 @@ namespace igl
     data.labels_strings.push_back(str);
   }
 
-  void Viewer::launch(std::string filename)
+  int Viewer::launch(std::string filename)
   {
     GLFWwindow* window;
 
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
-      exit(EXIT_FAILURE);
+      return EXIT_FAILURE;
 
     glfwWindowHint(GLFW_SAMPLES, 16);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -2400,7 +2400,7 @@ namespace igl
     if (!window)
     {
       glfwTerminate();
-      exit(EXIT_FAILURE);
+      return EXIT_FAILURE;
     }
 
 	glfwMakeContextCurrent(window);
@@ -2475,6 +2475,6 @@ namespace igl
 
     glfwDestroyWindow(window);
     glfwTerminate();
-    exit(EXIT_SUCCESS);
+    return EXIT_SUCCESS;
   }
 } // end namespace

@@ -111,7 +111,7 @@ IGL_INLINE void igl::jet(
   const double max_z = (normalize?Z.maxCoeff():-1);
   for(int r = 0;r<Z.rows();r++)
   {
-    jet((Z(r,0)-min_z)/(max_z-min_z),C(r,0),C(r,1),C(r,2));
+    jet((-min_z+Z(r,0))/(max_z-min_z),C(r,0),C(r,1),C(r,2));
   }
 }
 
@@ -123,4 +123,5 @@ template void igl::jet<double>(double, double*);
 template void igl::jet<double>(double, double&, double&, double&);
 template void igl::jet<float>(float, float*);
 template void igl::jet<Eigen::Array<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Array<double, -1, 1, 0, -1, 1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::jet<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif
