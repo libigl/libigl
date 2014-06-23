@@ -21,7 +21,7 @@ IGL_INLINE Eigen::MatrixXd igl::rotate_vectors(
     double a = atan2(B2.row(i).dot(V.row(i)),B1.row(i).dot(V.row(i)));
 
     // rotate
-    a += A.size() == 1 ? A(0) : A(1);
+    a += (A.size() == 1) ? A(0) : A(i);
 
     // move it back to global coordinates
     RV.row(i) = cos(a) * B1.row(i) + sin(a) * B2.row(i);

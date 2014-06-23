@@ -29,7 +29,6 @@ namespace igl
 // Outputs:
 //   F1      #F by 3 the first representative vector of the frame field (up to permutation and sign)
 //   F2      #F by 3 the second representative vector of the frame field (up to permutation and sign)
-//   S       #V by 1 the singularity index for each vertex (0 = regular)
 //
 // TODO: it now supports only soft constraints, should be extended to support both hard and soft constraints
 IGL_INLINE void frame_field(
@@ -39,8 +38,7 @@ IGL_INLINE void frame_field(
   const Eigen::MatrixXd& bc1,
   const Eigen::MatrixXd& bc2,
   Eigen::MatrixXd& F1,
-  Eigen::MatrixXd& F2,
-  Eigen::VectorXd& S
+  Eigen::MatrixXd& F2
   );
 }
 

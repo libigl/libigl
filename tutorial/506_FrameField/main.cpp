@@ -27,9 +27,6 @@ Eigen::MatrixXd bc2;
 // Interpolated frame field
 Eigen::MatrixXd FF1, FF2;
 
-// Singularities od the frame field
-Eigen::VectorXd S;
-
 // Deformed mesh
 Eigen::MatrixXd V_deformed;
 Eigen::MatrixXd B_deformed;
@@ -74,8 +71,8 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     for (unsigned i=0; i<b.size();++i)
     {
       C.row(b(i)) << 1, 0, 0;
-      F1_t.row(b(i)) = FF1.row(b(i));
-      F2_t.row(b(i)) = FF2.row(b(i));
+      F1_t.row(b(i)) = bc1.row(i);
+      F2_t.row(b(i)) = bc2.row(i);
     }
 
     viewer.set_colors(C);
@@ -154,7 +151,7 @@ int main(int argc, char *argv[])
   igl::barycenter(V, F, B);
 
   // Compute scale for visualizing fields
-  global_scale =  .5*igl::avg_edge_length(V, F);
+  global_scale =  .2*igl::avg_edge_length(V, F);
 
   // Load constraints
   MatrixXd temp;
@@ -164,8 +161,25 @@ int main(int argc, char *argv[])
   bc1 = temp.block(0,1,temp.rows(),3);
   bc2 = temp.block(0,4,temp.rows(),3);
 
+//  // Load a mesh in OBJ format
+//  igl::readOFF("../shared/planexy.off", V, F);
+//  
+//  // Compute face barycenters
+//  igl::barycenter(V, F, B);
+//  
+//  // Compute scale for visualizing fields
+//  global_scale =  .2*igl::avg_edge_length(V, F);
+//  
+//  b.resize(1);
+//  b << 0;
+//  bc1.resize(1,3);
+//  bc1 << (V.row(F(0,0)) - V.row(F(0,1))).normalized();
+//  MatrixXd B1,B2,B3;
+//  igl::local_basis(V,F,B1,B2,B3);
+//  bc2 = igl::rotate_vectors(bc1, VectorXd::Constant(1,M_PI/2), B1, B2);
+  
   // Interpolate the frame field
-  igl::frame_field(V, F, b, bc1, bc2, FF1, FF2, S);
+  igl::frame_field(V, F, b, bc1, bc2, FF1, FF2);
 
   // Deform the mesh to transform the frame field in a cross field
   igl::frame_field_deformer(V,F,FF1,FF2,V_deformed,FF1_deformed,FF2_deformed);
