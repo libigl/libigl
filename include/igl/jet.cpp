@@ -106,9 +106,19 @@ IGL_INLINE void igl::jet(
   const bool normalize,
   Eigen::PlainObjectBase<DerivedC> & C)
 {
-  C.resize(Z.rows(),3);
   const double min_z = (normalize?Z.minCoeff():0);
   const double max_z = (normalize?Z.maxCoeff():-1);
+  return jet(Z,min_z,max_z,C);
+}
+
+template <typename DerivedZ, typename DerivedC>
+IGL_INLINE void igl::jet(
+  const Eigen::PlainObjectBase<DerivedZ> & Z,
+  const double min_z,
+  const double max_z,
+  Eigen::PlainObjectBase<DerivedC> & C)
+{
+  C.resize(Z.rows(),3);
   for(int r = 0;r<Z.rows();r++)
   {
     jet((-min_z+Z(r,0))/(max_z-min_z),C(r,0),C(r,1),C(r,2));

@@ -40,10 +40,11 @@ of these lecture notes links to a cross-platform example application.
           Laplacian](#alternativeconstuctionoflaplacian)
 * [Chapter 3: Matrices and Linear Algebra](#chapter3:matricesandlinearalgebra)
     * [301 Slice](#slice)
-    * [301 Sort](#sort)
+    * [302 Sort](#sort)
         * [Other Matlab-style functions](#othermatlab-stylefunctions) 
-    * [301 Laplace Equation](#laplaceequation)
+    * [303 Laplace Equation](#laplaceequation)
         * [Quadratic energy minimization](#quadraticenergyminimization)
+    * [304 Linear Equality Constraints](#linearequalityconstraints)
 
 # Compilation Instructions
 
@@ -568,11 +569,11 @@ boundary conditions.](images/camelhead-laplace-equation.jpg)
 The same Laplace equation may be equivalently derived by minimizing Dirichlet
 energy subject to the same boundary conditions:
 
- $\mathop{\text{minimize }}_z \int\limits_S \|\nabla z\|^2 dA$
+ $\mathop{\text{minimize }}_z \frac{1}{2}\int\limits_S \|\nabla z\|^2 dA$
 
 On our discrete mesh, recall that this becomes
 
- $\mathop{\text{minimize }}_\mathbf{z}  \mathbf{z}^T \mathbf{G}^T \mathbf{D}
+ $\mathop{\text{minimize }}_\mathbf{z}  \frac{1}{2}\mathbf{z}^T \mathbf{G}^T \mathbf{D}
  \mathbf{G} \mathbf{z} \rightarrow \mathop{\text{minimize }}_\mathbf{z} \mathbf{z}^T \mathbf{L} \mathbf{z}$
 
 The general problem of minimizing some energy over a mesh subject to fixed
@@ -582,7 +583,7 @@ solving such systems.
 Let's consider a general quadratic minimization problem subject to different
 common constraints:
 
- $$\mathop{\text{minimize }}_\mathbf{z}  \mathbf{z}^T \mathbf{Q} \mathbf{z} +
+ $$\mathop{\text{minimize }}_\mathbf{z}  \frac{1}{2}\mathbf{z}^T \mathbf{Q} \mathbf{z} +
  \mathbf{z}^T \mathbf{B} + \text{constant},$$
 
  subject to
@@ -628,6 +629,86 @@ igl::min_quad_with_fixed_solve(mqwf,B,bc,Beq,Z);
 
 The output `Z` is a $n \times 1$ vector of solutions with fixed values
 correctly placed to match the mesh vertices `V`.
+
+## Linear Equality Constraints
+We saw above that `min_quad_with_fixed_*` in libigl provides a compact way to
+solve general quadratic programs. Let's consider another example, this time
+with active linear equality constraints. Specifically let's solve the
+`bi-Laplace equation` or equivalently minimize the Laplace energy:
+
+ $$\Delta^2 z = 0 \leftrightarrow \mathop{\text{minimize }}\limits_z \frac{1}{2}
+ \int\limits_S (\Delta z)^2 dA$$
+
+subject to fixed value constraints and a linear equality constraint:
+
+ $z_{a} = 1, z_{b} = -1$ and $z_{c} = z_{d}$.
+
+Notice that we can rewrite the last constraint in the familiar form from above:
+
+ $z_{c} - z_{d} = 0.$
+
+Now we can assembly `Aeq` as a $1 \times n$ sparse matrix with a coefficient 1
+in the column corresponding to vertex $c$ and a -1 at $d$. The right-hand side
+`Beq` is simply zero.
+
+Internally, `min_quad_with_fixed_*` solves using the Lagrange Multiplier
+method. This method adds additional variables for each linear constraint (in
+general a $m \times 1$ vector of variables $\lambda$) and then solves the
+saddle problem:
+
+ $$\mathop{\text{find saddle }}_{\mathbf{z},\lambda}\, \frac{1}{2}\mathbf{z}^T \mathbf{Q} \mathbf{z} +
+  \mathbf{z}^T \mathbf{B} + \text{constant} + \lambda^T\left(\mathbf{A}_{eq}
+ \mathbf{z} - \mathbf{B}_{eq}\right)$$
+
+This can be rewritten in a more familiar form by stacking $\mathbf{z}$ and
+$\lambda$ into one $(m+n) \times 1$ vector of unknowns:
+
+ $$\mathop{\text{find saddle }}_{\mathbf{z},\lambda}\, 
+ \frac{1}{2}
+ \left(
+  \mathbf{z}^T 
+  \lambda^T
+ \right)
+ \left(
+  \begin{array}{cc}
+  \mathbf{Q}      & \mathbf{A}_{eq}^T\\
+  \mathbf{A}_{eq} & 0
+  \end{array}
+ \right)
+ \left(
+  \begin{array}{c}
+  \mathbf{z}\\
+  \lambda
+  \end{array}
+ \right) + 
+ \left(
+  \mathbf{z}^T 
+  \lambda^T
+ \right)
+ \left(
+  \begin{array}{c}
+  \mathbf{B}\\
+  -\mathbf{B}_{eq}
+  \end{array}
+  \right)
+  + \text{constant}$$
+
+Differentiating with respect to $\left( \mathbf{z}^T \lambda^T \right)$ reveals
+a linear system and we can solve for $\mathbf{z}$ and $\lambda$. The only
+difference from
+the straight quadratic
+_minimization_ system, is that 
+this saddle problem system will not be positive definite. Thus, we must use a
+different factorization technique (LDLT rather than LLT). Luckily, libigl's
+`min_quad_with_fixed_precompute` automatically chooses the correct solver in
+the presence of linear equality constraints.
+
+![The example `LinearEqualityConstraints` first solves with just fixed value
+constraints (left: 1 and -1 on the left hand and foot respectively), then
+solves with an additional linear equality constraint (right: points on right
+hand and foot constrained to be equal).](images/cheburashka-biharmonic-leq.jpg)
+
+## Quadratic Programming
 
 
 [#meyer_2003]: Mark Meyer and Mathieu Desbrun and Peter Schröder and Alan H.  Barr,
