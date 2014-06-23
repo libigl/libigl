@@ -94,7 +94,7 @@ IGL_INLINE void igl::jet(const T x_in, T & r, T & g, T & b)
     b = 0;
   }else
   {
-    r = (bone-(x-7./8.)/(1.-7./8.)*0.5);
+    r = (rone-(x-7./8.)/(1.-7./8.)*0.5);
     g = 0;
     b = 0;
   }
