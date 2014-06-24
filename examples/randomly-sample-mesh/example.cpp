@@ -4,7 +4,7 @@
 #include <igl/writeOFF.h>
 #include <igl/readWRL.h>
 #include <igl/report_gl_error.h>
-#include <igl/triangulate.h>
+#include <igl/polygon_mesh_to_triangle_mesh.h>
 #include <igl/readOFF.h>
 #include <igl/readMESH.h>
 #include <igl/draw_mesh.h>
@@ -93,7 +93,7 @@ void TW_CALL set_rotation_type(const void * value, void * clientData)
   using namespace igl;
   const RotationType old_rotation_type = rotation_type;
   rotation_type = *(const RotationType *)(value);
-  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP && 
+  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP &&
     old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
   {
     push_undo();
@@ -223,7 +223,7 @@ void display()
   glMaterialfv(GL_BACK, GL_SPECULAR, SILVER_SPECULAR);
   glMaterialf (GL_BACK, GL_SHININESS, 128);
 
-  
+
   draw_mesh(V,F,N);
 
   glPointSize(3.);
@@ -381,7 +381,7 @@ void mouse_drag(int mouse_x, int mouse_y)
       }
       case ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
       {
-        // Rotate according to two axis valuator with fixed up vector 
+        // Rotate according to two axis valuator with fixed up vector
         two_axis_valuator_fixed_up(
           width, height,
           2.0,
@@ -482,7 +482,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
         cout<<"Unknown key command: "<<key<<" "<<int(key)<<endl;
       }
   }
-  
+
 }
 
 int main(int argc, char * argv[])
@@ -555,7 +555,7 @@ int main(int argc, char * argv[])
     {
       return 1;
     }
-    triangulate(vF,F);
+    polygon_mesh_to_triangle_mesh(vF,F);
   }
 
   init_relative();
@@ -571,7 +571,7 @@ int main(int argc, char * argv[])
   }
   // Create a tweak bar
   rebar.TwNewBar("TweakBar");
-  rebar.TwAddVarRW("camera_rotation", TW_TYPE_QUAT4D, 
+  rebar.TwAddVarRW("camera_rotation", TW_TYPE_QUAT4D,
     s.camera.m_rotation_conj.coeffs().data(), "open readonly=true");
   TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType",
     "igl_trackball,two-a...-fixed-up");

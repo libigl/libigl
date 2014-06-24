@@ -6,7 +6,7 @@
 #include <igl/writeOFF.h>
 #include <igl/readWRL.h>
 #include <igl/report_gl_error.h>
-#include <igl/triangulate.h>
+#include <igl/polygon_mesh_to_triangle_mesh.h>
 #include <igl/readOFF.h>
 #include <igl/readMESH.h>
 #include <igl/draw_mesh.h>
@@ -89,9 +89,9 @@ bool initialize_shadows(
   glGenTextures(1, &shadowMapTexture);
   glBindTexture(GL_TEXTURE_2D, shadowMapTexture);
   glTexImage2D(
-    GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 
+    GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
     factor*windowWidth,
-    factor*windowHeight, 
+    factor*windowHeight,
     0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -103,16 +103,16 @@ bool initialize_shadows(
   glGenFramebuffersEXT(1, &fbo);
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
   glFramebufferTexture2DEXT(
-    GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, 
+    GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D,
     shadowMapTexture,0);
   // Attach color render buffer
   glGenRenderbuffersEXT(1,&cfbo);
   glBindRenderbufferEXT(GL_RENDERBUFFER_EXT,cfbo);
-  glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGBA8, 
+  glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGBA8,
     factor*windowWidth, factor*windowHeight);
   //-------------------------
   //Attach color buffer to FBO
-  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, 
+  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
     GL_RENDERBUFFER_EXT, cfbo);
   //-------------------------
   //Does the GPU support current FBO configuration?
@@ -140,7 +140,7 @@ struct Mesh
   Eigen::MatrixXi F;
   Eigen::Affine3d a,da;
   Mesh():V(),N(),F(),a(Eigen::Affine3d::Identity()),da(Eigen::Affine3d::Identity())
-  { 
+  {
     using namespace Eigen;
     Quaterniond r(Eigen::Vector4d::Random());
     Quaterniond i(1,0,0,0);
@@ -368,7 +368,7 @@ void draw_objects()
     draw_mesh(mesh.V,mesh.F,mesh.N);
     glPopMatrix();
   }
-  
+
   // Draw a nice floor
   glPushMatrix();
   {
@@ -451,7 +451,7 @@ void display()
       is_animating = false;
     }
     Quaterniond q;
-    q.coeffs() = 
+    q.coeffs() =
       animation_to_quat.coeffs()*t + animation_from_quat.coeffs()*(1.-t);
     q.normalize();
     copy(q.coeffs().data(),q.coeffs().data()+4,s.camera.rotation);
@@ -496,7 +496,7 @@ void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
       const double a_diff = 1.0;
       s.camera.angle += double(direction)*a_diff;
       const double min_angle = 15.0;
-      s.camera.angle = 
+      s.camera.angle =
         min(90.0,max(min_angle,s.camera.angle));
     }
   }
@@ -596,7 +596,7 @@ void mouse_drag(int mouse_x, int mouse_y)
         Vector3d axis(0,1,0);
         const double speed = 2.0;
         Quaterniond q;
-        q = down_q * 
+        q = down_q *
           Quaterniond(
             AngleAxisd(
               M_PI*((double)(mouse_x-down_x))/(double)width*speed/2.0,
@@ -607,7 +607,7 @@ void mouse_drag(int mouse_x, int mouse_y)
           const double speed = 2.0;
           if(axis.norm() != 0)
           {
-            q = 
+            q =
               Quaterniond(
                 AngleAxisd(
                   M_PI*(mouse_y-down_y)/(double)width*speed/2.0,
@@ -708,7 +708,7 @@ void TW_CALL set_rotation_type(const void * value, void * clientData)
   using namespace igl;
   const RotationType old_rotation_type = rotation_type;
   rotation_type = *(const RotationType *)(value);
-  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP && 
+  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP &&
     old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
   {
     push_undo();
@@ -808,7 +808,7 @@ int main(int argc, char * argv[])
       {
         return 1;
       }
-      triangulate(vF,mesh.F);
+      polygon_mesh_to_triangle_mesh(vF,mesh.F);
     }
     init_mesh(mesh);
   }

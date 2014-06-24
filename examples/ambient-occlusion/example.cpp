@@ -13,7 +13,7 @@
 #include <igl/readWRL.h>
 #include <igl/trackball.h>
 #include <igl/list_to_matrix.h>
-#include <igl/triangulate.h>
+#include <igl/polygon_mesh_to_triangle_mesh.h>
 #include <igl/material_colors.h>
 #include <igl/barycenter.h>
 #include <igl/matlab_format.h>
@@ -297,7 +297,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
         cout<<"Unknown key command: "<<key<<" "<<int(key)<<endl;
       }
   }
-  
+
 }
 
 
@@ -366,7 +366,7 @@ int main(int argc, char * argv[])
     {
       return 1;
     }
-    triangulate(vF,F);
+    polygon_mesh_to_triangle_mesh(vF,F);
   }
 
   // Compute normals, centroid, colors, bounding box diagonal
