@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "polar_svd.h"
 #include <Eigen/SVD>
+#include <Eigen/Geometry>
 
 // Adapted from Olga's CGAL mentee's ARAP code
 template <
@@ -47,7 +48,14 @@ IGL_INLINE void igl::polar_svd(
   S = svd.singularValues();
   // TODO: Check for sign and switch here.
   R = U*V.transpose();
-  T = V*S.asDiagonal()*V.adjoint();
+  const auto & SV = S.asDiagonal() * V.adjoint();
+  // Check for reflection
+  if(R.determinant() < 0)
+  {
+    V.col(V.cols()-1) *= -1.;
+    R = U*V.transpose();
+  }
+  T = V*SV;
 }
 
 #ifndef IGL_HEADER_ONLY
