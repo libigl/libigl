@@ -1,4 +1,4 @@
-include ../../../Makefile.conf
+include Makefile.conf
 
 .PHONY: all
 all: 
@@ -6,18 +6,19 @@ debug:
 #all: libiglxml
 #debug: libiglxml
 
-include ../../../Makefile.conf
+include Makefile.conf
 all: CFLAGS += -O3 -DNDEBUG
 debug: CFLAGS += -g -Wall
 
 .PHONY: libiglxml
-libiglxml: obj ../../../lib/libiglxml.a
+libiglxml: obj ../lib/libiglxml.a
 
-CPP_FILES=$(wildcard *.cpp)
+SRC_DIR=../include/igl/xml/
+CPP_FILES=$(wildcard $(SRC_DIR)*.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 
 # include igl headers
-INC+=-I../../../include/
+INC+=-I../include/
 
 # EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY 
 
@@ -26,17 +27,17 @@ EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3
 INC+=$(EIGEN3_INC)
 
 #AntTweakbar dependency
-ANTTWEAKBAR_INC=-I../../../external/AntTweakBar/include
+ANTTWEAKBAR_INC=-I../external/AntTweakBar/include
 
 # xml dependency
 # TODO: linux, 32 bit etc
-TINYXML2=../../../external/tinyxml2
+TINYXML2=../external/tinyxml2
 TINYXML2_INC=-I$(TINYXML2)
 #TINYXML2_LIB=-L$(TINYXML2) -ltinyxml2
 INC+=$(TINYXML2_INC) $(ANTTWEAKBAR_INC)
 
 # AntTweakBar dependency
-ANTTWEAKBAR_INC=-I../../../external/AntTweakBar/include
+ANTTWEAKBAR_INC=-I../external/AntTweakBar/include
 INC+=$(ANTTWEAKBAR_INC)
 
 #CFLAGS+=-std=c++11
@@ -44,13 +45,13 @@ INC+=$(ANTTWEAKBAR_INC)
 obj: 
 	mkdir -p obj
 
-../../../lib/libiglxml.a: $(OBJ_FILES)
+../lib/libiglxml.a: $(OBJ_FILES)
 	rm -f $@
 	ar cqs $@ $(OBJ_FILES)
 
-obj/%.o: %.cpp %.h
+obj/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h
 	g++ $(AFLAGS) $(CFLAGS) -c -o $@ $< $(INC)
 
 clean:
 	rm -f obj/*.o
-	rm -f ../../../lib/libiglxml.a
+	rm -f ../lib/libiglxml.a
