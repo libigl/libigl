@@ -8,9 +8,9 @@
 
 #include <iostream>
 #include <string>
-#include <igl/read.h>
-#include <igl/write.h>
-#include <igl/tt.h>
+#include <igl/read_triangle_mesh.h>
+#include <igl/write_triangle_mesh.h>
+#include <igl/triangle_triangle_adjacency.h>
 #include <igl/edgetopology.h>
 
 using namespace std;

@@ -3,7 +3,7 @@
 #include <igl/matlab/mexStream.h>
 #include <igl/embree/ambient_occlusion.h>
 
-#include <igl/read.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/per_vertex_normals.h>
 
 #include <mex.h>

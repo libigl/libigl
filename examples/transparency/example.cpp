@@ -1,6 +1,6 @@
 #include <igl/OpenGL_convenience.h>
 #include <igl/per_face_normals.h>
-#include <igl/read.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/normalize_row_lengths.h>
 #include <igl/draw_mesh.h>
 #include <igl/jet.h>

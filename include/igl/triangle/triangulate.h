@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_TRIANGLE_WRAPPER_H
-#define IGL_TRIANGLE_WRAPPER_H
+#ifndef IGL_TRIANGULATE_H
+#define IGL_TRIANGULATE_H
 #include <igl/igl_inline.h>
 #include <string>
 #include <Eigen/Core>
@@ -25,7 +25,7 @@ namespace igl
   //
   // TODO: expose the option to prevent Steiner points on the boundary
   //
-  IGL_INLINE void triangle_wrapper(
+  IGL_INLINE void triangulate(
     const Eigen::MatrixXd& V,
     const Eigen::MatrixXi& E,
     const Eigen::MatrixXd& H,
@@ -36,7 +36,7 @@ namespace igl
 }
 
 #ifdef IGL_HEADER_ONLY
-#  include "triangle_wrapper.cpp"
+#  include "triangulate.cpp"
 #endif
 
 #endif
