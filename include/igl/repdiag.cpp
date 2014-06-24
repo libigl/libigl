@@ -21,13 +21,9 @@ IGL_INLINE void igl::repdiag(
   int m = A.rows();
   int n = A.cols();
 
-  // Should be able to *easily* do this in coherent order without
-  // dynamicsparsematrix
-
-  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> 
-    dyn_B(m*d,n*d);
+  B.resize(m*d,n*d);
   // Reserve enough space for new non zeros
-  dyn_B.reserve(d*A.nonZeros());
+  B.reserve(d*A.nonZeros());
 
   // loop over reps
   for(int i=0;i<d;i++)
@@ -38,12 +34,11 @@ IGL_INLINE void igl::repdiag(
       // loop inner level
       for (typename Eigen::SparseMatrix<T>::InnerIterator it(A,k); it; ++it)
       {
-        dyn_B.coeffRef(i*m+it.row(),i*n+it.col()) += it.value();
+        B.insert(i*m+it.row(),i*n+it.col()) = it.value();
       }
     }
   }
-
-  B = Eigen::SparseMatrix<T>(dyn_B);
+  B.makeCompressed();
 }
 
 template <typename T>
