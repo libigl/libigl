@@ -8,7 +8,7 @@
 #include "boundary_vertices_sorted.h"
 
 #include "triangle_triangle_adjacency.h"
-#include "vf.h"
+#include "vertex_triangle_adjacency.h"
 
 IGL_INLINE void igl::boundary_vertices_sorted(
     const Eigen::MatrixXd& V,
@@ -26,7 +26,7 @@ IGL_INLINE void igl::boundary_vertices_sorted(
   Eigen::MatrixXi TT,TTi;
   std::vector<std::vector<int> > VF, VFi;
   igl::triangle_triangle_adjacency(V,F,TT,TTi);
-  igl::vf(V,F,VF,VFi);
+  igl::vertex_triangle_adjacency(V,F,VF,VFi);
 
   // Extract one boundary edge
   bool done = false;

@@ -7,13 +7,13 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "find_cross_field_singularities.h"
-#include "cross_field_missmatch.h"
 
 #include <vector>
-#include "is_border_vertex.h"
-#include "vf.h"
-#include "is_border_vertex.h"
-#include "cross_field_missmatch.h"
+#include <igl/cross_field_missmatch.h>
+#include <igl/is_border_vertex.h>
+#include <igl/vertex_triangle_adjacency.h>
+#include <igl/is_border_vertex.h>
+#include <igl/cross_field_missmatch.h>
 
 
 template <typename DerivedV, typename DerivedF, typename DerivedM, typename DerivedO>
@@ -24,11 +24,11 @@ IGL_INLINE void igl::find_cross_field_singularities(const Eigen::PlainObjectBase
                                                     Eigen::PlainObjectBase<DerivedO> &singularityIndex)
 {
   std::vector<bool> V_border = igl::is_border_vertex(V,F);
-  
+
   std::vector<std::vector<int> > VF;
   std::vector<std::vector<int> > VFi;
-  igl::vf(V,F,VF,VFi);
-  
+  igl::vertex_triangle_adjacency(V,F,VF,VFi);
+
 
   isSingularity.setZero(V.rows(),1);
   singularityIndex.setZero(V.rows(),1);
@@ -37,7 +37,7 @@ IGL_INLINE void igl::find_cross_field_singularities(const Eigen::PlainObjectBase
     ///check that is on border..
     if (V_border[vid])
       return;
-    
+
     int missmatch=0;
     for (unsigned int i=0;i<VF[vid].size();i++)
     {
@@ -47,15 +47,15 @@ IGL_INLINE void igl::find_cross_field_singularities(const Eigen::PlainObjectBase
         if (F(VF[vid][i],z) == vid)
           j=z;
       assert(j!=-1);
-      
+
       missmatch+=Handle_MMatch(VF[vid][i],j);
     }
     missmatch=missmatch%4;
-    
+
     isSingularity(vid)=(missmatch!=0);
     singularityIndex(vid)=missmatch;
   }
-  
+
 
 }
 

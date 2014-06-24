@@ -13,7 +13,7 @@
 
 #include <igl/cotangent.h>
 #include <igl/cotmatrix.h>
-#include <igl/vf.h>
+#include <igl/vertex_triangle_adjacency.h>
 
 namespace igl
 {
@@ -162,7 +162,7 @@ IGL_INLINE void Frame_field_deformer::precompute_opt()
   using namespace Eigen;
 	nfree = V.rows() - fixed;						    // free vertices (at the beginning ov m.V) - global
   nconst = V.rows()-nfree;						// #constrained vertices
-  igl::vf(V,F,VT,VTi);                // compute vertex to face relationship
+  igl::vertex_triangle_adjacency(V,F,VT,VTi);                // compute vertex to face relationship
 
   igl::cotangent(V,F,C);							     // cotangent matrix for opt. rotations - global
 
