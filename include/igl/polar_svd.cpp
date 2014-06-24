@@ -8,6 +8,7 @@
 #include "polar_svd.h"
 #include <Eigen/SVD>
 #include <Eigen/Geometry>
+#include <iostream>
 
 // Adapted from Olga's CGAL mentee's ARAP code
 template <
@@ -46,16 +47,20 @@ IGL_INLINE void igl::polar_svd(
   U = svd.matrixU();
   V = svd.matrixV();
   S = svd.singularValues();
-  // TODO: Check for sign and switch here.
   R = U*V.transpose();
-  const auto & SV = S.asDiagonal() * V.adjoint();
+  const auto & SVT = S.asDiagonal() * V.adjoint();
   // Check for reflection
   if(R.determinant() < 0)
   {
-    V.col(V.cols()-1) *= -1.;
-    R = U*V.transpose();
+    // Annoyingly the .eval() is necessary
+    auto W = V.eval();
+    W.col(V.cols()-1) *= -1.;
+    R = U*W.transpose();
+    T = W*SVT;
+  }else
+  {
+    T = V*SVT;
   }
-  T = V*SV;
 }
 
 #ifndef IGL_HEADER_ONLY
