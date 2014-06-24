@@ -11,14 +11,13 @@ all: curvature
 igl_lib=../../
 eigen=-I$(DEFAULT_PREFIX)/include/eigen3
 
-CFLAGS=-g -O3
 inc=-I$(igl_lib)/include $(eigen)
 
 curvature: curvature.o
-	g++ $(CFLAGS) -o curvature curvature.o $(lib)
+	g++ $(CFLAGS) $(OPENMP) -o curvature curvature.o $(lib)
 
 curvature.o: curvature.cpp
-	g++ $(CFLAGS) -c curvature.cpp -o curvature.o $(inc)
+	g++ $(CFLAGS) $(OPENMP) -c curvature.cpp -o curvature.o $(inc)
 clean:
 	rm -f curvature.o
 	rm -f curvature
