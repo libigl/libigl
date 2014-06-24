@@ -149,7 +149,7 @@ void TW_CALL set_rotation_type(const void * value, void * clientData)
   using namespace igl;
   const RotationType old_rotation_type = rotation_type;
   rotation_type = *(const RotationType *)(value);
-  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP && 
+  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP &&
     old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
   {
     push_undo();
@@ -291,7 +291,7 @@ void display()
     {
       draw_mesh(V,F,s.N,s.C);
     }
-  
+
     // visualize selected patch
     glLineWidth(10);
     glBegin(GL_TRIANGLES);
@@ -390,7 +390,7 @@ void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
       break;
     default:
     case CENTER_TYPE_FPS:
-      // Move `eye` and `at` 
+      // Move `eye` and `at`
       camera.dolly((wheel==0?Vector3d(0,0,1):Vector3d(-1,0,0))*0.1*direction);
       break;
   }
@@ -487,7 +487,7 @@ void mouse_drag(int mouse_x, int mouse_y)
       }
       case ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
       {
-        // Rotate according to two axis valuator with fixed up vector 
+        // Rotate according to two axis valuator with fixed up vector
         two_axis_valuator_fixed_up(
           width, height,
           2.0,
@@ -606,7 +606,7 @@ bool save(const std::string & out_filename)
 {
   using namespace std;
   using namespace igl;
-  if(write(out_filename,V,F))
+  if(write_triangle_mesh(out_filename,V,F))
   {
     cout<<GREENGIN("Saved mesh to `"<<out_filename<<"` successfully.")<<endl;
     return true;
@@ -689,7 +689,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
         cout<<"Unknown key command: "<<key<<" "<<int(key)<<endl;
       }
   }
-  
+
 }
 
 int main(int argc, char * argv[])

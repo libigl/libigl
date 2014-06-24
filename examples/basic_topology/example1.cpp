@@ -29,12 +29,12 @@ int main (int argc, const char * argv[])
     cout << F << endl;
     cout << "-------------" << endl;
 
-    igl::write("bunny_out.off",V,F);
+    igl::write_triangle_mesh("bunny_out.off",V,F);
 
     // Face Topology
     cout << "TT Topology:" << endl;
     Eigen::MatrixXi TT;
-    igl::tt(V,F,TT);
+    igl::triangle_triangle_adjacency(V,F,TT);
     cout << TT << endl;
     cout << "-------------" << endl;
 
