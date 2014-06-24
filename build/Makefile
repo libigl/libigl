@@ -66,9 +66,9 @@ endif
 .PHONY: examples
 .PHONY: extras
 debug: lib extras
-lib: lib/libigl.a
+lib: ../lib/libigl.a
 examples: lib extras
-	make -C examples
+	make -C ../examples
 extras:
 	for p in  $(EXTRA_DIRS); \
 	do \
@@ -80,12 +80,12 @@ extras:
 #############################################################################
 # SOURCE 
 #############################################################################
-CPP_FILES=$(wildcard include/igl/*.cpp)
-H_FILES=$(wildcard include/igl/*.h)
+CPP_FILES=$(wildcard ../include/igl/*.cpp)
+H_FILES=$(wildcard ../include/igl/*.h)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 
 # include igl headers
-INC+=-Iinclude/
+INC+=-I../include/
 
 #############################################################################
 # DEPENDENCIES
@@ -100,7 +100,7 @@ INC+=$(EIGEN3_INC)
 
 # AntTweakBar dependency
 #ANTTWEAKBAR_INC=-I$(DEFAULT_PREFIX)/include
-ANTTWEAKBAR_INC=-Iexternal/AntTweakBar/include
+ANTTWEAKBAR_INC=-I../external/AntTweakBar/include
 INC+=$(ANTTWEAKBAR_INC)
 
 ## OpenGL dependency
@@ -112,34 +112,34 @@ INC+=$(ANTTWEAKBAR_INC)
 obj: 
 	mkdir -p obj
 
-lib/libigl.a: obj $(OBJ_FILES)
+../lib/libigl.a: obj $(OBJ_FILES)
 	mkdir -p lib
 	rm -f $@
 	ar cqs $@ $(OBJ_FILES)
 
-obj/%.o: include/igl/%.cpp include/igl/%.h
+obj/%.o: ../include/igl/%.cpp ../include/igl/%.h
 	$(GG) $(CFLAGS) $(AFLAGS) -c -o $@ $< $(INC)
 
-lib/igl.framework/:
-	mkdir -p $@
-	cp lib/*.a $@
-	mv $@/libigl.a $@/igl
-	mkdir -p $@/Libraries
-	mv $@/*.a $@/Libraries
-	mkdir -p $@/Headers
-	cp $(H_FILES) $@/Headers
-	for p in $(EXTRAS); \
-	do \
-	mkdir $@/Headers/$$p; \
-	cp include/igl/$$p/*.h $@/Headers/$$p; \
-	done
+#lib/igl.framework/:
+#	mkdir -p $@
+#	cp lib/*.a $@
+#	mv $@/libigl.a $@/igl
+#	mkdir -p $@/Libraries
+#	mv $@/*.a $@/Libraries
+#	mkdir -p $@/Headers
+#	cp $(H_FILES) $@/Headers
+#	for p in $(EXTRAS); \
+#	do \
+#	mkdir $@/Headers/$$p; \
+#	cp include/igl/$$p/*.h $@/Headers/$$p; \
+#	done
 
 
 clean:
-	rm -rf lib/igl.framework/
+	rm -rf ../lib/igl.framework/
 	rm -f obj/*.o
-	rm -f lib/libigl.a
-	make -C examples clean
+	rm -f ../lib/libigl.a
+	make -C ../examples clean
 	for p in  $(EXTRA_DIRS); \
 	do \
 	echo "cd $$p" ; \

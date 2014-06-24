@@ -6,7 +6,7 @@ all: example
 .PHONY: example
 
 # Shared flags etc.
-include ../../Makefile.conf
+include ../../build/Makefile.conf
 
 igl_lib=../../
 eigen=-I$(DEFAULT_PREFIX)/include/eigen3

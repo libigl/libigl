@@ -2,7 +2,7 @@
 all: example1
 
 # Shared flags etc.
-include ../../Makefile.conf
+include ../../build/Makefile.conf
 
 igl_lib=../../
 eigen_lib=$(DEFAULT_PREFIX)/include/eigen3/
