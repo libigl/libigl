@@ -224,6 +224,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     // Gather active constraints and resp. rhss
     PlainObjectBase<DerivedBeq> Beq_i;
     Beq_i.resize(Beq.rows()+as_ieq_count,1);
+    Beq_i.head(Beq.rows()) = Beq;
     {
       int k =0;
       for(int a=0;a<as_ieq.size();a++)
@@ -282,6 +283,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       ret = SOLVER_STATUS_ERROR;
       break;
     }
+    //cout<<matlab_format((Aeq*Z-Beq).eval(),"cr")<<endl;
     //cout<<matlab_format(Z,"Z")<<endl;
 #ifdef ACTIVE_SET_CPP_DEBUG
     cout<<"  post"<<endl;

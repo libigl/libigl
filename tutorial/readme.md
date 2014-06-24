@@ -37,7 +37,7 @@ of these lecture notes links to a cross-platform example application.
     * [204 Laplacian](#laplacian)
         * [Mass matrix](#massmatrix)
         * [Alternative construction of
-          Laplacian](#alternativeconstuctionoflaplacian)
+          Laplacian](#alternativeconstructionoflaplacian)
 * [Chapter 3: Matrices and Linear Algebra](#chapter3:matricesandlinearalgebra)
     * [301 Slice](#slice)
     * [302 Sort](#sort)
@@ -45,6 +45,15 @@ of these lecture notes links to a cross-platform example application.
     * [303 Laplace Equation](#laplaceequation)
         * [Quadratic energy minimization](#quadraticenergyminimization)
     * [304 Linear Equality Constraints](#linearequalityconstraints)
+    * [305 Quadratic Programming](#quadraticprogramming)
+* [Chapter 4: Shape Deformation](#chapter4:shapedeformation)
+    * [401 Biharmonic Deformation](#biharmonicdeformation)
+    * [402 Bounded Biharmonic Weights](#boundedbiharmonicweights)
+    * [403 Dual Quaternion Skinning](#dualquaternionskinning)
+    * [404 As-rigid-as-possible](#as-rigid-as-possible)
+    * [405 Fast automatic skinning
+      transformations](#fastautomaticskinningtransformations)
+
 
 # Compilation Instructions
 
@@ -370,7 +379,7 @@ An alternative construction of the discrete cotangent Laplacian is by
 "squaring" the discrete gradient operator. This may be derived by applying
 Green's identity (ignoring boundary conditions for the moment):
 
-  $\int_S \nabla f \nabla f dA = \int_S f \Delta f dA$
+  $\int_S \|\nabla f\|^2 dA = \int_S f \Delta f dA$
 
 Or in matrix form which is immediately translatable to code:
 
@@ -647,8 +656,9 @@ Notice that we can rewrite the last constraint in the familiar form from above:
 
  $z_{c} - z_{d} = 0.$
 
-Now we can assembly `Aeq` as a $1 \times n$ sparse matrix with a coefficient 1
-in the column corresponding to vertex $c$ and a -1 at $d$. The right-hand side
+Now we can assembly `Aeq` as a $1 \times n$ sparse matrix with a coefficient
+$1$
+in the column corresponding to vertex $c$ and a $-1$ at $d$. The right-hand side
 `Beq` is simply zero.
 
 Internally, `min_quad_with_fixed_*` solves using the Lagrange Multiplier
@@ -710,6 +720,48 @@ hand and foot constrained to be equal).](images/cheburashka-biharmonic-leq.jpg)
 
 ## Quadratic Programming
 
+We can generalize the quadratic optimization in the previous section even more
+by allowing inequality constraints. Specifically box constraints (lower and
+upper bounds):
+
+ $\mathbf{l} \le \mathbf{z} \le \mathbf{u},$
+
+where $\mathbf{l},\mathbf{u}$ are $n \times 1$ vectors of lower and upper
+bounds
+and general linear inequality constraints:
+
+ $\mathbf{A}_{ieq} \mathbf{z} \le \mathbf{B}_{ieq},$
+
+where $\mathbf{A}_{ieq}$ is a $k \times n$ matrix of linear coefficients and
+$\mathbf{B}_{ieq}$ is a $k \times 1$ matrix of constraint right-hand sides.
+
+Again, we are overly general as the box constraints could be written as
+rows of the linear inequality constraints, but bounds appear frequently enough
+to merit a dedicated api.
+
+Libigl implements its own active set routine for solving _quadratric programs_
+(QPs). This algorithm works by iteratively "activating" violated inequality
+constraints by enforcing them as equalities and "deactivating" constraints
+which are no longer needed.
+
+After deciding which constraints are active each iteration simple reduces to a
+quadratic minimization subject to linear _equality_ constraints, and the method
+from the previous section is invoked. This is repeated until convergence.
+
+Currently the implementation is efficient for box constraints and sparse
+non-overlapping linear inequality constraints.
+
+Unlike alternative interior-point methods, the active set method benefits from
+a warm-start (initial guess for the solution vector $\mathbf{z}$).
+
+```cpp
+igl::active_set_params as;
+// Z is optional initial guess and output
+igl::active_set(Q,B,b,bc,Aeq,Beq,Aieq,Bieq,lx,ux,as,Z);
+```
+
+![The example `QuadraticProgramming` uses an active set solver to optimize
+discrete biharmonic kernels at multiple scales [#rustamov_2011][].](images/cheburashka-multiscale-biharmonic-kernels.jpg)
 
 [#meyer_2003]: Mark Meyer and Mathieu Desbrun and Peter Schröder and Alan H.  Barr,
 "Discrete Differential-Geometry Operators for Triangulated
@@ -721,3 +773,4 @@ _Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
 2013.
 [#kazhdan_2012]: Michael Kazhdan, Jake Solomon, Mirela Ben-Chen,
 "Can Mean-Curvature Flow Be Made Non-Singular," 2012.
+[#rustamov_2011]: Raid M. Rustamov, "Multiscale Biharmonic Kernels", 2011.
