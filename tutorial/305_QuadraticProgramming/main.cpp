@@ -1,0 +1,94 @@
+#include <igl/active_set.h>
+#include <igl/boundary_faces.h>
+#include <igl/cotmatrix.h>
+#include <igl/invert_diag.h>
+#include <igl/jet.h>
+#include <igl/massmatrix.h>
+#include <igl/readOFF.h>
+#include <igl/viewer/Viewer.h>
+#include <Eigen/Sparse>
+#include <iostream>
+
+  
+Eigen::VectorXi b;
+Eigen::VectorXd B,bc,lx,ux,Beq,Bieq,Z;
+Eigen::SparseMatrix<double> Q,Aeq,Aieq;
+
+void solve(igl::Viewer &viewer)
+{
+  using namespace std;
+  igl::active_set_params as;
+  as.max_iter = 8;
+  igl::active_set(Q,B,b,bc,Aeq,Beq,Aieq,Bieq,lx,ux,as,Z);
+  // Pseudo-color based on solution
+  Eigen::MatrixXd C;
+  igl::jet(Z,0,1,C);
+  viewer.set_colors(C);
+}
+
+bool key_down(igl::Viewer &viewer, unsigned char key, int mod)
+{
+  switch(key)
+  {
+    case '.':
+      Beq(0) *= 2.0;
+      solve(viewer);
+      return true;
+    case ',':
+      Beq(0) /= 2.0;
+      solve(viewer);
+      return true;
+    case ' ':
+      solve(viewer);
+      return true;
+    default:
+      return false;
+  }
+}
+
+
+int main(int argc, char *argv[])
+{
+  using namespace Eigen;
+  using namespace std;
+  MatrixXd V;
+  MatrixXi F;
+  igl::readOFF("../shared/cheburashka.off",V,F);
+
+  // Plot the mesh
+  igl::Viewer viewer;
+  viewer.set_mesh(V, F);
+  viewer.options.show_lines = false;
+  viewer.callback_key_down = &key_down;
+
+  // One fixed point
+  b.resize(1,1);
+  // point on belly.
+  b<<2556;
+  bc.resize(1,1);
+  bc<<1;
+
+  // Construct Laplacian and mass matrix
+  SparseMatrix<double> L,M,Minv;
+  igl::cotmatrix(V,F,L);
+  igl::massmatrix(V,F,igl::MASSMATRIX_VORONOI,M);
+  //M = (M/M.diagonal().maxCoeff()).eval();
+  igl::invert_diag(M,Minv);
+  // Bi-Laplacian
+  Q = L.transpose() * (Minv * L);
+  // Zero linear term
+  B = VectorXd::Zero(V.rows(),1);
+
+  // Lower and upper bound
+  lx = VectorXd::Zero(V.rows(),1);
+  ux = VectorXd::Ones(V.rows(),1);
+
+  // Equality constraint constrain solution to sum to 1
+  Beq.resize(1,1);
+  Beq(0) = 0.08;
+  Aeq = M.diagonal().transpose().sparseView();
+  // (Empty inequality constraints)
+  solve(viewer);
+
+  viewer.launch();
+}

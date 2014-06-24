@@ -50,6 +50,7 @@ IGL_INLINE bool igl::is_symmetric(
 {
   using namespace Eigen;
   using namespace igl;
+  using namespace std;
   if(A.rows() != A.cols())
   {
     return false;
@@ -60,6 +61,10 @@ IGL_INLINE bool igl::is_symmetric(
   VectorXi AmATI,AmATJ;
   Matrix<AType,Dynamic,1> AmATV;
   find(AmAT,AmATI,AmATJ,AmATV);
+  if(AmATI.size() == 0)
+  {
+    return true;
+  }
   
   return AmATV.maxCoeff() < epsilon && AmATV.minCoeff() > -epsilon;
 }
