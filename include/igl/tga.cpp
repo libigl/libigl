@@ -59,7 +59,7 @@ typedef struct {
   int laststate;
 } RLEstate;
 
-static int
+IGL_INLINE static int
 std_fread(RLEstate *rleInfo, unsigned char *buf, size_t datasize, size_t nelems, FILE *fp)
 {
   if (_verbose > 1) {
@@ -75,7 +75,7 @@ std_fread(RLEstate *rleInfo, unsigned char *buf, size_t datasize, size_t nelems,
 #define RLE_PACKETSIZE 0x80
 
 /* Decode a bufferful of file. */
-static int
+IGL_INLINE static int
 rle_fread(RLEstate *rleInfo, unsigned char *vbuf, size_t datasize, size_t nelems, FILE *fp)
 {
 
@@ -184,7 +184,7 @@ rle_fread(RLEstate *rleInfo, unsigned char *vbuf, size_t datasize, size_t nelems
   return nelems;
 }
 
-igl::gliGenericImage *
+IGL_INLINE igl::gliGenericImage *
 igl::gliReadTGA(FILE *fp, char *name, int hflip, int vflip)
 {
   igl::TgaHeader tgaHeader;
@@ -468,7 +468,7 @@ igl::gliReadTGA(FILE *fp, char *name, int hflip, int vflip)
   return genericImage;
 }
 
-int igl::gli_verbose(int new_verbose)
+IGL_INLINE int igl::gli_verbose(int new_verbose)
 {
   _verbose = new_verbose;
   return _verbose;
@@ -507,14 +507,14 @@ unsigned char TGAHeaderBW[12] =
 // this makes sure that 
 // image size is written in correct format 
 // and byte order (least first)
-void write16bit(int n, FILE* fp) { 
+IGL_INLINE void write16bit(int n, FILE* fp) { 
   unsigned char bytes[] = { static_cast<unsigned char>(n % 256), static_cast<unsigned char>(n / 256) };
   fwrite(bytes, 2, sizeof(unsigned char),fp);
 }
 
 
 
-void igl::writeTGA( igl::gliGenericImage* image, FILE *fp) {
+IGL_INLINE void igl::writeTGA( igl::gliGenericImage* image, FILE *fp) {
 
   assert(!image->cmap); // we do not deal with color map images
     

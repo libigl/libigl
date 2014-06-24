@@ -35,11 +35,11 @@ namespace igl
   template <typename ScalarMatrix, typename IndexMatrix>
   IGL_INLINE ScalarMatrix project_mesh
   (
-    const ScalarMatrix & V_source,
-    const IndexMatrix  & F_source,
+		const ScalarMatrix & V_source,
+  	const IndexMatrix  & F_source,
     const ScalarMatrix & V_target,
     const IndexMatrix  & F_target
-  );
+	);
 
   // Project the point cloud V_source onto the triangle mesh
   // V_target,F_target. 

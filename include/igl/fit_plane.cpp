@@ -9,7 +9,7 @@
 #include "fit_plane.h"
 #include <iostream>
 
-void igl::fit_plane(
+IGL_INLINE void igl::fit_plane(
     const Eigen::MatrixXd & V,
     Eigen::RowVector3d & N,
     Eigen::RowVector3d & C)

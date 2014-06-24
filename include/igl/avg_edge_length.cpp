@@ -10,7 +10,7 @@
 #include <vector>
 
 template <typename DerivedV, typename DerivedF>
-double igl::avg_edge_length(
+IGL_INLINE double igl::avg_edge_length(
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F)
 {
