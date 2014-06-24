@@ -1,4 +1,4 @@
-include ../../Makefile.conf
+include ../../build/Makefile.conf
 
 CXX=g++
 

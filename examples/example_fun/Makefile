@@ -3,7 +3,7 @@
 all: example_static example_header_only
 
 # Shared flags etc.
-include ../../Makefile.conf
+include ../../build/Makefile.conf
 
 igl_lib=../../
 

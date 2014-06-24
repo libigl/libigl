@@ -2,7 +2,7 @@
 .PHONY: all
 
 # Shared flags etc.
-include ../../Makefile.conf
+include ../../build/Makefile.conf
 
 all: curvature
 

@@ -4,7 +4,7 @@
 all: example
 
 # Shared flags etc.
-include ../../Makefile.conf
+include ../../build/Makefile.conf
 
 .PHONY: example
 
