@@ -3,18 +3,19 @@
 all: libiglcgal
 debug: libiglcgal
 
-include ../../../Makefile.conf
+include Makefile.conf
 all: CFLAGS += -O3 -DNDEBUG 
 debug: CFLAGS += -g -Wall -Werror
 
 .PHONY: libcgal
-libiglcgal: obj ../../../lib/libiglcgal.a
+libiglcgal: obj ../lib/libiglcgal.a
 
-CPP_FILES=$(wildcard *.cpp)
+SRC_DIR=../include/igl/cgal/
+CPP_FILES=$(wildcard $(SRC_DIR)*.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 
 # include igl headers
-INC+=-I../../../include/
+INC+=-I../include/
 
 # EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY 
 
@@ -32,13 +33,13 @@ INC+=$(CGAL_INC)
 obj: 
 	mkdir -p obj
 
-../../../lib/libiglcgal.a: $(OBJ_FILES)
+../lib/libiglcgal.a: $(OBJ_FILES)
 	rm -f $@
 	ar cqs $@ $(OBJ_FILES)
 
-obj/%.o: %.cpp %.h
+obj/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h
 	g++ $(AFLAGS) $(CFLAGS) -c -o $@ $< $(INC)
 
 clean:
 	rm -f obj/*.o
-	rm -f ../../../lib/libiglcgal.a
+	rm -f ../lib/libiglcgal.a

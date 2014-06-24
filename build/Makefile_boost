@@ -1,21 +1,22 @@
-include ../../../Makefile.conf
+include Makefile.conf
 
 .PHONY: all
 all: libiglboost
 debug: libiglboost
 
-include ../../../Makefile.conf
+include Makefile.conf
 all: CFLAGS += -O3 -DNDEBUG
 debug: CFLAGS += -g -Wall 
 
 .PHONY: libiglboost
-libiglboost: obj ../../../lib/libiglboost.a
+libiglboost: obj ../lib/libiglboost.a
 
-CPP_FILES=$(wildcard *.cpp)
+SRC_DIR=../include/igl/boost/
+CPP_FILES=$(wildcard $(SRC_DIR)*.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 
 # include igl headers
-INC+=-I../../../include/
+INC+=-I../include/
 
 # EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY 
 
@@ -31,13 +32,13 @@ INC+=$(BOOST_INC)
 obj: 
 	mkdir -p obj
 
-../../../lib/libiglboost.a: $(OBJ_FILES)
+../lib/libiglboost.a: $(OBJ_FILES)
 	rm -f $@
 	ar cqs $@ $(OBJ_FILES)
 
-obj/%.o: %.cpp %.h
+obj/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h
 	g++ $(AFLAGS) $(OPENMP) $(CFLAGS) -c -o $@ $< $(INC)
 
 clean:
 	rm -f obj/*.o
-	rm -f ../../../lib/libiglboost.a
+	rm -f ../lib/libiglboost.a
