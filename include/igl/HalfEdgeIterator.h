@@ -6,8 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef IGL_POS_H
-#define IGL_POS_H
+#ifndef IGL_HALFEDGEITERATOR_H
+#define IGL_HALFEDGEITERATOR_H
 
 #include <Eigen/Core>
 
@@ -15,13 +15,14 @@
 
 namespace igl
 {
-  // Pos - Fake halfedge for fast and easy navigation on triangle meshes with VT and TT adjacency
+  // HalfEdgeIterator - Fake halfedge for fast and easy navigation on triangle meshes with vertex_triangle_adjacency and
+  // triangle_triangle adjacency
   template <typename DerivedF>
   class Pos
   {
   public:
-    // Init the pos by specifying Face,Edge Index and Orientation
-    IGL_INLINE Pos(
+    // Init the HalfEdgeIterator by specifying Face,Edge Index and Orientation
+    IGL_INLINE HalfEdgeIterator(
         const Eigen::PlainObjectBase<DerivedF>* F,
         const Eigen::PlainObjectBase<DerivedF>* FF,
         const Eigen::PlainObjectBase<DerivedF>* FFi,
