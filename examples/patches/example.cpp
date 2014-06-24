@@ -25,7 +25,7 @@
 #include <igl/boost/components.h>
 #include <igl/boost/bfs_orient.h>
 #include <igl/orient_outward.h>
-#include <igl/embree/orient_outward_ao.h>
+#include <igl/embree/reorient_facets_raycast.h>
 #include <igl/unique_simplices.h>
 #include <igl/C_STR.h>
 #include <igl/write_triangle_mesh.h>
@@ -567,9 +567,11 @@ void init_patches()
   switch(orient_method)
   {
     case ORIENT_METHOD_AO:
+    {
       cout<<"orient_outward_ao()"<<endl;
-      orient_outward_ao(V,F,CC,100, F.rows() * 100,F,I);
+      reorient_facets_raycast(V,F,F,I);
       break;
+    }
     case ORIENT_METHOD_OUTWARD:
     default:
       cout<<"orient_outward()"<<endl;
