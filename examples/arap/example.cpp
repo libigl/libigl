@@ -432,8 +432,8 @@ void display()
   const double floor_offset =
     -2./bbd*(V.col(1).maxCoeff()-mid(1));
   glTranslated(0,floor_offset,0);
-  const float GREY[4] = {0.5,0.5,0.6,1.0};
-  const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
+  //const float GREY[4] = {0.5,0.5,0.6,1.0};
+  //const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
 
   //draw_floor(GREY,DARK_GREY);
   draw_floor();
