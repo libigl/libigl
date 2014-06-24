@@ -20,7 +20,7 @@ namespace igl
   // Inputs:
   //   V  #V by dim list of vertex positions 
   //   F  #F by 3 list of triangle indices
-  // Returns vector of indices of vertices on open boundary of F
+  // Returns #V vector of bools revealing whether vertices are on boundary
   //
   // Known Bugs: does not depend on V
   // 

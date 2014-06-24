@@ -37,11 +37,23 @@ of these lecture notes links to a cross-platform example application.
     * [204 Laplacian](#laplacian)
         * [Mass matrix](#massmatrix)
         * [Alternative construction of
-          Laplacian](#alternativeconstuctionoflaplacian)
+          Laplacian](#alternativeconstructionoflaplacian)
 * [Chapter 3: Matrices and Linear Algebra](#chapter3:matricesandlinearalgebra)
     * [301 Slice](#slice)
-    * [301 Sort](#sort)
+    * [302 Sort](#sort)
         * [Other Matlab-style functions](#othermatlab-stylefunctions) 
+    * [303 Laplace Equation](#laplaceequation)
+        * [Quadratic energy minimization](#quadraticenergyminimization)
+    * [304 Linear Equality Constraints](#linearequalityconstraints)
+    * [305 Quadratic Programming](#quadraticprogramming)
+* [Chapter 4: Shape Deformation](#chapter4:shapedeformation)
+    * [401 Biharmonic Deformation](#biharmonicdeformation)
+    * [402 Bounded Biharmonic Weights](#boundedbiharmonicweights)
+    * [403 Dual Quaternion Skinning](#dualquaternionskinning)
+    * [404 As-rigid-as-possible](#as-rigid-as-possible)
+    * [405 Fast automatic skinning
+      transformations](#fastautomaticskinningtransformations)
+
 
 # Compilation Instructions
 
@@ -367,7 +379,7 @@ An alternative construction of the discrete cotangent Laplacian is by
 "squaring" the discrete gradient operator. This may be derived by applying
 Green's identity (ignoring boundary conditions for the moment):
 
-  $\int_S \nabla f \nabla f dA = \int_S f \Delta f dA$
+  $\int_S \|\nabla f\|^2 dA = \int_S f \Delta f dA$
 
 Or in matrix form which is immediately translatable to code:
 
@@ -493,8 +505,263 @@ functionality as common matlab functions.
 - `igl::median` Compute the median per column
 - `igl::mode` Compute the mode per column
 - `igl::orth` Orthogonalization of a basis
+- `igl::setdiff` Set difference of matrix elements
 - `igl::speye` Identity as sparse matrix
 
+## Laplace Equation
+A common linear system in geometry processing is the Laplace equation:
+
+ $∆z = 0$
+
+subject to some boundary conditions, for example Dirichlet boundary conditions
+(fixed value):
+
+ $\left.z\right|_{\partial{S}} = z_{bc}$
+
+In the discrete setting, this begins with the linear system:
+
+ $\mathbf{L} \mathbf{z} = \mathbf{0}$
+
+where $\mathbf{L}$ is the $n \times n$ discrete Laplacian and $\mathbf{z}$ is a
+vector of per-vertex values. Most of $\mathbf{z}$ correspond to interior
+vertices and are unknown, but some of $\mathbf{z}$ represent values at boundary
+vertices. Their values are known so we may move their corresponding terms to
+the right-hand side.
+
+Conceptually, this is very easy if we have sorted $\mathbf{z}$ so that interior
+vertices come first and then boundary vertices:
+
+ $$\left(\begin{array}{cc}
+ \mathbf{L}_{in,in} & \mathbf{L}_{in,b}\\
+ \mathbf{L}_{b,in} & \mathbf{L}_{b,b}\end{array}\right) 
+ \left(\begin{array}{c}
+ \mathbf{z}_{in}\\
+ \mathbf{L}_{b}\end{array}\right) = 
+ \left(\begin{array}{c}
+ \mathbf{0}_{in}\\
+ \mathbf{*}_{b}\end{array}\right)$$ 
+
+The bottom block of equations is no longer meaningful so we'll only consider
+the top block:
+
+ $$\left(\begin{array}{cc}
+ \mathbf{L}_{in,in} & \mathbf{L}_{in,b}\end{array}\right) 
+ \left(\begin{array}{c}
+ \mathbf{z}_{in}\\
+ \mathbf{z}_{b}\end{array}\right) = 
+ \mathbf{0}_{in}$$
+
+Where now we can move known values to the right-hand side:
+
+ $$\mathbf{L}_{in,in} 
+ \mathbf{z}_{in} = -
+ \mathbf{L}_{in,b}
+ \mathbf{z}_{b}$$
+
+Finally we can solve this equation for the unknown values at interior vertices
+$\mathbf{z}_{in}$.
+
+However, probably our vertices are not sorted. One option would be to sort `V`,
+then proceed as above and then _unsort_ the solution `Z` to match `V`. However,
+this solution is not very general.
+
+With array slicing no explicit sort is needed. Instead we can _slice-out_
+submatrix blocks ($\mathbf{L}_{in,in}$, $\mathbf{L}_{in,b}$, etc.) and follow
+the linear algebra above directly. Then we can slice the solution _into_ the
+rows of `Z` corresponding to the interior vertices.
+
+![The `LaplaceEquation` example solves a Laplace equation with Dirichlet
+boundary conditions.](images/camelhead-laplace-equation.jpg)
+
+### Quadratic energy minimization
+
+The same Laplace equation may be equivalently derived by minimizing Dirichlet
+energy subject to the same boundary conditions:
+
+ $\mathop{\text{minimize }}_z \frac{1}{2}\int\limits_S \|\nabla z\|^2 dA$
+
+On our discrete mesh, recall that this becomes
+
+ $\mathop{\text{minimize }}_\mathbf{z}  \frac{1}{2}\mathbf{z}^T \mathbf{G}^T \mathbf{D}
+ \mathbf{G} \mathbf{z} \rightarrow \mathop{\text{minimize }}_\mathbf{z} \mathbf{z}^T \mathbf{L} \mathbf{z}$
+
+The general problem of minimizing some energy over a mesh subject to fixed
+value boundary conditions is so wide spread that libigl has a dedicated api for
+solving such systems. 
+
+Let's consider a general quadratic minimization problem subject to different
+common constraints:
+
+ $$\mathop{\text{minimize }}_\mathbf{z}  \frac{1}{2}\mathbf{z}^T \mathbf{Q} \mathbf{z} +
+ \mathbf{z}^T \mathbf{B} + \text{constant},$$
+
+ subject to
+ 
+ $$\mathbf{z}_b = \mathbf{z}_{bc} \text{ and } \mathbf{A}_{eq} \mathbf{z} =
+ \mathbf{B}_{eq},$$
+
+where 
+
+  - $\mathbf{Q}$ is a (usually sparse) $n \times n$ positive semi-definite
+    matrix of quadratic coefficients (Hessian), 
+  - $\mathbf{B}$ is a $n \times 1$ vector of linear coefficients, 
+  - $\mathbf{z}_b$ is a $|b| \times 1$ portion of
+$\mathbf{z}$ corresponding to boundary or _fixed_ vertices,
+  - $\mathbf{z}_{bc}$ is a $|b| \times 1$ vector of known values corresponding to
+    $\mathbf{z}_b$,
+  - $\mathbf{A}_{eq}$ is a (usually sparse) $m \times n$ matrix of linear
+    equality constraint coefficients (one row per constraint), and
+  - $\mathbf{B}_{eq}$ is a $m \times 1$ vector of linear equality constraint
+    right-hand side values.
+
+This specification is overly general as we could write $\mathbf{z}_b =
+\mathbf{z}_{bc}$ as rows of $\mathbf{A}_{eq} \mathbf{z} =
+\mathbf{B}_{eq}$, but these fixed value constraints appear so often that they
+merit a dedicated place in the API.
+
+In libigl, solving such quadratic optimization problems is split into two
+routines: precomputation and solve. Precomputation only depends on the
+quadratic coefficients, known value indices and linear constraint coefficients:
+
+```cpp
+igl::min_quad_with_fixed_data mqwf;
+igl::min_quad_with_fixed_precompute(Q,b,Aeq,true,mqwf);
+```
+
+The output is a struct `mqwf` which contains the system matrix factorization
+and is used during solving with arbitrary linear terms, known values, and
+constraint right-hand sides:
+
+```cpp
+igl::min_quad_with_fixed_solve(mqwf,B,bc,Beq,Z);
+```
+
+The output `Z` is a $n \times 1$ vector of solutions with fixed values
+correctly placed to match the mesh vertices `V`.
+
+## Linear Equality Constraints
+We saw above that `min_quad_with_fixed_*` in libigl provides a compact way to
+solve general quadratic programs. Let's consider another example, this time
+with active linear equality constraints. Specifically let's solve the
+`bi-Laplace equation` or equivalently minimize the Laplace energy:
+
+ $$\Delta^2 z = 0 \leftrightarrow \mathop{\text{minimize }}\limits_z \frac{1}{2}
+ \int\limits_S (\Delta z)^2 dA$$
+
+subject to fixed value constraints and a linear equality constraint:
+
+ $z_{a} = 1, z_{b} = -1$ and $z_{c} = z_{d}$.
+
+Notice that we can rewrite the last constraint in the familiar form from above:
+
+ $z_{c} - z_{d} = 0.$
+
+Now we can assembly `Aeq` as a $1 \times n$ sparse matrix with a coefficient
+$1$
+in the column corresponding to vertex $c$ and a $-1$ at $d$. The right-hand side
+`Beq` is simply zero.
+
+Internally, `min_quad_with_fixed_*` solves using the Lagrange Multiplier
+method. This method adds additional variables for each linear constraint (in
+general a $m \times 1$ vector of variables $\lambda$) and then solves the
+saddle problem:
+
+ $$\mathop{\text{find saddle }}_{\mathbf{z},\lambda}\, \frac{1}{2}\mathbf{z}^T \mathbf{Q} \mathbf{z} +
+  \mathbf{z}^T \mathbf{B} + \text{constant} + \lambda^T\left(\mathbf{A}_{eq}
+ \mathbf{z} - \mathbf{B}_{eq}\right)$$
+
+This can be rewritten in a more familiar form by stacking $\mathbf{z}$ and
+$\lambda$ into one $(m+n) \times 1$ vector of unknowns:
+
+ $$\mathop{\text{find saddle }}_{\mathbf{z},\lambda}\, 
+ \frac{1}{2}
+ \left(
+  \mathbf{z}^T 
+  \lambda^T
+ \right)
+ \left(
+  \begin{array}{cc}
+  \mathbf{Q}      & \mathbf{A}_{eq}^T\\
+  \mathbf{A}_{eq} & 0
+  \end{array}
+ \right)
+ \left(
+  \begin{array}{c}
+  \mathbf{z}\\
+  \lambda
+  \end{array}
+ \right) + 
+ \left(
+  \mathbf{z}^T 
+  \lambda^T
+ \right)
+ \left(
+  \begin{array}{c}
+  \mathbf{B}\\
+  -\mathbf{B}_{eq}
+  \end{array}
+  \right)
+  + \text{constant}$$
+
+Differentiating with respect to $\left( \mathbf{z}^T \lambda^T \right)$ reveals
+a linear system and we can solve for $\mathbf{z}$ and $\lambda$. The only
+difference from
+the straight quadratic
+_minimization_ system, is that 
+this saddle problem system will not be positive definite. Thus, we must use a
+different factorization technique (LDLT rather than LLT). Luckily, libigl's
+`min_quad_with_fixed_precompute` automatically chooses the correct solver in
+the presence of linear equality constraints.
+
+![The example `LinearEqualityConstraints` first solves with just fixed value
+constraints (left: 1 and -1 on the left hand and foot respectively), then
+solves with an additional linear equality constraint (right: points on right
+hand and foot constrained to be equal).](images/cheburashka-biharmonic-leq.jpg)
+
+## Quadratic Programming
+
+We can generalize the quadratic optimization in the previous section even more
+by allowing inequality constraints. Specifically box constraints (lower and
+upper bounds):
+
+ $\mathbf{l} \le \mathbf{z} \le \mathbf{u},$
+
+where $\mathbf{l},\mathbf{u}$ are $n \times 1$ vectors of lower and upper
+bounds
+and general linear inequality constraints:
+
+ $\mathbf{A}_{ieq} \mathbf{z} \le \mathbf{B}_{ieq},$
+
+where $\mathbf{A}_{ieq}$ is a $k \times n$ matrix of linear coefficients and
+$\mathbf{B}_{ieq}$ is a $k \times 1$ matrix of constraint right-hand sides.
+
+Again, we are overly general as the box constraints could be written as
+rows of the linear inequality constraints, but bounds appear frequently enough
+to merit a dedicated api.
+
+Libigl implements its own active set routine for solving _quadratric programs_
+(QPs). This algorithm works by iteratively "activating" violated inequality
+constraints by enforcing them as equalities and "deactivating" constraints
+which are no longer needed.
+
+After deciding which constraints are active each iteration simple reduces to a
+quadratic minimization subject to linear _equality_ constraints, and the method
+from the previous section is invoked. This is repeated until convergence.
+
+Currently the implementation is efficient for box constraints and sparse
+non-overlapping linear inequality constraints.
+
+Unlike alternative interior-point methods, the active set method benefits from
+a warm-start (initial guess for the solution vector $\mathbf{z}$).
+
+```cpp
+igl::active_set_params as;
+// Z is optional initial guess and output
+igl::active_set(Q,B,b,bc,Aeq,Beq,Aieq,Bieq,lx,ux,as,Z);
+```
+
+![The example `QuadraticProgramming` uses an active set solver to optimize
+discrete biharmonic kernels at multiple scales [#rustamov_2011][].](images/cheburashka-multiscale-biharmonic-kernels.jpg)
 
 [#meyer_2003]: Mark Meyer and Mathieu Desbrun and Peter Schröder and Alan H.  Barr,
 "Discrete Differential-Geometry Operators for Triangulated
@@ -506,3 +773,4 @@ _Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
 2013.
 [#kazhdan_2012]: Michael Kazhdan, Jake Solomon, Mirela Ben-Chen,
 "Can Mean-Curvature Flow Be Made Non-Singular," 2012.
+[#rustamov_2011]: Raid M. Rustamov, "Multiscale Biharmonic Kernels", 2011.

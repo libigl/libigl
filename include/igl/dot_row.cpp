@@ -7,23 +7,16 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "igl/dot_row.h"
 
-using namespace Eigen;
-
-namespace igl
+template <typename DerivedV>
+IGL_INLINE Eigen::PlainObjectBase<DerivedV> igl::dot_row(
+  const Eigen::PlainObjectBase<DerivedV>& A,
+  const Eigen::PlainObjectBase<DerivedV>& B
+  )
 {
+  assert(A.rows() == B.rows());
+  assert(A.cols() == B.cols());
 
-  template <typename DerivedV>
-  IGL_INLINE Eigen::PlainObjectBase<DerivedV> dot_row(
-    const Eigen::PlainObjectBase<DerivedV>& A,
-    const Eigen::PlainObjectBase<DerivedV>& B
-    )
-  {
-    assert(A.rows() == B.rows());
-    assert(A.cols() == B.cols());
-
-    return (A.array() * B.array()).rowwise().sum();
-  }
-
+  return (A.array() * B.array()).rowwise().sum();
 }
 
 #ifndef IGL_HEADER_ONLY
