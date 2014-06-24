@@ -14,7 +14,7 @@
 #include <iostream>
 
 template <typename DerivedF, typename DerivedC, typename AScalar>
-void igl::manifold_patches(
+IGL_INLINE void igl::manifold_patches(
   const Eigen::PlainObjectBase<DerivedF> & F,
   Eigen::PlainObjectBase<DerivedC> & C,
   Eigen::SparseMatrix<AScalar> & A)

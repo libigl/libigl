@@ -26,8 +26,8 @@ namespace igl
   {
     public:
     protected:
-      virtual std::streamsize xsputn(const char *s, std::streamsize n); 
-      virtual int overflow(int c = EOF);
+      inline virtual std::streamsize xsputn(const char *s, std::streamsize n); 
+      inline virtual int overflow(int c = EOF);
   }; 
 }
 #ifdef IGL_HEADER_ONLY

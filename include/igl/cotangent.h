@@ -13,22 +13,16 @@ namespace igl
 {
   // COTANGENT compute the cotangents of each angle in mesh (V,F)
   // 
-  // Templates:
-  //   MatV  vertex position matrix, e.g. Eigen::MatrixXd
-  //   MatF  face index matrix, e.g. Eigen::MatrixXd
-  //   MatC  cotangent weights matrix, e.g. Eigen::MatrixXd
   // Inputs:
   //   V  #V by dim list of rest domain positions
   //   F  #F by {3|4} list of {triangle|tetrahedra} indices into V
   // Outputs:
-  //   C  #F by {3|6} list of cotangents corresponding angles
-  //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
-  //     for tets, columns correspond to edges
-  //     [1,2],[2,0],[0,1],[3,0],[3,1],[3,2] **times corresponding edge
-  //     lengths**
+  //     C  #F by 3 list of 1/2*cotangents corresponding angles
+  //       for triangles, columns correspond to edges [1,2],[2,0],[0,1]
+  //   OR
+  //     C  #F by 6 list of 1/6*cotangents of dihedral angles*edge lengths
+  //       for tets, columns along edges [1,2],[2,0],[0,1],[3,0],[3,1],[3,2] 
   //
-  // Known bug:
-  //   This computes 0.5*cotangent
   template <typename DerivedV, typename DerivedF, typename DerivedC>
   IGL_INLINE void cotangent(
     const Eigen::PlainObjectBase<DerivedV>& V,

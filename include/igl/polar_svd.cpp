@@ -45,6 +45,7 @@ IGL_INLINE void igl::polar_svd(
   U = svd.matrixU();
   V = svd.matrixV();
   S = svd.singularValues();
+  // TODO: Check for sign and switch here.
   R = U*V.transpose();
   T = V*S.asDiagonal()*V.adjoint();
 }

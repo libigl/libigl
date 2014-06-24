@@ -230,7 +230,7 @@ void draw_scene(const igl::Camera & v_camera,
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
   glLoadIdentity();
-  if(v_camera.m_angle > Camera::MIN_ANGLE)
+  if(v_camera.m_angle > IGL_CAMERA_MIN_ANGLE)
   {
     gluPerspective(v_camera.m_angle,v_camera.m_aspect,v_camera.m_near,v_camera.m_far);
   }else
