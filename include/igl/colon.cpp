@@ -47,7 +47,7 @@ IGL_INLINE void igl::colon(
   I.resize(n);
   int i = 0;
   T v = (T)low;
-  while((low<hi && (H)v<=hi) || (low>hi && (H)v>=hi))
+  while((low==hi && (H)v==hi) || (low<hi && (H)v<=hi) || (low>hi && (H)v>=hi))
   {
     I(i) = v;
     v = v + (T)step;

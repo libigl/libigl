@@ -12,7 +12,7 @@
 #include "find.h"
 #include "sparse.h"
 #include "repmat.h"
-#include "lu_lagrange.h"
+//#include "lu_lagrange.h"
 #include "full.h"
 #include "matlab_format.h"
 #include "EPS.h"
@@ -109,7 +109,10 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   }else
   {
     // determine if A(unknown,unknown) is symmetric and/or positive definite
-    data.Auu_sym = is_symmetric(Auu,EPS<double>());
+    VectorXi AuuI,AuuJ;
+    MatrixXd AuuV;
+    find(Auu,AuuI,AuuJ,AuuV);
+    data.Auu_sym = is_symmetric(Auu,EPS<double>()*AuuV.maxCoeff());
   }
 
   // Determine number of linearly independent constraints
@@ -144,6 +147,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     nc = data.AeqTQR.rank();
     assert(nc<=neq);
     data.Aeq_li = nc == neq;
+    //cout<<"data.Aeq_li: "<<data.Aeq_li<<endl;
   }else
   {
     data.Aeq_li = true;
@@ -378,6 +382,8 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
   using namespace std;
   using namespace Eigen;
   using namespace igl;
+  typedef Matrix<T,Dynamic,1> VectorXT;
+  typedef Matrix<T,Dynamic,Dynamic> MatrixXT;
   // number of known rows
   int kr = data.known.size();
   if(kr!=0)
@@ -402,56 +408,55 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
 
   if(data.Aeq_li)
   {
-
-  // number of lagrange multipliers aka linear equality constraints
-  int neq = data.lagrange.size();
-  // append lagrange multiplier rhs's
-  Eigen::Matrix<T,Eigen::Dynamic,1> BBeq(B.size() + Beq.size());
-  BBeq << B, (Beq*-2.0);
-  // Build right hand side
-  Eigen::Matrix<T,Eigen::Dynamic,1> BBequl;
-  igl::slice(BBeq,data.unknown_lagrange,BBequl);
-  Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> BBequlcols;
-  igl::repmat(BBequl,1,cols,BBequlcols);
-  Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> NB;
-  if(kr == 0)
-  {
-    NB = BBequlcols;
-  }else
-  {
-    NB = data.preY * Y + BBequlcols;
-  }
-
-  //std::cout<<"NB=["<<std::endl<<NB<<std::endl<<"];"<<std::endl;
-  //cout<<matlab_format(NB,"NB")<<endl;
-  switch(data.solver_type)
-  {
-    case igl::min_quad_with_fixed_data<T>::LLT:
-      sol = data.llt.solve(NB);
-      break;
-    case igl::min_quad_with_fixed_data<T>::LDLT:
-      sol = data.ldlt.solve(NB);
-      break;
-    case igl::min_quad_with_fixed_data<T>::LU:
-      // Not a bottleneck
-      sol = data.lu.solve(NB);
-      break;
-    default:
-      cerr<<"Error: invalid solver type"<<endl;
-      return false;
-  }
-  //std::cout<<"sol=["<<std::endl<<sol<<std::endl<<"];"<<std::endl;
-  // Now sol contains sol/-0.5
-  sol *= -0.5;
-  // Now sol contains solution
-  // Place solution in Z
-  for(int i = 0;i<(sol.rows()-neq);i++)
-  {
-    for(int j = 0;j<sol.cols();j++)
+    // number of lagrange multipliers aka linear equality constraints
+    int neq = data.lagrange.size();
+    // append lagrange multiplier rhs's
+    VectorXT BBeq(B.size() + Beq.size());
+    BBeq << B, (Beq*-2.0);
+    // Build right hand side
+    VectorXT BBequl;
+    igl::slice(BBeq,data.unknown_lagrange,BBequl);
+    MatrixXT BBequlcols;
+    igl::repmat(BBequl,1,cols,BBequlcols);
+    MatrixXT NB;
+    if(kr == 0)
     {
-      Z(data.unknown_lagrange(i),j) = sol(i,j);
+      NB = BBequlcols;
+    }else
+    {
+      NB = data.preY * Y + BBequlcols;
     }
-  }
+
+    //std::cout<<"NB=["<<std::endl<<NB<<std::endl<<"];"<<std::endl;
+    //cout<<matlab_format(NB,"NB")<<endl;
+    switch(data.solver_type)
+    {
+      case igl::min_quad_with_fixed_data<T>::LLT:
+        sol = data.llt.solve(NB);
+        break;
+      case igl::min_quad_with_fixed_data<T>::LDLT:
+        sol = data.ldlt.solve(NB);
+        break;
+      case igl::min_quad_with_fixed_data<T>::LU:
+        // Not a bottleneck
+        sol = data.lu.solve(NB);
+        break;
+      default:
+        cerr<<"Error: invalid solver type"<<endl;
+        return false;
+    }
+    //std::cout<<"sol=["<<std::endl<<sol<<std::endl<<"];"<<std::endl;
+    // Now sol contains sol/-0.5
+    sol *= -0.5;
+    // Now sol contains solution
+    // Place solution in Z
+    for(int i = 0;i<(sol.rows()-neq);i++)
+    {
+      for(int j = 0;j<sol.cols();j++)
+      {
+        Z(data.unknown_lagrange(i),j) = sol(i,j);
+      }
+    }
   }else
   {
     assert(data.solver_type == min_quad_with_fixed_data<T>::QR_LLT);

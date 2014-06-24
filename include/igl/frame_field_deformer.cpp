@@ -284,7 +284,7 @@ IGL_INLINE void Frame_field_deformer::compute_optimal_positions()
   for (int i=0;i<nfree;i++)
   {
     b.row(i) << 0.0, 0.0, 0.0;
-    for (int k=0;k<VT[i].size();k++)					// for all incident triangles
+    for (int k=0;k<(int)VT[i].size();k++)					// for all incident triangles
     {
       t = VT[i][k];												// incident tri
 			vi = (i==F(t,0))?0:(i==F(t,1))?1:(i==F(t,2))?2:3;	// index of i in t
@@ -345,7 +345,7 @@ IGL_INLINE void Frame_field_deformer::compute_optimal_positions()
   using namespace Eigen;
 
   WW.resize(F.rows());
-	for (int i=0;i<FF.size();i++)
+	for (int i=0;i<(int)FF.size();i++)
 	{
 		Vector3d v0,v1,v2;
 		v0 = FF[i].col(0);
@@ -360,7 +360,7 @@ IGL_INLINE void Frame_field_deformer::compute_optimal_positions()
 
 		// polar decomposition to discard rotational component (unnecessary but makes it easier)
 		Eigen::JacobiSVD<Matrix<double,3,3> > svd(AI, Eigen::ComputeFullU | Eigen::ComputeFullV );
-		Matrix<double,3,3>  au = svd.matrixU();
+		//Matrix<double,3,3>  au = svd.matrixU();
 		Matrix<double,3,3>  av = svd.matrixV();
 		DiagonalMatrix<double,3>	as(svd.singularValues());
 		WW[i] = av*as*av.transpose();
