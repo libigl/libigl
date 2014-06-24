@@ -68,7 +68,7 @@ void app_init(int argc, char* argv[], CurvatureCalculator& c, Eigen::MatrixXd& V
                 break;
             case 'i':
                 meshName=*++argv;
-                igl::read(meshName,V,F);
+                igl::read_triangle_mesh(meshName,V,F);
                 argc--;
                 break;
             case 'k':
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
     string filename;
 
     app_init(argc,argv,c,V,F);
-    
+
     c.init(V,F);
 
     c.computeCurvature();

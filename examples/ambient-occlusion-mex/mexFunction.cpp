@@ -11,7 +11,7 @@
 #include <iostream>
 #include <string>
 
-void mexFunction(int nlhs, mxArray *plhs[], 
+void mexFunction(int nlhs, mxArray *plhs[],
     int nrhs, const mxArray *prhs[])
 {
   // This is useful for debugging whether Matlab is caching the mex binary
@@ -31,7 +31,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   // Prepare left-hand side
   nlhs = 1;
 
-  //read("../shared/cheburashka.off",V,F);
+  //read_triangle_mesh("../shared/cheburashka.off",V,F);
   //P = V;
   //per_vertex_normals(V,F,N);
   ambient_occlusion(V,F,P,N,num_samples,S);

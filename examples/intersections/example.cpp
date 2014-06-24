@@ -97,7 +97,7 @@ void TW_CALL set_rotation_type(const void * value, void * clientData)
   using namespace igl;
   const RotationType old_rotation_type = rotation_type;
   rotation_type = *(const RotationType *)(value);
-  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP && 
+  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP &&
     old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
   {
     push_undo();
@@ -446,7 +446,7 @@ void mouse_drag(int mouse_x, int mouse_y)
       }
       case ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
       {
-        // Rotate according to two axis valuator with fixed up vector 
+        // Rotate according to two axis valuator with fixed up vector
         two_axis_valuator_fixed_up(
           width, height,
           2.0,
@@ -536,7 +536,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
         cout<<"Unknown key command: "<<key<<" "<<int(key)<<endl;
       }
   }
-  
+
   glutPostRedisplay();
 }
 
@@ -622,13 +622,13 @@ int main(int argc, char * argv[])
     return true;
   };
 
-  if(!read(filename,V,F,N))
+  if(!read_triangle_mesh(filename,V,F,N))
   {
     return 1;
   }
   if(has_other)
   {
-    if(!read(argv[2],U,G,W))
+    if(!read_triangle_mesh(argv[2],U,G,W))
     {
       return 1;
     }
@@ -656,7 +656,7 @@ int main(int argc, char * argv[])
   }
   // Create a tweak bar
   rebar.TwNewBar("TweakBar");
-  rebar.TwAddVarRW("camera_rotation", TW_TYPE_QUAT4D, 
+  rebar.TwAddVarRW("camera_rotation", TW_TYPE_QUAT4D,
     s.camera.m_rotation_conj.coeffs().data(), "open readonly=true");
   s.camera.push_away(3);
   s.camera.dolly_zoom(25-s.camera.m_angle);

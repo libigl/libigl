@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_TRIANGULATE_H
 #define IGL_TRIANGULATE_H
@@ -14,7 +14,7 @@
 #endif
 #include <vector>
 
-namespace igl 
+namespace igl
 {
   // Triangulate a general polygonal mesh into a triangle mesh.
   //
@@ -26,7 +26,7 @@ namespace igl
   // Example:
   //   vector<vector<double > > vV;
   //   vector<vector<int > > vF;
-  //   read("poly.obj",vV,vF);
+  //   read_triangle_mesh("poly.obj",vV,vF);
   //   MatrixXd V;
   //   MatrixXi F;
   //   list_to_matrix(vV,V);
@@ -42,4 +42,3 @@ namespace igl
 #endif
 
 #endif
-
