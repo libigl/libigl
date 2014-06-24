@@ -7,15 +7,16 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "cross_field_missmatch.h"
-#include "comb_cross_field.h"
+
 
 #include <vector>
 #include <deque>
-#include "per_face_normals.h"
-#include "is_border_vertex.h"
-#include "vf.h"
-#include "triangle_triangle_adjacency.h"
-#include "rotation_matrix_from_directions.h"
+#include <igl/comb_cross_field.h>
+#include <igl/per_face_normals.h>
+#include <igl/is_border_vertex.h>
+#include <igl/vertex_triangle_adjacency.h>
+#include <igl/triangle_triangle_adjacency.h>
+#include <igl/rotation_matrix_from_directions.h>
 
 namespace igl {
   template <typename DerivedV, typename DerivedF, typename DerivedO>
@@ -116,7 +117,7 @@ public:
   {
     igl::per_face_normals(V,F,N);
     V_border = igl::is_border_vertex(V,F);
-    igl::vf(V,F,VF,VFi);
+    igl::vertex_triangle_adjacency(V,F,VF,VFi);
     igl::triangle_triangle_adjacency(V,F,TT,TTi);
   }
 

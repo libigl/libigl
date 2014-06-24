@@ -22,7 +22,7 @@
 #include <igl/per_face_normals.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/avg_edge_length.h>
-#include <igl/vf.h>
+#include <igl/vertex_triangle_adjacency.h>
 
 typedef enum
 {
@@ -332,7 +332,7 @@ IGL_INLINE void CurvatureCalculator::init(const Eigen::MatrixXd& V, const Eigen:
 
   faces = F;
   igl::adjacency_list(F, vertex_to_vertices);
-  igl::vf(V, F, vertex_to_faces, vertex_to_faces_index);
+  igl::vertex_triangle_adjacency(V, F, vertex_to_faces, vertex_to_faces_index);
   igl::per_face_normals(V, F, face_normals);
   igl::per_vertex_normals(V, F, face_normals, vertex_normals);
 }
@@ -773,11 +773,11 @@ IGL_INLINE void CurvatureCalculator::printCurvature(std::string outpath)
 }
 
 template <
-  typename DerivedV, 
+  typename DerivedV,
   typename DerivedF,
-  typename DerivedPD1, 
-  typename DerivedPD2, 
-  typename DerivedPV1, 
+  typename DerivedPD1,
+  typename DerivedPD2,
+  typename DerivedPV1,
   typename DerivedPV2>
 IGL_INLINE void igl::principal_curvature(
   const Eigen::PlainObjectBase<DerivedV>& V,
@@ -822,7 +822,7 @@ IGL_INLINE void igl::principal_curvature(
     PD2.row(i) << cc.curvDir[i][1][0], cc.curvDir[i][1][1], cc.curvDir[i][1][2];
     PD1.row(i).normalize();
     PD2.row(i).normalize();
-    
+
     if (isnan(PD1(i,0)) || isnan(PD1(i,1)) || isnan(PD1(i,2)) || isnan(PD2(i,0)) || isnan(PD2(i,1)) || isnan(PD2(i,2)))
     {
       PD1.row(i) << 0,0,0;

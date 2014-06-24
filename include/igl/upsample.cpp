@@ -55,10 +55,6 @@ IGL_INLINE void igl::upsample(
   int n_odd = V.rows();
   int n_even = counter;
 
-  // Not sure what this is
-  //Eigen::DynamicSparseMatrix<double> SUBD(V.rows()+n_even,V.rows());
-  //SUBD.reserve(15 * (V.rows()+n_even));
-
   // Preallocate NV and NF
   NV.resize(V.rows()+n_even,V.cols());
   NF.resize(F.rows()*4,3);
