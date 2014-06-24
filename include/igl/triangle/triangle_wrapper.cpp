@@ -84,16 +84,21 @@ IGL_INLINE void igl::triangle_wrapper(
   free(in.holelist);
 
   // Cleanup out
+  free(out.pointlist);
+  free(out.trianglelist);
+  free(out.segmentlist);
+
+  // Return the mesh
   V2.resize(out.numberofpoints,2);
   for (unsigned i=0;i<V2.rows();++i)
     for (unsigned j=0;j<2;++j)
       V2(i,j) = out.pointlist[i*2+j];
-  
+
   F2.resize(out.numberoftriangles,3);
   for (unsigned i=0;i<F2.rows();++i)
     for (unsigned j=0;j<3;++j)
       F2(i,j) = out.trianglelist[i*3+j];
-  
+
 }
 
 #ifndef IGL_HEADER_ONLY

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(601_Serialization)
+project(604_Triangle)
 
 include("../CMakeLists.shared")
 find_package(TRIANGLE REQUIRED)
