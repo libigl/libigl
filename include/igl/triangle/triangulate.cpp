@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "triangle_wrapper.h"
+#include "triangulate.h"
 #define REAL double
 #define VOID int
 
@@ -14,7 +14,7 @@ extern "C"
 #include <triangle.h>
 }
 
-IGL_INLINE void igl::triangle_wrapper(
+IGL_INLINE void igl::triangulate(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& E,
   const Eigen::MatrixXd& H,

@@ -31,7 +31,7 @@
 //#include <igl/embree/orient_outward_ao.h>
 #include <igl/unique_simplices.h>
 #include <igl/C_STR.h>
-#include <igl/write.h>
+#include <igl/write_triangle_mesh.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>

@@ -1,7 +1,7 @@
 
 #define IGL_HEADER_ONLY
 #include <igl/principal_curvature.h>
-#include <igl/read.h>
+#include <igl/read_triangle_mesh.h>
 #include <iostream>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
