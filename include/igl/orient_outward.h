@@ -17,7 +17,7 @@ namespace igl
   // Inputs:
   //   V  #V by 3 list of vertex positions
   //   F  #F by 3 list of triangle indices
-  //   C  #F list of components
+  //   C  #F list of components (output of manifold_patches)
   // Outputs:
   //   FF  #F by 3 list of new triangle indices such that FF(~I,:) = F(~I,:) and
   //     FF(I,:) = fliplr(F(I,:)) (OK if &FF = &F)
