@@ -15,7 +15,6 @@
 #define IGL_MOD_SUPER           0x0008
 
 #ifdef ENABLE_XML_SERIALIZATION
-  #define IGL_HEADER_ONLY
   #include <igl/xml/XMLSerializer.h>
   #include <igl/xml/XMLSerialization.h>
 #endif
