@@ -303,7 +303,7 @@ int main(int argc, char * argv[])
   {
     filename = argv[1];
   }
-  if(!read(filename,V,F))
+  if(!read_triangle_mesh(filename,V,F))
   {
     return 1;
   }

@@ -13,13 +13,13 @@
             <li><a href=#header_benefits_drawbacks>Benefits and drawbacks</a></li>
           </ul>
         </li>
-        <li> 
+        <li>
           <a href=#static_library>Statically linked library (libigl.a)</a>
           <ul>
             <li><a href=#static_benefits_drawbacks>Benefits and drawbacks</a></li>
           </ul>
         </li>
-        <li> 
+        <li>
           <a href=#compress>Compressed igl.h/igl.cpp pair</a>
           <ul>
             <li><a href=#compress_benefits_drawbacks>Benefits and drawbacks</a></li>
@@ -30,7 +30,7 @@
         </li>
         <li><a href=#matlab>Conversion from matlab</a>
       <ul>
-    </div> 
+    </div>
     <div id=container>
     <div class=article_outer>
     <div class=article_inner>
@@ -97,7 +97,7 @@
 
       <div class=note>This practice is not recommended outside of debugging
       purposes.</div>
-      
+
 
       <h3 id=header_benefits_drawbacks>Benefits of headers-only library</h3>
       <ul>
@@ -214,7 +214,7 @@ cd /to/your/project
 make 2&gt;$LIBIGL/make.err
 cd $LIBIGL
 cat make.err | ./autoexplicit.sh
-make clean 
+make clean
 make
         </code></pre>
 
@@ -241,11 +241,11 @@ make
       <p>Calling the script:</p>
       <pre><code>scripts/compress.sh igl.h igl.cpp</code></pre>
       <p>will create a single header
-      <code>igl.h</code> and a single cpp file <code>igl.cpp</code>. 
+      <code>igl.h</code> and a single cpp file <code>igl.cpp</code>.
 
       <p>Alternatively, you can also compress everything into a single header file (analagous to IGL_HEADER_ONLY):</p>
       <pre><code>scripts/compress.sh igl.h</code></pre>
-      
+
       <h3 id=compress_benefits_drawbacks>Benefits of compressed .h/.cpp pair</h3>
       <ul>
         <li><strong>Easy incorporation:</strong> This can be easily incorporated
@@ -278,7 +278,7 @@ int main(int argc, char * argv[])
 {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
-  return (argc&gt;=2 &amp;&amp; igl::read(argv[1],V,F)?0:1);
+  return (argc&gt;=2 &amp;&amp; igl::read_triangle_mesh(argv[1],V,F)?0:1);
 }
       </code></pre>
       <p>Then compile <code>igl.cpp</code> with:
@@ -314,10 +314,10 @@ grep OpenGL `grep -L IGL_NO_OPENGL include/igl/*`
         optional. All OpenGL-dependent functions may be disabled by defining
         the <code>IGL_NO_OPENGL</code> preprocessor macro.</p>
         </p>
-        <p> Likewise, 
+        <p> Likewise,
           <a href="http://www.antisphere.com/Wiki/tools:anttweakbar">AntTweakBar</a>
-          is an 
-        <i>assumed</i> dependency, similarly diabled by defining 
+          is an
+        <i>assumed</i> dependency, similarly diabled by defining
         the <code>IGL_NO_ANTTWEAKBAR</code> preprocessor macro.</p>
 
         <p><span class=todo>Each IGL_NO_XXX should just be replaced by a libiglXXX.a extra</span></p>
@@ -350,7 +350,7 @@ grep OpenGL `grep -L IGL_NO_OPENGL include/igl/*`
         translation table</a>). We have implemented a few additional
         matlab-esque functions to make the translation even easier. <a
         href="matlab-to-eigen.html">Our own translation table</a> shows a list
-        of common matlab functions and their igl-eigen equivalents.  
+        of common matlab functions and their igl-eigen equivalents.
       </p>
 
       <h3>Including OpenGL</h3>
