@@ -16,7 +16,7 @@
 #include <igl/list_to_matrix.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
-#include <igl/triangulate.h>
+#include <igl/polygon_mesh_to_triangle_mesh.h>
 #include <igl/material_colors.h>
 #include <igl/barycenter.h>
 #include <igl/matlab_format.h>
@@ -615,7 +615,7 @@ int main(int argc, char * argv[])
       {
         return false;
       }
-      triangulate(vF,F);
+      polygon_mesh_to_triangle_mesh(vF,F);
     }
     // Compute normals, centroid, colors, bounding box diagonal
     per_face_normals(V,F,N);

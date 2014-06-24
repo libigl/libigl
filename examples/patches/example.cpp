@@ -3,7 +3,7 @@
 #include <igl/writeOFF.h>
 #include <igl/readWRL.h>
 #include <igl/report_gl_error.h>
-#include <igl/triangulate.h>
+#include <igl/polygon_mesh_to_triangle_mesh.h>
 #include <igl/readOFF.h>
 #include <igl/readMESH.h>
 #include <igl/draw_mesh.h>
@@ -766,7 +766,7 @@ int main(int argc, char * argv[])
     {
       return 1;
     }
-    triangulate(vF,F);
+    polygon_mesh_to_triangle_mesh(vF,F);
   }
   MatrixXi F_unique;
   unique_simplices(F, F_unique);
