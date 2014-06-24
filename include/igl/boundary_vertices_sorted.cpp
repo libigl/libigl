@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "boundary_vertices_sorted.h"
 
-#include "tt.h"
+#include "triangle_triangle_adjacency.h"
 #include "vf.h"
 
 IGL_INLINE void igl::boundary_vertices_sorted(
@@ -25,7 +25,7 @@ IGL_INLINE void igl::boundary_vertices_sorted(
   assert(is_manifold(V,F) && "Mesh must be manifold");
   Eigen::MatrixXi TT,TTi;
   std::vector<std::vector<int> > VF, VFi;
-  igl::tt(V,F,TT,TTi);
+  igl::triangle_triangle_adjacency(V,F,TT,TTi);
   igl::vf(V,F,VF,VFi);
 
   // Extract one boundary edge

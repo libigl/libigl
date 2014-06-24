@@ -1,24 +1,24 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "is_border_vertex.h"
 #include <vector>
 
-#include "tt.h"
+#include "triangle_triangle_adjacency.h"
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE std::vector<bool> igl::is_border_vertex(const Eigen::PlainObjectBase<DerivedV> &V, const Eigen::PlainObjectBase<DerivedF> &F)
 {
   Eigen::PlainObjectBase<DerivedF> FF;
-  igl::tt(V,F,FF);
+  igl::triangle_triangle_adjacency(V,F,FF);
   std::vector<bool> ret(V.rows());
   for(unsigned i=0; i<ret.size();++i)
     ret[i] = false;
-  
+
   for(unsigned i=0; i<F.rows();++i)
     for(unsigned j=0;j<F.cols();++j)
       if(FF(i,j) == -1)

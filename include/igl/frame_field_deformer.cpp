@@ -14,7 +14,6 @@
 #include <igl/cotangent.h>
 #include <igl/cotmatrix.h>
 #include <igl/vf.h>
-#include <igl/tt.h>
 
 namespace igl
 {
