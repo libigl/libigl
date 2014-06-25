@@ -5,10 +5,10 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "removeUnreferenced.h"
+#include "remove_unreferenced.h"
 
 template <typename Scalar, typename Index>
-IGL_INLINE void igl::removeUnreferenced(
+IGL_INLINE void igl::remove_unreferenced(
   const Eigen::PlainObjectBase<Scalar> &V,
   const Eigen::PlainObjectBase<Index> &F,
   Eigen::PlainObjectBase<Scalar> &NV,
