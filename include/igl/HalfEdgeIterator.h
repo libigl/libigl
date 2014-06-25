@@ -18,7 +18,7 @@ namespace igl
   // HalfEdgeIterator - Fake halfedge for fast and easy navigation on triangle meshes with vertex_triangle_adjacency and
   // triangle_triangle adjacency
   template <typename DerivedF>
-  class Pos
+  class HalfEdgeIterator
   {
   public:
     // Init the HalfEdgeIterator by specifying Face,Edge Index and Orientation
@@ -128,7 +128,7 @@ namespace igl
     }
 
 
-    IGL_INLINE bool operator==(Pos& p2)
+    IGL_INLINE bool operator==(HalfEdgeIterator& p2)
     {
       return
       (
