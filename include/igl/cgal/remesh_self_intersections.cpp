@@ -5,15 +5,15 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "selfintersect.h"
+#include "remesh_self_intersections.h"
 #include "SelfIntersectMesh.h"
 #include <igl/C_STR.h>
 #include <list>
 
-IGL_INLINE void igl::selfintersect(
+IGL_INLINE void igl::remesh_self_intersections(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
-  const SelfintersectParam & params,
+  const RemeshSelfIntersectionsParam & params,
   Eigen::MatrixXd & VV,
   Eigen::MatrixXi & FF,
   Eigen::MatrixXi & IF,

@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_SELFINTERSECT_H
-#define IGL_SELFINTERSECT_H
+#ifndef IGL_REMESH_SELF_INTERSECTIONS_H
+#define IGL_REMESH_SELF_INTERSECTIONS_H
 #include <igl/igl_inline.h>
 
 #include <Eigen/Dense>
@@ -22,11 +22,11 @@ namespace igl
 {
   // Optional Parameters
   //   DetectOnly  Only compute IF, leave VV and FF alone
-  struct SelfintersectParam
+  struct RemeshSelfIntersectionsParam
   {
     bool detect_only;
     bool first_only;
-    SelfintersectParam():detect_only(false),first_only(false){};
+    RemeshSelfIntersectionsParam():detect_only(false),first_only(false){};
   };
   
   // Given a triangle mesh (V,F) compute a new mesh (VV,FF) which is the same as
@@ -53,10 +53,10 @@ namespace igl
   // any resulting additional vertices along that edge may not get properly
   // connected so that the output mesh has the same global topology. This is
   // because 
-  IGL_INLINE void selfintersect(
+  IGL_INLINE void remesh_self_intersections(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
-    const SelfintersectParam & params,
+    const RemeshSelfIntersectionsParam & params,
     Eigen::MatrixXd & VV,
     Eigen::MatrixXi & FF,
     Eigen::MatrixXi & IF,
@@ -65,7 +65,7 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "selfintersect.cpp"
+#  include "remesh_self_intersections.cpp"
 #endif
   
 #endif
