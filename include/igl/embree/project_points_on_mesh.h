@@ -33,7 +33,7 @@ namespace igl
   //// the barycentric coordinates wrt the first two edges of the triangle
   //// To convert to standard global coordinates, see barycentric_to_global.h
   //template <typename ScalarMatrix, typename IndexMatrix>
-  //IGL_INLINE ScalarMatrix project_mesh
+  //IGL_INLINE ScalarMatrix project_points_on_mesh
   //(
 	//	const ScalarMatrix & V_source,
   //	const IndexMatrix  & F_source,
@@ -69,7 +69,7 @@ namespace igl
 
 }
 #ifndef IGL_STATIC_LIBRARY
-#  include "project_mesh.cpp"
+#  include "project_points_on_mesh.cpp"
 #endif
 
 #endif
