@@ -12,7 +12,7 @@
 // IGL includes 
 #include <igl/matrix_to_list.h>
 #include <igl/list_to_matrix.h>
-#include <igl/boundary_faces.h>
+#include <igl/boundary_facets.h>
 
 // STL includes
 #include <cassert>
@@ -55,7 +55,7 @@ IGL_INLINE int igl::tetrahedralize(
   {
     return -1;
   }
-  boundary_faces(TT,TF);
+  boundary_facets(TT,TF);
   return 0;
 }
 

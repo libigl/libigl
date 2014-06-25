@@ -1,4 +1,4 @@
-#include <igl/boundary_faces.h>
+#include <igl/boundary_facets.h>
 #include <igl/cotmatrix.h>
 #include <igl/invert_diag.h>
 #include <igl/jet.h>
