@@ -1,3 +1,4 @@
+1.0.0  Major beta release: many renames, tutorial, triangle wrapper, org. build
 0.4.6  Generalized Winding Numbers
 0.4.5  CGAL extra: mesh selfintersection
 0.4.4  STL file format support
