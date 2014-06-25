@@ -38,7 +38,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedL>& L);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "edge_lengths.cpp"
 #endif
 

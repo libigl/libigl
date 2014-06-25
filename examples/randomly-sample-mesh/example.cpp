@@ -546,7 +546,7 @@ int main(int argc, char * argv[])
   //  }
   //  //if(F.size() > T.size() || F.size() == 0)
   //  {
-  //    boundary_faces(T,F);
+  //    boundary_facets(T,F);
   //  }
   }
   if(vV.size() > 0)

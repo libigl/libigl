@@ -51,7 +51,7 @@ namespace igl
   IGL_INLINE bool example_fun(const Printable &amp; input);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "example_fun.cpp"
 #endif
 
@@ -76,7 +76,7 @@ IGL_INLINE bool igl::example_fun(const Printable &amp; input)
   return true;
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 template bool igl::example_fun&lt;double&gt;(const double&amp; input);
 template bool igl::example_fun&lt;int&gt;(const int&amp; input);
 #endif

@@ -75,7 +75,7 @@ namespace igl
   IGL_INLINE Eigen::IOFormat matlab_format();
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "matlab_format.cpp"
 #endif
 

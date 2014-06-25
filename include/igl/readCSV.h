@@ -28,7 +28,7 @@ namespace igl
     Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& M);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "readCSV.cpp"
 #endif
 

@@ -29,7 +29,7 @@ namespace igl
     Eigen::Quaterniond & s);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "snap_to_fixed_up.cpp"
 #endif
 

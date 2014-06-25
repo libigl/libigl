@@ -32,7 +32,7 @@ namespace igl
                                       const double &threshold,
                                       Eigen::PlainObjectBase<DerivedV> &Vout);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "planarize_quad_mesh.cpp"
 #endif
 

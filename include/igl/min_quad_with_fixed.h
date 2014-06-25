@@ -25,7 +25,10 @@ namespace igl
   // QR decomposition otherwise:
   //   http://www.okstate.edu/sas/v8/sashtml/ormp/chap5/sect32.htm
   //
-  // MIN_QUAD_WITH_FIXED Minimize quadratic energy Z'*A*Z + Z'*B + C with
+  // MIN_QUAD_WITH_FIXED Minimize quadratic energy 
+  //
+  // 0.5*Z'*A*Z + Z'*B + C with
+  //
   // constraints that Z(known) = Y, optionally also subject to the constraints
   // Aeq*Z = Beq
   //
@@ -152,7 +155,7 @@ struct igl::min_quad_with_fixed_data
   Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> NB;
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "min_quad_with_fixed.cpp"
 #endif
 

@@ -27,7 +27,7 @@ namespace igl
     std::vector<T> & ordered);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "reorder.cpp"
 #endif
 

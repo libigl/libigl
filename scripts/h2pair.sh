@@ -71,13 +71,13 @@ $after" | sed '1,/endif/d'`;
   then
     after=`echo "$after
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif"` 
   fi
   echo "$before
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include \"$filename.cpp\"
 #endif
 

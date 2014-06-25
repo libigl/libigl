@@ -54,7 +54,7 @@ namespace igl
     Eigen::Matrix<T,Eigen::Dynamic,1> & V);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "find.cpp"
 #endif
 

@@ -49,7 +49,7 @@ namespace igl
                                                  Eigen::PlainObjectBase<DerivedO> &isSingularity,
                                                  Eigen::PlainObjectBase<DerivedO> &singularityIndex);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "find_cross_field_singularities.cpp"
 #endif
 

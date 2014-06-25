@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "lscm.h"
 
-#include <igl/areamatrix.h>
+#include <igl/vector_area_matrix.h>
 #include <igl/cotmatrix.h>
 //#include <igl/kronecker_product.h>
 #include <igl/repdiag.h>
@@ -27,7 +27,7 @@ IGL_INLINE void igl::lscm(
   
   // Assemble the area matrix (note that A is #Vx2 by #Vx2)
   SparseMatrix<double> A;
-  igl::areamatrix(F,A);
+  igl::vector_area_matrix(F,A);
 
   // Assemble the cotan laplacian matrix
   SparseMatrix<double> L;
@@ -45,7 +45,7 @@ IGL_INLINE void igl::lscm(
   }
   
   // Minimize the LSCM energy
-  SparseMatrix<double> Q = -0.5*L_flat + A;
+  SparseMatrix<double> Q = -L_flat + 2.*A;
   const VectorXd B_flat = VectorXd::Zero(V.rows()*2);
   igl::min_quad_with_fixed_data<double> data;
   igl::min_quad_with_fixed_precompute(Q,b_flat,SparseMatrix<double>(),true,data);
@@ -64,6 +64,6 @@ IGL_INLINE void igl::lscm(
 
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif

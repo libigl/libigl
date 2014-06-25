@@ -41,7 +41,7 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedC> & C,
     const Eigen::PlainObjectBase<DerivedBE> & BE);
 };
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "draw_skeleton_3d.h"
 #endif
 #endif

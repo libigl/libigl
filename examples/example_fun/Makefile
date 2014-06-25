@@ -3,11 +3,11 @@
 all: example_static example_header_only
 
 # Shared flags etc.
-include ../../Makefile.conf
+include ../../build/Makefile.conf
 
 igl_lib=../../
 
-CFLAGS=-g
+CFLAGS+=-g
 inc=-I$(igl_lib)/include
 
 STATIC_LIB=-ligl -L../../lib

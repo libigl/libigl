@@ -2022,7 +2022,7 @@ namespace igl
       return;
     //Compute mesh centroid
     Eigen::SparseMatrix<double> M;
-    igl::massmatrix(V,F,igl::MASSMATRIX_VORONOI,M);
+    igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_VORONOI,M);
     const auto & MV = M*V;
     Eigen::RowVector3d centroid  = MV.colwise().sum()/M.diagonal().sum();
     Eigen::RowVector3d min_point = V.colwise().minCoeff();

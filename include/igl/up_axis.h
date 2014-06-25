@@ -25,7 +25,7 @@ IGL_INLINE void up_axis(double * x, double * y, double * z);
 IGL_INLINE void up_axis(const double * mv, double * x, double * y, double * z);
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "up_axis.cpp"
 #endif
 #endif

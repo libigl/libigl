@@ -9,7 +9,7 @@
 #define IGL_SELFINTERSECTMESH_H
 
 #include "CGAL_includes.hpp"
-#include "selfintersect.h"
+#include "remesh_self_intersections.h"
 
 #include <Eigen/Dense>
 #include <list>
@@ -81,16 +81,16 @@ namespace igl
       typedef std::map<EMK,EMV> EdgeMap;
       EdgeMap edge2faces;
     public:
-      SelfintersectParam params;
+      RemeshSelfIntersectionsParam params;
     public:
       // Constructs (VV,FF) a new mesh with self-intersections of (V,F)
       // subdivided
       //
-      // See also: selfintersect.h
+      // See also: remesh_self_intersections.h
       inline SelfIntersectMesh(
         const Eigen::MatrixXd & V,
         const Eigen::MatrixXi & F,
-        const SelfintersectParam & params,
+        const RemeshSelfIntersectionsParam & params,
         Eigen::MatrixXd & VV,
         Eigen::MatrixXi & FF,
         Eigen::MatrixXi & IF,
@@ -252,7 +252,7 @@ template <typename Kernel>
 inline igl::SelfIntersectMesh<Kernel>::SelfIntersectMesh(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
-  const SelfintersectParam & params,
+  const RemeshSelfIntersectionsParam & params,
   Eigen::MatrixXd & VV,
   Eigen::MatrixXi & FF,
   Eigen::MatrixXi & IF,

@@ -25,7 +25,7 @@ namespace igl
   template <> IGL_INLINE double EPS_SQ<double>();
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "EPS.cpp"
 #endif
 

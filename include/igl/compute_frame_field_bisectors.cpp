@@ -72,6 +72,6 @@ IGL_INLINE void igl::compute_frame_field_bisectors(
 
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif

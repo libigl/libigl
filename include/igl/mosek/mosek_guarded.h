@@ -20,7 +20,7 @@ namespace igl
   IGL_INLINE MSKrescodee mosek_guarded(const MSKrescodee r);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "mosek_guarded.cpp"
 #endif
 

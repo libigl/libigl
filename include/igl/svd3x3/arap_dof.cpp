@@ -262,7 +262,7 @@ IGL_INLINE bool igl::arap_dof_precomputation(
     // Build cotangent laplacian
     SparseMatrix<double> Mass;
     //printf("massmatrix()\n");
-    massmatrix(V,F,(F.cols()>3?MASSMATRIX_BARYCENTRIC:MASSMATRIX_VORONOI),Mass);
+    massmatrix(V,F,(F.cols()>3?MASSMATRIX_TYPE_BARYCENTRIC:MASSMATRIX_TYPE_VORONOI),Mass);
     //cout<<"MIJV=["<<endl;print_ijv(Mass,1);cout<<endl<<"];"<<
     //  endl<<"M=sparse(MIJV(:,1),MIJV(:,2),MIJV(:,3),"<<
     //  Mass.rows()<<","<<Mass.cols()<<");"<<endl;
@@ -875,7 +875,7 @@ IGL_INLINE bool igl::arap_dof_update(
   return true;
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit instanciation
 template bool igl::arap_dof_update<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(ArapDOFData<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, int, double, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
 template bool igl::arap_dof_recomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::SparseMatrix<double, 0, int> const&, ArapDOFData<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>&);

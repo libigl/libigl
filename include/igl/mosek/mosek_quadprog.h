@@ -120,7 +120,7 @@ namespace igl
     Eigen::VectorXd & x);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "mosek_quadprog.cpp"
 #endif
 

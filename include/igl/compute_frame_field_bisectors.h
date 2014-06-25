@@ -46,7 +46,7 @@ namespace igl
                                                 Eigen::PlainObjectBase<DerivedV>& BIS2);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "compute_frame_field_bisectors.cpp"
 #endif
 

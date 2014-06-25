@@ -25,7 +25,7 @@ namespace igl
     const int to_y);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "draw_rectangular_marquee.cpp"
 #endif
 

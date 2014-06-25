@@ -40,7 +40,7 @@ namespace igl
     GLuint & id);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "create_shader_program.cpp"
 #endif
 

@@ -27,7 +27,7 @@ namespace igl
     const double r);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "point_in_circle.cpp"
 #endif
 

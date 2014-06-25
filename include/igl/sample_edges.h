@@ -30,7 +30,7 @@ namespace igl
     const int k,
     Eigen::MatrixXd & S);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "sample_edges.cpp"
 #endif
 

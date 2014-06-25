@@ -40,7 +40,7 @@ namespace igl
       const Eigen::MatrixBase<DerivedM> & M);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "matrix_to_list.cpp"
 #endif
 

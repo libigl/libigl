@@ -26,7 +26,7 @@ namespace igl
   IGL_INLINE bool texture_from_tga(const std::string tga_file, GLuint & id);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "texture_from_tga.cpp"
 #endif
 

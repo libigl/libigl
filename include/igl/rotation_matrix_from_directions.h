@@ -28,7 +28,7 @@ namespace igl {
 }
 
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "rotation_matrix_from_directions.cpp"
 #endif
 

@@ -21,7 +21,7 @@ namespace igl
   IGL_INLINE bool is_readable(const char * filename);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "is_readable.cpp"
 #endif
 

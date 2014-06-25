@@ -39,7 +39,7 @@ IGL_INLINE void igl::invert_diag(
   }
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::invert_diag<double>(Eigen::SparseMatrix<double, 0, int> const&, Eigen::SparseMatrix<double, 0, int>&);
 template void igl::invert_diag<float>(Eigen::SparseMatrix<float, 0, int> const&, Eigen::SparseMatrix<float, 0, int>&);

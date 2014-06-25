@@ -19,7 +19,7 @@ namespace igl
   IGL_INLINE void print_program_info_log(const GLuint obj);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "print_program_info_log.cpp"
 #endif
 

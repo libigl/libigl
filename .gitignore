@@ -1,4 +1,5 @@
 # use glob syntax.
+scripts/change_name.sh
 syntax: glob
 *.o
 *.a

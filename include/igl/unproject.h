@@ -34,7 +34,7 @@ namespace igl
     const Eigen::PlainObjectBase<Derivedwin> & win);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "unproject.cpp"
 #endif
 

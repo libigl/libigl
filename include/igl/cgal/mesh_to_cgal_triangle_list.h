@@ -28,7 +28,7 @@ namespace igl
     const Eigen::MatrixXi & F,
     std::vector<CGAL::Triangle_3<Kernel> > & T);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "mesh_to_cgal_triangle_list.cpp"
 #endif
 

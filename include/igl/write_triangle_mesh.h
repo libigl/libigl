@@ -24,7 +24,7 @@ namespace igl
                         const Eigen::PlainObjectBase<DerivedF>& F);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "write_triangle_mesh.cpp"
 #endif
 

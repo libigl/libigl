@@ -88,7 +88,7 @@ namespace igl
                                               std::vector<int> roundVertices = std::vector<int>(),
                                               std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
 };
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "miq.cpp"
 #endif
 

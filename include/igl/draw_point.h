@@ -37,7 +37,7 @@ namespace igl
     const bool selected = false);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "draw_point.cpp"
 #endif
 

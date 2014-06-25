@@ -24,7 +24,7 @@ namespace igl
   IGL_INLINE Eigen::MatrixXd random_dir_stratified(const int n);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "random_dir.cpp"
 #endif
 

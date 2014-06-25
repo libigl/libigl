@@ -11,7 +11,7 @@
 #include <Eigen/Sparse>
 #include <vector>
 
-#include <igl/cotangent.h>
+#include <igl/cotmatrix_entries.h>
 #include <igl/cotmatrix.h>
 #include <igl/vertex_triangle_adjacency.h>
 
@@ -164,7 +164,7 @@ IGL_INLINE void Frame_field_deformer::precompute_opt()
   nconst = V.rows()-nfree;						// #constrained vertices
   igl::vertex_triangle_adjacency(V,F,VT,VTi);                // compute vertex to face relationship
 
-  igl::cotangent(V,F,C);							     // cotangent matrix for opt. rotations - global
+  igl::cotmatrix_entries(V,F,C);							     // cotangent matrix for opt. rotations - global
 
   igl::cotmatrix(V,F,L);
 
@@ -406,6 +406,6 @@ IGL_INLINE void igl::frame_field_deformer(
   }
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif

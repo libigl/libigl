@@ -32,7 +32,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedIA> & IA);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "setdiff.cpp"
 #endif
 #endif

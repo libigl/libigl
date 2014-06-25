@@ -1,7 +1,7 @@
 #include "frame_field.h"
 
 #include <igl/tt.h>
-#include <igl/edgetopology.h>
+#include <igl/edge_topology.h>
 #include <igl/per_face_normals.h>
 #include <igl/comiso/nrosy.h>
 #include <iostream>
@@ -110,7 +110,7 @@ FrameInterpolator::FrameInterpolator(const Eigen::MatrixXd& _V, const Eigen::Mat
 
   // Generate topological relations
   igl::tt(V,F,TT,TTi);
-  igl::edgetopology(V,F, EV, FE, EF);
+  igl::edge_topology(V,F, EV, FE, EF);
 
   // Flag border edges
   isBorderEdge.resize(EV.rows());

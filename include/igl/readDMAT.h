@@ -46,7 +46,7 @@ namespace igl
     std::vector<std::vector<Scalar> > & W);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "readDMAT.cpp"
 #endif
 

@@ -18,7 +18,7 @@ extern "C" {
 #include <igl/polygon_mesh_to_triangle_mesh.h>
 #include <igl/readOFF.h>
 #include <igl/readMESH.h>
-#include <igl/boundary_faces.h>
+#include <igl/boundary_facets.h>
 #include <igl/barycenter.h>
 #include <igl/doublearea.h>
 #include <igl/EPS.h>
@@ -395,7 +395,7 @@ bool render_to_buffer(
     }
     //if(F.size() > T.size() || F.size() == 0)
     {
-      boundary_faces(T,F);
+      boundary_facets(T,F);
     }
   }
   if(vV.size() > 0)

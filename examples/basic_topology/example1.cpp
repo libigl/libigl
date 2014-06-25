@@ -11,7 +11,7 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/write_triangle_mesh.h>
 #include <igl/triangle_triangle_adjacency.h>
-#include <igl/edgetopology.h>
+#include <igl/edge_topology.h>
 
 using namespace std;
 
@@ -44,7 +44,7 @@ int main (int argc, const char * argv[])
     Eigen::MatrixXi FE;
     Eigen::MatrixXi EF;
 
-    igl::edgetopology(V,F,EV,FE, EF);
+    igl::edge_topology(V,F,EV,FE, EF);
     cout << EV << endl << FE << endl << EF << endl;
     cout << "-------------" << endl;
 

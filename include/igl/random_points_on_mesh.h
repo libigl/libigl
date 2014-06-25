@@ -41,7 +41,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedFI > & FI);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "random_points_on_mesh.cpp"
 #endif
 

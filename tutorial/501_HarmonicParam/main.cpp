@@ -1,6 +1,6 @@
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
-#include <igl/boundary_vertices_sorted.h>
+#include <igl/boundary_loop.h>
 #include <igl/map_vertices_to_circle.h>
 #include <igl/harmonic.h>
 
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
   // Find the open boundary
   Eigen::VectorXi bnd;
-  igl::boundary_vertices_sorted(V,F,bnd);
+  igl::boundary_loop(V,F,bnd);
 
   // Map the boundary to a circle, preserving edge proportions
   Eigen::MatrixXd bnd_uv;

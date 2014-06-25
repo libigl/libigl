@@ -23,7 +23,7 @@ namespace igl
   IGL_INLINE std::string file_dialog_save();
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "file_dialog_save.cpp"
 #endif
 

@@ -54,7 +54,7 @@ namespace igl
     Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & B);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "transpose_blocks.cpp"
 #endif
 

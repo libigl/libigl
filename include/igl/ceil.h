@@ -23,7 +23,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedY>& Y);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "ceil.cpp"
 #endif
 

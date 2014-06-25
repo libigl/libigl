@@ -64,7 +64,7 @@ namespace igl
   IGL_INLINE void cat(const std::vector<std::vector< Mat > > & A, Mat & C);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "cat.cpp"
 #endif
 
