@@ -7,11 +7,11 @@ cmake -DCMAKE_BUILD_TYPE=Release .
 rm src/*.a
 make
 
-cd ../../embree/
+cd ../embree/
 rm -fr build
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ../
 make
 
-cd ../../tutorial
+cd ../../../tutorial
