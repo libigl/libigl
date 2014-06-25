@@ -52,7 +52,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedV> & CN);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "per_corner_normals.cpp"
 #endif
 

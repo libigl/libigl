@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "uniformly_sample_two_manifold.h"
 #include "verbose.h"
@@ -11,7 +11,7 @@
 #include "colon.h"
 #include "all_pairs_distances.h"
 #include "mat_max.h"
-#include "vf.h"
+#include "vertex_triangle_adjacency.h"
 #include "get_seconds.h"
 #include "cat.h"
 //#include "MT19937.h"
@@ -23,8 +23,8 @@
 
 IGL_INLINE void igl::uniformly_sample_two_manifold(
   const Eigen::MatrixXd & W,
-  const Eigen::MatrixXi & F, 
-  const int k, 
+  const Eigen::MatrixXi & F,
+  const int k,
   const double push,
   Eigen::MatrixXd & WS)
 {
@@ -100,7 +100,7 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
 
   // Build map from vertices to list of incident faces
   vector<vector<int> > VF,VFi;
-  vf(W,F,VF,VFi);
+  vertex_triangle_adjacency(W,F,VF,VFi);
 
   // List of list of face indices, for each sample gives index to face it is on
   vector<vector<int> > sample_faces; sample_faces.resize(k);
@@ -151,7 +151,7 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
       int face_i = sample_faces[i][cur_maxmin[i]];
       Eigen::Vector3d bary(sample_barys[i][cur_maxmin[i]]);
       // Find index in face of closest mesh vertex (on this face)
-      int index_in_face = 
+      int index_in_face =
         (bary(0) > bary(1) ? (bary(0) > bary(2) ? 0 : 2)
                            : (bary(1) > bary(2) ? 1 : 2));
       // find closest mesh vertex
@@ -166,7 +166,7 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
       sample_barys[i].push_back(bary);
       sample_faces[i].push_back(face_i);
       // Current seed location in weight space
-      VectorXd seed = 
+      VectorXd seed =
         bary(0)*W.row(F(face_i,0)) +
         bary(1)*W.row(F(face_i,1)) +
         bary(2)*W.row(F(face_i,2));
@@ -272,10 +272,10 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
         for(int j = 0;j < W.cols();j++)
         {
           // distance from sample(i,s) to corner j
-          double d = 
+          double d =
             ((sample_bary(0)*W.row(F(sample_face,0)) +
               sample_bary(1)*W.row(F(sample_face,1)) +
-              sample_bary(2)*W.row(F(sample_face,2))) 
+              sample_bary(2)*W.row(F(sample_face,2)))
               - I.row(j)).norm()/push;
           // append after distances to seeds
           D[i](s,k+j) = d;
@@ -346,7 +346,7 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
 
 IGL_INLINE void igl::uniformly_sample_two_manifold_at_vertices(
   const Eigen::MatrixXd & OW,
-  const int k, 
+  const int k,
   const double push,
   Eigen::VectorXi & S)
 {

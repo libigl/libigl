@@ -4,14 +4,14 @@
 all: example
 
 # Shared flags etc.
-include ../../Makefile.conf
+include ../../build/Makefile.conf
 
 .PHONY: example
 
 igl_lib=../../
 eigen=$(DEFAULT_PREFIX)/include/eigen3
 
-CFLAGS=-g
+CFLAGS+=-g
 inc=-I$(igl_lib)/include -I$(eigen)
 lib=-L$(igl_lib)/lib -ligl
 

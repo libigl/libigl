@@ -5,17 +5,19 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "mexStream.h"
+#include "MexStream.h"
 #include "mex.h"
 
-std::streamsize igl::mexStream::xsputn(const char *s, std::streamsize n) 
+inline std::streamsize igl::MexStream::xsputn(
+  const char *s, 
+  std::streamsize n) 
 {
   mexPrintf("%.*s",n,s);
   mexEvalString("drawnow;"); // to dump string.
   return n;
 }
 
-int igl::mexStream::overflow(int c) 
+inline int igl::MexStream::overflow(int c) 
 {
     if (c != EOF) {
       mexPrintf("%.1s",&c);

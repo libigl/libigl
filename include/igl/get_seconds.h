@@ -16,7 +16,7 @@ namespace igl
 
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "get_seconds.cpp"
 #endif
 

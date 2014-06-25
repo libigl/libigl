@@ -4,7 +4,7 @@
 // Demonstrates trackball mouse camera control and undo/redo stack with
 // immutable state object (i.e. not with reverse operations).
 //
-// Reads (V,F) from .obj,.off,.wrl files and saves (V,F) to .obj,.off. Any 
+// Reads (V,F) from .obj,.off,.wrl files and saves (V,F) to .obj,.off. Any
 // normals, texture coordinates, etc. in the input file will be ignored and
 // lost in the output file.
 //
@@ -12,7 +12,7 @@
 #include <igl/writeOBJ.h>
 #include <igl/writeOFF.h>
 #include <igl/readWRL.h>
-#include <igl/triangulate.h>
+#include <igl/polygon_mesh_to_triangle_mesh.h>
 #include <igl/readOFF.h>
 #include <igl/readMESH.h>
 #include <igl/draw_mesh.h>
@@ -184,7 +184,7 @@ void display()
   glMaterialfv(GL_BACK, GL_SPECULAR, SILVER_SPECULAR);
   glMaterialf (GL_BACK, GL_SHININESS, 128);
 
-  
+
   draw_mesh(s.V,s.F,s.N);
 
   glDisable(GL_LIGHTING);
@@ -281,7 +281,7 @@ void bake()
   s.V.col(0).array() -= s.Vmid(0);
   s.V.col(1).array() -= s.Vmid(1);
   s.V.col(2).array() -= s.Vmid(2);
-  s.V *= 2./s.bbd; 
+  s.V *= 2./s.bbd;
   s.V = (s.V * s.rot.matrix().transpose()).eval();
 }
 
@@ -339,7 +339,7 @@ bool save()
   //  }
   //  //if(F.size() > T.size() || F.size() == 0)
   //  {
-  //    boundary_faces(T,F);
+  //    boundary_facets(T,F);
   //  }
   }
   cout<<GREENGIN("Current baked model written to "+out_filename+".")<<endl;
@@ -433,7 +433,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
     default:
       cout<<"Unknown key command: '"<<key<<"' ("<<int(key)<<")"<<endl;
   }
-  
+
   glutPostRedisplay();
 }
 
@@ -502,7 +502,7 @@ int main(int argc, char * argv[])
   //  }
   //  //if(F.size() > T.size() || F.size() == 0)
   //  {
-  //    boundary_faces(T,F);
+  //    boundary_facets(T,F);
   //  }
   }
   if(vV.size() > 0)
@@ -511,7 +511,7 @@ int main(int argc, char * argv[])
     {
       return 1;
     }
-    triangulate(vF,s.F);
+    polygon_mesh_to_triangle_mesh(vF,s.F);
   }
 
   init_relative();

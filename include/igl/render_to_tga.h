@@ -28,7 +28,7 @@ namespace igl
     const bool alpha);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "render_to_tga.cpp"
 #endif
 

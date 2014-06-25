@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_BARYCENTER_H
 #define IGL_BARYCENTER_H
@@ -15,11 +15,11 @@ namespace igl
   //
   // B = barycenter(V,F)
   //
-  // Compute the barycenter of every triangle
+  // Compute the barycenter of every simplex
   //
   // Inputs:
   //   V #V x dim matrix of vertex coordinates
-  //   F #F x simplex_size  matrix of indices of triangle corners
+  //   F #F x simplex_size  matrix of indices of simplex corners
   // Output:
   //   BC a #F x dim matrix of 3d vertices
   template <
@@ -32,7 +32,7 @@ namespace igl
       Eigen::PlainObjectBase<DerivedBC> & BC);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "barycenter.cpp"
 #endif
 

@@ -36,7 +36,7 @@ namespace igl
     const bool wait);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "launch_medit.cpp"
 #endif
 

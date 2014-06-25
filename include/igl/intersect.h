@@ -26,7 +26,7 @@ namespace igl
   template <class M>
   IGL_INLINE M intersect(const M & A, const M & B);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "intersect.cpp"
 #endif
 #endif

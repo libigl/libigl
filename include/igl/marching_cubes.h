@@ -45,7 +45,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedF> &faces);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "marching_cubes.cpp"
 #endif
 

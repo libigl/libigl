@@ -31,7 +31,7 @@ namespace igl
     Eigen::Matrix<T, 3*4, 1> &S, 
     Eigen::Matrix<T, 3*4, 3>&V);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "svd3x3_sse.cpp"
 #endif
 #endif

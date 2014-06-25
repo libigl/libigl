@@ -42,7 +42,7 @@ namespace igl
     std::vector<Index> & C);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "harwell_boeing.cpp"
 #endif
 

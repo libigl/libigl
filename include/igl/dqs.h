@@ -36,7 +36,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedU> & U);
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "dqs.cpp"
 #endif
 #endif

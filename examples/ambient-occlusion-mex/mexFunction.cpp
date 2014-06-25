@@ -1,9 +1,9 @@
 #include "parse_rhs.h"
 
-#include <igl/matlab/mexStream.h>
+#include <igl/matlab/MexStream.h>
 #include <igl/embree/ambient_occlusion.h>
 
-#include <igl/read.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/per_vertex_normals.h>
 
 #include <mex.h>
@@ -11,12 +11,12 @@
 #include <iostream>
 #include <string>
 
-void mexFunction(int nlhs, mxArray *plhs[], 
+void mexFunction(int nlhs, mxArray *plhs[],
     int nrhs, const mxArray *prhs[])
 {
   // This is useful for debugging whether Matlab is caching the mex binary
   //mexPrintf("%s %s\n",__TIME__,__DATE__);
-  igl::mexStream mout;
+  igl::MexStream mout;
   std::streambuf *outbuf = std::cout.rdbuf(&mout);
 
   using namespace std;
@@ -31,7 +31,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   // Prepare left-hand side
   nlhs = 1;
 
-  //read("../shared/cheburashka.off",V,F);
+  //read_triangle_mesh("../shared/cheburashka.off",V,F);
   //P = V;
   //per_vertex_normals(V,F,N);
   ambient_occlusion(V,F,P,N,num_samples,S);

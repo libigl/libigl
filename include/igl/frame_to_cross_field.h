@@ -32,7 +32,7 @@ namespace igl
 
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "frame_to_cross_field.cpp"
 #endif
 

@@ -19,7 +19,7 @@ template <typename DerivedS, typename DerivedD>
 IGL_INLINE void igl::fit_rotations(
   const Eigen::PlainObjectBase<DerivedS> & S,
   const bool single_precision,
-        Eigen::PlainObjectBase<DerivedD> & R)
+  Eigen::PlainObjectBase<DerivedD> & R)
 {
   using namespace std;
   const int dim = S.cols();
@@ -55,15 +55,8 @@ IGL_INLINE void igl::fit_rotations(
       Mat3 ti,ui,vi;
       Vec3 _;
       igl::polar_svd(si,ri,ti,ui,_,vi);
-      // Check for reflection
-      if(ri.determinant() < 0)
-      {
-        vi.col(1) *= -1.;
-        ri = ui * vi.transpose();
-      }
     }
     assert(ri.determinant() >= 0);
-    // Not sure why polar_dec computes transpose...
     R.block(0,r*dim,dim,dim) = ri.block(0,0,dim,dim).transpose();
     //cout<<matlab_format(si,C_STR("si_"<<r))<<endl;
     //cout<<matlab_format(ri.transpose().eval(),C_STR("ri_"<<r))<<endl;
@@ -223,7 +216,7 @@ IGL_INLINE void igl::fit_rotations_AVX(
 }
 #endif
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template instanciation
 template void igl::fit_rotations<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template void igl::fit_rotations_planar<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);

@@ -11,20 +11,22 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Orient each component (identified by C) of a mesh (V,F) using ambient occlusion 
-  // such that the front side is less occluded than back side
+  // Orient each component (identified by C) of a mesh (V,F) using ambient
+  // occlusion such that the front side is less occluded than back side
   //
   // Inputs:
-  //   V                            #V by 3 list of vertex positions
-  //   F                            #F by 3 list of triangle indices
-  //   rays_total                   Total number of rays that will be shot
-  //   rays_minimum                 Minimum number of rays that each patch should receive
-  //   faceg_wise                   Decision made for each face independently, no use of patches (i.e., each face is treated as a patch)
-  //   use_parity                   Use parity mode
-  //   is_verbose                   Verbose output to cout
+  //   V  #V by 3 list of vertex positions
+  //   F  #F by 3 list of triangle indices
+  //   rays_total  Total number of rays that will be shot
+  //   rays_minimum  Minimum number of rays that each patch should receive
+  //   facet_wise  Decision made for each face independently, no use of patches
+  //     (i.e., each face is treated as a patch)
+  //   use_parity  Use parity mode
+  //   is_verbose  Verbose output to cout
   // Outputs:
-  //   I                            #F list of whether face has been flipped
-  //   C                            #F list of patch ID
+  //   I  #F list of whether face has been flipped
+  //   C  #F list of patch ID (outpute of bfs_orient
+  //     > manifold patches
   template <
     typename DerivedV, 
     typename DerivedF, 
@@ -40,9 +42,27 @@ namespace igl
     bool is_verbose,
     Eigen::PlainObjectBase<DerivedI> & I,
     Eigen::PlainObjectBase<DerivedC> & C);
+  // Outputs:
+  //   FF  #F by 3 list of reoriented faces
+  // Defaults:
+  //   rays_total = F.rows()*100;
+  //   rays_minimum = 10;
+  //   facet_wise = false;
+  //   use_parity = false;
+  //   is_verbose = false;
+  template <
+    typename DerivedV, 
+    typename DerivedF, 
+    typename DerivedFF,
+    typename DerivedI>
+  IGL_INLINE void reorient_facets_raycast(
+    const Eigen::PlainObjectBase<DerivedV> & V,
+    const Eigen::PlainObjectBase<DerivedF> & F,
+    Eigen::PlainObjectBase<DerivedFF> & FF,
+    Eigen::PlainObjectBase<DerivedI> & I);
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "reorient_facets_raycast.cpp"
 #endif
 

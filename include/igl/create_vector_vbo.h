@@ -33,7 +33,7 @@ namespace igl
     GLuint & V_vbo_id);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "create_vector_vbo.cpp"
 #endif
 

@@ -22,7 +22,7 @@ namespace igl
   IGL_INLINE int max_size(const std::vector<T> & V);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "max_size.cpp"
 #endif
 

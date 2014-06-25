@@ -28,7 +28,7 @@ namespace igl
     Eigen::RowVector3d & C);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "fit_plane.cpp"
 #endif
 

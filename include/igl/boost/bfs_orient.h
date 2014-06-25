@@ -29,7 +29,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedFF> & FF,
     Eigen::PlainObjectBase<DerivedC> & C);
 };
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "bfs_orient.cpp"
 #endif
 

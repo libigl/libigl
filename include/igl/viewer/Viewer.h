@@ -15,7 +15,6 @@
 #define IGL_MOD_SUPER           0x0008
 
 #ifdef ENABLE_XML_SERIALIZATION
-  #define IGL_HEADER_ONLY
   #include <igl/xml/XMLSerializer.h>
   #include <igl/xml/XMLSerialization.h>
 #endif
@@ -600,7 +599,7 @@ namespace igl
 
 } // end namespace
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "Viewer.cpp"
 #endif
 

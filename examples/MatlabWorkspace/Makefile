@@ -1,7 +1,7 @@
 .PHONY: all
 
 # Shared flags etc.
-include ../../Makefile.conf
+include ../../build/Makefile.conf
 
 IGL=../../
 IGL_LIB=-L$(IGL)/lib -ligl

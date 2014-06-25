@@ -275,7 +275,7 @@ namespace igl
 //TW_API int      TW_CALL TwRemoveVar(TwBar *bar, const char *name);
 //TW_API int      TW_CALL TwRemoveAllVars(TwBar *bar);
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "ReAntTweakBar.cpp"
 #endif
 

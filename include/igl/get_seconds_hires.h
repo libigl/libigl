@@ -15,7 +15,7 @@ namespace igl
   IGL_INLINE double get_seconds_hires();
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "get_seconds_hires.cpp"
 #endif
 

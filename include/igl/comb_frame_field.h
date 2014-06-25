@@ -40,7 +40,7 @@ namespace igl
                                         Eigen::PlainObjectBase<DerivedP> &PD1_combed,
                                         Eigen::PlainObjectBase<DerivedP> &PD2_combed);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "comb_frame_field.cpp"
 #endif
 

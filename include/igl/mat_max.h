@@ -37,7 +37,7 @@ namespace igl
     Eigen::Matrix<int,Eigen::Dynamic,1> & I);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "mat_max.cpp"
 #endif
 

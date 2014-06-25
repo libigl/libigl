@@ -27,7 +27,7 @@ namespace igl
   IGL_INLINE void edges( const Eigen::MatrixXi& F, Eigen::MatrixXi& E);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "edges.cpp"
 #endif
 

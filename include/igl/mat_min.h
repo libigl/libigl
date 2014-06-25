@@ -45,7 +45,7 @@ namespace igl
   //  const int dim);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "mat_min.cpp"
 #endif
 

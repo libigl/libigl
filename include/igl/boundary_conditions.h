@@ -40,7 +40,7 @@ namespace igl
     Eigen::MatrixXd & bc);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "boundary_conditions.cpp"
 #endif
 

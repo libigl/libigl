@@ -29,7 +29,7 @@ namespace igl
   IGL_INLINE bool stdin_to_temp(FILE ** temp_file);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "stdin_to_temp.cpp"
 #endif
 

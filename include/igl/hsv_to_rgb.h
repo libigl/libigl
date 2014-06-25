@@ -28,7 +28,7 @@ namespace igl
     T & r, T & g, T & b);
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "hsv_to_rgb.cpp"
 #endif
 

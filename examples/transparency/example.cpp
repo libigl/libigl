@@ -1,6 +1,6 @@
 #include <igl/OpenGL_convenience.h>
 #include <igl/per_face_normals.h>
-#include <igl/read.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/normalize_row_lengths.h>
 #include <igl/draw_mesh.h>
 #include <igl/jet.h>
@@ -303,7 +303,7 @@ int main(int argc, char * argv[])
   {
     filename = argv[1];
   }
-  if(!read(filename,V,F))
+  if(!read_triangle_mesh(filename,V,F))
   {
     return 1;
   }

@@ -39,7 +39,7 @@ namespace igl
   //   aabb.init(V,Ele);
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "in_element.cpp"
 #endif
 

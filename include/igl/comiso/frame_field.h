@@ -42,7 +42,7 @@ IGL_INLINE void frame_field(
   );
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "frame_field.cpp"
 #endif
 

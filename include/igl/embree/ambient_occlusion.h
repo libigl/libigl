@@ -49,7 +49,7 @@ namespace igl
     const int num_samples,
     Eigen::PlainObjectBase<DerivedS> & S);
 };
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "ambient_occlusion.cpp"
 #endif
 

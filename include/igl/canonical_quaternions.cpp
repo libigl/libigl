@@ -16,6 +16,6 @@ template <> IGL_INLINE double igl::CANONICAL_VIEW_QUAT<double>(int i, int j)
   return (double)igl::CANONICAL_VIEW_QUAT_D[i][j];
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif

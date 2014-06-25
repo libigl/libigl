@@ -51,7 +51,7 @@ namespace igl
   // Wrapper with default colors
   IGL_INLINE void draw_floor_outline();
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "draw_floor.cpp"
 #endif
 #endif

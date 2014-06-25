@@ -24,7 +24,7 @@ namespace igl
   // Wrapper using directory of source file
   IGL_INLINE bool dated_copy(const std::string & src_path);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "dated_copy.cpp"
 #endif
 #endif 

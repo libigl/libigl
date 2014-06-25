@@ -31,7 +31,7 @@ namespace igl
     const int k,
     Eigen::MatrixXd & W);
 };
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "harmonic.cpp"
 #endif
 #endif
