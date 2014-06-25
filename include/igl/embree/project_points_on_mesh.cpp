@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "project_mesh.h"
+#include "project_points_on_mesh.h"
 
 // For error printing
 #include <cstdio>
@@ -15,7 +15,7 @@
 #include <igl/embree/EmbreeIntersector.h>
 
 //template <typename ScalarMatrix, typename IndexMatrix>
-//IGL_INLINE ScalarMatrix igl::project_mesh(
+//IGL_INLINE ScalarMatrix igl::project_points_on_mesh(
 //   const ScalarMatrix & V_source,
 //   const IndexMatrix  & F_source,
 //   const ScalarMatrix & V_target,
