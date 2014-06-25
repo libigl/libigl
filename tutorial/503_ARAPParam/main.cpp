@@ -1,6 +1,6 @@
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
-#include <igl/boundary_vertices_sorted.h>
+#include <igl/boundary_loop.h>
 #include <igl/map_vertices_to_circle.h>
 #include <igl/harmonic.h>
 #include <igl/svd3x3/arap.h>
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
   // Compute the initial solution for ARAP (harmonic parametrization)
   Eigen::VectorXi bnd;
-  igl::boundary_vertices_sorted(V,F,bnd);
+  igl::boundary_loop(V,F,bnd);
   Eigen::MatrixXd bnd_uv;
   igl::map_vertices_to_circle(V,bnd,bnd_uv);
 

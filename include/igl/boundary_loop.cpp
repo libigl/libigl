@@ -5,12 +5,12 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "boundary_vertices_sorted.h"
+#include "boundary_loop.h"
 
 #include "triangle_triangle_adjacency.h"
 #include "vertex_triangle_adjacency.h"
 
-IGL_INLINE void igl::boundary_vertices_sorted(
+IGL_INLINE void igl::boundary_loop(
     const Eigen::MatrixXd& V,
     const Eigen::MatrixXi& F,
     Eigen::VectorXi& b)

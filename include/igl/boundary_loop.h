@@ -23,14 +23,14 @@ namespace igl
   //   F  #V by dim list of mesh faces
   // Outputs:
   //   bnd   sorted list of boundary vertex indices
-  IGL_INLINE void boundary_vertices_sorted(
+  IGL_INLINE void boundary_loop(
   	const Eigen::MatrixXd& V, 
   	const Eigen::MatrixXi& F, 
     Eigen::VectorXi& bnd);
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "boundary_vertices_sorted.cpp"
+#  include "boundary_loop.cpp"
 #endif
 
 #endif

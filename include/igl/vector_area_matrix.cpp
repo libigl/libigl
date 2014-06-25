@@ -12,7 +12,7 @@
 #include <iostream>
 #include <unsupported/Eigen/SparseExtra>
 
-//#include <igl/boundary_vertices_sorted.h>
+//#include <igl/boundary_loop.h>
 #include <igl/boundary_facets.h>
 
 template <typename DerivedF, typename Scalar>
