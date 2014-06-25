@@ -5,13 +5,13 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "plot_vector.h"
+#include "print_vector.h"
 #include <iostream>
 #include <vector>
 
 
 template <typename T>
-IGL_INLINE void igl::plot_vector( std::vector<T>& v)
+IGL_INLINE void igl::print_vector( std::vector<T>& v)
 {
   using namespace std;
   for (int i=0; i<v.size(); ++i)
@@ -20,7 +20,7 @@ IGL_INLINE void igl::plot_vector( std::vector<T>& v)
 }
 
 template <typename T>
-IGL_INLINE void igl::plot_vector( std::vector< std::vector<T> >& v)
+IGL_INLINE void igl::print_vector( std::vector< std::vector<T> >& v)
 {
   using namespace std;
   for (int i=0; i<v.size(); ++i)
@@ -34,7 +34,7 @@ IGL_INLINE void igl::plot_vector( std::vector< std::vector<T> >& v)
 
 
 template <typename T>
-IGL_INLINE void igl::plot_vector( std::vector< std::vector< std::vector<T> > >& v)
+IGL_INLINE void igl::print_vector( std::vector< std::vector< std::vector<T> > >& v)
 {
   using namespace std;
   for (int m=0; m<v.size(); ++m)
