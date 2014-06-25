@@ -31,7 +31,7 @@ namespace igl
   //// a vertex of the projected mesh and it has the following format:
   //// id b1 b2. id is the id of a face of the source mesh. b1 and b2 are 
   //// the barycentric coordinates wrt the first two edges of the triangle
-  //// To convert to standard global coordinates, see barycentric2global.h
+  //// To convert to standard global coordinates, see barycentric_to_global.h
   //template <typename ScalarMatrix, typename IndexMatrix>
   //IGL_INLINE ScalarMatrix project_mesh
   //(
@@ -57,7 +57,7 @@ namespace igl
   // a vertex of the projected mesh and it has the following format:
   // id b1 b2. id is the id of a face of the source mesh. b1 and b2 are 
   // the barycentric coordinates wrt the first two edges of the triangle
-  // To convert to standard global coordinates, see barycentric2global.h
+  // To convert to standard global coordinates, see barycentric_to_global.h
   template <typename ScalarMatrix, typename IndexMatrix>
   IGL_INLINE ScalarMatrix project_points_on_mesh
   (
