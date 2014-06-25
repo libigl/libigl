@@ -1,6 +1,6 @@
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
-#include <igl/boundary_vertices_sorted.h>
+#include <igl/boundary_loop.h>
 
 #include <igl/lscm.h>
 
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
   // Fix two points on the boundary
   VectorXi bnd,b(2,1);
-  igl::boundary_vertices_sorted(V,F,bnd);
+  igl::boundary_loop(V,F,bnd);
   b(0) = bnd(0);
   b(1) = bnd(round(bnd.size()/2));
   MatrixXd bc(2,2);
