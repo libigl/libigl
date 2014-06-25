@@ -40,35 +40,6 @@ namespace igl {
     
   private:
     
-    // Alec: Not compiling... Handle_MMatch not declared.
-    /////return true if a vertex is singluar by looking at initialized missmatches
-    //// possible bugs, verify deleted flag vs IsD()
-    //// not sorted vf, but should not make a difference
-    //// olga: TODO: this returns the index modulo 4.
-    //inline int oneRingMissMatch(const int vid)
-    //{
-    //  ///check that is on border..
-    //  if (V_border[vid])
-    //    return 0;
-    //  
-    //  int missmatch=0;
-    //  for (unsigned int i=0;i<VF[vid].size();i++)
-    //  {
-    //    // look for the vertex
-    //    int j=-1;
-    //    for (unsigned z=0; z<3; ++z)
-    //      if (F(VF[vid][i],z) == vid)
-    //        j=z;
-    //    assert(j!=-1);
-    //    
-    //    missmatch+=Handle_MMatch(VF[vid][i],j);
-    //  }
-    //  
-    //  missmatch=missmatch%4;
-    //  return missmatch;
-    //}
-    
-    
     ///compute the mismatch between 2 faces
     inline int MissMatchByCross(const int f0,
                          const int f1)
