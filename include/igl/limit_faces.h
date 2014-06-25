@@ -36,7 +36,7 @@ namespace igl
     MatF & LF);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "limit_faces.cpp"
 #endif
 

@@ -26,7 +26,7 @@ namespace igl
     Eigen::MatrixBase<DerivedB> & B);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "normalize_row_sums.cpp"
 #endif
 

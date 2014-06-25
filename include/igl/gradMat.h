@@ -38,7 +38,7 @@ namespace igl {
   Eigen::SparseMatrix<T> &G);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "gradMat.cpp"
 #endif
 

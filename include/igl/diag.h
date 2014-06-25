@@ -55,7 +55,7 @@ namespace igl
     Eigen::SparseMatrix<T>& X);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "diag.cpp"
 #endif
 

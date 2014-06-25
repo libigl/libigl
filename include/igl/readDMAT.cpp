@@ -197,7 +197,7 @@ IGL_INLINE bool igl::readDMAT(
   return true;
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template bool igl::readDMAT<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template bool igl::readDMAT<double>(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&);

@@ -62,7 +62,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedI> & I);
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "reorient_facets_raycast.cpp"
 #endif
 

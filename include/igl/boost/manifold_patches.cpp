@@ -90,7 +90,7 @@ IGL_INLINE void igl::manifold_patches(
 
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::manifold_patches<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<int, 0, int>&);
 #endif

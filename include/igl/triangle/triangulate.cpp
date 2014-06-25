@@ -101,6 +101,6 @@ IGL_INLINE void igl::triangulate(
 
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template instanciation
 #endif

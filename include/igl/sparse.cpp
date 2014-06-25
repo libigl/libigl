@@ -103,7 +103,7 @@ IGL_INLINE Eigen::SparseMatrix<typename DerivedD::Scalar > igl::sparse(
   return X;
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::sparse<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, double>(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, size_t, size_t, Eigen::SparseMatrix<double, 0, int>&);
 template void igl::sparse<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&);

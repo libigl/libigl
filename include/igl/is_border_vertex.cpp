@@ -29,7 +29,7 @@ IGL_INLINE std::vector<bool> igl::is_border_vertex(const Eigen::PlainObjectBase<
   return ret;
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template std::vector<bool, std::allocator<bool> > igl::is_border_vertex<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&);
 #endif

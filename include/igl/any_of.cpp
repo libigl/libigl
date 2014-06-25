@@ -13,7 +13,7 @@ IGL_INLINE bool igl::any_of(const Mat & S)
   return std::any_of(S.data(),S.data()+S.size(),[](bool s){return s;});
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template bool igl::any_of<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&);
 #endif

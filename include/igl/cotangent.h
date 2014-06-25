@@ -30,7 +30,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedC>& C);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "cotangent.cpp"
 #endif
 

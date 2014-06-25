@@ -44,7 +44,7 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedSD> & d,
     Eigen::PlainObjectBase<Derivedflag>  & flag);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "bone_visible.cpp"
 #endif
 #endif

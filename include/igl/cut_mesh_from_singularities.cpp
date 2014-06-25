@@ -183,6 +183,6 @@ IGL_INLINE void igl::cut_mesh_from_singularities(const Eigen::PlainObjectBase<De
   mc.cut(Handle_Seams);
 
 }
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif

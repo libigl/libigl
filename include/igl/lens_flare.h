@@ -84,7 +84,7 @@ namespace igl
     int & shine_tic);
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "lens_flare.cpp"
 #endif
 

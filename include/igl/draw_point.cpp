@@ -90,7 +90,7 @@ IGL_INLINE void igl::draw_point(
   return draw_point(P(0),P(1),P(2),requested_r,selected);
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 template void igl::draw_point<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, double, bool);
 #endif
 

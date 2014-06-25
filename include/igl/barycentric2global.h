@@ -35,7 +35,7 @@ namespace igl
       const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>  & bc);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "barycentric2global.cpp"
 #endif
 

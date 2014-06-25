@@ -37,7 +37,7 @@ namespace igl
     Eigen::VectorXi & I,
     Eigen::MatrixXd & C);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "point_mesh_squared_distance.cpp"
 #endif
 

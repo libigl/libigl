@@ -10,7 +10,7 @@ all: example
 
 igl_lib=../../
 
-CFLAGS=-g
+CFLAGS+=-g
 inc=-I$(igl_lib)/include
 lib=-L$(igl_lib)/lib -ligl
 

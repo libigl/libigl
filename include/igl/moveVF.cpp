@@ -24,6 +24,6 @@ IGL_INLINE void igl::moveVF(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynami
   
 };
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif

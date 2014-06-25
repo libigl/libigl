@@ -54,7 +54,7 @@ IGL_INLINE Eigen::Matrix<Scalar, 3, 3> igl::rotation_matrix_from_directions(Eige
   return rotM;
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif
 

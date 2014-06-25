@@ -56,7 +56,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedX> & Y);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "slice_into.cpp"
 #endif
 

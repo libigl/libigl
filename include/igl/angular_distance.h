@@ -23,7 +23,7 @@ namespace igl
     const Eigen::Quaterniond & B);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "angular_distance.cpp"
 #endif
 

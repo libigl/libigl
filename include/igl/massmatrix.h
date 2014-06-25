@@ -53,7 +53,7 @@ namespace igl
     Eigen::SparseMatrix<Scalar>& M);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "massmatrix.cpp"
 #endif
 

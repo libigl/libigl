@@ -60,7 +60,7 @@ namespace igl
     double * S);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "winding_number.h"
 #endif
 

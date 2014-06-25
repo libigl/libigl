@@ -13,7 +13,7 @@ namespace igl
   // Wrapper for mexErrMsgTxt that only calls error if test fails
   IGL_INLINE void mexErrMsgTxt(bool test, const char * message);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "mexErrMsgTxt.cpp"
 #endif
 #endif

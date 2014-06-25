@@ -49,6 +49,6 @@ IGL_INLINE bool igl::rows_to_matrix(const std::vector<Row> & V,Mat & M)
   return true;
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif

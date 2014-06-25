@@ -29,7 +29,7 @@ namespace igl
     Eigen::VectorXi& bnd);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "boundary_vertices_sorted.cpp"
 #endif
 

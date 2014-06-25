@@ -39,7 +39,7 @@ namespace igl
     t_type & t0,
     t_type & t1);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "ray_sphere_intersect.cpp"
 #endif
 #endif

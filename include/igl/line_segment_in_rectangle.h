@@ -26,7 +26,7 @@ namespace igl
     const Eigen::Vector2d & B);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "line_segment_in_rectangle.cpp"
 #endif
 

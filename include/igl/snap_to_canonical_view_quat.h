@@ -35,7 +35,7 @@ template <typename Q_type>
     Eigen::Quaterniond & s);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "snap_to_canonical_view_quat.cpp"
 #endif
 

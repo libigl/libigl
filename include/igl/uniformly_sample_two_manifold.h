@@ -36,7 +36,7 @@ namespace igl
     const double push,
     Eigen::VectorXi & S);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "uniformly_sample_two_manifold.h"
 #endif
 #endif

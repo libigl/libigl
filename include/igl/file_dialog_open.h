@@ -22,7 +22,7 @@ namespace igl
   IGL_INLINE std::string file_dialog_open();
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "file_dialog_open.cpp"
 #endif
 

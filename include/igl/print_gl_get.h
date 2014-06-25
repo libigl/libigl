@@ -20,7 +20,7 @@ namespace igl
   IGL_INLINE void print_gl_get(GLenum pname);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "print_gl_get.cpp"
 #endif
 

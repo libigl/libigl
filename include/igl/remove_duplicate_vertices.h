@@ -58,7 +58,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedSF>& SF);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "remove_duplicate_vertices.cpp"
 #endif
 

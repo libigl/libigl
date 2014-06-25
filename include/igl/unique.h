@@ -59,7 +59,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedIC>& IC);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "unique.cpp"
 #endif
 

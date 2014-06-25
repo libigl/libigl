@@ -70,7 +70,7 @@ IGL_INLINE void igl::rgb_to_hsv(const R * rgb, H * hsv)
   }
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit instanciation
 template void igl::rgb_to_hsv<float, double>(float const*, double*);
 template void igl::rgb_to_hsv<double, double>(double const*, double*);

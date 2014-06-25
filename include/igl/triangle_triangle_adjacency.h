@@ -59,7 +59,7 @@ namespace igl
                                 Eigen::PlainObjectBase<Index>& TTi);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "triangle_triangle_adjacency.cpp"
 #endif
 

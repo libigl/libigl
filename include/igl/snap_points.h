@@ -48,7 +48,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedminD > & minD);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "snap_points.cpp"
 #endif
 

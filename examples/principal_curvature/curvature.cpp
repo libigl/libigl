@@ -1,5 +1,5 @@
 
-#define IGL_HEADER_ONLY
+#undef IGL_STATIC_LIBRARY
 #include <igl/principal_curvature.h>
 #include <igl/read_triangle_mesh.h>
 #include <iostream>

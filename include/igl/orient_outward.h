@@ -36,7 +36,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedI> & I);
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "orient_outward.cpp"
 #endif
 

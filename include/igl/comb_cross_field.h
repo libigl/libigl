@@ -34,7 +34,7 @@ namespace igl
                                    Eigen::PlainObjectBase<DerivedV> &PD1out,
                                    Eigen::PlainObjectBase<DerivedV> &PD2out);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "comb_cross_field.cpp"
 #endif
 

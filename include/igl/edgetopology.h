@@ -29,7 +29,7 @@ namespace igl
     Eigen::MatrixXi& EF);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "edgetopology.cpp"
 #endif
 

@@ -88,7 +88,7 @@ namespace igl
     const Eigen::MatrixXi & WI,
     Eigen::MatrixXd & M);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "lbs_matrix.cpp"
 #endif
 #endif

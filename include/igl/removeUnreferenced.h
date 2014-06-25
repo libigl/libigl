@@ -36,7 +36,7 @@ namespace igl
     Eigen::PlainObjectBase<Index> &I);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "removeUnreferenced.cpp"
 #endif
 

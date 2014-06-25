@@ -81,12 +81,12 @@
       <pre><code>
 ...
 #include &lt;igl/some_other_igl_function.h&gt;
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 #  define IGL_HEADER_ONLY
 #  define IGL_HEADER_ONLY_WAS_NOT_DEFINED
 #endif
 #include &lt;igl/igl_function_to_inline.h&gt;
-#ifdef IGL_HEADER_ONLY_WAS_NOT_DEFINED
+#ifndef IGL_STATIC_LIBRARY_WAS_NOT_DEFINED
 #  undef IGL_HEADER_ONLY
 #endif
 #include &lt;igl/yet_another_igl_function.h&gt;
@@ -126,7 +126,7 @@
           is intended to be compiled into the statically linked libigl library
           then function is only compiled for each <i>explicitly</i> specialized
           declaration. These should be added at the bottom of the corresponding
-          .cpp file surrounded by a <code>#ifndef IGL_HEADER_ONLY</code>.
+          .cpp file surrounded by a <code>#ifdef IGL_STATIC_LIBRARY</code>.
         </p>
 
         <p>
@@ -173,7 +173,7 @@ Undefined symbols for architecture x86_64:
         </p>
         <pre><code>
 ...
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
   // Explicit template specialization
   <strong>template</strong> <span class=highlight>Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; igl::cat&lt;Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; &gt;(int, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&)</span>;
 #endif

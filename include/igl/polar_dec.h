@@ -46,7 +46,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedR> & R,
     Eigen::PlainObjectBase<DerivedT> & T);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "polar_dec.cpp"
 #endif
 #endif
