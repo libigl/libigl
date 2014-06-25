@@ -33,3 +33,9 @@ then
   exit 1
 fi
 
+if git status | grep -v --quiet "nothing to commit, working directory clean"
+then
+  echo "Error: git is not committed or not clean"
+  exit 1
+fi
+
