@@ -41,7 +41,7 @@ namespace igl
     Eigen::MatrixXd& V_uv);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "lscm.cpp"
 #endif
 

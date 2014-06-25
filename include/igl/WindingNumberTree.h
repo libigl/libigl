@@ -140,7 +140,7 @@ inline igl::WindingNumberTree<Point>::WindingNumberTree(
   V(dummyV),
   SV(),
   F(),
-  //boundary(igl::boundary_faces<Eigen::MatrixXi,Eigen::MatrixXi>(F))
+  //boundary(igl::boundary_facets<Eigen::MatrixXi,Eigen::MatrixXi>(F))
   cap(),
   radius(std::numeric_limits<double>::infinity()),
   center(0,0,0)

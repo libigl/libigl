@@ -24,7 +24,7 @@ namespace igl
   IGL_INLINE void rgb_to_hsv(const R * rgb, H * hsv);
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "rgb_to_hsv.cpp"
 #endif
 

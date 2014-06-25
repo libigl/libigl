@@ -6,15 +6,19 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "grad.h"
+#include <Eigen/Geometry>
+#include <vector>
 
 template <typename T, typename S>
 IGL_INLINE void igl::grad(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
   const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
-  const Eigen::Matrix<T, Eigen::Dynamic, 1>&X,
-  Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &G )
+  Eigen::SparseMatrix<T> &G )
 {
-  G = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>::Zero(F.rows(),3);
-  for (int i = 0; i<F.rows(); ++i)
+  Eigen::PlainObjectBase<Eigen::Matrix<T,Eigen::Dynamic,3> > eperp21, eperp13;
+  eperp21.resize(F.rows(),3);
+  eperp13.resize(F.rows(),3);
+
+  for (int i=0;i<F.rows();++i)
   {
     // renaming indices of vertices of triangles for convenience
     int i1 = F(i,0);
@@ -40,19 +44,65 @@ IGL_INLINE void igl::grad(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>
     // rotate each vector 90 degrees around normal
     double norm21 = std::sqrt(v21.dot(v21));
     double norm13 = std::sqrt(v13.dot(v13));
-    Eigen::Matrix<T, 1, 3> eperp21 = u.cross(v21);
-    eperp21 = eperp21 / std::sqrt(eperp21.dot(eperp21));
-    eperp21 *= norm21;
-    Eigen::Matrix<T, 1, 3> eperp13 = u.cross(v13);
-    eperp13 = eperp13 / std::sqrt(eperp13.dot(eperp13));
-    eperp13 *= norm13;
-    
-    G.row(i) = ((X[i2] -X[i1]) *eperp13 + (X[i3] - X[i1]) *eperp21) / dblA;
-  };
-}
-  
-  
+    eperp21.row(i) = u.cross(v21);
+    eperp21.row(i) = eperp21.row(i) / std::sqrt(eperp21.row(i).dot(eperp21.row(i)));
+    eperp21.row(i) *= norm21 / dblA;
+    eperp13.row(i) = u.cross(v13);
+    eperp13.row(i) = eperp13.row(i) / std::sqrt(eperp13.row(i).dot(eperp13.row(i)));
+    eperp13.row(i) *= norm13 / dblA;
+  }
 
-#ifndef IGL_HEADER_ONLY
+  std::vector<int> rs;
+  rs.reserve(F.rows()*4*3);
+  std::vector<int> cs;
+  cs.reserve(F.rows()*4*3);
+  std::vector<double> vs;
+  vs.reserve(F.rows()*4*3);
+
+  // row indices
+  for(int r=0;r<3;r++)
+  {
+    for(int j=0;j<4;j++)
+    {
+      for(int i=r*F.rows();i<(r+1)*F.rows();i++) rs.push_back(i);
+    }
+  }
+
+  // column indices
+  for(int r=0;r<3;r++)
+  {
+    for(int i=0;i<F.rows();i++) cs.push_back(F(i,1));
+    for(int i=0;i<F.rows();i++) cs.push_back(F(i,0));
+    for(int i=0;i<F.rows();i++) cs.push_back(F(i,2));
+    for(int i=0;i<F.rows();i++) cs.push_back(F(i,0));
+  }
+  
+  // values
+  for(int i=0;i<F.rows();i++) vs.push_back(eperp13(i,0));
+  for(int i=0;i<F.rows();i++) vs.push_back(-eperp13(i,0));
+  for(int i=0;i<F.rows();i++) vs.push_back(eperp21(i,0));
+  for(int i=0;i<F.rows();i++) vs.push_back(-eperp21(i,0));
+  for(int i=0;i<F.rows();i++) vs.push_back(eperp13(i,1));
+  for(int i=0;i<F.rows();i++) vs.push_back(-eperp13(i,1));
+  for(int i=0;i<F.rows();i++) vs.push_back(eperp21(i,1));
+  for(int i=0;i<F.rows();i++) vs.push_back(-eperp21(i,1));
+  for(int i=0;i<F.rows();i++) vs.push_back(eperp13(i,2));
+  for(int i=0;i<F.rows();i++) vs.push_back(-eperp13(i,2));
+  for(int i=0;i<F.rows();i++) vs.push_back(eperp21(i,2));
+  for(int i=0;i<F.rows();i++) vs.push_back(-eperp21(i,2));
+
+  // create sparse gradient operator matrix
+  G.resize(3*F.rows(),V.rows()); 
+  std::vector<Eigen::Triplet<T> > triplets;
+  for (int i=0;i<(int)vs.size();++i)
+  {
+    triplets.push_back(Eigen::Triplet<T>(rs[i],cs[i],vs[i]));
+  }
+  G.setFromTriplets(triplets.begin(), triplets.end());
+}
+
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template void igl::grad<double, int>(Eigen::Matrix<double, -1, -1, 0, -1,-1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&,Eigen::SparseMatrix<double, 0, int>&);
 #endif
+

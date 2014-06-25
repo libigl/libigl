@@ -60,7 +60,7 @@ namespace igl
 
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "lu_lagrange.cpp"
 #endif
 

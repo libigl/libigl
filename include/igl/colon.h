@@ -52,7 +52,7 @@ namespace igl
     const H hi);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "colon.cpp"
 #endif
 

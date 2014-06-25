@@ -27,7 +27,7 @@ IGL_INLINE void igl::ceil(
   Y = X.unaryExpr([](const Scalar &x)->Scalar{return std::ceil(x);}).template cast<typename DerivedY::Scalar >();
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit instanciation
 template void igl::ceil<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

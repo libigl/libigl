@@ -2,7 +2,7 @@
 #include <igl/readDMAT.h>
 #include <igl/cotmatrix.h>
 #include <igl/massmatrix.h>
-#include <igl/gradMat.h>
+#include <igl/grad.h>
 #include <igl/doublearea.h>
 #include <igl/repdiag.h>
 #include <igl/jet.h>
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
   // Alternative construction of same Laplacian
   SparseMatrix<double> G,K;
   // Gradient/Divergence
-  igl::gradMat(V,F,G);
+  igl::grad(V,F,G);
   // Diagonal per-triangle "mass matrix"
   VectorXd dblA;
   igl::doublearea(V,F,dblA);
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
       {
         // Recompute just mass matrix on each step
         SparseMatrix<double> M;
-        igl::massmatrix(U,F,igl::MASSMATRIX_VORONOI,M);
+        igl::massmatrix(U,F,igl::MASSMATRIX_TYPE_VORONOI,M);
         // Solve (M-delta*L) U = M*U
         const auto & S = (M - 0.001*L);
         Eigen::SimplicialLLT<Eigen::SparseMatrix<double > > solver(S);

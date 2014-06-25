@@ -20,9 +20,9 @@ FIND_PATH(LIBIGL_INCLUDE_DIR igl/readOBJ.h
 if(LIBIGL_INCLUDE_DIR)
    set(LIBIGL_FOUND TRUE)
    set(LIBIGL_INCLUDE_DIR ${LIBIGL_INCLUDE_DIR}  ${LIBIGL_INCLUDE_DIR}/../external/Singular_Value_Decomposition)
-   if(NOT LIBIGL_USE_STATIC_LIBRARY)
-      add_definitions(-DIGL_HEADER_ONLY)
-   endif(NOT LIBIGL_USE_STATIC_LIBRARY)
+   if(LIBIGL_USE_STATIC_LIBRARY)
+      add_definitions(-DIGL_STATIC_LIBRARY)
+   endif(LIBIGL_USE_STATIC_LIBRARY)
    #set(LIBIGL_SOURCES
    #   ${LIBIGL_INCLUDE_DIR}/igl/viewer/Viewer.cpp
    #)

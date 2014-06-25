@@ -88,7 +88,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedW> & W);
 }
   
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "bbw.cpp"
 #endif
 

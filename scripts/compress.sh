@@ -69,13 +69,13 @@ Compressed on `date`
 echo "$HEADER" | sed -e "s/^/\/\/ /" >> $H_OUT
 
 WIDGET_OPEN="
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 #  define IGL_HEADER_ONLY
 #  define IGL_HEADER_ONLY_WAS_NOT_DEFINED
 #endif
 ";
 WIDGET_CLOSE="
-#ifdef IGL_HEADER_ONLY_WAS_NOT_DEFINED
+#ifndef IGL_STATIC_LIBRARY_WAS_NOT_DEFINED
 #  undef IGL_HEADER_ONLY
 #endif
 ";

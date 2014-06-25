@@ -32,34 +32,46 @@ IGL_INLINE void igl::polar_dec(
   Eigen::PlainObjectBase<DerivedV> & V)
 {
   using namespace std;
- typedef typename DerivedA::Scalar Scalar;
+  using namespace Eigen;
+  typedef typename DerivedA::Scalar Scalar;
 
- const Scalar th = std::sqrt(Eigen::NumTraits<Scalar>::dummy_precision());
+  const Scalar th = std::sqrt(Eigen::NumTraits<Scalar>::dummy_precision());
 
- Eigen::SelfAdjointEigenSolver<DerivedA> eig;
- feclearexcept(FE_UNDERFLOW);
- eig.computeDirect(A.transpose()*A);
- if(fetestexcept(FE_UNDERFLOW) || eig.eigenvalues()(0)/eig.eigenvalues()(2)<th)
- {
-   cout<<"resorting to svd 1..."<<endl;
-   return polar_svd(A,R,T,U,S,V);
- }
+  Eigen::SelfAdjointEigenSolver<DerivedA> eig;
+  feclearexcept(FE_UNDERFLOW);
+  eig.computeDirect(A.transpose()*A);
+  if(fetestexcept(FE_UNDERFLOW) || eig.eigenvalues()(0)/eig.eigenvalues()(2)<th)
+  {
+    cout<<"resorting to svd 1..."<<endl;
+    return polar_svd(A,R,T,U,S,V);
+  }
 
- S = eig.eigenvalues().cwiseSqrt();
+  S = eig.eigenvalues().cwiseSqrt();
 
- T = eig.eigenvectors() * S.asDiagonal() * eig.eigenvectors().transpose();
- U = A * eig.eigenvectors();
- V = eig.eigenvectors();
- R = U * S.asDiagonal().inverse() * V.transpose();
- S = S.reverse().eval();
- V = V.rowwise().reverse().eval();
- U = U.rowwise().reverse().eval() * S.asDiagonal().inverse();
+  V = eig.eigenvectors();
+  U = A * V;
+  R = U * S.asDiagonal().inverse() * V.transpose();
+  T = V * S.asDiagonal() * V.transpose();
 
- if(std::fabs(R.squaredNorm()-3.) > th)
- {
-   cout<<"resorting to svd 2..."<<endl;
-   return polar_svd(A,R,T,U,S,V);
- }
+  S = S.reverse().eval();
+  V = V.rowwise().reverse().eval();
+  U = U.rowwise().reverse().eval() * S.asDiagonal().inverse();
+
+  if(R.determinant() < 0)
+  {
+    // Annoyingly the .eval() is necessary
+    auto W = V.eval();
+    const auto & SVT = S.asDiagonal() * V.adjoint();
+    W.col(V.cols()-1) *= -1.;
+    R = U*W.transpose();
+    T = W*SVT;
+  }
+
+  if(std::fabs(R.squaredNorm()-3.) > th)
+  {
+    cout<<"resorting to svd 2..."<<endl;
+    return polar_svd(A,R,T,U,S,V);
+  }
 }
 
 template <
@@ -77,7 +89,7 @@ IGL_INLINE void igl::polar_dec(
   return igl::polar_dec(A,R,T,U,S,V);
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template instanciation
 template  void igl::polar_dec<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

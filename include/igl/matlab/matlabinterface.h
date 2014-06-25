@@ -80,7 +80,7 @@ namespace igl
 }
 
 // Be sure that this is not compiled into libigl.a
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "matlabinterface.cpp"
 #endif
 

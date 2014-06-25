@@ -32,7 +32,7 @@ namespace igl
     Eigen::SparseMatrix<double>& CSM);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "covariance_scatter_matrix.cpp"
 #endif
 #endif

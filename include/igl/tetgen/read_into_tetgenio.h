@@ -45,7 +45,7 @@ namespace igl
 }
 
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "read_into_tetgenio.cpp"
 #endif
 

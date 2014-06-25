@@ -17,7 +17,7 @@ namespace igl
   // In-line version
   IGL_INLINE Eigen::MatrixXi triangle_fan( const Eigen::MatrixXi & E);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "triangle_fan.h"
 #endif
 #endif

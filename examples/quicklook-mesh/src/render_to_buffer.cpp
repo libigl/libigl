@@ -15,10 +15,10 @@ extern "C" {
 #include <igl/readOBJ.h>
 #include <igl/readSTL.h>
 #include <igl/readWRL.h>
-#include <igl/triangulate.h>
+#include <igl/polygon_mesh_to_triangle_mesh.h>
 #include <igl/readOFF.h>
 #include <igl/readMESH.h>
-#include <igl/boundary_faces.h>
+#include <igl/boundary_facets.h>
 #include <igl/barycenter.h>
 #include <igl/doublearea.h>
 #include <igl/EPS.h>
@@ -395,7 +395,7 @@ bool render_to_buffer(
     }
     //if(F.size() > T.size() || F.size() == 0)
     {
-      boundary_faces(T,F);
+      boundary_facets(T,F);
     }
   }
   if(vV.size() > 0)
@@ -405,7 +405,7 @@ bool render_to_buffer(
       red(width,height,buffer);
       return false;
     }
-    triangulate(vF,F);
+    polygon_mesh_to_triangle_mesh(vF,F);
   }
   cout<<"IO: "<<(get_seconds()-ts)<<"s"<<endl;
   ts = get_seconds();
@@ -455,7 +455,7 @@ bool render_to_buffer(
     red(width,height,buffer);
     return false;
   }
-    
+
   // Render
   init_viewports();
   reshape(width,height);
@@ -465,6 +465,6 @@ bool render_to_buffer(
 
   /* destroy the context */
   OSMesaDestroyContext( ctx );
-  
+
   return true;
 }

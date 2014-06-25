@@ -37,7 +37,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedN> & N);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "per_face_normals.cpp"
 #endif
 

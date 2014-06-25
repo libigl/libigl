@@ -31,7 +31,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedK> & K);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "internal_angles.cpp"
 #endif
 

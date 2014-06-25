@@ -48,7 +48,7 @@ IGL_INLINE void nrosy(
   );
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "nrosy.cpp"
 #endif
 

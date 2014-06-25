@@ -28,7 +28,7 @@ namespace igl
     Eigen::SparseMatrix<T>& Y);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "invert_diag.cpp"
 #endif
 

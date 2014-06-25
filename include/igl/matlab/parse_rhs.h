@@ -21,7 +21,7 @@ namespace igl
     const mxArray *prhs[], 
     Eigen::PlainObjectBase<DerivedV> & V);
 };
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "parse_rhs.cpp"
 #endif
 #endif

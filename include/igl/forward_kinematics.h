@@ -37,7 +37,7 @@ namespace igl
     std::vector<Eigen::Vector3d> & vT);
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "forward_kinematics.cpp"
 #endif
 #endif

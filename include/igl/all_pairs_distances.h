@@ -34,7 +34,7 @@ namespace igl
     Mat & D);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "all_pairs_distances.cpp"
 #endif
 

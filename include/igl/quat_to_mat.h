@@ -23,7 +23,7 @@ namespace igl
   IGL_INLINE void quat_to_mat(const Q_type * quat, Q_type * mat);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "quat_to_mat.cpp"
 #endif
 

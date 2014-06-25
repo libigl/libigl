@@ -36,7 +36,7 @@ namespace igl
                                         const bool isCombed,
                                         Eigen::PlainObjectBase<DerivedO> &missmatch);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "cross_field_missmatch.cpp"
 #endif
 

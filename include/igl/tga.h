@@ -1,6 +1,7 @@
 #ifndef IGL_TGA_H
 #define IGL_TGA_H
 #ifndef IGL_NO_OPENGL
+#include "igl_inline.h"
 // See license in tga.cpp
 
 /* tga.h - interface for TrueVision (TGA) image file loader */
@@ -82,17 +83,17 @@ typedef struct {
   char null;
 } TgaFooter;
 
-extern gliGenericImage *gliReadTGA(FILE *fp, char *name, int hflip, int vflip);
-int gli_verbose(int new_verbose);
-extern int gliVerbose(int newVerbose);
+IGL_INLINE extern gliGenericImage *gliReadTGA(FILE *fp, char *name, int hflip, int vflip);
+IGL_INLINE int gli_verbose(int new_verbose);
+IGL_INLINE extern int gliVerbose(int newVerbose);
 
-void writeTGA( gliGenericImage* image, FILE *fp);
+IGL_INLINE void writeTGA( gliGenericImage* image, FILE *fp);
 
 
 
 } // end of igl namespace
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "tga.cpp"
 #endif
 

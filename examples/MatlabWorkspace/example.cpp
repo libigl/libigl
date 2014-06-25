@@ -3,13 +3,13 @@
 #include <igl/readDMAT.h>
 #include <cstdio>
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 #  define IGL_HEADER_ONLY
 #  define IGL_HEADER_ONLY_WAS_NOT_DEFINED
 #endif
 #include <igl/matlab/MatlabWorkspace.h>
 #include <igl/on_boundary.h>
-#ifdef IGL_HEADER_ONLY_WAS_NOT_DEFINED
+#ifndef IGL_STATIC_LIBRARY_WAS_NOT_DEFINED
 #  undef IGL_HEADER_ONLY
 #endif
 

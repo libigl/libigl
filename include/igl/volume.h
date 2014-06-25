@@ -65,7 +65,7 @@ namespace igl
     Eigen::PlainObjectBase<Derivedvol>& vol);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "volume.cpp"
 #endif
 

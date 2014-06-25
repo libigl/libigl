@@ -7,6 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "polar_svd.h"
 #include <Eigen/SVD>
+#include <Eigen/Geometry>
+#include <iostream>
 
 // Adapted from Olga's CGAL mentee's ARAP code
 template <
@@ -46,10 +48,22 @@ IGL_INLINE void igl::polar_svd(
   V = svd.matrixV();
   S = svd.singularValues();
   R = U*V.transpose();
-  T = V*S.asDiagonal()*V.adjoint();
+  const auto & SVT = S.asDiagonal() * V.adjoint();
+  // Check for reflection
+  if(R.determinant() < 0)
+  {
+    // Annoyingly the .eval() is necessary
+    auto W = V.eval();
+    W.col(V.cols()-1) *= -1.;
+    R = U*W.transpose();
+    T = W*SVT;
+  }else
+  {
+    T = V*SVT;
+  }
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template instanciation
 template void igl::polar_svd<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template void igl::polar_svd<Eigen::Matrix<double, 2, 2, 0, 2, 2>, Eigen::Matrix<double, 2, 2, 0, 2, 2>, Eigen::Matrix<double, 2, 2, 0, 2, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 2, 0, 2, 2> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 2, 0, 2, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 2, 0, 2, 2> >&);

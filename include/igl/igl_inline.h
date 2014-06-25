@@ -11,7 +11,7 @@
 #undef IGL_INLINE
 #endif
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  define IGL_INLINE inline
 #else
 #  define IGL_INLINE

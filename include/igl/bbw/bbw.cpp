@@ -70,10 +70,10 @@ IGL_INLINE bool igl::bbw(
 
   SparseMatrix<typename DerivedW::Scalar> L;
   cotmatrix(V,Ele,L);
-  MassMatrixType mmtype = MASSMATRIX_VORONOI;
+  MassMatrixType mmtype = MASSMATRIX_TYPE_VORONOI;
   if(Ele.cols() == 4)
   {
-    mmtype = MASSMATRIX_BARYCENTRIC;
+    mmtype = MASSMATRIX_TYPE_BARYCENTRIC;
   }
   SparseMatrix<typename DerivedW::Scalar> M;
   SparseMatrix<typename DerivedW::Scalar> Mi;
@@ -209,7 +209,7 @@ IGL_INLINE bool igl::bbw(
   return true;
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template bool igl::bbw<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, igl::BBWData&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

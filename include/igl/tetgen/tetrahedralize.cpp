@@ -12,7 +12,7 @@
 // IGL includes 
 #include <igl/matrix_to_list.h>
 #include <igl/list_to_matrix.h>
-#include <igl/boundary_faces.h>
+#include <igl/boundary_facets.h>
 
 // STL includes
 #include <cassert>
@@ -55,7 +55,7 @@ IGL_INLINE int igl::tetrahedralize(
   {
     return -1;
   }
-  boundary_faces(TT,TF);
+  boundary_facets(TT,TF);
   return 0;
 }
 
@@ -101,7 +101,7 @@ IGL_INLINE int igl::tetrahedralize(
   return e;
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template int igl::tetrahedralize<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif

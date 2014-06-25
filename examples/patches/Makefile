@@ -2,13 +2,13 @@
 .PHONY: all
 
 # Shared flags etc.
-include ../../Makefile.conf
+include ../../build/Makefile.conf
 
 all: obj example
 
 .PHONY: example
 
-CFLAGS=-g -std=c++11
+CFLAGS+=-g -std=c++11
 
 LIBIGL=../../
 LIBIGL_INC=-I$(LIBIGL)/include

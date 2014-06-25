@@ -1,7 +1,7 @@
 #include <igl/embree/EmbreeIntersector.h>
 #include <igl/OpenGL_convenience.h>
 #include <igl/per_face_normals.h>
-#include <igl/read.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/normalize_row_lengths.h>
 #include <igl/draw_mesh.h>
 #include <igl/draw_floor.h>
@@ -220,9 +220,9 @@ void display()
     const double w0 = (1.0-hit->u-hit->v);
     const double w1 = hit->u;
     const double w2 = hit->v;
-    VectorXd hitP = 
-      w0 * V.row(F(hit->id,0)) + 
-      w1 * V.row(F(hit->id,1)) + 
+    VectorXd hitP =
+      w0 * V.row(F(hit->id,0)) +
+      w1 * V.row(F(hit->id,1)) +
       w2 * V.row(F(hit->id,2));
     glVertex3dv(hitP.data());
   }
@@ -278,7 +278,7 @@ void display()
     glDisable(GL_COLOR_MATERIAL);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glColor4f(1.0,0.3,0.3,0.6);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -428,7 +428,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
     default:
       cout<<"Unknown key command: "<<key<<" "<<int(key)<<endl;
   }
-  
+
 }
 
 int main(int argc, char * argv[])
@@ -448,7 +448,7 @@ int main(int argc, char * argv[])
     // Read and prepare mesh
     filename = argv[1];
   }
-  if(!read(filename,V,F))
+  if(!read_triangle_mesh(filename,V,F))
   {
     return 1;
   }
@@ -458,7 +458,7 @@ int main(int argc, char * argv[])
   mean = V.colwise().mean();
   C.resize(F.rows(),3);
   init_C();
-  bbd = 
+  bbd =
     (V.colwise().maxCoeff() -
     V.colwise().minCoeff()).maxCoeff();
 

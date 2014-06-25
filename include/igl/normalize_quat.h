@@ -25,7 +25,7 @@ namespace igl
     Q_type *out);
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "normalize_quat.cpp"
 #endif
 

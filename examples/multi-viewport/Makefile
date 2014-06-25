@@ -8,7 +8,7 @@ all: example
 .PHONY:  example
 
 LIBIGL=/usr/local/igl/libigl/
-include $(LIBIGL)/Makefile.conf
+include $(LIBIGL)/build/Makefile.conf
 LIBIGL_INC=-I$(LIBIGL)/include
 LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglembree
 

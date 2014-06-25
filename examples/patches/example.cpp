@@ -3,7 +3,7 @@
 #include <igl/writeOFF.h>
 #include <igl/readWRL.h>
 #include <igl/report_gl_error.h>
-#include <igl/triangulate.h>
+#include <igl/polygon_mesh_to_triangle_mesh.h>
 #include <igl/readOFF.h>
 #include <igl/readMESH.h>
 #include <igl/draw_mesh.h>
@@ -25,10 +25,10 @@
 #include <igl/boost/components.h>
 #include <igl/boost/bfs_orient.h>
 #include <igl/orient_outward.h>
-#include <igl/embree/orient_outward_ao.h>
+#include <igl/embree/reorient_facets_raycast.h>
 #include <igl/unique_simplices.h>
 #include <igl/C_STR.h>
-#include <igl/write.h>
+#include <igl/write_triangle_mesh.h>
 #include <igl/two_axis_valuator_fixed_up.h>
 #include <igl/snap_to_fixed_up.h>
 
@@ -149,7 +149,7 @@ void TW_CALL set_rotation_type(const void * value, void * clientData)
   using namespace igl;
   const RotationType old_rotation_type = rotation_type;
   rotation_type = *(const RotationType *)(value);
-  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP && 
+  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP &&
     old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
   {
     push_undo();
@@ -291,7 +291,7 @@ void display()
     {
       draw_mesh(V,F,s.N,s.C);
     }
-  
+
     // visualize selected patch
     glLineWidth(10);
     glBegin(GL_TRIANGLES);
@@ -390,7 +390,7 @@ void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
       break;
     default:
     case CENTER_TYPE_FPS:
-      // Move `eye` and `at` 
+      // Move `eye` and `at`
       camera.dolly((wheel==0?Vector3d(0,0,1):Vector3d(-1,0,0))*0.1*direction);
       break;
   }
@@ -487,7 +487,7 @@ void mouse_drag(int mouse_x, int mouse_y)
       }
       case ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
       {
-        // Rotate according to two axis valuator with fixed up vector 
+        // Rotate according to two axis valuator with fixed up vector
         two_axis_valuator_fixed_up(
           width, height,
           2.0,
@@ -567,9 +567,11 @@ void init_patches()
   switch(orient_method)
   {
     case ORIENT_METHOD_AO:
+    {
       cout<<"orient_outward_ao()"<<endl;
-      orient_outward_ao(V,F,CC,100, F.rows() * 100,F,I);
+      reorient_facets_raycast(V,F,F,I);
       break;
+    }
     case ORIENT_METHOD_OUTWARD:
     default:
       cout<<"orient_outward()"<<endl;
@@ -606,7 +608,7 @@ bool save(const std::string & out_filename)
 {
   using namespace std;
   using namespace igl;
-  if(write(out_filename,V,F))
+  if(write_triangle_mesh(out_filename,V,F))
   {
     cout<<GREENGIN("Saved mesh to `"<<out_filename<<"` successfully.")<<endl;
     return true;
@@ -689,7 +691,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
         cout<<"Unknown key command: "<<key<<" "<<int(key)<<endl;
       }
   }
-  
+
 }
 
 int main(int argc, char * argv[])
@@ -757,7 +759,7 @@ int main(int argc, char * argv[])
   //  }
   //  //if(F.size() > T.size() || F.size() == 0)
   //  {
-  //    boundary_faces(T,F);
+  //    boundary_facets(T,F);
   //  }
   }
   if(vV.size() > 0)
@@ -766,7 +768,7 @@ int main(int argc, char * argv[])
     {
       return 1;
     }
-    triangulate(vF,F);
+    polygon_mesh_to_triangle_mesh(vF,F);
   }
   MatrixXi F_unique;
   unique_simplices(F, F_unique);

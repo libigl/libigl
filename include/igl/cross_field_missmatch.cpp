@@ -7,28 +7,29 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "cross_field_missmatch.h"
-#include "comb_cross_field.h"
+
 
 #include <vector>
 #include <deque>
-#include "per_face_normals.h"
-#include "is_border_vertex.h"
-#include "vf.h"
-#include "tt.h"
-#include "rotation_matrix_from_directions.h"
+#include <igl/comb_cross_field.h>
+#include <igl/per_face_normals.h>
+#include <igl/is_border_vertex.h>
+#include <igl/vertex_triangle_adjacency.h>
+#include <igl/triangle_triangle_adjacency.h>
+#include <igl/rotation_matrix_from_directions.h>
 
 namespace igl {
   template <typename DerivedV, typename DerivedF, typename DerivedO>
   class MissMatchCalculator
   {
   public:
-    
+
     const Eigen::PlainObjectBase<DerivedV> &V;
     const Eigen::PlainObjectBase<DerivedF> &F;
     const Eigen::PlainObjectBase<DerivedV> &PD1;
     const Eigen::PlainObjectBase<DerivedV> &PD2;
     Eigen::PlainObjectBase<DerivedV> N;
-    
+
   private:
     // internal
     std::vector<bool> V_border; // bool
@@ -36,10 +37,9 @@ namespace igl {
     std::vector<std::vector<int> > VFi;
     Eigen::PlainObjectBase<DerivedF> TT;
     Eigen::PlainObjectBase<DerivedF> TTi;
-    
-    
+
+
   private:
-    
     ///compute the mismatch between 2 faces
     inline int MissMatchByCross(const int f0,
                          const int f1)
@@ -48,21 +48,21 @@ namespace igl {
       Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir1 = PD1.row(f1);
       Eigen::Matrix<typename DerivedV::Scalar, 3, 1> n0 = N.row(f0);
       Eigen::Matrix<typename DerivedV::Scalar, 3, 1> n1 = N.row(f1);
-      
+
       Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir1Rot = igl::rotation_matrix_from_directions(n1,n0)*dir1;
       dir1Rot.normalize();
-      
+
       // TODO: this should be equivalent to the other code below, to check!
       // Compute the angle between the two vectors
       //    double a0 = atan2(dir0.dot(B2.row(f0)),dir0.dot(B1.row(f0)));
       //    double a1 = atan2(dir1Rot.dot(B2.row(f0)),dir1Rot.dot(B1.row(f0)));
       //
       //    double angle_diff = a1-a0;   //VectToAngle(f0,dir1Rot);
-      
+
       double angle_diff = atan2(dir1Rot.dot(PD2.row(f0)),dir1Rot.dot(PD1.row(f0)));
-      
+
       //    std::cerr << "Dani: " << dir0(0) << " " << dir0(1) << " " << dir0(2) << " " << dir1Rot(0) << " " << dir1Rot(1) << " " << dir1Rot(2) << " " << angle_diff << std::endl;
-      
+
       double step=M_PI/2.0;
       int i=(int)floor((angle_diff/step)+0.5);
       int k=0;
@@ -72,8 +72,8 @@ namespace igl {
         k=(-(3*i))%4;
       return k;
     }
-    
-    
+
+
 public:
   inline MissMatchCalculator(const Eigen::PlainObjectBase<DerivedV> &_V,
                       const Eigen::PlainObjectBase<DerivedF> &_F,
@@ -87,10 +87,10 @@ public:
   {
     igl::per_face_normals(V,F,N);
     V_border = igl::is_border_vertex(V,F);
-    igl::vf(V,F,VF,VFi);
-    igl::tt(V,F,TT,TTi);
+    igl::vertex_triangle_adjacency(V,F,VF,VFi);
+    igl::triangle_triangle_adjacency(V,F,TT,TTi);
   }
-  
+
   inline void calculateMissmatch(Eigen::PlainObjectBase<DerivedO> &Handle_MMatch)
   {
     Handle_MMatch.setConstant(F.rows(),3,-1);
@@ -105,7 +105,7 @@ public:
       }
     }
   }
-  
+
 };
 }
 template <typename DerivedV, typename DerivedF, typename DerivedO>
@@ -118,7 +118,7 @@ IGL_INLINE void igl::cross_field_missmatch(const Eigen::PlainObjectBase<DerivedV
 {
   Eigen::PlainObjectBase<DerivedV> PD1_combed;
   Eigen::PlainObjectBase<DerivedV> PD2_combed;
-  
+
   if (!isCombed)
     igl::comb_cross_field(V,F,PD1,PD2,PD1_combed,PD2_combed);
   else
@@ -130,7 +130,6 @@ IGL_INLINE void igl::cross_field_missmatch(const Eigen::PlainObjectBase<DerivedV
   sf.calculateMissmatch(missmatch);
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif
-

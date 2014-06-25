@@ -206,7 +206,7 @@ Laplace-Beltrami operator [][#meyer_2003].
 MatrixXd HN;
 SparseMatrix<double> L,M,Minv;
 igl::cotmatrix(V,F,L);
-igl::massmatrix(V,F,igl::MASSMATRIX_VORONOI,M);
+igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_VORONOI,M);
 igl::invert_diag(M,Minv);
 HN = -Minv*(L*V);
 H = (HN.rowwise().squaredNorm()).array().sqrt();

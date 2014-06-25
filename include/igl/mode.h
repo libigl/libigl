@@ -28,7 +28,7 @@ namespace igl
     Eigen::Matrix<T,Eigen::Dynamic,1> & M);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "mode.cpp"
 #endif
 

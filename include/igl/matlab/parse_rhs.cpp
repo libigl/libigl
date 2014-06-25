@@ -25,7 +25,7 @@ IGL_INLINE void igl::parse_rhs_index(
   V.array() -= 1;
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 template void igl::parse_rhs_index<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(mxArray_tag const**, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 template void igl::parse_rhs_index<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(mxArray_tag const**, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template void igl::parse_rhs_double<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(mxArray_tag const**, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);

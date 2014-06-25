@@ -27,7 +27,7 @@ namespace igl
   IGL_INLINE bool destroy_shader_program(const GLuint id);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "destroy_shader_program.cpp"
 #endif
 

@@ -167,7 +167,6 @@ Eigen::Matrix4f translate(
 #include <igl/per_face_normals.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/per_corner_normals.h>
-#include <igl/vf.h>
 #include <igl/adjacency_list.h>
 #include <igl/writeOBJ.h>
 #include <igl/writeOFF.h>
@@ -2023,7 +2022,7 @@ namespace igl
       return;
     //Compute mesh centroid
     Eigen::SparseMatrix<double> M;
-    igl::massmatrix(V,F,igl::MASSMATRIX_VORONOI,M);
+    igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_VORONOI,M);
     const auto & MV = M*V;
     Eigen::RowVector3d centroid  = MV.colwise().sum()/M.diagonal().sum();
     Eigen::RowVector3d min_point = V.colwise().minCoeff();
@@ -2319,7 +2318,7 @@ namespace igl
   void Viewer::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
   {
     Eigen::MatrixXd P_temp;
-    
+
     // If P only has two columns, pad with a column of zeros
     if (P.cols() == 2)
     {
@@ -2340,7 +2339,7 @@ namespace igl
   void Viewer::add_edges(const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
   {
     Eigen::MatrixXd P1_temp,P2_temp;
-    
+
     // If P1 only has two columns, pad with a column of zeros
     if (P1.cols() == 2)
     {
@@ -2366,7 +2365,7 @@ namespace igl
   void Viewer::add_label(const Eigen::VectorXd& P,  const std::string& str)
   {
     Eigen::MatrixXd P_temp;
-    
+
     // If P only has two columns, pad with a column of zeros
     if (P.cols() == 2)
     {

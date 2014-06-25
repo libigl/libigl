@@ -45,7 +45,7 @@ namespace igl
     Eigen::MatrixXi & IF);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "intersect_other.cpp"
 #endif
   

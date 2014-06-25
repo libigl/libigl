@@ -39,7 +39,7 @@ IGL_INLINE void igl::create_mesh_vbo(
   create_vector_vbo(N,N_vbo_id);
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif
 #endif

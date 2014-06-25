@@ -72,7 +72,7 @@ namespace igl
     Eigen::Quaterniond & quat);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "trackball.cpp"
 #endif
 

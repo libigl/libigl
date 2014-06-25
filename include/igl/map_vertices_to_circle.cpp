@@ -8,7 +8,7 @@
 
 #include "map_vertices_to_circle.h"
 
-#include "boundary_vertices_sorted.h"
+#include "boundary_loop.h"
 
 IGL_INLINE void igl::map_vertices_to_circle(
   const Eigen::MatrixXd& V,
