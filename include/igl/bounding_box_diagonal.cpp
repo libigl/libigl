@@ -22,6 +22,6 @@ IGL_INLINE double igl::bounding_box_diagonal(
   return sqrt((maxV-minV).array().square().sum());
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template instanciation
 #endif

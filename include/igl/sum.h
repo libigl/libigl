@@ -35,7 +35,7 @@ namespace igl
     Eigen::SparseVector<T>& S);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "sum.cpp"
 #endif
 

@@ -52,6 +52,6 @@ IGL_INLINE void igl::add_barycenter(
 }
 
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif

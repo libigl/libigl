@@ -73,6 +73,6 @@ IGL_INLINE void igl::find_cross_field_singularities(const Eigen::PlainObjectBase
   igl::find_cross_field_singularities(V, F, Handle_MMatch, isSingularity, singularityIndex);
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif

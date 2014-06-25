@@ -25,7 +25,7 @@ namespace igl
     std::vector<IntegerC> & C);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "face_occurences.cpp"
 #endif
 

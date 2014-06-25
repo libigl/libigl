@@ -45,7 +45,7 @@ namespace igl
     const bool ascii=true);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "writeSTL.cpp"
 #endif
 

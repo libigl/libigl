@@ -54,6 +54,6 @@ IGL_INLINE void igl::plot_vector( std::vector< std::vector< std::vector<T> > >& 
   }
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif

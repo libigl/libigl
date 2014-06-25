@@ -23,7 +23,7 @@ namespace igl
     std::string & content);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "file_contents_as_string.cpp"
 #endif
 

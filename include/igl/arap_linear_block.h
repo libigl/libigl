@@ -71,7 +71,7 @@ namespace igl
     Eigen::SparseMatrix<Scalar> & Kd);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "arap_linear_block.cpp"
 #endif
 

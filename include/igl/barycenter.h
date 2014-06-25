@@ -32,7 +32,7 @@ namespace igl
       Eigen::PlainObjectBase<DerivedBC> & BC);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "barycenter.cpp"
 #endif
 

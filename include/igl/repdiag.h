@@ -47,7 +47,7 @@ namespace igl
   IGL_INLINE Mat repdiag(const Mat & A, const int d);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "repdiag.cpp"
 #endif
 

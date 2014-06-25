@@ -25,7 +25,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedV> & Aout);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "per_vertex_attribute_smoothing.cpp"
 #endif
 

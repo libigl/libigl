@@ -10,7 +10,7 @@ include ../../build/Makefile.conf
 
 igl_lib=../../
 
-CFLAGS=-g -Wall 
+CFLAGS+=-g -Wall 
 inc=-I$(igl_lib)/include
 lib=$(OPENGL_LIB) $(GLUT_LIB) -L$(igl_lib)/lib -ligl
 

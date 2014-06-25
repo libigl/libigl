@@ -35,7 +35,7 @@ namespace igl
     const int dim,
     Eigen::PlainObjectBase<DerivedB> & B);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "columnize.cpp"
 #endif
 #endif

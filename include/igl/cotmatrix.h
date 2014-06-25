@@ -47,7 +47,7 @@ namespace igl
     Eigen::SparseMatrix<Scalar>& L);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "cotmatrix.cpp"
 #endif
 

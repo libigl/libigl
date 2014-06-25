@@ -24,7 +24,7 @@ namespace igl
   IGL_INLINE std::string uniform_type_to_string(const GLenum type);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "uniform_type_to_string.cpp"
 #endif
 

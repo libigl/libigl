@@ -29,7 +29,7 @@ namespace igl
     Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &SF);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "moveVF.cpp"
 #endif
 

@@ -235,7 +235,7 @@ IGL_INLINE void igl::marching_cubes(const Eigen::Matrix<typename DerivedV::Scala
                                        vertices, 
                                        faces);
 }
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::marching_cubes<Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::Matrix<Eigen::Matrix<float, -1, 3, 0, -1, 3>::Scalar, -1, 1, 0, -1, 1> const&, Eigen::Matrix<Eigen::Matrix<float, -1, 3, 0, -1, 3>::Scalar, -1, 3, 0, -1, 3> const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
 template void igl::marching_cubes<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::Matrix<Eigen::Matrix<double, -1, 3, 0, -1, 3>::Scalar, -1, 1, 0, -1, 1> const&, Eigen::Matrix<Eigen::Matrix<double, -1, 3, 0, -1, 3>::Scalar, -1, 3, 0, -1, 3> const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);

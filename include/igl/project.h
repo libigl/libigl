@@ -36,7 +36,7 @@ namespace igl
     const Eigen::PlainObjectBase<Derivedobj> & obj);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "project.cpp"
 #endif
 

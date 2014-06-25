@@ -106,7 +106,7 @@ struct igl::active_set_params
     {};
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "active_set.cpp"
 #endif
 

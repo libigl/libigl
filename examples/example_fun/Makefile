@@ -7,7 +7,7 @@ include ../../build/Makefile.conf
 
 igl_lib=../../
 
-CFLAGS=-g
+CFLAGS+=-g
 inc=-I$(igl_lib)/include
 
 STATIC_LIB=-ligl -L../../lib

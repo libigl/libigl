@@ -101,7 +101,7 @@ IGL_INLINE void igl::gradMat(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynam
   G.setFromTriplets(triplets.begin(), triplets.end());
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::gradMat<double, int>(Eigen::Matrix<double, -1, -1, 0, -1,-1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&,Eigen::SparseMatrix<double, 0, int>&);
 #endif

@@ -53,6 +53,6 @@ IGL_INLINE void igl::frame_to_cross_field(
 }
 
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif

@@ -40,7 +40,7 @@ namespace igl
     Eigen::SparseMatrix<Scalar>& I);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "plane_project.cpp"
 #endif
 

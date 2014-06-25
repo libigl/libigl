@@ -25,7 +25,7 @@ namespace igl
   IGL_INLINE void right_axis(const double * mv, double * x, double * y, double * z);
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "right_axis.cpp"
 #endif
 #endif

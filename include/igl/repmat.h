@@ -46,7 +46,7 @@ namespace igl
     Eigen::SparseMatrix<T> & B);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "repmat.cpp"
 #endif
 

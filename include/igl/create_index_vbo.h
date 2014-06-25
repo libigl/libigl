@@ -30,7 +30,7 @@ namespace igl
     GLuint & F_vbo_id);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "create_index_vbo.cpp"
 #endif
 

@@ -65,7 +65,7 @@ IGL_INLINE void principal_curvature(
 }
 
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "principal_curvature.cpp"
 #endif
 

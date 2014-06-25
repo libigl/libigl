@@ -33,7 +33,7 @@ namespace igl
     Eigen::Matrix<double,Eigen::Dynamic,1> & D);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "partition.cpp"
 #endif
 #endif

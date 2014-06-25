@@ -36,7 +36,7 @@ namespace igl
                      std::vector<std::vector<IndexType> >& VFi);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "vertex_triangle_adjacency.cpp"
 #endif
 

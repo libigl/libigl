@@ -37,7 +37,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedA>& A);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "face_areas.cpp"
 #endif
 

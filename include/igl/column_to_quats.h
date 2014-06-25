@@ -27,7 +27,7 @@ namespace igl
       Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> > & vQ);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "columns_to_quats.cpp"
 #endif
 

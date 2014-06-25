@@ -35,7 +35,7 @@ namespace igl
                                                    const Eigen::PlainObjectBase<DerivedS> &singularity_index,
                                                    Eigen::PlainObjectBase<DerivedO> &seams);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "cut_mesh_from_singularities.cpp"
 #endif
 

@@ -24,7 +24,7 @@ namespace igl
   IGL_INLINE void mat3_to_quat(const Q_type * m, Q_type * q);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "mat_to_quat.cpp"
 #endif
 

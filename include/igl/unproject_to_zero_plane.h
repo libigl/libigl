@@ -31,7 +31,7 @@ namespace igl
     Eigen::PlainObjectBase<Derivedobj> & obj);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "unproject_to_zero_plane.cpp"
 #endif
 

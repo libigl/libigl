@@ -49,7 +49,7 @@ IGL_INLINE void igl::fit_plane(
   N = es.eigenvectors().col(0);
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 #endif
 
 

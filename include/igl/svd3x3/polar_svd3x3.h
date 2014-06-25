@@ -36,7 +36,7 @@ namespace igl
   IGL_INLINE void polar_svd3x3_avx(const Eigen::Matrix<T, 3*8, 3>& A, Eigen::Matrix<T, 3*8, 3> &R);
   #endif
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "polar_svd3x3.cpp"
 #endif
 #endif

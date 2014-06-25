@@ -11,8 +11,8 @@ all: example
 igl_lib=../../
 eigen=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
 
-#CFLAGS=-g
-CFLAGS=-Os -DNDEBUG
+#CFLAGS+=-g
+CFLAGS+=-Os -DNDEBUG
 inc=-I$(igl_lib)/include $(eigen)
 lib=-L$(igl_lib)/lib -ligl
 

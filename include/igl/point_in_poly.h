@@ -29,7 +29,7 @@ bool IGL_INLINE point_in_poly( const std::vector<std::vector<unsigned int > >&po
 
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "point_in_poly.cpp"
 #endif
 

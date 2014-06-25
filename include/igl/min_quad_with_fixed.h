@@ -155,7 +155,7 @@ struct igl::min_quad_with_fixed_data
   Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> NB;
 };
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "min_quad_with_fixed.cpp"
 #endif
 

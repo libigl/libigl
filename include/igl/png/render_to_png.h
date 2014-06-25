@@ -31,7 +31,7 @@ namespace igl
     const bool fast = false);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "render_to_png.cpp"
 #endif
 

@@ -22,7 +22,7 @@ namespace igl
   IGL_INLINE void plot_vector(std::vector< std::vector< std::vector<T> > >& v);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "plot_vector.cpp"
 #endif
 

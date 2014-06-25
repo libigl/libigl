@@ -599,7 +599,7 @@ namespace igl
 
 } // end namespace
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "Viewer.cpp"
 #endif
 

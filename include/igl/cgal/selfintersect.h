@@ -64,7 +64,7 @@ namespace igl
     Eigen::VectorXi & IM);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "selfintersect.cpp"
 #endif
   

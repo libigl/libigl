@@ -21,7 +21,7 @@ namespace igl
   IGL_INLINE int gl_type_size(const GLenum type);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "gl_type_size.cpp"
 #endif
 

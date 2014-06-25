@@ -93,7 +93,7 @@ IGL_INLINE void writeTGA( gliGenericImage* image, FILE *fp);
 
 } // end of igl namespace
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "tga.cpp"
 #endif
 

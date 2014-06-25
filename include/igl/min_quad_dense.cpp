@@ -91,7 +91,7 @@ IGL_INLINE void igl::min_quad_dense_precompute(
   //int hu = 1;
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::min_quad_dense_precompute<double>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, bool, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
 #endif

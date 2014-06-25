@@ -24,7 +24,7 @@ namespace igl
   IGL_INLINE bool example_fun(const Printable & input);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "example_fun.cpp"
 #endif
 

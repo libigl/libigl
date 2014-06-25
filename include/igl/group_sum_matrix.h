@@ -39,7 +39,7 @@ namespace igl
     const Eigen::Matrix<int,Eigen::Dynamic,1> & G,
     Eigen::SparseMatrix<T>& A);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "group_sum_matrix.cpp"
 #endif
 #endif
