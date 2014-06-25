@@ -6,19 +6,19 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 //
-//  removeUnreferenced.h
+//  remove_unreferenced.h
 //  Preview3D
 //
 //  Created by Daniele Panozzo on 17/11/11.
 
-#ifndef IGL_REMOVEUNREFERENCED_H
-#define IGL_REMOVEUNREFERENCED_H
+#ifndef IGL_REMOVE_UNREFERENCED_H
+#define IGL_REMOVE_UNREFERENCED_H
 #include "igl_inline.h"
 
 #include <Eigen/Core>
 namespace igl 
 {
-  // [ NV, NF ] = removeUnreferenced( V,F)
+  // [ NV, NF ] = remove_unreferenced( V,F)
   // Remove unreferenced vertices from V, updating F accordingly
   //
   // Input:
@@ -28,7 +28,7 @@ namespace igl
   // NV, NF: new mesh without unreferenced vertices
   //
   template <typename Scalar, typename Index>
-  IGL_INLINE void removeUnreferenced(
+  IGL_INLINE void remove_unreferenced(
     const Eigen::PlainObjectBase<Scalar> &V,
     const Eigen::PlainObjectBase<Index> &F,
     Eigen::PlainObjectBase<Scalar> &NV,
@@ -37,7 +37,7 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "removeUnreferenced.cpp"
+#  include "remove_unreferenced.cpp"
 #endif
 
 #endif
