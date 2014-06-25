@@ -4,6 +4,9 @@
 #  include <windows.h>
 #  undef max
 #  undef min
+#endif
+
+#ifndef __APPLE__
 #  include <GL/glew.h>
 #endif
 
@@ -2374,9 +2377,10 @@ namespace igl
     glfwWindowHint(GLFW_SAMPLES, 16);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
+    #endif
     window = glfwCreateWindow(1280, 800, "IGL Viewer", NULL, NULL);
     if (!window)
     {
@@ -2386,7 +2390,7 @@ namespace igl
 
 	glfwMakeContextCurrent(window);
 
-#ifdef _WIN32
+#ifndef __APPLE__
 	glewExperimental = true;
 	GLenum err = glewInit();
 	if (GLEW_OK != err)

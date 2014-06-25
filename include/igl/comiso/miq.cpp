@@ -572,11 +572,11 @@ namespace igl {
 
     IGL_INLINE bool updateStiffeningJacobianDistorsion(double grad_size, const Eigen::MatrixXd& WUV);
 
-    IGL_INLINE IGL_INLINE bool IsFlipped(const Eigen::Vector2d &uv0,
+    IGL_INLINE bool IsFlipped(const Eigen::Vector2d &uv0,
                           const Eigen::Vector2d &uv1,
                           const Eigen::Vector2d &uv2);
 
-    IGL_INLINE IGL_INLINE bool IsFlipped(const int i, const Eigen::MatrixXd& WUV);
+    IGL_INLINE bool IsFlipped(const int i, const Eigen::MatrixXd& WUV);
 
   };
 };
