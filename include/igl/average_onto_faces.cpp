@@ -5,10 +5,10 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "moveVF.h"
+#include "average_onto_faces.h"
 
 template <typename T, typename I>
-IGL_INLINE void igl::moveVF(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
+IGL_INLINE void igl::average_onto_faces(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
             const Eigen::Matrix<I, Eigen::Dynamic, Eigen::Dynamic> &F,
             const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &S,
             Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &SF)
