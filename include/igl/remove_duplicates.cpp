@@ -5,11 +5,11 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "removeDuplicates.h"
+#include "remove_duplicates.h"
 #include <vector>
 
 //template <typename T, typename S>
-//IGL_INLINE void igl::removeDuplicates(
+//IGL_INLINE void igl::remove_duplicates(
 //                                 const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
 //                                 const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
 //                                 Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &NV,
@@ -17,7 +17,7 @@
 //                                 Eigen::Matrix<S, Eigen::Dynamic, 1> &I,
 //                                 const double epsilon)
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::removeDuplicates(
+IGL_INLINE void igl::remove_duplicates(
   const Eigen::PlainObjectBase<DerivedV> &V,
   const Eigen::PlainObjectBase<DerivedF> &F,
   Eigen::PlainObjectBase<DerivedV> &NV,
@@ -83,5 +83,5 @@ IGL_INLINE void igl::removeDuplicates(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::removeDuplicates<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::Matrix<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, -1, 1, 0, -1, 1>&, double);
+template void igl::remove_duplicates<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::Matrix<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, -1, 1, 0, -1, 1>&, double);
 #endif
