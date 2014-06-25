@@ -5,12 +5,12 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "gradMat.h"
+#include "grad.h"
 #include <Eigen/Geometry>
 #include <vector>
 
 template <typename T, typename S>
-IGL_INLINE void igl::gradMat(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
+IGL_INLINE void igl::grad(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
   const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
   Eigen::SparseMatrix<T> &G )
 {
@@ -103,6 +103,6 @@ IGL_INLINE void igl::gradMat(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynam
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::gradMat<double, int>(Eigen::Matrix<double, -1, -1, 0, -1,-1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&,Eigen::SparseMatrix<double, 0, int>&);
+template void igl::grad<double, int>(Eigen::Matrix<double, -1, -1, 0, -1,-1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&,Eigen::SparseMatrix<double, 0, int>&);
 #endif
 

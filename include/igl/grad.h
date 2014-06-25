@@ -33,13 +33,13 @@ namespace igl {
   // 90 degrees
   //
   template <typename T, typename S>
-  IGL_INLINE void gradMat(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
+  IGL_INLINE void grad(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V,
     const Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> &F,
   Eigen::SparseMatrix<T> &G);
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "gradMat.cpp"
+#  include "grad.cpp"
 #endif
 
 #endif
