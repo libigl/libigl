@@ -5,13 +5,13 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_COTANGENT_H
-#define IGL_COTANGENT_H
+#ifndef IGL_COTMATRIX_ENTRIES_H
+#define IGL_COTMATRIX_ENTRIES_H
 #include "igl_inline.h"
 #include <Eigen/Core>
 namespace igl
 {
-  // COTANGENT compute the cotangents of each angle in mesh (V,F)
+  // COTMATRIX_ENTRIES compute the cotangents of each angle in mesh (V,F)
   // 
   // Inputs:
   //   V  #V by dim list of rest domain positions
@@ -24,14 +24,14 @@ namespace igl
   //       for tets, columns along edges [1,2],[2,0],[0,1],[3,0],[3,1],[3,2] 
   //
   template <typename DerivedV, typename DerivedF, typename DerivedC>
-  IGL_INLINE void cotangent(
+  IGL_INLINE void cotmatrix_entries(
     const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedC>& C);
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "cotangent.cpp"
+#  include "cotmatrix_entries.cpp"
 #endif
 
 #endif

@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "cotangent.h"
+#include "cotmatrix_entries.h"
 #include "doublearea.h"
 #include "edge_lengths.h"
 #include "face_areas.h"
@@ -16,7 +16,7 @@
 
 
 template <typename DerivedV, typename DerivedF, typename DerivedC>
-IGL_INLINE void igl::cotangent(
+IGL_INLINE void igl::cotmatrix_entries(
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedC>& C)
@@ -89,7 +89,7 @@ IGL_INLINE void igl::cotangent(
     default:
     {
       fprintf(stderr,
-          "cotangent.h: Error: Simplex size (%d) not supported\n", simplex_size);
+          "cotmatrix_entries.h: Error: Simplex size (%d) not supported\n", simplex_size);
       assert(false);
     }
   }
@@ -97,5 +97,5 @@ IGL_INLINE void igl::cotangent(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::cotangent<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::cotmatrix_entries<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif
