@@ -63,3 +63,4 @@ tutorial/*/build/*
 tutorial/*/Makefile
 external/glew/build
 *buildXcode*
+tutorial/build*
