@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
   // Construct Laplacian and mass matrix
   SparseMatrix<double> L,M,Minv,Q;
   igl::cotmatrix(V,F,L);
-  igl::massmatrix(V,F,igl::MASSMATRIX_VORONOI,M);
+  igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_VORONOI,M);
   igl::invert_diag(M,Minv);
   // Bi-Laplacian
   Q = L * (Minv * L);

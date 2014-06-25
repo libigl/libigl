@@ -56,7 +56,7 @@ IGL_INLINE void igl::boundary_vertices_sorted(
     int lastV;
     lastV = bnd[bnd.size()-1];
 
-    for (int i = 0; i < VF[lastV].size(); i++)
+    for (int i = 0; i < (int)VF[lastV].size(); i++)
     {
       int curr_neighbor = VF[lastV][i];
 

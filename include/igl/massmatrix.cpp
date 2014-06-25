@@ -28,13 +28,13 @@ IGL_INLINE void igl::massmatrix(
 
   MassMatrixType eff_type = type;
   // Use voronoi of for triangles by default, otherwise barycentric
-  if(type == MASSMATRIX_DEFAULT)
+  if(type == MASSMATRIX_TYPE_DEFAULT)
   {
-    eff_type = (simplex_size == 3?MASSMATRIX_VORONOI:MASSMATRIX_BARYCENTRIC);
+    eff_type = (simplex_size == 3?MASSMATRIX_TYPE_VORONOI:MASSMATRIX_TYPE_BARYCENTRIC);
   }
 
   // Not yet supported
-  assert(type!=MASSMATRIX_FULL);
+  assert(type!=MASSMATRIX_TYPE_FULL);
 
   Matrix<int,Dynamic,1> MI;
   Matrix<int,Dynamic,1> MJ;
@@ -63,7 +63,7 @@ IGL_INLINE void igl::massmatrix(
 
     switch(eff_type)
     {
-      case MASSMATRIX_BARYCENTRIC:
+      case MASSMATRIX_TYPE_BARYCENTRIC:
         // diagonal entries for each face corner
         MI.resize(m*3,1); MJ.resize(m*3,1); MV.resize(m*3,1);
         MI.block(0*m,0,m,1) = F.col(0);
@@ -73,7 +73,7 @@ IGL_INLINE void igl::massmatrix(
         repmat(dblA,3,1,MV);
         MV.array() /= 6.0;
         break;
-      case MASSMATRIX_VORONOI:
+      case MASSMATRIX_TYPE_VORONOI:
         {
           // diagonal entries for each face corner
           // http://www.alecjacobson.com/weblog/?p=874
@@ -120,7 +120,7 @@ IGL_INLINE void igl::massmatrix(
           
           break;
         }
-      case MASSMATRIX_FULL:
+      case MASSMATRIX_TYPE_FULL:
         assert(false && "Implementation incomplete");
         break;
       default:
@@ -130,7 +130,7 @@ IGL_INLINE void igl::massmatrix(
   }else if(simplex_size == 4)
   {
     assert(V.cols() == 3);
-    assert(eff_type == MASSMATRIX_BARYCENTRIC);
+    assert(eff_type == MASSMATRIX_TYPE_BARYCENTRIC);
     MI.resize(m*4,1); MJ.resize(m*4,1); MV.resize(m*4,1);
     MI.block(0*m,0,m,1) = F.col(0);
     MI.block(1*m,0,m,1) = F.col(1);

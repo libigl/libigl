@@ -154,7 +154,7 @@ IGL_INLINE bool igl::arap_precomputation(
     const double h = data.h;
     assert(h != 0);
     SparseMatrix<double> M;
-    massmatrix(V,F,MASSMATRIX_DEFAULT,data.M);
+    massmatrix(V,F,MASSMATRIX_TYPE_DEFAULT,data.M);
     SparseMatrix<double> DQ = 0.5/(h*h)*data.M;
     Q += DQ;
     // Dummy external forces
