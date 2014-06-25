@@ -20,7 +20,10 @@ namespace igl
   // using QR decomposition otherwise:
   //   http://www.okstate.edu/sas/v8/sashtml/ormp/chap5/sect32.htm
   //
-  // ACTIVE_SET Minimize quadratic energy Z'*A*Z + Z'*B + C with constraints
+  // ACTIVE_SET Minimize quadratic energy 
+  //
+  // 0.5*Z'*A*Z + Z'*B + C with constraints
+  //
   // that Z(known) = Y, optionally also subject to the constraints Aeq*Z = Beq,
   // and further optionally subject to the linear inequality constraints that
   // Aieq*Z <= Bieq and constant inequality constraints lx <= x <= ux

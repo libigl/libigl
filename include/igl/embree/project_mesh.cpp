@@ -14,20 +14,20 @@
 #include <igl/per_vertex_normals.h>
 #include <igl/embree/EmbreeIntersector.h>
 
-template <typename ScalarMatrix, typename IndexMatrix>
-IGL_INLINE ScalarMatrix igl::project_mesh(
-   const ScalarMatrix & V_source,
-   const IndexMatrix  & F_source,
-   const ScalarMatrix & V_target,
-   const IndexMatrix  & F_target
-)
-{
-  // Compute normals for the tri
-  Eigen::MatrixXd ray_dir;
-  igl::per_vertex_normals(V_source, F_source, ray_dir);
-
-  return project_points_on_mesh(V_source,ray_dir,V_target,F_target);
-}
+//template <typename ScalarMatrix, typename IndexMatrix>
+//IGL_INLINE ScalarMatrix igl::project_mesh(
+//   const ScalarMatrix & V_source,
+//   const IndexMatrix  & F_source,
+//   const ScalarMatrix & V_target,
+//   const IndexMatrix  & F_target
+//)
+//{
+//  // Compute normals for the tri
+//  Eigen::MatrixXd ray_dir;
+//  igl::per_vertex_normals(V_source, F_source, ray_dir);
+//
+//  return project_points_on_mesh(V_source,ray_dir,V_target,F_target);
+//}
 
 template <typename ScalarMatrix, typename IndexMatrix>
 IGL_INLINE ScalarMatrix igl::project_points_on_mesh
