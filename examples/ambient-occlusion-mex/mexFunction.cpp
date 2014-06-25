@@ -1,6 +1,6 @@
 #include "parse_rhs.h"
 
-#include <igl/matlab/mexStream.h>
+#include <igl/matlab/MexStream.h>
 #include <igl/embree/ambient_occlusion.h>
 
 #include <igl/read_triangle_mesh.h>
@@ -16,7 +16,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 {
   // This is useful for debugging whether Matlab is caching the mex binary
   //mexPrintf("%s %s\n",__TIME__,__DATE__);
-  igl::mexStream mout;
+  igl::MexStream mout;
   std::streambuf *outbuf = std::cout.rdbuf(&mout);
 
   using namespace std;

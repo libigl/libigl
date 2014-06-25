@@ -16,13 +16,13 @@ namespace igl
   // window.
   //
   // Insert at the beginning of mexFunction():
-  //  mexStream mout;
+  //  MexStream mout;
   //  std::streambuf *outbuf = std::cout.rdbuf(&mout); 
   //  ...
   //  ALWAYS restore original buffer to avoid memory leak problems in matlab
   //  std::cout.rdbuf(outbuf);
   //
-  class mexStream : public std::streambuf
+  class MexStream : public std::streambuf
   {
     public:
     protected:
@@ -31,6 +31,6 @@ namespace igl
   }; 
 }
 #ifndef IGL_STATIC_LIBRARY
-#  include "mexStream.cpp"
+#  include "MexStream.cpp"
 #endif
 #endif
