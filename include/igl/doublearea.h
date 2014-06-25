@@ -72,7 +72,7 @@ namespace igl
     Eigen::PlainObjectBase<DeriveddblA> & dblA);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "doublearea.cpp"
 #endif
 

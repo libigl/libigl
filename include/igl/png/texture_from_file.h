@@ -28,7 +28,7 @@ namespace igl
   IGL_INLINE bool texture_from_file(const std::string filename, GLuint & id);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "texture_from_file.cpp"
 #endif
 

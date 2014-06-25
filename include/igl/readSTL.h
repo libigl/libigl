@@ -49,7 +49,7 @@ namespace igl
     std::vector<std::vector<TypeN> > & N);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "readSTL.cpp"
 #endif
 

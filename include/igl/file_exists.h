@@ -19,7 +19,7 @@ namespace igl
   IGL_INLINE bool file_exists(const char * filename);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "file_exists.cpp"
 #endif
 

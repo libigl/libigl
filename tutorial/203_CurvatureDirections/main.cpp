@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
   MatrixXd HN;
   SparseMatrix<double> L,M,Minv;
   igl::cotmatrix(V,F,L);
-  igl::massmatrix(V,F,igl::MASSMATRIX_VORONOI,M);
+  igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_VORONOI,M);
   igl::invert_diag(M,Minv);
   // Laplace-Beltrami of position
   HN = -Minv*(L*V);

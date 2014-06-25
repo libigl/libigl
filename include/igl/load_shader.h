@@ -25,7 +25,7 @@ namespace igl
   IGL_INLINE GLuint load_shader(const char *src,const GLenum type);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "load_shader.cpp"
 #endif
 

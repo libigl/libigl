@@ -22,7 +22,7 @@ namespace igl
   IGL_INLINE std::string dirname(const std::string & path);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "dirname.cpp"
 #endif
 

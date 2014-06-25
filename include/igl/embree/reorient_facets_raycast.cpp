@@ -218,6 +218,40 @@ IGL_INLINE void igl::reorient_facets_raycast(
   if (is_verbose) cout << "done!" << endl;
 }
 
-#ifndef IGL_HEADER_ONLY
+template <
+  typename DerivedV, 
+  typename DerivedF, 
+  typename DerivedFF,
+  typename DerivedI>
+IGL_INLINE void igl::reorient_facets_raycast(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
+  Eigen::PlainObjectBase<DerivedFF> & FF,
+  Eigen::PlainObjectBase<DerivedI> & I)
+{
+  const int rays_total = F.rows()*100;
+  const int rays_minimum = 10;
+  const bool facet_wise = false;
+  const bool use_parity = false;
+  const bool is_verbose = false;
+  Eigen::VectorXi C;
+  reorient_facets_raycast(
+    V,F,rays_total,rays_minimum,facet_wise,use_parity,is_verbose,I,C);
+  // Conservative in case FF = F
+  FF.conservativeResize(F.rows(),F.cols());
+  for(int i = 0;i<I.rows();i++)
+  {
+    if(I(i))
+    {
+      FF.row(i) = (F.row(i).reverse()).eval();
+    }else
+    {
+      FF.row(i) = F.row(i);
+    }
+  }
+}
+
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template void igl::reorient_facets_raycast<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif

@@ -4,13 +4,13 @@
 all: example
 
 # Shared flags etc.
-include ../../Makefile.conf
+include ../../build/Makefile.conf
 
 .PHONY: example
 
 igl_lib=../../
 
-CFLAGS=-g -Wall 
+CFLAGS+=-g -Wall 
 #deps=-MMD -MF depends.txt
 EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
 inc=-I$(igl_lib)/include $(EIGEN3_INC)

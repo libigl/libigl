@@ -15,7 +15,7 @@ namespace igl
   // Note: Tested for Mac OS X
   IGL_INLINE std::string path_to_executable();
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "path_to_executable.cpp"
 #endif
 #endif 

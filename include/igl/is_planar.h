@@ -24,7 +24,7 @@ namespace igl
   IGL_INLINE bool is_planar(const Eigen::MatrixXd & V);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "is_planar.cpp"
 #endif
 #endif

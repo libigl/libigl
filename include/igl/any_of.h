@@ -18,7 +18,7 @@ namespace igl
   template <typename Mat>
   IGL_INLINE bool any_of(const Mat & S);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "any_of.cpp"
 #endif
 #endif

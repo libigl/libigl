@@ -50,7 +50,7 @@ namespace igl
 #endif
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "fit_rotations.cpp"
 #endif
 

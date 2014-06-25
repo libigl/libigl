@@ -1,5 +1,5 @@
 
-#define IGL_HEADER_ONLY
+#undef IGL_STATIC_LIBRARY
 #include <igl/principal_curvature.h>
 #include <igl/read_triangle_mesh.h>
 #include <iostream>
@@ -44,7 +44,7 @@ void app_init(int argc, char* argv[], CurvatureCalculator& c, Eigen::MatrixXd& V
     }
     char* tmp;
     const char* meshName;
-    char * scaleFile;
+    //char * scaleFile;
     for (argc--, argv++; argc--; argv++)
     {
         if( (*argv)[0] == '-')

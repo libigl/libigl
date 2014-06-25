@@ -25,7 +25,7 @@ namespace igl
   IGL_INLINE GLenum report_gl_error();
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "report_gl_error.cpp"
 #endif
 

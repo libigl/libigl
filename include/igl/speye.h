@@ -35,7 +35,7 @@ namespace igl
   IGL_INLINE void speye(const int n, Eigen::SparseMatrix<T> & I);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "speye.cpp"
 #endif
 

@@ -27,7 +27,7 @@ namespace igl
     Eigen::MatrixXi & E);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "all_edges.cpp"
 #endif
 

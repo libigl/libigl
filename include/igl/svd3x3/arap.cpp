@@ -13,7 +13,7 @@
 #include <igl/covariance_scatter_matrix.h>
 #include <igl/speye.h>
 #include <igl/mode.h>
-#include <igl/plane_project.h>
+#include <igl/project_isometrically_to_plane.h>
 #include <igl/slice.h>
 #include <igl/arap_rhs.h>
 #include <igl/repdiag.h>
@@ -61,7 +61,7 @@ IGL_INLINE bool igl::arap_precomputation(
   SparseMatrixS ref_map,ref_map_dim;
   if(flat)
   {
-    plane_project(V,F,plane_V,plane_F,ref_map);
+    project_isometrically_to_plane(V,F,plane_V,plane_F,ref_map);
     repdiag(ref_map,dim,ref_map_dim);
   }
   const PlainObjectBase<DerivedV>& ref_V = (flat?plane_V:V);
@@ -147,15 +147,15 @@ IGL_INLINE bool igl::arap_precomputation(
   }
   assert(data.K.rows() == data.n*data.dim);
 
-  SparseMatrix<double> Q = (-0.5*L).eval();
+  SparseMatrix<double> Q = (-L).eval();
 
   if(data.with_dynamics)
   {
     const double h = data.h;
     assert(h != 0);
     SparseMatrix<double> M;
-    massmatrix(V,F,MASSMATRIX_DEFAULT,data.M);
-    SparseMatrix<double> DQ = 0.5/(h*h)*data.M;
+    massmatrix(V,F,MASSMATRIX_TYPE_DEFAULT,data.M);
+    SparseMatrix<double> DQ = 1./(h*h)*data.M;
     Q += DQ;
     // Dummy external forces
     data.f_ext = MatrixXd::Zero(n,data.dim);
@@ -302,7 +302,7 @@ IGL_INLINE bool igl::arap_solve(
   return true;
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 template bool igl::arap_solve<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, igl::ARAPData&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template bool igl::arap_precomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, igl::ARAPData&);
 #endif

@@ -20,7 +20,7 @@ namespace igl
     const double *b);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "dot.cpp"
 #endif
 

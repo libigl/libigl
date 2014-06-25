@@ -27,7 +27,7 @@ namespace igl
   IGL_INLINE bool rows_to_matrix(const std::vector<Row> & V,Mat & M);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "rows_to_matrix.cpp"
 #endif
 

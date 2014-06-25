@@ -21,7 +21,7 @@ namespace igl
   IGL_INLINE double bounding_box_diagonal( const Eigen::MatrixXd & V);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "bounding_box_diagonal.cpp"
 #endif
 

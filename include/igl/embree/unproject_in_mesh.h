@@ -45,7 +45,7 @@ namespace igl
     Eigen::PlainObjectBase<Derivedobj> & obj,
     std::vector<igl::Hit > & hits);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "unproject_in_mesh.cpp"
 #endif
 #endif

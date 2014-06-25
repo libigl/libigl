@@ -19,7 +19,7 @@ namespace igl
   // Inline version
   Eigen::MatrixXi exterior_edges( const Eigen::MatrixXi & F);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "exterior_edges.h"
 #endif
 

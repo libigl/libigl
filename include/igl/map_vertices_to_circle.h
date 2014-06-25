@@ -30,7 +30,7 @@ namespace igl
   	Eigen::MatrixXd& UV);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "map_vertices_to_circle.cpp"
 #endif
 

@@ -33,7 +33,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedIX>& IX);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "sortrows.cpp"
 #endif
 

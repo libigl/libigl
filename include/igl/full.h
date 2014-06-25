@@ -34,7 +34,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedB>& B);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "full.cpp"
 #endif
 

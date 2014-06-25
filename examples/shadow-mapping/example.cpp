@@ -19,7 +19,6 @@
 #include <igl/trackball.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/REDRUM.h>
-#include <igl/Camera.h>
 #include <igl/ReAntTweakBar.h>
 #include <igl/get_seconds.h>
 #include <igl/jet.h>
@@ -57,6 +56,14 @@
 #include <iostream>
 
 
+struct Camera
+{
+  Eigen::Vector3d pan;
+  Eigen::Quaterniond rotation;
+  double zoom;
+  double angle;
+  Camera():pan(0,0,0),rotation(1,0,0,0),zoom(1),angle(25){}
+};
 
 // Initialize shadow textures. Should be called on reshape()
 //
@@ -154,7 +161,7 @@ std::vector<Mesh> meshes;
 
 struct State
 {
-  igl::Camera camera;
+  ::Camera camera;
   State():
     camera()
   {
@@ -175,7 +182,7 @@ std::stack<State> redo_stack;
 
 bool is_rotating = false;
 int down_x,down_y;
-igl::Camera down_camera;
+::Camera down_camera;
 
 bool is_animating = false;
 double animation_start_time = 0;
@@ -276,7 +283,7 @@ void push_lightview_camera(const Eigen::Vector4f & light_pos)
     0,1,0);
 }
 
-void push_camera(const igl::Camera & camera)
+void push_camera(const ::Camera & camera)
 {
   using namespace igl;
   glMatrixMode(GL_MODELVIEW);
@@ -284,7 +291,7 @@ void push_camera(const igl::Camera & camera)
   // scale, pan
   glScaled(camera.zoom, camera.zoom, camera.zoom);
   double mat[4*4];
-  quat_to_mat(camera.rotation,mat);
+  quat_to_mat(camera.rotation.coeffs().data(),mat);
   glMultMatrixd(mat);
 }
 
@@ -454,7 +461,7 @@ void display()
     q.coeffs() =
       animation_to_quat.coeffs()*t + animation_from_quat.coeffs()*(1.-t);
     q.normalize();
-    copy(q.coeffs().data(),q.coeffs().data()+4,s.camera.rotation);
+    s.camera.rotation = q;
   }
   update_meshes();
 
@@ -577,7 +584,7 @@ void mouse_drag(int mouse_x, int mouse_y)
       case ROTATION_TYPE_IGL_TRACKBALL:
       {
         // Rotate according to trackball
-        igl::trackball<double>(
+        igl::trackball(
           width,
           height,
           2.0,
@@ -591,8 +598,7 @@ void mouse_drag(int mouse_x, int mouse_y)
       }
       case ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
       {
-        Quaterniond down_q;
-        copy(down_camera.rotation,down_camera.rotation+4,down_q.coeffs().data());
+        Quaterniond down_q = down_camera.rotation;
         Vector3d axis(0,1,0);
         const double speed = 2.0;
         Quaterniond q;
@@ -615,7 +621,7 @@ void mouse_drag(int mouse_x, int mouse_y)
             q.normalize();
           }
         }
-        copy(q.coeffs().data(),q.coeffs().data()+4,s.camera.rotation);
+        s.camera.rotation = q;
         break;
       }
       default:
@@ -688,7 +694,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
       }else
       {
         push_undo();
-        igl::snap_to_canonical_view_quat<double>(
+        igl::snap_to_canonical_view_quat(
           s.camera.rotation,
           1.0,
           s.camera.rotation);
@@ -712,7 +718,7 @@ void TW_CALL set_rotation_type(const void * value, void * clientData)
     old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
   {
     push_undo();
-    copy(s.camera.rotation,s.camera.rotation+4,animation_from_quat.coeffs().data());
+    animation_from_quat = s.camera.rotation;
     const Vector3d up = animation_from_quat.matrix() * Vector3d(0,1,0);
     Vector3d proj_up(0,up(1),up(2));
     if(proj_up.norm() == 0)
@@ -825,7 +831,7 @@ int main(int argc, char * argv[])
   rebar.TwNewBar("bar");
   TwDefine("bar label='Shadow Mapping' size='200 550' text=light alpha='200' color='68 68 68'");
   rebar.TwAddVarRW("camera_zoom", TW_TYPE_DOUBLE,&s.camera.zoom,"");
-  rebar.TwAddVarRW("camera_rotation", TW_TYPE_QUAT4D,s.camera.rotation,"");
+  rebar.TwAddVarRW("camera_rotation", TW_TYPE_QUAT4D,s.camera.rotation.coeffs().data(),"");
   TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType","igl_trackball,two_axis_fixed_up");
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
@@ -834,7 +840,7 @@ int main(int argc, char * argv[])
   rebar.load(REBAR_NAME);
 
   animation_from_quat = Quaterniond(1,0,0,0);
-  copy(s.camera.rotation,s.camera.rotation+4,animation_to_quat.coeffs().data());
+  animation_from_quat = s.camera.rotation;
   animation_start_time = get_seconds();
 
   // Init antweakbar

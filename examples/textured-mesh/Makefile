@@ -2,7 +2,7 @@
 .PHONY: all
 
 # Shared flags etc.
-include ../../Makefile.conf
+include ../../build/Makefile.conf
 
 all: example
 
@@ -23,7 +23,7 @@ EMBREE_LIB=-L$(EMBREE)/build -lembree -lsys
 
 # YIMAGE Library
 YIMG=$(LIBIGL)/external/yimg/
-YIMG_LIB=-L$(YIMG) -lyimg -lz -L/usr/X11/lib -lpng -bind_at_load
+YIMG_LIB=-L$(YIMG) -lyimg -lz -L/opt/local/lib -lpng -bind_at_load
 YIMG_INC=-I/usr/X11/include -I$(YIMG) 
 
 ANTTWEAKBAR_INC=-I$(LIBIGL)/external/AntTweakBar/include

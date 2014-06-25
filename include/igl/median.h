@@ -21,7 +21,7 @@ namespace igl
   IGL_INLINE bool median(const Eigen::VectorXd & V, double & m);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "median.cpp"
 #endif
 

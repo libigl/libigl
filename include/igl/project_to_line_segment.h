@@ -42,7 +42,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedsqrD> & sqrD);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "project_to_line_segment.cpp"
 #endif
 

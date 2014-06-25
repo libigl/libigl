@@ -24,7 +24,7 @@
 #include <igl/pathinfo.h>
 #include <igl/Camera.h>
 #include <igl/get_seconds.h>
-#include <igl/cgal/selfintersect.h>
+#include <igl/cgal/remesh_self_intersections.h>
 #include <igl/cgal/intersect_other.h>
 
 #ifdef __APPLE__
@@ -477,9 +477,10 @@ void color_selfintersections(
   using namespace Eigen;
   MatrixXd SV;
   MatrixXi SF,IF;
-  SelfintersectParam params;
+  VectorXi J,IM;
+  RemeshSelfIntersectionsParam params;
   params.detect_only = true;
-  selfintersect(V,F,params,SV,SF,IF);
+  remesh_self_intersections(V,F,params,SV,SF,IF,J,IM);
   C.resize(F.rows(),3);
   C.col(0).setConstant(0.4);
   C.col(1).setConstant(0.8);
@@ -606,7 +607,7 @@ int main(int argc, char * argv[])
     //  }
     //  //if(F.size() > T.size() || F.size() == 0)
     //  {
-    //    boundary_faces(T,F);
+    //    boundary_facets(T,F);
     //  }
     }
     if(vV.size() > 0)
@@ -622,13 +623,13 @@ int main(int argc, char * argv[])
     return true;
   };
 
-  if(!read_triangle_mesh(filename,V,F,N))
+  if(!read(filename,V,F,N))
   {
     return 1;
   }
   if(has_other)
   {
-    if(!read_triangle_mesh(argv[2],U,G,W))
+    if(!read(argv[2],U,G,W))
     {
       return 1;
     }

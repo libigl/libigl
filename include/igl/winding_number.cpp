@@ -207,7 +207,7 @@ IGL_INLINE void igl::winding_number_2(
   }
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::winding_number_3<int>(double const*, int, int const*, int, double const*, int, double*);
 template void igl::winding_number_2<double>(double const*, int, double const*, int, double const*, int, double*);

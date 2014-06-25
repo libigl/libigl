@@ -332,6 +332,6 @@ IGL_INLINE bool igl::mosek_quadprog(
   list_to_matrix(vx,x);
   return ret;
 }
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template declarations
 #endif

@@ -129,6 +129,6 @@ IGL_INLINE void igl::intersect_other(
 
 }
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif

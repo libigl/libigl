@@ -18,7 +18,7 @@ namespace igl
   IGL_INLINE void draw_beach_ball();
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "draw_beach_ball.cpp"
 #endif
 

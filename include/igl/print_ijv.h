@@ -28,7 +28,7 @@ namespace igl
     const int offset=0);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "print_ijv.cpp"
 #endif
 

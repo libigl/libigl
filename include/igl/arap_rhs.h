@@ -36,7 +36,7 @@ namespace igl
     const igl::ARAPEnergyType energy,
     Eigen::SparseMatrix<double>& K);
 }
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "arap_rhs.cpp"
 #endif
 #endif

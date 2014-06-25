@@ -40,7 +40,7 @@ namespace igl
 }
 
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "mesh_to_tetgenio.cpp"
 #endif
 

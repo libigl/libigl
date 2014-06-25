@@ -40,7 +40,7 @@ namespace igl
     Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& S);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "min_quad_dense.cpp"
 #endif
 

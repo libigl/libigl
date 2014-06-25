@@ -8,7 +8,7 @@
 
 #include <igl/comiso/nrosy.h>
 #include <igl/tt.h>
-#include <igl/edgetopology.h>
+#include <igl/edge_topology.h>
 #include <igl/per_face_normals.h>
 
 #include <iostream>
@@ -160,7 +160,7 @@ igl::NRosyField::NRosyField(const Eigen::MatrixXd& _V, const Eigen::MatrixXi& _F
 
   // Generate topological relations
   igl::tt(V,F,TT,TTi);
-  igl::edgetopology(V,F, EV, FE, EF);
+  igl::edge_topology(V,F, EV, FE, EF);
 
   // Flag border edges
   isBorderEdge.resize(EV.rows());

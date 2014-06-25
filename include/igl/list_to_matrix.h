@@ -31,7 +31,7 @@ namespace igl
   IGL_INLINE bool list_to_matrix(const std::vector<T > & V,Mat & M);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "list_to_matrix.cpp"
 #endif
 

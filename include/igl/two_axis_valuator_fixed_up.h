@@ -42,7 +42,7 @@ namespace igl
     Eigen::Quaterniond & quat);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "two_axis_valuator_fixed_up.cpp"
 #endif
 

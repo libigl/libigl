@@ -22,7 +22,7 @@ namespace igl
     Eigen::MatrixXi & FF);
 }
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #  include "unique_simplices.cpp"
 #endif
 
