@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_MANIFOLD_PATCHES_H
-#define IGL_MANIFOLD_PATCHES_H
+#ifndef IGL_ORIENTABLE_PATCHES_H
+#define IGL_ORIENTABLE_PATCHES_H
 #include <igl/igl_inline.h>
 #include <Eigen/Core>
 #include <Eigen/Sparse>
@@ -26,12 +26,12 @@ namespace igl
   //    A  #F by #F adjacency matrix
   // 
   template <typename DerivedF, typename DerivedC, typename AScalar>
-  IGL_INLINE void manifold_patches(
+  IGL_INLINE void orientable_patches(
     const Eigen::PlainObjectBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedC> & C,
     Eigen::SparseMatrix<AScalar> & A);
 };
 #ifndef IGL_STATIC_LIBRARY
-#  include "manifold_patches.cpp"
+#  include "orientable_patches.cpp"
 #endif
 #endif
