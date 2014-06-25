@@ -1,13 +1,16 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "unproject.h"
 #ifndef IGL_NO_OPENGL
+#ifndef IGL_OPENGL_4
 
+#include <Eigen/Dense>
+#include <Eigen/LU>
 #include "OpenGL_convenience.h"
 
 IGL_INLINE int igl::unproject(
@@ -54,6 +57,31 @@ IGL_INLINE Eigen::PlainObjectBase<Derivedwin> igl::unproject(
   return obj;
 }
 
+#endif
+#endif
+
+
+Eigen::Vector3f igl::unproject(const Eigen::Vector3f& win,
+                          const Eigen::Matrix4f& model,
+                          const Eigen::Matrix4f& proj,
+                          const Eigen::Vector4f& viewport)
+{
+  Eigen::Matrix4f Inverse = (proj * model).inverse();
+
+  Eigen::Vector4f tmp;
+  tmp << win, 1;
+  tmp(0) = (tmp(0) - viewport(0)) / viewport(2);
+  tmp(1) = (tmp(1) - viewport(1)) / viewport(3);
+  tmp = tmp.array() * 2.0f - 1.0f;
+
+  Eigen::Vector4f obj = Inverse * tmp;
+  obj /= obj(3);
+
+  return obj.head(3);
+}
+
+#ifndef IGL_NO_OPENGL
+#ifndef IGL_OPENGL_4
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instanciation
@@ -65,4 +93,5 @@ template Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > igl::unpr
 template int igl::unproject<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
 #endif
 
+#endif
 #endif
