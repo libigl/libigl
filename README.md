@@ -35,7 +35,7 @@ listed below.
 - TetGen  libigltetgen extra only
 - Embree  libiglembree extra only
 - tinyxml2  libiglxml extra only
- 
+
 ## Header only ##
 libigl is designed to work "out-of-the-box" as a headers only library. To
 include libigl in your project. You need only include the libigl/include/
@@ -72,31 +72,34 @@ Then run this example with:
 libigl is developed most often on Mac OS X, though has current users in Linux and Windows.
 
 ### Linux/Mac OS X/Cygwin ###
-  
+
 libigl may also be compiled to a static library. This is advantageous when
 building a project with libigl, since the header only directive can slow down
 compile times.
 
 To build the entire libigl library producing lib/libigl.a, issue:
-  
+
+    cd build
     make lib
-  
+
 You may need to edit Makefile.conf accordingly. Best to give yourself an
 `IGL_USERNAME` and add a custom install suite for yourself. Then you can enable
 appropriate extras.
-  
+
 #### Extras ####
 Once you've set up an `IGL_USERNAME` and enabled extras within Makefile.conf.
 You can build the extra libraries (into lib/ligiglpng.a, lib/libiglmatlab.a,
 lib/libigltetgen.a, lib/libiglmosek.a, etc.) by issuing:
-  
+
+    cd build
     make extras
-  
+
 #### Examples ####
 You can make a slew of examples by issuing:
-  
+
+    cd build
     make examples
-  
+
 #### External ####
 Finally there are a number of external libraries that we include in
 ./external/ because they are either difficult to obtain or they have been
