@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_PLANE_PROJECT_H
-#define IGL_PLANE_PROJECT_H
+#ifndef IGL_PROJECT_ISOMETRICALLY_TO_PLANE_H
+#define IGL_PROJECT_ISOMETRICALLY_TO_PLANE_H
 #include "igl_inline.h"
 
 #include <Eigen/Dense>
@@ -16,7 +16,7 @@ namespace igl
 {
   // Project each triangle to the plane
   //
-  // [U,UF,I] = plane_project(V,F)
+  // [U,UF,I] = project_isometrically_to_plane(V,F)
   //
   // Inputs:
   //   V  #V by 3 list of vertex positions
@@ -32,7 +32,7 @@ namespace igl
     typename DerivedU,
     typename DerivedUF,
     typename Scalar>
-  IGL_INLINE void plane_project(
+  IGL_INLINE void project_isometrically_to_plane(
     const Eigen::PlainObjectBase<DerivedV> & V, 
     const Eigen::PlainObjectBase<DerivedF> & F, 
     Eigen::PlainObjectBase<DerivedU> & U,
@@ -41,7 +41,7 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "plane_project.cpp"
+#  include "project_isometrically_to_plane.cpp"
 #endif
 
 #endif
