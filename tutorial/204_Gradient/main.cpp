@@ -1,6 +1,6 @@
 #include <igl/readOFF.h>
 #include <igl/readDMAT.h>
-#include <igl/gradMat.h>
+#include <igl/grad.h>
 #include <igl/avg_edge_length.h>
 #include <igl/jet.h>
 #include <igl/barycenter.h>
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 
   // Compute gradient operator: #F*3 by #V
   SparseMatrix<double> G;
-  igl::gradMat(V,F,G);
+  igl::grad(V,F,G);
 
   // Compute gradient of U
   MatrixXd GU = Map<const MatrixXd>((G*U).eval().data(),F.rows(),3);
