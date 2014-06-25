@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "manifold_patches.h"
+#include "orientable_patches.h"
 #include "components.h"
 #include <igl/sort.h>
 #include <igl/unique.h>
@@ -14,7 +14,7 @@
 #include <iostream>
 
 template <typename DerivedF, typename DerivedC, typename AScalar>
-IGL_INLINE void igl::manifold_patches(
+IGL_INLINE void igl::orientable_patches(
   const Eigen::PlainObjectBase<DerivedF> & F,
   Eigen::PlainObjectBase<DerivedC> & C,
   Eigen::SparseMatrix<AScalar> & A)
@@ -92,5 +92,5 @@ IGL_INLINE void igl::manifold_patches(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::manifold_patches<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<int, 0, int>&);
+template void igl::orientable_patches<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<int, 0, int>&);
 #endif
