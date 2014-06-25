@@ -190,6 +190,57 @@ To get started, we advise that you take a look at a few examples:
 
     ./examples/ReAntTweakBar/
 
+## Extras ##
+Libigl compartmentalizes dependences via its organization into a _main_ libigl
+library and "extras." 
+
+
+### bbw ###
+This library extra contains functions for computing Bounded Biharmonic Weights, can
+be used with and without the [mosek](#mosek) extra via the `IGL_NO_MOSEK`
+macro.
+
+### boost ###
+This library extra utilizes the graph functions in the boost library for find
+connected components and performing breadth-first traversals.
+
+### cgal ###
+This library extra utilizes CGAL's efficient and exact intersection and
+proximity queries.
+
+### embree ###
+This library extra utilizes embree's efficient ray tracing queries.
+
+### matlab ###
+This library extra provides support for reading and writing `.mat` workspace
+files, interfacing with Matlab at run time and compiling mex functions.
+
+### mosek ###
+This library extra utilizes mosek's efficient interior-point solver for
+quadratic programs.
+
+### png ###
+This library extra uses `libpng` and `YImage` to read and write `.png` files.
+
+### svd3x3 ###
+This library extra implements "as-rigid-as-possible" (ARAP) deformation
+techniques using the fast singular value decomposition routines
+written specifically for 3x3 matrices to use `SSE` intrinsics. This extra can
+still be compiled without sse support and support should be determined
+automatically at compile time via the `__SSE__` macro.
+
+### tetgen ###
+This library extra provides a simplified wrapper to the tetgen 3d tetrahedral meshing
+library.
+
+### viewer ###
+This library extra utilizes glfw and glew to open an opengl context and launch
+a simple mesh viewer.
+
+### xml ###
+This library extra utilizes tinyxml2 to read and write serialized classes
+containing Eigen matrices and other standard simple data-structures.
+
 ## Development ##
 Further documentation for developers is listed in tutorial.html,
 style_guidelines.html
