@@ -38,7 +38,7 @@ namespace igl
   //   PV1 #V by 1 maximal curvature value for each vertex.
   //   PV2 #V by 1 minimal curvature value for each vertex.
   //
-  // See also: moveVF, moveFV
+  // See also: moveVF, average_onto_vertices
   //
   // This function has been developed by: Nikolas De Giorgis, Luigi Rocca and Enrico Puppo.
   // The algorithm is based on:
