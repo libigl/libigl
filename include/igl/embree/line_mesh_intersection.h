@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_PROJECTMESH_H
-#define IGL_PROJECTMESH_H
+#ifndef IGL_LINE_MESH_INTERSECTION_H
+#define IGL_LINE_MESH_INTERSECTION_H
 #include <igl/igl_inline.h>
 
 #include <Eigen/Dense>
@@ -33,7 +33,7 @@ namespace igl
   //// the barycentric coordinates wrt the first two edges of the triangle
   //// To convert to standard global coordinates, see barycentric_to_global.h
   //template <typename ScalarMatrix, typename IndexMatrix>
-  //IGL_INLINE ScalarMatrix project_points_on_mesh
+  //IGL_INLINE ScalarMatrix line_mesh_intersection
   //(
 	//	const ScalarMatrix & V_source,
   //	const IndexMatrix  & F_source,
@@ -59,7 +59,7 @@ namespace igl
   // the barycentric coordinates wrt the first two edges of the triangle
   // To convert to standard global coordinates, see barycentric_to_global.h
   template <typename ScalarMatrix, typename IndexMatrix>
-  IGL_INLINE ScalarMatrix project_points_on_mesh
+  IGL_INLINE ScalarMatrix line_mesh_intersection
   (
    const ScalarMatrix & V_source,
    const ScalarMatrix  & N_source,
@@ -69,7 +69,7 @@ namespace igl
 
 }
 #ifndef IGL_STATIC_LIBRARY
-#  include "project_points_on_mesh.cpp"
+#  include "line_mesh_intersection.cpp"
 #endif
 
 #endif

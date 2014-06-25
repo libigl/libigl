@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "project_points_on_mesh.h"
+#include "line_mesh_intersection.h"
 
 // For error printing
 #include <cstdio>
@@ -15,7 +15,7 @@
 #include <igl/embree/EmbreeIntersector.h>
 
 //template <typename ScalarMatrix, typename IndexMatrix>
-//IGL_INLINE ScalarMatrix igl::project_points_on_mesh(
+//IGL_INLINE ScalarMatrix igl::line_mesh_intersection(
 //   const ScalarMatrix & V_source,
 //   const IndexMatrix  & F_source,
 //   const ScalarMatrix & V_target,
@@ -26,11 +26,11 @@
 //  Eigen::MatrixXd ray_dir;
 //  igl::per_vertex_normals(V_source, F_source, ray_dir);
 //
-//  return project_points_on_mesh(V_source,ray_dir,V_target,F_target);
+//  return line_mesh_intersection(V_source,ray_dir,V_target,F_target);
 //}
 
 template <typename ScalarMatrix, typename IndexMatrix>
-IGL_INLINE ScalarMatrix igl::project_points_on_mesh
+IGL_INLINE ScalarMatrix igl::line_mesh_intersection
 (
  const ScalarMatrix & V_source,
  const ScalarMatrix  & N_source,
