@@ -52,25 +52,6 @@ Eigen::Vector3f project(const Eigen::Vector3f&  obj,
   return tmp.head(3);
 }
 
-Eigen::Vector3f unproject(const Eigen::Vector3f& win,
-                          const Eigen::Matrix4f& model,
-                          const Eigen::Matrix4f& proj,
-                          const Eigen::Vector4f& viewport)
-{
-  Eigen::Matrix4f Inverse = (proj * model).inverse();
-
-  Eigen::Vector4f tmp;
-  tmp << win, 1;
-  tmp(0) = (tmp(0) - viewport(0)) / viewport(2);
-  tmp(1) = (tmp(1) - viewport(1)) / viewport(3);
-  tmp = tmp.array() * 2.0f - 1.0f;
-
-  Eigen::Vector4f obj = Inverse * tmp;
-  obj /= obj(3);
-
-  return obj.head(3);
-}
-
 Eigen::Matrix4f lookAt (
                         const Eigen::Vector3f& eye,
                         const Eigen::Vector3f& center,
@@ -178,6 +159,7 @@ Eigen::Matrix4f translate(
 #include <igl/axis_angle_to_quat.h>
 #include <igl/trackball.h>
 #include <igl/snap_to_canonical_view_quat.h>
+#include <igl/unproject.h>
 #include <TwOpenGLCore.h>
 
 // Plugin manager (exported to other compilation units)
@@ -1075,8 +1057,8 @@ namespace igl
         case TRANSLATE:
         {
           //translation
-          Eigen::Vector3f pos1 = unproject(Eigen::Vector3f(mouse_x, viewport[3] - mouse_y, down_mouse_z), view * model, proj, viewport);
-          Eigen::Vector3f pos0 = unproject(Eigen::Vector3f(down_mouse_x, viewport[3] - down_mouse_y, down_mouse_z), view * model, proj, viewport);
+          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, viewport[3] - mouse_y, down_mouse_z), view * model, proj, viewport);
+          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, viewport[3] - down_mouse_y, down_mouse_z), view * model, proj, viewport);
 
           Eigen::Vector3f diff = pos1 - pos0;
           options.model_translation = down_translation + Eigen::Vector3f(diff[0],diff[1],diff[2]);
