@@ -12,7 +12,8 @@ CFLAGS += $(OPTFLAGS) -std=c++11
 .PHONY: libiglsvd3x3
 libiglsvd3x3: obj ../lib/libiglsvd3x3.a
 
-CPP_FILES=$(wildcard ../include/igl/svd3x3/*.cpp)
+SRC_DIR=../include/igl/svd3x3/
+CPP_FILES=$(wildcard $(SRC_DIR)*.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 
 # include igl headers

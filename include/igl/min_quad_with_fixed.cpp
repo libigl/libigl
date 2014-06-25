@@ -28,7 +28,7 @@
 
 template <typename T, typename Derivedknown>
 IGL_INLINE bool igl::min_quad_with_fixed_precompute(
-  const Eigen::SparseMatrix<T>& A,
+  const Eigen::SparseMatrix<T>& A2,
   const Eigen::PlainObjectBase<Derivedknown> & known,
   const Eigen::SparseMatrix<T>& Aeq,
   const bool pd,
@@ -39,6 +39,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   using namespace Eigen;
   using namespace std;
   using namespace igl;
+  const Eigen::SparseMatrix<T> A = 0.5*A2;
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
   cout<<"    pre"<<endl;
 #endif

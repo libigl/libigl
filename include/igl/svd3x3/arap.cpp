@@ -147,7 +147,7 @@ IGL_INLINE bool igl::arap_precomputation(
   }
   assert(data.K.rows() == data.n*data.dim);
 
-  SparseMatrix<double> Q = (-0.5*L).eval();
+  SparseMatrix<double> Q = (-L).eval();
 
   if(data.with_dynamics)
   {
@@ -155,7 +155,7 @@ IGL_INLINE bool igl::arap_precomputation(
     assert(h != 0);
     SparseMatrix<double> M;
     massmatrix(V,F,MASSMATRIX_TYPE_DEFAULT,data.M);
-    SparseMatrix<double> DQ = 0.5/(h*h)*data.M;
+    SparseMatrix<double> DQ = 1./(h*h)*data.M;
     Q += DQ;
     // Dummy external forces
     data.f_ext = MatrixXd::Zero(n,data.dim);

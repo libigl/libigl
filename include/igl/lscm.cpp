@@ -45,7 +45,7 @@ IGL_INLINE void igl::lscm(
   }
   
   // Minimize the LSCM energy
-  SparseMatrix<double> Q = -0.5*L_flat + A;
+  SparseMatrix<double> Q = -L_flat + 2.*A;
   const VectorXd B_flat = VectorXd::Zero(V.rows()*2);
   igl::min_quad_with_fixed_data<double> data;
   igl::min_quad_with_fixed_precompute(Q,b_flat,SparseMatrix<double>(),true,data);

@@ -297,7 +297,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     slice(A,known_i,1,Ak);
     Eigen::PlainObjectBase<DerivedB> Bk;
     slice(B,known_i,Bk);
-    MatrixXd Lambda_known_i = -(Ak*Z + 0.5*Bk);
+    MatrixXd Lambda_known_i = -(0.5*Ak*Z + 0.5*Bk);
     // reverse the lambda values for lx
     Lambda_known_i.block(nk,0,as_lx_count,1) = 
       (-1*Lambda_known_i.block(nk,0,as_lx_count,1)).eval();

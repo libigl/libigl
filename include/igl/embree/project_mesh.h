@@ -16,30 +16,30 @@
 namespace igl 
 {
 
-  // Project the triangle mesh V_source, F_source onto the triangle mesh
-  // V_target,F_target.
-  // A ray is casted for every vertex in the normal direction and its opposite.
-  //
-  // Input:
-  // V_source: #Vx3 Vertices of the source mesh
-  // F_source: #Fx3 Faces of the source mesh
-  // V_target: #V2x3 Vertices of the target mesh
-  // F_target: #F2x3 Faces of the target mesh
-  //
-  // Output:
-  // #Vx3 matrix of baricentric coordinate. Each row corresponds to 
-  // a vertex of the projected mesh and it has the following format:
-  // id b1 b2. id is the id of a face of the source mesh. b1 and b2 are 
-  // the barycentric coordinates wrt the first two edges of the triangle
-  // To convert to standard global coordinates, see barycentric2global.h
-  template <typename ScalarMatrix, typename IndexMatrix>
-  IGL_INLINE ScalarMatrix project_mesh
-  (
-		const ScalarMatrix & V_source,
-  	const IndexMatrix  & F_source,
-    const ScalarMatrix & V_target,
-    const IndexMatrix  & F_target
-	);
+  //// Project the triangle mesh V_source, F_source onto the triangle mesh
+  //// V_target,F_target.
+  //// A ray is casted for every vertex in the normal direction and its opposite.
+  ////
+  //// Input:
+  //// V_source: #Vx3 Vertices of the source mesh
+  //// F_source: #Fx3 Faces of the source mesh
+  //// V_target: #V2x3 Vertices of the target mesh
+  //// F_target: #F2x3 Faces of the target mesh
+  ////
+  //// Output:
+  //// #Vx3 matrix of baricentric coordinate. Each row corresponds to 
+  //// a vertex of the projected mesh and it has the following format:
+  //// id b1 b2. id is the id of a face of the source mesh. b1 and b2 are 
+  //// the barycentric coordinates wrt the first two edges of the triangle
+  //// To convert to standard global coordinates, see barycentric2global.h
+  //template <typename ScalarMatrix, typename IndexMatrix>
+  //IGL_INLINE ScalarMatrix project_mesh
+  //(
+	//	const ScalarMatrix & V_source,
+  //	const IndexMatrix  & F_source,
+  //  const ScalarMatrix & V_target,
+  //  const IndexMatrix  & F_target
+	//);
 
   // Project the point cloud V_source onto the triangle mesh
   // V_target,F_target. 
