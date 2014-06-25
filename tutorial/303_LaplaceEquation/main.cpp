@@ -1,4 +1,4 @@
-#include <igl/boundary_faces.h>
+#include <igl/boundary_facets.h>
 #include <igl/colon.h>
 #include <igl/cotmatrix.h>
 #include <igl/jet.h>
@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
   igl::readOFF("../shared/camelhead.off",V,F);
   // Find boundary edges
   MatrixXi E;
-  igl::boundary_faces(F,E);
+  igl::boundary_facets(F,E);
   // Find boundary vertices
   VectorXi b,IA,IC;
   igl::unique(E,b,IA,IC);

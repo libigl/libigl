@@ -30,7 +30,7 @@ namespace igl
   //
   //
   template <typename IntegerT, typename IntegerF>
-  IGL_INLINE void boundary_faces(
+  IGL_INLINE void boundary_facets(
     const std::vector<std::vector<IntegerT> > & T,
     std::vector<std::vector<IntegerF> > & F);
 
@@ -39,18 +39,18 @@ namespace igl
   //   DerivedT  integer-value: i.e. from MatrixXi
   //   DerivedF  integer-value: i.e. from MatrixXi
   template <typename DerivedT, typename DerivedF>
-  IGL_INLINE void boundary_faces(
+  IGL_INLINE void boundary_facets(
     const Eigen::PlainObjectBase<DerivedT>& T,
     Eigen::PlainObjectBase<DerivedF>& F);
   // Same as above but returns F
   template <typename DerivedT, typename Ret>
-  Ret boundary_faces(
+  Ret boundary_facets(
     const Eigen::PlainObjectBase<DerivedT>& T);
 #endif
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "boundary_faces.cpp"
+#  include "boundary_facets.cpp"
 #endif
 
 #endif

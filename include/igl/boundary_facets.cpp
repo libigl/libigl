@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "boundary_faces.h"
+#include "boundary_facets.h"
 #include "face_occurences.h"
 
 // IGL includes
@@ -16,7 +16,7 @@
 #include <iostream>
 
 template <typename IntegerT, typename IntegerF>
-IGL_INLINE void igl::boundary_faces(
+IGL_INLINE void igl::boundary_facets(
   const std::vector<std::vector<IntegerT> > & T,
   std::vector<std::vector<IntegerF> > & F)
 {
@@ -104,7 +104,7 @@ IGL_INLINE void igl::boundary_faces(
 #include "matrix_to_list.h"
 
 template <typename DerivedT, typename DerivedF>
-IGL_INLINE void igl::boundary_faces(
+IGL_INLINE void igl::boundary_facets(
   const Eigen::PlainObjectBase<DerivedT>& T,
   Eigen::PlainObjectBase<DerivedF>& F)
 {
@@ -116,16 +116,16 @@ IGL_INLINE void igl::boundary_faces(
   vector<vector<typename Eigen::PlainObjectBase<DerivedT>::Scalar> > vT;
   matrix_to_list(T,vT);
   vector<vector<typename Eigen::PlainObjectBase<DerivedF>::Scalar> > vF;
-  boundary_faces(vT,vF);
+  boundary_facets(vT,vF);
   list_to_matrix(vF,F);
 }
 
 template <typename DerivedT, typename Ret>
-Ret igl::boundary_faces(
+Ret igl::boundary_facets(
   const Eigen::PlainObjectBase<DerivedT>& T)
 {
   Ret F; 
-  igl::boundary_faces(T,F);
+  igl::boundary_facets(T,F);
   return F;
 }
 #endif
@@ -133,9 +133,9 @@ Ret igl::boundary_faces(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::boundary_faces<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::boundary_faces<int, int>(std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > const&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&);
-//template Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > igl::boundary_faces(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
-template Eigen::Matrix<int, -1, -1, 0, -1, -1> igl::boundary_faces<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
+template void igl::boundary_facets<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::boundary_facets<int, int>(std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > const&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&);
+//template Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > igl::boundary_facets(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
+template Eigen::Matrix<int, -1, -1, 0, -1, -1> igl::boundary_facets<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
 #endif
 

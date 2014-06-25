@@ -13,7 +13,7 @@
 #include <unsupported/Eigen/SparseExtra>
 
 //#include <igl/boundary_vertices_sorted.h>
-#include <igl/boundary_faces.h>
+#include <igl/boundary_facets.h>
 
 template <typename DerivedF, typename Scalar>
 IGL_INLINE void igl::vector_area_matrix(
@@ -33,7 +33,7 @@ IGL_INLINE void igl::vector_area_matrix(
 	vector<Triplet<Scalar> > auxTTripletList;
 
   MatrixXi E;
-  boundary_faces(F,E);
+  boundary_facets(F,E);
 
 	for(int k = 0; k < E.rows(); k++)
   {
