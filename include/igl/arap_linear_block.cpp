@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "arap_linear_block.h"
 #include "verbose.h"
-#include "cotangent.h"
+#include "cotmatrix_entries.h"
 #include <Eigen/Dense>
 
 template <typename MatV, typename MatF, typename Scalar>
@@ -81,7 +81,7 @@ IGL_INLINE void igl::arap_linear_block_spokes(
   }
   // gather cotangent weights
   Matrix<Scalar,Dynamic,Dynamic> C;
-  cotangent(V,F,C);
+  cotmatrix_entries(V,F,C);
   // should have weights for each edge
   assert(C.cols() == edges.rows());
   // loop over elements
@@ -149,7 +149,7 @@ IGL_INLINE void igl::arap_linear_block_spokes_and_rims(
   }
   // gather cotangent weights
   Matrix<Scalar,Dynamic,Dynamic> C;
-  cotangent(V,F,C);
+  cotmatrix_entries(V,F,C);
   // should have weights for each edge
   assert(C.cols() == edges.rows());
   // loop over elements
@@ -230,7 +230,7 @@ IGL_INLINE void igl::arap_linear_block_elements(
   }
   // gather cotangent weights
   Matrix<Scalar,Dynamic,Dynamic> C;
-  cotangent(V,F,C);
+  cotmatrix_entries(V,F,C);
   // should have weights for each edge
   assert(C.cols() == edges.rows());
   // loop over elements

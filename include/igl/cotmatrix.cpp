@@ -10,7 +10,7 @@
 
 // For error printing
 #include <cstdio>
-#include "cotangent.h"
+#include "cotmatrix_entries.h"
 
 // Bug in unsupported/Eigen/SparseExtra needs iostream first
 #include <iostream>
@@ -59,7 +59,7 @@ IGL_INLINE void igl::cotmatrix(
   }
   // Gather cotangents
   Matrix<Scalar,Dynamic,Dynamic> C;
-  cotangent(V,F,C);
+  cotmatrix_entries(V,F,C);
   
   vector<Triplet<Scalar> > IJV;
   IJV.reserve(F.rows()*edges.rows()*4);

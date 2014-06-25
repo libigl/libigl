@@ -39,7 +39,7 @@ namespace igl
   // See also: adjacency_matrix
   //
   // Known bugs: off by 1e-16 on regular grid. I think its a problem of
-  // arithmetic order in cotangent.h: C(i,e) = (arithmetic)/dblA/4
+  // arithmetic order in cotmatrix_entries.h: C(i,e) = (arithmetic)/dblA/4
   template <typename DerivedV, typename DerivedF, typename Scalar>
   IGL_INLINE void cotmatrix(
     const Eigen::PlainObjectBase<DerivedV> & V, 
