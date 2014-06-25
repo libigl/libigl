@@ -61,4 +61,5 @@ tutorial/readme.html
 tutorial/*/build/*
 tutorial/*/Makefile
 external/glew/build
+external/glfw/build
 *buildXcode*

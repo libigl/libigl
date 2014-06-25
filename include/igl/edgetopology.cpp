@@ -1,20 +1,20 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "edgetopology.h"
 #include <algorithm>
 #include "is_manifold.h"
 
-
+template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::edgetopology(
-  const Eigen::MatrixXd& V, 
-  const Eigen::MatrixXi& F, 
-  Eigen::MatrixXi& EV, 
-  Eigen::MatrixXi& FE, 
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::MatrixXi& EV,
+  Eigen::MatrixXi& FE,
   Eigen::MatrixXi& EF)
 {
   // Only needs to be edge-manifold
@@ -23,7 +23,7 @@ IGL_INLINE void igl::edgetopology(
   for(int f=0;f<F.rows();++f)
     for (int i=0;i<3;++i)
     {
-      // v1 v2 f vi 
+      // v1 v2 f vi
       int v1 = F(f,i);
       int v2 = F(f,(i+1)%3);
       if (v1 > v2) std::swap(v1,v2);
@@ -33,18 +33,18 @@ IGL_INLINE void igl::edgetopology(
       ETT.push_back(r);
     }
   std::sort(ETT.begin(),ETT.end());
-  
+
   // count the number of edges (assume manifoldness)
   int En = 1; // the last is always counted
   for(unsigned i=0;i<ETT.size()-1;++i)
     if (!((ETT[i][0] == ETT[i+1][0]) && (ETT[i][1] == ETT[i+1][1])))
       ++En;
-  
+
   EV = Eigen::MatrixXi::Constant((int)(En),2,-1);
   FE = Eigen::MatrixXi::Constant((int)(F.rows()),3,-1);
   EF = Eigen::MatrixXi::Constant((int)(En),2,-1);
   En = 0;
-  
+
   for(unsigned i=0;i<ETT.size();++i)
   {
     if (i == ETT.size()-1 ||
@@ -57,7 +57,7 @@ IGL_INLINE void igl::edgetopology(
       EV(En,1)     = r1[1];
       EF(En,0)    = r1[2];
       FE(r1[2],r1[3]) = En;
-    } 
+    }
     else
     {
       std::vector<int>& r1 = ETT[i];
@@ -72,10 +72,10 @@ IGL_INLINE void igl::edgetopology(
     }
     ++En;
   }
-  
+
   // Sort the relation EF, accordingly to EV
   // the first one is the face on the left of the edge
-  
+
   for(unsigned i=0; i<EF.rows(); ++i)
   {
     int fid = EF(i,0);
@@ -86,7 +86,7 @@ IGL_INLINE void igl::edgetopology(
       if ((F(fid,j) == EV(i,0)) && (F(fid,(j+1)%3) == EV(i,1)))
         flip = false;
     }
-    
+
     if (flip)
     {
       int tmp = EF(i,0);
@@ -94,7 +94,7 @@ IGL_INLINE void igl::edgetopology(
       EF(i,1) = tmp;
     }
   }
-  
+
 }
 
 #ifndef IGL_HEADER_ONLY

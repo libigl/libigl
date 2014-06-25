@@ -15,6 +15,7 @@ FIND_PATH(LIBCOMISO_INCLUDE_DIR CoMISo/Solver/ConstrainedSolver.hh
    ${PROJECT_SOURCE_DIR}/../CoMISo/
    ${PROJECT_SOURCE_DIR}/../CoMISo/include
    /Users/daniele/Dropbox/igl/MIQ/src
+   /Users/olkido/Documents/igl/MIQ/src
 )
 
 FIND_LIBRARY(LIBCOMISO_LIBRARY NAMES CoMISo
@@ -26,6 +27,7 @@ FIND_LIBRARY(LIBCOMISO_LIBRARY NAMES CoMISo
     ${PROJECT_SOURCE_DIR}/../CoMISo/
     ${PROJECT_SOURCE_DIR}/../CoMISo/build
     /Users/daniele/Dropbox/igl/MIQ/src/CoMISo/build
+    /Users/olkido/Documents/igl/MIQ/src/CoMISo/build
 )
 
 if(LIBCOMISO_INCLUDE_DIR AND LIBCOMISO_LIBRARY)

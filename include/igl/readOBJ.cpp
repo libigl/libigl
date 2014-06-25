@@ -244,7 +244,7 @@ IGL_INLINE bool igl::readOBJ(
     }
   }
 
-  if(!vFN.empty())
+  if(!vFN.empty() && !vFN[0].empty())
   {
     bool FN_rect = igl::list_to_matrix(vFN,FN);
     if(!FN_rect)
@@ -264,7 +264,7 @@ IGL_INLINE bool igl::readOBJ(
       return false;
     }
   }
-  if(!vFTC.empty())
+  if(!vFTC.empty()&& !vFTC[0].empty())
   {
 
     bool FTC_rect = igl::list_to_matrix(vFTC,FTC);
