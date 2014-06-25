@@ -29,14 +29,14 @@ namespace igl
   // #X: #Xx3 3D coordinates of all points in bc
   template <typename Scalar, typename Index>
   IGL_INLINE Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> 
-    barycentric2global(
+    barycentric_to_global(
       const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> & V, 
       const Eigen::Matrix<Index,Eigen::Dynamic,Eigen::Dynamic>   & F, 
       const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>  & bc);
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "barycentric2global.cpp"
+#  include "barycentric_to_global.cpp"
 #endif
 
 #endif

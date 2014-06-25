@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "barycentric2global.h"
+#include "barycentric_to_global.h"
 
 // For error printing
 #include <cstdio>
@@ -14,7 +14,7 @@
 namespace igl
 {
   template <typename Scalar, typename Index>
-  IGL_INLINE Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> barycentric2global(
+  IGL_INLINE Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> barycentric_to_global(
     const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> & V, 
     const Eigen::Matrix<Index,Eigen::Dynamic,Eigen::Dynamic>  & F, 
     const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> & bc)
