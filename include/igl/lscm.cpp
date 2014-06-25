@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "lscm.h"
 
-#include <igl/areamatrix.h>
+#include <igl/vector_area_matrix.h>
 #include <igl/cotmatrix.h>
 //#include <igl/kronecker_product.h>
 #include <igl/repdiag.h>
@@ -27,7 +27,7 @@ IGL_INLINE void igl::lscm(
   
   // Assemble the area matrix (note that A is #Vx2 by #Vx2)
   SparseMatrix<double> A;
-  igl::areamatrix(F,A);
+  igl::vector_area_matrix(F,A);
 
   // Assemble the cotan laplacian matrix
   SparseMatrix<double> L;
