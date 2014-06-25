@@ -262,7 +262,7 @@ IGL_INLINE bool igl::arap_dof_precomputation(
     // Build cotangent laplacian
     SparseMatrix<double> Mass;
     //printf("massmatrix()\n");
-    massmatrix(V,F,(F.cols()>3?MASSMATRIX_BARYCENTRIC:MASSMATRIX_VORONOI),Mass);
+    massmatrix(V,F,(F.cols()>3?MASSMATRIX_TYPE_BARYCENTRIC:MASSMATRIX_TYPE_VORONOI),Mass);
     //cout<<"MIJV=["<<endl;print_ijv(Mass,1);cout<<endl<<"];"<<
     //  endl<<"M=sparse(MIJV(:,1),MIJV(:,2),MIJV(:,3),"<<
     //  Mass.rows()<<","<<Mass.cols()<<");"<<endl;

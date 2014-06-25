@@ -27,11 +27,11 @@ IGL_INLINE bool igl::harmonic(
   switch(F.cols())
   {
     case 3:
-      massmatrix(V,F,MASSMATRIX_VORONOI,M);
+      massmatrix(V,F,MASSMATRIX_TYPE_VORONOI,M);
       break;
     case 4:
     default:
-      massmatrix(V,F,MASSMATRIX_BARYCENTRIC,M);
+      massmatrix(V,F,MASSMATRIX_TYPE_BARYCENTRIC,M);
       break;
   }
   invert_diag(M,Mi);

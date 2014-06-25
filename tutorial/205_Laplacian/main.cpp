@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
       {
         // Recompute just mass matrix on each step
         SparseMatrix<double> M;
-        igl::massmatrix(U,F,igl::MASSMATRIX_VORONOI,M);
+        igl::massmatrix(U,F,igl::MASSMATRIX_TYPE_VORONOI,M);
         // Solve (M-delta*L) U = M*U
         const auto & S = (M - 0.001*L);
         Eigen::SimplicialLLT<Eigen::SparseMatrix<double > > solver(S);
