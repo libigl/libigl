@@ -11,7 +11,6 @@ find_package(ANTTWEAKBAR REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(EIGEN REQUIRED)
 find_package(LIBIGL REQUIRED)
-find_package(TINYXML2 REQUIRED)
 find_package(GLFW REQUIRED)
 
 if(WIN32)
@@ -32,7 +31,6 @@ endif(WIN32)
 
 include_directories( ${EIGEN_INCLUDE_DIR})
 include_directories( ${LIBIGL_INCLUDE_DIR})
-include_directories( ${TINYXML2_INCLUDE_DIR})
 include_directories( ${GLFW_INCLUDE_DIR})
 include_directories(
 	/usr/local/include

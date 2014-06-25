@@ -1,5 +1,5 @@
 #include <igl/viewer/Viewer.h>
-#include <igl/triangle/triangle_wrapper.h>
+#include <igl/triangle/triangulate.h>
 // Input polygon
 Eigen::MatrixXd V;
 Eigen::MatrixXi E;
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
   H << 0,0;
 
   // Triangulate the interior
-  igl::triangle_wrapper(V,E,H,V2,F2,"a0.005q");
+  igl::triangulate(V,E,H,V2,F2,"a0.005q");
 
   // Plot the generated mesh
   igl::Viewer viewer;

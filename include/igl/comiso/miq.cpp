@@ -8,12 +8,12 @@
 
 #include <igl/comiso/miq.h>
 #include <igl/local_basis.h>
-#include <igl/tt.h>
+#include <igl/triangle_triangle_adjacency.h>
 
 // includes for VertexIndexing
-#include <igl/Pos.h>
+#include <igl/HalfEdgeIterator.h>
 #include <igl/is_border_vertex.h>
-#include <igl/vf.h>
+#include <igl/vertex_triangle_adjacency.h>
 
 
 // includes for poissonSolver
@@ -633,7 +633,7 @@ Handle_Seams(_Handle_Seams)
 {
 
   V_border = igl::is_border_vertex(V,F);
-  igl::vf(V,F,VF,VFi);
+  igl::vertex_triangle_adjacency(V,F,VF,VFi);
 
   IndexToVert.clear();
 
@@ -725,7 +725,7 @@ IGL_INLINE void igl::VertexIndexing<DerivedV, DerivedF>::FindInitialPos(const in
   int f_init;
   int edge_init;
   FirstPos(vert,f_init,edge_init); // todo manually IGL_INLINE the function
-  igl::Pos<DerivedF> VFI(&F,&TT,&TTi,f_init,edge_init);
+  igl::HalfEdgeIterator<DerivedF> VFI(&F,&TT,&TTi,f_init,edge_init);
 
   bool vertexB = V_border[vert];
   bool possible_split=false;
@@ -773,7 +773,7 @@ IGL_INLINE void igl::VertexIndexing<DerivedV, DerivedF>::MapIndexes(const int  v
   ///insert an initial index
   int curr_index=AddNewIndex(vert);
   ///and initialize the jumping pos
-  igl::Pos<DerivedF> VFI(&F,&TT,&TTi,f_init,edge_init);
+  igl::HalfEdgeIterator<DerivedF> VFI(&F,&TT,&TTi,f_init,edge_init);
   bool complete_turn=false;
   do
   {
@@ -809,7 +809,7 @@ IGL_INLINE void igl::VertexIndexing<DerivedV, DerivedF>::InitMappingSeam(const i
   int f_init = VF[vert][0];
   int indexE = VFi[vert][0];
 
-  igl::Pos<DerivedF> VFI(&F,&TT,&TTi,f_init,indexE);
+  igl::HalfEdgeIterator<DerivedF> VFI(&F,&TT,&TTi,f_init,indexE);
 
   int edge_init;
   int face_init;
@@ -1052,7 +1052,7 @@ Handle_SystemInfo(_Handle_SystemInfo)
   WUV       = Eigen::MatrixXd(F.rows(),6);
   igl::doublearea(V,F,doublearea);
   igl::per_face_normals(V,F,N);
-  igl::vf(V,F,VF,VFi);
+  igl::vertex_triangle_adjacency(V,F,VF,VFi);
 }
 
 
@@ -1850,7 +1850,7 @@ V(V_),
 F(F_)
 {
   igl::local_basis(V,F,B1,B2,B3);
-  igl::tt(V,F,TT,TTi);
+  igl::triangle_triangle_adjacency(V,F,TT,TTi);
 
   // Prepare indexing for the linear system
   VertexIndexing<DerivedV, DerivedF> VInd(V, F, TT, TTi, BIS1_combed, BIS2_combed, Handle_MMatch, Handle_Singular, Handle_SingularDegree, Handle_Seams);
