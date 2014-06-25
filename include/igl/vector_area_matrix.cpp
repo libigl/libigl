@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "areamatrix.h"
+#include "vector_area_matrix.h"
 #include <vector>
 
 // Bug in unsupported/Eigen/SparseExtra needs iostream first
@@ -16,7 +16,7 @@
 #include <igl/boundary_faces.h>
 
 template <typename DerivedF, typename Scalar>
-IGL_INLINE void igl::areamatrix(
+IGL_INLINE void igl::vector_area_matrix(
   const Eigen::PlainObjectBase<DerivedF> & F,
   Eigen::SparseMatrix<Scalar>& A)
 {
@@ -52,5 +52,5 @@ IGL_INLINE void igl::areamatrix(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::areamatrix<Eigen::Matrix<int, -1, -1, 0, -1, -1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::vector_area_matrix<Eigen::Matrix<int, -1, -1, 0, -1, -1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&);
 #endif

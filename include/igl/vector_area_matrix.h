@@ -29,13 +29,13 @@ namespace igl
   //   A  #Vx2 by #Vx2 area matrix
   //
   template <typename DerivedF, typename Scalar>
-  IGL_INLINE void areamatrix(
+  IGL_INLINE void vector_area_matrix(
     const Eigen::PlainObjectBase<DerivedF> & F,
     Eigen::SparseMatrix<Scalar>& A);
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "areamatrix.cpp"
+#  include "vector_area_matrix.cpp"
 #endif
 
 #endif
