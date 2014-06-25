@@ -13,21 +13,26 @@ find_package(EIGEN REQUIRED)
 find_package(LIBIGL REQUIRED)
 find_package(GLFW REQUIRED)
 
-if(WIN32)
+if(NOT APPLE)
 	find_package(GLEW REQUIRED)
-endif(WIN32)
+endif(NOT APPLE)
 
 if(APPLE)
 	set(CMAKE_CXX_LINK_FLAGS "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
 endif (APPLE) #APPLE
 
+if(UNIX AND NOT APPLE)
+  set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -lGL -lGLU -lrt -lX11 -lXxf86vm -lXrandr -lpthread -lXi")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx")
+endif(UNIX AND NOT APPLE)
+
 include_directories( ${ANT_TWEAK_BAR_INCLUDE_DIR} )
 
 # message(FATAL_ERROR ${ANT_TWEAK_BAR_INCLUDE_DIR})
 
-if(WIN32)
+if(NOT APPLE)
 	include_directories( ${GLEW_INCLUDE_DIR} )
-endif(WIN32)
+endif(NOT APPLE)
 
 include_directories( ${EIGEN_INCLUDE_DIR})
 include_directories( ${LIBIGL_INCLUDE_DIR})
@@ -59,9 +64,9 @@ endif()
 
 set(SHARED_SOURCES ${LIBIGL_SOURCES})
 
-if(WIN32)
+if(NOT APPLE)
 	set(SHARED_SOURCES ${SHARED_SOURCES} ${GLEW_SOURCES})
-endif(WIN32)
+endif(NOT APPLE)
 
 # message(FATAL_ERROR ${LIBIGL_SOURCES})
 
