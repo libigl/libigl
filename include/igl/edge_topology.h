@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_EDGETOPOLOGY_H
-#define IGL_EDGETOPOLOGY_H
+#ifndef IGL_EDGE_TOPOLOGY_H
+#define IGL_EDGE_TOPOLOGY_H
 
 #include "igl_inline.h"
 
@@ -21,7 +21,7 @@ namespace igl
   // EV  : #Ex2, Stores the edge description as pair of indices to vertices
   // FE : #Fx3, Stores the Triangle-Edge relation
   // EF : #Ex2: Stores the Edge-Triangle relation
-  IGL_INLINE void edgetopology(
+  IGL_INLINE void edge_topology(
     const Eigen::MatrixXd& V, 
     const Eigen::MatrixXi& F, 
     Eigen::MatrixXi& EV, 
@@ -30,7 +30,7 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "edgetopology.cpp"
+#  include "edge_topology.cpp"
 #endif
 
 #endif

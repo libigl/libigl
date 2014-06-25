@@ -5,12 +5,12 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "edgetopology.h"
+#include "edge_topology.h"
 #include <algorithm>
 #include "is_manifold.h"
 
 
-IGL_INLINE void igl::edgetopology(
+IGL_INLINE void igl::edge_topology(
   const Eigen::MatrixXd& V, 
   const Eigen::MatrixXi& F, 
   Eigen::MatrixXi& EV, 
