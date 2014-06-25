@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "triangle_triangle_adjacency.h"
 
-#include <igl/is_manifold.h>
+#include <igl/is_edge_manifold.h>
 #include <algorithm>
 
 template <typename Scalar, typename Index>
@@ -76,7 +76,7 @@ IGL_INLINE void igl::triangle_triangle_adjacency(const Eigen::PlainObjectBase<Sc
                         const Eigen::PlainObjectBase<Index>& F,
                         Eigen::PlainObjectBase<Index>& TT)
 {
-  //assert(igl::is_manifold(V,F));
+  //assert(igl::is_edge_manifold(V,F));
   std::vector<std::vector<int> > TTT;
 
   triangle_triangle_adjacency_preprocess(V,F,TTT);
@@ -90,7 +90,7 @@ IGL_INLINE void igl::triangle_triangle_adjacency(const Eigen::PlainObjectBase<Sc
                         Eigen::PlainObjectBase<Index>& TT,
                         Eigen::PlainObjectBase<Index>& TTi)
 {
-  //assert(igl::is_manifold(V,F));
+  //assert(igl::is_edge_manifold(V,F));
   std::vector<std::vector<int> > TTT;
 
   triangle_triangle_adjacency_preprocess(V,F,TTT);

@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "edge_topology.h"
 #include <algorithm>
-#include "is_manifold.h"
+#include "is_edge_manifold.h"
 
 
 IGL_INLINE void igl::edge_topology(
@@ -18,7 +18,7 @@ IGL_INLINE void igl::edge_topology(
   Eigen::MatrixXi& EF)
 {
   // Only needs to be edge-manifold
-  assert(igl::is_manifold(V,F));
+  assert(igl::is_edge_manifold(V,F));
   std::vector<std::vector<int> > ETT;
   for(int f=0;f<F.rows();++f)
     for (int i=0;i<3;++i)

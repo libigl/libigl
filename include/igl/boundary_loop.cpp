@@ -22,7 +22,7 @@ IGL_INLINE void igl::boundary_loop(
   // Actually mesh only needs to be manifold near boundary, so this is
   // over zealous (see gptoolbox's outline_loop for a more general
   // (and probably faster) implementation)
-  assert(is_manifold(V,F) && "Mesh must be manifold");
+  assert(is_edge_manifold(V,F) && "Mesh must be manifold");
   Eigen::MatrixXi TT,TTi;
   std::vector<std::vector<int> > VF, VFi;
   igl::triangle_triangle_adjacency(V,F,TT,TTi);
