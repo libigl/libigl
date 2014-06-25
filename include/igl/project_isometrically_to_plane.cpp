@@ -1,4 +1,4 @@
-#include "plane_project.h"
+#include "project_isometrically_to_plane.h"
 #include "edge_lengths.h"
 
 template <
@@ -7,7 +7,7 @@ template <
   typename DerivedU,
   typename DerivedUF,
   typename Scalar>
-IGL_INLINE void igl::plane_project(
+IGL_INLINE void igl::project_isometrically_to_plane(
   const Eigen::PlainObjectBase<DerivedV> & V, 
   const Eigen::PlainObjectBase<DerivedF> & F, 
   Eigen::PlainObjectBase<DerivedU> & U,
@@ -52,5 +52,5 @@ IGL_INLINE void igl::plane_project(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::plane_project<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::project_isometrically_to_plane<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::SparseMatrix<double, 0, int>&);
 #endif

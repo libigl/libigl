@@ -13,7 +13,7 @@
 #include <igl/covariance_scatter_matrix.h>
 #include <igl/speye.h>
 #include <igl/mode.h>
-#include <igl/plane_project.h>
+#include <igl/project_isometrically_to_plane.h>
 #include <igl/slice.h>
 #include <igl/arap_rhs.h>
 #include <igl/repdiag.h>
@@ -61,7 +61,7 @@ IGL_INLINE bool igl::arap_precomputation(
   SparseMatrixS ref_map,ref_map_dim;
   if(flat)
   {
-    plane_project(V,F,plane_V,plane_F,ref_map);
+    project_isometrically_to_plane(V,F,plane_V,plane_F,ref_map);
     repdiag(ref_map,dim,ref_map_dim);
   }
   const PlainObjectBase<DerivedV>& ref_V = (flat?plane_V:V);
