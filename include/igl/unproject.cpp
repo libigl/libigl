@@ -61,10 +61,11 @@ IGL_INLINE Eigen::PlainObjectBase<Derivedwin> igl::unproject(
 #endif
 
 
-Eigen::Vector3f igl::unproject(const Eigen::Vector3f& win,
-                          const Eigen::Matrix4f& model,
-                          const Eigen::Matrix4f& proj,
-                          const Eigen::Vector4f& viewport)
+Eigen::Vector3f igl::unproject(
+  const Eigen::Vector3f& win,
+  const Eigen::Matrix4f& model,
+  const Eigen::Matrix4f& proj,
+  const Eigen::Vector4f& viewport)
 {
   Eigen::Matrix4f Inverse = (proj * model).inverse();
 
@@ -80,10 +81,10 @@ Eigen::Vector3f igl::unproject(const Eigen::Vector3f& win,
   return obj.head(3);
 }
 
+#ifdef IGL_STATIC_LIBRARY
+
 #ifndef IGL_NO_OPENGL
 #ifndef IGL_OPENGL_4
-
-#ifdef IGL_STATIC_LIBRARY
 // Explicit template instanciation
 template int igl::unproject<Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
 template int igl::unproject<Eigen::Matrix<float, 3, 1, 0, 3, 1>, Eigen::Matrix<float, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> >&);
@@ -92,6 +93,6 @@ template int igl::unproject<Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<
 template Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > igl::unproject<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&);
 template int igl::unproject<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
 #endif
-
 #endif
+
 #endif

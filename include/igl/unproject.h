@@ -33,24 +33,24 @@ namespace igl
   IGL_INLINE Eigen::PlainObjectBase<Derivedwin> unproject(
     const Eigen::PlainObjectBase<Derivedwin> & win);
 
-// Eigen reimplementation of gluUnproject
-// Inputs:
-//   win  screen space x, y, and z coordinates
-// Returns:
-//   the unprojected x, y, and z coordinates
-// Returns return value of gluUnProject call
-IGL_INLINE Eigen::Vector3f unproject(const Eigen::Vector3f& win,
-                                     const Eigen::Matrix4f& model,
-                                     const Eigen::Matrix4f& proj,
-                                     const Eigen::Vector4f& viewport);
-
-template <typename Derivedwin, typename Derivedobj>
-IGL_INLINE int unproject(
-  const Eigen::PlainObjectBase<Derivedwin> & win,
-  Eigen::PlainObjectBase<Derivedobj> & obj);
-template <typename Derivedwin>
-IGL_INLINE Eigen::PlainObjectBase<Derivedwin> unproject(
-  const Eigen::PlainObjectBase<Derivedwin> & win);
+  // Eigen reimplementation of gluUnproject
+  // Inputs:
+  //   win  screen space x, y, and z coordinates
+  // Returns:
+  //   the unprojected x, y, and z coordinates
+  // Returns return value of gluUnProject call
+  IGL_INLINE Eigen::Vector3f unproject(
+    const Eigen::Vector3f& win,
+    const Eigen::Matrix4f& model,
+    const Eigen::Matrix4f& proj,
+    const Eigen::Vector4f& viewport);
+  template <typename Derivedwin, typename Derivedobj>
+  IGL_INLINE int unproject(
+    const Eigen::PlainObjectBase<Derivedwin> & win,
+    Eigen::PlainObjectBase<Derivedobj> & obj);
+  template <typename Derivedwin>
+  IGL_INLINE Eigen::PlainObjectBase<Derivedwin> unproject(
+    const Eigen::PlainObjectBase<Derivedwin> & win);
 }
 
 
