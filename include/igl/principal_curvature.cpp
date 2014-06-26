@@ -823,7 +823,7 @@ IGL_INLINE void igl::principal_curvature(
     PD1.row(i).normalize();
     PD2.row(i).normalize();
 
-    if (isnan(PD1(i,0)) || isnan(PD1(i,1)) || isnan(PD1(i,2)) || isnan(PD2(i,0)) || isnan(PD2(i,1)) || isnan(PD2(i,2)))
+    if (std::isnan(PD1(i,0)) || std::isnan(PD1(i,1)) || std::isnan(PD1(i,2)) || std::isnan(PD2(i,0)) || std::isnan(PD2(i,1)) || std::isnan(PD2(i,2)))
     {
       PD1.row(i) << 0,0,0;
       PD2.row(i) << 0,0,0;

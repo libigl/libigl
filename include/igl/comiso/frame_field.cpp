@@ -1,6 +1,6 @@
 #include "frame_field.h"
 
-#include <igl/tt.h>
+#include <igl/triangle_triangle_adjacency.h>
 #include <igl/edge_topology.h>
 #include <igl/per_face_normals.h>
 #include <igl/comiso/nrosy.h>
@@ -109,7 +109,7 @@ FrameInterpolator::FrameInterpolator(const Eigen::MatrixXd& _V, const Eigen::Mat
 
 
   // Generate topological relations
-  igl::tt(V,F,TT,TTi);
+  igl::triangle_triangle_adjacency(V,F,TT,TTi);
   igl::edge_topology(V,F, EV, FE, EF);
 
   // Flag border edges
