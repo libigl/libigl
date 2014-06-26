@@ -135,7 +135,7 @@ namespace igl {
     Handle_Singular(Handle_Singular_),
     Handle_SingularDegree(Handle_SingularDegree_)
     {
-      tt(V,F,TT,TTi);
+      triangle_triangle_adjacency(V,F,TT,TTi);
     };
 
     inline void cut(Eigen::PlainObjectBase<DerivedO> &Handle_Seams)

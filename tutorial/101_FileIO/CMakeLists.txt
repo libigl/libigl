@@ -7,5 +7,5 @@ set(SOURCES
 ${PROJECT_SOURCE_DIR}/main.cpp
 )
 
-add_executable(101_FileIO ${SOURCES} ${SHARED_SOURCES})
-target_link_libraries(101_FileIO ${SHARED_LIBRARIES})
+add_executable(${PROJECT_NAME} ${SOURCES} ${SHARED_SOURCES})
+target_link_libraries(${PROJECT_NAME} ${SHARED_LIBRARIES})

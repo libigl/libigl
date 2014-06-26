@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(202_GaussianCurvature)
+project(105_Overlays)
 
 include("../CMakeLists.shared")
 
