@@ -15,7 +15,7 @@
 namespace igl {
   //todo
   /// Given 2 vectors centered on origin calculate the rotation matrix from first to the second
-  
+
   // Inputs:
   //   v0, v1         the two #3 by 1 vectors
   //   normalized     boolean, if false, then the vectors are normalized prior to the calculation
@@ -29,7 +29,7 @@ namespace igl {
 }
 
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "polyroots.cpp"
 #endif
 

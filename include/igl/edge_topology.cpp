@@ -9,7 +9,7 @@
 #include <algorithm>
 #include "is_edge_manifold.h"
 
-
+template<typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::edge_topology(
                                    const Eigen::PlainObjectBase<DerivedV>& V,
                                    const Eigen::PlainObjectBase<DerivedF>& F,
@@ -33,18 +33,18 @@ IGL_INLINE void igl::edge_topology(
       ETT.push_back(r);
     }
   std::sort(ETT.begin(),ETT.end());
-  
+
   // count the number of edges (assume manifoldness)
   int En = 1; // the last is always counted
   for(unsigned i=0;i<ETT.size()-1;++i)
     if (!((ETT[i][0] == ETT[i+1][0]) && (ETT[i][1] == ETT[i+1][1])))
       ++En;
-  
+
   EV = Eigen::MatrixXi::Constant((int)(En),2,-1);
   FE = Eigen::MatrixXi::Constant((int)(F.rows()),3,-1);
   EF = Eigen::MatrixXi::Constant((int)(En),2,-1);
   En = 0;
-  
+
   for(unsigned i=0;i<ETT.size();++i)
   {
     if (i == ETT.size()-1 ||
@@ -72,10 +72,10 @@ IGL_INLINE void igl::edge_topology(
     }
     ++En;
   }
-  
+
   // Sort the relation EF, accordingly to EV
   // the first one is the face on the left of the edge
-  
+
   for(unsigned i=0; i<EF.rows(); ++i)
   {
     int fid = EF(i,0);
@@ -86,7 +86,7 @@ IGL_INLINE void igl::edge_topology(
       if ((F(fid,j) == EV(i,0)) && (F(fid,(j+1)%3) == EV(i,1)))
         flip = false;
     }
-    
+
     if (flip)
     {
       int tmp = EF(i,0);
@@ -94,7 +94,7 @@ IGL_INLINE void igl::edge_topology(
       EF(i,1) = tmp;
     }
   }
-  
+
 }
 
 #ifdef IGL_STATIC_LIBRARY

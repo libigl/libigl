@@ -37,7 +37,9 @@ FIND_LIBRARY(LIBCOMISO_LIBRARY NAMES CoMISo
     ${PROJECT_SOURCE_DIR}/../../CoMISo/build/Build/lib/CoMISo/
     ${PROJECT_SOURCE_DIR}/../../../CoMISo/
     ${PROJECT_SOURCE_DIR}/../../../CoMISo/build/Build/lib/CoMISo/
+    /Users/olkido/Documents/igl/MIQ/src/CoMISo/Build
 )
+#message(STATUS "${LIBCOMISO_LIBRARY}")
 
 if(LIBCOMISO_INCLUDE_DIR AND LIBCOMISO_LIBRARY)
 

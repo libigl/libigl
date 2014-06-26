@@ -29,7 +29,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   using namespace std;
   using namespace Eigen;
 
-  if (key <'1' || key >'4')
+  if (key <'0' || key >'4')
     return false;
 
   viewer.clear_mesh();
@@ -39,6 +39,8 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 
   int num = key  - '0';
 
+  if (num == 0)
+    return false;
   // Interpolate
   cerr<<"Interpolating for n = "<<num<<"... ";
   // Interpolated polyVector field
@@ -89,7 +91,7 @@ int main(int argc, char *argv[])
   MatrixXd temp;
   for (int n =0; n<=3; ++n)
   {
-    char cfile[1024]; sprintf(cfile, "/Users/olkido/Desktop/snail%d.dmat",n+1);
+    char cfile[1024]; sprintf(cfile, "../shared/snail%d.dmat",n+1);
 
     igl::readDMAT(cfile,temp);
     if (n == 0)
@@ -102,7 +104,7 @@ int main(int argc, char *argv[])
   igl::Viewer viewer;
 
   // Plot the original mesh with a texture parametrization
-  key_down(viewer,'1',0);
+  key_down(viewer,'0',0);
 
   // Launch the viewer
   viewer.callback_key_down = &key_down;

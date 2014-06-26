@@ -53,6 +53,7 @@ IGL_INLINE void igl::nchoosek(int offset,
 
 
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template igl::nchoosek(int, int, int, std::__1::vector<std::__1::vector<int, std::__1::allocator<int> >, std::__1::allocator<std::__1::vector<int, std::__1::allocator<int> > > >&);
 #endif

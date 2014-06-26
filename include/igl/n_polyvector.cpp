@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include <igl/n_polyvector.h>
-#include <igl/edgetopology.h>
+#include <igl/edge_topology.h>
 #include <igl/local_basis.h>
 #include <igl/nchoosek.h>
 #include <igl/slice.h>
@@ -77,7 +77,7 @@ numF(_F.rows()),
 n(_n)
 {
 
-  igl::edgetopology(V,F,EV,F2E,E2F);
+  igl::edge_topology(V,F,EV,F2E,E2F);
   numE = EV.rows();
 
 
@@ -492,6 +492,7 @@ IGL_INLINE void igl::n_polyvector(const Eigen::PlainObjectBase<DerivedV> &V,
 }
 
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template void igl::n_polyvector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, -1, -1, 0, -1, -1> const&, Eigen::Matrix<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, -1, -1, 0, -1, -1>&);
 #endif
