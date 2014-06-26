@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   igl::Viewer viewer;
-  viewer.draw_mesh(V, F);
+  viewer.set_mesh(V, F);
 
 
   // Normalize x coordinate between 0 and 1
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
   }
 
   // Add per-vertex colors
-  viewer.draw_colors(C);
+  viewer.set_colors(C);
 
   // Launch the viewer
   viewer.launch();

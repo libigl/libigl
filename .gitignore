@@ -64,3 +64,4 @@ tutorial/*/Makefile
 external/glew/build
 external/glfw/build
 *buildXcode*
+tutorial/build*
