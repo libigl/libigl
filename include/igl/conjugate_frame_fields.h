@@ -23,6 +23,9 @@ namespace igl {
   // Output:
   //                  3 by 3 rotation matrix that takes v0 to v1
   //
+  template <typename DerivedV, typename DerivedF>
+  class ConjugateFFSolverData;
+  
   template <typename DerivedV, typename DerivedF, typename DerivedO>
   IGL_INLINE void conjugate_frame_fields(const Eigen::PlainObjectBase<DerivedV> &V,
                                          const Eigen::PlainObjectBase<DerivedF> &F,
@@ -35,10 +38,22 @@ namespace igl {
                                          const typename DerivedV::Scalar &_lambdaMultFactor = 1.01,
                                          bool _doHardConstraints = true);
   
+  template <typename DerivedV, typename DerivedF, typename DerivedO>
+  IGL_INLINE void conjugate_frame_fields(const ConjugateFFSolverData<DerivedV, DerivedF> &csdata,
+                                         const Eigen::VectorXi &isConstrained,
+                                         const Eigen::PlainObjectBase<DerivedO> &initialSolution,
+                                         Eigen::PlainObjectBase<DerivedO> &output,
+                                         int _maxIter = 50,
+                                         const typename DerivedV::Scalar &_lambdaOrtho = .1,
+                                         const typename DerivedV::Scalar &_lambdaInit = 100,
+                                         const typename DerivedV::Scalar &_lambdaMultFactor = 1.01,
+                                         bool _doHardConstraints = true,
+                                         typename DerivedV::Scalar *lambdaOut = NULL);
+  
 };
 
 
-#ifdef IGL_HEADER_ONLY
+#ifndef IGL_STATIC_LIBRARY
 #include "conjugate_frame_fields.cpp"
 #endif
 
