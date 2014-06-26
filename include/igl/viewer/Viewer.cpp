@@ -4,6 +4,9 @@
 #  include <windows.h>
 #  undef max
 #  undef min
+#endif
+
+#ifndef __APPLE__
 #  include <GL/glew.h>
 #endif
 
@@ -50,25 +53,6 @@ Eigen::Vector3f project(const Eigen::Vector3f&  obj,
   tmp(1) = tmp(1) * viewport(3) + viewport(1);
 
   return tmp.head(3);
-}
-
-Eigen::Vector3f unproject(const Eigen::Vector3f& win,
-                          const Eigen::Matrix4f& model,
-                          const Eigen::Matrix4f& proj,
-                          const Eigen::Vector4f& viewport)
-{
-  Eigen::Matrix4f Inverse = (proj * model).inverse();
-
-  Eigen::Vector4f tmp;
-  tmp << win, 1;
-  tmp(0) = (tmp(0) - viewport(0)) / viewport(2);
-  tmp(1) = (tmp(1) - viewport(1)) / viewport(3);
-  tmp = tmp.array() * 2.0f - 1.0f;
-
-  Eigen::Vector4f obj = Inverse * tmp;
-  obj /= obj(3);
-
-  return obj.head(3);
 }
 
 Eigen::Matrix4f lookAt (
@@ -178,6 +162,7 @@ Eigen::Matrix4f translate(
 #include <igl/axis_angle_to_quat.h>
 #include <igl/trackball.h>
 #include <igl/snap_to_canonical_view_quat.h>
+#include <igl/unproject.h>
 #include <TwOpenGLCore.h>
 
 // Plugin manager (exported to other compilation units)
@@ -656,6 +641,7 @@ namespace igl
 
     // Default lights settings
     options.light_position << 0.0f, -0.30f, -5.0f;
+    options.lighting_factor = 1.0f; //on
 
     // Default trackball
     options.trackball_angle << 0.0f, 0.0f, 0.0f, 1.0f;
@@ -1075,8 +1061,8 @@ namespace igl
         case TRANSLATE:
         {
           //translation
-          Eigen::Vector3f pos1 = unproject(Eigen::Vector3f(mouse_x, viewport[3] - mouse_y, down_mouse_z), view * model, proj, viewport);
-          Eigen::Vector3f pos0 = unproject(Eigen::Vector3f(down_mouse_x, viewport[3] - down_mouse_y, down_mouse_z), view * model, proj, viewport);
+          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, viewport[3] - mouse_y, down_mouse_z), view * model, proj, viewport);
+          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, viewport[3] - down_mouse_y, down_mouse_z), view * model, proj, viewport);
 
           Eigen::Vector3f diff = pos1 - pos0;
           options.model_translation = down_translation + Eigen::Vector3f(diff[0],diff[1],diff[2]);
@@ -1703,7 +1689,7 @@ namespace igl
     "dot_prod_specular = max (dot_prod_specular, 0.0);"
     "float specular_factor = pow (dot_prod_specular, specular_exponent);"
     "vec3 Is = Ls * Ksi * specular_factor;"    // specular intensity
-    "vec4 color = vec4(lighting_factor * (Is + Id) + Ia, 1.0);"
+    "vec4 color = vec4(lighting_factor * (Is + Id) + Ia, 1.0) + vec4((1.0-lighting_factor) * Kdi,1.0);"
     "outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * color;"
     "if (fixed_color != vec4(0.0)) outColor = fixed_color;"
     "}";
@@ -1847,7 +1833,7 @@ namespace igl
     glUniform1f(specular_exponenti, options.shininess);
     Vector3f rev_light = -1.*options.light_position;
     glUniform3fv(light_position_worldi, 1, rev_light.data());
-    glUniform1f(lighting_factori, 1.0f); // enables lighting
+    glUniform1f(lighting_factori, options.lighting_factor); // enables lighting
     glUniform4f(fixed_colori, 0.0, 0.0, 0.0, 0.0);
 
     if (data.V.rows()>0)
@@ -2096,6 +2082,7 @@ namespace igl
     xmlSerializer->Add(background_color, "background_color");
     xmlSerializer->Add(line_color, "line_color");
     xmlSerializer->Add(light_position, "light_position");
+    xmlSerializer->Add(lighting_factor, "lighting_factor");
     xmlSerializer->Add(trackball_angle, "trackball_angle");
     xmlSerializer->Add(model_zoom, "model_zoom");
     xmlSerializer->Add(model_translation, "model_translation");
@@ -2392,9 +2379,10 @@ namespace igl
     glfwWindowHint(GLFW_SAMPLES, 16);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
+    #endif
     window = glfwCreateWindow(1280, 800, "IGL Viewer", NULL, NULL);
     if (!window)
     {
@@ -2404,7 +2392,7 @@ namespace igl
 
 	glfwMakeContextCurrent(window);
 
-#ifdef _WIN32
+#ifndef __APPLE__
 	glewExperimental = true;
 	GLenum err = glewInit();
 	if (GLEW_OK != err)

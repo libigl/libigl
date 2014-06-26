@@ -3,9 +3,13 @@ project(601_Serialization)
 
 include("../CMakeLists.shared")
 
+find_package(TINYXML2 REQUIRED)
+
+include_directories( ${TINYXML2_INCLUDE_DIR})
+
 set(SOURCES
 ${PROJECT_SOURCE_DIR}/main.cpp
 )
 
-add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${SHARED_SOURCES} ${TINYXML2_SOURCES})
-target_link_libraries(${CMAKE_PROJECT_NAME} ${SHARED_LIBRARIES})
+add_executable(${PROJECT_NAME} ${SOURCES} ${SHARED_SOURCES} ${TINYXML2_SOURCES})
+target_link_libraries(${PROJECT_NAME} ${SHARED_LIBRARIES})

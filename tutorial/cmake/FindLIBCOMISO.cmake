@@ -12,11 +12,18 @@ FIND_PATH(LIBCOMISO_INCLUDE_DIR CoMISo/Solver/ConstrainedSolver.hh
    $ENV{LIBCOMISO_ROOT}/include
    $ENV{LIBCOMISO_DIR}/include
    $ENV{LIBCOMISO_DIR}/inc
+   ${PROJECT_SOURCE_DIR}/../
+   ${PROJECT_SOURCE_DIR}/../../
+   ${PROJECT_SOURCE_DIR}/../../../
    ${PROJECT_SOURCE_DIR}/../CoMISo/
    ${PROJECT_SOURCE_DIR}/../CoMISo/include
+   ${PROJECT_SOURCE_DIR}/../../CoMISo/
+   ${PROJECT_SOURCE_DIR}/../../CoMISo/include
    /Users/daniele/Dropbox/igl/MIQ/src
    /Users/olkido/Documents/igl/MIQ/src
 )
+
+#message(FATAL_ERROR "${LIBCOMISO_INCLUDE_DIR}")
 
 FIND_LIBRARY(LIBCOMISO_LIBRARY NAMES CoMISo
   PATHS
@@ -25,9 +32,11 @@ FIND_LIBRARY(LIBCOMISO_LIBRARY NAMES CoMISo
     /usr
     /
     ${PROJECT_SOURCE_DIR}/../CoMISo/
-    ${PROJECT_SOURCE_DIR}/../CoMISo/build
-    /Users/daniele/Dropbox/igl/MIQ/src/CoMISo/build
-    /Users/olkido/Documents/igl/MIQ/src/CoMISo/build
+    ${PROJECT_SOURCE_DIR}/../CoMISo/build/Build/lib/CoMISo/
+    ${PROJECT_SOURCE_DIR}/../../CoMISo/
+    ${PROJECT_SOURCE_DIR}/../../CoMISo/build/Build/lib/CoMISo/
+    ${PROJECT_SOURCE_DIR}/../../../CoMISo/
+    ${PROJECT_SOURCE_DIR}/../../../CoMISo/build/Build/lib/CoMISo/
 )
 
 if(LIBCOMISO_INCLUDE_DIR AND LIBCOMISO_LIBRARY)

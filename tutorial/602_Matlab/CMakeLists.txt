@@ -14,5 +14,5 @@ if(APPLE)
   set(CMAKE_EXE_LINKER_FLAGS "-rpath ${MATLAB_INCLUDE_DIR}/../../bin/maci64"})
 endif (APPLE) #APPLE
 
-add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${SHARED_SOURCES})
-target_link_libraries(${CMAKE_PROJECT_NAME} ${SHARED_LIBRARIES} ${MATLAB_LIBRARIES})
+add_executable(${PROJECT_NAME} ${SOURCES} ${SHARED_SOURCES})
+target_link_libraries(${PROJECT_NAME} ${SHARED_LIBRARIES} ${MATLAB_LIBRARIES})

@@ -28,11 +28,11 @@ int main(int argc, char *argv[])
   // Laplace-Beltrami of position
   HN = -Minv*(L*V);
   // Extract magnitude as mean curvature
-  H = HN.rowwise().norm();
+  VectorXd H = HN.rowwise().norm();
 
   // Compute curvature directions via quadric fitting
   MatrixXd PD1,PD2;
-  VectorXd PV1,PV2,H;
+  VectorXd PV1,PV2;
   igl::principal_curvature(V,F,PD1,PD2,PV1,PV2);
   // mean curvature
   H = 0.5*(PV1+PV2);
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
   // Average edge length for sizing
   const double avg = igl::avg_edge_length(V,F);
-  
+
   // Draw a red segment parallel to the minimal curvature direction
   const RowVector3d red(1,0,0),blue(0,0,1);
   viewer.add_edges(V + PD1*avg, V - PD1*avg, red);
