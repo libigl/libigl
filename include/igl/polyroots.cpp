@@ -15,22 +15,22 @@ IGL_INLINE void igl::polyRoots(Eigen::Matrix<S, Eigen::Dynamic,1> &polyCoeff, //
 {
   //  degree
   int n = polyCoeff.rows() - 1;
-  
+
   Eigen::Matrix<S, Eigen::Dynamic, 1> d (n,1);
   d = polyCoeff.tail(n)/polyCoeff(0);
-  
+
   Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> I; I.setIdentity(n-1,n-1);
   Eigen::Matrix<S, Eigen::Dynamic, 1> z; z.setZero(n-1,1);
-  
+
   Eigen::Matrix<S, Eigen::Dynamic, Eigen::Dynamic> a(n,n);
   a<<-d.transpose(),I,z;
   roots = a.eigenvalues();
-  
+
 }
 
 
 
-#ifndef IGL_HEADER_ONLY
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template void igl::polyRoots<std::__1::complex<double>, double>(Eigen::Matrix<std::__1::complex<double>, -1, 1, 0, -1, 1>&, Eigen::Matrix<std::__1::complex<double>, -1, 1, 0, -1, 1>&);
 #endif
-
