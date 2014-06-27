@@ -507,7 +507,7 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
   // place bar at top (padded by 10 pixels)
   pos[1] = 10;
   // Set height to new height of window (padded by 10 pixels on bottom)
-  size[1] = height-pos[1]-10;
+  size[1] = highdpi*(height-pos[1]-10);
   TwSetParam(bar, NULL, "position", TW_PARAM_INT32, 2, pos);
   TwSetParam(bar, NULL, "size", TW_PARAM_INT32, 2,size);
 }
@@ -2352,13 +2352,13 @@ namespace igl
 
   void Viewer::add_label(const Eigen::VectorXd& P,  const std::string& str)
   {
-    Eigen::MatrixXd P_temp;
+    Eigen::RowVectorXd P_temp;
 
     // If P only has two columns, pad with a column of zeros
-    if (P.cols() == 2)
+    if (P.size() == 2)
     {
-      P_temp = Eigen::MatrixXd::Zero(P.rows(),3);
-      P_temp.block(0,0,P.rows(),2) = P;
+      P_temp = Eigen::RowVectorXd::Zero(3);
+      P_temp << P, 0;
     }
     else
       P_temp = P;
