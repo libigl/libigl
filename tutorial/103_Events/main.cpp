@@ -1,4 +1,3 @@
-#define IGL_HEADER_ONLY
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
 
