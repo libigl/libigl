@@ -5,6 +5,7 @@
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
+Eigen::MatrixXd C;
 
 int main(int argc, char *argv[])
 {
@@ -15,19 +16,11 @@ int main(int argc, char *argv[])
   igl::Viewer viewer;
   viewer.set_mesh(V, F);
 
+  // Use the x coordinate as a scalar field over the surface
+  Eigen::VectorXd x = V.col(2);
 
-  // Normalize x coordinate between 0 and 1
-  Eigen::VectorXd value = V.col(0).array() - V.col(0).minCoeff();
-  value = value.array() / value.maxCoeff();
-
-  // Map to colors using jet colorramp
-  Eigen::MatrixXd C(V.rows(),3);
-  for (unsigned i=0; i<V.rows(); ++i)
-  {
-    double r,g,b;
-    igl::jet(value(i),r,g,b);
-    C.row(i) << r,g,b;
-  }
+  // Compute per-vertex colors
+  igl::jet(x,true,C);
 
   // Add per-vertex colors
   viewer.set_colors(C);

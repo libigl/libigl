@@ -21,10 +21,8 @@ of these lecture notes links to a cross-platform example application.
 
 # Table of Contents
 
-* Basic Usage
-    * **100_FileIO**: Example of reading/writing mesh files
-    * **101_Serialization**: Example of using the XML serialization framework
-    * **102_DrawMesh**: Example of plotting a mesh
+* [Chapter 1: Introduction to libigl]
+
 * [Chapter 2: Discrete Geometric Quantities and
   Operators](#chapter2:discretegeometricquantitiesandoperators)
     * [201 Normals](#normals)
@@ -41,7 +39,7 @@ of these lecture notes links to a cross-platform example application.
 * [Chapter 3: Matrices and Linear Algebra](#chapter3:matricesandlinearalgebra)
     * [301 Slice](#slice)
     * [302 Sort](#sort)
-        * [Other Matlab-style functions](#othermatlab-stylefunctions) 
+        * [Other Matlab-style functions](#othermatlab-stylefunctions)
     * [303 Laplace Equation](#laplaceequation)
         * [Quadratic energy minimization](#quadraticenergyminimization)
     * [304 Linear Equality Constraints](#linearequalityconstraints)
@@ -53,34 +51,6 @@ of these lecture notes links to a cross-platform example application.
     * [404 As-rigid-as-possible](#as-rigid-as-possible)
     * [405 Fast automatic skinning
       transformations](#fastautomaticskinningtransformations)
-
-
-# Compilation Instructions
-
-All examples depends on glfw, glew and anttweakbar. A copy
-of the sourcecode of each library is provided together with libigl
-and they can be precompiled using:
-
-**Alec: Is this just compiling the dependencies? Then perhaps rename `compile_dependencies_*`**
-
-    sh compile_macosx.sh (MACOSX)
-    sh compile_linux.sh (LINUX)
-    compile_windows.bat (Visual Studio 2012)
-
-Every example can be compiled by using the cmake file provided in its folder.
-On Linux and MacOSX, you can use the provided bash script:
-
-    sh ../compile_example.sh
-
-## (Optional: compilation with libigl as static library)
-
-By default, libigl is a _headers only_ library, thus it does not require
-compilation. However, one can precompile libigl as a statically linked library.
-See `../README.md` in the main directory for compilations instructions to
-produce `libigl.a` and other libraries. Once compiled, these examples can be
-compiled using the `CMAKE` flag `-DLIBIGL_USE_STATIC_LIBRARY=ON`:
-
-    ../compile_example.sh -DLIBIGL_USE_STATIC_LIBRARY=ON
 
 # Chapter 2: Discrete Geometric Quantities and Operators
 This chapter illustrates a few discrete quantities that libigl can compute on a
@@ -187,13 +157,13 @@ orthogonal.
 
 Mean curvature is defined simply as the average of principal curvatures:
 
- $H = \frac{1}{2}(k_1 + k_2).$ 
+ $H = \frac{1}{2}(k_1 + k_2).$
 
 One way to extract mean curvature is by examining the Laplace-Beltrami operator
 applied to the surface positions. The result is a so-called mean-curvature
 normal:
 
-  $-\Delta \mathbf{x} = H \mathbf{n}.$ 
+  $-\Delta \mathbf{x} = H \mathbf{n}.$
 
 It is easy to compute this on a discrete triangle mesh in libigl using the cotangent
 Laplace-Beltrami operator [][#meyer_2003].
@@ -253,8 +223,8 @@ linear on incident triangles.](images/hat-function.jpg)
 Thus gradients of such piecewise linear functions are simply sums of gradients
 of the hat functions:
 
- $\nabla f(\mathbf{x}) \approx 
- \nabla \sum\limits_{i=0}^n \nabla \phi_i(\mathbf{x})\, f_i = 
+ $\nabla f(\mathbf{x}) \approx
+ \nabla \sum\limits_{i=0}^n \nabla \phi_i(\mathbf{x})\, f_i =
  \sum\limits_{i=0}^n \nabla \phi_i(\mathbf{x})\, f_i.$
 
 This reveals that the gradient is a linear function of the vector of $f_i$
@@ -276,12 +246,12 @@ visualizes the vector field.](images/cheburashka-gradient.jpg)
 ## Laplacian
 
 The discrete Laplacian is an essential geometry processing tool. Many
-interpretations and flavors of the Laplace and Laplace-Beltrami operator exist. 
+interpretations and flavors of the Laplace and Laplace-Beltrami operator exist.
 
 In open Euclidean space, the _Laplace_ operator is the usual divergence of gradient
 (or equivalently the Laplacian of a function is the trace of its Hessian):
 
- $\Delta f = 
+ $\Delta f =
  \frac{\partial^2 f}{\partial x^2} +
  \frac{\partial^2 f}{\partial y^2} +
  \frac{\partial^2 f}{\partial z^2}.$
@@ -383,8 +353,8 @@ Green's identity (ignoring boundary conditions for the moment):
 
 Or in matrix form which is immediately translatable to code:
 
-  $\mathbf{f}^T \mathbf{G}^T \mathbf{T} \mathbf{G} \mathbf{f} = 
-  \mathbf{f}^T \mathbf{M} \mathbf{M}^{-1} \mathbf{L} \mathbf{f} = 
+  $\mathbf{f}^T \mathbf{G}^T \mathbf{T} \mathbf{G} \mathbf{f} =
+  \mathbf{f}^T \mathbf{M} \mathbf{M}^{-1} \mathbf{L} \mathbf{f} =
   \mathbf{f}^T \mathbf{L} \mathbf{f}.$
 
 So we have that $\mathbf{L} = \mathbf{G}^T \mathbf{T} \mathbf{G}$. This also
@@ -478,7 +448,7 @@ where again `I` reveals the index of sort so that it can be reproduced with
 
 Analogous functions are available in libigl for: `max`, `min`, and `unique`.
 
-![The example `Sort` shows how to use `igl::sortrows` to 
+![The example `Sort` shows how to use `igl::sortrows` to
 pseudocolor triangles according to their barycenters' sorted
 order.](images/decimated-knight-sort-color.jpg)
 
@@ -533,27 +503,27 @@ vertices come first and then boundary vertices:
 
  $$\left(\begin{array}{cc}
  \mathbf{L}_{in,in} & \mathbf{L}_{in,b}\\
- \mathbf{L}_{b,in} & \mathbf{L}_{b,b}\end{array}\right) 
+ \mathbf{L}_{b,in} & \mathbf{L}_{b,b}\end{array}\right)
  \left(\begin{array}{c}
  \mathbf{z}_{in}\\
- \mathbf{L}_{b}\end{array}\right) = 
+ \mathbf{L}_{b}\end{array}\right) =
  \left(\begin{array}{c}
  \mathbf{0}_{in}\\
- \mathbf{*}_{b}\end{array}\right)$$ 
+ \mathbf{*}_{b}\end{array}\right)$$
 
 The bottom block of equations is no longer meaningful so we'll only consider
 the top block:
 
  $$\left(\begin{array}{cc}
- \mathbf{L}_{in,in} & \mathbf{L}_{in,b}\end{array}\right) 
+ \mathbf{L}_{in,in} & \mathbf{L}_{in,b}\end{array}\right)
  \left(\begin{array}{c}
  \mathbf{z}_{in}\\
- \mathbf{z}_{b}\end{array}\right) = 
+ \mathbf{z}_{b}\end{array}\right) =
  \mathbf{0}_{in}$$
 
 Where now we can move known values to the right-hand side:
 
- $$\mathbf{L}_{in,in} 
+ $$\mathbf{L}_{in,in}
  \mathbf{z}_{in} = -
  \mathbf{L}_{in,b}
  \mathbf{z}_{b}$$
@@ -587,7 +557,7 @@ On our discrete mesh, recall that this becomes
 
 The general problem of minimizing some energy over a mesh subject to fixed
 value boundary conditions is so wide spread that libigl has a dedicated api for
-solving such systems. 
+solving such systems.
 
 Let's consider a general quadratic minimization problem subject to different
 common constraints:
@@ -596,15 +566,15 @@ common constraints:
  \mathbf{z}^T \mathbf{B} + \text{constant},$$
 
  subject to
- 
+
  $$\mathbf{z}_b = \mathbf{z}_{bc} \text{ and } \mathbf{A}_{eq} \mathbf{z} =
  \mathbf{B}_{eq},$$
 
-where 
+where
 
   - $\mathbf{Q}$ is a (usually sparse) $n \times n$ positive semi-definite
-    matrix of quadratic coefficients (Hessian), 
-  - $\mathbf{B}$ is a $n \times 1$ vector of linear coefficients, 
+    matrix of quadratic coefficients (Hessian),
+  - $\mathbf{B}$ is a $n \times 1$ vector of linear coefficients,
   - $\mathbf{z}_b$ is a $|b| \times 1$ portion of
 $\mathbf{z}$ corresponding to boundary or _fixed_ vertices,
   - $\mathbf{z}_{bc}$ is a $|b| \times 1$ vector of known values corresponding to
@@ -673,10 +643,10 @@ saddle problem:
 This can be rewritten in a more familiar form by stacking $\mathbf{z}$ and
 $\lambda$ into one $(m+n) \times 1$ vector of unknowns:
 
- $$\mathop{\text{find saddle }}_{\mathbf{z},\lambda}\, 
+ $$\mathop{\text{find saddle }}_{\mathbf{z},\lambda}\,
  \frac{1}{2}
  \left(
-  \mathbf{z}^T 
+  \mathbf{z}^T
   \lambda^T
  \right)
  \left(
@@ -690,9 +660,9 @@ $\lambda$ into one $(m+n) \times 1$ vector of unknowns:
   \mathbf{z}\\
   \lambda
   \end{array}
- \right) + 
+ \right) +
  \left(
-  \mathbf{z}^T 
+  \mathbf{z}^T
   \lambda^T
  \right)
  \left(
@@ -707,7 +677,7 @@ Differentiating with respect to $\left( \mathbf{z}^T \lambda^T \right)$ reveals
 a linear system and we can solve for $\mathbf{z}$ and $\lambda$. The only
 difference from
 the straight quadratic
-_minimization_ system, is that 
+_minimization_ system, is that
 this saddle problem system will not be positive definite. Thus, we must use a
 different factorization technique (LDLT rather than LLT). Luckily, libigl's
 `min_quad_with_fixed_precompute` automatically chooses the correct solver in
