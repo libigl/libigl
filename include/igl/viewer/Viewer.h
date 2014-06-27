@@ -55,6 +55,7 @@ namespace igl
 
       // Lighting
       Eigen::Vector3f light_position;
+      float lighting_factor;
 
       // Trackball angle (quaternion)
       Eigen::Vector4f trackball_angle;

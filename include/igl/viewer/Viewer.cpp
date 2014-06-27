@@ -641,6 +641,7 @@ namespace igl
 
     // Default lights settings
     options.light_position << 0.0f, -0.30f, -5.0f;
+    options.lighting_factor = 1.0f; //on
 
     // Default trackball
     options.trackball_angle << 0.0f, 0.0f, 0.0f, 1.0f;
@@ -1688,7 +1689,7 @@ namespace igl
     "dot_prod_specular = max (dot_prod_specular, 0.0);"
     "float specular_factor = pow (dot_prod_specular, specular_exponent);"
     "vec3 Is = Ls * Ksi * specular_factor;"    // specular intensity
-    "vec4 color = vec4(lighting_factor * (Is + Id) + Ia, 1.0);"
+    "vec4 color = vec4(lighting_factor * (Is + Id) + Ia, 1.0) + vec4((1.0-lighting_factor) * Kdi,1.0);"
     "outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * color;"
     "if (fixed_color != vec4(0.0)) outColor = fixed_color;"
     "}";
@@ -1832,7 +1833,7 @@ namespace igl
     glUniform1f(specular_exponenti, options.shininess);
     Vector3f rev_light = -1.*options.light_position;
     glUniform3fv(light_position_worldi, 1, rev_light.data());
-    glUniform1f(lighting_factori, 1.0f); // enables lighting
+    glUniform1f(lighting_factori, options.lighting_factor); // enables lighting
     glUniform4f(fixed_colori, 0.0, 0.0, 0.0, 0.0);
 
     if (data.V.rows()>0)
@@ -2081,6 +2082,7 @@ namespace igl
     xmlSerializer->Add(background_color, "background_color");
     xmlSerializer->Add(line_color, "line_color");
     xmlSerializer->Add(light_position, "light_position");
+    xmlSerializer->Add(lighting_factor, "lighting_factor");
     xmlSerializer->Add(trackball_angle, "trackball_angle");
     xmlSerializer->Add(model_zoom, "model_zoom");
     xmlSerializer->Add(model_translation, "model_translation");
