@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(libigl_tutorials)
 
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../)
+
 # Chapter 1
 add_subdirectory("101_FileIO")
 add_subdirectory("102_DrawMesh")
