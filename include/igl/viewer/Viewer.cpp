@@ -7,6 +7,7 @@
 #endif
 
 #ifndef __APPLE__
+#  define GLEW_STATIC
 #  include <GL/glew.h>
 #endif
 

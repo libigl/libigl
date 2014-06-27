@@ -43,7 +43,7 @@ IGL_INLINE void igl::colon(
     }
   }
   // resize output
-  int n = floor(double((hi-low)/step))+1;
+  int n = std::floor(double((hi-low)/step))+1;
   I.resize(n);
   int i = 0;
   T v = (T)low;
