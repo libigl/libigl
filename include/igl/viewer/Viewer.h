@@ -327,6 +327,7 @@ namespace igl
     float down_mouse_z;
     Eigen::Vector3f down_translation;
     bool down;
+    bool hack_never_moved;
 
     // Anttweak bar
     TwBar* bar;
@@ -453,6 +454,8 @@ namespace igl
     static void TW_CALL get_face_based_cb(void *param, void *clientData);
     static void TW_CALL set_invert_normals_cb(const void *param, void *clientData);
     static void TW_CALL get_invert_normals_cb(void *param, void *clientData);
+  public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 
@@ -573,6 +576,8 @@ namespace igl
   protected:
     // Pointer to the main Preview3D class
     Viewer *viewer;
+  public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   // Keeps the lists of plugins
@@ -595,6 +600,8 @@ namespace igl
     }
 
     std::vector<Viewer_plugin*> plugin_list;
+  public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 
