@@ -734,22 +734,111 @@ igl::active_set(Q,B,b,bc,Aeq,Beq,Aieq,Bieq,lx,ux,as,Z);
 discrete biharmonic kernels at multiple scales [#rustamov_2011][].](images/cheburashka-multiscale-biharmonic-kernels.jpg)
 
 # Chapter 4: Shape Deformation
+Modern mesh-based shape deformation methods satisfy user deformation
+constraints at handles (selected vertices or regions on the mesh) and propagate
+these handle deformations to the rest of shape _smoothly_ and _without removing
+or distorting details_. Libigl provides implementations of a variety of
+state-of-the-art deformation techniques, ranging from quadratic mesh-based
+energy minimizers, to skinning methods, to non-linear elasticity-inspired
+techniques.
 
 ## Biharmonic Deformation
+The period of research between 2000 and 2010 produced a collection of
+techniques that cast the problem of handle-based shape deformation as a
+quadratic energy minimization problem or equivalently the solution to a linear
+partial differential equation.
 
-Biharmonic surfaces
+There are many flavors of these techniques, but
+a prototypical subset are those that consider solutions to the bi-Laplace
+equation, that is biharmonic functions [#botsch_2004][]. This fourth-order PDE provides
+sufficient flexibility in boundary conditions to ensure $C^1$ continuity at
+handle constraints (in the limit under refinement) [#jacobson_mixed_2010][].
 
-Biharmonic deformation fields
+### Biharmonic surfaces
+Let us first begin our discussion of biharmonic _deformation_, by considering
+biharmonic _surfaces_. We will casually define biharmonic surfaces as surface
+whose _position functions_ are biharmonic with respect to some initial
+parameterization:
+
+ $\Delta \mathbf{x}' = 0$
+
+and subject to some handle constraints, conceptualized as "boundary
+conditions":
+
+ $\mathbf{x}'_{b} = \mathbf{x}_{bc}.$
+
+where $\mathbf{x}'$ is the unknown 3D position of a point on the surface. So we are
+asking that the bi-Laplace of each of spatial coordinate functions to be zero.
+
+In libigl, one can solve a biharmonic problem like this with `igl::harmonic`
+and setting $k=2$ (_bi_-harmonic):
+
+```cpp
+// U_bc contains deformation of boundary vertices b
+igl::harmonic(V,F,b,U_bc,2,U);
+```
+
+This produces smooth surfaces that interpolate the handle constraints, but all
+original details on the surface will be _smoothed away_. Most obviously, if the
+original surface is not already biharmonic, then giving all handles the identity
+deformation (keeping them at their rest positions) will **not** reproduce the
+original surface. Rather, the result will be the biharmonic surface that does
+interpolate those handle positions.
+
+Thus, we may conclude that this is not an intuitive technique for shape
+deformation.
+
+### Biharmonic deformation fields
+Now we know that one useful property for a deformation technique is "rest pose
+reproduction": applying no deformation to the handles should apply no
+deformation to the shape. 
+
+To guarantee this by construction we can work with _deformation fields_ (ie.
+displacements)
+$\mathbf{d}$ rather 
+than directly with positions $\mathbf{x}. Then the deformed positions can be
+recovered as 
+
+ $\mathbf{x}' = \mathbf{x}+\mathbf{d}.$
+
+A smooth deformation field $\mathbf{d}$ which interpolates the deformation
+fields of the handle constraints will impose a smooth deformed shape
+$\mathbf{x}'$. Naturally, we consider _biharmonic deformation fields_:
+
+ $\Delta \mathbf{d} = 0$
+
+subject to the same handle constraints, but rewritten in terms of their implied
+deformation field at the boundary (handles):
+
+ $\mathbf{d}_b = \mathbf{x}_{bc} - \mathbf{x}_b.$
+
+Again we can use `igl::harmonic` with $k=2$, but this time solve for the
+deformation field and then recover the deformed positions:
+
+```cpp
+// U_bc contains deformation of boundary vertices b
+D_bc = U_bc - slice(V,b,1);
+igl::harmonic(V,F,b,D_bc,2,D);
+U = V+D;
+```
+
+
+
+#### Relationship to "differential coordinates" and Laplacian surface editing
 
 k-harmonic deformation
 
 ```cpp
+int k = 2;// or 1,3,4,...
+igl::harmonic(V,F,b,bc,k,Z);
 ```
 
 ![The `BiharmonicDeformation` example deforms a flat domain (left) into a bump as a
 solution to various $k$-harmonic PDEs.](images/bump-k-harmonic.jpg)
 
-[#meyer_2003]: Mark Meyer and Mathieu Desbrun and Peter Schröder and Alan H.  Barr,
+[#botsch_2004]: Matrio Botsch and Leif Kobbelt. "An Intuitive Framework for
+Real-Time Freeform Modeling," 2004.
+[#meyer_2003]: Mark Meyer, Mathieu Desbrun, Peter Schröder and Alan H.  Barr,
 "Discrete Differential-Geometry Operators for Triangulated
 2-Manifolds," 2003.
 [#pannozo_2010]: Daniele Pannozo, Enrico Puppo, Luigi Rocca,
@@ -757,6 +846,8 @@ solution to various $k$-harmonic PDEs.](images/bump-k-harmonic.jpg)
 [#jacobson_thesis_2013]: Alec Jacobson,
 _Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
 2013.
+[#jacobson_mixed_2010]: Alec Jacobson, Elif Tosun, Olga Sorkine, and Denis
+Zorin. "Mixed Finite Elements for Variational Surface Modeling," 2010.
 [#kazhdan_2012]: Michael Kazhdan, Jake Solomon, Mirela Ben-Chen,
 "Can Mean-Curvature Flow Be Made Non-Singular," 2012.
 [#rustamov_2011]: Raid M. Rustamov, "Multiscale Biharmonic Kernels", 2011.
