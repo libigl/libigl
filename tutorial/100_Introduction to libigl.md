@@ -1,5 +1,5 @@
 title: libigl Tutorial
-author: Alec Jacobson, Daniele Pannozo and others
+author: Daniele Panozzo, Alec Jacobson and others
 date: 20 June 2014
 css: style.css
 html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
