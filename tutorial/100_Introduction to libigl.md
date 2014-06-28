@@ -25,14 +25,14 @@ All dependencies for the compilation of these examples are contained in libigl (
 All examples depends on glfw, glew and anttweakbar. A copy
 of the sourcecode of each library is provided together with libigl
 and they can be precompiled using:
-``` sh
+```sh
     sh compile_dependencies_macosx.sh (MACOSX)
     sh compile_dependencies_linux.sh (LINUX)
 ```
 Precompiled binaries are provided for Visual Studio 2014 64bit.
 
 Use the cmake file in the tutorial folder to build all the examples:
-``` sh
+```sh
   cd tutorial
   mkdir build
   cd build
@@ -47,7 +47,7 @@ For a few examples in Chapter 5, the [CoMiSo solver](http://www.graphics.rwth-aa
 libIGL uses the [Eigen](http://eigen.tuxfamily.org/) library to encode vector and matrices. We will review in this tutorial many of the basic operations that Eigen supports: If you want to get an idea of what operations are supported you can take a look at the [dense](http://eigen.tuxfamily.org/dox/group__QuickRefPage.html) and [sparse](http://eigen.tuxfamily.org/dox/group__SparseQuickRefPage.html) quick reference guides.
 
 We encode a triangular mesh as a pair of matrices:
-``` cpp
+```cpp
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 ```
@@ -66,14 +66,14 @@ The reading/writing functions are named read\*.h and write\*.h, respectively.
 
 Reading a mesh from file requires a single igl function call:
 
-``` cpp
+```cpp
 igl::readOFF("../shared/cube.off", V, F);
 ```
 
 The functions read the mesh cube.off and fills the provided matrices V and F.
 Similarly, to write a mesh to file (in OBJ format):
 
-``` cpp
+```cpp
 igl::writeOBJ("cube.obj",V,F);
 ```
 
@@ -85,7 +85,7 @@ libigl contains an OpenGL viewer that can visualize surface and their properties
 
 The following code ([Example 102](102_DrawMesh/main.cpp)) is a basic skeleton that will be used over the entire tutorial. It is a standalone application that loads a mesh and visualize it.
 
-``` cpp
+```cpp
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
 
@@ -112,7 +112,7 @@ The function set_mesh assigns to the viewer the mesh that we want to plot, and t
 
 Keyboard and mouse events triggers callbacks that can be registered in the viewer. The viewer supports the following callbacks:
 
-``` cpp
+```cpp
 bool (*callback_pre_draw)(Viewer& viewer);
 bool (*callback_post_draw)(Viewer& viewer);
 bool (*callback_mouse_down)(Viewer& viewer, int button, int modifier);
@@ -125,7 +125,7 @@ bool (*callback_key_up)(Viewer& viewer, unsigned char key, int modifiers);
 
 A keyboard callback can be used to visualize multiple meshes or different stages of an algorithm, as demonstrated in [Example 103](103_Events/main.cpp). The keyboard callback changes the visualized mesh depending on the key pressed:
 
-``` cpp
+```cpp
 bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key == '1')
@@ -143,7 +143,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 ```
 and it is registered in the viewer as follows:
 
-``` cpp
+```cpp
 viewer.callback_key_down = &key_down;
 ```
 Note that the mesh is cleared before using set_mesh. This has to be called every time the number of vertices or faces of the plotted mesh changes. Every callback returns a boolean value that tells the viewer if the event has been handled by the plugin, or if the viewer should process it normally. This is useful, for example, to disable the default mouse event handling if you want to control the camera directly in your code.
@@ -153,14 +153,14 @@ The viewer can be extended using plugins, which are classes that implements all 
 ## Scalar field visualization [104]
 
 Colors and normals can be associated to both faces or normals using the set_colors function:
-``` cpp
+```cpp
 viewer.set_colors(C);
 ```
 **C** is a #C by 3 matrix with one RGB color per row, and as many rows as the number of faces **or** the number of vertices. Depending on the size of **C**, the viewer applies the color to faces or vertices.
 
 Colors are commonly used to visualize scalar functions defined on a surface using a transfer functions, that maps a scalar value between 0 and 1 to a color scale. A simple example of a scalar field defined on a surface is the z coordinate of each point. We can extract this information from our mesh by taking the first column of V (which contains the stacked z coordiantes of all the vertices), and map it to colors using the igl::jet function:
 
-``` cpp
+```cpp
 Eigen::VectorXd x = V.col(2);
 igl::jet(x,true,C);
 ```
@@ -173,19 +173,19 @@ The first row extracts the third column from V and the second calls the libigl f
 
 In addition to the surface, the viewer supports the visualization of points, lines and text label that can be very helful while developing geometric processing algorithms. These additional informations can be drawn using the following functions:
 
-``` cpp
+```cpp
 viewer.add_points(P,Eigen::RowVector3d(r,g,b));
 ```
 
 Draws a point of color r,g,b for each row of P at the coordinates specified in each row of P, which is a #P by 3 matrix.
 
-``` cpp
+```cpp
 viewer.add_edges(P1,P2,Eigen::RowVector3d(r,g,b);
 ```
 
 Draws a line for each line of P1 and P2, which connects the point in P1 to the point in P2.
 
-``` cpp
+```cpp
 viewer.add_label(p,str);
 ```
 
@@ -193,7 +193,7 @@ Draws a label containing the string str at the position p.
 
 These functions are demonstrate in [Example 105](105_Overlays/main.cpp) where the bounding box of the mesh is plotted using lines and points. The bounding box of a mesh can be found using Eigen:
 
-``` cpp
+```cpp
 Eigen::Vector3d m = V.colwise().minCoeff();
 Eigen::Vector3d M = V.colwise().maxCoeff();
 ```
@@ -205,7 +205,7 @@ Using matrices to encode the mesh and its attributes allows to write short and e
 ## Picking [106]
 
 Picking vertices and faces using the mouse is very common in geometry processing applications. While this might seem a simple operation, its implementation is quite involved. libigl contains a function that solves this problem using the [Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels) raycaster. Its usage is demonstrated in [Example 106](106_Picking/main.cpp):
-``` cpp
+```cpp
 bool hit = igl::unproject_in_mesh(
   Vector2f(x,y),
   F,

@@ -1,10 +1,14 @@
 #include "Viewer.h"
+#include <igl/get_seconds.h>
 
 #ifdef _WIN32
 #  include <windows.h>
 #  undef max
 #  undef min
 #endif
+
+// Todo: windows equivalent for `usleep`
+#include <unistd.h>
 
 #ifndef __APPLE__
 #  define GLEW_STATIC
@@ -677,6 +681,9 @@ namespace igl
     // Default point size / line width
     options.point_size = 15;
     options.line_width = 0.5f;
+    options.face_based = false;
+    options.is_animating = false;
+    options.animation_max_fps = 30.;
 
     // Temporary variables initialization
     down = false;
@@ -2456,11 +2463,25 @@ namespace igl
     // Rendering loop
     while (!glfwWindowShouldClose(window))
     {
+      double tic = get_seconds();
       draw();
 
       glfwSwapBuffers(window);
-      //glfwPollEvents();
-      glfwWaitEvents();
+      if(options.is_animating)
+      {
+        glfwPollEvents();
+        // In microseconds
+        double duration = 1000000.*(get_seconds()-tic);
+        const double min_duration = 1000000./options.animation_max_fps;
+        if(duration<min_duration)
+        {
+          // TODO: windows equivalent
+          usleep(min_duration-duration);
+        }
+      }else
+      {
+        glfwWaitEvents();
+      }
     }
 
     free_opengl();

@@ -41,21 +41,21 @@ The algorithm is divided in 3 steps:
 
 * Detection of the boundary vertices
 
-``` cpp
+```cpp
 Eigen::VectorXi bnd;
 igl::boundary_loop(V,F,bnd);
 ```
 
 * Map the boundary vertices to a circle
 
-``` cpp
+```cpp
 Eigen::MatrixXd bnd_uv;
 igl::map_vertices_to_circle(V,bnd,bnd_uv);
 ```
 
 * Computation of harmonic functions for both the u and v coordinate on the plane, using the boundary positions as boundary constraints
 
-``` cpp
+```cpp
 igl::harmonic(V,F,bnd,bnd_uv,1,V_uv);
 ```
 
@@ -93,21 +93,21 @@ where L_c is the cotangent laplacian matrix and A is a matrix such that \\( [\ma
 
 Using libigl, this matrix energy can be written using a few lines of codes. The cotangent matrix can be computed using igl::cotmatrix:
 
-``` cpp
+```cpp
 SparseMatrix<double> L;
 igl::cotmatrix(V,F,L);
 ```
 
 Note that we want to apply the laplacian matrix to the u and v coordinates at the same time, thus we need to extend the laplacian matrix taking the left Kronecker product with a 2x2 identity matrix:
 
-``` cpp
+```cpp
 SparseMatrix<double> L_flat;
 repdiag(L,2,L_flat);
 ```
 
 The area matrix is computed with igl::vector_area_matrix:
 
-``` cpp
+```cpp
 SparseMatrix<double> A;
 igl::vector_area_matrix(F,A);
 ```
@@ -146,7 +146,7 @@ The design of tangent fields is a basic tool used to design guidance fields for 
 
 In libigl, tangent unit-length vector fields are piece-wise constant on the faces of a triangle mesh, and described by one or more vectors per-face. The function
 
-``` cpp
+```cpp
 igl::nrosy(V,F,b,bc,b_soft,b_soft_weight,bc_soft,N,0.5,
            output_field,output_singularities);
 ```

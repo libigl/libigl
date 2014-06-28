@@ -733,6 +733,22 @@ igl::active_set(Q,B,b,bc,Aeq,Beq,Aieq,Bieq,lx,ux,as,Z);
 ![The example `QuadraticProgramming` uses an active set solver to optimize
 discrete biharmonic kernels at multiple scales [#rustamov_2011][].](images/cheburashka-multiscale-biharmonic-kernels.jpg)
 
+# Chapter 4: Shape Deformation
+
+## Biharmonic Deformation
+
+Biharmonic surfaces
+
+Biharmonic deformation fields
+
+k-harmonic deformation
+
+```cpp
+```
+
+![The `BiharmonicDeformation` example deforms a flat domain (left) into a bump as a
+solution to various $k$-harmonic PDEs.](images/bump-k-harmonic.jpg)
+
 [#meyer_2003]: Mark Meyer and Mathieu Desbrun and Peter Schröder and Alan H.  Barr,
 "Discrete Differential-Geometry Operators for Triangulated
 2-Manifolds," 2003.
