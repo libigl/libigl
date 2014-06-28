@@ -94,6 +94,10 @@ namespace igl
 
       // Enable per-face colors and normals
       bool face_based;
+
+      // Animation
+      bool is_animating;
+      double animation_max_fps;
     };
 
     enum DirtyFlags

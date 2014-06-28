@@ -12,17 +12,25 @@
 #include "min_quad_with_fixed.h"
 #include <Eigen/Sparse>
 
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename Derivedb,
+  typename Derivedbc,
+  typename DerivedW>
 IGL_INLINE bool igl::harmonic(
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
-  const Eigen::VectorXi & b,
-  const Eigen::MatrixXd & bc,
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::PlainObjectBase<Derivedb> & b,
+  const Eigen::PlainObjectBase<Derivedbc> & bc,
   const int k,
-  Eigen::MatrixXd & W)
+  Eigen::PlainObjectBase<DerivedW> & W)
 {
   using namespace igl;
   using namespace Eigen;
-  SparseMatrix<double> L,M,Mi;
+  typedef typename DerivedV::Scalar Scalar;
+  typedef Matrix<Scalar,Dynamic,1> VectorXS;
+  SparseMatrix<Scalar> L,M,Mi;
   cotmatrix(V,F,L);
   switch(F.cols())
   {
@@ -35,20 +43,20 @@ IGL_INLINE bool igl::harmonic(
       break;
   }
   invert_diag(M,Mi);
-  SparseMatrix<double> Q = -L;
+  SparseMatrix<Scalar> Q = -L;
   for(int p = 1;p<k;p++)
   {
     Q = (Q*Mi*-L).eval();
   }
-  const VectorXd B = VectorXd::Zero(V.rows(),1);
-  min_quad_with_fixed_data<double> data;
-  min_quad_with_fixed_precompute(Q,b,SparseMatrix<double>(),true,data);
+  const VectorXS B = VectorXS::Zero(V.rows(),1);
+  min_quad_with_fixed_data<Scalar> data;
+  min_quad_with_fixed_precompute(Q,b,SparseMatrix<Scalar>(),true,data);
   W.resize(V.rows(),bc.cols());
   for(int w = 0;w<bc.cols();w++)
   {
-    const VectorXd bcw = bc.col(w);
-    VectorXd Ww;
-    if(!min_quad_with_fixed_solve(data,B,bcw,VectorXd(),Ww))
+    const VectorXS bcw = bc.col(w);
+    VectorXS Ww;
+    if(!min_quad_with_fixed_solve(data,B,bcw,VectorXS(),Ww))
     {
       return false;
     }
@@ -56,3 +64,8 @@ IGL_INLINE bool igl::harmonic(
   }
   return true;
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instanciation
+template bool igl::harmonic<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&); 
+#endif

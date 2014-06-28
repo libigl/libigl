@@ -8,6 +8,7 @@
 #include "find.h"
 
 #include "verbose.h"
+#include <iostream>
   
 template <
   typename T, 
@@ -36,6 +37,39 @@ IGL_INLINE void igl::find(
       I(i) = it.row();
       J(i) = it.col();
       i++;
+    }
+  }
+}
+
+template <
+  typename DerivedX,
+  typename DerivedI, 
+  typename DerivedJ,
+  typename DerivedV>
+IGL_INLINE void igl::find(
+  const Eigen::PlainObjectBase<DerivedX>& X,
+  Eigen::PlainObjectBase<DerivedI> & I,
+  Eigen::PlainObjectBase<DerivedJ> & J,
+  Eigen::PlainObjectBase<DerivedV> & V)
+{
+  const int nnz = X.template cast<bool>().template cast<int>().sum();
+  I.resize(nnz,1);
+  J.resize(nnz,1);
+  V.resize(nnz,1);
+  {
+    int k = 0;
+    for(int j = 0;j<X.cols();j++)
+    {
+      for(int i = 0;i<X.rows();i++)
+      {
+        if(X(i,j))
+        {
+          I(k) = i;
+          J(k) = j;
+          V(k) = X(i,j);
+          k++;
+        }
+      }
     }
   }
 }
