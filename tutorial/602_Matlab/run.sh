@@ -7,4 +7,4 @@
 
 export DYLD_LIBRARY_PATH=/Applications/MATLAB_R2012b.app/bin/maci64/
 
-./build/602_Matlab
+./build/602_Matlab_bin

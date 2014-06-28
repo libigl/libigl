@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
   // Send Laplacian matrix to matlab
   igl::mlsetmatrix(&engine,"L",L);
 
-  // Plot the laplacian matri using matlab spy
+  // Plot the laplacian matrix using matlab spy
   igl::mleval(&engine,"spy(L)");
 
   // Extract the first 10 eigenvectors
