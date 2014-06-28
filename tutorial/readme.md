@@ -46,10 +46,11 @@ of these lecture notes links to a cross-platform example application.
     * [305 Quadratic Programming](#quadraticprogramming)
 * [Chapter 4: Shape Deformation](#chapter4:shapedeformation)
     * [401 Biharmonic Deformation](#biharmonicdeformation)
-    * [402 Bounded Biharmonic Weights](#boundedbiharmonicweights)
-    * [403 Dual Quaternion Skinning](#dualquaternionskinning)
-    * [404 As-rigid-as-possible](#as-rigid-as-possible)
-    * [405 Fast automatic skinning
+    * [402 Polyharmonic Deformation](#polyharmonicdeformation)
+    * [403 Bounded Biharmonic Weights](#boundedbiharmonicweights)
+    * [404 Dual Quaternion Skinning](#dualquaternionskinning)
+    * [405 As-rigid-as-possible](#as-rigid-as-possible)
+    * [406 Fast automatic skinning
       transformations](#fastautomaticskinningtransformations)
 
 # Chapter 2: Discrete Geometric Quantities and Operators
