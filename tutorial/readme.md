@@ -817,32 +817,52 @@ deformation field and then recover the deformed positions:
 
 ```cpp
 // U_bc contains deformation of boundary vertices b
-D_bc = U_bc - slice(V,b,1);
+D_bc = U_bc - igl::slice(V,b,1);
 igl::harmonic(V,F,b,D_bc,2,D);
 U = V+D;
 ```
 
-
+![The `BiharmonicDeformation` example deforms a statue's head as a _biharmonic
+surface_ (top) and using a _biharmonic displacements_ (bottom).](images/max-biharmonic.jpg)
 
 #### Relationship to "differential coordinates" and Laplacian surface editing
+Biharmonic functions (whether positions or displacements) are solutions to the
+bi-Laplace equation, but also minimizers of the "Laplacian energy". For
+example, for displacements $\mathbf{d}$, the energy reads
 
-k-harmonic deformation
+ $\int\limits_S \|\Delta \mathbf{d}\|^2 dA.$
+
+By linearity of the Laplace(-Beltrami) operator we can reexpress this energy in
+terms of the original positions $\mathbf{x}$ and the unknown positions
+$\mathbf{x}' = \mathbf{x} - \mathbf{d}$:
+
+ $\int\limits_S \|\Delta (\mathbf{x}' - \mathbf{x})\|^2 dA = \int\limits_S \|\Delta \mathbf{x}' - \Delta \mathbf{x})\|^2 dA.$
+
+In the early work of Sorkine et al., the quantities $\Delta \mathbf{x}'$ and
+$\Delta \mathbf{x}$ were dubbed "differential coordinates" [#sorkine_2004][].
+Their deformations (without linearized rotations) is thus equivalent to
+biharmonic deformation fields.
+
+## Polyharmonic deformation
+We can generalize biharmonic deformation by considering different powers of
+the Laplacian, resulting in a series of PDEs of the form:
+
+ $\Delta^k \mathbf{d} = 0.$
+
+with $k\in{1,2,3,\dots}$. The choice of $k$ determines the level of continuity
+at the handles. In particular, $k=1$ implies $C^0$ at the boundary, $k=2$
+implies $C^1$, $k=3$ implies $C^2$ and in general $k$ implies $C^{k-1}$.
 
 ```cpp
 int k = 2;// or 1,3,4,...
 igl::harmonic(V,F,b,bc,k,Z);
 ```
 
-![The `BiharmonicDeformation` example deforms a flat domain (left) into a bump as a
+![The `PolyharmonicDeformation` example deforms a flat domain (left) into a bump as a
 solution to various $k$-harmonic PDEs.](images/bump-k-harmonic.jpg)
 
 [#botsch_2004]: Matrio Botsch and Leif Kobbelt. "An Intuitive Framework for
 Real-Time Freeform Modeling," 2004.
-[#meyer_2003]: Mark Meyer, Mathieu Desbrun, Peter Schröder and Alan H.  Barr,
-"Discrete Differential-Geometry Operators for Triangulated
-2-Manifolds," 2003.
-[#pannozo_2010]: Daniele Pannozo, Enrico Puppo, Luigi Rocca,
-"Efficient Multi-scale Curvature and Crease Estimation," 2010.
 [#jacobson_thesis_2013]: Alec Jacobson,
 _Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
 2013.
@@ -850,4 +870,11 @@ _Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
 Zorin. "Mixed Finite Elements for Variational Surface Modeling," 2010.
 [#kazhdan_2012]: Michael Kazhdan, Jake Solomon, Mirela Ben-Chen,
 "Can Mean-Curvature Flow Be Made Non-Singular," 2012.
+[#meyer_2003]: Mark Meyer, Mathieu Desbrun, Peter Schröder and Alan H.  Barr,
+"Discrete Differential-Geometry Operators for Triangulated
+2-Manifolds," 2003.
+[#pannozo_2010]: Daniele Pannozo, Enrico Puppo, Luigi Rocca,
+"Efficient Multi-scale Curvature and Crease Estimation," 2010.
 [#rustamov_2011]: Raid M. Rustamov, "Multiscale Biharmonic Kernels", 2011.
+[#sorkine_2004]: Olga Sorkine, Yaron Lipman, Daniel Cohen-Or, Marc Alexa,
+Christian Rössl and Hans-Peter Seidel. "Laplacian Surface Editing," 2004.
