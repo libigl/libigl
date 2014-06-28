@@ -151,7 +151,7 @@ igl::nrosy(V,F,b,bc,b_soft,b_soft_weight,bc_soft,N,0.5,
            output_field,output_singularities);
 ```
 
-creates a smooth vector field (N=1) starting from a sparse set of constrained faces, whose indices are listed in b and their constrained value is specified in bc. The functions supports soft_constraints (b_soft,b_soft_weight,bc_soft), and returns the interpolated field for each face of the triangle mesh (output_field) plus the singularities of the field (output_field).
+creates a smooth vector field (N=1) starting from a sparse set of constrained faces, whose indices are listed in b and their constrained value is specified in bc. The functions supports soft_constraints (b_soft,b_soft_weight,bc_soft), and returns the interpolated field for each face of the triangle mesh (output_field) plus the singularities of the field (output_singularities).
 
 ![Design of a unit-lenght vector field](images/504_vector_field.png)
 
@@ -175,7 +175,7 @@ SIGGRAPH 2009
 
 The previous parametrization methods where focusing on generating parametrization of single patches, mainly aimed at texture mapping and baking of other surface properties like normals high-frequency details. Global, seamless parametrization aims at parametrizing complex shapes with a parametrization that is aligned with a given set of directions for the purpose of remeshing the surface. In libigl, we provide a reference  implementation of the pipeline of the  [MIQ](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf) paper.
 
-## Gradient field design (up to rotation and trianslation) [505]
+### Global, seamless integer-grid parametrization [505]
 
 The first step involves the design of a 4-RoSy field (sometimes called cross field) that describes how the edges of the final quad remeshing should align. The field constraints are usually manually specified or extracted from curvature. In this example, we simply fix one face in a random direction.
 
