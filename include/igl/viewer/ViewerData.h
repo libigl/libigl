@@ -1,3 +1,11 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
+
 #ifndef IGL_VIEWER_DATA_H
 #define IGL_VIEWER_DATA_H
 
@@ -7,17 +15,16 @@
 namespace igl
 {
 
+// Store the data visualized by ViewerCore
+// TODO: write documentation
+
 class ViewerData
 #ifdef ENABLE_XML_SERIALIZATION
 : public ::igl::XMLSerialization
 #endif
 {
 public:
-  ViewerData()
-  #ifdef ENABLE_XML_SERIALIZATION
-  : XMLSerialization("Data"), dirty(DIRTY_ALL)
-  #endif
-  {clear();};
+  ViewerData();
 
   enum DirtyFlags
   {
@@ -36,8 +43,6 @@ public:
     DIRTY_ALL            = 0x03FF
   };
 
-  // Helpers functions to fill the fields
-
   // Empy all fields
   IGL_INLINE void clear();
 
@@ -48,6 +53,7 @@ public:
   IGL_INLINE void set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
   IGL_INLINE void set_vertices(const Eigen::MatrixXd& V);
   IGL_INLINE void set_normals(const Eigen::MatrixXd& N);
+
   // Set the color of the mesh
   //
   // Inputs:
@@ -72,14 +78,16 @@ public:
   IGL_INLINE void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
   IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str);
 
-  // More helpers
+  // Computes the normals of the mesh
+  IGL_INLINE void compute_normals();
 
-  IGL_INLINE void compute_normals(); // Computes the normals of the mesh
-  IGL_INLINE void uniform_colors(Eigen::Vector3d ambient, Eigen::Vector3d diffuse, Eigen::Vector3d specular); // assign uniform colors to all faces/vertices
-  IGL_INLINE void grid_texture(); // Generate a default grid texture
+  // Assigns uniform colors to all faces/vertices
+  IGL_INLINE void uniform_colors(Eigen::Vector3d ambient, Eigen::Vector3d diffuse, Eigen::Vector3d specular);
 
+  // Generates a default grid texture
+  IGL_INLINE void grid_texture();
 
-
+  // Serialization code
   IGL_INLINE void InitSerialization();
 
   Eigen::MatrixXd V; // Vertices of the current mesh (#V x 3)

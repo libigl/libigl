@@ -1,4 +1,10 @@
-// Main class of the Viewer
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
 
 #ifndef IGL_VIEWER_H
 #define IGL_VIEWER_H
@@ -28,7 +34,7 @@
 
 namespace igl
 {
-
+  // GLFW-based mesh viewer
   class Viewer
   {
   public:
@@ -67,17 +73,14 @@ namespace igl
     // Keep track of the global position of the scrollwheel
     float scroll_position;
 
-    // Wrapper for ViewerData::compute_normals()
-    void compute_normals();
-
+    // Wrappers for ViewerCore functions
     void align_camera_center();
 
-    void clear();      // Clear the mesh data
+    // Wrappers for ViewerData functions
 
-    // Change the visualization mode, invalidating the cache if necessary
+    void clear();
+    void compute_normals();
     void set_face_based(bool newvalue);
-
-    // Helpers that can draw the most common meshes
     void set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
     void set_vertices(const Eigen::MatrixXd& V);
     void set_normals(const Eigen::MatrixXd& N);
@@ -94,8 +97,6 @@ namespace igl
     void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
     void add_label (const Eigen::VectorXd& P,  const std::string& str);
 
-
-//    Eigen::Vector4f viewport;
 
     // UI Enumerations
     enum MouseButton {IGL_LEFT, IGL_MIDDLE, IGL_RIGHT};

@@ -1,3 +1,11 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
+
 #ifndef IGL_VIEWER_CORE_H
 #define IGL_VIEWER_CORE_H
 
@@ -9,6 +17,9 @@
 namespace igl
 {
 
+// Basic class of the 3D mesh viewer
+// TODO: write documentation
+
 class ViewerCore
 #ifdef ENABLE_XML_SERIALIZATION
 : public ::igl::XMLSerialization
@@ -17,13 +28,20 @@ class ViewerCore
 public:
   IGL_INLINE ViewerCore();
 
+  // Initialization
   IGL_INLINE void init();
+
+  // Shutdown
   IGL_INLINE void shut();
 
-
+  // Serialization code
   IGL_INLINE void InitSerialization();
 
-  IGL_INLINE void align_camera_center(const Eigen::MatrixXd& V); // Adjust the view to see the entire model
+
+  // ------------------- Camera control functions
+
+  // Adjust the view to see the entire model
+  IGL_INLINE void align_camera_center(const Eigen::MatrixXd& V);
 
   // Determines how much to zoom and shift such that the mesh fills the unit
   // box (centered at the origin)
@@ -32,11 +50,17 @@ public:
     float & zoom,
     Eigen::Vector3f& shift);
 
+  // ------------------- Drawing functions
+
+  // Clear the frame buffers
   IGL_INLINE void clear_framebuffers();
 
   // Draw everything
   IGL_INLINE void draw(ViewerData& data, OpenGL_state& opengl);
 
+  // ------------------- Properties
+
+  // Text rendering helper
   TextRenderer textrenderer;
 
   // Shape material
@@ -92,7 +116,7 @@ public:
   // Caches the two-norm between the min/max point of the bounding box
   float object_scale;
 
-  // Window size
+  // Viewport size
   Eigen::Vector4f viewport;
 
   // Save the OpenGL transformation matrices used for the previous rendering pass
