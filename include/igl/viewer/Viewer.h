@@ -24,6 +24,7 @@
 #include <igl/viewer/ViewerData.h>
 #include <igl/viewer/OpenGL_state.h>
 #include <igl/viewer/ViewerPlugin.h>
+#include <igl/viewer/ViewerCore.h>
 
 namespace igl
 {
@@ -35,72 +36,8 @@ namespace igl
     int launch(std::string filename = "");
     void init();
 
-    class Options
-    #ifdef ENABLE_XML_SERIALIZATION
-    : public ::igl::XMLSerialization
-    #endif
-    {
-    public:
-      Options()
-      #ifdef ENABLE_XML_SERIALIZATION
-      : XMLSerialization("Options")
-      #endif
-      {};
-      void InitSerialization();
-
-      // Shape material
-      float shininess;
-
-      // Colors
-      Eigen::Vector3f background_color;
-      Eigen::Vector3f line_color;
-
-      // Lighting
-      Eigen::Vector3f light_position;
-      float lighting_factor;
-
-      // Trackball angle (quaternion)
-      Eigen::Vector4f trackball_angle;
-
-      // Model viewing parameters
-      float model_zoom;
-      Eigen::Vector3f model_translation;
-
-      // Model viewing paramters (uv coordinates)
-      float model_zoom_uv;
-      Eigen::Vector3f model_translation_uv;
-
-      // Camera parameters
-      float camera_zoom;
-      bool orthographic;
-      Eigen::Vector3f camera_eye;
-      Eigen::Vector3f camera_up;
-      Eigen::Vector3f camera_center;
-      float camera_view_angle;
-      float camera_dnear;
-      float camera_dfar;
-
-      // Visualization options
-      bool show_overlay;
-      bool show_overlay_depth;
-      bool show_texture;
-      bool show_faces;
-      bool show_lines;
-      bool show_vertid;
-      bool show_faceid;
-      bool invert_normals;
-
-      // Point size / line width
-      float point_size;
-      float line_width;
-
-      // Animation
-      bool is_animating;
-      double animation_max_fps;
-    };
-
     // Stores all the viewing options
-    Options options;
+    igl::ViewerCore options;
 
     // Stores all the data that should be visualized
     igl::ViewerData data;
@@ -127,16 +64,11 @@ namespace igl
     // Anttweak bar
     TwBar* bar;
 
-    // Window size
-    int width;
-    int height;
-
     // Keep track of the global position of the scrollwheel
     float scroll_position;
 
-    void align_camera_center(); // Adjust the view to see the entire model
+    // Wrapper for ViewerData::compute_normals()
     void compute_normals();
-
 
     void clear();      // Clear the mesh data
 
@@ -147,10 +79,6 @@ namespace igl
     void set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
     void set_vertices(const Eigen::MatrixXd& V);
     void set_normals(const Eigen::MatrixXd& N);
-    // Set the color of the mesh
-    //
-    // Inputs:
-    //   C  #V|#F|1 by 3 list of colors
     void set_colors(const Eigen::MatrixXd &C);
     void set_uv(const Eigen::MatrixXd& UV);
     void set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
@@ -160,23 +88,12 @@ namespace igl
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B);
 
     void add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
-    // Sets edges given a list of edge vertices and edge indices. In constrast
-    // to `add_edges` this will (purposefully) clober existing edges.
-    //
-    // Inputs:
-    //   P  #P by 3 list of vertex positions
-    //   E  #E by 2 list of edge indices into P
-    //   C  #E|1 by 3 color(s)
     void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C);
     void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
     void add_label (const Eigen::VectorXd& P,  const std::string& str);
 
-    // Save the OpenGL transformation matrices used for the previous rendering pass
-    Eigen::Matrix4f view;
-    Eigen::Matrix4f model;
-    Eigen::Matrix4f proj;
 
-    Eigen::Vector4f viewport;
+//    Eigen::Vector4f viewport;
 
     // UI Enumerations
     enum MouseButton {IGL_LEFT, IGL_MIDDLE, IGL_RIGHT};
@@ -203,14 +120,6 @@ namespace igl
     // Scene IO
     bool load_scene();
     bool save_scene();
-
-    // Determines how much to zoom and shift such that the mesh fills the unit
-    // box (centered at the origin)
-    static void get_scale_and_shift_to_fit_mesh(
-      const Eigen::MatrixXd& V,
-      const Eigen::MatrixXi& F,
-      float & zoom,
-      Eigen::Vector3f& shift);
 
     // Draw everything
     void draw();

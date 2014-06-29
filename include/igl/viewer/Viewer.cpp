@@ -40,90 +40,6 @@
 #include <algorithm>
 #include <igl/project.h>
 
-Eigen::Matrix4f lookAt (
-                        const Eigen::Vector3f& eye,
-                        const Eigen::Vector3f& center,
-                        const Eigen::Vector3f& up)
-{
-  Eigen::Vector3f f = (center - eye).normalized();
-  Eigen::Vector3f s = f.cross(up).normalized();
-  Eigen::Vector3f u = s.cross(f);
-
-  Eigen::Matrix4f Result = Eigen::Matrix4f::Identity();
-  Result(0,0) = s(0);
-  Result(0,1) = s(1);
-  Result(0,2) = s(2);
-  Result(1,0) = u(0);
-  Result(1,1) = u(1);
-  Result(1,2) = u(2);
-  Result(2,0) =-f(0);
-  Result(2,1) =-f(1);
-  Result(2,2) =-f(2);
-  Result(0,3) =-s.transpose() * eye;
-  Result(1,3) =-u.transpose() * eye;
-  Result(2,3) = f.transpose() * eye;
-  return Result;
-}
-
-Eigen::Matrix4f ortho (
-                       const float left,
-                       const float right,
-                       const float bottom,
-                       const float top,
-                       const float zNear,
-                       const float zFar
-                       )
-{
-  Eigen::Matrix4f Result = Eigen::Matrix4f::Identity();
-  Result(0,0) = 2.0f / (right - left);
-  Result(1,1) = 2.0f / (top - bottom);
-  Result(2,2) = - 2.0f / (zFar - zNear);
-  Result(0,3) = - (right + left) / (right - left);
-  Result(1,3) = - (top + bottom) / (top - bottom);
-  Result(2,3) = - (zFar + zNear) / (zFar - zNear);
-  return Result;
-}
-
-Eigen::Matrix4f frustum (
-                         const float left,
-                         const float right,
-                         const float bottom,
-                         const float top,
-                         const float nearVal,
-                         const float farVal)
-{
-  Eigen::Matrix4f Result = Eigen::Matrix4f::Zero();
-  Result(0,0) = (2.0f * nearVal) / (right - left);
-  Result(1,1) = (2.0f * nearVal) / (top - bottom);
-  Result(0,2) = (right + left) / (right - left);
-  Result(1,2) = (top + bottom) / (top - bottom);
-  Result(2,2) = -(farVal + nearVal) / (farVal - nearVal);
-  Result(3,2) = -1.0f;
-  Result(2,3) = -(2.0f * farVal * nearVal) / (farVal - nearVal);
-  return Result;
-}
-
-Eigen::Matrix4f scale (const Eigen::Matrix4f& m,
-                       const Eigen::Vector3f& v)
-{
-  Eigen::Matrix4f Result;
-  Result.col(0) = m.col(0).array() * v(0);
-  Result.col(1) = m.col(1).array() * v(1);
-  Result.col(2) = m.col(2).array() * v(2);
-  Result.col(3) = m.col(3);
-  return Result;
-}
-
-Eigen::Matrix4f translate(
-                          const Eigen::Matrix4f& m,
-                          const Eigen::Vector3f& v)
-{
-  Eigen::Matrix4f Result = m;
-  Result.col(3) = m.col(0).array() * v(0) + m.col(1).array() * v(1) + m.col(2).array() * v(2) + m.col(3).array();
-  return Result;
-}
-
-
 #include <limits>
 #include <cassert>
 
@@ -139,7 +55,6 @@ Eigen::Matrix4f translate(
 #include <igl/massmatrix.h>
 #include <igl/file_dialog_open.h>
 #include <igl/file_dialog_save.h>
-#include <igl/quat_to_mat.h>
 #include <igl/quat_mult.h>
 #include <igl/axis_angle_to_quat.h>
 #include <igl/trackball.h>
@@ -152,8 +67,6 @@ static igl::Viewer * __viewer;
 static double highdpi = 1;
 static double scroll_x = 0;
 static double scroll_y = 0;
-
-static igl::TextRenderer __font_renderer;
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
@@ -481,57 +394,12 @@ namespace igl
                " label='Show Faces Labels' key='CTRL+;' help='Toggle face"
                " indices'");
 
-    __font_renderer.Init();
-
+    options.init();
     init_plugins();
   }
 
   Viewer::Viewer()
   {
-    // Default shininess
-    options.shininess = 35.0f;
-
-    // Default colors
-    options.background_color << 0.3f, 0.3f, 0.5f;
-    options.line_color << 0.0f, 0.0f, 0.0f;
-
-    // Default lights settings
-    options.light_position << 0.0f, -0.30f, -5.0f;
-    options.lighting_factor = 1.0f; //on
-
-    // Default trackball
-    options.trackball_angle << 0.0f, 0.0f, 0.0f, 1.0f;
-
-    // Defalut model viewing parameters
-    options.model_zoom = 1.0f;
-    options.model_translation << 0,0,0;
-
-    // Camera parameters
-    options.camera_zoom = 1.0f;
-    options.orthographic = false;
-    options.camera_view_angle = 45.0;
-    options.camera_dnear = 1.0;
-    options.camera_dfar = 100.0;
-    options.camera_eye << 0, 0, 5;
-    options.camera_center << 0, 0, 0;
-    options.camera_up << 0, 1, 0;
-
-    // Default visualization options
-    options.show_faces = true;
-    options.show_lines = true;
-    options.invert_normals = false;
-    options.show_overlay = true;
-    options.show_overlay_depth = true;
-    options.show_vertid = false;
-    options.show_faceid = false;
-    options.show_texture = false;
-
-    // Default point size / line width
-    options.point_size = 15;
-    options.line_width = 0.5f;
-    data.face_based = false;
-    options.is_animating = false;
-    options.animation_max_fps = 30.;
 
     // Temporary variables initialization
     down = false;
@@ -559,6 +427,7 @@ namespace igl
     callback_mouse_scroll  = 0;
     callback_key_down      = 0;
     callback_key_up        = 0;
+
   }
 
   void Viewer::init_plugins()
@@ -628,7 +497,7 @@ namespace igl
     if (data.V_uv.rows() == 0)
       data.grid_texture();
 
-    align_camera_center();
+    options.align_camera_center(data.V);
 
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->post_load())
@@ -750,7 +619,7 @@ namespace igl
     else
       center = data.V.colwise().sum()/data.V.rows();
 
-    Eigen::Vector3f coord = igl::project(Eigen::Vector3f(center(0),center(1),center(2)), view * model, proj, viewport);
+    Eigen::Vector3f coord = igl::project(Eigen::Vector3f(center(0),center(1),center(2)), options.view * options.model, options.proj, options.viewport);
     down_mouse_z = coord[2];
     down_rotation = options.trackball_angle;
 
@@ -816,8 +685,8 @@ namespace igl
       {
         case ROTATION :
         {
-          igl::trackball(width,
-                         height,
+          igl::trackball(options.viewport(2),
+                         options.viewport(3),
                          2.0f,
                          down_rotation.data(),
                          down_mouse_x,
@@ -833,8 +702,8 @@ namespace igl
         case TRANSLATE:
         {
           //translation
-          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, viewport[3] - mouse_y, down_mouse_z), view * model, proj, viewport);
-          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, viewport[3] - down_mouse_y, down_mouse_z), view * model, proj, viewport);
+          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, options.viewport[3] - mouse_y, down_mouse_z), options.view * options.model, options.proj, options.viewport);
+          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, options.viewport[3] - down_mouse_y, down_mouse_z), options.view * options.model, options.proj, options.viewport);
 
           Eigen::Vector3f diff = pos1 - pos0;
           options.model_translation = down_translation + Eigen::Vector3f(diff[0],diff[1],diff[2]);
@@ -884,13 +753,8 @@ namespace igl
   {
     using namespace std;
     using namespace Eigen;
-    glClearColor(options.background_color[0],
-                 options.background_color[1],
-                 options.background_color[2],
-                 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glEnable(GL_DEPTH_TEST);
+    options.clear_framebuffers();
 
     if (callback_pre_draw)
       if (callback_pre_draw(*this))
@@ -900,170 +764,7 @@ namespace igl
       if (plugins[i]->pre_draw())
         return;
 
-    /* Bind and potentially refresh mesh/line/point data */
-    if (data.dirty)
-    {
-      opengl.set_data(data, options.invert_normals);
-      data.dirty = ViewerData::DIRTY_NONE;
-    }
-    opengl.bind_mesh();
-
-    // Initialize uniform
-    glViewport(0, 0, width, height);
-
-    model = Eigen::Matrix4f::Identity();
-    view  = Eigen::Matrix4f::Identity();
-    proj  = Eigen::Matrix4f::Identity();
-
-    // Set view
-    view = lookAt(Eigen::Vector3f(options.camera_eye[0], options.camera_eye[1], options.camera_eye[2]),
-                  Eigen::Vector3f(options.camera_center[0], options.camera_center[1], options.camera_center[2]),
-                  Eigen::Vector3f(options.camera_up[0], options.camera_up[1], options.camera_up[2]));
-
-    // Set projection
-    if (options.orthographic)
-    {
-      float length = (options.camera_eye - options.camera_center).norm();
-      float h = tan(options.camera_view_angle/360.0 * M_PI) * (length);
-      proj = ortho(-h*width/height, h*width/height, -h, h, options.camera_dnear, options.camera_dfar);
-    }
-    else
-    {
-      float fH = tan(options.camera_view_angle / 360.0 * M_PI) * options.camera_dnear;
-      float fW = fH * (double)width/(double)height;
-      proj = frustum(-fW, fW, -fH, fH, options.camera_dnear, options.camera_dfar);
-    }
-    // end projection
-
-    // Set model transformation
-    float mat[16];
-    igl::quat_to_mat(options.trackball_angle.data(), mat);
-
-    for (unsigned i=0;i<4;++i)
-      for (unsigned j=0;j<4;++j)
-        model(i,j) = mat[i+4*j];
-
-    model = scale(model, Eigen::Vector3f(options.camera_zoom,options.camera_zoom,options.camera_zoom));
-    model = scale(model, Eigen::Vector3f(options.model_zoom,options.model_zoom,options.model_zoom));
-    model = translate(model, Eigen::Vector3f(options.model_translation[0],options.model_translation[1],options.model_translation[2]));
-
-    // Send transformations to the GPU
-    GLint modeli = opengl.shader_mesh.uniform("model");
-    GLint viewi  = opengl.shader_mesh.uniform("view");
-    GLint proji  = opengl.shader_mesh.uniform("proj");
-    glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
-    glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
-    glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
-
-    // Light parameters
-    GLint specular_exponenti    = opengl.shader_mesh.uniform("specular_exponent");
-    GLint light_position_worldi = opengl.shader_mesh.uniform("light_position_world");
-    GLint lighting_factori      = opengl.shader_mesh.uniform("lighting_factor");
-    GLint fixed_colori          = opengl.shader_mesh.uniform("fixed_color");
-    GLint texture_factori       = opengl.shader_mesh.uniform("texture_factor");
-
-    glUniform1f(specular_exponenti, options.shininess);
-    Vector3f rev_light = -1.*options.light_position;
-    glUniform3fv(light_position_worldi, 1, rev_light.data());
-    glUniform1f(lighting_factori, options.lighting_factor); // enables lighting
-    glUniform4f(fixed_colori, 0.0, 0.0, 0.0, 0.0);
-
-    if (data.V.rows()>0)
-    {
-      // Render fill
-      if (options.show_faces)
-      {
-        // Texture
-        glUniform1f(texture_factori, options.show_texture ? 1.0f : 0.0f);
-        opengl.draw_mesh(true);
-        glUniform1f(texture_factori, 0.0f);
-      }
-
-      // Render wireframe
-      if (options.show_lines)
-      {
-        glLineWidth(options.line_width);
-        glUniform4f(fixed_colori, options.line_color[0], options.line_color[1],
-          options.line_color[2], 1.0f);
-        opengl.draw_mesh(false);
-        glUniform4f(fixed_colori, 0.0f, 0.0f, 0.0f, 0.0f);
-      }
-
-      if (options.show_vertid)
-      {
-        __font_renderer.BeginDraw(view*model, proj, viewport, data.object_scale);
-        for (int i=0; i<data.V.rows(); ++i)
-          __font_renderer.DrawText(data.V.row(i), data.V_normals.row(i), to_string(i));
-        __font_renderer.EndDraw();
-      }
-
-      if (options.show_faceid)
-      {
-        __font_renderer.BeginDraw(view*model, proj, viewport, data.object_scale);
-
-        for (int i=0; i<data.F.rows(); ++i)
-        {
-          Eigen::RowVector3d p = Eigen::RowVector3d::Zero();
-          for (int j=0;j<data.F.cols();++j)
-            p += data.V.row(data.F(i,j));
-          p /= data.F.cols();
-
-          __font_renderer.DrawText(p, data.F_normals.row(i), to_string(i));
-        }
-        __font_renderer.EndDraw();
-      }
-    }
-
-    if (options.show_overlay)
-    {
-      if (options.show_overlay_depth)
-        glEnable(GL_DEPTH_TEST);
-      else
-        glDisable(GL_DEPTH_TEST);
-
-      if (data.lines.rows() > 0)
-      {
-        opengl.bind_overlay_lines();
-        modeli = opengl.shader_overlay_lines.uniform("model");
-        viewi  = opengl.shader_overlay_lines.uniform("view");
-        proji  = opengl.shader_overlay_lines.uniform("proj");
-
-        glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
-        glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
-        glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
-        // This must be enabled, otherwise glLineWidth has no effect
-        glEnable(GL_LINE_SMOOTH);
-        glLineWidth(options.line_width);
-
-        opengl.draw_overlay_lines();
-      }
-
-      if (data.points.rows() > 0)
-      {
-        opengl.bind_overlay_points();
-        modeli = opengl.shader_overlay_points.uniform("model");
-        viewi  = opengl.shader_overlay_points.uniform("view");
-        proji  = opengl.shader_overlay_points.uniform("proj");
-
-        glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
-        glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
-        glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
-        glPointSize(options.point_size);
-
-        opengl.draw_overlay_points();
-      }
-
-      if (data.labels_positions.rows() > 0)
-      {
-        __font_renderer.BeginDraw(view*model, proj, viewport, data.object_scale);
-        for (int i=0; i<data.labels_positions.rows(); ++i)
-          __font_renderer.DrawText(data.labels_positions.row(i), Eigen::Vector3d(0.0,0.0,0.0),
-              data.labels_strings[i]);
-        __font_renderer.EndDraw();
-      }
-
-      glEnable(GL_DEPTH_TEST);
-    }
+    options.draw(data,opengl);
 
     if (callback_post_draw)
       if (callback_post_draw(*this))
@@ -1118,40 +819,9 @@ namespace igl
     return true;
   }
 
-  void Viewer::align_camera_center()
-  {
-    get_scale_and_shift_to_fit_mesh(data.V,data.F,options.model_zoom,options.model_translation);
-    data.object_scale = (data.V.colwise().maxCoeff() - data.V.colwise().minCoeff()).norm();
-  }
-
   void Viewer::resize(int w, int h)
   {
-    width = w;
-    height = h;
-    viewport = Eigen::Vector4f(0,0,width,height);
-  }
-
-  void Viewer::get_scale_and_shift_to_fit_mesh(
-    const Eigen::MatrixXd& V,
-    const Eigen::MatrixXi& F,
-    float& zoom,
-    Eigen::Vector3f& shift)
-  {
-    if (V.rows() == 0)
-      return;
-    //Compute mesh centroid
-    Eigen::SparseMatrix<double> M;
-    igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_VORONOI,M);
-    const auto & MV = M*V;
-    Eigen::RowVector3d centroid  = MV.colwise().sum()/M.diagonal().sum();
-    Eigen::RowVector3d min_point = V.colwise().minCoeff();
-    Eigen::RowVector3d max_point = V.colwise().maxCoeff();
-
-    shift = -centroid.cast<float>();
-    double x_scale = fabs(max_point[0] - min_point[0]);
-    double y_scale = fabs(max_point[1] - min_point[1]);
-    double z_scale = fabs(max_point[2] - min_point[2]);
-    zoom = 2.0/ std::max(z_scale,std::max(x_scale,y_scale));
+    options.viewport = Eigen::Vector4f(0,0,w,h);
   }
 
   void TW_CALL Viewer::snap_to_canonical_quaternion_cb(void *clientData)
@@ -1161,7 +831,7 @@ namespace igl
   }
   void TW_CALL Viewer::align_camera_center_cb(void *clientData)
   {
-    static_cast<Viewer *>(clientData)->align_camera_center();
+    static_cast<Viewer *>(clientData)->options.align_camera_center(static_cast<Viewer *>(clientData)->data.V);
   }
 
   void TW_CALL Viewer::save_scene_cb(void *clientData)
@@ -1207,42 +877,6 @@ namespace igl
     static_cast<Viewer *>(clientData)->load_mesh_from_file(fname.c_str());
   }
 
-  // Serialization
-  void Viewer::Options::InitSerialization()
-  {
-    #ifdef ENABLE_XML_SERIALIZATION
-    xmlSerializer->Add(shininess, "shininess");
-    xmlSerializer->Add(background_color, "background_color");
-    xmlSerializer->Add(line_color, "line_color");
-    xmlSerializer->Add(light_position, "light_position");
-    xmlSerializer->Add(lighting_factor, "lighting_factor");
-    xmlSerializer->Add(trackball_angle, "trackball_angle");
-    xmlSerializer->Add(model_zoom, "model_zoom");
-    xmlSerializer->Add(model_translation, "model_translation");
-    xmlSerializer->Add(model_zoom_uv, "model_zoom_uv");
-    xmlSerializer->Add(model_translation_uv, "model_translation_uv");
-    xmlSerializer->Add(camera_zoom, "camera_zoom");
-    xmlSerializer->Add(orthographic, "orthographic");
-    xmlSerializer->Add(camera_eye, "camera_eye");
-    xmlSerializer->Add(camera_up, "camera_up");
-    xmlSerializer->Add(camera_center, "camera_center");
-    xmlSerializer->Add(camera_view_angle, "camera_view_angle");
-    xmlSerializer->Add(camera_dnear, "camera_dnear");
-    xmlSerializer->Add(camera_dfar, "camera_dfar");
-    xmlSerializer->Add(show_overlay, "show_overlay");
-    xmlSerializer->Add(show_overlay_depth, "show_overlay_depth");
-    xmlSerializer->Add(show_texture, "show_texture");
-    xmlSerializer->Add(show_faces, "show_faces");
-    xmlSerializer->Add(show_lines, "show_lines");
-    xmlSerializer->Add(show_vertid, "show_vertid");
-    xmlSerializer->Add(show_faceid, "show_faceid");
-    xmlSerializer->Add(point_size, "point_size");
-    xmlSerializer->Add(line_width, "line_width");
-    xmlSerializer->Add(invert_normals, "invert_normals");
-    xmlSerializer->Add(face_based, "face_based");
-    #endif
-  }
-
   void Viewer::set_face_based(bool newvalue)
   {
     data.set_face_based(newvalue);
@@ -1257,7 +891,7 @@ namespace igl
   void Viewer::set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
   {
     data.set_mesh(V,F);
-    align_camera_center();
+    options.align_camera_center(V);
   }
 
   void Viewer::set_vertices(const Eigen::MatrixXd& V)
@@ -1417,7 +1051,7 @@ namespace igl
     }
 
     opengl.free();
-    __font_renderer.Shut();
+    options.shut();
 
     shutdown_plugins();
 
