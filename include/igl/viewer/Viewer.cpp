@@ -133,9 +133,6 @@ Eigen::Matrix4f translate(
 
 #include <igl/readOBJ.h>
 #include <igl/readOFF.h>
-#include <igl/per_face_normals.h>
-#include <igl/per_vertex_normals.h>
-#include <igl/per_corner_normals.h>
 #include <igl/adjacency_list.h>
 #include <igl/writeOBJ.h>
 #include <igl/writeOFF.h>
@@ -532,7 +529,7 @@ namespace igl
     // Default point size / line width
     options.point_size = 15;
     options.line_width = 0.5f;
-    options.face_based = false;
+    data.face_based = false;
     options.is_animating = false;
     options.animation_max_fps = 30.;
 
@@ -590,7 +587,7 @@ namespace igl
       if (plugins[i]->load(mesh_file_name_string))
         return true;
 
-    clear_mesh();
+    data.clear();
 
     size_t last_dot = mesh_file_name_string.rfind('.');
     if (last_dot == std::string::npos)
@@ -624,12 +621,12 @@ namespace igl
       return false;
     }
 
-    compute_normals();
-    uniform_colors(Eigen::Vector3d(51.0/255.0,43.0/255.0,33.3/255.0),
+    data.compute_normals();
+    data.uniform_colors(Eigen::Vector3d(51.0/255.0,43.0/255.0,33.3/255.0),
                    Eigen::Vector3d(255.0/255.0,228.0/255.0,58.0/255.0),
                    Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
     if (data.V_uv.rows() == 0)
-      grid_texture();
+      data.grid_texture();
 
     align_camera_center();
 
@@ -638,70 +635,6 @@ namespace igl
         return true;
 
     return true;
-  }
-
-  void Viewer::compute_normals()
-  {
-    igl::per_face_normals(data.V, data.F, data.F_normals);
-    igl::per_vertex_normals(data.V, data.F, data.F_normals, data.V_normals);
-    data.dirty |= OpenGL_state::DIRTY_NORMAL;
-  }
-
-  void Viewer::uniform_colors(Eigen::Vector3d ambient, Eigen::Vector3d diffuse, Eigen::Vector3d specular)
-  {
-    data.V_material_ambient.resize(data.V.rows(),3);
-    data.V_material_diffuse.resize(data.V.rows(),3);
-    data.V_material_specular.resize(data.V.rows(),3);
-
-    for (unsigned i=0; i<data.V.rows();++i)
-    {
-      data.V_material_ambient.row(i) = ambient;
-      data.V_material_diffuse.row(i) = diffuse;
-      data.V_material_specular.row(i) = specular;
-    }
-
-    data.F_material_ambient.resize(data.F.rows(),3);
-    data.F_material_diffuse.resize(data.F.rows(),3);
-    data.F_material_specular.resize(data.F.rows(),3);
-
-    for (unsigned i=0; i<data.F.rows();++i)
-    {
-      data.F_material_ambient.row(i) = ambient;
-      data.F_material_diffuse.row(i) = diffuse;
-      data.F_material_specular.row(i) = specular;
-    }
-    data.dirty |= OpenGL_state::DIRTY_SPECULAR | OpenGL_state::DIRTY_DIFFUSE | OpenGL_state::DIRTY_AMBIENT;
-  }
-
-  void Viewer::grid_texture()
-  {
-    if (data.V_uv.rows() == 0)
-    {
-      data.V_uv = data.V.block(0, 0, data.V.rows(), 2);
-      data.V_uv.col(0) = data.V_uv.col(0).array() - data.V_uv.col(0).minCoeff();
-      data.V_uv.col(0) = data.V_uv.col(0).array() / data.V_uv.col(0).maxCoeff();
-      data.V_uv.col(1) = data.V_uv.col(1).array() - data.V_uv.col(1).minCoeff();
-      data.V_uv.col(1) = data.V_uv.col(1).array() / data.V_uv.col(1).maxCoeff();
-      data.V_uv = data.V_uv.array() * 10;
-      data.dirty |= OpenGL_state::DIRTY_TEXTURE;
-    }
-
-    unsigned size = 128;
-    unsigned size2 = size/2;
-    data.texture_R.resize(size, size);
-    for (unsigned i=0; i<size; ++i)
-    {
-      for (unsigned j=0; j<size; ++j)
-      {
-        data.texture_R(i,j) = 0;
-        if ((i<size2 && j<size2) || (i>=size2 && j>=size2))
-          data.texture_R(i,j) = 255;
-      }
-    }
-
-    data.texture_G = data.texture_R;
-    data.texture_B = data.texture_R;
-    data.dirty |= OpenGL_state::DIRTY_TEXTURE;
   }
 
   bool Viewer::save_mesh_to_file(const char* mesh_file_name)
@@ -745,29 +678,9 @@ namespace igl
     return true;
   }
 
-  void Viewer::clear_mesh()
+  void Viewer::clear()
   {
-    data.V                       = Eigen::MatrixXd (0,3);
-    data.F                       = Eigen::MatrixXi (0,3);
-
-    data.F_material_ambient      = Eigen::MatrixXd (0,3);
-    data.F_material_diffuse      = Eigen::MatrixXd (0,3);
-    data.F_material_specular     = Eigen::MatrixXd (0,3);
-
-    data.V_material_ambient      = Eigen::MatrixXd (0,3);
-    data.V_material_diffuse      = Eigen::MatrixXd (0,3);
-    data.V_material_specular     = Eigen::MatrixXd (0,3);
-
-    data.F_normals               = Eigen::MatrixXd (0,3);
-    data.V_normals               = Eigen::MatrixXd (0,3);
-
-    data.V_uv                    = Eigen::MatrixXd (0,2);
-    data.F_uv                    = Eigen::MatrixXi (0,3);
-
-    data.lines                   = Eigen::MatrixXd (0,9);
-    data.points                  = Eigen::MatrixXd (0,6);
-    data.labels_positions        = Eigen::MatrixXd (0,3);
-    data.labels_strings.clear();
+    data.clear();
   }
 
   bool Viewer::key_down(unsigned char key, int modifiers)
@@ -990,8 +903,8 @@ namespace igl
     /* Bind and potentially refresh mesh/line/point data */
     if (data.dirty)
     {
-      opengl.set_data(data, options.face_based, options.invert_normals);
-      data.dirty = OpenGL_state::DIRTY_NONE;
+      opengl.set_data(data, options.invert_normals);
+      data.dirty = ViewerData::DIRTY_NONE;
     }
     opengl.bind_mesh();
 
@@ -1264,7 +1177,7 @@ namespace igl
   void TW_CALL Viewer::set_invert_normals_cb(const void *param, void *clientData)
   {
     Viewer *viewer = static_cast<Viewer *>(clientData);
-    viewer->data.dirty |= OpenGL_state::DIRTY_NORMAL;
+    viewer->data.dirty |= ViewerData::DIRTY_NORMAL;
     viewer->options.invert_normals = *((bool *) param);
   }
 
@@ -1281,7 +1194,7 @@ namespace igl
 
   void TW_CALL Viewer::get_face_based_cb(void *param, void *clientData)
   {
-    *((bool *) param) = static_cast<Viewer *>(clientData)->options.face_based;
+    *((bool *) param) = static_cast<Viewer *>(clientData)->data.face_based;
   }
 
   void TW_CALL Viewer::open_dialog_mesh(void *clientData)
@@ -1332,153 +1245,44 @@ namespace igl
 
   void Viewer::set_face_based(bool newvalue)
   {
-    if (options.face_based != newvalue)
-    {
-      options.face_based = newvalue;
-      data.dirty = OpenGL_state::DIRTY_ALL;
-    }
+    data.set_face_based(newvalue);
   }
 
-  // Helpers that draws the most common meshes
+  void Viewer::compute_normals()
+  {
+    data.compute_normals();
+  }
+
+
   void Viewer::set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
   {
-    using namespace std;
-
-    Eigen::MatrixXd V_temp;
-
-    // If V only has two columns, pad with a column of zeros
-    if (V.cols() == 2)
-    {
-      V_temp = Eigen::MatrixXd::Zero(V.rows(),3);
-      V_temp.block(0,0,V.rows(),2) = V;
-    }
-    else
-      V_temp = V;
-
-    if (data.V.rows() == 0 && data.F.rows() == 0)
-    {
-      clear_mesh();
-      data.V = V_temp;
-      data.F = F;
-
-      compute_normals();
-      uniform_colors(Eigen::Vector3d(51.0/255.0,43.0/255.0,33.3/255.0),
-                     Eigen::Vector3d(255.0/255.0,228.0/255.0,58.0/255.0),
-                     Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
-
-      grid_texture();
-      align_camera_center();
-    }
-    else
-    {
-      if (data.V.rows() == V.rows() && data.F.rows() == F.rows())
-      {
-        data.V = V_temp;
-        data.F = F;
-        align_camera_center();
-      }
-      else
-        cerr << "ERROR (set_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting.";
-    }
-    data.dirty |= OpenGL_state::DIRTY_FACE | OpenGL_state::DIRTY_POSITION;
+    data.set_mesh(V,F);
+    align_camera_center();
   }
 
   void Viewer::set_vertices(const Eigen::MatrixXd& V)
   {
-    data.V = V;
-    assert(data.F.size() == 0 || data.F.maxCoeff() < data.V.rows());
-    data.dirty |= OpenGL_state::DIRTY_POSITION;
+    data.set_vertices(V);
   }
 
   void Viewer::set_normals(const Eigen::MatrixXd& N)
   {
-    using namespace std;
-    if (N.rows() == data.V.rows())
-    {
-      set_face_based(false);
-      data.V_normals = N;
-    }
-    else if (N.rows() == data.F.rows() || N.rows() == data.F.rows()*3)
-    {
-      set_face_based(true);
-      data.F_normals = N;
-    }
-    else
-      cerr << "ERROR (set_normals): Please provide a normal per face, per corner or per vertex.";
-    data.dirty |= OpenGL_state::DIRTY_NORMAL;
+    data.set_normals(N);
   }
 
   void Viewer::set_colors(const Eigen::MatrixXd &C)
   {
-    using namespace std;
-    using namespace Eigen;
-    // Ambient color should be darker color
-    const auto ambient = [](const MatrixXd & C)->MatrixXd
-    {
-      return 0.1*C;
-    };
-    // Specular color should be a less saturated and darker color: dampened
-    // highlights
-    const auto specular = [](const MatrixXd & C)->MatrixXd
-    {
-      const double grey = 0.3;
-      return grey+0.1*(C.array()-grey);
-    };
-    if (C.rows() == 1)
-    {
-      for (unsigned i=0;i<data.V_material_diffuse.rows();++i)
-      {
-        data.V_material_diffuse.row(i) = C.row(0);
-      }
-      data.V_material_ambient = ambient(data.V_material_diffuse);
-      data.V_material_specular = specular(data.V_material_diffuse);
-
-      for (unsigned i=0;i<data.F_material_diffuse.rows();++i)
-      {
-        data.F_material_diffuse.row(i) = C.row(0);
-      }
-      data.F_material_ambient = ambient(data.F_material_diffuse);
-      data.F_material_specular = specular(data.F_material_diffuse);
-    }
-    else if (C.rows() == data.V.rows())
-    {
-      set_face_based(false);
-      data.V_material_diffuse = C;
-      data.V_material_ambient = ambient(data.V_material_diffuse);
-      data.V_material_specular = specular(data.V_material_diffuse);
-    }
-    else if (C.rows() == data.F.rows())
-    {
-      set_face_based(true);
-      data.F_material_diffuse = C;
-      data.F_material_ambient = ambient(data.F_material_diffuse);
-      data.F_material_specular = specular(data.F_material_diffuse);
-    }
-    else
-      cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex.";
-    data.dirty |= OpenGL_state::DIRTY_DIFFUSE;
-
+    data.set_colors(C);
   }
 
   void Viewer::set_uv(const Eigen::MatrixXd& UV)
   {
-    using namespace std;
-    if (UV.rows() == data.V.rows())
-    {
-      set_face_based(false);
-      data.V_uv = UV;
-    }
-    else
-      cerr << "ERROR (set_UV): Please provide uv per vertex.";
-    data.dirty |= OpenGL_state::DIRTY_UV;
+    data.set_uv(UV);
   }
 
   void Viewer::set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
   {
-    set_face_based(true);
-    data.V_uv = UV_V;
-    data.F_uv = UV_F;
-    data.dirty |= OpenGL_state::DIRTY_UV;
+    data.set_uv(UV_V,UV_F);
   }
 
 
@@ -1487,31 +1291,12 @@ namespace igl
     const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
     const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B)
   {
-    data.texture_R = R;
-    data.texture_G = G;
-    data.texture_B = B;
-    data.dirty |= OpenGL_state::DIRTY_TEXTURE;
+    data.set_texture(R,G,B);
   }
 
   void Viewer::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
   {
-    Eigen::MatrixXd P_temp;
-
-    // If P only has two columns, pad with a column of zeros
-    if (P.cols() == 2)
-    {
-      P_temp = Eigen::MatrixXd::Zero(P.rows(),3);
-      P_temp.block(0,0,P.rows(),2) = P;
-    }
-    else
-      P_temp = P;
-
-    int lastid = data.points.rows();
-    data.points.conservativeResize(data.points.rows() + P_temp.rows(),6);
-    for (unsigned i=0; i<P_temp.rows(); ++i)
-      data.points.row(lastid+i) << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
-
-    data.dirty |= OpenGL_state::DIRTY_OVERLAY_POINTS;
+    data.add_points(P,C);
   }
 
   void Viewer::set_edges(
@@ -1519,67 +1304,17 @@ namespace igl
     const Eigen::MatrixXi& E,
     const Eigen::MatrixXd& C)
   {
-    using namespace Eigen;
-    data.lines.resize(E.rows(),9);
-    assert(C.cols() == 3);
-    for(int e = 0;e<E.rows();e++)
-    {
-      RowVector3d color;
-      if(C.size() == 3)
-      {
-        color<<C;
-      }else if(C.rows() == E.rows())
-      {
-        color<<C.row(e);
-      }
-      data.lines.row(e)<< P.row(E(e,0)), P.row(E(e,1)), color;
-    }
-    data.dirty |= OpenGL_state::DIRTY_OVERLAY_LINES;
+    data.set_edges(P,E,C);
   }
 
   void Viewer::add_edges(const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
   {
-    Eigen::MatrixXd P1_temp,P2_temp;
-
-    // If P1 only has two columns, pad with a column of zeros
-    if (P1.cols() == 2)
-    {
-      P1_temp = Eigen::MatrixXd::Zero(P1.rows(),3);
-      P1_temp.block(0,0,P1.rows(),2) = P1;
-      P2_temp = Eigen::MatrixXd::Zero(P2.rows(),3);
-      P2_temp.block(0,0,P2.rows(),2) = P2;
-    }
-    else
-    {
-      P1_temp = P1;
-      P2_temp = P2;
-    }
-
-    int lastid = data.lines.rows();
-    data.lines.conservativeResize(data.lines.rows() + P1_temp.rows(),9);
-    for (unsigned i=0; i<P1_temp.rows(); ++i)
-      data.lines.row(lastid+i) << P1_temp.row(i), P2_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
-
-    data.dirty |= OpenGL_state::DIRTY_OVERLAY_LINES;
+    data.add_edges(P1,P2,C);
   }
 
   void Viewer::add_label(const Eigen::VectorXd& P,  const std::string& str)
   {
-    Eigen::RowVectorXd P_temp;
-
-    // If P only has two columns, pad with a column of zeros
-    if (P.size() == 2)
-    {
-      P_temp = Eigen::RowVectorXd::Zero(3);
-      P_temp << P, 0;
-    }
-    else
-      P_temp = P;
-
-    int lastid = data.labels_positions.rows();
-    data.labels_positions.conservativeResize(lastid+1, 3);
-    data.labels_positions.row(lastid) = P_temp;
-    data.labels_strings.push_back(str);
+    data.add_label(P,str);
   }
 
   int Viewer::launch(std::string filename)

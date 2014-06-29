@@ -19,6 +19,67 @@ public:
   #endif
   {};
 
+  enum DirtyFlags
+  {
+    DIRTY_NONE           = 0x0000,
+    DIRTY_POSITION       = 0x0001,
+    DIRTY_UV             = 0x0002,
+    DIRTY_NORMAL         = 0x0004,
+    DIRTY_AMBIENT        = 0x0008,
+    DIRTY_DIFFUSE        = 0x0010,
+    DIRTY_SPECULAR       = 0x0020,
+    DIRTY_TEXTURE        = 0x0040,
+    DIRTY_FACE           = 0x0080,
+    DIRTY_MESH           = 0x00FF,
+    DIRTY_OVERLAY_LINES  = 0x0100,
+    DIRTY_OVERLAY_POINTS = 0x0200,
+    DIRTY_ALL            = 0x03FF
+  };
+
+  // Helpers functions to fill the fields
+
+  // Empy all fields
+  IGL_INLINE void clear();
+
+  // Change the visualization mode, invalidating the cache if necessary
+  IGL_INLINE void set_face_based(bool newvalue);
+
+  // Helpers that can draw the most common meshes
+  IGL_INLINE void set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
+  IGL_INLINE void set_vertices(const Eigen::MatrixXd& V);
+  IGL_INLINE void set_normals(const Eigen::MatrixXd& N);
+  // Set the color of the mesh
+  //
+  // Inputs:
+  //   C  #V|#F|1 by 3 list of colors
+  IGL_INLINE void set_colors(const Eigen::MatrixXd &C);
+  IGL_INLINE void set_uv(const Eigen::MatrixXd& UV);
+  IGL_INLINE void set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
+  IGL_INLINE void set_texture(
+                    const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
+                    const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
+                    const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B);
+
+  IGL_INLINE void add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
+  // Sets edges given a list of edge vertices and edge indices. In constrast
+  // to `add_edges` this will (purposefully) clober existing edges.
+  //
+  // Inputs:
+  //   P  #P by 3 list of vertex positions
+  //   E  #E by 2 list of edge indices into P
+  //   C  #E|1 by 3 color(s)
+  IGL_INLINE void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C);
+  IGL_INLINE void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
+  IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str);
+
+  // More helpers
+
+  IGL_INLINE void compute_normals(); // Computes the normals of the mesh
+  IGL_INLINE void uniform_colors(Eigen::Vector3d ambient, Eigen::Vector3d diffuse, Eigen::Vector3d specular); // assign uniform colors to all faces/vertices
+  IGL_INLINE void grid_texture(); // Generate a default grid texture
+
+
+
   IGL_INLINE void InitSerialization();
 
   Eigen::MatrixXd V; // Vertices of the current mesh (#V x 3)
@@ -70,6 +131,9 @@ public:
 
   // Caches the two-norm between the min/max point of the bounding box
   float object_scale;
+
+  // Enable per-face or per-vertex properties
+  bool face_based;
   /*********************************/
 };
 

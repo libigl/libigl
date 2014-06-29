@@ -28,7 +28,7 @@ IGL_INLINE void igl::OpenGL_state::init_buffers()
   glGenBuffers(1, &vbo_points_V);
   glGenBuffers(1, &vbo_points_V_colors);
 
-  dirty = DIRTY_ALL;
+  dirty = ViewerData::DIRTY_ALL;
 }
 
 IGL_INLINE void igl::OpenGL_state::free_buffers()
@@ -54,23 +54,23 @@ IGL_INLINE void igl::OpenGL_state::free_buffers()
   glDeleteTextures(1, &vbo_tex);
 }
 
-IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool face_based, bool invert_normals)
+IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool invert_normals)
 {
   bool per_corner_uv = (data.F_uv.rows() == data.F.rows());
   bool per_corner_normals = (data.F_normals.rows() == 3 * data.F.rows());
 
   dirty |= data.dirty;
 
-  if (!face_based)
+  if (!data.face_based)
   {
     if (!per_corner_uv)
     {
       // Vertex positions
-      if (dirty & DIRTY_POSITION)
+      if (dirty & ViewerData::DIRTY_POSITION)
         V_vbo = (data.V.transpose()).cast<float>();
 
       // Vertex normals
-      if (dirty & DIRTY_NORMAL)
+      if (dirty & ViewerData::DIRTY_NORMAL)
       {
         V_normals_vbo = (data.V_normals.transpose()).cast<float>();
         if (invert_normals)
@@ -78,25 +78,25 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
       }
 
       // Per-vertex material settings
-      if (dirty & DIRTY_AMBIENT)
+      if (dirty & ViewerData::DIRTY_AMBIENT)
         V_ambient_vbo = (data.V_material_ambient.transpose()).cast<float>();
-      if (dirty & DIRTY_DIFFUSE)
+      if (dirty & ViewerData::DIRTY_DIFFUSE)
         V_diffuse_vbo = (data.V_material_diffuse.transpose()).cast<float>();
-      if (dirty & DIRTY_SPECULAR)
+      if (dirty & ViewerData::DIRTY_SPECULAR)
         V_specular_vbo = (data.V_material_specular.transpose()).cast<float>();
 
       // Face indices
-      if (dirty & DIRTY_FACE)
+      if (dirty & ViewerData::DIRTY_FACE)
         F_vbo = (data.F.transpose()).cast<unsigned>();
 
       // Texture coordinates
-      if (dirty & DIRTY_UV)
+      if (dirty & ViewerData::DIRTY_UV)
         V_uv_vbo = (data.V_uv.transpose()).cast<float>();
     }
     else
     {
       // Per vertex properties with per corner UVs
-      if (dirty & DIRTY_POSITION)
+      if (dirty & ViewerData::DIRTY_POSITION)
       {
         V_vbo.resize(3,data.F.rows()*3);
         for (unsigned i=0; i<data.F.rows();++i)
@@ -104,7 +104,7 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
             V_vbo.col(i*3+j) = data.V.row(data.F(i,j)).transpose().cast<float>();
       }
 
-      if (dirty & DIRTY_AMBIENT)
+      if (dirty & ViewerData::DIRTY_AMBIENT)
       {
         V_ambient_vbo.resize(3,data.F.rows()*3);
         for (unsigned i=0; i<data.F.rows();++i)
@@ -112,7 +112,7 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
             V_ambient_vbo.col (i*3+j) = data.V_material_ambient.row(data.F(i,j)).transpose().cast<float>();
       }
 
-      if (dirty & DIRTY_DIFFUSE)
+      if (dirty & ViewerData::DIRTY_DIFFUSE)
       {
         V_diffuse_vbo.resize(3,data.F.rows()*3);
         for (unsigned i=0; i<data.F.rows();++i)
@@ -120,7 +120,7 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
             V_diffuse_vbo.col (i*3+j) = data.V_material_diffuse.row(data.F(i,j)).transpose().cast<float>();
       }
 
-      if (dirty & DIRTY_SPECULAR)
+      if (dirty & ViewerData::DIRTY_SPECULAR)
       {
         V_specular_vbo.resize(3,data.F.rows()*3);
         for (unsigned i=0; i<data.F.rows();++i)
@@ -128,7 +128,7 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
             V_specular_vbo.col(i*3+j) = data.V_material_specular.row(data.F(i,j)).transpose().cast<float>();
       }
 
-      if (dirty & DIRTY_NORMAL)
+      if (dirty & ViewerData::DIRTY_NORMAL)
       {
         V_normals_vbo.resize(3,data.F.rows()*3);
         for (unsigned i=0; i<data.F.rows();++i)
@@ -139,14 +139,14 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
           V_normals_vbo = -V_normals_vbo;
       }
 
-      if (dirty & DIRTY_FACE)
+      if (dirty & ViewerData::DIRTY_FACE)
       {
         F_vbo.resize(3,data.F.rows());
         for (unsigned i=0; i<data.F.rows();++i)
           F_vbo.col(i) << i*3+0, i*3+1, i*3+2;
       }
 
-      if (dirty & DIRTY_UV)
+      if (dirty & ViewerData::DIRTY_UV)
       {
         V_uv_vbo.resize(2,data.F.rows()*3);
         for (unsigned i=0; i<data.F.rows();++i)
@@ -157,7 +157,7 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
   }
   else
   {
-    if (dirty & DIRTY_POSITION)
+    if (dirty & ViewerData::DIRTY_POSITION)
     {
       V_vbo.resize(3,data.F.rows()*3);
       for (unsigned i=0; i<data.F.rows();++i)
@@ -165,7 +165,7 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
           V_vbo.col(i*3+j) = data.V.row(data.F(i,j)).transpose().cast<float>();
     }
 
-    if (dirty & DIRTY_AMBIENT)
+    if (dirty & ViewerData::DIRTY_AMBIENT)
     {
       V_ambient_vbo.resize(3,data.F.rows()*3);
       for (unsigned i=0; i<data.F.rows();++i)
@@ -173,7 +173,7 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
           V_ambient_vbo.col (i*3+j) = data.F_material_ambient.row(i).transpose().cast<float>();
     }
 
-    if (dirty & DIRTY_DIFFUSE)
+    if (dirty & ViewerData::DIRTY_DIFFUSE)
     {
       V_diffuse_vbo.resize(3,data.F.rows()*3);
       for (unsigned i=0; i<data.F.rows();++i)
@@ -181,7 +181,7 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
           V_diffuse_vbo.col (i*3+j) = data.F_material_diffuse.row(i).transpose().cast<float>();
     }
 
-    if (dirty & DIRTY_SPECULAR)
+    if (dirty & ViewerData::DIRTY_SPECULAR)
     {
       V_specular_vbo.resize(3,data.F.rows()*3);
       for (unsigned i=0; i<data.F.rows();++i)
@@ -189,7 +189,7 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
           V_specular_vbo.col(i*3+j) = data.F_material_specular.row(i).transpose().cast<float>();
     }
 
-    if (dirty & DIRTY_NORMAL)
+    if (dirty & ViewerData::DIRTY_NORMAL)
     {
       V_normals_vbo.resize(3,data.F.rows()*3);
       for (unsigned i=0; i<data.F.rows();++i)
@@ -203,14 +203,14 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
         V_normals_vbo = -V_normals_vbo;
     }
 
-    if (dirty & DIRTY_FACE)
+    if (dirty & ViewerData::DIRTY_FACE)
     {
       F_vbo.resize(3,data.F.rows());
       for (unsigned i=0; i<data.F.rows();++i)
         F_vbo.col(i) << i*3+0, i*3+1, i*3+2;
     }
 
-    if (dirty & DIRTY_UV)
+    if (dirty & ViewerData::DIRTY_UV)
     {
         V_uv_vbo.resize(2,data.F.rows()*3);
         for (unsigned i=0; i<data.F.rows();++i)
@@ -219,7 +219,7 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
     }
   }
 
-  if (dirty & DIRTY_TEXTURE)
+  if (dirty & ViewerData::DIRTY_TEXTURE)
   {
     tex_u = data.texture_R.rows();
     tex_v = data.texture_R.cols();
@@ -232,7 +232,7 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
     }
   }
 
-  if (dirty & DIRTY_OVERLAY_LINES)
+  if (dirty & ViewerData::DIRTY_OVERLAY_LINES)
   {
     lines_V_vbo.resize(3, data.lines.rows()*2);
     lines_V_colors_vbo.resize(3, data.lines.rows()*2);
@@ -248,7 +248,7 @@ IGL_INLINE void igl::OpenGL_state::set_data(const igl::ViewerData &data, bool fa
     }
   }
 
-  if (dirty & DIRTY_OVERLAY_POINTS)
+  if (dirty & ViewerData::DIRTY_OVERLAY_POINTS)
   {
     points_V_vbo.resize(3, data.points.rows());
     points_V_colors_vbo.resize(3, data.points.rows());
@@ -266,20 +266,20 @@ IGL_INLINE void igl::OpenGL_state::bind_mesh()
 {
   glBindVertexArray(vao_mesh);
   shader_mesh.bind();
-  shader_mesh.bindVertexAttribArray("position", vbo_V, V_vbo, dirty & DIRTY_POSITION);
-  shader_mesh.bindVertexAttribArray("normal", vbo_V_normals, V_normals_vbo, dirty & DIRTY_NORMAL);
-  shader_mesh.bindVertexAttribArray("Ka", vbo_V_ambient, V_ambient_vbo, dirty & DIRTY_AMBIENT);
-  shader_mesh.bindVertexAttribArray("Kd", vbo_V_diffuse, V_diffuse_vbo, dirty & DIRTY_DIFFUSE);
-  shader_mesh.bindVertexAttribArray("Ks", vbo_V_specular, V_specular_vbo, dirty & DIRTY_SPECULAR);
-  shader_mesh.bindVertexAttribArray("texcoord", vbo_V_uv, V_uv_vbo, dirty & DIRTY_UV);
+  shader_mesh.bindVertexAttribArray("position", vbo_V, V_vbo, dirty & ViewerData::DIRTY_POSITION);
+  shader_mesh.bindVertexAttribArray("normal", vbo_V_normals, V_normals_vbo, dirty & ViewerData::DIRTY_NORMAL);
+  shader_mesh.bindVertexAttribArray("Ka", vbo_V_ambient, V_ambient_vbo, dirty & ViewerData::DIRTY_AMBIENT);
+  shader_mesh.bindVertexAttribArray("Kd", vbo_V_diffuse, V_diffuse_vbo, dirty & ViewerData::DIRTY_DIFFUSE);
+  shader_mesh.bindVertexAttribArray("Ks", vbo_V_specular, V_specular_vbo, dirty & ViewerData::DIRTY_SPECULAR);
+  shader_mesh.bindVertexAttribArray("texcoord", vbo_V_uv, V_uv_vbo, dirty & ViewerData::DIRTY_UV);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_F);
-  if (dirty & DIRTY_FACE)
+  if (dirty & ViewerData::DIRTY_FACE)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*F_vbo.size(), F_vbo.data(), GL_DYNAMIC_DRAW);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, vbo_tex);
-  if (dirty & DIRTY_TEXTURE)
+  if (dirty & ViewerData::DIRTY_TEXTURE)
   {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -288,12 +288,12 @@ IGL_INLINE void igl::OpenGL_state::bind_mesh()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex_u, tex_v, 0, GL_RGB, GL_UNSIGNED_BYTE, tex.data());
   }
   glUniform1i(shader_mesh.uniform("tex"), 0);
-  dirty &= ~DIRTY_MESH;
+  dirty &= ~ViewerData::DIRTY_MESH;
 }
 
 IGL_INLINE void igl::OpenGL_state::bind_overlay_lines()
 {
-  bool is_dirty = dirty & DIRTY_OVERLAY_LINES;
+  bool is_dirty = dirty & ViewerData::DIRTY_OVERLAY_LINES;
 
   glBindVertexArray(vao_overlay_lines);
   shader_overlay_lines.bind();
@@ -304,12 +304,12 @@ IGL_INLINE void igl::OpenGL_state::bind_overlay_lines()
   if (is_dirty)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*lines_F_vbo.size(), lines_F_vbo.data(), GL_DYNAMIC_DRAW);
 
-  dirty &= ~DIRTY_OVERLAY_LINES;
+  dirty &= ~ViewerData::DIRTY_OVERLAY_LINES;
 }
 
 IGL_INLINE void igl::OpenGL_state::bind_overlay_points()
 {
-  bool is_dirty = dirty & DIRTY_OVERLAY_POINTS;
+  bool is_dirty = dirty & ViewerData::DIRTY_OVERLAY_POINTS;
 
   glBindVertexArray(vao_overlay_points);
   shader_overlay_points.bind();
@@ -320,7 +320,7 @@ IGL_INLINE void igl::OpenGL_state::bind_overlay_points()
   if (is_dirty)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*points_F_vbo.size(), points_F_vbo.data(), GL_DYNAMIC_DRAW);
 
-  dirty &= ~DIRTY_OVERLAY_POINTS;
+  dirty &= ~ViewerData::DIRTY_OVERLAY_POINTS;
 }
 
 IGL_INLINE void igl::OpenGL_state::draw_mesh(bool solid)

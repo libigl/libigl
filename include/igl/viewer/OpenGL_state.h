@@ -73,7 +73,7 @@ public:
   IGL_INLINE void init_buffers();
 
   // Update contents from a 'Data' instance
-  IGL_INLINE void set_data(const igl::ViewerData &data, bool face_based, bool invert_normals);
+  IGL_INLINE void set_data(const igl::ViewerData &data, bool invert_normals);
 
   // Bind the underlying OpenGL buffer objects for subsequent mesh draw calls
   IGL_INLINE void bind_mesh();
@@ -95,23 +95,6 @@ public:
 
   // Release the OpenGL buffer objects
   IGL_INLINE void free_buffers();
-
-  enum DirtyFlags
-  {
-    DIRTY_NONE           = 0x0000,
-    DIRTY_POSITION       = 0x0001,
-    DIRTY_UV             = 0x0002,
-    DIRTY_NORMAL         = 0x0004,
-    DIRTY_AMBIENT        = 0x0008,
-    DIRTY_DIFFUSE        = 0x0010,
-    DIRTY_SPECULAR       = 0x0020,
-    DIRTY_TEXTURE        = 0x0040,
-    DIRTY_FACE           = 0x0080,
-    DIRTY_MESH           = 0x00FF,
-    DIRTY_OVERLAY_LINES  = 0x0100,
-    DIRTY_OVERLAY_POINTS = 0x0200,
-    DIRTY_ALL            = 0x03FF
-  };
 
 };
 

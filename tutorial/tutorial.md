@@ -194,12 +194,12 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key == '1')
   {
-    viewer.clear_mesh();
+    viewer.clear();
     viewer.set_mesh(V1, F1);
   }
   else if (key == '2')
   {
-    viewer.clear_mesh();
+    viewer.clear();
     viewer.set_mesh(V2, F2);
   }
   return false;
@@ -1155,7 +1155,7 @@ as a constrained optimization problem [#jacobson_2011][]. The weights enforce
 smoothness by minimizing a smoothness energy: the familiar Laplacian energy:
 
  $\sum\limits_{i = 1}^m \int_S (\Delta w_i)^2 dA$
-  
+
 subject to constraints which enforce interpolation of handle constraints:
 
  $w_i(\mathbf{x}) = \begin{cases} 1 & \text{ if } \mathbf{x} \in H_i\\ 0 & \text{ otherwise }
