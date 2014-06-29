@@ -171,9 +171,6 @@ Eigen::Matrix4f translate(
 #include <TwOpenGLCore.h>
 #include <igl/viewer/TextRenderer.h>
 
-// Plugin manager (exported to other compilation units)
-igl::Plugin_manager igl_viewer_plugin_manager;
-
 // Internal global variables used for glfw event handling
 static igl::Viewer * __viewer;
 static double highdpi = 1;
@@ -422,10 +419,8 @@ static void glfw_char_callback(GLFWwindow* window, unsigned int c)
 
 namespace igl
 {
-  void Viewer::init(Plugin_manager* pm)
+  void Viewer::init()
   {
-    plugin_manager = pm;
-
     // Create a tweak bar
     bar = TwNewBar("libIGL-Viewer");
     TwDefine(" libIGL-Viewer help='This is a simple 3D mesh viewer.' "); // Message added to the help bar->
@@ -517,8 +512,6 @@ namespace igl
 
   Viewer::Viewer()
   {
-    plugin_manager = 0;
-
     // Default shininess
     options.shininess = 35.0f;
 
@@ -595,9 +588,8 @@ namespace igl
   void Viewer::init_plugins()
   {
     // Init all plugins
-    if (plugin_manager)
-      for (unsigned int i = 0; i<plugin_manager->plugin_list.size(); ++i)
-        plugin_manager->plugin_list[i]->init(this);
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      plugins[i]->init(this);
   }
 
   Viewer::~Viewer()
@@ -606,9 +598,8 @@ namespace igl
 
   void Viewer::shutdown_plugins()
   {
-    if (plugin_manager)
-      for (unsigned int i = 0; i<plugin_manager->plugin_list.size(); ++i)
-        plugin_manager->plugin_list[i]->shutdown();
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      plugins[i]->shutdown();
   }
 
   bool Viewer::load_mesh_from_file(const char* mesh_file_name)
@@ -616,10 +607,9 @@ namespace igl
     std::string mesh_file_name_string = std::string(mesh_file_name);
 
     // first try to load it with a plugin
-    if (plugin_manager)
-      for (unsigned int i = 0; i<plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->load(mesh_file_name_string))
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->load(mesh_file_name_string))
+        return true;
 
     clear_mesh();
 
@@ -664,10 +654,9 @@ namespace igl
 
     align_camera_center();
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i<plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->post_load())
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->post_load())
+        return true;
 
     return true;
   }
@@ -741,10 +730,9 @@ namespace igl
     std::string mesh_file_name_string(mesh_file_name);
 
     // first try to load it with a plugin
-    if (plugin_manager)
-      for (unsigned int i = 0; i<plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->save(mesh_file_name_string))
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->save(mesh_file_name_string))
+        return true;
 
     size_t last_dot = mesh_file_name_string.rfind('.');
     if (last_dot == std::string::npos)
@@ -809,10 +797,9 @@ namespace igl
       if (callback_key_down(*this,key,modifiers))
         return true;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->key_down(key, modifiers))
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->key_down(key, modifiers))
+        return true;
 
     if (key == 'S')
       mouse_scroll(1);
@@ -840,10 +827,9 @@ namespace igl
       if (callback_key_up(*this,key,modifiers))
         return true;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->key_up(key, modifiers))
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->key_up(key, modifiers))
+        return true;
 
     return false;
   }
@@ -854,10 +840,9 @@ namespace igl
       if (callback_mouse_down(*this,button,modifier))
         return true;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i < plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->mouse_down(button,modifier))
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->mouse_down(button,modifier))
+        return true;
 
     down = true;
 
@@ -905,9 +890,8 @@ namespace igl
       if (callback_mouse_up(*this,button,modifier))
         return true;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->mouse_up(button,modifier))
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+        if (plugins[i]->mouse_up(button,modifier))
           return true;
 
     mouse_mode = NOTHING;
@@ -930,10 +914,9 @@ namespace igl
       if (callback_mouse_move(*this,mouse_x,mouse_y))
         return true;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i < plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->mouse_move(mouse_x, mouse_y))
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->mouse_move(mouse_x, mouse_y))
+        return true;
 
     if (down)
     {
@@ -991,10 +974,9 @@ namespace igl
       if (callback_mouse_scroll(*this,delta_y))
         return true;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->mouse_scroll(delta_y))
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->mouse_scroll(delta_y))
+        return true;
 
     // Only zoom if there's actually a change
     if(delta_y != 0)
@@ -1660,10 +1642,9 @@ namespace igl
       if (callback_pre_draw(*this))
         return;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->pre_draw())
-          return;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->pre_draw())
+        return;
 
     /* Bind and potentially refresh mesh/line/point data */
     if (data.dirty)
@@ -1834,10 +1815,9 @@ namespace igl
       if (callback_post_draw(*this))
         return;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->post_draw())
-          break;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->post_draw())
+        break;
 
     TwDraw();
   }
@@ -2341,7 +2321,7 @@ namespace igl
     TwInit(TW_OPENGL_CORE, NULL);
 
     // Initialize IGL viewer
-    init(&igl_viewer_plugin_manager);
+    init();
     __viewer = this;
 
     // Register callbacks
@@ -2382,7 +2362,8 @@ namespace igl
           // TODO: windows equivalent
           usleep(min_duration-duration);
         }
-      }else
+      }
+      else
       {
         glfwWaitEvents();
       }
