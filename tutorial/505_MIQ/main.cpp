@@ -255,10 +255,10 @@ int main(int argc, char *argv[])
   // Find the singularities
   igl::find_cross_field_singularities(V, F, MMatch, isSingularity, singularityIndex);
 
-  // Cut the mes, duplicating all vertices on the seams
+  // Cut the mesh, duplicating all vertices on the seams
   igl::cut_mesh_from_singularities(V, F, MMatch, isSingularity, singularityIndex, Seams);
 
-  // Comb the cross-field accordingly
+  // Comb the frame-field accordingly
   igl::comb_frame_field(V, F, X1, X2, BIS1_combed, BIS2_combed, X1_combed, X2_combed);
 
   // Global parametrization

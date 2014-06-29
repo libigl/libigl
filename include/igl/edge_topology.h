@@ -21,9 +21,10 @@ namespace igl
   // EV  : #Ex2, Stores the edge description as pair of indices to vertices
   // FE : #Fx3, Stores the Triangle-Edge relation
   // EF : #Ex2: Stores the Edge-Triangle relation
+template <typename DerivedV, typename DerivedF>
   IGL_INLINE void edge_topology(
-    const Eigen::MatrixXd& V, 
-    const Eigen::MatrixXi& F, 
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F, 
     Eigen::MatrixXi& EV, 
     Eigen::MatrixXi& FE, 
     Eigen::MatrixXi& EF);
