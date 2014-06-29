@@ -1,4 +1,5 @@
 #include "TextRenderer.h"
+#include <igl/project.h>
 
   IGL_INLINE igl::TextRenderer::TextRenderer() : m_shaderHandleBackup(0) { }
 
@@ -92,7 +93,7 @@
   IGL_INLINE void igl::TextRenderer::DrawText(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text)
   {
     pos += normal * 0.005f * object_scale;
-    Eigen::Vector3f coord = project(Eigen::Vector3f(pos(0), pos(1), pos(2)),
+    Eigen::Vector3f coord = igl::project(Eigen::Vector3f(pos(0), pos(1), pos(2)),
         view_matrix, proj_matrix, viewport);
     auto it = m_textObjects.find(text);
     void *text_obj = nullptr;

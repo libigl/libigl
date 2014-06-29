@@ -6,6 +6,9 @@
 
 #include <igl/igl_inline.h>
 #include <igl/viewer/OpenGL_shader.h>
+#include <TwOpenGLCore.h>
+#include <map>
+
 
 namespace igl
 {

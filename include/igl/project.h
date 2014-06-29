@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_PROJECT_H
 #define IGL_PROJECT_H
@@ -34,6 +34,21 @@ namespace igl
   template <typename Derivedobj>
   IGL_INLINE Eigen::PlainObjectBase<Derivedobj> project(
     const Eigen::PlainObjectBase<Derivedobj> & obj);
+
+  // Eigen reimplementation of gluProject
+// Inputs:
+//   obj*  3D objects' x, y, and z coordinates respectively
+// model        model matrix
+// proj         projection matrix
+// viewport     viewport vector
+// Returns:
+//   screen space x, y, and z coordinates respectively
+// Returns return value of gluProject call
+  Eigen::Vector3f project(const Eigen::Vector3f&  obj,
+                          const Eigen::Matrix4f& model,
+                          const Eigen::Matrix4f& proj,
+                          const Eigen::Vector4f&  viewport);
+
 }
 
 #ifndef IGL_STATIC_LIBRARY
