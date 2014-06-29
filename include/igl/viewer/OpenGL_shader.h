@@ -1,0 +1,63 @@
+#ifndef IGL_OPENGL_SHADER_H
+#define IGL_OPENGL_SHADER_H
+
+#include <igl/igl_inline.h>
+
+namespace igl
+{
+
+class OpenGL_shader
+{
+public:
+  typedef unsigned int GLuint;
+  typedef int GLint;
+
+  GLuint vertex_shader;
+  GLuint fragment_shader;
+  GLuint geometry_shader;
+  GLuint program_shader;
+
+  IGL_INLINE OpenGL_shader() : vertex_shader(0), fragment_shader(0),
+    geometry_shader(0), program_shader(0) { }
+
+  // Create a new shader from the specified source strings
+  IGL_INLINE bool init(const std::string &vertex_shader_string,
+    const std::string &fragment_shader_string,
+    const std::string &fragment_data_name,
+    const std::string &geometry_shader_string = "",
+    int geometry_shader_max_vertices = 3);
+
+  // Create a new shader from the specified files on disk
+  IGL_INLINE bool init_from_files(const std::string &vertex_shader_filename,
+    const std::string &fragment_shader_filename,
+    const std::string &fragment_data_name,
+    const std::string &geometry_shader_filename = "",
+    int geometry_shader_max_vertices = 3);
+
+  // Select this shader for subsequent draw calls
+  IGL_INLINE void bind();
+
+  // Release all OpenGL objects
+  IGL_INLINE void free();
+
+  // Return the OpenGL handle of a named shader attribute (-1 if it does not exist)
+  IGL_INLINE GLint attrib(const std::string &name) const;
+
+  // Return the OpenGL handle of a uniform attribute (-1 if it does not exist)
+  IGL_INLINE GLint uniform(const std::string &name) const;
+
+  // Bind a per-vertex array attribute and refresh its contents from an Eigen amtrix
+  IGL_INLINE GLint bindVertexAttribArray(const std::string &name, GLuint bufferID,
+    const Eigen::MatrixXf &M, bool refresh) const;
+
+  IGL_INLINE GLuint create_shader_helper(GLint type, const std::string &shader_string);
+
+};
+
+}
+
+#ifndef IGL_STATIC_LIBRARY
+#  include "OpenGL_shader.cpp"
+#endif
+
+#endif

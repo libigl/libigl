@@ -20,13 +20,13 @@
 #endif
 
 #include <Eigen/Core>
-
+#include <igl/viewer/OpenGL_shader.h>
 
 namespace igl
 {
   // Forward declaration of the viewer_plugin class
   class Viewer_plugin;
-  
+
   class Viewer
   {
   public:
@@ -182,51 +182,6 @@ namespace igl
       // Caches the two-norm between the min/max point of the bounding box
       float object_scale;
       /*********************************/
-    };
-
-    class OpenGL_shader
-    {
-    public:
-      typedef unsigned int GLuint;
-      typedef int GLint;
-
-      GLuint vertex_shader;
-      GLuint fragment_shader;
-      GLuint geometry_shader;
-      GLuint program_shader;
-
-      OpenGL_shader() : vertex_shader(0), fragment_shader(0),
-        geometry_shader(0), program_shader(0) { }
-
-      // Create a new shader from the specified source strings
-      bool init(const std::string &vertex_shader_string,
-        const std::string &fragment_shader_string,
-        const std::string &fragment_data_name,
-        const std::string &geometry_shader_string = "",
-        int geometry_shader_max_vertices = 3);
-
-      // Create a new shader from the specified files on disk
-      bool init_from_files(const std::string &vertex_shader_filename,
-        const std::string &fragment_shader_filename,
-        const std::string &fragment_data_name,
-        const std::string &geometry_shader_filename = "",
-        int geometry_shader_max_vertices = 3);
-
-      // Select this shader for subsequent draw calls
-      void bind();
-
-      // Release all OpenGL objects
-      void free();
-
-      // Return the OpenGL handle of a named shader attribute (-1 if it does not exist)
-      GLint attrib(const std::string &name) const;
-
-      // Return the OpenGL handle of a uniform attribute (-1 if it does not exist)
-      GLint uniform(const std::string &name) const;
-
-      // Bind a per-vertex array attribute and refresh its contents from an Eigen amtrix
-      GLint bindVertexAttribArray(const std::string &name, GLuint bufferID,
-        const Eigen::MatrixXf &M, bool refresh) const;
     };
 
     class OpenGL_state
