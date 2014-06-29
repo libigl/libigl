@@ -59,7 +59,7 @@ void line_texture(Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> &texture_R,
   for (unsigned i=size2-lineWidth; i<=size2+lineWidth; ++i)
     for (unsigned j=0; j<size; ++j)
       texture_R(i,j) = 0;
-  
+
   texture_G = texture_R;
   texture_B = texture_R;
 }
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
   b   = temp.block(0,0,temp.rows(),1).cast<int>();
   bc1 = temp.block(0,1,temp.rows(),3);
   bc2 = temp.block(0,4,temp.rows(),3);
-  
+
   // Interpolate the frame field
   igl::frame_field(V, F, b, bc1, bc2, FF1, FF2);
 
@@ -201,12 +201,12 @@ int main(int argc, char *argv[])
 
   // Find the closest crossfield to the deformed frame field
   igl::frame_to_cross_field(V,F,FF1_deformed,FF2_deformed,X1_deformed);
-  
+
   // Find a smooth crossfield that interpolates the deformed constraints
   MatrixXd bc_x(b.size(),3);
   for (unsigned i=0; i<b.size();++i)
     bc_x.row(i) = X1_deformed.row(b(i));
-  
+
   VectorXd S;
   igl::nrosy(
              V,
@@ -236,7 +236,7 @@ int main(int argc, char *argv[])
            60.0,
            5.0,
            false,
-           0);
+           2);
 
   igl::Viewer viewer;
   // Plot the original mesh with a texture parametrization

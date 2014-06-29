@@ -94,6 +94,10 @@ namespace igl
 
       // Enable per-face colors and normals
       bool face_based;
+
+      // Animation
+      bool is_animating;
+      double animation_max_fps;
     };
 
     enum DirtyFlags
@@ -327,6 +331,7 @@ namespace igl
     float down_mouse_z;
     Eigen::Vector3f down_translation;
     bool down;
+    bool hack_never_moved;
 
     // Anttweak bar
     TwBar* bar;
@@ -366,6 +371,14 @@ namespace igl
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B);
 
     void add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
+    // Sets edges given a list of edge vertices and edge indices. In constrast
+    // to `add_edges` this will (purposefully) clober existing edges.
+    //
+    // Inputs:
+    //   P  #P by 3 list of vertex positions
+    //   E  #E by 2 list of edge indices into P
+    //   C  #E|1 by 3 color(s)
+    void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C);
     void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
     void add_label (const Eigen::VectorXd& P,  const std::string& str);
 
@@ -453,6 +466,8 @@ namespace igl
     static void TW_CALL get_face_based_cb(void *param, void *clientData);
     static void TW_CALL set_invert_normals_cb(const void *param, void *clientData);
     static void TW_CALL get_invert_normals_cb(void *param, void *clientData);
+  public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 
@@ -573,6 +588,8 @@ namespace igl
   protected:
     // Pointer to the main Preview3D class
     Viewer *viewer;
+  public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   // Keeps the lists of plugins
@@ -595,6 +612,8 @@ namespace igl
     }
 
     std::vector<Viewer_plugin*> plugin_list;
+  public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 

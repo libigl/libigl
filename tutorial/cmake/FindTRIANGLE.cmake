@@ -5,6 +5,10 @@
 #  TRIANGLE_INCLUDE_DIR - the TRIANGLE include directory
 #  TRIANGLE_SOURCES - the TRIANGLE source files
 
+IF (WIN32)
+   add_definitions(-DNO_TIMER)
+ENDIF (WIN32)
+
 FIND_PATH(TRIANGLE_INCLUDE_DIR triangle.h
    /usr/include
    /usr/local/include

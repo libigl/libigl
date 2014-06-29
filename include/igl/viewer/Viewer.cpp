@@ -1,4 +1,5 @@
 #include "Viewer.h"
+#include <igl/get_seconds.h>
 
 #ifdef _WIN32
 #  include <windows.h>
@@ -6,7 +7,11 @@
 #  undef min
 #endif
 
+// Todo: windows equivalent for `usleep`
+#include <unistd.h>
+
 #ifndef __APPLE__
+#  define GLEW_STATIC
 #  include <GL/glew.h>
 #endif
 
@@ -506,7 +511,7 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
   // place bar at top (padded by 10 pixels)
   pos[1] = 10;
   // Set height to new height of window (padded by 10 pixels on bottom)
-  size[1] = height-pos[1]-10;
+  size[1] = highdpi*(height-pos[1]-10);
   TwSetParam(bar, NULL, "position", TW_PARAM_INT32, 2, pos);
   TwSetParam(bar, NULL, "size", TW_PARAM_INT32, 2,size);
 }
@@ -576,11 +581,14 @@ namespace igl
                " label='Light direction' open help='Change the light direction.' ");
 
     // ---------------------- DRAW OPTIONS ----------------------
-    TwAddVarRW(bar, "Toggle Orthographic/Perspective", TW_TYPE_BOOLCPP, &(options.orthographic),
+    TwAddVarRW(bar, "ToggleOrthographic", TW_TYPE_BOOLCPP, &(options.orthographic),
                " group='Viewing Options'"
                " label='Orthographic view' "
                " help='Toggles orthographic / perspective view. Default: perspective.'");
-
+    TwAddVarRW(bar, "Rotation", TW_TYPE_QUAT4F, &(options.trackball_angle),
+      " group='Viewing Options'"
+      " label='Rotation'"
+      " help='Rotates view.'");
     TwAddVarCB(bar,"Face-based Normals/Colors", TW_TYPE_BOOLCPP, set_face_based_cb, get_face_based_cb, this,
                " group='Draw options'"
                " label='Face-based' key=T help='Toggle per face shading/colors.' ");
@@ -673,9 +681,13 @@ namespace igl
     // Default point size / line width
     options.point_size = 15;
     options.line_width = 0.5f;
+    options.face_based = false;
+    options.is_animating = false;
+    options.animation_max_fps = 30.;
 
     // Temporary variables initialization
     down = false;
+    hack_never_moved = true;
     scroll_position = 0.0f;
 
     // Per face
@@ -1026,6 +1038,12 @@ namespace igl
 
   bool Viewer::mouse_move(int mouse_x, int mouse_y)
   {
+    if(hack_never_moved)
+    {
+      down_mouse_x = mouse_x;
+      down_mouse_y = mouse_y;
+      hack_never_moved = false;
+    }
     current_mouse_x = mouse_x;
     current_mouse_y = mouse_y;
 
@@ -1899,6 +1917,8 @@ namespace igl
         glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
         glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
         glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
+        // This must be enabled, otherwise glLineWidth has no effect
+        glEnable(GL_LINE_SMOOTH);
         glLineWidth(options.line_width);
 
         opengl.draw_overlay_lines();
@@ -2323,6 +2343,29 @@ namespace igl
     data.dirty |= DIRTY_OVERLAY_POINTS;
   }
 
+  void Viewer::set_edges(
+    const Eigen::MatrixXd& P, 
+    const Eigen::MatrixXi& E,
+    const Eigen::MatrixXd& C)
+  {
+    using namespace Eigen;
+    data.lines.resize(E.rows(),9);
+    assert(C.cols() == 3);
+    for(int e = 0;e<E.rows();e++)
+    {
+      RowVector3d color;
+      if(C.size() == 3)
+      {
+        color<<C;
+      }else if(C.rows() == E.rows())
+      {
+        color<<C.row(e);
+      }
+      data.lines.row(e)<< P.row(E(e,0)), P.row(E(e,1)), color;
+    }
+    data.dirty |= DIRTY_OVERLAY_LINES;
+  }
+
   void Viewer::add_edges(const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
   {
     Eigen::MatrixXd P1_temp,P2_temp;
@@ -2351,13 +2394,13 @@ namespace igl
 
   void Viewer::add_label(const Eigen::VectorXd& P,  const std::string& str)
   {
-    Eigen::MatrixXd P_temp;
+    Eigen::RowVectorXd P_temp;
 
     // If P only has two columns, pad with a column of zeros
-    if (P.cols() == 2)
+    if (P.size() == 2)
     {
-      P_temp = Eigen::MatrixXd::Zero(P.rows(),3);
-      P_temp.block(0,0,P.rows(),2) = P;
+      P_temp = Eigen::RowVectorXd::Zero(3);
+      P_temp << P, 0;
     }
     else
       P_temp = P;
@@ -2423,12 +2466,7 @@ namespace igl
     __viewer = this;
 
     // Register callbacks
-    glfwSetKeyCallback(window, glfw_key_callback);
-    glfwSetCursorPosCallback(window,glfw_mouse_move);
-    glfwSetWindowSizeCallback(window,glfw_window_size);
-    glfwSetMouseButtonCallback(window,glfw_mouse_press);
-    glfwSetScrollCallback(window,glfw_mouse_scroll);
-    glfwSetCharCallback(window, glfw_char_callback);
+    glfwSetKeyCallback(window, glfw_key_callback); glfwSetCursorPosCallback(window,glfw_mouse_move); glfwSetWindowSizeCallback(window,glfw_window_size); glfwSetMouseButtonCallback(window,glfw_mouse_press); glfwSetScrollCallback(window,glfw_mouse_scroll); glfwSetCharCallback(window, glfw_char_callback);
 
     // Handle retina displays (windows and mac)
     int width, height;
@@ -2450,11 +2488,25 @@ namespace igl
     // Rendering loop
     while (!glfwWindowShouldClose(window))
     {
+      double tic = get_seconds();
       draw();
 
       glfwSwapBuffers(window);
-      //glfwPollEvents();
-      glfwWaitEvents();
+      if(options.is_animating)
+      {
+        glfwPollEvents();
+        // In microseconds
+        double duration = 1000000.*(get_seconds()-tic);
+        const double min_duration = 1000000./options.animation_max_fps;
+        if(duration<min_duration)
+        {
+          // TODO: windows equivalent
+          usleep(min_duration-duration);
+        }
+      }else
+      {
+        glfwWaitEvents();
+      }
     }
 
     free_opengl();
