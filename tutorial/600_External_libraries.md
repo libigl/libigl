@@ -136,24 +136,51 @@ We provide a wrapper for igl::readOBJ in [Example 603](603_MEX/compileMEX.m). We
 
 ## Triangulation of closed polygons [604]
 
+The generation of high-quality triangle and tetrahedral meshes is a very common task in geometry processing. We provide wrappers in libigl to triangle and tetegen.
 
+A triangle mesh canb e cerated starting from a set of boundary edges using igl::triangulate.
 
-* discretization are useful to solve PDE
-* to create a 2D triangulation we provide a convenient wrapper for triangle
+``` cpp
+igl::triangulate(V,E,H,V2,F2,"a0.005q");
+```
 
-#Tetrahedralization of closed surfaces
+where E is a set of boundary edges, H a set of 2D positions of points contained in holes of the triangulation and (V2,F2) is the generate triangulation. Additional parameters can be given to triangles, to control the quality: "a0.005q" puts a bound on the maximal area of the triangles and a minimal angle of 20 degrees. In Example [Example 604](604_Triangle/main.m), the interior of a square (excluded a smaller square in its interior) is triangulated.
 
-* the same in 3D, similar interface
+![Triangulation of the interior of a polygon.](images/604_Triangle.png)
 
-#Baking ambient occlusion
+## Tetrahedralization of closed surfaces [605]
 
-* intro to ambinet occlusion
-* can be easily computed with raytracing
-* again a simple wrapper
-* then you multiply to the colors
+Similarly, the interior of a closed manifold surface can be tetrahedralized using the function igl::tetrahedralize which wraps the tetgen library ([Example 605](605_Tetgen/main.c)):
 
+``` cpp
+igl::tetrahedralize(V,F,"pq1.414", TV,TT,TF);
+```
 
-#Outlook for continuing development
+![Tetrahedralization of the interior of a surface mesh.](images/605_Tetgen.png)
+
+## Baking ambient occlusion [606]
+
+[Ambient occlusion](http://en.wikipedia.org/wiki/Ambient_occlusion) is a rendering technique used to calculate the exposure of each point in a surface to ambient lighting. It is usually encoded as a scalar (normalized between 0 and 1) associated with the vertice of a mesh.
+
+Formally, ambient occlusion is defined as:
+
+\\[ A_p = \frac{1}{\pi} \int_\omega V_{p,\omega}(n \cdot \omega) d\omega \\]
+
+where \\( V_{p,\omega} \\) is the visibility function at  p, defined to be zero if p is occluded in the direction \\( \omega \\) and one otherwise, and \\( d\omega \\) is the infinitesimal solid angle step of the integration variable \\( \omega \\).
+
+The integral is usually approximate by casting rays in random directions around each vertex. This approximation can be computed using the function:
+
+``` cpp
+igl::ambient_occlusion(V,F,V_samples,N_samples,500,AO);
+```
+
+that given a scene described in V,F, computes the ambient occlusion of the points in V_samples whose associated normals are N_samples. The number of casted rays can be controlled (usually at least 400-500 rays are required to get a smooth result) and the result is return in AO, as a single scalar for each sample.
+
+Ambient occlusion can be used to darken the surface colors, as shown in [Example 606](606_AmbientOcclusion/main.c)
+
+![A mesh rendered without (left) and with (right) ambient occlusion.](images/606_AmbientOcclusion.png)
+
+# Outlook for continuing development
 
 * better documentation
 * your contributions are welcome, using pull request
