@@ -21,17 +21,18 @@
 
 #include <Eigen/Core>
 
+
 namespace igl
 {
-
-  class Plugin_manager;
-
+  // Forward declaration of the viewer_plugin class
+  class Viewer_plugin;
+  
   class Viewer
   {
   public:
 
     int launch(std::string filename = "");
-    void init(Plugin_manager* pm);
+    void init();
 
     class Options
     #ifdef ENABLE_XML_SERIALIZATION
@@ -318,7 +319,7 @@ namespace igl
     OpenGL_state opengl;
 
     // Pointer to the plugin_manager (usually it will be a global variable)
-    Plugin_manager* plugin_manager;
+    std::vector<Viewer_plugin*> plugins;
     void init_plugins();
     void shutdown_plugins();
 
@@ -591,31 +592,6 @@ namespace igl
   public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
-
-  // Keeps the lists of plugins
-  class Plugin_manager
-  {
-  public:
-
-    Plugin_manager() {}
-
-    /** Registers a new plugin. A call to this function should be
-     implemented in the constructor of all classes derived from PreviewPlugin. */
-    bool register_plugin(Viewer_plugin* p)
-    {
-      auto it = plugin_list.begin();
-      while(it != plugin_list.end() && (*it)->priority() < p->priority())
-        ++it;
-
-      plugin_list.insert(it,p);
-      return true;
-    }
-
-    std::vector<Viewer_plugin*> plugin_list;
-  public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  };
-
 
 } // end namespace
 
