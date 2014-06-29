@@ -1917,6 +1917,8 @@ namespace igl
         glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
         glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
         glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
+        // This must be enabled, otherwise glLineWidth has no effect
+        glEnable(GL_LINE_SMOOTH);
         glLineWidth(options.line_width);
 
         opengl.draw_overlay_lines();
@@ -2339,6 +2341,29 @@ namespace igl
       data.points.row(lastid+i) << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
 
     data.dirty |= DIRTY_OVERLAY_POINTS;
+  }
+
+  void Viewer::set_edges(
+    const Eigen::MatrixXd& P, 
+    const Eigen::MatrixXi& E,
+    const Eigen::MatrixXd& C)
+  {
+    using namespace Eigen;
+    data.lines.resize(E.rows(),9);
+    assert(C.cols() == 3);
+    for(int e = 0;e<E.rows();e++)
+    {
+      RowVector3d color;
+      if(C.size() == 3)
+      {
+        color<<C;
+      }else if(C.rows() == E.rows())
+      {
+        color<<C.row(e);
+      }
+      data.lines.row(e)<< P.row(E(e,0)), P.row(E(e,1)), color;
+    }
+    data.dirty |= DIRTY_OVERLAY_LINES;
   }
 
   void Viewer::add_edges(const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
