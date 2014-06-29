@@ -6,6 +6,7 @@
 
 #include <igl/igl_inline.h>
 #include <igl/viewer/OpenGL_shader.h>
+#include <igl/viewer/ViewerData.h>
 
 namespace igl
 {

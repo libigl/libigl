@@ -38,27 +38,7 @@
 #include <fstream>
 
 #include <algorithm>
-
-//OK NV
-Eigen::Vector3f project(const Eigen::Vector3f&  obj,
-                        const Eigen::Matrix4f& model,
-                        const Eigen::Matrix4f& proj,
-                        const Eigen::Vector4f&  viewport)
-{
-  Eigen::Vector4f tmp;
-  tmp << obj,1;
-
-  tmp = model * tmp;
-
-  tmp = proj * tmp;
-
-  tmp = tmp.array() / tmp(3);
-  tmp = tmp.array() * 0.5f + 0.5f;
-  tmp(0) = tmp(0) * viewport(2) + viewport(0);
-  tmp(1) = tmp(1) * viewport(3) + viewport(1);
-
-  return tmp.head(3);
-}
+#include <igl/project.h>
 
 Eigen::Matrix4f lookAt (
                         const Eigen::Vector3f& eye,
@@ -168,7 +148,6 @@ Eigen::Matrix4f translate(
 #include <igl/trackball.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/unproject.h>
-#include <TwOpenGLCore.h>
 #include <igl/viewer/TextRenderer.h>
 
 // Internal global variables used for glfw event handling
@@ -858,7 +837,7 @@ namespace igl
     else
       center = data.V.colwise().sum()/data.V.rows();
 
-    Eigen::Vector3f coord = project(Eigen::Vector3f(center(0),center(1),center(2)), view * model, proj, viewport);
+    Eigen::Vector3f coord = igl::project(Eigen::Vector3f(center(0),center(1),center(2)), view * model, proj, viewport);
     down_mouse_z = coord[2];
     down_rotation = options.trackball_angle;
 
@@ -1704,7 +1683,7 @@ namespace igl
 
     opengl.free();
     __font_renderer.Shut();
-    
+
     shutdown_plugins();
 
     glfwDestroyWindow(window);

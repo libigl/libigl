@@ -2,6 +2,7 @@
 #define IGL_VIEWER_DATA_H
 
 #include <igl/igl_inline.h>
+#include <Eigen/Core>
 
 namespace igl
 {
