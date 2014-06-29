@@ -20,18 +20,21 @@
 #endif
 
 #include <Eigen/Core>
+#include <igl/viewer/OpenGL_shader.h>
+#include <igl/viewer/ViewerData.h>
+#include <igl/viewer/OpenGL_state.h>
 
 namespace igl
 {
-
-  class Plugin_manager;
+  // Forward declaration of the viewer_plugin class
+  class Viewer_plugin;
 
   class Viewer
   {
   public:
 
     int launch(std::string filename = "");
-    void init(Plugin_manager* pm);
+    void init();
 
     class Options
     #ifdef ENABLE_XML_SERIALIZATION
@@ -100,225 +103,17 @@ namespace igl
       double animation_max_fps;
     };
 
-    enum DirtyFlags
-    {
-      DIRTY_NONE           = 0x0000,
-      DIRTY_POSITION       = 0x0001,
-      DIRTY_UV             = 0x0002,
-      DIRTY_NORMAL         = 0x0004,
-      DIRTY_AMBIENT        = 0x0008,
-      DIRTY_DIFFUSE        = 0x0010,
-      DIRTY_SPECULAR       = 0x0020,
-      DIRTY_TEXTURE        = 0x0040,
-      DIRTY_FACE           = 0x0080,
-      DIRTY_MESH           = 0x00FF,
-      DIRTY_OVERLAY_LINES  = 0x0100,
-      DIRTY_OVERLAY_POINTS = 0x0200,
-      DIRTY_ALL            = 0x03FF
-    };
-
-    class Data
-    #ifdef ENABLE_XML_SERIALIZATION
-    : public ::igl::XMLSerialization
-    #endif
-    {
-    public:
-      Data()
-      #ifdef ENABLE_XML_SERIALIZATION
-      : XMLSerialization("Data"), dirty(DIRTY_ALL)
-      #endif
-      {};
-
-      void InitSerialization();
-
-      Eigen::MatrixXd V; // Vertices of the current mesh (#V x 3)
-      Eigen::MatrixXi F; // Faces of the mesh (#F x 3)
-
-      // Per face attributes
-      Eigen::MatrixXd F_normals; // One normal per face
-
-      Eigen::MatrixXd F_material_ambient; // Per face ambient color
-      Eigen::MatrixXd F_material_diffuse; // Per face diffuse color
-      Eigen::MatrixXd F_material_specular; // Per face specular color
-
-      // Per vertex attributes
-      Eigen::MatrixXd V_normals; // One normal per vertex
-
-      Eigen::MatrixXd V_material_ambient; // Per vertex ambient color
-      Eigen::MatrixXd V_material_diffuse; // Per vertex diffuse color
-      Eigen::MatrixXd V_material_specular; // Per vertex specular color
-
-      // UV parametrization
-      Eigen::MatrixXd V_uv; // UV vertices
-      Eigen::MatrixXi F_uv; // optional faces for UVs
-
-      // Texture
-      Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> texture_R;
-      Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> texture_G;
-      Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> texture_B;
-
-      // Overlays
-
-      // Lines plotted over the scene
-      // (Every row contains 9 doubles in the following format S_x, S_y, S_z, T_x, T_y, T_z, C_r, C_g, C_b),
-      // with S and T the coordinates of the two vertices of the line in global coordinates, and C the color in floating point rgb format
-      Eigen::MatrixXd lines;
-
-      // Points plotted over the scene
-      // (Every row contains 6 doubles in the following format P_x, P_y, P_z, C_r, C_g, C_b),
-      // with P the position in global coordinates of the center of the point, and C the color in floating point rgb format
-      Eigen::MatrixXd points;
-
-      // Text labels plotted over the scene
-      // Textp contains, in the i-th row, the position in global coordinates where the i-th label should be anchored
-      // Texts contains in the i-th position the text of the i-th label
-      Eigen::MatrixXd           labels_positions;
-      std::vector<std::string > labels_strings;
-
-      // Marks dirty buffers that need to be uploaded to OpenGL
-      uint32_t dirty;
-
-      // Caches the two-norm between the min/max point of the bounding box
-      float object_scale;
-      /*********************************/
-    };
-
-    class OpenGL_shader
-    {
-    public:
-      typedef unsigned int GLuint;
-      typedef int GLint;
-
-      GLuint vertex_shader;
-      GLuint fragment_shader;
-      GLuint geometry_shader;
-      GLuint program_shader;
-
-      OpenGL_shader() : vertex_shader(0), fragment_shader(0),
-        geometry_shader(0), program_shader(0) { }
-
-      // Create a new shader from the specified source strings
-      bool init(const std::string &vertex_shader_string,
-        const std::string &fragment_shader_string,
-        const std::string &fragment_data_name,
-        const std::string &geometry_shader_string = "",
-        int geometry_shader_max_vertices = 3);
-
-      // Create a new shader from the specified files on disk
-      bool init_from_files(const std::string &vertex_shader_filename,
-        const std::string &fragment_shader_filename,
-        const std::string &fragment_data_name,
-        const std::string &geometry_shader_filename = "",
-        int geometry_shader_max_vertices = 3);
-
-      // Select this shader for subsequent draw calls
-      void bind();
-
-      // Release all OpenGL objects
-      void free();
-
-      // Return the OpenGL handle of a named shader attribute (-1 if it does not exist)
-      GLint attrib(const std::string &name) const;
-
-      // Return the OpenGL handle of a uniform attribute (-1 if it does not exist)
-      GLint uniform(const std::string &name) const;
-
-      // Bind a per-vertex array attribute and refresh its contents from an Eigen amtrix
-      GLint bindVertexAttribArray(const std::string &name, GLuint bufferID,
-        const Eigen::MatrixXf &M, bool refresh) const;
-    };
-
-    class OpenGL_state
-    {
-    public:
-      typedef unsigned int GLuint;
-
-      GLuint vao_mesh;
-      GLuint vao_overlay_lines;
-      GLuint vao_overlay_points;
-      OpenGL_shader shader_mesh;
-      OpenGL_shader shader_overlay_lines;
-      OpenGL_shader shader_overlay_points;
-
-      GLuint vbo_V; // Vertices of the current mesh (#V x 3)
-      GLuint vbo_V_uv; // UV coordinates for the current mesh (#V x 2)
-      GLuint vbo_V_normals; // Vertices of the current mesh (#V x 3)
-      GLuint vbo_V_ambient; // Ambient material  (#V x 3)
-      GLuint vbo_V_diffuse; // Diffuse material  (#V x 3)
-      GLuint vbo_V_specular; // Specular material  (#V x 3)
-
-      GLuint vbo_F; // Faces of the mesh (#F x 3)
-      GLuint vbo_tex; // Texture
-
-      GLuint vbo_lines_F;         // Indices of the line overlay
-      GLuint vbo_lines_V;         // Vertices of the line overlay
-      GLuint vbo_lines_V_colors;  // Color values of the line overlay
-      GLuint vbo_points_F;        // Indices of the point overlay
-      GLuint vbo_points_V;        // Vertices of the point overlay
-      GLuint vbo_points_V_colors; // Color values of the point overlay
-
-      // Temporary copy of the content of each VBO
-      Eigen::MatrixXf V_vbo;
-      Eigen::MatrixXf V_normals_vbo;
-      Eigen::MatrixXf V_ambient_vbo;
-      Eigen::MatrixXf V_diffuse_vbo;
-      Eigen::MatrixXf V_specular_vbo;
-      Eigen::MatrixXf V_uv_vbo;
-      Eigen::MatrixXf lines_V_vbo;
-      Eigen::MatrixXf lines_V_colors_vbo;
-      Eigen::MatrixXf points_V_vbo;
-      Eigen::MatrixXf points_V_colors_vbo;
-
-      int tex_u;
-      int tex_v;
-      Eigen::Matrix<char,Eigen::Dynamic,1> tex;
-
-      Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic> F_vbo;
-      Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic> lines_F_vbo;
-      Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic> points_F_vbo;
-
-      // Marks dirty buffers that need to be uploaded to OpenGL
-      uint32_t dirty;
-
-      // Create a new set of OpenGL buffer objects
-      void init();
-
-      // Update contents from a 'Data' instance
-      void set_data(const Data &data, bool face_based, bool invert_normals);
-
-      // Bind the underlying OpenGL buffer objects for subsequent mesh draw calls
-      void bind_mesh();
-
-      /// Draw the currently buffered mesh (either solid or wireframe)
-      void draw_mesh(bool solid);
-
-      // Bind the underlying OpenGL buffer objects for subsequent line overlay draw calls
-      void bind_overlay_lines();
-
-      /// Draw the currently buffered line overlay
-      void draw_overlay_lines();
-
-      // Bind the underlying OpenGL buffer objects for subsequent point overlay draw calls
-      void bind_overlay_points();
-
-      /// Draw the currently buffered point overlay
-      void draw_overlay_points();
-
-      // Release the OpenGL buffer objects
-      void free();
-    };
-
     // Stores all the viewing options
     Options options;
 
     // Stores all the data that should be visualized
-    Data data;
+    igl::ViewerData data;
 
     // Stores the vbos indices and opengl related settings
-    OpenGL_state opengl;
+    igl::OpenGL_state opengl;
 
-    // Pointer to the plugin_manager (usually it will be a global variable)
-    Plugin_manager* plugin_manager;
+    // List of registered plugins
+    std::vector<Viewer_plugin*> plugins;
     void init_plugins();
     void shutdown_plugins();
 
@@ -422,11 +217,6 @@ namespace igl
       const Eigen::MatrixXi& F,
       float & zoom,
       Eigen::Vector3f& shift);
-
-
-    // Init opengl shaders and VBOs
-    void init_opengl();
-    void free_opengl();
 
     // Draw everything
     void draw();
@@ -591,31 +381,6 @@ namespace igl
   public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
-
-  // Keeps the lists of plugins
-  class Plugin_manager
-  {
-  public:
-
-    Plugin_manager() {}
-
-    /** Registers a new plugin. A call to this function should be
-     implemented in the constructor of all classes derived from PreviewPlugin. */
-    bool register_plugin(Viewer_plugin* p)
-    {
-      auto it = plugin_list.begin();
-      while(it != plugin_list.end() && (*it)->priority() < p->priority())
-        ++it;
-
-      plugin_list.insert(it,p);
-      return true;
-    }
-
-    std::vector<Viewer_plugin*> plugin_list;
-  public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  };
-
 
 } // end namespace
 

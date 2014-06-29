@@ -1,3 +1,4 @@
+- depth test for overlays cannot be disabled
 - data.lines, data.points should not concatenate colors with coordinates
 - snap to canonical recenters origin but trackball does not
 - rewrite in libigl style
