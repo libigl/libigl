@@ -94,9 +94,6 @@ namespace igl
       float point_size;
       float line_width;
 
-      // Enable per-face colors and normals
-      bool face_based;
-
       // Animation
       bool is_animating;
       double animation_max_fps;
@@ -137,13 +134,11 @@ namespace igl
     // Keep track of the global position of the scrollwheel
     float scroll_position;
 
-    // Useful functions
-    void compute_normals(); // Computes the normals of the mesh
-    void uniform_colors(Eigen::Vector3d ambient, Eigen::Vector3d diffuse, Eigen::Vector3d specular); // assign uniform colors to all faces/vertices
-    void grid_texture(); // Generate a default grid texture
-
-    void clear_mesh();      // Clear the mesh data
     void align_camera_center(); // Adjust the view to see the entire model
+    void compute_normals();
+
+
+    void clear();      // Clear the mesh data
 
     // Change the visualization mode, invalidating the cache if necessary
     void set_face_based(bool newvalue);

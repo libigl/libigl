@@ -9,8 +9,8 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key == '1')
   {
-    // Clear mesh should be called before drawing the mesh
-    viewer.clear_mesh();
+    // Clear should be called before drawing the mesh
+    viewer.clear();
     // Draw_mesh creates or updates the vertices and faces of the displayed mesh.
     // If a mesh is already displayed, draw_mesh returns an error if the given V and
     // F have size different than the current ones
@@ -18,7 +18,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   }
   else if (key == '2')
   {
-    viewer.clear_mesh();
+    viewer.clear();
     viewer.set_mesh(V2, F2);
   }
 

@@ -73,7 +73,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   if (key <'1' || key >'8')
     return false;
 
-  viewer.clear_mesh();
+  viewer.clear();
   viewer.options.show_lines = false;
   viewer.options.show_texture = false;
 
