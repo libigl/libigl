@@ -1,5 +1,5 @@
 title: libigl Tutorial
-author: Alec Jacobson, Daniele Pannozo and others
+author: Daniele Panozzo, Alec Jacobson and others
 date: 20 June 2014
 css: style.css
 html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
@@ -7,29 +7,19 @@ html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathja
 <script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 
-# Introduction
-Libigl is an open source C++ library for geometry processing research and
-development.  Dropping the heavy data structures of tradition geometry
-libraries, libigl is a simple header-only library of encapsulated functions.
-This combines the rapid prototyping familiar to Matlab or Python programmers
-with the performance and versatility of C++.  The tutorial is a self-contained,
-hands-on introduction to libigl.  Via live coding and interactive examples, we
-demonstrate how to accomplish various common geometry processing tasks such as
-computation of differential quantities and operators, real-time deformation,
-global parametrization, numerical optimization and mesh repair.  Each section
-of these lecture notes links to a cross-platform example application.
+# libigl Tutorial notes
+Libigl is an open source C++ library for geometry processing research and development.  Dropping the heavy data structures of tradition geometry libraries, libigl is a simple header-only library of encapsulated functions. This combines the rapid prototyping familiar to Matlab or Python programmers with the performance and versatility of C++.  The tutorial is a self-contained, hands-on introduction to libigl.  Via live coding and interactive examples, we demonstrate how to accomplish various common geometry processing tasks such as computation of differential quantities and operators, real-time deformation, global parametrization, numerical optimization and mesh repair.  Each section of these lecture notes links to a cross-platform example application.
 
 # Table of Contents
 
 * [Chapter 1: Introduction to libigl][100]
-    * [Mesh representation][101]
-    * [Plotting surfaces][102]
-    * [Interaction with keyboard and mouse][103]
-    * [Scalar field visualization][104]
-    * [Overlays][105]
-    * [Picking vertices and faces][106]
-    * [libigl design principles][107]
-
+    * [101 Mesh representation][101]
+    * [102 Plotting surfaces][102]
+    * [103 Interaction with keyboard and mouse][103]
+    * [104 Scalar field visualization][104]
+    * [105 Overlays][105]
+    * [106 Picking vertices and faces][106]
+        * [libigl design principles][107]
 * [Chapter 2: Discrete Geometric Quantities and
   Operators](#chapter2:discretegeometricquantitiesandoperators)
     * [201 Normals](#normals)
@@ -85,7 +75,10 @@ of these lecture notes links to a cross-platform example application.
 
 We introduce libIGL with a series of self-contained examples. The purpose of each example is to showcase a feature of libIGL while applying to a practical problem in geometry processing. In this chapter, we will showcase the basic concepts of libigl and introduce a simple mesh viewer that allows to easily visualize surface mesh and its attributes. All the examples are cross-platform and can be compiled on MacOSX, Linux and Windows.
 
-All dependencies for the compilation of these examples are contained in libigl (external folder), with the exception of Eigen, which should be downloaded and unpacked in the folder containing the libigl root folder.
+libigl can be downloaded from our [github repository](https://github.com/libigl/libigl) or cloned with git:
+``` sh
+git clone https://github.com/libigl/libigl.git
+```
 
 All examples depends on glfw, glew and anttweakbar. A copy
 of the sourcecode of each library is provided together with libigl
@@ -95,10 +88,9 @@ and they can be precompiled using:
     sh compile_dependencies_macosx.sh (MACOSX)
     sh compile_dependencies_linux.sh (LINUX)
 ```
+while precompiled binaries are provided for Visual Studio 2014 64bit.
 
-Precompiled binaries are provided for Visual Studio 2014 64bit.
-
-Use the cmake file in the tutorial folder to build all the examples:
+You can use the CMakeLists.txt in the tutorial folder to build all the examples:
 
 ```sh
   cd tutorial
@@ -107,6 +99,8 @@ Use the cmake file in the tutorial folder to build all the examples:
   cmake ../
   make
 ```
+
+or you can use the CMakeLists.txt inside each example folder to build the examples independently.
 
 For a few examples in Chapter 5, the [CoMiSo solver](http://www.graphics.rwth-aachen.de/software/comiso) has to be downloaded and compiled separately.
 
@@ -442,7 +436,7 @@ can define principal curvatures and use least squares fitting to find
 directions [][#meyer_2003].
 
 Alternatively, a robust method for determining principal curvatures is via
-quadric fitting [][#pannozo_2010]. In the neighborhood
+quadric fitting [][#panozzo_2010]. In the neighborhood
 around every vertex, a best-fit quadric is found and principal curvature values
 and directions are sampled from this quadric. With these in tow, one can
 compute mean curvature and Gaussian curvature as sums and products
@@ -1608,13 +1602,20 @@ Ambient occlusion can be used to darken the surface colors, as shown in [Example
 
 # Outlook for continuing development [future]
 
-* better documentation
-* your contributions are welcome, using pull request
-* open things to do
-  * isotropic remeshing
-  * matlab wrappers
-  * mixed integer solvers
-  * fast spatial indices
+libigl is in active development, and we plan to focus on the following features in the next months:
+
+* A better and more consistent documentation for all functions, plus exteding this tutorial to cover more features of libigl
+
+* Include a robust, adaptive triangular remeshing algorithm. Currently, the only remeshing functions available are only able to create quadrilateral remeshings
+
+* Generate matlab and python wrappers for all libigl functions
+
+* Implement a mixed-integer solver which only uses Eigen to remove the dependency on CoMiSo
+
+* Add a standalone BVH and a simple ray casting engine to make the dependency on Embree optional
+
+We encourage you to contribute to the library and to report problems and bugs that you encounter while using it. The best way of contributing new feature or patches is to fork the libigl repository and to open a [pull request](https://help.github.com/articles/using-pull-requests) on [our github repository](https://github.com/libigl/libigl).
+
 
 
 
@@ -1633,7 +1634,7 @@ Zorin. "Mixed Finite Elements for Variational Surface Modeling," 2010.
 [#meyer_2003]: Mark Meyer, Mathieu Desbrun, Peter Schröder and Alan H.  Barr,
 "Discrete Differential-Geometry Operators for Triangulated
 2-Manifolds," 2003.
-[#pannozo_2010]: Daniele Pannozo, Enrico Puppo, Luigi Rocca,
+[#panozzo_2010]: Daniele Panozzo, Enrico Puppo, Luigi Rocca,
 "Efficient Multi-scale Curvature and Crease Estimation," 2010.
 [#rustamov_2011]: Raid M. Rustamov, "Multiscale Biharmonic Kernels", 2011.
 [#sorkine_2004]: Olga Sorkine, Yaron Lipman, Daniel Cohen-Or, Marc Alexa,
