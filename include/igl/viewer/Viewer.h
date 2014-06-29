@@ -371,6 +371,14 @@ namespace igl
                       const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B);
 
     void add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
+    // Sets edges given a list of edge vertices and edge indices. In constrast
+    // to `add_edges` this will (purposefully) clober existing edges.
+    //
+    // Inputs:
+    //   P  #P by 3 list of vertex positions
+    //   E  #E by 2 list of edge indices into P
+    //   C  #E|1 by 3 color(s)
+    void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C);
     void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
     void add_label (const Eigen::VectorXd& P,  const std::string& str);
 

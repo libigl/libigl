@@ -1,8 +1,5 @@
 #include <igl/colon.h>
-#include <igl/cotmatrix.h>
 #include <igl/harmonic.h>
-#include <igl/jet.h>
-#include <igl/min_quad_with_fixed.h>
 #include <igl/readOBJ.h>
 #include <igl/readDMAT.h>
 #include <igl/viewer/Viewer.h>

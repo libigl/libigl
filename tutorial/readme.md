@@ -862,11 +862,76 @@ igl::harmonic(V,F,b,bc,k,Z);
 ![The `PolyharmonicDeformation` example deforms a flat domain (left) into a bump as a
 solution to various $k$-harmonic PDEs.](images/bump-k-harmonic.jpg)
 
+## Bounded Biharmonic Weights
+In computer animation, shape deformation is often referred to as "skinning".
+Constraints are posed as relative rotations of internal rigid "bones" inside a
+character. The deformation method, or skinning method, determines how the
+surface of the character (i.e. its skin) should move as a function of the bone
+rotations.
+
+The most popular technique is linear blend skinning. Each point on the shape
+computes its new location as a linear combination of bone transformations:
+
+ $\mathbf{x}' = \sum\limits_{i = 0}^m w_i(\mathbf{x}) \mathbf{T}_i
+ \left(\begin{array}{c}\mathbf{x}_i\\1\end{array}\right),$
+
+where $w_i(\mathbf{x})$ is the scalar _weight function_ of the ith bone evaluated at
+$\mathbf{x}$ and $\mathbf{T}_i$ is the bone transformation as a $4 \times 3$
+matrix.
+
+This formula is embarassingly parallel (computation at one point does not
+depend on shared data need by computation at another point). It is often
+implemented as a vertex shader. The weights and rest positions for each vertex
+are sent as vertex shader _attribtues_ and bone transformations are sent as
+_uniforms_. Then vertices are transformed within the vertex shader, just in
+time for rendering.
+
+As the skinning formula is linear (hence its name), we can write it as matrix
+multiplication:
+
+ $\mathbf{X}' = \mathbf{M} \mathbf{T},$
+
+where $\mathbx{X}'$ is $n \times 3$ stack of deformed positions as row
+vectors, $\mathbf{M}$ is a $n \times m\cdot dim$ matrix containing weights and
+rest positions and $\mathbf{T}$ is a $m\cdot (dim+1) \times dim$ stack of
+transposed bone transformations.
+
+Traditionally, the weight functions $w_j$ are painted manually by skilled
+rigging professionals. Modern techniques now exist to compute weight functions
+automatically given the shape and a description of the skeleton (or in general
+any handle structure such as a cage, collection of points, selected regions,
+etc.).
+
+Bounded biharmonic weights are one such technique that casts weight computation
+as a constrained optimization problem [#jacobson_2011][]. The weights enforce
+smoothness by minimizing a smoothness energy: the familiar Laplacian energy:
+
+ $\sum\limits_{i = 0}^m \int_S (\Delta w_i)^2 dA$
+  
+subject to constraints which enforce interpolation of handle constraints:
+
+ $w_i(\mathbf{x}) = \begin{cases} 1 & \text{ if } \mathbf{x} \in H_i\\ 0 & \text{ otherwise }
+ \end{cases},$
+
+where $H_i$ is the ith handle, and constraints which enforce non-negativity,
+parition of unity and encourage sparsity:
+
+ $0\le w_i \le 1$ and $\sum\limits_{i=0}^m w_i = 1.$
+
+This is a quadratic programming problem and libigl solves it using its active
+set solver or by calling out to Mosek.
+
+![The example `BoundedBiharmonicWeights` computes weights for a tetrahedral
+mesh given a skeleton (top) and then animates a linear blend skinning
+deformation (bottom).](images/hand-bbw.jpg)
+
 [#botsch_2004]: Matrio Botsch and Leif Kobbelt. "An Intuitive Framework for
 Real-Time Freeform Modeling," 2004.
 [#jacobson_thesis_2013]: Alec Jacobson,
 _Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
 2013.
+[#jacobson_2011]: Alec Jacobson, Ilya Baran, Jovan Popović, and Olga Sorkin.
+"Bounded Biharmonic Weights for Real-Time Deformation," 2011.
 [#jacobson_mixed_2010]: Alec Jacobson, Elif Tosun, Olga Sorkine, and Denis
 Zorin. "Mixed Finite Elements for Variational Surface Modeling," 2010.
 [#kazhdan_2012]: Michael Kazhdan, Jake Solomon, Mirela Ben-Chen,

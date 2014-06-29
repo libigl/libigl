@@ -1,5 +1,5 @@
+- data.lines, data.points should not concatenate colors with coordinates
 - snap to canonical recenters origin but trackball does not
-+ snap to canonical view key shortcut is not working
 - rewrite in libigl style
 - separate various class into their own .h/.cpp pairs
 - remove use of double underscores (http://stackoverflow.com/a/224420/148668)
@@ -14,6 +14,7 @@
 - zoom with pan rather than scaling
 - refresh draw while resizing
 - use constructor initializer list rather than complicated constructor
++ snap to canonical view key shortcut is not working
 + resize TwBar with window
 + trackball should be able to drag over TwBar
 + don't zoom on horizontal scale
