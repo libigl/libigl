@@ -26,7 +26,7 @@ bool pre_draw(igl::Viewer & viewer)
   U.col(2) = z_max*Z;
   viewer.set_vertices(U);
   viewer.compute_normals();
-  if(viewer.options.is_animating)
+  if(viewer.core.is_animating)
   {
     z_max += z_dir;
     z_dir *= (z_max>=1.0 || z_max<=0.0?-1.0:1.0);
@@ -39,7 +39,7 @@ bool key_down(igl::Viewer &viewer, unsigned char key, int mods)
   switch(key)
   {
     case ' ':
-      viewer.options.is_animating = !viewer.options.is_animating;
+      viewer.core.is_animating = !viewer.core.is_animating;
       break;
     case '.':
       k++;
@@ -93,13 +93,13 @@ int main(int argc, char *argv[])
   // Plot the mesh with pseudocolors
   igl::Viewer viewer;
   viewer.set_mesh(U, F);
-  viewer.options.show_lines = false;
+  viewer.core.show_lines = false;
   viewer.set_colors(C);
-  viewer.options.trackball_angle << -0.58,-0.03,-0.03,0.81;
-  viewer.options.trackball_angle.normalize();
+  viewer.core.trackball_angle << -0.58,-0.03,-0.03,0.81;
+  viewer.core.trackball_angle.normalize();
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
-  viewer.options.is_animating = true;
-  viewer.options.animation_max_fps = 30.;
+  viewer.core.is_animating = true;
+  viewer.core.animation_max_fps = 30.;
   viewer.launch();
 }

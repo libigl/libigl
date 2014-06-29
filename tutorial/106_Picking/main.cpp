@@ -65,6 +65,6 @@ int main(int argc, char *argv[])
   viewer.set_mesh(V, F);
   viewer.callback_mouse_down = &mouse_down;
   viewer.set_colors(C);
-  viewer.options.show_lines = false;
+  viewer.core.show_lines = false;
   viewer.launch();
 }

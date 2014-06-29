@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
   viewer.add_edges(BC,BC+max_size*GU, black);
 
   // Hide wireframe
-  viewer.options.show_lines = false;
+  viewer.core.show_lines = false;
 
   viewer.launch();
 }

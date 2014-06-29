@@ -40,7 +40,7 @@ bool pre_draw(igl::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
-  if(viewer.options.is_animating)
+  if(viewer.core.is_animating)
   {
     // Interpolate pose and identity
     RotationList anim_pose(pose.size());
@@ -91,7 +91,7 @@ bool key_down(igl::Viewer &viewer, unsigned char key, int mods)
   switch(key)
   {
     case ' ':
-      viewer.options.is_animating = !viewer.options.is_animating;
+      viewer.core.is_animating = !viewer.core.is_animating;
       break;
     case '.':
       selected++;
@@ -157,13 +157,13 @@ int main(int argc, char *argv[])
   viewer.set_mesh(U, F);
   set_color(viewer);
   viewer.set_edges(C,BE,sea_green);
-  viewer.options.show_lines = false;
-  viewer.options.show_overlay_depth = false;
-  viewer.options.line_width = 1;
-  viewer.options.trackball_angle.normalize();
+  viewer.core.show_lines = false;
+  viewer.core.show_overlay_depth = false;
+  viewer.core.line_width = 1;
+  viewer.core.trackball_angle.normalize();
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
-  viewer.options.is_animating = false;
-  viewer.options.animation_max_fps = 30.;
+  viewer.core.is_animating = false;
+  viewer.core.animation_max_fps = 30.;
   viewer.launch();
 }

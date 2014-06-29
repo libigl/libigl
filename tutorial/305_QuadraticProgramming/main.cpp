@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
   // Plot the mesh
   igl::Viewer viewer;
   viewer.set_mesh(V, F);
-  viewer.options.show_lines = false;
+  viewer.core.show_lines = false;
   viewer.callback_key_down = &key_down;
 
   // One fixed point
