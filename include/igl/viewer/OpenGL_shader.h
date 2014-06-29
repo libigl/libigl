@@ -1,3 +1,11 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2014 Wenzel Jacob <wenzel@inf.ethz.ch>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
+
 #ifndef IGL_OPENGL_SHADER_H
 #define IGL_OPENGL_SHADER_H
 
@@ -17,6 +25,9 @@
 
 namespace igl
 {
+
+// This class wraps an OpenGL program composed of three shaders
+// TODO: write documentation
 
 class OpenGL_shader
 {
