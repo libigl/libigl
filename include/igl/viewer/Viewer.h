@@ -23,11 +23,10 @@
 #include <igl/viewer/OpenGL_shader.h>
 #include <igl/viewer/ViewerData.h>
 #include <igl/viewer/OpenGL_state.h>
+#include <igl/viewer/ViewerPlugin.h>
 
 namespace igl
 {
-  // Forward declaration of the viewer_plugin class
-  class Viewer_plugin;
 
   class Viewer
   {
@@ -113,7 +112,7 @@ namespace igl
     igl::OpenGL_state opengl;
 
     // List of registered plugins
-    std::vector<Viewer_plugin*> plugins;
+    std::vector<ViewerPlugin*> plugins;
     void init_plugins();
     void shutdown_plugins();
 
@@ -256,128 +255,6 @@ namespace igl
     static void TW_CALL get_face_based_cb(void *param, void *clientData);
     static void TW_CALL set_invert_normals_cb(const void *param, void *clientData);
     static void TW_CALL get_invert_normals_cb(void *param, void *clientData);
-  public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  };
-
-
-  // Abstract class for plugins
-  // All plugins MUST have this class as their parent and implement all the callbacks
-  // For an example of a basic plugins see plugins/skeleton.h
-  //
-  // Return value of callbacks: returning true to any of the callbacks tells Preview3D that the event has been
-  // handled and that it should not be passed to other plugins or to other internal functions of Preview3D
-
-  class Viewer_plugin
-  #ifdef ENABLE_XML_SERIALIZATION
-  : public ::igl::XMLSerialization
-  #endif
-  {
-  public:
-    Viewer_plugin()
-    #ifdef ENABLE_XML_SERIALIZATION
-    : XMLSerialization("dummy")
-    #endif
-    {plugin_name = "dummy";};
-
-    ~Viewer_plugin(){};
-
-    // This function is called when the viewer is initialized (no mesh will be loaded at this stage)
-    virtual void init(igl::Viewer *_viewer)
-    {
-      viewer = _viewer;
-    }
-
-    // This function is called before shutdown
-    virtual void shutdown()
-    {
-    }
-
-    // This function is called before a mesh is loaded
-    virtual bool load(std::string filename)
-    {
-      return false;
-    }
-
-    // This function is called before a mesh is saved
-    virtual bool save(std::string filename)
-    {
-      return false;
-    }
-
-    // Runs immediately after a new mesh had been loaded.
-    virtual bool post_load()
-    {
-      return false;
-    }
-
-    // This function is called before the draw procedure of Preview3D
-    virtual bool pre_draw()
-    {
-      return false;
-    }
-
-    // This function is called after the draw procedure of Preview3D
-    virtual bool post_draw()
-    {
-      return false;
-    }
-
-    // This function is called when the mouse button is pressed
-    // - button can be GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON or GLUT_RIGHT_BUTTON
-    // - modifiers is a bitfield that might one or more of the following bits Preview3D::NO_KEY, Preview3D::SHIFT, Preview3D::CTRL, Preview3D::ALT;
-    virtual bool mouse_down(int button, int modifier)
-    {
-      return false;
-    }
-
-    // This function is called when the mouse button is released
-    // - button can be GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON or GLUT_RIGHT_BUTTON
-    // - modifiers is a bitfield that might one or more of the following bits Preview3D::NO_KEY, Preview3D::SHIFT, Preview3D::CTRL, Preview3D::ALT;
-    virtual bool mouse_up(int button, int modifier)
-    {
-      return false;
-    }
-
-    // This function is called every time the mouse is moved
-    // - mouse_x and mouse_y are the new coordinates of the mouse pointer in screen coordinates
-    virtual bool mouse_move(int mouse_x, int mouse_y)
-    {
-      return false;
-    }
-
-    // This function is called every time the scroll wheel is moved
-    // Note: this callback is not working with every glut implementation
-    virtual bool mouse_scroll(float delta_y)
-    {
-      return false;
-    }
-
-    // This function is called when a keyboard key is pressed
-    // - modifiers is a bitfield that might one or more of the following bits Preview3D::NO_KEY, Preview3D::SHIFT, Preview3D::CTRL, Preview3D::ALT;
-    virtual bool key_down(unsigned char key, int modifiers)
-    {
-      return false;
-    }
-
-    // This function is called when a keyboard key is release
-    // - modifiers is a bitfield that might one or more of the following bits Preview3D::NO_KEY, Preview3D::SHIFT, Preview3D::CTRL, Preview3D::ALT;
-    virtual bool key_up(unsigned char key, int modifiers)
-    {
-      return false;
-    }
-
-    // Priority of the plugin (use only positive numbers, negative are reserved for internal use)
-    // The plugins will be initialized in increasing priority
-    virtual int priority()
-    {
-      return 0;
-    }
-
-    std::string plugin_name;
-  protected:
-    // Pointer to the main Preview3D class
-    Viewer *viewer;
   public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
