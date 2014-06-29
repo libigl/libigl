@@ -891,7 +891,7 @@ multiplication:
 
  $\mathbf{X}' = \mathbf{M} \mathbf{T},$
 
-where $\mathbx{X}'$ is $n \times 3$ stack of deformed positions as row
+where $\mathbf{X}'$ is $n \times 3$ stack of deformed positions as row
 vectors, $\mathbf{M}$ is a $n \times m\cdot dim$ matrix containing weights and
 rest positions and $\mathbf{T}$ is a $m\cdot (dim+1) \times dim$ stack of
 transposed bone transformations.
