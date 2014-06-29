@@ -38,27 +38,7 @@
 #include <fstream>
 
 #include <algorithm>
-
-//OK NV
-Eigen::Vector3f project(const Eigen::Vector3f&  obj,
-                        const Eigen::Matrix4f& model,
-                        const Eigen::Matrix4f& proj,
-                        const Eigen::Vector4f&  viewport)
-{
-  Eigen::Vector4f tmp;
-  tmp << obj,1;
-
-  tmp = model * tmp;
-
-  tmp = proj * tmp;
-
-  tmp = tmp.array() / tmp(3);
-  tmp = tmp.array() * 0.5f + 0.5f;
-  tmp(0) = tmp(0) * viewport(2) + viewport(0);
-  tmp(1) = tmp(1) * viewport(3) + viewport(1);
-
-  return tmp.head(3);
-}
+#include <igl/project.h>
 
 Eigen::Matrix4f lookAt (
                         const Eigen::Vector3f& eye,
@@ -168,10 +148,7 @@ Eigen::Matrix4f translate(
 #include <igl/trackball.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/unproject.h>
-#include <TwOpenGLCore.h>
-
-// Plugin manager (exported to other compilation units)
-igl::Plugin_manager igl_viewer_plugin_manager;
+#include <igl/viewer/TextRenderer.h>
 
 // Internal global variables used for glfw event handling
 static igl::Viewer * __viewer;
@@ -179,129 +156,7 @@ static double highdpi = 1;
 static double scroll_x = 0;
 static double scroll_y = 0;
 
-/* This class extends the font rendering code in AntTweakBar
-   so that it can be used to render text at arbitrary 3D positions */
-class TextRenderer : public CTwGraphOpenGLCore {
-public:
-  TextRenderer() : m_shaderHandleBackup(0) { }
-
-  virtual int Init()
-  {
-    int retval = CTwGraphOpenGLCore::Init();
-    if (retval == 1)
-    {
-      std::string vertexShader =
-          "#version 150\n"
-          "uniform vec2 offset;"
-          "uniform vec2 wndSize;"
-          "uniform vec4 color;"
-          "uniform float depth;"
-          "in vec2 vertex;"
-          "in vec2 uv;"
-          "out vec4 fcolor;"
-          "out vec2 fuv;"
-          "void main() {"
-          "  gl_Position = vec4(2.0*(vertex.x+offset.x-0.5)/wndSize.x - 1.0,"
-          "                     1.0 - 2.0*(vertex.y+offset.y-0.5)/wndSize.y,"
-          "                     depth, 1);"
-          " fuv = uv;"
-          " fcolor = color;"
-          "}";
-
-      std::string fragmentShader =
-        "#version 150\n"
-        "uniform sampler2D tex;"
-        "in vec2 fuv;"
-        "in vec4 fcolor;"
-        "out vec4 outColor;"
-        "void main() { outColor.rgb = fcolor.bgr; outColor.a = fcolor.a * texture(tex, fuv).r; }";
-
-      if (!m_shader.init(vertexShader, fragmentShader, "outColor"))
-        return 0;
-
-      /* Adjust location bindings */
-      glBindAttribLocation(m_shader.program_shader, 0, "vertex");
-      glBindAttribLocation(m_shader.program_shader, 1, "uv");
-      glBindAttribLocation(m_shader.program_shader, 2, "color");
-      glLinkProgram(m_shader.program_shader);
-
-      m_shaderHandleBackup = m_TriTexUniProgram;
-      m_TriTexUniProgram = m_shader.program_shader;
-      m_TriTexUniLocationOffset = m_shader.uniform("offset");
-      m_TriTexUniLocationWndSize = m_shader.uniform("wndSize");
-      m_TriTexUniLocationColor = m_shader.uniform("color");
-      m_TriTexUniLocationTexture = m_shader.uniform("tex");
-      m_TriTexUniLocationDepth = m_shader.uniform("depth");
-    }
-    return retval;
-  }
-
-  virtual int Shut()
-  {
-    for (auto kv : m_textObjects)
-      DeleteTextObj(kv.second);
-    m_shader.free();
-    m_TriTexUniProgram = m_shaderHandleBackup;
-    return CTwGraphOpenGLCore::Shut();
-  }
-
-  void BeginDraw(const Eigen::Matrix4f &view, const Eigen::Matrix4f &proj,
-    const Eigen::Vector4f &_viewport, float _object_scale)
-  {
-    viewport = _viewport;
-    proj_matrix = proj;
-    view_matrix = view;
-    CTwGraphOpenGLCore::BeginDraw(viewport[2], viewport[3]);
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_FALSE);
-    object_scale = _object_scale;
-  }
-
-  void EndDraw()
-  {
-    /* Limit the number of cached text objects */
-    for (auto it = m_textObjects.cbegin(); it != m_textObjects.cend(); )
-    {
-      if (m_textObjects.size() < 1000000)
-        break;
-      DeleteTextObj(it->second);
-      m_textObjects.erase(it++);
-    }
-
-    glDepthMask(GL_TRUE);
-    CTwGraphOpenGLCore::EndDraw();
-  }
-
-  void DrawText(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text)
-  {
-    pos += normal * 0.005f * object_scale;
-    Eigen::Vector3f coord = project(Eigen::Vector3f(pos(0), pos(1), pos(2)),
-        view_matrix, proj_matrix, viewport);
-    auto it = m_textObjects.find(text);
-    void *text_obj = nullptr;
-    if (it == m_textObjects.end())
-    {
-      text_obj = NewTextObj();
-      BuildText(text_obj, &text, NULL, NULL, 1, g_DefaultNormalFont, 0, 0);
-      m_textObjects[text] = text_obj;
-    } else {
-      text_obj = it->second;
-    }
-    m_shader.bind();
-    glUniform1f(m_TriTexUniLocationDepth, 2*(coord(2)-0.5f));
-    CTwGraphOpenGLCore::DrawText(text_obj, coord[0], viewport[3] - coord[1], COLOR32_BLUE, 0);
-  }
-protected:
-  igl::Viewer::OpenGL_shader m_shader;
-  std::map<std::string, void *> m_textObjects;
-  GLuint m_shaderHandleBackup;
-  GLuint m_TriTexUniLocationDepth;
-  Eigen::Matrix4f view_matrix, proj_matrix;
-  Eigen::Vector4f viewport;
-  float object_scale;
-};
-
-static TextRenderer __font_renderer;
+static igl::TextRenderer __font_renderer;
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
@@ -543,10 +398,8 @@ static void glfw_char_callback(GLFWwindow* window, unsigned int c)
 
 namespace igl
 {
-  void Viewer::init(Plugin_manager* pm)
+  void Viewer::init()
   {
-    plugin_manager = pm;
-
     // Create a tweak bar
     bar = TwNewBar("libIGL-Viewer");
     TwDefine(" libIGL-Viewer help='This is a simple 3D mesh viewer.' "); // Message added to the help bar->
@@ -638,8 +491,6 @@ namespace igl
 
   Viewer::Viewer()
   {
-    plugin_manager = 0;
-
     // Default shininess
     options.shininess = 35.0f;
 
@@ -716,9 +567,8 @@ namespace igl
   void Viewer::init_plugins()
   {
     // Init all plugins
-    if (plugin_manager)
-      for (unsigned int i = 0; i<plugin_manager->plugin_list.size(); ++i)
-        plugin_manager->plugin_list[i]->init(this);
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      plugins[i]->init(this);
   }
 
   Viewer::~Viewer()
@@ -727,9 +577,8 @@ namespace igl
 
   void Viewer::shutdown_plugins()
   {
-    if (plugin_manager)
-      for (unsigned int i = 0; i<plugin_manager->plugin_list.size(); ++i)
-        plugin_manager->plugin_list[i]->shutdown();
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      plugins[i]->shutdown();
   }
 
   bool Viewer::load_mesh_from_file(const char* mesh_file_name)
@@ -737,10 +586,9 @@ namespace igl
     std::string mesh_file_name_string = std::string(mesh_file_name);
 
     // first try to load it with a plugin
-    if (plugin_manager)
-      for (unsigned int i = 0; i<plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->load(mesh_file_name_string))
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->load(mesh_file_name_string))
+        return true;
 
     clear_mesh();
 
@@ -785,10 +633,9 @@ namespace igl
 
     align_camera_center();
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i<plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->post_load())
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->post_load())
+        return true;
 
     return true;
   }
@@ -797,7 +644,7 @@ namespace igl
   {
     igl::per_face_normals(data.V, data.F, data.F_normals);
     igl::per_vertex_normals(data.V, data.F, data.F_normals, data.V_normals);
-    data.dirty |= DIRTY_NORMAL;
+    data.dirty |= OpenGL_state::DIRTY_NORMAL;
   }
 
   void Viewer::uniform_colors(Eigen::Vector3d ambient, Eigen::Vector3d diffuse, Eigen::Vector3d specular)
@@ -823,7 +670,7 @@ namespace igl
       data.F_material_diffuse.row(i) = diffuse;
       data.F_material_specular.row(i) = specular;
     }
-    data.dirty |= DIRTY_SPECULAR | DIRTY_DIFFUSE | DIRTY_AMBIENT;
+    data.dirty |= OpenGL_state::DIRTY_SPECULAR | OpenGL_state::DIRTY_DIFFUSE | OpenGL_state::DIRTY_AMBIENT;
   }
 
   void Viewer::grid_texture()
@@ -836,7 +683,7 @@ namespace igl
       data.V_uv.col(1) = data.V_uv.col(1).array() - data.V_uv.col(1).minCoeff();
       data.V_uv.col(1) = data.V_uv.col(1).array() / data.V_uv.col(1).maxCoeff();
       data.V_uv = data.V_uv.array() * 10;
-      data.dirty |= DIRTY_TEXTURE;
+      data.dirty |= OpenGL_state::DIRTY_TEXTURE;
     }
 
     unsigned size = 128;
@@ -854,7 +701,7 @@ namespace igl
 
     data.texture_G = data.texture_R;
     data.texture_B = data.texture_R;
-    data.dirty |= DIRTY_TEXTURE;
+    data.dirty |= OpenGL_state::DIRTY_TEXTURE;
   }
 
   bool Viewer::save_mesh_to_file(const char* mesh_file_name)
@@ -862,10 +709,9 @@ namespace igl
     std::string mesh_file_name_string(mesh_file_name);
 
     // first try to load it with a plugin
-    if (plugin_manager)
-      for (unsigned int i = 0; i<plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->save(mesh_file_name_string))
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->save(mesh_file_name_string))
+        return true;
 
     size_t last_dot = mesh_file_name_string.rfind('.');
     if (last_dot == std::string::npos)
@@ -930,10 +776,9 @@ namespace igl
       if (callback_key_down(*this,key,modifiers))
         return true;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->key_down(key, modifiers))
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->key_down(key, modifiers))
+        return true;
 
     if (key == 'S')
       mouse_scroll(1);
@@ -961,10 +806,9 @@ namespace igl
       if (callback_key_up(*this,key,modifiers))
         return true;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->key_up(key, modifiers))
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->key_up(key, modifiers))
+        return true;
 
     return false;
   }
@@ -975,10 +819,9 @@ namespace igl
       if (callback_mouse_down(*this,button,modifier))
         return true;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i < plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->mouse_down(button,modifier))
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->mouse_down(button,modifier))
+        return true;
 
     down = true;
 
@@ -994,7 +837,7 @@ namespace igl
     else
       center = data.V.colwise().sum()/data.V.rows();
 
-    Eigen::Vector3f coord = project(Eigen::Vector3f(center(0),center(1),center(2)), view * model, proj, viewport);
+    Eigen::Vector3f coord = igl::project(Eigen::Vector3f(center(0),center(1),center(2)), view * model, proj, viewport);
     down_mouse_z = coord[2];
     down_rotation = options.trackball_angle;
 
@@ -1026,9 +869,8 @@ namespace igl
       if (callback_mouse_up(*this,button,modifier))
         return true;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->mouse_up(button,modifier))
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+        if (plugins[i]->mouse_up(button,modifier))
           return true;
 
     mouse_mode = NOTHING;
@@ -1051,10 +893,9 @@ namespace igl
       if (callback_mouse_move(*this,mouse_x,mouse_y))
         return true;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i < plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->mouse_move(mouse_x, mouse_y))
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->mouse_move(mouse_x, mouse_y))
+        return true;
 
     if (down)
     {
@@ -1112,10 +953,9 @@ namespace igl
       if (callback_mouse_scroll(*this,delta_y))
         return true;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->mouse_scroll(delta_y))
-          return true;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->mouse_scroll(delta_y))
+        return true;
 
     // Only zoom if there's actually a change
     if(delta_y != 0)
@@ -1125,644 +965,6 @@ namespace igl
       options.camera_zoom = (options.camera_zoom * mult > min_zoom ? options.camera_zoom * mult : min_zoom);
     }
     return true;
-  }
-
-  static GLuint create_shader_helper(GLint type, const std::string &shader_string)
-  {
-    using namespace std;
-    if (shader_string.empty())
-      return (GLuint) 0;
-
-    GLuint id = glCreateShader(type);
-    const char *shader_string_const = shader_string.c_str();
-    glShaderSource(id, 1, &shader_string_const, NULL);
-    glCompileShader(id);
-
-    GLint status;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &status);
-
-    if (status != GL_TRUE)
-    {
-      char buffer[512];
-      if (type == GL_VERTEX_SHADER)
-        cerr << "Vertex shader:" << endl;
-      else if (type == GL_FRAGMENT_SHADER)
-        cerr << "Fragment shader:" << endl;
-      else if (type == GL_GEOMETRY_SHADER)
-        cerr << "Geometry shader:" << endl;
-      cerr << shader_string << endl << endl;
-      glGetShaderInfoLog(id, 512, NULL, buffer);
-      cerr << "Error: " << endl << buffer << endl;
-      return (GLuint) 0;
-    }
-
-    return id;
-  }
-
-  bool Viewer::OpenGL_shader::init_from_files(
-    const std::string &vertex_shader_filename,
-    const std::string &fragment_shader_filename,
-    const std::string &fragment_data_name,
-    const std::string &geometry_shader_filename,
-    int geometry_shader_max_vertices)
-  {
-    auto file_to_string = [](const std::string &filename)
-    {
-      std::ifstream t(filename);
-      return std::string((std::istreambuf_iterator<char>(t)),
-                          std::istreambuf_iterator<char>());
-    };
-
-    return init(
-      file_to_string(vertex_shader_filename),
-      file_to_string(fragment_shader_filename),
-      fragment_data_name,
-      file_to_string(geometry_shader_filename),
-      geometry_shader_max_vertices
-   );
-  }
-
-  bool Viewer::OpenGL_shader::init(
-    const std::string &vertex_shader_string,
-    const std::string &fragment_shader_string,
-    const std::string &fragment_data_name,
-    const std::string &geometry_shader_string,
-    int geometry_shader_max_vertices)
-  {
-    using namespace std;
-    vertex_shader = create_shader_helper(GL_VERTEX_SHADER, vertex_shader_string);
-    geometry_shader = create_shader_helper(GL_GEOMETRY_SHADER, geometry_shader_string);
-    fragment_shader = create_shader_helper(GL_FRAGMENT_SHADER, fragment_shader_string);
-
-    if (!vertex_shader || !fragment_shader)
-      return false;
-
-    program_shader = glCreateProgram();
-
-    glAttachShader(program_shader, vertex_shader);
-    glAttachShader(program_shader, fragment_shader);
-
-    if (geometry_shader)
-    {
-      glAttachShader(program_shader, geometry_shader);
-
-      /* This covers only basic cases and may need to be modified */
-      glProgramParameteri(program_shader, GL_GEOMETRY_INPUT_TYPE, GL_TRIANGLES);
-      glProgramParameteri(program_shader, GL_GEOMETRY_OUTPUT_TYPE, GL_TRIANGLES);
-      glProgramParameteri(program_shader, GL_GEOMETRY_VERTICES_OUT, geometry_shader_max_vertices);
-    }
-
-    glBindFragDataLocation(program_shader, 0, fragment_data_name.c_str());
-    glLinkProgram(program_shader);
-
-    GLint status;
-    glGetProgramiv(program_shader, GL_LINK_STATUS, &status);
-
-    if (status != GL_TRUE)
-    {
-      char buffer[512];
-      glGetProgramInfoLog(program_shader, 512, NULL, buffer);
-      cerr << "Linker error: " << endl << buffer << endl;
-      program_shader = 0;
-      return false;
-    }
-
-    return true;
-  }
-
-  void Viewer::OpenGL_shader::bind()
-  {
-    glUseProgram(program_shader);
-  }
-
-  GLint Viewer::OpenGL_shader::attrib(const std::string &name) const
-  {
-    return glGetAttribLocation(program_shader, name.c_str());
-  }
-
-  GLint Viewer::OpenGL_shader::uniform(const std::string &name) const
-  {
-    return glGetUniformLocation(program_shader, name.c_str());
-  }
-
-  GLint Viewer::OpenGL_shader::bindVertexAttribArray(
-    const std::string &name, GLuint bufferID, const Eigen::MatrixXf &M, bool refresh) const
-  {
-    GLint id = attrib(name);
-    if (id < 0)
-      return id;
-    if (M.size() == 0)
-    {
-      glDisableVertexAttribArray(id);
-      return id;
-    }
-    glBindBuffer(GL_ARRAY_BUFFER, bufferID);
-    if (refresh)
-      glBufferData(GL_ARRAY_BUFFER, sizeof(float)*M.size(), M.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(id, M.rows(), GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(id);
-    return id;
-  }
-
-  void Viewer::OpenGL_shader::free()
-  {
-    if (program_shader)
-    {
-      glDeleteProgram(program_shader);
-      program_shader = 0;
-    }
-    if (vertex_shader)
-    {
-      glDeleteShader(vertex_shader);
-      vertex_shader = 0;
-    }
-    if (fragment_shader)
-    {
-      glDeleteShader(fragment_shader);
-      fragment_shader = 0;
-    }
-    if (geometry_shader)
-    {
-      glDeleteShader(geometry_shader);
-      geometry_shader = 0;
-    }
-  }
-
-  void Viewer::OpenGL_state::init()
-  {
-    // Mesh: Vertex Array Object & Buffer objects
-    glGenVertexArrays(1, &vao_mesh);
-    glBindVertexArray(vao_mesh);
-    glGenBuffers(1, &vbo_V);
-    glGenBuffers(1, &vbo_V_normals);
-    glGenBuffers(1, &vbo_V_ambient);
-    glGenBuffers(1, &vbo_V_diffuse);
-    glGenBuffers(1, &vbo_V_specular);
-    glGenBuffers(1, &vbo_V_uv);
-    glGenBuffers(1, &vbo_F);
-    glGenTextures(1, &vbo_tex);
-
-    // Line overlay
-    glGenVertexArrays(1, &vao_overlay_lines);
-    glBindVertexArray(vao_overlay_lines);
-    glGenBuffers(1, &vbo_lines_F);
-    glGenBuffers(1, &vbo_lines_V);
-    glGenBuffers(1, &vbo_lines_V_colors);
-
-    // Point overlay
-    glGenVertexArrays(1, &vao_overlay_points);
-    glBindVertexArray(vao_overlay_points);
-    glGenBuffers(1, &vbo_points_F);
-    glGenBuffers(1, &vbo_points_V);
-    glGenBuffers(1, &vbo_points_V_colors);
-
-    dirty = DIRTY_ALL;
-  }
-
-  void Viewer::OpenGL_state::free()
-  {
-    glDeleteVertexArrays(1, &vao_mesh);
-    glDeleteVertexArrays(1, &vao_overlay_lines);
-    glDeleteVertexArrays(1, &vao_overlay_points);
-
-    glDeleteBuffers(1, &vbo_V);
-    glDeleteBuffers(1, &vbo_V_normals);
-    glDeleteBuffers(1, &vbo_V_ambient);
-    glDeleteBuffers(1, &vbo_V_diffuse);
-    glDeleteBuffers(1, &vbo_V_specular);
-    glDeleteBuffers(1, &vbo_V_uv);
-    glDeleteBuffers(1, &vbo_F);
-    glDeleteBuffers(1, &vbo_lines_F);
-    glDeleteBuffers(1, &vbo_lines_V);
-    glDeleteBuffers(1, &vbo_lines_V_colors);
-    glDeleteBuffers(1, &vbo_points_F);
-    glDeleteBuffers(1, &vbo_points_V);
-    glDeleteBuffers(1, &vbo_points_V_colors);
-
-    glDeleteTextures(1, &vbo_tex);
-  }
-
-  void Viewer::OpenGL_state::set_data(const Data &data, bool face_based, bool invert_normals)
-  {
-    bool per_corner_uv = (data.F_uv.rows() == data.F.rows());
-    bool per_corner_normals = (data.F_normals.rows() == 3 * data.F.rows());
-
-    dirty |= data.dirty;
-
-    if (!face_based)
-    {
-      if (!per_corner_uv)
-      {
-        // Vertex positions
-        if (dirty & DIRTY_POSITION)
-          V_vbo = (data.V.transpose()).cast<float>();
-
-        // Vertex normals
-        if (dirty & DIRTY_NORMAL)
-        {
-          V_normals_vbo = (data.V_normals.transpose()).cast<float>();
-          if (invert_normals)
-            V_normals_vbo = -V_normals_vbo;
-        }
-
-        // Per-vertex material settings
-        if (dirty & DIRTY_AMBIENT)
-          V_ambient_vbo = (data.V_material_ambient.transpose()).cast<float>();
-        if (dirty & DIRTY_DIFFUSE)
-          V_diffuse_vbo = (data.V_material_diffuse.transpose()).cast<float>();
-        if (dirty & DIRTY_SPECULAR)
-          V_specular_vbo = (data.V_material_specular.transpose()).cast<float>();
-
-        // Face indices
-        if (dirty & DIRTY_FACE)
-          F_vbo = (data.F.transpose()).cast<unsigned>();
-
-        // Texture coordinates
-        if (dirty & DIRTY_UV)
-          V_uv_vbo = (data.V_uv.transpose()).cast<float>();
-      }
-      else
-      {
-        // Per vertex properties with per corner UVs
-        if (dirty & DIRTY_POSITION)
-        {
-          V_vbo.resize(3,data.F.rows()*3);
-          for (unsigned i=0; i<data.F.rows();++i)
-            for (unsigned j=0;j<3;++j)
-              V_vbo.col(i*3+j) = data.V.row(data.F(i,j)).transpose().cast<float>();
-        }
-
-        if (dirty & DIRTY_AMBIENT)
-        {
-          V_ambient_vbo.resize(3,data.F.rows()*3);
-          for (unsigned i=0; i<data.F.rows();++i)
-            for (unsigned j=0;j<3;++j)
-              V_ambient_vbo.col (i*3+j) = data.V_material_ambient.row(data.F(i,j)).transpose().cast<float>();
-        }
-
-        if (dirty & DIRTY_DIFFUSE)
-        {
-          V_diffuse_vbo.resize(3,data.F.rows()*3);
-          for (unsigned i=0; i<data.F.rows();++i)
-            for (unsigned j=0;j<3;++j)
-              V_diffuse_vbo.col (i*3+j) = data.V_material_diffuse.row(data.F(i,j)).transpose().cast<float>();
-        }
-
-        if (dirty & DIRTY_SPECULAR)
-        {
-          V_specular_vbo.resize(3,data.F.rows()*3);
-          for (unsigned i=0; i<data.F.rows();++i)
-            for (unsigned j=0;j<3;++j)
-              V_specular_vbo.col(i*3+j) = data.V_material_specular.row(data.F(i,j)).transpose().cast<float>();
-        }
-
-        if (dirty & DIRTY_NORMAL)
-        {
-          V_normals_vbo.resize(3,data.F.rows()*3);
-          for (unsigned i=0; i<data.F.rows();++i)
-            for (unsigned j=0;j<3;++j)
-              V_normals_vbo.col (i*3+j) = data.V_normals.row(data.F(i,j)).transpose().cast<float>();
-
-          if (invert_normals)
-            V_normals_vbo = -V_normals_vbo;
-        }
-
-        if (dirty & DIRTY_FACE)
-        {
-          F_vbo.resize(3,data.F.rows());
-          for (unsigned i=0; i<data.F.rows();++i)
-            F_vbo.col(i) << i*3+0, i*3+1, i*3+2;
-        }
-
-        if (dirty & DIRTY_UV)
-        {
-          V_uv_vbo.resize(2,data.F.rows()*3);
-          for (unsigned i=0; i<data.F.rows();++i)
-            for (unsigned j=0;j<3;++j)
-              V_uv_vbo.col(i*3+j) = data.V_uv.row(data.F(i,j)).transpose().cast<float>();
-        }
-      }
-    }
-    else
-    {
-      if (dirty & DIRTY_POSITION)
-      {
-        V_vbo.resize(3,data.F.rows()*3);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            V_vbo.col(i*3+j) = data.V.row(data.F(i,j)).transpose().cast<float>();
-      }
-
-      if (dirty & DIRTY_AMBIENT)
-      {
-        V_ambient_vbo.resize(3,data.F.rows()*3);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            V_ambient_vbo.col (i*3+j) = data.F_material_ambient.row(i).transpose().cast<float>();
-      }
-
-      if (dirty & DIRTY_DIFFUSE)
-      {
-        V_diffuse_vbo.resize(3,data.F.rows()*3);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            V_diffuse_vbo.col (i*3+j) = data.F_material_diffuse.row(i).transpose().cast<float>();
-      }
-
-      if (dirty & DIRTY_SPECULAR)
-      {
-        V_specular_vbo.resize(3,data.F.rows()*3);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            V_specular_vbo.col(i*3+j) = data.F_material_specular.row(i).transpose().cast<float>();
-      }
-
-      if (dirty & DIRTY_NORMAL)
-      {
-        V_normals_vbo.resize(3,data.F.rows()*3);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            V_normals_vbo.col (i*3+j) =
-               per_corner_normals ?
-                 data.F_normals.row(i*3+j).transpose().cast<float>() :
-                 data.F_normals.row(i).transpose().cast<float>();
-
-        if (invert_normals)
-          V_normals_vbo = -V_normals_vbo;
-      }
-
-      if (dirty & DIRTY_FACE)
-      {
-        F_vbo.resize(3,data.F.rows());
-        for (unsigned i=0; i<data.F.rows();++i)
-          F_vbo.col(i) << i*3+0, i*3+1, i*3+2;
-      }
-
-      if (dirty & DIRTY_UV)
-      {
-          V_uv_vbo.resize(2,data.F.rows()*3);
-          for (unsigned i=0; i<data.F.rows();++i)
-            for (unsigned j=0;j<3;++j)
-              V_uv_vbo.col(i*3+j) = data.V_uv.row(per_corner_uv ? data.F_uv(i,j) : data.F(i,j)).transpose().cast<float>();
-      }
-    }
-
-    if (dirty & DIRTY_TEXTURE)
-    {
-      tex_u = data.texture_R.rows();
-      tex_v = data.texture_R.cols();
-      tex.resize(data.texture_R.size()*3);
-      for (unsigned i=0;i<data.texture_R.size();++i)
-      {
-        tex(i*3+0) = data.texture_R(i);
-        tex(i*3+1) = data.texture_G(i);
-        tex(i*3+2) = data.texture_B(i);
-      }
-    }
-
-    if (dirty & DIRTY_OVERLAY_LINES)
-    {
-      lines_V_vbo.resize(3, data.lines.rows()*2);
-      lines_V_colors_vbo.resize(3, data.lines.rows()*2);
-      lines_F_vbo.resize(1, data.lines.rows()*2);
-      for (unsigned i=0; i<data.lines.rows();++i)
-      {
-        lines_V_vbo.col(2*i+0) = data.lines.block<1, 3>(i, 0).transpose().cast<float>();
-        lines_V_vbo.col(2*i+1) = data.lines.block<1, 3>(i, 3).transpose().cast<float>();
-        lines_V_colors_vbo.col(2*i+0) = data.lines.block<1, 3>(i, 6).transpose().cast<float>();
-        lines_V_colors_vbo.col(2*i+1) = data.lines.block<1, 3>(i, 6).transpose().cast<float>();
-        lines_F_vbo(2*i+0) = 2*i+0;
-        lines_F_vbo(2*i+1) = 2*i+1;
-      }
-    }
-
-    if (dirty & DIRTY_OVERLAY_POINTS)
-    {
-      points_V_vbo.resize(3, data.points.rows());
-      points_V_colors_vbo.resize(3, data.points.rows());
-      points_F_vbo.resize(1, data.points.rows());
-      for (unsigned i=0; i<data.points.rows();++i)
-      {
-        points_V_vbo.col(i) = data.points.block<1, 3>(i, 0).transpose().cast<float>();
-        points_V_colors_vbo.col(i) = data.points.block<1, 3>(i, 3).transpose().cast<float>();
-        points_F_vbo(i) = i;
-      }
-    }
-  }
-
-  void Viewer::OpenGL_state::bind_mesh()
-  {
-    glBindVertexArray(vao_mesh);
-    shader_mesh.bind();
-    shader_mesh.bindVertexAttribArray("position", vbo_V, V_vbo, dirty & DIRTY_POSITION);
-    shader_mesh.bindVertexAttribArray("normal", vbo_V_normals, V_normals_vbo, dirty & DIRTY_NORMAL);
-    shader_mesh.bindVertexAttribArray("Ka", vbo_V_ambient, V_ambient_vbo, dirty & DIRTY_AMBIENT);
-    shader_mesh.bindVertexAttribArray("Kd", vbo_V_diffuse, V_diffuse_vbo, dirty & DIRTY_DIFFUSE);
-    shader_mesh.bindVertexAttribArray("Ks", vbo_V_specular, V_specular_vbo, dirty & DIRTY_SPECULAR);
-    shader_mesh.bindVertexAttribArray("texcoord", vbo_V_uv, V_uv_vbo, dirty & DIRTY_UV);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_F);
-    if (dirty & DIRTY_FACE)
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*F_vbo.size(), F_vbo.data(), GL_DYNAMIC_DRAW);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, vbo_tex);
-    if (dirty & DIRTY_TEXTURE)
-    {
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex_u, tex_v, 0, GL_RGB, GL_UNSIGNED_BYTE, tex.data());
-    }
-    glUniform1i(shader_mesh.uniform("tex"), 0);
-    dirty &= ~DIRTY_MESH;
-  }
-
-  void Viewer::OpenGL_state::bind_overlay_lines()
-  {
-    bool is_dirty = dirty & DIRTY_OVERLAY_LINES;
-
-    glBindVertexArray(vao_overlay_lines);
-    shader_overlay_lines.bind();
-    shader_overlay_lines.bindVertexAttribArray("position", vbo_lines_V, lines_V_vbo, is_dirty);
-    shader_overlay_lines.bindVertexAttribArray("color", vbo_lines_V_colors, lines_V_colors_vbo, is_dirty);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_lines_F);
-    if (is_dirty)
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*lines_F_vbo.size(), lines_F_vbo.data(), GL_DYNAMIC_DRAW);
-
-    dirty &= ~DIRTY_OVERLAY_LINES;
-  }
-
-  void Viewer::OpenGL_state::bind_overlay_points()
-  {
-    bool is_dirty = dirty & DIRTY_OVERLAY_POINTS;
-
-    glBindVertexArray(vao_overlay_points);
-    shader_overlay_points.bind();
-    shader_overlay_points.bindVertexAttribArray("position", vbo_points_V, points_V_vbo, is_dirty);
-    shader_overlay_points.bindVertexAttribArray("color", vbo_points_V_colors, points_V_colors_vbo, is_dirty);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_points_F);
-    if (is_dirty)
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*points_F_vbo.size(), points_F_vbo.data(), GL_DYNAMIC_DRAW);
-
-    dirty &= ~DIRTY_OVERLAY_POINTS;
-  }
-
-  void Viewer::OpenGL_state::draw_mesh(bool solid)
-  {
-    glPolygonMode(GL_FRONT_AND_BACK, solid ? GL_FILL : GL_LINE);
-
-    /* Avoid Z-buffer fighting between filled triangles & wireframe lines */
-    if (solid)
-    {
-      glEnable(GL_POLYGON_OFFSET_FILL);
-      glPolygonOffset(1.0, 1.0);
-    }
-    glDrawElements(GL_TRIANGLES, 3*F_vbo.cols(), GL_UNSIGNED_INT, 0);
-
-    glDisable(GL_POLYGON_OFFSET_FILL);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  }
-
-  void Viewer::OpenGL_state::draw_overlay_lines()
-  {
-    glDrawElements(GL_LINES, lines_F_vbo.cols(), GL_UNSIGNED_INT, 0);
-  }
-
-  void Viewer::OpenGL_state::draw_overlay_points()
-  {
-    glDrawElements(GL_POINTS, points_F_vbo.cols(), GL_UNSIGNED_INT, 0);
-  }
-
-  void Viewer::init_opengl()
-  {
-    std::string mesh_vertex_shader_string =
-    "#version 150\n"
-    "uniform mat4 model;"
-    "uniform mat4 view;"
-    "uniform mat4 proj;"
-    "in vec3 position;"
-    "in vec3 normal;"
-    "out vec3 position_eye;"
-    "out vec3 normal_eye;"
-    "in vec3 Ka;"
-    "in vec3 Kd;"
-    "in vec3 Ks;"
-    "in vec2 texcoord;"
-    "out vec2 texcoordi;"
-    "out vec3 Kai;"
-    "out vec3 Kdi;"
-    "out vec3 Ksi;"
-
-    "void main()"
-    "{"
-    "  position_eye = vec3 (view * model * vec4 (position, 1.0));"
-    "  normal_eye = vec3 (view * model * vec4 (normal, 0.0));"
-    "  normal_eye = normalize(normal_eye);"
-    "  gl_Position = proj * vec4 (position_eye, 1.0);" //proj * view * model * vec4(position, 1.0);"
-    "  Kai = Ka;"
-    "  Kdi = Kd;"
-    "  Ksi = Ks;"
-    "  texcoordi = texcoord;"
-    "}";
-
-    std::string mesh_fragment_shader_string =
-    "#version 150\n"
-    "uniform mat4 model;"
-    "uniform mat4 view;"
-    "uniform mat4 proj;"
-    "uniform vec4 fixed_color;"
-    "in vec3 position_eye;"
-    "in vec3 normal_eye;"
-    "uniform vec3 light_position_world;"
-    "vec3 Ls = vec3 (1, 1, 1);"
-    "vec3 Ld = vec3 (1, 1, 1);"
-    "vec3 La = vec3 (1, 1, 1);"
-    "in vec3 Ksi;"
-    "in vec3 Kdi;"
-    "in vec3 Kai;"
-    "in vec2 texcoordi;"
-    "uniform sampler2D tex;"
-    "uniform float specular_exponent;"
-    "uniform float lighting_factor;"
-    "uniform float texture_factor;"
-    "out vec4 outColor;"
-    "void main()"
-    "{"
-    "vec3 Ia = La * Kai;"    // ambient intensity
-
-    "vec3 light_position_eye = vec3 (view * vec4 (light_position_world, 1.0));"
-    "vec3 distance_to_light_eye = light_position_eye - position_eye;"
-    "vec3 direction_to_light_eye = normalize (distance_to_light_eye);"
-    "float dot_prod = dot (direction_to_light_eye, normal_eye);"
-    "dot_prod = max (dot_prod, 0.0);"
-    "vec3 Id = Ld * Kdi * dot_prod;"    // Diffuse intensity
-
-    "vec3 reflection_eye = reflect (-direction_to_light_eye, normal_eye);"
-    "vec3 surface_to_viewer_eye = normalize (-position_eye);"
-    "float dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);"
-    "dot_prod_specular = max (dot_prod_specular, 0.0);"
-    "float specular_factor = pow (dot_prod_specular, specular_exponent);"
-    "vec3 Is = Ls * Ksi * specular_factor;"    // specular intensity
-    "vec4 color = vec4(lighting_factor * (Is + Id) + Ia, 1.0) + vec4((1.0-lighting_factor) * Kdi,1.0);"
-    "outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * color;"
-    "if (fixed_color != vec4(0.0)) outColor = fixed_color;"
-    "}";
-
-    std::string overlay_vertex_shader_string =
-    "#version 150\n"
-    "uniform mat4 model;"
-    "uniform mat4 view;"
-    "uniform mat4 proj;"
-    "in vec3 position;"
-    "in vec3 color;"
-    "out vec3 color_frag;"
-
-    "void main()"
-    "{"
-    "  gl_Position = proj * view * model * vec4 (position, 1.0);"
-    "  color_frag = color;"
-    "}";
-
-    std::string overlay_fragment_shader_string =
-    "#version 150\n"
-    "in vec3 color_frag;"
-    "out vec4 outColor;"
-    "void main()"
-    "{"
-    "  outColor = vec4(color_frag, 1.0);"
-    "}";
-
-    std::string overlay_point_fragment_shader_string =
-    "#version 150\n"
-    "in vec3 color_frag;"
-    "out vec4 outColor;"
-    "void main()"
-    "{"
-    "  if (length(gl_PointCoord - vec2(0.5)) > 0.5)"
-    "    discard;"
-    "  outColor = vec4(color_frag, 1.0);"
-    "}";
-
-    opengl.init();
-    opengl.shader_mesh.init(mesh_vertex_shader_string,
-        mesh_fragment_shader_string, "outColor");
-    opengl.shader_overlay_lines.init(overlay_vertex_shader_string,
-        overlay_fragment_shader_string, "outColor");
-    opengl.shader_overlay_points.init(overlay_vertex_shader_string,
-        overlay_point_fragment_shader_string, "outColor");
-  }
-
-  void Viewer::free_opengl()
-  {
-    opengl.shader_mesh.free();
-    opengl.shader_overlay_lines.free();
-    opengl.shader_overlay_points.free();
-    opengl.free();
-    __font_renderer.Shut();
   }
 
   void Viewer::draw()
@@ -1781,16 +983,15 @@ namespace igl
       if (callback_pre_draw(*this))
         return;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->pre_draw())
-          return;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->pre_draw())
+        return;
 
     /* Bind and potentially refresh mesh/line/point data */
     if (data.dirty)
     {
       opengl.set_data(data, options.face_based, options.invert_normals);
-      data.dirty = DIRTY_NONE;
+      data.dirty = OpenGL_state::DIRTY_NONE;
     }
     opengl.bind_mesh();
 
@@ -1955,10 +1156,9 @@ namespace igl
       if (callback_post_draw(*this))
         return;
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        if (plugin_manager->plugin_list[i]->post_draw())
-          break;
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->post_draw())
+        break;
 
     TwDraw();
   }
@@ -2064,7 +1264,7 @@ namespace igl
   void TW_CALL Viewer::set_invert_normals_cb(const void *param, void *clientData)
   {
     Viewer *viewer = static_cast<Viewer *>(clientData);
-    viewer->data.dirty |= Viewer::DIRTY_NORMAL;
+    viewer->data.dirty |= OpenGL_state::DIRTY_NORMAL;
     viewer->options.invert_normals = *((bool *) param);
   }
 
@@ -2130,41 +1330,12 @@ namespace igl
     #endif
   }
 
-  void Viewer::Data::InitSerialization()
-  {
-    #ifdef ENABLE_XML_SERIALIZATION
-    xmlSerializer->Add(V,"V");
-    xmlSerializer->Add(F,"F");
-    xmlSerializer->Add(F_normals,"F_normals");
-
-    xmlSerializer->Add(F_material_ambient,"F_material_ambient");
-    xmlSerializer->Add(F_material_diffuse,"F_material_diffuse");
-    xmlSerializer->Add(F_material_specular,"F_material_specular");
-
-    xmlSerializer->Add(V_normals,"V_normals");
-    xmlSerializer->Add(V_material_ambient,"V_material_ambient");
-    xmlSerializer->Add(V_material_diffuse,"V_material_diffuse");
-    xmlSerializer->Add(V_material_specular,"V_material_specular");
-
-    xmlSerializer->Add(V_uv,"V_uv");
-    xmlSerializer->Add(F_uv,"F_uv");
-    xmlSerializer->Add(texture_R,"texture_R");
-    xmlSerializer->Add(texture_G,"texture_G");
-    xmlSerializer->Add(texture_B,"texture_B");
-    xmlSerializer->Add(lines,"lines");
-    xmlSerializer->Add(points,"points");
-
-    xmlSerializer->Add(labels_positions,"labels_positions");
-    xmlSerializer->Add(labels_strings,"labels_strings");
-    #endif
-  }
-
   void Viewer::set_face_based(bool newvalue)
   {
     if (options.face_based != newvalue)
     {
       options.face_based = newvalue;
-      data.dirty = DIRTY_ALL;
+      data.dirty = OpenGL_state::DIRTY_ALL;
     }
   }
 
@@ -2209,14 +1380,14 @@ namespace igl
       else
         cerr << "ERROR (set_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting.";
     }
-    data.dirty |= DIRTY_FACE | DIRTY_POSITION;
+    data.dirty |= OpenGL_state::DIRTY_FACE | OpenGL_state::DIRTY_POSITION;
   }
 
   void Viewer::set_vertices(const Eigen::MatrixXd& V)
   {
     data.V = V;
     assert(data.F.size() == 0 || data.F.maxCoeff() < data.V.rows());
-    data.dirty |= DIRTY_POSITION;
+    data.dirty |= OpenGL_state::DIRTY_POSITION;
   }
 
   void Viewer::set_normals(const Eigen::MatrixXd& N)
@@ -2234,7 +1405,7 @@ namespace igl
     }
     else
       cerr << "ERROR (set_normals): Please provide a normal per face, per corner or per vertex.";
-    data.dirty |= DIRTY_NORMAL;
+    data.dirty |= OpenGL_state::DIRTY_NORMAL;
   }
 
   void Viewer::set_colors(const Eigen::MatrixXd &C)
@@ -2285,7 +1456,7 @@ namespace igl
     }
     else
       cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex.";
-    data.dirty |= DIRTY_DIFFUSE;
+    data.dirty |= OpenGL_state::DIRTY_DIFFUSE;
 
   }
 
@@ -2299,7 +1470,7 @@ namespace igl
     }
     else
       cerr << "ERROR (set_UV): Please provide uv per vertex.";
-    data.dirty |= DIRTY_UV;
+    data.dirty |= OpenGL_state::DIRTY_UV;
   }
 
   void Viewer::set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
@@ -2307,7 +1478,7 @@ namespace igl
     set_face_based(true);
     data.V_uv = UV_V;
     data.F_uv = UV_F;
-    data.dirty |= DIRTY_UV;
+    data.dirty |= OpenGL_state::DIRTY_UV;
   }
 
 
@@ -2319,7 +1490,7 @@ namespace igl
     data.texture_R = R;
     data.texture_G = G;
     data.texture_B = B;
-    data.dirty |= DIRTY_TEXTURE;
+    data.dirty |= OpenGL_state::DIRTY_TEXTURE;
   }
 
   void Viewer::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
@@ -2340,11 +1511,11 @@ namespace igl
     for (unsigned i=0; i<P_temp.rows(); ++i)
       data.points.row(lastid+i) << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
 
-    data.dirty |= DIRTY_OVERLAY_POINTS;
+    data.dirty |= OpenGL_state::DIRTY_OVERLAY_POINTS;
   }
 
   void Viewer::set_edges(
-    const Eigen::MatrixXd& P, 
+    const Eigen::MatrixXd& P,
     const Eigen::MatrixXi& E,
     const Eigen::MatrixXd& C)
   {
@@ -2363,7 +1534,7 @@ namespace igl
       }
       data.lines.row(e)<< P.row(E(e,0)), P.row(E(e,1)), color;
     }
-    data.dirty |= DIRTY_OVERLAY_LINES;
+    data.dirty |= OpenGL_state::DIRTY_OVERLAY_LINES;
   }
 
   void Viewer::add_edges(const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
@@ -2389,7 +1560,7 @@ namespace igl
     for (unsigned i=0; i<P1_temp.rows(); ++i)
       data.lines.row(lastid+i) << P1_temp.row(i), P2_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
 
-    data.dirty |= DIRTY_OVERLAY_LINES;
+    data.dirty |= OpenGL_state::DIRTY_OVERLAY_LINES;
   }
 
   void Viewer::add_label(const Eigen::VectorXd& P,  const std::string& str)
@@ -2462,7 +1633,7 @@ namespace igl
     TwInit(TW_OPENGL_CORE, NULL);
 
     // Initialize IGL viewer
-    init(&igl_viewer_plugin_manager);
+    init();
     __viewer = this;
 
     // Register callbacks
@@ -2479,7 +1650,7 @@ namespace igl
 
     glfw_window_size(window,width_window,height_window);
 
-    init_opengl();
+    opengl.init();
 
     // Load the mesh passed as input
     if (filename.size() > 0)
@@ -2503,13 +1674,16 @@ namespace igl
           // TODO: windows equivalent
           usleep(min_duration-duration);
         }
-      }else
+      }
+      else
       {
         glfwWaitEvents();
       }
     }
 
-    free_opengl();
+    opengl.free();
+    __font_renderer.Shut();
+
     shutdown_plugins();
 
     glfwDestroyWindow(window);
