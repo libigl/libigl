@@ -988,38 +988,6 @@ namespace igl
     return true;
   }
 
-  static GLuint create_shader_helper(GLint type, const std::string &shader_string)
-  {
-    using namespace std;
-    if (shader_string.empty())
-      return (GLuint) 0;
-
-    GLuint id = glCreateShader(type);
-    const char *shader_string_const = shader_string.c_str();
-    glShaderSource(id, 1, &shader_string_const, NULL);
-    glCompileShader(id);
-
-    GLint status;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &status);
-
-    if (status != GL_TRUE)
-    {
-      char buffer[512];
-      if (type == GL_VERTEX_SHADER)
-        cerr << "Vertex shader:" << endl;
-      else if (type == GL_FRAGMENT_SHADER)
-        cerr << "Fragment shader:" << endl;
-      else if (type == GL_GEOMETRY_SHADER)
-        cerr << "Geometry shader:" << endl;
-      cerr << shader_string << endl << endl;
-      glGetShaderInfoLog(id, 512, NULL, buffer);
-      cerr << "Error: " << endl << buffer << endl;
-      return (GLuint) 0;
-    }
-
-    return id;
-  }
-
   void Viewer::OpenGL_state::init()
   {
     // Mesh: Vertex Array Object & Buffer objects
@@ -1074,7 +1042,7 @@ namespace igl
     glDeleteTextures(1, &vbo_tex);
   }
 
-  void Viewer::OpenGL_state::set_data(const Data &data, bool face_based, bool invert_normals)
+  void Viewer::OpenGL_state::set_data(const igl::ViewerData &data, bool face_based, bool invert_normals)
   {
     bool per_corner_uv = (data.F_uv.rows() == data.F.rows());
     bool per_corner_normals = (data.F_normals.rows() == 3 * data.F.rows());
@@ -1857,35 +1825,6 @@ namespace igl
     xmlSerializer->Add(line_width, "line_width");
     xmlSerializer->Add(invert_normals, "invert_normals");
     xmlSerializer->Add(face_based, "face_based");
-    #endif
-  }
-
-  void Viewer::Data::InitSerialization()
-  {
-    #ifdef ENABLE_XML_SERIALIZATION
-    xmlSerializer->Add(V,"V");
-    xmlSerializer->Add(F,"F");
-    xmlSerializer->Add(F_normals,"F_normals");
-
-    xmlSerializer->Add(F_material_ambient,"F_material_ambient");
-    xmlSerializer->Add(F_material_diffuse,"F_material_diffuse");
-    xmlSerializer->Add(F_material_specular,"F_material_specular");
-
-    xmlSerializer->Add(V_normals,"V_normals");
-    xmlSerializer->Add(V_material_ambient,"V_material_ambient");
-    xmlSerializer->Add(V_material_diffuse,"V_material_diffuse");
-    xmlSerializer->Add(V_material_specular,"V_material_specular");
-
-    xmlSerializer->Add(V_uv,"V_uv");
-    xmlSerializer->Add(F_uv,"F_uv");
-    xmlSerializer->Add(texture_R,"texture_R");
-    xmlSerializer->Add(texture_G,"texture_G");
-    xmlSerializer->Add(texture_B,"texture_B");
-    xmlSerializer->Add(lines,"lines");
-    xmlSerializer->Add(points,"points");
-
-    xmlSerializer->Add(labels_positions,"labels_positions");
-    xmlSerializer->Add(labels_strings,"labels_strings");
     #endif
   }
 
