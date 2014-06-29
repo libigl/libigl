@@ -1,6 +1,6 @@
 #include "ViewerData.h"
 
-void igl::ViewerData::InitSerialization()
+IGL_INLINE void igl::ViewerData::InitSerialization()
 {
   #ifdef ENABLE_XML_SERIALIZATION
   xmlSerializer->Add(V,"V");

@@ -18,7 +18,7 @@ public:
   #endif
   {};
 
-  void InitSerialization();
+  IGL_INLINE void InitSerialization();
 
   Eigen::MatrixXd V; // Vertices of the current mesh (#V x 3)
   Eigen::MatrixXi F; // Faces of the mesh (#F x 3)
