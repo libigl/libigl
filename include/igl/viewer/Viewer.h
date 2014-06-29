@@ -37,7 +37,7 @@ namespace igl
     void init();
 
     // Stores all the viewing options
-    igl::ViewerCore options;
+    igl::ViewerCore core;
 
     // Stores all the data that should be visualized
     igl::ViewerData data;
@@ -69,6 +69,8 @@ namespace igl
 
     // Wrapper for ViewerData::compute_normals()
     void compute_normals();
+
+    void align_camera_center();
 
     void clear();      // Clear the mesh data
 

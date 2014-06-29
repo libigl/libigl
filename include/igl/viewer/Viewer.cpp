@@ -333,22 +333,22 @@ namespace igl
     TwAddButton(bar,"Center object", align_camera_center_cb, this,
                 " group='Viewing Options'"
                 " label='Center object' key=A help='Set the center of the camera to the mesh center.'");
-    TwAddVarRW(bar, "Zoom", TW_TYPE_FLOAT, &(options.camera_zoom),
+    TwAddVarRW(bar, "Zoom", TW_TYPE_FLOAT, &(core.camera_zoom),
                " min=0.05 max=50 step=0.1 keyIncr=+ keyDecr=- help='Scale the object (1=original size).' group='Scene'");
     TwAddButton(bar,"SnapView", snap_to_canonical_quaternion_cb, this,
                 " group='Scene'"
                 " label='Snap to canonical view' key=Z "
                 " help='Snaps view to nearest canonical view.'");
-    TwAddVarRW(bar,"LightDir", TW_TYPE_DIR3F, options.light_position.data(),
+    TwAddVarRW(bar,"LightDir", TW_TYPE_DIR3F, core.light_position.data(),
                " group='Scene'"
                " label='Light direction' open help='Change the light direction.' ");
 
     // ---------------------- DRAW OPTIONS ----------------------
-    TwAddVarRW(bar, "ToggleOrthographic", TW_TYPE_BOOLCPP, &(options.orthographic),
+    TwAddVarRW(bar, "ToggleOrthographic", TW_TYPE_BOOLCPP, &(core.orthographic),
                " group='Viewing Options'"
                " label='Orthographic view' "
                " help='Toggles orthographic / perspective view. Default: perspective.'");
-    TwAddVarRW(bar, "Rotation", TW_TYPE_QUAT4F, &(options.trackball_angle),
+    TwAddVarRW(bar, "Rotation", TW_TYPE_QUAT4F, &(core.trackball_angle),
       " group='Viewing Options'"
       " label='Rotation'"
       " help='Rotates view.'");
@@ -356,45 +356,45 @@ namespace igl
                " group='Draw options'"
                " label='Face-based' key=T help='Toggle per face shading/colors.' ");
 
-    TwAddVarRW(bar,"Show texture", TW_TYPE_BOOLCPP, &(options.show_texture),
+    TwAddVarRW(bar,"Show texture", TW_TYPE_BOOLCPP, &(core.show_texture),
                " group='Draw options'");
 
     TwAddVarCB(bar,"Invert Normals", TW_TYPE_BOOLCPP, set_invert_normals_cb, get_invert_normals_cb, this,
                " group='Draw options'"
                " label='Invert normals' key=i help='Invert normal directions for inside out meshes.' ");
 
-    TwAddVarRW(bar,"ShowOverlay", TW_TYPE_BOOLCPP, &(options.show_overlay),
+    TwAddVarRW(bar,"ShowOverlay", TW_TYPE_BOOLCPP, &(core.show_overlay),
                " group='Draw options'"
                " label='Show overlay' key=o help='Show the overlay layers.' ");
-    TwAddVarRW(bar,"ShowOverlayDepth", TW_TYPE_BOOLCPP, &(options.show_overlay_depth),
+    TwAddVarRW(bar,"ShowOverlayDepth", TW_TYPE_BOOLCPP, &(core.show_overlay_depth),
                " group='Draw options'"
                " label='Show overlay depth test' help='Enable the depth test for overlay layer.' ");
     TwAddVarRW(bar,"Background color", TW_TYPE_COLOR3F,
-               options.background_color.data(),
+               core.background_color.data(),
                " help='Select a background color' colormode=hls group='Draw options'");
     TwAddVarRW(bar, "LineColor", TW_TYPE_COLOR3F,
-               options.line_color.data(),
+               core.line_color.data(),
                " label='Line color' help='Select a outline color' group='Draw options'");
-    TwAddVarRW(bar,"Shininess",TW_TYPE_FLOAT,&options.shininess," group='Draw options'"
+    TwAddVarRW(bar,"Shininess",TW_TYPE_FLOAT,&core.shininess," group='Draw options'"
                " min=1 max=128");
 
     // ---------------------- Overlays ----------------------
 
-    TwAddVarRW(bar,"Wireframe", TW_TYPE_BOOLCPP, &(options.show_lines),
+    TwAddVarRW(bar,"Wireframe", TW_TYPE_BOOLCPP, &(core.show_lines),
                " group='Overlays'"
                " label='Wireframe' key=l help='Toggle wire frame of mesh'");
-    TwAddVarRW(bar,"Fill", TW_TYPE_BOOLCPP, &(options.show_faces),
+    TwAddVarRW(bar,"Fill", TW_TYPE_BOOLCPP, &(core.show_faces),
                " group='Overlays'"
                " label='Fill' key=t help='Display filled polygons of mesh'");
-    TwAddVarRW(bar,"ShowVertexId", TW_TYPE_BOOLCPP, &(options.show_vertid),
+    TwAddVarRW(bar,"ShowVertexId", TW_TYPE_BOOLCPP, &(core.show_vertid),
                " group='Overlays'"
                " label='Show Vertex Labels' key=';' help='Toggle vertex indices'");
-    TwAddVarRW(bar,"ShowFaceId", TW_TYPE_BOOLCPP, &(options.show_faceid),
+    TwAddVarRW(bar,"ShowFaceId", TW_TYPE_BOOLCPP, &(core.show_faceid),
                " group='Overlays'"
                " label='Show Faces Labels' key='CTRL+;' help='Toggle face"
                " indices'");
 
-    options.init();
+    core.init();
     init_plugins();
   }
 
@@ -497,7 +497,7 @@ namespace igl
     if (data.V_uv.rows() == 0)
       data.grid_texture();
 
-    options.align_camera_center(data.V);
+    core.align_camera_center(data.V);
 
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->post_load())
@@ -570,13 +570,13 @@ namespace igl
 
     // Why aren't these handled view AntTweakBar?
     if (key == 'z') // Don't use 'Z' because that clobbers snap_to_canonical_view_quat
-      options.trackball_angle << 0.0f, 0.0f, 0.0f, 1.0f;
+      core.trackball_angle << 0.0f, 0.0f, 0.0f, 1.0f;
 
     if (key == 'y')
-      options.trackball_angle << -sqrt(2.0f)/2.0f, 0.0f, 0.0f, sqrt(2.0f)/2.0f;
+      core.trackball_angle << -sqrt(2.0f)/2.0f, 0.0f, 0.0f, sqrt(2.0f)/2.0f;
 
     if (key == 'x')
-      options.trackball_angle << -0.5f, -0.5f, -0.5f, 0.5f;
+      core.trackball_angle << -0.5f, -0.5f, -0.5f, 0.5f;
 
 
     return false;
@@ -609,7 +609,7 @@ namespace igl
 
     down_mouse_x = current_mouse_x;
     down_mouse_y = current_mouse_y;
-    down_translation = options.model_translation;
+    down_translation = core.model_translation;
 
 
     // Initialization code for the trackball
@@ -619,9 +619,9 @@ namespace igl
     else
       center = data.V.colwise().sum()/data.V.rows();
 
-    Eigen::Vector3f coord = igl::project(Eigen::Vector3f(center(0),center(1),center(2)), options.view * options.model, options.proj, options.viewport);
+    Eigen::Vector3f coord = igl::project(Eigen::Vector3f(center(0),center(1),center(2)), core.view * core.model, core.proj, core.viewport);
     down_mouse_z = coord[2];
-    down_rotation = options.trackball_angle;
+    down_rotation = core.trackball_angle;
 
     mouse_mode = ROTATION;
 
@@ -685,16 +685,16 @@ namespace igl
       {
         case ROTATION :
         {
-          igl::trackball(options.viewport(2),
-                         options.viewport(3),
+          igl::trackball(core.viewport(2),
+                         core.viewport(3),
                          2.0f,
                          down_rotation.data(),
                          down_mouse_x,
                          down_mouse_y,
                          mouse_x,
                          mouse_y,
-                         options.trackball_angle.data());
-          //Eigen::Vector4f snapq = options.trackball_angle;
+                         core.trackball_angle.data());
+          //Eigen::Vector4f snapq = core.trackball_angle;
 
           break;
         }
@@ -702,11 +702,11 @@ namespace igl
         case TRANSLATE:
         {
           //translation
-          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, options.viewport[3] - mouse_y, down_mouse_z), options.view * options.model, options.proj, options.viewport);
-          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, options.viewport[3] - down_mouse_y, down_mouse_z), options.view * options.model, options.proj, options.viewport);
+          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, core.viewport[3] - mouse_y, down_mouse_z), core.view * core.model, core.proj, core.viewport);
+          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, core.viewport[3] - down_mouse_y, down_mouse_z), core.view * core.model, core.proj, core.viewport);
 
           Eigen::Vector3f diff = pos1 - pos0;
-          options.model_translation = down_translation + Eigen::Vector3f(diff[0],diff[1],diff[2]);
+          core.model_translation = down_translation + Eigen::Vector3f(diff[0],diff[1],diff[2]);
 
           break;
         }
@@ -714,7 +714,7 @@ namespace igl
         {
           //float delta = 0.001f * (mouse_x - down_mouse_x + mouse_y - down_mouse_y);
           float delta = 0.001f * (mouse_x - down_mouse_x + mouse_y - down_mouse_y);
-          options.camera_zoom *= 1 + delta;
+          core.camera_zoom *= 1 + delta;
           down_mouse_x = mouse_x;
           down_mouse_y = mouse_y;
           break;
@@ -744,7 +744,7 @@ namespace igl
     {
       float mult = (1.0+((delta_y>0)?1.:-1.)*0.05);
       const float min_zoom = 0.1f;
-      options.camera_zoom = (options.camera_zoom * mult > min_zoom ? options.camera_zoom * mult : min_zoom);
+      core.camera_zoom = (core.camera_zoom * mult > min_zoom ? core.camera_zoom * mult : min_zoom);
     }
     return true;
   }
@@ -754,7 +754,7 @@ namespace igl
     using namespace std;
     using namespace Eigen;
 
-    options.clear_framebuffers();
+    core.clear_framebuffers();
 
     if (callback_pre_draw)
       if (callback_pre_draw(*this))
@@ -764,7 +764,7 @@ namespace igl
       if (plugins[i]->pre_draw())
         return;
 
-    options.draw(data,opengl);
+    core.draw(data,opengl);
 
     if (callback_post_draw)
       if (callback_post_draw(*this))
@@ -821,17 +821,17 @@ namespace igl
 
   void Viewer::resize(int w, int h)
   {
-    options.viewport = Eigen::Vector4f(0,0,w,h);
+    core.viewport = Eigen::Vector4f(0,0,w,h);
   }
 
   void TW_CALL Viewer::snap_to_canonical_quaternion_cb(void *clientData)
   {
-    Eigen::Vector4f snapq = static_cast<Viewer *>(clientData)->options.trackball_angle;
-    igl::snap_to_canonical_view_quat<float>(snapq.data(),1,static_cast<Viewer *>(clientData)->options.trackball_angle.data());
+    Eigen::Vector4f snapq = static_cast<Viewer *>(clientData)->core.trackball_angle;
+    igl::snap_to_canonical_view_quat<float>(snapq.data(),1,static_cast<Viewer *>(clientData)->core.trackball_angle.data());
   }
   void TW_CALL Viewer::align_camera_center_cb(void *clientData)
   {
-    static_cast<Viewer *>(clientData)->options.align_camera_center(static_cast<Viewer *>(clientData)->data.V);
+    static_cast<Viewer *>(clientData)->core.align_camera_center(static_cast<Viewer *>(clientData)->data.V);
   }
 
   void TW_CALL Viewer::save_scene_cb(void *clientData)
@@ -848,12 +848,12 @@ namespace igl
   {
     Viewer *viewer = static_cast<Viewer *>(clientData);
     viewer->data.dirty |= ViewerData::DIRTY_NORMAL;
-    viewer->options.invert_normals = *((bool *) param);
+    viewer->core.invert_normals = *((bool *) param);
   }
 
   void TW_CALL Viewer::get_invert_normals_cb(void *param, void *clientData)
   {
-    *((bool *) param) = static_cast<Viewer *>(clientData)->options.invert_normals;
+    *((bool *) param) = static_cast<Viewer *>(clientData)->core.invert_normals;
   }
 
   void TW_CALL Viewer::set_face_based_cb(const void *param, void *clientData)
@@ -887,11 +887,15 @@ namespace igl
     data.compute_normals();
   }
 
+  void Viewer::align_camera_center()
+  {
+    core.align_camera_center(data.V);
+  }
 
   void Viewer::set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
   {
     data.set_mesh(V,F);
-    options.align_camera_center(V);
+    core.align_camera_center(V);
   }
 
   void Viewer::set_vertices(const Eigen::MatrixXd& V)
@@ -1032,12 +1036,12 @@ namespace igl
       draw();
 
       glfwSwapBuffers(window);
-      if(options.is_animating)
+      if(core.is_animating)
       {
         glfwPollEvents();
         // In microseconds
         double duration = 1000000.*(get_seconds()-tic);
-        const double min_duration = 1000000./options.animation_max_fps;
+        const double min_duration = 1000000./core.animation_max_fps;
         if(duration<min_duration)
         {
           // TODO: windows equivalent
@@ -1051,7 +1055,7 @@ namespace igl
     }
 
     opengl.free();
-    options.shut();
+    core.shut();
 
     shutdown_plugins();
 

@@ -73,8 +73,8 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     return false;
 
   viewer.clear();
-  viewer.options.show_lines = false;
-  viewer.options.show_texture = false;
+  viewer.core.show_lines = false;
+  viewer.core.show_texture = false;
 
   if (key == '1')
   {
@@ -149,7 +149,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     viewer.set_mesh(V_deformed, F);
     viewer.set_uv(V_uv,F_uv);
     viewer.set_colors(RowVector3d(1,1,1));
-    viewer.options.show_texture = true;
+    viewer.core.show_texture = true;
   }
 
   if (key == '6')
@@ -158,7 +158,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     viewer.set_mesh(V, F);
     viewer.set_uv(V_uv,F_uv);
     viewer.set_colors(RowVector3d(1,1,1));
-    viewer.options.show_texture = true;
+    viewer.core.show_texture = true;
   }
 
   // Replace the standard texture with an integer shift invariant texture

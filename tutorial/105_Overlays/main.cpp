@@ -59,9 +59,6 @@ int main(int argc, char *argv[])
       Eigen::RowVector3d(1,0,0)
     );
 
-  // Increase the thickness of the lines
-  viewer.options.line_width = 2.0f;
-
   // Plot labels with the coordinates of bounding box vertices
   std::stringstream l1;
   l1 << m(0) << ", " << m(1) << ", " << m(2);

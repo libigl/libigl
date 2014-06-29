@@ -34,15 +34,15 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
       break;
     }
     case '.':
-      viewer.options.lighting_factor += 0.1;
+      viewer.core.lighting_factor += 0.1;
       break;
     case ',':
-      viewer.options.lighting_factor -= 0.1;
+      viewer.core.lighting_factor -= 0.1;
       break;
     default: break;
   }
-  viewer.options.lighting_factor = 
-    std::min(std::max(viewer.options.lighting_factor,0.f),1.f);
+  viewer.core.lighting_factor = 
+    std::min(std::max(viewer.core.lighting_factor,0.f),1.f);
 
   return false;
 }
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   viewer.set_mesh(V, F);
   viewer.callback_key_down = &key_down;
   key_down(viewer,'2',0);
-  viewer.options.show_lines = false;
-  viewer.options.lighting_factor = 0.0f;
+  viewer.core.show_lines = false;
+  viewer.core.lighting_factor = 0.0f;
   viewer.launch();
 }

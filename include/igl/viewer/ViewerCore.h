@@ -3,6 +3,8 @@
 
 #include <igl/igl_inline.h>
 #include <igl/viewer/TextRenderer.h>
+#include <igl/viewer/ViewerData.h>
+#include <igl/viewer/OpenGL_state.h>
 
 namespace igl
 {
