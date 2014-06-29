@@ -17,7 +17,7 @@ public:
   #ifdef ENABLE_XML_SERIALIZATION
   : XMLSerialization("Data"), dirty(DIRTY_ALL)
   #endif
-  {};
+  {clear();};
 
   enum DirtyFlags
   {
@@ -128,9 +128,6 @@ public:
 
   // Marks dirty buffers that need to be uploaded to OpenGL
   uint32_t dirty;
-
-  // Caches the two-norm between the min/max point of the bounding box
-  float object_scale;
 
   // Enable per-face or per-vertex properties
   bool face_based;
