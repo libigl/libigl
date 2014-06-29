@@ -6,12 +6,9 @@
 #include <igl/avg_edge_length.h>
 #include <vector>
 #include <igl/n_polyvector.h>
-#include <igl/conjugate_frame_fields.h>
+#include <igl/angle_bound_frame_fields.h>
 #include <stdlib.h>
-#include <igl/readOFF.h>
 #include <igl/jet.h>
-#include <igl/quad_planarity.h>
-#include <igl/planarize_quad_mesh.h>
 
 // Input mesh
 Eigen::MatrixXd V;
@@ -31,9 +28,7 @@ Eigen::MatrixXd PQS0, PQS1, PQS2, PQS3;
 Eigen::MatrixXd VQC;
 Eigen::MatrixXi FQC;
 Eigen::MatrixXi FQCtri;
-Eigen::MatrixXd VQCplan;
 Eigen::MatrixXd PQC0, PQC1, PQC2, PQC3;
-Eigen::MatrixXd PQCp0, PQCp1, PQCp2, PQCp3;
 
 // Scale for visualizing the fields
 double global_scale;
@@ -43,41 +38,88 @@ Eigen::VectorXi isConstrained;
 Eigen::MatrixXd constraints;
 
 Eigen::MatrixXd smooth_pvf;
-Eigen::MatrixXd conjugate_pvf;
+Eigen::MatrixXd angle_bound_pvf;
 
-igl::ConjugateFFSolverData<Eigen::MatrixXd, Eigen::MatrixXi> *csdata;
+igl::AngleBoundFFSolverData<Eigen::MatrixXd, Eigen::MatrixXi> *csdata;
 
 int conjIter = 2;
 int totalConjIter = 0;
 double lambdaOrtho = .1;
 double lambdaInit = 100;
-double lambdaMultFactor = 1.01;
-bool doHardConstraints = true;
+double lambdaMultFactor = 1.5;
+bool doHardConstraints = false;
+
+bool showAngles = true;
+int curr_key = 0;
+
+void computeAngles(const Eigen::MatrixXd &ff, Eigen::VectorXd &angles)
+{
+ angles.resize(ff.rows(),1);
+  int num =0;
+ for (int i =0; i<ff.rows(); ++i)
+ {
+  Eigen::RowVector3d u = (ff.block(i,0,1,3)); u.normalize();
+  Eigen::RowVector3d v = (ff.block(i,3,1,3)); v.normalize();
+  double s = (u.cross(v)).norm();
+  double c = fabs(u.dot(v));
+  angles[i] = atan2(s,c);
+   num += (angles[i]<70*M_PI/180);
+  }
+  std::cerr<<"out of bound:"<<num<<std::endl;
+}
+
+void getAngleColor(const Eigen::MatrixXd &ff, Eigen::MatrixXd &C)
+{
+  Eigen::VectorXd angles;
+  computeAngles(ff, angles);
+  Eigen::VectorXd val = 0.5*M_PI*Eigen::VectorXd::Ones(angles.rows(),1)-angles;
+  igl::jet(val, 0, 20*M_PI/180., C);
+}
 
 bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
 
-  if (key <'1' || key >'6')
+  // Highlight in red the constrained faces
+  MatrixXd CC = MatrixXd::Constant(F.rows(),3,1);
+  for (unsigned i=0; i<F.rows();++i)
+    if (isConstrained[i])
+      CC.row(i) << 1, 0, 0;
+
+  if (key == 'c' || key == 'C')
+  {
+    showAngles = !showAngles;
+    if (curr_key == 2)
+    {
+      MatrixXd C = CC;
+      if (showAngles)
+        getAngleColor(smooth_pvf, C);
+      viewer.set_colors(C);
+    }
+    else if (curr_key == 3)
+    {
+      MatrixXd C = CC;
+      if (showAngles)
+        getAngleColor(angle_bound_pvf, C);
+      viewer.set_colors(C);
+    }
     return false;
+  }
+  
+  if (key <'1' || key >'5')
+  {
+    return false;
+  }
 
   viewer.clear_mesh();
   viewer.options.show_lines = false;
   viewer.options.show_texture = false;
-  if (key <= '3')
-  {
-    viewer.set_mesh(V, F);
-    // Highlight in red the constrained faces
-    MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
-    for (unsigned i=0; i<F.rows();++i)
-      if (isConstrained[i])
-        C.row(i) << 1, 0, 0;
-    viewer.set_colors(C);
-  }
 
   if (key == '1')
   {
+    viewer.set_mesh(V, F);
+    viewer.set_colors(CC);
     // Frame field constraints
     MatrixXd F1_t = MatrixXd::Zero(F.rows(),3);
     MatrixXd F2_t = MatrixXd::Zero(F.rows(),3);
@@ -89,98 +131,76 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
       }
     viewer.add_edges (B - global_scale*F1_t, B + global_scale*F1_t , Eigen::RowVector3d(0,0,1));
     viewer.add_edges (B - global_scale*F2_t, B + global_scale*F2_t , Eigen::RowVector3d(0,0,1));
-
+    curr_key = 1;
   }
   if (key == '2')
   {
+    viewer.set_mesh(V, F);
     viewer.add_edges (B - global_scale*smooth_pvf.block(0,0,F.rows(),3),
                       B + global_scale*smooth_pvf.block(0,0,F.rows(),3),
                       Eigen::RowVector3d(0,1,0));
     viewer.add_edges (B - global_scale*smooth_pvf.block(0,3,F.rows(),3),
                       B + global_scale*smooth_pvf.block(0,3,F.rows(),3),
                       Eigen::RowVector3d(0,1,0));
+    MatrixXd C = CC;
+    if (showAngles)
+      getAngleColor(smooth_pvf, C);
+    viewer.set_colors(C);
+    curr_key = 2;
   }
 
   if (key == '3')
   {
+    viewer.set_mesh(V, F);
     if (totalConjIter <50)
     {
       double lambdaOut;
-      igl::conjugate_frame_fields(*csdata, isConstrained, conjugate_pvf, conjugate_pvf, conjIter, lambdaOrtho, lambdaInit, lambdaMultFactor, doHardConstraints,
-                                  &lambdaOut);
-      totalConjIter += 2;
+      igl::angle_bound_frame_fields(*csdata,
+                                     70,
+                                     isConstrained,
+                                     angle_bound_pvf,
+                                     angle_bound_pvf,
+                                     conjIter,
+                                     lambdaInit,
+                                     lambdaMultFactor,
+                                     doHardConstraints,
+                                     &lambdaOut);
+      totalConjIter += conjIter;
       lambdaInit = lambdaOut;
     }
-    viewer.add_edges (B - global_scale*conjugate_pvf.block(0,0,F.rows(),3),
-                      B + global_scale*conjugate_pvf.block(0,0,F.rows(),3),
+    viewer.add_edges (B - global_scale*angle_bound_pvf.block(0,0,F.rows(),3),
+                      B + global_scale*angle_bound_pvf.block(0,0,F.rows(),3),
                       Eigen::RowVector3d(0,1,0));
-    viewer.add_edges (B - global_scale*conjugate_pvf.block(0,3,F.rows(),3),
-                      B + global_scale*conjugate_pvf.block(0,3,F.rows(),3),
+    viewer.add_edges (B - global_scale*angle_bound_pvf.block(0,3,F.rows(),3),
+                      B + global_scale*angle_bound_pvf.block(0,3,F.rows(),3),
                       Eigen::RowVector3d(0,1,0));
+    MatrixXd C = CC;
+    if (showAngles)
+      getAngleColor(angle_bound_pvf, C);
+    viewer.set_colors(C);
+    curr_key = 3;
   }
 
   if (key == '4')
   {
     viewer.set_mesh(VQS, FQStri);
-
-    // show planarity
-    VectorXd planarity;
-    igl::quad_planarity( VQS, FQS, planarity);
-    MatrixXd Ct;
-    igl::jet(planarity, 0, 0.02, Ct);
-    MatrixXd C(FQStri.rows(),3);
-    C << Ct, Ct;
-    viewer.set_colors(C);
-
     viewer.add_edges (PQS0, PQS1, Eigen::RowVector3d(0,0,0));
     viewer.add_edges (PQS1, PQS2, Eigen::RowVector3d(0,0,0));
     viewer.add_edges (PQS2, PQS3, Eigen::RowVector3d(0,0,0));
     viewer.add_edges (PQS3, PQS0, Eigen::RowVector3d(0,0,0));
-
+    curr_key = 4;
   }
 
   if (key == '5')
   {
     viewer.set_mesh(VQC, FQCtri);
-
-    // show planarity
-    VectorXd planarity;
-    igl::quad_planarity( VQC, FQC, planarity);
-    MatrixXd Ct;
-    igl::jet(planarity, 0, 0.02, Ct);
-    MatrixXd C(FQCtri.rows(),3);
-    C << Ct, Ct;
-    viewer.set_colors(C);
-
     viewer.add_edges (PQC0, PQC1, Eigen::RowVector3d(0,0,0));
     viewer.add_edges (PQC1, PQC2, Eigen::RowVector3d(0,0,0));
     viewer.add_edges (PQC2, PQC3, Eigen::RowVector3d(0,0,0));
     viewer.add_edges (PQC3, PQC0, Eigen::RowVector3d(0,0,0));
+    curr_key = 5;
   }
 
-  if (key == '6')
-  {
-    igl ::planarize_quad_mesh(VQC, FQC, 50, 0.01, VQCplan);
-    viewer.set_mesh(VQCplan, FQCtri);
-    igl::slice( VQCplan, FQC.col(0), 1, PQCp0);
-    igl::slice( VQCplan, FQC.col(1), 1, PQCp1);
-    igl::slice( VQCplan, FQC.col(2), 1, PQCp2);
-    igl::slice( VQCplan, FQC.col(3), 1, PQCp3);
-
-    // show planarity
-    VectorXd planarity;
-    igl::quad_planarity( VQCplan, FQC, planarity);
-    MatrixXd Ct;
-    igl::jet(planarity, 0, 0.02, Ct);
-    MatrixXd C(FQCtri.rows(),3);
-    C << Ct, Ct;
-    viewer.set_colors(C);
-
-    viewer.add_edges (PQCp0, PQCp1, Eigen::RowVector3d(0,0,0));
-    viewer.add_edges (PQCp1, PQCp2, Eigen::RowVector3d(0,0,0));
-    viewer.add_edges (PQCp2, PQCp3, Eigen::RowVector3d(0,0,0));
-    viewer.add_edges (PQCp3, PQCp0, Eigen::RowVector3d(0,0,0));
-  }
 
   return false;
 }
@@ -190,7 +210,7 @@ int main(int argc, char *argv[])
   using namespace Eigen;
   using namespace std;
   // Load a mesh in OBJ format
-  igl::readOBJ("../shared/inspired_mesh.obj", V, F);
+  igl::readOBJ("../shared/teddy.obj", V, F);
 
   // Compute face barycenters
   igl::barycenter(V, F, B);
@@ -200,7 +220,7 @@ int main(int argc, char *argv[])
 
   // Load constraints
   MatrixXd temp;
-  igl::readDMAT("../shared/inspired_mesh.dmat",temp);
+  igl::readDMAT("../shared/teddy.dmat",temp);
   isConstrained = temp.block(0,0,temp.rows(),1).cast<int>();
   constraints = temp.block(0,1,temp.rows(),temp.cols()-1);
 
@@ -208,31 +228,30 @@ int main(int argc, char *argv[])
   igl::n_polyvector(V, F, isConstrained, constraints, smooth_pvf);
 
   // Initialize conjugate field with smooth field
-  csdata = new igl::ConjugateFFSolverData<Eigen::MatrixXd,Eigen::MatrixXi>(V,F);
-  conjugate_pvf = smooth_pvf;
+  csdata = new igl::AngleBoundFFSolverData<Eigen::MatrixXd,Eigen::MatrixXi>(V,F);
+  angle_bound_pvf = smooth_pvf;
 
   // Load quad mesh generated by smooth field
-  igl::readOFF("../shared/inspired_mesh_quads_Smooth.off", VQS, FQS);
+  igl::readOBJ("../shared/teddy_smooth_remeshed.obj", VQS, FQS);
   FQStri.resize(2*FQS.rows(), 3);
   FQStri <<  FQS.col(0),FQS.col(1),FQS.col(2),
              FQS.col(2),FQS.col(3),FQS.col(0);
+
+  // Load quad mesh generated by conjugate field
+  igl::readOBJ("../shared/teddy_angle_bound_remeshed.obj", VQC, FQC);
+  FQCtri.resize(2*FQC.rows(), 3);
+  FQCtri <<  FQC.col(0),FQC.col(1),FQC.col(2),
+             FQC.col(2),FQC.col(3),FQC.col(0);
+
   igl::slice( VQS, FQS.col(0), 1, PQS0);
   igl::slice( VQS, FQS.col(1), 1, PQS1);
   igl::slice( VQS, FQS.col(2), 1, PQS2);
   igl::slice( VQS, FQS.col(3), 1, PQS3);
 
-
-  // Load quad mesh generated by conjugate field
-  igl::readOFF("../shared/inspired_mesh_quads_Conjugate.off", VQC, FQC);
-  FQCtri.resize(2*FQC.rows(), 3);
-  FQCtri <<  FQC.col(0),FQC.col(1),FQC.col(2),
-             FQC.col(2),FQC.col(3),FQC.col(0);
   igl::slice( VQC, FQC.col(0), 1, PQC0);
   igl::slice( VQC, FQC.col(1), 1, PQC1);
   igl::slice( VQC, FQC.col(2), 1, PQC2);
   igl::slice( VQC, FQC.col(3), 1, PQC3);
-
-
 
   igl::Viewer viewer;
 
