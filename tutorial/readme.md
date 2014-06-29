@@ -212,7 +212,7 @@ int main(int argc, char * argv[])
 Scalar functions on a surface can be discretized as a piecewise linear function
 with values defined at each mesh vertex:
 
- $f(\mathbf{x}) \approx \sum\limits_{i=0}^n \phi_i(\mathbf{x})\, f_i,$
+ $f(\mathbf{x}) \approx \sum\limits_{i=1}^n \phi_i(\mathbf{x})\, f_i,$
 
 where $\phi_i$ is a piecewise linear hat function defined by the mesh so that
 for each triangle $\phi_i$ is _the_ linear function which is one only at
@@ -225,8 +225,8 @@ Thus gradients of such piecewise linear functions are simply sums of gradients
 of the hat functions:
 
  $\nabla f(\mathbf{x}) \approx
- \nabla \sum\limits_{i=0}^n \nabla \phi_i(\mathbf{x})\, f_i =
- \sum\limits_{i=0}^n \nabla \phi_i(\mathbf{x})\, f_i.$
+ \nabla \sum\limits_{i=1}^n \nabla \phi_i(\mathbf{x})\, f_i =
+ \sum\limits_{i=1}^n \nabla \phi_i(\mathbf{x})\, f_i.$
 
 This reveals that the gradient is a linear function of the vector of $f_i$
 values. Because $\phi_i$ are linear in each triangle their gradient are
@@ -872,7 +872,7 @@ rotations.
 The most popular technique is linear blend skinning. Each point on the shape
 computes its new location as a linear combination of bone transformations:
 
- $\mathbf{x}' = \sum\limits_{i = 0}^m w_i(\mathbf{x}) \mathbf{T}_i
+ $\mathbf{x}' = \sum\limits_{i = 1}^m w_i(\mathbf{x}) \mathbf{T}_i
  \left(\begin{array}{c}\mathbf{x}_i\\1\end{array}\right),$
 
 where $w_i(\mathbf{x})$ is the scalar _weight function_ of the ith bone evaluated at
@@ -906,7 +906,7 @@ Bounded biharmonic weights are one such technique that casts weight computation
 as a constrained optimization problem [#jacobson_2011][]. The weights enforce
 smoothness by minimizing a smoothness energy: the familiar Laplacian energy:
 
- $\sum\limits_{i = 0}^m \int_S (\Delta w_i)^2 dA$
+ $\sum\limits_{i = 1}^m \int_S (\Delta w_i)^2 dA$
   
 subject to constraints which enforce interpolation of handle constraints:
 
@@ -916,7 +916,7 @@ subject to constraints which enforce interpolation of handle constraints:
 where $H_i$ is the ith handle, and constraints which enforce non-negativity,
 parition of unity and encourage sparsity:
 
- $0\le w_i \le 1$ and $\sum\limits_{i=0}^m w_i = 1.$
+ $0\le w_i \le 1$ and $\sum\limits_{i=1}^m w_i = 1.$
 
 This is a quadratic programming problem and libigl solves it using its active
 set solver or by calling out to Mosek.
@@ -924,6 +924,50 @@ set solver or by calling out to Mosek.
 ![The example `BoundedBiharmonicWeights` computes weights for a tetrahedral
 mesh given a skeleton (top) and then animates a linear blend skinning
 deformation (bottom).](images/hand-bbw.jpg)
+
+## Dual Quaternion Skinning
+Even with high quality weights, linear blend skinning is limited. In
+particular, it suffers from known artifacts stemming from blending rotations as
+as matrices: a weight combination of rotation matrices is not necessarily a
+rotation. Consider an equal blend between rotating by $-pi/2$ and by $pi/2$
+about the $z$-axis. Intuitively one might expect to get the identity matrix,
+but instead the blend is a degenerate matrix scaling the $x$ and $y$
+coordinates by zero:
+
+ $0.5\left(\begin{array}{ccc}0&-1&0\\1&0&0\\0&0&1\end{array}\right)+
+ 0.5\left(\begin{array}{ccc}0&1&0\\-1&0&0\\0&0&1\end{array}\right)=
+ \left(\begin{array}{ccc}0&0&0\\0&0&0\\0&0&1\end{array}\right)$
+
+In practice, this means the shape shrinks and collapses in regions where bone
+weights overlap: near joints.
+
+Dual quaternion skinning presents a solution [#kavan_2008]. This method
+represents rigid transformations as a pair of unit quaternions,
+$\hat{\mathbf{q}}$. The linear blend skinning formula is replaced with a
+linear blend of dual quaternions:
+
+ $\mathbf{x}' =
+ \cfrac{\sum\limits_{i=1}^m w_i(\mathbf{x})\hat{\mathbf{q}_i}}
+ {\left\|\sum\limits_{i=1}^m w_i(\mathbf{x})\hat{\mathbf{q}_i}\right\|}
+ \mathbf{x},$
+
+where $\hat{\mathbf{q}_i}$ is the dual quaternion representation of the rigid
+transformation of bone $i$. The normalization forces the result of the linear blending
+to again be a unit dual quaternion and thus also a rigid transformation.
+
+Like linear blend skinning, dual quaternion skinning is best performed in the
+vertex shader. The only difference being that bone transformations are sent as
+dual quaternions rather than affine transformation matrices.  Libigl supports
+CPU-side dual quaternion skinning with the `igl::dqs` function, which takes a
+more traditional representation of rigid transformations as input and
+internally converts to the dual quaternion representation before blending:
+
+```cpp
+// vQ is a list of rotations as quaternions
+// vT is a list of translations
+igl::dqs(V,W,vQ,vT,U);
+```
+
 
 [#botsch_2004]: Matrio Botsch and Leif Kobbelt. "An Intuitive Framework for
 Real-Time Freeform Modeling," 2004.
@@ -934,6 +978,8 @@ _Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
 "Bounded Biharmonic Weights for Real-Time Deformation," 2011.
 [#jacobson_mixed_2010]: Alec Jacobson, Elif Tosun, Olga Sorkine, and Denis
 Zorin. "Mixed Finite Elements for Variational Surface Modeling," 2010.
+[#kavan_2008]: Ladislav Kavan, Steven Collins, Jiri Zara, and Carol O'Sullivan.
+"Geometric Skinning with Approximate Dual Quaternion Blending," 2008.
 [#kazhdan_2012]: Michael Kazhdan, Jake Solomon, Mirela Ben-Chen,
 "Can Mean-Curvature Flow Be Made Non-Singular," 2012.
 [#meyer_2003]: Mark Meyer, Mathieu Desbrun, Peter Schröder and Alan H.  Barr,
