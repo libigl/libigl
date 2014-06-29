@@ -25,6 +25,11 @@ add_subdirectory("303_LaplaceEquation")
 add_subdirectory("304_LinearEqualityConstraints")
 add_subdirectory("305_QuadraticProgramming")
 
+# Chapter 4
+add_subdirectory("401_BiharmonicDeformation")
+add_subdirectory("402_PolyharmonicDeformation")
+add_subdirectory("403_BoundedBiharmonicWeights")
+
 # Chapter 5
 add_subdirectory("501_HarmonicParam")
 add_subdirectory("502_LSCMParam")

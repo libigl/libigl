@@ -13,7 +13,7 @@ void igl::deform_skeleton(
   BET.resize(BE.rows(),2);
   for(int e = 0;e<BE.rows();e++)
   {
-    BET(e,0) = 2*e; 
+    BET(e,0) = 2*e;
     BET(e,1) = 2*e+1;
     Affine3d a = vA[e];
     Vector3d c0 = C.row(BE(e,0));
@@ -32,12 +32,12 @@ IGL_INLINE void igl::deform_skeleton(
   Eigen::MatrixXi & BET)
 {
   using namespace Eigen;
-  assert(BE.rows() == (int)vA.size());
+  //assert(BE.rows() == (int)vA.size());
   CT.resize(2*BE.rows(),C.cols());
   BET.resize(BE.rows(),2);
   for(int e = 0;e<BE.rows();e++)
   {
-    BET(e,0) = 2*e; 
+    BET(e,0) = 2*e;
     BET(e,1) = 2*e+1;
     Affine3d a;
     a.matrix() = T.block(e*4,0,4,3).transpose();

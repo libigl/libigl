@@ -3,6 +3,8 @@ project(403_BoundedBiharmonicWeights)
 
 include("../CMakeLists.shared")
 
+add_definitions(-DIGL_NO_MOSEK)
+
 set(SOURCES
 ${PROJECT_SOURCE_DIR}/main.cpp
 )
