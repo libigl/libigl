@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
   State state;
 
   // Load a mesh in OFF format
-  igl::readOFF("../shared/cube.off", state.V, state.F);
+  igl::readOFF("../shared/2triangles.off", state.V, state.F);
 
   // Save some integers in a vector
   state.ids.push_back(6);
