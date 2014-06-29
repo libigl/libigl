@@ -51,6 +51,9 @@ if(LIBCOMISO_FOUND)
 add_subdirectory("504_NRosyDesign")
 add_subdirectory("505_MIQ")
 add_subdirectory("506_FrameField")
+add_subdirectory("507_PolyVectorField")
+add_subdirectory("508_ConjugatePVF")
+add_subdirectory("509_AngleBoundPVF")
 endif(LIBCOMISO_FOUND)
 
 # Chapter 6
