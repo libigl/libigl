@@ -8,6 +8,11 @@
 
 #include "OpenGL_shader.h"
 
+#ifndef __APPLE__
+#  define GLEW_STATIC
+#  include <GL/glew.h>
+#endif
+
 #ifdef __APPLE__
 #   include <OpenGL/gl3.h>
 #   define __gl_h_ /* Prevent inclusion of the old gl.h */

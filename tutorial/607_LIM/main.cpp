@@ -44,7 +44,8 @@ bool key_down(igl::Viewer& viewer,unsigned char key,int modifier)
         energyType = energy;
     }
     
-    igl::compute_lim(V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
+    if(key != '0')
+      igl::compute_lim(V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
 
     // set mesh
     viewer.set_vertices(V1);
