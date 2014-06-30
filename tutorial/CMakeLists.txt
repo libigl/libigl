@@ -53,9 +53,8 @@ add_subdirectory("505_MIQ")
 add_subdirectory("506_FrameField")
 add_subdirectory("507_PolyVectorField")
 add_subdirectory("508_ConjugateField")
-add_subdirectory("509_Planarization")
 endif(LIBCOMISO_FOUND)
-
+add_subdirectory("509_Planarization")
 
 # Chapter 6
 add_subdirectory("601_Serialization")
