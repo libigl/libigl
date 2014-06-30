@@ -37,3 +37,5 @@ add_subdirectory("601_Serialization")
 add_subdirectory("604_Triangle")
 add_subdirectory("605_Tetgen")
 add_subdirectory("606_AmbientOcclusion")
+
+add_subdirectory("607_LIM")
