@@ -83,8 +83,8 @@ of these lecture notes links to a cross-platform example application.
 
 # Chapter 1 [100]
 
-We introduce libIGL with a series of self-contained examples. The purpose of
-each example is to showcase a feature of libIGL while applying to a practical
+We introduce libigl with a series of self-contained examples. The purpose of
+each example is to showcase a feature of libigl while applying to a practical
 problem in geometry processing. In this chapter, we will showcase the basic
 concepts of libigl and introduce a simple mesh viewer that allows to easily
 visualize surface mesh and its attributes. All the examples are cross-platform
@@ -102,8 +102,8 @@ of the sourcecode of each library is provided together with libigl
 and they can be precompiled using:
 
 ```sh
-    sh compile_dependencies_macosx.sh (MACOSX)
-    sh compile_dependencies_linux.sh (LINUX)
+sh compile_dependencies_macosx.sh (MACOSX)
+sh compile_dependencies_linux.sh (LINUX)
 ```
 
 while precompiled binaries are provided for Visual Studio 2014 64bit.
@@ -112,11 +112,11 @@ You can use the CMakeLists.txt in the tutorial folder to build all the
 examples:
 
 ```sh
-  cd tutorial
-  mkdir build
-  cd build
-  cmake ../
-  make
+cd tutorial
+mkdir build
+cd build
+cmake ../
+make
 ```
 
 or you can use the CMakeLists.txt inside each example folder to build the
@@ -128,7 +128,7 @@ downloaded and compiled separately.
 
 ## Mesh representation [101]
 
-libIGL uses the [Eigen](http://eigen.tuxfamily.org/) library to encode vector
+libigl uses the [Eigen](http://eigen.tuxfamily.org/) library to encode vector
 and matrices. We will review in this tutorial many of the basic operations that
 Eigen supports: If you want to get an idea of what operations are supported you
 can take a look at the
@@ -160,7 +160,7 @@ matrices. This simple representation has many advantages:
 * the use of indices instead of pointers greatly simplifies debuggind
 * the data can be trivially read/written on disk
 
-libIGL provides Input/Output functions to read and write common mesh formats.
+libigl provides Input/Output functions to read and write common mesh formats.
 The reading/writing functions are named read\*.h and write\*.h, respectively.
 
 Reading a mesh from file requires a single igl function call:
@@ -1313,6 +1313,10 @@ internally converts to the dual quaternion representation before blending:
 // vT is a list of translations
 igl::dqs(V,W,vQ,vT,U);
 ```
+
+![The example `DualQuaternionSkinning` compares linear blend skinning (top) to dual
+quaternion skinning (bottom), highlighting LBS's candy wrapper effect (middle)
+and joint collapse (right).](images/arm-dqs.jpg)
 
 
 # Chapter 5: Parametrization [500]
