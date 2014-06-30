@@ -1484,16 +1484,38 @@ Two tangent vectors lying on a face of triangle mesh are conjugate if
 
 \\[ k_1 (u^T d_1)(v^T d_1) + k_2(u^T d_2)(v^T d_2) = 0. \\]
 
-This condition is very important in architectural geometry, since a quad mesh (with infinitesimally small quads) whose edges are aligned with a conjugate field is made of planar faces. Conjugate fields can be generated with a local/global
+This condition is very important in architectural geometry, since the faces of an infinitely dense quad mesh whose edges are aligned with a conjugate field are planar. Thus, creating a quad mesh following a Conjugate field generates quad meshes that are easier to planarize.
 
-* they can be used to encode conjugate field -> planar meshing
+Finding a conjugate vector field that satisfies given directional constraints is a standard problem in architectural geometry, which can be tackled by warping a given PolyVector field to the closest conjugate field.
 
-* global/local approach
+The algorithms alternates a global step, which enforces smoothness, with a local step that projects the field on every face to the closest conjugate field ([Example 508](508_ConjugateField/main.cpp)).
+
+![A smooth 4-PolyVector field (left) is deformed to become a conjugate field (right).](images/508_ConjugateField.png)
+
+### References
+
+[Designing N-PolyVector Fields with Complex Polynomials](http://igl.ethz.ch/projects/complex-roots/)
+Olga Diamanti, Amir Vaxman, Daniele Panozzo, Olga Sorkine-Hornung,
+SGP 2014
+
+[General Planar Quadrilateral Mesh Design Using Conjugate Direction Field](http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf)
+Yang Liu, Weiwei Xu, Jun Wang, Lifeng Zhu, Baining Guo, Falai Chen, Guoping Wang
+SIGGRAPH Asia 2011
 
 ## Planarization [509]
 
-* given a mesh from conjugate directions, enforce planarity with a local/global approach
-* useful for architecture
+A quad mesh can be transformed in a planar quad mesh using Shape-Up, that is a local/global approach
+the uses the global step to enforce surface continuity and the local step to enforce planarity.
+
+[Example 509](509_Planarization/main.cpp) planarizes a quad mesh until it satisfies a user-given planarity threshold.
+
+![A non-planar quad mesh (left) is planarized using the libigl function igl::palanarize (right). The colors represent the planarity of the quads.](images/509_Planarization.png)
+
+### References
+
+[Shape-Up: Shaping Discrete Geometry with Projections](http://lgg.epfl.ch/publications/2012/shapeup.pdf)
+Sofien Bouaziz, Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
+SGP 2012
 
 # Chapter 6: External libraries [600]
 
@@ -1669,7 +1691,7 @@ This is undesirable in many applications, and it is possible to avoid it by intr
 
 libigl can be used to compute Locally Injective Maps using a variety of deformation energies. A simple deformation of a 2D grid is computed in [Example 607](607_LIM/main.c).
 
-![A mesh (left) deformed using harmonic deformation (middle) and with harmonic deformation + the anti-flipping conatraints (right).](images/607_LIM.png)
+![A mesh (left) deformed using Laplacian editing (middle) and with Laplacian editing plus the anti-flipping conatraints (right).](images/607_LIM.png)
 
 ### References
 

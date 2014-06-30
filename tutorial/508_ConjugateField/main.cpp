@@ -55,12 +55,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   if (key <'1' || key >'3')
     return false;
 
-  viewer.clear();
-  viewer.core.show_lines = false;
-  viewer.core.show_texture = false;
-
-  viewer.set_mesh(V, F);
-
+  viewer.data.lines.resize(0,9);
   // Highlight in red the constrained faces
   MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
   for (unsigned i=0; i<F.rows();++i)
@@ -150,8 +145,11 @@ int main(int argc, char *argv[])
 
   // Launch the viewer
   igl::Viewer viewer;
-  key_down(viewer,'3',0);
   viewer.core.invert_normals = true;
+  viewer.core.show_lines = false;
+  viewer.core.show_texture = false;
+  viewer.set_mesh(V, F);
   viewer.callback_key_down = &key_down;
+  key_down(viewer,'3',0);
   viewer.launch();
 }

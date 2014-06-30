@@ -41,7 +41,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     VectorXd planarity;
     igl::quad_planarity( VQC, FQC, planarity);
     MatrixXd Ct;
-    igl::jet(planarity, 0, 0.02, Ct);
+    igl::jet(planarity, 0, 0.01, Ct);
     MatrixXd C(FQCtri.rows(),3);
     C << Ct, Ct;
     viewer.set_colors(C);
@@ -63,7 +63,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     VectorXd planarity;
     igl::quad_planarity( VQCplan, FQC, planarity);
     MatrixXd Ct;
-    igl::jet(planarity, 0, 0.02, Ct);
+    igl::jet(planarity, 0, 0.01, Ct);
     MatrixXd C(FQCtri.rows(),3);
     C << Ct, Ct;
     viewer.set_colors(C);
