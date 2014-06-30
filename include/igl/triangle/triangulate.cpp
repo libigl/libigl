@@ -6,6 +6,16 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "triangulate.h"
+#ifdef ANSI_DECLARATORS
+#  define IGL_PREVIOUSLY_DEFINED_ANSI_DECLARATORS ANSI_DECLARATORS
+#endif
+#ifdef REAL
+#  define IGL_PREVIOUSLY_DEFINED_REAL REAL
+#endif
+#ifdef VOID
+#  define IGL_PREVIOUSLY_DEFINED_VOID VOID
+#endif
+#define ANSI_DECLARATORS
 #define REAL double
 #define VOID int
 
@@ -14,13 +24,31 @@ extern "C"
 #include <triangle.h>
 }
 
+#ifdef IGL_PREVIOUSLY_DEFINED_ANSI_DECLARATORS
+#  define ANSI_DECLARATORS IGL_PREVIOUSLY_DEFINED_ANSI_DECLARATORS
+#else
+#  undef ANSI_DECLARATORS
+#endif
+
+#ifdef IGL_PREVIOUSLY_DEFINED_REAL
+#  define REAL IGL_PREVIOUSLY_DEFINED_REAL
+#else
+#  undef REAL
+#endif
+
+#ifdef IGL_PREVIOUSLY_DEFINED_VOID
+#  define VOID IGL_PREVIOUSLY_DEFINED_VOID
+#else
+#  undef VOID
+#endif
+
 IGL_INLINE void igl::triangulate(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& E,
   const Eigen::MatrixXd& H,
+  const std::string flags,
   Eigen::MatrixXd& V2,
-  Eigen::MatrixXi& F2,
-  const std::string flags)
+  Eigen::MatrixXi& F2)
 {
   using namespace std;
   using namespace Eigen;
@@ -74,7 +102,7 @@ IGL_INLINE void igl::triangulate(
   out.segmentlist = NULL;
 
   // Call triangle
-  triangulate(const_cast<char*>(full_flags.c_str()), &in, &out, 0);
+  ::triangulate(const_cast<char*>(full_flags.c_str()), &in, &out, 0);
 
   // Cleanup in
   free(in.pointlist);
