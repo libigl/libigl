@@ -8,7 +8,16 @@ html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathja
 <script>hljs.initHighlightingOnLoad();</script>
 
 # libigl Tutorial notes
-Libigl is an open source C++ library for geometry processing research and development.  Dropping the heavy data structures of tradition geometry libraries, libigl is a simple header-only library of encapsulated functions. This combines the rapid prototyping familiar to Matlab or Python programmers with the performance and versatility of C++.  The tutorial is a self-contained, hands-on introduction to libigl.  Via live coding and interactive examples, we demonstrate how to accomplish various common geometry processing tasks such as computation of differential quantities and operators, real-time deformation, global parametrization, numerical optimization and mesh repair.  Each section of these lecture notes links to a cross-platform example application.
+Libigl is an open source C++ library for geometry processing research and
+development.  Dropping the heavy data structures of tradition geometry
+libraries, libigl is a simple header-only library of encapsulated functions.
+This combines the rapid prototyping familiar to Matlab or Python programmers
+with the performance and versatility of C++.  The tutorial is a self-contained,
+hands-on introduction to libigl.  Via live coding and interactive examples, we
+demonstrate how to accomplish various common geometry processing tasks such as
+computation of differential quantities and operators, real-time deformation,
+global parametrization, numerical optimization and mesh repair.  Each section
+of these lecture notes links to a cross-platform example application.
 
 # Table of Contents
 
@@ -74,10 +83,17 @@ Libigl is an open source C++ library for geometry processing research and develo
 
 # Chapter 1 [100]
 
-We introduce libIGL with a series of self-contained examples. The purpose of each example is to showcase a feature of libIGL while applying to a practical problem in geometry processing. In this chapter, we will showcase the basic concepts of libigl and introduce a simple mesh viewer that allows to easily visualize surface mesh and its attributes. All the examples are cross-platform and can be compiled on MacOSX, Linux and Windows.
+We introduce libIGL with a series of self-contained examples. The purpose of
+each example is to showcase a feature of libIGL while applying to a practical
+problem in geometry processing. In this chapter, we will showcase the basic
+concepts of libigl and introduce a simple mesh viewer that allows to easily
+visualize surface mesh and its attributes. All the examples are cross-platform
+and can be compiled on MacOSX, Linux and Windows.
 
-libigl can be downloaded from our [github repository](https://github.com/libigl/libigl) or cloned with git:
-``` sh
+libigl can be downloaded from our [github
+repository](https://github.com/libigl/libigl) or cloned with git:
+
+```sh
 git clone https://github.com/libigl/libigl.git
 ```
 
@@ -89,9 +105,11 @@ and they can be precompiled using:
     sh compile_dependencies_macosx.sh (MACOSX)
     sh compile_dependencies_linux.sh (LINUX)
 ```
+
 while precompiled binaries are provided for Visual Studio 2014 64bit.
 
-You can use the CMakeLists.txt in the tutorial folder to build all the examples:
+You can use the CMakeLists.txt in the tutorial folder to build all the
+examples:
 
 ```sh
   cd tutorial
@@ -101,13 +119,22 @@ You can use the CMakeLists.txt in the tutorial folder to build all the examples:
   make
 ```
 
-or you can use the CMakeLists.txt inside each example folder to build the examples independently.
+or you can use the CMakeLists.txt inside each example folder to build the
+examples independently.
 
-For a few examples in Chapter 5, the [CoMiSo solver](http://www.graphics.rwth-aachen.de/software/comiso) has to be downloaded and compiled separately.
+For a few examples in Chapter 5, the [CoMiSo
+solver](http://www.graphics.rwth-aachen.de/software/comiso) has to be
+downloaded and compiled separately.
 
 ## Mesh representation [101]
 
-libIGL uses the [Eigen](http://eigen.tuxfamily.org/) library to encode vector and matrices. We will review in this tutorial many of the basic operations that Eigen supports: If you want to get an idea of what operations are supported you can take a look at the [dense](http://eigen.tuxfamily.org/dox/group__QuickRefPage.html) and [sparse](http://eigen.tuxfamily.org/dox/group__SparseQuickRefPage.html) quick reference guides.
+libIGL uses the [Eigen](http://eigen.tuxfamily.org/) library to encode vector
+and matrices. We will review in this tutorial many of the basic operations that
+Eigen supports: If you want to get an idea of what operations are supported you
+can take a look at the
+[dense](http://eigen.tuxfamily.org/dox/group__QuickRefPage.html) and
+[sparse](http://eigen.tuxfamily.org/dox/group__SparseQuickRefPage.html) quick
+reference guides.
 
 We encode a triangular mesh as a pair of matrices:
 
@@ -116,11 +143,18 @@ Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 ```
 
-**V** is a #N by 3 matrix which stores the coordinates of the vertices. Each row stores the coordinate of a vertex, with the x,y,z coordinates in the first, second and third column respectively. The matrix **F** stores the triangle connectivity: each line of **F** denotes a triangle whose 3 vertices are represented as indices pointing to vertex coordinates in **F**.
+**V** is a #N by 3 matrix which stores the coordinates of the vertices. Each
+row stores the coordinate of a vertex, with the x,y,z coordinates in the first,
+second and third column respectively. The matrix **F** stores the triangle
+connectivity: each line of **F** denotes a triangle whose 3 vertices are
+represented as indices pointing to vertex coordinates in **F**.
 
 ![A simple mesh made of 2 triangles and 4 vertices.](images/VF.png)
 
-Note that the order of the vertex indices in F determines the orientation of the triangles and it should be consistent for the entire surface. As we will see later, additional properties of the mesh will be similarly stored as matrices. This simple representation has many advantages:
+Note that the order of the vertex indices in F determines the orientation of
+the triangles and it should be consistent for the entire surface. As we will
+see later, additional properties of the mesh will be similarly stored as
+matrices. This simple representation has many advantages:
 
 * it is memory efficient and cache friendly
 * the use of indices instead of pointers greatly simplifies debuggind
@@ -142,13 +176,17 @@ Similarly, to write a mesh to file (in OBJ format):
 igl::writeOBJ("cube.obj",V,F);
 ```
 
-See [Example 101](101_FileIO/main.cpp) for the source code of a simple mesh converter from OFF to OBJ format.
+See [Example 101](101_FileIO/main.cpp) for the source code of a simple mesh
+converter from OFF to OBJ format.
 
 ## Plotting surfaces [102]
 
-libigl contains an OpenGL viewer that can visualize surface and their properties.
+libigl contains an OpenGL viewer that can visualize surface and their
+properties.
 
-The following code ([Example 102](102_DrawMesh/main.cpp)) is a basic skeleton that will be used over the entire tutorial. It is a standalone application that loads a mesh and visualize it.
+The following code ([Example 102](102_DrawMesh/main.cpp)) is a basic skeleton
+that will be used over the entire tutorial. It is a standalone application that
+loads a mesh and visualize it.
 
 ```cpp
 #include <igl/readOFF.h>
@@ -169,13 +207,19 @@ int main(int argc, char *argv[])
 }
 ```
 
-The function set_mesh assigns to the viewer the mesh that we want to plot, and the last line creates an opengl context and starts the draw loop. Additional properties can be plotted on the mesh, and it is also possible to extend the viewer with standard OpenGL code. Please see the documentation in  [Viewer.h](../include/igl/Viewer/Viewer.h) for more details.
+The function set_mesh assigns to the viewer the mesh that we want to plot, and
+the last line creates an opengl context and starts the draw loop. Additional
+properties can be plotted on the mesh, and it is also possible to extend the
+viewer with standard OpenGL code. Please see the documentation in
+[Viewer.h](../include/igl/Viewer/Viewer.h) for more details.
 
-![([Example 102](102_DrawMesh/main.cpp)) loads and draws a mesh.](images/102_DrawMesh.png)
+![([Example 102](102_DrawMesh/main.cpp)) loads and draws a
+mesh.](images/102_DrawMesh.png)
 
 ## Interaction with keyboard and mouse [103]
 
-Keyboard and mouse events triggers callbacks that can be registered in the viewer. The viewer supports the following callbacks:
+Keyboard and mouse events triggers callbacks that can be registered in the
+viewer. The viewer supports the following callbacks:
 
 ```cpp
 bool (*callback_pre_draw)(Viewer& viewer);
@@ -188,7 +232,9 @@ bool (*callback_key_down)(Viewer& viewer, unsigned char key, int modifiers);
 bool (*callback_key_up)(Viewer& viewer, unsigned char key, int modifiers);
 ```
 
-A keyboard callback can be used to visualize multiple meshes or different stages of an algorithm, as demonstrated in [Example 103](103_Events/main.cpp). The keyboard callback changes the visualized mesh depending on the key pressed:
+A keyboard callback can be used to visualize multiple meshes or different
+stages of an algorithm, as demonstrated in [Example 103](103_Events/main.cpp).
+The keyboard callback changes the visualized mesh depending on the key pressed:
 
 ```cpp
 bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
@@ -212,45 +258,69 @@ and it is registered in the viewer as follows:
 viewer.callback_key_down = &key_down;
 ```
 
-Note that the mesh is cleared before using set_mesh. This has to be called every time the number of vertices or faces of the plotted mesh changes. Every callback returns a boolean value that tells the viewer if the event has been handled by the plugin, or if the viewer should process it normally. This is useful, for example, to disable the default mouse event handling if you want to control the camera directly in your code.
+Note that the mesh is cleared before using set_mesh. This has to be called
+every time the number of vertices or faces of the plotted mesh changes. Every
+callback returns a boolean value that tells the viewer if the event has been
+handled by the plugin, or if the viewer should process it normally. This is
+useful, for example, to disable the default mouse event handling if you want to
+control the camera directly in your code.
 
-The viewer can be extended using plugins, which are classes that implements all the viewer's callbacks. See the class Viewer_plugin for more details.
+The viewer can be extended using plugins, which are classes that implements all
+the viewer's callbacks. See the class Viewer_plugin for more details.
 
 ## Scalar field visualization [104]
 
-Colors and normals can be associated to both faces or normals using the set_colors function:
+Colors and normals can be associated to both faces or normals using the
+set_colors function:
 
 ```cpp
 viewer.set_colors(C);
 ```
-**C** is a #C by 3 matrix with one RGB color per row, and as many rows as the number of faces **or** the number of vertices. Depending on the size of **C**, the viewer applies the color to faces or vertices.
 
-Colors are commonly used to visualize scalar functions defined on a surface using a transfer functions, that maps a scalar value between 0 and 1 to a color scale. A simple example of a scalar field defined on a surface is the z coordinate of each point. We can extract this information from our mesh by taking the first column of V (which contains the stacked z coordiantes of all the vertices), and map it to colors using the igl::jet function:
+**C** is a #C by 3 matrix with one RGB color per row, and as many rows as the
+number of faces **or** the number of vertices. Depending on the size of **C**,
+the viewer applies the color to faces or vertices.
+
+Colors are commonly used to visualize scalar functions defined on a surface
+using a transfer functions, that maps a scalar value between 0 and 1 to a color
+scale. A simple example of a scalar field defined on a surface is the z
+coordinate of each point. We can extract this information from our mesh by
+taking the first column of V (which contains the stacked z coordiantes of all
+the vertices), and map it to colors using the igl::jet function:
 
 ```cpp
 Eigen::VectorXd x = V.col(2);
 igl::jet(x,true,C);
 ```
 
-The first row extracts the third column from V and the second calls the libigl functions that converts a scalar field to colors. The second parameter of jet normalizes the scalar field to lie between 0 and 1 before applying the color scale.
+The first row extracts the third column from V and the second calls the libigl
+functions that converts a scalar field to colors. The second parameter of jet
+normalizes the scalar field to lie between 0 and 1 before applying the color
+scale.
 
-![([Example 104](104_Colors/main.cpp)) igl::jet converts a scalar field to a color field.](images/104_Colors.png)
+![([Example 104](104_Colors/main.cpp)) igl::jet converts a scalar field to a
+color field.](images/104_Colors.png)
 
 ## Overlays [105]
 
-In addition to the surface, the viewer supports the visualization of points, lines and text label that can be very helful while developing geometric processing algorithms. These additional informations can be drawn using the following functions:
+In addition to the surface, the viewer supports the visualization of points,
+lines and text label that can be very helful while developing geometric
+processing algorithms. These additional informations can be drawn using the
+following functions:
 
 ```cpp
 viewer.add_points(P,Eigen::RowVector3d(r,g,b));
 ```
 
-Draws a point of color r,g,b for each row of P at the coordinates specified in each row of P, which is a #P by 3 matrix.
+Draws a point of color r,g,b for each row of P at the coordinates specified in
+each row of P, which is a #P by 3 matrix.
 
 ```cpp
 viewer.add_edges(P1,P2,Eigen::RowVector3d(r,g,b);
 ```
 
-Draws a line for each line of P1 and P2, which connects the point in P1 to the point in P2.
+Draws a line for each line of P1 and P2, which connects the point in P1 to the
+point in P2.
 
 ```cpp
 viewer.add_label(p,str);
@@ -258,20 +328,29 @@ viewer.add_label(p,str);
 
 Draws a label containing the string str at the position p.
 
-These functions are demonstrate in [Example 105](105_Overlays/main.cpp) where the bounding box of the mesh is plotted using lines and points. The bounding box of a mesh can be found using Eigen:
+These functions are demonstrate in [Example 105](105_Overlays/main.cpp) where
+the bounding box of the mesh is plotted using lines and points. The bounding
+box of a mesh can be found using Eigen:
 
 ```cpp
 Eigen::Vector3d m = V.colwise().minCoeff();
 Eigen::Vector3d M = V.colwise().maxCoeff();
 ```
 
-![([Example 105](105_Overlays/main.cpp)) The bounding box of a mesh is shown using overlays.](images/105_Overlays.png)
+![([Example 105](105_Overlays/main.cpp)) The bounding box of a mesh is shown
+using overlays.](images/105_Overlays.png)
 
-Using matrices to encode the mesh and its attributes allows to write short and efficient code for many operations, avoiding to write for loops.
+Using matrices to encode the mesh and its attributes allows to write short and
+efficient code for many operations, avoiding to write for loops.
 
 ## Picking [106]
 
-Picking vertices and faces using the mouse is very common in geometry processing applications. While this might seem a simple operation, its implementation is quite involved. libigl contains a function that solves this problem using the [Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels) raycaster. Its usage is demonstrated in [Example 106](106_Picking/main.cpp):
+Picking vertices and faces using the mouse is very common in geometry
+processing applications. While this might seem a simple operation, its
+implementation is quite involved. libigl contains a function that solves this
+problem using the
+[Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels)
+raycaster. Its usage is demonstrated in [Example 106](106_Picking/main.cpp):
 
 ```cpp
 bool hit = igl::unproject_in_mesh(
@@ -285,22 +364,37 @@ bool hit = igl::unproject_in_mesh(
   vid);
 ```
 
-This function casts a ray from the view plane in the view direction. x,y are the position of the mouse on screen; view,model,proj are the view, model and projection matrix respectively, viewport is the viewport in opengl format; ei contains a [Bounding Volume Hierarchy](http://en.wikipedia.org/wiki/Bounding_volume_hierarchy) constructed by Embree, and fid and vid are the picked face and vertex respectively.
+This function casts a ray from the view plane in the view direction. x,y are
+the position of the mouse on screen; view,model,proj are the view, model and
+projection matrix respectively, viewport is the viewport in opengl format; ei
+contains a [Bounding Volume
+Hierarchy](http://en.wikipedia.org/wiki/Bounding_volume_hierarchy) constructed
+by Embree, and fid and vid are the picked face and vertex respectively.
 
-This function is a good example of the design principles in libigl: the function takes very simple types, mostly matrix or vectors, and can be easily reused for many different tasks.
-Not committing to heavy data structures, favors simplicity, ease of use and reusability.
+This function is a good example of the design principles in libigl: the
+function takes very simple types, mostly matrix or vectors, and can be easily
+reused for many different tasks.  Not committing to heavy data structures,
+favors simplicity, ease of use and reusability.
 
 # libigl design choices [107]
 
-To conclude the introduction, we summarize the main design principles in libigl:
+To conclude the introduction, we summarize the main design principles in
+libigl:
 
-* No complex data types. Mostly matrices and vectors. This greatly favors code reusability and forces the authors to expose all the parameters used by the algorithm.  
+* No complex data types. Mostly matrices and vectors. This greatly favors code
+  reusability and forces the authors to expose all the parameters used by the
+  algorithm.  
 
-* Minimal dependencies: we use external libraries only when necessary and we wrap them in a small set of functions.
+* Minimal dependencies: we use external libraries only when necessary and we
+  wrap them in a small set of functions.
 
-* Header-only: it is straighforward to use our library since it is only one additional include directory in your project. (if you are worried about compilation speed, it is also possible to build the library as a [static library](../build/))
+* Header-only: it is straighforward to use our library since it is only one
+  additional include directory in your project. (if you are worried about
+  compilation speed, it is also possible to build the library as a [static
+  library](../build/))
 
-![([Example 106](106_Picking/main.cpp)) Picking via ray casting. The selected vertices are colored in red.](images/106_Picking.png)
+![([Example 106](106_Picking/main.cpp)) Picking via ray casting. The selected
+vertices are colored in red.](images/106_Picking.png)
 
 # Chapter 2: Discrete Geometric Quantities and Operators
 This chapter illustrates a few discrete quantities that libigl can compute on a
@@ -396,13 +490,13 @@ at vertex $i$ in triangle $j$ [][#meyer_2003].
 Just like the continuous analog, our discrete Gaussian curvature reveals
 elliptic, hyperbolic and parabolic vertices on the domain.
 
-![The `GaussianCurvature` example computes discrete Gaussian curvature and visualizes it in
-pseudocolor.](images/bumpy-gaussian-curvature.jpg)
+![The `GaussianCurvature` example computes discrete Gaussian curvature and
+visualizes it in pseudocolor.](images/bumpy-gaussian-curvature.jpg)
 
 ## Curvature Directions
-The two principal curvatures $(k_1,k_2)$ at a point on a surface measure how much the
-surface bends in different directions. The directions of maximum and minimum
-(signed) bending are call principal directions and are always
+The two principal curvatures $(k_1,k_2)$ at a point on a surface measure how
+much the surface bends in different directions. The directions of maximum and
+minimum (signed) bending are call principal directions and are always
 orthogonal.
 
 Mean curvature is defined simply as the average of principal curvatures:
@@ -415,8 +509,8 @@ normal:
 
   $-\Delta \mathbf{x} = H \mathbf{n}.$
 
-It is easy to compute this on a discrete triangle mesh in libigl using the cotangent
-Laplace-Beltrami operator [][#meyer_2003].
+It is easy to compute this on a discrete triangle mesh in libigl using the
+cotangent Laplace-Beltrami operator [][#meyer_2003].
 
 ```cpp
 #include <igl/cotmatrix.h>
@@ -498,8 +592,9 @@ visualizes the vector field.](images/cheburashka-gradient.jpg)
 The discrete Laplacian is an essential geometry processing tool. Many
 interpretations and flavors of the Laplace and Laplace-Beltrami operator exist.
 
-In open Euclidean space, the _Laplace_ operator is the usual divergence of gradient
-(or equivalently the Laplacian of a function is the trace of its Hessian):
+In open Euclidean space, the _Laplace_ operator is the usual divergence of
+gradient (or equivalently the Laplacian of a function is the trace of its
+Hessian):
 
  $\Delta f =
  \frac{\partial^2 f}{\partial x^2} +
@@ -508,12 +603,12 @@ In open Euclidean space, the _Laplace_ operator is the usual divergence of gradi
 
 The _Laplace-Beltrami_ operator generalizes this to surfaces.
 
-When considering piecewise-linear functions on a triangle mesh, a discrete Laplacian may
-be derived in a variety of ways. The most popular in geometry processing is the
-so-called ``cotangent Laplacian'' $\mathbf{L}$, arising simultaneously from FEM, DEC and
-applying divergence theorem to vertex one-rings. As a linear operator taking
-vertex values to vertex values, the Laplacian $\mathbf{L}$ is a $n\times n$
-matrix with elements:
+When considering piecewise-linear functions on a triangle mesh, a discrete
+Laplacian may be derived in a variety of ways. The most popular in geometry
+processing is the so-called ``cotangent Laplacian'' $\mathbf{L}$, arising
+simultaneously from FEM, DEC and applying divergence theorem to vertex
+one-rings. As a linear operator taking vertex values to vertex values, the
+Laplacian $\mathbf{L}$ is a $n\times n$ matrix with elements:
 
 $L_{ij} = \begin{cases}j \in N(i) &\cot \alpha_{ij} + \cot \beta_{ij},\\
 j \notin N(i) & 0,\\
@@ -657,8 +752,8 @@ functionality is provided in libigl using `slice_into`:
 igl::slice_into(B,R,C,A);
 ```
 
-![The example `Slice` shows how to use `igl::slice` to change the colors for triangles
-on a mesh.](images/decimated-knight-slice-color.jpg)
+![The example `Slice` shows how to use `igl::slice` to change the colors for
+triangles on a mesh.](images/decimated-knight-slice-color.jpg)
 
 ## Sort
 
@@ -877,9 +972,8 @@ Notice that we can rewrite the last constraint in the familiar form from above:
  $z_{c} - z_{d} = 0.$
 
 Now we can assembly `Aeq` as a $1 \times n$ sparse matrix with a coefficient
-$1$
-in the column corresponding to vertex $c$ and a $-1$ at $d$. The right-hand side
-`Beq` is simply zero.
+$1$ in the column corresponding to vertex $c$ and a $-1$ at $d$. The right-hand
+side `Beq` is simply zero.
 
 Internally, `min_quad_with_fixed_*` solves using the Lagrange Multiplier
 method. This method adds additional variables for each linear constraint (in
@@ -925,10 +1019,8 @@ $\lambda$ into one $(m+n) \times 1$ vector of unknowns:
 
 Differentiating with respect to $\left( \mathbf{z}^T \lambda^T \right)$ reveals
 a linear system and we can solve for $\mathbf{z}$ and $\lambda$. The only
-difference from
-the straight quadratic
-_minimization_ system, is that
-this saddle problem system will not be positive definite. Thus, we must use a
+difference from the straight quadratic _minimization_ system, is that this
+saddle problem system will not be positive definite. Thus, we must use a
 different factorization technique (LDLT rather than LLT). Luckily, libigl's
 `min_quad_with_fixed_precompute` automatically chooses the correct solver in
 the presence of linear equality constraints.
@@ -981,7 +1073,8 @@ igl::active_set(Q,B,b,bc,Aeq,Beq,Aieq,Bieq,lx,ux,as,Z);
 ```
 
 ![The example `QuadraticProgramming` uses an active set solver to optimize
-discrete biharmonic kernels at multiple scales [#rustamov_2011][].](images/cheburashka-multiscale-biharmonic-kernels.jpg)
+discrete biharmonic kernels at multiple scales
+[#rustamov_2011][].](images/cheburashka-multiscale-biharmonic-kernels.jpg)
 
 # Chapter 4: Shape Deformation
 Modern mesh-based shape deformation methods satisfy user deformation
@@ -998,11 +1091,11 @@ techniques that cast the problem of handle-based shape deformation as a
 quadratic energy minimization problem or equivalently the solution to a linear
 partial differential equation.
 
-There are many flavors of these techniques, but
-a prototypical subset are those that consider solutions to the bi-Laplace
-equation, that is biharmonic functions [#botsch_2004][]. This fourth-order PDE provides
-sufficient flexibility in boundary conditions to ensure $C^1$ continuity at
-handle constraints (in the limit under refinement) [#jacobson_mixed_2010][].
+There are many flavors of these techniques, but a prototypical subset are those
+that consider solutions to the bi-Laplace equation, that is biharmonic
+functions [#botsch_2004][]. This fourth-order PDE provides sufficient
+flexibility in boundary conditions to ensure $C^1$ continuity at handle
+constraints (in the limit under refinement) [#jacobson_mixed_2010][].
 
 ### Biharmonic surfaces
 Let us first begin our discussion of biharmonic _deformation_, by considering
@@ -1017,8 +1110,9 @@ conditions":
 
  $\mathbf{x}'_{b} = \mathbf{x}_{bc}.$
 
-where $\mathbf{x}'$ is the unknown 3D position of a point on the surface. So we are
-asking that the bi-Laplace of each of spatial coordinate functions to be zero.
+where $\mathbf{x}'$ is the unknown 3D position of a point on the surface. So we
+are asking that the bi-Laplace of each of spatial coordinate functions to be
+zero.
 
 In libigl, one can solve a biharmonic problem like this with `igl::harmonic`
 and setting $k=2$ (_bi_-harmonic):
@@ -1030,10 +1124,10 @@ igl::harmonic(V,F,b,U_bc,2,U);
 
 This produces smooth surfaces that interpolate the handle constraints, but all
 original details on the surface will be _smoothed away_. Most obviously, if the
-original surface is not already biharmonic, then giving all handles the identity
-deformation (keeping them at their rest positions) will **not** reproduce the
-original surface. Rather, the result will be the biharmonic surface that does
-interpolate those handle positions.
+original surface is not already biharmonic, then giving all handles the
+identity deformation (keeping them at their rest positions) will **not**
+reproduce the original surface. Rather, the result will be the biharmonic
+surface that does interpolate those handle positions.
 
 Thus, we may conclude that this is not an intuitive technique for shape
 deformation.
@@ -1073,7 +1167,8 @@ U = V+D;
 ```
 
 ![The `BiharmonicDeformation` example deforms a statue's head as a _biharmonic
-surface_ (top) and using a _biharmonic displacements_ (bottom).](images/max-biharmonic.jpg)
+surface_ (top) and using a _biharmonic displacements_
+(bottom).](images/max-biharmonic.jpg)
 
 #### Relationship to "differential coordinates" and Laplacian surface editing
 Biharmonic functions (whether positions or displacements) are solutions to the
@@ -1086,7 +1181,8 @@ By linearity of the Laplace(-Beltrami) operator we can reexpress this energy in
 terms of the original positions $\mathbf{x}$ and the unknown positions
 $\mathbf{x}' = \mathbf{x} - \mathbf{d}$:
 
- $\int\limits_S \|\Delta (\mathbf{x}' - \mathbf{x})\|^2 dA = \int\limits_S \|\Delta \mathbf{x}' - \Delta \mathbf{x})\|^2 dA.$
+ $\int\limits_S \|\Delta (\mathbf{x}' - \mathbf{x})\|^2 dA = \int\limits_S
+ \|\Delta \mathbf{x}' - \Delta \mathbf{x})\|^2 dA.$
 
 In the early work of Sorkine et al., the quantities $\Delta \mathbf{x}'$ and
 $\Delta \mathbf{x}$ were dubbed "differential coordinates" [#sorkine_2004][].
@@ -1159,8 +1255,8 @@ smoothness by minimizing a smoothness energy: the familiar Laplacian energy:
 
 subject to constraints which enforce interpolation of handle constraints:
 
- $w_i(\mathbf{x}) = \begin{cases} 1 & \text{ if } \mathbf{x} \in H_i\\ 0 & \text{ otherwise }
- \end{cases},$
+ $w_i(\mathbf{x}) = \begin{cases} 1 & \text{ if } \mathbf{x} \in H_i\\ 0 &
+ \text{ otherwise } \end{cases},$
 
 where $H_i$ is the ith handle, and constraints which enforce non-negativity,
 parition of unity and encourage sparsity:
@@ -1201,8 +1297,9 @@ linear blend of dual quaternions:
  \mathbf{x},$
 
 where $\hat{\mathbf{q}_i}$ is the dual quaternion representation of the rigid
-transformation of bone $i$. The normalization forces the result of the linear blending
-to again be a unit dual quaternion and thus also a rigid transformation.
+transformation of bone $i$. The normalization forces the result of the linear
+blending to again be a unit dual quaternion and thus also a rigid
+transformation.
 
 Like linear blend skinning, dual quaternion skinning is best performed in the
 vertex shader. The only difference being that bone transformations are sent as
@@ -1220,22 +1317,40 @@ igl::dqs(V,W,vQ,vT,U);
 
 # Chapter 5: Parametrization [500]
 
-In computer graphics, we denote as parametrization of a surface a map from the surface to \\(\mathbf{R}^2\\). It is usually encoded by a new set of 2D coordinates for each vertex of the mesh and possibly also a new set of faces in one to one correspondence with the faces of the original surface. Note that this definition
-is the *inverse* of the classical differential geometry parametrization.
+In computer graphics, we denote as parametrization of a surface a map from the
+surface to \\(\mathbf{R}^2\\). It is usually encoded by a new set of 2D
+coordinates for each vertex of the mesh and possibly also a new set of faces in
+one to one correspondence with the faces of the original surface. Note that
+this definition is the *inverse* of the classical differential geometry
+parametrization.
 
-A parametrization has many applications, ranging from texture mapping to surface remeshing. Many algorithms have been proposed, and they can be broadly characterized in four families:
+A parametrization has many applications, ranging from texture mapping to
+surface remeshing. Many algorithms have been proposed, and they can be broadly
+characterized in four families:
 
-1. **Single patch, fixed boundary**: these algorithm can parametrize a disk-like part of the surface given fixed 2D positions for its boundary. These algorithms are efficient and simple, but usually produce high-distortion maps due to the strong cosntraints on the border.
+1. **Single patch, fixed boundary**: these algorithm can parametrize a
+disk-like part of the surface given fixed 2D positions for its boundary. These
+algorithms are efficient and simple, but usually produce high-distortion maps
+due to the strong cosntraints on the border.
 
-2. **Single patch, free border:** these algorithms allows the boundary to deform freely, reducing the distortion of the map. Care should be taken to prevent the border to self-intersect.
+2. **Single patch, free border:** these algorithms allows the boundary to
+deform freely, reducing the distortion of the map. Care should be taken to
+prevent the border to self-intersect.
 
-3. **Global parametrization**: these algorithms works on meshes with arbitrary genus. They cut the mesh in multiple patches that are then possible to flatten in a 2D domain. Usually the map is discontinuous on the seams.
+3. **Global parametrization**: these algorithms works on meshes with arbitrary
+genus. They cut the mesh in multiple patches that are then possible to flatten
+in a 2D domain. Usually the map is discontinuous on the seams.
 
-4. **Global seamless parametrization**: similar to the global parametrization, but solved with a global solving strategy that hides the seams, making the parametrization "continuous", under specific assumptions that we will discuss later.
+4. **Global seamless parametrization**: similar to the global parametrization,
+but solved with a global solving strategy that hides the seams, making the
+parametrization "continuous", under specific assumptions that we will discuss
+later.
 
 ## Harmonic parametrization [501]
 
-Harmonic parametrization is a single patch, fixed boundary parametrization algorithm that computes the 2D coordinates of the flattened mesh as two Harmonic functions.
+Harmonic parametrization is a single patch, fixed boundary parametrization
+algorithm that computes the 2D coordinates of the flattened mesh as two
+Harmonic functions.
 
 The algorithm is divided in 3 steps:
 
@@ -1253,13 +1368,17 @@ Eigen::MatrixXd bnd_uv;
 igl::map_vertices_to_circle(V,bnd,bnd_uv);
 ```
 
-* Computation of harmonic functions for both the u and v coordinate on the plane, using the boundary positions as boundary constraints
+* Computation of harmonic functions for both the u and v coordinate on the
+  plane, using the boundary positions as boundary constraints
 
 ```cpp
 igl::harmonic(V,F,bnd,bnd_uv,1,V_uv);
 ```
 
-bnd contains the indices of the boundary vertices, bnd_uv their position on the UV plane, and "1" denotes that we want to compute an harmonic function (2 will be for biharmonic, 3 for triharmonic, etc.). Note that each of the three functions is deisgned to be reusable in other parametrization algorithms.
+`bnd` contains the indices of the boundary vertices, bnd_uv their position on the
+UV plane, and "1" denotes that we want to compute an harmonic function (2 will
+be for biharmonic, 3 for triharmonic, etc.). Note that each of the three
+functions is deisgned to be reusable in other parametrization algorithms.
 
 A UV parametrization can be visualized in the viewer using the method:
 
@@ -1267,19 +1386,25 @@ A UV parametrization can be visualized in the viewer using the method:
 viewer.set_uv(V_uv);
 ```
 
-which uses the UV coordinates to apply a procedural checkerboard texture to the mesh ([Example 501](501_HarmonicParam/main.cpp)).
+which uses the UV coordinates to apply a procedural checkerboard texture to the
+mesh ([Example 501](501_HarmonicParam/main.cpp)).
 
-![([Example 501](501_HarmonicParam/main.cpp)) Harmonic parametrization. (left) mesh with texture, (right) UV parametrization with texture](images/501_HarmonicParam.png)
+![([Example 501](501_HarmonicParam/main.cpp)) Harmonic parametrization. (left)
+mesh with texture, (right) UV parametrization with
+texture](images/501_HarmonicParam.png)
 
 ###References:
 
-[Multiresolution Analysis of Arbitrary Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf),
-Matthias Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner Stuetzle,
-SIGGRAPH 2005
+[Multiresolution Analysis of Arbitrary
+Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), Matthias
+Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
+Stuetzle, SIGGRAPH 2005
 
 ## Least-Square Conformal Maps [502]
 
-Least-square conformal maps parametrization minimizes the conformal (angular) distortion of the generated parametrization. If does not need to have a fixed boundary.
+Least-square conformal maps parametrization minimizes the conformal (angular)
+distortion of the generated parametrization. If does not need to have a fixed
+boundary.
 
 LSCM minimizes the following energy:
 
@@ -1289,16 +1414,21 @@ which can be rewritten in matrix form as:
 
 \\[ E_{LSCM}(\mathbf{u},\mathbf{v}) = \frac{1}{2} [\mathbf{u},\mathbf{v}]^t (L_c - 2A) [\mathbf{u},\mathbf{v}] \\]
 
-where L_c is the cotangent laplacian matrix and A is a matrix such that \\( [\mathbf{u},\mathbf{v}]^t A  [\mathbf{u},\mathbf{v}] \\) is equal to the _vector area_ of the mesh.
+where L_c is the cotangent laplacian matrix and A is a matrix such that \\(
+[\mathbf{u},\mathbf{v}]^t A  [\mathbf{u},\mathbf{v}] \\) is equal to the
+_vector area_ of the mesh.
 
-Using libigl, this matrix energy can be written using a few lines of codes. The cotangent matrix can be computed using igl::cotmatrix:
+Using libigl, this matrix energy can be written using a few lines of codes. The
+cotangent matrix can be computed using `igl::cotmatrix`:
 
 ```cpp
 SparseMatrix<double> L;
 igl::cotmatrix(V,F,L);
 ```
 
-Note that we want to apply the laplacian matrix to the u and v coordinates at the same time, thus we need to extend the laplacian matrix taking the left Kronecker product with a 2x2 identity matrix:
+Note that we want to apply the laplacian matrix to the u and v coordinates at
+the same time, thus we need to extend the laplacian matrix taking the left
+Kronecker product with a 2x2 identity matrix:
 
 ```cpp
 SparseMatrix<double> L_flat;
@@ -1312,112 +1442,174 @@ SparseMatrix<double> A;
 igl::vector_area_matrix(F,A);
 ```
 
-The final energy matrix is the sum of these two matrices. Note that in this case we don't need to fix the boundary, we only need to fix two arbitrary vertices to arbitrary positions to remove the null space of the energy and make the minimum unique. The full source code is provided in [Example 502](502_LSCMParam/main.cpp).
+The final energy matrix is the sum of these two matrices. Note that in this
+case we don't need to fix the boundary, we only need to fix two arbitrary
+vertices to arbitrary positions to remove the null space of the energy and make
+the minimum unique. The full source code is provided in [Example
+502](502_LSCMParam/main.cpp).
 
 
-![([Example 502](502_LSCMParam/main.cpp)) LSCM parametrization. (left) mesh with texture, (right) UV parametrization with texture](images/502_LSCMParam.png)
+![([Example 502](502_LSCMParam/main.cpp)) LSCM parametrization. (left) mesh
+with texture, (right) UV parametrization with
+texture](images/502_LSCMParam.png)
 
 ####References:
 
-[Least Squares Conformal Maps, for Automatic Texture Atlas Generation,](http://www.cs.jhu.edu/~misha/Fall09/Levy02.pdf)
-Bruno Lévy, Sylvain Petitjean, Nicolas Ray, Jérome Maillot,
-SIGGRAPH 2002
+[Least Squares Conformal Maps, for Automatic Texture Atlas
+Generation,](http://www.cs.jhu.edu/~misha/Fall09/Levy02.pdf) Bruno Lévy,
+Sylvain Petitjean, Nicolas Ray, Jérome Maillot, SIGGRAPH 2002
 
-[Spectral Conformal Parameterization](http://www.geometry.caltech.edu/pubs/MTAD08.pdf),
-Patrick Mullen, Yiying Tong, Pierre Alliez, Mathieu Desbrun,
-CGF 2008
+[Spectral Conformal
+Parameterization](http://www.geometry.caltech.edu/pubs/MTAD08.pdf), Patrick
+Mullen, Yiying Tong, Pierre Alliez, Mathieu Desbrun, CGF 2008
 
 ## As-Rigid-As-Possible parametrization [503]
 
-As-Rigid-As-Possible parametrizationis a powerful single-patch, non-linear algorithm to compute a parametrization that strives to preserve distances (and thus angles). The idea is very similar to ARAP surface deformation: each triangle is mapped to the plane trying to preserve its original shape, up to a rigid 2x2 rotation.
+As-Rigid-As-Possible parametrizationis a powerful single-patch, non-linear
+algorithm to compute a parametrization that strives to preserve distances (and
+thus angles). The idea is very similar to ARAP surface deformation: each
+triangle is mapped to the plane trying to preserve its original shape, up to a
+rigid 2x2 rotation.
 
-The algorithm can be implemented reusing the functions discuss in the deformation chapter arap_precomputation and ara_solve. The only difference is that the optimization has to be done in 2D instead of 3D and that a starting point for the non-linear optimization is necessary. While for 3D deformation the original mesh is a perfect starting point, this is not the case for ARAP parametrization since the starting point must be a 2D mesh. In [Example 503](503_ARAPParam/main.cpp), we use Harmonic parametrization as a starting point for the ARAP parametrization: note that similarly to LSCM, the boundary is free to deform to minimize the distortion.
+The algorithm can be implemented reusing the functions discuss in the
+deformation chapter arap_precomputation and ara_solve. The only difference is
+that the optimization has to be done in 2D instead of 3D and that a starting
+point for the non-linear optimization is necessary. While for 3D deformation
+the original mesh is a perfect starting point, this is not the case for ARAP
+parametrization since the starting point must be a 2D mesh. In [Example
+503](503_ARAPParam/main.cpp), we use Harmonic parametrization as a starting
+point for the ARAP parametrization: note that similarly to LSCM, the boundary
+is free to deform to minimize the distortion.
 
-![([Example 503](502_ARAPParam/main.cpp)) As-Rigid-As-Possible parametrization. (left) mesh with texture, (right) UV parametrization with texture](images/503_ARAPParam.png)
+![([Example 503](502_ARAPParam/main.cpp)) As-Rigid-As-Possible parametrization.
+(left) mesh with texture, (right) UV parametrization with
+texture](images/503_ARAPParam.png)
 
-### References
-[A Local/Global Approach to Mesh Parameterization](http://cs.harvard.edu/~sjg/papers/arap.pdf)
-Ligang Liu, Lei Zhang, Yin Xu, Craig Gotsman, Steven J. Gortler
-SGP 2008
+### References [A Local/Global Approach to Mesh
+Parameterization](http://cs.harvard.edu/~sjg/papers/arap.pdf) Ligang Liu, Lei
+Zhang, Yin Xu, Craig Gotsman, Steven J. Gortler SGP 2008
 
 ## N-Rotationally symmetric tangent fields [504]
 
-The design of tangent fields is a basic tool used to design guidance fields for uniform quadrilateral and hexaedral remeshing. libigl contains an implementation of all the state- of-the-art to design algorithms for N-RoSy fields and their generalizations.
+The design of tangent fields is a basic tool used to design guidance fields for
+uniform quadrilateral and hexaedral remeshing. libigl contains an
+implementation of all the state- of-the-art to design algorithms for N-RoSy
+fields and their generalizations.
 
-In libigl, tangent unit-length vector fields are piece-wise constant on the faces of a triangle mesh, and described by one or more vectors per-face. The function
+In libigl, tangent unit-length vector fields are piece-wise constant on the
+faces of a triangle mesh, and described by one or more vectors per-face. The
+function
 
 ```cpp
 igl::nrosy(V,F,b,bc,b_soft,b_soft_weight,bc_soft,N,0.5,
            output_field,output_singularities);
 ```
 
-creates a smooth vector field (N=1) starting from a sparse set of constrained faces, whose indices are listed in b and their constrained value is specified in bc. The functions supports soft_constraints (b_soft,b_soft_weight,bc_soft), and returns the interpolated field for each face of the triangle mesh (output_field) plus the singularities of the field (output_singularities).
+creates a smooth vector field (N=1) starting from a sparse set of constrained
+faces, whose indices are listed in b and their constrained value is specified
+in bc. The functions supports soft_constraints (b_soft,b_soft_weight,bc_soft),
+and returns the interpolated field for each face of the triangle mesh
+(output_field) plus the singularities of the field (output_singularities).
 
 ![Design of a unit-lenght vector field](images/504_vector_field.png)
 
-The singularities are vertices where the field vanishes, and they are highlighted in red. igl::nrosy can generate N-Rotation Symmetric fields, which are a generalization of vector fields where in every face the vector is defined up to a constant rotation of \\( 2\pi / N \\). As can be observed in the following figure, the singularities of fields generated with different N are in different positions and of a different kind.
+The singularities are vertices where the field vanishes, and they are
+highlighted in red. igl::nrosy can generate N-Rotation Symmetric fields, which
+are a generalization of vector fields where in every face the vector is defined
+up to a constant rotation of \\( 2\pi / N \\). As can be observed in the
+following figure, the singularities of fields generated with different N are in
+different positions and of a different kind.
 
 ![Design of a 2-,4- and 9-RoSy field](images/504_nrosy_field.png)
 
-We demonstrate how to call and plot N-RoSy fields in [Example 504](504_NRosyDesign/main.cpp), where the degree of the field can be controlled by pressing the number keys.
+We demonstrate how to call and plot N-RoSy fields in [Example
+504](504_NRosyDesign/main.cpp), where the degree of the field can be controlled
+by pressing the number keys.
 
 ### References
 
-[N-Symmetry Direction Field Design](http://alice.loria.fr/publications/papers/2008/DGF/NSDFD-TOG.pdf),
-Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy
-TOG 2008
+[N-Symmetry Direction Field
+Design](http://alice.loria.fr/publications/papers/2008/DGF/NSDFD-TOG.pdf),
+Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy TOG 2008
 
-[Mixed-integer quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf),
-David Bommes, Henrik Zimmer, Leif Kobbelt
-SIGGRAPH 2009
+[Mixed-integer
+quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf),
+David Bommes, Henrik Zimmer, Leif Kobbelt SIGGRAPH 2009
 
 #Global, seamless integer grid parametrization
 
-The previous parametrization methods where focusing on generating parametrization of single patches, mainly aimed at texture mapping and baking of other surface properties like normals high-frequency details. Global, seamless parametrization aims at parametrizing complex shapes with a parametrization that is aligned with a given set of directions for the purpose of remeshing the surface. In libigl, we provide a reference  implementation of the pipeline of the  [MIQ](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf) paper.
+The previous parametrization methods where focusing on generating
+parametrization of single patches, mainly aimed at texture mapping and baking
+of other surface properties like normals high-frequency details. Global,
+seamless parametrization aims at parametrizing complex shapes with a
+parametrization that is aligned with a given set of directions for the purpose
+of remeshing the surface. In libigl, we provide a reference  implementation of
+the pipeline of the
+[MIQ](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf) paper.
 
 ### Global, seamless integer-grid parametrization [505]
 
-The first step involves the design of a 4-RoSy field (sometimes called cross field) that describes how the edges of the final quad remeshing should align. The field constraints are usually manually specified or extracted from curvature. In this example, we simply fix one face in a random direction.
+The first step involves the design of a 4-RoSy field (sometimes called cross
+field) that describes how the edges of the final quad remeshing should align.
+The field constraints are usually manually specified or extracted from
+curvature. In this example, we simply fix one face in a random direction.
 
 ![Initial cross field prescribing the edge alignment.](images/505_MIQ_1.png)
 
 ### Combing and cutting
 
-Given the cross field, we now want to cut the surface so that it becomes homeorphic to a disk. While this can be done directly on the cross-field, we prefer to do this operation on its bisector field (a copy of the field rotated by 45 degrees) since it is more stable and generic.
+Given the cross field, we now want to cut the surface so that it becomes
+homeorphic to a disk. While this can be done directly on the cross-field, we
+prefer to do this operation on its bisector field (a copy of the field rotated
+by 45 degrees) since it is more stable and generic.
 
 We thus rotate the field,
 
 ![Bisector field.](images/505_MIQ_2.png)
 
-and we remove the rotation ambiguity by assigning to each face a u and v direction, computed by diffusing this alignment from a random face.
+and we remove the rotation ambiguity by assigning to each face a u and v
+direction, computed by diffusing this alignment from a random face.
 
 ![Combed bisector field.](images/505_MIQ_3.png)
 
-You can imagine this process as combing an hairy surface: you'll be able to comb part of it, but at some point you will not be able to comb consistently the full surface ([Hairy ball theorem](http://en.wikipedia.org/wiki/Hairy_ball_theorem)). The discontinuites in the combing defines the cut graph:
+You can imagine this process as combing an hairy surface: you'll be able to
+comb part of it, but at some point you will not be able to comb consistently
+the full surface ([Hairy ball
+theorem](http://en.wikipedia.org/wiki/Hairy_ball_theorem)). The discontinuites
+in the combing defines the cut graph:
 
 ![Cut graph.](images/505_MIQ_4.png)
 
-Finally, we rotate the combed field by 45 degrees to undo the initial 45 degrees rotation:
+Finally, we rotate the combed field by 45 degrees to undo the initial 45
+degrees rotation:
 
 ![Combed cross field.](images/505_MIQ_5.png)
 
-This cross field can be seen as the ideal gradient of the parametrization that we want to compute.
+This cross field can be seen as the ideal gradient of the parametrization that
+we want to compute.
 
 ### Poisson parametrization
 
-The mesh can be then cut along the seams and a parametrization is computed trying to find two scalar functions whose gradient matches the combed cross field. This is a classical Poisson problem, that is solved minimizing the following quadratic energy:
+The mesh can be then cut along the seams and a parametrization is computed
+trying to find two scalar functions whose gradient matches the combed cross
+field. This is a classical Poisson problem, that is solved minimizing the
+following quadratic energy:
 
 \\[ E(\mathbf{u},\mathbf{v}) = |\nabla \mathbf{u} - X_u|^2 + |\nabla \mathbf{v} - X_v|^2 \\]
 
-where \\( X_u \\) and \\( X_u \\) denotes the combed cross field. Solving this problem generates a parametrization whose u and v isolines are aligned with the input cross field.
+where \\( X_u \\) and \\( X_u \\) denotes the combed cross field. Solving this
+problem generates a parametrization whose u and v isolines are aligned with the
+input cross field.
 
 ![Poisson parametrization.](images/505_MIQ_8.png)
 
-We hide the seams by adding a set of integer constraints to the Poisson problem that aligns the isolines on both sides of each seam.
+We hide the seams by adding a set of integer constraints to the Poisson problem
+that aligns the isolines on both sides of each seam.
 
 ![Seamless Poisson parametrization.](images/505_MIQ_7.png)
 
-Note that this parametrization can only be used for remeshing purposes, since it contains many overlaps.
+Note that this parametrization can only be used for remeshing purposes, since
+it contains many overlaps.
 
 ![Seamless Poisson parametrization (in 2D).](images/505_MIQ_6.png)
 
@@ -1428,55 +1620,87 @@ The full pipeline is demonstrated in [Example 505](505_MIQ/main.cpp).
 
 ### References
 
-[Mixed-integer quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf),
-David Bommes, Henrik Zimmer, Leif Kobbelt
-SIGGRAPH 2009
+[Mixed-integer
+quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf),
+David Bommes, Henrik Zimmer, Leif Kobbelt SIGGRAPH 2009
 
 ## Anisotropic remeshing [506]
 
-Anisotropic and non-uniform quad remeshing is important to concentrate the elements in the regions with more details. It is possible to extend the MIQ quad meshing framework to generate anisotropic quad meshes using a mesh deformation approach.
+Anisotropic and non-uniform quad remeshing is important to concentrate the
+elements in the regions with more details. It is possible to extend the MIQ
+quad meshing framework to generate anisotropic quad meshes using a mesh
+deformation approach.
 
-The input of the remeshing algorithm is now a sparse set of constraints that defines the shape and scale of the desired quad remeshing. This can be encoded as a frame-field, which is a pair of non-orthogonal and non-unit lenght vectors. The frame field can be interpolated by decomposing it in a 4-RoSy field and a unique affine transformation. The two parts can then be interpolated separately, using igl::nrosy for the cross field, and an harmonic interpolant for the affine part.
+The input of the remeshing algorithm is now a sparse set of constraints that
+defines the shape and scale of the desired quad remeshing. This can be encoded
+as a frame-field, which is a pair of non-orthogonal and non-unit lenght
+vectors. The frame field can be interpolated by decomposing it in a 4-RoSy
+field and a unique affine transformation. The two parts can then be
+interpolated separately, using igl::nrosy for the cross field, and an harmonic
+interpolant for the affine part.
 
-![Interpolation of a frame field. Colors on the vectors denote the desired scale. The red faces contains the frame field constraints.](images/506_FrameField_1.png)
+![Interpolation of a frame field. Colors on the vectors denote the desired
+scale. The red faces contains the frame field
+constraints.](images/506_FrameField_1.png)
 
-After the interpolation, the surface is warped to transform each frame into an orthogonal and unit lenght cross (i.e. removing the scaling and skewness from the frame). This deformation defines a new embedding (and a new metric) for the surface.
+After the interpolation, the surface is warped to transform each frame into an
+orthogonal and unit lenght cross (i.e. removing the scaling and skewness from
+the frame). This deformation defines a new embedding (and a new metric) for the
+surface.
 
-![The surface is deformed to transform the frame field in a cross field.](images/506_FrameField_2.png)
+![The surface is deformed to transform the frame field in a cross
+field.](images/506_FrameField_2.png)
 
-The deformed surface can the be isotropically remeshed using the MIQ algorithm that has been presented in the previous section.
+The deformed surface can the be isotropically remeshed using the MIQ algorithm
+that has been presented in the previous section.
 
 ![The deformed surface is isotropically remeshed.](images/506_FrameField_3.png)
 
-The UV coordinates of the deformed surface can then be used to transport the parametrization to the original surface, where the isolines will trace a quad mesh whose elements are similar to the shape prescribed in the input frame field.
+The UV coordinates of the deformed surface can then be used to transport the
+parametrization to the original surface, where the isolines will trace a quad
+mesh whose elements are similar to the shape prescribed in the input frame
+field.
 
-![The global parametrization is lifted to the original surface to create the anisotropic quad meshing.](images/506_FrameField_4.png)
+![The global parametrization is lifted to the original surface to create the
+anisotropic quad meshing.](images/506_FrameField_4.png)
 
-Our implementation ([Example 506](506_FrameField/main.cpp)) uses MIQ to generate the UV parametrization, but other algorithms could be applied: the only desiderata is that the generated quad mesh will be as isotropic as possible.
+Our implementation ([Example 506](506_FrameField/main.cpp)) uses MIQ to
+generate the UV parametrization, but other algorithms could be applied: the
+only desiderata is that the generated quad mesh will be as isotropic as
+possible.
 
 ### References
 
-[Frame Fields: Anisotropic and Non-Orthogonal Cross Fields](http://www.inf.ethz.ch/personal/dpanozzo/papers/frame-fields-2014.pdf),
-Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga Sorkine-Hornung,
-SIGGRAPH, 2014
+[Frame Fields: Anisotropic and Non-Orthogonal Cross
+Fields](http://www.inf.ethz.ch/personal/dpanozzo/papers/frame-fields-2014.pdf),
+Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga Sorkine-Hornung, SIGGRAPH,
+2014
 
 ## N-PolyVector fields [507]
 
-N-RoSy vector fields can be further generalized to represent arbitrary vector-sets, with arbitrary angles between them and with arbitrary lenghts. This generalization is called  N-PolyVector field, and libigl provides the function igl::n_polyvector to design them starting from a sparse set of constraints ([Example 507](507_PolyVectorField/main.cpp)).
+N-RoSy vector fields can be further generalized to represent arbitrary
+vector-sets, with arbitrary angles between them and with arbitrary lenghts.
+This generalization is called  N-PolyVector field, and libigl provides the
+function igl::n_polyvector to design them starting from a sparse set of
+constraints ([Example 507](507_PolyVectorField/main.cpp)).
 
-![Interpolation of a N-PolyVector field from a sparse set of constraints.](images/507_PolyVectorField.png)
+![Interpolation of a N-PolyVector field from a sparse set of
+constraints.](images/507_PolyVectorField.png)
 
-Globally Optimal Direction fields are a special case of Poly-Vector Fields: if the interpolation constraints are an N-RoSy field, then our algorithm generates a field that if normalized, is equivalent to a globally optimal direction field.
+Globally Optimal Direction fields are a special case of Poly-Vector Fields: if
+the interpolation constraints are an N-RoSy field, then our algorithm generates
+a field that if normalized, is equivalent to a globally optimal direction
+field.
 
 ### References
 
-[Designing N-PolyVector Fields with Complex Polynomials](http://igl.ethz.ch/projects/complex-roots/)
-Olga Diamanti, Amir Vaxman, Daniele Panozzo, Olga Sorkine-Hornung,
-SGP 2014
+[Designing N-PolyVector Fields with Complex
+Polynomials](http://igl.ethz.ch/projects/complex-roots/) Olga Diamanti, Amir
+Vaxman, Daniele Panozzo, Olga Sorkine-Hornung, SGP 2014
 
-[Globally Optimal Direction Fields](http://www.cs.columbia.edu/~keenan/Projects/GloballyOptimalDirectionFields/paper.pdf)
-Knöppel, Crane, Pinkall, Schröder
-SIGGRAPH 2013
+[Globally Optimal Direction
+Fields](http://www.cs.columbia.edu/~keenan/Projects/GloballyOptimalDirectionFields/paper.pdf)
+Knöppel, Crane, Pinkall, Schröder SIGGRAPH 2013
 
 ## Conjugate vector fields [508]
 
@@ -1484,54 +1708,83 @@ Two tangent vectors lying on a face of triangle mesh are conjugate if
 
 \\[ k_1 (u^T d_1)(v^T d_1) + k_2(u^T d_2)(v^T d_2) = 0. \\]
 
-This condition is very important in architectural geometry, since the faces of an infinitely dense quad mesh whose edges are aligned with a conjugate field are planar. Thus, creating a quad mesh following a Conjugate field generates quad meshes that are easier to planarize.
+This condition is very important in architectural geometry, since the faces of
+an infinitely dense quad mesh whose edges are aligned with a conjugate field
+are planar. Thus, creating a quad mesh following a Conjugate field generates
+quad meshes that are easier to planarize.
 
-Finding a conjugate vector field that satisfies given directional constraints is a standard problem in architectural geometry, which can be tackled by warping a given PolyVector field to the closest conjugate field.
+Finding a conjugate vector field that satisfies given directional constraints
+is a standard problem in architectural geometry, which can be tackled by
+warping a given PolyVector field to the closest conjugate field.
 
-The algorithms alternates a global step, which enforces smoothness, with a local step that projects the field on every face to the closest conjugate field ([Example 508](508_ConjugateField/main.cpp)).
+The algorithms alternates a global step, which enforces smoothness, with a
+local step that projects the field on every face to the closest conjugate field
+([Example 508](508_ConjugateField/main.cpp)).
 
-![A smooth 4-PolyVector field (left) is deformed to become a conjugate field (right).](images/508_ConjugateField.png)
+![A smooth 4-PolyVector field (left) is deformed to become a conjugate field
+(right).](images/508_ConjugateField.png)
 
 ### References
 
-[Designing N-PolyVector Fields with Complex Polynomials](http://igl.ethz.ch/projects/complex-roots/)
-Olga Diamanti, Amir Vaxman, Daniele Panozzo, Olga Sorkine-Hornung,
-SGP 2014
+[Designing N-PolyVector Fields with Complex
+Polynomials](http://igl.ethz.ch/projects/complex-roots/) Olga Diamanti, Amir
+Vaxman, Daniele Panozzo, Olga Sorkine-Hornung, SGP 2014
 
-[General Planar Quadrilateral Mesh Design Using Conjugate Direction Field](http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf)
-Yang Liu, Weiwei Xu, Jun Wang, Lifeng Zhu, Baining Guo, Falai Chen, Guoping Wang
-SIGGRAPH Asia 2011
+[General Planar Quadrilateral Mesh Design Using Conjugate Direction
+Field](http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf)
+Yang Liu, Weiwei Xu, Jun Wang, Lifeng Zhu, Baining Guo, Falai Chen, Guoping
+Wang SIGGRAPH Asia 2011
 
 ## Planarization [509]
 
-A quad mesh can be transformed in a planar quad mesh using Shape-Up, that is a local/global approach
-the uses the global step to enforce surface continuity and the local step to enforce planarity.
+A quad mesh can be transformed in a planar quad mesh using Shape-Up, that is a
+local/global approach the uses the global step to enforce surface continuity
+and the local step to enforce planarity.
 
-[Example 509](509_Planarization/main.cpp) planarizes a quad mesh until it satisfies a user-given planarity threshold.
+[Example 509](509_Planarization/main.cpp) planarizes a quad mesh until it
+satisfies a user-given planarity threshold.
 
-![A non-planar quad mesh (left) is planarized using the libigl function igl::palanarize (right). The colors represent the planarity of the quads.](images/509_Planarization.png)
+![A non-planar quad mesh (left) is planarized using the libigl function
+igl::palanarize (right). The colors represent the planarity of the
+quads.](images/509_Planarization.png)
 
 ### References
 
-[Shape-Up: Shaping Discrete Geometry with Projections](http://lgg.epfl.ch/publications/2012/shapeup.pdf)
-Sofien Bouaziz, Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
+[Shape-Up: Shaping Discrete Geometry with
+Projections](http://lgg.epfl.ch/publications/2012/shapeup.pdf) Sofien Bouaziz,
+Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
 SGP 2012
 
 # Chapter 6: External libraries [600]
 
-An additional positive side effect of using matrices as basic types is that it is easy to exchange data between libigl and other softwares and libraries.
+An additional positive side effect of using matrices as basic types is that it
+is easy to exchange data between libigl and other softwares and libraries.
 
 ## State serialization [601]
 
-Geometry processing applications often require a considerable amount of computational time and/or manual input. In order to make the development efficient it must be possible to serialize and deserialize the state of the application.
+Geometry processing applications often require a considerable amount of
+computational time and/or manual input. In order to make the development
+efficient it must be possible to serialize and deserialize the state of the
+application.
 
-Having a good serialization framework allows to quickly start debugging just before the crash happens, avoiding to wait for the precomputation to take place every time. It also makes it easier to define unit testing that can be used to find bugs in interactive applications: if the input is slightly different every time the algorithm is executed, it is very difficult to find bugs.
+Having a good serialization framework allows to quickly start debugging just
+before the crash happens, avoiding to wait for the precomputation to take place
+every time. It also makes it easier to define unit testing that can be used to
+find bugs in interactive applications: if the input is slightly different every
+time the algorithm is executed, it is very difficult to find bugs.
 
-Unfortunately, serialization is often not considered in geoemtry processing due to the extreme difficulty in serializing pointer-based data structures (like an helf-edge).
+Unfortunately, serialization is often not considered in geoemtry processing due
+to the extreme difficulty in serializing pointer-based data structures (like an
+helf-edge).
 
-In libigl, serialization is simpler, since the majority of the functions use basic types, and pointers are used in very rare cases (usually to interface with external libraries). libigl provides an extremely easy to use XML serialization framework, that drastically reduces the overhead required to add serialization to your applications.
+In libigl, serialization is simpler, since the majority of the functions use
+basic types, and pointers are used in very rare cases (usually to interface
+with external libraries). libigl provides an extremely easy to use XML
+serialization framework, that drastically reduces the overhead required to add
+serialization to your applications.
 
-Assume that the state of your application is composed of a mesh and set of integer ids:
+Assume that the state of your application is composed of a mesh and set of
+integer ids:
 
 ``` cpp
 class State : public ::igl::XMLSerialization
@@ -1552,7 +1805,10 @@ public:
 };
 ```
 
-A class can be made serializable by inheriting from ::igl::XMLSerialization and trivially implementing the InitSerialization method. Note that you don't have to care the types, Add is able to serialize all basic stl types, all Eigen types and any class inheriting from ::igl::XMLSerialization.
+A class can be made serializable by inheriting from ::igl::XMLSerialization and
+trivially implementing the InitSerialization method. Note that you don't have
+to care the types, Add is able to serialize all basic stl types, all Eigen
+types and any class inheriting from ::igl::XMLSerialization.
 
 It is then possible to save the state to an xml file:
 
@@ -1562,7 +1818,8 @@ serializer_save.Add(state,"State");
 serializer_save.Save("temp.xml",true);
 ```
 
-This code generates the following xml file (assuming V and F contains a simple mesh with two triangles, and ids contains the numbers 6 and 7):
+This code generates the following xml file (assuming V and F contains a simple
+mesh with two triangles, and ids contains the numbers 6 and 7):
 
 ``` xml
 <:::601_Serialization>
@@ -1590,36 +1847,56 @@ serializer_load.Add(loaded_state,"State");
 serializer_load.Load("temp.xml");
 ```
 
-This can also be used as a convenient interface to provide parameters to command line applications, since the xml files can be directly edited with a standard text editor.
+This can also be used as a convenient interface to provide parameters to
+command line applications, since the xml files can be directly edited with a
+standard text editor.
 
-We demonstrate the serialization framework in [Example 601](601_Serialization/main.cpp). We strongly suggest that you make the entire state of your application always serializable: this will save you a lot of troubles when you'll be making figures for a scientific publication. It is very common to have to do small changes to figures during the production of a paper, and being able to serialize the entire state just before you take screenshots will save you many painful hours before a submission deadline.
+We demonstrate the serialization framework in [Example
+601](601_Serialization/main.cpp). We strongly suggest that you make the entire
+state of your application always serializable: this will save you a lot of
+troubles when you'll be making figures for a scientific publication. It is very
+common to have to do small changes to figures during the production of a paper,
+and being able to serialize the entire state just before you take screenshots
+will save you many painful hours before a submission deadline.
 
 ## Mixing matlab code [602]
 
-libigl can be interfaced matlab, to offload some of the numerically heavy computation to a matlab script. This has the major advantage of allowing to develop efficient and complex UI in C++, while keeping the advantage of fast protototyping of matlab. In particular, using an external matlab script in a libigl application allows to change the algorithm in the matlab script without having to recompile the C++ part.
+libigl can be interfaced matlab, to offload some of the numerically heavy
+computation to a matlab script. This has the major advantage of allowing to
+develop efficient and complex UI in C++, while keeping the advantage of fast
+protototyping of matlab. In particular, using an external matlab script in a
+libigl application allows to change the algorithm in the matlab script without
+having to recompile the C++ part.
 
-We demonstrate how to integrate matlab in a libigl application in [Example 602](602_Matlab/main.cpp). The example uses matlab to compute the Eigenfunctions of the discrete Laplacian operator, relying on libigl for mesh IO, visualization and for computing the Laplacian operator.
+We demonstrate how to integrate matlab in a libigl application in [Example
+602](602_Matlab/main.cpp). The example uses matlab to compute the
+Eigenfunctions of the discrete Laplacian operator, relying on libigl for mesh
+IO, visualization and for computing the Laplacian operator.
 
-libigl can connect to an existing instance of matlab (or launching a new one on Linux/MacOSX) using:
+libigl can connect to an existing instance of matlab (or launching a new one on
+Linux/MacOSX) using:
 
 ``` cpp
 igl::mlinit(&engine);
 ```
 
-The cotangent laplacian is computed using igl::cotmatrix and uploaded to the matlab workspace:
+The cotangent laplacian is computed using igl::cotmatrix and uploaded to the
+matlab workspace:
 
 ``` cpp
 igl::cotmatrix(V,F,L);
 igl::mlsetmatrix(&engine,"L",L);
 ```
 
-It is now possible to use any matlab function on the data. For example, we can see the sparsity pattern of L using spy:
+It is now possible to use any matlab function on the data. For example, we can
+see the sparsity pattern of L using spy:
 
 ``` cpp
 igl::mleval(&engine,"spy(L)");
 ```
 
-![The matlab spy function is called from a libigl-based application.](images/602_Matlab_1.png)
+![The matlab spy function is called from a libigl-based
+application.](images/602_Matlab_1.png)
 
 You can also do some computation and then return it back to the C++ application
 
@@ -1630,31 +1907,47 @@ igl::mlgetmatrix(&engine,"EV",EV);
 
 and then use libigl functions to plot the eigenfunctions.
 
-![4 Eigenfunctions of the Laplacian plotted in the libigl viewer.](images/602_Matlab_2.png)
+![4 Eigenfunctions of the Laplacian plotted in the libigl
+viewer.](images/602_Matlab_2.png)
 
 ## Calling igl functions from matlab [603]
 
-It is also possible to call libigl functions from matlab, compiling them as MEX functions. This can be very useful to offload to C++ code the computationally intensive parts of a matlab application.
+It is also possible to call libigl functions from matlab, compiling them as MEX
+functions. This can be very useful to offload to C++ code the computationally
+intensive parts of a matlab application.
 
-We provide a wrapper for igl::readOBJ in [Example 603](603_MEX/compileMEX.m). We plan to provide wrappers for all our functions in the future, if you are interested in this feature (or if you want to help implementing it) please let us know.
+We provide a wrapper for igl::readOBJ in [Example 603](603_MEX/compileMEX.m).
+We plan to provide wrappers for all our functions in the future, if you are
+interested in this feature (or if you want to help implementing it) please let
+us know.
 
 ## Triangulation of closed polygons [604]
 
-The generation of high-quality triangle and tetrahedral meshes is a very common task in geometry processing. We provide wrappers in libigl to triangle and tetegen.
+The generation of high-quality triangle and tetrahedral meshes is a very common
+task in geometry processing. We provide wrappers in libigl to triangle and
+tetegen.
 
-A triangle mesh canb e cerated starting from a set of boundary edges using igl::triangulate.
+A triangle mesh canb e cerated starting from a set of boundary edges using
+igl::triangulate.
 
 ``` cpp
 igl::triangulate(V,E,H,V2,F2,"a0.005q");
 ```
 
-where E is a set of boundary edges, H a set of 2D positions of points contained in holes of the triangulation and (V2,F2) is the generate triangulation. Additional parameters can be given to triangles, to control the quality: "a0.005q" puts a bound on the maximal area of the triangles and a minimal angle of 20 degrees. In Example [Example 604](604_Triangle/main.m), the interior of a square (excluded a smaller square in its interior) is triangulated.
+where E is a set of boundary edges, H a set of 2D positions of points contained
+in holes of the triangulation and (V2,F2) is the generate triangulation.
+Additional parameters can be given to triangles, to control the quality:
+"a0.005q" puts a bound on the maximal area of the triangles and a minimal angle
+of 20 degrees. In Example [Example 604](604_Triangle/main.m), the interior of a
+square (excluded a smaller square in its interior) is triangulated.
 
 ![Triangulation of the interior of a polygon.](images/604_Triangle.png)
 
 ## Tetrahedralization of closed surfaces [605]
 
-Similarly, the interior of a closed manifold surface can be tetrahedralized using the function igl::tetrahedralize which wraps the tetgen library ([Example 605](605_Tetgen/main.c)):
+Similarly, the interior of a closed manifold surface can be tetrahedralized
+using the function igl::tetrahedralize which wraps the tetgen library ([Example
+605](605_Tetgen/main.c)):
 
 ``` cpp
 igl::tetrahedralize(V,F,"pq1.414", TV,TT,TF);
@@ -1664,34 +1957,52 @@ igl::tetrahedralize(V,F,"pq1.414", TV,TT,TF);
 
 ## Baking ambient occlusion [606]
 
-[Ambient occlusion](http://en.wikipedia.org/wiki/Ambient_occlusion) is a rendering technique used to calculate the exposure of each point in a surface to ambient lighting. It is usually encoded as a scalar (normalized between 0 and 1) associated with the vertice of a mesh.
+[Ambient occlusion](http://en.wikipedia.org/wiki/Ambient_occlusion) is a
+rendering technique used to calculate the exposure of each point in a surface
+to ambient lighting. It is usually encoded as a scalar (normalized between 0
+and 1) associated with the vertice of a mesh.
 
 Formally, ambient occlusion is defined as:
 
 \\[ A_p = \frac{1}{\pi} \int_\omega V_{p,\omega}(n \cdot \omega) d\omega \\]
 
-where \\( V_{p,\omega} \\) is the visibility function at  p, defined to be zero if p is occluded in the direction \\( \omega \\) and one otherwise, and \\( d\omega \\) is the infinitesimal solid angle step of the integration variable \\( \omega \\).
+where \\( V_{p,\omega} \\) is the visibility function at  p, defined to be zero
+if p is occluded in the direction \\( \omega \\) and one otherwise, and \\(
+d\omega \\) is the infinitesimal solid angle step of the integration variable
+\\( \omega \\).
 
-The integral is usually approximated by casting rays in random directions around each vertex. This approximation can be computed using the function:
+The integral is usually approximated by casting rays in random directions
+around each vertex. This approximation can be computed using the function:
 
 ``` cpp
 igl::ambient_occlusion(V,F,V_samples,N_samples,500,AO);
 ```
 
-that given a scene described in V,F, computes the ambient occlusion of the points in V_samples whose associated normals are N_samples. The number of casted rays can be controlled (usually at least 400-500 rays are required to get a smooth result) and the result is return in AO, as a single scalar for each sample.
+that given a scene described in V,F, computes the ambient occlusion of the
+points in V_samples whose associated normals are N_samples. The number of
+casted rays can be controlled (usually at least 400-500 rays are required to
+get a smooth result) and the result is return in AO, as a single scalar for
+each sample.
 
-Ambient occlusion can be used to darken the surface colors, as shown in [Example 606](606_AmbientOcclusion/main.c)
+Ambient occlusion can be used to darken the surface colors, as shown in
+[Example 606](606_AmbientOcclusion/main.c)
 
-![A mesh rendered without (left) and with (right) ambient occlusion.](images/606_AmbientOcclusion.png)
+![A mesh rendered without (left) and with (right) ambient
+occlusion.](images/606_AmbientOcclusion.png)
 
 ## Locally Injective Maps [607]
 
-Extreme deformations or parametrizations with high-distortion might flip elements.
-This is undesirable in many applications, and it is possible to avoid it by introducing a non-linear contraints that guarantees that the area of every element remain positive.
+Extreme deformations or parametrizations with high-distortion might flip
+elements.  This is undesirable in many applications, and it is possible to
+avoid it by introducing a non-linear contraints that guarantees that the area
+of every element remain positive.
 
-libigl can be used to compute Locally Injective Maps using a variety of deformation energies. A simple deformation of a 2D grid is computed in [Example 607](607_LIM/main.c).
+libigl can be used to compute Locally Injective Maps using a variety of
+deformation energies. A simple deformation of a 2D grid is computed in [Example
+607](607_LIM/main.cpp).
 
-![A mesh (left) deformed using Laplacian editing (middle) and with Laplacian editing plus the anti-flipping conatraints (right).](images/607_LIM.png)
+![A mesh (left) deformed using Laplacian editing (middle) and with Laplacian
+editing plus the anti-flipping conatraints (right).](images/607_LIM.png)
 
 ### References
 
@@ -1701,19 +2012,29 @@ SGP 2013
 
 # Outlook for continuing development [future]
 
-libigl is in active development, and we plan to focus on the following features in the next months:
+libigl is in active development, and we plan to focus on the following features
+in the next months:
 
-* A better and more consistent documentation for all functions, plus exteding this tutorial to cover more features of libigl
+* A better and more consistent documentation for all functions, plus exteding
+  this tutorial to cover more features of libigl
 
-* Include a robust, adaptive triangular remeshing algorithm. Currently, the only remeshing functions available are only able to create quadrilateral remeshings
+* Include a robust, adaptive triangular remeshing algorithm. Currently, the
+  only remeshing functions available are only able to create quadrilateral
+  remeshings
 
 * Generate matlab and python wrappers for all libigl functions
 
-* Implement a mixed-integer solver which only uses Eigen to remove the dependency on CoMiSo
+* Implement a mixed-integer solver which only uses Eigen to remove the
+  dependency on CoMiSo
 
-* Add a standalone BVH and a simple ray casting engine to make the dependency on Embree optional
+* Add a standalone BVH and a simple ray casting engine to make the dependency
+  on Embree optional
 
-We encourage you to contribute to the library and to report problems and bugs that you encounter while using it. The best way of contributing new feature or patches is to fork the libigl repository and to open a [pull request](https://help.github.com/articles/using-pull-requests) on [our github repository](https://github.com/libigl/libigl).
+We encourage you to contribute to the library and to report problems and bugs
+that you encounter while using it. The best way of contributing new feature or
+patches is to fork the libigl repository and to open a [pull
+request](https://help.github.com/articles/using-pull-requests) on [our github
+repository](https://github.com/libigl/libigl).
 
 
 
