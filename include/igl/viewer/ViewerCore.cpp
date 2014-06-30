@@ -159,7 +159,7 @@ IGL_INLINE void igl::ViewerCore::get_scale_and_shift_to_fit_mesh(
   double x_scale = fabs(max_point[0] - min_point[0]);
   double y_scale = fabs(max_point[1] - min_point[1]);
   double z_scale = fabs(max_point[2] - min_point[2]);
-  zoom = 2.0/ std::max(z_scale,std::max(x_scale,y_scale));
+  zoom = 2.0 / std::max(z_scale,std::max(x_scale,y_scale));
 }
 
 IGL_INLINE void igl::ViewerCore::clear_framebuffers()

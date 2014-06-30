@@ -15,8 +15,8 @@
 #  undef min
 #endif
 
-// Todo: windows equivalent for `usleep`
-#include <unistd.h>
+#include <chrono>
+#include <thread>
 
 #ifndef __APPLE__
 #  define GLEW_STATIC
@@ -1052,8 +1052,7 @@ namespace igl
         const double min_duration = 1000000./core.animation_max_fps;
         if(duration<min_duration)
         {
-          // TODO: windows equivalent
-          usleep(min_duration-duration);
+          std::this_thread::sleep_for(std::chrono::microseconds((int)(min_duration-duration)));
         }
       }
       else
