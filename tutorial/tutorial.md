@@ -1456,17 +1456,35 @@ Our implementation ([Example 506](506_FrameField/main.cpp)) uses MIQ to generate
 
 ### References
 
-[Frame Fields: Anisotropic and Non-Orthogonal Cross Fields],
+[Frame Fields: Anisotropic and Non-Orthogonal Cross Fields](http://www.inf.ethz.ch/personal/dpanozzo/papers/frame-fields-2014.pdf),
 Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga Sorkine-Hornung,
 SIGGRAPH, 2014
 
 ## N-PolyVector fields [507]
 
-* further generalization to arbitrary rosy, same interface
+N-RoSy vector fields can be further generalized to represent arbitrary vector-sets, with arbitrary angles between them and with arbitrary lenghts. This generalization is called  N-PolyVector field, and libigl provides the function igl::n_polyvector to design them starting from a sparse set of constraints ([Example 507](507_PolyVectorField/main.cpp)).
 
-* globally optimal and keenan optimal field are a subset of them
+![Interpolation of a N-PolyVector field from a sparse set of constraints.](images/507_PolyVectorField.png)
+
+Globally Optimal Direction fields are a special case of Poly-Vector Fields: if the interpolation constraints are an N-RoSy field, then our algorithm generates a field that if normalized, is equivalent to a globally optimal direction field.
+
+### References
+
+[Designing N-PolyVector Fields with Complex Polynomials](http://igl.ethz.ch/projects/complex-roots/)
+Olga Diamanti, Amir Vaxman, Daniele Panozzo, Olga Sorkine-Hornung,
+SGP 2014
+
+[Globally Optimal Direction Fields](http://www.cs.columbia.edu/~keenan/Projects/GloballyOptimalDirectionFields/paper.pdf)
+Knöppel, Crane, Pinkall, Schröder
+SIGGRAPH 2013
 
 ## Conjugate vector fields [508]
+
+Two tangent vectors lying on a face of triangle mesh are conjugate if
+
+\\[ k_1 (u^T d_1)(v^T d_1) + k_2(u^T d_2)(v^T d_2) = 0. \\]
+
+This condition is very important in architectural geometry, since a quad mesh (with infinitesimally small quads) whose edges are aligned with a conjugate field is made of planar faces. Conjugate fields can be generated with a local/global
 
 * they can be used to encode conjugate field -> planar meshing
 
@@ -1646,7 +1664,18 @@ Ambient occlusion can be used to darken the surface colors, as shown in [Example
 
 ## Locally Injective Maps [607]
 
-[Example 607](607_LIM/main.c)
+Extreme deformations or parametrizations with high-distortion might flip elements.
+This is undesirable in many applications, and it is possible to avoid it by introducing a non-linear contraints that guarantees that the area of every element remain positive.
+
+libigl can be used to compute Locally Injective Maps using a variety of deformation energies. A simple deformation of a 2D grid is computed in [Example 607](607_LIM/main.c).
+
+![A mesh (left) deformed using harmonic deformation (middle) and with harmonic deformation + the anti-flipping conatraints (right).](images/607_LIM.png)
+
+### References
+
+[Locally Injective Mappings](http://igl.ethz.ch/projects/LIM/)
+Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga Sorkine-Hornung,
+SGP 2013
 
 # Outlook for continuing development [future]
 
