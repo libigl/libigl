@@ -19,6 +19,7 @@ namespace igl
   //   V #V by 2 list of 2D vertex positions
   //   E #E by 2 list of vertex ids forming unoriented edges of the boundary of the polygon
   //   H #H by 2 coordinates of points contained inside holes of the polygon
+  //   flags  string of options pass to triangle (see triangle documentation)
   // Outputs:
   //   V2  #V2 by 2  coordinates of the vertives of the generated triangulation
   //   F2  #F2 by 3  list of indices forming the faces of the generated triangulation
@@ -29,9 +30,9 @@ namespace igl
     const Eigen::MatrixXd& V,
     const Eigen::MatrixXi& E,
     const Eigen::MatrixXd& H,
+    const std::string flags,
     Eigen::MatrixXd& V2,
-    Eigen::MatrixXi& F2,
-    const std::string flags = std::string("q"));
+    Eigen::MatrixXi& F2);
 
 }
 

@@ -1046,7 +1046,7 @@ deformation to the shape.
 To guarantee this by construction we can work with _deformation fields_ (ie.
 displacements)
 $\mathbf{d}$ rather
-than directly with positions $\mathbf{x}. Then the deformed positions can be
+than directly with positions $\mathbf{x}$. Then the deformed positions can be
 recovered as
 
  $\mathbf{x}' = \mathbf{x}+\mathbf{d}.$
@@ -1671,8 +1671,8 @@ Real-Time Freeform Modeling," 2004.
 [#jacobson_thesis_2013]: Alec Jacobson,
 _Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
 2013.
-[#jacobson_2011]: Alec Jacobson, Ilya Baran, Jovan Popović, and Olga Sorkin.
-"Bounded Biharmonic Weights for Real-Time Deformation," 2011.
+[#jacobson_2011]: Alec Jacobson, Ilya Baran, Jovan Popović, and Olga Sorkine.
+["Bounded Biharmonic Weights for Real-Time Deformation,"](https://www.google.com/search?q=Bounded+biharmonic+weights+for+real-time+deformation) 2011.
 [#jacobson_mixed_2010]: Alec Jacobson, Elif Tosun, Olga Sorkine, and Denis
 Zorin. "Mixed Finite Elements for Variational Surface Modeling," 2010.
 [#kavan_2008]: Ladislav Kavan, Steven Collins, Jiri Zara, and Carol O'Sullivan.
