@@ -26,6 +26,7 @@
 #endif
 
 #include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <igl/viewer/OpenGL_shader.h>
 #include <igl/viewer/ViewerData.h>
 #include <igl/viewer/OpenGL_state.h>

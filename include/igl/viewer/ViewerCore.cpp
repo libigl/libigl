@@ -8,6 +8,7 @@
 
 #include "ViewerCore.h"
 #include <igl/quat_to_mat.h>
+#include <Eigen/Geometry>
 
 
 Eigen::Matrix4f lookAt (
