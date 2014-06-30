@@ -36,7 +36,7 @@ bool key_down(igl::Viewer& viewer,unsigned char key,int modifier)
       igl::compute_lim(V1,V0,F,bv,g,C,b,energy,1e-8,100,true);
 
     // set mesh
-    viewer.set_mesh(V1,F);
+    viewer.set_vertices(V1);
   }
 
 
