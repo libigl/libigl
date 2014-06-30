@@ -16,15 +16,13 @@ with the performance and versatility of C++.  The tutorial is a self-contained,
 hands-on introduction to libigl.  Via live coding and interactive examples, we
 demonstrate how to accomplish various common geometry processing tasks such as
 computation of differential quantities and operators, real-time deformation,
-global parametrization, numerical optimization and mesh repair.  Each section
+global parametrization, numerical optimization and mesh repair. Each section
 of these lecture notes links to a cross-platform example application.
 
 # Table of Contents
 
-* Basic Usage
-    * **100_FileIO**: Example of reading/writing mesh files
-    * **101_Serialization**: Example of using the XML serialization framework
-    * **102_DrawMesh**: Example of plotting a mesh
+* [Chapter 1: Introduction to libigl]
+
 * [Chapter 2: Discrete Geometric Quantities and
   Operators](#chapter2:discretegeometricquantitiesandoperators)
     * [201 Normals](#normals)
@@ -41,46 +39,19 @@ of these lecture notes links to a cross-platform example application.
 * [Chapter 3: Matrices and Linear Algebra](#chapter3:matricesandlinearalgebra)
     * [301 Slice](#slice)
     * [302 Sort](#sort)
-        * [Other Matlab-style functions](#othermatlab-stylefunctions) 
+        * [Other Matlab-style functions](#othermatlab-stylefunctions)
     * [303 Laplace Equation](#laplaceequation)
         * [Quadratic energy minimization](#quadraticenergyminimization)
     * [304 Linear Equality Constraints](#linearequalityconstraints)
     * [305 Quadratic Programming](#quadraticprogramming)
 * [Chapter 4: Shape Deformation](#chapter4:shapedeformation)
     * [401 Biharmonic Deformation](#biharmonicdeformation)
-    * [402 Bounded Biharmonic Weights](#boundedbiharmonicweights)
-    * [403 Dual Quaternion Skinning](#dualquaternionskinning)
-    * [404 As-rigid-as-possible](#as-rigid-as-possible)
-    * [405 Fast automatic skinning
+    * [402 Polyharmonic Deformation](#polyharmonicdeformation)
+    * [403 Bounded Biharmonic Weights](#boundedbiharmonicweights)
+    * [404 Dual Quaternion Skinning](#dualquaternionskinning)
+    * [405 As-rigid-as-possible](#as-rigid-as-possible)
+    * [406 Fast automatic skinning
       transformations](#fastautomaticskinningtransformations)
-
-
-# Compilation Instructions
-
-All examples depends on glfw, glew and anttweakbar. A copy
-of the sourcecode of each library is provided together with libigl
-and they can be precompiled using:
-
-**Alec: Is this just compiling the dependencies? Then perhaps rename `compile_dependencies_*`**
-
-    sh compile_macosx.sh (MACOSX)
-    sh compile_linux.sh (LINUX)
-    compile_windows.bat (Visual Studio 2012)
-
-Every example can be compiled by using the cmake file provided in its folder.
-On Linux and MacOSX, you can use the provided bash script:
-
-    sh ../compile_example.sh
-
-## (Optional: compilation with libigl as static library)
-
-By default, libigl is a _headers only_ library, thus it does not require
-compilation. However, one can precompile libigl as a statically linked library.
-See `../README.md` in the main directory for compilations instructions to
-produce `libigl.a` and other libraries. Once compiled, these examples can be
-compiled using the `CMAKE` flag `-DLIBIGL_USE_STATIC_LIBRARY=ON`:
-
-    ../compile_example.sh -DLIBIGL_USE_STATIC_LIBRARY=ON
 
 # Chapter 2: Discrete Geometric Quantities and Operators
 This chapter illustrates a few discrete quantities that libigl can compute on a
@@ -187,13 +158,13 @@ orthogonal.
 
 Mean curvature is defined simply as the average of principal curvatures:
 
- $H = \frac{1}{2}(k_1 + k_2).$ 
+ $H = \frac{1}{2}(k_1 + k_2).$
 
 One way to extract mean curvature is by examining the Laplace-Beltrami operator
 applied to the surface positions. The result is a so-called mean-curvature
 normal:
 
-  $-\Delta \mathbf{x} = H \mathbf{n}.$ 
+  $-\Delta \mathbf{x} = H \mathbf{n}.$
 
 It is easy to compute this on a discrete triangle mesh in libigl using the cotangent
 Laplace-Beltrami operator [][#meyer_2003].
@@ -241,7 +212,7 @@ int main(int argc, char * argv[])
 Scalar functions on a surface can be discretized as a piecewise linear function
 with values defined at each mesh vertex:
 
- $f(\mathbf{x}) \approx \sum\limits_{i=0}^n \phi_i(\mathbf{x})\, f_i,$
+ $f(\mathbf{x}) \approx \sum\limits_{i=1}^n \phi_i(\mathbf{x})\, f_i,$
 
 where $\phi_i$ is a piecewise linear hat function defined by the mesh so that
 for each triangle $\phi_i$ is _the_ linear function which is one only at
@@ -253,9 +224,9 @@ linear on incident triangles.](images/hat-function.jpg)
 Thus gradients of such piecewise linear functions are simply sums of gradients
 of the hat functions:
 
- $\nabla f(\mathbf{x}) \approx 
- \nabla \sum\limits_{i=0}^n \nabla \phi_i(\mathbf{x})\, f_i = 
- \sum\limits_{i=0}^n \nabla \phi_i(\mathbf{x})\, f_i.$
+ $\nabla f(\mathbf{x}) \approx
+ \nabla \sum\limits_{i=1}^n \nabla \phi_i(\mathbf{x})\, f_i =
+ \sum\limits_{i=1}^n \nabla \phi_i(\mathbf{x})\, f_i.$
 
 This reveals that the gradient is a linear function of the vector of $f_i$
 values. Because $\phi_i$ are linear in each triangle their gradient are
@@ -276,12 +247,12 @@ visualizes the vector field.](images/cheburashka-gradient.jpg)
 ## Laplacian
 
 The discrete Laplacian is an essential geometry processing tool. Many
-interpretations and flavors of the Laplace and Laplace-Beltrami operator exist. 
+interpretations and flavors of the Laplace and Laplace-Beltrami operator exist.
 
 In open Euclidean space, the _Laplace_ operator is the usual divergence of gradient
 (or equivalently the Laplacian of a function is the trace of its Hessian):
 
- $\Delta f = 
+ $\Delta f =
  \frac{\partial^2 f}{\partial x^2} +
  \frac{\partial^2 f}{\partial y^2} +
  \frac{\partial^2 f}{\partial z^2}.$
@@ -383,8 +354,8 @@ Green's identity (ignoring boundary conditions for the moment):
 
 Or in matrix form which is immediately translatable to code:
 
-  $\mathbf{f}^T \mathbf{G}^T \mathbf{T} \mathbf{G} \mathbf{f} = 
-  \mathbf{f}^T \mathbf{M} \mathbf{M}^{-1} \mathbf{L} \mathbf{f} = 
+  $\mathbf{f}^T \mathbf{G}^T \mathbf{T} \mathbf{G} \mathbf{f} =
+  \mathbf{f}^T \mathbf{M} \mathbf{M}^{-1} \mathbf{L} \mathbf{f} =
   \mathbf{f}^T \mathbf{L} \mathbf{f}.$
 
 So we have that $\mathbf{L} = \mathbf{G}^T \mathbf{T} \mathbf{G}$. This also
@@ -478,7 +449,7 @@ where again `I` reveals the index of sort so that it can be reproduced with
 
 Analogous functions are available in libigl for: `max`, `min`, and `unique`.
 
-![The example `Sort` shows how to use `igl::sortrows` to 
+![The example `Sort` shows how to use `igl::sortrows` to
 pseudocolor triangles according to their barycenters' sorted
 order.](images/decimated-knight-sort-color.jpg)
 
@@ -533,27 +504,27 @@ vertices come first and then boundary vertices:
 
  $$\left(\begin{array}{cc}
  \mathbf{L}_{in,in} & \mathbf{L}_{in,b}\\
- \mathbf{L}_{b,in} & \mathbf{L}_{b,b}\end{array}\right) 
+ \mathbf{L}_{b,in} & \mathbf{L}_{b,b}\end{array}\right)
  \left(\begin{array}{c}
  \mathbf{z}_{in}\\
- \mathbf{L}_{b}\end{array}\right) = 
+ \mathbf{L}_{b}\end{array}\right) =
  \left(\begin{array}{c}
  \mathbf{0}_{in}\\
- \mathbf{*}_{b}\end{array}\right)$$ 
+ \mathbf{*}_{b}\end{array}\right)$$
 
 The bottom block of equations is no longer meaningful so we'll only consider
 the top block:
 
  $$\left(\begin{array}{cc}
- \mathbf{L}_{in,in} & \mathbf{L}_{in,b}\end{array}\right) 
+ \mathbf{L}_{in,in} & \mathbf{L}_{in,b}\end{array}\right)
  \left(\begin{array}{c}
  \mathbf{z}_{in}\\
- \mathbf{z}_{b}\end{array}\right) = 
+ \mathbf{z}_{b}\end{array}\right) =
  \mathbf{0}_{in}$$
 
 Where now we can move known values to the right-hand side:
 
- $$\mathbf{L}_{in,in} 
+ $$\mathbf{L}_{in,in}
  \mathbf{z}_{in} = -
  \mathbf{L}_{in,b}
  \mathbf{z}_{b}$$
@@ -587,7 +558,7 @@ On our discrete mesh, recall that this becomes
 
 The general problem of minimizing some energy over a mesh subject to fixed
 value boundary conditions is so wide spread that libigl has a dedicated api for
-solving such systems. 
+solving such systems.
 
 Let's consider a general quadratic minimization problem subject to different
 common constraints:
@@ -596,15 +567,15 @@ common constraints:
  \mathbf{z}^T \mathbf{B} + \text{constant},$$
 
  subject to
- 
+
  $$\mathbf{z}_b = \mathbf{z}_{bc} \text{ and } \mathbf{A}_{eq} \mathbf{z} =
  \mathbf{B}_{eq},$$
 
-where 
+where
 
   - $\mathbf{Q}$ is a (usually sparse) $n \times n$ positive semi-definite
-    matrix of quadratic coefficients (Hessian), 
-  - $\mathbf{B}$ is a $n \times 1$ vector of linear coefficients, 
+    matrix of quadratic coefficients (Hessian),
+  - $\mathbf{B}$ is a $n \times 1$ vector of linear coefficients,
   - $\mathbf{z}_b$ is a $|b| \times 1$ portion of
 $\mathbf{z}$ corresponding to boundary or _fixed_ vertices,
   - $\mathbf{z}_{bc}$ is a $|b| \times 1$ vector of known values corresponding to
@@ -673,10 +644,10 @@ saddle problem:
 This can be rewritten in a more familiar form by stacking $\mathbf{z}$ and
 $\lambda$ into one $(m+n) \times 1$ vector of unknowns:
 
- $$\mathop{\text{find saddle }}_{\mathbf{z},\lambda}\, 
+ $$\mathop{\text{find saddle }}_{\mathbf{z},\lambda}\,
  \frac{1}{2}
  \left(
-  \mathbf{z}^T 
+  \mathbf{z}^T
   \lambda^T
  \right)
  \left(
@@ -690,9 +661,9 @@ $\lambda$ into one $(m+n) \times 1$ vector of unknowns:
   \mathbf{z}\\
   \lambda
   \end{array}
- \right) + 
+ \right) +
  \left(
-  \mathbf{z}^T 
+  \mathbf{z}^T
   \lambda^T
  \right)
  \left(
@@ -707,7 +678,7 @@ Differentiating with respect to $\left( \mathbf{z}^T \lambda^T \right)$ reveals
 a linear system and we can solve for $\mathbf{z}$ and $\lambda$. The only
 difference from
 the straight quadratic
-_minimization_ system, is that 
+_minimization_ system, is that
 this saddle problem system will not be positive definite. Thus, we must use a
 different factorization technique (LDLT rather than LLT). Luckily, libigl's
 `min_quad_with_fixed_precompute` automatically chooses the correct solver in
@@ -763,14 +734,259 @@ igl::active_set(Q,B,b,bc,Aeq,Beq,Aieq,Bieq,lx,ux,as,Z);
 ![The example `QuadraticProgramming` uses an active set solver to optimize
 discrete biharmonic kernels at multiple scales [#rustamov_2011][].](images/cheburashka-multiscale-biharmonic-kernels.jpg)
 
-[#meyer_2003]: Mark Meyer and Mathieu Desbrun and Peter Schröder and Alan H.  Barr,
+# Chapter 4: Shape Deformation
+Modern mesh-based shape deformation methods satisfy user deformation
+constraints at handles (selected vertices or regions on the mesh) and propagate
+these handle deformations to the rest of shape _smoothly_ and _without removing
+or distorting details_. Libigl provides implementations of a variety of
+state-of-the-art deformation techniques, ranging from quadratic mesh-based
+energy minimizers, to skinning methods, to non-linear elasticity-inspired
+techniques.
+
+## Biharmonic Deformation
+The period of research between 2000 and 2010 produced a collection of
+techniques that cast the problem of handle-based shape deformation as a
+quadratic energy minimization problem or equivalently the solution to a linear
+partial differential equation.
+
+There are many flavors of these techniques, but
+a prototypical subset are those that consider solutions to the bi-Laplace
+equation, that is biharmonic functions [#botsch_2004][]. This fourth-order PDE provides
+sufficient flexibility in boundary conditions to ensure $C^1$ continuity at
+handle constraints (in the limit under refinement) [#jacobson_mixed_2010][].
+
+### Biharmonic surfaces
+Let us first begin our discussion of biharmonic _deformation_, by considering
+biharmonic _surfaces_. We will casually define biharmonic surfaces as surface
+whose _position functions_ are biharmonic with respect to some initial
+parameterization:
+
+ $\Delta \mathbf{x}' = 0$
+
+and subject to some handle constraints, conceptualized as "boundary
+conditions":
+
+ $\mathbf{x}'_{b} = \mathbf{x}_{bc}.$
+
+where $\mathbf{x}'$ is the unknown 3D position of a point on the surface. So we are
+asking that the bi-Laplace of each of spatial coordinate functions to be zero.
+
+In libigl, one can solve a biharmonic problem like this with `igl::harmonic`
+and setting $k=2$ (_bi_-harmonic):
+
+```cpp
+// U_bc contains deformation of boundary vertices b
+igl::harmonic(V,F,b,U_bc,2,U);
+```
+
+This produces smooth surfaces that interpolate the handle constraints, but all
+original details on the surface will be _smoothed away_. Most obviously, if the
+original surface is not already biharmonic, then giving all handles the identity
+deformation (keeping them at their rest positions) will **not** reproduce the
+original surface. Rather, the result will be the biharmonic surface that does
+interpolate those handle positions.
+
+Thus, we may conclude that this is not an intuitive technique for shape
+deformation.
+
+### Biharmonic deformation fields
+Now we know that one useful property for a deformation technique is "rest pose
+reproduction": applying no deformation to the handles should apply no
+deformation to the shape.
+
+To guarantee this by construction we can work with _deformation fields_ (ie.
+displacements)
+$\mathbf{d}$ rather
+than directly with positions $\mathbf{x}. Then the deformed positions can be
+recovered as
+
+ $\mathbf{x}' = \mathbf{x}+\mathbf{d}.$
+
+A smooth deformation field $\mathbf{d}$ which interpolates the deformation
+fields of the handle constraints will impose a smooth deformed shape
+$\mathbf{x}'$. Naturally, we consider _biharmonic deformation fields_:
+
+ $\Delta \mathbf{d} = 0$
+
+subject to the same handle constraints, but rewritten in terms of their implied
+deformation field at the boundary (handles):
+
+ $\mathbf{d}_b = \mathbf{x}_{bc} - \mathbf{x}_b.$
+
+Again we can use `igl::harmonic` with $k=2$, but this time solve for the
+deformation field and then recover the deformed positions:
+
+```cpp
+// U_bc contains deformation of boundary vertices b
+D_bc = U_bc - igl::slice(V,b,1);
+igl::harmonic(V,F,b,D_bc,2,D);
+U = V+D;
+```
+
+![The `BiharmonicDeformation` example deforms a statue's head as a _biharmonic
+surface_ (top) and using a _biharmonic displacements_ (bottom).](images/max-biharmonic.jpg)
+
+#### Relationship to "differential coordinates" and Laplacian surface editing
+Biharmonic functions (whether positions or displacements) are solutions to the
+bi-Laplace equation, but also minimizers of the "Laplacian energy". For
+example, for displacements $\mathbf{d}$, the energy reads
+
+ $\int\limits_S \|\Delta \mathbf{d}\|^2 dA.$
+
+By linearity of the Laplace(-Beltrami) operator we can reexpress this energy in
+terms of the original positions $\mathbf{x}$ and the unknown positions
+$\mathbf{x}' = \mathbf{x} - \mathbf{d}$:
+
+ $\int\limits_S \|\Delta (\mathbf{x}' - \mathbf{x})\|^2 dA = \int\limits_S \|\Delta \mathbf{x}' - \Delta \mathbf{x})\|^2 dA.$
+
+In the early work of Sorkine et al., the quantities $\Delta \mathbf{x}'$ and
+$\Delta \mathbf{x}$ were dubbed "differential coordinates" [#sorkine_2004][].
+Their deformations (without linearized rotations) is thus equivalent to
+biharmonic deformation fields.
+
+## Polyharmonic deformation
+We can generalize biharmonic deformation by considering different powers of
+the Laplacian, resulting in a series of PDEs of the form:
+
+ $\Delta^k \mathbf{d} = 0.$
+
+with $k\in{1,2,3,\dots}$. The choice of $k$ determines the level of continuity
+at the handles. In particular, $k=1$ implies $C^0$ at the boundary, $k=2$
+implies $C^1$, $k=3$ implies $C^2$ and in general $k$ implies $C^{k-1}$.
+
+```cpp
+int k = 2;// or 1,3,4,...
+igl::harmonic(V,F,b,bc,k,Z);
+```
+
+![The `PolyharmonicDeformation` example deforms a flat domain (left) into a bump as a
+solution to various $k$-harmonic PDEs.](images/bump-k-harmonic.jpg)
+
+## Bounded Biharmonic Weights
+In computer animation, shape deformation is often referred to as "skinning".
+Constraints are posed as relative rotations of internal rigid "bones" inside a
+character. The deformation method, or skinning method, determines how the
+surface of the character (i.e. its skin) should move as a function of the bone
+rotations.
+
+The most popular technique is linear blend skinning. Each point on the shape
+computes its new location as a linear combination of bone transformations:
+
+ $\mathbf{x}' = \sum\limits_{i = 1}^m w_i(\mathbf{x}) \mathbf{T}_i
+ \left(\begin{array}{c}\mathbf{x}_i\\1\end{array}\right),$
+
+where $w_i(\mathbf{x})$ is the scalar _weight function_ of the ith bone evaluated at
+$\mathbf{x}$ and $\mathbf{T}_i$ is the bone transformation as a $4 \times 3$
+matrix.
+
+This formula is embarassingly parallel (computation at one point does not
+depend on shared data need by computation at another point). It is often
+implemented as a vertex shader. The weights and rest positions for each vertex
+are sent as vertex shader _attribtues_ and bone transformations are sent as
+_uniforms_. Then vertices are transformed within the vertex shader, just in
+time for rendering.
+
+As the skinning formula is linear (hence its name), we can write it as matrix
+multiplication:
+
+ $\mathbf{X}' = \mathbf{M} \mathbf{T},$
+
+where $\mathbf{X}'$ is $n \times 3$ stack of deformed positions as row
+vectors, $\mathbf{M}$ is a $n \times m\cdot dim$ matrix containing weights and
+rest positions and $\mathbf{T}$ is a $m\cdot (dim+1) \times dim$ stack of
+transposed bone transformations.
+
+Traditionally, the weight functions $w_j$ are painted manually by skilled
+rigging professionals. Modern techniques now exist to compute weight functions
+automatically given the shape and a description of the skeleton (or in general
+any handle structure such as a cage, collection of points, selected regions,
+etc.).
+
+Bounded biharmonic weights are one such technique that casts weight computation
+as a constrained optimization problem [#jacobson_2011][]. The weights enforce
+smoothness by minimizing a smoothness energy: the familiar Laplacian energy:
+
+ $\sum\limits_{i = 1}^m \int_S (\Delta w_i)^2 dA$
+
+subject to constraints which enforce interpolation of handle constraints:
+
+ $w_i(\mathbf{x}) = \begin{cases} 1 & \text{ if } \mathbf{x} \in H_i\\ 0 & \text{ otherwise }
+ \end{cases},$
+
+where $H_i$ is the ith handle, and constraints which enforce non-negativity,
+parition of unity and encourage sparsity:
+
+ $0\le w_i \le 1$ and $\sum\limits_{i=1}^m w_i = 1.$
+
+This is a quadratic programming problem and libigl solves it using its active
+set solver or by calling out to Mosek.
+
+![The example `BoundedBiharmonicWeights` computes weights for a tetrahedral
+mesh given a skeleton (top) and then animates a linear blend skinning
+deformation (bottom).](images/hand-bbw.jpg)
+
+## Dual Quaternion Skinning
+Even with high quality weights, linear blend skinning is limited. In
+particular, it suffers from known artifacts stemming from blending rotations as
+as matrices: a weight combination of rotation matrices is not necessarily a
+rotation. Consider an equal blend between rotating by $-pi/2$ and by $pi/2$
+about the $z$-axis. Intuitively one might expect to get the identity matrix,
+but instead the blend is a degenerate matrix scaling the $x$ and $y$
+coordinates by zero:
+
+ $0.5\left(\begin{array}{ccc}0&-1&0\\1&0&0\\0&0&1\end{array}\right)+
+ 0.5\left(\begin{array}{ccc}0&1&0\\-1&0&0\\0&0&1\end{array}\right)=
+ \left(\begin{array}{ccc}0&0&0\\0&0&0\\0&0&1\end{array}\right)$
+
+In practice, this means the shape shrinks and collapses in regions where bone
+weights overlap: near joints.
+
+Dual quaternion skinning presents a solution [#kavan_2008]. This method
+represents rigid transformations as a pair of unit quaternions,
+$\hat{\mathbf{q}}$. The linear blend skinning formula is replaced with a
+linear blend of dual quaternions:
+
+ $\mathbf{x}' =
+ \cfrac{\sum\limits_{i=1}^m w_i(\mathbf{x})\hat{\mathbf{q}_i}}
+ {\left\|\sum\limits_{i=1}^m w_i(\mathbf{x})\hat{\mathbf{q}_i}\right\|}
+ \mathbf{x},$
+
+where $\hat{\mathbf{q}_i}$ is the dual quaternion representation of the rigid
+transformation of bone $i$. The normalization forces the result of the linear blending
+to again be a unit dual quaternion and thus also a rigid transformation.
+
+Like linear blend skinning, dual quaternion skinning is best performed in the
+vertex shader. The only difference being that bone transformations are sent as
+dual quaternions rather than affine transformation matrices.  Libigl supports
+CPU-side dual quaternion skinning with the `igl::dqs` function, which takes a
+more traditional representation of rigid transformations as input and
+internally converts to the dual quaternion representation before blending:
+
+```cpp
+// vQ is a list of rotations as quaternions
+// vT is a list of translations
+igl::dqs(V,W,vQ,vT,U);
+```
+
+
+[#botsch_2004]: Matrio Botsch and Leif Kobbelt. "An Intuitive Framework for
+Real-Time Freeform Modeling," 2004.
+[#jacobson_thesis_2013]: Alec Jacobson,
+_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
+2013.
+[#jacobson_2011]: Alec Jacobson, Ilya Baran, Jovan Popović, and Olga Sorkin.
+"Bounded Biharmonic Weights for Real-Time Deformation," 2011.
+[#jacobson_mixed_2010]: Alec Jacobson, Elif Tosun, Olga Sorkine, and Denis
+Zorin. "Mixed Finite Elements for Variational Surface Modeling," 2010.
+[#kavan_2008]: Ladislav Kavan, Steven Collins, Jiri Zara, and Carol O'Sullivan.
+"Geometric Skinning with Approximate Dual Quaternion Blending," 2008.
+[#kazhdan_2012]: Michael Kazhdan, Jake Solomon, Mirela Ben-Chen,
+"Can Mean-Curvature Flow Be Made Non-Singular," 2012.
+[#meyer_2003]: Mark Meyer, Mathieu Desbrun, Peter Schröder and Alan H.  Barr,
 "Discrete Differential-Geometry Operators for Triangulated
 2-Manifolds," 2003.
 [#pannozo_2010]: Daniele Pannozo, Enrico Puppo, Luigi Rocca,
 "Efficient Multi-scale Curvature and Crease Estimation," 2010.
-[#jacobson_thesis_2013]: Alec Jacobson,
-_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
-2013.
-[#kazhdan_2012]: Michael Kazhdan, Jake Solomon, Mirela Ben-Chen,
-"Can Mean-Curvature Flow Be Made Non-Singular," 2012.
 [#rustamov_2011]: Raid M. Rustamov, "Multiscale Biharmonic Kernels", 2011.
+[#sorkine_2004]: Olga Sorkine, Yaron Lipman, Daniel Cohen-Or, Marc Alexa,
+Christian Rössl and Hans-Peter Seidel. "Laplacian Surface Editing," 2004.

@@ -38,6 +38,11 @@ Eigen::MatrixXi Seams;
 // Combed field
 Eigen::MatrixXd X1_combed, X2_combed;
 
+
+// Global parametrization (with seams)
+Eigen::MatrixXd UV_seams;
+Eigen::MatrixXi FUV_seams;
+
 // Global parametrization
 Eigen::MatrixXd UV;
 Eigen::MatrixXi FUV;
@@ -65,12 +70,12 @@ void line_texture(Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> &texture_R,
 
 bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 {
-  if (key <'1' || key >'7')
+  if (key <'1' || key >'8')
     return false;
 
-  viewer.clear_mesh();
-  viewer.options.show_lines = false;
-  viewer.options.show_texture = false;
+  viewer.clear();
+  viewer.core.show_lines = false;
+  viewer.core.show_texture = false;
 
   if (key == '1')
   {
@@ -175,7 +180,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     // Global parametrization UV
     viewer.set_mesh(UV, FUV);
     viewer.set_uv(UV);
-    viewer.options.show_lines = true;
+    viewer.core.show_lines = true;
   }
 
   if (key == '7')
@@ -183,7 +188,15 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     // Global parametrization in 3D
     viewer.set_mesh(V, F);
     viewer.set_uv(UV,FUV);
-    viewer.options.show_texture = true;
+    viewer.core.show_texture = true;
+  }
+
+  if (key == '8')
+  {
+    // Global parametrization in 3D with seams
+    viewer.set_mesh(V, F);
+    viewer.set_uv(UV_seams,FUV_seams);
+    viewer.core.show_texture = true;
   }
 
   viewer.set_colors(Eigen::RowVector3d(1,1,1));
@@ -242,10 +255,10 @@ int main(int argc, char *argv[])
   // Find the singularities
   igl::find_cross_field_singularities(V, F, MMatch, isSingularity, singularityIndex);
 
-  // Cut the mes, duplicating all vertices on the seams
+  // Cut the mesh, duplicating all vertices on the seams
   igl::cut_mesh_from_singularities(V, F, MMatch, isSingularity, singularityIndex, Seams);
 
-  // Comb the cross-field accordingly
+  // Comb the frame-field accordingly
   igl::comb_frame_field(V, F, X1, X2, BIS1_combed, BIS2_combed, X1_combed, X2_combed);
 
   // Global parametrization
@@ -267,6 +280,26 @@ int main(int argc, char *argv[])
            iter,
            5,
            true);
+
+// Global parametrization (with seams, only for demonstration)
+igl::miq(V,
+         F,
+         X1_combed,
+         X2_combed,
+         BIS1_combed,
+         BIS2_combed,
+         MMatch,
+         isSingularity,
+         singularityIndex,
+         Seams,
+         UV_seams,
+         FUV_seams,
+         gradient_size,
+         stiffness,
+         direct_round,
+         iter,
+         5,
+         false);
 
   // Plot the mesh
   igl::Viewer viewer;

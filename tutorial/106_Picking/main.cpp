@@ -25,7 +25,9 @@ bool mouse_down(igl::Viewer& viewer, int button, int modifier)
   int vid, fid;
 
   // Cast a ray in the view direction starting from the mouse position
-  bool hit = unproject_in_mesh(Vector2f(viewer.current_mouse_x,viewer.viewport(3) - viewer.current_mouse_y),
+  double x = viewer.current_mouse_x;
+  double y = viewer.viewport(3) - viewer.current_mouse_y;
+  bool hit = unproject_in_mesh(Vector2f(x,y),
                                 F,
                                 viewer.view * viewer.model,
                                 viewer.proj,
@@ -63,6 +65,6 @@ int main(int argc, char *argv[])
   viewer.set_mesh(V, F);
   viewer.callback_mouse_down = &mouse_down;
   viewer.set_colors(C);
-  viewer.options.show_lines = false;
+  viewer.core.show_lines = false;
   viewer.launch();
 }
