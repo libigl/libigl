@@ -28,12 +28,13 @@ std::vector<RotationList > poses;
 double anim_t = 0.0;
 double anim_t_dir = 0.015;
 bool use_dqs = false;
+bool recompute = true;
 
 bool pre_draw(igl::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
-  if(viewer.core.is_animating)
+  if(recompute)
   {
     // Find pose interval
     const int begin = (int)floor(anim_t)%poses.size();
@@ -78,23 +79,32 @@ bool pre_draw(igl::Viewer & viewer)
     viewer.set_vertices(U);
     viewer.set_edges(CT,BET,sea_green);
     viewer.compute_normals();
-    anim_t += anim_t_dir;
+    if(viewer.core.is_animating)
+    {
+      anim_t += anim_t_dir;
+    }
+    else
+    {
+      recompute=false;
+    }
   }
   return false;
 }
 
 bool key_down(igl::Viewer &viewer, unsigned char key, int mods)
 {
+  recompute = true;
   switch(key)
   {
     case 'D':
     case 'd':
       use_dqs = !use_dqs;
-      break;
+      return true;
     case ' ':
       viewer.core.is_animating = !viewer.core.is_animating;
-      break;
+      return true;
   }
+  return false;
 }
 
 int main(int argc, char *argv[])
@@ -131,5 +141,7 @@ int main(int argc, char *argv[])
   viewer.core.is_animating = false;
   viewer.core.camera_zoom = 2.5;
   viewer.core.animation_max_fps = 30.;
+  cout<<"Press [d] to toggle between LBS and DQS"<<endl<<
+    "Press [space] to toggle animation"<<endl;
   viewer.launch();
 }
