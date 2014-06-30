@@ -68,6 +68,7 @@ Libigl is an open source C++ library for geometry processing research and develo
     * [604 Triangulation of closed polygons][604]
     * [605 Tetrahedralization of closed surfaces][605]
     * [606 Baking ambient occlusion][606]
+    * [607 Locally Injective Maps][607]
 
 * [Chapter 7: Outlook for continuing development][future]
 
@@ -1631,7 +1632,7 @@ Formally, ambient occlusion is defined as:
 
 where \\( V_{p,\omega} \\) is the visibility function at  p, defined to be zero if p is occluded in the direction \\( \omega \\) and one otherwise, and \\( d\omega \\) is the infinitesimal solid angle step of the integration variable \\( \omega \\).
 
-The integral is usually approximate by casting rays in random directions around each vertex. This approximation can be computed using the function:
+The integral is usually approximated by casting rays in random directions around each vertex. This approximation can be computed using the function:
 
 ``` cpp
 igl::ambient_occlusion(V,F,V_samples,N_samples,500,AO);
@@ -1642,6 +1643,10 @@ that given a scene described in V,F, computes the ambient occlusion of the point
 Ambient occlusion can be used to darken the surface colors, as shown in [Example 606](606_AmbientOcclusion/main.c)
 
 ![A mesh rendered without (left) and with (right) ambient occlusion.](images/606_AmbientOcclusion.png)
+
+## Locally Injective Maps [607]
+
+[Example 607](607_LIM/main.c)
 
 # Outlook for continuing development [future]
 
