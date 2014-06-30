@@ -1313,6 +1313,113 @@ igl::dqs(V,W,vQ,vT,U);
 quaternion skinning (bottom), highlighting LBS's candy wrapper effect (middle)
 and joint collapse (right).](images/arm-dqs.jpg)
 
+## As-rigid-as-possible
+
+Skinning and other linear methods for deformation are inherently limited.
+Difficult arises especially when large rotations are imposed by the handle
+constraints.
+
+In the context of energy-minimization approaches, the problem stems from
+comparing positions (our displacements) in the coordinate frame of the
+undeformed shape. These quadratic energies are at best invariant to global
+rotations of the entire shape, but not smoothly varying local rotations. Thus
+linear techniques will not produce non-trivial bending and twisting.
+
+Furthermore, when considering solid shapes (e.g. discretized with tetrahedral
+meshes) linear methods struggle to maintain local volume. Often suffering from
+shrinking and bulging artifacts.
+
+There exist a family of non-linear deformation techniques that present a
+solution to these problems. They work by comparing the deformation of a mesh
+vertex to its rest position _rotated_ to a new coordinate frame which best
+matches the deformation. The non-linearity stems from the mutual dependence of
+the deformation and the best-fit rotation. These techniques are often labeled
+"as-rigid-as-possible" as they penalize the sum of all local deformations'
+deviations from rotations.
+
+To arrive at such an energy, let's consider a simple per-triangle energy:
+
+ $E_\text{linear}(\mathbf{X}') = \sum\limits_{t \in T} a_t \sum\limits_{\{i,j\}
+ \in t} w_{ij} \left\|
+ \left(\mathbf{x}'_i - \mathbf{x}'_j\right) -
+ \left(\mathbf{x}_i - \mathbf{x}_j\right)\right\|^2$
+
+where $\mathbf{X}'$ are the mesh's unknown deformed vertex positions, $t$ is a
+triangle in a list of triangles $T$, $a_t$ is the area of triangle $t$ and
+$\{i,j\}$ is an edge in triangle t$. Thus, this energy measures the norm of
+change between an edge vector in the original mesh $\left(\mathbf{x}_i -
+\mathbf{x}_j\right)$ and the unknown mesh $\left(\mathbf{x}'_i -
+\mathbf{x}'_j\right)$.
+
+This energy is **not** rotation invariant. If we rotate the mesh by 90 degrees
+the change in edge vectors not aligned with the axis of rotation will be large,
+despite the overall deformation being perfectly rigid.
+
+So, the "as-rigid-as-possible" solution is to append auxiliary variables
+$\mathbf{R}_t$
+for each triangle $t$ which are constrained to be rotations. Then the energy is
+rewritten, this time comparing deformed edge vectors to their rotated rest
+counterparts:
+
+
+ $E_\text{arap}(\mathbf{X}',\{\mathbf{R}_1,\dots,\mathbf{R}_{|T|}\}) = \sum\limits_{t \in T} a_t \sum\limits_{\{i,j\}
+ \in t} w_{ij} \left\|
+ \left(\mathbf{x}'_i - \mathbf{x}'_j\right)-
+ \mathbf{R}_t\left(\mathbf{x}_i - \mathbf{x}_j\right)\right\|^2.$
+
+The separation into the primary vertex position variables $\mathbf{X}'$ and the
+rotations $\{\mathbf{R}_1,\dots,\mathbf{R}_{|T|}\}$ lead to strategy for
+optimization, too. If the rotations $\{\mathbf{R}_1,\dots,\mathbf{R}_{|T|}\}$
+are held fixed then the energy is quadratic in the remaining variables
+$\mathbf{X}'$ and can be optimized by solving a (sparse) global linear system.
+Alternatively, if $\mathbf{X}'$ are held fixed then each rotation is the
+solution to a localized _Procrustes_ problem (found via $3 \times 3$ SVD or
+polar decompostion). These two steps---local and global---each weakly decrease
+the energy, thus we may safely iterate them until convergence.
+
+The different flavors of "as-rigid-as-possible" depend on the dimension and
+codimension of the domain and the edge-sets $T$. The proposed surface
+manipulation technique by Sorkine and Alexa [#sorkine_2007][], considers $T$ to
+be the set of sets of edges emanating from each vertex (spokes). Later, Chao et
+al.  derived the relationship between "as-rigid-as-possible" mesh energies and
+co-rotational elasticity considering 0-codimension elements as edge-sets:
+triangles in 2D and tetrahedra in 3D [#chao_2010][]. They also showed how
+Sorkine and Alexa's edge-sets are not a discretization of a continuous energy,
+proposing instead edge-sets for surfaces containing all edges of elements
+incident on a vertex (spokes and rims). They show that this amounts to
+measuring bending, albeit in a discretization-dependent way.
+
+Libigl, supports these common flavors. Selecting one is a matter of setting the
+energy type before the precompuation phase:
+
+```cpp
+igl::ARAPData data;
+arap_data.energy = igl::ARAP_ENERGY_TYPE_SPOKES;
+//arap_data.energy = igl::ARAP_ENERGY_TYPE_SPOKES_AND_RIMS;
+//arap_data.energy = igl::ARAP_ENERGY_TYPE_ELEMENTS; //triangles or tets
+igl::arap_precomputation(V,F,dim,b,data);
+```
+
+Just like `igl::min_quad_with_fixed_*`, this precomputation phase only depends
+on the mesh, fixed vertex indices `b` and the energy parameters. To solve with
+certain constraints on the positions of vertices in `b`, we may call:
+
+```cpp
+igl::arap_solve(bc,data,U);
+```
+
+which uses `U` as an initial guess and then computes the solution into it.
+
+Libigl's implementation of as-rigid-as-possible deformation takes advantage of
+the highly optimized singular value decomposition code from McAdams et al.
+[#mcadams_2011][] which leverages SSE intrinsics.
+
+![The example `AsRigidAsPossible` deforms a surface as if it were made of an
+elastic material](images/decimated-knight-arap.jpg)
+
+This concept of local rigidity will be revisited shortly in the context of
+surface parameterization.
+
 
 # Chapter 5: Parametrization [500]
 
@@ -1954,6 +2061,8 @@ repository](https://github.com/libigl/libigl).
 
 [#botsch_2004]: Matrio Botsch and Leif Kobbelt. "An Intuitive Framework for
 Real-Time Freeform Modeling," 2004.
+[#chao_2010]: Isaac Chao, Ulrich Pinkall, Patrick Sanan, Peter Schröder.
+"A Simple Geometric Model for Elastic Deformations," 2010.
 [#jacobson_thesis_2013]: Alec Jacobson,
 _Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
 2013.
@@ -1965,6 +2074,9 @@ Zorin. "Mixed Finite Elements for Variational Surface Modeling," 2010.
 "Geometric Skinning with Approximate Dual Quaternion Blending," 2008.
 [#kazhdan_2012]: Michael Kazhdan, Jake Solomon, Mirela Ben-Chen,
 "Can Mean-Curvature Flow Be Made Non-Singular," 2012.
+[#mcadams_2011]: Alexa McAdams, Andrew Selle, Rasmus Tamstorf, Joseph Teran,
+Eftychios Sifakis. "Computing the Singular Value Decomposition of 3x3 matrices
+with minimal branching and elementary floating point operations," 2011.
 [#meyer_2003]: Mark Meyer, Mathieu Desbrun, Peter Schröder and Alan H.  Barr,
 "Discrete Differential-Geometry Operators for Triangulated
 2-Manifolds," 2003.
@@ -1996,3 +2108,5 @@ Polynomials](http://igl.ethz.ch/projects/complex-roots/) Olga Diamanti, Amir
 Vaxman, Daniele Panozzo, Olga Sorkine-Hornung, SGP 2014
 [#knoppel_2013]:[Globally Optimal Direction
 Fields](http://www.cs.columbia.edu/~keenan/Projects/GloballyOptimalDirectionFields/paper.pdf) Knöppel, Crane, Pinkall, Schröder SIGGRAPH 2013
+[#sorkine_2007]: Olga Sorkine and Marc Alexa, "As-rigid-as-possible Surface
+Modeling." 2007.
