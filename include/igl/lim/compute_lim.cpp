@@ -12,6 +12,64 @@ IGL_INLINE int igl::compute_lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
+  const Eigen::SparseMatrix<double>& constraintMatrix,
+  const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
+  int energyType,
+  double tolerance,
+  int maxIteration,
+  bool findLocalMinima)
+{
+  return ComputeLIM(
+    vertices,
+    initialVertices,
+    elements,
+    constraintMatrix,
+    constraintTargets,
+    energyType,
+    tolerance,
+    maxIteration,
+    findLocalMinima
+    );
+}
+
+IGL_INLINE int igl::compute_lim(
+  Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
+  const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
+  const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
+  const Eigen::SparseMatrix<double>& constraintMatrix,
+  const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
+  int energyType,
+  double tolerance,
+  int maxIteration,
+  bool findLocalMinima,
+  bool enableOuput,
+  bool enableBarriers,
+  bool enableAlphaUpdate,
+  double beta,
+  double eps)
+{
+  return ComputeLIM(
+    vertices,
+    initialVertices,
+    elements,
+    constraintMatrix,
+    constraintTargets,
+    energyType,
+    tolerance,
+    maxIteration,
+    findLocalMinima,
+    enableOuput,
+    enableBarriers,
+    enableAlphaUpdate,
+    beta,
+    eps
+    );
+}
+
+IGL_INLINE int igl::compute_lim(
+  Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
+  const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
+  const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
   const std::vector<int>& borderVertices,
   const Eigen::Matrix<double,Eigen::Dynamic,1>& gradients,
   const Eigen::SparseMatrix<double>& constraintMatrix,
@@ -23,20 +81,17 @@ IGL_INLINE int igl::compute_lim(
 {
   return ComputeLIM(
     vertices,
-  initialVertices,
-  elements,
-  borderVertices,
-  gradients,
-  constraintMatrix,
-  constraintTargets,
-  energyType,
-  tolerance,
-  maxIteration,
-  findLocalMinima,
-  true,
-  true,
-  -1,
-  -1);
+    initialVertices,
+    elements,
+    borderVertices,
+    gradients,
+    constraintMatrix,
+    constraintTargets,
+    energyType,
+    tolerance,
+    maxIteration,
+    findLocalMinima
+    );
 }
 
 IGL_INLINE int igl::compute_lim(
@@ -52,26 +107,28 @@ IGL_INLINE int igl::compute_lim(
   int maxIteration,
   bool findLocalMinima,
   bool enableOuput,
+  bool enableBarriers,
   bool enableAlphaUpdate,
   double beta,
   double eps)
 {
   return ComputeLIM(
     vertices,
-  initialVertices,
-  elements,
-  borderVertices,
-  gradients,
-  constraintMatrix,
-  constraintTargets,
-  energyType,
-  tolerance,
-  maxIteration,
-  findLocalMinima,
-  enableOuput,
-  enableAlphaUpdate,
-  beta,
-  eps);
+    initialVertices,
+    elements,
+    borderVertices,
+    gradients,
+    constraintMatrix,
+    constraintTargets,
+    energyType,
+    tolerance,
+    maxIteration,
+    findLocalMinima,
+    enableOuput,
+    enableBarriers,
+    enableAlphaUpdate,
+    beta,
+    eps);
 }
 
 #ifdef IGL_STATIC_LIBRARY
