@@ -1,0 +1,14 @@
+cmake_minimum_required(VERSION 2.6)
+project(607_LIM)
+
+include("../CMakeLists.shared")
+find_package(LIM REQUIRED)
+
+include_directories(${LIM_INCLUDE_DIR})
+
+set(SOURCES
+${PROJECT_SOURCE_DIR}/main.cpp
+)
+
+add_executable(${PROJECT_NAME} ${SOURCES} ${SHARED_SOURCES} ${LIM_SOURCES})
+target_link_libraries(${PROJECT_NAME} ${SHARED_LIBRARIES})
