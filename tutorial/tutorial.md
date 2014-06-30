@@ -85,11 +85,12 @@ of these lecture notes links to a cross-platform example application.
 
 We introduce libigl with a series of self-contained examples. The purpose of
 each example is to showcase a feature of libigl while applying to a practical
-problem in geometry processing. In this chapter, we will showcase the basic
-concepts of libigl and introduce a simple mesh viewer that allows to easily
-visualize surface mesh and its attributes. All the examples are cross-platform
-and can be compiled on MacOSX, Linux and Windows.
+problem in geometry processing. In this chapter, we will present the basic
+concepts of libigl and introduce a simple mesh viewer that allows to
+visualize a surface mesh and its attributes. All the tutorial examples are
+cross-platform and can be compiled on MacOSX, Linux and Windows.
 
+### Downloading libigl
 libigl can be downloaded from our [github
 repository](https://github.com/libigl/libigl) or cloned with git:
 
@@ -97,8 +98,9 @@ repository](https://github.com/libigl/libigl) or cloned with git:
 git clone https://github.com/libigl/libigl.git
 ```
 
-All examples depends on glfw, glew and anttweakbar. A copy
-of the sourcecode of each library is provided together with libigl
+All the examples depends on [glfw](http://www.glfw.org),
+[glew](http://glew.sourceforge.net) and [anttweakbar](http://anttweakbar.sourceforge.net/doc/).
+The source code of each library is bundled with libigl
 and they can be precompiled using:
 
 ```sh
@@ -106,37 +108,35 @@ sh compile_dependencies_macosx.sh (MACOSX)
 sh compile_dependencies_linux.sh (LINUX)
 ```
 
-while precompiled binaries are provided for Visual Studio 2014 64bit.
+For windows, precompiled binaries are provided (Visual Studio 2014 64bit).
 
-You can use the CMakeLists.txt in the tutorial folder to build all the
-examples:
+To build all the examples in the tutorial, you can use the CMakeLists.txt in
+the tutorial folder:
 
 ```sh
 cd tutorial
 mkdir build
 cd build
-cmake ../
+cmake -DCMAKE_BUILD_TYPE=Release ../
 make
 ```
 
-or you can use the CMakeLists.txt inside each example folder to build the
-examples independently.
+The examples can also be independently built using the the CMakeLists.txt
+inside each example folder.
 
-For a few examples in Chapter 5, the [CoMiSo
-solver](http://www.graphics.rwth-aachen.de/software/comiso) has to be
+A few examples in Chapter 5 requires the [CoMiSo
+solver](http://www.graphics.rwth-aachen.de/software/comiso) which has to be
 downloaded and compiled separately.
 
 ## Mesh representation [101]
 
 libigl uses the [Eigen](http://eigen.tuxfamily.org/) library to encode vector
-and matrices. We will review in this tutorial many of the basic operations that
-Eigen supports: If you want to get an idea of what operations are supported you
-can take a look at the
+and matrices. We suggest that you keep the
 [dense](http://eigen.tuxfamily.org/dox/group__QuickRefPage.html) and
 [sparse](http://eigen.tuxfamily.org/dox/group__SparseQuickRefPage.html) quick
-reference guides.
+reference guides at hand while you read the examples in this tutorial.
 
-We encode a triangular mesh as a pair of matrices:
+A triangular mesh is encoded as a pair of matrices:
 
 ```cpp
 Eigen::MatrixXd V;
@@ -144,49 +144,51 @@ Eigen::MatrixXi F;
 ```
 
 **V** is a #N by 3 matrix which stores the coordinates of the vertices. Each
-row stores the coordinate of a vertex, with the x,y,z coordinates in the first,
-second and third column respectively. The matrix **F** stores the triangle
+row stores the coordinate of a vertex, with its x,y and z coordinates in the first,
+second and third column, respectively. The matrix **F** stores the triangle
 connectivity: each line of **F** denotes a triangle whose 3 vertices are
-represented as indices pointing to vertex coordinates in **F**.
+represented as indices pointing to rows of **V**.
 
 ![A simple mesh made of 2 triangles and 4 vertices.](images/VF.png)
 
-Note that the order of the vertex indices in F determines the orientation of
-the triangles and it should be consistent for the entire surface. As we will
-see later, additional properties of the mesh will be similarly stored as
-matrices. This simple representation has many advantages:
+Note that the order of the vertex indices in **F** determines the orientation of
+the triangles and it should thus be consistent for the entire surface.
+This simple representation has many advantages:
 
-* it is memory efficient and cache friendly
-* the use of indices instead of pointers greatly simplifies debuggind
-* the data can be trivially read/written on disk
+1. it is memory efficient and cache friendly
+2. the use of indices instead of pointers greatly simplifies debugging
+3. the data can be trivially copied and serialized
 
-libigl provides Input/Output functions to read and write common mesh formats.
-The reading/writing functions are named read\*.h and write\*.h, respectively.
+libigl provides input [output] functions to read [write] many common mesh formats.
+The IO functions are contained in the files read\*.h and write\*.h. As a general
+rule each libigl function is contained in a pair of .h/.cpp files with the same name.
+By default, the .h files include the corresponding cpp files, making the library header-only.
 
-Reading a mesh from file requires a single igl function call:
+Reading a mesh from a file requires a single igl function call:
 
 ```cpp
 igl::readOFF("../shared/cube.off", V, F);
 ```
 
-The functions read the mesh cube.off and fills the provided matrices V and F.
-Similarly, to write a mesh to file (in OBJ format):
+The function reads the mesh cube.off and it fills the provided **V** and **F** matrices.
+Similarly, a mesh can be written in an OBJ file using:
 
 ```cpp
 igl::writeOBJ("cube.obj",V,F);
 ```
 
-See [Example 101](101_FileIO/main.cpp) for the source code of a simple mesh
+[Example 101](101_FileIO/main.cpp) contains a simple mesh
 converter from OFF to OBJ format.
 
 ## Plotting surfaces [102]
 
-libigl contains an OpenGL viewer that can visualize surface and their
-properties.
+libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
+properties and additional debugging informations.
 
 The following code ([Example 102](102_DrawMesh/main.cpp)) is a basic skeleton
-that will be used over the entire tutorial. It is a standalone application that
-loads a mesh and visualize it.
+for all the examples that will be used in the tutorial.
+It is a standalone application that loads a mesh and uses the viewer to
+render it.
 
 ```cpp
 #include <igl/readOFF.h>
@@ -207,10 +209,11 @@ int main(int argc, char *argv[])
 }
 ```
 
-The function set_mesh assigns to the viewer the mesh that we want to plot, and
-the last line creates an opengl context and starts the draw loop. Additional
-properties can be plotted on the mesh, and it is also possible to extend the
-viewer with standard OpenGL code. Please see the documentation in
+The function set_mesh copies the mesh into the viewer.
+Viewer.launch()  creates a window, an opengl context and it starts the draw loop.
+Additional properties can be plotted on the mesh (as we will see later),
+and it is possible to extend the viewer with standard OpenGL code.
+Please see the documentation in
 [Viewer.h](../include/igl/Viewer/Viewer.h) for more details.
 
 ![([Example 102](102_DrawMesh/main.cpp)) loads and draws a
@@ -233,8 +236,8 @@ bool (*callback_key_up)(Viewer& viewer, unsigned char key, int modifiers);
 ```
 
 A keyboard callback can be used to visualize multiple meshes or different
-stages of an algorithm, as demonstrated in [Example 103](103_Events/main.cpp).
-The keyboard callback changes the visualized mesh depending on the key pressed:
+stages of an algorithm, as demonstrated in [Example 103](103_Events/main.cpp), where
+the keyboard callback changes the visualized mesh depending on the key pressed:
 
 ```cpp
 bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
@@ -252,7 +255,8 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   return false;
 }
 ```
-and it is registered in the viewer as follows:
+
+The callback has to registered in the viewer as follows:
 
 ```cpp
 viewer.callback_key_down = &key_down;
@@ -266,71 +270,68 @@ useful, for example, to disable the default mouse event handling if you want to
 control the camera directly in your code.
 
 The viewer can be extended using plugins, which are classes that implements all
-the viewer's callbacks. See the class Viewer_plugin for more details.
+the viewer's callbacks. See the [Viewer_plugin](../include/igl/viewer/ViewerPlugin.h) for more details.
 
 ## Scalar field visualization [104]
 
-Colors and normals can be associated to both faces or normals using the
+Colors and normals can be associated to faces or vertices using the
 set_colors function:
 
 ```cpp
 viewer.set_colors(C);
 ```
 
-**C** is a #C by 3 matrix with one RGB color per row, and as many rows as the
-number of faces **or** the number of vertices. Depending on the size of **C**,
-the viewer applies the color to faces or vertices.
+**C** is a #C by 3 matrix with one RGB color per row. **C** must have as many
+rows as the number of faces **or** the number of vertices of the mesh.
+Depending on the size of **C**, the viewer applies the color to the faces or to
+the vertices.
 
-Colors are commonly used to visualize scalar functions defined on a surface
-using a transfer functions, that maps a scalar value between 0 and 1 to a color
-scale. A simple example of a scalar field defined on a surface is the z
-coordinate of each point. We can extract this information from our mesh by
-taking the first column of V (which contains the stacked z coordiantes of all
-the vertices), and map it to colors using the igl::jet function:
+Colors can be used to visualize a scalar function defined on a surface.
+The scalar function is converted to colors using a color transfer function,
+which maps a scalar value between 0 and 1 to a color. A simple example
+of a scalar field defined on a surface is the z coordinate of each point,
+which can be extract from our mesh representation by
+taking the first column of **V** (([Example 104](104_Colors/main.cpp)). The function igl::jet can be used to convert it
+to colors:
 
 ```cpp
 Eigen::VectorXd x = V.col(2);
 igl::jet(x,true,C);
 ```
 
-The first row extracts the third column from V and the second calls the libigl
-functions that converts a scalar field to colors. The second parameter of jet
-normalizes the scalar field to lie between 0 and 1 before applying the color
-scale.
+The first row extracts the third column from **V** (the z coordinate of each
+vertex) and the second calls the libigl functions that converts a scalar field to colors. The second parameter of jet normalizes the scalar field to lie between 0 and 1 before applying the transfer function.
 
 ![([Example 104](104_Colors/main.cpp)) igl::jet converts a scalar field to a
 color field.](images/104_Colors.png)
 
 ## Overlays [105]
 
-In addition to the surface, the viewer supports the visualization of points,
-lines and text label that can be very helful while developing geometric
-processing algorithms. These additional informations can be drawn using the
-following functions:
+In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helful while developing geometric processing algorithms to plot debug informations.
 
 ```cpp
 viewer.add_points(P,Eigen::RowVector3d(r,g,b));
 ```
 
-Draws a point of color r,g,b for each row of P at the coordinates specified in
-each row of P, which is a #P by 3 matrix.
+Draws a point of color r,g,b for each row of P. The point is placed at the coordinates specified in each row of P, which is a #P by 3 matrix.
 
 ```cpp
 viewer.add_edges(P1,P2,Eigen::RowVector3d(r,g,b);
 ```
 
-Draws a line for each line of P1 and P2, which connects the point in P1 to the
-point in P2.
+Draws a line of color r,g,b for each row of P1 and P2, which connects the 3D point in to the point in P2. Both P1 and P2 are of size #P by 3.
 
 ```cpp
 viewer.add_label(p,str);
 ```
 
-Draws a label containing the string str at the position p.
+Draws a label containing the string str at the position p, which is a vector of length 3.
 
 These functions are demonstrate in [Example 105](105_Overlays/main.cpp) where
-the bounding box of the mesh is plotted using lines and points. The bounding
-box of a mesh can be found using Eigen:
+the bounding box of a mesh is plotted using lines and points.
+Using matrices to encode the mesh and its attributes allows to write short and
+efficient code for many operations, avoiding to write for loops. For example,
+the bounding box of a mesh can be found by taking the colwise maximum and minimum of **V**:
 
 ```cpp
 Eigen::Vector3d m = V.colwise().minCoeff();
@@ -340,15 +341,12 @@ Eigen::Vector3d M = V.colwise().maxCoeff();
 ![([Example 105](105_Overlays/main.cpp)) The bounding box of a mesh is shown
 using overlays.](images/105_Overlays.png)
 
-Using matrices to encode the mesh and its attributes allows to write short and
-efficient code for many operations, avoiding to write for loops.
 
 ## Picking [106]
 
 Picking vertices and faces using the mouse is very common in geometry
 processing applications. While this might seem a simple operation, its
-implementation is quite involved. libigl contains a function that solves this
-problem using the
+implementation is not straighforward. libigl contains a function that solves this problem using the
 [Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels)
 raycaster. Its usage is demonstrated in [Example 106](106_Picking/main.cpp):
 
@@ -365,14 +363,14 @@ bool hit = igl::unproject_in_mesh(
 ```
 
 This function casts a ray from the view plane in the view direction. x,y are
-the position of the mouse on screen; view,model,proj are the view, model and
-projection matrix respectively, viewport is the viewport in opengl format; ei
+the mouse screen coordinates; view, model, proj are the view, model and
+projection matrix respectively; viewport is the viewport in opengl format; ei
 contains a [Bounding Volume
 Hierarchy](http://en.wikipedia.org/wiki/Bounding_volume_hierarchy) constructed
-by Embree, and fid and vid are the picked face and vertex respectively.
+by Embree, and fid and vid are the picked face and vertex, respectively.
 
 This function is a good example of the design principles in libigl: the
-function takes very simple types, mostly matrix or vectors, and can be easily
+function takes simple types, mostly matrix or vectors, and can be easily
 reused for many different tasks.  Not committing to heavy data structures,
 favors simplicity, ease of use and reusability.
 
@@ -381,14 +379,11 @@ favors simplicity, ease of use and reusability.
 To conclude the introduction, we summarize the main design principles in
 libigl:
 
-* No complex data types. Mostly matrices and vectors. This greatly favors code
-  reusability and forces the authors to expose all the parameters used by the
-  algorithm.  
+1. **No complex data types.** We mostly use matrices and vectors. This greatly favors code reusability and forces the function authors to expose all the parameters used by the algorithm.  
 
-* Minimal dependencies: we use external libraries only when necessary and we
-  wrap them in a small set of functions.
+2. **Minimal dependencies.** We use external libraries only when necessary and we wrap them in a small set of functions.
 
-* Header-only: it is straighforward to use our library since it is only one
+3. **Header-only.** It is straighforward to use our library since it is only one
   additional include directory in your project. (if you are worried about
   compilation speed, it is also possible to build the library as a [static
   library](../build/))
