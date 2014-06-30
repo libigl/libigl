@@ -5,6 +5,10 @@
 #  LIBIGL_INCLUDE_DIR - the LIBIGL include directory
 #  LIBIGL_SOURCES - the LIBIGL source files
 
+# Mosek is not required but must be found before libigl to ensure correct flags
+# are set
+find_package(Mosek QUIET)
+
 FIND_PATH(LIBIGL_INCLUDE_DIR igl/readOBJ.h
    /usr/include
    /usr/local/include
@@ -25,9 +29,13 @@ if(LIBIGL_INCLUDE_DIR)
    #)
 endif(LIBIGL_INCLUDE_DIR)
 
+if (NOT MOSEK_FOUND)
+  add_definitions(-DIGL_NO_MOSEK)
+endif (NOT MOSEK_FOUND)
+
 if(LIBIGL_USE_STATIC_LIBRARY)
   add_definitions(-DIGL_STATIC_LIBRARY)
-  set(LIBIGL_LIB_DIRS 
+  set(LIBIGL_LIB_DIRS
    /usr/lib
    /usr/local/lib
    $ENV{LIBIGLROOT}/lib
