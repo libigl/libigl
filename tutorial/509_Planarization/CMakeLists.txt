@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(508_ConjugatePVF)
+project(509_Planarization)
 
 include("../CMakeLists.shared")
 
