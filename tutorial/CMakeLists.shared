@@ -10,6 +10,9 @@ set(CMAKE_COLOR_MAKEFILE ON)
 find_package(ANTTWEAKBAR REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(EIGEN REQUIRED)
+# Mosek is not required but must be found before libigl to ensure correct flags
+# are set
+find_package(Mosek)
 find_package(LIBIGL REQUIRED)
 find_package(GLFW REQUIRED)
 

@@ -1,11 +1,12 @@
 // Don't use static library for this example because of Mosek complications
 //#define IGL_NO_MOSEK
-#ifdef IGL_NO_MOSEK
-#undef IGL_STATIC_LIBRARY
-#endif
+//#ifdef IGL_NO_MOSEK
+//#undef IGL_STATIC_LIBRARY
+//#endif
 #include <igl/boundary_conditions.h>
 #include <igl/colon.h>
 #include <igl/column_to_quats.h>
+#include <igl/directed_edge_parents.h>
 #include <igl/forward_kinematics.h>
 #include <igl/jet.h>
 #include <igl/lbs_matrix.h>
@@ -114,18 +115,7 @@ int main(int argc, char *argv[])
   U=V;
   igl::readTGF("../shared/hand.tgf",C,BE);
   // retrieve parents for forward kinematics
-  P.resize(BE.rows(),1);
-  for(int e = 0;e<BE.rows();e++)
-  {
-    P(e) = -1;
-    for(int f = 0;f<BE.rows();f++)
-    {
-      if(BE(e,0) == BE(f,1))
-      {
-        P(e) = f;
-      }
-    }
-  }
+  igl::directed_edge_parents(BE,P);
 
   // Read pose as matrix of quaternions per row
   MatrixXd Q;
@@ -143,6 +133,7 @@ int main(int argc, char *argv[])
   igl::BBWData bbw_data;
   // only a few iterations for sake of demo
   bbw_data.active_set_params.max_iter = 8;
+  bbw_data.verbosity = 2;
   if(!igl::bbw(V,T,b,bc,bbw_data,W))
   {
     return false;
