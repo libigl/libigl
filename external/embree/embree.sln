@@ -1,5 +1,7 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "devices", "devices", "{D8ACAEEA-07BB-48F1-A342-1D72752BB338}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{B8B3B14B-6548-4865-B642-3257D264C487}"
@@ -15,58 +17,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{C11E295C-BBD
 		README.txt = README.txt
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sys", "embree\sys\sys.vcproj", "{B118AB3D-AB5B-4D86-90C2-8E91E8457710}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sys", "embree\sys\sys.vcxproj", "{B118AB3D-AB5B-4D86-90C2-8E91E8457710}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "image", "examples\common\image\image.vcproj", "{46A3A15E-AE35-41E9-824A-C542F8BA226E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B118AB3D-AB5B-4D86-90C2-8E91E8457710} = {B118AB3D-AB5B-4D86-90C2-8E91E8457710}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "image", "examples\common\image\image.vcxproj", "{46A3A15E-AE35-41E9-824A-C542F8BA226E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexers", "examples\common\lexers\lexers.vcproj", "{47A3A15E-AE35-41E9-824A-C542F8BA226E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexers", "examples\common\lexers\lexers.vcxproj", "{47A3A15E-AE35-41E9-824A-C542F8BA226E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "device", "examples\renderer\device\device.vcproj", "{ED848C9A-C161-4036-9DF7-EB169BCB81BC}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B118AB3D-AB5B-4D86-90C2-8E91E8457710} = {B118AB3D-AB5B-4D86-90C2-8E91E8457710}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "device", "examples\renderer\device\device.vcxproj", "{ED848C9A-C161-4036-9DF7-EB169BCB81BC}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "device_network", "examples\renderer\device_network\network_device.vcproj", "{F8965E6E-70F2-49D0-AC35-8A399C123548}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B118AB3D-AB5B-4D86-90C2-8E91E8457710} = {B118AB3D-AB5B-4D86-90C2-8E91E8457710}
-		{46A3A15E-AE35-41E9-824A-C542F8BA226E} = {46A3A15E-AE35-41E9-824A-C542F8BA226E}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "device_network", "examples\renderer\device_network\network_device.vcxproj", "{F8965E6E-70F2-49D0-AC35-8A399C123548}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "renderer_server", "examples\renderer\device_network\network_server.vcproj", "{F8965E6E-70F2-49D0-AC35-8A399C123541}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B118AB3D-AB5B-4D86-90C2-8E91E8457710} = {B118AB3D-AB5B-4D86-90C2-8E91E8457710}
-		{46A3A15E-AE35-41E9-824A-C542F8BA226E} = {46A3A15E-AE35-41E9-824A-C542F8BA226E}
-		{47A3A15E-AE35-41E9-824A-C542F8BA226E} = {47A3A15E-AE35-41E9-824A-C542F8BA226E}
-		{ED848C9A-C161-4036-9DF7-EB169BCB81BC} = {ED848C9A-C161-4036-9DF7-EB169BCB81BC}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "renderer_server", "examples\renderer\device_network\network_server.vcxproj", "{F8965E6E-70F2-49D0-AC35-8A399C123541}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "renderer", "examples\renderer\renderer\renderer.vcproj", "{1CA4782A-3DB4-4EC6-889D-104C61BF26DE}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B118AB3D-AB5B-4D86-90C2-8E91E8457710} = {B118AB3D-AB5B-4D86-90C2-8E91E8457710}
-		{46A3A15E-AE35-41E9-824A-C542F8BA226E} = {46A3A15E-AE35-41E9-824A-C542F8BA226E}
-		{47A3A15E-AE35-41E9-824A-C542F8BA226E} = {47A3A15E-AE35-41E9-824A-C542F8BA226E}
-		{ED848C9A-C161-4036-9DF7-EB169BCB81BC} = {ED848C9A-C161-4036-9DF7-EB169BCB81BC}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "renderer", "examples\renderer\renderer\renderer.vcxproj", "{1CA4782A-3DB4-4EC6-889D-104C61BF26DE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "device_singleray", "examples\renderer\device_singleray\device_singleray.vcproj", "{ED848C9A-C161-4036-8DF7-EB169BCB81BC}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B118AB3D-AB5B-4D86-90C2-8E91E8457710} = {B118AB3D-AB5B-4D86-90C2-8E91E8457710}
-		{46A3A15E-AE35-41E9-824A-C542F8BA226E} = {46A3A15E-AE35-41E9-824A-C542F8BA226E}
-		{ED858C9A-C161-4036-8DF7-EB169BCB81BC} = {ED858C9A-C161-4036-8DF7-EB169BCB81BC}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "device_singleray", "examples\renderer\device_singleray\device_singleray.vcxproj", "{ED848C9A-C161-4036-8DF7-EB169BCB81BC}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "embree", "embree\embree.vcproj", "{ED858C9A-C161-4036-8DF7-EB169BCB81BC}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B118AB3D-AB5B-4D86-90C2-8E91E8457710} = {B118AB3D-AB5B-4D86-90C2-8E91E8457710}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "embree", "embree\embree.vcxproj", "{ED858C9A-C161-4036-8DF7-EB169BCB81BC}"
 EndProject
 Global
-	GlobalSection(IntelOptPkgProperties) = preSolution
-		LoadPackage = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
@@ -163,5 +132,8 @@ Global
 		{ED848C9A-C161-4036-9DF7-EB169BCB81BC} = {D8ACAEEA-07BB-48F1-A342-1D72752BB338}
 		{F8965E6E-70F2-49D0-AC35-8A399C123548} = {D8ACAEEA-07BB-48F1-A342-1D72752BB338}
 		{ED848C9A-C161-4036-8DF7-EB169BCB81BC} = {D8ACAEEA-07BB-48F1-A342-1D72752BB338}
+	EndGlobalSection
+	GlobalSection(IntelOptPkgProperties) = preSolution
+		LoadPackage = true
 	EndGlobalSection
 EndGlobal

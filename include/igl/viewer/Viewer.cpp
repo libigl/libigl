@@ -16,7 +16,9 @@
 #endif
 
 // Todo: windows equivalent for `usleep`
-#include <unistd.h>
+//#include <unistd.h>
+#include <chrono>
+#include <thread>
 
 #ifndef __APPLE__
 #  define GLEW_STATIC
@@ -1053,7 +1055,8 @@ namespace igl
         if(duration<min_duration)
         {
           // TODO: windows equivalent
-          usleep(min_duration-duration);
+          //usleep(min_duration-duration);
+          std::this_thread::sleep_for(std::chrono::microseconds((int)(min_duration-duration)));
         }
       }
       else
