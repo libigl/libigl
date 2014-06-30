@@ -40,7 +40,6 @@ bool pre_draw(igl::Viewer & viewer)
     const int begin = (int)floor(anim_t)%poses.size();
     const int end = (int)(floor(anim_t)+1)%poses.size();
     const double t = anim_t - floor(anim_t);
-    //cout<<anim_t<<": "<<begin<<" "<<end<<endl;
 
     // Interpolate pose and identity
     RotationList anim_pose(poses[begin].size());
