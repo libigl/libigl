@@ -1580,13 +1580,13 @@ We demonstrate how to call and plot N-RoSy fields in [Example
 
 ### Global, seamless integer-grid parametrization [505]
 
-The previous parametrization methods where focusing on generating
-parametrization of surface patches, mainly aimed at texture mapping or baking
+The previous parametrization methods were focusing on creating
+parametrizations of surface patches aimed at texture mapping or baking
 of other surface properties such as normals and high-frequency details. Global,
 seamless parametrization aims at parametrizing complex shapes with a
 parametrization that is aligned with a given set of directions for the purpose
 of surface remeshing. In libigl, we provide a reference  implementation of
-the pipeline proposed in [#bommes_2009][].
+the pipeline proposed in the mixed integer quadrangulation paper [#bommes_2009][].
 
 The first step involves the design of a 4-RoSy field (sometimes called *cross*
 field) that describes the alignment of the edges of the desired quadrilateral remeshing. The field constraints are usually manually specified or extracted from the principal curvature directions. In [[Example 506](506_FrameField/main.cpp)], we simply fix one face in a random direction.
@@ -1596,41 +1596,39 @@ field) that describes the alignment of the edges of the desired quadrilateral re
 ### Combing and cutting
 
 Given the cross field, we now want to cut the surface so that it becomes
-homeorphic to a disk. While this can be done directly on the cross-field, we
-prefer to do this operation on its bisector field (a copy of the field rotated
-by 45 degrees) since it is more stable and generic.
+homeorphic to a disk. While this could be done directly on the cross-field, we
+opt to perform this operation on its bisector field (a copy of the field rotated
+by 45 degrees) since it is more stable and generic. Working on the bisectors allow us to take as input generalized, non-orthogonal and non-unit lenght cross fields.
 
 We thus rotate the field,
 
 ![Bisector field.](images/505_MIQ_2.png)
 
-and we remove the rotation ambiguity by assigning to each face a u and v
-direction, computed by diffusing this alignment from a random face.
+and we remove the rotation ambiguity by assigning to each face a u and a v
+direction. The assignment is done with a breadth-first search starting from a random face.
 
 ![Combed bisector field.](images/505_MIQ_3.png)
 
-You can imagine this process as combing an hairy surface: you'll be able to
-comb part of it, but at some point you will not be able to comb consistently
-the full surface ([Hairy ball
+You can imagine this process as combing an hairy surface: you will be able to
+comb part of it, but at some point you will not be able to consistently comb
+the entire surface ([Hairy ball
 theorem](http://en.wikipedia.org/wiki/Hairy_ball_theorem)). The discontinuites
-in the combing defines the cut graph:
+in the combing define the cut graph:
 
 ![Cut graph.](images/505_MIQ_4.png)
 
-Finally, we rotate the combed field by 45 degrees to undo the initial 45
+Finally, we rotate the combed field by 45 degrees to undo the initial
 degrees rotation:
 
 ![Combed cross field.](images/505_MIQ_5.png)
 
-This cross field can be seen as the ideal gradient of the parametrization that
-we want to compute.
+The combed cross field can be seen as the ideal Jacobian of the parametrization that will be computed in the next section.
 
 ### Poisson parametrization
 
-The mesh can be then cut along the seams and a parametrization is computed
+The mesh is cut along the seams and a parametrization is computed
 trying to find two scalar functions whose gradient matches the combed cross
-field. This is a classical Poisson problem, that is solved minimizing the
-following quadratic energy:
+field directions. This is a classical Poisson problem, that is solved minimizing the following quadratic energy:
 
 \\[ E(\mathbf{u},\mathbf{v}) = |\nabla \mathbf{u} - X_u|^2 + |\nabla \mathbf{v} - X_v|^2 \\]
 
@@ -1640,8 +1638,8 @@ input cross field.
 
 ![Poisson parametrization.](images/505_MIQ_8.png)
 
-We hide the seams by adding a set of integer constraints to the Poisson problem
-that aligns the isolines on both sides of each seam [#bommes_2009].
+We hide the seams by adding integer constraints to the Poisson problem
+that align the isolines on both sides of each seam [#bommes_2009].
 
 ![Seamless Poisson parametrization.](images/505_MIQ_7.png)
 
@@ -1652,22 +1650,19 @@ it contains many overlaps.
 
 A quad mesh can be extracted from this parametrization using
 [libQEx](https://github.com/hcebke/libQEx) (not included in libigl).
-
-The full pipeline is demonstrated in [Example 505](505_MIQ/main.cpp).
+The full pipeline is implemented in [Example 505](505_MIQ/main.cpp).
 
 ## Anisotropic remeshing [506]
 
-Anisotropic and non-uniform quad remeshing is important to concentrate the
-elements in the regions with more details. It is possible to extend the MIQ
+Anisotropic and non-uniform quad remeshing is important to concentrate the elements in the regions with more details. It is possible to extend the MIQ
 quad meshing framework to generate anisotropic quad meshes using a mesh
-deformation approach.
+deformation approach [#panozzo_2014][].
 
-The input of the remeshing algorithm is now a sparse set of constraints that
-defines the shape and scale of the desired quad remeshing. This can be encoded
-as a frame-field, which is a pair of non-orthogonal and non-unit lenght
+The input of the anisotropic remeshing algorithm is a sparse set of constraints that define the shape and scale of the desired quads. This can be encoded
+as a frame field, which is a pair of non-orthogonal and non-unit lenght
 vectors. The frame field can be interpolated by decomposing it in a 4-RoSy
 field and a unique affine transformation. The two parts can then be
-interpolated separately, using igl::nrosy for the cross field, and an harmonic
+interpolated separately, using `igl::nrosy` for the cross field, and an harmonic
 interpolant for the affine part.
 
 ![Interpolation of a frame field. Colors on the vectors denote the desired
@@ -1697,69 +1692,48 @@ anisotropic quad meshing.](images/506_FrameField_4.png)
 
 Our implementation ([Example 506](506_FrameField/main.cpp)) uses MIQ to
 generate the UV parametrization, but other algorithms could be applied: the
-only desiderata is that the generated quad mesh will be as isotropic as
+only desiderata is that the generated quad mesh should be as isotropic as
 possible.
-
-### References
-
-[Frame Fields: Anisotropic and Non-Orthogonal Cross
-Fields](http://www.inf.ethz.ch/personal/dpanozzo/papers/frame-fields-2014.pdf),
-Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga Sorkine-Hornung, SIGGRAPH,
-2014
 
 ## N-PolyVector fields [507]
 
 N-RoSy vector fields can be further generalized to represent arbitrary
-vector-sets, with arbitrary angles between them and with arbitrary lenghts.
+vector-sets, with arbitrary angles between them and with arbitrary lenghts [#diamanti_2014][].
 This generalization is called  N-PolyVector field, and libigl provides the
-function igl::n_polyvector to design them starting from a sparse set of
+function `igl::n_polyvector` to design them starting from a sparse set of
 constraints ([Example 507](507_PolyVectorField/main.cpp)).
 
 ![Interpolation of a N-PolyVector field from a sparse set of
 constraints.](images/507_PolyVectorField.png)
 
-Globally Optimal Direction fields are a special case of Poly-Vector Fields: if
-the interpolation constraints are an N-RoSy field, then our algorithm generates
-a field that if normalized, is equivalent to a globally optimal direction
-field.
+The core idea is to represent the vector set as the roots of a complex polynomial: The polynomial coefficients are then harmonically interpolated leading to polynomials whose roots smoothly vary over the surface.
+
+Globally optimal direction fields [#knoppel_2013][] are a special case of Poly-Vector fields. If the constraints are taken from an N-RoSy field, `igl::n_polyvector` generates a field that is equivalent, after normalization,  to a globally optimal direction field.
 
 ## Conjugate vector fields [508]
 
-Two tangent vectors lying on a face of triangle mesh are conjugate if
+Two tangent vectors lying on a face of a triangle mesh are conjugate if
 
 \\[ k_1 (u^T d_1)(v^T d_1) + k_2(u^T d_2)(v^T d_2) = 0. \\]
 
-This condition is very important in architectural geometry, since the faces of
+This condition is very important in architectural geometry: The faces of
 an infinitely dense quad mesh whose edges are aligned with a conjugate field
-are planar. Thus, creating a quad mesh following a Conjugate field generates
-quad meshes that are easier to planarize.
+are planar. Thus, a quad mesh whose edges follow a conjugate field  are easier to planarize [#liu_2011].
 
 Finding a conjugate vector field that satisfies given directional constraints
 is a standard problem in architectural geometry, which can be tackled by
-warping a given PolyVector field to the closest conjugate field.
+deforming a Poly-Vector field to the closest conjugate field.
 
-The algorithms alternates a global step, which enforces smoothness, with a
-local step that projects the field on every face to the closest conjugate field
+This algorithm [#diamanti_2014] alternates a global step, which enforces smoothness, with a local step, that projects the field on every face to the closest conjugate field
 ([Example 508](508_ConjugateField/main.cpp)).
 
 ![A smooth 4-PolyVector field (left) is deformed to become a conjugate field
 (right).](images/508_ConjugateField.png)
 
-### References
-
-[Designing N-PolyVector Fields with Complex
-Polynomials](http://igl.ethz.ch/projects/complex-roots/) Olga Diamanti, Amir
-Vaxman, Daniele Panozzo, Olga Sorkine-Hornung, SGP 2014
-
-[General Planar Quadrilateral Mesh Design Using Conjugate Direction
-Field](http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf)
-Yang Liu, Weiwei Xu, Jun Wang, Lifeng Zhu, Baining Guo, Falai Chen, Guoping
-Wang SIGGRAPH Asia 2011
-
 ## Planarization [509]
 
-A quad mesh can be transformed in a planar quad mesh using Shape-Up, that is a
-local/global approach the uses the global step to enforce surface continuity
+A quad mesh can be transformed in a planar quad mesh with Shape-Up [#bouaziz_2012], a
+local/global approach that uses the global step to enforce surface continuity
 and the local step to enforce planarity.
 
 [Example 509](509_Planarization/main.cpp) planarizes a quad mesh until it
@@ -1768,13 +1742,6 @@ satisfies a user-given planarity threshold.
 ![A non-planar quad mesh (left) is planarized using the libigl function
 igl::palanarize (right). The colors represent the planarity of the
 quads.](images/509_Planarization.png)
-
-### References
-
-[Shape-Up: Shaping Discrete Geometry with
-Projections](http://lgg.epfl.ch/publications/2012/shapeup.pdf) Sofien Bouaziz,
-Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
-SGP 2012
 
 # Chapter 6: External libraries [600]
 
@@ -2110,3 +2077,14 @@ Vaxman, Daniele Panozzo, Olga Sorkine-Hornung, SGP 2014
 Fields](http://www.cs.columbia.edu/~keenan/Projects/GloballyOptimalDirectionFields/paper.pdf) Knöppel, Crane, Pinkall, Schröder SIGGRAPH 2013
 [#sorkine_2007]: Olga Sorkine and Marc Alexa, "As-rigid-as-possible Surface
 Modeling." 2007.
+[#panozzo_2014]:[Frame Fields: Anisotropic and Non-Orthogonal Cross
+Fields](http://www.inf.ethz.ch/personal/dpanozzo/papers/frame-fields-2014.pdf),
+Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga Sorkine-Hornung, SIGGRAPH,
+2014
+[#liu_2011]:[General Planar Quadrilateral Mesh Design Using Conjugate Direction
+Field](http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf ) Yang Liu, Weiwei Xu, Jun Wang, Lifeng Zhu, Baining Guo, Falai Chen, Guoping
+Wang SIGGRAPH Asia 2011
+[#bouaziz_2012]:[Shape-Up: Shaping Discrete Geometry with
+Projections](http://lgg.epfl.ch/publications/2012/shapeup.pdf) Sofien Bouaziz,
+Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
+SGP 2012
