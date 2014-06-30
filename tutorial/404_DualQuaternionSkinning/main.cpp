@@ -1,14 +1,10 @@
-#include <igl/colon.h>
-#include <igl/column_to_quats.h>
 #include <igl/directed_edge_orientations.h>
 #include <igl/directed_edge_parents.h>
 #include <igl/forward_kinematics.h>
 #include <igl/PI.h>
-#include <igl/jet.h>
 #include <igl/lbs_matrix.h>
 #include <igl/deform_skeleton.h>
 #include <igl/dqs.h>
-#include <igl/normalize_row_sums.h>
 #include <igl/readDMAT.h>
 #include <igl/readOBJ.h>
 #include <igl/readTGF.h>
@@ -133,6 +129,7 @@ int main(int argc, char *argv[])
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
   viewer.core.is_animating = false;
+  viewer.core.camera_zoom = 2.5;
   viewer.core.animation_max_fps = 30.;
   viewer.launch();
 }
