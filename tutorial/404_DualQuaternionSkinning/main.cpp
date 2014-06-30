@@ -1,22 +1,18 @@
-// Don't use static library for this example because of Mosek complications
-//#define IGL_NO_MOSEK
-#ifdef IGL_NO_MOSEK
-#undef IGL_STATIC_LIBRARY
-#endif
-#include <igl/boundary_conditions.h>
 #include <igl/colon.h>
 #include <igl/column_to_quats.h>
+#include <igl/directed_edge_orientations.h>
 #include <igl/directed_edge_parents.h>
 #include <igl/forward_kinematics.h>
+#include <igl/PI.h>
 #include <igl/jet.h>
 #include <igl/lbs_matrix.h>
 #include <igl/deform_skeleton.h>
+#include <igl/dqs.h>
 #include <igl/normalize_row_sums.h>
 #include <igl/readDMAT.h>
-#include <igl/readMESH.h>
+#include <igl/readOBJ.h>
 #include <igl/readTGF.h>
 #include <igl/viewer/Viewer.h>
-#include <igl/bbw/bbw.h>
 
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
@@ -29,24 +25,31 @@ typedef
   RotationList;
 
 const Eigen::RowVector3d sea_green(70./255.,252./255.,167./255.);
-Eigen::MatrixXd V,W;
+Eigen::MatrixXd V,W,C,U,M;
 Eigen::MatrixXi F,BE;
 Eigen::VectorXi P;
-RotationList pose;
-double anim_t = 1.0;
-double anim_t_dir = -0.03;
+std::vector<RotationList > poses;
+double anim_t = 0.0;
+double anim_t_dir = 0.015;
+bool use_dqs = false;
 
 bool pre_draw(igl::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
-  if(viewer.options.is_animating)
+  if(viewer.core.is_animating)
   {
+    // Find pose interval
+    const int begin = (int)floor(anim_t)%poses.size();
+    const int end = (int)(floor(anim_t)+1)%poses.size();
+    const double t = anim_t - floor(anim_t);
+    //cout<<anim_t<<": "<<begin<<" "<<end<<endl;
+
     // Interpolate pose and identity
-    RotationList anim_pose(pose.size());
-    for(int e = 0;e<pose.size();e++)
+    RotationList anim_pose(poses[begin].size());
+    for(int e = 0;e<poses[begin].size();e++)
     {
-      anim_pose[e] = pose[e].slerp(anim_t,Quaterniond::Identity());
+      anim_pose[e] = poses[begin][e].slerp(t,poses[end][e]);
     }
     // Propogate relative rotations via FK to retrieve absolute transformations
     RotationList vQ;
@@ -63,7 +66,13 @@ bool pre_draw(igl::Viewer & viewer)
         a.matrix().transpose().block(0,0,dim+1,dim);
     }
     // Compute deformation via LBS as matrix multiplication
-    U = M*T;
+    if(use_dqs)
+    {
+      igl::dqs(V,W,vQ,vT,U);
+    }else
+    {
+      U = M*T;
+    }
 
     // Also deform skeleton edges
     MatrixXd CT;
@@ -74,7 +83,6 @@ bool pre_draw(igl::Viewer & viewer)
     viewer.set_edges(CT,BET,sea_green);
     viewer.compute_normals();
     anim_t += anim_t_dir;
-    anim_t_dir *= (anim_t>=1.0 || anim_t<=0.0?-1.0:1.0);
   }
   return false;
 }
@@ -83,8 +91,12 @@ bool key_down(igl::Viewer &viewer, unsigned char key, int mods)
 {
   switch(key)
   {
+    case 'D':
+    case 'd':
+      use_dqs = !use_dqs;
+      break;
     case ' ':
-      viewer.options.is_animating = !viewer.options.is_animating;
+      viewer.core.is_animating = !viewer.core.is_animating;
       break;
   }
 }
@@ -97,23 +109,30 @@ int main(int argc, char *argv[])
   U=V;
   igl::readTGF("../shared/arm.tgf",C,BE);
   // retrieve parents for forward kinematics
-  directed_edge_parents(BE,P);
+  igl::directed_edge_parents(BE,P);
+  RotationList rest_pose;
+  igl::directed_edge_orientations(C,BE,rest_pose);
+  poses.resize(4,RotationList(4,Quaterniond::Identity()));
+  // poses[1] // twist
+  const Quaterniond twist(AngleAxisd(igl::PI,Vector3d(1,0,0)));
+  poses[1][2] = rest_pose[2]*twist*rest_pose[2].conjugate();
+  const Quaterniond bend(AngleAxisd(-igl::PI*0.7,Vector3d(0,0,1)));
+  poses[3][2] = rest_pose[2]*bend*rest_pose[2].conjugate();
+
   igl::readDMAT("../shared/arm-weights.dmat",W);
-  pose_0 identity
-  pose_1 twist
-  pose_2 bend
+  igl::lbs_matrix(V,W,M);
 
   // Plot the mesh with pseudocolors
   igl::Viewer viewer;
   viewer.set_mesh(U, F);
   viewer.set_edges(C,BE,sea_green);
-  viewer.options.show_lines = false;
-  viewer.options.show_overlay_depth = false;
-  viewer.options.line_width = 1;
-  viewer.options.trackball_angle.normalize();
+  viewer.core.show_lines = false;
+  viewer.core.show_overlay_depth = false;
+  viewer.core.line_width = 1;
+  viewer.core.trackball_angle.normalize();
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
-  viewer.options.is_animating = false;
-  viewer.options.animation_max_fps = 30.;
+  viewer.core.is_animating = false;
+  viewer.core.animation_max_fps = 30.;
   viewer.launch();
 }
