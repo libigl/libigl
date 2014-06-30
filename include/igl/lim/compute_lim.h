@@ -28,6 +28,7 @@ namespace igl
   //   maxIteration      max number of iterations
   //   findLocalMinima   iterating until a local minima is found. If not enabled only tolerance must be fulfilled.
   //   enableOutput      (optional) enables the output (#itaration / hessian correction / step size / positional constraints / barrier constraints / deformation energy) (default : true)
+  //   enableBarriers    (optional) enables the non-flip constraints (default = true)
   //   enableAlphaUpdate (optional) enables dynamic alpha weight adjustment (default = true)
   //   beta              (optional) steepness factor of barrier slopes (default: ARAP/LSCM = 0.01, Green = 1)
   //   eps               (optional) smallest valid triangle area (default: 1e-5 * smallest triangle)
@@ -45,6 +46,33 @@ namespace igl
   //  1 : Successful optimization with fulfilled tolerance
   // -1 : Max iteration reached before tolerance was fulfilled
   // -2 : not feasible -> has inverted elements (may want to decrease eps?)
+
+  int compute_lim(
+    Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
+    const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
+    const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
+    const Eigen::SparseMatrix<double>& constraintMatrix,
+    const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
+    int energyType,
+    double tolerance,
+    int maxIteration,
+    bool findLocalMinima);
+
+  int compute_lim(
+    Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
+    const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
+    const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
+    const Eigen::SparseMatrix<double>& constraintMatrix,
+    const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
+    int energyType,
+    double tolerance,
+    int maxIteration,
+    bool findLocalMinima,
+    bool enableOuput,
+    bool enableBarriers,
+    bool enableAlphaUpdate,
+    double beta,
+    double eps);
 
   int compute_lim(
     Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
@@ -72,6 +100,7 @@ namespace igl
     int maxIteration,
     bool findLocalMinima,
     bool enableOuput,
+    bool enableBarriers,
     bool enableAlphaUpdate,
     double beta,
     double eps);
