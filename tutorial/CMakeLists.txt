@@ -38,9 +38,9 @@ add_subdirectory("304_LinearEqualityConstraints")
 add_subdirectory("305_QuadraticProgramming")
 
 # Chapter 4
-add_subdirectory("401_BiharmonicDeformation")
-add_subdirectory("402_PolyharmonicDeformation")
-add_subdirectory("403_BoundedBiharmonicWeights")
+#add_subdirectory("401_BiharmonicDeformation")
+#add_subdirectory("402_PolyharmonicDeformation")
+#add_subdirectory("403_BoundedBiharmonicWeights")
 
 # Chapter 5
 add_subdirectory("501_HarmonicParam")
@@ -67,3 +67,4 @@ add_subdirectory("605_Tetgen")
 if(EMBREE_FOUND)
 add_subdirectory("606_AmbientOcclusion")
 endif(EMBREE_FOUND)
+add_subdirectory("607_LIM")
