@@ -16,7 +16,7 @@ with the performance and versatility of C++.  The tutorial is a self-contained,
 hands-on introduction to libigl.  Via live coding and interactive examples, we
 demonstrate how to accomplish various common geometry processing tasks such as
 computation of differential quantities and operators, real-time deformation,
-global parametrization, numerical optimization and mesh repair.  Each section
+global parametrization, numerical optimization and mesh repair. Each section
 of these lecture notes links to a cross-platform example application.
 
 # Table of Contents
@@ -792,13 +792,13 @@ deformation.
 ### Biharmonic deformation fields
 Now we know that one useful property for a deformation technique is "rest pose
 reproduction": applying no deformation to the handles should apply no
-deformation to the shape. 
+deformation to the shape.
 
 To guarantee this by construction we can work with _deformation fields_ (ie.
 displacements)
-$\mathbf{d}$ rather 
+$\mathbf{d}$ rather
 than directly with positions $\mathbf{x}. Then the deformed positions can be
-recovered as 
+recovered as
 
  $\mathbf{x}' = \mathbf{x}+\mathbf{d}.$
 
@@ -907,7 +907,7 @@ as a constrained optimization problem [#jacobson_2011][]. The weights enforce
 smoothness by minimizing a smoothness energy: the familiar Laplacian energy:
 
  $\sum\limits_{i = 1}^m \int_S (\Delta w_i)^2 dA$
-  
+
 subject to constraints which enforce interpolation of handle constraints:
 
  $w_i(\mathbf{x}) = \begin{cases} 1 & \text{ if } \mathbf{x} \in H_i\\ 0 & \text{ otherwise }
