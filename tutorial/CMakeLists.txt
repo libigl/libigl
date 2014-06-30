@@ -42,6 +42,7 @@ add_subdirectory("401_BiharmonicDeformation")
 add_subdirectory("402_PolyharmonicDeformation")
 add_subdirectory("403_BoundedBiharmonicWeights")
 add_subdirectory("404_DualQuaternionSkinning")
+add_subdirectory("405_AsRigidAsPossible")
 
 # Chapter 5
 add_subdirectory("501_HarmonicParam")
