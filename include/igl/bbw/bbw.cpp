@@ -106,6 +106,7 @@ IGL_INLINE bool igl::bbw(
       {
         //if(data.verbosity >= 1)
         //{
+          cout<<"BBW: max_iter: "<<data.active_set_params.max_iter<<endl;
           cout<<"BBW: max_iter: "<<eff_params.max_iter<<endl;
         //}
         if(data.verbosity >= 1)
