@@ -16,8 +16,9 @@ Eigen::MatrixXi F;
 
 SparseMatrix<double> C;
 Eigen::VectorXd b;
-vector<int> bv; // border vertices (don't need to be defined exept for LSCM)
-Eigen::VectorXd g; // gradients (don't need to be defined execpt for Poisson)
+
+int energyType;
+bool barriersEnabled;
 
 // This function is called every time a keyboard button is pressed
 // keys: 0:Original Mesh / 1:Harmonic / 2:Biharmonic / 3:Green / 4:ARAP
@@ -26,19 +27,30 @@ bool key_down(igl::Viewer& viewer,unsigned char key,int modifier)
   using namespace std;
   using namespace Eigen;
 
-  if(key >= '0' && key <= '4')
+  if(key >= '1' && key <= '5' || key == 'B')
   {
     // compute locally injective map
-    int energy = key - 49;
+    int energy = key - '1';
 
     V1 = V0;
-    if(energy >= 0)
-      igl::compute_lim(V1,V0,F,bv,g,C,b,energy,1e-8,100,true);
+
+    if(key == 'B')
+    {
+      barriersEnabled = !barriersEnabled;
+    }
+    else
+    {
+      if(energy >= 0)
+        energyType = energy;
+    }
+
+    igl::compute_lim(V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
 
     // set mesh
     viewer.set_vertices(V1);
-  }
 
+    return true;
+  }
 
   return false;
 }
@@ -47,6 +59,9 @@ int main(int argc, char *argv[])
 {
   using namespace std;
   using namespace Eigen;
+
+  energyType = 0;
+  barriersEnabled = true;
 
   // load a mesh in OFF format
   igl::readOFF("../shared/grid.off",V0,F);
@@ -85,7 +100,7 @@ int main(int argc, char *argv[])
   b(2*fixedVertices.size()+1) = 0.2;
 
   // compute locally injective map
-  igl::compute_lim(V1,V0,F,bv,g,C,b,0,1e-8,100,true);
+  igl::compute_lim(V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
 
   // Show mesh
   igl::Viewer viewer;

@@ -84,12 +84,13 @@ void FreeLIMData(LIMData* data)
 // vertices          vx3 matrix containing vertex position of the mesh
 // initialVertices   vx3 matrix containing vertex position of initial rest pose mesh
 // elements          exd matrix containing vertex indices of all elements
-// borderVertices    (only needed for 2D LSCM) vector containing indices of border vertices
-// gradients         (only needed for 2D Poisson) vector containing partial derivatives of target element gradients (structure is: [xx_1, xy_1, xx_2, xy_2, ..., xx_v, xy_v, yx_1, yy_1, yx_2, yy_2, ..., yx_v, yy_v]')
+// borderVertices    (optional - only needed for 2D LSCM) vector containing indices of border vertices
+// gradients         (optional - only needed for 2D Poisson) vector containing partial derivatives of target element gradients (structure is: [xx_1, xy_1, xx_2, xy_2, ..., xx_v, xy_v, yx_1, yy_1, yx_2, yy_2, ..., yx_v, yy_v]')
 // constraintMatrix  C: (c)x(v*(d-1)) sparse linear positional constraint matrix. X an Y-coordinates are alternatingly stacked per row (structure for triangles: [x_1, y_1, x_2, y_2, ..., x_v,y_v])
 // constraintTargets d: c vector target positions
 // energyType        type of used energy: 0=Dirichlet,1=Laplacian,2=Green,3=ARAP,4=LSCM,5=Poisson
 // enableOutput      (optional) enables the output (#iteration / hessian correction / step size / positional constraints squared error / barrier constraints energy / deformation energy)
+// enableBarriers    (optional) enables the non-flip constraints (default = true)
 // enableAlphaUpdate (optional) enables dynamic alpha weight adjustment (default = true)
 // beta              (optional) steepness factor of barrier slopes (default: ARAP/LSCM = 0.01, Green = 1)
 // eps               (optional) smallest valid triangle area (default: 1e-5 * smallest triangle)
@@ -113,6 +114,7 @@ LIMData* InitLIM(
   const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
   int energyType,
   bool enableOuput = true,
+  bool enableBarriers = true,
   bool enableAlphaUpdate = true,
   double beta = -1,
   double eps = -1)
@@ -227,6 +229,7 @@ LIMData* InitLIM(
   
   solver->Init(mesh);
 
+  solver->EnableBarriers = enableBarriers;
   if(beta != -1) solver->Beta = beta;
 
   data->mesh = mesh;
@@ -234,6 +237,38 @@ LIMData* InitLIM(
   data->iteration = 0;
 
   return data;
+}
+
+LIMData* InitLIM(
+  Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
+  const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
+  const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
+  const Eigen::SparseMatrix<double>& constraintMatrix,
+  const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
+  int energyType,
+  bool enableOuput = true,
+  bool enableBarriers = true,
+  bool enableAlphaUpdate = true,
+  double beta = -1,
+  double eps = -1)
+{
+  vector<int> borderVertices;
+  Eigen::VectorXd gradients;
+
+  return InitLIM(
+    vertices,
+    initialVertices,
+    elements,
+    borderVertices,
+    gradients,
+    constraintMatrix,
+    constraintTargets,
+    energyType,
+    enableOuput,
+    enableBarriers,
+    enableAlphaUpdate,
+    beta,
+    eps);
 }
 
 //----------------------------------------------------------------------------------------
@@ -247,15 +282,16 @@ LIMData* InitLIM(
 // vertices          vx3 matrix containing vertex position of the mesh
 // initialVertices   vx3 matrix containing vertex position of initial rest pose mesh
 // elements          exd matrix containing vertex indices of all elements
-// borderVertices    (only needed for 2D LSCM) vector containing indices of border vertices
-// gradients         (only needed for 2D Poisson) vector containing partial derivatives of target element gradients (structure is: [xx_1, xy_1, xx_2, xy_2, ..., xx_v, xy_v, yx_1, yy_1, yx_2, yy_2, ..., yx_v, yy_v]')
+// borderVertices    (optional - only needed for 2D LSCM) vector containing indices of border vertices
+// gradients         (optional - only needed for 2D Poisson) vector containing partial derivatives of target element gradients (structure is: [xx_1, xy_1, xx_2, xy_2, ..., xx_v, xy_v, yx_1, yy_1, yx_2, yy_2, ..., yx_v, yy_v]')
 // constraintMatrix  C: (c)x(v*(d-1)) sparse linear positional constraint matrix. X an Y-coordinates are alternatingly stacked per row (structure for triangles: [x_1, y_1, x_2, y_2, ..., x_v,y_v])
 // constraintTargets d: c vector target positions
 // energyType        type of used energy: 0=Dirichlet,1=Laplacian,2=Green,3=ARAP,4=LSCM
 // tolerance         max squared positional constraints error
 // maxIteration      max number of iterations
-// findLocalMinima   iterating until a local minima is found. If not enabled only tolerance must be fulfilled.
+// findLocalMinima   iterating until a local minima is found. If not enabled only tolerance must be fulfilled
 // enableOutput      (optional) enables the output (#itaration / hessian correction / step size / positional constraints / barrier constraints / deformation energy) (default : true)
+// enableBarriers    (optional) enables the non-flip constraints (default = true)
 // enableAlphaUpdate (optional) enables dynamic alpha weight adjustment (default = true)
 // beta              (optional) steepness factor of barrier slopes (default: ARAP/LSCM = 0.01, Green = 1)
 // eps               (optional) smallest valid triangle area (default: 1e-5 * smallest triangle)
@@ -287,11 +323,12 @@ int ComputeLIM(
   int maxIteration,
   bool findLocalMinima,
   bool enableOuput = true,
+  bool enableBarriers = true,
   bool enableAlphaUpdate = true,
   double beta = -1,
   double eps = -1)
 {
-  LIMData* data = InitLIM(vertices, initialVertices, elements, borderVertices, gradients, constraintMatrix, constraintTargets, energyType, enableOuput, enableAlphaUpdate, beta, eps);
+  LIMData* data = InitLIM(vertices, initialVertices, elements, borderVertices, gradients, constraintMatrix, constraintTargets, energyType, enableOuput, enableBarriers, enableAlphaUpdate, beta, eps);
 
   int result = 0;
   while(result == 0)
@@ -325,6 +362,44 @@ int ComputeLIM(
   FreeLIMData(data);
 
   return result;
+}
+
+int ComputeLIM(
+  Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
+  const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
+  const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
+  const Eigen::SparseMatrix<double>& constraintMatrix,
+  const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
+  int energyType,
+  double tolerance,
+  int maxIteration,
+  bool findLocalMinima,
+  bool enableOuput = true,
+  bool enableBarriers = true,
+  bool enableAlphaUpdate = true,
+  double beta = -1,
+  double eps = -1)
+{
+  vector<int> borderVertices;
+  Eigen::VectorXd gradients;
+
+  return ComputeLIM(
+    vertices,
+    initialVertices,
+    elements,
+    borderVertices,
+    gradients,
+    constraintMatrix,
+    constraintTargets,
+    energyType,
+    tolerance,
+    maxIteration,
+    findLocalMinima,
+    enableOuput,
+    enableBarriers,
+    enableAlphaUpdate,
+    beta,
+    eps);
 }
 
 //----------------------------------------------------------------------------------------
