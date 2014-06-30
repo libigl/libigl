@@ -47,9 +47,9 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
       F_temp.row(i*4+3) << (i*4)+1, (i*4)+2, (i*4)+3;
     }
 
-    viewer.clear_mesh();
+    viewer.clear();
     viewer.set_mesh(V_temp,F_temp);
-    viewer.options.face_based = true;
+    viewer.set_face_based(true);
   }
 
 

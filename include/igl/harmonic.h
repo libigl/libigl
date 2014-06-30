@@ -23,13 +23,19 @@ namespace igl
   // Outputs:
   //   W  #V by #W list of weights
   //
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename Derivedb,
+    typename Derivedbc,
+    typename DerivedW>
   IGL_INLINE bool harmonic(
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & F,
-    const Eigen::VectorXi & b,
-    const Eigen::MatrixXd & bc,
+    const Eigen::PlainObjectBase<DerivedV> & V,
+    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::PlainObjectBase<Derivedb> & b,
+    const Eigen::PlainObjectBase<Derivedbc> & bc,
     const int k,
-    Eigen::MatrixXd & W);
+    Eigen::PlainObjectBase<DerivedW> & W);
 };
 #ifndef IGL_STATIC_LIBRARY
 #include "harmonic.cpp"

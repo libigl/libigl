@@ -13,7 +13,7 @@ IF (WIN32)
     ELSE( CMAKE_SIZEOF_VOID_P EQUAL 8 )
       SET( BITS "" )
     ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-	
+
 	FIND_PATH( ANT_TWEAK_BAR_INCLUDE_DIR AntTweakBar.h
       PATHS
 		${PROJECT_SOURCE_DIR}/../../external/AntTweakBar/include

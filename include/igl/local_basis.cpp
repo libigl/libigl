@@ -38,7 +38,7 @@ IGL_INLINE void igl::local_basis(
       Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v2 = v1.cross(v3).normalized();
 
       B1.row(i) = v1;
-      B2.row(i) = v2;
+      B2.row(i) = -v2;
       B3.row(i) = v3;
   }
 }

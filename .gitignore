@@ -1,6 +1,6 @@
 # use glob syntax.
-scripts/change_name.sh
 syntax: glob
+scripts/change_name.sh
 *.o
 *.a
 *.dylib
@@ -62,5 +62,6 @@ tutorial/readme.html
 tutorial/*/build/*
 tutorial/*/Makefile
 external/glew/build
+external/glfw/build
 *buildXcode*
 tutorial/build*

@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 
   // constraint targets
   b.resize(2*fixedVertices.size()+2);
- 
+
   for(int i=0;i<fixedVertices.size();i++)
   {
     b(2*i) = V0.row(fixedVertices[i])[0];
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
   igl::Viewer viewer;
   viewer.callback_key_down = &key_down;
   viewer.set_mesh(V1, F);
-  viewer.options.show_lines = true;
-  viewer.options.lighting_factor = 0.0f;
+  viewer.core.show_lines = true;
+  viewer.core.lighting_factor = 0.0f;
   viewer.launch();
 }

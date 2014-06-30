@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
   // Plot the mesh
   igl::Viewer viewer;
   viewer.callback_key_down = &key_down;
-  viewer.options.show_lines = false;
+  viewer.core.show_lines = false;
   viewer.set_mesh(V, F);
   viewer.set_normals(N_vertices);
   viewer.launch();
