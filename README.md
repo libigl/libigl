@@ -12,6 +12,10 @@ a single function.  The function may have multiple prototypes. All functions
 should use the igl namespace and should adhere to the conventions and styles
 listed below. 
 
+> **New:** As of 1 July 2014, we have release our libigl beta version 1.0. There are a
+> number of changes we collected for this release to minimize confusion and
+> changes to how you use libigl. See [Version 1.0 Changes][version1.0changes].
+
 ## Dependencies ##
 - Eigen3  Last tested with Eigen Version 3.2
 
@@ -39,7 +43,7 @@ listed below.
 ## Header only ##
 libigl is designed to work "out-of-the-box" as a headers only library. To
 include libigl in your project. You need only include the libigl/include/
-directory in your include path and define the `IGL_HEADER_ONLY` macro. To 
+directory in your include path. To 
 compile a hello-word example.cpp:
 
     #include <Eigen/Dense>
@@ -61,7 +65,7 @@ compile a hello-word example.cpp:
 
 using gcc (replacing appropriate paths):
 
-    g++ -DIGL_HEADER_ONLY -I/usr/local/igl/libigl/include \
+    g++ -I/usr/local/igl/libigl/include \
       -I/opt/local/include/eigen3 example.cpp -o example
 
 Then run this example with:
@@ -254,7 +258,75 @@ See `LICENSE.txt`
 ## Zipping ##
 Zip this directory without .git litter and binaries using:
 
-    git archive —prefix=libigl/ -o libigl.zip master
+    git archive -prefix=libigl/ -o libigl.zip master
+
+## Version 1.0 Changes ##
+Our beta release marks our confidence that this library can be used outside of
+casual experimenting. To maintain order, we have made a few changes which
+current users should read and adapt their code accordingly.
+
+### Renamed functions ###
+The following table lists functions which have changed name as of version
+1.0.0:
+
+ Old | --> | New 
+ ----|-|----
+ `igl::add_barycenter`| |`igl::false_barycentric_subdivision`
+ `igl::areamatrix`| |`igl::vector_area_matrix`
+ `igl::barycentric2global`| |`igl::barycentric_to_global`
+ `igl::boundary_faces`| |`igl::boundary_facets`
+ `igl::boundary_vertices_sorted`| |`igl::boundary_loop`
+ `igl::cotangent`| |`igl::cotmatrix_entries`
+ `igl::edgetopology`| |`igl::edge_topology`
+ `igl::gradMat`| |`igl::grad`
+ `igl::is_manifold`| |`igl::is_edge_manifold`
+ `igl::mexStream`| |`igl::MexStream`
+ `igl::moveFV`| |`igl::average_onto_vertices`
+ `igl::moveVF`| |`igl::average_onto_faces`
+ `igl::plot_vector`| |`igl::print_vector`
+ `igl::pos`| |`igl::HalfEdgeIterator`
+ `igl::plane_project`| |`igl::project_isometrically_to_plane`
+ `igl::project_points_mesh`| |`igl::line_mesh_intersection`
+ `igl::read`| |`igl::read_triangle_mesh`
+ `igl::removeDuplicates.cpp`| |`igl::remove_duplicates`
+ `igl::removeUnreferenced`| |`igl::remove_unreferenced`
+ `igl::tt`| |`igl::triangle_triangle_adjacency`
+ `igl::vf`| |`igl::vertex_triangle_adjacency`
+ `igl::write`| |`igl::write_triangle_mesh`
+ `igl::manifold_patches`| |`igl::orientable_patches`
+ `igl::selfintersect`| |`igl::remesh_self_intersections`
+ `igl::project_mesh`| |`igl::line_mesh_intersection`
+ `igl::triangulate`| |`igl::polygon_mesh_to_triangle_mesh`
+ `igl::is_manifold`| |`igl::is_edge_manifold`
+ `igl::triangle_wrapper`| |`igl::triangulate`
+
+### Miscellaneous ###
+ - To match interfaces provided by (all) other quadratic optimization
+   libraries, `igl::min_quad_with_fixed` and `igl::active_set` now expect as
+   input twice the quadratic coefficients matrix, i.e. the Hessian. For
+   example, `igl::min_quad_with_fixed(H,B,...)` minimizes $\frac{1}{2}x^T H
+   x+x^T B$.
+ - We have inverted the `IGL_HEADER_ONLY` macro to `IGL_STATIC_LIBRARY`. To
+   compile using libigl as a header-only library, simply include headers and
+   libigl in the header search path. To link to libigl, you must define the
+   `IGL_STATIC_LIBRARY` macro at compile time and link to the `libigl*.a`
+   libraries.
+ - Building libigl as a static library is now more organized. There is a
+   `build/` directory with Makefiles for the main library (`Makefile`) and each
+   dependency (e.g. `Makefile_mosek` for `libiglmosek.a`)
+ - `igl::polar_svd` now always returns a rotation in `R`, never a reflection.
+   This mirrors the behavior of `igl::polar_svd3x3`.  Consequently the `T`
+   part may have negative skews.
+ - We have organized the static
+ - The previous `igl::grad` function, which computed the per-triangle gradient
+   of a per-vertex scalar function has been replaced. Now `igl::grad` computes
+   the linear operator (previous computed using `igl::gradMat`). The gradient
+   values can still be recovered by multiplying the operator against the scalar
+   field as a vector and reshaping to have gradients per row.
+ - `MASSMATRIX_*` has become `MASSMATRIX_TYPE_*`
+ - The function `igl::project_normals`, which cast a line for each vertex of
+   mesh _A_ in the normal direction and found the closest intersection along
+   these lines with mesh _B_, has been removed.
 
 ## Contact ##
 libigl is a group endeavor led by Alec Jacobson and Daniele Panozzo. Please

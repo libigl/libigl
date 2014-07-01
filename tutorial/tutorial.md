@@ -1,5 +1,5 @@
 title: libigl Tutorial
-author: Daniele Panozzo, Alec Jacobson and others
+author: Daniele Panozzo and Alec Jacobson
 date: 20 June 2014
 css: style.css
 html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
@@ -7,7 +7,12 @@ html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathja
 <script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 
-# libigl Tutorial notes
+> Warning: This tutorial has been prepared for the static material accompanying
+> SGP Grad School 2014. Please find our up-to-date tutorial notes at
+> https://github.com/libigl/libigl/tutorial/tutorial.md
+
+
+# libigl tutorial notes
 Libigl is an open source C++ library for geometry processing research and
 development.  Dropping the heavy data structures of tradition geometry
 libraries, libigl is a simple header-only library of encapsulated functions.
@@ -19,7 +24,7 @@ computation of differential quantities and operators, real-time deformation,
 global parametrization, numerical optimization and mesh repair.  Each section
 of these lecture notes links to a cross-platform example application.
 
-# Table of Contents
+# Table of contents
 
 * [Chapter 1: Introduction to libigl][100]
     * [101 Mesh representation][101]
@@ -57,6 +62,7 @@ of these lecture notes links to a cross-platform example application.
     * [405 As-rigid-as-possible](#as-rigid-as-possible)
     * [406 Fast automatic skinning
       transformations](#fastautomaticskinningtransformations)
+        * [ARAP with grouped edge-sets]
 
 * [Chapter 5: Parametrization][500]
     * [501 Harmonic parametrization][501]
@@ -71,8 +77,8 @@ of these lecture notes links to a cross-platform example application.
 
 * [Chapter 6: External libraries][600]
     * [601 State serialization][601]
-    * [602 Mixing matlab code][602]
-    * [603 Calling igl functions from matlab][603]
+    * [602 Mixing Matlab code][602]
+    * [603 Calling libigl functions from Matlab][603]
     * [604 Triangulation of closed polygons][604]
     * [605 Tetrahedralization of closed surfaces][605]
     * [606 Baking ambient occlusion][606]
@@ -99,7 +105,7 @@ git clone https://github.com/libigl/libigl.git
 ```
 
 All the examples depends on [glfw](http://www.glfw.org),
-[glew](http://glew.sourceforge.net) and [anttweakbar](http://anttweakbar.sourceforge.net/doc/).
+[glew](http://glew.sourceforge.net) and [AntTweakBar](http://anttweakbar.sourceforge.net/doc/).
 The source code of each library is bundled with libigl
 and they can be precompiled using:
 
@@ -430,7 +436,7 @@ specified dihedral angle (e.g. 20°).
 ![The `Normals` example computes per-face (left), per-vertex (middle) and
 per-corner (right) normals](images/fandisk-normals.jpg)
 
-## Gaussian Curvature
+## Gaussian curvature
 Gaussian curvature on a continuous surface is defined as the product of the
 principal curvatures:
 
@@ -458,7 +464,7 @@ elliptic, hyperbolic and parabolic vertices on the domain.
 ![The `GaussianCurvature` example computes discrete Gaussian curvature and
 visualizes it in pseudocolor.](images/bumpy-gaussian-curvature.jpg)
 
-## Curvature Directions
+## Curvature directions
 The two principal curvatures $(k_1,k_2)$ at a point on a surface measure how
 much the surface bends in different directions. The directions of maximum and
 minimum (signed) bending are call principal directions and are always
@@ -663,7 +669,7 @@ since the Laplacian is the divergence of gradient. Naturally, $\mathbf{G}^T$ is
 $n \times md$ sparse matrix which takes vector values stored at triangle faces
 to scalar divergence values at vertices.
 
-# Chapter 3: Matrices and Linear Algebra
+# Chapter 3: Matrices and linear algebra
 Libigl relies heavily on the Eigen library for dense and sparse linear algebra
 routines. Besides geometry processing routines, libigl has a few linear algebra
 routines which bootstrap Eigen and make Eigen feel even more like a high-level
@@ -672,7 +678,7 @@ algebra library like Matlab.
 ## Slice
 A very familiar and powerful routine in Matlab is array slicing. This allows
 reading from or writing to a possibly non-contiguous sub-matrix. Let's consider
-the matlab code:
+the Matlab code:
 
 ```matlab
 B = A(R,C);
@@ -693,7 +699,7 @@ igl::slice(A,R,C,B);
 
 `A` and `B` could also be sparse matrices.
 
-Similarly, consider the matlab code:
+Similarly, consider the Matlab code:
 
 ```matlab
 A(R,C) = B;
@@ -730,7 +736,7 @@ This same functionality is supported in libigl:
 igl::sort(X,1,true,Y,I);
 ```
 
-Similarly, sorting entire rows can be accomplished in matlab using:
+Similarly, sorting entire rows can be accomplished in Matlab using:
 
 ```matlab
 [Y,I] = sortrows(X,'ascend');
@@ -755,7 +761,7 @@ order.](images/decimated-knight-sort-color.jpg)
 
 ### Other Matlab-style functions
 Libigl implements a variety of other routines with the same api and
-functionality as common matlab functions.
+functionality as common Matlab functions.
 
 - `igl::any_of` Whether any elements are non-zero (true)
 - `igl::cat` Concatenate two matrices (especially useful for dealing with Eigen
@@ -778,7 +784,7 @@ functionality as common matlab functions.
 - `igl::setdiff` Set difference of matrix elements
 - `igl::speye` Identity as sparse matrix
 
-## Laplace Equation
+## Laplace equation
 A common linear system in geometry processing is the Laplace equation:
 
  $∆z = 0$
@@ -909,7 +915,7 @@ igl::min_quad_with_fixed_solve(mqwf,B,bc,Beq,Z);
 The output `Z` is a $n \times 1$ vector of solutions with fixed values
 correctly placed to match the mesh vertices `V`.
 
-## Linear Equality Constraints
+## Linear equality constraints
 We saw above that `min_quad_with_fixed_*` in libigl provides a compact way to
 solve general quadratic programs. Let's consider another example, this time
 with active linear equality constraints. Specifically let's solve the
@@ -985,7 +991,7 @@ constraints (left: 1 and -1 on the left hand and foot respectively), then
 solves with an additional linear equality constraint (right: points on right
 hand and foot constrained to be equal).](images/cheburashka-biharmonic-leq.jpg)
 
-## Quadratic Programming
+## Quadratic programming
 
 We can generalize the quadratic optimization in the previous section even more
 by allowing inequality constraints. Specifically box constraints (lower and
@@ -1031,7 +1037,7 @@ igl::active_set(Q,B,b,bc,Aeq,Beq,Aieq,Bieq,lx,ux,as,Z);
 discrete biharmonic kernels at multiple scales
 [#rustamov_2011][].](images/cheburashka-multiscale-biharmonic-kernels.jpg)
 
-# Chapter 4: Shape Deformation
+# Chapter 4: Shape deformation
 Modern mesh-based shape deformation methods satisfy user deformation
 constraints at handles (selected vertices or regions on the mesh) and propagate
 these handle deformations to the rest of shape _smoothly_ and _without removing
@@ -1040,7 +1046,7 @@ state-of-the-art deformation techniques, ranging from quadratic mesh-based
 energy minimizers, to skinning methods, to non-linear elasticity-inspired
 techniques.
 
-## Biharmonic Deformation
+## Biharmonic deformation
 The period of research between 2000 and 2010 produced a collection of
 techniques that cast the problem of handle-based shape deformation as a
 quadratic energy minimization problem or equivalently the solution to a linear
@@ -1162,7 +1168,7 @@ igl::harmonic(V,F,b,bc,k,Z);
 ![The `PolyharmonicDeformation` example deforms a flat domain (left) into a bump as a
 solution to various $k$-harmonic PDEs.](images/bump-k-harmonic.jpg)
 
-## Bounded Biharmonic Weights
+## Bounded biharmonic weights
 In computer animation, shape deformation is often referred to as "skinning".
 Constraints are posed as relative rotations of internal rigid "bones" inside a
 character. The deformation method, or skinning method, determines how the
@@ -1225,7 +1231,7 @@ set solver or by calling out to Mosek.
 mesh given a skeleton (top) and then animates a linear blend skinning
 deformation (bottom).](images/hand-bbw.jpg)
 
-## Dual Quaternion Skinning
+## Dual quaternion skinning
 Even with high quality weights, linear blend skinning is limited. In
 particular, it suffers from known artifacts stemming from blending rotations as
 as matrices: a weight combination of rotation matrices is not necessarily a
@@ -1380,30 +1386,118 @@ elastic material](images/decimated-knight-arap.jpg)
 This concept of local rigidity will be revisited shortly in the context of
 surface parameterization.
 
-## Fast Automatic Skinning Transformations
+## Fast automatic skinning transformations
 
-- Can be seen as fast, subspace optimization for ARAP,
+Non-linear optimization is, unsurprisingly, slower than its linear cousins. In
+the case of the as-rigid-as-possible optimization, the bottleneck is typically
+the large number of polar decompositions necessary to recover best fit
+rotations for each edge-set (i.e. for each triangle, tetrahedron, or vertex
+cell). Even if this code is optimized, the number of primary degrees of freedom
+is tied to the discretization level, despite the deformations' low frequency
+behavior.
 
-- Or as a automatic method to find the best skinning transformation degrees of freedom
+This invites two routes toward fast non-linear optimization. First, is it
+necessary (or even advantageous) to find so many best-fit rotations? Second,
+can we reduce the degrees of freedom to better reflect the frequency of the
+desired deformations.
 
-Optimization in two steps:
+Taken in turn, these optimizations culminate in a method which optimizes over
+the space of linear blend skinning deformations spanned by high-quality weights
+(i.e. manually painted ones or bounded biharmonic weights). This space is a
+low-dimensional subspace of all possible mesh deformations, captured by writing
+linear blend skinning in matrix form:
 
-- subspace
+ $\mathbf{X}' = \mathbf{M}\mathbf{T}$
 
-- grouping
+where the mesh vertex positions in the $n \times 3$ matrix $\mathbf{X}'$ are
+replaced by a linear combination of a small number of degrees of freedom in the
+$(3+1)m \times 3$ stack of transposed "handle" transformations. Swapping in
+$\mathbf{M}\mathbf{T}$ for $\mathbf{X}'$ in the ARAP energies above immediately
+sees performance gains during the global solve step as $m << n$.
+
+The complexity of the local step---fitting rotations---is still bound
+to the original mesh discretization. However, if the skinning is well behaved,
+we can make the assumption that places on the shape with similar skinning
+weights will deform similarly and thus imply similar best-fit rotations.
+Therefor, we cluster edge-sets according to their representation in
+_weight-space_: where a vertex $\mathbf{x}$ takes the coordinates
+$[w_1(\mathbf{x}),w_2(\mathbf{x}),\dots,w_m(\mathbf{x})]$. The number of
+clustered edge-sets show diminishing returns on the deformation quality so we
+may choose a small number of clusters, proportional to the number of skinning
+weight functions (rather than the number of discrete mesh vertices).
+
+This proposed deformation model [#jacobson_2012][], can simultaneously be seen as a
+fast, subspace optimization for ARAP and as an automatic method for finding
+_the best_ skinning transformation degrees of freedom.
+
+A variety of user interfaces are supported via linear equality constraints on
+the skinning transformations associated with handles. To fix a transformation
+entirely we simply add the constraint:
+
+ $\left(\begin{array}{cccc}
+ 1 & 0 & 0 & 0\\
+ 0 & 1 & 0 & 0\\
+ 0 & 0 & 1 & 0\\
+ 0 & 0 & 0 & 1\end{array}\right)
+ \mathbf{T}_i^T = \hat{\mathbf{T}}_i^T,$
+
+where $\hat{\mathbf{T}}_i^T$ is the $(3+1) \times 3$ transposed fixed
+transformation for handle $i$.
+
+To fix only the origin of a handle, we add a constraint requiring the
+transformation to interpolate a point in space (typically the centroid of all
+points with $w_i = 1$:
+
+ $\mathbf{c}'^T\mathbf{T}_i^T = \mathbf{c}^T,$
+
+where $\mathbf{c}^T$ is the $1 \times (3+1)$ position of the point at rest in
+transposed homogeneous coordinates, and $\mathbf{c}'^T$ the point given by the
+user.
+
+We can similarly fix just the linear part of the transformation at a handle,
+freeing the translation component (producing a "chickenhead" effect):
+
+ $\left(\begin{array}{cccc}
+ 1&0&0&0\\
+ 0&1&0&0\\
+ 0&0&1&0\end{array}\right)
+ \mathbf{T}_i^T = \hat{\mathbf{L}}_i^T,$
+
+where $\hat{\mathbf{L}}_i^T$ is the fixed $3 \times 3$ linear part of the
+transformation at handle $i$.
+
+And lastly we can allow the user to entirely _free_ the transformation's
+degrees of freedom, delegating the optimization to find the best possible
+values for all elements. To do this, we simply abstain from adding a
+corresponding constraint.
 
 ### ARAP with grouped edge-sets
 
+Being a subspace method, an immediate disadvantage is the reduced degrees of
+freedom. This brings performance, but in some situations limits behavior too
+much. In such cases one can use the skinning subspace to build an effective
+clustering of rotation edge-sets for a traditional ARAP optimization: forgoing
+the subspace substitution. This has an two-fold effect. The cost of the
+rotation fitting, local step drastically reduces, and the deformations are
+"regularized" according the clusters. At a vague, high level, if the clusters
+are derived from skinning weights, then they will discourage bending,
+especially along isolines of the weight functions.
+
+In this light, we can few the "spokes+rims" style surface ARAP as a (slight and
+redundant) clustering of the per-triangle edge-sets.
+
 ![The example `FastAutomaticSkinningTransformations` compares a full (slow)
-ARAP deformation on a detailed shape (left of middle), to ARAP with grouped rotation edge sets
-(right of middle), to the very fast subpsace method
+ARAP deformation on a detailed shape (left of middle), to ARAP with grouped
+rotation edge sets (right of middle), to the very fast subpsace method
 (right).](images/armadillo-fast.jpg)
 
 # Chapter 5: Parametrization [500]
 
 In computer graphics, we denote as surface parametrization a map from the
 surface to \\(\mathbf{R}^2\\). It is usually encoded by a new set of 2D
-coordinates for each vertex of the mesh (and possibly also by a new set of faces in one to one correspondence with the faces of the original surface). Note that
+coordinates for each vertex of the mesh (and possibly also by a new set of
+faces in one to one correspondence with the faces of the original surface).
+Note that
 this definition is the *inverse* of the classical differential geometry
 definition.
 
@@ -1463,9 +1557,11 @@ mesh ([Example 501](501_HarmonicParam/main.cpp)).
 mesh with texture, (right) UV parametrization with
 texture](images/501_HarmonicParam.png)
 
-## Least-Square Conformal Maps [502]
+## Least squares conformal maps [502]
 
-Least-square conformal maps parametrization [#levy_2002][] minimizes the conformal (angular) distortion of the parametrization. Differently from harmonic parametrization, it does not need to have a fixed boundary.
+Least squares conformal maps parametrization [#levy_2002][] minimizes the
+conformal (angular) distortion of the parametrization. Differently from
+harmonic parametrization, it does not need to have a fixed boundary.
 
 LSCM minimizes the following energy:
 
@@ -1511,29 +1607,34 @@ vertices to two arbitrary positions. The full source code is provided in [Exampl
 ![([Example 502](502_LSCMParam/main.cpp)) LSCM parametrization. (left) mesh
 with texture, (right) UV parametrization](images/502_LSCMParam.png)
 
-## As-Rigid-As-Possible parametrization [503]
+## As-rigid-as-possible parametrization [503]
 
-As-Rigid-As-Possible parametrization [#liu_2008][] is a powerful single-patch, non-linear
-algorithm to compute a parametrization that strives to preserve distances (and
-thus angles). The idea is very similar to ARAP surface deformation: each
-triangle is mapped to the plane trying to preserve its original shape, up to a
-rigid rotation.
+As-rigid-as-possible parametrization [#liu_2008][] is a powerful single-patch,
+non-linear algorithm to compute a parametrization that strives to preserve
+distances (and thus angles). The idea is very similar to ARAP surface
+deformation: each triangle is mapped to the plane trying to preserve its
+original shape, up to a rigid rotation.
 
 The algorithm can be implemented reusing the functions discussed in the
-deformation chapter: `igl::arap_precomputation` and `igl::arap_solve`. The only difference is that the optimization has to be done in 2D instead of 3D and that we need to compute a starting point. While for 3D deformation
-the optimization is bootstrapped with the original mesh, this is not the case for ARAP parametrization since the starting point must be a 2D mesh. In [Example
-503](503_ARAPParam/main.cpp), we initialize the optimization with harmonic parametrization. Similarly to LSCM, the boundary is free to deform to minimize the distortion.
+deformation chapter: `igl::arap_precomputation` and `igl::arap_solve`. The only
+difference is that the optimization has to be done in 2D instead of 3D and that
+we need to compute a starting point. While for 3D deformation the optimization
+is bootstrapped with the original mesh, this is not the case for ARAP
+parametrization since the starting point must be a 2D mesh. In [Example
+503](503_ARAPParam/main.cpp), we initialize the optimization with harmonic
+parametrization. Similarly to LSCM, the boundary is free to deform to minimize
+the distortion.
 
 ![([Example 503](502_ARAPParam/main.cpp)) As-Rigid-As-Possible parametrization.
 (left) mesh with texture, (right) UV parametrization with
 texture](images/503_ARAPParam.png)
 
-## N-Rotationally symmetric tangent fields [504]
+## N-rotationally symmetric tangent fields [504]
 
 The design of tangent fields is a basic tool used to design guidance fields for
-uniform quadrilateral and hexaedral remeshing. libigl contains an
-implementation of all the state-of-the-art algorithms to design N-RoSy
-fields and their generalizations.
+uniform quadrilateral and hexahedral remeshing. libigl contains an
+implementation of all the state-of-the-art algorithms to design N-RoSy fields
+and their generalizations.
 
 In libigl, tangent unit-length vector fields are piece-wise constant on the
 faces of a triangle mesh, and they are described by one or more vectors per-face. The function
@@ -1543,70 +1644,90 @@ igl::nrosy(V,F,b,bc,b_soft,b_soft_weight,bc_soft,N,0.5,
            output_field,output_singularities);
 ```
 
-creates a smooth unit-length vector field (N=1) starting from a sparse set of constrained faces, whose indices are listed in b and their constrained value is specified in bc. The functions supports soft_constraints (b_soft, b_soft_weight, bc_soft), and returns the interpolated field for each face of the triangle mesh (output_field), plus the singularities of the field (output_singularities).
+creates a smooth unit-length vector field (N=1) starting from a sparse set of
+constrained faces, whose indices are listed in b and their constrained value is
+specified in bc. The functions supports soft_constraints (b_soft,
+b_soft_weight, bc_soft), and returns the interpolated field for each face of
+the triangle mesh (output_field), plus the singularities of the field
+(output_singularities).
 
-![Design of a unit-lenght vector field](images/504_vector_field.png)
+![Design of a unit-length vector field](images/504_vector_field.png)
 
-The singularities are vertices where the field vanishes (highlighted in red in the figure above). `igl::nrosy` can also generate N-RoSy fields [#levy_2008][], which are a generalization of vector fields where in every face the vector is defined up to a constant rotation of \\( 2\pi / N \\). As can be observed in the
-following figure, the singularities of the fields generated with different N are of different types and they appear in different positions.
+The singularities are vertices where the field vanishes (highlighted in red in
+the figure above). `igl::nrosy` can also generate N-RoSy fields [#levy_2008][],
+which are a generalization of vector fields where in every face the vector is
+defined up to a constant rotation of \\( 2\pi / N \\). As can be observed in
+the following figure, the singularities of the fields generated with different
+N are of different types and they appear in different positions.
 
 ![Design of a 2-,4- and 9-RoSy field](images/504_nrosy_field.png)
 
 We demonstrate how to call and plot N-RoSy fields in [Example
-504](504_NRosyDesign/main.cpp), where the degree of the field can be change pressing the number keys. `igl::nrosy` implements the algorithm proposed in
-[#bommes_2009][]. N-RoSy fields can also be interpolated with the algorithm proposed in [#knoppel_2013][], see Section [507] for more details ([igl::n_polyvector](../include/igl/n_polyvector.h)).
+504](504_NRosyDesign/main.cpp), where the degree of the field can be change
+pressing the number keys. `igl::nrosy` implements the algorithm proposed in
+[#bommes_2009][]. N-RoSy fields can also be interpolated with the algorithm
+proposed in [#knoppel_2013][], see Section [507] for more details
+([igl::n_polyvector](../include/igl/n_polyvector.h)).
 
 ### Global, seamless integer-grid parametrization [505]
 
-The previous parametrization methods were focusing on creating
-parametrizations of surface patches aimed at texture mapping or baking
-of other surface properties such as normals and high-frequency details. Global,
-seamless parametrization aims at parametrizing complex shapes with a
-parametrization that is aligned with a given set of directions for the purpose
-of surface remeshing. In libigl, we provide a reference  implementation of
-the pipeline proposed in the mixed integer quadrangulation paper [#bommes_2009][].
+The previous parametrization methods were focusing on creating parametrizations
+of surface patches aimed at texture mapping or baking of other surface
+properties such as normals and high-frequency details. Global, seamless
+parametrization aims at parametrizing complex shapes with a parametrization
+that is aligned with a given set of directions for the purpose of surface
+remeshing. In libigl, we provide a reference  implementation of the pipeline
+proposed in the mixed integer quadrangulation paper [#bommes_2009][].
 
 The first step involves the design of a 4-RoSy field (sometimes called *cross*
-field) that describes the alignment of the edges of the desired quadrilateral remeshing. The field constraints are usually manually specified or extracted from the principal curvature directions. In [[Example 506](506_FrameField/main.cpp)], we simply fix one face in a random direction.
+field) that describes the alignment of the edges of the desired quadrilateral
+remeshing. The field constraints are usually manually specified or extracted
+from the principal curvature directions. In [[Example
+506](506_FrameField/main.cpp)], we simply fix one face in a random direction.
 
 ![Initial cross field prescribing the edge alignment.](images/505_MIQ_1.png)
 
 ### Combing and cutting
 
 Given the cross field, we now want to cut the surface so that it becomes
-homeorphic to a disk. While this could be done directly on the cross-field, we
-opt to perform this operation on its bisector field (a copy of the field rotated
-by 45 degrees) since it is more stable and generic. Working on the bisectors allow us to take as input generalized, non-orthogonal and non-unit lenght cross fields.
+homeomorphic to a disk. While this could be done directly on the cross-field, we
+opt to perform this operation on its bisector field (a copy of the field
+rotated by 45 degrees) since it is more stable and generic. Working on the
+bisectors allow us to take as input generalized, non-orthogonal and non-unit
+length cross fields.
 
 We thus rotate the field,
 
 ![Bisector field.](images/505_MIQ_2.png)
 
 and we remove the rotation ambiguity by assigning to each face a u and a v
-direction. The assignment is done with a breadth-first search starting from a random face.
+direction. The assignment is done with a breadth-first search starting from a
+random face.
 
 ![Combed bisector field.](images/505_MIQ_3.png)
 
 You can imagine this process as combing an hairy surface: you will be able to
 comb part of it, but at some point you will not be able to consistently comb
 the entire surface ([Hairy ball
-theorem](http://en.wikipedia.org/wiki/Hairy_ball_theorem)). The discontinuites
+theorem](http://en.wikipedia.org/wiki/Hairy_ball_theorem)). The discontinuities
 in the combing define the cut graph:
 
 ![Cut graph.](images/505_MIQ_4.png)
 
-Finally, we rotate the combed field by 45 degrees to undo the initial
-degrees rotation:
+Finally, we rotate the combed field by 45 degrees to undo the initial degrees
+rotation:
 
 ![Combed cross field.](images/505_MIQ_5.png)
 
-The combed cross field can be seen as the ideal Jacobian of the parametrization that will be computed in the next section.
+The combed cross field can be seen as the ideal Jacobian of the parametrization
+that will be computed in the next section.
 
 ### Poisson parametrization
 
-The mesh is cut along the seams and a parametrization is computed
-trying to find two scalar functions whose gradient matches the combed cross
-field directions. This is a classical Poisson problem, that is solved minimizing the following quadratic energy:
+The mesh is cut along the seams and a parametrization is computed trying to
+find two scalar functions whose gradient matches the combed cross field
+directions. This is a classical Poisson problem, that is solved minimizing the
+following quadratic energy:
 
 \\[ E(\mathbf{u},\mathbf{v}) = |\nabla \mathbf{u} - X_u|^2 + |\nabla \mathbf{v} - X_v|^2 \\]
 
@@ -1632,23 +1753,25 @@ The full pipeline is implemented in [Example 505](505_MIQ/main.cpp).
 
 ## Anisotropic remeshing [506]
 
-Anisotropic and non-uniform quad remeshing is important to concentrate the elements in the regions with more details. It is possible to extend the MIQ
+Anisotropic and non-uniform quad remeshing is important to concentrate the
+elements in the regions with more details. It is possible to extend the MIQ
 quad meshing framework to generate anisotropic quad meshes using a mesh
 deformation approach [#panozzo_2014][].
 
-The input of the anisotropic remeshing algorithm is a sparse set of constraints that define the shape and scale of the desired quads. This can be encoded
-as a frame field, which is a pair of non-orthogonal and non-unit lenght
-vectors. The frame field can be interpolated by decomposing it in a 4-RoSy
-field and a unique affine transformation. The two parts can then be
-interpolated separately, using `igl::nrosy` for the cross field, and an harmonic
-interpolant for the affine part.
+The input of the anisotropic remeshing algorithm is a sparse set of constraints
+that define the shape and scale of the desired quads. This can be encoded as a
+frame field, which is a pair of non-orthogonal and non-unit length vectors. The
+frame field can be interpolated by decomposing it in a 4-RoSy field and a
+unique affine transformation. The two parts can then be interpolated
+separately, using `igl::nrosy` for the cross field, and an harmonic interpolant
+for the affine part.
 
 ![Interpolation of a frame field. Colors on the vectors denote the desired
 scale. The red faces contains the frame field
 constraints.](images/506_FrameField_1.png)
 
 After the interpolation, the surface is warped to transform each frame into an
-orthogonal and unit lenght cross (i.e. removing the scaling and skewness from
+orthogonal and unit length cross (i.e. removing the scaling and skewness from
 the frame). This deformation defines a new embedding (and a new metric) for the
 surface.
 
@@ -1676,17 +1799,22 @@ possible.
 ## N-PolyVector fields [507]
 
 N-RoSy vector fields can be further generalized to represent arbitrary
-vector-sets, with arbitrary angles between them and with arbitrary lenghts [#diamanti_2014][].
-This generalization is called  N-PolyVector field, and libigl provides the
-function `igl::n_polyvector` to design them starting from a sparse set of
-constraints ([Example 507](507_PolyVectorField/main.cpp)).
+vector-sets, with arbitrary angles between them and with arbitrary lengths
+[#diamanti_2014][].  This generalization is called  N-PolyVector field, and
+libigl provides the function `igl::n_polyvector` to design them starting from a
+sparse set of constraints ([Example 507](507_PolyVectorField/main.cpp)).
 
 ![Interpolation of a N-PolyVector field from a sparse set of
 constraints.](images/507_PolyVectorField.png)
 
-The core idea is to represent the vector set as the roots of a complex polynomial: The polynomial coefficients are then harmonically interpolated leading to polynomials whose roots smoothly vary over the surface.
+The core idea is to represent the vector set as the roots of a complex
+polynomial: The polynomial coefficients are then harmonically interpolated
+leading to polynomials whose roots smoothly vary over the surface.
 
-Globally optimal direction fields [#knoppel_2013][] are a special case of Poly-Vector fields. If the constraints are taken from an N-RoSy field, `igl::n_polyvector` generates a field that is equivalent, after normalization,  to a globally optimal direction field.
+Globally optimal direction fields [#knoppel_2013][] are a special case of
+Poly-Vector fields. If the constraints are taken from an N-RoSy field,
+`igl::n_polyvector` generates a field that is equivalent, after normalization,
+to a globally optimal direction field.
 
 ## Conjugate vector fields [508]
 
@@ -1694,25 +1822,27 @@ Two tangent vectors lying on a face of a triangle mesh are conjugate if
 
 \\[ k_1 (u^T d_1)(v^T d_1) + k_2(u^T d_2)(v^T d_2) = 0. \\]
 
-This condition is very important in architectural geometry: The faces of
-an infinitely dense quad mesh whose edges are aligned with a conjugate field
-are planar. Thus, a quad mesh whose edges follow a conjugate field  are easier to planarize [#liu_2011].
+This condition is very important in architectural geometry: The faces of an
+infinitely dense quad mesh whose edges are aligned with a conjugate field are
+planar. Thus, a quad mesh whose edges follow a conjugate field  are easier to
+planarize [#liu_2011].
 
 Finding a conjugate vector field that satisfies given directional constraints
 is a standard problem in architectural geometry, which can be tackled by
 deforming a Poly-Vector field to the closest conjugate field.
 
-This algorithm [#diamanti_2014] alternates a global step, which enforces smoothness, with a local step, that projects the field on every face to the closest conjugate field
-([Example 508](508_ConjugateField/main.cpp)).
+This algorithm [#diamanti_2014] alternates a global step, which enforces
+smoothness, with a local step, that projects the field on every face to the
+closest conjugate field ([Example 508](508_ConjugateField/main.cpp)).
 
 ![A smooth 4-PolyVector field (left) is deformed to become a conjugate field
 (right).](images/508_ConjugateField.png)
 
 ## Planarization [509]
 
-A quad mesh can be transformed in a planar quad mesh with Shape-Up [#bouaziz_2012], a
-local/global approach that uses the global step to enforce surface continuity
-and the local step to enforce planarity.
+A quad mesh can be transformed in a planar quad mesh with Shape-Up
+[#bouaziz_2012], a local/global approach that uses the global step to enforce
+surface continuity and the local step to enforce planarity.
 
 [Example 509](509_Planarization/main.cpp) planarizes a quad mesh until it
 satisfies a user-given planarity threshold.
@@ -1744,8 +1874,8 @@ serialization to your applications.
 Assume that the state of your application is a mesh and a set of
 integer ids:
 
-``` cpp
-class State : public ::igl::XMLSerialization
+```cpp
+class State : public igl::XMLSerialization
 {
 public:
   State() : XMLSerialization("dummy") {}
@@ -1768,15 +1898,15 @@ from `::igl::XMLSerialization`.
 
 The state can be saved into an xml file with:
 
-``` cpp
-::igl::XMLSerializer serializer_save("601_Serialization");
+```cpp
+igl::XMLSerializer serializer_save("601_Serialization");
 serializer_save.Add(state,"State");
 serializer_save.Save("temp.xml",true);
 ```
 
 This code generates the following xml file (assuming **V** and **F** contains a simple mesh with two triangles, and `ids` contains the numbers 6 and 7):
 
-``` xml
+```xml
 <:::601_Serialization>
     <State>
         <V rows="4" cols="3" matrix="
@@ -1795,9 +1925,9 @@ This code generates the following xml file (assuming **V** and **F** contains a 
 
 The xml file can be loaded in a similar way:
 
-``` cpp
+```cpp
 State loaded_state;
-::igl::XMLSerializer serializer_load("601_Serialization");
+igl::XMLSerializer serializer_load("601_Serialization");
 serializer_load.Add(loaded_state,"State");
 serializer_load.Load("temp.xml");
 ```
@@ -1809,44 +1939,44 @@ state of your application always serializable since it will save you a lot of
 troubles when you will be preparing figures for a scientific report. It is very
 common to have to do small changes to figures, and being able to serialize the entire state just before you take screenshots will save you many painful hours before a submission deadline.
 
-## Mixing matlab code [602]
+## Mixing Matlab code [602]
 
 libigl can be interfaced with matlab to offload numerically heavy
 computation to a matlab script. The major advantage of this approach is that you will be able to develop efficient and complex user-interfaces in C++, while exploting the syntax and fast protototyping features of matlab. In particular, the use of an external matlab script in a libigl application allows to change the matlab code while the C++ application is running, greatly increasing coding efficiency.
 
-We demonstrate how to integrate matlab in a libigl application in [Example
-602](602_Matlab/main.cpp). The example uses matlab to compute the
+We demonstrate how to integrate Matlab in a libigl application in [Example
+602](602_Matlab/main.cpp). The example uses Matlab to compute the
 Eigenfunctions of the discrete Laplacian operator, relying on libigl for mesh
 IO, visualization and for computing the Laplacian operator.
 
-libigl can connect to an existing instance of matlab (or launching a new one on
+libigl can connect to an existing instance of Matlab (or launching a new one on
 Linux/MacOSX) using:
 
-``` cpp
+```cpp
 igl::mlinit(&engine);
 ```
 
 The cotangent laplacian is computed using igl::cotmatrix and uploaded to the
-matlab workspace:
+Matlab workspace:
 
-``` cpp
+```cpp
 igl::cotmatrix(V,F,L);
 igl::mlsetmatrix(&engine,"L",L);
 ```
 
-It is now possible to use any matlab function on the data. For example, we can
+It is now possible to use any Matlab function on the data. For example, we can
 see the sparsity pattern of L using spy:
 
-``` cpp
+```cpp
 igl::mleval(&engine,"spy(L)");
 ```
 
-![The matlab spy function is called from a libigl-based
+![The Matlab spy function is called from a libigl-based
 application.](images/602_Matlab_1.png)
 
 The results of matlab computations can be returned back to the C++ application
 
-``` cpp
+```cpp
 igl::mleval(&engine,"[EV,~] = eigs(-L,10,'sm')");
 igl::mlgetmatrix(&engine,"EV",EV);
 ```
@@ -1856,7 +1986,7 @@ and plotted using the libigl viewer.
 ![4 Eigenfunctions of the Laplacian plotted in the libigl
 viewer.](images/602_Matlab_2.png)
 
-## Calling igl functions from matlab [603]
+## Calling libigl functions from Matlab [603]
 
 It is also possible to call libigl functions from matlab, compiling them as MEX
 functions. This can be used to offload to C++ code the computationally
@@ -1871,11 +2001,11 @@ us know.
 
 The generation of high-quality triangle and tetrahedral meshes is a very common
 task in geometry processing. We provide wrappers in libigl to [triangle](http://www.cs.cmu.edu/~quake/triangle.html) and
-[tetgen](http://wias-berlin.de/software/tetgen/).
+[Tetgen](http://wias-berlin.de/software/tetgen/).
 
 A triangle mesh with a given boundary can be created with:
 
-``` cpp
+```cpp
 igl::triangulate(V,E,H,V2,F2,"a0.005q");
 ```
 
@@ -1887,10 +2017,10 @@ square (excluded a smaller square in its interior) is triangulated.
 ## Tetrahedralization of closed surfaces [605]
 
 Similarly, the interior of a closed manifold surface can be tetrahedralized
-using the function `igl::tetrahedralize` which wraps the tetgen library ([Example
+using the function `igl::tetrahedralize` which wraps the Tetgen library ([Example
 605](605_Tetgen/main.c)):
 
-``` cpp
+```cpp
 igl::tetrahedralize(V,F,"pq1.414", TV,TT,TF);
 ```
 
@@ -1915,7 +2045,7 @@ d\omega \\) is the infinitesimal solid angle step of the integration variable
 The integral is usually approximated by casting rays in random directions
 around each vertex. This approximation can be computed using the function:
 
-``` cpp
+```cpp
 igl::ambient_occlusion(V,F,V_samples,N_samples,500,AO);
 ```
 
@@ -2000,6 +2130,8 @@ Real-Time Freeform Modeling," 2004.
 [#jacobson_thesis_2013]: Alec Jacobson,
 _Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
 2013.
+[#jacobson_2012]: Alec Jacobson, Ilya Baran, Ladislav Kavan, Jovan Popović, and
+Olga Sorkine. "Fast Automatic Skinning Transformations," 2012.
 [#jacobson_2011]: Alec Jacobson, Ilya Baran, Jovan Popović, and Olga Sorkine.
 ["Bounded Biharmonic Weights for Real-Time Deformation,"](https://www.google.com/search?q=Bounded+biharmonic+weights+for+real-time+deformation) 2011.
 [#jacobson_mixed_2010]: Alec Jacobson, Elif Tosun, Olga Sorkine, and Denis
