@@ -105,7 +105,7 @@ git clone https://github.com/libigl/libigl.git
 ```
 
 All the examples depends on [glfw](http://www.glfw.org),
-[glew](http://glew.sourceforge.net) and [anttweakbar](http://anttweakbar.sourceforge.net/doc/).
+[glew](http://glew.sourceforge.net) and [AntTweakBar](http://anttweakbar.sourceforge.net/doc/).
 The source code of each library is bundled with libigl
 and they can be precompiled using:
 
@@ -1906,7 +1906,7 @@ serializer_save.Save("temp.xml",true);
 
 This code generates the following xml file (assuming **V** and **F** contains a simple mesh with two triangles, and `ids` contains the numbers 6 and 7):
 
-``` xml
+```xml
 <:::601_Serialization>
     <State>
         <V rows="4" cols="3" matrix="
@@ -2001,7 +2001,7 @@ us know.
 
 The generation of high-quality triangle and tetrahedral meshes is a very common
 task in geometry processing. We provide wrappers in libigl to [triangle](http://www.cs.cmu.edu/~quake/triangle.html) and
-[tetgen](http://wias-berlin.de/software/tetgen/).
+[Tetgen](http://wias-berlin.de/software/tetgen/).
 
 A triangle mesh with a given boundary can be created with:
 
@@ -2017,7 +2017,7 @@ square (excluded a smaller square in its interior) is triangulated.
 ## Tetrahedralization of closed surfaces [605]
 
 Similarly, the interior of a closed manifold surface can be tetrahedralized
-using the function `igl::tetrahedralize` which wraps the tetgen library ([Example
+using the function `igl::tetrahedralize` which wraps the Tetgen library ([Example
 605](605_Tetgen/main.c)):
 
 ```cpp
