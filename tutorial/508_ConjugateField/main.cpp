@@ -1,6 +1,7 @@
 #undef IGL_STATIC_LIBRARY
 #include <igl/readOBJ.h>
 #include <igl/readDMAT.h>
+#include <igl/writeDMAT.h>
 #include <igl/viewer/Viewer.h>
 #include <igl/barycenter.h>
 #include <igl/avg_edge_length.h>
@@ -39,8 +40,8 @@ Eigen::MatrixXd PQCp0, PQCp1, PQCp2, PQCp3;
 double global_scale;
 
 // Input constraints
-Eigen::VectorXi isConstrained;
-Eigen::MatrixXd constraints;
+Eigen::VectorXi b;
+Eigen::MatrixXd bc;
 
 Eigen::MatrixXd smooth_pvf;
 Eigen::MatrixXd conjugate_pvf;
@@ -58,9 +59,8 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   viewer.data.lines.resize(0,9);
   // Highlight in red the constrained faces
   MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
-  for (unsigned i=0; i<F.rows();++i)
-    if (isConstrained[i])
-      C.row(i) << 1, 0, 0;
+  for (unsigned i=0; i<b.size();++i)
+      C.row(b(i)) << 1, 0, 0;
   viewer.set_colors(C);
 
   if (key == '1')
@@ -69,12 +69,11 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     MatrixXd F1_t = MatrixXd::Zero(F.rows(),3);
     MatrixXd F2_t = MatrixXd::Zero(F.rows(),3);
 
-    for (unsigned i=0; i<F.rows();++i)
-      if (isConstrained[i])
-      {
-        F1_t.row(i) = constraints.block(i,0,1,3);
-        F2_t.row(i) = constraints.block(i,3,1,3);
-      }
+    for (unsigned i=0; i<b.size();++i)
+    {
+      F1_t.row(b(i)) = bc.block(i,0,1,3);
+      F2_t.row(b(i)) = bc.block(i,3,1,3);
+    }
 
     viewer.add_edges (B - global_scale*F1_t, B + global_scale*F1_t , Eigen::RowVector3d(0,0,1));
     viewer.add_edges (B - global_scale*F2_t, B + global_scale*F2_t , Eigen::RowVector3d(0,0,1));
@@ -120,13 +119,11 @@ int main(int argc, char *argv[])
   global_scale =  .4*igl::avg_edge_length(V, F);
 
   // Load constraints
-  MatrixXd temp;
-  igl::readDMAT("../shared/inspired_mesh.dmat",temp);
-  isConstrained = temp.block(0,0,temp.rows(),1).cast<int>();
-  constraints = temp.block(0,1,temp.rows(),temp.cols()-1);
+  igl::readDMAT("../shared/inspired_mesh_b.dmat",b);
+  igl::readDMAT("../shared/inspired_mesh_bc.dmat",bc);
 
   // Interpolate to get a smooth field
-  igl::n_polyvector(V, F, isConstrained, constraints, smooth_pvf);
+  igl::n_polyvector(V, F, b, bc, smooth_pvf);
 
   // Initialize conjugate field with smooth field
   csdata = new igl::ConjugateFFSolverData<Eigen::MatrixXd,Eigen::MatrixXi>(V,F);
@@ -134,12 +131,15 @@ int main(int argc, char *argv[])
 
   // Optimize the field
   int conjIter = 20;
-  int totalConjIter = 0;
   double lambdaOrtho = .1;
   double lambdaInit = 100;
   double lambdaMultFactor = 1.01;
   bool doHardConstraints = true;
   double lambdaOut;
+  VectorXi isConstrained = VectorXi::Constant(F.rows(),0);
+  for (unsigned i=0; i<b.size(); ++i)
+    isConstrained(b(i)) = 1;
+  
   igl::conjugate_frame_fields(*csdata, isConstrained, conjugate_pvf, conjugate_pvf, conjIter, lambdaOrtho, lambdaInit, lambdaMultFactor, doHardConstraints,
                               &lambdaOut);
 

@@ -5,11 +5,16 @@
 #include <igl/avg_edge_length.h>
 #include <vector>
 #include <igl/n_polyvector.h>
+#include <igl/local_basis.h>
 #include <stdlib.h>
+#include <igl/jet.h>
 
 // Input mesh
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
+
+// Per face bases
+Eigen::MatrixXd B1,B2,B3;
 
 // Face barycenters
 Eigen::MatrixXd B;
@@ -17,54 +22,67 @@ Eigen::MatrixXd B;
 // Scale for visualizing the fields
 double global_scale;
 
-// Input constraints
-Eigen::VectorXi isConstrained;
-std::vector<Eigen::MatrixXd> constraints;
+// Random length factor
+double rand_factor = 5;
+
+// Create a random set of tangent vectors
+Eigen::VectorXd random_constraints(const
+                                   Eigen::VectorXd& b1, const
+                                   Eigen::VectorXd& b2, int n)
+{
+  Eigen::VectorXd r(n*3);
+  for (unsigned i=0; i<n;++i)
+  {
+    double a = (double(rand())/RAND_MAX)*2*M_PI;
+    double s = 1 + ((double(rand())/RAND_MAX)) * rand_factor;
+    Eigen::Vector3d t = s * (cos(a) * b1 + sin(a) * b2);
+    r.block(i*3,0,3,1) = t;
+  }
+  return r;
+}
 
 bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
 
-  if (key <'1' || key >'4')
+  if (key <'1' || key >'8')
     return false;
 
-  viewer.clear();
-  viewer.set_mesh(V, F);
-  viewer.core.show_lines = false;
-  viewer.core.show_texture = false;
+  viewer.data.lines.resize(0,9);
 
   int num = key  - '0';
 
   // Interpolate
-  cerr<<"Interpolating N-PolyVector field for N = "<<num<<"... ";
+  cerr << "Interpolating " << num * 2 << "-PolyVector field" << endl;
+
+  VectorXi b(3);
+  b << 1511, 603, 506;
+
+  MatrixXd bc(b.size(),num*3);
+  for (unsigned i=0; i<b.size(); ++i)
+  {
+    VectorXd t = random_constraints(B1.row(b(i)),B2.row(b(i)),num);
+    bc.row(i) = t;
+  }
 
   // Interpolated PolyVector field
   Eigen::MatrixXd pvf;
-  igl::n_polyvector(V, F, isConstrained, constraints[num-1], pvf);
+  igl::n_polyvector(V, F, b, bc, pvf);
 
   // Highlight in red the constrained faces
   MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
-  for (unsigned i=0; i<F.rows();++i)
-    if (isConstrained[i])
-    C.row(i) << 1, 0, 0;
+  for (unsigned i=0; i<b.size();++i)
+    C.row(b(i)) << 1, 0, 0;
   viewer.set_colors(C);
 
   for (int n=0; n<num; ++n)
   {
-    // Frame field constraints
-    MatrixXd F_t = MatrixXd::Zero(F.rows(),3);
-    for (unsigned i=0; i<F.rows();++i)
-      if (isConstrained[i])
-        F_t.row(i) = constraints[num-1].block(i,n*3,1,3);
-    viewer.add_edges (B, B + global_scale*F_t , Eigen::RowVector3d(0,0,1));
-
-    const Eigen::MatrixXd &pvf_t = pvf.block(0,n*3,F.rows(),3);
-    for (unsigned i=0; i<F.rows();++i)
-      if (isConstrained[i])
-        F_t.row(i) *= 0;
-
-    viewer.add_edges (B, B + global_scale*pvf_t , Eigen::RowVector3d(0,0,1));
+    const MatrixXd &VF = pvf.block(0,n*3,F.rows(),3);
+    VectorXd c = VF.rowwise().norm();
+    MatrixXd C2;
+    igl::jet(c,1,1+rand_factor,C2);
+    viewer.add_edges (B - global_scale*VF, B + global_scale*VF , C2);
   }
 
 
@@ -78,34 +96,22 @@ int main(int argc, char *argv[])
   // Load a mesh in OBJ format
   igl::readOBJ("../shared/snail.obj", V, F);
 
+  // Compute local basis for faces
+  igl::local_basis(V,F,B1,B2,B3);
+
   // Compute face barycenters
   igl::barycenter(V, F, B);
 
   // Compute scale for visualizing fields
-  global_scale =  .2*igl::avg_edge_length(V, F);
+  global_scale =  .1*igl::avg_edge_length(V, F);
 
-  // Allocate constraints and polyvector field
-  constraints.resize(4);
-
-  // Load constraints
-  MatrixXd temp;
-  for (int n =0; n<=3; ++n)
-  {
-    char cfile[1024]; sprintf(cfile, "../shared/snail%d.dmat",n+1);
-
-    igl::readDMAT(cfile,temp);
-    if (n == 0)
-      isConstrained = temp.block(0,0,temp.rows(),1).cast<int>();
-
-    constraints[n] = temp.block(0,1,temp.rows(),temp.cols()-1);
-  }
-
-
+  // Make the example deterministic
+  srand(0);
+  
   igl::Viewer viewer;
-
-  key_down(viewer,'5',0);
-
-  // Launch the viewer
+  viewer.set_mesh(V, F);
   viewer.callback_key_down = &key_down;
+  viewer.core.show_lines = false;
+  key_down(viewer,'3',0);
   viewer.launch();
 }

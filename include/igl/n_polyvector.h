@@ -23,12 +23,12 @@ namespace igl {
   // Output:
   //                  3 by 3 rotation matrix that takes v0 to v1
   //
-  template <typename DerivedV, typename DerivedF>
-  IGL_INLINE void n_polyvector(const Eigen::PlainObjectBase<DerivedV> &V,
-                               const Eigen::PlainObjectBase<DerivedF> &F,
-                               const Eigen::VectorXi &isConstrained,
-                               const Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, Eigen::Dynamic> &cfW,
-                               Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, Eigen::Dynamic> &output);
+
+  IGL_INLINE void n_polyvector(const Eigen::MatrixXd& V,
+                               const Eigen::MatrixXi& F,
+                               const Eigen::VectorXi& b,
+                               const Eigen::MatrixXd& bc,
+                               Eigen::MatrixXd &output);
 
 };
 
