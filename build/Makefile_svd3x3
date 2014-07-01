@@ -48,5 +48,5 @@ obj/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h
 	$(GG) $(AFLAGS) $(CFLAGS) -c -o $@ $< $(INC)
 
 clean:
-	rm -f obj/*.o
+	rm -f $(OBJ_FILES)
 	rm -f ../lib/libiglsvd3x3.a

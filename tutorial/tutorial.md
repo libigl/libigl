@@ -1420,6 +1420,24 @@ elastic material](images/decimated-knight-arap.jpg)
 This concept of local rigidity will be revisited shortly in the context of
 surface parameterization.
 
+## Fast Automatic Skinning Transformations
+
+- Can be seen as fast, subspace optimization for ARAP,
+
+- Or as a automatic method to find the best skinning transformation degrees of freedom 
+
+Optimization in two steps:
+
+- subspace
+
+- grouping
+
+### ARAP with grouped edge-sets
+
+![The example `FastAutomaticSkinningTransformations` compares a full (slow)
+ARAP deformation on a detailed shape (left of middle), to ARAP with grouped rotation edge sets
+(right of middle), to the very fast subpsace method
+(right).](images/armadillo-fast.jpg)
 
 # Chapter 5: Parametrization [500]
 

@@ -10,6 +10,7 @@
 #include "verbose.h"
 #include "repdiag.h"
 #include "cat.h"
+#include <iostream>
 
 IGL_INLINE void igl::arap_rhs(
   const Eigen::MatrixXd & V, 
@@ -19,6 +20,7 @@ IGL_INLINE void igl::arap_rhs(
   Eigen::SparseMatrix<double>& K)
 {
   using namespace igl;
+  using namespace std;
   using namespace Eigen;
   // Number of dimensions
   int Vdim = V.cols();

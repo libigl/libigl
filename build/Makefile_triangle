@@ -40,5 +40,5 @@ obj/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h
 	g++ $(AFLAGS) $(CFLAGS) -c -o $@ $< $(INC)
 
 clean:
-	rm -f obj/*.o
+	rm -f $(OBJ_FILES)
 	rm -f ../lib/libigltriangle.a
