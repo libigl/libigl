@@ -940,6 +940,13 @@ namespace igl
     data.set_texture(R,G,B);
   }
 
+  void Viewer::set_points(
+    const Eigen::MatrixXd& P,
+    const Eigen::MatrixXd& C)
+  {
+    data.set_points(P,C);
+  }
+
   void Viewer::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
   {
     data.add_points(P,C);

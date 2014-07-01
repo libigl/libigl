@@ -18,6 +18,7 @@
 #include <igl/arap_rhs.h>
 #include <igl/repdiag.h>
 #include <igl/columnize.h>
+#include <igl/matlab/MatlabWorkspace.h>
 #include "fit_rotations.h"
 #include <cassert>
 #include <iostream>
@@ -95,13 +96,11 @@ IGL_INLINE bool igl::arap_precomputation(
   // Get covariance scatter matrix, when applied collects the covariance
   // matrices used to fit rotations to during optimization
   covariance_scatter_matrix(ref_V,ref_F,eff_energy,data.CSM);
-  assert(data.CSM.rows() == ref_F.rows()*data.dim);
   if(flat)
   {
     data.CSM = (data.CSM * ref_map_dim.transpose()).eval();
   }
   assert(data.CSM.cols() == V.rows()*data.dim);
-  assert(data.CSM.rows() == ref_F.rows()*data.dim);
 
   // Get group sum scatter matrix, when applied sums all entries of the same
   // group according to G
@@ -216,6 +215,9 @@ IGL_INLINE bool igl::arap_solve(
     assert(U.cols() == data.dim);
     // As if U.col(2) was 0
     MatrixXd S = data.CSM * Udim;
+    // THIS NORMALIZATION IS IMPORTANT TO GET SINGLE PRECISION SVD CODE TO WORK
+    // CORRECTLY.
+    S /= S.array().abs().maxCoeff();
 
     const int Rdim = data.dim;
     MatrixXd R(Rdim,data.CSM.rows());
@@ -224,11 +226,12 @@ IGL_INLINE bool igl::arap_solve(
       fit_rotations_planar(S,R);
     }else
     {
-#ifdef __SSE__ // fit_rotations_SSE will convert to float if necessary
-    fit_rotations_SSE(S,R);
-#else
-    fit_rotations(S,true,R);
-#endif
+      fit_rotations(S,true,R);
+//#ifdef __SSE__ // fit_rotations_SSE will convert to float if necessary
+//      fit_rotations_SSE(S,R);
+//#else
+//      fit_rotations(S,true,R);
+//#endif
     }
     //for(int k = 0;k<(data.CSM.rows()/dim);k++)
     //{
@@ -299,6 +302,7 @@ IGL_INLINE bool igl::arap_solve(
     // Keep track of velocity for next time
     data.vel = (U-U0)/data.h;
   }
+
   return true;
 }
 

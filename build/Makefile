@@ -125,7 +125,7 @@ obj/%.o: ../include/igl/%.cpp ../include/igl/%.h
 
 clean:
 	rm -rf ../lib/igl.framework/
-	rm -f obj/*.o
+	rm -f $(OBJ_FILES)
 	rm -f ../lib/libigl.a
 	make -C ../examples clean
 	for p in  $(EXTRA_DIRS); \

@@ -213,6 +213,15 @@ IGL_INLINE void igl::ViewerData::set_texture(
   dirty |= DIRTY_TEXTURE;
 }
 
+IGL_INLINE void igl::ViewerData::set_points(
+  const Eigen::MatrixXd& P,  
+  const Eigen::MatrixXd& C)
+{
+  // clear existing points
+  points.resize(0,0);
+  add_points(P,C);
+}
+
 IGL_INLINE void igl::ViewerData::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
 {
   Eigen::MatrixXd P_temp;

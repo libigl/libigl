@@ -66,6 +66,15 @@ public:
                     const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
                     const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B);
 
+  // Sets points given a list of point vertices. In constrast to `set_points`
+  // this will (purposefully) clober existing points.
+  //
+  // Inputs:
+  //   P  #P by 3 list of vertex positions
+  //   C  #P|1 by 3 color(s)
+  IGL_INLINE void set_points(
+    const Eigen::MatrixXd& P,  
+    const Eigen::MatrixXd& C);
   IGL_INLINE void add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
   // Sets edges given a list of edge vertices and edge indices. In constrast
   // to `add_edges` this will (purposefully) clober existing edges.
