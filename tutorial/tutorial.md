@@ -1804,15 +1804,14 @@ vector-sets, with arbitrary angles between them and with arbitrary lengths
 libigl provides the function `igl::n_polyvector` to design them starting from a
 sparse set of constraints ([Example 507](507_PolyVectorField/main.cpp)).
 
-![Interpolation of a N-PolyVector field from a sparse set of
-constraints.](images/507_PolyVectorField.png)
+![Interpolation of a 6-PolyVector field (right) and a 12-PolyVector field from a sparse set of random constraints.](images/507_PolyVectorField.png)
 
 The core idea is to represent the vector set as the roots of a complex
 polynomial: The polynomial coefficients are then harmonically interpolated
 leading to polynomials whose roots smoothly vary over the surface.
 
 Globally optimal direction fields [#knoppel_2013][] are a special case of
-Poly-Vector fields. If the constraints are taken from an N-RoSy field,
+PolyVector fields. If the constraints are taken from an N-RoSy field,
 `igl::n_polyvector` generates a field that is equivalent, after normalization,
 to a globally optimal direction field.
 
