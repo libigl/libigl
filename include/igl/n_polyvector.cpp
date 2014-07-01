@@ -479,20 +479,27 @@ IGL_INLINE void igl::PolyVectorFieldFinder<DerivedV, DerivedF>::computek()
 }
 
 
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::n_polyvector(const Eigen::PlainObjectBase<DerivedV> &V,
-                             const Eigen::PlainObjectBase<DerivedF> &F,
-                             const Eigen::VectorXi &isConstrained,
-                             const Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, Eigen::Dynamic> &cfW,
-                             Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, Eigen::Dynamic> &output)
+IGL_INLINE void igl::n_polyvector(const Eigen::MatrixXd &V,
+                             const Eigen::MatrixXi &F,
+                             const Eigen::VectorXi& b,
+                             const Eigen::MatrixXd& bc,
+                             Eigen::MatrixXd &output)
 {
+  Eigen::VectorXi isConstrained = Eigen::VectorXi::Constant(F.rows(),0);
+  Eigen::MatrixXd cfW = Eigen::MatrixXd::Constant(F.rows(),bc.cols(),0);
+
+  for(unsigned i=0; i<b.size();++i)
+  {
+    isConstrained(b(i)) = 1;
+    cfW.row(b(i)) << bc.row(i);
+  }
+
   int n = cfW.cols()/3;
-  igl::PolyVectorFieldFinder<DerivedV, DerivedF> pvff(V,F,n);
+  igl::PolyVectorFieldFinder<Eigen::MatrixXd, Eigen::MatrixXi> pvff(V,F,n);
   pvff.solve(isConstrained, cfW, output);
 }
 
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::n_polyvector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, -1, -1, 0, -1, -1> const&, Eigen::Matrix<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, -1, -1, 0, -1, -1>&);
 #endif
