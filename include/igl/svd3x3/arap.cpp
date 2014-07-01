@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "arap.h"
 #include <igl/colon.h>
@@ -18,7 +18,6 @@
 #include <igl/arap_rhs.h>
 #include <igl/repdiag.h>
 #include <igl/columnize.h>
-#include <igl/matlab/MatlabWorkspace.h>
 #include "fit_rotations.h"
 #include <cassert>
 #include <iostream>
@@ -252,7 +251,7 @@ IGL_INLINE bool igl::arap_solve(
       eff_R.resize(Rdim,num_rots*Rdim);
       for(int r = 0;r<num_rots;r++)
       {
-        eff_R.block(0,Rdim*r,Rdim,Rdim) = 
+        eff_R.block(0,Rdim*r,Rdim,Rdim) =
           R.block(0,Rdim*data.G(r),Rdim,Rdim);
       }
     }
@@ -260,7 +259,7 @@ IGL_INLINE bool igl::arap_solve(
     MatrixXd Dl;
     if(data.with_dynamics)
     {
-      assert(data.M.rows() == n && 
+      assert(data.M.rows() == n &&
         "No mass matrix. Call arap_precomputation if changing with_dynamics");
       const double h = data.h;
       assert(h != 0);
