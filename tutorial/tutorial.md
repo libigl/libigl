@@ -657,9 +657,9 @@ to scalar divergence values at vertices.
 
 # Chapter 3: Matrices and linear algebra
 Libigl relies heavily on the Eigen library for dense and sparse linear algebra
-routines. Besides geometry processing routines, libigl has a few linear algebra
-routines which bootstrap Eigen and make Eigen feel even more like a high-level
-algebra library like Matlab.
+routines. Besides geometry processing routines, libigl has linear algebra
+routines which bootstrap Eigen and make it feel even more similar to a high-level
+algebra library such as Matlab.
 
 ## Slice
 A very familiar and powerful routine in Matlab is array slicing. This allows
@@ -674,7 +674,7 @@ If `A` is a $m \times n$ matrix and `R` is a $j$-long list of row-indices
 (between 1 and $m$) and `C` is a $k$-long list of column-indices, then as a
 result `B` will be a $j \times k$ matrix drawing elements from `A` according to
 `R` and `C`. In libigl, the same functionality is provided by the `slice`
-function:
+function ([Example 301](301_Slice/main.cpp)):
 
 ```cpp
 VectorXi R,C;
@@ -683,7 +683,7 @@ MatrixXd A,B;
 igl::slice(A,R,C,B);
 ```
 
-`A` and `B` could also be sparse matrices.
+Note that `A` and `B` could also be sparse matrices.
 
 Similarly, consider the Matlab code:
 
@@ -742,33 +742,34 @@ Analogous functions are available in libigl for: `max`, `min`, and `unique`.
 
 ![The example `Sort` shows how to use `igl::sortrows` to
 pseudocolor triangles according to their barycenters' sorted
-order.](images/decimated-knight-sort-color.jpg)
+order ([Example 302](302_Sort/main.cpp)).](images/decimated-knight-sort-color.jpg)
 
 
 ### Other Matlab-style functions
 Libigl implements a variety of other routines with the same api and
 functionality as common Matlab functions.
 
-- `igl::any_of` Whether any elements are non-zero (true)
-- `igl::cat` Concatenate two matrices (especially useful for dealing with Eigen
-  sparse matrices)
-- `igl::ceil` Round entries up to nearest integer
-- `igl::cumsum` Cumulative sum of matrix elements
-- `igl::colon` Act like Matlab's `:`, similar to Eigen's `LinSpaced`
-- `igl::cross` Cross product per-row
-- `igl::dot` dot product per-row
-- `igl::find` Find subscripts of non-zero entries
-- `igl::floot` Round entries down to nearest integer
-- `igl::histc` Counting occurrences for building a histogram
-- `igl::hsv_to_rgb` Convert HSV colors to RGB (cf. Matlab's `hsv2rgb`)
-- `igl::intersect` Set intersection of matrix elements.
-- `igl::jet` Quantized colors along the rainbow.
-- `igl::kronecker_product` Compare to Matlab's `kronprod`
-- `igl::median` Compute the median per column
-- `igl::mode` Compute the mode per column
-- `igl::orth` Orthogonalization of a basis
-- `igl::setdiff` Set difference of matrix elements
-- `igl::speye` Identity as sparse matrix
+| Name                     | Description                                                                         |
+| :----------------------- | :---------------------------------------------------------------------------------- |
+| `igl::any_of`            | Whether any elements are non-zero (true)                                            |
+| `igl::cat`               | Concatenate two matrices (especially useful for dealing with Eigen sparse matrices) |
+| `igl::ceil`              | Round entries up to nearest integer |
+| `igl::cumsum`            | Cumulative sum of matrix elements |
+| `igl::colon`             | Act like Matlab's `:`, similar to Eigen's `LinSpaced` |
+| `igl::cross`             | Cross product per-row |
+| `igl::dot`               | dot product per-row |
+| `igl::find`              | Find subscripts of non-zero entries |
+| `igl::floot`             | Round entries down to nearest integer |
+| `igl::histc`             | Counting occurrences for building a histogram |
+| `igl::hsv_to_rgb`        | Convert HSV colors to RGB (cf. Matlab's `hsv2rgb`) |
+| `igl::intersect`         | Set intersection of matrix elements. |
+| `igl::jet`               | Quantized colors along the rainbow. |
+| `igl::kronecker_product` | Compare to Matlab's `kronprod` |
+| `igl::median`            | Compute the median per column |
+| `igl::mode`              | Compute the mode per column |
+| `igl::orth`              | Orthogonalization of a basis |
+| `igl::setdiff`           | Set difference of matrix elements |
+| `igl::speye`             | Identity as sparse matrix |
 
 ## Laplace equation
 A common linear system in geometry processing is the Laplace equation:
