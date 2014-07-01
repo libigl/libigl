@@ -385,7 +385,7 @@ discretization.
 ### Per-vertex
 Normals can be computed and stored on vertices, and interpolated in the interior of the triangles to produce smooth renderings ([Phong shading](http://en.wikipedia.org/wiki/Phong_shading)).
 Most techniques for computing per-vertex normals take an average of incident face normals. The main difference between these techniques is their weighting scheme: Uniform
-weighting is heavily biased by the discretization choice, where as area-based
+weighting is heavily biased by the discretization choice, whereas area-based
 or angle-based weighting is more forgiving.
 
 The typical half-edge style computation of area-based weights has this structure:
@@ -426,8 +426,6 @@ designer, but creases and corners can also be computed automatically. Libigl
 implements a simple scheme which computes corner normals as averages of
 normals of faces incident on the corresponding vertex which do not deviate by more than a specified dihedral angle (e.g. 20°).
 
-
-
 ![The `Normals` example computes per-face (left), per-vertex (middle) and
 per-corner (right) normals](images/fandisk-normals.jpg)
 
@@ -454,7 +452,7 @@ where $N(i)$ are the triangles incident on vertex $i$ and $θ_{ij}$ is the angle
 at vertex $i$ in triangle $j$ [][#meyer_2003].
 
 Just like the continuous analog, our discrete Gaussian curvature reveals
-elliptic, hyperbolic and parabolic vertices on the domain.
+elliptic, hyperbolic and parabolic vertices on the domain, as demonstrated in [Example 202](202GaussianCurvature/main.cpp).
 
 ![The `GaussianCurvature` example computes discrete Gaussian curvature and
 visualizes it in pseudocolor.](images/bumpy-gaussian-curvature.jpg)
@@ -462,10 +460,10 @@ visualizes it in pseudocolor.](images/bumpy-gaussian-curvature.jpg)
 ## Curvature directions
 The two principal curvatures $(k_1,k_2)$ at a point on a surface measure how
 much the surface bends in different directions. The directions of maximum and
-minimum (signed) bending are call principal directions and are always
+minimum (signed) bending are called principal directions and are always
 orthogonal.
 
-Mean curvature is defined simply as the average of principal curvatures:
+Mean curvature is defined as the average of principal curvatures:
 
  $H = \frac{1}{2}(k_1 + k_2).$
 
@@ -499,9 +497,7 @@ directions [][#meyer_2003].
 Alternatively, a robust method for determining principal curvatures is via
 quadric fitting [][#panozzo_2010]. In the neighborhood
 around every vertex, a best-fit quadric is found and principal curvature values
-and directions are sampled from this quadric. With these in tow, one can
-compute mean curvature and Gaussian curvature as sums and products
-respectively.
+and directions are analytically computed on this quadric ([Example 203](203_curvatureDirections/main.cpp)).
 
 ![The `CurvatureDirections` example computes principal curvatures via quadric
 fitting and visualizes mean curvature in pseudocolor and principal directions
@@ -528,7 +524,7 @@ of the hat functions:
  \sum\limits_{i=1}^n \nabla \phi_i(\mathbf{x})\, f_i.$
 
 This reveals that the gradient is a linear function of the vector of $f_i$
-values. Because $\phi_i$ are linear in each triangle their gradient are
+values. Because the $\phi_i$ are linear in each triangle, their gradients are
 _constant_ in each triangle. Thus our discrete gradient operator can be written
 as a matrix multiplication taking vertex values to triangle values:
 
@@ -537,8 +533,8 @@ as a matrix multiplication taking vertex values to triangle values:
 where $\mathbf{f}$ is $n\times 1$ and $\mathbf{G}$ is an $md\times n$ sparse
 matrix. This matrix $\mathbf{G}$ can be derived geometrically, e.g.
 [ch. 2][#jacobson_thesis_2013].
-Libigl's `gradMat`**Alec: check name** function computes $\mathbf{G}$ for
-triangle and tetrahedral meshes:
+Libigl's `grad` function computes $\mathbf{G}$ for
+triangle and tetrahedral meshes ([Example 204](204_Gradient/main.cpp)):
 
 ![The `Gradient` example computes gradients of an input function on a mesh and
 visualizes the vector field.](images/cheburashka-gradient.jpg)
@@ -572,9 +568,8 @@ i = j & -\sum\limits_{k\neq i} L_{ik},
 \end{cases}$
 
 where $N(i)$ are the vertices adjacent to (neighboring) vertex $i$, and
-$\alpha_{ij},\beta_{ij}$ are the angles opposite edge ${ij}$.
-This oft
-produced formula leads to a typical half-edge style implementation for
+$\alpha_{ij},\beta_{ij}$ are the angles opposite to edge ${ij}$.
+This formula leads to a typical half-edge style implementation for
 constructing $\mathbf{L}$:
 
 ```cpp
@@ -591,11 +586,8 @@ for(int i : vertices)
 }
 ```
 
-Without a half-edge data-structure it may seem at first glance that looping
-over one-rings, and thus constructing the Laplacian would be inefficient.
-However, the Laplacian may be built by summing together contributions for each
-triangle, much in spirit with its FEM discretization of the Dirichlet energy
-(sum of squared gradients):
+Similarly as before, it may seem to loop over one-rings without having an half-edge data structure. However, this is not the case, since the Laplacian may be built by summing together contributions for each triangle, much in spirit with its FEM discretization
+of the Dirichlet energy (sum of squared gradients):
 
 ```cpp
 for(triangle t : triangles)
@@ -616,8 +608,7 @@ book" FEM construction which involves many (small) matrix inversions, cf.
 **Alec: cite Ariel reconstruction paper**.
 
 The operator applied to mesh vertex positions amounts to smoothing by _flowing_
-the surface along the mean curvature normal direction. This is equivalent to
-minimizing surface area.
+the surface along the mean curvature normal direction ([Example 205](205_Laplacian/main.cpp)). Note that this is equivalent to minimizing surface area.
 
 ![The `Laplacian` example computes conformalized mean curvature flow using the
 cotangent Laplacian [#kazhdan_2012][].](images/cow-curvature-flow.jpg)
@@ -660,8 +651,8 @@ Or in matrix form which is immediately translatable to code:
 
 So we have that $\mathbf{L} = \mathbf{G}^T \mathbf{T} \mathbf{G}$. This also
 hints that we may consider $\mathbf{G}^T$ as a discrete _divergence_ operator,
-since the Laplacian is the divergence of gradient. Naturally, $\mathbf{G}^T$ is
-$n \times md$ sparse matrix which takes vector values stored at triangle faces
+since the Laplacian is the divergence of the gradient. Naturally, $\mathbf{G}^T$ is
+a $n \times md$ sparse matrix which takes vector values stored at triangle faces
 to scalar divergence values at vertices.
 
 # Chapter 3: Matrices and linear algebra
