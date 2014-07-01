@@ -1874,7 +1874,7 @@ serialization to your applications.
 Assume that the state of your application is a mesh and a set of
 integer ids:
 
-``` cpp
+```cpp
 class State : public igl::XMLSerialization
 {
 public:
@@ -1898,7 +1898,7 @@ from `::igl::XMLSerialization`.
 
 The state can be saved into an xml file with:
 
-``` cpp
+```cpp
 igl::XMLSerializer serializer_save("601_Serialization");
 serializer_save.Add(state,"State");
 serializer_save.Save("temp.xml",true);
@@ -1925,7 +1925,7 @@ This code generates the following xml file (assuming **V** and **F** contains a 
 
 The xml file can be loaded in a similar way:
 
-``` cpp
+```cpp
 State loaded_state;
 igl::XMLSerializer serializer_load("601_Serialization");
 serializer_load.Add(loaded_state,"State");
@@ -1952,14 +1952,14 @@ IO, visualization and for computing the Laplacian operator.
 libigl can connect to an existing instance of Matlab (or launching a new one on
 Linux/MacOSX) using:
 
-``` cpp
+```cpp
 igl::mlinit(&engine);
 ```
 
 The cotangent laplacian is computed using igl::cotmatrix and uploaded to the
 Matlab workspace:
 
-``` cpp
+```cpp
 igl::cotmatrix(V,F,L);
 igl::mlsetmatrix(&engine,"L",L);
 ```
@@ -1967,7 +1967,7 @@ igl::mlsetmatrix(&engine,"L",L);
 It is now possible to use any Matlab function on the data. For example, we can
 see the sparsity pattern of L using spy:
 
-``` cpp
+```cpp
 igl::mleval(&engine,"spy(L)");
 ```
 
@@ -1976,7 +1976,7 @@ application.](images/602_Matlab_1.png)
 
 The results of matlab computations can be returned back to the C++ application
 
-``` cpp
+```cpp
 igl::mleval(&engine,"[EV,~] = eigs(-L,10,'sm')");
 igl::mlgetmatrix(&engine,"EV",EV);
 ```
@@ -2005,7 +2005,7 @@ task in geometry processing. We provide wrappers in libigl to [triangle](http://
 
 A triangle mesh with a given boundary can be created with:
 
-``` cpp
+```cpp
 igl::triangulate(V,E,H,V2,F2,"a0.005q");
 ```
 
@@ -2020,7 +2020,7 @@ Similarly, the interior of a closed manifold surface can be tetrahedralized
 using the function `igl::tetrahedralize` which wraps the tetgen library ([Example
 605](605_Tetgen/main.c)):
 
-``` cpp
+```cpp
 igl::tetrahedralize(V,F,"pq1.414", TV,TT,TF);
 ```
 
@@ -2045,7 +2045,7 @@ d\omega \\) is the infinitesimal solid angle step of the integration variable
 The integral is usually approximated by casting rays in random directions
 around each vertex. This approximation can be computed using the function:
 
-``` cpp
+```cpp
 igl::ambient_occlusion(V,F,V_samples,N_samples,500,AO);
 ```
 
