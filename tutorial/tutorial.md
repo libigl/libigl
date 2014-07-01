@@ -104,10 +104,13 @@ repository](https://github.com/libigl/libigl) or cloned with git:
 git clone https://github.com/libigl/libigl.git
 ```
 
-All the examples depends on [glfw](http://www.glfw.org),
+The core libigl functionality only depends on the C++ Standard Library and
+Eigen.
+
+The examples in this tutorial depend on [glfw](http://www.glfw.org),
 [glew](http://glew.sourceforge.net) and [AntTweakBar](http://anttweakbar.sourceforge.net/doc/).
 The source code of each library is bundled with libigl
-and they can be precompiled using:
+and they can be compiled all at once using:
 
 ```sh
 sh compile_dependencies_macosx.sh (MACOSX)
@@ -127,7 +130,7 @@ cmake -DCMAKE_BUILD_TYPE=Release ../
 make
 ```
 
-The examples can also be independently built using the the CMakeLists.txt
+The examples can also be built independently using the CMakeLists.txt
 inside each example folder.
 
 A few examples in Chapter 5 requires the [CoMiSo
