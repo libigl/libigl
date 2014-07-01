@@ -19,10 +19,10 @@ libraries, libigl is a simple header-only library of encapsulated functions.
 This combines the rapid prototyping familiar to Matlab or Python programmers
 with the performance and versatility of C++.  The tutorial is a self-contained,
 hands-on introduction to libigl.  Via live coding and interactive examples, we
-demonstrate how to accomplish various common geometry processing tasks such as
+demonstrate how to accomplish common geometry processing tasks such as
 computation of differential quantities and operators, real-time deformation,
-global parametrization, numerical optimization and mesh repair.  Each section
-of these lecture notes links to a cross-platform example application.
+parametrization, numerical optimization and remeshing. Each section
+of the lecture notes links to a cross-platform example application.
 
 # Table of contents
 
@@ -372,30 +372,26 @@ using overlays.](images/105_Overlays.png)
 
 # Chapter 2: Discrete Geometric Quantities and Operators
 This chapter illustrates a few discrete quantities that libigl can compute on a
-mesh. This also provides an introduction to basic drawing and coloring routines
-in our example viewer. Finally, we construct popular discrete differential
-geometry operators.
+mesh and the libigl functions that construct popular discrete differential
+geometry operators. It also provides an introduction to basic drawing and coloring routines of our viewer.
 
 ## Normals
 Surface normals are a basic quantity necessary for rendering a surface. There
-are a variety of ways to compute and store normals on a triangle mesh.
+are a variety of ways to compute and store normals on a triangle mesh. [Example 201](201_Normals/main.cpp) demonstrates how to compute and visualize normals with libigl.
 
 ### Per-face
 Normals are well defined on each triangle of a mesh as the vector orthogonal to
-triangle's plane. These piecewise constant normals produce piecewise-flat
+triangle's plane. These piecewise-constant normals produce piecewise-flat
 renderings: the surface appears non-smooth and reveals its underlying
 discretization.
 
 ### Per-vertex
-Storing normals at vertices, Phong or Gouraud shading will interpolate shading
-inside mesh triangles to produce smooth(er) renderings. Most techniques for
-computing per-vertex normals take an average of incident face normals. The
-techniques vary with respect to their different weighting schemes. Uniform
+Normals can be computed and stored on vertices, and interpolated in the interior of the triangles to produce smooth renderings ([Phong shading](http://en.wikipedia.org/wiki/Phong_shading)).
+Most techniques for computing per-vertex normals take an average of incident face normals. The main difference between these techniques is their weighting scheme: Uniform
 weighting is heavily biased by the discretization choice, where as area-based
 or angle-based weighting is more forgiving.
 
-The typical half-edge style computation of area-based weights might look
-something like this:
+The typical half-edge style computation of area-based weights has this structure:
 
 ```cpp
 N.setZero(V.rows(),3);
@@ -409,9 +405,7 @@ for(int i : vertices)
 N.rowwise().normalize();
 ```
 
-Without a half-edge data-structure it may seem at first glance that looping
-over incident faces---and thus constructing the per-vertex normals---would be
-inefficient. However, per-vertex normals may be _throwing_ each face normal to
+At first glance, it might seem inefficient to loop over incident faces---and thus constructing the per-vertex normals--- without using an half-edge data structure. However, per-vertex normals may be _throwing_ each face normal to
 running sums on its corner vertices:
 
 ```cpp
@@ -428,13 +422,14 @@ N.rowwise().normalize();
 
 ### Per-corner
 
-Storing normals per-corner is an efficient an convenient way of supporting both
+Storing normals per-corner is an efficient and convenient way of supporting both
 smooth and sharp (e.g. creases and corners) rendering. This format is common to
 OpenGL and the .obj mesh file format. Often such normals are tuned by the mesh
 designer, but creases and corners can also be computed automatically. Libigl
 implements a simple scheme which computes corner normals as averages of
-normals of faces incident on the corresponding vertex which do not deviate by a
-specified dihedral angle (e.g. 20°).
+normals of faces incident on the corresponding vertex which do not deviate by more than a specified dihedral angle (e.g. 20°).
+
+
 
 ![The `Normals` example computes per-face (left), per-vertex (middle) and
 per-corner (right) normals](images/fandisk-normals.jpg)
