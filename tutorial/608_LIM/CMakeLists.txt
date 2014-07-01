@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(607_LIM)
+project(608_LIM)
 
 include("../CMakeLists.shared")
 find_package(LIM REQUIRED)
