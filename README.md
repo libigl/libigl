@@ -5,12 +5,12 @@ libigl - A simple c++ geometry processing library
 <https://github.com/alecjacobson/libigl/>
 
 Copyright 2013 - Alec Jacobson, Daniele Panozzo, Olga Diamanti, Kenshi
-Takayama, Leo Sacht 
+Takayama, Leo Sacht, Wenzel Jacob
 
 This is first and foremost a *header* library. Each header file should contain
 a single function.  The function may have multiple prototypes. All functions
 should use the igl namespace and should adhere to the conventions and styles
-listed below. 
+listed below.
 
 > **New:** As of 1 July 2014, we have release our libigl beta version 1.0. There are a
 > number of changes we collected for this release to minimize confusion and
@@ -20,10 +20,11 @@ listed below.
 - Eigen3  Last tested with Eigen Version 3.2
 
 ### Optional ###
-- OpenGL (`IGL_NO_OPENGL`)
+- OpenGL < 3.2 (`IGL_NO_OPENGL`)
+- OpenGL >= 4 (`IGL_OPENGL_4`)
 - AntTweakBar  (`IGL_NO_ANTTWEAKBAR`) Last tested 1.16 (see
 -   libigl/external/AntTweakBar)
-- GLEW  Windows only
+- GLEW  Windows and Linux
 - OpenMP  
 - libpng  libiglpng extra only
 - Mosek  libiglmosek extra only
@@ -31,19 +32,22 @@ listed below.
 - boost  libiglboost, libiglcgal extra only
 - SSE/AVX  libiglsvd3x3 extra only
 - CGAL  libiglcgal extra only
-    * boost 
+    * boost
     * gmp
     * mpfr
+- CoMiSo libcomiso extra only
 
 ### Optional (included in external/) ###
 - TetGen  libigltetgen extra only
 - Embree  libiglembree extra only
 - tinyxml2  libiglxml extra only
+- glfw libviewer extra only
+- LIM  liblim extra only
 
 ## Header only ##
 libigl is designed to work "out-of-the-box" as a headers only library. To
 include libigl in your project. You need only include the libigl/include/
-directory in your include path. To 
+directory in your include path. To
 compile a hello-word example.cpp:
 
     #include <Eigen/Dense>
@@ -72,14 +76,18 @@ Then run this example with:
 
     ./example examples/shared/TinyTorus.obj
 
-## Compile ##
+## Tutorial ##
+
+As of version 1.0, libigl includes an introductory tutorial that covers its basic
+functionalities. See [tutorial/tutorial.md](./tutorial/tutorial.md) to get started.
+
+## Compilation as a static library ##
 libigl is developed most often on Mac OS X, though has current users in Linux and Windows.
 
 ### Linux/Mac OS X/Cygwin ###
 
 libigl may also be compiled to a static library. This is advantageous when
-building a project with libigl, since the header only directive can slow down
-compile times.
+building a project with libigl, since when used as an header-only library can slow down compile times.
 
 To build the entire libigl library producing lib/libigl.a, issue:
 
@@ -131,7 +139,7 @@ To build the tetgen library and executable on Mac OS X issue:
 To build the igl version of the medit executable on Mac OS X issue:
 
     cd external/medit
-    make -C libmesh 
+    make -C libmesh
     make -f Makefile.igl medit
 
 ##### Installing Embree 2.0 #####
@@ -199,7 +207,7 @@ To get started, we advise that you take a look at a few examples:
 
 ## Extras ##
 Libigl compartmentalizes dependences via its organization into a _main_ libigl
-library and "extras." 
+library and "extras."
 
 
 ### bbw ###
@@ -269,7 +277,7 @@ current users should read and adapt their code accordingly.
 The following table lists functions which have changed name as of version
 1.0.0:
 
- Old | --> | New 
+ Old | --> | New
  ----|-|----
  `igl::add_barycenter`| |`igl::false_barycentric_subdivision`
  `igl::areamatrix`| |`igl::vector_area_matrix`
@@ -334,4 +342,4 @@ contact [alecjacobson@gmail.com](mailto:alecjacobson@gmail.com) if you have
 questions or comments. We are happy to get feedback! Enjoy!
 
 If you find bugs or have problems please use our [github issue tracking
-page](https://github.com/libigl/libigl/issues). 
+page](https://github.com/libigl/libigl/issues).
