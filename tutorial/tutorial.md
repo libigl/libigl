@@ -26,9 +26,8 @@ of these lecture notes links to a cross-platform example application.
     * [102 Plotting surfaces][102]
     * [103 Interaction with keyboard and mouse][103]
     * [104 Scalar field visualization][104]
+        * [libigl design principles][104b]
     * [105 Overlays][105]
-    * [106 Picking vertices and faces][106]
-        * [libigl design principles][107]
 * [Chapter 2: Discrete Geometric Quantities and
   Operators](#chapter2:discretegeometricquantitiesandoperators)
     * [201 Normals](#normals)
@@ -77,7 +76,8 @@ of these lecture notes links to a cross-platform example application.
     * [604 Triangulation of closed polygons][604]
     * [605 Tetrahedralization of closed surfaces][605]
     * [606 Baking ambient occlusion][606]
-    * [607 Locally Injective Maps][607]
+    * [607 Picking vertices and faces][607]
+    * [608 Locally Injective Maps][608]
 
 * [Chapter 7: Outlook for continuing development][future]
 
@@ -291,7 +291,7 @@ The scalar function is converted to colors using a color transfer function,
 which maps a scalar value between 0 and 1 to a color. A simple example
 of a scalar field defined on a surface is the z coordinate of each point,
 which can be extract from our mesh representation by
-taking the first column of **V** (([Example 104](104_Colors/main.cpp)). The function igl::jet can be used to convert it
+taking the last column of **V** ([Example 104](104_Colors/main.cpp)). The function `igl::jet` can be used to convert it
 to colors:
 
 ```cpp
@@ -300,10 +300,30 @@ igl::jet(x,true,C);
 ```
 
 The first row extracts the third column from **V** (the z coordinate of each
-vertex) and the second calls the libigl functions that converts a scalar field to colors. The second parameter of jet normalizes the scalar field to lie between 0 and 1 before applying the transfer function.
+vertex) and the second calls a libigl functions that converts a scalar field to colors. The second parameter of jet normalizes the scalar field to lie between 0 and 1 before applying the transfer function.
 
 ![([Example 104](104_Colors/main.cpp)) igl::jet converts a scalar field to a
 color field.](images/104_Colors.png)
+
+`igl::jet` is an example of a standard function in libigl: it
+takes simple types and can be easily reused for many different tasks.
+Not committing to heavy data structures types favors simplicity, ease of use and reusability.
+
+# libigl design principles [104b]
+
+To conclude the introduction, we summarize the main design principles in
+libigl:
+
+1. **No complex data types.** We mostly use matrices and vectors. This greatly favors code reusability and forces the function authors to expose all the parameters used by the algorithm.  
+
+2. **Minimal dependencies.** We use external libraries only when necessary and we wrap them in a small set of functions.
+
+3. **Header-only.** It is straighforward to use our library since it is only one
+  additional include directory in your project. (if you are worried about
+  compilation speed, it is also possible to build the library as a [static
+  library](../build/))
+
+4. **Function encapsulation.** Every function (including its full implementation) is contained in a pair of .h/.cpp files with the same name of the function.
 
 ## Overlays [105]
 
@@ -340,56 +360,6 @@ Eigen::Vector3d M = V.colwise().maxCoeff();
 
 ![([Example 105](105_Overlays/main.cpp)) The bounding box of a mesh is shown
 using overlays.](images/105_Overlays.png)
-
-
-## Picking [106]
-
-Picking vertices and faces using the mouse is very common in geometry
-processing applications. While this might seem a simple operation, its
-implementation is not straighforward. libigl contains a function that solves this problem using the
-[Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels)
-raycaster. Its usage is demonstrated in [Example 106](106_Picking/main.cpp):
-
-```cpp
-bool hit = igl::unproject_in_mesh(
-  Vector2f(x,y),
-  F,
-  viewer.view * viewer.model,
-  viewer.proj,
-  viewer.viewport,
-  *ei,
-  fid,
-  vid);
-```
-
-This function casts a ray from the view plane in the view direction. x,y are
-the mouse screen coordinates; view, model, proj are the view, model and
-projection matrix respectively; viewport is the viewport in opengl format; ei
-contains a [Bounding Volume
-Hierarchy](http://en.wikipedia.org/wiki/Bounding_volume_hierarchy) constructed
-by Embree, and fid and vid are the picked face and vertex, respectively.
-
-![([Example 106](106_Picking/main.cpp)) Picking via ray casting. The selected
-vertices are colored in red.](images/106_Picking.png)
-
-This function is a good example of the design principles in libigl: the
-function takes simple types, mostly matrix or vectors, and can be easily
-reused for many different tasks.  Not committing to heavy data structures,
-favors simplicity, ease of use and reusability.
-
-# libigl design choices [107]
-
-To conclude the introduction, we summarize the main design principles in
-libigl:
-
-1. **No complex data types.** We mostly use matrices and vectors. This greatly favors code reusability and forces the function authors to expose all the parameters used by the algorithm.  
-
-2. **Minimal dependencies.** We use external libraries only when necessary and we wrap them in a small set of functions.
-
-3. **Header-only.** It is straighforward to use our library since it is only one
-  additional include directory in your project. (if you are worried about
-  compilation speed, it is also possible to build the library as a [static
-  library](../build/))
 
 # Chapter 2: Discrete Geometric Quantities and Operators
 This chapter illustrates a few discrete quantities that libigl can compute on a
@@ -535,16 +505,6 @@ respectively.
 ![The `CurvatureDirections` example computes principal curvatures via quadric
 fitting and visualizes mean curvature in pseudocolor and principal directions
 with a cross field.](images/fertility-principal-curvature.jpg)
-
-This is an example of syntax highlighted code:
-
-```cpp
-#include <foo.html>
-int main(int argc, char * argv[])
-{
-  return 0;
-}
-```
 
 ## Gradient
 Scalar functions on a surface can be discretized as a piecewise linear function
@@ -1967,7 +1927,37 @@ Ambient occlusion can be used to darken the surface colors, as shown in
 ![A mesh rendered without (left) and with (right) ambient
 occlusion.](images/606_AmbientOcclusion.png)
 
-## Locally Injective Maps [607]
+## Picking [607]
+
+Picking vertices and faces using the mouse is very common in geometry
+processing applications. While this might seem a simple operation, its
+implementation is not straighforward. libigl contains a function that solves this problem using the
+[Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels)
+raycaster. Its usage is demonstrated in [Example 607](607_Picking/main.cpp):
+
+```cpp
+bool hit = igl::unproject_in_mesh(
+  Vector2f(x,y),
+  F,
+  viewer.view * viewer.model,
+  viewer.proj,
+  viewer.viewport,
+  *ei,
+  fid,
+  vid);
+```
+
+This function casts a ray from the view plane in the view direction. x,y are
+the mouse screen coordinates; view, model, proj are the view, model and
+projection matrix respectively; viewport is the viewport in opengl format; ei
+contains a [Bounding Volume
+Hierarchy](http://en.wikipedia.org/wiki/Bounding_volume_hierarchy) constructed
+by Embree, and fid and vid are the picked face and vertex, respectively.
+
+![([Example 607](607_Picking/main.cpp)) Picking via ray casting. The selected
+vertices are colored in red.](images/607_Picking.png)
+
+## Locally Injective Maps [608]
 
 Extreme deformations or parametrizations with high-distortion might flip
 elements.  This is undesirable in many applications, and it is possible to
@@ -1976,10 +1966,10 @@ of every element remain positive.
 
 libigl can be used to compute Locally Injective Maps [#schuller_2013][] using a variety of
 deformation energies. A simple deformation of a 2D grid is computed in [Example
-607](607_LIM/main.cpp).
+608](608_LIM/main.cpp).
 
 ![A mesh (left) deformed using Laplacian editing (middle) and with Laplacian
-editing plus the anti-flipping conatraints (right).](images/607_LIM.png)
+editing plus the anti-flipping conatraints (right).](images/608_LIM.png)
 
 # Outlook for continuing development [future]
 
