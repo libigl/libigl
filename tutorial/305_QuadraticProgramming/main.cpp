@@ -89,6 +89,9 @@ int main(int argc, char *argv[])
   Aeq = M.diagonal().transpose().sparseView();
   // (Empty inequality constraints)
   solve(viewer);
+  cout<<
+    "Press '.' to increase scale and resolve."<<endl<<
+    "Press ',' to decrease scale and resolve."<<endl;
 
   viewer.launch();
 }

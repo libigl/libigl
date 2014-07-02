@@ -147,6 +147,8 @@ int main(int argc, char *argv[])
   MatrixXd W;
   igl::readDMAT("../shared/armadillo-weights.dmat",W);
   igl::lbs_matrix_column(V,W,M);
+
+  // Cluster according to weights
   VectorXi G;
   {
     VectorXi S;
@@ -154,18 +156,14 @@ int main(int argc, char *argv[])
     igl::partition(W,50,G,S,D);
   }
 
-  // vertices in selection (in regions with weight = delta)
-  //Matrix<bool,Dynamic,1> S = W.array().rowwise().maxCoeff()==1;
-  //igl::colon<int>(0,V.rows()-1,b);
-  //b.conservativeResize(stable_partition( b.data(), b.data()+b.size(), 
-  // [&](int i)->bool{return S(i);})-b.data());
-
+  // vertices corresponding to handles (those with maximum weight)
   {
     VectorXd maxW;
     igl::mat_max(W,1,maxW,b);
   }
 
   // Precomputation for FAST
+  cout<<"Initializing Fast Automatic Skinning Transformations..."<<endl;
   // number of weights
   const int m = W.cols();
   Aeq.resize(m*3,m*3*(3+1));
@@ -190,9 +188,11 @@ int main(int argc, char *argv[])
   igl::columnize(Istack,m,2,L);
 
   // Precomputation for ARAP
+  cout<<"Initializing ARAP..."<<endl;
   arap_data.max_iter = 1;
   igl::arap_precomputation(V,F,V.cols(),b,arap_data);
   // Grouped arap
+  cout<<"Initializing ARAP with grouped edge-sets..."<<endl;
   arap_grouped_data.max_iter = 2;
   arap_grouped_data.G = G;
   igl::arap_precomputation(V,F,V.cols(),b,arap_grouped_data);
@@ -211,6 +211,9 @@ int main(int argc, char *argv[])
   viewer.core.is_animating = false;
   viewer.core.animation_max_fps = 30.;
   cout<<
-    "Press [space] to toggle animation"<<endl;
+    "Press [space] to toggle animation."<<endl<<
+    "Press '0' to reset pose."<<endl<<
+    "Press '.' to switch to next deformation method."<<endl<<
+    "Press ',' to switch to previous deformation method."<<endl;
   viewer.launch();
 }

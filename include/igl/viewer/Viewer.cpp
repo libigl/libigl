@@ -505,7 +505,7 @@ namespace igl
     if (data.V_uv.rows() == 0)
       data.grid_texture();
 
-    core.align_camera_center(data.V);
+    core.align_camera_center(data.V,data.F);
 
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->post_load())
@@ -839,7 +839,9 @@ namespace igl
   }
   void TW_CALL Viewer::align_camera_center_cb(void *clientData)
   {
-    static_cast<Viewer *>(clientData)->core.align_camera_center(static_cast<Viewer *>(clientData)->data.V);
+    static_cast<Viewer *>(clientData)->core.align_camera_center(
+      static_cast<Viewer *>(clientData)->data.V,
+      static_cast<Viewer *>(clientData)->data.F);
   }
 
   void TW_CALL Viewer::save_scene_cb(void *clientData)
@@ -897,13 +899,13 @@ namespace igl
 
   void Viewer::align_camera_center()
   {
-    core.align_camera_center(data.V);
+    core.align_camera_center(data.V,data.F);
   }
 
   void Viewer::set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
   {
     data.set_mesh(V,F);
-    core.align_camera_center(V);
+    core.align_camera_center(V,F);
   }
 
   void Viewer::set_vertices(const Eigen::MatrixXd& V)

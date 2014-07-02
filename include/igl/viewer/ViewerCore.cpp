@@ -8,6 +8,7 @@
 
 #include "ViewerCore.h"
 #include <igl/quat_to_mat.h>
+#include <igl/massmatrix.h>
 #include <Eigen/Geometry>
 
 
@@ -137,23 +138,30 @@ void igl::ViewerCore::InitSerialization()
   #endif
 }
 
-IGL_INLINE void igl::ViewerCore::align_camera_center(const Eigen::MatrixXd& V)
+IGL_INLINE void igl::ViewerCore::align_camera_center(
+  const Eigen::MatrixXd& V,
+  const Eigen::MatrixXi& F)
 {
-  get_scale_and_shift_to_fit_mesh(V,model_zoom,model_translation);
+  get_scale_and_shift_to_fit_mesh(V,F,model_zoom,model_translation);
   object_scale = (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm();
 }
 
 IGL_INLINE void igl::ViewerCore::get_scale_and_shift_to_fit_mesh(
   const Eigen::MatrixXd& V,
+  const Eigen::MatrixXi& F,
   float& zoom,
   Eigen::Vector3f& shift)
 {
   if (V.rows() == 0)
     return;
 
+  //Eigen::SparseMatrix<double> M;
+  //igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_VORONOI,M);
+  //const auto & MV = M*V;
+  //Eigen::RowVector3d centroid  = MV.colwise().sum()/M.diagonal().sum();
   Eigen::RowVector3d min_point = V.colwise().minCoeff();
   Eigen::RowVector3d max_point = V.colwise().maxCoeff();
-  Eigen::RowVector3d centroid  = (max_point.array() + min_point.array())/2;
+  Eigen::RowVector3d centroid  = 0.5*(min_point + max_point);
 
   shift = -centroid.cast<float>();
   double x_scale = fabs(max_point[0] - min_point[0]);

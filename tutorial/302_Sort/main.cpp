@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
   MatrixXd BC,sorted_BC;
   igl::barycenter(V,F,BC);
   VectorXi I,J;
+  // sorted_BC = BC(I,:)
   igl::sortrows(BC,true,sorted_BC,I);
   // Get sorted "place" from sorted indices
   J.resize(I.rows());

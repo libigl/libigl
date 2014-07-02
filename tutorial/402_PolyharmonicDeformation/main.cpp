@@ -101,5 +101,9 @@ int main(int argc, char *argv[])
   viewer.callback_key_down = &key_down;
   viewer.core.is_animating = true;
   viewer.core.animation_max_fps = 30.;
+  cout<<
+    "Press [space] to toggle animation."<<endl<<
+    "Press '.' to increase k."<<endl<<
+    "Press ',' to decrease k."<<endl;
   viewer.launch();
 }

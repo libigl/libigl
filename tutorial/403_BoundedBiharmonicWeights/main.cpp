@@ -156,5 +156,9 @@ int main(int argc, char *argv[])
   viewer.callback_key_down = &key_down;
   viewer.core.is_animating = false;
   viewer.core.animation_max_fps = 30.;
+  cout<<
+    "Press '.' to show next weight function."<<endl<<
+    "Press ',' to show previous weight function."<<endl<<
+    "Press [space] to toggle animation."<<endl;
   viewer.launch();
 }

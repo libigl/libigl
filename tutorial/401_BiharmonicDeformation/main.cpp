@@ -117,5 +117,8 @@ int main(int argc, char *argv[])
   viewer.callback_key_down = &key_down;
   //viewer.core.is_animating = true;
   viewer.core.animation_max_fps = 30.;
+  cout<<
+    "Press [space] to toggle deformation."<<endl<<
+    "Press 'd' to toggle between biharmonic surface or displacements."<<endl;
   viewer.launch();
 }

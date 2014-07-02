@@ -91,5 +91,7 @@ int main(int argc, char *argv[])
       }
     };
   viewer.callback_key_down_data = &data;
+  cout<<
+    "Press [space] to toggle between unconstrained and constrained."<<endl;
   viewer.launch();
 }

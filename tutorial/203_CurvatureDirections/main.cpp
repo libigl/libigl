@@ -49,12 +49,12 @@ int main(int argc, char *argv[])
   // Average edge length for sizing
   const double avg = igl::avg_edge_length(V,F);
 
-  // Draw a red segment parallel to the minimal curvature direction
+  // Draw a blue segment parallel to the minimal curvature direction
   const RowVector3d red(1,0,0),blue(0,0,1);
-  viewer.add_edges(V + PD1*avg, V - PD1*avg, red);
+  viewer.add_edges(V + PD1*avg, V - PD1*avg, blue);
 
-  // Draw a blue segment parallel to the maximal curvature direction
-  viewer.add_edges(V + PD2*avg, V - PD2*avg, blue);
+  // Draw a red segment parallel to the maximal curvature direction
+  viewer.add_edges(V + PD2*avg, V - PD2*avg, red);
 
   // Hide wireframe
   viewer.core.show_lines = false;
