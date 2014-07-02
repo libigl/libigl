@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
   igl::Viewer viewer;
   viewer.data.set_mesh(V, F);
 
-  // Use the x coordinate as a scalar field over the surface
+  // Use the z coordinate as a scalar field over the surface
   Eigen::VectorXd Z = V.col(2);
 
   // Compute per-vertex colors

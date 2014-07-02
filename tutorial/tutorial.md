@@ -7,9 +7,6 @@ html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathja
 <script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 
-> Warning: This tutorial has been prepared for the static material accompanying
-> SGP Grad School 2014. Please find our [up-to-date tutorial notes](http://htmlpreview.github.io/?https://github.com/libigl/libigl/blob/master/tutorial/tutorial.html).
-
 # libigl tutorial notes
 
 #### Daniele Panozzo and Alec Jacobson, SGP Graduate School 2014
@@ -501,7 +498,7 @@ igl::cotmatrix(V,F,L);
 igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_VORONOI,M);
 igl::invert_diag(M,Minv);
 HN = -Minv*(L*V);
-H = (HN.rowwise().squaredNorm()).array().sqrt();
+H = HN.rowwise().norm(); //up to sign
 ```
 
 Combined with the angle defect definition of discrete Gaussian curvature, one
@@ -509,9 +506,10 @@ can define principal curvatures and use least squares fitting to find
 directions [][#meyer_2003].
 
 Alternatively, a robust method for determining principal curvatures is via
-quadric fitting [][#panozzo_2010]. In the neighborhood
-around every vertex, a best-fit quadric is found and principal curvature values
-and directions are analytically computed on this quadric ([Example 203](203_curvatureDirections/main.cpp)).
+quadric fitting [][#panozzo_2010]. In the neighborhood around every vertex, a
+best-fit quadric is found and principal curvature values and directions are
+analytically computed on this quadric ([Example
+203](203_curvatureDirections/main.cpp)).
 
 ![The `CurvatureDirections` example computes principal curvatures via quadric
 fitting and visualizes mean curvature in pseudocolor and principal directions
@@ -534,7 +532,7 @@ Thus gradients of such piecewise linear functions are simply sums of gradients
 of the hat functions:
 
  $\nabla f(\mathbf{x}) \approx
- \nabla \sum\limits_{i=1}^n \nabla \phi_i(\mathbf{x})\, f_i =
+ \nabla \sum\limits_{i=1}^n \phi_i(\mathbf{x})\, f_i =
  \sum\limits_{i=1}^n \nabla \phi_i(\mathbf{x})\, f_i.$
 
 This reveals that the gradient is a linear function of the vector of $f_i$
@@ -636,7 +634,7 @@ or voronoi area around vertex $i$ in the mesh [#meyer_2003][]. The inverse of
 this matrix is also very useful as it transforms integrated quantities into
 point-wise quantities, e.g.:
 
- $\nabla f \approx \mathbf{M}^{-1} \mathbf{L} \mathbf{f}.$
+ $\Delta f \approx \mathbf{M}^{-1} \mathbf{L} \mathbf{f}.$
 
 In general, when encountering squared quantities integrated over the surface,
 the mass matrix will be used as the discretization of the inner product when
