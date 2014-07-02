@@ -1,6 +1,6 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
-// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -16,13 +16,19 @@ namespace igl
 {
   // check if the mesh is edge-manifold
   //
-  // Not clear whether this returns true or false if the mesh is disc topology
+  // Inputs:
+  //   V  #V by dim list of mesh vertex positions **unneeded**
+  //   F  #F by 3 list of triangle indices
+  // Returns whether mesh is edge manifold.
   //
   // Known Bugs:
   //  Does not check for non-manifold vertices
+  //
+  // See also: is_vertex_manifold
   template <typename DerivedV, typename DerivedF>
-  IGL_INLINE bool is_edge_manifold(const Eigen::PlainObjectBase<DerivedV>& V,
-                              const Eigen::PlainObjectBase<DerivedF>& F);
+  IGL_INLINE bool is_edge_manifold(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F);
 }
 
 #ifndef IGL_STATIC_LIBRARY
