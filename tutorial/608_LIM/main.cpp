@@ -4,7 +4,7 @@
 #include <igl/avg_edge_length.h>
 #include <iostream>
 
-#include "igl/lim/compute_lim.h"
+#include "igl/lim/lim.h"
 
 using namespace Eigen;
 using namespace std;
@@ -45,7 +45,7 @@ bool key_down(igl::Viewer& viewer,unsigned char key,int modifier)
     }
 
     if(key != '0')
-      igl::compute_lim(V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
+      igl::lim(V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
 
     // set mesh
     viewer.set_vertices(V1);
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
   b(2*fixedVertices.size()+1) = 0.2;
 
   // compute locally injective map
-  igl::compute_lim(V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
+  igl::lim(V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
 
   // Show mesh
   igl::Viewer viewer;

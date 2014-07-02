@@ -5,10 +5,10 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "compute_lim.h"
+#include "lim.h"
 #include <LIMSolverInterface.h>
 
-IGL_INLINE int igl::compute_lim(
+IGL_INLINE int igl::lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -32,7 +32,7 @@ IGL_INLINE int igl::compute_lim(
     );
 }
 
-IGL_INLINE int igl::compute_lim(
+IGL_INLINE int igl::lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -66,7 +66,7 @@ IGL_INLINE int igl::compute_lim(
     );
 }
 
-IGL_INLINE int igl::compute_lim(
+IGL_INLINE int igl::lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -94,7 +94,7 @@ IGL_INLINE int igl::compute_lim(
     );
 }
 
-IGL_INLINE int igl::compute_lim(
+IGL_INLINE int igl::lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,

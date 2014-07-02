@@ -33,7 +33,7 @@ namespace igl
   //   enableAlphaUpdate (optional) enables dynamic alpha weight adjustment (default = true)
   //   beta              (optional) steepness factor of barrier slopes (default: ARAP/LSCM = 0.01, Green = 1)
   //   eps               (optional) smallest valid triangle area (default: 1e-5 * smallest triangle)
-  //   
+  //
   // where:
   //   v : # vertices
   //   c : # linear constraints
@@ -48,7 +48,7 @@ namespace igl
   // -1 : Max iteration reached before tolerance was fulfilled
   // -2 : not feasible -> has inverted elements (may want to decrease eps?)
 
-  int compute_lim(
+  int lim(
     Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
     const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
     const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -59,7 +59,7 @@ namespace igl
     int maxIteration,
     bool findLocalMinima);
 
-  int compute_lim(
+  int lim(
     Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
     const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
     const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -75,7 +75,7 @@ namespace igl
     double beta,
     double eps);
 
-  int compute_lim(
+  int lim(
     Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
     const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
     const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -88,7 +88,7 @@ namespace igl
     int maxIteration,
     bool findLocalMinima);
 
-  int compute_lim(
+  int lim(
     Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
     const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
     const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -108,7 +108,7 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "compute_lim.cpp"
+#  include "lim.cpp"
 #endif
 
 #endif
