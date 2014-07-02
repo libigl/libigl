@@ -112,11 +112,11 @@ IGL_INLINE int igl::unproject_in_mesh(
   return hits.size();
 }
 
-#ifndef IGL_OPENLGL_4
 
 #ifdef IGL_STATIC_LIBRARY
+#  ifndef IGL_OPENLGL_4
 template int igl::unproject_in_mesh<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(int, int, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&, std::vector<igl::Hit, std::allocator<igl::Hit> >&);
 template int igl::unproject_in_mesh<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(int, int, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
-#endif
-
+#  endif
+template int igl::unproject_in_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, std::vector<igl::Hit, std::allocator<igl::Hit> >&);
 #endif
