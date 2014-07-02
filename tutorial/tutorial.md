@@ -8,8 +8,7 @@ html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathja
 <script>hljs.initHighlightingOnLoad();</script>
 
 > Warning: This tutorial has been prepared for the static material accompanying
-> SGP Grad School 2014. Please find our up-to-date tutorial notes at
-> [https://github.com/libigl/libigl/blob/master/tutorial/tutorial.html](https://github.com/libigl/libigl/blob/master/tutorial/tutorial.html)
+> SGP Grad School 2014. Please find our [up-to-date tutorial notes](http://htmlpreview.github.io/?https://github.com/libigl/libigl/blob/master/tutorial/tutorial.html).
 
 # libigl tutorial notes
 
