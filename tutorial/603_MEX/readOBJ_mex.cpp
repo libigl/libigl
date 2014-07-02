@@ -1,6 +1,5 @@
 #include "mex.h"
 
-#define IGL_HEADER_ONLY
 #include <igl/readOBJ.h>
 #include <igl/matlab/prepare_lhs.h>
 #include <Eigen/Core>
