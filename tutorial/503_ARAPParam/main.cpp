@@ -23,9 +23,15 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     V_uv = initial_guess;
 
   if (show_uv)
+  {
     viewer.data.set_mesh(V_uv,F);
+    viewer.core.align_camera_center(V_uv,F);
+  }
   else
+  {
     viewer.data.set_mesh(V,F);
+    viewer.core.align_camera_center(V,F);
+  }
 
   viewer.data.compute_normals();
 
@@ -51,7 +57,7 @@ int main(int argc, char *argv[])
   arap_data.with_dynamics = true;
   Eigen::VectorXi b  = Eigen::VectorXi::Zero(0);
   Eigen::MatrixXd bc = Eigen::MatrixXd::Zero(0,0);
-  
+
   // Initialize ARAP
   arap_data.max_iter = 100;
   // 2 means that we're going to *solve* in 2d

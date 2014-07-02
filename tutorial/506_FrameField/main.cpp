@@ -165,6 +165,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> texture_R, texture_G, texture_B;
   line_texture(texture_R, texture_G, texture_B);
   viewer.data.set_texture(texture_R, texture_B, texture_G);
+  viewer.core.align_camera_center(viewer.data.V,viewer.data.F);
 
   return false;
 }

@@ -71,8 +71,8 @@ IGL_INLINE void igl::ViewerData::set_mesh(const Eigen::MatrixXd& _V, const Eigen
   // If V only has two columns, pad with a column of zeros
   if (_V.cols() == 2)
   {
-    V_temp = Eigen::MatrixXd::Zero(V.rows(),3);
-    V_temp.block(0,0,V.rows(),2) = _V;
+    V_temp = Eigen::MatrixXd::Zero(_V.rows(),3);
+    V_temp.block(0,0,_V.rows(),2) = _V;
   }
   else
     V_temp = _V;
@@ -92,7 +92,7 @@ IGL_INLINE void igl::ViewerData::set_mesh(const Eigen::MatrixXd& _V, const Eigen
   }
   else
   {
-    if (V.rows() == V.rows() && F.rows() == F.rows())
+    if (_V.rows() == V.rows() && _F.rows() == F.rows())
     {
       V = V_temp;
       F = _F;
@@ -214,7 +214,7 @@ IGL_INLINE void igl::ViewerData::set_texture(
 }
 
 IGL_INLINE void igl::ViewerData::set_points(
-  const Eigen::MatrixXd& P,  
+  const Eigen::MatrixXd& P,
   const Eigen::MatrixXd& C)
 {
   // clear existing points
