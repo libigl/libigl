@@ -794,7 +794,7 @@ subject to some boundary conditions, for example Dirichlet boundary conditions
 
  $\left.z\right|_{\partial{S}} = z_{bc}$
 
-In the discrete setting, this begins with the linear system:
+In the discrete setting, the linear system can be written as:
 
  $\mathbf{L} \mathbf{z} = \mathbf{0}$
 
@@ -827,7 +827,7 @@ the top block:
  \mathbf{z}_{b}\end{array}\right) =
  \mathbf{0}_{in}$$
 
-Where now we can move known values to the right-hand side:
+We can move the known values to the right-hand side:
 
  $$\mathbf{L}_{in,in}
  \mathbf{z}_{in} = -
@@ -837,14 +837,14 @@ Where now we can move known values to the right-hand side:
 Finally we can solve this equation for the unknown values at interior vertices
 $\mathbf{z}_{in}$.
 
-However, probably our vertices are not sorted. One option would be to sort `V`,
+However, our vertices will often not be sorted in this way. One option would be to sort `V`,
 then proceed as above and then _unsort_ the solution `Z` to match `V`. However,
 this solution is not very general.
 
 With array slicing no explicit sort is needed. Instead we can _slice-out_
 submatrix blocks ($\mathbf{L}_{in,in}$, $\mathbf{L}_{in,b}$, etc.) and follow
 the linear algebra above directly. Then we can slice the solution _into_ the
-rows of `Z` corresponding to the interior vertices.
+rows of `Z` corresponding to the interior vertices ([Example 303](303_LaplaceEquation/main.cpp)).
 
 ![The `LaplaceEquation` example solves a Laplace equation with Dirichlet
 boundary conditions.](images/camelhead-laplace-equation.jpg)
@@ -865,7 +865,7 @@ The general problem of minimizing some energy over a mesh subject to fixed
 value boundary conditions is so wide spread that libigl has a dedicated api for
 solving such systems.
 
-Let's consider a general quadratic minimization problem subject to different
+Let us consider a general quadratic minimization problem subject to different
 common constraints:
 
  $$\mathop{\text{minimize }}_\mathbf{z}  \frac{1}{2}\mathbf{z}^T \mathbf{Q} \mathbf{z} +
@@ -906,7 +906,7 @@ igl::min_quad_with_fixed_precompute(Q,b,Aeq,true,mqwf);
 
 The output is a struct `mqwf` which contains the system matrix factorization
 and is used during solving with arbitrary linear terms, known values, and
-constraint right-hand sides:
+constraint in the right-hand sides:
 
 ```cpp
 igl::min_quad_with_fixed_solve(mqwf,B,bc,Beq,Z);
@@ -982,9 +982,9 @@ Differentiating with respect to $\left( \mathbf{z}^T \lambda^T \right)$ reveals
 a linear system and we can solve for $\mathbf{z}$ and $\lambda$. The only
 difference from the straight quadratic _minimization_ system, is that this
 saddle problem system will not be positive definite. Thus, we must use a
-different factorization technique (LDLT rather than LLT). Luckily, libigl's
+different factorization technique (LDLT rather than LLT): libigl's
 `min_quad_with_fixed_precompute` automatically chooses the correct solver in
-the presence of linear equality constraints.
+the presence of linear equality constraints ([Example 304](304_LinearEqualityConstraints/main.cpp)).
 
 ![The example `LinearEqualityConstraints` first solves with just fixed value
 constraints (left: 1 and -1 on the left hand and foot respectively), then
@@ -1017,9 +1017,9 @@ Libigl implements its own active set routine for solving _quadratric programs_
 constraints by enforcing them as equalities and "deactivating" constraints
 which are no longer needed.
 
-After deciding which constraints are active each iteration simple reduces to a
-quadratic minimization subject to linear _equality_ constraints, and the method
-from the previous section is invoked. This is repeated until convergence.
+After deciding which constraints are active at each iteration, the problem
+reduces to a quadratic minimization subject to linear _equality_ constraints,
+and the method from the previous section is invoked. This is repeated until convergence.
 
 Currently the implementation is efficient for box constraints and sparse
 non-overlapping linear inequality constraints.
@@ -1033,9 +1033,9 @@ igl::active_set_params as;
 igl::active_set(Q,B,b,bc,Aeq,Beq,Aieq,Bieq,lx,ux,as,Z);
 ```
 
-![The example `QuadraticProgramming` uses an active set solver to optimize
-discrete biharmonic kernels at multiple scales
-[#rustamov_2011][].](images/cheburashka-multiscale-biharmonic-kernels.jpg)
+![ [Example 305](305_QuadraticProgramming/main.cpp) uses an active set solver to optimize
+discrete biharmonic kernels [#rustamov_2011][] at multiple scales
+.](images/cheburashka-multiscale-biharmonic-kernels.jpg)
 
 # Chapter 4: Shape deformation
 Modern mesh-based shape deformation methods satisfy user deformation
@@ -1053,8 +1053,8 @@ quadratic energy minimization problem or equivalently the solution to a linear
 partial differential equation.
 
 There are many flavors of these techniques, but a prototypical subset are those
-that consider solutions to the bi-Laplace equation, that is biharmonic
-functions [#botsch_2004][]. This fourth-order PDE provides sufficient
+that consider solutions to the bi-Laplace equation, that is a biharmonic
+function [#botsch_2004][]. This fourth-order PDE provides sufficient
 flexibility in boundary conditions to ensure $C^1$ continuity at handle
 constraints (in the limit under refinement) [#jacobson_mixed_2010][].
 
@@ -1072,10 +1072,10 @@ conditions":
  $\mathbf{x}'_{b} = \mathbf{x}_{bc}.$
 
 where $\mathbf{x}'$ is the unknown 3D position of a point on the surface. So we
-are asking that the bi-Laplace of each of spatial coordinate functions to be
+are asking that the bi-Laplacian of each of spatial coordinate function to be
 zero.
 
-In libigl, one can solve a biharmonic problem like this with `igl::harmonic`
+In libigl, one can solve a biharmonic problem with `igl::harmonic`
 and setting $k=2$ (_bi_-harmonic):
 
 ```cpp
@@ -1083,7 +1083,7 @@ and setting $k=2$ (_bi_-harmonic):
 igl::harmonic(V,F,b,U_bc,2,U);
 ```
 
-This produces smooth surfaces that interpolate the handle constraints, but all
+This produces a smooth surface that interpolates the handle constraints, but all
 original details on the surface will be _smoothed away_. Most obviously, if the
 original surface is not already biharmonic, then giving all handles the
 identity deformation (keeping them at their rest positions) will **not**
@@ -1127,7 +1127,7 @@ igl::harmonic(V,F,b,D_bc,2,D);
 U = V+D;
 ```
 
-![The `BiharmonicDeformation` example deforms a statue's head as a _biharmonic
+![The [BiharmonicDeformation](401_BiharmonicDeformation/main.cpp) example deforms a statue's head as a _biharmonic
 surface_ (top) and using a _biharmonic displacements_
 (bottom).](images/max-biharmonic.jpg)
 
@@ -1165,7 +1165,7 @@ int k = 2;// or 1,3,4,...
 igl::harmonic(V,F,b,bc,k,Z);
 ```
 
-![The `PolyharmonicDeformation` example deforms a flat domain (left) into a bump as a
+![The [PolyharmonicDeformation](402_PolyharmonicDeformation/main.cpp) example deforms a flat domain (left) into a bump as a
 solution to various $k$-harmonic PDEs.](images/bump-k-harmonic.jpg)
 
 ## Bounded biharmonic weights
@@ -1188,7 +1188,7 @@ matrix.
 This formula is embarassingly parallel (computation at one point does not
 depend on shared data need by computation at another point). It is often
 implemented as a vertex shader. The weights and rest positions for each vertex
-are sent as vertex shader _attribtues_ and bone transformations are sent as
+are sent as vertex shader _attributes_ and bone transformations are sent as
 _uniforms_. Then vertices are transformed within the vertex shader, just in
 time for rendering.
 
@@ -1210,7 +1210,7 @@ etc.).
 
 Bounded biharmonic weights are one such technique that casts weight computation
 as a constrained optimization problem [#jacobson_2011][]. The weights enforce
-smoothness by minimizing a smoothness energy: the familiar Laplacian energy:
+smoothness by minimizing the familiar Laplacian energy:
 
  $\sum\limits_{i = 1}^m \int_S (\Delta w_i)^2 dA$
 
@@ -1225,9 +1225,9 @@ parition of unity and encourage sparsity:
  $0\le w_i \le 1$ and $\sum\limits_{i=1}^m w_i = 1.$
 
 This is a quadratic programming problem and libigl solves it using its active
-set solver or by calling out to Mosek.
+set solver or by calling out to [Mosek](http://www.mosek.com).
 
-![The example `BoundedBiharmonicWeights` computes weights for a tetrahedral
+![The example [BoundedBiharmonicWeights](403_BoundedBiharmonicWeights/main.cpp) computes weights for a tetrahedral
 mesh given a skeleton (top) and then animates a linear blend skinning
 deformation (bottom).](images/hand-bbw.jpg)
 
@@ -1275,7 +1275,7 @@ internally converts to the dual quaternion representation before blending:
 igl::dqs(V,W,vQ,vT,U);
 ```
 
-![The example `DualQuaternionSkinning` compares linear blend skinning (top) to dual
+![The example [DualQuaternionSkinning](404_DualQuaternionSkinning/main.cpp) compares linear blend skinning (top) to dual
 quaternion skinning (bottom), highlighting LBS's candy wrapper effect (middle)
 and joint collapse (right).](images/arm-dqs.jpg)
 
@@ -1292,11 +1292,11 @@ rotations of the entire shape, but not smoothly varying local rotations. Thus
 linear techniques will not produce non-trivial bending and twisting.
 
 Furthermore, when considering solid shapes (e.g. discretized with tetrahedral
-meshes) linear methods struggle to maintain local volume. Often suffering from
+meshes) linear methods struggle to maintain local volume, and they often suffer from
 shrinking and bulging artifacts.
 
-There exist a family of non-linear deformation techniques that present a
-solution to these problems. They work by comparing the deformation of a mesh
+Non-linear deformation techniques present a solution to these problems.
+They work by comparing the deformation of a mesh
 vertex to its rest position _rotated_ to a new coordinate frame which best
 matches the deformation. The non-linearity stems from the mutual dependence of
 the deformation and the best-fit rotation. These techniques are often labeled
@@ -1380,10 +1380,10 @@ Libigl's implementation of as-rigid-as-possible deformation takes advantage of
 the highly optimized singular value decomposition code from McAdams et al.
 [#mcadams_2011][] which leverages SSE intrinsics.
 
-![The example `AsRigidAsPossible` deforms a surface as if it were made of an
+![The example [AsRigidAsPossible](405_AsRigidAsPossible/main.cpp) deforms a surface as if it were made of an
 elastic material](images/decimated-knight-arap.jpg)
 
-This concept of local rigidity will be revisited shortly in the context of
+The concept of local rigidity will be revisited shortly in the context of
 surface parameterization.
 
 ## Fast automatic skinning transformations
@@ -1419,7 +1419,7 @@ The complexity of the local step---fitting rotations---is still bound
 to the original mesh discretization. However, if the skinning is well behaved,
 we can make the assumption that places on the shape with similar skinning
 weights will deform similarly and thus imply similar best-fit rotations.
-Therefor, we cluster edge-sets according to their representation in
+Therefore, we cluster edge-sets according to their representation in
 _weight-space_: where a vertex $\mathbf{x}$ takes the coordinates
 $[w_1(\mathbf{x}),w_2(\mathbf{x}),\dots,w_m(\mathbf{x})]$. The number of
 clustered edge-sets show diminishing returns on the deformation quality so we
@@ -1479,14 +1479,14 @@ much. In such cases one can use the skinning subspace to build an effective
 clustering of rotation edge-sets for a traditional ARAP optimization: forgoing
 the subspace substitution. This has an two-fold effect. The cost of the
 rotation fitting, local step drastically reduces, and the deformations are
-"regularized" according the clusters. At a vague, high level, if the clusters
+"regularized" according the clusters. From a high level point of view, if the clusters
 are derived from skinning weights, then they will discourage bending,
 especially along isolines of the weight functions.
 
-In this light, we can few the "spokes+rims" style surface ARAP as a (slight and
+In this light, we can think of the "spokes+rims" style surface ARAP as a (slight and
 redundant) clustering of the per-triangle edge-sets.
 
-![The example `FastAutomaticSkinningTransformations` compares a full (slow)
+![The example [FastAutomaticSkinningTransformations](406_FastAutomaticSkinningTransformations/main.cpp) compares a full (slow)
 ARAP deformation on a detailed shape (left of middle), to ARAP with grouped
 rotation edge sets (right of middle), to the very fast subpsace method
 (right).](images/armadillo-fast.jpg)
@@ -2022,7 +2022,7 @@ The `igl::MatlabWorkspace` depends on Matlab libraries to compile and run,
 but---in contrast to the engine routines above---will avoid launching a Matlab
 instance upon execution.
 
-### Dumping Eigen matrices to copy and paste into Matlab 
+### Dumping Eigen matrices to copy and paste into Matlab
 Eigen supplies a sophisticated API for printing its matrix types to the screen.
 Libigl has wrapped up a particularly useful formatting which makes it simple to
 copy standard output from a C++ program into a Matlab IDE. The code:
@@ -2049,20 +2049,20 @@ F = [
   2 4 3
 ];
 LIJV = [
-                      1                     1   -0.7071067811865476
-                      2                     1    0.7071067811865475
-                      3                     1 1.570092458683775e-16
-                      1                     2    0.7071067811865475
-                      2                     2    -1.638010440969447
-                      3                     2    0.6422285251880865
-                      4                     2    0.2886751345948129
-                      1                     3 1.570092458683775e-16
-                      2                     3    0.6422285251880865
-                      3                     3   -0.9309036597828995
-                      4                     3    0.2886751345948129
-                      2                     4    0.2886751345948129
-                      3                     4    0.2886751345948129
-                      4                     4   -0.5773502691896258
+1  1    -0.7071067811865476
+2  1     0.7071067811865475
+3  1  1.570092458683775e-16
+1  2     0.7071067811865475
+2  2     -1.638010440969447
+3  2     0.6422285251880865
+4  2     0.2886751345948129
+1  3  1.570092458683775e-16
+2  3     0.6422285251880865
+3  3    -0.9309036597828995
+4  3     0.2886751345948129
+2  4     0.2886751345948129
+3  4     0.2886751345948129
+4  4    -0.5773502691896258
 ];
 L = sparse(LIJV(:,1),LIJV(:,2),LIJV(:,3));
 ```
@@ -2214,14 +2214,6 @@ in the next months:
   masonry and _3D-printability_ analysis.
 
 * Increase support for point clouds and general polygonal meshes.
-
-> * Generate Matlab and python **wrappers** for all libigl functions
-> 
-> * Include a robust, adaptive **triangular remeshing** algorithm. Currently, we
->   only support quadrilateral remeshing.
-> 
-> * Add a standalone **bounding-volume hierarchy** and a simple ray casting
->   engine to remove the dependency on Embree
 
 * What would you like to see in libigl? [Contact
   us!](mailto:alecjacobson@gmail.com) or post a [feature
