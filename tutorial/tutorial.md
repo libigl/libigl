@@ -177,15 +177,15 @@ Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 ```
 
-**V** is a #N by 3 matrix which stores the coordinates of the vertices. Each
+`V` is a #N by 3 matrix which stores the coordinates of the vertices. Each
 row stores the coordinate of a vertex, with its x,y and z coordinates in the first,
-second and third column, respectively. The matrix **F** stores the triangle
-connectivity: each line of **F** denotes a triangle whose 3 vertices are
-represented as indices pointing to rows of **V**.
+second and third column, respectively. The matrix `F` stores the triangle
+connectivity: each line of `F` denotes a triangle whose 3 vertices are
+represented as indices pointing to rows of `V`.
 
 ![A simple mesh made of 2 triangles and 4 vertices.](images/VF.png)
 
-Note that the order of the vertex indices in **F** determines the orientation of
+Note that the order of the vertex indices in `F` determines the orientation of
 the triangles and it should thus be consistent for the entire surface.
 This simple representation has many advantages:
 
@@ -316,16 +316,16 @@ set_colors function:
 viewer.set_colors(C);
 ```
 
-**C** is a #C by 3 matrix with one RGB color per row. **C** must have as many
+`C` is a #C by 3 matrix with one RGB color per row. `C` must have as many
 rows as the number of faces **or** the number of vertices of the mesh.
-Depending on the size of **C**, the viewer applies the color to the faces or to
+Depending on the size of `C`, the viewer applies the color to the faces or to
 the vertices.
 
 Colors can be used to visualize a scalar function defined on a surface.  The
 scalar function is converted to colors using a color transfer function, which
 maps a scalar value between 0 and 1 to a color. A simple example of a scalar
 field defined on a surface is the z coordinate of each point, which can be
-extract from our mesh representation by taking the last column of **V**
+extract from our mesh representation by taking the last column of `V`
 ([Example 104](104_Colors/main.cpp)). The function `igl::jet` can be used to
 convert it to colors:
 
@@ -334,7 +334,7 @@ Eigen::VectorXd Z = V.col(2);
 igl::jet(Z,true,C);
 ```
 
-The first row extracts the third column from **V** (the z coordinate of each
+The first row extracts the third column from `V` (the z coordinate of each
 vertex) and the second calls a libigl functions that converts a scalar field to colors. The second parameter of jet normalizes the scalar field to lie between 0 and 1 before applying the transfer function.
 
 ![([Example 104](104_Colors/main.cpp)) igl::jet converts a scalar field to a
@@ -370,7 +370,7 @@ These functions are demonstrate in [Example 105](105_Overlays/main.cpp) where
 the bounding box of a mesh is plotted using lines and points.
 Using matrices to encode the mesh and its attributes allows to write short and
 efficient code for many operations, avoiding to write for loops. For example,
-the bounding box of a mesh can be found by taking the colwise maximum and minimum of **V**:
+the bounding box of a mesh can be found by taking the colwise maximum and minimum of `V`:
 
 ```cpp
 Eigen::Vector3d m = V.colwise().minCoeff();
@@ -1904,7 +1904,7 @@ serializer_save.Add(state,"State");
 serializer_save.Save("temp.xml",true);
 ```
 
-This code generates the following xml file (assuming **V** and **F** contains a simple mesh with two triangles, and `ids` contains the numbers 6 and 7):
+This code generates the following xml file (assuming `V` and `F` contains a simple mesh with two triangles, and `ids` contains the numbers 6 and 7):
 
 ```xml
 <:::601_Serialization>
