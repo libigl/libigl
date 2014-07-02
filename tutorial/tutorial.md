@@ -11,6 +11,8 @@ html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathja
 
 #### Daniele Panozzo and Alec Jacobson, SGP Graduate School 2014
 
+![](images/libigl-logo.jpg)
+
 Libigl is an open source C++ library for geometry processing research and
 development.  Dropping the heavy data structures of tradition geometry
 libraries, libigl is a simple header-only library of encapsulated functions.
@@ -278,11 +280,13 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   {
     viewer.data.clear();
     viewer.data.set_mesh(V1, F1);
+    viewer.core.align_camera_center(V1,F1);
   }
   else if (key == '2')
   {
     viewer.data.clear();
     viewer.data.set_mesh(V2, F2);
+    viewer.core.align_camera_center(V2,F2);
   }
   return false;
 }
@@ -1864,7 +1868,7 @@ every time and it also makes your experiments reproducible, allowing to quickly 
 
 Serialization is often not considered in geometry processing due
 to the extreme difficulty in serializing pointer-based data structured, such as
-an half-edge data structure (OpenMesh, CGAL), or a pointer based indexed structure (VCG).
+an half-edge data structure ([OpenMesh](http://openmesh.org), [CGAL](http://www.cgal.org)), or a pointer based indexed structure ([VCG](http://vcg.isti.cnr.it/~cignoni/newvcglib/html/)).
 
 In libigl, serialization is much simpler, since the majority of the functions use basic types, and pointers are used in very rare cases (usually to interface
 with external libraries). Libigl bundles a simple and self-contained XML serialization framework, that drastically reduces the overhead required to add
