@@ -956,6 +956,8 @@ namespace igl
     if (filename.size() > 0)
       load_mesh_from_file(filename.c_str());
 
+    core.align_camera_center(data.V,data.F);
+
     // Rendering loop
     while (!glfwWindowShouldClose(window))
     {
