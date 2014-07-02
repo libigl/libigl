@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   igl::Viewer viewer;
-  viewer.set_mesh(V, F);
+  viewer.data.set_mesh(V, F);
 
   // Use the x coordinate as a scalar field over the surface
   Eigen::VectorXd Z = V.col(2);
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
   igl::jet(Z,true,C);
 
   // Add per-vertex colors
-  viewer.set_colors(C);
+  viewer.data.set_colors(C);
 
   // Launch the viewer
   viewer.launch();

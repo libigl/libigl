@@ -9,10 +9,12 @@ html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathja
 
 > Warning: This tutorial has been prepared for the static material accompanying
 > SGP Grad School 2014. Please find our up-to-date tutorial notes at
-> https://github.com/libigl/libigl/tutorial/tutorial.md
-
+> [https://github.com/libigl/libigl/blob/master/tutorial/tutorial.html](https://github.com/libigl/libigl/blob/master/tutorial/tutorial.html)
 
 # libigl tutorial notes
+
+#### Daniele Panozzo and Alec Jacobson, SGP Graduate School 2014
+
 Libigl is an open source C++ library for geometry processing research and
 development.  Dropping the heavy data structures of tradition geometry
 libraries, libigl is a simple header-only library of encapsulated functions.
@@ -238,7 +240,7 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   igl::Viewer viewer;
-  viewer.set_mesh(V, F);
+  viewer.data.set_mesh(V, F);
   viewer.launch();
 }
 ```
@@ -278,13 +280,13 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key == '1')
   {
-    viewer.clear();
-    viewer.set_mesh(V1, F1);
+    viewer.data.clear();
+    viewer.data.set_mesh(V1, F1);
   }
   else if (key == '2')
   {
-    viewer.clear();
-    viewer.set_mesh(V2, F2);
+    viewer.data.clear();
+    viewer.data.set_mesh(V2, F2);
   }
   return false;
 }
@@ -313,7 +315,7 @@ Colors and normals can be associated to faces or vertices using the
 set_colors function:
 
 ```cpp
-viewer.set_colors(C);
+viewer.data.set_colors(C);
 ```
 
 `C` is a #C by 3 matrix with one RGB color per row. `C` must have as many
@@ -349,19 +351,19 @@ heavy data structures types favors simplicity, ease of use and reusability.
 In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helful while developing geometric processing algorithms to plot debug informations.
 
 ```cpp
-viewer.add_points(P,Eigen::RowVector3d(r,g,b));
+viewer.data.add_points(P,Eigen::RowVector3d(r,g,b));
 ```
 
 Draws a point of color r,g,b for each row of P. The point is placed at the coordinates specified in each row of P, which is a #P by 3 matrix.
 
 ```cpp
-viewer.add_edges(P1,P2,Eigen::RowVector3d(r,g,b);
+viewer.data.add_edges(P1,P2,Eigen::RowVector3d(r,g,b);
 ```
 
 Draws a line of color r,g,b for each row of P1 and P2, which connects the 3D point in to the point in P2. Both P1 and P2 are of size #P by 3.
 
 ```cpp
-viewer.add_label(p,str);
+viewer.data.add_label(p,str);
 ```
 
 Draws a label containing the string str at the position p, which is a vector of length 3.
@@ -1548,7 +1550,7 @@ functions is designed to be reusable in other parametrization algorithms.
 A UV parametrization can be visualized in the viewer with:
 
 ```cpp
-viewer.set_uv(V_uv);
+viewer.data.set_uv(V_uv);
 ```
 
 The UV coordinates are then used to apply a procedural checkerboard texture to the
@@ -2162,9 +2164,9 @@ raycaster. Its usage is demonstrated in [Example 607](607_Picking/main.cpp):
 bool hit = igl::unproject_in_mesh(
   Vector2f(x,y),
   F,
-  viewer.view * viewer.model,
-  viewer.proj,
-  viewer.viewport,
+  viewer.core.view * viewer.core.model,
+  viewer.core.proj,
+  viewer.core.viewport,
   *ei,
   fid,
   vid);

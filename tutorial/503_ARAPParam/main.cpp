@@ -23,11 +23,11 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     V_uv = initial_guess;
 
   if (show_uv)
-    viewer.set_mesh(V_uv,F);
+    viewer.data.set_mesh(V_uv,F);
   else
-    viewer.set_mesh(V,F);
+    viewer.data.set_mesh(V,F);
 
-  viewer.compute_normals();
+  viewer.data.compute_normals();
 
   return false;
 }
@@ -69,8 +69,8 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   igl::Viewer viewer;
-  viewer.set_mesh(V, F);
-  viewer.set_uv(V_uv);
+  viewer.data.set_mesh(V, F);
+  viewer.data.set_uv(V_uv);
   viewer.callback_key_down = &key_down;
 
   // Disable wireframe

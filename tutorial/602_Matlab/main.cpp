@@ -29,7 +29,7 @@ void plotEV(igl::Viewer& viewer, int id)
     C.row(i) << r,g,b;
   }
 
-  viewer.set_colors(C);
+  viewer.data.set_colors(C);
 }
 
 // This function is called every time a keyboard button is pressed
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
   // Plot the mesh
   igl::Viewer viewer;
   viewer.callback_key_down = &key_down;
-  viewer.set_mesh(V, F);
+  viewer.data.set_mesh(V, F);
 
   // Plot the first non-trivial eigenvector
   plotEV(viewer,1);

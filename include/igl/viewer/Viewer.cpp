@@ -415,7 +415,7 @@ namespace igl
     scroll_position = 0.0f;
 
     // Per face
-    set_face_based(false);
+    data.set_face_based(false);
 
     // C-style callbacks
     callback_pre_draw     = 0;
@@ -553,11 +553,6 @@ namespace igl
       return false;
     }
     return true;
-  }
-
-  void Viewer::clear()
-  {
-    data.clear();
   }
 
   bool Viewer::key_down(unsigned char key, int modifiers)
@@ -869,7 +864,7 @@ namespace igl
   void TW_CALL Viewer::set_face_based_cb(const void *param, void *clientData)
   {
     Viewer *viewer = static_cast<Viewer *>(clientData);
-    viewer->set_face_based(*((bool *) param));
+    viewer->data.set_face_based(*((bool *) param));
   }
 
   void TW_CALL Viewer::get_face_based_cb(void *param, void *clientData)
@@ -885,91 +880,6 @@ namespace igl
       return;
 
     static_cast<Viewer *>(clientData)->load_mesh_from_file(fname.c_str());
-  }
-
-  void Viewer::set_face_based(bool newvalue)
-  {
-    data.set_face_based(newvalue);
-  }
-
-  void Viewer::compute_normals()
-  {
-    data.compute_normals();
-  }
-
-  void Viewer::align_camera_center()
-  {
-    core.align_camera_center(data.V,data.F);
-  }
-
-  void Viewer::set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F)
-  {
-    data.set_mesh(V,F);
-    core.align_camera_center(V,F);
-  }
-
-  void Viewer::set_vertices(const Eigen::MatrixXd& V)
-  {
-    data.set_vertices(V);
-  }
-
-  void Viewer::set_normals(const Eigen::MatrixXd& N)
-  {
-    data.set_normals(N);
-  }
-
-  void Viewer::set_colors(const Eigen::MatrixXd &C)
-  {
-    data.set_colors(C);
-  }
-
-  void Viewer::set_uv(const Eigen::MatrixXd& UV)
-  {
-    data.set_uv(UV);
-  }
-
-  void Viewer::set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
-  {
-    data.set_uv(UV_V,UV_F);
-  }
-
-
-  void Viewer::set_texture(
-    const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
-    const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
-    const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B)
-  {
-    data.set_texture(R,G,B);
-  }
-
-  void Viewer::set_points(
-    const Eigen::MatrixXd& P,
-    const Eigen::MatrixXd& C)
-  {
-    data.set_points(P,C);
-  }
-
-  void Viewer::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
-  {
-    data.add_points(P,C);
-  }
-
-  void Viewer::set_edges(
-    const Eigen::MatrixXd& P,
-    const Eigen::MatrixXi& E,
-    const Eigen::MatrixXd& C)
-  {
-    data.set_edges(P,E,C);
-  }
-
-  void Viewer::add_edges(const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
-  {
-    data.add_edges(P1,P2,C);
-  }
-
-  void Viewer::add_label(const Eigen::VectorXd& P,  const std::string& str)
-  {
-    data.add_label(P,str);
   }
 
   int Viewer::launch(std::string filename)

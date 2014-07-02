@@ -24,8 +24,8 @@ bool pre_draw(igl::Viewer & viewer)
     resolve = false;
   }
   U.col(2) = z_max*Z;
-  viewer.set_vertices(U);
-  viewer.compute_normals();
+  viewer.data.set_vertices(U);
+  viewer.data.compute_normals();
   if(viewer.core.is_animating)
   {
     z_max += z_dir;
@@ -92,9 +92,9 @@ int main(int argc, char *argv[])
 
   // Plot the mesh with pseudocolors
   igl::Viewer viewer;
-  viewer.set_mesh(U, F);
+  viewer.data.set_mesh(U, F);
   viewer.core.show_lines = false;
-  viewer.set_colors(C);
+  viewer.data.set_colors(C);
   viewer.core.trackball_angle << -0.58,-0.03,-0.03,0.81;
   viewer.core.trackball_angle.normalize();
   viewer.callback_pre_draw = &pre_draw;

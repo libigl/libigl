@@ -32,14 +32,14 @@ int main(int argc, char *argv[])
   const VectorXd GU_mag = GU.rowwise().norm();
 
   igl::Viewer viewer;
-  viewer.set_mesh(V, F);
+  viewer.data.set_mesh(V, F);
 
   // Compute pseudocolor for original function
   MatrixXd C;
   igl::jet(U,true,C);
   // // Or for gradient magnitude
   //igl::jet(GU_mag,true,C);
-  viewer.set_colors(C);
+  viewer.data.set_colors(C);
 
   // Average edge length divided by average gradient (for scaling)
   const double max_size = igl::avg_edge_length(V,F) / GU_mag.mean();
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
   MatrixXd BC;
   igl::barycenter(V,F,BC);
   const RowVector3d black(0,0,0);
-  viewer.add_edges(BC,BC+max_size*GU, black);
+  viewer.data.add_edges(BC,BC+max_size*GU, black);
 
   // Hide wireframe
   viewer.core.show_lines = false;

@@ -66,8 +66,8 @@ bool pre_draw(igl::Viewer & viewer)
       }
     }
     igl::arap_solve(bc,arap_data,U);
-    viewer.set_vertices(U);
-    viewer.compute_normals();
+    viewer.data.set_vertices(U);
+    viewer.data.compute_normals();
   if(viewer.core.is_animating)
   {
     anim_t += anim_t_dir;
@@ -121,8 +121,8 @@ int main(int argc, char *argv[])
 
   // Plot the mesh with pseudocolors
   igl::Viewer viewer;
-  viewer.set_mesh(U, F);
-  viewer.set_colors(C);
+  viewer.data.set_mesh(U, F);
+  viewer.data.set_colors(C);
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
   viewer.core.is_animating = false;
