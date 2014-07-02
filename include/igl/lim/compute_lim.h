@@ -9,6 +9,7 @@
 #define IGL_COMPUTE_LIM_H
 #include <igl/igl_inline.h>
 #include <Eigen/Core>
+#include <Eigen/Sparse>
 
 namespace igl
 {

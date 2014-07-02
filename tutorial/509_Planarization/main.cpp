@@ -1,4 +1,4 @@
-#include <igl/readOBJ.h>
+#include <igl/readOFF.h>
 #include <igl/readDMAT.h>
 #include <igl/viewer/Viewer.h>
 #include <igl/barycenter.h>

@@ -18,20 +18,20 @@ development.  Dropping the heavy data structures of tradition geometry
 libraries, libigl is a simple header-only library of encapsulated functions.
 This combines the rapid prototyping familiar to Matlab or Python programmers
 with the performance and versatility of C++.  The tutorial is a self-contained,
-hands-on introduction to libigl.  Via live coding and interactive examples, we
+hands-on introduction to libigl.  Via interactive, step-by-step examples, we
 demonstrate how to accomplish common geometry processing tasks such as
 computation of differential quantities and operators, real-time deformation,
-parametrization, numerical optimization and remeshing. Each section
-of the lecture notes links to a cross-platform example application.
+parametrization, numerical optimization and remeshing. Each section of the
+lecture notes links to a cross-platform example application.
 
 # Table of contents
 
 * [Chapter 1: Introduction to libigl][100]
+    * [Libigl design principles][100b]
     * [101 Mesh representation][101]
-    * [102 Plotting surfaces][102]
+    * [102 Visualizing surfaces][102]
     * [103 Interaction with keyboard and mouse][103]
     * [104 Scalar field visualization][104]
-        * [libigl design principles][104b]
     * [105 Overlays][105]
 * [Chapter 2: Discrete Geometric Quantities and
   Operators](#chapter2:discretegeometricquantitiesandoperators)
@@ -96,11 +96,33 @@ concepts of libigl and introduce a simple mesh viewer that allows to
 visualize a surface mesh and its attributes. All the tutorial examples are
 cross-platform and can be compiled on MacOSX, Linux and Windows.
 
+## libigl design principles [100b]
+
+Before getting into the examples, we summarize the main design principles in
+libigl:
+
+1. **No complex data types.** We mostly use matrices and vectors. This greatly
+  favors code reusability and forces the function authors to expose all the
+  parameters used by the algorithm.  
+
+2. **Minimal dependencies.** We use external libraries only when necessary and
+  we wrap them in a small set of functions.
+
+3. **Header-only.** It is straight forward to use our library since it is only
+  one additional include directory in your project. (if you are worried about
+  compilation speed, it is also possible to build the library as a [static
+  library](../build/))
+
+4. **Function encapsulation.** Every function (including its full
+  implementation) is contained in a pair of .h/.cpp files with the same name of
+  the function.
+
+
 ### Downloading libigl
 libigl can be downloaded from our [github
 repository](https://github.com/libigl/libigl) or cloned with git:
 
-```sh
+```bash
 git clone https://github.com/libigl/libigl.git
 ```
 
@@ -112,7 +134,7 @@ The examples in this tutorial depend on [glfw](http://www.glfw.org),
 The source code of each library is bundled with libigl
 and they can be compiled all at once using:
 
-```sh
+```bash
 sh compile_dependencies_macosx.sh (MACOSX)
 sh compile_dependencies_linux.sh (LINUX)
 ```
@@ -122,7 +144,7 @@ For windows, precompiled binaries are provided (Visual Studio 2014 64bit).
 To build all the examples in the tutorial, you can use the CMakeLists.txt in
 the tutorial folder:
 
-```sh
+```bash
 cd tutorial
 mkdir build
 cd build
@@ -189,9 +211,9 @@ igl::writeOBJ("cube.obj",V,F);
 [Example 101](101_FileIO/main.cpp) contains a simple mesh
 converter from OFF to OBJ format.
 
-## Plotting surfaces [102]
+## Visualizing surfaces [102]
 
-libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
+Libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
 properties and additional debugging informations.
 
 The following code ([Example 102](102_DrawMesh/main.cpp)) is a basic skeleton
@@ -265,7 +287,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 }
 ```
 
-The callback has to registered in the viewer as follows:
+The callback is registered in the viewer as follows:
 
 ```cpp
 viewer.callback_key_down = &key_down;
@@ -279,7 +301,8 @@ useful, for example, to disable the default mouse event handling if you want to
 control the camera directly in your code.
 
 The viewer can be extended using plugins, which are classes that implements all
-the viewer's callbacks. See the [Viewer_plugin](../include/igl/viewer/ViewerPlugin.h) for more details.
+the viewer's callbacks. See the
+[Viewer_plugin](../include/igl/viewer/ViewerPlugin.h) for more details.
 
 ## Scalar field visualization [104]
 
@@ -295,17 +318,17 @@ rows as the number of faces **or** the number of vertices of the mesh.
 Depending on the size of **C**, the viewer applies the color to the faces or to
 the vertices.
 
-Colors can be used to visualize a scalar function defined on a surface.
-The scalar function is converted to colors using a color transfer function,
-which maps a scalar value between 0 and 1 to a color. A simple example
-of a scalar field defined on a surface is the z coordinate of each point,
-which can be extract from our mesh representation by
-taking the last column of **V** ([Example 104](104_Colors/main.cpp)). The function `igl::jet` can be used to convert it
-to colors:
+Colors can be used to visualize a scalar function defined on a surface.  The
+scalar function is converted to colors using a color transfer function, which
+maps a scalar value between 0 and 1 to a color. A simple example of a scalar
+field defined on a surface is the z coordinate of each point, which can be
+extract from our mesh representation by taking the last column of **V**
+([Example 104](104_Colors/main.cpp)). The function `igl::jet` can be used to
+convert it to colors:
 
 ```cpp
-Eigen::VectorXd x = V.col(2);
-igl::jet(x,true,C);
+Eigen::VectorXd Z = V.col(2);
+igl::jet(Z,true,C);
 ```
 
 The first row extracts the third column from **V** (the z coordinate of each
@@ -314,25 +337,9 @@ vertex) and the second calls a libigl functions that converts a scalar field to 
 ![([Example 104](104_Colors/main.cpp)) igl::jet converts a scalar field to a
 color field.](images/104_Colors.png)
 
-`igl::jet` is an example of a standard function in libigl: it
-takes simple types and can be easily reused for many different tasks.
-Not committing to heavy data structures types favors simplicity, ease of use and reusability.
-
-# libigl design principles [104b]
-
-To conclude the introduction, we summarize the main design principles in
-libigl:
-
-1. **No complex data types.** We mostly use matrices and vectors. This greatly favors code reusability and forces the function authors to expose all the parameters used by the algorithm.  
-
-2. **Minimal dependencies.** We use external libraries only when necessary and we wrap them in a small set of functions.
-
-3. **Header-only.** It is straighforward to use our library since it is only one
-  additional include directory in your project. (if you are worried about
-  compilation speed, it is also possible to build the library as a [static
-  library](../build/))
-
-4. **Function encapsulation.** Every function (including its full implementation) is contained in a pair of .h/.cpp files with the same name of the function.
+`igl::jet` is an example of a standard function in libigl: it takes simple
+types and can be easily reused for many different tasks.  Not committing to
+heavy data structures types favors simplicity, ease of use and reusability.
 
 ## Overlays [105]
 
@@ -1930,7 +1937,7 @@ common to have to do small changes to figures, and being able to serialize the e
 
 ## Mixing Matlab code [602]
 
-libigl can be interfaced with matlab to offload numerically heavy
+Libigl can be interfaced with matlab to offload numerically heavy
 computation to a matlab script. The major advantage of this approach is that you will be able to develop efficient and complex user-interfaces in C++, while exploting the syntax and fast protototyping features of matlab. In particular, the use of an external matlab script in a libigl application allows to change the matlab code while the C++ application is running, greatly increasing coding efficiency.
 
 We demonstrate how to integrate Matlab in a libigl application in [Example
@@ -1938,7 +1945,7 @@ We demonstrate how to integrate Matlab in a libigl application in [Example
 Eigenfunctions of the discrete Laplacian operator, relying on libigl for mesh
 IO, visualization and for computing the Laplacian operator.
 
-libigl can connect to an existing instance of Matlab (or launching a new one on
+Libigl can connect to an existing instance of Matlab (or launching a new one on
 Linux/MacOSX) using:
 
 ```cpp
@@ -2083,7 +2090,7 @@ elements.  This is undesirable in many applications, and it is possible to
 avoid it by introducing a non-linear contraints that guarantees that the area
 of every element remain positive.
 
-libigl can be used to compute Locally Injective Maps [#schuller_2013][] using a variety of
+Libigl can be used to compute Locally Injective Maps [#schuller_2013][] using a variety of
 deformation energies. A simple deformation of a 2D grid is computed in [Example
 608](608_LIM/main.cpp).
 
@@ -2092,7 +2099,7 @@ editing plus the anti-flipping conatraints (right).](images/608_LIM.png)
 
 # Outlook for continuing development [future]
 
-libigl is in active development, and we plan to focus on the following features
+Libigl is in active development, and we plan to focus on the following features
 in the next months:
 
 * A better and more consistent **documentation**, plus extending this tutorial to cover more libigl features

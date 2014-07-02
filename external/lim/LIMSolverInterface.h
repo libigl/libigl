@@ -144,7 +144,7 @@ LIMData* InitLIM(
     triMesh->IsCorotatedTriangles = false;
 
     triMesh->BorderVertices->resize(borderVertices.size(),1);
-    for(int i=0;i<borderVertices.size();i++)
+    for(int i=0;i<(int)borderVertices.size();i++)
       triMesh->BorderVertices->coeffRef(i) = borderVertices[i];
   }
   

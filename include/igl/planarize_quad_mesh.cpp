@@ -59,13 +59,13 @@ inline igl::PlanarizerShapeUp<DerivedV, DerivedF>::PlanarizerShapeUp(const Eigen
                                                                      const Eigen::PlainObjectBase<DerivedF> &F_,
                                                                      const int maxIter_,
                                                                      const double &threshold_):
+numV(V_.rows()),
+numF(F_.rows()),
 Vin(V_),
 Fin(F_),
+weightsSqrt(Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 1>::Ones(numF,1)),
 maxIter(maxIter_),
-threshold(threshold_),
-numF(F_.rows()),
-numV(V_.rows()),
-weightsSqrt(Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 1>::Ones(numF,1))
+threshold(threshold_)
 {
   // assemble stacked vertex position vector
   Vv.setZero(3*numV,1);
@@ -198,7 +198,7 @@ inline void igl::PlanarizerShapeUp<DerivedV, DerivedF>::planarize(Eigen::PlainOb
   {
     igl::quad_planarity(Vout, Fin, planarity);
     typename DerivedV::Scalar nonPlanarity = planarity.cwiseAbs().maxCoeff();
-    std::cerr<<"iter #"<<iter<<": max non-planarity: "<<nonPlanarity<<std::endl;
+    //std::cerr<<"iter #"<<iter<<": max non-planarity: "<<nonPlanarity<<std::endl;
     if (nonPlanarity<threshold)
       break;
     assembleP();
@@ -231,3 +231,8 @@ IGL_INLINE void igl::planarize_quad_mesh(const Eigen::PlainObjectBase<DerivedV> 
   PlanarizerShapeUp<DerivedV, DerivedF> planarizer(Vin, Fin, maxIter, threshold);
   planarizer.planarize(Vout);
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instanciation
+template void igl::planarize_quad_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, double const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+#endif

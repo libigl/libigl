@@ -1,4 +1,3 @@
-#define IGL_HEADER_ONLY
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
 #include <igl/jet.h>
@@ -17,10 +16,10 @@ int main(int argc, char *argv[])
   viewer.set_mesh(V, F);
 
   // Use the x coordinate as a scalar field over the surface
-  Eigen::VectorXd x = V.col(2);
+  Eigen::VectorXd Z = V.col(2);
 
   // Compute per-vertex colors
-  igl::jet(x,true,C);
+  igl::jet(Z,true,C);
 
   // Add per-vertex colors
   viewer.set_colors(C);
