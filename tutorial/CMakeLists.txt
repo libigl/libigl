@@ -8,10 +8,10 @@ SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 find_package(LIBCOMISO QUIET)
 
 ## Check for MATLAB, if not available skip the examples that depends on it
-find_package(LIBMATLAB QUIET)
+find_package(MATLAB QUIET)
 
 ## Check for EMBREE, if not available skip the examples that depends on it
-find_package(LIBEMBREE QUIET)
+find_package(EMBREE QUIET)
 
 # Chapter 1
 add_subdirectory("101_FileIO")

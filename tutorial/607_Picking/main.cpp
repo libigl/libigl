@@ -1,7 +1,7 @@
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
 #include <igl/embree/EmbreeIntersector.h>
-#include <igl/embree/unproject_in_mesh.h>
+#include <igl/embree/unproject_onto_mesh.h>
 
 #include <algorithm>
 
@@ -26,12 +26,12 @@ bool mouse_down(igl::Viewer& viewer, int button, int modifier)
 
   // Cast a ray in the view direction starting from the mouse position
   double x = viewer.current_mouse_x;
-  double y = viewer.viewport(3) - viewer.current_mouse_y;
-  bool hit = unproject_in_mesh(Vector2f(x,y),
+  double y = viewer.core.viewport(3) - viewer.current_mouse_y;
+  bool hit = unproject_onto_mesh(Vector2f(x,y),
                                 F,
-                                viewer.view * viewer.model,
-                                viewer.proj,
-                                viewer.viewport,
+                                viewer.core.view * viewer.core.model,
+                                viewer.core.proj,
+                                viewer.core.viewport,
                                 *ei,
                                 fid,
                                 vid);
