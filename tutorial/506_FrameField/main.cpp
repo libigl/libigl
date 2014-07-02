@@ -72,14 +72,14 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   if (key <'1' || key >'6')
     return false;
 
-  viewer.clear();
+  viewer.data.clear();
   viewer.core.show_lines = false;
   viewer.core.show_texture = false;
 
   if (key == '1')
   {
     // Frame field constraints
-    viewer.set_mesh(V, F);
+    viewer.data.set_mesh(V, F);
 
     MatrixXd F1_t = MatrixXd::Zero(FF1.rows(),FF1.cols());
     MatrixXd F2_t = MatrixXd::Zero(FF2.rows(),FF2.cols());
@@ -92,7 +92,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
       F2_t.row(b(i)) = bc2.row(i);
     }
 
-    viewer.set_colors(C);
+    viewer.data.set_colors(C);
 
     MatrixXd C1,C2;
     VectorXd K1 = F1_t.rowwise().norm();
@@ -100,71 +100,71 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     igl::jet(K1,true,C1);
     igl::jet(K2,true,C2);
 
-    viewer.add_edges (B - global_scale*F1_t, B + global_scale*F1_t ,C1);
-    viewer.add_edges (B - global_scale*F2_t, B + global_scale*F2_t ,C2);
+    viewer.data.add_edges(B - global_scale*F1_t, B + global_scale*F1_t ,C1);
+    viewer.data.add_edges(B - global_scale*F2_t, B + global_scale*F2_t ,C2);
   }
 
   if (key == '2')
   {
     // Frame field
-    viewer.set_mesh(V, F);
+    viewer.data.set_mesh(V, F);
     MatrixXd C1,C2;
     VectorXd K1 = FF1.rowwise().norm();
     VectorXd K2 = FF2.rowwise().norm();
     igl::jet(K1,true,C1);
     igl::jet(K2,true,C2);
 
-    viewer.add_edges (B - global_scale*FF1, B + global_scale*FF1 ,C1);
-    viewer.add_edges (B - global_scale*FF2, B + global_scale*FF2 ,C2);
+    viewer.data.add_edges(B - global_scale*FF1, B + global_scale*FF1 ,C1);
+    viewer.data.add_edges(B - global_scale*FF2, B + global_scale*FF2 ,C2);
 
     // Highlight in red the constrained faces
     MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
     for (unsigned i=0; i<b.size();++i)
       C.row(b(i)) << 1, 0, 0;
-    viewer.set_colors(C);
+    viewer.data.set_colors(C);
 
   }
 
   if (key == '3')
   {
     // Deformed with frame field
-    viewer.set_mesh(V_deformed, F);
-    viewer.add_edges (B_deformed - global_scale*FF1_deformed, B_deformed + global_scale*FF1_deformed ,Eigen::RowVector3d(1,0,0));
-    viewer.add_edges (B_deformed - global_scale*FF2_deformed, B_deformed + global_scale*FF2_deformed ,Eigen::RowVector3d(0,0,1));
-    viewer.set_colors(RowVector3d(1,1,1));
+    viewer.data.set_mesh(V_deformed, F);
+    viewer.data.add_edges(B_deformed - global_scale*FF1_deformed, B_deformed + global_scale*FF1_deformed ,Eigen::RowVector3d(1,0,0));
+    viewer.data.add_edges(B_deformed - global_scale*FF2_deformed, B_deformed + global_scale*FF2_deformed ,Eigen::RowVector3d(0,0,1));
+    viewer.data.set_colors(RowVector3d(1,1,1));
   }
 
   if (key == '4')
   {
     // Deformed with cross field
-    viewer.set_mesh(V_deformed, F);
-    viewer.add_edges (B_deformed - global_scale*X1_deformed, B_deformed + global_scale*X1_deformed ,Eigen::RowVector3d(0,0,1));
-    viewer.add_edges (B_deformed - global_scale*X2_deformed, B_deformed + global_scale*X2_deformed ,Eigen::RowVector3d(0,0,1));
-    viewer.set_colors(RowVector3d(1,1,1));
+    viewer.data.set_mesh(V_deformed, F);
+    viewer.data.add_edges(B_deformed - global_scale*X1_deformed, B_deformed + global_scale*X1_deformed ,Eigen::RowVector3d(0,0,1));
+    viewer.data.add_edges(B_deformed - global_scale*X2_deformed, B_deformed + global_scale*X2_deformed ,Eigen::RowVector3d(0,0,1));
+    viewer.data.set_colors(RowVector3d(1,1,1));
   }
 
   if (key == '5')
   {
     // Deformed with quad texture
-    viewer.set_mesh(V_deformed, F);
-    viewer.set_uv(V_uv,F_uv);
-    viewer.set_colors(RowVector3d(1,1,1));
+    viewer.data.set_mesh(V_deformed, F);
+    viewer.data.set_uv(V_uv,F_uv);
+    viewer.data.set_colors(RowVector3d(1,1,1));
     viewer.core.show_texture = true;
   }
 
   if (key == '6')
   {
     // Deformed with quad texture
-    viewer.set_mesh(V, F);
-    viewer.set_uv(V_uv,F_uv);
-    viewer.set_colors(RowVector3d(1,1,1));
+    viewer.data.set_mesh(V, F);
+    viewer.data.set_uv(V_uv,F_uv);
+    viewer.data.set_colors(RowVector3d(1,1,1));
     viewer.core.show_texture = true;
   }
 
   // Replace the standard texture with an integer shift invariant texture
   Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> texture_R, texture_G, texture_B;
   line_texture(texture_R, texture_G, texture_B);
-  viewer.set_texture(texture_R, texture_B, texture_G);
+  viewer.data.set_texture(texture_R, texture_B, texture_G);
 
   return false;
 }

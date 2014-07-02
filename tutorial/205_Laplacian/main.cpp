@@ -67,9 +67,9 @@ int main(int argc, char *argv[])
         return false;
     }
     // Send new positions, update normals, recenter
-    viewer.set_vertices(U);
-    viewer.compute_normals();
-    viewer.align_camera_center();
+    viewer.data.set_vertices(U);
+    viewer.data.compute_normals();
+    viewer.core.align_camera_center(V,F);
     return true;
   };
 
@@ -81,8 +81,8 @@ int main(int argc, char *argv[])
 
   // Initialize smoothing with base mesh
   U = V;
-  viewer.set_mesh(U, F);
-  viewer.set_colors(C);
+  viewer.data.set_mesh(U, F);
+  viewer.data.set_colors(C);
   viewer.callback_key_down = key_down;
 
   cout<<"Press [space] to smooth."<<endl;;

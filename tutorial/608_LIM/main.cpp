@@ -48,7 +48,7 @@ bool key_down(igl::Viewer& viewer,unsigned char key,int modifier)
       igl::lim(V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
 
     // set mesh
-    viewer.set_vertices(V1);
+    viewer.data.set_vertices(V1);
 
     return true;
   }
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
   // Show mesh
   igl::Viewer viewer;
   viewer.callback_key_down = &key_down;
-  viewer.set_mesh(V1, F);
+  viewer.data.set_mesh(V1, F);
   viewer.core.show_lines = true;
   viewer.core.lighting_factor = 0.0f;
   viewer.launch();

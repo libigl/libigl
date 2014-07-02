@@ -74,51 +74,6 @@ namespace igl
     // Keep track of the global position of the scrollwheel
     float scroll_position;
 
-    // Wrappers for ViewerCore functions
-    void align_camera_center();
-
-    // Wrappers for ViewerData functions
-
-    void clear();
-    void compute_normals();
-    void set_face_based(bool newvalue);
-    void set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
-    void set_vertices(const Eigen::MatrixXd& V);
-    void set_normals(const Eigen::MatrixXd& N);
-    void set_colors(const Eigen::MatrixXd &C);
-    void set_uv(const Eigen::MatrixXd& UV);
-    void set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
-    void set_texture(
-                      const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
-                      const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
-                      const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B);
-
-    // Sets points given a list of point vertices. In constrast to `set_points`
-    // this will (purposefully) clober existing points.
-    //
-    // Inputs:
-    //   P  #P by 3 list of vertex positions
-    //   C  #P|1 by 3 color(s)
-    void set_points(
-      const Eigen::MatrixXd& P,  
-      const Eigen::MatrixXd& C);
-    void add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
-    // Sets edges given a list of edge vertices and edge indices. In
-    // constrast
-    // to `add_edges` this will (purposefully) clober existing edges.
-    //
-    // Inputs:
-    //   P  #P by 3 list of vertex positions
-    //   E  #E by 2 list of edge indices into P
-    //   C  #E|1 by 3 color(s)
-    void set_edges(
-      const Eigen::MatrixXd& P, 
-      const Eigen::MatrixXi& E, 
-      const Eigen::MatrixXd& C);
-    void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
-    void add_label (const Eigen::VectorXd& P,  const std::string& str);
-
-
     // UI Enumerations
     enum MouseButton {IGL_LEFT, IGL_MIDDLE, IGL_RIGHT};
     enum MouseMode { NOTHING, ROTATION, ZOOM, PAN, TRANSLATE} mouse_mode;

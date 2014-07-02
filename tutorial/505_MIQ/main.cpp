@@ -73,38 +73,38 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   if (key <'1' || key >'8')
     return false;
 
-  viewer.clear();
+  viewer.data.clear();
   viewer.core.show_lines = false;
   viewer.core.show_texture = false;
 
   if (key == '1')
   {
     // Cross field
-    viewer.set_mesh(V, F);
-    viewer.add_edges (B, B + global_scale*X1 ,Eigen::RowVector3d(1,0,0));
-    viewer.add_edges (B, B + global_scale*X2 ,Eigen::RowVector3d(0,0,1));
+    viewer.data.set_mesh(V, F);
+    viewer.data.add_edges(B, B + global_scale*X1 ,Eigen::RowVector3d(1,0,0));
+    viewer.data.add_edges(B, B + global_scale*X2 ,Eigen::RowVector3d(0,0,1));
   }
 
   if (key == '2')
   {
     // Bisector field
-    viewer.set_mesh(V, F);
-    viewer.add_edges (B, B + global_scale*BIS1 ,Eigen::RowVector3d(1,0,0));
-    viewer.add_edges (B, B + global_scale*BIS2 ,Eigen::RowVector3d(0,0,1));
+    viewer.data.set_mesh(V, F);
+    viewer.data.add_edges(B, B + global_scale*BIS1 ,Eigen::RowVector3d(1,0,0));
+    viewer.data.add_edges(B, B + global_scale*BIS2 ,Eigen::RowVector3d(0,0,1));
   }
 
   if (key == '3')
   {
     // Bisector field combed
-    viewer.set_mesh(V, F);
-    viewer.add_edges (B, B + global_scale*BIS1_combed ,Eigen::RowVector3d(1,0,0));
-    viewer.add_edges (B, B + global_scale*BIS2_combed ,Eigen::RowVector3d(0,0,1));
+    viewer.data.set_mesh(V, F);
+    viewer.data.add_edges(B, B + global_scale*BIS1_combed ,Eigen::RowVector3d(1,0,0));
+    viewer.data.add_edges(B, B + global_scale*BIS2_combed ,Eigen::RowVector3d(0,0,1));
   }
 
   if (key == '4')
   {
     // Singularities and cuts
-    viewer.set_mesh(V, F);
+    viewer.data.set_mesh(V, F);
 
     // Plot cuts
     int l_count = Seams.sum();
@@ -124,15 +124,15 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
       }
     }
 
-    viewer.add_edges(P1, P2, Eigen::RowVector3d(1, 0, 0));
+    viewer.data.add_edges(P1, P2, Eigen::RowVector3d(1, 0, 0));
 
     // Plot the singularities as colored dots (red for negative, blue for positive)
     for (unsigned i=0; i<singularityIndex.size();++i)
     {
       if (singularityIndex(i) < 2 && singularityIndex(i) > 0)
-        viewer.add_points(V.row(i),Eigen::RowVector3d(1,0,0));
+        viewer.data.add_points(V.row(i),Eigen::RowVector3d(1,0,0));
       else if (singularityIndex(i) > 2)
-        viewer.add_points(V.row(i),Eigen::RowVector3d(0,1,0));
+        viewer.data.add_points(V.row(i),Eigen::RowVector3d(0,1,0));
     }
 
   }
@@ -141,9 +141,9 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   {
     // Singularities and cuts, original field
     // Singularities and cuts
-    viewer.set_mesh(V, F);
-    viewer.add_edges (B, B + global_scale*X1_combed ,Eigen::RowVector3d(1,0,0));
-    viewer.add_edges (B, B + global_scale*X2_combed ,Eigen::RowVector3d(0,0,1));
+    viewer.data.set_mesh(V, F);
+    viewer.data.add_edges(B, B + global_scale*X1_combed ,Eigen::RowVector3d(1,0,0));
+    viewer.data.add_edges(B, B + global_scale*X2_combed ,Eigen::RowVector3d(0,0,1));
 
     // Plot cuts
     int l_count = Seams.sum();
@@ -163,48 +163,48 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
       }
     }
 
-    viewer.add_edges(P1, P2, Eigen::RowVector3d(1, 0, 0));
+    viewer.data.add_edges(P1, P2, Eigen::RowVector3d(1, 0, 0));
 
     // Plot the singularities as colored dots (red for negative, blue for positive)
     for (unsigned i=0; i<singularityIndex.size();++i)
     {
       if (singularityIndex(i) < 2 && singularityIndex(i) > 0)
-        viewer.add_points(V.row(i),Eigen::RowVector3d(1,0,0));
+        viewer.data.add_points(V.row(i),Eigen::RowVector3d(1,0,0));
       else if (singularityIndex(i) > 2)
-        viewer.add_points(V.row(i),Eigen::RowVector3d(0,1,0));
+        viewer.data.add_points(V.row(i),Eigen::RowVector3d(0,1,0));
     }
   }
 
   if (key == '6')
   {
     // Global parametrization UV
-    viewer.set_mesh(UV, FUV);
-    viewer.set_uv(UV);
+    viewer.data.set_mesh(UV, FUV);
+    viewer.data.set_uv(UV);
     viewer.core.show_lines = true;
   }
 
   if (key == '7')
   {
     // Global parametrization in 3D
-    viewer.set_mesh(V, F);
-    viewer.set_uv(UV,FUV);
+    viewer.data.set_mesh(V, F);
+    viewer.data.set_uv(UV,FUV);
     viewer.core.show_texture = true;
   }
 
   if (key == '8')
   {
     // Global parametrization in 3D with seams
-    viewer.set_mesh(V, F);
-    viewer.set_uv(UV_seams,FUV_seams);
+    viewer.data.set_mesh(V, F);
+    viewer.data.set_uv(UV_seams,FUV_seams);
     viewer.core.show_texture = true;
   }
 
-  viewer.set_colors(Eigen::RowVector3d(1,1,1));
+  viewer.data.set_colors(Eigen::RowVector3d(1,1,1));
 
   // Replace the standard texture with an integer shift invariant texture
   Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> texture_R, texture_G, texture_B;
   line_texture(texture_R, texture_G, texture_B);
-  viewer.set_texture(texture_R, texture_B, texture_G);
+  viewer.data.set_texture(texture_R, texture_B, texture_G);
 
   return false;
 }

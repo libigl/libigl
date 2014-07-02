@@ -12,12 +12,12 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key == '1')
     // Plot the 3D mesh
-    viewer.set_mesh(V,F);
+    viewer.data.set_mesh(V,F);
   else if (key == '2')
     // Plot the mesh in 2D using the UV coordinates as vertex coordinates
-    viewer.set_mesh(V_uv,F);
+    viewer.data.set_mesh(V_uv,F);
 
-  viewer.compute_normals();
+  viewer.data.compute_normals();
 
   return false;
 }
@@ -43,8 +43,8 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   igl::Viewer viewer;
-  viewer.set_mesh(V, F);
-  viewer.set_uv(V_uv);
+  viewer.data.set_mesh(V, F);
+  viewer.data.set_uv(V_uv);
   viewer.callback_key_down = &key_down;
 
   // Disable wireframe

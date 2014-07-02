@@ -41,7 +41,7 @@ bool mouse_down(igl::Viewer& viewer, int button, int modifier)
   {
     cerr << "Picked face(vertex): " << fid << " (" << vid << ")" << endl;
     C.row(vid) << 1,0,0;
-    viewer.set_colors(C);
+    viewer.data.set_colors(C);
     return true;
   }
 
@@ -62,9 +62,9 @@ int main(int argc, char *argv[])
 
   // Show mesh
   igl::Viewer viewer;
-  viewer.set_mesh(V, F);
+  viewer.data.set_mesh(V, F);
   viewer.callback_mouse_down = &mouse_down;
-  viewer.set_colors(C);
+  viewer.data.set_colors(C);
   viewer.core.show_lines = false;
   viewer.launch();
 }

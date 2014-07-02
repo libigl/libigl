@@ -35,7 +35,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   if (key == '1')
   {
     // Draw the triangulated quad mesh
-    viewer.set_mesh(VQC, FQCtri);
+    viewer.data.set_mesh(VQC, FQCtri);
 
     // Assign a color to each quad that corresponds to its planarity
     VectorXd planarity;
@@ -44,20 +44,20 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     igl::jet(planarity, 0, 0.01, Ct);
     MatrixXd C(FQCtri.rows(),3);
     C << Ct, Ct;
-    viewer.set_colors(C);
+    viewer.data.set_colors(C);
 
     // Plot a line for each edge of the quad mesh
-    viewer.add_edges (PQC0, PQC1, Eigen::RowVector3d(0,0,0));
-    viewer.add_edges (PQC1, PQC2, Eigen::RowVector3d(0,0,0));
-    viewer.add_edges (PQC2, PQC3, Eigen::RowVector3d(0,0,0));
-    viewer.add_edges (PQC3, PQC0, Eigen::RowVector3d(0,0,0));
+    viewer.data.add_edges(PQC0, PQC1, Eigen::RowVector3d(0,0,0));
+    viewer.data.add_edges(PQC1, PQC2, Eigen::RowVector3d(0,0,0));
+    viewer.data.add_edges(PQC2, PQC3, Eigen::RowVector3d(0,0,0));
+    viewer.data.add_edges(PQC3, PQC0, Eigen::RowVector3d(0,0,0));
   }
 
   // Plot the planarized quad mesh
   if (key == '2')
   {
     // Draw the triangulated quad mesh
-    viewer.set_mesh(VQCplan, FQCtri);
+    viewer.data.set_mesh(VQCplan, FQCtri);
 
     // Assign a color to each quad that corresponds to its planarity
     VectorXd planarity;
@@ -66,13 +66,13 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     igl::jet(planarity, 0, 0.01, Ct);
     MatrixXd C(FQCtri.rows(),3);
     C << Ct, Ct;
-    viewer.set_colors(C);
+    viewer.data.set_colors(C);
 
     // Plot a line for each edge of the quad mesh
-    viewer.add_edges (PQC0plan, PQC1plan, Eigen::RowVector3d(0,0,0));
-    viewer.add_edges (PQC1plan, PQC2plan, Eigen::RowVector3d(0,0,0));
-    viewer.add_edges (PQC2plan, PQC3plan, Eigen::RowVector3d(0,0,0));
-    viewer.add_edges (PQC3plan, PQC0plan, Eigen::RowVector3d(0,0,0));
+    viewer.data.add_edges(PQC0plan, PQC1plan, Eigen::RowVector3d(0,0,0));
+    viewer.data.add_edges(PQC1plan, PQC2plan, Eigen::RowVector3d(0,0,0));
+    viewer.data.add_edges(PQC2plan, PQC3plan, Eigen::RowVector3d(0,0,0));
+    viewer.data.add_edges(PQC3plan, PQC0plan, Eigen::RowVector3d(0,0,0));
   }
 
   return false;

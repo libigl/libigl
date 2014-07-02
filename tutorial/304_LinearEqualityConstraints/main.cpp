@@ -71,9 +71,9 @@ int main(int argc, char *argv[])
 
   // Plot the mesh with pseudocolors
   igl::Viewer viewer;
-  viewer.set_mesh(V, F);
+  viewer.data.set_mesh(V, F);
   viewer.core.show_lines = false;
-  viewer.set_colors(data.C);
+  viewer.data.set_colors(data.C);
 
   viewer.callback_key_down = 
     [](igl::Viewer& viewer,unsigned char key,int mod)->bool
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
       {
         Data & data = *static_cast<Data*>(viewer.callback_key_down_data);
         static bool toggle = true;
-        viewer.set_colors(toggle?data.C_const:data.C);
+        viewer.data.set_colors(toggle?data.C_const:data.C);
         toggle = !toggle;
         return true;
       }else

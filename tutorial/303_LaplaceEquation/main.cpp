@@ -64,8 +64,8 @@ int main(int argc, char *argv[])
 
   // Plot the mesh with pseudocolors
   igl::Viewer viewer;
-  viewer.set_mesh(V, F);
+  viewer.data.set_mesh(V, F);
   viewer.core.show_lines = false;
-  viewer.set_colors(C);
+  viewer.data.set_colors(C);
   viewer.launch();
 }
