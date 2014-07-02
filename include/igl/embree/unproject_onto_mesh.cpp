@@ -26,6 +26,7 @@ IGL_INLINE bool igl::unproject_onto_mesh(
   MatrixXd obj;
   vector<igl::Hit> hits;
 
+  // This is lazy, it will find more than just the first hit
   unproject_in_mesh(pos,model,proj,viewport,ei,obj,hits);
 
   if (hits.size()> 0)
@@ -44,5 +45,5 @@ IGL_INLINE bool igl::unproject_onto_mesh(
 
 
 #ifdef IGL_STATIC_LIBRARY
-
+// Explicit template instanciation
 #endif
