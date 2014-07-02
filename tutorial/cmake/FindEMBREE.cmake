@@ -10,8 +10,11 @@
 FIND_PATH(EMBREE_INCLUDE_DIR embree/include/embree.h
 	  PATHS
 		${PROJECT_SOURCE_DIR}/../../external/embree
+		${PROJECT_SOURCE_DIR}/../external/embree
 		NO_DEFAULT_PATH
     )
+
+# message(FATAL_ERROR ${PROJECT_SOURCE_DIR}/../../external/embree)
 
 SET(SEARCH_PATHS "${EMBREE_INCLUDE_DIR}" "${EMBREE_INCLUDE_DIR}/build" "${EMBREE_INCLUDE_DIR}/lib")
 

@@ -112,37 +112,6 @@ IGL_INLINE int igl::unproject_in_mesh(
   return hits.size();
 }
 
-IGL_INLINE bool igl::unproject_in_mesh(
-  const Eigen::Vector2f& pos,
-  const Eigen::MatrixXi& F,
-  const Eigen::Matrix4f& model,
-  const Eigen::Matrix4f& proj,
-  const Eigen::Vector4f& viewport,
-  const igl::EmbreeIntersector & ei,
-  int& fid,
-  int& vid)
-{
-  using namespace std;
-  using namespace Eigen;
-  MatrixXd obj;
-  vector<igl::Hit> hits;
-
-  unproject_in_mesh(pos,model,proj,viewport,ei,obj,hits);
-
-  if (hits.size()> 0)
-  {
-    Vector3d bc(1.0-hits[0].u-hits[0].v, hits[0].u, hits[0].v);
-    int i;
-    bc.maxCoeff(&i);
-
-    fid = hits[0].id;
-    vid = F(fid,i);
-    return true;
-  }
-
-  return false;
-}
-
 #ifndef IGL_OPENLGL_4
 
 #ifdef IGL_STATIC_LIBRARY
