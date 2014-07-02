@@ -3,6 +3,7 @@
 #include <igl/per_vertex_normals.h>
 #include <igl/per_face_normals.h>
 #include <igl/per_corner_normals.h>
+#include <iostream>
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -50,6 +51,10 @@ int main(int argc, char *argv[])
   viewer.callback_key_down = &key_down;
   viewer.core.show_lines = false;
   viewer.set_mesh(V, F);
-  viewer.set_normals(N_vertices);
+  viewer.set_normals(N_faces);
+  std::cout<<
+    "Press '1' for per-face normals."<<std::endl<<
+    "Press '2' for per-vertex normals."<<std::endl<<
+    "Press '3' for per-corner normals."<<std::endl;
   viewer.launch();
 }

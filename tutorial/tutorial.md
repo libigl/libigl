@@ -453,7 +453,7 @@ surface is ( $k_G>0$ ), how locally saddle-shaped or _hyperbolic_ the surface
 is ( $k_G<0$ ), or how locally cylindrical or _parabolic_ ( $k_G=0$ ) the
 surface is.
 
-In the discrete setting, one definition for a ``discrete Gaussian curvature''
+In the discrete setting, one definition for a "discrete Gaussian curvature"
 on a triangle mesh is via a vertex's _angular deficit_:
 
  $k_G(v_i) = 2π - \sum\limits_{j\in N(i)}θ_{ij},$
@@ -615,7 +615,7 @@ for(triangle t : triangles)
 Libigl implements discrete "cotangent" Laplacians for triangles meshes and
 tetrahedral meshes, building both with fast geometric rules rather than "by the
 book" FEM construction which involves many (small) matrix inversions, cf.
-**Alec: cite Ariel reconstruction paper**.
+[#sharf_2007][].
 
 The operator applied to mesh vertex positions amounts to smoothing by _flowing_
 the surface along the mean curvature normal direction ([Example 205](205_Laplacian/main.cpp)). Note that this is equivalent to minimizing surface area.
@@ -2119,10 +2119,23 @@ repository](https://github.com/libigl/libigl).
 
 
 
+[#bommes_2009]:[Mixed-integer
+quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf), David Bommes, Henrik Zimmer, Leif Kobbelt SIGGRAPH 2009
 [#botsch_2004]: Matrio Botsch and Leif Kobbelt. "An Intuitive Framework for
 Real-Time Freeform Modeling," 2004.
+[#bouaziz_2012]:[Shape-Up: Shaping Discrete Geometry with
+Projections](http://lgg.epfl.ch/publications/2012/shapeup.pdf) Sofien Bouaziz,
+Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
+SGP 2012
 [#chao_2010]: Isaac Chao, Ulrich Pinkall, Patrick Sanan, Peter Schröder.
 "A Simple Geometric Model for Elastic Deformations," 2010.
+[#diamanti_2014]:[Designing N-PolyVector Fields with Complex
+Polynomials](http://igl.ethz.ch/projects/complex-roots/) Olga Diamanti, Amir
+Vaxman, Daniele Panozzo, Olga Sorkine-Hornung, SGP 2014
+[#eck_2005]:[Multiresolution Analysis of Arbitrary
+Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), Matthias
+Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
+Stuetzle, SIGGRAPH 2005
 [#jacobson_thesis_2013]: Alec Jacobson,
 _Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
 2013.
@@ -2136,53 +2149,42 @@ Zorin. "Mixed Finite Elements for Variational Surface Modeling," 2010.
 "Geometric Skinning with Approximate Dual Quaternion Blending," 2008.
 [#kazhdan_2012]: Michael Kazhdan, Jake Solomon, Mirela Ben-Chen,
 "Can Mean-Curvature Flow Be Made Non-Singular," 2012.
+[#knoppel_2013]:[Globally Optimal Direction
+Fields](http://www.cs.columbia.edu/~keenan/Projects/GloballyOptimalDirectionFields/paper.pdf) Knöppel, Crane, Pinkall, Schröder SIGGRAPH 2013
+[#levy_2002]: [Least Squares Conformal Maps, for Automatic Texture Atlas
+Generation,](http://www.cs.jhu.edu/~misha/Fall09/Levy02.pdf) Bruno Lévy,
+Sylvain Petitjean, Nicolas Ray, Jérome Maillot, SIGGRAPH 2002
+[#levy_2008]:[N-Symmetry Direction Field
+Design](http://alice.loria.fr/publications/papers/2008/DGF/NSDFD-TOG.pdf),
+Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy TOG 2008
+[#liu_2008]: [A Local/Global Approach to Mesh
+Parameterization](http://cs.harvard.edu/~sjg/papers/arap.pdf) Ligang Liu, Lei
+Zhang, Yin Xu, Craig Gotsman, Steven J. Gortler SGP 2008
+[#liu_2011]:[General Planar Quadrilateral Mesh Design Using Conjugate Direction
+Field](http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf ) Yang Liu, Weiwei Xu, Jun Wang, Lifeng Zhu, Baining Guo, Falai Chen, Guoping
+Wang SIGGRAPH Asia 2011
 [#mcadams_2011]: Alexa McAdams, Andrew Selle, Rasmus Tamstorf, Joseph Teran,
 Eftychios Sifakis. "Computing the Singular Value Decomposition of 3x3 matrices
 with minimal branching and elementary floating point operations," 2011.
 [#meyer_2003]: Mark Meyer, Mathieu Desbrun, Peter Schröder and Alan H.  Barr,
 "Discrete Differential-Geometry Operators for Triangulated
 2-Manifolds," 2003.
-[#panozzo_2010]: Daniele Panozzo, Enrico Puppo, Luigi Rocca,
-"Efficient Multi-scale Curvature and Crease Estimation," 2010.
-[#rustamov_2011]: Raid M. Rustamov, "Multiscale Biharmonic Kernels", 2011.
-[#sorkine_2004]: Olga Sorkine, Yaron Lipman, Daniel Cohen-Or, Marc Alexa,
-Christian Rössl and Hans-Peter Seidel. "Laplacian Surface Editing," 2004.
-[#eck_2005]:[Multiresolution Analysis of Arbitrary
-Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), Matthias
-Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
-Stuetzle, SIGGRAPH 2005
-[#levy_2002]: [Least Squares Conformal Maps, for Automatic Texture Atlas
-Generation,](http://www.cs.jhu.edu/~misha/Fall09/Levy02.pdf) Bruno Lévy,
-Sylvain Petitjean, Nicolas Ray, Jérome Maillot, SIGGRAPH 2002
 [#mullen_2008]: [Spectral Conformal
 Parameterization](http://www.geometry.caltech.edu/pubs/MTAD08.pdf), Patrick
 Mullen, Yiying Tong, Pierre Alliez, Mathieu Desbrun, CGF 2008
-[#liu_2008]: [A Local/Global Approach to Mesh
-Parameterization](http://cs.harvard.edu/~sjg/papers/arap.pdf) Ligang Liu, Lei
-Zhang, Yin Xu, Craig Gotsman, Steven J. Gortler SGP 2008
-[#levy_2008]:[N-Symmetry Direction Field
-Design](http://alice.loria.fr/publications/papers/2008/DGF/NSDFD-TOG.pdf),
-Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy TOG 2008
-[#bommes_2009]:[Mixed-integer
-quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf), David Bommes, Henrik Zimmer, Leif Kobbelt SIGGRAPH 2009
-[#diamanti_2014]:[Designing N-PolyVector Fields with Complex
-Polynomials](http://igl.ethz.ch/projects/complex-roots/) Olga Diamanti, Amir
-Vaxman, Daniele Panozzo, Olga Sorkine-Hornung, SGP 2014
-[#knoppel_2013]:[Globally Optimal Direction
-Fields](http://www.cs.columbia.edu/~keenan/Projects/GloballyOptimalDirectionFields/paper.pdf) Knöppel, Crane, Pinkall, Schröder SIGGRAPH 2013
-[#sorkine_2007]: Olga Sorkine and Marc Alexa, "As-rigid-as-possible Surface
-Modeling." 2007.
+[#panozzo_2010]: Daniele Panozzo, Enrico Puppo, Luigi Rocca,
+"Efficient Multi-scale Curvature and Crease Estimation," 2010.
 [#panozzo_2014]:[Frame Fields: Anisotropic and Non-Orthogonal Cross
 Fields](http://www.inf.ethz.ch/personal/dpanozzo/papers/frame-fields-2014.pdf),
 Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga Sorkine-Hornung, SIGGRAPH,
 2014
-[#liu_2011]:[General Planar Quadrilateral Mesh Design Using Conjugate Direction
-Field](http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf ) Yang Liu, Weiwei Xu, Jun Wang, Lifeng Zhu, Baining Guo, Falai Chen, Guoping
-Wang SIGGRAPH Asia 2011
-[#bouaziz_2012]:[Shape-Up: Shaping Discrete Geometry with
-Projections](http://lgg.epfl.ch/publications/2012/shapeup.pdf) Sofien Bouaziz,
-Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
-SGP 2012
+[#rustamov_2011]: Raid M. Rustamov, "Multiscale Biharmonic Kernels", 2011.
 [#schuller_2013]:[Locally Injective Mappings](http://igl.ethz.ch/projects/LIM/)
 Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga Sorkine-Hornung,
 SGP 2013
+[#sharf_2007]: Andrei Sharf, Thomas Lewiner, Gil Shklarski, Sivan Toledo, and
+Daniel Cohen-Or.  "Interactive topology-aware surface reconstruction," 2007.
+[#sorkine_2004]: Olga Sorkine, Yaron Lipman, Daniel Cohen-Or, Marc Alexa,
+Christian Rössl and Hans-Peter Seidel. "Laplacian Surface Editing," 2004.
+[#sorkine_2007]: Olga Sorkine and Marc Alexa, "As-rigid-as-possible Surface
+Modeling." 2007.
