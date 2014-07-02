@@ -78,6 +78,9 @@ lecture notes links to a cross-platform example application.
 * [Chapter 6: External libraries][600]
     * [601 State serialization][601]
     * [602 Mixing Matlab code][602]
+        * [Saving a Matlab workspace](#savingamatlabworkspace)
+        * [Dumping Eigen matrices to copy and paste into
+          Matlab](#dumpingeigenmatricestocopyandpasteintomatlab)
     * [603 Calling libigl functions from Matlab][603]
     * [604 Triangulation of closed polygons][604]
     * [605 Tetrahedralization of closed surfaces][605]
@@ -195,13 +198,13 @@ The IO functions are contained in the files read\*.h and write\*.h. As a general
 rule each libigl function is contained in a pair of .h/.cpp files with the same name.
 By default, the .h files include the corresponding cpp files, making the library header-only.
 
-Reading a mesh from a file requires a single igl function call:
+Reading a mesh from a file requires a single libigl function call:
 
 ```cpp
 igl::readOFF("../shared/cube.off", V, F);
 ```
 
-The function reads the mesh cube.off and it fills the provided **V** and **F** matrices.
+The function reads the mesh cube.off and it fills the provided `V` and `F` matrices.
 Similarly, a mesh can be written in an OBJ file using:
 
 ```cpp
@@ -240,8 +243,8 @@ int main(int argc, char *argv[])
 }
 ```
 
-The function set_mesh copies the mesh into the viewer.
-Viewer.launch()  creates a window, an opengl context and it starts the draw loop.
+The function `set_mesh` copies the mesh into the viewer.
+`Viewer.launch()`  creates a window, an OpenGL context and it starts the draw loop.
 Additional properties can be plotted on the mesh (as we will see later),
 and it is possible to extend the viewer with standard OpenGL code.
 Please see the documentation in
@@ -1517,7 +1520,7 @@ genus. They initially cut the mesh in multiple patches that can be separately pa
 
 ## Harmonic parametrization [501]
 
-Harmonic parametrization [#eck_2005] is a single patch, fixed boundary parametrization
+Harmonic parametrization [#eck_2005][] is a single patch, fixed boundary parametrization
 algorithm that computes the 2D coordinates of the flattened mesh as two
 harmonic functions.
 
@@ -1528,6 +1531,7 @@ The algorithm is divided in 3 steps:
 3. Compute two harmonic functions (one for u and one for the v coordinate). The harmonic functions use the fixed vertices on the circle as boundary constraints.
 
 The algorithm can be coded using libigl as follows:
+
 ```cpp
 Eigen::VectorXi bnd;
 igl::boundary_loop(V,F,bnd);
@@ -1568,8 +1572,8 @@ which can be rewritten in matrix form as [#mullen_2008][]:
 
 \\[ E_{LSCM}(\mathbf{u},\mathbf{v}) = \frac{1}{2} [\mathbf{u},\mathbf{v}]^t (L_c - 2A) [\mathbf{u},\mathbf{v}] \\]
 
-where \\( L_c \\) is the cotangent laplacian matrix and A is a matrix such that \\(
-[\mathbf{u},\mathbf{v}]^t A  [\mathbf{u},\mathbf{v}] \\) is equal to the
+where $L_c$ is the cotangent Laplacian matrix and A is a matrix such that \\(
+[\mathbf{u},\mathbf{v}]^t A  [\mathbf{u},\mathbf{v}]$ is equal to the
 [vector area](http://en.wikipedia.org/wiki/Vector_area) of the mesh.
 
 Using libigl, this matrix energy can be written in a few lines of codes. The
@@ -1629,7 +1633,7 @@ texture](images/503_ARAPParam.png)
 ## N-rotationally symmetric tangent fields [504]
 
 The design of tangent fields is a basic tool used to design guidance fields for
-uniform quadrilateral and hexahedral remeshing. libigl contains an
+uniform quadrilateral and hexahedral remeshing. Libigl contains an
 implementation of all the state-of-the-art algorithms to design N-RoSy fields
 and their generalizations.
 
@@ -1653,7 +1657,7 @@ the triangle mesh (output_field), plus the singularities of the field
 The singularities are vertices where the field vanishes (highlighted in red in
 the figure above). `igl::nrosy` can also generate N-RoSy fields [#levy_2008][],
 which are a generalization of vector fields where in every face the vector is
-defined up to a constant rotation of \\( 2\pi / N \\). As can be observed in
+defined up to a constant rotation of $2\pi / N$. As can be observed in
 the following figure, the singularities of the fields generated with different
 N are of different types and they appear in different positions.
 
@@ -1728,7 +1732,7 @@ following quadratic energy:
 
 \\[ E(\mathbf{u},\mathbf{v}) = |\nabla \mathbf{u} - X_u|^2 + |\nabla \mathbf{v} - X_v|^2 \\]
 
-where \\( X_u \\) and \\( X_u \\) denotes the combed cross field. Solving this
+where $X_u$ and $X_u$ denotes the combed cross field. Solving this
 problem generates a parametrization whose u and v isolines are aligned with the
 input cross field.
 
@@ -1864,7 +1868,7 @@ to the extreme difficulty in serializing pointer-based data structured, such as
 an half-edge data structure (OpenMesh, CGAL), or a pointer based indexed structure (VCG).
 
 In libigl, serialization is much simpler, since the majority of the functions use basic types, and pointers are used in very rare cases (usually to interface
-with external libraries). libigl bundles a simple and self-contained XML serialization framework, that drastically reduces the overhead required to add
+with external libraries). Libigl bundles a simple and self-contained XML serialization framework, that drastically reduces the overhead required to add
 serialization to your applications.
 
 Assume that the state of your application is a mesh and a set of
@@ -1889,8 +1893,8 @@ public:
 };
 ```
 
-Any class can be made serializable by inheriting from ``::igl::XMLSerialization` and trivially implementing the `InitSerialization` method. The library can serialize all the basic `stl` types, all `Eigen` types and any class inheriting
-from `::igl::XMLSerialization`.
+Any class can be made serializable by inheriting from ``igl::XMLSerialization` and trivially implementing the `InitSerialization` method. The library can serialize all the basic `stl` types, all `Eigen` types and any class inheriting
+from `igl::XMLSerialization`.
 
 The state can be saved into an xml file with:
 
@@ -1928,17 +1932,27 @@ serializer_load.Add(loaded_state,"State");
 serializer_load.Load("temp.xml");
 ```
 
-The serialization framework can also be used as a convenient interface to provide parameters to command line applications, since the xml files can be directly edited with a standard text editor.
+The serialization framework can also be used as a convenient interface to
+provide parameters to command line applications, since the xml files can be
+directly edited with a standard text editor.
 
-The code snippets above are extracted from [Example 601](601_Serialization/main.cpp). We strongly suggest that you make the entire
+The code snippets above are extracted from [Example
+601](601_Serialization/main.cpp). We strongly suggest that you make the entire
 state of your application always serializable since it will save you a lot of
 troubles when you will be preparing figures for a scientific report. It is very
-common to have to do small changes to figures, and being able to serialize the entire state just before you take screenshots will save you many painful hours before a submission deadline.
+common to have to do small changes to figures, and being able to serialize the
+entire state just before you take screenshots will save you many painful hours
+before a submission deadline.
 
 ## Mixing Matlab code [602]
 
-Libigl can be interfaced with matlab to offload numerically heavy
-computation to a matlab script. The major advantage of this approach is that you will be able to develop efficient and complex user-interfaces in C++, while exploting the syntax and fast protototyping features of matlab. In particular, the use of an external matlab script in a libigl application allows to change the matlab code while the C++ application is running, greatly increasing coding efficiency.
+Libigl can be interfaced with Matlab to offload numerically heavy computation
+to a Matlab script. The major advantage of this approach is that you will be
+able to develop efficient and complex user-interfaces in C++, while exploting
+the syntax and fast protototyping features of matlab. In particular, the use of
+an external Matlab script in a libigl application allows to change the Matlab
+code while the C++ application is running, greatly increasing coding
+efficiency.
 
 We demonstrate how to integrate Matlab in a libigl application in [Example
 602](602_Matlab/main.cpp). The example uses Matlab to compute the
@@ -1952,7 +1966,7 @@ Linux/MacOSX) using:
 igl::mlinit(&engine);
 ```
 
-The cotangent laplacian is computed using igl::cotmatrix and uploaded to the
+The cotangent Laplacian is computed using igl::cotmatrix and uploaded to the
 Matlab workspace:
 
 ```cpp
@@ -1970,7 +1984,7 @@ igl::mleval(&engine,"spy(L)");
 ![The Matlab spy function is called from a libigl-based
 application.](images/602_Matlab_1.png)
 
-The results of matlab computations can be returned back to the C++ application
+The results of Matlab computations can be returned back to the C++ application
 
 ```cpp
 igl::mleval(&engine,"[EV,~] = eigs(-L,10,'sm')");
@@ -1982,11 +1996,84 @@ and plotted using the libigl viewer.
 ![4 Eigenfunctions of the Laplacian plotted in the libigl
 viewer.](images/602_Matlab_2.png)
 
+
+### Saving a Matlab workspace
+To aid debugging, libigl also supplies functions to write Matlab `.mat`
+"Workspaces". This C++ snippet saves a mesh and it's sparse Laplacian matrix to
+a file:
+
+```cpp
+igl::readOFF("../shared/fertility.off", V, F);
+igl::cotmatrix(V,F,L);
+igl::MatlabWorkspace mw;
+mw.save(V,"V");
+mw.save_index(F,"F");
+mw.save(L,"L");
+mw.write("fertility.mat");
+```
+
+Then this workspace can be loaded into a Matlab IDE:
+
+```matlab
+load fertility.mat
+```
+
+The `igl::MatlabWorkspace` depends on Matlab libraries to compile and run,
+but---in contrast to the engine routines above---will avoid launching a Matlab
+instance upon execution.
+
+### Dumping Eigen matrices to copy and paste into Matlab 
+Eigen supplies a sophisticated API for printing its matrix types to the screen.
+Libigl has wrapped up a particularly useful formatting which makes it simple to
+copy standard output from a C++ program into a Matlab IDE. The code:
+
+```cpp
+igl::readOFF("../shared/2triangles.off", V, F);
+igl::cotmatrix(V,F,L);
+std::cout<<igl::matlab_format(V,"V")<<std::endl;
+std::cout<<igl::matlab_format((F.array()+1).eval(),"F")<<std::endl;
+std::cout<<igl::matlab_format(L,"L")<<std::endl;
+```
+
+produces the output:
+
+```matlab
+V = [
+  0 0 0
+  1 0 0
+  1 1 1
+  2 1 0
+];
+F = [
+  1 2 3
+  2 4 3
+];
+LIJV = [
+                      1                     1   -0.7071067811865476
+                      2                     1    0.7071067811865475
+                      3                     1 1.570092458683775e-16
+                      1                     2    0.7071067811865475
+                      2                     2    -1.638010440969447
+                      3                     2    0.6422285251880865
+                      4                     2    0.2886751345948129
+                      1                     3 1.570092458683775e-16
+                      2                     3    0.6422285251880865
+                      3                     3   -0.9309036597828995
+                      4                     3    0.2886751345948129
+                      2                     4    0.2886751345948129
+                      3                     4    0.2886751345948129
+                      4                     4   -0.5773502691896258
+];
+L = sparse(LIJV(:,1),LIJV(:,2),LIJV(:,3));
+```
+
+which is easily copied and pasted into Matlab for debugging, etc.
+
 ## Calling libigl functions from Matlab [603]
 
 It is also possible to call libigl functions from matlab, compiling them as MEX
 functions. This can be used to offload to C++ code the computationally
-intensive parts of a matlab application.
+intensive parts of a Matlab application.
 
 We provide a wrapper for `igl::readOBJ` in [Example 603](603_MEX/compileMEX.m).
 We plan to provide wrappers for all our functions in the future, if you are
@@ -1996,7 +2083,8 @@ us know.
 ## Triangulation of closed polygons [604]
 
 The generation of high-quality triangle and tetrahedral meshes is a very common
-task in geometry processing. We provide wrappers in libigl to [triangle](http://www.cs.cmu.edu/~quake/triangle.html) and
+task in geometry processing. We provide wrappers in libigl to
+[triangle](http://www.cs.cmu.edu/~quake/triangle.html) and
 [Tetgen](http://wias-berlin.de/software/tetgen/).
 
 A triangle mesh with a given boundary can be created with:
@@ -2005,8 +2093,13 @@ A triangle mesh with a given boundary can be created with:
 igl::triangulate(V,E,H,V2,F2,"a0.005q");
 ```
 
-where E is a set of boundary edges (#E by 2), H is a set of 2D positions of points contained in holes of the triangulation (#H by 2) and (V2,F2) is the generated triangulation. Additional parameters can be passed to `triangle`, to control the quality: "a0.005q" enforces a bound on the maximal area of the triangles and a minimal angle of 20 degrees. In [Example 604](604_Triangle/main.m), the interior of a
-square (excluded a smaller square in its interior) is triangulated.
+where `E` is a set of boundary edges (#E by 2), `H` is a set of 2D positions of
+points contained in holes of the triangulation (#H by 2) and (`V2`,`F2`) is the
+generated triangulation. Additional parameters can be passed to `triangle`, to
+control the quality: `"a0.005q"` enforces a bound on the maximal area of the
+triangles and a minimal angle of 20 degrees. In [Example
+604](604_Triangle/main.m), the interior of a square (excluded a smaller square
+in its interior) is triangulated.
 
 ![Triangulation of the interior of a polygon.](images/604_Triangle.png)
 
@@ -2033,10 +2126,10 @@ Formally, ambient occlusion is defined as:
 
 \\[ A_p = \frac{1}{\pi} \int_\omega V_{p,\omega}(n \cdot \omega) d\omega \\]
 
-where \\( V_{p,\omega} \\) is the visibility function at  p, defined to be zero
-if p is occluded in the direction \\( \omega \\) and one otherwise, and \\(
-d\omega \\) is the infinitesimal solid angle step of the integration variable
-\\( \omega \\).
+where $V_{p,\omega}$ is the visibility function at  p, defined to be zero
+if p is occluded in the direction $\omega$ and one otherwise, and \\(
+d\omega$ is the infinitesimal solid angle step of the integration variable
+$\omega$.
 
 The integral is usually approximated by casting rays in random directions
 around each vertex. This approximation can be computed using the function:
@@ -2045,7 +2138,11 @@ around each vertex. This approximation can be computed using the function:
 igl::ambient_occlusion(V,F,V_samples,N_samples,500,AO);
 ```
 
-that given a scene described in **V**,**F**, computes the ambient occlusion of the points in **V_samples** whose associated normals are **N_samples**. The number of casted rays can be controlled (usually at least 300-500 rays are required to get a smooth result) and the result is returned in **AO**, as a single scalar for each sample.
+that given a scene described in `V` and `F`, computes the ambient occlusion of
+the points in `V_samples` whose associated normals are `N_samples`. The
+number of casted rays can be controlled (usually at least 300-500 rays are
+required to get a smooth result) and the result is returned in `AO`, as a
+single scalar for each sample.
 
 Ambient occlusion can be used to darken the surface colors, as shown in
 [Example 606](606_AmbientOcclusion/main.c)
@@ -2057,7 +2154,7 @@ occlusion.](images/606_AmbientOcclusion.png)
 
 Picking vertices and faces using the mouse is very common in geometry
 processing applications. While this might seem a simple operation, its
-implementation is not straighforward. libigl contains a function that solves this problem using the
+implementation is not straighforward. Libigl contains a function that solves this problem using the
 [Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels)
 raycaster. Its usage is demonstrated in [Example 607](607_Picking/main.cpp):
 
@@ -2073,12 +2170,14 @@ bool hit = igl::unproject_in_mesh(
   vid);
 ```
 
-This function casts a ray from the view plane in the view direction. x,y are
-the mouse screen coordinates; view, model, proj are the view, model and
-projection matrix respectively; viewport is the viewport in opengl format; ei
+This function casts a ray from the view plane in the view direction. Variables
+`x` and `y` are
+the mouse screen coordinates; `view`, `model`, `proj` are the view, model and
+projection matrix respectively; `viewport` is the viewport in OpenGL format;
+`ei`
 contains a [Bounding Volume
 Hierarchy](http://en.wikipedia.org/wiki/Bounding_volume_hierarchy) constructed
-by Embree, and fid and vid are the picked face and vertex, respectively.
+by Embree, and `fid` and `vid` are the picked face and vertex, respectively.
 
 ![([Example 607](607_Picking/main.cpp)) Picking via ray casting. The selected
 vertices are colored in red.](images/607_Picking.png)
@@ -2087,7 +2186,7 @@ vertices are colored in red.](images/607_Picking.png)
 
 Extreme deformations or parametrizations with high-distortion might flip
 elements.  This is undesirable in many applications, and it is possible to
-avoid it by introducing a non-linear contraints that guarantees that the area
+avoid it by introducing a non-linear constraints that guarantees that the area
 of every element remain positive.
 
 Libigl can be used to compute Locally Injective Maps [#schuller_2013][] using a variety of
@@ -2114,7 +2213,9 @@ in the next months:
 * Implement more mesh analysis functions, including structural analysis for
   masonry and _3D-printability_ analysis.
 
-> * Generate matlab and python **wrappers** for all libigl functions
+* Increase support for point clouds and general polygonal meshes.
+
+> * Generate Matlab and python **wrappers** for all libigl functions
 > 
 > * Include a robust, adaptive **triangular remeshing** algorithm. Currently, we
 >   only support quadrilateral remeshing.
