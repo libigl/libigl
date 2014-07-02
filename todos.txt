@@ -1,10 +1,10 @@
 - extras should be in namespaces, i.e. igl::tetgen::tetrahedralize
 - extra header blocks should be verbose, i.e. IGL_TETGEN_TETRAHEDRALIZE_H
 - reorient_facets_raycast depends on boost and embree
-- sort out `grad.*` vs `gradMat.*`
++ sort out `grad.*` vs `gradMat.*`
 - clean up externals
   - What's there for convenience?
-  - What's there because it's patched/
+  - What's there because it's patched?
 - compile on Linux, Mac OS X, Windows
 - unit tests for all functions
 - clean up examples
@@ -21,7 +21,7 @@
 - fix bugs in examples/Core/example2.cpp
 - replace DynamicSparseMatrix: coeffRef += ---> setFromTriplets()
 - create libigltga extra...why? license?
-- rename moveFV.h
++ rename moveFV.h
 - is_border_vertex.h should not require V
 - consistent checks/asserts for: manifoldness, closedness, triangles-only
     e.g. check_mesh(V,F,IS_MANIFOLD | IS_CLOSED | IS_TRIANGLES_ONLY)

@@ -1232,7 +1232,7 @@ deformation (bottom).](images/hand-bbw.jpg)
 Even with high quality weights, linear blend skinning is limited. In
 particular, it suffers from known artifacts stemming from blending rotations as
 as matrices: a weight combination of rotation matrices is not necessarily a
-rotation. Consider an equal blend between rotating by $-pi/2$ and by $pi/2$
+rotation. Consider an equal blend between rotating by $-\pi/2$ and by $\pi/2$
 about the $z$-axis. Intuitively one might expect to get the identity matrix,
 but instead the blend is a degenerate matrix scaling the $x$ and $y$
 coordinates by zero:
@@ -1309,7 +1309,7 @@ To arrive at such an energy, let's consider a simple per-triangle energy:
 
 where $\mathbf{X}'$ are the mesh's unknown deformed vertex positions, $t$ is a
 triangle in a list of triangles $T$, $a_t$ is the area of triangle $t$ and
-$\{i,j\}$ is an edge in triangle t$. Thus, this energy measures the norm of
+$\{i,j\}$ is an edge in triangle $t$. Thus, this energy measures the norm of
 change between an edge vector in the original mesh $\left(\mathbf{x}_i -
 \mathbf{x}_j\right)$ and the unknown mesh $\left(\mathbf{x}'_i -
 \mathbf{x}'_j\right)$.
@@ -2095,25 +2095,40 @@ deformation energies. A simple deformation of a 2D grid is computed in [Example
 608](608_LIM/main.cpp).
 
 ![A mesh (left) deformed using Laplacian editing (middle) and with Laplacian
-editing plus the anti-flipping conatraints (right).](images/608_LIM.png)
+editing plus the anti-flipping constraints (right).](images/608_LIM.png)
 
 # Outlook for continuing development [future]
 
 Libigl is in active development, and we plan to focus on the following features
 in the next months:
 
-* A better and more consistent **documentation**, plus extending this tutorial to cover more libigl features
-
-* Include a robust, adaptive **triangular remeshing** algorithm. Currently, we only support quadrilateral remeshing.
-
-* Generate matlab and python **wrappers** for all libigl functions
+* A better and more consistent **documentation**, plus extending this tutorial
+  to cover more libigl features.
 
 * Implement a **mixed-integer solver** which only uses Eigen to remove the
-  dependency on CoMiSo
+  dependency on CoMiSo.
 
-* Add a standalone **bounding-volume hierarchy** and a simple ray casting engine to remove the dependency on Embree
+* Improve the robustness and performance of the active set QP solver. In
+  particular, handle linearly dependent constraints.
 
-We encourage you to contribute to the library and to report problems and bugs. The best way to cntribute new feature or bug fixes is to fork the libigl repository and to open a [pull
+* Implement more mesh analysis functions, including structural analysis for
+  masonry and _3D-printability_ analysis.
+
+> * Generate matlab and python **wrappers** for all libigl functions
+> 
+> * Include a robust, adaptive **triangular remeshing** algorithm. Currently, we
+>   only support quadrilateral remeshing.
+> 
+> * Add a standalone **bounding-volume hierarchy** and a simple ray casting
+>   engine to remove the dependency on Embree
+
+* What would you like to see in libigl? [Contact
+  us!](mailto:alecjacobson@gmail.com) or post a [feature
+  request](https://github.com/libigl/libigl/issues/new).
+
+We encourage you to contribute to the library and to report problems and bugs.
+The best way to contribute new feature or bug fixes is to fork the libigl
+repository and to open a [pull
 request](https://help.github.com/articles/using-pull-requests) on [our github
 repository](https://github.com/libigl/libigl).
 
@@ -2121,14 +2136,17 @@ repository](https://github.com/libigl/libigl).
 
 [#bommes_2009]:[Mixed-integer
 quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf), David Bommes, Henrik Zimmer, Leif Kobbelt SIGGRAPH 2009
-[#botsch_2004]: Matrio Botsch and Leif Kobbelt. "An Intuitive Framework for
-Real-Time Freeform Modeling," 2004.
+[#botsch_2004]: Matrio Botsch and Leif Kobbelt. ["An Intuitive Framework for
+Real-Time Freeform
+Modeling,"](https://www.google.com/search?q=An+Intuitive+Framework+for+Real-Time+Freeform+Modeling)
+2004.
 [#bouaziz_2012]:[Shape-Up: Shaping Discrete Geometry with
 Projections](http://lgg.epfl.ch/publications/2012/shapeup.pdf) Sofien Bouaziz,
 Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
 SGP 2012
 [#chao_2010]: Isaac Chao, Ulrich Pinkall, Patrick Sanan, Peter Schröder.
-"A Simple Geometric Model for Elastic Deformations," 2010.
+["A Simple Geometric Model for Elastic
+Deformations,"](https://www.google.com/search?q=A+Simple+Geometric+Model+for+Elastic+Deformations) 2010.
 [#diamanti_2014]:[Designing N-PolyVector Fields with Complex
 Polynomials](http://igl.ethz.ch/projects/complex-roots/) Olga Diamanti, Amir
 Vaxman, Daniele Panozzo, Olga Sorkine-Hornung, SGP 2014
@@ -2137,18 +2155,23 @@ Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), Matthias
 Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
 Stuetzle, SIGGRAPH 2005
 [#jacobson_thesis_2013]: Alec Jacobson,
-_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_,
+[_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D
+Shapes_](https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes),
 2013.
 [#jacobson_2012]: Alec Jacobson, Ilya Baran, Ladislav Kavan, Jovan Popović, and
-Olga Sorkine. "Fast Automatic Skinning Transformations," 2012.
+Olga Sorkine. ["Fast Automatic Skinning
+Transformations,"](https://www.google.com/search?q=Fast+Automatic+Skinning+Transformations) 2012.
 [#jacobson_2011]: Alec Jacobson, Ilya Baran, Jovan Popović, and Olga Sorkine.
 ["Bounded Biharmonic Weights for Real-Time Deformation,"](https://www.google.com/search?q=Bounded+biharmonic+weights+for+real-time+deformation) 2011.
 [#jacobson_mixed_2010]: Alec Jacobson, Elif Tosun, Olga Sorkine, and Denis
-Zorin. "Mixed Finite Elements for Variational Surface Modeling," 2010.
+Zorin. ["Mixed Finite Elements for Variational Surface
+Modeling,"](https://www.google.com/search?q=Mixed+Finite+Elements+for+Variational+Surface+Modeling) 2010.
 [#kavan_2008]: Ladislav Kavan, Steven Collins, Jiri Zara, and Carol O'Sullivan.
-"Geometric Skinning with Approximate Dual Quaternion Blending," 2008.
+["Geometric Skinning with Approximate Dual Quaternion
+Blending,"](https://www.google.com/search?q=Geometric+Skinning+with+Approximate+Dual+Quaternion+Blending) 2008.
 [#kazhdan_2012]: Michael Kazhdan, Jake Solomon, Mirela Ben-Chen,
-"Can Mean-Curvature Flow Be Made Non-Singular," 2012.
+["Can Mean-Curvature Flow Be Made
+Non-Singular,"](https://www.google.com/search?q=Can+Mean-Curvature+Flow+Be+Made+Non-Singular) 2012.
 [#knoppel_2013]:[Globally Optimal Direction
 Fields](http://www.cs.columbia.edu/~keenan/Projects/GloballyOptimalDirectionFields/paper.pdf) Knöppel, Crane, Pinkall, Schröder SIGGRAPH 2013
 [#levy_2002]: [Least Squares Conformal Maps, for Automatic Texture Atlas
@@ -2164,27 +2187,35 @@ Zhang, Yin Xu, Craig Gotsman, Steven J. Gortler SGP 2008
 Field](http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf ) Yang Liu, Weiwei Xu, Jun Wang, Lifeng Zhu, Baining Guo, Falai Chen, Guoping
 Wang SIGGRAPH Asia 2011
 [#mcadams_2011]: Alexa McAdams, Andrew Selle, Rasmus Tamstorf, Joseph Teran,
-Eftychios Sifakis. "Computing the Singular Value Decomposition of 3x3 matrices
-with minimal branching and elementary floating point operations," 2011.
+Eftychios Sifakis. ["Computing the Singular Value Decomposition of 3x3 matrices
+with minimal branching and elementary floating point
+operations,"](https://www.google.com/search?q=Computing+the+Singular+Value+Decomposition+of+3x3+matrices+with+minimal+branching+and+elementary+floating+point+operations)
+2011.
 [#meyer_2003]: Mark Meyer, Mathieu Desbrun, Peter Schröder and Alan H.  Barr,
-"Discrete Differential-Geometry Operators for Triangulated
-2-Manifolds," 2003.
+["Discrete Differential-Geometry Operators for Triangulated
+2-Manifolds,"](https://www.google.com/search?q=Discrete+Differential-Geometry+Operators+for+Triangulated+2-Manifolds)
+2003.
 [#mullen_2008]: [Spectral Conformal
 Parameterization](http://www.geometry.caltech.edu/pubs/MTAD08.pdf), Patrick
 Mullen, Yiying Tong, Pierre Alliez, Mathieu Desbrun, CGF 2008
-[#panozzo_2010]: Daniele Panozzo, Enrico Puppo, Luigi Rocca,
-"Efficient Multi-scale Curvature and Crease Estimation," 2010.
+[#panozzo_2010]: Daniele Panozzo, Enrico Puppo, Luigi Rocca, ["Efficient
+Multi-scale Curvature and Crease
+Estimation,"](https://www.google.com/search?q=Efficient+Multi-scale+Curvature+and+Crease+Estimation)
+2010.
 [#panozzo_2014]:[Frame Fields: Anisotropic and Non-Orthogonal Cross
 Fields](http://www.inf.ethz.ch/personal/dpanozzo/papers/frame-fields-2014.pdf),
 Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga Sorkine-Hornung, SIGGRAPH,
 2014
-[#rustamov_2011]: Raid M. Rustamov, "Multiscale Biharmonic Kernels", 2011.
+[#rustamov_2011]: Raid M. Rustamov, ["Multiscale Biharmonic
+Kernels"](https://www.google.com/search?q=Multiscale+Biharmonic+Kernels), 2011.
 [#schuller_2013]:[Locally Injective Mappings](http://igl.ethz.ch/projects/LIM/)
 Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga Sorkine-Hornung,
 SGP 2013
 [#sharf_2007]: Andrei Sharf, Thomas Lewiner, Gil Shklarski, Sivan Toledo, and
-Daniel Cohen-Or.  "Interactive topology-aware surface reconstruction," 2007.
+Daniel Cohen-Or. ["Interactive topology-aware surface
+reconstruction,"](https://www.google.com/search?q=Interactive+topology-aware+surface+reconstruction) 2007.
 [#sorkine_2004]: Olga Sorkine, Yaron Lipman, Daniel Cohen-Or, Marc Alexa,
-Christian Rössl and Hans-Peter Seidel. "Laplacian Surface Editing," 2004.
-[#sorkine_2007]: Olga Sorkine and Marc Alexa, "As-rigid-as-possible Surface
-Modeling." 2007.
+Christian Rössl and Hans-Peter Seidel. ["Laplacian Surface
+Editing,"](https://www.google.com/search?q=Laplacian+Surface+Editing) 2004.
+[#sorkine_2007]: Olga Sorkine and Marc Alexa, ["As-rigid-as-possible Surface
+Modeling."](https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling) 2007.
