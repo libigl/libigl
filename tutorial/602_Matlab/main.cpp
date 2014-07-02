@@ -3,6 +3,7 @@
 #include <igl/viewer/Viewer.h>
 #include <igl/jet.h>
 #include <igl/cotmatrix.h>
+#include <iostream>
 
 // Base mesh
 Eigen::MatrixXd V;

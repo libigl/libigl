@@ -10,9 +10,11 @@ set(SOURCES
 ${PROJECT_SOURCE_DIR}/main.cpp
 )
 
-if(APPLE)
-  set(CMAKE_EXE_LINKER_FLAGS "-rpath ${MATLAB_INCLUDE_DIR}/../../bin/maci64"})
-endif (APPLE) #APPLE
+# Alec: This seems like a clang specific thing and also seems to have an extra
+# bracket.
+# if(APPLE)
+#   set(CMAKE_EXE_LINKER_FLAGS "-rpath ${MATLAB_INCLUDE_DIR}/../../bin/maci64"})
+# endif (APPLE) #APPLE
 
 add_executable(${PROJECT_NAME}_bin ${SOURCES} ${SHARED_SOURCES})
 target_link_libraries(${PROJECT_NAME}_bin ${SHARED_LIBRARIES} ${MATLAB_LIBRARIES})

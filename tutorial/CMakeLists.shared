@@ -19,6 +19,7 @@ endif(NOT APPLE)
 
 if(APPLE)
 	set(CMAKE_CXX_LINK_FLAGS "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
+         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2")
 endif (APPLE) #APPLE
 
 if(UNIX AND NOT APPLE)

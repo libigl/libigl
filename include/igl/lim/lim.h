@@ -13,6 +13,9 @@
 
 namespace igl
 {
+  // Known issues: energy type should be a readable enum rather than magic
+  // ints.
+  //
   // Computes a locally injective mapping of a triangle or tet-mesh based on a deformation energy
   // subject to some provided linear positional constraints Cv-d.
   //
