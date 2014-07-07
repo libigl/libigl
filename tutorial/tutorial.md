@@ -815,10 +815,10 @@ vertices come first and then boundary vertices:
  \mathbf{L}_{b,in} & \mathbf{L}_{b,b}\end{array}\right)
  \left(\begin{array}{c}
  \mathbf{z}_{in}\\
- \mathbf{L}_{b}\end{array}\right) =
+ \mathbf{z}_{b}\end{array}\right) =
  \left(\begin{array}{c}
  \mathbf{0}_{in}\\
- \mathbf{*}_{b}\end{array}\right)$$
+ \mathbf{z}_{bc}\end{array}\right)$$
 
 The bottom block of equations is no longer meaningful so we'll only consider
 the top block:
@@ -1067,7 +1067,7 @@ biharmonic _surfaces_. We will casually define biharmonic surfaces as surface
 whose _position functions_ are biharmonic with respect to some initial
 parameterization:
 
- $\Delta \mathbf{x}' = 0$
+ $\Delta^2 \mathbf{x}' = 0$
 
 and subject to some handle constraints, conceptualized as "boundary
 conditions":
@@ -1113,7 +1113,7 @@ A smooth deformation field $\mathbf{d}$ which interpolates the deformation
 fields of the handle constraints will impose a smooth deformed shape
 $\mathbf{x}'$. Naturally, we consider _biharmonic deformation fields_:
 
- $\Delta \mathbf{d} = 0$
+ $\Delta^2 \mathbf{d} = 0$
 
 subject to the same handle constraints, but rewritten in terms of their implied
 deformation field at the boundary (handles):
@@ -1593,7 +1593,7 @@ Kronecker product with a 2x2 identity matrix:
 
 ```cpp
 SparseMatrix<double> L_flat;
-repdiag(L,2,L_flat);
+igl::repdiag(L,2,L_flat);
 ```
 
 The area matrix is computed with `igl::vector_area_matrix`:
@@ -2129,10 +2129,9 @@ Formally, ambient occlusion is defined as:
 
 \\[ A_p = \frac{1}{\pi} \int_\omega V_{p,\omega}(n \cdot \omega) d\omega \\]
 
-where $V_{p,\omega}$ is the visibility function at  p, defined to be zero
-if p is occluded in the direction $\omega$ and one otherwise, and \\(
-d\omega$ is the infinitesimal solid angle step of the integration variable
-$\omega$.
+where $V_{p,\omega}$ is the visibility function at  p, defined to be zero if p
+is occluded in the direction $\omega$ and one otherwise, and $d\omega$ is the
+infinitesimal solid angle step of the integration variable $\omega$.
 
 The integral is usually approximated by casting rays in random directions
 around each vertex. This approximation can be computed using the function:
@@ -2162,7 +2161,7 @@ implementation is not straighforward. Libigl contains a function that solves thi
 raycaster. Its usage is demonstrated in [Example 607](607_Picking/main.cpp):
 
 ```cpp
-bool hit = igl::unproject_in_mesh(
+bool hit = igl::unproject_onto_mesh(
   Vector2f(x,y),
   F,
   viewer.core.view * viewer.core.model,
