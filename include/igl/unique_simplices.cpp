@@ -9,9 +9,16 @@
 #include "sort.h"
 #include "unique.h"
 
+template <
+  typename DerivedF,
+  typename DerivedFF,
+  typename DerivedIA,
+  typename DerivedIC>
 IGL_INLINE void igl::unique_simplices(
-  const Eigen::MatrixXi & F,
-  Eigen::MatrixXi & FF)
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::PlainObjectBase<DerivedFF>& FF,
+  Eigen::PlainObjectBase<DerivedIA>& IA,
+  Eigen::PlainObjectBase<DerivedIC>& IC)
 {
   using namespace Eigen;
   using namespace igl;
@@ -19,7 +26,6 @@ IGL_INLINE void igl::unique_simplices(
   MatrixXi sortF, unusedI;
   igl::sort(F,2,1,sortF,unusedI);
   // Find unique faces
-  VectorXi IA,IC;
   MatrixXi C;
   igl::unique_rows(sortF,C,IA,IC);
   FF.resize(IA.size(),F.cols());
@@ -29,3 +35,19 @@ IGL_INLINE void igl::unique_simplices(
     FF.row(i) = F.row(IA(i));
   }
 }
+
+template <
+  typename DerivedF,
+  typename DerivedFF>
+IGL_INLINE void igl::unique_simplices(
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::PlainObjectBase<DerivedFF>& FF)
+{
+  Eigen::VectorXi IA,IC;
+  return unique_simplices(F,FF,IA,IC);
+}
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instanciations
+template void igl::unique_simplices<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+#endif
