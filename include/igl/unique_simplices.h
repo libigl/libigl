@@ -11,15 +11,30 @@
 #include <Eigen/Dense>
 namespace igl
 {
-  // Find *combinatorially* unique simplices in F
+  // Find *combinatorially* unique simplices in F.  **Order independent**
   //
   // Inputs:
   //   F  #F by simplex-size list of simplices
   // Outputs:
   //   FF  #FF by simplex-size list of unique simplices in F
+  //   IA  #FF index vector so that FF == sort(F(IA,:),2);
+  //   IC  #F index vector so that sort(F,2) == FF(IC,:);
+  template <
+    typename DerivedF,
+    typename DerivedFF,
+    typename DerivedIA,
+    typename DerivedIC>
   IGL_INLINE void unique_simplices(
-    const Eigen::MatrixXi & F,
-    Eigen::MatrixXi & FF);
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedFF>& FF,
+    Eigen::PlainObjectBase<DerivedIA>& IA,
+    Eigen::PlainObjectBase<DerivedIC>& IC);
+  template <
+    typename DerivedF,
+    typename DerivedFF>
+  IGL_INLINE void unique_simplices(
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedFF>& FF);
 }
 
 #ifndef IGL_STATIC_LIBRARY
