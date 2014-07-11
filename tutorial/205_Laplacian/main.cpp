@@ -1,5 +1,6 @@
 #include <igl/readOFF.h>
 #include <igl/readDMAT.h>
+#include <igl/barycenter.h>
 #include <igl/cotmatrix.h>
 #include <igl/massmatrix.h>
 #include <igl/grad.h>
@@ -53,14 +54,26 @@ int main(int argc, char *argv[])
       {
         // Recompute just mass matrix on each step
         SparseMatrix<double> M;
-        igl::massmatrix(U,F,igl::MASSMATRIX_TYPE_VORONOI,M);
+        igl::massmatrix(U,F,igl::MASSMATRIX_TYPE_BARYCENTRIC,M);
         // Solve (M-delta*L) U = M*U
         const auto & S = (M - 0.001*L);
         Eigen::SimplicialLLT<Eigen::SparseMatrix<double > > solver(S);
         assert(solver.info() == Eigen::Success);
         U = solver.solve(M*U).eval();
+        // Compute centroid and subtract (also important for numerics)
+        VectorXd dblA;
+        igl::doublearea(U,F,dblA);
+        double area = 0.5*dblA.sum();
+        MatrixXd BC;
+        igl::barycenter(U,F,BC);
+        RowVector3d centroid(0,0,0);
+        for(int i = 0;i<BC.rows();i++)
+        {
+          centroid += 0.5*dblA(i)/area*BC.row(i);
+        }
+        U.rowwise() -= centroid;
         // Normalize to unit surface area (important for numerics)
-        U.array() /= sqrt(M.diagonal().array().sum());
+        U.array() /= sqrt(area);
         break;
       }
       default:
