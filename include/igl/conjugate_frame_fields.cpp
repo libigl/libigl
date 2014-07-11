@@ -67,12 +67,16 @@ namespace igl {
     IGL_INLINE void computeLaplacians();
     IGL_INLINE void computek();
     IGL_INLINE void computeCoefficientLaplacian(int n, Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar> > &D);
-    
+
     IGL_INLINE void precomputeInteriorEdges();
 
 public:
-      IGL_INLINE ConjugateFFSolverData(const Eigen::PlainObjectBase<DerivedV> &_V,
+    IGL_INLINE ConjugateFFSolverData(const Eigen::PlainObjectBase<DerivedV> &_V,
                                    const Eigen::PlainObjectBase<DerivedF> &_F);
+    IGL_INLINE void evaluateConjugacy(const Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 2> &pvU,
+                                      const Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 2> &pvV,
+                                      Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 1> &conjValues) const ;
+
   };
 
   template <typename DerivedV, typename DerivedF, typename DerivedO>
@@ -104,12 +108,6 @@ public:
     typename DerivedV::Scalar lambdaInit,lambdaMultFactor;
     int maxIter;
     bool doHardConstraints;
-
-
-
-    IGL_INLINE void evaluateConjugacy(Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 1> &conjValues);
-
-
 
     IGL_INLINE void localStep();
     IGL_INLINE void getPolyCoeffsForLocalSolve(const Eigen::Matrix<typename DerivedV::Scalar, 4, 1> &s,
@@ -413,7 +411,19 @@ computek()
 
 }
 
-
+template<typename DerivedV, typename DerivedF>
+IGL_INLINE void igl::ConjugateFFSolverData<DerivedV, DerivedF>::
+evaluateConjugacy(const Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 2> &pvU,
+                   const Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 2> &pvV,
+                  Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 1> &conjValues) const 
+{
+  conjValues.resize(numF,1);
+  for (int j =0; j<numF; ++j)
+  {
+    Eigen::Matrix<typename DerivedV::Scalar, 4, 1> x; x<<pvU.row(j).transpose(), pvV.row(j).transpose();
+    conjValues[j] = x.transpose()*H[j]*x;
+  }
+}
 /***************************** Solver ***********************************/
 template <typename DerivedV, typename DerivedF, typename DerivedO>
 IGL_INLINE igl::ConjugateFFSolver<DerivedV, DerivedF, DerivedO>::
@@ -436,19 +446,6 @@ doHardConstraints(_doHardConstraints)
   pvV.setZero(data.numF, 2);
 };
 
-
-
-template<typename DerivedV, typename DerivedF, typename DerivedO>
-IGL_INLINE void igl::ConjugateFFSolver<DerivedV, DerivedF, DerivedO>::
-evaluateConjugacy(Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 1> &conjValues)
-{
-  conjValues.resize(data.numF,1);
-  for (int j =0; j<data.numF; ++j)
-  {
-    Eigen::Matrix<typename DerivedV::Scalar, 4, 1> x; x<<pvU.row(j).transpose(), pvV.row(j).transpose();
-    conjValues[j] = x.transpose()*data.H[j]*x;
-  }
-}
 
 
 template<typename DerivedV, typename DerivedF, typename DerivedO>
@@ -705,7 +702,7 @@ solve(const Eigen::VectorXi &isConstrained,
   typename DerivedV::Scalar meanConj;
   typename DerivedV::Scalar maxConj;
 
-  evaluateConjugacy(conjValues);
+  data.evaluateConjugacy(pvU, pvV, conjValues);
   meanConj = conjValues.cwiseAbs().mean();
   maxConj = conjValues.cwiseAbs().maxCoeff();
   printf("Initial max non-conjugacy: %.5g\n",maxConj);
@@ -730,7 +727,7 @@ solve(const Eigen::VectorXi &isConstrained,
 
     printf("Smoothness: %.5g\n",smoothnessValue);
 
-    evaluateConjugacy(conjValues);
+    data.evaluateConjugacy(pvU, pvV, conjValues);
     meanConj = conjValues.cwiseAbs().mean();
     maxConj = conjValues.cwiseAbs().maxCoeff();
     printf("Mean/Max non-conjugacy: %.5g, %.5g\n",meanConj,maxConj);
@@ -756,7 +753,6 @@ solve(const Eigen::VectorXi &isConstrained,
 
   if (lambdaOut)
     *lambdaOut = lambda;
-
 
   return true;
 }
