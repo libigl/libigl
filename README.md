@@ -4,28 +4,78 @@ libigl - A simple c++ geometry processing library
 <http://igl.ethz.ch/projects/libigl/>
 <https://github.com/alecjacobson/libigl/>
 
-Copyright 2013 - Alec Jacobson, Daniele Panozzo, Olga Diamanti, Kenshi
-Takayama, Leo Sacht, Wenzel Jacob
+Copyright 2014 - Alec Jacobson, Daniele Panozzo, Olga Diamanti, Kenshi
+Takayama, Leo Sacht, Wenzel Jacob, etc.
 
 This is first and foremost a *header* library. Each header file should contain
 a single function.  The function may have multiple prototypes. All functions
 should use the igl namespace and should adhere to the conventions and styles
 listed below.
 
-> **New:** As of 1 July 2014, we have release our libigl beta version 1.0. There are a
-> number of changes we collected for this release to minimize confusion and
-> changes to how you use libigl. See [Version 1.0 Changes][version1.0changes].
+> **New:** As of 1 July 2014, we have release our libigl beta version 1.0.
+> There are a number of changes we collected for this release to minimize
+> confusion and changes to how you use libigl. See [Version 1.0
+> Changes][version1.0changes].
+
+## Installation ##
+Libigl is a *header* library. You do **not** need to build anything to install.
+Simple add `igl/` to your include path and include relevant headers. Here's a
+small "Hello, World" program:
+
+```cpp
+#include <igl/cotmatrix.h>
+#include <Eigen/Dense>
+#include <Eigen/SparseMatrix>
+#include <iostream>
+int main()
+{
+  Eigen::MatrixXd V(4,2);
+  V<<0,0,
+     1,0,
+     1,1,
+     0,1;
+  Eigen::MatrixXi F(2,3);
+  F<<0,1,2,
+     0,2,3;
+  Eigen::SparseMatrix<double> L;
+  igl::cotmatrix(V,F,L);
+  std::cout<<"Hello, mesh: "<<std::endl<<L*V<<std::endl;
+  return 0;
+}
+```
+
+If you save this in `hello.cpp`, then on `gcc` with Eigen installed via
+macports for example you could compile this with:
+
+```bash
+gcc -I/opt/local/include/eigen3 -I./igl/ hello.cpp -o hello
+```
+
+Running `./hello` would then produce
+
+```
+Hello, mesh:
+ 0.5  0.5
+-0.5  0.5
+-0.5 -0.5
+ 0.5 -0.5
+```
+
+## Tutorial ##
+
+As of version 1.0, libigl includes an introductory tutorial that covers its basic
+functionalities. See [tutorial/tutorial.md](./tutorial/tutorial.md) to get started.
 
 ## Dependencies ##
 - Eigen3  Last tested with Eigen Version 3.2
 
 ### Optional ###
-- OpenGL < 3.2 (`IGL_NO_OPENGL`)
-- OpenGL >= 4 (`IGL_OPENGL_4`)
-- AntTweakBar  (`IGL_NO_ANTTWEAKBAR`) Last tested 1.16 (see
--   libigl/external/AntTweakBar)
+- OpenGL (disable with `IGL_NO_OPENGL`)
+    * OpenGL >= 4 (enable with `IGL_OPENGL_4`)
+- AntTweakBar  (disable with `IGL_NO_ANTTWEAKBAR`) Last tested 1.16 (see
+  `libigl/external/AntTweakBar`)
 - GLEW  Windows and Linux
-- OpenMP  
+- OpenMP
 - libpng  libiglpng extra only
 - Mosek  libiglmosek extra only
 - Matlab  libiglmatlab extra only
@@ -45,7 +95,7 @@ listed below.
 - LIM  liblim extra only
 
 ## Header only ##
-libigl is designed to work "out-of-the-box" as a headers only library. To
+Libigl is designed to work "out-of-the-box" as a headers only library. To
 include libigl in your project. You need only include the libigl/include/
 directory in your include path. To
 compile a hello-word example.cpp:
@@ -76,18 +126,15 @@ Then run this example with:
 
     ./example examples/shared/TinyTorus.obj
 
-## Tutorial ##
-
-As of version 1.0, libigl includes an introductory tutorial that covers its basic
-functionalities. See [tutorial/tutorial.md](./tutorial/tutorial.md) to get started.
-
 ## Compilation as a static library ##
-libigl is developed most often on Mac OS X, though has current users in Linux and Windows.
+Libigl is developed most often on Mac OS X, though has current users in Linux
+and Windows.
 
 ### Linux/Mac OS X/Cygwin ###
 
-libigl may also be compiled to a static library. This is advantageous when
-building a project with libigl, since when used as an header-only library can slow down compile times.
+Libigl may also be compiled to a static library. This is advantageous when
+building a project with libigl, since when used as an header-only library can
+slow down compile times.
 
 To build the entire libigl library producing lib/libigl.a, issue:
 
@@ -337,9 +384,14 @@ The following table lists functions which have changed name as of version
    these lines with mesh _B_, has been removed.
 
 ## Contact ##
-libigl is a group endeavor led by Alec Jacobson and Daniele Panozzo. Please
+Libigl is a group endeavor led by Alec Jacobson and Daniele Panozzo. Please
 contact [alecjacobson@gmail.com](mailto:alecjacobson@gmail.com) if you have
 questions or comments. We are happy to get feedback! Enjoy!
+
+If you're using libigl in your projects, quickly [drop us a
+note](mailto:alecjacobson@gmail.com). Tell us who you are and what you're using
+it for. This helps us apply for funding and justify spending time maintaining
+this.
 
 If you find bugs or have problems please use our [github issue tracking
 page](https://github.com/libigl/libigl/issues).
