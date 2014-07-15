@@ -1139,7 +1139,10 @@ Biharmonic functions (whether positions or displacements) are solutions to the
 bi-Laplace equation, but also minimizers of the "Laplacian energy". For
 example, for displacements $\mathbf{d}$, the energy reads
 
- $\int\limits_S \|\Delta \mathbf{d}\|^2 dA.$
+ $\int\limits_S \|\Delta \mathbf{d}\|^2 dA,$
+
+where we define $\Delta \mathbf{d}$ to simply apply the Laplacian
+coordinate-wise.
 
 By linearity of the Laplace(-Beltrami) operator we can reexpress this energy in
 terms of the original positions $\mathbf{x}$ and the unknown positions
