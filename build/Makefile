@@ -101,7 +101,7 @@ obj:
 	mkdir -p obj
 
 ../lib/libigl.a: obj $(OBJ_FILES)
-	mkdir -p lib
+	mkdir -p ../lib
 	rm -f $@
 	ar cqs $@ $(OBJ_FILES)
 
