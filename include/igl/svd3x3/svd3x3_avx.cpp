@@ -99,8 +99,10 @@ IGL_INLINE void igl::svd3x3_avx(
 }
 #pragma runtime_checks( "u", restore )
 
+#ifdef IGL_STATIC_LIBRARY
 // forced instantiation
 template void igl::svd3x3_avx(const Eigen::Matrix<float, 3*8, 3>& A, Eigen::Matrix<float, 3*8, 3> &U, Eigen::Matrix<float, 3*8, 1> &S, Eigen::Matrix<float, 3*8, 3>&V);
 // doesn't even make sense with double because the wunder-SVD code is only single precision anyway...
 template void igl::svd3x3_avx<float>(Eigen::Matrix<float, 24, 3, 0, 24, 3> const&, Eigen::Matrix<float, 24, 3, 0, 24, 3>&, Eigen::Matrix<float, 24, 1, 0, 24, 1>&, Eigen::Matrix<float, 24, 3, 0, 24, 3>&);
+#endif
 #endif
