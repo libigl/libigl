@@ -324,36 +324,37 @@ current users should read and adapt their code accordingly.
 The following table lists functions which have changed name as of version
 1.0.0:
 
-Old | --> | New
-----|-|----
-`igl::add_barycenter`| |`igl::false_barycentric_subdivision`
-`igl::areamatrix`| |`igl::vector_area_matrix`
-`igl::barycentric2global`| |`igl::barycentric_to_global`
-`igl::boundary_faces`| |`igl::boundary_facets`
-`igl::boundary_vertices_sorted`| |`igl::boundary_loop`
-`igl::cotangent`| |`igl::cotmatrix_entries`
-`igl::edgetopology`| |`igl::edge_topology`
-`igl::gradMat`| |`igl::grad`
-`igl::is_manifold`| |`igl::is_edge_manifold`
-`igl::mexStream`| |`igl::MexStream`
-`igl::moveFV`| |`igl::average_onto_vertices`
-`igl::moveVF`| |`igl::average_onto_faces`
-`igl::plot_vector`| |`igl::print_vector`
-`igl::pos`| |`igl::HalfEdgeIterator`
-`igl::plane_project`| |`igl::project_isometrically_to_plane`
-`igl::project_points_mesh`| |`igl::line_mesh_intersection`
-`igl::read`| |`igl::read_triangle_mesh`
-`igl::removeDuplicates.cpp`| |`igl::remove_duplicates`
-`igl::removeUnreferenced`| |`igl::remove_unreferenced`
-`igl::tt`| |`igl::triangle_triangle_adjacency`
-`igl::vf`| |`igl::vertex_triangle_adjacency`
-`igl::write`| |`igl::write_triangle_mesh`
-`igl::manifold_patches`| |`igl::orientable_patches`
-`igl::selfintersect`| |`igl::remesh_self_intersections`
-`igl::project_mesh`| |`igl::line_mesh_intersection`
-`igl::triangulate`| |`igl::polygon_mesh_to_triangle_mesh`
-`igl::is_manifold`| |`igl::is_edge_manifold`
-`igl::triangle_wrapper`| |`igl::triangulate`
+Old | New
+---- | ----
+`igl::add_barycenter`|`igl::false_barycentric_subdivision`
+`igl::areamatrix`|`igl::vector_area_matrix`
+`igl::barycentric2global`|`igl::barycentric_to_global`
+`igl::boundary_faces`|`igl::boundary_facets`
+`igl::boundary_vertices_sorted`|`igl::boundary_loop`
+`igl::cotangent`|`igl::cotmatrix_entries`
+`igl::edgetopology`|`igl::edge_topology`
+`igl::gradMat`|`igl::grad`
+`igl::is_manifold`|`igl::is_edge_manifold`
+`igl::mexStream`|`igl::MexStream`
+`igl::moveFV`|`igl::average_onto_vertices`
+`igl::moveVF`|`igl::average_onto_faces`
+`igl::plot_vector`|`igl::print_vector`
+`igl::pos`|`igl::HalfEdgeIterator`
+`igl::plane_project`|`igl::project_isometrically_to_plane`
+`igl::project_points_mesh`|`igl::line_mesh_intersection`
+`igl::read`|`igl::read_triangle_mesh`
+`igl::removeDuplicates.cpp`|`igl::remove_duplicates`
+`igl::removeUnreferenced`|`igl::remove_unreferenced`
+`igl::tt`|`igl::triangle_triangle_adjacency`
+`igl::vf`|`igl::vertex_triangle_adjacency`
+`igl::write`|`igl::write_triangle_mesh`
+`igl::manifold_patches`|`igl::orientable_patches`
+`igl::selfintersect`|`igl::remesh_self_intersections`
+`igl::project_mesh`|`igl::line_mesh_intersection`
+`igl::triangulate`|`igl::polygon_mesh_to_triangle_mesh`
+`igl::is_manifold`|`igl::is_edge_manifold`
+`igl::triangle_wrapper`|`igl::triangulate`
+
 
 ### Miscellaneous ###
  - To match interfaces provided by (all) other quadratic optimization
