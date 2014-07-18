@@ -76,6 +76,13 @@ static double highdpi = 1;
 static double scroll_x = 0;
 static double scroll_y = 0;
 
+namespace {
+void TW_CALL copy_str(std::string& dst, const std::string& src)
+{
+  dst = src;
+}
+}
+
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
   bool tw_used = TwEventMouseButtonGLFW(button, action);
@@ -904,17 +911,17 @@ namespace igl
       return EXIT_FAILURE;
     }
 
-	glfwMakeContextCurrent(window);
+  glfwMakeContextCurrent(window);
 
 #ifndef __APPLE__
-	glewExperimental = true;
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		/* Problem: glewInit failed, something is seriously wrong. */
-		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-	}
-	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+  glewExperimental = true;
+  GLenum err = glewInit();
+  if (GLEW_OK != err)
+  {
+    /* Problem: glewInit failed, something is seriously wrong. */
+    fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+  }
+  fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 #endif
 
     #ifdef DEBUG
@@ -931,6 +938,8 @@ namespace igl
 
     // Initialize AntTweakBar
     TwInit(TW_OPENGL_CORE, NULL);
+    TwCopyStdStringToClientFunc(static_cast<TwCopyStdStringToClient>(::copy_str));
+
 
     // Initialize IGL viewer
     init();
