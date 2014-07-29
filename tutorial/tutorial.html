@@ -130,7 +130,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#607">607 Picking vertices and faces</a></li>
 <li><a href="#608">608 Locally Injective Maps</a></li>
 </ul></li>
-<li><p><a href="#future">Chapter 7: Outlook for continuing development</a></p></li>
+<li><a href="#future">Chapter 7: Outlook for continuing development</a></li>
 </ul>
 
 <h1 id="100">Chapter 1</h1>
@@ -950,10 +950,10 @@ vertices come first and then boundary vertices:</p>
  \mathbf{L}_{b,in} & \mathbf{L}_{b,b}\end{array}\right)
  \left(\begin{array}{c}
  \mathbf{z}_{in}\\
- \mathbf{L}_{b}\end{array}\right) =
+ \mathbf{z}_{b}\end{array}\right) =
  \left(\begin{array}{c}
  \mathbf{0}_{in}\\
- \mathbf{*}_{b}\end{array}\right)\]</span></p>
+ \mathbf{z}_{bc}\end{array}\right)\]</span></p>
 
 <p>The bottom block of equations is no longer meaningful so we&#8217;ll only consider
 the top block:</p>
@@ -1217,7 +1217,7 @@ biharmonic <em>surfaces</em>. We will casually define biharmonic surfaces as sur
 whose <em>position functions</em> are biharmonic with respect to some initial
 parameterization:</p>
 
-<p><span class="math">\(\Delta \mathbf{x}' = 0\)</span></p>
+<p><span class="math">\(\Delta^2 \mathbf{x}' = 0\)</span></p>
 
 <p>and subject to some handle constraints, conceptualized as &#8220;boundary
 conditions&#8221;:</p>
@@ -1263,7 +1263,7 @@ recovered as</p>
 fields of the handle constraints will impose a smooth deformed shape
 <span class="math">\(\mathbf{x}'\)</span>. Naturally, we consider <em>biharmonic deformation fields</em>:</p>
 
-<p><span class="math">\(\Delta \mathbf{d} = 0\)</span></p>
+<p><span class="math">\(\Delta^2 \mathbf{d} = 0\)</span></p>
 
 <p>subject to the same handle constraints, but rewritten in terms of their implied
 deformation field at the boundary (handles):</p>
@@ -1293,7 +1293,10 @@ surface</em> (top) and using a <em>biharmonic displacements</em>
 bi-Laplace equation, but also minimizers of the &#8220;Laplacian energy&#8221;. For
 example, for displacements <span class="math">\(\mathbf{d}\)</span>, the energy reads</p>
 
-<p><span class="math">\(\int\limits_S \|\Delta \mathbf{d}\|^2 dA.\)</span></p>
+<p><span class="math">\(\int\limits_S \|\Delta \mathbf{d}\|^2 dA,\)</span></p>
+
+<p>where we define <span class="math">\(\Delta \mathbf{d}\)</span> to simply apply the Laplacian
+coordinate-wise.</p>
 
 <p>By linearity of the Laplace(-Beltrami) operator we can reexpress this energy in
 terms of the original positions <span class="math">\(\mathbf{x}\)</span> and the unknown positions
@@ -1765,7 +1768,7 @@ the same time, thus we need to extend it taking the left
 Kronecker product with a 2x2 identity matrix:</p>
 
 <pre><code class="cpp">SparseMatrix&lt;double&gt; L_flat;
-repdiag(L,2,L_flat);
+igl::repdiag(L,2,L_flat);
 </code></pre>
 
 <p>The area matrix is computed with <code>igl::vector_area_matrix</code>:</p>
@@ -2343,10 +2346,9 @@ and 1) associated with the vertice of a mesh.</p>
 
 <p><span class="math">\[ A_p = \frac{1}{\pi} \int_\omega V_{p,\omega}(n \cdot \omega) d\omega \]</span></p>
 
-<p>where <span class="math">\(V_{p,\omega}\)</span> is the visibility function at p, defined to be zero
-if p is occluded in the direction <span class="math">\(\omega\)</span> and one otherwise, and \(
-d\omega$ is the infinitesimal solid angle step of the integration variable
-<span class="math">\(\omega\)</span>.</p>
+<p>where <span class="math">\(V_{p,\omega}\)</span> is the visibility function at p, defined to be zero if p
+is occluded in the direction <span class="math">\(\omega\)</span> and one otherwise, and <span class="math">\(d\omega\)</span> is the
+infinitesimal solid angle step of the integration variable <span class="math">\(\omega\)</span>.</p>
 
 <p>The integral is usually approximated by casting rays in random directions
 around each vertex. This approximation can be computed using the function:</p>
@@ -2377,7 +2379,7 @@ implementation is not straighforward. Libigl contains a function that solves thi
 <a href="https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels">Embree</a>
 raycaster. Its usage is demonstrated in <a href="607_Picking/main.cpp">Example 607</a>:</p>
 
-<pre><code class="cpp">bool hit = igl::unproject_in_mesh(
+<pre><code class="cpp">bool hit = igl::unproject_onto_mesh(
   Vector2f(x,y),
   F,
   viewer.core.view * viewer.core.model,
