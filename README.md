@@ -12,7 +12,7 @@ a single function.  The function may have multiple prototypes. All functions
 should use the igl namespace and should adhere to the conventions and styles
 listed below.
 
-> **New:** As of 1 July 2014, we have release our libigl beta version 1.0.
+> **New:** As of 1 July 2014, we have released libigl as beta version 1.0.
 > There are a number of changes we collected for this release to minimize
 > confusion and changes to how you use libigl. See [Version 1.0
 > Changes][version1.0changes].
