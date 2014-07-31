@@ -395,3 +395,17 @@ this.
 
 If you find bugs or have problems please use our [github issue tracking
 page](https://github.com/libigl/libigl/issues).
+
+## Academic citation ##
+If you use libigl in your research projects, please cite the papers we
+implement as appropriate. To cite the library in general, you could use this
+BibTeX entry:
+
+```bibtex
+@misc{libigl,
+  title = {{libigl}: A simple {C++} geometry processing library},
+  author = {Alec Jacobson and Daniele Panozzo and others},
+  note = {http://igl.ethz.ch/projects/libigl/},
+  year = {2013},
+}
+```
