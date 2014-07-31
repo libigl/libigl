@@ -21,9 +21,10 @@ namespace igl
 {
   template <typename T>
   struct min_quad_with_fixed_data;
-  // Known Bugs: rows of Aeq **must** be linearly independent. Should be using
-  // QR decomposition otherwise:
-  //   http://www.okstate.edu/sas/v8/sashtml/ormp/chap5/sect32.htm
+  // Known Bugs: rows of Aeq **should probably** be linearly independent.
+  // During precomputation, the rows of a Aeq are checked via QR. But in case
+  // they're not then resulting probably will no longer be sparse: it will be
+  // slow.
   //
   // MIN_QUAD_WITH_FIXED Minimize quadratic energy 
   //
