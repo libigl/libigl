@@ -5,7 +5,6 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_NO_BOOST
 #include "render_to_png_async.h"
 #include <YImage.hpp>
 
@@ -43,7 +42,7 @@ static IGL_INLINE bool render_to_png_async_helper(
   return img->save(png_file.c_str(),fast);
 }
 
-IGL_INLINE boost::thread igl::render_to_png_async(
+IGL_INLINE std::thread igl::render_to_png_async(
   const std::string png_file,
   const int width,
   const int height,
@@ -62,6 +61,5 @@ IGL_INLINE boost::thread igl::render_to_png_async(
     GL_UNSIGNED_BYTE,
     img->data());
   // Part that should be asynchronous  
-  return boost::thread(render_to_png_async_helper,img,png_file,alpha,fast);
+  return std::thread(render_to_png_async_helper,img,png_file,alpha,fast);
 }
-#endif

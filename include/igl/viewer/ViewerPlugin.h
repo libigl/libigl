@@ -8,7 +8,7 @@
 
 #ifndef IGL_VIEWER_PLUGIN_H
 #define IGL_VIEWER_PLUGIN_H
-
+#include <string>
 #include <igl/igl_inline.h>
 
 #ifdef ENABLE_XML_SERIALIZATION
@@ -39,9 +39,9 @@ public:
   #ifdef ENABLE_XML_SERIALIZATION
   : XMLSerialization("dummy")
   #endif
-  {plugin_name = "dummy";};
+  {plugin_name = "dummy";}
 
-  ~ViewerPlugin(){};
+  virtual ~ViewerPlugin(){}
 
   // This function is called when the viewer is initialized (no mesh will be loaded at this stage)
   IGL_INLINE virtual void init(igl::Viewer *_viewer)
@@ -132,8 +132,6 @@ public:
 protected:
   // Pointer to the main Preview3D class
   Viewer *viewer;
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 }

@@ -5,11 +5,11 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_NO_BOOST
 #ifndef IGL_RENDER_TO_PNG_ASYNC_H
 #define IGL_RENDER_TO_PNG_ASYNC_H
 #include <igl/igl_inline.h>
-#include <boost/thread/thread.hpp>
+#include <thread>
+//#include <boost/thread/thread.hpp>
 
 #include <string>
 namespace igl
@@ -27,7 +27,7 @@ namespace igl
   // Returns true only if no errors occured
   //
   // See also: igl/render_to_tga which is faster but writes .tga files
-  IGL_INLINE boost::thread render_to_png_async(
+  IGL_INLINE std::thread render_to_png_async(
     const std::string png_file,
     const int width,
     const int height,
@@ -37,8 +37,6 @@ namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "render_to_png_async.cpp"
-#endif
-
 #endif
 
 #endif

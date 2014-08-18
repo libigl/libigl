@@ -188,6 +188,11 @@ inline bool igl::MatlabWorkspace::write(const std::string & path) const
 {
   using namespace std;
   MATFile * mat_file = matOpen(path.c_str(), "w");
+  if(mat_file == NULL)
+  {
+    fprintf(stderr,"Error opening file %s\n",path.c_str());
+    return false;
+  }
   assert(names.size() == data.size());
   // loop over names and data
   for(int i = 0;i < (int)names.size(); i++)
