@@ -26,13 +26,13 @@ lecture notes links to a cross-platform example application.
 
 # Table of contents
 
-* [Chapter 1: Introduction to libigl][100]
-    * [Libigl design principles][100b]
-    * [101 Mesh representation][101]
-    * [102 Visualizing surfaces][102]
-    * [103 Interaction with keyboard and mouse][103]
-    * [104 Scalar field visualization][104]
-    * [105 Overlays][105]
+* [Chapter 1: Introduction to libigl](#100)
+    * [Libigl design principles](#100b)
+    * [101 Mesh representation](#101)
+    * [102 Visualizing surfaces](#102)
+    * [103 Interaction with keyboard and mouse](#103)
+    * [104 Scalar field visualization](#104)
+    * [105 Overlays](#105)
 * [Chapter 2: Discrete Geometric Quantities and
   Operators](#chapter2:discretegeometricquantitiesandoperators)
     * [201 Normals](#normals)
@@ -62,33 +62,30 @@ lecture notes links to a cross-platform example application.
     * [405 As-rigid-as-possible](#as-rigid-as-possible)
     * [406 Fast automatic skinning
       transformations](#fastautomaticskinningtransformations)
-        * [ARAP with grouped edge-sets]
-
-* [Chapter 5: Parametrization][500]
-    * [501 Harmonic parametrization][501]
-    * [502 Least-Square Conformal Maps][502]
-    * [503 As-Rigid-As-Possible][503]
-    * [504 N-Rotationally symmetric tangent fields][504]
-    * [505 Global, seamless integer-grid parametrization][505]
-    * [506 Anisotropic remeshing using frame fields][506]
-    * [507 N-PolyVector fields][507]
-    * [508 Conjugate vector fields][508]
-    * [509 Planarization][509]
-
-* [Chapter 6: External libraries][600]
-    * [601 State serialization][601]
-    * [602 Mixing Matlab code][602]
+        * [ARAP with grouped edge-sets](#arapwithgroupededge-sets)
+* [Chapter 5: Parametrization](#500)
+    * [501 Harmonic parametrization](#501)
+    * [502 Least-Square Conformal Maps](#502)
+    * [503 As-Rigid-As-Possible](#503)
+    * [504 N-Rotationally symmetric tangent fields](#504)
+    * [505 Global, seamless integer-grid parametrization](#505)
+    * [506 Anisotropic remeshing using frame fields](#506)
+    * [507 N-PolyVector fields](#507)
+    * [508 Conjugate vector fields](#508)
+    * [509 Planarization](#509)
+* [Chapter 6: External libraries](#600)
+    * [601 State serialization](#601)
+    * [602 Mixing Matlab code](#602)
         * [Saving a Matlab workspace](#savingamatlabworkspace)
         * [Dumping Eigen matrices to copy and paste into
           Matlab](#dumpingeigenmatricestocopyandpasteintomatlab)
-    * [603 Calling libigl functions from Matlab][603]
-    * [604 Triangulation of closed polygons][604]
-    * [605 Tetrahedralization of closed surfaces][605]
-    * [606 Baking ambient occlusion][606]
-    * [607 Picking vertices and faces][607]
-    * [608 Locally Injective Maps][608]
-
-* [Chapter 7: Outlook for continuing development][future]
+    * [603 Calling libigl functions from Matlab](#603)
+    * [604 Triangulation of closed polygons](#604)
+    * [605 Tetrahedralization of closed surfaces](#605)
+    * [606 Baking ambient occlusion](#606)
+    * [607 Picking vertices and faces](#607)
+    * [608 Locally Injective Maps](#608)
+* [Chapter 7: Outlook for continuing development](#future)
 
 # Chapter 1 [100]
 
@@ -1139,7 +1136,10 @@ Biharmonic functions (whether positions or displacements) are solutions to the
 bi-Laplace equation, but also minimizers of the "Laplacian energy". For
 example, for displacements $\mathbf{d}$, the energy reads
 
- $\int\limits_S \|\Delta \mathbf{d}\|^2 dA.$
+ $\int\limits_S \|\Delta \mathbf{d}\|^2 dA,$
+
+where we define $\Delta \mathbf{d}$ to simply apply the Laplacian
+coordinate-wise.
 
 By linearity of the Laplace(-Beltrami) operator we can reexpress this energy in
 terms of the original positions $\mathbf{x}$ and the unknown positions

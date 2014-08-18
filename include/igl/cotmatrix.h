@@ -38,6 +38,11 @@ namespace igl
   //
   // See also: adjacency_matrix
   //
+  // Note: This Laplacian uses the convention that diagonal entries are
+  // **minus** the sum of off-diagonal entries. The diagonal entries are
+  // therefore in general negative and the matrix is **negative** semi-definite
+  // (immediately, -L is **positive** semi-definite)
+  //
   // Known bugs: off by 1e-16 on regular grid. I think its a problem of
   // arithmetic order in cotmatrix_entries.h: C(i,e) = (arithmetic)/dblA/4
   template <typename DerivedV, typename DerivedF, typename Scalar>

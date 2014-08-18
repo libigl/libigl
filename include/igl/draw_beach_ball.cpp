@@ -28,9 +28,6 @@
 ////////////////////////////////////////////////////////////////////////////
 // Begin Copied Straight from AntTweakBar
 ////////////////////////////////////////////////////////////////////////////
-static const float  FLOAT_EPS     = 1.0e-7f;
-static const float  FLOAT_EPS_SQ  = 1.0e-14f;
-static const float  FLOAT_PI      = 3.14159265358979323846f;
 enum EArrowParts     { ARROW_CONE, ARROW_CONE_CAP, ARROW_CYL, ARROW_CYL_CAP };
 
 template <typename T> SAFE_INLINE const T& TClamp(const T& X, const T& Limit1, const T& Limit2)
@@ -133,6 +130,7 @@ static void CreateSphere()
                     norm = sqrtf(x*x+y*y+z*z);
                     x /= norm; y /= norm; z /= norm;
                     s_SphTri.push_back(x); s_SphTri.push_back(y); s_SphTri.push_back(z);
+static const float  FLOAT_EPS     = 1.0e-7f;
                     if( u[l]+v[l]>FLOAT_EPS )
                         col = ColorBlend(COL_A[i], ColorBlend(COL_B[i], COL_C[i], v[l]/(u[l]+v[l])), u[l]+v[l]);
                     else
@@ -169,6 +167,7 @@ static void CreateArrow()
     float x0, x1, y0, y1, z0, z1, a0, a1, nx, nn;
     for(i=0; i<SUBDIV; ++i)
     {
+static const float  FLOAT_PI      = 3.14159265358979323846f;
         a0 = 2.0f*FLOAT_PI*(float(i))/SUBDIV;
         a1 = 2.0f*FLOAT_PI*(float(i+1))/SUBDIV;
         x0 = ARROW_BGN;

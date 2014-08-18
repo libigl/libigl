@@ -489,15 +489,14 @@ namespace igl
     {
       if(name.find("::", 0) == 0)
         name.replace(0,3,"");
-      
-      std::stringstream stream;
-      for(unsigned int i=0;i<numForbiddenChars;i++)
+
+      for(auto chr : forbiddenChars)
       {
         std::stringstream searchs;
-        searchs << ":" << (int)forbiddenChars[i];
+        searchs << ":" << (int)chr;
         std::string search = searchs.str();
         std::string replace;
-        replace = forbiddenChars[i];
+        replace = chr;
         
         ReplaceSubString(name,search,replace);
       }
