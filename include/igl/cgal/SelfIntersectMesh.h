@@ -157,7 +157,7 @@ namespace igl
       // Helper function for box_intersect. In the case where A and B have
       // already been identified to share two vertices, then we only want to add
       // a possible coplanar (Triangle) intersection. Assumes truly degenerate
-      // facets are not givine as input.
+      // facets are not givin as input.
       inline bool double_shared_vertex(
           const Triangle_3 & A,
           const Triangle_3 & B,
@@ -771,8 +771,7 @@ inline bool igl::SelfIntersectMesh<Kernel>::double_shared_vertex(
       return false;
     }
   }
-  // Shouldn't get here either
-  assert(false);
+  // No intersection.
   return false;
 }
 
