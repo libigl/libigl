@@ -54,6 +54,31 @@ IGL_INLINE void igl::forward_kinematics(
   }
 }
 
+IGL_INLINE void igl::forward_kinematics(
+  const Eigen::MatrixXd & C,
+  const Eigen::MatrixXi & BE,
+  const Eigen::VectorXi & P,
+  const std::vector<
+    Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> > & dQ,
+  Eigen::MatrixXd & T)
+{
+  using namespace Eigen;
+  using namespace std;
+  vector< Quaterniond,aligned_allocator<Quaterniond> > vQ;
+  vector< Vector3d> vT;
+  forward_kinematics(C,BE,P,dQ,vQ,vT);
+  const int dim = C.cols();
+  T.resize(BE.rows()*(dim+1),dim);
+  for(int e = 0;e<BE.rows();e++)
+  {
+    Affine3d a = Affine3d::Identity();
+    a.translate(vT[e]);
+    a.rotate(vQ[e]);
+    T.block(e*(dim+1),0,dim+1,dim) =
+      a.matrix().transpose().block(0,0,dim+1,dim);
+  }
+}
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instanciation
 #endif

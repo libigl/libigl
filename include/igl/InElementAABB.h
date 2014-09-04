@@ -280,13 +280,16 @@ inline std::vector<int> igl::InElementAABB::find(
   const int dim = m_bb_max.size();
   assert(q.size() == m_bb_max.size());
   const double epsilon = 1e-14;
+  // Check if outside bounding box
   for(int d = 0;d<q.size()&&inside;d++)
   {
     inside &= (q(d)-m_bb_min(d))>=epsilon;
     inside &= (m_bb_max(d)-q(d))>=epsilon;
   }
+  cout<<"searching..."<<endl;
   if(!inside)
   {
+    cout<<"not in bb"<<endl;
     return std::vector<int>();
   }
   if(m_element != -1)
@@ -314,9 +317,16 @@ inline std::vector<int> igl::InElementAABB::find(
           const Vector2d V1 = V.row(Ele(m_element,0));
           const Vector2d V2 = V.row(Ele(m_element,1));
           const Vector2d V3 = V.row(Ele(m_element,2));
+          double a0 = doublearea_single(V1,V2,V3);
           a1 = doublearea_single(V1,V2,(Vector2d)q);
           a2 = doublearea_single(V2,V3,(Vector2d)q);
           a3 = doublearea_single(V3,V1,(Vector2d)q);
+          cout<<
+            a0<<" "<<
+            a1<<" "<<
+            a2<<" "<<
+            a3<<" "<<
+            endl;
           break;
         }
       default:assert(false);

@@ -1,4 +1,5 @@
 - `align_and_center_object` continues to zoom out on repeated calls
+- trackball_angle should be a quaternion
 - data.lines, data.points should not concatenate colors with coordinates
 - snap to canonical recenters origin but trackball does not
 - rewrite in libigl style

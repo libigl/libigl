@@ -10,7 +10,7 @@ all: obj example
 
 LIBIGL=../../
 LIBIGL_INC=-I$(LIBIGL)/include
-LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -ligltetgen -liglbbw -liglmosek
+LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglembree -liglcgal -ligltetgen -liglbbw -liglmosek
 
 EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 
@@ -20,6 +20,10 @@ ANTTWEAKBAR_LIB=-L$(LIBIGL)/external/AntTweakBar/lib -lAntTweakBar -framework Ap
 TETGEN=$(LIBIGL)/external/tetgen
 TETGEN_LIB=-L$(TETGEN) -ltet 
 TETGEN_INC=-I$(TETGEN)
+
+EMBREE=$(LIBIGL)/external/embree
+EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/embree
+EMBREE_LIB=-L$(EMBREE)/build -lembree -lsys
 
 CARBON_LIB=-framework Carbon
 
@@ -47,8 +51,15 @@ MOSEK_INC=-I$(MOSEK)/$(MOSEKVERSION)/tools/platform/$(MOSEKPLATFORM)/h
 MOSEK_LIB=-L$(MOSEK)/$(MOSEKVERSION)/tools/platform/$(MOSEKPLATFORM)/bin -lmosek64
 endif
 
-INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC) $(MATLAB_INC) $(GLUT_INC) ${TETGEN_INC} $(MOSEK_INC)
-LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB) $(MATLAB_LIB) $(CARBON_LIB) $(TETGEN_LIB) $(MOSEK_LIB)
+CGAL=/opt/local/
+CGAL_LIB=-L$(CGAL)/lib -lCGAL -lCGAL_Core -lgmp -lmpfr -lboost_thread-mt -lboost_system-mt
+CGAL_INC=-I$(CGAL)/include -I/usr/include/
+# This is absolutely necessary for Exact Construction
+CGAL_FLAGS=-frounding-math -fsignaling-nans 
+CFLAGS+=$(CGAL_FLAGS)
+
+INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC) $(MATLAB_INC) $(GLUT_INC) ${CGAL_INC} ${TETGEN_INC} $(MOSEK_INC) $(EMBREE_INC)
+LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB) $(MATLAB_LIB) ${CGAL_LIB} $(CARBON_LIB) $(TETGEN_LIB) $(MOSEK_LIB) $(EMBREE_LIB)
 
 CPP_FILES=$(wildcard ./*.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o))) 
@@ -56,7 +67,7 @@ OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 CFLAGS+=-std=c++11 -g
 
 example: obj $(OBJ_FILES)
-	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -o example $(OBJ_FILES) $(LIB)
+	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -o example $(LIB) $(OBJ_FILES) 
 
 obj:
 	mkdir -p obj
