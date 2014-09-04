@@ -29,13 +29,12 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedBE> & BE,
     const Eigen::PlainObjectBase<DerivedT> & T,
     const Eigen::PlainObjectBase<Derivedcolor> & color);
-  // Wrapper with each T = Identity
+  // Default color
   template <typename DerivedC, typename DerivedBE, typename DerivedT>
   IGL_INLINE void draw_skeleton_3d(
     const Eigen::PlainObjectBase<DerivedC> & C,
     const Eigen::PlainObjectBase<DerivedBE> & BE,
     const Eigen::PlainObjectBase<DerivedT> & T);
-  // Default color
   template <typename DerivedC, typename DerivedBE>
   IGL_INLINE void draw_skeleton_3d(
     const Eigen::PlainObjectBase<DerivedC> & C,

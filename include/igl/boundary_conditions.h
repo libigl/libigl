@@ -13,7 +13,11 @@
 namespace igl
 {
 
-  // Compute boundary conditions for automatic weights computation
+  // Compute boundary conditions for automatic weights computation. This
+  // function expects that the given mesh (V,Ele) has sufficient samples
+  // (vertices) exactly at point handle locations and exactly along bone and
+  // cage edges.
+  //
   // Inputs:
   //   V  #V by dim list of domain vertices
   //   Ele  #Ele by simplex-size list of simplex indices
@@ -24,10 +28,10 @@ namespace igl
   // Outputs:
   //   b  #b list of boundary indices (indices into V of vertices which have
   //     known, fixed values)
-  //   bc #b by #weights list of known/fixed values for boundary vertices (notice
-  //     the #b != #weights in general because #b will include all the
-  //     intermediary samples along each bone, etc.. The ordering of the weights
-  //     corresponds to [P;BE]
+  //   bc #b by #weights list of known/fixed values for boundary vertices
+  //     (notice the #b != #weights in general because #b will include all the
+  //     intermediary samples along each bone, etc.. The ordering of the
+  //     weights corresponds to [P;BE]
   // Returns true if boundary conditions make sense
   IGL_INLINE bool boundary_conditions(
     const Eigen::MatrixXd & V,

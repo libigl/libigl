@@ -12,3 +12,11 @@
   %    S  #P list of ambient occlusion values between 1 (fully occluded) and 0
   %      (not occluded)
   %
+  % Examples:
+  %   % mesh (V,F), scalar field Z
+  %   AO = ambient_occlusion(V,F,V,per_vertex_normals(V,F),1000);
+  %   tsurf(F,V,'FaceVertexCData', ...
+  %     bsxfun(@times,1-AO, ...
+  %       squeeze(ind2rgb(floor(matrixnormalize(Z)*256),jet(256)))), ...
+  %     fphong,'EdgeColor','none');
+  %
