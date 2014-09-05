@@ -14,6 +14,7 @@ template <
 IGL_INLINE void igl::per_edge_normals(
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F,
+  const PerEdgeNormalsWeightingType weighting,
   Eigen::PlainObjectBase<DerivedN> & N,
   Eigen::PlainObjectBase<DerivedE> & E,
   Eigen::PlainObjectBase<DerivedEMAP> & EMAP)
@@ -34,18 +35,49 @@ IGL_INLINE void igl::per_edge_normals(
   MatrixXd FN;
   per_face_normals(V,F,FN);
 
-  VectorXd dblA;
-  doublearea(V,F,dblA);
+  Eigen::VectorXd W(F.rows());
+  switch(weighting)
+  {
+    case PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM:
+      W.setConstant(1.);
+      break;
+    default:
+      assert(false && "Unknown weighting type");
+    case PER_EDGE_NORMALS_WEIGHTING_TYPE_DEFAULT:
+    case PER_EDGE_NORMALS_WEIGHTING_TYPE_AREA:
+    {
+      doublearea(V,F,W);
+      break;
+    }
+  }
+
   N.setConstant(E.rows(),3,0);
   for(int f = 0;f<m;f++)
   {
     for(int c = 0;c<3;c++)
     {
-      N.row(EMAP(f+c*m)) += dblA(f) * FN.row(f);
+      N.row(EMAP(f+c*m)) += W(f) * FN.row(f);
     }
   }
   N.rowwise().normalize();
   
+}
+
+template <
+  typename DerivedV, 
+  typename DerivedF, 
+  typename DerivedN,
+  typename DerivedE,
+  typename DerivedEMAP>
+IGL_INLINE void igl::per_edge_normals(
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::PlainObjectBase<DerivedN> & N,
+  Eigen::PlainObjectBase<DerivedE> & E,
+  Eigen::PlainObjectBase<DerivedEMAP> & EMAP)
+{
+  return 
+    per_edge_normals(V,F,PER_EDGE_NORMALS_WEIGHTING_TYPE_DEFAULT,N,E,EMAP);
 }
 
 #ifdef IGL_STATIC_LIBRARY
