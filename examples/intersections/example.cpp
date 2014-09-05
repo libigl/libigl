@@ -23,6 +23,7 @@
 #include <igl/ReAntTweakBar.h>
 #include <igl/pathinfo.h>
 #include <igl/Camera.h>
+#include <igl/cat.h>
 #include <igl/get_seconds.h>
 #include <igl/cgal/remesh_self_intersections.h>
 #include <igl/cgal/intersect_other.h>
@@ -123,7 +124,7 @@ float light_pos[4] = {0.1,0.1,-0.9,0};
 // C,D  Colors
 // N,W  Normals
 // mid  combined "centroid"
-Eigen::MatrixXd V,N,C,Z,mid,U,W,D;
+Eigen::MatrixXd V,N,C,Z,mid,U,W,D,VU;
 // F,G  faces
 Eigen::MatrixXi F,G;
 bool has_other = false;
@@ -305,7 +306,7 @@ void display()
   // Draw a nice floor
   glPushMatrix();
   const double floor_offset =
-    -2./bbd*(V.col(1).maxCoeff()-mid(1));
+    -2./bbd*(VU.col(1).maxCoeff()-mid(1));
   glTranslated(0,floor_offset,0);
   const float GREY[4] = {0.5,0.5,0.6,1.0};
   const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
@@ -633,18 +634,14 @@ int main(int argc, char * argv[])
     {
       return 1;
     }
-    mid = 0.25*(V.colwise().maxCoeff() + V.colwise().minCoeff()) +
-      0.25*(U.colwise().maxCoeff() + U.colwise().minCoeff());
-    bbd = max(
-      (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff(),
-      (U.colwise().maxCoeff() - U.colwise().minCoeff()).maxCoeff());
+    cat(1,V,U,VU);
     color_intersections(V,F,U,G,C,D);
   }else
   {
-    mid = 0.5*(V.colwise().maxCoeff() + V.colwise().minCoeff());
-    bbd = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
-    color_selfintersections(V,F,C);
+    VU = V;
   }
+  mid = 0.5*(VU.colwise().maxCoeff() + VU.colwise().minCoeff());
+  bbd = (VU.colwise().maxCoeff() - VU.colwise().minCoeff()).maxCoeff();
 
   // Init glut
   glutInit(&argc,argv);

@@ -18,6 +18,6 @@ namespace igl
   IGL_INLINE Eigen::MatrixXi triangle_fan( const Eigen::MatrixXi & E);
 }
 #ifndef IGL_STATIC_LIBRARY
-#  include "triangle_fan.h"
+#  include "triangle_fan.cpp"
 #endif
 #endif
