@@ -1,51 +1,46 @@
+#include <igl/Camera.h>
+#include <igl/MouseController.h>
+#include <igl/REDRUM.h>
+#include <igl/ReAntTweakBar.h>
+#include <igl/STR.h>
+#include <igl/barycenter.h>
+#include <igl/bbw/bbw.h>
+#include <igl/bone_parents.h>
+#include <igl/boundary_conditions.h>
+#include <igl/boundary_facets.h>
+#include <igl/centroid.h>
+#include <igl/cgal/remesh_self_intersections.h>
+#include <igl/colon.h>
+#include <igl/draw_beach_ball.h>
+#include <igl/draw_floor.h>
+#include <igl/draw_mesh.h>
 #include <igl/draw_skeleton_3d.h>
 #include <igl/draw_skeleton_vector_graphics.h>
-#include <igl/two_axis_valuator_fixed_up.h>
-#include <igl/readOBJ.h>
-#include <igl/readTGF.h>
-#include <igl/writeOBJ.h>
-#include <igl/writeOFF.h>
-#include <igl/writeDMAT.h>
-#include <igl/readDMAT.h>
-#include <igl/readWRL.h>
-#include <igl/report_gl_error.h>
-#include <igl/polygon_mesh_to_triangle_mesh.h>
-#include <igl/readOFF.h>
-#include <igl/readMESH.h>
-#include <igl/draw_mesh.h>
-#include <igl/draw_floor.h>
-#include <igl/pathinfo.h>
-#include <igl/list_to_matrix.h>
-#include <igl/quat_to_mat.h>
-#include <igl/per_face_normals.h>
+#include <igl/forward_kinematics.h>
+#include <igl/get_seconds.h>
+#include <igl/lbs_matrix.h>
 #include <igl/material_colors.h>
-#include <igl/trackball.h>
+#include <igl/normalize_row_sums.h>
+#include <igl/pathinfo.h>
+#include <igl/per_face_normals.h>
+#include <igl/quat_to_mat.h>
+#include <igl/readDMAT.h>
+#include <igl/readTGF.h>
+#include <igl/read_triangle_mesh.h>
+#include <igl/remove_unreferenced.h>
+#include <igl/report_gl_error.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
-#include <igl/REDRUM.h>
-#include <igl/Camera.h>
-#include <igl/ReAntTweakBar.h>
-#include <igl/get_seconds.h>
-#include <igl/forward_kinematics.h>
-#include <igl/boundary_conditions.h>
-#include <igl/lbs_matrix.h>
-#include <igl/colon.h>
-#include <igl/writeTGF.h>
-#include <igl/file_exists.h>
-#include <igl/MouseController.h>
-#include <igl/STR.h>
-#include <igl/bone_parents.h>
-#include <igl/cgal/remesh_self_intersections.h>
-#include <igl/tetgen/tetrahedralize.h>
-#include <igl/barycenter.h>
-#include <igl/remove_unreferenced.h>
-#include <igl/boundary_facets.h>
-#include <igl/winding_number.h>
-#include <igl/bbw/bbw.h>
-#include <igl/normalize_row_sums.h>
-#include <igl/centroid.h>
 #include <igl/tetgen/mesh_with_skeleton.h>
-#include <igl/draw_beach_ball.h>
+#include <igl/tetgen/tetrahedralize.h>
+#include <igl/trackball.h>
+#include <igl/two_axis_valuator_fixed_up.h>
+#include <igl/winding_number.h>
+#include <igl/writeDMAT.h>
+#include <igl/writeOBJ.h>
+#include <igl/writeOFF.h>
+#include <igl/writeTGF.h>
+#include <igl/next_filename.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -166,26 +161,6 @@ void TW_CALL get_rotation_type(void * value, void *clientData)
 {
   RotationType * rt = (RotationType *)(value);
   *rt = rotation_type;
-}
-
-std::string next_filename(
-  const std::string & prefix, 
-  const int zeros,
-  const std::string & suffix)
-{
-  using namespace std;
-  using namespace igl;
-  // O(n)
-  int i = 0;
-  while(true)
-  {
-    string next = STR(prefix << setfill('0') << setw(zeros)<<i<<suffix);
-    if(!file_exists(next.c_str()))
-    {
-      return next;
-    }
-    i++;
-  }
 }
 
 void reshape(int width, int height)
@@ -540,16 +515,16 @@ void mouse_drag(int mouse_x, int mouse_y)
       case ROTATION_TYPE_IGL_TRACKBALL:
       {
         // Rotate according to trackball
-        igl::trackball<double>(
+        igl::trackball(
           width,
           height,
           2.0,
-          down_camera.m_rotation_conj.coeffs().data(),
+          down_camera.m_rotation_conj,
           down_x,
           down_y,
           mouse_x,
           mouse_y,
-          q.coeffs().data());
+          q);
           break;
       }
       case ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
@@ -617,7 +592,8 @@ bool save()
   using namespace std;
   using namespace igl;
   using namespace Eigen;
-  string output_filename = next_filename(output_prefix,4,".dmat");
+  string output_filename;
+  next_filename(output_prefix,4,".dmat",output_filename);
   MatrixXd T;
   forward_kinematics(C,BE,P,s.mouse.rotations(),T);
   if(writeDMAT(output_filename,T))
@@ -861,62 +837,17 @@ int main(int argc, char * argv[])
   cout<<"⇧ ⌘ Z                  Redo."<<endl;
   cout<<"^C,ESC                 Exit (without saving)."<<endl;
 
-  // dirname, basename, extension and filename
-  string dir,base,ext,name;
-  pathinfo(filename,dir,base,ext,name);
-  // Convert extension to lower case
-  transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-  vector<vector<double > > vV,vN,vTC;
-  vector<vector<int > > vF,vFTC,vFN;
-  if(ext == "obj")
-  {
-    // Convert extension to lower case
-    if(!igl::readOBJ(filename,vV,vTC,vN,vF,vFTC,vFN))
-    {
-      return 1;
-    }
-  }else if(ext == "off")
-  {
-    // Convert extension to lower case
-    if(!igl::readOFF(filename,vV,vF,vN))
-    {
-      return 1;
-    }
-  }else if(ext == "wrl")
-  {
-    // Convert extension to lower case
-    if(!igl::readWRL(filename,vV,vF))
-    {
-      return 1;
-    }
-  //}else
-  //{
-  //  // Convert extension to lower case
-  //  MatrixXi T;
-  //  if(!igl::readMESH(filename,V,T,F))
-  //  {
-  //    return 1;
-  //  }
-  //  //if(F.size() > T.size() || F.size() == 0)
-  //  {
-  //    boundary_facets(T,F);
-  //  }
-  }
-  if(vV.size() > 0)
-  {
-    if(!list_to_matrix(vV,V))
-    {
-      return 1;
-    }
-    polygon_mesh_to_triangle_mesh(vF,F);
-  }
+  string dir,_1,_2,name;
+  read_triangle_mesh(filename,V,F,dir,_1,_2,name);
+
   if(output_prefix.size() == 0)
   {
     output_prefix = dir+"/"+name+"-pose-";
   }
 
   {
-    string output_filename = next_filename(output_prefix,4,".dmat");
+    string output_filename;
+    next_filename(output_prefix,4,".dmat",output_filename);
     cout<<BLUEGIN("Output set to start with "<<output_filename)<<endl;
   }
 

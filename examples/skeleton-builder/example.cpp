@@ -1,15 +1,11 @@
 #include <igl/draw_skeleton_3d.h>
 #include <igl/draw_skeleton_vector_graphics.h>
 #include <igl/two_axis_valuator_fixed_up.h>
-#include <igl/readOBJ.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/readTGF.h>
 #include <igl/writeOBJ.h>
 #include <igl/writeOFF.h>
-#include <igl/readWRL.h>
 #include <igl/report_gl_error.h>
-#include <igl/polygon_mesh_to_triangle_mesh.h>
-#include <igl/readOFF.h>
-#include <igl/readMESH.h>
 #include <igl/draw_mesh.h>
 #include <igl/draw_floor.h>
 #include <igl/pathinfo.h>
@@ -1100,55 +1096,9 @@ int main(int argc, char * argv[])
   cout<<"⇧ ⌘ Z                  Redo."<<endl;
   cout<<"^C,ESC                 Exit (without saving)."<<endl;
 
-  // dirname, basename, extension and filename
-  string dir,base,ext,name;
-  pathinfo(filename,dir,base,ext,name);
-  // Convert extension to lower case
-  transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-  vector<vector<double > > vV,vN,vTC;
-  vector<vector<int > > vF,vFTC,vFN;
-  if(ext == "obj")
-  {
-    // Convert extension to lower case
-    if(!igl::readOBJ(filename,vV,vTC,vN,vF,vFTC,vFN))
-    {
-      return 1;
-    }
-  }else if(ext == "off")
-  {
-    // Convert extension to lower case
-    if(!igl::readOFF(filename,vV,vF,vN))
-    {
-      return 1;
-    }
-  }else if(ext == "wrl")
-  {
-    // Convert extension to lower case
-    if(!igl::readWRL(filename,vV,vF))
-    {
-      return 1;
-    }
-  //}else
-  //{
-  //  // Convert extension to lower case
-  //  MatrixXi T;
-  //  if(!igl::readMESH(filename,V,T,F))
-  //  {
-  //    return 1;
-  //  }
-  //  //if(F.size() > T.size() || F.size() == 0)
-  //  {
-  //    boundary_facets(T,F);
-  //  }
-  }
-  if(vV.size() > 0)
-  {
-    if(!list_to_matrix(vV,V))
-    {
-      return 1;
-    }
-    polygon_mesh_to_triangle_mesh(vF,F);
-  }
+  string dir,_1,_2,name;
+  read_triangle_mesh(filename,V,F,dir,_1,_2,name);
+
   if(output_filename.size() == 0)
   {
     output_filename = dir+"/"+name+".tgf";

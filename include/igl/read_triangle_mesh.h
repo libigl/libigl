@@ -26,7 +26,6 @@ namespace igl
   //     to Scalar)
   //   Index  type for indices (will be read as int and cast to Index)
   // Inputs:
-  // Inputs:
   //   str  path to .obj/.off file
   // Outputs:
   //   V  eigen double matrix #V by 3
@@ -42,6 +41,20 @@ namespace igl
     const std::string str,
     Eigen::PlainObjectBase<DerivedV>& V,
     Eigen::PlainObjectBase<DerivedF>& F);
+  // Outputs:
+  //  dir  directory path (see pathinfo.h)
+  //  base  base name (see pathinfo.h)
+  //  ext  extension (see pathinfo.h)
+  //  name  filename (see pathinfo.h)
+  template <typename DerivedV, typename DerivedF>
+  IGL_INLINE bool read_triangle_mesh(
+    const std::string str,
+    Eigen::PlainObjectBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedF>& F,
+    std::string & dir,
+    std::string & base,
+    std::string & ext,
+    std::string & name);
 #endif
 }
 
