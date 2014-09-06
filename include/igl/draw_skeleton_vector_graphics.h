@@ -44,6 +44,6 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedT> & T);
 }
 #ifndef IGL_STATIC_LIBRARY
-#  include "draw_skeleton_vector_graphics.h"
+#  include "draw_skeleton_vector_graphics.cpp"
 #endif
 #endif 

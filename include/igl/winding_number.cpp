@@ -36,6 +36,7 @@ IGL_INLINE void igl::winding_number(
         Vector3d p = O.row(o);
         W(o) = hier.winding_number(p);
       }
+      break;
     }
     default: assert(false && "Bad simplex size"); break;
   }
