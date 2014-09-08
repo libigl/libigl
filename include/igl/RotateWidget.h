@@ -238,7 +238,7 @@ inline bool igl::RotateWidget::down(const int x, const int y)
     auto on_meridian = [&](
       const Vector3d & hit, 
       const Quaterniond & rot, 
-      const Quaterniond m,
+      const Quaterniond & m,
       Vector3d & pl_hit) -> bool
     {
       // project onto rotate plane
