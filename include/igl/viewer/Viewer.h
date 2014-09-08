@@ -108,6 +108,7 @@ namespace igl
 
 
     // C-style callbacks
+    bool (*callback_init)(Viewer& viewer);
     bool (*callback_pre_draw)(Viewer& viewer);
     bool (*callback_post_draw)(Viewer& viewer);
     bool (*callback_mouse_down)(Viewer& viewer, int button, int modifier);
@@ -118,6 +119,7 @@ namespace igl
     bool (*callback_key_up)(Viewer& viewer, unsigned char key, int modifiers);
 
     // Pointers to per-callback data
+    void* callback_init_data;
     void* callback_pre_draw_data;
     void* callback_post_draw_data;
     void* callback_mouse_down_data;
