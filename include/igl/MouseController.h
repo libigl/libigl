@@ -80,7 +80,7 @@ namespace igl
       inline const VectorXb & selection() const{return m_selection;};
       //                          〃 m_is_selecting
       inline const bool & is_selecting() const{return m_is_selecting;}
-      inline const bool & is_widget_down() const{return m_widget.is_down();}
+      inline bool is_widget_down() const{return m_widget.is_down();}
       //                          〃 m_rotations
       inline const RotationList & rotations() const{return m_rotations;}
       // Returns non-const reference to m_root_enabled
