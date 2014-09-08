@@ -307,11 +307,11 @@ public:
 
 IGL_INLINE CurvatureCalculator::CurvatureCalculator()
 {
-  this->localMode=false;
-  this->projectionPlaneCheck=false;
+  this->localMode=true;
+  this->projectionPlaneCheck=true;
   this->sphereRadius=5;
   this->st=SPHERE_SEARCH;
-  this->nt=PROJ_PLANE;
+  this->nt=AVERAGE;
   this->montecarlo=false;
   this->montecarloN=0;
   this->kRing=3;
@@ -418,8 +418,8 @@ IGL_INLINE void CurvatureCalculator::finalEigenStuff (int i, std::vector<Eigen::
   v2global.normalize();
 
   v1global *= c_val(0);
-  v2global *= c_val(1);
-
+  v2global *= c_val(1);  
+  
   if (c_val[0] > c_val[1])
   {
     curv[i]=std::vector<double>(2);
@@ -697,6 +697,18 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
       std::cerr << "Could not compute curvature of radius " << scaledRadius << endl;
       return;
     }
+
+
+    if (projectionPlaneCheck)
+    {
+      vvtmp.reserve (vv.size ());
+      applyProjOnPlane (vertex_normals.row(i), vv, vvtmp);
+      if (vvtmp.size() >= 6 && vvtmp.size()<vv.size())
+	  vv = vvtmp;
+
+    }
+
+
     switch (nt)
     {
       case AVERAGE:
@@ -709,15 +721,6 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
         fprintf(stderr,"Error: normal type not recognized");
         return;
     }
-
-    if (projectionPlaneCheck)
-    {
-      vvtmp.reserve (vv.size ());
-      applyProjOnPlane (normal, vv, vvtmp);
-      if (vvtmp.size() >= 6)
-        vv = vvtmp;
-    }
-
     if (vv.size()<6)
     {
       std::cerr << "Could not compute curvature of radius " << scaledRadius << endl;
