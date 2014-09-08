@@ -25,7 +25,7 @@ small "Hello, World" program:
 ```cpp
 #include <igl/cotmatrix.h>
 #include <Eigen/Dense>
-#include <Eigen/SparseMatrix>
+#include <Eigen/Sparse>
 #include <iostream>
 int main()
 {
