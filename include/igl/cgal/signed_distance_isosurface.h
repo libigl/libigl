@@ -12,6 +12,9 @@
 #include <Eigen/Core>
 namespace igl
 {
+  // SIGNED_DISTANCE_ISOSURFACE Compute the contour of an iso-level of the
+  // signed distance field to a given mesh.
+  //
   // Inputs:
   //   IV  #IV by 3 list of input mesh vertex positions
   //   IF  #IF by 3 list of input triangle indices
