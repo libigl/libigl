@@ -50,7 +50,7 @@ IGL_INLINE bool igl::mesh_with_skeleton(
   //   * has consistent orientation
   //   * has no self-intersections
   //   * has no 0-volume pieces
-  writeOBJ("mesh_with_skeleton.obj",VS,F);
+  //writeOBJ("mesh_with_skeleton.obj",VS,F);
   cerr<<"tetgen begin()"<<endl;
   int status = tetrahedralize( VS,F,eff_tetgen_flags,VV,TT,FF);
   cerr<<"tetgen end()"<<endl;

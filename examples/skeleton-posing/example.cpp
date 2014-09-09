@@ -42,6 +42,7 @@
 #include <igl/writeOFF.h>
 #include <igl/writeTGF.h>
 #include <igl/next_filename.h>
+#include <igl/volume.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -710,7 +711,6 @@ bool clean(
     MatrixXd oldCV = CV;
     MatrixXi oldCF = CF;
     remove_unreferenced(oldCV,oldCF,CV,CF,IM);
-    writeOBJ("remesh.obj",CV,CF);
   }
   MatrixXd TV;
   MatrixXi TT;
@@ -727,7 +727,6 @@ bool clean(
       cout<<REDRUM("CDT failed.")<<endl;
       return false;
     }
-    writeMESH("tetrahedralize-1.mesh",TV,TT,MatrixXi());
   }
   {
     MatrixXd BC;
@@ -737,8 +736,6 @@ bool clean(
     cout<<"winding_number"<<endl;
 #endif
     winding_number(V,F,BC,W);
-    writeDMAT("W.dmat",W);
-    writeDMAT("BC.dmat",BC);
     W = W.array().abs();
     const double thresh = 0.5;
     const int count = (W.array()>thresh).cast<int>().sum();
@@ -753,7 +750,6 @@ bool clean(
     }
     assert(c==count);
     boundary_facets(CT,CF);
-    writeOBJ("boundary_facets.obj",CV,CF);
   }
   return true;
 }
@@ -783,14 +779,32 @@ bool robust_weights(
 #ifdef VERBOSE
     cout<<"mesh_with_skeleton"<<endl;
 #endif
-    writeOBJ("before.obj",CV,CF);
-    if(!mesh_with_skeleton(CV,CF,C,{},BE,{},10,TV,TT,_1))
+    if(!mesh_with_skeleton(CV,CF,C,{},BE,{},10,"pq1.5Y",TV,TT,_1))
     {
       cout<<REDRUM("tetgen failed.")<<endl;
       return false;
     }
-    writeMESH("after.mesh",TV,TT,MatrixXi());
   }
+  // Finally, tetgen may have still included some insanely small tets.
+  // Just ignore these during weight computation (and hope they don't isolate
+  // any vertices).
+  {
+    const MatrixXi oldTT = TT;
+    VectorXd vol;
+    volume(TV,TT,vol);
+    const double thresh = 1e-17;
+    const int count = (vol.array()>thresh).cast<int>().sum();
+    TT.resize(count,oldTT.cols());
+    int c = 0;
+    for(int t = 0;t<oldTT.rows();t++)
+    {
+      if(vol(t)>thresh)
+      {
+        TT.row(c++) = oldTT.row(t);
+      }
+    }
+  }
+
   // compute weights
   VectorXi b;
   MatrixXd bc;
