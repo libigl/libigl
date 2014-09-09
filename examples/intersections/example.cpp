@@ -7,6 +7,7 @@
 #include <igl/quat_to_mat.h>
 #include <igl/report_gl_error.h>
 #include <igl/readOBJ.h>
+#include <igl/writeOBJ.h>
 #include <igl/readDMAT.h>
 #include <igl/readOFF.h>
 #include <igl/readMESH.h>
@@ -273,6 +274,7 @@ void display()
     const MatrixXd & N,
     const MatrixXd & C)
   {
+    glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_POLYGON_OFFSET_FILL); // Avoid Stitching!
     glPolygonOffset(1.0,1);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -476,12 +478,14 @@ void color_selfintersections(
 {
   using namespace igl;
   using namespace Eigen;
+  using namespace std;
   MatrixXd SV;
   MatrixXi SF,IF;
   VectorXi J,IM;
   RemeshSelfIntersectionsParam params;
-  params.detect_only = true;
+  params.detect_only = false;
   remesh_self_intersections(V,F,params,SV,SF,IF,J,IM);
+  writeOBJ("FUCK.obj",SV,SF);
   C.resize(F.rows(),3);
   C.col(0).setConstant(0.4);
   C.col(1).setConstant(0.8);
@@ -639,6 +643,7 @@ int main(int argc, char * argv[])
   }else
   {
     VU = V;
+    color_selfintersections(V,F,C);
   }
   mid = 0.5*(VU.colwise().maxCoeff() + VU.colwise().minCoeff());
   bbd = (VU.colwise().maxCoeff() - VU.colwise().minCoeff()).maxCoeff();

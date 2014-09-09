@@ -214,7 +214,10 @@ inline bool igl::WindingNumberAABB<Point>::inside(const Point & p) const
   assert(p.size() == min_corner.size());
   for(int i = 0;i<p.size();i++)
   {
-    if( p(i) < min_corner(i) || p(i) >= max_corner(i))
+    //// Perfect matching is **not** robust
+    //if( p(i) < min_corner(i) || p(i) >= max_corner(i))
+    // **MUST** be conservative!!
+    if( p(i) < min_corner(i) || p(i) > max_corner(i))
     {
       return false;
     }
