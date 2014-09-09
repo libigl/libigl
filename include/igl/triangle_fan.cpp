@@ -20,7 +20,8 @@ IGL_INLINE void igl::triangle_fan(
   // outgoing (left or right). Thus this will not work.
   assert(E.cols() == 2);
   // Arbitrary starting vertex
-  int s = E(int(((double)rand() / RAND_MAX)*E.rows()),0);
+  //int s = E(int(((double)rand() / RAND_MAX)*E.rows()),0);
+  int s = E(rand()%E.rows(),0);
   vector<vector<int> >  lcap;
   for(int i = 0;i<E.rows();i++)
   {

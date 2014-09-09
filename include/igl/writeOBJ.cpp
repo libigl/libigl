@@ -8,6 +8,8 @@
 #include "writeOBJ.h"
 
 #include <iostream>
+#include <limits>
+#include <iomanip>
 #include <fstream>
 #include <cstdio>
 
@@ -18,6 +20,7 @@ IGL_INLINE bool igl::writeOBJ(
   const Eigen::PlainObjectBase<DerivedF>& F)
 {
   std::ofstream s(str.c_str());
+  s.precision(std::numeric_limits<double>::digits10 + 1);
 
   if(!s.is_open())
   {

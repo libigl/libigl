@@ -38,6 +38,7 @@
 #include <igl/winding_number.h>
 #include <igl/writeDMAT.h>
 #include <igl/writeOBJ.h>
+#include <igl/writeMESH.h>
 #include <igl/writeOFF.h>
 #include <igl/writeTGF.h>
 #include <igl/next_filename.h>
@@ -58,6 +59,8 @@
 #include <stack>
 #include <iostream>
 #include <iomanip>
+
+#define VERBOSE
 
 enum SkelStyleType
 {
@@ -698,8 +701,16 @@ bool clean(
   using namespace std;
   {
     MatrixXi _1;
-    VectorXi _2,_3;
-    remesh_self_intersections(V,F,{},CV,CF,_1,_2,_3);
+    VectorXi _2,IM;
+#ifdef VERBOSE
+    cout<<"remesh_self_intersections"<<endl;
+#endif
+    remesh_self_intersections(V,F,{},CV,CF,_1,_2,IM);
+    for_each(CF.data(),CF.data()+CF.size(),[&IM](int & a){a=IM(a);});
+    MatrixXd oldCV = CV;
+    MatrixXi oldCF = CF;
+    remove_unreferenced(oldCV,oldCF,CV,CF,IM);
+    writeOBJ("remesh.obj",CV,CF);
   }
   MatrixXd TV;
   MatrixXi TT;
@@ -708,17 +719,26 @@ bool clean(
     // c  convex hull
     // Y  no boundary steiners
     // p  polygon input
-    if(tetrahedralize(V,F,"cYp",TV,TT,_1) != 0)
+#ifdef VERBOSE
+    cout<<"tetrahedralize"<<endl;
+#endif
+    if(tetrahedralize(CV,CF,"cYpC",TV,TT,_1) != 0)
     {
       cout<<REDRUM("CDT failed.")<<endl;
       return false;
     }
+    writeMESH("tetrahedralize-1.mesh",TV,TT,MatrixXi());
   }
   {
     MatrixXd BC;
     barycenter(TV,TT,BC);
     VectorXd W;
+#ifdef VERBOSE
+    cout<<"winding_number"<<endl;
+#endif
     winding_number(V,F,BC,W);
+    writeDMAT("W.dmat",W);
+    writeDMAT("BC.dmat",BC);
     W = W.array().abs();
     const double thresh = 0.5;
     const int count = (W.array()>thresh).cast<int>().sum();
@@ -733,6 +753,7 @@ bool clean(
     }
     assert(c==count);
     boundary_facets(CT,CF);
+    writeOBJ("boundary_facets.obj",CV,CF);
   }
   return true;
 }
@@ -759,11 +780,16 @@ bool robust_weights(
   // compute tet-mesh
   {
     MatrixXi _1;
-    if(!mesh_with_skeleton(V,F,C,{},BE,{},10,TV,TT,_1))
+#ifdef VERBOSE
+    cout<<"mesh_with_skeleton"<<endl;
+#endif
+    writeOBJ("before.obj",CV,CF);
+    if(!mesh_with_skeleton(CV,CF,C,{},BE,{},10,TV,TT,_1))
     {
       cout<<REDRUM("tetgen failed.")<<endl;
       return false;
     }
+    writeMESH("after.mesh",TV,TT,MatrixXi());
   }
   // compute weights
   VectorXi b;

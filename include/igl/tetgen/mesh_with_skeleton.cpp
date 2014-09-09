@@ -11,6 +11,7 @@
 #include <igl/cat.h>
 #include <igl/tetgen/tetrahedralize.h>
 #include <igl/writeOFF.h>
+#include <igl/writeOBJ.h>
 
 #include <iostream>
 // Default settings pq2Y tell tetgen to mesh interior of triangle mesh and
@@ -43,15 +44,13 @@ IGL_INLINE bool igl::mesh_with_skeleton(
   sample_edges(C,BECE,samples_per_bone,S);
   // Vertices we'll constrain tet mesh to meet
   MatrixXd VS = cat(1,V,S);
-  // Boundary faces
-  MatrixXi BF;
   // Use tetgen to mesh the interior of surface, this assumes surface:
   //   * has no holes
   //   * has no non-manifold edges or vertices
   //   * has consistent orientation
   //   * has no self-intersections
   //   * has no 0-volume pieces
-  //writeOFF("mesh_with_skeleton.off",VS,F);
+  writeOBJ("mesh_with_skeleton.obj",VS,F);
   cerr<<"tetgen begin()"<<endl;
   int status = tetrahedralize( VS,F,eff_tetgen_flags,VV,TT,FF);
   cerr<<"tetgen end()"<<endl;

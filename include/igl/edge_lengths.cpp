@@ -17,6 +17,15 @@ IGL_INLINE void igl::edge_lengths(
   using namespace std;
   switch(F.cols())
   {
+    case 2:
+    {
+      L.resize(F.rows(),1);
+      for(int i = 0;i<F.rows();i++)
+      {
+        L(i,0) = (V.row(F(i,1))-V.row(F(i,0))).norm();
+      }
+      break;
+    }
     case 3:
     {
       L.resize(F.rows(),3);
