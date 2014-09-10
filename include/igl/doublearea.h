@@ -26,6 +26,8 @@ namespace igl
   // Outputs:
   //   dblA  #F list of triangle double areas (SIGNED only for 2D input)
   //
+  // Known bug: For dim==3 complexity is O(#V + #F)!! Not just O(#F). This is a big deal
+  // if you have 1million unreferenced vertices and 1 face
   template <typename DerivedV, typename DerivedF, typename DeriveddblA>
   IGL_INLINE void doublearea( 
     const Eigen::PlainObjectBase<DerivedV> & V, 
