@@ -142,7 +142,6 @@ inline void igl::WindingNumberAABB<Point>::grow()
 
   // Blerg, why is selecting rows so difficult
 
-  vector<int> id( this->getF().rows());
   double split_value;
   // Split in longest direction
   switch(split_method)
@@ -160,6 +159,7 @@ inline void igl::WindingNumberAABB<Point>::grow()
   //cout<<"c: "<<0.5*(max_corner[max_d] + min_corner[max_d])<<" "<<
   //  "m: "<<split_value<<endl;;
 
+  vector<int> id( this->getF().rows());
   for(int i = 0;i<this->getF().rows();i++)
   {
     if(BC(i,max_d) <= split_value)
@@ -216,7 +216,7 @@ inline bool igl::WindingNumberAABB<Point>::inside(const Point & p) const
   {
     //// Perfect matching is **not** robust
     //if( p(i) < min_corner(i) || p(i) >= max_corner(i))
-    // **MUST** be conservative!!
+    // **MUST** be conservative
     if( p(i) < min_corner(i) || p(i) > max_corner(i))
     {
       return false;
