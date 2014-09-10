@@ -20,11 +20,11 @@ IGL_INLINE void igl::slice_into(
   Eigen::SparseMatrix<T>& Y)
 {
 
+#ifndef NDEBUG
   int xm = X.rows();
   int xn = X.cols();
   assert(R.size() == xm);
   assert(C.size() == xn);
-#ifndef NDEBUG
   int ym = Y.size();
   int yn = Y.size();
   assert(R.minCoeff() >= 0);
@@ -57,9 +57,9 @@ IGL_INLINE void igl::slice_into(
 
   int xm = X.rows();
   int xn = X.cols();
+#ifndef NDEBUG
   assert(R.size() == xm);
   assert(C.size() == xn);
-#ifndef NDEBUG
   int ym = Y.size();
   int yn = Y.size();
   assert(R.minCoeff() >= 0);

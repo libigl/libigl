@@ -47,6 +47,12 @@ namespace igl
     std::vector<std::vector<Index > > & F,
     std::vector<std::vector<Index > > & FTC,
     std::vector<std::vector<Index > > & FN);
+  // Just V and F
+  template <typename Scalar, typename Index>
+  IGL_INLINE bool readOBJ(
+    const std::string obj_file_name, 
+    std::vector<std::vector<Scalar > > & V,
+    std::vector<std::vector<Index > > & F);
 
 #ifndef IGL_NO_EIGEN
   //! Read a mesh from an ascii obj file
