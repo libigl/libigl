@@ -16,7 +16,8 @@
 IGL_INLINE bool igl::tetgenio_to_tetmesh(
   const tetgenio & out,
   std::vector<std::vector<REAL > > & V, 
-  std::vector<std::vector<int> > & T)
+  std::vector<std::vector<int> > & T,
+  std::vector<std::vector<int> > & F)
 {
   using namespace std;
   // process points
@@ -62,14 +63,42 @@ IGL_INLINE bool igl::tetgenio_to_tetmesh(
   assert(max_index >= 0);
   assert(max_index < (int)V.size());
 
+  cout<<out.numberoftrifaces<<endl;
+
+  // When would this not be 4?
+  F.clear();
+  // loop over tetrahedra
+  for(int i = 0; i < out.numberoftrifaces; i++)
+  {
+    if(out.trifacemarkerlist[i]>=0)
+    {
+      vector<int> face(3);
+      for(int j = 0; j<3; j++)
+      {
+        face[j] = out.trifacelist[i * 3 + j];
+      }
+      F.push_back(face);
+    }
+  }
+
   return true;
 }
 
-template <typename DerivedV, typename DerivedT>
+IGL_INLINE bool igl::tetgenio_to_tetmesh(
+  const tetgenio & out,
+  std::vector<std::vector<REAL > > & V, 
+  std::vector<std::vector<int> > & T)
+{
+  std::vector<std::vector<int> > F;
+  return igl::tetgenio_to_tetmesh(out,V,T,F);
+}
+
+template <typename DerivedV, typename DerivedT, typename DerivedF>
 IGL_INLINE bool igl::tetgenio_to_tetmesh(
   const tetgenio & out,
   Eigen::PlainObjectBase<DerivedV>& V,
-  Eigen::PlainObjectBase<DerivedT>& T)
+  Eigen::PlainObjectBase<DerivedT>& T,
+  Eigen::PlainObjectBase<DerivedF>& F)
 {
   using namespace igl;
   using namespace std;
@@ -93,6 +122,16 @@ IGL_INLINE bool igl::tetgenio_to_tetmesh(
     return false;
   }
   return true;
+}
+
+template <typename DerivedV, typename DerivedT>
+IGL_INLINE bool igl::tetgenio_to_tetmesh(
+  const tetgenio & out,
+  Eigen::PlainObjectBase<DerivedV>& V,
+  Eigen::PlainObjectBase<DerivedT>& T)
+{
+  Eigen::PlainObjectBase<DerivedT> F;
+  return tetgenio_to_tetmesh(out,V,T,F);
 }
 
 #ifdef IGL_STATIC_LIBRARY

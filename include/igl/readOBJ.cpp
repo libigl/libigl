@@ -203,6 +203,17 @@ IGL_INLINE bool igl::readOBJ(
   return true;
 }
 
+template <typename Scalar, typename Index>
+IGL_INLINE bool igl::readOBJ(
+  const std::string obj_file_name, 
+  std::vector<std::vector<Scalar > > & V,
+  std::vector<std::vector<Index > > & F)
+{
+  std::vector<std::vector<Scalar > > TC,N;
+  std::vector<std::vector<Index > > FTC,FN;
+  return readOBJ(obj_file_name,V,TC,N,F,FTC,FN);
+}
+
 template <typename DerivedV, typename DerivedF, typename DerivedT>
 IGL_INLINE bool igl::readOBJ(
   const std::string str,
