@@ -39,8 +39,10 @@ IGL_INLINE void igl::deform_skeleton(
   {
     BET(e,0) = 2*e;
     BET(e,1) = 2*e+1;
+    Matrix4d t;
+    t << T.block(e*4,0,4,3).transpose(), 0,0,0,0;
     Affine3d a;
-    a.matrix() = T.block(e*4,0,4,3).transpose();
+    a.matrix() = t;
     Vector3d c0 = C.row(BE(e,0));
     Vector3d c1 = C.row(BE(e,1));
     CT.row(2*e) =   a * c0;

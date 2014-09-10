@@ -7,11 +7,18 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "read_triangle_mesh.h"
 
+#include <igl/list_to_matrix.h>
+#include <igl/readMESH.h>
 #include <igl/readOBJ.h>
 #include <igl/readOFF.h>
+#include <igl/readSTL.h>
+#include <igl/readWRL.h>
 #include <igl/pathinfo.h>
+#include <igl/boundary_facets.h>
+#include <igl/polygon_mesh_to_triangle_mesh.h>
 
 #include <cstdio>
+#include <algorithm>
 #include <iostream>
 
 
@@ -50,25 +57,82 @@ IGL_INLINE bool igl::read_triangle_mesh(
   Eigen::PlainObjectBase<DerivedV>& V,
   Eigen::PlainObjectBase<DerivedF>& F)
 {
-    const char* p;
-    for (p = str.c_str(); *p != '\0'; p++)
-        ;
-    while (*p != '.')
-        p--;
+  std::string _1,_2,_3,_4;
+  return read_triangle_mesh(str,V,F,_1,_2,_3,_4);
+}
 
-    if (!strcmp(p, ".obj") || !strcmp(p, ".OBJ"))
+template <typename DerivedV, typename DerivedF>
+IGL_INLINE bool igl::read_triangle_mesh(
+  const std::string filename,
+  Eigen::PlainObjectBase<DerivedV>& V,
+  Eigen::PlainObjectBase<DerivedF>& F,
+  std::string & dir,
+  std::string & base,
+  std::string & ext,
+  std::string & name)
+{
+  using namespace std;
+  using namespace Eigen;
+
+  // dirname, basename, extension and filename
+  pathinfo(filename,dir,base,ext,name);
+  // Convert extension to lower case
+  transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+  vector<vector<double > > vV,vN,vTC;
+  vector<vector<int > > vF,vFTC,vFN;
+  if(ext == "mesh")
+  {
+    // Convert extension to lower case
+    MatrixXi T;
+    if(!readMESH(filename,V,T,F))
     {
-        return igl::readOBJ(str,V,F);
-    }else if (!strcmp(p, ".off") || !strcmp(p, ".OFF"))
-    {
-        return igl::readOFF(str,V,F);
+      return 1;
     }
-    else
+    //if(F.size() > T.size() || F.size() == 0)
     {
-      fprintf(stderr,"read_triangle_mesh() does not recognize extension: %s\n",p);
+      boundary_facets(T,F);
+    }
+  }else if(ext == "obj")
+  {
+    if(!readOBJ(filename,vV,vTC,vN,vF,vFTC,vFN))
+    {
       return false;
     }
+  }else if(ext == "off")
+  {
+    if(!readOFF(filename,vV,vF,vN))
+    {
+      return false;
+    }
+  }else if(ext == "stl")
+  {
+    MatrixXd _;
+    if(!readSTL(filename,V,F,_))
+    {
+      return false;
+    }
+  }else if(ext == "wrl")
+  {
+    if(!readWRL(filename,vV,vF))
+    {
+      return false;
+    }
+  }else
+  {
+    cerr<<"Error: unknown extension: "<<ext<<endl;
+    return false;
+  }
+  if(vV.size() > 0)
+  {
+    if(!list_to_matrix(vV,V))
+    {
+      return false;
+    }
+    polygon_mesh_to_triangle_mesh(vF,F);
+  }
+  return true;
 }
+
 #endif
 
 #ifdef IGL_STATIC_LIBRARY

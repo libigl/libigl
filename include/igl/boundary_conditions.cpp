@@ -157,6 +157,12 @@ IGL_INLINE bool igl::boundary_conditions(
     bc.row(i).array() /= sum;
   }
 
+  if(bc.size() == 0)
+  {
+    verbose("^%s: Error: boundary conditions are empty.\n",__FUNCTION__);
+    return false;
+  }
+
   // If there's only a single boundary condition, the following tests
   // are overzealous.
   if(bc.rows() == 1)

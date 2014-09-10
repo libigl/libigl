@@ -26,6 +26,21 @@ namespace igl
   IGL_INLINE bool list_to_matrix(
     const std::vector<std::vector<T > > & V,
     Mat & M);
+  // Convert a list of row vectors of `n` or less to a matrix and pad on
+  // the right with `padding`:
+  //
+  // Inputs:
+  //   V  a m-long list of vectors of size <=n
+  //   n  number of columns
+  //   padding  value to fill in from right for short rows
+  // Outputs:
+  //   M  an m by n matrix
+  template <typename T, class Mat>
+  IGL_INLINE bool list_to_matrix(
+    const std::vector<std::vector<T > > & V,
+    const int n,
+    const T & padding,
+    Mat & M);
   // Vector wrapper
   template <typename T, class Mat>
   IGL_INLINE bool list_to_matrix(const std::vector<T > & V,Mat & M);

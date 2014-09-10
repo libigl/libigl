@@ -33,16 +33,16 @@ namespace igl
   template <
     typename Derivedobj>
   IGL_INLINE int unproject_in_mesh(
-    const int x,
-    const int y,
+    const double x,
+    const double y,
     const igl::EmbreeIntersector & ei,
     Eigen::PlainObjectBase<Derivedobj> & obj);
 
   template <
     typename Derivedobj>
   IGL_INLINE int unproject_in_mesh(
-    const int x,
-    const int y,
+    const double x,
+    const double y,
     const igl::EmbreeIntersector & ei,
     Eigen::PlainObjectBase<Derivedobj> & obj,
     std::vector<igl::Hit > & hits);

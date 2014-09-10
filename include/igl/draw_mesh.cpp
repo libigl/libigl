@@ -75,6 +75,7 @@ IGL_INLINE void igl::draw_mesh(
   using namespace std;
   using namespace Eigen;
   const int rF = F.rows();
+  const int cF = F.cols();
   const int cC = C.cols();
   const int rC = C.rows();
   const int cW = W.cols();
@@ -93,6 +94,9 @@ IGL_INLINE void igl::draw_mesh(
     assert(C.cols() == 3 || C.size() == 0);
     assert(N.cols() == 3 || N.size() == 0);
     assert(TC.cols() == 2 || TC.size() == 0);
+    assert(cF == 3 || cF == 4);
+    assert(TF.size() == 0 || TF.cols() == F.cols());
+    assert(NF.size() == 0 || NF.cols() == NF.cols());
   }
   if(W.size()>0)
   {
@@ -101,12 +105,21 @@ IGL_INLINE void igl::draw_mesh(
     assert(W.cols() == WI.cols());
   }
 
-  glBegin(GL_TRIANGLES);
+  switch(F.cols())
+  {
+    default:
+    case 3:
+      glBegin(GL_TRIANGLES);
+      break;
+    case 4:
+      glBegin(GL_QUADS);
+      break;
+  }
   // loop over faces
   for(int i = 0; i<rF;i++)
   {
     // loop over corners of triangle
-    for(int j = 0;j<3;j++)
+    for(int j = 0;j<cF;j++)
     {
 
       int tc = -1;
@@ -119,9 +132,9 @@ IGL_INLINE void igl::draw_mesh(
       }else if(rTC == rV)
       {
         tc = F(i,j);
-      }else if(rTC == rF*2)
+      }else if(rTC == rF*cF)
       {
-        tc = i*2 + j;
+        tc = i*cF + j;
       }else if(rTC == rF)
       {
         tc = i;
@@ -138,9 +151,9 @@ IGL_INLINE void igl::draw_mesh(
       }else if(rC == rV)
       {
         color = C.row(F(i,j));
-      }else if(rC == rF*3)
+      }else if(rC == rF*cF)
       {
-        color = C.row(i*3+j);
+        color = C.row(i*cF+j);
       }else if(rC == rF)
       {
         color = C.row(i);
@@ -152,19 +165,19 @@ IGL_INLINE void igl::draw_mesh(
       int n = -1;
       if(rNF != 0)
       {
-        n = NF(i,j);
-      } else if(rN == 1)
+        n = NF(i,j); // indexed normals
+      } else if(rN == 1) 
       {
-        n = 0;
-      }else if(rN == rV)
-      {
-        n = F(i,j);
-      }else if(rN == rF*2)
-      {
-        n = i*2 + j;
+        n = 0; // uniform normals
       }else if(rN == rF)
       {
-        n = i;
+        n = i; // face normals
+      }else if(rN == rV)
+      {
+        n = F(i,j); // vertex normals
+      }else if(rN == rF*cF)
+      {
+        n = i*cF + j; // corner normals
       }else
       {
         assert(N.size() == 0);

@@ -1,3 +1,15 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
+
+// # MUTUAL DEPENDENCY ISSUE FOR HEADER ONLY VERSION
+// MUST INCLUDE winding_number.h first before guard:
+#include "winding_number.h"
+
 #ifndef IGL_WINDINGNUMBERAABB_H
 #define IGL_WINDINGNUMBERAABB_H
 #include "WindingNumberTree.h"
@@ -202,7 +214,10 @@ inline bool igl::WindingNumberAABB<Point>::inside(const Point & p) const
   assert(p.size() == min_corner.size());
   for(int i = 0;i<p.size();i++)
   {
-    if( p(i) < min_corner(i) || p(i) >= max_corner(i))
+    //// Perfect matching is **not** robust
+    //if( p(i) < min_corner(i) || p(i) >= max_corner(i))
+    // **MUST** be conservative!!
+    if( p(i) < min_corner(i) || p(i) > max_corner(i))
     {
       return false;
     }

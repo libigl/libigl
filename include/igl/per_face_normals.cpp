@@ -19,7 +19,7 @@ IGL_INLINE void igl::per_face_normals(
   N.resize(F.rows(),3);
   // loop over faces
   int Frows = F.rows();
-#pragma omp parallel for
+#pragma omp parallel for if (Frows>10000)
   for(int i = 0; i < Frows;i++)
   {
     const Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v1 = V.row(F(i,1)) - V.row(F(i,0));

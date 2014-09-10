@@ -95,7 +95,7 @@ IGL_INLINE bool igl::writeMESH(
   for(int i = 0;i<number_of_tet_vertices;i++)
   {
     // print position of ith tet vertex
-    fprintf(mesh_file,"%lg %lg %lg 1\n",
+    fprintf(mesh_file,"%.17lg %.17lg %.17lg 1\n",
       (double)V(i,0),
       (double)V(i,1),
       (double)V(i,2));

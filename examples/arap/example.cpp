@@ -214,8 +214,8 @@ bool init_arap()
   {
     return false;
   }
-  //arap_data.with_dynamics = true;
-  //arap_data.h = 0.5;
+  arap_data.with_dynamics = true;
+  arap_data.h = 0.05;
   //arap_data.max_iter = 100;
   //partition(W,100,arap_data.G,_S,_D);
   return arap_precomputation(V,*Ele,V.cols(),b,arap_data);

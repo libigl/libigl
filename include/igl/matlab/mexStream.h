@@ -30,7 +30,6 @@ namespace igl
       inline virtual int overflow(int c = EOF);
   }; 
 }
-#ifndef IGL_STATIC_LIBRARY
-#  include "MexStream.cpp"
-#endif
+// ALWAYS INCLUDE
+#include "MexStream.cpp"
 #endif

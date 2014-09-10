@@ -18,26 +18,72 @@ IGL_INLINE void igl::point_mesh_squared_distance(
   Eigen::MatrixXd & C)
 {
   using namespace std;
-  typedef CGAL::Point_3<Kernel>    Point_3;
+  typedef CGAL::Triangle_3<Kernel> Triangle_3; 
+  typedef typename std::vector<Triangle_3>::iterator Iterator;
+  typedef CGAL::AABB_triangle_primitive<Kernel, Iterator> Primitive;
+  typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
+  typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
+  Tree tree;
+  vector<Triangle_3> T;
+  point_mesh_squared_distance_precompute(V,F,tree,T);
+  return point_mesh_squared_distance(P,tree,T,sqrD,I,C);
+}
+
+template <typename Kernel>
+IGL_INLINE void igl::point_mesh_squared_distance_precompute(
+  const Eigen::MatrixXd & V,
+  const Eigen::MatrixXi & F,
+  CGAL::AABB_tree<
+    CGAL::AABB_traits<Kernel, 
+      CGAL::AABB_triangle_primitive<Kernel, 
+        typename std::vector<CGAL::Triangle_3<Kernel> >::iterator
+      >
+    >
+  > & tree,
+  std::vector<CGAL::Triangle_3<Kernel> > & T)
+{
+  using namespace std;
+
+  typedef CGAL::Triangle_3<Kernel> Triangle_3; 
+  typedef typename std::vector<Triangle_3>::iterator Iterator;
+  typedef CGAL::AABB_triangle_primitive<Kernel, Iterator> Primitive;
+  typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
+  typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
+
+  // Must be 3D
+  assert(V.cols() == 3);
+  // Must be triangles
+  assert(F.cols() == 3);
+  // Make list of cgal triangles
+  mesh_to_cgal_triangle_list(V,F,T);
+  tree.clear();
+  tree.insert(T.begin(),T.end());
+  tree.accelerate_distance_queries();
+}
+
+template <typename Kernel>
+IGL_INLINE void igl::point_mesh_squared_distance(
+  const Eigen::MatrixXd & P,
+  const CGAL::AABB_tree<
+    CGAL::AABB_traits<Kernel, 
+      CGAL::AABB_triangle_primitive<Kernel, 
+        typename std::vector<CGAL::Triangle_3<Kernel> >::iterator
+      >
+    >
+  > & tree,
+  const std::vector<CGAL::Triangle_3<Kernel> > & T,
+  Eigen::VectorXd & sqrD,
+  Eigen::VectorXi & I,
+  Eigen::MatrixXd & C)
+{
   typedef CGAL::Triangle_3<Kernel> Triangle_3; 
   typedef typename std::vector<Triangle_3>::iterator Iterator;
   typedef CGAL::AABB_triangle_primitive<Kernel, Iterator> Primitive;
   typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
   typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
   typedef typename Tree::Point_and_primitive_id Point_and_primitive_id;
-
-  // Must be 3D
-  assert(V.cols() == 3);
+  typedef CGAL::Point_3<Kernel>    Point_3;
   assert(P.cols() == 3);
-  // Must be triangles
-  assert(F.cols() == 3);
-  // Make list of cgal triangles
-  Tree tree;
-  vector<Triangle_3> T;
-  mesh_to_cgal_triangle_list(V,F,T);
-  tree.insert(T.begin(),T.end());
-
-  tree.accelerate_distance_queries();
   const int n = P.rows();
   sqrD.resize(n,1);
   I.resize(n,1);
@@ -59,5 +105,6 @@ IGL_INLINE void igl::point_mesh_squared_distance(
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::point_mesh_squared_distance<CGAL::Epeck>( const Eigen::MatrixXd & P, const Eigen::MatrixXd & V, const Eigen::MatrixXi & F, Eigen::VectorXd & sqrD, Eigen::VectorXi & I, Eigen::MatrixXd & C);
+template void igl::point_mesh_squared_distance_precompute<CGAL::Epick>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, CGAL::AABB_tree<CGAL::AABB_traits<CGAL::Epick, CGAL::AABB_triangle_primitive<CGAL::Epick, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > >::iterator, CGAL::Boolean_tag<false> > > >&, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > >&);
 
 #endif

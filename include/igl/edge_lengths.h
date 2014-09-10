@@ -22,11 +22,14 @@ namespace igl
   //   DerivedL derived from edge lengths matrix type: i.e. MatrixXd
   // Inputs:
   //   V  eigen matrix #V by 3
+  //   F  #F by 2 list of mesh edges
+  //    or
   //   F  #F by 3 list of mesh faces (must be triangles)
   //    or
   //   T  #T by 4 list of mesh elements (must be tets)
   // Outputs:
-  //   L  #F by {3|6} list of edge lengths 
+  //   L  #F by {1|3|6} list of edge lengths 
+  //     for edges, column of lengths
   //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
   //     for tets, columns correspond to edges
   //     [1,2],[2,0],[0,1],[3,0],[3,1],[3,2]

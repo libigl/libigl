@@ -27,6 +27,10 @@ IGL_INLINE void igl::draw_skeleton_3d(
   // parameter. Further, its joint balls are not rotated with the bones.
   using namespace Eigen;
   using namespace std;
+  if(color.size() == 0)
+  {
+    return draw_skeleton_3d(C,BE,T,MAYA_SEA_GREEN);
+  }
   assert(color.cols() == 4 || color.size() == 4);
   if(T.size() == 0)
   {
@@ -38,7 +42,7 @@ IGL_INLINE void igl::draw_skeleton_3d(
     {
       return;
     }
-    return draw_skeleton_3d(C,BE,T,MAYA_SEA_GREEN);
+    return draw_skeleton_3d(C,BE,T,color);
   }
   assert(T.rows() == BE.rows()*(C.cols()+1));
   assert(T.cols() == C.cols());

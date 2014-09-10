@@ -54,6 +54,35 @@ IGL_INLINE bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Mat 
 }
 
 template <typename T, class Mat>
+IGL_INLINE bool igl::list_to_matrix(
+  const std::vector<std::vector<T > > & V,
+  const int n,
+  const T & padding,
+  Mat & M)
+{
+  const int m = V.size();
+  M.resize(m,n);
+  for(int i = 0;i<m;i++)
+  {
+    const auto & row = V[i];
+    if(row.size()>n)
+    {
+      return false;
+    }
+    int j = 0;
+    for(;j<row.size();j++)
+    {
+      M(i,j) = row[j];
+    }
+    for(;j<n;j++)
+    {
+      M(i,j) = padding;
+    }
+  }
+  return true;
+}
+
+template <typename T, class Mat>
 IGL_INLINE bool igl::list_to_matrix(const std::vector<T > & V,Mat & M)
 {
   // number of rows
