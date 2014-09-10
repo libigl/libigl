@@ -22,7 +22,7 @@ namespace igl
   //   DerivedL derived from edge lengths matrix type: i.e. MatrixXd
   // Inputs:
   //   V  eigen matrix #V by 3
-  //   F  #F by 3 list of mesh faces (must be triangles)
+  //   F  #F by simplex-size list of mesh faces (must be simplex)
   // Outputs:
   //   l  average edge length
   //

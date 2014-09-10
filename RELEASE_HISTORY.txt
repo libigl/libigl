@@ -1,3 +1,5 @@
+1.0.2  Bug fix in winding number code
+1.0.1  Bug fixes and more CGAL support
 1.0.0  Major beta release: many renames, tutorial, triangle wrapper, org. build
 0.4.6  Generalized Winding Numbers
 0.4.5  CGAL extra: mesh selfintersection

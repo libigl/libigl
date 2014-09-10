@@ -80,6 +80,7 @@ namespace igl
       inline const VectorXb & selection() const{return m_selection;};
       //                          〃 m_is_selecting
       inline const bool & is_selecting() const{return m_is_selecting;}
+      inline bool is_widget_down() const{return m_widget.is_down();}
       //                          〃 m_rotations
       inline const RotationList & rotations() const{return m_rotations;}
       // Returns non-const reference to m_root_enabled
@@ -122,6 +123,7 @@ namespace igl
       inline void set_size(const int n);
       // Resets m_rotation elements to identity
       inline void reset_rotations();
+      inline void reset_selected_rotations();
       inline bool set_rotations(const RotationList & vQ);
       // Sets all entries in m_selection to false
       inline void clear_selection();
@@ -500,6 +502,19 @@ inline void igl::MouseController::reset_rotations()
   // cop out. just clear selection
   clear_selection();
 }
+
+inline void igl::MouseController::reset_selected_rotations()
+{
+  using namespace Eigen;
+  for(int e = 0;e<m_selection.size();e++)
+  {
+    if(m_selection(e))
+    {
+      m_rotations[e] = Quaterniond::Identity();
+    }
+  }
+}
+
 inline bool igl::MouseController::set_rotations(const RotationList & vQ)
 {
   if(vQ.size() != m_rotations.size())

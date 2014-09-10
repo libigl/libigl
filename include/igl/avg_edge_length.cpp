@@ -19,10 +19,10 @@ IGL_INLINE double igl::avg_edge_length(
 
   for (unsigned i=0;i<F.rows();++i)
   {
-    for (unsigned j=0;j<3;++j)
+    for (unsigned j=0;j<F.cols();++j)
     {
       ++count;
-      avg += (V.row(F(i,j)) - V.row(F(i,(j+1)%3))).norm();
+      avg += (V.row(F(i,j)) - V.row(F(i,(j+1)%F.cols()))).norm();
     }
   }
 

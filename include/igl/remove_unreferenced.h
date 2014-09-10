@@ -27,13 +27,18 @@ namespace igl
   // Output:
   // NV, NF: new mesh without unreferenced vertices
   //
-  template <typename Scalar, typename Index>
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedNV,
+    typename DerivedNF,
+    typename DerivedI>
   IGL_INLINE void remove_unreferenced(
-    const Eigen::PlainObjectBase<Scalar> &V,
-    const Eigen::PlainObjectBase<Index> &F,
-    Eigen::PlainObjectBase<Scalar> &NV,
-    Eigen::PlainObjectBase<Index> &NF,
-    Eigen::PlainObjectBase<Index> &I);
+    const Eigen::PlainObjectBase<DerivedV> &V,
+    const Eigen::PlainObjectBase<DerivedF> &F,
+    Eigen::PlainObjectBase<DerivedNV> &NV,
+    Eigen::PlainObjectBase<DerivedNF> &NF,
+    Eigen::PlainObjectBase<DerivedI> &I);
 }
 
 #ifndef IGL_STATIC_LIBRARY

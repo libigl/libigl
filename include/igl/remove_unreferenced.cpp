@@ -7,13 +7,18 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "remove_unreferenced.h"
 
-template <typename Scalar, typename Index>
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedNV,
+  typename DerivedNF,
+  typename DerivedI>
 IGL_INLINE void igl::remove_unreferenced(
-  const Eigen::PlainObjectBase<Scalar> &V,
-  const Eigen::PlainObjectBase<Index> &F,
-  Eigen::PlainObjectBase<Scalar> &NV,
-  Eigen::PlainObjectBase<Index> &NF,
-  Eigen::PlainObjectBase<Index> &I)
+  const Eigen::PlainObjectBase<DerivedV> &V,
+  const Eigen::PlainObjectBase<DerivedF> &F,
+  Eigen::PlainObjectBase<DerivedNV> &NV,
+  Eigen::PlainObjectBase<DerivedNF> &NF,
+  Eigen::PlainObjectBase<DerivedI> &I)
 {
 
   // Mark referenced vertices
@@ -65,4 +70,5 @@ IGL_INLINE void igl::remove_unreferenced(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template void igl::remove_unreferenced<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif

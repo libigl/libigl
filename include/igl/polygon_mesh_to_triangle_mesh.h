@@ -35,6 +35,10 @@ namespace igl
   IGL_INLINE void polygon_mesh_to_triangle_mesh(
     const std::vector<std::vector<Index> > & vF,
     Eigen::PlainObjectBase<DerivedF>& F);
+  template <typename DerivedP, typename DerivedF>
+  IGL_INLINE void polygon_mesh_to_triangle_mesh(
+    const Eigen::PlainObjectBase<DerivedP>& P,
+    Eigen::PlainObjectBase<DerivedF>& F);
 }
 
 #ifndef IGL_STATIC_LIBRARY

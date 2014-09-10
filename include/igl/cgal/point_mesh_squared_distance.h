@@ -9,6 +9,7 @@
 #define IGL_POINT_MESH_SQUARED_DISTANCE_H
 #include <igl/igl_inline.h>
 #include <Eigen/Core>
+#include <vector>
 #include "CGAL_includes.hpp"
 namespace igl
 {
@@ -36,7 +37,45 @@ namespace igl
     Eigen::VectorXd & sqrD,
     Eigen::VectorXi & I,
     Eigen::MatrixXd & C);
+  // Probably can do this in a way that we don't pass around `tree` and `T`
+  //
+  // Outputs:
+  //   tree  CGAL's AABB tree
+  //   T  list of CGAL triangles in order of F (for determining which was found
+  //     in computation)
+  template <typename Kernel>
+  IGL_INLINE void point_mesh_squared_distance_precompute(
+    const Eigen::MatrixXd & V,
+    const Eigen::MatrixXi & F,
+    CGAL::AABB_tree<
+      CGAL::AABB_traits<Kernel, 
+        CGAL::AABB_triangle_primitive<Kernel, 
+          typename std::vector<CGAL::Triangle_3<Kernel> >::iterator
+        >
+      >
+    > & tree,
+    std::vector<CGAL::Triangle_3<Kernel> > & T);
+  // Inputs:
+  //  see above
+  // Outputs:
+  //  see above
+  template <typename Kernel>
+  IGL_INLINE void point_mesh_squared_distance(
+    const Eigen::MatrixXd & P,
+    const CGAL::AABB_tree<
+      CGAL::AABB_traits<Kernel, 
+        CGAL::AABB_triangle_primitive<Kernel, 
+          typename std::vector<CGAL::Triangle_3<Kernel> >::iterator
+        >
+      >
+    > & tree,
+    const std::vector<CGAL::Triangle_3<Kernel> > & T,
+    Eigen::VectorXd & sqrD,
+    Eigen::VectorXi & I,
+    Eigen::MatrixXd & C);
+
 }
+
 #ifndef IGL_STATIC_LIBRARY
 #  include "point_mesh_squared_distance.cpp"
 #endif

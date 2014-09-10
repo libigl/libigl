@@ -368,16 +368,17 @@ IGL_INLINE bool igl::readOBJ(
     // igl::list_to_matrix(vF,F) already printed error message to std err
     return false;
   }
-  // Legacy
-  if(F.cols() != 3)
-  {
-    fprintf(stderr,
-            "Error: readOBJ(filename,V,F) is meant for reading triangle-only"
-            " meshes. This mesh has faces all with size %d. See readOBJ.h for other"
-            " options.\n",
-            (int)F.cols());
-    return false;
-  }
+  // THIS IS ANNOYING, I WANT TO READ QUADS, Why not?
+  //// Legacy
+  //if(F.cols() != 3)
+  //{
+  //  fprintf(stderr,
+  //          "Error: readOBJ(filename,V,F) is meant for reading triangle-only"
+  //          " meshes. This mesh has faces all with size %d. See readOBJ.h for other"
+  //          " options.\n",
+  //          (int)F.cols());
+  //  return false;
+  //}
   return true;
 }
 

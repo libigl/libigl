@@ -61,7 +61,7 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "winding_number.h"
+#  include "winding_number.cpp"
 #endif
 
 #endif

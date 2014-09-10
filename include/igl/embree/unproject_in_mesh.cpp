@@ -14,8 +14,8 @@
 template <
   typename Derivedobj>
 IGL_INLINE int igl::unproject_in_mesh(
-  const int x,
-  const int y,
+  const double x,
+  const double y,
   const igl::EmbreeIntersector & ei,
   Eigen::PlainObjectBase<Derivedobj> & obj)
 {
@@ -26,8 +26,8 @@ IGL_INLINE int igl::unproject_in_mesh(
 template <
   typename Derivedobj>
 IGL_INLINE int igl::unproject_in_mesh(
-  const int x,
-  const int y,
+  const double x,
+  const double y,
   const igl::EmbreeIntersector & ei,
   Eigen::PlainObjectBase<Derivedobj> & obj,
   std::vector<igl::Hit > & hits)
@@ -115,8 +115,8 @@ IGL_INLINE int igl::unproject_in_mesh(
 
 #ifdef IGL_STATIC_LIBRARY
 #  ifndef IGL_OPENLGL_4
-template int igl::unproject_in_mesh<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(int, int, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&, std::vector<igl::Hit, std::allocator<igl::Hit> >&);
-template int igl::unproject_in_mesh<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(int, int, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
+template int igl::unproject_in_mesh<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(double, double, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&, std::vector<igl::Hit, std::allocator<igl::Hit> >&);
+template int igl::unproject_in_mesh<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(double, double, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
 #  endif
 template int igl::unproject_in_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, std::vector<igl::Hit, std::allocator<igl::Hit> >&);
 #endif

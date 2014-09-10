@@ -35,6 +35,15 @@ namespace igl
     std::vector<
       Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> > & vQ,
     std::vector<Eigen::Vector3d> & vT);
+  // Outputs:
+  //   T  #BE*(dim+1) by dim stack of transposed transformation matrices
+  IGL_INLINE void forward_kinematics(
+    const Eigen::MatrixXd & C,
+    const Eigen::MatrixXi & BE,
+    const Eigen::VectorXi & P,
+    const std::vector<
+      Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> > & dQ,
+    Eigen::MatrixXd & T);
 };
 
 #ifndef IGL_STATIC_LIBRARY

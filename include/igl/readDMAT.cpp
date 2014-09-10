@@ -59,7 +59,7 @@ template <typename DerivedW>
 IGL_INLINE bool igl::readDMAT(const std::string file_name,
   Eigen::PlainObjectBase<DerivedW> & W)
 {
-  FILE * fp = fopen(file_name.c_str(),"r");
+  FILE * fp = fopen(file_name.c_str(),"rb");
   if(fp == NULL)
   {
     fprintf(stderr,"IOError: readDMAT() could not open %s...\n",file_name.c_str());
