@@ -31,6 +31,7 @@ namespace igl
         NUM_SPLIT_METHODS = 3
       } split_method;
     public:
+      inline WindingNumberAABB(){}
       inline WindingNumberAABB(
         const Eigen::MatrixXd & V,
         const Eigen::MatrixXi & F);
@@ -38,6 +39,9 @@ namespace igl
         const WindingNumberTree<Point> & parent,
         const Eigen::MatrixXi & F);
       // Initialize some things
+      inline void set_mesh(
+        const Eigen::MatrixXd & V,
+        const Eigen::MatrixXi & F);
       inline void init();
       inline bool inside(const Point & p) const;
       inline virtual void grow();
@@ -66,6 +70,15 @@ namespace igl
 #ifndef WindingNumberAABB_MIN_F
 #  define WindingNumberAABB_MIN_F 100
 #endif
+
+template <typename Point>
+inline void igl::WindingNumberAABB<Point>::set_mesh(
+    const Eigen::MatrixXd & V,
+    const Eigen::MatrixXi & F)
+{
+  igl::WindingNumberTree<Point>::set_mesh(V,F);
+  init();
+}
 
 template <typename Point>
 inline void igl::WindingNumberAABB<Point>::init()

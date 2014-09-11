@@ -62,20 +62,33 @@ IGL_INLINE bool igl::signed_distance_isosurface(
   typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
   typedef typename Tree::Point_and_primitive_id Point_and_primitive_id;
 
-  Eigen::MatrixXd FN,VN,EN;
-  Eigen::MatrixXi E;
-  Eigen::VectorXi EMAP;
-  // "Signed Distance Computation Using the Angle Weighted Pseudonormal"
-  // [Bærentzen & Aanæs 2005]
-  per_face_normals(IV,IF,FN);
-  per_vertex_normals(IV,IF,PER_VERTEX_NORMALS_WEIGHTING_TYPE_ANGLE,VN);
-  per_edge_normals(IV,IF,PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM,EN,E,EMAP);
-  // Prepare distance computation
   Tree tree;
   vector<Triangle_3 > T;
   point_mesh_squared_distance_precompute(IV,IF,tree,T);
-  WindingNumberAABB<Eigen::Vector3d> hier(IV,IF);
-  hier.grow();
+
+  Eigen::MatrixXd FN,VN,EN;
+  Eigen::MatrixXi E;
+  Eigen::VectorXi EMAP;
+  WindingNumberAABB<Eigen::Vector3d> hier;
+  switch(sign_type)
+  {
+    default:
+      assert(false && "Unknown SignedDistanceType");
+    case SIGNED_DISTANCE_TYPE_DEFAULT:
+    case SIGNED_DISTANCE_TYPE_WINDING_NUMBER:
+      hier.set_mesh(IV,IF);
+      hier.grow();
+      break;
+    case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
+      // "Signed Distance Computation Using the Angle Weighted Pseudonormal"
+      // [Bærentzen & Aanæs 2005]
+      per_face_normals(IV,IF,FN);
+      per_vertex_normals(IV,IF,PER_VERTEX_NORMALS_WEIGHTING_TYPE_ANGLE,FN,VN);
+      per_edge_normals(
+        IV,IF,PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM,FN,EN,E,EMAP);
+      break;
+  }
+
   Tr tr;            // 3D-Delaunay triangulation
   C2t3 c2t3 (tr);   // 2D-complex in 3D-Delaunay triangulation
   // defining the surface
