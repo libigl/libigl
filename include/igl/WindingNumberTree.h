@@ -156,7 +156,7 @@ inline igl::WindingNumberTree<Point>::WindingNumberTree(
   radius(std::numeric_limits<double>::infinity()),
   center(0,0,0)
 {
-  set_mesh(V,F);
+  set_mesh(_V,_F);
 }
 
 template <typename Point>
@@ -164,6 +164,7 @@ inline void igl::WindingNumberTree<Point>::set_mesh(
     const Eigen::MatrixXd & _V,
     const Eigen::MatrixXi & _F)
 {
+  using namespace std;
   // Remove any exactly duplicate vertices
   // Q: Can this ever increase the complexity of the boundary?
   // Q: Would we gain even more by remove almost exactly duplicate vertices?
