@@ -16,11 +16,6 @@
 #include "../harwell_boeing.h"
 #include "../EPS.h"
 
-// Little function mosek needs in order to know how to print to std out
-static void MSKAPI printstr(void *handle, char str[])
-{
-  printf("%s",str);
-}
 
 igl::MosekData::MosekData()
 {
@@ -109,6 +104,11 @@ IGL_INLINE bool igl::mosek_quadprog(
   mosek_guarded(MSK_makeenv(&env,NULL,NULL,NULL,NULL));
 #endif
   ///* Directs the log stream to the 'printstr' function. */
+  //// Little function mosek needs in order to know how to print to std out
+  //const auto & printstr = [](void *handle, char str[])
+  //{
+  //  printf("%s",str);
+  //}
   //mosek_guarded(MSK_linkfunctoenvstream(env,MSK_STREAM_LOG,NULL,printstr));
   // initialize mosek environment
   mosek_guarded(MSK_initenv(env));

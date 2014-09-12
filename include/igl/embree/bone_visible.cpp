@@ -6,7 +6,6 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "bone_visible.h"
-#include "EmbreeIntersector.h"
 #include <igl/project_to_line.h>
 #include <igl/EPS.h>
 #include <igl/Timer.h>
@@ -24,10 +23,6 @@ IGL_INLINE void igl::bone_visible(
   const Eigen::PlainObjectBase<DerivedSD> & d,
   Eigen::PlainObjectBase<Derivedflag>  & flag)
 {
-  using namespace igl;
-  using namespace std;
-  using namespace Eigen;
-  flag.resize(V.rows());
   // "double sided lighting"
   Eigen::PlainObjectBase<DerivedF> FF;
   FF.resize(F.rows()*2,F.cols());
@@ -35,13 +30,33 @@ IGL_INLINE void igl::bone_visible(
   // Initialize intersector
   EmbreeIntersector ei;
   ei.init(V.template cast<float>(),FF.template cast<int>());
+  return bone_visible(V,F,ei,s,d,flag);
+}
+
+template <
+  typename DerivedV, 
+  typename DerivedF, 
+  typename DerivedSD,
+  typename Derivedflag>
+IGL_INLINE void igl::bone_visible(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
+  const igl::EmbreeIntersector & ei,
+  const Eigen::PlainObjectBase<DerivedSD> & s,
+  const Eigen::PlainObjectBase<DerivedSD> & d,
+  Eigen::PlainObjectBase<Derivedflag>  & flag)
+{
+  using namespace igl;
+  using namespace std;
+  using namespace Eigen;
+  flag.resize(V.rows());
   const double sd_norm = (s-d).norm();
   // Embree seems to be parallel when constructing but not when tracing rays
 #pragma omp parallel for
   // loop over mesh vertices
   for(int v = 0;v<V.rows();v++)
   {
-    Vector3d Vv = V.row(v);
+    const Vector3d Vv = V.row(v);
     // Project vertex v onto line segment sd
     //embree.intersectSegment
     double t,sqrd;
