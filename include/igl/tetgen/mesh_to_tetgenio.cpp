@@ -35,11 +35,12 @@ IGL_INLINE bool igl::mesh_to_tetgenio(
 
   in.numberoffacets = F.size();
   in.facetlist = new tetgenio::facet[in.numberoffacets];
-  in.facetmarkerlist = NULL;
+  in.facetmarkerlist = new int[in.numberoffacets];
 
   // loop over face
   for(int i = 0;i < (int)F.size(); i++)
   {
+    in.facetmarkerlist[i] = i;
     tetgenio::facet * f = &in.facetlist[i];
     f->numberofpolygons = 1;
     f->polygonlist = new tetgenio::polygon[f->numberofpolygons];

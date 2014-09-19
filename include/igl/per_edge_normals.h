@@ -34,6 +34,21 @@ namespace igl
   template <
     typename DerivedV, 
     typename DerivedF, 
+    typename DerivedFN,
+    typename DerivedN,
+    typename DerivedE,
+    typename DerivedEMAP>
+  IGL_INLINE void per_edge_normals(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    const PerEdgeNormalsWeightingType weight,
+    const Eigen::PlainObjectBase<DerivedFN>& FN,
+    Eigen::PlainObjectBase<DerivedN> & N,
+    Eigen::PlainObjectBase<DerivedE> & E,
+    Eigen::PlainObjectBase<DerivedEMAP> & EMAP);
+  template <
+    typename DerivedV, 
+    typename DerivedF, 
     typename DerivedN,
     typename DerivedE,
     typename DerivedEMAP>
@@ -63,4 +78,3 @@ namespace igl
 #endif
 
 #endif
-

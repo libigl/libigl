@@ -25,18 +25,30 @@ IGL_INLINE void igl::doublearea(
   Eigen::PlainObjectBase<DerivedV> l;
   // "Lecture Notes on Geometric Robustness" Shewchuck 09, Section 3.1
   // http://www.cs.berkeley.edu/~jrs/meshpapers/robnotes.pdf
+
+  // Projected area helper
+  const auto & proj_doublearea = 
+    [&V,&F](const int x, const int y, const int f)->double
+  {
+    auto rx = V(F(f,0),x)-V(F(f,2),x);
+    auto sx = V(F(f,1),x)-V(F(f,2),x);
+    auto ry = V(F(f,0),y)-V(F(f,2),y);
+    auto sy = V(F(f,1),y)-V(F(f,2),y);
+    return rx*sy - ry*sx;
+  };
+
   switch(dim)
   {
     case 3:
     {
       dblA = Eigen::PlainObjectBase<DeriveddblA>::Zero(m,1);
-      for(int d = 0;d<3;d++)
+      for(int f = 0;f<F.rows();f++)
       {
-        Eigen::Matrix<typename DerivedV::Scalar, DerivedV::RowsAtCompileTime, 2> Vd(V.rows(),2);
-        Vd << V.col(d), V.col((d+1)%3);
-        Eigen::PlainObjectBase<DeriveddblA> dblAd;
-        doublearea(Vd,F,dblAd);
-        dblA.array() += dblAd.array().square();
+        for(int d = 0;d<3;d++)
+        {
+          double dblAd = proj_doublearea(d,(d+1)%3,f);
+          dblA[f] += dblAd*dblAd;
+        }
       }
       dblA = dblA.array().sqrt().eval();
       break;
@@ -46,9 +58,7 @@ IGL_INLINE void igl::doublearea(
       dblA.resize(m,1);
       for(int f = 0;f<m;f++)
       {
-        auto r = V.row(F(f,0))-V.row(F(f,2));
-        auto s = V.row(F(f,1))-V.row(F(f,2));
-        dblA(f) = r(0)*s(1) - r(1)*s(0);
+        dblA(f) = proj_doublearea(0,1,f);
       }
       break;
     }

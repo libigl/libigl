@@ -12,6 +12,7 @@
 #include <Eigen/Dense>
 #include "WindingNumberMethod.h"
 
+static Eigen::MatrixXd dummyV;
 namespace igl
 {
   // Templates:
@@ -44,6 +45,7 @@ namespace igl
       // (Approximate) center (of mass)
       Point center;
     public:
+      inline WindingNumberTree():V(dummyV){}
       // For root
       inline WindingNumberTree(
         const Eigen::MatrixXd & V,
@@ -53,6 +55,9 @@ namespace igl
         const WindingNumberTree<Point> & parent,
         const Eigen::MatrixXi & F);
       inline virtual ~WindingNumberTree();
+      inline virtual void set_mesh(
+        const Eigen::MatrixXd & V,
+        const Eigen::MatrixXi & F);
       // Set method
       inline void set_method( const WindingNumberMethod & m);
     public:
@@ -137,7 +142,6 @@ template <typename Point>
 std::map< std::pair<const igl::WindingNumberTree<Point>*,const igl::WindingNumberTree<Point>*>, double>
   igl::WindingNumberTree<Point>::cached;
 
-static Eigen::MatrixXd dummyV;
 template <typename Point>
 inline igl::WindingNumberTree<Point>::WindingNumberTree(
   const Eigen::MatrixXd & _V,
@@ -152,6 +156,15 @@ inline igl::WindingNumberTree<Point>::WindingNumberTree(
   radius(std::numeric_limits<double>::infinity()),
   center(0,0,0)
 {
+  set_mesh(_V,_F);
+}
+
+template <typename Point>
+inline void igl::WindingNumberTree<Point>::set_mesh(
+    const Eigen::MatrixXd & _V,
+    const Eigen::MatrixXi & _F)
+{
+  using namespace std;
   // Remove any exactly duplicate vertices
   // Q: Can this ever increase the complexity of the boundary?
   // Q: Would we gain even more by remove almost exactly duplicate vertices?

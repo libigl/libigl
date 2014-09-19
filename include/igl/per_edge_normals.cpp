@@ -8,6 +8,7 @@
 template <
   typename DerivedV, 
   typename DerivedF, 
+  typename DerivedFN, 
   typename DerivedN,
   typename DerivedE,
   typename DerivedEMAP>
@@ -15,9 +16,11 @@ IGL_INLINE void igl::per_edge_normals(
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F,
   const PerEdgeNormalsWeightingType weighting,
+  const Eigen::PlainObjectBase<DerivedFN>& FN,
   Eigen::PlainObjectBase<DerivedN> & N,
   Eigen::PlainObjectBase<DerivedE> & E,
   Eigen::PlainObjectBase<DerivedEMAP> & EMAP)
+
 {
   using namespace Eigen;
   using namespace std;
@@ -32,8 +35,6 @@ IGL_INLINE void igl::per_edge_normals(
   unique_simplices(allE,E,_,EMAP);
   // now sort(allE,2) == E(EMAP,:), that is, if EMAP(i) = j, then E.row(j) is
   // the undirected edge corresponding to the directed edge allE.row(i).
-  MatrixXd FN;
-  per_face_normals(V,F,FN);
 
   Eigen::VectorXd W(F.rows());
   switch(weighting)
@@ -60,7 +61,25 @@ IGL_INLINE void igl::per_edge_normals(
     }
   }
   N.rowwise().normalize();
-  
+}
+
+template <
+  typename DerivedV, 
+  typename DerivedF, 
+  typename DerivedN,
+  typename DerivedE,
+  typename DerivedEMAP>
+IGL_INLINE void igl::per_edge_normals(
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  const PerEdgeNormalsWeightingType weighting,
+  Eigen::PlainObjectBase<DerivedN> & N,
+  Eigen::PlainObjectBase<DerivedE> & E,
+  Eigen::PlainObjectBase<DerivedEMAP> & EMAP)
+{
+  Eigen::PlainObjectBase<DerivedN> FN;
+  per_face_normals(V,F,FN);
+  return per_edge_normals(V,F,weighting,FN,N,E,EMAP);
 }
 
 template <
