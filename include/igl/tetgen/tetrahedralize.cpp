@@ -50,12 +50,12 @@ IGL_INLINE int igl::tetrahedralize(
     cerr<<"^"<<__FUNCTION__<<": Tetgen failed to create tets"<<endl;
     return 2;
   }
-  success = tetgenio_to_tetmesh(out,TV,TT);
+  success = tetgenio_to_tetmesh(out,TV,TT,TF);
   if(!success)
   {
     return -1;
   }
-  boundary_facets(TT,TF);
+  //boundary_facets(TT,TF);
   return 0;
 }
 

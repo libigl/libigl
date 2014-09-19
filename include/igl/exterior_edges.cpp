@@ -2,7 +2,7 @@
 #include "all_edges.h"
 
 #include <cassert>
-#include <map>
+#include <unordered_map>
 #include <utility>
 
 //template <typename T> inline int sgn(T val) {
@@ -40,9 +40,21 @@ IGL_INLINE void igl::exterior_edges(
   assert(F.cols() == 3);
   MatrixXi all_E;
   all_edges(F,all_E);
+  long int n = F.maxCoeff()+1;
+  int m = F.minCoeff();
+  const auto & compress = [&n,&m](const int i, const int j)->long int
+  {
+    return n*(i-m)+(j-m);
+  };
+  const auto & decompress = [&n,&m](const long int l,int & i, int & j)
+  {
+    i = (l / n) + m;
+    j = (l % n) + m;
+  };
+
   // Count occurances looking only at pairs (i,j) where i<j, so we count and
   // edge i-->j as +1 and j-->i as -1
-  map<pair<const int,const int>,int> C;
+  unordered_map<long int,int> C;
   // Loop over edges
   for(int e = 0;e<all_E.rows();e++)
   {
@@ -51,11 +63,11 @@ IGL_INLINE void igl::exterior_edges(
     if(i<j)
     {
       // Forward direction --> +1
-      C[pair<const int,const int>(i,j)]++;
+      C[compress(i,j)]++;
     }else
     {
       // Backward direction --> -1
-      C[pair<const int,const int>(j,i)]--;
+      C[compress(j,i)]--;
     }
   }
   // Q: Why mod off factors of 2? +1/-1 already takes care of interior edges?
@@ -66,25 +78,20 @@ IGL_INLINE void igl::exterior_edges(
   E.resize(all_E.rows(),all_E.cols());
   int e = 0;
   // Find all edges with -1 or 1 occurances, flipping direction for -1
-  for(
-    map<pair<const int, const int>,int>::const_iterator cit=C.begin();
-    cit!=C.end();
-    cit++)
+  for(const auto & cit : C)
   {
     int i,j;
-    if(cit->second > 0)
+    if(cit.second > 0)
     {
-      i = cit->first.first;
-      j = cit->first.second;
-    } else if(cit->second < 0)
+      decompress(cit.first,i,j);
+    } else if(cit.second < 0)
     {
-      i = cit->first.second;
-      j = cit->first.first;
-    } else if(cit->second == 0)
+      decompress(cit.first,j,i);
+    } else if(cit.second == 0)
     {
       continue;
     }
-    for(int k = 0;k<abs(cit->second);k++)
+    for(int k = 0;k<abs(cit.second);k++)
     {
       E(e,0) = i;
       E(e,1) = j;
