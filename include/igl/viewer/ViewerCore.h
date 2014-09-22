@@ -8,7 +8,7 @@
 
 #ifndef IGL_VIEWER_CORE_H
 #define IGL_VIEWER_CORE_H
-
+#include <vector>
 #include <igl/igl_inline.h>
 #include <igl/viewer/TextRenderer.h>
 #include <igl/viewer/ViewerData.h>

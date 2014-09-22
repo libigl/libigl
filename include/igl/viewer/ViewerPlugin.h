@@ -44,7 +44,7 @@ public:
   virtual ~ViewerPlugin(){}
 
   // This function is called when the viewer is initialized (no mesh will be loaded at this stage)
-  IGL_INLINE virtual void init(igl::Viewer *_viewer)
+  IGL_INLINE virtual void init(Viewer *_viewer)
   {
     viewer = _viewer;
   }
