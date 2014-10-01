@@ -13,7 +13,7 @@
 #include <igl/slice.h>
 #include <igl/polyroots.h>
 #include <Eigen/Sparse>
-
+#include <Eigen/Geometry>
 #include <iostream>
 
 namespace igl {

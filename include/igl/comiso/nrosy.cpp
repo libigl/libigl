@@ -901,3 +901,31 @@ IGL_INLINE void igl::nrosy(
   // Extract singularity indices
   S = solver.getSingularityIndexPerVertex();
 }
+
+
+IGL_INLINE void igl::nrosy(
+                           const Eigen::MatrixXd& V,
+                           const Eigen::MatrixXi& F,
+                           const Eigen::VectorXi& b,
+                           const Eigen::MatrixXd& bc,
+                           const int N,
+                           Eigen::MatrixXd& R,
+                           Eigen::VectorXd& S
+                           )
+{
+  // Init solver
+  igl::NRosyField solver(V,F);
+
+  // Add hard constraints
+  for (unsigned i=0; i<b.size();++i)
+    solver.setConstraintHard(b(i),bc.row(i));
+
+  // Interpolate
+  solver.solve(N);
+
+  // Copy the result back
+  R = solver.getFieldPerFace();
+
+  // Extract singularity indices
+  S = solver.getSingularityIndexPerVertex();
+}
