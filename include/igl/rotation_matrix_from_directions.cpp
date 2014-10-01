@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "rotation_matrix_from_directions.h"
+#include <Eigen/Geometry>
 
 template <typename Scalar>
 IGL_INLINE Eigen::Matrix<Scalar, 3, 3> igl::rotation_matrix_from_directions(Eigen::Matrix<Scalar, 3, 1> v0,
@@ -27,12 +28,12 @@ IGL_INLINE Eigen::Matrix<Scalar, 3, 3> igl::rotation_matrix_from_directions(Eige
     rotM = Eigen::Matrix<Scalar, 3, 3>::Identity();
     return rotM;
   }
-  
+
   ///find the axis of rotation
   Eigen::Matrix<Scalar, 3, 1> axis;
   axis=v0.cross(v1);
   axis.normalize();
-  
+
   ///construct rotation matrix
   Scalar u=axis(0);
   Scalar v=axis(1);
@@ -40,7 +41,7 @@ IGL_INLINE Eigen::Matrix<Scalar, 3, 3> igl::rotation_matrix_from_directions(Eige
   Scalar phi=acos(dot);
   Scalar rcos = cos(phi);
   Scalar rsin = sin(phi);
-  
+
   rotM(0,0) =      rcos + u*u*(1-rcos);
   rotM(1,0) =  w * rsin + v*u*(1-rcos);
   rotM(2,0) = -v * rsin + w*u*(1-rcos);
@@ -50,11 +51,11 @@ IGL_INLINE Eigen::Matrix<Scalar, 3, 3> igl::rotation_matrix_from_directions(Eige
   rotM(0,2) =  v * rsin + u*w*(1-rcos);
   rotM(1,2) = -u * rsin + v*w*(1-rcos);
   rotM(2,2) =      rcos + w*w*(1-rcos);
-  
+
   return rotM;
 }
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template Eigen::Matrix<double, 3, 3, 0, 3, 3> igl::rotation_matrix_from_directions<double>(Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1>, bool);
 #endif
-

@@ -8,6 +8,7 @@
 #ifndef IGL_FRAMEFIELD_H
 #define IGL_FRAMEFIELD_H
 
+#include <igl/igl_inline.h>
 #include <Eigen/Dense>
 #include <vector>
 
