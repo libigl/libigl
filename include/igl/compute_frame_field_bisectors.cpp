@@ -22,7 +22,7 @@ IGL_INLINE void igl::compute_frame_field_bisectors(
 {
   BIS1.resize(PD1.rows(),3);
   BIS2.resize(PD1.rows(),3);
-  
+
   for (unsigned i=0; i<PD1.rows();++i)
   {
     // project onto the tangent plane and convert to angle
@@ -37,7 +37,7 @@ IGL_INLINE void igl::compute_frame_field_bisectors(
     a2 += ceil (std::max(0., -a2) / (M_PI*2.)) * (M_PI*2.);
     //take modulo 2pi
     a2 = fmod(a2, (M_PI*2.));
-    
+
     double b1 = (a1+a2)/2.0;
     //make it positive by adding some multiple of 2pi
     b1 += ceil (std::max(0., -b1) / (M_PI*2.)) * (M_PI*2.);
@@ -49,10 +49,10 @@ IGL_INLINE void igl::compute_frame_field_bisectors(
     b2 += ceil (std::max(0., -b2) / (M_PI*2.)) * (M_PI*2.);
     //take modulo 2pi
     b2 = fmod(b2, (M_PI*2.));
-    
+
     BIS1.row(i) = cos(b1) * B1.row(i) + sin(b1) * B2.row(i);
     BIS2.row(i) = cos(b2) * B1.row(i) + sin(b2) * B2.row(i);
-    
+
   }
 }
 
@@ -67,11 +67,12 @@ IGL_INLINE void igl::compute_frame_field_bisectors(
 {
   Eigen::PlainObjectBase<DerivedV> B1, B2, B3;
   igl::local_basis(V,F,B1,B2,B3);
-  
+
   compute_frame_field_bisectors( V, F, B1, B2, PD1, PD2, BIS1, BIS2);
 
 }
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template void igl::compute_frame_field_bisectors<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
 #endif

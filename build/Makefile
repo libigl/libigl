@@ -29,6 +29,9 @@ endif
 ifeq ($(IGL_WITH_EMBREE),1)
 	EXTRAS += embree
 endif
+ifeq ($(IGL_WITH_COMISO),1)
+	EXTRAS += comiso
+endif
 ifeq ($(IGL_WITH_MATLAB),1)
 	EXTRAS += matlab
 endif
@@ -66,7 +69,7 @@ extras:
 
 
 #############################################################################
-# SOURCE 
+# SOURCE
 #############################################################################
 CPP_FILES=$(wildcard ../include/igl/*.cpp)
 H_FILES=$(wildcard ../include/igl/*.h)
@@ -97,7 +100,7 @@ INC+=$(ANTTWEAKBAR_INC)
 #LIB+=-framework AppKit
 
 .PHONY: obj
-obj: 
+obj:
 	mkdir -p obj
 
 ../lib/libigl.a: obj $(OBJ_FILES)
