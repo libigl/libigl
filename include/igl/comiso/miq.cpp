@@ -27,6 +27,7 @@
 //
 #include <igl/cross_field_missmatch.h>
 #include <igl/comb_frame_field.h>
+#include <igl/comb_cross_field.h>
 #include <igl/cut_mesh_from_singularities.h>
 #include <igl/find_cross_field_singularities.h>
 #include <igl/compute_frame_field_bisectors.h>
@@ -2228,13 +2229,13 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
                          std::vector<int> roundVertices,
                          std::vector<std::vector<int> > hardFeatures)
 {
-  Eigen::MatrixXd PD2i = PD2;
-  if (PD2i.size() == 0)
-  {
-    Eigen::MatrixXd B1, B2, B3;
-    igl::local_basis(V,F,B1,B2,B3);
-    PD2i = igl::rotate_vectors(V,Eigen::VectorXd::Constant(1,M_PI/2),B1,B2);
-  }
+  // Eigen::MatrixXd PD2i = PD2;
+  // if (PD2i.size() == 0)
+  // {
+    // Eigen::MatrixXd B1, B2, B3;
+    // igl::local_basis(V,F,B1,B2,B3);
+    // PD2i = igl::rotate_vectors(V,Eigen::VectorXd::Constant(1,M_PI/2),B1,B2);
+  // }
 
   Eigen::PlainObjectBase<DerivedV> BIS1, BIS2;
   igl::compute_frame_field_bisectors(V, F, PD1, PD2, BIS1, BIS2);
@@ -2277,5 +2278,5 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::mixed_integer_quadrangulate<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 2, 0, -1, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, double, double, bool, int, int, bool, std::__1::vector<int, std::__1::allocator<int> >, std::__1::vector<std::__1::vector<int, std::__1::allocator<int> >, std::__1::allocator<std::__1::vector<int, std::__1::allocator<int> > > >);
+template void igl::miq<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 2, 0, -1, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, double, double, bool, int, int, bool, std::__1::vector<int, std::__1::allocator<int> >, std::__1::vector<std::__1::vector<int, std::__1::allocator<int> >, std::__1::allocator<std::__1::vector<int, std::__1::allocator<int> > > >);
 #endif

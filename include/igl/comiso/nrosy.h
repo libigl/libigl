@@ -12,6 +12,7 @@
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 #include <vector>
+#include <igl/igl_inline.h>
 
 namespace igl
 {
@@ -46,6 +47,18 @@ IGL_INLINE void nrosy(
   Eigen::MatrixXd& R,
   Eigen::VectorXd& S
   );
+
+//wrapper for the case without soft constraints
+IGL_INLINE void nrosy(
+ const Eigen::MatrixXd& V,
+ const Eigen::MatrixXi& F,
+ const Eigen::VectorXi& b,
+ const Eigen::MatrixXd& bc,
+ const int N,
+ Eigen::MatrixXd& R,
+ Eigen::VectorXd& S
+  );
+
 }
 
 #ifndef IGL_STATIC_LIBRARY

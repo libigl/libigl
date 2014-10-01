@@ -201,6 +201,6 @@ template void igl::slice<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::Matri
 template void igl::slice<Eigen::SparseMatrix<double, 0, int> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int, Eigen::SparseMatrix<double, 0, int>&);
 template Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > igl::slice<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int);
 template Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > igl::slice<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int);
-template void igl::slice<Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::Matrix<double, -1, 3, 0, -1, 3> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int, Eigen::Matrix<double, -1, 3, 0, -1, 3>&);
 template void igl::slice<std::__1::complex<double> >(Eigen::SparseMatrix<std::__1::complex<double>, 0, int> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::SparseMatrix<std::__1::complex<double>, 0, int>&);
+template void igl::slice<Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::Matrix<double, -1, 3, 0, -1, 3> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int, Eigen::Matrix<double, -1, 3, 0, -1, 3>&);
 #endif
