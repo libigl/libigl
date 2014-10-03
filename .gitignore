@@ -69,3 +69,5 @@ external/glfw/build
 *buildXcode*
 tutorial/build*
 tutorial/*/*.mexmaci64
+include/igl/comb_cross_field_new.cpp
+include/igl/comb_cross_field_new.h
