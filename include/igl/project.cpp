@@ -147,6 +147,8 @@ template Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> > igl::proje
 template Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > igl::project<Eigen::Matrix<double, 1, -1, 1, 1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&);
 template int igl::project<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
 template Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > igl::project<Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&);
+template Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > igl::project<Eigen::Matrix<double, 1, 2, 1, 1, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > const&);
+template Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > igl::project<Eigen::Matrix<double, 2, 1, 0, 2, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&);
 #endif
 #endif
 
