@@ -114,7 +114,7 @@ IGL_INLINE Eigen::PlainObjectBase<Derivedobj> igl::project(
 #endif
 #endif
 
-Eigen::Vector3f igl::project(const Eigen::Vector3f&  obj,
+IGL_INLINE Eigen::Vector3f igl::project(const Eigen::Vector3f&  obj,
                         const Eigen::Matrix4f& model,
                         const Eigen::Matrix4f& proj,
                         const Eigen::Vector4f&  viewport)
