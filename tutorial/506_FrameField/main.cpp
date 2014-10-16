@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
   igl::barycenter(V_deformed, F, B_deformed);
 
   // Find the closest crossfield to the deformed frame field
-  igl::frame_to_cross_field(V,F,FF1_deformed,FF2_deformed,X1_deformed);
+igl::frame_to_cross_field(V_deformed,F,FF1_deformed,FF2_deformed,X1_deformed);
 
   // Find a smooth crossfield that interpolates the deformed constraints
   MatrixXd bc_x(b.size(),3);
