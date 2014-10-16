@@ -30,7 +30,9 @@ IGL_INLINE void igl::draw_point(
 
   float f;
   glGetFloatv(GL_POINT_SIZE_MAX,&f);
-  assert(requested_r<=0.5*f);
+  // THIS IS OVERZEALOUS on Mac OS X: OpenGL reports a smaller point size than
+  // possible.
+  //assert(requested_r<=0.5*f);
   double r = (requested_r<0.5*f?requested_r:0.5*f);
 
   //glDisable(GL_DEPTH_TEST);
