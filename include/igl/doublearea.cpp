@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "doublearea.h"
 #include "edge_lengths.h"
@@ -12,9 +12,9 @@
 #include <iostream>
 
 template <typename DerivedV, typename DerivedF, typename DeriveddblA>
-IGL_INLINE void igl::doublearea( 
-  const Eigen::PlainObjectBase<DerivedV> & V, 
-  const Eigen::PlainObjectBase<DerivedF> & F, 
+IGL_INLINE void igl::doublearea(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
   Eigen::PlainObjectBase<DeriveddblA> & dblA)
 {
   const int dim = V.cols();
@@ -27,7 +27,7 @@ IGL_INLINE void igl::doublearea(
   // http://www.cs.berkeley.edu/~jrs/meshpapers/robnotes.pdf
 
   // Projected area helper
-  const auto & proj_doublearea = 
+  const auto & proj_doublearea =
     [&V,&F](const int x, const int y, const int f)->double
   {
     auto rx = V(F(f,0),x)-V(F(f,2),x);
@@ -47,7 +47,7 @@ IGL_INLINE void igl::doublearea(
         for(int d = 0;d<3;d++)
         {
           double dblAd = proj_doublearea(d,(d+1)%3,f);
-          dblA[f] += dblAd*dblAd;
+          dblA(f) += dblAd*dblAd;
         }
       }
       dblA = dblA.array().sqrt().eval();
@@ -75,9 +75,9 @@ template <
   typename DerivedB,
   typename DerivedC,
   typename DerivedD>
-IGL_INLINE void doublearea( 
-  const Eigen::PlainObjectBase<DerivedA> & A, 
-  const Eigen::PlainObjectBase<DerivedB> & B, 
+IGL_INLINE void doublearea(
+  const Eigen::PlainObjectBase<DerivedA> & A,
+  const Eigen::PlainObjectBase<DerivedB> & B,
   const Eigen::PlainObjectBase<DerivedC> & C,
   Eigen::PlainObjectBase<DerivedD> & D)
 {
@@ -96,8 +96,8 @@ template <
   typename DerivedB,
   typename DerivedC>
 IGL_INLINE typename DerivedA::Scalar igl::doublearea_single(
-  const Eigen::PlainObjectBase<DerivedA> & A, 
-  const Eigen::PlainObjectBase<DerivedB> & B, 
+  const Eigen::PlainObjectBase<DerivedA> & A,
+  const Eigen::PlainObjectBase<DerivedB> & B,
   const Eigen::PlainObjectBase<DerivedC> & C)
 {
   auto r = A-C;
@@ -106,7 +106,7 @@ IGL_INLINE typename DerivedA::Scalar igl::doublearea_single(
 }
 
 template <typename Derivedl, typename DeriveddblA>
-IGL_INLINE void igl::doublearea( 
+IGL_INLINE void igl::doublearea(
   const Eigen::PlainObjectBase<Derivedl> & ul,
   Eigen::PlainObjectBase<DeriveddblA> & dblA)
 {
@@ -127,12 +127,12 @@ IGL_INLINE void igl::doublearea(
   for(int i = 0;i<m;i++)
   {
     //// Heron's formula for area
-    //const typename Derivedl::Scalar arg = 
+    //const typename Derivedl::Scalar arg =
     //  s(i)*(s(i)-l(i,0))*(s(i)-l(i,1))*(s(i)-l(i,2));
     //assert(arg>=0);
     //dblA(i) = 2.0*sqrt(arg);
     // Kahan's Heron's formula
-    const typename Derivedl::Scalar arg = 
+    const typename Derivedl::Scalar arg =
       (l(i,0)+(l(i,1)+l(i,2)))*
       (l(i,2)-(l(i,0)-l(i,1)))*
       (l(i,2)+(l(i,0)-l(i,1)))*

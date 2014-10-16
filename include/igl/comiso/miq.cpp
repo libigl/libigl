@@ -974,7 +974,7 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::SolvePoisson(Eigen::Vect
 
   clearUserConstraint();
   // copy the user constraints number
-  for (int i = 0; i < hardFeatures.size(); ++i)
+  for (size_t i = 0; i < hardFeatures.size(); ++i)
   {
     addSharpEdgeConstraint(hardFeatures[i][0],hardFeatures[i][1]);
   }
@@ -1445,7 +1445,7 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::AddSingularityRound()
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::AddToRoundVertices(std::vector<int> ids)
 {
-  for (int i = 0; i < ids.size(); ++i)
+  for (size_t i = 0; i < ids.size(); ++i)
   {
     if (ids[i] < 0 || ids[i] >= V.rows())
       std::cerr << "WARNING: Ignored round vertex constraint, vertex " << ids[i] << " does not exist in the mesh." << std::endl;
@@ -1789,7 +1789,7 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::addSharpEdgeConstraint(i
   // prepare constraint
   std::vector<int> c(Handle_SystemInfo.num_vert_variables*2 + 1);
 
-  for (int i = 0; i < c.size(); ++i)
+  for (size_t i = 0; i < c.size(); ++i)
   {
     c[i] = 0;
   }
@@ -2271,7 +2271,9 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
            DirectRound,
            iter,
            localIter,
-           DoRound);
+           DoRound,
+           roundVertices,
+           hardFeatures);
 
 }
 
