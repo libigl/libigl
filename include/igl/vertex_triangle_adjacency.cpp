@@ -7,29 +7,39 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "vertex_triangle_adjacency.h"
 
-#include "verbose.h"
-
-template <typename DerivedV, typename DerivedF, typename IndexType>
+template <typename DerivedF, typename VFType, typename VFiType>
 IGL_INLINE void igl::vertex_triangle_adjacency(
-                   const Eigen::PlainObjectBase<DerivedV>& V,
-                   const Eigen::PlainObjectBase<DerivedF>& F,
-                   std::vector<std::vector<IndexType> >& VF,
-                   std::vector<std::vector<IndexType> >& VFi)
+  const typename DerivedF::Scalar n,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  std::vector<std::vector<VFType> >& VF,
+  std::vector<std::vector<VFiType> >& VFi)
 {
   VF.clear();
   VFi.clear();
 
-  VF.resize(V.rows());
-  VFi.resize(V.rows());
+  VF.resize(n);
+  VFi.resize(n);
 
-  for(int fi=0; fi<F.rows(); ++fi)
+  typedef typename DerivedF::Index Index;
+  for(Index fi=0; fi<F.rows(); ++fi)
   {
-    for(int i = 0; i < F.cols(); ++i)
+    for(Index i = 0; i < F.cols(); ++i)
     {
       VF[F(fi,i)].push_back(fi);
       VFi[F(fi,i)].push_back(i);
     }
   }
+}
+
+
+template <typename DerivedV, typename DerivedF, typename IndexType>
+IGL_INLINE void igl::vertex_triangle_adjacency(
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  std::vector<std::vector<IndexType> >& VF,
+  std::vector<std::vector<IndexType> >& VFi)
+{
+  return vertex_triangle_adjacency(V.rows(),F,VF,VFi);
 }
 
 #ifdef IGL_STATIC_LIBRARY
