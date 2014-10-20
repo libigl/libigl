@@ -23,7 +23,8 @@ namespace igl
   IGL_INLINE void components(
     const Eigen::SparseMatrix<AScalar> & A,
     Eigen::PlainObjectBase<DerivedC> & C);
-  // Ditto but for mesh faces as input
+  // Ditto but for mesh faces as input. This computes connected components of
+  // **vertices** where **edges** establish connectivity.
   //
   // Inputs:
   //   F  n by 3 list of triangle indices

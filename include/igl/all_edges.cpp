@@ -7,9 +7,10 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "all_edges.h"
 
+template <typename DerivedF, typename DerivedE>
 IGL_INLINE void igl::all_edges(
-  const Eigen::MatrixXi & F,
-  Eigen::MatrixXi & E)
+  const Eigen::PlainObjectBase<DerivedF> & F,
+  Eigen::PlainObjectBase<DerivedE> & E)
 {
   E.resize(F.rows()*F.cols(),F.cols()-1);
   switch(F.cols())
