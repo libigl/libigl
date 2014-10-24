@@ -36,7 +36,7 @@ IGL_INLINE void igl::find_cross_field_singularities(const Eigen::PlainObjectBase
   {
     ///check that is on border..
     if (V_border[vid])
-      return;
+      continue;
 
     int missmatch=0;
     for (unsigned int i=0;i<VF[vid].size();i++)

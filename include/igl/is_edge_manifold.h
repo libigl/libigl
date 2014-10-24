@@ -10,7 +10,6 @@
 #include "igl_inline.h"
 
 #include <Eigen/Core>
-#include <vector>
 
 namespace igl 
 {
@@ -25,6 +24,18 @@ namespace igl
   //  Does not check for non-manifold vertices
   //
   // See also: is_vertex_manifold
+  template <
+    typename DerivedF, 
+    typename DerivedBF,
+    typename DerivedE,
+    typename DerivedEMAP,
+    typename DerivedBE>
+  IGL_INLINE bool is_edge_manifold(
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedBF>& BF,
+    Eigen::PlainObjectBase<DerivedE>& E,
+    Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+    Eigen::PlainObjectBase<DerivedBE>& BE);
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool is_edge_manifold(
     const Eigen::PlainObjectBase<DerivedV>& V,

@@ -9,8 +9,8 @@
 
 #include <sys/stat.h>
 
-IGL_INLINE bool igl::file_exists(const char* filename)
+IGL_INLINE bool igl::file_exists(const std::string filename)
 {
   struct stat status;
-  return (stat(filename,&status)==0);
+  return (stat(filename.c_str(),&status)==0);
 }

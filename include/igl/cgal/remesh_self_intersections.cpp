@@ -10,15 +10,23 @@
 #include <igl/C_STR.h>
 #include <list>
 
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedVV,
+  typename DerivedFF,
+  typename DerivedIF,
+  typename DerivedJ,
+  typename DerivedIM>
 IGL_INLINE void igl::remesh_self_intersections(
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
   const RemeshSelfIntersectionsParam & params,
-  Eigen::MatrixXd & VV,
-  Eigen::MatrixXi & FF,
-  Eigen::MatrixXi & IF,
-  Eigen::VectorXi & J,
-  Eigen::VectorXi & IM)
+  Eigen::PlainObjectBase<DerivedVV> & VV,
+  Eigen::PlainObjectBase<DerivedFF> & FF,
+  Eigen::PlainObjectBase<DerivedIF> & IF,
+  Eigen::PlainObjectBase<DerivedJ> & J,
+  Eigen::PlainObjectBase<DerivedIM> & IM)
 {
   using namespace std;
   if(params.detect_only)
@@ -36,7 +44,18 @@ IGL_INLINE void igl::remesh_self_intersections(
 //#endif
 
     typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-    SelfIntersectMesh<Kernel> SIM = SelfIntersectMesh<Kernel>(V,F,params,VV,FF,IF,J,IM);
+    typedef 
+      SelfIntersectMesh<
+        Kernel,
+        DerivedV,
+        DerivedF,
+        DerivedVV,
+        DerivedFF,
+        DerivedIF,
+        DerivedJ,
+        DerivedIM> 
+      SelfIntersectMeshK;
+    SelfIntersectMeshK SIM = SelfIntersectMeshK(V,F,params,VV,FF,IF,J,IM);
 
 //#ifdef __APPLE__
 //    signal(SIGFPE,SIG_DFL);
@@ -45,6 +64,22 @@ IGL_INLINE void igl::remesh_self_intersections(
   }else
   {
     typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
-    SelfIntersectMesh<Kernel> SIM = SelfIntersectMesh<Kernel>(V,F,params,VV,FF,IF,J,IM);
+    typedef 
+      SelfIntersectMesh<
+        Kernel,
+        DerivedV,
+        DerivedF,
+        DerivedVV,
+        DerivedFF,
+        DerivedIF,
+        DerivedJ,
+        DerivedIM> 
+      SelfIntersectMeshK;
+    SelfIntersectMeshK SIM = SelfIntersectMeshK(V,F,params,VV,FF,IF,J,IM);
   }
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template specialization
+template void igl::remesh_self_intersections<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::RemeshSelfIntersectionsParam const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+#endif
