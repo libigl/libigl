@@ -53,15 +53,23 @@ namespace igl
   // any resulting additional vertices along that edge may not get properly
   // connected so that the output mesh has the same global topology. This is
   // because 
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedVV,
+    typename DerivedFF,
+    typename DerivedIF,
+    typename DerivedJ,
+    typename DerivedIM>
   IGL_INLINE void remesh_self_intersections(
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & F,
+    const Eigen::PlainObjectBase<DerivedV> & V,
+    const Eigen::PlainObjectBase<DerivedF> & F,
     const RemeshSelfIntersectionsParam & params,
-    Eigen::MatrixXd & VV,
-    Eigen::MatrixXi & FF,
-    Eigen::MatrixXi & IF,
-    Eigen::VectorXi & J,
-    Eigen::VectorXi & IM);
+    Eigen::PlainObjectBase<DerivedVV> & VV,
+    Eigen::PlainObjectBase<DerivedFF> & FF,
+    Eigen::PlainObjectBase<DerivedIF> & IF,
+    Eigen::PlainObjectBase<DerivedJ> & J,
+    Eigen::PlainObjectBase<DerivedIM> & IM);
 }
 
 #ifndef IGL_STATIC_LIBRARY

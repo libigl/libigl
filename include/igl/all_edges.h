@@ -22,9 +22,10 @@ namespace igl
   // directed edge including repeats (meaning interior edges on a surface will
   // show up once for each direction and non-manifold edges may appear more than
   // once for each direction).
+  template <typename DerivedF, typename DerivedE>
   IGL_INLINE void all_edges(
-    const Eigen::MatrixXi & F,
-    Eigen::MatrixXi & E);
+    const Eigen::PlainObjectBase<DerivedF> & F,
+    Eigen::PlainObjectBase<DerivedE> & E);
 }
 
 #ifndef IGL_STATIC_LIBRARY

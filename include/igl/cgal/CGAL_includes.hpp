@@ -31,9 +31,10 @@
 #include <CGAL/AABB_traits.h>
 #include <CGAL/AABB_triangle_primitive.h>
 
-// Boolean operations
-#include <CGAL/Polyhedron_3.h>
-#include <CGAL/Nef_polyhedron_3.h>
+// ALEC: IS ANY IGL FUNCTION USING THESE?
+//// Boolean operations
+//#include <CGAL/Polyhedron_3.h>
+//#include <CGAL/Nef_polyhedron_3.h>
 
 // Delaunay Triangulation in 3D
 #include <CGAL/Delaunay_triangulation_3.h>
