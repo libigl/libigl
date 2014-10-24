@@ -9,6 +9,7 @@
 #include "cut_mesh_from_singularities.h"
 
 #include <igl/triangle_triangle_adjacency.h>
+#include <igl/edge_topology.h>
 
 #include <vector>
 #include <deque>
@@ -32,6 +33,7 @@ namespace igl {
     Eigen::PlainObjectBase<DerivedF> TT;
     Eigen::PlainObjectBase<DerivedF> TTi;
 
+    Eigen::MatrixXi E, F2E, E2F;
   protected:
 
     inline bool IsRotSeam(const int f0,const int edge)
@@ -75,17 +77,32 @@ namespace igl {
     inline void Retract(Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
     {
       std::vector<int> e(V.rows(),0); // number of edges per vert
-
-      for (unsigned f=0; f<F.rows(); f++)
+      // for (unsigned f=0; f<F.rows(); f++)
+      // {
+      //   for (int s = 0; s<3; s++)
+      //   {
+      //     if (Handle_Seams(f,s))
+      //       if (TT(f,s)<=f)
+      //       {
+      //         e[ F(f,s) ] ++;
+      //         e[ F(f,(s+1)%3) ] ++;
+      //       }
+      //   }
+      // }
+      for (int ei=0; ei<E.rows(); ++ei)
       {
-        for (int s = 0; s<3; s++)
+        //only need one face
+        int f0 = E2F(ei,0);
+        if (f0==-1)
+          f0 = E2F(ei,1);
+        int k=0;
+        for (k=0; k<3; ++k)
+          if (F2E(f0,k)==ei)
+            break;
+        if (Handle_Seams(f0,k))
         {
-          if (Handle_Seams(f,s))
-            if (TT(f,s)<=f)
-            {
-              e[ F(f,s) ] ++;
-              e[ F(f,(s+1)%3) ] ++;
-            }
+          e[ F(f0,k) ] ++;
+          e[ F(f0,(k+1)%3) ] ++;
         }
       }
 
@@ -115,7 +132,7 @@ namespace igl {
           }
         }
 
-        if (guard++>10000)
+        if (guard++>0)
           over = true;
 
       } while (!over);
@@ -131,6 +148,7 @@ namespace igl {
     Handle_MMatch(Handle_MMatch_)
     {
       triangle_triangle_adjacency(V,F,TT,TTi);
+      edge_topology(V,F,E,F2E,E2F);
     };
 
     inline void cut(Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
@@ -148,7 +166,7 @@ namespace igl {
         }
       }
 
-      // Retract(Handle_Seams);
+      Retract(Handle_Seams);
 
       for (unsigned int f=0;f<F.rows();f++)
         for (int j=0;j<3;j++)
