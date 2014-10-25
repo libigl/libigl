@@ -15,7 +15,7 @@ namespace igl
   // Calculates the missmatch (integer), at each face edge, of a cross field defined on the mesh faces.
   // The integer missmatch is a multiple of pi/2 that transforms the cross on one side of the edge to
   // the cross on the other side. It represents the deviation from a Lie connection across the edge.
-  
+
   // Inputs:
   //   V         #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F         #F by 3 eigen Matrix of face (quad) indices
@@ -27,14 +27,14 @@ namespace igl
   //   Handle_MMatch    #F by 3 eigen Matrix containing the integer missmatch of the cross field
   //                    across all face edges
   //
-  
-  template <typename DerivedV, typename DerivedF, typename DerivedO>
+
+  template <typename DerivedV, typename DerivedF>
   IGL_INLINE void cross_field_missmatch(const Eigen::PlainObjectBase<DerivedV> &V,
                                         const Eigen::PlainObjectBase<DerivedF> &F,
                                         const Eigen::PlainObjectBase<DerivedV> &PD1,
                                         const Eigen::PlainObjectBase<DerivedV> &PD2,
                                         const bool isCombed,
-                                        Eigen::PlainObjectBase<DerivedO> &missmatch);
+                                        Eigen::PlainObjectBase<DerivedF> &missmatch);
 }
 #ifndef IGL_STATIC_LIBRARY
 #include "cross_field_missmatch.cpp"

@@ -2250,7 +2250,7 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
   igl::find_cross_field_singularities(V, F, Handle_MMatch, isSingularity, singularityIndex);
 
   Eigen::Matrix<int, Eigen::Dynamic, 3> Handle_Seams;
-  igl::cut_mesh_from_singularities(V, F, Handle_MMatch, isSingularity, singularityIndex, Handle_Seams);
+  igl::cut_mesh_from_singularities(V, F, Handle_MMatch, Handle_Seams);
 
   Eigen::PlainObjectBase<DerivedV> PD1_combed, PD2_combed;
   igl::comb_frame_field(V, F, PD1, PD2, BIS1_combed, BIS2_combed, PD1_combed, PD2_combed);

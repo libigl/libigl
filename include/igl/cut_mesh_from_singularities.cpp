@@ -19,7 +19,6 @@ namespace igl {
   typename DerivedV,
   typename DerivedF,
   typename DerivedM,
-  typename DerivedS,
   typename DerivedO
   >
   class MeshCutter
@@ -27,8 +26,6 @@ namespace igl {
   protected:
     const Eigen::PlainObjectBase<DerivedV> &V;
     const Eigen::PlainObjectBase<DerivedF> &F;
-    const Eigen::PlainObjectBase<DerivedS> &Handle_Singular;
-    const Eigen::PlainObjectBase<DerivedS> &Handle_SingularDegree;
     const Eigen::PlainObjectBase<DerivedM> &Handle_MMatch;
 
     Eigen::VectorXi F_visited;
@@ -128,14 +125,10 @@ namespace igl {
 
     inline MeshCutter(const Eigen::PlainObjectBase<DerivedV> &V_,
                const Eigen::PlainObjectBase<DerivedF> &F_,
-               const Eigen::PlainObjectBase<DerivedM> &Handle_MMatch_,
-               const Eigen::PlainObjectBase<DerivedS> &Handle_Singular_,
-               const Eigen::PlainObjectBase<DerivedS> &Handle_SingularDegree_):
+               const Eigen::PlainObjectBase<DerivedM> &Handle_MMatch_):
     V(V_),
     F(F_),
-    Handle_MMatch(Handle_MMatch_),
-    Handle_Singular(Handle_Singular_),
-    Handle_SingularDegree(Handle_SingularDegree_)
+    Handle_MMatch(Handle_MMatch_)
     {
       triangle_triangle_adjacency(V,F,TT,TTi);
     };
@@ -172,20 +165,17 @@ namespace igl {
 template <typename DerivedV,
   typename DerivedF,
   typename DerivedM,
-  typename DerivedS,
   typename DerivedO>
 IGL_INLINE void igl::cut_mesh_from_singularities(const Eigen::PlainObjectBase<DerivedV> &V,
                                                  const Eigen::PlainObjectBase<DerivedF> &F,
                                                  const Eigen::PlainObjectBase<DerivedM> &Handle_MMatch,
-                                                 const Eigen::PlainObjectBase<DerivedS> &isSingularity,
-                                                 const Eigen::PlainObjectBase<DerivedS> &singularityIndex,
                                                  Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
 {
-  igl::MeshCutter< DerivedV, DerivedF, DerivedM, DerivedS, DerivedO> mc(V, F, Handle_MMatch, isSingularity, singularityIndex);
+  igl::MeshCutter< DerivedV, DerivedF, DerivedM, DerivedO> mc(V, F, Handle_MMatch);
   mc.cut(Handle_Seams);
 
 }
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::cut_mesh_from_singularities<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
+template void igl::cut_mesh_from_singularities<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif

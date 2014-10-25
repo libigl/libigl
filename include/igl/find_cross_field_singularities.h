@@ -13,8 +13,8 @@
 namespace igl
 {
   // Computes singularities of a cross field, assumed combed
-  
-  
+
+
   // Inputs:
   //   V                #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F                #F by 3 eigen Matrix of face (quad) indices
@@ -47,7 +47,8 @@ namespace igl
                                                  const Eigen::PlainObjectBase<DerivedV> &PD1,
                                                  const Eigen::PlainObjectBase<DerivedV> &PD2,
                                                  Eigen::PlainObjectBase<DerivedO> &isSingularity,
-                                                 Eigen::PlainObjectBase<DerivedO> &singularityIndex);
+                                                 Eigen::PlainObjectBase<DerivedO> &singularityIndex,
+                                                 bool isCombed = false);
 }
 #ifndef IGL_STATIC_LIBRARY
 #include "find_cross_field_singularities.cpp"
