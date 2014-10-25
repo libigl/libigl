@@ -46,13 +46,13 @@ namespace igl
     Eigen::PlainObjectBase<DerivedV> & N);
   // Inputs:
   //   FN  #F by 3 matrix of face (triangle) normals
-  template <typename DerivedV, typename DerivedF>
+  template <typename DerivedV, typename DerivedF, typename DerivedFN, typename DerivedN>
   IGL_INLINE void per_vertex_normals(
     const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedF>& F,
     const PerVertexNormalsWeightingType weighting,
-    const Eigen::PlainObjectBase<DerivedV>& FN,
-    Eigen::PlainObjectBase<DerivedV> & N);
+    const Eigen::PlainObjectBase<DerivedFN>& FN,
+    Eigen::PlainObjectBase<DerivedN> & N);
   // Without weighting
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE void per_vertex_normals(

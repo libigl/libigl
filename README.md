@@ -406,6 +406,6 @@ BibTeX entry:
   title = {{libigl}: A simple {C++} geometry processing library},
   author = {Alec Jacobson and Daniele Panozzo and others},
   note = {http://igl.ethz.ch/projects/libigl/},
-  year = {2013},
+  year = {2014},
 }
 ```

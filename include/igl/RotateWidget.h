@@ -70,6 +70,8 @@ namespace igl
       inline bool is_down() const;
       inline void draw() const;
       inline void draw_guide() const;
+    public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
