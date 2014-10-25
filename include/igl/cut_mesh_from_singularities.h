@@ -22,8 +22,6 @@ namespace igl
   // MMatch:            #F by 3 list of per corner integer mismatch
   // seams:             #F by 3 list of per corner booleans that denotes if an edge is a seam or not
   //
-  // TODO: make the name of the variables consistent in the cpp
-
   template <typename DerivedV, typename DerivedF, typename DerivedM, typename DerivedO>
   IGL_INLINE void cut_mesh_from_singularities(const Eigen::PlainObjectBase<DerivedV> &V,
                                                    const Eigen::PlainObjectBase<DerivedF> &F,

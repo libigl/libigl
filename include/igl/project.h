@@ -44,7 +44,7 @@ namespace igl
 // Returns:
 //   screen space x, y, and z coordinates respectively
 // Returns return value of gluProject call
-  Eigen::Vector3f project(const Eigen::Vector3f&  obj,
+  IGL_INLINE Eigen::Vector3f project(const Eigen::Vector3f&  obj,
                           const Eigen::Matrix4f& model,
                           const Eigen::Matrix4f& proj,
                           const Eigen::Vector4f&  viewport);

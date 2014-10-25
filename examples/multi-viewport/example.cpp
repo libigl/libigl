@@ -49,7 +49,6 @@ int width,height;
 igl::Camera down_camera;
 bool trackball_on = false;
 int down_mouse_x,down_mouse_y,move_x,move_y;
-int down_vp;
 // Position of light
 float light_pos[4] = {0.1,0.1,-0.9,0};
 // Vertex positions, normals, colors and centroid
@@ -222,7 +221,7 @@ void display()
   // All smooth points
   glEnable( GL_POINT_SMOOTH );
 
-  // Flash lights
+  // Flashlights
   lights();
   for(int vp = 0;vp<NUM_VIEWPORTS;vp++)
   {
@@ -321,7 +320,6 @@ void display()
   report_gl_error();
 
   glutSwapBuffers();
-  glutPostRedisplay();
 }
 
 // Initialize colors to a boring green
@@ -330,24 +328,6 @@ void init_C()
   C.col(0).setConstant(0.4);
   C.col(1).setConstant(0.8);
   C.col(2).setConstant(0.3);
-}
-
-int in_viewport(const int x, const int y)
-{
-  int down_vp = -1;
-  for(int vp = 0;vp<NUM_VIEWPORTS;vp++)
-  {
-    if(
-      x >= viewports[vp].x &&
-      y >= viewports[vp].y &&
-      x <  viewports[vp].x+viewports[vp].width &&
-      y <  viewports[vp].y+viewports[vp].height)
-    {
-      down_vp = vp;
-      break;
-    }
-  }
-  return down_vp;
 }
 
 const double SNAP_DIST = 10;
@@ -359,8 +339,10 @@ void mouse_move(int mouse_x, int mouse_y)
   using namespace std;
   move_x = mouse_x;
   move_y = mouse_y;
-  const int in_vp = in_viewport(mouse_x,height-mouse_y);
-  if(in_vp >= 0)
+  const int in_vp = find_if(viewports,viewports+NUM_VIEWPORTS,
+    [&mouse_x,&mouse_y](const AugViewport & vp) -> bool
+    {return vp.inside(mouse_x,height-mouse_y);})-viewports;
+  if(in_vp < NUM_VIEWPORTS)
   {
     if(
       viewports[in_vp].width > 0 &&
@@ -391,6 +373,7 @@ void mouse_move(int mouse_x, int mouse_y)
   {
     glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
   }
+  glutPostRedisplay();
 }
 
 void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
@@ -422,9 +405,11 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
         vert_on = true;
       } else
       {
-        down_vp = in_viewport(mouse_x,height-mouse_y);
+        down_vp = find_if(viewports,viewports+NUM_VIEWPORTS,
+          [&mouse_x,&mouse_y](const AugViewport & vp) -> bool
+          {return vp.inside(mouse_x,height-mouse_y);})-viewports;
         // down
-        if(down_vp >= 0)
+        if(down_vp < NUM_VIEWPORTS)
         {
           glutSetCursor(GLUT_CURSOR_CYCLE);
           // collect information for trackball
@@ -436,6 +421,7 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
       }
     break;
   }
+  glutPostRedisplay();
 }
 
 void mouse_drag(int mouse_x, int mouse_y)
@@ -476,6 +462,7 @@ void mouse_drag(int mouse_x, int mouse_y)
       viewports[down_vp].mouse_y(mouse_y,height),
       viewports[down_vp].camera.m_rotation_conj.coeffs().data());
   }
+  glutPostRedisplay();
 }
 
 
@@ -490,8 +477,10 @@ void key(unsigned char key, int mouse_x, int mouse_y)
       exit(0);
     case 'Z':
     {
-      const int in_vp = in_viewport(mouse_x,height-mouse_y);
-      if(in_vp >= 0)
+      const int in_vp = find_if(viewports,viewports+NUM_VIEWPORTS,
+          [&mouse_x,&mouse_y](const AugViewport & vp) -> bool
+          {return vp.inside(mouse_x,height-mouse_y);})-viewports;
+      if(in_vp < NUM_VIEWPORTS)
       {
         igl::snap_to_canonical_view_quat(
           viewports[in_vp].camera.m_rotation_conj.coeffs().data(),
@@ -504,6 +493,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
       cout<<"Unknown key command: "<<key<<" "<<int(key)<<endl;
   }
 
+  glutPostRedisplay();
 }
 
 int main(int argc, char * argv[])

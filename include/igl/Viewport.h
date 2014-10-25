@@ -55,6 +55,13 @@ namespace igl
     {
       return mx - x;
     }
+    // Returns whether point (mx,my) is in extend of Viewport
+    bool inside(const int mx, const int my) const
+    {
+      return 
+        mx >= x && my >= y && 
+        mx < x+width && my < y+height;
+    }
   };
 }
 

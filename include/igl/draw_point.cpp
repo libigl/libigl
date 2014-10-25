@@ -30,7 +30,9 @@ IGL_INLINE void igl::draw_point(
 
   float f;
   glGetFloatv(GL_POINT_SIZE_MAX,&f);
-  assert(requested_r<=0.5*f);
+  // THIS IS OVERZEALOUS on Mac OS X: OpenGL reports a smaller point size than
+  // possible.
+  //assert(requested_r<=0.5*f);
   double r = (requested_r<0.5*f?requested_r:0.5*f);
 
   //glDisable(GL_DEPTH_TEST);
@@ -87,11 +89,18 @@ IGL_INLINE void igl::draw_point(
   const double requested_r,
   const bool selected)
 {
-  return draw_point(P(0),P(1),P(2),requested_r,selected);
+  switch(P.size())
+  {
+    case 2:
+      return draw_point(P(0),P(1),0,requested_r,selected);
+    default:
+      return draw_point(P(0),P(1),P(2),requested_r,selected);
+  }
 }
 
 #ifdef IGL_STATIC_LIBRARY
 template void igl::draw_point<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, double, bool);
+template void igl::draw_point<Eigen::Matrix<double, 2, 1, 0, 2, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&, double, bool); 
 #endif
 
 #endif

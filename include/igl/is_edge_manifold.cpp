@@ -6,12 +6,56 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "is_edge_manifold.h"
+#include "all_edges.h"
+#include "unique_simplices.h"
 
 #include <algorithm>
+#include <vector>
+
+template <
+  typename DerivedF, 
+  typename DerivedBF,
+  typename DerivedE,
+  typename DerivedEMAP,
+  typename DerivedBE>
+IGL_INLINE bool igl::is_edge_manifold(
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::PlainObjectBase<DerivedBF>& BF,
+  Eigen::PlainObjectBase<DerivedE>& E,
+  Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+  Eigen::PlainObjectBase<DerivedBE>& BE)
+{
+  using namespace Eigen;
+  typedef typename DerivedF::Index Index;
+  typedef Matrix<typename DerivedF::Scalar,Dynamic,1> VectorXF;
+  typedef Matrix<typename DerivedF::Scalar,Dynamic,2> MatrixXF2;
+  MatrixXF2 allE;
+  all_edges(F,allE);
+  // Find unique undirected edges and mapping
+  VectorXF _;
+  unique_simplices(allE,E,_,EMAP);
+  std::vector<typename DerivedF::Index> count(E.rows(),0);
+  for(Index e = 0;e<EMAP.rows();e++)
+  {
+    count[EMAP[e]]++;
+  }
+  const Index m = F.rows();
+  BF.resize(m,3);
+  BE.resize(E.rows(),1);
+  bool all = true;
+  for(Index e = 0;e<EMAP.rows();e++)
+  {
+    const bool manifold = count[EMAP[e]] <= 2;
+    all &= BF(e%m,e/m) = manifold;
+    BE(EMAP[e]) = manifold;
+  }
+  return all;
+}
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE bool igl::is_edge_manifold(const Eigen::PlainObjectBase<DerivedV>& /*V*/,
-                                 const Eigen::PlainObjectBase<DerivedF>& F)
+IGL_INLINE bool igl::is_edge_manifold(
+  const Eigen::PlainObjectBase<DerivedV>& /*V*/,
+  const Eigen::PlainObjectBase<DerivedF>& F)
 {
   // List of edges (i,j,f,c) where edge i<j is associated with corner i of face
   // f

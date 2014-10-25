@@ -39,7 +39,9 @@ static IGL_INLINE bool render_to_png_async_helper(
     }
   }
 
-  return img->save(png_file.c_str(),fast);
+  bool ret = img->save(png_file.c_str(),fast);
+  delete img;
+  return ret;
 }
 
 IGL_INLINE std::thread igl::render_to_png_async(
@@ -61,5 +63,7 @@ IGL_INLINE std::thread igl::render_to_png_async(
     GL_UNSIGNED_BYTE,
     img->data());
   // Part that should be asynchronous  
-  return std::thread(render_to_png_async_helper,img,png_file,alpha,fast);
+  std::thread t(render_to_png_async_helper,img,png_file,alpha,fast);
+  t.detach();
+  return t;
 }

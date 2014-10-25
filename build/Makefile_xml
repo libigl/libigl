@@ -1,7 +1,7 @@
 include Makefile.conf
 
 .PHONY: all
-all: 
+all:
 debug:
 #all: libiglxml
 #debug: libiglxml
@@ -20,7 +20,7 @@ OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 # include igl headers
 INC+=-I../include/
 
-# EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY 
+# EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY
 
 # Eigen dependency
 EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
@@ -42,7 +42,7 @@ INC+=$(ANTTWEAKBAR_INC)
 
 #CFLAGS+=-std=c++11
 
-obj: 
+obj:
 	mkdir -p obj
 
 ../lib/libiglxml.a: $(OBJ_FILES)
