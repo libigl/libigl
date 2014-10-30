@@ -136,7 +136,7 @@ template <
   }
   // E2E[i] --> {j,k,...} means face edge i corresponds to other faces edges j
   // and k
-  TT.resize (m,vector<vector<TIIndex> >(F.cols()));
+  TT.resize (m,vector<vector<TTIndex> >(F.cols()));
   TTi.resize(m,vector<vector<TTiIndex> >(F.cols()));
   for(int e = 0;e<E.rows();e++)
   {
