@@ -307,6 +307,7 @@ namespace igl {
                       bool direct_round=true,
                       int localIter=0,
                       bool _integer_rounding=true,
+                      bool _singularity_rounding=true,
                       std::vector<int> roundVertices = std::vector<int>(),
                       std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
 
@@ -556,6 +557,7 @@ namespace igl {
               int iter = 5,
               int localIter = 5,
               bool DoRound = true,
+              bool SingularityRound=true,
               std::vector<int> roundVertices = std::vector<int>(),
               std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
 
@@ -962,6 +964,7 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::SolvePoisson(Eigen::Vect
                                                           bool direct_round,
                                                           int localIter,
                                                           bool _integer_rounding,
+                                                          bool _singularity_rounding,
                                                           std::vector<int> roundVertices,
                                                           std::vector<std::vector<int> > hardFeatures)
 {
@@ -1003,11 +1006,11 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::SolvePoisson(Eigen::Vect
   if (DEBUGPRINT)
     printf("\n BUILT THE MATRIX \n");
 
-  if (integer_rounding)
-  {
-    AddSingularityRound();
+  if (integer_rounding)    
     AddToRoundVertices(roundVertices);
-  }
+
+  if (_singularity_rounding)
+      AddSingularityRound();
 
   int t1=clock();
   if (DEBUGPRINT) printf("\n time:%d \n",t1-t0);
@@ -1766,6 +1769,7 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolve(double
   COMISO::ConstrainedSolver solver;
 
   solver.misolver().set_local_iters(localIter);
+
   solver.misolver().set_direct_rounding(direct_round);
 
   std::sort(ids_to_round.begin(),ids_to_round.end());
@@ -1798,12 +1802,13 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::addSharpEdgeConstraint(i
   int v2 = F(fid,(vid+1)%3);
 
   Eigen::Matrix<typename DerivedV::Scalar, 3, 1> e = V.row(v2) - V.row(v1);
+  e = e.normalized();
 
-  int v1i = GetFirstVertexIndex(v1);
-  int v2i = GetFirstVertexIndex(v2);
+  int v1i = HandleS_Index(fid,vid);//GetFirstVertexIndex(v1);
+  int v2i = HandleS_Index(fid,(vid+1)%3);//GetFirstVertexIndex(v2);
 
-  double d1 = fabs(e.dot(PD1.row(fid)));
-  double d2 = fabs(e.dot(PD2.row(fid)));
+  double d1 = fabs(e.dot(PD1.row(fid).normalized()));
+  double d2 = fabs(e.dot(PD2.row(fid).normalized()));
 
   int offset = 0;
 
@@ -1844,6 +1849,7 @@ IGL_INLINE igl::MIQ_class<DerivedV, DerivedF, DerivedU>::MIQ_class(const Eigen::
                                                         int iter,
                                                         int localIter,
                                                         bool DoRound,
+                                                        bool SingularityRound,
                                                         std::vector<int> roundVertices,
                                                         std::vector<std::vector<int> > hardFeatures):
 V(V_),
@@ -1900,7 +1906,7 @@ F(F_)
   {
     for (int i=0;i<iter;i++)
     {
-      PSolver.SolvePoisson(Handle_Stiffness, GradientSize,1.f,DirectRound,localIter,DoRound,roundVertices,hardFeatures);
+      PSolver.SolvePoisson(Handle_Stiffness, GradientSize,1.f,DirectRound,localIter,DoRound,SingularityRound,roundVertices,hardFeatures);
       int nflips=NumFlips(PSolver.WUV);
       bool folded = updateStiffeningJacobianDistorsion(GradientSize,PSolver.WUV);
       printf("ITERATION %d FLIPS %d \n",i,nflips);
@@ -1909,7 +1915,7 @@ F(F_)
   }
   else
   {
-    PSolver.SolvePoisson(Handle_Stiffness,GradientSize,1.f,DirectRound,localIter,DoRound,roundVertices,hardFeatures);
+    PSolver.SolvePoisson(Handle_Stiffness,GradientSize,1.f,DirectRound,localIter,DoRound,SingularityRound,roundVertices,hardFeatures);
   }
 
   int nflips=NumFlips(PSolver.WUV);
@@ -2183,6 +2189,7 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
                          int iter,
                          int localIter,
                          bool DoRound,
+                         bool SingularityRound,
                          std::vector<int> roundVertices,
                          std::vector<std::vector<int> > hardFeatures)
 {
@@ -2206,6 +2213,7 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
                                                    iter,
                                                    localIter,
                                                    DoRound,
+                                                   SingularityRound,
                                                    roundVertices,
                                                    hardFeatures);
 
@@ -2225,6 +2233,7 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
                          int iter,
                          int localIter,
                          bool DoRound,
+                         bool SingularityRound,
                          std::vector<int> roundVertices,
                          std::vector<std::vector<int> > hardFeatures)
 {
@@ -2272,6 +2281,7 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
            iter,
            localIter,
            DoRound,
+           SingularityRound,
            roundVertices,
            hardFeatures);
 
