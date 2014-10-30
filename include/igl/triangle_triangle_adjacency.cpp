@@ -6,8 +6,9 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "triangle_triangle_adjacency.h"
-
-#include <igl/is_edge_manifold.h>
+#include "is_edge_manifold.h"
+#include "all_edges.h"
+#include <map>
 #include <algorithm>
 
 template <typename Scalar, typename Index>
@@ -96,6 +97,63 @@ IGL_INLINE void igl::triangle_triangle_adjacency(const Eigen::PlainObjectBase<Sc
   triangle_triangle_adjacency_preprocess(V,F,TTT);
   triangle_triangle_adjacency_extractTT(F,TTT,TT);
   triangle_triangle_adjacency_extractTTi(F,TTT,TTi);
+}
+
+template <
+  typename DerivedF, 
+  typename TTIndex, 
+  typename TTiIndex>
+  IGL_INLINE void igl::triangle_triangle_adjacency(
+    const Eigen::PlainObjectBase<DerivedF> & F,
+    std::vector<std::vector<std::vector<TTIndex> > > & TT,
+    std::vector<std::vector<std::vector<TTiIndex> > > & TTi)
+{
+  using namespace Eigen;
+  using namespace std;
+  using namespace igl;
+  assert(F.cols() == 3 && "Faces must be triangles");
+  typedef typename DerivedF::Index Index;
+  // number of faces
+  const int m = F.rows();
+  // All occurances of directed edges
+  MatrixXi E;
+  all_edges(F,E);
+  assert(E.rows() == 3*m);
+  // uE2E[i] --> {j,k,...} means unique edge i corresponds to face edges j and
+  // k (where j-edge comes is the j/m edge of face j%m)
+  map<pair<Index,Index>,vector<Index> > uE2E;
+  for(int e = 0;e<E.rows();e++)
+  {
+    Index i = E(e,0);
+    Index j = E(e,1);
+    if(i<j)
+    {
+      uE2E[pair<Index,Index>(i,j)].push_back(e);
+    }else
+    {
+      uE2E[pair<Index,Index>(j,i)].push_back(e);
+    }
+  }
+  // E2E[i] --> {j,k,...} means face edge i corresponds to other faces edges j
+  // and k
+  TT.resize (m,vector<vector<TTIndex> >(F.cols()));
+  TTi.resize(m,vector<vector<TTiIndex> >(F.cols()));
+  for(int e = 0;e<E.rows();e++)
+  {
+    const Index i = E(e,0);
+    const Index j = E(e,1);
+    const Index f = e%m;
+    const Index c = e/m;
+    const vector<Index> & N = 
+      i<j ? uE2E[pair<Index,Index>(i,j)] : uE2E[pair<Index,Index>(j,i)];
+    for(const auto & ne : N)
+    {
+      const Index nf = ne%m;
+      const Index nc = ne/m;
+      TT[f][c].push_back(nf);
+      TTi[f][c].push_back(nc);
+    }
+  }
 }
 
 #ifdef IGL_STATIC_LIBRARY

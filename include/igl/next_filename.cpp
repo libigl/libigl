@@ -24,7 +24,7 @@ bool igl::next_filename(
   while(true)
   {
     next = STR(prefix << setfill('0') << setw(zeros)<<i<<suffix);
-    if(!file_exists(next.c_str()))
+    if(!file_exists(next))
     {
       return true;
     }
