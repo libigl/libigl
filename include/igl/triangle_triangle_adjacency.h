@@ -29,6 +29,7 @@ namespace igl
   //   TTi  #F by #3 adjacent matrix, the element i,j is the id of edge of the triangle TT(i,j) that is adjacent with triangle i
   // NOTE: the first edge of a triangle is [0,1] the second [1,2] and the third [2,3].
   //       this convention is DIFFERENT from cotmatrix_entries.h
+  // Known bug: this should not need to take V as input.
 
   template <typename Scalar, typename Index>
   IGL_INLINE void triangle_triangle_adjacency(const Eigen::PlainObjectBase<Scalar>& V,
@@ -57,6 +58,24 @@ namespace igl
   IGL_INLINE void triangle_triangle_adjacency_extractTTi(const Eigen::PlainObjectBase<Index>& F,
                                 std::vector<std::vector<int> >& TTT,
                                 Eigen::PlainObjectBase<Index>& TTi);
+  // Adjacency list version, which works with non-manifold meshes
+  //
+  // Inputs:
+  //   F  #F by 3 list of triangle indices
+  // Outputs:
+  //   TT  #F by 3 list of lists so that TT[i][c] --> {j,k,...} means that faces j and
+  //     k etc. are edge-neighbors of face i on face i's edge opposite corner c
+  //   TTj  #F list of lists so that TTj[i][c] --> {j,k,...} means that face
+  //     TT[i][c][0] is an edge-neighbor of face i incident on the edge of face
+  //     TT[i][c][0] opposite corner j, and TT[i][c][1] " corner k, etc.
+  template <
+    typename DerivedF, 
+    typename TTIndex, 
+    typename TTiIndex>
+    IGL_INLINE void triangle_triangle_adjacency(
+      const Eigen::PlainObjectBase<DerivedF> & F,
+      std::vector<std::vector<std::vector<TTIndex> > > & TT,
+      std::vector<std::vector<std::vector<TTiIndex> > > & TTi);
 }
 
 #ifndef IGL_STATIC_LIBRARY

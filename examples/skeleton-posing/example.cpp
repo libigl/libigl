@@ -49,6 +49,9 @@
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
+#ifndef GLUT_ACTIVE_COMMAND
+#  define GLUT_ACTIVE_COMMAND 9
+#endif
 #include <Carbon/Carbon.h>
 #else
 #include <GL/glut.h>

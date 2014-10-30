@@ -32,6 +32,10 @@ namespace igl
   IGL_INLINE bool writeDMAT(
     const std::string file_name, 
     const std::vector<std::vector<Scalar> > W);
+  template <typename Scalar>
+  IGL_INLINE bool writeDMAT(
+    const std::string file_name, 
+    const std::vector<Scalar > W);
 }
 
 #ifndef IGL_STATIC_LIBRARY
