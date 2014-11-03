@@ -26,7 +26,7 @@ namespace igl {
   IGL_INLINE void nchoosek(int offset,
                            int k,
                            int N,
-                           std::vector<std::vector<int>> &allCombs);
+                           std::vector<std::vector<int> > &allCombs);
 }
 
 

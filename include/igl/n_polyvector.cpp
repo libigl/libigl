@@ -12,6 +12,7 @@
 #include <igl/nchoosek.h>
 #include <igl/slice.h>
 #include <igl/polyroots.h>
+#include <igl/igl_inline.h>
 #include <Eigen/Sparse>
 
 #include <iostream>
@@ -39,7 +40,7 @@ namespace igl {
     Eigen::PlainObjectBase<DerivedV> B1, B2, FN;
 
     IGL_INLINE void computek();
-    IGL_INLINE void setFieldFromGeneralCoefficients(const  std::vector<Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1>> &coeffs,
+    IGL_INLINE void setFieldFromGeneralCoefficients(const  std::vector<Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1> > &coeffs,
                                                     std::vector<Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 2> > &pv);
     IGL_INLINE void computeCoefficientLaplacian(int n, Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar> > &D);
     IGL_INLINE void getGeneralCoeffConstraints(const Eigen::VectorXi &isConstrained,
@@ -152,7 +153,7 @@ minQuadWithKnownMini(const Eigen::SparseMatrix<std::complex<typename DerivedV::S
       indu++;
     }
 
-  Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar>> Quu, Quk;
+  Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar> > Quu, Quk;
 
   igl::slice(Q,unknown, unknown, Quu);
   igl::slice(Q,unknown, known, Quk);
@@ -166,14 +167,14 @@ minQuadWithKnownMini(const Eigen::SparseMatrix<std::complex<typename DerivedV::S
 
   Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar> > rhs = (Quk*xknown).sparseView()+.5*fu;
 
-  Eigen::SparseLU< Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar>>> solver;
+  Eigen::SparseLU< Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar> > > solver;
   solver.compute(-Quu);
   if(solver.info()!=Eigen::Success)
   {
     std::cerr<<"Decomposition failed!"<<std::endl;
     return;
   }
-  Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar>>  b  = solver.solve(rhs);
+  Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar> >  b  = solver.solve(rhs);
   if(solver.info()!=Eigen::Success)
   {
     std::cerr<<"Solving failed!"<<std::endl;
@@ -207,7 +208,7 @@ IGL_INLINE bool igl::PolyVectorFieldFinder<DerivedV, DerivedF>::
   // ... +
   // (-1)^n c[n-1]
 
-  std::vector<Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1>> coeffs(n,Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1>::Zero(numF, 1));
+  std::vector<Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1> > coeffs(n,Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1>::Zero(numF, 1));
 
   for (int i =0; i<n; ++i)
   {
@@ -241,8 +242,8 @@ IGL_INLINE bool igl::PolyVectorFieldFinder<DerivedV, DerivedF>::
 }
 
 template<typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::PolyVectorFieldFinder<DerivedV, DerivedF>::setFieldFromGeneralCoefficients(const  std::vector<Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1>> &coeffs,
-                                                            std::vector<Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 2>> &pv)
+IGL_INLINE void igl::PolyVectorFieldFinder<DerivedV, DerivedF>::setFieldFromGeneralCoefficients(const  std::vector<Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1> > &coeffs,
+                                                            std::vector<Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 2> > &pv)
 {
   pv.assign(n, Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 2>::Zero(numF, 2));
   for (int i = 0; i <numF; ++i)
@@ -302,7 +303,7 @@ IGL_INLINE void igl::PolyVectorFieldFinder<DerivedV, DerivedF>::setFieldFromGene
 template<typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::PolyVectorFieldFinder<DerivedV, DerivedF>::computeCoefficientLaplacian(int n, Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar> > &D)
 {
-  std::vector<Eigen::Triplet<std::complex<typename DerivedV::Scalar> >> tripletList;
+  std::vector<Eigen::Triplet<std::complex<typename DerivedV::Scalar> > > tripletList;
 
   // For every non-border edge
   for (unsigned eid=0; eid<numE; ++eid)
@@ -343,7 +344,7 @@ IGL_INLINE void igl::PolyVectorFieldFinder<DerivedV, DerivedF>::getGeneralCoeffC
   Ck.resize(numConstrained,1);
   int n = cfW.cols()/3;
 
-  std::vector<std::vector<int>> allCombs;
+  std::vector<std::vector<int> > allCombs;
   igl::nchoosek(0,k+1,n,allCombs);
 
   int ind = 0;
