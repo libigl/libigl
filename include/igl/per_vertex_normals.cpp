@@ -76,7 +76,8 @@ IGL_INLINE void igl::per_vertex_normals(
     // throw normal at each corner
     for(int j = 0; j < 3;j++)
     {
-      // Does this need to be critical?
+      // Q: Does this need to be critical?
+      // A: Yes. Different (i,j)'s could produce the same F(i,j)
 //#pragma omp critical
       N.row(F(i,j)) += W(i,j)*FN.row(i);
     }

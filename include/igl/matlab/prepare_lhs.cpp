@@ -12,6 +12,17 @@ IGL_INLINE void igl::prepare_lhs_double(
 }
 
 template <typename DerivedV>
+IGL_INLINE void igl::prepare_lhs_logical(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  mxArray *plhs[])
+{
+  using namespace std;
+  plhs[0] = mxCreateLogicalMatrix(V.rows(),V.cols());
+  mxLogical * Vp = static_cast<mxLogical*>(mxGetData(plhs[0]));
+  copy(&V.data()[0],&V.data()[0]+V.size(),Vp);
+}
+
+template <typename DerivedV>
 IGL_INLINE void igl::prepare_lhs_index(
   const Eigen::PlainObjectBase<DerivedV> & V,
   mxArray *plhs[])
