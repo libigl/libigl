@@ -40,6 +40,7 @@ extern "C" {
 
 // Alec:
 #include <iostream>
+#include <stdexcept>
 
 struct GenericVertType;
     struct IsctVertType;

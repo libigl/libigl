@@ -29,16 +29,18 @@ PLATFORM := $(shell uname)
 
 -include makeConstants
 
+
 # *********
 # * TOOLS *
 # *********--+
 # | Programs |
 # +----------+
-CPP11_FLAGS := -std=c++11
-CC  := clang
-CXX := clang++
+CPP11_FLAGS := -std=c++11 
+include ../../build/Makefile.conf
+CC  := ${GG}
+CXX := ${GG}
 ifeq ($(PLATFORM),Darwin) # on mac
-    CPP11_FLAGS := $(CPP11_FLAGS) -stdlib=libc++ -Wno-c++11-extensions
+    CPP11_FLAGS := $(CPP11_FLAGS)  -Wno-c++11-extensions
 endif
 RM  := rm
 CP  := cp
@@ -195,7 +197,7 @@ bin/off2obj: obj/off2obj.o
 
 obj/isct/triangle.o: src/isct/triangle.c
 	@echo "Compiling the Triangle library"
-	@$(CC) -O2 -DNO_TIMER \
+	@$(CC) -x c -O2 -DNO_TIMER \
                -DREDUCED \
                -DCDT_ONLY -DTRILIBRARY \
                -Wall -DANSI_DECLARATORS \

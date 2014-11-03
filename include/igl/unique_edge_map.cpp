@@ -30,8 +30,13 @@ IGL_INLINE void igl::unique_edge_map(
   // This does help a little
   for_each(uE2E.begin(),uE2E.end(),[](vector<uE2EType > & v){v.reserve(2);});
   assert(EMAP.size() == ne);
-  for(uE2EType e = 0;e<ne;e++)
+  for(uE2EType e = 0;e<(uE2EType)ne;e++)
   {
     uE2E[EMAP(e)].push_back(e);
   }
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template specialization
+template void igl::unique_edge_map<Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, long>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > >&);
+#endif 
