@@ -183,7 +183,7 @@ template <
 # endif
 # pragma omp parallel for if (ne>IGL_OMP_MIN_VALUE)
   // Slightly better memory access than loop over E
-  for(Index f = 0;f<m;f++)
+  for(Index f = 0;f<(Index)m;f++)
   {
     for(Index c = 0;c<3;c++)
     {
@@ -209,4 +209,5 @@ template <
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template void igl::triangle_triangle_adjacency<Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, long, long, long>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > > const&, bool, std::vector<std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > >, std::allocator<std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > > > >&, std::vector<std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > >, std::allocator<std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > > > >&);
 #endif
