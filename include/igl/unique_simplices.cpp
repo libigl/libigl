@@ -24,7 +24,7 @@ IGL_INLINE void igl::unique_simplices(
   using namespace igl;
   // Sort each face
   MatrixXi sortF, unusedI;
-  igl::sort(F,2,1,sortF,unusedI);
+  igl::sort(F,2,true,sortF,unusedI);
   // Find unique faces
   MatrixXi C;
   igl::unique_rows(sortF,C,IA,IC);

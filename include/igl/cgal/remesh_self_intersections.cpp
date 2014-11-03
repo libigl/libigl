@@ -9,6 +9,7 @@
 #include "SelfIntersectMesh.h"
 #include <igl/C_STR.h>
 #include <list>
+#include <iostream>
 
 template <
   typename DerivedV,

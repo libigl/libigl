@@ -13,6 +13,12 @@ namespace igl
 {
   // Note:
   // This should be potentially replaced with eigen's LinSpaced() function
+  //
+  // If step = 1, it's about 5 times faster to use:
+  //     X = Eigen::VectorXi::LinSpaced(n,0,n-1);
+  // than 
+  //     X = igl::colon<int>(0,n-1);
+  //
 
   // Colon operator like matlab's colon operator. Enumerats values between low
   // and hi with step step.

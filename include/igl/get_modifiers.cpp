@@ -36,7 +36,7 @@ IGL_INLINE int igl::get_modifiers()
   mod |= (carbon_is_keydown(kVK_Option)?GLUT_ACTIVE_ALT:0);
   mod |= (carbon_is_keydown(kVK_Control)?GLUT_ACTIVE_CTRL:0);
 #else
-#  error "Not supported.
+#  error "Not supported."
 #endif
   return mod;
 }
