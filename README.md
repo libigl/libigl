@@ -63,8 +63,9 @@ Hello, mesh:
 
 ## Tutorial ##
 
-As of version 1.0, libigl includes an introductory tutorial that covers its basic
-functionalities. See [tutorial/tutorial.md](./tutorial/tutorial.md) to get started.
+As of version 1.0, libigl includes an introductory
+[tutorial](http://libigl.github.io/libigl/tutorial/tutorial.html) that covers
+its basic functionalities.
 
 ## Dependencies ##
 - Eigen3  Last tested with Eigen Version 3.2
