@@ -29,7 +29,7 @@ IGL_INLINE void igl::unique_edge_map(
   uE2E.resize(uE.rows());
   // This does help a little
   for_each(uE2E.begin(),uE2E.end(),[](vector<uE2EType > & v){v.reserve(2);});
-  assert(EMAP.size() == ne);
+  assert((size_t)EMAP.size() == ne);
   for(uE2EType e = 0;e<(uE2EType)ne;e++)
   {
     uE2E[EMAP(e)].push_back(e);

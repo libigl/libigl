@@ -32,6 +32,7 @@ namespace igl
 }
 
 // Implementation 
+#include <mex.h>
 inline std::streamsize igl::MexStream::xsputn(
   const char *s, 
   std::streamsize n) 
