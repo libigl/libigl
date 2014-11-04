@@ -2430,7 +2430,7 @@ the result of a number of set operations on solid regions of space: union,
 intersection, set difference, symmetric difference, complement. Typically, CSG
 libraries represent the inputs and outputs to these operations <em>implicitly</em>:
 the solid <span class="math">\(A\)</span> is defined as the open set of points <span class="math">\(\mathbf{x}\)</span> for which some
-function <span class="math">\(a(\mathbf{x})\)</span> ``returns true&#8217;&#8217;. The surface of this shape is the
+function <span class="math">\(a(\mathbf{x})\)</span> &#8220;returns true&#8221;. The surface of this shape is the
 <em>closure</em> of all points <span class="math">\(x\)</span> in <span class="math">\(A\)</span>.</p>
 
 <p>With this sort of representation, boolean
@@ -2452,7 +2452,7 @@ is simply</p>
 
 <p>and the symmetric difference (XOR) is</p>
 
-<p><span class="math">\(A \setminus B = \{\mathbf{x} \left.\right|
+<p><span class="math">\(A \triangle B = \{\mathbf{x} \left.\right|
   \text{either } a(\mathbf{x}) \text{ or } b(\mathbf{x}) \text{ but not both }\}.\)</span></p>
 
 <p>Stringing together many of these operations, one can design quite complex
@@ -2471,7 +2471,7 @@ intersections have been &#8220;resolved&#8221;. That is, edges and vertices are 
 exactly at the intersection lines, so the resulting <em>non-manifold</em> mesh <code>(V,F)</code>
 has no self-intersections.</p>
 
-<p>Then libigl <em>peals</em> the outer hull <span class="externalcitation">[#attene_14]</span> off this mesh recursively,
+<p>Then libigl <em>peals</em> the outer hull <a class="citation" href="#fn:28" title="Jump to citation">[28]<span class="citekey" style="display:none">attene_2014</span></a> off this mesh recursively,
 keeping track of the iteration parity and orientation flips for each layer.
 For any boolean operation, these two pieces of information determine for each
 triangle (1) if it should be included in the output, and (2) if its orientation
@@ -2483,17 +2483,32 @@ should be reversed before added to the output.</p>
 <pre><code class="cpp">igl::mesh_boolean(VA,FA,VB,FB,MESH_BOOLEAN_TYPE_UNION,VC,FC);
 </code></pre>
 
+<p>The following figure shows each boolean operation on two meshes.</p>
+
 <figure>
 <img src="images/cheburashka-knight-boolean.jpg" alt="The example Boolean conducts
 boolean operations on the Cheburashka (red) and Knight (green). From left
 to right: union, intersection, set minus, symmetric difference (XOR),
-``resolve. Bottom row reveals inner surfaces, darker color indicates
+resolve. Bottom row reveals inner surfaces, darker color indicates
 back-facing triangles." />
 <figcaption>The example <a href="609_Boolean/main.cpp">Boolean</a> conducts
 boolean operations on the <em>Cheburashka</em> (red) and <em>Knight</em> (green). From left
 to right: union, intersection, set minus, symmetric difference (XOR),
-``resolve&#8217;&#8217;. Bottom row reveals inner surfaces, darker color indicates
+&#8220;resolve&#8221;. Bottom row reveals inner surfaces, darker color indicates
 back-facing triangles.</figcaption></figure>
+
+<p>The union, symmetric difference and &#8220;resolve&#8221; have the same outward
+appearance, but differ in their treatment of internal structures. The union has
+no internal surfaces: the triangles are not included in the output. The
+symmetric difference is the same set of triangles as the &#8220;resolve&#8221;, but
+internal surfaces have been reversed in orientation, indicating that the solid
+result of the operation. The &#8220;resolve&#8221; operation is not really a boolean
+operation, it is simply the result of resolving all intersections and gluing
+together coincident vertices, maintaining original triangle orientations.</p>
+
+<p>Libigl also provides a wrapper <code>igl::mesh_boolean_cork</code> to the
+<a href="https://github.com/gilbo/cork">cork</a>, which is typically faster, but is not
+always robust.</p>
 
 <h1 id="future">Outlook for continuing development</h1>
 
@@ -2663,6 +2678,12 @@ SGP 2012</p>
 <li id="fn:27" class="citation"><span class="citekey" style="display:none">schuller_2013</span><p><a href="http://igl.ethz.ch/projects/LIM/">Locally Injective Mappings</a>
 Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga Sorkine-Hornung,
 SGP 2013</p>
+</li>
+
+<li id="fn:28" class="citation"><span class="citekey" style="display:none">attene_2014</span><p><a href="https://www.google.com/search?q=Direct+repair+of+self-intersecting+meshes">&#8220;Direct repair of
+ self-intersecting
+ meshes&#8221;</a>,
+ Marco Attene, 2014.</p>
 </li>
 
 </ol>
