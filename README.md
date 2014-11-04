@@ -1,4 +1,5 @@
-# libigl - A simple c++ geometry processing library
+libigl - A simple c++ geometry processing library
+=================================================
 
 ![](tutorial/images/libigl-logo.jpg)
 
