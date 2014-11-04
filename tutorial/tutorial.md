@@ -9,7 +9,7 @@ html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathja
 
 # libigl tutorial notes
 
-#### Daniele Panozzo and Alec Jacobson, SGP Graduate School 2014
+#### as presented by Daniele Panozzo and Alec Jacobsond at SGP Graduate School 2014
 
 ![](images/libigl-logo.jpg)
 
