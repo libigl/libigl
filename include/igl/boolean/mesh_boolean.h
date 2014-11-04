@@ -19,9 +19,27 @@ namespace igl
   //  Outputs:
   //    W  #W by 3 list of vertex positions of boolean result mesh
   //    H  #H by 3 list of triangle indices into W
+  //    J  #H list of indices into [FA;FB] revealing "birth" facet
   //  
   //  See also: self_intersect
   //     
+  template <
+    typename DerivedVA,
+    typename DerivedFA,
+    typename DerivedVB,
+    typename DerivedFB,
+    typename DerivedVC,
+    typename DerivedFC,
+    typename DerivedJ>
+  IGL_INLINE void mesh_boolean(
+    const Eigen::PlainObjectBase<DerivedVA > & VA,
+    const Eigen::PlainObjectBase<DerivedFA > & FA,
+    const Eigen::PlainObjectBase<DerivedVB > & VB,
+    const Eigen::PlainObjectBase<DerivedFB > & FB,
+    const MeshBooleanType & type,
+    Eigen::PlainObjectBase<DerivedVC > & VC,
+    Eigen::PlainObjectBase<DerivedFC > & FC,
+    Eigen::PlainObjectBase<DerivedJ > & J);
   template <
     typename DerivedVA,
     typename DerivedFA,
@@ -46,7 +64,8 @@ namespace igl
     typename DerivedVB,
     typename DerivedFB,
     typename DerivedVC,
-    typename DerivedFC>
+    typename DerivedFC,
+    typename DerivedJ>
   IGL_INLINE void mesh_boolean(
     const Eigen::PlainObjectBase<DerivedVA > & VA,
     const Eigen::PlainObjectBase<DerivedFA > & FA,
@@ -55,12 +74,14 @@ namespace igl
     const MeshBooleanType & type,
     const std::function<void(
       const Eigen::Matrix<typename DerivedVC::Scalar,Eigen::Dynamic,3> &,
-      const Eigen::Matrix<typename DerivedFC::Scalar, Eigen::Dynamic,3> &,
+      const Eigen::Matrix<typename DerivedFC::Scalar,Eigen::Dynamic,3> &,
             Eigen::Matrix<typename DerivedVC::Scalar,Eigen::Dynamic,3> &,
-            Eigen::Matrix<typename DerivedFC::Scalar, Eigen::Dynamic,3> &)> 
+            Eigen::Matrix<typename DerivedFC::Scalar,Eigen::Dynamic,3> &,
+            Eigen::Matrix<typename  DerivedJ::Scalar,Eigen::Dynamic,1>&)> 
       & resolve_fun,
     Eigen::PlainObjectBase<DerivedVC > & VC,
-    Eigen::PlainObjectBase<DerivedFC > & FC);
+    Eigen::PlainObjectBase<DerivedFC > & FC,
+    Eigen::PlainObjectBase<DerivedJ > & J);
 }
 
 #ifndef IGL_STATIC_LIBRARY

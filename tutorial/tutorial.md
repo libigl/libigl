@@ -85,6 +85,7 @@ lecture notes links to a cross-platform example application.
     * [606 Baking ambient occlusion](#606)
     * [607 Picking vertices and faces](#607)
     * [608 Locally Injective Maps](#608)
+    * [609 Boolean Operations on Meshes](#609)
 * [Chapter 7: Outlook for continuing development](#future)
 
 # Chapter 1 [100]
@@ -2198,6 +2199,75 @@ deformation energies. A simple deformation of a 2D grid is computed in [Example
 ![A mesh (left) deformed using Laplacian editing (middle) and with Laplacian
 editing plus the anti-flipping constraints (right).](images/608_LIM.png)
 
+## Boolean operations on meshes [609]
+
+Constructive solid geometry (CSG) is a technique to define a complex surface as
+the result of a number of set operations on solid regions of space: union,
+intersection, set difference, symmetric difference, complement. Typically, CSG
+libraries represent the inputs and outputs to these operations _implicitly_:
+the solid $A$ is defined as the open set of points $\mathbf{x}$ for which some
+function $a(\mathbf{x})$ ``returns true''. The surface of this shape is the
+_closure_ of all points $x$ in $A$.
+
+With this sort of representation, boolean
+operations are straightforward. For example, the union of solids $A$ and $B$
+is simply
+
+$A \cup B = \{\mathbf{x} \left.\right|
+  a(\mathbf{x}) \text{ or } b(\mathbf{x})\},$
+
+the intersection is
+
+$A \cap B = \{\mathbf{x} \left.\right|
+  a(\mathbf{x}) \text{ and } b(\mathbf{x})\},$
+
+the difference $A$ _minus_ $B$ is
+
+$A \setminus B = \{\mathbf{x} \left.\right|
+  a(\mathbf{x}) \text{ and _not_ } b(\mathbf{x})\},$
+
+and the symmetric difference (XOR) is
+
+$A \setminus B = \{\mathbf{x} \left.\right|
+  \text{either } a(\mathbf{x}) \text{ or } b(\mathbf{x}) \text{ but not both }\}.$
+
+Stringing together many of these operations, one can design quite complex
+shapes. A typical CSG library might only keep explicit _base-case_
+representations of canonical shapes: half-spaces, quadrics, etc.
+
+In libigl, we do currently _not_ have an implicit surface representation.
+Instead we expect our users to be working with _explicit_ triangle mesh
+_boundary representations_ of solid shapes. CSG operations are much hard to
+compute robustly with boundary representations, but are nonetheless useful.
+
+To compute a boolean operation on a triangle mesh with vertices `VA` and
+triangles `FA` and another mesh `VB` and `FB`, libigl first computes a unified
+mesh with vertices `V` and triangles `F` where all triangle-triangle
+intersections have been "resolved". That is, edges and vertices are added
+exactly at the intersection lines, so the resulting _non-manifold_ mesh `(V,F)`
+has no self-intersections.
+
+Then libigl _peals_ the outer hull [#attene_14][] off this mesh recursively,
+keeping track of the iteration parity and orientation flips for each layer.
+For any boolean operation, these two pieces of information determine for each
+triangle (1) if it should be included in the output, and (2) if its orientation
+should be reversed before added to the output.
+
+Calling libigl's boolean operations is simple. To compute the union of
+`(VA,FA)` and `(VB,FB)` into a new mesh `(VC,FC)`, use:
+
+```cpp
+igl::mesh_boolean(VA,FA,VB,FB,MESH_BOOLEAN_TYPE_UNION,VC,FC);
+```
+
+![The example [Boolean](609_Boolean/main.cpp) conducts
+boolean operations on the _Cheburashka_ (red) and _Knight_ (green). From left
+to right: union, intersection, set minus, symmetric difference (XOR),
+``resolve''. Bottom row reveals inner surfaces, darker color indicates
+back-facing triangles.](images/cheburashka-knight-boolean.jpg)
+
+
+
 # Outlook for continuing development [future]
 
 Libigl is in active development, and we plan to focus on the following features
@@ -2229,8 +2299,13 @@ repository](https://github.com/libigl/libigl).
 
 
 
+[#attene_2014]:["Direct repair of
+  self-intersecting
+  meshes"](https://www.google.com/search?q=Direct+repair+of+self-intersecting+meshes),
+  Marco Attene, 2014.
 [#bommes_2009]:[Mixed-integer
-quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf), David Bommes, Henrik Zimmer, Leif Kobbelt SIGGRAPH 2009
+quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf),
+David Bommes, Henrik Zimmer, Leif Kobbelt SIGGRAPH 2009
 [#botsch_2004]: Matrio Botsch and Leif Kobbelt. ["An Intuitive Framework for
 Real-Time Freeform
 Modeling,"](https://www.google.com/search?q=An+Intuitive+Framework+for+Real-Time+Freeform+Modeling)

@@ -137,7 +137,6 @@ template <
   using namespace std;
   assert(F.cols() == 3 && "Faces must be triangles");
   // number of faces
-  const int m = F.rows();
   typedef typename DerivedF::Index Index;
   typedef Matrix<typename DerivedF::Scalar,Dynamic,2> MatrixX2I;
   typedef Matrix<typename DerivedF::Index,Dynamic,1> VectorXI;
@@ -166,7 +165,7 @@ template <
   using namespace Eigen;
   typedef typename DerivedE::Index Index;
   const size_t m = E.rows()/3;
-  assert(E.rows() == m*3 && "E should come from list of triangles.");
+  assert((size_t)E.rows() == m*3 && "E should come from list of triangles.");
   // E2E[i] --> {j,k,...} means face edge i corresponds to other faces edges j
   // and k
   TT.resize (m,vector<vector<TTIndex> >(3));
@@ -177,20 +176,17 @@ template <
 
   // No race conditions because TT*[f][c]'s are in bijection with e's
   // Minimum number of iterms per openmp thread
-  const size_t ne = E.rows();
+  //const size_t num_e = E.rows();
 # ifndef IGL_OMP_MIN_VALUE
 #   define IGL_OMP_MIN_VALUE 1000
 # endif
-# pragma omp parallel for if (ne>IGL_OMP_MIN_VALUE)
+# pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
   // Slightly better memory access than loop over E
   for(Index f = 0;f<(Index)m;f++)
   {
     for(Index c = 0;c<3;c++)
     {
       const Index e = f + m*c;
-      const Index i = E(e,0);
-      const Index j = E(e,1);
-      //const Index f = e%m;
       //const Index c = e/m;
       const vector<Index> & N = uE2E[EMAP(e)];
       for(const auto & ne : N)

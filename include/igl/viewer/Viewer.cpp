@@ -911,7 +911,7 @@ namespace igl
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     #endif
-    window = glfwCreateWindow(1280, 800, "IGL Viewer", NULL, NULL);
+    window = glfwCreateWindow(1280, 800, "libigl viewer", NULL, NULL);
     if (!window)
     {
       glfwTerminate();
