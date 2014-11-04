@@ -2206,7 +2206,7 @@ the result of a number of set operations on solid regions of space: union,
 intersection, set difference, symmetric difference, complement. Typically, CSG
 libraries represent the inputs and outputs to these operations _implicitly_:
 the solid $A$ is defined as the open set of points $\mathbf{x}$ for which some
-function $a(\mathbf{x})$ ``returns true''. The surface of this shape is the
+function $a(\mathbf{x})$ "returns true". The surface of this shape is the
 _closure_ of all points $x$ in $A$.
 
 With this sort of representation, boolean
@@ -2228,7 +2228,7 @@ $A \setminus B = \{\mathbf{x} \left.\right|
 
 and the symmetric difference (XOR) is
 
-$A \setminus B = \{\mathbf{x} \left.\right|
+$A \triangle B = \{\mathbf{x} \left.\right|
   \text{either } a(\mathbf{x}) \text{ or } b(\mathbf{x}) \text{ but not both }\}.$
 
 Stringing together many of these operations, one can design quite complex
@@ -2247,7 +2247,7 @@ intersections have been "resolved". That is, edges and vertices are added
 exactly at the intersection lines, so the resulting _non-manifold_ mesh `(V,F)`
 has no self-intersections.
 
-Then libigl _peals_ the outer hull [#attene_14][] off this mesh recursively,
+Then libigl _peals_ the outer hull [#attene_2014][] off this mesh recursively,
 keeping track of the iteration parity and orientation flips for each layer.
 For any boolean operation, these two pieces of information determine for each
 triangle (1) if it should be included in the output, and (2) if its orientation
@@ -2260,13 +2260,26 @@ Calling libigl's boolean operations is simple. To compute the union of
 igl::mesh_boolean(VA,FA,VB,FB,MESH_BOOLEAN_TYPE_UNION,VC,FC);
 ```
 
+The following figure shows each boolean operation on two meshes.
+
 ![The example [Boolean](609_Boolean/main.cpp) conducts
 boolean operations on the _Cheburashka_ (red) and _Knight_ (green). From left
 to right: union, intersection, set minus, symmetric difference (XOR),
-``resolve''. Bottom row reveals inner surfaces, darker color indicates
+"resolve". Bottom row reveals inner surfaces, darker color indicates
 back-facing triangles.](images/cheburashka-knight-boolean.jpg)
 
+The union, symmetric difference and "resolve" have the same outward
+appearance, but differ in their treatment of internal structures. The union has
+no internal surfaces: the triangles are not included in the output. The
+symmetric difference is the same set of triangles as the "resolve", but
+internal surfaces have been reversed in orientation, indicating that the solid
+result of the operation. The "resolve" operation is not really a boolean
+operation, it is simply the result of resolving all intersections and gluing
+together coincident vertices, maintaining original triangle orientations.
 
+Libigl also provides a wrapper `igl::mesh_boolean_cork` to the
+[cork](https://github.com/gilbo/cork), which is typically faster, but is not
+always robust.
 
 # Outlook for continuing development [future]
 
