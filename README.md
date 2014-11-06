@@ -3,8 +3,8 @@ libigl - A simple c++ geometry processing library
 
 ![](tutorial/images/libigl-logo.jpg)
 
-<http://igl.ethz.ch/projects/libigl/>
-<https://github.com/alecjacobson/libigl/>
+<http://libigl.github.io/libigl/>
+<https://github.com/libigl/libigl/>
 
 Copyright 2014 - Alec Jacobson, Daniele Panozzo, Olga Diamanti, Kenshi
 Takayama, Leo Sacht, Wenzel Jacob, etc.
