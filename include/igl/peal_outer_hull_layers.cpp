@@ -1,6 +1,8 @@
+#include <vector>
 #include "peal_outer_hull_layers.h"
 #include "outer_hull.h"
 
+using namespace std;
 template <
   typename DerivedV,
   typename DerivedF,
