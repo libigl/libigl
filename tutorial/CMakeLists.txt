@@ -12,6 +12,7 @@ find_package(MATLAB QUIET)
 
 ## Check for EMBREE, if not available skip the examples that depends on it
 find_package(EMBREE QUIET)
+find_package(CGAL QUIET)
 
 # Chapter 1
 add_subdirectory("101_FileIO")
@@ -68,3 +69,6 @@ add_subdirectory("606_AmbientOcclusion")
 add_subdirectory("607_Picking")
 endif(EMBREE_FOUND)
 add_subdirectory("608_LIM")
+if(CGAL_FOUND)
+add_subdirectory("609_Boolean")
+endif()

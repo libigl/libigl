@@ -202,12 +202,12 @@ namespace igl {
     const Eigen::PlainObjectBase<DerivedF> &F;
     const Eigen::PlainObjectBase<DerivedF> &TT;
     const Eigen::PlainObjectBase<DerivedF> &TTi;
-    const Eigen::PlainObjectBase<DerivedV> &PD1;
-    const Eigen::PlainObjectBase<DerivedV> &PD2;
+    // const Eigen::PlainObjectBase<DerivedV> &PD1;
+    // const Eigen::PlainObjectBase<DerivedV> &PD2;
 
     const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_MMatch;
-    const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular; // bool
-    const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_SingularDegree; // vertex;
+    // const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular; // bool
+    // const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_SingularDegree; // vertex;
     const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams; // 3 bool
 
 
@@ -232,11 +232,11 @@ namespace igl {
                    const Eigen::PlainObjectBase<DerivedF> &_F,
                    const Eigen::PlainObjectBase<DerivedF> &_TT,
                    const Eigen::PlainObjectBase<DerivedF> &_TTi,
-                   const Eigen::PlainObjectBase<DerivedV> &_PD1,
-                   const Eigen::PlainObjectBase<DerivedV> &_PD2,
+                  //  const Eigen::PlainObjectBase<DerivedV> &_PD1,
+                  //  const Eigen::PlainObjectBase<DerivedV> &_PD2,
                    const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_MMatch,
-                   const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_Singular,
-                   const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_SingularDegree,
+                  //  const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_Singular,
+                  //  const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_SingularDegree,
                    const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_Seams
                    );
 
@@ -308,6 +308,7 @@ namespace igl {
                       bool direct_round=true,
                       int localIter=0,
                       bool _integer_rounding=true,
+                      bool _singularity_rounding=true,
                       std::vector<int> roundVertices = std::vector<int>(),
                       std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
 
@@ -543,11 +544,11 @@ namespace igl {
               const Eigen::PlainObjectBase<DerivedF> &F_,
               const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
               const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
-              const Eigen::PlainObjectBase<DerivedV> &BIS1_combed,
-              const Eigen::PlainObjectBase<DerivedV> &BIS2_combed,
+              // const Eigen::PlainObjectBase<DerivedV> &BIS1_combed,
+              // const Eigen::PlainObjectBase<DerivedV> &BIS2_combed,
               const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_MMatch,
               const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular,
-              const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_SingularDegree,
+              // const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_SingularDegree,
               const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams,
               Eigen::PlainObjectBase<DerivedU> &UV,
               Eigen::PlainObjectBase<DerivedF> &FUV,
@@ -557,6 +558,7 @@ namespace igl {
               int iter = 5,
               int localIter = 5,
               bool DoRound = true,
+              bool SingularityRound=true,
               std::vector<int> roundVertices = std::vector<int>(),
               std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
 
@@ -613,11 +615,11 @@ IGL_INLINE igl::VertexIndexing<DerivedV, DerivedF>::VertexIndexing(const Eigen::
                                                         const Eigen::PlainObjectBase<DerivedF> &_F,
                                                         const Eigen::PlainObjectBase<DerivedF> &_TT,
                                                         const Eigen::PlainObjectBase<DerivedF> &_TTi,
-                                                        const Eigen::PlainObjectBase<DerivedV> &_PD1,
-                                                        const Eigen::PlainObjectBase<DerivedV> &_PD2,
+                                                        // const Eigen::PlainObjectBase<DerivedV> &_PD1,
+                                                        // const Eigen::PlainObjectBase<DerivedV> &_PD2,
                                                         const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_MMatch,
-                                                        const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_Singular,
-                                                        const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_SingularDegree,
+                                                        // const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_Singular,
+                                                        // const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_SingularDegree,
                                                         const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_Seams
 
                                                         ):
@@ -625,11 +627,11 @@ V(_V),
 F(_F),
 TT(_TT),
 TTi(_TTi),
-PD1(_PD1),
-PD2(_PD2),
+// PD1(_PD1),
+// PD2(_PD2),
 Handle_MMatch(_Handle_MMatch),
-Handle_Singular(_Handle_Singular),
-Handle_SingularDegree(_Handle_SingularDegree),
+// Handle_Singular(_Handle_Singular),
+// Handle_SingularDegree(_Handle_SingularDegree),
 Handle_Seams(_Handle_Seams)
 {
 
@@ -747,9 +749,9 @@ IGL_INLINE void igl::VertexIndexing<DerivedV, DerivedF>::FindInitialPos(const in
     if (!vertexB)
       //seam=curr_f->IsSeam(next_f);
       seam=IsSeam(curr_f,next_f);
-    if (vertexB)
-      assert(!Handle_Singular(vert));
-    ;
+    // if (vertexB)
+      // assert(!Handle_Singular(vert));
+    // ;
     //assert(!vert->IsSingular());
     possible_split=((on_border)||(seam));
     complete_turn = next_f == f_init;
@@ -963,6 +965,7 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::SolvePoisson(Eigen::Vect
                                                           bool direct_round,
                                                           int localIter,
                                                           bool _integer_rounding,
+                                                          bool _singularity_rounding,
                                                           std::vector<int> roundVertices,
                                                           std::vector<std::vector<int> > hardFeatures)
 {
@@ -1004,11 +1007,11 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::SolvePoisson(Eigen::Vect
   if (DEBUGPRINT)
     printf("\n BUILT THE MATRIX \n");
 
-  if (integer_rounding)
-  {
-    AddSingularityRound();
+  if (integer_rounding)    
     AddToRoundVertices(roundVertices);
-  }
+
+  if (_singularity_rounding)
+      AddSingularityRound();
 
   int t1=clock();
   if (DEBUGPRINT) printf("\n time:%d \n",t1-t0);
@@ -1767,6 +1770,7 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolve(double
   COMISO::ConstrainedSolver solver;
 
   solver.misolver().set_local_iters(localIter);
+
   solver.misolver().set_direct_rounding(direct_round);
 
   std::sort(ids_to_round.begin(),ids_to_round.end());
@@ -1799,12 +1803,13 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::addSharpEdgeConstraint(i
   int v2 = F(fid,(vid+1)%3);
 
   Eigen::Matrix<typename DerivedV::Scalar, 3, 1> e = V.row(v2) - V.row(v1);
+  e = e.normalized();
 
-  int v1i = GetFirstVertexIndex(v1);
-  int v2i = GetFirstVertexIndex(v2);
+  int v1i = HandleS_Index(fid,vid);//GetFirstVertexIndex(v1);
+  int v2i = HandleS_Index(fid,(vid+1)%3);//GetFirstVertexIndex(v2);
 
-  double d1 = fabs(e.dot(PD1.row(fid)));
-  double d2 = fabs(e.dot(PD2.row(fid)));
+  double d1 = fabs(e.dot(PD1.row(fid).normalized()));
+  double d2 = fabs(e.dot(PD2.row(fid).normalized()));
 
   int offset = 0;
 
@@ -1831,11 +1836,11 @@ IGL_INLINE igl::MIQ_class<DerivedV, DerivedF, DerivedU>::MIQ_class(const Eigen::
                                                         const Eigen::PlainObjectBase<DerivedF> &F_,
                                                         const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
                                                         const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
-                                                        const Eigen::PlainObjectBase<DerivedV> &BIS1_combed,
-                                                        const Eigen::PlainObjectBase<DerivedV> &BIS2_combed,
+                                                        // const Eigen::PlainObjectBase<DerivedV> &BIS1_combed,
+                                                        // const Eigen::PlainObjectBase<DerivedV> &BIS2_combed,
                                                         const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_MMatch,
                                                         const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular,
-                                                        const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_SingularDegree,
+                                                        // const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_SingularDegree,
                                                         const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams,
                                                         Eigen::PlainObjectBase<DerivedU> &UV,
                                                         Eigen::PlainObjectBase<DerivedF> &FUV,
@@ -1845,6 +1850,7 @@ IGL_INLINE igl::MIQ_class<DerivedV, DerivedF, DerivedU>::MIQ_class(const Eigen::
                                                         int iter,
                                                         int localIter,
                                                         bool DoRound,
+                                                        bool SingularityRound,
                                                         std::vector<int> roundVertices,
                                                         std::vector<std::vector<int> > hardFeatures):
 V(V_),
@@ -1854,7 +1860,7 @@ F(F_)
   igl::triangle_triangle_adjacency(V,F,TT,TTi);
 
   // Prepare indexing for the linear system
-  VertexIndexing<DerivedV, DerivedF> VInd(V, F, TT, TTi, BIS1_combed, BIS2_combed, Handle_MMatch, Handle_Singular, Handle_SingularDegree, Handle_Seams);
+  VertexIndexing<DerivedV, DerivedF> VInd(V, F, TT, TTi, /*BIS1_combed, BIS2_combed,*/ Handle_MMatch, /*Handle_Singular, Handle_SingularDegree,*/ Handle_Seams);
 
   VInd.InitMapping();
   VInd.InitFaceIntegerVal();
@@ -1862,8 +1868,8 @@ F(F_)
 
   Eigen::PlainObjectBase<DerivedV> PD1_combed_for_poisson, PD2_combed_for_poisson;
   // Rotate by 90 degrees CCW
-  PD1_combed_for_poisson.setZero(BIS1_combed.rows(),3);
-  PD2_combed_for_poisson.setZero(BIS2_combed.rows(),3);
+  PD1_combed_for_poisson.setZero(PD1_combed.rows(),3);
+  PD2_combed_for_poisson.setZero(PD2_combed.rows(),3);
   for (unsigned i=0; i<PD1_combed.rows();++i)
   {
     double n1 = PD1_combed.row(i).norm();
@@ -1892,7 +1898,7 @@ F(F_)
                                             PD1_combed_for_poisson,
                                             PD2_combed_for_poisson,
                                             VInd.HandleS_Index,
-                                            VInd.Handle_Singular,
+                                            /*VInd.Handle_Singular*/Handle_Singular,
                                             VInd.Handle_SystemInfo);
   Handle_Stiffness = Eigen::VectorXd::Constant(F.rows(),1);
 
@@ -1901,7 +1907,7 @@ F(F_)
   {
     for (int i=0;i<iter;i++)
     {
-      PSolver.SolvePoisson(Handle_Stiffness, GradientSize,1.f,DirectRound,localIter,DoRound,roundVertices,hardFeatures);
+      PSolver.SolvePoisson(Handle_Stiffness, GradientSize,1.f,DirectRound,localIter,DoRound,SingularityRound,roundVertices,hardFeatures);
       int nflips=NumFlips(PSolver.WUV);
       bool folded = updateStiffeningJacobianDistorsion(GradientSize,PSolver.WUV);
       printf("ITERATION %d FLIPS %d \n",i,nflips);
@@ -1910,7 +1916,7 @@ F(F_)
   }
   else
   {
-    PSolver.SolvePoisson(Handle_Stiffness,GradientSize,1.f,DirectRound,localIter,DoRound,roundVertices,hardFeatures);
+    PSolver.SolvePoisson(Handle_Stiffness,GradientSize,1.f,DirectRound,localIter,DoRound,SingularityRound,roundVertices,hardFeatures);
   }
 
   int nflips=NumFlips(PSolver.WUV);
@@ -2170,11 +2176,11 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
                          const Eigen::PlainObjectBase<DerivedF> &F,
                          const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
                          const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
-                         const Eigen::PlainObjectBase<DerivedV> &BIS1_combed,
-                         const Eigen::PlainObjectBase<DerivedV> &BIS2_combed,
+                        //  const Eigen::PlainObjectBase<DerivedV> &BIS1_combed,
+                        //  const Eigen::PlainObjectBase<DerivedV> &BIS2_combed,
                          const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_MMatch,
                          const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular,
-                         const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_SingularDegree,
+                        //  const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_SingularDegree,
                          const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams,
                          Eigen::PlainObjectBase<DerivedU> &UV,
                          Eigen::PlainObjectBase<DerivedF> &FUV,
@@ -2184,6 +2190,7 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
                          int iter,
                          int localIter,
                          bool DoRound,
+                         bool SingularityRound,
                          std::vector<int> roundVertices,
                          std::vector<std::vector<int> > hardFeatures)
 {
@@ -2193,11 +2200,11 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
                                                    F,
                                                    PD1_combed,
                                                    PD2_combed,
-                                                   BIS1_combed,
-                                                   BIS2_combed,
+                                                  //  BIS1_combed,
+                                                  //  BIS2_combed,
                                                    Handle_MMatch,
                                                    Handle_Singular,
-                                                   Handle_SingularDegree,
+                                                  //  Handle_SingularDegree,
                                                    Handle_Seams,
                                                    UV,
                                                    FUV,
@@ -2207,6 +2214,7 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
                                                    iter,
                                                    localIter,
                                                    DoRound,
+                                                   SingularityRound,
                                                    roundVertices,
                                                    hardFeatures);
 
@@ -2226,6 +2234,7 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
                          int iter,
                          int localIter,
                          bool DoRound,
+                         bool SingularityRound,
                          std::vector<int> roundVertices,
                          std::vector<std::vector<int> > hardFeatures)
 {
@@ -2250,7 +2259,7 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
   igl::find_cross_field_singularities(V, F, Handle_MMatch, isSingularity, singularityIndex);
 
   Eigen::Matrix<int, Eigen::Dynamic, 3> Handle_Seams;
-  igl::cut_mesh_from_singularities(V, F, Handle_MMatch, isSingularity, singularityIndex, Handle_Seams);
+  igl::cut_mesh_from_singularities(V, F, Handle_MMatch, Handle_Seams);
 
   Eigen::PlainObjectBase<DerivedV> PD1_combed, PD2_combed;
   igl::comb_frame_field(V, F, PD1, PD2, BIS1_combed, BIS2_combed, PD1_combed, PD2_combed);
@@ -2259,11 +2268,11 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
            F,
            PD1_combed,
            PD2_combed,
-           BIS1_combed,
-           BIS2_combed,
+          //  BIS1_combed,
+          //  BIS2_combed,
            Handle_MMatch,
            isSingularity,
-           singularityIndex,
+          //  singularityIndex,
            Handle_Seams,
            UV,
            FUV,
@@ -2273,6 +2282,7 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
            iter,
            localIter,
            DoRound,
+           SingularityRound,
            roundVertices,
            hardFeatures);
 
@@ -2280,5 +2290,7 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::miq<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 2, 0, -1, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, double, double, bool, int, int, bool, std::__1::vector<int, std::__1::allocator<int> >, std::__1::vector<std::__1::vector<int, std::__1::allocator<int> >, std::__1::allocator<std::__1::vector<int, std::__1::allocator<int> > > >);
+// template void igl::miq<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 2, 0, -1, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, double, double, bool, int, int, bool, std::__1::vector<int, std::__1::allocator<int> >, std::__1::vector<std::__1::vector<int, std::__1::allocator<int> >, std::__1::allocator<std::__1::vector<int, std::__1::allocator<int> > > >);
+// template void igl::miq<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 2, 0, -1, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::Matrix<int, -1, 3, 0, -1, 3> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, double, double, bool, int, int, bool, std::__1::vector<int, std::__1::allocator<int> >, std::__1::vector<std::__1::vector<int, std::__1::allocator<int> >, std::__1::allocator<std::__1::vector<int, std::__1::allocator<int> > > >);
+//template void igl::miq<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 2, 0, -1, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::Matrix<int, -1, 3, 0, -1, 3> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 3, 0, -1, 3> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, double, double, bool, int, int, bool, std::__1::vector<int, std::__1::allocator<int> >, std::__1::vector<std::__1::vector<int, std::__1::allocator<int> >, std::__1::allocator<std::__1::vector<int, std::__1::allocator<int> > > >);
 #endif

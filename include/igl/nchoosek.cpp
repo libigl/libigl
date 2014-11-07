@@ -14,7 +14,7 @@ namespace igl {
   private:
     std::vector<int> combinations;
     void add(const std::vector<int>& v,
-             std::vector<std::vector<int>> &allCombs)
+             std::vector<std::vector<int> > &allCombs)
     {
       allCombs.push_back(v);
     }
@@ -23,7 +23,7 @@ namespace igl {
     void doCombs(int offset,
                  int k,
                  int N,
-                 std::vector<std::vector<int>> &allCombs)
+                 std::vector<std::vector<int> > &allCombs)
     {
       if (k == 0) {
         add(combinations,allCombs);
@@ -44,7 +44,7 @@ namespace igl {
 IGL_INLINE void igl::nchoosek(int offset,
                               int k,
                               int N,
-                              std::vector<std::vector<int>> &allCombs)
+                              std::vector<std::vector<int> > &allCombs)
 {
   CombinationFinder cmbf;
   allCombs.clear();

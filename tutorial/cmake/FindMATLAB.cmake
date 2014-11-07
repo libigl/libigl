@@ -137,7 +137,7 @@ ELSE(WIN32)
     IF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
 
     # Search for a version of Matlab available, starting from the most modern one to older versions
-      FOREACH(MATVER "R2014b" "R2014a" "R2013b" "R2013a" "R2012b" "R2012a" "R2011b" "R2011a" "R2010b" "R2010a" "R2009b" "R2009a" "R2008b")
+      FOREACH(MATVER "R2015b" "R2015a" "R2014b" "R2014a" "R2014a" "R2013b" "R2013a" "R2012b" "R2012a" "R2011b" "R2011a" "R2010b" "R2010a" "R2009b" "R2009a" "R2008b")
         IF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
           IF(EXISTS /Applications/MATLAB_${MATVER}.app)
             SET(MATLAB_ROOT /Applications/MATLAB_${MATVER}.app)
@@ -187,9 +187,14 @@ ELSE(WIN32)
 
 ENDIF(WIN32)
 
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  set(MATLAB_LIBSTDCPP "-lstdc++")
+endif ()
+
 
 # This is common to UNIX and Win32:
 SET(MATLAB_LIBRARIES
+  ${MATLAB_LIBSTDCPP}
   ${MATLAB_MAT_LIBRARY}
   ${MATLAB_MEX_LIBRARY}
   ${MATLAB_MX_LIBRARY}
