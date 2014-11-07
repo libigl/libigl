@@ -85,9 +85,11 @@ namespace igl
       // Number of self-intersecting triangle pairs
       typedef typename DerivedF::Index Index;
       Index count;
-      std::vector<std::list<CGAL::Object> > F_objects;
+      typedef std::vector<CGAL::Object> ObjectList;
+      std::vector<ObjectList > F_objects;
       Triangles T;
-      std::list<Index> lIF;
+      typedef std::vector<Index> IndexList;
+      IndexList lIF;
       std::vector<bool> offensive;
       std::vector<Index> offending_index;
       std::vector<Index> offending;
@@ -95,7 +97,7 @@ namespace igl
       typedef std::pair<Index,Index> EMK;
       // Make a short name for the type stored at each edge, the edge map's
       // value
-      typedef std::list<Index> EMV;
+      typedef std::vector<Index> EMV;
       // Make a short name for the edge map
       typedef std::map<EMK,EMV> EdgeMap;
       EdgeMap edge2faces;
@@ -205,11 +207,11 @@ namespace igl
       //   cdt  Contrained delaunay triangulation in projected 2D plane
       inline void projected_delaunay(
           const Triangle_3 & A,
-          const std::list<CGAL::Object> & A_objects_3,
+          const ObjectList & A_objects_3,
           CDT_plus_2 & cdt);
       // Getters:
     public:
-      //const std::list<int>& get_lIF() const{ return lIF;}
+      //const IndexList& get_lIF() const{ return lIF;}
       static inline void box_intersect(
         SelfIntersectMesh * SIM, 
         const SelfIntersectMesh::Box &a, 
@@ -222,6 +224,7 @@ namespace igl
 #include "mesh_to_cgal_triangle_list.h"
 
 #include <igl/REDRUM.h>
+#include <igl/get_seconds.h>
 #include <igl/C_STR.h>
 
 #include <boost/function.hpp>
@@ -322,8 +325,19 @@ inline igl::SelfIntersectMesh<
 {
   using namespace std;
   using namespace Eigen;
+
+  //const auto & tictoc = []()
+  //{
+  //  static double t_start = igl::get_seconds();
+  //  double diff = igl::get_seconds()-t_start;
+  //  t_start += diff;
+  //  return diff;
+  //};
+  //tictoc();
+
   // Compute and process self intersections
   mesh_to_cgal_triangle_list(V,F,T);
+  //cout<<"mesh_to_cgal_triangle_list: "<<tictoc()<<endl;
   // http://www.cgal.org/Manual/latest/doc_html/cgal_manual/Box_intersection_d/Chapter_main.html#Section_63.5 
   // Create the corresponding vector of bounding boxes
   std::vector<Box> boxes;
@@ -338,6 +352,7 @@ inline igl::SelfIntersectMesh<
   // Leapfrog callback
   boost::function<void(const Box &a,const Box &b)> cb
     = boost::bind(&box_intersect, this, _1,_2);
+  //cout<<"boxes and bind: "<<tictoc()<<endl;
   // Run the self intersection algorithm with all defaults
   try{
     CGAL::box_self_intersection_d(boxes.begin(), boxes.end(),cb);
@@ -350,6 +365,7 @@ inline igl::SelfIntersectMesh<
     }
     // Otherwise just fall through
   }
+  //cout<<"box_self_intersection_d: "<<tictoc()<<endl;
 
   // Convert lIF to Eigen matrix
   assert(lIF.size()%2 == 0);
@@ -357,7 +373,7 @@ inline igl::SelfIntersectMesh<
   {
     Index i=0;
     for(
-      typename list<Index>::const_iterator ifit = lIF.begin();
+      typename IndexList::const_iterator ifit = lIF.begin();
       ifit!=lIF.end();
       )
     {
@@ -368,6 +384,7 @@ inline igl::SelfIntersectMesh<
       i++;
     }
   }
+  //cout<<"IF: "<<tictoc()<<endl;
 
   if(params.detect_only)
   {
@@ -380,7 +397,8 @@ inline igl::SelfIntersectMesh<
     typename Eigen::Matrix<typename DerivedFF::Scalar,Dynamic,Dynamic>
     > NF(offending.size());
   // list of new vertices
-  list<Point_3> NV;
+  typedef vector<Point_3> Point_3List;
+  Point_3List NV;
   Index NV_count = 0;
   vector<CDT_plus_2> cdt(offending.size());
   vector<Plane_3> P(offending.size());
@@ -391,7 +409,9 @@ inline igl::SelfIntersectMesh<
   {
     // index in F
     const Index f = offending[o];
-    projected_delaunay(T[f],F_objects[f],cdt[o]);
+    {
+      projected_delaunay(T[f],F_objects[f],cdt[o]);
+    }
     // Q: Is this also delaunay in 3D?
     // A: No, because the projection is affine and delaunay is not affine
     // invariant.
@@ -439,7 +459,7 @@ inline igl::SelfIntersectMesh<
             assert(edge2faces.count(EMK(i,j))==1);
             // loop over neighbors
             for(
-              typename list<Index>::const_iterator nit = edge2faces[EMK(i,j)].begin();
+              typename IndexList::const_iterator nit = edge2faces[EMK(i,j)].begin();
               nit != edge2faces[EMK(i,j)].end() && !found;
               nit++)
             {
@@ -494,6 +514,7 @@ inline igl::SelfIntersectMesh<
       }
     }
   }
+  //cout<<"CDT: "<<tictoc()<<"  "<<t_proj_del<<endl;
   assert(NV_count == (Index)NV.size());
   // Build output
 #ifndef NDEBUG
@@ -535,7 +556,7 @@ inline igl::SelfIntersectMesh<
   {
     Index i = 0;
     for(
-      typename list<Point_3>::const_iterator nvit = NV.begin();
+      typename Point_3List::const_iterator nvit = NV.begin();
       nvit != NV.end();
       nvit++)
     {
@@ -571,7 +592,7 @@ inline igl::SelfIntersectMesh<
   {
     Index v = V.rows();
     for(
-      typename list<Point_3>::const_iterator nvit = NV.begin();
+      typename Point_3List::const_iterator nvit = NV.begin();
       nvit != NV.end();
       nvit++)
     {
@@ -585,6 +606,7 @@ inline igl::SelfIntersectMesh<
       v++;
     }
   }
+  //cout<<"Output + dupes: "<<tictoc()<<endl;
 
   // Q: Does this give the same result as TETGEN?
   // A: For the cow and beast, yes.
@@ -639,7 +661,7 @@ inline void igl::SelfIntersectMesh<
       // Create new list if there is no entry
       if(edge2faces.count(EMK(i,j))==0)
       {
-        edge2faces[EMK(i,j)] = list<Index>();
+        edge2faces[EMK(i,j)] = EMV();
       }
       // append to list
       edge2faces[EMK(i,j)].push_back(f);
@@ -1096,7 +1118,7 @@ inline void igl::SelfIntersectMesh<
   DerivedJ,
   DerivedIM>::projected_delaunay(
   const Triangle_3 & A,
-  const std::list<CGAL::Object> & A_objects_3,
+  const ObjectList & A_objects_3,
   CDT_plus_2 & cdt)
 {
   using namespace std;
@@ -1115,20 +1137,16 @@ inline void igl::SelfIntersectMesh<
     cdt.insert_constraint( corners[(i+1)%3], corners[(i+2)%3]);
   }
   // Insert constraints for intersection objects
-  for(
-    typename list<CGAL::Object>::const_iterator lit = A_objects_3.begin();
-    lit != A_objects_3.end();
-    lit++)
+  for( const auto & obj : A_objects_3)
   {
-    CGAL::Object obj = *lit;
-    if(const Point_3 *ipoint = CGAL::object_cast<Point_3 >(&obj))
-    {
-      // Add point
-      cdt.insert(P.to_2d(*ipoint));
-    } else if(const Segment_3 *iseg = CGAL::object_cast<Segment_3 >(&obj))
+    if(const Segment_3 *iseg = CGAL::object_cast<Segment_3 >(&obj))
     {
       // Add segment constraint
       cdt.insert_constraint(P.to_2d(iseg->vertex(0)),P.to_2d(iseg->vertex(1)));
+    }else if(const Point_3 *ipoint = CGAL::object_cast<Point_3 >(&obj))
+    {
+      // Add point
+      cdt.insert(P.to_2d(*ipoint));
     } else if(const Triangle_3 *itri = CGAL::object_cast<Triangle_3 >(&obj))
     {
       // Add 3 segment constraints

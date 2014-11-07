@@ -76,6 +76,40 @@ namespace igl
       const Eigen::PlainObjectBase<DerivedF> & F,
       std::vector<std::vector<std::vector<TTIndex> > > & TT,
       std::vector<std::vector<std::vector<TTiIndex> > > & TTi);
+  template < typename DerivedF, typename TTIndex>
+    IGL_INLINE void triangle_triangle_adjacency(
+      const Eigen::PlainObjectBase<DerivedF> & F,
+      std::vector<std::vector<std::vector<TTIndex> > > & TT);
+  // Wrapper with bool to choose whether to compute TTi (this prototype should
+  // be "hidden").
+  template <
+    typename DerivedF, 
+    typename TTIndex, 
+    typename TTiIndex>
+    IGL_INLINE void triangle_triangle_adjacency(
+      const Eigen::PlainObjectBase<DerivedF> & F,
+      const bool construct_TTi,
+      std::vector<std::vector<std::vector<TTIndex> > > & TT,
+      std::vector<std::vector<std::vector<TTiIndex> > > & TTi);
+  // Inputs:
+  //   E  #F*3 by 2 list of all of directed edges in order (see `all_edges`)
+  //   EMAP #F*3 list of indices into uE, mapping each directed edge to unique
+  //     undirected edge
+  //   uE2E  #uE list of lists of indices into E of coexisting edges
+  // See also: unique_edge_map, all_edges
+  template <
+    typename DerivedE, 
+    typename DerivedEMAP,
+    typename uE2EType,
+    typename TTIndex, 
+    typename TTiIndex>
+    IGL_INLINE void triangle_triangle_adjacency(
+      const Eigen::PlainObjectBase<DerivedE> & E,
+      const Eigen::PlainObjectBase<DerivedEMAP> & EMAP,
+      const std::vector<std::vector<uE2EType > > & uE2E,
+      const bool construct_TTi,
+      std::vector<std::vector<std::vector<TTIndex> > > & TT,
+      std::vector<std::vector<std::vector<TTiIndex> > > & TTi);
 }
 
 #ifndef IGL_STATIC_LIBRARY

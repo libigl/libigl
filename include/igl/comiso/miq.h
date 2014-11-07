@@ -54,7 +54,7 @@ namespace igl
                                               bool direct_round = false,
                                               int iter = 5,
                                               int local_iter = 5,
-                                              bool DoRound = true,
+                                              bool DoRound = true,bool SingularityRound=true,
                                               std::vector<int> round_vertices = std::vector<int>(),
                                               std::vector<std::vector<int> > hard_features = std::vector<std::vector<int> >());
 
@@ -84,7 +84,7 @@ namespace igl
                                               double Stiffness = 5.0,
                                               bool DirectRound = false,
                                               int iter = 5,
-                                              int localIter = 5, bool DoRound = true,
+                                              int localIter = 5, bool DoRound = true,bool SingularityRound=true,
                                               std::vector<int> roundVertices = std::vector<int>(),
                                               std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
 };
