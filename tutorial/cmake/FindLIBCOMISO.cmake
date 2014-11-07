@@ -27,7 +27,7 @@ FIND_PATH(LIBCOMISO_INCLUDE_DIR CoMISo/Solver/ConstrainedSolver.hh
 
 FIND_LIBRARY(LIBCOMISO_LIBRARY NAMES CoMISo
   PATHS
-    /usr/local
+    #/usr/local
     /usr/X11
     /usr
     /
