@@ -20,6 +20,9 @@ EXTRAS=
 ifeq ($(IGL_WITH_BBW),1)
 	EXTRAS += bbw
 endif
+ifeq ($(IGL_WITH_BOOLEAN),1)
+	EXTRAS += boolean
+endif
 ifeq ($(IGL_WITH_BOOST),1)
 	EXTRAS += boost
 endif

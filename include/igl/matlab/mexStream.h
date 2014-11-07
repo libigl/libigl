@@ -30,6 +30,24 @@ namespace igl
       inline virtual int overflow(int c = EOF);
   }; 
 }
-// ALWAYS INCLUDE
-#include "MexStream.cpp"
+
+// Implementation 
+#include <mex.h>
+inline std::streamsize igl::MexStream::xsputn(
+  const char *s, 
+  std::streamsize n) 
+{
+  mexPrintf("%.*s",n,s);
+  mexEvalString("drawnow;"); // to dump string.
+  return n;
+}
+
+inline int igl::MexStream::overflow(int c) 
+{
+    if (c != EOF) {
+      mexPrintf("%.1s",&c);
+      mexEvalString("drawnow;"); // to dump string.
+    }
+    return 1;
+}
 #endif

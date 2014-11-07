@@ -54,7 +54,7 @@ namespace igl
                                               bool direct_round = false,
                                               int iter = 5,
                                               int local_iter = 5,
-                                              bool DoRound = true,
+                                              bool DoRound = true,bool SingularityRound=true,
                                               std::vector<int> round_vertices = std::vector<int>(),
                                               std::vector<std::vector<int> > hard_features = std::vector<std::vector<int> >());
 
@@ -72,11 +72,11 @@ namespace igl
                                               const Eigen::PlainObjectBase<DerivedF> &F,
                                               const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
                                               const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
-                                              const Eigen::PlainObjectBase<DerivedV> &BIS1_combed,
-                                              const Eigen::PlainObjectBase<DerivedV> &BIS2_combed,
+                                              // const Eigen::PlainObjectBase<DerivedV> &BIS1_combed,
+                                              // const Eigen::PlainObjectBase<DerivedV> &BIS2_combed,
                                               const Eigen::Matrix<int, Eigen::Dynamic, 3> &MMatch,
                                               const Eigen::Matrix<int, Eigen::Dynamic, 1> &Singular,
-                                              const Eigen::Matrix<int, Eigen::Dynamic, 1> &SingularDegree,
+                                              // const Eigen::Matrix<int, Eigen::Dynamic, 1> &SingularDegree,
                                               const Eigen::Matrix<int, Eigen::Dynamic, 3> &Seams,
                                               Eigen::PlainObjectBase<DerivedU> &UV,
                                               Eigen::PlainObjectBase<DerivedF> &FUV,
@@ -84,7 +84,7 @@ namespace igl
                                               double Stiffness = 5.0,
                                               bool DirectRound = false,
                                               int iter = 5,
-                                              int localIter = 5, bool DoRound = true,
+                                              int localIter = 5, bool DoRound = true,bool SingularityRound=true,
                                               std::vector<int> roundVertices = std::vector<int>(),
                                               std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
 };

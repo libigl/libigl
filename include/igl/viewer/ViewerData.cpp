@@ -79,7 +79,6 @@ IGL_INLINE void igl::ViewerData::set_mesh(const Eigen::MatrixXd& _V, const Eigen
 
   if (V.rows() == 0 && F.rows() == 0)
   {
-    clear();
     V = V_temp;
     F = _F;
 
