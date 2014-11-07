@@ -94,11 +94,11 @@ public:
   inline void calculateMissmatch(Eigen::PlainObjectBase<DerivedF> &Handle_MMatch)
   {
     Handle_MMatch.setConstant(F.rows(),3,-1);
-    for (unsigned int i=0;i<F.rows();i++)
+    for (size_t i=0;i<F.rows();i++)
     {
       for (int j=0;j<3;j++)
       {
-        if (i==TT(i,j) || TT(i,j) == -1)
+        if (((int)i)==TT(i,j) || TT(i,j) == -1)
           Handle_MMatch(i,j)=0;
         else
           Handle_MMatch(i,j) = MissMatchByCross(i,TT(i,j));

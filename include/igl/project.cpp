@@ -90,6 +90,7 @@ IGL_INLINE int igl::project(
   const Eigen::PlainObjectBase<Derivedobj> & obj,
   Eigen::PlainObjectBase<Derivedwin> & win)
 {
+  assert(obj.size() >= 3);
   Eigen::Vector3d dobj(obj(0),obj(1),obj(2));
   Eigen::Vector3d dwin;
   int ret = project(dobj(0),dobj(1),dobj(2),

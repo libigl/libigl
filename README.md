@@ -1,16 +1,19 @@
 libigl - A simple c++ geometry processing library
 =================================================
 
-<http://igl.ethz.ch/projects/libigl/>
-<https://github.com/alecjacobson/libigl/>
+![](tutorial/images/libigl-logo.jpg)
+
+<http://libigl.github.io/libigl/>
+<https://github.com/libigl/libigl/>
 
 Copyright 2014 - Alec Jacobson, Daniele Panozzo, Olga Diamanti, Kenshi
 Takayama, Leo Sacht, Wenzel Jacob, etc.
 
-This is first and foremost a *header* library. Each header file should contain
-a single function.  The function may have multiple prototypes. All functions
-should use the igl namespace and should adhere to the conventions and styles
-listed below.
+Libigl is first and foremost a *header* library. Each header file should
+contain a single function.  This function may have multiple overloads and
+prototypes. All functions should use the `igl::` namespace and should adhere to
+the conventions and styles listed in the [style
+guidelines](style_guidelines.html).
 
 > **New:** As of 1 July 2014, we have released libigl as beta version 1.0.
 > There are a number of changes we collected for this release to minimize
@@ -63,8 +66,9 @@ Hello, mesh:
 
 ## Tutorial ##
 
-As of version 1.0, libigl includes an introductory tutorial that covers its basic
-functionalities. See [tutorial/tutorial.md](./tutorial/tutorial.md) to get started.
+As of version 1.0, libigl includes an introductory
+[tutorial](http://libigl.github.io/libigl/tutorial/tutorial.html) that covers
+its basic functionalities.
 
 ## Dependencies ##
 - Eigen3  Last tested with Eigen Version 3.2
@@ -405,7 +409,7 @@ BibTeX entry:
 @misc{libigl,
   title = {{libigl}: A simple {C++} geometry processing library},
   author = {Alec Jacobson and Daniele Panozzo and others},
-  note = {http://igl.ethz.ch/projects/libigl/},
+  note = {http://libigl.github.io/libigl/},
   year = {2014},
 }
 ```

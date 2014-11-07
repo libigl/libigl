@@ -42,11 +42,11 @@ IGL_INLINE void igl::exterior_edges(
   all_edges(F,all_E);
   long int n = F.maxCoeff()+1;
   int m = F.minCoeff();
-  const auto & compress = [&n,&m](const int i, const int j)->long int
+  const auto & compress = [n,m](const int i, const int j)->long int
   {
     return n*(i-m)+(j-m);
   };
-  const auto & decompress = [&n,&m](const long int l,int & i, int & j)
+  const auto & decompress = [n,m](const long int l,int & i, int & j)
   {
     i = (l / n) + m;
     j = (l % n) + m;

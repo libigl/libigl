@@ -1,0 +1,19 @@
+
+bin/
+depend/
+include/
+lib/
+obj/
+
+error_log.txt
+
+win/wincork/Debug
+win/wincork/Release
+win/wincork/*.suo
+win/wincork/*.vcxproj.user
+win/wincork/*.sdf
+win/wincork/*.opensdf
+
+# in case you're on mac
+.DS_Store
+
