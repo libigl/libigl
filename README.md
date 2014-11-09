@@ -15,7 +15,7 @@ like MATLAB.
 It is first and foremost a header library. Each header file contains a single
 function. Most are tailored to operate on a generic triangle mesh stored in an
 n-by-3 matrix of vertex positions V and an m-by-3 matrix of triangle indices F.
-The library may also be [compiled](build/README.md) into a statically linked
+The library may also be [compiled](build/) into a statically linked
 library, for faster compile times with your projects.
 
 We use the [Eigen](http://eigen.tuxfamily.org) library heavily in our code. Our
