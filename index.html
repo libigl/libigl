@@ -20,16 +20,29 @@
 
 <p><a href="https://github.com/libigl/libigl/">https://github.com/libigl/libigl/</a></p>
 
-<p>libigl is a simple C++ geometry processing library. We have a wide functionality including construction of sparse discrete differential geometry operators and finite-elements matrices such as the contangent Laplacian and diagonalized mass matrix, simple facet and edge-based topology data structures, mesh-viewing utilities for OpenGL and GLSL, and many core functions for matrix manipulation which make <a href="http://eigen.tuxfamily.org">Eigen</a> feel a lot more like MATLAB.</p>
+<p>libigl is a simple C++ geometry processing library. We have a wide
+functionality including construction of sparse discrete differential geometry
+operators and finite-elements matrices such as the contangent Laplacian and
+diagonalized mass matrix, simple facet and edge-based topology data structures,
+mesh-viewing utilities for OpenGL and GLSL, and many core functions for matrix
+manipulation which make <a href="http://eigen.tuxfamily.org">Eigen</a> feel a lot more
+like MATLAB.</p>
 
-<p>It is first and foremost a header library. Each header file contains a single function. Most are tailored to operate on a generic triangle mesh stored in an n-by&#8211;3 matrix of vertex positions V and an m-by&#8211;3 matrix of triangle indices F. The library may also be <a href="build/README.html">compiled</a> into a statically linked library, for faster compile times with your projects.</p>
+<p>It is first and foremost a header library. Each header file contains a single
+function. Most are tailored to operate on a generic triangle mesh stored in an
+n-by&#8211;3 matrix of vertex positions V and an m-by&#8211;3 matrix of triangle indices F.
+The library may also be <a href="build/README.md">compiled</a> into a statically linked
+library, for faster compile times with your projects.</p>
 
-<p>We use the <a href="http://eigen.tuxfamily.org">Eigen</a> library heavily in our code. Our group prototypes a lot in MATLAB, and we have a useful <a href="http://libigl.github.io/libigl/tutorial/matlab-to-eigen.html">conversion table</a> from MATLAB to libigl/Eigen.</p>
+<p>We use the <a href="http://eigen.tuxfamily.org">Eigen</a> library heavily in our code. Our
+group prototypes a lot in MATLAB, and we have a useful <a href="tutorial/matlab-to-eigen.html">conversion
+table</a> from
+MATLAB to libigl/Eigen.</p>
 
 <h1 id="tutorial">Tutorial</h1>
 
 <p>As of version 1.0, libigl includes an introductory
-<a href="http://libigl.github.io/libigl/tutorial/tutorial.html">tutorial</a> that covers
+<a href="tutorial/tutorial.html">tutorial</a> that covers
 its basic functionalities.</p>
 
 <h2 id="installation">Installation</h2>
@@ -59,8 +72,8 @@ int main()
 }
 </code></pre>
 
-<p>If you save this in <code>hello.cpp</code>, then you could compile this with (assuming Eigen
- is installed in /opt/local/include/eigen3):</p>
+<p>If you save this in <code>hello.cpp</code>, then you could compile this with (assuming
+Eigen is installed in /opt/local/include/eigen3):</p>
 
 <pre><code class="bash">gcc -I/opt/local/include/eigen3 -I./igl/ hello.cpp -o hello
 </code></pre>
@@ -76,27 +89,34 @@ int main()
 
 <h2 id="dependencies">Dependencies</h2>
 
-<p>Dependencies are on a per-include basis and the majority of the functions in libigl
-depends only on the <a href="http://eigen.tuxfamily.org">Eigen</a> library.</p>
+<p>Dependencies are on a per-include basis and the majority of the functions in
+libigl depends only on the <a href="http://eigen.tuxfamily.org">Eigen</a> library.</p>
 
 <p>For more information see our <a href="tutorial/tutorial.html">tutorial</a>.</p>
 
 <h1 id="download">Download</h1>
 
-<p>You can keep up to date by cloning a read-only copy of our GitHub <a href="https://github.com/libigl">repository</a>.</p>
+<p>You can keep up to date by cloning a read-only copy of our GitHub
+<a href="https://github.com/libigl">repository</a>.</p>
 
 <h2 id="howtocontribute">How to contribute</h2>
 
-<p>If you are interested in joining development, please fork the repository and submit a <a href="https://help.github.com/articles/using-pull-requests/">pull request</a> with your changes.</p>
+<p>If you are interested in joining development, please fork the repository and
+submit a <a href="https://help.github.com/articles/using-pull-requests/">pull request</a>
+with your changes.</p>
 
 <h2 id="license">License</h2>
 
-<p>libigl is primarily <a href="http://www.mozilla.org/MPL/2.0/">MPL2</a> licensed (<a href="http://www.mozilla.org/MPL/2.0/FAQ.html">FAQ</a>). Some files contain third-party code under other licenses. We&#8217;re currently in the processes of identifying these and marking appropriately.</p>
+<p>libigl is primarily <a href="http://www.mozilla.org/MPL/2.0/">MPL2</a> licensed
+(<a href="http://www.mozilla.org/MPL/2.0/FAQ.html">FAQ</a>). Some files contain
+third-party code under other licenses. We&#8217;re currently in the processes of
+identifying these and marking appropriately.</p>
 
 <h2 id="attribution">Attribution</h2>
 
-<p>If you use libigl in your academic projects, please cite the papers we implement
-as appropriate. To cite the library in general, you could use this BibTeX entry:</p>
+<p>If you use libigl in your academic projects, please cite the papers we
+implement as appropriate. To cite the library in general, you could use this
+BibTeX entry:</p>
 
 <pre><code class="bibtex">@misc{libigl,
   title = {{libigl}: A simple {C++} geometry processing library},
@@ -108,12 +128,16 @@ as appropriate. To cite the library in general, you could use this BibTeX entry:
 
 <h1 id="contact">Contact</h1>
 
-<p>Libigl is a group endeavor led by <a href="http://www.cs.columbia.edu/~jacobson/">Alec Jacobson</a> and <a href="http://www.inf.ethz.ch/personal/dpanozzo/">Daniele Panozzo</a>. Please
-<a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#x61;&#x6c;&#101;&#x63;&#x6a;&#x61;&#x63;&#111;&#98;&#115;&#111;&#110;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#x6f;&#x6d;&#44;&#x64;&#x61;&#110;&#105;&#101;&#x6c;&#101;&#x2e;&#x70;&#x61;&#110;&#x6f;&#122;&#x7a;&#x6f;&#64;&#x67;&#x6d;&#x61;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#x6d;">&#99;&#x6f;&#x6e;&#116;&#x61;&#99;&#x74; &#117;&#115;</a> if you have questions or comments. We are happy to get feedback!</p>
+<p>Libigl is a group endeavor led by <a href="http://www.cs.columbia.edu/~jacobson/">Alec
+Jacobson</a> and <a href="http://www.inf.ethz.ch/personal/dpanozzo/">Daniele
+Panozzo</a>. Please <a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#x61;&#x6c;&#101;&#x63;&#x6a;&#x61;&#x63;&#111;&#98;&#115;&#111;&#110;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#x6f;&#x6d;&#44;&#x64;&#x61;&#110;&#105;&#101;&#x6c;&#101;&#x2e;&#x70;&#x61;&#110;&#x6f;&#122;&#x7a;&#x6f;&#64;&#x67;&#x6d;&#x61;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#x6d;">&#99;&#x6f;&#x6e;&#116;&#x61;&#99;&#x74;
+&#117;&#115;</a> if you have
+questions or comments. We are happy to get feedback!</p>
 
 <p>If you&#8217;re using libigl in your projects, quickly <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#x6f;&#58;&#97;&#x6c;&#101;&#99;&#106;&#x61;&#x63;&#111;&#x62;&#x73;&#x6f;&#110;&#64;&#103;&#x6d;&#x61;&#x69;&#x6c;&#46;&#99;&#x6f;&#x6d;&#x2c;&#100;&#x61;&#110;&#105;&#x65;&#108;&#x65;&#x2e;&#112;&#97;&#x6e;&#111;&#x7a;&#x7a;&#x6f;&#x40;&#103;&#109;&#x61;&#105;&#x6c;&#x2e;&#x63;&#111;&#109;">&#x64;&#x72;&#111;&#112; &#x75;&#x73; &#97;
-&#110;&#111;&#116;&#101;</a>. Tell us who you are and what you&#8217;re using it for. This helps us apply for funding and justify spending time maintaining
-this.</p>
+&#110;&#111;&#116;&#101;</a>. Tell us who you
+are and what you&#8217;re using it for. This helps us apply for funding and justify
+spending time maintaining this.</p>
 
 <p>If you find bugs or have problems please use our <a href="https://github.com/libigl/libigl/issues">github issue tracking
 page</a>.</p>
