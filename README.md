@@ -20,7 +20,7 @@ library, for faster compile times with your projects.
 
 We use the [Eigen](http://eigen.tuxfamily.org) library heavily in our code. Our
 group prototypes a lot in MATLAB, and we have a useful [conversion
-table](tutorial/matlab-to-eigen.html) from
+table](matlab-to-eigen.html) from
 MATLAB to libigl/Eigen.
 
 # Tutorial
