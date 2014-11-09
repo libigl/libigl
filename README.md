@@ -4,16 +4,29 @@
 
 <https://github.com/libigl/libigl/>
 
-libigl is a simple C++ geometry processing library. We have a wide functionality including construction of sparse discrete differential geometry operators and finite-elements matrices such as the contangent Laplacian and diagonalized mass matrix, simple facet and edge-based topology data structures, mesh-viewing utilities for OpenGL and GLSL, and many core functions for matrix manipulation which make [Eigen](http://eigen.tuxfamily.org) feel a lot more like MATLAB.
+libigl is a simple C++ geometry processing library. We have a wide
+functionality including construction of sparse discrete differential geometry
+operators and finite-elements matrices such as the contangent Laplacian and
+diagonalized mass matrix, simple facet and edge-based topology data structures,
+mesh-viewing utilities for OpenGL and GLSL, and many core functions for matrix
+manipulation which make [Eigen](http://eigen.tuxfamily.org) feel a lot more
+like MATLAB.
 
-It is first and foremost a header library. Each header file contains a single function. Most are tailored to operate on a generic triangle mesh stored in an n-by-3 matrix of vertex positions V and an m-by-3 matrix of triangle indices F. The library may also be [compiled](build/README.html) into a statically linked library, for faster compile times with your projects.
+It is first and foremost a header library. Each header file contains a single
+function. Most are tailored to operate on a generic triangle mesh stored in an
+n-by-3 matrix of vertex positions V and an m-by-3 matrix of triangle indices F.
+The library may also be [compiled](build/README.md) into a statically linked
+library, for faster compile times with your projects.
 
-We use the [Eigen](http://eigen.tuxfamily.org) library heavily in our code. Our group prototypes a lot in MATLAB, and we have a useful [conversion table](http://libigl.github.io/libigl/tutorial/matlab-to-eigen.html) from MATLAB to libigl/Eigen.
+We use the [Eigen](http://eigen.tuxfamily.org) library heavily in our code. Our
+group prototypes a lot in MATLAB, and we have a useful [conversion
+table](tutorial/matlab-to-eigen.html) from
+MATLAB to libigl/Eigen.
 
 # Tutorial
 
 As of version 1.0, libigl includes an introductory
-[tutorial](http://libigl.github.io/libigl/tutorial/tutorial.html) that covers
+[tutorial](tutorial/tutorial.html) that covers
 its basic functionalities.
 
 ## Installation
@@ -43,8 +56,8 @@ int main()
 }
 ```
 
-If you save this in `hello.cpp`, then you could compile this with (assuming Eigen
-  is installed in /opt/local/include/eigen3):
+If you save this in `hello.cpp`, then you could compile this with (assuming
+Eigen is installed in /opt/local/include/eigen3):
 
 ```bash
 gcc -I/opt/local/include/eigen3 -I./igl/ hello.cpp -o hello
@@ -61,24 +74,31 @@ Hello, mesh:
 ```
 
 ## Dependencies
-Dependencies are on a per-include basis and the majority of the functions in libigl
-depends only on the [Eigen](http://eigen.tuxfamily.org) library.
+Dependencies are on a per-include basis and the majority of the functions in
+libigl depends only on the [Eigen](http://eigen.tuxfamily.org) library.
 
 For more information see our [tutorial](tutorial/tutorial.html).
 
 # Download
-You can keep up to date by cloning a read-only copy of our GitHub [repository](https://github.com/libigl).
+You can keep up to date by cloning a read-only copy of our GitHub
+[repository](https://github.com/libigl).
 
 ## How to contribute
 
-If you are interested in joining development, please fork the repository and submit a [pull request](https://help.github.com/articles/using-pull-requests/) with your changes.
+If you are interested in joining development, please fork the repository and
+submit a [pull request](https://help.github.com/articles/using-pull-requests/)
+with your changes.
 
 ## License
-libigl is primarily [MPL2](http://www.mozilla.org/MPL/2.0/) licensed ([FAQ](http://www.mozilla.org/MPL/2.0/FAQ.html)). Some files contain third-party code under other licenses. We're currently in the processes of identifying these and marking appropriately.
+libigl is primarily [MPL2](http://www.mozilla.org/MPL/2.0/) licensed
+([FAQ](http://www.mozilla.org/MPL/2.0/FAQ.html)). Some files contain
+third-party code under other licenses. We're currently in the processes of
+identifying these and marking appropriately.
 
 ## Attribution
-If you use libigl in your academic projects, please cite the papers we implement
-as appropriate. To cite the library in general, you could use this BibTeX entry:
+If you use libigl in your academic projects, please cite the papers we
+implement as appropriate. To cite the library in general, you could use this
+BibTeX entry:
 
 ```bibtex
 @misc{libigl,
@@ -91,12 +111,16 @@ as appropriate. To cite the library in general, you could use this BibTeX entry:
 
 # Contact
 
-Libigl is a group endeavor led by [Alec Jacobson](http://www.cs.columbia.edu/~jacobson/) and [Daniele Panozzo](http://www.inf.ethz.ch/personal/dpanozzo/). Please
-[contact us](mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com) if you have questions or comments. We are happy to get feedback!
+Libigl is a group endeavor led by [Alec
+Jacobson](http://www.cs.columbia.edu/~jacobson/) and [Daniele
+Panozzo](http://www.inf.ethz.ch/personal/dpanozzo/). Please [contact
+us](mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com) if you have
+questions or comments. We are happy to get feedback!
 
 If you're using libigl in your projects, quickly [drop us a
-note](mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com). Tell us who you are and what you're using it for. This helps us apply for funding and justify spending time maintaining
-this.
+note](mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com). Tell us who you
+are and what you're using it for. This helps us apply for funding and justify
+spending time maintaining this.
 
 If you find bugs or have problems please use our [github issue tracking
 page](https://github.com/libigl/libigl/issues).

@@ -1,6 +1,6 @@
 title: libigl Tutorial
 author: Daniele Panozzo and Alec Jacobson
-date: 20 June 2014
+date: 07 November 2014
 css: style.css
 html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
