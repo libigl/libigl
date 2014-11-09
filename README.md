@@ -101,7 +101,6 @@ this.
 If you find bugs or have problems please use our [github issue tracking
 page](https://github.com/libigl/libigl/issues).
 
-
 ### Copyright
 2014 Alec Jacobson, Daniele Panozzo, Olga Diamanti, Kenshi
 Takayama, Leo Sacht, Wenzel Jacob, Nico Pietroni, Amir Vaxman
