@@ -1,8 +1,9 @@
-# Compilation as a static library
+# Compiling libigl as a static library
 
-`Warning: compiling igl as a static library is considerably more difficult than using it as
-a header-only library. Do it only if you are experienced with C++ and you want to
-improve your compilation times.`
+> Warning: compiling libigl as a static library is considerably more difficult
+> than using it as a header-only library (see `../README.md` instead). Do it
+> only if you are experienced with C++ and you want to improve your compilation
+> times.
 
 Libigl is developed most often on Mac OS X, though has current users in Linux
 and Windows.
@@ -13,19 +14,19 @@ Libigl may also be compiled to a static library. This is advantageous when
 building a project with libigl, since when used as an header-only library can
 slow down compile times.
 
-To build the entire libigl library producing lib/libigl.a, issue:
+To build the entire libigl library producing `lib/libigl.a`, issue:
 
     cd build
     make lib
 
-You may need to edit Makefile.conf accordingly. Best to give yourself an
+You may need to edit `Makefile.conf` accordingly. Best to give yourself an
 `IGL_USERNAME` and add a custom install suite for yourself. Then you can enable
 appropriate extras.
 
 #### Extras ####
 Once you've set up an `IGL_USERNAME` and enabled extras within Makefile.conf.
-You can build the extra libraries (into lib/ligiglpng.a, lib/libiglmatlab.a,
-lib/libigltetgen.a, lib/libiglmosek.a, etc.) by issuing:
+You can build the extra libraries (into `lib/ligiglpng.a`, `lib/libiglmatlab.a`,
+`lib/libigltetgen.a`, `lib/libiglmosek.a`, etc.) by issuing:
 
     cd build
     make extras
@@ -38,9 +39,9 @@ You can make a slew of examples by issuing:
 
 #### External ####
 Finally there are a number of external libraries that we include in
-./external/ because they are either difficult to obtain or they have been
-patched for easier use with libigl. Please see the respective readmes in
-those directories.
+`./external/` because they are either difficult to obtain or they have been
+patched for easier use with libigl. Please see the respective readmes in those
+directories.
 
 
 ##### Installing AntTweakBar #####
@@ -181,8 +182,8 @@ This library extra utilizes tinyxml2 to read and write serialized classes
 containing Eigen matrices and other standard simple data-structures.
 
 ## Development ##
-Further documentation for developers is listed in tutorial.html,
-style_guidelines.html
+Further documentation for developers is listed in 
+[style_guidelines.html](../style_guidelines.html).
 
 ## License ##
 See `LICENSE.txt`
