@@ -39,15 +39,15 @@ namespace igl
     const double * O,
     const int no,
     double * S);
-  // Only one evaluation origin
-  template <typename DerivedF>
-  IGL_INLINE void winding_number_3(
-    const double * V,
-    const int n,
-    const DerivedF * F,
-    const int m,
-    const double * O,
-    double * S);
+  //// Only one evaluation origin
+  //template <typename DerivedF>
+  //IGL_INLINE void winding_number_3(
+  //  const double * V,
+  //  const int n,
+  //  const DerivedF * F,
+  //  const int m,
+  //  const double * O,
+  //  double * S);
   // 2d
   template <typename DerivedF>
   IGL_INLINE void winding_number_2(
