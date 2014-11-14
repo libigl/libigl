@@ -49,6 +49,7 @@ int width,height;
 igl::Camera down_camera;
 bool trackball_on = false;
 int down_mouse_x,down_mouse_y,move_x,move_y;
+int down_vp;
 // Position of light
 float light_pos[4] = {0.1,0.1,-0.9,0};
 // Vertex positions, normals, colors and centroid

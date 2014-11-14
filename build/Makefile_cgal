@@ -26,7 +26,7 @@ INC+=$(EIGEN3_INC)
 # CGAL dependency
 CGAL=$(DEFAULT_PREFIX)
 CGAL_INC=-I$(CGAL)/include
-CGAL_FLAGS=-frounding-math -fsignaling-nans 
+CGAL_FLAGS=-frounding-math -fsignaling-nans ${OPENMP}
 CFLAGS+=$(CGAL_FLAGS)
 INC+=$(CGAL_INC)
 
