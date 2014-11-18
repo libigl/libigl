@@ -1,6 +1,7 @@
 #include "all_edges.h"
 #include "doublearea.h"
 #include "per_edge_normals.h"
+#include "get_seconds.h"
 #include "per_face_normals.h"
 #include "unique_simplices.h"
 #include <vector>
@@ -36,11 +37,11 @@ IGL_INLINE void igl::per_edge_normals(
   // now sort(allE,2) == E(EMAP,:), that is, if EMAP(i) = j, then E.row(j) is
   // the undirected edge corresponding to the directed edge allE.row(i).
 
-  Eigen::VectorXd W(F.rows());
+  Eigen::VectorXd W;
   switch(weighting)
   {
     case PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM:
-      W.setConstant(1.);
+      // Do nothing
       break;
     default:
       assert(false && "Unknown weighting type");
@@ -52,15 +53,20 @@ IGL_INLINE void igl::per_edge_normals(
     }
   }
 
-  N.setConstant(E.rows(),3,0);
+  N.setZero(E.rows(),3);
   for(int f = 0;f<m;f++)
   {
     for(int c = 0;c<3;c++)
     {
-      N.row(EMAP(f+c*m)) += W(f) * FN.row(f);
+      if(weighting == PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM)
+      {
+        N.row(EMAP(f+c*m)) += FN.row(f);
+      }else
+      {
+        N.row(EMAP(f+c*m)) += W(f) * FN.row(f);
+      }
     }
   }
-  N.rowwise().normalize();
 }
 
 template <

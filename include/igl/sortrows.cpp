@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "sortrows.h"
+#include "get_seconds.h"
 
 #include "SortableRow.h"
 #include "sort.h"
@@ -55,6 +56,9 @@ IGL_INLINE void igl::sortrows(
   Eigen::PlainObjectBase<DerivedX>& Y,
   Eigen::PlainObjectBase<DerivedIX>& IX)
 {
+  // This is already 2x faster than matlab's builtin `sortrows`. I have tried
+  // implementing a "multiple-pass" sort on each column, but see no performance
+  // improvement.
   using namespace std;
   using namespace Eigen;
   using namespace igl;

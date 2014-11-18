@@ -8,6 +8,7 @@
 #include "unique_simplices.h"
 #include "sort.h"
 #include "unique.h"
+#include "get_seconds.h"
 
 template <
   typename DerivedF,
@@ -22,6 +23,7 @@ IGL_INLINE void igl::unique_simplices(
 {
   using namespace Eigen;
   using namespace igl;
+  using namespace std;
   // Sort each face
   MatrixXi sortF, unusedI;
   igl::sort(F,2,true,sortF,unusedI);
@@ -29,8 +31,14 @@ IGL_INLINE void igl::unique_simplices(
   MatrixXi C;
   igl::unique_rows(sortF,C,IA,IC);
   FF.resize(IA.size(),F.cols());
+  const size_t mff = FF.rows();
+  // Minimum number of iterms per openmp thread
+  #ifndef IGL_OMP_MIN_VALUE
+  #  define IGL_OMP_MIN_VALUE 1000
+  #endif
+  #pragma omp parallel for if (mff>IGL_OMP_MIN_VALUE)
   // Copy into output
-  for(int i = 0;i<IA.rows();i++)
+  for(int i = 0;i<mff;i++)
   {
     FF.row(i) = F.row(IA(i));
   }

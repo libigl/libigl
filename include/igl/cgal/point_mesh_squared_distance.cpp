@@ -45,6 +45,7 @@ IGL_INLINE void igl::point_mesh_squared_distance_precompute(
   using namespace std;
 
   typedef CGAL::Triangle_3<Kernel> Triangle_3; 
+  typedef CGAL::Point_3<Kernel> Point_3; 
   typedef typename std::vector<Triangle_3>::iterator Iterator;
   typedef CGAL::AABB_triangle_primitive<Kernel, Iterator> Primitive;
   typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
@@ -59,6 +60,11 @@ IGL_INLINE void igl::point_mesh_squared_distance_precompute(
   tree.clear();
   tree.insert(T.begin(),T.end());
   tree.accelerate_distance_queries();
+  // accelerate_distance_queries doesn't seem actually to do _all_ of the
+  // precomputation. the tree (despite being const) will still do more
+  // precomputation and reorganizing on the first call of `closest_point` or
+  // `closest_point_and_primitive`. Therefor, call it once here.
+  tree.closest_point_and_primitive(Point_3(0,0,0));
 }
 
 template <typename Kernel>
