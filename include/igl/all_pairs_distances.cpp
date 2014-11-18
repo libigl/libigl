@@ -23,7 +23,7 @@ IGL_INLINE void igl::all_pairs_distances(
   {
     for(int j=0;j<U.rows();j++)
     {
-      D(i,j) = (V.row(i)-U.row(j)).array().pow(2).sum();
+      D(i,j) = (V.row(i)-U.row(j)).squaredNorm();
       if(!squared)
       {
         D(i,j) = sqrt(D(i,j));

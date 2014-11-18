@@ -9,6 +9,7 @@
 #include "../per_vertex_normals.h"
 #include "../per_edge_normals.h"
 #include "../per_face_normals.h"
+#include "../get_seconds.h"
 #include "point_mesh_squared_distance.h"
 
 
@@ -62,7 +63,7 @@ IGL_INLINE void igl::signed_distance(
       per_face_normals(V,F,FN);
       per_vertex_normals(V,F,PER_VERTEX_NORMALS_WEIGHTING_TYPE_ANGLE,FN,VN);
       per_edge_normals(
-        V,F,PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM,EN,E,EMAP);
+        V,F,PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM,FN,EN,E,EMAP);
       N.resize(P.rows(),3);
       break;
   }
@@ -167,53 +168,53 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
   typedef typename Tree::Point_and_primitive_id Point_and_primitive_id;
 
   pp = tree.closest_point_and_primitive(q);
-  Point_3 & p = pp.first;
-  const auto & qp = q-p;
-  sqrd = qp.squared_length();
-  Vector3d v(qp.x(),qp.y(),qp.z());
-  const int f = pp.second - T.begin();
-  const Triangle_3 & t = *pp.second;
-  // barycentric coordinates
-  const auto & area = [&p,&t](const int i, const int j)->FT
-  {
-    return sqrt(Triangle_3(p,t.vertex(i),t.vertex(j)).squared_area());
-  };
-  Vector3d b(area(1,2),area(2,0),area(0,1));
-  b /= b.sum();
-  // Determine which normal to use
-  const double epsilon = 1e-12;
-  const int type = (b.array()<=epsilon).cast<int>().sum();
-  switch(type)
-  {
-    case 2:
-      // Find vertex
-      for(int c = 0;c<3;c++)
-      {
-        if(b(c)>epsilon)
-        {
-          n = VN.row(F(f,c));
-          break;
-        }
-      }
-      break;
-    case 1:
-      // Find edge
-      for(int c = 0;c<3;c++)
-      {
-        if(b(c)<=epsilon)
-        {
-          n = EN.row(EMAP(F.rows()*c+f));
-          break;
-        }
-      }
-      break;
-    default:
-      assert(false && "all barycentric coords zero.");
-    case 0:
-      n = FN.row(f);
-      break;
-  }
-  s = (v.dot(n) >= 0 ? 1. : -1.);
+  //Point_3 & p = pp.first;
+  //const auto & qp = q-p;
+  //sqrd = qp.squared_length();
+  //Vector3d v(qp.x(),qp.y(),qp.z());
+  //const int f = pp.second - T.begin();
+  //const Triangle_3 & t = *pp.second;
+  //// barycentric coordinates
+  //const auto & area = [&p,&t](const int i, const int j)->FT
+  //{
+  //  return sqrt(Triangle_3(p,t.vertex(i),t.vertex(j)).squared_area());
+  //};
+  //Vector3d b(area(1,2),area(2,0),area(0,1));
+  //b /= b.sum();
+  //// Determine which normal to use
+  //const double epsilon = 1e-12;
+  //const int type = (b.array()<=epsilon).cast<int>().sum();
+  //switch(type)
+  //{
+  //  case 2:
+  //    // Find vertex
+  //    for(int c = 0;c<3;c++)
+  //    {
+  //      if(b(c)>epsilon)
+  //      {
+  //        n = VN.row(F(f,c));
+  //        break;
+  //      }
+  //    }
+  //    break;
+  //  case 1:
+  //    // Find edge
+  //    for(int c = 0;c<3;c++)
+  //    {
+  //      if(b(c)<=epsilon)
+  //      {
+  //        n = EN.row(EMAP(F.rows()*c+f));
+  //        break;
+  //      }
+  //    }
+  //    break;
+  //  default:
+  //    assert(false && "all barycentric coords zero.");
+  //  case 0:
+  //    n = FN.row(f);
+  //    break;
+  //}
+  //s = (v.dot(n) >= 0 ? 1. : -1.);
 }
 
 template <typename Kernel>

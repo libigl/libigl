@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "per_vertex_normals.h"
 
+#include "get_seconds.h"
 #include "per_face_normals.h"
 #include "doublearea.h"
 #include "internal_angles.h"
@@ -40,6 +41,9 @@ IGL_INLINE void igl::per_vertex_normals(
   const Eigen::PlainObjectBase<DerivedFN>& FN,
   Eigen::PlainObjectBase<DerivedN> & N)
 {
+  using namespace std;
+  double t_start;
+  t_start = get_seconds();
   // Resize for output
   N.setZero(V.rows(),3);
 

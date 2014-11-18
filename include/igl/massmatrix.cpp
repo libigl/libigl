@@ -47,9 +47,9 @@ IGL_INLINE void igl::massmatrix(
     // loop over faces
     for(int i = 0;i<m;i++)
     {
-      l(i,0) = sqrt((V.row(F(i,1))-V.row(F(i,2))).array().pow(2).sum());
-      l(i,1) = sqrt((V.row(F(i,2))-V.row(F(i,0))).array().pow(2).sum());
-      l(i,2) = sqrt((V.row(F(i,0))-V.row(F(i,1))).array().pow(2).sum());
+      l(i,0) = (V.row(F(i,1))-V.row(F(i,2))).norm();
+      l(i,1) = (V.row(F(i,2))-V.row(F(i,0))).norm();
+      l(i,2) = (V.row(F(i,0))-V.row(F(i,1))).norm();
     }
     // semiperimeters
     Matrix<Scalar,Dynamic,1> s = l.rowwise().sum()*0.5;

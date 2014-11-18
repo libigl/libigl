@@ -12,6 +12,7 @@
 #include "sortrows.h"
 #include "list_to_matrix.h"
 #include "matrix_to_list.h"
+#include "get_seconds.h"
 
 #include <algorithm>
 #include <iostream>
