@@ -38,7 +38,7 @@ IGL_INLINE void igl::unique_simplices(
   #endif
   #pragma omp parallel for if (mff>IGL_OMP_MIN_VALUE)
   // Copy into output
-  for(int i = 0;i<mff;i++)
+  for(size_t i = 0;i<mff;i++)
   {
     FF.row(i) = F.row(IA(i));
   }
