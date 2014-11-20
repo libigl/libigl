@@ -42,8 +42,6 @@ IGL_INLINE void igl::per_vertex_normals(
   Eigen::PlainObjectBase<DerivedN> & N)
 {
   using namespace std;
-  double t_start;
-  t_start = get_seconds();
   // Resize for output
   N.setZero(V.rows(),3);
 
