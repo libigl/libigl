@@ -32,8 +32,6 @@ IGL_INLINE void igl::intersect_other(
   typedef CGAL::Triangle_3<Kernel> Triangle_3; 
   typedef CGAL::Plane_3<Kernel>    Plane_3;
   typedef CGAL::Tetrahedron_3<Kernel> Tetrahedron_3; 
-  typedef CGAL::Polyhedron_3<Kernel> Polyhedron_3; 
-  typedef CGAL::Nef_polyhedron_3<Kernel> Nef_polyhedron_3; 
   // 2D Primitives
   typedef CGAL::Point_2<Kernel>    Point_2;
   typedef CGAL::Segment_2<Kernel>  Segment_2; 

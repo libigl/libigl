@@ -124,6 +124,11 @@ IGL_INLINE void igl::doublearea(
   assert(s.rows() == m);
   // resize output
   dblA.resize(l.rows(),1);
+  // Minimum number of iterms per openmp thread
+  #ifndef IGL_OMP_MIN_VALUE
+  #  define IGL_OMP_MIN_VALUE 1000
+  #endif
+  #pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
   for(int i = 0;i<m;i++)
   {
     //// Heron's formula for area

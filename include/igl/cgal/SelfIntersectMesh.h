@@ -405,7 +405,9 @@ inline igl::SelfIntersectMesh<
   // Use map for *all* faces
   map<typename CDT_plus_2::Vertex_handle,Index> v2i;
   // Loop over offending triangles
-  for(Index o = 0;o<(Index)offending.size();o++)
+  const size_t noff = offending.size();
+# pragma omp parallel for if (noff>1000)
+  for(Index o = 0;o<(Index)noff;o++)
   {
     // index in F
     const Index f = offending[o];
@@ -439,6 +441,7 @@ inline igl::SelfIntersectMesh<
           assert(T[f].vertex(i) == P[o].to_3d(vit->point()));
 #endif
           // For first three, use original index in F
+#   pragma omp critical
           v2i[vit] = F(f,i);
         }else
         {
@@ -480,6 +483,7 @@ inline igl::SelfIntersectMesh<
                 if(vit_point_3 == P[no].to_3d(uit->point()))
                 {
                   assert(v2i.count(uit) == 1);
+#   pragma omp critical
                   v2i[vit] = v2i[uit];
                   found = true;
                 }
@@ -488,9 +492,12 @@ inline igl::SelfIntersectMesh<
           }
           if(!found)
           {
-            v2i[vit] = V.rows()+NV_count;
-            NV.push_back(vit_point_3);
-            NV_count++;
+#   pragma omp critical
+            {
+              v2i[vit] = V.rows()+NV_count;
+              NV.push_back(vit_point_3);
+              NV_count++;
+            }
           }
         }
         i++;
@@ -500,6 +507,7 @@ inline igl::SelfIntersectMesh<
       Index i = 0;
       // Resize to fit new number of triangles
       NF[o].resize(cdt[o].number_of_faces(),3);
+#   pragma omp atomic
       NF_count+=NF[o].rows();
       // Append new faces to NF
       for(

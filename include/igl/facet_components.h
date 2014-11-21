@@ -22,10 +22,12 @@ namespace igl
   //   C  #F list of connected component ids
   template <
     typename TTIndex, 
-    typename DerivedC>
+    typename DerivedC,
+    typename Derivedcounts>
   IGL_INLINE void facet_components(
     const std::vector<std::vector<std::vector<TTIndex > > > & TT,
-    Eigen::PlainObjectBase<DerivedC> & C);
+    Eigen::PlainObjectBase<DerivedC> & C,
+    Eigen::PlainObjectBase<Derivedcounts> & counts);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "facet_components.cpp"

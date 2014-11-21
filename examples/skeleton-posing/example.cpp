@@ -106,7 +106,7 @@ bool is_rotating = false;
 bool centroid_is_visible = true;
 int down_x,down_y;
 igl::Camera down_camera;
-std::string output_prefix;
+std::string output_weights_filename,output_pose_prefix;
 
 struct CameraAnimation
 {
@@ -594,13 +594,13 @@ void redo()
   }
 }
 
-bool save()
+bool save_pose()
 {
   using namespace std;
   using namespace igl;
   using namespace Eigen;
   string output_filename;
-  next_filename(output_prefix,4,".dmat",output_filename);
+  next_filename(output_pose_prefix,4,".dmat",output_filename);
   MatrixXd T;
   forward_kinematics(C,BE,P,s.mouse.rotations(),T);
   if(writeDMAT(output_filename,T))
@@ -610,6 +610,23 @@ bool save()
   }else
   {
     cout<<REDRUM("Writing to "+output_filename+" failed.")<<endl;
+    return false;
+  }
+}
+
+bool save_weights()
+{
+  using namespace std;
+  using namespace igl;
+  using namespace Eigen;
+  if(writeDMAT(output_weights_filename,W))
+  {
+    cout<<GREENGIN("Current weights written to "+
+      output_weights_filename+".")<<endl;
+    return true;
+  }else
+  {
+    cout<<REDRUM("Writing to "+output_weights_filename+" failed.")<<endl;
     return false;
   }
 }
@@ -660,7 +677,13 @@ void key(unsigned char key, int mouse_x, int mouse_y)
     case 'S':
     case 's':
     {
-      save();
+      save_pose();
+      break;
+    }
+    case 'W':
+    case 'w':
+    {
+      save_weights();
       break;
     }
     case 'z':
@@ -848,11 +871,11 @@ int main(int argc, char * argv[])
   string filename = "../shared/cheburashka.off";
   string skel_filename = "../shared/cheburashka.tgf";
   string weights_filename = "";
-  output_prefix = "";
+  output_pose_prefix = "";
   switch(argc)
   {
     case 5:
-      output_prefix = argv[4];
+      output_pose_prefix = argv[4];
       //fall through
     case 4:
       weights_filename = argv[3];
@@ -872,9 +895,10 @@ int main(int argc, char * argv[])
   cout<<"⌥ +[Click] and [drag]  Rotate secene."<<endl;
   cout<<"⌫                      Delete selected node(s) and incident bones."<<endl;
   cout<<"D,d                    Deselect all."<<endl;
-  cout<<"S,s                    Save current pose."<<endl;
   cout<<"R                      Reset selected rotation."<<endl;
   cout<<"r                      Reset all rotations."<<endl;
+  cout<<"S,s                    Save current pose."<<endl;
+  cout<<"W,w                    Save current weights."<<endl;
   cout<<"Z,z                    Snap to canonical view."<<endl;
   cout<<"⌘ Z                    Undo."<<endl;
   cout<<"⇧ ⌘ Z                  Redo."<<endl;
@@ -883,15 +907,21 @@ int main(int argc, char * argv[])
   string dir,_1,_2,name;
   read_triangle_mesh(filename,V,F,dir,_1,_2,name);
 
-  if(output_prefix.size() == 0)
+  if(output_weights_filename.size() == 0)
   {
-    output_prefix = dir+"/"+name+"-pose-";
+    output_weights_filename = dir+"/"+name+"-weights.dmat";
+  }
+  if(output_pose_prefix.size() == 0)
+  {
+    output_pose_prefix = dir+"/"+name+"-pose-";
   }
 
   {
     string output_filename;
-    next_filename(output_prefix,4,".dmat",output_filename);
-    cout<<BLUEGIN("Output set to start with "<<output_filename)<<endl;
+    next_filename(output_pose_prefix,4,".dmat",output_filename);
+    cout<<BLUEGIN("Output weights set to start with "<<
+      output_weights_filename)<<endl;
+    cout<<BLUEGIN("Output poses set to start with "<<output_filename)<<endl;
   }
 
   // Read in skeleton and precompute hierarchy

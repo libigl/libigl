@@ -33,7 +33,7 @@ IGL_INLINE void igl::project_to_line(
   int np  = P.rows();
   // vector from source to destination
   MatL DmS = D-S;
-  double v_sqrlen = (double)(DmS.array().pow(2).sum());
+  double v_sqrlen = (double)(DmS.squaredNorm());
   assert(v_sqrlen != 0);
   // resize output
   t.resize(np,1);
@@ -48,7 +48,7 @@ IGL_INLINE void igl::project_to_line(
     t(i) = -(DmS.array()*SmPi.array()).sum() / v_sqrlen;
     // P projected onto line
     MatL projP = (1-t(i))*S + t(i)*D;
-    sqrD(i) = (Pi-projP).array().pow(2).sum();
+    sqrD(i) = (Pi-projP).squaredNorm();
   }
 }
 

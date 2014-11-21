@@ -53,7 +53,7 @@ IGL_INLINE bool igl::boundary_conditions(
       // double sqrd = (V.row(i)-pos).array().pow(2).sum();
       // Must first store in temporary
       VectorXd vi = V.row(i);
-      double sqrd = (vi-pos).array().pow(2).sum();
+      double sqrd = (vi-pos).squaredNorm();
       if(sqrd <= FLOAT_EPS)
       {
         //cout<<"sum((["<<

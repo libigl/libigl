@@ -1,4 +1,6 @@
-
+// This example is broken. It secretly uses classes from inside
+// principal_curvature.cpp not the api provided in the header
+// principal_curvature.h
 #undef IGL_STATIC_LIBRARY
 #include <igl/principal_curvature.h>
 #include <igl/read_triangle_mesh.h>
