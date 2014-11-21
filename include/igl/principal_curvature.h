@@ -11,9 +11,6 @@
 
 #include <Eigen/Geometry>
 #include <Eigen/Dense>
-#include <vector>
-#include <stdio.h>
-#include <map>
 
 #include <igl/igl_inline.h>
 #include <igl/cotmatrix.h>

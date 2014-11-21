@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "internal_angles.h"
 #include "edge_lengths.h"
+#include "get_seconds.h"
 
 template <typename DerivedV, typename DerivedF, typename DerivedK>
 IGL_INLINE void igl::internal_angles(
@@ -15,6 +16,7 @@ IGL_INLINE void igl::internal_angles(
   Eigen::PlainObjectBase<DerivedK> & K)
 {
   using namespace Eigen;
+  using namespace std;
   // Edge lengths
   Matrix<
     typename DerivedV::Scalar,
@@ -23,7 +25,7 @@ IGL_INLINE void igl::internal_angles(
   edge_lengths(V,F,L);
 
   assert(F.cols() == 3 && "F should contain triangles");
-  return internal_angles(L,K);
+  internal_angles(L,K);
 }
 
 template <typename DerivedL, typename DerivedK>
@@ -32,13 +34,29 @@ IGL_INLINE void igl::internal_angles(
   Eigen::PlainObjectBase<DerivedK> & K)
 {
   assert(L.cols() == 3 && "Edge-lengths should come from triangles");
-  K.resize(L.rows(),L.cols());
-  for(int d = 0;d<3;d++)
+  const size_t m = L.rows();
+  K.resize(m,3);
+  //for(int d = 0;d<3;d++)
+  //{
+  //  const auto & s1 = L.col(d).array();
+  //  const auto & s2 = L.col((d+1)%3).array();
+  //  const auto & s3 = L.col((d+2)%3).array();
+  //  K.col(d) = ((s3.square() + s2.square() - s1.square())/(2.*s3*s2)).acos();
+  //}
+  // Minimum number of iterms per openmp thread
+  #ifndef IGL_OMP_MIN_VALUE
+  #  define IGL_OMP_MIN_VALUE 1000
+  #endif
+  #pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
+  for(int f = 0;f<m;f++)
   {
-    const auto & s1 = L.col(d).array();
-    const auto & s2 = L.col((d+1)%3).array();
-    const auto & s3 = L.col((d+2)%3).array();
-    K.col(d) = ((s3.square() + s2.square() - s1.square())/(2.*s3*s2)).acos();
+    for(int d = 0;d<3;d++)
+    {
+      const auto & s1 = L(f,d);
+      const auto & s2 = L(f,(d+1)%3);
+      const auto & s3 = L(f,(d+2)%3);
+      K(f,d) = acos((s3*s3 + s2*s2 - s1*s1)/(2.*s3*s2));
+    }
   }
 }
 

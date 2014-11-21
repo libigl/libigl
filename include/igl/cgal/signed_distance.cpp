@@ -9,6 +9,7 @@
 #include "../per_vertex_normals.h"
 #include "../per_edge_normals.h"
 #include "../per_face_normals.h"
+#include "../get_seconds.h"
 #include "point_mesh_squared_distance.h"
 
 
@@ -62,7 +63,7 @@ IGL_INLINE void igl::signed_distance(
       per_face_normals(V,F,FN);
       per_vertex_normals(V,F,PER_VERTEX_NORMALS_WEIGHTING_TYPE_ANGLE,FN,VN);
       per_edge_normals(
-        V,F,PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM,EN,E,EMAP);
+        V,F,PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM,FN,EN,E,EMAP);
       N.resize(P.rows(),3);
       break;
   }

@@ -1,5 +1,5 @@
-#ifndef IGL_EXTERIOR_EDGES_H
-#define IGL_EXTERIOR_EDGES_H
+#ifndef IGL_UNIQUE_EDGE_MAP_H
+#define IGL_UNIQUE_EDGE_MAP_H
 #include "igl_inline.h"
 #include <Eigen/Dense>
 #include <vector>

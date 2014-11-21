@@ -15,6 +15,11 @@ IGL_INLINE void igl::edge_lengths(
   Eigen::PlainObjectBase<DerivedL>& L)
 {
   using namespace std;
+  const int m = F.rows();
+  // Minimum number of iterms per openmp thread
+#ifndef IGL_OMP_MIN_VALUE
+#  define IGL_OMP_MIN_VALUE 1000
+#endif
   switch(F.cols())
   {
     case 2:
@@ -28,29 +33,30 @@ IGL_INLINE void igl::edge_lengths(
     }
     case 3:
     {
-      L.resize(F.rows(),3);
+      L.resize(m,3);
       // loop over faces
-      for(int i = 0;i<F.rows();i++)
+      #pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
+      for(int i = 0;i<m;i++)
       {
-        L(i,0) = sqrt((V.row(F(i,1))-V.row(F(i,2))).array().pow(2).sum());
-        L(i,1) = sqrt((V.row(F(i,2))-V.row(F(i,0))).array().pow(2).sum());
-        L(i,2) = sqrt((V.row(F(i,0))-V.row(F(i,1))).array().pow(2).sum());
+        L(i,0) = (V.row(F(i,1))-V.row(F(i,2))).norm();
+        L(i,1) = (V.row(F(i,2))-V.row(F(i,0))).norm();
+        L(i,2) = (V.row(F(i,0))-V.row(F(i,1))).norm();
       }
       break;
     }
     case 4:
     {
-      const int m = F.rows();
       L.resize(m,6);
       // loop over faces
+      #pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
       for(int i = 0;i<m;i++)
       {
-        L(i,0) = sqrt((V.row(F(i,3))-V.row(F(i,0))).array().pow(2).sum());
-        L(i,1) = sqrt((V.row(F(i,3))-V.row(F(i,1))).array().pow(2).sum());
-        L(i,2) = sqrt((V.row(F(i,3))-V.row(F(i,2))).array().pow(2).sum());
-        L(i,3) = sqrt((V.row(F(i,1))-V.row(F(i,2))).array().pow(2).sum());
-        L(i,4) = sqrt((V.row(F(i,2))-V.row(F(i,0))).array().pow(2).sum());
-        L(i,5) = sqrt((V.row(F(i,0))-V.row(F(i,1))).array().pow(2).sum());
+        L(i,0) = (V.row(F(i,3))-V.row(F(i,0))).norm();
+        L(i,1) = (V.row(F(i,3))-V.row(F(i,1))).norm();
+        L(i,2) = (V.row(F(i,3))-V.row(F(i,2))).norm();
+        L(i,3) = (V.row(F(i,1))-V.row(F(i,2))).norm();
+        L(i,4) = (V.row(F(i,2))-V.row(F(i,0))).norm();
+        L(i,5) = (V.row(F(i,0))-V.row(F(i,1))).norm();
       }
       break;
     }
