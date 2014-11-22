@@ -418,8 +418,8 @@ IGL_INLINE void CurvatureCalculator::finalEigenStuff (int i, std::vector<Eigen::
   v2global.normalize();
 
   v1global *= c_val(0);
-  v2global *= c_val(1);  
-  
+  v2global *= c_val(1);
+
   if (c_val[0] > c_val[1])
   {
     curv[i]=std::vector<double>(2);
@@ -793,6 +793,12 @@ IGL_INLINE void igl::principal_curvature(
   bool useKring)
 {
   using namespace std;
+
+  if (radius < 2)
+  {
+    radius = 2;
+    cout << "WARNING: igl::principal_curvature needs a radius >= 2, fixing it to 2." << endl;
+  }
 
   // Preallocate memory
   PD1.resize(V.rows(),3);
