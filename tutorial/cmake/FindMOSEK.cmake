@@ -26,6 +26,5 @@ IF (MOSEK_FOUND)
    SET(MOSEK_INCLUDE_DIRS ${MOSEK_INCLUDE_DIR} )
 ELSE (MOSEK_FOUND)
     #add_definitions(-DIGL_NO_MOSEK)
-    message(WARNING "could NOT find MOSEK")
+    #message(WARNING "could NOT find MOSEK")
 ENDIF (MOSEK_FOUND)
-
