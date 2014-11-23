@@ -17,6 +17,8 @@ find_package(CGAL QUIET)
 ## Check for mosek
 find_package(MOSEK QUIET)
 
+include("CMakeLists.shared")
+
 # Chapter 1
 add_subdirectory("101_FileIO")
 add_subdirectory("102_DrawMesh")
@@ -41,9 +43,7 @@ add_subdirectory("305_QuadraticProgramming")
 # Chapter 4
 add_subdirectory("401_BiharmonicDeformation")
 add_subdirectory("402_PolyharmonicDeformation")
-if(MOSEK_FOUND)
 add_subdirectory("403_BoundedBiharmonicWeights")
-endif(MOSEK_FOUND)
 add_subdirectory("404_DualQuaternionSkinning")
 add_subdirectory("405_AsRigidAsPossible")
 add_subdirectory("406_FastAutomaticSkinningTransformations")

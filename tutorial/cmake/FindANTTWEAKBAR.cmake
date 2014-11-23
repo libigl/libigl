@@ -17,20 +17,23 @@ IF (WIN32)
 	FIND_PATH( ANT_TWEAK_BAR_INCLUDE_DIR AntTweakBar.h
       PATHS
 		${PROJECT_SOURCE_DIR}/../../external/AntTweakBar/include
+		${PROJECT_SOURCE_DIR}/../external/AntTweakBar/include
 		$ENV{ANT_TWEAK_BAR_ROOT}/include
 		DOC "The directory where AntTweakBar.h resides")
 
     FIND_LIBRARY( ANT_TWEAK_BAR_LIBRARY AntTweakBar${BITS}
         PATHS
 		${PROJECT_SOURCE_DIR}/../../external/AntTweakBar/lib
-        $ENV{ANT_TWEAK_BAR_ROOT}/lib
-        DOC "The AntTweakBar library")
+		${PROJECT_SOURCE_DIR}/../external/AntTweakBar/lib
+                $ENV{ANT_TWEAK_BAR_ROOT}/lib
+                DOC "The AntTweakBar library")
 ELSE (WIN32)
 
 FIND_PATH(ANT_TWEAK_BAR_INCLUDE_DIR AntTweakBar.h
       PATHS
-	    ${PROJECT_SOURCE_DIR}/../libigl/external/AntTweakBar/include/
+	    ${LIBIGL_INCLUDE_DIR}/../external/AntTweakBar/include/
       ${PROJECT_SOURCE_DIR}/../../external/AntTweakBar/include/
+      ${PROJECT_SOURCE_DIR}/../external/AntTweakBar/include/
       /usr/local/include
       /usr/X11/include
       /usr/include
@@ -38,8 +41,9 @@ FIND_PATH(ANT_TWEAK_BAR_INCLUDE_DIR AntTweakBar.h
 
 FIND_LIBRARY( ANT_TWEAK_BAR_LIBRARY AntTweakBar
   PATHS
-		${PROJECT_SOURCE_DIR}/../libigl/external/AntTweakBar/lib
+		${LIBIGL_INCLUDE_DIR}/../external/AntTweakBar/lib
     ${PROJECT_SOURCE_DIR}/../../external/AntTweakBar/lib
+    ${PROJECT_SOURCE_DIR}/../external/AntTweakBar/lib
     /usr/local
     /usr/X11
     /usr
