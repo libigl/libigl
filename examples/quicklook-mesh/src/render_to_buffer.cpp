@@ -2,9 +2,6 @@
 extern "C" {
 #include "render_to_buffer.h"
 };
-// We're probably didn't build libigl.a with LLVM so just use the headers only
-// version.
-#define IGL_HEADER_ONLY
 #include <igl/per_face_normals.h>
 #include <igl/normalize_row_lengths.h>
 #include <igl/get_seconds.h>
@@ -13,6 +10,7 @@ extern "C" {
 #include <igl/material_colors.h>
 #include <igl/pathinfo.h>
 #include <igl/readOBJ.h>
+#include <igl/readPLY.h>
 #include <igl/readSTL.h>
 #include <igl/readWRL.h>
 #include <igl/polygon_mesh_to_triangle_mesh.h>
@@ -372,6 +370,14 @@ bool render_to_buffer(
   {
     // Convert extension to lower case
     if(!igl::readWRL(filename,vV,vF))
+    {
+      red(width,height,buffer);
+      return false;
+    }
+  }else if(ext == "ply")
+  {
+    // Convert extension to lower case
+    if(!igl::readPLY(filename,vV,vF,vN,vTC))
     {
       red(width,height,buffer);
       return false;

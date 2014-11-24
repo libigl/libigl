@@ -1,3 +1,4 @@
+1.1.1  PLY file format support
 1.1.0  Mesh boolean operations using CGAL and cork, implementing [Attene 14]
 1.0.3  Bone heat method
 1.0.2  Bug fix in winding number code
