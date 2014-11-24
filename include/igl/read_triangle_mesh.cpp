@@ -12,6 +12,7 @@
 #include <igl/readOBJ.h>
 #include <igl/readOFF.h>
 #include <igl/readSTL.h>
+#include <igl/readPLY.h>
 #include <igl/readWRL.h>
 #include <igl/pathinfo.h>
 #include <igl/boundary_facets.h>
@@ -101,6 +102,12 @@ IGL_INLINE bool igl::read_triangle_mesh(
   }else if(ext == "off")
   {
     if(!readOFF(filename,vV,vF,vN))
+    {
+      return false;
+    }
+  }else if(ext == "ply")
+  {
+    if(!readPLY(filename,vV,vF,vN,vTC))
     {
       return false;
     }
