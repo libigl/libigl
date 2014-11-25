@@ -24,7 +24,6 @@ IGL_INLINE bool igl::readPLY(
 {
   using namespace std;
   // Largely follows ply2iv.c
-  PlyOtherProp *vert_other,*face_other;
 
    typedef struct Vertex {
      double x,y,z;          /* position */
@@ -54,7 +53,6 @@ IGL_INLINE bool igl::readPLY(
     {"vertex_indices", PLY_INT, PLY_INT, offsetof(Face,verts),
       1, PLY_UCHAR, PLY_UCHAR, offsetof(Face,nverts)},
   };
-  char * elem_name;
   FILE * fp = fopen(filename.c_str(),"r");
   if(fp == NULL)
   {
@@ -80,7 +78,7 @@ IGL_INLINE bool igl::readPLY(
     ply_get_property (in_ply,"vertex",&vert_props[0]);
     ply_get_property (in_ply,"vertex",&vert_props[1]);
     ply_get_property (in_ply,"vertex",&vert_props[2]);
-    for (size_t j = 0; j < nprops; j++)
+    for (int j = 0; j < nprops; j++)
     {
       PlyProperty * prop = plist[j];
       if (equal_strings ("nx", prop->name) 
@@ -100,7 +98,8 @@ IGL_INLINE bool igl::readPLY(
         has_texture_coords = true;
       }
     }
-    vert_other = ply_get_other_properties(in_ply,"vertex",
+    // Is this call necessary?
+    ply_get_other_properties(in_ply,"vertex",
 				     offsetof(Vertex,other_props));
     V.resize(elem_count,std::vector<Vtype>(3));
     if(has_normals)
@@ -117,7 +116,7 @@ IGL_INLINE bool igl::readPLY(
     {
       UV.resize(0);
     }
-    for(size_t j = 0;j<elem_count;j++)
+    for(int j = 0;j<elem_count;j++)
     {
       Vertex v;
       ply_get_element_setup(in_ply,"vertex",3,vert_props);
@@ -143,7 +142,7 @@ IGL_INLINE bool igl::readPLY(
   {
     F.resize(elem_count);
     ply_get_property(in_ply,"face",&face_props[0]);
-    for (size_t j = 0; j < elem_count; j++) 
+    for (int j = 0; j < elem_count; j++) 
     {
       Face f;
       ply_get_element(in_ply, (void *) &f);
@@ -187,4 +186,5 @@ IGL_INLINE bool igl::readPLY(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template bool igl::readPLY<double, int, double, double>(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&);
 #endif
