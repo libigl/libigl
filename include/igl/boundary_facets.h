@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_BOUNDARY_FACES_H
-#define IGL_BOUNDARY_FACES_H
+#ifndef IGL_BOUNDARY_FACETS_H
+#define IGL_BOUNDARY_FACETS_H
 #include "igl_inline.h"
 
 #ifndef IGL_NO_EIGEN
@@ -17,8 +17,8 @@
 
 namespace igl
 {
-  // BOUNDARY_FACES Determine boundary faces (edges) of tetrahedra (triangles)
-  // stored in T
+  // BOUNDARY_FACETS Determine boundary faces (edges) of tetrahedra (triangles)
+  // stored in T (analogous to qptoolbox's `outline` and `boundary_faces`).
   //
   // Templates:
   //   IntegerT  integer-value: e.g. int
