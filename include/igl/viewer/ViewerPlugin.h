@@ -20,11 +20,14 @@ namespace igl
 {
 
 // Abstract class for plugins
-// All plugins MUST have this class as their parent and implement all the callbacks
-// For an example of a basic plugins see plugins/skeleton.h
+// All plugins MUST have this class as their parent and may implement any/all
+// the callbacks marked `virtual` here.
 //
-// Return value of callbacks: returning true to any of the callbacks tells Preview3D that the event has been
-// handled and that it should not be passed to other plugins or to other internal functions of Preview3D
+// /////For an example of a basic plugins see plugins/skeleton.h
+//
+// Return value of callbacks: returning true to any of the callbacks tells
+// Viewer that the event has been handled and that it should not be passed to
+// other plugins or to other internal functions of Viewer
 
 // Forward declaration of the viewer
 class Viewer;
@@ -130,7 +133,7 @@ public:
 
   std::string plugin_name;
 protected:
-  // Pointer to the main Preview3D class
+  // Pointer to the main Viewer class
   Viewer *viewer;
 };
 

@@ -416,6 +416,12 @@ IGL_INLINE std::string igl::ReTwBar::get_value_as_string(
         sstr << *(static_cast<int*>(var));
         break;
       }
+    case TW_TYPE_UINT32:
+      {
+        sstr << "TW_TYPE_UINT32" << " ";
+        sstr << *(static_cast<unsigned int*>(var));
+        break;
+      }
     case TW_TYPE_FLOAT:
       {
         sstr << "TW_TYPE_FLOAT" << " ";
@@ -571,6 +577,7 @@ bool igl::ReTwBar::set_value_from_string(
   float f[4];
   double d[4];
   bool b;
+  unsigned int u;
   unsigned char uc;
   std::string s;
 
@@ -663,6 +670,18 @@ bool igl::ReTwBar::set_value_from_string(
         if(sscanf(value_str," %d",&i) == 1)
         {
           value = &i;
+        }else
+        {
+          printf("ERROR: Bad value format...\n");
+          return false;
+        }
+        break;
+      }
+    case TW_TYPE_UINT32:
+      {
+        if(sscanf(value_str," %u",&u) == 1)
+        {
+          value = &u;
         }else
         {
           printf("ERROR: Bad value format...\n");
@@ -806,6 +825,13 @@ bool igl::ReTwBar::set_value_from_string(
             int * ivar = static_cast<int*>(var);
             int * ivalue = static_cast<int*>(value);
             *ivar = *ivalue;
+            break;
+          }
+        case TW_TYPE_UINT32:
+          {
+            unsigned int * uvar =   static_cast<unsigned int*>(var);
+            unsigned int * uvalue = static_cast<unsigned int*>(value);
+            *uvar = *uvalue;
             break;
           }
         case TW_TYPE_FLOAT:
