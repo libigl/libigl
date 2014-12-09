@@ -16,6 +16,9 @@ IGL_INLINE void igl::outline_ordered(
 {
   using namespace std;
   using namespace Eigen;
+  // Exterior edges include some non-manifold edges (poor function name). I
+  // suppose `outline_ordered` is not well defined for non-manifold meshes, but
+  // perhaps this should just call `boundary_facets`
   MatrixXi E = exterior_edges(F);
 
   set<int> unseen;
