@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "outline_ordered.h"
-#include "exterior_edges.h"
+#include "igl/boundary_facets.h"
 #include <set>
 
 template <typename DerivedF, typename Index>
@@ -16,10 +16,8 @@ IGL_INLINE void igl::outline_ordered(
 {
   using namespace std;
   using namespace Eigen;
-  // Exterior edges include some non-manifold edges (poor function name). I
-  // suppose `outline_ordered` is not well defined for non-manifold meshes, but
-  // perhaps this should just call `boundary_facets`
-  MatrixXi E = exterior_edges(F);
+  MatrixXi E;
+  boundary_facets(F, E);
 
   set<int> unseen;
   for (int i = 0; i < E.rows(); ++i)
