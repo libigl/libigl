@@ -1,21 +1,21 @@
 #include "outline_ordered.h"
-
-#include "igl/exterior_edges.h"
+#include "exterior_edges.h"
 #include <set>
 
-using namespace std;
-using namespace Eigen;
-
-template <typename Index>
+template <typename DerivedF, typename Index>
 IGL_INLINE void igl::outline_ordered(
-    const Eigen::MatrixXi& F, 
+    const Eigen::PlainObjectBase<DerivedF> & F, 
     std::vector<std::vector<Index> >& L)
 {
+  using namespace std;
+  using namespace Eigen;
   MatrixXi E = exterior_edges(F);
 
   set<int> unseen;
   for (int i = 0; i < E.rows(); ++i)
-      unseen.insert(unseen.end(),i);
+  {
+    unseen.insert(unseen.end(),i);
+  }
 
   while (!unseen.empty())
   {
