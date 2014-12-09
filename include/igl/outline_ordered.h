@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_OUTLINE_ORDERED_H
 #define IGL_OUTLINE_ORDERED_H
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 
 #include <Eigen/Dense>
 #include <vector>
@@ -23,9 +23,9 @@ namespace igl
   // Outputs:
   //   L  list of loops where L[i] = ordered list of boundary vertices in loop i
   //
-  template <typename Index>
+  template <typename DerivedF, typename Index>
   IGL_INLINE void outline_ordered(
-    const Eigen::MatrixXi& F, 
+    const Eigen::PlainObjectBase<DerivedF> & F, 
     std::vector<std::vector<Index> >& L);
 }
 
