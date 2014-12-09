@@ -7,30 +7,60 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_BOUNDARY_LOOP_H
 #define IGL_BOUNDARY_LOOP_H
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 
 #include <Eigen/Dense>
 #include <vector>
 
 namespace igl
 {
-
-  // Compute sorted list of boundary vertices for a manifold mesh with single
-  // boundary.
+  // Compute list of ordered boundary loops for a manifold mesh.
   //
+  // Templates:
+  //  Index  index type
   // Inputs:
-  //   V  #V by dim list of mesh vertex positions
   //   F  #V by dim list of mesh faces
   // Outputs:
-  //   bnd   sorted list of boundary vertex indices
+  //   L  list of loops where L[i] = ordered list of boundary vertices in loop i
+  //
+  template <typename DerivedF, typename Index>
   IGL_INLINE void boundary_loop(
-  	const Eigen::MatrixXd& V, 
-  	const Eigen::MatrixXi& F, 
-    Eigen::VectorXi& bnd);
+    const Eigen::PlainObjectBase<DerivedF>& F, 
+    std::vector<std::vector<Index> >& L);
+
+
+  // Compute ordered boundary loops for a manifold mesh and return the 
+  // longest loop in terms of vertices.
+  //
+  // Templates:
+  //  Index  index type
+  // Inputs:
+  //   F  #V by dim list of mesh faces
+  // Outputs:
+  //   L  ordered list of boundary vertices of longest boundary loop
+  //
+  template <typename DerivedF, typename Index>
+  IGL_INLINE void boundary_loop(
+    const Eigen::PlainObjectBase<DerivedF>& F, 
+    std::vector<Index>& L);
+
+  // Compute ordered boundary loops for a manifold mesh and return the 
+  // longest loop in terms of vertices.
+  //
+  // Templates:
+  //  Index  index type
+  // Inputs:
+  //   F  #V by dim list of mesh faces
+  // Outputs:
+  //   L  ordered list of boundary vertices of longest boundary loop
+  //
+  template <typename DerivedF, typename DerivedL>
+  IGL_INLINE void boundary_loop(
+    const Eigen::PlainObjectBase<DerivedF>& F, 
+    Eigen::PlainObjectBase<DerivedL>& L);
 }
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "boundary_loop.cpp"
 #endif
-
 #endif

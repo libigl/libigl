@@ -1,105 +1,104 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-//
+// 
 // Copyright (C) 2014 Stefan Brugger <stefanbrugger@gmail.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla Public License
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "boundary_loop.h"
+#include "igl/boundary_facets.h"
+#include "igl/slice.h"
+#include <set>
 
-#include "triangle_triangle_adjacency.h"
-#include "vertex_triangle_adjacency.h"
-
+template <typename DerivedF, typename Index>
 IGL_INLINE void igl::boundary_loop(
-    const Eigen::MatrixXd& V,
-    const Eigen::MatrixXi& F,
-    Eigen::VectorXi& b)
+    const Eigen::PlainObjectBase<DerivedF> & F, 
+    std::vector<std::vector<Index> >& L)
 {
-  std::vector<int> bnd;
-  bnd.clear();
-  std::vector<bool> isVisited(V.rows(),false);
+  using namespace std;
+  using namespace Eigen;
+  MatrixXi E;
+  boundary_facets(F, E);
 
-  // Actually mesh only needs to be manifold near boundary, so this is
-  // over zealous (see gptoolbox's outline_loop for a more general
-  // (and probably faster) implementation)
-  assert(is_edge_manifold(V,F) && "Mesh must be manifold");
-  Eigen::MatrixXi TT,TTi;
-  std::vector<std::vector<int> > VF, VFi;
-  igl::triangle_triangle_adjacency(V,F,TT,TTi);
-  igl::vertex_triangle_adjacency(V,F,VF,VFi);
-
-  // Extract one boundary edge
-  bool done = false;
-  for (int i = 0; i < TT.rows() && !done; i++)
+  set<int> unseen;
+  for (int i = 0; i < E.rows(); ++i)
   {
-    for (int j = 0; j < TT.cols(); j++)
-    {
-      if (TT(i,j) < 0)
-      {
-        int idx1, idx2;
-        idx1 = F(i,j);
-        idx2 = F(i,(j+1) % F.cols());
-        bnd.push_back(idx1);
-        bnd.push_back(idx2);
-        isVisited[idx1] = true;
-        isVisited[idx2] = true;
-        done = true;
-        break;
-      }
-    }
+    unseen.insert(unseen.end(),i);
   }
 
-  // Traverse boundary
-  while(1)
+  while (!unseen.empty())
   {
-    bool changed = false;
-    int lastV;
-    lastV = bnd[bnd.size()-1];
+      vector<Index> l;
 
-    for (int i = 0; i < (int)VF[lastV].size(); i++)
-    {
-      int curr_neighbor = VF[lastV][i];
+      // Get first vertex of loop
+      int startEdge = *unseen.begin();
+      unseen.erase(unseen.begin());
 
-      if (TT.row(curr_neighbor).minCoeff() < 0.) // Face contains boundary edge
+      int start = E(startEdge,0);
+      int next = E(startEdge,1);
+      l.push_back(start);
+
+      while (start != next)
       {
-        int idx_lastV_in_face;
-        if (F(curr_neighbor,0) == lastV) idx_lastV_in_face = 0;
-        if (F(curr_neighbor,1) == lastV) idx_lastV_in_face = 1;
-        if (F(curr_neighbor,2) == lastV) idx_lastV_in_face = 2;
+          l.push_back(next);
 
-        int idx_prev = (idx_lastV_in_face + F.cols()-1) % F.cols();
-        int idx_next = (idx_lastV_in_face + 1) % F.cols();
-        bool isPrevVisited = isVisited[F(curr_neighbor,idx_prev)];
-        bool isNextVisited = isVisited[F(curr_neighbor,idx_next)];
-
-        bool gotBndEdge = false;
-        int next_bnd_vertex;
-        if (!isNextVisited && TT(curr_neighbor,idx_lastV_in_face) < 0)
-        {
-          next_bnd_vertex = idx_next;
-          gotBndEdge = true;
-        }
-        else if (!isPrevVisited && TT(curr_neighbor,(idx_lastV_in_face+2) % F.cols()) < 0)
-        {
-          next_bnd_vertex = idx_prev;
-          gotBndEdge = true;
-        }
-
-        if (gotBndEdge)
-        {
-          changed = true;
-          bnd.push_back(F(curr_neighbor,next_bnd_vertex));
-          isVisited[F(curr_neighbor,next_bnd_vertex)] = true;
-          break;
-        }
+          // Find next edge
+          int nextEdge;
+          set<int>::iterator it;
+          for (it=unseen.begin(); it != unseen.end() ; ++it)
+          {
+              if (E(*it,0) == next || E(*it,1) == next)
+              {
+                  nextEdge = *it;
+                  break;
+              }                  
+          }
+          unseen.erase(nextEdge);
+          next = (E(nextEdge,0) == next) ? E(nextEdge,1) : E(nextEdge,0);
       }
-    }
-
-    if (!changed)
-      break;
+      L.push_back(l);
   }
+}
 
-  b.resize(bnd.size());
-  for(unsigned i=0;i<bnd.size();++i)
-    b(i) = bnd[i];
+template <typename DerivedF, typename Index>
+IGL_INLINE void igl::boundary_loop(
+  const Eigen::PlainObjectBase<DerivedF>& F, 
+  std::vector<Index>& L)
+{
+  using namespace Eigen;
+  using namespace std;
+
+  vector<vector<int> > Lall;
+  boundary_loop(F,Lall);
+
+  int idxMax = -1;
+  int maxLen = 0;
+  for (int i = 0; i < Lall.size(); ++i)
+  {
+    if (Lall[i].size() > maxLen)
+    {
+      maxLen = Lall[i].size();
+      idxMax = i;
+    }
+  }   
+
+  L.resize(Lall[idxMax].size());
+  for (int i = 0; i < Lall[idxMax].size(); ++i)
+    L[i] = Lall[idxMax][i];
+}
+
+template <typename DerivedF, typename DerivedL>
+IGL_INLINE void igl::boundary_loop(
+  const Eigen::PlainObjectBase<DerivedF>& F, 
+  Eigen::PlainObjectBase<DerivedL>& L)
+{
+  using namespace Eigen;
+  using namespace std;
+
+  vector<int> Lvec;
+  boundary_loop(F,Lvec);
+
+  L.resize(Lvec.size());
+  for (int i = 0; i < Lvec.size(); ++i)
+    L(i) = Lvec[i];
 }
