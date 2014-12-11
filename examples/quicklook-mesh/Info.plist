@@ -13,8 +13,9 @@
 			<array>
 				<string>org.mesh</string>
 				<string>org.obj</string>
-				<string>org.stl</string>
 				<string>org.off</string>
+				<string>org.ply</string>
+				<string>org.stl</string>
 				<string>org.wrl</string>
 			</array>
 		</dict>
@@ -84,6 +85,7 @@
 				</array>
 			</dict>
 		</dict>
+
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
@@ -103,6 +105,27 @@
 				</array>
 			</dict>
 		</dict>
+
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.image</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>PLY 3D file</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.ply</string>
+			<key>UTTypeReferenceURL</key>
+			<string>http://en.wikipedia.org/wiki/PLY_%28file_format%29</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>ply</string>
+				</array>
+			</dict>
+		</dict>
+
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>

@@ -46,12 +46,13 @@ bool key_down(igl::Viewer &viewer, unsigned char key, int mods)
   {
     case ' ':
       viewer.core.is_animating = !viewer.core.is_animating;
-      break;
+      return true;
     case 'D':
     case 'd':
       deformation_field = !deformation_field;
-      break;
+      return true;
   }
+  return false;
 }
 
 int main(int argc, char *argv[])

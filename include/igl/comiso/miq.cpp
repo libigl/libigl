@@ -1007,7 +1007,7 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::SolvePoisson(Eigen::Vect
   if (DEBUGPRINT)
     printf("\n BUILT THE MATRIX \n");
 
-  if (integer_rounding)    
+  if (integer_rounding)
     AddToRoundVertices(roundVertices);
 
   if (_singularity_rounding)

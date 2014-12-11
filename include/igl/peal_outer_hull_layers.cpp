@@ -1,6 +1,7 @@
 #include <vector>
 #include "peal_outer_hull_layers.h"
 #include "outer_hull.h"
+#include <vector>
 
 using namespace std;
 template <
@@ -42,7 +43,7 @@ IGL_INLINE void igl::peal_outer_hull_layers(
     outer_hull(V,Fr,Fo,Jo,flipr);
     assert(Fo.rows() == Jo.rows());
     // all faces in Fo of Fr
-    vector<bool> in_outer(Fr.rows(),false); 
+    vector<bool> in_outer(Fr.rows(),false);
     for(Index g = 0;g<Jo.rows();g++)
     {
       odd(IM(Jo(g))) = odd_iter;
