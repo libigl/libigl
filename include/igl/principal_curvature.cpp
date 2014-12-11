@@ -794,6 +794,12 @@ IGL_INLINE void igl::principal_curvature(
 {
   using namespace std;
 
+  if (radius < 2)
+  {
+    radius = 2;
+    cout << "WARNING: igl::principal_curvature needs a radius >= 2, fixing it to 2." << endl;
+  }
+
   // Preallocate memory
   PD1.resize(V.rows(),3);
   PD2.resize(V.rows(),3);

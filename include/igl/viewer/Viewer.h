@@ -8,6 +8,9 @@
 
 #ifndef IGL_VIEWER_H
 #define IGL_VIEWER_H
+#ifndef IGL_OPENGL_4
+#define IGL_OPENGL_4
+#endif
 
 #include <AntTweakBar.h>
 
