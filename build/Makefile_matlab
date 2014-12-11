@@ -16,7 +16,7 @@ OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 # include igl headers
 INC+=-I../include/
 
-# EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY 
+# EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY
 
 # Eigen dependency
 EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
@@ -24,14 +24,14 @@ INC+=$(EIGEN3_INC)
 
 # Matlab dependency
 ifndef MATLAB
-  MATLAB=/Applications/MATLAB_R2013b.app/
+  MATLAB=/Applications/MATLAB_R2014b.app/
   $(warning MATLAB undefined. Setting MATLAB=${MATLAB})
 endif
 MATLAB_INC=-I$(MATLAB)/extern/include/
 MATLAB_LIB=-L$(MATLAB)/bin/maci64 -lmx -leng
 INC+=$(MATLAB_INC)
 
-obj: 
+obj:
 	mkdir -p obj
 
 ../lib/libiglmatlab.a: $(OBJ_FILES)
