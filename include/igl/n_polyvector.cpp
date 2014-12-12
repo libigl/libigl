@@ -15,6 +15,7 @@
 #include <igl/igl_inline.h>
 #include <Eigen/Sparse>
 
+#include <Eigen/Geometry>
 #include <iostream>
 
 namespace igl {
