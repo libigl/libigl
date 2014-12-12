@@ -44,6 +44,7 @@ namespace igl
         bool includeScaling,
         bool includeReflections,
         Eigen::Transform<Scalar,DIM,TType>& T);
+    
 }
 
 #ifndef IGL_STATIC_LIBRARY
