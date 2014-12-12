@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "matlab_format.h"
 #include "STR.h"
@@ -119,4 +119,5 @@ template Eigen::WithFormat<Eigen::Matrix<float, 2, 1, 0, 2, 1> > const igl::matl
 template Eigen::WithFormat<Eigen::Matrix<float, 2, 2, 1, 2, 2> > const igl::matlab_format<Eigen::Matrix<float, 2, 2, 1, 2, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<float, 2, 2, 1, 2, 2> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
 template Eigen::WithFormat<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const igl::matlab_format<Eigen::Matrix<float, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
 template Eigen::WithFormat<Eigen::Matrix<double, 3, 3, 1, 3, 3> > const igl::matlab_format<Eigen::Matrix<double, 3, 3, 1, 3, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 3, 1, 3, 3> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
+template Eigen::WithFormat<Eigen::Array<double, -1, 1, 0, -1, 1> > const igl::matlab_format<Eigen::Array<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Array<double, -1, 1, 0, -1, 1> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >);
 #endif
