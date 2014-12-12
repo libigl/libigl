@@ -14,6 +14,11 @@ find_package(MATLAB QUIET)
 find_package(EMBREE QUIET)
 find_package(CGAL QUIET)
 
+## Check for mosek
+find_package(MOSEK QUIET)
+
+include("CMakeLists.shared")
+
 # Chapter 1
 add_subdirectory("101_FileIO")
 add_subdirectory("102_DrawMesh")

@@ -3,7 +3,12 @@ project(403_BoundedBiharmonicWeights)
 
 include("../CMakeLists.shared")
 
-find_package(MOSEK REQUIRED)
+if(NOT MOSEK_FOUND)
+  add_definitions(-DIGL_NO_MOSEK)
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    set(LIBIGLMOSEK_LIBRARY "")
+  endif(LIBIGL_USE_STATIC_LIBRARY)
+endif(NOT MOSEK_FOUND)
 
 include_directories( ${MOSEK_INCLUDE_DIR} )
 

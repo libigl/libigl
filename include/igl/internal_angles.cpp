@@ -48,9 +48,9 @@ IGL_INLINE void igl::internal_angles(
   #  define IGL_OMP_MIN_VALUE 1000
   #endif
   #pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
-  for(int f = 0;f<m;f++)
+  for(size_t f = 0;f<m;f++)
   {
-    for(int d = 0;d<3;d++)
+    for(size_t d = 0;d<3;d++)
     {
       const auto & s1 = L(f,d);
       const auto & s2 = L(f,(d+1)%3);

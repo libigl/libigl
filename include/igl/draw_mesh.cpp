@@ -91,7 +91,7 @@ IGL_INLINE void igl::draw_mesh(
     assert(F.maxCoeff() < V.rows());
     assert(V.cols() == 3);
     assert(rC == rV || rC == rF || rC == rF*3 || rC==1 || C.size() == 0);
-    assert(C.cols() == 3 || C.size() == 0);
+    assert(C.cols() >= 3 || C.size() == 0);
     assert(N.cols() == 3 || N.size() == 0);
     assert(TC.cols() == 2 || TC.size() == 0);
     assert(cF == 3 || cF == 4);

@@ -227,7 +227,10 @@ IGL_INLINE bool igl::GeneralPolyVectorFieldFinder<DerivedV, DerivedF>::
     computeCoefficientLaplacian(degree, DD);
     Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar> > f; f.resize(numF,1);
 
-    minQuadWithKnownMini(DD, f, isConstrained, Ck, coeffs[i]);
+    if (isConstrained.sum() == numF)
+      coeffs[i] = Ck;
+    else
+      minQuadWithKnownMini(DD, f, isConstrained, Ck, coeffs[i]);
   }
 
   std::vector<Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 2> > pv;
@@ -479,7 +482,6 @@ IGL_INLINE void igl::n_polyvector_general(const Eigen::MatrixXd &V,
     isConstrained(b(i)) = 1;
     cfW.row(b(i)) << bc.row(i);
   }
-
   int n = I.rows();
   igl::GeneralPolyVectorFieldFinder<Eigen::MatrixXd, Eigen::MatrixXi> pvff(V,F,n);
   pvff.solve(isConstrained, cfW, I, output);
