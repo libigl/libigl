@@ -4,6 +4,7 @@
 #include <igl/igl_inline.h>
 #include "MeshBooleanType.h"
 #include <Eigen/Core>
+#include <functional>
 
 namespace igl
 {

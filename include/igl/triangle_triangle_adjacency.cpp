@@ -101,8 +101,8 @@ IGL_INLINE void igl::triangle_triangle_adjacency(const Eigen::PlainObjectBase<Sc
 }
 
 template <
-  typename DerivedF, 
-  typename TTIndex, 
+  typename DerivedF,
+  typename TTIndex,
   typename TTiIndex>
   IGL_INLINE void igl::triangle_triangle_adjacency(
     const Eigen::PlainObjectBase<DerivedF> & F,
@@ -113,7 +113,7 @@ template <
 }
 
 template <
-  typename DerivedF, 
+  typename DerivedF,
   typename TTIndex>
   IGL_INLINE void igl::triangle_triangle_adjacency(
     const Eigen::PlainObjectBase<DerivedF> & F,
@@ -124,8 +124,8 @@ template <
 }
 
 template <
-  typename DerivedF, 
-  typename TTIndex, 
+  typename DerivedF,
+  typename TTIndex,
   typename TTiIndex>
   IGL_INLINE void igl::triangle_triangle_adjacency(
     const Eigen::PlainObjectBase<DerivedF> & F,
@@ -148,10 +148,10 @@ template <
 }
 
 template <
-  typename DerivedE, 
+  typename DerivedE,
   typename DerivedEMAP,
   typename uE2EType,
-  typename TTIndex, 
+  typename TTIndex,
   typename TTiIndex>
   IGL_INLINE void igl::triangle_triangle_adjacency(
     const Eigen::PlainObjectBase<DerivedE> & E,
@@ -206,6 +206,7 @@ template <
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::triangle_triangle_adjacency<Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, long, long, long>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > > const&, bool, std::vector<std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > >, std::allocator<std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > > > >&, std::vector<std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > >, std::allocator<std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > > > >&);
+template void igl::triangle_triangle_adjacency<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template void igl::triangle_triangle_adjacency<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
 template void igl::triangle_triangle_adjacency<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
 #endif

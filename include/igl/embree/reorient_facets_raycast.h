@@ -25,8 +25,7 @@ namespace igl
   //   is_verbose  Verbose output to cout
   // Outputs:
   //   I  #F list of whether face has been flipped
-  //   C  #F list of patch ID (outpute of bfs_orient
-  //     > manifold patches
+  //   C  #F list of patch ID (output of bfs_orient > manifold patches)
   template <
     typename DerivedV, 
     typename DerivedF, 

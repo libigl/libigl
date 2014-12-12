@@ -4,7 +4,9 @@ project(609_Boolean)
 find_package(CGAL REQUIRED)
 include(${CGAL_USE_FILE})
 
-# for some reason must come after cgal include
+# for some reason must come after cgal include. I think that it's overwriting
+# come flags like CXX_FLAGS
+set(CMAKELISTS_SHARED_INCLUDED FALSE)
 include("../CMakeLists.shared")
 
 set(SOURCES
