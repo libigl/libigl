@@ -6,6 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "procrustes.h"
+#include "polar_svd.h"
+#include "polar_dec.h"
  
 template <typename DerivedV, typename Scalar, int DIM, int TType>
 IGL_INLINE void igl::procrustes(
@@ -20,8 +22,8 @@ IGL_INLINE void igl::procrustes(
    assert(X.cols() == Y.cols() && "Points have same dimensions");
 
    // Center data
-   VectorXd Xmean = X.colwise().mean();      
-   VectorXd Ymean = Y.colwise().mean();      
+   const VectorXd Xmean = X.colwise().mean();      
+   const VectorXd Ymean = Y.colwise().mean();      
    MatrixXd XC = X.rowwise() - Xmean.transpose();
    MatrixXd YC = Y.rowwise() - Ymean.transpose();
 
@@ -39,22 +41,16 @@ IGL_INLINE void igl::procrustes(
 
 
    // Rotation 
-   MatrixXd M = XC.transpose() * YC; 
-   JacobiSVD<Eigen::MatrixXd> svd(M, Eigen::ComputeFullU | Eigen::ComputeFullV);
-
-   MatrixXd sigma;
-   sigma.setIdentity(DIM,DIM);
-   if (!includeReflections && (svd.matrixU() * svd.matrixV().transpose()).determinant() < 0)
-       sigma(DIM-1,DIM-1) = -1.;
-
-   Matrix<Scalar,DIM,DIM> R = svd.matrixU() * sigma * svd.matrixV().transpose();
-   assert(abs(R.determinant() - 1) < 1e-10);
-
+   MatrixXd S = XC.transpose() * YC; 
+   Matrix<Scalar,DIM,DIM> Rm,Tm;
+   if (includeReflections)
+     polar_dec(S,Rm,Tm);
+   else
+     polar_svd(S,Rm,Tm);
 
    // Translation
-   Matrix<Scalar,DIM,1> t = Ymean - scale*R*Xmean;
-     
+   Matrix<Scalar,DIM,1> t = Ymean - scale*Rm*Xmean;
 
    // Combine
-   T = Translation<Scalar,DIM>(t) * R.transpose() * Scaling(scale);
+   T = Translation<Scalar,DIM>(t) * Rm.transpose() * Scaling(scale);
 }
