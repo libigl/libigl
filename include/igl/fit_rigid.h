@@ -14,6 +14,7 @@
 
 namespace igl
 {
+  // Deprecated: please use procrustes(...) instead.
   // Fit a rigid 
   IGL_INLINE void fit_rigid(
     const Eigen::MatrixXd & A,
