@@ -14,6 +14,7 @@ IGL_INLINE void igl::fit_rigid(
   Eigen::Rotation2Dd & R,
   Eigen::RowVector2d & t)
 {
+  using namespace Eigen;
   Matrix2d Rmat;
   procrustes(A,B,Rmat,t);
   R.fromRotationMatrix(Rmat);
