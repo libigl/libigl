@@ -114,7 +114,6 @@ IGL_INLINE void igl::procrustes(
     Eigen::PlainObjectBase<DerivedR>& R,
     Eigen::PlainObjectBase<DerivedT>& t)
 {
-  double scale;
   procrustes(X,Y,false,false,R,t);
 }
 
