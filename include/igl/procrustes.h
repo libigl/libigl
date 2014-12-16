@@ -78,13 +78,14 @@ namespace igl
   //   igl::procrustes(X,Y,true,false,T);
   //   MatrixXd Xprime = (X * T.linear()).rowwise() + T.translation().transpose();
   template <
-    typename DerivedV, 
+    typename DerivedX, 
+    typename DerivedY, 
     typename Scalar, 
     int DIM, 
     int TType>
   IGL_INLINE void procrustes(
-    const Eigen::PlainObjectBase<DerivedV>& X,
-    const Eigen::PlainObjectBase<DerivedV>& Y,
+    const Eigen::PlainObjectBase<DerivedX>& X,
+    const Eigen::PlainObjectBase<DerivedY>& Y,
     bool includeScaling,
     bool includeReflections,
     Eigen::Transform<Scalar,DIM,TType>& T);
