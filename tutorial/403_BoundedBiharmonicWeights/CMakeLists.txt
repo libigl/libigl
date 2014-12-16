@@ -8,9 +8,10 @@ if(NOT MOSEK_FOUND)
   if(LIBIGL_USE_STATIC_LIBRARY)
     set(LIBIGLMOSEK_LIBRARY "")
   endif(LIBIGL_USE_STATIC_LIBRARY)
+  set(MOSEK_LIBRARIES "")
+else(NOT MOSEK_FOUND)
+  include_directories( ${MOSEK_INCLUDE_DIR} )
 endif(NOT MOSEK_FOUND)
-
-include_directories( ${MOSEK_INCLUDE_DIR} )
 
 set(SOURCES
 ${PROJECT_SOURCE_DIR}/main.cpp
