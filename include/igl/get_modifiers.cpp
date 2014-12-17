@@ -15,7 +15,7 @@
 #endif
 
 #ifdef __APPLE__
-#include <Carbon/Carbon.h>
+#include <Carbon/HIToolbox/Events.h>
 #endif
 
 IGL_INLINE int igl::get_modifiers()
@@ -36,7 +36,7 @@ IGL_INLINE int igl::get_modifiers()
   mod |= (carbon_is_keydown(kVK_Option)?GLUT_ACTIVE_ALT:0);
   mod |= (carbon_is_keydown(kVK_Control)?GLUT_ACTIVE_CTRL:0);
 #else
-#  error "Not supported."
+#  warning "igl::get_modifiers not supported on your OS, some demos may not work correctly."
 #endif
   return mod;
 }
