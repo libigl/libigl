@@ -15,10 +15,12 @@
 #endif
 
 #ifdef __APPLE__
-#include <Carbon/HIToolbox/Events.h>
+//#include <Carbon/HIToolbox/Events.h>
+#include <Carbon/Carbon.h>
 #endif
 
-IGL_INLINE int igl::get_modifiers()
+// FORCED INLINE
+inline int igl::get_modifiers()
 {
   int mod = 0;
 #ifdef __APPLE__

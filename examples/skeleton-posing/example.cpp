@@ -296,7 +296,7 @@ void display()
       default:
       case SKEL_STYLE_TYPE_3D:
       {
-        draw_skeleton_3d(C,BE,T,s.colors);
+        draw_skeleton_3d(C,BE,T,s.colors,bbd*0.5);
         break;
       }
       case SKEL_STYLE_TYPE_VECTOR_GRAPHICS:

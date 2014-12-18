@@ -293,7 +293,7 @@ void display()
   {
     default:
     case SKEL_STYLE_TYPE_3D:
-      draw_skeleton_3d(C,BE,T);
+      draw_skeleton_3d(C,BE,T,MAYA_VIOLET,bbd*0.5);
       break;
     case SKEL_STYLE_TYPE_VECTOR_GRAPHICS:
       draw_skeleton_vector_graphics(C,BE,T);
