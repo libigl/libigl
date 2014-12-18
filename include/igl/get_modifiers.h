@@ -1,6 +1,6 @@
 #ifndef GET_MODIFIERS_H
 #define GET_MODIFIERS_H
-#include "igl_inline.h"
+//#include "igl_inline.h"
 namespace igl
 {
   enum Modifier
@@ -14,9 +14,12 @@ namespace igl
   // Retrieve current modifier constellation. 
   //
   // Returns int that's an "or" of the active modifiers above.
-  IGL_INLINE int get_modifiers();
+  //
+  // FORCED INLINE
+  inline int get_modifiers();
 }
-#ifndef IGL_STATIC_LIBRARY
-#include "get_modifiers.cpp"
-#endif
+// FORCED INLINE
+//#ifndef IGL_STATIC_LIBRARY
+//#include "get_modifiers.cpp"
+//#endif
 #endif
