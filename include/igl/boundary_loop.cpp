@@ -6,8 +6,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "boundary_loop.h"
-#include "igl/boundary_facets.h"
-#include "igl/slice.h"
+#include "slice.h"
+#include "triangle_triangle_adjacency.h"
+#include "vertex_triangle_adjacency.h"
+#include "is_border_vertex.h"
 #include <set>
 
 template <typename DerivedF, typename Index>
@@ -17,46 +19,77 @@ IGL_INLINE void igl::boundary_loop(
 {
   using namespace std;
   using namespace Eigen;
-  MatrixXi E;
-  boundary_facets(F, E);
+  using namespace igl;
 
+  MatrixXd Vdummy(F.maxCoeff(),1);
+  MatrixXi TT,TTi;
+  vector<std::vector<int> > VF, VFi;
+  triangle_triangle_adjacency(Vdummy,F,TT,TTi);
+  vertex_triangle_adjacency(Vdummy,F,VF,VFi);
+
+  vector<bool> unvisited = is_border_vertex(Vdummy,F);
   set<int> unseen;
-  for (int i = 0; i < E.rows(); ++i)
+  for (int i = 0; i < unvisited.size(); ++i)
   {
-    unseen.insert(unseen.end(),i);
+    if (unvisited[i])
+      unseen.insert(unseen.end(),i);
   }
 
   while (!unseen.empty())
   {
-      vector<Index> l;
+    vector<Index> l;
 
-      // Get first vertex of loop
-      int startEdge = *unseen.begin();
-      unseen.erase(unseen.begin());
+    // Get first vertex of loop
+    int start = *unseen.begin();
+    unseen.erase(unseen.begin());
+    unvisited[start] = false;
+    l.push_back(start);
 
-      int start = E(startEdge,0);
-      int next = E(startEdge,1);
-      l.push_back(start);
-
-      while (start != next)
+    bool done = false;
+    while (!done)
+    {
+      // Find next vertex
+      bool newBndEdge = false;
+      int v = l[l.size()-1];
+      int next;
+      for (int i = 0; i < (int)VF[v].size() && !newBndEdge; i++)
       {
-          l.push_back(next);
+        int fid = VF[v][i];
 
-          // Find next edge
-          int nextEdge;
-          set<int>::iterator it;
-          for (it=unseen.begin(); it != unseen.end() ; ++it)
+        if (TT.row(fid).minCoeff() < 0.) // Face contains boundary edge
+        {
+          int vLoc;
+          if (F(fid,0) == v) vLoc = 0;
+          if (F(fid,1) == v) vLoc = 1;
+          if (F(fid,2) == v) vLoc = 2;
+
+          int vPrev = F(fid,(vLoc + F.cols()-1) % F.cols());
+          int vNext = F(fid,(vLoc + 1) % F.cols());
+
+          bool newBndEdge = false;
+          if (unvisited[vPrev] && TT(fid,(vLoc+2) % F.cols()) < 0)
           {
-              if (E(*it,0) == next || E(*it,1) == next)
-              {
-                  nextEdge = *it;
-                  break;
-              }                  
+            next = vPrev;
+            newBndEdge = true;
           }
-          unseen.erase(nextEdge);
-          next = (E(nextEdge,0) == next) ? E(nextEdge,1) : E(nextEdge,0);
+          else if (unvisited[vNext] && TT(fid,vLoc) < 0)
+          {
+            next = vNext;
+            newBndEdge = true;
+          }
+        }
       }
-      L.push_back(l);
+
+      if (newBndEdge)
+      {
+        l.push_back(next);
+        unseen.erase(next);
+        unvisited[next] = false;
+      }
+      else
+        done = true;
+    }
+    L.push_back(l);
   }
 }
 
