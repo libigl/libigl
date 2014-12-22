@@ -12,6 +12,9 @@
 #  include <igl/png/render_to_png_async.h>
 #endif
 
+#include <list>
+#include <thread>
+
 extern GLboolean  hasStereo;
 extern int       *pilmat,ipilmat,refmat,reftype,refitem;
 extern short      schw,schh;
@@ -875,7 +878,8 @@ void redrawScene() {
     }else
     {
       sprintf(path,"%s.%.3d." PNG,path,numdep);
-      igl::render_to_png_async(std::string(path),sc->par.xs,sc->par.ys,true,false);
+      static std::list<std::thread> thread_list;
+      thread_list.push_back(igl::render_to_png_async(std::string(path),sc->par.xs,sc->par.ys,true,false));
     }
     sc->igl_params->render_on_next = false;
   }
