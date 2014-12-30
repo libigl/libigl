@@ -214,36 +214,36 @@ extern char *my_alloc();
 
 /*** delcaration of routines ***/
 
-int get_native_binary_type2();
+inline int get_native_binary_type2();
 
-extern PlyFile *ply_write(FILE *, int, char **, int);
-extern PlyFile *ply_open_for_writing(char *, int, char **, int, float *);
-extern void ply_describe_element(PlyFile *, const char *, int, int, PlyProperty *);
-extern void ply_describe_property(PlyFile *, const char *, PlyProperty *);
-extern void ply_element_count(PlyFile *, const char *, int);
-extern void ply_header_complete(PlyFile *);
-extern void ply_put_element_setup(PlyFile *, const char *);
-extern void ply_put_element(PlyFile *, void *);
-extern void ply_put_comment(PlyFile *, char *);
-extern void ply_put_obj_info(PlyFile *, char *);
-extern PlyFile *ply_read(FILE *, int *, char ***);
-extern PlyFile *ply_open_for_reading( const char *, int *, char ***, int *, float *);
-extern PlyProperty **ply_get_element_description(PlyFile *, const char *, int*, int*);
-extern void ply_get_element_setup( PlyFile *, const char *, int, PlyProperty *);
-extern void ply_get_property(PlyFile *, const char *, PlyProperty *);
-extern PlyOtherProp *ply_get_other_properties(PlyFile *, const char *, int);
-extern void ply_get_element(PlyFile *, void *);
-extern char **ply_get_comments(PlyFile *, int *);
-extern char **ply_get_obj_info(PlyFile *, int *);
-extern void ply_close(PlyFile *);
-extern void ply_get_info(PlyFile *, float *, int *);
-extern PlyOtherElems *ply_get_other_element (PlyFile *, const char *, int);
-extern void ply_describe_other_elements ( PlyFile *, PlyOtherElems *);
-extern void ply_put_other_elements (PlyFile *);
-extern void ply_free_other_elements (PlyOtherElems *);
-extern void ply_describe_other_properties(PlyFile *, PlyOtherProp *, int);
+inline PlyFile *ply_write(FILE *, int, char **, int);
+inline PlyFile *ply_open_for_writing(char *, int, char **, int, float *);
+inline void ply_describe_element(PlyFile *, const char *, int, int, PlyProperty *);
+inline void ply_describe_property(PlyFile *, const char *, PlyProperty *);
+inline void ply_element_count(PlyFile *, const char *, int);
+inline void ply_header_complete(PlyFile *);
+inline void ply_put_element_setup(PlyFile *, const char *);
+inline void ply_put_element(PlyFile *, void *);
+inline void ply_put_comment(PlyFile *, char *);
+inline void ply_put_obj_info(PlyFile *, char *);
+inline PlyFile *ply_read(FILE *, int *, char ***);
+inline PlyFile *ply_open_for_reading( const char *, int *, char ***, int *, float *);
+inline PlyProperty **ply_get_element_description(PlyFile *, const char *, int*, int*);
+inline void ply_get_element_setup( PlyFile *, const char *, int, PlyProperty *);
+inline void ply_get_property(PlyFile *, const char *, PlyProperty *);
+inline PlyOtherProp *ply_get_other_properties(PlyFile *, const char *, int);
+inline void ply_get_element(PlyFile *, void *);
+inline char **ply_get_comments(PlyFile *, int *);
+inline char **ply_get_obj_info(PlyFile *, int *);
+inline void ply_close(PlyFile *);
+inline void ply_get_info(PlyFile *, float *, int *);
+inline PlyOtherElems *ply_get_other_element (PlyFile *, const char *, int);
+inline void ply_describe_other_elements ( PlyFile *, PlyOtherElems *);
+inline void ply_put_other_elements (PlyFile *);
+inline void ply_free_other_elements (PlyOtherElems *);
+inline void ply_describe_other_properties(PlyFile *, PlyOtherProp *, int);
 
-extern int equal_strings(const char *, const char *);
+inline int equal_strings(const char *, const char *);
 
 
 #ifdef __cplusplus
@@ -361,60 +361,60 @@ static int types_checked = 0;
 #define NAMED_PROP       1
 
 /* returns 1 if strings are equal, 0 if not */
-int equal_strings(const char *, const char *);
+inline int equal_strings(const char *, const char *);
 
 /* find an element in a plyfile's list */
-PlyElement *find_element(PlyFile *, const char *);
+inline PlyElement *find_element(PlyFile *, const char *);
 
 /* find a property in an element's list */
-PlyProperty *find_property(PlyElement *, const char *, int *);
+inline PlyProperty *find_property(PlyElement *, const char *, int *);
 
 /* write to a file the word describing a PLY file data type */
-void write_scalar_type (FILE *, int);
+inline void write_scalar_type (FILE *, int);
 
 /* read a line from a file and break it up into separate words */
-char **get_words(FILE *, int *, char **);
-char **old_get_words(FILE *, int *);
+inline char **get_words(FILE *, int *, char **);
+inline char **old_get_words(FILE *, int *);
 
 /* write an item to a file */
-void write_binary_item(FILE *, int, int, unsigned int, double, int);
-void write_ascii_item(FILE *, int, unsigned int, double, int);
-double old_write_ascii_item(FILE *, char *, int);
+inline void write_binary_item(FILE *, int, int, unsigned int, double, int);
+inline void write_ascii_item(FILE *, int, unsigned int, double, int);
+inline double old_write_ascii_item(FILE *, char *, int);
 
 /* add information to a PLY file descriptor */
-void add_element(PlyFile *, char **);
-void add_property(PlyFile *, char **);
-void add_comment(PlyFile *, char *);
-void add_obj_info(PlyFile *, char *);
+inline void add_element(PlyFile *, char **);
+inline void add_property(PlyFile *, char **);
+inline void add_comment(PlyFile *, char *);
+inline void add_obj_info(PlyFile *, char *);
 
 /* copy a property */
-void copy_property(PlyProperty *, PlyProperty *);
+inline void copy_property(PlyProperty *, PlyProperty *);
 
 /* store a value into where a pointer and a type specify */
-void store_item(char *, int, int, unsigned int, double);
+inline void store_item(char *, int, int, unsigned int, double);
 
 /* return the value of a stored item */
-void get_stored_item( void *, int, int *, unsigned int *, double *);
+inline void get_stored_item( void *, int, int *, unsigned int *, double *);
 
 /* return the value stored in an item, given ptr to it and its type */
-double get_item_value(char *, int);
+inline double get_item_value(char *, int);
 
 /* get binary or ascii item and store it according to ptr and type */
-void get_ascii_item(char *, int, int *, unsigned int *, double *);
-void get_binary_item(FILE *, int, int, int *, unsigned int *, double *);
+inline void get_ascii_item(char *, int, int *, unsigned int *, double *);
+inline void get_binary_item(FILE *, int, int, int *, unsigned int *, double *);
 
 /* get a bunch of elements from a file */
-void ascii_get_element(PlyFile *, char *);
-void binary_get_element(PlyFile *, char *);
+inline void ascii_get_element(PlyFile *, char *);
+inline void binary_get_element(PlyFile *, char *);
 
 /* memory allocation */
-char *my_alloc(int, int, const char *);
+inline char *my_alloc(int, int, const char *);
 
 /* byte ordering */
-void get_native_binary_type();
-void swap_bytes(char *, int);
+inline void get_native_binary_type();
+inline void swap_bytes(char *, int);
 
-void check_types();
+inline void check_types();
 
 
 /*************/
@@ -435,7 +435,7 @@ Exit:
   returns a pointer to a PlyFile, used to refer to this file, or NULL if error
 ******************************************************************************/
 
-PlyFile *ply_write(
+inline PlyFile *ply_write(
   FILE *fp,
   int nelems,
   const char **elem_names,
@@ -499,7 +499,7 @@ Exit:
   returns a file identifier, used to refer to this file, or NULL if error
 ******************************************************************************/
 
-PlyFile *ply_open_for_writing(
+inline PlyFile *ply_open_for_writing(
   const char *filename,
   int nelems,
   char **elem_names,
@@ -552,7 +552,7 @@ Entry:
   prop_list - list of properties
 ******************************************************************************/
 
-void ply_describe_element(
+inline void ply_describe_element(
   PlyFile *plyfile,
   const char *elem_name,
   int nelems,
@@ -597,7 +597,7 @@ Entry:
   prop      - the new property
 ******************************************************************************/
 
-void ply_describe_property(
+inline void ply_describe_property(
   PlyFile *plyfile,
   const char *elem_name,
   PlyProperty *prop
@@ -643,7 +643,7 @@ Describe what the "other" properties are that are to be stored, and where
 they are in an element.
 ******************************************************************************/
 
-void ply_describe_other_properties(
+inline void ply_describe_other_properties(
   PlyFile *plyfile,
   PlyOtherProp *other,
   int offset
@@ -703,7 +703,7 @@ Entry:
   nelems    - number of elements of this type to be written
 ******************************************************************************/
 
-void ply_element_count(
+inline void ply_element_count(
   PlyFile *plyfile,
   const char *elem_name,
   int nelems
@@ -730,7 +730,7 @@ Entry:
   plyfile - file identifier
 ******************************************************************************/
 
-void ply_header_complete(PlyFile *plyfile)
+inline void ply_header_complete(PlyFile *plyfile)
 {
   int i,j;
   FILE *fp = plyfile->fp;
@@ -803,7 +803,7 @@ Entry:
   elem_name - name of element we're talking about
 ******************************************************************************/
 
-void ply_put_element_setup(PlyFile *plyfile, const char *elem_name)
+inline void ply_put_element_setup(PlyFile *plyfile, const char *elem_name)
 {
   PlyElement *elem;
 
@@ -827,7 +827,7 @@ Entry:
   elem_ptr - pointer to the element
 ******************************************************************************/
 
-void ply_put_element(PlyFile *plyfile, void *elem_ptr)
+inline void ply_put_element(PlyFile *plyfile, void *elem_ptr)
 {
   int j,k;
   FILE *fp = plyfile->fp;
@@ -940,7 +940,7 @@ Entry:
   comment - the comment to be written
 ******************************************************************************/
 
-void ply_put_comment(PlyFile *plyfile, char *comment)
+inline void ply_put_comment(PlyFile *plyfile, char *comment)
 {
   /* (re)allocate space for new comment */
   if (plyfile->num_comments == 0)
@@ -964,7 +964,7 @@ Entry:
   obj_info - the text information to be written
 ******************************************************************************/
 
-void ply_put_obj_info(PlyFile *plyfile, char *obj_info)
+inline void ply_put_obj_info(PlyFile *plyfile, char *obj_info)
 {
   /* (re)allocate space for new info */
   if (plyfile->num_obj_info == 0)
@@ -1002,7 +1002,7 @@ Exit:
   returns a pointer to a PlyFile, used to refer to this file, or NULL if error
 ******************************************************************************/
 
-PlyFile *ply_read(FILE *fp, int *nelems, char ***elem_names)
+inline PlyFile *ply_read(FILE *fp, int *nelems, char ***elem_names)
 {
   int i,j;
   PlyFile *plyfile;
@@ -1124,7 +1124,7 @@ Exit:
   returns a file identifier, used to refer to this file, or NULL if error
 ******************************************************************************/
 
-PlyFile *ply_open_for_reading(
+inline PlyFile *ply_open_for_reading(
   char *filename,
   int *nelems,
   char ***elem_names,
@@ -1185,7 +1185,7 @@ Exit:
   returns a list of properties, or NULL if the file doesn't contain that elem
 ******************************************************************************/
 
-PlyProperty **ply_get_element_description(
+inline PlyProperty **ply_get_element_description(
   PlyFile *plyfile,
   const char *elem_name,
   int *nelems,
@@ -1229,7 +1229,7 @@ Entry:
   prop_list - list of properties
 ******************************************************************************/
 
-void ply_get_element_setup(
+inline void ply_get_element_setup(
   PlyFile *plyfile,
   const char *elem_name,
   int nprops,
@@ -1280,7 +1280,7 @@ Entry:
   prop      - property to add to those that will be returned
 ******************************************************************************/
 
-void ply_get_property(
+inline void ply_get_property(
   PlyFile *plyfile,
   const char *elem_name,
   PlyProperty *prop
@@ -1322,7 +1322,7 @@ Entry:
   elem_ptr - pointer to location where the element information should be put
 ******************************************************************************/
 
-void ply_get_element(PlyFile *plyfile, void *elem_ptr)
+inline void ply_get_element(PlyFile *plyfile, void *elem_ptr)
 {
   if (plyfile->file_type == PLY_ASCII)
     ascii_get_element (plyfile, (char *) elem_ptr);
@@ -1342,7 +1342,7 @@ Exit:
   returns a pointer to a list of comments
 ******************************************************************************/
 
-char **ply_get_comments(PlyFile *plyfile, int *num_comments)
+inline char **ply_get_comments(PlyFile *plyfile, int *num_comments)
 {
   *num_comments = plyfile->num_comments;
   return (plyfile->comments);
@@ -1361,7 +1361,7 @@ Exit:
   returns a pointer to a list of object info lines
 ******************************************************************************/
 
-char **ply_get_obj_info(PlyFile *plyfile, int *num_obj_info)
+inline char **ply_get_obj_info(PlyFile *plyfile, int *num_obj_info)
 {
   *num_obj_info = plyfile->num_obj_info;
   return (plyfile->obj_info);
@@ -1379,7 +1379,7 @@ Entry:
   elem    - element for which we want to save away other properties
 ******************************************************************************/
 
-void setup_other_props(PlyElement *elem)
+inline void setup_other_props(PlyElement *elem)
 {
   int i;
   PlyProperty *prop;
@@ -1450,7 +1450,7 @@ Exit:
   returns pointer to structure containing description of other_props
 ******************************************************************************/
 
-PlyOtherProp *ply_get_other_properties(
+inline PlyOtherProp *ply_get_other_properties(
   PlyFile *plyfile,
   const char *elem_name,
   int offset
@@ -1539,7 +1539,7 @@ Exit:
   returns pointer to ALL the "other" element data for this PLY file
 ******************************************************************************/
 
-PlyOtherElems *ply_get_other_element (
+inline PlyOtherElems *ply_get_other_element (
   PlyFile *plyfile,
   char *elem_name,
   int elem_count
@@ -1611,7 +1611,7 @@ Entry:
   other_elems - info about other elements that we want to store
 ******************************************************************************/
 
-void ply_describe_other_elements (
+inline void ply_describe_other_elements (
   PlyFile *plyfile,
   PlyOtherElems *other_elems
 )
@@ -1653,7 +1653,7 @@ Entry:
   plyfile - pointer to PLY file to write out other elements for
 ******************************************************************************/
 
-void ply_put_other_elements (PlyFile *plyfile)
+inline void ply_put_other_elements (PlyFile *plyfile)
 {
   int i,j;
   OtherElem *other;
@@ -1683,7 +1683,7 @@ Entry:
   other_elems - data structure to free up
 ******************************************************************************/
 
-void ply_free_other_elements (PlyOtherElems *other_elems)
+inline void ply_free_other_elements (PlyOtherElems *other_elems)
 {
   other_elems = other_elems;
 }
@@ -1703,7 +1703,7 @@ Entry:
   plyfile - identifier of file to close
 ******************************************************************************/
 
-void ply_close(PlyFile *plyfile)
+inline void ply_close(PlyFile *plyfile)
 {
   fclose (plyfile->fp);
 
@@ -1723,7 +1723,7 @@ Exit:
   file_type - PLY_ASCII, PLY_BINARY_BE, or PLY_BINARY_LE
 ******************************************************************************/
 
-void ply_get_info(PlyFile *ply, float *version, int *file_type)
+inline void ply_get_info(PlyFile *ply, float *version, int *file_type)
 {
   if (ply == NULL)
     return;
@@ -1737,7 +1737,7 @@ void ply_get_info(PlyFile *ply, float *version, int *file_type)
 Compare two strings.  Returns 1 if they are the same, 0 if not.
 ******************************************************************************/
 
-int equal_strings(const char *s1, const char *s2)
+inline int equal_strings(const char *s1, const char *s2)
 {
 
   while (*s1 && *s2)
@@ -1762,7 +1762,7 @@ Exit:
   returns the element, or NULL if not found
 ******************************************************************************/
 
-PlyElement *find_element(PlyFile *plyfile, const char *element)
+inline PlyElement *find_element(PlyFile *plyfile, const char *element)
 {
   int i;
 
@@ -1786,7 +1786,7 @@ Exit:
   returns a pointer to the property, or NULL if not found
 ******************************************************************************/
 
-PlyProperty *find_property(PlyElement *elem, const char *prop_name, int *index)
+inline PlyProperty *find_property(PlyElement *elem, const char *prop_name, int *index)
 {
   int i;
 
@@ -1809,7 +1809,7 @@ Entry:
   elem_ptr - pointer to element
 ******************************************************************************/
 
-void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
+inline void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
 {
   int j,k;
   PlyElement *elem;
@@ -1931,7 +1931,7 @@ Entry:
   elem_ptr - pointer to an element
 ******************************************************************************/
 
-void binary_get_element(PlyFile *plyfile, char *elem_ptr)
+inline void binary_get_element(PlyFile *plyfile, char *elem_ptr)
 {
   int j,k;
   PlyElement *elem;
@@ -2043,7 +2043,7 @@ Entry:
   code - code for type
 ******************************************************************************/
 
-void write_scalar_type (FILE *fp, int code)
+inline void write_scalar_type (FILE *fp, int code)
 {
   /* make sure this is a valid code */
 
@@ -2066,7 +2066,7 @@ Entry:
   num_bytes - number of bytes in array
 ******************************************************************************/
 
-void swap_bytes(char *bytes, int num_bytes)
+inline void swap_bytes(char *bytes, int num_bytes)
 {
     int i;
     char temp;
@@ -2088,7 +2088,7 @@ void swap_bytes(char *bytes, int num_bytes)
 
 ******************************************************************************/
 
-void get_native_binary_type()
+inline void get_native_binary_type()
 {
     endian_test_type test;
 
@@ -2106,7 +2106,7 @@ void get_native_binary_type()
     }
 }
 
-int get_native_binary_type2()
+inline int get_native_binary_type2()
 {
     endian_test_type test;
 
@@ -2130,7 +2130,7 @@ int get_native_binary_type2()
 
 ******************************************************************************/
 
-void check_types()
+inline void check_types()
 {
     if ((ply_type_size[PLY_CHAR] != sizeof(char)) ||
 	(ply_type_size[PLY_SHORT] != sizeof(short)) ||	
@@ -2164,7 +2164,7 @@ Exit:
   returns a list of words from the line, or NULL if end-of-file
 ******************************************************************************/
 
-char **get_words(FILE *fp, int *nwords, char **orig_line)
+inline char **get_words(FILE *fp, int *nwords, char **orig_line)
 {
   #define BIG_STRING 4096
   static char str[BIG_STRING];
@@ -2361,7 +2361,7 @@ Exit:
   returns a double-precision float that contains the value of the item
 ******************************************************************************/
 
-double get_item_value(char *item, int type)
+inline double get_item_value(char *item, int type)
 {
   unsigned char *puchar;
   char *pchar;
@@ -2426,7 +2426,7 @@ Entry:
   type       - data type to write out
 ******************************************************************************/
 
-void write_binary_item(
+inline void write_binary_item(
   FILE *fp,
   int file_type,
   int int_val,
@@ -2499,7 +2499,7 @@ Entry:
   type       - data type to write out
 ******************************************************************************/
 
-void write_ascii_item(
+inline void write_ascii_item(
   FILE *fp,
   int int_val,
   unsigned int uint_val,
@@ -2553,7 +2553,7 @@ Exit:
   returns a double-precision float that contains the value of the written item
 ******************************************************************************/
 
-double old_write_ascii_item(FILE *fp, char *item, int type)
+inline double old_write_ascii_item(FILE *fp, char *item, int type)
 {
   unsigned char *puchar;
   char *pchar;
@@ -2629,7 +2629,7 @@ Exit:
   double_val - double-precision floating point value
 ******************************************************************************/
 
-void get_stored_item(
+inline void get_stored_item(
   void *ptr,
   int type,
   int *int_val,
@@ -2699,7 +2699,7 @@ Exit:
   double_val - double-precision floating point value
 ******************************************************************************/
 
-void get_binary_item(
+inline void get_binary_item(
   FILE *fp,
   int file_type,
   int type,
@@ -2785,7 +2785,7 @@ Exit:
   double_val - double-precision floating point value
 ******************************************************************************/
 
-void get_ascii_item(
+inline void get_ascii_item(
   char *word,
   int type,
   int *int_val,
@@ -2838,7 +2838,7 @@ Exit:
   item - pointer to stored value
 ******************************************************************************/
 
-void store_item (
+inline void store_item (
   char *item,
   int type,
   int int_val,
@@ -2902,7 +2902,7 @@ Entry:
   nwords  - number of words in the list
 ******************************************************************************/
 
-void add_element (PlyFile *plyfile, char **words)
+inline void add_element (PlyFile *plyfile, char **words)
 {
   PlyElement *elem;
 
@@ -2935,7 +2935,7 @@ Exit:
   returns integer code for property, or 0 if not found
 ******************************************************************************/
 
-int get_prop_type(char *type_name)
+inline int get_prop_type(char *type_name)
 {
   int i;
 
@@ -2961,7 +2961,7 @@ Entry:
   nwords  - number of words in the list
 ******************************************************************************/
 
-void add_property (PlyFile *plyfile, char **words)
+inline void add_property (PlyFile *plyfile, char **words)
 {
   PlyProperty *prop;
   PlyElement *elem;
@@ -3005,7 +3005,7 @@ Entry:
   line    - line containing comment
 ******************************************************************************/
 
-void add_comment (PlyFile *plyfile, char *line)
+inline void add_comment (PlyFile *plyfile, char *line)
 {
   int i;
 
@@ -3026,7 +3026,7 @@ Entry:
   line    - line containing text info
 ******************************************************************************/
 
-void add_obj_info (PlyFile *plyfile, char *line)
+inline void add_obj_info (PlyFile *plyfile, char *line)
 {
   int i;
 
@@ -3043,7 +3043,7 @@ void add_obj_info (PlyFile *plyfile, char *line)
 Copy a property.
 ******************************************************************************/
 
-void copy_property(PlyProperty *dest, PlyProperty *src)
+inline void copy_property(PlyProperty *dest, PlyProperty *src)
 {
   dest->name = strdup (src->name);
   dest->external_type = src->external_type;
@@ -3066,7 +3066,7 @@ Entry:
   fname - file name from which memory was requested
 ******************************************************************************/
 
-char *my_alloc(int size, int lnum, const char *fe)
+inline char *my_alloc(int size, int lnum, const char *fe)
 {
   char *ptr;
 
