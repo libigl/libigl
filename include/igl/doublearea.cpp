@@ -19,7 +19,7 @@ IGL_INLINE void igl::doublearea(
 {
   if (F.cols() == 4) // quads are handled by a specialized function
     return doublearea_quad(V,F,dblA);
-  
+
   const int dim = V.cols();
   // Only support triangles
   assert(F.cols() == 3);
@@ -174,9 +174,9 @@ Eigen::PlainObjectBase<DeriveddblA> & dblA)
   Eigen::VectorXd doublearea_tri;
   igl::doublearea(V,Ft,doublearea_tri);
 
-  dblA.resize(F.rows());
+  dblA.resize(F.rows(),1);
   for(unsigned i=0; i<F.rows();++i)
-    dblA[i] = doublearea_tri[i*2] + doublearea_tri[i*2 + 1];
+    dblA(i) = doublearea_tri(i*2) + doublearea_tri(i*2 + 1);
 
 }
 
