@@ -24,9 +24,11 @@ namespace igl
   typename DerivedF,
   typename Derivedtheta>
   IGL_INLINE void angles(
-  Eigen::PlainObjectBase<DerivedV>& V,
-  Eigen::PlainObjectBase<DerivedF>& F,
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
   Eigen::PlainObjectBase<Derivedtheta>& theta);
+
+}
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "angles.cpp"

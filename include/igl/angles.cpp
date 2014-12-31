@@ -13,8 +13,8 @@ template <
   typename DerivedF,
   typename Derivedtheta>
 void igl::angles(
-  Eigen::PlainObjectBase<DerivedV>& V,
-  Eigen::PlainObjectBase<DerivedF>& F,
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
   Eigen::PlainObjectBase<Derivedtheta>& theta)
 {
   theta.resize(F.rows(),F.cols());
@@ -40,8 +40,6 @@ void igl::angles(
   }
 }
 
-
-}
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif
