@@ -57,7 +57,7 @@ IGL_INLINE bool igl::writePLY(
   const bool has_texture_coords = UV.rows() > 0;
   std::vector<Vertex> vlist(V.rows());
   std::vector<Face> flist(F.rows());
-  for(size_t i = 0;i<V.rows();i++)
+  for(size_t i = 0;i<(size_t)V.rows();i++)
   {
     vlist[i].x = V(i,0);
     vlist[i].y = V(i,1);
@@ -74,11 +74,11 @@ IGL_INLINE bool igl::writePLY(
       vlist[i].t = UV(i,1);
     }
   }
-  for(size_t i = 0;i<F.rows();i++)
+  for(size_t i = 0;i<(size_t)F.rows();i++)
   {
     flist[i].nverts = F.cols();
     flist[i].verts = new int[F.cols()];
-    for(size_t c = 0;c<F.cols();c++)
+    for(size_t c = 0;c<(size_t)F.cols();c++)
     {
       flist[i].verts[c] = F(i,c);
     }
@@ -130,13 +130,27 @@ IGL_INLINE bool igl::writePLY(
 
   ply_close(ply);
   fclose(fp);
-  for(size_t i = 0;i<F.rows();i++)
+  for(size_t i = 0;i<(size_t)F.rows();i++)
   {
     delete[] flist[i].verts;
   }
   return true;
 }
 
+template <
+  typename DerivedV,
+  typename DerivedF>
+IGL_INLINE bool igl::writePLY(
+  const std::string & filename,
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
+  const bool ascii)
+{
+  Eigen::MatrixXd N,UV;
+  return writePLY(filename,V,F,N,UV,ascii);
+}
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template bool igl::writePLY<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, bool);
 #endif
