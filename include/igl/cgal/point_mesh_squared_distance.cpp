@@ -55,6 +55,10 @@ IGL_INLINE void igl::point_mesh_squared_distance_precompute(
   assert(V.cols() == 3);
   // Must be triangles
   assert(F.cols() == 3);
+
+  // http://stackoverflow.com/questions/27748442/is-clangs-c11-support-reliable
+  T.reserve(0);
+
   // Make list of cgal triangles
   mesh_to_cgal_triangle_list(V,F,T);
   tree.clear();
