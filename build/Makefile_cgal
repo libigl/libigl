@@ -6,7 +6,6 @@ debug: libiglcgal
 include Makefile.conf
 all: CFLAGS += -O3 -DNDEBUG 
 debug: CFLAGS += -g -Wall -Werror
-CFLAGS += -ferror-limit=1
 
 .PHONY: libcgal
 libiglcgal: obj ../lib/libiglcgal.a
