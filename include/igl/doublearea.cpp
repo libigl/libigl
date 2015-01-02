@@ -17,6 +17,9 @@ IGL_INLINE void igl::doublearea(
   const Eigen::PlainObjectBase<DerivedF> & F,
   Eigen::PlainObjectBase<DeriveddblA> & dblA)
 {
+  if (F.cols() == 4) // quads are handled by a specialized function
+    return doublearea_quad(V,F,dblA);
+
   const int dim = V.cols();
   // Only support triangles
   assert(F.cols() == 3);
@@ -146,6 +149,35 @@ IGL_INLINE void igl::doublearea(
     assert( l(i,2) - (l(i,0)-l(i,1)) && "FAILED KAHAN'S ASSERTION");
     assert(dblA(i) == dblA(i) && "DOUBLEAREA() PRODUCED NaN");
   }
+}
+
+template <typename DerivedV, typename DerivedF, typename DeriveddblA>
+IGL_INLINE void igl::doublearea_quad(
+const Eigen::PlainObjectBase<DerivedV> & V,
+const Eigen::PlainObjectBase<DerivedF> & F,
+Eigen::PlainObjectBase<DeriveddblA> & dblA)
+{
+  assert(V.cols() == 3); // Only supports points in 3D
+  assert(F.cols() == 4); // Only support quads
+  const int m = F.rows();
+
+  // Split the quads into triangles
+  Eigen::MatrixXi Ft(F.rows()*2,3);
+
+  for(unsigned i=0; i<F.rows();++i)
+  {
+    Ft.row(i*2    ) << F(i,0), F(i,1), F(i,2);
+    Ft.row(i*2 + 1) << F(i,2), F(i,3), F(i,0);
+  }
+
+  // Compute areas
+  Eigen::VectorXd doublearea_tri;
+  igl::doublearea(V,Ft,doublearea_tri);
+
+  dblA.resize(F.rows(),1);
+  for(unsigned i=0; i<F.rows();++i)
+    dblA(i) = doublearea_tri(i*2) + doublearea_tri(i*2 + 1);
+
 }
 
 #ifdef IGL_STATIC_LIBRARY
