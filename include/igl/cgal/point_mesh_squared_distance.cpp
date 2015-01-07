@@ -62,6 +62,7 @@ IGL_INLINE void igl::point_mesh_squared_distance_precompute(
   // line (I guess invoking some compilation from <vector>), clang will vomit
   // errors inside CGAL.
   //
+  // http://stackoverflow.com/questions/27748442/is-clangs-c11-support-reliable
   T.reserve(0);
 
   // Make list of cgal triangles
