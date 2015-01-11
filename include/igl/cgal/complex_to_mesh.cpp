@@ -11,6 +11,7 @@
 #include <igl/remove_unreferenced.h>
 
 #include <CGAL/Surface_mesh_default_triangulation_3.h>
+#include <CGAL/Triangulation_cell_base_with_circumcenter_3.h>
 #include <set>
 #include <stack>
 

@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "writePLY.h"
 #include <igl/ply.h>
+#include <vector>
 
 template <
   typename DerivedV,
