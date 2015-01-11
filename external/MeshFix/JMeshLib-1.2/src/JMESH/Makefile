@@ -28,11 +28,8 @@ jmesh.o: /usr/include/sys/cdefs.h /usr/include/sys/_symbol_aliasing.h
 jmesh.o: /usr/include/sys/_posix_availability.h /usr/include/Availability.h
 jmesh.o: /usr/include/AvailabilityInternal.h /usr/include/_types.h
 jmesh.o: /usr/include/sys/_types.h /usr/include/machine/_types.h
-jmesh.o: /usr/include/i386/_types.h
-jmesh.o: /usr/include/sys/_pthread/_pthread_types.h
-jmesh.o: /usr/include/sys/_types/_va_list.h /usr/include/sys/_types/_size_t.h
-jmesh.o: /usr/include/sys/_types/_null.h /usr/include/sys/stdio.h
-jmesh.o: /usr/include/sys/_types/_off_t.h /usr/include/sys/_types/_ssize_t.h
+jmesh.o: /usr/include/i386/_types.h /usr/include/sys/_types/_va_list.h
+jmesh.o: /usr/include/sys/_types/_size_t.h /usr/include/sys/_types/_null.h
 jmesh.o: /usr/include/secure/_stdio.h /usr/include/secure/_common.h
 jmesh.o: /usr/include/math.h /usr/include/limits.h
 jmesh.o: /usr/include/machine/limits.h /usr/include/i386/limits.h
@@ -45,25 +42,21 @@ jmesh.o: /usr/include/sys/signal.h /usr/include/sys/appleapiopts.h
 jmesh.o: /usr/include/machine/signal.h /usr/include/i386/signal.h
 jmesh.o: /usr/include/machine/_mcontext.h /usr/include/i386/_mcontext.h
 jmesh.o: /usr/include/mach/i386/_structs.h
-jmesh.o: /usr/include/sys/_pthread/_pthread_attr_t.h
 jmesh.o: /usr/include/sys/_types/_sigaltstack.h
 jmesh.o: /usr/include/sys/_types/_ucontext.h
+jmesh.o: /usr/include/sys/_types/_pthread_attr_t.h
 jmesh.o: /usr/include/sys/_types/_sigset_t.h /usr/include/sys/_types/_uid_t.h
-jmesh.o: /usr/include/sys/resource.h /usr/include/stdint.h
-jmesh.o: /usr/include/sys/_types/_int8_t.h /usr/include/sys/_types/_int16_t.h
-jmesh.o: /usr/include/sys/_types/_int32_t.h
-jmesh.o: /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h
-jmesh.o: /usr/include/_types/_uint16_t.h /usr/include/_types/_uint32_t.h
-jmesh.o: /usr/include/_types/_uint64_t.h /usr/include/sys/_types/_intptr_t.h
-jmesh.o: /usr/include/sys/_types/_uintptr_t.h /usr/include/_types/_intmax_t.h
-jmesh.o: /usr/include/_types/_uintmax_t.h /usr/include/sys/_types/_timeval.h
+jmesh.o: /usr/include/sys/resource.h /usr/include/sys/_types/_timeval.h
 jmesh.o: /usr/include/machine/endian.h /usr/include/i386/endian.h
-jmesh.o: /usr/include/sys/_endian.h /usr/include/libkern/_OSByteOrder.h
-jmesh.o: /usr/include/libkern/i386/_OSByteOrder.h /usr/include/alloca.h
+jmesh.o: /usr/include/sys/_endian.h /usr/include/alloca.h
 jmesh.o: /usr/include/sys/_types/_ct_rune_t.h
 jmesh.o: /usr/include/sys/_types/_rune_t.h /usr/include/sys/_types/_wchar_t.h
 jmesh.o: /usr/include/machine/types.h /usr/include/i386/types.h
+jmesh.o: /usr/include/sys/_types/_int8_t.h /usr/include/sys/_types/_int16_t.h
+jmesh.o: /usr/include/sys/_types/_int32_t.h
+jmesh.o: /usr/include/sys/_types/_int64_t.h
+jmesh.o: /usr/include/sys/_types/_intptr_t.h
+jmesh.o: /usr/include/sys/_types/_uintptr_t.h
+jmesh.o: /usr/include/sys/_types/___offsetof.h
 jmesh.o: /usr/include/sys/_types/_dev_t.h /usr/include/sys/_types/_mode_t.h
-jmesh.o: /usr/include/string.h /usr/include/sys/_types/_rsize_t.h
-jmesh.o: /usr/include/sys/_types/_errno_t.h /usr/include/strings.h
-jmesh.o: /usr/include/secure/_string.h
+jmesh.o: /usr/include/string.h /usr/include/secure/_string.h
