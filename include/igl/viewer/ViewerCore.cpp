@@ -400,7 +400,7 @@ IGL_INLINE igl::ViewerCore::ViewerCore()
   show_texture = false;
 
   // Default point size / line width
-  point_size = 15;
+  point_size = 30;
   line_width = 0.5f;
   is_animating = false;
   animation_max_fps = 30.;
