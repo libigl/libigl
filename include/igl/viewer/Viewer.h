@@ -12,7 +12,10 @@
 #define IGL_OPENGL_4
 #endif
 
+// #define NO_TBAR
+#ifndef NO_TBAR
 #include <AntTweakBar.h>
+#endif
 
 #include <vector>
 #include <string>
@@ -71,17 +74,19 @@ namespace igl
     bool down;
     bool hack_never_moved;
 
+    #ifndef NO_TBAR
     // Anttweak bar
     TwBar* bar;
-
+    #endif
     // Keep track of the global position of the scrollwheel
     float scroll_position;
 
     // UI Enumerations
     enum MouseButton {IGL_LEFT, IGL_MIDDLE, IGL_RIGHT};
     enum MouseMode { NOTHING, ROTATION, ZOOM, PAN, TRANSLATE} mouse_mode;
+    #ifndef NO_TBAR
     enum KeyModifier { NO_KEY = TW_KMOD_NONE, SHIFT = TW_KMOD_SHIFT, CTRL =TW_KMOD_CTRL, ALT = TW_KMOD_ALT } key_modifier;
-
+#endif
     Viewer();
     ~Viewer();
 
@@ -133,6 +138,7 @@ namespace igl
     void* callback_key_up_data;
 
 
+    #ifndef NO_TBAR
     /********* AntTweakBar callbacks *********/
     static void TW_CALL snap_to_canonical_quaternion_cb(void *clientData);
     static void TW_CALL save_scene_cb(void *clientData);
@@ -143,6 +149,7 @@ namespace igl
     static void TW_CALL get_face_based_cb(void *param, void *clientData);
     static void TW_CALL set_invert_normals_cb(const void *param, void *clientData);
     static void TW_CALL get_invert_normals_cb(void *param, void *clientData);
+    #endif
   public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };

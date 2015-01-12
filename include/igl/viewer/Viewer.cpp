@@ -77,15 +77,19 @@ static double scroll_x = 0;
 static double scroll_y = 0;
 
 namespace {
-void TW_CALL copy_str(std::string& dst, const std::string& src)
+  #ifndef NO_TBAR
+  void TW_CALL copy_str(std::string& dst, const std::string& src)
 {
   dst = src;
 }
+#endif
 }
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
+  #ifndef NO_TBAR
   bool tw_used = TwEventMouseButtonGLFW(button, action);
+  #endif
   igl::Viewer::MouseButton mb;
 
   if (button == GLFW_MOUSE_BUTTON_1)
@@ -97,10 +101,12 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 
   if (action == GLFW_PRESS)
   {
+    #ifndef NO_TBAR
     if(!tw_used)
     {
       __viewer->mouse_down(mb,modifier);
     }
+    #endif
   } else
   {
     // Always call mouse_up on up
@@ -115,6 +121,7 @@ static void glfw_error_callback(int error, const char* description)
 }
 
 int global_KMod = 0;
+#ifndef NO_TBAR
 
 int TwEventKeyGLFW3(int glfwKey, int glfwAction)
 {
@@ -257,19 +264,21 @@ int TwEventKeyGLFW3(int glfwKey, int glfwAction)
 
   return handled;
 }
-
+#endif
 static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int modifier)
 {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
 
-  if (!TwEventKeyGLFW3(key,action))
+    #ifndef NO_TBAR
+    if (!TwEventKeyGLFW3(key,action))
   {
     if (action == GLFW_PRESS)
       __viewer->key_down(key, modifier);
     else
       __viewer->key_up(key, modifier);
   }
+  #endif
 }
 
 static void glfw_window_size(GLFWwindow* window, int width, int height)
@@ -279,6 +288,7 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
 
   __viewer->resize(w, h);
 
+#ifndef NO_TBAR
   TwWindowSize(w, h);
   const auto & bar = __viewer->bar;
   // Keep AntTweakBar on right side of screen and height == opengl height
@@ -294,15 +304,18 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
   size[1] = highdpi*(height-pos[1]-10);
   TwSetParam(bar, NULL, "position", TW_PARAM_INT32, 2, pos);
   TwSetParam(bar, NULL, "size", TW_PARAM_INT32, 2,size);
+#endif
 }
 
 static void glfw_mouse_move(GLFWwindow* window, double x, double y)
 {
+  #ifndef NO_TBAR
   if(!TwEventMousePosGLFW(x*highdpi,y*highdpi) || __viewer->down)
   {
     // Call if TwBar hasn't used or if down
     __viewer->mouse_move(x*highdpi, y*highdpi);
   }
+  #endif
 }
 
 static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
@@ -311,20 +324,25 @@ static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
   scroll_x += x;
   scroll_y += y;
 
+  #ifndef NO_TBAR
   if (!TwEventMouseWheelGLFW(scroll_y))
     __viewer->mouse_scroll(y);
+    #endif
 }
 
 static void glfw_char_callback(GLFWwindow* window, unsigned int c)
 {
+  #ifndef NO_TBAR
   if ((c & 0xff00)==0)
     TwKeyPressed(c, global_KMod);
+    #endif
 }
 
 namespace igl
 {
   void Viewer::init()
   {
+    #ifndef NO_TBAR
     // Create a tweak bar
     bar = TwNewBar("libIGL-Viewer");
     TwDefine(" libIGL-Viewer help='This is a simple 3D mesh viewer.' "); // Message added to the help bar->
@@ -408,7 +426,7 @@ namespace igl
                " group='Overlays'"
                " label='Show Faces Labels' key='CTRL+;' help='Toggle face"
                " indices'");
-
+#endif
     core.init();
 
     if (callback_init)
@@ -791,7 +809,9 @@ namespace igl
       if (plugins[i]->post_draw())
         break;
 
-    TwDraw();
+        #ifndef NO_TBAR
+        TwDraw();
+        #endif
   }
 
   bool Viewer::save_scene()
@@ -840,7 +860,7 @@ namespace igl
   {
     core.viewport = Eigen::Vector4f(0,0,w,h);
   }
-
+  #ifndef NO_TBAR
   void TW_CALL Viewer::snap_to_canonical_quaternion_cb(void *clientData)
   {
     Eigen::Vector4f snapq = static_cast<Viewer *>(clientData)->core.trackball_angle;
@@ -895,7 +915,7 @@ namespace igl
 
     static_cast<Viewer *>(clientData)->load_mesh_from_file(fname.c_str());
   }
-
+#endif
   int Viewer::launch(std::string filename)
   {
     GLFWwindow* window;
@@ -944,9 +964,10 @@ namespace igl
     glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
 
     // Initialize AntTweakBar
+    #ifndef NO_TBAR
     TwInit(TW_OPENGL_CORE, NULL);
     TwCopyStdStringToClientFunc(static_cast<TwCopyStdStringToClient>(::copy_str));
-
+#endif
 
     // Initialize IGL viewer
     init();

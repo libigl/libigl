@@ -495,6 +495,11 @@ IGL_INLINE void igl::n_polyvector(const Eigen::MatrixXd &V,
     isConstrained(b(i)) = 1;
     cfW.row(b(i)) << bc.row(i);
   }
+  if (b.size() == F.rows())
+  {
+    output = cfW;
+    return;
+  }
 
   int n = cfW.cols()/3;
   igl::PolyVectorFieldFinder<Eigen::MatrixXd, Eigen::MatrixXi> pvff(V,F,n);
