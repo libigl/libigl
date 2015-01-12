@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <igl/ply.h>
+#include <vector>
 
 template <
   typename DerivedV,
