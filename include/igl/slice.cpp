@@ -206,4 +206,5 @@ template void igl::slice<Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::Matrix<
 template Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > igl::slice<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&);
 template Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > igl::slice<Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int);
 template Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > igl::slice<Eigen::Matrix<double, 1, -1, 1, 1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int);
+template Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > igl::slice<Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int);
 #endif

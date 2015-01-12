@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "readOBJ.h"
 
@@ -15,7 +15,7 @@
 
 template <typename Scalar, typename Index>
 IGL_INLINE bool igl::readOBJ(
-  const std::string obj_file_name, 
+  const std::string obj_file_name,
   std::vector<std::vector<Scalar > > & V,
   std::vector<std::vector<Scalar > > & TC,
   std::vector<std::vector<Scalar > > & N,
@@ -52,7 +52,7 @@ IGL_INLINE bool igl::readOBJ(
 
   char line[IGL_LINE_MAX];
   int line_no = 1;
-  while (fgets(line, IGL_LINE_MAX, obj_file) != NULL) 
+  while (fgets(line, IGL_LINE_MAX, obj_file) != NULL)
   {
     char type[IGL_LINE_MAX];
     // Read first word containing type
@@ -63,12 +63,12 @@ IGL_INLINE bool igl::readOBJ(
       if(type == v)
       {
         double x[4];
-        int count = 
+        int count =
         sscanf(l,"%lf %lf %lf %lf\n",&x[0],&x[1],&x[2],&x[3]);
         if(count != 3 && count != 4)
         {
-          fprintf(stderr, 
-                  "Error: readOBJ() vertex on line %d should have 3 or 4 coordinates", 
+          fprintf(stderr,
+                  "Error: readOBJ() vertex on line %d should have 3 or 4 coordinates",
                   line_no);
           fclose(obj_file);
           return false;
@@ -82,12 +82,12 @@ IGL_INLINE bool igl::readOBJ(
       }else if(type == vn)
       {
         double x[3];
-        int count = 
+        int count =
         sscanf(l,"%lf %lf %lf\n",&x[0],&x[1],&x[2]);
         if(count != 3)
         {
-          fprintf(stderr, 
-                  "Error: readOBJ() normal on line %d should have 3 coordinates", 
+          fprintf(stderr,
+                  "Error: readOBJ() normal on line %d should have 3 coordinates",
                   line_no);
           fclose(obj_file);
           return false;
@@ -101,12 +101,12 @@ IGL_INLINE bool igl::readOBJ(
       }else if(type == vt)
       {
         double x[3];
-        int count = 
+        int count =
         sscanf(l,"%lf %lf %lf\n",&x[0],&x[1],&x[2]);
         if(count != 2 && count != 3)
         {
-          fprintf(stderr, 
-                  "Error: readOBJ() vertex on line %d should have 2 or 3 coordinates (%d)", 
+          fprintf(stderr,
+                  "Error: readOBJ() vertex on line %d should have 2 or 3 coordinates (%d)",
                   line_no,count);
           fclose(obj_file);
           return false;
@@ -174,7 +174,7 @@ IGL_INLINE bool igl::readOBJ(
           fclose(obj_file);
           return false;
         }
-      }else if(strlen(type) >= 1 && (type[0] == '#' || 
+      }else if(strlen(type) >= 1 && (type[0] == '#' ||
             type[0] == 'g'  ||
             type[0] == 's'  ||
             strcmp("usemtl",type)==0 ||
@@ -205,7 +205,7 @@ IGL_INLINE bool igl::readOBJ(
 
 template <typename Scalar, typename Index>
 IGL_INLINE bool igl::readOBJ(
-  const std::string obj_file_name, 
+  const std::string obj_file_name,
   std::vector<std::vector<Scalar > > & V,
   std::vector<std::vector<Index > > & F)
 {

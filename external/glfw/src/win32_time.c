@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.0 Win32 - www.glfw.org
+// GLFW 3.1 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -32,7 +32,7 @@
 //
 static unsigned __int64 getRawTime(void)
 {
-    if (_glfw.win32.timer.hasPC)
+    if (_glfw.win32_time.hasPC)
     {
         unsigned __int64 time;
         QueryPerformanceCounter((LARGE_INTEGER*) &time);
@@ -55,16 +55,16 @@ void _glfwInitTimer(void)
 
     if (QueryPerformanceFrequency((LARGE_INTEGER*) &frequency))
     {
-        _glfw.win32.timer.hasPC = GL_TRUE;
-        _glfw.win32.timer.resolution = 1.0 / (double) frequency;
+        _glfw.win32_time.hasPC = GL_TRUE;
+        _glfw.win32_time.resolution = 1.0 / (double) frequency;
     }
     else
     {
-        _glfw.win32.timer.hasPC = GL_FALSE;
-        _glfw.win32.timer.resolution = 0.001; // winmm resolution is 1 ms
+        _glfw.win32_time.hasPC = GL_FALSE;
+        _glfw.win32_time.resolution = 0.001; // winmm resolution is 1 ms
     }
 
-    _glfw.win32.timer.base = getRawTime();
+    _glfw.win32_time.base = getRawTime();
 }
 
 
@@ -74,13 +74,13 @@ void _glfwInitTimer(void)
 
 double _glfwPlatformGetTime(void)
 {
-    return (double) (getRawTime() - _glfw.win32.timer.base) *
-        _glfw.win32.timer.resolution;
+    return (double) (getRawTime() - _glfw.win32_time.base) *
+        _glfw.win32_time.resolution;
 }
 
 void _glfwPlatformSetTime(double time)
 {
-    _glfw.win32.timer.base = getRawTime() -
-        (unsigned __int64) (time / _glfw.win32.timer.resolution);
+    _glfw.win32_time.base = getRawTime() -
+        (unsigned __int64) (time / _glfw.win32_time.resolution);
 }
 
