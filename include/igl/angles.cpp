@@ -24,7 +24,11 @@ void igl::angles(
     Eigen::RowVector3d v1 = (x-y).normalized();
     Eigen::RowVector3d v2 = (z-y).normalized();
 
-    return acos(v1 * v2.transpose());
+    // http://stackoverflow.com/questions/10133957/signed-angle-between-two-vectors-without-a-reference-plane
+    double s = v1.cross(v2).norm();
+    double c = v1.dot(v2);
+
+    return atan2(s, c);
   };
 
   for(unsigned i=0; i<F.rows(); ++i)
