@@ -1349,7 +1349,7 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::perElementRHS(int f,
 
   Eigen::Matrix<typename DerivedV::Scalar, 3, 1> K1,K2;
   K1 = PD1.row(f);
-  K2 = -PD2.row(f); // TODO: the "-" accounts for the orientation of local_basis.h, adapt the code before and remove the "-"
+  K2 = PD2.row(f); // TODO: the "-" accounts for the orientation of local_basis.h, adapt the code before and remove the "-"
 
   scaled_Kreal = K1*(vector_field_scale)/2;
   scaled_Kimag = K2*(vector_field_scale)/2;
@@ -1429,6 +1429,7 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::FindFixedVertField()
     if (Handle_Singular(v))
     {
       AddFixedVertex(v);
+      std::cerr<<"miq: fixing "<<v<<endl;
       UV.row(v) << 0,0;
       return;
     }

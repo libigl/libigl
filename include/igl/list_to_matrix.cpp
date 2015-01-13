@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "list_to_matrix.h"
 
@@ -151,4 +151,5 @@ template bool igl::list_to_matrix<double, Eigen::PlainObjectBase<Eigen::Matrix<d
 template bool igl::list_to_matrix<int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > >(std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
 template bool igl::list_to_matrix<double, Eigen::Matrix<double, 1, -1, 1, 1, -1> >(std::vector<double, std::allocator<double> > const&, Eigen::Matrix<double, 1, -1, 1, 1, -1>&);
 template bool igl::list_to_matrix<unsigned long, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > >(std::vector<unsigned long, std::allocator<unsigned long> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template bool igl::list_to_matrix<double, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(std::__1::vector<double, std::__1::allocator<double> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&);
 #endif
