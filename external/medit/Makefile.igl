@@ -22,7 +22,7 @@ LIBS  = -framework OpenGL -framework GLUT -L${LIBMESH} -lmesh $(IGL_LIB) $(ANTTW
   -L$(LIBIGL)/external/AntTweakBar -lAntTweakBar \
   -I/opt/local/include -L/opt/local/lib -lboost_thread-mt -lboost_system-mt \
 #CFLAGS = -Wall -g -DIGL
-CFLAGS=-Wall -O3 -DIGL -std=c++11
+CFLAGS=-Wall -O3 -DIGL -std=c++11 -DNDEBUG -msse4.2
 
 C_FILES=$(wildcard *.c)
 OBJ_FILES=$(notdir $(C_FILES:.c=.o))

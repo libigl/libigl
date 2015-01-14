@@ -1350,6 +1350,7 @@ void initAntTweakBar(pScene sc,pMesh mesh)
     {COLOR_MAP_JET,"JET"},
     {COLOR_MAP_EASTER,"EASTER"},
     {COLOR_MAP_WINDING_THEN_EASTER,"WN_EASTER"},
+    {COLOR_MAP_PARULA,"PARULA"},
   };
   TwType ColorMapTypeTW = 
     igl::ReTwDefineEnum(
