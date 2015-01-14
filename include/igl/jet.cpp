@@ -56,7 +56,7 @@
 template <typename T>
 IGL_INLINE void igl::jet(const T x, T * rgb)
 {
-  igl::jet(x,rgb[0],rgb[1],rgb[2]);
+  return jet(x,rgb[0],rgb[1],rgb[2]);
 }
 
 template <typename T>
