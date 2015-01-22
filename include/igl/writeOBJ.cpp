@@ -97,7 +97,7 @@ IGL_INLINE bool igl::writeOBJ(
   {
     for(int i = 0;i<(int)TC.rows();i++)
     {
-      fprintf(obj_file, "vt %0.15g %0.15g\n",TC(i,0),1-TC(i,1));
+      fprintf(obj_file, "vt %0.15g %0.15g\n",TC(i,0),TC(i,1));
     }
     fprintf(obj_file,"\n");
   }
