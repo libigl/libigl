@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 
   // Compute the initial solution for ARAP (harmonic parametrization)
   Eigen::VectorXi bnd;
-  igl::boundary_loop(V,F,bnd);
+  igl::boundary_loop(F,bnd);
   Eigen::MatrixXd bnd_uv;
   igl::map_vertices_to_circle(V,bnd,bnd_uv);
 
