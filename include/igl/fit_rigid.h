@@ -8,6 +8,7 @@
 #ifndef IGL_FIT_RIGID_H
 #define IGL_FIT_RIGID_H
 
+#warning "Deprecated. Use igl/procrustes.h instead"
 #include "igl_inline.h"
 #include <Eigen/Core>
 #include <Eigen/Geometry>
