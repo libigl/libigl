@@ -5,6 +5,8 @@
 #include <igl/unique_simplices.h>
 #include <iostream>
 
+//#define IGL_MESH_BOOLEAN_DEBUG
+
 template <
   typename DerivedVA,
   typename DerivedFA,
@@ -97,10 +99,16 @@ IGL_INLINE void igl::mesh_boolean(
   typedef Matrix<Index,Dynamic,2> MatrixX2I;
   typedef Matrix<Index,Dynamic,1> VectorXI;
   typedef Matrix<typename DerivedJ::Scalar,Dynamic,1> VectorXJ;
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+  cout<<"mesh boolean..."<<endl;
+#endif
   MatrixX3S V(VA.rows()+VB.rows(),3);
   MatrixX3I F(FA.rows()+FB.rows(),3);
   V.block(0,0,VA.rows(),VA.cols()) = VA;
   V.block(VA.rows(),0,VB.rows(),VB.cols()) = VB;
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+  cout<<"prepare selfintersect input..."<<endl;
+#endif
   switch(type)
   {
     // Minus is implemented by flipping B and computing union
@@ -138,6 +146,9 @@ IGL_INLINE void igl::mesh_boolean(
     }
   };
 
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+  cout<<"resolve..."<<endl;
+#endif
   MatrixX3S CV;
   MatrixX3I CF;
   VectorXJ CJ;
@@ -157,12 +168,18 @@ IGL_INLINE void igl::mesh_boolean(
     return;
   }
 
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+  cout<<"peal..."<<endl;
+#endif
   Matrix<bool,Dynamic,1> from_A(CF.rows());
   // Peal layers keeping track of odd and even flips
   Matrix<bool,Dynamic,1> odd;
   Matrix<bool,Dynamic,1> flip;
   peal_outer_hull_layers(CV,CF,odd,flip);
 
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+  cout<<"categorize..."<<endl;
+#endif
   const Index m = CF.rows();
   // Faces of output vG[i] = j means ith face of output should be jth face in F
   std::vector<Index> vG;
@@ -205,6 +222,9 @@ IGL_INLINE void igl::mesh_boolean(
     G.row(g) = Gflip[g] ? CF.row(vG[g]).reverse().eval() : CF.row(vG[g]);
     GJ(g) = CJ(vG[g]);
   }
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+  cout<<"clean..."<<endl;
+#endif
   // remove duplicates: cancel out in all cases? assertion in others?
   {
     MatrixXi oldG = G;
