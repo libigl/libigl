@@ -46,6 +46,13 @@ namespace igl
     Eigen::PlainObjectBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedN> & N,
     Eigen::PlainObjectBase<DerivedUV> & UV);
+  template <
+    typename DerivedV,
+    typename DerivedF>
+  IGL_INLINE bool readPLY(
+    const std::string & filename,
+    Eigen::PlainObjectBase<DerivedV> & V,
+    Eigen::PlainObjectBase<DerivedF> & F);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "readPLY.cpp"
