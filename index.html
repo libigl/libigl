@@ -94,6 +94,12 @@ libigl depends only on the <a href="http://eigen.tuxfamily.org">Eigen</a> librar
 
 <p>For more information see our <a href="tutorial/tutorial.html">tutorial</a>.</p>
 
+<h3 id="gccandtheoptionalcgaldependency">GCC and the optional CGAL dependency</h3>
+
+<p>The <code>include/igl/cgal/*.h</code> headers depend on CGAL. It has come to our attention
+that CGAL does not work properly with GCC 4.8. To the best of our knowledge,
+GCC 4.7 and clang will work correctly.</p>
+
 <h1 id="download">Download</h1>
 
 <p>You can keep up to date by cloning a read-only copy of our GitHub
@@ -144,7 +150,7 @@ page</a>.</p>
 
 <h3 id="copyright">Copyright</h3>
 
-<p>2014 Alec Jacobson, Daniele Panozzo, Olga Diamanti, Kenshi
+<p>2014 Alec Jacobson, Daniele Panozzo, Olga Diamanti, Christian Schüller, Kenshi
 Takayama, Leo Sacht, Wenzel Jacob, Nico Pietroni, Amir Vaxman</p>
 
 <figure>
