@@ -1,13 +1,9 @@
-// This file is part of libigl, a simple c++ geometry processing library.
 // 
-// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2014 Christian Schüller <schuellchr@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-/* ---------------------------------------------------------------------------
- // XMLSerializer.h
- // Author: Christian Schüller <schuellchr@gmail.com>
  -----------------------------------------------------------------------------
  
  Header library which allows to save and load a serialization of basic c++ data
@@ -38,7 +34,7 @@ Bugs:
 #define IGL_XML_SERIALIZER_H
 
 #include <igl/igl_inline.h>
-#include <igl/xml/XMLSerializable.h>
+#include <igl/xml/old_version/XMLSerializable.h>
 
 #include <iostream>
 //#include <array>
