@@ -67,6 +67,8 @@ link_directories(
 add_definitions(-DIGL_OPENGL_4)
 add_definitions(-DNDEBUG)
 add_definitions(-O3)
+add_definitions(-DENABLE_XML_SERIALIZATION)
+
 
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")

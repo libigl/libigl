@@ -1,8 +1,8 @@
-// 
-// Copyright (C) 2014 Christian Schüller <schuellchr@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// Copyright (C) 2014 Christian Schï¿½ller <schuellchr@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "serialize_xml.h"
@@ -10,13 +10,13 @@
 namespace igl
 {
   template <typename T>
-  void serialize_xml(const T& obj,const std::string& filename)
+  IGL_INLINE void serialize_xml(const T& obj,const std::string& filename)
   {
     serialize_xml(obj,"object",filename,0);
   }
 
   template <typename T>
-  void serialize_xml(const T& obj,const std::string& objectName,const std::string& filename,bool binary,bool overwrite)
+  IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,const std::string& filename,bool binary,bool overwrite)
   {
     tinyxml2::XMLDocument* doc = new tinyxml2::XMLDocument();
 
@@ -50,7 +50,7 @@ namespace igl
   }
 
   template <typename T>
-  void serialize_xml(const T& obj,const std::string& objectName,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,bool binary)
+  IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,bool binary)
   {
     static_assert(detail_xml::is_serializable<T>::value,"'igl::serialize_xml': type is not serializable");
 
@@ -75,13 +75,13 @@ namespace igl
   }
 
   template <typename T>
-  void deserialize_xml(T& obj,const std::string& filename)
+  IGL_INLINE void deserialize_xml(T& obj,const std::string& filename)
   {
     deserialize_xml(obj,"object",filename);
   }
 
   template <typename T>
-  void deserialize_xml(T& obj,const std::string& objectName,const std::string& filename)
+  IGL_INLINE void deserialize_xml(T& obj,const std::string& objectName,const std::string& filename)
   {
     tinyxml2::XMLDocument* doc = new tinyxml2::XMLDocument();
 
@@ -110,7 +110,7 @@ namespace igl
   }
 
   template <typename T>
-  inline void deserialize_xml(T& obj,const std::string& objectName,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element)
+  IGL_INLINE void deserialize_xml(T& obj,const std::string& objectName,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element)
   {
     static_assert(detail::is_serializable<T>::value,"'igl::deserialize_xml': type is not deserializable");
 
@@ -130,7 +130,7 @@ namespace igl
 
         std::vector<char> buffer;
         std::copy(decoded.c_str(),decoded.c_str()+decoded.length(),std::back_inserter(buffer));
-        
+
         deserialize(obj,name,buffer);
       }
       else
@@ -145,14 +145,14 @@ namespace igl
     // fundamental types
 
     template <typename T>
-    std::enable_if_t<std::is_fundamental<T>::value> serialize(const T& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE typename std::enable_if<std::is_fundamental<T>::value>::type serialize(const T& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
     {
       tinyxml2::XMLElement* child = getElement(doc,element,name.c_str());
       child->SetAttribute("val",obj);
     }
 
     template <typename T>
-    std::enable_if_t<std::is_fundamental<T>::value> deserialize(T& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE typename std::enable_if<std::is_fundamental<T>::value>::type deserialize(T& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
     {
       const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
       if(child != NULL)
@@ -167,13 +167,13 @@ namespace igl
 
     // std::string
 
-    void serialize(const std::string& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE void serialize(const std::string& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
     {
       tinyxml2::XMLElement* child = getElement(doc,element,name.c_str());
       child->SetAttribute("val",obj.c_str());
     }
 
-    void deserialize(std::string& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE void deserialize(std::string& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
     {
       const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
       if(child != NULL)
@@ -189,7 +189,7 @@ namespace igl
     // Serializable
 
     template <typename T>
-    std::enable_if_t<std::is_base_of<XMLSerializable,T>::value> serialize(const T& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE typename std::enable_if<std::is_base_of<XMLSerializable,T>::value>::type serialize(const T& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
     {
       // Serialize object implementing Serializable interface
       const XMLSerializable& object = dynamic_cast<const XMLSerializable&>(obj);
@@ -199,7 +199,7 @@ namespace igl
     }
 
     template <typename T>
-    std::enable_if_t<std::is_base_of<XMLSerializable,T>::value> deserialize(T& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE typename std::enable_if<std::is_base_of<XMLSerializable,T>::value>::type deserialize(T& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
     {
       const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
 
@@ -216,7 +216,7 @@ namespace igl
     // STL containers
 
     template <typename T1,typename T2>
-    void serialize(const std::pair<T1,T2>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE void serialize(const std::pair<T1,T2>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
     {
       tinyxml2::XMLElement* pair = getElement(doc,element,name.c_str());
       serialize(obj.first,doc,pair,"first");
@@ -224,7 +224,7 @@ namespace igl
     }
 
     template <typename T1,typename T2>
-    void deserialize(std::pair<T1,T2>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE void deserialize(std::pair<T1,T2>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
     {
       const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
       if(child != NULL)
@@ -240,7 +240,7 @@ namespace igl
     }
 
     template <typename T1,typename T2>
-    void serialize(const std::vector<T1,T2>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE void serialize(const std::vector<T1,T2>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
     {
       tinyxml2::XMLElement* vector = getElement(doc,element,name.c_str());
       vector->SetAttribute("size",(unsigned int)obj.size());
@@ -255,7 +255,7 @@ namespace igl
     }
 
     template <typename T1,typename T2>
-    void deserialize(std::vector<T1,T2>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE void deserialize(std::vector<T1,T2>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
     {
       obj.clear();
 
@@ -281,7 +281,7 @@ namespace igl
     }
 
     template <typename T>
-    void serialize(const std::set<T>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE void serialize(const std::set<T>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
     {
       tinyxml2::XMLElement* set = getElement(doc,element,name.c_str());
       set->SetAttribute("size",(unsigned int)obj.size());
@@ -297,7 +297,7 @@ namespace igl
     }
 
     template <typename T>
-    void deserialize(std::set<T>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE void deserialize(std::set<T>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
     {
       obj.clear();
 
@@ -325,7 +325,7 @@ namespace igl
     }
 
     template <typename T1,typename T2>
-    void serialize(const std::map<T1,T2>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE void serialize(const std::map<T1,T2>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
     {
       tinyxml2::XMLElement* map = getElement(doc,element,name.c_str());
       map->SetAttribute("size",(unsigned int)obj.size());
@@ -341,7 +341,7 @@ namespace igl
     }
 
     template <typename T1,typename T2>
-    void deserialize(std::map<T1,T2>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE void deserialize(std::map<T1,T2>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
     {
       obj.clear();
 
@@ -370,7 +370,7 @@ namespace igl
 
     // Eigen types
     template<typename T,int R,int C,int P,int MR,int MC>
-    void serialize(const Eigen::Matrix<T,R,C,P,MR,MC>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE void serialize(const Eigen::Matrix<T,R,C,P,MR,MC>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
     {
       tinyxml2::XMLElement* matrix = getElement(doc,element,name.c_str());
 
@@ -401,7 +401,7 @@ namespace igl
     }
 
     template<typename T,int R,int C,int P,int MR,int MC>
-    void deserialize(Eigen::Matrix<T,R,C,P,MR,MC>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE void deserialize(Eigen::Matrix<T,R,C,P,MR,MC>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
     {
       const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
       bool initialized = false;
@@ -460,7 +460,7 @@ namespace igl
     }
 
     template<typename T,int P,typename I>
-    void serialize(const Eigen::SparseMatrix<T,P,I>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE void serialize(const Eigen::SparseMatrix<T,P,I>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
     {
       tinyxml2::XMLElement* matrix = getElement(doc,element,name.c_str());
 
@@ -490,7 +490,7 @@ namespace igl
     }
 
     template<typename T,int P,typename I>
-    void deserialize(Eigen::SparseMatrix<T,P,I>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE void deserialize(Eigen::SparseMatrix<T,P,I>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
     {
       const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
       bool initialized = false;
@@ -556,7 +556,7 @@ namespace igl
     // pointers
 
     template <typename T>
-    std::enable_if_t<std::is_pointer<T>::value> serialize(const T& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE typename std::enable_if<std::is_pointer<T>::value>::type serialize(const T& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
     {
       tinyxml2::XMLElement* pointer = getElement(doc,element,name.c_str());
 
@@ -569,7 +569,7 @@ namespace igl
     }
 
     template <typename T>
-    std::enable_if_t<std::is_pointer<T>::value> deserialize(T& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE typename std::enable_if<std::is_pointer<T>::value>::type deserialize(T& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
     {
       const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
       if(child != NULL)
@@ -588,8 +588,8 @@ namespace igl
         {
           if(obj != NULL)
             std::cout << "deserialization: possible memory leak for '" << typeid(obj).name() << "'" << std::endl;
-          
-          obj = new std::remove_pointer<T>::type();
+
+          obj = new typename std::remove_pointer<T>::type();
 
           detail_xml::deserialize(*obj,doc,element,name);
         }
@@ -598,7 +598,7 @@ namespace igl
 
     // helper functions
 
-    tinyxml2::XMLElement* getElement(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE tinyxml2::XMLElement* getElement(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
     {
       tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
       if(child == NULL)
@@ -609,41 +609,41 @@ namespace igl
       return child;
     }
 
-    void getAttribute(const char* src,bool& dest)
+    IGL_INLINE void getAttribute(const char* src,bool& dest)
     {
       tinyxml2::XMLUtil::ToBool(src,&dest);
     }
 
-    void getAttribute(const char* src,char& dest)
+    IGL_INLINE void getAttribute(const char* src,char& dest)
     {
       dest = (char)atoi(src);
     }
 
-    void getAttribute(const char* src,std::string& dest)
+    IGL_INLINE void getAttribute(const char* src,std::string& dest)
     {
       dest = src;
     }
 
-    void getAttribute(const char* src,float& dest)
+    IGL_INLINE void getAttribute(const char* src,float& dest)
     {
       tinyxml2::XMLUtil::ToFloat(src,&dest);
     }
 
-    void getAttribute(const char* src,double& dest)
+    IGL_INLINE void getAttribute(const char* src,double& dest)
     {
       tinyxml2::XMLUtil::ToDouble(src,&dest);
     }
 
-    template<typename T>
-    std::enable_if_t<std::is_integral<T>::value && std::is_unsigned<T>::value> getAttribute(const char* src,T& dest)
+    IGL_INLINE template<typename T>
+    typename std::enable_if<std::is_integral<T>::value && std::is_unsigned<T>::value>::type getAttribute(const char* src,T& dest)
     {
       unsigned int val;
       tinyxml2::XMLUtil::ToUnsigned(src,&val);
       dest = (T)val;
     }
 
-    template<typename T>
-    std::enable_if_t<std::is_integral<T>::value && !std::is_unsigned<T>::value> getAttribute(const char* src,T& dest)
+    IGL_INLINE template<typename T>
+    typename std::enable_if<std::is_integral<T>::value && !std::is_unsigned<T>::value>::type getAttribute(const char* src,T& dest)
     {
       int val;
       tinyxml2::XMLUtil::ToInt(src,&val);
@@ -654,7 +654,7 @@ namespace igl
     static const int numForbiddenChars = 8;
     static const char forbiddenChars[] ={' ','/','~','#','&','>','<','='};
 
-    void replaceSubString(std::string& str,const std::string& search,const std::string& replace)
+    IGL_INLINE void replaceSubString(std::string& str,const std::string& search,const std::string& replace)
     {
       size_t pos = 0;
       while((pos = str.find(search,pos)) != std::string::npos)
@@ -664,7 +664,7 @@ namespace igl
       }
     }
 
-    void encodeXMLElementName(std::string& name)
+    IGL_INLINE void encodeXMLElementName(std::string& name)
     {
       // must not start with a digit
       if(isdigit(*name.begin()))
@@ -685,7 +685,7 @@ namespace igl
       }
     }
 
-    void decodeXMLElementName(std::string& name)
+    IGL_INLINE void decodeXMLElementName(std::string& name)
     {
       if(name.find("::",0) == 0)
         name.replace(0,3,"");
@@ -702,7 +702,7 @@ namespace igl
       }
     }
 
-   /* Copyright(C) 2004-2008 René Nyffenegger
+   /* Copyright(C) 2004-2008 Renï¿½ Nyffenegger
 
       This source code is provided 'as-is',without any express or implied
       warranty.In no event will the author be held liable for any damages
@@ -722,7 +722,7 @@ namespace igl
 
       3. This notice may not be removed or altered from any source distribution.
 
-      René Nyffenegger rene.nyffenegger@adp-gmbh.ch
+      Renï¿½ Nyffenegger rene.nyffenegger@adp-gmbh.ch
       */
 
     static const std::string base64_chars =
@@ -787,9 +787,9 @@ namespace igl
       std::string ret;
 
       // construct fast lookup table
-      // added by Christian Schüller (schuellc@inf.ethz.ch)
+      // added by Christian Schï¿½ller (schuellc@inf.ethz.ch)
       int charLookup[200];
-      for(int i=0;i<base64_chars.length();i++)
+      for(int i=0;i<(int)(base64_chars.length());i++)
         charLookup[(int)base64_chars[i]] = i;
 
       while(in_len-- && (encoded_string[in_] != '=') && is_base64(encoded_string[in_])) {
