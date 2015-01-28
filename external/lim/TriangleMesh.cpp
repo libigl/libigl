@@ -35,6 +35,10 @@ void TriangleMesh::InitMesh()
     Eigen::Vector3d C = InitalVertices->row(Triangles->coeff(t,2)).cast<double>();
 
     double area = ((A-C).cross(B-C)).norm();
+
+    if(area <= 0)
+      std::cerr << "element " << t << " has zero or negative area!\n";
+
     avgArea += area;
 
     if(area < minArea)

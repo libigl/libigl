@@ -29,7 +29,7 @@ void Poisson_LIMSolver2D::prepareProblemData(std::vector<int>& hessRowIdx, std::
   Eigen::SparseMatrix<double> tempG, tempL;
   Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> vertices(*mesh->DeformedVertices);
   Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> faces(*mesh->Triangles);
-  igl::grad(vertices, faces, tempG);
+  igl::grad(vertices,faces,tempG);
 
   // Only get x and y derivatives of elements as z is zero
   int newRowSize = 2.0/3.0*tempG.rows();

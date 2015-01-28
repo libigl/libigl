@@ -1,182 +1,188 @@
-// This file is part of libigl, a simple c++ geometry processing library.
-// 
-// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
-// obtain one at http://mozilla.org/MPL/2.0/.
-/* ---------------------------------------------------------------------------
- // XMLSerialization.h
- // Author: Christian Schüller <schuellchr@gmail.com>
- ------------------------------------------------------------------------------
- Inherit from this class to have the easiest way to serialize your user defined class.
- 
- 1) Pass the default name of your class to the base constructor.
- 2) Override InitSerialization() and add your variables to serialize like:
- xmlSerializer->Add(var1,"name1");
- xmlSerializer->Add(var2,"name2");
-
- Workaround for Visual Studio run time debugger inspection problem:
- Copy and implement all the functions, splitting them into a source and header file.
- Restrictions on Native C++ Expressions (Anonymous Namespaces):
- http://msdn.microsoft.com/en-us/library/0888kc6a%28VS.80%29.aspx
- ----------------------------------------------------------------------------*/
 #ifndef IGL_XML_SERIALIZATION_H
 #define IGL_XML_SERIALIZATION_H
 
-#include <igl/xml/XMLSerializer.h>
+#include <igl/xml/serialize_xml.h>
 
 namespace igl
 {
-  namespace
+  class XMLSerialization: public XMLSerializable
   {
-    class XMLSerializer;
-
-    class XMLSerialization : public igl::XMLSerializable
+  private:
+    
+    template <typename T>
+    struct XMLSerializationObject: public XMLSerializable
     {
-    public:
-      XMLSerializer* xmlSerializer;
+      bool Binary;
+      std::string Name;
+      T* Object;
 
-      /**
-       * Default implementation of XMLSerializable interface
-       */
-      virtual void Init();
-      virtual bool Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element);
-      virtual bool Deserialize(tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element);
+      void Serialize(std::vector<char>& buffer) const {
+        igl::serialize(*Object,Name,buffer);
+      }
 
-      /**
-      * Default constructor, destructor, assignment and copy constructor
-      */
-      XMLSerialization(const std::string& name);
-      ~XMLSerialization();
-      XMLSerialization(const XMLSerialization& obj);
-      XMLSerialization& operator=(const XMLSerialization& obj);
+      void Deserialize(const std::vector<char>& buffer) {
+        igl::deserialize(*Object,Name,buffer);
+      }
 
-      /**
-      * Function which must be overriden in the subclass if you dont use
-      * heap allocations (new) to create new instances.
-      * It will get called if the assignment operator or copy constructor
-      * is involved to update the references to the new copied data structures
-      *
-      * Add in this fucntion all the variables you wanna serialize like:
-      * xmlSerializer->Add(var1);
-      * xmlSerializer->Add(varw);
-      * ...
-      */
-      virtual void InitSerialization();
+      void Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) const {
+        igl::serialize_xml(*Object,Name,doc,element,Binary);
+      }
 
-      /**
-       * Following functions can be overwritten to handle the specific events.
-       * Return false to prevent serialization of object.
-       */
-      virtual bool BeforeSerialization();
-      virtual void AfterSerialization();
-      virtual bool BeforeDeserialization();
-      virtual void AfterDeserialization();
-
-    private:
-      void initXMLSerializer();
+      void Deserialize(const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element) {
+        igl::deserialize_xml(*Object,Name,doc,element);
+      }
     };
 
-    // Implementation
+    mutable bool initialized;
+    mutable std::vector<XMLSerializable*> objects;
+  
+  public:
 
-    void XMLSerialization::Init()
+    /**
+    * Override this function to add your member variables which should be
+    * serialized:
+    *
+    * this->Add(var1);
+    * this->Add(var2);
+    * ...
+    */
+    virtual void InitSerialization() = 0;
+
+    /**
+    * Following functions can be overridden to handle the specific events.
+    * Return false to prevent the de-/serialization of an object.
+    */
+    virtual bool BeforeSerialization() const { return true; }
+    virtual void AfterSerialization() const {}
+    virtual bool BeforeDeserialization() { return true; }
+    virtual void AfterDeserialization() {}
+
+    /**
+    * Default implementation of XMLSerializable interface
+    */
+    void Serialize(std::vector<char>& buffer) const
     {
-    }
-
-    bool XMLSerialization::Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element)
-    {
-      bool serialized = false;
-
       if(this->BeforeSerialization())
       {
-        if(xmlSerializer==NULL)
+        if(initialized == false)
         {
-          xmlSerializer = new XMLSerializer(Name);
-          this->InitSerialization();
+          objects.clear();
+          (const_cast<XMLSerialization*>(this))->InitSerialization();
+          initialized = true;
         }
-        serialized = xmlSerializer->SaveGroupToXMLElement(doc,element,Name);
+
+        for(int i=0;i<objects.size();i++)
+          objects[i]->Serialize(buffer);
+
         this->AfterSerialization();
       }
-
-      return serialized;
     }
 
-    bool XMLSerialization::Deserialize(tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element)
+    void Deserialize(const std::vector<char>& buffer)
     {
-      bool serialized = false;
-
       if(this->BeforeDeserialization())
       {
-        if(xmlSerializer==NULL)
+        if(initialized == false)
         {
-          xmlSerializer = new XMLSerializer(Name);
-          this->InitSerialization();
+          objects.clear();
+          (const_cast<XMLSerialization*>(this))->InitSerialization();
+          initialized = true;
         }
-        serialized = xmlSerializer->LoadGroupFromXMLElement(Name,doc,element);
+
+        for(int i=0;i<objects.size();i++)
+          objects[i]->Deserialize(buffer);
+
         this->AfterDeserialization();
       }
-
-      return serialized;
     }
 
-    void XMLSerialization::InitSerialization()
+    void Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) const
     {
-      std::cout<<"You have to override InitSerialization()"<<"\n";
-      //assert(false);
-    }
-
-    XMLSerialization::XMLSerialization(const std::string& name)
-    {
-      Name = name;
-      xmlSerializer = NULL;
-    }
-
-    XMLSerialization::~XMLSerialization()
-    {
-      if(xmlSerializer!=NULL)
-        delete xmlSerializer;
-      xmlSerializer = NULL;
-    }
-
-    XMLSerialization::XMLSerialization(const XMLSerialization& obj)
-    {
-      Name = obj.Name;
-      xmlSerializer = NULL;
-    }
-
-    XMLSerialization& XMLSerialization::operator=(const XMLSerialization& obj)
-    {
-      if(this!=&obj)
+      if(this->BeforeSerialization())
       {
-        Name = obj.Name;
-        if(xmlSerializer!=NULL)
+        if(initialized == false)
         {
-          delete xmlSerializer;
-          xmlSerializer = NULL;
+          objects.clear();
+          (const_cast<XMLSerialization*>(this))->InitSerialization();
+          initialized = true;
+        }
+
+        for(int i=0;i<objects.size();i++)
+          objects[i]->Serialize(doc,element);
+
+        this->AfterSerialization();
+      }
+    }
+
+    void Deserialize(const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element)
+    {
+      if(this->BeforeDeserialization())
+      {
+        if(initialized == false)
+        {
+          objects.clear();
+          (const_cast<XMLSerialization*>(this))->InitSerialization();
+          initialized = true;
+        }
+
+        for(int i=0;i<objects.size();i++)
+          objects[i]->Deserialize(doc,element);
+
+        this->AfterDeserialization();
+      }
+    }
+
+    /**
+    * Default constructor, destructor, assignment and copy constructor
+    */
+
+    XMLSerialization()
+    {
+      initialized = false;
+    }
+    
+    XMLSerialization(const XMLSerialization& obj)
+    {
+      initialized = false;
+      objects.clear();
+    }
+
+    ~XMLSerialization()
+    {
+      initialized = false;
+      objects.clear();
+    }
+
+
+    XMLSerialization& operator=(const XMLSerialization& obj)
+    {
+      if(this != &obj)
+      {
+        if(initialized)
+        {
+          initialized = false;
+          objects.clear();
         }
       }
       return *this;
     }
 
-    bool XMLSerialization::BeforeSerialization()
+    /**
+    * Use this function to add your variables which should be serialized.
+    */
+  
+    template <typename T>
+    void Add(T& obj,std::string name, bool binary = false)
     {
-      return true;
-    }
+      XMLSerializationObject<T>* object = new XMLSerializationObject<T>();
+      object->Binary = binary;
+      object->Name = name;
+      object->Object = &obj;
 
-    void XMLSerialization::AfterSerialization()
-    {
+      objects.push_back(object);
     }
+  };
 
-    bool XMLSerialization::BeforeDeserialization()
-    {
-      return true;
-    }
-
-    void XMLSerialization::AfterDeserialization()
-    {
-    }
-  }
 }
 
 #endif

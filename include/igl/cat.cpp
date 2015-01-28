@@ -36,7 +36,7 @@ IGL_INLINE void igl::cat(
     return;
   }
 
-  DynamicSparseMatrix<Scalar, RowMajor> dyn_C;
+  SparseMatrix<Scalar, RowMajor> dyn_C;
   if(dim == 1)
   {
     assert(A.cols() == B.cols());

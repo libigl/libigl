@@ -21,7 +21,7 @@ private:
     
   Eigen::SparseMatrix<double> L, K;
   Eigen::Matrix<double,Eigen::Dynamic,1> R;
-  Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> CotanWeights;
+  Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> CotanWeights;
   Eigen::Matrix<double,Eigen::Dynamic,6> RestPoseEdges;
   
   double constantEnergyPart;
