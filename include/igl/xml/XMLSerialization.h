@@ -1,8 +1,8 @@
-// 
+//
 // Copyright (C) 2014 Christian Schüller <schuellchr@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_XML_SERIALIZATION_H
 #define IGL_XML_SERIALIZATION_H
@@ -14,7 +14,7 @@ namespace igl
   class XMLSerialization: public XMLSerializable
   {
   private:
-    
+
     template <typename T>
     struct XMLSerializationObject: public XMLSerializable
     {
@@ -41,7 +41,7 @@ namespace igl
 
     mutable bool initialized;
     mutable std::vector<XMLSerializable*> objects;
-  
+
   public:
 
     /**
@@ -77,7 +77,7 @@ namespace igl
           initialized = true;
         }
 
-        for(int i=0;i<objects.size();i++)
+        for(unsigned int i=0;i<objects.size();i++)
           objects[i]->Serialize(buffer);
 
         this->AfterSerialization();
@@ -95,7 +95,7 @@ namespace igl
           initialized = true;
         }
 
-        for(int i=0;i<objects.size();i++)
+        for(unsigned int i=0;i<objects.size();i++)
           objects[i]->Deserialize(buffer);
 
         this->AfterDeserialization();
@@ -113,7 +113,7 @@ namespace igl
           initialized = true;
         }
 
-        for(int i=0;i<objects.size();i++)
+        for(unsigned int i=0;i<objects.size();i++)
           objects[i]->Serialize(doc,element);
 
         this->AfterSerialization();
@@ -131,7 +131,7 @@ namespace igl
           initialized = true;
         }
 
-        for(int i=0;i<objects.size();i++)
+        for(unsigned int i=0;i<objects.size();i++)
           objects[i]->Deserialize(doc,element);
 
         this->AfterDeserialization();
@@ -146,7 +146,7 @@ namespace igl
     {
       initialized = false;
     }
-    
+
     XMLSerialization(const XMLSerialization& obj)
     {
       initialized = false;
@@ -176,7 +176,7 @@ namespace igl
     /**
     * Use this function to add your variables which should be serialized.
     */
-  
+
     template <typename T>
     void Add(T& obj,std::string name, bool binary = false)
     {

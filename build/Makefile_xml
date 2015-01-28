@@ -52,7 +52,7 @@ obj:
 	rm -f $@
 	ar cqs $@ $(OBJ_FILES)
 
-obj/%.o: ../include/igl/xml/%.cpp ../include/igl/xml/%.h
+obj/%.o: ../include/igl/xml/%.cpp 
 	$(GG) $(AFLAGS) $(CFLAGS) -c -o $@ $< $(INC)
 
 clean:

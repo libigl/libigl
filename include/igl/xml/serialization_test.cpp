@@ -1,18 +1,24 @@
-// 
+//
 // Copyright (C) 2014 Christian Schüller <schuellchr@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_SERIALIZATION_TEST_H
-#define IGL_SERIALIZATION_TEST_H
+//#ifndef IGL_SERIALIZATION_TEST_H
+//#define IGL_SERIALIZATION_TEST_H
 
-#include <igl/Timer.h>
+//#include <igl/Timer.h>
 #include <igl/xml/serialize_xml.h>
+#include <igl/xml/XMLSerialization.h>
 
 namespace igl
 {
-  struct Test1: public igl::XMLSerialization
+
+  struct Test1111
+  {
+  };
+
+  struct Test1 : public XMLSerialization
   {
     std::string ts;
     std::vector<Test1*> tvt;
@@ -112,7 +118,7 @@ namespace igl
 
     Test1 testB = testA;
     testB.ts = "400";
-    testB.tvt.pop_back();    
+    testB.tvt.pop_back();
 
     std::pair<int,bool> tPairIn(10,true);
     std::pair<int,bool> tPairOut;
@@ -199,7 +205,7 @@ namespace igl
     igl::deserialize(tObjOut,file);
     assert(tObjIn.tc == tObjOut.tc);
     assert(*tObjIn.ti == *tObjOut.ti);
-    for(int i=0;i<tObjIn.tvb.size();i++)
+    for(unsigned int i=0;i<tObjIn.tvb.size();i++)
       assert(tObjIn.tvb[i] == tObjOut.tvb[i]);
     tObjOut.ti = NULL;
 
@@ -210,12 +216,12 @@ namespace igl
 
     igl::serialize(tVector1In,file);
     igl::deserialize(tVector1Out,file);
-    for(int i=0;i<tVector1In.size();i++)
+    for(unsigned int i=0;i<tVector1In.size();i++)
       assert(tVector1In[i] == tVector1Out[i]);
 
     igl::serialize(tVector2In,file);
     igl::deserialize(tVector2Out,file);
-    for(int i=0;i<tVector2In.size();i++)
+    for(unsigned int i=0;i<tVector2In.size();i++)
     {
       assert(tVector2In[i].first == tVector2Out[i].first);
       assert(tVector2In[i].second == tVector2Out[i].second);
@@ -245,7 +251,7 @@ namespace igl
     igl::deserialize(testC,file);
     assert(testB.ts == testC.ts);
     assert(testB.tvt.size() == testC.tvt.size());
-    for(int i=0;i<testB.tvt.size();i++)
+    for(unsigned int i=0;i<testB.tvt.size();i++)
     {
       assert(testB.tvt[i]->ts == testC.tvt[i]->ts);
       assert(testB.tvt[i]->tvt.size() == testC.tvt[i]->tvt.size());
@@ -258,10 +264,10 @@ namespace igl
 
     // big data test
     /*std::vector<std::vector<float> > bigDataIn,bigDataOut;
-    for(int i=0;i<10000;i++)
+    for(unsigned int i=0;i<10000;i++)
     {
     std::vector<float> v;
-    for(int j=0;j<10000;j++)
+    for(unsigned int j=0;j<10000;j++)
     {
     v.push_back(j);
     }
@@ -333,7 +339,7 @@ namespace igl
     igl::deserialize_xml(tVector2Out,"tVector2In",file);
     igl::deserialize_xml(tsOut,"tsIn",file);
     assert(tsIn == tsOut);
-    for(int i=0;i<tVector2In.size();i++)
+    for(unsigned int i=0;i<tVector2In.size();i++)
     {
       assert(tVector2In[i].first == tVector2Out[i].first);
       assert(tVector2In[i].second == tVector2Out[i].second);
@@ -344,7 +350,7 @@ namespace igl
     // binarization
     igl::serialize_xml(tVector2In,"tVector2In",file,true);
     igl::deserialize_xml(tVector2Out,"tVector2In",file);
-    for(int i=0;i<tVector2In.size();i++)
+    for(unsigned int i=0;i<tVector2In.size();i++)
     {
       assert(tVector2In[i].first == tVector2Out[i].first);
       assert(tVector2In[i].second == tVector2Out[i].second);
@@ -354,7 +360,7 @@ namespace igl
     igl::deserialize_xml(tObjOut,file);
     assert(tObjIn.tc == tObjOut.tc);
     assert(*tObjIn.ti == *tObjOut.ti);
-    for(int i=0;i<tObjIn.tvb.size();i++)
+    for(unsigned int i=0;i<tObjIn.tvb.size();i++)
       assert(tObjIn.tvb[i] == tObjOut.tvb[i]);
 
     igl::serialize_xml(tPairIn,file);
@@ -364,12 +370,12 @@ namespace igl
 
     igl::serialize_xml(tVector1In,file);
     igl::deserialize_xml(tVector1Out,file);
-    for(int i=0;i<tVector1In.size();i++)
+    for(unsigned int i=0;i<tVector1In.size();i++)
       assert(tVector1In[i] == tVector1Out[i]);
 
     igl::serialize_xml(tVector2In,file);
     igl::deserialize_xml(tVector2Out,file);
-    for(int i=0;i<tVector2In.size();i++)
+    for(unsigned int i=0;i<tVector2In.size();i++)
     {
       assert(tVector2In[i].first == tVector2Out[i].first);
       assert(tVector2In[i].second == tVector2Out[i].second);
@@ -399,7 +405,7 @@ namespace igl
     igl::deserialize_xml(testC,file);
     assert(testB.ts == testC.ts);
     assert(testB.tvt.size() == testC.tvt.size());
-    for(int i=0;i<testB.tvt.size();i++)
+    for(unsigned int i=0;i<testB.tvt.size();i++)
     {
       assert(testB.tvt[i]->ts == testC.tvt[i]->ts);
       assert(testB.tvt[i]->tvt.size() == testC.tvt[i]->tvt.size());
@@ -411,10 +417,10 @@ namespace igl
 
     // big data test
     /*std::vector<std::vector<float> > bigDataIn,bigDataOut;
-    for(int i=0;i<10000;i++)
+    for(unsigned int i=0;i<10000;i++)
     {
     std::vector<float> v;
-    for(int j=0;j<10000;j++)
+    for(unsigned int j=0;j<10000;j++)
     {
     v.push_back(j);
     }
@@ -438,4 +444,4 @@ namespace igl
   }
 }
 
-#endif
+//#endif
