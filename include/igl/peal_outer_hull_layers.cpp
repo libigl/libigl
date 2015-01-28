@@ -1,6 +1,9 @@
 #include "peal_outer_hull_layers.h"
 #include "outer_hull.h"
+#include "writePLY.h"
 #include <vector>
+#include <iostream>
+//#define IGL_PEAL_OUTER_HULL_LAYERS_DEBUG
 
 template <
   typename DerivedV,
@@ -20,7 +23,13 @@ IGL_INLINE void igl::peal_outer_hull_layers(
   typedef Matrix<Index,Dynamic,1> MatrixXI;
   typedef Matrix<typename Derivedflip::Scalar,Dynamic,Derivedflip::ColsAtCompileTime> MatrixXflip;
   const Index m = F.rows();
+#ifdef IGL_PEAL_OUTER_HULL_LAYERS_DEBUG
+  cout<<"peal outer hull layers..."<<endl;
+#endif
 
+#ifdef IGL_PEAL_OUTER_HULL_LAYERS_DEBUG
+  cout<<"resize output ..."<<endl;
+#endif
   // keep track of iteration parity and whether flipped in hull
   MatrixXF Fr = F;
   odd.resize(m,1);
@@ -38,7 +47,14 @@ IGL_INLINE void igl::peal_outer_hull_layers(
     MatrixXF Fo;
     MatrixXI Jo;
     MatrixXflip flipr;
+#ifdef IGL_PEAL_OUTER_HULL_LAYERS_DEBUG
+  cout<<"calling outer hull..."<<endl;
+  writePLY("outer-hull-input.ply",V,Fr);
+#endif
     outer_hull(V,Fr,Fo,Jo,flipr);
+#ifdef IGL_PEAL_OUTER_HULL_LAYERS_DEBUG
+  cout<<"reindex, flip..."<<endl;
+#endif
     assert(Fo.rows() == Jo.rows());
     // all faces in Fo of Fr
     vector<bool> in_outer(Fr.rows(),false);

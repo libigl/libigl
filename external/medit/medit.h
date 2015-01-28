@@ -46,8 +46,14 @@
 
 #define DTOR       0.0174532925
 #define RTOD      57.29577951308232
+// Alec: This is also a shitty thing to do
+#ifdef IGL
+const double EPS  = 1.e-06;
+const double EPS2 = 2.e-10;
+#else
 #define EPS            1.e-06
 #define EPS2           2.e-10
+#endif
 
 #ifndef  TRUE
 #define  TRUE   1

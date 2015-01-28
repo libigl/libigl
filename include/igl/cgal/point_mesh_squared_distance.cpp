@@ -55,6 +55,16 @@ IGL_INLINE void igl::point_mesh_squared_distance_precompute(
   assert(V.cols() == 3);
   // Must be triangles
   assert(F.cols() == 3);
+
+  // WTF ALERT!!!! 
+  //
+  // There's a bug in clang probably or at least in cgal. Without calling this
+  // line (I guess invoking some compilation from <vector>), clang will vomit
+  // errors inside CGAL.
+  //
+  // http://stackoverflow.com/questions/27748442/is-clangs-c11-support-reliable
+  T.reserve(0);
+
   // Make list of cgal triangles
   mesh_to_cgal_triangle_list(V,F,T);
   tree.clear();
@@ -110,7 +120,7 @@ IGL_INLINE void igl::point_mesh_squared_distance(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::point_mesh_squared_distance<CGAL::Epeck>( const Eigen::MatrixXd & P, const Eigen::MatrixXd & V, const Eigen::MatrixXi & F, Eigen::VectorXd & sqrD, Eigen::VectorXi & I, Eigen::MatrixXd & C);
 template void igl::point_mesh_squared_distance_precompute<CGAL::Epick>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, CGAL::AABB_tree<CGAL::AABB_traits<CGAL::Epick, CGAL::AABB_triangle_primitive<CGAL::Epick, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > >::iterator, CGAL::Boolean_tag<false> > > >&, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > >&);
-
+template void igl::point_mesh_squared_distance<CGAL::Epeck>( const Eigen::MatrixXd & P, const Eigen::MatrixXd & V, const Eigen::MatrixXi & F, Eigen::VectorXd & sqrD, Eigen::VectorXi & I, Eigen::MatrixXd & C);
+template void igl::point_mesh_squared_distance<CGAL::Epick>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
 #endif

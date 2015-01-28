@@ -1,6 +1,6 @@
 title: libigl Tutorial
 author: Daniele Panozzo and Alec Jacobson
-date: 07 November 2014
+date: 07 November 2015
 css: style.css
 html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
@@ -9,7 +9,7 @@ html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathja
 
 # libigl tutorial notes
 
-#### as presented by Daniele Panozzo and Alec Jacobson at SGP Graduate School 2014
+#### as presented by Daniele Panozzo and Alec Jacobson at SGP Graduate School 2015
 
 ![](images/libigl-logo.jpg)
 
@@ -86,6 +86,7 @@ lecture notes links to a cross-platform example application.
     * [607 Picking vertices and faces](#607)
     * [608 Locally Injective Maps](#608)
     * [609 Boolean Operations on Meshes](#609)
+    * [610 Mesh Statistics](#610)
 * [Chapter 7: Outlook for continuing development](#future)
 
 # Chapter 1 [100]
@@ -2280,6 +2281,30 @@ together coincident vertices, maintaining original triangle orientations.
 Libigl also provides a wrapper `igl::mesh_boolean_cork` to the
 [cork](https://github.com/gilbo/cork), which is typically faster, but is not
 always robust.
+
+## Mesh Statistics [610]
+
+libigl contains various mesh statistics, including face angles, face areas and the detection of singular vertices, which are vertices with more or less than 6 neighbours in triangulations
+or 4 in quadrangulations.
+
+The example [Statistics](610_Statistics/main.cpp) computes these quantities and
+does a basic statistic analysis that allows to estimate the isometry and regularity of a mesh:
+
+```bash
+Irregular vertices:
+136/2400 (5.67%)
+Areas (Min/Max)/Avg_Area Sigma:
+0.01/5.33 (0.87)
+Angles in degrees (Min/Max) Sigma:
+17.21/171.79 (15.36)
+```
+
+The first row contains the number and percentage of irregular vertices, which is particularly important for quadrilateral meshes when they are used to define subdivision surfaces: every singular point will result in a point of the surface that is only C^1.
+
+The second row reports the area of the minimal element, maximal element and the standard deviation.
+These numbers are normalized by the mean area, so in the example above 5.33 max area means that the biggest face is 5 times larger than the average face. An ideal isotropic mesh would have both min and max area close to 1.
+
+The third row measures the face angles, which should be close to 60 degrees (90 for quads) in a perfectly regular triangulation. For FEM purposes, the closer the angles are to 60 degrees the more stable will the optimization be. In this case, it is clear that the mesh is of bad quality and it will probably result in artifacts if used for solving PDEs.
 
 # Outlook for continuing development [future]
 

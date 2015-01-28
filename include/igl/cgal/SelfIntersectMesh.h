@@ -911,7 +911,7 @@ inline bool igl::SelfIntersectMesh<
     try
     {
       CGAL::Object result = CGAL::intersection(A,B);
-      if(result)
+      if(!result.empty())
       {
         if(CGAL::object_cast<Segment_3 >(&result))
         {
