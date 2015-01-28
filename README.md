@@ -110,7 +110,7 @@ BibTeX entry:
   title = {{libigl}: A simple {C++} geometry processing library},
   author = {Alec Jacobson and Daniele Panozzo and others},
   note = {http://libigl.github.io/libigl/},
-  year = {2014},
+  year = {2015},
 }
 ```
 
@@ -131,7 +131,7 @@ If you find bugs or have problems please use our [github issue tracking
 page](https://github.com/libigl/libigl/issues).
 
 ### Copyright
-2014 Alec Jacobson, Daniele Panozzo, Olga Diamanti, Christian Schüller, Kenshi
+2015 Alec Jacobson, Daniele Panozzo, Olga Diamanti, Christian Schüller, Kenshi
 Takayama, Leo Sacht, Wenzel Jacob, Nico Pietroni, Amir Vaxman
 
 ![](tutorial/images/libigl-logo.jpg)
