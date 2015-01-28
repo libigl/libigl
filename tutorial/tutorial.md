@@ -1,6 +1,6 @@
 title: libigl Tutorial
 author: Daniele Panozzo and Alec Jacobson
-date: 07 November 2014
+date: 07 November 2015
 css: style.css
 html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
@@ -9,7 +9,7 @@ html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathja
 
 # libigl tutorial notes
 
-#### as presented by Daniele Panozzo and Alec Jacobson at SGP Graduate School 2014
+#### as presented by Daniele Panozzo and Alec Jacobson at SGP Graduate School 2015
 
 ![](images/libigl-logo.jpg)
 
