@@ -1,13 +1,9 @@
-// This file is part of libigl, a simple c++ geometry processing library.
 // 
-// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2014 Christian Schüller <schuellchr@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-/* ---------------------------------------------------------------------------
- // XMLSerializable.h
- // Author: Christian Schüller <schuellchr@gmail.com>
  ------------------------------------------------------------------------------
  Inherit from this abstract class to have full control over the serialization
  of your user defined class.
@@ -39,13 +35,13 @@ namespace igl
         * Serialize your stuff within this function.
         * doc is the current serialization xml file. You can use SaveToXMLDoc to add your objects.
         */
-      virtual void Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) = 0;
+      virtual bool Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) = 0;
 
       /**
         * Deserialize your stuff within this function.
         * doc is the current serialization xml file. You can use LoadFromXMLDoc to read out your objects.
         */
-      virtual void Deserialize(tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element) = 0;
+      virtual bool Deserialize(tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element) = 0;
     };
   }
 }
