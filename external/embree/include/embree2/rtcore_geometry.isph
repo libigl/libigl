@@ -1,0 +1,158 @@
+// ======================================================================== //
+// Copyright 2009-2013 Intel Corporation                                    //
+//                                                                          //
+// Licensed under the Apache License, Version 2.0 (the "License");          //
+// you may not use this file except in compliance with the License.         //
+// You may obtain a copy of the License at                                  //
+//                                                                          //
+//     http://www.apache.org/licenses/LICENSE-2.0                           //
+//                                                                          //
+// Unless required by applicable law or agreed to in writing, software      //
+// distributed under the License is distributed on an "AS IS" BASIS,        //
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. //
+// See the License for the specific language governing permissions and      //
+// limitations under the License.                                           //
+// ======================================================================== //
+
+#ifndef __RTCORE_GEOMETRY_ISPH__
+#define __RTCORE_GEOMETRY_ISPH__
+
+/*! \ingroup embree_kernel_api_ispc */
+/*! \{ */
+
+/*! invalid geometry ID */
+#define RTC_INVALID_GEOMETRY_ID ((uniform unsigned int)-1)
+
+/*! \brief Specifies the type of buffers when mapping buffers */
+enum RTCBufferType {
+  RTC_INDEX_BUFFER    = 0x01000000,
+  RTC_VERTEX_BUFFER   = 0x02000000,
+  RTC_VERTEX_BUFFER0  = 0x02000000,
+  RTC_VERTEX_BUFFER1  = 0x02000001,
+};
+
+/*! \brief Supported types of matrix layout for functions involving matrices */
+enum RTCMatrixType {
+  RTC_MATRIX_ROW_MAJOR = 0,
+  RTC_MATRIX_COLUMN_MAJOR = 1,
+  RTC_MATRIX_COLUMN_MAJOR_ALIGNED16 = 2,
+};
+
+/*! \brief Supported geometry flags to specify handling in dynamic scenes. */
+enum RTCGeometryFlags 
+{
+  RTC_GEOMETRY_STATIC     = 0,    //!< specifies static geometry that will change rarely
+  RTC_GEOMETRY_DEFORMABLE = 1,    //!< specifies dynamic geometry with deformable motion (BVH refit possible)
+  RTC_GEOMETRY_DYNAMIC    = 2,    //!< specifies dynamic geometry with arbitrary motion (BVH refit not possible)
+};
+
+/*! Intersection filter function for uniform rays. */
+typedef void (*RTCFilterFuncUniform)(void* uniform ptr,    /*!< pointer to user data */
+                                     uniform RTCRay1& ray  /*!< intersection to filter */);
+
+/*! Intersection filter function for varying rays. */
+typedef void (*RTCFilterFuncVarying)(void* uniform ptr,   /*!< pointer to user data */
+                                     varying RTCRay& ray  /*!< intersection to filter */);
+
+/*! \brief Creates a new scene instance. 
+
+  A scene instance contains a reference to a scene to instantiate and
+  the transformation to instantiate the scene with. An implementation
+  will typically transform the ray with the inverse of the provided
+  transformation and continue traversing the ray through the provided
+  scene. If any geometry is hit, the instance ID (instID) member of
+  the ray will get set to the geometry ID of the instance. */
+uniform unsigned int rtcNewInstance (RTCScene target,           //!< the scene the instance belongs to
+                                     RTCScene source            //!< the geometry to instantiate
+  );
+
+/*! \brief Sets transformation of the instance */
+void rtcSetTransform (RTCScene scene,                                  //!< scene handle
+                      uniform unsigned int geomID,                     //!< ID of geometry
+                      uniform RTCMatrixType layout,                    //!< layout of transformation matrix
+                      const uniform float* uniform xfm                       //!< transformation matrix
+                      );
+
+/*! \brief Creates a new triangle mesh. The number of triangles
+  (numTriangles), number of vertices (numVertices), and number of time
+  steps (1 for normal meshes, and 2 for linear motion blur), have to
+  get specified. The triangle indices can be set be mapping and
+  writing to the index buffer (RTC_INDEX_BUFFER) and the triangle
+  vertices can be set by mapping and writing into the vertex buffer
+  (RTC_VERTEX_BUFFER). In case of linear motion blur, two vertex
+  buffers have to get filled (RTC_VERTEX_BUFFER0, RTC_VERTEX_BUFFER1),
+  one for each time step. The index buffer has the default layout of
+  three 32 bit integer indices for each triangle. An index points to
+  the ith vertex. The vertex buffer stores single precision x,y,z
+  floating point coordinates aligned to 16 bytes. The value of the 4th
+  float used for alignment can be arbitrary. */
+uniform unsigned int rtcNewTriangleMesh (RTCScene scene,              //!< the scene the mesh belongs to
+                                         uniform RTCGeometryFlags flags,  //!< geometry flags
+                                         uniform size_t numTriangles,     //!< number of triangles
+                                         uniform size_t numVertices,      //!< number of vertices
+                                         uniform size_t numTimeSteps = 1  //!< number of motion blur time steps
+  );
+
+/*! \brief Sets 32 bit ray mask. */
+void rtcSetMask (RTCScene scene, uniform unsigned int geomID, uniform int mask);
+
+/*! \brief Maps specified buffer. This function can be used to set index and
+ *  vertex buffers of geometries. */
+void* uniform rtcMapBuffer(RTCScene scene, uniform unsigned int geomID, uniform RTCBufferType type);
+
+/*! \brief Unmaps specified buffer. 
+
+  A buffer has to be unmapped before the rtcEnable, rtcDisable,
+  rtcUpdate, or rtcDeleteGeometry calls are executed. */
+void rtcUnmapBuffer(RTCScene scene, uniform unsigned int geomID, uniform RTCBufferType type);
+
+/*! \brief Shares a data buffer between the application and
+ *  Embree. The passed buffer is used by Embree to store index and
+ *  vertex data. It has to remain valid as long as the mesh exists,
+ *  and the user is responsible to free the data when the mesh gets
+ *  deleted. One can optionally speficy a byte offset and byte stride
+ *  of the elements stored inside the buffer. The addresses
+ *  ptr+offset+i*stride have to be aligned to 4 bytes on Xeon CPUs and
+ *  16 bytes on Xeon Phi accelerators. For vertex buffers, the 4 bytes
+ *  after the z-coordinate of the last vertex have to be readable memory,
+ *  thus padding is required for some layouts. If this function is not
+ *  called, Embree will allocate and manage buffers of the default
+ *  layout. */
+void rtcSetBuffer(RTCScene scene, uniform unsigned int geomID, uniform RTCBufferType type, 
+                  void* uniform ptr, uniform size_t offset = 0, uniform size_t stride = 16);
+
+/*! \brief Enable geometry. Enabled geometry can be hit by a ray. */
+void rtcEnable (RTCScene scene, uniform unsigned int geomID);
+
+/*! \brief Update geometry. 
+
+  This function has to get called, each time the user modifies some
+  geometry for dynamic scenes. The function does not have to get
+  called after initializing some geometry for the first time. */
+void rtcUpdate (RTCScene scene, uniform unsigned int geomID);
+
+/*! \brief Disable geometry. 
+
+  Disabled geometry is not hit by any ray. Disabling and enabling
+  geometry gives higher performance than deleting and recreating
+  geometry. */
+void rtcDisable (RTCScene scene, uniform unsigned int geomID);
+
+/*! \brief Sets the intersection filter function for uniform rays. */
+void rtcSetIntersectionFilterFunction1 (RTCScene scene, uniform unsigned int geomID, uniform RTCFilterFuncUniform func);
+
+/*! \brief Sets the intersection filter function for varying rays. */
+void rtcSetIntersectionFilterFunction (RTCScene scene, uniform unsigned int geomID, uniform RTCFilterFuncVarying func);
+
+/*! \brief Sets the occlusion filter function for uniform rays. */
+void rtcSetOcclusionFilterFunction1 (RTCScene scene, uniform unsigned int geomID, uniform RTCFilterFuncUniform func);
+
+/*! \brief Sets the occlusion filter function for varying rays. */
+void rtcSetOcclusionFilterFunction (RTCScene scene, uniform unsigned int geomID, uniform RTCFilterFuncVarying func);
+
+/*! \brief Deletes the geometry. */
+void rtcDeleteGeometry (RTCScene scene, uniform unsigned int geomID);
+
+/*! @} */
+
+#endif

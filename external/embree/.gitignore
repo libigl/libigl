@@ -1,5 +1,5 @@
-.svn
-*~
-*.orig
-*.swp
-/bin
+*.user
+Win32
+x64
+*.suo
+*.ncb

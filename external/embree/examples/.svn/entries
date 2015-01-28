@@ -1,89 +1,0 @@
-10
-
-dir
-51
-https://github.com/embree/embree.git/branches/v2.0/examples
-https://github.com/embree/embree.git
-
-
-
-2013-10-23T11:55:36.000000Z
-47
-sven.woop
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-805a0351-d790-0c91-761a-ce57b7db7bff
-
-tutorial_host
-dir
-
-tutorial_device
-dir
-
-tutorial00
-dir
-
-tutorial01
-dir
-
-tutorial02
-dir
-
-renderer
-dir
-
-tutorial03
-dir
-
-tutorials
-dir
-
-common
-dir
-
-CMakeLists.txt
-file
-
-
-
-
-2013-10-29T11:28:33.000000Z
-b27347d6fa8f1f0f3d1c44fcab59f1bb
-2013-10-23T11:55:36.000000Z
-17
-sven.woop
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-2653
-

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup
+    Condition="'$(ISPCBeforeTargets)' == '' and '$(ISPCAfterTargets)' == '' and '$(ConfigurationType)' != 'Makefile'">
+    <ISPCBeforeTargets>Midl</ISPCBeforeTargets>
+    <ISPCAfterTargets>CustomBuild</ISPCAfterTargets>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ISPCDependsOn
+      Condition="'$(ConfigurationType)' != 'Makefile'">_SelectedFiles;$(ISPCDependsOn)</ISPCDependsOn>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ISPC>
+      <GenerateDebugInformation>False</GenerateDebugInformation>
+      <Assertions>true</Assertions>
+      <Aligned>False</Aligned>
+      <PIC>False</PIC>
+      <WarningsAsErrors>False</WarningsAsErrors>
+      <NoWarnings>False</NoWarnings>
+      <ObjectFileName>$(IntDir)%(Filename).ispc.obj</ObjectFileName>
+      <HeaderFile>$(IntDir)%(Filename)_ispc.h</HeaderFile>
+      <Architecture>1</Architecture>
+      <Processor>1</Processor>
+      <TargetISA>0</TargetISA>
+      <WarningLevel>1</WarningLevel>
+      <MathLibrary>0</MathLibrary>
+      <Opt>1</Opt>
+      <CommandLineTemplate>ispc.exe [AllOptions] [AdditionalOptions] [Inputs]</CommandLineTemplate>
+      <Outputs Condition="'$(Configuration)'=='Debug'">$(IntDir)%(Filename).ispc.obj;$(IntDir)%(Filename).ispc_sse2.obj;$(IntDir)%(Filename).ispc_sse4.obj</Outputs>
+      <Outputs Condition="'$(Configuration)'=='Release'">$(IntDir)%(Filename).ispc.obj;$(IntDir)%(Filename).ispc_sse2.obj;$(IntDir)%(Filename).ispc_sse4.obj</Outputs>
+      <Outputs Condition="'$(Configuration)'=='ReleaseAVX'">$(IntDir)%(Filename).ispc.obj;$(IntDir)%(Filename).ispc_sse2.obj;$(IntDir)%(Filename).ispc_sse4.obj;$(IntDir)%(Filename).ispc_avx.obj</Outputs>
+      <Outputs Condition="'$(Configuration)'=='ReleaseAVX2'">$(IntDir)%(Filename).ispc.obj;$(IntDir)%(Filename).ispc_sse2.obj;$(IntDir)%(Filename).ispc_sse4.obj;$(IntDir)%(Filename).ispc_avx.obj;;$(IntDir)%(Filename).ispc_avx2.obj</Outputs>
+      <Outputs Condition="'$(MSBuildProjectName)'=='embree'">$(IntDir)%(Filename).ispc.obj;$(IntDir)%(Filename).ispc_sse2.obj;$(IntDir)%(Filename).ispc_sse4.obj;$(IntDir)%(Filename).ispc_avx.obj;$(IntDir)%(Filename).ispc_avx2.obj</Outputs>
+      <ExecutionDescription>Compiling %(Filename)%(Extension)  ...</ExecutionDescription>
+    </ISPC>
+  </ItemDefinitionGroup>
+</Project>

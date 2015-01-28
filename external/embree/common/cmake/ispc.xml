@@ -1,0 +1,322 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:transformCallback="Microsoft.Cpp.Dev10.ConvertPropertyCallback">
+  <Rule
+    Name="ISPC"
+    PageTemplate="tool"
+    DisplayName="Intel SPMD Programm Compiler (ISPC)"
+    Order="200">
+    <Rule.DataSource>
+      <DataSource
+        Persistence="ProjectFile"
+        ItemType="ISPC" />
+    </Rule.DataSource>
+    <Rule.Categories>
+      <Category
+        Name="General">
+        <Category.DisplayName>
+          <sys:String>General</sys:String>
+        </Category.DisplayName>
+      </Category>
+      <Category
+        Name="Command Line"
+        Subtype="CommandLine">
+        <Category.DisplayName>
+          <sys:String>Command Line</sys:String>
+        </Category.DisplayName>
+      </Category>
+    </Rule.Categories>
+    <StringListProperty
+      Name="Inputs"
+      Category="Command Line"
+      IsRequired="true"
+      Switch=" ">
+      <StringListProperty.DataSource>
+        <DataSource
+          Persistence="ProjectFile"
+          ItemType="ISPC"
+          SourceType="Item" />
+      </StringListProperty.DataSource>
+    </StringListProperty>
+    <BoolProperty
+      Name="GenerateDebugInformation"
+      HelpContext="0"
+      DisplayName="Generate Debug Information"
+      Description="Generates Debug Information. (-g)"
+      Switch="-g" />
+    <BoolProperty
+      Name="Assertions"
+      HelpContext="0"
+      DisplayName="Assertions"
+      Description="Disables Assertions"
+      Switch="--opt=disable-assertions" />
+    <BoolProperty
+      Name="Aligned"
+      HelpContext="0"
+      DisplayName="Force Aligned Loads"
+      Description="Forces Aligned Loads."
+      Switch="--opt=force-aligned-memory" />
+    <BoolProperty
+      Name="PIC"
+      HelpContext="0"
+      DisplayName="Position Independent Code"
+      Description="Generate Position Independent Code"
+      Switch="--pic" />
+    <BoolProperty
+      Name="WarningsAsErrors"
+      HelpContext="0"
+      DisplayName="Treat Warnings as Errors"
+      Description="Treat Warnings as Errors."
+      Switch="--werror" />
+    <BoolProperty
+      Name="NoWarnings"
+      HelpContext="0"
+      DisplayName="Disable Warnings"
+      Description="Disable Warnings"
+      Switch="--woff" />
+    <StringProperty
+      Name="ObjectFileName"
+      Category="Output"
+      HelpContext="0"
+      DisplayName="Object File Name"
+      Description="Specifies the name of the output object file."
+      Switch="-o &quot;[value]&quot;" />
+    <StringListProperty
+      Name="PreprocessorDefinitions"
+      HelpContext="0"
+      DisplayName="Preprocessor Definitions"
+      Description="Defines a text macro with the given name."
+      Separator=";"
+      Switch="-D&quot;[value]&quot;" />
+    <StringListProperty
+      Name="IncludePaths"
+      HelpContext="0"
+      DisplayName="Include Paths"
+      Description="Sets path for include file. "
+      Separator=";"
+      Switch="-I &quot;[value]&quot;" />
+    <StringProperty
+      Name="HeaderFile"
+      Category="Output"
+      HelpContext="0"
+      DisplayName="Header File Name"
+      Description="Interface Header File."
+      Switch="-h &quot;[value]&quot;" />
+    <EnumProperty
+      Name="Architecture"
+      HelpContext="0"
+      DisplayName="Target Architecture"
+      Description="Select Target Architecture.">
+      <EnumValue
+        Name="0"
+        DisplayName="x86"
+        Switch="--arch=x86" />
+      <EnumValue
+        Name="1"
+        DisplayName="x86-64"
+        Switch="--arch=x86-64" />
+    </EnumProperty>
+    <EnumProperty
+      Name="Processor"
+      HelpContext="0"
+      DisplayName="Target Processor"
+      Description="Select Target Processor.">
+      <EnumValue
+        Name="0"
+        DisplayName="Atom"
+        Switch="--cpu=atom" />
+      <EnumValue
+        Name="1"
+        DisplayName="Penryn"
+        Switch="--cpu=penryn" />
+      <EnumValue
+        Name="2"
+        DisplayName="Core 2"
+        Switch="--cpu=core2" />
+      <EnumValue
+        Name="3"
+        DisplayName="Core i7"
+        Switch="--cpu=corei7" />
+      <EnumValue
+        Name="4"
+        DisplayName="Core i7 AVX"
+        Switch="--cpu=corei7-avx" />
+    </EnumProperty>
+    <EnumProperty
+      Name="TargetISA"
+      HelpContext="0"
+      DisplayName="Target ISA"
+      Description="Select Target ISA.">
+      <EnumValue
+        Name="0"
+        DisplayName="SSE2"
+        Switch="--target=sse2" />
+      <EnumValue
+        Name="1"
+        DisplayName="SSE4"
+        Switch="--target=sse4" />
+      <EnumValue
+        Name="2"
+        DisplayName="AVX"
+        Switch="--target=avx" />
+      <EnumValue
+        Name="3"
+        DisplayName="AVX-I"
+        Switch="--target=avx1.1" />
+      <EnumValue
+        Name="4"
+        DisplayName="AVX2"
+        Switch="--target=AVX2" />
+      <EnumValue
+        Name="5"
+        DisplayName="SSE2,SSE4"
+        Switch="--target=sse2,sse4" />
+      <EnumValue
+        Name="6"
+        DisplayName="SSE2,SSE4,AVX"
+        Switch="--target=sse2,sse4,avx" />
+      <EnumValue
+        Name="7"
+        DisplayName="SSE2,SSE4,AVX,AVX2"
+        Switch="--target=sse2,sse4,avx,avx2" />
+    </EnumProperty>
+    <EnumProperty
+      Name="WarningLevel"
+      HelpContext="0"
+      DisplayName="Warning Level"
+      Description="Sets the warning level.">
+      <EnumValue
+        Name="0"
+        DisplayName="Warning Level 0"
+        Switch="--woff" />
+      <EnumValue
+        Name="1"
+        DisplayName="Warning Level 1"
+        Switch="--wno-perf" />
+      <EnumValue
+        Name="2"
+        DisplayName="Warning Level 2" />
+    </EnumProperty>
+    <EnumProperty
+      Name="MathLibrary"
+      HelpContext="0"
+      DisplayName="Math Library"
+      Description="Select Math Library">
+      <EnumValue
+        Name="0"
+        DisplayName="ISPC Internal"
+        Switch="--math-lib=default" />
+      <EnumValue
+        Name="1"
+        DisplayName="Fast"
+        Switch="--math-lib=fast" />
+      <EnumValue
+        Name="2"
+        DisplayName="SVML"
+        Switch="--math-lib=svml" />
+      <EnumValue
+        Name="3"
+        DisplayName="System"
+        Switch="--math-lib=system" />
+    </EnumProperty>
+    <EnumProperty
+      Name="Opt"
+      HelpContext="0"
+      DisplayName="Optimization Level"
+      Description="Optimization Level">
+      <EnumValue
+        Name="0"
+        DisplayName="O0"
+        Switch="-O0" />
+      <EnumValue
+        Name="1"
+        DisplayName="O1"
+        Switch="-O1" />
+    </EnumProperty>
+    <StringProperty
+      Name="CommandLineTemplate"
+      DisplayName="Command Line"
+      Visible="False"
+      IncludeInCommandLine="False" />
+    <DynamicEnumProperty
+      Name="ISPCBeforeTargets"
+      Category="General"
+      EnumProvider="Targets"
+      IncludeInCommandLine="False">
+      <DynamicEnumProperty.DisplayName>
+        <sys:String>Execute Before</sys:String>
+      </DynamicEnumProperty.DisplayName>
+      <DynamicEnumProperty.Description>
+        <sys:String>Specifies the targets for the build customization to run before.</sys:String>
+      </DynamicEnumProperty.Description>
+      <DynamicEnumProperty.ProviderSettings>
+        <NameValuePair
+          Name="Exclude"
+          Value="^ISPCBeforeTargets|^Compute" />
+      </DynamicEnumProperty.ProviderSettings>
+      <DynamicEnumProperty.DataSource>
+        <DataSource
+          Persistence="ProjectFile"
+          HasConfigurationCondition="true" />
+      </DynamicEnumProperty.DataSource>
+    </DynamicEnumProperty>
+    <DynamicEnumProperty
+      Name="ISPCAfterTargets"
+      Category="General"
+      EnumProvider="Targets"
+      IncludeInCommandLine="False">
+      <DynamicEnumProperty.DisplayName>
+        <sys:String>Execute After</sys:String>
+      </DynamicEnumProperty.DisplayName>
+      <DynamicEnumProperty.Description>
+        <sys:String>Specifies the targets for the build customization to run after.</sys:String>
+      </DynamicEnumProperty.Description>
+      <DynamicEnumProperty.ProviderSettings>
+        <NameValuePair
+          Name="Exclude"
+          Value="^ISPCAfterTargets|^Compute" />
+      </DynamicEnumProperty.ProviderSettings>
+      <DynamicEnumProperty.DataSource>
+        <DataSource
+          Persistence="ProjectFile"
+          ItemType=""
+          HasConfigurationCondition="true" />
+      </DynamicEnumProperty.DataSource>
+    </DynamicEnumProperty>
+    <StringListProperty
+      Name="Outputs"
+      DisplayName="Outputs"
+      Visible="False"
+      IncludeInCommandLine="False" />
+    <StringProperty
+      Name="ExecutionDescription"
+      DisplayName="Execution Description"
+      Visible="False"
+      IncludeInCommandLine="False" />
+    <StringListProperty
+      Name="AdditionalDependencies"
+      DisplayName="Additional Dependencies"
+      IncludeInCommandLine="False"
+      Visible="false" />
+    <StringProperty
+      Subtype="AdditionalOptions"
+      Name="AdditionalOptions"
+      Category="Command Line">
+      <StringProperty.DisplayName>
+        <sys:String>Additional Options</sys:String>
+      </StringProperty.DisplayName>
+      <StringProperty.Description>
+        <sys:String>Additional Options</sys:String>
+      </StringProperty.Description>
+    </StringProperty>
+  </Rule>
+  <ItemType
+    Name="ISPC"
+    DisplayName="Intel SPMD Programm Compiler (ISPC)" />
+  <FileExtension
+    Name="*.ispc"
+    ContentType="ISPC" />
+  <ContentType
+    Name="ISPC"
+    DisplayName="Intel SPMD Programm Compiler (ISPC)"
+    ItemType="ISPC" />
+</ProjectSchemaDefinitions>

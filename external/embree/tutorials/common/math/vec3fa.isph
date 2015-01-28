@@ -1,0 +1,44 @@
+// ======================================================================== //
+// Copyright 2009-2013 Intel Corporation                                    //
+//                                                                          //
+// Licensed under the Apache License, Version 2.0 (the "License");          //
+// you may not use this file except in compliance with the License.         //
+// You may obtain a copy of the License at                                  //
+//                                                                          //
+//     http://www.apache.org/licenses/LICENSE-2.0                           //
+//                                                                          //
+// Unless required by applicable law or agreed to in writing, software      //
+// distributed under the License is distributed on an "AS IS" BASIS,        //
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. //
+// See the License for the specific language governing permissions and      //
+// limitations under the License.                                           //
+// ======================================================================== //
+
+#ifndef __EMBREE_ISPC_VEC3FA_H__
+#define __EMBREE_ISPC_VEC3FA_H__
+
+struct Vec3fa 
+{
+  float x;
+  float y;
+  float z;
+  float a;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// Constructors
+////////////////////////////////////////////////////////////////////////////////
+
+inline uniform Vec3fa make_Vec3fa(const uniform float a) { uniform Vec3fa r; r.x = a; r.y = a; r.z = a; r.a = 0.0f; return r; }
+inline varying Vec3fa make_Vec3fa(const varying float a) { varying Vec3fa r; r.x = a; r.y = a; r.z = a; r.a = 0.0f; return r; }  
+
+inline uniform Vec3fa make_Vec3fa(const uniform float x, const uniform float y, const uniform float z) { uniform Vec3fa r; r.x = x; r.y = y; r.z = z; r.a = 0.0f; return r; }
+inline varying Vec3fa make_Vec3fa(const varying float x, const varying float y, const varying float z) { varying Vec3fa r; r.x = x; r.y = y; r.z = z; r.a = 0.0f; return r; }  
+
+inline uniform Vec3fa make_Vec3fa(uniform Vec3f a) { return make_Vec3fa(a.x,a.y,a.z); }
+inline varying Vec3fa make_Vec3fa(varying Vec3f a) { return make_Vec3fa(a.x,a.y,a.z); }
+
+inline uniform Vec3f make_Vec3f(uniform Vec3fa a) { return make_Vec3f(a.x,a.y,a.z); }
+inline varying Vec3f make_Vec3f(varying Vec3fa a) { return make_Vec3f(a.x,a.y,a.z); }
+
+#endif

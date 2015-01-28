@@ -1,0 +1,50 @@
+/*! \subpage embree_path_tracer Embree's Sample Path Tracer
+
+  \section path_tracer_intro Photo-Realistic Example Renderer
+
+  The Embree Example Renderer is a photo-realistic renderer that
+  builds on the Embree high performance ray tracing kernels. The
+  renderer is used to demonstrate how Embree is used in practice and
+  to measure Embree's performance in a realistic application
+  scenario. The Embree Example Renderer is not a full featured
+  renderer and not designed to be used for production renderering. The
+  Embree Example Renderer is released as Open Source under the Apache
+  2.0 license.
+
+  In ealier versions of Embree this photo-realistic renderer was part
+  of the Embree kernel repository. In fact, this path tracer was
+  initially rather tightly coupled to the Embree kernels, and has over
+  time evolved into something that eventually became bigger than the
+  kernels themselves.
+
+  In the process of re-focusing Embree on the actual kernels (that
+  most users' interest is in) and to make it easier to use the
+  kernels without having to understand the whole project, starting in
+  version 2.1 we have created a stricter separation between the actual
+  kernels and the sample codes that use those kernels.
+
+  Consequently, we have moved the Embree Example Renderer
+  into a separate repository dedicated to this renderer. This path
+  tracer is still being maintained, and is still kept in sync with the
+  Embree kernels; but it has to be checked out and built separately
+  from the kernels.
+
+  \section path_tracer_getting Checking out the Sample Path Tracer 
+
+  The example renderer is only available in source form and can be
+  downloaded using the following ZIP file:
+
+     http://github.com/embree/embree-renderer/archive/v2.1_alpha.zip
+
+  Alternatively you can also use git to get the latest Embree Example
+  Renderer 2.1:
+      
+     git clone https://github.com/embree/embree-renderer.git embree-renderer
+     cd embree-renderer
+     git checkout v2.1
+   
+  \section path_tracer_building Building the Sample Path Tracer 
+
+  To build the sample renderer, please refer to its documentation.
+
+ */

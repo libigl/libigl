@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <PropertyPageSchema
+      Include="$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml" />
+    <AvailableItemName
+      Include="ISPC">
+      <Targets>_ISPC</Targets>
+    </AvailableItemName>
+  </ItemGroup>
+  <UsingTask
+    TaskName="ISPC"
+    TaskFactory="XamlTaskFactory"
+    AssemblyName="Microsoft.Build.Tasks.v4.0">
+    <Task>$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml</Task>
+  </UsingTask>
+  <Target
+    Name="_ISPC"
+    BeforeTargets="$(ISPCBeforeTargets)"
+    AfterTargets="$(ISPCAfterTargets)"
+    Condition="'@(ISPC)' != ''"
+    DependsOnTargets="$(ISPCDependsOn);ComputeISPCOutput"
+    Outputs="%(ISPC.Outputs)"
+    Inputs="%(ISPC.Identity);%(ISPC.AdditionalDependencies);$(MSBuildProjectFile)">
+    <ItemGroup
+      Condition="'@(SelectedFiles)' != ''">
+      <ISPC
+        Remove="@(ISPC)"
+        Condition="'%(Identity)' != '@(SelectedFiles)'" />
+    </ItemGroup>
+    <ItemGroup>
+      <ISPC_tlog
+        Include="%(ISPC.Outputs)"
+        Condition="'%(ISPC.Outputs)' != '' and '%(ISPC.ExcludedFromBuild)' != 'true'">
+        <Source>@(ISPC, '|')</Source>
+      </ISPC_tlog>
+    </ItemGroup>
+    <Message
+      Importance="High"
+      Text="%(ISPC.ExecutionDescription)" />
+    <WriteLinesToFile
+      Condition="'@(ISPC_tlog)' != '' and '%(ISPC_tlog.ExcludedFromBuild)' != 'true'"
+      File="$(IntDir)$(ProjectName).write.1.tlog"
+      Lines="^%(ISPC_tlog.Source);@(ISPC_tlog-&gt;'%(Fullpath)')" />
+    <ISPC
+      Condition="'@(ISPC)' != '' and '%(ISPC.ExcludedFromBuild)' != 'true'"
+      CommandLineTemplate="%(ISPC.CommandLineTemplate)"
+      GenerateDebugInformation="%(ISPC.GenerateDebugInformation)"
+      Assertions="%(ISPC.Assertions)"
+      Aligned="%(ISPC.Aligned)"
+      PIC="%(ISPC.PIC)"
+      WarningsAsErrors="%(ISPC.WarningsAsErrors)"
+      NoWarnings="%(ISPC.NoWarnings)"
+      ObjectFileName="%(ISPC.ObjectFileName)"
+      PreprocessorDefinitions="%(ISPC.PreprocessorDefinitions)"
+      IncludePaths="%(ISPC.IncludePaths)"
+      HeaderFile="%(ISPC.HeaderFile)"
+      Architecture="%(ISPC.Architecture)"
+      Processor="%(ISPC.Processor)"
+      TargetISA="%(ISPC.TargetISA)"
+      WarningLevel="%(ISPC.WarningLevel)"
+      MathLibrary="%(ISPC.MathLibrary)"
+      Opt="%(ISPC.Opt)"
+      AdditionalOptions="%(ISPC.AdditionalOptions)"
+      Inputs="%(ISPC.Identity)" />
+  </Target>
+  <PropertyGroup>
+    <ComputeLinkInputsTargets>
+            $(ComputeLinkInputsTargets);
+            ComputeISPCOutput;
+          </ComputeLinkInputsTargets>
+    <ComputeLibInputsTargets>
+            $(ComputeLibInputsTargets);
+            ComputeISPCOutput;
+          </ComputeLibInputsTargets>
+  </PropertyGroup>
+  <Target
+    Name="ComputeISPCOutput"
+    Condition="'@(ISPC)' != ''">
+    <ItemGroup>
+      <ISPCDirsToMake
+        Condition="'@(ISPC)' != '' and '%(ISPC.ExcludedFromBuild)' != 'true'"
+        Include="%(ISPC.Outputs)" />
+      <Link
+        Include="%(ISPCDirsToMake.Identity)"
+        Condition="'%(Extension)'=='.obj' or '%(Extension)'=='.res' or '%(Extension)'=='.rsc' or '%(Extension)'=='.lib'" />
+      <Lib
+        Include="%(ISPCDirsToMake.Identity)"
+        Condition="'%(Extension)'=='.obj' or '%(Extension)'=='.res' or '%(Extension)'=='.rsc' or '%(Extension)'=='.lib'" />
+      <ImpLib
+        Include="%(ISPCDirsToMake.Identity)"
+        Condition="'%(Extension)'=='.obj' or '%(Extension)'=='.res' or '%(Extension)'=='.rsc' or '%(Extension)'=='.lib'" />
+    </ItemGroup>
+    <MakeDir
+      Directories="@(ISPCDirsToMake-&gt;'%(RootDir)%(Directory)')" />
+  </Target>
+</Project>
