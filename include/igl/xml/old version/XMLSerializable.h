@@ -20,32 +20,34 @@
 
 namespace igl
 {
-
-  class XMLSerializable
+  namespace
   {
-  public:
-    /**
-    * Default name of serializable object
-    */
-    std::string Name;
-      
-    /**
-      * This function gets called if the objects were not found during deserialization.
-      * Initialize your objects as you like.
+    class XMLSerializable
+    {
+    public:
+      /**
+      * Default name of serializable object
       */
-    virtual void Init() = 0;
-    /**
-      * Serialize your stuff within this function.
-      * It contains the current serialization xml file. You can use SaveToXMLDoc or SaveGroupToXMLElement to add your objects.
-      */
-    virtual bool Serialize(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* element) = 0;
-      
-    /**
-      * Deserialize your stuff within this function.
-      * It contains the current serialization xml file. You can use LoadFromXMLDoc or LoadGroupFromXMLElement to read out your objects.
-      */
-    virtual bool Deserialize(tinyxml2::XMLDocument* doc, const tinyxml2::XMLElement* element) = 0;
-  };
+      std::string Name;
+
+      /**
+        * This function gets called if the objects were not found during deserialization.
+        * Initialize your objects as you like.
+        */
+      virtual void Init() = 0;
+      /**
+        * Serialize your stuff within this function.
+        * doc is the current serialization xml file. You can use SaveToXMLDoc to add your objects.
+        */
+      virtual void Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) = 0;
+
+      /**
+        * Deserialize your stuff within this function.
+        * doc is the current serialization xml file. You can use LoadFromXMLDoc to read out your objects.
+        */
+      virtual void Deserialize(tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element) = 0;
+    };
+  }
 }
 
 #endif
