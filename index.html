@@ -16,7 +16,7 @@
 
 <figure>
 <img src="libigl-teaser.png" alt="" />
-</figure>
+<figcaption></figcaption></figure>
 
 <p><a href="https://github.com/libigl/libigl/">https://github.com/libigl/libigl/</a></p>
 
@@ -100,6 +100,14 @@ libigl depends only on the <a href="http://eigen.tuxfamily.org">Eigen</a> librar
 that CGAL does not work properly with GCC 4.8. To the best of our knowledge,
 GCC 4.7 and clang will work correctly.</p>
 
+<h3 id="openmpandwindows">OpenMP and Windows</h3>
+
+<p>Some of our functions will take advantage of OpenMP if available. However, it
+has come to our attention that Visual Studio + Eigen does not work properly
+with OpenMP. Since OpenMP only improves performance without affecting
+functionality we recommend avoiding OpenMP on Windows or proceeding with
+caution.</p>
+
 <h1 id="download">Download</h1>
 
 <p>You can keep up to date by cloning a read-only copy of our GitHub
@@ -128,7 +136,7 @@ BibTeX entry:</p>
   title = {{libigl}: A simple {C++} geometry processing library},
   author = {Alec Jacobson and Daniele Panozzo and others},
   note = {http://libigl.github.io/libigl/},
-  year = {2014},
+  year = {2015},
 }
 </code></pre>
 
@@ -150,12 +158,12 @@ page</a>.</p>
 
 <h3 id="copyright">Copyright</h3>
 
-<p>2014 Alec Jacobson, Daniele Panozzo, Olga Diamanti, Christian Schüller, Kenshi
+<p>2015 Alec Jacobson, Daniele Panozzo, Olga Diamanti, Christian Schüller, Kenshi
 Takayama, Leo Sacht, Wenzel Jacob, Nico Pietroni, Amir Vaxman</p>
 
 <figure>
 <img src="tutorial/images/libigl-logo.jpg" alt="" />
-</figure>
+<figcaption></figcaption></figure>
 
 </body>
 </html>
