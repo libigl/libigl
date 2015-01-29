@@ -22,6 +22,7 @@
 #include <igl/readTGF.h>
 #include <igl/viewer/Viewer.h>
 #include <igl/bbw/bbw.h>
+//#include <igl/embree/bone_heat.h>
 
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
@@ -143,6 +144,16 @@ int main(int argc, char *argv[])
   {
     return false;
   }
+
+  //MatrixXd Vsurf = V.topLeftCorner(F.maxCoeff()+1,V.cols());
+  //MatrixXd Wsurf;
+  //if(!igl::bone_heat(Vsurf,F,C,VectorXi(),BE,MatrixXi(),Wsurf))
+  //{
+  //  return false;
+  //}
+  //W.setConstant(V.rows(),Wsurf.cols(),1);
+  //W.topLeftCorner(Wsurf.rows(),Wsurf.cols()) = Wsurf = Wsurf = Wsurf = Wsurf;
+
   // Normalize weights to sum to one
   igl::normalize_row_sums(W,W);
   // precompute linear blend skinning matrix
