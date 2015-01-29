@@ -23,7 +23,7 @@ group prototypes a lot in MATLAB, and we have a useful [conversion
 table](matlab-to-eigen.html) from
 MATLAB to libigl/Eigen.
 
-# Tutorial
+## Tutorial
 
 As of version 1.0, libigl includes an introductory
 [tutorial](tutorial/tutorial.html) that covers
@@ -91,7 +91,7 @@ with OpenMP. Since OpenMP only improves performance without affecting
 functionality we recommend avoiding OpenMP on Windows or proceeding with
 caution.
 
-# Download
+## Download
 You can keep up to date by cloning a read-only copy of our GitHub
 [repository](https://github.com/libigl).
 
@@ -121,7 +121,7 @@ BibTeX entry:
 }
 ```
 
-# Contact
+## Contact
 
 Libigl is a group endeavor led by [Alec
 Jacobson](http://www.cs.columbia.edu/~jacobson/) and [Daniele
@@ -137,7 +137,7 @@ spending time maintaining this.
 If you find bugs or have problems please use our [github issue tracking
 page](https://github.com/libigl/libigl/issues).
 
-### Copyright
+## Copyright
 2015 Alec Jacobson, Daniele Panozzo, Olga Diamanti, Christian Schüller, Kenshi
 Takayama, Leo Sacht, Wenzel Jacob, Nico Pietroni, Amir Vaxman
 
