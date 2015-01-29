@@ -84,6 +84,13 @@ The `include/igl/cgal/*.h` headers depend on CGAL. It has come to our attention
 that CGAL does not work properly with GCC 4.8. To the best of our knowledge,
 GCC 4.7 and clang will work correctly.
 
+### OpenMP and Windows
+Some of our functions will take advantage of OpenMP if available. However, it
+has come to our attention that Visual Studio + Eigen does not work properly
+with OpenMP. Since OpenMP only improves performance without affecting
+functionality we recommend avoiding OpenMP on Windows or proceeding with
+caution.
+
 # Download
 You can keep up to date by cloning a read-only copy of our GitHub
 [repository](https://github.com/libigl).
