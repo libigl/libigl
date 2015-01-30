@@ -23,18 +23,13 @@
 #define IGL_MOD_ALT             0x0004
 #define IGL_MOD_SUPER           0x0008
 
-#ifdef ENABLE_XML_SERIALIZATION
-  #include <igl/xml/XMLSerializer.h>
-  #include <igl/xml/XMLSerialization.h>
-#endif
-
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <igl/viewer/OpenGL_shader.h>
-#include <igl/viewer/ViewerData.h>
 #include <igl/viewer/OpenGL_state.h>
-#include <igl/viewer/ViewerPlugin.h>
 #include <igl/viewer/ViewerCore.h>
+#include <igl/viewer/ViewerData.h>
+#include <igl/viewer/ViewerPlugin.h>
 
 namespace igl
 {

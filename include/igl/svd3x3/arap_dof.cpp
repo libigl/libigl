@@ -739,7 +739,7 @@ IGL_INLINE bool igl::arap_dof_update(
 #ifdef __SSE__ // fit_rotations_SSE will convert to float if necessary
       fit_rotations_SSE(S,R);
 #else
-      fit_rotations(S,R);
+      fit_rotations(S,false,R);
 #endif
     }
 

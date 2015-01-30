@@ -6,14 +6,20 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+// TODO:
+// * create plugins/skeleton.h
+// * pass time in draw function
+// * remove Preview3D from comments
+
 #ifndef IGL_VIEWER_PLUGIN_H
 #define IGL_VIEWER_PLUGIN_H
 #include <string>
 #include <igl/igl_inline.h>
 
 #ifdef ENABLE_XML_SERIALIZATION
-  #include <igl/xml/XMLSerializer.h>
-  #include <igl/xml/XMLSerialization.h>
+  #include <igl/xml/serialize_xml.h>
+#else
+  #include <igl/serialize.h>
 #endif
 
 namespace igl
@@ -34,17 +40,21 @@ class Viewer;
 
 class ViewerPlugin
 #ifdef ENABLE_XML_SERIALIZATION
-: public ::igl::XMLSerialization
+  : public igl::XMLSerializable
+#else
+  : public igl::Serializable
 #endif
 {
 public:
   IGL_INLINE ViewerPlugin()
-  #ifdef ENABLE_XML_SERIALIZATION
-  : XMLSerialization("dummy")
-  #endif
   {plugin_name = "dummy";}
 
   virtual ~ViewerPlugin(){}
+
+  // This is a interface function for the serialization
+  IGL_INLINE virtual void InitSerialization()
+  {
+  }
 
   // This function is called when the viewer is initialized (no mesh will be loaded at this stage)
   IGL_INLINE virtual void init(igl::Viewer *_viewer)
@@ -69,7 +79,7 @@ public:
     return false;
   }
 
-  // Runs immediately after a new mesh had been loaded.
+  // Runs immediately after a new mesh has been loaded.
   IGL_INLINE virtual bool post_load()
   {
     return false;

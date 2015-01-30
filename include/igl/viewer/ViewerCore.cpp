@@ -96,52 +96,62 @@ Eigen::Matrix4f translate(
 }
 
 
-
 void igl::ViewerCore::InitSerialization()
 {
-  #ifdef ENABLE_XML_SERIALIZATION
-  xmlSerializer->Add(shininess, "shininess");
-  xmlSerializer->Add(background_color, "background_color");
-  xmlSerializer->Add(line_color, "line_color");
-  xmlSerializer->Add(light_position, "light_position");
-  xmlSerializer->Add(lighting_factor, "lighting_factor");
-  xmlSerializer->Add(trackball_angle, "trackball_angle");
-  xmlSerializer->Add(model_zoom, "model_zoom");
-  xmlSerializer->Add(model_translation, "model_translation");
-  xmlSerializer->Add(model_zoom_uv, "model_zoom_uv");
-  xmlSerializer->Add(model_translation_uv, "model_translation_uv");
-  xmlSerializer->Add(camera_zoom, "camera_zoom");
-  xmlSerializer->Add(orthographic, "orthographic");
-  xmlSerializer->Add(camera_eye, "camera_eye");
-  xmlSerializer->Add(camera_up, "camera_up");
-  xmlSerializer->Add(camera_center, "camera_center");
-  xmlSerializer->Add(camera_view_angle, "camera_view_angle");
-  xmlSerializer->Add(camera_dnear, "camera_dnear");
-  xmlSerializer->Add(camera_dfar, "camera_dfar");
-  xmlSerializer->Add(show_overlay, "show_overlay");
-  xmlSerializer->Add(show_overlay_depth, "show_overlay_depth");
-  xmlSerializer->Add(show_texture, "show_texture");
-  xmlSerializer->Add(show_faces, "show_faces");
-  xmlSerializer->Add(show_lines, "show_lines");
-  xmlSerializer->Add(show_vertid, "show_vertid");
-  xmlSerializer->Add(show_faceid, "show_faceid");
-  xmlSerializer->Add(point_size, "point_size");
-  xmlSerializer->Add(line_width, "line_width");
-  xmlSerializer->Add(invert_normals, "invert_normals");
-  xmlSerializer->Add(face_based, "face_based");
-  xmlSerializer->Add(face_based, "object_scale");
-  xmlSerializer->Add(viewport, "viewport");
-  xmlSerializer->Add(view, "view");
-  xmlSerializer->Add(model, "model");
-  xmlSerializer->Add(proj, "proj");
-
-  #endif
+  Add(shininess, "shininess");
+  
+  Add(background_color, "background_color");
+  Add(line_color, "line_color");
+  
+  Add(light_position, "light_position");
+  Add(lighting_factor, "lighting_factor");
+  
+  Add(trackball_angle, "trackball_angle");
+  
+  Add(model_zoom, "model_zoom");
+  Add(model_translation, "model_translation");
+  
+  Add(model_zoom_uv, "model_zoom_uv");
+  Add(model_translation_uv, "model_translation_uv");
+  
+  Add(object_scale, "object_scale");
+  
+  Add(camera_zoom, "camera_zoom");
+  Add(orthographic, "orthographic");
+  Add(camera_view_angle, "camera_view_angle");
+  Add(camera_dnear, "camera_dnear");
+  Add(camera_dfar, "camera_dfar");
+  Add(camera_eye, "camera_eye");
+  Add(camera_center, "camera_center");
+  Add(camera_up, "camera_up");
+  
+  Add(show_faces, "show_faces");
+  Add(show_lines, "show_lines");
+  Add(invert_normals, "invert_normals");
+  Add(show_overlay, "show_overlay");
+  Add(show_overlay_depth, "show_overlay_depth");
+  Add(show_vertid, "show_vertid");
+  Add(show_faceid, "show_faceid");
+  Add(show_texture, "show_texture");
+  
+  Add(point_size, "point_size");
+  Add(line_width, "line_width");
+  Add(is_animating, "is_animating");
+  Add(animation_max_fps, "animation_max_fps");
+  
+  Add(viewport, "viewport");
+  Add(view, "view");
+  Add(model, "model");
+  Add(proj, "proj");
 }
 
 IGL_INLINE void igl::ViewerCore::align_camera_center(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F)
 {
+  if(V.rows() == 0)
+    return;
+
   get_scale_and_shift_to_fit_mesh(V,F,model_zoom,model_translation);
   object_scale = (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm();
 }
@@ -357,9 +367,6 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl)
 }
 
 IGL_INLINE igl::ViewerCore::ViewerCore()
-#ifdef ENABLE_XML_SERIALIZATION
-: XMLSerialization("Core")
-#endif
 {
   // Default shininess
   shininess = 35.0f;

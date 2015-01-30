@@ -67,7 +67,7 @@ link_directories(
 add_definitions(-DIGL_OPENGL_4)
 add_definitions(-DNDEBUG)
 add_definitions(-O3)
-add_definitions(-DENABLE_XML_SERIALIZATION)
+#add_definitions(-DENABLE_XML_SERIALIZATION)
 
 
 

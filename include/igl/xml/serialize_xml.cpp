@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2014 Christian Sch�ller <schuellchr@gmail.com>
+// Copyright (C) 2014 Christian Schüller <schuellchr@gmail.com>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -16,11 +16,11 @@ namespace igl
   }
 
   template <typename T>
-  IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,const std::string& filename,bool binary,bool overwrite)
+  IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,const std::string& filename,bool binary,bool update)
   {
     tinyxml2::XMLDocument* doc = new tinyxml2::XMLDocument();
 
-    if(overwrite)
+    if(update)
     {
       // Check if file exists
       tinyxml2::XMLError error = doc->LoadFile(filename.c_str());
@@ -57,13 +57,20 @@ namespace igl
     std::string name(objectName);
     detail_xml::encodeXMLElementName(name);
 
+    tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
+    
+    if(child != NULL)
+      element->DeleteChild(child);
+
+    child = doc->NewElement(name.c_str());
+    element->InsertEndChild(child);
+
     if(binary)
     {
       std::vector<char> buffer;
       serialize(obj,name,buffer);
       std::string data = detail_xml::base64_encode(reinterpret_cast<const unsigned char*>(buffer.data()),buffer.size());
-
-      tinyxml2::XMLElement* child = detail_xml::getElement(doc,element,name);
+      
       child->SetAttribute("binary",true);
 
       detail_xml::serialize(data,doc,element,name);
@@ -140,6 +147,138 @@ namespace igl
     }
   }
 
+  IGL_INLINE bool XMLSerializable::PreSerialization() const
+  { 
+    return true;
+  }
+  
+  IGL_INLINE void XMLSerializable::PostSerialization() const
+  {
+  }
+  
+  IGL_INLINE bool XMLSerializable::PreDeserialization()
+  { 
+    return true;
+  }
+
+  IGL_INLINE void XMLSerializable::PostDeserialization() 
+  {
+  }
+
+  IGL_INLINE void XMLSerializable::Serialize(std::vector<char>& buffer) const
+  {
+    if(this->PreSerialization())
+    {
+      if(initialized == false)
+      {
+        objects.clear();
+        (const_cast<XMLSerializable*>(this))->InitSerialization();
+        initialized = true;
+      }
+
+      for(unsigned int i=0;i<objects.size();i++)
+        objects[i]->Serialize(buffer);
+
+      this->PostSerialization();
+    }
+  }
+
+  IGL_INLINE void XMLSerializable::Deserialize(const std::vector<char>& buffer)
+  {
+    if(this->PreDeserialization())
+    {
+      if(initialized == false)
+      {
+        objects.clear();
+        (const_cast<XMLSerializable*>(this))->InitSerialization();
+        initialized = true;
+      }
+
+      for(unsigned int i=0;i<objects.size();i++)
+        objects[i]->Deserialize(buffer);
+
+      this->PostDeserialization();
+    }
+  }
+
+  IGL_INLINE void XMLSerializable::Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) const
+  {
+    if(this->PreSerialization())
+    {
+      if(initialized == false)
+      {
+        objects.clear();
+        (const_cast<XMLSerializable*>(this))->InitSerialization();
+        initialized = true;
+      }
+
+      for(unsigned int i=0;i<objects.size();i++)
+        objects[i]->Serialize(doc,element);
+
+      this->PostSerialization();
+    }
+  }
+
+  IGL_INLINE void XMLSerializable::Deserialize(const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element)
+  {
+    if(this->PreDeserialization())
+    {
+      if(initialized == false)
+      {
+        objects.clear();
+        (const_cast<XMLSerializable*>(this))->InitSerialization();
+        initialized = true;
+      }
+
+      for(unsigned int i=0;i<objects.size();i++)
+        objects[i]->Deserialize(doc,element);
+
+      this->PostDeserialization();
+    }
+  }
+
+  IGL_INLINE XMLSerializable::XMLSerializable()
+  {
+    initialized = false;
+  }
+
+  IGL_INLINE XMLSerializable::XMLSerializable(const XMLSerializable& obj)
+  {
+    initialized = false;
+    objects.clear();
+  }
+
+  IGL_INLINE XMLSerializable::~XMLSerializable()
+  {
+    initialized = false;
+    objects.clear();
+  }
+
+
+  IGL_INLINE XMLSerializable& XMLSerializable::operator=(const XMLSerializable& obj)
+  {
+    if(this != &obj)
+    {
+      if(initialized)
+      {
+        initialized = false;
+        objects.clear();
+      }
+    }
+    return *this;
+  }
+
+  template <typename T>
+  IGL_INLINE void XMLSerializable::Add(T& obj,std::string name,bool binary)
+  {
+    XMLSerializationObject<T>* object = new XMLSerializationObject<T>();
+    object->Binary = binary;
+    object->Name = name;
+    object->Object = &obj;
+
+    objects.push_back(object);
+  }
+
   namespace detail_xml
   {
     // fundamental types
@@ -189,17 +328,17 @@ namespace igl
     // Serializable
 
     template <typename T>
-    IGL_INLINE typename std::enable_if<std::is_base_of<XMLSerializable,T>::value>::type serialize(const T& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE typename std::enable_if<std::is_base_of<XMLSerializableBase,T>::value>::type serialize(const T& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
     {
       // Serialize object implementing Serializable interface
-      const XMLSerializable& object = dynamic_cast<const XMLSerializable&>(obj);
+      const XMLSerializableBase& object = dynamic_cast<const XMLSerializableBase&>(obj);
 
       tinyxml2::XMLElement* child = getElement(doc,element,name.c_str());
       object.Serialize(doc,child);
     }
 
     template <typename T>
-    IGL_INLINE typename std::enable_if<std::is_base_of<XMLSerializable,T>::value>::type deserialize(T& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
+    IGL_INLINE typename std::enable_if<std::is_base_of<XMLSerializableBase,T>::value>::type deserialize(T& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
     {
       const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
 
@@ -634,16 +773,16 @@ namespace igl
       tinyxml2::XMLUtil::ToDouble(src,&dest);
     }
 
-    IGL_INLINE template<typename T>
-    typename std::enable_if<std::is_integral<T>::value && std::is_unsigned<T>::value>::type getAttribute(const char* src,T& dest)
+    template<typename T>
+    IGL_INLINE typename std::enable_if<std::is_integral<T>::value && std::is_unsigned<T>::value>::type getAttribute(const char* src,T& dest)
     {
       unsigned int val;
       tinyxml2::XMLUtil::ToUnsigned(src,&val);
       dest = (T)val;
     }
 
-    IGL_INLINE template<typename T>
-    typename std::enable_if<std::is_integral<T>::value && !std::is_unsigned<T>::value>::type getAttribute(const char* src,T& dest)
+    template<typename T>
+    IGL_INLINE typename std::enable_if<std::is_integral<T>::value && !std::is_unsigned<T>::value>::type getAttribute(const char* src,T& dest)
     {
       int val;
       tinyxml2::XMLUtil::ToInt(src,&val);

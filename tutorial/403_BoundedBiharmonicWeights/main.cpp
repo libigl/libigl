@@ -110,6 +110,7 @@ bool key_down(igl::Viewer &viewer, unsigned char key, int mods)
       set_color(viewer);
       break;
   }
+  return true;
 }
 
 int main(int argc, char *argv[])

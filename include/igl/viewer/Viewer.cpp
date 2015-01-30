@@ -6,6 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+// TODO: save_scene()/load_scene()
+
 #include "Viewer.h"
 #include <igl/get_seconds.h>
 
@@ -27,9 +29,6 @@
 #   include <OpenGL/gl3.h>
 #   define __gl_h_ /* Prevent inclusion of the old gl.h */
 #else
-#   ifdef _WIN32
-#       include <windows.h>
-#   endif
 #   include <GL/gl.h>
 #endif
 
@@ -50,10 +49,6 @@
 
 #include <limits>
 #include <cassert>
-
-#ifdef ENABLE_XML_SERIALIZATION
-  #include "igl/xml/XMLSerializer.h"
-#endif
 
 #include <igl/readOBJ.h>
 #include <igl/readOFF.h>
@@ -334,10 +329,8 @@ namespace igl
 
     // ---------------------- LOADING ----------------------
 
-    #ifdef ENABLE_XML_SERIALIZATION
     TwAddButton(bar,"Load Scene", load_scene_cb,    this, "group='Workspace'");
     TwAddButton(bar,"Save Scene", save_scene_cb,    this, "group='Workspace'");
-    #endif
 
     #ifdef ENABLE_IO
     TwAddButton(bar,"Load Mesh",  open_dialog_mesh, this, "group='Mesh' key=o");
@@ -491,8 +484,11 @@ namespace igl
 
     if (extension == "off" || extension =="OFF")
     {
-      if (!igl::readOFF(mesh_file_name_string, data.V, data.F))
+      Eigen::MatrixXd V;
+      Eigen::MatrixXi F;
+      if (!igl::readOFF(mesh_file_name_string, V, F))
         return false;
+      data.set_mesh(V,F);
     }
     else if (extension == "obj" || extension =="OBJ")
     {
@@ -501,9 +497,15 @@ namespace igl
 
       Eigen::MatrixXd UV_V;
       Eigen::MatrixXi UV_F;
+      Eigen::MatrixXd V;
+      Eigen::MatrixXi F;
 
-      if (!(igl::readOBJ(mesh_file_name_string, data.V, data.F, corner_normals, fNormIndices, UV_V, UV_F)))
+      if (!(igl::readOBJ(mesh_file_name_string, V, F, corner_normals, fNormIndices, UV_V, UV_F)))
         return false;
+
+      data.set_mesh(V,F);
+      data.set_uv(UV_V,UV_F);
+
     }
     else
     {
@@ -796,43 +798,55 @@ namespace igl
 
   bool Viewer::save_scene()
   {
-    #ifdef ENABLE_XML_SERIALIZATION
-    string fname = igl::file_dialog_save();
+    std::string fname = igl::file_dialog_save();
     if (fname.length() == 0)
       return false;
 
-    ::igl::XMLSerializer serializer("Viewer");
-    serializer.Add(data,"Data");
-    serializer.Add(options,"Options");
+#ifdef ENABLE_XML_SERIALIZATION
+    
+    igl::serialize_xml(core,"Core",fname.c_str(),false,false);
+    igl::serialize_xml(data,"Data",fname.c_str(),false,true);
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        serializer.Add(*(plugin_manager->plugin_list[i]),plugin_manager->plugin_list[i]->plugin_name);
+    for(unsigned int i = 0; i <plugins.size(); ++i)
+      igl::serialize_xml(*plugins[i],plugins[i]->plugin_name,fname.c_str(),false,true);
+#else
 
-    serializer.Save(fname.c_str(),true);
+    igl::serialize(core,"Core",fname.c_str(),false);
+    igl::serialize(data,"Data",fname.c_str(),true);
 
-    #endif
+    for(unsigned int i = 0; i <plugins.size(); ++i)
+      igl::serialize(*plugins[i],plugins[i]->plugin_name,fname.c_str(),true);
+
+#endif
+
     return true;
   }
 
   bool Viewer::load_scene()
   {
-    #ifdef ENABLE_XML_SERIALIZATION
-    string fname = igl::file_dialog_open();
+    std::string fname = igl::file_dialog_open();
     if (fname.length() == 0)
       return false;
 
-    ::igl::XMLSerializer serializer("Viewer");
-    serializer.Add(data,"Data");
-    serializer.Add(options,"Options");
+#ifdef ENABLE_XML_SERIALIZATION
+    
+    igl::deserialize_xml(core,"Core",fname.c_str());
+    igl::deserialize_xml(data,"Data",fname.c_str());
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        serializer.Add(*(plugin_manager->plugin_list[i]),plugin_manager->plugin_list[i]->plugin_name);
+    for(unsigned int i = 0; i <plugins.size(); ++i)
+      igl::deserialize_xml(*plugins[i],plugins[i]->plugin_name,fname.c_str());
 
-    serializer.Load(fname.c_str());
 
-    #endif
+#else
+
+    igl::deserialize(core,"Core",fname.c_str());
+    igl::deserialize(data,"Data",fname.c_str());
+
+    for(unsigned int i = 0; i <plugins.size(); ++i)
+      igl::deserialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
+
+#endif
+
     return true;
   }
 
@@ -896,7 +910,7 @@ namespace igl
     static_cast<Viewer *>(clientData)->load_mesh_from_file(fname.c_str());
   }
 
-  int Viewer::launch(std::string filename)
+  int Viewer::launch(std::string filename)  
   {
     GLFWwindow* window;
 
@@ -904,7 +918,7 @@ namespace igl
     if (!glfwInit())
       return EXIT_FAILURE;
 
-    glfwWindowHint(GLFW_SAMPLES, 16);
+    glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     #ifdef __APPLE__

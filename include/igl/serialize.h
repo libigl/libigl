@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2014 Christian Sch�ller <schuellchr@gmail.com>
+// Copyright (C) 2014 Christian Schüller <schuellchr@gmail.com>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -8,7 +8,7 @@
 // Functions to save and load a serialization of fundamental c++ data types to
 // and from a binary file. STL containers, Eigen matrix types and nested data
 // structures are also supported. To serialize a user defined class implement
-// the interface Serializable.
+// the interface Serializable or SerializableBase.
 //
 // See also: xml/serialize_xml.h
 // -----------------------------------------------------------------------------
@@ -19,17 +19,20 @@
 
 #ifndef IGL_SERIALIZE_H
 #define IGL_SERIALIZE_H
-#include "igl_inline.h"
+
 #include <type_traits>
 #include <iostream>
+#include <fstream>
+#include <cstdint>
 #include <numeric>
 #include <vector>
 #include <set>
 #include <map>
-#include <fstream>
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+
+#include "igl_inline.h"
 
 //#define SERIALIZE(x) igl::serialize(x,#x,buffer);
 //#define DESERIALIZE(x) igl::deserialize(x,#x,buffer);
@@ -37,7 +40,7 @@
 namespace igl
 {
 
-  // serializes the given object either to a file or to a provided buffer
+  // Serializes the given object either to a file or to a provided buffer
   // Templates:
   //   T  type of the object to serialize
   // Inputs:
@@ -50,9 +53,11 @@ namespace igl
   template <typename T>
   IGL_INLINE void serialize(const T& obj,const std::string& filename);
   template <typename T>
+  IGL_INLINE void serialize(const T& obj,const std::string& objectName,const std::string& filename,bool update = false);
+  template <typename T>
   IGL_INLINE void serialize(const T& obj,const std::string& objectName,std::vector<char>& buffer);
 
-  // deserializes the given data from a file or buffer back to the provided object
+  // Deserializes the given data from a file or buffer back to the provided object
   //
   // Templates:
   //   T  type of the object to serialize
@@ -66,27 +71,80 @@ namespace igl
   template <typename T>
   IGL_INLINE void deserialize(T& obj,const std::string& filename);
   template <typename T>
+  IGL_INLINE void deserialize(T& obj,const std::string& objectName,const std::string& filename);
+  template <typename T>
   IGL_INLINE void deserialize(T& obj,const std::string& objectName,const std::vector<char>& buffer);
 
-  // interface for user defined types
-  struct Serializable
-  {
-    virtual void Serialize(std::vector<char>& buffer) const = 0;
-    virtual void Deserialize(const std::vector<char>& buffer) = 0;
-  };
-  // example:
+  // User defined types have to derive from the class Serializable
+  // and add their member variables in InitSerialization like the
+  // following:
   //
   // class Test : public igl::Serializable {
   //
   //   int var;
   //
-  //   void Serialize(std::vector<char>& buffer) {
-  //     serialize(var,"var1",buffer);
+  //   void InitSerialization() {
+  //     this->Add(var,"var");
   //   }
-  //   void Deserialize(const std::vector<char>& buffer) {
-  //     deserialize(var,"var1",buffer);
-  //   }
-  // }
+  // };
+
+  // Base interface for user defined types
+  struct SerializableBase 
+  {
+    virtual void Serialize(std::vector<char>& buffer) const = 0;
+    virtual void Deserialize(const std::vector<char>& buffer) = 0;
+  };
+
+  // Convenient interface for user defined types
+  class Serializable: public SerializableBase
+  {
+  private:
+
+    template <typename T>
+    struct SerializationObject : public SerializableBase
+    {
+      bool Binary;
+      std::string Name;
+      T* Object;
+
+      void Serialize(std::vector<char>& buffer) const {
+        igl::serialize(*Object,Name,buffer);
+      }
+
+      void Deserialize(const std::vector<char>& buffer) {
+        igl::deserialize(*Object,Name,buffer);
+      }
+    };
+
+    mutable bool initialized;
+    mutable std::vector<SerializableBase*> objects;
+  
+  public:
+
+    // Override this function to add your member variables which should be serialized
+    IGL_INLINE virtual void InitSerialization() = 0;
+
+    // Following functions can be overridden to handle the specific events.
+    // Return false to prevent the de-/serialization of an object.
+    IGL_INLINE virtual bool PreSerialization() const;
+    IGL_INLINE virtual void PostSerialization() const;
+    IGL_INLINE virtual bool PreDeserialization();
+    IGL_INLINE virtual void PostDeserialization();
+
+    // Default implementation of Serializable interface
+    IGL_INLINE void Serialize(std::vector<char>& buffer) const;
+    IGL_INLINE void Deserialize(const std::vector<char>& buffer);
+
+    // Default constructor, destructor, assignment and copy constructor
+    IGL_INLINE Serializable();
+    IGL_INLINE Serializable(const Serializable& obj);
+    IGL_INLINE ~Serializable();
+    IGL_INLINE Serializable& operator=(const Serializable& obj);
+
+    // Use this function to add your variables which should be serialized
+    template <typename T>
+    IGL_INLINE void Add(T& obj,std::string name,bool binary = false);
+  };
 
   // internal functions
   namespace detail
@@ -104,13 +162,13 @@ namespace igl
     IGL_INLINE void serialize(const std::string& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
     IGL_INLINE void deserialize(std::string& obj,std::vector<char>::const_iterator& iter);
 
-    // Serializable
+    // SerializableBase
     template <typename T>
-    IGL_INLINE typename std::enable_if<std::is_base_of<Serializable,T>::value,size_t>::type getByteSize(const T& obj);
+    IGL_INLINE typename std::enable_if<std::is_base_of<SerializableBase,T>::value,size_t>::type getByteSize(const T& obj);
     template <typename T>
-    IGL_INLINE typename std::enable_if<std::is_base_of<Serializable,T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    IGL_INLINE typename std::enable_if<std::is_base_of<SerializableBase,T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
     template <typename T>
-    IGL_INLINE typename std::enable_if<std::is_base_of<Serializable,T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter);
+    IGL_INLINE typename std::enable_if<std::is_base_of<SerializableBase,T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter);
 
     // stl containers
     // std::pair
@@ -168,6 +226,10 @@ namespace igl
     template <typename T>
     IGL_INLINE typename std::enable_if<std::is_pointer<T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter);
 
+    // helper functions
+    template <typename T>
+    std::vector<char>::iterator findObject(const T& obj,const std::string objectName,std::vector<char>& buffer);
+
     // compile time type serializable check
     template <typename T>
     struct is_stl_container { static const bool value = false; };
@@ -190,7 +252,7 @@ namespace igl
     template <typename T>
     struct is_serializable {
       using T0 = typename  std::remove_pointer<T>::type;
-      static const bool value = std::is_fundamental<T0>::value || std::is_same<std::string,T0>::value || std::is_base_of<Serializable,T0>::value
+      static const bool value = std::is_fundamental<T0>::value || std::is_same<std::string,T0>::value || std::is_base_of<SerializableBase,T0>::value
         || is_stl_container<T0>::value || is_eigen_type<T0>::value;
     };
   }
