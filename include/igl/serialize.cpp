@@ -32,7 +32,7 @@ namespace igl
 
         buffer.resize(size);
         file.read(&buffer[0],size);
-        
+
         file.close();
       }
     }
@@ -61,7 +61,8 @@ namespace igl
     // serialize object data
     size_t size = detail::getByteSize(obj);
     std::vector<char> tmp(size);
-    detail::serialize(obj,tmp,tmp.begin());
+    std::vector<char>::iterator it = tmp.begin();
+    detail::serialize(obj,tmp,it);
 
     std::string objectType(typeid(obj).name());
     size_t newObjectSize = tmp.size();
@@ -70,36 +71,37 @@ namespace igl
     size_t oldHeaderSize = 0;
 
     // find object header
-    std::vector<char>::iterator iter = buffer.begin();
-    while(iter != buffer.end())
+    std::vector<char>::const_iterator citer = buffer.cbegin();
+    while(citer != buffer.cend())
     {
-      std::vector<char>::iterator iterTemp = iter;
+      std::vector<char>::const_iterator citerTemp = citer;
 
       std::string name;
       std::string type;
-      detail::deserialize(name,iter);
-      detail::deserialize(type,iter);
-      detail::deserialize(oldObjectSize,iter);
+      detail::deserialize(name,citer);
+      detail::deserialize(type,citer);
+      detail::deserialize(oldObjectSize,citer);
 
       if(name == objectName)
       {
         if(type != typeid(obj).name())
           std::cout << "object " + objectName + " was overwriten with different data type!" << std::endl;
 
-        oldHeaderSize = iter - iterTemp;
-        iter = iterTemp;
+        oldHeaderSize = citer - citerTemp;
+        citer = citerTemp;
         break;
       }
       else
-        iter+=oldObjectSize;
+        citer+=oldObjectSize;
     }
 
+    std::vector<char>::iterator iter = buffer.begin() + (citer-buffer.cbegin());
     if(iter != buffer.end())
     {
       std::vector<char>::iterator iterEndPart = iter+oldHeaderSize+oldObjectSize;
       size_t startPartSize = iter - buffer.begin();
       size_t endPartSize = buffer.end()-iterEndPart;
-      
+
       // copy end part of buffer
       std::vector<char> endPartBuffer(endPartSize);
       std::copy(iterEndPart,buffer.end(),endPartBuffer.begin());
@@ -120,7 +122,7 @@ namespace igl
       std::copy(endPartBuffer.begin(),endPartBuffer.end(),iter);
     }
     else
-    { 
+    {
       size_t curSize = buffer.size();
       size_t newSize = curSize + newHeaderSize + newObjectSize;
 
@@ -502,7 +504,7 @@ namespace igl
     IGL_INLINE size_t getByteSize(const Eigen::Matrix<T,R,C,P,MR,MC>& obj)
     {
       // space for numbers of rows,cols and data
-      return 2*sizeof(Eigen::Matrix<T,R,C,P,MR,MC>::Index)+sizeof(T)*obj.rows()*obj.cols();
+      return 2*sizeof(typename Eigen::Matrix<T,R,C,P,MR,MC>::Index)+sizeof(T)*obj.rows()*obj.cols();
     }
 
     template<typename T,int R,int C,int P,int MR,int MC>
@@ -629,12 +631,5 @@ namespace igl
       }
     }
 
-    template <typename T>
-    std::vector<char>::iterator findObject(const T& obj,const std::string objectName, std::vector<char>& buffer)
-    {
-      
-
-      return iter;
-    }
   }
 }

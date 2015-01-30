@@ -89,7 +89,7 @@ namespace igl
   // };
 
   // Base interface for user defined types
-  struct SerializableBase 
+  struct SerializableBase
   {
     virtual void Serialize(std::vector<char>& buffer) const = 0;
     virtual void Deserialize(const std::vector<char>& buffer) = 0;
@@ -118,7 +118,7 @@ namespace igl
 
     mutable bool initialized;
     mutable std::vector<SerializableBase*> objects;
-  
+
   public:
 
     // Override this function to add your member variables which should be serialized
@@ -225,10 +225,6 @@ namespace igl
     IGL_INLINE typename std::enable_if<std::is_pointer<T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
     template <typename T>
     IGL_INLINE typename std::enable_if<std::is_pointer<T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter);
-
-    // helper functions
-    template <typename T>
-    std::vector<char>::iterator findObject(const T& obj,const std::string objectName,std::vector<char>& buffer);
 
     // compile time type serializable check
     template <typename T>
