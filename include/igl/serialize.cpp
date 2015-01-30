@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2014 Christian Sch�ller <schuellchr@gmail.com>
+// Copyright (C) 2014 Christian Schüller <schuellchr@gmail.com>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -12,20 +12,44 @@ namespace igl
   template <typename T>
   IGL_INLINE void serialize(const T& obj,const std::string& filename)
   {
-    std::ofstream fout(filename.c_str(),std::ios::out | std::ios::binary);
+    serialize(obj,"obj",filename);
+  }
 
-    if(fout.is_open())
+  template <typename T>
+  IGL_INLINE void serialize(const T& obj,const std::string& objectName,const std::string& filename,bool update)
+  {
+    std::vector<char> buffer;
+
+    if(update)
     {
-      std::vector<char> buffer;
-      serialize(obj,"obj",buffer);
+      std::ifstream file(filename.c_str(),std::ios::binary);
 
-      fout.write(&buffer[0],buffer.size());
+      if(file.is_open())
+      {
+        file.seekg(0,std::ios::end);
+        int size = file.tellg();
+        file.seekg(0,std::ios::beg);
 
-      fout.close();
+        buffer.resize(size);
+        file.read(&buffer[0],size);
+        
+        file.close();
+      }
+    }
+
+    std::ofstream file(filename.c_str(),std::ios::out | std::ios::binary);
+
+    if(file.is_open())
+    {
+      serialize(obj,objectName,buffer);
+
+      file.write(&buffer[0],buffer.size());
+
+      file.close();
     }
     else
     {
-      std::cerr << "Saving binary serialization failed!" << std::endl;
+      std::cerr << "saving binary serialization failed!" << std::endl;
     }
   }
 
@@ -40,26 +64,88 @@ namespace igl
     detail::serialize(obj,tmp,tmp.begin());
 
     std::string objectType(typeid(obj).name());
+    size_t newObjectSize = tmp.size();
+    size_t newHeaderSize = detail::getByteSize(objectName) + detail::getByteSize(objectType) + sizeof(size_t);
+    size_t oldObjectSize = 0;
+    size_t oldHeaderSize = 0;
 
-    size_t curSize = buffer.size();
-    size_t objSize = tmp.size();
-    size_t newSize = curSize + detail::getByteSize(objectName) + detail::getByteSize(objectType) + sizeof(size_t)+objSize;
+    // find object header
+    std::vector<char>::iterator iter = buffer.begin();
+    while(iter != buffer.end())
+    {
+      std::vector<char>::iterator iterTemp = iter;
 
-    buffer.resize(newSize);
+      std::string name;
+      std::string type;
+      detail::deserialize(name,iter);
+      detail::deserialize(type,iter);
+      detail::deserialize(oldObjectSize,iter);
 
-    std::vector<char>::iterator iter = buffer.begin()+curSize;
+      if(name == objectName)
+      {
+        if(type != typeid(obj).name())
+          std::cout << "object " + objectName + " was overwriten with different data type!" << std::endl;
 
-    // serialize object header (name/type/size)
-    detail::serialize(objectName,buffer,iter);
-    detail::serialize(objectType,buffer,iter);
-    detail::serialize(objSize,buffer,iter);
+        oldHeaderSize = iter - iterTemp;
+        iter = iterTemp;
+        break;
+      }
+      else
+        iter+=oldObjectSize;
+    }
 
-    // copy serilized data to buffer
-    iter = std::copy(tmp.begin(),tmp.end(),iter);
+    if(iter != buffer.end())
+    {
+      std::vector<char>::iterator iterEndPart = iter+oldHeaderSize+oldObjectSize;
+      size_t startPartSize = iter - buffer.begin();
+      size_t endPartSize = buffer.end()-iterEndPart;
+      
+      // copy end part of buffer
+      std::vector<char> endPartBuffer(endPartSize);
+      std::copy(iterEndPart,buffer.end(),endPartBuffer.begin());
+
+      size_t newSize = startPartSize + newHeaderSize + newObjectSize + endPartSize;
+      buffer.resize(newSize);
+      iter = buffer.begin() + startPartSize;
+
+      // serialize object header (name/type/size)
+      detail::serialize(objectName,buffer,iter);
+      detail::serialize(objectType,buffer,iter);
+      detail::serialize(newObjectSize,buffer,iter);
+
+      // copy serialized data to buffer
+      iter = std::copy(tmp.begin(),tmp.end(),iter);
+
+      // copy back end part of buffer
+      std::copy(endPartBuffer.begin(),endPartBuffer.end(),iter);
+    }
+    else
+    { 
+      size_t curSize = buffer.size();
+      size_t newSize = curSize + newHeaderSize + newObjectSize;
+
+      buffer.resize(newSize);
+
+      std::vector<char>::iterator iter = buffer.begin()+curSize;
+
+      // serialize object header (name/type/size)
+      detail::serialize(objectName,buffer,iter);
+      detail::serialize(objectType,buffer,iter);
+      detail::serialize(newObjectSize,buffer,iter);
+
+      // copy serialized data to buffer
+      iter = std::copy(tmp.begin(),tmp.end(),iter);
+    }
   }
 
   template <typename T>
   IGL_INLINE void deserialize(T& obj,const std::string& filename)
+  {
+    deserialize(obj,"obj",filename);
+  }
+
+  template <typename T>
+  IGL_INLINE void deserialize(T& obj,const std::string& objectName,const std::string& filename)
   {
     std::ifstream file(filename.c_str(),std::ios::binary);
 
@@ -72,7 +158,7 @@ namespace igl
       std::vector<char> buffer(size);
       file.read(&buffer[0],size);
 
-      deserialize(obj,"obj",buffer);
+      deserialize(obj,objectName,buffer);
       file.close();
     }
     else
@@ -107,6 +193,101 @@ namespace igl
       detail::deserialize(obj,iter);
     else
       obj = T();
+  }
+
+  IGL_INLINE bool Serializable::PreSerialization() const
+  {
+    return true;
+  }
+
+  IGL_INLINE void Serializable::PostSerialization() const
+  {
+  }
+
+  IGL_INLINE bool Serializable::PreDeserialization()
+  {
+    return true;
+  }
+
+  IGL_INLINE void Serializable::PostDeserialization()
+  {
+  }
+
+  IGL_INLINE void Serializable::Serialize(std::vector<char>& buffer) const
+  {
+    if(this->PreSerialization())
+    {
+      if(initialized == false)
+      {
+        objects.clear();
+        (const_cast<Serializable*>(this))->InitSerialization();
+        initialized = true;
+      }
+
+      for(unsigned int i=0;i<objects.size();i++)
+        objects[i]->Serialize(buffer);
+
+      this->PostSerialization();
+    }
+  }
+
+  IGL_INLINE void Serializable::Deserialize(const std::vector<char>& buffer)
+  {
+    if(this->PreDeserialization())
+    {
+      if(initialized == false)
+      {
+        objects.clear();
+        (const_cast<Serializable*>(this))->InitSerialization();
+        initialized = true;
+      }
+
+      for(unsigned int i=0;i<objects.size();i++)
+        objects[i]->Deserialize(buffer);
+
+      this->PostDeserialization();
+    }
+  }
+
+  IGL_INLINE Serializable::Serializable()
+  {
+    initialized = false;
+  }
+
+  IGL_INLINE Serializable::Serializable(const Serializable& obj)
+  {
+    initialized = false;
+    objects.clear();
+  }
+
+  IGL_INLINE Serializable::~Serializable()
+  {
+    initialized = false;
+    objects.clear();
+  }
+
+  IGL_INLINE Serializable& Serializable::operator=(const Serializable& obj)
+  {
+    if(this != &obj)
+    {
+      if(initialized)
+      {
+        initialized = false;
+        objects.clear();
+      }
+    }
+    return *this;
+  }
+
+  template <typename T>
+  IGL_INLINE void Serializable::Add(T& obj,std::string name,bool binary)
+  {
+    SerializationObject<T>* object = new SerializationObject<T>();
+    object->Binary = binary;
+    object->Name = name;
+    object->Object = &obj;
+
+    objects.push_back(object);
   }
 
   namespace detail
@@ -161,16 +342,16 @@ namespace igl
       obj = str;
     }
 
-    // Serializable
+    // SerializableBase
 
     template <typename T>
-    IGL_INLINE typename std::enable_if<std::is_base_of<Serializable,T>::value,size_t>::type getByteSize(const T& obj)
+    IGL_INLINE typename std::enable_if<std::is_base_of<SerializableBase,T>::value,size_t>::type getByteSize(const T& obj)
     {
       return sizeof(std::vector<char>::size_type);
     }
 
     template <typename T>
-    IGL_INLINE typename std::enable_if<std::is_base_of<Serializable,T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter)
+    IGL_INLINE typename std::enable_if<std::is_base_of<SerializableBase,T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter)
     {
       // data
       std::vector<char> tmp;
@@ -187,7 +368,7 @@ namespace igl
     }
 
     template <typename T>
-    IGL_INLINE typename std::enable_if<std::is_base_of<Serializable,T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter)
+    IGL_INLINE typename std::enable_if<std::is_base_of<SerializableBase,T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter)
     {
       std::vector<char>::size_type size;
       detail::deserialize(size,iter);
@@ -446,6 +627,14 @@ namespace igl
 
         detail::deserialize(*obj,iter);
       }
+    }
+
+    template <typename T>
+    std::vector<char>::iterator findObject(const T& obj,const std::string objectName, std::vector<char>& buffer)
+    {
+      
+
+      return iter;
     }
   }
 }

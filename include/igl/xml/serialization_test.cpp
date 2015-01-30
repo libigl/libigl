@@ -9,7 +9,6 @@
 
 //#include <igl/Timer.h>
 #include <igl/xml/serialize_xml.h>
-#include <igl/xml/XMLSerialization.h>
 
 namespace igl
 {
@@ -18,7 +17,7 @@ namespace igl
   {
   };
 
-  struct Test1 : public XMLSerialization
+  struct Test1 : public XMLSerializable
   {
     std::string ts;
     std::vector<Test1*> tvt;
@@ -37,7 +36,7 @@ namespace igl
     }
   };
 
-  struct Test2: public igl::XMLSerializable
+  struct Test2: public igl::XMLSerializableBase
   {
     char tc;
     int* ti;
@@ -201,6 +200,18 @@ namespace igl
     igl::deserialize(tstrOut,file);
     assert(tstrIn == tstrOut);
 
+    // updating
+    igl::serialize(tsIn,"tsIn",file);
+    igl::serialize(tVector1In,"tVector1In",file,true);
+    igl::serialize(tVector2In,"tsIn",file,true);
+    igl::deserialize(tVector2Out,"tsIn",file);
+    for(unsigned int i=0;i<tVector2In.size();i++)
+    {
+      assert(tVector2In[i].first == tVector2Out[i].first);
+      assert(tVector2In[i].second == tVector2Out[i].second);
+    }
+    tVector2Out.clear();
+
     igl::serialize(tObjIn,file);
     igl::deserialize(tObjOut,file);
     assert(tObjIn.tc == tObjOut.tc);
@@ -335,16 +346,14 @@ namespace igl
 
     // updating
     igl::serialize_xml(tsIn,"tsIn",file);
-    igl::serialize_xml(tVector2In,"tVector2In",file,false,true);
-    igl::deserialize_xml(tVector2Out,"tVector2In",file);
-    igl::deserialize_xml(tsOut,"tsIn",file);
-    assert(tsIn == tsOut);
+    igl::serialize_xml(tVector1In,"tVector1In",file,false,true);
+    igl::serialize_xml(tVector2In,"tsIn",file,false,true);
+    igl::deserialize_xml(tVector2Out,"tsIn",file);
     for(unsigned int i=0;i<tVector2In.size();i++)
     {
       assert(tVector2In[i].first == tVector2Out[i].first);
       assert(tVector2In[i].second == tVector2Out[i].second);
     }
-    tsOut = 0;
     tVector2Out.clear();
 
     // binarization

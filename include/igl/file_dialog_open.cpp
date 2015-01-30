@@ -9,9 +9,12 @@
 #include <cstdio>
 #include <cstring>
 
-
 #ifdef _WIN32
- #include <Commdlg.h>
+  #include <windows.h>
+  #undef max
+  #undef min
+  
+  #include <Commdlg.h>
 #endif
 
 IGL_INLINE std::string igl::file_dialog_open()

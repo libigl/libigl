@@ -8,7 +8,7 @@
 // Functions to save and load a serialization of fundamental c++ data types to
 // and from a xml file. STL containers, Eigen matrix types and nested data
 // structures are also supported. To serialize a user defined class implement
-// the interface XMLSerializable.
+// the interface XMLSerializable or XMLSerializableBase.
 //
 // See also: serialize.h
 // -----------------------------------------------------------------------------
@@ -53,7 +53,7 @@ namespace igl
   template <typename T>
   IGL_INLINE void serialize_xml(const T& obj,const std::string& filename);
   template <typename T>
-  IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,const std::string& filename, bool binary = false,bool overwrite = false);
+  IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,const std::string& filename, bool binary = false,bool update = false);
   template <typename T>
   IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,bool binary = false);
 
@@ -80,32 +80,74 @@ namespace igl
   IGL_INLINE void deserialize_xml(T& obj,const std::string& objectName,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element);
 
   // interface for user defined types
-  struct XMLSerializable : public Serializable
+  struct XMLSerializableBase : public SerializableBase
   {
     virtual void Serialize(std::vector<char>& buffer) const = 0;
     virtual void Deserialize(const std::vector<char>& buffer) = 0;
     virtual void Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) const = 0;
     virtual void Deserialize(const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element) = 0;
   };
-  // example:
-  //
-  // class Test : public igl::Serializable {
-  //
-  //   int var;
-  //
-  //   void Serialize(std::vector<char>& buffer) {
-  //     serialize(var,"var1",buffer);
-  //   }
-  //   void Deserialize(const std::vector<char>& buffer) {
-  //     deserialize(var,"var1",buffer);
-  //   }
-  //   void Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) const {
-  //     serialize_xml(var,"var1",doc,element);
-  //   }
-  //   void Deserialize(const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element) {
-  //     deserialize_xml(var,"var1",doc,element);
-  //   }
-  // }
+
+  // Convenient interface for user defined types
+  class XMLSerializable: public XMLSerializableBase
+  {
+  private:
+
+    template <typename T>
+    struct XMLSerializationObject: public XMLSerializableBase
+    {
+      bool Binary;
+      std::string Name;
+      T* Object;
+
+      void Serialize(std::vector<char>& buffer) const {
+        igl::serialize(*Object,Name,buffer);
+      }
+
+      void Deserialize(const std::vector<char>& buffer) {
+        igl::deserialize(*Object,Name,buffer);
+      }
+
+      void Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) const {
+        igl::serialize_xml(*Object,Name,doc,element,Binary);
+      }
+
+      void Deserialize(const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element) {
+        igl::deserialize_xml(*Object,Name,doc,element);
+      }
+    };
+
+    mutable bool initialized;
+    mutable std::vector<XMLSerializableBase*> objects;
+
+  public:
+
+    // Override this function to add your member variables which should be serialized
+    IGL_INLINE virtual void InitSerialization() = 0;
+
+    // Following functions can be overridden to handle the specific events.
+    // Return false to prevent the de-/serialization of an object.
+    IGL_INLINE virtual bool PreSerialization() const;
+    IGL_INLINE virtual void PostSerialization() const;
+    IGL_INLINE virtual bool PreDeserialization();
+    IGL_INLINE virtual void PostDeserialization();
+
+    // Default implementation of XMLSerializable interface
+    IGL_INLINE void Serialize(std::vector<char>& buffer) const;
+    IGL_INLINE void Deserialize(const std::vector<char>& buffer);
+    IGL_INLINE void Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) const;
+    IGL_INLINE void Deserialize(const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element);
+
+    // Default constructor, destructor, assignment and copy constructor
+    IGL_INLINE XMLSerializable();
+    IGL_INLINE XMLSerializable(const XMLSerializable& obj);
+    IGL_INLINE ~XMLSerializable();
+    IGL_INLINE XMLSerializable& operator=(const XMLSerializable& obj);
+
+    // Use this function to add your variables which should be serialized
+    template <typename T>
+    IGL_INLINE void Add(T& obj,std::string name,bool binary = false);
+  };
 
   // internal functions
   namespace detail_xml
@@ -120,11 +162,11 @@ namespace igl
     IGL_INLINE void serialize(const std::string& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
     IGL_INLINE void deserialize(std::string& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
 
-    // Serializable
+    // XMLSerializableBase
     template <typename T>
-    IGL_INLINE typename std::enable_if<std::is_base_of<XMLSerializable,T>::value>::type serialize(const T& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
+    IGL_INLINE typename std::enable_if<std::is_base_of<XMLSerializableBase,T>::value>::type serialize(const T& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
     template <typename T>
-    IGL_INLINE typename std::enable_if<std::is_base_of<XMLSerializable,T>::value>::type deserialize(T& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
+    IGL_INLINE typename std::enable_if<std::is_base_of<XMLSerializableBase,T>::value>::type deserialize(T& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
 
     // STL containers
     template <typename T1, typename T2>
@@ -203,7 +245,7 @@ namespace igl
     template <typename T>
     struct is_serializable {
       using T0 = typename  std::remove_pointer<T>::type;
-      static const bool value = std::is_fundamental<T0>::value || std::is_same<std::string,T0>::value || std::is_base_of<Serializable,T0>::value
+      static const bool value = std::is_fundamental<T0>::value || std::is_same<std::string,T0>::value || std::is_base_of<XMLSerializableBase,T0>::value
         || is_stl_container<T0>::value || is_eigen_type<T0>::value;
     };
   }

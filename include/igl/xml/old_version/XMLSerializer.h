@@ -4,7 +4,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
- -----------------------------------------------------------------------------
+/* -----------------------------------------------------------------------------
  
  Header library which allows to save and load a serialization of basic c++ data
  types like char, char*, std::string, bool, uint, int, float, double to and
