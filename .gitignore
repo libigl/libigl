@@ -69,3 +69,4 @@ external/glfw/build
 *buildXcode*
 tutorial/build*
 tutorial/*/*.mexmaci64
+external/libpng/build
