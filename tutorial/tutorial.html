@@ -4,7 +4,7 @@
 	<meta charset="utf-8"/>
 	<title>libigl Tutorial</title>
 	<meta name="author" content="Daniele Panozzo and Alec Jacobson"/>
-	<meta name="date" content="07 November 2014"/>
+	<meta name="date" content="07 November 2015"/>
 	<link type="text/css" rel="stylesheet" href="style.css"/>
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
@@ -15,11 +15,11 @@
 
 <h1 id="libigltutorialnotes">libigl tutorial notes</h1>
 
-<h4 id="aspresentedbydanielepanozzoandalecjacobsonatsgpgraduateschool2014">as presented by Daniele Panozzo and Alec Jacobson at SGP Graduate School 2014</h4>
+<h4 id="aspresentedbydanielepanozzoandalecjacobsonatsgpgraduateschool2015">as presented by Daniele Panozzo and Alec Jacobson at SGP Graduate School 2015</h4>
 
 <figure>
 <img src="images/libigl-logo.jpg" alt="" />
-</figure>
+<figcaption></figcaption></figure>
 
 <p>Libigl is an open source C++ library for geometry processing research and
 development. Dropping the heavy data structures of tradition geometry
@@ -130,9 +130,13 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#607">607 Picking vertices and faces</a></li>
 <li><a href="#608">608 Locally Injective Maps</a></li>
 <li><a href="#609">609 Boolean Operations on Meshes</a></li>
-<li><a href="#610">610 Mesh Statistics</a></li>
 </ul></li>
-<li><a href="#future">Chapter 7: Outlook for continuing development</a></li>
+<li><a href="#700">Chapter 7: Miscellaneous</a>
+
+<ul>
+<li><a href="#701">701 Mesh Statistics</a></li>
+</ul></li>
+<li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
 
 <h1 id="100">Chapter 1</h1>
@@ -225,8 +229,7 @@ represented as indices pointing to rows of <code>V</code>.</p>
 
 <figure>
 <img src="images/VF.png" alt="A simple mesh made of 2 triangles and 4 vertices." />
-<figcaption>A simple mesh made of 2 triangles and 4 vertices.</figcaption>
-</figure>
+<figcaption>A simple mesh made of 2 triangles and 4 vertices.</figcaption></figure>
 
 <p>Note that the order of the vertex indices in <code>F</code> determines the orientation of
 the triangles and it should thus be consistent for the entire surface.
@@ -296,8 +299,7 @@ Please see the documentation in
 <img src="images/102_DrawMesh.png" alt="(Example 102) loads and draws a
 mesh." />
 <figcaption>(<a href="102_DrawMesh/main.cpp">Example 102</a>) loads and draws a
-mesh.</figcaption>
-</figure>
+mesh.</figcaption></figure>
 
 <h2 id="103">Interaction with keyboard and mouse</h2>
 
@@ -384,8 +386,7 @@ vertex) and the second calls a libigl functions that converts a scalar field to 
 <img src="images/104_Colors.png" alt="(Example 104) igl::jet converts a scalar field to a
 color field." />
 <figcaption>(<a href="104_Colors/main.cpp">Example 104</a>) igl::jet converts a scalar field to a
-color field.</figcaption>
-</figure>
+color field.</figcaption></figure>
 
 <p><code>igl::jet</code> is an example of a standard function in libigl: it takes simple
 types and can be easily reused for many different tasks. Not committing to
@@ -424,8 +425,7 @@ Eigen::Vector3d M = V.colwise().maxCoeff();
 <img src="images/105_Overlays.png" alt="(Example 105) The bounding box of a mesh is shown
 using overlays." />
 <figcaption>(<a href="105_Overlays/main.cpp">Example 105</a>) The bounding box of a mesh is shown
-using overlays.</figcaption>
-</figure>
+using overlays.</figcaption></figure>
 
 <h1 id="chapter2:discretegeometricquantitiesandoperators">Chapter 2: Discrete Geometric Quantities and Operators</h1>
 
@@ -492,8 +492,7 @@ normals of faces incident on the corresponding vertex which do not deviate by mo
 <img src="images/fandisk-normals.jpg" alt="The Normals example computes per-face (left), per-vertex (middle) and
 per-corner (right) normals" />
 <figcaption>The <code>Normals</code> example computes per-face (left), per-vertex (middle) and
-per-corner (right) normals</figcaption>
-</figure>
+per-corner (right) normals</figcaption></figure>
 
 <h2 id="gaussiancurvature">Gaussian curvature</h2>
 
@@ -525,8 +524,7 @@ elliptic, hyperbolic and parabolic vertices on the domain, as demonstrated in <a
 <img src="images/bumpy-gaussian-curvature.jpg" alt="The GaussianCurvature example computes discrete Gaussian curvature and
 visualizes it in pseudocolor." />
 <figcaption>The <code>GaussianCurvature</code> example computes discrete Gaussian curvature and
-visualizes it in pseudocolor.</figcaption>
-</figure>
+visualizes it in pseudocolor.</figcaption></figure>
 
 <h2 id="curvaturedirections">Curvature directions</h2>
 
@@ -577,8 +575,7 @@ fitting and visualizes mean curvature in pseudocolor and principal directions
 with a cross field." />
 <figcaption>The <code>CurvatureDirections</code> example computes principal curvatures via quadric
 fitting and visualizes mean curvature in pseudocolor and principal directions
-with a cross field.</figcaption>
-</figure>
+with a cross field.</figcaption></figure>
 
 <h2 id="gradient">Gradient</h2>
 
@@ -595,8 +592,7 @@ vertex <span class="math">\(i\)</span> and zero at the other corners.</p>
 <img src="images/hat-function.jpg" alt="Hat function $\phi_i$ is one at vertex $i$, zero at all other vertices, and
 linear on incident triangles." />
 <figcaption>Hat function <span class="math">\(\phi_i\)</span> is one at vertex <span class="math">\(i\)</span>, zero at all other vertices, and
-linear on incident triangles.</figcaption>
-</figure>
+linear on incident triangles.</figcaption></figure>
 
 <p>Thus gradients of such piecewise linear functions are simply sums of gradients
 of the hat functions:</p>
@@ -622,8 +618,7 @@ triangle and tetrahedral meshes (<a href="204_Gradient/main.cpp">Example 204</a>
 <img src="images/cheburashka-gradient.jpg" alt="The Gradient example computes gradients of an input function on a mesh and
 visualizes the vector field." />
 <figcaption>The <code>Gradient</code> example computes gradients of an input function on a mesh and
-visualizes the vector field.</figcaption>
-</figure>
+visualizes the vector field.</figcaption></figure>
 
 <h2 id="laplacian">Laplacian</h2>
 
@@ -698,8 +693,7 @@ the surface along the mean curvature normal direction (<a href="205_Laplacian/ma
 <img src="images/cow-curvature-flow.jpg" alt="The Laplacian example computes conformalized mean curvature flow using the
 cotangent Laplacian ." />
 <figcaption>The <code>Laplacian</code> example computes conformalized mean curvature flow using the
-cotangent Laplacian <a class="citation" href="#fn:5" title="Jump to citation">[5]<span class="citekey" style="display:none">kazhdan_2012</span></a>.</figcaption>
-</figure>
+cotangent Laplacian <a class="citation" href="#fn:5" title="Jump to citation">[5]<span class="citekey" style="display:none">kazhdan_2012</span></a>.</figcaption></figure>
 
 <h3 id="massmatrix">Mass matrix</h3>
 
@@ -790,8 +784,7 @@ functionality is provided in libigl using <code>slice_into</code>:</p>
 <img src="images/decimated-knight-slice-color.jpg" alt="The example Slice shows how to use igl::slice to change the colors for
 triangles on a mesh." />
 <figcaption>The example <code>Slice</code> shows how to use <code>igl::slice</code> to change the colors for
-triangles on a mesh.</figcaption>
-</figure>
+triangles on a mesh.</figcaption></figure>
 
 <h2 id="sort">Sort</h2>
 
@@ -834,8 +827,7 @@ pseudocolor triangles according to their barycenters sorted
 order (Example 302)." />
 <figcaption>The example <code>Sort</code> shows how to use <code>igl::sortrows</code> to
 pseudocolor triangles according to their barycenters&#8217; sorted
-order (<a href="302_Sort/main.cpp">Example 302</a>).</figcaption>
-</figure>
+order (<a href="302_Sort/main.cpp">Example 302</a>).</figcaption></figure>
 
 <h3 id="othermatlab-stylefunctions">Other Matlab-style functions</h3>
 
@@ -1002,8 +994,7 @@ rows of <code>Z</code> corresponding to the interior vertices (<a href="303_Lapl
 <img src="images/camelhead-laplace-equation.jpg" alt="The LaplaceEquation example solves a Laplace equation with Dirichlet
 boundary conditions." />
 <figcaption>The <code>LaplaceEquation</code> example solves a Laplace equation with Dirichlet
-boundary conditions.</figcaption>
-</figure>
+boundary conditions.</figcaption></figure>
 
 <h3 id="quadraticenergyminimization">Quadratic energy minimization</h3>
 
@@ -1151,8 +1142,7 @@ hand and foot constrained to be equal)." />
 <figcaption>The example <code>LinearEqualityConstraints</code> first solves with just fixed value
 constraints (left: 1 and &#8211;1 on the left hand and foot respectively), then
 solves with an additional linear equality constraint (right: points on right
-hand and foot constrained to be equal).</figcaption>
-</figure>
+hand and foot constrained to be equal).</figcaption></figure>
 
 <h2 id="quadraticprogramming">Quadratic programming</h2>
 
@@ -1201,8 +1191,7 @@ discrete biharmonic kernels  at multiple scales
 ." />
 <figcaption> <a href="305_QuadraticProgramming/main.cpp">Example 305</a> uses an active set solver to optimize
 discrete biharmonic kernels <a class="citation" href="#fn:6" title="Jump to citation">[6]<span class="citekey" style="display:none">rustamov_2011</span></a> at multiple scales
-.</figcaption>
-</figure>
+.</figcaption></figure>
 
 <h1 id="chapter4:shapedeformation">Chapter 4: Shape deformation</h1>
 
@@ -1302,8 +1291,7 @@ surface (top) and using a biharmonic displacements
 (bottom)." />
 <figcaption>The <a href="401_BiharmonicDeformation/main.cpp">BiharmonicDeformation</a> example deforms a statue&#8217;s head as a <em>biharmonic
 surface</em> (top) and using a <em>biharmonic displacements</em>
-(bottom).</figcaption>
-</figure>
+(bottom).</figcaption></figure>
 
 <h4 id="relationshiptodifferentialcoordinatesandlaplaciansurfaceediting">Relationship to &#8220;differential coordinates&#8221; and Laplacian surface editing</h4>
 
@@ -1347,8 +1335,7 @@ igl::harmonic(V,F,b,bc,k,Z);
 <img src="images/bump-k-harmonic.jpg" alt="The PolyharmonicDeformation example deforms a flat domain (left) into a bump as a
 solution to various $k$-harmonic PDEs." />
 <figcaption>The <a href="402_PolyharmonicDeformation/main.cpp">PolyharmonicDeformation</a> example deforms a flat domain (left) into a bump as a
-solution to various <span class="math">\(k\)</span>-harmonic PDEs.</figcaption>
-</figure>
+solution to various <span class="math">\(k\)</span>-harmonic PDEs.</figcaption></figure>
 
 <h2 id="boundedbiharmonicweights">Bounded biharmonic weights</h2>
 
@@ -1416,8 +1403,7 @@ mesh given a skeleton (top) and then animates a linear blend skinning
 deformation (bottom)." />
 <figcaption>The example <a href="403_BoundedBiharmonicWeights/main.cpp">BoundedBiharmonicWeights</a> computes weights for a tetrahedral
 mesh given a skeleton (top) and then animates a linear blend skinning
-deformation (bottom).</figcaption>
-</figure>
+deformation (bottom).</figcaption></figure>
 
 <h2 id="dualquaternionskinning">Dual quaternion skinning</h2>
 
@@ -1469,8 +1455,7 @@ quaternion skinning (bottom), highlighting LBSs candy wrapper effect (middle)
 and joint collapse (right)." />
 <figcaption>The example <a href="404_DualQuaternionSkinning/main.cpp">DualQuaternionSkinning</a> compares linear blend skinning (top) to dual
 quaternion skinning (bottom), highlighting LBS&#8217;s candy wrapper effect (middle)
-and joint collapse (right).</figcaption>
-</figure>
+and joint collapse (right).</figcaption></figure>
 
 <h2 id="as-rigid-as-possible">As-rigid-as-possible</h2>
 
@@ -1574,8 +1559,7 @@ the highly optimized singular value decomposition code from McAdams et al.
 <img src="images/decimated-knight-arap.jpg" alt="The example AsRigidAsPossible deforms a surface as if it were made of an
 elastic material" />
 <figcaption>The example <a href="405_AsRigidAsPossible/main.cpp">AsRigidAsPossible</a> deforms a surface as if it were made of an
-elastic material</figcaption>
-</figure>
+elastic material</figcaption></figure>
 
 <p>The concept of local rigidity will be revisited shortly in the context of
 surface parameterization.</p>
@@ -1688,8 +1672,7 @@ rotation edge sets (right of middle), to the very fast subpsace method
 <figcaption>The example <a href="406_FastAutomaticSkinningTransformations/main.cpp">FastAutomaticSkinningTransformations</a> compares a full (slow)
 ARAP deformation on a detailed shape (left of middle), to ARAP with grouped
 rotation edge sets (right of middle), to the very fast subpsace method
-(right).</figcaption>
-</figure>
+(right).</figcaption></figure>
 
 <h1 id="500">Chapter 5: Parametrization</h1>
 
@@ -1759,8 +1742,7 @@ mesh with texture, (right) UV parametrization with
 texture" />
 <figcaption>(<a href="501_HarmonicParam/main.cpp">Example 501</a>) Harmonic parametrization. (left)
 mesh with texture, (right) UV parametrization with
-texture</figcaption>
-</figure>
+texture</figcaption></figure>
 
 <h2 id="502">Least squares conformal maps</h2>
 
@@ -1809,8 +1791,7 @@ vertices to two arbitrary positions. The full source code is provided in <a href
 <img src="images/502_LSCMParam.png" alt="(Example 502) LSCM parametrization. (left) mesh
 with texture, (right) UV parametrization" />
 <figcaption>(<a href="502_LSCMParam/main.cpp">Example 502</a>) LSCM parametrization. (left) mesh
-with texture, (right) UV parametrization</figcaption>
-</figure>
+with texture, (right) UV parametrization</figcaption></figure>
 
 <h2 id="503">As-rigid-as-possible parametrization</h2>
 
@@ -1836,8 +1817,7 @@ the distortion.</p>
 texture" />
 <figcaption>(<a href="502_ARAPParam/main.cpp">Example 503</a>) As-Rigid-As-Possible parametrization.
 (left) mesh with texture, (right) UV parametrization with
-texture</figcaption>
-</figure>
+texture</figcaption></figure>
 
 <h2 id="504">N-rotationally symmetric tangent fields</h2>
 
@@ -1862,8 +1842,7 @@ the triangle mesh (output_field), plus the singularities of the field
 
 <figure>
 <img src="images/504_vector_field.png" alt="Design of a unit-length vector field" />
-<figcaption>Design of a unit-length vector field</figcaption>
-</figure>
+<figcaption>Design of a unit-length vector field</figcaption></figure>
 
 <p>The singularities are vertices where the field vanishes (highlighted in red in
 the figure above). <code>igl::nrosy</code> can also generate N-RoSy fields <a class="citation" href="#fn:20" title="Jump to citation">[20]<span class="citekey" style="display:none">levy_2008</span></a>,
@@ -1874,8 +1853,7 @@ N are of different types and they appear in different positions.</p>
 
 <figure>
 <img src="images/504_nrosy_field.png" alt="Design of a 2-,4- and 9-RoSy field" />
-<figcaption>Design of a 2-,4- and 9-RoSy field</figcaption>
-</figure>
+<figcaption>Design of a 2-,4- and 9-RoSy field</figcaption></figure>
 
 <p>We demonstrate how to call and plot N-RoSy fields in <a href="504_NRosyDesign/main.cpp">Example
 504</a>, where the degree of the field can be change
@@ -1902,8 +1880,7 @@ from the principal curvature directions. In [<a href="506_FrameField/main.cpp">E
 
 <figure>
 <img src="images/505_MIQ_1.png" alt="Initial cross field prescribing the edge alignment." />
-<figcaption>Initial cross field prescribing the edge alignment.</figcaption>
-</figure>
+<figcaption>Initial cross field prescribing the edge alignment.</figcaption></figure>
 
 <h3 id="combingandcutting">Combing and cutting</h3>
 
@@ -1918,8 +1895,7 @@ length cross fields.</p>
 
 <figure>
 <img src="images/505_MIQ_2.png" alt="Bisector field." />
-<figcaption>Bisector field.</figcaption>
-</figure>
+<figcaption>Bisector field.</figcaption></figure>
 
 <p>and we remove the rotation ambiguity by assigning to each face a u and a v
 direction. The assignment is done with a breadth-first search starting from a
@@ -1927,8 +1903,7 @@ random face.</p>
 
 <figure>
 <img src="images/505_MIQ_3.png" alt="Combed bisector field." />
-<figcaption>Combed bisector field.</figcaption>
-</figure>
+<figcaption>Combed bisector field.</figcaption></figure>
 
 <p>You can imagine this process as combing an hairy surface: you will be able to
 comb part of it, but at some point you will not be able to consistently comb
@@ -1938,16 +1913,14 @@ in the combing define the cut graph:</p>
 
 <figure>
 <img src="images/505_MIQ_4.png" alt="Cut graph." />
-<figcaption>Cut graph.</figcaption>
-</figure>
+<figcaption>Cut graph.</figcaption></figure>
 
 <p>Finally, we rotate the combed field by 45 degrees to undo the initial degrees
 rotation:</p>
 
 <figure>
 <img src="images/505_MIQ_5.png" alt="Combed cross field." />
-<figcaption>Combed cross field.</figcaption>
-</figure>
+<figcaption>Combed cross field.</figcaption></figure>
 
 <p>The combed cross field can be seen as the ideal Jacobian of the parametrization
 that will be computed in the next section.</p>
@@ -1967,24 +1940,21 @@ input cross field.</p>
 
 <figure>
 <img src="images/505_MIQ_8.png" alt="Poisson parametrization." />
-<figcaption>Poisson parametrization.</figcaption>
-</figure>
+<figcaption>Poisson parametrization.</figcaption></figure>
 
 <p>We hide the seams by adding integer constraints to the Poisson problem
 that align the isolines on both sides of each seam <a class="citation" href="#fn:21" title="Jump to citation">[21]<span class="citekey" style="display:none">bommes_2009</span></a>.</p>
 
 <figure>
 <img src="images/505_MIQ_7.png" alt="Seamless Poisson parametrization." />
-<figcaption>Seamless Poisson parametrization.</figcaption>
-</figure>
+<figcaption>Seamless Poisson parametrization.</figcaption></figure>
 
 <p>Note that this parametrization can only be used for remeshing purposes, since
 it contains many overlaps.</p>
 
 <figure>
 <img src="images/505_MIQ_6.png" alt="Seamless Poisson parametrization (in 2D)." />
-<figcaption>Seamless Poisson parametrization (in 2D).</figcaption>
-</figure>
+<figcaption>Seamless Poisson parametrization (in 2D).</figcaption></figure>
 
 <p>A quad mesh can be extracted from this parametrization using
 <a href="https://github.com/hcebke/libQEx">libQEx</a> (not included in libigl).
@@ -2011,8 +1981,7 @@ scale. The red faces contains the frame field
 constraints." />
 <figcaption>Interpolation of a frame field. Colors on the vectors denote the desired
 scale. The red faces contains the frame field
-constraints.</figcaption>
-</figure>
+constraints.</figcaption></figure>
 
 <p>After the interpolation, the surface is warped to transform each frame into an
 orthogonal and unit length cross (i.e. removing the scaling and skewness from
@@ -2023,16 +1992,14 @@ surface.</p>
 <img src="images/506_FrameField_2.png" alt="The surface is deformed to transform the frame field in a cross
 field." />
 <figcaption>The surface is deformed to transform the frame field in a cross
-field.</figcaption>
-</figure>
+field.</figcaption></figure>
 
 <p>The deformed surface can the be isotropically remeshed using the MIQ algorithm
 that has been presented in the previous section.</p>
 
 <figure>
 <img src="images/506_FrameField_3.png" alt="The deformed surface is isotropically remeshed." />
-<figcaption>The deformed surface is isotropically remeshed.</figcaption>
-</figure>
+<figcaption>The deformed surface is isotropically remeshed.</figcaption></figure>
 
 <p>The UV coordinates of the deformed surface can then be used to transport the
 parametrization to the original surface, where the isolines will trace a quad
@@ -2043,8 +2010,7 @@ field.</p>
 <img src="images/506_FrameField_4.png" alt="The global parametrization is lifted to the original surface to create the
 anisotropic quad meshing." />
 <figcaption>The global parametrization is lifted to the original surface to create the
-anisotropic quad meshing.</figcaption>
-</figure>
+anisotropic quad meshing.</figcaption></figure>
 
 <p>Our implementation (<a href="506_FrameField/main.cpp">Example 506</a>) uses MIQ to
 generate the UV parametrization, but other algorithms could be applied: the
@@ -2061,8 +2027,7 @@ sparse set of constraints (<a href="507_PolyVectorField/main.cpp">Example 507</a
 
 <figure>
 <img src="images/507_PolyVectorField.png" alt="Interpolation of a 6-PolyVector field (right) and a 12-PolyVector field from a sparse set of random constraints." />
-<figcaption>Interpolation of a 6-PolyVector field (right) and a 12-PolyVector field from a sparse set of random constraints.</figcaption>
-</figure>
+<figcaption>Interpolation of a 6-PolyVector field (right) and a 12-PolyVector field from a sparse set of random constraints.</figcaption></figure>
 
 <p>The core idea is to represent the vector set as the roots of a complex
 polynomial: The polynomial coefficients are then harmonically interpolated
@@ -2096,8 +2061,7 @@ closest conjugate field (<a href="508_ConjugateField/main.cpp">Example 508</a>).
 <img src="images/508_ConjugateField.png" alt="A smooth 4-PolyVector field (left) is deformed to become a conjugate field
 (right)." />
 <figcaption>A smooth 4-PolyVector field (left) is deformed to become a conjugate field
-(right).</figcaption>
-</figure>
+(right).</figcaption></figure>
 
 <h2 id="509">Planarization</h2>
 
@@ -2114,8 +2078,7 @@ igl::palanarize (right). The colors represent the planarity of the
 quads." />
 <figcaption>A non-planar quad mesh (left) is planarized using the libigl function
 igl::palanarize (right). The colors represent the planarity of the
-quads.</figcaption>
-</figure>
+quads.</figcaption></figure>
 
 <h1 id="600">Chapter 6: External libraries</h1>
 
@@ -2244,8 +2207,7 @@ see the sparsity pattern of L using spy:</p>
 <img src="images/602_Matlab_1.png" alt="The Matlab spy function is called from a libigl-based
 application." />
 <figcaption>The Matlab spy function is called from a libigl-based
-application.</figcaption>
-</figure>
+application.</figcaption></figure>
 
 <p>The results of Matlab computations can be returned back to the C++ application</p>
 
@@ -2259,8 +2221,7 @@ igl::mlgetmatrix(&amp;engine,&quot;EV&quot;,EV);
 <img src="images/602_Matlab_2.png" alt="4 Eigenfunctions of the Laplacian plotted in the libigl
 viewer." />
 <figcaption>4 Eigenfunctions of the Laplacian plotted in the libigl
-viewer.</figcaption>
-</figure>
+viewer.</figcaption></figure>
 
 <h3 id="savingamatlabworkspace">Saving a Matlab workspace</h3>
 
@@ -2365,8 +2326,7 @@ in its interior) is triangulated.</p>
 
 <figure>
 <img src="images/604_Triangle.png" alt="Triangulation of the interior of a polygon." />
-<figcaption>Triangulation of the interior of a polygon.</figcaption>
-</figure>
+<figcaption>Triangulation of the interior of a polygon.</figcaption></figure>
 
 <h2 id="605">Tetrahedralization of closed surfaces</h2>
 
@@ -2379,8 +2339,7 @@ using the function <code>igl::tetrahedralize</code> which wraps the Tetgen libra
 
 <figure>
 <img src="images/605_Tetgen.png" alt="Tetrahedralization of the interior of a surface mesh." />
-<figcaption>Tetrahedralization of the interior of a surface mesh.</figcaption>
-</figure>
+<figcaption>Tetrahedralization of the interior of a surface mesh.</figcaption></figure>
 
 <h2 id="606">Baking ambient occlusion</h2>
 
@@ -2416,8 +2375,7 @@ single scalar for each sample.</p>
 <img src="images/606_AmbientOcclusion.png" alt="A mesh rendered without (left) and with (right) ambient
 occlusion." />
 <figcaption>A mesh rendered without (left) and with (right) ambient
-occlusion.</figcaption>
-</figure>
+occlusion.</figcaption></figure>
 
 <h2 id="607">Picking</h2>
 
@@ -2451,8 +2409,7 @@ by Embree, and <code>fid</code> and <code>vid</code> are the picked face and ver
 <img src="images/607_Picking.png" alt="(Example 607) Picking via ray casting. The selected
 vertices are colored in red." />
 <figcaption>(<a href="607_Picking/main.cpp">Example 607</a>) Picking via ray casting. The selected
-vertices are colored in red.</figcaption>
-</figure>
+vertices are colored in red.</figcaption></figure>
 
 <h2 id="608">Locally Injective Maps</h2>
 
@@ -2469,8 +2426,7 @@ deformation energies. A simple deformation of a 2D grid is computed in <a href="
 <img src="images/608_LIM.png" alt="A mesh (left) deformed using Laplacian editing (middle) and with Laplacian
 editing plus the anti-flipping constraints (right)." />
 <figcaption>A mesh (left) deformed using Laplacian editing (middle) and with Laplacian
-editing plus the anti-flipping constraints (right).</figcaption>
-</figure>
+editing plus the anti-flipping constraints (right).</figcaption></figure>
 
 <h2 id="609">Boolean operations on meshes</h2>
 
@@ -2544,8 +2500,7 @@ back-facing triangles." />
 boolean operations on the <em>Cheburashka</em> (red) and <em>Knight</em> (green). From left
 to right: union, intersection, set minus, symmetric difference (XOR),
 &#8220;resolve&#8221;. Bottom row reveals inner surfaces, darker color indicates
-back-facing triangles.</figcaption>
-</figure>
+back-facing triangles.</figcaption></figure>
 
 <p>The union, symmetric difference and &#8220;resolve&#8221; have the same outward
 appearance, but differ in their treatment of internal structures. The union has
@@ -2560,13 +2515,22 @@ together coincident vertices, maintaining original triangle orientations.</p>
 <a href="https://github.com/gilbo/cork">cork</a>, which is typically faster, but is not
 always robust.</p>
 
-<h2 id="610">Mesh Statistics</h2>
+<h1 id="700">Miscellaneous</h1>
 
-<p>libigl contains various mesh statistics, including face angles, face areas and the detection of singular vertices, which are vertices with more or less than 6 neighbours in triangulations
-or 4 in quadrangulations.</p>
+<p>Libigl contains a <em>wide</em> variety of geometry processing tools and functions for
+dealing with meshes and the linear algebra related to them: far too many to
+discuss in this introductory tutorial. We&#8217;ve pulled out a couple of the
+interesting functions in this chapter to highlight.</p>
 
-<p>The example <a href="610_Statistics/main.cpp">Statistics</a> computes these quantities and
-does a basic statistic analysis that allows to estimate the isometry and regularity of a mesh:</p>
+<h2 id="701">Mesh Statistics</h2>
+
+<p>Libigl contains various mesh statistics, including face angles, face areas and
+the detection of singular vertices, which are vertices with more or less than 6
+neighbours in triangulations or 4 in quadrangulations.</p>
+
+<p>The example <a href="701_Statistics/main.cpp">Statistics</a> computes these quantities and
+does a basic statistic analysis that allows to estimate the isometry and
+regularity of a mesh:</p>
 
 <pre><code class="bash">Irregular vertices:
 136/2400 (5.67%)
@@ -2576,12 +2540,22 @@ Angles in degrees (Min/Max) Sigma:
 17.21/171.79 (15.36)
 </code></pre>
 
-<p>The first row contains the number and percentage of irregular vertices, which is particularly important for quadrilateral meshes when they are used to define subdivision surfaces: every singular point will result in a point of the surface that is only C<sup>1</sup>.</p>
+<p>The first row contains the number and percentage of irregular vertices, which
+is particularly important for quadrilateral meshes when they are used to define
+subdivision surfaces: every singular point will result in a point of the
+surface that is only C<sup>1</sup>.</p>
 
-<p>The second row reports the area of the minimal element, maximal element and the standard deviation.
-These numbers are normalized by the mean area, so in the example above 5.33 max area means that the biggest face is 5 times larger than the average face. An ideal isotropic mesh would have both min and max area close to 1.</p>
+<p>The second row reports the area of the minimal element, maximal element and the
+standard deviation. These numbers are normalized by the mean area, so in the
+example above 5.33 max area means that the biggest face is 5 times larger than
+the average face. An ideal isotropic mesh would have both min and max area
+close to 1.</p>
 
-<p>The third row measures the face angles, which should be close to 60 degrees (90 for quads) in a perfectly regular triangulation. For FEM purposes, the closer the angles are to 60 degrees the more stable will the optimization be. In this case, it is clear that the mesh is of bad quality and it will probably result in artifacts if used for solving PDEs.</p>
+<p>The third row measures the face angles, which should be close to 60 degrees (90
+for quads) in a perfectly regular triangulation. For FEM purposes, the closer
+the angles are to 60 degrees the more stable will the optimization be. In this
+case, it is clear that the mesh is of bad quality and it will probably result
+in artifacts if used for solving PDEs.</p>
 
 <h1 id="future">Outlook for continuing development</h1>
 
