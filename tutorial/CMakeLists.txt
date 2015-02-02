@@ -63,7 +63,7 @@ endif(LIBCOMISO_FOUND)
 add_subdirectory("509_Planarization")
 
 # Chapter 6
-#add_subdirectory("601_Serialization")
+add_subdirectory("601_Serialization")
 if(MATLAB_FOUND)
 add_subdirectory("602_Matlab")
 endif(MATLAB_FOUND)
