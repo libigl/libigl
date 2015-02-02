@@ -30,9 +30,9 @@ namespace igl
 
     void InitSerialization()
     {
-      Add(ts,"ts");
-      Add(tvt,"tvt",true);
-      Add(tt,"tt",true);
+      Add(ts,"ts",false);
+      Add(tvt,"tvt");
+      Add(tt,"tt");
     }
   };
 
@@ -139,6 +139,7 @@ namespace igl
 
     Eigen::Matrix<float,3,3> tDenseMatrixIn;
     tDenseMatrixIn << Eigen::Matrix<float,3,3>::Random();
+    tDenseMatrixIn.coeffRef(0,0) = 1.00001;
     Eigen::Matrix<float,3,3> tDenseMatrixOut;
 
     Eigen::Matrix<float,3,3,Eigen::RowMajor> tDenseRowMatrixIn;
@@ -201,9 +202,23 @@ namespace igl
     assert(tstrIn == tstrOut);
 
     // updating
-    igl::serialize(tsIn,"tsIn",file);
-    igl::serialize(tVector1In,"tVector1In",file,true);
-    igl::serialize(tVector2In,"tsIn",file,true);
+    igl::serialize(tbIn,"tb",file,true);
+    igl::serialize(tcIn,"tc",file);
+    igl::serialize(tiIn,"ti",file);
+    tiIn++;
+    igl::serialize(tiIn,"ti",file);
+    tiIn++;
+    igl::serialize(tiIn,"ti",file);
+    igl::deserialize(tbOut,"tb",file);
+    igl::deserialize(tcOut,"tc",file);
+    igl::deserialize(tiOut,"ti",file);
+    assert(tbIn == tbOut);
+    assert(tcIn == tcOut);
+    assert(tiIn == tiOut);
+
+    igl::serialize(tsIn,"tsIn",file,true);
+    igl::serialize(tVector1In,"tVector1In",file);
+    igl::serialize(tVector2In,"tsIn",file);
     igl::deserialize(tVector2Out,"tsIn",file);
     for(unsigned int i=0;i<tVector2In.size();i++)
     {
@@ -345,9 +360,23 @@ namespace igl
     assert(tstrIn == tstrOut);
 
     // updating
-    igl::serialize_xml(tsIn,"tsIn",file);
-    igl::serialize_xml(tVector1In,"tVector1In",file,false,true);
-    igl::serialize_xml(tVector2In,"tsIn",file,false,true);
+    igl::serialize_xml(tbIn,"tb",file,false,true);
+    igl::serialize_xml(tcIn,"tc",file);
+    igl::serialize_xml(tiIn,"ti",file);
+    tiIn++;
+    igl::serialize_xml(tiIn,"ti",file);
+    tiIn++;
+    igl::serialize_xml(tiIn,"ti",file);
+    igl::deserialize_xml(tbOut,"tb",file);
+    igl::deserialize_xml(tcOut,"tc",file);
+    igl::deserialize_xml(tiOut,"ti",file);
+    assert(tbIn == tbOut);
+    assert(tcIn == tcOut);
+    assert(tiIn == tiOut);
+
+    igl::serialize_xml(tsIn,"tsIn",file,false,true);
+    igl::serialize_xml(tVector1In,"tVector1In",file);
+    igl::serialize_xml(tVector2In,"tsIn",file);
     igl::deserialize_xml(tVector2Out,"tsIn",file);
     for(unsigned int i=0;i<tVector2In.size();i++)
     {

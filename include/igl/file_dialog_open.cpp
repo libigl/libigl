@@ -42,13 +42,11 @@ IGL_INLINE std::string igl::file_dialog_open()
 
   OPENFILENAME ofn;       // common dialog box structure
   char szFile[260];       // buffer for file name
-  HWND hwnd;              // owner window
-  HANDLE hf;              // file handle
 
   // Initialize OPENFILENAME
   ZeroMemory(&ofn, sizeof(ofn));
   ofn.lStructSize = sizeof(ofn);
-  ofn.hwndOwner = NULL;//hwnd;
+  ofn.hwndOwner = NULL;
   ofn.lpstrFile = new char[100];
   // Set lpstrFile[0] to '\0' so that GetOpenFileName does not 
   // use the contents of szFile to initialize itself.
