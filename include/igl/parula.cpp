@@ -35,7 +35,7 @@ IGL_INLINE void igl::parula(
   Eigen::PlainObjectBase<DerivedC> & C)
 {
   const double min_z = (normalize?Z.minCoeff():0);
-  const double max_z = (normalize?Z.maxCoeff():-1);
+  const double max_z = (normalize?Z.maxCoeff():1);
   return parula(Z,min_z,max_z,C);
 }
 template <typename DerivedZ, typename DerivedC>
@@ -55,4 +55,5 @@ IGL_INLINE void igl::parula(
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instanciation
 template void igl::parula<double>(double, double*);
+template void igl::parula<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

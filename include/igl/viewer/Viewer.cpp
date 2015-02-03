@@ -475,8 +475,12 @@ namespace igl
 
     // first try to load it with a plugin
     for (unsigned int i = 0; i<plugins.size(); ++i)
+    {
       if (plugins[i]->load(mesh_file_name_string))
+      {
         return true;
+      }
+    }
 
     data.clear();
 
@@ -492,7 +496,9 @@ namespace igl
     if (extension == "off" || extension =="OFF")
     {
       if (!igl::readOFF(mesh_file_name_string, data.V, data.F))
+      {
         return false;
+      }
     }
     else if (extension == "obj" || extension =="OBJ")
     {
@@ -503,7 +509,9 @@ namespace igl
       Eigen::MatrixXi UV_F;
 
       if (!(igl::readOBJ(mesh_file_name_string, data.V, data.F, corner_normals, fNormIndices, UV_V, UV_F)))
+      {
         return false;
+      }
     }
     else
     {
@@ -968,9 +976,15 @@ namespace igl
 
     opengl.init();
 
+    // Alec: It seems silly to overload launch to take a filename as an
+    // argument. load_mesh_from_file has many side effects so it makes
+    // debugging launch difficult.
+
     // Load the mesh passed as input
     if (filename.size() > 0)
+    {
       load_mesh_from_file(filename.c_str());
+    }
 
     core.align_camera_center(data.V,data.F);
 
