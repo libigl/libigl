@@ -2436,8 +2436,7 @@ Shapes_](https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time
 2013.
 [#jacobson_2013]: Alec Jacobson, Ladislav Kavan, and Olga Sorkine.
 ["Robust Inside-Outside Segmentation using Generalized Winding
-Numbers,"](https://www.google.com/search?q=Robust+Inside-Outside+Segmentation
-using+Generalized+Winding+Numbers) 2013.
+Numbers,"](https://www.google.com/search?q=Robust+Inside-Outside+Segmentation+using+Generalized+Winding+Numbers) 2013.
 [#jacobson_2012]: Alec Jacobson, Ilya Baran, Ladislav Kavan, Jovan Popović, and
 Olga Sorkine. ["Fast Automatic Skinning
 Transformations,"](https://www.google.com/search?q=Fast+Automatic+Skinning+Transformations) 2012.
