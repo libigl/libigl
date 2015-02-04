@@ -15,6 +15,8 @@ namespace igl
   // Inputs:
   //   S  matrix
   // Returns whether any entries are true
+  //
+  // Seems that Eigen (now) implements this for `Eigen::Array` 
   template <typename Mat>
   IGL_INLINE bool any_of(const Mat & S);
 }
