@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
   igl::readOFF("../shared/fertility.off",V,F);
 
   // Tetrahedralize the interior
-  igl::tetrahedralize(V,F,"pq1.414", TV,TT,TF);
+  igl::tetrahedralize(V,F,"pq1.414Y", TV,TT,TF);
 
   // Compute barycenters
   igl::barycenter(TV,TT,B);

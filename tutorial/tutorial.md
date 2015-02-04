@@ -88,6 +88,7 @@ lecture notes links to a cross-platform example application.
     * [609 Boolean Operations on Meshes](#609)
 * [Chapter 7: Miscellaneous](#700)
     * [701 Mesh Statistics](#701)
+    * [702 Generalized Winding Number](#702)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [100]
@@ -2335,6 +2336,52 @@ the angles are to 60 degrees the more stable will the optimization be. In this
 case, it is clear that the mesh is of bad quality and it will probably result
 in artifacts if used for solving PDEs.
 
+## Generalized Winding Number [702]
+
+The problem of tetrahedralizing the interior of closed watertight surface mesh
+is a difficult, but well-posed problem (see our [Tetgen wrappers][605]).  But
+black-box tet-meshers like TetGen will _refuse_ input triangle meshes with
+self-intersections, open boundaries, non-manifold edges from multiple connected
+components.
+The problem is two-fold: self-intersections present contradictory facet
+constraints and self-intersections/open-boundaries/non-manifold edges make the
+problem of determining inside from outside ill-posed without further
+assumptions.
+
+The first problem is _easily_ solved by "resolving" all self-intersections.
+That is, meshing intersecting triangles so that intersects occur exactly at
+edges and vertices. This is accomplished using `igl::selfintersect`.
+
+TetGen can usually tetrahedralize the convex hull of this "resolved" mesh, and
+then the problem becomes determining which of these tets are _inside_ the input
+mesh and which are outside. That is, which should be kept and which should be
+removed.
+
+The "Generalized Winding Number" is a robust method for determined
+inside and outside for troublesome meshes [#jacobson_2013][].  The generalized
+winding number with respect to `(V,F)` at some point $\mathbf{p} \in
+\mathcal{R}^3$ is defined as scalar function:
+
+ $$w(\mathbf{p}) = \sum\limits_{f_i\in F} \frac{1}{4\pi}\Omega_{f_i}(\mathbf{p})$$
+
+where $\Omega_{f_i}$ is the _solid angle_ subtended by $f_i$ (the ith face in
+`F`) at the point $\mathbf{p}$. This solid angle contribution is a simple,
+closed-form expression involving `atan2` and some dot-products.
+
+If `(V,F)` _does_ form a closed watertight surface, then $w(\mathbf{p})=1$ if
+$\mathbf{p}$ lies inside `(V,F)` and $w(\mathbf{p})=0$ if outside `(V,F)`.  If
+`(V,F)` is closed but overlaps itself then $w(\mathbf{p})$ is an integer value
+counting how many (signed) times `(V,F)` _wraps_ around $\mathbf{p}$.  Finally,
+if `(V,F)` is not closed or not even manifold (but at least consistently
+oriented), then $w(\mathbf{p})$ tends smoothly toward 1 as $\mathbf{p}$ is
+_more_ inside `(V,F)`, and toward 0 as $\mathbf{p}$ is more outside.
+ 
+![Example [702_WindingNumber](702_WindingNumber/main.cpp) computes the
+generalized winding number function for a tetrahedral mesh inside a cat with
+holes and self intersections (gold). The silver mesh is surface of the
+extracted interior tets, and slices show the winding number function on all
+tets in the convex hull: blue (~0), green (~1), yellow
+(~2).](images/big-sigcat-winding-number.gif)
 
 # Outlook for continuing development [future]
 
@@ -2396,6 +2443,9 @@ Stuetzle, SIGGRAPH 2005
 [_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D
 Shapes_](https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes),
 2013.
+[#jacobson_2013]: Alec Jacobson, Ladislav Kavan, and Olga Sorkine.
+["Robust Inside-Outside Segmentation using Generalized Winding
+Numbers,"](https://www.google.com/search?q=Robust+Inside-Outside+Segmentation+using+Generalized+Winding+Numbers) 2013.
 [#jacobson_2012]: Alec Jacobson, Ilya Baran, Ladislav Kavan, Jovan Popović, and
 Olga Sorkine. ["Fast Automatic Skinning
 Transformations,"](https://www.google.com/search?q=Fast+Automatic+Skinning+Transformations) 2012.
