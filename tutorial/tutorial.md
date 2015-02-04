@@ -86,8 +86,9 @@ lecture notes links to a cross-platform example application.
     * [607 Picking vertices and faces](#607)
     * [608 Locally Injective Maps](#608)
     * [609 Boolean Operations on Meshes](#609)
-    * [610 Mesh Statistics](#610)
-* [Chapter 7: Outlook for continuing development](#future)
+* [Chapter 7: Miscellaneous](#700)
+    * [701 Mesh Statistics](#701)
+* [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [100]
 
@@ -1873,73 +1874,82 @@ to the extreme difficulty in serializing pointer-based data structured, such as
 an half-edge data structure ([OpenMesh](http://openmesh.org), [CGAL](http://www.cgal.org)), or a pointer based indexed structure ([VCG](http://vcg.isti.cnr.it/~cignoni/newvcglib/html/)).
 
 In libigl, serialization is much simpler, since the majority of the functions use basic types, and pointers are used in very rare cases (usually to interface
-with external libraries). Libigl bundles a simple and self-contained XML serialization framework, that drastically reduces the overhead required to add
+with external libraries). Libigl bundles a simple and self-contained binary and XML serialization framework, that drastically reduces the overhead required to add
 serialization to your applications.
 
-Assume that the state of your application is a mesh and a set of
-integer ids:
+To de-/serialize a set of variables use the following method:
 
 ```cpp
-class State : public igl::XMLSerialization
-{
-public:
-  State() : XMLSerialization("dummy") {}
+#include "igl/serialize.h"
 
+bool b = true;
+unsigned int num = 10;
+std::vector<float> vec = {0.1,0.002,5.3};
+
+// use overwrite = true for first serialization to create a new file
+igl::serialize(b,"B","filename",true);
+// appends serialization to existing file
+igl::serialize(num,"Number","filename");
+igl::serialize(vec,"VectorName","filename");
+
+// deserialize back to variables
+igl::deserialize(b,"B","filename");
+igl::deserialize(num,"Number","filename");
+igl::deserialize(vec,"VectorName","filename");
+```
+
+Currently all fundamental data types (bool, int, float, double, ...) are supported, as well as std::string, basic `STL` containers, dense and sparse Eigen matrices and nestings of those.
+Some limitations apply to pointers. Currently, loops or many to one type of link structures are not handled correctly. Each pointer is assumed to point to a different independent object.
+Uninitialized pointers must be set `NULL` before de-/serialization to avoid memory leaks. Cross-platform issues like little-, big-endianess is currently not supported.
+To make user defined types serializable, just derive from `igl::Serializable` and trivially implementing the `InitSerialization` method.
+
+Assume that the state of your application is a mesh and a set of integer ids:
+
+```cpp
+#include "igl/serialize.h"
+
+struct State : public igl::Serializable
+{
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   std::vector<int> ids;
 
   void InitSerialization()
   {
-    xmlSerializer->Add(V  , "V");
-    xmlSerializer->Add(F  , "F");
-    xmlSerializer->Add(ids, "ids");
+    this->Add(V  , "V");
+    this->Add(F  , "F");
+    this->Add(ids, "ids");
   }
 };
 ```
 
-Any class can be made serializable by inheriting from ``igl::XMLSerialization` and trivially implementing the `InitSerialization` method. The library can serialize all the basic `stl` types, all `Eigen` types and any class inheriting
-from `igl::XMLSerialization`.
-
-The state can be saved into an xml file with:
+If you need more control over the serialization of your types, you can override the following functions or directly inherit from the interface `igl::SerializableBase`.
 
 ```cpp
-igl::XMLSerializer serializer_save("601_Serialization");
-serializer_save.Add(state,"State");
-serializer_save.Save("temp.xml",true);
+bool Serializable::PreSerialization() const;
+void Serializable::PostSerialization() const;
+bool Serializable::PreDeserialization();
+void Serializable::PostDeserialization();
 ```
 
-This code generates the following xml file (assuming `V` and `F` contains a simple mesh with two triangles, and `ids` contains the numbers 6 and 7):
-
-```xml
-<:::601_Serialization>
-    <State>
-        <V rows="4" cols="3" matrix="
-0,0,0,
-1,0,0,
-1,1,1,
-2,1,0"/>
-        <F rows="2" cols="3" matrix="
-0,1,2,
-1,3,2"/>
-        <ids size="2" vector_int="
-6,7"/>
-    </State>
-</:::601_Serialization>
-```
-
-The xml file can be loaded in a similar way:
+All the former code is for binary serialization which is especially useful if you have to handle larger data where the loading and saving times become more important.
+For cases where you want to read and edit the serialized data by hand we provide a serialization to XML files which is based on the library [tinyxml2](https://github.com/leethomason/tinyxml2).
+There you also have the option to create a partial binary serialization of your data by using the binary parameter, exposed in the function `serialize_xml()`:
 
 ```cpp
-State loaded_state;
-igl::XMLSerializer serializer_load("601_Serialization");
-serializer_load.Add(loaded_state,"State");
-serializer_load.Load("temp.xml");
+#include "igl/xml/serialize_xml.h"
+
+int number;
+
+// binary = false, overwrite = true
+igl::serialize_xml(vec,"VectorXML",xmlFile,false,true);
+// binary = true, overwrite = true
+igl::serialize_xml(vec,"VectorBin",xmlFile,true,true);
+igl::deserialize_xml(vec,"VectorXML",xmlFile);
+igl::deserialize_xml(vec,"VectorBin",xmlFile);
 ```
 
-The serialization framework can also be used as a convenient interface to
-provide parameters to command line applications, since the xml files can be
-directly edited with a standard text editor.
+For user defined types derive from `XMLSerializable`. 
 
 The code snippets above are extracted from [Example
 601](601_Serialization/main.cpp). We strongly suggest that you make the entire
@@ -2282,13 +2292,22 @@ Libigl also provides a wrapper `igl::mesh_boolean_cork` to the
 [cork](https://github.com/gilbo/cork), which is typically faster, but is not
 always robust.
 
-## Mesh Statistics [610]
+# Miscellaneous [700]
 
-libigl contains various mesh statistics, including face angles, face areas and the detection of singular vertices, which are vertices with more or less than 6 neighbours in triangulations
-or 4 in quadrangulations.
+Libigl contains a _wide_ variety of geometry processing tools and functions for
+dealing with meshes and the linear algebra related to them: far too many to
+discuss in this introductory tutorial. We've pulled out a couple of the
+interesting functions in this chapter to highlight.
 
-The example [Statistics](610_Statistics/main.cpp) computes these quantities and
-does a basic statistic analysis that allows to estimate the isometry and regularity of a mesh:
+## Mesh Statistics [701]
+
+Libigl contains various mesh statistics, including face angles, face areas and
+the detection of singular vertices, which are vertices with more or less than 6
+neighbours in triangulations or 4 in quadrangulations.
+
+The example [Statistics](701_Statistics/main.cpp) computes these quantities and
+does a basic statistic analysis that allows to estimate the isometry and
+regularity of a mesh:
 
 ```bash
 Irregular vertices:
@@ -2299,12 +2318,23 @@ Angles in degrees (Min/Max) Sigma:
 17.21/171.79 (15.36)
 ```
 
-The first row contains the number and percentage of irregular vertices, which is particularly important for quadrilateral meshes when they are used to define subdivision surfaces: every singular point will result in a point of the surface that is only C^1.
+The first row contains the number and percentage of irregular vertices, which
+is particularly important for quadrilateral meshes when they are used to define
+subdivision surfaces: every singular point will result in a point of the
+surface that is only C^1.
 
-The second row reports the area of the minimal element, maximal element and the standard deviation.
-These numbers are normalized by the mean area, so in the example above 5.33 max area means that the biggest face is 5 times larger than the average face. An ideal isotropic mesh would have both min and max area close to 1.
+The second row reports the area of the minimal element, maximal element and the
+standard deviation.  These numbers are normalized by the mean area, so in the
+example above 5.33 max area means that the biggest face is 5 times larger than
+the average face. An ideal isotropic mesh would have both min and max area
+close to 1.
 
-The third row measures the face angles, which should be close to 60 degrees (90 for quads) in a perfectly regular triangulation. For FEM purposes, the closer the angles are to 60 degrees the more stable will the optimization be. In this case, it is clear that the mesh is of bad quality and it will probably result in artifacts if used for solving PDEs.
+The third row measures the face angles, which should be close to 60 degrees (90
+for quads) in a perfectly regular triangulation. For FEM purposes, the closer
+the angles are to 60 degrees the more stable will the optimization be. In this
+case, it is clear that the mesh is of bad quality and it will probably result
+in artifacts if used for solving PDEs.
+
 
 # Outlook for continuing development [future]
 

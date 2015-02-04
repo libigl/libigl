@@ -12,15 +12,15 @@ namespace igl
   template <typename T>
   IGL_INLINE void serialize_xml(const T& obj,const std::string& filename)
   {
-    serialize_xml(obj,"object",filename,0);
+    serialize_xml(obj,"object",filename,false,true);
   }
 
   template <typename T>
-  IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,const std::string& filename,bool binary,bool update)
+  IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,const std::string& filename,bool binary,bool overwrite)
   {
     tinyxml2::XMLDocument* doc = new tinyxml2::XMLDocument();
 
-    if(update)
+    if(overwrite == false)
     {
       // Check if file exists
       tinyxml2::XMLError error = doc->LoadFile(filename.c_str());

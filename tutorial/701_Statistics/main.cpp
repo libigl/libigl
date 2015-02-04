@@ -5,7 +5,7 @@
 
 #include <igl/is_irregular_vertex.h>
 #include <igl/doublearea.h>
-#include <igl/angles.h>
+#include <igl/internal_angles.h>
 
 int main(int argc, char *argv[])
 {
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
   printf("Irregular vertices: \n%d/%d (%.2f%%)\n",irregular_vertex_count,vertex_count, irregular_ratio*100);
 
-  // Compute triangles areas, min, max and standard deviation
+  // Compute areas, min, max and standard deviation
   VectorXd area;
   igl::doublearea(V,F,area);
   area = area.array() / 2;

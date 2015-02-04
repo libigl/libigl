@@ -46,16 +46,17 @@ namespace igl
   // Inputs:
   //   obj        object to serialize
   //   objectName unique object name,used for the identification
+  //   overwrite  set to true to overwrite an existing file
   //   filename   name of the file containing the serialization
   // Outputs:
   //   buffer     binary serialization
   //
   template <typename T>
-  IGL_INLINE void serialize(const T& obj,const std::string& filename);
+  IGL_INLINE bool serialize(const T& obj,const std::string& filename);
   template <typename T>
-  IGL_INLINE void serialize(const T& obj,const std::string& objectName,const std::string& filename,bool update = false);
+  IGL_INLINE bool serialize(const T& obj,const std::string& objectName,const std::string& filename,bool overwrite = false);
   template <typename T>
-  IGL_INLINE void serialize(const T& obj,const std::string& objectName,std::vector<char>& buffer);
+  IGL_INLINE bool serialize(const T& obj,const std::string& objectName,std::vector<char>& buffer);
 
   // Deserializes the given data from a file or buffer back to the provided object
   //
@@ -69,11 +70,11 @@ namespace igl
   //   obj        object to load back serialization to
   //
   template <typename T>
-  IGL_INLINE void deserialize(T& obj,const std::string& filename);
+  IGL_INLINE bool deserialize(T& obj,const std::string& filename);
   template <typename T>
-  IGL_INLINE void deserialize(T& obj,const std::string& objectName,const std::string& filename);
+  IGL_INLINE bool deserialize(T& obj,const std::string& objectName,const std::string& filename);
   template <typename T>
-  IGL_INLINE void deserialize(T& obj,const std::string& objectName,const std::vector<char>& buffer);
+  IGL_INLINE bool deserialize(T& obj,const std::string& objectName,const std::vector<char>& buffer);
 
   // User defined types have to derive from the class Serializable
   // and add their member variables in InitSerialization like the
@@ -131,7 +132,7 @@ namespace igl
     IGL_INLINE virtual bool PreDeserialization();
     IGL_INLINE virtual void PostDeserialization();
 
-    // Default implementation of Serializable interface
+    // Default implementation of SerializableBase interface
     IGL_INLINE void Serialize(std::vector<char>& buffer) const;
     IGL_INLINE void Deserialize(const std::vector<char>& buffer);
 

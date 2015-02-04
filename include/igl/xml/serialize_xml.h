@@ -45,7 +45,7 @@ namespace igl
   //   objectName unique object name,used for the identification
   //   filename   name of the file containing the serialization
   //   binary     set to true to serialize the object in binary format (faster for big data)
-  //   overwrite  set to true to update the serialization in an existing xml file
+  //   overwrite  set to true to overwrite an existing xml file
   //   element    tinyxml2 virtual representation of the current xml node
   // Outputs:
   //   doc        contains current tinyxml2 virtual representation of the xml data
@@ -53,7 +53,7 @@ namespace igl
   template <typename T>
   IGL_INLINE void serialize_xml(const T& obj,const std::string& filename);
   template <typename T>
-  IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,const std::string& filename, bool binary = false,bool update = false);
+  IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,const std::string& filename, bool binary = false,bool overwrite = false);
   template <typename T>
   IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,bool binary = false);
 
@@ -66,7 +66,7 @@ namespace igl
   //   objectName unique object name,used for the identification
   //   filename   name of the file containing the serialization
   //   binary     set to true to serialize the object in binary format (faster for big data)
-  //   overwrite  set to true to update the serialization in an existing xml file
+  //   overwrite  set to true to overwrite an existing xml file
   //   doc        contains current tinyxml2 virtual representation of the xml data
   //   element    tinyxml2 virtual representation of the current xml node
   // Outputs:
@@ -132,7 +132,7 @@ namespace igl
     IGL_INLINE virtual bool PreDeserialization();
     IGL_INLINE virtual void PostDeserialization();
 
-    // Default implementation of XMLSerializable interface
+    // Default implementation of XMLSerializableBase interface
     IGL_INLINE void Serialize(std::vector<char>& buffer) const;
     IGL_INLINE void Deserialize(const std::vector<char>& buffer);
     IGL_INLINE void Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) const;
