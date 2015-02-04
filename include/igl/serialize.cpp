@@ -78,11 +78,11 @@ namespace igl
     std::vector<char>::iterator it = tmp.begin();
     detail::serialize(obj,tmp,it);
 
-    std::string objectType(typeid(obj).raw_name());
+    std::string objectType(typeid(obj).name());
     size_t newObjectSize = tmp.size();
     size_t newHeaderSize = detail::getByteSize(objectName) + detail::getByteSize(objectType) + sizeof(size_t);
-    size_t oldObjectSize = 0;
-    size_t oldHeaderSize = 0;
+//    size_t oldObjectSize = 0;
+//    size_t oldHeaderSize = 0;
 
     // find object header to replace existing object
     /*std::vector<char>::const_iterator citer = buffer.cbegin();
@@ -210,7 +210,7 @@ namespace igl
       detail::deserialize(type,iter);
       detail::deserialize(size,iter);
 
-      if(name == objectName && type == typeid(obj).raw_name())
+      if(name == objectName && type == typeid(obj).name())
       {
         objectIter = iter;
         //break; // find first suitable object header
