@@ -1,5 +1,5 @@
 ## ======================================================================== ##
-## Copyright 2009-2013 Intel Corporation                                    ##
+## Copyright 2009-2014 Intel Corporation                                    ##
 ##                                                                          ##
 ## Licensed under the Apache License, Version 2.0 (the "License");          ##
 ## you may not use this file except in compliance with the License.         ##
@@ -13,6 +13,9 @@
 ## See the License for the specific language governing permissions and      ##
 ## limitations under the License.                                           ##
 ## ======================================================================== ##
+
+SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+FIND_PACKAGE(Threads REQUIRED)
 
 IF (__XEON__)
 
@@ -40,7 +43,8 @@ ADD_LIBRARY(sys STATIC
   stl/string.cpp
 )
 
-TARGET_LINK_LIBRARIES(sys pthread dl)
+TARGET_LINK_LIBRARIES(sys ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+SET_PROPERTY(TARGET sys PROPERTY FOLDER kernels)
 
 ELSE ()
  
@@ -63,6 +67,6 @@ ADD_LIBRARY(sys_xeonphi STATIC
   stl/string.cpp
 )
 
-TARGET_LINK_LIBRARIES(sys_xeonphi pthread dl)
+TARGET_LINK_LIBRARIES(sys_xeonphi ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
 
 ENDIF ()

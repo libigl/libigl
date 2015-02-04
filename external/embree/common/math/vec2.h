@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_VEC2_H__
-#define __EMBREE_VEC2_H__
+#pragma once
 
 #include "sys/platform.h"
 #include "math/math.h"
@@ -153,5 +152,3 @@ namespace embree
   typedef Vec2<int  > Vec2i;
   typedef Vec2<float> Vec2f;
 }
-
-#endif

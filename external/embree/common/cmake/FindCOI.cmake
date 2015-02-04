@@ -1,5 +1,5 @@
 ## ======================================================================== ##
-## Copyright 2009-2013 Intel Corporation                                    ##
+## Copyright 2009-2014 Intel Corporation                                    ##
 ##                                                                          ##
 ## Licensed under the Apache License, Version 2.0 (the "License");          ##
 ## you may not use this file except in compliance with the License.         ##
@@ -16,7 +16,7 @@
 
 FIND_PATH(COI_INCLUDE_PATH source/COIProcess_source.h /opt/intel/mic/coi/include /usr/include/intel-coi)
 FIND_PATH(COI_HOST_LIBRARY_DIR libcoi_host.so /opt/intel/mic/coi/host-linux-release/lib/)
-FIND_PATH(COI_DEV_LIBRARY_DIR libcoi_device.so /opt/intel/mic/coi/device-linux-release/lib/ /opt/mpss/3.1/sysroots/k1om-mpss-linux/usr/lib64/  /opt/mpss/3.1.4/sysroots/k1om-mpss-linux/usr/lib64/ /opt/mpss/3.2/sysroots/k1om-mpss-linux/usr/lib64/ /opt/mpss/3.2.1/sysroots/k1om-mpss-linux/usr/lib64/)
+FIND_PATH(COI_DEV_LIBRARY_DIR libcoi_device.so /opt/mpss/*/sysroots/k1om-mpss-linux/usr/lib64/)
 
 IF (COI_INCLUDE_PATH AND COI_HOST_LIBRARY_DIR AND COI_DEV_LIBRARY_DIR)
   SET(COI_FOUND TRUE)

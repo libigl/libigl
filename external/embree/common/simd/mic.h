@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,12 +14,11 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_MIC_H__
-#define __EMBREE_MIC_H__
+#pragma once
 
 #include "sys/platform.h"
 #include "sys/intrinsics.h"
-#include "sse_mic.h"
+//#include "sse_mic.h"
 
 #include <zmmintrin.h>
 
@@ -126,12 +125,16 @@ namespace embree
       return t;
     }
 
-  __forceinline mic_f convert(const ssef &v)
-  {
-    return broadcast4to16f(&v);
+  /* __forceinline mic_f convert(const ssef &v) */
+  /* { */
+  /*   return broadcast4to16f(&v); */
+  /* } */
+
+  __forceinline mic_i mul_uint64( const mic_i& a, const mic_i& b) { 
+    const mic_i low  = _mm512_mullo_epi32(a, b);
+    const mic_i high = _mm512_mulhi_epu32(a, b);
+    return select(0x5555,low,high);
   }
 
 
 }
-
-#endif

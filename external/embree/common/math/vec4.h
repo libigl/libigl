@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_VEC4_H__
-#define __EMBREE_VEC4_H__
+#pragma once
 
 #include "sys/platform.h"
 
@@ -38,6 +37,8 @@ namespace embree
 
     __forceinline Vec4    ( )                  { }
     __forceinline Vec4    ( const Vec4& other ) { x = other.x; y = other.y; z = other.z; w = other.w; }
+    __forceinline Vec4    ( const Vec3fa& other );
+
     template<typename T1> __forceinline Vec4( const Vec4<T1>& a ) : x(T(a.x)), y(T(a.y)), z(T(a.z)), w(T(a.w)) {}
     template<typename T1> __forceinline Vec4& operator =(const Vec4<T1>& other) { x = other.x; y = other.y; z = other.z; w = other.w; return *this; }
 
@@ -152,4 +153,46 @@ namespace embree
   typedef Vec4<float        > Vec4f;
 }
 
+#if defined(__MIC__)
+#include "vec3ba_mic.h"
+#include "vec3ia_mic.h"
+#include "vec3fa_mic.h"
+#else
+#include "vec3ba.h" 
+#include "vec3ia.h" 
+#include "vec3fa.h" 
 #endif
+
+namespace embree 
+{ 
+  template<> __forceinline Vec4<float>::Vec4( const Vec3fa& a ) { x = a.x; y = a.y; z = a.z; w = a.w; }
+
+#if defined (__SSE__) 
+  template<> __forceinline Vec4<ssef>::Vec4( const Vec3fa& a ) { 
+    const ssef v = ssef(a); x = shuffle<0,0,0,0>(v); y = shuffle<1,1,1,1>(v); z = shuffle<2,2,2,2>(v); w = shuffle<3,3,3,3>(v); 
+  }
+  __forceinline Vec4<ssef> broadcast4f( const Vec4<ssef>& a, const size_t k ) {  
+    return Vec4<ssef>(ssef::broadcast(&a.x[k]), ssef::broadcast(&a.y[k]), ssef::broadcast(&a.z[k]), ssef::broadcast(&a.w[k]));
+  }
+#endif
+
+#if defined(__AVX__)
+  template<> __forceinline Vec4<avxf>::Vec4( const Vec3fa& a ) {  
+    x = a.x; y = a.y; z = a.z; w = a.w; 
+  }
+  __forceinline Vec4<ssef> broadcast4f( const Vec4<avxf>& a, const size_t k ) {  
+    return Vec4<ssef>(ssef::broadcast(&a.x[k]), ssef::broadcast(&a.y[k]), ssef::broadcast(&a.z[k]), ssef::broadcast(&a.w[k]));
+  }
+  __forceinline Vec4<avxf> broadcast8f( const Vec4<ssef>& a, const size_t k ) {  
+    return Vec4<avxf>(avxf::broadcast(&a.x[k]), avxf::broadcast(&a.y[k]), avxf::broadcast(&a.z[k]), avxf::broadcast(&a.w[k]));
+  }
+  __forceinline Vec4<avxf> broadcast8f( const Vec4<avxf>& a, const size_t k ) {  
+    return Vec4<avxf>(avxf::broadcast(&a.x[k]), avxf::broadcast(&a.y[k]), avxf::broadcast(&a.z[k]), avxf::broadcast(&a.w[k]));
+  }
+#endif
+
+#if defined(__MIC__)
+  //template<> __forceinline Vec4<ssef>::Vec4( const Vec3fa& a ) : x(a.x), y(a.y), z(a.z), w(a.w) {}
+  template<> __forceinline Vec4<mic_f>::Vec4( const Vec3fa& a ) : x(a.x), y(a.y), z(a.z), w(a.w) {}
+#endif
+}

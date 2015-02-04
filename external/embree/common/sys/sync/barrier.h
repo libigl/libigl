@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,16 +14,16 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_BARRIER_H__
-#define __EMBREE_BARRIER_H__
+#pragma once
 
 #include "sys/platform.h"
 #include "sys/intrinsics.h"
 
 namespace embree
 {
-#if defined(__SPINLOCKS__)
+#if defined(RTCORE_SPINLOCKS)
 #define Barrier LinearBarrierActive
+  //#define Barrier BarrierActive
 #else
 #define Barrier BarrierSys
 #endif
@@ -66,15 +66,16 @@ namespace embree
   struct __aligned(64) BarrierActive 
   {
   public:
-    BarrierActive () : cntr(0) {}
+    BarrierActive () 
+      : cntr(0) {}
     
-    void init(size_t cntr) {
-      this->cntr = cntr;
+    void reset() {
+      cntr = 0;
     }
 
-    void wait() {
-      atomic_add((atomic_t*)&cntr,-1);
-      while (cntr != 0) __pause();
+    void wait (size_t numThreads) {
+      atomic_add((atomic_t*)&cntr,1);
+      while (cntr != numThreads) __pause_cpu();
     }
 
   private:
@@ -103,16 +104,18 @@ namespace embree
       volatile unsigned int flag0;
       volatile unsigned int flag1;
       volatile unsigned int fill[16-3];
+      volatile unsigned int numThreads;
       
-      LinearBarrierActive ();
+      LinearBarrierActive (size_t numThreads = 0);
 
-      void init(size_t cntr);
+      void init(size_t numThreads);
 
       __forceinline void pause(unsigned int &cycles) {
-	__pause_expfalloff(cycles,MAX_MIC_BARRIER_WAIT_CYCLES);
+	__pause_cpu_expfalloff(cycles,MAX_MIC_BARRIER_WAIT_CYCLES);
       }
 
-      void wait (const size_t threadIndex, const size_t threadCount);
+      void wait (const size_t threadIndex, const size_t threadCount); // FIXME: remove second parameter
+      void waitForThreads(const size_t threadIndex, const size_t threadCount);
 
       void syncWithReduction(const size_t threadIndex, 
                              const size_t threadCount,
@@ -180,5 +183,3 @@ namespace embree
     __aligned(64) CoreSyncData data[MAX_MIC_CORES]; // == one cacheline per core ==
   };
 }
-
-#endif

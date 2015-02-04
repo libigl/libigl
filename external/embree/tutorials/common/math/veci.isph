@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_ISPC_VECI_H__
-#define __EMBREE_ISPC_VECI_H__
+#pragma once
 
 // //////////////////////////////////////////////////////////////////////////////
 // / Vector of 2 signed ints
@@ -135,5 +134,3 @@ inline uniform Vec3uc make_Vec3uc(const uniform unsigned int8 x, const uniform u
 inline varying Vec3uc make_Vec3uc(const varying unsigned int8 x, const varying unsigned int8 y, const varying unsigned int8 z) {
   Vec3uc v; v.x = x; v.y = y; v.z = z; return v;
 }
-
-#endif

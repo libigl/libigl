@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_STREAM_H__
-#define __EMBREE_STREAM_H__
+#pragma once
 
 #include "sys/platform.h"
 #include "sys/ref.h"
@@ -78,7 +77,7 @@ namespace embree
      buffer[end] = v;
    }
    __forceinline void pop_front() {
-     if (past == 0) throw std::runtime_error("stream buffer empty");
+     if (past == 0) THROW_RUNTIME_ERROR("stream buffer empty");
      start = (start+1)%BUF_SIZE; past--;
    }
   public:
@@ -102,7 +101,7 @@ namespace embree
       return buffer[(start+past)%BUF_SIZE].first;
     }
     const T& unget(size_t n = 1) {
-      if (past < n) throw std::runtime_error ("cannot unget that many items");
+      if (past < n) THROW_RUNTIME_ERROR ("cannot unget that many items");
       past -= n; future += n;
       return peek();
     }
@@ -151,7 +150,7 @@ namespace embree
       : lineNumber(1), colNumber(0), charNumber(0), name(new String(fileName.str()))
     {
       file = fopen(fileName.c_str(),"r");
-      if (file == NULL) throw std::runtime_error("cannot open file " + fileName.str());
+      if (file == NULL) THROW_RUNTIME_ERROR("cannot open file " + fileName.str());
     }
     ~FileStream() { fclose(file); }
 
@@ -203,5 +202,3 @@ namespace embree
     Ref<String> name;        /// name of buffer
   };
 }
-
-#endif

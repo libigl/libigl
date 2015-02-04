@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_ATOMIC_H__
-#define __EMBREE_ATOMIC_H__
+#pragma once
 
 #include "../intrinsics.h"
 
@@ -30,8 +29,9 @@ namespace embree
     __forceinline operator atomic_t() const { return data; }
 
   public:
-    __forceinline atomic_t sub( const atomic_t input ) { return atomic_add(&data,-input) - input; }
-    __forceinline atomic_t add( const atomic_t input ) { return atomic_add(&data, input) + input; }
+    __forceinline atomic_t sub( const atomic_t input ) { return atomic_add(&data,-input); }
+    __forceinline atomic_t add( const atomic_t input ) { return atomic_add(&data, input); }
+
     __forceinline friend atomic_t operator +=( AtomicCounter& value, const atomic_t input ) { return atomic_add(&value.data, +input) + input; }
     __forceinline friend atomic_t operator -=( AtomicCounter& value, const atomic_t input ) { return atomic_add(&value.data, -input) - input; }
     __forceinline friend atomic_t operator ++( AtomicCounter& value ) { return atomic_add(&value.data,  1) + 1; }
@@ -70,6 +70,4 @@ namespace embree
     volatile atomic32_t data;
     char align[64-sizeof(atomic32_t)]; // one counter per cache line
   };
- }
-
-#endif
+}

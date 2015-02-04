@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_LINEAR_SPACE3_H__
-#define __EMBREE_LINEAR_SPACE3_H__
+#pragma once
 
 #include "vec3.h"
 #include "quaternion.h"
@@ -104,6 +103,14 @@ namespace embree
     Vector vx,vy,vz;
   };
 
+#if !defined(__MIC__)
+  /*! compute transposed matrix */
+  template<> __forceinline const LinearSpace3<Vec3fa> LinearSpace3<Vec3fa>::transposed() const { 
+    ssef rx,ry,rz; transpose((ssef&)vx,(ssef&)vy,(ssef&)vz,ssef(zero),rx,ry,rz);
+    return LinearSpace3<Vec3fa>(Vec3fa(rx),Vec3fa(ry),Vec3fa(rz)); 
+  }
+#endif
+
   ////////////////////////////////////////////////////////////////////////////////
   // Unary Operators
   ////////////////////////////////////////////////////////////////////////////////
@@ -119,6 +126,13 @@ namespace embree
     T dx = normalize(select(dot(dx0,dx0) > dot(dx1,dx1),dx0,dx1));
     T dy = normalize(cross(N,dx));
     return LinearSpace3<T>(dx,dy,N);
+  }
+
+  /* clamps linear space to range -1 to +1 */
+  template<typename T> __forceinline LinearSpace3<T> clamp(const LinearSpace3<T>& space) {
+    return LinearSpace3<T>(clamp(space.vx,T(-1.0f),T(1.0f)),
+                           clamp(space.vy,T(-1.0f),T(1.0f)),
+                           clamp(space.vz,T(-1.0f),T(1.0f)));
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -138,8 +152,8 @@ namespace embree
   template<typename T> __forceinline LinearSpace3<T>& operator *=( LinearSpace3<T>& a, const LinearSpace3<T>& b ) { return a = a * b; }
   template<typename T> __forceinline LinearSpace3<T>& operator /=( LinearSpace3<T>& a, const LinearSpace3<T>& b ) { return a = a / b; }
 
-  template<typename T> __forceinline T       xfmPoint (const LinearSpace3<T>& s, const T      & a) { return a.x*s.vx + a.y*s.vy + a.z*s.vz; }
-  template<typename T> __forceinline T       xfmVector(const LinearSpace3<T>& s, const T      & a) { return a.x*s.vx + a.y*s.vy + a.z*s.vz; }
+  template<typename T> __forceinline T       xfmPoint (const LinearSpace3<T>& s, const T      & a) { return madd(T(a.x),s.vx,madd(T(a.y),s.vy,T(a.z)*s.vz)); }
+  template<typename T> __forceinline T       xfmVector(const LinearSpace3<T>& s, const T      & a) { return madd(T(a.x),s.vx,madd(T(a.y),s.vy,T(a.z)*s.vz)); }
   template<typename T> __forceinline T       xfmNormal(const LinearSpace3<T>& s, const T      & a) { return xfmVector(s.inverse().transposed(),a); }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -158,7 +172,7 @@ namespace embree
   }
 
   /*! Shortcuts for common linear spaces. */
-  typedef LinearSpace3<Vec3fa> LinearSpace3f;
-}
+  typedef LinearSpace3<Vec3f> LinearSpace3f;
+  typedef LinearSpace3<Vec3fa> LinearSpace3fa;
 
-#endif
+}

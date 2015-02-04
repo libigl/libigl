@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -15,46 +15,9 @@
 // ======================================================================== //
 
 #include "../common/tutorial/tutorial_device.isph"
+#include "../common/tutorial/scene_device.h"
 
-struct ISPCTriangle 
-{
-  int v0;                /*< first triangle vertex */
-  int v1;                /*< second triangle vertex */
-  int v2;                /*< third triangle vertex */
-  int materialID;        /*< material of triangle */
-};
-
-struct ISPCMaterial
-{
-  int illum;             /*< illumination model */
-  
-  float d;               /*< dissolve factor, 1=opaque, 0=transparent */
-  float Ns;              /*< specular exponent */
-  float Ni;              /*< optical density for the surface (index of refraction) */
-  
-  Vec3f Ka;              /*< ambient reflectivity */
-  Vec3f Kd;              /*< diffuse reflectivity */
-  Vec3f Ks;              /*< specular reflectivity */
-  Vec3f Tf;              /*< transmission filter */
-};
-
-struct ISPCMesh
-{
-  uniform Vec3fa* positions;    //!< vertex position array
-  uniform Vec3fa* normals;       //!< vertex normal array
-  uniform Vec2f* texcoords;     //!< vertex texcoord array
-  uniform ISPCTriangle* triangles;  //!< list of triangles
-  int numVertices;
-  int numTriangles;
-};
-
-struct ISPCScene
-{
-  uniform ISPCMesh* uniform* meshes;         //!< list of meshes
-  uniform ISPCMaterial* materials;  //!< material list
-  int numMeshes;
-  int numMaterials;
-};
+#define PARALLEL_COMMIT
 
 /* scene data */
 extern uniform ISPCScene* uniform g_ispc_scene;
@@ -63,20 +26,48 @@ RTCScene g_scene = NULL;
 /* render function to use */
 renderPixelFunc renderPixel;
 
+/* error reporting function */
+void error_handler(const uniform RTCError code, const uniform int8* uniform str)
+{
+  print("Embree: ");
+  switch (code) {
+  case RTC_UNKNOWN_ERROR    : print("RTC_UNKNOWN_ERROR"); break;
+  case RTC_INVALID_ARGUMENT : print("RTC_INVALID_ARGUMENT"); break;
+  case RTC_INVALID_OPERATION: print("RTC_INVALID_OPERATION"); break;
+  case RTC_OUT_OF_MEMORY    : print("RTC_OUT_OF_MEMORY"); break;
+  case RTC_UNSUPPORTED_CPU  : print("RTC_UNSUPPORTED_CPU"); break;
+  default                   : print("invalid error code"); break;
+  }
+  if (str) { 
+    print(" ("); 
+    while (*str) putchar(*str++); 
+    print(")\n"); 
+  }
+  abort();
+}
+
+Vec3fa renderPixelEyeLight(float x, float y, const Vec3fa& vx, const Vec3fa& vy, const Vec3fa& vz, const Vec3fa& p);
+
+
 /* called by the C++ code for initialization */
 export void device_init (uniform int8* uniform cfg)
 {
   /* initialize ray tracing core */
   rtcInit(cfg);
 
+  /* set error handler */
+  rtcSetErrorFunction(error_handler);
+
   /* set start render mode */
   renderPixel = renderPixelStandard;
+  //renderPixel = renderPixelEyeLight;	
 }
 
 RTCScene convertScene(uniform ISPCScene* uniform scene_in)
 {
   /* create scene */
   RTCScene scene_out = rtcNewScene(RTC_SCENE_STATIC,RTC_INTERSECT_UNIFORM | RTC_INTERSECT_VARYING);
+
 
   /* add all meshes to the scene */
   for (uniform int i=0; i<scene_in->numMeshes; i++)
@@ -87,63 +78,22 @@ RTCScene convertScene(uniform ISPCScene* uniform scene_in)
     /* create a triangle mesh */
     uniform unsigned int geometry = rtcNewTriangleMesh (scene_out, RTC_GEOMETRY_STATIC, mesh->numTriangles, mesh->numVertices);
 
-#if 1
     /* share vertex buffer */
     rtcSetBuffer(scene_out, geometry, RTC_VERTEX_BUFFER, mesh->positions, 0, sizeof(uniform Vec3fa      ));
-    //rtcSetBuffer(scene_out, geometry, RTC_INDEX_BUFFER,  mesh->triangles, 0, sizeof(uniform ISPCTriangle));
-
-    /* set triangles */
-    uniform Triangle* uniform triangles = (uniform Triangle* uniform) rtcMapBuffer(scene_out,geometry,RTC_INDEX_BUFFER);
-    for (uniform int j=0; j<mesh->numTriangles; j++) {
-      triangles[j].v0 = mesh->triangles[j].v0;
-      triangles[j].v1 = mesh->triangles[j].v1;
-      triangles[j].v2 = mesh->triangles[j].v2;
-    }
-    rtcUnmapBuffer(scene_out,geometry,RTC_INDEX_BUFFER);
-
-#elif 0
-    uniform Vec3f* uniform positions = uniform new uniform Vec3f[mesh->numVertices+1];
-    for (uniform int j=0; j<mesh->numVertices; j++) {
-      positions[j].x = mesh->positions[j].x;
-      positions[j].y = mesh->positions[j].y;
-      positions[j].z = mesh->positions[j].z;
-    }
-    rtcSetBuffer(scene_out, geometry, RTC_VERTEX_BUFFER, positions, 0, sizeof(uniform Vec3f));
     rtcSetBuffer(scene_out, geometry, RTC_INDEX_BUFFER,  mesh->triangles, 0, sizeof(uniform ISPCTriangle));
-#else
-
-    /* set vertices */
-    uniform Vertex* uniform vertices = (uniform Vertex* uniform) rtcMapBuffer(scene_out,geometry,RTC_VERTEX_BUFFER); 
-    for (uniform int j=0; j<mesh->numVertices; j++) {
-      vertices[j].x = mesh->positions[j].x;
-      vertices[j].y = mesh->positions[j].y;
-      vertices[j].z = mesh->positions[j].z;
-    }
-    rtcUnmapBuffer(scene_out,geometry,RTC_VERTEX_BUFFER); 
-
-    /* set triangles */
-    uniform Triangle* uniform triangles = (uniform Triangle* uniform) rtcMapBuffer(scene_out,geometry,RTC_INDEX_BUFFER);
-    for (uniform int j=0; j<mesh->numTriangles; j++) {
-      triangles[j].v0 = mesh->triangles[j].v0;
-      triangles[j].v1 = mesh->triangles[j].v1;
-      triangles[j].v2 = mesh->triangles[j].v2;
-    }
-    rtcUnmapBuffer(scene_out,geometry,RTC_INDEX_BUFFER);
-#endif
   }
 
   /* commit changes to scene */
-  rtcCommit (scene_out);
   return scene_out;
 }
 
 /* task that renders a single screen tile */
-Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p)
+Vec3f renderPixelStandard(float x, float y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p)
 {
   /* initialize ray */
   RTCRay ray;
   ray.org = p;
-  ray.dir = normalize(add(mul(x,vx), mul(y,vy), vz));
+  ray.dir = normalize(x*vx + y*vy + vz);
   ray.tnear = 0.0f;
   ray.tfar = inf;
   ray.geomID = RTC_INVALID_GEOMETRY_ID;
@@ -159,6 +109,8 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
   
   /* shade all rays that hit something */
   Vec3f color = make_Vec3f(0.0f);
+  Vec3f Ns = make_Vec3f(0.0f);
+
 #if 0 // FIXME: pointer gather not implemented on ISPC for Xeon Phi
   uniform ISPCMesh* varying mesh = g_ispc_scene->meshes[ray.geomID];
   uniform ISPCTriangle* varying tri = &mesh->triangles[ray.primID];
@@ -167,17 +119,19 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
   int materialID = tri->materialID;
 
   /* interpolate shading normal */
-  Vec3f n0 = make_Vec3f(mesh->normals[tri->v0]);
-  Vec3f n1 = make_Vec3f(mesh->normals[tri->v1]);
-  Vec3f n2 = make_Vec3f(mesh->normals[tri->v2]);
-  float u = ray.u, v = ray.v, w = 1.0f-ray.u-ray.v;
-  Vec3f Ns = add(add(mul(w,n0),mul(u,n1)),mul(v,n2));
-  Ns = normalize(Ns);
+  if (mesh->normals) {
+    Vec3f n0 = make_Vec3f(mesh->normals[tri->v0]);
+    Vec3f n1 = make_Vec3f(mesh->normals[tri->v1]);
+    Vec3f n2 = make_Vec3f(mesh->normals[tri->v2]);
+    float u = ray.u, v = ray.v, w = 1.0f-ray.u-ray.v;
+    Ns = normalize(w*n0 + u*n1 + v*n2);
+  } else {
+    Ns = normalize(ray.Ng);
+  }
 
 #else
 
   int materialID = 0;
-  Vec3f Ns = make_Vec3f(0.0f);
   foreach_unique (geomID in ray.geomID) 
   {
     uniform ISPCMesh* uniform mesh = g_ispc_scene->meshes[geomID];
@@ -190,23 +144,27 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
       materialID = tri->materialID;
 
       /* interpolate shading normal */
-      Vec3f n0 = make_Vec3f(mesh->normals[tri->v0]);
-      Vec3f n1 = make_Vec3f(mesh->normals[tri->v1]);
-      Vec3f n2 = make_Vec3f(mesh->normals[tri->v2]);
-      float u = ray.u, v = ray.v, w = 1.0f-ray.u-ray.v;
-      Ns = add(add(mul(w,n0),mul(u,n1)),mul(v,n2));
+      if (mesh->normals) {
+        Vec3f n0 = make_Vec3f(mesh->normals[tri->v0]);
+        Vec3f n1 = make_Vec3f(mesh->normals[tri->v1]);
+        Vec3f n2 = make_Vec3f(mesh->normals[tri->v2]);
+        float u = ray.u, v = ray.v, w = 1.0f-ray.u-ray.v;
+        Ns = w*n0 + u*n1 + v*n2;
+      } else {
+        Ns = normalize(ray.Ng);
+      }
     }
   }
   Ns = normalize(Ns);
 #endif
-  uniform ISPCMaterial* material = &g_ispc_scene->materials[materialID];
-  color = material->Kd;
+  uniform OBJMaterial* material = (uniform OBJMaterial*) &g_ispc_scene->materials[materialID];
+  color = make_Vec3f(material->Kd);
 
   /* apply ambient light */
-  Vec3f Nf = faceforward(Ns,neg(ray.dir),ray.Ng);
+  Vec3f Nf = faceforward(Ns,neg(ray.dir),Ns);
   //Vec3f Ng = normalize(ray.Ng);
   //Vec3f Nf = dot(ray.dir,Ng) < 0.0f ? Ng : neg(Ng);
-  color = mul(color,dot(ray.dir,Nf));    
+  color = color*dot(ray.dir,Nf);   // FIXME: *=
   return color;
 }
 
@@ -242,6 +200,13 @@ task void renderTile(uniform int* uniform pixels,
   }
 }
 
+/* rtcCommitThread called by all ISPC worker threads to enable parallel build */
+#if defined(PARALLEL_COMMIT)
+task void parallelCommit(RTCScene scene) {
+  rtcCommitThread (scene,threadIndex,threadCount); 
+}
+#endif
+
 /* called by the C++ code to render */
 export void device_render (uniform int* uniform pixels,
                            const uniform int width,
@@ -254,7 +219,14 @@ export void device_render (uniform int* uniform pixels,
 {
   /* create scene */
   if (g_scene == NULL)
+  { 
     g_scene = convertScene(g_ispc_scene);
+#if !defined(PARALLEL_COMMIT)
+  rtcCommit (g_scene);
+#else
+  launch[ getNumHWThreads() ] parallelCommit(g_scene); sync;
+#endif
+  }
 
   /* render image */
   const uniform int numTilesX = (width +TILE_SIZE_X-1)/TILE_SIZE_X;

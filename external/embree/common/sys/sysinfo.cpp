@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -43,9 +43,9 @@ namespace embree
 #elif defined(__WIN32__) && defined(__X86_64__)
     return "Windows (64bit)";
 #elif defined(__MACOSX__) && !defined(__X86_64__)
-    return "MacOS (32bit)";
+    return "Mac OS X (32bit)";
 #elif defined(__MACOSX__) && defined(__X86_64__)
-    return "MacOS (64bit)";
+    return "Mac OS X (64bit)";
 #elif defined(__UNIX__) && !defined(__X86_64__)
     return "Unix (32bit)";
 #elif defined(__UNIX__) && defined(__X86_64__)
@@ -58,12 +58,13 @@ namespace embree
   std::string getCompilerName()
   {
 #if defined(__INTEL_COMPILER)
-    std::string version = std::stringOf(__INTEL_COMPILER);
-    version.insert(3,".");
-    version.insert(2,".");
-    version = "Intel Compiler " + version;
+    int icc_mayor = __INTEL_COMPILER / 100 % 100;
+    int icc_minor = __INTEL_COMPILER % 100;
+    std::string version = "Intel Compiler ";
+    version += std::stringOf(icc_mayor);
+    version += "." + std::stringOf(icc_minor);
 #if defined(__INTEL_COMPILER_UPDATE)
-    version += " Update " + std::stringOf(__INTEL_COMPILER_UPDATE);
+    version += "." + std::stringOf(__INTEL_COMPILER_UPDATE);
 #endif
     return version;
 #elif defined(__clang__)
@@ -279,6 +280,13 @@ namespace embree
 #endif
   }
 
+  size_t getNumberOfCores() {
+    static int nCores = -1;
+    if (nCores == -1) nCores = getNumberOfLogicalThreads(); // FIXME: detect if hyperthreading is enabled
+    if (nCores ==  0) nCores = 1;
+    return nCores;
+  }
+
   int getTerminalWidth() 
   {
     HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -314,7 +322,7 @@ namespace embree
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-/// MacOS Platform
+/// Mac OS X Platform
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifdef __MACOSX__
@@ -351,9 +359,15 @@ namespace embree
 {
   size_t getNumberOfLogicalThreads() {
     static int nThreads = -1;
-    if (nThreads == -1)
-      nThreads = sysconf(_SC_NPROCESSORS_CONF);
+    if (nThreads == -1) nThreads = sysconf(_SC_NPROCESSORS_CONF);
     return nThreads;
+  }
+
+  size_t getNumberOfCores() {
+    static int nCores = -1;
+    if (nCores == -1) nCores = sysconf(_SC_NPROCESSORS_CONF)/2; // FIXME: detect if hyperthreading is enabled
+    if (nCores ==  0) nCores = 1;
+    return nCores;
   }
 
   int getTerminalWidth() 

@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_SSEB_H__
-#define __EMBREE_SSEB_H__
+#pragma once
 
 namespace embree
 {
@@ -135,21 +134,25 @@ namespace embree
   ////////////////////////////////////////////////////////////////////////////////
   /// Reduction Operations
   ////////////////////////////////////////////////////////////////////////////////
+    
+  __forceinline bool reduce_and( const sseb& a ) { return _mm_movemask_ps(a) == 0xf; }
+  __forceinline bool reduce_or ( const sseb& a ) { return _mm_movemask_ps(a) != 0x0; }
+
+  __forceinline bool all       ( const sseb& b ) { return _mm_movemask_ps(b) == 0xf; }
+  __forceinline bool any       ( const sseb& b ) { return _mm_movemask_ps(b) != 0x0; }
+  __forceinline bool none      ( const sseb& b ) { return _mm_movemask_ps(b) == 0x0; }
+
+  __forceinline bool all       ( const sseb& valid, const sseb& b ) { return all(!valid | b); }
+  __forceinline bool any       ( const sseb& valid, const sseb& b ) { return any( valid & b); }
+  __forceinline bool none      ( const sseb& valid, const sseb& b ) { return none(valid & b); }
   
-#if defined(__SSE4_1__)
+  __forceinline size_t movemask( const sseb& a ) { return _mm_movemask_ps(a); }
+#if defined(__SSE4_2__)
   __forceinline size_t popcnt( const sseb& a ) { return __popcnt(_mm_movemask_ps(a)); }
 #else
   __forceinline size_t popcnt( const sseb& a ) { return bool(a[0])+bool(a[1])+bool(a[2])+bool(a[3]); }
 #endif
-  
-  __forceinline bool reduce_and( const sseb& a ) { return _mm_movemask_ps(a) == 0xf; }
-  __forceinline bool reduce_or ( const sseb& a ) { return _mm_movemask_ps(a) != 0x0; }
-  __forceinline bool all       ( const sseb& b ) { return _mm_movemask_ps(b) == 0xf; }
-  __forceinline bool any       ( const sseb& b ) { return _mm_movemask_ps(b) != 0x0; }
-  __forceinline bool none      ( const sseb& b ) { return _mm_movemask_ps(b) == 0x0; }
-  
-  __forceinline size_t movemask( const sseb& a ) { return _mm_movemask_ps(a); }
-  
+
   ////////////////////////////////////////////////////////////////////////////////
   /// Output Operators
   ////////////////////////////////////////////////////////////////////////////////
@@ -158,5 +161,3 @@ namespace embree
     return cout << "<" << a[0] << ", " << a[1] << ", " << a[2] << ", " << a[3] << ">";
   }
 }
-
-#endif

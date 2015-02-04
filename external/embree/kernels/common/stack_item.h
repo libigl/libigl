@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_STACK_ITEM_H__
-#define __EMBREE_STACK_ITEM_H__
+#pragma once
 
 namespace embree
 {
@@ -54,23 +53,16 @@ namespace embree
     float dist;
   };
 
-
-
   /*! An item on the stack holds the node ID and distance of that node. */
   template<typename T>
-    struct StackItemInt32
+    struct __aligned(16) StackItemInt32
   {
-    
-    __forceinline static void swap2(StackItemInt32<T>& a, StackItemInt32<T>& b) { 
-#if defined(__AVX__)
-      /* use sse registers to copy stack items */
-      ssef sse_a = load4f(&a);
-      ssef sse_b = load4f(&b);
+    __forceinline static void swap2(StackItemInt32<T>& a, StackItemInt32<T>& b) 
+    { 
+      const ssef sse_a = load4f(&a); 
+      const ssef sse_b = load4f(&b);
       store4f(&a,sse_b);
       store4f(&b,sse_a);
-#else
-      StackItemInt32<T> t = b; b = a; a = t;
-#endif
     }
 
     /*! Sort 2 stack items. */
@@ -312,6 +304,51 @@ namespace embree
     d.all = s4;  
   }  
 #endif
-}
 
+  struct __aligned(16) StackItemNearFar 
+  {
+  public:
+    __forceinline static void swap2(StackItemNearFar& a, StackItemNearFar& b) 
+    { 
+#if defined(__AVX__)
+      ssef sse_a = load4f(&a);
+      ssef sse_b = load4f(&b);
+      store4f(&a,sse_b);
+      store4f(&b,sse_a);
+#else
+      StackItemNearFar t = b; b = a; a = t;
 #endif
+    }
+    
+    __forceinline friend bool operator<(const StackItemNearFar& s1, const StackItemNearFar& s2) {
+      return s1.tNear > s2.tNear;
+    }
+    
+    /*! Sort 2 stack items. */
+    __forceinline friend void sort(StackItemNearFar& s1, StackItemNearFar& s2) {
+      if (s2.tNear < s1.tNear) swap2(s2,s1);
+    }
+    
+    /*! Sort 3 stack items. */
+    __forceinline friend void sort(StackItemNearFar& s1, StackItemNearFar& s2, StackItemNearFar& s3)
+    {
+      if (s2.tNear < s1.tNear) swap2(s2,s1);
+      if (s3.tNear < s2.tNear) swap2(s3,s2);
+      if (s2.tNear < s1.tNear) swap2(s2,s1);
+    }
+    
+    /*! Sort 4 stack items. */
+    __forceinline friend void sort(StackItemNearFar& s1, StackItemNearFar& s2, StackItemNearFar& s3, StackItemNearFar& s4)
+    {
+      if (s2.tNear < s1.tNear) swap2(s2,s1);
+      if (s4.tNear < s3.tNear) swap2(s4,s3);
+      if (s3.tNear < s1.tNear) swap2(s3,s1);
+      if (s4.tNear < s2.tNear) swap2(s4,s2);
+      if (s3.tNear < s2.tNear) swap2(s3,s2);
+    }
+    
+  public:
+    size_t ref;
+    float tNear,tFar;
+  };
+}

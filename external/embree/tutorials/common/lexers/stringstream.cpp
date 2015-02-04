@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -50,6 +50,6 @@ namespace embree
     while (cin->peek() != EOF && !isSeparator(cin->peek()))
       str.push_back((char)cin->get());
     str.push_back(0);
-    return std::string(&str[0]);
+    return std::string(str.data());
   }
 }

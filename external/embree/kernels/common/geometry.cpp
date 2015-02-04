@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -32,6 +32,17 @@ namespace embree
 
   void Geometry::enable () 
   {
+    if (parent->isStatic()) {
+      process_error(RTC_INVALID_OPERATION,"static geometries cannot get enabled");
+      return;
+    }
+
+    if (isDisabled()) {
+      atomic_add(&parent->numIntersectionFilters4,(intersectionFilter4 != NULL) + (occlusionFilter4 != NULL));
+      atomic_add(&parent->numIntersectionFilters8,(intersectionFilter8 != NULL) + (occlusionFilter8 != NULL));
+      atomic_add(&parent->numIntersectionFilters16,(intersectionFilter16 != NULL) + (occlusionFilter16 != NULL));
+    }
+
     switch (state) {
     case ENABLING:
       break;
@@ -54,6 +65,11 @@ namespace embree
 
   void Geometry::update() 
   {
+    if (parent->isStatic()) {
+      process_error(RTC_INVALID_OPERATION,"static geometries cannot get updated");
+      return;
+    }
+
     switch (state) {
     case ENABLING:
       break;
@@ -73,6 +89,17 @@ namespace embree
 
   void Geometry::disable () 
   {
+    if (parent->isStatic()) {
+      process_error(RTC_INVALID_OPERATION,"static geometries cannot get disabled");
+      return;
+    }
+
+    if (isEnabled()) {
+      atomic_sub(&parent->numIntersectionFilters4,(intersectionFilter4 != NULL) + (occlusionFilter4 != NULL));
+      atomic_sub(&parent->numIntersectionFilters8,(intersectionFilter8 != NULL) + (occlusionFilter8 != NULL));
+      atomic_sub(&parent->numIntersectionFilters16,(intersectionFilter16 != NULL) + (occlusionFilter16 != NULL));
+    }
+
     switch (state) {
     case ENABLING:
       state = DISABLED;
@@ -97,6 +124,11 @@ namespace embree
 
   void Geometry::erase () 
   {
+    if (parent->isStatic()) {
+      process_error(RTC_INVALID_OPERATION,"static geometries cannot get deleted");
+      return;
+    }
+
     switch (state) {
     case ENABLING:
       state = ERASING;
@@ -123,8 +155,8 @@ namespace embree
 
   void Geometry::setIntersectionFilterFunction (RTCFilterFunc filter, bool ispc) 
   {
-    if (type != TRIANGLE_MESH) {
-      recordError(RTC_INVALID_OPERATION); 
+    if (type != TRIANGLE_MESH && type != BEZIER_CURVES) {
+      process_error(RTC_INVALID_OPERATION,"filter functions only supported for triangle meshes and hair geometries"); 
       return;
     }
     intersectionFilter1 = filter;
@@ -132,10 +164,12 @@ namespace embree
     
   void Geometry::setIntersectionFilterFunction4 (RTCFilterFunc4 filter, bool ispc) 
   { 
-    if (type != TRIANGLE_MESH) {
-      recordError(RTC_INVALID_OPERATION); 
+    if (type != TRIANGLE_MESH && type != BEZIER_CURVES) {
+      process_error(RTC_INVALID_OPERATION,"filter functions only supported for triangle meshes and hair geometries"); 
       return;
     }
+    atomic_sub(&parent->numIntersectionFilters4,intersectionFilter4 != NULL);
+    atomic_add(&parent->numIntersectionFilters4,filter != NULL);
     intersectionFilter4 = filter;
     if (ispc) ispcIntersectionFilter4 = (void*) filter; 
     else      ispcIntersectionFilter4 = NULL;
@@ -143,10 +177,12 @@ namespace embree
     
   void Geometry::setIntersectionFilterFunction8 (RTCFilterFunc8 filter, bool ispc) 
   { 
-    if (type != TRIANGLE_MESH) {
-      recordError(RTC_INVALID_OPERATION); 
+    if (type != TRIANGLE_MESH && type != BEZIER_CURVES) {
+      process_error(RTC_INVALID_OPERATION,"filter functions only supported for triangle meshes and hair geometries"); 
       return;
     }
+    atomic_sub(&parent->numIntersectionFilters8,intersectionFilter8 != NULL);
+    atomic_add(&parent->numIntersectionFilters8,filter != NULL);
     intersectionFilter8 = filter;
     if (ispc) ispcIntersectionFilter8 = (void*) filter; 
     else      ispcIntersectionFilter8 = NULL;
@@ -154,10 +190,12 @@ namespace embree
   
   void Geometry::setIntersectionFilterFunction16 (RTCFilterFunc16 filter, bool ispc) 
   { 
-    if (type != TRIANGLE_MESH) {
-      recordError(RTC_INVALID_OPERATION); 
+    if (type != TRIANGLE_MESH && type != BEZIER_CURVES) {
+      process_error(RTC_INVALID_OPERATION,"filter functions only supported for triangle meshes and hair geometries"); 
       return;
     }
+    atomic_sub(&parent->numIntersectionFilters16,intersectionFilter16 != NULL);
+    atomic_add(&parent->numIntersectionFilters16,filter != NULL);
     intersectionFilter16 = filter;
     if (ispc) ispcIntersectionFilter16 = (void*) filter; 
     else      ispcIntersectionFilter16 = NULL;
@@ -165,8 +203,8 @@ namespace embree
 
   void Geometry::setOcclusionFilterFunction (RTCFilterFunc filter, bool ispc) 
   {
-    if (type != TRIANGLE_MESH) {
-      recordError(RTC_INVALID_OPERATION); 
+    if (type != TRIANGLE_MESH && type != BEZIER_CURVES) {
+      process_error(RTC_INVALID_OPERATION,"filter functions only supported for triangle meshes and hair geometries"); 
       return;
     }
     occlusionFilter1 = filter;
@@ -174,10 +212,12 @@ namespace embree
     
   void Geometry::setOcclusionFilterFunction4 (RTCFilterFunc4 filter, bool ispc) 
   { 
-    if (type != TRIANGLE_MESH) {
-      recordError(RTC_INVALID_OPERATION); 
+    if (type != TRIANGLE_MESH && type != BEZIER_CURVES) {
+      process_error(RTC_INVALID_OPERATION,"filter functions only supported for triangle meshes and hair geometries"); 
       return;
     }
+    atomic_sub(&parent->numIntersectionFilters4,occlusionFilter4 != NULL);
+    atomic_add(&parent->numIntersectionFilters4,filter != NULL);
     occlusionFilter4 = filter;
     if (ispc) ispcOcclusionFilter4 = (void*) filter; 
     else      ispcOcclusionFilter4 = NULL;
@@ -185,10 +225,12 @@ namespace embree
     
   void Geometry::setOcclusionFilterFunction8 (RTCFilterFunc8 filter, bool ispc) 
   { 
-    if (type != TRIANGLE_MESH) {
-      recordError(RTC_INVALID_OPERATION); 
+    if (type != TRIANGLE_MESH && type != BEZIER_CURVES) {
+      process_error(RTC_INVALID_OPERATION,"filter functions only supported for triangle meshes and hair geometries"); 
       return;
     }
+    atomic_sub(&parent->numIntersectionFilters8,occlusionFilter8 != NULL);
+    atomic_add(&parent->numIntersectionFilters8,filter != NULL);
     occlusionFilter8 = filter;
     if (ispc) ispcOcclusionFilter8 = (void*) filter; 
     else      ispcOcclusionFilter8 = NULL;
@@ -196,10 +238,12 @@ namespace embree
   
   void Geometry::setOcclusionFilterFunction16 (RTCFilterFunc16 filter, bool ispc) 
   { 
-    if (type != TRIANGLE_MESH) {
-      recordError(RTC_INVALID_OPERATION); 
+    if (type != TRIANGLE_MESH && type != BEZIER_CURVES) {
+      process_error(RTC_INVALID_OPERATION,"filter functions only supported for triangle meshes and hair geometries"); 
       return;
     }
+    atomic_sub(&parent->numIntersectionFilters16,occlusionFilter16 != NULL);
+    atomic_add(&parent->numIntersectionFilters16,filter != NULL);
     occlusionFilter16 = filter;
     if (ispc) ispcOcclusionFilter16 = (void*) filter; 
     else      ispcOcclusionFilter16 = NULL;

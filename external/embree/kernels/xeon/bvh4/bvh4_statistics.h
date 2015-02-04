@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_BVH4_STATISTICS_H__
-#define __EMBREE_BVH4_STATISTICS_H__
+#pragma once
 
 #include "bvh4.h"
 
@@ -23,7 +22,8 @@ namespace embree
 {
   class BVH4Statistics 
   {
-    typedef BVH4::Node Node;
+    typedef BVH4::Node AlignedNode;
+    typedef BVH4::UnalignedNode UnalignedNode;
     typedef BVH4::NodeRef NodeRef;
 
   public:
@@ -34,22 +34,27 @@ namespace embree
     /*! Convert statistics into a string */
     std::string str();
 
-    /*! memory required to store BVH4 */
-    size_t bytesUsed();
+    float sah() const { return bvhSAH; }
+
+    size_t bytesUsed() const;
 
   private:
-    void statistics(NodeRef node, const BBox3f& bounds, size_t& depth);
+    void statistics(NodeRef node, const float A, size_t& depth);
 
   private:
     BVH4* bvh;
-    float bvhSAH;                      //!< SAH cost of the BVH4.
-    float leafSAH;                      //!< SAH cost of the BVH4.
-    size_t numNodes;                   //!< Number of internal nodes.
+    float bvhSAH;                      //!< SAH cost.
+    size_t numAlignedNodes;            //!< Number of aligned internal nodes.
+    size_t numUnalignedNodes;          //!< Number of unaligned internal nodes.
+    size_t numAlignedNodesMB;            //!< Number of aligned internal nodes.
+    size_t numUnalignedNodesMB;          //!< Number of unaligned internal nodes.
+    size_t childrenAlignedNodes;       //!< Number of children of aligned nodes
+    size_t childrenUnalignedNodes;     //!< Number of children of unaligned internal nodes.
+    size_t childrenAlignedNodesMB;       //!< Number of children of aligned nodes
+    size_t childrenUnalignedNodesMB;     //!< Number of children of unaligned internal nodes.
     size_t numLeaves;                  //!< Number of leaf nodes.
-    size_t numPrimBlocks;              //!< Number of primitive blocks.
     size_t numPrims;                   //!< Number of primitives.
     size_t depth;                      //!< Depth of the tree.
+    size_t hash;
   };
 }
-
-#endif

@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_PARSE_STREAM_H__
-#define __EMBREE_PARSE_STREAM_H__
+#pragma once
 
 #include "stringstream.h"
 #include "sys/filename.h"
@@ -45,7 +44,7 @@ namespace embree
     void force(const std::string& next) {
       std::string token = getString();
       if (token != next)
-        throw std::runtime_error("token \""+next+"\" expected but token \""+token+"\" found");
+        THROW_RUNTIME_ERROR("token \""+next+"\" expected but token \""+token+"\" found");
     }
 
     std::string getString() {
@@ -83,6 +82,13 @@ namespace embree
       return Vec2f(x,y);
     }
 
+    Vec3f getVec3f() {
+      float x = (float)atof(get().c_str());
+      float y = (float)atof(get().c_str());
+      float z = (float)atof(get().c_str());
+      return Vec3f(x,y,z);
+    }
+
     Vec3fa getVec3fa() {
       float x = (float)atof(get().c_str());
       float y = (float)atof(get().c_str());
@@ -110,5 +116,3 @@ namespace embree
     Ref<Stream<std::string> > cin;
   };
 }
-
-#endif

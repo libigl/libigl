@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -15,6 +15,8 @@
 // ======================================================================== //
 
 #include "../common/tutorial/tutorial_device.isph"
+
+#define PARALLEL_COMMIT
 
 #if 0
 const uniform int numSpheres = 1000;
@@ -36,8 +38,28 @@ uniform int disabledID = -1;
 /* render function to use */
 renderPixelFunc renderPixel;
 
+/* error reporting function */
+void error_handler(const uniform RTCError code, const uniform int8* uniform str)
+{
+  print("Embree: ");
+  switch (code) {
+  case RTC_UNKNOWN_ERROR    : print("RTC_UNKNOWN_ERROR"); break;
+  case RTC_INVALID_ARGUMENT : print("RTC_INVALID_ARGUMENT"); break;
+  case RTC_INVALID_OPERATION: print("RTC_INVALID_OPERATION"); break;
+  case RTC_OUT_OF_MEMORY    : print("RTC_OUT_OF_MEMORY"); break;
+  case RTC_UNSUPPORTED_CPU  : print("RTC_UNSUPPORTED_CPU"); break;
+  default                   : print("invalid error code"); break;
+  }
+  if (str) { 
+    print(" ("); 
+    while (*str) putchar(*str++); 
+    print(")\n"); 
+  }
+  abort();
+}
+
 /* adds a sphere to the scene */
-uniform unsigned int createSphere (uniform RTCGeometryFlags flags, const uniform Vec3f pos, const uniform float r)
+uniform unsigned int createSphere (uniform RTCGeometryFlags flags, const uniform Vec3f& pos, const uniform float r)
 {
   /* create a triangulated sphere */
   uniform unsigned int mesh = rtcNewTriangleMesh (g_scene, flags, 2*numTheta*(numPhi-1), numTheta*(numPhi+1));
@@ -91,6 +113,13 @@ uniform unsigned int createSphere (uniform RTCGeometryFlags flags, const uniform
   return mesh;
 }
 
+/* rtcCommitThread called by all ISPC worker threads to enable parallel build */
+#if defined(PARALLEL_COMMIT)
+task void parallelCommit(RTCScene scene) {
+  rtcCommitThread (scene,threadIndex,threadCount); 
+}
+#endif
+
 /* adds a ground plane to the scene */
 uniform unsigned int addGroundPlane (RTCScene scene_i)
 {
@@ -120,6 +149,9 @@ export void device_init (uniform int8* uniform cfg)
   /* initialize ray tracing core */
   rtcInit(cfg);
 
+  /* set error handler */
+  rtcSetErrorFunction(error_handler);
+
   /* create scene */
   g_scene = rtcNewScene(RTC_SCENE_DYNAMIC,RTC_INTERSECT_UNIFORM | RTC_INTERSECT_VARYING);
 
@@ -128,7 +160,8 @@ export void device_init (uniform int8* uniform cfg)
   {
     const uniform float phi = i*2.0f*pi/numSpheres;
     const uniform float r = 2.0f*pi/numSpheres;
-    const uniform Vec3f p = mul(2.0f,make_Vec3f(sin(phi),0.0f,-cos(phi)));
+    const uniform Vec3f p = 2.0f*make_Vec3f(sin(phi),0.0f,-cos(phi));
+    //uniform RTCGeometryFlags flags = i%3 == 0 ? RTC_GEOMETRY_STATIC : i%3 == 1 ? RTC_GEOMETRY_DEFORMABLE : RTC_GEOMETRY_DYNAMIC;
     uniform RTCGeometryFlags flags = i%2 ? RTC_GEOMETRY_DEFORMABLE : RTC_GEOMETRY_DYNAMIC;
     //uniform RTCGeometryFlags flags = RTC_GEOMETRY_DEFORMABLE;
     uniform int id = createSphere(flags,p,r);
@@ -144,7 +177,11 @@ export void device_init (uniform int8* uniform cfg)
   colors[id] = make_Vec3f(1.0f,1.0f,1.0f);
 
   /* commit changes to scene */
+#if !defined(PARALLEL_COMMIT)
   rtcCommit (g_scene);
+#else
+  launch[ getNumHWThreads() ] parallelCommit(g_scene); sync;
+#endif
 
   /* set start render mode */
   renderPixel = renderPixelStandard;
@@ -154,7 +191,7 @@ export void device_init (uniform int8* uniform cfg)
 task void animateSphere (uniform Vertex* uniform vertices, 
                          const uniform float rcpNumTheta,
                          const uniform float rcpNumPhi,
-                         const uniform Vec3f pos, 
+                         const uniform Vec3f& pos, 
                          const uniform float r,
                          const uniform float f)
 {
@@ -171,12 +208,12 @@ task void animateSphere (uniform Vertex* uniform vertices,
 }
 
 /* task that renders a single screen tile */
-Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p)
+Vec3f renderPixelStandard(float x, float y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p)
 {
   /* initialize ray */
   RTCRay ray;
   ray.org = p;
-  ray.dir = normalize(add(mul(x,vx), mul(y,vy), vz));
+  ray.dir = normalize(x*vx + y*vy + vz);
   ray.tnear = 0.0f;
   ray.tfar = inf;
   ray.geomID = RTC_INVALID_GEOMETRY_ID;
@@ -192,12 +229,12 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
   if (ray.geomID != RTC_INVALID_GEOMETRY_ID) 
   {
     Vec3f diffuse = colors[ray.geomID];
-    color = add(color,mul(diffuse,0.1f));
+    color = color + diffuse*0.1f; // FIXME: +=
     Vec3f lightDir = normalize(make_Vec3f(-1,-1,-1));
     
     /* initialize shadow ray */
     RTCRay shadow;
-    shadow.org = add(ray.org,mul(ray.tfar,ray.dir));
+    shadow.org = ray.org + ray.tfar*ray.dir;
     shadow.dir = neg(lightDir);
     shadow.tnear = 0.001f;
     shadow.tfar = inf;
@@ -211,7 +248,7 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
     
     /* add light contribution */
     if (shadow.geomID)
-      color = add(color,mul(diffuse,clamp(-dot(lightDir,normalize(ray.Ng)),0.0f,1.0f)));
+      color = color + diffuse*clamp(-dot(lightDir,normalize(ray.Ng)),0.0f,1.0f); // FIXME: +=
   }
   return color;
 }
@@ -295,7 +332,12 @@ export void device_render (uniform int* uniform pixels,
     animateSphere(i,time+i);
 
   /* commit changes to scene */
+#if !defined(PARALLEL_COMMIT)
   rtcCommit (g_scene);
+#else
+  launch[ getNumHWThreads() ] parallelCommit(g_scene); sync;
+#endif
+
  
   /* render all pixels */
   const uniform int numTilesX = (width +TILE_SIZE_X-1)/TILE_SIZE_X;

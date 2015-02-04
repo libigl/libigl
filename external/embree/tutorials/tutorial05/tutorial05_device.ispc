@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -16,12 +16,41 @@
 
 #include "../common/tutorial/tutorial_device.isph"
 
+#define PARALLEL_COMMIT
+
 /* scene data */
 RTCScene g_scene = NULL;
 uniform Vec3f* uniform colors = NULL;
 
 /* render function to use */
 renderPixelFunc renderPixel;
+
+/* error reporting function */
+void error_handler(const uniform RTCError code, const uniform int8* uniform str)
+{
+  print("Embree: ");
+  switch (code) {
+  case RTC_UNKNOWN_ERROR    : print("RTC_UNKNOWN_ERROR"); break;
+  case RTC_INVALID_ARGUMENT : print("RTC_INVALID_ARGUMENT"); break;
+  case RTC_INVALID_OPERATION: print("RTC_INVALID_OPERATION"); break;
+  case RTC_OUT_OF_MEMORY    : print("RTC_OUT_OF_MEMORY"); break;
+  case RTC_UNSUPPORTED_CPU  : print("RTC_UNSUPPORTED_CPU"); break;
+  default                   : print("invalid error code"); break;
+  }
+  if (str) { 
+    print(" ("); 
+    while (*str) putchar(*str++); 
+    print(")\n"); 
+  }
+  abort();
+}
+
+/* rtcCommitThread called by all ISPC worker threads to enable parallel build */
+#if defined(PARALLEL_COMMIT)
+task void parallelCommit(RTCScene scene) {
+  rtcCommitThread (scene,threadIndex,threadCount); 
+}
+#endif
 
 /* extended ray structure that includes total transparency along the ray */
 struct RTCRay2
@@ -46,7 +75,7 @@ struct RTCRay2
 /* 3D procedural transparency */
 inline float transparencyFunction(RTCRay2& ray)
 {
-  Vec3f h = add(ray.org,mul(ray.dir,ray.tfar));
+  Vec3f h = ray.org + ray.dir*ray.tfar;
   float v = abs(sin(4.0f*h.x)*cos(4.0f*h.y)*sin(4.0f*h.z));
   float T = clamp((v-0.1f)*3.0f,0.0f,1.0f);
   return T;
@@ -156,6 +185,9 @@ export void device_init (uniform int8* uniform cfg)
   /* initialize ray tracing core */
   rtcInit(cfg);
 
+  /* set error handler */
+  rtcSetErrorFunction(error_handler);
+
   /* create scene */
   g_scene = rtcNewScene(RTC_SCENE_STATIC,RTC_INTERSECT_UNIFORM | RTC_INTERSECT_VARYING);
 
@@ -166,14 +198,18 @@ export void device_init (uniform int8* uniform cfg)
   addGroundPlane(g_scene);
 
   /* commit changes to scene */
+#if !defined(PARALLEL_COMMIT)
   rtcCommit (g_scene);
+#else
+  launch[ getNumHWThreads() ] parallelCommit(g_scene); sync;
+#endif
 
   /* set start render mode */
   renderPixel = renderPixelStandard;
 }
 
 /* task that renders a single screen tile */
-Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p)
+Vec3f renderPixelStandard(float x, float y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p)
 {
   float weight = 1.0f;
   Vec3f color = make_Vec3f(0.0f);
@@ -181,7 +217,7 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
   /* initialize ray */
   RTCRay2 primary;
   primary.org = p;
-  primary.dir = normalize(add(mul(x,vx), mul(y,vy), vz));
+  primary.dir = normalize(x*vx + y*vy + vz);
   primary.tnear = 0.0f;
   primary.tfar = inf;
   primary.geomID = RTC_INVALID_GEOMETRY_ID;
@@ -193,7 +229,7 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
   while (true)
   {
     /* intersect ray with scene */
-    rtcIntersect(g_scene,*((varying RTCRay*)&primary));
+    rtcIntersect(g_scene,*((varying RTCRay*)&primary)); // FIXME: use (RTCRay&) cast
     
     /* shade pixels */
     if (primary.geomID == RTC_INVALID_GEOMETRY_ID) 
@@ -201,13 +237,13 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
 
     float opacity = 1.0f-primary.transparency;
     Vec3f diffuse = colors[primary.primID];
-    Vec3f La = mul(diffuse,0.5f);
-    color = add(color,mul(weight*opacity,La));
+    Vec3f La = diffuse*0.5f;
+    color = color + weight*opacity*La; // FIXME: +=
     Vec3f lightDir = normalize(make_Vec3f(-1,-1,-1));
       
     /* initialize shadow ray */
     RTCRay2 shadow;
-    shadow.org = add(primary.org,mul(primary.tfar,primary.dir));
+    shadow.org = primary.org + primary.tfar*primary.dir;
     shadow.dir = neg(lightDir);
     shadow.tnear = 0.001f;
     shadow.tfar = inf;
@@ -218,12 +254,12 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
     shadow.transparency = 1.0f;
     
     /* trace shadow ray */
-    rtcOccluded(g_scene,*((varying RTCRay*)&shadow));
+    rtcOccluded(g_scene,*((varying RTCRay*)&shadow)); // FIXME: use (RTCRay&) cast
     
     /* add light contribution */
     if (shadow.geomID) {
-      Vec3f Ll = mul(diffuse,shadow.transparency*clamp(-dot(lightDir,normalize(primary.Ng)),0.0f,1.0f));
-      color = add(color,mul(weight*opacity,Ll));
+      Vec3f Ll = diffuse*shadow.transparency*clamp(-dot(lightDir,normalize(primary.Ng)),0.0f,1.0f);
+      color = color + weight*opacity*Ll; // FIXME: +=
     }
 
     /* shoot transmission ray */

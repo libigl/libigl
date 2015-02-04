@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -72,7 +72,7 @@ namespace embree
     if (lib) return lib_t(lib);
     FileName executable = getExecutableFileName();
     lib = dlopen((executable.path() + fullName).c_str(),RTLD_NOW);
-    if (lib == NULL) throw std::runtime_error(dlerror());
+    if (lib == NULL) THROW_RUNTIME_ERROR(dlerror());
     return lib_t(lib);
   }
 

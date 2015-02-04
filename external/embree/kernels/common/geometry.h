@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_GEOMETRY_H__
-#define __EMBREE_GEOMETRY_H__
+#pragma once
 
 #include "embree2/rtcore.h"
 #include "common/default.h"
@@ -25,7 +24,7 @@ namespace embree
   class Scene;
 
   /*! type of geometry */
-  enum GeometryTy { TRIANGLE_MESH, USER_GEOMETRY, QUADRATIC_BEZIER_CURVES, INSTANCES };
+  enum GeometryTy { TRIANGLE_MESH = 1, USER_GEOMETRY = 2, BEZIER_CURVES = 4, SUBDIV_MESH = 8 /*, INSTANCES = 16*/ };
   
 #if defined(__SSE__)
   typedef void (*ISPCFilterFunc4)(void* ptr, RTCRay4& ray, __m128 valid);
@@ -60,6 +59,10 @@ namespace embree
       return numPrimitives && (state >= ENABLING) && (state <= MODIFIED); 
     }
 
+    __forceinline bool isDisabled() const { 
+      return !isEnabled();
+    }
+
     __forceinline bool isModified() const { 
       return numPrimitives && ((state == MODIFIED) || (state == ENABLING)); 
     }
@@ -81,6 +84,11 @@ namespace embree
 
     /*! Update geometry. */
     virtual void update ();
+
+    /*! Update geometry buffer. */
+    virtual void updateBuffer (RTCBufferType type) {
+      update(); // update everything for geometries not supporting this call
+    }
     
     /*! Disable geometry. */
     virtual void disable ();
@@ -105,23 +113,28 @@ namespace embree
 
     /*! Sets ray mask. */
     virtual void setMask (unsigned mask) { 
-      recordError(RTC_INVALID_OPERATION); 
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
     }
 
     /*! Maps specified buffer. */
     virtual void* map(RTCBufferType type) { 
-      recordError(RTC_INVALID_OPERATION); 
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
       return NULL; 
     }
 
     /*! Unmap specified buffer. */
     virtual void unmap(RTCBufferType type) { 
-      recordError(RTC_INVALID_OPERATION); 
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
     }
 
     /*! Sets specified buffer. */
     virtual void setBuffer(RTCBufferType type, void* ptr, size_t offset, size_t stride) { 
-      recordError(RTC_INVALID_OPERATION); 
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
+    }
+
+    /*! Set displacement function. */
+    virtual void setDisplacementFunction (RTCDisplacementFunc filter, RTCBounds* bounds) {
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
     }
 
     /*! Set intersection filter function for single rays. */
@@ -152,8 +165,8 @@ namespace embree
   public:
     
     /*! Sets transformation of the instance */
-    virtual void setTransform(AffineSpace3f& transform) {
-      recordError(RTC_INVALID_OPERATION); 
+    virtual void setTransform(AffineSpace3fa& transform) {
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
     };
 
     /*! user geometry only */
@@ -161,59 +174,65 @@ namespace embree
 
     /*! Set user data for intersect and occluded functions. */
     virtual void setUserData (void* ptr, bool ispc = false) { 
-      recordError(RTC_INVALID_OPERATION); 
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
     }
 
     /*! Set bounds function. */
     virtual void setBoundsFunction (RTCBoundsFunc bounds) { 
-      recordError(RTC_INVALID_OPERATION); 
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
     }
     
     /*! Set intersect function for single rays. */
     virtual void setIntersectFunction (RTCIntersectFunc intersect, bool ispc = false) { 
-      recordError(RTC_INVALID_OPERATION); 
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
     }
     
     /*! Set intersect function for ray packets of size 4. */
     virtual void setIntersectFunction4 (RTCIntersectFunc4 intersect4, bool ispc = false) { 
-      recordError(RTC_INVALID_OPERATION); 
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
     }
     
     /*! Set intersect function for ray packets of size 8. */
     virtual void setIntersectFunction8 (RTCIntersectFunc8 intersect8, bool ispc = false) { 
-      recordError(RTC_INVALID_OPERATION); 
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
     }
     
     /*! Set intersect function for ray packets of size 16. */
     virtual void setIntersectFunction16 (RTCIntersectFunc16 intersect16, bool ispc = false) { 
-      recordError(RTC_INVALID_OPERATION); 
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
     }
 
     /*! Set occlusion function for single rays. */
     virtual void setOccludedFunction (RTCOccludedFunc occluded, bool ispc = false) { 
-      recordError(RTC_INVALID_OPERATION); 
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
     }
     
     /*! Set occlusion function for ray packets of size 4. */
     virtual void setOccludedFunction4 (RTCOccludedFunc4 occluded4, bool ispc = false) { 
-      recordError(RTC_INVALID_OPERATION); 
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
     }
     
     /*! Set occlusion function for ray packets of size 8. */
     virtual void setOccludedFunction8 (RTCOccludedFunc8 occluded8, bool ispc = false) { 
-      recordError(RTC_INVALID_OPERATION); 
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
     }
     
     /*! Set occlusion function for ray packets of size 16. */
     virtual void setOccludedFunction16 (RTCOccludedFunc16 occluded16, bool ispc = false) { 
-      recordError(RTC_INVALID_OPERATION); 
+      process_error(RTC_INVALID_OPERATION,"operation not supported for this geometry"); 
+    }
+
+  public:
+
+    virtual void write(std::ofstream& file) {
+      int type = -1; file.write((char*)&type,sizeof(type));
     }
 
   public:
     Scene* parent;   //!< pointer to scene this mesh belongs to
     GeometryTy type;
     ssize_t numPrimitives;    //!< number of primitives of this geometry
-    unsigned id;       //!< internal geometry ID
+    unsigned int id;       //!< internal geometry ID
     RTCGeometryFlags flags;    //!< flags of geometry
     State state;       //!< state of the geometry 
     void* userPtr;     //!< user pointer
@@ -248,5 +267,3 @@ namespace embree
     __forceinline bool hasOcclusionFilter16() const { return occlusionFilter16 != NULL; }
   };
 }
-
-#endif

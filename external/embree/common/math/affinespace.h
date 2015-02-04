@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_AFFINE_SPACE_H__
-#define __EMBREE_AFFINE_SPACE_H__
+#pragma once
 
 #include "math/linearspace3.h"
 #include "math/quaternion.h"
@@ -42,6 +41,7 @@ namespace embree
 
       __forceinline AffineSpaceT           ( )                           { }
       __forceinline AffineSpaceT           ( const AffineSpaceT& other ) { l = other.l; p = other.p; }
+      __forceinline AffineSpaceT           ( const L           & other ) { l = other  ; p = VectorT(zero); }
       __forceinline AffineSpaceT& operator=( const AffineSpaceT& other ) { l = other.l; p = other.p; return *this; }
 
       __forceinline AffineSpaceT( const VectorT& vx, const VectorT& vy, const VectorT& vz, const VectorT& p ) : l(vx,vy,vz), p(p) {}
@@ -103,13 +103,13 @@ namespace embree
   template<typename L> __forceinline AffineSpaceT<L>& operator /=( AffineSpaceT<L>& a, const AffineSpaceT<L>& b ) { return a = a / b; }
   template<typename L> __forceinline AffineSpaceT<L>& operator /=( AffineSpaceT<L>& a, const ScalarT        & b ) { return a = a / b; }
 
-  template<typename L> __forceinline const VectorT xfmPoint (const AffineSpaceT<L>& m, const VectorT& p) { return xfmPoint(m.l,p) + m.p; }
+  template<typename L> __forceinline const VectorT xfmPoint (const AffineSpaceT<L>& m, const VectorT& p) { return madd(VectorT(p.x),m.l.vx,madd(VectorT(p.y),m.l.vy,madd(VectorT(p.z),m.l.vz,m.p))); }
   template<typename L> __forceinline const VectorT xfmVector(const AffineSpaceT<L>& m, const VectorT& v) { return xfmVector(m.l,v); }
   template<typename L> __forceinline const VectorT xfmNormal(const AffineSpaceT<L>& m, const VectorT& n) { return xfmNormal(m.l,n); }
 
   __forceinline const BBox<Vec3fa> xfmBounds(const AffineSpaceT<LinearSpace3<Vec3fa> >& m, const BBox<Vec3fa>& b) 
   { 
-    BBox3f dst = empty;
+    BBox3fa dst = empty;
     const Vec3fa p0(b.lower.x,b.lower.y,b.lower.z); dst.extend(xfmPoint(m,p0));
     const Vec3fa p1(b.lower.x,b.lower.y,b.upper.z); dst.extend(xfmPoint(m,p1));
     const Vec3fa p2(b.lower.x,b.upper.y,b.lower.z); dst.extend(xfmPoint(m,p2));
@@ -141,37 +141,9 @@ namespace embree
   ////////////////////////////////////////////////////////////////////////////////
 
   typedef AffineSpaceT<LinearSpace3f> AffineSpace3f;
+  typedef AffineSpaceT<LinearSpace3fa> AffineSpace3fa;
   typedef AffineSpaceT<Quaternion3f > OrthonormalSpace3f;
-
-  ////////////////////////////////////////////////////////////////////////////////
-  // Data conversions for AffineSpace3f
-  ////////////////////////////////////////////////////////////////////////////////
-
-  struct Array12f {
-    float values[12];
-    operator float*() { return(values); }
-  };
-  
-  __forceinline Array12f copyToArray(const AffineSpace3f& xfm)  
-  {
-    Array12f values;
-    values[ 0] = xfm.l.vx.x;  values[ 1] = xfm.l.vx.y;  values[ 2] = xfm.l.vx.z;       
-    values[ 3] = xfm.l.vy.x;  values[ 4] = xfm.l.vy.y;  values[ 5] = xfm.l.vy.z;       
-    values[ 6] = xfm.l.vz.x;  values[ 7] = xfm.l.vz.y;  values[ 8] = xfm.l.vz.z;       
-    values[ 9] = xfm.p.x;     values[10] = xfm.p.y;     values[11] = xfm.p.z;       
-    return values;
-  }
-  
-  __forceinline AffineSpace3f copyFromArray(const float* v) 
-  {
-    return AffineSpace3f(LinearSpace3f(Vec3fa(v[0],v[1],v[2]),
-                                       Vec3fa(v[3],v[4],v[5]),
-                                       Vec3fa(v[6],v[7],v[8])),
-                         Vec3fa(v[9],v[10],v[11]));
-  }
 
   #undef VectorT
   #undef ScalarT
 }
-
-#endif

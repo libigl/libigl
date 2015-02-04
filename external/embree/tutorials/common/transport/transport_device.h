@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and      //
 // limitations under the License.                                           //
 // ======================================================================== //
+
+#pragma once
 
 #include "math/vec3.h"
 
@@ -38,9 +40,9 @@ namespace embree
 
   extern "C" void device_set_scene(Scene* scene);
   extern "C" void device_resize(int32 width, int32 height);
-  extern "C" bool device_pick(const float x, const float y, const Vec3f& vx, const Vec3f& vy, const Vec3f& vz, const Vec3f& p, Vec3f& hitPos);
+  extern "C" bool device_pick(const float x, const float y, const Vec3fa& vx, const Vec3fa& vy, const Vec3fa& vz, const Vec3fa& p, Vec3fa& hitPos);
 
   extern "C" void device_render(int* pixels, const int width, const int height,
-                                const float time, const Vec3f& vx, const Vec3f& vy, const Vec3f& vz, const Vec3f& p);
+                                const float time, const Vec3fa& vx, const Vec3fa& vy, const Vec3fa& vz, const Vec3fa& p);
   extern "C" void device_cleanup();
 }

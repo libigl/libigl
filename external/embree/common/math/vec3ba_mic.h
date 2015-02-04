@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_VEC3B_MIC_H__
-#define __EMBREE_VEC3B_MIC_H__
+#pragma once
 
 #include "math.h"
 
@@ -98,6 +97,17 @@ namespace embree
   }
 
   ////////////////////////////////////////////////////////////////////////////////
+  /// Reduction Operations
+  ////////////////////////////////////////////////////////////////////////////////
+    
+  __forceinline bool reduce_and( const Vec3ba& a ) { return (a.v & 0x7) == 0x7; }
+  __forceinline bool reduce_or ( const Vec3ba& a ) { return (a.v & 0x7) != 0x0; }
+  
+  __forceinline int all(const Vec3ba& a)  { return (a.v & 0x7) == 0x7; }
+  __forceinline int any(const Vec3ba& a)  { return (a.v & 0x7) != 0x0; }
+  __forceinline int none(const Vec3ba& a) { return (a.v & 0x7) == 0x0; }
+
+  ////////////////////////////////////////////////////////////////////////////////
   /// Output Operators
   ////////////////////////////////////////////////////////////////////////////////
 
@@ -105,5 +115,3 @@ namespace embree
     return cout << "(" << (a[0] ? "1" : "0") << ", " << (a[1] ? "1" : "0") << ", " << (a[2] ? "1" : "0") << ")";
   }
 }
-
-#endif

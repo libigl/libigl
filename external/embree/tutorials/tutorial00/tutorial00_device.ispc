@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -16,12 +16,41 @@
 
 #include "../common/tutorial/tutorial_device.isph"
 
+#define PARALLEL_COMMIT
+
 /* scene data */
 RTCScene g_scene = NULL;
 uniform Vec3f* uniform colors = NULL;
 
 /* render function to use */
 renderPixelFunc renderPixel;
+
+/* error reporting function */
+void error_handler(const uniform RTCError code, const uniform int8* uniform str)
+{
+  print("Embree: ");
+  switch (code) {
+  case RTC_UNKNOWN_ERROR    : print("RTC_UNKNOWN_ERROR"); break;
+  case RTC_INVALID_ARGUMENT : print("RTC_INVALID_ARGUMENT"); break;
+  case RTC_INVALID_OPERATION: print("RTC_INVALID_OPERATION"); break;
+  case RTC_OUT_OF_MEMORY    : print("RTC_OUT_OF_MEMORY"); break;
+  case RTC_UNSUPPORTED_CPU  : print("RTC_UNSUPPORTED_CPU"); break;
+  default                   : print("invalid error code"); break;
+  }
+  if (str) { 
+    print(" ("); 
+    while (*str) putchar(*str++); 
+    print(")\n"); 
+  }
+  abort();
+}
+
+/* rtcCommitThread called by all ISPC worker threads to enable parallel build */
+#if defined(PARALLEL_COMMIT)
+task void parallelCommit(RTCScene scene) {
+  rtcCommitThread (scene,threadIndex,threadCount); 
+}
+#endif
 
 /* adds a cube to the scene */
 uniform unsigned int addCube (RTCScene scene_i)
@@ -106,6 +135,9 @@ export void device_init (uniform int8* uniform cfg)
   /* initialize ray tracing core */
   rtcInit(cfg);
 
+  /* set error handler */
+  rtcSetErrorFunction(error_handler);
+ 
   /* create scene */
   g_scene = rtcNewScene(RTC_SCENE_STATIC,RTC_INTERSECT_UNIFORM | RTC_INTERSECT_VARYING);
 
@@ -116,19 +148,24 @@ export void device_init (uniform int8* uniform cfg)
   addGroundPlane(g_scene);
 
   /* commit changes to scene */
+
+#if !defined(PARALLEL_COMMIT)
   rtcCommit (g_scene);
+#else
+  launch[ getNumHWThreads() ] parallelCommit(g_scene); sync;
+#endif
 
   /* set start render mode */
   renderPixel = renderPixelStandard;
 }
 
 /* task that renders a single screen tile */
-Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p)
+Vec3f renderPixelStandard(float x, float y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p)
 {
   /* initialize ray */
   RTCRay ray;
   ray.org = p;
-  ray.dir = normalize(add(mul(x,vx), mul(y,vy), vz));
+  ray.dir = normalize(x*vx + y*vy + vz);
   ray.tnear = 0.0f;
   ray.tfar = inf;
   ray.geomID = RTC_INVALID_GEOMETRY_ID;
@@ -144,12 +181,12 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
   if (ray.geomID != RTC_INVALID_GEOMETRY_ID) 
   {
     Vec3f diffuse = colors[ray.primID];
-    color = add(color,mul(diffuse,0.5f));
+    color = color + diffuse*0.5f; // FIXME: +=
     Vec3f lightDir = normalize(make_Vec3f(-1,-1,-1));
     
     /* initialize shadow ray */
     RTCRay shadow;
-    shadow.org = add(ray.org,mul(ray.tfar,ray.dir));
+    shadow.org = ray.org + ray.tfar*ray.dir;
     shadow.dir = neg(lightDir);
     shadow.tnear = 0.001f;
     shadow.tfar = inf;
@@ -163,9 +200,35 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
     
     /* add light contribution */
     if (shadow.geomID)
-      color = add(color,mul(diffuse,clamp(-dot(lightDir,normalize(ray.Ng)),0.0f,1.0f)));
+      color = color + diffuse*clamp(-dot(lightDir,normalize(ray.Ng)),0.0f,1.0f); // FIXME: +=
   }
   return color;
+}
+
+unsigned int rand_lcg(unsigned int &rng_state)
+{
+    // LCG values from Numerical Recipes
+    rng_state = 1664525 * rng_state + 1013904223;
+    return rng_state;
+}
+ 
+unsigned int rand_xorshift(unsigned int &rng_state)
+{
+    // Xorshift algorithm from George Marsaglia's paper
+    rng_state ^= (rng_state << 13);
+    rng_state ^= (rng_state >> 17);
+    rng_state ^= (rng_state << 5);
+    return rng_state;
+}
+
+unsigned int wang_hash(unsigned int &seed)
+{
+    seed = (seed ^ 61) ^ (seed >> 16);
+    seed *= 9;
+    seed = seed ^ (seed >> 4);
+    seed *= 0x27d4eb2d;
+    seed = seed ^ (seed >> 15);
+    return seed;
 }
 
 /* task that renders a single screen tile */
@@ -187,10 +250,21 @@ task void renderTile(uniform int* uniform pixels,
   const uniform int y0 = tileY * TILE_SIZE_Y;
   const uniform int y1 = min(y0+TILE_SIZE_Y,height);
 
+  //unsigned int seed = tileY*numTilesX+tileX+programIndex;
+
+  //seed = wang_hash( seed );
+   
   foreach (y = y0 ... y1, x = x0 ... x1)
   {
+   unsigned int seed = y * width + x + programIndex;
+   rand_xorshift(seed);
+   rand_xorshift(seed);
+
     /* calculate pixel color */
     Vec3f color = renderPixel(x,y,vx,vy,vz,p);
+    //float f = ((float)rand_xorshift(seed)) * (1.0f / 4294967296.0f);
+    //float f = ((float)wang_hash(seed)) * (1.0f / 4294967296.0f);
+    //Vec3f color = make_Vec3f(f);
 
     /* write color to framebuffer */
     unsigned int r = (unsigned int) (255.0f * clamp(color.x,0.0f,1.0f));

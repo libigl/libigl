@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_INSTANCE_INTERSECTOR8_H__
-#define __EMBREE_INSTANCE_INTERSECTOR8_H__
+#pragma once
 
 #include "common/scene_user_geometry.h"
 #include "common/ray8.h"
@@ -26,11 +25,8 @@ namespace embree
   {
     struct FastInstanceIntersector8
     {
-      static void intersect(avxb* valid, const UserGeometryScene::Instance* instance, Ray8& ray, size_t item);
-      static void occluded (avxb* valid, const UserGeometryScene::Instance* instance, Ray8& ray, size_t item);
+      static void intersect(avxb* valid, const Instance* instance, Ray8& ray, size_t item);
+      static void occluded (avxb* valid, const Instance* instance, Ray8& ray, size_t item);
     };
   }
 }
-
-#endif
-  

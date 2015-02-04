@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -53,6 +53,21 @@ typedef void (*RTCOccludedFuncVarying) (void* uniform ptr,       /*!< pointer to
                                         varying RTCRay& ray,     /*!< ray to test occlusion */
                                         uniform size_t item      /*< item to test for occlusion */);
 
+
+typedef void (*RTCDisplacementFunc)(void* uniform ptr,               /*!< pointer to user data of geometry */
+                                    uniform unsigned int geomID,     /*!< ID of geometry to displace */
+                                    uniform unsigned int primID,     /*!< ID of primitive of geometry to displace */
+                                    uniform const float* uniform u,  /*!< u coordinates (source) */
+                                    uniform const float* uniform v,  /*!< v coordinates (source) */
+                                    uniform const float* uniform nx, /*!< x coordinates of normal at point to displace (source) */
+                                    uniform const float* uniform ny, /*!< y coordinates of normal at point to displace (source) */
+                                    uniform const float* uniform nz, /*!< z coordinates of normal at point to displace (source) */
+                                    uniform float* uniform px,       /*!< x coordinates of points to displace (source and target) */
+                                    uniform float* uniform py,       /*!< y coordinates of points to displace (source and target) */
+                                    uniform float* uniform pz,       /*!< z coordinates of points to displace (source and target) */
+                                    uniform size_t N                 /*!< number of points to displace */ );
+
+
 /*! Creates a new user geometry object. This feature makes it possible
  *  to add arbitrary types of geometry to the scene by providing
  *  appropiate intersect and occluded functions, as well as a bounding
@@ -99,6 +114,10 @@ void rtcSetOccludedFunction1 (RTCScene scene, uniform unsigned int geomID, unifo
  *  will call the passed function for intersecting the user
  *  geometry. */
 void rtcSetOccludedFunction (RTCScene scene, uniform unsigned int geomID, uniform RTCOccludedFuncVarying occluded);
+
+
+/*! \brief Sets the displacement function. */
+void rtcSetDisplacementFunction (RTCScene scene, uniform unsigned int geomID, uniform RTCDisplacementFunc func, uniform RTCBounds *uniform bounds);
 
 /*! @} */
 

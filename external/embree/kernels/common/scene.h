@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,18 +14,17 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_SCENE_H__
-#define __EMBREE_SCENE_H__
+#pragma once
 
 #include "common/default.h"
 
 #include "scene_triangle_mesh.h"
 #include "scene_user_geometry.h"
-#include "scene_quadratic_bezier_curves.h"
+#include "scene_bezier_curves.h"
+#include "scene_subdiv_mesh.h"
 
 #include "common/acceln.h"
 #include "geometry.h"
-#include "common/buildsource.h"
 
 namespace embree
 {
@@ -33,12 +32,42 @@ namespace embree
   class Scene : public Accel
   {
     ALIGNED_CLASS;
-  public:
 
-    typedef TriangleMeshScene::TriangleMesh TriangleMesh;
+  public:
+    template<typename Ty> // FIXME: give motion blur meshes different type to iterate over them here
+    class Iterator
+    {
+    public:
+      Iterator ()  {}
+
+      Iterator (Scene* scene) 
+        : scene(scene) {}
+
+      __forceinline Ty* operator[] (const size_t i) 
+      {
+        Geometry* geom = scene->geometries[i];
+        if (geom == NULL) return NULL;
+        if (!geom->isEnabled()) return NULL;
+        if (geom->type != Ty::geom_type) return NULL;
+        return (Ty*) geom;
+      }
+
+      __forceinline size_t size() const {
+        return scene->size();
+      }
+      
+    private:
+      Scene* scene;
+    };
+
+  public:
     
     /*! Scene construction */
     Scene (RTCSceneFlags flags, RTCAlgorithmFlags aflags);
+
+    void createTriangleAccel();
+    void createHairAccel();
+    void createSubdivAccel();
 
     /*! Scene destruction */
     ~Scene ();
@@ -53,15 +82,19 @@ namespace embree
     unsigned int newTriangleMesh (RTCGeometryFlags flags, size_t maxTriangles, size_t maxVertices, size_t numTimeSteps);
 
     /*! Creates a new collection of quadratic bezier curves. */
-    unsigned int newQuadraticBezierCurves (RTCGeometryFlags flags, size_t maxCurves, size_t maxVertices, size_t numTimeSteps);
+    unsigned int newBezierCurves (RTCGeometryFlags flags, size_t maxCurves, size_t maxVertices, size_t numTimeSteps);
+
+    /*! Creates a new subdivision mesh. */
+    unsigned int newSubdivisionMesh (RTCGeometryFlags flags, size_t numFaces, size_t numEdges, size_t numVertices, size_t numEdgeCreases, size_t numVertexCreases, size_t numHoles, size_t numTimeSteps);
 
     /*! Builds acceleration structure for the scene. */
-    void build ();
-
     void build (size_t threadIndex, size_t threadCount);
 
+    /*! stores scene into binary file */
+    void write(std::ofstream& file);
+
     /*! build task */
-    TASK_COMPLETE_FUNCTION(Scene,task_build);
+    TASK_RUN_FUNCTION(Scene,task_build_parallel);
     TaskScheduler::Task task;
 
     /* return number of geometries */
@@ -79,6 +112,7 @@ namespace embree
     /* get mesh by ID */
     __forceinline       Geometry* get(size_t i)       { assert(i < geometries.size()); return geometries[i]; }
     __forceinline const Geometry* get(size_t i) const { assert(i < geometries.size()); return geometries[i]; }
+
     __forceinline       Geometry* get_locked(size_t i)  { 
       Lock<AtomicMutex> lock(geometriesMutex);
       Geometry *g = geometries[i]; 
@@ -105,13 +139,30 @@ namespace embree
       if (geometries[i]->type != TRIANGLE_MESH) return NULL;
       else return (TriangleMesh*) geometries[i]; 
     }
-    __forceinline UserGeometryScene::Base* getUserGeometrySafe(size_t i) { 
+    __forceinline SubdivMesh* getSubdivMesh(size_t i) { 
+      assert(i < geometries.size()); 
+      assert(geometries[i]);
+      assert(geometries[i]->type == SUBDIV_MESH);
+      return (SubdivMesh*) geometries[i]; 
+    }
+    __forceinline const SubdivMesh* getSubdivMesh(size_t i) const { 
+      assert(i < geometries.size()); 
+      assert(geometries[i]);
+      assert(geometries[i]->type == SUBDIV_MESH);
+      return (SubdivMesh*) geometries[i]; 
+    }
+    __forceinline UserGeometryBase* getUserGeometrySafe(size_t i) { 
       assert(i < geometries.size()); 
       if (geometries[i] == NULL) return NULL;
-      if (geometries[i]->type != USER_GEOMETRY && geometries[i]->type != INSTANCES) return NULL;
-      else return (UserGeometryScene::Base*) geometries[i]; 
+      if (geometries[i]->type != USER_GEOMETRY) return NULL;
+      else return (UserGeometryBase*) geometries[i]; 
     }
-
+    __forceinline BezierCurves* getBezierCurves(size_t i) { 
+      assert(i < geometries.size()); 
+      assert(geometries[i]);
+      assert(geometries[i]->type == BEZIER_CURVES);
+      return (BezierCurves*) geometries[i]; 
+    }
 
     /* test if this is a static scene */
     __forceinline bool isStatic() const { return embree::isStatic(flags); }
@@ -127,114 +178,36 @@ namespace embree
     /* test if scene got already build */
     __forceinline bool isBuild() const { return is_build; }
 
-    struct FlatTriangleAccelBuildSource : public BuildSource
-    {
-      FlatTriangleAccelBuildSource (Scene* scene, size_t numTimeSteps = 1)
-        : scene(scene), numTimeSteps(numTimeSteps) {}
-
-      bool isEmpty () const { 
-        if (numTimeSteps == 1) return scene->numTriangleMeshes  == 0;
-        else                   return scene->numTriangleMeshes2 == 0;
-      }
-      
-      size_t groups () const { 
-        return scene->geometries.size();
-      }
-      
-      size_t prims (size_t group, size_t* numVertices) const 
-      {
-        if (scene->get(group) == NULL || scene->get(group)->type != TRIANGLE_MESH) return 0;
-        TriangleMeshScene::TriangleMesh* mesh = scene->getTriangleMesh(group);
-        if (mesh == NULL || !mesh->isEnabled() || mesh->numTimeSteps != numTimeSteps) return 0;
-        if (numVertices) *numVertices = mesh->numVertices;
-        return mesh->numTriangles;
-      }
-
-      const BBox3f bounds(size_t group, size_t prim) const 
-      {
-	assert(scene->get(group) != NULL);
-	assert(scene->get(group)->type == TRIANGLE_MESH);
-
-        TriangleMeshScene::TriangleMesh* mesh = scene->getTriangleMesh(group);
-        if (mesh == NULL) return empty;
-        return mesh->bounds(prim);
-      }
-
-      void bounds(size_t group, size_t begin, size_t end, BBox3f* bounds_o) const 
-      {
-	assert(scene->get(group) != NULL);
-	assert(scene->get(group)->type == TRIANGLE_MESH);
-
-        TriangleMeshScene::TriangleMesh* mesh = scene->getTriangleMesh(group);
-        if (mesh == NULL) { 
-          for (size_t i=0; i<end-begin; i++)
-            bounds_o[i] = empty;
-        } else {
-          for (size_t i=begin; i<end; i++)
-            bounds_o[i-begin] = mesh->bounds(i);
-        }
-      }
-
-      const Vec3fa vertex(size_t group, size_t prim, size_t vtxID) const 
-      {
-	assert(scene->get(group) != NULL);
-	assert(scene->get(group)->type == TRIANGLE_MESH);
-
-        const TriangleMeshScene::TriangleMesh* mesh = scene->getTriangleMesh(group);
-        const TriangleMeshScene::TriangleMesh::Triangle& tri = mesh->triangle(prim);
-	return mesh->vertex(tri.v[vtxID]);
-      }
-      
-      void split (const PrimRef& prim, int dim, float pos, PrimRef& left_o, PrimRef& right_o) const 
-      {
-	assert(scene->get(prim.geomID()));
-	assert(scene->get(prim.geomID())->type == TRIANGLE_MESH);
-
-        const TriangleMeshScene::TriangleMesh* mesh = scene->getTriangleMesh(prim.geomID());
-        const TriangleMeshScene::TriangleMesh::Triangle& tri = mesh->triangle(prim.primID());
-        const Vec3fa& v0 = mesh->vertex(tri.v[0]);
-        const Vec3fa& v1 = mesh->vertex(tri.v[1]);
-        const Vec3fa& v2 = mesh->vertex(tri.v[2]);
-        splitTriangle(prim,dim,pos,v0,v1,v2,left_o,right_o);
-      }
-      
-    public:
-      Scene* scene;
-      size_t numTimeSteps;
-    };
-
-    
   public:
     std::vector<int> usedIDs;
     std::vector<Geometry*> geometries; //!< list of all user geometries
     
   public:
     AccelN accels;
+    unsigned int commitCounter;
     atomic_t numMappedBuffers;         //!< number of mapped buffers
     RTCSceneFlags flags;
     RTCAlgorithmFlags aflags;
-    bool needTriangles;
-    bool needVertices;
+    bool needTriangles; 
+    bool needVertices; // FIXME: this flag is also used for hair geometry, but there should be a second flag
     bool is_build;
     MutexSys mutex;
     AtomicMutex geometriesMutex;
-
-  public:
-    atomic_t numTriangleMeshes;        //!< number of enabled triangle meshes
-    atomic_t numTriangleMeshes2;       //!< number of enabled motion blur triangle meshes
-    atomic_t numCurveSets;             //!< number of enabled curve sets
-    atomic_t numCurveSets2;            //!< number of enabled motion blur curve sets
-    atomic_t numUserGeometries;        //!< number of enabled user geometries
     
+    /*! global lock step task scheduler */
+    __aligned(64) LockStepTaskScheduler lockstep_scheduler;
+
   public:
-    FlatTriangleAccelBuildSource flat_triangle_source_1;
-    FlatTriangleAccelBuildSource flat_triangle_source_2;
+    atomic_t numTriangles;             //!< number of enabled triangles
+    atomic_t numTriangles2;            //!< number of enabled motion blur triangles
+    atomic_t numBezierCurves;          //!< number of enabled curves
+    atomic_t numBezierCurves2;         //!< number of enabled motion blur curves
+    atomic_t numSubdivPatches;         //!< number of enabled subdivision patches
+    atomic_t numSubdivPatches2;        //!< number of enabled motion blur subdivision patches
+    atomic_t numUserGeometries1;       //!< number of enabled user geometries
+
+    atomic_t numIntersectionFilters4;   //!< number of enabled intersection/occlusion filters for 4-wide ray packets
+    atomic_t numIntersectionFilters8;   //!< number of enabled intersection/occlusion filters for 8-wide ray packets
+    atomic_t numIntersectionFilters16;  //!< number of enabled intersection/occlusion filters for 16-wide ray packets
   };
-
-  typedef Builder* (*TriangleMeshBuilderFunc)(void* accel, TriangleMeshScene::TriangleMesh* mesh, const size_t minLeafSize, const size_t maxLeafSize);
-  typedef Builder* (*BuilderFunc)            (void* accel, BuildSource* source, Scene* scene, const size_t minLeafSize, const size_t maxLeafSize);
-
 }
-
-#endif
-

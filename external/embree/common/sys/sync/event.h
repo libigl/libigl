@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_EVENT_H__
-#define __EMBREE_EVENT_H__
+#pragma once
 
 #include "mutex.h"
 #include "condition.h"
@@ -46,7 +45,7 @@ namespace embree
 
     void wait() {
 #if defined(__MIC__)
-      while (!event) __pause(1024);
+      while (!event) __pause_cpu(1024);
 #else
       mutex.lock();
       while (!event) condition.wait(mutex);
@@ -56,12 +55,10 @@ namespace embree
     }
 
   protected:
-    __aligned(64) volatile bool event;
+    volatile bool event;
 #if !defined(__MIC__)
     MutexSys mutex;
     ConditionSys condition;
 #endif
   };
 }
-
-#endif

@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -49,22 +49,24 @@ namespace embree
     
     /* take next task from task list */
     TaskScheduler::Event* event = task->event;
-    thread2event[threadIndex].event = event; 
-
+    
     DBG(
 	std::cout << "GOT TASK " << (void*)task << " : threadIndex " << threadIndex << " threadCount " << threadCount << std::endl << std::flush;
 	);
-
     while (true) 
       {
 	if (unlikely((int)task->started < 0)) break;       
 	int elt = --task->started;
 	if (unlikely(elt < 0)) break;       
 
+#if defined(__MIC__)
+	if (task->run) task->run(task->runData,threadIndex,threadCount,task->elts-1-elt,task->elts,task->event);
+#else
 	if (task->run) task->run(task->runData,threadIndex,threadCount,elt,task->elts,task->event);
+#endif
       }
 
-    barrier.wait(threadIndex,threadCount);
+    barrier.waitForThreads(threadIndex,threadCount);
 
     DBG(std::cout << "END WORK task " << task << " threadIndex " << threadIndex << std::endl << std::flush);
   }
@@ -89,7 +91,7 @@ namespace embree
 	__memory_barrier();
 	unsigned int liveIndex = (head_task_list++)&(NUM_TASKS-1);
 	__memory_barrier();
-	if (tasks[liveIndex]) throw std::runtime_error("task list full");
+	if (tasks[liveIndex]) THROW_RUNTIME_ERROR("task list full");
 	__memory_barrier();
 	assert(tasks[liveIndex] == NULL); 
 	tasks[liveIndex] = task;
@@ -99,7 +101,7 @@ namespace embree
 	DBG( std::cout << "WAIT APP THREAD..." << std::endl << std::flush);
 	__memory_barrier();
 	while (tasks[liveIndex] != NULL) { 
-	  __pause(1023); 
+	  __pause_cpu(1023); 
 	}
 	DBG( std::cout << "WAIT APP THREAD...DONE" << std::endl << std::flush);
 	
@@ -120,7 +122,7 @@ namespace embree
 	/* wait for available task */
 	while(head_task_list == tail_task_list && !terminateThreads)
 	  {
-	    __pause(1023); 
+	    __pause_cpu(1023); 
 	  }
 
 	DBG( std::cout<< "WOKE " << threadIndex << std::endl);
@@ -176,7 +178,8 @@ namespace embree
 
 	/* terminate thread */
 	if (terminateThreads) 
-	  {
+	  {	    
+	    DBG(std::cout << "terminate thread " << threadIndex << std::endl << std::flush);
 	    return;
 	  }
 

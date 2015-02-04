@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -25,7 +25,7 @@ namespace embree
 
   Stat::~Stat () 
   {
-#ifdef __USE_STAT_COUNTERS__
+#ifdef RTCORE_STAT_COUNTERS
     Stat::print(std::cout);
 #endif
   }
@@ -43,13 +43,13 @@ namespace embree
     cout << "    #prim_hits    = " << float(cntrs.code.normal.trav_prim_hits   )*1E-6 << "M" << std::endl;
 
 #if defined(__MIC__)
+    cout << "    #stack nodes  = " << float(cntrs.code.normal.trav_stack_nodes )*1E-6 << "M" << std::endl;
+
     size_t normal_box_hits = 0;
     for (size_t i=0;i<=16;i++) normal_box_hits += cntrs.code.normal.trav_hit_boxes[i];
     cout << "    #hit_boxes    = ";
     for (size_t i=0;i<=16;i++) cout << "[" << i << "] " << 100.0f * cntrs.code.normal.trav_hit_boxes[i] / normal_box_hits << " ";
     cout << std::endl;
-    cout << "  #normal_travs_active   = " << float(cntrs.active.normal.travs            )*1E-6 << "M" << std::endl;
-
 #endif
     if (cntrs.code.shadow.travs) {
       cout << "  #shadow_travs = " << float(cntrs.code.shadow.travs         )*1E-6 << "M" << std::endl;
@@ -59,15 +59,13 @@ namespace embree
       cout << "    #prim_hits  = " << float(cntrs.code.shadow.trav_prim_hits)*1E-6 << "M" << std::endl;
 
 #if defined(__MIC__)
+      cout << "    #stack nodes = " << float(cntrs.code.shadow.trav_stack_nodes )*1E-6 << "M" << std::endl;
+
       size_t shadow_box_hits = 0;
       for (size_t i=0;i<=16;i++) shadow_box_hits += cntrs.code.shadow.trav_hit_boxes[i];
       cout << "    #hit_boxes    = ";
       for (size_t i=0;i<=16;i++) cout << "[" << i << "] " << 100.0f * cntrs.code.shadow.trav_hit_boxes[i] / shadow_box_hits << " ";
       cout << std::endl;
-      cout << "  #shadow_travs_active   = " << float(cntrs.active.shadow.travs            )*1E-6 << "M" << std::endl;
-      cout << std::endl;
-      cout << "total  #rays   = " << float(cntrs.active.normal.travs+cntrs.active.shadow.travs            )*1E-6 << "M" << std::endl;
-
 #endif
 
     }

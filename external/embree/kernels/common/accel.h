@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,23 +14,22 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_ACCEL_H__
-#define __EMBREE_ACCEL_H__
+#pragma once
 
 #include "common/default.h"
 
 namespace embree
 {
-  /*! Base class for bounded geometry. */
-  class Bounded : public RefCount {
+  /*! Base class for the acceleration structure data. */
+  class AccelData : public RefCount {
   public:
-    Bounded () : bounds(empty) {}
+    AccelData () : bounds(empty) {}
   public:
-    BBox3f bounds;
+    BBox3fa bounds;
   };
 
   /*! Base class for all intersectable and buildable acceleration structures. */
-  class Accel : public Bounded
+  class Accel : public AccelData
   {
     ALIGNED_CLASS;
   public:
@@ -140,11 +139,70 @@ namespace embree
       IntersectFunc16 intersect;
       OccludedFunc16 occluded;
     };
+
+    struct Intersectors 
+    {
+      Intersectors() 
+        : ptr(NULL) {}
+
+      void print(size_t ident) 
+      {
+        if (intersector1.name) {
+          for (size_t i=0; i<ident; i++) std::cout << " ";
+          std::cout << "intersector1  = " << intersector1.name << std::endl;
+        }
+        if (intersector4.name) {
+          for (size_t i=0; i<ident; i++) std::cout << " ";
+          std::cout << "intersector4  = " << intersector4.name << std::endl;
+        }
+        if (intersector8.name) {
+          for (size_t i=0; i<ident; i++) std::cout << " ";
+          std::cout << "intersector8  = " << intersector8.name << std::endl;
+        }
+        if (intersector16.name) {
+          for (size_t i=0; i<ident; i++) std::cout << " ";
+          std::cout << "intersector16 = " << intersector16.name << std::endl;
+        }
+      }
+
+      void select(bool filter4, bool filter8, bool filter16)
+      {
+	if (intersector4_filter) {
+	  if (filter4) intersector4 = intersector4_filter;
+	  else         intersector4 = intersector4_nofilter;
+	}
+	if (intersector8_filter) {
+	  if (filter8) intersector8 = intersector8_filter;
+	  else         intersector8 = intersector8_nofilter;
+	}
+	if (intersector16_filter) {
+	  if (filter16) intersector16 = intersector16_filter;
+	  else          intersector16 = intersector16_nofilter;
+	}
+      }
+
+    public:
+      AccelData* ptr;
+      Intersector1 intersector1;
+      Intersector4 intersector1_nofilter;
+      Intersector4 intersector4;
+      Intersector4 intersector4_filter;
+      Intersector4 intersector4_nofilter;
+      Intersector8 intersector8;
+      Intersector8 intersector8_filter;
+      Intersector8 intersector8_nofilter;
+      Intersector16 intersector16;
+      Intersector16 intersector16_filter;
+      Intersector16 intersector16_nofilter;
+    };
   
   public:
 
     /*! Construction */
-    Accel () { intersectors.ptr = NULL; }
+    Accel () {}
+
+    /*! Construction */
+    Accel (const Intersectors& intersectors) : intersectors(intersectors) {}
 
     /*! Virtual destructor */
     virtual ~Accel() {}
@@ -204,39 +262,10 @@ namespace embree
     }
 
   public:
-    struct Intersectors 
-    {
-      Intersectors() 
-        : ptr(NULL) {}
-
-      void print(size_t ident) 
-      {
-        if (intersector1.name) {
-          for (size_t i=0; i<ident; i++) std::cout << " ";
-          std::cout << "intersector1  = " << intersector1.name << std::endl;
-        }
-        if (intersector4.name) {
-          for (size_t i=0; i<ident; i++) std::cout << " ";
-          std::cout << "intersector4  = " << intersector4.name << std::endl;
-        }
-        if (intersector8.name) {
-          for (size_t i=0; i<ident; i++) std::cout << " ";
-          std::cout << "intersector8  = " << intersector8.name << std::endl;
-        }
-        if (intersector16.name) {
-          for (size_t i=0; i<ident; i++) std::cout << " ";
-          std::cout << "intersector16 = " << intersector16.name << std::endl;
-        }
-      }
-
-    public:
-      void* ptr;
-      Intersector1 intersector1;
-      Intersector4 intersector4;
-      Intersector8 intersector8;
-      Intersector16 intersector16;
-    } intersectors;
+    Intersectors intersectors;
   };
+
+#define COMMA ,
 
 #define DEFINE_INTERSECTOR1(symbol,intersector)                        \
   Accel::Intersector1 symbol((Accel::IntersectFunc)intersector::intersect, \
@@ -258,5 +287,3 @@ namespace embree
                               (Accel::OccludedFunc16)intersector::occluded,\
                               TOSTRING(isa) "::" TOSTRING(symbol));
 }
-
-#endif

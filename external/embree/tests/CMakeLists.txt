@@ -1,5 +1,5 @@
 ## ======================================================================== ##
-## Copyright 2009-2013 Intel Corporation                                    ##
+## Copyright 2009-2014 Intel Corporation                                    ##
 ##                                                                          ##
 ## Licensed under the Apache License, Version 2.0 (the "License");          ##
 ## you may not use this file except in compliance with the License.         ##
@@ -32,20 +32,30 @@ IF (__XEON__)
 
   ADD_EXECUTABLE(verify verify.cpp)
   TARGET_LINK_LIBRARIES(verify sys embree)
+  SET_PROPERTY(TARGET verify PROPERTY FOLDER tests)
 
   ADD_EXECUTABLE(benchmark benchmark.cpp)
   TARGET_LINK_LIBRARIES(benchmark sys embree)
+  SET_PROPERTY(TARGET benchmark PROPERTY FOLDER tests)
+
+  ADD_EXECUTABLE(retrace retrace.cpp)
+  TARGET_LINK_LIBRARIES(retrace sys simd embree)
+  SET_PROPERTY(TARGET retrace PROPERTY FOLDER tests)
 
 ELSE ()
 
   INCLUDE (icc_xeonphi)
 
   ADD_EXECUTABLE(verify_xeonphi verify.cpp)
-  TARGET_LINK_LIBRARIES(verify_xeonphi sys_xeonphi embree_xeonphi.so)
-  ADD_DEPENDENCIES(verify_xeonphi embree_xeonphi)
+  TARGET_LINK_LIBRARIES(verify_xeonphi sys_xeonphi embree_xeonphi)
+  SET_PROPERTY(TARGET verify_xeonphi PROPERTY FOLDER tests)
 
   ADD_EXECUTABLE(benchmark_xeonphi benchmark.cpp)
-  TARGET_LINK_LIBRARIES(benchmark_xeonphi sys_xeonphi embree_xeonphi.so)
-  ADD_DEPENDENCIES(benchmark_xeonphi embree_xeonphi)
+  TARGET_LINK_LIBRARIES(benchmark_xeonphi sys_xeonphi embree_xeonphi)
+  SET_PROPERTY(TARGET benchmark_xeonphi PROPERTY FOLDER tests)
+
+  ADD_EXECUTABLE(retrace_xeonphi retrace.cpp)
+  TARGET_LINK_LIBRARIES(retrace_xeonphi sys_xeonphi embree_xeonphi)
+  SET_PROPERTY(TARGET retrace_xeonphi PROPERTY FOLDER tests)
 
 ENDIF()

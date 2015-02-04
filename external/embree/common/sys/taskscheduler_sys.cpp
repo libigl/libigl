@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -35,7 +35,7 @@ namespace embree
     switch (queue) {
     case GLOBAL_FRONT: { size_t i = (--begin)&(tasks.size()-1); tasks[i] = task; break; }
     case GLOBAL_BACK : { size_t i = (end++  )&(tasks.size()-1); tasks[i] = task; break; }
-    default          : throw std::runtime_error("invalid task queue");
+    default          : THROW_RUNTIME_ERROR("invalid task queue");
     }
     
     condition.broadcast();
@@ -126,7 +126,7 @@ namespace embree
     switch (queue) {
     case GLOBAL_FRONT: { size_t i = (--begin)&(tasks.size()-1); tasks[i] = task; break; }
     case GLOBAL_BACK : { size_t i = (end++  )&(tasks.size()-1); tasks[i] = task; break; }
-    default          : throw std::runtime_error("invalid task queue");
+    default          : THROW_RUNTIME_ERROR("invalid task queue");
     }
     
     condition.broadcast();
@@ -136,8 +136,13 @@ namespace embree
   void TaskSchedulerSys::wait(size_t threadIndex, size_t threadCount, Event* event)
   {
     event->dec();
-    while (!event->triggered()) { // FIMXE: does not wait on event
-      work(threadIndex,threadCount,false);
+    if (!isEnabled(threadIndex)) {
+      while (!event->triggered()); // FIXME: wait using events
+    }
+    else {
+      while (!event->triggered()) { // FIXME: wait using events
+	work(threadIndex,threadCount,false);
+      }
     }
   }
 
@@ -145,7 +150,7 @@ namespace embree
   {
     /* wait for available task */
     mutex.lock();
-    while ((end-begin) == 0 && !terminateThreads) {
+    while (((end-begin) == 0 && !terminateThreads) || !isEnabled(threadIndex)) {
       if (wait) condition.wait(mutex);
       else { mutex.unlock(); return; }
     }
@@ -153,7 +158,7 @@ namespace embree
     /* terminate this thread */
     if (terminateThreads) {
       mutex.unlock();
-      throw TaskScheduler::Terminate();
+      return;
     }
     
     /* take next task from stack */
@@ -165,10 +170,9 @@ namespace embree
     
     /* run the task */
     TaskScheduler::Event* event = task->event;
-    thread2event[threadIndex].event = event; 
     if (task->run) {
       size_t taskID = TaskLogger::beginTask(threadIndex,task->name,elt);
-      task->run(task->runData,threadIndex,threadCount,elt,task->elts,task->event);
+      task->run(task->runData,threadIndex,numEnabledThreads,elt,task->elts,task->event);
       TaskLogger::endTask(threadIndex,taskID);
     }
     
@@ -176,7 +180,7 @@ namespace embree
     if (--task->completed == 0) {
       if (task->complete) {
         size_t taskID = TaskLogger::beginTask(threadIndex,task->name,0);
-        task->complete(task->completeData,threadIndex,threadCount,task->event);
+        task->complete(task->completeData,threadIndex,numEnabledThreads,task->event);
         TaskLogger::endTask(threadIndex,taskID);
       }
       if (event) event->dec();
@@ -185,7 +189,7 @@ namespace embree
 
   void TaskSchedulerSys::run(size_t threadIndex, size_t threadCount)
   {
-    while (true)
+    while (!terminateThreads)
       work(threadIndex,threadCount,true);
   }
 

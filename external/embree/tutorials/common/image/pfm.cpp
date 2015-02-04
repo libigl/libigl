@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -33,7 +33,7 @@ namespace embree
     }
     char line[1024];
     if (fgets(line, sizeof(line), file) == NULL)
-      throw std::runtime_error("Error reading PPM file!");
+      THROW_RUNTIME_ERROR("Error reading PPM file!");
     return true;
   }
 
@@ -42,12 +42,12 @@ namespace embree
   {
     /* open PPM file */
     FILE* file = fopen(fileName.c_str(), "rb");
-    if (!file) throw std::runtime_error("cannot open " + fileName.str());
+    if (!file) THROW_RUNTIME_ERROR("cannot open " + fileName.str());
 
     /* read file type */
     char type[8];
     if (fscanf(file, "%7s", type) != 1)
-      throw std::runtime_error("Error reading " + fileName.str());
+      THROW_RUNTIME_ERROR("Error reading " + fileName.str());
 
     /* skip comment lines */
     while (readCommentLine(file)) {};
@@ -56,12 +56,12 @@ namespace embree
     int width, height;
     float maxColor;
     if (fscanf(file, "%i %i %f", &width, &height, &maxColor) != 3)
-      throw std::runtime_error("Error reading " + fileName.str());
+      THROW_RUNTIME_ERROR("Error reading " + fileName.str());
 
     /* Check for big endian PFM file */
     if (maxColor > 0.0f) {
       fclose(file);
-      throw std::runtime_error("Big endian PFM files not supported");
+      THROW_RUNTIME_ERROR("Big endian PFM files not supported");
     }
     float rcpMaxColor = -1.0f/float(maxColor);
 
@@ -78,7 +78,7 @@ namespace embree
       for (ssize_t y=0; y<height; y++) {
         for (ssize_t x=0; x<width; x++) {
           if (fread(rgb,sizeof(rgb),1,file) != 1)
-            throw std::runtime_error("Error reading " + fileName.str());
+            THROW_RUNTIME_ERROR("Error reading " + fileName.str());
           img->set(x,y,Color4(float(rgb[0])*rcpMaxColor,float(rgb[1])*rcpMaxColor,float(rgb[2])*rcpMaxColor,1.0f));
         }
       }
@@ -87,7 +87,7 @@ namespace embree
     /* invalid magic value */
     else {
       fclose(file);
-      throw std::runtime_error("Invalid magic value in PFM file");
+      THROW_RUNTIME_ERROR("Invalid magic value in PFM file");
     }
 
     fclose(file);
@@ -98,7 +98,7 @@ namespace embree
   void storePFM(const Ref<Image>& img, const FileName& fileName)
   {
     FILE* file = fopen(fileName.c_str(), "wb");
-    if (!file) throw std::runtime_error("cannot open file " + fileName.str());
+    if (!file) THROW_RUNTIME_ERROR("cannot open file " + fileName.str());
     fprintf(file,"PF\n%i %i\n%f\n", int(img->width), int(img->height), -1.0f);
 
     float rgb[3];

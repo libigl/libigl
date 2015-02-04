@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -19,13 +19,6 @@
 
 /*! \ingroup embree_kernel_api */
 /*! \{ */
-
-/*! Axis aligned bounding box representation */
-struct RTCORE_ALIGN(16) RTCBounds
-{
-  float lower_x, lower_y, lower_z, align0;
-  float upper_x, upper_y, upper_z, align1;
-};
 
 /*! Type of bounding function. */
 typedef void (*RTCBoundsFunc)(void* ptr,              /*!< pointer to user data */

@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,15 +14,14 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_TUTORIALS_H__
-#define __EMBREE_TUTORIALS_H__
+#pragma once
 
 /* size of screen tiles */
 #define TILE_SIZE_X 16
 #define TILE_SIZE_Y 16
 
 /* vertex and triangle layout */
-struct Vertex   { float x,y,z,a;  };
+struct Vertex   { float x,y,z,r;  };
 struct Triangle { int v0, v1, v2; };
 
 /* include optional vector library */
@@ -36,6 +35,12 @@ struct Triangle { int v0, v1, v2; };
 
 /* returns time stamp counter */
 extern "C" uniform int64 get_tsc();
+
+/* declare some standard library functions */
+extern "C" void abort ();
+extern "C" void exit(uniform int);
+extern "C" uniform int puts ( const uniform int8* uniform str );
+extern "C" uniform int putchar ( uniform int character );
 
 /* face forward for shading normals */
 inline Vec3f faceforward( Vec3f N, Vec3f I, Vec3f Ng ) {
@@ -53,13 +58,32 @@ inline Vec3f faceforward( Vec3f N, Vec3f I, Vec3f Ng ) {
 #define GLUT_KEY_F8 8
 #define GLUT_KEY_F9 9
 #define GLUT_KEY_F10 10
+#define GLUT_KEY_F11 11
+#define GLUT_KEY_F12 12
 
 /* standard shading function */
-typedef Vec3f (* uniform renderPixelFunc)(int x, int y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p);
+typedef Vec3f (* uniform renderPixelFunc)(float x, float y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p);
 
-Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p);
-Vec3f renderPixelUV(int x, int y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p);
+Vec3f renderPixelStandard(float x, float y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p);
+
+Vec3f renderPixelEyeLight(float x, float y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p);
+
+Vec3f renderPixelUV(float x, float y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p);
+
+uniform unsigned int getNumHWThreads();
 
 #define ALIGNED_STRUCT
 
-#endif
+struct Sample3f
+{
+  Vec3f v;
+  float pdf;
+};
+
+inline Sample3f make_Sample3f(const Vec3f v, const float pdf) { // FIXME: &
+  Sample3f s; s.v = v; s.pdf = pdf; return s;
+}
+
+/* noise functions */
+float noise(const Vec3fa& p);
+Vec3fa noise3D(const Vec3fa& p);

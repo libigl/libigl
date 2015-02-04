@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -15,7 +15,8 @@
 // ======================================================================== //
 
 #include "bvh4mb_intersector16_chunk.h"
-#include "geometry/triangle1.h"
+#include "bvh4mb_traversal.h"
+#include "bvh4mb_leaf_intersector.h"
 
 namespace embree
 {
@@ -23,7 +24,8 @@ namespace embree
   {
     static unsigned int BVH4I_LEAF_MASK = BVH4i::leaf_mask; // needed due to compiler efficiency bug
 
-    void BVH4mbIntersector16Chunk::intersect(mic_i* valid_i, BVH4mb* bvh, Ray16& ray)
+    template<typename LeafIntersector>
+    void BVH4mbIntersector16Chunk<LeafIntersector>::intersect(mic_i* valid_i, BVH4mb* bvh, Ray16& ray)
     {
       /* near and node stack */
       __aligned(64) mic_f   stack_dist[3*BVH4i::maxDepth+1];
@@ -66,193 +68,39 @@ namespace embree
 	        
 	const unsigned int leaf_mask = BVH4I_LEAF_MASK; 
 
-	const mic_f time     = ray.time;
-	const mic_f one_time = (mic_f::one() - time);
-
-        while (1)
-        {
-          /* test if this is a leaf node */
-          if (unlikely(curNode.isLeaf(leaf_mask))) break;
-          
-          STAT3(normal.trav_nodes,1,popcnt(ray_tfar > curDist),16);
-          const Node* __restrict__ const node = curNode.node(nodes);
-
-          const BVH4mb::Node* __restrict__ const nodeMB = (BVH4mb::Node*)node;
-
-          /* pop of next node */
-          sptr_node--;
-          sptr_dist--;
-          curNode = *sptr_node; 	  
-          curDist = *sptr_dist;
-
-	  prefetch<PFHINT_L1>((mic_f*)node + 0);           
-	  prefetch<PFHINT_L1>((mic_f*)node + 1); 
-	  prefetch<PFHINT_L1>((mic_f*)node + 2); 
-	  prefetch<PFHINT_L1>((mic_f*)node + 3); 
-
-#pragma unroll(4)
-          for (unsigned int i=0; i<4; i++)
-          {
-	    const NodeRef child = node->lower[i].child;
-
-	    const mic_f lower_x =  one_time * nodeMB->lower[i].x + time * nodeMB->lower_t1[i].x;
-	    const mic_f lower_y =  one_time * nodeMB->lower[i].y + time * nodeMB->lower_t1[i].y;
-	    const mic_f lower_z =  one_time * nodeMB->lower[i].z + time * nodeMB->lower_t1[i].z;
-	    const mic_f upper_x =  one_time * nodeMB->upper[i].x + time * nodeMB->upper_t1[i].x;
-	    const mic_f upper_y =  one_time * nodeMB->upper[i].y + time * nodeMB->upper_t1[i].y;
-	    const mic_f upper_z =  one_time * nodeMB->upper[i].z + time * nodeMB->upper_t1[i].z;
-
-
-            const mic_f lclipMinX = msub(lower_x,rdir.x,org_rdir.x);
-            const mic_f lclipMinY = msub(lower_y,rdir.y,org_rdir.y);
-            const mic_f lclipMinZ = msub(lower_z,rdir.z,org_rdir.z);
-            const mic_f lclipMaxX = msub(upper_x,rdir.x,org_rdir.x);
-            const mic_f lclipMaxY = msub(upper_y,rdir.y,org_rdir.y);
-            const mic_f lclipMaxZ = msub(upper_z,rdir.z,org_rdir.z);
-	    
-            const mic_f lnearP = max(max(min(lclipMinX, lclipMaxX), min(lclipMinY, lclipMaxY)), min(lclipMinZ, lclipMaxZ));
-            const mic_f lfarP  = min(min(max(lclipMinX, lclipMaxX), max(lclipMinY, lclipMaxY)), max(lclipMinZ, lclipMaxZ));
-            const mic_m lhit   = le(max(lnearP,ray_tnear),min(lfarP,ray_tfar));   
-	    const mic_f childDist = select(lhit,lnearP,inf);
-            const mic_m m_child_dist = lt(childDist,curDist);
-            /* if we hit the child we choose to continue with that child if it 
-               is closer than the current next child, or we push it onto the stack */
-
-            if (likely(any(lhit)))
-            {
-              sptr_node++;
-              sptr_dist++;
-              
-              /* push cur node onto stack and continue with hit child */
-              if (any(m_child_dist))
-              {
-                *(sptr_node-1) = curNode;
-                *(sptr_dist-1) = curDist; 
-                curDist = childDist;
-                curNode = child;
-              }              
-              /* push hit child onto stack*/
-              else 
-		{
-		  *(sptr_node-1) = child;
-		  *(sptr_dist-1) = childDist; 
-		}
-              assert(sptr_node - stack_node < BVH4i::maxDepth);
-            }	      
-          }
-        }
+	traverse_chunk_intersect(curNode,
+				 curDist,
+				 rdir,
+				 org_rdir,
+				 ray_tnear,
+				 ray_tfar,
+				 ray.time,
+				 sptr_node,
+				 sptr_dist,
+				 nodes,
+				 leaf_mask);
         
         /* return if stack is empty */
         if (unlikely(curNode == BVH4i::invalidNode)) break;
         
         /* intersect leaf */
-        const mic_m valid_leaf = ray_tfar > curDist;
-        STAT3(normal.trav_leaves,1,popcnt(valid_leaf),16);
+        const mic_m m_valid_leaf = ray_tfar > curDist;
+        STAT3(normal.trav_leaves,1,popcnt(m_valid_leaf),16);
  
-	unsigned int items; 
-	const BVH4mb::Triangle01* tris  = (BVH4mb::Triangle01*) curNode.leaf(accel,items);
+	LeafIntersector::intersect16(curNode,
+				     m_valid_leaf,
+				     ray.dir,
+				     ray.org,
+				     ray,
+				     accel,
+				     (Scene*)bvh->geometry);
 
-	const mic_f zero = mic_f::zero();
-	const mic_f one  = mic_f::one();
-
-	prefetch<PFHINT_L1>((mic_f*)tris +  0); 
-	prefetch<PFHINT_L2>((mic_f*)tris +  1); 
-	prefetch<PFHINT_L2>((mic_f*)tris +  2); 
-	prefetch<PFHINT_L2>((mic_f*)tris +  3); 
-	prefetch<PFHINT_L2>((mic_f*)tris +  4); 
-	prefetch<PFHINT_L2>((mic_f*)tris +  5); 
-	prefetch<PFHINT_L2>((mic_f*)tris +  6); 
-	prefetch<PFHINT_L2>((mic_f*)tris +  7); 
-
-        const mic3f org = ray.org;
-        const mic3f dir = ray.dir;
-
-	for (size_t i=0; i<items; i++) 
-	  {
-	    const Triangle1& tri_t0 = tris[i].t0;
-	    const Triangle1& tri_t1 = tris[i].t1;
-
-	    prefetch<PFHINT_L1>(&tris[i+1].t0); 
-	    prefetch<PFHINT_L1>(&tris[i+1].t1); 
-
-	    STAT3(normal.trav_prims,1,popcnt(valid_i),16);
-        
-	    /* load vertices and calculate edges */
-	    const mic3f v0_t0( broadcast1to16f(&tri_t0.v0.x), broadcast1to16f(&tri_t0.v0.y), broadcast1to16f(&tri_t0.v0.z) );
-	    const mic3f v0_t1( broadcast1to16f(&tri_t1.v0.x), broadcast1to16f(&tri_t1.v0.y), broadcast1to16f(&tri_t1.v0.z) );
-	    const mic3f v0 = v0_t0 * one_time + time * v0_t1;
-	    const mic3f v1_t0( broadcast1to16f(&tri_t0.v1.x), broadcast1to16f(&tri_t0.v1.y), broadcast1to16f(&tri_t0.v1.z) );
-	    const mic3f v1_t1( broadcast1to16f(&tri_t1.v1.x), broadcast1to16f(&tri_t1.v1.y), broadcast1to16f(&tri_t1.v1.z) );
-	    const mic3f v1 = v1_t0 * one_time + time * v1_t1;
-	    const mic3f v2_t0( broadcast1to16f(&tri_t0.v2.x), broadcast1to16f(&tri_t0.v2.y), broadcast1to16f(&tri_t0.v2.z) );
-	    const mic3f v2_t1( broadcast1to16f(&tri_t1.v2.x), broadcast1to16f(&tri_t1.v2.y), broadcast1to16f(&tri_t1.v2.z) );
-	    const mic3f v2 = v2_t0 * one_time + time * v2_t1;
-
-	    const mic3f e1 = v0-v1;
-	    const mic3f e2 = v2-v0;
-
-	    const mic3f Ng = cross(e1,e2);
-
-	    /* calculate denominator */
-	    const mic3f C =  v0 - org;
-	    
-	    const mic_f den = dot(Ng,dir);
-
-	    mic_m valid = valid_leaf;
-
-#if defined(__BACKFACE_CULLING__)
-	    
-	    valid &= den > zero;
-#endif
-
-	    /* perform edge tests */
-	    const mic_f rcp_den = rcp(den);
-	    const mic3f R = cross(dir,C);
-	    const mic_f u = dot(R,e2)*rcp_den;
-	    const mic_f v = dot(R,e1)*rcp_den;
-	    valid = ge(valid,u,zero);
-	    valid = ge(valid,v,zero);
-	    valid = le(valid,u+v,one);
-	    prefetch<PFHINT_L1EX>(&ray.u);      
-	    prefetch<PFHINT_L1EX>(&ray.v);      
-	    prefetch<PFHINT_L1EX>(&ray.tfar);      
-	    const mic_f t = dot(C,Ng) * rcp_den;
-
-	    if (unlikely(none(valid))) continue;
-      
-	    /* perform depth test */
-	    valid = ge(valid, t,ray.tnear);
-	    valid = ge(valid,ray.tfar,t);
-
-	    const mic_i geomID = tri_t0.geomID();
-	    const mic_i primID = tri_t0.primID();
-	    prefetch<PFHINT_L1EX>(&ray.geomID);      
-	    prefetch<PFHINT_L1EX>(&ray.primID);      
-	    prefetch<PFHINT_L1EX>(&ray.Ng.x);      
-	    prefetch<PFHINT_L1EX>(&ray.Ng.y);      
-	    prefetch<PFHINT_L1EX>(&ray.Ng.z);      
-
-	    /* ray masking test */
-#if defined(__USE_RAY_MASK__)
-	    valid &= (mic_i(tri_t0.mask()) & ray.mask) != 0;
-#endif
-	    if (unlikely(none(valid))) continue;
-        
-	    /* update hit information */
-	    store16f(valid,(float*)&ray.u,u);
-	    store16f(valid,(float*)&ray.v,v);
-	    store16f(valid,(float*)&ray.tfar,t);
-	    store16i(valid,(float*)&ray.geomID,geomID);
-	    store16i(valid,(float*)&ray.primID,primID);
-	    store16f(valid,(float*)&ray.Ng.x,Ng.x);
-	    store16f(valid,(float*)&ray.Ng.y,Ng.y);
-	    store16f(valid,(float*)&ray.Ng.z,Ng.z);
-	  }
-        ray_tfar = select(valid_leaf,ray.tfar,ray_tfar);
+        ray_tfar = select(m_valid_leaf,ray.tfar,ray_tfar);
       }
     }
 
-    void BVH4mbIntersector16Chunk::occluded(mic_i* valid_i, BVH4mb* bvh, Ray16& ray)
+    template<typename LeafIntersector>
+    void BVH4mbIntersector16Chunk<LeafIntersector>::occluded(mic_i* valid_i, BVH4mb* bvh, Ray16& ray)
     {
       /* allocate stack */
       __aligned(64) mic_f    stack_dist[3*BVH4i::maxDepth+1];
@@ -298,175 +146,42 @@ namespace embree
 	
 	const unsigned int leaf_mask = BVH4I_LEAF_MASK; 
 
-	const mic_f time     = ray.time;
-	const mic_f one_time = (mic_f::one() - time);
-
-        while (1)
-        {
-          /* test if this is a leaf node */
-          if (unlikely(curNode.isLeaf(leaf_mask))) break;
-          
-          STAT3(shadow.trav_nodes,1,popcnt(ray_tfar > curDist),16);
-          const Node* __restrict__ const node = curNode.node(nodes);
-          const BVH4mb::Node* __restrict__ const nodeMB = (BVH4mb::Node*)node;
-          
-	  prefetch<PFHINT_L1>((mic_f*)node + 0); 
-	  prefetch<PFHINT_L1>((mic_f*)node + 1); 
-	  prefetch<PFHINT_L1>((mic_f*)node + 2); 
-	  prefetch<PFHINT_L1>((mic_f*)node + 3); 
-
-          /* pop of next node */
-          sptr_node--;
-          sptr_dist--;
-          curNode = *sptr_node; 
-          curDist = *sptr_dist;
-          	 
-#pragma unroll(4)
-          for (unsigned int i=0; i<4; i++)
-          {
-	    const NodeRef child = node->lower[i].child;
-
-	    const mic_f lower_x =  one_time * nodeMB->lower[i].x + time * nodeMB->lower_t1[i].x;
-	    const mic_f lower_y =  one_time * nodeMB->lower[i].y + time * nodeMB->lower_t1[i].y;
-	    const mic_f lower_z =  one_time * nodeMB->lower[i].z + time * nodeMB->lower_t1[i].z;
-	    const mic_f upper_x =  one_time * nodeMB->upper[i].x + time * nodeMB->upper_t1[i].x;
-	    const mic_f upper_y =  one_time * nodeMB->upper[i].y + time * nodeMB->upper_t1[i].y;
-	    const mic_f upper_z =  one_time * nodeMB->upper[i].z + time * nodeMB->upper_t1[i].z;
-
-
-            const mic_f lclipMinX = msub(lower_x,rdir.x,org_rdir.x);
-            const mic_f lclipMinY = msub(lower_y,rdir.y,org_rdir.y);
-            const mic_f lclipMinZ = msub(lower_z,rdir.z,org_rdir.z);
-            const mic_f lclipMaxX = msub(upper_x,rdir.x,org_rdir.x);
-            const mic_f lclipMaxY = msub(upper_y,rdir.y,org_rdir.y);
-            const mic_f lclipMaxZ = msub(upper_z,rdir.z,org_rdir.z);
-
-            const mic_f lnearP = max(max(min(lclipMinX, lclipMaxX), min(lclipMinY, lclipMaxY)), min(lclipMinZ, lclipMaxZ));
-            const mic_f lfarP  = min(min(max(lclipMinX, lclipMaxX), max(lclipMinY, lclipMaxY)), max(lclipMinZ, lclipMaxZ));
-            const mic_m lhit   = le(m_active,max(lnearP,ray_tnear),min(lfarP,ray_tfar));      
-	    const mic_f childDist = select(lhit,lnearP,inf);
-            const mic_m m_child_dist = childDist < curDist;
-            
-            /* if we hit the child we choose to continue with that child if it 
-               is closer than the current next child, or we push it onto the stack */
-            if (likely(any(lhit)))
-            {
-              sptr_node++;
-              sptr_dist++;
-              
-              /* push cur node onto stack and continue with hit child */
-              if (any(m_child_dist))
-              {
-                *(sptr_node-1) = curNode; 
-                *(sptr_dist-1) = curDist; 
-                curDist = childDist;
-                curNode = child;
-              }
-              
-              /* push hit child onto stack*/
-              else {
-                *(sptr_node-1) = child;
-                *(sptr_dist-1) = childDist; 
-              }
-              assert(sptr_node - stack_node < BVH4i::maxDepth);
-            }	      
-          }
-        }
+	traverse_chunk_occluded(curNode,
+				 curDist,
+				 rdir,
+				 org_rdir,
+				 ray_tnear,
+				 ray_tfar,
+				 m_active,
+				 ray.time,
+				 sptr_node,
+				 sptr_dist,
+				 nodes,
+				 leaf_mask);
         
         /* return if stack is empty */
         if (unlikely(curNode == BVH4i::invalidNode)) break;
         
         /* intersect leaf */
-        mic_m valid_leaf = gt(m_active,ray_tfar,curDist);
-        STAT3(shadow.trav_leaves,1,popcnt(valid_leaf),16);
+        mic_m m_valid_leaf = gt(m_active,ray_tfar,curDist);
+        STAT3(shadow.trav_leaves,1,popcnt(m_valid_leaf),16);
 
-	unsigned int items; 
-	const BVH4mb::Triangle01* tris  = (BVH4mb::Triangle01*) curNode.leaf(accel,items);
+	LeafIntersector::occluded16(curNode,
+				    m_valid_leaf,
+				    ray.dir,
+				    ray.org,
+				    ray,
+				    m_terminated,
+				    accel,
+				    (Scene*)bvh->geometry);
 
-	prefetch<PFHINT_L1>((mic_f*)tris +  0); 
-	prefetch<PFHINT_L2>((mic_f*)tris +  1); 
-	prefetch<PFHINT_L2>((mic_f*)tris +  2); 
-	prefetch<PFHINT_L2>((mic_f*)tris +  3); 
-	prefetch<PFHINT_L2>((mic_f*)tris +  4); 
-	prefetch<PFHINT_L2>((mic_f*)tris +  5); 
-	prefetch<PFHINT_L2>((mic_f*)tris +  6); 
-	prefetch<PFHINT_L2>((mic_f*)tris +  7); 
 
-        const mic3f org = ray.org;
-        const mic3f dir = ray.dir;
-	const mic_f zero = mic_f::zero();
-
-	for (size_t i=0; i<items; i++) 
-	  {
-	    const Triangle1& tri_t0 = tris[i].t0;
-	    const Triangle1& tri_t1 = tris[i].t1;
-
-	    prefetch<PFHINT_L1>(&tris[i+1].t0); 
-	    prefetch<PFHINT_L1>(&tris[i+1].t1); 
-
-	    STAT3(normal.trav_prims,1,popcnt(valid_i),16);
-        
-	    /* load vertices and calculate edges */
-	    const mic3f v0_t0( broadcast1to16f(&tri_t0.v0.x), broadcast1to16f(&tri_t0.v0.y), broadcast1to16f(&tri_t0.v0.z) );
-	    const mic3f v0_t1( broadcast1to16f(&tri_t1.v0.x), broadcast1to16f(&tri_t1.v0.y), broadcast1to16f(&tri_t1.v0.z) );
-	    const mic3f v0 = v0_t0 * one_time + time * v0_t1;
-	    const mic3f v1_t0( broadcast1to16f(&tri_t0.v1.x), broadcast1to16f(&tri_t0.v1.y), broadcast1to16f(&tri_t0.v1.z) );
-	    const mic3f v1_t1( broadcast1to16f(&tri_t1.v1.x), broadcast1to16f(&tri_t1.v1.y), broadcast1to16f(&tri_t1.v1.z) );
-	    const mic3f v1 = v1_t0 * one_time + time * v1_t1;
-	    const mic3f v2_t0( broadcast1to16f(&tri_t0.v2.x), broadcast1to16f(&tri_t0.v2.y), broadcast1to16f(&tri_t0.v2.z) );
-	    const mic3f v2_t1( broadcast1to16f(&tri_t1.v2.x), broadcast1to16f(&tri_t1.v2.y), broadcast1to16f(&tri_t1.v2.z) );
-	    const mic3f v2 = v2_t0 * one_time + time * v2_t1;
-
-	    const mic3f e1 = v0-v1;
-	    const mic3f e2 = v2-v0;
-
-	    const mic3f Ng = cross(e1,e2);
-
-	    /* calculate denominator */
-	    const mic3f C =  v0 - org;
-	    
-	    const mic_f den = dot(Ng,dir);
-
-	    mic_m valid = valid_leaf;
-
-#if defined(__BACKFACE_CULLING__)
-	    
-	    valid &= den > zero;
-#endif
-
-	    /* perform edge tests */
-	    const mic_f rcp_den = rcp(den);
-	    const mic3f R = cross(dir,C);
-	    const mic_f u = dot(R,e2)*rcp_den;
-	    const mic_f v = dot(R,e1)*rcp_den;
-	    valid = ge(valid,u,zero);
-	    valid = ge(valid,v,zero);
-	    valid = le(valid,u+v,one);
-	    const mic_f t = dot(C,Ng) * rcp_den;
-
-	    if (unlikely(none(valid))) continue;
-      
-	    /* perform depth test */
-	    valid = ge(valid, t,ray.tnear);
-	    valid = ge(valid,ray.tfar,t);
-
-	    /* ray masking test */
-#if defined(__USE_RAY_MASK__)
-	    valid &= (mic_i(tri_t0.mask()) & ray.mask) != 0;
-#endif
-	    if (unlikely(none(valid))) continue;
-	    
-	    /* update occlusion */
-	    m_terminated |= valid;
-	    valid_leaf &= ~valid;
-	    if (unlikely(none(valid_leaf))) break;
-	  }
         if (unlikely(all(m_terminated))) break;
         ray_tfar = select(m_terminated,neg_inf,ray_tfar);
       }
       store16i(valid & m_terminated,&ray.geomID,0);
     }
 
-    DEFINE_INTERSECTOR16    (BVH4mbTriangle1Intersector16ChunkMoeller, BVH4mbIntersector16Chunk);
+    DEFINE_INTERSECTOR16    (BVH4mbTriangle1Intersector16ChunkMoeller, BVH4mbIntersector16Chunk<Triangle1mbLeafIntersector>);
   }
 }

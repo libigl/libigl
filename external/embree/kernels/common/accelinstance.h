@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_ACCEL_INSTANCE_H__
-#define __EMBREE_ACCEL_INSTANCE_H__
+#pragma once
 
 #include "accel.h"
 #include "builder.h"
@@ -25,11 +24,8 @@ namespace embree
   class AccelInstance : public Accel
   {
   public:
-    AccelInstance (Bounded* accel, Builder* builder, Intersectors& intersectors)
-      : accel(accel), builder(builder) 
-    {
-      this->intersectors = intersectors;
-    }
+    AccelInstance (AccelData* accel, Builder* builder, Intersectors& intersectors)
+      : accel(accel), builder(builder), Accel(intersectors) {}
 
     void immutable () {
       delete builder; builder = NULL;
@@ -37,7 +33,7 @@ namespace embree
 
     ~AccelInstance() {
       delete builder; builder = NULL; // delete builder first!
-      delete accel; accel = NULL;
+      delete accel;   accel = NULL;
     }
 
   public:
@@ -47,9 +43,7 @@ namespace embree
     }
 
   private:
-    Bounded* accel;
+    AccelData* accel;
     Builder* builder;
   };
 }
-
-#endif

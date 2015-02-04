@@ -5,7 +5,7 @@
 
 #include <igl/is_irregular_vertex.h>
 #include <igl/doublearea.h>
-#include <igl/internal_angles.h>
+#include <igl/angles.h>
 
 int main(int argc, char *argv[])
 {
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
   VectorXd area;
   igl::doublearea(V,F,area);
   area = area.array() / 2;
-  
+
   double area_avg   = area.mean();
   double area_min   = area.minCoeff() / area_avg;
   double area_max   = area.maxCoeff() / area_avg;
@@ -42,12 +42,12 @@ int main(int argc, char *argv[])
   MatrixXd angles;
   igl::angles(V,F,angles);
   angles = 360.0 * (angles/(2*M_PI)); // Convert to degrees
-  
+
   double angle_avg   = angles.mean();
   double angle_min   = angles.minCoeff();
   double angle_max   = angles.maxCoeff();
   double angle_sigma = sqrt( (angles.array()-angle_avg).square().mean() );
-  
+
   printf("Angles in degrees (Min/Max) Sigma: \n%.2f/%.2f (%.2f)\n",angle_min,angle_max,angle_sigma);
 
 }

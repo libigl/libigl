@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_BVH4MB_MIC_H__
-#define __EMBREE_BVH4MB_MIC_H__
+#pragma once
 
 #include "bvh4i/bvh4i.h"
 #include "geometry/triangle1.h"
@@ -43,10 +42,16 @@ namespace embree
       } lower_t1[4], upper_t1[4];    // lower and upper bounds of all 4 children
 
       /*! Returns bounds of specified child. */
-      __forceinline BBox3f bounds(size_t i) const {
+      __forceinline BBox3fa bounds(size_t i) const {
         Vec3fa l = *(Vec3fa*)&lower[i];
         Vec3fa u = *(Vec3fa*)&upper[i];
-        return BBox3f(l,u);
+        return BBox3fa(l,u);
+      }
+
+      __forceinline BBox3fa bounds_t1(size_t i) const {
+        Vec3fa l = *(Vec3fa*)&lower_t1[i];
+        Vec3fa u = *(Vec3fa*)&upper_t1[i];
+        return BBox3fa(l,u);
       }
 
       __forceinline void setInvalid(size_t i)
@@ -75,6 +80,7 @@ namespace embree
       Triangle1 t0;
       Triangle1 t1;
     };
+
 
 
   public:
@@ -107,6 +113,9 @@ namespace embree
       return o;
     } 
 
-}
+  __forceinline mic_i getTriMasks(const BVH4mb::Triangle01 * __restrict__ const tptr)
+  {
+    return swDDDD(gather16i_4i_align(&tptr[0].t0.v2,&tptr[1].t0.v2,&tptr[2].t0.v2,&tptr[3].t0.v2));
+  }
 
-#endif
+}

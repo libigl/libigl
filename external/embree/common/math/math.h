@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,12 +14,13 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_MATH_H__
-#define __EMBREE_MATH_H__
+#pragma once
 
 #include "sys/platform.h"
 #include "sys/intrinsics.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <cmath>
 #include <float.h>
 #include <emmintrin.h>
@@ -111,20 +112,44 @@ namespace embree
   __forceinline double floor( const double x ) { return ::floor (x); }
   __forceinline double ceil ( const double x ) { return ::ceil (x); }
 
-  __forceinline                    int min(int    a, int    b)                                         { return a<b? a:b; }
-  __forceinline                  int64 min(int64  a, int64  b)                                         { return a<b? a:b; }
-  __forceinline                 size_t min(size_t a, size_t b)                                         { return a<b? a:b; }
-  __forceinline                  float min(float  a, float  b)                                         { return a<b? a:b; }
-  __forceinline                 double min(double a, double b)                                         { return a<b? a:b; }
+#if defined(__SSE4_1__)
+  __forceinline float mini(float a, float b) { 
+    const __m128i ai = _mm_castps_si128(_mm_set_ss(a));
+    const __m128i bi = _mm_castps_si128(_mm_set_ss(b));
+    const __m128i ci = _mm_min_epi32(ai,bi);
+    return _mm_cvtss_f32(_mm_castsi128_ps(ci));
+  }
+#endif
+
+#if defined(__SSE4_1__)
+  __forceinline float maxi(float a, float b) { 
+    const __m128i ai = _mm_castps_si128(_mm_set_ss(a));
+    const __m128i bi = _mm_castps_si128(_mm_set_ss(b));
+    const __m128i ci = _mm_max_epi32(ai,bi);
+    return _mm_cvtss_f32(_mm_castsi128_ps(ci));
+  }
+#endif
+
+  __forceinline                    int min(int     a, int     b)                                       { return a<b? a:b; }
+  __forceinline                  int64 min(int64   a, int64   b)                                       { return a<b? a:b; }
+  __forceinline                 size_t min(size_t  a, size_t  b)                                       { return a<b? a:b; }
+#if !defined(__WIN32__)
+  __forceinline                ssize_t min(ssize_t a, ssize_t b)                                       { return a<b? a:b; }
+#endif
+  __forceinline                  float min(float   a, float   b)                                       { return a<b? a:b; }
+  __forceinline                 double min(double  a, double  b)                                       { return a<b? a:b; }
   template<typename T> __forceinline T min(const T& a, const T& b, const T& c)                         { return min(min(a,b),c); }
   template<typename T> __forceinline T min(const T& a, const T& b, const T& c, const T& d)             { return min(min(a,b),min(c,d)); }
   template<typename T> __forceinline T min(const T& a, const T& b, const T& c, const T& d, const T& e) { return min(min(min(a,b),min(c,d)),e); }
 
-  __forceinline                    int max(int    a, int    b)                                         { return a<b? b:a; }
-  __forceinline                  int64 max(int64  a, int64  b)                                         { return a<b? b:a; }
-  __forceinline                 size_t max(size_t a, size_t b)                                         { return a<b? b:a; }
-  __forceinline                  float max(float  a, float  b)                                         { return a<b? b:a; }
-  __forceinline                 double max(double a, double b)                                         { return a<b? b:a; }
+  __forceinline                    int max(int     a, int     b)                                       { return a<b? b:a; }
+  __forceinline                  int64 max(int64   a, int64   b)                                       { return a<b? b:a; }
+  __forceinline                 size_t max(size_t  a, size_t  b)                                       { return a<b? b:a; }
+#if !defined(__WIN32__)
+  __forceinline                ssize_t max(ssize_t a, ssize_t b)                                       { return a<b? b:a; }
+#endif
+  __forceinline                  float max(float   a, float   b)                                       { return a<b? b:a; }
+  __forceinline                 double max(double  a, double  b)                                       { return a<b? b:a; }
   template<typename T> __forceinline T max(const T& a, const T& b, const T& c)                         { return max(max(a,b),c); }
   template<typename T> __forceinline T max(const T& a, const T& b, const T& c, const T& d)             { return max(max(a,b),max(c,d)); }
   template<typename T> __forceinline T max(const T& a, const T& b, const T& c, const T& d, const T& e) { return max(max(max(a,b),max(c,d)),e); }
@@ -181,7 +206,7 @@ namespace embree
   template<class T>
     __forceinline T bitInterleave(const T& xin, const T& yin, const T& zin)
   {
-    T x = xin, y = yin, z = zin;
+	T x = xin, y = yin, z = zin;
     x = (x | (x << 16)) & 0x030000FF; 
     x = (x | (x <<  8)) & 0x0300F00F; 
     x = (x | (x <<  4)) & 0x030C30C3; 
@@ -200,6 +225,35 @@ namespace embree
     return x | (y << 1) | (z << 2);
   }
 
+  /*! bit interleave operation for 64bit data types*/
+  template<class T>
+    __forceinline T bitInterleave64(const T& xin, const T& yin, const T& zin){
+    T x = xin & 0x1fffff; 
+    T y = yin & 0x1fffff; 
+    T z = zin & 0x1fffff; 
+
+    x = (x | x << 32) & 0x1f00000000ffff;  
+    x = (x | x << 16) & 0x1f0000ff0000ff;  
+    x = (x | x << 8) & 0x100f00f00f00f00f; 
+    x = (x | x << 4) & 0x10c30c30c30c30c3; 
+    x = (x | x << 2) & 0x1249249249249249;
+
+    y = (y | y << 32) & 0x1f00000000ffff;  
+    y = (y | y << 16) & 0x1f0000ff0000ff;  
+    y = (y | y << 8) & 0x100f00f00f00f00f; 
+    y = (y | y << 4) & 0x10c30c30c30c30c3; 
+    y = (y | y << 2) & 0x1249249249249249;
+
+    z = (z | z << 32) & 0x1f00000000ffff;  
+    z = (z | z << 16) & 0x1f0000ff0000ff;  
+    z = (z | z << 8) & 0x100f00f00f00f00f; 
+    z = (z | z << 4) & 0x10c30c30c30c30c3; 
+    z = (z | z << 2) & 0x1249249249249249;
+
+    return x | (y << 1) | (z << 2);
+  }
+
+
 #if _WIN32
   __forceinline double drand48() {
     return double(rand())/double(RAND_MAX);
@@ -207,5 +261,3 @@ namespace embree
 #endif
 
 }
-
-#endif

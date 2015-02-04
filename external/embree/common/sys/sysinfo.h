@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_SYSINFO_H__
-#define __EMBREE_SYSINFO_H__
+#pragma once
 
 #define CACHELINE_SIZE 64
 #define PAGE_SIZE 4096
@@ -75,8 +74,9 @@ namespace embree
   /*! return the number of logical threads of the system */
   size_t getNumberOfLogicalThreads();
   
+  /*! return the number of cores of the system */
+  size_t getNumberOfCores();
+  
   /*! returns the size of the terminal window in characters */
   int getTerminalWidth();
 }
-
-#endif

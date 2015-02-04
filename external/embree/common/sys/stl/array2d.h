@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,42 +14,57 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_ARRAY2D_H__
-#define __EMBREE_ARRAY2D_H__
+#pragma once
 
 #include "../platform.h"
 
 namespace embree
 {
   template<typename T>
-  class Array2D
+    class Array2D
   {
   public:
-    Array2D() : sizeX(0), sizeY(0), data(NULL) {}
-
-    Array2D(size_t sizeX, size_t sizeY) : sizeX(sizeX), sizeY(sizeY) {
-      data = new T*[sizeX];
-      for (size_t x = 0; x < sizeX; x++)
-        data[x] = new T[sizeY];
+    Array2D () : array(NULL), size_x(0), size_y(0) {}
+    ~Array2D () { alignedFree(array); }
+    
+    void init(size_t width, size_t height) {
+      size_x = width; size_y = height;
+      //delete[] array; array = new T[width*height];
+      alignedFree(array); array = (T*)alignedMalloc(width*height*sizeof(T));
+    }
+    
+    void init(size_t width, size_t height, const T& v) 
+    {
+      size_x = width; size_y = height;
+      //delete[] array; array = new T[width*height];
+      alignedFree(array); array = (T*)alignedMalloc(width*height*sizeof(T));
+      for (size_t y=0; y<height; y++)
+        for (size_t x=0; x<width; x++)
+          array[y*size_x+x] = v;
+    }
+    
+    __forceinline size_t width() const { 
+      return size_x;
+    }
+    
+    __forceinline size_t height() const {
+      return size_y;
+    }
+    
+    __forceinline T& operator() (size_t x, size_t y) {
+      assert(x<size_x);
+      assert(y<size_y);
+      return array[y*size_x+x];
     }
 
-    ~Array2D() {
-      for (size_t x = 0; x < sizeX; x++)
-        delete[] data[x];
-      delete[] data;
+    __forceinline const T& operator() (size_t x, size_t y) const {
+      assert(x<size_x);
+      assert(y<size_y);
+      return array[y*size_x+x];
     }
-
-    operator const T**() const { return const_cast<const T**>(data); }
-    operator T**() { return data; }
-    const T& get(const size_t x, const size_t y) const { return data[x][y]; }
-    T& get(const size_t x, const size_t y) { return data[x][y]; }
-    void set(const size_t x, const size_t y, const T& value) { data[x][y] = value; }
-
+    
   private:
-    size_t sizeX;
-    size_t sizeY;
-    T** data;
+    T* array;
+    size_t size_x, size_y;
   };
 }
-
-#endif

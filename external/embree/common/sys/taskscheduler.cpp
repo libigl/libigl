@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -22,8 +22,7 @@
 #include "sysinfo.h"
 #include "tasklogger.h"
 #include "sys/sync/atomic.h"
-
-#define DBG_THREADS(x)
+#include "math/math.h"
 
 namespace embree
 {
@@ -44,33 +43,37 @@ namespace embree
   void TaskScheduler::create(size_t numThreads)
   {
     if (instance)
-      throw std::runtime_error("Embree threads already running.");
+      THROW_RUNTIME_ERROR("Embree threads already running.");
 
     /* enable fast pthreads tasking system */
 #if defined(__MIC__)
     instance = new TaskSchedulerMIC; 
-    //instance = new TaskSchedulerSys; 
+    //instance = new TaskSchedulerSys;
 #else
     instance = new TaskSchedulerSys; 
 #endif
 
-#if 1
     instance->createThreads(numThreads);
-#else
-    instance->createThreads(1);
-    std::cout << "WARNING: Using only a single thread." << std::endl;
-#endif
   }
 
   size_t TaskScheduler::getNumThreads() 
   {
-    if (!instance) throw std::runtime_error("Embree tasks not running.");
-    return instance->numThreads;
+    if (!instance) THROW_RUNTIME_ERROR("Embree threads not running.");
+    return instance->numEnabledThreads;
+  }
+
+  size_t TaskScheduler::enableThreads(size_t N)
+  {
+    if (!instance) THROW_RUNTIME_ERROR("Embree threads not running.");
+    // if (!instance->defaultNumThreads) return; // FIXME: enable
+    N = min(N,instance->numThreads);
+    //TaskScheduler::init(N);
+    return instance->numEnabledThreads = N;
   }
 
   void TaskScheduler::addTask(ssize_t threadIndex, QUEUE queue, Task* task)
   {
-    if (!instance) throw std::runtime_error("Embree tasks not running.");
+    if (!instance) THROW_RUNTIME_ERROR("Embree threads not running.");
     instance->add(threadIndex,queue,task);
   }
 
@@ -101,13 +104,13 @@ namespace embree
     instance->wait(threadIndex,threadCount,&event);
   }
 
-
   void TaskScheduler::waitForEvent(Event* event) {
     instance->wait(0,instance->getNumThreads(),event);
   }
 
   void TaskScheduler::destroy() 
   {
+    enableThreads(-1);
     if (instance) {
       instance->destroyThreads();
       delete instance; 
@@ -115,40 +118,33 @@ namespace embree
     }
   }
   
-  TaskScheduler::Event* TaskScheduler::getISPCEvent(ssize_t threadIndex)
-  {
-    if (!instance) throw std::runtime_error("Embree tasks not running.");
-    if (threadIndex < 0 || threadIndex >= (ssize_t)instance->numThreads)
-      throw std::runtime_error("invalid thread index");
-
-    return instance->thread2event[threadIndex].event;
-  }
-
   TaskScheduler::TaskScheduler () 
-    : terminateThreads(false), numThreads(0), thread2event(NULL) {}
+    : terminateThreads(false), defaultNumThreads(true), numThreads(0), numEnabledThreads(0) {}
 
   void TaskScheduler::createThreads(size_t numThreads_in)
   {
     numThreads = numThreads_in;
+    defaultNumThreads = false;
 #if defined(__MIC__)
-    if (numThreads == 0) numThreads = getNumberOfLogicalThreads()-4;
+    if (numThreads == 0) {
+      numThreads = getNumberOfLogicalThreads()-4;
+      defaultNumThreads = true;
+    }
 #else
-    if (numThreads == 0) numThreads = getNumberOfLogicalThreads();
+    if (numThreads == 0) {
+      numThreads = getNumberOfLogicalThreads();
+      defaultNumThreads = true;
+    }
 #endif
-    
-    /* this mapping is only required as ISPC does not propagate task groups */
-
-    thread2event = (ThreadEvent*) alignedMalloc(numThreads*sizeof(ThreadEvent));
-
-    memset(thread2event,0,numThreads*sizeof(ThreadEvent));
+    numEnabledThreads = numThreads;
 
     /* generate all threads */
     for (size_t t=0; t<numThreads; t++) {
       threads.push_back(createThread((thread_func)threadFunction,new Thread(t,numThreads,this),4*1024*1024,t));
     }
 
-    //setAffinity(0);
     TaskLogger::init(numThreads);
+    //taskBarrier.init(numThreads);
   }
 
   void TaskScheduler::threadFunction(void* ptr) try 
@@ -156,14 +152,19 @@ namespace embree
     Thread thread = *(Thread*) ptr;
     delete (Thread*) ptr;
 
-    
     thread.scheduler->run(thread.threadIndex,thread.threadCount);
-  }
-  catch (const Terminate&) {
   }
   catch (const std::exception& e) {
     std::cout << "Error: " << e.what() << std::endl;
     exit(1);
+  }
+
+  LockStepTaskScheduler* LockStepTaskScheduler::instance() {
+    return scheduler;
+  }
+
+  void LockStepTaskScheduler::setInstance(LockStepTaskScheduler* inst) {
+    scheduler = inst;
   }
 
   void TaskScheduler::destroyThreads ()
@@ -171,30 +172,10 @@ namespace embree
     terminate();
     for (size_t i=0; i<threads.size(); i++) join(threads[i]);
     threads.clear();
-    alignedFree(thread2event); thread2event = NULL;
     terminateThreads = false;
   }
 
-
-  // ================================================================================
-  // ================================================================================
-  // ================================================================================
-
-  __aligned(64) void* volatile LockStepTaskScheduler::data = NULL;
-  __aligned(64) void (* LockStepTaskScheduler::taskPtr)(void* data, const size_t threadID, const size_t numThreads) = NULL;
-
-#if defined(__MIC__)
-  __aligned(64) QuadTreeBarrier LockStepTaskScheduler::taskBarrier;
-  //__aligned(64) Barrier LockStepTaskScheduler::taskBarrier;
-#else
-  __aligned(64) Barrier LockStepTaskScheduler::taskBarrier;
-#endif
-
-  __aligned(64) AlignedAtomicCounter32 LockStepTaskScheduler::taskCounter;
-
-  void LockStepTaskScheduler::init(const size_t numThreads) {
-    taskBarrier.init(numThreads);
-  }
+  __thread LockStepTaskScheduler* LockStepTaskScheduler::scheduler = NULL;
 
   void LockStepTaskScheduler::syncThreads(const size_t threadID, const size_t numThreads) {
     taskBarrier.wait(threadID,numThreads);
@@ -211,6 +192,13 @@ namespace embree
   }
 
 
+  bool LockStepTaskScheduler::enter(size_t threadIndex, size_t threadCount)
+  {
+    if (threadIndex == 0) return false;
+    dispatchTaskMainLoop(threadIndex,threadCount);
+    return true;
+  }
+
   void LockStepTaskScheduler::dispatchTaskMainLoop(const size_t threadID, const size_t numThreads)
   {
     while (true) {
@@ -219,26 +207,50 @@ namespace embree
     }  
   }
 
-  bool LockStepTaskScheduler::dispatchTask(const size_t threadID, const size_t numThreads)
+  bool LockStepTaskScheduler::dispatchTask(const size_t threadID, size_t numThreads)
   {
-    if (threadID == 0)
+    if (threadID == 0) {
       taskCounter.reset(0);
-
-    syncThreads(threadID, numThreads);
-
-    if (taskPtr == NULL) 
-      return true;
-
-    (*taskPtr)((void*)data,threadID,numThreads);
-    syncThreads(threadID, numThreads);
+      this->numThreads = numThreads;
+    }
     
-    return false;
+    syncThreads(threadID, numThreads);
+    numThreads = this->numThreads;
+
+    if (taskPtr) {
+      if (threadID < numThreads) {
+	(*taskPtr)((void*)data,threadID,numThreads);
+      }
+      syncThreads(threadID, numThreads);
+      return false;
+    }
+
+    if (taskPtr2) {
+      if (threadID < numThreads) {
+	while (true) {
+	  size_t taskID = taskCounter.inc();
+	  if (taskID >= numTasks) break;
+	  (*taskPtr2)((void*)data,threadID,numThreads,taskID,numTasks);
+	}
+      }
+      syncThreads(threadID, numThreads);
+      return false;
+    }
+    return true;
+  }
+
+  void LockStepTaskScheduler::leave(const size_t threadID, const size_t numThreads)
+  {
+    assert(threadID == 0);
+    releaseThreads(numThreads);
   }
 
   void LockStepTaskScheduler::releaseThreads(const size_t numThreads)
   {
     taskPtr = NULL;
+    taskPtr2 = NULL;
     data = NULL;
+    numTasks = 0;
     dispatchTask(0,numThreads);  
   }
 
@@ -266,7 +278,7 @@ namespace embree
 	__memory_barrier();
 
 	while( (*(volatile unsigned int*)&threadState[m][0]) !=  0x01010101 )
-	  __pause(WAIT_CYCLES);
+	  __pause_cpu(WAIT_CYCLES);
 
 	mode = 1 - mode;
 
@@ -280,7 +292,7 @@ namespace embree
 	__memory_barrier();
 	
 	while (threadState[m][localThreadID] == 1)
-	  __pause(WAIT_CYCLES);
+	  __pause_cpu(WAIT_CYCLES);
       }
  
   }
@@ -313,6 +325,5 @@ namespace embree
     data = NULL;
     dispatchTask(localThreadID,globalThreadID);  
   }
-
 }
 

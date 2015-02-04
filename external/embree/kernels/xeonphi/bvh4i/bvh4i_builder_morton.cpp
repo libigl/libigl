@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -15,10 +15,12 @@
 // ======================================================================== //
 
 #include "bvh4i_builder_morton.h"
+#include "builders/builder_util.h"
+#include "bvh4i_rotate.h"
 
-#define BVH_NODE_PREALLOC_FACTOR          1.2f
+#define MORTON_BVH4I_NODE_PREALLOC_FACTOR   0.9f
 #define NUM_MORTON_IDS_PER_BLOCK            8
-#define SINGLE_THREADED_BUILD_THRESHOLD  (MAX_MIC_THREADS*8)
+#define SINGLE_THREADED_BUILD_THRESHOLD     (MAX_MIC_THREADS*64)
 
 //#define PROFILE
 #define PROFILE_ITERATIONS 200
@@ -31,15 +33,20 @@
 
 namespace embree 
 {
+#if defined(DEBUG)
+  extern AtomicMutex mtx;
+#endif
+
+
   // =======================================================================================================
   // =======================================================================================================
   // =======================================================================================================
 
   __aligned(64) static double dt = 0.0f;
 
-  BVH4iBuilderMorton::BVH4iBuilderMorton (BVH4i* bvh, BuildSource* source, void* geometry)
-  : bvh(bvh), source(source), scene((Scene*)geometry), topLevelItemThreshold(0), encodeShift(0), encodeMask(0), numBuildRecords(0), 
-    morton(NULL), node(NULL), accel(NULL), numGroups(0), numPrimitives(0), numNodes(0), numAllocatedNodes(0), size_morton(0)
+  BVH4iBuilderMorton::BVH4iBuilderMorton (BVH4i* bvh, void* geometry, const bool tree_rotations)
+  : bvh(bvh), scene((Scene*)geometry), topLevelItemThreshold(0), encodeShift(0), encodeMask(0), numBuildRecords(0), 
+    morton(NULL), node(NULL), accel(NULL), numGroups(0), numPrimitives(0), numNodes(0), numAllocatedNodes(0), size_morton(0), size_node(0), size_accel(0), numPrimitivesOld(-1), enableTreeRotations(tree_rotations)
   {
   }
 
@@ -52,10 +59,9 @@ namespace embree
   }
 
 
-  void BVH4iBuilderMorton::initEncodingAllocateData(size_t threadCount)
+  void BVH4iBuilderMorton::initEncodingAllocateData()
   {
     /* calculate total number of primrefs */
-    size_t numPrimitivesOld = numPrimitives;
     numGroups     = scene->size();
     numPrimitives = 0;
 
@@ -65,7 +71,7 @@ namespace embree
       {
 	if (unlikely(scene->get(group) == NULL)) continue;
 	if (scene->get(group)->type != TRIANGLE_MESH) continue;
-	const TriangleMeshScene::TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(group);
+	const TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(group);
 	if (unlikely(!mesh->isEnabled())) continue;
 	if (unlikely(mesh->numTimeSteps != 1)) continue;
 
@@ -80,16 +86,15 @@ namespace embree
     encodeMask = ((size_t)1 << encodeShift)-1;
     size_t maxGroups = ((size_t)1 << (31-encodeShift))-1;
 
-    DBG(DBG_PRINT(numGroups));
-    DBG(DBG_PRINT(maxPrimsPerGroup));
-    DBG(DBG_PRINT(numPrimitives));
-    DBG(DBG_PRINT(encodeMask));
-    DBG(DBG_PRINT(encodeShift));
-    DBG(DBG_PRINT(maxGroups));
-    DBG(DBG_PRINT(size_morton));
-    DBG(DBG_PRINT(bvh->size_node));
-    DBG(DBG_PRINT(bvh->size_accel));
-
+#if 0
+    DBG_PRINT(numGroups);
+    DBG_PRINT(maxPrimsPerGroup);
+    DBG_PRINT(numPrimitives);
+    DBG_PRINT(encodeMask);
+    DBG_PRINT(encodeShift);
+    DBG_PRINT(maxGroups);
+    DBG_PRINT(size_morton);
+#endif
     if (maxPrimsPerGroup > encodeMask || numGroups > maxGroups)
     {
       DBG_PRINT(numGroups);
@@ -97,72 +102,126 @@ namespace embree
       DBG_PRINT(maxPrimsPerGroup);
       DBG_PRINT(encodeMask);
       DBG_PRINT(maxGroups);
-      FATAL("ENCODING ERROR");      
+      unsigned int primIDEncodingBits   = encodeShift;
+      unsigned int groupIDEncodingBits = __bsr((unsigned int)numGroups) + 1;
+      DBG_PRINT( primIDEncodingBits );
+      DBG_PRINT( groupIDEncodingBits );
+      FATAL("ENCODING ERROR: primIDEncodingBits + groupIDEncodingBits > 32");      
     }
+  }
 
+  void BVH4iBuilderMorton::allocateData(size_t threadCount)
+  {
     /* preallocate arrays */
     const size_t additional_size = 16 * CACHELINE_SIZE;
-    if (numPrimitivesOld != numPrimitives || numPrimitives == 0)
+    if (numPrimitivesOld != numPrimitives)
     {
+      DBG(
+	  DBG_PRINT( numPrimitivesOld );
+	  DBG_PRINT( numPrimitives );
+	  );
+
+      numPrimitivesOld = numPrimitives;
       /* free previously allocated memory */
       if (morton) {
 	assert(size_morton > 0);
 	os_free(morton,size_morton);
       }
-      if (node  ) { 
-	assert(bvh->size_node > 0);
-	os_free(node  ,bvh->size_node);
+      if (node) { 
+	assert(size_node > 0);
+	os_free(node  ,size_node);
       }
       if (accel ) {
-	assert(bvh->size_accel > 0);
-	os_free(accel ,bvh->size_accel);
+	assert(size_accel > 0);
+	os_free(accel ,size_accel);
       }
       
       /* allocated memory for primrefs,nodes, and accel */
-      const size_t minAllocNodes = numPrimitives ? threadCount * ALLOCATOR_NODE_BLOCK_SIZE * 4: 16;
+      const size_t minAllocNodes = (threadCount+1) * 2* ALLOCATOR_NODE_BLOCK_SIZE;
+
+
       const size_t numPrims      = numPrimitives+4;
-      const size_t numNodes      = max((size_t)(numPrimitives * BVH_NODE_PREALLOC_FACTOR),minAllocNodes);
+      const size_t numNodes      = (size_t)((numPrimitives+3)/4);
+
+
+      const size_t sizeNodeInBytes = sizeof(BVH4i::Node);
+      const size_t sizeAccelInBytes = sizeof(Triangle1);
+
 
       const size_t size_morton_tmp = numPrims * sizeof(MortonID32Bit) + additional_size;
-      const size_t size_node       = numNodes * sizeof(BVHNode) + additional_size;
-      const size_t size_accel      = numPrims * sizeof(Triangle1) + additional_size;
-      numAllocatedNodes = size_node / sizeof(BVHNode);
+
+      size_node         = (double)((numNodes * MORTON_BVH4I_NODE_PREALLOC_FACTOR + minAllocNodes) * sizeNodeInBytes + additional_size) * g_memory_preallocation_factor;
+      size_accel        = numPrims * sizeAccelInBytes + additional_size;
+      numAllocatedNodes = size_node / sizeof(BVH4i::Node);
+
 
       DBG(DBG_PRINT(size_morton_tmp));
       DBG(DBG_PRINT(size_node));
       DBG(DBG_PRINT(size_accel));
 
       morton = (MortonID32Bit* ) os_malloc(size_morton_tmp); 
-      node   = (BVHNode*)        os_malloc(size_node  );     
+      node   = (BVH4i::Node*)    os_malloc(size_node  );     
       accel  = (Triangle1*)      os_malloc(size_accel );     
+
+      memset((char*)accel + numPrims * sizeAccelInBytes,0,additional_size); // clear out as a 4-wide access is possible
 
       assert(morton != 0);
       assert(node   != 0);
       assert(accel  != 0);
 
-#if 0
-      memset(morton,0,size_morton_tmp);
-      memset(node  ,0,size_node);
-      memset(accel ,0,size_accel);	
-#endif
-
-      bvh->accel = accel;
-      bvh->qbvh  = (BVH4i::Node*)node;
-      bvh->size_node  = size_node;
-      bvh->size_accel = size_accel;
+      // memset(morton,0,size_morton_tmp);
+      // memset(node  ,0,size_node);
+      // memset(accel ,0,size_accel);	
 
       size_morton = size_morton_tmp;
+
+
+      DBG(
+	  DBG_PRINT( minAllocNodes );
+	  DBG_PRINT( numNodes );
+	  );
+
     }
+
+    bvh->accel = accel;
+    bvh->qbvh  = (BVH4i::Node*)node;
+    bvh->size_node  = size_node;
+    bvh->size_accel = size_accel;
+
+    DBG(
+	DBG_PRINT(bvh->size_node);
+	DBG_PRINT(bvh->size_accel);
+	DBG_PRINT(numAllocatedNodes);
+	);
 
   }
 
   void BVH4iBuilderMorton::build(size_t threadIndex, size_t threadCount) 
-  {
-    if (g_verbose >= 2)
-      std::cout << "building BVH4i with Morton builder (MIC)... " << std::flush;
+  {    
+    if (threadIndex != 0) {
+      FATAL("threadIndex != 0");
+    }
 
+    if (unlikely(g_verbose >= 2))
+      {
+	std::cout << "building BVH4i with 32-bit Morton builder (MIC)... " << std::flush;
+      }
+    
     /* do some global inits first */
-    initEncodingAllocateData(TaskScheduler::getNumThreads());
+    initEncodingAllocateData();
+
+    if (likely(numPrimitives == 0))
+      {
+	DBG(std::cout << "EMPTY SCENE BUILD" << std::endl);
+	bvh->root = BVH4i::invalidNode;
+	bvh->bounds = empty;
+	bvh->qbvh = NULL;
+	bvh->accel = NULL;
+	return;
+      }
+
+    /* allocate memory arrays */
+    allocateData(threadCount);
 
 #if defined(PROFILE)
     size_t numTotalPrimitives = numPrimitives;
@@ -175,7 +234,7 @@ namespace embree
     size_t iterations = PROFILE_ITERATIONS;
     for (size_t i=0; i<iterations; i++) 
     {
-      TaskScheduler::executeTask(threadIndex,threadCount,_build_parallel_morton,this,TaskScheduler::getNumThreads(),"build_parallel_morton");
+      build_main(threadIndex,threadCount);
 
       dt_min = min(dt_min,dt);
       dt_avg = dt_avg + dt;
@@ -187,45 +246,32 @@ namespace embree
     std::cout << "  min = " << 1000.0f*dt_min << "ms (" << numTotalPrimitives/dt_min*1E-6 << " Mtris/s)" << std::endl;
     std::cout << "  avg = " << 1000.0f*dt_avg << "ms (" << numTotalPrimitives/dt_avg*1E-6 << " Mtris/s)" << std::endl;
     std::cout << "  max = " << 1000.0f*dt_max << "ms (" << numTotalPrimitives/dt_max*1E-6 << " Mtris/s)" << std::endl;
-    std::cout << BVH4iStatistics(bvh).str();
+    std::cout << BVH4iStatistics<BVH4i::Node>(bvh).str();
 
 #else
     DBG(DBG_PRINT(numPrimitives));
 
 
-    if (likely(numPrimitives > SINGLE_THREADED_BUILD_THRESHOLD && TaskScheduler::getNumThreads() > 1))
+    if (likely(numPrimitives > SINGLE_THREADED_BUILD_THRESHOLD && threadCount > 1))
       {
 	DBG(std::cout << "PARALLEL BUILD" << std::endl << std::flush);
-	TaskScheduler::executeTask(threadIndex,threadCount,_build_parallel_morton,this,TaskScheduler::getNumThreads(),"build_parallel");
+	build_main(threadIndex,threadCount);
+
       }
     else
       {
 	/* number of primitives is small, just use single threaded mode */
-	if (likely(numPrimitives > 0))
-	  {
-	    DBG(std::cout << "SERIAL BUILD" << std::endl << std::flush);
-	    build_parallel_morton(0,1,0,0,NULL);
-	  }
-	else
-	  {
-	    DBG(std::cout << "EMPTY SCENE BUILD" << std::endl << std::flush);
-	    /* handle empty scene */
-	    for (size_t i=0;i<4;i++)
-	      bvh->qbvh[0].setInvalid(i);
-	    for (size_t i=0;i<4;i++)
-	      bvh->qbvh[1].setInvalid(i);
-	    bvh->qbvh[0].lower[0].child = BVH4i::NodeRef(128);
-	    bvh->root = bvh->qbvh[0].lower[0].child; 
-	    bvh->bounds = empty;
-	  }
+	DBG(std::cout << "SERIAL BUILD" << std::endl << std::flush);
+	build_main(0,1);
       }
 
     if (g_verbose >= 2) {
       double perf = numPrimitives/dt*1E-6;
       std::cout << "[DONE] " << 1000.0f*dt << "ms (" << perf << " Mtris/s), primitives " << numPrimitives << std::endl;
-      std::cout << BVH4iStatistics(bvh).str();
+      std::cout << BVH4iStatistics<BVH4i::Node>(bvh).str();
     }
 #endif
+    
   }
 
     
@@ -247,7 +293,7 @@ namespace embree
     {       
       if (unlikely(scene->get(group) == NULL)) continue;
       if (scene->get(group)->type != TRIANGLE_MESH) continue;
-      const TriangleMeshScene::TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(group);
+      const TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(group);
       if (unlikely(!mesh->isEnabled())) continue;
       if (unlikely(mesh->numTimeSteps != 1)) continue;
 
@@ -284,37 +330,35 @@ namespace embree
     {       
       if (unlikely(scene->get(group) == NULL)) continue;
       if (unlikely(scene->get(group)->type != TRIANGLE_MESH)) continue;
-      const TriangleMeshScene::TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(group);
+      const TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(group);
       if (unlikely(!mesh->isEnabled())) continue;
       if (unlikely(mesh->numTimeSteps != 1)) continue;
 
-
-      const TriangleMeshScene::TriangleMesh::Triangle* tri = &mesh->triangle(offset);
-
-      for (size_t i=offset; i<mesh->numTriangles && currentID < endID; i++, currentID++,tri++)	 
+      if (offset < mesh->numTriangles)
 	{
-	  prefetch<PFHINT_L2>(&tri + L2_PREFETCH_ITEMS);
-
-	  const float *__restrict__ const vptr0 = (float*)&mesh->vertex(tri->v[0]);
-	  const float *__restrict__ const vptr1 = (float*)&mesh->vertex(tri->v[1]);
-	  const float *__restrict__ const vptr2 = (float*)&mesh->vertex(tri->v[2]);
-
-	  prefetch<PFHINT_NT>(vptr1);
-	  prefetch<PFHINT_NT>(vptr2);
-
-	  const mic_f v0 = broadcast4to16f(vptr0);
-	  const mic_f v1 = broadcast4to16f(vptr1);
-	  const mic_f v2 = broadcast4to16f(vptr2);
-
-	  prefetch<PFHINT_L1>(&tri + L1_PREFETCH_ITEMS);
-
-	  const mic_f bmin = min(min(v0,v1),v2);
-	  const mic_f bmax = max(max(v0,v1),v2);
-	  const mic_f centroid2 = bmin+bmax;
-	  bounds_centroid_min = min(bounds_centroid_min,centroid2);
-	  bounds_centroid_max = max(bounds_centroid_max,centroid2);
-	}
+	  const char* __restrict__ cptr_tri = (char*)&mesh->triangle(offset);
+	  const unsigned int stride = mesh->triangles.getBufferStride();
       
+	  for (size_t i=offset; i<mesh->numTriangles && currentID < endID; i++, currentID++,cptr_tri+=stride)	 
+	    {
+	      const TriangleMesh::Triangle& tri = *(TriangleMesh::Triangle*)cptr_tri;
+	      prefetch<PFHINT_L1>(&tri + L1_PREFETCH_ITEMS);
+	      prefetch<PFHINT_L2>(&tri + L2_PREFETCH_ITEMS);
+
+	      assert( tri.v[0] < mesh->numVertices );
+	      assert( tri.v[1] < mesh->numVertices );
+	      assert( tri.v[2] < mesh->numVertices );
+
+	      const mic3f v = mesh->getTriangleVertices<PFHINT_L2>(tri);
+
+	      const mic_f bmin  = min(min(v[0],v[1]),v[2]);
+	      const mic_f bmax  = max(max(v[0],v[1]),v[2]);
+
+	      const mic_f centroid2 = bmin+bmax;
+	      bounds_centroid_min = min(bounds_centroid_min,centroid2);
+	      bounds_centroid_max = max(bounds_centroid_max,centroid2);
+	    }
+	}      
       if (unlikely(currentID == endID)) break;
       offset = 0;
     }
@@ -357,52 +401,50 @@ namespace embree
     {       
       if (unlikely(scene->get(group) == NULL)) continue;
       if (unlikely(scene->get(group)->type != TRIANGLE_MESH)) continue;
-      const TriangleMeshScene::TriangleMesh* const mesh = scene->getTriangleMesh(group);
+      const TriangleMesh* const mesh = scene->getTriangleMesh(group);
       if (unlikely(!mesh->isEnabled())) continue;
       if (unlikely(mesh->numTimeSteps != 1)) continue;
 
       const size_t numTriangles = min(mesh->numTriangles-offset,endID-currentID);
        
       const unsigned int groupCode = (group << encodeShift);
-      for (size_t i=0; i<numTriangles; i++)	  
-      {
-	const TriangleMeshScene::TriangleMesh::Triangle& tri = mesh->triangle(offset+i);
-	prefetch<PFHINT_NT>(&tri + 16);
-	prefetch<PFHINT_NT>(&tri + 4);
 
-	const float *__restrict__ const vptr0 = (float*)&mesh->vertex(tri.v[0]);
-	const float *__restrict__ const vptr1 = (float*)&mesh->vertex(tri.v[1]);
-	const float *__restrict__ const vptr2 = (float*)&mesh->vertex(tri.v[2]);
+      if (offset < mesh->numTriangles)
+	{
+	  const char* __restrict__ cptr_tri = (char*)&mesh->triangle(offset);
+	  const unsigned int stride = mesh->triangles.getBufferStride();
+      
+	  for (size_t i=0; i<numTriangles; i++,cptr_tri+=stride)	  
+	    {
+	      //const TriangleMesh::Triangle& tri = mesh->triangle(offset+i);
+	      const TriangleMesh::Triangle& tri = *(TriangleMesh::Triangle*)cptr_tri;
 
-	prefetch<PFHINT_L2>(vptr1);
-	prefetch<PFHINT_L2>(vptr2);
+	      prefetch<PFHINT_NT>(&tri + 16);
 
-	const mic_f v0 = broadcast4to16f(vptr0);
-	const mic_f v1 = broadcast4to16f(vptr1);
-	const mic_f v2 = broadcast4to16f(vptr2);
+	      const mic3f v = mesh->getTriangleVertices<PFHINT_L2>(tri);
+	      const mic_f bmin  = min(min(v[0],v[1]),v[2]);
+	      const mic_f bmax  = max(max(v[0],v[1]),v[2]);
 
-	const mic_f bmin  = min(min(v0,v1),v2);
-	const mic_f bmax  = max(max(v0,v1),v2);
-	const mic_f cent  = bmin+bmax;
-	const mic_i binID = mic_i((cent-base)*scale);
+	      const mic_f cent  = bmin+bmax;
+	      const mic_i binID = mic_i((cent-base)*scale);
 
-	mID[2*slot+1] = groupCode | (offset+i);
-	compactustore16i_low(0x1,&binID3_x[2*slot+0],binID); // extract
-	compactustore16i_low(0x2,&binID3_y[2*slot+0],binID);
-	compactustore16i_low(0x4,&binID3_z[2*slot+0],binID);
-	slot++;
-	if (unlikely(slot == NUM_MORTON_IDS_PER_BLOCK))
-	  {
-	    const mic_i code  = bitInterleave(binID3_x,binID3_y,binID3_z);
-	    const mic_i final = select(0x5555,code,mID);      
-	    assert((size_t)dest % 64 == 0);
-	    store16i_ngo(dest,final);	    
-	    slot = 0;
-	    dest += 8;
-	  }
-        currentID++;
-      }
-
+	      mID[2*slot+1] = groupCode | (offset+i);
+	      compactustore16i_low(0x1,&binID3_x[2*slot+0],binID); // extract
+	      compactustore16i_low(0x2,&binID3_y[2*slot+0],binID);
+	      compactustore16i_low(0x4,&binID3_z[2*slot+0],binID);
+	      slot++;
+	      if (unlikely(slot == NUM_MORTON_IDS_PER_BLOCK))
+		{
+		  const mic_i code  = bitInterleave(binID3_x,binID3_y,binID3_z);
+		  const mic_i final = select(0x5555,code,mID);      
+		  assert((size_t)dest % 64 == 0);
+		  store16i_ngo(dest,final);	    
+		  slot = 0;
+		  dest += 8;
+		}
+	      currentID++;
+	    }
+	}
       offset = 0;
       if (currentID == endID) break;
     }
@@ -438,22 +480,13 @@ namespace embree
 	    const unsigned int index  = m[j].index;
 	    const unsigned int primID = index & encodeMask; 
 	    const unsigned int geomID = index >> encodeShift; 
-	    const TriangleMeshScene::TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(geomID);
-	    const TriangleMeshScene::TriangleMesh::Triangle& tri = mesh->triangle(primID);
+	    const TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(geomID);
+	    const TriangleMesh::Triangle& tri = mesh->triangle(primID);
 
-	    const float *__restrict__ const vptr0 = (float*)&mesh->vertex(tri.v[0]);
-	    const float *__restrict__ const vptr1 = (float*)&mesh->vertex(tri.v[1]);
-	    const float *__restrict__ const vptr2 = (float*)&mesh->vertex(tri.v[2]);
+	    const mic3f v = mesh->getTriangleVertices<PFHINT_L1>(tri);
+	    const mic_f bmin  = min(min(v[0],v[1]),v[2]);
+	    const mic_f bmax  = max(max(v[0],v[1]),v[2]);
 
-	    prefetch<PFHINT_L1>(vptr1);
-	    prefetch<PFHINT_L1>(vptr2);
-
-	    const mic_f v0 = broadcast4to16f(vptr0);
-	    const mic_f v1 = broadcast4to16f(vptr1);
-	    const mic_f v2 = broadcast4to16f(vptr2);
-     
-	    const mic_f bmin = min(min(v0,v1),v2);
-	    const mic_f bmax = max(max(v0,v1),v2);
 	    const mic_f centroid2 = bmin+bmax;
 	    bounds_centroid_min = min(bounds_centroid_min,centroid2);
 	    bounds_centroid_max = max(bounds_centroid_max,centroid2);
@@ -468,15 +501,13 @@ namespace embree
 	    const unsigned int primID = index & encodeMask; 
 	    const unsigned int geomID = index >> encodeShift; 
 
-	    const TriangleMeshScene::TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(geomID);
-	    const TriangleMeshScene::TriangleMesh::Triangle& tri = mesh->triangle(primID);
+	    const TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(geomID);
+	    const TriangleMesh::Triangle& tri = mesh->triangle(primID);
 
-	    const mic_f v0 = broadcast4to16f((float*)&mesh->vertex(tri.v[0]));
-	    const mic_f v1 = broadcast4to16f((float*)&mesh->vertex(tri.v[1]));
-	    const mic_f v2 = broadcast4to16f((float*)&mesh->vertex(tri.v[2]));
-     
-	    const mic_f bmin = min(min(v0,v1),v2);
-	    const mic_f bmax = max(max(v0,v1),v2);
+	    const mic3f v = mesh->getTriangleVertices<PFHINT_L1>(tri);
+	    const mic_f bmin  = min(min(v[0],v[1]),v[2]);
+	    const mic_f bmax  = max(max(v[0],v[1]),v[2]);
+
 	    const mic_f centroid2 = bmin+bmax;
 	    bounds_centroid_min = min(bounds_centroid_min,centroid2);
 	    bounds_centroid_max = max(bounds_centroid_max,centroid2);
@@ -502,15 +533,12 @@ namespace embree
 	    const unsigned int primID = index & encodeMask; 
 	    const unsigned int geomID = index >> encodeShift; 
 
-	    const TriangleMeshScene::TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(geomID);
-	    const TriangleMeshScene::TriangleMesh::Triangle& tri = mesh->triangle(primID);
+	    const TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(geomID);
+	    const TriangleMesh::Triangle& tri = mesh->triangle(primID);
 
-	    const mic_f v0 = broadcast4to16f((float*)&mesh->vertex(tri.v[0]));
-	    const mic_f v1 = broadcast4to16f((float*)&mesh->vertex(tri.v[1]));
-	    const mic_f v2 = broadcast4to16f((float*)&mesh->vertex(tri.v[2]));
-     
-	    const mic_f bmin = min(min(v0,v1),v2);
-	    const mic_f bmax = max(max(v0,v1),v2);
+	    const mic3f v = mesh->getTriangleVertices(tri);
+	    const mic_f bmin  = min(min(v[0],v[1]),v[2]);
+	    const mic_f bmax  = max(max(v[0],v[1]),v[2]);
 	    const mic_f centroid = bmin+bmax;
 	    const mic_i binID = mic_i((centroid-base)*scale);
 
@@ -532,15 +560,12 @@ namespace embree
 	    const unsigned int primID = index & encodeMask; 
 	    const unsigned int geomID = index >> encodeShift; 
 
-	    const TriangleMeshScene::TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(geomID);
-	    const TriangleMeshScene::TriangleMesh::Triangle& tri = mesh->triangle(primID);
+	    const TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(geomID);
+	    const TriangleMesh::Triangle& tri = mesh->triangle(primID);
 
-	    const mic_f v0 = broadcast4to16f((float*)&mesh->vertex(tri.v[0]));
-	    const mic_f v1 = broadcast4to16f((float*)&mesh->vertex(tri.v[1]));
-	    const mic_f v2 = broadcast4to16f((float*)&mesh->vertex(tri.v[2]));
-     
-	    const mic_f bmin = min(min(v0,v1),v2);
-	    const mic_f bmax = max(max(v0,v1),v2);
+	    const mic3f v = mesh->getTriangleVertices(tri);
+	    const mic_f bmin  = min(min(v[0],v[1]),v[2]);
+	    const mic_f bmax  = max(max(v[0],v[1]),v[2]);
 	    const mic_f centroid = bmin+bmax;
 	    const mic_i binID = mic_i((centroid-base)*scale);
 
@@ -607,7 +632,7 @@ namespace embree
 	  }
       }
 
-      LockStepTaskScheduler::syncThreads(threadID,numThreads);
+      scene->lockstep_scheduler.syncThreads(threadID,numThreads);
 
 
       /* calculate total number of items for each bucket */
@@ -675,7 +700,7 @@ namespace embree
 	evictL2(&src[i]);
       }
 
-      if (b<3) LockStepTaskScheduler::syncThreads(threadID,numThreads);
+      if (b<3) scene->lockstep_scheduler.syncThreads(threadID,numThreads);
 
     }
   }
@@ -691,7 +716,7 @@ namespace embree
 	SmallBuildRecord &sbr = buildRecords[taskID];
 	if (sbr.size() > topLevelItemThreshold)
 	  {
-	    const size_t numChildren = createQBVHNode(sbr,children);
+	    const size_t numChildren = createSingleBVH4iNode(sbr,children);
 	    buildRecords[taskID] = children[0];
 	    if (numChildren > 1)
 	      {
@@ -708,44 +733,20 @@ namespace embree
   {
     NodeAllocator alloc(atomicID,numAllocatedNodes);
     
-    double msec;
-    TIMER(msec = getSeconds());
-    TIMER(size_t items = 0);
-
-
     while (true)
     {
-      const unsigned int taskID = LockStepTaskScheduler::taskCounter.inc();
+      const unsigned int taskID = scene->lockstep_scheduler.taskCounter.inc();
       if (taskID >= numBuildRecords) break;
       
       SmallBuildRecord &br = buildRecords[taskID];
-
-      recurse(br,alloc,RECURSE,threadID);
+      
+      BBox3fa bounds = recurse(br,alloc);     
       
       /* mark toplevel of tree */
-      node[br.parentID].upper.a = -1;
-
-      TIMER(items += br.size());
+      node[br.parentNodeID].setBounds(br.parentLocalID,bounds);
+      node[br.parentNodeID].upper[br.parentLocalID].child = BVH4I_TOP_LEVEL_MARKER;
     }    
 
-  }
-
-  void BVH4iBuilderMorton::convertToSOALayout(const size_t threadID, const size_t numThreads)
-  {
-    const size_t startID = (threadID+0)*numNodes/numThreads;
-    const size_t endID   = (threadID+1)*numNodes/numThreads;
-
-    BVHNode  * __restrict__  bptr = ( BVHNode*)node + startID*4;
-
-    BVH4i::Node * __restrict__  qptr = (BVH4i::Node*)node + startID;
-
-    for (unsigned int n=startID;n<endID;n++,qptr++,bptr+=4)
-      {
-	prefetch<PFHINT_L1EX>(bptr+4);
-	prefetch<PFHINT_L2EX>(bptr+4*4);
-	convertToBVH4Layout(bptr);
-	evictL1(bptr);
-      }
   }
   
   // =======================================================================================================
@@ -753,16 +754,22 @@ namespace embree
   // =======================================================================================================
 
 
-  void BVH4iBuilderMorton::split_fallback(SmallBuildRecord& current, SmallBuildRecord& leftChild, SmallBuildRecord& rightChild) const
+  void BVH4iBuilderMorton::split_fallback(SmallBuildRecord& current, SmallBuildRecord& leftChild, SmallBuildRecord& rightChild)
   {
-    const unsigned int center = (current.begin + current.end)/2;
+    unsigned int blocks4 = (current.items()+3)/4;
+    unsigned int center = current.begin + (blocks4/2)*4; 
+
+    assert(center != current.begin);
+    assert(center != current.end);
+
     leftChild.init(current.begin,center);
     rightChild.init(center,current.end);
   }
 		
 
-  __forceinline BBox3f BVH4iBuilderMorton::createSmallLeaf(SmallBuildRecord& current) const
-  {
+  __forceinline BBox3fa BVH4iBuilderMorton::createSmallLeaf(SmallBuildRecord& current)
+  {    
+    assert(current.size() > 0);
     mic_f bounds_min(pos_inf);
     mic_f bounds_max(neg_inf);
 
@@ -775,7 +782,6 @@ namespace embree
     const mic_i morton_mask(encodeMask);
     const mic_i morton_shift(encodeShift);
 
-    prefetch<PFHINT_L2EX>(&node[current.parentID]);
     prefetch<PFHINT_L2>(&morton[start+8]);
 
     for (size_t i=0; i<items; i++) 
@@ -784,20 +790,20 @@ namespace embree
 	const unsigned int primID = index & encodeMask; 
 	const unsigned int geomID = index >> encodeShift; 
 
+
 	const mic_i morton_index(morton[start+i].index);
 	const mic_i morton_primID = morton_index & morton_mask;
 	const mic_i morton_geomID = morton_index >> morton_shift;
 
-	const TriangleMeshScene::TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(geomID);
-	const TriangleMeshScene::TriangleMesh::Triangle& tri = mesh->triangle(primID);
-      
-	const float *__restrict__ const vptr0 = (float*)&mesh->vertex(tri.v[0]);
-	const float *__restrict__ const vptr1 = (float*)&mesh->vertex(tri.v[1]);
-	const float *__restrict__ const vptr2 = (float*)&mesh->vertex(tri.v[2]);
+	const TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(geomID);
+	const TriangleMesh::Triangle& tri = mesh->triangle(primID);
 
-	const mic_f v0 = broadcast4to16f(vptr0); //WARNING: zero last component
-	const mic_f v1 = broadcast4to16f(vptr1);
-	const mic_f v2 = broadcast4to16f(vptr2);
+	const mic3f v = mesh->getTriangleVertices(tri);
+	const mic_f v0 = v[0];
+	const mic_f v1 = v[1];
+	const mic_f v2 = v[2];
+
+	//WARNING: zero last component
 
 	const mic_f tri_accel = initTriangle1(v0,v1,v2,morton_geomID,morton_primID,mic_i(mesh->mask));
 
@@ -806,21 +812,22 @@ namespace embree
 	store16f_ngo(&accel[start+i],tri_accel);
       }
 
-    store4f(&node[current.parentID].lower,bounds_min);
-    store4f(&node[current.parentID].upper,bounds_max);
-    node[current.parentID].createLeaf(start,items,items);
-    __aligned(64) BBox3f bounds;
+    store3f(&node[current.parentNodeID].lower[current.parentLocalID],bounds_min);
+    store3f(&node[current.parentNodeID].upper[current.parentLocalID],bounds_max);
+    createBVH4iLeaf(node[current.parentNodeID].lower[current.parentLocalID].child,start,items);
+    __aligned(64) BBox3fa bounds;
     store4f(&bounds.lower,bounds_min);
     store4f(&bounds.upper,bounds_max);
+
     return bounds;
   }
 
 
-  BBox3f BVH4iBuilderMorton::createLeaf(SmallBuildRecord& current, NodeAllocator& alloc)
+  BBox3fa BVH4iBuilderMorton::createLeaf(SmallBuildRecord& current, NodeAllocator& alloc)
   {
 #if defined(DEBUG)
     if (current.depth > BVH4i::maxBuildDepthLeaf) 
-      throw std::runtime_error("ERROR: depth limit reached");
+      THROW_RUNTIME_ERROR("ERROR: depth limit reached");
 #endif
     
     /* create leaf for few primitives */
@@ -839,33 +846,37 @@ namespace embree
 
     /* allocate next four nodes */
     size_t numChildren = 4;
-    //const unsigned int currentIndex = allocNode(BVH4i::N);
-    const size_t currentIndex = alloc.get(BVH4i::N);
+    const size_t currentIndex = alloc.get(1);
    
     /* init used/unused nodes */
-    const mic_f init_node = load16f((float*)BVH4i::initQBVHNode);
-    store16f_ngo((float*)&node[currentIndex+0],init_node);
-    store16f_ngo((float*)&node[currentIndex+2],init_node);
+    mic_f init_lower = broadcast4to16f(&BVH4i::initQBVHNode[0]);
+    mic_f init_upper = broadcast4to16f(&BVH4i::initQBVHNode[1]);
 
-    BBox3f bounds; 
+    store16f_ngo((float*)&node[currentIndex].lower,init_lower);
+    store16f_ngo((float*)&node[currentIndex].upper,init_upper);
+
+
+    __aligned(64) BBox3fa bounds; 
     bounds = empty;
     /* recurse into each child */
     for (size_t i=0; i<numChildren; i++) {
-      children[i].parentID = currentIndex+i;
+      children[i].parentNodeID  = currentIndex;
+      children[i].parentLocalID = i;
       children[i].depth = current.depth+1;
       bounds.extend( createLeaf(children[i],alloc) );
     }
 
-    node[current.parentID].lower = bounds.lower;
-    node[current.parentID].upper = bounds.upper;
-    node[current.parentID].createNode(currentIndex,numChildren);
+    store3f(&node[current.parentNodeID].lower[current.parentLocalID],broadcast4to16f(&bounds.lower));
+    store3f(&node[current.parentNodeID].upper[current.parentLocalID],broadcast4to16f(&bounds.upper));
+
+    createBVH4iNode<4>(node[current.parentNodeID].lower[current.parentLocalID].child,currentIndex);
 
     return bounds;
   }  
 
   __forceinline bool BVH4iBuilderMorton::split(SmallBuildRecord& current,
                                                SmallBuildRecord& left,
-                                               SmallBuildRecord& right) const
+                                               SmallBuildRecord& right)
   {
     /* mark as leaf if leaf threshold reached */
     if (unlikely(current.size() <= BVH4iBuilderMorton::MORTON_LEAF_THRESHOLD)) {
@@ -881,6 +892,7 @@ namespace embree
     if (unlikely(bitpos == 32)) 
     {
       recreateMortonCodes(current);
+
       const unsigned int code_start = morton[current.begin].code;
       const unsigned int code_end   = morton[current.end-1].code;
       bitpos = clz(code_start^code_end);
@@ -900,14 +912,14 @@ namespace embree
     const unsigned int bitmask = 1 << bitpos_diff;
     
     /* find location where bit differs using binary search */
-    size_t begin = current.begin;
-    size_t end   = current.end;
+    unsigned int begin = current.begin;
+    unsigned int end   = current.end;
     while (begin + 1 != end) {
-      const size_t mid = (begin+end)/2;
-      const unsigned bit = morton[mid].code & bitmask;
+      const unsigned int mid = (begin+end)/2;
+      const unsigned int bit = morton[mid].code & bitmask;
       if (bit == 0) begin = mid; else end = mid;
     }
-    size_t center = end;
+    unsigned int center = end;
 #if defined(DEBUG)      
     for (unsigned int i=begin;  i<center; i++) assert((morton[i].code & bitmask) == 0);
     for (unsigned int i=center; i<end;    i++) assert((morton[i].code & bitmask) == bitmask);
@@ -918,7 +930,7 @@ namespace embree
     return true;
   }
 
-  size_t BVH4iBuilderMorton::createQBVHNode(SmallBuildRecord& current, SmallBuildRecord *__restrict__ const children)
+  size_t BVH4iBuilderMorton::createSingleBVH4iNode(SmallBuildRecord& current, SmallBuildRecord *__restrict__ const children)
   {
 
     /* create leaf node */
@@ -973,38 +985,31 @@ namespace embree
     }
 
     /* allocate next four nodes and prefetch them */
-    const size_t currentIndex = allocNode(BVH4i::N);    
+    const size_t currentIndex = allocGlobalNode(1);    
 
-    /* init used/unused nodes */
-    const mic_f init_node = load16f((float*)BVH4i::initQBVHNode);
-    store16f_ngo((float*)&node[currentIndex+0],init_node);
-    store16f_ngo((float*)&node[currentIndex+2],init_node);
+    mic_f init_lower = broadcast4to16f(&BVH4i::initQBVHNode[0]);
+    mic_f init_upper = broadcast4to16f(&BVH4i::initQBVHNode[1]);
+
+    store16f_ngo((float*)&node[currentIndex].lower,init_lower);
+    store16f_ngo((float*)&node[currentIndex].upper,init_upper);
 
     /* recurse into each child */
     for (size_t i=0; i<numChildren; i++) 
       {
-	children[i].parentID = currentIndex+i;
+	children[i].parentNodeID  = currentIndex;
+	children[i].parentLocalID = i;
       }
 
-    node[current.parentID].createNode(currentIndex,numChildren);
+    createBVH4iNode<4>(node[current.parentNodeID].lower[current.parentLocalID].child,currentIndex);
+
     return numChildren;
   }
 
   
-  BBox3f BVH4iBuilderMorton::recurse(SmallBuildRecord& current, 
-				     NodeAllocator& alloc,
-				     const size_t mode, 
-				     const size_t numThreads) 
+  BBox3fa BVH4iBuilderMorton::recurse(SmallBuildRecord& current, 
+				     NodeAllocator& alloc) 
   {
-    /* stop toplevel recursion at some number of items */
-    if (unlikely(mode == CREATE_TOP_LEVEL))
-      {
-	if (current.size()  <= topLevelItemThreshold &&
-	    numBuildRecords >= numThreads) {
-	  buildRecords[numBuildRecords++] = current;
-	  return empty;
-	}
-      }
+    assert(current.size() > 0);
 
     __aligned(64) SmallBuildRecord children[BVH4i::N];
 
@@ -1059,120 +1064,147 @@ namespace embree
     }
 
     /* allocate next four nodes and prefetch them */
-    const size_t currentIndex = alloc.get(BVH4i::N);    
+    const size_t currentIndex = alloc.get(1);    
 
     /* init used/unused nodes */
-    const mic_f init_node = load16f((float*)BVH4i::initQBVHNode);
-    store16f_ngo((float*)&node[currentIndex+0],init_node);
-    store16f_ngo((float*)&node[currentIndex+2],init_node);
+    mic_f init_lower = broadcast4to16f(&BVH4i::initQBVHNode[0]);
+    mic_f init_upper = broadcast4to16f(&BVH4i::initQBVHNode[1]);
+
+    store16f_ngo((float*)&node[currentIndex].lower,init_lower);
+    store16f_ngo((float*)&node[currentIndex].upper,init_upper);
 
     /* recurse into each child */
-    BBox3f bounds;
+    __aligned(64) BBox3fa bounds;
     bounds = empty;
+    size_t child_nodes = 0;
     for (size_t i=0; i<numChildren; i++) 
     {
-      children[i].parentID = currentIndex+i;
+      children[i].parentNodeID = currentIndex;
+      children[i].parentLocalID = i;
 
       if (children[i].size() <= BVH4iBuilderMorton::MORTON_LEAF_THRESHOLD)
 	{
 	  bounds.extend( createSmallLeaf(children[i]) );
 	}
       else
-	bounds.extend( recurse(children[i],alloc,mode,numThreads) );
+	{
+	  bounds.extend( recurse(children[i],alloc) ); // recurse 
+	}
     }
 
-    node[current.parentID].lower = bounds.lower;
-    node[current.parentID].upper = bounds.upper;
-    node[current.parentID].createNode(currentIndex,numChildren);
+    store3f(&node[current.parentNodeID].lower[current.parentLocalID],broadcast4to16f(&bounds.lower));
+    store3f(&node[current.parentNodeID].upper[current.parentLocalID],broadcast4to16f(&bounds.upper));
+    createBVH4iNode<4>(node[current.parentNodeID].lower[current.parentLocalID].child,currentIndex);
+
+    if (enableTreeRotations)
+      {
+	BVH4i::NodeRef local_root = node[current.parentNodeID].child(current.parentLocalID);
+	BVH4iRotate::rotateNode(bvh,local_root);
+      }
 
     return bounds;
   }
 
-
-  void BVH4iBuilderMorton::refit(const size_t index) const
+  BBox3fa BVH4iBuilderMorton::refit(const BVH4i::NodeRef &ref)
   {    
-    BVHNode& entry = node[index];
+    if (unlikely(ref.isLeaf()))
+      {
+	return BBox3fa( empty );
+      }
 
-    if (unlikely(entry.isLeaf()))
-      return;
+    BVH4i::Node *n = (BVH4i::Node*)ref.node(node);
 
-    const size_t children = entry.firstChildID();
-    const size_t items    = entry.items();
-    BVHNode* next = &node[children+0];
-    
-    Vec3fa lower(pos_inf);
-    Vec3fa upper(neg_inf);
-    const int e0 = entry.lower.a;
-    const int e1 = entry.upper.a;
-    
-    for (size_t i=0; i<items; i++) 
-    {
-      const size_t childIndex = children + i;	    	    
-      if (!next[i].isLeaf())
-        refit(childIndex);
-      
-      lower = min(lower,next[i].lower);
-      upper = max(upper,next[i].upper);
-    }      
-    
-    entry.lower = Vec3fa(lower);
-    entry.upper = Vec3fa(upper);
-    entry.lower.a = e0;
-    entry.upper.a = e1;
+    BBox3fa parentBounds = empty;
+
+    for (size_t i=0;i<BVH4i::N;i++)
+      {
+	if (n->child(i) == BVH4i::invalidNode) break;
+	
+	if (n->child(i).isLeaf())
+	  {
+	    parentBounds.extend( n->bounds(i) );
+	  }
+	else
+	  {
+	    BBox3fa bounds = refit( n->child(i) );
+
+	    n->setBounds(i,bounds);
+	    parentBounds.extend( bounds );
+	  }
+      }
+    return parentBounds;
   }    
 
-  void BVH4iBuilderMorton::refit_toplevel(const size_t index) const
+  BBox3fa BVH4iBuilderMorton::refit_toplevel(const BVH4i::NodeRef &ref)
   {    
-    BVHNode& entry = node[index];
+    if (unlikely(ref.isLeaf()))
+      {
+	return BBox3fa( empty );
+      }
 
-    if (entry.upper.a == -1 || entry.isLeaf())    
-      return;
+    BVH4i::Node *n = (BVH4i::Node*)ref.node(node);
 
-    const unsigned int children = entry.firstChildID();
-    BVHNode* next = &node[children+0];
-    
-    const unsigned int items = entry.items();
-    
-    Vec3fa lower(pos_inf);
-    Vec3fa upper(neg_inf);
-    const int e0 = entry.lower.a;
-    const int e1 = entry.upper.a;
-    
-    for (unsigned int i=0; i<items; i++) 
-    {
-      const unsigned int childIndex = children + i;	    	    
-      if (!next[i].isLeaf())
-        refit_toplevel(childIndex);
-      
-      lower = min(lower,next[i].lower);
-      upper = max(upper,next[i].upper);
-    }      
-    
-    entry.lower = Vec3fa(lower);
-    entry.upper = Vec3fa(upper);
-    entry.lower.a = e0;
-    entry.upper.a = e1;
+    BBox3fa parentBounds = empty;
+
+    for (size_t i=0;i<BVH4i::N;i++)
+      {
+	if (n->child(i) == BVH4i::invalidNode) break;
+	
+	if (n->child(i).isLeaf())
+	  parentBounds.extend( n->bounds(i) );
+	else if (n->upper[i].child == BVH4I_TOP_LEVEL_MARKER)
+	  {
+	    BVH4i::Node *c = (BVH4i::Node*)n->child(i).node(node);
+	    parentBounds.extend( c->bounds() );	    
+	    n->setBounds(i,c->bounds() );
+	  }
+	else
+	  {
+	    BBox3fa bounds = refit_toplevel( n->child(i) );
+	    n->setBounds(i,bounds);
+	    parentBounds.extend( bounds );
+	  }
+      }
+
+    if (enableTreeRotations)
+      BVH4iRotate::rotateNode(bvh,ref);
+
+    return parentBounds;
+
   }
 
   void BVH4iBuilderMorton::build_main (const size_t threadIndex, const size_t threadCount)
   { 
     DBG(PING);
+
+    /* start measurement */
+    double t0 = 0.0f;
+
+#if !defined(PROFILE)
+    if (g_verbose >= 2) 
+#endif
+      t0 = getSeconds();
+
     TIMER(std::cout << std::endl);
     TIMER(double msec = 0.0);
+
+    /* init thread state */
+    TIMER(msec = getSeconds());
+    scene->lockstep_scheduler.dispatchTask( task_initThreadState, this, threadIndex, threadCount );
+    TIMER(msec = getSeconds()-msec);    
+    TIMER(std::cout << "task_initThreadState " << 1000. * msec << " ms" << std::endl << std::flush);
 
     /* compute scene bounds */
     TIMER(msec = getSeconds());
     global_bounds.reset();
-    LockStepTaskScheduler::dispatchTask( task_computeBounds, this, threadIndex, threadCount );
+    scene->lockstep_scheduler.dispatchTask( task_computeBounds, this, threadIndex, threadCount );
     TIMER(msec = getSeconds()-msec);    
     TIMER(std::cout << "task_computeBounds " << 1000. * msec << " ms" << std::endl << std::flush);
     TIMER(DBG_PRINT(global_bounds));
-
-
-
+    
     /* compute morton codes */
     TIMER(msec = getSeconds());
-    LockStepTaskScheduler::dispatchTask( task_computeMortonCodes, this, threadIndex, threadCount );   
+    scene->lockstep_scheduler.dispatchTask( task_computeMortonCodes, this, threadIndex, threadCount );   
 
     /* padding */
     MortonID32Bit* __restrict__ const dest = (MortonID32Bit*)morton;
@@ -1189,20 +1221,30 @@ namespace embree
 
     /* sort morton codes */
     TIMER(msec = getSeconds());
-    LockStepTaskScheduler::dispatchTask( task_radixsort, this, threadIndex, threadCount );
+    scene->lockstep_scheduler.dispatchTask( task_radixsort, this, threadIndex, threadCount );
 
 #if defined(DEBUG)
     for (size_t i=1; i<((numPrimitives+7)&(-8)); i++)
-      assert(morton[i-1].code <= morton[i].code);
+      {
+	if (morton[i-1].code > morton[i].code)
+	  {
+	    DBG_PRINT( i );
+	    DBG_PRINT( morton[i-1].code );
+	    DBG_PRINT( morton[i].code );
+	  }
+
+	assert(morton[i-1].code <= morton[i].code);
+      }
 
     for (size_t i=numPrimitives; i<((numPrimitives+7)&(-8)); i++) {
       assert(dest[i].code  == 0xffffffff); 
       assert(dest[i].index == 0);
     }
+
 #endif	    
 
     TIMER(msec = getSeconds()-msec);    
-    TIMER(std::cout << "task_radixsort " << 1000. * msec << " ms" << std::endl << std::flush);
+    TIMER(std::cout << "task_radixsort " << 1000. * msec << " ms -> " << numPrimitives / msec / 1E+6 << "M key/value pairs per sec" <<  std::endl << std::flush);
 
     TIMER(msec = getSeconds());
 
@@ -1213,11 +1255,10 @@ namespace embree
 
     SmallBuildRecord br;
     br.init(0,numPrimitives);
-    br.parentID = 0;
+    br.parentNodeID = 0;
+    br.parentLocalID = 0;
     br.depth = 1;
 
-
-#if 1
 
     buildRecords[0] = br;
     numBuildRecords = 1;
@@ -1225,25 +1266,19 @@ namespace embree
     while(numBuildRecords < threadCount*3)
       {
 	numBuildRecordCounter.reset(numBuildRecords);
-	LockStepTaskScheduler::dispatchTask( task_createTopLevelTree, this, threadIndex, threadCount );
+	scene->lockstep_scheduler.dispatchTask( task_createTopLevelTree, this, threadIndex, threadCount );
 	iterations++;
 
 	if (unlikely(numBuildRecords == numBuildRecordCounter)) { break; }
 
 	numBuildRecords = numBuildRecordCounter;
       }
-#else
-
-    /* perform first splits in single threaded mode */
-    NodeAllocator alloc(atomicID,numAllocatedNodes);
-
-    recurse(br,alloc,CREATE_TOP_LEVEL,threadIndex);	    
-
-
-#endif
 
     /* sort all subtasks by size */
+
     quicksort_insertionsort_decending<SmallBuildRecord,16>(buildRecords,0,numBuildRecords-1);
+
+
 
     TIMER(msec = getSeconds()-msec);    
     TIMER(std::cout << "create top level " << 1000. * msec << " ms" << std::endl << std::flush);
@@ -1252,9 +1287,11 @@ namespace embree
     TIMER(msec = getSeconds());
     
     /* build sub-trees */
-    LockStepTaskScheduler::dispatchTask( task_recurseSubMortonTrees, this, threadIndex, threadCount );
+    scene->lockstep_scheduler.dispatchTask( task_recurseSubMortonTrees, this, threadIndex, threadCount );
 
-    numNodes = atomicID >> 2;
+    DBG(DBG_PRINT(atomicID));
+
+    numNodes = atomicID;
 
     TIMER(msec = getSeconds()-msec);    
     TIMER(std::cout << "task_recurseSubMortonTrees " << 1000. * msec << " ms" << std::endl << std::flush);
@@ -1262,53 +1299,14 @@ namespace embree
     TIMER(msec = getSeconds());
 
     /* refit toplevel part of tree */
-    refit_toplevel(0);
+    BBox3fa rootBounds = refit_toplevel(node->child(0));
 
     TIMER(msec = getSeconds()-msec);    
     TIMER(std::cout << "refit top level " << 1000. * msec << " ms" << std::endl << std::flush);
 
-    /* set global bounds */
-    global_bounds.geometry = node[0];
-  }
+    bvh->root   = node->child(0); 
+    bvh->bounds = node->child(0).isLeaf() ? node->bounds(0) : rootBounds;
 
-  void BVH4iBuilderMorton::build_parallel_morton(size_t threadIndex, size_t threadCount, size_t taskIndex, size_t taskCount, TaskScheduler::Event* event) 
-  {
-    TIMER(double msec = 0.0);
-
-
-    /* initialize thread state */
-    initThreadState(threadIndex,threadCount);
-    
-    /* let all thread except for control thread wait for work */
-    if (threadIndex != 0) {
-      LockStepTaskScheduler::dispatchTaskMainLoop(threadIndex,threadCount);
-      return;
-    }
-
-    /* start measurement */
-    double t0 = 0.0f;
-
-#if !defined(PROFILE)
-    if (g_verbose >= 2) 
-#endif
-      t0 = getSeconds();
-
-    /* performs build of tree */
-    build_main(threadIndex,threadCount);
-
-    TIMER(msec = getSeconds());
-    /* convert to optimized layout */
-    LockStepTaskScheduler::dispatchTask( task_convertToSOALayout, this, threadIndex, threadCount );
-    TIMER(msec = getSeconds()-msec);    
-    TIMER(std::cout << "task_convertToSOALayout " << 1000. * msec << " ms" << std::endl << std::flush);
-
-    /* set root and bounding box */
-    bvh->root = bvh->qbvh[0].lower[0].child; 
-    bvh->bounds = global_bounds.geometry;
-
-    /* end task */
-    LockStepTaskScheduler::releaseThreads(threadCount);
-    
     /* stop measurement */
 #if !defined(PROFILE)
     if (g_verbose >= 2) 
@@ -1316,6 +1314,7 @@ namespace embree
       dt = getSeconds()-t0;
 
   }
+
 }
 
 

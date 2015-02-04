@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -17,11 +17,6 @@
 #ifndef __RTCORE_ISPH__
 #define __RTCORE_ISPH__
 
-#ifdef _WIN32
-#  define RTCORE_API extern "C"
-#else
-#  define RTCORE_API extern "C"
-#endif
 
 #ifdef _WIN32
 #  define RTCORE_ALIGN(...) // FIXME: need to specify alignment
@@ -84,6 +79,12 @@ enum RTCError {
   previous error. The rtcGetError function reads and returns the
   currently stored error and clears the error flag again. */
 uniform RTCError rtcGetError();
+
+/*! \brief Type of error callback function. */
+typedef void (*uniform RTC_ERROR_FUNCTION)(const uniform RTCError code, const uniform int8* uniform str);
+
+/*! \brief Sets a callback function that is called whenever an error occurs. */
+void rtcSetErrorFunction(uniform RTC_ERROR_FUNCTION func);
 
 /*! \brief Implementation specific (do not call).
 

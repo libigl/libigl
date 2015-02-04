@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_BVH_REFIT_H__
-#define __EMBREE_BVH_REFIT_H__
+#pragma once
 
 #include "bvh4.h"
 
@@ -37,28 +36,30 @@ namespace embree
       void build(size_t threadIndex, size_t threadCount);
       
       /*! Constructor. */
-      BVH4Refit (BVH4* bvh, Builder* builder, TriangleMeshScene::TriangleMesh* mesh);
+      BVH4Refit (BVH4* bvh, Builder* builder, TriangleMesh* mesh, bool listMode);
 
       ~BVH4Refit();
 
-      TASK_COMPLETE_FUNCTION(BVH4Refit,refit_sequential);
+      //TASK_COMPLETE_FUNCTION(BVH4Refit,refit_sequential);
+      void refit_sequential(size_t threadIndex, size_t threadCount);
       
-      TASK_RUN_FUNCTION(BVH4Refit,task_refit_parallel);
-      TASK_COMPLETE_FUNCTION(BVH4Refit,task_refit_complete);
+      TASK_SET_FUNCTION(BVH4Refit,task_refit_parallel);
       
     private:
       size_t annotate_tree_sizes(NodeRef& ref);
       void calculate_refit_roots ();
       
-      BBox3f leaf_bounds(NodeRef& ref);
-      BBox3f node_bounds(NodeRef& ref);
-      BBox3f recurse_bottom(NodeRef& ref);
-      BBox3f recurse_top(NodeRef& ref);
+      BBox3fa leaf_bounds(NodeRef& ref);
+      BBox3fa node_bounds(NodeRef& ref);
+      BBox3fa recurse_bottom(NodeRef& ref);
+      BBox3fa recurse_top(NodeRef& ref);
       
     private:
       //BuildSource* source;           //!< input geometry
       //void* geometry;                //!< input geometry
-      TriangleMeshScene::TriangleMesh* mesh;
+      TriangleMesh* mesh;
+      LockStepTaskScheduler* scheduler;
+      bool listMode;
       
     public:
       const PrimitiveType& primTy;   //!< primitve type stored in BVH
@@ -71,5 +72,3 @@ namespace embree
     };
   }
 }
-#endif
-  

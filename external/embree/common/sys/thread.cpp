@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -39,7 +39,7 @@ namespace embree
   /*! set the affinity of a given thread */
   void setAffinity(HANDLE thread, ssize_t affinity)
   {
-#if (_WIN32_WINNT >= 0x0601)
+#if (_WIN32_WINNT >= 0x0601) // FIXME: use getProcAddress to activate this feature only if supported by Windows
     int groups = GetActiveProcessorGroupCount();
     int totalProcessors = 0, group = 0, number = 0;
     for (int i = 0; i<groups; i++) {
@@ -59,19 +59,19 @@ namespace embree
     groupAffinity.Reserved[1] = 0;
     groupAffinity.Reserved[2] = 0;
     if (!SetThreadGroupAffinity(thread, &groupAffinity, NULL))
-      throw std::runtime_error("cannot set thread group affinity");
+      THROW_RUNTIME_ERROR("cannot set thread group affinity");
 
     PROCESSOR_NUMBER processorNumber;
     processorNumber.Group = group;
     processorNumber.Number = number;
     processorNumber.Reserved = 0;
     if (!SetThreadIdealProcessorEx(thread, &processorNumber, NULL))
-      throw std::runtime_error("cannot set threadeal processor");
+      THROW_RUNTIME_ERROR("cannot set ideal processor");
 #else
     if (!SetThreadAffinityMask(thread, DWORD_PTR(uint64(1) << affinity)))
-      throw std::runtime_error("cannot set thread affinity mask");
+      THROW_RUNTIME_ERROR("cannot set thread affinity mask");
     if (SetThreadIdealProcessor(thread, (DWORD)affinity) == (DWORD)-1)
-      throw std::runtime_error("cannot set threadeal processor");
+      THROW_RUNTIME_ERROR("cannot set ideal processor");
 #endif
   }
 
@@ -104,7 +104,7 @@ namespace embree
   thread_t createThread(thread_func f, void* arg, size_t stack_size, ssize_t threadID)
   {
     HANDLE thread = CreateThread(NULL, stack_size, (LPTHREAD_START_ROUTINE)threadStartup, new ThreadStartupData(f,arg), 0, NULL);
-    if (thread == NULL) throw std::runtime_error("cannot create thread");
+    if (thread == NULL) THROW_RUNTIME_ERROR("cannot create thread");
     if (threadID >= 0) setAffinity(thread, threadID);
     return thread_t(thread);
   }
@@ -289,7 +289,7 @@ namespace embree
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     if (stack_size > 0) pthread_attr_setstacksize (&attr, stack_size);
-    
+    //DBG_PRINT( stack_size );
     /* set affinity */
 #if defined(__LINUX__)
     if (threadID >= 0) {
@@ -303,7 +303,7 @@ namespace embree
     /* create thread */
     pthread_t* tid = new pthread_t;
     if (pthread_create(tid,&attr,(void*(*)(void*))threadStartup,new ThreadStartupData(f,arg,threadID)) != 0)
-      throw std::runtime_error("pthread_create");
+      THROW_RUNTIME_ERROR("pthread_create");
 
     return thread_t(tid);
   }
@@ -316,7 +316,7 @@ namespace embree
   /*! waits until the given thread has terminated */
   void join(thread_t tid) {
     if (pthread_join(*(pthread_t*)tid, NULL) != 0)
-      throw std::runtime_error("pthread_join");
+      THROW_RUNTIME_ERROR("pthread_join");
     delete (pthread_t*)tid;
   }
 
@@ -330,7 +330,7 @@ namespace embree
   tls_t createTls() {
     pthread_key_t* key = new pthread_key_t;
     if (pthread_key_create(key,NULL) != 0)
-      throw std::runtime_error("pthread_key_create");
+      THROW_RUNTIME_ERROR("pthread_key_create");
 
     return tls_t(key);
   }
@@ -347,7 +347,7 @@ namespace embree
   {
     assert(tls);
     if (pthread_setspecific(*(pthread_key_t*)tls, ptr) != 0)
-      throw std::runtime_error("pthread_setspecific");
+      THROW_RUNTIME_ERROR("pthread_setspecific");
   }
 
   /*! destroys thread local storage identifier */
@@ -355,7 +355,7 @@ namespace embree
   {
     assert(tls);
     if (pthread_key_delete(*(pthread_key_t*)tls) != 0)
-      throw std::runtime_error("pthread_key_delete");
+      THROW_RUNTIME_ERROR("pthread_key_delete");
     delete (pthread_key_t*)tls;
   }
 }

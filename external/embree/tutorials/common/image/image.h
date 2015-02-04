@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_IMAGE_H__
-#define __EMBREE_IMAGE_H__
+#pragma once
 
 #include <vector>
 #include <string>
@@ -111,38 +110,58 @@ namespace embree
   typedef ImageT<Col4c> Image4c;
   typedef ImageT<Col4f> Image4f;
   
-  /*! Loads image from PPM file. */
-  Ref<Image> loadPPM(const FileName& fileName);
-  
-  /*! Loads image from PFM file. */
-  Ref<Image> loadPFM(const FileName& fileName);
-  
+  /*! Generate a JPEG encoded image from a RGB8 buffer in memory. */
+  void encodeRGB8_to_JPEG(unsigned char *image, size_t width, size_t height, unsigned char **encoded, size_t *capacity);
+
   /*! Loads image from EXR file. */
   Ref<Image> loadExr(const FileName& fileName);
   
+  /*! Loads image from file. Format is auto detected. */
+  Ref<Image> loadImage(const FileName& filename, bool cache = false);
+
+  /*! Loads image from JPEG file. */
+  Ref<Image> loadJPEG(const FileName& fileName);
+
   /*! Loads image using ImageMagick. */
   Ref<Image> loadMagick(const FileName& fileName);
   
-  /*! Loads image from file. Format is auto detected. */
-  Ref<Image> loadImage(const FileName& filename, bool cache = false);
-  
-  /*! Store image to PPM file. */
-  void storePPM(const Ref<Image>& img, const FileName& fileName);
-  
-  /*! Store image to PFM file. */
-  void storePFM(const Ref<Image>& img, const FileName& fileName);
-  
-  /*! Store image to TGA file. */
-  void storeTga(const Ref<Image>& img, const FileName& fileName);
+  /*! Loads image from PFM file. */
+  Ref<Image> loadPFM(const FileName& fileName);
+
+  /*! Loads image from PNG file. */
+//Ref<Image> loadPNG(const FileName& fileName);
+
+  /*! Loads image from PPM file. */
+  Ref<Image> loadPPM(const FileName& fileName);
+
+  /*! Loads image from TIFF file. */
+//Ref<Image> loadTIFF(const FileName& fileName);
   
   /*! Store image to EXR file. */
   void storeExr(const Ref<Image>& img, const FileName& fileName);
   
+  /*! Store image to file. Format is auto detected. */
+  void storeImage(const Ref<Image>& image, const FileName& filename);
+
+  /*! Store image to JPEG file. */
+  void storeJPEG(const Ref<Image>& img, const FileName& fileName);
+
   /*! Store image to file using ImageMagick. */
   void storeMagick(const Ref<Image>& img, const FileName& fileName);
   
-  /*! Store image to file. Format is auto detected. */
-  void storeImage(const Ref<Image>& image, const FileName& filename);
-}
+  /*! Store image to PFM file. */
+  void storePFM(const Ref<Image>& img, const FileName& fileName);
+  
+  /*! Store image to PNG file. */
+//void storePNG(const Ref<Image>& img, const FileName& fileName);
 
-#endif
+  /*! Store image to PPM file. */
+  void storePPM(const Ref<Image>& img, const FileName& fileName);
+  
+  /*! Store image to TGA file. */
+  void storeTga(const Ref<Image>& img, const FileName& fileName);
+
+  /*! Store image to TIFF file. */
+//void storeTIFF(const Ref<Image>& img, const FileName& fileName);
+
+}

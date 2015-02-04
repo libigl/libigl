@@ -1,5 +1,5 @@
 ## ======================================================================== ##
-## Copyright 2009-2013 Intel Corporation                                    ##
+## Copyright 2009-2014 Intel Corporation                                    ##
 ##                                                                          ##
 ## Licensed under the Apache License, Version 2.0 (the "License");          ##
 ## you may not use this file except in compliance with the License.         ##
@@ -19,7 +19,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 SET(__XEON__ 1)
 ADD_SUBDIRECTORY(xeon)
 
-IF (TARGET_XEON_PHI)
+IF (XEON_PHI_ISA)
   SET(__XEON__ 0)
   ADD_SUBDIRECTORY(xeonphi)
 ENDIF()

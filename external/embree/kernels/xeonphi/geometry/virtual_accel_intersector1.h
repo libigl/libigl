@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_VIRTUAL_ACCEL_INTERSECTOR1_H__
-#define __EMBREE_VIRTUAL_ACCEL_INTERSECTOR1_H__
+#pragma once
 
 #include "common/accel.h"
 #include "common/ray.h"
@@ -28,7 +27,6 @@ namespace embree
 
     static __forceinline void intersect(Ray& ray, const Primitive& prim, const void* geom) 
     {
-      AVX_ZERO_UPPER();
       prim.accel->intersect((RTCRay&)ray,prim.item);
     }
 
@@ -40,7 +38,6 @@ namespace embree
 
     static __forceinline bool occluded(Ray& ray, const Primitive& prim, const void* geom) 
     {
-      AVX_ZERO_UPPER();
       prim.accel->occluded((RTCRay&)ray,prim.item);
       return ray.geomID == 0;
     }
@@ -55,7 +52,3 @@ namespace embree
     }
   };
 }
-
-#endif
-
-

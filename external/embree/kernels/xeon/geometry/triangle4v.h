@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_ACCEL_TRIANGLE4V_H__
-#define __EMBREE_ACCEL_TRIANGLE4V_H__
+#pragma once
 
 #include "primitive.h"
 
@@ -30,16 +29,22 @@ namespace embree
     __forceinline Triangle4v () {}
 
     /*! Construction from vertices and IDs. */
-    __forceinline Triangle4v (const sse3f& v0, const sse3f& v1, const sse3f& v2, const ssei& geomID, const ssei& primID, const ssei& mask)
-      : v0(v0), v1(v1), v2(v2), geomID(geomID), primID(primID)
+    __forceinline Triangle4v (const sse3f& v0, const sse3f& v1, const sse3f& v2, const ssei& geomIDs, const ssei& primIDs, const ssei& mask, const bool last)
+      : v0(v0), v1(v1), v2(v2), geomIDs(geomIDs), primIDs(primIDs | (last << 31))
     {
-#if defined(__USE_RAY_MASK__)
+#if defined(RTCORE_RAY_MASK)
       this->mask = mask;
 #endif
     }
 
+    /*! Returns if the specified triangle is valid. */
+    __forceinline bool valid(const size_t i) const { 
+      assert(i<4); 
+      return geomIDs[i] != -1; 
+    }
+
     /*! Returns a mask that tells which triangles are valid. */
-    __forceinline sseb valid() const { return geomID != ssei(-1); }
+    __forceinline sseb valid() const { return geomIDs != ssei(-1); }
 
     /*! Returns the number of stored triangles. */
     __forceinline size_t size() const {
@@ -47,7 +52,7 @@ namespace embree
     }
 
     /*! calculate the bounds of the triangle */
-    __forceinline BBox3f bounds() const 
+    __forceinline BBox3fa bounds() const 
     {
       sse3f lower = min(v0,v1,v2);
       sse3f upper = max(v0,v1,v2);
@@ -58,7 +63,7 @@ namespace embree
       upper.x = select(mask,upper.x,ssef(neg_inf));
       upper.y = select(mask,upper.y,ssef(neg_inf));
       upper.z = select(mask,upper.z,ssef(neg_inf));
-      return BBox3f(Vec3fa(reduce_min(lower.x),reduce_min(lower.y),reduce_min(lower.z)),
+      return BBox3fa(Vec3fa(reduce_min(lower.x),reduce_min(lower.y),reduce_min(lower.z)),
                     Vec3fa(reduce_max(upper.x),reduce_max(upper.y),reduce_max(upper.z)));
     }
 
@@ -74,44 +79,119 @@ namespace embree
       store4f_nt(&dst->v2.x,src.v2.x);
       store4f_nt(&dst->v2.y,src.v2.y);
       store4f_nt(&dst->v2.z,src.v2.z);
-      store4i_nt(&dst->geomID,src.geomID);
-      store4i_nt(&dst->primID,src.primID);
-#if defined(__USE_RAY_MASK__)
+      store4i_nt(&dst->geomIDs,src.geomIDs);
+      store4i_nt(&dst->primIDs,src.primIDs);
+#if defined(RTCORE_RAY_MASK)
       store4i_nt(&dst->mask,src.mask);
 #endif
     }
 
+    /*! returns required number of primitive blocks for N primitives */
+    static __forceinline size_t blocks(size_t N) { return (N+3)/4; }
+
+    /*! checks if this is the last triangle in the list */
+    __forceinline int last() const { 
+      return primIDs[0] & 0x80000000; 
+    }
+
+    /*! returns the geometry IDs */
+    template<bool list>
+    __forceinline ssei geomID() const { 
+      return geomIDs; 
+    }
+    template<bool list>
+    __forceinline int geomID(const size_t i) const { 
+      assert(i<4); return geomIDs[i]; 
+    }
+
+    /*! returns the primitive IDs */
+    template<bool list>
+    __forceinline ssei primID() const { 
+      if (list) return primIDs & 0x7FFFFFFF; 
+      else      return primIDs;
+    }
+    template<bool list>
+    __forceinline int  primID(const size_t i) const { 
+      assert(i<4); 
+      if (list) return primIDs[i] & 0x7FFFFFFF; 
+      else      return primIDs[i];
+    }
+
+    /*! fill triangle from triangle list */
+    __forceinline void fill(atomic_set<PrimRefBlock>::block_iterator_unsafe& prims, Scene* scene, const bool list)
+    {
+      ssei vgeomID = -1, vprimID = -1, vmask = -1;
+      sse3f v0 = zero, v1 = zero, v2 = zero;
+      
+      for (size_t i=0; i<4 && prims; i++, prims++)
+      {
+	const PrimRef& prim = *prims;
+	const size_t geomID = prim.geomID();
+        const size_t primID = prim.primID();
+        const TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(geomID);
+        const TriangleMesh::Triangle& tri = mesh->triangle(primID);
+        const Vec3fa& p0 = mesh->vertex(tri.v[0]);
+        const Vec3fa& p1 = mesh->vertex(tri.v[1]);
+        const Vec3fa& p2 = mesh->vertex(tri.v[2]);
+        vgeomID [i] = geomID;
+        vprimID [i] = primID;
+        vmask   [i] = mesh->mask;
+        v0.x[i] = p0.x; v0.y[i] = p0.y; v0.z[i] = p0.z;
+        v1.x[i] = p1.x; v1.y[i] = p1.y; v1.z[i] = p1.z;
+        v2.x[i] = p2.x; v2.y[i] = p2.y; v2.z[i] = p2.z;
+      }
+      Triangle4v::store_nt(this,Triangle4v(v0,v1,v2,vgeomID,vprimID,vmask,list && !prims));
+    }
+
+    /*! fill triangle from triangle list */
+    __forceinline void fill(const PrimRef* prims, size_t& begin, size_t end, Scene* scene, const bool list)
+    {
+      ssei vgeomID = -1, vprimID = -1, vmask = -1;
+      sse3f v0 = zero, v1 = zero, v2 = zero;
+      
+      for (size_t i=0; i<4 && begin<end; i++, begin++)
+      {
+	const PrimRef& prim = prims[begin];
+        const size_t geomID = prim.geomID();
+        const size_t primID = prim.primID();
+        const TriangleMesh* __restrict__ const mesh = scene->getTriangleMesh(geomID);
+        const TriangleMesh::Triangle& tri = mesh->triangle(primID);
+        const Vec3fa& p0 = mesh->vertex(tri.v[0]);
+        const Vec3fa& p1 = mesh->vertex(tri.v[1]);
+        const Vec3fa& p2 = mesh->vertex(tri.v[2]);
+        vgeomID [i] = geomID;
+        vprimID [i] = primID;
+        vmask   [i] = mesh->mask;
+        v0.x[i] = p0.x; v0.y[i] = p0.y; v0.z[i] = p0.z;
+        v1.x[i] = p1.x; v1.y[i] = p1.y; v1.z[i] = p1.z;
+        v2.x[i] = p2.x; v2.y[i] = p2.y; v2.z[i] = p2.z;
+      }
+      Triangle4v::store_nt(this,Triangle4v(v0,v1,v2,vgeomID,vprimID,vmask,list && begin>=end));
+    }
+   
   public:
     sse3f v0;      //!< 1st vertex of the triangles.
     sse3f v1;      //!< 2nd vertex of the triangles.
     sse3f v2;      //!< 3rd vertex of the triangles.
-    ssei geomID;   //!< user geometry ID
-    ssei primID;   //!< primitive ID
-#if defined(__USE_RAY_MASK__)
+    ssei geomIDs;   //!< user geometry ID
+    ssei primIDs;   //!< primitive ID
+#if defined(RTCORE_RAY_MASK)
     ssei mask;     //!< geometry mask
 #endif
   };
 
-  struct Triangle4vType : public PrimitiveType {
+  struct Triangle4vType : public PrimitiveType 
+  {
+    static Triangle4vType type;
+
     Triangle4vType ();
     size_t blocks(size_t x) const;
     size_t size(const char* This) const;
   };
 
-  struct SceneTriangle4v : public Triangle4vType
-  {
-    static SceneTriangle4v type;
-    void pack(char* This, atomic_set<PrimRefBlock>::block_iterator_unsafe& prims, void* geom) const;
-    void pack(char* dst, const PrimRef* prims, size_t num, void* geom) const;
-    BBox3f update(char* prim, size_t num, void* geom) const;
-  };
-
   struct TriangleMeshTriangle4v : public Triangle4vType
   {
     static TriangleMeshTriangle4v type;
-    void pack(char* This, atomic_set<PrimRefBlock>::block_iterator_unsafe& prims, void* geom) const;
-    BBox3f update(char* prim, size_t num, void* geom) const;
+    BBox3fa update(char* prim, size_t num, void* geom) const;
   };
 }
-
-#endif

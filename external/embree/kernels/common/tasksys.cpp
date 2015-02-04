@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -42,7 +42,7 @@ namespace embree
   };
 
   void ISPCTask::run(size_t threadIndex, size_t threadCount, size_t taskIndex, size_t taskCount, TaskScheduler::Event* event) {
-    func(data,threadIndex,threadCount,taskIndex,taskCount);
+    func(data,threadIndex,/* threadCount */ TaskScheduler::getNumThreads() ,taskIndex,taskCount);
   }
 
   void ISPCTask::finish(size_t threadIndex, size_t threadCount, TaskScheduler::Event* event) {
@@ -54,7 +54,7 @@ namespace embree
     return (char*)_mm_malloc(size,alignment);
   }
 
-  __dllexport void ISPCLaunch(void** taskPtr, void* func, void* data, int count) {
+  __dllexport void ISPCLaunch(void** taskPtr, void* func, void* data, int count) {      
     ISPCTask* ispcTask = new ISPCTask((TaskScheduler::Event*)(*taskPtr),(TaskFuncType)func,data,count);
     TaskScheduler::addTask(-1, TaskScheduler::GLOBAL_BACK, &ispcTask->task);
   }

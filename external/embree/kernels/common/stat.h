@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,13 +14,12 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_STAT_H__
-#define __EMBREE_STAT_H__
+#pragma once
 
 #include "default.h"
 
 /* Makros to gather statistics */
-#ifdef __USE_STAT_COUNTERS__
+#ifdef RTCORE_STAT_COUNTERS
 #define STAT(x) x
 #define STAT3(s,x,y,z) \
   STAT(Stat::get().code  .s+=x);               \
@@ -65,6 +64,8 @@ namespace embree
 	    AtomicCounter trav_prim_hits;
 #if defined(__MIC__)
 	    AtomicCounter trav_hit_boxes[16+1];
+	    AtomicCounter trav_stack_nodes;
+
 #endif
 
 	  } normal, shadow;
@@ -90,5 +91,3 @@ namespace embree
     static Stat instance;
   };
 }
-
-#endif

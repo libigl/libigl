@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -55,9 +55,16 @@ typedef uniform struct __RTCScene {}* uniform RTCScene;
 RTCScene rtcNewScene (uniform RTCSceneFlags flags, uniform RTCAlgorithmFlags aflags);
 
 /*! Commits the geometry of the scene. After initializing or modifying
- *  geometries, this function has to get called before tracing
+ *  geometries, commit has to get called before tracing
  *  rays. */
 void rtcCommit (RTCScene scene); 
+
+/*! Commits the geometry of the scene. The calling threads will be used
+ *  internally as a worker threads. The function will wait until
+ *  'numThreads' threads have called this function. After initializing
+ *  or modifying geometries, commit has to get called before
+ *  tracing rays. */
+void rtcCommitThread(RTCScene scene, uniform unsigned int threadID, uniform unsigned int numThreads);
 
 /*! Intersects a uniform ray with the scene. This function can only be
  *  called for scenes with the RTC_INTERSECT_UNIFORM flag set. The ray

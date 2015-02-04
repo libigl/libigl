@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_MICI_H__
-#define __EMBREE_MICI_H__
+#pragma once
 
 namespace embree
 { 
@@ -64,6 +63,7 @@ namespace embree
 
     __forceinline static mic_i zero() { return _mm512_setzero_epi32(); }
     __forceinline static mic_i one () { return _mm512_set_1to16_epi32(1); }
+    __forceinline static mic_i neg_one () { return _mm512_set_1to16_epi32(-1); }
 
     ////////////////////////////////////////////////////////////////////////////////
     /// Array Access
@@ -71,6 +71,10 @@ namespace embree
     
     __forceinline int&       operator[](const size_t index)       { return i[index]; };
     __forceinline const int& operator[](const size_t index) const { return i[index]; };
+
+    __forceinline unsigned int&       uint(const size_t index) const      { assert(index < 16); return ((unsigned int*)i)[index]; };
+    __forceinline size_t&             uint64(const size_t index)  const     { assert(index < 8); return ((size_t*)i)[index]; };
+
 
   };
   
@@ -207,8 +211,16 @@ namespace embree
     return _mm512_mask_or_epi32(f,m,t,t); 
   }
 
-  __forceinline void xchg(mic_m m, mic_i& a, mic_i& b) { 
+  __forceinline void xchg(const mic_m &m, mic_i& a, mic_i& b) { 
     const mic_i c = a; a = select(m,b,a); b = select(m,c,b);  
+  }
+
+  __forceinline mic_m test(const mic_m &m, const mic_i& a, const mic_i& b) { 
+    return _mm512_mask_test_epi32_mask(m,a,b);
+  }
+
+  __forceinline mic_m test(const mic_i& a, const mic_i& b) { 
+    return _mm512_test_epi32_mask(a,b);
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -343,6 +355,11 @@ namespace embree
     return _mm512_mask_extloadunpacklo_epi32(v, mask, addr, _MM_UPCONV_EPI32_NONE, _MM_HINT_NONE);
   }
 
+  __forceinline mic_i uload16i(const mic_m& mask,const int *const addr) {
+    mic_i r = _mm512_undefined_epi32();
+    r =_mm512_mask_extloadunpacklo_epi32(r, mask,addr, _MM_UPCONV_EPI32_NONE, _MM_HINT_NONE);
+    return _mm512_mask_extloadunpackhi_epi32(r, mask,addr+16, _MM_UPCONV_EPI32_NONE, _MM_HINT_NONE);  
+  }
   
 
   __forceinline mic_i gather16i_4i(const int *__restrict__ const ptr0,
@@ -367,6 +384,18 @@ namespace embree
     v = align_shift_right<12>(v,broadcast4to16i((const int*)ptr2));
     v = align_shift_right<12>(v,broadcast4to16i((const int*)ptr1));
     v = align_shift_right<12>(v,broadcast4to16i((const int*)ptr0));
+    return v;
+  }
+
+  __forceinline mic_i gather16i_4i_align(const mic_i &v0,
+					 const mic_i &v1,
+					 const mic_i &v2,
+					 const mic_i &v3)
+  {
+    mic_i v = v3;
+    v = align_shift_right<12>(v,v2);
+    v = align_shift_right<12>(v,v1);
+    v = align_shift_right<12>(v,v0);
     return v;
   }
 
@@ -434,6 +463,10 @@ namespace embree
   __forceinline void store16i_uint8(const mic_m& mask, void* __restrict__ addr, const mic_i& v2) {
     _mm512_mask_extstore_epi32(addr,mask,v2,_MM_DOWNCONV_EPI32_UINT8,_MM_HINT_NONE);
   }
+
+  __forceinline mic_i convert_uint32(const __m512 f) { 
+    return _mm512_cvtfxpnt_round_adjustps_epu32(f,_MM_FROUND_TO_ZERO,_MM_EXPADJ_NONE);
+  }
   
   ////////////////////////////////////////////////////////////////////////////////
   /// Output Operators
@@ -447,5 +480,3 @@ namespace embree
       return cout;
     }
 }
-
-#endif

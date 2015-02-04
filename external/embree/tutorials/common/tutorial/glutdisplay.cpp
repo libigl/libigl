@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,6 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
+#include <map>
 #include "glutdisplay.h"
 #include "sys/filename.h"
 #include "lexers/streamfilters.h"
@@ -24,7 +25,7 @@
 #if defined(__MACOSX__)
 #  include <OpenGL/gl.h>
 #  include <GLUT/glut.h>
-#  include <ApplicationServices/ApplicationServices.h>
+//#  include <ApplicationServices/ApplicationServices.h>
 #elif defined(__WIN32__)
 #  include <windows.h>
 #  include <GL/gl.h>   
@@ -33,6 +34,8 @@
 #  include <GL/gl.h>   
 #  include <GL/glut.h>
 #endif
+
+float g_debug = 0.0f;
 
 namespace embree
 {
@@ -58,13 +61,24 @@ namespace embree
   /*                                  Keyboard control                                             */
   /*************************************************************************************************/
 
+  typedef void (* KeyBinding)(unsigned char key, int x, int y);
+
   static float g_speed = 1.0f;
+  static std::map<unsigned char, KeyBinding> keyBindings;
 
-  void keyboardFunc(unsigned char k, int, int)
+  void mapKeyToFunction(unsigned char key, KeyBinding binding)
   {
-    key_pressed(k);
+    keyBindings[key] = binding;
+  }
 
-    switch (k)
+  void keyboardFunc(unsigned char key, int x, int y)
+  {
+
+    if (keyBindings.find(key) != keyBindings.end()) { keyBindings[key](key, x, y);  return; }
+
+    key_pressed(key);
+
+    switch (key)
     {
     case 'f' : 
       if (g_fullscreen) {
@@ -89,6 +103,10 @@ namespace embree
     case 'w' : g_camera.move(0.0f,0.0f,+g_speed); break;
     case 's' : g_camera.move(0.0f,0.0f,-g_speed); break;
     case ' ' : g_display = !g_display; break;
+
+    case '+' : g_debug=clamp(g_debug+0.01f); PRINT(g_debug); break;
+    case '-' : g_debug=clamp(g_debug-0.01f); PRINT(g_debug); break;
+
     case '\033': case 'q': case 'Q':
       cleanup();
       glutDestroyWindow(g_window);
@@ -97,11 +115,11 @@ namespace embree
     }
   }
 
-  void specialFunc(int k, int, int)
+  void specialFunc(int key, int, int)
   {
-    key_pressed(k);
+    key_pressed(key);
 
-    switch (k) {
+    switch (key) {
     case GLUT_KEY_LEFT      : g_camera.rotate(-0.02f,0.0f); break;
     case GLUT_KEY_RIGHT     : g_camera.rotate(+0.02f,0.0f); break;
     case GLUT_KEY_UP        : g_camera.move(0.0f,0.0f,+g_speed); break;
@@ -124,10 +142,10 @@ namespace embree
     if (state == GLUT_UP) 
     {
       mouseMode = 0;
-      if (button == GLUT_LEFT_BUTTON && glutGetModifiers() == GLUT_ACTIVE_CTRL) 
+      if (button == GLUT_LEFT_BUTTON && glutGetModifiers() == GLUT_ACTIVE_SHIFT) 
       {
-        AffineSpace3f pixel2world = g_camera.pixel2world(g_width,g_height);
-        Vec3f p; bool hit = pick(x,y, pixel2world.l.vx, pixel2world.l.vy, pixel2world.l.vz, pixel2world.p, p);
+        AffineSpace3fa pixel2world = g_camera.pixel2world(g_width,g_height);
+        Vec3fa p; bool hit = pick(x,y, pixel2world.l.vx, pixel2world.l.vy, pixel2world.l.vz, pixel2world.p, p);
 
         if (hit) {
           Vec3fa delta = p - g_camera.to;
@@ -139,8 +157,8 @@ namespace embree
       }
       else if (button == GLUT_LEFT_BUTTON && glutGetModifiers() == (GLUT_ACTIVE_CTRL | GLUT_ACTIVE_SHIFT)) 
       {
-        AffineSpace3f pixel2world = g_camera.pixel2world(g_width,g_height);
-        Vec3f p; bool hit = pick(x,y, pixel2world.l.vx, pixel2world.l.vy, pixel2world.l.vz, pixel2world.p, p);
+        AffineSpace3fa pixel2world = g_camera.pixel2world(g_width,g_height);
+        Vec3fa p; bool hit = pick(x,y, pixel2world.l.vx, pixel2world.l.vy, pixel2world.l.vz, pixel2world.p, p);
         if (hit) g_camera.to = p;
       }
 
@@ -150,6 +168,7 @@ namespace embree
       if      (button == GLUT_LEFT_BUTTON && modifiers == GLUT_ACTIVE_SHIFT) mouseMode = 1;
       else if (button == GLUT_MIDDLE_BUTTON) mouseMode = 2;
       else if (button == GLUT_RIGHT_BUTTON ) mouseMode = 3;
+      else if (button == GLUT_LEFT_BUTTON && modifiers == GLUT_ACTIVE_CTRL ) mouseMode = 3;
       else if (button == GLUT_LEFT_BUTTON  ) mouseMode = 4;
 
       if (flip14) {
@@ -178,23 +197,24 @@ namespace embree
 
   void displayFunc(void) 
   {
-    AffineSpace3f pixel2world = g_camera.pixel2world(g_width,g_height);
+    AffineSpace3fa pixel2world = g_camera.pixel2world(g_width,g_height);
 
     /* render image using ISPC */
     double t0 = getSeconds();
     render(g_time0-t0,
            pixel2world.l.vx,
-           pixel2world.l.vy,
-           pixel2world.l.vz,
+           -pixel2world.l.vy,
+           pixel2world.l.vz+g_height*pixel2world.l.vy,
            pixel2world.p);
+
     double dt0 = getSeconds()-t0;
 
     if (g_display) 
     {
       /* draw pixels to screen */
       int* pixels = map();
-      glRasterPos2i(-1, 1);
-      glPixelZoom(1.0f, -1.0f);
+      //glRasterPos2i(-1, 1);
+      //glPixelZoom(1.0f, -1.0f);
       glDrawPixels(g_width,g_height,GL_RGBA,GL_UNSIGNED_BYTE,pixels);
       glutSwapBuffers();
       unmap();
@@ -222,12 +242,18 @@ namespace embree
     g_width = width; g_height = height;
   }
   
-  void idleFunc() {
+  void idleFunc()
+  {
     glutPostRedisplay();
   }
 
+  void enterWindowRunLoop()
+  {
+    glutMainLoop();
+  }
+
   /* initialize GLUT */
-  void initGlut (const std::string name, const size_t width, const size_t height, const bool fullscreen, const bool mouseMode)
+  void initWindowState(int& argc, char** argv, const std::string name, const size_t width, const size_t height, const bool fullscreen, const bool mouseMode)
   {
     g_width = width;
     g_height = height;
@@ -235,7 +261,6 @@ namespace embree
 
     g_fullscreen = fullscreen;
     flip14 = mouseMode;
-    int argc = 0; char** argv = NULL; 
     glutInit(&argc, argv);
     glutInitWindowSize((GLsizei)g_width, (GLsizei)g_height);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
@@ -249,6 +274,7 @@ namespace embree
     glutMouseFunc(clickFunc);
     glutMotionFunc(motionFunc);
     glutReshapeFunc(reshapeFunc);
-    glutMainLoop();
   }
+
 }
+

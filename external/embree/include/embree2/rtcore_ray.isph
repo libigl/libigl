@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -20,17 +20,10 @@
 /*! \ingroup embree_kernel_api_ispc */
 /*! \{ */
 
-#ifdef _WIN32
-#  define RTCORE_ALIGN(...) // FIXME: need to specify alignment
-#else
-#  define RTCORE_ALIGN(...) // FIXME: need to specify alignment
-#endif
-
 /*! Ray structure for uniform (single) rays. */
-RTCORE_ALIGN(16) struct RTCRay1 
+struct RTCRay1 
 {
   /* ray data */
-public:
   float org[3];      //!< Ray origin
   float align0;      //!< unused member to force alignment of following members
   
@@ -43,7 +36,6 @@ public:
   int   mask;        //!< Used to mask out objects during traversal
   
   /* hit data */
-public:
   float Ng[3];       //!< Unnormalized geometry normal
   float align2;
   
@@ -53,13 +45,13 @@ public:
   int geomID;        //!< geometry ID
   int primID;        //!< primitive ID
   int instID;        //!< instance ID
+  varying int align[0];  //!< aligns ray on stack to at least 16 bytes
 };
 
 /*! Ray structure for packets of 4 rays. */
 struct RTCRay
 {
   /* ray data */
-public:
   float orgx;  //!< x coordinate of ray origin
   float orgy;  //!< y coordinate of ray origin
   float orgz;  //!< z coordinate of ray origin
@@ -74,7 +66,6 @@ public:
   int   mask;  //!< Used to mask out objects during traversal
   
   /* hit data */
-public:
   float Ngx;   //!< x coordinate of geometry normal
   float Ngy;   //!< y coordinate of geometry normal
   float Ngz;   //!< z coordinate of geometry normal

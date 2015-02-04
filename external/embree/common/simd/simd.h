@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,14 +14,13 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_SIMD_H__
-#define __EMBREE_SIMD_H__
+#pragma once
 
 #include "math/math.h"
 
 /* include SSE emulation for Xeon Phi */
 #if defined (__MIC__)
-#  include "simd/sse_mic.h"
+//#  include "simd/sse_mic.h"
 #  include "simd/mic.h"
 #endif
 
@@ -39,6 +38,4 @@
 #define AVX_ZERO_UPPER() _mm256_zeroupper()
 #else
 #define AVX_ZERO_UPPER()
-#endif
-
 #endif

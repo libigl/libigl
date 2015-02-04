@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -30,7 +30,7 @@ namespace embree
 
   bool TaskLogger::init (size_t numThreads)
   {
-#if defined(__LOG_TASKS__)
+#if defined(RTCORE_TASKLOGGER)
     if (threads.size() != numThreads) {
       threads.clear();
       for (size_t i=0; i<numThreads; i++)
@@ -42,7 +42,7 @@ namespace embree
   
   void TaskLogger::start() 
   {
-#if defined(__LOG_TASKS__)
+#if defined(RTCORE_TASKLOGGER)
     for (size_t i=0; i<threads.size(); i++)
       threads[i]->reset();
     
@@ -52,7 +52,7 @@ namespace embree
   }
 
   void TaskLogger::stop() {
-#if defined(__LOG_TASKS__)
+#if defined(RTCORE_TASKLOGGER)
     active = false;
 #endif
   }
@@ -182,7 +182,7 @@ namespace embree
   /** store all logged data into FIG file */
   void TaskLogger::store(const char* fname)
   {
-#if defined(__LOG_TASKS__)
+#if defined(RTCORE_TASKLOGGER)
 
     /** generate xfig drawing */
     const int64 xAxisStepSize = 1000000000;

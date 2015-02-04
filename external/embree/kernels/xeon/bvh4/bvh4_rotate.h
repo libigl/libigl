@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,23 +14,27 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_BVH4_ROTATE_H__
-#define __EMBREE_BVH4_ROTATE_H__
+#pragma once
 
 #include "bvh4.h"
 
 namespace embree
 {
-  /* BVH4 Tree Rotations. */
-  class BVH4Rotate
+  namespace isa 
   {
-  public:
-    typedef BVH4::Node Node;
-    typedef BVH4::NodeRef NodeRef;
-
-  public:
-    static size_t rotate(BVH4* bvh, NodeRef parentRef, size_t depth = 1);
-  };
-}
-
+    /* BVH4 Tree Rotations. */
+    class BVH4Rotate
+    {
+    public:
+      typedef BVH4::Node Node;
+      typedef BVH4::NodeRef NodeRef;
+      
+    public:
+      static size_t rotate     (BVH4* bvh, NodeRef parentRef, size_t depth = 1);
+      
+#if defined(__AVX__)
+      static void   restructure(NodeRef ref, size_t depth = 1);
 #endif
+    };
+  }
+}

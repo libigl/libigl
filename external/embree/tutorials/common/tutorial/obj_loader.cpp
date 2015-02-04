@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -56,7 +56,7 @@ namespace embree
   /*! Parse separator. */
   static inline const char* parseSep(const char*& token) {
     size_t sep = strspn(token, " \t");
-    if (!sep) throw std::runtime_error("separator expected");
+    if (!sep) THROW_RUNTIME_ERROR("separator expected");
     return token+=sep;
   }
 
@@ -93,7 +93,8 @@ namespace embree
   public:
 
     /*! Constructor. */
-    OBJLoader(const FileName& fileName, OBJScene& mesh);
+    OBJLoader(const FileName& fileName, const AffineSpace3f& space, OBJScene& mesh, const bool
+              subdivMode);
 
     /*! Destruction */
     ~OBJLoader();
@@ -109,11 +110,15 @@ namespace embree
     /*! output model */
     OBJScene& model;
     
+    /*! load only quads and ignore triangles */
+    bool subdivMode;
+
     /*! Geometry buffer. */
     vector_t<Vec3fa> v;
     vector_t<Vec3fa> vn;
     std::vector<Vec2f> vt;
     std::vector<std::vector<Vertex> > curGroup;
+    AffineSpace3f space;
 
     /*! Material handling. */
     int curMaterial;
@@ -128,19 +133,19 @@ namespace embree
     uint32 getVertex(std::map<Vertex,uint32>& vertexMap, OBJScene::Mesh* mesh, const Vertex& i);
   };
 
-  OBJLoader::OBJLoader(const FileName &fileName, OBJScene& mesh) 
-    : path(fileName.path()), model(mesh)
+  OBJLoader::OBJLoader(const FileName &fileName, const AffineSpace3f& space, OBJScene& mesh, const bool subdivMode) 
+    : path(fileName.path()), model(mesh), space(space), subdivMode(subdivMode)
   {
     /* open file */
     std::ifstream cin;
     cin.open(fileName.c_str());
     if (!cin.is_open()) {
-      throw std::runtime_error("cannot open " + fileName.str());
+      THROW_RUNTIME_ERROR("cannot open " + fileName.str());
       return;
     }
 
     /* generate default material */
-    model.materials.push_back(OBJScene::Material());
+    model.materials.push_back(OBJScene::OBJMaterial());
     curMaterial = 0;
 
     char line[10000];
@@ -162,10 +167,17 @@ namespace embree
       if (token[0] == 0) continue;
 
       /*! parse position */
-      if (token[0] == 'v' && isSep(token[1]))                    { v.push_back((Vec3fa)getVec3f(token += 2)); continue; }
+      if (token[0] == 'v' && isSep(token[1])) { 
+        const Vec3f p = xfmPoint(space,getVec3f(token += 2));
+        v.push_back(p); continue;
+      }
 
       /* parse normal */
-      if (token[0] == 'v' && token[1] == 'n' && isSep(token[2])) { vn.push_back((Vec3fa)getVec3f(token += 3)); continue; }
+      if (token[0] == 'v' && token[1] == 'n' && isSep(token[2])) { 
+        const Vec3f n = xfmVector(space,getVec3f(token += 3));
+        vn.push_back(n); 
+        continue; 
+      }
 
       /* parse texcoord */
       if (token[0] == 'v' && token[1] == 't' && isSep(token[2])) { vt.push_back(getVec2f(token += 3)); continue; }
@@ -203,6 +215,8 @@ namespace embree
       // ignore unknown stuff
     }
     flushFaceGroup();
+
+
     cin.close();
   }
 
@@ -243,22 +257,22 @@ namespace embree
         parseSep(token+=6);
         std::string name(token);
         material[name] = cur = model.materials.size();
-        model.materials.push_back(OBJScene::Material());
+        model.materials.push_back(OBJScene::OBJMaterial());
         continue;
       }
 
-      if (!cur) throw std::runtime_error("invalid material file: newmtl expected first");
+      if (!cur) THROW_RUNTIME_ERROR("invalid material file: newmtl expected first");
 
       if (!strncmp(token, "illum", 5)) { parseSep(token += 5);  continue; }
 
-      if (!strncmp(token, "d",  1)) { parseSep(token += 1);  model.materials[cur].d  = getFloat(token); continue; }
-      if (!strncmp(token, "Ns", 2)) { parseSep(token += 2);  model.materials[cur].Ns = getFloat(token); continue; }
-      if (!strncmp(token, "Ni", 2)) { parseSep(token += 2);  model.materials[cur].Ni = getFloat(token); continue; }
+      if (!strncmp(token, "d",  1)) { parseSep(token += 1);  model.materials[cur].obj().d  = getFloat(token); continue; }
+      if (!strncmp(token, "Ns", 2)) { parseSep(token += 2);  model.materials[cur].obj().Ns = getFloat(token); continue; }
+      if (!strncmp(token, "Ni", 2)) { parseSep(token += 2);  model.materials[cur].obj().Ni = getFloat(token); continue; }
 
-      if (!strncmp(token, "Ka", 2)) { parseSep(token += 2);  model.materials[cur].Ka = getVec3f(token); continue; }
-      if (!strncmp(token, "Kd", 2)) { parseSep(token += 2);  model.materials[cur].Kd = getVec3f(token); continue; }
-      if (!strncmp(token, "Ks", 2)) { parseSep(token += 2);  model.materials[cur].Ks = getVec3f(token); continue; }
-      if (!strncmp(token, "Tf", 2)) { parseSep(token += 2);  model.materials[cur].Tf = getVec3f(token); continue; }
+      if (!strncmp(token, "Ka", 2)) { parseSep(token += 2);  model.materials[cur].obj().Ka = getVec3f(token); continue; }
+      if (!strncmp(token, "Kd", 2)) { parseSep(token += 2);  model.materials[cur].obj().Kd = getVec3f(token); continue; }
+      if (!strncmp(token, "Ks", 2)) { parseSep(token += 2);  model.materials[cur].obj().Ks = getVec3f(token); continue; }
+      if (!strncmp(token, "Tf", 2)) { parseSep(token += 2);  model.materials[cur].obj().Tf = getVec3f(token); continue; }
     }
     cin.close();
   }
@@ -321,25 +335,106 @@ namespace embree
     {
       /* iterate over all faces */
       const std::vector<Vertex>& face = curGroup[j];
+
+      /* for subdivision test scenes */
+
+      if (subdivMode && face.size() == 4)
+	{
+	  /* only look at position indices here */
+	  uint32 v0 = face[0].v;
+	  uint32 v1 = face[1].v;
+	  uint32 v2 = face[2].v;
+	  uint32 v3 = face[3].v;
+
+	  // DBG_PRINT( v0 );
+	  // DBG_PRINT( v1 );
+	  // DBG_PRINT( v2 );
+	  // DBG_PRINT( v3 );
+
+	  mesh->quads.push_back(OBJScene::Quad(v0,v1,v2,v3));
+	  continue;
+	}
+
       Vertex i0 = face[0], i1 = Vertex(-1), i2 = face[1];
 
       /* triangulate the face with a triangle fan */
       for (size_t k=2; k < face.size(); k++) {
         i1 = i2; i2 = face[k];
-        uint32 v0 = getVertex(vertexMap, mesh, i0);
-        uint32 v1 = getVertex(vertexMap, mesh, i1);
-        uint32 v2 = getVertex(vertexMap, mesh, i2);
-        mesh->triangles.push_back(OBJScene::Triangle(v0,v1,v2,curMaterial));
-        assert(v0 < mesh->v.size());
-        assert(v1 < mesh->v.size());
-        assert(v2 < mesh->v.size());
+	uint32 v0,v1,v2;
+	if (subdivMode)
+	  {
+	    v0 = i0.v; 
+	    v1 = i1.v; 
+	    v2 = i2.v; 
+	  }
+	else
+	  {
+	    v0 = getVertex(vertexMap, mesh, i0);
+	    v1 = getVertex(vertexMap, mesh, i1);
+	    v2 = getVertex(vertexMap, mesh, i2);
+            assert(v0 < mesh->v.size());
+            assert(v1 < mesh->v.size());
+            assert(v2 < mesh->v.size());
+	  }
+	mesh->triangles.push_back(OBJScene::Triangle(v0,v1,v2,curMaterial));
       }
     }
+
+    /* use vertex array as it is in quad-only mode */
+    if (subdivMode)
+      {
+	for (size_t i=0;i<v.size();i++)
+	  {
+	    mesh->v.push_back(v[i]);
+	  }
+      }
+
     curGroup.clear();
   }
 
-  void loadOBJ(const FileName& fileName, OBJScene& mesh_o) {
-    OBJLoader loader(fileName,mesh_o); 
+  void loadOBJ(const FileName& fileName, const AffineSpace3f& space, OBJScene& mesh_o, const bool subdivMode) {
+    OBJLoader loader(fileName,space,mesh_o,subdivMode); 
+  }
+
+  void OBJScene::Mesh::set_motion_blur(const Mesh* other)
+  {
+    if (v.size() != other->v.size())
+      THROW_RUNTIME_ERROR("incompatible geometry");
+
+    bool different = false;
+    for (size_t i=0; i<v.size(); i++) 
+      different |= v[i] != other->v[i];
+
+    if (different)
+      v2 = other->v;
+  }
+
+  void OBJScene::HairSet::set_motion_blur(const HairSet* other)
+  {
+    if (v.size() != other->v.size())
+      THROW_RUNTIME_ERROR("incompatible geometry");
+
+    bool different = false;
+    for (size_t i=0; i<v.size(); i++) 
+      different |= v[i] != other->v[i];
+
+    if (different)
+      v2 = other->v;
+  }
+
+  void OBJScene::set_motion_blur(OBJScene& other)
+  {
+    if (meshes.size() != other.meshes.size())
+      THROW_RUNTIME_ERROR("incompatible geometry");
+    
+    for (size_t i=0; i<meshes.size(); i++) 
+      meshes[i]->set_motion_blur(other.meshes[i]);
+
+    if (hairsets.size() != other.hairsets.size())
+      THROW_RUNTIME_ERROR("incompatible geometry");
+
+    for (size_t i=0; i<hairsets.size(); i++) 
+      hairsets[i]->set_motion_blur(other.hairsets[i]);
   }
 }
 

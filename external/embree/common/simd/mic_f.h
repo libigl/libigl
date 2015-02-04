@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_MICF_H__
-#define __EMBREE_MICF_H__
+#pragma once
 
 namespace embree
 {
@@ -167,6 +166,8 @@ namespace embree
   __forceinline mic_f msub (const mic_f& a, const mic_f& b, const mic_f& c) { return _mm512_fmsub_ps(a,b,c); }
   __forceinline mic_f nmadd (const mic_f& a, const mic_f& b, const mic_f& c) { return _mm512_fnmadd_ps(a,b,c); }
   __forceinline mic_f nmsub (const mic_f& a, const mic_f& b, const mic_f& c) { return _mm512_fnmsub_ps(a,b,c); }
+
+  __forceinline mic_f mask_msub (const mic_m& mask,const mic_f& a, const mic_f& b, const mic_f& c) { return _mm512_mask_fmsub_ps(a,mask,b,c); }
   
   __forceinline mic_f madd231 (const mic_f& a, const mic_f& b, const mic_f& c) { return _mm512_fmadd_ps(c,b,a); }
   __forceinline mic_f msub213 (const mic_f& a, const mic_f& b, const mic_f& c) { return _mm512_fmsub_ps(a,b,c); }
@@ -238,6 +239,7 @@ namespace embree
   __forceinline const mic_f select( const mic_m& s, const mic_f& t, const mic_f& f ) {
     return _mm512_mask_blend_ps(s, f, t);
   }
+
 
   __forceinline void xchg(mic_m m, mic_f& a, mic_f& b) 
   {
@@ -354,8 +356,13 @@ namespace embree
   __forceinline size_t select_min(const mic_f& v) { return __bsf(movemask(v == vreduce_min(v))); }
   __forceinline size_t select_max(const mic_f& v) { return __bsf(movemask(v == vreduce_max(v))); }
 
-  __forceinline size_t select_min(const mic_m& valid, const mic_f& v) { const mic_f a = select(valid,v,mic_f(pos_inf)); return __bsf(movemask(valid & (a == vreduce_min(a)))); }
+  __forceinline size_t select_min(const mic_m& valid, const mic_f& v, const mic_f &max_value) { const mic_f a = select(valid,v,max_value); return __bsf(movemask(a == vreduce_min(a))); }
+
+  __forceinline size_t select_max(const mic_m& valid, const mic_f& v, const mic_f &min_value) { const mic_f a = select(valid,v,min_value); return __bsf(movemask(a == vreduce_max(a))); }
+
   __forceinline size_t select_max(const mic_m& valid, const mic_f& v) { const mic_f a = select(valid,v,mic_f(neg_inf)); return __bsf(movemask(valid & (a == vreduce_max(a)))); }
+
+  __forceinline size_t select_min(const mic_m& valid, const mic_f& v) { const mic_f a = select(valid,v,mic_f(pos_inf)); return __bsf(movemask(valid & (a == vreduce_min(a)))); }
   
   __forceinline mic_f prefix_sum(const mic_f& a)
   {
@@ -440,10 +447,27 @@ namespace embree
   __forceinline mic_f broadcast4to16f(const void *f) { 
     return _mm512_extload_ps(f,_MM_UPCONV_PS_NONE,_MM_BROADCAST_4X16,0);  
   }
+
+  __forceinline mic_f broadcast8to16f(const void *f) { 
+    return  _mm512_castpd_ps(_mm512_extload_pd(f,_MM_UPCONV_PD_NONE,_MM_BROADCAST_4X8,0));  
+  }
     
   __forceinline mic_f load16f_uint8(const unsigned char *const ptr) {
     return _mm512_mul_ps(_mm512_extload_ps(ptr,_MM_UPCONV_PS_UINT8,_MM_BROADCAST_16X16,_MM_HINT_NONE),mic_f(1.0f/255.0f));  
   }
+
+  __forceinline mic_f load16f_uint16(const unsigned short *const ptr) {
+    return _mm512_mul_ps(_mm512_extload_ps(ptr,_MM_UPCONV_PS_UINT16,_MM_BROADCAST_16X16,_MM_HINT_NONE),mic_f(1.0f/65535.0f));  
+  }
+
+  __forceinline mic_f uload16f_low_uint8(const mic_m& mask, const void* addr, const mic_f& v1) {
+    return _mm512_mask_extloadunpacklo_ps(v1, mask, addr, _MM_UPCONV_PS_UINT8, _MM_HINT_NONE);
+  }
+
+  __forceinline mic_f load16f_int8(const char *const ptr) {
+    return _mm512_mul_ps(_mm512_extload_ps(ptr,_MM_UPCONV_PS_SINT8,_MM_BROADCAST_16X16,_MM_HINT_NONE),mic_f(1.0f/127.0f));  
+  }
+
 
   __forceinline mic_f gather16f_4f(const float *__restrict__ const ptr0,
                                    const float *__restrict__ const ptr1,
@@ -486,6 +510,16 @@ namespace embree
     return cast(v);
   }
 
+  __forceinline mic_f gather_2f_zlc(const mic_i &v_mask,
+				    const mic_m &mask,
+                                    const void *__restrict__ const ptr0,
+                                    const void *__restrict__ const ptr1) 
+  {
+    mic_i v = v_mask &  broadcast4to16i((const int*)ptr0);
+    v = mask_and(mask,v,v_mask, broadcast4to16i((const int*)ptr1));
+    return cast(v);
+  }
+
 
   __forceinline mic_f gather16f_4f_align(const void *__restrict__ const ptr0,
 					 const void *__restrict__ const ptr1,
@@ -496,6 +530,19 @@ namespace embree
     v = align_shift_right<12>(v,broadcast4to16f(ptr2));
     v = align_shift_right<12>(v,broadcast4to16f(ptr1));
     v = align_shift_right<12>(v,broadcast4to16f(ptr0));
+    return v;
+  }
+
+
+  __forceinline mic_f gather16f_4f_align(const mic_f& v0,
+					 const mic_f& v1,
+					 const mic_f& v2,
+					 const mic_f& v3) 
+  {
+    mic_f v = v3;
+    v = align_shift_right<12>(v,v2);
+    v = align_shift_right<12>(v,v1);
+    v = align_shift_right<12>(v,v0);
     return v;
   }
 
@@ -510,6 +557,13 @@ namespace embree
   }
 
 
+  __forceinline mic_f uload16f(const mic_m& mask,const float *const addr) {
+    mic_f r = mic_f::undefined();
+    r =_mm512_mask_extloadunpacklo_ps(r, mask,addr, _MM_UPCONV_PS_NONE, _MM_HINT_NONE);
+    r = _mm512_mask_extloadunpackhi_ps(r, mask, addr+16, _MM_UPCONV_PS_NONE, _MM_HINT_NONE);  
+    return r;
+  }
+
   __forceinline mic_f uload16f(const float *const addr) {
     mic_f r = mic_f::undefined();
     r =_mm512_extloadunpacklo_ps(r, addr, _MM_UPCONV_PS_NONE, _MM_HINT_NONE);
@@ -522,6 +576,11 @@ namespace embree
   }
   
   __forceinline mic_f uload16f_low(const mic_m& mask, const void* addr, const mic_f& v1) {
+    return _mm512_mask_extloadunpacklo_ps(v1, mask, addr, _MM_UPCONV_PS_NONE, _MM_HINT_NONE);
+  }
+
+  __forceinline mic_f uload16f_low(const mic_m& mask, const void* addr) {
+    mic_f v1 = mic_f::undefined();
     return _mm512_mask_extloadunpacklo_ps(v1, mask, addr, _MM_UPCONV_PS_NONE, _MM_HINT_NONE);
   }
   
@@ -539,6 +598,10 @@ namespace embree
   __forceinline void compactustore16f_low(const mic_m& mask, float * addr, const mic_f &reg) {
     _mm512_mask_extpackstorelo_ps(addr+0 ,mask, reg, _MM_DOWNCONV_PS_NONE , 0);
   }
+
+  __forceinline void compactustore16f_low_uint8(const mic_m& mask, void * addr, const mic_f &reg) {
+    _mm512_mask_extpackstorelo_ps(addr+0 ,mask, reg, _MM_DOWNCONV_PS_UINT8 , 0);
+  }
   
   __forceinline void ustore16f_low(float * addr, const mic_f& reg) {
     _mm512_extpackstorelo_ps(addr+0 ,reg, _MM_DOWNCONV_PS_NONE , 0);
@@ -555,10 +618,28 @@ namespace embree
   __forceinline void store16f(void* addr, const mic_f& v2) {
     _mm512_extstore_ps(addr,v2,_MM_DOWNCONV_PS_NONE,0);
   }
+
+  __forceinline void store16f_int8(void* addr, const mic_f& v2) {
+    _mm512_extstore_ps(addr,v2,_MM_DOWNCONV_PS_SINT8,0);
+  }
+
+  __forceinline void store16f_uint16(void* addr, const mic_f& v2) {
+    _mm512_extstore_ps(addr,v2,_MM_DOWNCONV_PS_UINT16,0);
+  }
+
+  __forceinline void store4f_int8(void* addr, const mic_f& v1) {
+    assert((unsigned long)addr % 4 == 0);
+    _mm512_mask_extpackstorelo_ps(addr,0xf, v1, _MM_DOWNCONV_PS_SINT8 , 0);
+  }
   
   __forceinline void store4f(void* addr, const mic_f& v1) {
     assert((unsigned long)addr % 16 == 0);
     _mm512_mask_extpackstorelo_ps(addr,0xf, v1, _MM_DOWNCONV_PS_NONE , 0);
+  }
+
+  __forceinline void store3f(void* addr, const mic_f& v1) {
+    assert((unsigned long)addr % 16 == 0);
+    _mm512_mask_extpackstorelo_ps(addr,0x7, v1, _MM_DOWNCONV_PS_NONE , 0);
   }
 
   __forceinline void store4f_nt(void* addr, const mic_f& v1) {
@@ -607,6 +688,21 @@ namespace embree
     f = select(0x4444,broadcast1to16f((float*)&z + index),f);
     return f;
   }
+
+  __forceinline mic_f loadAOS4to16f(const unsigned int index,
+				    const mic_f &x,
+				    const mic_f &y,
+				    const mic_f &z,
+				    const mic_f &fill)
+  {
+    mic_f f = fill;
+    f = select(0x1111,broadcast1to16f((float*)&x + index),f);
+    f = select(0x2222,broadcast1to16f((float*)&y + index),f);
+    f = select(0x4444,broadcast1to16f((float*)&z + index),f);
+    return f;
+  }
+
+  __forceinline mic_f rcp_safe( const mic_f& a ) { return select(a != mic_f::zero(),_mm512_rcp23_ps(a),mic_f(1E-10f)); };
 
   ////////////////////////////////////////////////////////////////////////////////
   /// Euclidian Space Operators
@@ -678,5 +774,3 @@ __forceinline mic_f lcross_zxy(const mic_f &ao, const mic_f &bo) {
     return cout;
   }
 }
-
-#endif

@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_AVXB_H__
-#define __EMBREE_AVXB_H__
+#pragma once
 
 namespace embree
 {
@@ -45,13 +44,13 @@ namespace embree
 
     __forceinline avxb ( const int a ) 
     {
+      assert(a >= 0 && a <= 255);
 #if defined (__AVX2__)
       const __m256i mask = _mm256_set_epi32(0x80, 0x40, 0x20, 0x10, 0x8, 0x4, 0x2, 0x1);
       const __m256i b = _mm256_set1_epi32(a);
       const __m256i c = _mm256_and_si256(b,mask);
       m256 = _mm256_castsi256_ps(_mm256_cmpeq_epi32(c,mask));
 #else
-      assert(a >= 0 && a < 32);
       l = _mm_lookupmask_ps[a & 0xF];
       h = _mm_lookupmask_ps[a >> 4];
 #endif
@@ -148,14 +147,19 @@ namespace embree
   /// Reduction Operations
   ////////////////////////////////////////////////////////////////////////////////
 
-  __forceinline size_t popcnt( const avxb& a ) { return __popcnt(_mm256_movemask_ps(a)); }
   __forceinline bool reduce_and( const avxb& a ) { return _mm256_movemask_ps(a) == (unsigned int)0xff; }
   __forceinline bool reduce_or ( const avxb& a ) { return !_mm256_testz_ps(a,a); }
+
   __forceinline bool all       ( const avxb& a ) { return _mm256_movemask_ps(a) == (unsigned int)0xff; }
-  __forceinline bool none      ( const avxb& a ) { return _mm256_testz_ps(a,a) != 0; }
   __forceinline bool any       ( const avxb& a ) { return !_mm256_testz_ps(a,a); }
+  __forceinline bool none      ( const avxb& a ) { return _mm256_testz_ps(a,a) != 0; }
+
+  __forceinline bool all       ( const avxb& valid, const avxb& b ) { return all(!valid | b); }
+  __forceinline bool any       ( const avxb& valid, const avxb& b ) { return any( valid & b); }
+  __forceinline bool none      ( const avxb& valid, const avxb& b ) { return none(valid & b); }
 
   __forceinline unsigned int movemask( const avxb& a ) { return _mm256_movemask_ps(a); }
+  __forceinline size_t       popcnt  ( const avxb& a ) { return __popcnt(_mm256_movemask_ps(a)); }
 
   ////////////////////////////////////////////////////////////////////////////////
   /// Output Operators
@@ -166,5 +170,3 @@ namespace embree
                        << a[4] << ", " << a[5] << ", " << a[6] << ", " << a[7] << ">";
   }
 }
-
-#endif

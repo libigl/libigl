@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_MICB_H__
-#define __EMBREE_MICB_H__
+#pragma once
 
 namespace embree
 {
@@ -92,6 +91,10 @@ namespace embree
   __forceinline int all(const mic_m &a)  { return  _mm512_kortestc(a,a) != 0; }
   __forceinline int any(const mic_m &a)  { return  _mm512_kortestz(a,a) == 0; }
   __forceinline int none(const mic_m &a) { return  _mm512_kortestz(a,a) != 0; }
+
+  __forceinline int all       ( const mic_m& valid, const mic_m& b ) { return all(!valid | b); }
+  __forceinline int any       ( const mic_m& valid, const mic_m& b ) { return any( valid & b); }
+  __forceinline int none      ( const mic_m& valid, const mic_m& b ) { return none(valid & b); }
   
   __forceinline size_t movemask( const mic_m& a ) { return _mm512_kmov(a); }
   __forceinline size_t popcnt  ( const mic_m& a ) { return _mm_countbits_32(a.v); }
@@ -116,5 +119,3 @@ namespace embree
     return cout << ">";
   }
 }
-
-#endif

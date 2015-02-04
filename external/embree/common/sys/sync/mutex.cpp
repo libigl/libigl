@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -46,13 +46,13 @@ namespace embree
   { 
     mutex = new pthread_mutex_t; 
     if (pthread_mutex_init((pthread_mutex_t*)mutex, NULL) != 0)
-      throw std::runtime_error("pthread_mutex_init failed");
+      THROW_RUNTIME_ERROR("pthread_mutex_init failed");
   }
   
   MutexSys::~MutexSys( void ) 
   { 
     if (pthread_mutex_destroy((pthread_mutex_t*)mutex) != 0)
-      throw std::runtime_error("pthread_mutex_destroy failed");
+      THROW_RUNTIME_ERROR("pthread_mutex_destroy failed");
     
     delete (pthread_mutex_t*)mutex; 
   }
@@ -60,13 +60,13 @@ namespace embree
   void MutexSys::lock( void ) 
   { 
     if (pthread_mutex_lock((pthread_mutex_t*)mutex) != 0) 
-      throw std::runtime_error("pthread_mutex_lock failed");
+      THROW_RUNTIME_ERROR("pthread_mutex_lock failed");
   }
   
   void MutexSys::unlock( void ) 
   { 
     if (pthread_mutex_unlock((pthread_mutex_t*)mutex) != 0)
-      throw std::runtime_error("pthread_mutex_unlock failed");
+      THROW_RUNTIME_ERROR("pthread_mutex_unlock failed");
   }
 }
 #endif

@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -56,7 +56,7 @@ namespace embree
       if (cnt0 > 1) 
       {
         if (WaitForSingleObject(events[i0], INFINITE) != WAIT_OBJECT_0)
-          throw std::runtime_error("WaitForSingleObjects failed");
+          THROW_RUNTIME_ERROR("WaitForSingleObjects failed");
       }
       
       /* the last thread starts all threads waiting at the barrier */
@@ -65,7 +65,7 @@ namespace embree
         i = 1-i;
         enterCount = barrierSize;
         if (SetEvent(events[i0]) == 0)
-          throw std::runtime_error("SetEvent failed");
+          THROW_RUNTIME_ERROR("SetEvent failed");
       }
 
       /* every thread leaving the barrier decrements this count */
@@ -76,7 +76,7 @@ namespace embree
       {
         exitCount = barrierSize;
         if (ResetEvent(events[i0]) == 0)
-          throw std::runtime_error("ResetEvent failed");
+          THROW_RUNTIME_ERROR("ResetEvent failed");
       }
     }
 
@@ -149,8 +149,9 @@ namespace embree
     ((BarrierSysImplementation*) opaque)->wait();
   }
 
-  LinearBarrierActive::LinearBarrierActive () 
+  LinearBarrierActive::LinearBarrierActive (size_t numThreads_i) 
   {    
+    numThreads = numThreads_i;
     mode      = 0;
     flag0     = 0;
     flag1     = 0;
@@ -158,10 +159,22 @@ namespace embree
     for (size_t i=0; i<MAX_MIC_THREADS; i++) count1[i] = 0;
   }
 
-  void LinearBarrierActive::init(size_t cntr) {
+  void LinearBarrierActive::init(size_t cntr) 
+  {
+    numThreads = cntr;
+    mode      = 0;
+    flag0     = 0;
+    flag1     = 0;
+    for (size_t i=0; i<cntr; i++) count0[i] = 0;
+    for (size_t i=0; i<cntr; i++) count1[i] = 0;
   }
 
-  void LinearBarrierActive::wait (const size_t threadIndex, const size_t threadCount)
+  void LinearBarrierActive::wait (const size_t threadIndex, const size_t __threadCount)
+  {
+    waitForThreads(threadIndex,numThreads);
+  }
+
+  void LinearBarrierActive::waitForThreads(const size_t threadIndex, const size_t threadCount)
   {
     if (mode == 0)
     {			
@@ -230,6 +243,7 @@ namespace embree
       }		
     }					
   }
+
   
   void LinearBarrierActive::syncWithReduction(const size_t threadIndex, 
                                               const size_t threadCount,
@@ -317,7 +331,7 @@ namespace embree
   }
   
   void QuadTreeBarrier::CoreSyncData::pause(unsigned int &cycles) {
-    __pause_expfalloff(cycles,MAX_MIC_BARRIER_WAIT_CYCLES);
+    __pause_cpu_expfalloff(cycles,MAX_MIC_BARRIER_WAIT_CYCLES);
   }
   
   void QuadTreeBarrier::CoreSyncData::switchModeAndSendRunSignal(const unsigned int m)

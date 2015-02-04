@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,10 +14,10 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_VEC3F_MIC_H__
-#define __EMBREE_VEC3F_MIC_H__
+#pragma once
 
 #include "math.h"
+#include "simd/mic.h"
 
 namespace embree
 {
@@ -32,7 +32,7 @@ namespace embree
   {
     typedef float Scalar;
     enum { N = 3 };
-    float x,y,z; union { int a; float w; };
+    float x,y,z; union { int a; unsigned u; float w; };
     
     ////////////////////////////////////////////////////////////////////////////////
     /// Constructors, Assignment & Cast Operators
@@ -41,6 +41,7 @@ namespace embree
     __forceinline Vec3fa () {}
     __forceinline Vec3fa ( float x                   ) : x(x), y(x), z(x), a(0) {}
     __forceinline Vec3fa ( float x, float y, float z ) : x(x), y(y), z(z), a(0) {}
+    __forceinline Vec3fa ( const Vec3f & o           ) : x(o.x), y(o.y), z(o.z), a(0) {}
     __forceinline Vec3fa ( const Vec3fa& other, const int other_a ) : x(other.x), y(other.y), z(other.z), a(other_a) {}
     
     __forceinline Vec3fa           ( const Vec3ia_t& other );
@@ -68,10 +69,11 @@ namespace embree
   struct __aligned(64) Vec3fa_t 
   {
     __m512 m512; 
-    
+        
     ////////////////////////////////////////////////////////////////////////////////
     /// Constructors, Assignment & Cast Operators
     ////////////////////////////////////////////////////////////////////////////////
+    __forceinline Vec3fa_t( ) { m512 = _mm512_undefined(); }
 
     __forceinline Vec3fa_t( const __m512 a ) : m512(a) {}
     __forceinline Vec3fa_t            ( const Vec3fa_t& other ) { m512 = other.m512; }
@@ -79,6 +81,9 @@ namespace embree
     
     __forceinline operator const __m512&( void ) const { return m512; }
     __forceinline operator       __m512&( void )       { return m512; }
+
+    __forceinline operator const mic_f( void ) const { return mic_f(m512); }
+    __forceinline operator       mic_f( void )       { return mic_f(m512); }
 
   public:
     __forceinline explicit Vec3fa_t ( float a ) 
@@ -128,6 +133,14 @@ namespace embree
   __forceinline const Vec3fa_t zero_fix( const Vec3fa_t& a ) { return _mm512_mask_blend_ps(_mm512_cmp_ps_mask(a.m512,_mm512_setzero_ps(),_MM_CMPINT_EQ), a, _mm512_set1_ps(1E-10f)); }
   __forceinline const Vec3fa_t rcp_safe(const Vec3fa_t& a) { return rcp(zero_fix(a)); }
 
+  __forceinline Vec3fa log ( const Vec3fa& a ) { 
+    return Vec3fa(logf(a.x),logf(a.y),logf(a.z));
+  }
+
+  __forceinline Vec3fa exp ( const Vec3fa& a ) { 
+    return Vec3fa(expf(a.x),expf(a.y),expf(a.z));
+  }
+
   ////////////////////////////////////////////////////////////////////////////////
   /// Binary Operators
   ////////////////////////////////////////////////////////////////////////////////
@@ -145,6 +158,16 @@ namespace embree
   __forceinline const Vec3fa_t max( const Vec3fa_t& a, const Vec3fa_t& b ) { return _mm512_gmax_ps(a.m512,b.m512); }
 
   ////////////////////////////////////////////////////////////////////////////////
+  /// Ternary Operators
+  ////////////////////////////////////////////////////////////////////////////////
+
+  __forceinline Vec3fa_t madd  ( const Vec3fa_t& a, const Vec3fa_t& b, const Vec3fa_t& c) { return _mm512_fmadd_ps(a,b,c); }
+  __forceinline Vec3fa_t msub  ( const Vec3fa_t& a, const Vec3fa_t& b, const Vec3fa_t& c) { return _mm512_fmsub_ps(a,b,c); }
+  __forceinline Vec3fa_t nmadd ( const Vec3fa_t& a, const Vec3fa_t& b, const Vec3fa_t& c) { return _mm512_fnmadd_ps(a,b,c); }
+  __forceinline Vec3fa_t nmsub ( const Vec3fa_t& a, const Vec3fa_t& b, const Vec3fa_t& c) { return _mm512_fnmsub_ps(a,b,c); }
+
+
+  ////////////////////////////////////////////////////////////////////////////////
   /// Assignment Operators
   ////////////////////////////////////////////////////////////////////////////////
 
@@ -152,6 +175,10 @@ namespace embree
   __forceinline Vec3fa& operator -=( Vec3fa& a, const Vec3fa_t& b ) { return a = a - b; }
   __forceinline Vec3fa& operator *=( Vec3fa& a, const float    b ) { return a = a * b; }
   __forceinline Vec3fa& operator /=( Vec3fa& a, const float    b ) { return a = a / b; }
+
+  __forceinline Vec3fa_t& operator +=( Vec3fa_t& a, const Vec3fa_t& b ) { return a = a + b; }
+  __forceinline Vec3fa_t& operator *=( Vec3fa_t& a, const float    b  ) { return a = a * b; }
+  __forceinline Vec3fa_t& operator /=( Vec3fa_t& a, const float    b  ) { return a = a / b; }
 
   ////////////////////////////////////////////////////////////////////////////////
   /// Reductions
@@ -236,8 +263,13 @@ namespace embree
   ////////////////////////////////////////////////////////////////////////////////
 
   inline std::ostream& operator<<(std::ostream& cout, const Vec3fa& a) {
-    return cout << "(" << a.x << ", " << a.y << ", " << a.z << ")";
+    return cout << "(" << a.x << ", " << a.y << ", " << a.z << ", " << a.w << ")";
   }
-}
 
-#endif
+  inline std::ostream& operator<<(std::ostream& cout, const Vec3fa_t& a) {
+    const float * const f = (float*)&a.m512;
+    return cout << "(" << f[0] << ", " << f[1] << ", " << f[2] << ", " << f[3] << ")";
+
+  }
+
+}

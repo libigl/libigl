@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -20,11 +20,11 @@ namespace embree
 {
   namespace isa
   {
-    void InstanceBoundsFunction(const UserGeometryScene::Instance* instance, size_t item, BBox3f& bounds_o)
+    void InstanceBoundsFunction(const Instance* instance, size_t item, BBox3fa& bounds_o)
     {
       Vec3fa lower = instance->object->bounds.lower;
       Vec3fa upper = instance->object->bounds.upper;
-      AffineSpace3f local2world = instance->local2world;
+      AffineSpace3fa local2world = instance->local2world;
       Vec3fa p000 = xfmPoint(local2world,Vec3fa(lower.x,lower.y,lower.z));
       Vec3fa p001 = xfmPoint(local2world,Vec3fa(lower.x,lower.y,upper.z));
       Vec3fa p010 = xfmPoint(local2world,Vec3fa(lower.x,upper.y,lower.z));
@@ -39,7 +39,7 @@ namespace embree
 
     RTCBoundsFunc InstanceBoundsFunc = (RTCBoundsFunc) InstanceBoundsFunction;
 
-    void FastInstanceIntersector1::intersect(const UserGeometryScene::Instance* instance, Ray& ray, size_t item)
+    void FastInstanceIntersector1::intersect(const Instance* instance, Ray& ray, size_t item)
     {
       const Vec3fa ray_org = ray.org;
       const Vec3fa ray_dir = ray.dir;
@@ -58,7 +58,7 @@ namespace embree
       }
     }
     
-    void FastInstanceIntersector1::occluded (const UserGeometryScene::Instance* instance, Ray& ray, size_t item)
+    void FastInstanceIntersector1::occluded (const Instance* instance, Ray& ray, size_t item)
     {
       const Vec3fa ray_org = ray.org;
       const Vec3fa ray_dir = ray.dir;

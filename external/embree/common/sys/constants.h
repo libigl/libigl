@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_CONSTANTS_H__
-#define __EMBREE_CONSTANTS_H__
+#pragma once
 
 #ifndef NULL
 #define NULL 0
@@ -160,5 +159,3 @@ namespace embree
   static struct FullTy {
   } full MAYBE_UNUSED;
 }
-
-#endif

@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and      //
 // limitations under the License.                                           //
 // ======================================================================== //
+
+#pragma once
 
 #include "math/vec3.h"
 
@@ -32,17 +34,24 @@ namespace embree
   {
     int numMaterials;
     int numMeshes;
-    //Vec3f pointLightPosition;
-    //Vec3f pointLightIntensity;
-    //Vec3f ambientLightIntensity;
+    int numHairSets;
+    int numAmbientLights;
+    int numPointLights;
+    int numDirectionalLights;
+    int numDistantLights;
   };
 
   struct CreateMeshData
   {
     int numVertices;
     int numTriangles;
-    Vec3f dir;
-    Vec3f offset;
+    int numQuads;
+  };
+
+  struct CreateHairSetData
+  {
+    int numVertices;
+    int numHairs;
   };
 
   struct ResizeData {
@@ -51,17 +60,17 @@ namespace embree
 
   struct PickDataSend {
     float x,y;
-    Vec3f vx,vy,vz,p;
+    Vec3fa vx,vy,vz,p;
   };
 
   struct PickDataReceive {
-    Vec3f pos;
+    Vec3fa pos;
     bool hit;
   };
 
   struct RenderData {
     float time;
-    Vec3f vx,vy,vz,p;
+    Vec3fa vx,vy,vz,p;
     int width;
     int height;
   };

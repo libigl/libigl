@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_AVXF_H__
-#define __EMBREE_AVXF_H__
+#pragma once
 
 namespace embree
 {
@@ -64,11 +63,19 @@ namespace embree
     __forceinline avxf( NaNTy    ) : m256(_mm256_set1_ps(nan)) {}
 
     ////////////////////////////////////////////////////////////////////////////////
-    /// Constants
+    /// Loads and Stores
     ////////////////////////////////////////////////////////////////////////////////
 
     static __forceinline avxf broadcast( const void* const a ) { 
       return _mm256_broadcast_ss((float*)a); 
+    }
+
+    static __forceinline avxf load( const unsigned char* const ptr ) { 
+#if defined(__AVX2__)
+      return _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(_mm_loadu_si128((__m128i*)ptr)));
+#else
+      return avxf(ssef::load(ptr),ssef::load(ptr+4));
+#endif
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +91,6 @@ namespace embree
   /// Unary Operators
   ////////////////////////////////////////////////////////////////////////////////
 
-  __forceinline const avxf cast      (const __m256i& a) { return _mm256_castsi256_ps(a); }
   __forceinline const avxf cast      (const avxi& a   ) { return _mm256_castsi256_ps(a); }
   __forceinline const avxi cast      (const avxf& a   ) { return _mm256_castps_si256(a); }
   __forceinline const avxf operator +( const avxf& a ) { return a; }
@@ -128,7 +134,7 @@ namespace embree
 
   __forceinline const avxf operator /( const avxf& a, const avxf& b ) { return _mm256_div_ps(a.m256, b.m256); }
   __forceinline const avxf operator /( const avxf& a, const float b ) { return a / avxf(b); }
-  __forceinline const avxf operator /( const float a, const avxf& b ) { return avxf(a) * b; }
+  __forceinline const avxf operator /( const float a, const avxf& b ) { return avxf(a) / b; }
 
   __forceinline const avxf operator^( const avxf& a, const avxf& b ) { return _mm256_xor_ps(a.m256,b.m256); }
   __forceinline const avxf operator^( const avxf& a, const avxi& b ) { return _mm256_xor_ps(a.m256,_mm256_castsi256_ps(b.m256)); }
@@ -222,13 +228,13 @@ namespace embree
     return _mm256_blendv_ps(f, t, m); 
   }
 
-#if !defined(__clang__)
-  __forceinline const avxf select( const int m, const avxf& t, const avxf& f ) { 
-    return _mm256_blend_ps(f, t, m);
+#if defined(__clang__) || defined(_MSC_VER) && !defined(__INTEL_COMPILER)
+  __forceinline const avxf select(const int m, const avxf& t, const avxf& f) {
+	  return select(avxb(m), t, f); // workaround for clang and Microsoft compiler bugs
   }
 #else
   __forceinline const avxf select( const int m, const avxf& t, const avxf& f ) { 
-    return select(avxb(m),t,f);
+	  return _mm256_blend_ps(f, t, m);
   }
 #endif
 
@@ -285,13 +291,37 @@ namespace embree
   __forceinline avxf permute(const avxf &a, const __m256i &index) {
     return _mm256_permutevar8x32_ps(a,index);
   }
+
+  template<int i>
+  __forceinline avxf alignr(const avxf &a, const avxf &b) {
+    return _mm256_castsi256_ps(_mm256_alignr_epi8(_mm256_castps_si256(a), _mm256_castps_si256(b), i));
+  }  
 #endif
+
+#if defined (__AVX_I__)
+  template<const int mode>
+  __forceinline ssei convert_to_hf16(const avxf &a) {
+    return _mm256_cvtps_ph(a,mode);
+  }
+
+  __forceinline avxf convert_from_hf16(const ssei &a) {
+    return _mm256_cvtph_ps(a);
+  }
+#endif
+
+  __forceinline ssef broadcast4f( const avxf& a, const size_t k ) {  
+    return ssef::broadcast(&a[k]);
+  }
+
+  __forceinline avxf broadcast8f( const avxf& a, const size_t k ) {  
+    return avxf::broadcast(&a[k]);
+  }
 
   ////////////////////////////////////////////////////////////////////////////////
   /// Transpose
   ////////////////////////////////////////////////////////////////////////////////
 
-  __forceinline void transpose4(const avxf& r0, const avxf& r1, const avxf& r2, const avxf& r3, avxf& c0, avxf& c1, avxf& c2, avxf& c3)
+  __forceinline void transpose(const avxf& r0, const avxf& r1, const avxf& r2, const avxf& r3, avxf& c0, avxf& c1, avxf& c2, avxf& c3)
   {
     avxf l02 = unpacklo(r0,r2);
     avxf h02 = unpackhi(r0,r2);
@@ -303,11 +333,22 @@ namespace embree
     c3 = unpackhi(h02,h13);
   }
 
+  __forceinline void transpose(const avxf& r0, const avxf& r1, const avxf& r2, const avxf& r3, avxf& c0, avxf& c1, avxf& c2)
+  {
+    avxf l02 = unpacklo(r0,r2);
+    avxf h02 = unpackhi(r0,r2);
+    avxf l13 = unpacklo(r1,r3);
+    avxf h13 = unpackhi(r1,r3);
+    c0 = unpacklo(l02,l13);
+    c1 = unpackhi(l02,l13);
+    c2 = unpacklo(h02,h13);
+  }
+
   __forceinline void transpose(const avxf& r0, const avxf& r1, const avxf& r2, const avxf& r3, const avxf& r4, const avxf& r5, const avxf& r6, const avxf& r7,
                                avxf& c0, avxf& c1, avxf& c2, avxf& c3, avxf& c4, avxf& c5, avxf& c6, avxf& c7)
   {
-    avxf h0,h1,h2,h3; transpose4(r0,r1,r2,r3,h0,h1,h2,h3);
-    avxf h4,h5,h6,h7; transpose4(r4,r5,r6,r7,h4,h5,h6,h7);
+    avxf h0,h1,h2,h3; transpose(r0,r1,r2,r3,h0,h1,h2,h3);
+    avxf h4,h5,h6,h7; transpose(r4,r5,r6,r7,h4,h5,h6,h7);
     c0 = shuffle<0,2>(h0,h4);
     c1 = shuffle<0,2>(h1,h5);
     c2 = shuffle<0,2>(h2,h6);
@@ -356,6 +397,10 @@ namespace embree
     return _mm256_store_ps((float*)ptr,f);
   }
 
+  __forceinline void storeu8f(void *ptr, const avxf& f ) { 
+    return _mm256_storeu_ps((float*)ptr,f);
+  }
+
   __forceinline void store8f( const avxb& mask, void *ptr, const avxf& f ) { 
     return _mm256_maskstore_ps((float*)ptr,(__m256i)mask,f);
   }
@@ -364,6 +409,7 @@ namespace embree
   __forceinline avxf load8f_nt(void* ptr) {
     return _mm256_castsi256_ps(_mm256_stream_load_si256((__m256i*)ptr));
   }
+
 #endif
   
   __forceinline void store8f_nt(void* ptr, const avxf& v) {
@@ -378,8 +424,12 @@ namespace embree
   /// Euclidian Space Operators
   ////////////////////////////////////////////////////////////////////////////////
 
+  //__forceinline avxf dot ( const avxf& a, const avxf& b ) {
+  //  return vreduce_add4(a*b);
+  //}
+
   __forceinline avxf dot ( const avxf& a, const avxf& b ) {
-    return vreduce_add4(a*b);
+    return _mm256_dp_ps(a,b,0x7F);
   }
 
   __forceinline avxf cross ( const avxf& a, const avxf& b ) 
@@ -399,5 +449,3 @@ namespace embree
     return cout << "<" << a[0] << ", " << a[1] << ", " << a[2] << ", " << a[3] << ", " << a[4] << ", " << a[5] << ", " << a[6] << ", " << a[7] << ">";
   }
 }
-
-#endif

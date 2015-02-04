@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_BVH4MB_INTERSECTOR16_HYBRID_MIC_H__
-#define __EMBREE_BVH4MB_INTERSECTOR16_HYBRID_MIC_H__
+#pragma once
 
 #include "bvh4mb.h"
 #include "common/ray16.h" 
@@ -24,7 +23,8 @@ namespace embree
 {
   namespace isa
   {
-    /*! BVH4i Traverser. Packet traversal implementation for a Quad BVH. */
+    /*! BVH4i Traverser. Packet traversal implementation for a bvh4mb. */
+    template<typename LeafIntersector>
       class BVH4mbIntersector16Hybrid
     {
       /* shortcuts for frequently used types */
@@ -37,6 +37,3 @@ namespace embree
     };
   }
 }
-
-#endif
-  

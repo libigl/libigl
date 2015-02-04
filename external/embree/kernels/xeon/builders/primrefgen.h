@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,65 +14,118 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_PRIMREFGENBIN_H__
-#define __EMBREE_PRIMREFGENBIN_H__
+#pragma once
 
-#include "common/buildsource.h"
+#include "common/scene.h"
 #include "primrefalloc.h"
 #include "primrefblock.h"
+#include "heuristic_fallback.h"
 
 namespace embree
 {
-  /*! Generates a list of build primitives from a list of triangles. */
-  template<typename Heuristic>      
-    class PrimRefGen
+  namespace isa
   {
-    static const size_t numTasks = 40;
-    typedef typename Heuristic::Split Split;
-    typedef typename Heuristic::PrimInfo PrimInfo;
+    /*! Generates a list of triangle build primitives from the scene. */
+    class PrimRefListGen
+    {
+      typedef atomic_set<PrimRefBlockT<PrimRef> > PrimRefList;
 
-    struct WorkItem {
-      size_t startGroup, startPrim, numPrims;
+    public:      
+      static void generate(size_t threadIndex, size_t threadCount, LockStepTaskScheduler* scheduler, PrimRefBlockAlloc<PrimRef>* alloc, const Scene* scene, GeometryTy ty, size_t numTimeSteps, PrimRefList& prims, PrimInfo& pinfo);
+      
+    private:
+      
+      /*! standard constructor that schedules the task */
+      PrimRefListGen (size_t threadIndex, size_t threadCount, LockStepTaskScheduler* scheduler, PrimRefBlockAlloc<PrimRef>* alloc, const Scene* scene, GeometryTy ty, size_t numTimeSteps, PrimRefList& prims, PrimInfo& pinfo);
+            
+      /*! parallel task to iterate over the primitives */
+      TASK_SET_FUNCTION(PrimRefListGen,task_gen_parallel);
+      
+    private:
+      const Scene* scene;                  //!< input geometry
+      GeometryTy ty;                       //!< types of geometry to generate
+      size_t numTimeSteps;                 //!< number of timesteps to generate
+      PrimRefBlockAlloc<PrimRef>* alloc;   //!< allocator for build primitive blocks
+      size_t numPrimitives;                //!< number of generated primitives
+      TaskScheduler::Task task;
+      PrimRefList& prims_o;                 //!< list of build primitives
+      PrimInfo& pinfo_o;                   //!< bounding information of primitives
     };
-    
-  public:
-    __forceinline PrimRefGen () {}
 
-    /*! standard constructor that schedules the task */
-    PrimRefGen (size_t threadIndex, size_t threadCount, const BuildSource* geom, PrimRefAlloc* alloc);
+    /*! Generates a list of triangle build primitives from some geometry. */
+    template<typename Ty>
+    class PrimRefListGenFromGeometry
+    {
+      typedef atomic_set<PrimRefBlockT<PrimRef> > PrimRefList;
 
-    /*! destruction */
-    ~PrimRefGen();
-    
-  public:
-    
-    /*! parallel task to iterate over the triangles */
-    TASK_RUN_FUNCTION(PrimRefGen,task_gen_parallel);
+    public:      
+      static void generate(size_t threadIndex, size_t threadCount, LockStepTaskScheduler* scheduler, PrimRefBlockAlloc<PrimRef>* alloc, const Ty* geom, PrimRefList& prims, PrimInfo& pinfo);
+      
+    private:
+      
+      /*! standard constructor that schedules the task */
+      PrimRefListGenFromGeometry (size_t threadIndex, size_t threadCount, LockStepTaskScheduler* scheduler, PrimRefBlockAlloc<PrimRef>* alloc, const Ty* geom, PrimRefList& prims, PrimInfo& pinfo);
+            
+      /*! parallel task to iterate over the primitives */
+      TASK_SET_FUNCTION(PrimRefListGenFromGeometry,task_gen_parallel);
+      
+      /* input data */
+    private:
+      const Ty* geom;                      //!< input geometry
+      PrimRefBlockAlloc<PrimRef>* alloc;   //!< allocator for build primitive blocks
+      TaskScheduler::Task task;
+      PrimRefList& prims_o;                 //!< list of build primitives
+      PrimInfo& pinfo_o;                   //!< bounding information of primitives
+    };
 
-    /*! reduces the bounding information gathered in parallel */
-    TASK_COMPLETE_FUNCTION(PrimRefGen,task_gen_parallel_reduce);
-    
-    /* input data */
-  private:
-    const BuildSource* geom;       //!< input geometry
-    PrimRefAlloc* alloc;           //!< allocator for build primitive blocks
-    
-    /* intermediate data */
-  private:
-    TaskScheduler::Task task;
-    BBox3f geomBounds[numTasks];     //!< Geometry bounds per thread
-    BBox3f centBounds[numTasks];     //!< Centroid bounds per thread
-    Heuristic heuristics[numTasks];  //!< Heuristics per thread
-    WorkItem work[numTasks];
-    
-    /* output data */
-  public:
-    size_t numPrimitives;            //!< number of primitives
-    size_t numVertices;              //!< number of vertices
-    atomic_set<PrimRefBlock> prims;  //!< list of build primitives
-    PrimInfo pinfo;                  //!< bounding information of primitives
-    Split split;                     //!< best possible split
-  };
+    /*! Generates an array of triangle build primitives from the scene. */
+    class PrimRefArrayGen
+    {
+    public:   
+      static void generate_sequential(size_t threadIndex, size_t threadCount, const Scene* scene, GeometryTy ty, size_t numTimeSteps, PrimRef* prims, PrimInfo& pinfo);
+      static void generate_parallel  (size_t threadIndex, size_t threadCount, LockStepTaskScheduler* scheduler, const Scene* scene, GeometryTy ty, size_t numTimeSteps, PrimRef* prims, PrimInfo& pinfo);
+      
+    private:
+      
+      /*! standard constructor that schedules the task */
+      PrimRefArrayGen (size_t threadIndex, size_t threadCount, LockStepTaskScheduler* scheduler, const Scene* scene, GeometryTy ty, size_t numTimeSteps, PrimRef* prims_o, PrimInfo& pinfo_o, bool parallel);
+            
+      /*! parallel task to iterate over the primitives */
+      TASK_FUNCTION(PrimRefArrayGen,task_gen_parallel);
+      
+      /* input data */
+    private:
+      const Scene* scene;           //!< input geometry
+      GeometryTy ty;                //!< types of geometry to generate
+      size_t numTimeSteps;          //!< number of timesteps to generate
+      size_t numPrimitives;         //!< number of generated primitives
+      PrimRef* prims_o;             //!< list of build primitives
+      PrimInfo& pinfo_o;            //!< bounding information of primitives
+      size_t* dst;                  //!< write-start offset for each thread
+    };
+
+    /*! Generates an array of triangle build primitives from some geometry. */
+    template<typename Ty>
+    class PrimRefArrayGenFromGeometry
+    {
+    public:   
+      static void generate_sequential(size_t threadIndex, size_t threadCount, const Ty* geom, PrimRef* prims, PrimInfo& pinfo);
+      static void generate_parallel  (size_t threadIndex, size_t threadCount, LockStepTaskScheduler* scheduler, const Ty* geom, PrimRef* prims, PrimInfo& pinfo);
+      
+    private:
+      
+      /*! standard constructor */
+      PrimRefArrayGenFromGeometry (const Ty* geom, PrimRef* prims_o, PrimInfo& pinfo_o);
+            
+      /*! parallel task to iterate over the primitives */
+      TASK_FUNCTION(PrimRefArrayGenFromGeometry,task_gen_parallel);
+      
+      /* input data */
+    private:
+      const Ty* geom;               //!< input geometry
+      PrimRef* prims_o;             //!< list of build primitives
+      PrimInfo& pinfo_o;            //!< bounding information of primitives
+      size_t* dst;                  //!< write-start offset for each thread
+    };
+  }
 }
-
-#endif

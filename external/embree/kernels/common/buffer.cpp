@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -19,7 +19,7 @@
 namespace embree
 {
   Buffer::Buffer () 
-    : ptr(NULL), bytes(0), ptr_ofs(NULL), stride(0), num(0), shared(false), mapped(false) {}
+    : ptr(NULL), bytes(0), ptr_ofs(NULL), stride(0), num(0), shared(false), mapped(false), modified(true) {}
   
   Buffer::~Buffer () {
     free();
@@ -34,13 +34,14 @@ namespace embree
     stride = stride_in;
     shared = false;
     mapped = false;
+    modified = true;
   }
 
   void Buffer::set(void* ptr_in, size_t ofs_in, size_t stride_in)
   {
-#if !defined(__BUFFER_STRIDE__)
+#if !defined(RTCORE_BUFFER_STRIDE)
     if (stride_in != stride) {
-      recordError(RTC_INVALID_OPERATION);
+      process_error(RTC_INVALID_OPERATION,"buffer stride feature disabled at compile time and specified stride does not match default stride");
       return;
     }
 #endif
@@ -52,15 +53,7 @@ namespace embree
     shared = true;
   }
 
-  void Buffer::alloc()
-  {
-    /* report error if buffer already allocated or shared */
-    if (shared || ptr) {
-      recordError(RTC_INVALID_OPERATION);
-      return;
-    }
-
-    /* allocate buffer */
+  void Buffer::alloc() {
     ptr = ptr_ofs = (char*) alignedMalloc(bytes);
   }
 
@@ -74,7 +67,7 @@ namespace embree
   {
     /* report error if buffer is already mapped */
     if (mapped) {
-      recordError(RTC_INVALID_OPERATION);
+      process_error(RTC_INVALID_OPERATION,"buffer is already mapped");
       return NULL;
     }
 
@@ -92,7 +85,7 @@ namespace embree
   {
     /* report error if buffer not mapped */
     if (!mapped) {
-      recordError(RTC_INVALID_OPERATION);
+      process_error(RTC_INVALID_OPERATION,"buffer is not mapped");
       return;
     }
 

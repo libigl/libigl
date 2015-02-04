@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_BVH4_INTERSECTOR1_H__
-#define __EMBREE_BVH4_INTERSECTOR1_H__
+#pragma once
 
 #include "bvh4.h"
 #include "common/ray.h"
@@ -26,10 +25,11 @@ namespace embree
   namespace isa
   {
     /*! BVH4 single ray traversal implementation. */
-    template<typename PrimitiveIntersector>
+    template<int mask, bool robust, typename PrimitiveIntersector>
       class BVH4Intersector1 
     {
       /* shortcuts for frequently used types */
+      typedef typename PrimitiveIntersector::Precalculations Precalculations;
       typedef typename PrimitiveIntersector::Primitive Primitive;
       typedef typename BVH4::NodeRef NodeRef;
       typedef typename BVH4::Node Node;
@@ -42,5 +42,3 @@ namespace embree
     };
   }
 }
-
-#endif

@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_AVXI_H__
-#define __EMBREE_AVXI_H__
+#pragma once
 
 namespace embree
 {
@@ -64,6 +63,14 @@ namespace embree
     __forceinline avxi( StepTy   ) : m256(_mm256_set_epi32(7, 6, 5, 4, 3, 2, 1, 0)) {}
 
     ////////////////////////////////////////////////////////////////////////////////
+    /// Loads and Stores
+    ////////////////////////////////////////////////////////////////////////////////
+
+    static __forceinline avxi load( const unsigned char* const ptr ) { 
+      return _mm256_cvtepu8_epi32(_mm_load_si128((__m128i*)ptr));
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
     /// Array Access
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -78,7 +85,6 @@ namespace embree
   __forceinline const avxi operator +( const avxi& a ) { return a; }
   __forceinline const avxi operator -( const avxi& a ) { return _mm256_sub_epi32(_mm256_setzero_si256(), a.m256); }
   __forceinline const avxi abs       ( const avxi& a ) { return _mm256_abs_epi32(a.m256); }
-  __forceinline const avxi cast      ( const __m256& a ) { return _mm256_castps_si256(a); }
 
   ////////////////////////////////////////////////////////////////////////////////
   /// Binary Operators
@@ -176,13 +182,13 @@ namespace embree
     return _mm256_castps_si256(_mm256_blendv_ps(_mm256_castsi256_ps(f), _mm256_castsi256_ps(t), m)); 
   }
 
-#if !defined(__clang__)
-  __forceinline const avxi select( const int m, const avxi& t, const avxi& f ) { 
-    return _mm256_blend_epi32(f,t,m);
+#if defined(__clang__) || defined(_MSC_VER) && !defined(__INTEL_COMPILER)
+  __forceinline const avxi select(const int m, const avxi& t, const avxi& f) {
+	  return select(avxb(m), t, f); // workaround for clang and Microsoft compiler bugs
   }
 #else
-  __forceinline const avxi select( const int m, const avxi& t, const avxi& f ) { 
-    return select(avxb(m),t,f);
+  __forceinline const avxi select(const int m, const avxi& t, const avxi& f) {
+	  return _mm256_blend_epi32(f, t, m);
   }
 #endif
 
@@ -289,5 +295,3 @@ namespace embree
     return cout << "<" << a[0] << ", " << a[1] << ", " << a[2] << ", " << a[3] << ", " << a[4] << ", " << a[5] << ", " << a[6] << ", " << a[7] << ">";
   }
 }
-
-#endif

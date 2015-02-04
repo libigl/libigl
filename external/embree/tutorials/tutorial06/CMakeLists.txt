@@ -1,5 +1,5 @@
 ## ======================================================================== ##
-## Copyright 2009-2013 Intel Corporation                                    ##
+## Copyright 2009-2014 Intel Corporation                                    ##
 ##                                                                          ##
 ## Licensed under the Apache License, Version 2.0 (the "License");          ##
 ## you may not use this file except in compliance with the License.         ##
@@ -14,24 +14,5 @@
 ## limitations under the License.                                           ##
 ## ======================================================================== ##
 
-IF (__XEON__ AND BUILD_TUTORIALS)
-  ADD_EXECUTABLE(tutorial06 tutorial06.cpp tutorial06_device.cpp)
-  TARGET_LINK_LIBRARIES(tutorial06 embree tutorial transport tutorial_device)
-ENDIF()
-
-IF (__XEON__ AND BUILD_TUTORIALS_ISPC)
-  ADD_ISPC_EXECUTABLE(tutorial06_ispc tutorial06.cpp tutorial06_device.ispc)
-  TARGET_LINK_LIBRARIES(tutorial06_ispc embree tutorial transport tutorial_device_ispc)
-ENDIF()
-
-IF (NOT __XEON__ AND __HOST__)
-  ADD_EXECUTABLE(tutorial06_xeonphi tutorial06.cpp)
-  TARGET_LINK_LIBRARIES(tutorial06_xeonphi tutorial transport_host)
-ENDIF()
-
-IF (NOT __XEON__ AND NOT __HOST__)
-  INCLUDE (icc_xeonphi)
-  ADD_ISPC_EXECUTABLE(tutorial06_xeonphi_device tutorial06_device.ispc)
-  TARGET_LINK_LIBRARIES(tutorial06_xeonphi_device embree_xeonphi.so transport_device tutorial_xeonphi_device_ispc)
-  ADD_DEPENDENCIES(tutorial06_xeonphi_device embree_xeonphi)
-ENDIF()
+INCLUDE(tutorial)
+ADD_TUTORIAL(tutorial06)

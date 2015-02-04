@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_COLOR_H__
-#define __EMBREE_COLOR_H__
+#pragma once // FIXME: delete color files
 
 #include "../sys/constants.h"
 #include "../simd/sse.h"
@@ -46,7 +45,7 @@ namespace embree
     __forceinline explicit Color4 (const float v) : m128(_mm_set1_ps(v)) {}
     __forceinline          Color4 (const float r, const float g, const float b, const float a) : m128(_mm_set_ps(a,b,g,r)) {}
 
-    __forceinline explicit Color4 ( const Col3c& other ) { m128 = _mm_mul_ps(_mm_set_ps(1.0f,other.b,other.g,other.r),_mm_set1_ps(one_over_255)); }
+    __forceinline explicit Color4 ( const Col3c& other ) { m128 = _mm_mul_ps(_mm_set_ps(255.0f,other.b,other.g,other.r),_mm_set1_ps(one_over_255)); }
     __forceinline explicit Color4 ( const Col3f& other ) { m128 = _mm_set_ps(1.0f,other.b,other.g,other.r); }
     __forceinline explicit Color4 ( const Col4c& other ) { m128 = _mm_mul_ps(_mm_set_ps(other.a,other.b,other.g,other.r),_mm_set1_ps(one_over_255)); }
     __forceinline explicit Color4 ( const Col4f& other ) { m128 = _mm_set_ps(other.a,other.b,other.g,other.r); }
@@ -202,7 +201,7 @@ namespace embree
 
   __forceinline const Color select( bool s, const Color& t, const Color& f ) {
     __m128 mask = s ? _mm_castsi128_ps(_mm_cmpeq_epi32(_mm_setzero_si128(), _mm_setzero_si128())) : _mm_setzero_ps();
-    return _mm_blendv_ps(f, t, mask);
+    return blendv_ps(f, t, mask);
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -221,5 +220,3 @@ namespace embree
     return cout << "(" << a.r << ", " << a.g << ", " << a.b << ")";
   }
 }
-
-#endif

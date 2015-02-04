@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -27,42 +27,6 @@ namespace embree
 {
   Ref<Image> loadMagick(const FileName& fileName)
   {
-#if 1
-    if (std::string(fileName.c_str()).size() > 2 && fileName.c_str()[1] == ' ') {
-      Magick::Image image(fileName.c_str()+2);
-      Image* out = new Image4f(image.columns(),image.rows(),fileName);
-      float rcpMaxRGB = 1.0f/float(MaxRGB);
-      Magick::Pixels pixel_cache(image);
-      Magick::PixelPacket* pixels = pixel_cache.get(0,0,out->width,out->height);
-    
-      for (size_t y=0; y<out->height; y++) {
-        for (size_t x=0; x<out->width; x++) {
-          Color4 c;
-          if (fileName.c_str()[0] == 'a') {
-            c.r =
-            c.g =
-            c.b = float(pixels[y*out->width+x].opacity )*rcpMaxRGB;
-            c.a = 1.f;
-          } else {
-            c.r = float(pixels[y*out->width+x].red  )*rcpMaxRGB;
-            c.g = float(pixels[y*out->width+x].green)*rcpMaxRGB;
-            c.b = float(pixels[y*out->width+x].blue )*rcpMaxRGB;
-            c.a = 1.f;
-          }
-          out->set(x,y,c);
-        }
-      }
-
-      return out;
-      // if (fileName[0] == 'd') {
-      //   Ref<Image> img = loadMagick(fileName.c_str()+2);
-        
-      //   return img;
-      // }
-      // if (fileName[0] == 'a')
-      //   return NULL;
-    }
-#endif
     Magick::Image image(fileName.c_str());
     Image* out = new Image4c(image.columns(),image.rows(),fileName);
     float rcpMaxRGB = 1.0f/float(MaxRGB);
@@ -86,7 +50,7 @@ namespace embree
   void storeMagick(const Ref<Image>& img, const FileName& fileName)
   {
     Magick::Image image(Magick::Geometry(img->width,img->height),
-                        Magick::Color(0,0,0,0));
+                        Magick::ColorRGB(0,0,0));
     image.modifyImage();
 
     Magick::Pixels pixel_cache(image);
@@ -94,10 +58,10 @@ namespace embree
     for (size_t y=0; y<img->height; y++) {
       for (size_t x=0; x<img->width; x++) {
         Color4 c = img->get(x,y);
-        pixels[y*img->width+x] = Magick::Color(Magick::Quantum(clamp(c.r)*MaxRGB),
-                                               Magick::Quantum(clamp(c.g)*MaxRGB),
-                                               Magick::Quantum(clamp(c.b)*MaxRGB),
-                                               Magick::Quantum(clamp(c.a)*MaxRGB));
+	pixels[y*img->width+x].red     = Magick::Quantum(clamp(c.r)*MaxRGB);
+	pixels[y*img->width+x].green   = Magick::Quantum(clamp(c.g)*MaxRGB);
+	pixels[y*img->width+x].blue    = Magick::Quantum(clamp(c.b)*MaxRGB);
+	pixels[y*img->width+x].opacity = Magick::Quantum(clamp(c.a)*MaxRGB);
       }
     }
     pixel_cache.sync();
@@ -105,4 +69,5 @@ namespace embree
   }
 }
 
-#endif
+#endif // USE_IMAGEMAGICK
+

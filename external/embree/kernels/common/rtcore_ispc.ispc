@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -21,9 +21,11 @@
 extern "C" void ispcInit(const uniform int8* uniform cfg);
 extern "C" void ispcExit();
 extern "C" uniform RTCError ispcGetError ();
+extern "C" void ispcSetErrorFunction (void* uniform ptr);
 extern "C" void ispcDebug();
 extern "C" RTCScene ispcNewScene (uniform RTCSceneFlags flags, uniform RTCAlgorithmFlags aflags);
 extern "C" void ispcCommitScene (RTCScene scene);
+extern "C" void ispcCommitSceneThread (RTCScene scene, uniform unsigned int threadID, uniform unsigned int numThreads);
 extern "C" void ispcIntersect1 (RTCScene scene, uniform RTCRay1& ray);
 extern "C" void ispcIntersect4 (void* uniform valid, RTCScene scene, void* uniform ray);
 extern "C" void ispcIntersect8 (void* uniform valid, RTCScene scene, void* uniform ray);
@@ -41,17 +43,29 @@ extern "C" uniform unsigned int ispcNewTriangleMesh (RTCScene scene,
                                                  uniform size_tt numTriangles,
                                                  uniform size_tt numVertices,
                                                  uniform size_tt numTimeSteps);
-extern "C" uniform unsigned int ispcNewQuadraticBezierCurves (RTCScene scene,
+extern "C" uniform unsigned int ispcNewBezierCurves (RTCScene scene,
                                                               uniform RTCGeometryFlags flags,
                                                               uniform size_tt numCurves,
                                                               uniform size_tt numVertices,
                                                               uniform size_tt numTimeSteps);
+
+extern "C" uniform unsigned int ispcNewSubdivisionMesh (RTCScene scene,
+                                                        uniform RTCGeometryFlags flags,
+                                                        uniform size_tt numFaces,
+                                                        uniform size_tt numEdges,
+                                                        uniform size_tt numVertices,
+                                                        uniform size_tt numCreases,
+                                                        uniform size_tt numCorners,
+                                                        uniform size_tt numHoles,
+                                                        uniform size_tt numTimeSteps);
+
 extern "C" void ispcSetRayMask (RTCScene scene, uniform unsigned int geomID, uniform int mask);
 extern "C" void* uniform ispcMapBuffer(RTCScene scene, uniform unsigned int geomID, uniform RTCBufferType type);
 extern "C" void ispcUnmapBuffer(RTCScene scene, uniform unsigned int geomID, uniform RTCBufferType type);
 extern "C" void ispcSetBuffer(RTCScene scene, uniform unsigned int geomID, uniform RTCBufferType type, void* uniform ptr, uniform size_tt offset, uniform size_tt stride);
 extern "C" void ispcEnable (RTCScene scene, uniform unsigned int geomID);
-extern "C" void ispcModified (RTCScene scene, uniform unsigned int geomID);
+extern "C" void ispcUpdate (RTCScene scene, uniform unsigned int geomID);
+extern "C" void ispcUpdateBuffer (RTCScene scene, uniform unsigned int geomID, uniform RTCBufferType type);
 extern "C" void ispcDisable (RTCScene scene, uniform unsigned int geomID);
 extern "C" void ispcDeleteGeometry (RTCScene scene, uniform unsigned int geomID);
 
@@ -78,6 +92,8 @@ extern "C" void ispcSetOcclusionFilterFunction4 (RTCScene scene, uniform unsigne
 extern "C" void ispcSetOcclusionFilterFunction8 (RTCScene scene, uniform unsigned int geomID, void* uniform filter);
 extern "C" void ispcSetOcclusionFilterFunction16 (RTCScene scene, uniform unsigned int geomID, void* uniform filter);
 
+extern "C" void ispcSetDisplacementFunction (RTCScene scene, uniform unsigned int geomID, void *uniform func, uniform RTCBounds* uniform bounds);
+
 void rtcInit(const uniform int8* uniform cfg) {
   ispcInit(cfg);
 }
@@ -88,6 +104,10 @@ void rtcExit() {
 
 uniform RTCError rtcGetError() {
   return ispcGetError();
+}
+
+void rtcSetErrorFunction(uniform RTC_ERROR_FUNCTION func) {
+  ispcSetErrorFunction(func);
 }
 
 void rtcDebug() {
@@ -109,6 +129,10 @@ RTCScene rtcNewScene (uniform RTCSceneFlags flags, uniform RTCAlgorithmFlags afl
 
 void rtcCommit (RTCScene scene) {
   ispcCommitScene(scene);
+}
+
+void rtcCommitThread (RTCScene scene, uniform unsigned int threadID, uniform unsigned int numThreads) {
+  ispcCommitSceneThread(scene,threadID,numThreads);
 }
 
 void rtcIntersect1 (RTCScene scene, uniform RTCRay1& ray) {
@@ -174,14 +198,28 @@ uniform unsigned int rtcNewTriangleMesh (RTCScene scene,
   return ispcNewTriangleMesh(scene,flags,numTriangles,numVertices,numTimeSteps);
 }
 
-uniform unsigned int rtcNewQuadraticBezierCurves (RTCScene scene,
+uniform unsigned int rtcNewHairGeometry (RTCScene scene,
                                                   uniform RTCGeometryFlags flags,
                                                   uniform size_t numCurves,
                                                   uniform size_t numVertices,
                                                   uniform size_t numTimeSteps)
 {
-  return ispcNewQuadraticBezierCurves (scene,flags,numCurves,numVertices,numTimeSteps);
+  return ispcNewBezierCurves (scene,flags,numCurves,numVertices,numTimeSteps);
 }
+
+uniform unsigned int rtcNewSubdivisionMesh (RTCScene scene,
+                                            uniform RTCGeometryFlags flags,
+                                            uniform size_t numFaces,
+                                            uniform size_t numEdges,
+                                            uniform size_t numVertices,
+                                            uniform size_t numEdgeCreases, 
+                                            uniform size_t numVertexCreases, 
+                                            uniform size_t numHoles,
+                                            uniform size_t numTimeSteps)
+{
+  return ispcNewSubdivisionMesh(scene,flags,numFaces,numEdges,numVertices,numEdgeCreases,numVertexCreases,numHoles,numTimeSteps);
+}
+
 
 void rtcSetMask (RTCScene scene, uniform unsigned int geomID, uniform int mask) {
   ispcSetRayMask(scene,geomID,mask);
@@ -204,7 +242,11 @@ void rtcEnable (RTCScene scene, uniform unsigned int geomID) {
 }
 
 void rtcUpdate (RTCScene scene, uniform unsigned int geomID) {
-  ispcModified(scene,geomID);
+  ispcUpdate(scene,geomID);
+}
+
+void rtcUpdateBuffer (RTCScene scene, uniform unsigned int geomID, uniform RTCBufferType type) {
+  ispcUpdateBuffer(scene,geomID,type);
 }
 
 void rtcDisable (RTCScene scene, uniform unsigned int geomID) {
@@ -229,11 +271,11 @@ void rtcSetIntersectFunction1 (RTCScene scene, uniform unsigned int geomID, unif
 
 void rtcSetIntersectFunction (RTCScene scene, uniform unsigned int geomID, uniform RTCIntersectFuncVarying intersect)
 {
-  if (sizeof(varying float) == 16)
+  if (sizeof(varying float) == 16) 
     ispcSetIntersectFunction4(scene,geomID,intersect);
-  else if (sizeof(varying float) == 32)
+  else if (sizeof(varying float) == 32) 
     ispcSetIntersectFunction8(scene,geomID,intersect);
-  else if (sizeof(varying float) == 64)
+  else if (sizeof(varying float) == 64) 
     ispcSetIntersectFunction16(scene,geomID,intersect);
 }
 
@@ -277,4 +319,9 @@ void rtcSetOcclusionFilterFunction (RTCScene scene, uniform unsigned int geomID,
     ispcSetOcclusionFilterFunction8(scene,geomID,filter);
   else if (sizeof(varying float) == 64)
     ispcSetOcclusionFilterFunction16(scene,geomID,filter);
+}
+
+void rtcSetDisplacementFunction (RTCScene scene, uniform unsigned int geomID, uniform RTCDisplacementFunc func, uniform RTCBounds* uniform bounds)
+{
+  ispcSetDisplacementFunction(scene,geomID,func,bounds);
 }

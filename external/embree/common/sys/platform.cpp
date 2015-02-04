@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -60,6 +60,11 @@ namespace embree
     VirtualFree(ptr,0,MEM_RELEASE);
   }
 
+  void *os_realloc (void* ptr, size_t bytesNew, size_t bytesOld)
+  {
+    FATAL("not implemented");
+  }
+
   double getSeconds() {
     LARGE_INTEGER freq, val;
     QueryPerformanceFrequency(&freq);
@@ -88,9 +93,9 @@ namespace embree
 #if defined(__MIC__)
     if (bytes > 16*4096) {
       flags |= MAP_HUGETLB | MAP_POPULATE;
-     bytes = (bytes+2*1024*1024-1)&(-2*1024*1024);
+      bytes = (bytes+2*1024*1024-1)&ssize_t(-2*1024*1024);
     } else {
-      bytes = (bytes+4095)&(-4096);
+      bytes = (bytes+4095)&ssize_t(-4096);
     }
 #endif
     char* ptr = (char*) mmap(0, bytes, PROT_READ | PROT_WRITE, flags, -1, 0);
@@ -104,9 +109,9 @@ namespace embree
 #if defined(__MIC__)
     if (bytes > 16*4096) {
       flags |= MAP_HUGETLB;
-      bytes = (bytes+2*1024*1024-1)&(-2*1024*1024);
+      bytes = (bytes+2*1024*1024-1)&ssize_t(-2*1024*1024);
     } else {
-      bytes = (bytes+4095)&(-4096);
+      bytes = (bytes+4095)&ssize_t(-4096);
     }
 #endif
     char* ptr = (char*) mmap(0, bytes, PROT_READ | PROT_WRITE, flags, -1, 0);
@@ -136,15 +141,43 @@ namespace embree
 
 #if defined(__MIC__)
     if (bytes > 16*4096) {
-      bytes = (bytes+2*1024*1024-1)&(-2*1024*1024);
+      bytes = (bytes+2*1024*1024-1)&ssize_t(-2*1024*1024);
     } else {
-      bytes = (bytes+4095)&(-4096);
+      bytes = (bytes+4095)&ssize_t(-4096);
     }
 #endif
     if (munmap(ptr,bytes) == -1) {
       throw std::bad_alloc();
     }
   }
+
+  void* os_realloc (void* old_ptr, size_t bytesNew, size_t bytesOld)
+  {
+#if defined(__MIC__)
+    if (bytesOld > 16*4096)
+      bytesOld = (bytesOld+2*1024*1024-1)&ssize_t(-2*1024*1024);
+    else
+      bytesOld = (bytesOld+4095)&ssize_t(-4096);
+
+    if (bytesNew > 16*4096)
+      bytesNew = (bytesNew+2*1024*1024-1)&ssize_t(-2*1024*1024);
+    else
+      bytesNew = (bytesNew+4095)&ssize_t(-4096);
+
+    char *ptr = (char*)mremap(old_ptr,bytesOld,bytesNew,MREMAP_MAYMOVE);
+
+    if (ptr == NULL || ptr == MAP_FAILED) {
+      perror("os_realloc ");
+      throw std::bad_alloc();
+    }
+    return ptr;
+#else
+    FATAL("not implemented");
+    return NULL;
+#endif
+
+  }
+
 
 #if defined(__MIC__)
 
@@ -193,6 +226,8 @@ namespace embree
 
 namespace embree
 {
+  std::vector<RegressionTest*>* regression_tests;
+
   void* alignedMalloc(size_t size, size_t align)
   {
     if (size == 0) return NULL;

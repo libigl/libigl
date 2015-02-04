@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_VECTOR3B_SSE_H__
-#define __EMBREE_VECTOR3B_SSE_H__
+#pragma once
 
 #include "simd/sse.h"
 #include "math.h"
@@ -109,6 +108,17 @@ namespace embree
   }
 
   ////////////////////////////////////////////////////////////////////////////////
+  /// Reduction Operations
+  ////////////////////////////////////////////////////////////////////////////////
+    
+  __forceinline bool reduce_and( const Vec3ba& a ) { return (_mm_movemask_ps(a) & 0x7) == 0x7; }
+  __forceinline bool reduce_or ( const Vec3ba& a ) { return (_mm_movemask_ps(a) & 0x7) != 0x0; }
+
+  __forceinline bool all       ( const Vec3ba& b ) { return (_mm_movemask_ps(b) & 0x7) == 0x7; }
+  __forceinline bool any       ( const Vec3ba& b ) { return (_mm_movemask_ps(b) & 0x7) != 0x0; }
+  __forceinline bool none      ( const Vec3ba& b ) { return (_mm_movemask_ps(b) & 0x7) == 0x0; }
+
+  ////////////////////////////////////////////////////////////////////////////////
   /// Output Operators
   ////////////////////////////////////////////////////////////////////////////////
 
@@ -116,5 +126,3 @@ namespace embree
     return cout << "(" << (a.x ? "1" : "0") << ", " << (a.y ? "1" : "0") << ", " << (a.z ? "1" : "0") << ")";
   }
 }
-
-#endif

@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -17,45 +17,59 @@
 #include "scene.h"
 
 #if !defined(__MIC__)
-#include "bvh4/twolevel_accel.h"
-#include "bvh4/bvh4_builder_toplevel.h"
 #include "bvh4/bvh4.h"
-#include "bvh4i/bvh4i.h"
-#include "bvh8i/bvh8i.h"
-#include "bvh4mb/bvh4mb.h"
+#include "bvh8/bvh8.h"
 #else
 #include "xeonphi/bvh4i/bvh4i.h"
 #include "xeonphi/bvh4mb/bvh4mb.h"
-#include "xeonphi/bvh16i/bvh16i.h"
+#include "xeonphi/bvh4hair/bvh4hair.h"
 #endif
 
 namespace embree
 {
   Scene::Scene (RTCSceneFlags sflags, RTCAlgorithmFlags aflags)
     : flags(sflags), aflags(aflags), numMappedBuffers(0), is_build(false), needTriangles(false), needVertices(false),
-      numTriangleMeshes(0), numTriangleMeshes2(0), numCurveSets(0), numCurveSets2(0), numUserGeometries(0),
-      flat_triangle_source_1(this,1), flat_triangle_source_2(this,2)
+      numTriangles(0), numTriangles2(0), 
+      numBezierCurves(0), numBezierCurves2(0), 
+      numSubdivPatches(0), numSubdivPatches2(0), 
+      numUserGeometries1(0), 
+      numIntersectionFilters4(0), numIntersectionFilters8(0), numIntersectionFilters16(0),
+      commitCounter(0)
   {
+#if !defined(__MIC__)
+    lockstep_scheduler.taskBarrier.init(TaskScheduler::getNumThreads());
+#else
+    lockstep_scheduler.taskBarrier.init(MAX_MIC_THREADS);
+#endif
     if (g_scene_flags != -1)
       flags = (RTCSceneFlags) g_scene_flags;
 
     geometries.reserve(128);
 
 #if defined(__MIC__)
+    accels.add( BVH4mb::BVH4mbTriangle1ObjectSplitBinnedSAH(this) );
+    accels.add( BVH4i::BVH4iVirtualGeometryBinnedSAH(this) );
+    accels.add( BVH4Hair::BVH4HairBinnedSAH(this) );
+    accels.add( BVH4i::BVH4iSubdivMeshBinnedSAH(this) );
 
-    g_top_accel = g_tri_accel;
-
-
-    accels.add(BVH4mb::BVH4mbTriangle1ObjectSplitBinnedSAH(this));
-
-    if (g_top_accel == "default" || g_top_accel == "bvh4i")   
+    if (g_verbose >= 1)
       {
-	if (g_builder == "default") 
+	std::cout << "scene flags: static " << isStatic() << " compact = " << isCompact() << " high quality = " << isHighQuality() << " robust = " << isRobust() << std::endl;
+      }
+
+    if (g_tri_accel == "default" || g_tri_accel == "bvh4i")   
+      {
+	if (g_tri_builder == "default") 
 	  {
 	    if (isStatic())
 	      {
 		if (g_verbose >= 1) std::cout << "STATIC BUILDER MODE" << std::endl;
-		accels.add(BVH4i::BVH4iTriangle1ObjectSplitBinnedSAH(this));
+		if ( isCompact() )
+		  accels.add(BVH4i::BVH4iTriangle1MemoryConservativeBinnedSAH(this));		    
+		else if ( isHighQuality() )
+		  accels.add(BVH4i::BVH4iTriangle1ObjectSplitBinnedSAH(this));
+		else
+		  accels.add(BVH4i::BVH4iTriangle1ObjectSplitBinnedSAH(this));
 	      }
 	    else
 	      {
@@ -65,45 +79,59 @@ namespace embree
 	  }
 	else
 	  {
-	    if (g_builder == "sah" || g_builder == "bvh4i" || g_builder == "bvh4i.sah") {
+	    if (g_tri_builder == "sah" || g_tri_builder == "bvh4i" || g_tri_builder == "bvh4i.sah") {
 	      accels.add(BVH4i::BVH4iTriangle1ObjectSplitBinnedSAH(this));
 	    }
-	    else if (g_builder == "fast" || g_builder == "morton") {
+	    else if (g_tri_builder == "fast" || g_tri_builder == "morton") {
 	      accels.add(BVH4i::BVH4iTriangle1ObjectSplitMorton(this));
 	    }
-	    else if (g_builder == "fast_enhanced" || g_builder == "morton.enhanced") {
+	    else if (g_tri_builder == "fast_enhanced" || g_tri_builder == "morton.enhanced") {
 	      accels.add(BVH4i::BVH4iTriangle1ObjectSplitEnhancedMorton(this));
 	    }
-	    else if (g_builder == "high_quality" || g_builder == "presplits") {
+	    else if (g_tri_builder == "high_quality" || g_tri_builder == "presplits") {
 	      accels.add(BVH4i::BVH4iTriangle1PreSplitsBinnedSAH(this));
 	    }
-	    else throw std::runtime_error("unknown builder "+g_builder+" for BVH4i<Triangle1>");
+	    else if (g_tri_builder == "compact" ||
+		     g_tri_builder == "memory_conservative") {
+	      accels.add(BVH4i::BVH4iTriangle1MemoryConservativeBinnedSAH(this));
+	    }
+	    else if (g_tri_builder == "morton64") {
+	      accels.add(BVH4i::BVH4iTriangle1ObjectSplitMorton64Bit(this));
+	    }
+
+	    else THROW_RUNTIME_ERROR("unknown builder "+g_tri_builder+" for BVH4i<Triangle1>");
 	  }
       }
-    // else if (g_top_accel == "bvh4mb") {
-    //   accels.add(BVH4mb::BVH4mbTriangle1ObjectSplitBinnedSAH(this));
-    // }
-    else if (g_top_accel == "bvh16i") {
-      accels.add(BVH16i::BVH16iTriangle1ObjectSplitBinnedSAH(this));
-    }
-    else throw std::runtime_error("unknown accel "+g_top_accel);
+    else THROW_RUNTIME_ERROR("unknown accel "+g_tri_accel);
 
-    accels.add(BVH4i::BVH4iVirtualGeometryBinnedSAH(this));
 
 #else
+    createTriangleAccel();
+    //accels.add(BVH4::BVH4Triangle1vMB(this));
+    accels.add(BVH4::BVH4Triangle4vMB(this));
+    accels.add(BVH4::BVH4UserGeometry(this));
+    createHairAccel();
+    accels.add(BVH4::BVH4OBBBezier1iMB(this,false));
+    createSubdivAccel();
 
-    /* create default acceleration structure */
-    if (g_top_accel == "default" && g_tri_accel == "default") 
+#endif
+  }
+
+#if !defined(__MIC__)
+
+  void Scene::createTriangleAccel()
+  {
+    if (g_tri_accel == "default") 
     {
       if (isStatic()) {
-        int mode =  4*(int)isCoherent() + 2*(int)isCompact() + 1*(int)isRobust();
+        int mode =  2*(int)isCompact() + 1*(int)isRobust(); 
         switch (mode) {
-        case /*0b000*/ 0: 
+        case /*0b00*/ 0: 
 #if defined (__TARGET_AVX__)
-          if (has_feature(AVX2) && aflags == RTC_INTERSECT1) 
-          {
-            if (isHighQuality()) accels.add(BVH4::BVH4Triangle8SpatialSplit(this)); 
-            else                 accels.add(BVH4::BVH4Triangle8ObjectSplit(this)); 
+          if (has_feature(AVX))
+	  {
+            if (isHighQuality()) accels.add(BVH8::BVH8Triangle4SpatialSplit(this)); 
+            else                 accels.add(BVH8::BVH8Triangle4ObjectSplit(this)); 
           }
           else 
 #endif
@@ -113,74 +141,92 @@ namespace embree
           }
           break;
 
-        case /*0b001*/ 1: accels.add(BVH4::BVH4Triangle4vObjectSplit(this)); break;
-        case /*0b010*/ 2: accels.add(BVH4::BVH4Triangle4iObjectSplit(this)); break;
-        case /*0b011*/ 3: accels.add(BVH4::BVH4Triangle4iObjectSplit(this)); break;
-        case /*0b100*/ 4: 
-          if (isHighQuality()) accels.add(BVH4::BVH4Triangle1SpatialSplit(this));
-          else                 accels.add(BVH4::BVH4Triangle1ObjectSplit(this)); 
-          break;
-        case /*0b101*/ 5: accels.add(BVH4::BVH4Triangle1vObjectSplit(this)); break;
-        case /*0b110*/ 6: accels.add(BVH4::BVH4Triangle4iObjectSplit(this)); break;
-        case /*0b111*/ 7: accels.add(BVH4::BVH4Triangle4iObjectSplit(this)); break;
+        case /*0b01*/ 1: accels.add(BVH4::BVH4Triangle4vObjectSplit(this)); break;
+        case /*0b10*/ 2: accels.add(BVH4::BVH4Triangle4iObjectSplit(this)); break;
+        case /*0b11*/ 3: accels.add(BVH4::BVH4Triangle4iObjectSplit(this)); break;
         }
-        accels.add(BVH4MB::BVH4MBTriangle1v(this)); 
-        accels.add(new TwoLevelAccel("bvh4",this)); 
-      } else {
-        int mode =  4*(int)isCoherent() + 2*(int)isCompact() + 1*(int)isRobust();
+      } 
+      else 
+      {
+        int mode =  2*(int)isCompact() + 1*(int)isRobust();
         switch (mode) {
-        case /*0b000*/ 0: accels.add(BVH4::BVH4BVH4Triangle4ObjectSplit(this)); break;
-        case /*0b001*/ 1: accels.add(BVH4::BVH4BVH4Triangle4vObjectSplit(this)); break;
-        case /*0b010*/ 2: accels.add(BVH4::BVH4BVH4Triangle4vObjectSplit(this)); break;
-        case /*0b011*/ 3: accels.add(BVH4::BVH4BVH4Triangle4vObjectSplit(this)); break;
-        case /*0b100*/ 4: accels.add(BVH4::BVH4BVH4Triangle1ObjectSplit(this)); break;
-        case /*0b101*/ 5: accels.add(BVH4::BVH4BVH4Triangle1vObjectSplit(this)); break;
-        case /*0b110*/ 6: accels.add(BVH4::BVH4BVH4Triangle1vObjectSplit(this)); break;
-        case /*0b111*/ 7: accels.add(BVH4::BVH4BVH4Triangle1vObjectSplit(this)); break;
+        case /*0b00*/ 0: accels.add(BVH4::BVH4BVH4Triangle4ObjectSplit(this)); break;
+        case /*0b01*/ 1: accels.add(BVH4::BVH4BVH4Triangle4vObjectSplit(this)); break;
+        case /*0b10*/ 2: accels.add(BVH4::BVH4BVH4Triangle4iObjectSplit(this)); break;
+        case /*0b11*/ 3: accels.add(BVH4::BVH4BVH4Triangle4iObjectSplit(this)); break;
         }
-        accels.add(BVH4MB::BVH4MBTriangle1v(this));
-        accels.add(new TwoLevelAccel("bvh4",this));
       }
     }
-
-    /* create user specified acceleration structure */
-    else if (g_top_accel == "default") 
-    {
-      if      (g_tri_accel == "bvh4.bvh4.triangle1.morton") accels.add(BVH4::BVH4BVH4Triangle1Morton(this));
-      else if (g_tri_accel == "bvh4.bvh4.triangle1")    accels.add(BVH4::BVH4BVH4Triangle1ObjectSplit(this));
-      else if (g_tri_accel == "bvh4.bvh4.triangle4")    accels.add(BVH4::BVH4BVH4Triangle4ObjectSplit(this));
-      else if (g_tri_accel == "bvh4.bvh4.triangle1v")   accels.add(BVH4::BVH4BVH4Triangle1vObjectSplit(this));
-      else if (g_tri_accel == "bvh4.bvh4.triangle4v")   accels.add(BVH4::BVH4BVH4Triangle4vObjectSplit(this));
-      else if (g_tri_accel == "bvh4.triangle1")         accels.add(BVH4::BVH4Triangle1(this));
-      else if (g_tri_accel == "bvh4.triangle4")         accels.add(BVH4::BVH4Triangle4(this));
+    else if (g_tri_accel == "bvh4.bvh4.triangle1")    accels.add(BVH4::BVH4BVH4Triangle1ObjectSplit(this));
+    else if (g_tri_accel == "bvh4.bvh4.triangle4")    accels.add(BVH4::BVH4BVH4Triangle4ObjectSplit(this));
+    else if (g_tri_accel == "bvh4.bvh4.triangle1v")   accels.add(BVH4::BVH4BVH4Triangle1vObjectSplit(this));
+    else if (g_tri_accel == "bvh4.bvh4.triangle4v")   accels.add(BVH4::BVH4BVH4Triangle4vObjectSplit(this));
+    else if (g_tri_accel == "bvh4.triangle1")         accels.add(BVH4::BVH4Triangle1(this));
+    else if (g_tri_accel == "bvh4.triangle4")         accels.add(BVH4::BVH4Triangle4(this));
+    else if (g_tri_accel == "bvh4.triangle1v")        accels.add(BVH4::BVH4Triangle1v(this));
+    else if (g_tri_accel == "bvh4.triangle4v")        accels.add(BVH4::BVH4Triangle4v(this));
+    else if (g_tri_accel == "bvh4.triangle4i")        accels.add(BVH4::BVH4Triangle4i(this));
 #if defined (__TARGET_AVX__)
-      else if (g_tri_accel == "bvh4.triangle8")         accels.add(BVH4::BVH4Triangle8(this));
+    else if (g_tri_accel == "bvh4.triangle8")         accels.add(BVH4::BVH4Triangle8(this));
+    else if (g_tri_accel == "bvh8.triangle4")         accels.add(BVH8::BVH8Triangle4(this));
+    else if (g_tri_accel == "bvh8.triangle8")         accels.add(BVH8::BVH8Triangle8(this));
 #endif
-      else if (g_tri_accel == "bvh4.triangle1v")        accels.add(BVH4::BVH4Triangle1v(this));
-      else if (g_tri_accel == "bvh4.triangle4v")        accels.add(BVH4::BVH4Triangle4v(this));
-      else if (g_tri_accel == "bvh4.triangle4i")        accels.add(BVH4::BVH4Triangle4i(this));
-      else if (g_tri_accel == "bvh4i.triangle1")        accels.add(BVH4i::BVH4iTriangle1(this));
-      else if (g_tri_accel == "bvh4i.triangle4")        accels.add(BVH4i::BVH4iTriangle4(this));
-#if defined (__TARGET_AVX__)
-      else if (g_tri_accel == "bvh4i.triangle8")        accels.add(BVH4i::BVH4iTriangle8(this));
-#endif
-      else if (g_tri_accel == "bvh4i.triangle1.v1")     accels.add(BVH4i::BVH4iTriangle1_v1(this));
-      else if (g_tri_accel == "bvh4i.triangle1.v2")     accels.add(BVH4i::BVH4iTriangle1_v2(this));
-      else if (g_tri_accel == "bvh4i.triangle1.morton") accels.add(BVH4i::BVH4iTriangle1_morton(this));
-      else if (g_tri_accel == "bvh4i.triangle1.morton.enhanced") accels.add(BVH4i::BVH4iTriangle1_morton_enhanced(this));
-#if !defined(__WIN32__) && defined (__TARGET_AVX__)
-      else if (g_tri_accel == "bvh8i.triangle8")        accels.add(BVH8i::BVH8iTriangle8(this));
-#endif
-      else throw std::runtime_error("unknown triangle acceleration structure "+g_tri_accel);
-
-      accels.add(new TwoLevelAccel(g_top_accel,this));
-    }
-    else {
-      accels.add(new TwoLevelAccel(g_top_accel,this));
-    }
-#endif
+    else THROW_RUNTIME_ERROR("unknown triangle acceleration structure "+g_tri_accel);
   }
-  
+
+  void Scene::createHairAccel()
+  {
+    if (g_hair_accel == "default") 
+    {
+      if (isStatic()) {
+        int mode =  2*(int)isCompact() + 1*(int)isRobust(); 
+        switch (mode) {
+        case /*0b00*/ 0: accels.add(BVH4::BVH4OBBBezier1v(this,isHighQuality())); break;
+        case /*0b01*/ 1: accels.add(BVH4::BVH4OBBBezier1v(this,isHighQuality())); break;
+        case /*0b10*/ 2: accels.add(BVH4::BVH4OBBBezier1i(this,isHighQuality())); break;
+        case /*0b11*/ 3: accels.add(BVH4::BVH4OBBBezier1i(this,isHighQuality())); break;
+        }
+      } 
+      else 
+      {
+        int mode =  2*(int)isCompact() + 1*(int)isRobust();
+        switch (mode) {
+	case /*0b00*/ 0: accels.add(BVH4::BVH4Bezier1v(this)); break;
+        case /*0b01*/ 1: accels.add(BVH4::BVH4Bezier1v(this)); break;
+        case /*0b10*/ 2: accels.add(BVH4::BVH4Bezier1i(this)); break;
+        case /*0b11*/ 3: accels.add(BVH4::BVH4Bezier1i(this)); break;
+        }
+      }   
+    }
+    else if (g_hair_accel == "bvh4.bezier1v"    ) accels.add(BVH4::BVH4Bezier1v(this));
+    else if (g_hair_accel == "bvh4.bezier1i"    ) accels.add(BVH4::BVH4Bezier1i(this));
+    else if (g_hair_accel == "bvh4obb.bezier1v" ) accels.add(BVH4::BVH4OBBBezier1v(this,false));
+    else if (g_hair_accel == "bvh4obb.bezier1i" ) accels.add(BVH4::BVH4OBBBezier1i(this,false));
+    else THROW_RUNTIME_ERROR("unknown hair acceleration structure "+g_hair_accel);
+  }
+
+  void Scene::createSubdivAccel()
+  {
+    if (g_subdiv_accel == "default") 
+    {
+      if (isIncoherent(flags)) {
+        if (isCompact()) accels.add(BVH4::BVH4SubdivGridLazy(this));
+        else             accels.add(BVH4::BVH4SubdivGridEager(this));
+      }
+      else {
+        accels.add(BVH4::BVH4SubdivPatch1Cached(this));
+      }
+    }
+    else if (g_subdiv_accel == "bvh4.subdivpatch1"      ) accels.add(BVH4::BVH4SubdivPatch1(this));
+    else if (g_subdiv_accel == "bvh4.subdivpatch1cached") accels.add(BVH4::BVH4SubdivPatch1Cached(this));
+    else if (g_subdiv_accel == "bvh4.grid.adaptive"     ) accels.add(BVH4::BVH4SubdivGrid(this));
+    else if (g_subdiv_accel == "bvh4.grid.eager"        ) accels.add(BVH4::BVH4SubdivGridEager(this));
+    else if (g_subdiv_accel == "bvh4.grid.lazy"         ) accels.add(BVH4::BVH4SubdivGridLazy(this));
+    else THROW_RUNTIME_ERROR("unknown subdiv accel "+g_subdiv_accel);
+  }
+
+#endif
+
   Scene::~Scene () 
   {
     for (size_t i=0; i<geometries.size(); i++)
@@ -189,44 +235,61 @@ namespace embree
 
   unsigned Scene::newUserGeometry (size_t items) 
   {
-    Geometry* geom = new UserGeometryScene::UserGeometry(this,items);
+    Geometry* geom = new UserGeometry(this,items);
     return geom->id;
   }
   
   unsigned Scene::newInstance (Scene* scene) {
-    Geometry* geom = new UserGeometryScene::Instance(this,scene);
+    Geometry* geom = new Instance(this,scene);
     return geom->id;
   }
 
   unsigned Scene::newTriangleMesh (RTCGeometryFlags gflags, size_t numTriangles, size_t numVertices, size_t numTimeSteps) 
   {
     if (isStatic() && (gflags != RTC_GEOMETRY_STATIC)) {
-      recordError(RTC_INVALID_OPERATION);
+      process_error(RTC_INVALID_OPERATION,"static scenes can only contain static geometries");
       return -1;
     }
 
     if (numTimeSteps == 0 || numTimeSteps > 2) {
-      recordError(RTC_INVALID_OPERATION);
+      process_error(RTC_INVALID_OPERATION,"only 1 or 2 time steps supported");
       return -1;
     }
     
-    Geometry* geom = new TriangleMeshScene::TriangleMesh(this,gflags,numTriangles,numVertices,numTimeSteps);
+    Geometry* geom = new TriangleMesh(this,gflags,numTriangles,numVertices,numTimeSteps);
     return geom->id;
   }
 
-  unsigned Scene::newQuadraticBezierCurves (RTCGeometryFlags gflags, size_t numCurves, size_t numVertices, size_t numTimeSteps) 
+  unsigned Scene::newSubdivisionMesh (RTCGeometryFlags gflags, size_t numFaces, size_t numEdges, size_t numVertices, size_t numEdgeCreases, size_t numVertexCreases, size_t numHoles, size_t numTimeSteps) 
   {
     if (isStatic() && (gflags != RTC_GEOMETRY_STATIC)) {
-      recordError(RTC_INVALID_OPERATION);
+      process_error(RTC_INVALID_OPERATION,"static scenes can only contain static geometries");
       return -1;
     }
 
     if (numTimeSteps == 0 || numTimeSteps > 2) {
-      recordError(RTC_INVALID_OPERATION);
+      process_error(RTC_INVALID_OPERATION,"only 1 or 2 time steps supported");
       return -1;
     }
     
-    Geometry* geom = new QuadraticBezierCurvesScene::QuadraticBezierCurves(this,gflags,numCurves,numVertices,numTimeSteps);
+    Geometry* geom = new SubdivMesh(this,gflags,numFaces,numEdges,numVertices,numEdgeCreases,numVertexCreases,numHoles,numTimeSteps);
+    return geom->id;
+  }
+
+
+  unsigned Scene::newBezierCurves (RTCGeometryFlags gflags, size_t numCurves, size_t numVertices, size_t numTimeSteps) 
+  {
+    if (isStatic() && (gflags != RTC_GEOMETRY_STATIC)) {
+      process_error(RTC_INVALID_OPERATION,"static scenes can only contain static geometries");
+      return -1;
+    }
+
+    if (numTimeSteps == 0 || numTimeSteps > 2) {
+      process_error(RTC_INVALID_OPERATION,"only 1 or 2 time steps supported");
+      return -1;
+    }
+    
+    Geometry* geom = new BezierCurves(this,gflags,numCurves,numVertices,numTimeSteps);
     return geom->id;
   }
 
@@ -248,53 +311,71 @@ namespace embree
   void Scene::remove(Geometry* geometry) 
   {
     Lock<AtomicMutex> lock(geometriesMutex);
-
     usedIDs.push_back(geometry->id);
     geometries[geometry->id] = NULL;
     delete geometry;
   }
 
-  void Scene::build (size_t threadIndex, size_t threadCount) {
-    accels.build(threadIndex,threadCount);
-  }
 
-  void Scene::task_build(size_t threadIndex, size_t threadCount, TaskScheduler::Event* event) {
-    build(threadIndex,threadCount);
-  }
-
-  void Scene::build () 
+  void Scene::task_build_parallel(size_t threadIndex, size_t threadCount, size_t taskIndex, size_t taskCount, TaskScheduler::Event* event) 
   {
+    LockStepTaskScheduler::Init init(threadIndex,threadCount,&lockstep_scheduler);
+    if (threadIndex == 0) accels.build(threadIndex,threadCount);
+  }
+
+  void Scene::build (size_t threadIndex, size_t threadCount) 
+  {
+    /* all user worker threads properly enter and leave the tasking system */
+    LockStepTaskScheduler::Init init(threadIndex,threadCount,&lockstep_scheduler);
+    if (threadIndex != 0) return;
+
+    /* allow only one build at a time */
     Lock<MutexSys> lock(mutex);
 
-    if ((isStatic() && isBuild()) || !ready()) {
-      recordError(RTC_INVALID_OPERATION);
+    if (isStatic() && isBuild()) {
+      process_error(RTC_INVALID_OPERATION,"static geometries cannot get committed twice");
+      return;
+    }
+
+    if (!ready()) {
+      process_error(RTC_INVALID_OPERATION,"not all buffers are unmapped");
       return;
     }
 
     /* verify geometry in debug mode  */
-#if defined(DEBUG)
+#if 0 && defined(DEBUG) // FIXME: enable
     for (size_t i=0; i<geometries.size(); i++) {
       if (geometries[i]) {
         if (!geometries[i]->verify()) {
-          std::cerr << "Embree: invalid geometry specified" << std::endl;
-          throw std::runtime_error("invalid geometry");
+          process_error(RTC_INVALID_OPERATION,"invalid geometry specified");
+          return;
         }
       }
     }
 #endif
 
-    /* spawn build task */
-    TaskScheduler::EventSync event;
-    new (&task) TaskScheduler::Task(&event,NULL,NULL,1,_task_build,this,"scene_build");
-    TaskScheduler::addTask(-1,TaskScheduler::GLOBAL_FRONT,&task);
-    event.sync();
+    /* select fast code path if no intersection filter is present */
+    accels.select(numIntersectionFilters4,numIntersectionFilters8,numIntersectionFilters16);
+
+    /* if user provided threads use them */
+    if (threadCount)
+      accels.build(threadIndex,threadCount);
+
+    /* otherwise use our own threads */
+    else
+    {
+      TaskScheduler::EventSync event;
+      new (&task) TaskScheduler::Task(&event,_task_build_parallel,this,TaskScheduler::getNumThreads(),NULL,NULL,"scene_build");
+      TaskScheduler::addTask(-1,TaskScheduler::GLOBAL_FRONT,&task);
+      event.sync();
+    }
 
     /* make static geometry immutable */
     if (isStatic()) 
     {
       accels.immutable();
       for (size_t i=0; i<geometries.size(); i++)
-        geometries[i]->immutable();
+        if (geometries[i]) geometries[i]->immutable();
     }
 
     /* delete geometry that is scheduled for delete */
@@ -333,6 +414,21 @@ namespace embree
       accels.print(2);
       std::cout << "selected scene intersector" << std::endl;
       intersectors.print(2);
+    }
+    
+    /* update commit counter */
+    commitCounter++;
+  }
+
+  void Scene::write(std::ofstream& file)
+  {
+    int magick = 0x35238765LL;
+    file.write((char*)&magick,sizeof(magick));
+    int numGroups = size();
+    file.write((char*)&numGroups,sizeof(numGroups));
+    for (size_t i=0; i<numGroups; i++) {
+      if (geometries[i]) geometries[i]->write(file);
+      else { int type = -1; file.write((char*)&type,sizeof(type)); }
     }
   }
 }

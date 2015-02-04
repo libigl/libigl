@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -20,9 +20,10 @@
 namespace embree
 {
   Triangle4iType Triangle4iType::type;
+  TriangleMeshTriangle4i TriangleMeshTriangle4i::type;
 
   Triangle4iType::Triangle4iType () 
-  : PrimitiveType("triangle4i",sizeof(Triangle4i),4,true,1) {} 
+    : PrimitiveType("triangle4i",sizeof(Triangle4i),4,true,1) {} 
   
   size_t Triangle4iType::blocks(size_t x) const {
     return (x+3)/4;
@@ -31,38 +32,56 @@ namespace embree
   size_t Triangle4iType::size(const char* This) const {
     return ((Triangle4i*)This)->size();
   }
-  
-  void Triangle4iType::pack(char* This, atomic_set<PrimRefBlock>::block_iterator_unsafe& prims, void* geom) const 
+
+  BBox3fa TriangleMeshTriangle4i::update(char* prim_i, size_t num, void* geom) const 
   {
-    Scene* scene = (Scene*) geom;
-    
-    ssei geomID = -1, primID = -1;
-    Vec3f* v0[4] = { NULL, NULL, NULL, NULL };
-    ssei v1 = zero, v2 = zero;
-    PrimRef& prim = *prims;
-    
-    for (size_t i=0; i<4; i++)
+    BBox3fa bounds = empty;
+    TriangleMesh* mesh = (TriangleMesh*) geom;
+    Triangle4i* prim = (Triangle4i*) prim_i;
+
+    if (num == -1)
     {
-      const TriangleMeshScene::TriangleMesh* mesh = scene->getTriangleMesh(prim.geomID());
-      const TriangleMeshScene::TriangleMesh::Triangle& tri = mesh->triangle(prim.primID());
-      if (prims) {
-        geomID[i] = prim.geomID();
-        primID[i] = prim.primID();
-        v0[i] = (Vec3f*) &mesh->vertex(tri.v[0]); 
-        v1[i] = (int*)&mesh->vertex(tri.v[1])-(int*)v0[i]; 
-        v2[i] = (int*)&mesh->vertex(tri.v[2])-(int*)v0[i]; 
-        prims++;
-      } else {
-        assert(i);
-        geomID[i] = -1;
-        primID[i] = -1;
-        v0[i] = v0[i-1];
-        v1[i] = 0; 
-        v2[i] = 0;
+      while (true)
+      {
+	ssei vgeomID = -1, vprimID = -1, vmask = -1;
+	sse3f v0 = zero, v1 = zero, v2 = zero;
+	
+	for (size_t i=0; i<4; i++)
+	{
+	  if (prim->primID<1>(i) == -1) break;
+	  const unsigned geomID = prim->geomID<1>(i);
+	  const unsigned primID = prim->primID<1>(i);
+	  const TriangleMesh::Triangle& tri = mesh->triangle(primID);
+	  const Vec3fa p0 = mesh->vertex(tri.v[0]);
+	  const Vec3fa p1 = mesh->vertex(tri.v[1]);
+	  const Vec3fa p2 = mesh->vertex(tri.v[2]);
+	  bounds.extend(merge(BBox3fa(p0),BBox3fa(p1),BBox3fa(p2)));
+	}
+	bool last = prim->last();
+	if (last) break;
+	prim++;
       }
-      if (prims) prim = *prims;
     }
-    
-    new (This) Triangle4i(v0,v1,v2,geomID,primID);
+    else
+    {
+      for (size_t j=0; j<num; j++, prim++)
+      {
+	ssei vgeomID = -1, vprimID = -1, vmask = -1;
+	sse3f v0 = zero, v1 = zero, v2 = zero;
+	
+	for (size_t i=0; i<4; i++)
+	{
+	  if (prim->primID<0>(i) == -1) break;
+	  const unsigned geomID = prim->geomID<0>(i);
+	  const unsigned primID = prim->primID<0>(i);
+	  const TriangleMesh::Triangle& tri = mesh->triangle(primID);
+	  const Vec3fa p0 = mesh->vertex(tri.v[0]);
+	  const Vec3fa p1 = mesh->vertex(tri.v[1]);
+	  const Vec3fa p2 = mesh->vertex(tri.v[2]);
+	  bounds.extend(merge(BBox3fa(p0),BBox3fa(p1),BBox3fa(p2)));
+	}
+      }
+    }
+    return bounds; 
   }
 }

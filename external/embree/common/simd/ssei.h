@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_SSEI_H__
-#define __EMBREE_SSEI_H__
+#pragma once
 
 #include "math/math.h"
 
@@ -43,10 +42,11 @@ namespace embree
     __forceinline operator const __m128i&( void ) const { return m128; }
     __forceinline operator       __m128i&( void )       { return m128; }
 
-    __forceinline explicit ssei  ( const int32* const a ) : m128(_mm_loadu_si128((__m128i*)a)) {}
-    //__forceinline ssei           ( int32  a ) : m128(_mm_set1_epi32(a)) {}
-    __forceinline ssei           ( const int32& a ) : m128(_mm_shuffle_epi32(_mm_castps_si128(_mm_load_ss((float*)&a)), _MM_SHUFFLE(0, 0, 0, 0))) {}
-    __forceinline ssei           ( int32  a, int32  b) : m128(_mm_set_epi32(b, a, b, a)) {}
+    __forceinline ssei           ( const int32&  a ) : m128(_mm_shuffle_epi32(_mm_castps_si128(_mm_load_ss((float*)&a)), _MM_SHUFFLE(0, 0, 0, 0))) {}
+    __forceinline ssei           ( const uint32& a ) : m128(_mm_shuffle_epi32(_mm_castps_si128(_mm_load_ss((float*)&a)), _MM_SHUFFLE(0, 0, 0, 0))) {}
+#if defined(__X86_64__)
+    __forceinline ssei           ( const size_t a  ) : m128(_mm_set1_epi32((int)a)) {}
+#endif
     __forceinline ssei           ( int32  a, int32  b, int32  c, int32  d) : m128(_mm_set_epi32(d, c, b, a)) {}
 
     __forceinline explicit ssei( const __m128 a ) : m128(_mm_cvtps_epi32(a)) {}
@@ -60,6 +60,16 @@ namespace embree
     __forceinline ssei( PosInfTy ) : m128(_mm_set_epi32(pos_inf, pos_inf, pos_inf, pos_inf)) {}
     __forceinline ssei( NegInfTy ) : m128(_mm_set_epi32(neg_inf, neg_inf, neg_inf, neg_inf)) {}
     __forceinline ssei( StepTy )   : m128(_mm_set_epi32(3, 2, 1, 0)) {}
+
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Loads and Stores
+    ////////////////////////////////////////////////////////////////////////////////
+
+#if defined(__SSE4_1__)
+    static __forceinline ssei load( const unsigned char* const ptr ) { 
+      return _mm_cvtepu8_epi32(_mm_load_si128((__m128i*)ptr));
+    }
+#endif
 
     ////////////////////////////////////////////////////////////////////////////////
     /// Array Access
@@ -118,13 +128,16 @@ namespace embree
   
 #if defined(__SSE4_1__)
   __forceinline const ssei min( const ssei& a, const ssei& b ) { return _mm_min_epi32(a.m128, b.m128); }
+  __forceinline const ssei max( const ssei& a, const ssei& b ) { return _mm_max_epi32(a.m128, b.m128); }
+#else
+  __forceinline const ssei min( const ssei& a, const ssei& b ) { return ssei(min(a[0],b[0]),min(a[1],b[1]),min(a[2],b[2]),min(a[3],b[3])); }
+  __forceinline const ssei max( const ssei& a, const ssei& b ) { return ssei(max(a[0],b[0]),max(a[1],b[1]),max(a[2],b[2]),max(a[3],b[3])); }
+#endif
+
   __forceinline const ssei min( const ssei& a, const int32&  b ) { return min(a,ssei(b)); }
   __forceinline const ssei min( const int32&  a, const ssei& b ) { return min(ssei(a),b); }
-
-  __forceinline const ssei max( const ssei& a, const ssei& b ) { return _mm_max_epi32(a.m128, b.m128); }
   __forceinline const ssei max( const ssei& a, const int32&  b ) { return max(a,ssei(b)); }
   __forceinline const ssei max( const int32&  a, const ssei& b ) { return max(ssei(a),b); }
-#endif
 
   ////////////////////////////////////////////////////////////////////////////////
   /// Assignment Operators
@@ -186,14 +199,16 @@ namespace embree
 #endif
   }
 
-#if defined(__SSE4_1__) && !defined(__clang__)
-  __forceinline const ssei select( const int m, const ssei& t, const ssei& f ) { 
-    return _mm_castps_si128(_mm_blend_ps(_mm_castsi128_ps(f), _mm_castsi128_ps(t), m)); 
+#if defined(__SSE4_1__) 
+#if defined(__clang__) || defined(_MSC_VER) && !defined(__INTEL_COMPILER) // FIXME: can this get removed?
+  __forceinline const ssei select(const int mask, const ssei& t, const ssei& f) {
+	  return select(sseb(mask), t, f);
   }
 #else
-  __forceinline const ssei select( const int mask, const ssei& t, const ssei& f ) { 
-    return select(sseb(mask),t,f);
+  __forceinline const ssei select(const int m, const ssei& t, const ssei& f) {
+	  return _mm_castps_si128(_mm_blend_ps(_mm_castsi128_ps(f), _mm_castsi128_ps(t), m));
   }
+#endif
 #endif
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -264,6 +279,10 @@ namespace embree
     return _mm_load_si128((__m128i*)a); 
   }
 
+  __forceinline ssei loadu4i( const void* const a ) { 
+    return _mm_loadu_si128((__m128i*)a); 
+  }
+
   __forceinline void store4i(void* ptr, const ssei& v) {
     _mm_store_si128((__m128i*)ptr,v);
   }
@@ -304,6 +323,4 @@ namespace embree
     return cout << "<" << a[0] << ", " << a[1] << ", " << a[2] << ", " << a[3] << ">";
   }
 }
-
-#endif
 

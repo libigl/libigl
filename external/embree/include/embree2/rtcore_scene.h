@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -59,9 +59,16 @@ typedef struct __RTCScene {}* RTCScene;
 RTCORE_API RTCScene rtcNewScene (RTCSceneFlags flags, RTCAlgorithmFlags aflags);
 
 /*! Commits the geometry of the scene. After initializing or modifying
- *  geometries, this function has to get called before tracing
+ *  geometries, commit has to get called before tracing
  *  rays. */
 RTCORE_API void rtcCommit (RTCScene scene);
+
+/*! Commits the geometry of the scene. The calling threads will be used
+ *  internally as a worker threads. The function will wait until
+ *  'numThreads' threads have called this function. After initializing
+ *  or modifying geometries, commit has to get called before
+ *  tracing rays. */
+RTCORE_API void rtcCommitThread(RTCScene scene, unsigned int threadID, unsigned int numThreads);
 
 /*! Intersects a single ray with the scene. The ray has to be aligned
  *  to 16 bytes. This function can only be called for scenes with the
@@ -83,7 +90,7 @@ RTCORE_API void rtcIntersect8 (const void* valid, RTCScene scene, RTCRay8& ray);
 /*! Intersects a packet of 16 rays with the scene. The valid mask and
  *  ray have both to be aligned to 64 bytes. This function can only be
  *  called for scenes with the RTC_INTERSECT16 flag set. For
- *  performance reasons, the rtcIntersect8 function should only get
+ *  performance reasons, the rtcIntersect16 function should only get
  *  called if the CPU supports the 16-wide Xeon Phi instructions. */
 RTCORE_API void rtcIntersect16 (const void* valid, RTCScene scene, RTCRay16& ray);
 

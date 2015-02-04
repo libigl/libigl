@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -28,7 +28,12 @@ namespace embree
 
   /* configuration */
   static std::string g_rtcore = "";
-  
+
+  static size_t g_plot_min = 0;
+  static size_t g_plot_max = 0;
+  static size_t g_plot_step= 0;
+  static std::string g_plot_test = "";
+
   /* vertex and triangle layout */
   struct Vertex   { float x,y,z,a; };
   struct Triangle { int v0, v1, v2; };
@@ -39,129 +44,295 @@ namespace embree
   if (rtcGetError() == RTC_NO_ERROR) return false;
 #define AssertError(code) \
   if (rtcGetError() != code) return false;
-#define BUILD(name,test) {                                              \
-    double perf = test;                                                \
-    printf("%30s ... %f Mtris/s\n",name,perf*1E-6);                                 \
-	fflush(stdout);\
-  }
 
   std::vector<thread_t> g_threads;
-  std::vector<thread_t> g_threads2;
 
   MutexSys g_mutex;
   BarrierSys g_barrier;
-  BarrierSys g_barrier2;
-  size_t g_num_barrier_waits = 10000;
+  LinearBarrierActive g_barrier_active;
   size_t g_num_mutex_locks = 100000;
+  size_t g_num_threads = 0;
+  atomic_t g_atomic_cntr = 0;
 
-  atomic_t g_atomic_mutex_locks = 0;
-
-  void benchmark_mutex_sys_thread(void* ptr) 
+  class Benchmark
   {
-    while (true)
+  public:
+    const std::string name;
+    const std::string unit;
+    Benchmark (const std::string& name, const std::string& unit)
+      : name(name), unit(unit) {}
+
+    virtual double run(size_t numThreads) = 0;
+
+    void print(size_t numThreads, size_t N) 
     {
-      if (atomic_add(&g_atomic_mutex_locks,-1) < 0) break;
-      g_mutex.lock();
-      g_mutex.unlock();
+      double pmin = inf, pmax = -float(inf), pavg = 0.0f;
+      for (size_t j=0; j<N; j++) {
+	double p = run(numThreads);
+	pmin = min(pmin,p);
+	pmax = max(pmax,p);
+	pavg = pavg + p/double(N);
+      }
+
+      printf("%30s ... [%f / %f / %f] %s\n",name.c_str(),pmin,pavg,pmax,unit.c_str());
+      fflush(stdout);
     }
-  }
+  };
+
+  class benchmark_mutex_sys : public Benchmark
+  {
+  public:
+    benchmark_mutex_sys () 
+     : Benchmark("mutex_sys","ms") {}
+
+    static void benchmark_mutex_sys_thread(void* ptr) 
+    {
+      while (true)
+	{
+	  if (atomic_add(&g_atomic_cntr,-1) < 0) break;
+	  g_mutex.lock();
+	  g_mutex.unlock();
+	}
+    }
+    
+    double run (size_t numThreads)
+    {
+      g_atomic_cntr = g_num_mutex_locks;
+      for (size_t i=1; i<numThreads; i++)
+	g_threads.push_back(createThread(benchmark_mutex_sys_thread,NULL,1000000,i));
+      setAffinity(0);
+      
+      double t0 = getSeconds();
+      benchmark_mutex_sys_thread(NULL);
+      double t1 = getSeconds();
+      
+      for (size_t i=0; i<g_threads.size(); i++)	join(g_threads[i]);
+      g_threads.clear();
+      
+      //printf("%30s ... %f ms (%f k/s)\n","mutex_sys",1000.0f*(t1-t0)/double(g_num_mutex_locks),1E-3*g_num_mutex_locks/(t1-t0));
+      //fflush(stdout);
+      return 1000.0f*(t1-t0)/double(g_num_mutex_locks);
+    }
+  };
+
+  class benchmark_barrier_sys : public Benchmark
+  {
+  public:
+    enum { N = 100 };
+
+    benchmark_barrier_sys () 
+     : Benchmark("barrier_sys","ms") {}
+
+    static void benchmark_barrier_sys_thread(void* ptr) 
+    {
+      g_barrier.wait();
+      for (size_t i=0; i<N; i++) 
+	g_barrier.wait();
+    }
+    
+    double run (size_t numThreads)
+    {
+      g_barrier.init(numThreads);
+      for (size_t i=1; i<numThreads; i++)
+	g_threads.push_back(createThread(benchmark_barrier_sys_thread,(void*)i,1000000,i));
+      setAffinity(0);
+      
+      g_barrier.wait();
+      double t0 = getSeconds();
+      for (size_t i=0; i<N; i++) g_barrier.wait();
+      double t1 = getSeconds();
+      
+      for (size_t i=0; i<g_threads.size(); i++)	join(g_threads[i]);
+      g_threads.clear();
+    
+      //printf("%30s ... %f ms (%f k/s)\n","barrier_sys",1000.0f*(t1-t0)/double(N),1E-3*N/(t1-t0));
+      //fflush(stdout);
+      return 1000.0f*(t1-t0)/double(N);
+    }
+  };
+
+  class benchmark_barrier_active : public Benchmark
+  {
+    enum { N = 1000 };
+
+  public:
+    benchmark_barrier_active () 
+      : Benchmark("barrier_active","ns") {}
+
+    static void benchmark_barrier_active_thread(void* ptr) 
+    {
+      size_t threadIndex = (size_t) ptr;
+      size_t threadCount = g_num_threads;
+      g_barrier_active.wait(threadIndex,threadCount);
+      for (size_t i=0; i<N; i++) 
+	g_barrier_active.wait(threadIndex,threadCount);
+    }
   
-  void benchmark_mutex_sys ()
+    double run (size_t numThreads)
+    {
+      g_num_threads = numThreads;
+      g_barrier_active.init(numThreads);
+      for (size_t i=1; i<numThreads; i++)
+	g_threads.push_back(createThread(benchmark_barrier_active_thread,(void*)i,1000000,i));
+      setAffinity(0);
+      
+      g_barrier_active.wait(0,numThreads);
+      double t0 = getSeconds();
+      for (size_t i=0; i<N; i++) 
+	g_barrier_active.wait(0,numThreads);
+      double t1 = getSeconds();
+      
+      for (size_t i=0; i<g_threads.size(); i++)
+	join(g_threads[i]);
+      
+      g_threads.clear();
+      
+      //printf("%30s ... %f ms (%f k/s)\n","barrier_active",1000.0f*(t1-t0)/double(N),1E-3*N/(t1-t0));
+      //fflush(stdout);
+      return 1E9*(t1-t0)/double(N);
+    }
+  };
+
+  class benchmark_atomic_inc : public Benchmark
   {
-    size_t numThreads = getNumberOfLogicalThreads();
-#if defined (__MIC__)
-    numThreads -= 4;
-#endif
-    g_atomic_mutex_locks = g_num_mutex_locks;
-    for (size_t i=1; i<numThreads; i++)
-      g_threads.push_back(createThread(benchmark_mutex_sys_thread,NULL,1000000,i));
-    setAffinity(0);
+  public:
+    enum { N = 1000000 };
 
-    double t0 = getSeconds();
-    benchmark_mutex_sys_thread(NULL);
-    double t1 = getSeconds();
+    benchmark_atomic_inc () 
+     : Benchmark("atomic_inc","ns") {}
 
-    for (size_t i=0; i<g_threads.size(); i++)
-      join(g_threads[i]);
+    static void benchmark_atomic_inc_thread(void* arg) 
+    {
+      size_t threadIndex = (size_t) arg;
+      size_t threadCount = g_num_threads;
+      if (threadIndex != 0) g_barrier_active.wait(threadIndex,threadCount);
+      while (atomic_add(&g_atomic_cntr,-1) > 0);
+      if (threadIndex != 0) g_barrier_active.wait(threadIndex,threadCount);
+    }
+    
+    double run (size_t numThreads)
+    {
+      g_atomic_cntr = N;
 
-    g_threads.clear();
+      g_num_threads = numThreads;
+      g_barrier_active.init(numThreads);
+      for (size_t i=1; i<numThreads; i++)
+	g_threads.push_back(createThread(benchmark_atomic_inc_thread,(void*)i,1000000,i));
+      setAffinity(0);
+      
+      g_barrier_active.wait(0,numThreads);
+      double t0 = getSeconds();
+      benchmark_atomic_inc_thread(NULL);
+      double t1 = getSeconds();
+      g_barrier_active.wait(0,numThreads);
+      
+      for (size_t i=0; i<g_threads.size(); i++)	join(g_threads[i]);
+      g_threads.clear();
+      
+      //printf("%30s ... %f ms (%f k/s)\n","mutex_sys",1000.0f*(t1-t0)/double(g_num_mutex_locks),1E-3*g_num_mutex_locks/(t1-t0));
+      //fflush(stdout);
+      return 1E9*(t1-t0)/double(N);
+    }
+  };
 
-    printf("%30s ... %f ms (%f k/s)\n","mutex_sys",1000.0f*(t1-t0)/double(g_num_mutex_locks),1E-3*g_num_mutex_locks/(t1-t0));
-    fflush(stdout);
-  }
-
-  void benchmark_barrier_sys_thread(void* ptr) 
+  class benchmark_osmalloc : public Benchmark
   {
-    for (size_t i=0; i<g_num_barrier_waits; i++) 
-      g_barrier.wait();
-  }
-  
-  void benchmark_barrier_sys ()
+  public:
+    enum { N = 1000000000 };
+
+    static char* ptr;
+
+    benchmark_osmalloc () 
+     : Benchmark("osmalloc","GB/s") {}
+
+    static void benchmark_osmalloc_thread(void* arg) 
+    {
+      size_t threadIndex = (size_t) arg;
+      size_t threadCount = g_num_threads;
+      if (threadIndex != 0) g_barrier_active.wait(threadIndex,threadCount);
+      size_t start = (threadIndex+0)*N/threadCount;
+      size_t end   = (threadIndex+1)*N/threadCount;
+      for (size_t i=start; i<end; i+=64)
+	ptr[i] = 0;
+      if (threadIndex != 0) g_barrier_active.wait(threadIndex,threadCount);
+    }
+    
+    double run (size_t numThreads)
+    {
+      ptr = (char*) os_malloc(N);
+
+      g_num_threads = numThreads;
+      g_barrier_active.init(numThreads);
+      for (size_t i=1; i<numThreads; i++)
+	g_threads.push_back(createThread(benchmark_osmalloc_thread,(void*)i,1000000,i));
+      setAffinity(0);
+      
+      g_barrier_active.wait(0,numThreads);
+      double t0 = getSeconds();
+      benchmark_osmalloc_thread(0);
+      double t1 = getSeconds();
+      g_barrier_active.wait(0,numThreads);
+      
+      for (size_t i=0; i<g_threads.size(); i++)	join(g_threads[i]);
+      g_threads.clear();
+      os_free(ptr,N);
+      
+      return 1E-9*double(N)/(t1-t0);
+    }
+  };
+
+  char* benchmark_osmalloc::ptr = NULL;
+
+  class benchmark_bandwidth : public Benchmark
   {
-    size_t numThreads = getNumberOfLogicalThreads();
-#if defined (__MIC__)
-    numThreads -= 4;
-#endif
-    g_barrier.init(numThreads);
-    for (size_t i=1; i<numThreads; i++)
-      g_threads.push_back(createThread(benchmark_barrier_sys_thread,NULL,1000000,i));
-    setAffinity(0);
+  public:
+    enum { N = 300000000 };
 
-    double t0 = getSeconds();
+    static char* ptr;
+
+    benchmark_bandwidth () 
+      : Benchmark("bandwidth","GB/s") {}
+
+    static void benchmark_bandwidth_thread(void* arg) 
+    {
+      size_t threadIndex = (size_t) arg;
+      size_t threadCount = g_num_threads;
+      if (threadIndex != 0) g_barrier_active.wait(threadIndex,threadCount);
+      size_t start = (threadIndex+0)*N/threadCount;
+      size_t end   = (threadIndex+1)*N/threadCount;
+      char p = 0;
+      for (size_t i=start; i<end; i+=64)
+	p += ptr[i];
+      volatile char out = p;
+      if (threadIndex != 0) g_barrier_active.wait(threadIndex,threadCount);
+    }
     
-    for (size_t i=0; i<g_num_barrier_waits; i++) 
-      g_barrier.wait();
-    
-    double t1 = getSeconds();
+    double run (size_t numThreads)
+    {
+      ptr = (char*) os_malloc(N);
+      for (size_t i=0; i<N; i+=4096) ptr[i] = 0;
 
-    for (size_t i=0; i<g_threads.size(); i++)
-      join(g_threads[i]);
+      g_num_threads = numThreads;
+      g_barrier_active.init(numThreads);
+      for (size_t i=1; i<numThreads; i++)
+	g_threads.push_back(createThread(benchmark_bandwidth_thread,(void*)i,1000000,i));
+      setAffinity(0);
+      
+      g_barrier_active.wait(0,numThreads);
+      double t0 = getSeconds();
+      benchmark_bandwidth_thread(0);
+      double t1 = getSeconds();
+      g_barrier_active.wait(0,numThreads);
 
-    g_threads.clear();
+      for (size_t i=0; i<g_threads.size(); i++)	join(g_threads[i]);
+      g_threads.clear();
+      os_free(ptr,N);
+      
+      return 1E-9*double(N)/(t1-t0);
+    }
+  };
 
-    printf("%30s ... %f ms (%f k/s)\n","barrier_sys",1000.0f*(t1-t0)/double(g_num_barrier_waits),1E-3*g_num_barrier_waits/(t1-t0));
-    fflush(stdout);
-  }
-
-  void benchmark_barrier_sys_thread2(void* ptr) {
-    g_barrier2.wait();
-  }
-
-  void benchmark_barrier_sys_oversubscribed ()
-  {
-    size_t numThreads = getNumberOfLogicalThreads();
-#if defined (__MIC__)
-    numThreads -= 4;
-#endif
-    g_barrier.init(numThreads);
-    for (size_t i=1; i<numThreads; i++)
-      g_threads.push_back(createThread(benchmark_barrier_sys_thread,NULL,1000000,i));
-    setAffinity(0);
-
-    g_barrier2.init(numThreads+1);
-    for (size_t i=0; i<numThreads; i++)
-      g_threads2.push_back(createThread(benchmark_barrier_sys_thread2,NULL,1000000,i));
-
-    double t0 = getSeconds();
-    
-    for (size_t i=0; i<g_num_barrier_waits; i++) 
-      g_barrier.wait();
-    
-    double t1 = getSeconds();
-
-    for (size_t i=0; i<g_threads.size(); i++)
-      join(g_threads[i]);
-
-    g_barrier2.wait();
-    for (size_t i=0; i<g_threads2.size(); i++)
-      join(g_threads2[i]);
-
-    g_threads.clear();
-    g_threads2.clear();
-
-    printf("%30s ... %f ms (%f k/s)\n","barrier_sys_oversubscribed",1000.0f*(t1-t0)/double(g_num_barrier_waits),1E-3*g_num_barrier_waits/(t1-t0));
-    fflush(stdout);
-  }
+  char* benchmark_bandwidth::ptr = NULL;
 
   RTCRay makeRay(Vec3f org, Vec3f dir) 
   {
@@ -236,26 +407,6 @@ namespace embree
     ray_o.instID[i] = ray_i.instID;
   }
 
-  static void parseCommandLine(int argc, char** argv)
-  {
-    for (int i=1; i<argc; i++)
-    {
-      std::string tag = argv[i];
-      if (tag == "") return;
-
-      /* rtcore configuration */
-      else if (tag == "-rtcore" && i+1<argc) {
-        g_rtcore = argv[++i];
-      }
-
-      /* skip unknown command line parameter */
-      else {
-        std::cerr << "unknown command line parameter: " << tag << " ";
-        std::cerr << std::endl;
-      }
-    }
-  }
-
   struct Mesh {
     std::vector<Vertex> vertices;
     std::vector<Triangle> triangles;
@@ -324,63 +475,86 @@ namespace embree
     return geom;
   }
 
-  double rtcore_create_geometry(RTCSceneFlags sflags, RTCGeometryFlags gflags, size_t numPhi, size_t numMeshes)
+  class create_geometry : public Benchmark
   {
-    Mesh mesh; createSphereMesh (Vec3f(0,0,0), 1, numPhi, mesh);
+  public:
+    RTCSceneFlags sflags; RTCGeometryFlags gflags; size_t numPhi; size_t numMeshes;
+    create_geometry (const std::string& name, RTCSceneFlags sflags, RTCGeometryFlags gflags, size_t numPhi, size_t numMeshes)
+      : Benchmark(name,"Mtris/s"), sflags(sflags), gflags(gflags), numPhi(numPhi), numMeshes(numMeshes) {}
 
-    double t0 = getSeconds();
-    RTCScene scene = rtcNewScene(sflags,aflags);
-
-    for (size_t i=0; i<numMeshes; i++) 
+    double run(size_t numThreads)
     {
-      unsigned geom = rtcNewTriangleMesh (scene, gflags, mesh.triangles.size(), mesh.vertices.size());
-      memcpy(rtcMapBuffer(scene,geom,RTC_VERTEX_BUFFER), &mesh.vertices[0], mesh.vertices.size()*sizeof(Vertex));
-      memcpy(rtcMapBuffer(scene,geom,RTC_INDEX_BUFFER ), &mesh.triangles[0], mesh.triangles.size()*sizeof(Triangle));
-      rtcUnmapBuffer(scene,geom,RTC_VERTEX_BUFFER);
-      rtcUnmapBuffer(scene,geom,RTC_INDEX_BUFFER);
-      for (size_t i=0; i<mesh.vertices.size(); i++) {
-        mesh.vertices[i].x += 1.0f;
-        mesh.vertices[i].y += 1.0f;
-        mesh.vertices[i].z += 1.0f;
-      }
-    }
-    rtcCommit (scene);
-    double t1 = getSeconds();
-    rtcDeleteScene(scene);
+      rtcInit((g_rtcore+",threads="+std::stringOf(numThreads)).c_str());
 
-    size_t numTriangles = mesh.triangles.size() * numMeshes;
-    return double(numTriangles)/(t1-t0);
-  }
+      Mesh mesh; createSphereMesh (Vec3f(0,0,0), 1, numPhi, mesh);
+      
+      double t0 = getSeconds();
+      RTCScene scene = rtcNewScene(sflags,aflags);
+      
+      for (size_t i=0; i<numMeshes; i++) 
+      {
+	unsigned geom = rtcNewTriangleMesh (scene, gflags, mesh.triangles.size(), mesh.vertices.size());
+	memcpy(rtcMapBuffer(scene,geom,RTC_VERTEX_BUFFER), &mesh.vertices[0], mesh.vertices.size()*sizeof(Vertex));
+	memcpy(rtcMapBuffer(scene,geom,RTC_INDEX_BUFFER ), &mesh.triangles[0], mesh.triangles.size()*sizeof(Triangle));
+	rtcUnmapBuffer(scene,geom,RTC_VERTEX_BUFFER);
+	rtcUnmapBuffer(scene,geom,RTC_INDEX_BUFFER);
+	for (size_t i=0; i<mesh.vertices.size(); i++) {
+	  mesh.vertices[i].x += 1.0f;
+	  mesh.vertices[i].y += 1.0f;
+	  mesh.vertices[i].z += 1.0f;
+	}
+      }
+      rtcCommit (scene);
+      double t1 = getSeconds();
+      rtcDeleteScene(scene);
+      rtcExit();
+      
+      size_t numTriangles = mesh.triangles.size() * numMeshes;
+      return 1E-6*double(numTriangles)/(t1-t0);
+    }
+  };
   
-  double rtcore_update_geometry(RTCGeometryFlags flags, size_t numPhi, size_t numMeshes)
+  class update_geometry : public Benchmark
   {
-    Mesh mesh; createSphereMesh (Vec3f(0,0,0), 1, numPhi, mesh);
-    RTCScene scene = rtcNewScene(RTC_SCENE_DYNAMIC,aflags);
-
-    for (size_t i=0; i<numMeshes; i++) 
+  public:
+    RTCGeometryFlags flags; size_t numPhi; size_t numMeshes;
+    update_geometry(const std::string& name, RTCGeometryFlags flags, size_t numPhi, size_t numMeshes)
+      : Benchmark(name,"Mtris/s"), flags(flags), numPhi(numPhi), numMeshes(numMeshes) {}
+  
+    double run(size_t numThreads)
     {
-      unsigned geom = rtcNewTriangleMesh (scene, flags, mesh.triangles.size(), mesh.vertices.size());
-      memcpy(rtcMapBuffer(scene,geom,RTC_VERTEX_BUFFER), &mesh.vertices[0], mesh.vertices.size()*sizeof(Vertex));
-      memcpy(rtcMapBuffer(scene,geom,RTC_INDEX_BUFFER ), &mesh.triangles[0], mesh.triangles.size()*sizeof(Triangle));
-      rtcUnmapBuffer(scene,geom,RTC_VERTEX_BUFFER);
-      rtcUnmapBuffer(scene,geom,RTC_INDEX_BUFFER);
-      for (size_t i=0; i<mesh.vertices.size(); i++) {
-        mesh.vertices[i].x += 1.0f;
-        mesh.vertices[i].y += 1.0f;
-        mesh.vertices[i].z += 1.0f;
+      rtcInit((g_rtcore+",threads="+std::stringOf(numThreads)).c_str());
+
+      Mesh mesh; createSphereMesh (Vec3f(0,0,0), 1, numPhi, mesh);
+      RTCScene scene = rtcNewScene(RTC_SCENE_DYNAMIC,aflags);
+      
+      for (size_t i=0; i<numMeshes; i++) 
+      {
+	unsigned geom = rtcNewTriangleMesh (scene, flags, mesh.triangles.size(), mesh.vertices.size());
+	memcpy(rtcMapBuffer(scene,geom,RTC_VERTEX_BUFFER), &mesh.vertices[0], mesh.vertices.size()*sizeof(Vertex));
+	memcpy(rtcMapBuffer(scene,geom,RTC_INDEX_BUFFER ), &mesh.triangles[0], mesh.triangles.size()*sizeof(Triangle));
+	rtcUnmapBuffer(scene,geom,RTC_VERTEX_BUFFER);
+	rtcUnmapBuffer(scene,geom,RTC_INDEX_BUFFER);
+	for (size_t i=0; i<mesh.vertices.size(); i++) {
+	  mesh.vertices[i].x += 1.0f;
+	  mesh.vertices[i].y += 1.0f;
+	  mesh.vertices[i].z += 1.0f;
+	}
       }
+      rtcCommit (scene);
+      
+      double t0 = getSeconds();
+      for (size_t i=0; i<numMeshes; i++) rtcUpdate(scene,i);
+      rtcCommit (scene);
+      double t1 = getSeconds();
+      rtcDeleteScene(scene);
+      rtcExit();
+      
+      //return 1000.0f*(t1-t0);
+      size_t numTriangles = mesh.triangles.size() * numMeshes;
+      return 1E-6*double(numTriangles)/(t1-t0);
     }
-    rtcCommit (scene);
-
-    double t0 = getSeconds();
-    for (size_t i=0; i<numMeshes; i++) rtcUpdate(scene,i);
-    rtcCommit (scene);
-    double t1 = getSeconds();
-    rtcDeleteScene(scene);
-
-    size_t numTriangles = mesh.triangles.size() * numMeshes;
-    return double(numTriangles)/(t1-t0);
-  }
+  };
 
   void rtcore_coherent_intersect1(RTCScene scene)
   {
@@ -542,6 +716,8 @@ namespace embree
 
   void rtcore_intersect_benchmark(RTCSceneFlags flags, size_t numPhi)
   {
+    rtcInit(g_rtcore.c_str());
+
     RTCScene scene = rtcNewScene(flags,aflags);
     addSphere (scene, RTC_GEOMETRY_STATIC, zero, 1, numPhi);
     rtcCommit (scene);
@@ -588,72 +764,162 @@ namespace embree
     delete numbers;
 
     rtcDeleteScene(scene);
+    rtcExit();
+  }
+  
+  std::vector<Benchmark*> benchmarks;
+
+  void create_benchmarks()
+  {
+    benchmarks.push_back(new benchmark_mutex_sys());
+    benchmarks.push_back(new benchmark_barrier_sys());
+    benchmarks.push_back(new benchmark_barrier_active());
+    benchmarks.push_back(new benchmark_atomic_inc());
+    benchmarks.push_back(new benchmark_osmalloc());
+    benchmarks.push_back(new benchmark_bandwidth());
+ 
+    benchmarks.push_back(new create_geometry ("create_static_geometry_120",      RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,6,1));
+    benchmarks.push_back(new create_geometry ("create_static_geometry_1k" ,      RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,17,1));
+    benchmarks.push_back(new create_geometry ("create_static_geometry_10k",      RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,51,1));
+    benchmarks.push_back(new create_geometry ("create_static_geometry_100k",     RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,159,1));
+    benchmarks.push_back(new create_geometry ("create_static_geometry_1000k_1",  RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,501,1));
+    benchmarks.push_back(new create_geometry ("create_static_geometry_100k_10",  RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,159,10));
+    benchmarks.push_back(new create_geometry ("create_static_geometry_10k_100",  RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,51,100));
+    benchmarks.push_back(new create_geometry ("create_static_geometry_1k_1000" , RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,17,1000));
+#if defined(__X86_64__)
+    benchmarks.push_back(new create_geometry ("create_static_geometry_120_10000",RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,6,8334));
+#endif
+
+    benchmarks.push_back(new create_geometry ("create_dynamic_geometry_120",      RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,6,1));
+    benchmarks.push_back(new create_geometry ("create_dynamic_geometry_1k" ,      RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,17,1));
+    benchmarks.push_back(new create_geometry ("create_dynamic_geometry_10k",      RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,51,1));
+    benchmarks.push_back(new create_geometry ("create_dynamic_geometry_100k",     RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,159,1));
+    benchmarks.push_back(new create_geometry ("create_dynamic_geometry_1000k_1",  RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,501,1));
+    benchmarks.push_back(new create_geometry ("create_dynamic_geometry_100k_10",  RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,159,10));
+    benchmarks.push_back(new create_geometry ("create_dynamic_geometry_10k_100",  RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,51,100));
+    benchmarks.push_back(new create_geometry ("create_dynamic_geometry_1k_1000" , RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,17,1000));
+#if defined(__X86_64__)
+    benchmarks.push_back(new create_geometry ("create_dynamic_geometry_120_10000",RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,6,8334));
+#endif
+
+    benchmarks.push_back(new update_geometry ("refit_geometry_120",      RTC_GEOMETRY_DEFORMABLE,6,1));
+    benchmarks.push_back(new update_geometry ("refit_geometry_1k" ,      RTC_GEOMETRY_DEFORMABLE,17,1));
+    benchmarks.push_back(new update_geometry ("refit_geometry_10k",      RTC_GEOMETRY_DEFORMABLE,51,1));
+    benchmarks.push_back(new update_geometry ("refit_geometry_100k",     RTC_GEOMETRY_DEFORMABLE,159,1));
+    benchmarks.push_back(new update_geometry ("refit_geometry_1000k_1",  RTC_GEOMETRY_DEFORMABLE,501,1));
+    benchmarks.push_back(new update_geometry ("refit_geometry_100k_10",  RTC_GEOMETRY_DEFORMABLE,159,10));
+    benchmarks.push_back(new update_geometry ("refit_geometry_10k_100",  RTC_GEOMETRY_DEFORMABLE,51,100));
+    benchmarks.push_back(new update_geometry ("refit_geometry_1k_1000" , RTC_GEOMETRY_DEFORMABLE,17,1000));
+#if defined(__X86_64__)
+    benchmarks.push_back(new update_geometry ("refit_geometry_120_10000",RTC_GEOMETRY_DEFORMABLE,6,8334));
+#endif
+    
+    benchmarks.push_back(new update_geometry ("update_geometry_120",      RTC_GEOMETRY_DYNAMIC,6,1));
+    benchmarks.push_back(new update_geometry ("update_geometry_1k" ,      RTC_GEOMETRY_DYNAMIC,17,1));
+    benchmarks.push_back(new update_geometry ("update_geometry_10k",      RTC_GEOMETRY_DYNAMIC,51,1));
+    benchmarks.push_back(new update_geometry ("update_geometry_100k",     RTC_GEOMETRY_DYNAMIC,159,1));
+    benchmarks.push_back(new update_geometry ("update_geometry_1000k_1",  RTC_GEOMETRY_DYNAMIC,501,1));
+    benchmarks.push_back(new update_geometry ("update_geometry_100k_10",  RTC_GEOMETRY_DYNAMIC,159,10));
+    benchmarks.push_back(new update_geometry ("update_geometry_10k_100",  RTC_GEOMETRY_DYNAMIC,51,100));
+    benchmarks.push_back(new update_geometry ("update_geometry_1k_1000" , RTC_GEOMETRY_DYNAMIC,17,1000));
+#if defined(__X86_64__)
+    benchmarks.push_back(new update_geometry ("update_geometry_120_10000",RTC_GEOMETRY_DYNAMIC,6,8334));
+#endif
+  }
+
+  Benchmark* getBenchmark(const std::string& str)
+  {
+    for (size_t i=0; i<benchmarks.size(); i++) 
+      if (benchmarks[i]->name == str) 
+	return benchmarks[i];
+
+    std::cout << "unknown benchmark: " << str << std::endl;
+    exit(1);
+  }
+
+  void plot_scalability()
+  {
+    Benchmark* benchmark = getBenchmark(g_plot_test);
+    //std::cout << "set terminal gif" << std::endl;
+    //std::cout << "set output\"" << benchmark->name << "\"" << std::endl;
+    std::cout << "set key inside right top vertical Right noreverse enhanced autotitles box linetype -1 linewidth 1.000" << std::endl;
+    std::cout << "set samples 50, 50" << std::endl;
+    std::cout << "set title \"" << benchmark->name << "\"" << std::endl; 
+    std::cout << "set xlabel \"threads\"" << std::endl;
+    std::cout << "set ylabel \"" << benchmark->unit << "\"" << std::endl;
+    std::cout << "plot \"-\" using 0:2 title \"" << benchmark->name << "\" with lines" << std::endl;
+	
+    for (size_t i=g_plot_min; i<=g_plot_max; i+= g_plot_step) 
+    {
+      double pmin = inf, pmax = -float(inf), pavg = 0.0f;
+      size_t N = 8;
+      for (size_t j=0; j<N; j++) {
+	double p = benchmark->run(i);
+	pmin = min(pmin,p);
+	pmax = max(pmax,p);
+	pavg = pavg + p/double(N);
+      }
+      //std::cout << "threads = " << i << ": [" << pmin << " / " << pavg << " / " << pmax << "] " << benchmark->unit << std::endl;
+      std::cout << " " << i << " " << pmin << " " << pavg << " " << pmax << std::endl;
+    }
+    std::cout << "EOF" << std::endl;
+  }
+
+  static void parseCommandLine(int argc, char** argv)
+  {
+    for (int i=1; i<argc; i++)
+    {
+      std::string tag = argv[i];
+      if (tag == "") return;
+
+      /* rtcore configuration */
+      else if (tag == "-rtcore" && i+1<argc) {
+        g_rtcore = argv[++i];
+      }
+
+      /* plots scalability graph */
+      else if (tag == "-plot" && i+4<argc) {
+	g_plot_min = atoi(argv[++i]);
+	g_plot_max = atoi(argv[++i]);
+	g_plot_step= atoi(argv[++i]);
+	g_plot_test= argv[++i];
+	plot_scalability();
+      }
+
+      /* run single benchmark */
+      else if (tag == "-run" && i+2<argc) 
+      {
+	size_t numThreads = atoi(argv[++i]);
+	std::string name = argv[++i];
+	Benchmark* benchmark = getBenchmark(name);
+	benchmark->print(numThreads,64);
+      }
+
+      /* skip unknown command line parameter */
+      else {
+        std::cerr << "unknown command line parameter: " << tag << " ";
+        std::cerr << std::endl;
+      }
+    }
   }
 
   /* main function in embree namespace */
   int main(int argc, char** argv) 
   {
+    create_benchmarks();
+
     /* parse command line */  
     parseCommandLine(argc,argv);
 
-    /* perform tests */
-    rtcInit(g_rtcore.c_str());
-
-    benchmark_mutex_sys();
-    benchmark_barrier_sys();
-    benchmark_barrier_sys_oversubscribed();
-    
-    rtcore_intersect_benchmark(RTC_SCENE_STATIC, 501);
-
-    BUILD   ("create_static_geometry_120",       rtcore_create_geometry(RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,6,1));
-    BUILD   ("create_static_geometry_1k",        rtcore_create_geometry(RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,17,1));
-    BUILD   ("create_static_geometry_10k",       rtcore_create_geometry(RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,51,1));
-    BUILD   ("create_static_geometry_100k",      rtcore_create_geometry(RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,159,1));
-    BUILD   ("create_static_geometry_1000k_1",   rtcore_create_geometry(RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,501,1));
-    BUILD   ("create_static_geometry_100k_10",   rtcore_create_geometry(RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,159,10));
-    BUILD   ("create_static_geometry_10k_100",   rtcore_create_geometry(RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,51,100));
-    BUILD   ("create_static_geometry_1k_1000",   rtcore_create_geometry(RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,17,1000));
-#if defined(__X86_64__)
-    BUILD   ("create_static_geometry_120_10000", rtcore_create_geometry(RTC_SCENE_STATIC,RTC_GEOMETRY_STATIC,6,8334));
+    if (argc == 1) 
+    {
+      size_t numThreads = getNumberOfLogicalThreads();
+#if defined (__MIC__)
+      numThreads -= 4;
 #endif
-
-    BUILD   ("create_dynamic_geometry_120",       rtcore_create_geometry(RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,6,1));
-    BUILD   ("create_dynamic_geometry_1k",        rtcore_create_geometry(RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,17,1));
-    BUILD   ("create_dynamic_geometry_10k",       rtcore_create_geometry(RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,51,1));
-    BUILD   ("create_dynamic_geometry_100k",      rtcore_create_geometry(RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,159,1));
-    BUILD   ("create_dynamic_geometry_1000k_1",   rtcore_create_geometry(RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,501,1));
-    BUILD   ("create_dynamic_geometry_100k_10",   rtcore_create_geometry(RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,159,10));
-    BUILD   ("create_dynamic_geometry_10k_100",   rtcore_create_geometry(RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,51,100));
-    BUILD   ("create_dynamic_geometry_1k_1000",   rtcore_create_geometry(RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,17,1000));
-#if defined(__X86_64__)
-    BUILD   ("create_dynamic_geometry_120_10000", rtcore_create_geometry(RTC_SCENE_DYNAMIC,RTC_GEOMETRY_STATIC,6,8334));
-#endif
-
-    BUILD   ("refit_geometry_120",        rtcore_update_geometry(RTC_GEOMETRY_DEFORMABLE,6,1));
-    BUILD   ("refit_geometry_1k",         rtcore_update_geometry(RTC_GEOMETRY_DEFORMABLE,17,1));
-    BUILD   ("refit_geometry_10k",        rtcore_update_geometry(RTC_GEOMETRY_DEFORMABLE,51,1));
-    BUILD   ("refit_geometry_100k",       rtcore_update_geometry(RTC_GEOMETRY_DEFORMABLE,159,1));
-    BUILD   ("refit_geometry_1000k_1",    rtcore_update_geometry(RTC_GEOMETRY_DEFORMABLE,501,1));
-    BUILD   ("refit_geometry_100k_10",    rtcore_update_geometry(RTC_GEOMETRY_DEFORMABLE,159,10));
-    BUILD   ("refit_geometry_10k_100",    rtcore_update_geometry(RTC_GEOMETRY_DEFORMABLE,51,100));
-    BUILD   ("refit_geometry_1k_1000",    rtcore_update_geometry(RTC_GEOMETRY_DEFORMABLE,17,1000));
-#if defined(__X86_64__)
-    BUILD   ("refit_geometry_120_10000",  rtcore_update_geometry(RTC_GEOMETRY_DEFORMABLE,6,8334));
-#endif
-
-    BUILD   ("update_geometry_120",        rtcore_update_geometry(RTC_GEOMETRY_DYNAMIC,6,1));
-    BUILD   ("update_geometry_1k",         rtcore_update_geometry(RTC_GEOMETRY_DYNAMIC,17,1));
-    BUILD   ("update_geometry_10k",        rtcore_update_geometry(RTC_GEOMETRY_DYNAMIC,51,1));
-    BUILD   ("update_geometry_100k",       rtcore_update_geometry(RTC_GEOMETRY_DYNAMIC,159,1));
-    BUILD   ("update_geometry_1000k_1",    rtcore_update_geometry(RTC_GEOMETRY_DYNAMIC,501,1));
-    BUILD   ("update_geometry_100k_10",    rtcore_update_geometry(RTC_GEOMETRY_DYNAMIC,159,10));
-    BUILD   ("update_geometry_10k_100",    rtcore_update_geometry(RTC_GEOMETRY_DYNAMIC,51,100));
-    BUILD   ("update_geometry_1k_1000",    rtcore_update_geometry(RTC_GEOMETRY_DYNAMIC,17,1000));
-#if defined(__X86_64__)
-    BUILD   ("update_geometry_120_10000",  rtcore_update_geometry(RTC_GEOMETRY_DYNAMIC,6,8334));
-#endif
-
-    rtcExit();
+      rtcore_intersect_benchmark(RTC_SCENE_STATIC, 501);
+      for (size_t i=0; i<benchmarks.size(); i++) benchmarks[i]->print(numThreads,4);
+    }
 
     return 0;
   }

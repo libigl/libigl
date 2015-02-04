@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_RAY8_H__
-#define __EMBREE_RAY8_H__
+#pragma once
 
 #include "ray.h"
 
@@ -35,6 +34,34 @@ namespace embree
 
     /*! Tests if we hit something. */
     __forceinline operator avxb() const { return geomID != avxi(-1); }
+
+    /* converts ray packet to single rays */
+    __forceinline void get(Ray ray[8]) const
+    {
+      for (size_t i=0; i<8; i++) // FIXME: use SSE and AVX transpose
+      {
+	ray[i].org.x = org.x[i]; ray[i].org.y = org.y[i]; ray[i].org.z = org.z[i]; 
+	ray[i].dir.x = dir.x[i]; ray[i].dir.y = dir.y[i]; ray[i].dir.z = dir.z[i];
+	ray[i].tnear = tnear[i]; ray[i].tfar  = tfar [i]; ray[i].time  = time[i]; ray[i].mask = mask[i];
+	ray[i].Ng.x = Ng.x[i]; ray[i].Ng.y = Ng.y[i]; ray[i].Ng.z = Ng.z[i];
+	ray[i].u = u[i]; ray[i].v = v[i];
+	ray[i].geomID = geomID[i]; ray[i].primID = primID[i]; ray[i].instID = instID[i];
+      }
+    }
+
+    /* converts single rays to ray packet */
+    __forceinline void set(const Ray ray[8])
+    {
+      for (size_t i=0; i<8; i++)
+      {
+	org.x[i] = ray[i].org.x; org.y[i] = ray[i].org.y; org.z[i] = ray[i].org.z;
+	dir.x[i] = ray[i].dir.x; dir.y[i] = ray[i].dir.y; dir.z[i] = ray[i].dir.z;
+	tnear[i] = ray[i].tnear; tfar [i] = ray[i].tfar;  time[i] = ray[i].time; mask[i] = ray[i].mask;
+	Ng.x[i] = ray[i].Ng.x; Ng.y[i] = ray[i].Ng.y; Ng.z[i] = ray[i].Ng.z;
+	u[i] = ray[i].u; v[i] = ray[i].v;
+	geomID[i] = ray[i].geomID; primID[i] = ray[i].primID; instID[i] = ray[i].instID;
+      }
+    }
 
   public:
     avx3f org;      //!< Ray origin
@@ -60,5 +87,3 @@ namespace embree
       "instID = " << ray.instID << ", geomID = " << ray.geomID << ", primID = " << ray.primID <<  ", " << "u = " << ray.u <<  ", v = " << ray.v << ", Ng = " << ray.Ng << " }";
   }
 }
-
-#endif

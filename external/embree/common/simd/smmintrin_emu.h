@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_SMMINTRIN_EMU_H__
-#define __EMBREE_SMMINTRIN_EMU_H__
+#pragma once // FIXME: remove this file?
 
 #ifndef __GNUC__
 #pragma message (" --- Intel remark: SSE4 intrinsics are emulated with SSE3 ---")
@@ -112,6 +111,4 @@ __forceinline __int64 _mm_extract_epi64( __m128i input, const int index ) {
     assert(size_t(index) < 2); 
     return index == 0 ? _mm_cvtsi128_si64x(input) : _mm_cvtsi128_si64x(_mm_unpackhi_epi64(input, input)); 
 }
-#endif
-
 #endif

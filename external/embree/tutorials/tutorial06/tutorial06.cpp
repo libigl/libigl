@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -16,7 +16,9 @@
 
 #include "tutorial/tutorial.h"
 #include "tutorial/obj_loader.h"
+#include "tutorial/xml_loader.h"
 #include "sys/taskscheduler.h"
+#include "image/image.h"
 
 namespace embree
 {
@@ -25,36 +27,21 @@ namespace embree
 
   /* configuration */
   static std::string g_rtcore = "";
+  static size_t g_numThreads = 0;
 
   /* output settings */
   static size_t g_width = 512;
   static size_t g_height = 512;
   static bool g_fullscreen = false;
-  static size_t g_numThreads = 0;
-
-  /* ISPC compatible mesh */
-  struct ISPCMesh
-  {
-    Vec3fa* positions;    //!< vertex position array
-    Vec3fa* normals;       //!< vertex normal array
-    Vec2f* texcoords;     //!< vertex texcoord array
-    OBJScene::Triangle* triangles;  //!< list of triangles
-    int numVertices;
-    int numTriangles;
-  };
-
-  /* ISPC compatible scene */
-  struct ISPCScene
-  {
-    ISPCMesh** meshes;
-    OBJScene::Material* materials;  //!< material list
-    int numMeshes;
-    int numMaterials;
-  };
-
+  static FileName outFilename = "";
+  static int g_skipBenchmarkFrames = 0;
+  static int g_numBenchmarkFrames = 0;
+  static bool g_interactive = true;
+  static bool g_only_subdivs = false;
+  
   /* scene */
   OBJScene g_obj_scene;
-  static FileName filename = "default.obj";
+  static FileName filename = "";
 
   static void parseCommandLine(Ref<ParseStream> cin, const FileName& path)
   {
@@ -91,6 +78,19 @@ namespace embree
       else if (tag == "-fullscreen") 
         g_fullscreen = true;
 
+      /* output filename */
+      else if (tag == "-o") {
+        outFilename = cin->getFileName();
+	g_interactive = false;
+      }
+
+      /* number of frames to render in benchmark mode */
+      else if (tag == "-benchmark") {
+        g_skipBenchmarkFrames = cin->getInt();
+        g_numBenchmarkFrames  = cin->getInt();
+	g_interactive = false;
+      }
+
       /* rtcore configuration */
       else if (tag == "-rtcore")
         g_rtcore = cin->getString();
@@ -99,6 +99,43 @@ namespace embree
       else if (tag == "-threads")
         g_numThreads = cin->getInt();
 
+      /* ambient light source */
+      else if (tag == "-ambientlight") 
+      {
+        const Vec3fa L = cin->getVec3fa();
+        g_obj_scene.ambientLights.push_back(OBJScene::AmbientLight(L));
+      }
+
+      /* point light source */
+      else if (tag == "-pointlight") 
+      {
+        const Vec3fa P = cin->getVec3fa();
+        const Vec3fa I = cin->getVec3fa();
+        g_obj_scene.pointLights.push_back(OBJScene::PointLight(P,I));
+      }
+
+      /* directional light source */
+      else if (tag == "-directionallight" || tag == "-dirlight") 
+      {
+        const Vec3fa D = cin->getVec3fa();
+        const Vec3fa E = cin->getVec3fa();
+        g_obj_scene.directionalLights.push_back(OBJScene::DirectionalLight(D,E));
+      }
+
+      /* distant light source */
+      else if (tag == "-distantlight") 
+      {
+        const Vec3fa D = cin->getVec3fa();
+        const Vec3fa L = cin->getVec3fa();
+        const float halfAngle = cin->getFloat();
+        g_obj_scene.distantLights.push_back(OBJScene::DistantLight(D,L,halfAngle));
+      }
+
+      /* converts triangle meshes into subdiv meshes */
+      else if (tag == "-subdiv") {
+	g_only_subdivs = true;
+      }
+
       /* skip unknown command line parameter */
       else {
         std::cerr << "unknown command line parameter: " << tag << " ";
@@ -106,6 +143,41 @@ namespace embree
         std::cerr << std::endl;
       }
     }
+  }
+  
+  void renderBenchmark(const FileName& fileName)
+  {
+    resize(g_width,g_height);
+    AffineSpace3fa pixel2world = g_camera.pixel2world(g_width,g_height);
+
+    double dt = 0.0f;
+    size_t numTotalFrames = g_skipBenchmarkFrames + g_numBenchmarkFrames;
+    for (size_t i=0; i<numTotalFrames; i++) 
+    {
+      double t0 = getSeconds();
+      render(0.0f,pixel2world.l.vx,pixel2world.l.vy,pixel2world.l.vz,pixel2world.p);
+      double t1 = getSeconds();
+      std::cout << "frame [" << i << " / " << numTotalFrames << "] ";
+      std::cout << 1.0/(t1-t0) << "fps ";
+      if (i < g_skipBenchmarkFrames) std::cout << "(skipped)";
+      std::cout << std::endl;
+      if (i >= g_skipBenchmarkFrames) dt += t1-t0;
+    }
+    std::cout << "frame [" << g_skipBenchmarkFrames << " - " << numTotalFrames << "] " << std::flush;
+    std::cout << double(g_numBenchmarkFrames)/dt << "fps " << std::endl;
+    std::cout << "BENCHMARK_RENDER " << double(g_numBenchmarkFrames)/dt << std::endl;
+  }
+
+  void renderToFile(const FileName& fileName)
+  {
+    resize(g_width,g_height);
+    AffineSpace3fa pixel2world = g_camera.pixel2world(g_width,g_height);
+    render(0.0f,pixel2world.l.vx,pixel2world.l.vy,pixel2world.l.vz,pixel2world.p);
+    void* ptr = map();
+    Ref<Image> image = new Image4c(g_width, g_height, (Col4c*)ptr);
+    storeImage(image, fileName);
+    unmap();
+    cleanup();
   }
 
   /* main function in embree namespace */
@@ -118,24 +190,46 @@ namespace embree
     parseCommandLine(stream, FileName());
     if (g_numThreads) 
       g_rtcore += ",threads=" + std::stringOf(g_numThreads);
+    if (g_numBenchmarkFrames)
+      g_rtcore += ",benchmark=1";
 
     /* initialize task scheduler */
-#if !defined(__EXPORT_ALL_SYMBOLS__)
+#if !defined(RTCORE_EXPORT_ALL_SYMBOLS)
     TaskScheduler::create(g_numThreads);
 #endif
 
     /* load scene */
-    loadOBJ(filename,g_obj_scene);
+    if (strlwr(filename.ext()) == std::string("obj"))
+      loadOBJ(filename,one,g_obj_scene);
+    else if (strlwr(filename.ext()) == std::string("xml"))
+      loadXML(filename,one,g_obj_scene);
+    else if (filename.ext() != "")
+      THROW_RUNTIME_ERROR("invalid scene type: "+strlwr(filename.ext()));
 
     /* initialize ray tracing core */
     init(g_rtcore.c_str());
-    
+
+    /* convert triangle meshes to subdiv meshes */
+    if (g_only_subdivs)
+      g_obj_scene.convert_to_subdiv();
+
     /* send model */
     set_scene(&g_obj_scene);
-
-    /* initialize GLUT */
-    initGlut(tutorialName,g_width,g_height,g_fullscreen,true);
     
+    /* benchmark mode */
+    if (g_numBenchmarkFrames)
+      renderBenchmark(outFilename);
+    
+    /* render to disk */
+    if (outFilename.str() != "")
+      renderToFile(outFilename);
+    
+    /* interactive mode */
+    if (g_interactive) {
+      initWindowState(argc,argv,tutorialName, g_width, g_height, g_fullscreen);
+      enterWindowRunLoop();
+    }
+
     return 0;
   }
 }

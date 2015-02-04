@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_ATOMIC_SET_H__
-#define __EMBREE_ATOMIC_SET_H__
+#pragma once
 
 #include "sys/intrinsics.h"
 
@@ -106,6 +105,8 @@ namespace embree
       __forceinline operator bool( ) const { return root; }
       __forceinline const Type& operator*( ) const { return (*root)[pos]; }
       __forceinline       Type& operator*( )       { return (*root)[pos]; }
+      __forceinline const Type* operator->( ) const { return &(*root)[pos]; }
+      __forceinline       Type* operator->( )       { return &(*root)[pos]; }
   
     private:
 
@@ -128,12 +129,12 @@ namespace embree
     __forceinline atomic_set () : root(NULL) {}
 
     /*! copy constructor */
-    __forceinline atomic_set (atomic_set& other) {
+    __forceinline atomic_set (const atomic_set& other) {
       this->root = other.root; other.root = NULL;
     }
 
     /*! assignment operator */
-    __forceinline atomic_set& operator=(atomic_set& other) {
+    __forceinline atomic_set& operator=(const atomic_set& other) {
       this->root = other.root; other.root = NULL;
       return *this;
     }
@@ -181,6 +182,10 @@ namespace embree
       return s;
     }
 
+    __forceinline item* head() {
+      return root;
+    }
+
   private:
 
     __forceinline bool try_insert(item* ptr) 
@@ -199,9 +204,6 @@ namespace embree
     }
 
   private:
-    item* root;
+    mutable item* root;
   };
 }
-
-#endif
-

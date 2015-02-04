@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_ACCELN_H__
-#define __EMBREE_ACCELN_H__
+#pragma once
 
 #include "accel.h"
 
@@ -46,11 +45,13 @@ namespace embree
     void print(size_t ident);
     void immutable();
     void build (size_t threadIndex, size_t threadCount);
-
+    void select(bool filter4, bool filter8, bool filter16);
+      
   public:
     Accel* accels[16];
     size_t N;
+
+    Accel* validAccels[16];
+    size_t M;
   };
 }
-
-#endif

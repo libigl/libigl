@@ -1,5 +1,5 @@
 ## ======================================================================== ##
-## Copyright 2009-2013 Intel Corporation                                    ##
+## Copyright 2009-2014 Intel Corporation                                    ##
 ##                                                                          ##
 ## Licensed under the Apache License, Version 2.0 (the "License");          ##
 ## you may not use this file except in compliance with the License.         ##
@@ -16,6 +16,7 @@
 
 IF (__XEON__)
   ADD_LIBRARY(simd STATIC sse.cpp)
+  SET_PROPERTY(TARGET simd PROPERTY FOLDER kernels)
 ELSE ()
   INCLUDE(icc_xeonphi)
   ADD_LIBRARY(simd_xeonphi STATIC mic_i.cpp mic_f.cpp mic_m.cpp)

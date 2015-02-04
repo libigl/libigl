@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_PRIM_REF_H__
-#define __EMBREE_PRIM_REF_H__
+#pragma once
 
 #include "common/default.h"
 
@@ -25,13 +24,29 @@ namespace embree
   struct __aligned(32) PrimRef 
   {
     __forceinline PrimRef () {}
-    __forceinline PrimRef (const BBox3f& bounds, unsigned geomID, unsigned primID) {
+
+    __forceinline PrimRef (const BBox3fa& bounds, unsigned geomID, unsigned primID) {
       lower = bounds.lower; lower.a = geomID;
       upper = bounds.upper; upper.a = primID;
     }
+
+    __forceinline PrimRef (const BBox3fa& bounds, size_t id) {
+#if defined(__X86_64__)
+      lower = bounds.lower; lower.u = id & 0xFFFFFFFF;
+      upper = bounds.upper; upper.u = (id >> 32) & 0xFFFFFFFF;
+#else
+      lower = bounds.lower; lower.u = id;
+      upper = bounds.upper; upper.u = 0;
+#endif
+    }
+
+    /*! calculates twice the center of the primitive */
+    __forceinline const Vec3fa center2() const {
+      return lower+upper;
+    }
     
-    __forceinline const BBox3f bounds() const {
-      return BBox3f(lower,upper);
+    __forceinline const BBox3fa bounds() const {
+      return BBox3fa(lower,upper);
     }
 
     __forceinline size_t geomID() const { 
@@ -41,12 +56,31 @@ namespace embree
     __forceinline size_t primID() const { 
       return upper.a;
     }
+
+    __forceinline size_t ID() const { 
+#if defined(__X86_64__)
+      return size_t(lower.u) + (size_t(upper.u) << 32);
+#else
+      return size_t(lower.u);
+#endif
+    }
+
+    __forceinline uint64 id64() const {
+      return (((uint64)primID()) << 32) + (uint64)geomID();
+    }
+
+    friend __forceinline bool operator<(const PrimRef& p0, const PrimRef& p1) {
+      return p0.id64() < p1.id64();
+    }
     
 #if defined(__MIC__)
     __forceinline void operator=(const PrimRef& v) { 
       const mic_f p = uload16f_low((float*)&v.lower);
       compactustore16f_low(0xff,(float*)this,p);            
     };
+
+    __forceinline mic2f getBounds() const { return mic2f(broadcast4to16f((float*)&lower),broadcast4to16f((float*)&upper)); }
+
 #endif
 
   public:
@@ -93,5 +127,3 @@ namespace embree
   }
 
 }
-#endif
-

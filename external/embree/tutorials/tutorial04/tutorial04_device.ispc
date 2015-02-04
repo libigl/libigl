@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -16,13 +16,35 @@
 
 #include "../common/tutorial/tutorial_device.isph"
 
+#define PARALLEL_COMMIT
+
 /* render function to use */
 renderPixelFunc renderPixel;
+
+/* error reporting function */
+void error_handler(const uniform RTCError code, const uniform int8* uniform str)
+{
+  print("Embree: ");
+  switch (code) {
+  case RTC_UNKNOWN_ERROR    : print("RTC_UNKNOWN_ERROR"); break;
+  case RTC_INVALID_ARGUMENT : print("RTC_INVALID_ARGUMENT"); break;
+  case RTC_INVALID_OPERATION: print("RTC_INVALID_OPERATION"); break;
+  case RTC_OUT_OF_MEMORY    : print("RTC_OUT_OF_MEMORY"); break;
+  case RTC_UNSUPPORTED_CPU  : print("RTC_UNSUPPORTED_CPU"); break;
+  default                   : print("invalid error code"); break;
+  }
+  if (str) { 
+    print(" ("); 
+    while (*str) putchar(*str++); 
+    print(")\n"); 
+  }
+  abort();
+}
 
 const uniform int numPhi = 5;
 const uniform int numTheta = 2*numPhi;
 
-uniform unsigned int createTriangulatedSphere (RTCScene scene, uniform Vec3f p, uniform float r)
+uniform unsigned int createTriangulatedSphere (RTCScene scene, const uniform Vec3f& p, uniform float r)
 {
   /* create triangle mesh */
   uniform unsigned int mesh = rtcNewTriangleMesh (scene, RTC_GEOMETRY_STATIC, 2*numTheta*(numPhi-1), numTheta*(numPhi+1));
@@ -110,11 +132,21 @@ uniform unsigned int g_instance3 = -1;
 
 uniform Vec3f colors[4][4];
 
+/* rtcCommitThread called by all ISPC worker threads to enable parallel build */
+#if defined(PARALLEL_COMMIT)
+task void parallelCommit(RTCScene scene) {
+  rtcCommitThread (scene,threadIndex,threadCount); 
+}
+#endif
+
 /* called by the C++ code for initialization */
 export void device_init (uniform int8* uniform cfg)
 {
   /* initialize ray tracing core */
   rtcInit(cfg);
+
+  /* set error handler */
+  rtcSetErrorFunction(error_handler);
 
   /* create scene */
   g_scene = rtcNewScene(RTC_SCENE_DYNAMIC,RTC_INTERSECT_UNIFORM | RTC_INTERSECT_VARYING);
@@ -125,7 +157,12 @@ export void device_init (uniform int8* uniform cfg)
   createTriangulatedSphere(g_scene1,make_Vec3f(+1, 0, 0),0.5);
   createTriangulatedSphere(g_scene1,make_Vec3f( 0, 0,-1),0.5);
   createTriangulatedSphere(g_scene1,make_Vec3f(-1, 0, 0),0.5);
-  rtcCommit(g_scene1);
+
+#if !defined(PARALLEL_COMMIT)
+  rtcCommit (g_scene1);
+#else
+  launch[ getNumHWThreads() ] parallelCommit(g_scene1); sync;
+#endif
 
   /* instantiate geometry */
   g_instance0 = rtcNewInstance(g_scene,g_scene1);
@@ -160,12 +197,12 @@ export void device_init (uniform int8* uniform cfg)
 }
 
 /* task that renders a single screen tile */
-Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p)
+Vec3f renderPixelStandard(float x, float y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p)
 {
   /* initialize ray */
   RTCRay ray;
   ray.org = p;
-  ray.dir = normalize(add(mul(x,vx), mul(y,vy), vz));
+  ray.dir = normalize(x*vx + y*vy + vz);
   ray.tnear = 0.0f;
   ray.tfar = inf;
   ray.geomID = RTC_INVALID_GEOMETRY_ID;
@@ -184,12 +221,12 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
     Vec3f diffuse = make_Vec3f(1,1,1);
     if (ray.instID != -1)
       diffuse = colors[ray.instID][ray.geomID];
-    color = add(color,mul(diffuse,0.5));
+    color = color + diffuse*0.5; // FIXME: +=
     Vec3f lightDir = normalize(make_Vec3f(-1,-1,-1));
     
     /* initialize shadow ray */
     RTCRay shadow;
-    shadow.org = add(ray.org,mul(ray.tfar,ray.dir));
+    shadow.org = ray.org + ray.tfar*ray.dir;
     shadow.dir = neg(lightDir);
     shadow.tnear = 0.001f;
     shadow.tfar = inf;
@@ -203,7 +240,7 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
 
     /* add light contribution */
     if (shadow.geomID)
-      color = add(color,mul(diffuse,clamp(-dot(lightDir,normalize(ray.Ng)),0.0f,1.0f)));
+      color = color + diffuse*clamp(-dot(lightDir,normalize(ray.Ng)),0.0f,1.0f); // FIXME: +=
   }
   return color;
 }
@@ -259,13 +296,13 @@ export void device_render (uniform int* uniform pixels,
   uniform float t = 0.7f*time;
 
   /* move instances */
-  xfm.p = mul(2.0f,make_Vec3f(+cos(t),0.0f,+sin(t)));
+  xfm.p = 2.0f*make_Vec3f(+cos(t),0.0f,+sin(t));
   rtcSetTransform(g_scene,g_instance0,RTC_MATRIX_COLUMN_MAJOR,(uniform float* uniform)&xfm);
-  xfm.p = mul(2.0f,make_Vec3f(-cos(t),0.0f,-sin(t)));
+  xfm.p = 2.0f*make_Vec3f(-cos(t),0.0f,-sin(t));
   rtcSetTransform(g_scene,g_instance1,RTC_MATRIX_COLUMN_MAJOR,(uniform float* uniform)&xfm);
-  xfm.p = mul(2.0f,make_Vec3f(-sin(t),0.0f,+cos(t)));
+  xfm.p = 2.0f*make_Vec3f(-sin(t),0.0f,+cos(t));
   rtcSetTransform(g_scene,g_instance2,RTC_MATRIX_COLUMN_MAJOR,(uniform float* uniform)&xfm);
-  xfm.p = mul(2.0f,make_Vec3f(+sin(t),0.0f,-cos(t)));
+  xfm.p = 2.0f*make_Vec3f(+sin(t),0.0f,-cos(t));
   rtcSetTransform(g_scene,g_instance3,RTC_MATRIX_COLUMN_MAJOR,(uniform float* uniform)&xfm);
 
   /* update scene */
@@ -273,7 +310,12 @@ export void device_render (uniform int* uniform pixels,
   rtcUpdate(g_scene,g_instance1);
   rtcUpdate(g_scene,g_instance2);
   rtcUpdate(g_scene,g_instance3);
+#if !defined(PARALLEL_COMMIT)
   rtcCommit (g_scene);
+#else
+  launch[ getNumHWThreads() ] parallelCommit(g_scene); sync;
+#endif
+
 
   /* render all pixels */
   const uniform int numTilesX = (width +TILE_SIZE_X-1)/TILE_SIZE_X;

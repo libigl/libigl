@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -19,8 +19,30 @@
 const uniform int numPhi = 5;
 const uniform int numTheta = 2*numPhi;
 
+//#define PARALLEL_COMMIT
+
 /* render function to use */
 renderPixelFunc renderPixel;
+
+/* error reporting function */
+void error_handler(const uniform RTCError code, const uniform int8* uniform str)
+{
+  print("Embree: ");
+  switch (code) {
+  case RTC_UNKNOWN_ERROR    : print("RTC_UNKNOWN_ERROR"); break;
+  case RTC_INVALID_ARGUMENT : print("RTC_INVALID_ARGUMENT"); break;
+  case RTC_INVALID_OPERATION: print("RTC_INVALID_OPERATION"); break;
+  case RTC_OUT_OF_MEMORY    : print("RTC_OUT_OF_MEMORY"); break;
+  case RTC_UNSUPPORTED_CPU  : print("RTC_UNSUPPORTED_CPU"); break;
+  default                   : print("invalid error code"); break;
+  }
+  if (str) { 
+    print(" ("); 
+    while (*str) putchar(*str++); 
+    print(")\n"); 
+  }
+  abort();
+}
 
 // ======================================================================== //
 //                         User defined instancing                          //
@@ -86,7 +108,7 @@ void instanceOccludedFunc(const uniform Instance* uniform instance, varying RTCR
   ray.dir = ray_dir;
 }
 
-uniform Instance* uniform createInstance (RTCScene scene, RTCScene object, uniform int userID, uniform Vec3f lower, uniform Vec3f upper)
+uniform Instance* uniform createInstance (RTCScene scene, RTCScene object, uniform int userID, const uniform Vec3f& lower, const uniform Vec3f& upper)
 {
   uniform Instance* uniform instance = uniform new uniform Instance;
   instance->object = object;
@@ -138,7 +160,7 @@ void sphereBoundsFunc(const uniform Sphere* uniform spheres, uniform size_t item
 void sphereIntersectFunc(const uniform Sphere* uniform spheres, varying RTCRay& ray, uniform size_t item)
 {
   const uniform Sphere& sphere = spheres[item];
-  const Vec3f v = sub(ray.org,sphere.p);
+  const Vec3f v = ray.org-sphere.p;
   const float A = dot(ray.dir,ray.dir);
   const float B = 2.0f*dot(v,ray.dir);
   const float C = dot(v,v) - sqr(sphere.r);
@@ -154,7 +176,7 @@ void sphereIntersectFunc(const uniform Sphere* uniform spheres, varying RTCRay& 
     ray.tfar = t0;
     ray.geomID = sphere.geomID;
     ray.primID = item;
-    ray.Ng = sub(add(ray.org,mul(t0,ray.dir)),sphere.p);
+    ray.Ng = ray.org+t0*ray.dir-sphere.p;
   }
   if ((ray.tnear < t1) & (t1 < ray.tfar)) {
     ray.u = 0.0f;
@@ -162,14 +184,14 @@ void sphereIntersectFunc(const uniform Sphere* uniform spheres, varying RTCRay& 
     ray.tfar = t1;
     ray.geomID = sphere.geomID;
     ray.primID = item;
-    ray.Ng = sub(add(ray.org,mul(t1,ray.dir)),sphere.p);
+    ray.Ng = ray.org+t1*ray.dir-sphere.p;
   }
 }
 
 void sphereOccludedFunc(const uniform Sphere* uniform spheres, varying RTCRay& ray, uniform size_t item)
 {
   const uniform Sphere& sphere = spheres[item];
-  const Vec3f v = sub(ray.org,sphere.p);
+  const Vec3f v = ray.org-sphere.p;
   const float A = dot(ray.dir,ray.dir);
   const float B = 2.0f*dot(v,ray.dir);
   const float C = dot(v,v) - sqr(sphere.r);
@@ -187,7 +209,7 @@ void sphereOccludedFunc(const uniform Sphere* uniform spheres, varying RTCRay& r
   }
 }
 
-uniform Sphere* uniform createAnalyticalSphere (RTCScene scene, uniform Vec3f p, uniform float r)
+uniform Sphere* uniform createAnalyticalSphere (RTCScene scene, const uniform Vec3f& p, uniform float r)
 {
   uniform unsigned int geomID = rtcNewUserGeometry(scene,1);
   uniform Sphere* uniform sphere = uniform new uniform Sphere;
@@ -217,7 +239,7 @@ uniform Sphere* uniform createAnalyticalSpheres (RTCScene scene, uniform size_t 
 //                      Triangular sphere geometry                          //
 // ======================================================================== //
 
-uniform unsigned int createTriangulatedSphere (RTCScene scene, uniform Vec3f p, uniform float r)
+uniform unsigned int createTriangulatedSphere (RTCScene scene, const uniform Vec3f& p, uniform float r)
 {
   /* create triangle mesh */
   uniform unsigned int mesh = rtcNewTriangleMesh (scene, RTC_GEOMETRY_STATIC, 2*numTheta*(numPhi-1), numTheta*(numPhi+1));
@@ -307,11 +329,21 @@ uniform Instance* uniform g_instance3 = NULL;
 
 uniform Vec3f colors[5][4];
 
+/* rtcCommitThread called by all ISPC worker threads to enable parallel build */
+#if defined(PARALLEL_COMMIT)
+task void parallelCommit(RTCScene scene) {
+  rtcCommitThread (scene,threadIndex,threadCount); 
+}
+#endif
+
 /* called by the C++ code for initialization */
 export void device_init (uniform int8* uniform cfg)
 {
   /* initialize ray tracing core */
   rtcInit(cfg);
+
+  /* set error handler */
+  rtcSetErrorFunction(error_handler);
 
   /* create scene */
   g_scene = rtcNewScene(RTC_SCENE_DYNAMIC,RTC_INTERSECT_UNIFORM | RTC_INTERSECT_VARYING);
@@ -323,7 +355,11 @@ export void device_init (uniform int8* uniform cfg)
   spheres[1].p = make_Vec3f(+1, 0, 0); spheres[1].r = 0.5f;
   spheres[2].p = make_Vec3f( 0, 0,-1); spheres[2].r = 0.5f;
   spheres[3].p = make_Vec3f(-1, 0, 0); spheres[3].r = 0.5f;
+#if !defined(PARALLEL_COMMIT)
   rtcCommit(g_scene0);
+#else
+  launch[ getNumHWThreads() ] parallelCommit(g_scene0); sync;
+#endif
 
   /* create scene with 4 triangulated spheres */
   g_scene1 = rtcNewScene(RTC_SCENE_STATIC,RTC_INTERSECT_UNIFORM | RTC_INTERSECT_VARYING);
@@ -331,7 +367,11 @@ export void device_init (uniform int8* uniform cfg)
   createTriangulatedSphere(g_scene1,make_Vec3f(+1, 0, 0),0.5);
   createTriangulatedSphere(g_scene1,make_Vec3f( 0, 0,-1),0.5);
   createTriangulatedSphere(g_scene1,make_Vec3f(-1, 0, 0),0.5);
+#if !defined(PARALLEL_COMMIT)
   rtcCommit(g_scene1);
+#else
+  launch[ getNumHWThreads() ] parallelCommit(g_scene1); sync;
+#endif
 
   /* create scene with 2 triangulated and 2 analytical spheres */
   g_scene2 = rtcNewScene(RTC_SCENE_STATIC,RTC_INTERSECT_UNIFORM | RTC_INTERSECT_VARYING);
@@ -339,7 +379,11 @@ export void device_init (uniform int8* uniform cfg)
   createAnalyticalSphere  (g_scene2,make_Vec3f(+1, 0, 0),0.5);
   createTriangulatedSphere(g_scene2,make_Vec3f( 0, 0,-1),0.5);
   createAnalyticalSphere  (g_scene2,make_Vec3f(-1, 0, 0),0.5);
+#if !defined(PARALLEL_COMMIT)
   rtcCommit(g_scene2);
+#else
+  launch[ getNumHWThreads() ] parallelCommit(g_scene2); sync;
+#endif
 
   /* instantiate geometry */
   createGroundPlane(g_scene);
@@ -379,12 +423,12 @@ export void device_init (uniform int8* uniform cfg)
 }
 
 /* task that renders a single screen tile */
-Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p)
+Vec3f renderPixelStandard(float x, float y, const uniform Vec3f& vx, const uniform Vec3f& vy, const uniform Vec3f& vz, const uniform Vec3f& p)
 {
   /* initialize ray */
   RTCRay ray;
   ray.org = p;
-  ray.dir = normalize(add(mul(x,vx), mul(y,vy), vz));
+  ray.dir = normalize(x*vx + y*vy + vz);
   ray.tnear = 0.0f;
   ray.tfar = inf;
   ray.geomID = RTC_INVALID_GEOMETRY_ID;
@@ -403,12 +447,12 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
     Vec3f diffuse = make_Vec3f(0.0f);
     if (ray.instID == 0) diffuse = colors[ray.instID][ray.primID];
     else                 diffuse = colors[ray.instID][ray.geomID];
-    color = add(color,mul(diffuse,0.5));
+    color = color + diffuse*0.5; // FIXME: +=
     Vec3f lightDir = normalize(make_Vec3f(-1,-1,-1));
     
     /* initialize shadow ray */
     RTCRay shadow;
-    shadow.org = add(ray.org,mul(ray.tfar,ray.dir));
+    shadow.org = ray.org + ray.tfar*ray.dir;
     shadow.dir = neg(lightDir);
     shadow.tnear = 0.001f;
     shadow.tfar = inf;
@@ -422,7 +466,7 @@ Vec3f renderPixelStandard(int x, int y, const uniform Vec3f& vx, const uniform V
     
     /* add light contribution */
     if (shadow.geomID)
-      color = add(color,mul(diffuse,clamp(-dot(lightDir,normalize(ray.Ng)),0.0f,1.0f)));
+      color = color + diffuse*clamp(-dot(lightDir,normalize(ray.Ng)),0.0f,1.0f); // FIXME: +=
   }
   return color;
 }
@@ -471,15 +515,19 @@ export void device_render (uniform int* uniform pixels,
 {
   /* move instances */
   uniform float t = 0.7f*time;
-  g_instance0->local2world.p = mul(2.0f,make_Vec3f(+cos(t),0.0f,+sin(t)));
-  g_instance1->local2world.p = mul(2.0f,make_Vec3f(-cos(t),0.0f,-sin(t)));
-  g_instance2->local2world.p = mul(2.0f,make_Vec3f(-sin(t),0.0f,+cos(t)));
-  g_instance3->local2world.p = mul(2.0f,make_Vec3f(+sin(t),0.0f,-cos(t)));
+  g_instance0->local2world.p = 2.0f*make_Vec3f(+cos(t),0.0f,+sin(t));
+  g_instance1->local2world.p = 2.0f*make_Vec3f(-cos(t),0.0f,-sin(t));
+  g_instance2->local2world.p = 2.0f*make_Vec3f(-sin(t),0.0f,+cos(t));
+  g_instance3->local2world.p = 2.0f*make_Vec3f(+sin(t),0.0f,-cos(t));
   updateInstance(g_scene,g_instance0);
   updateInstance(g_scene,g_instance1);
   updateInstance(g_scene,g_instance2);
   updateInstance(g_scene,g_instance3);
+#if !defined(PARALLEL_COMMIT)
   rtcCommit (g_scene);
+#else
+  launch[ getNumHWThreads() ] parallelCommit(g_scene); sync;
+#endif
 
   /* render all pixels */
   const uniform int numTilesX = (width +TILE_SIZE_X-1)/TILE_SIZE_X;

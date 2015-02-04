@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,15 +14,16 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_TUTORIALS_H__
-#define __EMBREE_TUTORIALS_H__
+#pragma once
 
 /* size of screen tiles */
 #define TILE_SIZE_X 8
 #define TILE_SIZE_Y 8
 
 /* vertex and triangle layout */
-struct Vertex   { float x,y,z,a; };
+#if !defined(__NO_VERTEX__)
+struct Vertex   { float x,y,z,r; };
+#endif
 struct Triangle { int v0, v1, v2; };
 
 #include "embree2/rtcore.h"
@@ -49,33 +50,59 @@ __forceinline Vec3f faceforward( const Vec3f& N, const Vec3f& I, const Vec3f& Ng
 #define GLUT_KEY_F8 8
 #define GLUT_KEY_F9 9
 #define GLUT_KEY_F10 10
+#define GLUT_KEY_F11 11
+#define GLUT_KEY_F12 12
 
 /* standard shading function */
-typedef Vec3fa (* renderPixelFunc)(int x, int y, const Vec3fa& vx, const Vec3fa& vy, const Vec3fa& vz, const Vec3fa& p);
+typedef Vec3fa (* renderPixelFunc)(float x, float y, const Vec3fa& vx, const Vec3fa& vy, const Vec3fa& vz, const Vec3fa& p);
 
-Vec3fa renderPixelStandard(int x, int y, const Vec3fa& vx, const Vec3fa& vy, const Vec3fa& vz, const Vec3fa& p);
+Vec3fa renderPixelStandard(float x, float y, const Vec3fa& vx, const Vec3fa& vy, const Vec3fa& vz, const Vec3fa& p);
+Vec3fa renderPixelUV      (float x, float y, const Vec3fa& vx, const Vec3fa& vy, const Vec3fa& vz, const Vec3fa& p);
+Vec3fa renderPixelGeomIDPrimID(float x, float y, const Vec3fa& vx, const Vec3fa& vy, const Vec3fa& vz, const Vec3fa& p);
+Vec3fa renderPixelGeomID      (float x, float y, const Vec3fa& vx, const Vec3fa& vy, const Vec3fa& vz, const Vec3fa& p);
+Vec3fa renderPixelCycles(float x, float y, const Vec3fa& vx, const Vec3fa& vy, const Vec3fa& vz, const Vec3fa& p);
 
+__forceinline Vec3f  neg(const Vec3f& a ) { return -a; }
 __forceinline Vec3fa neg(const Vec3fa& a) { return -a; }
-__forceinline Vec3fa mul(const Vec3fa& a, const Vec3fa& b) { return a*b; }
-__forceinline Vec3fa add(const Vec3fa& a, const Vec3fa& b) { return a+b; }
-__forceinline Vec3fa sub(const Vec3fa& a, const Vec3fa& b) { return a-b; }
-__forceinline Vec3fa add(const Vec3fa& a, const Vec3fa& b, const Vec3fa& c) { return a+b+c; }
-
-__forceinline Vec3f sub(const Vec3fa& a, const Vec3f& b) { return a-b; }
-
-__forceinline Vec3f neg(const Vec3f& a) { return -a; }
-__forceinline Vec3f mul(const Vec3f& a, const Vec3f& b) { return a*b; }
-__forceinline Vec3f add(const Vec3f& a, const Vec3f& b) { return a+b; }
-__forceinline Vec3f sub(const Vec3f& a, const Vec3f& b) { return a-b; }
-__forceinline Vec3f add(const Vec3f& a, const Vec3f& b, const Vec3f& c) { return a+b+c; }
-
-__forceinline Vec3f mul(const LinearSpace3<Vec3f>& a, const Vec3f& b) { return b.x*a.vx + b.y*a.vy + b.z*a.vz; }
-
-__forceinline Vec3f div(const Vec3f& a, const float& b) { return a/b; }
+__forceinline bool   eq (const Vec3fa& a, const Vec3fa& b) { return a == b; }
+__forceinline bool   ne (const Vec3fa& a, const Vec3fa& b) { return a != b; }
 
 /* parallel invokation of renderTile function */
 void launch_renderTile (int numTiles, 
                         int* pixels, const int width, const int height, const float time, 
-                        const Vec3f& vx, const Vec3f& vy, const Vec3f& vz, const Vec3f& p, const int numTilesX, const int numTilesY);
+                        const Vec3fa& vx, const Vec3fa& vy, const Vec3fa& vz, const Vec3fa& p, const int numTilesX, const int numTilesY);
 
-#endif
+/* parallel invokation of animateSphere function */
+typedef void (*animateSphereFunc) (int taskIndex, Vertex* vertices, 
+				   const float rcpNumTheta,
+				   const float rcpNumPhi,
+				   const Vec3fa& pos, 
+				   const float r,
+				   const float f);
+
+void launch_animateSphere(animateSphereFunc func,
+			  int taskSize, 
+			  Vertex* vertices, 
+			  const float rcpNumTheta,
+			  const float rcpNumPhi,
+			  const Vec3fa& pos, 
+			  const float r,
+			  const float f);
+
+struct Sample3f
+{
+  Sample3f () {}
+
+  Sample3f (const Vec3fa& v, const float pdf) 
+    : v(v), pdf(pdf) {}
+
+  Vec3fa v;
+  float pdf;
+};
+
+/* noise functions */
+float noise(const Vec3fa& p);
+Vec3fa noise3D(const Vec3fa& p);
+
+
+

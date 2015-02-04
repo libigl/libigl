@@ -1,5 +1,5 @@
 ## ======================================================================== ##
-## Copyright 2009-2013 Intel Corporation                                    ##
+## Copyright 2009-2014 Intel Corporation                                    ##
 ##                                                                          ##
 ## Licensed under the Apache License, Version 2.0 (the "License");          ##
 ## you may not use this file except in compliance with the License.         ##
@@ -18,4 +18,5 @@ FIND_PACKAGE(COI REQUIRED)
 INCLUDE_DIRECTORIES(${COI_INCLUDE_PATHS})
 
 ADD_LIBRARY(transport_host STATIC tutorials_host.cpp)
+SET_PROPERTY(TARGET transport_host PROPERTY FOLDER tutorials/common)
 TARGET_LINK_LIBRARIES(transport_host ${COI_HOST_LIBRARIES})

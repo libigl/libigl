@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_VECTOR_H__
-#define __EMBREE_VECTOR_H__
+#pragma once
 
 #include <stdio.h>
 #include <assert.h>
@@ -60,6 +59,10 @@ namespace embree
 
       T* begin() const { return t; };
       T* end() const { return t+m_size; };
+
+	  __forceinline       T* data()       { return t; };
+	  __forceinline const T* data() const { return t; };
+
 
       inline T& front() const { return t[0]; };
       inline T& back () const { return t[m_size-1]; };
@@ -135,5 +138,3 @@ namespace embree
       T *t;             // data array
     };
 }
-
-#endif

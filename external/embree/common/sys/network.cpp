@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -58,7 +58,7 @@ namespace embree
       WSADATA wsaData;
       short version = MAKEWORD(1,1);
       if (WSAStartup(version,&wsaData) != 0)
-        throw std::runtime_error("Winsock initialization failed");
+        THROW_RUNTIME_ERROR("Winsock initialization failed");
       initialized = true;
 #endif
     }
@@ -91,11 +91,11 @@ namespace embree
 
       /*! create a new socket */
       SOCKET sockfd = ::socket(AF_INET, SOCK_STREAM, 0);
-      if (sockfd < 0) throw std::runtime_error("cannot create socket");
+      if (sockfd < 0) THROW_RUNTIME_ERROR("cannot create socket");
       
       /*! perform DNS lookup */
       struct hostent* server = ::gethostbyname(host);
-      if (server == NULL) throw std::runtime_error("server "+std::string(host)+" not found");
+      if (server == NULL) THROW_RUNTIME_ERROR("server "+std::string(host)+" not found");
       
       /*! perform connection */
       struct sockaddr_in serv_addr;
@@ -105,7 +105,7 @@ namespace embree
       memcpy((char*)&serv_addr.sin_addr.s_addr, (char*)server->h_addr, server->h_length);
       
       if (::connect(sockfd,(struct sockaddr*) &serv_addr,sizeof(serv_addr)) < 0)
-        throw std::runtime_error("connection to "+std::string(host)+":"+std::stringOf(port)+" failed");
+        THROW_RUNTIME_ERROR("connection to "+std::string(host)+":"+std::stringOf(port)+" failed");
 
       /*! enable TCP_NODELAY */
 #ifdef TCP_NODELAY
@@ -126,7 +126,7 @@ namespace embree
 
       /*! create a new socket */
       SOCKET sockfd = ::socket(AF_INET, SOCK_STREAM, 0);
-      if (sockfd < 0) throw std::runtime_error("cannot create socket");
+      if (sockfd < 0) THROW_RUNTIME_ERROR("cannot create socket");
 
       /* When the server completes, the server socket enters a time-wait state during which the local
       address and port used by the socket are believed to be in use by the OS. The wait state may
@@ -143,11 +143,11 @@ namespace embree
       serv_addr.sin_addr.s_addr = INADDR_ANY;
 
       if (::bind(sockfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr)) < 0)
-        throw std::runtime_error("binding to port "+std::stringOf(port)+" failed");
+        THROW_RUNTIME_ERROR("binding to port "+std::stringOf(port)+" failed");
       
       /*! listen to port, up to 5 pending connections */
       if (::listen(sockfd,5) < 0)
-        throw std::runtime_error("listening on socket failed");
+        THROW_RUNTIME_ERROR("listening on socket failed");
 
       return (socket_t) new buffered_socket_t(sockfd);
     }
@@ -160,7 +160,7 @@ namespace embree
       struct sockaddr_in addr;
       socklen_t len = sizeof(addr);
       SOCKET fd = ::accept(sockfd, (struct sockaddr *) &addr, &len);
-      if (fd < 0) throw std::runtime_error("cannot accept connection");
+      if (fd < 0) THROW_RUNTIME_ERROR("cannot accept connection");
 
       /*! enable TCP_NODELAY */
 #ifdef TCP_NODELAY
@@ -184,7 +184,7 @@ namespace embree
         if (hsock->istart == hsock->iend) {
           ssize_t n = ::recv(hsock->fd,hsock->ibuf,hsock->isize,MSG_NOSIGNAL);
           if      (n == 0) throw Disconnect();
-          else if (n  < 0) throw std::runtime_error("error reading from socket");
+          else if (n  < 0) THROW_RUNTIME_ERROR("error reading from socket");
           hsock->istart = 0;
           hsock->iend = n;
         }
@@ -201,7 +201,7 @@ namespace embree
       while (bytes) {
         ssize_t n = ::read(hsock->fd,data,bytes);
         if      (n == 0) throw Disconnect();
-        else if (n  < 0) throw std::runtime_error("error reading from socket");
+        else if (n  < 0) THROW_RUNTIME_ERROR("error reading from socket");
         data+=n;
         bytes-=n;
       }
@@ -227,7 +227,7 @@ namespace embree
       buffered_socket_t* hsock = (buffered_socket_t*) hsock_i;
       while (bytes) {
         ssize_t n = ::write(hsock->fd,data,bytes);
-        if (n  < 0) throw std::runtime_error("error writing to socket");
+        if (n  < 0) THROW_RUNTIME_ERROR("error writing to socket");
         data+=n;
         bytes-=n;
       }
@@ -242,7 +242,7 @@ namespace embree
       size_t bytes = hsock->oend;
       while (bytes > 0) {
         ssize_t n = ::send(hsock->fd,data,(int)bytes,MSG_NOSIGNAL);
-        if (n < 0) throw std::runtime_error("error writing to socket");
+        if (n < 0) THROW_RUNTIME_ERROR("error writing to socket");
         bytes -= n;
         data += n;
       } 

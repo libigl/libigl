@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,8 +14,7 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
-#ifndef __EMBREE_TUTORIAL_H__
-#define __EMBREE_TUTORIAL_H__
+#pragma once
 
 #include "sys/platform.h"
 #include "sys/ref.h"
@@ -28,6 +27,4 @@
 inline double drand48() {
   return (double)rand()/(double)RAND_MAX;
 }
-#endif
-
 #endif

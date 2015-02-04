@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -14,15 +14,25 @@
 // limitations under the License.                                           //
 // ======================================================================== //
 
+#pragma once
+
 #include "sys/platform.h"
 #include "sys/ref.h"
 #include "camera.h"
 
 namespace embree
 {
+
   /* camera */
   extern Camera g_camera;
 
+  /* enter the GLUT main run loop */
+  void enterWindowRunLoop();
+
   /* initialize GLUT */
-  void initGlut (const std::string name, const size_t width, const size_t height, const bool fullscreen, const bool mouseMode);
+  void initWindowState(int& argc, char** argv, const std::string name, const size_t width, const size_t height, const bool fullscreen, const bool mouseMode = true);
+
+  /* set a callback for a key */
+  void mapKeyToFunction(unsigned char key, void (*func)(unsigned char key, int x, int y));
+
 }

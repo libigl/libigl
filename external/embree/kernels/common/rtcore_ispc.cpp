@@ -1,5 +1,5 @@
 // ======================================================================== //
-// Copyright 2009-2013 Intel Corporation                                    //
+// Copyright 2009-2014 Intel Corporation                                    //
 //                                                                          //
 // Licensed under the Apache License, Version 2.0 (the "License");          //
 // you may not use this file except in compliance with the License.         //
@@ -23,27 +23,22 @@ namespace embree
 
 #define CATCH_BEGIN try {
 #define CATCH_END                                                       \
-  } catch (std::bad_alloc&) {                                         \
-  if (VERBOSE) std::cerr << "Embree: Out of memory" << std::endl;     \
-  recordError(RTC_OUT_OF_MEMORY);                                       \
- } catch (std::exception& e) {                                          \
-  if (VERBOSE) std::cerr << "Embree: " << e.what() << std::endl;      \
-  recordError(RTC_UNKNOWN_ERROR);                                       \
+  } catch (std::bad_alloc&) {                                           \
+    process_error(RTC_OUT_OF_MEMORY,"out of memory");                   \
+  } catch (std::exception& e) {                                         \
+    process_error(RTC_UNKNOWN_ERROR,e.what());                          \
  } catch (...) {                                                        \
-  if (VERBOSE) std::cerr << "Embree: Unknown exception caught." << std::endl; \
-  recordError(RTC_UNKNOWN_ERROR);                                       \
- }
+  process_error(RTC_UNKNOWN_ERROR,"unknown exception caught");          \
+  }
 
 #define VERIFY_HANDLE(handle) \
   if (handle == NULL) {                                                 \
-    if (VERBOSE) std::cerr << "Embree: invalid argument" << std::endl; \
-    recordError(RTC_INVALID_ARGUMENT);                                  \
+    process_error(RTC_INVALID_ARGUMENT,"invalid argument");             \
   }
 
 #define VERIFY_GEOMID(id) \
   if (id == -1) {                                                 \
-    if (VERBOSE) std::cerr << "Embree: invalid argument" << std::endl; \
-    recordError(RTC_INVALID_ARGUMENT);                                  \
+    process_error(RTC_INVALID_ARGUMENT,"invalid argument");       \
   }
 
 #define TRACE(x) //std::cout << #x << std::endl;
@@ -59,6 +54,10 @@ namespace embree
   extern "C" RTCError ispcGetError() {
     return rtcGetError();
   }
+
+  extern "C" void ispcSetErrorFunction(void* f) {
+    return rtcSetErrorFunction((RTC_ERROR_FUNCTION)f);
+  }
   
   extern "C" void ispcDebug() {
     rtcDebug();
@@ -72,6 +71,10 @@ namespace embree
   
   extern "C" void ispcCommitScene (RTCScene scene) {
     return rtcCommit(scene);
+  }
+
+  extern "C" void ispcCommitSceneThread (RTCScene scene, unsigned int threadID, unsigned int numThreads) {
+    return rtcCommitThread(scene,threadID,numThreads);
   }
   
   extern "C" void ispcIntersect1 (RTCScene scene, RTCRay& ray) {
@@ -126,9 +129,8 @@ namespace embree
     return rtcNewTriangleMesh((RTCScene)scene,flags,numTriangles,numVertices,numTimeSteps);
   }
   
-  extern "C" unsigned ispcNewQuadraticBezierCurves (RTCScene scene, RTCGeometryFlags flags, size_t numCurves, size_t numVertices, size_t numTimeSteps) {
-    //return rtcNewQuadraticBezierCurves(scene,flags,numCurves,numVertices,numTimeSteps);
-    return 0;
+  extern "C" unsigned ispcNewBezierCurves (RTCScene scene, RTCGeometryFlags flags, size_t numCurves, size_t numVertices, size_t numTimeSteps) {
+    return rtcNewHairGeometry(scene,flags,numCurves,numVertices,numTimeSteps);
   }
   
   extern "C" void ispcSetRayMask (RTCScene scene, unsigned geomID, int mask) {
@@ -151,8 +153,12 @@ namespace embree
     rtcEnable(scene,geomID);
   }
   
-  extern "C" void ispcModified (RTCScene scene, unsigned geomID) {
+  extern "C" void ispcUpdate (RTCScene scene, unsigned geomID) {
     rtcUpdate(scene,geomID);
+  }
+
+  extern "C" void ispcUpdateBuffer (RTCScene scene, unsigned geomID, RTCBufferType type) {
+    rtcUpdateBuffer(scene,geomID,type);
   }
   
   extern "C" void ispcDisable (RTCScene scene, unsigned geomID) {
@@ -336,4 +342,19 @@ namespace embree
     ((Scene*)scene)->get(geomID)->setOcclusionFilterFunction16(filter,true);
     CATCH_END;
   }
+
+  extern "C" unsigned ispcNewSubdivisionMesh (RTCScene scene, RTCGeometryFlags flags, size_t numFaces, size_t numEdges, size_t numVertices, size_t numEdgeCreases, size_t numVertexCreases, size_t numHoles, size_t numTimeSteps) {
+    return rtcNewSubdivisionMesh((RTCScene)scene,flags,numFaces,numEdges,numVertices,numEdgeCreases,numVertexCreases,numHoles,numTimeSteps);
+  }
+
+  extern "C" void ispcSetDisplacementFunction (RTCScene scene, unsigned int geomID, void* func, RTCBounds* bounds)
+  {
+    CATCH_BEGIN;
+    TRACE(rtcSetDisplacementFunction);
+    VERIFY_HANDLE(scene);
+    VERIFY_GEOMID(geomID);
+    ((Scene*)scene)->get(geomID)->setDisplacementFunction((RTCDisplacementFunc)func,bounds);
+    CATCH_END;
+  }
+
 }
