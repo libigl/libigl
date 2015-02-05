@@ -137,7 +137,7 @@ namespace igl
       std::vector<Hit > &hits,
       int& num_rays,
       float tnear = 0,
-      float tfar = -1,
+      float tfar = std::numeric_limits<float>::infinity(),
       int mask = 0xFFFFFFFF) const;
 
     // Given a ray find the first hit
@@ -436,7 +436,9 @@ igl::EmbreeIntersector
   {
     ray.tnear = min_t;
     ray.tfar = tfar;
-    ray.primID = -1;
+    ray.geomID = RTC_INVALID_GEOMETRY_ID;
+    ray.primID = RTC_INVALID_GEOMETRY_ID;
+    ray.instID = RTC_INVALID_GEOMETRY_ID;
     num_rays++;
     rtcIntersect(scene,ray);
     if(ray.geomID != RTC_INVALID_GEOMETRY_ID)
@@ -447,9 +449,9 @@ igl::EmbreeIntersector
         // push min_t a bit more
         //double t_push = pow(2.0,self_hits-4)*(hit.t<eps?eps:hit.t);
         double t_push = pow(2.0,self_hits)*eps;
-#ifdef IGL_VERBOSE
+        #ifdef IGL_VERBOSE
         std::cerr<<"  t_push: "<<t_push<<endl;
-#endif
+        #endif
         //o = o+t_push*d;
         min_t += t_push;
         self_hits++;
