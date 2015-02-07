@@ -3,7 +3,7 @@
 #include "writePLY.h"
 #include <vector>
 #include <iostream>
-#define IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
+//#define IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
 #include "STR.h"
 #endif
