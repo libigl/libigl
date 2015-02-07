@@ -1,16 +1,19 @@
-#include "peal_outer_hull_layers.h"
+#include "peel_outer_hull_layers.h"
 #include "outer_hull.h"
 #include "writePLY.h"
 #include <vector>
 #include <iostream>
-//#define IGL_PEAL_OUTER_HULL_LAYERS_DEBUG
+#define IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
+#ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
+#include "STR.h"
+#endif
 
 template <
   typename DerivedV,
   typename DerivedF,
   typename Derivedodd,
   typename Derivedflip>
-IGL_INLINE void igl::peal_outer_hull_layers(
+IGL_INLINE size_t igl::peel_outer_hull_layers(
   const Eigen::PlainObjectBase<DerivedV > & V,
   const Eigen::PlainObjectBase<DerivedF > & F,
   Eigen::PlainObjectBase<Derivedodd > & odd,
@@ -23,11 +26,11 @@ IGL_INLINE void igl::peal_outer_hull_layers(
   typedef Matrix<Index,Dynamic,1> MatrixXI;
   typedef Matrix<typename Derivedflip::Scalar,Dynamic,Derivedflip::ColsAtCompileTime> MatrixXflip;
   const Index m = F.rows();
-#ifdef IGL_PEAL_OUTER_HULL_LAYERS_DEBUG
-  cout<<"peal outer hull layers..."<<endl;
+#ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
+  cout<<"peel outer hull layers..."<<endl;
 #endif
 
-#ifdef IGL_PEAL_OUTER_HULL_LAYERS_DEBUG
+#ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
   cout<<"resize output ..."<<endl;
 #endif
   // keep track of iteration parity and whether flipped in hull
@@ -47,12 +50,13 @@ IGL_INLINE void igl::peal_outer_hull_layers(
     MatrixXF Fo;
     MatrixXI Jo;
     MatrixXflip flipr;
-#ifdef IGL_PEAL_OUTER_HULL_LAYERS_DEBUG
+#ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
   cout<<"calling outer hull..."<<endl;
-  writePLY("outer-hull-input.ply",V,Fr);
+  writePLY(STR("outer-hull-input-"<<iter<<".ply"),V,Fr);
 #endif
     outer_hull(V,Fr,Fo,Jo,flipr);
-#ifdef IGL_PEAL_OUTER_HULL_LAYERS_DEBUG
+#ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
+  writePLY(STR("outer-hull-output-"<<iter<<".ply"),V,Fo);
   cout<<"reindex, flip..."<<endl;
 #endif
     assert(Fo.rows() == Jo.rows());
@@ -86,10 +90,11 @@ IGL_INLINE void igl::peal_outer_hull_layers(
     odd_iter = !odd_iter;
     iter++;
   }
+  return iter;
 }
 
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::peal_outer_hull_layers<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<bool, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
+template size_t igl::peel_outer_hull_layers<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<bool, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
 #endif
