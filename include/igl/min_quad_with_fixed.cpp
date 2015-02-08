@@ -96,6 +96,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
 
   SparseMatrix<T> Auu;
   slice(A,data.unknown,data.unknown,Auu);
+  assert(Auu.size() > 0 && "All DOFs seem to be fixed.");
 
   // Positive definiteness is *not* determined, rather it is given as a
   // parameter
