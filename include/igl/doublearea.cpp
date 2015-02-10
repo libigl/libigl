@@ -124,7 +124,7 @@ IGL_INLINE void igl::doublearea(
   sort(ul,2,false,l,_);
   // semiperimeters
   Matrix<typename Derivedl::Scalar,Dynamic,1> s = l.rowwise().sum()*0.5;
-  assert(s.rows() == m);
+  assert((size_t)s.rows() == m);
   // resize output
   dblA.resize(l.rows(),1);
   // Minimum number of iterms per openmp thread
