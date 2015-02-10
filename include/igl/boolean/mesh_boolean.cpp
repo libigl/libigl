@@ -1,5 +1,5 @@
 #include "mesh_boolean.h"
-#include <igl/peal_outer_hull_layers.h>
+#include <igl/peel_outer_hull_layers.h>
 #include <igl/cgal/remesh_self_intersections.h>
 #include <igl/remove_unreferenced.h>
 #include <igl/unique_simplices.h>
@@ -169,13 +169,13 @@ IGL_INLINE void igl::mesh_boolean(
   }
 
 #ifdef IGL_MESH_BOOLEAN_DEBUG
-  cout<<"peal..."<<endl;
+  cout<<"peel..."<<endl;
 #endif
   Matrix<bool,Dynamic,1> from_A(CF.rows());
-  // Peal layers keeping track of odd and even flips
+  // peel layers keeping track of odd and even flips
   Matrix<bool,Dynamic,1> odd;
   Matrix<bool,Dynamic,1> flip;
-  peal_outer_hull_layers(CV,CF,odd,flip);
+  peel_outer_hull_layers(CV,CF,odd,flip);
 
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"categorize..."<<endl;

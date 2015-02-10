@@ -2259,7 +2259,7 @@ intersections have been "resolved". That is, edges and vertices are added
 exactly at the intersection lines, so the resulting _non-manifold_ mesh `(V,F)`
 has no self-intersections.
 
-Then libigl _peals_ the outer hull [#attene_2014][] off this mesh recursively,
+Then libigl _peels_ the outer hull [#attene_2014][] off this mesh recursively,
 keeping track of the iteration parity and orientation flips for each layer.
 For any boolean operation, these two pieces of information determine for each
 triangle (1) if it should be included in the output, and (2) if its orientation
