@@ -214,8 +214,8 @@ namespace igl
       //const IndexList& get_lIF() const{ return lIF;}
       static inline void box_intersect(
         SelfIntersectMesh * SIM, 
-        const SelfIntersectMesh::Box &a, 
-        const SelfIntersectMesh::Box &b);
+        const Box &a, 
+        const Box &b);
   };
 }
 
