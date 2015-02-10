@@ -65,10 +65,10 @@ namespace igl
   //   index_map  an index map such that sorted[i] = unsorted[index_map[i]]
   template <class T>
   IGL_INLINE void sort(
-      const std::vector<T> &unsorted,
-      const bool ascending,
-      std::vector<T> &sorted,
-      std::vector<size_t> &index_map);
+    const std::vector<T> &unsorted,
+    const bool ascending,
+    std::vector<T> &sorted,
+    std::vector<size_t> &index_map);
 
 }
 
