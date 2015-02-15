@@ -1423,13 +1423,12 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::FindFixedVertField()
   Hard_constraints.clear();
 
   n_fixed_vars=0;
-  ///fix the first singularity
+  //fix the first singularity
   for (unsigned int v=0;v<V.rows();v++)
   {
     if (Handle_Singular(v))
     {
       AddFixedVertex(v);
-      std::cerr<<"miq: fixing "<<v<<endl;
       UV.row(v) << 0,0;
       return;
     }
