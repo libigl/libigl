@@ -15,14 +15,14 @@ GL2PS=/opt/local/
 GL2PS_INC=-I$(GL2PS)/include
 GL2PS_LIB=-L$(GL2PS)/lib -lgl2ps
 
-INC = -I${LIBMESH} $(IGL_INC) $(ANTTWEAKBAR_INC) $(GL2PS_INC) ${EIGEN_INC}
+INC = -I${LIBMESH} $(IGL_INC) $(ANTTWEAKBAR_INC) $(GL2PS_INC) ${EIGEN_INC} -I$(LIBIGL)/external/yimg/ -DIGL_STATIC_LIBRARY
 LIBS  = -framework OpenGL -framework GLUT -L${LIBMESH} -lmesh $(IGL_LIB) $(ANTTWEAKBAR_LIB) $(GL2PS_LIB)\
   -liglpng -L$(LIBIGL)/external/yimg/ -lyimg\
   -L/usr/X11/lib -lpng \
   -L$(LIBIGL)/external/AntTweakBar -lAntTweakBar \
   -I/opt/local/include -L/opt/local/lib -lboost_thread-mt -lboost_system-mt \
 #CFLAGS = -Wall -g -DIGL
-CFLAGS=-Wall -O3 -DIGL
+CFLAGS=-Wall -O3 -DIGL -std=c++11 -DNDEBUG -msse4.2
 
 C_FILES=$(wildcard *.c)
 OBJ_FILES=$(notdir $(C_FILES:.c=.o))

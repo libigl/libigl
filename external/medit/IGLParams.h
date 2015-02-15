@@ -9,7 +9,8 @@ enum ColorMap {
   COLOR_MAP_JET = 1,
   COLOR_MAP_EASTER = 2,
   COLOR_MAP_WINDING_THEN_EASTER = 3,
-  NUM_COLOR_MAP = 4,
+  COLOR_MAP_PARULA = 4,
+  NUM_COLOR_MAP = 5,
 };
 
 class IGLParams

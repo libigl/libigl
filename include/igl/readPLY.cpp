@@ -184,6 +184,18 @@ IGL_INLINE bool igl::readPLY(
     list_to_matrix(vUV,UV);
 }
 
+template <
+  typename DerivedV,
+  typename DerivedF>
+IGL_INLINE bool igl::readPLY(
+  const std::string & filename,
+  Eigen::PlainObjectBase<DerivedV> & V,
+  Eigen::PlainObjectBase<DerivedF> & F)
+{
+  Eigen::MatrixXd N,UV;
+  return readPLY(filename,V,F,N,UV);
+}
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template bool igl::readPLY<double, int, double, double>(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&);

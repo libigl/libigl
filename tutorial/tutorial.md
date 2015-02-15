@@ -1,6 +1,6 @@
 title: libigl Tutorial
 author: Daniele Panozzo and Alec Jacobson
-date: 07 November 2014
+date: 07 November 2015
 css: style.css
 html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
@@ -9,7 +9,7 @@ html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathja
 
 # libigl tutorial notes
 
-#### as presented by Daniele Panozzo and Alec Jacobsond at SGP Graduate School 2014
+#### as presented by Daniele Panozzo and Alec Jacobson at SGP Graduate School 2015
 
 ![](images/libigl-logo.jpg)
 
@@ -86,7 +86,10 @@ lecture notes links to a cross-platform example application.
     * [607 Picking vertices and faces](#607)
     * [608 Locally Injective Maps](#608)
     * [609 Boolean Operations on Meshes](#609)
-* [Chapter 7: Outlook for continuing development](#future)
+* [Chapter 7: Miscellaneous](#700)
+    * [701 Mesh Statistics](#701)
+    * [702 Generalized Winding Number](#702)
+* [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [100]
 
@@ -2247,7 +2250,7 @@ intersections have been "resolved". That is, edges and vertices are added
 exactly at the intersection lines, so the resulting _non-manifold_ mesh `(V,F)`
 has no self-intersections.
 
-Then libigl _peals_ the outer hull [#attene_2014][] off this mesh recursively,
+Then libigl _peels_ the outer hull [#attene_2014][] off this mesh recursively,
 keeping track of the iteration parity and orientation flips for each layer.
 For any boolean operation, these two pieces of information determine for each
 triangle (1) if it should be included in the output, and (2) if its orientation
@@ -2280,6 +2283,96 @@ together coincident vertices, maintaining original triangle orientations.
 Libigl also provides a wrapper `igl::mesh_boolean_cork` to the
 [cork](https://github.com/gilbo/cork), which is typically faster, but is not
 always robust.
+
+# Miscellaneous [700]
+
+Libigl contains a _wide_ variety of geometry processing tools and functions for
+dealing with meshes and the linear algebra related to them: far too many to
+discuss in this introductory tutorial. We've pulled out a couple of the
+interesting functions in this chapter to highlight.
+
+## Mesh Statistics [701]
+
+Libigl contains various mesh statistics, including face angles, face areas and
+the detection of singular vertices, which are vertices with more or less than 6
+neighbours in triangulations or 4 in quadrangulations.
+
+The example [Statistics](701_Statistics/main.cpp) computes these quantities and
+does a basic statistic analysis that allows to estimate the isometry and
+regularity of a mesh:
+
+```bash
+Irregular vertices:
+136/2400 (5.67%)
+Areas (Min/Max)/Avg_Area Sigma:
+0.01/5.33 (0.87)
+Angles in degrees (Min/Max) Sigma:
+17.21/171.79 (15.36)
+```
+
+The first row contains the number and percentage of irregular vertices, which
+is particularly important for quadrilateral meshes when they are used to define
+subdivision surfaces: every singular point will result in a point of the
+surface that is only C^1.
+
+The second row reports the area of the minimal element, maximal element and the
+standard deviation.  These numbers are normalized by the mean area, so in the
+example above 5.33 max area means that the biggest face is 5 times larger than
+the average face. An ideal isotropic mesh would have both min and max area
+close to 1.
+
+The third row measures the face angles, which should be close to 60 degrees (90
+for quads) in a perfectly regular triangulation. For FEM purposes, the closer
+the angles are to 60 degrees the more stable will the optimization be. In this
+case, it is clear that the mesh is of bad quality and it will probably result
+in artifacts if used for solving PDEs.
+
+## Generalized Winding Number [702]
+
+The problem of tetrahedralizing the interior of closed watertight surface mesh
+is a difficult, but well-posed problem (see our [Tetgen wrappers][605]).  But
+black-box tet-meshers like TetGen will _refuse_ input triangle meshes with
+self-intersections, open boundaries, non-manifold edges from multiple connected
+components.
+The problem is two-fold: self-intersections present contradictory facet
+constraints and self-intersections/open-boundaries/non-manifold edges make the
+problem of determining inside from outside ill-posed without further
+assumptions.
+
+The first problem is _easily_ solved by "resolving" all self-intersections.
+That is, meshing intersecting triangles so that intersects occur exactly at
+edges and vertices. This is accomplished using `igl::selfintersect`.
+
+TetGen can usually tetrahedralize the convex hull of this "resolved" mesh, and
+then the problem becomes determining which of these tets are _inside_ the input
+mesh and which are outside. That is, which should be kept and which should be
+removed.
+
+The "Generalized Winding Number" is a robust method for determined
+inside and outside for troublesome meshes [#jacobson_2013][].  The generalized
+winding number with respect to `(V,F)` at some point $\mathbf{p} \in
+\mathcal{R}^3$ is defined as scalar function:
+
+ $$w(\mathbf{p}) = \sum\limits_{f_i\in F} \frac{1}{4\pi}\Omega_{f_i}(\mathbf{p})$$
+
+where $\Omega_{f_i}$ is the _solid angle_ subtended by $f_i$ (the ith face in
+`F`) at the point $\mathbf{p}$. This solid angle contribution is a simple,
+closed-form expression involving `atan2` and some dot-products.
+
+If `(V,F)` _does_ form a closed watertight surface, then $w(\mathbf{p})=1$ if
+$\mathbf{p}$ lies inside `(V,F)` and $w(\mathbf{p})=0$ if outside `(V,F)`.  If
+`(V,F)` is closed but overlaps itself then $w(\mathbf{p})$ is an integer value
+counting how many (signed) times `(V,F)` _wraps_ around $\mathbf{p}$.  Finally,
+if `(V,F)` is not closed or not even manifold (but at least consistently
+oriented), then $w(\mathbf{p})$ tends smoothly toward 1 as $\mathbf{p}$ is
+_more_ inside `(V,F)`, and toward 0 as $\mathbf{p}$ is more outside.
+ 
+![Example [702_WindingNumber](702_WindingNumber/main.cpp) computes the
+generalized winding number function for a tetrahedral mesh inside a cat with
+holes and self intersections (gold). The silver mesh is surface of the
+extracted interior tets, and slices show the winding number function on all
+tets in the convex hull: blue (~0), green (~1), yellow
+(~2).](images/big-sigcat-winding-number.gif)
 
 # Outlook for continuing development [future]
 
@@ -2341,6 +2434,9 @@ Stuetzle, SIGGRAPH 2005
 [_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D
 Shapes_](https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes),
 2013.
+[#jacobson_2013]: Alec Jacobson, Ladislav Kavan, and Olga Sorkine.
+["Robust Inside-Outside Segmentation using Generalized Winding
+Numbers,"](https://www.google.com/search?q=Robust+Inside-Outside+Segmentation+using+Generalized+Winding+Numbers) 2013.
 [#jacobson_2012]: Alec Jacobson, Ilya Baran, Ladislav Kavan, Jovan Popović, and
 Olga Sorkine. ["Fast Automatic Skinning
 Transformations,"](https://www.google.com/search?q=Fast+Automatic+Skinning+Transformations) 2012.

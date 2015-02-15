@@ -7,6 +7,7 @@
 
 FIND_PATH(GLEW_INCLUDE_DIR GL/glew.h
    ${PROJECT_SOURCE_DIR}/../../external/glew/include
+   ${PROJECT_SOURCE_DIR}/../external/glew/include
    /usr/include
    /usr/local/include
    $ENV{GLEWROOT}/include

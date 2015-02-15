@@ -9,6 +9,7 @@ static int ch[6][4] = { {0,1,2,3}, {4,5,6,7}, {0,1,5,4},
 
 #ifdef IGL
 #include <igl/jet.h>
+#include <igl/parula.h>
 #include <igl/rgb_to_hsv.h>
 void IGLParams::rgb(double x, double * rgb)
 {
@@ -20,6 +21,9 @@ void IGLParams::rgb(double x, double * rgb)
   //hsv[2] = this->easter_v;
   switch(color_map)
   {
+    case COLOR_MAP_PARULA:
+      igl::parula(x,rgb);
+      return;
     case COLOR_MAP_JET:
       igl::jet(x,rgb);
       return;

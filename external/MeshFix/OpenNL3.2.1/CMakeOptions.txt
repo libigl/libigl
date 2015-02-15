@@ -55,7 +55,8 @@ SET(BUILD_EXAMPLES TRUE)
 SET(USE_SUPERLU TRUE)
 
 # Edit these lines to match your installation
-SET(SUPERLU_HOME /usr/local/igl/igl_lib/external/SuperLU_4.3)
+# Alec: annoyingly relative to ./src
+SET(SUPERLU_HOME ../../../SuperLU_4.3)
 SET(SUPERLU_NAME superlu_4.3)
 
 ###########
