@@ -13,8 +13,8 @@
 
 namespace igl
 {
-  // Deform a mesh to transform the given per-face frame field to be as close as possible
-  // to a cross field, in the least square sense.
+  // Deform a mesh to transform the given per-face frame field to be as close
+  // as possible to a cross field, in the least square sense.
   //
   // Inputs:
   //   V       #V by 3 coordinates of the vertices

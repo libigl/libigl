@@ -16,6 +16,7 @@
 - zoom with pan rather than scaling
 - refresh draw while resizing
 - use constructor initializer list rather than complicated constructor
+- support per-element alpha values
 + snap to canonical view key shortcut is not working
 + resize TwBar with window
 + trackball should be able to drag over TwBar

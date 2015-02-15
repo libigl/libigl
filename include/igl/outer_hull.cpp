@@ -15,6 +15,7 @@
 #include <map>
 #include <queue>
 #include <iostream>
+//#define IGL_OUTER_HULL_DEBUG
 
 template <
   typename DerivedV,
@@ -40,6 +41,13 @@ IGL_INLINE void igl::outer_hull(
   typedef Matrix<typename DerivedJ::Scalar,Dynamic,DerivedJ::ColsAtCompileTime> MatrixXJ;
   const Index m = F.rows();
 
+#ifdef IGL_OUTER_HULL_DEBUG
+  cout<<"outer hull..."<<endl;
+#endif
+
+#ifdef IGL_OUTER_HULL_DEBUG
+  cout<<"edge map..."<<endl;
+#endif
   typedef Matrix<typename DerivedF::Scalar,Dynamic,2> MatrixX2I;
   typedef Matrix<typename DerivedF::Index,Dynamic,1> VectorXI;
   MatrixX2I E,uE;
@@ -50,6 +58,9 @@ IGL_INLINE void igl::outer_hull(
   vector<vector<vector<Index > > > TT,_1;
   triangle_triangle_adjacency(E,EMAP,uE2E,false,TT,_1);
   VectorXI counts;
+#ifdef IGL_OUTER_HULL_DEBUG
+  cout<<"facet components..."<<endl;
+#endif
   facet_components(TT,C,counts);
   assert(C.maxCoeff()+1 == counts.rows());
   const size_t ncc = counts.rows();
@@ -61,7 +72,14 @@ IGL_INLINE void igl::outer_hull(
     typename DerivedV::Scalar,
     DerivedF::RowsAtCompileTime,
     3> N;
+#ifdef IGL_OUTER_HULL_DEBUG
+  cout<<"normals..."<<endl;
+#endif
   per_face_normals(V,F,N);
+
+#ifdef IGL_OUTER_HULL_DEBUG
+  cout<<"reindex..."<<endl;
+#endif
   // H contains list of faces on outer hull;
   vector<bool> FH(m,false);
   vector<bool> EH(3*m,false);
@@ -80,11 +98,17 @@ IGL_INLINE void igl::outer_hull(
     vIM[C(f)](g[C(f)]++) = f;
   }
 
+#ifdef IGL_OUTER_HULL_DEBUG
+  cout<<"barycenters..."<<endl;
+#endif
   // assumes that "resolve" has handled any coplanar cases correctly and nearly
   // coplanar cases can be sorted based on barycenter.
   MatrixXV BC;
   barycenter(V,F,BC);
 
+#ifdef IGL_OUTER_HULL_DEBUG
+  cout<<"loop over CCs..."<<endl;
+#endif
   for(Index id = 0;id<(Index)ncc;id++)
   {
     auto & IM = vIM[id];
@@ -92,6 +116,9 @@ IGL_INLINE void igl::outer_hull(
     // component
     int f;
     bool f_flip;
+#ifdef IGL_OUTER_HULL_DEBUG
+  cout<<"outer facet..."<<endl;
+#endif
     outer_facet(V,F,N,IM,f,f_flip);
     int FHcount = 0;
     // Q contains list of face edges to continue traversing upong
@@ -99,7 +126,10 @@ IGL_INLINE void igl::outer_hull(
     Q.push(f+0*m);
     Q.push(f+1*m);
     Q.push(f+2*m);
-    flip[f] = f_flip;
+    flip(f) = f_flip;
+#ifdef IGL_OUTER_HULL_DEBUG
+  cout<<"BFS..."<<endl;
+#endif
     while(!Q.empty())
     {
       // face-edge
@@ -123,11 +153,11 @@ IGL_INLINE void igl::outer_hull(
       }
       // find overlapping face-edges
       const auto & neighbors = uE2E[EMAP(e)];
-      const auto & fN = (flip[f]?-1.:1.)*N.row(f);
+      const auto & fN = (flip(f)?-1.:1.)*N.row(f);
       // source of edge according to f
-      const int fs = flip[f]?F(f,(c+2)%3):F(f,(c+1)%3);
+      const int fs = flip(f)?F(f,(c+2)%3):F(f,(c+1)%3);
       // destination of edge according to f
-      const int fd = flip[f]?F(f,(c+1)%3):F(f,(c+2)%3);
+      const int fd = flip(f)?F(f,(c+1)%3):F(f,(c+2)%3);
       const auto & eV = (V.row(fd)-V.row(fs)).normalized();
       // Loop over and find max dihedral angle
       typename DerivedV::Scalar max_di = -1;
@@ -144,8 +174,8 @@ IGL_INLINE void igl::outer_hull(
         // are faces consistently oriented
         //const int ns = F(nf,(nc+1)%3);
         const int nd = F(nf,(nc+2)%3);
-        const bool cons = (flip[f]?fd:fs) == nd;
-        const auto & nN = (cons? (flip[f]?-1:1.) : (flip[f]?1.:-1.) )*N.row(nf);
+        const bool cons = (flip(f)?fd:fs) == nd;
+        const auto & nN = (cons? (flip(f)?-1:1.) : (flip(f)?1.:-1.) )*N.row(nf);
         const auto & ndi = M_PI - atan2( fN.cross(nN).dot(eV), fN.dot(nN));
         if(ndi>=max_di)
         {
@@ -159,8 +189,8 @@ IGL_INLINE void igl::outer_hull(
         const int nf = max_ne%m;
         const int nc = max_ne/m;
         const int nd = F(nf,(nc+2)%3);
-        const bool cons = (flip[f]?fd:fs) == nd;
-        flip[nf] = (cons ? flip[f] : !flip[f]);
+        const bool cons = (flip(f)?fd:fs) == nd;
+        flip(nf) = (cons ? flip(f) : !flip(f));
         const int ne1 = nf+((nc+1)%3)*m;
         const int ne2 = nf+((nc+2)%3)*m;
         if(!EH[ne1])
@@ -185,16 +215,16 @@ IGL_INLINE void igl::outer_hull(
         const size_t f = IM(i);
         //if(f_flip)
         //{
-        //  flip[f] = !flip[f];
+        //  flip(f) = !flip(f);
         //}
         if(FH[f])
         {
-          vG[id].row(h) = (flip[f]?F.row(f).reverse().eval():F.row(f));
+          vG[id].row(h) = (flip(f)?F.row(f).reverse().eval():F.row(f));
           vJ[id](h,0) = f;
           h++;
         }
       }
-      assert(h == FHcount);
+      assert((int)h == FHcount);
     }
   }
 
@@ -245,7 +275,7 @@ IGL_INLINE void igl::outer_hull(
     // q could be so close (<~1e-16) to B that the winding number is not a robust way to
     // determine inside/outsideness. We could try to find a _better_ q which is
     // farther away, but couldn't they all be bad?
-    MatrixXV q = BC.row(AJ(1));
+    MatrixXV q = BC.row(AJ(0));
     // In a perfect world, it's enough to test a single point.
     double w;
     winding_number_3(

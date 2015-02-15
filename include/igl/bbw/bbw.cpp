@@ -104,11 +104,11 @@ IGL_INLINE bool igl::bbw(
     {
       case QP_SOLVER_IGL_ACTIVE_SET:
       {
-        //if(data.verbosity >= 1)
-        //{
+        if(data.verbosity >= 1)
+        {
           cout<<"BBW: max_iter: "<<data.active_set_params.max_iter<<endl;
-          cout<<"BBW: max_iter: "<<eff_params.max_iter<<endl;
-        //}
+          cout<<"BBW: eff_max_iter: "<<eff_params.max_iter<<endl;
+        }
         if(data.verbosity >= 1)
         {
           cout<<"BBW: Computing initial weights for "<<m<<" handle"<<

@@ -8,12 +8,14 @@
 #ifndef IGL_FIT_RIGID_H
 #define IGL_FIT_RIGID_H
 
+#warning "Deprecated. Use igl/procrustes.h instead"
 #include "igl_inline.h"
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
 namespace igl
 {
+  // Deprecated: please use procrustes(...) instead.
   // Fit a rigid 
   IGL_INLINE void fit_rigid(
     const Eigen::MatrixXd & A,

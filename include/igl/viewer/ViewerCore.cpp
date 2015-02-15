@@ -10,6 +10,7 @@
 #include <igl/quat_to_mat.h>
 #include <igl/massmatrix.h>
 #include <Eigen/Geometry>
+#include <iostream>
 
 
 Eigen::Matrix4f lookAt (
@@ -143,7 +144,11 @@ IGL_INLINE void igl::ViewerCore::align_camera_center(
   const Eigen::MatrixXi& F)
 {
   get_scale_and_shift_to_fit_mesh(V,F,model_zoom,model_translation);
-  object_scale = (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm();
+  // Rather than crash on empty mesh...
+  if(V.size() > 0)
+  {
+    object_scale = (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm();
+  }
 }
 
 IGL_INLINE void igl::ViewerCore::get_scale_and_shift_to_fit_mesh(

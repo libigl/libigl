@@ -1,4 +1,3 @@
-#include <igl/draw_skeleton_3d.h>
 #include <igl/draw_skeleton_vector_graphics.h>
 #include <igl/two_axis_valuator_fixed_up.h>
 #include <igl/read_triangle_mesh.h>
@@ -41,13 +40,13 @@
 #include <igl/writeTGF.h>
 #include <igl/file_exists.h>
 #include <igl/centroid.h>
+#include <igl/draw_skeleton_3d.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
-#include <Carbon/Carbon.h>
 #else
 #include <GL/glut.h>
 #endif
@@ -310,7 +309,7 @@ void display()
             }
           }
         }
-        draw_skeleton_3d(s.C,s.BE,MatrixXd(),colors);
+        draw_skeleton_3d(s.C,s.BE,MatrixXd(),colors,bbd*0.5);
         break;
       }
       case SKEL_STYLE_TYPE_VECTOR_GRAPHICS:
@@ -707,6 +706,7 @@ void init_relative()
   Vmid = 0.5*(Vmax + Vmin);
   centroid(V,F,Vcen);
   bbd = (Vmax-Vmin).norm();
+  cout<<"bbd: "<<bbd<<endl;
   camera.push_away(2);
 }
 

@@ -15,7 +15,7 @@
 <h1 id="libigl-asimplecgeometryprocessinglibrary">libigl - A simple C++ geometry processing library</h1>
 
 <figure>
-<img src="tutorial/images/libigl-logo.jpg" alt="" />
+<img src="libigl-teaser.png" alt="" />
 <figcaption></figcaption></figure>
 
 <p><a href="https://github.com/libigl/libigl/">https://github.com/libigl/libigl/</a></p>
@@ -39,7 +39,7 @@ group prototypes a lot in MATLAB, and we have a useful <a href="matlab-to-eigen.
 table</a> from
 MATLAB to libigl/Eigen.</p>
 
-<h1 id="tutorial">Tutorial</h1>
+<h2 id="tutorial">Tutorial</h2>
 
 <p>As of version 1.0, libigl includes an introductory
 <a href="tutorial/tutorial.html">tutorial</a> that covers
@@ -94,7 +94,21 @@ libigl depends only on the <a href="http://eigen.tuxfamily.org">Eigen</a> librar
 
 <p>For more information see our <a href="tutorial/tutorial.html">tutorial</a>.</p>
 
-<h1 id="download">Download</h1>
+<h3 id="gccandtheoptionalcgaldependency">GCC and the optional CGAL dependency</h3>
+
+<p>The <code>include/igl/cgal/*.h</code> headers depend on CGAL. It has come to our attention
+that CGAL does not work properly with GCC 4.8. To the best of our knowledge,
+GCC 4.7 and clang will work correctly.</p>
+
+<h3 id="openmpandwindows">OpenMP and Windows</h3>
+
+<p>Some of our functions will take advantage of OpenMP if available. However, it
+has come to our attention that Visual Studio + Eigen does not work properly
+with OpenMP. Since OpenMP only improves performance without affecting
+functionality we recommend avoiding OpenMP on Windows or proceeding with
+caution.</p>
+
+<h2 id="download">Download</h2>
 
 <p>You can keep up to date by cloning a read-only copy of our GitHub
 <a href="https://github.com/libigl">repository</a>.</p>
@@ -122,11 +136,11 @@ BibTeX entry:</p>
   title = {{libigl}: A simple {C++} geometry processing library},
   author = {Alec Jacobson and Daniele Panozzo and others},
   note = {http://libigl.github.io/libigl/},
-  year = {2014},
+  year = {2015},
 }
 </code></pre>
 
-<h1 id="contact">Contact</h1>
+<h2 id="contact">Contact</h2>
 
 <p>Libigl is a group endeavor led by <a href="http://www.cs.columbia.edu/~jacobson/">Alec
 Jacobson</a> and <a href="http://www.inf.ethz.ch/personal/dpanozzo/">Daniele
@@ -142,10 +156,14 @@ spending time maintaining this.</p>
 <p>If you find bugs or have problems please use our <a href="https://github.com/libigl/libigl/issues">github issue tracking
 page</a>.</p>
 
-<h3 id="copyright">Copyright</h3>
+<h2 id="copyright">Copyright</h2>
 
-<p>2014 Alec Jacobson, Daniele Panozzo, Olga Diamanti, Kenshi
+<p>2015 Alec Jacobson, Daniele Panozzo, Olga Diamanti, Christian Schüller, Kenshi
 Takayama, Leo Sacht, Wenzel Jacob, Nico Pietroni, Amir Vaxman</p>
+
+<figure>
+<img src="tutorial/images/libigl-logo.jpg" alt="" />
+<figcaption></figcaption></figure>
 
 </body>
 </html>

@@ -52,7 +52,6 @@
 #ifndef GLUT_ACTIVE_COMMAND
 #  define GLUT_ACTIVE_COMMAND 9
 #endif
-#include <Carbon/Carbon.h>
 #else
 #include <GL/glut.h>
 #endif
@@ -296,7 +295,7 @@ void display()
       default:
       case SKEL_STYLE_TYPE_3D:
       {
-        draw_skeleton_3d(C,BE,T,s.colors);
+        draw_skeleton_3d(C,BE,T,s.colors,bbd*0.5);
         break;
       }
       case SKEL_STYLE_TYPE_VECTOR_GRAPHICS:
@@ -631,6 +630,28 @@ bool save_weights()
   }
 }
 
+bool save_mesh()
+{
+  using namespace std;
+  using namespace igl;
+  using namespace Eigen;
+  MatrixXd T;
+  forward_kinematics(C,BE,P,s.mouse.rotations(),T);
+  MatrixXd U = M*T;
+  string output_filename;
+  next_filename(output_pose_prefix,4,".obj",output_filename);
+  if(writeOBJ(output_filename,U,F))
+  {
+    cout<<GREENGIN("Current mesh written to "+
+      output_filename+".")<<endl;
+    return true;
+  }else
+  {
+    cout<<REDRUM("Writing to "+output_filename+" failed.")<<endl;
+    return false;
+  }
+}
+
 void key(unsigned char key, int mouse_x, int mouse_y)
 {
   using namespace std;
@@ -675,6 +696,10 @@ void key(unsigned char key, int mouse_x, int mouse_y)
       break;
     }
     case 'S':
+    {
+      save_mesh();
+      break;
+    }
     case 's':
     {
       save_pose();
@@ -897,7 +922,8 @@ int main(int argc, char * argv[])
   cout<<"D,d                    Deselect all."<<endl;
   cout<<"R                      Reset selected rotation."<<endl;
   cout<<"r                      Reset all rotations."<<endl;
-  cout<<"S,s                    Save current pose."<<endl;
+  cout<<"S                      Save current posed mesh."<<endl;
+  cout<<"s                      Save current skeleton pose."<<endl;
   cout<<"W,w                    Save current weights."<<endl;
   cout<<"Z,z                    Snap to canonical view."<<endl;
   cout<<"⌘ Z                    Undo."<<endl;
