@@ -1,10 +1,3 @@
-title: Google Summer of Code 2015 Project Ideas
-css: tutorial/style.css
-html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-<link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
-<script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
-
 # [libigl](./index.html) - Google Summer of Code 2015 Project Ideas
 
 ## Automatic Generation of Python/MATLAB bindings
