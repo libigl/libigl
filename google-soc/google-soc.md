@@ -36,3 +36,11 @@ these core functions for surface remeshing.
 Student: [apply](https://www.google-melange.com/gsoc/homepage/google/gsoc2015)
 
 Mentors: Alec Jacobson & Daniele Panozzo
+
+## Contact
+
+Google Summer of Code projects with libigl are mentored by [Alec
+Jacobson](http://www.cs.columbia.edu/~jacobson/) and [Daniele
+Panozzo](http://www.inf.ethz.ch/personal/dpanozzo/). Please [contact
+us](mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com) if you have
+questions, comments or other ideas for a fun summer of hacking on libigl.
