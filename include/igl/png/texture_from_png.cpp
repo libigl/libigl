@@ -62,7 +62,7 @@ IGL_INLINE bool igl::texture_from_png(
       R(i,j) = yimg.at(yimg.width()-1-i,yimg.height()-1-j).r;
       G(i,j) = yimg.at(yimg.width()-1-i,yimg.height()-1-j).g;
       B(i,j) = yimg.at(yimg.width()-1-i,yimg.height()-1-j).b;
-      A(i,j) = yimg.at(yimg.width()-1-i,yimg.height()-1-j).a;
+      //1A(i,j) = yimg.at(yimg.width()-1-i,yimg.height()-1-j).a;
     }
   }
 
