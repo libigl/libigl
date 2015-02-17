@@ -66,7 +66,7 @@ IGL_INLINE void igl::boundary_loop(
           int vPrev = F(fid,(vLoc + F.cols()-1) % F.cols());
           int vNext = F(fid,(vLoc + 1) % F.cols());
 
-          bool newBndEdge = false;
+          newBndEdge = false;
           if (unvisited[vPrev] && TT(fid,(vLoc+2) % F.cols()) < 0)
           {
             next = vPrev;
