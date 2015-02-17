@@ -199,7 +199,7 @@ IGL_INLINE void igl::ViewerData::set_uv(const Eigen::MatrixXd& UV)
 IGL_INLINE void igl::ViewerData::set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
 {
   set_face_based(true);
-  V_uv = UV_V;
+  V_uv = UV_V.block(0,0,UV_V.rows(),2);
   F_uv = UV_F;
   dirty |= DIRTY_UV;
 }
