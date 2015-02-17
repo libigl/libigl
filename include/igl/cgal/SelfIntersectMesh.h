@@ -913,6 +913,7 @@ inline bool igl::SelfIntersectMesh<
     // Construct intersection
     try
     {
+      // This can fail for Epick but not Epeck
       CGAL::Object result = CGAL::intersection(A,B);
       if(!result.empty())
       {
