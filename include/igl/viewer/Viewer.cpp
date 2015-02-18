@@ -65,11 +65,16 @@
 #include <igl/unproject.h>
 #include <igl/viewer/TextRenderer.h>
 
+#ifdef ENABLE_SERIALIZATION
+#include <igl/serialize.h>
+#endif
+
 // Internal global variables used for glfw event handling
 static igl::Viewer * __viewer;
 static double highdpi = 1;
 static double scroll_x = 0;
 static double scroll_y = 0;
+static int global_KMod = 0;
 
 namespace {
 void TW_CALL copy_str(std::string& dst, const std::string& src)
@@ -109,9 +114,7 @@ static void glfw_error_callback(int error, const char* description)
   fputs(description, stderr);
 }
 
-int global_KMod = 0;
-
-int TwEventKeyGLFW3(int glfwKey, int glfwAction)
+IGL_INLINE int TwEventKeyGLFW3(int glfwKey, int glfwAction)
 {
   int handled = 0;
 
@@ -318,7 +321,7 @@ static void glfw_char_callback(GLFWwindow* window, unsigned int c)
 
 namespace igl
 {
-  void Viewer::init()
+  IGL_INLINE void Viewer::init()
   {
     // Create a tweak bar
     bar = TwNewBar("libIGL-Viewer");
@@ -329,8 +332,10 @@ namespace igl
 
     // ---------------------- LOADING ----------------------
 
+    #ifdef ENABLE_SERIALIZATION
     TwAddButton(bar,"Load Scene", load_scene_cb,    this, "group='Workspace'");
     TwAddButton(bar,"Save Scene", save_scene_cb,    this, "group='Workspace'");
+    #endif
 
     #ifdef ENABLE_IO
     TwAddButton(bar,"Load Mesh",  open_dialog_mesh, this, "group='Mesh' key=o");
@@ -411,7 +416,7 @@ namespace igl
     init_plugins();
   }
 
-  Viewer::Viewer()
+  IGL_INLINE Viewer::Viewer()
   {
 
     // Temporary variables initialization
@@ -445,24 +450,24 @@ namespace igl
 
   }
 
-  void Viewer::init_plugins()
+  IGL_INLINE void Viewer::init_plugins()
   {
     // Init all plugins
     for (unsigned int i = 0; i<plugins.size(); ++i)
       plugins[i]->init(this);
   }
 
-  Viewer::~Viewer()
+  IGL_INLINE Viewer::~Viewer()
   {
   }
 
-  void Viewer::shutdown_plugins()
+  IGL_INLINE void Viewer::shutdown_plugins()
   {
     for (unsigned int i = 0; i<plugins.size(); ++i)
       plugins[i]->shutdown();
   }
 
-  bool Viewer::load_mesh_from_file(const char* mesh_file_name)
+  IGL_INLINE bool Viewer::load_mesh_from_file(const char* mesh_file_name)
   {
     std::string mesh_file_name_string = std::string(mesh_file_name);
 
@@ -534,7 +539,7 @@ namespace igl
     return true;
   }
 
-  bool Viewer::save_mesh_to_file(const char* mesh_file_name)
+  IGL_INLINE bool Viewer::save_mesh_to_file(const char* mesh_file_name)
   {
     std::string mesh_file_name_string(mesh_file_name);
 
@@ -575,7 +580,7 @@ namespace igl
     return true;
   }
 
-  bool Viewer::key_down(unsigned char key, int modifiers)
+  IGL_INLINE bool Viewer::key_down(int key,int modifiers)
   {
     if (callback_key_down)
       if (callback_key_down(*this,key,modifiers))
@@ -585,27 +590,29 @@ namespace igl
       if (plugins[i]->key_down(key, modifiers))
         return true;
 
-    if (key == 'S')
+    char k = key;
+
+    if(key == GLFW_KEY_S && modifiers == GLFW_MOD_SHIFT)
       mouse_scroll(1);
 
-    if (key == 'A')
+    if(key == GLFW_KEY_A && modifiers == GLFW_MOD_SHIFT)
       mouse_scroll(-1);
 
     // Why aren't these handled via AntTweakBar?
-    if (key == 'z') // Don't use 'Z' because that clobbers snap_to_canonical_view_quat
+    if(key == GLFW_KEY_Z) // Don't use 'Z' because that clobbers snap_to_canonical_view_quat
       core.trackball_angle << 0.0f, 0.0f, 0.0f, 1.0f;
 
-    if (key == 'y')
+    if(key == GLFW_KEY_Y)
       core.trackball_angle << -sqrt(2.0f)/2.0f, 0.0f, 0.0f, sqrt(2.0f)/2.0f;
 
-    if (key == 'x')
+    if(key == GLFW_KEY_X)
       core.trackball_angle << -0.5f, -0.5f, -0.5f, 0.5f;
 
 
     return false;
   }
 
-  bool Viewer::key_up(unsigned char key, int modifiers)
+  IGL_INLINE bool Viewer::key_up(int key,int modifiers)
   {
     if (callback_key_up)
       if (callback_key_up(*this,key,modifiers))
@@ -618,7 +625,7 @@ namespace igl
     return false;
   }
 
-  bool Viewer::mouse_down(MouseButton button, int modifier)
+  IGL_INLINE bool Viewer::mouse_down(MouseButton button,int modifier)
   {
     if (callback_mouse_down)
       if (callback_mouse_down(*this,button,modifier))
@@ -666,7 +673,7 @@ namespace igl
     return true;
   }
 
-  bool Viewer::mouse_up(MouseButton button, int modifier)
+  IGL_INLINE bool Viewer::mouse_up(MouseButton button,int modifier)
   {
     down = false;
 
@@ -683,7 +690,7 @@ namespace igl
     return true;
   }
 
-  bool Viewer::mouse_move(int mouse_x, int mouse_y)
+  IGL_INLINE bool Viewer::mouse_move(int mouse_x,int mouse_y)
   {
     if(hack_never_moved)
     {
@@ -750,7 +757,7 @@ namespace igl
     return true;
   }
 
-  bool Viewer::mouse_scroll(float delta_y)
+  IGL_INLINE bool Viewer::mouse_scroll(float delta_y)
   {
     scroll_position += delta_y;
 
@@ -772,7 +779,7 @@ namespace igl
     return true;
   }
 
-  void Viewer::draw()
+  IGL_INLINE void Viewer::draw()
   {
     using namespace std;
     using namespace Eigen;
@@ -800,48 +807,32 @@ namespace igl
     TwDraw();
   }
 
-  bool Viewer::save_scene()
+  IGL_INLINE bool Viewer::save_scene()
   {
     std::string fname = igl::file_dialog_save();
     if (fname.length() == 0)
       return false;
 
-#ifdef ENABLE_XML_SERIALIZATION
-    
-    igl::serialize_xml(core,"Core",fname.c_str(),false,false);
-    igl::serialize_xml(data,"Data",fname.c_str(),false,true);
+#ifdef ENABLE_SERIALIZATION
+
+    igl::serialize(core,"Core",fname.c_str(),true);
+    igl::serialize(data,"Data",fname.c_str());
 
     for(unsigned int i = 0; i <plugins.size(); ++i)
-      igl::serialize_xml(*plugins[i],plugins[i]->plugin_name,fname.c_str(),false,true);
-#else
-
-    igl::serialize(core,"Core",fname.c_str(),false);
-    igl::serialize(data,"Data",fname.c_str(),true);
-
-    for(unsigned int i = 0; i <plugins.size(); ++i)
-      igl::serialize(*plugins[i],plugins[i]->plugin_name,fname.c_str(),true);
+      igl::serialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
 
 #endif
 
     return true;
   }
 
-  bool Viewer::load_scene()
+  IGL_INLINE bool Viewer::load_scene()
   {
     std::string fname = igl::file_dialog_open();
     if (fname.length() == 0)
       return false;
 
-#ifdef ENABLE_XML_SERIALIZATION
-    
-    igl::deserialize_xml(core,"Core",fname.c_str());
-    igl::deserialize_xml(data,"Data",fname.c_str());
-
-    for(unsigned int i = 0; i <plugins.size(); ++i)
-      igl::deserialize_xml(*plugins[i],plugins[i]->plugin_name,fname.c_str());
-
-
-#else
+#ifdef ENABLE_SERIALIZATION
 
     igl::deserialize(core,"Core",fname.c_str());
     igl::deserialize(data,"Data",fname.c_str());
@@ -854,57 +845,57 @@ namespace igl
     return true;
   }
 
-  void Viewer::resize(int w, int h)
+  IGL_INLINE void Viewer::resize(int w,int h)
   {
     core.viewport = Eigen::Vector4f(0,0,w,h);
   }
 
-  void TW_CALL Viewer::snap_to_canonical_quaternion_cb(void *clientData)
+  IGL_INLINE void TW_CALL Viewer::snap_to_canonical_quaternion_cb(void *clientData)
   {
     Eigen::Vector4f snapq = static_cast<Viewer *>(clientData)->core.trackball_angle;
     igl::snap_to_canonical_view_quat<float>(snapq.data(),1,static_cast<Viewer *>(clientData)->core.trackball_angle.data());
   }
-  void TW_CALL Viewer::align_camera_center_cb(void *clientData)
+  IGL_INLINE void TW_CALL Viewer::align_camera_center_cb(void *clientData)
   {
     static_cast<Viewer *>(clientData)->core.align_camera_center(
       static_cast<Viewer *>(clientData)->data.V,
       static_cast<Viewer *>(clientData)->data.F);
   }
 
-  void TW_CALL Viewer::save_scene_cb(void *clientData)
+  IGL_INLINE void TW_CALL Viewer::save_scene_cb(void *clientData)
   {
     static_cast<Viewer *>(clientData)->save_scene();
   }
 
-  void TW_CALL Viewer::load_scene_cb(void *clientData)
+  IGL_INLINE void TW_CALL Viewer::load_scene_cb(void *clientData)
   {
     static_cast<Viewer *>(clientData)->load_scene();
   }
 
-  void TW_CALL Viewer::set_invert_normals_cb(const void *param, void *clientData)
+  IGL_INLINE void TW_CALL Viewer::set_invert_normals_cb(const void *param,void *clientData)
   {
     Viewer *viewer = static_cast<Viewer *>(clientData);
     viewer->data.dirty |= ViewerData::DIRTY_NORMAL;
     viewer->core.invert_normals = *((bool *) param);
   }
 
-  void TW_CALL Viewer::get_invert_normals_cb(void *param, void *clientData)
+  IGL_INLINE void TW_CALL Viewer::get_invert_normals_cb(void *param,void *clientData)
   {
     *((bool *) param) = static_cast<Viewer *>(clientData)->core.invert_normals;
   }
 
-  void TW_CALL Viewer::set_face_based_cb(const void *param, void *clientData)
+  IGL_INLINE void TW_CALL Viewer::set_face_based_cb(const void *param,void *clientData)
   {
     Viewer *viewer = static_cast<Viewer *>(clientData);
     viewer->data.set_face_based(*((bool *) param));
   }
 
-  void TW_CALL Viewer::get_face_based_cb(void *param, void *clientData)
+  IGL_INLINE void TW_CALL Viewer::get_face_based_cb(void *param,void *clientData)
   {
     *((bool *) param) = static_cast<Viewer *>(clientData)->data.face_based;
   }
 
-  void TW_CALL Viewer::open_dialog_mesh(void *clientData)
+  IGL_INLINE void TW_CALL Viewer::open_dialog_mesh(void *clientData)
   {
     std::string fname = igl::file_dialog_open();
 
@@ -914,7 +905,7 @@ namespace igl
     static_cast<Viewer *>(clientData)->load_mesh_from_file(fname.c_str());
   }
 
-  int Viewer::launch(std::string filename)  
+  IGL_INLINE int Viewer::launch(std::string filename)
   {
     GLFWwindow* window;
 
@@ -971,7 +962,12 @@ namespace igl
     __viewer = this;
 
     // Register callbacks
-    glfwSetKeyCallback(window, glfw_key_callback); glfwSetCursorPosCallback(window,glfw_mouse_move); glfwSetWindowSizeCallback(window,glfw_window_size); glfwSetMouseButtonCallback(window,glfw_mouse_press); glfwSetScrollCallback(window,glfw_mouse_scroll); glfwSetCharCallback(window, glfw_char_callback);
+    glfwSetKeyCallback(window, glfw_key_callback);
+    glfwSetCursorPosCallback(window,glfw_mouse_move);
+    glfwSetWindowSizeCallback(window,glfw_window_size);
+    glfwSetMouseButtonCallback(window,glfw_mouse_press);
+    glfwSetScrollCallback(window,glfw_mouse_scroll);
+    glfwSetCharCallback(window, glfw_char_callback);
 
     // Handle retina displays (windows and mac)
     int width, height;

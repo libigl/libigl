@@ -52,10 +52,10 @@ namespace igl
   template <typename T>
   IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,bool binary)
   {
-    static_assert(detail_xml::is_serializable<T>::value,"'igl::serialize_xml': type is not serializable");
+    static_assert(serialization_xml::is_serializable<T>::value,"'igl::serialize_xml': type is not serializable");
 
     std::string name(objectName);
-    detail_xml::encodeXMLElementName(name);
+    serialization_xml::encodeXMLElementName(name);
 
     tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
     
@@ -69,15 +69,15 @@ namespace igl
     {
       std::vector<char> buffer;
       serialize(obj,name,buffer);
-      std::string data = detail_xml::base64_encode(reinterpret_cast<const unsigned char*>(buffer.data()),buffer.size());
+      std::string data = serialization_xml::base64_encode(reinterpret_cast<const unsigned char*>(buffer.data()),buffer.size());
       
       child->SetAttribute("binary",true);
 
-      detail_xml::serialize(data,doc,element,name);
+      serialization_xml::serialize(data,doc,element,name);
     }
     else
     {
-      detail_xml::serialize(obj,doc,element,name);
+      serialization_xml::serialize(obj,doc,element,name);
     }
   }
 
@@ -119,10 +119,10 @@ namespace igl
   template <typename T>
   IGL_INLINE void deserialize_xml(T& obj,const std::string& objectName,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element)
   {
-    static_assert(detail::is_serializable<T>::value,"'igl::deserialize_xml': type is not deserializable");
+    static_assert(serialization::is_serializable<T>::value,"'igl::deserialize_xml': type is not deserializable");
 
     std::string name(objectName);
-    detail_xml::encodeXMLElementName(name);
+    serialization_xml::encodeXMLElementName(name);
 
     const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
     if(child != NULL)
@@ -132,8 +132,8 @@ namespace igl
       if(attr != NULL)
       {
         std::string code;
-        detail_xml::deserialize(code,doc,element,name);
-        std::string decoded = detail_xml::base64_decode(code);
+        serialization_xml::deserialize(code,doc,element,name);
+        std::string decoded = serialization_xml::base64_decode(code);
 
         std::vector<char> buffer;
         std::copy(decoded.c_str(),decoded.c_str()+decoded.length(),std::back_inserter(buffer));
@@ -142,7 +142,7 @@ namespace igl
       }
       else
       {
-        detail_xml::deserialize(obj,doc,element,name);
+        serialization_xml::deserialize(obj,doc,element,name);
       }
     }
   }
@@ -279,7 +279,7 @@ namespace igl
     objects.push_back(object);
   }
 
-  namespace detail_xml
+  namespace serialization_xml
   {
     // fundamental types
 
@@ -704,7 +704,7 @@ namespace igl
       pointer->SetAttribute("isNullPtr",isNullPtr);
 
       if(isNullPtr == false)
-        detail_xml::serialize(*obj,doc,element,name);
+        serialization_xml::serialize(*obj,doc,element,name);
     }
 
     template <typename T>
@@ -730,7 +730,7 @@ namespace igl
 
           obj = new typename std::remove_pointer<T>::type();
 
-          detail_xml::deserialize(*obj,doc,element,name);
+          serialization_xml::deserialize(*obj,doc,element,name);
         }
       }
     }

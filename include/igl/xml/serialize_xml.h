@@ -23,6 +23,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <memory>
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -150,7 +151,7 @@ namespace igl
   };
 
   // internal functions
-  namespace detail_xml
+  namespace serialization_xml
   {
     // fundamental types
     template <typename T>
@@ -200,7 +201,7 @@ namespace igl
     template<typename T,int P,typename I>
     IGL_INLINE void deserialize(Eigen::SparseMatrix<T,P,I>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
 
-    // pointers
+    // raw pointers
     template <typename T>
     IGL_INLINE typename std::enable_if<std::is_pointer<T>::value>::type serialize(const T& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
     template <typename T>
