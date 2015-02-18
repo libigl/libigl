@@ -66,7 +66,7 @@ IGL_INLINE void igl::outer_hull(
   VectorXI diIM(3*m);
   vector<vector<typename DerivedV::Scalar> > di(uE2E.size());
   // For each list of face-edges incide on a unique edge
-  for(size_t ui = 0;ui<uE.rows();ui++)
+  for(size_t ui = 0;ui<(size_t)uE.rows();ui++)
   {
     const typename DerivedF::Scalar ud = uE(ui,1);
     const typename DerivedF::Scalar us = uE(ui,0);
@@ -78,8 +78,8 @@ IGL_INLINE void igl::outer_hull(
     const typename DerivedF::Scalar d = F(fe0%m,((fe0/m)+2)%3);
     const typename DerivedF::Scalar s = F(fe0%m,((fe0/m)+1)%3);
     // Edge vector
-    const auto & eV = (V.row(ud)-V.row(us)).normalized();
-    //const auto & eV = (V.row(d)-V.row(s)).normalized();
+    //const auto & eV = (V.row(ud)-V.row(us)).normalized();
+    const auto & eV = (V.row(d)-V.row(s)).normalized();
 
     // Loop over incident face edges
     for(size_t fei = 0;fei<uE2E[ui].size();fei++)
@@ -89,7 +89,7 @@ IGL_INLINE void igl::outer_hull(
       const auto c = fe / m;
       // source should match destination to be consistent
       const bool cons = (d == F(f,(c+1)%3));
-      assert(cons || (d == F(f,(c+2)%3)));
+      assert(cons ||  (d == F(f,(c+2)%3)));
       assert(!cons || (s == F(f,(c+2)%3)));
       assert(!cons || (d == F(f,(c+1)%3)));
       // Angle between n and f
@@ -217,12 +217,15 @@ IGL_INLINE void igl::outer_hull(
       const auto & eV = (V.row(fd)-V.row(fs)).normalized();
       // edge valence
       const size_t val = uE2E[EMAP(e)].size();
-#warning "EXPERIMENTAL, DO NOT USE"
-      const int e_cons = (fs == uE(EMAP(e))?-1:1);
+      const auto ui = EMAP(e);
+      const auto fe0 = uE2E[ui][0];
+      const auto es = F(fe0%m,((fe0/m)+1)%3);
+      const int e_cons = (fs == es?-1:1);
       const int nfei = (diIM(e) + val + e_cons*(flip(f)?-1:1))%val;
-      const int max_ne = uE2E[EMAP(e)][nfei];
+      const int max_ne_2 = uE2E[EMAP(e)][nfei];
       // Loop over and find max dihedral angle
-      //int max_ne = -1;
+      int max_ne = -1;
+      // // SAVE THIS OLD IMPLEMENTATION FOR NOW
       //typename DerivedV::Scalar max_di = -1;
       //for(const auto & ne : neighbors)
       //{
@@ -247,6 +250,7 @@ IGL_INLINE void igl::outer_hull(
       //    max_di = ndi;
       //  }
       //}
+      ////cout<<(max_ne != max_ne_2)<<" =?= "<<e_cons<<endl;
       //if(max_ne != max_ne_2)
       //{
       //  cout<<(f+1)<<" ---> "<<(max_ne%m)+1<<" != "<<(max_ne_2%m)+1<<" ... "<<e_cons<<endl;
@@ -278,6 +282,7 @@ IGL_INLINE void igl::outer_hull(
       //    }
       //  }
       //}
+      max_ne = max_ne_2;
 
       if(max_ne>=0)
       {
