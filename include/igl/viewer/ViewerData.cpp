@@ -12,49 +12,61 @@
 #include <igl/per_vertex_normals.h>
 #include <iostream>
 
+#ifdef ENABLE_SERIALIZATION
+#include <igl/serialize.h>
+namespace igl {
+  namespace serialization {
+
+    IGL_INLINE void serialization(bool s,ViewerData& obj,std::vector<char>& buffer)
+    {
+      SERIALIZE_MEMBER(V);
+      SERIALIZE_MEMBER(F);
+
+      SERIALIZE_MEMBER(F_normals);
+      SERIALIZE_MEMBER(F_material_ambient);
+      SERIALIZE_MEMBER(F_material_diffuse);
+      SERIALIZE_MEMBER(F_material_specular);
+
+      SERIALIZE_MEMBER(V_normals);
+      SERIALIZE_MEMBER(V_material_ambient);
+      SERIALIZE_MEMBER(V_material_diffuse);
+      SERIALIZE_MEMBER(V_material_specular);
+
+      SERIALIZE_MEMBER(V_uv);
+      SERIALIZE_MEMBER(F_uv);
+
+      SERIALIZE_MEMBER(texture_R);
+      SERIALIZE_MEMBER(texture_G);
+      SERIALIZE_MEMBER(texture_B);
+
+      SERIALIZE_MEMBER(lines);
+      SERIALIZE_MEMBER(points);
+
+      SERIALIZE_MEMBER(labels_positions);
+      SERIALIZE_MEMBER(labels_strings);
+
+      SERIALIZE_MEMBER(face_based);
+    }
+
+    IGL_INLINE void serialize(const ViewerData& obj,std::vector<char>& buffer)
+    {
+      serialization(true,const_cast<ViewerData&>(obj),buffer);
+    }
+
+    IGL_INLINE void deserialize(ViewerData& obj,const std::vector<char>& buffer)
+    {
+      serialization(false,obj,const_cast<std::vector<char>&>(buffer));
+      obj.dirty = ViewerData::DIRTY_ALL;
+    }
+  }
+}
+#endif
+
 IGL_INLINE igl::ViewerData::ViewerData()
 : dirty(DIRTY_ALL)
 {
   clear();
 };
-
-IGL_INLINE void igl::ViewerData::InitSerialization()
-{  
-  Add(V,"V");
-  Add(F,"F");
-  
-  Add(F_normals,"F_normals");
-
-  Add(F_material_ambient,"F_material_ambient");
-  Add(F_material_diffuse,"F_material_diffuse");
-  Add(F_material_specular,"F_material_specular");
-
-  Add(V_normals,"V_normals");
-  
-  Add(V_material_ambient,"V_material_ambient");
-  Add(V_material_diffuse,"V_material_diffuse");
-  Add(V_material_specular,"V_material_specular");
-
-  Add(V_uv,"V_uv");
-  Add(F_uv,"F_uv");
-  
-  Add(texture_R,"texture_R");
-  Add(texture_G,"texture_G");
-  Add(texture_B,"texture_B");
-
-  Add(lines,"lines");
-  Add(points,"points");
-
-  Add(labels_positions,"labels_positions");
-  Add(labels_strings,"labels_strings");
-
-  Add(face_based,"face_based");
-}
-
-IGL_INLINE void igl::ViewerData::PostDeserialization()
-{
-  dirty = DIRTY_ALL;
-}
 
 IGL_INLINE void igl::ViewerData::set_face_based(bool newvalue)
 {
