@@ -14,12 +14,6 @@
 #include <igl/viewer/ViewerData.h>
 #include <igl/viewer/OpenGL_state.h>
 
-#ifdef ENABLE_XML_SERIALIZATION
-  #include <igl/xml/serialize_xml.h>
-#else
-  #include <igl/serialize.h>
-#endif
-
 namespace igl
 {
 
@@ -27,11 +21,6 @@ namespace igl
 // TODO: write documentation
 
 class ViewerCore
-#ifdef ENABLE_XML_SERIALIZATION
-  : public igl::XMLSerializable
-#else
-  : public igl::Serializable
-#endif
 {
 public:
   IGL_INLINE ViewerCore();
