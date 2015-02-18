@@ -31,7 +31,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::readOFF("D:/libraries/libigl/tutorial/shared/camelhead.off", V, F);
+  igl::readOFF("../shared/camelhead.off", V, F);
 
   // Find the open boundary
   Eigen::VectorXi bnd;
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
   // Harmonic parametrization for the internal vertices
   igl::harmonic(V,F,bnd,bnd_uv,1,V_uv);
-
+  
   // Scale UV to make the texture more clear
   V_uv *= 5;
 
