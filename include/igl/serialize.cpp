@@ -19,7 +19,7 @@ namespace igl
   IGL_INLINE bool serialize(const T& obj,const std::string& objectName,const std::string& filename,bool overwrite)
   {
     bool success = false;
-    
+
     std::vector<char> buffer;
 
     std::ios_base::openmode mode = std::ios::out | std::ios::binary;
@@ -28,7 +28,7 @@ namespace igl
       mode |= std::ios::trunc;
     else
       mode |= std::ios::app;
-    
+
     std::ofstream file(filename.c_str(),mode);
 
     if(file.is_open())
@@ -110,7 +110,7 @@ namespace igl
 
       deserialize(obj,objectName,buffer);
       file.close();
-      
+
       success = true;
     }
     else
@@ -123,7 +123,7 @@ namespace igl
 
   template <typename T>
   IGL_INLINE bool deserialize(T& obj,const std::string& objectName,const std::vector<char>& buffer)
-  {   
+  {
     bool success = false;
 
     // find suitable object header
@@ -232,7 +232,7 @@ namespace igl
       {
         v->Deserialize(buffer);
       }
-          
+
       this->PostDeserialization();
     }
   }
@@ -655,7 +655,7 @@ namespace igl
         if(obj)
           std::cout << "deserialization: possible memory leak for '" << typeid(obj).name() << "'" << std::endl;
 
-        obj = new std::remove_pointer<T>::type();
+        obj = new typename std::remove_pointer<T>::type();
         serialization::deserialize(*obj,iter);
       }
     }
@@ -692,7 +692,7 @@ namespace igl
     }
 
     // std::weak_ptr
-    
+
     template <typename T>
     IGL_INLINE size_t getByteSize(const std::weak_ptr<T>& obj)
     {
@@ -715,13 +715,13 @@ namespace igl
     template <typename T>
     IGL_INLINE void serialize(const T& obj,std::vector<char>& buffer)
     {
-      static_assert(false,"type is not serializable: derive from igl::Serializable or overload the function igl::serialization::serialize(const T& obj,std::vector<char>& buffer)");
+      std::cerr << typeid(obj).name() << " is not serializable: derive from igl::Serializable or overload the function igl::serialization::serialize(const T& obj,std::vector<char>& buffer)" << std::endl;
     }
 
     template <typename T>
     IGL_INLINE void deserialize(T& obj,const std::vector<char>& buffer)
     {
-      static_assert(false,"type is not serializable: derive from igl::Serializable or overload the function igl::serialization::deserialize(const T& obj,std::vector<char>& buffer)");
+      std::cerr << typeid(obj).name() << " is not drserializable: derive from igl::Serializable or overload the function igl::serialization::deserialize(T& obj, const std::vector<char>& buffer)" << std::endl;
     }
 
     // helper functions
@@ -754,7 +754,7 @@ namespace igl
       else
       {
         // already serialized
-        
+
         // remove inserted address
         memoryMap.erase(el.first);
       }

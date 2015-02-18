@@ -253,7 +253,7 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-  #include "serialize_xml.cpp";
+  #include "serialize_xml.cpp"
 #endif
 
 #endif
