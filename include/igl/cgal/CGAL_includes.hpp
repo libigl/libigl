@@ -33,7 +33,8 @@
 
 // Boolean operations
 #include <CGAL/Polyhedron_3.h>
-#include <CGAL/Nef_polyhedron_3.h>
+// Is this actually used?
+//#include <CGAL/Nef_polyhedron_3.h>
 
 // Delaunay Triangulation in 3D
 #include <CGAL/Delaunay_triangulation_3.h>

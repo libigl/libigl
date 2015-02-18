@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>libigl</title>
+	<meta name="author" content="Alec Jacobson and Daniele Panozzo and others"/>
+	<link type="text/css" rel="stylesheet" href="../tutorial/style.css"/>
+<script type='text/javascript' src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+<link rel='stylesheet' href='http://yandex.st/highlightjs/7.3/styles/default.min.css'>
+<script src='http://yandex.st/highlightjs/7.3/highlight.min.js'></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+
+<h1 id="libigl-googlesummerofcode2015projectideas"><a href="./index.html">libigl</a> - Google Summer of Code 2015 Project Ideas</h1>
+
+<h2 id="automaticgenerationofpythonmatlabbindings">Automatic Generation of Python/MATLAB bindings</h2>
+
+<figure>
+<img src="./libigl-logo-python-matlab.jpg" alt="" />
+<figcaption></figcaption></figure>
+
+<p>Libigl is a C++ library, but its functional interface make it very friendly to
+wrapping individual functions for popular scripting languages like Python or
+MATLAB. Since many libigl functions have the form &#8220;mesh in&#8221; &#8211;&gt; &#8220;mesh out&#8221; or
+&#8220;mesh with scalar field in&#8221; &#8211;&gt; &#8220;scalar field out&#8221;, we would like to develop an
+<em>automatic</em> routine for generating Python and MATLAB bindings for libigl
+functions. This project has three parts: 1) determining the necessary mark up
+(e.g. comments) inside libigl header files to determine the Python interface,
+2) writing a program to parse this mark up and generate valid Python bindings
+and compilation instructions, and 3) validating and testing these results on a
+variety of functions in the library.</p>
+
+<p>Student: <a href="https://www.google-melange.com/gsoc/homepage/google/gsoc2015">apply</a></p>
+
+<p>Mentors: Alec Jacobson &amp; Daniele Panozzo</p>
+
+<h2 id="topologicalmeshoperations">Topological Mesh Operations</h2>
+
+<figure>
+<img src="./collapse-split-flip.jpg" alt="" />
+<figcaption></figcaption></figure>
+
+<p>Libigl avoids complicated mesh data-structures to ensure that its interface is
+clean and easy to port into users&#8217; existing projects. Our mesh format is a
+simple list of vertices and list of face indices to those vertices: <code>V</code> and
+<code>F</code>. We have a number of functions for <em>deforming</em> a mesh: that is, modifying
+the entries in <code>V</code>, but currently lack functions for <em>modifying</em> the mesh&#8217;s
+topology: that is, modifying <code>F</code> and/or modifying the <em>size</em> of <code>V</code>. This
+project entails implementing <em>efficient</em> routines for: edge collapse, edge
+splitting, and edge flipping. The project will culminate in a routine combining
+these core functions for surface remeshing.</p>
+
+<p>Student: <a href="https://www.google-melange.com/gsoc/homepage/google/gsoc2015">apply</a></p>
+
+<p>Mentors: Alec Jacobson &amp; Daniele Panozzo</p>
+
+<h2 id="contact">Contact</h2>
+
+<p>Google Summer of Code projects with libigl are mentored by <a href="http://www.cs.columbia.edu/~jacobson/">Alec
+Jacobson</a> and <a href="http://www.inf.ethz.ch/personal/dpanozzo/">Daniele
+Panozzo</a>. Please <a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#x61;&#x6c;&#101;&#x63;&#x6a;&#x61;&#x63;&#111;&#98;&#115;&#111;&#110;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#x6f;&#x6d;&#44;&#x64;&#x61;&#110;&#105;&#101;&#x6c;&#101;&#x2e;&#x70;&#x61;&#110;&#x6f;&#122;&#x7a;&#x6f;&#64;&#x67;&#x6d;&#x61;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#x6d;">&#99;&#x6f;&#x6e;&#116;&#x61;&#99;&#x74;
+&#117;&#115;</a> if you have
+questions, comments or other ideas for a fun summer of hacking on libigl.</p>
+
+</body>
+</html>

@@ -6,7 +6,7 @@
 
 libigl is a simple C++ geometry processing library. We have a wide
 functionality including construction of sparse discrete differential geometry
-operators and finite-elements matrices such as the contangent Laplacian and
+operators and finite-elements matrices such as the cotangent Laplacian and
 diagonalized mass matrix, simple facet and edge-based topology data structures,
 mesh-viewing utilities for OpenGL and GLSL, and many core functions for matrix
 manipulation which make [Eigen](http://eigen.tuxfamily.org) feel a lot more
