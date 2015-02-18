@@ -212,10 +212,10 @@ namespace igl
       // Getters:
     public:
       //const IndexList& get_lIF() const{ return lIF;}
-      static inline void box_intersect(
+      static inline void box_intersect_static(
         SelfIntersectMesh * SIM, 
-        const SelfIntersectMesh::Box &a, 
-        const SelfIntersectMesh::Box &b);
+        const Box &a, 
+        const Box &b);
   };
 }
 
@@ -227,9 +227,8 @@ namespace igl
 #include <igl/get_seconds.h>
 #include <igl/C_STR.h>
 
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
 
+#include <functional>
 #include <algorithm>
 #include <exception>
 #include <cassert>
@@ -277,7 +276,7 @@ inline void igl::SelfIntersectMesh<
   DerivedFF,
   DerivedIF,
   DerivedJ,
-  DerivedIM>::box_intersect(
+  DerivedIM>::box_intersect_static(
   Self * SIM, 
   const typename Self::Box &a, 
   const typename Self::Box &b)
@@ -350,8 +349,12 @@ inline igl::SelfIntersectMesh<
     boxes.push_back(Box(tit->bbox(), tit));
   }
   // Leapfrog callback
-  boost::function<void(const Box &a,const Box &b)> cb
-    = boost::bind(&box_intersect, this, _1,_2);
+  std::function<void(const Box &a,const Box &b)> cb = 
+    std::bind(&box_intersect_static, this, 
+      // Explicitly use std namespace to avoid confusion with boost (who puts
+      // _1 etc. in global namespace)
+      std::placeholders::_1,
+      std::placeholders::_2);
   //cout<<"boxes and bind: "<<tictoc()<<endl;
   // Run the self intersection algorithm with all defaults
   try{
@@ -910,6 +913,7 @@ inline bool igl::SelfIntersectMesh<
     // Construct intersection
     try
     {
+      // This can fail for Epick but not Epeck
       CGAL::Object result = CGAL::intersection(A,B);
       if(!result.empty())
       {

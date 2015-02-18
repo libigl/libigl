@@ -1,5 +1,6 @@
 #include "outer_hull.h"
 #include "outer_facet.h"
+#include "sort.h"
 #include "facet_components.h"
 #include "winding_number.h"
 #include "triangle_triangle_adjacency.h"
@@ -20,12 +21,14 @@
 template <
   typename DerivedV,
   typename DerivedF,
+  typename DerivedN,
   typename DerivedG,
   typename DerivedJ,
   typename Derivedflip>
 IGL_INLINE void igl::outer_hull(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::PlainObjectBase<DerivedN> & N,
   Eigen::PlainObjectBase<DerivedG> & G,
   Eigen::PlainObjectBase<DerivedJ> & J,
   Eigen::PlainObjectBase<Derivedflip> & flip)
@@ -55,6 +58,65 @@ IGL_INLINE void igl::outer_hull(
   vector<vector<typename DerivedF::Index> > uE2E;
   unique_edge_map(F,E,uE,EMAP,uE2E);
 
+  // TODO:
+  // uE --> face-edge index, sorted CCW around edge according to normal
+  // uE --> sorted order index 
+  // uE --> bool, whether needed to flip face to make "consistent" with unique
+  //   edge
+  VectorXI diIM(3*m);
+  vector<vector<typename DerivedV::Scalar> > di(uE2E.size());
+  // For each list of face-edges incide on a unique edge
+  for(size_t ui = 0;ui<(size_t)uE.rows();ui++)
+  {
+    const typename DerivedF::Scalar ud = uE(ui,1);
+    const typename DerivedF::Scalar us = uE(ui,0);
+    // Base normal vector to orient against
+    const auto fe0 = uE2E[ui][0];
+    const auto & eVp = N.row(fe0%m);
+    di[ui].resize(uE2E[ui].size());
+
+    const typename DerivedF::Scalar d = F(fe0%m,((fe0/m)+2)%3);
+    const typename DerivedF::Scalar s = F(fe0%m,((fe0/m)+1)%3);
+    // Edge vector
+    //const auto & eV = (V.row(ud)-V.row(us)).normalized();
+    const auto & eV = (V.row(d)-V.row(s)).normalized();
+
+    // Loop over incident face edges
+    for(size_t fei = 0;fei<uE2E[ui].size();fei++)
+    {
+      const auto & fe = uE2E[ui][fei];
+      const auto f = fe % m;
+      const auto c = fe / m;
+      // source should match destination to be consistent
+      const bool cons = (d == F(f,(c+1)%3));
+      assert(cons ||  (d == F(f,(c+2)%3)));
+      assert(!cons || (s == F(f,(c+2)%3)));
+      assert(!cons || (d == F(f,(c+1)%3)));
+      // Angle between n and f
+      const auto & n = N.row(f);
+      di[ui][fei] = M_PI - atan2( eVp.cross(n).dot(eV), eVp.dot(n));
+      if(!cons)
+      {
+        di[ui][fei] = di[ui][fei] + M_PI;
+        if(di[ui][fei]>2.*M_PI)
+        {
+          di[ui][fei] = di[ui][fei] - 2.*M_PI;
+        }
+      }
+    }
+    vector<size_t> IM;
+    igl::sort(di[ui],true,di[ui],IM);
+    // copy old list
+    vector<typename DerivedF::Index> temp = uE2E[ui];
+    for(size_t fei = 0;fei<uE2E[ui].size();fei++)
+    {
+      uE2E[ui][fei] = temp[IM[fei]];
+      const auto & fe = uE2E[ui][fei];
+      diIM(fe) = fei;
+    }
+
+  }
+
   vector<vector<vector<Index > > > TT,_1;
   triangle_triangle_adjacency(E,EMAP,uE2E,false,TT,_1);
   VectorXI counts;
@@ -67,15 +129,6 @@ IGL_INLINE void igl::outer_hull(
   G.resize(0,F.cols());
   J.resize(0,1);
   flip.setConstant(m,1,false);
-  // precompute face normals
-  typename Eigen::Matrix<
-    typename DerivedV::Scalar,
-    DerivedF::RowsAtCompileTime,
-    3> N;
-#ifdef IGL_OUTER_HULL_DEBUG
-  cout<<"normals..."<<endl;
-#endif
-  per_face_normals(V,F,N);
 
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"reindex..."<<endl;
@@ -107,7 +160,7 @@ IGL_INLINE void igl::outer_hull(
   barycenter(V,F,BC);
 
 #ifdef IGL_OUTER_HULL_DEBUG
-  cout<<"loop over CCs..."<<endl;
+  cout<<"loop over CCs (="<<ncc<<")..."<<endl;
 #endif
   for(Index id = 0;id<(Index)ncc;id++)
   {
@@ -127,6 +180,7 @@ IGL_INLINE void igl::outer_hull(
     Q.push(f+1*m);
     Q.push(f+2*m);
     flip(f) = f_flip;
+    //cout<<"flip("<<f<<") = "<<(flip(f)?"true":"false")<<endl;
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"BFS..."<<endl;
 #endif
@@ -153,44 +207,93 @@ IGL_INLINE void igl::outer_hull(
       }
       // find overlapping face-edges
       const auto & neighbors = uE2E[EMAP(e)];
+      // normal after possible flipping 
       const auto & fN = (flip(f)?-1.:1.)*N.row(f);
       // source of edge according to f
       const int fs = flip(f)?F(f,(c+2)%3):F(f,(c+1)%3);
       // destination of edge according to f
       const int fd = flip(f)?F(f,(c+1)%3):F(f,(c+2)%3);
+      // Edge vector according to f's (flipped) orientation.
       const auto & eV = (V.row(fd)-V.row(fs)).normalized();
+      // edge valence
+      const size_t val = uE2E[EMAP(e)].size();
+      const auto ui = EMAP(e);
+      const auto fe0 = uE2E[ui][0];
+      const auto es = F(fe0%m,((fe0/m)+1)%3);
+      const int e_cons = (fs == es?-1:1);
+      const int nfei = (diIM(e) + val + e_cons*(flip(f)?-1:1))%val;
+      const int max_ne_2 = uE2E[EMAP(e)][nfei];
       // Loop over and find max dihedral angle
-      typename DerivedV::Scalar max_di = -1;
       int max_ne = -1;
-      typename Eigen::Matrix< typename DerivedV::Scalar, 1, 3> max_nN;
-      for(const auto & ne : neighbors)
-      {
-        const int nf = ne%m;
-        if(nf == f)
-        {
-          continue;
-        }
-        const int nc = ne/m;
-        // are faces consistently oriented
-        //const int ns = F(nf,(nc+1)%3);
-        const int nd = F(nf,(nc+2)%3);
-        const bool cons = (flip(f)?fd:fs) == nd;
-        const auto & nN = (cons? (flip(f)?-1:1.) : (flip(f)?1.:-1.) )*N.row(nf);
-        const auto & ndi = M_PI - atan2( fN.cross(nN).dot(eV), fN.dot(nN));
-        if(ndi>=max_di)
-        {
-          max_ne = ne;
-          max_di = ndi;
-          max_nN = nN;
-        }
-      }
+      // // SAVE THIS OLD IMPLEMENTATION FOR NOW
+      //typename DerivedV::Scalar max_di = -1;
+      //for(const auto & ne : neighbors)
+      //{
+      //  const int nf = ne%m;
+      //  if(nf == f)
+      //  {
+      //    continue;
+      //  }
+      //  // Corner of neighbor
+      //  const int nc = ne/m;
+      //  // Is neighbor oriented consistently with (flipped) f?
+      //  //const int ns = F(nf,(nc+1)%3);
+      //  const int nd = F(nf,(nc+2)%3);
+      //  const bool cons = (flip(f)?fd:fs) == nd;
+      //  // Normal after possibly flipping to match flip or orientation of f
+      //  const auto & nN = (cons? (flip(f)?-1:1.) : (flip(f)?1.:-1.) )*N.row(nf);
+      //  // Angle between n and f
+      //  const auto & ndi = M_PI - atan2( fN.cross(nN).dot(eV), fN.dot(nN));
+      //  if(ndi>=max_di)
+      //  {
+      //    max_ne = ne;
+      //    max_di = ndi;
+      //  }
+      //}
+      ////cout<<(max_ne != max_ne_2)<<" =?= "<<e_cons<<endl;
+      //if(max_ne != max_ne_2)
+      //{
+      //  cout<<(f+1)<<" ---> "<<(max_ne%m)+1<<" != "<<(max_ne_2%m)+1<<" ... "<<e_cons<<endl;
+      //  typename DerivedV::Scalar max_di = -1;
+      //  for(size_t nei = 0;nei<neighbors.size();nei++)
+      //  {
+      //    const auto & ne = neighbors[nei];
+      //    const int nf = ne%m;
+      //    if(nf == f)
+      //    {
+      //      cout<<"  "<<(ne%m)+1<<": "<<0<<" "<<di[EMAP[e]][nei]<<" "<<diIM(ne)<<endl;
+      //      continue;
+      //    }
+      //    // Corner of neighbor
+      //    const int nc = ne/m;
+      //    // Is neighbor oriented consistently with (flipped) f?
+      //    //const int ns = F(nf,(nc+1)%3);
+      //    const int nd = F(nf,(nc+2)%3);
+      //    const bool cons = (flip(f)?fd:fs) == nd;
+      //    // Normal after possibly flipping to match flip or orientation of f
+      //    const auto & nN = (cons? (flip(f)?-1:1.) : (flip(f)?1.:-1.) )*N.row(nf);
+      //    // Angle between n and f
+      //    const auto & ndi = M_PI - atan2( fN.cross(nN).dot(eV), fN.dot(nN));
+      //    cout<<"  "<<(ne%m)+1<<": "<<ndi<<" "<<di[EMAP[e]][nei]<<" "<<diIM(ne)<<endl;
+      //    if(ndi>=max_di)
+      //    {
+      //      max_ne = ne;
+      //      max_di = ndi;
+      //    }
+      //  }
+      //}
+      max_ne = max_ne_2;
+
       if(max_ne>=0)
       {
+        // face of neighbor
         const int nf = max_ne%m;
+        // corner of neighbor
         const int nc = max_ne/m;
         const int nd = F(nf,(nc+2)%3);
         const bool cons = (flip(f)?fd:fs) == nd;
         flip(nf) = (cons ? flip(f) : !flip(f));
+        //cout<<"flip("<<nf<<") = "<<(flip(nf)?"true":"false")<<endl;
         const int ne1 = nf+((nc+1)%3)*m;
         const int ne2 = nf+((nc+2)%3)*m;
         if(!EH[ne1])
@@ -323,6 +426,24 @@ IGL_INLINE void igl::outer_hull(
     }
   }
 }
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedG,
+  typename DerivedJ,
+  typename Derivedflip>
+IGL_INLINE void igl::outer_hull(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
+  Eigen::PlainObjectBase<DerivedG> & G,
+  Eigen::PlainObjectBase<DerivedJ> & J,
+  Eigen::PlainObjectBase<Derivedflip> & flip)
+{
+  Eigen::Matrix<typename DerivedV::Scalar,DerivedF::RowsAtCompileTime,3> N;
+  per_face_normals(V,F,N);
+  return outer_hull(V,F,N,G,J,flip);
+}
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::outer_hull<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
