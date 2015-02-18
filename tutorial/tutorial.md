@@ -1887,9 +1887,9 @@ bool b = true;
 unsigned int num = 10;
 std::vector<float> vec = {0.1,0.002,5.3};
 
-// use overwrite = true for first serialization to create a new file
+// use overwrite = true for the first serialization to create or overwrite an existing file
 igl::serialize(b,"B","filename",true);
-// appends serialization to existing file
+// append following serialization to existing file
 igl::serialize(num,"Number","filename");
 igl::serialize(vec,"VectorName","filename");
 
@@ -1901,7 +1901,7 @@ igl::deserialize(vec,"VectorName","filename");
 
 Currently all fundamental data types (bool, int, float, double, ...) are supported, as well as std::string, basic `STL` containers, dense and sparse Eigen matrices and nestings of those.
 Some limitations apply to pointers. Currently, loops or many to one type of link structures are not handled correctly. Each pointer is assumed to point to a different independent object.
-Uninitialized pointers must be set `NULL` before de-/serialization to avoid memory leaks. Cross-platform issues like little-, big-endianess is currently not supported.
+Uninitialized pointers must be set to `nullptr` before de-/serialization to avoid memory leaks. Cross-platform issues like little-, big-endianess is currently not supported.
 To make user defined types serializable, just derive from `igl::Serializable` and trivially implementing the `InitSerialization` method.
 
 Assume that the state of your application is a mesh and a set of integer ids:
@@ -1931,6 +1931,34 @@ bool Serializable::PreSerialization() const;
 void Serializable::PostSerialization() const;
 bool Serializable::PreDeserialization();
 void Serializable::PostDeserialization();
+```
+
+Alternatively, if you want a non-intrusive way of serializing your state you can overload the following functions:
+
+```cpp
+namespace igl { namespace serialization {
+
+void serialize(const State& obj,std::vector<char>& buffer){
+  ::igl::serialize(obj.V,std::string("V"),buffer);
+  ::igl::serialize(obj.F,std::string("F"),buffer);
+  ::igl::serialize(obj.ids,std::string("ids"),buffer);
+}
+void deserialize(State& obj,const std::vector<char>& buffer){
+  ::igl::deserialize(obj.V,std::string("V"),buffer);
+  ::igl::deserialize(obj.F,std::string("F"),buffer);
+  ::igl::deserialize(obj.ids,std::string("ids"),buffer);
+}
+}}
+```
+
+Equivalently, you can use the following macros:
+
+```cpp
+SERIALIZE_TYPE(State,
+ SERIALIZE_MEMBER(V)
+ SERIALIZE_MEMBER(F)
+ SERIALIZE_MEMBER_NAME(ids,"ids")
+)
 ```
 
 All the former code is for binary serialization which is especially useful if you have to handle larger data where the loading and saving times become more important.

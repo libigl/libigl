@@ -7,6 +7,7 @@
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 
+// derive from igl::Serializable to serialize your own type
 struct State : public igl::Serializable
 {
   Eigen::MatrixXd V;
@@ -23,6 +24,22 @@ struct State : public igl::Serializable
   }
 };
 
+// alternatively you can do it like the following to have
+// a non-intrusive serialization:
+//
+// struct State
+// {
+//   Eigen::MatrixXd V;
+//   Eigen::MatrixXi F;
+//   std::vector<int> ids;
+// };
+// 
+// SERIALIZE_TYPE(State,
+//  SERIALIZE_MEMBER(V)
+//   SERIALIZE_MEMBER(F)
+//   SERIALIZE_MEMBER_NAME(ids,"ids")
+// )
+
 int main(int argc, char *argv[])
 {
   std::string binaryFile = "binData";
@@ -32,9 +49,9 @@ int main(int argc, char *argv[])
   unsigned int num = 10;
   std::vector<float> vec = {0.1f,0.002f,5.3f};
 
-  // use overwrite = true for first serialization to create a new file
+  // use overwrite = true for the first serialization to create or overwrite an existing file
   igl::serialize(b,"B",binaryFile,true);
-  // appends serialization to existing file
+  // append following serialization to existing file
   igl::serialize(num,"Number",binaryFile);
   igl::serialize(vec,"VectorName",binaryFile);
 
@@ -46,7 +63,7 @@ int main(int argc, char *argv[])
   State stateIn, stateOut;
 
   // Load a mesh in OFF format
-  igl::readOFF("../../shared/2triangles.off",stateIn.V,stateIn.F);
+  igl::readOFF("../shared/2triangles.off",stateIn.V,stateIn.F);
 
   // Save some integers in a vector
   stateIn.ids.push_back(6);
@@ -55,7 +72,7 @@ int main(int argc, char *argv[])
   // Serialize the state of the application
   igl::serialize(stateIn,"State",binaryFile,true);
 
-  // Load the state from the same XML file
+  // Load the state from the same file
   igl::deserialize(stateOut,"State",binaryFile);
 
   // Plot the state
