@@ -12,23 +12,12 @@
 #include <igl/igl_inline.h>
 #include <Eigen/Core>
 
-#ifdef ENABLE_XML_SERIALIZATION
-  #include <igl/xml/serialize_xml.h>
-#else
-  #include <igl/serialize.h>
-#endif
-
 namespace igl
 {
 
 // TODO: write documentation
 
 class ViewerData
-#ifdef ENABLE_XML_SERIALIZATION
-  : public igl::XMLSerializable
-#else
-  : public igl::Serializable
-#endif
 {
 public:
   ViewerData();
@@ -103,10 +92,6 @@ public:
   // Generates a default grid texture
   IGL_INLINE void grid_texture();
 
-  // Serialization code
-  IGL_INLINE void InitSerialization();
-  IGL_INLINE void PostDeserialization();
-
   Eigen::MatrixXd V; // Vertices of the current mesh (#V x 3)
   Eigen::MatrixXi F; // Faces of the mesh (#F x 3)
 
@@ -158,7 +143,6 @@ public:
   bool face_based;
   /*********************************/
 };
-
 
 }
 

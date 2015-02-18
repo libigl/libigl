@@ -10,17 +10,12 @@
 // * create plugins/skeleton.h
 // * pass time in draw function
 // * remove Preview3D from comments
+// * clean comments
 
 #ifndef IGL_VIEWER_PLUGIN_H
 #define IGL_VIEWER_PLUGIN_H
 #include <string>
 #include <igl/igl_inline.h>
-
-#ifdef ENABLE_XML_SERIALIZATION
-  #include <igl/xml/serialize_xml.h>
-#else
-  #include <igl/serialize.h>
-#endif
 
 namespace igl
 {
@@ -39,22 +34,12 @@ namespace igl
 class Viewer;
 
 class ViewerPlugin
-#ifdef ENABLE_XML_SERIALIZATION
-  : public igl::XMLSerializable
-#else
-  : public igl::Serializable
-#endif
 {
 public:
   IGL_INLINE ViewerPlugin()
   {plugin_name = "dummy";}
 
   virtual ~ViewerPlugin(){}
-
-  // This is a interface function for the serialization
-  IGL_INLINE virtual void InitSerialization()
-  {
-  }
 
   // This function is called when the viewer is initialized (no mesh will be loaded at this stage)
   IGL_INLINE virtual void init(igl::Viewer *_viewer)
@@ -75,6 +60,18 @@ public:
 
   // This function is called before a mesh is saved
   IGL_INLINE virtual bool save(std::string filename)
+  {
+    return false;
+  }
+
+  // This function is called when the scene is serialized
+  IGL_INLINE virtual bool serialize(std::vector<char>& buffer) const
+  {
+    return false;
+  }
+
+  // This function is called when the scene is deserialized
+  IGL_INLINE virtual bool deserialize(const std::vector<char>& buffer)
   {
     return false;
   }
@@ -129,14 +126,14 @@ public:
 
   // This function is called when a keyboard key is pressed
   // - modifiers is a bitfield that might one or more of the following bits Preview3D::NO_KEY, Preview3D::SHIFT, Preview3D::CTRL, Preview3D::ALT;
-  IGL_INLINE virtual bool key_down(unsigned char key, int modifiers)
+  IGL_INLINE virtual bool key_down(int key, int modifiers)
   {
     return false;
   }
 
   // This function is called when a keyboard key is release
   // - modifiers is a bitfield that might one or more of the following bits Preview3D::NO_KEY, Preview3D::SHIFT, Preview3D::CTRL, Preview3D::ALT;
-  IGL_INLINE virtual bool key_up(unsigned char key, int modifiers)
+  IGL_INLINE virtual bool key_up(int key, int modifiers)
   {
     return false;
   }
@@ -146,6 +143,21 @@ protected:
   // Pointer to the main Viewer class
   Viewer *viewer;
 };
+
+#ifdef ENABLE_SERIALIZATION
+namespace serialization
+{
+  IGL_INLINE void serialize(const ViewerPlugin& obj,std::vector<char>& buffer)
+  {
+    obj.serialize(buffer);
+  }
+
+  IGL_INLINE void deserialize(ViewerPlugin& obj,const std::vector<char>& buffer)
+  {
+    obj.deserialize(buffer);
+  }
+}
+#endif
 
 }
 
