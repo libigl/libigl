@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2014 Stefan Brugger <stefanbrugger@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "boundary_loop.h"
 #include "slice.h"
@@ -14,14 +14,14 @@
 
 template <typename DerivedF, typename Index>
 IGL_INLINE void igl::boundary_loop(
-    const Eigen::PlainObjectBase<DerivedF> & F, 
+    const Eigen::PlainObjectBase<DerivedF> & F,
     std::vector<std::vector<Index> >& L)
 {
   using namespace std;
   using namespace Eigen;
   using namespace igl;
 
-  MatrixXd Vdummy(F.maxCoeff(),1);
+  MatrixXd Vdummy(F.maxCoeff()+1,1);
   MatrixXi TT,TTi;
   vector<std::vector<int> > VF, VFi;
   triangle_triangle_adjacency(Vdummy,F,TT,TTi);
@@ -89,7 +89,7 @@ IGL_INLINE void igl::boundary_loop(
 
 template <typename DerivedF, typename Index>
 IGL_INLINE void igl::boundary_loop(
-  const Eigen::PlainObjectBase<DerivedF>& F, 
+  const Eigen::PlainObjectBase<DerivedF>& F,
   std::vector<Index>& L)
 {
   using namespace Eigen;
@@ -107,7 +107,7 @@ IGL_INLINE void igl::boundary_loop(
       maxLen = Lall[i].size();
       idxMax = i;
     }
-  }   
+  }
 
   L.resize(Lall[idxMax].size());
   for (int i = 0; i < Lall[idxMax].size(); ++i)
@@ -116,7 +116,7 @@ IGL_INLINE void igl::boundary_loop(
 
 template <typename DerivedF, typename DerivedL>
 IGL_INLINE void igl::boundary_loop(
-  const Eigen::PlainObjectBase<DerivedF>& F, 
+  const Eigen::PlainObjectBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedL>& L)
 {
   using namespace Eigen;
