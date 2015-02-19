@@ -52,8 +52,11 @@ IGL_INLINE bool igl::unproject_onto_mesh(
   Eigen::Vector3f bc;
   bool hit = unproject_onto_mesh(pos,F,model,proj,viewport,ei,fid,bc);
   int i;
-  bc.maxCoeff(&i);
-  vid = F(fid,i);
+  if (hit)
+  {
+    bc.maxCoeff(&i);
+    vid = F(fid,i);
+  }
   return hit;
 }
 

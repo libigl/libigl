@@ -59,7 +59,7 @@ void LGARAP_LIMSolver3D::computeLocalStep()
     Eigen::Matrix<float,3,3> U, Vt;
     Eigen::Matrix<float,3,1> S;
     
-	igl::svd3x3(A, U, S, Vt);
+    igl::svd3x3(A, U, S, Vt);
     rot = (Vt * U.transpose()).cast<double>();
 
     const int idx = 9*t;
@@ -80,7 +80,7 @@ void LGARAP_LIMSolver3D::prepareProblemData(std::vector<int>& hessRowIdx, std::v
   const int numTets = mesh->Tetrahedra->rows();
 
   CotanWeights.resize(numTets,6);
-  igl::cotmatrix_entries(*mesh->InitalVertices, *mesh->Tetrahedra, CotanWeights);
+  igl::cotmatrix_entries(*mesh->InitalVertices,*mesh->Tetrahedra,CotanWeights);
 
   // Create matrices L, K
   Eigen::SparseMatrix<double> B, tempL, tempK, restV;

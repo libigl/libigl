@@ -84,9 +84,11 @@ void FreeLIMData(LIMData* data)
 // vertices          vx3 matrix containing vertex position of the mesh
 // initialVertices   vx3 matrix containing vertex position of initial rest pose mesh
 // elements          exd matrix containing vertex indices of all elements
-// borderVertices    (optional - only needed for 2D LSCM) vector containing indices of border vertices
-// gradients         (optional - only needed for 2D Poisson) vector containing partial derivatives of target element gradients (structure is: [xx_1, xy_1, xx_2, xy_2, ..., xx_v, xy_v, yx_1, yy_1, yx_2, yy_2, ..., yx_v, yy_v]')
-// constraintMatrix  C: (c)x(v*(d-1)) sparse linear positional constraint matrix. X an Y-coordinates are alternatingly stacked per row (structure for triangles: [x_1, y_1, x_2, y_2, ..., x_v,y_v])
+// borderVertices    (optional) only needed for 2D LSCM) vector containing indices of border vertices
+// gradients         (optional) only needed for 2D Poisson) vector containing partial derivatives of target element gradients (structure is: [xx_1, xy_1, xx_2, xy_2, ..., xx_v, xy_v, yx_1, yy_1, yx_2, yy_2, ..., yx_v, yy_v]')
+// constraintMatrix  C: (c)x(3xv) sparse linear positional constraint matrix
+//                   X,Y,Z-coordinates are alternatingly stacked per row (structure for triangles: [x_1, y_1, z_1, x_2, y_2, z_2, ..., x_v,y_v,z_v])
+//                   and each row of C belongs to a linear constraint.
 // constraintTargets d: c vector target positions
 // energyType        type of used energy: 0=Dirichlet,1=Laplacian,2=Green,3=ARAP,4=LSCM,5=Poisson
 // enableOutput      (optional) enables the output (#iteration / hessian correction / step size / positional constraints squared error / barrier constraints energy / deformation energy)
@@ -282,14 +284,16 @@ LIMData* InitLIM(
 // vertices          vx3 matrix containing vertex position of the mesh
 // initialVertices   vx3 matrix containing vertex position of initial rest pose mesh
 // elements          exd matrix containing vertex indices of all elements
-// borderVertices    (optional - only needed for 2D LSCM) vector containing indices of border vertices
-// gradients         (optional - only needed for 2D Poisson) vector containing partial derivatives of target element gradients (structure is: [xx_1, xy_1, xx_2, xy_2, ..., xx_v, xy_v, yx_1, yy_1, yx_2, yy_2, ..., yx_v, yy_v]')
-// constraintMatrix  C: (c)x(v*(d-1)) sparse linear positional constraint matrix. X an Y-coordinates are alternatingly stacked per row (structure for triangles: [x_1, y_1, x_2, y_2, ..., x_v,y_v])
+// borderVertices    (optional) (only needed for 2D LSCM) vector containing indices of border vertices
+// gradients         (optional) (only needed for 2D Poisson) vector containing partial derivatives of target element gradients (structure is: [xx_1, xy_1, xx_2, xy_2, ..., xx_v, xy_v, yx_1, yy_1, yx_2, yy_2, ..., yx_v, yy_v]')
+// constraintMatrix  C: (c)x(3xv) sparse linear positional constraint matrix
+//                   X,Y,Z-coordinates are alternatingly stacked per row (structure for triangles: [x_1, y_1, z_1, x_2, y_2, z_2, ..., x_v,y_v,z_v])
+//                   and each row of C belongs to a linear constraint.
 // constraintTargets d: c vector target positions
 // energyType        type of used energy: 0=Dirichlet,1=Laplacian,2=Green,3=ARAP,4=LSCM
 // tolerance         max squared positional constraints error
 // maxIteration      max number of iterations
-// findLocalMinima   iterating until a local minima is found. If not enabled only tolerance must be fulfilled
+// findLocalMinima   iterating until a local minima is found. If not enabled only tolerance must be fulfilled.
 // enableOutput      (optional) enables the output (#itaration / hessian correction / step size / positional constraints / barrier constraints / deformation energy) (default : true)
 // enableBarriers    (optional) enables the non-flip constraints (default = true)
 // enableAlphaUpdate (optional) enables dynamic alpha weight adjustment (default = true)

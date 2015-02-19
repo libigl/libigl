@@ -1,80 +1,0 @@
-10
-
-dir
-51
-https://github.com/embree/embree.git/branches/v2.0/examples/renderer
-https://github.com/embree/embree.git
-
-
-
-2013-10-23T11:55:36.000000Z
-47
-sven.woop
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-805a0351-d790-0c91-761a-ce57b7db7bff
-
-device
-dir
-
-renderer
-dir
-
-device_network
-dir
-
-device_coi
-dir
-
-device_singleray
-dir
-
-device_ispc
-dir
-
-CMakeLists.txt
-file
-
-
-
-
-2013-10-29T11:28:33.000000Z
-d1ffae72852067af8177841ec9ca77ee
-2013-10-23T11:55:36.000000Z
-17
-sven.woop
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-2752
-

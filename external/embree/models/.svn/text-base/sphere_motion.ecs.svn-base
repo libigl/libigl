@@ -1,9 +1,0 @@
--i sphere_motion.xml
-
--vp -119.999 519.273 292.713 
--vi 304.489 40.8668 -159.324
--vu 0 1 0
--fov 60
-
--renderer pathtracer
--accel bvh4mb

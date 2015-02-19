@@ -1,0 +1,167 @@
+// ======================================================================== //
+// Copyright 2009-2014 Intel Corporation                                    //
+//                                                                          //
+// Licensed under the Apache License, Version 2.0 (the "License");          //
+// you may not use this file except in compliance with the License.         //
+// You may obtain a copy of the License at                                  //
+//                                                                          //
+//     http://www.apache.org/licenses/LICENSE-2.0                           //
+//                                                                          //
+// Unless required by applicable law or agreed to in writing, software      //
+// distributed under the License is distributed on an "AS IS" BASIS,        //
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. //
+// See the License for the specific language governing permissions and      //
+// limitations under the License.                                           //
+// ======================================================================== //
+
+#pragma once
+
+struct Vec3fa 
+{
+  float x;
+  float y;
+  float z;
+  float w;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// Constructors
+////////////////////////////////////////////////////////////////////////////////
+
+inline uniform Vec3fa make_Vec3fa(const uniform float a) { uniform Vec3fa r; r.x = a; r.y = a; r.z = a; r.w = 0.0f; return r; }
+inline varying Vec3fa make_Vec3fa(const varying float a) { varying Vec3fa r; r.x = a; r.y = a; r.z = a; r.w = 0.0f; return r; }  
+
+inline uniform Vec3fa make_Vec3fa(const uniform float x, const uniform float y, const uniform float z) { uniform Vec3fa r; r.x = x; r.y = y; r.z = z; r.w = 0.0f; return r; }
+inline varying Vec3fa make_Vec3fa(const varying float x, const varying float y, const varying float z) { varying Vec3fa r; r.x = x; r.y = y; r.z = z; r.w = 0.0f; return r; }  
+
+inline uniform Vec3fa make_Vec3fa(const uniform float x, const uniform float y, const uniform float z, const uniform float a) { uniform Vec3fa r; r.x = x; r.y = y; r.z = z; r.w = a; return r; }
+inline varying Vec3fa make_Vec3fa(const varying float x, const varying float y, const varying float z, const varying float a) { varying Vec3fa r; r.x = x; r.y = y; r.z = z; r.w = a; return r; }  
+
+inline uniform Vec3fa make_Vec3fa(uniform Vec3f a) { return make_Vec3fa(a.x,a.y,a.z); }
+inline varying Vec3fa make_Vec3fa(varying Vec3f a) { return make_Vec3fa(a.x,a.y,a.z); }
+
+inline uniform Vec3fa make_Vec3fa(uniform Vec3f a, uniform float b) { return make_Vec3fa(a.x,a.y,a.z,b); }
+inline varying Vec3fa make_Vec3fa(varying Vec3f a, varying float b) { return make_Vec3fa(a.x,a.y,a.z,b); }
+
+inline uniform Vec3f make_Vec3f(uniform Vec3fa a) { return make_Vec3f(a.x,a.y,a.z); }
+inline varying Vec3f make_Vec3f(varying Vec3fa a) { return make_Vec3f(a.x,a.y,a.z); }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Unary Operators
+////////////////////////////////////////////////////////////////////////////////
+
+inline uniform Vec3fa operator-(const uniform Vec3fa a) { return make_Vec3fa(-a.x,-a.y,-a.z,-a.w); }
+inline varying Vec3fa operator-(const varying Vec3fa a) { return make_Vec3fa(-a.x,-a.y,-a.z,-a.w); }
+
+inline uniform Vec3fa neg(const uniform Vec3fa a) { return make_Vec3fa(-a.x,-a.y,-a.z,-a.w); }
+inline varying Vec3fa neg(const varying Vec3fa a) { return make_Vec3fa(-a.x,-a.y,-a.z,-a.w); }
+
+inline uniform Vec3fa abs(const uniform Vec3fa a) { return make_Vec3fa(abs(a.x),abs(a.y),abs(a.z),abs(a.w)); }
+inline varying Vec3fa abs(const varying Vec3fa a) { return make_Vec3fa(abs(a.x),abs(a.y),abs(a.z),abs(a.w)); }
+
+inline uniform Vec3fa rcp(const uniform Vec3fa a) { return make_Vec3fa(rcp(a.x),rcp(a.y),rcp(a.z),rcp(a.w)); }
+inline varying Vec3fa rcp(const varying Vec3fa a) { return make_Vec3fa(rcp(a.x),rcp(a.y),rcp(a.z),rcp(a.w)); }
+
+inline uniform Vec3fa rcp_safe(const uniform Vec3fa a) { return make_Vec3fa(rcp_safe(a.x), rcp_safe(a.y), rcp_safe(a.z), rcp_safe(a.w)); }
+inline varying Vec3fa rcp_safe(const varying Vec3fa a) { return make_Vec3fa(rcp_safe(a.x), rcp_safe(a.y), rcp_safe(a.z), rcp_safe(a.w)); }
+
+inline uniform Vec3fa exp(const uniform Vec3fa a) { return make_Vec3fa(exp(a.x),exp(a.y),exp(a.z),exp(a.w)); }
+inline varying Vec3fa exp(const varying Vec3fa a) { return make_Vec3fa(exp(a.x),exp(a.y),exp(a.z),exp(a.w)); }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Binary Operators
+////////////////////////////////////////////////////////////////////////////////
+
+inline uniform Vec3fa operator+(const uniform Vec3fa a, const uniform Vec3fa b) { return make_Vec3fa(a.x+b.x, a.y+b.y, a.z+b.z, a.w+b.w); }
+inline varying Vec3fa operator+(const varying Vec3fa a, const varying Vec3fa b) { return make_Vec3fa(a.x+b.x, a.y+b.y, a.z+b.z, a.w+b.w); }
+
+inline uniform Vec3fa operator-(const uniform Vec3fa a, const uniform Vec3fa b) { return make_Vec3fa(a.x-b.x, a.y-b.y, a.z-b.z, a.w-b.w); }
+inline varying Vec3fa operator-(const varying Vec3fa a, const varying Vec3fa b) { return make_Vec3fa(a.x-b.x, a.y-b.y, a.z-b.z, a.w-b.w); }
+
+inline uniform Vec3fa operator*(const uniform float a, const uniform Vec3fa b) { return make_Vec3fa(a*b.x, a*b.y, a*b.z, a*b.w); }
+inline varying Vec3fa operator*(const varying float a, const varying Vec3fa b) { return make_Vec3fa(a*b.x, a*b.y, a*b.z, a*b.w); }
+
+inline uniform Vec3fa operator*(const uniform Vec3fa a, const uniform float b) { return make_Vec3fa(a.x*b, a.y*b, a.z*b, a.w*b); }
+inline varying Vec3fa operator*(const varying Vec3fa a, const varying float b) { return make_Vec3fa(a.x*b, a.y*b, a.z*b, a.w*b); }
+
+inline uniform Vec3fa operator*(const uniform Vec3fa a, const uniform Vec3fa b) { return make_Vec3fa(a.x*b.x, a.y*b.y, a.z*b.z, a.w*b.w); }
+inline varying Vec3fa operator*(const varying Vec3fa a, const varying Vec3fa b) { return make_Vec3fa(a.x*b.x, a.y*b.y, a.z*b.z, a.w*b.w); }
+
+inline uniform Vec3fa operator/(const uniform float a, const uniform Vec3fa b) { return make_Vec3fa(a/b.x, a/b.y, a/b.z, a/b.w); }
+inline varying Vec3fa operator/(const varying float a, const varying Vec3fa b) { return make_Vec3fa(a/b.x, a/b.y, a/b.z, a/b.w); }
+
+inline uniform Vec3fa operator/(const uniform Vec3fa a, const uniform float b) { return make_Vec3fa(a.x/b, a.y/b, a.z/b, a.w/b); }
+inline varying Vec3fa operator/(const varying Vec3fa a, const varying float b) { return make_Vec3fa(a.x/b, a.y/b, a.z/b, a.w/b); }
+
+inline uniform Vec3fa operator/(const uniform Vec3fa a, const uniform Vec3fa b) { return make_Vec3fa(a.x/b.x, a.y/b.y, a.z/b.z, a.w/b.w); }
+inline varying Vec3fa operator/(const varying Vec3fa a, const varying Vec3fa b) { return make_Vec3fa(a.x/b.x, a.y/b.y, a.z/b.z, a.w/b.w); }
+
+inline uniform Vec3fa min(const uniform Vec3fa a, const uniform Vec3fa b) { return make_Vec3fa(min(a.x,b.x),min(a.y,b.y),min(a.z,b.z),min(a.w,b.w)); }
+inline varying Vec3fa min(const varying Vec3fa a, const varying Vec3fa b) { return make_Vec3fa(min(a.x,b.x),min(a.y,b.y),min(a.z,b.z),min(a.w,b.w)); }
+
+inline uniform Vec3fa max(const uniform Vec3fa a, const uniform Vec3fa b) { return make_Vec3fa(max(a.x,b.x),max(a.y,b.y),max(a.z,b.z),max(a.w,b.w)); }
+inline varying Vec3fa max(const varying Vec3fa a, const varying Vec3fa b) { return make_Vec3fa(max(a.x,b.x),max(a.y,b.y),max(a.z,b.z),max(a.w,b.w)); }
+
+inline uniform Vec3fa pow(const uniform Vec3fa a, const uniform float b) { return make_Vec3fa(pow(a.x,b), pow(a.y,b), pow(a.z,b), pow(a.w,b)); }
+inline varying Vec3fa pow(const varying Vec3fa a, const varying float b) { return make_Vec3fa(pow(a.x,b), pow(a.y,b), pow(a.z,b), pow(a.w,b)); }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Reduction Operators
+////////////////////////////////////////////////////////////////////////////////
+
+inline uniform float reduce_add(const uniform Vec3fa a) { return a.x+a.y+a.z; }
+inline varying float reduce_add(const varying Vec3fa a) { return a.x+a.y+a.z; }
+
+inline uniform float reduce_mul(const uniform Vec3fa a) { return a.x*a.y*a.z; }
+inline varying float reduce_mul(const varying Vec3fa a) { return a.x*a.y*a.z; }
+
+inline uniform float reduce_min(const uniform Vec3fa a) { return min(min(a.x,a.y),a.z); }
+inline varying float reduce_min(const varying Vec3fa a) { return min(min(a.x,a.y),a.z); }
+
+inline uniform float reduce_max(const uniform Vec3fa a) { return max(max(a.x,a.y),a.z); }
+inline varying float reduce_max(const varying Vec3fa a) { return max(max(a.x,a.y),a.z); }
+
+inline uniform Vec3fa __reduce_min(const varying Vec3fa a) { return make_Vec3fa(reduce_min(a.x),reduce_min(a.y),reduce_min(a.z)); }
+inline uniform Vec3fa __reduce_max(const varying Vec3fa a) { return make_Vec3fa(reduce_max(a.x),reduce_max(a.y),reduce_max(a.z)); }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Comparison Operators
+////////////////////////////////////////////////////////////////////////////////
+
+//inline uniform bool operator==(const uniform Vec3fa a, const uniform Vec3fa b) { return (a.x == b.x) & (a.y == b.y) & (a.z == b.z); } // FIXME: enable
+//inline varying bool operator==(const varying Vec3fa a, const varying Vec3fa b) { return (a.x == b.x) & (a.y == b.y) & (a.z == b.z); }
+
+//inline uniform bool operator!=(const uniform Vec3fa a, const uniform Vec3fa b) { return (a.x != b.x) | (a.y != b.y) | (a.z != b.z); }
+//inline varying bool operator!=(const varying Vec3fa a, const varying Vec3fa b) { return (a.x != b.x) | (a.y != b.y) | (a.z != b.z); }
+
+inline uniform bool eq(const uniform Vec3fa a, const uniform Vec3fa b) { return (a.x == b.x) & (a.y == b.y) & (a.z == b.z); }
+inline varying bool eq(const varying Vec3fa a, const varying Vec3fa b) { return (a.x == b.x) & (a.y == b.y) & (a.z == b.z); }
+
+inline uniform bool ne(const uniform Vec3fa a, const uniform Vec3fa b) { return (a.x != b.x) | (a.y != b.y) | (a.z != b.z); }
+inline varying bool ne(const varying Vec3fa a, const varying Vec3fa b) { return (a.x != b.x) | (a.y != b.y) | (a.z != b.z); }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Euclidian Space Operators
+////////////////////////////////////////////////////////////////////////////////
+
+inline uniform float dot(const uniform Vec3fa a, const uniform Vec3fa b) { return a.x*b.x+a.y*b.y+a.z*b.z; }
+inline varying float dot(const varying Vec3fa a, const varying Vec3fa b) { return a.x*b.x+a.y*b.y+a.z*b.z; }
+
+inline uniform float length(const uniform Vec3fa a) { return sqrt(dot(a,a)); }
+inline varying float length(const varying Vec3fa a) { return sqrt(dot(a,a)); }
+
+inline uniform Vec3fa normalize(const uniform Vec3fa a) { return rsqrt(dot(a,a))*a; }
+inline varying Vec3fa normalize(const varying Vec3fa a) { return rsqrt(dot(a,a))*a; }
+
+inline uniform float distance(const uniform Vec3fa a, const uniform Vec3fa b) { return length(a-b); }
+inline varying float distance(const varying Vec3fa a, const uniform Vec3fa b) { return length(a-b); }
+
+inline uniform Vec3fa cross(const uniform Vec3fa a, const uniform Vec3fa b) { 
+  return make_Vec3fa(a.y*b.z-a.z*b.y,a.z*b.x-a.x*b.z,a.x*b.y-a.y*b.x);
+}
+inline varying Vec3fa cross(const varying Vec3fa a, const varying Vec3fa b) { 
+  return make_Vec3fa(a.y*b.z-a.z*b.y,a.z*b.x-a.x*b.z,a.x*b.y-a.y*b.x);
+}
+
+inline uniform Vec3fa lerp(const uniform float s, const uniform Vec3fa v0, const uniform Vec3fa v1) { return (1.0f-s)*v0+s*v1; }
+inline varying Vec3fa lerp(const varying float s, const varying Vec3fa v0, const varying Vec3fa v1) { return (1.0f-s)*v0+s*v1; }

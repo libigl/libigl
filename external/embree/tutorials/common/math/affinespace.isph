@@ -1,0 +1,95 @@
+// ======================================================================== //
+// Copyright 2009-2014 Intel Corporation                                    //
+//                                                                          //
+// Licensed under the Apache License, Version 2.0 (the "License");          //
+// you may not use this file except in compliance with the License.         //
+// You may obtain a copy of the License at                                  //
+//                                                                          //
+//     http://www.apache.org/licenses/LICENSE-2.0                           //
+//                                                                          //
+// Unless required by applicable law or agreed to in writing, software      //
+// distributed under the License is distributed on an "AS IS" BASIS,        //
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. //
+// See the License for the specific language governing permissions and      //
+// limitations under the License.                                           //
+// ======================================================================== //
+
+#pragma once
+
+#include "linearspace.isph"
+
+struct AffineSpace3f
+{
+  LinearSpace3f l;
+  Vec3f p;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// Constructors
+////////////////////////////////////////////////////////////////////////////////
+
+inline uniform AffineSpace3f make_AffineSpace3f(const uniform LinearSpace3f l, const uniform Vec3f p) {
+  uniform AffineSpace3f xfm; xfm.l = l; xfm.p = p; return xfm;
+}
+inline varying AffineSpace3f make_AffineSpace3f(const varying LinearSpace3f l, const varying Vec3f p) {
+  varying AffineSpace3f xfm; xfm.l = l; xfm.p = p; return xfm;
+}
+
+inline uniform AffineSpace3f make_AffineSpace3f(const uniform Vec3f x, const uniform Vec3f y, const uniform Vec3f z, const uniform Vec3f p) {
+  uniform AffineSpace3f xfm; xfm.l.vx = x; xfm.l.vy = y; xfm.l.vz = z; xfm.p = p; return xfm;
+}
+inline varying AffineSpace3f make_AffineSpace3f(const varying Vec3f x, const varying Vec3f y, const varying Vec3f z, const varying Vec3f p) {
+  varying AffineSpace3f xfm; xfm.l.vx = x; xfm.l.vy = y; xfm.l.vz = z; xfm.p = p; return xfm;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Unary Operators
+////////////////////////////////////////////////////////////////////////////////
+
+inline uniform AffineSpace3f neg(const uniform AffineSpace3f a) { return make_AffineSpace3f(neg(a.l),neg(a.p)); }
+inline varying AffineSpace3f neg(const varying AffineSpace3f a) { return make_AffineSpace3f(neg(a.l),neg(a.p)); }
+
+inline uniform AffineSpace3f rcp( const uniform AffineSpace3f a) { uniform LinearSpace3f il = rcp(a.l); return make_AffineSpace3f(il,neg(il*a.p)); }
+inline varying AffineSpace3f rcp( const varying AffineSpace3f a) { varying LinearSpace3f il = rcp(a.l); return make_AffineSpace3f(il,neg(il*a.p)); }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Binary Operators
+////////////////////////////////////////////////////////////////////////////////
+
+inline uniform AffineSpace3f operator+(const uniform AffineSpace3f a, const uniform AffineSpace3f b) { return make_AffineSpace3f(a.l+b.l, a.p+b.p); }
+inline varying AffineSpace3f operator+(const varying AffineSpace3f a, const varying AffineSpace3f b) { return make_AffineSpace3f(a.l+b.l, a.p+b.p); }
+
+inline uniform AffineSpace3f operator-(const uniform AffineSpace3f a, const uniform AffineSpace3f b) { return make_AffineSpace3f(a.l-b.l, a.p-b.p); }
+inline varying AffineSpace3f operator-(const varying AffineSpace3f a, const varying AffineSpace3f b) { return make_AffineSpace3f(a.l-b.l, a.p-b.p); }
+
+inline uniform AffineSpace3f operator*( const uniform float         a, const uniform AffineSpace3f b ) { return make_AffineSpace3f(a*b.l,a*b.p); }
+inline uniform AffineSpace3f operator*( const uniform AffineSpace3f a, const uniform float         b ) { return make_AffineSpace3f(a.l*b,a.p*b); }
+inline uniform AffineSpace3f operator*( const uniform AffineSpace3f a, const uniform AffineSpace3f b ) { return make_AffineSpace3f(a.l*b.l,a.l*b.p+a.p); }
+
+inline varying AffineSpace3f operator*( const varying float         a, const varying AffineSpace3f b ) { return make_AffineSpace3f(a*b.l,a*b.p); }
+inline varying AffineSpace3f operator*( const varying AffineSpace3f a, const varying float         b ) { return make_AffineSpace3f(a.l*b,a.p*b); }
+inline varying AffineSpace3f operator*( const varying AffineSpace3f a, const varying AffineSpace3f b ) { return make_AffineSpace3f(a.l*b.l,a.l*b.p + a.p); }
+
+inline uniform Vec3f xfmPoint (const uniform AffineSpace3f a, const uniform Vec3f v) { return xfmVector(a.l,v)+a.p; }
+inline varying Vec3f xfmPoint (const uniform AffineSpace3f a, const varying Vec3f v) { return xfmVector(a.l,v)+a.p; }
+inline varying Vec3f xfmPoint (const varying AffineSpace3f a, const varying Vec3f v) { return xfmVector(a.l,v)+a.p; }
+
+inline uniform Vec3f xfmVector(const uniform AffineSpace3f a, const uniform Vec3f v) { return xfmVector(a.l,v); }
+inline varying Vec3f xfmVector(const uniform AffineSpace3f a, const varying Vec3f v) { return xfmVector(a.l,v); }
+inline varying Vec3f xfmVector(const varying AffineSpace3f a, const varying Vec3f v) { return xfmVector(a.l,v); }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Comparison Operators
+////////////////////////////////////////////////////////////////////////////////
+
+//inline uniform bool operator==(const uniform AffineSpace3f a, const uniform AffineSpace3f b) { return eq(a.l,b.l) & eq(a.p,b.p); } // FIXME: enable
+//inline varying bool operator==(const varying AffineSpace3f a, const varying AffineSpace3f b) { return eq(a.l,b.l) & eq(a.p,b.p); }
+
+//inline uniform bool operator!=(const uniform AffineSpace3f a, const uniform AffineSpace3f b) { return ne(a.l,b.l) | ne(a.p,b.p); }
+//inline varying bool operator!=(const varying AffineSpace3f a, const varying AffineSpace3f b) { return ne(a.l,b.l) | ne(a.p,b.p); }
+
+inline uniform bool eq(const uniform AffineSpace3f a, const uniform AffineSpace3f b) { return eq(a.l,b.l) & eq(a.p,b.p); }
+inline varying bool eq(const varying AffineSpace3f a, const varying AffineSpace3f b) { return eq(a.l,b.l) & eq(a.p,b.p); }
+
+inline uniform bool ne(const uniform AffineSpace3f a, const uniform AffineSpace3f b) { return ne(a.l,b.l) | ne(a.p,b.p); }
+inline varying bool ne(const varying AffineSpace3f a, const varying AffineSpace3f b) { return ne(a.l,b.l) | ne(a.p,b.p); }

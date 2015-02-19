@@ -487,7 +487,13 @@ public:
                || ch == '-';
     }
 
+    // faster version
     inline static bool StringEqual( const char* p, const char* q, int nChar=INT_MAX )  {
+        return std::strncmp(p,q,nChar) == 0;
+    }
+
+    // slow default version
+    /*inline static bool StringEqual( const char* p, const char* q, int nChar=INT_MAX )  {
         int n = 0;
         if ( p == q ) {
             return true;
@@ -501,7 +507,8 @@ public:
             return true;
         }
         return false;
-    }
+    }*/
+
     
     inline static int IsUTF8Continuation( const char p ) {
         return p & 0x80;

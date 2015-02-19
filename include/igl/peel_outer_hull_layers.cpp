@@ -1,10 +1,11 @@
 #include "peel_outer_hull_layers.h"
+#include "per_face_normals.h"
 #include "outer_hull.h"
-#include "writePLY.h"
 #include <vector>
 #include <iostream>
 //#define IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
+#include "writePLY.h"
 #include "STR.h"
 #endif
 
@@ -12,11 +13,13 @@ using namespace std;
 template <
   typename DerivedV,
   typename DerivedF,
+  typename DerivedN,
   typename Derivedodd,
   typename Derivedflip>
 IGL_INLINE size_t igl::peel_outer_hull_layers(
   const Eigen::PlainObjectBase<DerivedV > & V,
   const Eigen::PlainObjectBase<DerivedF > & F,
+  const Eigen::PlainObjectBase<DerivedN > & N,
   Eigen::PlainObjectBase<Derivedodd > & odd,
   Eigen::PlainObjectBase<Derivedflip > & flip)
 {
@@ -24,6 +27,7 @@ IGL_INLINE size_t igl::peel_outer_hull_layers(
   using namespace std;
   typedef typename DerivedF::Index Index;
   typedef Matrix<typename DerivedF::Scalar,Dynamic,DerivedF::ColsAtCompileTime> MatrixXF;
+  typedef Matrix<typename DerivedN::Scalar,Dynamic,DerivedN::ColsAtCompileTime> MatrixXN;
   typedef Matrix<Index,Dynamic,1> MatrixXI;
   typedef Matrix<typename Derivedflip::Scalar,Dynamic,Derivedflip::ColsAtCompileTime> MatrixXflip;
   const Index m = F.rows();
@@ -36,6 +40,7 @@ IGL_INLINE size_t igl::peel_outer_hull_layers(
 #endif
   // keep track of iteration parity and whether flipped in hull
   MatrixXF Fr = F;
+  MatrixXN Nr = N;
   odd.resize(m,1);
   flip.resize(m,1);
   // Keep track of index map
@@ -55,7 +60,7 @@ IGL_INLINE size_t igl::peel_outer_hull_layers(
   cout<<"calling outer hull..."<<endl;
   writePLY(STR("outer-hull-input-"<<iter<<".ply"),V,Fr);
 #endif
-    outer_hull(V,Fr,Fo,Jo,flipr);
+    outer_hull(V,Fr,Nr,Fo,Jo,flipr);
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
   writePLY(STR("outer-hull-output-"<<iter<<".ply"),V,Fo);
   cout<<"reindex, flip..."<<endl;
@@ -73,8 +78,10 @@ IGL_INLINE size_t igl::peel_outer_hull_layers(
     // Fr = Fr - Fo
     // update IM
     MatrixXF prev_Fr = Fr;
+    MatrixXN prev_Nr = Nr;
     MatrixXI prev_IM = IM;
     Fr.resize(prev_Fr.rows() - Fo.rows(),F.cols());
+    Nr.resize(Fr.rows(),3);
     IM.resize(Fr.rows());
     {
       Index g = 0;
@@ -83,6 +90,7 @@ IGL_INLINE size_t igl::peel_outer_hull_layers(
         if(!in_outer[f])
         {
           Fr.row(g) = prev_Fr.row(f);
+          Nr.row(g) = prev_Nr.row(f);
           IM(g) = prev_IM(f);
           g++;
         }
@@ -94,8 +102,25 @@ IGL_INLINE size_t igl::peel_outer_hull_layers(
   return iter;
 }
 
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename Derivedodd,
+  typename Derivedflip>
+IGL_INLINE size_t igl::peel_outer_hull_layers(
+  const Eigen::PlainObjectBase<DerivedV > & V,
+  const Eigen::PlainObjectBase<DerivedF > & F,
+  Eigen::PlainObjectBase<Derivedodd > & odd,
+  Eigen::PlainObjectBase<Derivedflip > & flip)
+{
+  Eigen::Matrix<typename DerivedV::Scalar,DerivedF::RowsAtCompileTime,3> N;
+  per_face_normals(V,F,N);
+  return peel_outer_hull_layers(V,F,N,odd,flip);
+}
+
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template size_t igl::peel_outer_hull_layers<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<bool, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
+template size_t igl::peel_outer_hull_layers<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<bool, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
 #endif

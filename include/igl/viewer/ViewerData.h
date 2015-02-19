@@ -15,13 +15,9 @@
 namespace igl
 {
 
-// Store the data visualized by ViewerCore
 // TODO: write documentation
 
 class ViewerData
-#ifdef ENABLE_XML_SERIALIZATION
-: public ::igl::XMLSerialization
-#endif
 {
 public:
   ViewerData();
@@ -96,9 +92,6 @@ public:
   // Generates a default grid texture
   IGL_INLINE void grid_texture();
 
-  // Serialization code
-  IGL_INLINE void InitSerialization();
-
   Eigen::MatrixXd V; // Vertices of the current mesh (#V x 3)
   Eigen::MatrixXi F; // Faces of the mesh (#F x 3)
 
@@ -150,7 +143,6 @@ public:
   bool face_based;
   /*********************************/
 };
-
 
 }
 
