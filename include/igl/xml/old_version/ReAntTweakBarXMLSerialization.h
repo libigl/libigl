@@ -1,14 +1,14 @@
-// This file is part of libigl, a simple c++ geometry processing library.
 // 
-// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2014 Christian Schüller <schuellchr@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
+
 #ifndef IGL_REANTTWEAKBAR_XML_SERIALIZATION_H
 #define IGL_REANTTWEAKBAR_XML_SERIALIZATION_H
 #include "../igl_inline.h"
-#include "serialize_xml.h"
+#include "XMLSerializer.h"
 
 #undef IGL_HEADER_ONLY
 #include <igl/ReAntTweakBar.h>
@@ -44,8 +44,7 @@ namespace igl
       for(std::vector< ::igl::ReTwRWItem>::const_iterator it = rw_items.begin(); it != rw_items.end(); it++)
       {
         std::string val = bar->get_value_as_string(it->var,it->type);
-        //::igl::XMLSerializer::SaveObject(val,it->name,name,file_name,false);
-        ::igl::serialize_xml(val,it->name,file_name,false,false);
+        ::igl::XMLSerializer::SaveObject(val,it->name,name,file_name,false);
       }
       
       char var[REANTTWEAKBAR_MAX_CB_VAR_SIZE];
@@ -63,14 +62,13 @@ namespace igl
         getCallback(var,clientData);
         
         std::string val = bar->get_value_as_string(var,type);
-        //::igl::XMLSerializer::SaveObject(val,it->name,name,file_name,false);
-        ::igl::serialize_xml(val,it->name,file_name,false,false);
+        ::igl::XMLSerializer::SaveObject(val,it->name,name,file_name,false);
       }
       
       return true;
     }
     
-    /*IGL_INLINE bool save_ReAntTweakBar(::igl::ReTwBar* bar, tinyxml2::XMLDocument* doc)
+    IGL_INLINE bool save_ReAntTweakBar(::igl::ReTwBar* bar, tinyxml2::XMLDocument* doc)
     {
       std::vector<char**> buffer;
       
@@ -123,7 +121,7 @@ namespace igl
       delete s;
       
       return true;
-    }*/
+    }
     
     IGL_INLINE bool load_ReAntTweakBar(::igl::ReTwBar* bar, const char *file_name)
     {
@@ -138,8 +136,7 @@ namespace igl
       for(std::vector< ::igl::ReTwRWItem>::const_iterator it = rw_items.begin(); it != rw_items.end(); it++)
       {
         char* val;
-        //::igl::XMLSerializer::LoadObject(val,it->name,name,file_name);
-        ::igl::deserialize_xml(val,it->name,file_name);
+        ::igl::XMLSerializer::LoadObject(val,it->name,name,file_name);
         sscanf(val,"%s %[^\n]",type_str,value_str);
         
         if(!bar->type_from_string(type_str,type))
@@ -156,8 +153,7 @@ namespace igl
       for(std::vector< ::igl::ReTwCBItem>::const_iterator it = cb_items.begin(); it != cb_items.end(); it++)
       {
         char* val;
-        //::igl::XMLSerializer::LoadObject(val,it->name,name,file_name);
-        ::igl::deserialize_xml(val,it->name,file_name);
+        ::igl::XMLSerializer::LoadObject(val,it->name,name,file_name);
         sscanf(val,"%s %[^\n]",type_str,value_str);
         
         if(!bar->type_from_string(type_str,type))
@@ -173,7 +169,7 @@ namespace igl
       return true;
     }
     
-    /*IGL_INLINE bool load_ReAntTweakBar(::igl::ReTwBar* bar, tinyxml2::XMLDocument* doc)
+    IGL_INLINE bool load_ReAntTweakBar(::igl::ReTwBar* bar, tinyxml2::XMLDocument* doc)
     {
       std::map<std::string,char*> variables;
       std::map<std::string,char*> cbVariables;
@@ -255,7 +251,7 @@ namespace igl
       delete s;
       
       return true;
-    }*/
+    }
     
 //  }
 }

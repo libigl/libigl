@@ -52,6 +52,7 @@ bool key_down(igl::Viewer &viewer, unsigned char key, int mods)
       resolve = true;
       break;
   }
+  return true;
 }
 
 int main(int argc, char *argv[])

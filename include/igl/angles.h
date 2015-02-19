@@ -7,7 +7,13 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_ANGLES_H
 #define IGL_ANGLES_H
-#warning "Deprecated. Use igl/internal_angles.h instead"
+#ifdef _WIN32
+ #pragma message ( "Deprecated. Use igl/internal_angles.h instead" )
+#else
+ #warning "Deprecated. Use igl/internal_angles.h instead"
+#endif
+
+
 #include "igl_inline.h"
 #include <Eigen/Core>
 namespace igl

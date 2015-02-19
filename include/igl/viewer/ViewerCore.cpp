@@ -13,7 +13,7 @@
 #include <iostream>
 
 
-Eigen::Matrix4f lookAt (
+IGL_INLINE Eigen::Matrix4f lookAt (
                         const Eigen::Vector3f& eye,
                         const Eigen::Vector3f& center,
                         const Eigen::Vector3f& up)
@@ -38,7 +38,7 @@ Eigen::Matrix4f lookAt (
   return Result;
 }
 
-Eigen::Matrix4f ortho (
+IGL_INLINE Eigen::Matrix4f ortho(
                        const float left,
                        const float right,
                        const float bottom,
@@ -57,7 +57,7 @@ Eigen::Matrix4f ortho (
   return Result;
 }
 
-Eigen::Matrix4f frustum (
+IGL_INLINE Eigen::Matrix4f frustum(
                          const float left,
                          const float right,
                          const float bottom,
@@ -76,7 +76,7 @@ Eigen::Matrix4f frustum (
   return Result;
 }
 
-Eigen::Matrix4f scale (const Eigen::Matrix4f& m,
+IGL_INLINE Eigen::Matrix4f scale(const Eigen::Matrix4f& m,
                        const Eigen::Vector3f& v)
 {
   Eigen::Matrix4f Result;
@@ -87,7 +87,7 @@ Eigen::Matrix4f scale (const Eigen::Matrix4f& m,
   return Result;
 }
 
-Eigen::Matrix4f translate(
+IGL_INLINE Eigen::Matrix4f translate(
                           const Eigen::Matrix4f& m,
                           const Eigen::Vector3f& v)
 {
@@ -96,53 +96,80 @@ Eigen::Matrix4f translate(
   return Result;
 }
 
+#ifdef ENABLE_SERIALIZATION
+#include <igl/serialize.h>
+namespace igl {
+  namespace serialization {
 
+    IGL_INLINE void serialization(bool s,ViewerCore& obj,std::vector<char>& buffer)
+    {
+      SERIALIZE_MEMBER(shininess);
 
-void igl::ViewerCore::InitSerialization()
-{
-  #ifdef ENABLE_XML_SERIALIZATION
-  xmlSerializer->Add(shininess, "shininess");
-  xmlSerializer->Add(background_color, "background_color");
-  xmlSerializer->Add(line_color, "line_color");
-  xmlSerializer->Add(light_position, "light_position");
-  xmlSerializer->Add(lighting_factor, "lighting_factor");
-  xmlSerializer->Add(trackball_angle, "trackball_angle");
-  xmlSerializer->Add(model_zoom, "model_zoom");
-  xmlSerializer->Add(model_translation, "model_translation");
-  xmlSerializer->Add(model_zoom_uv, "model_zoom_uv");
-  xmlSerializer->Add(model_translation_uv, "model_translation_uv");
-  xmlSerializer->Add(camera_zoom, "camera_zoom");
-  xmlSerializer->Add(orthographic, "orthographic");
-  xmlSerializer->Add(camera_eye, "camera_eye");
-  xmlSerializer->Add(camera_up, "camera_up");
-  xmlSerializer->Add(camera_center, "camera_center");
-  xmlSerializer->Add(camera_view_angle, "camera_view_angle");
-  xmlSerializer->Add(camera_dnear, "camera_dnear");
-  xmlSerializer->Add(camera_dfar, "camera_dfar");
-  xmlSerializer->Add(show_overlay, "show_overlay");
-  xmlSerializer->Add(show_overlay_depth, "show_overlay_depth");
-  xmlSerializer->Add(show_texture, "show_texture");
-  xmlSerializer->Add(show_faces, "show_faces");
-  xmlSerializer->Add(show_lines, "show_lines");
-  xmlSerializer->Add(show_vertid, "show_vertid");
-  xmlSerializer->Add(show_faceid, "show_faceid");
-  xmlSerializer->Add(point_size, "point_size");
-  xmlSerializer->Add(line_width, "line_width");
-  xmlSerializer->Add(invert_normals, "invert_normals");
-  xmlSerializer->Add(face_based, "face_based");
-  xmlSerializer->Add(face_based, "object_scale");
-  xmlSerializer->Add(viewport, "viewport");
-  xmlSerializer->Add(view, "view");
-  xmlSerializer->Add(model, "model");
-  xmlSerializer->Add(proj, "proj");
+      SERIALIZE_MEMBER(background_color);
+      SERIALIZE_MEMBER(line_color);
 
-  #endif
+      SERIALIZE_MEMBER(light_position);
+      SERIALIZE_MEMBER(lighting_factor);
+
+      SERIALIZE_MEMBER(trackball_angle);
+
+      SERIALIZE_MEMBER(model_zoom);
+      SERIALIZE_MEMBER(model_translation);
+
+      SERIALIZE_MEMBER(model_zoom_uv);
+      SERIALIZE_MEMBER(model_translation_uv);
+
+      SERIALIZE_MEMBER(object_scale);
+
+      SERIALIZE_MEMBER(camera_zoom);
+      SERIALIZE_MEMBER(orthographic);
+      SERIALIZE_MEMBER(camera_view_angle);
+      SERIALIZE_MEMBER(camera_dnear);
+      SERIALIZE_MEMBER(camera_dfar);
+      SERIALIZE_MEMBER(camera_eye);
+      SERIALIZE_MEMBER(camera_center);
+      SERIALIZE_MEMBER(camera_up);
+
+      SERIALIZE_MEMBER(show_faces);
+      SERIALIZE_MEMBER(show_lines);
+      SERIALIZE_MEMBER(invert_normals);
+      SERIALIZE_MEMBER(show_overlay);
+      SERIALIZE_MEMBER(show_overlay_depth);
+      SERIALIZE_MEMBER(show_vertid);
+      SERIALIZE_MEMBER(show_faceid);
+      SERIALIZE_MEMBER(show_texture);
+
+      SERIALIZE_MEMBER(point_size);
+      SERIALIZE_MEMBER(line_width);
+      SERIALIZE_MEMBER(is_animating);
+      SERIALIZE_MEMBER(animation_max_fps);
+
+      SERIALIZE_MEMBER(viewport);
+      SERIALIZE_MEMBER(view);
+      SERIALIZE_MEMBER(model);
+      SERIALIZE_MEMBER(proj);
+    }
+
+    IGL_INLINE void serialize(const ViewerCore& obj,std::vector<char>& buffer)
+    {
+      serialization(true,const_cast<ViewerCore&>(obj),buffer);
+    }
+
+    IGL_INLINE void deserialize(ViewerCore& obj,const std::vector<char>& buffer)
+    {
+      serialization(false,obj,const_cast<std::vector<char>&>(buffer));
+    }
+  }
 }
+#endif
 
 IGL_INLINE void igl::ViewerCore::align_camera_center(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F)
 {
+  if(V.rows() == 0)
+    return;
+
   get_scale_and_shift_to_fit_mesh(V,F,model_zoom,model_translation);
   // Rather than crash on empty mesh...
   if(V.size() > 0)
@@ -362,9 +389,6 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl)
 }
 
 IGL_INLINE igl::ViewerCore::ViewerCore()
-#ifdef ENABLE_XML_SERIALIZATION
-: XMLSerialization("Core")
-#endif
 {
   // Default shininess
   shininess = 35.0f;
