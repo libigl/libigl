@@ -21,9 +21,6 @@ namespace igl
 // TODO: write documentation
 
 class ViewerCore
-#ifdef ENABLE_XML_SERIALIZATION
-: public ::igl::XMLSerialization
-#endif
 {
 public:
   IGL_INLINE ViewerCore();

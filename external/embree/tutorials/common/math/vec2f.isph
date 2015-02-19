@@ -1,0 +1,132 @@
+// ======================================================================== //
+// Copyright 2009-2014 Intel Corporation                                    //
+//                                                                          //
+// Licensed under the Apache License, Version 2.0 (the "License");          //
+// you may not use this file except in compliance with the License.         //
+// You may obtain a copy of the License at                                  //
+//                                                                          //
+//     http://www.apache.org/licenses/LICENSE-2.0                           //
+//                                                                          //
+// Unless required by applicable law or agreed to in writing, software      //
+// distributed under the License is distributed on an "AS IS" BASIS,        //
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. //
+// See the License for the specific language governing permissions and      //
+// limitations under the License.                                           //
+// ======================================================================== //
+
+#pragma once
+
+/*! \brief ISPC Two-float vector class */
+struct Vec2f 
+{
+  float x;
+  float y;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// Constructors
+////////////////////////////////////////////////////////////////////////////////
+
+inline uniform Vec2f make_Vec2f(const uniform float a) { uniform Vec2f v; v.x = a; v.y = a; return v; }
+inline varying Vec2f make_Vec2f(const varying float a) { varying Vec2f v; v.x = a; v.y = a; return v; }
+
+inline uniform Vec2f make_Vec2f(const uniform float a, const uniform float b) { uniform Vec2f v; v.x = a; v.y = b; return v; }
+inline varying Vec2f make_Vec2f(const varying float a, const varying float b) { varying Vec2f v; v.x = a; v.y = b; return v; }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Unary Operators
+////////////////////////////////////////////////////////////////////////////////
+
+inline uniform Vec2f operator-(const uniform Vec2f a) { return make_Vec2f(-a.x,-a.y); }
+inline varying Vec2f operator-(const varying Vec2f a) { return make_Vec2f(-a.x,-a.y); }
+
+inline uniform Vec2f neg(const uniform Vec2f a) { return make_Vec2f(-a.x,-a.y); }
+inline varying Vec2f neg(const varying Vec2f a) { return make_Vec2f(-a.x,-a.y); }
+
+inline uniform Vec2f abs(const uniform Vec2f a) { return make_Vec2f(abs(a.x),abs(a.y)); }
+inline varying Vec2f abs(const varying Vec2f a) { return make_Vec2f(abs(a.x),abs(a.y)); }
+
+inline uniform Vec2f rcp(const uniform Vec2f a) { return make_Vec2f(rcp(a.x),rcp(a.y)); }
+inline varying Vec2f rcp(const varying Vec2f a) { return make_Vec2f(rcp(a.x),rcp(a.y)); }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Binary Operators
+////////////////////////////////////////////////////////////////////////////////
+
+inline uniform Vec2f operator+(const uniform Vec2f a, const uniform Vec2f b) { return make_Vec2f(a.x+b.x,a.y+b.y); }
+inline varying Vec2f operator+(const varying Vec2f a, const varying Vec2f b) { return make_Vec2f(a.x+b.x,a.y+b.y); }
+
+inline uniform Vec2f operator-(const uniform Vec2f a, const uniform Vec2f b) { return make_Vec2f(a.x-b.x,a.y-b.y); }
+inline varying Vec2f operator-(const varying Vec2f a, const varying Vec2f b) { return make_Vec2f(a.x-b.x,a.y-b.y); }
+
+inline uniform Vec2f operator*(const uniform float a, const uniform Vec2f b) { return make_Vec2f(a*b.x,a*b.y); }
+inline varying Vec2f operator*(const varying float a, const varying Vec2f b) { return make_Vec2f(a*b.x,a*b.y); }
+
+inline uniform Vec2f operator*(const uniform Vec2f a, const uniform float b) { return make_Vec2f(a.x*b,a.y*b); }
+inline varying Vec2f operator*(const varying Vec2f a, const varying float b) { return make_Vec2f(a.x*b,a.y*b); }
+
+inline uniform Vec2f operator*(const uniform Vec2f a, const uniform Vec2f b) { return make_Vec2f(a.x*b.x,a.y*b.y); }
+inline varying Vec2f operator*(const varying Vec2f a, const varying Vec2f b) { return make_Vec2f(a.x*b.x,a.y*b.y); }
+
+inline uniform Vec2f operator/(const uniform Vec2f a, const uniform float b) { return make_Vec2f(a.x/b,a.y/b); }
+inline varying Vec2f operator/(const varying Vec2f a, const varying float b) { return make_Vec2f(a.x/b,a.y/b); }
+
+inline uniform Vec2f operator/(const uniform float a, const uniform Vec2f b) { return make_Vec2f(a/b.x,a/b.y); }
+inline varying Vec2f operator/(const varying float a, const varying Vec2f b) { return make_Vec2f(a/b.x,a/b.y); }
+
+inline uniform Vec2f operator/(const uniform Vec2f a, const uniform Vec2f b) { return make_Vec2f(a.x/b.x,a.y/b.y); }
+inline varying Vec2f operator/(const varying Vec2f a, const varying Vec2f b) { return make_Vec2f(a.x/b.x,a.y/b.y); }
+
+inline uniform Vec2f min(const uniform Vec2f a, const uniform Vec2f b) { return make_Vec2f(min(a.x,b.x),min(a.y,b.y)); }
+inline varying Vec2f min(const varying Vec2f a, const varying Vec2f b) { return make_Vec2f(min(a.x,b.x),min(a.y,b.y)); }
+
+inline uniform Vec2f max(const uniform Vec2f a, const uniform Vec2f b) { return make_Vec2f(max(a.x,b.x),max(a.y,b.y)); }
+inline varying Vec2f max(const varying Vec2f a, const varying Vec2f b) { return make_Vec2f(max(a.x,b.x),max(a.y,b.y)); }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Reduction Operators
+////////////////////////////////////////////////////////////////////////////////
+
+inline uniform float reduce_add(const uniform Vec2f a) { return a.x+a.y; }
+inline varying float reduce_add(const varying Vec2f a) { return a.x+a.y; }
+
+inline uniform float reduce_mul(const uniform Vec2f a) { return a.x*a.y; }
+inline varying float reduce_mul(const varying Vec2f a) { return a.x*a.y; }
+
+inline uniform float reduce_min(const uniform Vec2f a) { return min(a.x,a.y); }
+inline varying float reduce_min(const varying Vec2f a) { return min(a.x,a.y); }
+
+inline uniform float reduce_max(const uniform Vec2f a) { return max(a.x,a.y); }
+inline varying float reduce_max(const varying Vec2f a) { return max(a.x,a.y); }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Comparison Operators
+////////////////////////////////////////////////////////////////////////////////
+
+//inline uniform bool operator==(const uniform Vec2f a, const uniform Vec2f b) { return (a.x == b.x) & (a.y == b.y); } // FIXME: enable
+//inline varying bool operator==(const varying Vec2f a, const varying Vec2f b) { return (a.x == b.x) & (a.y == b.y); }
+
+//inline uniform bool operator!=(const uniform Vec2f a, const uniform Vec2f b) { return (a.x != b.x) | (a.y != b.y); }
+//inline varying bool operator!=(const varying Vec2f a, const varying Vec2f b) { return (a.x != b.x) | (a.y != b.y); }
+
+inline uniform bool eq(const uniform Vec2f a, const uniform Vec2f b) { return (a.x == b.x) & (a.y == b.y); }
+inline varying bool eq(const varying Vec2f a, const varying Vec2f b) { return (a.x == b.x) & (a.y == b.y); }
+
+inline uniform bool ne(const uniform Vec2f a, const uniform Vec2f b) { return (a.x != b.x) | (a.y != b.y); }
+inline varying bool ne(const varying Vec2f a, const varying Vec2f b) { return (a.x != b.x) | (a.y != b.y); }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Euclidian Space Operators
+////////////////////////////////////////////////////////////////////////////////
+
+inline uniform float dot(const uniform Vec2f a, const uniform Vec2f b) { return a.x*b.x + a.y*b.y; }
+inline varying float dot(const varying Vec2f a, const varying Vec2f b) { return a.x*b.x + a.y*b.y; }
+
+inline uniform float length(const uniform Vec2f a) { return sqrt(dot(a,a)); }
+inline varying float length(const varying Vec2f a) { return sqrt(dot(a,a)); }
+
+inline uniform Vec2f normalize(const uniform Vec2f a) { return rsqrt(dot(a,a))*a; }
+inline varying Vec2f normalize(const varying Vec2f a) { return rsqrt(dot(a,a))*a; }
+
+inline uniform float distance(const uniform Vec2f a, const uniform Vec2f b) { return length(a-b); }
+inline varying float distance(const varying Vec2f a, const uniform Vec2f b) { return length(a-b); }

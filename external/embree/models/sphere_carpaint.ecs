@@ -1,4 +1,0 @@
--i sphere_carpaint.xml
--c sphere_view.ecs
-#-ambientlight 0.5 0.5 0.5
--renderer pathtracer

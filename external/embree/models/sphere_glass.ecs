@@ -1,4 +1,0 @@
--i sphere_glass.xml
--c sphere_view.ecs
-#-ambientlight 1 1 1
--renderer pathtracer

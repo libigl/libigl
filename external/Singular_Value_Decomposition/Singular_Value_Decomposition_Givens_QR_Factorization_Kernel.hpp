@@ -18,6 +18,11 @@
 // Compute the Givens half-angle, construct the Givens quaternion and the rotation sine/cosine (for the full angle)
 //###########################################################
 
+#ifdef _WIN32
+  #undef max
+  #undef min
+#endif
+
 ENABLE_SCALAR_IMPLEMENTATION(Ssh.f=SANPIVOT.f*SANPIVOT.f;)                                ENABLE_SSE_IMPLEMENTATION(Vsh=_mm_mul_ps(VANPIVOT,VANPIVOT);)                             ENABLE_AVX_IMPLEMENTATION(Vsh=_mm256_mul_ps(VANPIVOT,VANPIVOT);)
 ENABLE_SCALAR_IMPLEMENTATION(Ssh.ui=(Ssh.f>=Ssmall_number.f)?0xffffffff:0;)               ENABLE_SSE_IMPLEMENTATION(Vsh=_mm_cmpge_ps(Vsh,Vsmall_number);)                           ENABLE_AVX_IMPLEMENTATION(Vsh=_mm256_cmp_ps(Vsh,Vsmall_number, _CMP_GE_OS);) //ENABLE_AVX_IMPLEMENTATION(Vsh=_mm256_cmpge_ps(Vsh,Vsmall_number);)
 ENABLE_SCALAR_IMPLEMENTATION(Ssh.ui=Ssh.ui&SANPIVOT.ui;)                                  ENABLE_SSE_IMPLEMENTATION(Vsh=_mm_and_ps(Vsh,VANPIVOT);)                                  ENABLE_AVX_IMPLEMENTATION(Vsh=_mm256_and_ps(Vsh,VANPIVOT);)

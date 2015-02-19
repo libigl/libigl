@@ -12,45 +12,61 @@
 #include <igl/per_vertex_normals.h>
 #include <iostream>
 
-IGL_INLINE igl::ViewerData::ViewerData()
-#ifdef ENABLE_XML_SERIALIZATION
-: XMLSerialization("Data"), dirty(DIRTY_ALL)
+#ifdef ENABLE_SERIALIZATION
+#include <igl/serialize.h>
+namespace igl {
+  namespace serialization {
+
+    IGL_INLINE void serialization(bool s,ViewerData& obj,std::vector<char>& buffer)
+    {
+      SERIALIZE_MEMBER(V);
+      SERIALIZE_MEMBER(F);
+
+      SERIALIZE_MEMBER(F_normals);
+      SERIALIZE_MEMBER(F_material_ambient);
+      SERIALIZE_MEMBER(F_material_diffuse);
+      SERIALIZE_MEMBER(F_material_specular);
+
+      SERIALIZE_MEMBER(V_normals);
+      SERIALIZE_MEMBER(V_material_ambient);
+      SERIALIZE_MEMBER(V_material_diffuse);
+      SERIALIZE_MEMBER(V_material_specular);
+
+      SERIALIZE_MEMBER(V_uv);
+      SERIALIZE_MEMBER(F_uv);
+
+      SERIALIZE_MEMBER(texture_R);
+      SERIALIZE_MEMBER(texture_G);
+      SERIALIZE_MEMBER(texture_B);
+
+      SERIALIZE_MEMBER(lines);
+      SERIALIZE_MEMBER(points);
+
+      SERIALIZE_MEMBER(labels_positions);
+      SERIALIZE_MEMBER(labels_strings);
+
+      SERIALIZE_MEMBER(face_based);
+    }
+
+    IGL_INLINE void serialize(const ViewerData& obj,std::vector<char>& buffer)
+    {
+      serialization(true,const_cast<ViewerData&>(obj),buffer);
+    }
+
+    IGL_INLINE void deserialize(ViewerData& obj,const std::vector<char>& buffer)
+    {
+      serialization(false,obj,const_cast<std::vector<char>&>(buffer));
+      obj.dirty = ViewerData::DIRTY_ALL;
+    }
+  }
+}
 #endif
+
+IGL_INLINE igl::ViewerData::ViewerData()
+: dirty(DIRTY_ALL)
 {
   clear();
 };
-
-IGL_INLINE void igl::ViewerData::InitSerialization()
-{
-  #ifdef ENABLE_XML_SERIALIZATION
-  xmlSerializer->Add(V,"V");
-  xmlSerializer->Add(F,"F");
-  xmlSerializer->Add(F_normals,"F_normals");
-
-  xmlSerializer->Add(F_material_ambient,"F_material_ambient");
-  xmlSerializer->Add(F_material_diffuse,"F_material_diffuse");
-  xmlSerializer->Add(F_material_specular,"F_material_specular");
-
-  xmlSerializer->Add(V_normals,"V_normals");
-  xmlSerializer->Add(V_material_ambient,"V_material_ambient");
-  xmlSerializer->Add(V_material_diffuse,"V_material_diffuse");
-  xmlSerializer->Add(V_material_specular,"V_material_specular");
-
-  xmlSerializer->Add(V_uv,"V_uv");
-  xmlSerializer->Add(F_uv,"F_uv");
-  xmlSerializer->Add(texture_R,"texture_R");
-  xmlSerializer->Add(texture_G,"texture_G");
-  xmlSerializer->Add(texture_B,"texture_B");
-  xmlSerializer->Add(lines,"lines");
-  xmlSerializer->Add(points,"points");
-
-  xmlSerializer->Add(labels_positions,"labels_positions");
-  xmlSerializer->Add(labels_strings,"labels_strings");
-
-  xmlSerializer->Add(face_based,"face_based");
-
-  #endif
-}
 
 IGL_INLINE void igl::ViewerData::set_face_based(bool newvalue)
 {
@@ -195,7 +211,7 @@ IGL_INLINE void igl::ViewerData::set_uv(const Eigen::MatrixXd& UV)
 IGL_INLINE void igl::ViewerData::set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
 {
   set_face_based(true);
-  V_uv = UV_V;
+  V_uv = UV_V.block(0,0,UV_V.rows(),2);
   F_uv = UV_F;
   dirty |= DIRTY_UV;
 }

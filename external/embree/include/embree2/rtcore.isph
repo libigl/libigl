@@ -1,0 +1,97 @@
+// ======================================================================== //
+// Copyright 2009-2014 Intel Corporation                                    //
+//                                                                          //
+// Licensed under the Apache License, Version 2.0 (the "License");          //
+// you may not use this file except in compliance with the License.         //
+// You may obtain a copy of the License at                                  //
+//                                                                          //
+//     http://www.apache.org/licenses/LICENSE-2.0                           //
+//                                                                          //
+// Unless required by applicable law or agreed to in writing, software      //
+// distributed under the License is distributed on an "AS IS" BASIS,        //
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. //
+// See the License for the specific language governing permissions and      //
+// limitations under the License.                                           //
+// ======================================================================== //
+
+#ifndef __RTCORE_ISPH__
+#define __RTCORE_ISPH__
+
+
+#ifdef _WIN32
+#  define RTCORE_ALIGN(...) // FIXME: need to specify alignment
+#else
+#  define RTCORE_ALIGN(...) // FIXME: need to specify alignment
+#endif
+
+#include "rtcore_scene.isph"
+#include "rtcore_geometry.isph"
+#include "rtcore_geometry_user.isph"
+
+/*! \file rtcore.isph Defines the Embree Ray Tracing Kernel API for ISPC.
+
+   This file defines the Embree ray tracing kernel API for C and
+   C++. The user is supposed to include this file, and alternatively
+   the rtcore_ray.isph file, but none of the other .isph files in this
+   folder. */
+
+/*! \{ */
+
+/*! \brief Initializes the Embree ray tracing core
+
+  Initializes the ray tracing core and passed some configuration
+  string. The configuration string allows to configure implementation
+  specific parameters. If this string is NULL, a default configuration
+  is used. The following configuration flags are supported by the
+  Embree implementation of the API:
+  
+  threads = num,       // sets the number of threads to use (default is to use all threads)
+  verbose = num,       // sets verbosity level (default is 0)
+
+  If Embree is started on an unsupported CPU, rtcInit will fail and
+  set the RTC_UNSUPPORTED_CPU error code.
+  
+*/
+void rtcInit(const uniform int8* uniform cfg = NULL);
+
+/*! \brief Shuts down Embree. 
+
+  Shuts down the ray tracing core. After shutdown, all scene handles
+  are invalid, and invoking any API call except rtcInit is not
+  allowed. The application should invoke this call before
+  terminating. It is safe to call rtcInit again after an rtcExit
+  call. */
+void rtcExit();
+
+/*! \brief Error codes returned by the rtcGetError function. */
+enum RTCError {
+  RTC_NO_ERROR = 0,          //!< No error has been recorded.
+  RTC_UNKNOWN_ERROR = 1,     //!< An unknown error has occured.
+  RTC_INVALID_ARGUMENT = 2,  //!< An invalid argument is specified
+  RTC_INVALID_OPERATION = 3, //!< The operation is not allowed for the specified object.
+  RTC_OUT_OF_MEMORY = 4,     //!< There is not enough memory left to execute the command.
+  RTC_UNSUPPORTED_CPU = 5    //!< The CPU is not supported as it does not support SSE2.
+};
+
+/*! \brief Returns the value of the per-thread error flag. 
+
+  If an error occurs this flag is set to an error code if it stores no
+  previous error. The rtcGetError function reads and returns the
+  currently stored error and clears the error flag again. */
+uniform RTCError rtcGetError();
+
+/*! \brief Type of error callback function. */
+typedef void (*uniform RTC_ERROR_FUNCTION)(const uniform RTCError code, const uniform int8* uniform str);
+
+/*! \brief Sets a callback function that is called whenever an error occurs. */
+void rtcSetErrorFunction(uniform RTC_ERROR_FUNCTION func);
+
+/*! \brief Implementation specific (do not call).
+
+  This function is implementation specific and only for debugging
+  purposes. Do not call it. */
+void rtcDebug(); 
+
+/*! \} */
+
+#endif

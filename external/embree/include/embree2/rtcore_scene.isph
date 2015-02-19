@@ -1,0 +1,96 @@
+// ======================================================================== //
+// Copyright 2009-2014 Intel Corporation                                    //
+//                                                                          //
+// Licensed under the Apache License, Version 2.0 (the "License");          //
+// you may not use this file except in compliance with the License.         //
+// You may obtain a copy of the License at                                  //
+//                                                                          //
+//     http://www.apache.org/licenses/LICENSE-2.0                           //
+//                                                                          //
+// Unless required by applicable law or agreed to in writing, software      //
+// distributed under the License is distributed on an "AS IS" BASIS,        //
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. //
+// See the License for the specific language governing permissions and      //
+// limitations under the License.                                           //
+// ======================================================================== //
+
+#ifndef __RTCORE_SCENE_ISPH__
+#define __RTCORE_SCENE_ISPH__
+
+/*! \ingroup embree_kernel_api */
+/*! \{ */
+
+/*! forward declarations for ray structures */
+struct RTCRay1;
+struct RTCRay;
+
+/*! scene flags */
+enum RTCSceneFlags 
+{
+  /* dynamic type flags */
+  RTC_SCENE_STATIC     = (0 << 0),    //!< specifies static scene
+  RTC_SCENE_DYNAMIC    = (1 << 0),    //!< specifies dynamic scene
+
+  /* acceleration structure flags */
+  RTC_SCENE_COMPACT    = (1 << 8),    //!< use memory conservative data structures
+  RTC_SCENE_COHERENT   = (1 << 9),    //!< optimize data structures for coherent rays (enabled by default)
+  RTC_SCENE_INCOHERENT = (1 << 10),    //!< optimize data structures for in-coherent rays
+  RTC_SCENE_HIGH_QUALITY = (1 << 11),  //!< create higher quality data structures
+
+  /* traversal algorithm flags */
+  RTC_SCENE_ROBUST     = (1 << 16)     //!< use more robust traversal algorithms
+};
+
+/*! enabled algorithm flags */
+enum RTCAlgorithmFlags 
+{
+  RTC_INTERSECT_UNIFORM = (1 << 0),    //!< enables the uniform rtcIntersect1 and uniform rtcOccluded1 functions for this scene
+  RTC_INTERSECT_VARYING = (1 << 1),    //!< enables the varying rtcIntersect and varying rtcOccluded functions for this scene
+};
+
+/*! \brief Defines an opaque scene type */
+typedef uniform struct __RTCScene {}* uniform RTCScene;
+
+/*! Creates a new scene. */
+RTCScene rtcNewScene (uniform RTCSceneFlags flags, uniform RTCAlgorithmFlags aflags);
+
+/*! Commits the geometry of the scene. After initializing or modifying
+ *  geometries, commit has to get called before tracing
+ *  rays. */
+void rtcCommit (RTCScene scene); 
+
+/*! Commits the geometry of the scene. The calling threads will be used
+ *  internally as a worker threads. The function will wait until
+ *  'numThreads' threads have called this function. After initializing
+ *  or modifying geometries, commit has to get called before
+ *  tracing rays. */
+void rtcCommitThread(RTCScene scene, uniform unsigned int threadID, uniform unsigned int numThreads);
+
+/*! Intersects a uniform ray with the scene. This function can only be
+ *  called for scenes with the RTC_INTERSECT_UNIFORM flag set. The ray
+ *  has to be aligned to 16 bytes. */
+void rtcIntersect1 (RTCScene scene, uniform RTCRay1& ray);
+
+/*! Intersects a varying ray with the scene. This function can only be
+ *  called for scenes with the RTC_INTERSECT_VARYING flag set. The
+ *  valid mask and ray have both to be aligned to sizeof(varing float)
+ *  bytes. */
+void rtcIntersect (RTCScene scene, varying RTCRay& ray);
+
+/*! Tests if a uniform ray is occluded by the scene. This function can
+ *  only be called for scenes with the RTC_INTERSECT_UNIFORM flag
+ *  set. The ray has to be aligned to 16 bytes. */
+void rtcOccluded1 (RTCScene scene, uniform RTCRay1& ray);
+
+/*! Tests if a varying ray is occluded by the scene. This function can
+ *  only be called for scenes with the RTC_INTERSECT_VARYING flag
+ *  set. The valid mask and ray have both to be aligned to
+ *  sizeof(varing float) bytes. */
+void rtcOccluded (RTCScene scene, varying RTCRay& ray);
+
+/*! Deletes the geometry again. */
+void rtcDeleteScene (RTCScene scene);
+
+/*! @} */
+
+#endif

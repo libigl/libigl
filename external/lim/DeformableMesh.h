@@ -6,6 +6,7 @@
 #ifndef DEFORMABLE_MESH_H
 #define DEFORMABLE_MESH_H
 
+#include <iostream>
 #include <vector>
 
 #include <Eigen/Dense>

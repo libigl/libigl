@@ -91,7 +91,7 @@ void LGARAP_LIMSolver2D::prepareProblemData(std::vector<int>& hessRowIdx, std::v
   const int numTriangles = mesh->Triangles->rows();
 
   CotanWeights.resize(numTriangles,3);
-  igl::cotmatrix_entries(*mesh->InitalVertices, *mesh->Triangles, CotanWeights);
+  igl::cotmatrix_entries(*mesh->InitalVertices,*mesh->Triangles,CotanWeights);
 
   // Create matrices L, K
   Eigen::SparseMatrix<double> B, tempL, tempK, restV;

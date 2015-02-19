@@ -9,9 +9,12 @@
 #include <cstdio>
 #include <cstring>
 
-
 #ifdef _WIN32
- #include <Commdlg.h>
+  #include <windows.h>
+  #undef max
+  #undef min
+  
+  #include <Commdlg.h>
 #endif
 
 IGL_INLINE std::string igl::file_dialog_open()
@@ -32,20 +35,18 @@ IGL_INLINE std::string igl::file_dialog_open()
   while ( fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL )
   {
   }
-#elif _WIN32
+#elif defined _WIN32
   
   // Use native windows file dialog box
   // (code contributed by Tino Weinkauf)
 
   OPENFILENAME ofn;       // common dialog box structure
   char szFile[260];       // buffer for file name
-  HWND hwnd;              // owner window
-  HANDLE hf;              // file handle
 
   // Initialize OPENFILENAME
   ZeroMemory(&ofn, sizeof(ofn));
   ofn.lStructSize = sizeof(ofn);
-  ofn.hwndOwner = NULL;//hwnd;
+  ofn.hwndOwner = NULL;
   ofn.lpstrFile = new char[100];
   // Set lpstrFile[0] to '\0' so that GetOpenFileName does not 
   // use the contents of szFile to initialize itself.

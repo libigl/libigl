@@ -38,6 +38,9 @@ void TetrahedronMesh::InitMesh()
 
     double vol = a.dot(c.cross(b));
 
+    if(vol <= 0)
+      std::cerr << "element " << t << " has zero or negative volume!\n";
+
     if(vol < minVol)
       minVol = vol;
   }

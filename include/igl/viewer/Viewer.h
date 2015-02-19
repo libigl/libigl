@@ -23,18 +23,13 @@
 #define IGL_MOD_ALT             0x0004
 #define IGL_MOD_SUPER           0x0008
 
-#ifdef ENABLE_XML_SERIALIZATION
-  #include <igl/xml/XMLSerializer.h>
-  #include <igl/xml/XMLSerialization.h>
-#endif
-
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <igl/viewer/OpenGL_shader.h>
-#include <igl/viewer/ViewerData.h>
 #include <igl/viewer/OpenGL_state.h>
-#include <igl/viewer/ViewerPlugin.h>
 #include <igl/viewer/ViewerCore.h>
+#include <igl/viewer/ViewerData.h>
+#include <igl/viewer/ViewerPlugin.h>
 
 namespace igl
 {
@@ -43,8 +38,8 @@ namespace igl
   {
   public:
 
-    int launch(std::string filename = "");
-    void init();
+    IGL_INLINE int launch(std::string filename = "");
+    IGL_INLINE void init();
 
     // Stores all the viewing options
     igl::ViewerCore core;
@@ -57,8 +52,8 @@ namespace igl
 
     // List of registered plugins
     std::vector<ViewerPlugin*> plugins;
-    void init_plugins();
-    void shutdown_plugins();
+    IGL_INLINE void init_plugins();
+    IGL_INLINE void shutdown_plugins();
 
     // Temporary data stored when the mouse button is pressed
     Eigen::Vector4f down_rotation;
@@ -86,28 +81,28 @@ namespace igl
     ~Viewer();
 
     // Mesh IO
-    bool load_mesh_from_file(const char* mesh_file_name);
-    bool save_mesh_to_file(const char* mesh_file_name);
+    IGL_INLINE bool load_mesh_from_file(const char* mesh_file_name);
+    IGL_INLINE bool save_mesh_to_file(const char* mesh_file_name);
 
     // Callbacks
-    bool key_down(unsigned char key, int modifier);
-    bool key_up(unsigned char key, int modifier);
+    IGL_INLINE bool key_down(int key,int modifier);
+    IGL_INLINE bool key_up(int key,int modifier);
 
-    bool mouse_down(MouseButton button, int modifier);
-    bool mouse_up(MouseButton button, int modifier);
+    IGL_INLINE bool mouse_down(MouseButton button,int modifier);
+    IGL_INLINE bool mouse_up(MouseButton button,int modifier);
 
-    bool mouse_move(int mouse_x, int mouse_y);
-    bool mouse_scroll(float delta_y);
+    IGL_INLINE bool mouse_move(int mouse_x,int mouse_y);
+    IGL_INLINE bool mouse_scroll(float delta_y);
 
     // Scene IO
-    bool load_scene();
-    bool save_scene();
+    IGL_INLINE bool load_scene();
+    IGL_INLINE bool save_scene();
 
     // Draw everything
-    void draw();
+    IGL_INLINE void draw();
 
     // OpenGL context resize
-    void resize(int w, int h);
+    IGL_INLINE void resize(int w,int h);
 
 
     // C-style callbacks

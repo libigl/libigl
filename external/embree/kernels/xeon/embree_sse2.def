@@ -1,0 +1,51 @@
+; To generate this file, first compile the Embree project as a static
+; library (Project Properties -> General -> Configuration Types -> Static Library).
+; Now open an Visual Studio Command Prompt (Tools -> Visual Studio Command Prompt)
+; and navigate into the x64/Release folder. There execute the following command
+; and copy the contents of the symbols.txt file under the EXPORTS keyword.
+;   dumpbin embree.lib /symbols | grep rtc | grep External | sed 's/^.\{48\}//' > symbols.txt
+
+LIBRARY	"embree"
+
+EXPORTS
+rtcCommitThread___un_3C_s[un__RTCScene]_3E_unuunu
+rtcCommit___un_3C_s[un__RTCScene]_3E_
+rtcDebug___
+rtcDeleteGeometry___un_3C_s[un__RTCScene]_3E_unu
+rtcDeleteScene___un_3C_s[un__RTCScene]_3E_
+rtcDisable___un_3C_s[un__RTCScene]_3E_unu
+rtcEnable___un_3C_s[un__RTCScene]_3E_unu
+rtcExit___
+rtcGetError___
+rtcInit___un_3C_Cunt_3E_
+rtcIntersect1___un_3C_s[un__RTCScene]_3E_REFs[unRTCRay1]
+rtcIntersect___un_3C_s[un__RTCScene]_3E_REFs[vyRTCRay]
+rtcMapBuffer___un_3C_s[un__RTCScene]_3E_unuunenum[RTCBufferType]
+rtcNewHairGeometry___un_3C_s[un__RTCScene]_3E_unenum[RTCGeometryFlags]unuunuunu
+rtcNewInstance___un_3C_s[un__RTCScene]_3E_un_3C_s[un__RTCScene]_3E_
+rtcNewScene___unenum[RTCSceneFlags]unenum[RTCAlgorithmFlags]
+rtcNewSubdivisionMesh___un_3C_s[un__RTCScene]_3E_unenum[RTCGeometryFlags]unuunuunuunuunuunuunu
+rtcNewTriangleMesh___un_3C_s[un__RTCScene]_3E_unenum[RTCGeometryFlags]unuunuunu
+rtcNewUserGeometry___un_3C_s[un__RTCScene]_3E_unu
+rtcOccluded1___un_3C_s[un__RTCScene]_3E_REFs[unRTCRay1]
+rtcOccluded___un_3C_s[un__RTCScene]_3E_REFs[vyRTCRay]
+rtcSetBoundsFunction___un_3C_s[un__RTCScene]_3E_unuun_3C____un_3C_unv_3E_unuREFs[unRTCBounds]_3E_
+rtcSetBuffer___un_3C_s[un__RTCScene]_3E_unuunenum[RTCBufferType]un_3C_unv_3E_unuunu
+rtcSetErrorFunction___un_3C____Cunenum[RTCError]un_3C_Cunt_3E__3E_
+rtcSetIntersectFunction1___un_3C_s[un__RTCScene]_3E_unuun_3C____un_3C_unv_3E_REFs[unRTCRay1]unu_3E_
+rtcSetIntersectFunction___un_3C_s[un__RTCScene]_3E_unuun_3C____un_3C_unv_3E_REFs[vyRTCRay]unu_3E_
+rtcSetIntersectionFilterFunction1___un_3C_s[un__RTCScene]_3E_unuun_3C____un_3C_unv_3E_REFs[unRTCRay1]_3E_
+rtcSetIntersectionFilterFunction___un_3C_s[un__RTCScene]_3E_unuun_3C____un_3C_unv_3E_REFs[vyRTCRay]_3E_
+rtcSetMask___un_3C_s[un__RTCScene]_3E_unuuni
+rtcSetOccludedFunction1___un_3C_s[un__RTCScene]_3E_unuun_3C____un_3C_unv_3E_REFs[unRTCRay1]unu_3E_
+rtcSetOccludedFunction___un_3C_s[un__RTCScene]_3E_unuun_3C____un_3C_unv_3E_REFs[vyRTCRay]unu_3E_
+rtcSetOcclusionFilterFunction1___un_3C_s[un__RTCScene]_3E_unuun_3C____un_3C_unv_3E_REFs[unRTCRay1]_3E_
+rtcSetOcclusionFilterFunction___un_3C_s[un__RTCScene]_3E_unuun_3C____un_3C_unv_3E_REFs[vyRTCRay]_3E_
+rtcSetTransform___un_3C_s[un__RTCScene]_3E_unuunenum[RTCMatrixType]un_3C_Cunf_3E_
+rtcSetUserData___un_3C_s[un__RTCScene]_3E_unuun_3C_unv_3E_
+rtcUnmapBuffer___un_3C_s[un__RTCScene]_3E_unuunenum[RTCBufferType]
+rtcUpdate___un_3C_s[un__RTCScene]_3E_unu
+
+rtcUpdateBuffer___un_3C_s[un__RTCScene]_3E_unuunenum[RTCBufferType]
+
+rtcSetDisplacementFunction___un_3C_s[un__RTCScene]_3E_unuun_3C____un_3C_unv_3E_unuunuun_3C_Cunf_3E_un_3C_Cunf_3E_un_3C_Cunf_3E_un_3C_Cunf_3E_un_3C_Cunf_3E_un_3C_unf_3E_un_3C_unf_3E_un_3C_unf_3E_unu_3E_un_3C_s[unRTCBounds]_3E_

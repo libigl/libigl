@@ -1,17 +1,15 @@
 #include <igl/readOFF.h>
 #include <iostream>
 
-#include <igl/xml/XMLSerializer.h>
-#include <igl/xml/XMLSerialization.h>
+#include <igl/serialize.h>
+#include <igl/xml/serialize_xml.h>
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 
-class State : public ::igl::XMLSerialization
+// derive from igl::Serializable to serialize your own type
+struct State : public igl::Serializable
 {
-public:
-  State() : XMLSerialization("dummy") {}
-
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   std::vector<int> ids;
@@ -20,39 +18,75 @@ public:
   // register the fields you want to serialize
   void InitSerialization()
   {
-    xmlSerializer->Add(V  , "V");
-    xmlSerializer->Add(F  , "F");
-    xmlSerializer->Add(ids, "ids");
+    this->Add(V  , "V");
+    this->Add(F  , "F");
+    this->Add(ids, "ids");
   }
-
 };
+
+// alternatively you can do it like the following to have
+// a non-intrusive serialization:
+//
+// struct State
+// {
+//   Eigen::MatrixXd V;
+//   Eigen::MatrixXi F;
+//   std::vector<int> ids;
+// };
+// 
+// SERIALIZE_TYPE(State,
+//  SERIALIZE_MEMBER(V)
+//   SERIALIZE_MEMBER(F)
+//   SERIALIZE_MEMBER_NAME(ids,"ids")
+// )
 
 int main(int argc, char *argv[])
 {
-  State state;
+  std::string binaryFile = "binData";
+  std::string xmlFile = "data.xml";
+
+  bool b = true;
+  unsigned int num = 10;
+  std::vector<float> vec = {0.1f,0.002f,5.3f};
+
+  // use overwrite = true for the first serialization to create or overwrite an existing file
+  igl::serialize(b,"B",binaryFile,true);
+  // append following serialization to existing file
+  igl::serialize(num,"Number",binaryFile);
+  igl::serialize(vec,"VectorName",binaryFile);
+
+  // deserialize back to variables
+  igl::deserialize(b,"B",binaryFile);
+  igl::deserialize(num,"Number",binaryFile);
+  igl::deserialize(vec,"VectorName",binaryFile);
+
+  State stateIn, stateOut;
 
   // Load a mesh in OFF format
-  igl::readOFF("../shared/2triangles.off", state.V, state.F);
+  igl::readOFF("../shared/2triangles.off",stateIn.V,stateIn.F);
 
   // Save some integers in a vector
-  state.ids.push_back(6);
-  state.ids.push_back(7);
+  stateIn.ids.push_back(6);
+  stateIn.ids.push_back(7);
 
-  // Serialize to XML the state of the application
-  ::igl::XMLSerializer serializer_save("601_Serialization");
-  serializer_save.Add(state,"State");
-  serializer_save.Save("temp.xml",true);
+  // Serialize the state of the application
+  igl::serialize(stateIn,"State",binaryFile,true);
 
-  // Load the state from the same XML file
-  State loaded_state;
-  ::igl::XMLSerializer serializer_load("601_Serialization");
-  serializer_load.Add(loaded_state,"State");
-  serializer_load.Load("temp.xml");
+  // Load the state from the same file
+  igl::deserialize(stateOut,"State",binaryFile);
 
   // Plot the state
-  std::cout << "Vertices: " << std::endl << loaded_state.V << std::endl;
-  std::cout << "Faces:    " << std::endl << loaded_state.F << std::endl;
+  std::cout << "Vertices: " << std::endl << stateOut.V << std::endl;
+  std::cout << "Faces:    " << std::endl << stateOut.F << std::endl;
   std::cout << "ids:      " << std::endl
-            << loaded_state.ids[0] << " " << loaded_state.ids[1] << std::endl;
-
+            << stateOut.ids[0] << " " << stateOut.ids[1] << std::endl;
+			
+  // XML serialization
+  
+  // binary = false, overwrite = true
+  igl::serialize_xml(vec,"VectorXML",xmlFile,false,true);
+  // binary = true, overwrite = false
+  igl::serialize_xml(vec,"VectorBin",xmlFile,true,false);
+  igl::deserialize_xml(vec,"VectorXML",xmlFile);
+  igl::deserialize_xml(vec,"VectorBin",xmlFile);
 }

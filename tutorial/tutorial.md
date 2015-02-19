@@ -1875,73 +1875,110 @@ to the extreme difficulty in serializing pointer-based data structured, such as
 an half-edge data structure ([OpenMesh](http://openmesh.org), [CGAL](http://www.cgal.org)), or a pointer based indexed structure ([VCG](http://vcg.isti.cnr.it/~cignoni/newvcglib/html/)).
 
 In libigl, serialization is much simpler, since the majority of the functions use basic types, and pointers are used in very rare cases (usually to interface
-with external libraries). Libigl bundles a simple and self-contained XML serialization framework, that drastically reduces the overhead required to add
+with external libraries). Libigl bundles a simple and self-contained binary and XML serialization framework, that drastically reduces the overhead required to add
 serialization to your applications.
 
-Assume that the state of your application is a mesh and a set of
-integer ids:
+To de-/serialize a set of variables use the following method:
 
 ```cpp
-class State : public igl::XMLSerialization
-{
-public:
-  State() : XMLSerialization("dummy") {}
+#include "igl/serialize.h"
 
+bool b = true;
+unsigned int num = 10;
+std::vector<float> vec = {0.1,0.002,5.3};
+
+// use overwrite = true for the first serialization to create or overwrite an existing file
+igl::serialize(b,"B","filename",true);
+// append following serialization to existing file
+igl::serialize(num,"Number","filename");
+igl::serialize(vec,"VectorName","filename");
+
+// deserialize back to variables
+igl::deserialize(b,"B","filename");
+igl::deserialize(num,"Number","filename");
+igl::deserialize(vec,"VectorName","filename");
+```
+
+Currently all fundamental data types (bool, int, float, double, ...) are supported, as well as std::string, basic `STL` containers, dense and sparse Eigen matrices and nestings of those.
+Some limitations apply to pointers. Currently, loops or many to one type of link structures are not handled correctly. Each pointer is assumed to point to a different independent object.
+Uninitialized pointers must be set to `nullptr` before de-/serialization to avoid memory leaks. Cross-platform issues like little-, big-endianess is currently not supported.
+To make user defined types serializable, just derive from `igl::Serializable` and trivially implementing the `InitSerialization` method.
+
+Assume that the state of your application is a mesh and a set of integer ids:
+
+```cpp
+#include "igl/serialize.h"
+
+struct State : public igl::Serializable
+{
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   std::vector<int> ids;
 
   void InitSerialization()
   {
-    xmlSerializer->Add(V  , "V");
-    xmlSerializer->Add(F  , "F");
-    xmlSerializer->Add(ids, "ids");
+    this->Add(V  , "V");
+    this->Add(F  , "F");
+    this->Add(ids, "ids");
   }
 };
 ```
 
-Any class can be made serializable by inheriting from ``igl::XMLSerialization` and trivially implementing the `InitSerialization` method. The library can serialize all the basic `stl` types, all `Eigen` types and any class inheriting
-from `igl::XMLSerialization`.
-
-The state can be saved into an xml file with:
+If you need more control over the serialization of your types, you can override the following functions or directly inherit from the interface `igl::SerializableBase`.
 
 ```cpp
-igl::XMLSerializer serializer_save("601_Serialization");
-serializer_save.Add(state,"State");
-serializer_save.Save("temp.xml",true);
+bool Serializable::PreSerialization() const;
+void Serializable::PostSerialization() const;
+bool Serializable::PreDeserialization();
+void Serializable::PostDeserialization();
 ```
 
-This code generates the following xml file (assuming `V` and `F` contains a simple mesh with two triangles, and `ids` contains the numbers 6 and 7):
-
-```xml
-<:::601_Serialization>
-    <State>
-        <V rows="4" cols="3" matrix="
-0,0,0,
-1,0,0,
-1,1,1,
-2,1,0"/>
-        <F rows="2" cols="3" matrix="
-0,1,2,
-1,3,2"/>
-        <ids size="2" vector_int="
-6,7"/>
-    </State>
-</:::601_Serialization>
-```
-
-The xml file can be loaded in a similar way:
+Alternatively, if you want a non-intrusive way of serializing your state you can overload the following functions:
 
 ```cpp
-State loaded_state;
-igl::XMLSerializer serializer_load("601_Serialization");
-serializer_load.Add(loaded_state,"State");
-serializer_load.Load("temp.xml");
+namespace igl { namespace serialization {
+
+void serialize(const State& obj,std::vector<char>& buffer){
+  ::igl::serialize(obj.V,std::string("V"),buffer);
+  ::igl::serialize(obj.F,std::string("F"),buffer);
+  ::igl::serialize(obj.ids,std::string("ids"),buffer);
+}
+void deserialize(State& obj,const std::vector<char>& buffer){
+  ::igl::deserialize(obj.V,std::string("V"),buffer);
+  ::igl::deserialize(obj.F,std::string("F"),buffer);
+  ::igl::deserialize(obj.ids,std::string("ids"),buffer);
+}
+}}
 ```
 
-The serialization framework can also be used as a convenient interface to
-provide parameters to command line applications, since the xml files can be
-directly edited with a standard text editor.
+Equivalently, you can use the following macros:
+
+```cpp
+SERIALIZE_TYPE(State,
+ SERIALIZE_MEMBER(V)
+ SERIALIZE_MEMBER(F)
+ SERIALIZE_MEMBER_NAME(ids,"ids")
+)
+```
+
+All the former code is for binary serialization which is especially useful if you have to handle larger data where the loading and saving times become more important.
+For cases where you want to read and edit the serialized data by hand we provide a serialization to XML files which is based on the library [tinyxml2](https://github.com/leethomason/tinyxml2).
+There you also have the option to create a partial binary serialization of your data by using the binary parameter, exposed in the function `serialize_xml()`:
+
+```cpp
+#include "igl/xml/serialize_xml.h"
+
+int number;
+
+// binary = false, overwrite = true
+igl::serialize_xml(vec,"VectorXML",xmlFile,false,true);
+// binary = true, overwrite = true
+igl::serialize_xml(vec,"VectorBin",xmlFile,true,true);
+igl::deserialize_xml(vec,"VectorXML",xmlFile);
+igl::deserialize_xml(vec,"VectorBin",xmlFile);
+```
+
+For user defined types derive from `XMLSerializable`. 
 
 The code snippets above are extracted from [Example
 601](601_Serialization/main.cpp). We strongly suggest that you make the entire
