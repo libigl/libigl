@@ -6,6 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+// TODO: save_scene()/load_scene()
+
 #include "Viewer.h"
 #include <igl/get_seconds.h>
 
@@ -27,9 +29,6 @@
 #   include <OpenGL/gl3.h>
 #   define __gl_h_ /* Prevent inclusion of the old gl.h */
 #else
-#   ifdef _WIN32
-#       include <windows.h>
-#   endif
 #   include <GL/gl.h>
 #endif
 
@@ -51,10 +50,6 @@
 #include <limits>
 #include <cassert>
 
-#ifdef ENABLE_XML_SERIALIZATION
-  #include "igl/xml/XMLSerializer.h"
-#endif
-
 #include <igl/readOBJ.h>
 #include <igl/readOFF.h>
 #include <igl/adjacency_list.h>
@@ -70,26 +65,27 @@
 #include <igl/unproject.h>
 #include <igl/viewer/TextRenderer.h>
 
+#ifdef ENABLE_SERIALIZATION
+#include <igl/serialize.h>
+#endif
+
 // Internal global variables used for glfw event handling
 static igl::Viewer * __viewer;
 static double highdpi = 1;
 static double scroll_x = 0;
 static double scroll_y = 0;
+static int global_KMod = 0;
 
 namespace {
-  #ifndef NO_TBAR
-  void TW_CALL copy_str(std::string& dst, const std::string& src)
+void TW_CALL copy_str(std::string& dst, const std::string& src)
 {
   dst = src;
 }
-#endif
 }
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
-  #ifndef NO_TBAR
   bool tw_used = TwEventMouseButtonGLFW(button, action);
-  #endif
   igl::Viewer::MouseButton mb;
 
   if (button == GLFW_MOUSE_BUTTON_1)
@@ -101,12 +97,10 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 
   if (action == GLFW_PRESS)
   {
-    #ifndef NO_TBAR
     if(!tw_used)
     {
       __viewer->mouse_down(mb,modifier);
     }
-    #endif
   } else
   {
     // Always call mouse_up on up
@@ -120,10 +114,7 @@ static void glfw_error_callback(int error, const char* description)
   fputs(description, stderr);
 }
 
-int global_KMod = 0;
-#ifndef NO_TBAR
-
-int TwEventKeyGLFW3(int glfwKey, int glfwAction)
+IGL_INLINE int TwEventKeyGLFW3(int glfwKey, int glfwAction)
 {
   int handled = 0;
 
@@ -264,21 +255,19 @@ int TwEventKeyGLFW3(int glfwKey, int glfwAction)
 
   return handled;
 }
-#endif
+
 static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int modifier)
 {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
 
-    #ifndef NO_TBAR
-    if (!TwEventKeyGLFW3(key,action))
+  if (!TwEventKeyGLFW3(key,action))
   {
     if (action == GLFW_PRESS)
       __viewer->key_down(key, modifier);
     else
       __viewer->key_up(key, modifier);
   }
-  #endif
 }
 
 static void glfw_window_size(GLFWwindow* window, int width, int height)
@@ -288,7 +277,6 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
 
   __viewer->resize(w, h);
 
-#ifndef NO_TBAR
   TwWindowSize(w, h);
   const auto & bar = __viewer->bar;
   // Keep AntTweakBar on right side of screen and height == opengl height
@@ -304,18 +292,15 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
   size[1] = highdpi*(height-pos[1]-10);
   TwSetParam(bar, NULL, "position", TW_PARAM_INT32, 2, pos);
   TwSetParam(bar, NULL, "size", TW_PARAM_INT32, 2,size);
-#endif
 }
 
 static void glfw_mouse_move(GLFWwindow* window, double x, double y)
 {
-  #ifndef NO_TBAR
   if(!TwEventMousePosGLFW(x*highdpi,y*highdpi) || __viewer->down)
   {
     // Call if TwBar hasn't used or if down
     __viewer->mouse_move(x*highdpi, y*highdpi);
   }
-  #endif
 }
 
 static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
@@ -324,25 +309,20 @@ static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
   scroll_x += x;
   scroll_y += y;
 
-  #ifndef NO_TBAR
   if (!TwEventMouseWheelGLFW(scroll_y))
     __viewer->mouse_scroll(y);
-    #endif
 }
 
 static void glfw_char_callback(GLFWwindow* window, unsigned int c)
 {
-  #ifndef NO_TBAR
   if ((c & 0xff00)==0)
     TwKeyPressed(c, global_KMod);
-    #endif
 }
 
 namespace igl
 {
-  void Viewer::init()
+  IGL_INLINE void Viewer::init()
   {
-    #ifndef NO_TBAR
     // Create a tweak bar
     bar = TwNewBar("libIGL-Viewer");
     TwDefine(" libIGL-Viewer help='This is a simple 3D mesh viewer.' "); // Message added to the help bar->
@@ -352,7 +332,7 @@ namespace igl
 
     // ---------------------- LOADING ----------------------
 
-    #ifdef ENABLE_XML_SERIALIZATION
+    #ifdef ENABLE_SERIALIZATION
     TwAddButton(bar,"Load Scene", load_scene_cb,    this, "group='Workspace'");
     TwAddButton(bar,"Save Scene", save_scene_cb,    this, "group='Workspace'");
     #endif
@@ -426,7 +406,7 @@ namespace igl
                " group='Overlays'"
                " label='Show Faces Labels' key='CTRL+;' help='Toggle face"
                " indices'");
-#endif
+
     core.init();
 
     if (callback_init)
@@ -436,7 +416,7 @@ namespace igl
     init_plugins();
   }
 
-  Viewer::Viewer()
+  IGL_INLINE Viewer::Viewer()
   {
 
     // Temporary variables initialization
@@ -470,24 +450,24 @@ namespace igl
 
   }
 
-  void Viewer::init_plugins()
+  IGL_INLINE void Viewer::init_plugins()
   {
     // Init all plugins
     for (unsigned int i = 0; i<plugins.size(); ++i)
       plugins[i]->init(this);
   }
 
-  Viewer::~Viewer()
+  IGL_INLINE Viewer::~Viewer()
   {
   }
 
-  void Viewer::shutdown_plugins()
+  IGL_INLINE void Viewer::shutdown_plugins()
   {
     for (unsigned int i = 0; i<plugins.size(); ++i)
       plugins[i]->shutdown();
   }
 
-  bool Viewer::load_mesh_from_file(const char* mesh_file_name)
+  IGL_INLINE bool Viewer::load_mesh_from_file(const char* mesh_file_name)
   {
     std::string mesh_file_name_string = std::string(mesh_file_name);
 
@@ -513,10 +493,11 @@ namespace igl
 
     if (extension == "off" || extension =="OFF")
     {
-      if (!igl::readOFF(mesh_file_name_string, data.V, data.F))
-      {
+      Eigen::MatrixXd V;
+      Eigen::MatrixXi F;
+      if (!igl::readOFF(mesh_file_name_string, V, F))
         return false;
-      }
+      data.set_mesh(V,F);
     }
     else if (extension == "obj" || extension =="OBJ")
     {
@@ -525,11 +506,15 @@ namespace igl
 
       Eigen::MatrixXd UV_V;
       Eigen::MatrixXi UV_F;
+      Eigen::MatrixXd V;
+      Eigen::MatrixXi F;
 
-      if (!(igl::readOBJ(mesh_file_name_string, data.V, data.F, corner_normals, fNormIndices, UV_V, UV_F)))
-      {
+      if (!(igl::readOBJ(mesh_file_name_string, V, F, corner_normals, fNormIndices, UV_V, UV_F)))
         return false;
-      }
+
+      data.set_mesh(V,F);
+      data.set_uv(UV_V,UV_F);
+
     }
     else
     {
@@ -554,7 +539,7 @@ namespace igl
     return true;
   }
 
-  bool Viewer::save_mesh_to_file(const char* mesh_file_name)
+  IGL_INLINE bool Viewer::save_mesh_to_file(const char* mesh_file_name)
   {
     std::string mesh_file_name_string(mesh_file_name);
 
@@ -595,7 +580,7 @@ namespace igl
     return true;
   }
 
-  bool Viewer::key_down(unsigned char key, int modifiers)
+  IGL_INLINE bool Viewer::key_down(int key,int modifiers)
   {
     if (callback_key_down)
       if (callback_key_down(*this,key,modifiers))
@@ -605,27 +590,29 @@ namespace igl
       if (plugins[i]->key_down(key, modifiers))
         return true;
 
-    if (key == 'S')
+    char k = key;
+
+    if(key == GLFW_KEY_S && modifiers == GLFW_MOD_SHIFT)
       mouse_scroll(1);
 
-    if (key == 'A')
+    if(key == GLFW_KEY_A && modifiers == GLFW_MOD_SHIFT)
       mouse_scroll(-1);
 
     // Why aren't these handled via AntTweakBar?
-    if (key == 'z') // Don't use 'Z' because that clobbers snap_to_canonical_view_quat
+    if(key == GLFW_KEY_Z) // Don't use 'Z' because that clobbers snap_to_canonical_view_quat
       core.trackball_angle << 0.0f, 0.0f, 0.0f, 1.0f;
 
-    if (key == 'y')
+    if(key == GLFW_KEY_Y)
       core.trackball_angle << -sqrt(2.0f)/2.0f, 0.0f, 0.0f, sqrt(2.0f)/2.0f;
 
-    if (key == 'x')
+    if(key == GLFW_KEY_X)
       core.trackball_angle << -0.5f, -0.5f, -0.5f, 0.5f;
 
 
     return false;
   }
 
-  bool Viewer::key_up(unsigned char key, int modifiers)
+  IGL_INLINE bool Viewer::key_up(int key,int modifiers)
   {
     if (callback_key_up)
       if (callback_key_up(*this,key,modifiers))
@@ -638,7 +625,7 @@ namespace igl
     return false;
   }
 
-  bool Viewer::mouse_down(MouseButton button, int modifier)
+  IGL_INLINE bool Viewer::mouse_down(MouseButton button,int modifier)
   {
     if (callback_mouse_down)
       if (callback_mouse_down(*this,button,modifier))
@@ -686,7 +673,7 @@ namespace igl
     return true;
   }
 
-  bool Viewer::mouse_up(MouseButton button, int modifier)
+  IGL_INLINE bool Viewer::mouse_up(MouseButton button,int modifier)
   {
     down = false;
 
@@ -703,7 +690,7 @@ namespace igl
     return true;
   }
 
-  bool Viewer::mouse_move(int mouse_x, int mouse_y)
+  IGL_INLINE bool Viewer::mouse_move(int mouse_x,int mouse_y)
   {
     if(hack_never_moved)
     {
@@ -770,7 +757,7 @@ namespace igl
     return true;
   }
 
-  bool Viewer::mouse_scroll(float delta_y)
+  IGL_INLINE bool Viewer::mouse_scroll(float delta_y)
   {
     scroll_position += delta_y;
 
@@ -792,7 +779,7 @@ namespace igl
     return true;
   }
 
-  void Viewer::draw()
+  IGL_INLINE void Viewer::draw()
   {
     using namespace std;
     using namespace Eigen;
@@ -817,104 +804,98 @@ namespace igl
       if (plugins[i]->post_draw())
         break;
 
-        #ifndef NO_TBAR
-        TwDraw();
-        #endif
+    TwDraw();
   }
 
-  bool Viewer::save_scene()
+  IGL_INLINE bool Viewer::save_scene()
   {
-    #ifdef ENABLE_XML_SERIALIZATION
-    string fname = igl::file_dialog_save();
+    std::string fname = igl::file_dialog_save();
     if (fname.length() == 0)
       return false;
 
-    ::igl::XMLSerializer serializer("Viewer");
-    serializer.Add(data,"Data");
-    serializer.Add(options,"Options");
+#ifdef ENABLE_SERIALIZATION
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        serializer.Add(*(plugin_manager->plugin_list[i]),plugin_manager->plugin_list[i]->plugin_name);
+    igl::serialize(core,"Core",fname.c_str(),true);
+    igl::serialize(data,"Data",fname.c_str());
 
-    serializer.Save(fname.c_str(),true);
+    for(unsigned int i = 0; i <plugins.size(); ++i)
+      igl::serialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
 
-    #endif
+#endif
+
     return true;
   }
 
-  bool Viewer::load_scene()
+  IGL_INLINE bool Viewer::load_scene()
   {
-    #ifdef ENABLE_XML_SERIALIZATION
-    string fname = igl::file_dialog_open();
+    std::string fname = igl::file_dialog_open();
     if (fname.length() == 0)
       return false;
 
-    ::igl::XMLSerializer serializer("Viewer");
-    serializer.Add(data,"Data");
-    serializer.Add(options,"Options");
+#ifdef ENABLE_SERIALIZATION
 
-    if (plugin_manager)
-      for (unsigned int i = 0; i <plugin_manager->plugin_list.size(); ++i)
-        serializer.Add(*(plugin_manager->plugin_list[i]),plugin_manager->plugin_list[i]->plugin_name);
+    igl::deserialize(core,"Core",fname.c_str());
+    igl::deserialize(data,"Data",fname.c_str());
 
-    serializer.Load(fname.c_str());
+    for(unsigned int i = 0; i <plugins.size(); ++i)
+      igl::deserialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
 
-    #endif
+#endif
+
     return true;
   }
 
-  void Viewer::resize(int w, int h)
+  IGL_INLINE void Viewer::resize(int w,int h)
   {
     core.viewport = Eigen::Vector4f(0,0,w,h);
   }
-  #ifndef NO_TBAR
-  void TW_CALL Viewer::snap_to_canonical_quaternion_cb(void *clientData)
+
+  IGL_INLINE void TW_CALL Viewer::snap_to_canonical_quaternion_cb(void *clientData)
   {
     Eigen::Vector4f snapq = static_cast<Viewer *>(clientData)->core.trackball_angle;
     igl::snap_to_canonical_view_quat<float>(snapq.data(),1,static_cast<Viewer *>(clientData)->core.trackball_angle.data());
   }
-  void TW_CALL Viewer::align_camera_center_cb(void *clientData)
+  IGL_INLINE void TW_CALL Viewer::align_camera_center_cb(void *clientData)
   {
     static_cast<Viewer *>(clientData)->core.align_camera_center(
       static_cast<Viewer *>(clientData)->data.V,
       static_cast<Viewer *>(clientData)->data.F);
   }
 
-  void TW_CALL Viewer::save_scene_cb(void *clientData)
+  IGL_INLINE void TW_CALL Viewer::save_scene_cb(void *clientData)
   {
     static_cast<Viewer *>(clientData)->save_scene();
   }
 
-  void TW_CALL Viewer::load_scene_cb(void *clientData)
+  IGL_INLINE void TW_CALL Viewer::load_scene_cb(void *clientData)
   {
     static_cast<Viewer *>(clientData)->load_scene();
   }
 
-  void TW_CALL Viewer::set_invert_normals_cb(const void *param, void *clientData)
+  IGL_INLINE void TW_CALL Viewer::set_invert_normals_cb(const void *param,void *clientData)
   {
     Viewer *viewer = static_cast<Viewer *>(clientData);
     viewer->data.dirty |= ViewerData::DIRTY_NORMAL;
     viewer->core.invert_normals = *((bool *) param);
   }
 
-  void TW_CALL Viewer::get_invert_normals_cb(void *param, void *clientData)
+  IGL_INLINE void TW_CALL Viewer::get_invert_normals_cb(void *param,void *clientData)
   {
     *((bool *) param) = static_cast<Viewer *>(clientData)->core.invert_normals;
   }
 
-  void TW_CALL Viewer::set_face_based_cb(const void *param, void *clientData)
+  IGL_INLINE void TW_CALL Viewer::set_face_based_cb(const void *param,void *clientData)
   {
     Viewer *viewer = static_cast<Viewer *>(clientData);
     viewer->data.set_face_based(*((bool *) param));
   }
 
-  void TW_CALL Viewer::get_face_based_cb(void *param, void *clientData)
+  IGL_INLINE void TW_CALL Viewer::get_face_based_cb(void *param,void *clientData)
   {
     *((bool *) param) = static_cast<Viewer *>(clientData)->data.face_based;
   }
 
-  void TW_CALL Viewer::open_dialog_mesh(void *clientData)
+  IGL_INLINE void TW_CALL Viewer::open_dialog_mesh(void *clientData)
   {
     std::string fname = igl::file_dialog_open();
 
@@ -923,8 +904,8 @@ namespace igl
 
     static_cast<Viewer *>(clientData)->load_mesh_from_file(fname.c_str());
   }
-#endif
-  int Viewer::launch(std::string filename)
+
+  IGL_INLINE int Viewer::launch(std::string filename)
   {
     GLFWwindow* window;
 
@@ -932,7 +913,7 @@ namespace igl
     if (!glfwInit())
       return EXIT_FAILURE;
 
-    glfwWindowHint(GLFW_SAMPLES, 16);
+    glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     #ifdef __APPLE__
@@ -972,17 +953,21 @@ namespace igl
     glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
 
     // Initialize AntTweakBar
-    #ifndef NO_TBAR
     TwInit(TW_OPENGL_CORE, NULL);
     TwCopyStdStringToClientFunc(static_cast<TwCopyStdStringToClient>(::copy_str));
-#endif
+
 
     // Initialize IGL viewer
     init();
     __viewer = this;
 
     // Register callbacks
-    glfwSetKeyCallback(window, glfw_key_callback); glfwSetCursorPosCallback(window,glfw_mouse_move); glfwSetWindowSizeCallback(window,glfw_window_size); glfwSetMouseButtonCallback(window,glfw_mouse_press); glfwSetScrollCallback(window,glfw_mouse_scroll); glfwSetCharCallback(window, glfw_char_callback);
+    glfwSetKeyCallback(window, glfw_key_callback);
+    glfwSetCursorPosCallback(window,glfw_mouse_move);
+    glfwSetWindowSizeCallback(window,glfw_window_size);
+    glfwSetMouseButtonCallback(window,glfw_mouse_press);
+    glfwSetScrollCallback(window,glfw_mouse_scroll);
+    glfwSetCharCallback(window, glfw_char_callback);
 
     // Handle retina displays (windows and mac)
     int width, height;

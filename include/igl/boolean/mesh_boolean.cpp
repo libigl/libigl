@@ -1,5 +1,6 @@
 #include "mesh_boolean.h"
 #include <igl/peel_outer_hull_layers.h>
+#include <igl/per_face_normals.h>
 #include <igl/cgal/remesh_self_intersections.h>
 #include <igl/remove_unreferenced.h>
 #include <igl/unique_simplices.h>
@@ -167,6 +168,13 @@ IGL_INLINE void igl::mesh_boolean(
     J = CJ;
     return;
   }
+  MatrixX3S N,CN;
+  per_face_normals(V,F,N);
+  CN.resize(CF.rows(),3);
+  for(size_t f = 0;f<(size_t)CN.rows();f++)
+  {
+    CN.row(f) = N.row(CJ(f));
+  }
 
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"peel..."<<endl;
@@ -175,7 +183,7 @@ IGL_INLINE void igl::mesh_boolean(
   // peel layers keeping track of odd and even flips
   Matrix<bool,Dynamic,1> odd;
   Matrix<bool,Dynamic,1> flip;
-  peel_outer_hull_layers(CV,CF,odd,flip);
+  peel_outer_hull_layers(CV,CF,CN,odd,flip);
 
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"categorize..."<<endl;

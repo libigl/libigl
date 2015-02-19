@@ -1,13 +1,9 @@
-// This file is part of libigl, a simple c++ geometry processing library.
 // 
-// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2014 Christian Schüller <schuellchr@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-/* ---------------------------------------------------------------------------
- // XMLSerialization.h
- // Author: Christian Schüller <schuellchr@gmail.com>
  ------------------------------------------------------------------------------
  Inherit from this class to have the easiest way to serialize your user defined class.
  
@@ -53,14 +49,14 @@ namespace igl
       XMLSerialization& operator=(const XMLSerialization& obj);
 
       /**
-      * Function which must be overriden in the subclass if you dont use
+      * Function which must be overridden in the subclass if you don't use
       * heap allocations (new) to create new instances.
       * It will get called if the assignment operator or copy constructor
       * is involved to update the references to the new copied data structures
       *
-      * Add in this fucntion all the variables you wanna serialize like:
+      * Add in this function all the variables you want to serialize like:
       * xmlSerializer->Add(var1);
-      * xmlSerializer->Add(varw);
+      * xmlSerializer->Add(var2);
       * ...
       */
       virtual void InitSerialization();

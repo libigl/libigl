@@ -34,15 +34,13 @@ IGL_INLINE std::string igl::file_dialog_save()
   while ( fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL )
   {
   }
-#elif _WIN32
+#elif defined _WIN32
 
   // Use native windows file dialog box
   // (code contributed by Tino Weinkauf)
 
   OPENFILENAME ofn;       // common dialog box structure
   char szFile[260];       // buffer for file name
-  HWND hwnd;              // owner window
-  HANDLE hf;              // file handle
 
   // Initialize OPENFILENAME
   ZeroMemory(&ofn, sizeof(ofn));
