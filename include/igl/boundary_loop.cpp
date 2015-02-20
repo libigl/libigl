@@ -21,7 +21,10 @@ IGL_INLINE void igl::boundary_loop(
   using namespace Eigen;
   using namespace igl;
 
-  MatrixXd Vdummy(F.maxCoeff(),1);
+  if(F.rows() == 0)
+    return;
+
+  MatrixXd Vdummy(F.maxCoeff()+1,1);
   MatrixXi TT,TTi;
   vector<std::vector<int> > VF, VFi;
   triangle_triangle_adjacency(Vdummy,F,TT,TTi);
@@ -95,6 +98,9 @@ IGL_INLINE void igl::boundary_loop(
   using namespace Eigen;
   using namespace std;
 
+  if(F.rows() == 0)
+    return;
+
   vector<vector<int> > Lall;
   boundary_loop(F,Lall);
 
@@ -121,6 +127,9 @@ IGL_INLINE void igl::boundary_loop(
 {
   using namespace Eigen;
   using namespace std;
+
+  if(F.rows() == 0)
+    return;
 
   vector<int> Lvec;
   boundary_loop(F,Lvec);

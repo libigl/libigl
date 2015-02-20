@@ -43,7 +43,7 @@ namespace igl
     }
     else
     {
-      std::cerr << "saving binary serialization failed!" << std::endl;
+      std::cerr << "serialization: file " << filename << " not found!" << std::endl;
     }
 
     return success;
@@ -115,7 +115,7 @@ namespace igl
     }
     else
     {
-      std::cerr << "Loading binary serialization failed!" << std::endl;
+      std::cerr << "serialization: file " << filename << " not found!" << std::endl;
     }
 
     return success;
@@ -646,16 +646,20 @@ namespace igl
       {
         if(obj)
         {
-          std::cout << "deserialization: possible memory leak for '" << typeid(obj).name() << "'" << std::endl;
+          std::cout << "serialization: possible memory leak in serialization for '" << typeid(obj).name() << "'" << std::endl;
           obj = nullptr;
         }
       }
       else
       {
         if(obj)
-          std::cout << "deserialization: possible memory leak for '" << typeid(obj).name() << "'" << std::endl;
-
-        obj = new typename std::remove_pointer<T>::type();
+        {
+          std::cout << "serialization: possible memory corruption in deserialization for '" << typeid(obj).name() << "'" << std::endl;
+        }
+        else
+        {
+          obj = new typename std::remove_pointer<T>::type();
+        }
         serialization::deserialize(*obj,iter);
       }
     }
@@ -721,7 +725,7 @@ namespace igl
     template <typename T>
     IGL_INLINE void deserialize(T& obj,const std::vector<char>& buffer)
     {
-      std::cerr << typeid(obj).name() << " is not drserializable: derive from igl::Serializable or overload the function igl::serialization::deserialize(T& obj, const std::vector<char>& buffer)" << std::endl;
+      std::cerr << typeid(obj).name() << " is not deserializable: derive from igl::Serializable or overload the function igl::serialization::deserialize(T& obj, const std::vector<char>& buffer)" << std::endl;
     }
 
     // helper functions
