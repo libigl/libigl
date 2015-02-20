@@ -448,7 +448,7 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
   viewport = viewport_ori;
   
   // Copy back in the given Eigen matrices
-  GLubyte* pixels;
+  GLubyte* pixels = (GLubyte*)calloc(x*y*4,sizeof(GLubyte));
   glReadPixels
   (
    0, 0,
@@ -457,9 +457,9 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
    );
     
   int count = 0;
-  for (unsigned i=0; i<x; ++i)
+  for (unsigned j=0; j<y; ++j)
   {
-    for (unsigned j=0; j<y; ++j)
+    for (unsigned i=0; i<x; ++i)
     {
       R(i,j) = pixels[count*4+0];
       G(i,j) = pixels[count*4+1];
@@ -470,6 +470,7 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
   }
   
   // Clean up
+  free(pixels);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glDeleteRenderbuffers(1, &rboDepthStencil);
   glDeleteTextures(1, &texColorBuffer);
