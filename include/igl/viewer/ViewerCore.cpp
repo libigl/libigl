@@ -448,7 +448,7 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
   viewport = viewport_ori;
   
   // Copy back in the given Eigen matrices
-  GLubyte pixels[ x * y * 4 ];
+  GLubyte* pixels;
   glReadPixels
   (
    0, 0,
