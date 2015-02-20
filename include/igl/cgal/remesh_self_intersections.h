@@ -29,12 +29,12 @@ namespace igl
     RemeshSelfIntersectionsParam():detect_only(false),first_only(false){};
   };
   
-  // Given a triangle mesh (V,F) compute a new mesh (VV,FF) which is the same as
-  // (V,F) except that any self-intersecting triangles in (V,F) have been
+  // Given a triangle mesh (V,F) compute a new mesh (VV,FF) which is the same
+  // as (V,F) except that any self-intersecting triangles in (V,F) have been
   // subdivided (new vertices and face created) so that the self-intersection
   // contour lies exactly on edges in (VV,FF). New vertices will appear in
-  // original faces or on original edges. New vertices on edges are "merged" only
-  // across original faces sharing that edge. This means that if the input
+  // original faces or on original edges. New vertices on edges are "merged"
+  // only across original faces sharing that edge. This means that if the input
   // triangle mesh is a closed manifold the output will be too.
   //
   // Inputs:
@@ -53,6 +53,17 @@ namespace igl
   // any resulting additional vertices along that edge may not get properly
   // connected so that the output mesh has the same global topology. This is
   // because 
+  //
+  // Example:
+  //     // resolve intersections
+  //     igl::remesh_self_intersections(V,F,params,VV,FF,IF,J,IM);
+  //     // _apply_ duplicate vertex mapping IM to FF
+  //     for_each(FF.data(),FF.data()+FF.size(),[&IM](int & a){a=IM(a);});
+  //     // remove any vertices now unreferenced after duplicate mapping.
+  //     igl::remove_unreferenced(VV,FF,SV,SF,UIM);
+  //     // Now (SV,SF) is ready to extract outer hull
+  //     igl::outer_hull(SV,SF,G,J,flip);
+  //
   template <
     typename DerivedV,
     typename DerivedF,
