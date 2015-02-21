@@ -9,6 +9,7 @@
 #include "ViewerCore.h"
 #include <igl/quat_to_mat.h>
 #include <igl/massmatrix.h>
+#include <igl/barycenter.h>
 #include <Eigen/Geometry>
 #include <iostream>
 
@@ -191,8 +192,10 @@ IGL_INLINE void igl::ViewerCore::get_scale_and_shift_to_fit_mesh(
   //igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_VORONOI,M);
   //const auto & MV = M*V;
   //Eigen::RowVector3d centroid  = MV.colwise().sum()/M.diagonal().sum();
-  Eigen::RowVector3d min_point = V.colwise().minCoeff();
-  Eigen::RowVector3d max_point = V.colwise().maxCoeff();
+  Eigen::MatrixXd BC;
+  igl::barycenter(V,F,BC);
+  Eigen::RowVector3d min_point = BC.colwise().minCoeff();
+  Eigen::RowVector3d max_point = BC.colwise().maxCoeff();
   Eigen::RowVector3d centroid  = 0.5*(min_point + max_point);
 
   shift = -centroid.cast<float>();
