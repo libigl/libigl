@@ -206,4 +206,6 @@ template bool igl::readDMAT<Eigen::Matrix<double, 4, 1, 0, 4, 1> >(std::basic_st
 template bool igl::readDMAT<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 template bool igl::readDMAT<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 template bool igl::readDMAT<Eigen::Matrix<int, -1, 2, 0, -1, 2> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&);
+template bool igl::readDMAT<Eigen::Matrix<double, -1, -1, 1, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 1, -1, -1> >&);
+template bool igl::readDMAT<Eigen::Matrix<int, -1, -1, 1, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 1, -1, -1> >&);
 #endif
