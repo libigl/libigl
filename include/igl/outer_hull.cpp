@@ -64,12 +64,11 @@ IGL_INLINE void igl::outer_hull(
   // uE --> bool, whether needed to flip face to make "consistent" with unique
   //   edge
   VectorXI diIM(3*m);
+  VectorXI dicons(3*m);
   vector<vector<typename DerivedV::Scalar> > di(uE2E.size());
   // For each list of face-edges incide on a unique edge
   for(size_t ui = 0;ui<(size_t)uE.rows();ui++)
   {
-    const typename DerivedF::Scalar ud = uE(ui,1);
-    const typename DerivedF::Scalar us = uE(ui,0);
     // Base normal vector to orient against
     const auto fe0 = uE2E[ui][0];
     const auto & eVp = N.row(fe0%m);
@@ -78,9 +77,9 @@ IGL_INLINE void igl::outer_hull(
     const typename DerivedF::Scalar d = F(fe0%m,((fe0/m)+2)%3);
     const typename DerivedF::Scalar s = F(fe0%m,((fe0/m)+1)%3);
     // Edge vector
-    //const auto & eV = (V.row(ud)-V.row(us)).normalized();
     const auto & eV = (V.row(d)-V.row(s)).normalized();
 
+    vector<bool> cons(uE2E[ui].size());
     // Loop over incident face edges
     for(size_t fei = 0;fei<uE2E[ui].size();fei++)
     {
@@ -88,14 +87,14 @@ IGL_INLINE void igl::outer_hull(
       const auto f = fe % m;
       const auto c = fe / m;
       // source should match destination to be consistent
-      const bool cons = (d == F(f,(c+1)%3));
-      assert(cons ||  (d == F(f,(c+2)%3)));
-      assert(!cons || (s == F(f,(c+2)%3)));
-      assert(!cons || (d == F(f,(c+1)%3)));
+      cons[fei] = (d == F(f,(c+1)%3));
+      assert( cons[fei] ||  (d == F(f,(c+2)%3)));
+      assert(!cons[fei] || (s == F(f,(c+2)%3)));
+      assert(!cons[fei] || (d == F(f,(c+1)%3)));
       // Angle between n and f
       const auto & n = N.row(f);
       di[ui][fei] = M_PI - atan2( eVp.cross(n).dot(eV), eVp.dot(n));
-      if(!cons)
+      if(!cons[fei])
       {
         di[ui][fei] = di[ui][fei] + M_PI;
         if(di[ui][fei]>2.*M_PI)
@@ -113,6 +112,7 @@ IGL_INLINE void igl::outer_hull(
       uE2E[ui][fei] = temp[IM[fei]];
       const auto & fe = uE2E[ui][fei];
       diIM(fe) = fei;
+      dicons(fe) = cons[IM[fei]];
     }
 
   }
@@ -217,15 +217,19 @@ IGL_INLINE void igl::outer_hull(
       const auto & eV = (V.row(fd)-V.row(fs)).normalized();
       // edge valence
       const size_t val = uE2E[EMAP(e)].size();
-      const auto ui = EMAP(e);
-      const auto fe0 = uE2E[ui][0];
-      const auto es = F(fe0%m,((fe0/m)+1)%3);
-      const int e_cons = (fs == es?-1:1);
+
+//#warning "EXPERIMENTAL, DO NOT USE"
+      //// THIS IS WRONG! The first face is---after sorting---no longer the face
+      //// used for orienting the sort.
+      //const auto ui = EMAP(e);
+      //const auto fe0 = uE2E[ui][0];
+      //const auto es = F(fe0%m,((fe0/m)+1)%3);
+      const int e_cons = (dicons(e) ? 1: -1);
       const int nfei = (diIM(e) + val + e_cons*(flip(f)?-1:1))%val;
       const int max_ne_2 = uE2E[EMAP(e)][nfei];
-      // Loop over and find max dihedral angle
+
       int max_ne = -1;
-      // // SAVE THIS OLD IMPLEMENTATION FOR NOW
+      //// Loop over and find max dihedral angle
       //typename DerivedV::Scalar max_di = -1;
       //for(const auto & ne : neighbors)
       //{
@@ -250,10 +254,11 @@ IGL_INLINE void igl::outer_hull(
       //    max_di = ndi;
       //  }
       //}
+
       ////cout<<(max_ne != max_ne_2)<<" =?= "<<e_cons<<endl;
       //if(max_ne != max_ne_2)
       //{
-      //  cout<<(f+1)<<" ---> "<<(max_ne%m)+1<<" != "<<(max_ne_2%m)+1<<" ... "<<e_cons<<endl;
+      //  cout<<(f+1)<<" ---> "<<(max_ne%m)+1<<" != "<<(max_ne_2%m)+1<<" ... "<<e_cons<<" "<<flip(f)<<endl;
       //  typename DerivedV::Scalar max_di = -1;
       //  for(size_t nei = 0;nei<neighbors.size();nei++)
       //  {
@@ -261,7 +266,7 @@ IGL_INLINE void igl::outer_hull(
       //    const int nf = ne%m;
       //    if(nf == f)
       //    {
-      //      cout<<"  "<<(ne%m)+1<<": "<<0<<" "<<di[EMAP[e]][nei]<<" "<<diIM(ne)<<endl;
+      //      cout<<"  "<<(ne%m)+1<<":\t"<<0<<"\t"<<di[EMAP[e]][nei]<<" "<<diIM(ne)<<endl;
       //      continue;
       //    }
       //    // Corner of neighbor
@@ -274,7 +279,7 @@ IGL_INLINE void igl::outer_hull(
       //    const auto & nN = (cons? (flip(f)?-1:1.) : (flip(f)?1.:-1.) )*N.row(nf);
       //    // Angle between n and f
       //    const auto & ndi = M_PI - atan2( fN.cross(nN).dot(eV), fN.dot(nN));
-      //    cout<<"  "<<(ne%m)+1<<": "<<ndi<<" "<<di[EMAP[e]][nei]<<" "<<diIM(ne)<<endl;
+      //    cout<<"  "<<(ne%m)+1<<":\t"<<ndi<<"\t"<<di[EMAP[e]][nei]<<" "<<diIM(ne)<<endl;
       //    if(ndi>=max_di)
       //    {
       //      max_ne = ne;
@@ -426,6 +431,7 @@ IGL_INLINE void igl::outer_hull(
     }
   }
 }
+
 template <
   typename DerivedV,
   typename DerivedF,
@@ -447,4 +453,5 @@ IGL_INLINE void igl::outer_hull(
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::outer_hull<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
+template void igl::outer_hull<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif
