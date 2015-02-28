@@ -37,6 +37,7 @@ IGL_INLINE void igl::view_axis(Eigen::PlainObjectBase<DerivedV> & V)
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instanciation
 template void igl::view_axis<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
+template void igl::view_axis<Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
 #endif
 
 #endif

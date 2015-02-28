@@ -32,7 +32,6 @@
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
-#include <Carbon/Carbon.h>
 #else
 #include <GL/glut.h>
 #endif
@@ -483,14 +482,6 @@ void init_relative()
 }
 
 
-KeyMap keyStates ;
-bool IS_KEYDOWN( uint16_t vKey )
-{
-  uint8_t index = vKey / 32 ;
-  uint8_t shift = vKey % 32 ;
-  return keyStates[index].bigEndianValue & (1 << shift) ;
-}
-
 
 void undo()
 {
@@ -519,9 +510,9 @@ void key(unsigned char key, int mouse_x, int mouse_y)
   using namespace std;
   using namespace igl;
   using namespace Eigen;
-  GetKeys(keyStates);
-  const bool command_down = IS_KEYDOWN(kVK_Command);
-  const bool shift_down = IS_KEYDOWN(kVK_Shift);
+  const int mod = glutGetModifiers();
+  const bool command_down = mod | GLUT_ACTIVE_COMMAND;
+  const bool shift_down = mod | GLUT_ACTIVE_SHIFT;
   switch(key)
   {
     // ESC
