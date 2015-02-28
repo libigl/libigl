@@ -8,94 +8,13 @@
 
 #include "ViewerCore.h"
 #include <igl/quat_to_mat.h>
+#include <igl/look_at.h>
+#include <igl/frustum.h>
+#include <igl/ortho.h>
 #include <igl/massmatrix.h>
 #include <igl/barycenter.h>
 #include <Eigen/Geometry>
 #include <iostream>
-
-
-IGL_INLINE Eigen::Matrix4f lookAt (
-                        const Eigen::Vector3f& eye,
-                        const Eigen::Vector3f& center,
-                        const Eigen::Vector3f& up)
-{
-  Eigen::Vector3f f = (center - eye).normalized();
-  Eigen::Vector3f s = f.cross(up).normalized();
-  Eigen::Vector3f u = s.cross(f);
-
-  Eigen::Matrix4f Result = Eigen::Matrix4f::Identity();
-  Result(0,0) = s(0);
-  Result(0,1) = s(1);
-  Result(0,2) = s(2);
-  Result(1,0) = u(0);
-  Result(1,1) = u(1);
-  Result(1,2) = u(2);
-  Result(2,0) =-f(0);
-  Result(2,1) =-f(1);
-  Result(2,2) =-f(2);
-  Result(0,3) =-s.transpose() * eye;
-  Result(1,3) =-u.transpose() * eye;
-  Result(2,3) = f.transpose() * eye;
-  return Result;
-}
-
-IGL_INLINE Eigen::Matrix4f ortho(
-                       const float left,
-                       const float right,
-                       const float bottom,
-                       const float top,
-                       const float zNear,
-                       const float zFar
-                       )
-{
-  Eigen::Matrix4f Result = Eigen::Matrix4f::Identity();
-  Result(0,0) = 2.0f / (right - left);
-  Result(1,1) = 2.0f / (top - bottom);
-  Result(2,2) = - 2.0f / (zFar - zNear);
-  Result(0,3) = - (right + left) / (right - left);
-  Result(1,3) = - (top + bottom) / (top - bottom);
-  Result(2,3) = - (zFar + zNear) / (zFar - zNear);
-  return Result;
-}
-
-IGL_INLINE Eigen::Matrix4f frustum(
-                         const float left,
-                         const float right,
-                         const float bottom,
-                         const float top,
-                         const float nearVal,
-                         const float farVal)
-{
-  Eigen::Matrix4f Result = Eigen::Matrix4f::Zero();
-  Result(0,0) = (2.0f * nearVal) / (right - left);
-  Result(1,1) = (2.0f * nearVal) / (top - bottom);
-  Result(0,2) = (right + left) / (right - left);
-  Result(1,2) = (top + bottom) / (top - bottom);
-  Result(2,2) = -(farVal + nearVal) / (farVal - nearVal);
-  Result(3,2) = -1.0f;
-  Result(2,3) = -(2.0f * farVal * nearVal) / (farVal - nearVal);
-  return Result;
-}
-
-IGL_INLINE Eigen::Matrix4f scale(const Eigen::Matrix4f& m,
-                       const Eigen::Vector3f& v)
-{
-  Eigen::Matrix4f Result;
-  Result.col(0) = m.col(0).array() * v(0);
-  Result.col(1) = m.col(1).array() * v(1);
-  Result.col(2) = m.col(2).array() * v(2);
-  Result.col(3) = m.col(3);
-  return Result;
-}
-
-IGL_INLINE Eigen::Matrix4f translate(
-                          const Eigen::Matrix4f& m,
-                          const Eigen::Vector3f& v)
-{
-  Eigen::Matrix4f Result = m;
-  Result.col(3) = m.col(0).array() * v(0) + m.col(1).array() * v(1) + m.col(2).array() * v(2) + m.col(3).array();
-  return Result;
-}
 
 #ifdef ENABLE_SERIALIZATION
 #include <igl/serialize.h>
@@ -237,9 +156,7 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl)
   proj  = Eigen::Matrix4f::Identity();
 
   // Set view
-  view = lookAt(Eigen::Vector3f(camera_eye[0], camera_eye[1], camera_eye[2]),
-                Eigen::Vector3f(camera_center[0], camera_center[1], camera_center[2]),
-                Eigen::Vector3f(camera_up[0], camera_up[1], camera_up[2]));
+  look_at( camera_eye, camera_center, camera_up, view);
 
   float width  = viewport(2);
   float height = viewport(3);
@@ -249,13 +166,13 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl)
   {
     float length = (camera_eye - camera_center).norm();
     float h = tan(camera_view_angle/360.0 * M_PI) * (length);
-    proj = ortho(-h*width/height, h*width/height, -h, h, camera_dnear, camera_dfar);
+    ortho(-h*width/height, h*width/height, -h, h, camera_dnear, camera_dfar,proj);
   }
   else
   {
     float fH = tan(camera_view_angle / 360.0 * M_PI) * camera_dnear;
     float fW = fH * (double)width/(double)height;
-    proj = frustum(-fW, fW, -fH, fH, camera_dnear, camera_dfar);
+    frustum(-fW, fW, -fH, fH, camera_dnear, camera_dfar,proj);
   }
   // end projection
 
@@ -267,9 +184,10 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl)
     for (unsigned j=0;j<4;++j)
       model(i,j) = mat[i+4*j];
 
-  model = scale(model, Eigen::Vector3f(camera_zoom,camera_zoom,camera_zoom));
-  model = scale(model, Eigen::Vector3f(model_zoom,model_zoom,model_zoom));
-  model = translate(model, Eigen::Vector3f(model_translation[0],model_translation[1],model_translation[2]));
+  // Why not just use Eigen::Transform<double,3,Projective> for model...?
+  model.topLeftCorner(3,3)*=camera_zoom;
+  model.topLeftCorner(3,3)*=model_zoom;
+  model.col(3).head(3) += model.topLeftCorner(3,3)*model_translation;
 
   // Send transformations to the GPU
   GLint modeli = opengl.shader_mesh.uniform("model");
