@@ -58,6 +58,7 @@ namespace igl {
       SERIALIZE_MEMBER(show_vertid);
       SERIALIZE_MEMBER(show_faceid);
       SERIALIZE_MEMBER(show_texture);
+      SERIALIZE_MEMBER(depth_test);
 
       SERIALIZE_MEMBER(point_size);
       SERIALIZE_MEMBER(line_width);
@@ -138,7 +139,10 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl)
   using namespace std;
   using namespace Eigen;
 
-  glEnable(GL_DEPTH_TEST);
+  if (depth_test)
+    glEnable(GL_DEPTH_TEST);
+  else
+    glDisable(GL_DEPTH_TEST);
 
   /* Bind and potentially refresh mesh/line/point data */
   if (data.dirty)
@@ -309,6 +313,92 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl)
 
 }
 
+IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
+                            OpenGL_state& opengl,
+                            Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
+                            Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
+                            Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B,
+                            Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& A)
+{
+  assert(R.rows() == G.rows() && G.rows() == B.rows() && B.rows() == A.rows());
+  assert(R.cols() == G.cols() && G.cols() == B.cols() && B.cols() == A.cols());
+  
+  int x = R.rows();
+  int y = R.cols();
+  
+  // Create frame buffer
+  GLuint frameBuffer;
+  glGenFramebuffers(1, &frameBuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
+  // Create texture to hold color buffer
+  GLuint texColorBuffer;
+  glGenTextures(1, &texColorBuffer);
+  glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+  
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+  
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer, 0);
+  
+  // Create Renderbuffer Object to hold depth and stencil buffers
+  GLuint rboDepthStencil;
+  glGenRenderbuffers(1, &rboDepthStencil);
+  glBindRenderbuffer(GL_RENDERBUFFER, rboDepthStencil);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, x, y);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboDepthStencil);
+
+  assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
+  // Clear the buffer
+  glClearColor(0.f, 0.f, 0.f, 0.f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  // Save old viewport
+  Eigen::Vector4f viewport_ori = viewport;
+  viewport << 0,0,x,y;
+  
+  // Draw
+  draw(data,opengl);
+  
+  // Restore viewport
+  viewport = viewport_ori;
+  
+  // Copy back in the given Eigen matrices
+  GLubyte* pixels = (GLubyte*)calloc(x*y*4,sizeof(GLubyte));
+  glReadPixels
+  (
+   0, 0,
+   x, y,
+   GL_RGBA, GL_UNSIGNED_BYTE, pixels
+   );
+    
+  int count = 0;
+  for (unsigned j=0; j<y; ++j)
+  {
+    for (unsigned i=0; i<x; ++i)
+    {
+      R(i,j) = pixels[count*4+0];
+      G(i,j) = pixels[count*4+1];
+      B(i,j) = pixels[count*4+2];
+      A(i,j) = pixels[count*4+3];
+      ++count;
+    }
+  }
+  
+  // Clean up
+  free(pixels);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDeleteRenderbuffers(1, &rboDepthStencil);
+  glDeleteTextures(1, &texColorBuffer);
+  glDeleteFramebuffers(1, &frameBuffer);
+}
+
+
 IGL_INLINE igl::ViewerCore::ViewerCore()
 {
   // Default shininess
@@ -348,6 +438,7 @@ IGL_INLINE igl::ViewerCore::ViewerCore()
   show_vertid = false;
   show_faceid = false;
   show_texture = false;
+  depth_test = true;
 
   // Default point size / line width
   point_size = 15;

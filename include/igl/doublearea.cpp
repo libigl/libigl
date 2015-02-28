@@ -73,12 +73,13 @@ IGL_INLINE void igl::doublearea(
   }
 }
 
+
 template <
   typename DerivedA,
   typename DerivedB,
   typename DerivedC,
   typename DerivedD>
-IGL_INLINE void doublearea(
+IGL_INLINE void igl::doublearea(
   const Eigen::PlainObjectBase<DerivedA> & A,
   const Eigen::PlainObjectBase<DerivedB> & B,
   const Eigen::PlainObjectBase<DerivedC> & C,

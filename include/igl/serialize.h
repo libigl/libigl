@@ -74,6 +74,8 @@ namespace igl
   IGL_INLINE bool serialize(const T& obj,const std::string& objectName,const std::string& filename,bool overwrite = false);
   template <typename T>
   IGL_INLINE bool serialize(const T& obj,const std::string& objectName,std::vector<char>& buffer);
+  template <typename T>
+  IGL_INLINE bool serialize(const T& obj,const std::string& objectName,std::vector<char>& buffer,size_t offset,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap);
 
   // Deserializes the given data from a file or buffer back to the provided object
   //
@@ -245,7 +247,7 @@ namespace igl
     template <typename T>
     IGL_INLINE typename std::enable_if<!is_serializable<T>::value,size_t>::type getByteSize(const T& obj);
     template <typename T>
-    IGL_INLINE typename std::enable_if<!is_serializable<T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    IGL_INLINE typename std::enable_if<!is_serializable<T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap);
     template <typename T>
     IGL_INLINE typename std::enable_if<!is_serializable<T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter);
 
@@ -253,20 +255,20 @@ namespace igl
     template <typename T>
     IGL_INLINE typename std::enable_if<std::is_fundamental<T>::value,size_t>::type getByteSize(const T& obj);
     template <typename T>
-    IGL_INLINE typename std::enable_if<std::is_fundamental<T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    IGL_INLINE typename std::enable_if<std::is_fundamental<T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap);
     template <typename T>
     IGL_INLINE typename std::enable_if<std::is_fundamental<T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter);
 
     // std::string
     IGL_INLINE size_t getByteSize(const std::string& obj);
-    IGL_INLINE void serialize(const std::string& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    IGL_INLINE void serialize(const std::string& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap);
     IGL_INLINE void deserialize(std::string& obj,std::vector<char>::const_iterator& iter);
 
     // SerializableBase
     template <typename T>
     IGL_INLINE typename std::enable_if<std::is_base_of<SerializableBase,T>::value,size_t>::type getByteSize(const T& obj);
     template <typename T>
-    IGL_INLINE typename std::enable_if<std::is_base_of<SerializableBase,T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    IGL_INLINE typename std::enable_if<std::is_base_of<SerializableBase,T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap);
     template <typename T>
     IGL_INLINE typename std::enable_if<std::is_base_of<SerializableBase,T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter);    
 
@@ -275,7 +277,7 @@ namespace igl
     template <typename T1,typename T2>
     IGL_INLINE size_t getByteSize(const std::pair<T1,T2>& obj);
     template <typename T1,typename T2>
-    IGL_INLINE void serialize(const std::pair<T1,T2>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    IGL_INLINE void serialize(const std::pair<T1,T2>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap);
     template <typename T1,typename T2>
     IGL_INLINE void deserialize(std::pair<T1,T2>& obj,std::vector<char>::const_iterator& iter);
 
@@ -283,7 +285,7 @@ namespace igl
     template <typename T1,typename T2>
     IGL_INLINE size_t getByteSize(const std::vector<T1,T2>& obj);
     template <typename T1,typename T2>
-    IGL_INLINE void serialize(const std::vector<T1,T2>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    IGL_INLINE void serialize(const std::vector<T1,T2>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap);
     template <typename T1,typename T2>
     IGL_INLINE void deserialize(std::vector<T1,T2>& obj,std::vector<char>::const_iterator& iter);
 
@@ -291,7 +293,7 @@ namespace igl
     template <typename T>
     IGL_INLINE size_t getByteSize(const std::set<T>& obj);
     template <typename T>
-    IGL_INLINE void serialize(const std::set<T>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    IGL_INLINE void serialize(const std::set<T>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap);
     template <typename T>
     IGL_INLINE void deserialize(std::set<T>& obj,std::vector<char>::const_iterator& iter);
 
@@ -299,7 +301,7 @@ namespace igl
     template <typename T1,typename T2>
     IGL_INLINE size_t getByteSize(const std::map<T1,T2>& obj);
     template <typename T1,typename T2>
-    IGL_INLINE void serialize(const std::map<T1,T2>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    IGL_INLINE void serialize(const std::map<T1,T2>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap);
     template <typename T1,typename T2>
     IGL_INLINE void deserialize(std::map<T1,T2>& obj,std::vector<char>::const_iterator& iter);
 
@@ -307,14 +309,14 @@ namespace igl
     template<typename T,int R,int C,int P,int MR,int MC>
     IGL_INLINE size_t getByteSize(const Eigen::Matrix<T,R,C,P,MR,MC>& obj);
     template<typename T,int R,int C,int P,int MR,int MC>
-    IGL_INLINE void serialize(const Eigen::Matrix<T,R,C,P,MR,MC>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    IGL_INLINE void serialize(const Eigen::Matrix<T,R,C,P,MR,MC>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap);
     template<typename T,int R,int C,int P,int MR,int MC>
     IGL_INLINE void deserialize(Eigen::Matrix<T,R,C,P,MR,MC>& obj,std::vector<char>::const_iterator& iter);
 
     template<typename T,int P,typename I>
     IGL_INLINE size_t getByteSize(const Eigen::SparseMatrix<T,P,I>& obj);
     template<typename T,int P,typename I>
-    IGL_INLINE void serialize(const Eigen::SparseMatrix<T,P,I>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    IGL_INLINE void serialize(const Eigen::SparseMatrix<T,P,I>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap);
     template<typename T,int P,typename I>
     IGL_INLINE void deserialize(Eigen::SparseMatrix<T,P,I>& obj,std::vector<char>::const_iterator& iter);
 
@@ -322,15 +324,15 @@ namespace igl
     template <typename T>
     IGL_INLINE typename std::enable_if<std::is_pointer<T>::value,size_t>::type getByteSize(const T& obj);
     template <typename T>
-    IGL_INLINE typename std::enable_if<std::is_pointer<T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    IGL_INLINE typename std::enable_if<std::is_pointer<T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap);
     template <typename T>
     IGL_INLINE typename std::enable_if<std::is_pointer<T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter);
 
     // std::shared_ptr and std::unique_ptr
-    /*template <typename T>
+    template <typename T>
     IGL_INLINE typename std::enable_if<serialization::is_smart_ptr<T>::value,size_t>::type getByteSize(const T& obj);
     template <typename T>
-    IGL_INLINE typename std::enable_if<serialization::is_smart_ptr<T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    IGL_INLINE typename std::enable_if<serialization::is_smart_ptr<T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap);
     template <template<typename> class T0, typename T1>
     IGL_INLINE typename std::enable_if<serialization::is_smart_ptr<T0<T1> >::value>::type deserialize(T0<T1>& obj,std::vector<char>::const_iterator& iter);
 
@@ -338,9 +340,9 @@ namespace igl
     template <typename T>
     IGL_INLINE size_t getByteSize(const std::weak_ptr<T>& obj);
     template <typename T>
-    IGL_INLINE void serialize(const std::weak_ptr<T>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    IGL_INLINE void serialize(const std::weak_ptr<T>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap);
     template <typename T>
-    IGL_INLINE void deserialize(std::weak_ptr<T>& obj,std::vector<char>::const_iterator& iter);*/
+    IGL_INLINE void deserialize(std::weak_ptr<T>& obj,std::vector<char>::const_iterator& iter);
 
     // functions to overload for non-intrusive serialization
     template <typename T>
