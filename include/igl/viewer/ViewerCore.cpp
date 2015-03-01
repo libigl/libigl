@@ -7,11 +7,12 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "ViewerCore.h"
+
+#include <iostream>
+#include <Eigen/Geometry>
+
 #include <igl/quat_to_mat.h>
 #include <igl/massmatrix.h>
-#include <Eigen/Geometry>
-#include <iostream>
-
 
 IGL_INLINE Eigen::Matrix4f lookAt (
                         const Eigen::Vector3f& eye,
