@@ -34,8 +34,6 @@
 #include <GL/glut.h>
 #endif
 
-#include <Carbon/Carbon.h>
-
 #include <string>
 #include <vector>
 #include <stack>
@@ -347,13 +345,6 @@ bool save()
 }
 
 
-KeyMap keyStates ;
-bool IS_KEYDOWN( uint16_t vKey )
-{
-  uint8_t index = vKey / 32 ;
-  uint8_t shift = vKey % 32 ;
-  return keyStates[index].bigEndianValue & (1 << shift) ;
-}
 
 void undo()
 {
@@ -380,9 +371,9 @@ void redo()
 void key(unsigned char key, int mouse_x, int mouse_y)
 {
   using namespace std;
-  GetKeys(keyStates);
-  const bool command_down = IS_KEYDOWN(kVK_Command);
-  const bool shift_down = IS_KEYDOWN(kVK_Shift);
+  const int mod = glutGetModifiers();
+  const bool command_down = GLUT_ACTIVE_COMMAND & mod;
+  const bool shift_down = GLUT_ACTIVE_SHIFT & mod;
   switch(key)
   {
     // Ctrl-c and esc exit
