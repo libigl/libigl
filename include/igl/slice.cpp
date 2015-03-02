@@ -38,42 +38,37 @@ IGL_INLINE void igl::slice(
   assert(C.minCoeff() >= 0);
   assert(C.maxCoeff() < xn);
 
-  // Build reindexing maps for columns and rows, -1 means not in map
-  std::vector<std::vector<int> > RI;
-  RI.resize(xm);
-  for(int i = 0;i<ym;i++)
+  // initialize row and col permutation vectors
+  Eigen::VectorXi rowIndexVec = Eigen::VectorXi::LinSpaced(xm,0,xm);
+  Eigen::VectorXi rowPermVec  = Eigen::VectorXi::LinSpaced(xm,0,xm);
+  for(int i=0;i<ym;i++)
   {
-    RI[R(i)].push_back(i);
-  }
-  std::vector<std::vector<int> > CI;
-  CI.resize(xn);
-  // initialize to -1
-  for(int i = 0;i<yn;i++)
-  {
-    CI[C(i)].push_back(i);
-  }
-  // Resize output
-  Eigen::SparseMatrix<T, Eigen::RowMajor> dyn_Y(ym,yn);
-  // Take a guess at the number of nonzeros (this assumes uniform distribution
-  // not banded or heavily diagonal)
-  dyn_Y.reserve((X.nonZeros()/(X.rows()*X.cols())) * (ym*yn));
-  // Iterate over outside
-  for(int k=0; k<X.outerSize(); ++k)
-  {
-    // Iterate over inside
-    for(typename Eigen::SparseMatrix<T>::InnerIterator it (X,k); it; ++it)
+    int pos = rowIndexVec.coeffRef(R(i));
+    if(pos != i)
     {
-      std::vector<int>::iterator rit, cit;
-      for(rit = RI[it.row()].begin();rit != RI[it.row()].end(); rit++)
-      {
-        for(cit = CI[it.col()].begin();cit != CI[it.col()].end(); cit++)
-        {
-          dyn_Y.coeffRef(*rit,*cit) = it.value();
-        }
-      }
+      int& val = rowPermVec.coeffRef(i);
+      std::swap(rowIndexVec.coeffRef(val),rowIndexVec.coeffRef(R(i)));
+      std::swap(rowPermVec.coeffRef(i),rowPermVec.coeffRef(pos));
     }
   }
-  Y = Eigen::SparseMatrix<T>(dyn_Y);
+  Eigen::PermutationMatrix<Eigen::Dynamic,Eigen::Dynamic,int> rowPerm(rowIndexVec);
+
+  Eigen::VectorXi colIndexVec = Eigen::VectorXi::LinSpaced(xn,0,xn);
+  Eigen::VectorXi colPermVec = Eigen::VectorXi::LinSpaced(xn,0,xn);
+  for(int i=0;i<yn;i++)
+  {
+    int pos = colIndexVec.coeffRef(C(i));
+    if(pos != i)
+    {
+      int& val = colPermVec.coeffRef(i);
+      std::swap(colIndexVec.coeffRef(val),colIndexVec.coeffRef(C(i)));
+      std::swap(colPermVec.coeffRef(i),colPermVec.coeffRef(pos));
+    }
+  }
+  Eigen::PermutationMatrix<Eigen::Dynamic,Eigen::Dynamic,int> colPerm(colPermVec);
+
+  Eigen::SparseMatrix<T> M = (rowPerm * X);
+  Y = (M * colPerm).block(0,0,ym,yn);
 }
 
 template <typename Mat>

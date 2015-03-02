@@ -13,6 +13,8 @@
 namespace igl
 {
   // Determines the view axis or depth axis of the current gl matrix
+  // Inputs:
+  //   mv pointer to modelview matrix
   // Outputs:
   //   x  pointer to x-coordinate in scene coordinates of the un-normalized
   //     viewing axis 
@@ -20,11 +22,11 @@ namespace igl
   //     viewing axis 
   //   z  pointer to z-coordinate in scene coordinates of the un-normalized
   //     viewing axis
-  //   mv pointer to modelview matrix
   //
   // Note: View axis is returned *UN-normalized*
-  IGL_INLINE void view_axis(double * x, double * y, double * z);
   IGL_INLINE void view_axis(const double * mv, double * x, double * y, double * z);
+  // Extract mv from current GL state.
+  IGL_INLINE void view_axis(double * x, double * y, double * z);
   template <typename DerivedV>
   IGL_INLINE void view_axis(Eigen::PlainObjectBase<DerivedV> & V);
 };
