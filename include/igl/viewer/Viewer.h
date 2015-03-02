@@ -12,24 +12,27 @@
 #define IGL_OPENGL_4
 #endif
 
-#include <AntTweakBar.h>
-
 #include <vector>
 #include <string>
 #include <cstdint>
+
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
+#include <AntTweakBar.h>
+
+#include <igl/igl_inline.h>
+
+#include "OpenGL_shader.h"
+#include "OpenGL_state.h"
+#include "ViewerCore.h"
+#include "ViewerData.h"
+#include "ViewerPlugin.h"
 
 #define IGL_MOD_SHIFT           0x0001
 #define IGL_MOD_CONTROL         0x0002
 #define IGL_MOD_ALT             0x0004
 #define IGL_MOD_SUPER           0x0008
-
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <igl/viewer/OpenGL_shader.h>
-#include <igl/viewer/OpenGL_state.h>
-#include <igl/viewer/ViewerCore.h>
-#include <igl/viewer/ViewerData.h>
-#include <igl/viewer/ViewerPlugin.h>
 
 namespace igl
 {

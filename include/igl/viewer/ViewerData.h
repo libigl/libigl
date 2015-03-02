@@ -9,8 +9,12 @@
 #ifndef IGL_VIEWER_DATA_H
 #define IGL_VIEWER_DATA_H
 
-#include <igl/igl_inline.h>
+#include <cstdint>
+#include <vector>
+
 #include <Eigen/Core>
+
+#include <igl/igl_inline.h>
 
 namespace igl
 {
@@ -134,7 +138,7 @@ public:
   // Textp contains, in the i-th row, the position in global coordinates where the i-th label should be anchored
   // Texts contains in the i-th position the text of the i-th label
   Eigen::MatrixXd           labels_positions;
-  std::vector<std::string > labels_strings;
+  std::vector<std::string>  labels_strings;
 
   // Marks dirty buffers that need to be uploaded to OpenGL
   uint32_t dirty;
