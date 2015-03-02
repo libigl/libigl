@@ -44,6 +44,10 @@ namespace igl
     IGL_INLINE int launch(std::string filename = "");
     IGL_INLINE void init();
 
+    // Stores command line arguments
+    int argc;
+    char **argv;
+
     // Stores all the viewing options
     igl::ViewerCore core;
 

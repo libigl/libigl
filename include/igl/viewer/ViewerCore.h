@@ -57,6 +57,12 @@ public:
 
   // Draw everything
   IGL_INLINE void draw(ViewerData& data, OpenGL_state& opengl);
+  IGL_INLINE void draw_buffer(ViewerData& data,
+                              OpenGL_state& opengl,
+                              Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
+                              Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
+                              Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B,
+                              Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& A);
 
   // ------------------- Properties
 
@@ -104,6 +110,7 @@ public:
   bool show_vertid;
   bool show_faceid;
   bool invert_normals;
+  bool depth_test;
 
   // Point size / line width
   float point_size;
