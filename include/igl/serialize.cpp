@@ -739,7 +739,7 @@ namespace igl
     // helper functions
 
     template <typename T>
-    IGL_INLINE void updateMemoryMap(T& obj,size_t size)
+    IGL_INLINE void updateMemoryMap(T& obj,size_t size,std::map<std::uintptr_t,IndexedPointerBase*>& memoryMap)
     {
       // check if object is already serialized
       auto startPtr = new IndexedPointer<T>();
