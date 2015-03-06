@@ -12,27 +12,27 @@
 #define IGL_OPENGL_4
 #endif
 
-// #define NO_TBAR
-#ifndef NO_TBAR
-#include <AntTweakBar.h>
-#endif
-
 #include <vector>
 #include <string>
 #include <cstdint>
+
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
+#include <AntTweakBar.h>
+
+#include <igl/igl_inline.h>
+
+#include "OpenGL_shader.h"
+#include "OpenGL_state.h"
+#include "ViewerCore.h"
+#include "ViewerData.h"
+#include "ViewerPlugin.h"
 
 #define IGL_MOD_SHIFT           0x0001
 #define IGL_MOD_CONTROL         0x0002
 #define IGL_MOD_ALT             0x0004
 #define IGL_MOD_SUPER           0x0008
-
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <igl/viewer/OpenGL_shader.h>
-#include <igl/viewer/OpenGL_state.h>
-#include <igl/viewer/ViewerCore.h>
-#include <igl/viewer/ViewerData.h>
-#include <igl/viewer/ViewerPlugin.h>
 
 namespace igl
 {
@@ -73,19 +73,17 @@ namespace igl
     bool down;
     bool hack_never_moved;
 
-    #ifndef NO_TBAR
     // Anttweak bar
     TwBar* bar;
-    #endif
+
     // Keep track of the global position of the scrollwheel
     float scroll_position;
 
     // UI Enumerations
     enum MouseButton {IGL_LEFT, IGL_MIDDLE, IGL_RIGHT};
     enum MouseMode { NOTHING, ROTATION, ZOOM, PAN, TRANSLATE} mouse_mode;
-    #ifndef NO_TBAR
     enum KeyModifier { NO_KEY = TW_KMOD_NONE, SHIFT = TW_KMOD_SHIFT, CTRL =TW_KMOD_CTRL, ALT = TW_KMOD_ALT } key_modifier;
-#endif
+
     Viewer();
     ~Viewer();
 
@@ -137,7 +135,6 @@ namespace igl
     void* callback_key_up_data;
 
 
-    #ifndef NO_TBAR
     /********* AntTweakBar callbacks *********/
     static void TW_CALL snap_to_canonical_quaternion_cb(void *clientData);
     static void TW_CALL save_scene_cb(void *clientData);
@@ -148,7 +145,6 @@ namespace igl
     static void TW_CALL get_face_based_cb(void *param, void *clientData);
     static void TW_CALL set_invert_normals_cb(const void *param, void *clientData);
     static void TW_CALL get_invert_normals_cb(void *param, void *clientData);
-    #endif
   public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };

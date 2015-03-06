@@ -9,7 +9,6 @@
 // TODO: save_scene()/load_scene()
 
 #include "Viewer.h"
-#include <igl/get_seconds.h>
 
 #ifdef _WIN32
 #  include <windows.h>
@@ -43,13 +42,12 @@
 #include <iomanip>
 #include <iostream>
 #include <fstream>
-
 #include <algorithm>
-#include <igl/project.h>
-
 #include <limits>
 #include <cassert>
 
+#include <igl/project.h>
+#include <igl/get_seconds.h>
 #include <igl/readOBJ.h>
 #include <igl/readOFF.h>
 #include <igl/adjacency_list.h>
@@ -63,6 +61,7 @@
 #include <igl/trackball.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/unproject.h>
+
 #include <igl/viewer/TextRenderer.h>
 
 #ifdef ENABLE_SERIALIZATION
@@ -418,7 +417,6 @@ namespace igl
 
   IGL_INLINE Viewer::Viewer()
   {
-
     // Temporary variables initialization
     down = false;
     hack_never_moved = true;

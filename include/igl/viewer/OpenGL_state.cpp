@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "OpenGL_state.h"
+#include "ViewerData.h"
 
 IGL_INLINE void igl::OpenGL_state::init_buffers()
 {
