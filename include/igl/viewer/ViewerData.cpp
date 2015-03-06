@@ -8,9 +8,10 @@
 
 #include "ViewerData.h"
 
+#include <iostream>
+
 #include <igl/per_face_normals.h>
 #include <igl/per_vertex_normals.h>
-#include <iostream>
 
 #ifdef ENABLE_SERIALIZATION
 #include <igl/serialize.h>
