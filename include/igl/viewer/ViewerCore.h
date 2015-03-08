@@ -57,9 +57,10 @@ public:
   IGL_INLINE void clear_framebuffers();
 
   // Draw everything
-  IGL_INLINE void draw(ViewerData& data, OpenGL_state& opengl);
+  IGL_INLINE void draw(ViewerData& data, OpenGL_state& opengl, bool update_matrices = true);
   IGL_INLINE void draw_buffer(ViewerData& data,
                               OpenGL_state& opengl,
+                              bool update_matrices,
                               Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
                               Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
                               Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B,
