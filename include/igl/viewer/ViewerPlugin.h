@@ -16,6 +16,7 @@
 #define IGL_VIEWER_PLUGIN_H
 #include <string>
 #include <igl/igl_inline.h>
+#include <vector>
 
 namespace igl
 {

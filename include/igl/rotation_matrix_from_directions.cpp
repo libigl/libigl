@@ -15,15 +15,16 @@ IGL_INLINE Eigen::Matrix<Scalar, 3, 3> igl::rotation_matrix_from_directions(cons
                                                                         bool normalized)
 {
   Eigen::Matrix<Scalar, 3, 3> rotM;
-  const double epsilon=0.00001;
+  const double epsilon=1e-8;
   // if (!normalized)
-  // {
+//   {
     // v0.normalize();
     // v1.normalize();
   // }
   Scalar dot=v0.normalized().dot(v1.normalized());
   ///control if there is no rotation
-  if (dot>((double)1-epsilon))
+//  if (dot>((double)1-epsilon))
+  if ((v0-v1).norm()<epsilon)
   {
     rotM = Eigen::Matrix<Scalar, 3, 3>::Identity();
     return rotM;
