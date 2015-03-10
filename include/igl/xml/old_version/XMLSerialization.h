@@ -4,23 +4,23 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
- ------------------------------------------------------------------------------
- Inherit from this class to have the easiest way to serialize your user defined class.
- 
- 1) Pass the default name of your class to the base constructor.
- 2) Override InitSerialization() and add your variables to serialize like:
- xmlSerializer->Add(var1,"name1");
- xmlSerializer->Add(var2,"name2");
-
- Workaround for Visual Studio run time debugger inspection problem:
- Copy and implement all the functions, splitting them into a source and header file.
- Restrictions on Native C++ Expressions (Anonymous Namespaces):
- http://msdn.microsoft.com/en-us/library/0888kc6a%28VS.80%29.aspx
- ----------------------------------------------------------------------------*/
+// ------------------------------------------------------------------------------
+// Inherit from this class to have the easiest way to serialize your user defined class.
+// 
+// 1) Pass the default name of your class to the base constructor.
+// 2) Override InitSerialization() and add your variables to serialize like:
+// xmlSerializer->Add(var1,"name1");
+// xmlSerializer->Add(var2,"name2");
+//
+// Workaround for Visual Studio run time debugger inspection problem:
+// Copy and implement all the functions, splitting them into a source and header file.
+// Restrictions on Native C++ Expressions (Anonymous Namespaces):
+// http://msdn.microsoft.com/en-us/library/0888kc6a%28VS.80%29.aspx
+// ----------------------------------------------------------------------------*/
 #ifndef IGL_XML_SERIALIZATION_H
 #define IGL_XML_SERIALIZATION_H
 
-#include <igl/xml/XMLSerializer.h>
+#include <igl/xml/old_version/XMLSerializer.h>
 
 namespace igl
 {

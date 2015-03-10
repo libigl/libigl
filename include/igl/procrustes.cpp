@@ -55,7 +55,7 @@ IGL_INLINE void igl::procrustes(
   {
     polar_svd(S,R,T);
   }
-  R.transposeInPlace();
+//  R.transposeInPlace();
 
   // Translation
   t = Ymean - scale*R.transpose()*Xmean;

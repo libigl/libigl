@@ -17,10 +17,13 @@
 #define IGL_EMBREE_INTERSECTOR_H
 
 #include <Eigen/Core>
+#include <Eigen/Geometry>
+
 #include <vector>
 #include <embree2/rtcore.h>
 #include <embree2/rtcore_ray.h>
 #include "Hit.h"
+#include <iostream>
 
 namespace igl
 {
