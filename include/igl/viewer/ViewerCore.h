@@ -61,10 +61,10 @@ public:
   IGL_INLINE void draw_buffer(ViewerData& data,
                               OpenGL_state& opengl,
                               bool update_matrices,
-                              Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
-                              Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
-                              Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B,
-                              Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& A);
+                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
+                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
 
   // ------------------- Properties
 
