@@ -22,11 +22,7 @@ IGL_INLINE void igl::draw_point(
   const bool selected)
 {
   // Push GL settings
-  //GLboolean old_depth_test;
-  //glGetBooleanv(GL_DEPTH_TEST,&old_depth_test);
-  GLboolean old_lighting;
-  glGetBooleanv(GL_LIGHTING,&old_lighting);
-  glEnable( GL_POINT_SMOOTH );
+  glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING_BIT);
 
   float f;
   glGetFloatv(GL_POINT_SIZE_MAX,&f);
@@ -79,8 +75,7 @@ IGL_INLINE void igl::draw_point(
   glColor4fv(color);
 
   // Pop GL settings
-  if(old_lighting) glEnable(GL_LIGHTING);
-  //if(old_depth_test) glEnable(GL_DEPTH_TEST);
+  glPopAttrib();
 }
 
 template <typename DerivedP>

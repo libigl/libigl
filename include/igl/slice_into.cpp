@@ -137,4 +137,5 @@ template void igl::slice_into<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::Plain
 template void igl::slice_into<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int, Eigen::Matrix<double, -1, 1, 0, -1, 1>&);
 template void igl::slice_into<Eigen::SparseMatrix<double, 0, int> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int, Eigen::SparseMatrix<double, 0, int>&);
 template void igl::slice_into<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int, Eigen::Matrix<int, -1, 1, 0, -1, 1>&);
+template void igl::slice_into<Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 #endif
