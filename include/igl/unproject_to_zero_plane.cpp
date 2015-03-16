@@ -13,7 +13,7 @@
 #include "project.h"
 #include "unproject.h"
 
-IGL_INLINE int igl::unproject_to_zero_plane(
+IGL_INLINE void igl::unproject_to_zero_plane(
   const double winX,
   const double winY,
   double* objX,
@@ -26,7 +26,7 @@ IGL_INLINE int igl::unproject_to_zero_plane(
 }
 
 template <typename Derivedwin, typename Derivedobj>
-IGL_INLINE int igl::unproject_to_zero_plane(
+IGL_INLINE void igl::unproject_to_zero_plane(
   const Eigen::PlainObjectBase<Derivedwin> & win,
   Eigen::PlainObjectBase<Derivedobj> & obj)
 {
@@ -38,9 +38,9 @@ IGL_INLINE int igl::unproject_to_zero_plane(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instanciation
-template int igl::unproject_to_zero_plane<Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
-template int igl::unproject_to_zero_plane<Eigen::Matrix<double, 2, 1, 0, 2, 1>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
-template int igl::unproject_to_zero_plane<Eigen::Matrix<double, 2, 1, 0, 2, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
+template void igl::unproject_to_zero_plane<Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
+template void igl::unproject_to_zero_plane<Eigen::Matrix<double, 2, 1, 0, 2, 1>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
+template void igl::unproject_to_zero_plane<Eigen::Matrix<double, 2, 1, 0, 2, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
 #endif
 
 #endif
