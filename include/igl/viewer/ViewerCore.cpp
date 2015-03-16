@@ -319,10 +319,10 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bo
 IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
                             OpenGL_state& opengl,
                             bool update_matrices,
-                            Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
-                            Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
-                            Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B,
-                            Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& A)
+                            Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+                            Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+                            Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
+                            Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A)
 {
   assert(R.rows() == G.rows() && G.rows() == B.rows() && B.rows() == A.rows());
   assert(R.cols() == G.cols() && G.cols() == B.cols() && B.cols() == A.cols());
@@ -359,7 +359,7 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
   glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 
   // Clear the buffer
-  glClearColor(0.f, 0.f, 0.f, 0.f);
+  glClearColor(background_color(0), background_color(1), background_color(2), 0.f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Save old viewport
