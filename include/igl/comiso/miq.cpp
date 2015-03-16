@@ -1349,7 +1349,7 @@ IGL_INLINE void igl::PoissonSolver<DerivedV, DerivedF>::perElementRHS(int f,
 
   Eigen::Matrix<typename DerivedV::Scalar, 3, 1> K1,K2;
   K1 = PD1.row(f);
-  K2 = PD2.row(f); // TODO: the "-" accounts for the orientation of local_basis.h, adapt the code before and remove the "-"
+  K2 = -PD2.row(f); // TODO: the "-" accounts for the orientation of local_basis.h, adapt the code before and remove the "-"
 
   scaled_Kreal = K1*(vector_field_scale)/2;
   scaled_Kimag = K2*(vector_field_scale)/2;
@@ -1927,28 +1927,28 @@ F(F_)
   VInd.InitFaceIntegerVal();
   VInd.InitSeamInfo();
 
-  Eigen::PlainObjectBase<DerivedV> PD1_combed_for_poisson, PD2_combed_for_poisson;
-  // Rotate by 90 degrees CCW
-  PD1_combed_for_poisson.setZero(PD1_combed.rows(),3);
-  PD2_combed_for_poisson.setZero(PD2_combed.rows(),3);
-  for (unsigned i=0; i<PD1_combed.rows();++i)
-  {
-    double n1 = PD1_combed.row(i).norm();
-    double n2 = PD2_combed.row(i).norm();
-
-    double a1 = atan2(B2.row(i).dot(PD1_combed.row(i)),B1.row(i).dot(PD1_combed.row(i)));
-    double a2 = atan2(B2.row(i).dot(PD2_combed.row(i)),B1.row(i).dot(PD2_combed.row(i)));
-
-    // a1 += M_PI/2;
-    // a2 += M_PI/2;
-
-
-    PD1_combed_for_poisson.row(i) = cos(a1) * B1.row(i) + sin(a1) * B2.row(i);
-    PD2_combed_for_poisson.row(i) = cos(a2) * B1.row(i) + sin(a2) * B2.row(i);
-
-    PD1_combed_for_poisson.row(i) = PD1_combed_for_poisson.row(i).normalized() * n1;
-    PD2_combed_for_poisson.row(i) = PD2_combed_for_poisson.row(i).normalized() * n2;
-  }
+  // Eigen::PlainObjectBase<DerivedV> PD1_combed_for_poisson, PD2_combed_for_poisson;
+  // // Rotate by 90 degrees CCW
+  // PD1_combed_for_poisson.setZero(PD1_combed.rows(),3);
+  // PD2_combed_for_poisson.setZero(PD2_combed.rows(),3);
+  // for (unsigned i=0; i<PD1_combed.rows();++i)
+  // {
+  //   double n1 = PD1_combed.row(i).norm();
+  //   double n2 = PD2_combed.row(i).norm();
+  //
+  //   double a1 = atan2(B2.row(i).dot(PD1_combed.row(i)),B1.row(i).dot(PD1_combed.row(i)));
+  //   double a2 = atan2(B2.row(i).dot(PD2_combed.row(i)),B1.row(i).dot(PD2_combed.row(i)));
+  //
+  //   // a1 += M_PI/2;
+  //   // a2 += M_PI/2;
+  //
+  //
+  //   PD1_combed_for_poisson.row(i) = cos(a1) * B1.row(i) + sin(a1) * B2.row(i);
+  //   PD2_combed_for_poisson.row(i) = cos(a2) * B1.row(i) + sin(a2) * B2.row(i);
+  //
+  //   PD1_combed_for_poisson.row(i) = PD1_combed_for_poisson.row(i).normalized() * n1;
+  //   PD2_combed_for_poisson.row(i) = PD2_combed_for_poisson.row(i).normalized() * n2;
+  // }
 
 
   // Assemble the system and solve
@@ -1956,8 +1956,8 @@ F(F_)
                                             F,
                                             TT,
                                             TTi,
-                                            PD1_combed_for_poisson,
-                                            PD2_combed_for_poisson,
+                                            PD1_combed,
+                                            PD2_combed,
                                             VInd.HandleS_Index,
                                             /*VInd.Handle_Singular*/Handle_Singular,
                                             VInd.Handle_SystemInfo);
@@ -2313,7 +2313,7 @@ IGL_INLINE void igl::miq(const Eigen::PlainObjectBase<DerivedV> &V,
   Eigen::PlainObjectBase<DerivedV> BIS1_combed, BIS2_combed;
   igl::comb_cross_field(V, F, BIS1, BIS2, BIS1_combed, BIS2_combed);
 
-  Eigen::Matrix<int, Eigen::Dynamic, 3> Handle_MMatch;
+  Eigen::PlainObjectBase<DerivedF> Handle_MMatch;
   igl::cross_field_missmatch(V, F, BIS1_combed, BIS2_combed, true, Handle_MMatch);
 
   Eigen::Matrix<int, Eigen::Dynamic, 1> isSingularity, singularityIndex;

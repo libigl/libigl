@@ -45,9 +45,9 @@ Eigen::MatrixXd V_uv;
 Eigen::MatrixXi F_uv;
 
 // Create a texture that hides the integer translation in the parametrization
-void line_texture(Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> &texture_R,
-                  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> &texture_G,
-                  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> &texture_B)
+void line_texture(Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &texture_R,
+                  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &texture_G,
+                  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &texture_B)
 {
   unsigned size = 128;
   unsigned size2 = size/2;
@@ -162,7 +162,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   }
 
   // Replace the standard texture with an integer shift invariant texture
-  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> texture_R, texture_G, texture_B;
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_R, texture_G, texture_B;
   line_texture(texture_R, texture_G, texture_B);
   viewer.data.set_texture(texture_R, texture_B, texture_G);
   viewer.core.align_camera_center(viewer.data.V,viewer.data.F);
