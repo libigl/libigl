@@ -647,7 +647,7 @@ namespace igl
     else
       center = data.V.colwise().sum()/data.V.rows();
 
-    Eigen::Vector3f coord = igl::project(Eigen::Vector3f(center(0),center(1),center(2)), core.view * core.model, core.proj, core.viewport);
+    Eigen::Vector3f coord = igl::project(Eigen::Vector3f(center(0),center(1),center(2)), (core.view * core.model).eval(), core.proj, core.viewport);
     down_mouse_z = coord[2];
     down_rotation = core.trackball_angle;
 
@@ -730,8 +730,8 @@ namespace igl
         case TRANSLATE:
         {
           //translation
-          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, core.viewport[3] - mouse_y, down_mouse_z), core.view * core.model, core.proj, core.viewport);
-          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, core.viewport[3] - down_mouse_y, down_mouse_z), core.view * core.model, core.proj, core.viewport);
+          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, core.viewport[3] - mouse_y, down_mouse_z), (core.view * core.model).eval(), core.proj, core.viewport);
+          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, core.viewport[3] - down_mouse_y, down_mouse_z), (core.view * core.model).eval(), core.proj, core.viewport);
 
           Eigen::Vector3f diff = pos1 - pos0;
           core.model_translation = down_translation + Eigen::Vector3f(diff[0],diff[1],diff[2]);
