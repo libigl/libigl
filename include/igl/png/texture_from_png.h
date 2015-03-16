@@ -8,6 +8,7 @@
 #ifndef IGL_TEXTURE_FROM_PNG_H
 #define IGL_TEXTURE_FROM_PNG_H
 #include "../igl_inline.h"
+#include <Eigen/Core>
 #include <string>
 
 #ifndef IGL_NO_OPENGL
