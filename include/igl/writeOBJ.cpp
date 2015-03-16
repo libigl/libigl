@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <fstream>
 #include <cstdio>
+#include <cassert>
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE bool igl::writeOBJ(
@@ -19,6 +20,7 @@ IGL_INLINE bool igl::writeOBJ(
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F)
 {
+  assert(V.cols() == 3 && "V should have 3 columns");
   std::ofstream s(str.c_str());
   s.precision(std::numeric_limits<double>::digits10 + 1);
 
