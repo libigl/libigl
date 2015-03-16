@@ -10,7 +10,7 @@ all: obj example
 
 LIBIGL=../../
 LIBIGL_INC=-I$(LIBIGL)/include
-LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglembree -liglcgal -ligltetgen -liglbbw -liglmosek
+LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglcgal -ligltetgen -liglbbw -liglmosek
 
 EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 

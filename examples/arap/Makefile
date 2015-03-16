@@ -15,12 +15,8 @@ LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglpng -liglsvd3x3
 EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 #CFLAGS+=-DIGL_HEADER_ONLY
 
-
-#EMBREE=$(LIBIGL)/external/embree
-#EMBREE_INC=-I$(EMBREE)/rtcore -I$(EMBREE)/common
-#EMBREE_LIB=-L$(EMBREE)/build -lrtcore -lsys
 EMBREE=$(LIBIGL)/external/embree
-EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/embree
+EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/include
 EMBREE_LIB=-L$(EMBREE)/build -lembree -lsys
 
 # YIMAGE Library

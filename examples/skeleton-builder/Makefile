@@ -22,7 +22,7 @@ TETGEN_LIB=-L$(TETGEN) -ltet
 TETGEN_INC=-I$(TETGEN)
 
 EMBREE=$(LIBIGL)/external/embree
-EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/embree
+EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/include
 EMBREE_LIB=-L$(EMBREE)/build -lembree -lsys
 
 CARBON_LIB=-framework Carbon

@@ -10,7 +10,7 @@ all: example
 LIBIGL=/usr/local/igl/libigl/
 include $(LIBIGL)/build/Makefile.conf
 LIBIGL_INC=-I$(LIBIGL)/include
-LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglembree
+LIBIGL_LIB=-L$(LIBIGL)/lib -ligl
 
 EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 CFLAGS+=-std=c++11 -g -Wno-deprecated-declarations

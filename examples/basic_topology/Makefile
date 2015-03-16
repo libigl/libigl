@@ -7,7 +7,7 @@ include ../../build/Makefile.conf
 igl_lib=../../
 eigen_lib=$(DEFAULT_PREFIX)/include/eigen3/
 
-CFLAGS+=-g
+CFLAGS+=-g -fopenmp
 inc=-I$(igl_lib)/include -I$(eigen_lib)
 lib=-L$(igl_lib)/lib -ligl
 

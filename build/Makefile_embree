@@ -28,7 +28,7 @@ INC+=$(EIGEN3_INC)
 #EMBREE=../external/embree
 #EMBREE_INC=-I$(EMBREE)/common -I$(EMBREE)/rtcore/
 EMBREE=../external/embree/
-EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/embree
+EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/include
 #EMBREE_LIB=-L$(EMBREE)/bin -lrtcore -lsys
 INC+=$(EMBREE_INC)
 
