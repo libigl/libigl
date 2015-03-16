@@ -62,9 +62,9 @@ public:
   IGL_INLINE void set_uv(const Eigen::MatrixXd& UV);
   IGL_INLINE void set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
   IGL_INLINE void set_texture(
-                    const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
-                    const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
-                    const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B);
+                    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+                    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+                    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B);
 
   // Sets points given a list of point vertices. In constrast to `set_points`
   // this will (purposefully) clober existing points.
@@ -118,9 +118,9 @@ public:
   Eigen::MatrixXi F_uv; // optional faces for UVs
 
   // Texture
-  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> texture_R;
-  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> texture_G;
-  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic> texture_B;
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_R;
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_G;
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_B;
 
   // Overlays
 
