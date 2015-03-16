@@ -40,4 +40,5 @@ IGL_INLINE std::vector<bool> igl::is_irregular_vertex(const Eigen::PlainObjectBa
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template std::vector<bool, std::allocator<bool> > igl::is_irregular_vertex<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&);
+template std::vector<bool, std::allocator<bool> > igl::is_irregular_vertex<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
 #endif
