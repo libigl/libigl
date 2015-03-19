@@ -12,6 +12,7 @@
 #include "report_gl_error.h"
 
 #include "OpenGL_convenience.h"
+#include <iostream>
 
 IGL_INLINE int igl::project(
   const double objX,
