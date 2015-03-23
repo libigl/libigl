@@ -4,6 +4,7 @@
 #include <igl/PI.h>
 #include <cmath>
 
+// IF THIS IS EVER TEMPLATED BE SURE THAT V IS COLMAJOR
 IGL_INLINE void igl::winding_number(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
