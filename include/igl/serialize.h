@@ -936,7 +936,7 @@ namespace igl
     inline size_t getByteSize(const Eigen::SparseMatrix<T,P,I>& obj)
     {
       // space for numbers of rows,cols,nonZeros and tripplets with data (rowIdx,colIdx,value)
-      size_t size = sizeof(Eigen::SparseMatrix<T,P,I>::Index);
+      size_t size = sizeof(typename Eigen::SparseMatrix<T,P,I>::Index);
       return 3*size+(sizeof(T)+2*size)*obj.nonZeros();
     }
 
