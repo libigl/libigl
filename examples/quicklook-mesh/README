@@ -32,7 +32,7 @@ After installing you can test previews with:
 
 and thumbnails with:
 
-    /usr/bin/qlmanage -t ../shared/cheburashka.obj
+    /usr/bin/qlmanage -t ../shared/cheburashka.off
 
 = Note about Mesa =
 
