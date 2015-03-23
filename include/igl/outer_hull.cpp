@@ -174,6 +174,9 @@ IGL_INLINE void igl::outer_hull(
   cout<<"outer facet..."<<endl;
 #endif
     outer_facet(V,F,N,IM,f,f_flip);
+#ifdef IGL_OUTER_HULL_DEBUG
+  cout<<"outer facet: "<<f<<endl;
+#endif
     int FHcount = 0;
     // Q contains list of face edges to continue traversing upong
     queue<int> Q;
@@ -387,8 +390,23 @@ IGL_INLINE void igl::outer_hull(
     MatrixXV q = BC.row(AJ(0));
     // In a perfect world, it's enough to test a single point.
     double w;
+
+    // winding_number_3 expects colmajor
+    const typename DerivedV::Scalar * Vdata;
+    Vdata = V.data();
+    Matrix<
+      typename DerivedV::Scalar,
+      DerivedV::RowsAtCompileTime,
+      DerivedV::ColsAtCompileTime,
+      ColMajor> Vcol;
+    if(DerivedV::IsRowMajor)
+    {
+      // copy to convert to colmajor
+      Vcol = V;
+      Vdata = Vcol.data();
+    }
     winding_number_3(
-      V.data(),V.rows(),
+      Vdata,V.rows(),
       B.data(),B.rows(),
       q.data(),1,&w);
     return fabs(w)>0.5;
@@ -406,8 +424,11 @@ IGL_INLINE void igl::outer_hull(
       {
         continue;
       }
-      keep[id] = keep[id] && 
-        !is_component_inside_other(V,BC,vG[id],vJ[id],vG[oid]);
+      const bool inside = is_component_inside_other(V,BC,vG[id],vJ[id],vG[oid]);
+#ifdef IGL_OUTER_HULL_DEBUG
+      cout<<id<<" is inside "<<oid<<" ? "<<inside<<endl;
+#endif
+      keep[id] = keep[id] && !inside;
     }
     if(keep[id])
     {
