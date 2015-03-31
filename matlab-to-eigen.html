@@ -142,14 +142,18 @@
 
       <tr class=d1>
         <td><pre><code>B = repmat(A,i,j)</code></pre></td>
-        <td><pre><code>igl::repmat(A,i,j,B)</code></pre></td>
-        <td>So far igl::repmat is only implemented for dense matrices.
+        <td><pre><code>igl::repmat(A,i,j,B);
+B = A.replicate(i,j);</code></pre></td>
+        <td>igl::repmat is also implemented for Sparse Matrices.
         </td>
       </tr>
 
       <tr class=d0>
         <td><pre><code>I = low:step:hi</code></pre></td>
-        <td><pre><code>igl::colon(low,step,hi,I)</code></pre></td>
+        <td><pre><code>igl::colon(low,step,hi,I);
+// or
+const int size = ((hi-low)/step)+1;
+I = VectorXiLinSpaced(size,low,low+step*(size-1));</code></pre></td>
         <td>IGL version should be templated enough to handle same situations as
         matlab's colon. The matlab keyword <b>end</b> does not correspond in
         the C++ version. You'll have to use M.size(),M.rows() or whatever.
@@ -209,7 +213,7 @@ A = IM(A);
         <td><pre><code>B = A.unaryExpr(bind1st(mem_fun( 
   static_cast&lt;VectorXi::Scalar&amp;(VectorXi::*)(VectorXi::Index)&gt;
   (&amp;VectorXi::operator())), &amp;IM)).eval();
-
+// or
 for_each(A.data(),A.data()+A.size(),[&amp;IM](int &amp; a){a=IM(a);});
   </code></pre></td>
         <td>Where IM is an "index map" column vector and A is an arbitrary
@@ -234,19 +238,31 @@ A.setFromTriplets(IJV);
       </tr>
 
       <tr class=d1>
-        <td><pre><code>IP = I(P==0);</code></pre></td>
-        <td><pre><code>VectorXi IP = I;
+        <td><pre><code>I=1:10;
+...
+IP = I(P==0);</code></pre></td>
+        <td><pre><code>I = VectorXi::LinSpaced(10,0,9);
+...
+VectorXi IP = I;
 IP.conservativeResize(stable_partition(
   IP.data(), 
   IP.data()+IP.size(), 
   [&amp;P](int i){return P(i)==0;})-IP.data());
         </code></pre></td>
-        <td>Where I and P are vectors. <i>Requires C++11 and <code>#include &lt;algorithm&gt;</code></i></td>
+        <td>Where I is a vector of increasing indices from 0 to n, and P is a vector. <i>Requires C++11 and <code>#include &lt;algorithm&gt;</code></i></td>
       </tr>
 
       <tr class=d0>
+        <td><pre><code>B = A(R&lt;2,C&gt;1);</code></pre>
+        <td><pre><code>B = igl::slice_mask(A,R.array()&lt;2,C.array()&gt;1);</code></pre>
+        <td>Where </td>
+      </tr>
+
+      <tr class=d1>
         <td><pre><code>a = any(A(:))</code></pre></td>
-        <td><pre><code>bool a = any_of(A.data(),A.data()+A.size(),[](bool a){ return a;});</code></pre></td>
+        <td><pre><code><del>bool a = any_of(A.data(),A.data()+A.size(),[](bool a){ return a;});</del>
+bool a = A.array().any();
+        </code></pre></td>
         <td>Casts <code>Matrix::Scalar<code> to <code>bool</code>.</td>
       </tr>
 
