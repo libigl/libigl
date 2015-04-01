@@ -16,7 +16,7 @@
 
 <figure>
 <img src="libigl-teaser.png" alt="" />
-</figure>
+<figcaption></figcaption></figure>
 
 <p><a href="https://github.com/libigl/libigl/">https://github.com/libigl/libigl/</a></p>
 
@@ -113,6 +113,27 @@ caution.</p>
 <p>You can keep up to date by cloning a read-only copy of our GitHub
 <a href="https://github.com/libigl">repository</a>.</p>
 
+<h2 id="knownissues">Known Issues</h2>
+
+<p>We really heavily on Eigen. Nearly all inputs and outputs are Eigen matrices of
+some kind. However, we currently <em>only</em> support Eigen&#8217;s default column-major
+ordering. That means, we <strong>do not</strong> expect our code to work for matrices using
+the <code>Eigen::RowMajor</code> flag. If you can, change definitions like:</p>
+
+<pre><code class="cpp">Eigen::Matrix&lt;double, Eigen::Dynamic, 3, Eigen::RowMajor&gt; A;
+</code></pre>
+
+<p>to</p>
+
+<pre><code class="cpp">Eigen::Matrix&lt;double, Eigen::Dynamic, 3, Eigen::ColMajor&gt; A;
+// or simply
+Eigen::Matrix&lt;double, Eigen::Dynamic, 3&gt; A;
+</code></pre>
+
+<p>We hope to fix this, or at least identify which functions are safe (many of
+them probably work just fine). This requires setting up unit testing, which is
+a major <em>todo</em> for our development.</p>
+
 <h2 id="howtocontribute">How to contribute</h2>
 
 <p>If you are interested in joining development, please fork the repository and
@@ -163,7 +184,7 @@ Takayama, Leo Sacht, Wenzel Jacob, Nico Pietroni, Amir Vaxman</p>
 
 <figure>
 <img src="tutorial/images/libigl-logo.jpg" alt="" />
-</figure>
+<figcaption></figcaption></figure>
 
 </body>
 </html>

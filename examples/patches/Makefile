@@ -20,7 +20,7 @@ ANTTWEAKBAR_INC=-I$(LIBIGL)/external/AntTweakBar/include
 ANTTWEAKBAR_LIB=-L$(LIBIGL)/external/AntTweakBar/lib -lAntTweakBar -framework AppKit
 
 EMBREE=$(LIBIGL)/external/embree
-EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/embree
+EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/include
 EMBREE_LIB=-L$(EMBREE)/build -lembree -lsys
 
 MATLAB_INC=-I$(MATLAB)/extern/include/

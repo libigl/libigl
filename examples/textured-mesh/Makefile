@@ -14,13 +14,6 @@ LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglpng
 
 EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 
-#EMBREE=$(LIBIGL)/external/embree
-#EMBREE_INC=-I$(EMBREE)/rtcore -I$(EMBREE)/common
-#EMBREE_LIB=-L$(EMBREE)/build -lrtcore -lsys
-EMBREE=$(LIBIGL)/external/embree
-EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/embree
-EMBREE_LIB=-L$(EMBREE)/build -lembree -lsys
-
 # YIMAGE Library
 YIMG=$(LIBIGL)/external/yimg/
 YIMG_LIB=-L$(YIMG) -lyimg -lz -L/opt/local/lib -lpng -bind_at_load

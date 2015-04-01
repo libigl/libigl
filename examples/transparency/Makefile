@@ -10,7 +10,7 @@ all: example
 
 LIBIGL=../../
 LIBIGL_INC=-I$(LIBIGL)/include
-LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglmatlab -liglembree
+LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglmatlab
 
 EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 CFLAGS+=-O3 -fopenmp

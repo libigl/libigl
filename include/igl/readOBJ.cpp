@@ -106,7 +106,8 @@ IGL_INLINE bool igl::readOBJ(
         if(count != 2 && count != 3)
         {
           fprintf(stderr,
-                  "Error: readOBJ() vertex on line %d should have 2 or 3 coordinates (%d)",
+                  "Error: readOBJ() texture coords on line %d should have 2 "
+                  "or 3 coordinates (%d)",
                   line_no,count);
           fclose(obj_file);
           return false;

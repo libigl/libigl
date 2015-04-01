@@ -10,15 +10,12 @@ all: obj example
 
 LIBIGL=../../
 LIBIGL_INC=-I$(LIBIGL)/include
-LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglmatlab -liglembree
+LIBIGL_LIB=-L$(LIBIGL)/lib -ligl
 
 EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 
 ANTTWEAKBAR_INC=-I$(LIBIGL)/external/AntTweakBar/include
 ANTTWEAKBAR_LIB=-L$(LIBIGL)/external/AntTweakBar/lib -lAntTweakBar -framework AppKit
-
-MATLAB_INC=-I$(MATLAB)/extern/include/
-MATLAB_LIB=-L$(MATLAB)/bin/maci64 -lmx -lmat -lmex -lstdc++
 
 CARBON_LIB=-framework Carbon
 
