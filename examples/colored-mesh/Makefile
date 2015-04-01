@@ -14,11 +14,8 @@ LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglembree
 
 EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
 
-#EMBREE=$(LIBIGL)/external/embree
-#EMBREE_INC=-I$(EMBREE)/rtcore -I$(EMBREE)/common
-#EMBREE_LIB=-L$(EMBREE)/build -lrtcore -lsys
 EMBREE=$(LIBIGL)/external/embree
-EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/embree
+EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/include
 EMBREE_LIB=-L$(EMBREE)/build -lembree -lsys
 
 ANTTWEAKBAR_INC=-I$(LIBIGL)/external/AntTweakBar/include

@@ -52,6 +52,7 @@ namespace igl
     const double min_Z,
     const double max_Z,
     Eigen::PlainObjectBase<DerivedC> & C);
+  // adapted from parula.m
   const Eigen::Matrix<float,256,4> PARULA_COLOR_MAP = 
     (Eigen::Matrix<float,256,4>()<<
       0.2081,0.1663,0.5292,1,

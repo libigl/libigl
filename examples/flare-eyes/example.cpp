@@ -31,7 +31,6 @@
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
-#include <Carbon/Carbon.h>
 #else
 #include <GL/glut.h>
 #endif
@@ -524,14 +523,6 @@ void init_relative()
   bbd = (Vmax-Vmin).norm();
 }
 
-
-KeyMap keyStates ;
-bool IS_KEYDOWN( uint16_t vKey )
-{
-  uint8_t index = vKey / 32 ;
-  uint8_t shift = vKey % 32 ;
-  return keyStates[index].bigEndianValue & (1 << shift) ;
-}
 
 void undo()
 {
