@@ -1,10 +1,10 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
 //               2014 Christian Schüller <schuellchr@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 // igl function interface for Embree2.2
 //
@@ -12,6 +12,8 @@
 // * Use igl:Hit instead of embree:Hit (where id0 -> id)
 // * For Embree2.2
 // * Uncomment #define __USE_RAY_MASK__ in platform.h to enable masking
+//
+// TODO: Check for NANs in the input
 
 #ifndef IGL_EMBREE_INTERSECTOR_H
 #define IGL_EMBREE_INTERSECTOR_H
@@ -42,7 +44,7 @@ namespace igl
   public:
     typedef Eigen::Matrix<float,Eigen::Dynamic,3> PointMatrixType;
     typedef Eigen::Matrix<int,Eigen::Dynamic,3> FaceMatrixType;
-  public: 
+  public:
     inline EmbreeIntersector();
   private:
     // Copying and assignment are not allowed.
@@ -50,7 +52,7 @@ namespace igl
     inline EmbreeIntersector & operator=(const EmbreeIntersector &);
   public:
     virtual inline ~EmbreeIntersector();
-    
+
     // Initialize with a given mesh.
     //
     // Inputs:
@@ -79,9 +81,9 @@ namespace igl
     // destruction: no need to call if you just want to init() once and
     // destroy.
     inline void deinit();
-  
+
     // Given a ray find the first hit
-    // 
+    //
     // Inputs:
     //   origin     3d origin point of ray
     //   direction  3d (not necessarily normalized) direction vector of ray
@@ -92,7 +94,7 @@ namespace igl
     //   hit        information about hit
     // Returns true if and only if there was a hit
     inline bool intersectRay(
-      const Eigen::RowVector3f& origin, 
+      const Eigen::RowVector3f& origin,
       const Eigen::RowVector3f& direction,
       Hit& hit,
       float tnear = 0,
@@ -102,7 +104,7 @@ namespace igl
     // Given a ray find the first hit
     // This is a conservative hit test where multiple rays within a small radius
     // will be tested and only the closesest hit is returned.
-    // 
+    //
     // Inputs:
     //   origin     3d origin point of ray
     //   direction  3d (not necessarily normalized) direction vector of ray
@@ -125,7 +127,7 @@ namespace igl
       bool closestHit = true) const;
 
     // Given a ray find all hits in order
-    // 
+    //
     // Inputs:
     //   origin     3d origin point of ray
     //   direction  3d (not necessarily normalized) direction vector of ray
@@ -146,7 +148,7 @@ namespace igl
       int mask = 0xFFFFFFFF) const;
 
     // Given a ray find the first hit
-    // 
+    //
     // Inputs:
     //   a    3d first end point of segment
     //   ab   3d vector from a to other endpoint b
@@ -158,7 +160,7 @@ namespace igl
       const Eigen::RowVector3f& ab,
       Hit &hit,
       int mask = 0xFFFFFFFF) const;
-    
+
   private:
 
     struct Vertex   {float x,y,z,a;};
@@ -262,10 +264,10 @@ inline void igl::EmbreeIntersector::init(
   const std::vector<const FaceMatrixType*>& F,
   const std::vector<int>& masks)
 {
-  
+
   if(initialized)
     deinit();
-  
+
   using namespace std;
   global_init();
 
@@ -274,7 +276,7 @@ inline void igl::EmbreeIntersector::init(
     std::cerr << "Embree: No geometry specified!";
     return;
   }
-  
+
   // create a scene
   scene = rtcNewScene(RTC_SCENE_ROBUST | RTC_SCENE_HIGH_QUALITY,RTC_INTERSECT1);
 
@@ -307,7 +309,7 @@ inline void igl::EmbreeIntersector::init(
   }
 
   rtcCommit(scene);
-  
+
   if(rtcGetError() != RTC_NO_ERROR)
       std::cerr << "Embree: An error occured while initializing the provided geometry!" << endl;
 #ifdef IGL_VERBOSE
@@ -347,14 +349,14 @@ inline bool igl::EmbreeIntersector::intersectRay(
 {
   RTCRay ray;
   createRay(ray, origin,direction,tnear,std::numeric_limits<float>::infinity(),mask);
-  
+
   // shot ray
   rtcIntersect(scene,ray);
 #ifdef IGL_VERBOSE
   if(rtcGetError() != RTC_NO_ERROR)
       std::cerr << "Embree: An error occured while resetting!" << std::endl;
 #endif
-  
+
   if(ray.geomID != RTC_INVALID_GEOMETRY_ID)
   {
     hit.id = ray.primID;
@@ -369,7 +371,7 @@ inline bool igl::EmbreeIntersector::intersectRay(
 }
 
 inline bool igl::EmbreeIntersector::intersectBeam(
-      const Eigen::RowVector3f& origin, 
+      const Eigen::RowVector3f& origin,
       const Eigen::RowVector3f& direction,
       Hit& hit,
       float tnear,
@@ -386,18 +388,21 @@ inline bool igl::EmbreeIntersector::intersectBeam(
   else
     bestHit.t = 0;
 
-  if(hasHit = (intersectRay(origin,direction,hit,tnear,tfar,mask) && (hit.gid == geoId || geoId == -1)))
+  hasHit = (intersectRay(origin,direction,hit,tnear,tfar,mask) && (hit.gid == geoId || geoId == -1));
+  if(hasHit)
     bestHit = hit;
-  
+
   // sample points around actual ray (conservative hitcheck)
   float eps= 1e-5;
   int density = 4;
-        
-  Eigen::RowVector3f up(0,1,0);
+
+  Eigen::RowVector3f up; up.setRandom(1,3);
+  while (fabs(direction.cross(up).norm()) < 1e-5)
+    up.setRandom(1,3);
   Eigen::RowVector3f offset = direction.cross(up).normalized();
 
   Eigen::Matrix3f rot = Eigen::AngleAxis<float>(2*3.14159265358979/density,direction).toRotationMatrix();
-        
+
   for(int r=0;r<density;r++)
   {
     if(intersectRay(origin+offset*eps,direction,hit,tnear,tfar,mask) && ((closestHit && (hit.t < bestHit.t)) || (!closestHit && (hit.t > bestHit.t))) && (hit.gid == geoId || geoId == -1))
@@ -412,10 +417,10 @@ inline bool igl::EmbreeIntersector::intersectBeam(
   return hasHit;
 }
 
-inline bool 
+inline bool
 igl::EmbreeIntersector
 ::intersectRay(
-  const Eigen::RowVector3f& origin, 
+  const Eigen::RowVector3f& origin,
   const Eigen::RowVector3f& direction,
   std::vector<Hit > &hits,
   int& num_rays,
@@ -484,7 +489,7 @@ igl::EmbreeIntersector
     }
     else
       break; // no more hits
-    
+
     if(hits.size()>1000 && !large_hits_warned)
     {
       std::cout<<"Warning: Large number of hits..."<<endl;
@@ -493,10 +498,10 @@ igl::EmbreeIntersector
       {
         std::cout<<(hit->id+1)<<" ";
       }
-      
+
       std::cout.precision(std::numeric_limits< double >::digits10);
       std::cout<<"[ ";
-      
+
       for(vector<Hit>::iterator hit = hits.begin(); hit != hits.end(); hit++)
       {
         std::cout<<(hit->t)<<endl;;
@@ -512,13 +517,13 @@ igl::EmbreeIntersector
   return hits.empty();
 }
 
-inline bool 
+inline bool
 igl::EmbreeIntersector
 ::intersectSegment(const Eigen::RowVector3f& a, const Eigen::RowVector3f& ab, Hit &hit, int mask) const
 {
   RTCRay ray;
   createRay(ray,a,ab,0,1.0,mask);
-  
+
   rtcIntersect(scene,ray);
 
   if(ray.geomID != RTC_INVALID_GEOMETRY_ID)

@@ -18,7 +18,7 @@ OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 # include igl headers
 INC+=-I../include/
 
-# EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY 
+# EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY
 
 # Eigen dependency
 EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
@@ -28,11 +28,12 @@ INC+=$(EIGEN3_INC)
 #EMBREE=../external/embree
 #EMBREE_INC=-I$(EMBREE)/common -I$(EMBREE)/rtcore/
 EMBREE=../external/embree/
-EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/embree
+#EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/embree
+EMBREE_INC=-I$(EMBREE)/include
 #EMBREE_LIB=-L$(EMBREE)/bin -lrtcore -lsys
 INC+=$(EMBREE_INC)
 
-obj: 
+obj:
 	mkdir -p obj
 
 ../lib/libiglembree.a: $(OBJ_FILES)

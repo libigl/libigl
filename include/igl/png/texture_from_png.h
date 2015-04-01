@@ -9,6 +9,7 @@
 #define IGL_TEXTURE_FROM_PNG_H
 #include "../igl_inline.h"
 #include <string>
+#include <Eigen/Core>
 
 #ifndef IGL_NO_OPENGL
 #include "../OpenGL_convenience.h"

@@ -1,5 +1,5 @@
 include Makefile.conf
-all: CFLAGS += -O3 -DNDEBUG 
+all: CFLAGS += -O3 -DNDEBUG
 debug: CFLAGS += -g -Wall -Werror
 
 .PHONY: all
@@ -16,7 +16,7 @@ OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 # include igl headers
 INC+=-I../include/
 
-# EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY 
+# EXPECTS THAT CFLAGS IS ALREADY SET APPROPRIATELY
 
 # YIMG dependency
 YIMG=../external/yimg
@@ -27,7 +27,11 @@ YIMG_STATIC_LIB=$(YIMG)/libyimg.a
 # BOOST dependency
 INC+=-I/opt/local/include/
 
-obj: 
+# Eigen dependency
+EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
+INC+=$(EIGEN3_INC)
+
+obj:
 	mkdir -p obj
 
 ../lib/libiglpng.a: $(OBJ_FILES)

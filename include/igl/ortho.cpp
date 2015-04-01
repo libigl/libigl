@@ -18,3 +18,7 @@ IGL_INLINE void igl::ortho(
   P(1,3) = - (top + bottom) / (top - bottom);
   P(2,3) = - (farVal + nearVal) / (farVal - nearVal);
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template void igl::ortho<Eigen::Matrix<float, 4, 4, 0, 4, 4> >(Eigen::Matrix<float, 4, 4, 0, 4, 4>::Scalar, Eigen::Matrix<float, 4, 4, 0, 4, 4>::Scalar, Eigen::Matrix<float, 4, 4, 0, 4, 4>::Scalar, Eigen::Matrix<float, 4, 4, 0, 4, 4>::Scalar, Eigen::Matrix<float, 4, 4, 0, 4, 4>::Scalar, Eigen::Matrix<float, 4, 4, 0, 4, 4>::Scalar, Eigen::PlainObjectBase<Eigen::Matrix<float, 4, 4, 0, 4, 4> >&);
+#endif
