@@ -85,22 +85,8 @@ INC+=-I../include/
 # DEPENDENCIES
 #############################################################################
 INC+=$(OPENGL_INC)
-
-# Eigen dependency
-ifndef EIGEN3_INC
-	EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
-endif
 INC+=$(EIGEN3_INC)
-
-# AntTweakBar dependency
-#ANTTWEAKBAR_INC=-I$(DEFAULT_PREFIX)/include
-ANTTWEAKBAR_INC=-I../external/AntTweakBar/include
 INC+=$(ANTTWEAKBAR_INC)
-
-## OpenGL dependency
-#LIB+=-framework OpenGL
-#LIB+=-framework GLUT
-#LIB+=-framework AppKit
 
 .PHONY: obj
 obj:
