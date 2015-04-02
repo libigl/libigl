@@ -1,7 +1,0 @@
-igl_lib is a lightweight C++ for mesh processing
-
-Example1.cpp: 
-- Load/save a mesh
-- Compute face and edge topology
-- Compute the cotan matrix of the loaded mesh
-
