@@ -1,4 +1,3 @@
-
 .PHONY: all
 
 # Shared flags etc.
@@ -11,8 +10,8 @@ all: example
 igl_lib=../../
 
 CFLAGS+=-g
-inc=-I$(igl_lib)/include
-lib=$(OPENGL_LIB) $(GLUT_LIB) -L$(igl_lib)/lib -ligl
+inc=$(LIBIGL_INC)
+lib=$(OPENGL_LIB) $(GLUT_LIB) $(LIBIGL_LIB)
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o $(lib)
