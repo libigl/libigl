@@ -3,6 +3,7 @@ all: lib extras examples
 framework: lib extras lib/igl.framework/
 
 # Shared flags etc.
+CFLAGS += -DIGL_STATIC_LIBRARY
 include Makefile.conf
 $(info Hello, $(IGL_USERNAME)!)
 
