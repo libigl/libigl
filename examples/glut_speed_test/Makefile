@@ -1,4 +1,3 @@
-
 .PHONY: all
 
 all: example
@@ -11,14 +10,15 @@ include ../../build/Makefile.conf
 igl_lib=../../
 
 CFLAGS+=-g -Wall 
-inc=-I$(igl_lib)/include
-lib=$(OPENGL_LIB) $(GLUT_LIB) -L$(igl_lib)/lib -ligl
+INC=$(LIBIGL_INC)
+LIB=$(OPENGL_LIB) $(GLUT_LIB) $(LIBIGL_LIB)
 
 example: example.o
-	g++ $(CFLAGS) -o example example.o $(lib)
+	g++ $(CFLAGS) -o example example.o $(LIB)
 
 example.o: example.cpp
-	g++ $(CFLAGS) $(deps) -c example.cpp -o example.o $(inc)
+	g++ $(CFLAGS) $(deps) -c example.cpp -o example.o $(INC)
+
 clean:
 	rm -f example.o
 	rm -f example
