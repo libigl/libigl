@@ -9,10 +9,12 @@ all: example
 .PHONY: example
 
 igl_lib=../../
-eigen=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
+ifndef EIGEN3_INC
+	EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
+endif
 
 CFLAGS+=-g
-inc=-I$(igl_lib)/include $(eigen)
+inc=-I$(igl_lib)/include $(EIGEN3_INC)
 lib=-L$(igl_lib)/lib -ligl
 
 example: example.o

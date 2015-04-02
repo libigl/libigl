@@ -12,7 +12,9 @@ LIBIGL=../../
 LIBIGL_INC=-I$(LIBIGL)/include -DIGL_HEADER_ONLY
 LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglmatlab 
 
-EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+ifndef EIGEN3_INC
+	EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+endif
 
 ANTTWEAKBAR_INC=-I$(LIBIGL)/external/AntTweakBar/include
 ANTTWEAKBAR_LIB=-L$(LIBIGL)/external/AntTweakBar/lib -lAntTweakBar -framework AppKit

@@ -12,7 +12,9 @@ LIBIGL=../../
 LIBIGL_INC=-I$(LIBIGL)/include
 LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglembree
 
-EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+ifndef EIGEN3_INC
+	EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+endif
 
 EMBREE=$(LIBIGL)/external/embree
 EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/include

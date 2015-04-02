@@ -12,7 +12,9 @@ igl_lib=../../
 
 CFLAGS+=-g -Wall 
 #deps=-MMD -MF depends.txt
-EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
+ifndef EIGEN3_INC
+	EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
+endif
 inc=-I$(igl_lib)/include $(EIGEN3_INC)
 lib=$(OPENGL_LIB) $(GLUT_LIB) -L$(igl_lib)/lib -ligl
 

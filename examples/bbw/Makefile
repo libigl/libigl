@@ -25,7 +25,9 @@ MOSEK_LIB=-L$(MOSEK)/$(MOSEKVERSION)/tools/platform/$(MOSEKPLATFORM)/bin -lmosek
 INC+=$(MOSEK_INC)
 endif
 
-EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
+ifndef EIGEN3_INC
+	EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
+endif
 
 # By default I'm using the libigl version. Adjust accordingly
 TETGEN=$(LIBIGL)/external/tetgen

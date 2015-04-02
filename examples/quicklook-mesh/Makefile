@@ -11,7 +11,9 @@ C=clang
 CXXFLAGS += -stdlib=libc++ -std=c++11
 
 EIGEN=/opt/local/include/eigen3/
-EIGEN3_INC=-I$(EIGEN) -I$(EIGEN)/unsupported
+ifndef EIGEN3_INC
+	EIGEN3_INC=-I$(EIGEN) -I$(EIGEN)/unsupported
+endif
 
 LIBIGL=../../
 #LIBIGL_LIB=-L$(LIBIGL)/lib -ligl

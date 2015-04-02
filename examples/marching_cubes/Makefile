@@ -9,10 +9,12 @@ all: example
 include ../../build/Makefile.conf
 
 igl_lib=../../
-eigen=-I$(DEFAULT_PREFIX)/include/eigen3
+ifndef EIGEN3_INC
+	EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3
+endif
 
 CFLAGS+=-g
-inc=-I$(igl_lib)/include $(eigen)
+inc=-I$(igl_lib)/include $(EIGEN3_INC)
 lib=-L$(igl_lib)/lib -ligl
 
 example: example.o

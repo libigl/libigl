@@ -12,7 +12,9 @@ LIBIGL=../../
 LIBIGL_INC=-I$(LIBIGL)/include
 LIBIGL_LIB=-L$(LIBIGL)/lib -ligl -liglpng
 
-EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+ifndef EIGEN3_INC
+	EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+endif
 
 # YIMAGE Library
 YIMG=$(LIBIGL)/external/yimg/

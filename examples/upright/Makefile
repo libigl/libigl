@@ -12,7 +12,9 @@ include $(LIBIGL)/build/Makefile.conf
 LIBIGL_INC=-I$(LIBIGL)/include
 LIBIGL_LIB=-L$(LIBIGL)/lib -ligl
 
-EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+ifndef EIGEN3_INC
+	EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+endif
 
 CARBON_LIB=-framework Carbon
 

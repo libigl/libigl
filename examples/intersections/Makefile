@@ -18,7 +18,9 @@ CGAL_INC=-I$(CGAL)/include -I/usr/include/
 # This is absolutely necessary for Exact Construction
 CGAL_FLAGS=-frounding-math -fsignaling-nans 
 
-EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+ifndef EIGEN3_INC
+	EIGEN3_INC=-I/opt/local/include/eigen3 -I/opt/local/include/eigen3/unsupported
+endif
 
 EMBREE=$(LIBIGL)/external/embree
 EMBREE_INC=-I$(EMBREE)/ -I$(EMBREE)/include
