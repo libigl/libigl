@@ -10,15 +10,9 @@ C=clang
 #C=clang-mp-3.4
 CXXFLAGS += -stdlib=libc++ -std=c++11
 
-EIGEN=/opt/local/include/eigen3/
-ifndef EIGEN3_INC
-	EIGEN3_INC=-I$(EIGEN) -I$(EIGEN)/unsupported
-endif
-
+#Be sure that libs aren't used
 LIBIGL=../../
-#LIBIGL_LIB=-L$(LIBIGL)/lib -ligl
-LIBIGL_LIB=
-LIBIGL_INC=-DIGL_HEADER_ONLY -I $(LIBIGL)/include
+LIBIGL_INC=-I$(LIBIGL)/include
 
 # Do not use the GLU that comes with the macports Mesa:
 # http://www.alecjacobson.com/weblog/?p=2827

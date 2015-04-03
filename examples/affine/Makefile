@@ -1,4 +1,3 @@
-
 .PHONY: all
 
 all: example
@@ -8,14 +7,9 @@ include ../../build/Makefile.conf
 
 .PHONY: example
 
-igl_lib=../../
-ifndef EIGEN3_INC
-	EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3
-endif
-
 CFLAGS+=-g
-inc=-I$(igl_lib)/include $(EIGEN3_INC)
-lib=-L$(igl_lib)/lib -ligl
+inc=$(LIBIGL_INC) $(EIGEN3_INC)
+lib=$(LIBIGL_LIB)
 
 example: example.o
 	g++ $(CFLAGS) -o example example.o $(lib)
