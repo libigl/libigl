@@ -29,6 +29,10 @@ namespace igl
     std::vector<T> & C,
     std::vector<size_t> & IA,
     std::vector<size_t> & IC);
+  template <typename T>
+  IGL_INLINE void unique(
+    const std::vector<T> & A,
+    std::vector<T> & C);
   template <
     typename DerivedA,
     typename DerivedC,
@@ -39,6 +43,14 @@ namespace igl
       Eigen::PlainObjectBase<DerivedC> & C,
       Eigen::PlainObjectBase<DerivedIA> & IA,
       Eigen::PlainObjectBase<DerivedIC> & IC);
+  template <
+    typename DerivedA,
+    typename DerivedC,
+    typename DerivedIA,
+    typename DerivedIC>
+  IGL_INLINE void unique(
+      const Eigen::PlainObjectBase<DerivedA> & A,
+      Eigen::PlainObjectBase<DerivedC> & C);
   // Act like matlab's [C,IA,IC] = unique(X,'rows')
   //
   // Templates:
