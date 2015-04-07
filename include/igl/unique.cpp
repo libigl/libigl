@@ -63,6 +63,15 @@ IGL_INLINE void igl::unique(
 
 }
 
+template <typename T>
+IGL_INLINE void igl::unique(
+  const std::vector<T> & A,
+  std::vector<T> & C)
+{
+  std::vector<size_t> IA,IC;
+  return igl::unique(A,C,IA,IC);
+}
+
 template <
   typename DerivedA,
   typename DerivedC,
@@ -84,6 +93,25 @@ IGL_INLINE void igl::unique(
   list_to_matrix(vC,C);
   list_to_matrix(vIA,IA);
   list_to_matrix(vIC,IC);
+}
+
+template <
+  typename DerivedA,
+  typename DerivedC,
+  typename DerivedIA,
+  typename DerivedIC>
+IGL_INLINE void igl::unique(
+    const Eigen::PlainObjectBase<DerivedA> & A,
+    Eigen::PlainObjectBase<DerivedC> & C)
+{
+  using namespace std;
+  using namespace Eigen;
+  vector<typename DerivedA::Scalar > vA;
+  vector<typename DerivedC::Scalar > vC;
+  vector<size_t> vIA,vIC;
+  matrix_to_list(A,vA);
+  unique(vA,vC,vIA,vIC);
+  list_to_matrix(vC,C);
 }
 
 // Obsolete slow version converting to vectors
