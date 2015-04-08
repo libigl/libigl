@@ -185,8 +185,6 @@ IGL_INLINE void igl::slice_mask(
   const int dim,
   Eigen::PlainObjectBase<DerivedX> & Y)
 {
-  int xm = X.rows();
-  int xn = X.cols();
   switch(dim)
   {
     case 1:
