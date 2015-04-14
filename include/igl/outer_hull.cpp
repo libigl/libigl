@@ -103,7 +103,9 @@ IGL_INLINE void igl::outer_hull(
           di_I(fei,0) = di_I(fei,0) - 2.*M_PI;
         }
       }
-      di_I(fei,1) = f;
+      // This signing is very important to make sure different edges sort
+      // duplicate faces the same way, regardless of their orientations
+      di_I(fei,1) = (cons[fei]?1.:-1.)*f;
     }
     VectorXi IM;
 
@@ -189,7 +191,8 @@ IGL_INLINE void igl::outer_hull(
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"outer facet: "<<f<<endl;
 #endif
-    int FHcount = 0;
+    int FHcount = 1;
+    FH[f] = true;
     // Q contains list of face edges to continue traversing upong
     queue<int> Q;
     Q.push(f+0*m);
@@ -215,15 +218,6 @@ IGL_INLINE void igl::outer_hull(
         continue;
       }
       EH[e] = true;
-      // first time seeing face
-      if(!FH[f])
-      {
-//#ifdef IGL_OUTER_HULL_DEBUG
-//      cout<<(f+1)<<endl;
-//#endif
-        FH[f] = true;
-        FHcount++;
-      }
       // source of edge according to f
       const int fs = flip(f)?F(f,(c+2)%3):F(f,(c+1)%3);
       // destination of edge according to f
@@ -250,28 +244,30 @@ IGL_INLINE void igl::outer_hull(
       // Loop once around trying to find suitable next face
       for(size_t step = 1; step<val+2;step++)
       {
-        nfei = (diIM(e) + 2*val + e_cons*step*(flip(f)?-1:1))%val;
-#ifdef IGL_OUTER_HULL_DEBUG
-        const int nf = uE2E[EMAP(e)][nfei] % m;
-#endif
+        const int nfei_new = (diIM(e) + 2*val + e_cons*step*(flip(f)?-1:1))%val;
+        const int nf = uE2E[EMAP(e)][nfei_new] % m;
         // Don't consider faces with identical dihedral angles
-        if(di[EMAP(e)][diIM(e)] != di[EMAP(e)][nfei])
+        if(di[EMAP(e)][diIM(e)] != di[EMAP(e)][nfei_new])
 //#warning "THIS IS HACK, FIX ME"
-//        if( abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei]) < 1e-16 )
+//        if( abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new]) < 1e-16 )
         {
 //#ifdef IGL_OUTER_HULL_DEBUG
 //        cout<<"Next facet: "<<(f+1)<<" --> "<<(nf+1)<<", |"<<
-//          di[EMAP(e)][diIM(e)]<<" - "<<di[EMAP(e)][nfei]<<"| = "<<
-//            abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei])
+//          di[EMAP(e)][diIM(e)]<<" - "<<di[EMAP(e)][nfei_new]<<"| = "<<
+//            abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new])
 //            <<endl;
 //#endif
+          // Only use this face if not already seen
+          if(!FH[nf])
+          {
+            nfei = nfei_new;
+          }
           break;
         }
-#ifdef IGL_OUTER_HULL_DEBUG
-        cout<<"Skipping co-planar facet: "<<(f+1)<<" --> "<<(nf+1)<<endl;
-#endif
+//#ifdef IGL_OUTER_HULL_DEBUG
+//        cout<<"Skipping co-planar facet: "<<(f+1)<<" --> "<<(nf+1)<<endl;
+//#endif
       }
-      const int max_ne_2 = uE2E[EMAP(e)][nfei];
 
       int max_ne = -1;
       //// Loop over and find max dihedral angle
@@ -332,12 +328,24 @@ IGL_INLINE void igl::outer_hull(
       //    }
       //  }
       //}
-      max_ne = max_ne_2;
+      if(nfei >= 0)
+      {
+        max_ne = uE2E[EMAP(e)][nfei];
+      }
 
       if(max_ne>=0)
       {
         // face of neighbor
         const int nf = max_ne%m;
+#ifdef IGL_OUTER_HULL_DEBUG
+        if(!FH[nf])
+        {
+          // first time seeing face
+          cout<<(f+1)<<" --> "<<(nf+1)<<endl;
+        }
+#endif
+        FH[nf] = true;
+        FHcount++;
         // corner of neighbor
         const int nc = max_ne/m;
         const int nd = F(nf,(nc+2)%3);

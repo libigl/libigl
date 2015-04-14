@@ -35,6 +35,10 @@ IGL_INLINE size_t igl::peel_outer_hull_layers(
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
   cout<<"peel outer hull layers..."<<endl;
 #endif
+#ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
+  cout<<"calling outer hull..."<<endl;
+  writePLY(STR("peel-outer-hull-input.ply"),V,F);
+#endif
 
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
   cout<<"resize output ..."<<endl;
