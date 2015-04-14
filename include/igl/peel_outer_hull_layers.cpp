@@ -6,6 +6,7 @@
 //#define IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
 #include "writePLY.h"
+#include "writeDMAT.h"
 #include "STR.h"
 #endif
 
@@ -59,6 +60,7 @@ IGL_INLINE size_t igl::peel_outer_hull_layers(
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
   cout<<"calling outer hull..."<<endl;
   writePLY(STR("outer-hull-input-"<<iter<<".ply"),V,Fr);
+  writeDMAT(STR("outer-hull-input-"<<iter<<".dmat"),Nr);
 #endif
     outer_hull(V,Fr,Nr,Fo,Jo,flipr);
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
