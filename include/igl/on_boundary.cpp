@@ -9,7 +9,7 @@
 
 // IGL includes
 #include "sort.h"
-#include "face_occurences.h"
+#include "face_occurrences.h"
 
 // STL includes
 
@@ -47,7 +47,7 @@ IGL_INLINE void igl::on_boundary(
   }
   // Counts
   vector<int> FC;
-  face_occurences(F,FC);
+  face_occurrences(F,FC);
   C.resize(T.size(),vector<bool>(4));
   I.resize(T.size(),false);
   for(int i = 0; i< (int)T.size();i++)
