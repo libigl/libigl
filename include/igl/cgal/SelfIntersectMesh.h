@@ -1026,14 +1026,14 @@ inline void igl::SelfIntersectMesh<
   const Index total_shared_vertices = comb_shared_vertices + geo_shared_vertices;
   if(comb_shared_vertices== 3)
   {
-    // Combinatorially duplicate face, these should be removed by preprocessing
-    cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are combinatorial duplicates")<<endl;
+    //// Combinatorially duplicate face, these should be removed by preprocessing
+    //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are combinatorial duplicates")<<endl;
     goto done;
   }
   if(total_shared_vertices== 3)
   {
-    // Geometrically duplicate face, these should be removed by preprocessing
-    cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are geometrical duplicates")<<endl;
+    //// Geometrically duplicate face, these should be removed by preprocessing
+    //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are geometrical duplicates")<<endl;
     goto done;
   }
   //// SPECIAL CASES ARE BROKEN FOR COPLANAR TRIANGLES
