@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "boundary_facets.h"
-#include "face_occurences.h"
+#include "face_occurrences.h"
 
 // IGL includes
 #include "sort.h"
@@ -72,7 +72,7 @@ IGL_INLINE void igl::boundary_facets(
 
   // Counts
   vector<int> C;
-  face_occurences(allF,C);
+  face_occurrences(allF,C);
 
   // Q: Why not just count the number of ones?
   // A: because we are including non-manifold edges as boundary edges
