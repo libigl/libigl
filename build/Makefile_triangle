@@ -3,6 +3,7 @@
 all: libigltriangle
 debug: libigltriangle
 
+CFLAGS += -DIGL_STATIC_LIBRARY
 include Makefile.conf
 all: CFLAGS += -O3 -DNDEBUG 
 debug: CFLAGS += -g -Wall -Werror

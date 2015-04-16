@@ -34,7 +34,6 @@
 #include <igl/get_seconds.h>
 #include <igl/PI.h>
 #include <igl/STR.h>
-#include <YImage.hpp>
 
 #ifdef __APPLE__
 #  include <GLUT/glut.h>

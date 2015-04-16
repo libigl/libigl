@@ -17,20 +17,21 @@ namespace igl
   //
   // Templates:
   //   DerivedX derived scalar type, e.g. MatrixXi or MatrixXd
-  //   DerivedIX derived integer type, e.g. MatrixXi
+  //   DerivedI derived integer type, e.g. MatrixXi
   // Inputs:
   //   X  m by n matrix whose entries are to be sorted
   //   ascending  sort ascending (true, matlab default) or descending (false)
   // Outputs:
-  //   Y  m by n matrix whose entries are sorted
-  //   IX  m by n matrix of indices so that if dim = 1, then in matlab notation
-  //     for j = 1:n, Y(:,j) = X(I(:,j),j); end
-  template <typename DerivedX, typename DerivedIX>
+  //   Y  m by n matrix whose entries are sorted (**should not** be same
+  //     reference as X)
+  //   I  m list of indices so that
+  //     Y = X(I,:);
+  template <typename DerivedX, typename DerivedI>
   IGL_INLINE void sortrows(
     const Eigen::PlainObjectBase<DerivedX>& X,
     const bool ascending,
     Eigen::PlainObjectBase<DerivedX>& Y,
-    Eigen::PlainObjectBase<DerivedIX>& IX);
+    Eigen::PlainObjectBase<DerivedI>& I);
 }
 
 #ifndef IGL_STATIC_LIBRARY
