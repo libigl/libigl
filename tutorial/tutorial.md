@@ -89,6 +89,7 @@ lecture notes links to a cross-platform example application.
 * [Chapter 7: Miscellaneous](#700)
     * [701 Mesh Statistics](#701)
     * [702 Generalized Winding Number](#702)
+    * [703 Mesh Decimation](#703)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [100]
@@ -2411,6 +2412,152 @@ extracted interior tets, and slices show the winding number function on all
 tets in the convex hull: blue (~0), green (~1), yellow
 (~2).](images/big-sigcat-winding-number.gif)
 
+## Mesh Decimation [703]
+
+The study of mesh simplification or _decimation_ is nearly as old as meshes
+themselves. Given a high resolution mesh with too many triangles, find a "well
+approximating" low resolution mesh with far fewer triangles. By now there are a
+variety of different paradigms for solving this problem and state-of-the-art
+methods are fairly advanced.
+
+One family of mesh decimation methods operates by successively remove elements
+from the mesh. In particular, Hoppe advocates for successively remove or rather
+collapsing edges [#hoppe_1996][]. The generic form of this technique is to
+construct a sequence of n meshes from the initial high-resolution mesh $M_0$ to
+the lowest resolution mesh $M_n$ by collapsing a single edge:
+
+ $M_0 \mathop{\longrightarrow}_\text{edge collapse} 
+  M_1 \mathop{\longrightarrow}_\text{edge collapse} 
+  \dots \mathop{\longrightarrow}_\text{edge collapse}
+  M_{n-1} \mathop{\longrightarrow}_\text{edge collapse} M_n.$
+
+Hoppe's original method and subsequent follow-up works propose various ways to
+choose the next edge to collapse in this sequence. Using a cost-based paradigm,
+one can maintain a priority queue of edges based on their "cost" (how much
+"worse" will my approximation be if I remove this edge?). The cheapest edge is
+collapsed and costs of neighboring edges are updated.
+
+In order to maintain the topology (e.g. if the mesh is combinatorially as
+sphere or a torus etc.), one should assign infinite cost to edges whose
+collapse would alter the mesh topology. Let's briefly examine how this can
+happen.
+
+Recall the Euler formula which relates the number of vertices, faces and edges
+to the Euler characteristic (genus of surface) $\chi$: 
+
+ $\chi = \#V - \#E + \#F.$
+
+A valid edge collapse will remove 1 vertex, 2 neighboring faces and 3 edges
+(itself and one edge from each face), see Figure (left). How does this affect
+the Euler characteristic?
+ $\chi = (\#V-1) - (\#E - 3) + (\#F-2) = \#V - \#E + \#F = \chi.$
+
+It doesn't. The topology remains the same. In particular, this means a closed
+manifold mesh, stays a closed manifold mesh.
+
+Any edge collapse which removes too many faces or edges may invalidate the
+Euler characteristic. Indeed this happens if and only if the number of mutual
+neighbors of the endpoints of the collapsing edge is not exactly two! 
+
+If there exists a third shared vertex, then another face will be removed, but 2
+edges will be removed leaving our Euler formula imbalanced. This can result in
+unwanted holes or non-manifold "flaps".
+
+![A valid edge collapse and an invalid edge collapse.](images/edge-collapse.jpg)
+
+> There is also a one-off condition that no edges of a tetrahedron should be
+> collapsed.
+
+Because libigl (purposefully) does not center its implementations around a
+dynamic mesh data structure (e.g. half-edge datastructure), support for
+topology changes are limited. Nonetheless, libigl has support for isolated edge
+collapses, sequences of edge-collapses (each in O(log) time) and priority queue
+based decimation.
+
+The simplest is `igl::decimation`. By calling
+
+```cpp
+igl::decimate(V,F,1000,U,G);
+```
+
+the mesh `(V,F)` will be decimated to a new mesh `(U,G)` so that `G` has at
+most `1000` faces. This uses default (naive) criteria for determining the cost
+of an edge collapse and the placement of the merged vertex. Shortest edges are
+collapsed first, and merged vertices are placed at edge midpoints.
+
+One can also provide function handles (`c++` lambda functions are convenient
+here) `cost_and_placement` and `stopping_condition` for determining the
+cost/placement of an edge collapse and the stopping condition respectively. For
+example, the default version above is implemented as:
+
+```cpp
+igl::decimate(V,F,shortest_edge_and_midpoint,max_m,U,G);
+```
+
+where `shortest_edge_and_midpoint` assign the edge's length as cost and its
+midpoint as the merged vertex placement and `max_m` counts the current number
+of faces (valid collapses decrease count by 2) and returns `true` if the count
+drops below `m=1000`.
+
+One can also scratch deeper inside the decimation loop and call
+`igl::collapse_edge` directly. In order to operate efficiently, this routine
+needs more than the usual `(V,F)` mesh representation. We need `E` a list of
+edge indices, where `E.row(i) --> [s,d]`; we need `EMAP` which maps the
+"half"-edges of each triangle in `F` to its corresponding edge in `E` so that
+`E.row(EMAP(f+i*F.rows)) --> [s,d]` if the edge across from the ith corner of the
+fth face is `[s,d]` (up to orientation); we need `EF` and `EI` which keep track
+of the faces incident on each edge and across from which corner of those faces
+the edges appears, so that `EF(e,o) = f` and `EI(e,o) = i` means that the edge
+`E.row(e) --> [s,d]` appears in the fth face across from its ith corner (for
+`o=0` the edge orientations should match, for `o=1` the orientations are
+opposite).
+
+When a collapse occurs, the sizes of the `F`,`E`, etc. matrices do not change.
+Rather rows corresponding to "removed" faces and edges are set to a special
+constant value `IGL_COLLAPSE_EDGE_NULL`. Doing this ensures that we're able to
+remove edges in truly constant time O(1). 
+
+
+> Conveniently `IGL_COLLAPSE_EDGE_NULL==0`. This means most OPENGL style renderings of `F`
+> will simply draw a bunch of 0-area triangles at the first vertex.
+
+The following will collapse the first
+edge and place its merged vertex at the origin:
+
+```cpp
+igl::collapse_edge(0,RowVector3d(0,0,0),V,F,E,EMAP,EF,EI);
+```
+If valid, then `V`,`F`,`E`,`EF`,`EI` are adjusted accordingly.
+
+This is powerful, but low level. To build a decimator around this you'd need to
+keep track which edges are left to collapse and which to collapse next.
+Fortunately, libigl also exposes a priority queue based edge collapse with
+function handles to adjust costs and placements.
+
+The priority queue is implemented as a (ordered) set `Q` or (cost,edge index)
+pairs and a list of iterators `Qit` so that `Qit[e]` reveals the iterator in
+`Q` corresponding to the eth edge. Placements are stored in a #E list of
+positions `C`. When the following is called:
+
+```cpp
+igl::collapse_edge(cost_and_placement,V,F,E,EMAP,EF,EI,Q,Qit,C);
+```
+
+the lowest cost edge collapse according to `Q` is attempted. If valid, then
+`V`,`F`,etc. are adjusted accordingly and that edge is "popped" from `Q`. Using
+`Qit` its neighboring edges are also popped from `Q` and re-inserted after
+updating their costs according to `cost_and_placement`, new placements are
+remembered in `C`. If not valid, then the edge is "popped" from `Q` and
+reinserted with infinite cost.
+
+![Example 703 conducts edge collapses on the fertility
+model.](images/fertility-edge-collapse.gif)
+
+The [Example 703](./703_Decimation/main.cpp) demonstrates using this priority
+queue based approach with the simple shortest-edge-midpoint cost/placement
+strategy discussed above.
+
+
 # Outlook for continuing development [future]
 
 Libigl is in active development, and we plan to focus on the following features
@@ -2440,98 +2587,110 @@ repository and to open a [pull
 request](https://help.github.com/articles/using-pull-requests) on [our github
 repository](https://github.com/libigl/libigl).
 
-
-
-[#attene_2014]:["Direct repair of
-  self-intersecting
-  meshes"](https://www.google.com/search?q=Direct+repair+of+self-intersecting+meshes),
-  Marco Attene, 2014.
-[#bommes_2009]:[Mixed-integer
-quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf),
-David Bommes, Henrik Zimmer, Leif Kobbelt SIGGRAPH 2009
-[#botsch_2004]: Matrio Botsch and Leif Kobbelt. ["An Intuitive Framework for
-Real-Time Freeform
-Modeling,"](https://www.google.com/search?q=An+Intuitive+Framework+for+Real-Time+Freeform+Modeling)
-2004.
-[#bouaziz_2012]:[Shape-Up: Shaping Discrete Geometry with
-Projections](http://lgg.epfl.ch/publications/2012/shapeup.pdf) Sofien Bouaziz,
-Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
-SGP 2012
+[#attene_2014]: Marco Attene. 
+  [Direct repair of self-intersecting
+  meshes](https://www.google.com/search?q=Direct+repair+of+self-intersecting+meshes),
+  2014.
+[#bommes_2009]: David Bommes, Henrik Zimmer, Leif Kobbelt.
+  [Mixed-integer
+  quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf),
+  2009.
+[#botsch_2004]: Matrio Botsch and Leif Kobbelt. 
+  [An Intuitive Framework for Real-Time Freeform
+  Modeling](https://www.google.com/search?q=An+Intuitive+Framework+for+Real-Time+Freeform+Modeling),
+  2004.
+[#bouaziz_2012]: Sofien Bouaziz, Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
+  [Shape-Up: Shaping Discrete Geometry with
+  Projections](http://lgg.epfl.ch/publications/2012/shapeup.pdf), 2012
 [#chao_2010]: Isaac Chao, Ulrich Pinkall, Patrick Sanan, Peter Schröder.
-["A Simple Geometric Model for Elastic
-Deformations,"](https://www.google.com/search?q=A+Simple+Geometric+Model+for+Elastic+Deformations) 2010.
-[#diamanti_2014]:[Designing N-PolyVector Fields with Complex
-Polynomials](http://igl.ethz.ch/projects/complex-roots/) Olga Diamanti, Amir
-Vaxman, Daniele Panozzo, Olga Sorkine-Hornung, SGP 2014
-[#eck_2005]:[Multiresolution Analysis of Arbitrary
-Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), Matthias
-Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
-Stuetzle, SIGGRAPH 2005
+  [A Simple Geometric Model for Elastic
+  Deformations](https://www.google.com/search?q=A+Simple+Geometric+Model+for+Elastic+Deformations),
+  2010.
+[#diamanti_2014]: Olga Diamanti, Amir Vaxman, Daniele Panozzo, Olga
+  Sorkine-Hornung. [Designing N-PolyVector Fields with Complex
+  Polynomials](http://igl.ethz.ch/projects/complex-roots/), 2014
+[#eck_2005]: Matthias Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
+  Stuetzle.  [Multiresolution Analysis of Arbitrary
+  Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), 2005.
+[#hoppe_1996]: Hugues Hoppe. [Progressive
+  Meshes](https://www.google.com/search?q=Progressive+meshes), 1996
 [#jacobson_thesis_2013]: Alec Jacobson,
-[_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D
-Shapes_](https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes),
-2013.
+  [_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D
+  Shapes_](https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes),
+  2013.
 [#jacobson_2013]: Alec Jacobson, Ladislav Kavan, and Olga Sorkine.
-["Robust Inside-Outside Segmentation using Generalized Winding
-Numbers,"](https://www.google.com/search?q=Robust+Inside-Outside+Segmentation+using+Generalized+Winding+Numbers) 2013.
+  [Robust Inside-Outside Segmentation using Generalized Winding
+  Numbers](https://www.google.com/search?q=Robust+Inside-Outside+Segmentation+using+Generalized+Winding+Numbers),
+  2013.
 [#jacobson_2012]: Alec Jacobson, Ilya Baran, Ladislav Kavan, Jovan Popović, and
-Olga Sorkine. ["Fast Automatic Skinning
-Transformations,"](https://www.google.com/search?q=Fast+Automatic+Skinning+Transformations) 2012.
+  Olga Sorkine. [Fast Automatic Skinning
+  Transformations](https://www.google.com/search?q=Fast+Automatic+Skinning+Transformations),
+  2012.
 [#jacobson_2011]: Alec Jacobson, Ilya Baran, Jovan Popović, and Olga Sorkine.
-["Bounded Biharmonic Weights for Real-Time Deformation,"](https://www.google.com/search?q=Bounded+biharmonic+weights+for+real-time+deformation) 2011.
+  [Bounded Biharmonic Weights for Real-Time
+  Deformation](https://www.google.com/search?q=Bounded+biharmonic+weights+for+real-time+deformation),
+  2011.
 [#jacobson_mixed_2010]: Alec Jacobson, Elif Tosun, Olga Sorkine, and Denis
-Zorin. ["Mixed Finite Elements for Variational Surface
-Modeling,"](https://www.google.com/search?q=Mixed+Finite+Elements+for+Variational+Surface+Modeling) 2010.
+  Zorin. [Mixed Finite Elements for Variational Surface
+  Modeling](https://www.google.com/search?q=Mixed+Finite+Elements+for+Variational+Surface+Modeling),
+  2010.
 [#kavan_2008]: Ladislav Kavan, Steven Collins, Jiri Zara, and Carol O'Sullivan.
-["Geometric Skinning with Approximate Dual Quaternion
-Blending,"](https://www.google.com/search?q=Geometric+Skinning+with+Approximate+Dual+Quaternion+Blending) 2008.
+  [Geometric Skinning with Approximate Dual Quaternion
+  Blending](https://www.google.com/search?q=Geometric+Skinning+with+Approximate+Dual+Quaternion+Blending),
+  2008.
 [#kazhdan_2012]: Michael Kazhdan, Jake Solomon, Mirela Ben-Chen,
-["Can Mean-Curvature Flow Be Made
-Non-Singular,"](https://www.google.com/search?q=Can+Mean-Curvature+Flow+Be+Made+Non-Singular) 2012.
-[#knoppel_2013]:[Globally Optimal Direction
-Fields](http://www.cs.columbia.edu/~keenan/Projects/GloballyOptimalDirectionFields/paper.pdf) Knöppel, Crane, Pinkall, Schröder SIGGRAPH 2013
-[#levy_2002]: [Least Squares Conformal Maps, for Automatic Texture Atlas
-Generation,](http://www.cs.jhu.edu/~misha/Fall09/Levy02.pdf) Bruno Lévy,
-Sylvain Petitjean, Nicolas Ray, Jérome Maillot, SIGGRAPH 2002
-[#levy_2008]:[N-Symmetry Direction Field
-Design](http://alice.loria.fr/publications/papers/2008/DGF/NSDFD-TOG.pdf),
-Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy TOG 2008
-[#liu_2008]: [A Local/Global Approach to Mesh
-Parameterization](http://cs.harvard.edu/~sjg/papers/arap.pdf) Ligang Liu, Lei
-Zhang, Yin Xu, Craig Gotsman, Steven J. Gortler SGP 2008
-[#liu_2011]:[General Planar Quadrilateral Mesh Design Using Conjugate Direction
-Field](http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf ) Yang Liu, Weiwei Xu, Jun Wang, Lifeng Zhu, Baining Guo, Falai Chen, Guoping
-Wang SIGGRAPH Asia 2011
+  [Can Mean-Curvature Flow Be Made
+  Non-Singular](https://www.google.com/search?q=Can+Mean-Curvature+Flow+Be+Made+Non-Singular),
+  2012.
+[#knoppel_2013]: Felix Knöppel, Keenan Crane, Ulrich Pinkall, and Peter
+  Schröder. [Globally Optimal Direction
+  Fields](http://www.cs.columbia.edu/~keenan/Projects/GloballyOptimalDirectionFields/paper.pdf),
+  2013.
+[#levy_2002]: Bruno Lévy, Sylvain Petitjean, Nicolas Ray, Jérome Maillot.
+  [Least Squares Conformal Maps, for Automatic Texture Atlas
+  Generation,](http://www.cs.jhu.edu/~misha/Fall09/Levy02.pdf), 2002.
+[#levy_2008]: Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy.
+  [N-Symmetry Direction Field
+  Design](http://alice.loria.fr/publications/papers/2008/DGF/NSDFD-TOG.pdf),
+  2008.
+[#liu_2008]: Ligang Liu, Lei Zhang, Yin Xu, Craig Gotsman, Steven J. Gortler.
+  [A Local/Global Approach to Mesh
+  Parameterization](http://cs.harvard.edu/~sjg/papers/arap.pdf), 2008.
+[#liu_2011]: Yang Liu, Weiwei Xu, Jun Wang, Lifeng Zhu, Baining Guo, Falai Chen, Guoping
+  Wang.  [General Planar Quadrilateral Mesh Design Using Conjugate Direction
+  Field](http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf),
+  2008.
 [#mcadams_2011]: Alexa McAdams, Andrew Selle, Rasmus Tamstorf, Joseph Teran,
-Eftychios Sifakis. ["Computing the Singular Value Decomposition of 3x3 matrices
-with minimal branching and elementary floating point
-operations,"](https://www.google.com/search?q=Computing+the+Singular+Value+Decomposition+of+3x3+matrices+with+minimal+branching+and+elementary+floating+point+operations)
-2011.
+  Eftychios Sifakis. [Computing the Singular Value Decomposition of 3x3
+  matrices with minimal branching and elementary floating point
+  operations](https://www.google.com/search?q=Computing+the+Singular+Value+Decomposition+of+3x3+matrices+with+minimal+branching+and+elementary+floating+point+operations),
+  2011.
 [#meyer_2003]: Mark Meyer, Mathieu Desbrun, Peter Schröder and Alan H.  Barr,
-["Discrete Differential-Geometry Operators for Triangulated
-2-Manifolds,"](https://www.google.com/search?q=Discrete+Differential-Geometry+Operators+for+Triangulated+2-Manifolds)
-2003.
-[#mullen_2008]: [Spectral Conformal
-Parameterization](http://www.geometry.caltech.edu/pubs/MTAD08.pdf), Patrick
-Mullen, Yiying Tong, Pierre Alliez, Mathieu Desbrun, CGF 2008
-[#panozzo_2010]: Daniele Panozzo, Enrico Puppo, Luigi Rocca, ["Efficient
-Multi-scale Curvature and Crease
-Estimation,"](https://www.google.com/search?q=Efficient+Multi-scale+Curvature+and+Crease+Estimation)
-2010.
-[#panozzo_2014]:[Frame Fields: Anisotropic and Non-Orthogonal Cross
-Fields](http://www.inf.ethz.ch/personal/dpanozzo/papers/frame-fields-2014.pdf),
-Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga Sorkine-Hornung, SIGGRAPH,
-2014
-[#rustamov_2011]: Raid M. Rustamov, ["Multiscale Biharmonic
-Kernels"](https://www.google.com/search?q=Multiscale+Biharmonic+Kernels), 2011.
-[#schuller_2013]:[Locally Injective Mappings](http://igl.ethz.ch/projects/LIM/)
-Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga Sorkine-Hornung,
-SGP 2013
+  [Discrete Differential-Geometry Operators for Triangulated
+  2-Manifolds](https://www.google.com/search?q=Discrete+Differential-Geometry+Operators+for+Triangulated+2-Manifolds),
+  2003.
+[#mullen_2008]: Patrick Mullen, Yiying Tong, Pierre Alliez, Mathieu Desbrun.
+  [Spectral Conformal
+  Parameterization](http://www.geometry.caltech.edu/pubs/MTAD08.pdf), 2008.
+[#panozzo_2010]: Daniele Panozzo, Enrico Puppo, Luigi Rocca, [Efficient
+  Multi-scale Curvature and Crease
+  Estimation](https://www.google.com/search?q=Efficient+Multi-scale+Curvature+and+Crease+Estimation),
+  2010.
+[#panozzo_2014]: Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga
+  Sorkine-Hornung.  [Frame Fields: Anisotropic and Non-Orthogonal Cross
+  Fields](http://www.inf.ethz.ch/personal/dpanozzo/papers/frame-fields-2014.pdf),
+  2014.
+[#rustamov_2011]: Raid M. Rustamov, [Multiscale Biharmonic
+  Kernels](https://www.google.com/search?q=Multiscale+Biharmonic+Kernels), 2011.
+[#schuller_2013]: Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga
+  Sorkine-Hornung.  [Locally Injective
+  Mappings](http://igl.ethz.ch/projects/LIM/), 2013.
 [#sharf_2007]: Andrei Sharf, Thomas Lewiner, Gil Shklarski, Sivan Toledo, and
-Daniel Cohen-Or. ["Interactive topology-aware surface
-reconstruction,"](https://www.google.com/search?q=Interactive+topology-aware+surface+reconstruction) 2007.
+  Daniel Cohen-Or. [Interactive topology-aware surface
+  reconstruction](https://www.google.com/search?q=Interactive+topology-aware+surface+reconstruction),
+  2007.
 [#sorkine_2004]: Olga Sorkine, Yaron Lipman, Daniel Cohen-Or, Marc Alexa,
-Christian Rössl and Hans-Peter Seidel. ["Laplacian Surface
-Editing,"](https://www.google.com/search?q=Laplacian+Surface+Editing) 2004.
-[#sorkine_2007]: Olga Sorkine and Marc Alexa, ["As-rigid-as-possible Surface
-Modeling."](https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling) 2007.
+  Christian Rössl and Hans-Peter Seidel. [Laplacian Surface
+  Editing](https://www.google.com/search?q=Laplacian+Surface+Editing), 2004.
+[#sorkine_2007]: Olga Sorkine and Marc Alexa, [As-rigid-as-possible Surface
+  Modeling](https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling), 2007.
