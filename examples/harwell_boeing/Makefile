@@ -1,4 +1,3 @@
-
 .PHONY: all
 
 # Shared flags etc.
@@ -8,18 +7,15 @@ all: example
 
 .PHONY: example
 
-igl_lib=../../
-eigen=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
-
 CFLAGS+=-g
-inc=-I$(igl_lib)/include $(eigen)
-lib=-L$(igl_lib)/lib -ligl
+INC=$(LIBIGL_INC) $(EIGEN3_INC)
+LIB=$(LIBIGL_LIB)
 
 example: example.o
-	g++ $(CFLAGS) -o example example.o $(lib)
+	g++ $(CFLAGS) -o example example.o $(LIB)
 
 example.o: example.cpp
-	g++ $(CFLAGS) -c example.cpp -o example.o $(inc)
+	g++ $(CFLAGS) -c example.cpp -o example.o $(INC)
 clean:
 	rm -f example.o
 	rm -f example

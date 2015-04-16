@@ -1,9 +1,0 @@
-This is a simple example program that shows how to use the cat function on
-eigen matrices like matlab's C = cat(dim,A,B) function
-
-
-To Build:
-  make
-
-To Run:
-  ./example

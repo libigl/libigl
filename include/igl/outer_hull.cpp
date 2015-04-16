@@ -1,15 +1,12 @@
 #include "outer_hull.h"
 #include "outer_facet.h"
-#include "sort.h"
+#include "sortrows.h"
 #include "facet_components.h"
 #include "winding_number.h"
 #include "triangle_triangle_adjacency.h"
 #include "unique_edge_map.h"
 #include "barycenter.h"
 #include "per_face_normals.h"
-#include "all_edges.h"
-#include "colon.h"
-#include "get_seconds.h"
 
 #include <Eigen/Geometry>
 #include <vector>
@@ -64,8 +61,11 @@ IGL_INLINE void igl::outer_hull(
   // uE --> sorted order index 
   // uE --> bool, whether needed to flip face to make "consistent" with unique
   //   edge
+  // Place order of each half-edge in its corresponding sorted list around edge
   VectorXI diIM(3*m);
+  // Whether face's edge used for sorting is consistent with unique edge
   VectorXI dicons(3*m);
+  // dihedral angles of faces around edge with face of edge in dicons
   vector<vector<typename DerivedV::Scalar> > di(uE2E.size());
   // For each list of face-edges incide on a unique edge
   for(size_t ui = 0;ui<(size_t)uE.rows();ui++)
@@ -73,7 +73,7 @@ IGL_INLINE void igl::outer_hull(
     // Base normal vector to orient against
     const auto fe0 = uE2E[ui][0];
     const RowVector3N & eVp = N.row(fe0%m);
-    di[ui].resize(uE2E[ui].size());
+    MatrixXd di_I(uE2E[ui].size(),2);
 
     const typename DerivedF::Scalar d = F(fe0%m,((fe0/m)+2)%3);
     const typename DerivedF::Scalar s = F(fe0%m,((fe0/m)+1)%3);
@@ -94,26 +94,40 @@ IGL_INLINE void igl::outer_hull(
       assert(!cons[fei] || (d == F(f,(c+1)%3)));
       // Angle between n and f
       const RowVector3N & n = N.row(f);
-      di[ui][fei] = M_PI - atan2( eVp.cross(n).dot(eV), eVp.dot(n));
+      di_I(fei,0) = M_PI - atan2( eVp.cross(n).dot(eV), eVp.dot(n));
       if(!cons[fei])
       {
-        di[ui][fei] = di[ui][fei] + M_PI;
-        if(di[ui][fei]>2.*M_PI)
+        di_I(fei,0) = di_I(fei,0) + M_PI;
+        if(di_I(fei,0)>=2.*M_PI)
         {
-          di[ui][fei] = di[ui][fei] - 2.*M_PI;
+          di_I(fei,0) = di_I(fei,0) - 2.*M_PI;
         }
       }
+      // This signing is very important to make sure different edges sort
+      // duplicate faces the same way, regardless of their orientations
+      di_I(fei,1) = (cons[fei]?1.:-1.)*f;
     }
-    vector<size_t> IM;
-    igl::sort(di[ui],true,di[ui],IM);
+    VectorXi IM;
+
+    //igl::sort(di[ui],true,di[ui],IM);
+    // Sort, but break ties using index to ensure that duplicates always show
+    // up in same order.
+    MatrixXd s_di_I;
+    igl::sortrows(di_I,true,s_di_I,IM);
+    di[ui].resize(uE2E[ui].size());
+    for(size_t i = 0;i<di[ui].size();i++)
+    {
+      di[ui][i] = s_di_I(i,0);
+    }
+
     // copy old list
     vector<typename DerivedF::Index> temp = uE2E[ui];
     for(size_t fei = 0;fei<uE2E[ui].size();fei++)
     {
-      uE2E[ui][fei] = temp[IM[fei]];
+      uE2E[ui][fei] = temp[IM(fei)];
       const auto & fe = uE2E[ui][fei];
       diIM(fe) = fei;
-      dicons(fe) = cons[IM[fei]];
+      dicons(fe) = cons[IM(fei)];
     }
 
   }
@@ -177,7 +191,8 @@ IGL_INLINE void igl::outer_hull(
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"outer facet: "<<f<<endl;
 #endif
-    int FHcount = 0;
+    int FHcount = 1;
+    FH[f] = true;
     // Q contains list of face edges to continue traversing upong
     queue<int> Q;
     Q.push(f+0*m);
@@ -203,24 +218,18 @@ IGL_INLINE void igl::outer_hull(
         continue;
       }
       EH[e] = true;
-      // first time seeing face
-      if(!FH[f])
-      {
-        FH[f] = true;
-        FHcount++;
-      }
-      // find overlapping face-edges
-      const auto & neighbors = uE2E[EMAP(e)];
-      // normal after possible flipping 
-      const auto & fN = (flip(f)?-1.:1.)*N.row(f);
       // source of edge according to f
       const int fs = flip(f)?F(f,(c+2)%3):F(f,(c+1)%3);
       // destination of edge according to f
       const int fd = flip(f)?F(f,(c+1)%3):F(f,(c+2)%3);
-      // Edge vector according to f's (flipped) orientation.
-      const auto & eV = (V.row(fd)-V.row(fs)).normalized();
       // edge valence
       const size_t val = uE2E[EMAP(e)].size();
+      //// find overlapping face-edges
+      //const auto & neighbors = uE2E[EMAP(e)];
+      //// normal after possible flipping 
+      //const auto & fN = (flip(f)?-1.:1.)*N.row(f);
+      //// Edge vector according to f's (flipped) orientation.
+      ////const auto & eV = (V.row(fd)-V.row(fs)).normalized();
 
 //#warning "EXPERIMENTAL, DO NOT USE"
       //// THIS IS WRONG! The first face is---after sorting---no longer the face
@@ -228,9 +237,37 @@ IGL_INLINE void igl::outer_hull(
       //const auto ui = EMAP(e);
       //const auto fe0 = uE2E[ui][0];
       //const auto es = F(fe0%m,((fe0/m)+1)%3);
+
+      // is edge consistent with edge of face used for sorting
       const int e_cons = (dicons(e) ? 1: -1);
-      const int nfei = (diIM(e) + val + e_cons*(flip(f)?-1:1))%val;
-      const int max_ne_2 = uE2E[EMAP(e)][nfei];
+      int nfei = -1;
+      // Loop once around trying to find suitable next face
+      for(size_t step = 1; step<val+2;step++)
+      {
+        const int nfei_new = (diIM(e) + 2*val + e_cons*step*(flip(f)?-1:1))%val;
+        const int nf = uE2E[EMAP(e)][nfei_new] % m;
+        // Don't consider faces with identical dihedral angles
+        if(di[EMAP(e)][diIM(e)] != di[EMAP(e)][nfei_new])
+//#warning "THIS IS HACK, FIX ME"
+//        if( abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new]) < 1e-16 )
+        {
+//#ifdef IGL_OUTER_HULL_DEBUG
+//        cout<<"Next facet: "<<(f+1)<<" --> "<<(nf+1)<<", |"<<
+//          di[EMAP(e)][diIM(e)]<<" - "<<di[EMAP(e)][nfei_new]<<"| = "<<
+//            abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new])
+//            <<endl;
+//#endif
+          // Only use this face if not already seen
+          if(!FH[nf])
+          {
+            nfei = nfei_new;
+          }
+          break;
+        }
+//#ifdef IGL_OUTER_HULL_DEBUG
+//        cout<<"Skipping co-planar facet: "<<(f+1)<<" --> "<<(nf+1)<<endl;
+//#endif
+      }
 
       int max_ne = -1;
       //// Loop over and find max dihedral angle
@@ -291,12 +328,24 @@ IGL_INLINE void igl::outer_hull(
       //    }
       //  }
       //}
-      max_ne = max_ne_2;
+      if(nfei >= 0)
+      {
+        max_ne = uE2E[EMAP(e)][nfei];
+      }
 
       if(max_ne>=0)
       {
         // face of neighbor
         const int nf = max_ne%m;
+#ifdef IGL_OUTER_HULL_DEBUG
+        if(!FH[nf])
+        {
+          // first time seeing face
+          cout<<(f+1)<<" --> "<<(nf+1)<<endl;
+        }
+#endif
+        FH[nf] = true;
+        FHcount++;
         // corner of neighbor
         const int nc = max_ne/m;
         const int nd = F(nf,(nc+2)%3);

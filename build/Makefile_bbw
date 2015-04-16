@@ -2,6 +2,7 @@
 all: libiglbbw
 debug: libiglbbw
 
+CFLAGS += -DIGL_STATIC_LIBRARY
 include Makefile.conf
 all: OPTFLAGS += -O3 -DNDEBUG $(OPENMP)
 debug: OPTFLAGS += -g -Wall

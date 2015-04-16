@@ -1,3 +1,4 @@
+CFLAGS += -DIGL_STATIC_LIBRARY
 include Makefile.conf
 
 .PHONY: all

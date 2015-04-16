@@ -317,12 +317,12 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bo
 }
 
 IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
-                            OpenGL_state& opengl,
-                            bool update_matrices,
-                            Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
-                            Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
-                            Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
-                            Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A)
+  OpenGL_state& opengl,
+  bool update_matrices,
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A)
 {
   assert(R.rows() == G.rows() && G.rows() == B.rows() && B.rows() == A.rows());
   assert(R.cols() == G.cols() && G.cols() == B.cols() && B.cols() == A.cols());

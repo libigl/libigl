@@ -379,11 +379,8 @@ inline void igl::RotateWidget::draw() const
   using namespace Eigen;
   using namespace std;
   using namespace igl;
-  int l,dt;
-  glGetIntegerv(GL_LIGHTING,&l);
-  glGetIntegerv(GL_DEPTH_TEST,&dt);
-  double lw;
-  glGetDoublev(GL_LINE_WIDTH,&lw);
+  glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING_BIT | GL_DEPTH_BUFFER_BIT | GL_LINE_BIT);
+  glDisable(GL_CLIP_PLANE0);
 
   glDisable(GL_LIGHTING);
   glDisable(GL_DEPTH_TEST);
@@ -470,9 +467,7 @@ inline void igl::RotateWidget::draw() const
   draw_guide();
   glPopMatrix();
 
-  glLineWidth(lw);
-  (l ? glEnable(GL_LIGHTING):glDisable(GL_LIGHTING));
-  (dt ? glEnable(GL_DEPTH_TEST):glDisable(GL_DEPTH_TEST));
+  glPopAttrib();
 };
 
 inline void igl::RotateWidget::draw_guide() const
@@ -480,12 +475,15 @@ inline void igl::RotateWidget::draw_guide() const
   using namespace Eigen;
   using namespace std;
   using namespace igl;
-  int posm,post,cf;
-  glGetIntegerv(GL_CULL_FACE,&cf);
-  glGetIntegerv(GL_POINT_SMOOTH,&posm);
-  glGetIntegerv(GL_POLYGON_STIPPLE,&post);
-  double posi;
-  glGetDoublev(GL_POINT_SIZE,&posi);
+  glPushAttrib(
+    GL_DEPTH_BUFFER_BIT | 
+    GL_ENABLE_BIT | 
+    GL_POLYGON_BIT | 
+    GL_POINT_BIT | 
+    GL_TRANSFORM_BIT |
+    GL_STENCIL_BUFFER_BIT |
+    GL_LIGHTING_BIT);
+
   // http://www.codeproject.com/Articles/23444/A-Simple-OpenGL-Stipple-Polygon-Example-EP_OpenGL_
   const GLubyte halftone[] = {
     0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55,
@@ -510,47 +508,47 @@ inline void igl::RotateWidget::draw_guide() const
   {
     case DOWN_TYPE_NONE:
     case DOWN_TYPE_TRACKBALL:
-      return;
+      goto finish;
     case DOWN_TYPE_OUTLINE:
       glScaled(outer_over_inner,outer_over_inner,outer_over_inner);
       break;
     default:
       break;
   }
-  const Vector3d nudown(udown.normalized()), 
-    nudrag(udrag.normalized());
-  glPushMatrix();
-  glDisable(GL_CULL_FACE);
-  glDisable(GL_POINT_SMOOTH);
-  glPointSize(5.);
-  glBegin(GL_POINTS);
-  glVertex3dv(nudown.data());
-  glVertex3d(0,0,0);
-  glVertex3dv(nudrag.data());
-  glEnd();
-  glBegin(GL_LINE_STRIP);
-  glVertex3dv(nudown.data());
-  glVertex3d(0,0,0);
-  glVertex3dv(nudrag.data());
-  glEnd();
-  glEnable(GL_POLYGON_STIPPLE);
-  glPolygonStipple(halftone);
-  glBegin(GL_TRIANGLE_FAN);
-  glVertex3d(0,0,0);
-  Quaterniond dq = rot * down_rot.conjugate();
-  //dq.setFromTwoVectors(nudown,nudrag);
-  for(double t = 0;t<1;t+=0.1)
   {
-    const Vector3d p = Quaterniond::Identity().slerp(t,dq) * nudown;
-    glVertex3dv(p.data());
+    const Vector3d nudown(udown.normalized()), 
+      nudrag(udrag.normalized());
+    glPushMatrix();
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_POINT_SMOOTH);
+    glPointSize(5.);
+    glBegin(GL_POINTS);
+    glVertex3dv(nudown.data());
+    glVertex3d(0,0,0);
+    glVertex3dv(nudrag.data());
+    glEnd();
+    glBegin(GL_LINE_STRIP);
+    glVertex3dv(nudown.data());
+    glVertex3d(0,0,0);
+    glVertex3dv(nudrag.data());
+    glEnd();
+    glEnable(GL_POLYGON_STIPPLE);
+    glPolygonStipple(halftone);
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex3d(0,0,0);
+    Quaterniond dq = rot * down_rot.conjugate();
+    //dq.setFromTwoVectors(nudown,nudrag);
+    for(double t = 0;t<1;t+=0.1)
+    {
+      const Vector3d p = Quaterniond::Identity().slerp(t,dq) * nudown;
+      glVertex3dv(p.data());
+    }
+    glVertex3dv(nudrag.data());
+    glEnd();
+    glPopMatrix();
   }
-  glVertex3dv(nudrag.data());
-  glEnd();
-  glPopMatrix();
-  glPointSize(posi);
-  (cf?glEnable(GL_CULL_FACE):glDisable(GL_CULL_FACE));
-  (posm?glEnable(GL_POINT_SMOOTH):glDisable(GL_POINT_SMOOTH));
-  (post?glEnable(GL_POLYGON_STIPPLE):glDisable(GL_POLYGON_STIPPLE));
+finish:
+  glPopAttrib();
 }
 
 #endif

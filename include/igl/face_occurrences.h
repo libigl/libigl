@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_FACE_OCCURENCES
-#define IGL_FACE_OCCURENCES
+#ifndef IGL_FACE_OCCURRENCES
+#define IGL_FACE_OCCURRENCES
 #include "igl_inline.h"
 
 #include <vector>
@@ -20,13 +20,13 @@ namespace igl
   //   C  #F list of counts
   // Known bug: triangles/tets only (where ignoring order still gives simplex)
   template <typename IntegerF, typename IntegerC>
-  IGL_INLINE void face_occurences(
+  IGL_INLINE void face_occurrences(
     const std::vector<std::vector<IntegerF> > & F,
     std::vector<IntegerC> & C);
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "face_occurences.cpp"
+#  include "face_occurrences.cpp"
 #endif
 
 #endif
