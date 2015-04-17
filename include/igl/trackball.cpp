@@ -18,6 +18,8 @@
 #include <algorithm>
 #include <iostream>
 
+using namespace std;
+
 // Utility IGL_INLINE functions
 template <typename Q_type>
 static IGL_INLINE Q_type _QuatD(double w, double h)
