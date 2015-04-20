@@ -9,13 +9,12 @@
 
 #include <igl/vector_area_matrix.h>
 #include <igl/cotmatrix.h>
-//#include <igl/kronecker_product.h>
 #include <igl/repdiag.h>
 #include <igl/min_quad_with_fixed.h>
 #include <igl/matlab_format.h>
 #include <iostream>
 
-IGL_INLINE void igl::lscm(
+IGL_INLINE bool igl::lscm(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F,
   const Eigen::VectorXi& b,
@@ -48,11 +47,16 @@ IGL_INLINE void igl::lscm(
   SparseMatrix<double> Q = -L_flat + 2.*A;
   const VectorXd B_flat = VectorXd::Zero(V.rows()*2);
   igl::min_quad_with_fixed_data<double> data;
-  igl::min_quad_with_fixed_precompute(Q,b_flat,SparseMatrix<double>(),true,data);
+  if(!igl::min_quad_with_fixed_precompute(Q,b_flat,SparseMatrix<double>(),true,data))
+  {
+    return false;
+  }
 
   MatrixXd W_flat;
   if(!min_quad_with_fixed_solve(data,B_flat,bc_flat,VectorXd(),W_flat))
-    assert(false);
+  {
+    return false;
+  }
 
 
   assert(W_flat.rows() == V.rows()*2);
@@ -61,7 +65,7 @@ IGL_INLINE void igl::lscm(
   {
     V_uv.col(i) = W_flat.block(V_uv.rows()*i,0,V_uv.rows(),1);
   }
-
+  return true;
 }
 
 #ifdef IGL_STATIC_LIBRARY
