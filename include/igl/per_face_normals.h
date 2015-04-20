@@ -35,6 +35,13 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedN> & N);
+  // Special version where order of face indices is guaranteed not to effect
+  // output.
+  template <typename DerivedV, typename DerivedF, typename DerivedN>
+  IGL_INLINE void per_face_normals_stable(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedN> & N);
 }
 
 #ifndef IGL_STATIC_LIBRARY
