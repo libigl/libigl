@@ -7,7 +7,7 @@
 
 #ifndef IGL_REANTTWEAKBAR_XML_SERIALIZATION_H
 #define IGL_REANTTWEAKBAR_XML_SERIALIZATION_H
-#include "../igl_inline.h"
+#include "igl/igl_inline.h"
 #include "XMLSerializer.h"
 
 #undef IGL_HEADER_ONLY
