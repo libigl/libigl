@@ -117,7 +117,8 @@ namespace igl
       float tfar = -1,
       int mask = 0xFFFFFFFF,
       int geoId = -1,
-      bool closestHit = true) const;
+      bool closestHit = true,
+	  unsigned int samples = 4) const;
 
     // Given a ray find all hits in order
     // 
@@ -371,7 +372,8 @@ inline bool igl::EmbreeIntersector::intersectBeam(
       float tfar,
       int mask,
       int geoId,
-      bool closestHit) const
+      bool closestHit,
+	  unsigned int samples) const
 {
   bool hasHit = false;
   Hit bestHit;
@@ -381,19 +383,19 @@ inline bool igl::EmbreeIntersector::intersectBeam(
   else
     bestHit.t = 0;
 
-  if(hasHit = (intersectRay(origin,direction,hit,tnear,tfar,mask) && (hit.gid == geoId || geoId == -1)))
+  hasHit = (intersectRay(origin,direction,hit,tnear,tfar,mask) && (hit.gid == geoId || geoId == -1));
+  if(hasHit)
     bestHit = hit;
   
   // sample points around actual ray (conservative hitcheck)
-  float eps= 1e-5;
-  int density = 4;
+  const float eps= 1e-5;
         
   Eigen::RowVector3f up(0,1,0);
   Eigen::RowVector3f offset = direction.cross(up).normalized();
 
-  Eigen::Matrix3f rot = Eigen::AngleAxis<float>(2*3.14159265358979/density,direction).toRotationMatrix();
+  Eigen::Matrix3f rot = Eigen::AngleAxis<float>(2*3.14159265358979/samples,direction).toRotationMatrix();
         
-  for(int r=0;r<density;r++)
+  for(int r=0;r<samples;r++)
   {
     if(intersectRay(origin+offset*eps,direction,hit,tnear,tfar,mask) && ((closestHit && (hit.t < bestHit.t)) || (!closestHit && (hit.t > bestHit.t))) && (hit.gid == geoId || geoId == -1))
     {
