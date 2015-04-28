@@ -24,7 +24,6 @@ IGL_INLINE void igl::remove_duplicate_vertices(
   Eigen::PlainObjectBase<DerivedSVI>& SVI,
   Eigen::PlainObjectBase<DerivedSVJ>& SVJ)
 {
-  using namespace igl;
   if(epsilon > 0)
   {
     Eigen::PlainObjectBase<DerivedV> rV,rSV;

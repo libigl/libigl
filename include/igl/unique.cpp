@@ -208,7 +208,6 @@ IGL_INLINE void igl::unique_rows(
   Eigen::PlainObjectBase<DerivedIC>& IC)
 {
   using namespace std;
-  using namespace igl;
   using namespace Eigen;
   VectorXi IM;
   Eigen::PlainObjectBase<DerivedA> sortA;

@@ -32,7 +32,6 @@ IGL_INLINE void igl::sort_triangles(
   Eigen::PlainObjectBase<DerivedI> & I)
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
 
 
@@ -101,7 +100,6 @@ void igl::sort_triangles(
   Eigen::PlainObjectBase<DerivedI> & I)
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
   // Put model, projection, and viewport matrices into double arrays
   Matrix4d MV;
@@ -136,7 +134,6 @@ void igl::sort_triangles_slow(
   Eigen::PlainObjectBase<DerivedI> & I)
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
   // Barycenter, centroid
   Eigen::Matrix<typename DerivedV::Scalar, DerivedF::RowsAtCompileTime,1> D,sD;
@@ -463,7 +460,6 @@ class Triangle
 //    "must be drawn before that one'");
 //  using namespace std;
 //  using namespace Eigen;
-//  using namespace igl;
 //  typedef Matrix<typename DerivedV::Scalar,3,1> Vec3;
 //  assert(V.cols() == 4);
 //  Matrix<typename DerivedV::Scalar, DerivedV::RowsAtCompileTime,3> VMVP =
@@ -542,7 +538,6 @@ class Triangle
 //  Eigen::PlainObjectBase<DerivedI> & I)
 //{
 //  using namespace Eigen;
-//  using namespace igl;
 //  using namespace std;
 //  // Put model, projection, and viewport matrices into double arrays
 //  Matrix4d MV;

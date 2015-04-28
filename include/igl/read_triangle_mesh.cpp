@@ -30,7 +30,6 @@ IGL_INLINE bool igl::read_triangle_mesh(
   std::vector<std::vector<Index> > & F)
 {
   using namespace std;
-  using namespace igl;
   // dirname, basename, extension and filename
   string d,b,e,f;
   pathinfo(str,d,b,e,f);

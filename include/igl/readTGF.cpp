@@ -148,7 +148,6 @@ IGL_INLINE bool igl::readTGF(
   Eigen::MatrixXi & CE,
   Eigen::MatrixXi & PE)
 {
-  using namespace igl;
   std::vector<std::vector<double> > vC;
   std::vector<std::vector<int> > vE;
   std::vector<int> vP;
