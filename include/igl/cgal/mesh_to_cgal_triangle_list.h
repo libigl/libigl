@@ -22,10 +22,13 @@ namespace igl
   //   F  #F by 3 list of triangle indices
   // Outputs:
   //   T  #F list of CGAL triangles
-  template <typename Kernel>
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename Kernel>
   IGL_INLINE void mesh_to_cgal_triangle_list(
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & F,
+    const Eigen::PlainObjectBase<DerivedV> & V,
+    const Eigen::PlainObjectBase<DerivedF> & F,
     std::vector<CGAL::Triangle_3<Kernel> > & T);
 }
 #ifndef IGL_STATIC_LIBRARY
