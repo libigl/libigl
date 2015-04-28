@@ -9,10 +9,13 @@
 
 #include <cassert>
 
-template <typename Kernel>
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename Kernel>
 IGL_INLINE void igl::mesh_to_cgal_triangle_list(
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
   std::vector<CGAL::Triangle_3<Kernel> > & T)
 {
   typedef CGAL::Point_3<Kernel>    Point_3;
@@ -35,7 +38,4 @@ IGL_INLINE void igl::mesh_to_cgal_triangle_list(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::mesh_to_cgal_triangle_list<CGAL::Epeck>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, std::vector<CGAL::Triangle_3<CGAL::Epeck>, std::allocator<CGAL::Triangle_3<CGAL::Epeck> > >&);
-template void igl::mesh_to_cgal_triangle_list<CGAL::Epick>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > >&);
-template void igl::mesh_to_cgal_triangle_list<CGAL::Simple_cartesian<double> >(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, std::vector<CGAL::Triangle_3<CGAL::Simple_cartesian<double> >, std::allocator<CGAL::Triangle_3<CGAL::Simple_cartesian<double> > > >&);
 #endif
