@@ -52,7 +52,6 @@ IGL_INLINE bool igl::writeMESH(
   const Eigen::PlainObjectBase<DerivedF> & F)
 {
   using namespace std;
-  using namespace igl;
   using namespace Eigen;
 
   //// This is (surprisingly) slower than the C-ish code below

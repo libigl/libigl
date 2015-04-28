@@ -63,7 +63,6 @@ IGL_INLINE bool igl::writeTGF(
   const Eigen::MatrixXd & C,
   const Eigen::MatrixXi & E)
 {
-  using namespace igl;
   using namespace std;
   vector<vector<double> > vC;
   vector<vector<int> > vE;

@@ -22,7 +22,6 @@ IGL_INLINE void igl::unique_simplices(
   Eigen::PlainObjectBase<DerivedIC>& IC)
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
   // Sort each face
   MatrixXi sortF, unusedI;
