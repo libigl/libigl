@@ -12,7 +12,6 @@
 //void igl::jet(const int m, Eigen::MatrixXd & J)
 //{
 //  using namespace Eigen;
-//  using namespace igl;
 //  // Applications/MATLAB_R2012b.app/toolbox/matlab/graph3d/jet.m
 //  const int n = ceil(m/4);
 //  // resize output

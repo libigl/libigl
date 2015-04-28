@@ -406,7 +406,6 @@ inline double igl::WindingNumberTree<Point>::cached_winding_number(
   const Point & p) const
 {
   using namespace std;
-  using namespace igl;
   // Simple metric for "far".
   //   this             that
   //                   --------

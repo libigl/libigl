@@ -111,7 +111,6 @@ inline void igl::InElementAABB::init(
 {
   using namespace std;
   using namespace Eigen;
-  using namespace igl;
   if(bb_mins.size() > 0)
   {
     assert(bb_mins.rows() == bb_maxs.rows() && "Serial tree arrays must match");
@@ -171,7 +170,6 @@ inline void igl::InElementAABB::init(
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   const int dim = V.cols();
   const double inf = numeric_limits<double>::infinity();
   m_bb_min.setConstant(1,dim, inf);
@@ -274,7 +272,6 @@ inline std::vector<int> igl::InElementAABB::find(
     const bool first) const
 {
   using namespace std;
-  using namespace igl;
   using namespace Eigen;
   bool inside = true;
   const int dim = m_bb_max.size();

@@ -18,7 +18,6 @@ IGL_INLINE void igl::arap_linear_block(
   const igl::ARAPEnergyType energy,
   Eigen::SparseMatrix<Scalar> & Kd)
 {
-  using namespace igl;
   switch(energy)
   {
     case ARAP_ENERGY_TYPE_SPOKES:
@@ -44,7 +43,6 @@ IGL_INLINE void igl::arap_linear_block_spokes(
   const int d,
   Eigen::SparseMatrix<Scalar> & Kd)
 {
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
   // simplex size (3: triangles, 4: tetrahedra)
@@ -110,7 +108,6 @@ IGL_INLINE void igl::arap_linear_block_spokes_and_rims(
   const int d,
   Eigen::SparseMatrix<Scalar> & Kd)
 {
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
   // simplex size (3: triangles, 4: tetrahedra)
@@ -193,7 +190,6 @@ IGL_INLINE void igl::arap_linear_block_elements(
   const int d,
   Eigen::SparseMatrix<Scalar> & Kd)
 {
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
   // simplex size (3: triangles, 4: tetrahedra)

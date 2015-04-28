@@ -21,7 +21,6 @@ IGL_INLINE void igl::boundary_facets(
   std::vector<std::vector<IntegerF> > & F)
 {
   using namespace std;
-  using namespace igl;
 
   if(T.size() == 0)
   {
@@ -111,7 +110,6 @@ IGL_INLINE void igl::boundary_facets(
   assert(T.cols() == 0 || T.cols() == 4 || T.cols() == 3);
   using namespace std;
   using namespace Eigen;
-  using namespace igl;
   // Cop out: use vector of vectors version
   vector<vector<typename Eigen::PlainObjectBase<DerivedT>::Scalar> > vT;
   matrix_to_list(T,vT);

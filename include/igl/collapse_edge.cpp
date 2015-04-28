@@ -29,7 +29,6 @@ IGL_INLINE bool igl::collapse_edge(
   // never get collapsed to anything else since it is the smallest index)
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   const int eflip = E(e,0)>E(e,1);
   // source and destination
   const int s = eflip?E(e,1):E(e,0);

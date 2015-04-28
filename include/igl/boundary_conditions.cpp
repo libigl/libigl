@@ -26,7 +26,6 @@ IGL_INLINE bool igl::boundary_conditions(
   Eigen::MatrixXd &       bc )
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
 
   if(P.size()+BE.rows() == 0)

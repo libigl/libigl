@@ -8,7 +8,6 @@ IGL_INLINE void igl::facet_components(
   Eigen::PlainObjectBase<DerivedC> & C)
 {
   using namespace std;
-  using namespace igl;
   typedef typename DerivedF::Index Index;
   vector<vector<vector<Index > > > TT;
   vector<vector<vector<Index > > > TTi;
@@ -27,7 +26,6 @@ IGL_INLINE void igl::facet_components(
   Eigen::PlainObjectBase<Derivedcounts> & counts)
 {
   using namespace std;
-  using namespace igl;
   typedef TTIndex Index;
   const Index m = TT.size();
   C.resize(m,1);
