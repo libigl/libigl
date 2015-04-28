@@ -26,7 +26,6 @@ IGL_INLINE bool igl::harmonic(
   const int k,
   Eigen::PlainObjectBase<DerivedW> & W)
 {
-  using namespace igl;
   using namespace Eigen;
   typedef typename DerivedV::Scalar Scalar;
   typedef Matrix<Scalar,Dynamic,1> VectorXS;

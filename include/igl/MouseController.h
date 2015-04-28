@@ -214,7 +214,6 @@ inline void igl::MouseController::reshape(const int w, const int h)
 inline bool igl::MouseController::down(const int x, const int y)
 {
   using namespace std;
-  using namespace igl;
   m_down_x = m_drag_x =x;
   m_down_y = m_drag_y =y;
   const bool widget_down = any_selection() && m_widget.down(x,m_height-y);

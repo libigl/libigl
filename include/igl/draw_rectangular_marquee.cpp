@@ -15,7 +15,6 @@ IGL_INLINE void igl::draw_rectangular_marquee(
   const int to_x,
   const int to_y)
 {
-  using namespace igl;
   using namespace std;
   int l;
   glGetIntegerv(GL_LIGHTING,&l);

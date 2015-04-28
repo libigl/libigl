@@ -65,7 +65,6 @@ IGL_INLINE void igl::lens_flare_create(
   const float * C,
   std::vector<igl::Flare> & flares)
 {
-  using namespace igl;
   using namespace std;
   flares.resize(12);
   /* Shines */
