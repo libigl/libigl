@@ -10,6 +10,9 @@ namespace igl
   //   v_str  string of vertex shader contents
   //   f_str  string of fragment shader contents
   // Returns id of program
+  //
+  // Known bugs: this seems to duplicate `create_shader_program` with less
+  // functionality.
   IGL_INLINE GLuint compile_and_link_program(
     const char * v_str, const char * f_str);
 }
