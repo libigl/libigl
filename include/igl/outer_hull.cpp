@@ -32,7 +32,6 @@ IGL_INLINE void igl::outer_hull(
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   typedef typename DerivedF::Index Index;
   Matrix<Index,DerivedF::RowsAtCompileTime,1> C;
   typedef Matrix<typename DerivedV::Scalar,Dynamic,DerivedV::ColsAtCompileTime> MatrixXV;
@@ -106,6 +105,18 @@ IGL_INLINE void igl::outer_hull(
       // Angle between n and f
       const RowVector3N & n = N.row(f);
       di_I(fei,0) = M_PI - atan2( eVp.cross(n).dot(eV), eVp.dot(n));
+#ifdef IGL_OUTER_HULL_DEBUG
+      if(di_I(fei,0) != di_I(fei,0) )
+      {
+        cout<<"NaN from face: "<<(f+1)<<endl;
+        cout<<"  n: "<<n<<endl;
+        cout<<"  eVp: "<<eVp<<endl;
+        cout<<"  eV: "<<eV<<endl;
+        cout<<"  eVp x n . eV: "<<(eVp.cross(n).dot(eV))<<endl;
+        cout<<"  eVp . n: "<<(eVp.dot(n))<<endl;
+      }
+#endif
+      assert(di_I(fei,0) == di_I(fei,0) && "NaN Alert!");
       if(!cons[fei])
       {
         di_I(fei,0) = di_I(fei,0) + M_PI;
