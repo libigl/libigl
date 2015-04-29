@@ -25,7 +25,6 @@ IGL_INLINE bool igl::linprog(
   // http://www.mathworks.com/matlabcentral/fileexchange/2166-introduction-to-linear-algebra/content/strang/linprog.m
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   bool success = true;
   // number of constraints
   const int m = _A.rows();
@@ -259,7 +258,6 @@ IGL_INLINE bool igl::linprog(
   Eigen::VectorXd & x)
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
   const int m = A.rows();
   const int n = A.cols();

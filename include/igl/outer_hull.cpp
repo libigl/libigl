@@ -42,6 +42,17 @@ IGL_INLINE void igl::outer_hull(
   typedef Matrix<typename DerivedN::Scalar,1,3> RowVector3N;
   const Index m = F.rows();
 
+  const auto & duplicate_simplex = [&F](const int f, const int g)->bool
+  {
+    return 
+      (F(f,0) == F(g,0) && F(f,1) == F(g,1) && F(f,2) == F(g,2)) ||
+      (F(f,1) == F(g,0) && F(f,2) == F(g,1) && F(f,0) == F(g,2)) ||
+      (F(f,2) == F(g,0) && F(f,0) == F(g,1) && F(f,1) == F(g,2)) ||
+      (F(f,0) == F(g,2) && F(f,1) == F(g,1) && F(f,2) == F(g,0)) ||
+      (F(f,1) == F(g,2) && F(f,2) == F(g,1) && F(f,0) == F(g,0)) ||
+      (F(f,2) == F(g,2) && F(f,0) == F(g,1) && F(f,1) == F(g,0));
+  };
+
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"outer hull..."<<endl;
 #endif
@@ -107,11 +118,32 @@ IGL_INLINE void igl::outer_hull(
       // duplicate faces the same way, regardless of their orientations
       di_I(fei,1) = (cons[fei]?1.:-1.)*f;
     }
-    VectorXi IM;
 
+    // Despite the effort to get stable normals the atan2 up doesn't
+    // compute (exactly) -θ for -n if it computes θ for n. So just
+    // explicitly check if there's a duplicate face
+    // Shitty O(val^2) implementation
+    for(size_t fei = 0;fei<uE2E[ui].size();fei++)
+    {
+      const auto & fe = uE2E[ui][fei];
+      const auto f = fe % m;
+      for(size_t gei = fei+1;gei<uE2E[ui].size();gei++)
+      {
+        const auto & ge = uE2E[ui][gei];
+        const auto g = ge % m;
+        if(duplicate_simplex(f,g))
+        {
+#ifdef IGL_OUTER_HULL_DEBUG
+          cout<<"Forcing duplicate: "<<(f+1)<<","<<(g+1)<<endl;
+#endif
+          di_I(gei,0) = di_I(fei,0);
+        }
+      }
+    }
+    VectorXi IM;
     //igl::sort(di[ui],true,di[ui],IM);
-    // Sort, but break ties using index to ensure that duplicates always show
-    // up in same order.
+    // Sort, but break ties using "signed index" to ensure that duplicates
+    // always show up in same order.
     MatrixXd s_di_I;
     igl::sortrows(di_I,true,s_di_I,IM);
     di[ui].resize(uE2E[ui].size());
@@ -247,16 +279,19 @@ IGL_INLINE void igl::outer_hull(
         const int nfei_new = (diIM(e) + 2*val + e_cons*step*(flip(f)?-1:1))%val;
         const int nf = uE2E[EMAP(e)][nfei_new] % m;
         // Don't consider faces with identical dihedral angles
-        if(di[EMAP(e)][diIM(e)] != di[EMAP(e)][nfei_new])
+        if((di[EMAP(e)][diIM(e)] != di[EMAP(e)][nfei_new]))
 //#warning "THIS IS HACK, FIX ME"
 //        if( abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new]) < 1e-16 )
         {
-//#ifdef IGL_OUTER_HULL_DEBUG
-//        cout<<"Next facet: "<<(f+1)<<" --> "<<(nf+1)<<", |"<<
-//          di[EMAP(e)][diIM(e)]<<" - "<<di[EMAP(e)][nfei_new]<<"| = "<<
-//            abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new])
-//            <<endl;
-//#endif
+#ifdef IGL_OUTER_HULL_DEBUG
+        cout<<"Next facet: "<<(f+1)<<" --> "<<(nf+1)<<", |"<<
+          di[EMAP(e)][diIM(e)]<<" - "<<di[EMAP(e)][nfei_new]<<"| = "<<
+            abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new])
+            <<endl;
+#endif
+        
+
+
           // Only use this face if not already seen
           if(!FH[nf])
           {
@@ -517,7 +552,7 @@ IGL_INLINE void igl::outer_hull(
   Eigen::PlainObjectBase<Derivedflip> & flip)
 {
   Eigen::Matrix<typename DerivedV::Scalar,DerivedF::RowsAtCompileTime,3> N;
-  per_face_normals(V,F,N);
+  per_face_normals_stable(V,F,N);
   return outer_hull(V,F,N,G,J,flip);
 }
 

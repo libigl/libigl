@@ -9,7 +9,6 @@ IGL_INLINE void igl::in_element(
 {
   using namespace std;
   using namespace Eigen;
-  using namespace igl;
   const int Qr = Q.rows();
   I.setConstant(Qr,1,-1);
 #pragma omp parallel for

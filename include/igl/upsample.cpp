@@ -25,7 +25,6 @@ IGL_INLINE void igl::upsample(
   // Use "in place" wrapper instead
   assert(&V != &NV);
   assert(&F != &NF);
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
 

@@ -5,7 +5,8 @@ include("../CMakeLists.shared")
 
 find_package(LIBCOMISO REQUIRED)
 
-include_directories( ${LIBCOMISO_INCLUDE_DIR} )
+include_directories( ${LIBCOMISO_INCLUDE_DIR}
+                     ${LIBCOMISO_INCLUDE_DIRS} )
 
 set(SOURCES
 ${PROJECT_SOURCE_DIR}/main.cpp

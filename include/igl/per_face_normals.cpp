@@ -47,6 +47,65 @@ IGL_INLINE void igl::per_face_normals(
   return per_face_normals(V,F,Z,N);
 }
 
+template <typename DerivedV, typename DerivedF, typename DerivedN>
+IGL_INLINE void igl::per_face_normals_stable(
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::PlainObjectBase<DerivedN> & N)
+{
+  using namespace Eigen;
+  typedef Matrix<typename DerivedN::Scalar,DerivedN::RowsAtCompileTime,3> MatrixN3;
+  typedef Matrix<typename DerivedV::Scalar,DerivedF::RowsAtCompileTime,3> MatrixV3;
+  typedef Matrix<typename DerivedV::Scalar,3,3> MatrixV33;
+  typedef Matrix<typename DerivedV::Scalar,1,3> RowVectorV3;
+  typedef typename DerivedV::Scalar Scalar;
+
+  const size_t m = F.rows();
+
+  N.resize(F.rows(),3);
+  // Grad all points
+  for(size_t f = 0;f<m;f++)
+  {
+    const RowVectorV3 p0 = V.row(F(f,0));
+    const RowVectorV3 p1 = V.row(F(f,1));
+    const RowVectorV3 p2 = V.row(F(f,2));
+    const RowVectorV3 n0 = (p1 - p0).cross(p2 - p0);
+    const RowVectorV3 n1 = (p2 - p1).cross(p0 - p1);
+    const RowVectorV3 n2 = (p0 - p2).cross(p1 - p2);
+
+    // careful sum
+    for(int d = 0;d<3;d++)
+    {
+      // This is a little _silly_ in terms of complexity, but its recursive
+      // implementation is clean looking...
+      const std::function<Scalar(Scalar,Scalar,Scalar)> sum3 = 
+        [&sum3](Scalar a, Scalar b, Scalar c)->Scalar
+      {
+        if(fabs(c)>fabs(a))
+        {
+          return sum3(c,b,a);
+        }
+        // c < a
+        if(fabs(c)>fabs(b))
+        {
+          return sum3(a,c,b);
+        }
+        // c < a, c < b
+        if(fabs(b)>fabs(a))
+        {
+          return sum3(b,a,c);
+        }
+        return (a+b)+c;
+      };
+
+      N(f,d) = sum3(n0(d),n1(d),n2(d));
+    }
+    // sum better not be sure, or else NaN
+    N.row(f) /= N.row(f).norm();
+  }
+
+}
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::per_face_normals<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
@@ -54,4 +113,6 @@ template void igl::per_face_normals<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Ei
 template void igl::per_face_normals<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
 template void igl::per_face_normals<Eigen::Matrix<float, -1, -1, 1, -1, -1>, Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1>, Eigen::Matrix<float, -1, -1, 1, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, -1, 1, -1, -1> >&);
 template void igl::per_face_normals<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
+template void igl::per_face_normals_stable<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
+template void igl::per_face_normals_stable<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
 #endif

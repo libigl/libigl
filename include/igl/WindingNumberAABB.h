@@ -83,7 +83,6 @@ inline void igl::WindingNumberAABB<Point>::set_mesh(
 template <typename Point>
 inline void igl::WindingNumberAABB<Point>::init()
 {
-  using namespace igl;
   using namespace Eigen;
   assert(max_corner.size() == 3);
   assert(min_corner.size() == 3);
@@ -124,7 +123,6 @@ inline void igl::WindingNumberAABB<Point>::grow()
 {
   using namespace std;
   using namespace Eigen;
-  using namespace igl;
   //cout<<"cap.rows(): "<<this->getcap().rows()<<endl;
   //cout<<"F.rows(): "<<this->getF().rows()<<endl;
 
@@ -300,7 +298,6 @@ inline double igl::WindingNumberAABB<Point>::max_simple_abs_winding_number(const
 {
   using namespace std;
   using namespace Eigen;
-  using namespace igl;
   // Only valid if not inside
   if(inside(p))
   {

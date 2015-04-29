@@ -165,7 +165,6 @@ inline Eigen::Matrix4d igl::Camera::projection() const
 {
   Eigen::Matrix4d P;
   using namespace std;
-  using namespace igl;
   // http://stackoverflow.com/a/3738696/148668
   if(m_angle >= IGL_CAMERA_MIN_ANGLE)
   {
@@ -244,7 +243,6 @@ inline Eigen::Vector3d igl::Camera::up() const
 
 inline Eigen::Vector3d igl::Camera::unit_plane() const
 {
-  using namespace igl;
   // Distance of center pixel to eye
   const double d = 1.0;
   const double a = m_aspect;
@@ -263,7 +261,6 @@ inline void igl::Camera::dolly(const Eigen::Vector3d & dv)
 inline void igl::Camera::push_away(const double s)
 {
   using namespace Eigen;
-  using namespace igl;
 #ifndef NDEBUG
   Vector3d old_at = at();
 #endif
@@ -276,7 +273,6 @@ inline void igl::Camera::push_away(const double s)
 inline void igl::Camera::dolly_zoom(const double da)
 {
   using namespace std;
-  using namespace igl;
   using namespace Eigen;
 #ifndef NDEBUG
   Vector3d old_at = at();
@@ -316,7 +312,6 @@ inline void igl::Camera::dolly_zoom(const double da)
 inline void igl::Camera::turn_eye(const Eigen::Quaterniond & q)
 {
   using namespace Eigen;
-  using namespace igl;
   Vector3d old_eye = eye();
   // eye should be fixed
   //
@@ -330,7 +325,6 @@ inline void igl::Camera::turn_eye(const Eigen::Quaterniond & q)
 inline void igl::Camera::orbit(const Eigen::Quaterniond & q)
 {
   using namespace Eigen;
-  using namespace igl;
   Vector3d old_at = at();
   // at should be fixed
   //
@@ -351,7 +345,6 @@ inline void igl::Camera::look_at(
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   // http://www.opengl.org/sdk/docs/man2/xhtml/gluLookAt.xml
   // Normalize vector from at to eye
   Vector3d F = eye-at;

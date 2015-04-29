@@ -23,7 +23,6 @@ IGL_INLINE bool igl::edge_collapse_is_valid(
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   // For consistency with collapse_edge.cpp, let's determine edge flipness
   // (though not needed to check validity)
   const int eflip = E(e,0)>E(e,1);

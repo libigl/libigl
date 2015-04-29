@@ -48,7 +48,6 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 #ifdef ACTIVE_SET_CPP_DEBUG
 #  warning "ACTIVE_SET_CPP_DEBUG"
 #endif
-  using namespace igl;
   using namespace Eigen;
   using namespace std;
   SolverStatus ret = SOLVER_STATUS_ERROR;

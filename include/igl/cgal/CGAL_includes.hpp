@@ -8,6 +8,8 @@
 #ifndef IGL_CGAL_INCLUDES_H
 #define IGL_CGAL_INCLUDES_H
 
+// http://www.alecjacobson.com/weblog/?p=4291
+#define CGAL_INTERSECTION_VERSION 1
 // Triangle triangle intersection
 #include <CGAL/intersections.h>
 // THIS CANNOT BE INCLUDED IN THE SAME FILE AS <CGAL/intersections.h>
