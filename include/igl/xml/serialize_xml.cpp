@@ -59,7 +59,7 @@ namespace igl
     serialization_xml::encodeXMLElementName(name);
 
     tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
-    
+
     if(child != NULL)
       element->DeleteChild(child);
 
@@ -71,7 +71,7 @@ namespace igl
       std::vector<char> buffer;
       serialize(obj,name,buffer);
       std::string data = serialization_xml::base64_encode(reinterpret_cast<const unsigned char*>(buffer.data()),buffer.size());
-      
+
       child->SetAttribute("binary",true);
 
       serialization_xml::serialize(data,doc,element,name);
@@ -149,20 +149,20 @@ namespace igl
   }
 
   IGL_INLINE bool XMLSerializable::PreSerialization() const
-  { 
-    return true;
-  }
-  
-  IGL_INLINE void XMLSerializable::PostSerialization() const
   {
-  }
-  
-  IGL_INLINE bool XMLSerializable::PreDeserialization()
-  { 
     return true;
   }
 
-  IGL_INLINE void XMLSerializable::PostDeserialization() 
+  IGL_INLINE void XMLSerializable::PostSerialization() const
+  {
+  }
+
+  IGL_INLINE bool XMLSerializable::PreDeserialization()
+  {
+    return true;
+  }
+
+  IGL_INLINE void XMLSerializable::PostDeserialization()
   {
   }
 
@@ -974,4 +974,15 @@ namespace igl
 // Explicit template specialization
 template void igl::serialize_xml<std::vector<float, std::allocator<float> > >(std::vector<float, std::allocator<float> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, bool, bool);
 template void igl::deserialize_xml<std::vector<float, std::allocator<float> > >(std::vector<float, std::allocator<float> >&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&);
+template void igl::deserialize_xml<Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::Matrix<double, -1, 3, 0, -1, 3>&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&);
+template void igl::deserialize_xml<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::Matrix<double, -1, -1, 0, -1, -1>&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&);
+template void igl::deserialize_xml<Eigen::Matrix<float, 3, 1, 0, 3, 1> >(Eigen::Matrix<float, 3, 1, 0, 3, 1>&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&);
+template void igl::deserialize_xml<Eigen::Matrix<float, 4, 1, 0, 4, 1> >(Eigen::Matrix<float, 4, 1, 0, 4, 1>&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&);
+template void igl::deserialize_xml<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::Matrix<int, -1, 1, 0, -1, 1>&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&);
+template void igl::deserialize_xml<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&);
+template void igl::deserialize_xml<std::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1> > > >(std::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1> > >&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&);
+template void igl::deserialize_xml<bool>(bool&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&);
+template void igl::deserialize_xml<double>(double&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&);
+template void igl::deserialize_xml<float>(float&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&);
+template void igl::deserialize_xml<int>(int&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&);
 #endif

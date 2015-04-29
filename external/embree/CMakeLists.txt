@@ -35,7 +35,7 @@ CONFIGURE_FILE(
 )
 INCLUDE_DIRECTORIES("${PROJECT_BINARY_DIR}")
 
- 
+
 IF(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 ENDIF(COMMAND cmake_policy)
