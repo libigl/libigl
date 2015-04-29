@@ -8,6 +8,7 @@
 #ifndef IGL_HSV_TO_RGB_H
 #define IGL_HSV_TO_RGB_H
 #include "igl_inline.h"
+#include <Eigen/Core>
 namespace igl
 {
   // Convert RGB to HSV
@@ -26,6 +27,10 @@ namespace igl
   IGL_INLINE void hsv_to_rgb( 
     const T & h, const T & s, const T & v, 
     T & r, T & g, T & b);
+  template <typename DerivedH, typename DerivedR>
+  void hsv_to_rgb(
+    const Eigen::PlainObjectBase<DerivedH> & H,
+    Eigen::PlainObjectBase<DerivedR> & R);
 };
 
 #ifndef IGL_STATIC_LIBRARY
