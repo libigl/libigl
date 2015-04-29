@@ -19,15 +19,13 @@ namespace igl
   // Write a mesh in an ascii obj file
   // Inputs:
   //   str  path to outputfile
-  //   V  eigen double matrix #V by 3 (mesh vertices)
-  //   F  eigen int matrix #F by 3 (mesh indices)
+  //   V  #V by 3 mesh vertex positions
+  //   F  #F by 3|4 mesh indices into V
+  //   CN #CN by 3 normal vectors
+  //   FN  #F by 3|4 corner normal indices into CN
+  //   TC  #TC by 2|3 texture coordinates
+  //   FTC #F by 3|4 corner texture coord indices into TC
   // Returns true on success, false on error
-  template <typename DerivedV, typename DerivedF>
-  IGL_INLINE bool writeOBJ(
-    const std::string str,
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F);
-  
   template <typename DerivedV, typename DerivedF, typename DerivedT>
   IGL_INLINE bool writeOBJ(
     const std::string str,
@@ -37,6 +35,11 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedF>& FN,
     const Eigen::PlainObjectBase<DerivedT>& TC,
     const Eigen::PlainObjectBase<DerivedF>& FTC);
+  template <typename DerivedV, typename DerivedF>
+  IGL_INLINE bool writeOBJ(
+    const std::string str,
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F);
 
 }
 
