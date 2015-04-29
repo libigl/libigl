@@ -85,7 +85,9 @@ IGL_INLINE void igl::slice(
       // boring base case
       if(X.cols() == 0)
       {
-        Y.resize(R.size(),0);
+        printf("slice: 1\n");
+        Y.resize(0,R.cols());
+        // Y.resize(R.rows(),0);
         return;
       }
       igl::colon(0,X.cols()-1,C);
@@ -94,7 +96,9 @@ IGL_INLINE void igl::slice(
       // boring base case
       if(X.rows() == 0)
       {
-        Y.resize(0,R.size());
+        printf("slice: 2\n");
+        Y.resize(R.rows(),0);
+        // Y.resize(0,R.cols());
         return;
       }
       igl::colon(0,X.rows()-1,C);
@@ -308,4 +312,5 @@ template Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > igl::sl
 template Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > igl::slice<Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int);
 template Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > igl::slice<Eigen::Matrix<double, 1, -1, 1, 1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int);
 template Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > igl::slice<Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int);
+template void igl::slice<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int, Eigen::Matrix<double, -1, 1, 0, -1, 1>&);
 #endif
