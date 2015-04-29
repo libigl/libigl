@@ -15,7 +15,6 @@
 IGL_INLINE bool igl::texture_from_tga(const std::string tga_file, GLuint & id)
 {
   using namespace std;
-  using namespace igl;
 
   // read pixels to tga file
   FILE * imgFile;

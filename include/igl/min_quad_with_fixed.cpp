@@ -38,7 +38,6 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
 //#define MIN_QUAD_WITH_FIXED_CPP_DEBUG
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   const Eigen::SparseMatrix<T> A = 0.5*A2;
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
   cout<<"    pre"<<endl;
@@ -383,7 +382,6 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
 {
   using namespace std;
   using namespace Eigen;
-  using namespace igl;
   typedef Matrix<T,Dynamic,1> VectorXT;
   typedef Matrix<T,Dynamic,Dynamic> MatrixXT;
   // number of known rows

@@ -19,7 +19,6 @@ IGL_INLINE void igl::arap_rhs(
   const igl::ARAPEnergyType energy,
   Eigen::SparseMatrix<double>& K)
 {
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
   // Number of dimensions

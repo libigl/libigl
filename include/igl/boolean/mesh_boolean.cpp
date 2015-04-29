@@ -169,7 +169,7 @@ IGL_INLINE void igl::mesh_boolean(
     return;
   }
   MatrixX3S N,CN;
-  per_face_normals(V,F,N);
+  per_face_normals_stable(V,F,N);
   CN.resize(CF.rows(),3);
   for(size_t f = 0;f<(size_t)CN.rows();f++)
   {

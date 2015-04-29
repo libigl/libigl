@@ -12,7 +12,6 @@ IGL_INLINE double igl::angular_distance(
   const Eigen::Quaterniond & A,
   const Eigen::Quaterniond & B)
 {
-  using namespace igl;
   assert(fabs(A.norm()-1)<FLOAT_EPS && "A should be unit norm");
   assert(fabs(B.norm()-1)<FLOAT_EPS && "B should be unit norm");
   //// acos is always in [0,2*pi)

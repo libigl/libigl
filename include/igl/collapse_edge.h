@@ -9,6 +9,8 @@
 #define IGL_COLLAPSE_EDGE_H
 #include "igl_inline.h"
 #include <Eigen/Core>
+#include <vector>
+#include <set>
 namespace igl
 {
   // Assumes (V,F) is a closed manifold mesh (except for previouslly collapsed
@@ -62,6 +64,60 @@ namespace igl
     Eigen::VectorXi & EMAP,
     Eigen::MatrixXi & EF,
     Eigen::MatrixXi & EI);
+  // Collapse least-cost edge from a priority queue and update queue 
+  //
+  // Inputs/Outputs:
+  //   cost_and_placement  function computing cost of collapsing an edge and 3d
+  //     position where it should be placed:
+  //     cost_and_placement(V,F,E,EMAP,EF,EI,cost,placement);
+  //   Q  queue containing pairs of costs and edge indices
+  //   Qit  list of iterators so that Qit[e] --> iterator of edge e in Q
+  //   C  #E by dim list of stored placements
+  IGL_INLINE bool collapse_edge(
+    const std::function<void(
+      const int,
+      const Eigen::MatrixXd &,
+      const Eigen::MatrixXi &,
+      const Eigen::MatrixXi &,
+      const Eigen::VectorXi &,
+      const Eigen::MatrixXi &,
+      const Eigen::MatrixXi &,
+      double &,
+      Eigen::RowVectorXd &)> & cost_and_placement,
+    Eigen::MatrixXd & V,
+    Eigen::MatrixXi & F,
+    Eigen::MatrixXi & E,
+    Eigen::VectorXi & EMAP,
+    Eigen::MatrixXi & EF,
+    Eigen::MatrixXi & EI,
+    std::set<std::pair<double,int> > & Q,
+    std::vector<std::set<std::pair<double,int> >::iterator > & Qit,
+    Eigen::MatrixXd & C);
+  IGL_INLINE bool collapse_edge(
+    const std::function<void(
+      const int,
+      const Eigen::MatrixXd &,
+      const Eigen::MatrixXi &,
+      const Eigen::MatrixXi &,
+      const Eigen::VectorXi &,
+      const Eigen::MatrixXi &,
+      const Eigen::MatrixXi &,
+      double &,
+      Eigen::RowVectorXd &)> & cost_and_placement,
+    Eigen::MatrixXd & V,
+    Eigen::MatrixXi & F,
+    Eigen::MatrixXi & E,
+    Eigen::VectorXi & EMAP,
+    Eigen::MatrixXi & EF,
+    Eigen::MatrixXi & EI,
+    std::set<std::pair<double,int> > & Q,
+    std::vector<std::set<std::pair<double,int> >::iterator > & Qit,
+    Eigen::MatrixXd & C,
+    int & e,
+    int & e1,
+    int & e2,
+    int & f1,
+    int & f2);
 }
 
 #ifndef IGL_STATIC_LIBRARY

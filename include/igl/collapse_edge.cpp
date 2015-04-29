@@ -29,7 +29,6 @@ IGL_INLINE bool igl::collapse_edge(
   // never get collapsed to anything else since it is the smallest index)
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   const int eflip = E(e,0)>E(e,1);
   // source and destination
   const int s = eflip?E(e,1):E(e,0);
@@ -153,4 +152,118 @@ IGL_INLINE bool igl::collapse_edge(
 {
   int e1,e2,f1,f2;
   return collapse_edge(e,p,V,F,E,EMAP,EF,EI,e1,e2,f1,f2);
+}
+
+IGL_INLINE bool igl::collapse_edge(
+  const std::function<void(
+    const int,
+    const Eigen::MatrixXd &,
+    const Eigen::MatrixXi &,
+    const Eigen::MatrixXi &,
+    const Eigen::VectorXi &,
+    const Eigen::MatrixXi &,
+    const Eigen::MatrixXi &,
+    double &,
+    Eigen::RowVectorXd &)> & cost_and_placement,
+  Eigen::MatrixXd & V,
+  Eigen::MatrixXi & F,
+  Eigen::MatrixXi & E,
+  Eigen::VectorXi & EMAP,
+  Eigen::MatrixXi & EF,
+  Eigen::MatrixXi & EI,
+  std::set<std::pair<double,int> > & Q,
+  std::vector<std::set<std::pair<double,int> >::iterator > & Qit,
+  Eigen::MatrixXd & C)
+{
+  int e,e1,e2,f1,f2;
+  return 
+    collapse_edge(cost_and_placement,V,F,E,EMAP,EF,EI,Q,Qit,C,e,e1,e2,f1,f2);
+}
+
+
+IGL_INLINE bool igl::collapse_edge(
+  const std::function<void(
+    const int,
+    const Eigen::MatrixXd &,
+    const Eigen::MatrixXi &,
+    const Eigen::MatrixXi &,
+    const Eigen::VectorXi &,
+    const Eigen::MatrixXi &,
+    const Eigen::MatrixXi &,
+    double &,
+    Eigen::RowVectorXd &)> & cost_and_placement,
+  Eigen::MatrixXd & V,
+  Eigen::MatrixXi & F,
+  Eigen::MatrixXi & E,
+  Eigen::VectorXi & EMAP,
+  Eigen::MatrixXi & EF,
+  Eigen::MatrixXi & EI,
+  std::set<std::pair<double,int> > & Q,
+  std::vector<std::set<std::pair<double,int> >::iterator > & Qit,
+  Eigen::MatrixXd & C,
+  int & e,
+  int & e1,
+  int & e2,
+  int & f1,
+  int & f2)
+{
+  using namespace Eigen;
+  if(Q.empty())
+  {
+    // no edges to collapse
+    return false;
+  }
+  std::pair<double,int> p = *(Q.begin());
+  if(p.first == std::numeric_limits<double>::infinity())
+  {
+    // min cost edge is infinite cost
+    return false;
+  }
+  Q.erase(Q.begin());
+  e = p.second;
+  Qit[e] = Q.end();
+  std::vector<int> N  = circulation(e, true,F,E,EMAP,EF,EI);
+  std::vector<int> Nd = circulation(e,false,F,E,EMAP,EF,EI);
+  N.insert(N.begin(),Nd.begin(),Nd.end());
+  const bool collapsed =
+    collapse_edge(e,C.row(e),V,F,E,EMAP,EF,EI,e1,e2,f1,f2);
+  if(collapsed)
+  {
+    // Erase the two, other collapsed edges
+    Q.erase(Qit[e1]);
+    Qit[e1] = Q.end();
+    Q.erase(Qit[e2]);
+    Qit[e2] = Q.end();
+    // update local neighbors
+    // loop over original face neighbors
+    for(auto n : N)
+    {
+      if(F(n,0) != IGL_COLLAPSE_EDGE_NULL ||
+          F(n,1) != IGL_COLLAPSE_EDGE_NULL ||
+          F(n,2) != IGL_COLLAPSE_EDGE_NULL)
+      {
+        for(int v = 0;v<3;v++)
+        {
+          // get edge id
+          const int ei = EMAP(v*F.rows()+n);
+          // erase old entry
+          Q.erase(Qit[ei]);
+          // compute cost and potential placement
+          double cost;
+          RowVectorXd place;
+          cost_and_placement(ei,V,F,E,EMAP,EF,EI,cost,place);
+          // Replace in queue
+          Qit[ei] = Q.insert(std::pair<double,int>(cost,ei)).first;
+          C.row(ei) = place;
+        }
+      }
+    }
+  }else
+  {
+    // reinsert with infinite weight (the provided cost function must **not**
+    // have given this un-collapsable edge inf cost already)
+    p.first = std::numeric_limits<double>::infinity();
+    Qit[e] = Q.insert(p).first;
+  }
+  return collapsed;
 }

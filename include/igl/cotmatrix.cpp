@@ -22,7 +22,6 @@ IGL_INLINE void igl::cotmatrix(
   const Eigen::PlainObjectBase<DerivedF> & F, 
   Eigen::SparseMatrix<Scalar>& L)
 {
-  using namespace igl;
   using namespace Eigen;
   using namespace std;
 

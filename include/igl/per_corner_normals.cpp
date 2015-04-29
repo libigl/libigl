@@ -18,7 +18,6 @@ IGL_INLINE void igl::per_corner_normals(
   const double corner_threshold,
   Eigen::PlainObjectBase<DerivedV> & CN)
 {
-  using namespace igl;
   using namespace Eigen;
   using namespace std;
   Eigen::PlainObjectBase<DerivedV> FN;
@@ -36,7 +35,6 @@ IGL_INLINE void igl::per_corner_normals(
   const double corner_threshold,
   Eigen::PlainObjectBase<DerivedCN> & CN)
 {
-  using namespace igl;
   using namespace Eigen;
   using namespace std;
   vector<vector<int> > VF,VFi;
@@ -53,7 +51,6 @@ IGL_INLINE void igl::per_corner_normals(
   const double corner_threshold,
   Eigen::PlainObjectBase<DerivedV> & CN)
 {
-  using namespace igl;
   using namespace Eigen;
   using namespace std;
 

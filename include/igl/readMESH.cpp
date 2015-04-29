@@ -18,7 +18,6 @@ IGL_INLINE bool igl::readMESH(
   std::vector<std::vector<Index > > & F)
 {
   using namespace std;
-  using namespace igl;
   FILE * mesh_file = fopen(mesh_file_name.c_str(),"r");
   if(NULL==mesh_file)
   {
@@ -233,7 +232,6 @@ IGL_INLINE bool igl::readMESH(
   Eigen::PlainObjectBase<DerivedF>& F)
 {
   using namespace std;
-  using namespace igl;
   FILE * mesh_file = fopen(mesh_file_name.c_str(),"r");
   if(NULL==mesh_file)
   {

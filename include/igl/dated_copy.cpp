@@ -19,7 +19,6 @@
 IGL_INLINE bool igl::dated_copy(const std::string & src_path, const std::string & dir)
 {
   using namespace std;
-  using namespace igl;
   // Get time and date as string
   char buffer[80];
   time_t rawtime;
