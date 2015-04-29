@@ -41,3 +41,28 @@ IGL_INLINE void igl::hsv_to_rgb(
   case 5: r = v; g = p; b = q; break;
   }
 }
+
+template <typename DerivedH, typename DerivedR>
+void igl::hsv_to_rgb(
+  const Eigen::PlainObjectBase<DerivedH> & H,
+  Eigen::PlainObjectBase<DerivedR> & R)
+{
+  assert(H.cols() == 3);
+  R.resize(H.rows(),H.cols());
+  for(typename DerivedH::Index r = 0;r<H.rows();r++)
+  {
+    typename DerivedH::Scalar hsv[3];
+    hsv[0] = H(r,0);
+    hsv[1] = H(r,1);
+    hsv[2] = H(r,2);
+    typename DerivedR::Scalar rgb[3];
+    hsv_to_rgb(hsv,rgb);
+    R(r,0) = rgb[0];
+    R(r,1) = rgb[1];
+    R(r,2) = rgb[2];
+  }
+}
+
+#ifdef IGL_STATIC_LIBRARY
+template void igl::hsv_to_rgb<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+#endif
