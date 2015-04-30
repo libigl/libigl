@@ -18,6 +18,8 @@ namespace igl
   //     glAttachShader(prog_id,vid);
   //     glAttachShader(prog_id,fid);
   //     glLinkProgram(prog_id);
+  //
+  // Known bugs: seems to be duplicate of `load_shader`
   IGL_INLINE GLuint compile_shader(const GLint type, const char * str);
 }
 #ifndef IGL_STATIC_LIBRARY
