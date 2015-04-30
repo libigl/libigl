@@ -171,7 +171,7 @@ IGL_INLINE bool igl::writeOBJPoly(
   s << V.format(IOFormat(FullPrecision,DontAlignCols," ","\n","v ","","",""));
   for(int i=0;i<(int)F.size();++i) { //rows
     s << "f";
-    for(int c =0;c<(int)F.size();++c) { //cols
+    for(int c =0;c<(int)F[i].size();++c) { //cols
       s << " " << Index(F[i][c])+1;
     }
     s << std::endl;
