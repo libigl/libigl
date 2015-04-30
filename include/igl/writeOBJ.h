@@ -41,6 +41,15 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedF>& F);
 
+  template <typename DerivedV, typename DerivedT, typename Index>
+  IGL_INLINE bool writeOBJPoly(
+    const std::string str,
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const std::vector<std::vector< Index > >& F,
+    const Eigen::PlainObjectBase<DerivedV>& CN,
+    const std::vector<std::vector< Index > >& FN,
+    const Eigen::PlainObjectBase<DerivedT>& TC,
+    const std::vector<std::vector< Index > >& FTC);
   template <typename DerivedV, typename DerivedF, typename DerivedT, typename Index>
   IGL_INLINE bool writeOBJPoly(
     const std::string str,
@@ -50,6 +59,11 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedF>& FN,
     const Eigen::PlainObjectBase<DerivedT>& TC,
     const Eigen::PlainObjectBase<DerivedF>& FTC);
+  template <typename DerivedV, typename Index>
+  IGL_INLINE bool writeOBJPoly(
+          const std::string str,
+          const Eigen::PlainObjectBase<DerivedV>& V,
+          const std::vector<std::vector< Index > >& F);
 
 }
 
