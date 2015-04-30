@@ -84,7 +84,7 @@ IGL_INLINE void igl::rgb_to_hsv(
     rgb[0] = R(r,0);
     rgb[1] = R(r,1);
     rgb[2] = R(r,2);
-    typename DerivedH::Scalar hsv[3];
+    typename DerivedH::Scalar hsv[] = {0,0,0};
     rgb_to_hsv(rgb,hsv);
     H(r,0) = hsv[0];
     H(r,1) = hsv[1];
@@ -97,4 +97,5 @@ IGL_INLINE void igl::rgb_to_hsv(
 template void igl::rgb_to_hsv<float, double>(float const*, double*);
 template void igl::rgb_to_hsv<double, double>(double const*, double*);
 template void igl::rgb_to_hsv<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::rgb_to_hsv<Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> >&);
 #endif
