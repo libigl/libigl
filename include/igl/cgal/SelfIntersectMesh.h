@@ -217,6 +217,11 @@ namespace igl
         SelfIntersectMesh * SIM, 
         const Box &a, 
         const Box &b);
+      // Annoying wrappers to conver from cgal to double or cgal
+      static inline void to_output_type(const typename Kernel::FT & cgal,double & d);
+      static inline void to_output_type(
+        const typename CGAL::Epeck::FT & cgal,
+        CGAL::Epeck::FT & d);
   };
 }
 
@@ -600,13 +605,7 @@ inline igl::SelfIntersectMesh<
       {
         const Point_3 & p = *nvit;
         // Don't convert via double if output type is same as Kernel
-        if(std::is_same<typename DerivedVV::Scalar,typename Kernel::FT>::value)
-        {
-          VV(V.rows()+i,d) = p[d];
-        }else
-        {
-          VV(V.rows()+i,d) = CGAL::to_double(p[d]);
-        }
+        to_output_type(p[d], VV(V.rows()+i,d));
       }
       i++;
     }
@@ -1211,6 +1210,58 @@ inline void igl::SelfIntersectMesh<
       assert(false);
     }
   }
+}
+
+template <
+  typename Kernel,
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedVV,
+  typename DerivedFF,
+  typename DerivedIF,
+  typename DerivedJ,
+  typename DerivedIM>
+inline 
+void 
+igl::SelfIntersectMesh<
+  Kernel,
+  DerivedV,
+  DerivedF,
+  DerivedVV,
+  DerivedFF,
+  DerivedIF,
+  DerivedJ,
+  DerivedIM>::to_output_type(
+    const typename Kernel::FT & cgal,
+    double & d)
+{
+  d = CGAL::to_double(cgal);
+}
+
+template <
+  typename Kernel,
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedVV,
+  typename DerivedFF,
+  typename DerivedIF,
+  typename DerivedJ,
+  typename DerivedIM>
+inline 
+void 
+igl::SelfIntersectMesh<
+  Kernel,
+  DerivedV,
+  DerivedF,
+  DerivedVV,
+  DerivedFF,
+  DerivedIF,
+  DerivedJ,
+  DerivedIM>::to_output_type(
+    const typename CGAL::Epeck::FT & cgal,
+    CGAL::Epeck::FT & d)
+{
+  d = cgal;
 }
 
 #endif
