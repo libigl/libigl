@@ -22,7 +22,10 @@ FIND_PATH(LIBIGL_INCLUDE_DIR igl/readOBJ.h
 
 if(LIBIGL_INCLUDE_DIR)
    set(LIBIGL_FOUND TRUE)
-   set(LIBIGL_INCLUDE_DIR ${LIBIGL_INCLUDE_DIR}  ${LIBIGL_INCLUDE_DIR}/../external/Singular_Value_Decomposition)
+   set(LIBIGL_INCLUDE_DIR
+     ${LIBIGL_INCLUDE_DIR}
+     ${LIBIGL_INCLUDE_DIR}/../external/Singular_Value_Decomposition
+     ${LIBIGL_INCLUDE_DIR}/../external/AntTweakBar/src)
    #set(LIBIGL_SOURCES
    #   ${LIBIGL_INCLUDE_DIR}/igl/viewer/Viewer.cpp
    #)
