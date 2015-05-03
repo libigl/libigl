@@ -13,9 +13,9 @@
 #include <cstdio>
 
 IGL_INLINE bool igl::create_shader_program(
-  const std::string vert_source,
-  const std::string frag_source,
-  const std::map<std::string,GLuint> attrib,
+  const std::string & vert_source,
+  const std::string & frag_source,
+  const std::map<std::string,GLuint> & attrib,
   GLuint & id)
 {
   if(vert_source == "" && frag_source == "")
@@ -77,5 +77,15 @@ IGL_INLINE bool igl::create_shader_program(
   igl::print_program_info_log(id);
 
   return true;
+}
+
+IGL_INLINE GLuint igl::create_shader_program(
+  const std::string & vert_source,
+  const std::string & frag_source,
+  const std::map<std::string,GLuint> & attrib)
+{
+  GLuint prog_id = 0;
+  create_shader_program(vert_source,frag_source,attrib,prog_id);
+  return prog_id;
 }
 #endif

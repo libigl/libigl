@@ -34,10 +34,14 @@ namespace igl
   //
   // See also: destroy_shader_program
   IGL_INLINE bool create_shader_program(
-    const std::string vert_source,
-    const std::string frag_source,
-    const std::map<std::string,GLuint> attrib,
+    const std::string &vert_source,
+    const std::string &frag_source,
+    const std::map<std::string,GLuint> &attrib,
     GLuint & id);
+  IGL_INLINE GLuint create_shader_program(
+    const std::string & vert_source,
+    const std::string & frag_source,
+    const std::map<std::string,GLuint> &attrib);
 }
 
 #ifndef IGL_STATIC_LIBRARY
