@@ -25,6 +25,6 @@ namespace igl
     Eigen::PlainObjectBase<DerivedB> & B);
 }
 #ifndef IGL_STATIC_LIBRARY
-#include "mod.h"
+#include "mod.cpp"
 #endif
 #endif
