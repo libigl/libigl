@@ -14,5 +14,5 @@
 //   func(C_STR("foo"<<1<<"bar"));
 #include <sstream>
 #include <string>
-#define C_STR(X) static_cast<std::ostringstream&>(std::ostringstream().seekp(0) << X).str().c_str()
+#define C_STR(X) static_cast<std::ostringstream&>(std::ostringstream().flush() << X).str().c_str()
 #endif
