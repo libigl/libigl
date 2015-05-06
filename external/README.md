@@ -11,6 +11,9 @@ and for building with Mesa (AntTweakBar/src/Makefile.mesa.igl)
 
 ## Embree
 
+Install `ispc` for example (`sudo port install ispc` or `brew install ispc`),
+then
+
     mkdir build
     cd build
     cmake -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_BUILD_TYPE=Release ..
