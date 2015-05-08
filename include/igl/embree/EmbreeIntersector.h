@@ -16,16 +16,15 @@
 #ifndef IGL_EMBREE_INTERSECTOR_H
 #define IGL_EMBREE_INTERSECTOR_H
 
+#include "Hit.h"
 #include <Eigen/Geometry>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include <vector>
 #include <embree2/rtcore.h>
 #include <embree2/rtcore_ray.h>
 #include <iostream>
-#include "Hit.h"
-#include <iostream>
+#include <vector>
 
 namespace igl
 {
@@ -278,7 +277,7 @@ inline void igl::EmbreeIntersector::init(
   // create a scene
   scene = rtcNewScene(RTC_SCENE_ROBUST | RTC_SCENE_HIGH_QUALITY,RTC_INTERSECT1);
 
-  for(int g=0;g<V.size();g++)
+  for(int g=0;g<(int)V.size();g++)
   {
     // create triangle mesh geometry in that scene
     geomID = rtcNewTriangleMesh(scene,RTC_GEOMETRY_STATIC,F[g]->rows(),V[g]->rows(),1);
@@ -327,14 +326,21 @@ igl::EmbreeIntersector
 
 void igl::EmbreeIntersector::deinit()
 {
-  rtcDeleteScene(scene);
+  if(scene)
+  {
+    rtcDeleteScene(scene);
 
-  if(rtcGetError() != RTC_NO_ERROR)
-      std::cerr << "Embree: An error occured while resetting!" << std::endl;
+    if(rtcGetError() != RTC_NO_ERROR)
+    {
+        std::cerr << "Embree: An error occured while resetting!" << std::endl;
+    }
 #ifdef IGL_VERBOSE
-  else
-    std::cerr << "Embree: geometry removed." << std::endl;
+    else
+    {
+      std::cerr << "Embree: geometry removed." << std::endl;
+    }
 #endif
+  }
 }
 
 inline bool igl::EmbreeIntersector::intersectRay(
