@@ -27,12 +27,14 @@ IGL_INLINE void igl::init_render_to_texture(
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
   //Attach 2D texture to this FBO
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, tex_id, 0);
+
   glGenRenderbuffersEXT(1, &dfbo_id);
   glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, dfbo_id);
   glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, width, height);
   //Attach depth buffer to FBO (for this example it's not really needed, but if
   //drawing a 3D scene it would be necessary to attach something)
   glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, dfbo_id);
+
   //Does the GPU support current FBO configuration?
   GLenum status;
   status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
