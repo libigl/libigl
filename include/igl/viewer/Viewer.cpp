@@ -425,17 +425,6 @@ namespace igl
     // Per face
     data.set_face_based(false);
 
-    // C-style callbacks
-    callback_init         = 0;
-    callback_pre_draw     = 0;
-    callback_post_draw    = 0;
-    callback_mouse_down   = 0;
-    callback_mouse_up     = 0;
-    callback_mouse_move   = 0;
-    callback_mouse_scroll = 0;
-    callback_key_down     = 0;
-    callback_key_up       = 0;
-
     callback_init_data          = 0;
     callback_pre_draw_data      = 0;
     callback_post_draw_data     = 0;
