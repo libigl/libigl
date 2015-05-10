@@ -352,7 +352,7 @@ inline bool igl::EmbreeIntersector::intersectRay(
   int mask) const
 {
   RTCRay ray;
-  createRay(ray, origin,direction,tnear,std::numeric_limits<float>::infinity(),mask);
+  createRay(ray, origin,direction,tnear,tfar,mask);
   
   // shot ray
   rtcIntersect(scene,ray);
@@ -361,7 +361,7 @@ inline bool igl::EmbreeIntersector::intersectRay(
       std::cerr << "Embree: An error occured while resetting!" << std::endl;
 #endif
   
-  if(ray.geomID != RTC_INVALID_GEOMETRY_ID)
+  if((unsigned)ray.geomID != RTC_INVALID_GEOMETRY_ID)
   {
     hit.id = ray.primID;
     hit.gid = ray.geomID;
@@ -392,7 +392,7 @@ inline bool igl::EmbreeIntersector::intersectBeam(
   else
     bestHit.t = 0;
 
-  if(hasHit = (intersectRay(origin,direction,hit,tnear,tfar,mask) && (hit.gid == geoId || geoId == -1)))
+  if((hasHit = (intersectRay(origin,direction,hit,tnear,tfar,mask)) && (hit.gid == geoId || geoId == -1)))
     bestHit = hit;
   
   // sample points around actual ray (conservative hitcheck)
@@ -452,7 +452,7 @@ igl::EmbreeIntersector
     ray.instID = RTC_INVALID_GEOMETRY_ID;
     num_rays++;
     rtcIntersect(scene,ray);
-    if(ray.geomID != RTC_INVALID_GEOMETRY_ID)
+    if((unsigned)ray.geomID != RTC_INVALID_GEOMETRY_ID)
     {
       // Hit self again, progressively advance
       if(ray.primID == last_id0 || ray.tfar <= min_t)
@@ -527,7 +527,7 @@ igl::EmbreeIntersector
   
   rtcIntersect(scene,ray);
 
-  if(ray.geomID != RTC_INVALID_GEOMETRY_ID)
+  if((unsigned)ray.geomID != RTC_INVALID_GEOMETRY_ID)
   {
     hit.id = ray.primID;
     hit.gid = ray.geomID;
