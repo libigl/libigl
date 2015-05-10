@@ -106,8 +106,8 @@ IGL_INLINE bool igl::writeOBJ(
     return false;
   }
   s<<
-    V.format(IOFormat(FullPrecision,DontAlignCols," ","\n","v ","","",""))<<
-    (F.array()+1).format(IOFormat(FullPrecision,DontAlignCols," ","\n","f ","","",""));
+    V.format(IOFormat(FullPrecision,DontAlignCols," ","\n","v ","","","\n"))<<
+    (F.array()+1).format(IOFormat(FullPrecision,DontAlignCols," ","\n","f ","","","\n"));
   return true;
 }
 
