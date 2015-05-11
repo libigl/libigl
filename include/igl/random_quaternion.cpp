@@ -20,4 +20,5 @@ IGL_INLINE Eigen::Quaternion<Scalar> igl::random_quaternion()
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template Eigen::Quaternion<double, 0> igl::random_quaternion<double>();
 #endif
