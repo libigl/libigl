@@ -143,6 +143,26 @@ BibTeX entry:
 }
 ```
 
+## Projects/Universities using libigl
+
+ - [Spine by Esoteric Software](http://esotericsoftware.com/) is an animation tool dedicated to 2D characters.
+ - Columbia University, [Columbia Computer Graphics Group](http://www.cs.columbia.edu/cg/), USA
+ - EPF Lausanne, [Computer Graphics and Geometry Laboratory](http://lgg.epfl.ch/people.php), Switzerland
+ - ETH Zurich, [Interactive Geometry Lab](http://igl.ethz.ch/) and [Advanced Technologies Lab](http://ait.inf.ethz.ch/), Swizterland
+ - George Mason University, [CraGL](http://cs.gmu.edu/~ygingold/), USA
+ - NYUPoly, [Game Innovation Lab](http://game.engineering.nyu.edu/), USA
+ - New York University, [Media Research Lab](http://mrl.nyu.edu/), USA
+ - [Cornell University](http://www.graphics.cornell.edu/), USA
+ - [National Institute of Informatics](http://www.nii.ac.jp/en/), Japan 
+ - [TU Delft](http://www.tudelft.nl/en/), Netherlands
+ - [Telecom ParisTech](http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html), Paris, France
+ - [Universidade Federal de Santa Catarina](http://mtm.ufsc.br/~leo/), Brazil
+ - [University College London](http://vecg.cs.ucl.ac.uk/), England
+ - [University of Cambridge](http://www.cam.ac.uk/), England
+ - [University of Pennsylvania](http://cg.cis.upenn.edu/), USA
+ - [Università della Svizzera Italiana](http://www.usi.ch/en), Switzerland
+
+
 ## Contact
 
 Libigl is a group endeavor led by [Alec
