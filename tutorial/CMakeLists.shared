@@ -45,7 +45,7 @@ if(NOT APPLE)
 endif(NOT APPLE)
 
 include_directories( ${EIGEN_INCLUDE_DIR})
-include_directories( ${LIBIGL_INCLUDE_DIR})
+include_directories( ${LIBIGL_INCLUDE_DIRS})
 include_directories( ${GLFW_INCLUDE_DIR})
 include_directories(
 	/usr/local/include
