@@ -230,26 +230,6 @@ void draw_scene(const igl::Camera & v_camera,
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
   glLoadIdentity();
-  if(v_camera.m_angle > IGL_CAMERA_MIN_ANGLE)
-  {
-    gluPerspective(v_camera.m_angle,v_camera.m_aspect,v_camera.m_near,v_camera.m_far);
-  }else
-  {
-    glOrtho(
-      -0.5*v_camera.m_aspect,
-      0.5*v_camera.m_aspect,
-      -0.5,
-      0.5,
-      v_camera.m_near,
-      v_camera.m_far);
-  }
-  //{
-  //  Matrix4d m;
-  //  glGetDoublev(GL_PROJECTION_MATRIX,m.data());
-  //  cout<<matlab_format(m,"glu")<<endl;
-  //}
-
-  glLoadIdentity();
   glMultMatrixd(v_camera.projection().data());
   //{
   //  Matrix4d m;
@@ -258,13 +238,13 @@ void draw_scene(const igl::Camera & v_camera,
   //}
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
-  //glLoadIdentity();
-  //gluLookAt(
-  //  v_camera.eye()(0), v_camera.eye()(1), v_camera.eye()(2),
-  //  v_camera.at()(0), v_camera.at()(1), v_camera.at()(2),
-  //  v_camera.up()(0), v_camera.up()(1), v_camera.up()(2));
   glLoadIdentity();
-  glMultMatrixd(v_camera.inverse().matrix().data());
+  gluLookAt(
+    v_camera.eye()(0), v_camera.eye()(1), v_camera.eye()(2),
+    v_camera.at()(0), v_camera.at()(1), v_camera.at()(2),
+    v_camera.up()(0), v_camera.up()(1), v_camera.up()(2));
+  //glLoadIdentity();
+  //glMultMatrixd(v_camera.inverse().matrix().data());
 
 
   for(int c = 0;c<(int)s.cameras.size();c++)
@@ -609,6 +589,12 @@ void key(unsigned char key, int mouse_x, int mouse_y)
     // ^C
     case char(3):
       exit(0);
+    case 'o':
+    case 'O':
+      {
+        s.cameras[0].m_orthographic ^= true;
+        break;
+      }
     case 'z':
     case 'Z':
       if(mod & GLUT_ACTIVE_COMMAND)
