@@ -14,6 +14,8 @@
 #include <igl/readOFF.h>
 #include <igl/per_face_normals.h>
 #include <igl/draw_floor.h>
+#include <igl/project.h>
+#include <igl/unproject.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -246,6 +248,13 @@ void draw_scene(const igl::Camera & v_camera,
   //glLoadIdentity();
   //glMultMatrixd(v_camera.inverse().matrix().data());
 
+  if(!render_to_texture)
+  {
+    Vector3d win;
+    igl::project(Vector3d(0,0,0),win);
+    cout<<win.transpose()<<endl;
+  }
+
 
   for(int c = 0;c<(int)s.cameras.size();c++)
   {
@@ -411,7 +420,6 @@ void display()
 
   TwDraw();
   glutSwapBuffers();
-  glutPostRedisplay();
 }
 
 
@@ -455,6 +463,7 @@ void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
       camera.dolly((wheel==0?Vector3d(0,0,1):Vector3d(-1,0,0))*0.1*direction);
       break;
   }
+  glutPostRedisplay();
 }
 
 void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
@@ -523,6 +532,7 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
 #endif
     }
   }
+  glutPostRedisplay();
 }
 
 void mouse_drag(int mouse_x, int mouse_y)
@@ -575,6 +585,7 @@ void mouse_drag(int mouse_x, int mouse_y)
         break;
     }
   }
+  glutPostRedisplay();
 }
 
 void key(unsigned char key, int mouse_x, int mouse_y)
@@ -614,6 +625,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
         cout<<"Unknown key command: "<<key<<" "<<int(key)<<endl;
       }
   }
+  glutPostRedisplay();
 }
 
 int main(int argc, char * argv[])
