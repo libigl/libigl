@@ -4,9 +4,9 @@
 include ../../build/Makefile.conf
 LIBIGL_LIB+=-liglbbw -liglcgal
 
-all: obj example
+all: obj skeleton-poser
 
-.PHONY: example
+.PHONY: skeleton-poser
 
 ifdef IGL_NO_MOSEK
 CFLAGS+=-DIGL_NO_MOSEK
@@ -39,8 +39,8 @@ OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
 
 CFLAGS+=-std=c++11 -g
 
-example: obj $(OBJ_FILES)
-	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -o example $(LIB) $(OBJ_FILES) 
+skeleton-poser: obj $(OBJ_FILES)
+	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -o skeleton-poser $(LIB) $(OBJ_FILES) 
 
 obj:
 	mkdir -p obj
@@ -53,4 +53,4 @@ obj/%.o: %.cpp %.h
 
 clean:
 	rm -f $(OBJ_FILES)
-	rm -f example
+	rm -f skeleton-poser
