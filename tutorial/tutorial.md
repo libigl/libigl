@@ -26,13 +26,13 @@ lecture notes links to a cross-platform example application.
 
 # Table of contents
 
-* [Chapter 1: Introduction to libigl](#100)
-    * [Libigl design principles](#100b)
-    * [101 Mesh representation](#101)
-    * [102 Visualizing surfaces](#102)
-    * [103 Interaction with keyboard and mouse](#103)
-    * [104 Scalar field visualization](#104)
-    * [105 Overlays](#105)
+* [Chapter 1: Introduction to libigl](#chapter1:introductiontolibigl)
+    * [Libigl design principles](#libigldesignprinciples)
+    * [101 Mesh representation](#meshrepresentation)
+    * [102 Visualizing surfaces](#visualizingsurfaces)
+    * [103 Interaction with keyboard and mouse](#interactionwithkeyboardandmouse)
+    * [104 Scalar field visualization](#scalarfieldvisualization)
+    * [105 Overlays](#overlays)
 * [Chapter 2: Discrete Geometric Quantities and
   Operators](#chapter2:discretegeometricquantitiesandoperators)
     * [201 Normals](#normals)
@@ -63,36 +63,36 @@ lecture notes links to a cross-platform example application.
     * [406 Fast automatic skinning
       transformations](#fastautomaticskinningtransformations)
         * [ARAP with grouped edge-sets](#arapwithgroupededge-sets)
-* [Chapter 5: Parametrization](#500)
-    * [501 Harmonic parametrization](#501)
-    * [502 Least-Square Conformal Maps](#502)
-    * [503 As-Rigid-As-Possible](#503)
-    * [504 N-Rotationally symmetric tangent fields](#504)
-    * [505 Global, seamless integer-grid parametrization](#505)
-    * [506 Anisotropic remeshing using frame fields](#506)
-    * [507 N-PolyVector fields](#507)
-    * [508 Conjugate vector fields](#508)
-    * [509 Planarization](#509)
-* [Chapter 6: External libraries](#600)
-    * [601 State serialization](#601)
-    * [602 Mixing Matlab code](#602)
+* [Chapter 5: Parametrization](#chapter5:parametrization)
+    * [501 Harmonic parametrization](#harmonicparametrization)
+    * [502 Least-Square Conformal Maps](#leastsquareconformalmaps)
+    * [503 As-Rigid-As-Possible](#asrigidaspossible)
+    * [504 N-Rotationally symmetric tangent fields](#nrotationallysymmetrictangetfields)
+    * [505 Global, seamless integer-grid parametrization](#globalseamlessintegergridparametrization)
+    * [506 Anisotropic remeshing using frame fields](#anisotropicremeshingusingframefields)
+    * [507 N-PolyVector fields](#npolyvectorfields)
+    * [508 Conjugate vector fields](#conjugatevectorfields)
+    * [509 Planarization](#planarization)
+* [Chapter 6: External libraries](#chapter6:externallibraries)
+    * [601 State serialization](#stateserialization)
+    * [602 Mixing Matlab code](#mixingmatlabcode)
         * [Saving a Matlab workspace](#savingamatlabworkspace)
         * [Dumping Eigen matrices to copy and paste into
           Matlab](#dumpingeigenmatricestocopyandpasteintomatlab)
-    * [603 Calling libigl functions from Matlab](#603)
-    * [604 Triangulation of closed polygons](#604)
-    * [605 Tetrahedralization of closed surfaces](#605)
-    * [606 Baking ambient occlusion](#606)
-    * [607 Picking vertices and faces](#607)
-    * [608 Locally Injective Maps](#608)
-    * [609 Boolean Operations on Meshes](#609)
-* [Chapter 7: Miscellaneous](#700)
-    * [701 Mesh Statistics](#701)
-    * [702 Generalized Winding Number](#702)
-    * [703 Mesh Decimation](#703)
+    * [603 Calling libigl functions from Matlab](#callinglibiglfunctionsfrommatlab)
+    * [604 Triangulation of closed polygons](#triangulationofclosedpolygons)
+    * [605 Tetrahedralization of closed surfaces](#tetrahedralizationofclosedsurfaces)
+    * [606 Baking ambient occlusion](#bakingambientocclusion)
+    * [607 Picking vertices and faces](#pickingverticesandfaces)
+    * [608 Locally Injective Maps](#locallyinjectivemaps)
+    * [609 Boolean Operations on Meshes](#booleanoperationsonmeshes)
+* [Chapter 7: Miscellaneous](#chapter7:miscellaneous)
+    * [701 Mesh Statistics](#meshstatistics)
+    * [702 Generalized Winding Number](#generalizedwindingnumber)
+    * [703 Mesh Decimation](#meshdecimation)
 * [Chapter 8: Outlook for continuing development](#future)
 
-# Chapter 1 [100]
+# Chapter 1 [chapter1:introductiontolibigl]
 
 We introduce libigl with a series of self-contained examples. The purpose of
 each example is to showcase a feature of libigl while applying to a practical
@@ -101,7 +101,7 @@ concepts of libigl and introduce a simple mesh viewer that allows to
 visualize a surface mesh and its attributes. All the tutorial examples are
 cross-platform and can be compiled on MacOSX, Linux and Windows.
 
-## libigl design principles [100b]
+## libigl design principles [libigldesignprinciples]
 
 Before getting into the examples, we summarize the main design principles in
 libigl:
@@ -164,7 +164,7 @@ A few examples in Chapter 5 requires the [CoMiSo
 solver](http://www.graphics.rwth-aachen.de/software/comiso) which has to be
 downloaded and compiled separately.
 
-## Mesh representation [101]
+## Mesh representation [meshrepresentation]
 
 libigl uses the [Eigen](http://eigen.tuxfamily.org/) library to encode vector
 and matrices. We suggest that you keep the
@@ -216,7 +216,7 @@ igl::writeOBJ("cube.obj",V,F);
 [Example 101](101_FileIO/main.cpp) contains a simple mesh
 converter from OFF to OBJ format.
 
-## Visualizing surfaces [102]
+## Visualizing surfaces [visualizingsurfaces]
 
 Libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
 properties and additional debugging informations.
@@ -255,7 +255,7 @@ Please see the documentation in
 ![([Example 102](102_DrawMesh/main.cpp)) loads and draws a
 mesh.](images/102_DrawMesh.png)
 
-## Interaction with keyboard and mouse [103]
+## Interaction with keyboard and mouse [interactionwithkeyboardandmouse]
 
 Keyboard and mouse events triggers callbacks that can be registered in the
 viewer. The viewer supports the following callbacks:
@@ -311,7 +311,7 @@ The viewer can be extended using plugins, which are classes that implements all
 the viewer's callbacks. See the
 [Viewer_plugin](../include/igl/viewer/ViewerPlugin.h) for more details.
 
-## Scalar field visualization [104]
+## Scalar field visualization [scalarfieldvisualization]
 
 Colors and normals can be associated to faces or vertices using the
 set_colors function:
@@ -348,7 +348,7 @@ color field.](images/104_Colors.png)
 types and can be easily reused for many different tasks.  Not committing to
 heavy data structures types favors simplicity, ease of use and reusability.
 
-## Overlays [105]
+## Overlays [overlays]
 
 In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helful while developing geometric processing algorithms to plot debug informations.
 
@@ -1499,7 +1499,7 @@ ARAP deformation on a detailed shape (left of middle), to ARAP with grouped
 rotation edge sets (right of middle), to the very fast subpsace method
 (right).](images/armadillo-fast.jpg)
 
-# Chapter 5: Parametrization [500]
+# Chapter 5: Parametrization [chapter5:parametrization]
 
 In computer graphics, we denote as surface parametrization a map from the
 surface to \\(\mathbf{R}^2\\). It is usually encoded by a new set of 2D
@@ -1526,7 +1526,7 @@ genus. They initially cut the mesh in multiple patches that can be separately pa
 
 4. **Global seamless parametrization**: these are global parametrization algorithm that hides the seams, making the parametrization "continuous", under specific assumptions that we will discuss later.
 
-## Harmonic parametrization [501]
+## Harmonic parametrization [harmonicparametrization]
 
 Harmonic parametrization [#eck_2005][] is a single patch, fixed boundary parametrization
 algorithm that computes the 2D coordinates of the flattened mesh as two
@@ -1566,7 +1566,7 @@ mesh ([Example 501](501_HarmonicParam/main.cpp)).
 mesh with texture, (right) UV parametrization with
 texture](images/501_HarmonicParam.png)
 
-## Least squares conformal maps [502]
+## Least squares conformal maps [leastsquareconformalmaps]
 
 Least squares conformal maps parametrization [#levy_2002][] minimizes the
 conformal (angular) distortion of the parametrization. Differently from
@@ -1616,7 +1616,7 @@ vertices to two arbitrary positions. The full source code is provided in [Exampl
 ![([Example 502](502_LSCMParam/main.cpp)) LSCM parametrization. (left) mesh
 with texture, (right) UV parametrization](images/502_LSCMParam.png)
 
-## As-rigid-as-possible parametrization [503]
+## As-rigid-as-possible parametrization [asrigidaspossible]
 
 As-rigid-as-possible parametrization [#liu_2008][] is a powerful single-patch,
 non-linear algorithm to compute a parametrization that strives to preserve
@@ -1638,7 +1638,7 @@ the distortion.
 (left) mesh with texture, (right) UV parametrization with
 texture](images/503_ARAPParam.png)
 
-## N-rotationally symmetric tangent fields [504]
+## N-rotationally symmetric tangent fields [nrotationallysymmetrictangetfields]
 
 The design of tangent fields is a basic tool used to design guidance fields for
 uniform quadrilateral and hexahedral remeshing. Libigl contains an
@@ -1675,10 +1675,10 @@ We demonstrate how to call and plot N-RoSy fields in [Example
 504](504_NRosyDesign/main.cpp), where the degree of the field can be change
 pressing the number keys. `igl::nrosy` implements the algorithm proposed in
 [#bommes_2009][]. N-RoSy fields can also be interpolated with the algorithm
-proposed in [#knoppel_2013][], see Section [507] for more details
+proposed in [#knoppel_2013][], see Section [npolyvectorfields] for more details
 ([igl::n_polyvector](../include/igl/n_polyvector.h)).
 
-### Global, seamless integer-grid parametrization [505]
+### Global, seamless integer-grid parametrization [globalseamlessintegergridparametrization]
 
 The previous parametrization methods were focusing on creating parametrizations
 of surface patches aimed at texture mapping or baking of other surface
@@ -1760,7 +1760,7 @@ A quad mesh can be extracted from this parametrization using
 [libQEx](https://github.com/hcebke/libQEx) (not included in libigl).
 The full pipeline is implemented in [Example 505](505_MIQ/main.cpp).
 
-## Anisotropic remeshing [506]
+## Anisotropic remeshing [anisotropicremeshingusingframefields]
 
 Anisotropic and non-uniform quad remeshing is important to concentrate the
 elements in the regions with more details. It is possible to extend the MIQ
@@ -1805,7 +1805,7 @@ generate the UV parametrization, but other algorithms could be applied: the
 only desiderata is that the generated quad mesh should be as isotropic as
 possible.
 
-## N-PolyVector fields [507]
+## N-PolyVector fields [npolyvectorfields]
 
 N-RoSy vector fields can be further generalized to represent arbitrary
 vector-sets, with arbitrary angles between them and with arbitrary lengths
@@ -1824,7 +1824,7 @@ PolyVector fields. If the constraints are taken from an N-RoSy field,
 `igl::n_polyvector` generates a field that is equivalent, after normalization,
 to a globally optimal direction field.
 
-## Conjugate vector fields [508]
+## Conjugate vector fields [conjugatevectorfields]
 
 Two tangent vectors lying on a face of a triangle mesh are conjugate if
 
@@ -1846,7 +1846,7 @@ closest conjugate field ([Example 508](508_ConjugateField/main.cpp)).
 ![A smooth 4-PolyVector field (left) is deformed to become a conjugate field
 (right).](images/508_ConjugateField.png)
 
-## Planarization [509]
+## Planarization [planarization]
 
 A quad mesh can be transformed in a planar quad mesh with Shape-Up
 [#bouaziz_2012], a local/global approach that uses the global step to enforce
@@ -1859,12 +1859,12 @@ satisfies a user-given planarity threshold.
 igl::palanarize (right). The colors represent the planarity of the
 quads.](images/509_Planarization.png)
 
-# Chapter 6: External libraries [600]
+# Chapter 6: External libraries [chapter6:externallibraries]
 
 An additional positive side effect of using matrices as basic types is that it
 is easy to exchange data between libigl and other softwares and libraries.
 
-## State serialization [601]
+## State serialization [stateserialization]
 
 Geometry processing applications often require a considerable amount of
 computational time and/or manual input. Serializing the state of the application is a simple strategy to greatly increase the development efficiency. It allows to quickly start debugging just
@@ -1989,7 +1989,7 @@ common to have to do small changes to figures, and being able to serialize the
 entire state just before you take screenshots will save you many painful hours
 before a submission deadline.
 
-## Mixing Matlab code [602]
+## Mixing Matlab code [mixingmatlabcode]
 
 Libigl can be interfaced with Matlab to offload numerically heavy computation
 to a Matlab script. The major advantage of this approach is that you will be
@@ -2114,7 +2114,7 @@ L = sparse(LIJV(:,1),LIJV(:,2),LIJV(:,3));
 
 which is easily copied and pasted into Matlab for debugging, etc.
 
-## Calling libigl functions from Matlab [603]
+## Calling libigl functions from Matlab [callinglibiglfunctionsfrommatlab]
 
 It is also possible to call libigl functions from matlab, compiling them as MEX
 functions. This can be used to offload to C++ code the computationally
@@ -2125,7 +2125,7 @@ We plan to provide wrappers for all our functions in the future, if you are
 interested in this feature (or if you want to help implementing it) please let
 us know.
 
-## Triangulation of closed polygons [604]
+## Triangulation of closed polygons [triangulationofclosedpolygons]
 
 The generation of high-quality triangle and tetrahedral meshes is a very common
 task in geometry processing. We provide wrappers in libigl to
@@ -2148,7 +2148,7 @@ in its interior) is triangulated.
 
 ![Triangulation of the interior of a polygon.](images/604_Triangle.png)
 
-## Tetrahedralization of closed surfaces [605]
+## Tetrahedralization of closed surfaces [tetrahedralizationofclosedsurfaces]
 
 Similarly, the interior of a closed manifold surface can be tetrahedralized
 using the function `igl::tetrahedralize` which wraps the Tetgen library ([Example
@@ -2160,7 +2160,7 @@ igl::tetrahedralize(V,F,"pq1.414", TV,TT,TF);
 
 ![Tetrahedralization of the interior of a surface mesh.](images/605_Tetgen.png)
 
-## Baking ambient occlusion [606]
+## Baking ambient occlusion [bakingambientocclusion]
 
 [Ambient occlusion](http://en.wikipedia.org/wiki/Ambient_occlusion) is a
 rendering technique used to calculate the exposure of each point in a surface
@@ -2194,7 +2194,7 @@ Ambient occlusion can be used to darken the surface colors, as shown in
 ![A mesh rendered without (left) and with (right) ambient
 occlusion.](images/606_AmbientOcclusion.png)
 
-## Picking [607]
+## Picking [pickingverticesandfaces]
 
 Picking vertices and faces using the mouse is very common in geometry
 processing applications. While this might seem a simple operation, its
@@ -2226,7 +2226,7 @@ by Embree, and `fid` and `vid` are the picked face and vertex, respectively.
 ![([Example 607](607_Picking/main.cpp)) Picking via ray casting. The selected
 vertices are colored in red.](images/607_Picking.png)
 
-## Locally Injective Maps [608]
+## Locally Injective Maps [locallyinjectivemaps]
 
 Extreme deformations or parametrizations with high-distortion might flip
 elements.  This is undesirable in many applications, and it is possible to
@@ -2240,7 +2240,7 @@ deformation energies. A simple deformation of a 2D grid is computed in [Example
 ![A mesh (left) deformed using Laplacian editing (middle) and with Laplacian
 editing plus the anti-flipping constraints (right).](images/608_LIM.png)
 
-## Boolean operations on meshes [609]
+## Boolean operations on meshes [booleanoperationsonmeshes]
 
 Constructive solid geometry (CSG) is a technique to define a complex surface as
 the result of a number of set operations on solid regions of space: union,
@@ -2322,14 +2322,14 @@ Libigl also provides a wrapper `igl::mesh_boolean_cork` to the
 [cork](https://github.com/gilbo/cork), which is typically faster, but is not
 always robust.
 
-# Miscellaneous [700]
+# Miscellaneous [chapter7:miscellaneous]
 
 Libigl contains a _wide_ variety of geometry processing tools and functions for
 dealing with meshes and the linear algebra related to them: far too many to
 discuss in this introductory tutorial. We've pulled out a couple of the
 interesting functions in this chapter to highlight.
 
-## Mesh Statistics [701]
+## Mesh Statistics [meshstatistics]
 
 Libigl contains various mesh statistics, including face angles, face areas and
 the detection of singular vertices, which are vertices with more or less than 6
@@ -2365,10 +2365,10 @@ the angles are to 60 degrees the more stable will the optimization be. In this
 case, it is clear that the mesh is of bad quality and it will probably result
 in artifacts if used for solving PDEs.
 
-## Generalized Winding Number [702]
+## Generalized Winding Number [generalizedwindingnumber]
 
 The problem of tetrahedralizing the interior of closed watertight surface mesh
-is a difficult, but well-posed problem (see our [Tetgen wrappers][605]).  But
+is a difficult, but well-posed problem (see our [Tetgen wrappers][tetrahedralizationofclosedsurfaces]).  But
 black-box tet-meshers like TetGen will _refuse_ input triangle meshes with
 self-intersections, open boundaries, non-manifold edges from multiple connected
 components.
@@ -2405,14 +2405,14 @@ if `(V,F)` is not closed or not even manifold (but at least consistently
 oriented), then $w(\mathbf{p})$ tends smoothly toward 1 as $\mathbf{p}$ is
 _more_ inside `(V,F)`, and toward 0 as $\mathbf{p}$ is more outside.
  
-![Example [702_WindingNumber](702_WindingNumber/main.cpp) computes the
+![Example [generalizedwindingnumber_WindingNumber](702_WindingNumber/main.cpp) computes the
 generalized winding number function for a tetrahedral mesh inside a cat with
 holes and self intersections (gold). The silver mesh is surface of the
 extracted interior tets, and slices show the winding number function on all
 tets in the convex hull: blue (~0), green (~1), yellow
 (~2).](images/big-sigcat-winding-number.gif)
 
-## Mesh Decimation [703]
+## Mesh Decimation [meshdecimation]
 
 The study of mesh simplification or _decimation_ is nearly as old as meshes
 themselves. Given a high resolution mesh with too many triangles, find a "well
