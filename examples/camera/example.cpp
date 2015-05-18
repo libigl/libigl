@@ -248,14 +248,6 @@ void draw_scene(const igl::Camera & v_camera,
   //glLoadIdentity();
   //glMultMatrixd(v_camera.inverse().matrix().data());
 
-  if(!render_to_texture)
-  {
-    Vector3d win;
-    igl::project(Vector3d(0,0,0),win);
-    cout<<win.transpose()<<endl;
-  }
-
-
   for(int c = 0;c<(int)s.cameras.size();c++)
   {
     auto & camera = s.cameras[c];
@@ -498,6 +490,7 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
         break;
       }
       break;
+    }
 #ifdef GLUT_WHEEL_DOWN
     // Scroll down
     case GLUT_WHEEL_DOWN:
@@ -530,7 +523,6 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
       break;
     }
 #endif
-    }
   }
   glutPostRedisplay();
 }
