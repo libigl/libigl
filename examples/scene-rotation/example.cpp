@@ -36,6 +36,22 @@
 #include <GL/glut.h>
 #endif
 
+#ifndef GLUT_WHEEL_UP
+#define GLUT_WHEEL_UP    3
+#endif
+#ifndef GLUT_WHEEL_DOWN
+#define GLUT_WHEEL_DOWN  4
+#endif
+#ifndef GLUT_WHEEL_RIGHT
+#define GLUT_WHEEL_RIGHT 5
+#endif
+#ifndef GLUT_WHEEL_LEFT
+#define GLUT_WHEEL_LEFT  6
+#endif
+#ifndef GLUT_ACTIVE_COMMAND
+#define GLUT_ACTIVE_COMMAND 8
+#endif
+
 #include <string>
 #include <vector>
 #include <stack>
