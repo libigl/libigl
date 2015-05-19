@@ -8,13 +8,14 @@
 #ifndef IGL_ANGLES_H
 #define IGL_ANGLES_H
 #ifdef _WIN32
- #pragma message ( "Deprecated. Use igl/internal_angles.h instead" )
+#  pragma message ( "Deprecated. Use igl/internal_angles.h instead" )
 #else
- #warning "Deprecated. Use igl/internal_angles.h instead"
+#  warning "Deprecated. Use igl/internal_angles.h instead"
 #endif
 
 
 #include "igl_inline.h"
+#include "deprecated.h"
 #include <Eigen/Core>
 namespace igl
 {
@@ -30,10 +31,12 @@ namespace igl
   typename DerivedV,
   typename DerivedF,
   typename Derivedtheta>
-  IGL_INLINE void angles(
-  const Eigen::PlainObjectBase<DerivedV>& V,
-  const Eigen::PlainObjectBase<DerivedF>& F,
-  Eigen::PlainObjectBase<Derivedtheta>& theta);
+  IGL_INLINE 
+  IGL_DEPRECATED(
+    void angles(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<Derivedtheta>& theta));
 
 }
 

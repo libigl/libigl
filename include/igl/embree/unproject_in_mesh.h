@@ -20,7 +20,10 @@ namespace igl
 
   #ifndef IGL_OPENGL_4
   // Unproject a screen location (using current opengl viewport, projection, and
-  // model view) to a 3D position
+  // model view) to a 3D position _inside_ a given mesh. If the ray through the
+  // given screen location (x,y) _hits_ the mesh more than twice then the 3D
+  // midpoint between the first two hits is return. If it hits once, then that
+  // point is return. If it does not hit the mesh then obj is not set.
   //
   // Inputs:
   //    x  x-coordinate of mouse location

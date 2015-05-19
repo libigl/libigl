@@ -32,6 +32,7 @@ namespace igl
   // Outputs:
   //   V  eigen double matrix #V by 3
   //   F  eigen int matrix #F by 3
+  // Returns true iff success
   template <typename Scalar, typename Index>
   IGL_INLINE bool read_triangle_mesh(
     const std::string str,
