@@ -7,7 +7,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "slice.h"
 #include "colon.h"
-#include "matlab_format.h"
 
 #include <vector>
 
