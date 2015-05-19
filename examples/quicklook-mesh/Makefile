@@ -28,6 +28,8 @@ MESA_LIB=-L$(MESA)/lib -lOSMesa -lGL
 OBJC_LIB=-lobjc
 
 all: obj Mesh.qlgenerator
+deploy:
+	dylibbundler -od -b -x ./Mesh.qlgenerator/Contents/MacOS/Mesh -d ./Mesh.qlgenerator/Contents/libs -p @loader_path/../libs/
 install:
 	rm -rf /Library/QuickLook/Mesh.qlgenerator
 	cp -R Mesh.qlgenerator /Library/QuickLook/Mesh.qlgenerator

@@ -52,17 +52,16 @@ IGL_INLINE int igl::unproject_in_mesh(
     case 0:
       break;
     case 1:
-    default:
-  {
+    {
       obj = (s + dir*hits[0].t).cast<typename Derivedobj::Scalar>();
       break;
     }
-    // case 2:
-    // default:
-    // {
-    //   obj = 0.5*((s + dir*hits[0].t) + (s + dir*hits[1].t)).cast<typename Derivedobj::Scalar>();
-    //   break;
-    // }
+    case 2:
+    default:
+    {
+      obj = 0.5*((s + dir*hits[0].t) + (s + dir*hits[1].t)).cast<typename Derivedobj::Scalar>();
+      break;
+    }
   }
   return hits.size();
 }
@@ -99,17 +98,16 @@ IGL_INLINE int igl::unproject_in_mesh(
     case 0:
       break;
     case 1:
-    default:
     {
       obj = (s + dir*hits[0].t).cast<typename Derivedobj::Scalar>();
       break;
     }
-    // case 2:
-    // default:
-    // {
-    //   obj = 0.5*((s + dir*hits[0].t) + (s + dir*hits[1].t)).cast<typename Derivedobj::Scalar>();
-    //   break;
-    // }
+    case 2:
+    default:
+    {
+      obj = 0.5*((s + dir*hits[0].t) + (s + dir*hits[1].t)).cast<typename Derivedobj::Scalar>();
+      break;
+    }
   }
   return hits.size();
 }

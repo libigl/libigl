@@ -107,7 +107,7 @@ void igl::is_boundary_edge(
   // Look of occurances of 1
   for(int e = 0;e<E.rows();e++)
   {
-    B(e) = (N(EMAP(e)) == 1);
+    B(e) = N(e) == 1;
   }
 }
 

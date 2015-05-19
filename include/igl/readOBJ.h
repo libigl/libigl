@@ -8,6 +8,7 @@
 #ifndef IGL_READOBJ_H
 #define IGL_READOBJ_H
 #include "igl_inline.h"
+#include "deprecated.h"
 // History:
 //  return type changed from void to bool  Alec 18 Sept 2011
 //  added pure vector of vectors version that has much more support Alec 31 Oct
@@ -98,14 +99,16 @@ namespace igl
     typename DerivedF, 
     typename DerivedT, 
     typename Index>
-  IGL_INLINE bool readOBJPoly(
+  IGL_INLINE 
+  IGL_DEPRECATED(
+  bool readOBJPoly(
     const std::string str,
     Eigen::PlainObjectBase<DerivedV>& V,
     std::vector<std::vector<Index> >& F,
     Eigen::PlainObjectBase<DerivedV>& CN,
     Eigen::PlainObjectBase<DerivedF>& FN,
     Eigen::PlainObjectBase<DerivedT>& TC,
-    Eigen::PlainObjectBase<DerivedF>& FTC);
+    Eigen::PlainObjectBase<DerivedF>& FTC));
   
   //! Read a mesh from an ascii obj file
   // Inputs:

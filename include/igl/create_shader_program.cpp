@@ -10,20 +10,22 @@
 
 #include "load_shader.h"
 #include "print_program_info_log.h"
+#include <iostream>
 #include <cstdio>
 
 IGL_INLINE bool igl::create_shader_program(
-  const std::string vert_source,
-  const std::string frag_source,
-  const std::map<std::string,GLuint> attrib,
+  const std::string & geom_source,
+  const std::string & vert_source,
+  const std::string & frag_source,
+  const std::map<std::string,GLuint> & attrib,
   GLuint & id)
 {
+  using namespace std;
   if(vert_source == "" && frag_source == "")
   {
-    fprintf(
-      stderr,
-      "Error: create_shader_program() could not create shader program,"
-      " both .vert and .frag source given were empty\n");
+    cerr<<
+      "create_shader_program() could not create shader program,"
+      " both .vert and .frag source given were empty"<<endl;
     return false;
   }
 
@@ -31,10 +33,20 @@ IGL_INLINE bool igl::create_shader_program(
   id = glCreateProgram();
   if(id == 0)
   {
-    fprintf(
-      stderr,
-      "Error: create_shader_program() could not create shader program.\n");
+    cerr<<"create_shader_program() could not create shader program."<<endl;
     return false;
+  }
+
+  if(geom_source != "")
+  {
+    // load vertex shader
+    GLuint g = igl::load_shader(geom_source.c_str(),GL_GEOMETRY_SHADER_EXT);
+    if(g == 0)
+    {
+      cerr<<"geometry shader failed to compile."<<endl;
+      return false;
+    }
+    glAttachShader(id,g);
   }
 
   if(vert_source != "")
@@ -43,6 +55,7 @@ IGL_INLINE bool igl::create_shader_program(
     GLuint v = igl::load_shader(vert_source.c_str(),GL_VERTEX_SHADER);
     if(v == 0)
     {
+      cerr<<"vertex shader failed to compile."<<endl;
       return false;
     }
     glAttachShader(id,v);
@@ -54,6 +67,7 @@ IGL_INLINE bool igl::create_shader_program(
     GLuint f = igl::load_shader(frag_source.c_str(),GL_FRAGMENT_SHADER);
     if(f == 0)
     {
+      cerr<<"fragment shader failed to compile."<<endl;
       return false;
     }
     glAttachShader(id,f);
@@ -78,4 +92,36 @@ IGL_INLINE bool igl::create_shader_program(
 
   return true;
 }
+
+IGL_INLINE bool igl::create_shader_program(
+  const std::string & vert_source,
+  const std::string & frag_source,
+  const std::map<std::string,GLuint> & attrib,
+  GLuint & prog_id)
+{
+  return create_shader_program("",vert_source,frag_source,attrib,prog_id);
+}
+
+
+IGL_INLINE GLuint igl::create_shader_program(
+  const std::string & geom_source,
+  const std::string & vert_source,
+  const std::string & frag_source,
+  const std::map<std::string,GLuint> & attrib)
+{
+  GLuint prog_id = 0;
+  create_shader_program(geom_source,vert_source,frag_source,attrib,prog_id);
+  return prog_id;
+}
+
+IGL_INLINE GLuint igl::create_shader_program(
+  const std::string & vert_source,
+  const std::string & frag_source,
+  const std::map<std::string,GLuint> & attrib)
+{
+  GLuint prog_id = 0;
+  create_shader_program(vert_source,frag_source,attrib,prog_id);
+  return prog_id;
+}
+
 #endif
