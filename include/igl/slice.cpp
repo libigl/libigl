@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "slice.h"
 #include "colon.h"
+#include "matlab_format.h"
 
 #include <vector>
 
@@ -21,6 +22,71 @@ IGL_INLINE void igl::slice(
   const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
   Eigen::SparseMatrix<T>& Y)
 {
+#if true
+  int xm = X.rows();
+  int xn = X.cols();
+  int ym = R.size();
+  int yn = C.size();
+
+  // special case when R or C is empty
+  if(ym == 0 || yn == 0)
+  {
+    Y.resize(ym,yn);
+    return;
+  }
+
+  assert(R.minCoeff() >= 0);
+  assert(R.maxCoeff() < xm);
+  assert(C.minCoeff() >= 0);
+  assert(C.maxCoeff() < xn);
+
+  // Build reindexing maps for columns and rows, -1 means not in map
+  std::vector<std::vector<int> > RI;
+  RI.resize(xm);
+  for(int i = 0;i<ym;i++)
+  {
+    RI[R(i)].push_back(i);
+  }
+  std::vector<std::vector<int> > CI;
+  CI.resize(xn);
+  // initialize to -1
+  for(int i = 0;i<yn;i++)
+  {
+    CI[C(i)].push_back(i);
+  }
+  // Resize output
+  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> dyn_Y(ym,yn);
+  // Take a guess at the number of nonzeros (this assumes uniform distribution
+  // not banded or heavily diagonal)
+  dyn_Y.reserve((X.nonZeros()/(X.rows()*X.cols())) * (ym*yn));
+  // Iterate over outside
+  for(int k=0; k<X.outerSize(); ++k)
+  {
+    // Iterate over inside
+    for(typename Eigen::SparseMatrix<T>::InnerIterator it (X,k); it; ++it)
+    {
+      std::vector<int>::iterator rit, cit;
+      for(rit = RI[it.row()].begin();rit != RI[it.row()].end(); rit++)
+      {
+        for(cit = CI[it.col()].begin();cit != CI[it.col()].end(); cit++)
+        {
+          dyn_Y.coeffRef(*rit,*cit) = it.value();
+        }
+      }
+    }
+  }
+  Y = Eigen::SparseMatrix<T>(dyn_Y);
+#else
+
+  // Alec: This is _not_ valid for arbitrary R,C since they don't necessary
+  // representation a strict permutation of the rows and columns: rows or
+  // columns could be removed or replicated. The removal of rows seems to be
+  // handled here (although it's not clear if there is a performance gain when
+  // the #removals >> #remains). If this is sufficiently faster than the
+  // correct code above, one could test whether all entries in R and C are
+  // unique and apply the permutation version if appropriate. 
+  //
+
   int xm = X.rows();
   int xn = X.cols();
   int ym = R.size();
@@ -39,8 +105,8 @@ IGL_INLINE void igl::slice(
   assert(C.maxCoeff() < xn);
 
   // initialize row and col permutation vectors
-  Eigen::VectorXi rowIndexVec = Eigen::VectorXi::LinSpaced(xm,0,xm);
-  Eigen::VectorXi rowPermVec  = Eigen::VectorXi::LinSpaced(xm,0,xm);
+  Eigen::VectorXi rowIndexVec = Eigen::VectorXi::LinSpaced(xm,0,xm-1);
+  Eigen::VectorXi rowPermVec  = Eigen::VectorXi::LinSpaced(xm,0,xm-1);
   for(int i=0;i<ym;i++)
   {
     int pos = rowIndexVec.coeffRef(R(i));
@@ -53,8 +119,8 @@ IGL_INLINE void igl::slice(
   }
   Eigen::PermutationMatrix<Eigen::Dynamic,Eigen::Dynamic,int> rowPerm(rowIndexVec);
 
-  Eigen::VectorXi colIndexVec = Eigen::VectorXi::LinSpaced(xn,0,xn);
-  Eigen::VectorXi colPermVec = Eigen::VectorXi::LinSpaced(xn,0,xn);
+  Eigen::VectorXi colIndexVec = Eigen::VectorXi::LinSpaced(xn,0,xn-1);
+  Eigen::VectorXi colPermVec =  Eigen::VectorXi::LinSpaced(xn,0,xn-1);
   for(int i=0;i<yn;i++)
   {
     int pos = colIndexVec.coeffRef(C(i));
@@ -69,6 +135,7 @@ IGL_INLINE void igl::slice(
 
   Eigen::SparseMatrix<T> M = (rowPerm * X);
   Y = (M * colPerm).block(0,0,ym,yn);
+#endif
 }
 
 template <typename Mat>
