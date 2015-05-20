@@ -383,14 +383,14 @@ localStep()
       typename DerivedV::Scalar diff = thetaMin*M_PI/180 - current_angle + 1e-6;
       rotateAroundBisector(u, v, diff, u1, v1);
 
-      if (computeAngle(u1, v1)<thetaMin*M_PI/180)
-      {
-        std::cerr<<"u = ["<<real(u)<<","<<imag(u)<< "]; v= ["<<real(v)<<","<<imag(v)<<"];"<<std::endl;
-        std::cerr<<"u1 = ["<<real(u1)<<","<<imag(u1)<< "]; v1= ["<<real(v1)<<","<<imag(v1)<<"];"<<std::endl;
-        std::cerr<<"current_angle = "<<current_angle<<std::endl;
-        std::cerr<<"aout = "<<computeAngle(u1, v1)<< "; theta= "<<thetaMin*M_PI/180<<";"<<std::endl;
-      }
-      assert(computeAngle(u1, v1)>=thetaMin*M_PI/180);
+//      if (computeAngle(u1, v1)<thetaMin*M_PI/180)
+//      {
+//        std::cerr<<"u = ["<<real(u)<<","<<imag(u)<< "]; v= ["<<real(v)<<","<<imag(v)<<"];"<<std::endl;
+//        std::cerr<<"u1 = ["<<real(u1)<<","<<imag(u1)<< "]; v1= ["<<real(v1)<<","<<imag(v1)<<"];"<<std::endl;
+//        std::cerr<<"current_angle = "<<current_angle<<std::endl;
+//        std::cerr<<"aout = "<<computeAngle(u1, v1)<< "; theta= "<<thetaMin*M_PI/180<<";"<<std::endl;
+//      }
+//      assert(computeAngle(u1, v1)>=thetaMin*M_PI/180);
 
 
       pvU.row(j) << real(u1),imag(u1);
@@ -699,7 +699,7 @@ solve(const Eigen::VectorXi &isConstrained,
     if (stoppingCriterion)
       break;
     lambda = lambda*lambdaMultFactor;
-    printf(" %d %.5g %d\n",iter, smoothnessValue, oob);
+//    printf(" %d %.5g %d\n",iter, smoothnessValue, oob);
 
   }
 

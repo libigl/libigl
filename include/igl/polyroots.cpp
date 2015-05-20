@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "polyroots.h"
+#include <Eigen/Eigenvalues>
 
 template <typename S, typename T>
 IGL_INLINE void igl::polyRoots(Eigen::Matrix<S, Eigen::Dynamic,1> &polyCoeff, //real or comples coefficients
@@ -32,4 +33,5 @@ IGL_INLINE void igl::polyRoots(Eigen::Matrix<S, Eigen::Dynamic,1> &polyCoeff, //
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template void igl::polyRoots<std::complex<double>, double>(Eigen::Matrix<std::complex<double>, -1, 1, 0, -1, 1>&, Eigen::Matrix<std::complex<double>, -1, 1, 0, -1, 1>&);
 #endif

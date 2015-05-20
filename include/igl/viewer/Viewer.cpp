@@ -264,7 +264,7 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
   {
     if (action == GLFW_PRESS)
       __viewer->key_down(key, modifier);
-    else
+    else if(action == GLFW_RELEASE)
       __viewer->key_up(key, modifier);
   }
 }
@@ -412,6 +412,18 @@ namespace igl
       if (callback_init(*this))
         return;
 
+    // Parse command line arguments
+    bool isLoaded = false;
+    for(int i=1;i<argc;i++)
+    {
+      if(strcmp(argv[i],"-s")==0) {
+        std::cout << "load scene file: " << argv[i+1] << std::endl;
+        isLoaded = load_scene(argv[i+1]);
+        if(isLoaded == false)
+          std::cout << "file not found: " << argv[i+1] << std::endl;
+      }
+    }
+
     init_plugins();
   }
 
@@ -426,25 +438,25 @@ namespace igl
     data.set_face_based(false);
 
     // C-style callbacks
-    callback_init         = 0;
-    callback_pre_draw     = 0;
-    callback_post_draw    = 0;
-    callback_mouse_down   = 0;
-    callback_mouse_up     = 0;
-    callback_mouse_move   = 0;
-    callback_mouse_scroll = 0;
-    callback_key_down     = 0;
-    callback_key_up       = 0;
+    callback_init         = nullptr;
+    callback_pre_draw     = nullptr;
+    callback_post_draw    = nullptr;
+    callback_mouse_down   = nullptr;
+    callback_mouse_up     = nullptr;
+    callback_mouse_move   = nullptr;
+    callback_mouse_scroll = nullptr;
+    callback_key_down     = nullptr;
+    callback_key_up       = nullptr;
 
-    callback_init_data          = 0;
-    callback_pre_draw_data      = 0;
-    callback_post_draw_data     = 0;
-    callback_mouse_down_data    = 0;
-    callback_mouse_up_data      = 0;
-    callback_mouse_move_data    = 0;
-    callback_mouse_scroll_data  = 0;
-    callback_key_down_data      = 0;
-    callback_key_up_data        = 0;
+    callback_init_data          = nullptr;
+    callback_pre_draw_data      = nullptr;
+    callback_post_draw_data     = nullptr;
+    callback_mouse_down_data    = nullptr;
+    callback_mouse_up_data      = nullptr;
+    callback_mouse_move_data    = nullptr;
+    callback_mouse_scroll_data  = nullptr;
+    callback_key_down_data      = nullptr;
+    callback_key_up_data        = nullptr;
 
   }
 
@@ -647,7 +659,7 @@ namespace igl
     else
       center = data.V.colwise().sum()/data.V.rows();
 
-    Eigen::Vector3f coord = igl::project(Eigen::Vector3f(center(0),center(1),center(2)), core.view * core.model, core.proj, core.viewport);
+    Eigen::Vector3f coord = igl::project(Eigen::Vector3f(center(0),center(1),center(2)), (core.view * core.model).eval(), core.proj, core.viewport);
     down_mouse_z = coord[2];
     down_rotation = core.trackball_angle;
 
@@ -730,8 +742,8 @@ namespace igl
         case TRANSLATE:
         {
           //translation
-          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, core.viewport[3] - mouse_y, down_mouse_z), core.view * core.model, core.proj, core.viewport);
-          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, core.viewport[3] - down_mouse_y, down_mouse_z), core.view * core.model, core.proj, core.viewport);
+          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, core.viewport[3] - mouse_y, down_mouse_z), (core.view * core.model).eval(), core.proj, core.viewport);
+          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, core.viewport[3] - down_mouse_y, down_mouse_z), (core.view * core.model).eval(), core.proj, core.viewport);
 
           Eigen::Vector3f diff = pos1 - pos0;
           core.model_translation = down_translation + Eigen::Vector3f(diff[0],diff[1],diff[2]);
@@ -814,7 +826,7 @@ namespace igl
 #ifdef ENABLE_SERIALIZATION
 
     igl::serialize(core,"Core",fname.c_str(),true);
-    igl::serialize(data,"Data",fname.c_str());
+    //igl::serialize(data,"Data",fname.c_str());
 
     for(unsigned int i = 0; i <plugins.size(); ++i)
       igl::serialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
@@ -825,15 +837,20 @@ namespace igl
   }
 
   IGL_INLINE bool Viewer::load_scene()
-  {
+  {    
     std::string fname = igl::file_dialog_open();
-    if (fname.length() == 0)
+    if(fname.length() == 0)
       return false;
 
+    return load_scene(fname);
+  }
+
+  IGL_INLINE bool Viewer::load_scene(std::string fname)
+  {
 #ifdef ENABLE_SERIALIZATION
 
     igl::deserialize(core,"Core",fname.c_str());
-    igl::deserialize(data,"Data",fname.c_str());
+    //igl::deserialize(data,"Data",fname.c_str());
 
     for(unsigned int i = 0; i <plugins.size(); ++i)
       igl::deserialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
@@ -954,9 +971,6 @@ namespace igl
     TwInit(TW_OPENGL_CORE, NULL);
     TwCopyStdStringToClientFunc(static_cast<TwCopyStdStringToClient>(::copy_str));
 
-
-    // Initialize IGL viewer
-    init();
     __viewer = this;
 
     // Register callbacks
@@ -991,6 +1005,9 @@ namespace igl
     }
 
     core.align_camera_center(data.V,data.F);
+    
+    // Initialize IGL viewer
+    init();
 
     // Rendering loop
     while (!glfwWindowShouldClose(window))

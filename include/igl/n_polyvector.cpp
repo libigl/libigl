@@ -15,6 +15,7 @@
 #include <igl/igl_inline.h>
 #include <Eigen/Sparse>
 
+#include <Eigen/Geometry>
 #include <iostream>
 
 namespace igl {
@@ -493,6 +494,11 @@ IGL_INLINE void igl::n_polyvector(const Eigen::MatrixXd &V,
   {
     isConstrained(b(i)) = 1;
     cfW.row(b(i)) << bc.row(i);
+  }
+  if (b.size() == F.rows())
+  {
+    output = cfW;
+    return;
   }
 
   int n = cfW.cols()/3;

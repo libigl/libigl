@@ -13,6 +13,9 @@
 #include <igl/jet.h>
 #include <igl/quad_planarity.h>
 #include <igl/planarize_quad_mesh.h>
+#include <igl/dot_row.h>
+#include <igl/local_basis.h>
+
 
 // Input mesh
 Eigen::MatrixXd V;
@@ -20,21 +23,6 @@ Eigen::MatrixXi F;
 
 // Face barycenters
 Eigen::MatrixXd B;
-
-
-// Quad mesh generated from smooth field
-Eigen::MatrixXd VQS;
-Eigen::MatrixXi FQS;
-Eigen::MatrixXi FQStri;
-Eigen::MatrixXd PQS0, PQS1, PQS2, PQS3;
-
-// Quad mesh generated from conjugate field
-Eigen::MatrixXd VQC;
-Eigen::MatrixXi FQC;
-Eigen::MatrixXi FQCtri;
-Eigen::MatrixXd VQCplan;
-Eigen::MatrixXd PQC0, PQC1, PQC2, PQC3;
-Eigen::MatrixXd PQCp0, PQCp1, PQCp2, PQCp3;
 
 // Scale for visualizing the fields
 double global_scale;
@@ -45,15 +33,18 @@ Eigen::MatrixXd bc;
 
 Eigen::MatrixXd smooth_pvf;
 Eigen::MatrixXd conjugate_pvf;
+Eigen::VectorXd conjugacy_s;
+Eigen::VectorXd conjugacy_c;
 
 igl::ConjugateFFSolverData<Eigen::MatrixXd, Eigen::MatrixXi> *csdata;
+
 
 bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
 
-  if (key <'1' || key >'3')
+  if (key <'1' || key >'5')
     return false;
 
   viewer.data.lines.resize(0,9);
@@ -61,7 +52,19 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
   for (unsigned i=0; i<b.size();++i)
       C.row(b(i)) << 1, 0, 0;
-  viewer.data.set_colors(C);
+
+  double maxC = std::max(conjugacy_c.maxCoeff(), conjugacy_s.maxCoeff());
+  double minC = std::min(conjugacy_c.minCoeff(), conjugacy_s.minCoeff());
+
+  Eigen::VectorXd valS = conjugacy_s;
+  // Eigen::VectorXd valS = (valS.array() - minC)/(maxC-minC);
+  // valS = 1 - valS.array();
+  Eigen::VectorXd valC = conjugacy_c;
+  // Eigen::VectorXd valC = (valC.array() - minC)/(maxC-minC);
+  // valC = 1 - valC.array();
+  MatrixXd CS, CC;
+  igl::jet(valS, 0, 0.004, CS);
+  igl::jet(valC, 0, 0.004, CC);
 
   if (key == '1')
   {
@@ -77,6 +80,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 
     viewer.data.add_edges(B - global_scale*F1_t, B + global_scale*F1_t , Eigen::RowVector3d(0,0,1));
     viewer.data.add_edges(B - global_scale*F2_t, B + global_scale*F2_t , Eigen::RowVector3d(0,0,1));
+    viewer.data.set_colors(C);
   }
 
   if (key == '2')
@@ -88,9 +92,16 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     viewer.data.add_edges(B - global_scale*smooth_pvf.block(0,3,F.rows(),3),
                       B + global_scale*smooth_pvf.block(0,3,F.rows(),3),
                       Eigen::RowVector3d(0,0,1));
+    viewer.data.set_colors(C);
   }
 
   if (key == '3')
+  {
+    // Interpolated result
+    viewer.data.set_colors(CS);
+  }
+
+  if (key == '4')
   {
     // Conjugate field
     viewer.data.add_edges(B - global_scale*conjugate_pvf.block(0,0,F.rows(),3),
@@ -99,6 +110,12 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     viewer.data.add_edges(B - global_scale*conjugate_pvf.block(0,3,F.rows(),3),
                       B + global_scale*conjugate_pvf.block(0,3,F.rows(),3),
                       Eigen::RowVector3d(0,0,1));
+    viewer.data.set_colors(C);
+  }
+  if (key == '5')
+  {
+    // Conjugate field
+    viewer.data.set_colors(CC);
   }
 
   return false;
@@ -111,9 +128,12 @@ int main(int argc, char *argv[])
 
   // Load a mesh in OBJ format
   igl::readOBJ("../shared/inspired_mesh.obj", V, F);
-
   // Compute face barycenters
   igl::barycenter(V, F, B);
+
+  // Local bases (needed for conjugacy)
+  Eigen::MatrixXd B1, B2, B3;
+  igl::local_basis(V, F, B1, B2, B3);
 
   // Compute scale for visualizing fields
   global_scale =  .4*igl::avg_edge_length(V, F);
@@ -129,6 +149,7 @@ int main(int argc, char *argv[])
   csdata = new igl::ConjugateFFSolverData<Eigen::MatrixXd,Eigen::MatrixXi>(V,F);
   conjugate_pvf = smooth_pvf;
 
+
   // Optimize the field
   int conjIter = 20;
   double lambdaOrtho = .1;
@@ -140,9 +161,23 @@ int main(int argc, char *argv[])
   for (unsigned i=0; i<b.size(); ++i)
     isConstrained(b(i)) = 1;
 
-  igl::conjugate_frame_fields(*csdata, isConstrained, conjugate_pvf, conjugate_pvf, conjIter, lambdaOrtho, lambdaInit, lambdaMultFactor, doHardConstraints,
-                              &lambdaOut);
+  igl::conjugate_frame_fields(*csdata, isConstrained, conjugate_pvf, conjugate_pvf, conjIter, lambdaOrtho, lambdaInit, lambdaMultFactor, doHardConstraints, &lambdaOut);
 
+  // local representations of field vectors
+  Eigen::Matrix<double, Eigen::Dynamic, 2> pvU, pvV;
+  pvU.resize(F.rows(),2); pvV.resize(F.rows(),2);
+  //smooth
+  const Eigen::MatrixXd &Us = smooth_pvf.leftCols(3);
+  const Eigen::MatrixXd &Vs = smooth_pvf.rightCols(3);
+  pvU << igl::dot_row(Us,B1), igl::dot_row(Us,B2);
+  pvV << igl::dot_row(Vs,B1), igl::dot_row(Vs,B2);
+  csdata->evaluateConjugacy(pvU, pvV, conjugacy_s);
+  //conjugate
+  const Eigen::MatrixXd &Uc = conjugate_pvf.leftCols(3);
+  const Eigen::MatrixXd &Vc = conjugate_pvf.rightCols(3);
+  pvU << igl::dot_row(Uc,B1), igl::dot_row(Uc,B2);
+  pvV << igl::dot_row(Vc,B1), igl::dot_row(Vc,B2);
+  csdata->evaluateConjugacy(pvU, pvV, conjugacy_c);
   // Launch the viewer
   igl::Viewer viewer;
   viewer.core.invert_normals = true;
@@ -150,6 +185,6 @@ int main(int argc, char *argv[])
   viewer.core.show_texture = false;
   viewer.data.set_mesh(V, F);
   viewer.callback_key_down = &key_down;
-  key_down(viewer,'3',0);
+  key_down(viewer,'1',0);
   viewer.launch();
 }

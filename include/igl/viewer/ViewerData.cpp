@@ -219,9 +219,9 @@ IGL_INLINE void igl::ViewerData::set_uv(const Eigen::MatrixXd& UV_V, const Eigen
 
 
 IGL_INLINE void igl::ViewerData::set_texture(
-  const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
-  const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
-  const Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B)
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B)
 {
   texture_R = R;
   texture_G = G;

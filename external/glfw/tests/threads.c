@@ -1,5 +1,5 @@
 //========================================================================
-// Multithreading test
+// Multi-threading test
 // Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
@@ -53,7 +53,7 @@ static void error_callback(int error, const char* description)
 
 static int thread_main(void* data)
 {
-    const Thread* thread = (const Thread*) data;
+    const Thread* thread = data;
 
     glfwMakeContextCurrent(thread->window);
     glfwSwapInterval(1);
@@ -123,6 +123,9 @@ int main(void)
                 running = GL_FALSE;
         }
     }
+
+    for (i = 0;  i < count;  i++)
+        glfwHideWindow(threads[i].window);
 
     for (i = 0;  i < count;  i++)
         thrd_join(threads[i].id, &result);

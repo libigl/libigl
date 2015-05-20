@@ -1,3 +1,4 @@
+// This file is part of libigl, a simple c++ geometry processing library.
 //
 // Copyright (C) 2014 Christian Schüller <schuellchr@gmail.com>
 //
@@ -968,3 +969,9 @@ namespace igl
     }
   }
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template specialization
+template void igl::serialize_xml<std::vector<float, std::allocator<float> > >(std::vector<float, std::allocator<float> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, bool, bool);
+template void igl::deserialize_xml<std::vector<float, std::allocator<float> > >(std::vector<float, std::allocator<float> >&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&);
+#endif

@@ -6,6 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "writePLY.h"
+#include <vector>
+
 #include <igl/ply.h>
 #include <vector>
 
@@ -37,7 +39,7 @@ IGL_INLINE bool igl::writePLY(
     int *verts;              /* vertex index list */
   } Face;
 
-  PlyProperty vert_props[] = 
+  PlyProperty vert_props[] =
   { /* list of property information for a vertex */
     {"x", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,x), 0, 0, 0, 0},
     {"y", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,y), 0, 0, 0, 0},
@@ -49,7 +51,7 @@ IGL_INLINE bool igl::writePLY(
     {"t", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,t), 0, 0, 0, 0},
   };
 
-  PlyProperty face_props[] = 
+  PlyProperty face_props[] =
   { /* list of property information for a face */
     {"vertex_indices", PLY_INT, PLY_INT, offsetof(Face,verts),
       1, PLY_UCHAR, PLY_UCHAR, offsetof(Face,nverts)},
@@ -91,7 +93,7 @@ IGL_INLINE bool igl::writePLY(
   {
     return false;
   }
-  PlyFile * ply = ply_write(fp, 2,elem_names, 
+  PlyFile * ply = ply_write(fp, 2,elem_names,
       (ascii ? PLY_ASCII : PLY_BINARY_LE));
   if(ply==NULL)
   {
@@ -102,7 +104,7 @@ IGL_INLINE bool igl::writePLY(
   plist.push_back(vert_props[0]);
   plist.push_back(vert_props[1]);
   plist.push_back(vert_props[2]);
-  if (has_normals) 
+  if (has_normals)
   {
     plist.push_back(vert_props[3]);
     plist.push_back(vert_props[4]);

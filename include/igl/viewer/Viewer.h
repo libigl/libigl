@@ -103,6 +103,7 @@ namespace igl
 
     // Scene IO
     IGL_INLINE bool load_scene();
+    IGL_INLINE bool load_scene(std::string fname);
     IGL_INLINE bool save_scene();
 
     // Draw everything
@@ -112,16 +113,16 @@ namespace igl
     IGL_INLINE void resize(int w,int h);
 
 
-    // C-style callbacks
-    bool (*callback_init)(Viewer& viewer);
-    bool (*callback_pre_draw)(Viewer& viewer);
-    bool (*callback_post_draw)(Viewer& viewer);
-    bool (*callback_mouse_down)(Viewer& viewer, int button, int modifier);
-    bool (*callback_mouse_up)(Viewer& viewer, int button, int modifier);
-    bool (*callback_mouse_move)(Viewer& viewer, int mouse_x, int mouse_y);
-    bool (*callback_mouse_scroll)(Viewer& viewer, float delta_y);
-    bool (*callback_key_down)(Viewer& viewer, unsigned char key, int modifiers);
-    bool (*callback_key_up)(Viewer& viewer, unsigned char key, int modifiers);
+    // C++-style functions
+    std::function<bool(Viewer& viewer)> callback_init;
+    std::function<bool(Viewer& viewer)> callback_pre_draw;
+    std::function<bool(Viewer& viewer)> callback_post_draw;
+    std::function<bool(Viewer& viewer, int button, int modifier)> callback_mouse_down;
+    std::function<bool(Viewer& viewer, int button, int modifier)> callback_mouse_up;
+    std::function<bool(Viewer& viewer, int mouse_x, int mouse_y)> callback_mouse_move;
+    std::function<bool(Viewer& viewer, float delta_y)> callback_mouse_scroll;
+    std::function<bool(Viewer& viewer, unsigned char key, int modifiers)> callback_key_down;
+    std::function<bool(Viewer& viewer, unsigned char key, int modifiers)> callback_key_up;
 
     // Pointers to per-callback data
     void* callback_init_data;

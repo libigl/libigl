@@ -41,18 +41,18 @@ SET(MATLAB_FOUND 0)
 IF(WIN32)
   # Search for a version of Matlab available, starting from the most modern one to older versions
   FOREACH(MATVER "7.14" "7.11" "7.10" "7.9" "7.8" "7.7" "7.6" "7.5" "7.4")
-    IF((NOT DEFINED MATLAB_ROOT) 
+    IF((NOT DEFINED MATLAB_ROOT)
         OR ("${MATLAB_ROOT}" STREQUAL "")
         OR ("${MATLAB_ROOT}" STREQUAL "/registry"))
       GET_FILENAME_COMPONENT(MATLAB_ROOT
         "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\${MATVER};MATLABROOT]"
         ABSOLUTE)
       SET(MATLAB_VERSION ${MATVER})
-    ENDIF((NOT DEFINED MATLAB_ROOT) 
+    ENDIF((NOT DEFINED MATLAB_ROOT)
       OR ("${MATLAB_ROOT}" STREQUAL "")
       OR ("${MATLAB_ROOT}" STREQUAL "/registry"))
   ENDFOREACH(MATVER)
-  
+
   # Directory name depending on whether the Windows architecture is 32
   # bit or 64 bit
   set(CMAKE_SIZEOF_VOID_P 8) # Note: For some weird reason this variable is undefined in my system...
@@ -61,7 +61,7 @@ IF(WIN32)
   ELSEIF(CMAKE_SIZEOF_VOID_P MATCHES "8")
     SET(WINDIR "win64")
   ELSE(CMAKE_SIZEOF_VOID_P MATCHES "4")
-    MESSAGE(FATAL_ERROR 
+    MESSAGE(FATAL_ERROR
       "CMAKE_SIZEOF_VOID_P (${CMAKE_SIZEOF_VOID_P}) doesn't indicate a valid platform")
   ENDIF(CMAKE_SIZEOF_VOID_P MATCHES "4")
 
@@ -113,7 +113,7 @@ IF(WIN32)
 
 ELSE(WIN32)
 
-  IF((NOT DEFINED MATLAB_ROOT) 
+  IF((NOT DEFINED MATLAB_ROOT)
       OR ("${MATLAB_ROOT}" STREQUAL ""))
     # get path to the Matlab root directory
     EXECUTE_PROCESS(
@@ -124,7 +124,7 @@ ELSE(WIN32)
       COMMAND xargs echo -n
       OUTPUT_VARIABLE MATLAB_ROOT
       )
-  ENDIF((NOT DEFINED MATLAB_ROOT) 
+  ENDIF((NOT DEFINED MATLAB_ROOT)
     OR ("${MATLAB_ROOT}" STREQUAL ""))
 
   # Check if this is a Mac
@@ -132,7 +132,7 @@ ELSE(WIN32)
 
     SET(LIBRARY_EXTENSION .dylib)
 
-    # If this is a Mac and the attempts to find MATLAB_ROOT have so far failed, 
+    # If this is a Mac and the attempts to find MATLAB_ROOT have so far failed,
     # we look in the applications folder
     IF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
 
@@ -141,7 +141,7 @@ ELSE(WIN32)
         IF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
           IF(EXISTS /Applications/MATLAB_${MATVER}.app)
             SET(MATLAB_ROOT /Applications/MATLAB_${MATVER}.app)
-    
+
           ENDIF(EXISTS /Applications/MATLAB_${MATVER}.app)
         ENDIF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
       ENDFOREACH(MATVER)

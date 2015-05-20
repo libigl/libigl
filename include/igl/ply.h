@@ -216,8 +216,8 @@ extern char *my_alloc();
 
 inline int get_native_binary_type2();
 
-inline PlyFile *ply_write(FILE *, int, char **, int);
-inline PlyFile *ply_open_for_writing(char *, int, char **, int, float *);
+inline PlyFile *ply_write(FILE *, int,const char **, int);
+inline PlyFile *ply_open_for_writing(char *, int,const char **, int, float *);
 inline void ply_describe_element(PlyFile *, const char *, int, int, PlyProperty *);
 inline void ply_describe_property(PlyFile *, const char *, PlyProperty *);
 inline void ply_element_count(PlyFile *, const char *, int);
@@ -324,7 +324,7 @@ properly to target OSs with binary files.
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include "ply.h"
+//#include "ply.h"
 
 const char *type_names[] = {
 "invalid",
@@ -502,7 +502,7 @@ Exit:
 inline PlyFile *ply_open_for_writing(
   const char *filename,
   int nelems,
-  char **elem_names,
+  const char **elem_names,
   int file_type,
   float *version
 )
@@ -1685,7 +1685,9 @@ Entry:
 
 inline void ply_free_other_elements (PlyOtherElems *other_elems)
 {
-  other_elems = other_elems;
+  // Alec: 
+  //other_elems = other_elems;
+  delete(other_elems);
 }
 
 

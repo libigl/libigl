@@ -4,7 +4,6 @@
 #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #define EIGEN_IM_MAD_AS_HELL_AND_IM_NOT_GOING_TO_TAKE_IT_ANYMORE
 #include <Eigen/Sparse>
-#include <Eigen/SparseExtra>
 using namespace Eigen;
 
 #include <cstdio>

@@ -74,7 +74,7 @@ IGL_INLINE bool igl::is_vertex_manifold(
         }
       }
     }
-    return one_ring_size == seen.size();
+    return one_ring_size == (FIndex) seen.size();
   };
 
   // Unreferenced vertices are considered non-manifold
@@ -87,3 +87,7 @@ IGL_INLINE bool igl::is_vertex_manifold(
   }
   return all;
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template bool igl::is_vertex_manifold<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+#endif

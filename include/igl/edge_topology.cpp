@@ -18,6 +18,13 @@ IGL_INLINE void igl::edge_topology(
                                    Eigen::MatrixXi& EF)
 {
   // Only needs to be edge-manifold
+  if (V.rows() ==0 || F.rows()==0)
+  {
+    EV = Eigen::MatrixXi::Constant(0,2,-1);
+    FE = Eigen::MatrixXi::Constant(0,3,-1);
+    EF = Eigen::MatrixXi::Constant(0,2,-1);
+    return;
+  }
   assert(igl::is_edge_manifold(V,F));
   std::vector<std::vector<int> > ETT;
   for(int f=0;f<F.rows();++f)
@@ -36,7 +43,7 @@ IGL_INLINE void igl::edge_topology(
 
   // count the number of edges (assume manifoldness)
   int En = 1; // the last is always counted
-  for(unsigned i=0;i<ETT.size()-1;++i)
+  for(int i=0;i<int(ETT.size())-1;++i)
     if (!((ETT[i][0] == ETT[i+1][0]) && (ETT[i][1] == ETT[i+1][1])))
       ++En;
 
@@ -75,7 +82,6 @@ IGL_INLINE void igl::edge_topology(
 
   // Sort the relation EF, accordingly to EV
   // the first one is the face on the left of the edge
-
   for(unsigned i=0; i<EF.rows(); ++i)
   {
     int fid = EF(i,0);
@@ -99,4 +105,6 @@ IGL_INLINE void igl::edge_topology(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template void igl::edge_topology<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1>&, Eigen::Matrix<int, -1, -1, 0, -1, -1>&, Eigen::Matrix<int, -1, -1, 0, -1, -1>&);
+template void igl::edge_topology<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1>&, Eigen::Matrix<int, -1, -1, 0, -1, -1>&, Eigen::Matrix<int, -1, -1, 0, -1, -1>&);
 #endif

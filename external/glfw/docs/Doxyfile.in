@@ -657,13 +657,16 @@ INPUT                  = @GLFW_INTERNAL_DOCS@                         \
                          @GLFW_SOURCE_DIR@/include/GLFW/glfw3native.h \
                          @GLFW_SOURCE_DIR@/docs/main.dox              \
                          @GLFW_SOURCE_DIR@/docs/news.dox              \
-                         @GLFW_SOURCE_DIR@/docs/quick.dox             \
                          @GLFW_SOURCE_DIR@/docs/moving.dox            \
+                         @GLFW_SOURCE_DIR@/docs/quick.dox             \
                          @GLFW_SOURCE_DIR@/docs/compile.dox           \
                          @GLFW_SOURCE_DIR@/docs/build.dox             \
+                         @GLFW_SOURCE_DIR@/docs/intro.dox             \
                          @GLFW_SOURCE_DIR@/docs/context.dox           \
                          @GLFW_SOURCE_DIR@/docs/monitor.dox           \
                          @GLFW_SOURCE_DIR@/docs/window.dox            \
+                         @GLFW_SOURCE_DIR@/docs/input.dox             \
+                         @GLFW_SOURCE_DIR@/docs/rift.dox              \
                          @GLFW_SOURCE_DIR@/docs/compat.dox
 
 # This tag can be used to specify the character encoding of the source files
@@ -934,7 +937,7 @@ HTML_EXTRA_STYLESHEET  = @GLFW_SOURCE_DIR@/docs/extra.css
 # files. In the HTML_STYLESHEET file, use the file name only. Also note that
 # the files will be copied as-is; there are no commands or markers available.
 
-HTML_EXTRA_FILES       =
+HTML_EXTRA_FILES       = @GLFW_SOURCE_DIR@/docs/spaces.svg
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output.
 # Doxygen will adjust the colors in the style sheet and background images
@@ -1466,18 +1469,6 @@ GENERATE_XML           = NO
 # put in front of it. If left blank `xml' will be used as the default path.
 
 XML_OUTPUT             = xml
-
-# The XML_SCHEMA tag can be used to specify an XML schema,
-# which can be used by a validating XML parser to check the
-# syntax of the XML files.
-
-XML_SCHEMA             =
-
-# The XML_DTD tag can be used to specify an XML DTD,
-# which can be used by a validating XML parser to check the
-# syntax of the XML files.
-
-XML_DTD                =
 
 # If the XML_PROGRAMLISTING tag is set to YES Doxygen will
 # dump the program listings (including syntax highlighting

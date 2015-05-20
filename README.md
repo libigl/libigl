@@ -95,6 +95,28 @@ caution.
 You can keep up to date by cloning a read-only copy of our GitHub
 [repository](https://github.com/libigl).
 
+## Known Issues
+We really heavily on Eigen. Nearly all inputs and outputs are Eigen matrices of
+some kind. However, we currently _only_ support Eigen's default column-major
+ordering. That means, we **do not** expect our code to work for matrices using
+the `Eigen::RowMajor` flag. If you can, change definitions like:
+
+```cpp
+Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> A;
+```
+
+to
+
+```cpp
+Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::ColMajor> A;
+// or simply
+Eigen::Matrix<double, Eigen::Dynamic, 3> A;
+```
+
+We hope to fix this, or at least identify which functions are safe (many of
+them probably work just fine). This requires setting up unit testing, which is
+a major _todo_ for our development.
+
 ## How to contribute
 
 If you are interested in joining development, please fork the repository and

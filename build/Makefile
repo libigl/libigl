@@ -3,6 +3,7 @@ all: lib extras examples
 framework: lib extras lib/igl.framework/
 
 # Shared flags etc.
+CFLAGS += -DIGL_STATIC_LIBRARY
 include Makefile.conf
 $(info Hello, $(IGL_USERNAME)!)
 
@@ -31,6 +32,9 @@ ifeq ($(IGL_WITH_CGAL),1)
 endif
 ifeq ($(IGL_WITH_EMBREE),1)
 	EXTRAS += embree
+endif
+ifeq ($(IGL_WITH_COMISO),1)
+	EXTRAS += comiso
 endif
 ifeq ($(IGL_WITH_MATLAB),1)
 	EXTRAS += matlab
@@ -69,7 +73,7 @@ extras:
 
 
 #############################################################################
-# SOURCE 
+# SOURCE
 #############################################################################
 CPP_FILES=$(wildcard ../include/igl/*.cpp)
 H_FILES=$(wildcard ../include/igl/*.h)
@@ -82,25 +86,11 @@ INC+=-I../include/
 # DEPENDENCIES
 #############################################################################
 INC+=$(OPENGL_INC)
-
-# Eigen dependency
-ifndef EIGEN3_INC
-	EIGEN3_INC=-I$(DEFAULT_PREFIX)/include/eigen3 -I$(DEFAULT_PREFIX)/include/eigen3/unsupported
-endif
 INC+=$(EIGEN3_INC)
-
-# AntTweakBar dependency
-#ANTTWEAKBAR_INC=-I$(DEFAULT_PREFIX)/include
-ANTTWEAKBAR_INC=-I../external/AntTweakBar/include
 INC+=$(ANTTWEAKBAR_INC)
 
-## OpenGL dependency
-#LIB+=-framework OpenGL
-#LIB+=-framework GLUT
-#LIB+=-framework AppKit
-
 .PHONY: obj
-obj: 
+obj:
 	mkdir -p obj
 
 ../lib/libigl.a: obj $(OBJ_FILES)

@@ -19,14 +19,14 @@ namespace igl
   // Outputs:
   //   obj*  pointers to 3D objects' x, y, and z coordinates respectively
   // Returns return value of gluUnProject call
-  IGL_INLINE int unproject_to_zero_plane(
+  IGL_INLINE void unproject_to_zero_plane(
     const double winX,
     const double winY,
     double* objX,
     double* objY,
     double* objZ);
   template <typename Derivedwin, typename Derivedobj>
-  IGL_INLINE int unproject_to_zero_plane(
+  IGL_INLINE void unproject_to_zero_plane(
     const Eigen::PlainObjectBase<Derivedwin> & win,
     Eigen::PlainObjectBase<Derivedobj> & obj);
 }

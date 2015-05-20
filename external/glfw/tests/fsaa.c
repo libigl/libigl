@@ -1,5 +1,5 @@
 //========================================================================
-// Fullscreen anti-aliasing test
+// Full screen anti-aliasing test
 // Copyright (c) Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
@@ -29,9 +29,8 @@
 //
 //========================================================================
 
-#define GLFW_INCLUDE_GLU
+#define GLFW_INCLUDE_GLEXT
 #include <GLFW/glfw3.h>
-#include <GL/glext.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -98,6 +97,7 @@ int main(int argc, char** argv)
         printf("Requesting that FSAA not be available\n");
 
     glfwWindowHint(GLFW_SAMPLES, samples);
+    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 
     window = glfwCreateWindow(800, 400, "Aliasing Detector", NULL, NULL);
     if (!window)
@@ -114,9 +114,13 @@ int main(int argc, char** argv)
 
     if (!glfwExtensionSupported("GL_ARB_multisample"))
     {
+        printf("GL_ARB_multisample extension not supported\n");
+
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
+
+    glfwShowWindow(window);
 
     glGetIntegerv(GL_SAMPLES_ARB, &samples);
     if (samples)
@@ -125,7 +129,7 @@ int main(int argc, char** argv)
         printf("Context reports FSAA is unavailable\n");
 
     glMatrixMode(GL_PROJECTION);
-    gluOrtho2D(0.f, 1.f, 0.f, 0.5f);
+    glOrtho(0.f, 1.f, 0.f, 0.5f, 0.f, 1.f);
     glMatrixMode(GL_MODELVIEW);
 
     while (!glfwWindowShouldClose(window))

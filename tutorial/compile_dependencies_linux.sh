@@ -23,6 +23,7 @@ cd ../embree/
 rm -fr build
 mkdir build
 cd build
+cp ../ispc/ispc-v1.8.1-linux ispc
 cmake -DCMAKE_BUILD_TYPE=Release ../
 make
 
