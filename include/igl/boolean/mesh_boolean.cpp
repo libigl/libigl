@@ -169,7 +169,7 @@ IGL_INLINE void igl::mesh_boolean(
     return;
   }
   MatrixX3S N,CN;
-  per_face_normals(V,F,N);
+  per_face_normals_stable(V,F,N);
   CN.resize(CF.rows(),3);
   for(size_t f = 0;f<(size_t)CN.rows();f++)
   {
@@ -233,16 +233,55 @@ IGL_INLINE void igl::mesh_boolean(
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"clean..."<<endl;
 #endif
-  // remove duplicates: cancel out in all cases? assertion in others?
+  // Deal with duplicate faces
   {
-    MatrixXi oldG = G;
-    VectorXi IA,_1;
-    unique_simplices(oldG,G,IA,_1);
-    assert(IA.rows() == G.rows());
-    J.resize(IA.rows(),1);
-    for(size_t j = 0;j<(size_t)J.size();j++)
+    VectorXi IA,IC;
+    MatrixX3I uG;
+    unique_simplices(G,uG,IA,IC);
+    assert(IA.rows() == uG.rows());
+    // faces ontop of each unique face
+    vector<vector<Index> > uG2G(uG.rows());
+    // signed counts
+    VectorXi counts = VectorXi::Zero(uG.rows());
+    // loop over all faces
+    for(Index g = 0;g<gm;g++)
     {
-      J(j) = GJ(IA(j));
+      const int ug = IC(g);
+      assert(ug < uG2G.size());
+      uG2G[ug].push_back(g);
+      // is uG(g,:) just a rotated version of G(g,:) ?
+      const bool consistent = 
+        (G(g,0) == uG(ug,0) && G(g,1) == uG(ug,1) && G(g,2) == uG(ug,2)) ||
+        (G(g,0) == uG(ug,1) && G(g,1) == uG(ug,2) && G(g,2) == uG(ug,0)) ||
+        (G(g,0) == uG(ug,2) && G(g,1) == uG(ug,0) && G(g,2) == uG(ug,1));
+      counts(ug) += consistent ? 1 : -1;
+    }
+    MatrixX3I oldG = G;
+    // Faces of output vG[i] = j means ith face of output should be jth face in
+    // oldG
+    vG.clear();
+    for(size_t ug = 0;ug < uG2G.size();ug++)
+    {
+      // if signed occurrences is zero or ±two then keep none
+      // else if signed occurrences is ±one then keep just one facet
+      if(abs(counts(ug)) == 1)
+      {
+        assert(uG2G.size() > 0);
+        vG.push_back(uG2G[ug][0]);
+      }
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+      else
+      {
+        cout<<"Skipping "<<uG2G.size()<<" facets..."<<endl;
+      }
+#endif
+    }
+    G.resize(vG.size(),3);
+    J.resize(vG.size());
+    for(size_t g = 0;g<vG.size();g++)
+    {
+      G.row(g) = oldG.row(vG[g]);
+      J(g) = GJ(vG[g]);
     }
   }
   // remove unreferenced vertices

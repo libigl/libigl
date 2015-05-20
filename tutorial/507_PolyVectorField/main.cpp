@@ -25,6 +25,32 @@ double global_scale;
 // Random length factor
 double rand_factor = 5;
 
+Eigen::VectorXi samples;
+
+void readSamples(const std::string &fname, Eigen::VectorXi &samples)
+{
+    int numSamples;
+    FILE *fp = fopen(fname.c_str(),"r");
+    if (fscanf(fp, "%d", &numSamples)!=1)
+    {
+      fclose(fp);
+      return;
+    }
+    samples.resize(numSamples,1);
+    int vali;
+    for (int i =0; i<numSamples; ++i)
+    {
+      if (fscanf(fp, "%d", &vali)!=1 || vali<0)
+      {
+        fclose(fp);
+        samples.resize(0,1);
+        return;
+      }
+      samples[i]=vali;
+    }
+    fclose(fp);
+
+}
 // Create a random set of tangent vectors
 Eigen::VectorXd random_constraints(const
                                    Eigen::VectorXd& b1, const
@@ -56,8 +82,8 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   // Interpolate
   cerr << "Interpolating " << num * 2 << "-PolyVector field" << endl;
 
-  VectorXi b(3);
-  b << 1511, 603, 506;
+  VectorXi b(4);
+  b << 4550, 2321, 5413, 5350;
 
   MatrixXd bc(b.size(),num*3);
   for (unsigned i=0; i<b.size(); ++i)
@@ -78,13 +104,19 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 
   for (int n=0; n<num; ++n)
   {
-    const MatrixXd &VF = pvf.block(0,n*3,F.rows(),3);
+    MatrixXd VF = MatrixXd::Zero(F.rows(),3);
+    for (unsigned i=0; i<b.size(); ++i)
+      VF.row(b[i]) = bc.row(i);
+
+    for (int i=0; i<samples.rows(); ++i)
+      VF.row(samples[i]) = pvf.block(samples[i],n*3,1,3);
+    // MatrixXd VF = pvf.block(0,n*3,F.rows(),3);
+
     VectorXd c = VF.rowwise().norm();
     MatrixXd C2;
     igl::jet(c,1,1+rand_factor,C2);
     viewer.data.add_edges(B - global_scale*VF, B + global_scale*VF , C2);
   }
-
 
   return false;
 }
@@ -94,7 +126,8 @@ int main(int argc, char *argv[])
   using namespace Eigen;
   using namespace std;
   // Load a mesh in OBJ format
-  igl::readOBJ("../shared/snail.obj", V, F);
+  igl::readOBJ("../shared/lilium.obj", V, F);
+  readSamples("../shared/lilium.samples.0.2", samples);
 
   // Compute local basis for faces
   igl::local_basis(V,F,B1,B2,B3);
@@ -103,7 +136,7 @@ int main(int argc, char *argv[])
   igl::barycenter(V, F, B);
 
   // Compute scale for visualizing fields
-  global_scale =  .1*igl::avg_edge_length(V, F);
+  global_scale =  .2*igl::avg_edge_length(V, F);
 
   // Make the example deterministic
   srand(0);
@@ -112,6 +145,9 @@ int main(int argc, char *argv[])
   viewer.data.set_mesh(V, F);
   viewer.callback_key_down = &key_down;
   viewer.core.show_lines = false;
-  key_down(viewer,'3',0);
+  viewer.core.line_width = 10000;// this does not work, why?
+  key_down(viewer,'2',0);
+
+
   viewer.launch();
 }

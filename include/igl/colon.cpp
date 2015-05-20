@@ -16,44 +16,8 @@ IGL_INLINE void igl::colon(
   const H hi, 
   Eigen::Matrix<T,Eigen::Dynamic,1> & I)
 {
-  if(low < hi)
-  {
-    if(step < 0)
-    {
-      I.resize(0);
-      //fprintf(stderr,"WARNING: colon() low(%g)<hi(%g) but step(%g)<0\n",
-      //  (double)low,
-      //  (double)hi,
-      //  (double)step);
-      //assert(false && "low<hi but step<0");
-      return;
-    }
-  }
-  if(low > hi)
-  {
-    if(step > 0)
-    {
-      I.resize(0);
-      //fprintf(stderr,"Error: colon() low(%g)>hi(%g) but step(%g)>0\n",
-      //  (double)low,
-      //  (double)hi,
-      //  (double)step);
-      //assert(false && "low>hi but step<0");
-      return;
-    }
-  }
-  // resize output
-  int n = std::floor(double((hi-low)/step))+1;
-  I.resize(n);
-  int i = 0;
-  T v = (T)low;
-  while((low==hi && (H)v==hi) || (low<hi && (H)v<=hi) || (low>hi && (H)v>=hi))
-  {
-    I(i) = v;
-    v = v + (T)step;
-    i++;
-  }
-  assert(i==n);
+  const int size = ((hi-low)/step)+1;
+  I = Eigen::Matrix<T,Eigen::Dynamic,1>::LinSpaced(size,low,low+step*(size-1));
 }
 
 template <typename L,typename H,typename T>

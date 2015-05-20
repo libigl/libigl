@@ -16,11 +16,16 @@
 #ifndef IGL_EMBREE_INTERSECTOR_H
 #define IGL_EMBREE_INTERSECTOR_H
 
+#include <Eigen/Geometry>
 #include <Eigen/Core>
+#include <Eigen/Geometry>
+
 #include <vector>
 #include <embree2/rtcore.h>
 #include <embree2/rtcore_ray.h>
+#include <iostream>
 #include "Hit.h"
+#include <iostream>
 
 namespace igl
 {
@@ -451,9 +456,9 @@ igl::EmbreeIntersector
         // push min_t a bit more
         //double t_push = pow(2.0,self_hits-4)*(hit.t<eps?eps:hit.t);
         double t_push = pow(2.0,self_hits)*eps;
-        #ifdef IGL_VERBOSE
-        std::cerr<<"  t_push: "<<t_push<<endl;
-        #endif
+#ifdef IGL_VERBOSE
+        std::cerr << "  t_push: "<<t_push<<endl;
+#endif
         //o = o+t_push*d;
         min_t += t_push;
         self_hits++;
@@ -468,7 +473,7 @@ igl::EmbreeIntersector
         hit.t = ray.tfar;
         hits.push_back(hit);
 #ifdef IGL_VERBOSE
-        std::cerr<<"  t: "<<hit.t<<endl;
+        std::cerr << "  t: "<<hit.t<<endl;
 #endif
         // Instead of moving origin, just change min_t. That way calculations
         // all use exactly same origin values

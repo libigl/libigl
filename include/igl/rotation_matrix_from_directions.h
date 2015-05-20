@@ -14,7 +14,7 @@
 
 namespace igl {
   /// Given 2 vectors centered on origin calculate the rotation matrix from first to the second
-  
+
   // Inputs:
   //   v0, v1         the two #3 by 1 vectors
   //   normalized     boolean, if false, then the vectors are normalized prior to the calculation
@@ -22,9 +22,9 @@ namespace igl {
   //                  3 by 3 rotation matrix that takes v0 to v1
   //
   template <typename Scalar>
-  IGL_INLINE Eigen::Matrix<Scalar, 3, 3> rotation_matrix_from_directions(Eigen::Matrix<Scalar, 3, 1> v0,
-                                                                     Eigen::Matrix<Scalar, 3, 1> v1,
-                                                                     bool normalized=true);
+  IGL_INLINE Eigen::Matrix<Scalar, 3, 3> rotation_matrix_from_directions(const Eigen::Matrix<Scalar, 3, 1> v0,
+                                                                     const Eigen::Matrix<Scalar, 3, 1> v1,
+                                                                     const bool normalized=true);
 }
 
 

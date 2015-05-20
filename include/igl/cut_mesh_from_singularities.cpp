@@ -8,6 +8,9 @@
 
 #include "cut_mesh_from_singularities.h"
 
+#include <igl/triangle_triangle_adjacency.h>
+#include <igl/edge_topology.h>
+
 #include <vector>
 #include <deque>
 
@@ -17,7 +20,6 @@ namespace igl {
   typename DerivedV,
   typename DerivedF,
   typename DerivedM,
-  typename DerivedS,
   typename DerivedO
   >
   class MeshCutter
@@ -25,14 +27,13 @@ namespace igl {
   protected:
     const Eigen::PlainObjectBase<DerivedV> &V;
     const Eigen::PlainObjectBase<DerivedF> &F;
-    const Eigen::PlainObjectBase<DerivedS> &Handle_Singular;
-    const Eigen::PlainObjectBase<DerivedS> &Handle_SingularDegree;
     const Eigen::PlainObjectBase<DerivedM> &Handle_MMatch;
 
     Eigen::VectorXi F_visited;
     Eigen::PlainObjectBase<DerivedF> TT;
     Eigen::PlainObjectBase<DerivedF> TTi;
 
+    Eigen::MatrixXi E, F2E, E2F;
   protected:
 
     inline bool IsRotSeam(const int f0,const int edge)
@@ -76,17 +77,32 @@ namespace igl {
     inline void Retract(Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
     {
       std::vector<int> e(V.rows(),0); // number of edges per vert
-
-      for (unsigned f=0; f<F.rows(); f++)
+      // for (unsigned f=0; f<F.rows(); f++)
+      // {
+      //   for (int s = 0; s<3; s++)
+      //   {
+      //     if (Handle_Seams(f,s))
+      //       if (TT(f,s)<=f)
+      //       {
+      //         e[ F(f,s) ] ++;
+      //         e[ F(f,(s+1)%3) ] ++;
+      //       }
+      //   }
+      // }
+      for (int ei=0; ei<E.rows(); ++ei)
       {
-        for (int s = 0; s<3; s++)
+        //only need one face
+        int f0 = E2F(ei,0);
+        if (f0==-1)
+          f0 = E2F(ei,1);
+        int k=0;
+        for (k=0; k<3; ++k)
+          if (F2E(f0,k)==ei)
+            break;
+        if (Handle_Seams(f0,k))
         {
-          if (Handle_Seams(f,s))
-            if (TT(f,s)<=f)
-            {
-              e[ F(f,s) ] ++;
-              e[ F(f,(s+1)%3) ] ++;
-            }
+          e[ F(f0,k) ] ++;
+          e[ F(f0,(k+1)%3) ] ++;
         }
       }
 
@@ -126,16 +142,13 @@ namespace igl {
 
     inline MeshCutter(const Eigen::PlainObjectBase<DerivedV> &V_,
                const Eigen::PlainObjectBase<DerivedF> &F_,
-               const Eigen::PlainObjectBase<DerivedM> &Handle_MMatch_,
-               const Eigen::PlainObjectBase<DerivedS> &Handle_Singular_,
-               const Eigen::PlainObjectBase<DerivedS> &Handle_SingularDegree_):
+               const Eigen::PlainObjectBase<DerivedM> &Handle_MMatch_):
     V(V_),
     F(F_),
-    Handle_MMatch(Handle_MMatch_),
-    Handle_Singular(Handle_Singular_),
-    Handle_SingularDegree(Handle_SingularDegree_)
+    Handle_MMatch(Handle_MMatch_)
     {
       triangle_triangle_adjacency(V,F,TT,TTi);
+      edge_topology(V,F,E,F2E,E2F);
     };
 
     inline void cut(Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
@@ -170,19 +183,19 @@ namespace igl {
 template <typename DerivedV,
   typename DerivedF,
   typename DerivedM,
-  typename DerivedS,
   typename DerivedO>
 IGL_INLINE void igl::cut_mesh_from_singularities(const Eigen::PlainObjectBase<DerivedV> &V,
                                                  const Eigen::PlainObjectBase<DerivedF> &F,
                                                  const Eigen::PlainObjectBase<DerivedM> &Handle_MMatch,
-                                                 const Eigen::PlainObjectBase<DerivedS> &isSingularity,
-                                                 const Eigen::PlainObjectBase<DerivedS> &singularityIndex,
                                                  Eigen::PlainObjectBase<DerivedO> &Handle_Seams)
 {
-  igl::MeshCutter< DerivedV, DerivedF, DerivedM, DerivedS, DerivedO> mc(V, F, Handle_MMatch, isSingularity, singularityIndex);
+  igl::MeshCutter< DerivedV, DerivedF, DerivedM, DerivedO> mc(V, F, Handle_MMatch);
   mc.cut(Handle_Seams);
 
 }
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template void igl::cut_mesh_from_singularities<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::cut_mesh_from_singularities<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::cut_mesh_from_singularities<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
 #endif

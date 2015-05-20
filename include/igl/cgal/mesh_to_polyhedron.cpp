@@ -8,6 +8,8 @@
 #include "mesh_to_polyhedron.h"
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/Polyhedron_incremental_builder_3.h>
+
+
 template <typename Polyhedron>
 IGL_INLINE bool igl::mesh_to_polyhedron(
   const Eigen::MatrixXd & V,
@@ -43,3 +45,10 @@ IGL_INLINE bool igl::mesh_to_polyhedron(
   B.end_surface();
   return poly.is_valid();
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instanciation
+#include <CGAL/Simple_cartesian.h>
+#include <CGAL/Polyhedron_items_with_id_3.h>
+template bool igl::mesh_to_polyhedron<CGAL::Polyhedron_3<CGAL::Simple_cartesian<double>, CGAL::Polyhedron_items_with_id_3, CGAL::HalfedgeDS_default, std::allocator<int> > >(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, CGAL::Polyhedron_3<CGAL::Simple_cartesian<double>, CGAL::Polyhedron_items_with_id_3, CGAL::HalfedgeDS_default, std::allocator<int> >&);
+#endif

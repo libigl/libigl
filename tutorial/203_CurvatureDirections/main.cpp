@@ -1,11 +1,11 @@
-#include <igl/readOFF.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/viewer/Viewer.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/per_face_normals.h>
 #include <igl/per_corner_normals.h>
 #include <igl/avg_edge_length.h>
 #include <igl/principal_curvature.h>
-#include <igl/jet.h>
+#include <igl/parula.h>
 #include <igl/cotmatrix.h>
 #include <igl/massmatrix.h>
 #include <igl/invert_diag.h>
@@ -16,8 +16,13 @@ Eigen::MatrixXi F;
 int main(int argc, char *argv[])
 {
   using namespace Eigen;
+  std::string filename = "../shared/fertility.off";
+  if(argc>=1)
+  {
+    filename = argv[1];
+  }
   // Load a mesh in OFF format
-  igl::readOFF("../shared/fertility.off", V, F);
+  igl::read_triangle_mesh(filename, V, F);
 
   // Alternative discrete mean curvature
   MatrixXd HN;
@@ -43,14 +48,14 @@ int main(int argc, char *argv[])
 
   // Compute pseudocolor
   MatrixXd C;
-  igl::jet(H,true,C);
+  igl::parula(H,true,C);
   viewer.data.set_colors(C);
 
   // Average edge length for sizing
   const double avg = igl::avg_edge_length(V,F);
 
   // Draw a blue segment parallel to the minimal curvature direction
-  const RowVector3d red(1,0,0),blue(0,0,1);
+  const RowVector3d red(0.8,0.2,0.2),blue(0.2,0.2,0.8);
   viewer.data.add_edges(V + PD1*avg, V - PD1*avg, blue);
 
   // Draw a red segment parallel to the maximal curvature direction

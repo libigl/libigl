@@ -16,6 +16,7 @@
 #define IGL_VIEWER_PLUGIN_H
 #include <string>
 #include <igl/igl_inline.h>
+#include <vector>
 
 namespace igl
 {
@@ -42,7 +43,7 @@ public:
   virtual ~ViewerPlugin(){}
 
   // This function is called when the viewer is initialized (no mesh will be loaded at this stage)
-  IGL_INLINE virtual void init(igl::Viewer *_viewer)
+  IGL_INLINE virtual void init(Viewer *_viewer)
   {
     viewer = _viewer;
   }

@@ -12,6 +12,7 @@
 #include "report_gl_error.h"
 
 #include "OpenGL_convenience.h"
+#include <iostream>
 
 IGL_INLINE int igl::project(
   const double objX,
@@ -115,12 +116,14 @@ IGL_INLINE Eigen::PlainObjectBase<Derivedobj> igl::project(
 #endif
 #endif
 
-IGL_INLINE Eigen::Vector3f igl::project(const Eigen::Vector3f&  obj,
-                        const Eigen::Matrix4f& model,
-                        const Eigen::Matrix4f& proj,
-                        const Eigen::Vector4f&  viewport)
+template <typename Scalar>
+Eigen::Matrix<Scalar,3,1> igl::project(
+  const    Eigen::Matrix<Scalar,3,1>&  obj,
+  const    Eigen::Matrix<Scalar,4,4>& model,
+  const    Eigen::Matrix<Scalar,4,4>& proj,
+  const    Eigen::Matrix<Scalar,4,1>&  viewport)
 {
-  Eigen::Vector4f tmp;
+  Eigen::Matrix<Scalar,4,1> tmp;
   tmp << obj,1;
 
   tmp = model * tmp;
@@ -137,10 +140,9 @@ IGL_INLINE Eigen::Vector3f igl::project(const Eigen::Vector3f&  obj,
 
 
 #ifdef IGL_STATIC_LIBRARY
-
+// Explicit template instanciations
 #ifndef IGL_NO_OPENGL
 #ifndef IGL_OPENGL_4
-// Explicit template instanciations
 template int igl::project<Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
 template Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > igl::project<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&);
 template int igl::project<Eigen::Matrix<float, 3, 1, 0, 3, 1>, Eigen::Matrix<float, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> >&);
@@ -151,6 +153,7 @@ template Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > igl::proj
 template Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > igl::project<Eigen::Matrix<double, 1, 2, 1, 1, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > const&);
 template Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > igl::project<Eigen::Matrix<double, 2, 1, 0, 2, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&);
 #endif
+template Eigen::Matrix<double, 3, 1, 0, 3, 1> igl::project<double>(Eigen::Matrix<double, 3, 1, 0, 3, 1> const&, Eigen::Matrix<double, 4, 4, 0, 4, 4> const&, Eigen::Matrix<double, 4, 4, 0, 4, 4> const&, Eigen::Matrix<double, 4, 1, 0, 4, 1> const&);
 #endif
-
+template Eigen::Matrix<float, 3, 1, 0, 3, 1> igl::project<float>(Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&);
 #endif

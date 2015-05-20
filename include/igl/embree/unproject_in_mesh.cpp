@@ -52,16 +52,17 @@ IGL_INLINE int igl::unproject_in_mesh(
     case 0:
       break;
     case 1:
-    {
+    default:
+  {
       obj = (s + dir*hits[0].t).cast<typename Derivedobj::Scalar>();
       break;
     }
-    case 2:
-    default:
-    {
-      obj = 0.5*((s + dir*hits[0].t) + (s + dir*hits[1].t)).cast<typename Derivedobj::Scalar>();
-      break;
-    }
+    // case 2:
+    // default:
+    // {
+    //   obj = 0.5*((s + dir*hits[0].t) + (s + dir*hits[1].t)).cast<typename Derivedobj::Scalar>();
+    //   break;
+    // }
   }
   return hits.size();
 }
@@ -98,16 +99,17 @@ IGL_INLINE int igl::unproject_in_mesh(
     case 0:
       break;
     case 1:
+    default:
     {
       obj = (s + dir*hits[0].t).cast<typename Derivedobj::Scalar>();
       break;
     }
-    case 2:
-    default:
-    {
-      obj = 0.5*((s + dir*hits[0].t) + (s + dir*hits[1].t)).cast<typename Derivedobj::Scalar>();
-      break;
-    }
+    // case 2:
+    // default:
+    // {
+    //   obj = 0.5*((s + dir*hits[0].t) + (s + dir*hits[1].t)).cast<typename Derivedobj::Scalar>();
+    //   break;
+    // }
   }
   return hits.size();
 }
@@ -119,4 +121,5 @@ template int igl::unproject_in_mesh<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(doubl
 template int igl::unproject_in_mesh<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(double, double, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
 #  endif
 template int igl::unproject_in_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, std::vector<igl::Hit, std::allocator<igl::Hit> >&);
+template int igl::unproject_in_mesh<Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&, std::vector<igl::Hit, std::allocator<igl::Hit> >&);
 #endif

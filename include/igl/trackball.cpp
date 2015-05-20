@@ -22,7 +22,8 @@
 template <typename Q_type>
 static IGL_INLINE Q_type _QuatD(double w, double h)
 {
-  return (Q_type)(abs(w) < abs(h) ? abs(w) : abs(h)) - 4;
+  using namespace std;
+  return (Q_type)(std::abs(w) < std::abs(h) ? std::abs(w) : std::abs(h)) - 4;
 }
 template <typename Q_type>
 static IGL_INLINE Q_type _QuatIX(double x, double w, double h)

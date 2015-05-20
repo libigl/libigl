@@ -52,7 +52,7 @@ IGL_INLINE void igl::find(
   Eigen::PlainObjectBase<DerivedJ> & J,
   Eigen::PlainObjectBase<DerivedV> & V)
 {
-  const int nnz = X.template cast<bool>().template cast<int>().sum();
+  const int nnz = X.count();
   I.resize(nnz,1);
   J.resize(nnz,1);
   V.resize(nnz,1);
@@ -67,6 +67,31 @@ IGL_INLINE void igl::find(
           I(k) = i;
           J(k) = j;
           V(k) = X(i,j);
+          k++;
+        }
+      }
+    }
+  }
+}
+
+template <
+  typename DerivedX,
+  typename DerivedI>
+IGL_INLINE void igl::find(
+  const Eigen::PlainObjectBase<DerivedX>& X,
+  Eigen::PlainObjectBase<DerivedI> & I)
+{
+  const int nnz = X.count();
+  I.resize(nnz,1);
+  {
+    int k = 0;
+    for(int j = 0;j<X.cols();j++)
+    {
+      for(int i = 0;i<X.rows();i++)
+      {
+        if(X(i,j))
+        {
+          I(k) = i+X.rows()*j;
           k++;
         }
       }

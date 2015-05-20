@@ -20,19 +20,12 @@ namespace igl
   // V:                 #V by 3 list of mesh vertex positions
   // F:                 #F by 3 list of faces
   // MMatch:            #F by 3 list of per corner integer mismatch
-  // is_singularity:    #V by 1 list of booleans that denotes if a vertex is a singularity
-  // singularity_index: #V by 1 list of degree of the singularity
   // seams:             #F by 3 list of per corner booleans that denotes if an edge is a seam or not
   //
-  // TODO: remove is_singularity, it is redundant
-  //       make the name of the variables consistent in the cpp
-
-  template <typename DerivedV, typename DerivedF, typename DerivedM, typename DerivedS, typename DerivedO>
+  template <typename DerivedV, typename DerivedF, typename DerivedM, typename DerivedO>
   IGL_INLINE void cut_mesh_from_singularities(const Eigen::PlainObjectBase<DerivedV> &V,
                                                    const Eigen::PlainObjectBase<DerivedF> &F,
                                                    const Eigen::PlainObjectBase<DerivedM> &MMatch,
-                                                   const Eigen::PlainObjectBase<DerivedS> &is_singularity,
-                                                   const Eigen::PlainObjectBase<DerivedS> &singularity_index,
                                                    Eigen::PlainObjectBase<DerivedO> &seams);
 }
 #ifndef IGL_STATIC_LIBRARY

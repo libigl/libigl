@@ -199,15 +199,32 @@ void FrameInterpolator::interpolateCross()
   using namespace std;
   using namespace Eigen;
 
-  NRosyField nrosy(V,F);
+  //olga: was
+  // NRosyField nrosy(V,F);
+  // for (unsigned i=0; i<F.rows(); ++i)
+    // if(thetas_c[i])
+      // nrosy.setConstraintHard(i,theta2vector(TPs[i],thetas(i)));
+  // nrosy.solve(4);
+  // MatrixXd R = nrosy.getFieldPerFace();
 
+  //olga: is
+  Eigen::MatrixXd R;
+  Eigen::VectorXd S;
+  Eigen::VectorXi b; b.resize(F.rows(),1);
+  Eigen::MatrixXd bc; bc.resize(F.rows(),3);
+  int num = 0;
   for (unsigned i=0; i<F.rows(); ++i)
     if(thetas_c[i])
-      nrosy.setConstraintHard(i,theta2vector(TPs[i],thetas(i)));
+      {
+        b[num] = i;
+        bc.row(num) = theta2vector(TPs[i],thetas(i));
+        num++;
+      }
+  b.conservativeResize(num,Eigen::NoChange);
+  bc.conservativeResize(num,Eigen::NoChange);
 
-  nrosy.solve(4);
-
-  MatrixXd R = nrosy.getFieldPerFace();
+  igl::nrosy(V, F, b, bc, 4, R, S);
+  //olga:end
   assert(R.rows() == F.rows());
 
   for (unsigned i=0; i<F.rows(); ++i)

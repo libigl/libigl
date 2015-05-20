@@ -134,7 +134,7 @@ IGL_INLINE void igl::ViewerCore::clear_framebuffers()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl)
+IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bool update_matrices)
 {
   using namespace std;
   using namespace Eigen;
@@ -155,44 +155,47 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl)
   // Initialize uniform
   glViewport(viewport(0), viewport(1), viewport(2), viewport(3));
 
-  model = Eigen::Matrix4f::Identity();
-  view  = Eigen::Matrix4f::Identity();
-  proj  = Eigen::Matrix4f::Identity();
-
-  // Set view
-  look_at( camera_eye, camera_center, camera_up, view);
-
-  float width  = viewport(2);
-  float height = viewport(3);
-
-  // Set projection
-  if (orthographic)
+  if(update_matrices)
   {
-    float length = (camera_eye - camera_center).norm();
-    float h = tan(camera_view_angle/360.0 * M_PI) * (length);
-    ortho(-h*width/height, h*width/height, -h, h, camera_dnear, camera_dfar,proj);
+    model = Eigen::Matrix4f::Identity();
+    view  = Eigen::Matrix4f::Identity();
+    proj  = Eigen::Matrix4f::Identity();
+    
+    // Set view
+    look_at( camera_eye, camera_center, camera_up, view);
+    
+    float width  = viewport(2);
+    float height = viewport(3);
+    
+    // Set projection
+    if (orthographic)
+    {
+      float length = (camera_eye - camera_center).norm();
+      float h = tan(camera_view_angle/360.0 * M_PI) * (length);
+      ortho(-h*width/height, h*width/height, -h, h, camera_dnear, camera_dfar,proj);
+    }
+    else
+    {
+      float fH = tan(camera_view_angle / 360.0 * M_PI) * camera_dnear;
+      float fW = fH * (double)width/(double)height;
+      frustum(-fW, fW, -fH, fH, camera_dnear, camera_dfar,proj);
+    }
+    // end projection
+    
+    // Set model transformation
+    float mat[16];
+    igl::quat_to_mat(trackball_angle.data(), mat);
+    
+    for (unsigned i=0;i<4;++i)
+      for (unsigned j=0;j<4;++j)
+        model(i,j) = mat[i+4*j];
+    
+    // Why not just use Eigen::Transform<double,3,Projective> for model...?
+    model.topLeftCorner(3,3)*=camera_zoom;
+    model.topLeftCorner(3,3)*=model_zoom;
+    model.col(3).head(3) += model.topLeftCorner(3,3)*model_translation;
   }
-  else
-  {
-    float fH = tan(camera_view_angle / 360.0 * M_PI) * camera_dnear;
-    float fW = fH * (double)width/(double)height;
-    frustum(-fW, fW, -fH, fH, camera_dnear, camera_dfar,proj);
-  }
-  // end projection
-
-  // Set model transformation
-  float mat[16];
-  igl::quat_to_mat(trackball_angle.data(), mat);
-
-  for (unsigned i=0;i<4;++i)
-    for (unsigned j=0;j<4;++j)
-      model(i,j) = mat[i+4*j];
-
-  // Why not just use Eigen::Transform<double,3,Projective> for model...?
-  model.topLeftCorner(3,3)*=camera_zoom;
-  model.topLeftCorner(3,3)*=model_zoom;
-  model.col(3).head(3) += model.topLeftCorner(3,3)*model_translation;
-
+  
   // Send transformations to the GPU
   GLint modeli = opengl.shader_mesh.uniform("model");
   GLint viewi  = opengl.shader_mesh.uniform("view");
@@ -200,7 +203,7 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl)
   glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
   glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
   glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
-
+  
   // Light parameters
   GLint specular_exponenti    = opengl.shader_mesh.uniform("specular_exponent");
   GLint light_position_worldi = opengl.shader_mesh.uniform("light_position_world");
@@ -314,11 +317,12 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl)
 }
 
 IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
-                            OpenGL_state& opengl,
-                            Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
-                            Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
-                            Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B,
-                            Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& A)
+  OpenGL_state& opengl,
+  bool update_matrices,
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A)
 {
   assert(R.rows() == G.rows() && G.rows() == B.rows() && B.rows() == A.rows());
   assert(R.cols() == G.cols() && G.cols() == B.cols() && B.cols() == A.cols());
@@ -355,7 +359,7 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
   glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 
   // Clear the buffer
-  glClearColor(0.f, 0.f, 0.f, 0.f);
+  glClearColor(background_color(0), background_color(1), background_color(2), 0.f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Save old viewport
@@ -363,7 +367,7 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
   viewport << 0,0,x,y;
   
   // Draw
-  draw(data,opengl);
+  draw(data,opengl,update_matrices);
   
   // Restore viewport
   viewport = viewport_ori;
@@ -441,7 +445,7 @@ IGL_INLINE igl::ViewerCore::ViewerCore()
   depth_test = true;
 
   // Default point size / line width
-  point_size = 15;
+  point_size = 30;
   line_width = 0.5f;
   is_animating = false;
   animation_max_fps = 30.;

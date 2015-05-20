@@ -104,18 +104,6 @@ IGL_INLINE void igl::triangulate(
   // Call triangle
   ::triangulate(const_cast<char*>(full_flags.c_str()), &in, &out, 0);
 
-  // Cleanup in
-  free(in.pointlist);
-  free(in.pointmarkerlist);
-  free(in.segmentlist);
-  free(in.segmentmarkerlist);
-  free(in.holelist);
-
-  // Cleanup out
-  free(out.pointlist);
-  free(out.trianglelist);
-  free(out.segmentlist);
-
   // Return the mesh
   V2.resize(out.numberofpoints,2);
   for (unsigned i=0;i<V2.rows();++i)
@@ -127,6 +115,17 @@ IGL_INLINE void igl::triangulate(
     for (unsigned j=0;j<3;++j)
       F2(i,j) = out.trianglelist[i*3+j];
 
+  // Cleanup in
+  free(in.pointlist);
+  free(in.pointmarkerlist);
+  free(in.segmentlist);
+  free(in.segmentmarkerlist);
+  free(in.holelist);
+
+  // Cleanup out
+  free(out.pointlist);
+  free(out.trianglelist);
+  free(out.segmentlist);
 }
 
 #ifdef IGL_STATIC_LIBRARY

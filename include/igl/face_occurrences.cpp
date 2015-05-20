@@ -5,14 +5,14 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "face_occurences.h"
+#include "face_occurrences.h"
 
 #include <map>
 #include "sort.h"
 #include <cassert>
 
 template <typename IntegerF, typename IntegerC>
-IGL_INLINE void igl::face_occurences(
+IGL_INLINE void igl::face_occurrences(
   const std::vector<std::vector<IntegerF> > & F,
   std::vector<IntegerC> & C)
 {
@@ -52,5 +52,5 @@ IGL_INLINE void igl::face_occurences(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::face_occurences<int, int>(std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > const&, std::vector<int, std::allocator<int> >&);
+template void igl::face_occurrences<int, int>(std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > const&, std::vector<int, std::allocator<int> >&);
 #endif

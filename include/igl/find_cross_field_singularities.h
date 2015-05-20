@@ -48,7 +48,8 @@ namespace igl
                                                  const Eigen::PlainObjectBase<DerivedV> &PD1,
                                                  const Eigen::PlainObjectBase<DerivedV> &PD2,
                                                  Eigen::PlainObjectBase<DerivedO> &isSingularity,
-                                                 Eigen::PlainObjectBase<DerivedO> &singularityIndex);
+                                                 Eigen::PlainObjectBase<DerivedO> &singularityIndex,
+                                                 bool isCombed = false);
 }
 #ifndef IGL_STATIC_LIBRARY
 #include "find_cross_field_singularities.cpp"

@@ -47,6 +47,19 @@ namespace igl
     const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
     Eigen::PlainObjectBase<DerivedX> & Y);
   template <typename DerivedX>
+  IGL_INLINE void slice_mask(
+    const Eigen::PlainObjectBase<DerivedX> & X,
+    const Eigen::Array<bool,Eigen::Dynamic,1> & R,
+    const Eigen::Array<bool,Eigen::Dynamic,1> & C,
+    Eigen::PlainObjectBase<DerivedX> & Y);
+  template <typename DerivedX>
+  IGL_INLINE void slice_mask(
+    const Eigen::PlainObjectBase<DerivedX> & X,
+    const Eigen::Array<bool,Eigen::Dynamic,1> & R,
+    const int dim,
+    Eigen::PlainObjectBase<DerivedX> & Y);
+
+  template <typename DerivedX>
   IGL_INLINE void slice(
     const Eigen::PlainObjectBase<DerivedX> & X,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
@@ -60,6 +73,16 @@ namespace igl
   IGL_INLINE Eigen::PlainObjectBase<DerivedX> slice(
     const Eigen::PlainObjectBase<DerivedX>& X,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
+    const int dim);
+  template <typename DerivedX>
+  IGL_INLINE Eigen::PlainObjectBase<DerivedX> slice_mask(
+    const Eigen::PlainObjectBase<DerivedX> & X,
+    const Eigen::Array<bool,Eigen::Dynamic,1> & R,
+    const Eigen::Array<bool,Eigen::Dynamic,1> & C);
+  template <typename DerivedX>
+  IGL_INLINE Eigen::PlainObjectBase<DerivedX> slice_mask(
+    const Eigen::PlainObjectBase<DerivedX> & X,
+    const Eigen::Array<bool,Eigen::Dynamic,1> & R,
     const int dim);
 }
 
