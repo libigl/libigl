@@ -350,7 +350,7 @@ heavy data structures types favors simplicity, ease of use and reusability.
 
 ## Overlays [overlays]
 
-In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helful while developing geometric processing algorithms to plot debug informations.
+In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helpful while developing geometric processing algorithms to plot debug informations.
 
 ```cpp
 viewer.data.add_points(P,Eigen::RowVector3d(r,g,b));
@@ -2646,10 +2646,10 @@ repository](https://github.com/libigl/libigl).
   Schröder. [Globally Optimal Direction
   Fields](http://www.cs.columbia.edu/~keenan/Projects/GloballyOptimalDirectionFields/paper.pdf),
   2013.
-[#levy_2002]: Bruno Lévy, Sylvain Petitjean, Nicolas Ray, Jérome Maillot.
+[#levy_2002]: Bruno Lévy, Sylvain Petitjean, Nicolas Ray, Jérome Maillot.
   [Least Squares Conformal Maps, for Automatic Texture Atlas
   Generation,](http://www.cs.jhu.edu/~misha/Fall09/Levy02.pdf), 2002.
-[#levy_2008]: Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy.
+[#levy_2008]: Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy.
   [N-Symmetry Direction Field
   Design](http://alice.loria.fr/publications/papers/2008/DGF/NSDFD-TOG.pdf),
   2008.
