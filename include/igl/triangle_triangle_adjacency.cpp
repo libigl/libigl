@@ -193,11 +193,15 @@ template <
       for(const auto & ne : N)
       {
         const Index nf = ne%m;
-        TT[f][c].push_back(nf);
-        if(construct_TTi)
+        // don't add self
+        if(nf != f)
         {
-          const Index nc = ne/m;
-          TTi[f][c].push_back(nc);
+          TT[f][c].push_back(nf);
+          if(construct_TTi)
+          {
+            const Index nc = ne/m;
+            TTi[f][c].push_back(nc);
+          }
         }
       }
     }
@@ -214,4 +218,11 @@ template void igl::triangle_triangle_adjacency<Eigen::Matrix<int, -1, -1, 0, -1,
 template void igl::triangle_triangle_adjacency<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template void igl::triangle_triangle_adjacency<Eigen::Matrix<double, -1, -1, 0, -1, -1>, long, long>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, std::vector<std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > >, std::allocator<std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > > > >&, std::vector<std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > >, std::allocator<std::vector<std::vector<long, std::allocator<long> >, std::allocator<std::vector<long, std::allocator<long> > > > > >&);
 template void igl::triangle_triangle_adjacency<Eigen::Matrix<int, -1, -1, 0, -1, -1>, int, int>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::vector<std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >, std::allocator<std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > > >&, std::vector<std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >, std::allocator<std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > > >&);
+template void igl::triangle_triangle_adjacency<Eigen::Matrix<int, -1, 3, 0, -1,
+         3>, int>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >
+             const&, std::vector<std::vector<std::vector<int,
+             std::allocator<int> >, std::allocator<std::vector<int,
+             std::allocator<int> > > >,
+             std::allocator<std::vector<std::vector<int, std::allocator<int> >,
+             std::allocator<std::vector<int, std::allocator<int> > > > > >&);
 #endif
