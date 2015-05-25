@@ -61,6 +61,7 @@ IGL_INLINE void igl::outer_hull(
 #endif
   typedef Matrix<typename DerivedF::Scalar,Dynamic,2> MatrixX2I;
   typedef Matrix<typename DerivedF::Index,Dynamic,1> VectorXI;
+  typedef Matrix<typename DerivedV::Scalar, 3, 1> Vector3F;
   MatrixX2I E,uE;
   VectorXI EMAP;
   vector<vector<typename DerivedF::Index> > uE2E;
@@ -85,10 +86,59 @@ IGL_INLINE void igl::outer_hull(
     const RowVector3N & eVp = N.row(fe0%m);
     MatrixXd di_I(uE2E[ui].size(),2);
 
+    const typename DerivedF::Scalar o = F(fe0%m, fe0/m);
     const typename DerivedF::Scalar d = F(fe0%m,((fe0/m)+2)%3);
     const typename DerivedF::Scalar s = F(fe0%m,((fe0/m)+1)%3);
     // Edge vector
-    const auto & eV = (V.row(d)-V.row(s)).normalized();
+    auto eV = (V.row(d)-V.row(s)).normalized();
+    auto edge_len = (V.row(d) - V.row(s)).norm();
+    auto edge_valance = uE2E[ui].size();
+    bool degenerated = !eV.allFinite() || edge_len < 1e-12;
+#ifdef IGL_OUTER_HULL_DEBUG
+    if (degenerated && edge_valance > 2) {
+        cerr.precision(30);
+        std::cerr << ui << ": " << (V.row(d) - V.row(s)).norm() << std::endl;
+        std::cerr << "Edge valance: " << edge_valance << std::endl;
+        std::cerr << V.row(d) << std::endl;
+        std::cerr << V.row(s) << std::endl;
+    }
+#endif
+    if (degenerated) {
+        const size_t num_adj_faces = uE2E[ui].size();
+        Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 3>
+            normals(num_adj_faces, 3);
+        for (size_t fei=0; fei<num_adj_faces; fei++) {
+            const auto & fe = uE2E[ui][fei];
+            const auto f = fe % m;
+            const RowVector3N & n = N.row(f);
+            normals.row(fei) = n;
+        }
+        for (size_t i=0; i<num_adj_faces; i++) {
+            size_t j = (i+1) % num_adj_faces;
+            eV = normals.row(i).cross(normals.row(j));
+            auto length = eV.norm();
+            if (length > 1e-12) {
+                eV /= length;
+                break;
+            }
+        }
+    }
+    if (!eV.allFinite() || eV.norm() < 1e-12) {
+        //cerr << "This is bad... all adj face normals are colinear" << std::endl;
+        eV.setZero();
+    } 
+    if (degenerated){
+        // Adjust edge direction.
+        Vector3F in_face_vec = V.row(o) - V.row(s);
+        Vector3F edge = eV;
+        if (edge.cross(in_face_vec).dot(eVp) < 0) {
+#ifdef IGL_OUTER_HULL_DEBUG
+            cerr << "Flipping edge..." << std::endl;
+#endif
+            eV *= -1;
+        }
+        //cerr << "Resolved: " << eV << std::endl;
+    }
 
     vector<bool> cons(uE2E[ui].size());
     // Loop over incident face edges
