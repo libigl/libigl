@@ -60,7 +60,7 @@ typedef struct {
 } RLEstate;
 
 IGL_INLINE static int
-std_fread(RLEstate *rleInfo, unsigned char *buf, size_t datasize, size_t nelems, FILE *fp)
+std_fread(RLEstate * /*rleInfo*/, unsigned char *buf, size_t datasize, size_t nelems, FILE *fp)
 {
   if (_verbose > 1) {
     totbytes += nelems * datasize;
@@ -185,7 +185,7 @@ rle_fread(RLEstate *rleInfo, unsigned char *vbuf, size_t datasize, size_t nelems
 }
 
 IGL_INLINE igl::gliGenericImage *
-igl::gliReadTGA(FILE *fp, char *name, int hflip, int vflip)
+igl::gliReadTGA(FILE *fp, char *name, int /*hflip*/, int vflip)
 {
   igl::TgaHeader tgaHeader;
   igl::TgaFooter tgaFooter;
