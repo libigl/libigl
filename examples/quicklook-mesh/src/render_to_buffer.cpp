@@ -372,6 +372,7 @@ bool render_to_buffer(
     // Convert extension to lower case
     if(!igl::readOBJ(filename,vV,vTC,vN,vF,vFTC,vFN))
     {
+      cerr<<"readOBJ failed."<<endl;
       red(width,height,buffer);
       return false;
     }
@@ -380,6 +381,7 @@ bool render_to_buffer(
     // Convert extension to lower case
     if(!igl::readOFF(filename,vV,vF,vN))
     {
+      cerr<<"readOFF failed."<<endl;
       red(width,height,buffer);
       return false;
     }
@@ -425,6 +427,7 @@ bool render_to_buffer(
   {
     if(!list_to_matrix(vV,V))
     {
+      cerr<<"list_to_matrix failed."<<endl;
       red(width,height,buffer);
       return false;
     }
