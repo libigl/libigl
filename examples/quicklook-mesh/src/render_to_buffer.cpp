@@ -280,7 +280,24 @@ void display()
       glMaterialfv(GL_BACK, GL_SPECULAR, SILVER_SPECULAR);
       glMaterialf (GL_BACK, GL_SHININESS, 128);
     //}
-    draw_mesh(V,F,N);
+    if(F.rows() == 0)
+    {
+      glPointSize(1.+ 20./log10(V.rows()));
+      const bool has_normals = N.rows() == V.rows();
+      glBegin(GL_POINTS);
+      for(int v = 0;v<V.rows();v++)
+      {
+        if(has_normals)
+        {
+          glNormal3d(N(v,0),N(v,1),N(v,2));
+        }
+        glVertex3d(V(v,0),V(v,1),V(v,2));
+      }
+      glEnd();
+    }else
+    {
+      draw_mesh(V,F,N);
+    }
     //if(invert)
     //{
     //  glFrontFace(GL_CCW);
@@ -411,13 +428,21 @@ bool render_to_buffer(
       red(width,height,buffer);
       return false;
     }
+    if(!list_to_matrix(vN,N))
+    {
+      // silently continue
+      N.resize(0,0);
+    }
     polygon_mesh_to_triangle_mesh(vF,F);
   }
   cout<<"IO: "<<(get_seconds()-ts)<<"s"<<endl;
   ts = get_seconds();
 
-  // Computer already normalized per triangle normals
-  per_face_normals(V,F,N);
+  // Compute already normalized per triangle normals
+  if(N.rows() != V.rows() && N.rows() != F.rows())
+  {
+    per_face_normals(V,F,N);
+  }
   //Vmean = 0.5*(V.colwise().maxCoeff()+V.colwise().minCoeff());
   Vmax = V.colwise().maxCoeff();
   Vmin = V.colwise().minCoeff();
