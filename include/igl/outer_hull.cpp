@@ -7,6 +7,7 @@
 #include "unique_edge_map.h"
 #include "barycenter.h"
 #include "per_face_normals.h"
+#include "writePLY.h"
 
 #include <Eigen/Geometry>
 #include <vector>
@@ -30,6 +31,11 @@ IGL_INLINE void igl::outer_hull(
   Eigen::PlainObjectBase<DerivedJ> & J,
   Eigen::PlainObjectBase<Derivedflip> & flip)
 {
+#ifdef IGL_OUTER_HULL_DEBUG
+  std::cerr << "Extracting outer hull" << std::endl;
+  std::cerr << F << std::endl;
+  writePLY("outer_hull_input.ply", V, F);
+#endif
   using namespace Eigen;
   using namespace std;
   typedef typename DerivedF::Index Index;
@@ -66,6 +72,15 @@ IGL_INLINE void igl::outer_hull(
   VectorXI EMAP;
   vector<vector<typename DerivedF::Index> > uE2E;
   unique_edge_map(F,E,uE,EMAP,uE2E);
+#ifdef IGL_OUTER_HULL_DEBUG
+  for (size_t ui=0; ui<uE.rows(); ui++) {
+      std::cout << ui << ": " << uE2E[ui].size() << " -- (";
+      for (size_t i=0; i<uE2E[ui].size(); i++) {
+          std::cout << uE2E[ui][i] << ", ";
+      }
+      std::cout << ")" << std::endl;
+  }
+#endif
 
   // TODO:
   // uE --> face-edge index, sorted CCW around edge according to normal
@@ -93,6 +108,7 @@ IGL_INLINE void igl::outer_hull(
     auto eV = (V.row(d)-V.row(s)).normalized();
     auto edge_len = (V.row(d) - V.row(s)).norm();
     auto edge_valance = uE2E[ui].size();
+    assert(edge_valance % 2 == 0);
     bool degenerated = !eV.allFinite() || edge_len < 1e-12;
 #ifdef IGL_OUTER_HULL_DEBUG
     if (degenerated && edge_valance > 2) {
@@ -154,7 +170,8 @@ IGL_INLINE void igl::outer_hull(
       assert(!cons[fei] || (d == F(f,(c+1)%3)));
       // Angle between n and f
       const RowVector3N & n = N.row(f);
-      di_I(fei,0) = M_PI - atan2( eVp.cross(n).dot(eV), eVp.dot(n));
+      //di_I(fei,0) = M_PI - atan2( eVp.cross(n).dot(eV), eVp.dot(n));
+      di_I(fei,0) = -atan2( eVp.cross(n).dot(eV), eVp.dot(n));
 #ifdef IGL_OUTER_HULL_DEBUG
       if(di_I(fei,0) != di_I(fei,0) )
       {
@@ -167,19 +184,24 @@ IGL_INLINE void igl::outer_hull(
       }
 #endif
       assert(di_I(fei,0) == di_I(fei,0) && "NaN Alert!");
-      if(!cons[fei])
-      {
-        di_I(fei,0) = di_I(fei,0) + M_PI;
-        if(di_I(fei,0)>=2.*M_PI)
-        {
-          di_I(fei,0) = di_I(fei,0) - 2.*M_PI;
-        }
+      //if(!cons[fei])
+      //{
+      //  di_I(fei,0) = di_I(fei,0) + M_PI;
+      //  if(di_I(fei,0)>=2.*M_PI)
+      //  {
+      //    di_I(fei,0) = di_I(fei,0) - 2.*M_PI;
+      //  }
+      //  std::cout << " + M_PI";
+      //}
+      if (cons[fei]) {
+          di_I(fei, 0) -= M_PI;
       }
       // This signing is very important to make sure different edges sort
       // duplicate faces the same way, regardless of their orientations
-      di_I(fei,1) = (cons[fei]?1.:-1.)*f;
+      di_I(fei,1) = (cons[fei]?1.:-1.)*(f+1);
     }
 
+#if 0
     // Despite the effort to get stable normals the atan2 up doesn't
     // compute (exactly) -θ for -n if it computes θ for n. So just
     // explicitly check if there's a duplicate face
@@ -201,6 +223,7 @@ IGL_INLINE void igl::outer_hull(
         }
       }
     }
+#endif
     VectorXi IM;
     //igl::sort(di[ui],true,di[ui],IM);
     // Sort, but break ties using "signed index" to ensure that duplicates
