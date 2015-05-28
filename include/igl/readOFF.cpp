@@ -32,7 +32,7 @@ IGL_INLINE bool igl::readOFF(
   const std::string NOFF("NOFF");
   if(fscanf(off_file,"%s\n",header)!=1
      || !(
-       string(header).compare(0,NOFF.length(),NOFF)==0 || 
+       string(header).compare(0, OFF.length(), OFF)==0 || 
        string(header).compare(0,NOFF.length(),NOFF)==0))
   {
     printf("Error: %s's first line should be OFF or NOFF not %s...",off_file_name.c_str(),header);
