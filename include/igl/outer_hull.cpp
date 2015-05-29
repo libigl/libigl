@@ -15,7 +15,7 @@
 #include <map>
 #include <queue>
 #include <iostream>
-#define IGL_OUTER_HULL_DEBUG
+//#define IGL_OUTER_HULL_DEBUG
 
 template <
   typename DerivedV,
@@ -92,7 +92,7 @@ IGL_INLINE void igl::outer_hull(
   // Whether face's edge used for sorting is consistent with unique edge
   VectorXI dicons(3*m);
   // dihedral angles of faces around edge with face of edge in dicons
-  vector<vector<typename DerivedV::Scalar> > di(uE2E.size());
+  vector<vector<typename Eigen::Vector2d> > di(uE2E.size());
   // For each list of face-edges incide on a unique edge
   for(size_t ui = 0;ui<(size_t)uE.rows();ui++)
   {
@@ -213,15 +213,24 @@ IGL_INLINE void igl::outer_hull(
     // always show up in same order.
     igl::sort_angles(di_I, IM);
     vector<typename DerivedF::Index> temp = uE2E[ui];
+#ifdef IGL_OUTER_HULL_DEBUG
     std::cout.precision(20);
     std::cout << "sorted" << std::endl;
+#endif
     for(size_t fei = 0;fei<uE2E[ui].size();fei++)
     {
+#ifdef IGL_OUTER_HULL_DEBUG
       std::cout << di_I.row(IM(fei)) << std::endl;
+#endif
       uE2E[ui][fei] = temp[IM(fei)];
       const auto & fe = uE2E[ui][fei];
       diIM(fe) = fei;
       dicons(fe) = cons[IM(fei)];
+    }
+
+    di[ui].resize(uE2E[ui].size());
+    for (size_t i=0; i<di[ui].size(); i++) {
+        di[ui][i] = di_I.row(IM(i)).segment<2>(0);
     }
 
     //MatrixXd s_di_I;
@@ -301,6 +310,9 @@ IGL_INLINE void igl::outer_hull(
     outer_facet(V,F,N,IM,f,f_flip);
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"outer facet: "<<f<<endl;
+  cout << V.row(F(f, 0)) << std::endl;
+  cout << V.row(F(f, 1)) << std::endl;
+  cout << V.row(F(f, 2)) << std::endl;
 #endif
     int FHcount = 1;
     FH[f] = true;
@@ -358,6 +370,7 @@ IGL_INLINE void igl::outer_hull(
         const int nfei_new = (diIM(e) + 2*val + e_cons*step*(flip(f)?-1:1))%val;
         const int nf = uE2E[EMAP(e)][nfei_new] % m;
         // Don't consider faces with identical dihedral angles
+        if ((di[EMAP(e)][diIM(e)].array() != di[EMAP(e)][nfei_new].array()).any())
         //if((di[EMAP(e)][diIM(e)] != di[EMAP(e)][nfei_new]))
 //#warning "THIS IS HACK, FIX ME"
 //        if( abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new]) < 1e-16 )
