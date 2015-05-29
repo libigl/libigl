@@ -8,13 +8,14 @@
 #include "barycenter.h"
 #include "per_face_normals.h"
 #include "writePLY.h"
+#include "sort_angles.h"
 
 #include <Eigen/Geometry>
 #include <vector>
 #include <map>
 #include <queue>
 #include <iostream>
-//#define IGL_OUTER_HULL_DEBUG
+#define IGL_OUTER_HULL_DEBUG
 
 template <
   typename DerivedV,
@@ -33,7 +34,6 @@ IGL_INLINE void igl::outer_hull(
 {
 #ifdef IGL_OUTER_HULL_DEBUG
   std::cerr << "Extracting outer hull" << std::endl;
-  std::cerr << F << std::endl;
   writePLY("outer_hull_input.ply", V, F);
 #endif
   using namespace Eigen;
@@ -99,7 +99,7 @@ IGL_INLINE void igl::outer_hull(
     // Base normal vector to orient against
     const auto fe0 = uE2E[ui][0];
     const RowVector3N & eVp = N.row(fe0%m);
-    MatrixXd di_I(uE2E[ui].size(),2);
+    MatrixXd di_I(uE2E[ui].size(),3);
 
     const typename DerivedF::Scalar o = F(fe0%m, fe0/m);
     const typename DerivedF::Scalar d = F(fe0%m,((fe0/m)+2)%3);
@@ -170,35 +170,18 @@ IGL_INLINE void igl::outer_hull(
       assert(!cons[fei] || (d == F(f,(c+1)%3)));
       // Angle between n and f
       const RowVector3N & n = N.row(f);
-      //di_I(fei,0) = M_PI - atan2( eVp.cross(n).dot(eV), eVp.dot(n));
-      di_I(fei,0) = -atan2( eVp.cross(n).dot(eV), eVp.dot(n));
-#ifdef IGL_OUTER_HULL_DEBUG
-      if(di_I(fei,0) != di_I(fei,0) )
-      {
-        cout<<"NaN from face: "<<(f+1)<<endl;
-        cout<<"  n: "<<n<<endl;
-        cout<<"  eVp: "<<eVp<<endl;
-        cout<<"  eV: "<<eV<<endl;
-        cout<<"  eVp x n . eV: "<<(eVp.cross(n).dot(eV))<<endl;
-        cout<<"  eVp . n: "<<(eVp.dot(n))<<endl;
-      }
-#endif
+      di_I(fei, 0) = eVp.cross(n).dot(eV);
+      di_I(fei, 1) = eVp.dot(n);
       assert(di_I(fei,0) == di_I(fei,0) && "NaN Alert!");
-      //if(!cons[fei])
-      //{
-      //  di_I(fei,0) = di_I(fei,0) + M_PI;
-      //  if(di_I(fei,0)>=2.*M_PI)
-      //  {
-      //    di_I(fei,0) = di_I(fei,0) - 2.*M_PI;
-      //  }
-      //  std::cout << " + M_PI";
-      //}
+      assert(di_I(fei,1) == di_I(fei,1) && "NaN Alert!");
       if (cons[fei]) {
-          di_I(fei, 0) -= M_PI;
+          di_I(fei, 0) *= -1;
+          di_I(fei, 1) *= -1;
       }
+      di_I(fei, 0) *= -1; // Sort clockwise.
       // This signing is very important to make sure different edges sort
       // duplicate faces the same way, regardless of their orientations
-      di_I(fei,1) = (cons[fei]?1.:-1.)*(f+1);
+      di_I(fei,2) = (cons[fei]?1.:-1.)*(f+1);
     }
 
 #if 0
@@ -228,24 +211,36 @@ IGL_INLINE void igl::outer_hull(
     //igl::sort(di[ui],true,di[ui],IM);
     // Sort, but break ties using "signed index" to ensure that duplicates
     // always show up in same order.
-    MatrixXd s_di_I;
-    igl::sortrows(di_I,true,s_di_I,IM);
-    di[ui].resize(uE2E[ui].size());
-    for(size_t i = 0;i<di[ui].size();i++)
-    {
-      di[ui][i] = s_di_I(i,0);
-    }
-
-    // copy old list
+    igl::sort_angles(di_I, IM);
     vector<typename DerivedF::Index> temp = uE2E[ui];
+    std::cout.precision(20);
+    std::cout << "sorted" << std::endl;
     for(size_t fei = 0;fei<uE2E[ui].size();fei++)
     {
+      std::cout << di_I.row(IM(fei)) << std::endl;
       uE2E[ui][fei] = temp[IM(fei)];
       const auto & fe = uE2E[ui][fei];
       diIM(fe) = fei;
       dicons(fe) = cons[IM(fei)];
     }
 
+    //MatrixXd s_di_I;
+    //igl::sortrows(di_I,true,s_di_I,IM);
+    //di[ui].resize(uE2E[ui].size());
+    //for(size_t i = 0;i<di[ui].size();i++)
+    //{
+    //  di[ui][i] = s_di_I(i,0);
+    //}
+
+    //// copy old list
+    //vector<typename DerivedF::Index> temp = uE2E[ui];
+    //for(size_t fei = 0;fei<uE2E[ui].size();fei++)
+    //{
+    //  uE2E[ui][fei] = temp[IM(fei)];
+    //  const auto & fe = uE2E[ui][fei];
+    //  diIM(fe) = fei;
+    //  dicons(fe) = cons[IM(fei)];
+    //}
   }
 
   vector<vector<vector<Index > > > TT,_1;
@@ -363,15 +358,15 @@ IGL_INLINE void igl::outer_hull(
         const int nfei_new = (diIM(e) + 2*val + e_cons*step*(flip(f)?-1:1))%val;
         const int nf = uE2E[EMAP(e)][nfei_new] % m;
         // Don't consider faces with identical dihedral angles
-        if((di[EMAP(e)][diIM(e)] != di[EMAP(e)][nfei_new]))
+        //if((di[EMAP(e)][diIM(e)] != di[EMAP(e)][nfei_new]))
 //#warning "THIS IS HACK, FIX ME"
 //        if( abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new]) < 1e-16 )
         {
 #ifdef IGL_OUTER_HULL_DEBUG
-        cout<<"Next facet: "<<(f+1)<<" --> "<<(nf+1)<<", |"<<
-          di[EMAP(e)][diIM(e)]<<" - "<<di[EMAP(e)][nfei_new]<<"| = "<<
-            abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new])
-            <<endl;
+        //cout<<"Next facet: "<<(f+1)<<" --> "<<(nf+1)<<", |"<<
+        //  di[EMAP(e)][diIM(e)]<<" - "<<di[EMAP(e)][nfei_new]<<"| = "<<
+        //    abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new])
+        //    <<endl;
 #endif
         
 
