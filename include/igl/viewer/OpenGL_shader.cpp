@@ -33,7 +33,7 @@ IGL_INLINE bool igl::OpenGL_shader::init_from_files(
   const std::string &geometry_shader_filename,
   int geometry_shader_max_vertices)
 {
-  auto file_to_string = [](const std::string &filename)
+  auto file_to_string = [](const std::string &filename)->std::string
   {
     std::ifstream t(filename);
     return std::string((std::istreambuf_iterator<char>(t)),
