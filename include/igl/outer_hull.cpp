@@ -215,12 +215,12 @@ IGL_INLINE void igl::outer_hull(
     vector<typename DerivedF::Index> temp = uE2E[ui];
 #ifdef IGL_OUTER_HULL_DEBUG
     std::cout.precision(20);
-    std::cout << "sorted" << std::endl;
+    //std::cout << "sorted" << std::endl;
 #endif
     for(size_t fei = 0;fei<uE2E[ui].size();fei++)
     {
 #ifdef IGL_OUTER_HULL_DEBUG
-      std::cout << di_I.row(IM(fei)) << std::endl;
+      //std::cout << di_I.row(IM(fei)) << std::endl;
 #endif
       uE2E[ui][fei] = temp[IM(fei)];
       const auto & fe = uE2E[ui][fei];
@@ -335,6 +335,12 @@ IGL_INLINE void igl::outer_hull(
       const int f = e%m;
       // corner
       const int c = e/m;
+#ifdef IGL_OUTER_HULL_DEBUG
+      std::cout << "edge: " << e << std::endl;
+      std::cout << "face: " << f << std::endl;
+      std::cout << "corner: " << c << std::endl;
+      std::cout << "consistent: " << dicons(e) << std::endl;
+#endif
       // Should never see edge again...
       if(EH[e] == true)
       {
@@ -347,6 +353,18 @@ IGL_INLINE void igl::outer_hull(
       const int fd = flip(f)?F(f,(c+1)%3):F(f,(c+2)%3);
       // edge valence
       const size_t val = uE2E[EMAP(e)].size();
+#ifdef IGL_OUTER_HULL_DEBUG
+      for (size_t i=0; i<val; i++) {
+          if (i == diIM(e)) {
+              std::cout << "* ";
+          } else {
+              std::cout << "  ";
+          }
+          std::cout << i << ": " << di[EMAP(e)][i].transpose()
+              << " (e: " << uE2E[EMAP(e)][i] << ", f: "
+              << uE2E[EMAP(e)][i] % m * (dicons(uE2E[EMAP(e)][i]) ? 1:-1) << ")" << std::endl;
+      }
+#endif
       //// find overlapping face-edges
       //const auto & neighbors = uE2E[EMAP(e)];
       //// normal after possible flipping 
@@ -370,7 +388,7 @@ IGL_INLINE void igl::outer_hull(
         const int nfei_new = (diIM(e) + 2*val + e_cons*step*(flip(f)?-1:1))%val;
         const int nf = uE2E[EMAP(e)][nfei_new] % m;
         // Don't consider faces with identical dihedral angles
-        if ((di[EMAP(e)][diIM(e)].array() != di[EMAP(e)][nfei_new].array()).any())
+        //if ((di[EMAP(e)][diIM(e)].array() != di[EMAP(e)][nfei_new].array()).any())
         //if((di[EMAP(e)][diIM(e)] != di[EMAP(e)][nfei_new]))
 //#warning "THIS IS HACK, FIX ME"
 //        if( abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new]) < 1e-16 )
@@ -388,8 +406,16 @@ IGL_INLINE void igl::outer_hull(
           if(!FH[nf])
           {
             nfei = nfei_new;
+          //} else {
+          //    std::cout << "skipping face " << nfei_new << " because it is seen before"
+          //        << std::endl;
           }
           break;
+        //} else {
+        //    std::cout << di[EMAP(e)][diIM(e)].transpose() << std::endl;
+        //    std::cout << di[EMAP(e)][diIM(nfei_new)].transpose() << std::endl;
+        //    std::cout << "skipping face " << nfei_new << " with identical dihedral angle" 
+        //        << std::endl;
         }
 //#ifdef IGL_OUTER_HULL_DEBUG
 //        cout<<"Skipping co-planar facet: "<<(f+1)<<" --> "<<(nf+1)<<endl;
