@@ -9,7 +9,6 @@
 
 #include "triangle_triangle_adjacency.h"
 
-#include <Eigen/Dense>
 
 template <
   typename DerivedV,
@@ -28,8 +27,10 @@ IGL_INLINE void igl::upsample(
   using namespace std;
   using namespace Eigen;
 
-  Eigen::MatrixXi FF,FFi;
-  triangle_triangle_adjacency(V,F,FF,FFi);
+  Eigen::Matrix<
+    typename DerivedF::Scalar,Eigen::Dynamic,Eigen::Dynamic>
+    FF,FFi;
+  triangle_triangle_adjacency(F,FF,FFi);
 
   // TODO: Cache optimization missing from here, it is a mess
 
