@@ -32,6 +32,10 @@ IGL_INLINE void igl::outer_hull(
   Eigen::PlainObjectBase<DerivedJ> & J,
   Eigen::PlainObjectBase<Derivedflip> & flip)
 {
+    std::cout.precision(20);
+    //for (size_t i=0; i<V.rows(); i++) {
+    //    std::cout << "v " << V.row(i) << std::endl;
+    //}
 #ifdef IGL_OUTER_HULL_DEBUG
   std::cerr << "Extracting outer hull" << std::endl;
   writePLY("outer_hull_input.ply", V, F);
@@ -109,7 +113,7 @@ IGL_INLINE void igl::outer_hull(
     auto edge_len = (V.row(d) - V.row(s)).norm();
     auto edge_valance = uE2E[ui].size();
     assert(edge_valance % 2 == 0);
-    bool degenerated = !eV.allFinite() || edge_len < 1e-12;
+    bool degenerated = !eV.allFinite() || edge_len < 1e-15;
 #ifdef IGL_OUTER_HULL_DEBUG
     if (degenerated && edge_valance > 2) {
         cerr.precision(30);
@@ -133,13 +137,13 @@ IGL_INLINE void igl::outer_hull(
             size_t j = (i+1) % num_adj_faces;
             eV = normals.row(i).cross(normals.row(j));
             auto length = eV.norm();
-            if (length > 1e-12) {
+            if (length > 1e-15) {
                 eV /= length;
                 break;
             }
         }
     }
-    if (!eV.allFinite() || eV.norm() < 1e-12) {
+    if (!eV.allFinite() || eV.norm() < 1e-15) {
         //cerr << "This is bad... all adj face normals are colinear" << std::endl;
         eV.setZero();
     } 
@@ -155,6 +159,11 @@ IGL_INLINE void igl::outer_hull(
         }
         //cerr << "Resolved: " << eV << std::endl;
     }
+#ifdef IGL_OUTER_HULL_DEBUG
+    if (degenerated) {
+        cerr << "eV: " << eV << std::endl;
+    }
+#endif
 
     vector<bool> cons(uE2E[ui].size());
     // Loop over incident face edges
@@ -170,6 +179,10 @@ IGL_INLINE void igl::outer_hull(
       assert(!cons[fei] || (d == F(f,(c+1)%3)));
       // Angle between n and f
       const RowVector3N & n = N.row(f);
+#ifdef IGL_OUTER_HULL_DEBUG
+      if (degenerated)
+          cerr << "n " << fei << ": " << n << std::endl;
+#endif
       di_I(fei, 0) = eVp.cross(n).dot(eV);
       di_I(fei, 1) = eVp.dot(n);
       assert(di_I(fei,0) == di_I(fei,0) && "NaN Alert!");
@@ -274,6 +287,7 @@ IGL_INLINE void igl::outer_hull(
   vector<MatrixXG> vG(ncc);
   vector<MatrixXJ> vJ(ncc);
   vector<MatrixXJ> vIM(ncc);
+  size_t face_count = 0;
   for(size_t id = 0;id<ncc;id++)
   {
     vIM[id].resize(counts[id],1);
@@ -322,6 +336,8 @@ IGL_INLINE void igl::outer_hull(
     Q.push(f+1*m);
     Q.push(f+2*m);
     flip(f) = f_flip;
+    //std::cout << "face " << face_count++ << ": " << f << std::endl;
+    //std::cout << "f " << F.row(f).array()+1 << std::endl;
     //cout<<"flip("<<f<<") = "<<(flip(f)?"true":"false")<<endl;
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"BFS..."<<endl;
@@ -336,7 +352,7 @@ IGL_INLINE void igl::outer_hull(
       // corner
       const int c = e/m;
 #ifdef IGL_OUTER_HULL_DEBUG
-      std::cout << "edge: " << e << std::endl;
+      std::cout << "edge: " << e << ", ue: " << EMAP(e) << std::endl;
       std::cout << "face: " << f << std::endl;
       std::cout << "corner: " << c << std::endl;
       std::cout << "consistent: " << dicons(e) << std::endl;
@@ -354,6 +370,9 @@ IGL_INLINE void igl::outer_hull(
       // edge valence
       const size_t val = uE2E[EMAP(e)].size();
 #ifdef IGL_OUTER_HULL_DEBUG
+      std::cout << "vd: " << V.row(fd) << std::endl;
+      std::cout << "vs: " << V.row(fs) << std::endl;
+      std::cout << "edge: " << V.row(fd) - V.row(fs) << std::endl;
       for (size_t i=0; i<val; i++) {
           if (i == diIM(e)) {
               std::cout << "* ";
@@ -391,7 +410,7 @@ IGL_INLINE void igl::outer_hull(
         //if ((di[EMAP(e)][diIM(e)].array() != di[EMAP(e)][nfei_new].array()).any())
         //if((di[EMAP(e)][diIM(e)] != di[EMAP(e)][nfei_new]))
 //#warning "THIS IS HACK, FIX ME"
-//        if( abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new]) < 1e-16 )
+//        if( abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new]) < 1e-15 )
         {
 #ifdef IGL_OUTER_HULL_DEBUG
         //cout<<"Next facet: "<<(f+1)<<" --> "<<(nf+1)<<", |"<<
@@ -498,6 +517,8 @@ IGL_INLINE void igl::outer_hull(
         }
 #endif
         FH[nf] = true;
+        //std::cout << "face " << face_count++ << ": " << nf << std::endl;
+        //std::cout << "f " << F.row(nf).array()+1 << std::endl;
         FHcount++;
         // corner of neighbor
         const int nc = max_ne/m;
@@ -586,7 +607,7 @@ IGL_INLINE void igl::outer_hull(
     // POTENTIAL ROBUSTNESS WEAK AREA
     ////////////////////////////////////////////////////////////////////////
     //
-    // q could be so close (<~1e-16) to B that the winding number is not a robust way to
+    // q could be so close (<~1e-15) to B that the winding number is not a robust way to
     // determine inside/outsideness. We could try to find a _better_ q which is
     // farther away, but couldn't they all be bad?
     MatrixXV q = BC.row(AJ(0));
