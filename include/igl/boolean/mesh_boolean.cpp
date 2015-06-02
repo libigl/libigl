@@ -6,6 +6,8 @@
 #include <igl/unique_simplices.h>
 #include <iostream>
 
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+
 //#define IGL_MESH_BOOLEAN_DEBUG
 
 template <
@@ -93,9 +95,12 @@ IGL_INLINE void igl::mesh_boolean(
   using namespace igl;
   MeshBooleanType eff_type = type;
   // Concatenate A and B into a single mesh
+  typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
+  typedef Kernel::FT ExactScalar;
   typedef typename DerivedVC::Scalar Scalar;
   typedef typename DerivedFC::Scalar Index;
   typedef Matrix<Scalar,Dynamic,3> MatrixX3S;
+  typedef Matrix<ExactScalar,Dynamic,3> MatrixX3ES;
   typedef Matrix<Index,Dynamic,3> MatrixX3I;
   typedef Matrix<Index,Dynamic,2> MatrixX2I;
   typedef Matrix<Index,Dynamic,1> VectorXI;
@@ -131,11 +136,11 @@ IGL_INLINE void igl::mesh_boolean(
   const auto & libigl_resolve = [](
     const MatrixX3S & V,
     const MatrixX3I & F,
-    MatrixX3S & CV,
+    MatrixX3ES & CV,
     MatrixX3I & CF,
     VectorXJ & J)
   {
-    MatrixX3S SV;
+    MatrixX3ES SV;
     MatrixX3I SF;
     MatrixX2I SIF;
     VectorXI SIM,UIM;
@@ -151,6 +156,7 @@ IGL_INLINE void igl::mesh_boolean(
   cout<<"resolve..."<<endl;
 #endif
   MatrixX3S CV;
+  MatrixX3ES EV;
   MatrixX3I CF;
   VectorXJ CJ;
   if(resolve_fun)
@@ -158,7 +164,12 @@ IGL_INLINE void igl::mesh_boolean(
     resolve_fun(V,F,CV,CF,CJ);
   }else
   {
-    libigl_resolve(V,F,CV,CF,CJ);
+    libigl_resolve(V,F,EV,CF,CJ);
+    CV.resize(EV.rows(), EV.cols());
+    std::transform(EV.data(), EV.data() + EV.rows()*EV.cols(),
+            CV.data(), [&](ExactScalar val) {
+            return CGAL::to_double(val);
+            });
   }
 
   if(type == MESH_BOOLEAN_TYPE_RESOLVE)
@@ -183,7 +194,7 @@ IGL_INLINE void igl::mesh_boolean(
   // peel layers keeping track of odd and even flips
   Matrix<bool,Dynamic,1> odd;
   Matrix<bool,Dynamic,1> flip;
-  peel_outer_hull_layers(CV,CF,CN,odd,flip);
+  peel_outer_hull_layers_exact<Kernel>(EV,CF,CN,odd,flip);
 
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"categorize..."<<endl;
