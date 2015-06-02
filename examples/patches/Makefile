@@ -2,7 +2,9 @@
 
 # Shared flags etc.
 include ../../build/Makefile.conf
-LIBIGL_LIB+=-liglembree -liglboost
+ifdef LIBIGL_USE_STATIC_LIBRARY
+	LIBIGL_LIB+=-liglembree -liglboost
+endif
 
 all: obj example
 
@@ -17,16 +19,16 @@ CPP_FILES=$(wildcard ./*.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o))) 
 
 example: obj $(OBJ_FILES)
-	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -o example $(OBJ_FILES) $(LIB)
+	g++ $(OPTFLAGS) $(OPENMP) $(AFLAGS) $(CFLAGS) -o example $(OBJ_FILES) $(LIB)
 
 obj:
 	mkdir -p obj
 
 obj/%.o: %.cpp
-	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -c $< -o $@ $(INC)
+	g++ $(OPTFLAGS) $(OPENMP) $(AFLAGS) $(CFLAGS) -c $< -o $@ $(INC)
 
 obj/%.o: %.cpp %.h
-	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -c $< -o $@ $(INC)
+	g++ $(OPTFLAGS) $(OPENMP) $(AFLAGS) $(CFLAGS) -c $< -o $@ $(INC)
 
 clean:
 	rm -f $(OBJ_FILES)

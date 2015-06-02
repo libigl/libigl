@@ -11,7 +11,9 @@
 #include "triangle_triangle_adjacency.h"
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE std::vector<bool> igl::is_border_vertex(const Eigen::PlainObjectBase<DerivedV> &V, const Eigen::PlainObjectBase<DerivedF> &F)
+IGL_INLINE std::vector<bool> igl::is_border_vertex(
+    const Eigen::PlainObjectBase<DerivedV> &V, 
+    const Eigen::PlainObjectBase<DerivedF> &F)
 {
   Eigen::PlainObjectBase<DerivedF> FF;
   igl::triangle_triangle_adjacency(V,F,FF);
