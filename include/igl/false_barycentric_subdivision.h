@@ -19,7 +19,8 @@ namespace igl
   //   F       #F by 3 list of mesh faces (must be triangles)
   // Outputs:
   //   VD      #V + #F by 3 coordinate of the vertices of the dual mesh
-  //           The added vertices are added at the end of VD
+  //           The added vertices are added at the end of VD (should not be
+  //           same references as (V,F)
   //   FD      #F*3 by 3 faces of the dual mesh
   //
   template <typename Scalar, typename Index>
