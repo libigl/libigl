@@ -7,10 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "sparse.h"
 
-// Bug in unsupported/Eigen/SparseExtra needs iostream first
 #include <iostream>
 #include <vector>
-#include <unsupported/Eigen/SparseExtra>
 
 template <class IndexVector, class ValueVector, typename T>
 IGL_INLINE void igl::sparse(

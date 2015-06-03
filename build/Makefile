@@ -9,7 +9,6 @@ $(info Hello, $(IGL_USERNAME)!)
 
 # optimized default settings
 all: LFLAGS +=
-OPTFLAGS+=-O3 -DNDEBUG $(OPENMP)
 #debug: OPTFLAGS= -g -Wall -Werror
 debug: OPTFLAGS= -g -Wall
 debug: DEBUG=debug
