@@ -9,9 +9,6 @@
 #define IGL_SLICE_H
 #include "igl_inline.h"
 
-#ifndef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-#endif
 #include <Eigen/Sparse>
 namespace igl
 {
