@@ -30,6 +30,9 @@ namespace igl
   //
   // NOTE: V should not be the same as NV,
   // NOTE: F should not be the same as NF, use other proto
+  //
+  // Known issues:
+  //   - assumes (V,F) is edge-manifold.
   template <
     typename DerivedV, 
     typename DerivedF,

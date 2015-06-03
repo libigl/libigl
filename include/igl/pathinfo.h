@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_PATHINFO_H
 #define IGL_PATHINFO_H
@@ -30,6 +30,23 @@ namespace igl
   //  filename  string containing filename (characters of basename before last
   //    '.')
   //
+  //
+  // Examples:
+  //
+  // input                     | dirname        basename       ext    filename
+  // "/"                       | "/"            ""             ""     ""
+  // "//"                      | "/"            ""             ""     ""
+  // "/foo"                    | "/"            "foo"          ""     "foo"
+  // "/foo/"                   | "/"            "foo"          ""     "foo"
+  // "/foo//"                  | "/"            "foo"          ""     "foo"
+  // "/foo/./"                 | "/foo"         "."            ""     ""
+  // "/foo/bar"                | "/foo"         "bar"          ""     "bar"
+  // "/foo/bar."               | "/foo"         "bar."         ""     "bar"
+  // "/foo/bar.txt"            | "/foo"         "bar.txt"      "txt"  "bar"
+  // "/foo/bar.txt.zip"        | "/foo"         "bar.txt.zip"  "zip"  "bar.txt"
+  // "/foo/bar.dir/"           | "/foo"         "bar.dir"      "dir"  "bar"
+  // "/foo/bar.dir/file"       | "/foo/bar.dir" "file"         ""     "file"
+  // "/foo/bar.dir/file.txt"   | "/foo/bar.dir" "file.txt"     "txt"  "file"
   //  See also: basename, dirname
   IGL_INLINE void pathinfo(
     const std::string & path,
