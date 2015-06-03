@@ -732,7 +732,7 @@ IGL_INLINE void igl::outer_hull_exact(
     //}
 #ifdef IGL_OUTER_HULL_DEBUG
   std::cerr << "Extracting outer hull" << std::endl;
-  writePLY("outer_hull_input.ply", V, F);
+  //writePLY("outer_hull_input.ply", V, F);
 #endif
   using namespace Eigen;
   using namespace std;
@@ -930,12 +930,6 @@ IGL_INLINE void igl::outer_hull_exact(
   cout<<"outer facet..."<<endl;
 #endif
     outer_facet(V,F,N,IM,f,f_flip);
-#ifdef IGL_OUTER_HULL_DEBUG
-  cout<<"outer facet: "<<f<<endl;
-  cout << V.row(F(f, 0)) << std::endl;
-  cout << V.row(F(f, 1)) << std::endl;
-  cout << V.row(F(f, 2)) << std::endl;
-#endif
     int FHcount = 1;
     FH[f] = true;
     // Q contains list of face edges to continue traversing upong
@@ -978,9 +972,6 @@ IGL_INLINE void igl::outer_hull_exact(
       // edge valence
       const size_t val = uE2E[EMAP(e)].size();
 #ifdef IGL_OUTER_HULL_DEBUG
-      std::cout << "vd: " << V.row(fd) << std::endl;
-      std::cout << "vs: " << V.row(fs) << std::endl;
-      std::cout << "edge: " << V.row(fd) - V.row(fs) << std::endl;
       for (size_t i=0; i<val; i++) {
           if (i == diIM(e)) {
               std::cout << "* ";
