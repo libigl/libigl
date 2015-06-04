@@ -194,7 +194,7 @@ IGL_INLINE void igl::mesh_boolean(
   // peel layers keeping track of odd and even flips
   Matrix<bool,Dynamic,1> odd;
   Matrix<bool,Dynamic,1> flip;
-  peel_outer_hull_layers_exact<Kernel>(EV,CF,CN,odd,flip);
+  peel_outer_hull_layers(EV,CF,CN,odd,flip);
 
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"categorize..."<<endl;
@@ -245,6 +245,7 @@ IGL_INLINE void igl::mesh_boolean(
   cout<<"clean..."<<endl;
 #endif
   // Deal with duplicate faces
+  //if (false)
   {
     VectorXi IA,IC;
     MatrixX3I uG;

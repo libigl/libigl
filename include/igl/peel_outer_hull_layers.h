@@ -40,19 +40,6 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedF > & F,
     Eigen::PlainObjectBase<Derivedodd > & odd,
     Eigen::PlainObjectBase<Derivedflip > & flip);
-  template <
-    typename Kernel,
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedN,
-    typename Derivedodd,
-    typename Derivedflip>
-  IGL_INLINE size_t peel_outer_hull_layers_exact(
-    const Eigen::PlainObjectBase<DerivedV > & V,
-    const Eigen::PlainObjectBase<DerivedF > & F,
-    const Eigen::PlainObjectBase<DerivedN > & N,
-    Eigen::PlainObjectBase<Derivedodd > & odd,
-    Eigen::PlainObjectBase<Derivedflip > & flip);
 }
 
 #ifndef IGL_STATIC_LIBRARY

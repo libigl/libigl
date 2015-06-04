@@ -48,22 +48,6 @@ namespace igl
     Eigen::PlainObjectBase<DerivedG> & G,
     Eigen::PlainObjectBase<DerivedJ> & J,
     Eigen::PlainObjectBase<Derivedflip> & flip);
-
-  template<
-    typename Kernel,
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedN,
-    typename DerivedG,
-    typename DerivedJ,
-    typename Derivedflip>
-  IGL_INLINE void outer_hull_exact(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    const Eigen::PlainObjectBase<DerivedN> & N,
-    Eigen::PlainObjectBase<DerivedG> & G,
-    Eigen::PlainObjectBase<DerivedJ> & J,
-    Eigen::PlainObjectBase<Derivedflip> & flip);
 }
 
 #ifndef IGL_STATIC_LIBRARY
