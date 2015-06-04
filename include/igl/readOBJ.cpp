@@ -309,11 +309,6 @@ IGL_INLINE bool igl::readOBJPoly(
   Eigen::PlainObjectBase<DerivedT>& TC,
   Eigen::PlainObjectBase<DerivedF>& FTC)
 {
-#ifdef _WIN32
- #pragma message ( "Deprecated. Use `readOBJ` with vector args instead" )
-#else
- #warning "Deprecated. Use `readOBJ` with vector args instead"
-#endif
   std::vector<std::vector<double> > vV,vTC,vN;
   std::vector<std::vector<Index> > vF,vFTC,vFN;
   bool success = igl::readOBJ(str,vV,vTC,vN,vF,vFTC,vFN);
