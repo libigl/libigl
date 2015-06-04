@@ -28,10 +28,13 @@ namespace igl
       {
         CENTER_ON_LONGEST_AXIS = 0,
         MEDIAN_ON_LONGEST_AXIS = 1,
-        NUM_SPLIT_METHODS = 3
+        NUM_SPLIT_METHODS = 2
       } split_method;
     public:
-      inline WindingNumberAABB(){}
+      inline WindingNumberAABB():
+        total_positive_area(std::numeric_limits<double>::infinity()),
+        split_method(MEDIAN_ON_LONGEST_AXIS)
+      {}
       inline WindingNumberAABB(
         const Eigen::MatrixXd & V,
         const Eigen::MatrixXi & F);
