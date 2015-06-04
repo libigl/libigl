@@ -245,7 +245,7 @@ IGL_INLINE void igl::mesh_boolean(
   cout<<"clean..."<<endl;
 #endif
   // Deal with duplicate faces
-  //if (false)
+  if (false)
   {
     VectorXi IA,IC;
     MatrixX3I uG;
