@@ -45,7 +45,7 @@ namespace igl
       // (Approximate) center (of mass)
       Point center;
     public:
-      inline WindingNumberTree():V(dummyV){}
+      inline WindingNumberTree();
       // For root
       inline WindingNumberTree(
         const Eigen::MatrixXd & V,
@@ -141,6 +141,20 @@ namespace igl
 template <typename Point>
 std::map< std::pair<const igl::WindingNumberTree<Point>*,const igl::WindingNumberTree<Point>*>, double>
   igl::WindingNumberTree<Point>::cached;
+
+template <typename Point>
+inline igl::WindingNumberTree<Point>::WindingNumberTree():
+  method(EXACT_WINDING_NUMBER_METHOD),
+  parent(NULL),
+  V(dummyV),
+  SV(),
+  F(),
+  //boundary(igl::boundary_facets<Eigen::MatrixXi,Eigen::MatrixXi>(F))
+  cap(),
+  radius(std::numeric_limits<double>::infinity()),
+  center(0,0,0)
+{
+}
 
 template <typename Point>
 inline igl::WindingNumberTree<Point>::WindingNumberTree(
