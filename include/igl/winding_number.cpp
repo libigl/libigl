@@ -43,15 +43,15 @@ IGL_INLINE void igl::winding_number(
   }
 }
 
-template <typename DerivedF>
+template <typename Scalar, typename DerivedF>
 IGL_INLINE void igl::winding_number_3(
-  const double * V,
+  const Scalar * V,
   const int n,
   const DerivedF * F,
   const int m,
-  const double * O,
+  const Scalar * O,
   const int no,
-  double * S)
+  Scalar * S)
 {
   // Initialize output
   // loop over origins
@@ -68,7 +68,7 @@ IGL_INLINE void igl::winding_number_3(
   for(int f = 0;f<m;f++)
   {
     // Gather corners 
-    double C[3][3];
+    Scalar C[3][3];
     // loop around triangle
     for(int t=0;t<3;t++)
     {
@@ -84,8 +84,8 @@ IGL_INLINE void igl::winding_number_3(
     for(int o = 0;o<no;o++)
     {
       // Gather vectors to corners
-      double v[3][3];
-      double vl[3];
+      Scalar v[3][3];
+      Scalar vl[3];
       // loop around triangle
       for(int t=0;t<3;t++)
       {
@@ -106,7 +106,7 @@ IGL_INLINE void igl::winding_number_3(
       }
       //printf("\n");
       // Compute determinant
-      double detf = 
+      Scalar detf = 
         v[0][0]*v[1][1]*v[2][2]+
         v[1][0]*v[2][1]*v[0][2]+
         v[2][0]*v[0][1]*v[1][2]-
@@ -114,7 +114,7 @@ IGL_INLINE void igl::winding_number_3(
         v[1][0]*v[0][1]*v[2][2]-
         v[0][0]*v[2][1]*v[1][2];
       // Compute pairwise dotproducts
-      double dp[3];
+      Scalar dp[3];
       dp[0] = v[1][0]*v[2][0];
       dp[0] += v[1][1]*v[2][1];
       dp[0] += v[1][2]*v[2][2];
@@ -126,7 +126,7 @@ IGL_INLINE void igl::winding_number_3(
       dp[2] += v[0][2]*v[1][2];
       // Compute winding number
       // Only divide by TWO_PI instead of 4*pi because there was a 2 out front
-      double val = atan2(detf,
+      Scalar val = atan2(detf,
         vl[0]*vl[1]*vl[2] + 
         dp[0]*vl[0] +
         dp[1]*vl[1] +
