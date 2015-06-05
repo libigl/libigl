@@ -1,6 +1,6 @@
-#ifndef PEEL_OUTER_HULL_LAYERS_H
-#define PEEL_OUTER_HULL_LAYERS_H
-#include "igl_inline.h"
+#ifndef IGL_PEEL_OUTER_HULL_LAYERS_H
+#define IGL_PEEL_OUTER_HULL_LAYERS_H
+#include "../igl_inline.h"
 #include <Eigen/Core>
 namespace igl
 {

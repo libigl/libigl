@@ -1,15 +1,15 @@
 #include "outer_hull.h"
-#include "outer_facet.h"
-#include "sortrows.h"
-#include "facet_components.h"
-#include "winding_number.h"
-#include "triangle_triangle_adjacency.h"
-#include "unique_edge_map.h"
-#include "barycenter.h"
-#include "per_face_normals.h"
-#include "writePLY.h"
-#include "sort_angles.h"
 #include "order_facets_around_edges.h"
+#include "../outer_facet.h"
+#include "../sortrows.h"
+#include "../facet_components.h"
+#include "../winding_number.h"
+#include "../triangle_triangle_adjacency.h"
+#include "../unique_edge_map.h"
+#include "../barycenter.h"
+#include "../per_face_normals.h"
+#include "../writePLY.h"
+#include "../sort_angles.h"
 
 #include <Eigen/Geometry>
 #include <vector>
@@ -396,19 +396,18 @@ IGL_INLINE void igl::outer_hull(
   // Is A inside B? Assuming A and B are consistently oriented but closed and
   // non-intersecting.
   const auto & is_component_inside_other = [](
-    const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> & V,
+    const Eigen::MatrixXd & V,
     const MatrixXV & BC,
     const MatrixXG & A,
     const MatrixXJ & AJ,
     const MatrixXG & B)->bool
   {
-      typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Matrix;
     const auto & bounding_box = [](
-      const Matrix & V,
+      const Eigen::MatrixXd & V,
       const MatrixXG & F)->
-      Matrix
+      Eigen::MatrixXd
     {
-      Matrix BB(2,3);
+      Eigen::MatrixXd BB(2,3);
       BB<<
          1e26,1e26,1e26,
         -1e26,-1e26,-1e26;
@@ -426,8 +425,8 @@ IGL_INLINE void igl::outer_hull(
     };
     // A lot of the time we're dealing with unrelated, distant components: cull
     // them.
-    Matrix ABB = bounding_box(V,A);
-    Matrix BBB = bounding_box(V,B);
+    Eigen::MatrixXd ABB = bounding_box(V,A);
+    Eigen::MatrixXd BBB = bounding_box(V,B);
     if( (BBB.row(0)-ABB.row(1)).maxCoeff()>0  ||
         (ABB.row(0)-BBB.row(1)).maxCoeff()>0 )
     {
@@ -449,16 +448,14 @@ IGL_INLINE void igl::outer_hull(
         CGAL::to_double(BC(AJ(0), 2)) };
     // In a perfect world, it's enough to test a single point.
     double w;
-    const double * Vdata;
-    Vdata = V.data();
     winding_number_3(
-      Vdata,V.rows(),
+      V.data(),V.rows(),
       B.data(),B.rows(),
       q,1,&w);
     return w > 0.5 || w < -0.5;
   };
 
-  Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Vcol(V.rows(), V.cols());
+  Eigen::MatrixXd Vcol(V.rows(), V.cols());
   for (size_t i=0; i<V.rows(); i++) {
       for (size_t j=0; j<V.cols(); j++) {
           Vcol(i, j) = CGAL::to_double(V(i, j));

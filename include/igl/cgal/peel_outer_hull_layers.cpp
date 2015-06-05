@@ -1,13 +1,13 @@
 #include "peel_outer_hull_layers.h"
-#include "per_face_normals.h"
+#include "../per_face_normals.h"
 #include "outer_hull.h"
 #include <vector>
 #include <iostream>
 //#define IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
-#include "writePLY.h"
-#include "writeDMAT.h"
-#include "STR.h"
+#include "../writePLY.h"
+#include "../writeDMAT.h"
+#include "../STR.h"
 #endif
 
 using namespace std;

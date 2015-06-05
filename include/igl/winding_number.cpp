@@ -101,7 +101,7 @@ IGL_INLINE void igl::winding_number_3(
         // Matlab crashes on NaN
         if(vl[t]!=0)
         {
-          vl[t] /= sqrt(vl[t]);
+          vl[t] = sqrt(vl[t]);
         }
       }
       //printf("\n");

@@ -1,7 +1,7 @@
 #ifndef ORDER_FACETS_AROUND_EDGES
 #define ORDER_FACETS_AROUND_EDGES
 
-#include "igl_inline.h"
+#include "../igl_inline.h"
 #include <Eigen/Core>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
