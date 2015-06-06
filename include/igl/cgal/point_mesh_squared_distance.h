@@ -28,7 +28,7 @@ namespace igl
   //   C  #P by 3 list of closest points
   //
   // Known bugs: This only computes distances to triangles. So unreferenced
-  // vertices are ignored.
+  // vertices and degenerate triangles (segments) are ignored.
   template <typename Kernel>
   IGL_INLINE void point_mesh_squared_distance(
     const Eigen::MatrixXd & P,
