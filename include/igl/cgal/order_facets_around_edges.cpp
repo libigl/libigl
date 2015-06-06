@@ -1,4 +1,5 @@
 #include "order_facets_around_edges.h"
+#include "../sort_angles.h"
 #include <type_traits>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
