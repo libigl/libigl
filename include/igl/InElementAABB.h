@@ -283,10 +283,8 @@ inline std::vector<int> igl::InElementAABB::find(
     inside &= (q(d)-m_bb_min(d))>=epsilon;
     inside &= (m_bb_max(d)-q(d))>=epsilon;
   }
-  cout<<"searching..."<<endl;
   if(!inside)
   {
-    cout<<"not in bb"<<endl;
     return std::vector<int>();
   }
   if(m_element != -1)
@@ -318,12 +316,6 @@ inline std::vector<int> igl::InElementAABB::find(
           a1 = doublearea_single(V1,V2,(Vector2d)q);
           a2 = doublearea_single(V2,V3,(Vector2d)q);
           a3 = doublearea_single(V3,V1,(Vector2d)q);
-          cout<<
-            a0<<" "<<
-            a1<<" "<<
-            a2<<" "<<
-            a3<<" "<<
-            endl;
           break;
         }
       default:assert(false);
