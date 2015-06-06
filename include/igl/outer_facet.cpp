@@ -61,13 +61,13 @@ IGL_INLINE void igl::outer_facet(
                         max_f = f;
                         max_nd = nd;
                         flip = false;
-                    } else if (f > max_f){
+                    } else if (f > (Index)max_f){
                         max_f = f;
                         max_nd = nd;
                         flip = false;
                     }
                 } else {
-                    if (flip && f < max_f) {
+                    if (flip && f < (Index)max_f) {
                         max_f = f;
                         max_nd = generic_fabs(nd);
                         flip = true;

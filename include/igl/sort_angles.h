@@ -2,6 +2,7 @@
 #define SORT_ANGLES_H
 
 #include "igl_inline.h"
+#include <Eigen/Core>
 
 namespace igl {
     // Sort angles in ascending order in a numerically robust way.

@@ -48,16 +48,17 @@ IGL_INLINE void igl::outer_hull(
   typedef Matrix<typename DerivedN::Scalar,1,3> RowVector3N;
   const Index m = F.rows();
 
-  const auto & duplicate_simplex = [&F](const int f, const int g)->bool
-  {
-    return 
-      (F(f,0) == F(g,0) && F(f,1) == F(g,1) && F(f,2) == F(g,2)) ||
-      (F(f,1) == F(g,0) && F(f,2) == F(g,1) && F(f,0) == F(g,2)) ||
-      (F(f,2) == F(g,0) && F(f,0) == F(g,1) && F(f,1) == F(g,2)) ||
-      (F(f,0) == F(g,2) && F(f,1) == F(g,1) && F(f,2) == F(g,0)) ||
-      (F(f,1) == F(g,2) && F(f,2) == F(g,1) && F(f,0) == F(g,0)) ||
-      (F(f,2) == F(g,2) && F(f,0) == F(g,1) && F(f,1) == F(g,0));
-  };
+  // UNUSED:
+  //const auto & duplicate_simplex = [&F](const int f, const int g)->bool
+  //{
+  //  return 
+  //    (F(f,0) == F(g,0) && F(f,1) == F(g,1) && F(f,2) == F(g,2)) ||
+  //    (F(f,1) == F(g,0) && F(f,2) == F(g,1) && F(f,0) == F(g,2)) ||
+  //    (F(f,2) == F(g,0) && F(f,0) == F(g,1) && F(f,1) == F(g,2)) ||
+  //    (F(f,0) == F(g,2) && F(f,1) == F(g,1) && F(f,2) == F(g,0)) ||
+  //    (F(f,1) == F(g,2) && F(f,2) == F(g,1) && F(f,0) == F(g,0)) ||
+  //    (F(f,2) == F(g,2) && F(f,0) == F(g,1) && F(f,1) == F(g,0));
+  //};
 
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"outer hull..."<<endl;
@@ -117,7 +118,7 @@ IGL_INLINE void igl::outer_hull(
   vector<MatrixXG> vG(ncc);
   vector<MatrixXJ> vJ(ncc);
   vector<MatrixXJ> vIM(ncc);
-  size_t face_count = 0;
+  //size_t face_count = 0;
   for(size_t id = 0;id<ncc;id++)
   {
     vIM[id].resize(counts[id],1);
@@ -456,8 +457,8 @@ IGL_INLINE void igl::outer_hull(
   };
 
   Eigen::MatrixXd Vcol(V.rows(), V.cols());
-  for (size_t i=0; i<V.rows(); i++) {
-      for (size_t j=0; j<V.cols(); j++) {
+  for (size_t i=0; i<(size_t)V.rows(); i++) {
+      for (size_t j=0; j<(size_t)V.cols(); j++) {
           Vcol(i, j) = CGAL::to_double(V(i, j));
       }
   }

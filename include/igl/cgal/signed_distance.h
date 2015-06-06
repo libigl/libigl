@@ -40,7 +40,7 @@ namespace igl
   //     sign_type=SIGNED_DISTANCE_TYPE_PSEUDONORMAL)
   //
   // Known bugs: This only computes distances to triangles. So unreferenced
-  // vertices are ignored.
+  // vertices and degenerate triangles are ignored.
   template <typename Kernel>
   IGL_INLINE void signed_distance(
     const Eigen::MatrixXd & P,
