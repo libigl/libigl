@@ -7,11 +7,11 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_SIGNED_DISTANCE_H
 #define IGL_SIGNED_DISTANCE_H
-#include <igl/igl_inline.h>
-#include <igl/WindingNumberAABB.h>
+#include "igl_inline.h"
+#include "AABB.h"
+#include "WindingNumberAABB.h"
 #include <Eigen/Core>
 #include <vector>
-#include "CGAL_includes.hpp"
 namespace igl
 {
   enum SignedDistanceType
@@ -24,9 +24,6 @@ namespace igl
   };
   // Computes signed distance to a mesh
   //
-  // Templates:
-  //   Kernal  CGAL computation and construction kernel (e.g.
-  //     CGAL::Simple_cartesian<double>)
   // Inputs:
   //   P  #P by 3 list of query point positions
   //   V  #V by 3 list of vertex positions
@@ -41,7 +38,6 @@ namespace igl
   //
   // Known bugs: This only computes distances to triangles. So unreferenced
   // vertices and degenerate triangles are ignored.
-  template <typename Kernel>
   IGL_INLINE void signed_distance(
     const Eigen::MatrixXd & P,
     const Eigen::MatrixXd & V,
@@ -53,12 +49,8 @@ namespace igl
     Eigen::MatrixXd & N);
   // Computes signed distance to mesh
   //
-  // Templates:
-  //   Kernal  CGAL computation and construction kernel (e.g.
-  //     CGAL::Simple_cartesian<double>)
   // Inputs:
-  //   tree  AABB acceleration tree (see point_mesh_squared_distance.h)
-  //   T  #F list of CGAL triangles (see point_mesh_squared_distance.h)
+  //   tree  AABB acceleration tree (see AABB.h)
   //   F  #F by 3 list of triangle indices
   //   FN  #F by 3 list of triangle normals 
   //   VN  #V by 3 list of vertex normals (ANGLE WEIGHTING)
@@ -67,92 +59,61 @@ namespace igl
   //   q  Query point
   // Returns signed distance to mesh
   //
-  template <typename Kernel>
-  IGL_INLINE typename Kernel::FT signed_distance_pseudonormal(
-    const CGAL::AABB_tree<
-      CGAL::AABB_traits<Kernel, 
-        CGAL::AABB_triangle_primitive<Kernel, 
-          typename std::vector<CGAL::Triangle_3<Kernel> >::iterator
-        >
-      >
-    > & tree,
-    const std::vector<CGAL::Triangle_3<Kernel> > & T,
+  IGL_INLINE double signed_distance_pseudonormal(
+    const AABB<Eigen::MatrixXd,3> & tree,
+    const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
     const Eigen::MatrixXd & FN,
     const Eigen::MatrixXd & VN,
     const Eigen::MatrixXd & EN,
     const Eigen::VectorXi & EMAP,
-    const typename Kernel::Point_3 & q);
+    const Eigen::RowVector3d & q);
   // Outputs:
   //   s  sign
   //   sqrd  squared distance
-  //   pp  closest point and primitve
+  //   i  closest primitive
+  //   c  closest point
   //   n  normal
-  template <typename Kernel>
   IGL_INLINE void signed_distance_pseudonormal(
-    const CGAL::AABB_tree<
-      CGAL::AABB_traits<Kernel, 
-        CGAL::AABB_triangle_primitive<Kernel, 
-          typename std::vector<CGAL::Triangle_3<Kernel> >::iterator
-        >
-      >
-    > & tree,
-    const std::vector<CGAL::Triangle_3<Kernel> > & T,
+    const AABB<Eigen::MatrixXd,3> & tree,
+    const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
     const Eigen::MatrixXd & FN,
     const Eigen::MatrixXd & VN,
     const Eigen::MatrixXd & EN,
     const Eigen::VectorXi & EMAP,
-    const typename Kernel::Point_3 & q,
-    typename Kernel::FT & s,
-    typename Kernel::FT & sqrd,
-    typename CGAL::AABB_tree<
-      CGAL::AABB_traits<Kernel, 
-        CGAL::AABB_triangle_primitive<Kernel, 
-          typename std::vector<CGAL::Triangle_3<Kernel> >::iterator> 
-          > 
-        >::Point_and_primitive_id & pp,
-   Eigen::Vector3d & n);
+    const Eigen::RowVector3d & q,
+    double & s,
+    double & sqrd,
+    int & i,
+    Eigen::RowVector3d & c,
+    Eigen::RowVector3d & n);
 
   // Inputs:
-  //   tree  AABB acceleration tree (see point_mesh_squared_distance.h)
+  //   tree  AABB acceleration tree (see cgal/point_mesh_squared_distance.h)
   //   hier  Winding number evaluation hierarchy
   //   q  Query point
   // Returns signed distance to mesh
-  template <typename Kernel>
-  IGL_INLINE typename Kernel::FT signed_distance_winding_number(
-    const CGAL::AABB_tree<
-      CGAL::AABB_traits<Kernel, 
-        CGAL::AABB_triangle_primitive<Kernel, 
-          typename std::vector<CGAL::Triangle_3<Kernel> >::iterator
-        >
-      >
-    > & tree,
+  IGL_INLINE double signed_distance_winding_number(
+    const AABB<Eigen::MatrixXd,3> & tree,
+    const Eigen::MatrixXd & V,
+    const Eigen::MatrixXi & F,
     const igl::WindingNumberAABB<Eigen::Vector3d> & hier,
-    const typename Kernel::Point_3 & q);
+    const Eigen::RowVector3d & q);
   // Outputs:
   //   s  sign
   //   sqrd  squared distance
   //   pp  closest point and primitve
-  template <typename Kernel>
   IGL_INLINE void signed_distance_winding_number(
-    const CGAL::AABB_tree<
-      CGAL::AABB_traits<Kernel, 
-        CGAL::AABB_triangle_primitive<Kernel, 
-          typename std::vector<CGAL::Triangle_3<Kernel> >::iterator
-        >
-      >
-    > & tree,
+    const AABB<Eigen::MatrixXd,3> & tree,
+    const Eigen::MatrixXd & V,
+    const Eigen::MatrixXi & F,
     const igl::WindingNumberAABB<Eigen::Vector3d> & hier,
-    const typename Kernel::Point_3 & q,
-    typename Kernel::FT & s,
-    typename Kernel::FT & sqrd,
-    typename CGAL::AABB_tree<
-      CGAL::AABB_traits<Kernel, 
-        CGAL::AABB_triangle_primitive<Kernel, 
-          typename std::vector<CGAL::Triangle_3<Kernel> >::iterator> 
-          > 
-        >::Point_and_primitive_id & pp);
+    const Eigen::RowVector3d & q,
+    double & s,
+    double & sqrd,
+    int & i,
+    Eigen::RowVector3d & c);
 }
 
 #ifndef IGL_STATIC_LIBRARY
