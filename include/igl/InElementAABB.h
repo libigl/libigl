@@ -276,7 +276,7 @@ inline std::vector<int> igl::InElementAABB::find(
   bool inside = true;
   const int dim = m_bb_max.size();
   assert(q.size() == m_bb_max.size());
-  const double epsilon = 1e-14;
+  const double epsilon = igl::EPS<double>();
   // Check if outside bounding box
   for(int d = 0;d<q.size()&&inside;d++)
   {
