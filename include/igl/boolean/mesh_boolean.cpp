@@ -1,6 +1,6 @@
 #include "mesh_boolean.h"
-#include <igl/peel_outer_hull_layers.h>
 #include <igl/per_face_normals.h>
+#include <igl/cgal/peel_outer_hull_layers.h>
 #include <igl/cgal/remesh_self_intersections.h>
 #include <igl/remove_unreferenced.h>
 #include <igl/unique_simplices.h>
