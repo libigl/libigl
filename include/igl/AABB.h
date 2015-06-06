@@ -65,12 +65,20 @@ namespace igl
       {
         swap(*this,other);
       }
-      ~AABB()
+      // Seems like there should have been an elegant solution to this using
+      // the copy-swap idiom above:
+      inline void deinit()
       {
+        m_element = -1;
+        m_box = Eigen::AlignedBox<Scalar,DIM>();
         delete m_left;
         m_left = NULL;
         delete m_right;
         m_right = NULL;
+      }
+      ~AABB()
+      {
+        deinit();
       }
       // Build an Axis-Aligned Bounding Box tree for a given mesh and given
       // serialization of a previous AABB tree.
@@ -166,6 +174,7 @@ namespace igl
         const RowVectorDIMS & p,
         int & i,
         RowVectorDIMS & c) const;
+    private:
       inline Scalar squared_distance(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
@@ -173,7 +182,7 @@ namespace igl
         const Scalar min_sqr_d,
         int & i,
         RowVectorDIMS & c) const;
-
+    public:
       template <
         typename DerivedP, 
         typename DerivedsqrD, 
@@ -203,6 +212,15 @@ namespace igl
         Scalar & sqr_d,
         int & i,
         RowVectorDIMS & c) const;
+    public:
+      template <int SS>
+        static
+        void barycentric_coordinates(
+          const RowVectorDIMS & p, 
+          const RowVectorDIMS & a, 
+          const RowVectorDIMS & b, 
+          const RowVectorDIMS & c,
+          Eigen::Matrix<Scalar,1,SS> & bary);
   };
 }
 
@@ -291,7 +309,7 @@ inline void igl::AABB<DerivedV,DIM>::init(
 {
   using namespace Eigen;
   using namespace std;
-  const int dim = V.cols();
+  assert(DIM == V.cols() && "V.cols() should matched declared dimension");
   const Scalar inf = numeric_limits<Scalar>::infinity();
   m_box = AlignedBox<Scalar,DIM>();
   // Compute bounding box
@@ -542,6 +560,8 @@ igl::AABB<DerivedV,DIM>::squared_distance(
   using namespace std;
   using namespace igl;
   Scalar sqr_d = min_sqr_d;
+  assert(DIM == 3 && "Code has only been tested for DIM == 3");
+  assert(Ele.cols() == 3 && "Code has only been tested for simplex size == 3");
 
   assert(m_element==-1 || (m_left == NULL && m_right == NULL));
   if(is_leaf())
@@ -646,30 +666,6 @@ inline void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
   using namespace igl;
   using namespace std;
 
-  // http://gamedev.stackexchange.com/a/23745
-  const auto & bary = [](
-      const RowVectorDIMS & p, 
-      const RowVectorDIMS & a, 
-      const RowVectorDIMS & b, 
-      const RowVectorDIMS & c, 
-      Scalar &u, 
-      Scalar &v, 
-      Scalar &w)
-  {
-    const RowVectorDIMS v0 = b - a;
-    const RowVectorDIMS v1 = c - a;
-    const RowVectorDIMS v2 = p - a;
-    Scalar d00 = v0.dot(v0);
-    Scalar d01 = v0.dot(v1);
-    Scalar d11 = v1.dot(v1);
-    Scalar d20 = v2.dot(v0);
-    Scalar d21 = v2.dot(v1);
-    Scalar denom = d00 * d11 - d01 * d01;
-    v = (d11 * d20 - d01 * d21) / denom;
-    w = (d00 * d21 - d01 * d20) / denom;
-    u = 1.0f - v - w;
-  };
-
   // Only one element per node
   // plane unit normal
   const RowVectorDIMS v10 = (V.row(Ele(m_element,1))- V.row(Ele(m_element,0)));
@@ -693,14 +689,14 @@ inline void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
     d_j = v.dot(un);
     pp = p - d_j*un;
     // determine if pp is inside triangle
-    Scalar b0,b1,b2;
-    bary(
-        pp,
-        V.row(Ele(m_element,0)),
-        V.row(Ele(m_element,1)),
-        V.row(Ele(m_element,2)),
-        b0,b1,b2);
-    inside_triangle = fabs(fabs(b0) + fabs(b1) + fabs(b2) - 1.) <= 1e-10;
+    Eigen::Matrix<Scalar,1,3> b;
+    barycentric_coordinates(
+          pp,
+          V.row(Ele(m_element,0)),
+          V.row(Ele(m_element,1)),
+          V.row(Ele(m_element,2)),
+          b);
+    inside_triangle = fabs(fabs(b(0)) + fabs(b(1)) + fabs(b(2)) - 1.) <= 1e-10;
   }
   if(inside_triangle)
   {
@@ -753,5 +749,32 @@ inline void igl::AABB<DerivedV,DIM>::set_min(
     sqr_d = sqr_d_candidate;
   }
 }
+
+
+template <typename DerivedV, int DIM>
+template <int SS>
+inline void
+igl::AABB<DerivedV,DIM>::barycentric_coordinates(
+  const RowVectorDIMS & p, 
+  const RowVectorDIMS & a, 
+  const RowVectorDIMS & b, 
+  const RowVectorDIMS & c,
+  Eigen::Matrix<Scalar,1,SS> & bary)
+{
+  assert(SS==3);
+  // http://gamedev.stackexchange.com/a/23745
+  const RowVectorDIMS v0 = b - a;
+  const RowVectorDIMS v1 = c - a;
+  const RowVectorDIMS v2 = p - a;
+  Scalar d00 = v0.dot(v0);
+  Scalar d01 = v0.dot(v1);
+  Scalar d11 = v1.dot(v1);
+  Scalar d20 = v2.dot(v0);
+  Scalar d21 = v2.dot(v1);
+  Scalar denom = d00 * d11 - d01 * d01;
+  bary(1) = (d11 * d20 - d01 * d21) / denom;
+  bary(2) = (d00 * d21 - d01 * d20) / denom;
+  bary(0) = 1.0f - bary(1) - bary(2);
+};
 
 #endif

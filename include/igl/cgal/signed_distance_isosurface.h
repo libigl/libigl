@@ -7,8 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_SIGNED_DISTANCE_ISOSURFACE_H
 #define IGL_SIGNED_DISTANCE_ISOSURFACE_H
-#include <igl/igl_inline.h>
-#include "signed_distance.h"
+#include "../igl_inline.h"
+#include "../signed_distance.h"
 #include <Eigen/Core>
 namespace igl
 {
@@ -22,7 +22,8 @@ namespace igl
   //   angle_bound  lower bound on triangle angles (mesh quality) (e.g. 28)
   //   radius_bound  upper bound on triangle size (mesh density?) (e.g. 0.02)
   //   distance_bound  cgal mysterious parameter (mesh density?) (e.g. 0.01)
-  //   sign_type  method for computing distance _sign_ (see signed_distance.h)
+  //   sign_type  method for computing distance _sign_ (see
+  //     ../signed_distance.h)
   // Outputs:
   //   V  #V by 3 list of input mesh vertex positions
   //   F  #F by 3 list of input triangle indices
