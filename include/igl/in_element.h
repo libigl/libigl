@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_IN_ELEMENT_H
 #define IGL_IN_ELEMENT_H
@@ -20,8 +20,8 @@ namespace igl
   // templates:
   //   DIM  dimension of vertices in V (# of columns)
   // Inputs:
-  //   V  #V by dim list of mesh vertex positions. 
-  //   Ele  #Ele by dim+1 list of mesh indices into #V. 
+  //   V  #V by dim list of mesh vertex positions.
+  //   Ele  #Ele by dim+1 list of mesh indices into #V.
   //   Q  #Q by dim list of query point positions
   //   aabb  axis-aligned bounding box tree object (see AABB.h)
   // Outputs:
@@ -43,7 +43,7 @@ namespace igl
     const Eigen::MatrixXi & Ele,
     const Eigen::PlainObjectBase<DerivedQ> & Q,
     const AABB<DerivedV,DIM> & aabb,
-    Eigen::SparseMatrix<double> & I);
+    Eigen::SparseMatrix<Scalar> & I);
   //
   // Example:
   //   InElementAABB aabb;

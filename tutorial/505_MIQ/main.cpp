@@ -6,6 +6,14 @@
 #include <igl/comiso/nrosy.h>
 #include <sstream>
 #include <igl/rotate_vectors.h>
+#include <igl/local_basis.h>
+#include <igl/compute_frame_field_bisectors.h>
+#include <igl/comb_cross_field.h>
+#include <igl/cross_field_missmatch.h>
+#include <igl/find_cross_field_singularities.h>
+#include <igl/cut_mesh_from_singularities.h>
+#include <igl/comb_frame_field.h>
+#include <igl/comb_cross_field.h>
 
 // Input mesh
 Eigen::MatrixXd V;
@@ -75,7 +83,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   {
     extend_arrows = !extend_arrows;
   }
-  
+
   if (key <'1' || key >'8')
     return false;
 
@@ -204,7 +212,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     viewer.data.set_uv(UV_seams,FUV_seams);
     viewer.core.show_texture = true;
   }
-  
+
   viewer.data.set_colors(Eigen::RowVector3d(1,1,1));
 
   // Replace the standard texture with an integer shift invariant texture
