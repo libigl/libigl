@@ -27,7 +27,11 @@ IGL_INLINE void igl::signed_distance(
   using namespace std;
   assert(V.cols() == 3 && "V should have 3d positions");
   assert(P.cols() == 3 && "P should have 3d positions");
-  assert(F.cols() == 3 && "F should have triangles");
+  // Only unsigned distance is supported for non-triangles
+  if(sign_type != SIGNED_DISTANCE_TYPE_UNSIGNED)
+  {
+    assert(F.cols() == 3 && "F should have triangles");
+  }
 
   // Prepare distance computation
   AABB<MatrixXd,3> tree;
@@ -41,6 +45,9 @@ IGL_INLINE void igl::signed_distance(
   {
     default:
       assert(false && "Unknown SignedDistanceType");
+    case SIGNED_DISTANCE_TYPE_UNSIGNED:
+      // do nothing
+      break;
     case SIGNED_DISTANCE_TYPE_DEFAULT:
     case SIGNED_DISTANCE_TYPE_WINDING_NUMBER:
       hier.set_mesh(V,F);
@@ -70,6 +77,10 @@ IGL_INLINE void igl::signed_distance(
     {
       default:
         assert(false && "Unknown SignedDistanceType");
+      case SIGNED_DISTANCE_TYPE_UNSIGNED:
+        s = 1.;
+        sqrd = tree.squared_distance(V,F,q,i,c);
+        break;
       case SIGNED_DISTANCE_TYPE_DEFAULT:
       case SIGNED_DISTANCE_TYPE_WINDING_NUMBER:
         signed_distance_winding_number(tree,V,F,hier,q,s,sqrd,i,c);

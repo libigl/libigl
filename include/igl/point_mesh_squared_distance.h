@@ -17,14 +17,18 @@ namespace igl
   // Inputs:
   //   P  #P by 3 list of query point positions
   //   V  #V by 3 list of vertex positions
-  //   F  #F by 3 list of triangle indices
+  //   F  #F by (3|2|1) list of (triangle|edge|point) indices
   // Outputs:
   //   sqrD  #P list of smallest squared distances
-  //   I  #P list of facet indices corresponding to smallest distances
+  //   I  #P list of primitive indices corresponding to smallest distances
   //   C  #P by 3 list of closest points
   //
-  // Known bugs: This only computes distances to triangles. So unreferenced
-  // vertices and degenerate triangles (segments) are ignored.
+  // Known bugs: This only computes distances to given primitivess. So
+  // unreferenced vertices are ignored. However, degenerate primitives are
+  // handled correctly: triangle [1 2 2] is treated as a segment [1 2], and
+  // triangle [1 1 1] is treated as a point. So one _could_ add extra
+  // combinatorially degenerate rows to Ele for all unreferenced vertices to
+  // also get distances to points.
   template <
     typename DerivedP,
     typename DerivedV,

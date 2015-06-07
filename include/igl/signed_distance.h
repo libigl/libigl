@@ -16,10 +16,11 @@ namespace igl
 {
   enum SignedDistanceType
   {
+    // Use fast pseudo-normal test [Bærentzen & Aanæs 2005]
     SIGNED_DISTANCE_TYPE_PSEUDONORMAL   = 0,
     SIGNED_DISTANCE_TYPE_WINDING_NUMBER = 1,
     SIGNED_DISTANCE_TYPE_DEFAULT        = 2,
-    SIGNED_DISTANCE_TYPE_IGNORE         = 3,
+    SIGNED_DISTANCE_TYPE_UNSIGNED       = 3,
     NUM_SIGNED_DISTANCE_TYPE            = 4
   };
   // Computes signed distance to a mesh
@@ -27,8 +28,9 @@ namespace igl
   // Inputs:
   //   P  #P by 3 list of query point positions
   //   V  #V by 3 list of vertex positions
-  //   F  #F by 3 list of triangle indices
-  //   sign_type  method for computing distance _sign_ (see signed_distance.h)
+  //   F  #F by ss list of triangle indices, ss should be 3 unless sign_type ==
+  //     SIGNED_DISTANCE_TYPE_UNSIGNED
+  //   sign_type  method for computing distance _sign_ S
   // Outputs:
   //   S  #P list of smallest signed distances
   //   I  #P list of facet indices corresponding to smallest distances
