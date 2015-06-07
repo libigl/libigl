@@ -68,9 +68,8 @@ IGL_INLINE std::string igl::file_dialog_open()
       buffer[pos] = (char)ofn.lpstrFile[pos];
       pos++;
     }
-    buffer[pos] = 0;
   } 
-  
+  buffer[pos] = 0;
 #else
   
   // For linux use zenity
