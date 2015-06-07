@@ -12,216 +12,222 @@
 // The mesh (V,Ele) is stored and managed by the caller and each routine here
 // simply takes it as references (it better not change between calls).
 //
+// It's a little annoying that the Dimension is a template parameter and not
+// picked up at run time from V. This leads to duplicated code for 2d/3d (up to
+// dim).
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <vector>
 namespace igl
 {
   template <typename DerivedV, int DIM>
-  class AABB
-  {
-    public:
-      typedef typename DerivedV::Scalar Scalar;
-      typedef Eigen::Matrix<Scalar,1,DIM> RowVectorDIMS;
-      typedef Eigen::Matrix<Scalar,DIM,1> VectorDIMS;
-      typedef Eigen::Matrix<Scalar,Eigen::Dynamic,DIM> MatrixXDIMS;
-      // Shared pointers are slower...
-      AABB * m_left;
-      AABB * m_right;
-      Eigen::AlignedBox<Scalar,DIM> m_box;
-      // -1 non-leaf
-      int m_primitive;
-      AABB():
-        m_left(NULL), m_right(NULL),
-        m_box(), m_primitive(-1)
+    class AABB 
+    {
+      public:
+        typedef typename DerivedV::Scalar Scalar;
+        typedef Eigen::Matrix<Scalar,1,DIM> RowVectorDIMS;
+        typedef Eigen::Matrix<Scalar,DIM,1> VectorDIMS;
+        typedef Eigen::Matrix<Scalar,Eigen::Dynamic,DIM> MatrixXDIMS;
+        // Shared pointers are slower...
+        AABB * m_left;
+        AABB * m_right;
+        Eigen::AlignedBox<Scalar,DIM> m_box;
+        // -1 non-leaf
+        int m_primitive;
+        AABB():
+          m_left(NULL), m_right(NULL),
+          m_box(), m_primitive(-1)
       {}
-      // http://stackoverflow.com/a/3279550/148668
-      AABB(const AABB& other):
-        m_left(other.m_left ? new AABB(*other.m_left) : NULL),
-        m_right(other.m_right ? new AABB(*other.m_right) : NULL),
-        m_box(other.m_box),
-        m_primitive(other.m_primitive)
-      {
-      }
-      // copy-swap idiom
-      friend void swap(AABB& first, AABB& second)
-      {
-        // Enable ADL
-        using std::swap;
-        swap(first.m_left,second.m_left);
-        swap(first.m_right,second.m_right);
-        swap(first.m_box,second.m_box);
-        swap(first.m_primitive,second.m_primitive);
-      }
-      // Pass-by-value (aka copy)
-      AABB& operator=(AABB other)
+        // http://stackoverflow.com/a/3279550/148668
+        AABB(const AABB& other):
+          m_left(other.m_left ? new AABB(*other.m_left) : NULL),
+          m_right(other.m_right ? new AABB(*other.m_right) : NULL),
+          m_box(other.m_box),
+          m_primitive(other.m_primitive)
+          {
+          }
+        // copy-swap idiom
+        friend void swap(AABB& first, AABB& second)
+        {
+          // Enable ADL
+          using std::swap;
+          swap(first.m_left,second.m_left);
+          swap(first.m_right,second.m_right);
+          swap(first.m_box,second.m_box);
+          swap(first.m_primitive,second.m_primitive);
+        }
+        // Pass-by-value (aka copy)
+        AABB& operator=(AABB other)
+        {
+          swap(*this,other);
+          return *this;
+        }
+        AABB(AABB&& other):
+          // initialize via default constructor
+          AABB() 
       {
         swap(*this,other);
-        return *this;
       }
-      AABB(AABB&& other):
-        // initialize via default constructor
-        AABB() 
-      {
-        swap(*this,other);
-      }
-      // Seems like there should have been an elegant solution to this using
-      // the copy-swap idiom above:
-      inline void deinit()
-      {
-        m_primitive = -1;
-        m_box = Eigen::AlignedBox<Scalar,DIM>();
-        delete m_left;
-        m_left = NULL;
-        delete m_right;
-        m_right = NULL;
-      }
-      ~AABB()
-      {
-        deinit();
-      }
-      // Build an Axis-Aligned Bounding Box tree for a given mesh and given
-      // serialization of a previous AABB tree.
-      //
-      // Inputs:
-      //   V  #V by dim list of mesh vertex positions. 
-      //   Ele  #Ele by dim+1 list of mesh indices into #V. 
-      //   bb_mins  max_tree by dim list of bounding box min corner positions
-      //   bb_maxs  max_tree by dim list of bounding box max corner positions
-      //   elements  max_tree list of element or (not leaf id) indices into Ele
-      //   i  recursive call index {0}
-      inline void init(
-          const Eigen::PlainObjectBase<DerivedV> & V,
-          const Eigen::MatrixXi & Ele, 
-          const MatrixXDIMS & bb_mins,
-          const MatrixXDIMS & bb_maxs,
-          const Eigen::VectorXi & elements,
-          const int i = 0);
-      // Wrapper for root with empty serialization
-      inline void init(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::MatrixXi & Ele);
-      // Build an Axis-Aligned Bounding Box tree for a given mesh.
-      //
-      // Inputs:
-      //   V  #V by dim list of mesh vertex positions. 
-      //   Ele  #Ele by dim+1 list of mesh indices into #V. 
-      //   SI  #Ele by dim list revealing for each coordinate where Ele's
-      //     barycenters would be sorted: SI(e,d) = i --> the dth coordinate of
-      //     the barycenter of the eth element would be placed at position i in a
-      //     sorted list.
-      //   I  #I list of indices into Ele of elements to include (for recursive
-      //     calls)
-      // 
-      inline void init(
-          const Eigen::PlainObjectBase<DerivedV> & V,
-          const Eigen::MatrixXi & Ele, 
-          const Eigen::MatrixXi & SI,
-          const Eigen::VectorXi & I);
-      // Return whether at leaf node
-      inline bool is_leaf() const;
-      // Find the indices of elements containing given point.
-      //
-      // Inputs:
-      //   V  #V by dim list of mesh vertex positions. **Should be same as used to
-      //     construct mesh.**
-      //   Ele  #Ele by dim+1 list of mesh indices into #V. **Should be same as used to
-      //     construct mesh.**
-      //   q  dim row-vector query position
-      //   first  whether to only return first element containing q
-      // Returns:
-      //   list of indices of elements containing q
-      inline std::vector<int> find(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::MatrixXi & Ele, 
-        const RowVectorDIMS & q, 
-        const bool first=false) const;
-  
-      // If number of elements m then total tree size should be 2*h where h is
-      // the deepest depth 2^ceil(log(#Ele*2-1))
-      inline int subtree_size() const;
-  
-      // Serialize this class into 3 arrays (so we can pass it pack to matlab)
-      //
-      // Outputs:
-      //   bb_mins  max_tree by dim list of bounding box min corner positions
-      //   bb_maxs  max_tree by dim list of bounding box max corner positions
-      //   elements  max_tree list of element or (not leaf id) indices into Ele
-      //   i  recursive call index into these arrays {0}
-      inline void serialize(
-        MatrixXDIMS & bb_mins,
-        MatrixXDIMS & bb_maxs,
-        Eigen::VectorXi & elements,
-        const int i = 0) const;
-      // Compute squared distance to a query point
-      //
-      // Inputs:
-      //   V  #V by dim list of vertex positions
-      //   Ele  #Ele by dim list of simplex indices
-      //   P  3 list of query point coordinates
-      //   min_sqr_d  current minimum squared distance (only find distances
-      //   less than this)
-      // Outputs:
-      //   I  #P list of facet indices corresponding to smallest distances
-      //   C  #P by 3 list of closest points
-      // Returns squared distance
-      //
-      // Known bugs: currently assumes Elements are triangles regardless of
-      // dimension.
-      inline Scalar squared_distance(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::MatrixXi & Ele, 
-        const RowVectorDIMS & p,
-        int & i,
-        RowVectorDIMS & c) const;
-    private:
-      inline Scalar squared_distance(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::MatrixXi & Ele, 
-        const RowVectorDIMS & p,
-        const Scalar min_sqr_d,
-        int & i,
-        RowVectorDIMS & c) const;
-    public:
-      template <
-        typename DerivedP, 
-        typename DerivedsqrD, 
-        typename DerivedI, 
-        typename DerivedC>
-      inline void squared_distance(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::MatrixXi & Ele, 
-        const Eigen::PlainObjectBase<DerivedP> & P,
-        Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
-        Eigen::PlainObjectBase<DerivedI> & I,
-        Eigen::PlainObjectBase<DerivedC> & C) const;
-    private:
-      // Helper function for leaves: works in-place on sqr_d
-      inline void leaf_squared_distance(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::MatrixXi & Ele, 
-        const RowVectorDIMS & p,
-        Scalar & sqr_d,
-        int & i,
-        RowVectorDIMS & c) const;
-      inline void set_min(
-        const RowVectorDIMS & p,
-        const Scalar sqr_d_candidate,
-        const int i_candidate,
-        const RowVectorDIMS & c_candidate,
-        Scalar & sqr_d,
-        int & i,
-        RowVectorDIMS & c) const;
-    public:
-      template <int SS>
-        static
-        void barycentric_coordinates(
-          const RowVectorDIMS & p, 
-          const RowVectorDIMS & a, 
-          const RowVectorDIMS & b, 
-          const RowVectorDIMS & c,
-          Eigen::Matrix<Scalar,1,SS> & bary);
-  };
+        // Seems like there should have been an elegant solution to this using
+        // the copy-swap idiom above:
+        inline void deinit()
+        {
+          m_primitive = -1;
+          m_box = Eigen::AlignedBox<Scalar,DIM>();
+          delete m_left;
+          m_left = NULL;
+          delete m_right;
+          m_right = NULL;
+        }
+        ~AABB()
+        {
+          deinit();
+        }
+        // Build an Axis-Aligned Bounding Box tree for a given mesh and given
+        // serialization of a previous AABB tree.
+        //
+        // Inputs:
+        //   V  #V by dim list of mesh vertex positions. 
+        //   Ele  #Ele by dim+1 list of mesh indices into #V. 
+        //   bb_mins  max_tree by dim list of bounding box min corner positions
+        //   bb_maxs  max_tree by dim list of bounding box max corner positions
+        //   elements  max_tree list of element or (not leaf id) indices into Ele
+        //   i  recursive call index {0}
+        template <typename Derivedbb_mins, typename Derivedbb_maxs>
+          inline void init(
+              const Eigen::PlainObjectBase<DerivedV> & V,
+              const Eigen::MatrixXi & Ele, 
+              const Eigen::PlainObjectBase<Derivedbb_mins> & bb_mins,
+              const Eigen::PlainObjectBase<Derivedbb_maxs> & bb_maxs,
+              const Eigen::VectorXi & elements,
+              const int i = 0);
+        // Wrapper for root with empty serialization
+        inline void init(
+            const Eigen::PlainObjectBase<DerivedV> & V,
+            const Eigen::MatrixXi & Ele);
+        // Build an Axis-Aligned Bounding Box tree for a given mesh.
+        //
+        // Inputs:
+        //   V  #V by dim list of mesh vertex positions. 
+        //   Ele  #Ele by dim+1 list of mesh indices into #V. 
+        //   SI  #Ele by dim list revealing for each coordinate where Ele's
+        //     barycenters would be sorted: SI(e,d) = i --> the dth coordinate of
+        //     the barycenter of the eth element would be placed at position i in a
+        //     sorted list.
+        //   I  #I list of indices into Ele of elements to include (for recursive
+        //     calls)
+        // 
+        inline void init(
+            const Eigen::PlainObjectBase<DerivedV> & V,
+            const Eigen::MatrixXi & Ele, 
+            const Eigen::MatrixXi & SI,
+            const Eigen::VectorXi & I);
+        // Return whether at leaf node
+        inline bool is_leaf() const;
+        // Find the indices of elements containing given point.
+        //
+        // Inputs:
+        //   V  #V by dim list of mesh vertex positions. **Should be same as used to
+        //     construct mesh.**
+        //   Ele  #Ele by dim+1 list of mesh indices into #V. **Should be same as used to
+        //     construct mesh.**
+        //   q  dim row-vector query position
+        //   first  whether to only return first element containing q
+        // Returns:
+        //   list of indices of elements containing q
+        template <typename Derivedq>
+        inline std::vector<int> find(
+            const Eigen::PlainObjectBase<DerivedV> & V,
+            const Eigen::MatrixXi & Ele, 
+            const Eigen::PlainObjectBase<Derivedq> & q,
+            const bool first=false) const;
+
+        // If number of elements m then total tree size should be 2*h where h is
+        // the deepest depth 2^ceil(log(#Ele*2-1))
+        inline int subtree_size() const;
+
+        // Serialize this class into 3 arrays (so we can pass it pack to matlab)
+        //
+        // Outputs:
+        //   bb_mins  max_tree by dim list of bounding box min corner positions
+        //   bb_maxs  max_tree by dim list of bounding box max corner positions
+        //   elements  max_tree list of element or (not leaf id) indices into Ele
+        //   i  recursive call index into these arrays {0}
+        template <typename Derivedbb_mins, typename Derivedbb_maxs>
+          inline void serialize(
+              Eigen::PlainObjectBase<Derivedbb_mins> & bb_mins,
+              Eigen::PlainObjectBase<Derivedbb_maxs> & bb_maxs,
+              Eigen::VectorXi & elements,
+              const int i = 0) const;
+        // Compute squared distance to a query point
+        //
+        // Inputs:
+        //   V  #V by dim list of vertex positions
+        //   Ele  #Ele by dim list of simplex indices
+        //   P  3 list of query point coordinates
+        //   min_sqr_d  current minimum squared distance (only find distances
+        //   less than this)
+        // Outputs:
+        //   I  #P list of facet indices corresponding to smallest distances
+        //   C  #P by 3 list of closest points
+        // Returns squared distance
+        //
+        // Known bugs: currently assumes Elements are triangles regardless of
+        // dimension.
+        inline Scalar squared_distance(
+            const Eigen::PlainObjectBase<DerivedV> & V,
+            const Eigen::MatrixXi & Ele, 
+            const RowVectorDIMS & p,
+            int & i,
+            RowVectorDIMS & c) const;
+      private:
+        inline Scalar squared_distance(
+            const Eigen::PlainObjectBase<DerivedV> & V,
+            const Eigen::MatrixXi & Ele, 
+            const RowVectorDIMS & p,
+            const Scalar min_sqr_d,
+            int & i,
+            RowVectorDIMS & c) const;
+      public:
+        template <
+          typename DerivedP, 
+                   typename DerivedsqrD, 
+                   typename DerivedI, 
+                   typename DerivedC>
+                     inline void squared_distance(
+                         const Eigen::PlainObjectBase<DerivedV> & V,
+                         const Eigen::MatrixXi & Ele, 
+                         const Eigen::PlainObjectBase<DerivedP> & P,
+                         Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
+                         Eigen::PlainObjectBase<DerivedI> & I,
+                         Eigen::PlainObjectBase<DerivedC> & C) const;
+      private:
+        // Helper function for leaves: works in-place on sqr_d
+        inline void leaf_squared_distance(
+            const Eigen::PlainObjectBase<DerivedV> & V,
+            const Eigen::MatrixXi & Ele, 
+            const RowVectorDIMS & p,
+            Scalar & sqr_d,
+            int & i,
+            RowVectorDIMS & c) const;
+        inline void set_min(
+            const RowVectorDIMS & p,
+            const Scalar sqr_d_candidate,
+            const int i_candidate,
+            const RowVectorDIMS & c_candidate,
+            Scalar & sqr_d,
+            int & i,
+            RowVectorDIMS & c) const;
+      public:
+        template <int SS>
+          static
+          void barycentric_coordinates(
+              const RowVectorDIMS & p, 
+              const RowVectorDIMS & a, 
+              const RowVectorDIMS & b, 
+              const RowVectorDIMS & c,
+              Eigen::Matrix<Scalar,1,SS> & bary);
+    };
 }
 
 // Implementation
@@ -238,11 +244,12 @@ namespace igl
 #include <limits>
 
 template <typename DerivedV, int DIM>
+  template <typename Derivedbb_mins, typename Derivedbb_maxs>
 inline void igl::AABB<DerivedV,DIM>::init(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::MatrixXi & Ele, 
-    const MatrixXDIMS & bb_mins,
-    const MatrixXDIMS & bb_maxs,
+    const Eigen::PlainObjectBase<Derivedbb_mins> & bb_mins,
+    const Eigen::PlainObjectBase<Derivedbb_maxs> & bb_maxs,
     const Eigen::VectorXi & elements,
     const int i)
 {
@@ -254,7 +261,7 @@ inline void igl::AABB<DerivedV,DIM>::init(
     assert(bb_mins.cols() == V.cols() && "Serial tree array dim must match V");
     assert(bb_mins.cols() == bb_maxs.cols() && "Serial tree arrays must match");
     assert(bb_mins.rows() == elements.rows() &&
-      "Serial tree arrays must match");
+        "Serial tree arrays must match");
     // construct from serialization
     m_box.extend(bb_mins.row(i).transpose());
     m_box.extend(bb_maxs.row(i).transpose());
@@ -291,7 +298,7 @@ inline void igl::AABB<DerivedV,DIM>::init(
   }
 }
 
-template <typename DerivedV, int DIM>
+  template <typename DerivedV, int DIM>
 inline void igl::AABB<DerivedV,DIM>::init(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::MatrixXi & Ele)
@@ -300,7 +307,7 @@ inline void igl::AABB<DerivedV,DIM>::init(
   return init(V,Ele,MatrixXDIMS(),MatrixXDIMS(),VectorXi(),0);
 }
 
-template <typename DerivedV, int DIM>
+  template <typename DerivedV, int DIM>
 inline void igl::AABB<DerivedV,DIM>::init(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::MatrixXi & Ele, 
@@ -398,18 +405,19 @@ inline bool igl::AABB<DerivedV,DIM>::is_leaf() const
 }
 
 template <typename DerivedV, int DIM>
+template <typename Derivedq>
 inline std::vector<int> igl::AABB<DerivedV,DIM>::find(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::MatrixXi & Ele, 
-    const RowVectorDIMS & q, 
+    const Eigen::PlainObjectBase<Derivedq> & q,
     const bool first) const
 {
   using namespace std;
   using namespace Eigen;
   assert(q.size() == DIM && 
-    "Query dimension should match aabb dimension");
+      "Query dimension should match aabb dimension");
   assert(Ele.cols() == V.cols()+1 && 
-    "AABB::find only makes sense for (d+1)-simplices");
+      "AABB::find only makes sense for (d+1)-simplices");
   const Scalar epsilon = igl::EPS<Scalar>();
   // Check if outside bounding box
   bool inside = m_box.contains(q.transpose());
@@ -502,9 +510,10 @@ inline int igl::AABB<DerivedV,DIM>::subtree_size() const
 
 
 template <typename DerivedV, int DIM>
+template <typename Derivedbb_mins, typename Derivedbb_maxs>
 inline void igl::AABB<DerivedV,DIM>::serialize(
-    MatrixXDIMS & bb_mins,
-    MatrixXDIMS & bb_maxs,
+    Eigen::PlainObjectBase<Derivedbb_mins> & bb_mins,
+    Eigen::PlainObjectBase<Derivedbb_maxs> & bb_maxs,
     Eigen::VectorXi & elements,
     const int i) const
 {

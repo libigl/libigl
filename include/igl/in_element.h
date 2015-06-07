@@ -23,7 +23,7 @@ namespace igl
   //   V  #V by dim list of mesh vertex positions. 
   //   Ele  #Ele by dim+1 list of mesh indices into #V. 
   //   Q  #Q by dim list of query point positions
-  //   aabb  axis-aligned bounding box tree object (see InElementAABB.h)
+  //   aabb  axis-aligned bounding box tree object (see AABB.h)
   // Outputs:
   //   I  #Q list of indices into Ele of first containing element (-1 means no
   //     containing element)
