@@ -25,7 +25,7 @@ endif(ANTTWEAKBAR_FOUND)
 
 
 ## Check for CoMiSo, if not available skip the examples that depends on it
-find_package(LIBCOMISO REQUIRED)
+find_package(LIBCOMISO QUIET)
 if (LIBCOMISO_FOUND)
   include_directories( ${LIBCOMISO_INCLUDE_DIRS})
 endif(LIBCOMISO_FOUND)
