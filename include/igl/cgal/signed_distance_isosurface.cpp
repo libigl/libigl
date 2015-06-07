@@ -65,6 +65,9 @@ IGL_INLINE bool igl::signed_distance_isosurface(
   {
     default:
       assert(false && "Unknown SignedDistanceType");
+    case SIGNED_DISTANCE_TYPE_UNSIGNED:
+      // do nothing
+      break;
     case SIGNED_DISTANCE_TYPE_DEFAULT:
     case SIGNED_DISTANCE_TYPE_WINDING_NUMBER:
       hier.set_mesh(IV,IF);
@@ -96,6 +99,16 @@ IGL_INLINE bool igl::signed_distance_isosurface(
   {
     default:
       assert(false && "Unknown SignedDistanceType");
+    case SIGNED_DISTANCE_TYPE_UNSIGNED:
+      fun = 
+        [&tree,&IV,&IF,&level](const Point_3 & q) -> FT
+        {
+          int i;
+          RowVector3d c;
+          const double sd = tree.squared_distance(
+            IV,IF,RowVector3d(q.x(),q.y(),q.z()),i,c);
+          return sd-level;
+        };
     case SIGNED_DISTANCE_TYPE_DEFAULT:
     case SIGNED_DISTANCE_TYPE_WINDING_NUMBER:
       fun = 
