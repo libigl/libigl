@@ -51,7 +51,7 @@ IGL_INLINE void igl::outer_hull(
   // UNUSED:
   //const auto & duplicate_simplex = [&F](const int f, const int g)->bool
   //{
-  //  return 
+  //  return
   //    (F(f,0) == F(g,0) && F(f,1) == F(g,1) && F(f,2) == F(g,2)) ||
   //    (F(f,1) == F(g,0) && F(f,2) == F(g,1) && F(f,0) == F(g,2)) ||
   //    (F(f,2) == F(g,0) && F(f,0) == F(g,1) && F(f,1) == F(g,2)) ||
@@ -217,7 +217,7 @@ IGL_INLINE void igl::outer_hull(
 #endif
       //// find overlapping face-edges
       //const auto & neighbors = uE2E[EMAP(e)];
-      //// normal after possible flipping 
+      //// normal after possible flipping
       //const auto & fN = (flip(f)?-1.:1.)*N.row(f);
       //// Edge vector according to f's (flipped) orientation.
       ////const auto & eV = (V.row(fd)-V.row(fs)).normalized();
@@ -249,7 +249,7 @@ IGL_INLINE void igl::outer_hull(
         //    abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new])
         //    <<endl;
 #endif
-        
+
 
 
           // Only use this face if not already seen
@@ -264,7 +264,7 @@ IGL_INLINE void igl::outer_hull(
         //} else {
         //    std::cout << di[EMAP(e)][diIM(e)].transpose() << std::endl;
         //    std::cout << di[EMAP(e)][diIM(nfei_new)].transpose() << std::endl;
-        //    std::cout << "skipping face " << nfei_new << " with identical dihedral angle" 
+        //    std::cout << "skipping face " << nfei_new << " with identical dihedral angle"
         //        << std::endl;
         }
 //#ifdef IGL_OUTER_HULL_DEBUG
@@ -369,7 +369,7 @@ IGL_INLINE void igl::outer_hull(
         }
       }
     }
-    
+
     {
       vG[id].resize(FHcount,3);
       vJ[id].resize(FHcount,1);
@@ -524,8 +524,17 @@ IGL_INLINE void igl::outer_hull(
 }
 
 
-
 #ifdef IGL_STATIC_LIBRARY
+
+#include <igl/barycenter.cpp>
+template void igl::barycenter<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> >&);
+
+#include <igl/outer_facet.cpp>
+template void igl::outer_facet<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, int&, bool&);
+
+#include <igl/cgal/order_facets_around_edges.cpp>
+template std::__1::enable_if<std::is_same<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>::Scalar, CGAL::Lazy_exact_nt<CGAL::Gmpq> >::value, void>::type igl::order_facets_around_edges<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, long, long, bool>(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, std::__1::vector<std::__1::vector<long, std::__1::allocator<long> >, std::__1::allocator<std::__1::vector<long, std::__1::allocator<long> > > > const&, std::__1::vector<std::__1::vector<long, std::__1::allocator<long> >, std::__1::allocator<std::__1::vector<long, std::__1::allocator<long> > > >&, std::__1::vector<std::__1::vector<bool, std::__1::allocator<bool> >, std::__1::allocator<std::__1::vector<bool, std::__1::allocator<bool> > > >&);
+
 // Explicit template specialization
 template void igl::outer_hull<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
 template void igl::outer_hull<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);

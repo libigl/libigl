@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 2.6)
 project(libigl)
 
-#SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../)
+SET(CMAKE_SKIP_RULE_DEPENDENCY 1)
+
+# SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../../lib)
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/tutorial/cmake)
 find_package(EIGEN REQUIRED)
 
+add_definitions(-DIGL_STATIC_LIBRARY)
 
 ## Check for GLFW
 find_package(GLFW QUIET)
@@ -22,7 +25,10 @@ endif(ANTTWEAKBAR_FOUND)
 
 
 ## Check for CoMiSo, if not available skip the examples that depends on it
-find_package(LIBCOMISO QUIET)
+find_package(LIBCOMISO REQUIRED)
+if (LIBCOMISO_FOUND)
+  include_directories( ${LIBCOMISO_INCLUDE_DIRS})
+endif(LIBCOMISO_FOUND)
 
 ## Check for MATLAB, if not available skip the examples that depends on it
 find_package(MATLAB QUIET)
@@ -83,6 +89,11 @@ if(TINYXML2_FOUND)
   include_directories( ${TINYXML2_INCLUDE_DIR})
 endif(TINYXML2_FOUND)
 
+## Check for COMISO
+find_package(COMISO QUIET)
+if(COMISO_FOUND)
+  include_directories( ${COMISO_INCLUDE_DIR})
+endif(COMISO_FOUND)
 
 ## Use openMP if available
 find_package(OpenMP)
@@ -97,8 +108,6 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 #### Compile the core library that depends only on EIGEN ####
 include_directories( ${EIGEN_INCLUDE_DIR})
 include_directories( ${PROJECT_SOURCE_DIR}/include/)
-
-add_definitions(-DIGL_STATIC_LIBRARY)
 
 file(GLOB SOURCES
   "${PROJECT_SOURCE_DIR}/include/igl/*.cpp"
@@ -209,6 +218,15 @@ if (TINYXML2_FOUND)
 
   add_library(iglxml STATIC ${SOURCES_XML})
 endif (TINYXML2_FOUND)
+
+#### Compile the xml part
+if (LIBCOMISO_FOUND)
+  file(GLOB SOURCES_COMISO
+    "${PROJECT_SOURCE_DIR}/include/igl/comiso/*.cpp"
+  )
+
+  add_library(iglcomiso STATIC ${SOURCES_COMISO})
+endif (LIBCOMISO_FOUND)
 
 #### Compile the viewer
 if (GLFW_FOUND AND ANTTWEAKBAR_FOUND)
