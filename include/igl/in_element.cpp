@@ -16,7 +16,7 @@ IGL_INLINE void igl::in_element(
   for(int e = 0;e<Qr;e++)
   {
     // find all
-    const auto R = aabb.find(V,Ele,Q.row(e),true);
+    const auto R = aabb.find(V,Ele,Q.row(e).eval(),true);
     if(!R.empty())
     {
       I(e) = R[0];
@@ -42,7 +42,7 @@ IGL_INLINE void igl::in_element(
   for(int e = 0;e<Qr;e++)
   {
     // find all
-    const auto R = aabb.find(V,Ele,Q.row(e),false);
+    const auto R = aabb.find(V,Ele,Q.row(e).eval(),false);
     for(const auto r : R)
     {
 #pragma omp critical
