@@ -30,17 +30,17 @@ namespace igl
       AABB * m_right;
       Eigen::AlignedBox<Scalar,DIM> m_box;
       // -1 non-leaf
-      int m_element;
+      int m_primitive;
       AABB():
         m_left(NULL), m_right(NULL),
-        m_box(), m_element(-1)
+        m_box(), m_primitive(-1)
       {}
       // http://stackoverflow.com/a/3279550/148668
       AABB(const AABB& other):
         m_left(other.m_left ? new AABB(*other.m_left) : NULL),
         m_right(other.m_right ? new AABB(*other.m_right) : NULL),
         m_box(other.m_box),
-        m_element(other.m_element)
+        m_primitive(other.m_primitive)
       {
       }
       // copy-swap idiom
@@ -51,7 +51,7 @@ namespace igl
         swap(first.m_left,second.m_left);
         swap(first.m_right,second.m_right);
         swap(first.m_box,second.m_box);
-        swap(first.m_element,second.m_element);
+        swap(first.m_primitive,second.m_primitive);
       }
       // Pass-by-value (aka copy)
       AABB& operator=(AABB other)
@@ -69,7 +69,7 @@ namespace igl
       // the copy-swap idiom above:
       inline void deinit()
       {
-        m_element = -1;
+        m_primitive = -1;
         m_box = Eigen::AlignedBox<Scalar,DIM>();
         delete m_left;
         m_left = NULL;
@@ -258,9 +258,9 @@ inline void igl::AABB<DerivedV,DIM>::init(
     // construct from serialization
     m_box.extend(bb_mins.row(i).transpose());
     m_box.extend(bb_maxs.row(i).transpose());
-    m_element = elements(i);
+    m_primitive = elements(i);
     // Not leaf then recurse
-    if(m_element == -1)
+    if(m_primitive == -1)
     {
       m_left = new AABB();
       m_left->init( V,Ele,bb_mins,bb_maxs,elements,2*i+1);
@@ -329,7 +329,7 @@ inline void igl::AABB<DerivedV,DIM>::init(
       }
     case 1:
       {
-        m_element = I(0);
+        m_primitive = I(0);
         break;
       }
     default:
@@ -394,7 +394,7 @@ inline void igl::AABB<DerivedV,DIM>::init(
 template <typename DerivedV, int DIM>
 inline bool igl::AABB<DerivedV,DIM>::is_leaf() const
 {
-  return m_element != -1;
+  return m_primitive != -1;
 }
 
 template <typename DerivedV, int DIM>
@@ -417,7 +417,7 @@ inline std::vector<int> igl::AABB<DerivedV,DIM>::find(
   {
     return std::vector<int>();
   }
-  assert(m_element==-1 || (m_left == NULL && m_right == NULL));
+  assert(m_primitive==-1 || (m_left == NULL && m_right == NULL));
   if(is_leaf())
   {
     // Initialize to some value > -epsilon
@@ -428,10 +428,10 @@ inline std::vector<int> igl::AABB<DerivedV,DIM>::find(
         {
           // Barycentric coordinates
           typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
-          const RowVector3S V1 = V.row(Ele(m_element,0));
-          const RowVector3S V2 = V.row(Ele(m_element,1));
-          const RowVector3S V3 = V.row(Ele(m_element,2));
-          const RowVector3S V4 = V.row(Ele(m_element,3));
+          const RowVector3S V1 = V.row(Ele(m_primitive,0));
+          const RowVector3S V2 = V.row(Ele(m_primitive,1));
+          const RowVector3S V3 = V.row(Ele(m_primitive,2));
+          const RowVector3S V4 = V.row(Ele(m_primitive,3));
           a1 = volume_single(V2,V4,V3,(RowVector3S)q);
           a2 = volume_single(V1,V3,V4,(RowVector3S)q);
           a3 = volume_single(V1,V4,V2,(RowVector3S)q);
@@ -442,9 +442,9 @@ inline std::vector<int> igl::AABB<DerivedV,DIM>::find(
         {
           // Barycentric coordinates
           typedef Eigen::Matrix<Scalar,2,1> Vector2S;
-          const Vector2S V1 = V.row(Ele(m_element,0));
-          const Vector2S V2 = V.row(Ele(m_element,1));
-          const Vector2S V3 = V.row(Ele(m_element,2));
+          const Vector2S V1 = V.row(Ele(m_primitive,0));
+          const Vector2S V2 = V.row(Ele(m_primitive,1));
+          const Vector2S V3 = V.row(Ele(m_primitive,2));
           // Hack for now to keep templates simple. If becomes bottleneck
           // consider using std::enable_if_t 
           const Vector2S q2 = q.head(2);
@@ -462,7 +462,7 @@ inline std::vector<int> igl::AABB<DerivedV,DIM>::find(
         a3>=-epsilon && 
         a4>=-epsilon)
     {
-      return std::vector<int>(1,m_element);
+      return std::vector<int>(1,m_primitive);
     }else
     {
       return std::vector<int>();
@@ -522,7 +522,7 @@ inline void igl::AABB<DerivedV,DIM>::serialize(
   //cout<<i<<" ";
   bb_mins.row(i) = m_box.min();
   bb_maxs.row(i) = m_box.max();
-  elements(i) = m_element;
+  elements(i) = m_primitive;
   if(m_left != NULL)
   {
     m_left->serialize(bb_mins,bb_maxs,elements,2*i+1);
@@ -561,9 +561,10 @@ igl::AABB<DerivedV,DIM>::squared_distance(
   using namespace igl;
   Scalar sqr_d = min_sqr_d;
   assert(DIM == 3 && "Code has only been tested for DIM == 3");
-  assert(Ele.cols() == 3 && "Code has only been tested for simplex size == 3");
+  assert((Ele.cols() == 3 || Ele.cols() == 2 || Ele.cols() == 1)
+    && "Code has only been tested for simplex sizes 3,2,1");
 
-  assert(m_element==-1 || (m_left == NULL && m_right == NULL));
+  assert(m_primitive==-1 || (m_left == NULL && m_right == NULL));
   if(is_leaf())
   {
     leaf_squared_distance(V,Ele,p,sqr_d,i,c);
@@ -666,63 +667,93 @@ inline void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
   using namespace igl;
   using namespace std;
 
+  // Simplex size
+  const size_t ss = Ele.cols();
   // Only one element per node
   // plane unit normal
-  const RowVectorDIMS v10 = (V.row(Ele(m_element,1))- V.row(Ele(m_element,0)));
-  const RowVectorDIMS v20 = (V.row(Ele(m_element,2))- V.row(Ele(m_element,0)));
-  const RowVectorDIMS n = v10.cross(v20);
+  bool inside_triangle = false;
   Scalar d_j = std::numeric_limits<Scalar>::infinity();
   RowVectorDIMS pp;
-  bool inside_triangle = false;
-  Scalar n_norm = n.norm();
-  if(n_norm > 0)
+  // Only consider triangles, and non-degenerate triangles at that
+  if(ss == 3 && 
+      Ele(m_primitive,0) != Ele(m_primitive,1) && 
+      Ele(m_primitive,1) != Ele(m_primitive,2) && 
+      Ele(m_primitive,2) != Ele(m_primitive,0))
   {
-    const RowVectorDIMS un = n/n.norm();
-    // vector to plane
-    const RowVectorDIMS bc = 
-      1./3.*
-      ( V.row(Ele(m_element,0))+
-        V.row(Ele(m_element,1))+
-        V.row(Ele(m_element,2)));
-    const auto & v = p-bc;
-    // projected point on plane
-    d_j = v.dot(un);
-    pp = p - d_j*un;
-    // determine if pp is inside triangle
-    Eigen::Matrix<Scalar,1,3> b;
-    barycentric_coordinates(
-          pp,
-          V.row(Ele(m_element,0)),
-          V.row(Ele(m_element,1)),
-          V.row(Ele(m_element,2)),
-          b);
-    inside_triangle = fabs(fabs(b(0)) + fabs(b(1)) + fabs(b(2)) - 1.) <= 1e-10;
+    const RowVectorDIMS v10 = (V.row(Ele(m_primitive,1))- V.row(Ele(m_primitive,0)));
+    const RowVectorDIMS v20 = (V.row(Ele(m_primitive,2))- V.row(Ele(m_primitive,0)));
+    const RowVectorDIMS n = v10.cross(v20);
+    Scalar n_norm = n.norm();
+    if(n_norm > 0)
+    {
+      const RowVectorDIMS un = n/n.norm();
+      // vector to plane
+      const RowVectorDIMS bc = 
+        1./3.*
+        ( V.row(Ele(m_primitive,0))+
+          V.row(Ele(m_primitive,1))+
+          V.row(Ele(m_primitive,2)));
+      const auto & v = p-bc;
+      // projected point on plane
+      d_j = v.dot(un);
+      pp = p - d_j*un;
+      // determine if pp is inside triangle
+      Eigen::Matrix<Scalar,1,3> b;
+      barycentric_coordinates(
+            pp,
+            V.row(Ele(m_primitive,0)),
+            V.row(Ele(m_primitive,1)),
+            V.row(Ele(m_primitive,2)),
+            b);
+      inside_triangle = fabs(fabs(b(0)) + fabs(b(1)) + fabs(b(2)) - 1.) <= 1e-10;
+    }
   }
+  const auto & point_point_squared_distance = [&](const RowVectorDIMS & s)
+  {
+    const Scalar sqr_d_s = (p-s).squaredNorm();
+    set_min(p,sqr_d_s,m_primitive,s,sqr_d,i,c);
+  };
   if(inside_triangle)
   {
     // point-triangle squared distance
     const Scalar sqr_d_j = d_j*d_j;
     //cout<<"point-triangle..."<<endl;
-    set_min(p,sqr_d_j,m_element,pp,sqr_d,i,c);
+    set_min(p,sqr_d_j,m_primitive,pp,sqr_d,i,c);
   }else
   {
-    // point-segment distance
-    for(int x = 0;x<3;x++)
+    if(ss >= 2)
     {
-      Matrix<Scalar,1,1> sqr_d_j_x(1,1);
-      const RowVectorDIMS & s = V.row(Ele(m_element,(x+1)%3));
-      const RowVectorDIMS & d = V.row(Ele(m_element,(x+2)%3));
-      Matrix<Scalar,1,1> t(1,1);
-      project_to_line_segment(p,s,d,t,sqr_d_j_x);
-      const RowVectorDIMS q = s+t(0)*(d-s);
-      //cout<<"point-segment..."<<endl;
-      //cout<<"sqr_d_j_x="<<sqr_d_j_x<<";"<<endl;
-      //cout<<"t="<<t<<";"<<endl;
-      //cout<<matlab_format(p,"p")<<endl;
-      //cout<<matlab_format(s,"s")<<endl;
-      //cout<<matlab_format(d,"d")<<endl;
-      //cout<<matlab_format(q,"q")<<endl;
-      set_min(p,sqr_d_j_x(0),m_element,q,sqr_d,i,c);
+      // point-segment distance
+      // number of edges
+      size_t ne = ss==3?3:1;
+      for(int x = 0;x<ne;x++)
+      {
+        const size_t e1 = Ele(m_primitive,(x+1)%ss);
+        const size_t e2 = Ele(m_primitive,(x+2)%ss);
+        const RowVectorDIMS & s = V.row(e1);
+        const RowVectorDIMS & d = V.row(e2);
+        // Degenerate edge
+        if(e1 == e2 || (s-d).squaredNorm()==0)
+        {
+          // only consider once
+          if(e1 < e2)
+          {
+            point_point_squared_distance(s);
+          }
+          continue;
+        }
+        Matrix<Scalar,1,1> sqr_d_j_x(1,1);
+        Matrix<Scalar,1,1> t(1,1);
+        project_to_line_segment(p,s,d,t,sqr_d_j_x);
+        const RowVectorDIMS q = s+t(0)*(d-s);
+        set_min(p,sqr_d_j_x(0),m_primitive,q,sqr_d,i,c);
+      }
+    }else
+    {
+      // So then Ele is just a list of points...
+      assert(ss == 1);
+      const RowVectorDIMS & s = V.row(Ele(m_primitive,0));
+      point_point_squared_distance(s);
     }
   }
 }
