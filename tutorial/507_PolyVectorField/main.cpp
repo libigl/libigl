@@ -8,6 +8,7 @@
 #include <igl/local_basis.h>
 #include <stdlib.h>
 #include <igl/jet.h>
+#include <iostream>
 
 // Input mesh
 Eigen::MatrixXd V;
@@ -80,7 +81,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   int num = key  - '0';
 
   // Interpolate
-  cerr << "Interpolating " << num * 2 << "-PolyVector field" << endl;
+  std::cerr << "Interpolating " << num * 2 << "-PolyVector field" << std::endl;
 
   VectorXi b(4);
   b << 4550, 2321, 5413, 5350;
