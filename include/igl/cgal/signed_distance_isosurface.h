@@ -18,7 +18,7 @@ namespace igl
   // Inputs:
   //   IV  #IV by 3 list of input mesh vertex positions
   //   IF  #IF by 3 list of input triangle indices
-  //   level  iso-level to contour (e.g. 0)
+  //   level  iso-level to contour in world coords, negative is inside.
   //   angle_bound  lower bound on triangle angles (mesh quality) (e.g. 28)
   //   radius_bound  upper bound on triangle size (mesh density?) (e.g. 0.02)
   //   distance_bound  cgal mysterious parameter (mesh density?) (e.g. 0.01)
