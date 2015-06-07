@@ -726,7 +726,7 @@ inline void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
       // point-segment distance
       // number of edges
       size_t ne = ss==3?3:1;
-      for(int x = 0;x<ne;x++)
+      for(size_t x = 0;x<ne;x++)
       {
         const size_t e1 = Ele(m_primitive,(x+1)%ss);
         const size_t e2 = Ele(m_primitive,(x+2)%ss);
