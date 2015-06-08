@@ -14,6 +14,9 @@ FIND_PATH(GLFW_INCLUDE_DIR GLFW/glfw3.h
     ${PROJECT_SOURCE_DIR}/../../external/glfw/include
     ${PROJECT_SOURCE_DIR}/../external/glfw/include
     ${PROJECT_SOURCE_DIR}/external/glfw/include
+    ${PROJECT_SOURCE_DIR}/../../libigl/external/glfw/include
+    ${PROJECT_SOURCE_DIR}/../libigl/external/glfw/include
+    ${PROJECT_SOURCE_DIR}/libigl/external/glfw/include
     /usr/local/include
     /usr/X11/include
     /usr/include
@@ -26,9 +29,15 @@ FIND_LIBRARY( GLFW_LIBRARIES NAMES glfw glfw3
     ${PROJECT_SOURCE_DIR}/../../external/glfw/src
     ${PROJECT_SOURCE_DIR}/../external/glfw/src
     ${PROJECT_SOURCE_DIR}/external/glfw/src
+    ${PROJECT_SOURCE_DIR}/../../libigl/external/glfw/src
+    ${PROJECT_SOURCE_DIR}/../libigl/external/glfw/src
+    ${PROJECT_SOURCE_DIR}/libigl/external/glfw/src
     ${PROJECT_SOURCE_DIR}/../../external/glfw/lib/x64
     ${PROJECT_SOURCE_DIR}/../external/glfw/lib/x64
     ${PROJECT_SOURCE_DIR}/external/glfw/lib/x64
+    ${PROJECT_SOURCE_DIR}/../../libigl/external/glfw/lib/x64
+    ${PROJECT_SOURCE_DIR}/../libigl/external/glfw/lib/x64
+    ${PROJECT_SOURCE_DIR}/libigl/external/glfw/lib/x64
     /usr/local
     /usr/X11
     /usr
