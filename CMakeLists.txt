@@ -143,7 +143,6 @@ if (CGAL_FOUND)
   )
 
 add_library(iglcgal STATIC ${SOURCES_CGAL})
-endif (CGAL_FOUND)
 
 #### Compile the boolean part
 if (NOT CORK_FOUND)
@@ -155,6 +154,7 @@ file(GLOB SOURCES_BOOLEAN
 )
 
 add_library(iglboolean STATIC ${SOURCES_BOOLEAN})
+endif (CGAL_FOUND)
 
 #### Compile the embree part
 if (EMBREE_FOUND)
