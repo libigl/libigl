@@ -137,6 +137,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#meshstatistics">701 Mesh Statistics</a></li>
 <li><a href="#generalizedwindingnumber">702 Generalized Winding Number</a></li>
 <li><a href="#meshdecimation">703 Mesh Decimation</a></li>
+<li><a href="#signeddistances">704 Signed Distances</a></li>
 </ul></li>
 <li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
@@ -396,7 +397,7 @@ heavy data structures types favors simplicity, ease of use and reusability.</p>
 
 <h2 id="overlays">Overlays</h2>
 
-<p>In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helful while developing geometric processing algorithms to plot debug informations.</p>
+<p>In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helpful while developing geometric processing algorithms to plot debug informations.</p>
 
 <pre><code class="cpp">viewer.data.add_points(P,Eigen::RowVector3d(r,g,b));
 </code></pre>
@@ -2635,13 +2636,13 @@ oriented), then <span class="math">\(w(\mathbf{p})\)</span> tends smoothly towar
 <em>more</em> inside <code>(V,F)</code>, and toward 0 as <span class="math">\(\mathbf{p}\)</span> is more outside.</p>
 
 <figure>
-<img src="images/big-sigcat-winding-number.gif" alt="Example generalizedwindingnumber_WindingNumber computes the
+<img src="images/big-sigcat-winding-number.gif" alt="Example 702 computes the
 generalized winding number function for a tetrahedral mesh inside a cat with
 holes and self intersections (gold). The silver mesh is surface of the
 extracted interior tets, and slices show the winding number function on all
 tets in the convex hull: blue (~0), green (~1), yellow
 (~2)." />
-<figcaption>Example <a href="702_WindingNumber/main.cpp">generalizedwindingnumber_WindingNumber</a> computes the
+<figcaption>Example <a href="702_WindingNumber/main.cpp">702</a> computes the
 generalized winding number function for a tetrahedral mesh inside a cat with
 holes and self intersections (gold). The silver mesh is surface of the
 extracted interior tets, and slices show the winding number function on all
@@ -2675,29 +2676,13 @@ collapsed and costs of neighboring edges are updated.</p>
 
 <p>In order to maintain the topology (e.g. if the mesh is combinatorially as
 sphere or a torus etc.), one should assign infinite cost to edges whose
-collapse would alter the mesh topology. Let&#8217;s briefly examine how this can
-happen.</p>
-
-<p>Recall the Euler formula which relates the number of vertices, faces and edges
-to the Euler characteristic (genus of surface) <span class="math">\(\chi\)</span>: </p>
-
-<p><span class="math">\(\chi = \#V - \#E + \#F.\)</span></p>
-
-<p>A valid edge collapse will remove 1 vertex, 2 neighboring faces and 3 edges
-(itself and one edge from each face), see Figure (left). How does this affect
-the Euler characteristic?
- <span class="math">\(\chi = (\#V-1) - (\#E - 3) + (\#F-2) = \#V - \#E + \#F = \chi.\)</span></p>
-
-<p>It doesn&#8217;t. The topology remains the same. In particular, this means a closed
-manifold mesh, stays a closed manifold mesh.</p>
-
-<p>Any edge collapse which removes too many faces or edges may invalidate the
-Euler characteristic. Indeed this happens if and only if the number of mutual
-neighbors of the endpoints of the collapsing edge is not exactly two! </p>
+collapse would alter the mesh topology. Indeed this happens if and only if the
+number of mutual neighbors of the endpoints of the collapsing edge is not
+exactly two! </p>
 
 <p>If there exists a third shared vertex, then another face will be removed, but 2
-edges will be removed leaving our Euler formula imbalanced. This can result in
-unwanted holes or non-manifold &#8220;flaps&#8221;.</p>
+edges will be removed. This can result in unwanted holes or non-manifold
+&#8220;flaps&#8221;.</p>
 
 <figure>
 <img src="images/edge-collapse.jpg" alt="A valid edge collapse and an invalid edge collapse." />
@@ -2797,6 +2782,115 @@ model.</figcaption></figure>
 <p>The <a href="./703_Decimation/main.cpp">Example 703</a> demonstrates using this priority
 queue based approach with the simple shortest-edge-midpoint cost/placement
 strategy discussed above.</p>
+
+<h2 id="signeddistances">Signed Distances</h2>
+
+<p>In the <a href="#generalizedwindingnumber">Generalized Winding Number section</a>, we
+examined a robust method for determining whether points lie inside or outside
+of a given triangle soup mesh. Libigl complements this algorithm with
+accelerated signed and unsigned distance queries and &#8220;in element&#8221; queries for
+planar triangle meshes and 3D tetrahedral meshes. These routines make use of
+libigl&#8217;s general purpose axis-aligned bounding box hierarchy (<code>igl/AABB.h</code>).
+This class is lightweight and&#8212;by design&#8212;does not store a copy of the mesh
+(taking it as inputs to its member functions instead).</p>
+
+<h3 id="pointlocation">Point location</h3>
+
+<p>For tetrahedral meshes, this is useful for &#8220;in element&#8221; or &#8220;point location&#8221;
+queries: given a point <span class="math">\(\mathbf{q}\in\mathcal{R}^3\)</span> and a tetrahedral mesh
+<span class="math">\((V,T)\)</span> determine in which tetrahedron <span class="math">\(\mathbf{q}\)</span> lies. This is accomplished
+in libigl for a tet mesh <code>V,T</code> and a list of query points in the rows of <code>Q</code>
+via the <code>igl::in_element()</code>:</p>
+
+<pre><code class="cpp">// Initialize AABB tree
+igl::AABB&lt;MatrixXd,3&gt; tree;
+tree.init(V,T);
+VectorXi I;
+igl::in_element(V,T,Q,tree,I);
+</code></pre>
+
+<p>the resulting vector <code>I</code> is a list of indices into <code>T</code> revealing the <em>first</em>
+tetrahedron found to contain the corresponding point in <code>Q</code>.</p>
+
+<p>For overlapping meshes, a point <span class="math">\(\mathbf{q}\)</span> may belong to more than one
+tetrahedron. In those cases, one can find them all (not just the first) by
+using the <code>igl::in_element</code> overload with a <code>SparseMatrix</code> as the output:</p>
+
+<pre><code class="cpp">SparseMatrix&lt;int&gt; I;
+igl::in_element(V,T,Q,tree,I);
+</code></pre>
+
+<p>now each row of <code>I</code> reveals whether each tet contains the corresponding row in
+<code>Q</code>: <code>I(q,e)!=0</code> means that point <code>q</code> is in element <code>e</code>.</p>
+
+<h3 id="closestpoints">Closest points</h3>
+
+<p>For Triangle meshes, we use the AABB tree to accelerate point-mesh closest
+point queries: given a mesh <span class="math">\((V,F)\)</span> and a query point
+<span class="math">\(\mathbf{q}\in\mathcal{R}^3\)</span> find the closest point <span class="math">\(\mathbf{c} \in (V,F)\)</span>
+(where <span class="math">\(\mathbf{c}\)</span> is not necessarily a vertex of <span class="math">\((V,F)\)</span>). This is
+accomplished for a triangle mesh <code>V,F</code> and a list of points in the rows of <code>P</code>
+via <code>igl::point_mesh_squared_distance</code>:</p>
+
+<pre><code class="cpp">VectorXd sqrD;
+VectorXi I;
+MatrixXd C;
+igl::point_mesh_squared_distance(P,V,F,sqrD,I,C);
+</code></pre>
+
+<p>the output <code>sqrD</code> contains the (unsigned) squared distance from each point in
+<code>P</code> to its closest point given in <code>C</code> which lies on the element in <code>F</code> given by
+<code>I</code> (e.g. from which one could recover barycentric coordinates, using
+<code>igl::barycentric_coordinates</code>).</p>
+
+<p>If the mesh <code>V,F</code> is static, but the point set <code>P</code> is changing dynamically then
+it&#8217;s best to reuse the AABB hierarchy that&#8217;s being built during
+<code>igl::point_mesh_squared_distance</code>:</p>
+
+<pre><code class="cpp">igl::AABB tree;
+tree.init(V,F);
+tree.squared_distance(V,F,P,sqrD,I,C);
+... // P changes, but (V,F) does not
+tree.squared_distance(V,F,P,sqrD,I,C);
+</code></pre>
+
+<h3 id="signeddistance">Signed distance</h3>
+
+<p>Finally, from the closest point or the winding number it&#8217;s possible to <em>sign</em>
+this distance. In <code>igl::signed_distance</code> we provide two methods for signing:
+the so-called &#8220;pseudo-normal test&#8221; <a class="citation" href="#fn:31" title="Jump to citation">[31]<span class="citekey" style="display:none">baerentzen_2005</span></a> and the generalized
+winding number <a class="citation" href="#fn:29" title="Jump to citation">[29]<span class="citekey" style="display:none">jacobson_2013</span></a>. </p>
+
+<p>The pseudo-normal test (see also <code>igl::pseudonormal_test</code>) assumes the input
+mesh is a watertight (closed, non-self-intersecting, manifold) mesh. Then given
+a query point <span class="math">\(\mathbf{q}\)</span> and its closest point <span class="math">\(\mathbf{c} \in (V,F)\)</span>, it
+carefully chooses an outward normal <span class="math">\(\mathbf{n}\)</span> at <span class="math">\(\mathbf{c}\)</span> so that
+<span class="math">\(\text{sign}(\mathbf{q}-\mathbf{c})\cdot \mathbf{n}\)</span> reveals whether
+<span class="math">\(\mathbf{q}\)</span> is inside <span class="math">\((V,F)\)</span>: &#8211;1, or outside: +1. This is a fast <span class="math">\(O(1)\)</span> test
+once <span class="math">\(\mathbf{c}\)</span> is located, but may fail if <code>V,F</code> is not watertight.</p>
+
+<p>An alternative is to use the <a href="#generalizedwindingnumber">generalized winding
+number</a> to determine the sign. This is very robust to
+unclean meshes <code>V,F</code> but slower: something like <span class="math">\(O(\sqrt{n})\)</span> once <span class="math">\(\mathbf{c}\)</span>
+is located.</p>
+
+<p>In either case, the interface via <code>igl::signed_distance</code> is:</p>
+
+<pre><code class="cpp">// Choose type of signing to use
+igl::SignedDistanceType type = SIGNED_DISTANCE_TYPE_PSEUDONORMAL;
+igl::signed_distance(P,V,F,sign_type,S,I,C,N);
+</code></pre>
+
+<p>the outputs are as above for <code>igl::point_mesh_squared_distance</code> but now <code>S</code>
+contains signed (unsquared) distances and the extra output <code>N</code> (only set when
+<code>type == SIGNED_DISTANCE_TYPE_PSEUDON</code>) contains the normals used for signing
+with the pseudo-normal test.</p>
+
+<figure>
+<img src="images/bunny-signed-distance.gif" alt="Example 704 computes signed distance on
+slices through the bunny." />
+<figcaption>Example <a href="704_SignedDistance/main.cpp">704</a> computes signed distance on
+slices through the bunny.</figcaption></figure>
 
 <h1 id="future">Outlook for continuing development</h1>
 
@@ -2919,7 +3013,7 @@ repository</a>.</p>
  Meshes</a>, 2005.</p>
 </li>
 
-<li id="fn:17" class="citation"><span class="citekey" style="display:none">levy_2002</span><p>Bruno Lévy, Sylvain Petitjean, Nicolas Ray, Jérome Maillot.
+<li id="fn:17" class="citation"><span class="citekey" style="display:none">levy_2002</span><p>Bruno Lévy, Sylvain Petitjean, Nicolas Ray, Jérome Maillot.
  <a href="http://www.cs.jhu.edu/~misha/Fall09/Levy02.pdf">Least Squares Conformal Maps, for Automatic Texture Atlas
  Generation,</a>, 2002.</p>
 </li>
@@ -2934,7 +3028,7 @@ repository</a>.</p>
  Parameterization</a>, 2008.</p>
 </li>
 
-<li id="fn:20" class="citation"><span class="citekey" style="display:none">levy_2008</span><p>Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy.
+<li id="fn:20" class="citation"><span class="citekey" style="display:none">levy_2008</span><p>Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy.
  <a href="http://alice.loria.fr/publications/papers/2008/DGF/NSDFD-TOG.pdf">N-Symmetry Direction Field
  Design</a>,
  2008.</p>
@@ -2993,6 +3087,12 @@ repository</a>.</p>
 
 <li id="fn:30" class="citation"><span class="citekey" style="display:none">hoppe_1996</span><p>Hugues Hoppe. <a href="https://www.google.com/search?q=Progressive+meshes">Progressive
  Meshes</a>, 1996</p>
+</li>
+
+<li id="fn:31" class="citation"><span class="citekey" style="display:none">baerentzen_2005</span><p>J Andreas Baerentzen and Henrik Aanaes.
+<a href="https://www.google.com/search?q=Signed+distance+computation+using+the+angle+weighted+pseudonormal">Signed distance computation using the angle weighted
+pseudonormal</a>,
+ 2005.</p>
 </li>
 
 </ol>
