@@ -261,7 +261,7 @@ private:
 public:
       template <int SS>
       static
-      void barycentric_coordinates(
+      inline void barycentric_coordinates(
         const RowVectorDIMS & p, 
         const RowVectorDIMS & a, 
         const RowVectorDIMS & b, 
