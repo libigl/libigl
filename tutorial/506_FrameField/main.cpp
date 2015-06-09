@@ -9,6 +9,8 @@
 #include <igl/frame_field_deformer.h>
 #include <igl/jet.h>
 #include <igl/frame_to_cross_field.h>
+#include <igl/local_basis.h>
+#include <igl/rotate_vectors.h>
 
 // Input mesh
 Eigen::MatrixXd V;

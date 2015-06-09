@@ -9,13 +9,14 @@
 #define IGL_SELFINTERSECTMESH_H
 
 #include "CGAL_includes.hpp"
-#include "remesh_self_intersections.h"
+#include "RemeshSelfIntersectionsParam.h"
 
 #include <Eigen/Dense>
 #include <list>
 #include <map>
 #include <vector>
 
+//#define IGL_SELFINTERSECTMESH_DEBUG
 #ifndef IGL_FIRST_HIT_EXCEPTION
 #define IGL_FIRST_HIT_EXCEPTION 10
 #endif
@@ -216,6 +217,11 @@ namespace igl
         SelfIntersectMesh * SIM, 
         const Box &a, 
         const Box &b);
+      // Annoying wrappers to conver from cgal to double or cgal
+      static inline void to_output_type(const typename Kernel::FT & cgal,double & d);
+      static inline void to_output_type(
+        const typename CGAL::Epeck::FT & cgal,
+        CGAL::Epeck::FT & d);
   };
 }
 
@@ -325,18 +331,22 @@ inline igl::SelfIntersectMesh<
   using namespace std;
   using namespace Eigen;
 
-  //const auto & tictoc = []()
-  //{
-  //  static double t_start = igl::get_seconds();
-  //  double diff = igl::get_seconds()-t_start;
-  //  t_start += diff;
-  //  return diff;
-  //};
-  //tictoc();
+#ifdef IGL_SELFINTERSECTMESH_DEBUG
+  const auto & tictoc = []()
+  {
+    static double t_start = igl::get_seconds();
+    double diff = igl::get_seconds()-t_start;
+    t_start += diff;
+    return diff;
+  };
+  tictoc();
+#endif
 
   // Compute and process self intersections
   mesh_to_cgal_triangle_list(V,F,T);
-  //cout<<"mesh_to_cgal_triangle_list: "<<tictoc()<<endl;
+#ifdef IGL_SELFINTERSECTMESH_DEBUG
+  cout<<"mesh_to_cgal_triangle_list: "<<tictoc()<<endl;
+#endif
   // http://www.cgal.org/Manual/latest/doc_html/cgal_manual/Box_intersection_d/Chapter_main.html#Section_63.5 
   // Create the corresponding vector of bounding boxes
   std::vector<Box> boxes;
@@ -355,7 +365,9 @@ inline igl::SelfIntersectMesh<
       // _1 etc. in global namespace)
       std::placeholders::_1,
       std::placeholders::_2);
-  //cout<<"boxes and bind: "<<tictoc()<<endl;
+#ifdef IGL_SELFINTERSECTMESH_DEBUG
+  cout<<"boxes and bind: "<<tictoc()<<endl;
+#endif
   // Run the self intersection algorithm with all defaults
   try{
     CGAL::box_self_intersection_d(boxes.begin(), boxes.end(),cb);
@@ -368,7 +380,9 @@ inline igl::SelfIntersectMesh<
     }
     // Otherwise just fall through
   }
-  //cout<<"box_self_intersection_d: "<<tictoc()<<endl;
+#ifdef IGL_SELFINTERSECTMESH_DEBUG
+  cout<<"box_self_intersection_d: "<<tictoc()<<endl;
+#endif
 
   // Convert lIF to Eigen matrix
   assert(lIF.size()%2 == 0);
@@ -387,7 +401,9 @@ inline igl::SelfIntersectMesh<
       i++;
     }
   }
-  //cout<<"IF: "<<tictoc()<<endl;
+#ifdef IGL_SELFINTERSECTMESH_DEBUG
+  cout<<"IF: "<<tictoc()<<endl;
+#endif
 
   if(params.detect_only)
   {
@@ -409,6 +425,9 @@ inline igl::SelfIntersectMesh<
   map<typename CDT_plus_2::Vertex_handle,Index> v2i;
   // Loop over offending triangles
   const size_t noff = offending.size();
+#ifdef IGL_SELFINTERSECTMESH_DEBUG
+  double t_proj_del = 0;
+#endif
   // Unfortunately it looks like CGAL has trouble allocating memory when
   // multiple openmp threads are running. Crashes durring CDT...
 //# pragma omp parallel for if (noff>1000)
@@ -417,7 +436,13 @@ inline igl::SelfIntersectMesh<
     // index in F
     const Index f = offending[o];
     {
+#ifdef IGL_SELFINTERSECTMESH_DEBUG
+      const double t_before = get_seconds();
+#endif
       projected_delaunay(T[f],F_objects[f],cdt[o]);
+#ifdef IGL_SELFINTERSECTMESH_DEBUG
+      t_proj_del += (get_seconds()-t_before);
+#endif
     }
     // Q: Is this also delaunay in 3D?
     // A: No, because the projection is affine and delaunay is not affine
@@ -527,7 +552,10 @@ inline igl::SelfIntersectMesh<
       }
     }
   }
-  //cout<<"CDT: "<<tictoc()<<"  "<<t_proj_del<<endl;
+#ifdef IGL_SELFINTERSECTMESH_DEBUG
+  cout<<"CDT: "<<tictoc()<<"  "<<t_proj_del<<endl;
+#endif
+
   assert(NV_count == (Index)NV.size());
   // Build output
 #ifndef NDEBUG
@@ -565,7 +593,7 @@ inline igl::SelfIntersectMesh<
   }
   // Append vertices
   VV.resize(V.rows()+NV_count,3);
-  VV.block(0,0,V.rows(),3) = V;
+  VV.block(0,0,V.rows(),3) = V.template cast<typename DerivedVV::Scalar>();
   {
     Index i = 0;
     for(
@@ -576,13 +604,8 @@ inline igl::SelfIntersectMesh<
       for(Index d = 0;d<3;d++)
       {
         const Point_3 & p = *nvit;
-        VV(V.rows()+i,d) = CGAL::to_double(p[d]);
-        // This distinction does not seem necessary:
-//#ifdef INEXACT_CONSTRUCTION
-//        VV(V.rows()+i,d) = CGAL::to_double(p[d]);
-//#else
-//        VV(V.rows()+i,d) = CGAL::to_double(p[d].exact());
-//#endif
+        // Don't convert via double if output type is same as Kernel
+        to_output_type(p[d], VV(V.rows()+i,d));
       }
       i++;
     }
@@ -619,7 +642,9 @@ inline igl::SelfIntersectMesh<
       v++;
     }
   }
-  //cout<<"Output + dupes: "<<tictoc()<<endl;
+#ifdef IGL_SELFINTERSECTMESH_DEBUG
+  cout<<"Output + dupes: "<<tictoc()<<endl;
+#endif
 
   // Q: Does this give the same result as TETGEN?
   // A: For the cow and beast, yes.
@@ -1185,6 +1210,58 @@ inline void igl::SelfIntersectMesh<
       assert(false);
     }
   }
+}
+
+template <
+  typename Kernel,
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedVV,
+  typename DerivedFF,
+  typename DerivedIF,
+  typename DerivedJ,
+  typename DerivedIM>
+inline 
+void 
+igl::SelfIntersectMesh<
+  Kernel,
+  DerivedV,
+  DerivedF,
+  DerivedVV,
+  DerivedFF,
+  DerivedIF,
+  DerivedJ,
+  DerivedIM>::to_output_type(
+    const typename Kernel::FT & cgal,
+    double & d)
+{
+  d = CGAL::to_double(cgal);
+}
+
+template <
+  typename Kernel,
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedVV,
+  typename DerivedFF,
+  typename DerivedIF,
+  typename DerivedJ,
+  typename DerivedIM>
+inline 
+void 
+igl::SelfIntersectMesh<
+  Kernel,
+  DerivedV,
+  DerivedF,
+  DerivedVV,
+  DerivedFF,
+  DerivedIF,
+  DerivedJ,
+  DerivedIM>::to_output_type(
+    const typename CGAL::Epeck::FT & cgal,
+    CGAL::Epeck::FT & d)
+{
+  d = cgal;
 }
 
 #endif

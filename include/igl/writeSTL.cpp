@@ -107,3 +107,7 @@ IGL_INLINE bool igl::writeSTL(
 {
   return writeSTL(filename,V,F, Eigen::PlainObjectBase<DerivedV>(), ascii);
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template bool igl::writeSTL<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, bool);
+#endif

@@ -13,7 +13,7 @@
 
 namespace igl
 {
-  // Function like PHP's dirname
+  // Function like PHP's dirname: /etc/passwd --> /etc, 
   // Input:
   //  path  string containing input path
   // Returns string containing dirname (see php's dirname)

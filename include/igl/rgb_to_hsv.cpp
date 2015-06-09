@@ -70,8 +70,33 @@ IGL_INLINE void igl::rgb_to_hsv(const R * rgb, H * hsv)
   }
 }
 
+
+template <typename DerivedR,typename DerivedH>
+IGL_INLINE void igl::rgb_to_hsv(
+  const Eigen::PlainObjectBase<DerivedR> & R,
+  Eigen::PlainObjectBase<DerivedH> & H)
+{
+  assert(R.cols() == 3);
+  H.resize(R.rows(),R.cols());
+  for(typename DerivedR::Index r = 0;r<R.rows();r++)
+  {
+    typename DerivedR::Scalar rgb[3];
+    rgb[0] = R(r,0);
+    rgb[1] = R(r,1);
+    rgb[2] = R(r,2);
+    typename DerivedH::Scalar hsv[] = {0,0,0};
+    rgb_to_hsv(rgb,hsv);
+    H(r,0) = hsv[0];
+    H(r,1) = hsv[1];
+    H(r,2) = hsv[2];
+  }
+}
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit instanciation
 template void igl::rgb_to_hsv<float, double>(float const*, double*);
 template void igl::rgb_to_hsv<double, double>(double const*, double*);
+template void igl::rgb_to_hsv<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::rgb_to_hsv<Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> >&);
+template void igl::rgb_to_hsv<Eigen::Matrix<float, 64, 3, 1, 64, 3>, Eigen::Matrix<float, 64, 3, 1, 64, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<float, 64, 3, 1, 64, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, 64, 3, 1, 64, 3> >&); 
 #endif

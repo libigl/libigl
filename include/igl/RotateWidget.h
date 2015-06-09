@@ -118,7 +118,6 @@ inline Eigen::Quaterniond igl::RotateWidget::axis_q(const int a)
 inline Eigen::Vector3d igl::RotateWidget::view_direction(const int x, const int y)
 {
   using namespace Eigen;
-  using namespace igl;
   const Vector3d win_s(x,y,0), win_d(x,y,1);
   const Vector3d s = unproject(win_s);
   const Vector3d d = unproject(win_d);
@@ -128,7 +127,6 @@ inline Eigen::Vector3d igl::RotateWidget::view_direction(const int x, const int 
 inline Eigen::Vector3d igl::RotateWidget::view_direction(const Eigen::Vector3d & pos)
 {
   using namespace Eigen;
-  using namespace igl;
   const Vector3d ppos = project(pos);
   return view_direction(ppos(0),ppos(1));
 }
@@ -151,7 +149,6 @@ inline Eigen::Vector3d igl::RotateWidget::unproject_onto(
   const int y) const
 {
   using namespace Eigen;
-  using namespace igl;
   // KNOWN BUG: This projects to same depths as pos. I think what we actually
   // want is The intersection with the plane perpendicular to the view
   // direction at pos. If the field of view angle is small then this difference
@@ -179,7 +176,6 @@ inline bool igl::RotateWidget::intersect(
   Eigen::Vector3d & hit) const
 {
   using namespace Eigen;
-  using namespace igl;
   Vector3d view = view_direction(x,y);
   const Vector3d ppos = project(pos);
   Vector3d uxy = unproject(Vector3d(x,y,ppos(2)));
@@ -196,7 +192,6 @@ inline bool igl::RotateWidget::intersect(
 inline double igl::RotateWidget::unprojected_inner_radius() const
 {
   using namespace Eigen;
-  using namespace igl;
   Vector3d off,ppos,ppos_off,pos_off;
   project(pos,ppos);
   ppos_off = ppos;
@@ -207,7 +202,6 @@ inline double igl::RotateWidget::unprojected_inner_radius() const
 inline bool igl::RotateWidget::down(const int x, const int y)
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
   if(!m_is_enabled)
   {
@@ -289,7 +283,6 @@ inline bool igl::RotateWidget::down(const int x, const int y)
 
 inline bool igl::RotateWidget::drag(const int x, const int y)
 {
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
   if(!m_is_enabled)
@@ -378,7 +371,6 @@ inline void igl::RotateWidget::draw() const
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   glPushAttrib(GL_ENABLE_BIT | GL_LIGHTING_BIT | GL_DEPTH_BUFFER_BIT | GL_LINE_BIT);
   glDisable(GL_CLIP_PLANE0);
 
@@ -474,7 +466,6 @@ inline void igl::RotateWidget::draw_guide() const
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   glPushAttrib(
     GL_DEPTH_BUFFER_BIT | 
     GL_ENABLE_BIT | 

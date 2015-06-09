@@ -8,13 +8,7 @@
 // normals, texture coordinates, etc. in the input file will be ignored and
 // lost in the output file.
 //
-#include <igl/readOBJ.h>
-#include <igl/writeOBJ.h>
-#include <igl/writeOFF.h>
-#include <igl/readWRL.h>
-#include <igl/polygon_mesh_to_triangle_mesh.h>
-#include <igl/readOFF.h>
-#include <igl/readMESH.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/draw_mesh.h>
 #include <igl/draw_floor.h>
 #include <igl/pathinfo.h>
@@ -23,6 +17,7 @@
 #include <igl/material_colors.h>
 #include <igl/trackball.h>
 #include <igl/snap_to_canonical_view_quat.h>
+#include <igl/write_triangle_mesh.h>
 #include <igl/REDRUM.h>
 
 #include <Eigen/Core>
@@ -32,6 +27,22 @@
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
+#endif
+
+#ifndef GLUT_WHEEL_UP
+#define GLUT_WHEEL_UP    3
+#endif
+#ifndef GLUT_WHEEL_DOWN
+#define GLUT_WHEEL_DOWN  4
+#endif
+#ifndef GLUT_WHEEL_RIGHT
+#define GLUT_WHEEL_RIGHT 5
+#endif
+#ifndef GLUT_WHEEL_LEFT
+#define GLUT_WHEEL_LEFT  6
+#endif
+#ifndef GLUT_ACTIVE_COMMAND
+#define GLUT_ACTIVE_COMMAND 8
 #endif
 
 #include <string>
@@ -301,47 +312,15 @@ bool save()
   using namespace std;
   using namespace igl;
   using namespace Eigen;
-  // dirname, basename, extension and filename
-  string d,b,ext,f;
-  pathinfo(out_filename,d,b,ext,f);
-  // Convert extension to lower case
-  transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-  if(ext == "obj")
+  if(write_triangle_mesh(out_filename,s.V,s.F))
   {
-    // Convert extension to lower case
-    if(!igl::writeOBJ(out_filename,s.V,s.F))
-    {
-      return false;
-    }
-  }else if(ext == "off")
+    cout<<GREENGIN("Current baked model written to "+out_filename+".")<<endl;
+    return true;
+  }else
   {
-    // Convert extension to lower case
-    if(!igl::writeOFF(out_filename,s.V,s.F))
-    {
-      return false;
-    }
-  //}else if(ext == "wrl")
-  //{
-  //  // Convert extension to lower case
-  //  if(!igl::readWRL(filename,vV,vF))
-  //  {
-  //    return 1;
-  //  }
-  //}else
-  //{
-  //  // Convert extension to lower case
-  //  MatrixXi T;
-  //  if(!igl::readMESH(filename,V,T,F))
-  //  {
-  //    return 1;
-  //  }
-  //  //if(F.size() > T.size() || F.size() == 0)
-  //  {
-  //    boundary_facets(T,F);
-  //  }
+    cout<<REDRUM("Current baked model failed to write to "+out_filename+".")<<endl;
+    return false;
   }
-  cout<<GREENGIN("Current baked model written to "+out_filename+".")<<endl;
-  return true;
 }
 
 
@@ -455,56 +434,11 @@ int main(int argc, char * argv[])
   // Read and prepare mesh
   string filename = argv[1];
   out_filename = argv[2];
-  // dirname, basename, extension and filename
-  string d,b,ext,f;
-  pathinfo(filename,d,b,ext,f);
-  // Convert extension to lower case
-  transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-  vector<vector<double > > vV,vN,vTC;
-  vector<vector<int > > vF,vFTC,vFN;
-  if(ext == "obj")
+  if(!read_triangle_mesh(filename,s.V,s.F))
   {
-    // Convert extension to lower case
-    if(!igl::readOBJ(filename,vV,vTC,vN,vF,vFTC,vFN))
-    {
-      return 1;
-    }
-  }else if(ext == "off")
-  {
-    // Convert extension to lower case
-    if(!igl::readOFF(filename,vV,vF,vN))
-    {
-      return 1;
-    }
-  }else if(ext == "wrl")
-  {
-    // Convert extension to lower case
-    if(!igl::readWRL(filename,vV,vF))
-    {
-      return 1;
-    }
-  //}else
-  //{
-  //  // Convert extension to lower case
-  //  MatrixXi T;
-  //  if(!igl::readMESH(filename,V,T,F))
-  //  {
-  //    return 1;
-  //  }
-  //  //if(F.size() > T.size() || F.size() == 0)
-  //  {
-  //    boundary_facets(T,F);
-  //  }
+    cout<<"Failed to read from "<<filename<<"."<<endl;
+    return EXIT_FAILURE;
   }
-  if(vV.size() > 0)
-  {
-    if(!list_to_matrix(vV,s.V))
-    {
-      return 1;
-    }
-    polygon_mesh_to_triangle_mesh(vF,s.F);
-  }
-
   init_relative();
 
   // Init glut
@@ -520,5 +454,5 @@ int main(int argc, char * argv[])
   //glutPassiveMotionFunc(mouse_move);
   glutMainLoop();
 
-  return 0;
+  return EXIT_SUCCESS;
 }

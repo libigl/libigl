@@ -14,6 +14,8 @@
 #include <igl/readOFF.h>
 #include <igl/per_face_normals.h>
 #include <igl/draw_floor.h>
+#include <igl/project.h>
+#include <igl/unproject.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -22,6 +24,22 @@
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
+#endif
+
+#ifndef GLUT_WHEEL_UP
+#define GLUT_WHEEL_UP    3
+#endif
+#ifndef GLUT_WHEEL_DOWN
+#define GLUT_WHEEL_DOWN  4
+#endif
+#ifndef GLUT_WHEEL_RIGHT
+#define GLUT_WHEEL_RIGHT 5
+#endif
+#ifndef GLUT_WHEEL_LEFT
+#define GLUT_WHEEL_LEFT  6
+#endif
+#ifndef GLUT_ACTIVE_COMMAND
+#define GLUT_ACTIVE_COMMAND 8
 #endif
 
 #include <vector>
@@ -230,26 +248,6 @@ void draw_scene(const igl::Camera & v_camera,
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
   glLoadIdentity();
-  if(v_camera.m_angle > IGL_CAMERA_MIN_ANGLE)
-  {
-    gluPerspective(v_camera.m_angle,v_camera.m_aspect,v_camera.m_near,v_camera.m_far);
-  }else
-  {
-    glOrtho(
-      -0.5*v_camera.m_aspect,
-      0.5*v_camera.m_aspect,
-      -0.5,
-      0.5,
-      v_camera.m_near,
-      v_camera.m_far);
-  }
-  //{
-  //  Matrix4d m;
-  //  glGetDoublev(GL_PROJECTION_MATRIX,m.data());
-  //  cout<<matlab_format(m,"glu")<<endl;
-  //}
-
-  glLoadIdentity();
   glMultMatrixd(v_camera.projection().data());
   //{
   //  Matrix4d m;
@@ -258,14 +256,13 @@ void draw_scene(const igl::Camera & v_camera,
   //}
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
-  //glLoadIdentity();
-  //gluLookAt(
-  //  v_camera.eye()(0), v_camera.eye()(1), v_camera.eye()(2),
-  //  v_camera.at()(0), v_camera.at()(1), v_camera.at()(2),
-  //  v_camera.up()(0), v_camera.up()(1), v_camera.up()(2));
   glLoadIdentity();
-  glMultMatrixd(v_camera.inverse().matrix().data());
-
+  gluLookAt(
+    v_camera.eye()(0), v_camera.eye()(1), v_camera.eye()(2),
+    v_camera.at()(0), v_camera.at()(1), v_camera.at()(2),
+    v_camera.up()(0), v_camera.up()(1), v_camera.up()(2));
+  //glLoadIdentity();
+  //glMultMatrixd(v_camera.inverse().matrix().data());
 
   for(int c = 0;c<(int)s.cameras.size();c++)
   {
@@ -431,7 +428,6 @@ void display()
 
   TwDraw();
   glutSwapBuffers();
-  glutPostRedisplay();
 }
 
 
@@ -475,6 +471,7 @@ void mouse_wheel(int wheel, int direction, int mouse_x, int mouse_y)
       camera.dolly((wheel==0?Vector3d(0,0,1):Vector3d(-1,0,0))*0.1*direction);
       break;
   }
+  glutPostRedisplay();
 }
 
 void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
@@ -509,6 +506,7 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
         break;
       }
       break;
+    }
 #ifdef GLUT_WHEEL_DOWN
     // Scroll down
     case GLUT_WHEEL_DOWN:
@@ -541,8 +539,8 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
       break;
     }
 #endif
-    }
   }
+  glutPostRedisplay();
 }
 
 void mouse_drag(int mouse_x, int mouse_y)
@@ -595,6 +593,7 @@ void mouse_drag(int mouse_x, int mouse_y)
         break;
     }
   }
+  glutPostRedisplay();
 }
 
 void key(unsigned char key, int mouse_x, int mouse_y)
@@ -609,6 +608,12 @@ void key(unsigned char key, int mouse_x, int mouse_y)
     // ^C
     case char(3):
       exit(0);
+    case 'o':
+    case 'O':
+      {
+        s.cameras[0].m_orthographic ^= true;
+        break;
+      }
     case 'z':
     case 'Z':
       if(mod & GLUT_ACTIVE_COMMAND)
@@ -628,6 +633,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
         cout<<"Unknown key command: "<<key<<" "<<int(key)<<endl;
       }
   }
+  glutPostRedisplay();
 }
 
 int main(int argc, char * argv[])

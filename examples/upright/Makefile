@@ -11,7 +11,7 @@ include ../..//build/Makefile.conf
 INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC)
 LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB)
 
-CFLAGS+=-g
+CFLAGS+=-g $(OPTFLAGS)
 
 upright: upright.o
 	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -o upright upright.o $(LIB)

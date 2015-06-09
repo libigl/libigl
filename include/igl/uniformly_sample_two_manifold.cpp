@@ -29,7 +29,6 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
   Eigen::MatrixXd & WS)
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
 
   // Euclidean distance between two points on a mesh given as barycentric
@@ -351,7 +350,6 @@ IGL_INLINE void igl::uniformly_sample_two_manifold_at_vertices(
   Eigen::VectorXi & S)
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
 
   // Copy weights and faces

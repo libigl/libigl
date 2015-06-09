@@ -18,7 +18,6 @@ void igl::is_boundary_edge(
   const Eigen::PlainObjectBase<DerivedF> & F,
   Eigen::PlainObjectBase<DerivedB> & B)
 {
-  using namespace igl;
   using namespace Eigen;
   using namespace std;
   // Should be triangles
@@ -74,7 +73,6 @@ void igl::is_boundary_edge(
   Eigen::PlainObjectBase<DerivedE> & E,
   Eigen::PlainObjectBase<DerivedEMAP> & EMAP)
 {
-  using namespace igl;
   using namespace Eigen;
   using namespace std;
   // Should be triangles
@@ -109,7 +107,7 @@ void igl::is_boundary_edge(
   // Look of occurances of 1
   for(int e = 0;e<E.rows();e++)
   {
-    B(e) = (N(EMAP(e)) == 1);
+    B(e) = N(e) == 1;
   }
 }
 

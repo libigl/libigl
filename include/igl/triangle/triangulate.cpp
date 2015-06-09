@@ -126,6 +126,7 @@ IGL_INLINE void igl::triangulate(
   free(out.pointlist);
   free(out.trianglelist);
   free(out.segmentlist);
+
 }
 
 #ifdef IGL_STATIC_LIBRARY

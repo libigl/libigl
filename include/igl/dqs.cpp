@@ -22,7 +22,6 @@ IGL_INLINE void igl::dqs(
   Eigen::PlainObjectBase<DerivedU> & U)
 {
   using namespace std;
-  using namespace igl;
   assert(V.rows() <= W.rows());
   assert(W.cols() == (int)vQ.size());
   assert(W.cols() == (int)vT.size());

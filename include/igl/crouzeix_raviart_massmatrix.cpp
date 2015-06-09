@@ -39,7 +39,6 @@ void igl::crouzeix_raviart_massmatrix(
     const Eigen::PlainObjectBase<DerivedEMAP> & EMAP,
     Eigen::SparseMatrix<MT> & M)
 {
-  using namespace igl;
   using namespace Eigen;
   using namespace std;
   assert(F.cols() == 3);

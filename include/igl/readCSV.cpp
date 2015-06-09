@@ -20,7 +20,6 @@ IGL_INLINE bool igl::readCSV(
   Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& M)
 {
   using namespace std;
-  using namespace igl;
 
   std::vector<std::vector<Scalar> > Mt;
   

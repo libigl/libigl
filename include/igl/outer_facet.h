@@ -18,7 +18,7 @@ namespace igl
   //   flip  whether facet's orientation should be flipped so that
   //     counter-clockwise normal points outward.
   //
-  // See also: outer_hull.h
+  // See also: cgal/outer_hull.h
   template <
     typename DerivedV,
     typename DerivedF,

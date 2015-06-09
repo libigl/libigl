@@ -14,7 +14,6 @@ IGL_INLINE const Eigen::WithFormat< DerivedM > igl::matlab_format(
   const Eigen::PlainObjectBase<DerivedM> & M,
   const std::string name)
 {
-  using namespace igl;
   using namespace std;
   string prefix = "";
   if(!name.empty())
@@ -42,7 +41,6 @@ igl::matlab_format(
   const std::string name)
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
   Matrix<typename Eigen::SparseMatrix<DerivedS>::Scalar,Dynamic,1> I,J,V;
   Matrix<DerivedS,Dynamic,Dynamic> SIJV;

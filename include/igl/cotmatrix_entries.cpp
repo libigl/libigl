@@ -21,7 +21,6 @@ IGL_INLINE void igl::cotmatrix_entries(
   const Eigen::PlainObjectBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedC>& C)
 {
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
   // simplex size (3: triangles, 4: tetrahedra)

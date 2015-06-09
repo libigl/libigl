@@ -8,21 +8,20 @@
 #include "signed_distance_isosurface.h"
 #include "point_mesh_squared_distance.h"
 #include "complex_to_mesh.h"
-#include "signed_distance.h"
 
-#include <igl/per_face_normals.h>
-#include <igl/per_edge_normals.h>
-#include <igl/per_vertex_normals.h>
-#include <igl/centroid.h>
-#include <igl/WindingNumberAABB.h>
-#include <igl/matlab_format.h>
-#include <igl/remove_unreferenced.h>
+#include "../AABB.h"
+#include "../per_face_normals.h"
+#include "../per_edge_normals.h"
+#include "../per_vertex_normals.h"
+#include "../centroid.h"
+#include "../WindingNumberAABB.h"
+#include "../matlab_format.h"
+#include "../remove_unreferenced.h"
 
 #include <CGAL/Surface_mesh_default_triangulation_3.h>
 #include <CGAL/Complex_2_in_triangulation_3.h>
 #include <CGAL/make_surface_mesh.h>
 #include <CGAL/Implicit_surface_3.h>
-#include <CGAL/Polyhedron_3.h>
 #include <CGAL/IO/output_surface_facets_to_polyhedron.h>
 // Axis-aligned bounding box tree for tet tri intersection
 #include <CGAL/AABB_tree.h>
@@ -42,6 +41,7 @@ IGL_INLINE bool igl::signed_distance_isosurface(
   Eigen::MatrixXi & F)
 {
   using namespace std;
+  using namespace Eigen;
 
   // default triangulation for Surface_mesher
   typedef CGAL::Surface_mesh_default_triangulation_3 Tr;
@@ -53,18 +53,9 @@ IGL_INLINE bool igl::signed_distance_isosurface(
   typedef GT::FT FT;
   typedef std::function<FT (Point_3)> Function;
   typedef CGAL::Implicit_surface_3<GT, Function> Surface_3;
-  typedef CGAL::Polyhedron_3<GT> Polyhedron;
-  typedef GT::Kernel Kernel;
-  typedef CGAL::Triangle_3<Kernel> Triangle_3; 
-  typedef typename std::vector<Triangle_3>::iterator Iterator;
-  typedef CGAL::AABB_triangle_primitive<Kernel, Iterator> Primitive;
-  typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
-  typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
-  typedef typename Tree::Point_and_primitive_id Point_and_primitive_id;
 
-  Tree tree;
-  vector<Triangle_3 > T;
-  point_mesh_squared_distance_precompute(IV,IF,tree,T);
+  AABB<Eigen::MatrixXd,3> tree;
+  tree.init(IV,IF);
 
   Eigen::MatrixXd FN,VN,EN;
   Eigen::MatrixXi E;
@@ -74,6 +65,9 @@ IGL_INLINE bool igl::signed_distance_isosurface(
   {
     default:
       assert(false && "Unknown SignedDistanceType");
+    case SIGNED_DISTANCE_TYPE_UNSIGNED:
+      // do nothing
+      break;
     case SIGNED_DISTANCE_TYPE_DEFAULT:
     case SIGNED_DISTANCE_TYPE_WINDING_NUMBER:
       hier.set_mesh(IV,IF);
@@ -105,39 +99,36 @@ IGL_INLINE bool igl::signed_distance_isosurface(
   {
     default:
       assert(false && "Unknown SignedDistanceType");
+    case SIGNED_DISTANCE_TYPE_UNSIGNED:
+      fun = 
+        [&tree,&IV,&IF,&level](const Point_3 & q) -> FT
+        {
+          int i;
+          RowVector3d c;
+          const double sd = tree.squared_distance(
+            IV,IF,RowVector3d(q.x(),q.y(),q.z()),i,c);
+          return sd-level;
+        };
     case SIGNED_DISTANCE_TYPE_DEFAULT:
     case SIGNED_DISTANCE_TYPE_WINDING_NUMBER:
       fun = 
-        [&tree,&hier,&level](const Point_3 & q) -> FT
+        [&tree,&IV,&IF,&hier,&level](const Point_3 & q) -> FT
         {
-          return signed_distance_winding_number(tree,hier,q)-level;
+          const double sd = signed_distance_winding_number(
+            tree,IV,IF,hier,RowVector3d(q.x(),q.y(),q.z()));
+          return sd-level;
         };
       break;
     case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
-      fun = [&tree,&T,&IF,&FN,&VN,&EN,&EMAP,&level](const Point_3 & q) -> FT
+      fun = [&tree,&IV,&IF,&FN,&VN,&EN,&EMAP,&level](const Point_3 & q) -> FT
         {
-          return 
-            igl::signed_distance_pseudonormal(tree,T,IF,FN,VN,EN,EMAP,q) - 
-            level;
+          const double sd = 
+            igl::signed_distance_pseudonormal(
+              tree,IV,IF,FN,VN,EN,EMAP,RowVector3d(q.x(),q.y(),q.z()));
+          return sd- level;
         };
       break;
   }
-    //[&tree,&hier,&T,&IF,&FN,&VN,&EN,&EMAP,&level](const Point_3 & q) ->FT
-    //{
-    //  const FT p = signed_distance_pseudonormal(tree,T,IF,FN,VN,EN,EMAP,q);
-    //  const FT w = signed_distance_winding_number(tree,hier,q);
-    //  if(w*p < 0 && (fabs(w) > 0.1 || fabs(p) > 0.1))
-    //  {
-    //    cout<<"q=["<<q.x()<<","<<q.y()<<","<<q.z()<<"];"<<endl;
-    //    cout<<matlab_format(n.transpose().eval(),"n")<<endl;
-    //    cout<<matlab_format(b.transpose().eval(),"b")<<endl;
-    //    cout<<"Sig difference: "<<type<<endl;
-    //    cout<<"w: "<<w<<endl;
-    //    cout<<"p: "<<p<<endl;
-    //    exit(1);
-    //  }
-    //  return w;
-    //},
   Sphere_3 bounding_sphere(cmid, (r+level)*(r+level));
   Surface_3 surface(fun,bounding_sphere);
   CGAL::Surface_mesh_default_criteria_3<Tr> 

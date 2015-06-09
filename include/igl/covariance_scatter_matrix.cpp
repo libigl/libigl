@@ -20,7 +20,6 @@ IGL_INLINE void igl::covariance_scatter_matrix(
   const ARAPEnergyType energy,
   Eigen::SparseMatrix<double>& CSM)
 {
-  using namespace igl;
   using namespace Eigen;
   // number of mesh vertices
   int n = V.rows();
