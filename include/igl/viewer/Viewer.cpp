@@ -412,6 +412,8 @@ namespace igl
       if (callback_init(*this))
         return;
 
+    init_plugins();
+
     // Parse command line arguments
     bool isLoaded = false;
     for(int i=1;i<argc;i++)
@@ -423,8 +425,6 @@ namespace igl
           std::cout << "file not found: " << argv[i+1] << std::endl;
       }
     }
-
-    init_plugins();
   }
 
   IGL_INLINE Viewer::Viewer()
