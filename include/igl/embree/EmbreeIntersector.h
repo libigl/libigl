@@ -16,16 +16,15 @@
 #ifndef IGL_EMBREE_INTERSECTOR_H
 #define IGL_EMBREE_INTERSECTOR_H
 
+#include "Hit.h"
 #include <Eigen/Geometry>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include <vector>
 #include <embree2/rtcore.h>
 #include <embree2/rtcore_ray.h>
 #include <iostream>
-#include "Hit.h"
-#include <iostream>
+#include <vector>
 
 namespace igl
 {
@@ -279,7 +278,7 @@ inline void igl::EmbreeIntersector::init(
   // create a scene
   scene = rtcNewScene(RTC_SCENE_ROBUST | RTC_SCENE_HIGH_QUALITY,RTC_INTERSECT1);
 
-  for(int g=0;g<V.size();g++)
+  for(int g=0;g<(int)V.size();g++)
   {
     // create triangle mesh geometry in that scene
     geomID = rtcNewTriangleMesh(scene,RTC_GEOMETRY_STATIC,F[g]->rows(),V[g]->rows(),1);
@@ -328,14 +327,21 @@ igl::EmbreeIntersector
 
 void igl::EmbreeIntersector::deinit()
 {
-  rtcDeleteScene(scene);
+  if(scene)
+  {
+    rtcDeleteScene(scene);
 
-  if(rtcGetError() != RTC_NO_ERROR)
-      std::cerr << "Embree: An error occured while resetting!" << std::endl;
+    if(rtcGetError() != RTC_NO_ERROR)
+    {
+        std::cerr << "Embree: An error occured while resetting!" << std::endl;
+    }
 #ifdef IGL_VERBOSE
-  else
-    std::cerr << "Embree: geometry removed." << std::endl;
+    else
+    {
+      std::cerr << "Embree: geometry removed." << std::endl;
+    }
 #endif
+  }
 }
 
 inline bool igl::EmbreeIntersector::intersectRay(
@@ -347,7 +353,7 @@ inline bool igl::EmbreeIntersector::intersectRay(
   int mask) const
 {
   RTCRay ray;
-  createRay(ray, origin,direction,tnear,std::numeric_limits<float>::infinity(),mask);
+  createRay(ray, origin,direction,tnear,tfar,mask);
   
   // shot ray
   rtcIntersect(scene,ray);
@@ -356,7 +362,7 @@ inline bool igl::EmbreeIntersector::intersectRay(
       std::cerr << "Embree: An error occured while resetting!" << std::endl;
 #endif
   
-  if(ray.geomID != RTC_INVALID_GEOMETRY_ID)
+  if((unsigned)ray.geomID != RTC_INVALID_GEOMETRY_ID)
   {
     hit.id = ray.primID;
     hit.gid = ray.geomID;
@@ -388,8 +394,7 @@ inline bool igl::EmbreeIntersector::intersectBeam(
   else
     bestHit.t = 0;
 
-  hasHit = (intersectRay(origin,direction,hit,tnear,tfar,mask) && (hit.gid == geoId || geoId == -1));
-  if(hasHit)
+  if(hasHit = (intersectRay(origin,direction,hit,tnear,tfar,mask) && (hit.gid == geoId || geoId == -1)))
     bestHit = hit;
   
   // sample points around actual ray (conservative hitcheck)
@@ -448,7 +453,7 @@ igl::EmbreeIntersector
     ray.instID = RTC_INVALID_GEOMETRY_ID;
     num_rays++;
     rtcIntersect(scene,ray);
-    if(ray.geomID != RTC_INVALID_GEOMETRY_ID)
+    if((unsigned)ray.geomID != RTC_INVALID_GEOMETRY_ID)
     {
       // Hit self again, progressively advance
       if(ray.primID == last_id0 || ray.tfar <= min_t)
@@ -523,7 +528,7 @@ igl::EmbreeIntersector
   
   rtcIntersect(scene,ray);
 
-  if(ray.geomID != RTC_INVALID_GEOMETRY_ID)
+  if((unsigned)ray.geomID != RTC_INVALID_GEOMETRY_ID)
   {
     hit.id = ray.primID;
     hit.gid = ray.geomID;

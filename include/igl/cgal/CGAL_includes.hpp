@@ -8,6 +8,11 @@
 #ifndef IGL_CGAL_INCLUDES_H
 #define IGL_CGAL_INCLUDES_H
 
+// This causes unknown bugs during intersection meshing:
+//// http://www.alecjacobson.com/weblog/?p=4291
+//#define CGAL_INTERSECTION_VERSION 1
+// Use this instead to mute errors resulting from bad CGAL assertions
+#define CGAL_KERNEL_NO_ASSERTIONS
 // Triangle triangle intersection
 #include <CGAL/intersections.h>
 // THIS CANNOT BE INCLUDED IN THE SAME FILE AS <CGAL/intersections.h>

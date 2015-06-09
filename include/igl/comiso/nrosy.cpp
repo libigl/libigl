@@ -6,6 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+#include "nrosy.h"
+
 #include <igl/comiso/nrosy.h>
 #include <igl/triangle_triangle_adjacency.h>
 #include <igl/edge_topology.h>
@@ -22,6 +24,7 @@
 #include <CoMISo/Solver/ConstrainedSolver.hh>
 #include <CoMISo/Solver/MISolver.hh>
 #include <CoMISo/Solver/GMM_Tools.hh>
+
 namespace igl
 {
 class NRosyField

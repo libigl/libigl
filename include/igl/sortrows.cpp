@@ -61,7 +61,6 @@ IGL_INLINE void igl::sortrows(
   // improvement.
   using namespace std;
   using namespace Eigen;
-  using namespace igl;
   // Resize output
   Y.resize(X.rows(),X.cols());
   IX.resize(X.rows(),1);

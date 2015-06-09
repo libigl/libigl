@@ -14,7 +14,6 @@
 IGL_INLINE bool igl::median(const Eigen::VectorXd & V, double & m)
 {
   using namespace std;
-  using namespace igl;
   if(V.size() == 0)
   {
     return false;

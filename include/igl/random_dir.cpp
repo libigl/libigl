@@ -12,7 +12,6 @@
 IGL_INLINE Eigen::Vector3d igl::random_dir()
 {
   using namespace Eigen;
-  using namespace igl;
   double z =  (double)rand() / (double)RAND_MAX*2.0 - 1.0;
   double t =  (double)rand() / (double)RAND_MAX*2.0*PI;
   // http://www.altdevblogaday.com/2012/05/03/generating-uniformly-distributed-points-on-sphere/
@@ -25,7 +24,6 @@ IGL_INLINE Eigen::Vector3d igl::random_dir()
 IGL_INLINE Eigen::MatrixXd igl::random_dir_stratified(const int n)
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
   const double m = floor(sqrt(double(n)));
   MatrixXd N(n,3);

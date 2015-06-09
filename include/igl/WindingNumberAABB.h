@@ -28,10 +28,13 @@ namespace igl
       {
         CENTER_ON_LONGEST_AXIS = 0,
         MEDIAN_ON_LONGEST_AXIS = 1,
-        NUM_SPLIT_METHODS = 3
+        NUM_SPLIT_METHODS = 2
       } split_method;
     public:
-      inline WindingNumberAABB(){}
+      inline WindingNumberAABB():
+        total_positive_area(std::numeric_limits<double>::infinity()),
+        split_method(MEDIAN_ON_LONGEST_AXIS)
+      {}
       inline WindingNumberAABB(
         const Eigen::MatrixXd & V,
         const Eigen::MatrixXi & F);
@@ -83,7 +86,6 @@ inline void igl::WindingNumberAABB<Point>::set_mesh(
 template <typename Point>
 inline void igl::WindingNumberAABB<Point>::init()
 {
-  using namespace igl;
   using namespace Eigen;
   assert(max_corner.size() == 3);
   assert(min_corner.size() == 3);
@@ -124,7 +126,6 @@ inline void igl::WindingNumberAABB<Point>::grow()
 {
   using namespace std;
   using namespace Eigen;
-  using namespace igl;
   //cout<<"cap.rows(): "<<this->getcap().rows()<<endl;
   //cout<<"F.rows(): "<<this->getF().rows()<<endl;
 
@@ -300,7 +301,6 @@ inline double igl::WindingNumberAABB<Point>::max_simple_abs_winding_number(const
 {
   using namespace std;
   using namespace Eigen;
-  using namespace igl;
   // Only valid if not inside
   if(inside(p))
   {

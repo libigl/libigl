@@ -6,6 +6,14 @@
 #include <igl/comiso/nrosy.h>
 #include <sstream>
 #include <igl/rotate_vectors.h>
+#include <igl/local_basis.h>
+#include <igl/compute_frame_field_bisectors.h>
+#include <igl/comb_cross_field.h>
+#include <igl/cross_field_missmatch.h>
+#include <igl/find_cross_field_singularities.h>
+#include <igl/cut_mesh_from_singularities.h>
+#include <igl/comb_frame_field.h>
+#include <igl/comb_cross_field.h>
 
 // Input mesh
 Eigen::MatrixXd V;
@@ -16,6 +24,7 @@ Eigen::MatrixXd B;
 
 // Scale for visualizing the fields
 double global_scale;
+bool extend_arrows = false;
 
 // Cross field
 Eigen::MatrixXd X1,X2;
@@ -70,6 +79,11 @@ void line_texture(Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &te
 
 bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
 {
+  if (key == 'E')
+  {
+    extend_arrows = !extend_arrows;
+  }
+
   if (key <'1' || key >'8')
     return false;
 
@@ -81,24 +95,24 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   {
     // Cross field
     viewer.data.set_mesh(V, F);
-    viewer.data.add_edges(B, B + global_scale*X1 ,Eigen::RowVector3d(1,0,0));
-    viewer.data.add_edges(B, B + global_scale*X2 ,Eigen::RowVector3d(0,0,1));
+    viewer.data.add_edges(extend_arrows ? B - global_scale*X1 : B, B + global_scale*X1 ,Eigen::RowVector3d(1,0,0));
+    viewer.data.add_edges(extend_arrows ? B - global_scale*X2 : B, B + global_scale*X2 ,Eigen::RowVector3d(0,0,1));
   }
 
   if (key == '2')
   {
     // Bisector field
     viewer.data.set_mesh(V, F);
-    viewer.data.add_edges(B, B + global_scale*BIS1 ,Eigen::RowVector3d(1,0,0));
-    viewer.data.add_edges(B, B + global_scale*BIS2 ,Eigen::RowVector3d(0,0,1));
+    viewer.data.add_edges(extend_arrows ? B - global_scale*BIS1 : B, B + global_scale*BIS1 ,Eigen::RowVector3d(1,0,0));
+    viewer.data.add_edges(extend_arrows ? B - global_scale*BIS2 : B, B + global_scale*BIS2 ,Eigen::RowVector3d(0,0,1));
   }
 
   if (key == '3')
   {
     // Bisector field combed
     viewer.data.set_mesh(V, F);
-    viewer.data.add_edges(B, B + global_scale*BIS1_combed ,Eigen::RowVector3d(1,0,0));
-    viewer.data.add_edges(B, B + global_scale*BIS2_combed ,Eigen::RowVector3d(0,0,1));
+    viewer.data.add_edges(extend_arrows ? B - global_scale*BIS1_combed : B, B + global_scale*BIS1_combed ,Eigen::RowVector3d(1,0,0));
+    viewer.data.add_edges(extend_arrows ? B - global_scale*BIS2_combed : B, B + global_scale*BIS2_combed ,Eigen::RowVector3d(0,0,1));
   }
 
   if (key == '4')
@@ -142,8 +156,8 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     // Singularities and cuts, original field
     // Singularities and cuts
     viewer.data.set_mesh(V, F);
-    viewer.data.add_edges(B, B + global_scale*X1_combed ,Eigen::RowVector3d(1,0,0));
-    viewer.data.add_edges(B, B + global_scale*X2_combed ,Eigen::RowVector3d(0,0,1));
+    viewer.data.add_edges(extend_arrows ? B - global_scale*X1_combed : B, B + global_scale*X1_combed ,Eigen::RowVector3d(1,0,0));
+    viewer.data.add_edges(extend_arrows ? B - global_scale*X2_combed : B, B + global_scale*X2_combed ,Eigen::RowVector3d(0,0,1));
 
     // Plot cuts
     int l_count = Seams.sum();

@@ -1,7 +1,0 @@
-camera_rotation: TW_TYPE_QUAT4D 0.152085375459856 -0.590495112202136 -0.114509193857288 0.784266029838584
-center_type: CenterType orbit
-wireframe_visible: TW_TYPE_BOOLCPP 1
-fill_visible: TW_TYPE_BOOLCPP 1
-rotation_type: RotationType two-axis-valuator-fixed-up
-orient_method: OrientMethod ambient-occlusion
-

@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 template <typename Scalar, typename Index>
-IGL_INLINE bool readNODE(
+IGL_INLINE bool igl::readNODE(
   const std::string node_file_name,
   std::vector<std::vector<Scalar > > & V,
   std::vector<std::vector<Index > > & I)
@@ -36,7 +36,6 @@ IGL_INLINE bool igl::readNODE(
   Eigen::PlainObjectBase<DerivedI>& I)
 {
   using namespace std;
-  using namespace igl;
   FILE * node_file = fopen(node_file_name.c_str(),"r");
   if(NULL==node_file)
   {

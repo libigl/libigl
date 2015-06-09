@@ -16,6 +16,7 @@ IGL_INLINE bool igl::readOFF(
   std::vector<std::vector<Index > > & F,
   std::vector<std::vector<Scalar > > & N)
 {
+  using namespace std;
   FILE * off_file = fopen(off_file_name.c_str(),"r");                                       
   if(NULL==off_file)
   {
@@ -30,13 +31,15 @@ IGL_INLINE bool igl::readOFF(
   const std::string OFF("OFF");
   const std::string NOFF("NOFF");
   if(fscanf(off_file,"%s\n",header)!=1
-     || !(OFF == header || NOFF == header))
+     || !(
+       string(header).compare(0, OFF.length(), OFF)==0 || 
+       string(header).compare(0,NOFF.length(),NOFF)==0))
   {
     printf("Error: %s's first line should be OFF or NOFF not %s...",off_file_name.c_str(),header);
     fclose(off_file);
     return false; 
   }
-  bool has_normals = NOFF==header;
+  bool has_normals = string(header).compare(0,NOFF.length(),NOFF)==0;
   // Second line is #vertices #faces #edges
   int number_of_vertices;
   int number_of_faces;
@@ -80,7 +83,7 @@ IGL_INLINE bool igl::readOFF(
       }
       i++;
     }else if(
-             fscanf(off_file,"%[#]",&tic_tac_toe)==1)
+        fscanf(off_file,"%[#]",&tic_tac_toe)==1)
     {
       char comment[1000];
       fscanf(off_file,"%[^\n]",comment);

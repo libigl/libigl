@@ -35,21 +35,16 @@ namespace igl
       //  m_near  near clipping plane {1e-2}
       //  m_far  far clipping plane {100}
       //  m_at_dist  distance of looking at point {1}
+      //  m_orthographic  whether to use othrographic projection {false}
       //  m_rotation_conj  Conjugate of rotation part of rigid transformation of
       //    camera {identity}. Note: we purposefully store the conjugate because
       //    this is what TW_TYPE_QUAT4D is expecting.
       //  m_translation  Translation part of rigid transformation of camera
       //    {(0,0,1)}
       double m_angle, m_aspect, m_near, m_far, m_at_dist;
+      bool m_orthographic;
       Eigen::Quaterniond m_rotation_conj;
       Eigen::Vector3d m_translation;
-    private:
-      // m_at_dist_min_angle  m_at_dist from last time m_angle set to <= IGL_CAMERA_MIN_ANGLE
-      double m_at_dist_min_angle;
-      double m_angle_min_angle;
-    //  // m_last_positive_m_angle
-    //  // m_last_positive_m_angle_m_at_dist
-    //  double m_last_positive_m_angle,m_last_positive_m_angle_m_at_dist;
     public:
       inline Camera();
       inline virtual ~Camera(){}
@@ -154,10 +149,9 @@ namespace igl
 
 inline igl::Camera::Camera():
   m_angle(45.0),m_aspect(1),m_near(1e-2),m_far(100),m_at_dist(1),
+  m_orthographic(false),
   m_rotation_conj(1,0,0,0),
-  m_translation(0,0,1),
-  m_at_dist_min_angle(m_at_dist),
-  m_angle_min_angle(m_angle)
+  m_translation(0,0,1)
 {
 }
 
@@ -165,41 +159,36 @@ inline Eigen::Matrix4d igl::Camera::projection() const
 {
   Eigen::Matrix4d P;
   using namespace std;
-  using namespace igl;
+  const double far = m_at_dist + m_far;
+  const double near = m_near;
   // http://stackoverflow.com/a/3738696/148668
-  if(m_angle >= IGL_CAMERA_MIN_ANGLE)
-  {
-    const double yScale = tan(PI*0.5 - 0.5*m_angle*PI/180.);
-    // http://stackoverflow.com/a/14975139/148668
-    const double xScale = yScale/m_aspect;
-    const double far = m_at_dist + m_far;
-    const double near = m_near;
-    P<< 
-      xScale, 0, 0, 0,
-      0, yScale, 0, 0,
-      0, 0, -(far+near)/(far-near), -1,
-      0, 0, -2.*near*far/(far-near), 0;
-    P = P.transpose().eval();
-  }else
+  if(m_orthographic)
   {
     const double f = 0.5;
     const double left = -f*m_aspect;
     const double right = f*m_aspect;
     const double bottom = -f;
     const double top = f;
-    const double near = m_near;
-    const double far = m_at_dist + m_far;
     const double tx = (right+left)/(right-left);
     const double ty = (top+bottom)/(top-bottom);
     const double tz = (far+near)/(far-near);
-    const double z_fix = 
-      0.5/(m_at_dist_min_angle * tan(m_angle_min_angle/2./180.*M_PI))+
-      (-m_at_dist+m_at_dist_min_angle)/m_at_dist_min_angle;
+    const double z_fix = 0.5 /m_at_dist / tan(m_angle*0.5 * (M_PI/180.) );
     P<<
       z_fix*2./(right-left), 0, 0, -tx,
       0, z_fix*2./(top-bottom), 0, -ty,
       0, 0, -z_fix*2./(far-near),  -tz,
       0, 0, 0, 1;
+  }else
+  {
+    const double yScale = tan(PI*0.5 - 0.5*m_angle*PI/180.);
+    // http://stackoverflow.com/a/14975139/148668
+    const double xScale = yScale/m_aspect;
+    P<< 
+      xScale, 0, 0, 0,
+      0, yScale, 0, 0,
+      0, 0, -(far+near)/(far-near), -1,
+      0, 0, -2.*near*far/(far-near), 0;
+    P = P.transpose().eval();
   }
   return P;
 }
@@ -244,7 +233,6 @@ inline Eigen::Vector3d igl::Camera::up() const
 
 inline Eigen::Vector3d igl::Camera::unit_plane() const
 {
-  using namespace igl;
   // Distance of center pixel to eye
   const double d = 1.0;
   const double a = m_aspect;
@@ -263,7 +251,6 @@ inline void igl::Camera::dolly(const Eigen::Vector3d & dv)
 inline void igl::Camera::push_away(const double s)
 {
   using namespace Eigen;
-  using namespace igl;
 #ifndef NDEBUG
   Vector3d old_at = at();
 #endif
@@ -276,47 +263,36 @@ inline void igl::Camera::push_away(const double s)
 inline void igl::Camera::dolly_zoom(const double da)
 {
   using namespace std;
-  using namespace igl;
   using namespace Eigen;
 #ifndef NDEBUG
   Vector3d old_at = at();
 #endif
   const double old_angle = m_angle;
-  m_angle += da;
-  m_angle = min(89.,max(0.,m_angle));
-  const double eff_angle = (IGL_CAMERA_MIN_ANGLE > m_angle ? IGL_CAMERA_MIN_ANGLE : m_angle);
-  if(old_angle >= IGL_CAMERA_MIN_ANGLE)
+  if(old_angle + da < IGL_CAMERA_MIN_ANGLE)
   {
+    m_orthographic = true;
+  }else if(old_angle + da > IGL_CAMERA_MIN_ANGLE)
+  {
+    m_orthographic = false;
+  }
+  if(!m_orthographic)
+  {
+    m_angle += da;
+    m_angle = min(89.,max(IGL_CAMERA_MIN_ANGLE,m_angle));
     // change in distance
     const double s = 
       (2.*tan(old_angle/2./180.*M_PI)) /
-      (2.*tan(eff_angle/2./180.*M_PI)) ;
+      (2.*tan(m_angle/2./180.*M_PI)) ;
     const double old_at_dist = m_at_dist;
     m_at_dist = old_at_dist * s;
     dolly(Vector3d(0,0,1)*(m_at_dist - old_at_dist));
-    if(eff_angle == IGL_CAMERA_MIN_ANGLE)
-    {
-      m_at_dist_min_angle = m_at_dist;
-      m_angle_min_angle = eff_angle;
-    }
     assert((old_at-at()).squaredNorm() < DOUBLE_EPS);
-  }else if(old_angle < IGL_CAMERA_MIN_ANGLE && m_angle >= IGL_CAMERA_MIN_ANGLE)
-  {
-    // Restore decent length
-    const double z_fix = 
-      // There should be some factor here based on the incoming angle
-      // (m_angle_min_angle) and outgoing angle (m_angle)... For now I set it
-      // to 1. (assumes equality)
-      //0.5/(m_at_dist_min_angle * tan(m_angle_min_angle/2./180.*M_PI))+
-      1.+(-m_at_dist+m_at_dist_min_angle)/m_at_dist_min_angle;
-    m_at_dist = m_at_dist_min_angle / z_fix;
   }
 }
 
 inline void igl::Camera::turn_eye(const Eigen::Quaterniond & q)
 {
   using namespace Eigen;
-  using namespace igl;
   Vector3d old_eye = eye();
   // eye should be fixed
   //
@@ -330,7 +306,6 @@ inline void igl::Camera::turn_eye(const Eigen::Quaterniond & q)
 inline void igl::Camera::orbit(const Eigen::Quaterniond & q)
 {
   using namespace Eigen;
-  using namespace igl;
   Vector3d old_at = at();
   // at should be fixed
   //
@@ -351,7 +326,6 @@ inline void igl::Camera::look_at(
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   // http://www.opengl.org/sdk/docs/man2/xhtml/gluLookAt.xml
   // Normalize vector from at to eye
   Vector3d F = eye-at;

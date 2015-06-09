@@ -8,6 +8,7 @@
 #ifndef IGL_REMESH_SELF_INTERSECTIONS_H
 #define IGL_REMESH_SELF_INTERSECTIONS_H
 #include <igl/igl_inline.h>
+#include "RemeshSelfIntersectionsParam.h"
 
 #include <Eigen/Dense>
 
@@ -17,18 +18,9 @@
 #  undef assert
 #  define assert( isOK ) ( (isOK) ? (void)0 : (void) mexErrMsgTxt(C_STR(__FILE__<<":"<<__LINE__<<": failed assertion `"<<#isOK<<"'"<<std::endl) ) )
 #endif
-
+  
 namespace igl
 {
-  // Optional Parameters
-  //   DetectOnly  Only compute IF, leave VV and FF alone
-  struct RemeshSelfIntersectionsParam
-  {
-    bool detect_only;
-    bool first_only;
-    RemeshSelfIntersectionsParam():detect_only(false),first_only(false){};
-  };
-  
   // Given a triangle mesh (V,F) compute a new mesh (VV,FF) which is the same
   // as (V,F) except that any self-intersecting triangles in (V,F) have been
   // subdivided (new vertices and face created) so that the self-intersection

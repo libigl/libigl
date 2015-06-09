@@ -19,7 +19,6 @@ IGL_INLINE void igl::boundary_loop(
 {
   using namespace std;
   using namespace Eigen;
-  using namespace igl;
 
   if(F.rows() == 0)
     return;

@@ -21,6 +21,8 @@ namespace igl
   // source strings and vertex attributes assigned from a map before linking the
   // shaders to the program, making it ready to use with glUseProgram(id)
   // Inputs:
+  //   geom_source  string containing source code of geometry shader (can be
+  //     "" to mean use default pass-through)
   //   vert_source  string containing source code of vertex shader
   //   frag_source  string containing source code of fragment shader
   //   attrib  map containing table of vertex attribute strings add their
@@ -34,10 +36,25 @@ namespace igl
   //
   // See also: destroy_shader_program
   IGL_INLINE bool create_shader_program(
-    const std::string vert_source,
-    const std::string frag_source,
-    const std::map<std::string,GLuint> attrib,
+    const std::string &geom_source,
+    const std::string &vert_source,
+    const std::string &frag_source,
+    const std::map<std::string,GLuint> &attrib,
     GLuint & id);
+  IGL_INLINE bool create_shader_program(
+    const std::string &vert_source,
+    const std::string &frag_source,
+    const std::map<std::string,GLuint> &attrib,
+    GLuint & id);
+  IGL_INLINE GLuint create_shader_program(
+    const std::string & geom_source,
+    const std::string & vert_source,
+    const std::string & frag_source,
+    const std::map<std::string,GLuint> &attrib);
+  IGL_INLINE GLuint create_shader_program(
+    const std::string & vert_source,
+    const std::string & frag_source,
+    const std::map<std::string,GLuint> &attrib);
 }
 
 #ifndef IGL_STATIC_LIBRARY

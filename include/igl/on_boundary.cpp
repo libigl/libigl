@@ -20,7 +20,6 @@ IGL_INLINE void igl::on_boundary(
   std::vector<std::vector<bool> > & C)
 {
   using namespace std;
-  using namespace igl;
 
   // Get a list of all faces
   vector<vector<IntegerT> > F(T.size()*4,vector<IntegerT>(3));
@@ -77,7 +76,6 @@ IGL_INLINE void igl::on_boundary(
   assert(T.cols() == 0 || T.cols() == 4);
   using namespace std;
   using namespace Eigen;
-  using namespace igl;
   // Cop out: use vector of vectors version
   vector<vector<typename Eigen::PlainObjectBase<DerivedT>::Scalar> > vT;
   matrix_to_list(T,vT);

@@ -18,7 +18,6 @@ IGL_INLINE void igl::quat_to_axis_angle(
   Q_type *axis, 
   Q_type & angle)
 {
-  using namespace igl;
     if( fabs(q[3])>(1.0 + igl::EPS<Q_type>()) )
     {
         //axis[0] = axis[1] = axis[2] = 0; // no, keep the previous value
