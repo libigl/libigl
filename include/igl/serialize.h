@@ -242,7 +242,7 @@ namespace igl
 
     template <typename T>
     struct is_serializable {
-      static const bool value = std::is_fundamental<T>::value || std::is_same<std::string,T>::value || std::is_base_of<SerializableBase,T>::value
+      static const bool value = std::is_fundamental<T>::value || std::is_same<std::string,T>::value || std::is_enum<T>::value || std::is_base_of<SerializableBase,T>::value
         || is_stl_container<T>::value || is_eigen_type<T>::value || std::is_pointer<T>::value || serialization::is_smart_ptr<T>::value;
     };
 
@@ -266,6 +266,14 @@ namespace igl
     inline size_t getByteSize(const std::string& obj);
     inline void serialize(const std::string& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
     inline void deserialize(std::string& obj,std::vector<char>::const_iterator& iter);
+
+    // enum types
+    template <typename T>
+    inline typename std::enable_if<std::is_enum<T>::value,size_t>::type getByteSize(const T& obj);
+    template <typename T>
+    inline typename std::enable_if<std::is_enum<T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    template <typename T>
+    inline typename std::enable_if<std::is_enum<T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter);
 
     // SerializableBase
     template <typename T>
@@ -631,7 +639,6 @@ namespace igl
 
   namespace serialization
   {
-    // not serializable
     template <typename T>
     inline typename std::enable_if<!is_serializable<T>::value,size_t>::type getByteSize(const T& obj)
     {
@@ -721,6 +728,29 @@ namespace igl
       }
 
       obj = str;
+    }
+
+    // enum types
+
+    template <typename T>
+    inline typename std::enable_if<std::is_enum<T>::value,size_t>::type getByteSize(const T& obj)
+    {
+      return sizeof(T);
+    }
+
+    template <typename T>
+    inline typename std::enable_if<std::is_enum<T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter)
+    {
+      const uint8_t* ptr = reinterpret_cast<const uint8_t*>(&obj);
+      iter = std::copy(ptr,ptr+sizeof(T),iter);
+    }
+
+    template <typename T>
+    inline typename std::enable_if<std::is_enum<T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter)
+    {
+      uint8_t* ptr = reinterpret_cast<uint8_t*>(&obj);
+      std::copy(iter,iter+sizeof(T),ptr);
+      iter += sizeof(T);
     }
 
     // SerializableBase

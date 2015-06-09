@@ -18,7 +18,7 @@ namespace igl
   //
   // Templates:
   //   Scalar derived type of eigen matrix for V (e.g. derived from
-  //     MatirxXd)
+  //     MatrixXd)
   //   Index  derived type of eigen matrix for F (e.g. derived from
   //     MatrixXi)
   // Inputs:
