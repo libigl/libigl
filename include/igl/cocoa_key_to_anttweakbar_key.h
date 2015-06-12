@@ -22,9 +22,9 @@ namespace igl
   IGL_INLINE int cocoa_key_to_anttweakbar_key(int key);
 }
 
-#ifndef IGL_STATIC_LIBRARY
+//#ifndef IGL_STATIC_LIBRARY
 #  include "cocoa_key_to_anttweakbar_key.cpp"
-#endif
+//#endif
 
 #endif
 #endif

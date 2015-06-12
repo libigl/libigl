@@ -115,10 +115,6 @@ file(GLOB SOURCES
   "${PROJECT_SOURCE_DIR}/include/igl/*.cpp"
 )
 
-### HACKS TO CLEAN
-list(REMOVE_ITEM SOURCES ${ui} ${PROJECT_SOURCE_DIR}/include/igl/cocoa_key_to_anttweakbar_key.cpp)
-list(REMOVE_ITEM SOURCES ${ui} ${PROJECT_SOURCE_DIR}/include/igl/ReAntTweakBar.cpp)
-
 add_library(igl STATIC ${SOURCES})
 
 #### Compile the BBW part
