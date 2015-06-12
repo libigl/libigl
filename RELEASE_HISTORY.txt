@@ -14,6 +14,17 @@ Version | Short description
 1.0.1   | Bug fixes and more CGAL support
 1.0.0   | Major beta release: many renames, tutorial, triangle, org. build
 
+## Version 1.2 Changes ##
+This change introduces better organization of dependencies and removes some
+deprecated/repeated functions
+
+### Deprecated/repeated functions ###
+
+Old                              | New
+-------------------------------- | -------------------------------------
+`igl::angles`                    | `igl::internal_angles`
+
+
 ## Version 1.0 Changes ##
 Our beta release marks our confidence that this library can be used outside of
 casual experimenting. To maintain order, we have made a few changes which
