@@ -18,6 +18,7 @@ To build the entire libigl library producing at least `libigl/lib/libigl.a` and
 possible other (automatically detected) extras, e.g. `libigl/lib/libiglcgal.a`
 from _this current directory_: issue:
 
+    mkdir -p ../lib
     cd ../lib
     cmake -DCMAKE_BUILD_TYPE=Release ..
     make
@@ -25,8 +26,8 @@ from _this current directory_: issue:
 #### Examples ####
 You can make a slew of examples by issuing:
 
-    cd build
-    make examples
+    cd ../examples
+    make
 
 #### External ####
 
