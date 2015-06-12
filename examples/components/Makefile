@@ -2,18 +2,19 @@
 
 # Shared flags etc.
 include ../Makefile.conf
+LIBIGL_LIB+=-liglembree -liglboost
 
 all: obj example
 
 .PHONY: example
 
-INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC) $(GLUT_INC)
-LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB)
+CFLAGS+=-g -std=c++11
+
+INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC) $(GLUT_INC) $(EMBREE_INC)
+LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB) $(EMBREE_LIB)
 
 CPP_FILES=$(wildcard ./*.cpp)
 OBJ_FILES=$(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o))) 
-
-CFLAGS+=-std=c++11 -g -O0
 
 example: obj $(OBJ_FILES)
 	g++ $(OPENMP) $(AFLAGS) $(CFLAGS) -o example $(OBJ_FILES) $(LIB)
