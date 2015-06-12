@@ -47,9 +47,11 @@ find_package(CGAL QUIET)
 
 ## Check for mosek
 find_package(MOSEK QUIET)
-if(NOT MOSEK_FOUND)
+if(MOSEK_FOUND)
+  include_directories(${MOSEK_INCLUDE_DIR})
+else(MOSEK_FOUND)
   add_definitions(-DIGL_NO_MOSEK)
-endif(NOT MOSEK_FOUND)
+endif(MOSEK_FOUND)
 
 ## Check for CORK
 find_package(CORK QUIET)
