@@ -3,7 +3,7 @@
 #include <igl/Camera.h>
 #include <igl/matlab_format.h>
 #include <igl/report_gl_error.h>
-#include <igl/ReAntTweakBar.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 #include <igl/trackball.h>
 #include <igl/two_axis_valuator_fixed_up.h>
 #include <igl/PI.h>

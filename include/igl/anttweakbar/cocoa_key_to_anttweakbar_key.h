@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_COCOA_KEY_TO_ANTTWEAKBAR_KEY_H
 #define IGL_COCOA_KEY_TO_ANTTWEAKBAR_KEY_H
-#include "igl_inline.h"
+#include "../igl_inline.h"
 
 
 namespace igl

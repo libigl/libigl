@@ -19,7 +19,7 @@
 #include <igl/snap_to_fixed_up.h>
 #include <igl/REDRUM.h>
 #include <igl/Camera.h>
-#include <igl/ReAntTweakBar.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 #include <igl/get_seconds.h>
 #include <igl/random_points_on_mesh.h>
 

@@ -17,7 +17,7 @@
 #include <igl/material_colors.h>
 #include <igl/barycenter.h>
 #include <igl/matlab_format.h>
-#include <igl/ReAntTweakBar.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 #include <igl/pathinfo.h>
 #include <igl/embree/EmbreeIntersector.h>
 #include <igl/embree/ambient_occlusion.h>

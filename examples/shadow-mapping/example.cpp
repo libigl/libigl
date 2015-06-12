@@ -19,7 +19,7 @@
 #include <igl/trackball.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/REDRUM.h>
-#include <igl/ReAntTweakBar.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 #include <igl/get_seconds.h>
 #include <igl/jet.h>
 #include <igl/randperm.h>

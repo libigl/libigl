@@ -28,7 +28,7 @@
 #include <igl/material_colors.h>
 #include <igl/barycenter.h>
 #include <igl/matlab_format.h>
-#include <igl/ReAntTweakBar.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 #include <igl/pathinfo.h>
 #include <igl/Camera.h>
 #include <igl/get_seconds.h>

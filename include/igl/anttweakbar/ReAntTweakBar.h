@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_REANTTWEAKBAR_H
 #define IGL_REANTTWEAKBAR_H
-#include "igl_inline.h"
+#include "../igl_inline.h"
 // ReAntTweakBar is a minimal wrapper for the AntTweakBar library that allows
 // "bars" to be saved and load from disk. Changing your existing app that uses
 // AntTweakBar to use ReAntTweakBar is trivial.

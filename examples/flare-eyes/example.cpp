@@ -17,7 +17,7 @@
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/REDRUM.h>
 #include <igl/Camera.h>
-#include <igl/ReAntTweakBar.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 #include <igl/PI.h>
 #include <igl/render_to_tga.h>
 #include <igl/STR.h>
