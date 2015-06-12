@@ -7,12 +7,12 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "fit_rotations.h"
 #include "polar_svd3x3.h"
-#include <igl/repmat.h>
-#include <igl/verbose.h>
-#include <igl/polar_dec.h>
-#include <igl/polar_svd.h>
-#include <igl/matlab_format.h>
-#include <igl/C_STR.h>
+#include "repmat.h"
+#include "verbose.h"
+#include "polar_dec.h"
+#include "polar_svd.h"
+#include "matlab_format.h"
+#include "C_STR.h"
 #include <iostream>
 
 template <typename DerivedS, typename DerivedD>
