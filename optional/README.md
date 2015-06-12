@@ -1,9 +1,9 @@
 # Compiling libigl as a static library
 
 > Warning: compiling libigl as a static library is considerably more difficult
-> than using it as a header-only library (see `../README.md` instead). Do it
-> only if you are experienced with C++ and you want to improve your compilation
-> times.
+> than using it as a header-only library (see [../README.md](../) instead). Do
+> it only if you are experienced with C++, cmake and make, and you want to
+> improve your compilation times.
 
 Libigl is developed most often on Mac OS X, though has current users in Linux
 and Windows.
@@ -14,22 +14,13 @@ Libigl may also be compiled to a static library. This is advantageous when
 building a project with libigl, since when used as an header-only library can
 slow down compile times.
 
-To build the entire libigl library producing `lib/libigl.a`, issue:
+To build the entire libigl library producing at least `libigl/lib/libigl.a` and
+possible other (automatically detected) extras, e.g. `libigl/lib/libiglcgal.a`
+from _this current directory_: issue:
 
-    cd build
-    make lib
-
-You may need to edit `Makefile.conf` accordingly. Best to give yourself an
-`IGL_USERNAME` and add a custom install suite for yourself. Then you can enable
-appropriate extras.
-
-#### Extras ####
-Once you've set up an `IGL_USERNAME` and enabled extras within Makefile.conf.
-You can build the extra libraries (into `lib/ligiglpng.a`, `lib/libiglmatlab.a`,
-`lib/libigltetgen.a`, `lib/libiglmosek.a`, etc.) by issuing:
-
-    cd build
-    make extras
+    cd ../lib
+    cmake -DCMAKE_BUILD_TYPE=Release ..
+    make
 
 #### Examples ####
 You can make a slew of examples by issuing:
@@ -38,6 +29,11 @@ You can make a slew of examples by issuing:
     make examples
 
 #### External ####
+
+> **Deprecation notice** All external libraries will be absorbed by libigl or
+> moved to separate git sub-repositories in the near future. The following
+> instructions are subject to immediate change.
+
 Finally there are a number of external libraries that we include in
 `./external/` because they are either difficult to obtain or they have been
 patched for easier use with libigl. Please see the respective readmes in those
@@ -45,7 +41,7 @@ directories.
 
 
 ##### Installing AntTweakBar #####
-To build the a static AntTweakBar library on Mac OS X issue:
+To build a static AntTweakBar library on Mac OS X issue:
 
     cd external/AntTweakBar/src
     make -f Makefile.osx.igl
@@ -100,6 +96,10 @@ installed at `/usr/X11/lib`.
 
 
 ### Windows (Experimental) ###
+
+> **Deprecation notice** Windows users should run cmake on the `CMakeLists.txt`
+> file in the current directory.
+
 To build a static library (.lib) on windows, open Visual Studio 2010.
 
 - New > Project ...
@@ -325,9 +325,11 @@ Alternatively, you can also compress everything into a single header file:
   `AntTweakBar`, `BLAS`). However, because all
   depencies other than Eigen should be encapsulated between
   `#ifndef` guards (e.g. `#ifndef IGL_NO_OPENGL`, it
-  is possible to ignore certain functions that have such dependencies.</li>
-  <li><strong>Long compile:</strong> Compiling `igl.cpp` takes a long time and isn't easily parallelized (no `make -j12` equivalent).</li>
-  </ul>
+  is possible to ignore certain functions that have such dependencies.
+
+* **Long compile**: 
+  Compiling `igl.cpp` takes a long time and isn't easily parallelized (no `make
+  -j12` equivalent).
 
 Here's a tiny test example using `igl.h` and `igl.cpp`. Save the following in `test.cpp`:
 

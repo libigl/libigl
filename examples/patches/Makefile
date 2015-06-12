@@ -1,7 +1,7 @@
 .PHONY: all
 
 # Shared flags etc.
-include ../../build/Makefile.conf
+include ../Makefile.conf
 ifdef LIBIGL_USE_STATIC_LIBRARY
 	LIBIGL_LIB+=-liglembree -liglboost
 endif
