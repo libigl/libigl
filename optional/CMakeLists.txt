@@ -73,6 +73,14 @@ if(LIM_FOUND)
   include_directories( ${LIM_INCLUDE_DIR})
 endif(LIM_FOUND)
 
+## Check for PNG
+find_package(PNG QUIET)
+if(PNG_FOUND)
+  include_directories( ${PNG_INCLUDE_DIR})
+else(PNG_FOUND)
+  message(STATUS "PNG not found")
+endif(PNG_FOUND)
+
 ## Check for SVD3X3
 find_package(SVD3X3 QUIET)
 if(SVD3X3_FOUND)
@@ -109,6 +117,14 @@ if (OPENMP_FOUND AND NOT WIN32)
   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
+
+## Check for YIMG
+find_package(YIMG QUIET)
+if(YIMG_FOUND)
+  include_directories( ${YIMG_INCLUDE_DIR})
+else(YIMG_FOUND)
+  message(STATUS "YIMG not found")
+endif(YIMG_FOUND)
 
 #### Libigl requires a modern C++ compiler that supports c++11
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -196,12 +212,19 @@ if (MATLAB_FOUND)
   add_library(iglmatlab STATIC ${SOURCES_MATLAB})
 endif (MATLAB_FOUND)
 
+#### Compile the png part
+if (PNG_FOUND)
+  file(GLOB SOURCES_PNG
+    "${PROJECT_SOURCE_DIR}/../include/igl/png/*.cpp"
+  )
+  add_library(iglpng STATIC ${SOURCES_PNG})
+endif (PNG_FOUND)
+
 #### Compile the svd3x3 part
 if (SVD3X3_FOUND)
   file(GLOB SOURCES_SVD3X3
     "${PROJECT_SOURCE_DIR}/../include/igl/svd3x3/*.cpp"
   )
-
   add_library(iglsvd3x3 STATIC ${SOURCES_SVD3X3})
 endif (SVD3X3_FOUND)
 
