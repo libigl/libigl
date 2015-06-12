@@ -28,28 +28,32 @@ mesh-viewing utilities for OpenGL and GLSL, and many core functions for matrix
 manipulation which make <a href="http://eigen.tuxfamily.org">Eigen</a> feel a lot more
 like MATLAB.</p>
 
-<p>It is first and foremost a header library. Each header file contains a single
-function. Most are tailored to operate on a generic triangle mesh stored in an
-n-by&#8211;3 matrix of vertex positions V and an m-by&#8211;3 matrix of triangle indices F.
-The library may also be <a href="build/">compiled</a> into a statically linked
-library, for faster compile times with your projects.</p>
+<p>It is <strong>a header-only library</strong>. You do not need to compile anything to use,
+just include igl headers (e.g. <code>#include &lt;igl/cotmatrix.h&gt;</code>) and run. Each
+header file contains a single function (e.g. <code>igl/cotmatrix.h</code> contains
+<code>igl::cotmatrix()</code>). Most are tailored to operate on a generic triangle mesh
+stored in an n-by&#8211;3 matrix of vertex positions V and an m-by&#8211;3 matrix of
+triangle indices F. </p>
+
+<p><em>Optionally</em> the library may also be <a href="build/">pre-compiled</a> into a statically
+linked library, for faster compile times with your projects. This only effects
+compile time (run-time performance and behavior is identical). If in doubt, use
+the header-only default mode: (i.e. just include the headers you want to use).</p>
 
 <p>We use the <a href="http://eigen.tuxfamily.org">Eigen</a> library heavily in our code. Our
-group prototypes a lot in MATLAB, and we have a useful <a href="matlab-to-eigen.html">conversion
-table</a> from
-MATLAB to libigl/Eigen.</p>
+group prototypes a lot in MATLAB, and we have a useful <a href="matlab-to-eigen.html">MATLAB to libigl+Eigen
+conversion table</a>.</p>
 
 <h2 id="tutorial">Tutorial</h2>
 
 <p>As of version 1.0, libigl includes an introductory
-<a href="tutorial/tutorial.html">tutorial</a> that covers
-its basic functionalities.</p>
+<a href="tutorial/tutorial.html">tutorial</a> that covers many functionalities.</p>
 
 <h2 id="installation">Installation</h2>
 
-<p>Libigl is a <em>header</em> library. You do <strong>not</strong> need to build anything to install.
-Simply add <code>igl/</code> to your include path and include relevant headers. Here is a
-small &#8220;Hello, World&#8221; program:</p>
+<p>Libigl is a <strong>header-only</strong> library. You do <strong>not</strong> need to build anything to
+install. Simply add <code>libigl/include</code> to your include path and include relevant
+headers. Here is a small &#8220;Hello, World&#8221; program:</p>
 
 <pre><code class="cpp">#include &lt;igl/cotmatrix.h&gt;
 #include &lt;Eigen/Dense&gt;
@@ -73,9 +77,9 @@ int main()
 </code></pre>
 
 <p>If you save this in <code>hello.cpp</code>, then you could compile this with (assuming
-Eigen is installed in /opt/local/include/eigen3):</p>
+Eigen is installed in <code>/usr/local/include/eigen3</code>):</p>
 
-<pre><code class="bash">gcc -I/opt/local/include/eigen3 -I./igl/ hello.cpp -o hello
+<pre><code class="bash">gcc -I/usr/local/include/eigen3 -I./libigl/include/ hello.cpp -o hello
 </code></pre>
 
 <p>Running <code>./hello</code> would then produce</p>
@@ -103,10 +107,9 @@ GCC 4.7 and clang will work correctly.</p>
 <h3 id="openmpandwindows">OpenMP and Windows</h3>
 
 <p>Some of our functions will take advantage of OpenMP if available. However, it
-has come to our attention that Visual Studio + Eigen does not work properly
-with OpenMP. Since OpenMP only improves performance without affecting
-functionality we recommend avoiding OpenMP on Windows or proceeding with
-caution.</p>
+has come to our attention that Visual Studio + Eigen + OpenMP does not work
+properly. Since we use OpenMP only to improve performance, we recommend
+avoiding OpenMP on Windows or proceeding with caution.</p>
 
 <h2 id="download">Download</h2>
 
@@ -116,9 +119,9 @@ caution.</p>
 <h2 id="knownissues">Known Issues</h2>
 
 <p>We really heavily on Eigen. Nearly all inputs and outputs are Eigen matrices of
-some kind. However, we currently <em>only</em> support Eigen&#8217;s default column-major
-ordering. That means, we <strong>do not</strong> expect our code to work for matrices using
-the <code>Eigen::RowMajor</code> flag. If you can, change definitions like:</p>
+some kind. However, we currently <em>only</em> officially support Eigen&#8217;s default
+column-major ordering. That means, we <strong>do not</strong> expect our code to work for
+matrices using the <code>Eigen::RowMajor</code> flag. If you can, change definitions like:</p>
 
 <pre><code class="cpp">Eigen::Matrix&lt;double, Eigen::Dynamic, 3, Eigen::RowMajor&gt; A;
 </code></pre>
