@@ -23,6 +23,12 @@ if (ANTTWEAKBAR_FOUND)
   include_directories( ${ANT_TWEAK_BAR_INCLUDE_DIR})
 endif(ANTTWEAKBAR_FOUND)
 
+## Check for Boost
+find_package(BOOST QUIET)
+if (Boost_FOUND)
+  include_directories( ${BOOST_INCLUDE_DIR})
+endif(Boost_FOUND)
+
 
 ## Check for CoMiSo, if not available skip the examples that depends on it
 find_package(LIBCOMISO QUIET)
@@ -117,6 +123,16 @@ file(GLOB SOURCES
 
 add_library(igl STATIC ${SOURCES})
 
+#### Compile the boost part
+if (Boost_FOUND)
+  file(GLOB SOURCES_BOOST
+    "${PROJECT_SOURCE_DIR}/../include/igl/boost/*.cpp"
+  )
+add_library(iglboost STATIC ${SOURCES_BOOST})
+else (Boost_FOUND)
+  message(STATUS "Boost not found.")
+endif (Boost_FOUND)
+
 #### Compile the BBW part
 
 file(GLOB SOURCES_BBW
@@ -130,7 +146,6 @@ if (MOSEK_FOUND)
   file(GLOB SOURCES_MOSEK
     "${PROJECT_SOURCE_DIR}/../include/igl/mosek/*.cpp"
   )
-
 add_library(iglmosek STATIC ${SOURCES_MOSEK})
 endif (MOSEK_FOUND)
 
