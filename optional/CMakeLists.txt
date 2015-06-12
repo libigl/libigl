@@ -117,20 +117,26 @@ file(GLOB SOURCES
 
 add_library(igl STATIC ${SOURCES})
 
+#### Compile the AntTweakBar part
+if (ANTTWEAKBAR_FOUND)
+  file(GLOB SOURCES_ANTTWEAKBAR
+    "${PROJECT_SOURCE_DIR}/include/igl/anttweakbar/*.cpp"
+  )
+add_library(iglanttweakbar STATIC ${SOURCES_ANTTWEAKBAR})
+endif (ANTTWEAKBAR_FOUND)
+
 #### Compile the BBW part
 
 file(GLOB SOURCES_BBW
   "${PROJECT_SOURCE_DIR}/include/igl/bbw/*.cpp"
 )
-
 add_library(iglbbw STATIC ${SOURCES_BBW})
 
-#### Compile the mosek part (untested)
+#### Compile the mosek part
 if (MOSEK_FOUND)
   file(GLOB SOURCES_MOSEK
     "${PROJECT_SOURCE_DIR}/include/igl/mosek/*.cpp"
   )
-
 add_library(iglmosek STATIC ${SOURCES_MOSEK})
 endif (MOSEK_FOUND)
 
