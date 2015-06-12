@@ -5,7 +5,10 @@
 #include <Eigen/Core>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
-namespace igl {
+namespace igl
+{
+  namespace cgal
+  {
     // For each undirected edge, sort its adjacent faces.
     //
     // Inputs:
@@ -70,6 +73,7 @@ namespace igl {
             const std::vector<std::vector<uE2EType> >& uE2E,
             std::vector<std::vector<uE2oEType> >& uE2oE,
             std::vector<std::vector<uE2CType > >& uE2C );
+  }
 }
 
 #ifndef IGL_STATIC_LIBRARY

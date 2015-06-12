@@ -13,41 +13,44 @@
 #include <mosek.h>
 namespace igl
 {
-  // Solve a linear program using mosek:
-  // 
-  // min c'x
-  // s.t. lc <= A x <= uc
-  //      lx <= x <= ux
-  //
-  // Inputs:
-  //   c  #x list of linear objective coefficients
-  //   A  #A by #x matrix of linear inequality constraint coefficients
-  //   lc  #A list of lower constraint bounds
-  //   uc  #A list of upper constraint bounds
-  //   lx  #x list of lower variable bounds
-  //   ux  #x list of upper variable bounds
-  // Outputs:
-  //   x  #x list of solution values
-  // Returns true iff success.
-  IGL_INLINE bool mosek_linprog(
-    const Eigen::VectorXd & c,
-    const Eigen::SparseMatrix<double> & A,
-    const Eigen::VectorXd & lc,
-    const Eigen::VectorXd & uc,
-    const Eigen::VectorXd & lx,
-    const Eigen::VectorXd & ux,
-    Eigen::VectorXd & x);
-  // Wrapper that keeps mosek environment alive (if licence checking is
-  // becoming a bottleneck)
-  IGL_INLINE bool mosek_linprog(
-    const Eigen::VectorXd & c,
-    const Eigen::SparseMatrix<double> & A,
-    const Eigen::VectorXd & lc,
-    const Eigen::VectorXd & uc,
-    const Eigen::VectorXd & lx,
-    const Eigen::VectorXd & ux,
-    const MSKenv_t & env,
-    Eigen::VectorXd & x);
+  namespace mosek
+  {
+    // Solve a linear program using mosek:
+    // 
+    // min c'x
+    // s.t. lc <= A x <= uc
+    //      lx <= x <= ux
+    //
+    // Inputs:
+    //   c  #x list of linear objective coefficients
+    //   A  #A by #x matrix of linear inequality constraint coefficients
+    //   lc  #A list of lower constraint bounds
+    //   uc  #A list of upper constraint bounds
+    //   lx  #x list of lower variable bounds
+    //   ux  #x list of upper variable bounds
+    // Outputs:
+    //   x  #x list of solution values
+    // Returns true iff success.
+    IGL_INLINE bool mosek_linprog(
+        const Eigen::VectorXd & c,
+        const Eigen::SparseMatrix<double> & A,
+        const Eigen::VectorXd & lc,
+        const Eigen::VectorXd & uc,
+        const Eigen::VectorXd & lx,
+        const Eigen::VectorXd & ux,
+        Eigen::VectorXd & x);
+    // Wrapper that keeps mosek environment alive (if licence checking is
+    // becoming a bottleneck)
+    IGL_INLINE bool mosek_linprog(
+        const Eigen::VectorXd & c,
+        const Eigen::SparseMatrix<double> & A,
+        const Eigen::VectorXd & lc,
+        const Eigen::VectorXd & uc,
+        const Eigen::VectorXd & lx,
+        const Eigen::VectorXd & ux,
+        const MSKenv_t & env,
+        Eigen::VectorXd & x);
+  }
 }
 
 #ifndef IGL_STATIC_LIBRARY

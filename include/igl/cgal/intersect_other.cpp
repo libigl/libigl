@@ -13,7 +13,7 @@
 #define IGL_FIRST_HIT_EXCEPTION 10
 #endif
 
-IGL_INLINE void igl::intersect_other(
+IGL_INLINE void igl::cgal::intersect_other(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   const Eigen::MatrixXd & U,

@@ -14,23 +14,8 @@
 #include <igl/per_vertex_normals.h>
 #include <igl/embree/EmbreeIntersector.h>
 
-//template <typename ScalarMatrix, typename IndexMatrix>
-//IGL_INLINE ScalarMatrix igl::line_mesh_intersection(
-//   const ScalarMatrix & V_source,
-//   const IndexMatrix  & F_source,
-//   const ScalarMatrix & V_target,
-//   const IndexMatrix  & F_target
-//)
-//{
-//  // Compute normals for the tri
-//  Eigen::MatrixXd ray_dir;
-//  igl::per_vertex_normals(V_source, F_source, ray_dir);
-//
-//  return line_mesh_intersection(V_source,ray_dir,V_target,F_target);
-//}
-
 template <typename ScalarMatrix, typename IndexMatrix>
-IGL_INLINE ScalarMatrix igl::line_mesh_intersection
+IGL_INLINE ScalarMatrix igl::embree::line_mesh_intersection
 (
  const ScalarMatrix & V_source,
  const ScalarMatrix  & N_source,
@@ -49,13 +34,13 @@ IGL_INLINE ScalarMatrix igl::line_mesh_intersection
   R.resize(V_source.rows(), 3);
   
   // Initialize embree
-  igl::EmbreeIntersector embree;
+  EmbreeIntersector embree;
   embree.init(V_target.template cast<float>(),F_target.template cast<int>());
 
   // Shoot rays from the source to the target
   for (unsigned i=0; i<ray_pos.rows(); ++i)
   {
-    igl::Hit A,B;
+    igl::embree::Hit A,B;
     
     // Shoot ray A
     Eigen::RowVector3d A_pos = ray_pos.row(i) + tol * ray_dir.row(i);

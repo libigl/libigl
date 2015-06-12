@@ -16,16 +16,19 @@
 
 namespace igl
 {
-  // Read an image from an image file and use it as a texture. Officially, only
-  // .tga and .png are supported. Any filetype read by ImageMagick's `convert`
-  // will work via an unsafe system call.
-  //
-  // Input:
-  //  filename  path to image file
-  // Output:
-  //  id  of generated openGL texture
-  // Returns true on success, false on failure
-  IGL_INLINE bool texture_from_file(const std::string filename, GLuint & id);
+  namespace png
+  {
+    // Read an image from an image file and use it as a texture. Officially, only
+    // .tga and .png are supported. Any filetype read by ImageMagick's `convert`
+    // will work via an unsafe system call.
+    //
+    // Input:
+    //  filename  path to image file
+    // Output:
+    //  id  of generated openGL texture
+    // Returns true on success, false on failure
+    IGL_INLINE bool texture_from_file(const std::string filename, GLuint & id);
+  }
 }
 
 #ifndef IGL_STATIC_LIBRARY

@@ -14,6 +14,8 @@
 
 namespace igl
 {
+namespace comiso
+{
 // Generate a piecewise-constant frame-field field from a sparse set of constraints on faces
 // using the algorithm proposed in:
 // Frame Fields: Anisotropic and Non-Orthogonal Cross Fields
@@ -41,6 +43,7 @@ IGL_INLINE void frame_field(
   Eigen::MatrixXd& FF1,
   Eigen::MatrixXd& FF2
   );
+}
 }
 
 #ifndef IGL_STATIC_LIBRARY

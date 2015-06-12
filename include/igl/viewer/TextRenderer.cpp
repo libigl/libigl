@@ -8,9 +8,9 @@
 #include "TextRenderer.h"
 #include <igl/project.h>
 
-  IGL_INLINE igl::TextRenderer::TextRenderer() : m_shaderHandleBackup(0) { }
+  IGL_INLINE igl::viewer::TextRenderer::TextRenderer() : m_shaderHandleBackup(0) { }
 
-  IGL_INLINE int igl::TextRenderer::Init()
+  IGL_INLINE int igl::viewer::TextRenderer::Init()
   {
     int retval = CTwGraphOpenGLCore::Init();
     if (retval == 1)
@@ -61,7 +61,7 @@
     return retval;
   }
 
-  IGL_INLINE int igl::TextRenderer::Shut()
+  IGL_INLINE int igl::viewer::TextRenderer::Shut()
   {
     for (auto kv : m_textObjects)
       DeleteTextObj(kv.second);
@@ -70,7 +70,7 @@
     return CTwGraphOpenGLCore::Shut();
   }
 
-  IGL_INLINE void igl::TextRenderer::BeginDraw(const Eigen::Matrix4f &view, const Eigen::Matrix4f &proj,
+  IGL_INLINE void igl::viewer::TextRenderer::BeginDraw(const Eigen::Matrix4f &view, const Eigen::Matrix4f &proj,
     const Eigen::Vector4f &_viewport, float _object_scale)
   {
     viewport = _viewport;
@@ -82,7 +82,7 @@
     object_scale = _object_scale;
   }
 
-  IGL_INLINE void igl::TextRenderer::EndDraw()
+  IGL_INLINE void igl::viewer::TextRenderer::EndDraw()
   {
     /* Limit the number of cached text objects */
     for (auto it = m_textObjects.cbegin(); it != m_textObjects.cend(); )
@@ -97,7 +97,7 @@
     CTwGraphOpenGLCore::EndDraw();
   }
 
-  IGL_INLINE void igl::TextRenderer::DrawText(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text)
+  IGL_INLINE void igl::viewer::TextRenderer::DrawText(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text)
   {
     pos += normal * 0.005f * object_scale;
     Eigen::Vector3f coord = igl::project(Eigen::Vector3f(pos(0), pos(1), pos(2)),

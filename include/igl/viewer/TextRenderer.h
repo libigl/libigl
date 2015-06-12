@@ -20,6 +20,8 @@
 
 namespace igl
 {
+namespace viewer
+{
 
 class TextRenderer : public CTwGraphOpenGLCore
 {
@@ -37,7 +39,7 @@ public:
   IGL_INLINE void DrawText(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text);
 
 protected:
-  igl::OpenGL_shader m_shader;
+  OpenGL_shader m_shader;
   std::map<std::string, void *> m_textObjects;
   GLuint m_shaderHandleBackup;
   GLuint m_TriTexUniLocationDepth;
@@ -46,6 +48,7 @@ protected:
   float object_scale;
 };
 
+}
 }
 
 #ifndef IGL_STATIC_LIBRARY

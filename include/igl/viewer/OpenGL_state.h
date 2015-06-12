@@ -9,7 +9,7 @@
 #ifndef IGL_OPENGL_STATE_H
 #define IGL_OPENGL_STATE_H
 
-// Coverts mesh data inside a igl::ViewerData class in an OpenGL compatible format
+// Coverts mesh data inside a igl::viewer::ViewerData class in an OpenGL compatible format
 // The class includes a shader and the opengl calls to plot the data
 
 #include <igl/igl_inline.h>
@@ -17,6 +17,8 @@
 #include <igl/viewer/ViewerData.h>
 
 namespace igl
+{
+namespace viewer
 {
 
 class OpenGL_state
@@ -81,7 +83,7 @@ public:
   IGL_INLINE void init_buffers();
 
   // Update contents from a 'Data' instance
-  IGL_INLINE void set_data(const igl::ViewerData &data, bool invert_normals);
+  IGL_INLINE void set_data(const igl::viewer::ViewerData &data, bool invert_normals);
 
   // Bind the underlying OpenGL buffer objects for subsequent mesh draw calls
   IGL_INLINE void bind_mesh();
@@ -106,6 +108,7 @@ public:
 
 };
 
+}
 }
 
 #ifndef IGL_STATIC_LIBRARY

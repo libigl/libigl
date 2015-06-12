@@ -20,6 +20,8 @@
 
 namespace igl
 {
+namespace viewer
+{
 
 // Abstract class for plugins
 // All plugins MUST have this class as their parent and may implement any/all
@@ -160,6 +162,7 @@ namespace serialization
 }
 #endif
 
+}
 }
 
 #endif

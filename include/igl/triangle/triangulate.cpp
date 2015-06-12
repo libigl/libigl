@@ -42,7 +42,7 @@ extern "C"
 #  undef VOID
 #endif
 
-IGL_INLINE void igl::triangulate(
+IGL_INLINE void igl::triangle::triangulate(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& E,
   const Eigen::MatrixXd& H,

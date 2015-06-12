@@ -2,7 +2,7 @@
 #include <algorithm>
 
 template <typename DerivedV>
-IGL_INLINE void igl::parse_rhs_double(
+IGL_INLINE void igl::matlab::parse_rhs_double(
     const mxArray *prhs[], 
     Eigen::PlainObjectBase<DerivedV> & V)
 {
@@ -34,7 +34,7 @@ IGL_INLINE void igl::parse_rhs_double(
 }
 
 template <typename DerivedV>
-IGL_INLINE void igl::parse_rhs_index(
+IGL_INLINE void igl::matlab::parse_rhs_index(
     const mxArray *prhs[], 
     Eigen::PlainObjectBase<DerivedV> & V)
 {
@@ -43,7 +43,7 @@ IGL_INLINE void igl::parse_rhs_index(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::parse_rhs_index<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(mxArray_tag const**, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::parse_rhs_index<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(mxArray_tag const**, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::parse_rhs_double<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(mxArray_tag const**, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::matlab::parse_rhs_index<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(mxArray_tag const**, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::matlab::parse_rhs_index<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(mxArray_tag const**, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::matlab::parse_rhs_double<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(mxArray_tag const**, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

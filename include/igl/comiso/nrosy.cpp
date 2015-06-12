@@ -27,6 +27,8 @@
 
 namespace igl
 {
+namespace comiso
+{
 class NRosyField
 {
 public:
@@ -147,9 +149,10 @@ private:
 
 };
 
+} // NAMESPACE COMISO
 } // NAMESPACE IGL
 
-igl::NRosyField::NRosyField(const Eigen::MatrixXd& _V, const Eigen::MatrixXi& _F)
+igl::comiso::NRosyField::NRosyField(const Eigen::MatrixXd& _V, const Eigen::MatrixXi& _F)
 {
   using namespace std;
   using namespace Eigen;
@@ -204,14 +207,14 @@ igl::NRosyField::NRosyField(const Eigen::MatrixXd& _V, const Eigen::MatrixXi& _F
   softAlpha = 0.5;
 }
 
-void igl::NRosyField::setSoftAlpha(double alpha)
+void igl::comiso::NRosyField::setSoftAlpha(double alpha)
 {
   assert(alpha >= 0 && alpha < 1);
   softAlpha = alpha;
 }
 
 
-void igl::NRosyField::prepareSystemMatrix(const int N)
+void igl::comiso::NRosyField::prepareSystemMatrix(const int N)
 {
   using namespace std;
   using namespace Eigen;
@@ -392,7 +395,7 @@ void igl::NRosyField::prepareSystemMatrix(const int N)
 //  s2.close();
 }
 
-void igl::NRosyField::solveNoRoundings()
+void igl::comiso::NRosyField::solveNoRoundings()
 {
   using namespace std;
   using namespace Eigen;
@@ -414,7 +417,7 @@ void igl::NRosyField::solveNoRoundings()
       p[i] = roundl(x[tag_p[i]]);
 }
 
-void igl::NRosyField::solveRoundings()
+void igl::comiso::NRosyField::solveRoundings()
 {
   using namespace std;
   using namespace Eigen;
@@ -468,13 +471,13 @@ void igl::NRosyField::solveRoundings()
 }
 
 
-void igl::NRosyField::roundAndFix()
+void igl::comiso::NRosyField::roundAndFix()
 {
   for(unsigned i=0; i<p.rows(); ++i)
     pFixed[i] = true;
 }
 
-void igl::NRosyField::roundAndFixToZero()
+void igl::comiso::NRosyField::roundAndFixToZero()
 {
   for(unsigned i=0; i<p.rows(); ++i)
   {
@@ -483,7 +486,7 @@ void igl::NRosyField::roundAndFixToZero()
   }
 }
 
-void igl::NRosyField::solve(const int N)
+void igl::comiso::NRosyField::solve(const int N)
 {
   // Reduce the search space by fixing matchings
   reduceSpace();
@@ -511,19 +514,19 @@ void igl::NRosyField::solve(const int N)
   findCones(N);
 }
 
-void igl::NRosyField::setConstraintHard(const int fid, const Eigen::Vector3d& v)
+void igl::comiso::NRosyField::setConstraintHard(const int fid, const Eigen::Vector3d& v)
 {
   isHard[fid] = true;
   hard(fid) = convert3DtoLocal(fid, v);
 }
 
-void igl::NRosyField::setConstraintSoft(const int fid, const double w, const Eigen::Vector3d& v)
+void igl::comiso::NRosyField::setConstraintSoft(const int fid, const double w, const Eigen::Vector3d& v)
 {
   wSoft(fid) = w;
   soft(fid) = convert3DtoLocal(fid, v);
 }
 
-void igl::NRosyField::resetConstraints()
+void igl::comiso::NRosyField::resetConstraints()
 {
   using namespace std;
   using namespace Eigen;
@@ -537,7 +540,7 @@ void igl::NRosyField::resetConstraints()
   soft   = VectorXd::Zero(F.rows());
 }
 
-Eigen::MatrixXd igl::NRosyField::getFieldPerFace()
+Eigen::MatrixXd igl::comiso::NRosyField::getFieldPerFace()
 {
   using namespace std;
   using namespace Eigen;
@@ -548,7 +551,7 @@ Eigen::MatrixXd igl::NRosyField::getFieldPerFace()
   return result;
 }
 
-Eigen::MatrixXd igl::NRosyField::getFFieldPerFace()
+Eigen::MatrixXd igl::comiso::NRosyField::getFFieldPerFace()
 {
   using namespace std;
   using namespace Eigen;
@@ -569,7 +572,7 @@ Eigen::MatrixXd igl::NRosyField::getFFieldPerFace()
 }
 
 
-void igl::NRosyField::computek()
+void igl::comiso::NRosyField::computek()
 {
   using namespace std;
   using namespace Eigen;
@@ -668,7 +671,7 @@ void igl::NRosyField::computek()
 
 }
 
-void igl::NRosyField::reduceSpace()
+void igl::comiso::NRosyField::reduceSpace()
 {
   using namespace std;
   using namespace Eigen;
@@ -765,7 +768,7 @@ void igl::NRosyField::reduceSpace()
 
 }
 
-double igl::NRosyField::convert3DtoLocal(unsigned fid, const Eigen::Vector3d& v)
+double igl::comiso::NRosyField::convert3DtoLocal(unsigned fid, const Eigen::Vector3d& v)
 {
   using namespace std;
   using namespace Eigen;
@@ -777,7 +780,7 @@ double igl::NRosyField::convert3DtoLocal(unsigned fid, const Eigen::Vector3d& v)
   return atan2(vp(1),vp(0));
 }
 
-Eigen::Vector3d igl::NRosyField::convertLocalto3D(unsigned fid, double a)
+Eigen::Vector3d igl::comiso::NRosyField::convertLocalto3D(unsigned fid, double a)
 {
   using namespace std;
   using namespace Eigen;
@@ -786,7 +789,7 @@ Eigen::Vector3d igl::NRosyField::convertLocalto3D(unsigned fid, double a)
   return vp.transpose() * TPs[fid];
 }
 
-Eigen::VectorXd igl::NRosyField::angleDefect()
+Eigen::VectorXd igl::comiso::NRosyField::angleDefect()
 {
   Eigen::VectorXd A = Eigen::VectorXd::Constant(V.rows(),-2*M_PI);
 
@@ -805,7 +808,7 @@ Eigen::VectorXd igl::NRosyField::angleDefect()
   return A;
 }
 
-void igl::NRosyField::findCones(int N)
+void igl::comiso::NRosyField::findCones(int N)
 {
   // Compute I0, see http://www.graphics.rwth-aachen.de/media/papers/bommes_zimmer_2009_siggraph_011.pdf for details
 
@@ -862,27 +865,27 @@ void igl::NRosyField::findCones(int N)
   singularityIndex = I;
 }
 
-Eigen::VectorXd igl::NRosyField::getSingularityIndexPerVertex()
+Eigen::VectorXd igl::comiso::NRosyField::getSingularityIndexPerVertex()
 {
   return singularityIndex;
 }
 
-IGL_INLINE void igl::nrosy(
-                           const Eigen::MatrixXd& V,
-                           const Eigen::MatrixXi& F,
-                           const Eigen::VectorXi& b,
-                           const Eigen::MatrixXd& bc,
-                           const Eigen::VectorXi& b_soft,
-                           const Eigen::VectorXd& w_soft,
-                           const Eigen::MatrixXd& bc_soft,
-                           const int N,
-                           const double soft,
-                           Eigen::MatrixXd& R,
-                           Eigen::VectorXd& S
-                           )
+IGL_INLINE void igl::comiso::nrosy(
+  const Eigen::MatrixXd& V,
+  const Eigen::MatrixXi& F,
+  const Eigen::VectorXi& b,
+  const Eigen::MatrixXd& bc,
+  const Eigen::VectorXi& b_soft,
+  const Eigen::VectorXd& w_soft,
+  const Eigen::MatrixXd& bc_soft,
+  const int N,
+  const double soft,
+  Eigen::MatrixXd& R,
+  Eigen::VectorXd& S
+  )
 {
   // Init solver
-  igl::NRosyField solver(V,F);
+  igl::comiso::NRosyField solver(V,F);
 
   // Add hard constraints
   for (unsigned i=0; i<b.size();++i)
@@ -917,7 +920,7 @@ IGL_INLINE void igl::nrosy(
                            )
 {
   // Init solver
-  igl::NRosyField solver(V,F);
+  igl::comiso::NRosyField solver(V,F);
 
   // Add hard constraints
   for (unsigned i=0; i<b.size();++i)

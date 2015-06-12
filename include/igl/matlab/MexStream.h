@@ -10,30 +10,33 @@
 #include <iostream>
 namespace igl
 {
-  // http://stackoverflow.com/a/249008/148668
-  
-  // Class to implement "cout" for mex files to print to the matlab terminal
-  // window.
-  //
-  // Insert at the beginning of mexFunction():
-  //  MexStream mout;
-  //  std::streambuf *outbuf = std::cout.rdbuf(&mout); 
-  //  ...
-  //  ALWAYS restore original buffer to avoid memory leak problems in matlab
-  //  std::cout.rdbuf(outbuf);
-  //
-  class MexStream : public std::streambuf
+  namespace matlab
   {
-    public:
-    protected:
-      inline virtual std::streamsize xsputn(const char *s, std::streamsize n); 
-      inline virtual int overflow(int c = EOF);
-  }; 
+    // http://stackoverflow.com/a/249008/148668
+    
+    // Class to implement "cout" for mex files to print to the matlab terminal
+    // window.
+    //
+    // Insert at the beginning of mexFunction():
+    //  MexStream mout;
+    //  std::streambuf *outbuf = std::cout.rdbuf(&mout); 
+    //  ...
+    //  ALWAYS restore original buffer to avoid memory leak problems in matlab
+    //  std::cout.rdbuf(outbuf);
+    //
+    class MexStream : public std::streambuf
+    {
+      public:
+      protected:
+        inline virtual std::streamsize xsputn(const char *s, std::streamsize n); 
+        inline virtual int overflow(int c = EOF);
+    }; 
+  }
 }
 
 // Implementation 
 #include <mex.h>
-inline std::streamsize igl::MexStream::xsputn(
+inline std::streamsize igl::matlab::MexStream::xsputn(
   const char *s, 
   std::streamsize n) 
 {
@@ -42,7 +45,7 @@ inline std::streamsize igl::MexStream::xsputn(
   return n;
 }
 
-inline int igl::MexStream::overflow(int c) 
+inline int igl::matlab::MexStream::overflow(int c) 
 {
     if (c != EOF) {
       mexPrintf("%.1s",&c);

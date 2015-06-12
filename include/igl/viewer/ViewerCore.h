@@ -17,6 +17,8 @@
 
 namespace igl
 {
+namespace viewer
+{
 
 // Basic class of the 3D mesh viewer
 // TODO: write documentation
@@ -134,6 +136,7 @@ public:
   Eigen::Matrix4f proj;
 };
 
+}
 }
 
 #ifndef IGL_STATIC_LIBRARY
