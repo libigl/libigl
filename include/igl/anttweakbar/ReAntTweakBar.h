@@ -7,7 +7,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_REANTTWEAKBAR_H
 #define IGL_REANTTWEAKBAR_H
-#ifndef IGL_NO_ANTTWEAKBAR
 #include "igl_inline.h"
 // ReAntTweakBar is a minimal wrapper for the AntTweakBar library that allows
 // "bars" to be saved and load from disk. Changing your existing app that uses
@@ -277,9 +276,8 @@ namespace igl
 //TW_API int      TW_CALL TwRemoveAllVars(TwBar *bar);
 
 // Until AntTweakBar dependency folder exists, this is header-only
-//#ifndef IGL_STATIC_LIBRARY
+#ifndef IGL_STATIC_LIBRARY
 #  include "ReAntTweakBar.cpp"
-//#endif
-
 #endif
+
 #endif

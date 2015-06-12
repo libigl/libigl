@@ -7,7 +7,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_COCOA_KEY_TO_ANTTWEAKBAR_KEY_H
 #define IGL_COCOA_KEY_TO_ANTTWEAKBAR_KEY_H
-#ifndef IGL_NO_ANTTWEAKBAR
 #include "igl_inline.h"
 
 
@@ -22,9 +21,8 @@ namespace igl
   IGL_INLINE int cocoa_key_to_anttweakbar_key(int key);
 }
 
-//#ifndef IGL_STATIC_LIBRARY
+#ifndef IGL_STATIC_LIBRARY
 #  include "cocoa_key_to_anttweakbar_key.cpp"
-//#endif
-
 #endif
+
 #endif

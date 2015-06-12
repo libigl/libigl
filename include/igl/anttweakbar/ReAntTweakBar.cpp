@@ -6,7 +6,6 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "ReAntTweakBar.h"
-#ifndef IGL_NO_ANTTWEAKBAR
 
 #include <cstdio>
 #include <cstring>
@@ -921,4 +920,3 @@ IGL_INLINE const std::vector<igl::ReTwCBItem> & igl::ReTwBar::get_cb_items()
 {
   return cb_items;
 }
-#endif
