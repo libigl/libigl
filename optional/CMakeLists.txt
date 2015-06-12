@@ -13,6 +13,8 @@ add_definitions(-DIGL_STATIC_LIBRARY)
 find_package(GLFW QUIET)
 if (GLFW_FOUND)
   include_directories( ${GLFW_INCLUDE_DIR})
+else (GLFW_FOUND)
+  message(STATUS "GLFW not found.")
 endif(GLFW_FOUND)
 
 find_package(OpenGL QUIET)
@@ -21,6 +23,8 @@ find_package(OpenGL QUIET)
 find_package(ANTTWEAKBAR QUIET)
 if (ANTTWEAKBAR_FOUND)
   include_directories( ${ANT_TWEAK_BAR_INCLUDE_DIR})
+else (ANTTWEAKBAR_FOUND)
+  message(STATUS "AntTweakBar not found.")
 endif(ANTTWEAKBAR_FOUND)
 
 
@@ -34,12 +38,16 @@ endif(LIBCOMISO_FOUND)
 find_package(MATLAB QUIET)
 if (MATLAB_FOUND)
   include_directories( ${MATLAB_INCLUDE_DIR})
+else (MATLAB_FOUND)
+  message(STATUS "MATLAB not found.")
 endif(MATLAB_FOUND)
 
 ## Check for EMBREE, if not available skip the examples that depends on it
 find_package(EMBREE QUIET)
 if (EMBREE_FOUND)
   include_directories( ${EMBREE_INCLUDE_DIR})
+else (EMBREE_FOUND)
+  message(STATUS "Embree not found.")
 endif(EMBREE_FOUND)
 
 ## Check for CGAL, if not available skip the examples that depends on it
@@ -120,7 +128,7 @@ add_library(igl STATIC ${SOURCES})
 #### Compile the AntTweakBar part
 if (ANTTWEAKBAR_FOUND)
   file(GLOB SOURCES_ANTTWEAKBAR
-    "${PROJECT_SOURCE_DIR}/include/igl/anttweakbar/*.cpp"
+    "${PROJECT_SOURCE_DIR}/../include/igl/anttweakbar/*.cpp"
   )
 add_library(iglanttweakbar STATIC ${SOURCES_ANTTWEAKBAR})
 endif (ANTTWEAKBAR_FOUND)

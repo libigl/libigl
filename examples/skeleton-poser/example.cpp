@@ -1,7 +1,7 @@
 #include <igl/Camera.h>
 #include <igl/MouseController.h>
 #include <igl/REDRUM.h>
-#include <igl/ReAntTweakBar.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 #include <igl/STR.h>
 #include <igl/barycenter.h>
 #include <igl/bbw/bbw.h>

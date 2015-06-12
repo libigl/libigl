@@ -7,7 +7,7 @@
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/REDRUM.h>
 #include <igl/Camera.h>
-#include <igl/ReAntTweakBar.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 #include <igl/get_seconds.h>
 #include <igl/jet.h>
 #include <igl/rgb_to_hsv.h>

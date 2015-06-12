@@ -14,7 +14,7 @@
 #include <igl/colon.h>
 #include <igl/slice.h>
 #include <igl/report_gl_error.h>
-#include <igl/ReAntTweakBar.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 #include <igl/EPS.h>
 #define IGL_HEADER_ONLY
 #include <igl/sort_triangles.h>
