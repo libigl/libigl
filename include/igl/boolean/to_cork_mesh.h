@@ -6,20 +6,23 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Convert a (V,F) mesh to a cork's triangle mesh representation.
-  //
-  // Inputs:
-  //   V  #V by 3 list of vertex positions
-  //   F  #F by 3 list of triangle indices into V
-  // Outputs:
-  //   mesh  cork representation of mesh
-  template <
-    typename DerivedV,
-    typename DerivedF>
-  IGL_INLINE void to_cork_mesh(
-    const Eigen::PlainObjectBase<DerivedV > & V,
-    const Eigen::PlainObjectBase<DerivedF > & F,
-    CorkTriMesh & mesh);
+  namespace boolean
+  {
+    // Convert a (V,F) mesh to a cork's triangle mesh representation.
+    //
+    // Inputs:
+    //   V  #V by 3 list of vertex positions
+    //   F  #F by 3 list of triangle indices into V
+    // Outputs:
+    //   mesh  cork representation of mesh
+    template <
+      typename DerivedV,
+      typename DerivedF>
+    IGL_INLINE void to_cork_mesh(
+      const Eigen::PlainObjectBase<DerivedV > & V,
+      const Eigen::PlainObjectBase<DerivedF > & F,
+      CorkTriMesh & mesh);
+  }
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "to_cork_mesh.cpp"

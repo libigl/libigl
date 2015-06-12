@@ -36,6 +36,8 @@
 
 namespace igl
 {
+namespace viewer
+{
   // GLFW-based mesh viewer
   class Viewer
   {
@@ -49,13 +51,13 @@ namespace igl
     char **argv;
 
     // Stores all the viewing options
-    igl::ViewerCore core;
+    ViewerCore core;
 
     // Stores all the data that should be visualized
-    igl::ViewerData data;
+    ViewerData data;
 
     // Stores the vbos indices and opengl related settings
-    igl::OpenGL_state opengl;
+    OpenGL_state opengl;
 
     // List of registered plugins
     std::vector<ViewerPlugin*> plugins;
@@ -149,6 +151,7 @@ namespace igl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+} // end namespace
 } // end namespace
 
 #ifndef IGL_STATIC_LIBRARY

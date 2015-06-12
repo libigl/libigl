@@ -12,20 +12,23 @@
 
 namespace igl
 {
-  // Convert a CGAL Polyhedron to a mesh (V,F)
-  //
-  // Templates:
-  //   Polyhedron  CGAL Polyhedron type (e.g. Polyhedron_3)
-  // Inputs:
-  //   poly  cgal polyhedron
-  // Outputs:
-  //   V  #V by 3 list of vertex positions
-  //   F  #F by 3 list of triangle indices
-  template <typename Polyhedron>
-  IGL_INLINE void polyhedron_to_mesh(
-    const Polyhedron & poly,
-    Eigen::MatrixXd & V,
-    Eigen::MatrixXi & F);
+  namespace cgal
+  {
+    // Convert a CGAL Polyhedron to a mesh (V,F)
+    //
+    // Templates:
+    //   Polyhedron  CGAL Polyhedron type (e.g. Polyhedron_3)
+    // Inputs:
+    //   poly  cgal polyhedron
+    // Outputs:
+    //   V  #V by 3 list of vertex positions
+    //   F  #F by 3 list of triangle indices
+    template <typename Polyhedron>
+    IGL_INLINE void polyhedron_to_mesh(
+      const Polyhedron & poly,
+      Eigen::MatrixXd & V,
+      Eigen::MatrixXi & F);
+  }
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "polyhedron_to_mesh.cpp"

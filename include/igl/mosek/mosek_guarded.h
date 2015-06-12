@@ -12,12 +12,15 @@
 #include "mosek.h"
 namespace igl
 {
-  // Little function to wrap around mosek call to handle errors
-  // 
-  // Inputs:
-  //   r  mosek error code returned from mosek call
-  // Returns r untouched
-  IGL_INLINE MSKrescodee mosek_guarded(const MSKrescodee r);
+  namespace mosek
+  {
+    // Little function to wrap around mosek call to handle errors
+    // 
+    // Inputs:
+    //   r  mosek error code returned from mosek call
+    // Returns r untouched
+    IGL_INLINE MSKrescodee mosek_guarded(const MSKrescodee r);
+  }
 }
 
 #ifndef IGL_STATIC_LIBRARY

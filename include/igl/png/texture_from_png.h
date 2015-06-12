@@ -16,32 +16,38 @@
 
 namespace igl
 {
-  // Read an image from a .png file and use it as a texture
-  //
-  // Input:
-  //  png_file  path to .png file
-  // Output:
-  //  id  of generated openGL texture
-  // Returns true on success, false on failure
-  IGL_INLINE bool texture_from_png(const std::string png_file, GLuint & id);
+  namespace png
+  {
+    // Read an image from a .png file and use it as a texture
+    //
+    // Input:
+    //  png_file  path to .png file
+    // Output:
+    //  id  of generated openGL texture
+    // Returns true on success, false on failure
+    IGL_INLINE bool texture_from_png(const std::string png_file, GLuint & id);
+  }
 }
 #endif
 
 namespace igl
 {
-  // Read an image from a .png file and use it as a texture
-  //
-  // Input:
-  //  png_file  path to .png file
-  // Output:
-  //  R,G,B,A texture channels
-  // Returns true on success, false on failure
-  IGL_INLINE bool texture_from_png(const std::string png_file,
-  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
-  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
-  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B,
-  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& A
-  );
+  namespace png
+  {
+    // Read an image from a .png file and use it as a texture
+    //
+    // Input:
+    //  png_file  path to .png file
+    // Output:
+    //  R,G,B,A texture channels
+    // Returns true on success, false on failure
+    IGL_INLINE bool texture_from_png(const std::string png_file,
+    Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
+    Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
+    Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B,
+    Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& A
+    );
+  }
 }
 
 #ifndef IGL_STATIC_LIBRARY

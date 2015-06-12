@@ -11,43 +11,46 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Forward define
-  class EmbreeIntersector;
-  // Compute ambient occlusion per given point
-  //
-  // Inputs:
-  //    ei  EmbreeIntersector containing (V,F)
-  //    P  #P by 3 list of origin points
-  //    N  #P by 3 list of origin normals
-  // Outputs:
-  //    S  #P list of ambient occlusion values between 1 (fully occluded) and 0
-  //      (not occluded)
-  //
-  template <
-    typename DerivedP,
-    typename DerivedN,
-    typename DerivedS >
-  IGL_INLINE void ambient_occlusion(
-    const igl::EmbreeIntersector & ei,
-    const Eigen::PlainObjectBase<DerivedP> & P,
-    const Eigen::PlainObjectBase<DerivedN> & N,
-    const int num_samples,
-    Eigen::PlainObjectBase<DerivedS> & S);
-  // Wrapper which builds new EmbreeIntersector for (V,F). That's expensive so
-  // avoid this if repeatedly calling.
-  template <
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedP,
-    typename DerivedN,
-    typename DerivedS >
-  IGL_INLINE void ambient_occlusion(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    const Eigen::PlainObjectBase<DerivedP> & P,
-    const Eigen::PlainObjectBase<DerivedN> & N,
-    const int num_samples,
-    Eigen::PlainObjectBase<DerivedS> & S);
+  namespace embree
+  {
+    // Forward define
+    class EmbreeIntersector;
+    // Compute ambient occlusion per given point
+    //
+    // Inputs:
+    //    ei  EmbreeIntersector containing (V,F)
+    //    P  #P by 3 list of origin points
+    //    N  #P by 3 list of origin normals
+    // Outputs:
+    //    S  #P list of ambient occlusion values between 1 (fully occluded) and
+    //      0 (not occluded)
+    //
+    template <
+      typename DerivedP,
+      typename DerivedN,
+      typename DerivedS >
+    IGL_INLINE void ambient_occlusion(
+      const EmbreeIntersector & ei,
+      const Eigen::PlainObjectBase<DerivedP> & P,
+      const Eigen::PlainObjectBase<DerivedN> & N,
+      const int num_samples,
+      Eigen::PlainObjectBase<DerivedS> & S);
+    // Wrapper which builds new EmbreeIntersector for (V,F). That's expensive so
+    // avoid this if repeatedly calling.
+    template <
+      typename DerivedV,
+      typename DerivedF,
+      typename DerivedP,
+      typename DerivedN,
+      typename DerivedS >
+    IGL_INLINE void ambient_occlusion(
+      const Eigen::PlainObjectBase<DerivedV> & V,
+      const Eigen::PlainObjectBase<DerivedF> & F,
+      const Eigen::PlainObjectBase<DerivedP> & P,
+      const Eigen::PlainObjectBase<DerivedN> & N,
+      const int num_samples,
+      Eigen::PlainObjectBase<DerivedS> & S);
+  }
 };
 #ifndef IGL_STATIC_LIBRARY
 #  include "ambient_occlusion.cpp"

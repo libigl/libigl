@@ -18,6 +18,8 @@
 
 namespace igl
 {
+namespace viewer
+{
 
 // TODO: write documentation
 
@@ -148,6 +150,7 @@ public:
   /*********************************/
 };
 
+}
 }
 
 #ifndef IGL_STATIC_LIBRARY

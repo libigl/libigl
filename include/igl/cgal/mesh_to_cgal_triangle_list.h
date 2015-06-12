@@ -12,24 +12,27 @@
 #include "CGAL_includes.hpp"
 namespace igl
 {
-  // Convert a mesh (V,F) to a list of CGAL triangles
-  //
-  // Templates:
-  //   Kernal  CGAL computation and construction kernel (e.g.
-  //     CGAL::Exact_predicates_exact_constructions_kernel)
-  // Inputs:
-  //   V  #V by 3 list of vertex positions
-  //   F  #F by 3 list of triangle indices
-  // Outputs:
-  //   T  #F list of CGAL triangles
-  template <
-    typename DerivedV,
-    typename DerivedF,
-    typename Kernel>
-  IGL_INLINE void mesh_to_cgal_triangle_list(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    std::vector<CGAL::Triangle_3<Kernel> > & T);
+  namespace cgal
+  {
+    // Convert a mesh (V,F) to a list of CGAL triangles
+    //
+    // Templates:
+    //   Kernal  CGAL computation and construction kernel (e.g.
+    //     CGAL::Exact_predicates_exact_constructions_kernel)
+    // Inputs:
+    //   V  #V by 3 list of vertex positions
+    //   F  #F by 3 list of triangle indices
+    // Outputs:
+    //   T  #F list of CGAL triangles
+    template <
+      typename DerivedV,
+      typename DerivedF,
+      typename Kernel>
+    IGL_INLINE void mesh_to_cgal_triangle_list(
+      const Eigen::PlainObjectBase<DerivedV> & V,
+      const Eigen::PlainObjectBase<DerivedF> & F,
+      std::vector<CGAL::Triangle_3<Kernel> > & T);
+  }
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "mesh_to_cgal_triangle_list.cpp"

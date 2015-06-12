@@ -36,6 +36,8 @@
 
 namespace igl
 {
+namespace viewer
+{
 
 // This class wraps an OpenGL program composed of three shaders
 // TODO: write documentation
@@ -88,6 +90,7 @@ public:
 
 };
 
+}
 }
 
 #ifndef IGL_STATIC_LIBRARY

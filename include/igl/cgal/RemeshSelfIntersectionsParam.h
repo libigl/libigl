@@ -10,14 +10,17 @@
 
 namespace igl
 {
-  // Optional Parameters
-  //   DetectOnly  Only compute IF, leave VV and FF alone
-  struct RemeshSelfIntersectionsParam
+  namespace cgal
   {
-    bool detect_only;
-    bool first_only;
-    RemeshSelfIntersectionsParam():detect_only(false),first_only(false){};
-  };
+    // Optional Parameters
+    //   DetectOnly  Only compute IF, leave VV and FF alone
+    struct RemeshSelfIntersectionsParam
+    {
+      bool detect_only;
+      bool first_only;
+      RemeshSelfIntersectionsParam():detect_only(false),first_only(false){};
+    };
+  }
 }
 
 #endif
