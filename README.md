@@ -12,27 +12,32 @@ mesh-viewing utilities for OpenGL and GLSL, and many core functions for matrix
 manipulation which make [Eigen](http://eigen.tuxfamily.org) feel a lot more
 like MATLAB.
 
-It is first and foremost a header library. Each header file contains a single
-function. Most are tailored to operate on a generic triangle mesh stored in an
-n-by-3 matrix of vertex positions V and an m-by-3 matrix of triangle indices F.
-The library may also be [compiled](build/) into a statically linked
-library, for faster compile times with your projects.
+It is **a header-only library**. You do not need to compile anything to use,
+just include igl headers (e.g. `#include <igl/cotmatrix.h>`) and run.  Each
+header file contains a single function (e.g. `igl/cotmatrix.h` contains
+`igl::cotmatrix()`). Most are tailored to operate on a generic triangle mesh
+stored in an n-by-3 matrix of vertex positions V and an m-by-3 matrix of
+triangle indices F. 
+
+_Optionally_ the library may also be [pre-compiled](build/) into a statically
+linked library, for faster compile times with your projects. This only effects
+compile time (run-time performance and behavior is identical). If in doubt, use
+the header-only default mode: (i.e. just include the headers you want to use).
 
 We use the [Eigen](http://eigen.tuxfamily.org) library heavily in our code. Our
-group prototypes a lot in MATLAB, and we have a useful [conversion
-table](matlab-to-eigen.html) from
-MATLAB to libigl/Eigen.
+group prototypes a lot in MATLAB, and we have a useful [MATLAB to libigl+Eigen
+conversion table](matlab-to-eigen.html).
 
 ## Tutorial
 
 As of version 1.0, libigl includes an introductory
-[tutorial](tutorial/tutorial.html) that covers
-its basic functionalities.
+[tutorial](tutorial/tutorial.html) that covers many functionalities.
 
 ## Installation
-Libigl is a *header* library. You do **not** need to build anything to install.
-Simply add `igl/` to your include path and include relevant headers. Here is a
-small "Hello, World" program:
+
+Libigl is a **header-only** library. You do **not** need to build anything to
+install.  Simply add `libigl/include` to your include path and include relevant
+headers.  Here is a small "Hello, World" program:
 
 ```cpp
 #include <igl/cotmatrix.h>
@@ -57,10 +62,10 @@ int main()
 ```
 
 If you save this in `hello.cpp`, then you could compile this with (assuming
-Eigen is installed in /opt/local/include/eigen3):
+Eigen is installed in `/usr/local/include/eigen3`):
 
 ```bash
-gcc -I/opt/local/include/eigen3 -I./igl/ hello.cpp -o hello
+gcc -I/usr/local/include/eigen3 -I./libigl/include/ hello.cpp -o hello
 ```
 
 Running `./hello` would then produce
@@ -86,10 +91,9 @@ GCC 4.7 and clang will work correctly.
 
 ### OpenMP and Windows
 Some of our functions will take advantage of OpenMP if available. However, it
-has come to our attention that Visual Studio + Eigen does not work properly
-with OpenMP. Since OpenMP only improves performance without affecting
-functionality we recommend avoiding OpenMP on Windows or proceeding with
-caution.
+has come to our attention that Visual Studio + Eigen + OpenMP does not work
+properly. Since we use OpenMP only to improve performance, we recommend
+avoiding OpenMP on Windows or proceeding with caution.
 
 ## Download
 You can keep up to date by cloning a read-only copy of our GitHub
@@ -97,9 +101,9 @@ You can keep up to date by cloning a read-only copy of our GitHub
 
 ## Known Issues
 We really heavily on Eigen. Nearly all inputs and outputs are Eigen matrices of
-some kind. However, we currently _only_ support Eigen's default column-major
-ordering. That means, we **do not** expect our code to work for matrices using
-the `Eigen::RowMajor` flag. If you can, change definitions like:
+some kind. However, we currently _only_ officially support Eigen's default
+column-major ordering. That means, we **do not** expect our code to work for
+matrices using the `Eigen::RowMajor` flag. If you can, change definitions like:
 
 ```cpp
 Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> A;
