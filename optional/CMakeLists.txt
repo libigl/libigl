@@ -4,7 +4,7 @@ project(libigl)
 SET(CMAKE_SKIP_RULE_DEPENDENCY 1)
 
 # SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../../lib)
-SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/tutorial/cmake)
+SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../tutorial/cmake)
 find_package(EIGEN REQUIRED)
 
 add_definitions(-DIGL_STATIC_LIBRARY)
@@ -109,10 +109,10 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 #### Compile the core library that depends only on EIGEN ####
 include_directories( ${EIGEN_INCLUDE_DIR})
-include_directories( ${PROJECT_SOURCE_DIR}/include/)
+include_directories( ${PROJECT_SOURCE_DIR}/../include/)
 
 file(GLOB SOURCES
-  "${PROJECT_SOURCE_DIR}/include/igl/*.cpp"
+  "${PROJECT_SOURCE_DIR}/../include/igl/*.cpp"
 )
 
 add_library(igl STATIC ${SOURCES})
@@ -120,7 +120,7 @@ add_library(igl STATIC ${SOURCES})
 #### Compile the BBW part
 
 file(GLOB SOURCES_BBW
-  "${PROJECT_SOURCE_DIR}/include/igl/bbw/*.cpp"
+  "${PROJECT_SOURCE_DIR}/../include/igl/bbw/*.cpp"
 )
 
 add_library(iglbbw STATIC ${SOURCES_BBW})
@@ -128,7 +128,7 @@ add_library(iglbbw STATIC ${SOURCES_BBW})
 #### Compile the mosek part (untested)
 if (MOSEK_FOUND)
   file(GLOB SOURCES_MOSEK
-    "${PROJECT_SOURCE_DIR}/include/igl/mosek/*.cpp"
+    "${PROJECT_SOURCE_DIR}/../include/igl/mosek/*.cpp"
   )
 
 add_library(iglmosek STATIC ${SOURCES_MOSEK})
@@ -137,7 +137,7 @@ endif (MOSEK_FOUND)
 #### Compile the cgal part
 if (CGAL_FOUND)
   file(GLOB SOURCES_CGAL
-    "${PROJECT_SOURCE_DIR}/include/igl/cgal/*.cpp"
+    "${PROJECT_SOURCE_DIR}/../include/igl/cgal/*.cpp"
   )
 
 add_library(iglcgal STATIC ${SOURCES_CGAL})
@@ -148,7 +148,7 @@ if (NOT CORK_FOUND)
 endif(NOT CORK_FOUND)
 
 file(GLOB SOURCES_BOOLEAN
-  "${PROJECT_SOURCE_DIR}/include/igl/boolean/*.cpp"
+  "${PROJECT_SOURCE_DIR}/../include/igl/boolean/*.cpp"
 )
 
 add_library(iglboolean STATIC ${SOURCES_BOOLEAN})
@@ -157,7 +157,7 @@ endif (CGAL_FOUND)
 #### Compile the embree part
 if (EMBREE_FOUND)
   file(GLOB SOURCES_EMBREE
-    "${PROJECT_SOURCE_DIR}/include/igl/embree/*.cpp"
+    "${PROJECT_SOURCE_DIR}/../include/igl/embree/*.cpp"
   )
 
   add_library(iglembree STATIC ${SOURCES_EMBREE})
@@ -166,7 +166,7 @@ endif (EMBREE_FOUND)
 #### Compile the lim part
 if (LIM_FOUND)
   file(GLOB SOURCES_LIM
-    "${PROJECT_SOURCE_DIR}/include/igl/lim/*.cpp"
+    "${PROJECT_SOURCE_DIR}/../include/igl/lim/*.cpp"
   )
 
   add_library(igllim STATIC ${SOURCES_LIM})
@@ -175,7 +175,7 @@ endif (LIM_FOUND)
 #### Compile the matlab part
 if (MATLAB_FOUND)
   file(GLOB SOURCES_MATLAB
-    "${PROJECT_SOURCE_DIR}/include/igl/matlab/*.cpp"
+    "${PROJECT_SOURCE_DIR}/../include/igl/matlab/*.cpp"
   )
 
   add_library(iglmatlab STATIC ${SOURCES_MATLAB})
@@ -184,7 +184,7 @@ endif (MATLAB_FOUND)
 #### Compile the svd3x3 part
 if (SVD3X3_FOUND)
   file(GLOB SOURCES_SVD3X3
-    "${PROJECT_SOURCE_DIR}/include/igl/svd3x3/*.cpp"
+    "${PROJECT_SOURCE_DIR}/../include/igl/svd3x3/*.cpp"
   )
 
   add_library(iglsvd3x3 STATIC ${SOURCES_SVD3X3})
@@ -193,7 +193,7 @@ endif (SVD3X3_FOUND)
 #### Compile the tetgen part
 if (TETGEN_FOUND)
   file(GLOB SOURCES_TETGEN
-    "${PROJECT_SOURCE_DIR}/include/igl/tetgen/*.cpp"
+    "${PROJECT_SOURCE_DIR}/../include/igl/tetgen/*.cpp"
   )
 
   add_library(igltetgen STATIC ${SOURCES_TETGEN})
@@ -202,7 +202,7 @@ endif (TETGEN_FOUND)
 #### Compile the triangle part
 if (TRIANGLE_FOUND)
   file(GLOB SOURCES_TRIANGLE
-    "${PROJECT_SOURCE_DIR}/include/igl/triangle/*.cpp"
+    "${PROJECT_SOURCE_DIR}/../include/igl/triangle/*.cpp"
   )
 
   add_library(igltriangle STATIC ${SOURCES_TRIANGLE})
@@ -211,7 +211,7 @@ endif (TRIANGLE_FOUND)
 #### Compile the xml part
 if (TINYXML2_FOUND)
   file(GLOB SOURCES_XML
-    "${PROJECT_SOURCE_DIR}/include/igl/xml/*.cpp"
+    "${PROJECT_SOURCE_DIR}/../include/igl/xml/*.cpp"
   )
 
   add_library(iglxml STATIC ${SOURCES_XML})
@@ -220,7 +220,7 @@ endif (TINYXML2_FOUND)
 #### Compile the xml part
 if (LIBCOMISO_FOUND)
   file(GLOB SOURCES_COMISO
-    "${PROJECT_SOURCE_DIR}/include/igl/comiso/*.cpp"
+    "${PROJECT_SOURCE_DIR}/../include/igl/comiso/*.cpp"
   )
 
   add_library(iglcomiso STATIC ${SOURCES_COMISO})
@@ -229,7 +229,7 @@ endif (LIBCOMISO_FOUND)
 #### Compile the viewer
 if (GLFW_FOUND AND ANTTWEAKBAR_FOUND)
   file(GLOB SOURCES_XML
-    "${PROJECT_SOURCE_DIR}/include/igl/viewer/*.cpp"
+    "${PROJECT_SOURCE_DIR}/../include/igl/viewer/*.cpp"
   )
 
   add_library(iglviewer STATIC ${SOURCES_XML})
