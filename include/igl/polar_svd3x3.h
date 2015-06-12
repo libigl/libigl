@@ -8,7 +8,7 @@
 #ifndef IGL_POLAR_SVD3X3_H
 #define IGL_POLAR_SVD3X3_H
 #include <Eigen/Core>
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 namespace igl
 {
   // Computes the closest rotation to input matrix A using specialized 3x3 SVD

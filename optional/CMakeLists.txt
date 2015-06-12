@@ -89,12 +89,6 @@ else(PNG_FOUND)
   message(STATUS "PNG not found")
 endif(PNG_FOUND)
 
-## Check for SVD3X3
-find_package(SVD3X3 QUIET)
-if(SVD3X3_FOUND)
-  include_directories( ${SVD3X3_INCLUDE_DIR})
-endif(SVD3X3_FOUND)
-
 ## Check for TETGEN
 find_package(TETGEN QUIET)
 if(TETGEN_FOUND)
@@ -234,14 +228,6 @@ if (PNG_FOUND)
   )
   add_library(iglpng STATIC ${SOURCES_PNG})
 endif (PNG_FOUND)
-
-#### Compile the svd3x3 part
-if (SVD3X3_FOUND)
-  file(GLOB SOURCES_SVD3X3
-    "${PROJECT_SOURCE_DIR}/../include/igl/svd3x3/*.cpp"
-  )
-  add_library(iglsvd3x3 STATIC ${SOURCES_SVD3X3})
-endif (SVD3X3_FOUND)
 
 #### Compile the tetgen part
 if (TETGEN_FOUND)
