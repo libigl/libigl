@@ -95,7 +95,7 @@ namespace igl
       const Eigen::RowVector3f& direction,
       Hit& hit,
       float tnear = 0,
-      float tfar = -1,
+      float tfar = std::numeric_limits<float>::infinity(),
       int mask = 0xFFFFFFFF) const;
 
     // Given a ray find the first hit
@@ -392,7 +392,7 @@ inline bool igl::EmbreeIntersector::intersectBeam(
   else
     bestHit.t = 0;
 
-  if((hasHit = (intersectRay(origin,direction,hit,tnear,tfar,mask)) && (hit.gid == geoId || geoId == -1)))
+  if(hasHit = ((intersectRay(origin,direction,hit,tnear,tfar,mask)) && (hit.gid == geoId || geoId == -1)))
     bestHit = hit;
   
   // sample points around actual ray (conservative hitcheck)
