@@ -8,6 +8,7 @@
 FIND_PATH(TETGEN_INCLUDE_DIR tetgen.h
    ${PROJECT_SOURCE_DIR}/../libigl/external/tetgen/
    ${PROJECT_SOURCE_DIR}/../../external/tetgen/
+   ${PROJECT_SOURCE_DIR}/../external/tetgen/
    /usr/include
    /usr/local/include
    NO_DEFAULT_PATH
