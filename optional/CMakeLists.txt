@@ -27,6 +27,12 @@ else (ANTTWEAKBAR_FOUND)
   message(STATUS "AntTweakBar not found.")
 endif(ANTTWEAKBAR_FOUND)
 
+## Check for Boost
+find_package(BOOST QUIET)
+if (Boost_FOUND)
+  include_directories( ${BOOST_INCLUDE_DIR})
+endif(Boost_FOUND)
+
 
 ## Check for CoMiSo, if not available skip the examples that depends on it
 find_package(LIBCOMISO QUIET)
@@ -132,6 +138,16 @@ if (ANTTWEAKBAR_FOUND)
   )
 add_library(iglanttweakbar STATIC ${SOURCES_ANTTWEAKBAR})
 endif (ANTTWEAKBAR_FOUND)
+
+#### Compile the boost part
+if (Boost_FOUND)
+  file(GLOB SOURCES_BOOST
+    "${PROJECT_SOURCE_DIR}/../include/igl/boost/*.cpp"
+  )
+add_library(iglboost STATIC ${SOURCES_BOOST})
+else (Boost_FOUND)
+  message(STATUS "Boost not found.")
+endif (Boost_FOUND)
 
 #### Compile the BBW part
 
