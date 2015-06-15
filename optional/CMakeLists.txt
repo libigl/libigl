@@ -93,6 +93,8 @@ endif(PNG_FOUND)
 find_package(TETGEN QUIET)
 if(TETGEN_FOUND)
   include_directories( ${TETGEN_INCLUDE_DIR})
+else(TETGEN_FOUND)
+  message(STATUS "Tetgen not found.")
 endif(TETGEN_FOUND)
 
 ## Check for TRIANGLE
