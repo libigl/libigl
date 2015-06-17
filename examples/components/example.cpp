@@ -1,24 +1,24 @@
-#include <igl/read_triangle_mesh.h>
-#include <igl/init_render_to_texture.h>
-#include <igl/draw_floor.h>
-#include <igl/report_gl_error.h>
-#include <igl/per_face_normals.h>
-#include <igl/trackball.h>
-#include <igl/snap_to_canonical_view_quat.h>
-#include <igl/REDRUM.h>
-#include <igl/Camera.h>
-#include <igl/anttweakbar/ReAntTweakBar.h>
-#include <igl/get_seconds.h>
-#include <igl/jet.h>
-#include <igl/rgb_to_hsv.h>
-#include <igl/hsv_to_rgb.h>
-#include <igl/randperm.h>
-#include <igl/boost/components.h>
 #include <igl/C_STR.h>
-#include <igl/write_triangle_mesh.h>
-#include <igl/two_axis_valuator_fixed_up.h>
-#include <igl/snap_to_fixed_up.h>
+#include <igl/Camera.h>
+#include <igl/REDRUM.h>
+#include <igl/components.h>
 #include <igl/create_shader_program.h>
+#include <igl/draw_floor.h>
+#include <igl/get_seconds.h>
+#include <igl/hsv_to_rgb.h>
+#include <igl/init_render_to_texture.h>
+#include <igl/jet.h>
+#include <igl/per_face_normals.h>
+#include <igl/randperm.h>
+#include <igl/read_triangle_mesh.h>
+#include <igl/report_gl_error.h>
+#include <igl/rgb_to_hsv.h>
+#include <igl/snap_to_canonical_view_quat.h>
+#include <igl/snap_to_fixed_up.h>
+#include <igl/trackball.h>
+#include <igl/two_axis_valuator_fixed_up.h>
+#include <igl/write_triangle_mesh.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -108,7 +108,7 @@ int width,height;
 Eigen::Vector4f light_pos(-0.1,-0.1,0.9,0);
 
 #define REBAR_NAME "temp.rbr"
-igl::ReTwBar rebar;
+igl::anttweakbar::ReTwBar rebar;
 
 // Forward
 void init_components();
@@ -1050,11 +1050,11 @@ int main(int argc, char * argv[])
   TwDefine("bar label='Components' size='200 550' text=light alpha='200' color='68 68 68'");
   rebar.TwAddVarRW("camera_rotation", TW_TYPE_QUAT4D,
     s.camera.m_rotation_conj.coeffs().data(), "open readonly=true");
-  TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType",
+  TwType RotationTypeTW = igl::anttweakbar::ReTwDefineEnumFromString("RotationType",
     "igl_trackball,two-axis-valuator-fixed-up");
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
-  TwType CenterTypeTW = ReTwDefineEnumFromString("CenterType","orbit,fps");
+  TwType CenterTypeTW = igl::anttweakbar::ReTwDefineEnumFromString("CenterType","orbit,fps");
   rebar.TwAddVarRW("center_type", CenterTypeTW,&center_type,
     "keyIncr={ keyDecr=}");
 

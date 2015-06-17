@@ -1,35 +1,35 @@
+#include <igl/Camera.h>
+#include <igl/REDRUM.h>
+#include <igl/boundary_conditions.h>
+#include <igl/draw_floor.h>
+#include <igl/draw_mesh.h>
 #include <igl/draw_skeleton_3d.h>
 #include <igl/draw_skeleton_vector_graphics.h>
-#include <igl/two_axis_valuator_fixed_up.h>
+#include <igl/forward_kinematics.h>
+#include <igl/get_seconds.h>
+#include <igl/lbs_matrix.h>
+#include <igl/list_to_matrix.h>
+#include <igl/material_colors.h>
+#include <igl/normalize_row_sums.h>
+#include <igl/pathinfo.h>
+#include <igl/per_face_normals.h>
+#include <igl/polygon_mesh_to_triangle_mesh.h>
+#include <igl/quat_to_mat.h>
+#include <igl/readMESH.h>
 #include <igl/readOBJ.h>
+#include <igl/readOFF.h>
 #include <igl/readTGF.h>
-#include <igl/writeOBJ.h>
-#include <igl/writeOFF.h>
 #include <igl/readWRL.h>
 #include <igl/report_gl_error.h>
-#include <igl/polygon_mesh_to_triangle_mesh.h>
-#include <igl/readOFF.h>
-#include <igl/readMESH.h>
-#include <igl/draw_mesh.h>
-#include <igl/draw_floor.h>
-#include <igl/pathinfo.h>
-#include <igl/list_to_matrix.h>
-#include <igl/quat_to_mat.h>
-#include <igl/per_face_normals.h>
-#include <igl/material_colors.h>
-#include <igl/trackball.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
-#include <igl/REDRUM.h>
-#include <igl/Camera.h>
+#include <igl/trackball.h>
+#include <igl/two_axis_valuator_fixed_up.h>
+#include <igl/writeOBJ.h>
+#include <igl/writeOFF.h>
 #include <igl/anttweakbar/ReAntTweakBar.h>
-#include <igl/get_seconds.h>
-#include <igl/forward_kinematics.h>
-#include <igl/tetgen/mesh_with_skeleton.h>
-#include <igl/boundary_conditions.h>
-#include <igl/normalize_row_sums.h>
-#include <igl/lbs_matrix.h>
 #include <igl/bbw/bbw.h>
+#include <igl/tetgen/mesh_with_skeleton.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -106,7 +106,7 @@ int width,height;
 Eigen::Vector4f light_pos(-0.1,-0.1,0.9,0);
 
 #define REBAR_NAME "temp.rbr"
-igl::ReTwBar rebar;
+igl::anttweakbar::ReTwBar rebar;
 
 void push_undo()
 {
@@ -556,7 +556,7 @@ bool init_weights(
   MatrixXd VV;
   MatrixXi TT,FF,CE;
   VectorXi P;
-  if(!mesh_with_skeleton(V,F,C,P,BE,CE,10,VV,TT,FF))
+  if(!igl::tetgen::mesh_with_skeleton(V,F,C,P,BE,CE,10,VV,TT,FF))
   {
     return false;
   }
@@ -571,10 +571,10 @@ bool init_weights(
 
   // compute BBW
   // Default bbw data and flags
-  BBWData bbw_data;
+  igl::bbw::BBWData bbw_data;
   bbw_data.active_set_params.max_iter = 4;
   // Weights matrix
-  if(!bbw(VV,TT,b,bc,bbw_data,W))
+  if(!igl::bbw::bbw(VV,TT,b,bc,bbw_data,W))
   {
     return false;
   }
@@ -691,13 +691,13 @@ int main(int argc, char * argv[])
   rebar.TwNewBar("TweakBar");
   rebar.TwAddVarRW("camera_rotation", TW_TYPE_QUAT4D,
     s.camera.m_rotation_conj.coeffs().data(), "open readonly=true");
-  TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType",
+  TwType RotationTypeTW = igl::anttweakbar::ReTwDefineEnumFromString("RotationType",
     "igl_trackball,two-a...-fixed-up");
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
   rebar.TwAddVarRW("skeleton_on_top", TW_TYPE_BOOLCPP,&skeleton_on_top,"key=O");
   rebar.TwAddVarRW("wireframe", TW_TYPE_BOOLCPP,&wireframe,"key=l");
-  TwType SkelStyleTypeTW = ReTwDefineEnumFromString("SkelStyleType",
+  TwType SkelStyleTypeTW = igl::anttweakbar::ReTwDefineEnumFromString("SkelStyleType",
     "3d,vector-graphics");
   rebar.TwAddVarRW("style",SkelStyleTypeTW,&skel_style,"key=s");
   rebar.load(REBAR_NAME);

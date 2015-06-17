@@ -1,37 +1,37 @@
-#include <igl/readOBJ.h>
-#include <igl/readPLY.h>
-#include <igl/writeOBJ.h>
-#include <igl/writeOFF.h>
-#include <igl/readWRL.h>
-#include <igl/report_gl_error.h>
-#include <igl/polygon_mesh_to_triangle_mesh.h>
-#include <igl/readOFF.h>
-#include <igl/readMESH.h>
-#include <igl/draw_mesh.h>
-#include <igl/draw_floor.h>
-#include <igl/pathinfo.h>
-#include <igl/list_to_matrix.h>
-#include <igl/quat_to_mat.h>
-#include <igl/per_face_normals.h>
-#include <igl/material_colors.h>
-#include <igl/trackball.h>
-#include <igl/snap_to_canonical_view_quat.h>
-#include <igl/REDRUM.h>
+#include <igl/C_STR.h>
 #include <igl/Camera.h>
-#include <igl/anttweakbar/ReAntTweakBar.h>
+#include <igl/REDRUM.h>
+#include <igl/bfs_orient.h>
+#include <igl/components.h>
+#include <igl/draw_floor.h>
+#include <igl/draw_mesh.h>
 #include <igl/get_seconds.h>
 #include <igl/jet.h>
-#include <igl/randperm.h>
+#include <igl/list_to_matrix.h>
+#include <igl/material_colors.h>
 #include <igl/normalize_row_lengths.h>
-#include <igl/boost/components.h>
-#include <igl/boost/bfs_orient.h>
 #include <igl/orient_outward.h>
-#include <igl/embree/reorient_facets_raycast.h>
-#include <igl/unique_simplices.h>
-#include <igl/C_STR.h>
-#include <igl/write_triangle_mesh.h>
-#include <igl/two_axis_valuator_fixed_up.h>
+#include <igl/pathinfo.h>
+#include <igl/per_face_normals.h>
+#include <igl/polygon_mesh_to_triangle_mesh.h>
+#include <igl/quat_to_mat.h>
+#include <igl/randperm.h>
+#include <igl/readMESH.h>
+#include <igl/readOBJ.h>
+#include <igl/readOFF.h>
+#include <igl/readPLY.h>
+#include <igl/readWRL.h>
+#include <igl/report_gl_error.h>
+#include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
+#include <igl/trackball.h>
+#include <igl/two_axis_valuator_fixed_up.h>
+#include <igl/unique_simplices.h>
+#include <igl/writeOBJ.h>
+#include <igl/writeOFF.h>
+#include <igl/write_triangle_mesh.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
+#include <igl/embree/reorient_facets_raycast.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -121,7 +121,7 @@ int width,height;
 Eigen::Vector4f light_pos(-0.1,-0.1,0.9,0);
 
 #define REBAR_NAME "temp.rbr"
-igl::ReTwBar rebar;
+igl::anttweakbar::ReTwBar rebar;
 
 // Forward
 void init_patches();
@@ -578,7 +578,7 @@ void init_patches()
     case ORIENT_METHOD_AO:
     {
       cout<<"orient_outward_ao()"<<endl;
-      reorient_facets_raycast(V,F,F,I);
+      igl::embree::reorient_facets_raycast(V,F,F,I);
       break;
     }
     case ORIENT_METHOD_OUTWARD:
@@ -807,14 +807,14 @@ int main(int argc, char * argv[])
   TwDefine("bar label='Patches' size='200 550' text=light alpha='200' color='68 68 68'");
   rebar.TwAddVarRW("camera_rotation", TW_TYPE_QUAT4D,
     s.camera.m_rotation_conj.coeffs().data(), "open readonly=true");
-  TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType",
+  TwType RotationTypeTW = igl::anttweakbar::ReTwDefineEnumFromString("RotationType",
     "igl_trackball,two-axis-valuator-fixed-up");
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
-  TwType CenterTypeTW = ReTwDefineEnumFromString("CenterType","orbit,fps");
+  TwType CenterTypeTW = igl::anttweakbar::ReTwDefineEnumFromString("CenterType","orbit,fps");
   rebar.TwAddVarRW("center_type", CenterTypeTW,&center_type,
     "keyIncr={ keyDecr=}");
-  TwType OrientMethodTW = ReTwDefineEnumFromString("OrientMethod",
+  TwType OrientMethodTW = igl::anttweakbar::ReTwDefineEnumFromString("OrientMethod",
     "outward,ambient-occlusion");
   rebar.TwAddVarCB( "orient_method", OrientMethodTW,
     set_orient_method,get_orient_method,NULL,"keyIncr=< keyDecr=>");
