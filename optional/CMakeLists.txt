@@ -151,16 +151,6 @@ if (ANTTWEAKBAR_FOUND)
 add_library(iglanttweakbar STATIC ${SOURCES_ANTTWEAKBAR})
 endif (ANTTWEAKBAR_FOUND)
 
-#### Compile the boost part
-if (Boost_FOUND)
-  file(GLOB SOURCES_BOOST
-    "${PROJECT_SOURCE_DIR}/../include/igl/boost/*.cpp"
-  )
-add_library(iglboost STATIC ${SOURCES_BOOST})
-else (Boost_FOUND)
-  message(STATUS "Boost not found.")
-endif (Boost_FOUND)
-
 #### Compile the BBW part
 
 file(GLOB SOURCES_BBW
