@@ -1,23 +1,22 @@
+#include <igl/EPS.h>
 #include <igl/OpenGL_convenience.h>
-#include <igl/per_face_normals.h>
-#include <igl/read_triangle_mesh.h>
-#include <igl/normalize_row_lengths.h>
+#include <igl/colon.h>
+#include <igl/draw_floor.h>
 #include <igl/draw_mesh.h>
 #include <igl/jet.h>
 #include <igl/material_colors.h>
-#include <igl/draw_floor.h>
-#include <igl/unproject.h>
-#include <igl/quat_to_mat.h>
-#include <igl/trackball.h>
-#include <igl/report_gl_error.h>
 #include <igl/matlab_format.h>
-#include <igl/colon.h>
-#include <igl/slice.h>
+#include <igl/normalize_row_lengths.h>
+#include <igl/per_face_normals.h>
+#include <igl/quat_to_mat.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/report_gl_error.h>
-#include <igl/anttweakbar/ReAntTweakBar.h>
-#include <igl/EPS.h>
-#define IGL_HEADER_ONLY
+#include <igl/report_gl_error.h>
+#include <igl/slice.h>
 #include <igl/sort_triangles.h>
+#include <igl/trackball.h>
+#include <igl/unproject.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 
 #ifdef __APPLE__
 #  include <GLUT/glut.h>
@@ -50,7 +49,7 @@ Eigen::MatrixXi F,sorted_F;
 double alpha = 0.2;
 
 #define REBAR_NAME "temp.rbr"
-igl::ReTwBar rebar; // Pointer to the tweak bar
+igl::anttweakbar::ReTwBar rebar; // Pointer to the tweak bar
 
 void reshape(int width,int height)
 {

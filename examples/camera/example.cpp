@@ -64,7 +64,7 @@ enum CenterType
 
 int width,height;
 #define REBAR_NAME "temp.rbr"
-igl::ReTwBar rebar;
+igl::anttweakbar::ReTwBar rebar;
 struct State
 {
   std::vector<igl::Camera> cameras;
@@ -666,10 +666,12 @@ int main(int argc, char * argv[])
   // Create a tweak bar
   rebar.TwNewBar("bar");
   TwDefine("bar label='camera' size='200 550' text=light alpha='200' color='68 68 68'");
-  TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType","igl_trackball,two_axis_fixed_up");
+  TwType RotationTypeTW = igl::anttweakbar::ReTwDefineEnumFromString(
+      "RotationType","igl_trackball,two_axis_fixed_up");
   rebar.TwAddVarRW("rotation_type", RotationTypeTW,&rotation_type,
     "keyIncr=] keyDecr=[");
-  TwType CenterTypeTW = ReTwDefineEnumFromString("CenterType","orbit,fps");
+  TwType CenterTypeTW = igl::anttweakbar::ReTwDefineEnumFromString(
+      "CenterType","orbit,fps");
   rebar.TwAddVarRW("center_type", CenterTypeTW,&center_type,
     "keyIncr={ keyDecr=}");
   rebar.TwAddVarRW("rotation", TW_TYPE_QUAT4D,s.cameras[0].m_rotation_conj.coeffs().data(),"");

@@ -1,15 +1,12 @@
 #include <igl/Camera.h>
 #include <igl/MouseController.h>
 #include <igl/REDRUM.h>
-#include <igl/anttweakbar/ReAntTweakBar.h>
 #include <igl/STR.h>
 #include <igl/barycenter.h>
-#include <igl/bbw/bbw.h>
 #include <igl/bone_parents.h>
 #include <igl/boundary_conditions.h>
 #include <igl/boundary_facets.h>
 #include <igl/centroid.h>
-#include <igl/cgal/remesh_self_intersections.h>
 #include <igl/colon.h>
 #include <igl/draw_beach_ball.h>
 #include <igl/draw_floor.h>
@@ -20,6 +17,7 @@
 #include <igl/get_seconds.h>
 #include <igl/lbs_matrix.h>
 #include <igl/material_colors.h>
+#include <igl/next_filename.h>
 #include <igl/normalize_row_sums.h>
 #include <igl/pathinfo.h>
 #include <igl/per_face_normals.h>
@@ -31,18 +29,20 @@
 #include <igl/report_gl_error.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
-#include <igl/tetgen/mesh_with_skeleton.h>
-#include <igl/tetgen/tetrahedralize.h>
 #include <igl/trackball.h>
 #include <igl/two_axis_valuator_fixed_up.h>
+#include <igl/volume.h>
 #include <igl/winding_number.h>
 #include <igl/writeDMAT.h>
-#include <igl/writeOBJ.h>
 #include <igl/writeMESH.h>
+#include <igl/writeOBJ.h>
 #include <igl/writeOFF.h>
 #include <igl/writeTGF.h>
-#include <igl/next_filename.h>
-#include <igl/volume.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
+#include <igl/bbw/bbw.h>
+#include <igl/cgal/remesh_self_intersections.h>
+#include <igl/tetgen/mesh_with_skeleton.h>
+#include <igl/tetgen/tetrahedralize.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -144,7 +144,7 @@ int width,height;
 Eigen::Vector4f light_pos(-0.1,-0.1,0.9,0);
 
 #define REBAR_NAME "temp.rbr"
-igl::ReTwBar rebar;
+igl::anttweakbar::ReTwBar rebar;
 
 void push_undo()
 {
@@ -770,7 +770,7 @@ bool clean(
 #ifdef VERBOSE
     cout<<"remesh_self_intersections"<<endl;
 #endif
-    remesh_self_intersections(V,F,{},CV,CF,_1,_2,IM);
+    igl::cgal::remesh_self_intersections(V,F,{},CV,CF,_1,_2,IM);
     for_each(CF.data(),CF.data()+CF.size(),[&IM](int & a){a=IM(a);});
     MatrixXd oldCV = CV;
     MatrixXi oldCF = CF;
@@ -786,7 +786,7 @@ bool clean(
 #ifdef VERBOSE
     cout<<"tetrahedralize"<<endl;
 #endif
-    if(tetrahedralize(CV,CF,"cYpC",TV,TT,_1) != 0)
+    if(igl::tetgen::tetrahedralize(CV,CF,"cYpC",TV,TT,_1) != 0)
     {
       cout<<REDRUM("CDT failed.")<<endl;
       return false;
@@ -843,7 +843,7 @@ bool robust_weights(
 #ifdef VERBOSE
     cout<<"mesh_with_skeleton"<<endl;
 #endif
-    if(!mesh_with_skeleton(CV,CF,C,{},BE,{},10,"pq1.5Y",TV,TT,_1))
+    if(!igl::tetgen::mesh_with_skeleton(CV,CF,C,{},BE,{},10,"pq1.5Y",TV,TT,_1))
     {
       cout<<REDRUM("tetgen failed.")<<endl;
       return false;
@@ -879,17 +879,17 @@ bool robust_weights(
   }
   // compute BBW
   // Default bbw data and flags
-  BBWData bbw_data;
+  igl::bbw::BBWData bbw_data;
   bbw_data.verbosity = 1;
 #ifdef IGL_NO_MOSEK
-  bbw_data.qp_solver = QP_SOLVER_IGL_ACTIVE_SET;
+  bbw_data.qp_solver = igl::bbw::QP_SOLVER_IGL_ACTIVE_SET;
   bbw_data.active_set_params.max_iter = 4;
 #else
   bbw_data.mosek_data.douparam[MSK_DPAR_INTPNT_TOL_REL_GAP]=1e-14;
-  bbw_data.qp_solver = QP_SOLVER_MOSEK;
+  bbw_data.qp_solver = igl::bbw::QP_SOLVER_MOSEK;
 #endif
   // Weights matrix
-  if(!bbw(TV,TT,b,bc,bbw_data,W))
+  if(!igl::bbw::bbw(TV,TT,b,bc,bbw_data,W))
   {
     return false;
   }
@@ -996,14 +996,14 @@ int main(int argc, char * argv[])
   rebar.TwNewBar("TweakBar");
   rebar.TwAddVarRW("camera_rotation", TW_TYPE_QUAT4D,
     camera.m_rotation_conj.coeffs().data(), "open readonly=true");
-  TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType",
+  TwType RotationTypeTW = igl::anttweakbar::ReTwDefineEnumFromString("RotationType",
     "igl_trackball,two-a...-fixed-up");
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
   rebar.TwAddVarRW("wireframe", TW_TYPE_BOOLCPP,&wireframe,"key=l");
   rebar.TwAddVarRW("centroid_is_visible", TW_TYPE_BOOLCPP,&centroid_is_visible,
     "keyIncr=C keyDecr=c label='centroid visible?'");
-  TwType SkelStyleTypeTW = ReTwDefineEnumFromString("SkelStyleType",
+  TwType SkelStyleTypeTW = igl::anttweakbar::ReTwDefineEnumFromString("SkelStyleType",
     "3d,vector-graphics");
   rebar.TwAddVarRW("style",SkelStyleTypeTW,&skel_style,"");
   rebar.load(REBAR_NAME);
