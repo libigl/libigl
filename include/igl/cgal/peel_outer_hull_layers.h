@@ -1,5 +1,5 @@
-#ifndef IGL_PEEL_OUTER_HULL_LAYERS_H
-#define IGL_PEEL_OUTER_HULL_LAYERS_H
+#ifndef IGL_CGAL_PEEL_OUTER_HULL_LAYERS_H
+#define IGL_CGAL_PEEL_OUTER_HULL_LAYERS_H
 #include "../igl_inline.h"
 #include <Eigen/Core>
 namespace igl

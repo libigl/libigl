@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_REANTTWEAKBAR_XML_SERIALIZATION_H
-#define IGL_REANTTWEAKBAR_XML_SERIALIZATION_H
+#ifndef IGL_XML_REANTTWEAKBAR_XML_SERIALIZATION_H
+#define IGL_XML_REANTTWEAKBAR_XML_SERIALIZATION_H
 #include "../igl_inline.h"
 #include "serialize_xml.h"
 

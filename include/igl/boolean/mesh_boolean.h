@@ -1,5 +1,5 @@
-#ifndef MESH_BOOLEAN_H
-#define MESH_BOOLEAN_H
+#ifndef IGL_BOOLEAN_MESH_BOOLEAN_H
+#define IGL_BOOLEAN_MESH_BOOLEAN_H
 
 #include <igl/igl_inline.h>
 #include "MeshBooleanType.h"

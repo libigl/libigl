@@ -1,5 +1,5 @@
-#ifndef IGL_TO_CORK_MESH_H
-#define IGL_TO_CORK_MESH_H
+#ifndef IGL_BOOLEAN_TO_CORK_MESH_H
+#define IGL_BOOLEAN_TO_CORK_MESH_H
 #ifndef IGL_NO_CORK
 #include <igl/igl_inline.h>
 #include <cork.h>

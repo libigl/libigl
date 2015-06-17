@@ -1,5 +1,5 @@
-#ifndef IGL_OUTER_HULL_H
-#define IGL_OUTER_HULL_H
+#ifndef IGL_CGAL_OUTER_HULL_H
+#define IGL_CGAL_OUTER_HULL_H
 #include "../igl_inline.h"
 #include <Eigen/Core>
 namespace igl

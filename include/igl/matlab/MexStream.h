@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_MEX_STREAM_H
-#define IGL_MEX_STREAM_H
+#ifndef IGL_MATLAB_MEX_STREAM_H
+#define IGL_MATLAB_MEX_STREAM_H
 #include <iostream>
 namespace igl
 {

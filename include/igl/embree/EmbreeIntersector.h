@@ -13,8 +13,8 @@
 // * For Embree2.2
 // * Uncomment #define __USE_RAY_MASK__ in platform.h to enable masking
 
-#ifndef IGL_EMBREE_INTERSECTOR_H
-#define IGL_EMBREE_INTERSECTOR_H
+#ifndef IGL_EMBREE_EMBREE_INTERSECTOR_H
+#define IGL_EMBREE_EMBREE_INTERSECTOR_H
 
 #include "Hit.h"
 #include <Eigen/Geometry>

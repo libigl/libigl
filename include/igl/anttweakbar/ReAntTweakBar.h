@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_REANTTWEAKBAR_H
-#define IGL_REANTTWEAKBAR_H
+#ifndef IGL_ANTTWEAKBAR_REANTTWEAKBAR_H
+#define IGL_ANTTWEAKBAR_REANTTWEAKBAR_H
 #include "../igl_inline.h"
 // ReAntTweakBar is a minimal wrapper for the AntTweakBar library that allows
 // "bars" to be saved and load from disk. Changing your existing app that uses

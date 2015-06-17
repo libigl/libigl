@@ -1,5 +1,5 @@
-#ifndef IGL_PREPARE_LHS_H
-#define IGL_PREPARE_LHS_H
+#ifndef IGL_MATLAB_PREPARE_LHS_H
+#define IGL_MATLAB_PREPARE_LHS_H
 #include <igl/igl_inline.h>
 #include <mex.h>
 #include <Eigen/Dense>

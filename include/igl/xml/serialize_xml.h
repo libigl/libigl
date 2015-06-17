@@ -4,6 +4,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
+#ifndef IGL_XML_SERIALIZABLE_XML_H
+#define IGL_XML_SERIALIZABLE_XML_H
 // -----------------------------------------------------------------------------
 // Functions to save and load a serialization of fundamental c++ data types to
 // and from a xml file. STL containers, Eigen matrix types and nested data
@@ -12,9 +14,6 @@
 //
 // See also: serialize.h
 // -----------------------------------------------------------------------------
-
-#ifndef IGL_SERIALIZABLE_XML_H
-#define IGL_SERIALIZABLE_XML_H
 
 #include "../igl_inline.h"
 

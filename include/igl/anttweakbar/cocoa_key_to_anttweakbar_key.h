@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_COCOA_KEY_TO_ANTTWEAKBAR_KEY_H
-#define IGL_COCOA_KEY_TO_ANTTWEAKBAR_KEY_H
+#ifndef IGL_ANTTWEAKBAR_COCOA_KEY_TO_ANTTWEAKBAR_KEY_H
+#define IGL_ANTTWEAKBAR_COCOA_KEY_TO_ANTTWEAKBAR_KEY_H
 #include "../igl_inline.h"
 
 
