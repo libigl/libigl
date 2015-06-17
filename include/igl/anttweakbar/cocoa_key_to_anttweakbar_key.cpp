@@ -9,7 +9,7 @@
 
 #include <AntTweakBar.h>
 
-IGL_INLINE int igl::cocoa_key_to_anttweakbar_key(int key)
+IGL_INLINE int igl::anttweakbar::cocoa_key_to_anttweakbar_key(int key)
 {
   // I've left commented the AntTweakBar key codes that correspond to keys I
   // don't have on my keyboard. Please fill this in if you have those keys
