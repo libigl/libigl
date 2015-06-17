@@ -13,8 +13,8 @@
 #include <igl/columnize.h>
 #include <igl/readDMAT.h>
 #include <igl/readOBJ.h>
-#include <igl/svd3x3/arap.h>
-#include <igl/svd3x3/arap_dof.h>
+#include <igl/arap.h>
+#include <igl/arap_dof.h>
 #include <igl/viewer/Viewer.h>
 
 #include <Eigen/Geometry>
@@ -49,7 +49,7 @@ enum ModeType
   NUM_MODE_TYPES = 4
 } mode = MODE_TYPE_ARAP;
 
-bool pre_draw(igl::Viewer & viewer)
+bool pre_draw(igl::viewer::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
@@ -111,7 +111,7 @@ bool pre_draw(igl::Viewer & viewer)
   return false;
 }
 
-bool key_down(igl::Viewer &viewer, unsigned char key, int mods)
+bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
 {
   switch(key)
   {
@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
   bbd = (V.colwise().maxCoeff()- V.colwise().minCoeff()).norm();
 
   // Plot the mesh with pseudocolors
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(U, F);
   viewer.data.add_points(igl::slice(V,b,1),sea_green);
   viewer.core.show_lines = false;

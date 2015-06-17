@@ -30,7 +30,7 @@ double anim_t_dir = 0.015;
 bool use_dqs = false;
 bool recompute = true;
 
-bool pre_draw(igl::Viewer & viewer)
+bool pre_draw(igl::viewer::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
@@ -90,7 +90,7 @@ bool pre_draw(igl::Viewer & viewer)
   return false;
 }
 
-bool key_down(igl::Viewer &viewer, unsigned char key, int mods)
+bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
 {
   recompute = true;
   switch(key)
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
   igl::lbs_matrix(V,W,M);
 
   // Plot the mesh with pseudocolors
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(U, F);
   viewer.data.set_edges(C,BE,sea_green);
   viewer.core.show_lines = false;

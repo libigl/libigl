@@ -17,6 +17,7 @@ find_package(CGAL QUIET)
 ## Check for mosek
 find_package(MOSEK QUIET)
 
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 include("CMakeLists.shared")
 
 # Chapter 1
@@ -73,7 +74,9 @@ if(EMBREE_FOUND)
 add_subdirectory("606_AmbientOcclusion")
 add_subdirectory("607_Picking")
 endif(EMBREE_FOUND)
+if(LIM_FOUND)
 add_subdirectory("608_LIM")
+endif(LIM_FOUND)
 if(CGAL_FOUND)
 add_subdirectory("609_Boolean")
 endif()

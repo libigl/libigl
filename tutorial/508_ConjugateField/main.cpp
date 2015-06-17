@@ -1,20 +1,15 @@
-#undef IGL_STATIC_LIBRARY
-#include <igl/readOBJ.h>
-#include <igl/readDMAT.h>
-#include <igl/writeDMAT.h>
-#include <igl/viewer/Viewer.h>
-#include <igl/barycenter.h>
 #include <igl/avg_edge_length.h>
-#include <vector>
-#include <igl/n_polyvector.h>
+#include <igl/barycenter.h>
 #include <igl/conjugate_frame_fields.h>
-#include <stdlib.h>
-#include <igl/readOFF.h>
-#include <igl/jet.h>
-#include <igl/quad_planarity.h>
-#include <igl/planarize_quad_mesh.h>
 #include <igl/dot_row.h>
+#include <igl/jet.h>
 #include <igl/local_basis.h>
+#include <igl/n_polyvector.h>
+#include <igl/readDMAT.h>
+#include <igl/readOBJ.h>
+#include <igl/viewer/Viewer.h>
+#include <vector>
+#include <cstdlib>
 
 
 // Input mesh
@@ -39,7 +34,7 @@ Eigen::VectorXd conjugacy_c;
 igl::ConjugateFFSolverData<Eigen::MatrixXd, Eigen::MatrixXi> *csdata;
 
 
-bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
@@ -179,7 +174,7 @@ int main(int argc, char *argv[])
   pvV << igl::dot_row(Vc,B1), igl::dot_row(Vc,B2);
   csdata->evaluateConjugacy(pvU, pvV, conjugacy_c);
   // Launch the viewer
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.core.invert_normals = true;
   viewer.core.show_lines = false;
   viewer.core.show_texture = false;

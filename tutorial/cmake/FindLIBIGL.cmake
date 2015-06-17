@@ -8,19 +8,19 @@
 if(NOT LIBIGL_FOUND)
 
 FIND_PATH(LIBIGL_INCLUDE_DIR igl/readOBJ.h
-   /usr/include
-   /usr/local/include
-   /usr/local/igl/libigl/include
+   ${PROJECT_SOURCE_DIR}/../../include
+   ${PROJECT_SOURCE_DIR}/../include
+   ${PROJECT_SOURCE_DIR}/include
+   ${PROJECT_SOURCE_DIR}/../libigl/include
+   ${PROJECT_SOURCE_DIR}/../../libigl/include
    $ENV{LIBIGL}/include
    $ENV{LIBIGLROOT}/include
    $ENV{LIBIGL_ROOT}/include
    $ENV{LIBIGL_DIR}/include
    $ENV{LIBIGL_DIR}/inc
-   ${PROJECT_SOURCE_DIR}/../libigl/include
-   ${PROJECT_SOURCE_DIR}/../../libigl/include
-   ${PROJECT_SOURCE_DIR}/../../include
-   ${PROJECT_SOURCE_DIR}/include
-   ${PROJECT_SOURCE_DIR}/../include
+   /usr/include
+   /usr/local/include
+   /usr/local/igl/libigl/include
 )
 
 
@@ -35,15 +35,17 @@ endif(LIBIGL_INCLUDE_DIR)
 if(LIBIGL_USE_STATIC_LIBRARY)
   add_definitions(-DIGL_STATIC_LIBRARY)
   set(LIBIGL_LIB_DIRS
-   /usr/lib
-   /usr/local/lib
+   ${PROJECT_SOURCE_DIR}/../../lib
+   ${PROJECT_SOURCE_DIR}/../lib
+   ${PROJECT_SOURCE_DIR}/lib
+   ${PROJECT_SOURCE_DIR}/../../libigl/lib
+   ${PROJECT_SOURCE_DIR}/../libigl/lib
    $ENV{LIBIGL}/lib
    $ENV{LIBIGLROOT}/lib
    $ENV{LIBIGL_ROOT}/lib
    $ENV{LIBIGL_DIR}/lib
-   ${PROJECT_SOURCE_DIR}/../libigl/lib
-   ${PROJECT_SOURCE_DIR}/../../libigl/lib
-   ${PROJECT_SOURCE_DIR}/../../lib)
+   /usr/lib
+   /usr/local/lib)
   FIND_LIBRARY( LIBIGL_LIBRARY NAMES igl PATHS ${LIBIGL_LIB_DIRS})
   if(NOT LIBIGL_LIBRARY)
     set(LIBIGL_FOUND FALSE)
@@ -57,19 +59,21 @@ if(LIBIGL_USE_STATIC_LIBRARY)
     message(FATAL_ERROR "could NOT find libiglbbw")
   endif(NOT LIBIGLBBW_LIBRARY)
   set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES}  ${LIBIGLBBW_LIBRARY})
-#  FIND_LIBRARY( LIBIGLMOSEK_LIBRARY NAMES iglmosek PATHS ${LIBIGL_LIB_DIRS})
-#  if(NOT LIBIGLMOSEK_LIBRARY)
-#    set(LIBIGL_FOUND FALSE)
-#    message(FATAL_ERROR "could NOT find libiglmosek")
-#  endif(NOT LIBIGLMOSEK_LIBRARY)
-#  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES}  ${LIBIGLMOSEK_LIBRARY})
-#if(MOSEK_FOUND)
-#    set(LIBIGL_INCLUDE_DIRS ${LIBIGL_INCLUDE_DIRS}  ${MOSEK_INCLUDE_DIR})
-#    set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES}  ${MOSEK_LIBRARIES})
-#  else(MOSEK_FOUND)
-#    set(LIBIGL_FOUND FALSE)
-#    message(FATAL_ERROR "could NOT find mosek")
-#  endif(MOSEK_FOUND)
+  # WARNING: PLEASE FIND A BETTER WAY OF DEALING WITH MOSEK THAN COMMENTING OUT
+  # THIS ENTIRE SECTION... OR AT LEAST DEFINE IGL_NO_MOSEK...
+  FIND_LIBRARY( LIBIGLMOSEK_LIBRARY NAMES iglmosek PATHS ${LIBIGL_LIB_DIRS})
+  if(NOT LIBIGLMOSEK_LIBRARY)
+    set(LIBIGL_FOUND FALSE)
+    message(FATAL_ERROR "could NOT find libiglmosek")
+  endif(NOT LIBIGLMOSEK_LIBRARY)
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES}  ${LIBIGLMOSEK_LIBRARY})
+  if(MOSEK_FOUND)
+    set(LIBIGL_INCLUDE_DIRS ${LIBIGL_INCLUDE_DIRS}  ${MOSEK_INCLUDE_DIR})
+    set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES}  ${MOSEK_LIBRARIES})
+  else(MOSEK_FOUND)
+    set(LIBIGL_FOUND FALSE)
+    message(FATAL_ERROR "could NOT find mosek")
+  endif(MOSEK_FOUND)
 
   FIND_LIBRARY( LIBIGLCGAL_LIBRARY NAMES iglcgal PATHS ${LIBIGL_LIB_DIRS})
   if(NOT LIBIGLCGAL_LIBRARY)
@@ -95,8 +99,9 @@ if(LIBIGL_USE_STATIC_LIBRARY)
 
   FIND_LIBRARY( LIBIGLLIM_LIBRARY NAMES igllim PATHS ${LIBIGL_LIB_DIRS})
   if(NOT LIBIGLLIM_LIBRARY)
-    set(LIBIGL_FOUND FALSE)
-    message(FATAL_ERROR "could NOT find libigllim")
+    #set(LIBIGL_FOUND FALSE)
+    message(WARNING "could NOT find libigllim")
+    set(LIBIGLLIM_LIBRARY "")
   endif(NOT LIBIGLLIM_LIBRARY)
   set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES}  ${LIBIGLLIM_LIBRARY})
 
@@ -151,8 +156,9 @@ if(LIBIGL_USE_STATIC_LIBRARY)
 
   FIND_LIBRARY( LIBIGLCOMISO_LIBRARY NAMES iglcomiso PATHS ${LIBIGL_LIB_DIRS})
   if(NOT LIBIGLCOMISO_LIBRARY)
-    set(LIBIGL_FOUND FALSE)
-    message(FATAL_ERROR "could NOT find libiglcomiso")
+    #set(LIBIGL_FOUND FALSE)
+    set(LIBIGLCOMISO_LIBRARY "")
+    message(WARNING "could NOT find libiglcomiso")
   endif(NOT LIBIGLCOMISO_LIBRARY)
   set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES}  ${LIBIGLCOMISO_LIBRARY})
 
