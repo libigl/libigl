@@ -12,13 +12,16 @@
 
 namespace igl
 {
-  // Convert an unsigned char (like that from Cocoa apps) to AntTweakBar key
-  // code.
-  // See also: TranslateKey() in TwMgr.cpp in AntTweakBar source
-  // Inputs:
-  //   key  unsigned char key from keyboard
-  // Returns int of new key code 
-  IGL_INLINE int cocoa_key_to_anttweakbar_key(int key);
+  namespace anttweakbar
+  {
+    // Convert an unsigned char (like that from Cocoa apps) to AntTweakBar key
+    // code.
+    // See also: TranslateKey() in TwMgr.cpp in AntTweakBar source
+    // Inputs:
+    //   key  unsigned char key from keyboard
+    // Returns int of new key code 
+    IGL_INLINE int cocoa_key_to_anttweakbar_key(int key);
+  }
 }
 
 #ifndef IGL_STATIC_LIBRARY
