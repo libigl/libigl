@@ -43,7 +43,7 @@ RotationList pose;
 double anim_t = 1.0;
 double anim_t_dir = -0.03;
 
-bool pre_draw(igl::Viewer & viewer)
+bool pre_draw(igl::viewer::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
@@ -86,14 +86,14 @@ bool pre_draw(igl::Viewer & viewer)
   return false;
 }
 
-void set_color(igl::Viewer &viewer)
+void set_color(igl::viewer::Viewer &viewer)
 {
   Eigen::MatrixXd C;
   igl::jet(W.col(selected).eval(),true,C);
   viewer.data.set_colors(C);
 }
 
-bool key_down(igl::Viewer &viewer, unsigned char key, int mods)
+bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
 {
   switch(key)
   {
@@ -137,11 +137,11 @@ int main(int argc, char *argv[])
   igl::boundary_conditions(V,T,C,VectorXi(),BE,MatrixXi(),b,bc);
 
   // compute BBW weights matrix
-  igl::BBWData bbw_data;
+  igl::bbw::BBWData bbw_data;
   // only a few iterations for sake of demo
   bbw_data.active_set_params.max_iter = 8;
   bbw_data.verbosity = 2;
-  if(!igl::bbw(V,T,b,bc,bbw_data,W))
+  if(!igl::bbw::bbw(V,T,b,bc,bbw_data,W))
   {
     return false;
   }
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
   igl::lbs_matrix(V,W,M);
 
   // Plot the mesh with pseudocolors
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(U, F);
   set_color(viewer);
   viewer.data.set_edges(C,BE,sea_green);

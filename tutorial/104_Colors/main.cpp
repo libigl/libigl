@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
   igl::readOFF("../shared/screwdriver.off", V, F);
 
   // Plot the mesh
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(V, F);
 
   // Use the z coordinate as a scalar field over the surface
