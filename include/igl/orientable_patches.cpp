@@ -7,9 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "orientable_patches.h"
 #include "components.h"
-#include <igl/sort.h>
-#include <igl/unique.h>
-#include <igl/matlab_format.h>
+#include "sort.h"
+#include "unique.h"
 #include <vector>
 #include <iostream>
 
