@@ -17,13 +17,24 @@ Version | Short description
 ## Version 1.2 Changes ##
 This change introduces better organization of dependencies and removes some
 deprecated/repeated functions. The 3x3 svd code and dependent functions
-(including ARAP) were absorbed into the main library.
+(including ARAP) were absorbed into the main library. Similarly, the boost
+dependency extra was absorbed.
 
 ### Deprecated/repeated functions ###
 
-Old                              | New
--------------------------------- | -------------------------------------
-`igl::angles`                    | `igl::internal_angles`
+Old                                     | New
+--------------------------------------- | -----------------------------------
+`igl::angles`                           | `igl::internal_angles`
+`#include <igl/boost/components.h>`     | `#include <igl/components.h>`
+`#include <igl/boost/bfs_orient.h>`     | `#include <igl/bfs_orient.h>`
+`#include <igl/boost/orientable_patches.h>` | `#include <igl/orientable_patches.h>`
+`#include <igl/svd3x3/arap.h>`          | `#include <igl/arap.h>`
+`#include <igl/svd3x3/arap_dof.h>`      | `#include <igl/arap_dof.h>`
+`#include <igl/svd3x3/fit_rotations.h>` | `#include <igl/fit_rotations.h>`
+`#include <igl/svd3x3/polar_svd3x3.h>`  | `#include <igl/polar_svd3x3.h>`
+`#include <igl/svd3x3/svd3x3.h>`        | `#include <igl/svd3x3.h>`
+`#include <igl/svd3x3/svd3x3_avx.h>`    | `#include <igl/svd3x3_avx.h>`
+`#include <igl/svd3x3/svd3x3_sse.h>`    | `#include <igl/svd3x3_sse.h>`
 
 
 ## Version 1.0 Changes ##

@@ -9,7 +9,7 @@
 #include "../per_face_normals.h"
 #include "../doublearea.h"
 #include "../random_dir.h"
-#include "../boost/bfs_orient.h"
+#include "../bfs_orient.h"
 #include "EmbreeIntersector.h"
 #include <iostream>
 #include <random>
