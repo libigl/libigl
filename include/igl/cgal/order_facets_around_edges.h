@@ -1,5 +1,5 @@
-#ifndef ORDER_FACETS_AROUND_EDGES
-#define ORDER_FACETS_AROUND_EDGES
+#ifndef IGL_CGAL_ORDER_FACETS_AROUND_EDGES_H
+#define IGL_CGAL_ORDER_FACETS_AROUND_EDGES_H
 
 #include "../igl_inline.h"
 #include <Eigen/Core>

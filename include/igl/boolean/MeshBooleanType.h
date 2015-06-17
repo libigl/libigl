@@ -1,5 +1,5 @@
-#ifndef MESH_BOOLEAN_TYPE_H
-#define MESH_BOOLEAN_TYPE_H
+#ifndef IGL_BOOLEAN_MESH_BOOLEAN_TYPE_H
+#define IGL_BOOLEAN_MESH_BOOLEAN_TYPE_H
 
 namespace igl
 {

@@ -1,5 +1,5 @@
-#ifndef MESH_BOOLEAN_CORK_H
-#define MESH_BOOLEAN_CORK_H
+#ifndef IGL_BOOLEAN_MESH_BOOLEAN_CORK_H
+#define IGL_BOOLEAN_MESH_BOOLEAN_CORK_H
 #ifndef IGL_NO_CORK
 #include "MeshBooleanType.h"
 #include <igl/igl_inline.h>

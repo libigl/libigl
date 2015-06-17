@@ -1,5 +1,5 @@
-#ifndef IGL_PARSE_RHS_H
-#define IGL_PARSE_RHS_H
+#ifndef IGL_MATLAB_PARSE_RHS_H
+#define IGL_MATLAB_PARSE_RHS_H
 #include <igl/igl_inline.h>
 #include <mex.h>
 #include <Eigen/Dense>

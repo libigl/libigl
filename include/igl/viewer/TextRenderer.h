@@ -5,12 +5,11 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
+#ifndef IGL_VIEWER_TEXT_RENDERER_H
+#define IGL_VIEWER_TEXT_RENDERER_H
 
 /* This class extends the font rendering code in AntTweakBar
    so that it can be used to render text at arbitrary 3D positions */
-
-#ifndef IGL_TEXT_RENDERER_H
-#define IGL_TEXT_RENDERER_H
 
 #include <igl/igl_inline.h>
 #include <igl/viewer/OpenGL_shader.h>
