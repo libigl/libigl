@@ -4,7 +4,6 @@ project(601_Serialization)
 include("../CMakeLists.shared")
 
 find_package(TINYXML2 REQUIRED)
-
 include_directories( ${TINYXML2_INCLUDE_DIR})
 
 set(SOURCES

@@ -9,7 +9,7 @@
 #ifndef IGL_CONJUGATE_FRAME_FIELDS
 #define IGL_CONJUGATE_FRAME_FIELDS
 #include "igl_inline.h"
-
+#include "ConjugateFFSolverData.h"
 #include <Eigen/Core>
 #include <vector>
 
