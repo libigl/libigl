@@ -1,6 +1,7 @@
 #include <igl/avg_edge_length.h>
 #include <igl/barycenter.h>
 #include <igl/conjugate_frame_fields.h>
+#include <igl/ConjugateFFSolverData.h>
 #include <igl/dot_row.h>
 #include <igl/jet.h>
 #include <igl/local_basis.h>
