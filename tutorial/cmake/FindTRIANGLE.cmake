@@ -14,6 +14,7 @@ FIND_PATH(TRIANGLE_INCLUDE_DIR triangle.h
    /usr/local/include
    ${PROJECT_SOURCE_DIR}/../libigl/external/triangle/
    ${PROJECT_SOURCE_DIR}/../../external/triangle/
+   ${PROJECT_SOURCE_DIR}/../external/triangle/
    NO_DEFAULT_PATH
 )
 

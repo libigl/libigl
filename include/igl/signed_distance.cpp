@@ -6,11 +6,12 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "signed_distance.h"
-#include "per_vertex_normals.h"
+#include "get_seconds.h"
 #include "per_edge_normals.h"
 #include "per_face_normals.h"
-#include "get_seconds.h"
+#include "per_vertex_normals.h"
 #include "point_mesh_squared_distance.h"
+#include "pseudonormal_test.h"
 
 
 IGL_INLINE void igl::signed_distance(
@@ -118,6 +119,58 @@ IGL_INLINE double igl::signed_distance_pseudonormal(
 }
 
 IGL_INLINE void igl::signed_distance_pseudonormal(
+  const Eigen::MatrixXd & P,
+  const Eigen::MatrixXd & V,
+  const Eigen::MatrixXi & F,
+  const AABB<Eigen::MatrixXd,3> & tree,
+  const Eigen::MatrixXd & FN,
+  const Eigen::MatrixXd & VN,
+  const Eigen::MatrixXd & EN,
+  const Eigen::VectorXi & EMAP,
+  Eigen::VectorXd & S,
+  Eigen::VectorXi & I,
+  Eigen::MatrixXd & C,
+  Eigen::MatrixXd & N)
+{
+  using namespace Eigen;
+  const size_t np = P.rows();
+  S.resize(np,1);
+  I.resize(np,1);
+  N.resize(np,3);
+  C.resize(np,3);
+# pragma omp parallel for if(np>1000)
+  for(size_t p = 0;p<np;p++)
+  {
+    double s,sqrd;
+    RowVector3d n,c;
+    int i = -1;
+    RowVector3d q = P.row(p);
+    signed_distance_pseudonormal(tree,V,F,FN,VN,EN,EMAP,q,s,sqrd,i,c,n);
+    S(p) = s*sqrt(sqrd);
+    I(p) = i;
+    N.row(p) = n;
+    C.row(p) = c;
+  }
+//  igl::AABB<MatrixXd,3> tree_P;
+//  MatrixXi J = VectorXi::LinSpaced(P.rows(),0,P.rows()-1);
+//  tree_P.init(P,J);
+//  tree.squared_distance(V,F,tree_P,P,J,S,I,C);
+//# pragma omp parallel for if(np>1000)
+//  for(size_t p = 0;p<np;p++)
+//  {
+//    RowVector3d c = C.row(p);
+//    RowVector3d q = P.row(p);
+//    const int f = I(p);
+//    double s;
+//    RowVector3d n;
+//    pseudonormal_test(V,F,FN,VN,EN,EMAP,q,f,c,s,n);
+//    N.row(p) = n;
+//    S(p) = s*sqrt(S(p));
+//  }
+
+}
+
+IGL_INLINE void igl::signed_distance_pseudonormal(
   const AABB<Eigen::MatrixXd,3> & tree,
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
@@ -135,44 +188,7 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
   using namespace Eigen;
   using namespace std;
   sqrd = tree.squared_distance(V,F,q,f,c);
-  const auto & qc = q-c;
-  RowVector3d b;
-  AABB<Eigen::MatrixXd,3>::barycentric_coordinates(
-    c,V.row(F(f,0)),V.row(F(f,1)),V.row(F(f,2)),b);
-  // Determine which normal to use
-  const double epsilon = 1e-12;
-  const int type = (b.array()<=epsilon).cast<int>().sum();
-  switch(type)
-  {
-    case 2:
-      // Find vertex
-      for(int x = 0;x<3;x++)
-      {
-        if(b(x)>epsilon)
-        {
-          n = VN.row(F(f,x));
-          break;
-        }
-      }
-      break;
-    case 1:
-      // Find edge
-      for(int x = 0;x<3;x++)
-      {
-        if(b(x)<=epsilon)
-        {
-          n = EN.row(EMAP(F.rows()*x+f));
-          break;
-        }
-      }
-      break;
-    default:
-      assert(false && "all barycentric coords zero.");
-    case 0:
-      n = FN.row(f);
-      break;
-  }
-  s = (qc.dot(n) >= 0 ? 1. : -1.);
+  pseudonormal_test(V,F,FN,VN,EN,EMAP,q,f,c,s,n);
 }
 
 IGL_INLINE double igl::signed_distance_winding_number(

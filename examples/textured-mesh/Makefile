@@ -1,7 +1,7 @@
 .PHONY: all
 
 # Shared flags etc.
-include ../../build/Makefile.conf
+include ../Makefile.conf
 LIBIGL_LIB+=-liglpng
 
 all: example

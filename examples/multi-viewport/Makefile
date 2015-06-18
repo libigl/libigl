@@ -6,7 +6,7 @@ all: example
 
 .PHONY:  example
 
-include ../..//build/Makefile.conf
+include ../Makefile.conf
 
 CFLAGS+=-std=c++11 -g -Wno-deprecated-declarations
 
