@@ -90,6 +90,7 @@ lecture notes links to a cross-platform example application.
     * [701 Mesh Statistics](#meshstatistics)
     * [702 Generalized Winding Number](#generalizedwindingnumber)
     * [703 Mesh Decimation](#meshdecimation)
+    * [704 Signed Distances](#signeddistances)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -2405,7 +2406,7 @@ if `(V,F)` is not closed or not even manifold (but at least consistently
 oriented), then $w(\mathbf{p})$ tends smoothly toward 1 as $\mathbf{p}$ is
 _more_ inside `(V,F)`, and toward 0 as $\mathbf{p}$ is more outside.
  
-![Example [generalizedwindingnumber_WindingNumber](702_WindingNumber/main.cpp) computes the
+![Example [702](702_WindingNumber/main.cpp) computes the
 generalized winding number function for a tetrahedral mesh inside a cat with
 holes and self intersections (gold). The silver mesh is surface of the
 extracted interior tets, and slices show the winding number function on all
@@ -2439,29 +2440,13 @@ collapsed and costs of neighboring edges are updated.
 
 In order to maintain the topology (e.g. if the mesh is combinatorially as
 sphere or a torus etc.), one should assign infinite cost to edges whose
-collapse would alter the mesh topology. Let's briefly examine how this can
-happen.
-
-Recall the Euler formula which relates the number of vertices, faces and edges
-to the Euler characteristic (genus of surface) $\chi$: 
-
- $\chi = \#V - \#E + \#F.$
-
-A valid edge collapse will remove 1 vertex, 2 neighboring faces and 3 edges
-(itself and one edge from each face), see Figure (left). How does this affect
-the Euler characteristic?
- $\chi = (\#V-1) - (\#E - 3) + (\#F-2) = \#V - \#E + \#F = \chi.$
-
-It doesn't. The topology remains the same. In particular, this means a closed
-manifold mesh, stays a closed manifold mesh.
-
-Any edge collapse which removes too many faces or edges may invalidate the
-Euler characteristic. Indeed this happens if and only if the number of mutual
-neighbors of the endpoints of the collapsing edge is not exactly two! 
+collapse would alter the mesh topology. Indeed this happens if and only if the
+number of mutual neighbors of the endpoints of the collapsing edge is not
+exactly two! 
 
 If there exists a third shared vertex, then another face will be removed, but 2
-edges will be removed leaving our Euler formula imbalanced. This can result in
-unwanted holes or non-manifold "flaps".
+edges will be removed. This can result in unwanted holes or non-manifold
+"flaps".
 
 ![A valid edge collapse and an invalid edge collapse.](images/edge-collapse.jpg)
 
@@ -2557,6 +2542,116 @@ The [Example 703](./703_Decimation/main.cpp) demonstrates using this priority
 queue based approach with the simple shortest-edge-midpoint cost/placement
 strategy discussed above.
 
+## Signed Distances [signeddistances]
+
+In the [Generalized Winding Number section][generalizedwindingnumber], we
+examined a robust method for determining whether points lie inside or outside
+of a given triangle soup mesh. Libigl complements this algorithm with
+accelerated signed and unsigned distance queries and "in element" queries for
+planar triangle meshes and 3D tetrahedral meshes. These routines make use of
+libigl's general purpose axis-aligned bounding box hierarchy (`igl/AABB.h`).
+This class is lightweight and---by design---does not store a copy of the mesh
+(taking it as inputs to its member functions instead).
+
+### Point location
+For tetrahedral meshes, this is useful for "in element" or "point location"
+queries: given a point $\mathbf{q}\in\mathcal{R}^3$ and a tetrahedral mesh
+$(V,T)$ determine in which tetrahedron $\mathbf{q}$ lies. This is accomplished
+in libigl for a tet mesh `V,T` and a list of query points in the rows of `Q`
+via the `igl::in_element()`:
+
+```cpp
+// Initialize AABB tree
+igl::AABB<MatrixXd,3> tree;
+tree.init(V,T);
+VectorXi I;
+igl::in_element(V,T,Q,tree,I);
+```
+
+the resulting vector `I` is a list of indices into `T` revealing the _first_
+tetrahedron found to contain the corresponding point in `Q`.
+
+For overlapping meshes, a point $\mathbf{q}$ may belong to more than one
+tetrahedron. In those cases, one can find them all (not just the first) by
+using the `igl::in_element` overload with a `SparseMatrix` as the output:
+
+```cpp
+SparseMatrix<int> I;
+igl::in_element(V,T,Q,tree,I);
+```
+
+now each row of `I` reveals whether each tet contains the corresponding row in
+`Q`: `I(q,e)!=0` means that point `q` is in element `e`.
+
+### Closest points
+
+For Triangle meshes, we use the AABB tree to accelerate point-mesh closest
+point queries: given a mesh $(V,F)$ and a query point
+$\mathbf{q}\in\mathcal{R}^3$ find the closest point $\mathbf{c} \in (V,F)$
+(where $\mathbf{c}$ is not necessarily a vertex of $(V,F)$). This is
+accomplished for a triangle mesh `V,F` and a list of points in the rows of `P`
+via `igl::point_mesh_squared_distance`:
+
+```cpp
+VectorXd sqrD;
+VectorXi I;
+MatrixXd C;
+igl::point_mesh_squared_distance(P,V,F,sqrD,I,C);
+```
+
+the output `sqrD` contains the (unsigned) squared distance from each point in
+`P` to its closest point given in `C` which lies on the element in `F` given by
+`I` (e.g. from which one could recover barycentric coordinates, using
+`igl::barycentric_coordinates`).
+
+If the mesh `V,F` is static, but the point set `P` is changing dynamically then
+it's best to reuse the AABB hierarchy that's being built during
+`igl::point_mesh_squared_distance`:
+
+```cpp
+igl::AABB tree;
+tree.init(V,F);
+tree.squared_distance(V,F,P,sqrD,I,C);
+... // P changes, but (V,F) does not
+tree.squared_distance(V,F,P,sqrD,I,C);
+```
+
+### Signed distance
+
+Finally, from the closest point or the winding number it's possible to _sign_
+this distance. In `igl::signed_distance` we provide two methods for signing:
+the so-called "pseudo-normal test" [#baerentzen_2005][] and the generalized
+winding number [#jacobson_2013][]. 
+
+The pseudo-normal test (see also `igl::pseudonormal_test`) assumes the input
+mesh is a watertight (closed, non-self-intersecting, manifold) mesh. Then given
+a query point $\mathbf{q}$ and its closest point $\mathbf{c} \in (V,F)$, it
+carefully chooses an outward normal $\mathbf{n}$ at $\mathbf{c}$ so that
+$\text{sign}(\mathbf{q}-\mathbf{c})\cdot \mathbf{n}$ reveals whether
+$\mathbf{q}$ is inside $(V,F)$: -1, or outside: +1. This is a fast $O(1)$ test
+once $\mathbf{c}$ is located, but may fail if `V,F` is not watertight.
+
+An alternative is to use the [generalized winding
+number][generalizedwindingnumber] to determine the sign. This is very robust to
+unclean meshes `V,F` but slower: something like $O(\sqrt{n})$ once $\mathbf{c}$
+is located.
+
+In either case, the interface via `igl::signed_distance` is:
+
+```cpp
+// Choose type of signing to use
+igl::SignedDistanceType type = SIGNED_DISTANCE_TYPE_PSEUDONORMAL;
+igl::signed_distance(P,V,F,sign_type,S,I,C,N);
+```
+
+the outputs are as above for `igl::point_mesh_squared_distance` but now `S`
+contains signed (unsquared) distances and the extra output `N` (only set when
+`type == SIGNED_DISTANCE_TYPE_PSEUDON`) contains the normals used for signing
+with the pseudo-normal test.
+
+![Example [704](704_SignedDistance/main.cpp) computes signed distance on
+slices through the bunny.](images/bunny-signed-distance.gif)
+
 
 # Outlook for continuing development [future]
 
@@ -2591,6 +2686,10 @@ repository](https://github.com/libigl/libigl).
   [Direct repair of self-intersecting
   meshes](https://www.google.com/search?q=Direct+repair+of+self-intersecting+meshes),
   2014.
+[#baerentzen_2005]: J Andreas Baerentzen and Henrik Aanaes.
+[Signed distance computation using the angle weighted
+pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+the+angle+weighted+pseudonormal),
+ 2005.
 [#bommes_2009]: David Bommes, Henrik Zimmer, Leif Kobbelt.
   [Mixed-integer
   quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf),

@@ -1,4 +1,5 @@
 #include <igl/readOBJ.h>
+#include <igl/readPLY.h>
 #include <igl/writeOBJ.h>
 #include <igl/writeOFF.h>
 #include <igl/readWRL.h>
@@ -747,6 +748,13 @@ int main(int argc, char * argv[])
   {
     // Convert extension to lower case
     if(!igl::readOFF(filename,vV,vF,vN))
+    {
+      return 1;
+    }
+  }else if(ext == "ply")
+  {
+    // Convert extension to lower case
+    if(!igl::readPLY(filename,vV,vF,vN,vTC))
     {
       return 1;
     }

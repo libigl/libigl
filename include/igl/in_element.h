@@ -44,10 +44,6 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedQ> & Q,
     const AABB<DerivedV,DIM> & aabb,
     Eigen::SparseMatrix<Scalar> & I);
-  //
-  // Example:
-  //   InElementAABB aabb;
-  //   aabb.init(V,Ele);
 };
 
 #ifndef IGL_STATIC_LIBRARY
