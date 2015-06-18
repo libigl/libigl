@@ -6,8 +6,6 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-// TODO: save_scene()/load_scene()
-
 #include "Viewer.h"
 
 #ifdef _WIN32
@@ -46,6 +44,8 @@
 #include <limits>
 #include <cassert>
 
+#include <nanogui/nanoguicontrol.h>
+
 #include <igl/project.h>
 #include <igl/get_seconds.h>
 #include <igl/readOBJ.h>
@@ -75,24 +75,18 @@ static double scroll_x = 0;
 static double scroll_y = 0;
 static int global_KMod = 0;
 
-namespace {
-void TW_CALL copy_str(std::string& dst, const std::string& src)
-{
-  dst = src;
-}
-}
-
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
-  bool tw_used = TwEventMouseButtonGLFW(button, action);
+  bool tw_used = __viewer->ngui->mouseButtonEvent(window,button,action,modifier);
+
   igl::Viewer::MouseButton mb;
 
   if (button == GLFW_MOUSE_BUTTON_1)
-    mb = igl::Viewer::IGL_LEFT;
+    mb = igl::Viewer::MouseButton::Left;
   else if (button == GLFW_MOUSE_BUTTON_2)
-    mb = igl::Viewer::IGL_RIGHT;
+    mb = igl::Viewer::MouseButton::Right;
   else //if (button == GLFW_MOUSE_BUTTON_3)
-    mb = igl::Viewer::IGL_MIDDLE;
+    mb = igl::Viewer::MouseButton::Middle;
 
   if (action == GLFW_PRESS)
   {
@@ -113,154 +107,12 @@ static void glfw_error_callback(int error, const char* description)
   fputs(description, stderr);
 }
 
-IGL_INLINE int TwEventKeyGLFW3(int glfwKey, int glfwAction)
-{
-  int handled = 0;
-
-  // Register of modifiers state
-  if (glfwAction==GLFW_PRESS)
-  {
-    switch (glfwKey)
-    {
-      case GLFW_KEY_LEFT_SHIFT:
-      case GLFW_KEY_RIGHT_SHIFT:
-        global_KMod |= TW_KMOD_SHIFT;
-        break;
-      case GLFW_KEY_LEFT_CONTROL:
-      case GLFW_KEY_RIGHT_CONTROL:
-        global_KMod |= TW_KMOD_CTRL;
-        break;
-      case GLFW_KEY_LEFT_ALT:
-      case GLFW_KEY_RIGHT_ALT:
-        global_KMod |= TW_KMOD_ALT;
-        break;
-    }
-  }
-  else
-  {
-    switch (glfwKey)
-    {
-      case GLFW_KEY_LEFT_SHIFT:
-      case GLFW_KEY_RIGHT_SHIFT:
-        global_KMod &= ~TW_KMOD_SHIFT;
-        break;
-      case GLFW_KEY_LEFT_CONTROL:
-      case GLFW_KEY_RIGHT_CONTROL:
-        global_KMod &= ~TW_KMOD_CTRL;
-        break;
-      case GLFW_KEY_LEFT_ALT:
-      case GLFW_KEY_RIGHT_ALT:
-        global_KMod &= ~TW_KMOD_ALT;
-        break;
-    }
-  }
-
-  // Process key pressed
-  if (glfwAction==GLFW_PRESS)
-  {
-    int mod = global_KMod;
-    int testkp = ((mod&TW_KMOD_CTRL) || (mod&TW_KMOD_ALT)) ? 1 : 0;
-
-    if ((mod&TW_KMOD_CTRL) && glfwKey>0 && glfwKey<GLFW_KEY_ESCAPE   )   // CTRL cases
-      handled = TwKeyPressed(glfwKey, mod);
-    else if (glfwKey>=GLFW_KEY_ESCAPE  )
-    {
-      int k = 0;
-
-      if (glfwKey>=GLFW_KEY_F1 && glfwKey<=GLFW_KEY_F15)
-        k = TW_KEY_F1 + (glfwKey-GLFW_KEY_F1);
-      else if (testkp && glfwKey>=GLFW_KEY_KP_0 && glfwKey<=GLFW_KEY_KP_9)
-        k = '0' + (glfwKey-GLFW_KEY_KP_0);
-      else
-      {
-        switch (glfwKey)
-        {
-          case GLFW_KEY_ESCAPE  :
-            k = TW_KEY_ESCAPE;
-            break;
-          case GLFW_KEY_UP:
-            k = TW_KEY_UP;
-            break;
-          case GLFW_KEY_DOWN:
-            k = TW_KEY_DOWN;
-            break;
-          case GLFW_KEY_LEFT:
-            k = TW_KEY_LEFT;
-            break;
-          case GLFW_KEY_RIGHT:
-            k = TW_KEY_RIGHT;
-            break;
-          case GLFW_KEY_TAB:
-            k = TW_KEY_TAB;
-            break;
-          case GLFW_KEY_ENTER:
-            k = TW_KEY_RETURN;
-            break;
-          case GLFW_KEY_BACKSPACE:
-            k = TW_KEY_BACKSPACE;
-            break;
-          case GLFW_KEY_INSERT:
-            k = TW_KEY_INSERT;
-            break;
-          case GLFW_KEY_DELETE:
-            k = TW_KEY_DELETE;
-            break;
-          case GLFW_KEY_PAGE_UP:
-            k = TW_KEY_PAGE_UP;
-            break;
-          case GLFW_KEY_PAGE_DOWN:
-            k = TW_KEY_PAGE_DOWN;
-            break;
-          case GLFW_KEY_HOME:
-            k = TW_KEY_HOME;
-            break;
-          case GLFW_KEY_END:
-            k = TW_KEY_END;
-            break;
-          case GLFW_KEY_KP_ENTER:
-            k = TW_KEY_RETURN;
-            break;
-          case GLFW_KEY_KP_DIVIDE:
-            if (testkp)
-              k = '/';
-            break;
-          case GLFW_KEY_KP_MULTIPLY:
-            if (testkp)
-              k = '*';
-            break;
-          case GLFW_KEY_KP_SUBTRACT:
-            if (testkp)
-              k = '-';
-            break;
-          case GLFW_KEY_KP_ADD:
-            if (testkp)
-              k = '+';
-            break;
-          case GLFW_KEY_KP_DECIMAL:
-            if (testkp)
-              k = '.';
-            break;
-          case GLFW_KEY_KP_EQUAL:
-            if (testkp)
-              k = '=';
-            break;
-        }
-      }
-
-      if (k>0)
-        handled = TwKeyPressed(k, mod);
-    }
-  }
-
-  return handled;
-}
-
 static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int modifier)
 {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
 
-  if (!TwEventKeyGLFW3(key,action))
+  if (__viewer->ngui->keyEvent(window,key,scancode,action,modifier) == false)
   {
     if (action == GLFW_PRESS)
       __viewer->key_down(key, modifier);
@@ -276,28 +128,13 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
 
   __viewer->resize(w, h);
 
-  TwWindowSize(w, h);
-  const auto & bar = __viewer->bar;
-  // Keep AntTweakBar on right side of screen and height == opengl height
-  // get the current position of a bar
-  int size[2];
-  TwGetParam(bar, NULL, "size", TW_PARAM_INT32, 2, size);
-  int pos[2];
-  // Place bar on left side of opengl rect (padded by 10 pixels)
-  pos[0] = 10;//max(10,(int)width - size[0] - 10);
-  // place bar at top (padded by 10 pixels)
-  pos[1] = 10;
-  // Set height to new height of window (padded by 10 pixels on bottom)
-  size[1] = highdpi*(height-pos[1]-10);
-  TwSetParam(bar, NULL, "position", TW_PARAM_INT32, 2, pos);
-  TwSetParam(bar, NULL, "size", TW_PARAM_INT32, 2,size);
+  // TODO: repositioning of the nanogui
 }
 
 static void glfw_mouse_move(GLFWwindow* window, double x, double y)
 {
-  if(!TwEventMousePosGLFW(x*highdpi,y*highdpi) || __viewer->down)
+  if(__viewer->ngui->cursorPosEvent(window,x,y) == false || __viewer->down)
   {
-    // Call if TwBar hasn't used or if down
     __viewer->mouse_move(x*highdpi, y*highdpi);
   }
 }
@@ -308,22 +145,89 @@ static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
   scroll_x += x;
   scroll_y += y;
 
-  if (!TwEventMouseWheelGLFW(scroll_y))
+  if (__viewer->ngui->scrollEvent(window,x,y) == false)
     __viewer->mouse_scroll(y);
 }
 
 static void glfw_char_callback(GLFWwindow* window, unsigned int c)
 {
-  if ((c & 0xff00)==0)
-    TwKeyPressed(c, global_KMod);
+  __viewer->ngui->charEvent(window,c);
+}
+
+static void glfw_drop_callback(GLFWwindow *window,int count,const char **filenames)
+{
+  __viewer->ngui->dropEvent(window,count,filenames);
 }
 
 namespace igl
 {
   IGL_INLINE void Viewer::init()
   {
+    ngui->setInputCellSize(Eigen::Vector2i(60,20));
+
+    // Create nanogui widgets    
+    ngui->addNewWindow(Eigen::Vector2i(10,10),"libIGL-Viewer");
+
+    // ---------------------- LOADING ----------------------
+
+  #ifdef ENABLE_SERIALIZATION
+    ngui->addNewGroup("Workspace",NanoGui::Layout::Horizontal);
+    ngui->addButton("Load",[&](){this->load_scene();});
+    ngui->addButton("Save",[&](){this->save_scene();});
+  #endif
+
+  #ifdef ENABLE_IO
+    ngui->addNewGroup("Mesh",NanoGui::Layout::Horizontal);
+    ngui->addButton("Load",[&](){this->open_dialog_load_mesh();});
+    ngui->addButton("Save",[&](){this->open_dialog_save_mesh();});
+  #endif
+
+    ngui->addNewGroup("Viewing Options",NanoGui::Layout::Vertical);
+    ngui->addButton("Center object",[&](){this->core.align_camera_center(this->data.V,this->data.F);});
+    ngui->addButton("Snap canonical view",[&]()
+    {
+      this->snap_to_canonical_quaternion();
+    });
+    ngui->addVariable(core.camera_zoom,"Zoom");
+    ngui->addVariable(core.orthographic,"Orthographic view");
+
+    ngui->addNewGroup("Draw options");
+
+    ngui->addVariable([&](bool checked)
+    {
+      this->data.set_face_based(checked);
+    },[&]()
+    {
+      return this->data.face_based;
+    }, "Face-based",false);
+
+    ngui->addVariable(core.show_texture,"Show texture");
+
+    ngui->addVariable([&](bool checked)
+    {
+      this->data.dirty |= ViewerData::DIRTY_NORMAL;
+      this->core.invert_normals = checked;
+    },[&]()
+    {
+      return this->core.invert_normals;
+    },
+      "Invert normals",false);
+    ngui->addVariable(core.show_overlay,"Show overlay");
+    ngui->addVariable(core.show_overlay_depth,"Show overlay depth");
+    ngui->addColorPicker(core.background_color,"Background");
+    ngui->addColorPicker(core.line_color,"Line color");
+    ngui->addVariable(core.shininess,"Shininess");
+
+    ngui->addNewGroup("Overlays");
+    ngui->addVariable(core.show_lines,"Wireframe");
+    ngui->addVariable(core.show_faces,"Fill");
+    ngui->addVariable(core.show_vertid,"Show vertex labels");
+    ngui->addVariable(core.show_faceid,"Show faces labels");
+
+    ngui->layout();
+
     // Create a tweak bar
-    bar = TwNewBar("libIGL-Viewer");
+    /*bar = TwNewBar("libIGL-Viewer");
     TwDefine(" libIGL-Viewer help='This is a simple 3D mesh viewer.' "); // Message added to the help bar->
     TwDefine(" libIGL-Viewer size='200 685'"); // change default tweak bar size
     TwDefine(" libIGL-Viewer color='76 76 127' "); // change default tweak bar color
@@ -405,6 +309,7 @@ namespace igl
                " group='Overlays'"
                " label='Show Faces Labels' key='CTRL+;' help='Toggle face"
                " indices'");
+    */
 
     core.init();
 
@@ -429,6 +334,8 @@ namespace igl
 
   IGL_INLINE Viewer::Viewer()
   {
+    ngui = nullptr;
+
     // Temporary variables initialization
     down = false;
     hack_never_moved = true;
@@ -469,6 +376,7 @@ namespace igl
 
   IGL_INLINE Viewer::~Viewer()
   {
+    if(!ngui) delete ngui;
   }
 
   IGL_INLINE void Viewer::shutdown_plugins()
@@ -638,11 +546,11 @@ namespace igl
   IGL_INLINE bool Viewer::mouse_down(MouseButton button,int modifier)
   {
     if (callback_mouse_down)
-      if (callback_mouse_down(*this,button,modifier))
+      if (callback_mouse_down(*this,static_cast<int>(button),modifier))
         return true;
 
     for (unsigned int i = 0; i<plugins.size(); ++i)
-      if (plugins[i]->mouse_down(button,modifier))
+      if(plugins[i]->mouse_down(static_cast<int>(button),modifier))
         return true;
 
     down = true;
@@ -663,20 +571,20 @@ namespace igl
     down_mouse_z = coord[2];
     down_rotation = core.trackball_angle;
 
-    mouse_mode = ROTATION;
+    mouse_mode = MouseMode::Rotation;
 
     switch (button)
     {
-      case IGL_LEFT:
-        mouse_mode = ROTATION;
+      case MouseButton::Left:
+        mouse_mode = MouseMode::Rotation;
         break;
 
-      case IGL_RIGHT:
-        mouse_mode = TRANSLATE;
+      case MouseButton::Right:
+        mouse_mode = MouseMode::Translation;
         break;
 
       default:
-        mouse_mode = NOTHING;
+        mouse_mode = MouseMode::None;
         break;
     }
 
@@ -688,14 +596,14 @@ namespace igl
     down = false;
 
     if (callback_mouse_up)
-      if (callback_mouse_up(*this,button,modifier))
+      if (callback_mouse_up(*this,static_cast<int>(button),modifier))
         return true;
 
     for (unsigned int i = 0; i<plugins.size(); ++i)
-        if (plugins[i]->mouse_up(button,modifier))
+      if(plugins[i]->mouse_up(static_cast<int>(button),modifier))
           return true;
 
-    mouse_mode = NOTHING;
+    mouse_mode = MouseMode::None;
 
     return true;
   }
@@ -723,7 +631,7 @@ namespace igl
     {
       switch (mouse_mode)
       {
-        case ROTATION :
+        case MouseMode::Rotation :
         {
           igl::trackball(core.viewport(2),
                          core.viewport(3),
@@ -739,7 +647,7 @@ namespace igl
           break;
         }
 
-        case TRANSLATE:
+        case MouseMode::Translation:
         {
           //translation
           Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, core.viewport[3] - mouse_y, down_mouse_z), (core.view * core.model).eval(), core.proj, core.viewport);
@@ -750,9 +658,8 @@ namespace igl
 
           break;
         }
-        case ZOOM:
+        case MouseMode::Zoom:
         {
-          //float delta = 0.001f * (mouse_x - down_mouse_x + mouse_y - down_mouse_y);
           float delta = 0.001f * (mouse_x - down_mouse_x + mouse_y - down_mouse_y);
           core.camera_zoom *= 1 + delta;
           down_mouse_x = mouse_x;
@@ -814,7 +721,7 @@ namespace igl
       if (plugins[i]->post_draw())
         break;
 
-    TwDraw();
+    ngui->draw();
   }
 
   IGL_INLINE bool Viewer::save_scene()
@@ -826,7 +733,9 @@ namespace igl
 #ifdef ENABLE_SERIALIZATION
 
     igl::serialize(core,"Core",fname.c_str(),true);
-    //igl::serialize(data,"Data",fname.c_str());
+#ifndef ENABLE_SERIALIZATION_DATA_SEPARATION
+    igl::serialize(data,"Data",fname.c_str());
+#endif
 
     for(unsigned int i = 0; i <plugins.size(); ++i)
       igl::serialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
@@ -850,7 +759,9 @@ namespace igl
 #ifdef ENABLE_SERIALIZATION
 
     igl::deserialize(core,"Core",fname.c_str());
-    //igl::deserialize(data,"Data",fname.c_str());
+#ifndef ENABLE_SERIALIZATION_DATA_SEPARATION
+    igl::deserialize(data,"Data",fname.c_str());
+#endif
 
     for(unsigned int i = 0; i <plugins.size(); ++i)
       igl::deserialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
@@ -865,62 +776,33 @@ namespace igl
     core.viewport = Eigen::Vector4f(0,0,w,h);
   }
 
-  IGL_INLINE void TW_CALL Viewer::snap_to_canonical_quaternion_cb(void *clientData)
+  IGL_INLINE void Viewer::snap_to_canonical_quaternion()
   {
-    Eigen::Vector4f snapq = static_cast<Viewer *>(clientData)->core.trackball_angle;
-    igl::snap_to_canonical_view_quat<float>(snapq.data(),1,static_cast<Viewer *>(clientData)->core.trackball_angle.data());
-  }
-  IGL_INLINE void TW_CALL Viewer::align_camera_center_cb(void *clientData)
-  {
-    static_cast<Viewer *>(clientData)->core.align_camera_center(
-      static_cast<Viewer *>(clientData)->data.V,
-      static_cast<Viewer *>(clientData)->data.F);
+    Eigen::Vector4f snapq = this->core.trackball_angle;
+    igl::snap_to_canonical_view_quat<float>(snapq.data(),1,this->core.trackball_angle.data());
   }
 
-  IGL_INLINE void TW_CALL Viewer::save_scene_cb(void *clientData)
-  {
-    static_cast<Viewer *>(clientData)->save_scene();
-  }
-
-  IGL_INLINE void TW_CALL Viewer::load_scene_cb(void *clientData)
-  {
-    static_cast<Viewer *>(clientData)->load_scene();
-  }
-
-  IGL_INLINE void TW_CALL Viewer::set_invert_normals_cb(const void *param,void *clientData)
-  {
-    Viewer *viewer = static_cast<Viewer *>(clientData);
-    viewer->data.dirty |= ViewerData::DIRTY_NORMAL;
-    viewer->core.invert_normals = *((bool *) param);
-  }
-
-  IGL_INLINE void TW_CALL Viewer::get_invert_normals_cb(void *param,void *clientData)
-  {
-    *((bool *) param) = static_cast<Viewer *>(clientData)->core.invert_normals;
-  }
-
-  IGL_INLINE void TW_CALL Viewer::set_face_based_cb(const void *param,void *clientData)
-  {
-    Viewer *viewer = static_cast<Viewer *>(clientData);
-    viewer->data.set_face_based(*((bool *) param));
-  }
-
-  IGL_INLINE void TW_CALL Viewer::get_face_based_cb(void *param,void *clientData)
-  {
-    *((bool *) param) = static_cast<Viewer *>(clientData)->data.face_based;
-  }
-
-  IGL_INLINE void TW_CALL Viewer::open_dialog_mesh(void *clientData)
+  IGL_INLINE void Viewer::open_dialog_load_mesh()
   {
     std::string fname = igl::file_dialog_open();
 
     if (fname.length() == 0)
       return;
 
-    static_cast<Viewer *>(clientData)->load_mesh_from_file(fname.c_str());
+    this->load_mesh_from_file(fname.c_str());
   }
 
-  IGL_INLINE int Viewer::launch(std::string filename)
+  IGL_INLINE void Viewer::open_dialog_save_mesh()
+  {
+    std::string fname = igl::file_dialog_save();
+
+    if(fname.length() == 0)
+      return;
+
+    this->save_mesh_to_file(fname.c_str());
+  }
+
+  IGL_INLINE int Viewer::launch(std::string filename,bool resizable,bool fullscreen)
   {
     GLFWwindow* window;
 
@@ -928,34 +810,47 @@ namespace igl
     if (!glfwInit())
       return EXIT_FAILURE;
 
-    glfwWindowHint(GLFW_SAMPLES, 4);
+    glfwWindowHint(GLFW_SAMPLES, 8);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+
     #ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+      glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     #endif
-    window = glfwCreateWindow(1280, 800, "libigl viewer", NULL, NULL);
+
+    if(fullscreen)
+    {
+      GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+      const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+      window = glfwCreateWindow(mode->width,mode->height,"libigl viewer",monitor,nullptr);
+    }
+    else
+    {
+      window = glfwCreateWindow(1280,800,"libigl viewer",nullptr,nullptr);
+    }
+
     if (!window)
     {
       glfwTerminate();
       return EXIT_FAILURE;
     }
 
-  glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(window);
 
-#ifndef __APPLE__
-  glewExperimental = true;
-  GLenum err = glewInit();
-  if (GLEW_OK != err)
-  {
-    /* Problem: glewInit failed, something is seriously wrong. */
-    fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-  }
-  fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-#endif
+    #ifndef __APPLE__
+      glewExperimental = true;
+      GLenum err = glewInit();
+      if(GLEW_OK != err) 
+      {
+        /* Problem: glewInit failed, something is seriously wrong. */
+       fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+      }
+      glGetError(); // pull and savely ignonre unhandled errors like GL_INVALID_ENUM
+      fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+    #endif
 
-    #ifdef DEBUG
+    #if defined(DEBUG) || defined(_DEBUG)
       int major, minor, rev;
       major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
       minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
@@ -967,9 +862,9 @@ namespace igl
 
     glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
 
-    // Initialize AntTweakBar
-    TwInit(TW_OPENGL_CORE, NULL);
-    TwCopyStdStringToClientFunc(static_cast<TwCopyStdStringToClient>(::copy_str));
+    // Initialize NanoGui
+    ngui = new NanoGui();
+    ngui->init(window);
 
     __viewer = this;
 
@@ -979,7 +874,8 @@ namespace igl
     glfwSetWindowSizeCallback(window,glfw_window_size);
     glfwSetMouseButtonCallback(window,glfw_mouse_press);
     glfwSetScrollCallback(window,glfw_mouse_scroll);
-    glfwSetCharCallback(window, glfw_char_callback);
+    glfwSetCharCallback(window,glfw_char_callback);
+    glfwSetDropCallback(window,glfw_drop_callback);
 
     // Handle retina displays (windows and mac)
     int width, height;

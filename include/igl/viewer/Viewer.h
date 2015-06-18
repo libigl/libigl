@@ -19,8 +19,6 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include <AntTweakBar.h>
-
 #include <igl/igl_inline.h>
 
 #include "OpenGL_shader.h"
@@ -34,6 +32,8 @@
 #define IGL_MOD_ALT             0x0004
 #define IGL_MOD_SUPER           0x0008
 
+class NanoGui;
+
 namespace igl
 {
   // GLFW-based mesh viewer
@@ -41,7 +41,7 @@ namespace igl
   {
   public:
 
-    IGL_INLINE int launch(std::string filename = "");
+    IGL_INLINE int launch(std::string filename = "",bool resizable = true,bool fullscreen = false);
     IGL_INLINE void init();
 
     // Stores command line arguments
@@ -73,16 +73,14 @@ namespace igl
     bool down;
     bool hack_never_moved;
 
-    // Anttweak bar
-    TwBar* bar;
+    NanoGui* ngui;
 
     // Keep track of the global position of the scrollwheel
     float scroll_position;
 
     // UI Enumerations
-    enum MouseButton {IGL_LEFT, IGL_MIDDLE, IGL_RIGHT};
-    enum MouseMode { NOTHING, ROTATION, ZOOM, PAN, TRANSLATE} mouse_mode;
-    enum KeyModifier { NO_KEY = TW_KMOD_NONE, SHIFT = TW_KMOD_SHIFT, CTRL =TW_KMOD_CTRL, ALT = TW_KMOD_ALT } key_modifier;
+    enum class MouseButton {Left, Middle, Right};
+    enum class MouseMode { None, Rotation, Zoom, Pan, Translation} mouse_mode;
 
     Viewer();
     ~Viewer();
@@ -112,6 +110,10 @@ namespace igl
     // OpenGL context resize
     IGL_INLINE void resize(int w,int h);
 
+    // Helper functions
+    IGL_INLINE void snap_to_canonical_quaternion();
+    IGL_INLINE void open_dialog_load_mesh();
+    IGL_INLINE void open_dialog_save_mesh();
 
     // C++-style functions
     std::function<bool(Viewer& viewer)> callback_init;
@@ -135,17 +137,6 @@ namespace igl
     void* callback_key_down_data;
     void* callback_key_up_data;
 
-
-    /********* AntTweakBar callbacks *********/
-    static void TW_CALL snap_to_canonical_quaternion_cb(void *clientData);
-    static void TW_CALL save_scene_cb(void *clientData);
-    static void TW_CALL load_scene_cb(void *clientData);
-    static void TW_CALL open_dialog_mesh(void *clientData);
-    static void TW_CALL align_camera_center_cb(void *clientData);
-    static void TW_CALL set_face_based_cb(const void *param, void *clientData);
-    static void TW_CALL get_face_based_cb(void *param, void *clientData);
-    static void TW_CALL set_invert_normals_cb(const void *param, void *clientData);
-    static void TW_CALL get_invert_normals_cb(void *param, void *clientData);
   public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
