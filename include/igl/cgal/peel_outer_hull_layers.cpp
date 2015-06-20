@@ -1,13 +1,20 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #include "peel_outer_hull_layers.h"
-#include "per_face_normals.h"
+#include "../per_face_normals.h"
 #include "outer_hull.h"
 #include <vector>
 #include <iostream>
 //#define IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
-#include "writePLY.h"
-#include "writeDMAT.h"
-#include "STR.h"
+#include "../writePLY.h"
+#include "../writeDMAT.h"
+#include "../STR.h"
 #endif
 
 using namespace std;

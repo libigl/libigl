@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "remesh_self_intersections.h"
 #include "SelfIntersectMesh.h"
@@ -45,7 +45,7 @@ IGL_INLINE void igl::remesh_self_intersections(
 //#endif
 
     typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-    typedef 
+    typedef
       SelfIntersectMesh<
         Kernel,
         DerivedV,
@@ -54,7 +54,7 @@ IGL_INLINE void igl::remesh_self_intersections(
         DerivedFF,
         DerivedIF,
         DerivedJ,
-        DerivedIM> 
+        DerivedIM>
       SelfIntersectMeshK;
     SelfIntersectMeshK SIM = SelfIntersectMeshK(V,F,params,VV,FF,IF,J,IM);
 
@@ -65,7 +65,7 @@ IGL_INLINE void igl::remesh_self_intersections(
   }else
   {
     typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
-    typedef 
+    typedef
       SelfIntersectMesh<
         Kernel,
         DerivedV,
@@ -74,7 +74,7 @@ IGL_INLINE void igl::remesh_self_intersections(
         DerivedFF,
         DerivedIF,
         DerivedJ,
-        DerivedIM> 
+        DerivedIM>
       SelfIntersectMeshK;
     SelfIntersectMeshK SIM = SelfIntersectMeshK(V,F,params,VV,FF,IF,J,IM);
   }

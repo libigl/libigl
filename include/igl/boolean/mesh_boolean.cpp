@@ -1,10 +1,19 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #include "mesh_boolean.h"
-#include <igl/peel_outer_hull_layers.h>
 #include <igl/per_face_normals.h>
+#include <igl/cgal/peel_outer_hull_layers.h>
 #include <igl/cgal/remesh_self_intersections.h>
 #include <igl/remove_unreferenced.h>
 #include <igl/unique_simplices.h>
 #include <iostream>
+
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
 //#define IGL_MESH_BOOLEAN_DEBUG
 
@@ -30,8 +39,8 @@ IGL_INLINE void igl::mesh_boolean(
     const Eigen::Matrix<typename DerivedVC::Scalar,Eigen::Dynamic,3> &,
     const Eigen::Matrix<typename DerivedFC::Scalar, Eigen::Dynamic,3>&,
           Eigen::Matrix<typename DerivedVC::Scalar,Eigen::Dynamic,3> &,
-          Eigen::Matrix<typename DerivedFC::Scalar, Eigen::Dynamic,3>&, 
-          Eigen::Matrix<typename DerivedJ::Scalar, Eigen::Dynamic,1>&)> 
+          Eigen::Matrix<typename DerivedFC::Scalar, Eigen::Dynamic,3>&,
+          Eigen::Matrix<typename DerivedJ::Scalar, Eigen::Dynamic,1>&)>
     empty_fun;
   return mesh_boolean(VA,FA,VB,FB,type,empty_fun,VC,FC,J);
 }
@@ -57,8 +66,8 @@ IGL_INLINE void igl::mesh_boolean(
     const Eigen::Matrix<typename DerivedVC::Scalar,Eigen::Dynamic,3> &,
     const Eigen::Matrix<typename DerivedFC::Scalar, Eigen::Dynamic,3>&,
           Eigen::Matrix<typename DerivedVC::Scalar,Eigen::Dynamic,3> &,
-          Eigen::Matrix<typename DerivedFC::Scalar, Eigen::Dynamic,3>&, 
-          Eigen::Matrix<typename DerivedFC::Index, Eigen::Dynamic,1>&)> 
+          Eigen::Matrix<typename DerivedFC::Scalar, Eigen::Dynamic,3>&,
+          Eigen::Matrix<typename DerivedFC::Index, Eigen::Dynamic,1>&)>
     empty_fun;
   return mesh_boolean(VA,FA,VB,FB,type,empty_fun,VC,FC,J);
 }
@@ -82,7 +91,7 @@ IGL_INLINE void igl::mesh_boolean(
     const Eigen::Matrix<typename DerivedFC::Scalar, Eigen::Dynamic,3>&,
           Eigen::Matrix<typename DerivedVC::Scalar,Eigen::Dynamic,3>&,
           Eigen::Matrix<typename DerivedFC::Scalar, Eigen::Dynamic,3>&,
-          Eigen::Matrix<typename DerivedJ::Scalar, Eigen::Dynamic,1>&)> 
+          Eigen::Matrix<typename DerivedJ::Scalar, Eigen::Dynamic,1>&)>
     & resolve_fun,
   Eigen::PlainObjectBase<DerivedVC > & VC,
   Eigen::PlainObjectBase<DerivedFC > & FC,
@@ -93,9 +102,12 @@ IGL_INLINE void igl::mesh_boolean(
   using namespace igl;
   MeshBooleanType eff_type = type;
   // Concatenate A and B into a single mesh
+  typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
+  typedef Kernel::FT ExactScalar;
   typedef typename DerivedVC::Scalar Scalar;
   typedef typename DerivedFC::Scalar Index;
   typedef Matrix<Scalar,Dynamic,3> MatrixX3S;
+  typedef Matrix<ExactScalar,Dynamic,3> MatrixX3ES;
   typedef Matrix<Index,Dynamic,3> MatrixX3I;
   typedef Matrix<Index,Dynamic,2> MatrixX2I;
   typedef Matrix<Index,Dynamic,1> VectorXI;
@@ -117,7 +129,7 @@ IGL_INLINE void igl::mesh_boolean(
       F.block(0,0,FA.rows(),FA.cols()) = FA.rowwise().reverse();
       F.block(FA.rows(),0,FB.rows(),FB.cols()) = FB.array()+VA.rows();
       //F.block(0,0,FA.rows(),3) = FA;
-      //F.block(FA.rows(),0,FB.rows(),3) = 
+      //F.block(FA.rows(),0,FB.rows(),3) =
       //  FB.rowwise().reverse().array()+VA.rows();
       eff_type = MESH_BOOLEAN_TYPE_INTERSECT;
       break;
@@ -131,11 +143,11 @@ IGL_INLINE void igl::mesh_boolean(
   const auto & libigl_resolve = [](
     const MatrixX3S & V,
     const MatrixX3I & F,
-    MatrixX3S & CV,
+    MatrixX3ES & CV,
     MatrixX3I & CF,
     VectorXJ & J)
   {
-    MatrixX3S SV;
+    MatrixX3ES SV;
     MatrixX3I SF;
     MatrixX2I SIF;
     VectorXI SIM,UIM;
@@ -151,6 +163,7 @@ IGL_INLINE void igl::mesh_boolean(
   cout<<"resolve..."<<endl;
 #endif
   MatrixX3S CV;
+  MatrixX3ES EV;
   MatrixX3I CF;
   VectorXJ CJ;
   if(resolve_fun)
@@ -158,7 +171,12 @@ IGL_INLINE void igl::mesh_boolean(
     resolve_fun(V,F,CV,CF,CJ);
   }else
   {
-    libigl_resolve(V,F,CV,CF,CJ);
+    libigl_resolve(V,F,EV,CF,CJ);
+    CV.resize(EV.rows(), EV.cols());
+    std::transform(EV.data(), EV.data() + EV.rows()*EV.cols(),
+            CV.data(), [&](ExactScalar val) {
+            return CGAL::to_double(val);
+            });
   }
 
   if(type == MESH_BOOLEAN_TYPE_RESOLVE)
@@ -183,7 +201,7 @@ IGL_INLINE void igl::mesh_boolean(
   // peel layers keeping track of odd and even flips
   Matrix<bool,Dynamic,1> odd;
   Matrix<bool,Dynamic,1> flip;
-  peel_outer_hull_layers(CV,CF,CN,odd,flip);
+  peel_outer_hull_layers(EV,CF,CN,odd,flip);
 
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"categorize..."<<endl;
@@ -250,7 +268,7 @@ IGL_INLINE void igl::mesh_boolean(
       assert(ug < uG2G.size());
       uG2G[ug].push_back(g);
       // is uG(g,:) just a rotated version of G(g,:) ?
-      const bool consistent = 
+      const bool consistent =
         (G(g,0) == uG(ug,0) && G(g,1) == uG(ug,1) && G(g,2) == uG(ug,2)) ||
         (G(g,0) == uG(ug,1) && G(g,1) == uG(ug,2) && G(g,2) == uG(ug,0)) ||
         (G(g,0) == uG(ug,2) && G(g,1) == uG(ug,0) && G(g,2) == uG(ug,1));
@@ -293,6 +311,18 @@ IGL_INLINE void igl::mesh_boolean(
 }
 
 #ifdef IGL_STATIC_LIBRARY
+
+// This is a hack to discuss
+#include <igl/remove_unreferenced.cpp>
+
+template void igl::remove_unreferenced<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+
+#include <igl/cgal/peel_outer_hull_layers.cpp>
+template unsigned long igl::peel_outer_hull_layers<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<bool, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
+
+#include <igl/cgal/outer_hull.cpp>
+template void igl::outer_hull<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
+
 // Explicit template specialization
 template void igl::mesh_boolean<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::MeshBooleanType const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template void igl::mesh_boolean<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::MeshBooleanType const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);

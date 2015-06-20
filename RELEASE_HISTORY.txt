@@ -1,12 +1,18 @@
-1.1.5  Bug fix in booleans
-1.1.4  Edge collapsing and linear program solving
-1.1.3  Bug fixes in active set and boundary_conditions
-1.1.1  PLY file format support
-1.1.0  Mesh boolean operations using CGAL and cork, implementing [Attene 14]
-1.0.3  Bone heat method
-1.0.2  Bug fix in winding number code
-1.0.1  Bug fixes and more CGAL support
-1.0.0  Major beta release: many renames, tutorial, triangle wrapper, org. build
+# Version tracking
+
+Version | Short description
+--------|----------------------------------------------------------------------
+1.1.7   | Switch build for static library to cmake.
+1.1.6   | Major boolean robustness fix, drop CGAL dependency for AABB/distances
+1.1.5   | Bug fix in booleans
+1.1.4   | Edge collapsing and linear program solving
+1.1.3   | Bug fixes in active set and boundary_conditions
+1.1.1   | PLY file format support
+1.1.0   | Mesh boolean operations using CGAL and cork, implementing [Attene 14]
+1.0.3   | Bone heat method
+1.0.2   | Bug fix in winding number code
+1.0.1   | Bug fixes and more CGAL support
+1.0.0   | Major beta release: many renames, tutorial, triangle, org. build
 
 ## Version 1.0 Changes ##
 Our beta release marks our confidence that this library can be used outside of

@@ -5,7 +5,7 @@ all: example
 .PHONY: example
 
 # Shared flags etc.
-include ../../build/Makefile.conf
+include ../Makefile.conf
 
 CFLAGS+=-g
 inc=$(LIBIGL_INC) $(EIGEN3_INC)

@@ -1,7 +1,7 @@
 .PHONY: all
 
 # Shared flags etc.
-include ../../build/Makefile.conf
+include ../Makefile.conf
 LIBIGL_LIB+=-liglmatlab
 
 MATLAB_INC=-I$(MATLAB)/extern/include/
