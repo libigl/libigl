@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_WINDING_NUMBER_H
 #define IGL_WINDING_NUMBER_H
 #include "igl_inline.h"
@@ -39,15 +46,15 @@ namespace igl
   //   no  number of origins
   // Outputs:
   //   S  no by 1 list of winding numbers
-  template <typename DerivedF>
+  template <typename Scalar, typename DerivedF>
   IGL_INLINE void winding_number_3(
-    const double * V,
+    const Scalar * V,
     const int n,
     const DerivedF * F,
     const int m,
-    const double * O,
+    const Scalar * O,
     const int no,
-    double * S);
+    Scalar * S);
   //// Only one evaluation origin
   //template <typename DerivedF>
   //IGL_INLINE void winding_number_3(

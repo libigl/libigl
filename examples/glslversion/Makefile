@@ -1,7 +1,7 @@
 .PHONY: all
 
 # Shared flags etc.
-include ../../build/Makefile.conf
+include ../Makefile.conf
 
 all: example
 

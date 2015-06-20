@@ -46,6 +46,8 @@ namespace igl
   // Outputs:
   //   L  #P by e list of barycentric coordinates
   //   
+  // Known bugs: this code is not tested (and probably will not work) for
+  // triangles and queries in 3D even if the query lives in/on the triangle.
   template <
     typename DerivedP,
     typename DerivedA,

@@ -3,7 +3,7 @@
 all: example_static example_header_only
 
 # Shared flags etc.
-include ../../build/Makefile.conf
+include ../Makefile.conf
 
 CFLAGS+=-g
 INC=$(LIBIGL_INC)

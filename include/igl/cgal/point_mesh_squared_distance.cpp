@@ -9,7 +9,7 @@
 #include "mesh_to_cgal_triangle_list.h"
 
 template <typename Kernel>
-IGL_INLINE void igl::point_mesh_squared_distance(
+IGL_INLINE void igl::cgal::point_mesh_squared_distance(
   const Eigen::MatrixXd & P,
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
@@ -30,7 +30,7 @@ IGL_INLINE void igl::point_mesh_squared_distance(
 }
 
 template <typename Kernel>
-IGL_INLINE void igl::point_mesh_squared_distance_precompute(
+IGL_INLINE void igl::cgal::point_mesh_squared_distance_precompute(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   CGAL::AABB_tree<
@@ -78,7 +78,7 @@ IGL_INLINE void igl::point_mesh_squared_distance_precompute(
 }
 
 template <typename Kernel>
-IGL_INLINE void igl::point_mesh_squared_distance(
+IGL_INLINE void igl::cgal::point_mesh_squared_distance(
   const Eigen::MatrixXd & P,
   const CGAL::AABB_tree<
     CGAL::AABB_traits<Kernel, 
@@ -120,8 +120,8 @@ IGL_INLINE void igl::point_mesh_squared_distance(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::point_mesh_squared_distance_precompute<CGAL::Epick>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, CGAL::AABB_tree<CGAL::AABB_traits<CGAL::Epick, CGAL::AABB_triangle_primitive<CGAL::Epick, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > >::iterator, CGAL::Boolean_tag<false> > > >&, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > >&);
-template void igl::point_mesh_squared_distance<CGAL::Epeck>( const Eigen::MatrixXd & P, const Eigen::MatrixXd & V, const Eigen::MatrixXi & F, Eigen::VectorXd & sqrD, Eigen::VectorXi & I, Eigen::MatrixXd & C);
-template void igl::point_mesh_squared_distance<CGAL::Epick>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
-template void igl::point_mesh_squared_distance<CGAL::Simple_cartesian<double> >(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
+template void igl::cgal::point_mesh_squared_distance_precompute<CGAL::Epick>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, CGAL::AABB_tree<CGAL::AABB_traits<CGAL::Epick, CGAL::AABB_triangle_primitive<CGAL::Epick, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > >::iterator, CGAL::Boolean_tag<false> > > >&, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > >&);
+template void igl::cgal::point_mesh_squared_distance<CGAL::Epeck>( const Eigen::MatrixXd & P, const Eigen::MatrixXd & V, const Eigen::MatrixXi & F, Eigen::VectorXd & sqrD, Eigen::VectorXi & I, Eigen::MatrixXd & C);
+template void igl::cgal::point_mesh_squared_distance<CGAL::Epick>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
+template void igl::cgal::point_mesh_squared_distance<CGAL::Simple_cartesian<double> >(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
 #endif

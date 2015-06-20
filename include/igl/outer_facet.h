@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_OUTER_FACET_H
 #define IGL_OUTER_FACET_H
 #include "igl_inline.h"
@@ -18,7 +25,7 @@ namespace igl
   //   flip  whether facet's orientation should be flipped so that
   //     counter-clockwise normal points outward.
   //
-  // See also: outer_hull.h
+  // See also: cgal/outer_hull.h
   template <
     typename DerivedV,
     typename DerivedF,

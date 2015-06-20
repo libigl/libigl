@@ -6,7 +6,7 @@ all: upright
 
 .PHONY: upright
 
-include ../..//build/Makefile.conf
+include ../Makefile.conf
 
 INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC)
 LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB)

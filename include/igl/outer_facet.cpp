@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #include "outer_facet.h"
 #include "sort.h"
 #include "vertex_triangle_adjacency.h"
@@ -30,6 +37,10 @@ IGL_INLINE void igl::outer_facet(
   assert(V.cols() == 3);
   assert(N.cols() == 3);
   Index max_v = -1;
+  auto generic_fabs = [&](Scalar val) { 
+      if (val >= 0) return val;
+      else return -val;
+  };
   for(size_t d = 0;d<(size_t)V.cols();d++)
   {
     Scalar max_d = -1e26;
@@ -38,19 +49,37 @@ IGL_INLINE void igl::outer_facet(
     {
       const Index f = I(i);
       const Scalar nd = N(f,d);
-      if(fabs(nd)>0)
+      if(generic_fabs(nd)>0)
       {
         for(Index c = 0;c<3;c++)
         {
           const Index v = F(f,c);
           if(v == max_v)
           {
-            if(fabs(nd) > max_nd)
+            if(generic_fabs(nd) > max_nd)
             {
               // Just update max face and normal
               max_f = f;
-              max_nd = fabs(nd);
+              max_nd = generic_fabs(nd);
               flip = nd<0;
+            } else if (generic_fabs(nd) == max_nd) {
+                if (nd == max_nd) {
+                    if (flip) {
+                        max_f = f;
+                        max_nd = nd;
+                        flip = false;
+                    } else if (f > (Index)max_f){
+                        max_f = f;
+                        max_nd = nd;
+                        flip = false;
+                    }
+                } else {
+                    if (flip && f < (Index)max_f) {
+                        max_f = f;
+                        max_nd = generic_fabs(nd);
+                        flip = true;
+                    }
+                }
             }
           }else
           {
@@ -61,7 +90,7 @@ IGL_INLINE void igl::outer_facet(
               max_v = v;
               max_d = vd;
               max_f = f;
-              max_nd = fabs(nd);
+              max_nd = generic_fabs(nd);
               flip = nd<0;
             }
           }
