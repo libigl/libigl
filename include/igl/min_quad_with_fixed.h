@@ -100,7 +100,22 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedY> & Y,
     const Eigen::PlainObjectBase<DerivedBeq> & Beq,
     Eigen::PlainObjectBase<DerivedZ> & Z);
-
+  template <
+    typename T,
+    typename Derivedknown,
+    typename DerivedB,
+    typename DerivedY,
+    typename DerivedBeq,
+    typename DerivedZ>
+  IGL_INLINE bool min_quad_with_fixed(
+    const Eigen::SparseMatrix<T>& A,
+    const Eigen::PlainObjectBase<DerivedB> & B,
+    const Eigen::PlainObjectBase<Derivedknown> & known,
+    const Eigen::PlainObjectBase<DerivedY> & Y,
+    const Eigen::SparseMatrix<T>& Aeq,
+    const Eigen::PlainObjectBase<DerivedBeq> & Beq,
+    const bool pd,
+    Eigen::PlainObjectBase<DerivedZ> & Z);
 }
 
 template <typename T>
