@@ -10,6 +10,7 @@
 #include "igl_inline.h"
 
 #include <Eigen/Sparse>
+#include <Eigen/Core>
 namespace igl
 {
   // Act like the matlab X(row_mask,col_mask) operator, where
