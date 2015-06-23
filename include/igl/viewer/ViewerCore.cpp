@@ -160,13 +160,13 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bo
     model = Eigen::Matrix4f::Identity();
     view  = Eigen::Matrix4f::Identity();
     proj  = Eigen::Matrix4f::Identity();
-    
+
     // Set view
     look_at( camera_eye, camera_center, camera_up, view);
-    
+
     float width  = viewport(2);
     float height = viewport(3);
-    
+
     // Set projection
     if (orthographic)
     {
@@ -181,21 +181,21 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bo
       frustum(-fW, fW, -fH, fH, camera_dnear, camera_dfar,proj);
     }
     // end projection
-    
+
     // Set model transformation
     float mat[16];
     igl::quat_to_mat(trackball_angle.data(), mat);
-    
+
     for (unsigned i=0;i<4;++i)
       for (unsigned j=0;j<4;++j)
         model(i,j) = mat[i+4*j];
-    
+
     // Why not just use Eigen::Transform<double,3,Projective> for model...?
     model.topLeftCorner(3,3)*=camera_zoom;
     model.topLeftCorner(3,3)*=model_zoom;
     model.col(3).head(3) += model.topLeftCorner(3,3)*model_translation;
   }
-  
+
   // Send transformations to the GPU
   GLint modeli = opengl.shader_mesh.uniform("model");
   GLint viewi  = opengl.shader_mesh.uniform("view");
@@ -203,7 +203,7 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bo
   glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
   glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
   glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
-  
+
   // Light parameters
   GLint specular_exponenti    = opengl.shader_mesh.uniform("specular_exponent");
   GLint light_position_worldi = opengl.shader_mesh.uniform("light_position_world");
@@ -326,10 +326,10 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
 {
   assert(R.rows() == G.rows() && G.rows() == B.rows() && B.rows() == A.rows());
   assert(R.cols() == G.cols() && G.cols() == B.cols() && B.cols() == A.cols());
-  
+
   int x = R.rows();
   int y = R.cols();
-  
+
   // Create frame buffer
   GLuint frameBuffer;
   glGenFramebuffers(1, &frameBuffer);
@@ -339,14 +339,14 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
   GLuint texColorBuffer;
   glGenTextures(1, &texColorBuffer);
   glBindTexture(GL_TEXTURE_2D, texColorBuffer);
-  
+
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-  
+
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  
+
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer, 0);
-  
+
   // Create Renderbuffer Object to hold depth and stencil buffers
   GLuint rboDepthStencil;
   glGenRenderbuffers(1, &rboDepthStencil);
@@ -365,13 +365,13 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
   // Save old viewport
   Eigen::Vector4f viewport_ori = viewport;
   viewport << 0,0,x,y;
-  
+
   // Draw
   draw(data,opengl,update_matrices);
-  
+
   // Restore viewport
   viewport = viewport_ori;
-  
+
   // Copy back in the given Eigen matrices
   GLubyte* pixels = (GLubyte*)calloc(x*y*4,sizeof(GLubyte));
   glReadPixels
@@ -380,7 +380,7 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
    x, y,
    GL_RGBA, GL_UNSIGNED_BYTE, pixels
    );
-    
+
   int count = 0;
   for (unsigned j=0; j<y; ++j)
   {
@@ -393,7 +393,7 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
       ++count;
     }
   }
-  
+
   // Clean up
   free(pixels);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
