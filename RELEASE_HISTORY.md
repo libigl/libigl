@@ -54,6 +54,8 @@ dependency extra was absorbed.
 Old                                     | New
 --------------------------------------- | -----------------------------------
 `igl::angles`                           | `igl::internal_angles`
+`igl::get_modifiers`                    | [deleted]
+`igl::nchoosek(offset,K,N,std::vector)` | `igl::nchoosek(Eigen,K,Eigen)`
 `#include <igl/boost/components.h>`     | `#include <igl/components.h>`
 `#include <igl/boost/bfs_orient.h>`     | `#include <igl/bfs_orient.h>`
 `#include <igl/boost/orientable_patches.h>` | `#include <igl/orientable_patches.h>`
