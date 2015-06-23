@@ -32,6 +32,7 @@
 #include <Eigen/LU>
 
 #define GLFW_INCLUDE_GLU
+#define GLFW_INCLUDE_GLCOREARB
 #include <GLFW/glfw3.h>
 
 #include <cmath>
