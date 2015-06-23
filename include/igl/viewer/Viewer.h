@@ -32,7 +32,9 @@
 #define IGL_MOD_ALT             0x0004
 #define IGL_MOD_SUPER           0x0008
 
-class NanoGui;
+namespace nanogui {
+  class FormScreen;
+}
 
 namespace igl
 {
@@ -73,7 +75,7 @@ namespace igl
     bool down;
     bool hack_never_moved;
 
-    NanoGui* ngui;
+    nanogui::FormScreen* ngui;
 
     // Keep track of the global position of the scrollwheel
     float scroll_position;

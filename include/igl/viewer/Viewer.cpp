@@ -44,7 +44,7 @@
 #include <limits>
 #include <cassert>
 
-#include <nanogui/nanoguicontrol.h>
+#include <nanogui/formscreen.h>
 
 #include <igl/project.h>
 #include <igl/get_seconds.h>
@@ -163,6 +163,8 @@ namespace igl
 {
   IGL_INLINE void Viewer::init()
   {
+    using namespace nanogui;
+
     ngui->setInputCellSize(Eigen::Vector2i(60,20));
 
     // Create nanogui widgets    
@@ -171,18 +173,18 @@ namespace igl
     // ---------------------- LOADING ----------------------
 
   #ifdef ENABLE_SERIALIZATION
-    ngui->addNewGroup("Workspace",NanoGui::Layout::Horizontal);
+    ngui->addNewGroup("Workspace",FormScreen::Layout::Horizontal);
     ngui->addButton("Load",[&](){this->load_scene();});
     ngui->addButton("Save",[&](){this->save_scene();});
   #endif
 
   #ifdef ENABLE_IO
-    ngui->addNewGroup("Mesh",NanoGui::Layout::Horizontal);
+    ngui->addNewGroup("Mesh",FormScreen::Layout::Horizontal);
     ngui->addButton("Load",[&](){this->open_dialog_load_mesh();});
     ngui->addButton("Save",[&](){this->open_dialog_save_mesh();});
   #endif
 
-    ngui->addNewGroup("Viewing Options",NanoGui::Layout::Vertical);
+    ngui->addNewGroup("Viewing Options",FormScreen::Layout::Vertical);
     ngui->addButton("Center object",[&](){this->core.align_camera_center(this->data.V,this->data.F);});
     ngui->addButton("Snap canonical view",[&]()
     {
@@ -212,6 +214,7 @@ namespace igl
       return this->core.invert_normals;
     },
       "Invert normals",false);
+
     ngui->addVariable(core.show_overlay,"Show overlay");
     ngui->addVariable(core.show_overlay_depth,"Show overlay depth");
     ngui->addColorPicker(core.background_color,"Background");
@@ -862,8 +865,8 @@ namespace igl
 
     glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
 
-    // Initialize NanoGui
-    ngui = new NanoGui();
+    // Initialize FormScreen
+    ngui = new nanogui::FormScreen();
     ngui->init(window);
 
     __viewer = this;
