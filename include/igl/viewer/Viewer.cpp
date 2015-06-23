@@ -168,7 +168,7 @@ namespace igl
 
     ngui->setInputCellSize(Eigen::Vector2i(60,20));
 
-    // Create nanogui widgets    
+    // Create nanogui widgets
     ngui->addNewWindow(Eigen::Vector2i(10,10),"libIGL-Viewer");
 
     // ---------------------- LOADING ----------------------
@@ -750,7 +750,7 @@ namespace igl
   }
 
   IGL_INLINE bool Viewer::load_scene()
-  {    
+  {
     std::string fname = igl::file_dialog_open();
     if(fname.length() == 0)
       return false;
@@ -845,7 +845,7 @@ namespace igl
     #ifndef __APPLE__
       glewExperimental = true;
       GLenum err = glewInit();
-      if(GLEW_OK != err) 
+      if(GLEW_OK != err)
       {
         /* Problem: glewInit failed, something is seriously wrong. */
        fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
@@ -905,7 +905,7 @@ namespace igl
     }
 
     core.align_camera_center(data.V,data.F);
-    
+
     // Initialize IGL viewer
     init();
 

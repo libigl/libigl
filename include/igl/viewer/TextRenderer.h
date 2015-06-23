@@ -13,15 +13,15 @@
 #define IGL_TEXT_RENDERER_H
 
 #include <igl/igl_inline.h>
-#include <igl/viewer/OpenGL_shader.h>
-#include <TwOpenGLCore.h>
+//#include <igl/viewer/OpenGL_shader.h>
+//#include <TwOpenGLCore.h>
 #include <map>
-
+#include <nanogui/opengl.h>
 
 namespace igl
 {
 
-class TextRenderer : public CTwGraphOpenGLCore
+class TextRenderer
 {
 public:
   IGL_INLINE TextRenderer();
@@ -37,13 +37,14 @@ public:
   IGL_INLINE void DrawText(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text);
 
 protected:
-  igl::OpenGL_shader m_shader;
+//  igl::OpenGL_shader m_shader;
   std::map<std::string, void *> m_textObjects;
-  GLuint m_shaderHandleBackup;
-  GLuint m_TriTexUniLocationDepth;
+  // GLuint m_shaderHandleBackup;
+  // GLuint m_TriTexUniLocationDepth;
   Eigen::Matrix4f view_matrix, proj_matrix;
   Eigen::Vector4f viewport;
   float object_scale;
+  NVGcontext *ctx;
 };
 
 }
