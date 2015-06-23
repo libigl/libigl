@@ -8,7 +8,10 @@
 #include "slice.h"
 #include "colon.h"
 
+#include <unsupported/Eigen/SparseExtra>
+#include <Eigen/Sparse>
 #include <vector>
+#include <complex>
 
 template <typename T>
 IGL_INLINE void igl::slice(
