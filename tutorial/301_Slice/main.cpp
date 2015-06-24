@@ -1,6 +1,6 @@
+#include <igl/floor.h>
 #include <igl/readOFF.h>
 #include <igl/slice.h>
-#include <igl/floor.h>
 #include <igl/slice_into.h>
 #include <igl/viewer/Viewer.h>
 #include <iostream>
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
   igl::slice_into(R,K,1,C);
 
   // Plot the mesh with pseudocolors
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(V, F);
   viewer.data.set_colors(C);
   viewer.launch();

@@ -70,7 +70,7 @@
 #endif
 
 // Internal global variables used for glfw event handling
-static igl::Viewer * __viewer;
+static igl::viewer::Viewer * __viewer;
 static double highdpi = 1;
 static double scroll_x = 0;
 static double scroll_y = 0;
@@ -80,14 +80,14 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 {
   bool tw_used = __viewer->ngui->mouseButtonEvent(window,button,action,modifier);
 
-  igl::Viewer::MouseButton mb;
+  igl::viewer::Viewer::MouseButton mb;
 
   if (button == GLFW_MOUSE_BUTTON_1)
-    mb = igl::Viewer::MouseButton::Left;
+    mb = igl::viewer::Viewer::MouseButton::Left;
   else if (button == GLFW_MOUSE_BUTTON_2)
-    mb = igl::Viewer::MouseButton::Right;
+    mb = igl::viewer::Viewer::MouseButton::Right;
   else //if (button == GLFW_MOUSE_BUTTON_3)
-    mb = igl::Viewer::MouseButton::Middle;
+    mb = igl::viewer::Viewer::MouseButton::Middle;
 
   if (action == GLFW_PRESS)
   {
@@ -161,6 +161,8 @@ static void glfw_drop_callback(GLFWwindow *window,int count,const char **filenam
 }
 
 namespace igl
+{
+namespace viewer
 {
   IGL_INLINE void Viewer::init()
   {
@@ -346,7 +348,10 @@ namespace igl
       Eigen::MatrixXd V;
       Eigen::MatrixXi F;
 
-      if (!(igl::readOBJ(mesh_file_name_string, V, F, corner_normals, fNormIndices, UV_V, UV_F)))
+      if (!(
+            igl::readOBJ(
+              mesh_file_name_string,
+              V, UV_V, corner_normals, F, UV_F, fNormIndices)))
         return false;
 
       data.set_mesh(V,F);
@@ -858,3 +863,4 @@ namespace igl
     return EXIT_SUCCESS;
   }
 } // end namespace
+}

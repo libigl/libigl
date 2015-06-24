@@ -11,7 +11,7 @@
 template <
   typename DerivedV,
   typename DerivedF>
-IGL_INLINE void igl::from_cork_mesh(
+IGL_INLINE void igl::boolean::from_cork_mesh(
   const CorkTriMesh & mesh,
   Eigen::PlainObjectBase<DerivedV > & V,
   Eigen::PlainObjectBase<DerivedF > & F)
@@ -37,8 +37,8 @@ IGL_INLINE void igl::from_cork_mesh(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::from_cork_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(CorkTriMesh const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::from_cork_mesh<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(CorkTriMesh const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
+template void igl::boolean::from_cork_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(CorkTriMesh const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::boolean::from_cork_mesh<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(CorkTriMesh const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
 #endif
 
 #endif

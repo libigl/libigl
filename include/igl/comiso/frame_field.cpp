@@ -15,6 +15,8 @@
 
 namespace igl
 {
+namespace comiso
+{
 
 class FrameInterpolator
 {
@@ -649,9 +651,11 @@ Eigen::MatrixXd FrameInterpolator::getFieldPerFace()
 }
 
 }
+namespace igl
+{
 
 
-IGL_INLINE void igl::frame_field(
+IGL_INLINE void igl::comiso::frame_field(
                                  const Eigen::MatrixXd& V,
                                  const Eigen::MatrixXi& F,
                                  const Eigen::VectorXi& b,

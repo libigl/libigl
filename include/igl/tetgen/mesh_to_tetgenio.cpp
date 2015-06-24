@@ -13,7 +13,7 @@
 // STL includes
 #include <cassert>
 
-IGL_INLINE bool igl::mesh_to_tetgenio(
+IGL_INLINE bool igl::tetgen::mesh_to_tetgenio(
   const std::vector<std::vector<REAL > > & V, 
   const std::vector<std::vector<int> > & F, 
   tetgenio & in)
@@ -59,7 +59,7 @@ IGL_INLINE bool igl::mesh_to_tetgenio(
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE bool igl::mesh_to_tetgenio(
+IGL_INLINE bool igl::tetgen::mesh_to_tetgenio(
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F,
   tetgenio & in)
@@ -75,5 +75,5 @@ IGL_INLINE bool igl::mesh_to_tetgenio(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template bool igl::mesh_to_tetgenio<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, tetgenio&);
+template bool igl::tetgen::mesh_to_tetgenio<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, tetgenio&);
 #endif

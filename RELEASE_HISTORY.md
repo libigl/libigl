@@ -1,7 +1,17 @@
-# Version tracking
+title: libigl Tutorial
+author: Alec Jacobson
+date: 17 June 2015
+css: tutorial/style.css
+html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
+<script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+# Libigl version tracking
 
 Version | Short description
 --------|----------------------------------------------------------------------
+1.2.0   | Reorganization of "extras", rm deprecated funcs, absorb boost & svd3x3
 1.1.7   | Switch build for static library to cmake.
 1.1.6   | Major boolean robustness fix, drop CGAL dependency for AABB/distances
 1.1.5   | Bug fix in booleans
@@ -13,6 +23,50 @@ Version | Short description
 1.0.2   | Bug fix in winding number code
 1.0.1   | Bug fixes and more CGAL support
 1.0.0   | Major beta release: many renames, tutorial, triangle, org. build
+0.4.6   | Generalized Winding Numbers
+0.4.5   | CGAL extra: mesh selfintersection
+0.4.4   | STL file format support
+0.4.3   | ARAP implementation
+0.4.1   | Migrated much of the FAST code including extra for Sifakis' 3x3 svd
+0.4.0   | Release under MPL2 license
+0.3.7   | Embree2.0 support
+0.3.6   | boost extra, patches, mosek 7 support, libiglbbw (mosek optional)
+0.3.5   | More examples, naive primitive sorting
+0.3.3   | Many more examples, ambient occlusion with Embree.
+0.3.1   | Linearly dependent constraints in min_quad_with_fixed, SparseQR buggy
+0.3.0   | Better active set method support
+0.2.3   | More explicits, active set method, opengl/anttweakbar guards
+0.2.2   | More explicit instanciations, faster sorts and uniques
+0.2.1   | Bug fixes in barycenter and doublearea found by Martin Bisson
+0.2.0   | XML serializer more stable and fixed bug in remove_duplicate_vertices
+0.1.8   | Embree and xml (windows only) extras
+0.1.5   | Compilation on windows, bug fix for compilation with cygwin
+0.1.1   | Alpha release with core functions, extras, examples
+
+## Version 1.2 Changes ##
+This change introduces better organization of dependencies and removes some
+deprecated/repeated functions. The 3x3 svd code and dependent functions
+(including ARAP) were absorbed into the main library. Similarly, the boost
+dependency extra was absorbed.
+
+### Deprecated/repeated functions ###
+
+Old                                     | New
+--------------------------------------- | -----------------------------------
+`igl::angles`                           | `igl::internal_angles`
+`igl::get_modifiers`                    | [deleted]
+`igl::nchoosek(offset,K,N,std::vector)` | `igl::nchoosek(Eigen,K,Eigen)`
+`#include <igl/boost/components.h>`     | `#include <igl/components.h>`
+`#include <igl/boost/bfs_orient.h>`     | `#include <igl/bfs_orient.h>`
+`#include <igl/boost/orientable_patches.h>` | `#include <igl/orientable_patches.h>`
+`#include <igl/svd3x3/arap.h>`          | `#include <igl/arap.h>`
+`#include <igl/svd3x3/arap_dof.h>`      | `#include <igl/arap_dof.h>`
+`#include <igl/svd3x3/fit_rotations.h>` | `#include <igl/fit_rotations.h>`
+`#include <igl/svd3x3/polar_svd3x3.h>`  | `#include <igl/polar_svd3x3.h>`
+`#include <igl/svd3x3/svd3x3.h>`        | `#include <igl/svd3x3.h>`
+`#include <igl/svd3x3/svd3x3_avx.h>`    | `#include <igl/svd3x3_avx.h>`
+`#include <igl/svd3x3/svd3x3_sse.h>`    | `#include <igl/svd3x3_sse.h>`
+
 
 ## Version 1.0 Changes ##
 Our beta release marks our confidence that this library can be used outside of
@@ -71,7 +125,7 @@ Old                              | New
  - `igl::polar_svd` now always returns a rotation in `R`, never a reflection.
    This mirrors the behavior of `igl::polar_svd3x3`.  Consequently the `T`
    part may have negative skews.
- - We have organized the static
+ - We have organized the static library build
  - The previous `igl::grad` function, which computed the per-triangle gradient
    of a per-vertex scalar function has been replaced. Now `igl::grad` computes
    the linear operator (previous computed using `igl::gradMat`). The gradient
@@ -81,23 +135,3 @@ Old                              | New
  - The function `igl::project_normals`, which cast a line for each vertex of
    mesh _A_ in the normal direction and found the closest intersection along
    these lines with mesh _B_, has been removed.
-
-0.4.6  Generalized Winding Numbers
-0.4.5  CGAL extra: mesh selfintersection
-0.4.4  STL file format support
-0.4.3  ARAP implementation
-0.4.1  Migrated much of the FAST code including extra for Sifakis' 3x3 svd
-0.4.0  Release under MPL2 license
-0.3.7  Embree2.0 support
-0.3.6  boost extra, patches, mosek 7 support, libiglbbw (mosek optional)
-0.3.5  More examples, naive primitive sorting
-0.3.3  Many more examples, ambient occlusion with Embree.
-0.3.1  Linearly dependent constraints in min_quad_with_fixed, SparseQR buggy
-0.3.0  Better active set method support
-0.2.3  More explicits, active set method, opengl/anttweakbar guards
-0.2.2  More explicit instanciations, faster sorts and uniques
-0.2.1  Bug fixes in barycenter and doublearea found by Martin Bisson
-0.2.0  XML serializer more stable and fixed bug in remove_duplicate_vertices
-0.1.8  Embree and xml (windows only) extras
-0.1.5  Compilation on windows, bug fix for compilation with cygwin
-0.1.1  Alpha release with core functions, extras, examples

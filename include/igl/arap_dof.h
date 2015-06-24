@@ -7,11 +7,11 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_ARAP_ENERGY_TYPE_DOF_H
 #define IGL_ARAP_ENERGY_TYPE_DOF_H
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include <igl/ARAPEnergyType.h>
+#include "ARAPEnergyType.h"
 #include <vector>
 
 namespace igl

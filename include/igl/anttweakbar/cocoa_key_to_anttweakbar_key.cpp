@@ -6,11 +6,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "cocoa_key_to_anttweakbar_key.h"
-#ifndef IGL_NO_ANTTWEAKBAR
 
 #include <AntTweakBar.h>
 
-IGL_INLINE int igl::cocoa_key_to_anttweakbar_key(int key)
+IGL_INLINE int igl::anttweakbar::cocoa_key_to_anttweakbar_key(int key)
 {
   // I've left commented the AntTweakBar key codes that correspond to keys I
   // don't have on my keyboard. Please fill this in if you have those keys
@@ -80,4 +79,3 @@ IGL_INLINE int igl::cocoa_key_to_anttweakbar_key(int key)
   }
   return key;
 }
-#endif

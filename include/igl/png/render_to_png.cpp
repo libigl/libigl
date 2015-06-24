@@ -19,7 +19,7 @@
 #  include <GL/gl.h>
 #endif
 
-IGL_INLINE bool igl::render_to_png(
+IGL_INLINE bool igl::png::render_to_png(
   const std::string png_file,
   const int width,
   const int height,
@@ -52,5 +52,5 @@ IGL_INLINE bool igl::render_to_png(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-// template bool igl::render_to_png(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, int, int, bool, bool);
+// template bool igl::png::render_to_png(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, int, int, bool, bool);
 #endif

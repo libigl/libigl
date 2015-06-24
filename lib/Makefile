@@ -33,16 +33,16 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/local/Cellar/cmake/3.2.2/bin/cmake
+CMAKE_COMMAND = /usr/local/Cellar/cmake/3.2.3/bin/cmake
 
 # The command to remove a file.
-RM = /usr/local/Cellar/cmake/3.2.2/bin/cmake -E remove -f
+RM = /usr/local/Cellar/cmake/3.2.3/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/daniele/Dropbox/igl/libigl
+CMAKE_SOURCE_DIR = /Users/daniele/Dropbox/igl/libigl/optional
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = /Users/daniele/Dropbox/igl/libigl/lib
@@ -53,7 +53,7 @@ CMAKE_BINARY_DIR = /Users/daniele/Dropbox/igl/libigl/lib
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/local/Cellar/cmake/3.2.2/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/Cellar/cmake/3.2.3/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -63,7 +63,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/local/Cellar/cmake/3.2.2/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/Cellar/cmake/3.2.3/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -113,6 +113,19 @@ igl: cmake_check_build_system
 igl/fast:
 	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/build
 .PHONY : igl/fast
+
+#=============================================================================
+# Target rules for targets named iglanttweakbar
+
+# Build rule for target.
+iglanttweakbar: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 iglanttweakbar
+.PHONY : iglanttweakbar
+
+# fast build rule for target.
+iglanttweakbar/fast:
+	$(MAKE) -f CMakeFiles/iglanttweakbar.dir/build.make CMakeFiles/iglanttweakbar.dir/build
+.PHONY : iglanttweakbar/fast
 
 #=============================================================================
 # Target rules for targets named iglbbw
@@ -180,19 +193,6 @@ iglembree/fast:
 .PHONY : iglembree/fast
 
 #=============================================================================
-# Target rules for targets named igllim
-
-# Build rule for target.
-igllim: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 igllim
-.PHONY : igllim
-
-# fast build rule for target.
-igllim/fast:
-	$(MAKE) -f CMakeFiles/igllim.dir/build.make CMakeFiles/igllim.dir/build
-.PHONY : igllim/fast
-
-#=============================================================================
 # Target rules for targets named iglmatlab
 
 # Build rule for target.
@@ -206,17 +206,17 @@ iglmatlab/fast:
 .PHONY : iglmatlab/fast
 
 #=============================================================================
-# Target rules for targets named iglsvd3x3
+# Target rules for targets named iglpng
 
 # Build rule for target.
-iglsvd3x3: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 iglsvd3x3
-.PHONY : iglsvd3x3
+iglpng: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 iglpng
+.PHONY : iglpng
 
 # fast build rule for target.
-iglsvd3x3/fast:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/build
-.PHONY : iglsvd3x3/fast
+iglpng/fast:
+	$(MAKE) -f CMakeFiles/iglpng.dir/build.make CMakeFiles/iglpng.dir/build
+.PHONY : iglpng/fast
 
 #=============================================================================
 # Target rules for targets named igltetgen
@@ -270,8141 +270,8381 @@ iglxml/fast:
 	$(MAKE) -f CMakeFiles/iglxml.dir/build.make CMakeFiles/iglxml.dir/build
 .PHONY : iglxml/fast
 
-include/igl/EPS.o: include/igl/EPS.cpp.o
-.PHONY : include/igl/EPS.o
+Users/daniele/Dropbox/igl/libigl/include/igl/EPS.o: Users/daniele/Dropbox/igl/libigl/include/igl/EPS.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/EPS.o
 
 # target to build an object file
-include/igl/EPS.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/EPS.cpp.o
-.PHONY : include/igl/EPS.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/EPS.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/EPS.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/EPS.cpp.o
 
-include/igl/EPS.i: include/igl/EPS.cpp.i
-.PHONY : include/igl/EPS.i
+Users/daniele/Dropbox/igl/libigl/include/igl/EPS.i: Users/daniele/Dropbox/igl/libigl/include/igl/EPS.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/EPS.i
 
 # target to preprocess a source file
-include/igl/EPS.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/EPS.cpp.i
-.PHONY : include/igl/EPS.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/EPS.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/EPS.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/EPS.cpp.i
 
-include/igl/EPS.s: include/igl/EPS.cpp.s
-.PHONY : include/igl/EPS.s
+Users/daniele/Dropbox/igl/libigl/include/igl/EPS.s: Users/daniele/Dropbox/igl/libigl/include/igl/EPS.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/EPS.s
 
 # target to generate assembly for a file
-include/igl/EPS.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/EPS.cpp.s
-.PHONY : include/igl/EPS.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/EPS.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/EPS.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/EPS.cpp.s
 
-include/igl/active_set.o: include/igl/active_set.cpp.o
-.PHONY : include/igl/active_set.o
+Users/daniele/Dropbox/igl/libigl/include/igl/active_set.o: Users/daniele/Dropbox/igl/libigl/include/igl/active_set.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/active_set.o
 
 # target to build an object file
-include/igl/active_set.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/active_set.cpp.o
-.PHONY : include/igl/active_set.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/active_set.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/active_set.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/active_set.cpp.o
 
-include/igl/active_set.i: include/igl/active_set.cpp.i
-.PHONY : include/igl/active_set.i
+Users/daniele/Dropbox/igl/libigl/include/igl/active_set.i: Users/daniele/Dropbox/igl/libigl/include/igl/active_set.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/active_set.i
 
 # target to preprocess a source file
-include/igl/active_set.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/active_set.cpp.i
-.PHONY : include/igl/active_set.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/active_set.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/active_set.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/active_set.cpp.i
 
-include/igl/active_set.s: include/igl/active_set.cpp.s
-.PHONY : include/igl/active_set.s
+Users/daniele/Dropbox/igl/libigl/include/igl/active_set.s: Users/daniele/Dropbox/igl/libigl/include/igl/active_set.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/active_set.s
 
 # target to generate assembly for a file
-include/igl/active_set.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/active_set.cpp.s
-.PHONY : include/igl/active_set.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/active_set.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/active_set.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/active_set.cpp.s
 
-include/igl/adjacency_list.o: include/igl/adjacency_list.cpp.o
-.PHONY : include/igl/adjacency_list.o
+Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.o: Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.o
 
 # target to build an object file
-include/igl/adjacency_list.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/adjacency_list.cpp.o
-.PHONY : include/igl/adjacency_list.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.cpp.o
 
-include/igl/adjacency_list.i: include/igl/adjacency_list.cpp.i
-.PHONY : include/igl/adjacency_list.i
+Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.i: Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.i
 
 # target to preprocess a source file
-include/igl/adjacency_list.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/adjacency_list.cpp.i
-.PHONY : include/igl/adjacency_list.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.cpp.i
 
-include/igl/adjacency_list.s: include/igl/adjacency_list.cpp.s
-.PHONY : include/igl/adjacency_list.s
+Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.s: Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.s
 
 # target to generate assembly for a file
-include/igl/adjacency_list.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/adjacency_list.cpp.s
-.PHONY : include/igl/adjacency_list.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.cpp.s
 
-include/igl/adjacency_matrix.o: include/igl/adjacency_matrix.cpp.o
-.PHONY : include/igl/adjacency_matrix.o
+Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.o: Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.o
 
 # target to build an object file
-include/igl/adjacency_matrix.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/adjacency_matrix.cpp.o
-.PHONY : include/igl/adjacency_matrix.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.cpp.o
 
-include/igl/adjacency_matrix.i: include/igl/adjacency_matrix.cpp.i
-.PHONY : include/igl/adjacency_matrix.i
+Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.i: Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.i
 
 # target to preprocess a source file
-include/igl/adjacency_matrix.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/adjacency_matrix.cpp.i
-.PHONY : include/igl/adjacency_matrix.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.cpp.i
 
-include/igl/adjacency_matrix.s: include/igl/adjacency_matrix.cpp.s
-.PHONY : include/igl/adjacency_matrix.s
+Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.s: Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.s
 
 # target to generate assembly for a file
-include/igl/adjacency_matrix.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/adjacency_matrix.cpp.s
-.PHONY : include/igl/adjacency_matrix.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.cpp.s
 
-include/igl/all_edges.o: include/igl/all_edges.cpp.o
-.PHONY : include/igl/all_edges.o
+Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.o: Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.o
 
 # target to build an object file
-include/igl/all_edges.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/all_edges.cpp.o
-.PHONY : include/igl/all_edges.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.cpp.o
 
-include/igl/all_edges.i: include/igl/all_edges.cpp.i
-.PHONY : include/igl/all_edges.i
+Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.i: Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.i
 
 # target to preprocess a source file
-include/igl/all_edges.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/all_edges.cpp.i
-.PHONY : include/igl/all_edges.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.cpp.i
 
-include/igl/all_edges.s: include/igl/all_edges.cpp.s
-.PHONY : include/igl/all_edges.s
+Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.s: Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.s
 
 # target to generate assembly for a file
-include/igl/all_edges.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/all_edges.cpp.s
-.PHONY : include/igl/all_edges.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.cpp.s
 
-include/igl/all_pairs_distances.o: include/igl/all_pairs_distances.cpp.o
-.PHONY : include/igl/all_pairs_distances.o
+Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.o: Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.o
 
 # target to build an object file
-include/igl/all_pairs_distances.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/all_pairs_distances.cpp.o
-.PHONY : include/igl/all_pairs_distances.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.cpp.o
 
-include/igl/all_pairs_distances.i: include/igl/all_pairs_distances.cpp.i
-.PHONY : include/igl/all_pairs_distances.i
+Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.i: Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.i
 
 # target to preprocess a source file
-include/igl/all_pairs_distances.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/all_pairs_distances.cpp.i
-.PHONY : include/igl/all_pairs_distances.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.cpp.i
 
-include/igl/all_pairs_distances.s: include/igl/all_pairs_distances.cpp.s
-.PHONY : include/igl/all_pairs_distances.s
+Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.s: Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.s
 
 # target to generate assembly for a file
-include/igl/all_pairs_distances.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/all_pairs_distances.cpp.s
-.PHONY : include/igl/all_pairs_distances.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.cpp.s
 
-include/igl/angle_bound_frame_fields.o: include/igl/angle_bound_frame_fields.cpp.o
-.PHONY : include/igl/angle_bound_frame_fields.o
+Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.o: Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.o
 
 # target to build an object file
-include/igl/angle_bound_frame_fields.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/angle_bound_frame_fields.cpp.o
-.PHONY : include/igl/angle_bound_frame_fields.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.cpp.o
 
-include/igl/angle_bound_frame_fields.i: include/igl/angle_bound_frame_fields.cpp.i
-.PHONY : include/igl/angle_bound_frame_fields.i
+Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.i: Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.i
 
 # target to preprocess a source file
-include/igl/angle_bound_frame_fields.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/angle_bound_frame_fields.cpp.i
-.PHONY : include/igl/angle_bound_frame_fields.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.cpp.i
 
-include/igl/angle_bound_frame_fields.s: include/igl/angle_bound_frame_fields.cpp.s
-.PHONY : include/igl/angle_bound_frame_fields.s
+Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.s: Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.s
 
 # target to generate assembly for a file
-include/igl/angle_bound_frame_fields.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/angle_bound_frame_fields.cpp.s
-.PHONY : include/igl/angle_bound_frame_fields.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.cpp.s
 
-include/igl/angles.o: include/igl/angles.cpp.o
-.PHONY : include/igl/angles.o
+Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.o: Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.o
 
 # target to build an object file
-include/igl/angles.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/angles.cpp.o
-.PHONY : include/igl/angles.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.cpp.o
 
-include/igl/angles.i: include/igl/angles.cpp.i
-.PHONY : include/igl/angles.i
+Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.i: Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.i
 
 # target to preprocess a source file
-include/igl/angles.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/angles.cpp.i
-.PHONY : include/igl/angles.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.cpp.i
 
-include/igl/angles.s: include/igl/angles.cpp.s
-.PHONY : include/igl/angles.s
+Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.s: Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.s
 
 # target to generate assembly for a file
-include/igl/angles.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/angles.cpp.s
-.PHONY : include/igl/angles.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.cpp.s
 
-include/igl/angular_distance.o: include/igl/angular_distance.cpp.o
-.PHONY : include/igl/angular_distance.o
+Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.o: Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.o
 
 # target to build an object file
-include/igl/angular_distance.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/angular_distance.cpp.o
-.PHONY : include/igl/angular_distance.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.cpp.o:
+	$(MAKE) -f CMakeFiles/iglanttweakbar.dir/build.make CMakeFiles/iglanttweakbar.dir/Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.cpp.o
 
-include/igl/angular_distance.i: include/igl/angular_distance.cpp.i
-.PHONY : include/igl/angular_distance.i
+Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.i: Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.i
 
 # target to preprocess a source file
-include/igl/angular_distance.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/angular_distance.cpp.i
-.PHONY : include/igl/angular_distance.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.cpp.i:
+	$(MAKE) -f CMakeFiles/iglanttweakbar.dir/build.make CMakeFiles/iglanttweakbar.dir/Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.cpp.i
 
-include/igl/angular_distance.s: include/igl/angular_distance.cpp.s
-.PHONY : include/igl/angular_distance.s
+Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.s: Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.s
 
 # target to generate assembly for a file
-include/igl/angular_distance.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/angular_distance.cpp.s
-.PHONY : include/igl/angular_distance.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.cpp.s:
+	$(MAKE) -f CMakeFiles/iglanttweakbar.dir/build.make CMakeFiles/iglanttweakbar.dir/Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.cpp.s
 
-include/igl/any_of.o: include/igl/any_of.cpp.o
-.PHONY : include/igl/any_of.o
+Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.o: Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.o
 
 # target to build an object file
-include/igl/any_of.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/any_of.cpp.o
-.PHONY : include/igl/any_of.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.cpp.o:
+	$(MAKE) -f CMakeFiles/iglanttweakbar.dir/build.make CMakeFiles/iglanttweakbar.dir/Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.cpp.o
 
-include/igl/any_of.i: include/igl/any_of.cpp.i
-.PHONY : include/igl/any_of.i
+Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.i: Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.i
 
 # target to preprocess a source file
-include/igl/any_of.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/any_of.cpp.i
-.PHONY : include/igl/any_of.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.cpp.i:
+	$(MAKE) -f CMakeFiles/iglanttweakbar.dir/build.make CMakeFiles/iglanttweakbar.dir/Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.cpp.i
 
-include/igl/any_of.s: include/igl/any_of.cpp.s
-.PHONY : include/igl/any_of.s
+Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.s: Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.s
 
 # target to generate assembly for a file
-include/igl/any_of.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/any_of.cpp.s
-.PHONY : include/igl/any_of.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.cpp.s:
+	$(MAKE) -f CMakeFiles/iglanttweakbar.dir/build.make CMakeFiles/iglanttweakbar.dir/Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.cpp.s
 
-include/igl/arap_linear_block.o: include/igl/arap_linear_block.cpp.o
-.PHONY : include/igl/arap_linear_block.o
+Users/daniele/Dropbox/igl/libigl/include/igl/any_of.o: Users/daniele/Dropbox/igl/libigl/include/igl/any_of.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/any_of.o
 
 # target to build an object file
-include/igl/arap_linear_block.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/arap_linear_block.cpp.o
-.PHONY : include/igl/arap_linear_block.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/any_of.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/any_of.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/any_of.cpp.o
 
-include/igl/arap_linear_block.i: include/igl/arap_linear_block.cpp.i
-.PHONY : include/igl/arap_linear_block.i
+Users/daniele/Dropbox/igl/libigl/include/igl/any_of.i: Users/daniele/Dropbox/igl/libigl/include/igl/any_of.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/any_of.i
 
 # target to preprocess a source file
-include/igl/arap_linear_block.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/arap_linear_block.cpp.i
-.PHONY : include/igl/arap_linear_block.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/any_of.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/any_of.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/any_of.cpp.i
 
-include/igl/arap_linear_block.s: include/igl/arap_linear_block.cpp.s
-.PHONY : include/igl/arap_linear_block.s
+Users/daniele/Dropbox/igl/libigl/include/igl/any_of.s: Users/daniele/Dropbox/igl/libigl/include/igl/any_of.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/any_of.s
 
 # target to generate assembly for a file
-include/igl/arap_linear_block.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/arap_linear_block.cpp.s
-.PHONY : include/igl/arap_linear_block.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/any_of.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/any_of.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/any_of.cpp.s
 
-include/igl/arap_rhs.o: include/igl/arap_rhs.cpp.o
-.PHONY : include/igl/arap_rhs.o
+Users/daniele/Dropbox/igl/libigl/include/igl/arap.o: Users/daniele/Dropbox/igl/libigl/include/igl/arap.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap.o
 
 # target to build an object file
-include/igl/arap_rhs.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/arap_rhs.cpp.o
-.PHONY : include/igl/arap_rhs.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/arap.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/arap.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap.cpp.o
 
-include/igl/arap_rhs.i: include/igl/arap_rhs.cpp.i
-.PHONY : include/igl/arap_rhs.i
+Users/daniele/Dropbox/igl/libigl/include/igl/arap.i: Users/daniele/Dropbox/igl/libigl/include/igl/arap.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap.i
 
 # target to preprocess a source file
-include/igl/arap_rhs.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/arap_rhs.cpp.i
-.PHONY : include/igl/arap_rhs.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/arap.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/arap.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap.cpp.i
 
-include/igl/arap_rhs.s: include/igl/arap_rhs.cpp.s
-.PHONY : include/igl/arap_rhs.s
+Users/daniele/Dropbox/igl/libigl/include/igl/arap.s: Users/daniele/Dropbox/igl/libigl/include/igl/arap.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap.s
 
 # target to generate assembly for a file
-include/igl/arap_rhs.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/arap_rhs.cpp.s
-.PHONY : include/igl/arap_rhs.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/arap.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/arap.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap.cpp.s
 
-include/igl/average_onto_faces.o: include/igl/average_onto_faces.cpp.o
-.PHONY : include/igl/average_onto_faces.o
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.o: Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.o
 
 # target to build an object file
-include/igl/average_onto_faces.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/average_onto_faces.cpp.o
-.PHONY : include/igl/average_onto_faces.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.cpp.o
 
-include/igl/average_onto_faces.i: include/igl/average_onto_faces.cpp.i
-.PHONY : include/igl/average_onto_faces.i
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.i: Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.i
 
 # target to preprocess a source file
-include/igl/average_onto_faces.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/average_onto_faces.cpp.i
-.PHONY : include/igl/average_onto_faces.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.cpp.i
 
-include/igl/average_onto_faces.s: include/igl/average_onto_faces.cpp.s
-.PHONY : include/igl/average_onto_faces.s
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.s: Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.s
 
 # target to generate assembly for a file
-include/igl/average_onto_faces.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/average_onto_faces.cpp.s
-.PHONY : include/igl/average_onto_faces.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.cpp.s
 
-include/igl/average_onto_vertices.o: include/igl/average_onto_vertices.cpp.o
-.PHONY : include/igl/average_onto_vertices.o
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.o: Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.o
 
 # target to build an object file
-include/igl/average_onto_vertices.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/average_onto_vertices.cpp.o
-.PHONY : include/igl/average_onto_vertices.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.cpp.o
 
-include/igl/average_onto_vertices.i: include/igl/average_onto_vertices.cpp.i
-.PHONY : include/igl/average_onto_vertices.i
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.i: Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.i
 
 # target to preprocess a source file
-include/igl/average_onto_vertices.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/average_onto_vertices.cpp.i
-.PHONY : include/igl/average_onto_vertices.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.cpp.i
 
-include/igl/average_onto_vertices.s: include/igl/average_onto_vertices.cpp.s
-.PHONY : include/igl/average_onto_vertices.s
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.s: Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.s
 
 # target to generate assembly for a file
-include/igl/average_onto_vertices.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/average_onto_vertices.cpp.s
-.PHONY : include/igl/average_onto_vertices.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.cpp.s
 
-include/igl/avg_edge_length.o: include/igl/avg_edge_length.cpp.o
-.PHONY : include/igl/avg_edge_length.o
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.o: Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.o
 
 # target to build an object file
-include/igl/avg_edge_length.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/avg_edge_length.cpp.o
-.PHONY : include/igl/avg_edge_length.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.cpp.o
 
-include/igl/avg_edge_length.i: include/igl/avg_edge_length.cpp.i
-.PHONY : include/igl/avg_edge_length.i
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.i: Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.i
 
 # target to preprocess a source file
-include/igl/avg_edge_length.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/avg_edge_length.cpp.i
-.PHONY : include/igl/avg_edge_length.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.cpp.i
 
-include/igl/avg_edge_length.s: include/igl/avg_edge_length.cpp.s
-.PHONY : include/igl/avg_edge_length.s
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.s: Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.s
 
 # target to generate assembly for a file
-include/igl/avg_edge_length.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/avg_edge_length.cpp.s
-.PHONY : include/igl/avg_edge_length.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.cpp.s
 
-include/igl/axis_angle_to_quat.o: include/igl/axis_angle_to_quat.cpp.o
-.PHONY : include/igl/axis_angle_to_quat.o
+Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.o: Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.o
 
 # target to build an object file
-include/igl/axis_angle_to_quat.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/axis_angle_to_quat.cpp.o
-.PHONY : include/igl/axis_angle_to_quat.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.cpp.o
 
-include/igl/axis_angle_to_quat.i: include/igl/axis_angle_to_quat.cpp.i
-.PHONY : include/igl/axis_angle_to_quat.i
+Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.i: Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.i
 
 # target to preprocess a source file
-include/igl/axis_angle_to_quat.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/axis_angle_to_quat.cpp.i
-.PHONY : include/igl/axis_angle_to_quat.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.cpp.i
 
-include/igl/axis_angle_to_quat.s: include/igl/axis_angle_to_quat.cpp.s
-.PHONY : include/igl/axis_angle_to_quat.s
+Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.s: Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.s
 
 # target to generate assembly for a file
-include/igl/axis_angle_to_quat.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/axis_angle_to_quat.cpp.s
-.PHONY : include/igl/axis_angle_to_quat.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.cpp.s
 
-include/igl/barycenter.o: include/igl/barycenter.cpp.o
-.PHONY : include/igl/barycenter.o
+Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.o: Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.o
 
 # target to build an object file
-include/igl/barycenter.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/barycenter.cpp.o
-.PHONY : include/igl/barycenter.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.cpp.o
 
-include/igl/barycenter.i: include/igl/barycenter.cpp.i
-.PHONY : include/igl/barycenter.i
+Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.i: Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.i
 
 # target to preprocess a source file
-include/igl/barycenter.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/barycenter.cpp.i
-.PHONY : include/igl/barycenter.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.cpp.i
 
-include/igl/barycenter.s: include/igl/barycenter.cpp.s
-.PHONY : include/igl/barycenter.s
+Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.s: Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.s
 
 # target to generate assembly for a file
-include/igl/barycenter.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/barycenter.cpp.s
-.PHONY : include/igl/barycenter.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.cpp.s
 
-include/igl/barycentric_coordinates.o: include/igl/barycentric_coordinates.cpp.o
-.PHONY : include/igl/barycentric_coordinates.o
+Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.o: Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.o
 
 # target to build an object file
-include/igl/barycentric_coordinates.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/barycentric_coordinates.cpp.o
-.PHONY : include/igl/barycentric_coordinates.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.cpp.o
 
-include/igl/barycentric_coordinates.i: include/igl/barycentric_coordinates.cpp.i
-.PHONY : include/igl/barycentric_coordinates.i
+Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.i: Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.i
 
 # target to preprocess a source file
-include/igl/barycentric_coordinates.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/barycentric_coordinates.cpp.i
-.PHONY : include/igl/barycentric_coordinates.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.cpp.i
 
-include/igl/barycentric_coordinates.s: include/igl/barycentric_coordinates.cpp.s
-.PHONY : include/igl/barycentric_coordinates.s
+Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.s: Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.s
 
 # target to generate assembly for a file
-include/igl/barycentric_coordinates.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/barycentric_coordinates.cpp.s
-.PHONY : include/igl/barycentric_coordinates.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.cpp.s
 
-include/igl/barycentric_to_global.o: include/igl/barycentric_to_global.cpp.o
-.PHONY : include/igl/barycentric_to_global.o
+Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.o: Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.o
 
 # target to build an object file
-include/igl/barycentric_to_global.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/barycentric_to_global.cpp.o
-.PHONY : include/igl/barycentric_to_global.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.cpp.o
 
-include/igl/barycentric_to_global.i: include/igl/barycentric_to_global.cpp.i
-.PHONY : include/igl/barycentric_to_global.i
+Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.i: Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.i
 
 # target to preprocess a source file
-include/igl/barycentric_to_global.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/barycentric_to_global.cpp.i
-.PHONY : include/igl/barycentric_to_global.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.cpp.i
 
-include/igl/barycentric_to_global.s: include/igl/barycentric_to_global.cpp.s
-.PHONY : include/igl/barycentric_to_global.s
+Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.s: Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.s
 
 # target to generate assembly for a file
-include/igl/barycentric_to_global.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/barycentric_to_global.cpp.s
-.PHONY : include/igl/barycentric_to_global.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.cpp.s
 
-include/igl/basename.o: include/igl/basename.cpp.o
-.PHONY : include/igl/basename.o
+Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.o: Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.o
 
 # target to build an object file
-include/igl/basename.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/basename.cpp.o
-.PHONY : include/igl/basename.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.cpp.o
 
-include/igl/basename.i: include/igl/basename.cpp.i
-.PHONY : include/igl/basename.i
+Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.i: Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.i
 
 # target to preprocess a source file
-include/igl/basename.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/basename.cpp.i
-.PHONY : include/igl/basename.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.cpp.i
 
-include/igl/basename.s: include/igl/basename.cpp.s
-.PHONY : include/igl/basename.s
+Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.s: Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.s
 
 # target to generate assembly for a file
-include/igl/basename.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/basename.cpp.s
-.PHONY : include/igl/basename.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.cpp.s
 
-include/igl/bbw/bbw.o: include/igl/bbw/bbw.cpp.o
-.PHONY : include/igl/bbw/bbw.o
+Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.o: Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.o
 
 # target to build an object file
-include/igl/bbw/bbw.cpp.o:
-	$(MAKE) -f CMakeFiles/iglbbw.dir/build.make CMakeFiles/iglbbw.dir/include/igl/bbw/bbw.cpp.o
-.PHONY : include/igl/bbw/bbw.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.cpp.o
 
-include/igl/bbw/bbw.i: include/igl/bbw/bbw.cpp.i
-.PHONY : include/igl/bbw/bbw.i
+Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.i: Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.i
 
 # target to preprocess a source file
-include/igl/bbw/bbw.cpp.i:
-	$(MAKE) -f CMakeFiles/iglbbw.dir/build.make CMakeFiles/iglbbw.dir/include/igl/bbw/bbw.cpp.i
-.PHONY : include/igl/bbw/bbw.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.cpp.i
 
-include/igl/bbw/bbw.s: include/igl/bbw/bbw.cpp.s
-.PHONY : include/igl/bbw/bbw.s
+Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.s: Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.s
 
 # target to generate assembly for a file
-include/igl/bbw/bbw.cpp.s:
-	$(MAKE) -f CMakeFiles/iglbbw.dir/build.make CMakeFiles/iglbbw.dir/include/igl/bbw/bbw.cpp.s
-.PHONY : include/igl/bbw/bbw.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.cpp.s
 
-include/igl/bone_parents.o: include/igl/bone_parents.cpp.o
-.PHONY : include/igl/bone_parents.o
+Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.o: Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.o
 
 # target to build an object file
-include/igl/bone_parents.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/bone_parents.cpp.o
-.PHONY : include/igl/bone_parents.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.cpp.o
 
-include/igl/bone_parents.i: include/igl/bone_parents.cpp.i
-.PHONY : include/igl/bone_parents.i
+Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.i: Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.i
 
 # target to preprocess a source file
-include/igl/bone_parents.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/bone_parents.cpp.i
-.PHONY : include/igl/bone_parents.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.cpp.i
 
-include/igl/bone_parents.s: include/igl/bone_parents.cpp.s
-.PHONY : include/igl/bone_parents.s
+Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.s: Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.s
 
 # target to generate assembly for a file
-include/igl/bone_parents.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/bone_parents.cpp.s
-.PHONY : include/igl/bone_parents.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.cpp.s
 
-include/igl/boolean/from_cork_mesh.o: include/igl/boolean/from_cork_mesh.cpp.o
-.PHONY : include/igl/boolean/from_cork_mesh.o
+Users/daniele/Dropbox/igl/libigl/include/igl/basename.o: Users/daniele/Dropbox/igl/libigl/include/igl/basename.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/basename.o
 
 # target to build an object file
-include/igl/boolean/from_cork_mesh.cpp.o:
-	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/include/igl/boolean/from_cork_mesh.cpp.o
-.PHONY : include/igl/boolean/from_cork_mesh.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/basename.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/basename.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/basename.cpp.o
 
-include/igl/boolean/from_cork_mesh.i: include/igl/boolean/from_cork_mesh.cpp.i
-.PHONY : include/igl/boolean/from_cork_mesh.i
+Users/daniele/Dropbox/igl/libigl/include/igl/basename.i: Users/daniele/Dropbox/igl/libigl/include/igl/basename.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/basename.i
 
 # target to preprocess a source file
-include/igl/boolean/from_cork_mesh.cpp.i:
-	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/include/igl/boolean/from_cork_mesh.cpp.i
-.PHONY : include/igl/boolean/from_cork_mesh.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/basename.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/basename.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/basename.cpp.i
 
-include/igl/boolean/from_cork_mesh.s: include/igl/boolean/from_cork_mesh.cpp.s
-.PHONY : include/igl/boolean/from_cork_mesh.s
+Users/daniele/Dropbox/igl/libigl/include/igl/basename.s: Users/daniele/Dropbox/igl/libigl/include/igl/basename.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/basename.s
 
 # target to generate assembly for a file
-include/igl/boolean/from_cork_mesh.cpp.s:
-	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/include/igl/boolean/from_cork_mesh.cpp.s
-.PHONY : include/igl/boolean/from_cork_mesh.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/basename.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/basename.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/basename.cpp.s
 
-include/igl/boolean/mesh_boolean.o: include/igl/boolean/mesh_boolean.cpp.o
-.PHONY : include/igl/boolean/mesh_boolean.o
+Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.o: Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.o
 
 # target to build an object file
-include/igl/boolean/mesh_boolean.cpp.o:
-	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/include/igl/boolean/mesh_boolean.cpp.o
-.PHONY : include/igl/boolean/mesh_boolean.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.cpp.o:
+	$(MAKE) -f CMakeFiles/iglbbw.dir/build.make CMakeFiles/iglbbw.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.cpp.o
 
-include/igl/boolean/mesh_boolean.i: include/igl/boolean/mesh_boolean.cpp.i
-.PHONY : include/igl/boolean/mesh_boolean.i
+Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.i: Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.i
 
 # target to preprocess a source file
-include/igl/boolean/mesh_boolean.cpp.i:
-	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/include/igl/boolean/mesh_boolean.cpp.i
-.PHONY : include/igl/boolean/mesh_boolean.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.cpp.i:
+	$(MAKE) -f CMakeFiles/iglbbw.dir/build.make CMakeFiles/iglbbw.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.cpp.i
 
-include/igl/boolean/mesh_boolean.s: include/igl/boolean/mesh_boolean.cpp.s
-.PHONY : include/igl/boolean/mesh_boolean.s
+Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.s: Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.s
 
 # target to generate assembly for a file
-include/igl/boolean/mesh_boolean.cpp.s:
-	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/include/igl/boolean/mesh_boolean.cpp.s
-.PHONY : include/igl/boolean/mesh_boolean.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.cpp.s:
+	$(MAKE) -f CMakeFiles/iglbbw.dir/build.make CMakeFiles/iglbbw.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.cpp.s
 
-include/igl/boolean/mesh_boolean_cork.o: include/igl/boolean/mesh_boolean_cork.cpp.o
-.PHONY : include/igl/boolean/mesh_boolean_cork.o
+Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.o: Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.o
 
 # target to build an object file
-include/igl/boolean/mesh_boolean_cork.cpp.o:
-	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/include/igl/boolean/mesh_boolean_cork.cpp.o
-.PHONY : include/igl/boolean/mesh_boolean_cork.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.cpp.o
 
-include/igl/boolean/mesh_boolean_cork.i: include/igl/boolean/mesh_boolean_cork.cpp.i
-.PHONY : include/igl/boolean/mesh_boolean_cork.i
+Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.i: Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.i
 
 # target to preprocess a source file
-include/igl/boolean/mesh_boolean_cork.cpp.i:
-	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/include/igl/boolean/mesh_boolean_cork.cpp.i
-.PHONY : include/igl/boolean/mesh_boolean_cork.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.cpp.i
 
-include/igl/boolean/mesh_boolean_cork.s: include/igl/boolean/mesh_boolean_cork.cpp.s
-.PHONY : include/igl/boolean/mesh_boolean_cork.s
+Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.s: Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.s
 
 # target to generate assembly for a file
-include/igl/boolean/mesh_boolean_cork.cpp.s:
-	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/include/igl/boolean/mesh_boolean_cork.cpp.s
-.PHONY : include/igl/boolean/mesh_boolean_cork.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.cpp.s
 
-include/igl/boolean/to_cork_mesh.o: include/igl/boolean/to_cork_mesh.cpp.o
-.PHONY : include/igl/boolean/to_cork_mesh.o
+Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.o: Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.o
 
 # target to build an object file
-include/igl/boolean/to_cork_mesh.cpp.o:
-	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/include/igl/boolean/to_cork_mesh.cpp.o
-.PHONY : include/igl/boolean/to_cork_mesh.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.cpp.o
 
-include/igl/boolean/to_cork_mesh.i: include/igl/boolean/to_cork_mesh.cpp.i
-.PHONY : include/igl/boolean/to_cork_mesh.i
+Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.i: Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.i
 
 # target to preprocess a source file
-include/igl/boolean/to_cork_mesh.cpp.i:
-	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/include/igl/boolean/to_cork_mesh.cpp.i
-.PHONY : include/igl/boolean/to_cork_mesh.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.cpp.i
 
-include/igl/boolean/to_cork_mesh.s: include/igl/boolean/to_cork_mesh.cpp.s
-.PHONY : include/igl/boolean/to_cork_mesh.s
+Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.s: Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.s
 
 # target to generate assembly for a file
-include/igl/boolean/to_cork_mesh.cpp.s:
-	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/include/igl/boolean/to_cork_mesh.cpp.s
-.PHONY : include/igl/boolean/to_cork_mesh.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.cpp.s
 
-include/igl/boundary_conditions.o: include/igl/boundary_conditions.cpp.o
-.PHONY : include/igl/boundary_conditions.o
+Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.o: Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.o
 
 # target to build an object file
-include/igl/boundary_conditions.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/boundary_conditions.cpp.o
-.PHONY : include/igl/boundary_conditions.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.cpp.o
 
-include/igl/boundary_conditions.i: include/igl/boundary_conditions.cpp.i
-.PHONY : include/igl/boundary_conditions.i
+Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.i: Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.i
 
 # target to preprocess a source file
-include/igl/boundary_conditions.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/boundary_conditions.cpp.i
-.PHONY : include/igl/boundary_conditions.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.cpp.i
 
-include/igl/boundary_conditions.s: include/igl/boundary_conditions.cpp.s
-.PHONY : include/igl/boundary_conditions.s
+Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.s: Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.s
 
 # target to generate assembly for a file
-include/igl/boundary_conditions.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/boundary_conditions.cpp.s
-.PHONY : include/igl/boundary_conditions.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.cpp.s
 
-include/igl/boundary_facets.o: include/igl/boundary_facets.cpp.o
-.PHONY : include/igl/boundary_facets.o
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.o: Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.o
 
 # target to build an object file
-include/igl/boundary_facets.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/boundary_facets.cpp.o
-.PHONY : include/igl/boundary_facets.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.cpp.o:
+	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.cpp.o
 
-include/igl/boundary_facets.i: include/igl/boundary_facets.cpp.i
-.PHONY : include/igl/boundary_facets.i
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.i: Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.i
 
 # target to preprocess a source file
-include/igl/boundary_facets.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/boundary_facets.cpp.i
-.PHONY : include/igl/boundary_facets.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.cpp.i:
+	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.cpp.i
 
-include/igl/boundary_facets.s: include/igl/boundary_facets.cpp.s
-.PHONY : include/igl/boundary_facets.s
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.s: Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.s
 
 # target to generate assembly for a file
-include/igl/boundary_facets.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/boundary_facets.cpp.s
-.PHONY : include/igl/boundary_facets.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.cpp.s:
+	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.cpp.s
 
-include/igl/boundary_loop.o: include/igl/boundary_loop.cpp.o
-.PHONY : include/igl/boundary_loop.o
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.o: Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.o
 
 # target to build an object file
-include/igl/boundary_loop.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/boundary_loop.cpp.o
-.PHONY : include/igl/boundary_loop.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.cpp.o:
+	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.cpp.o
 
-include/igl/boundary_loop.i: include/igl/boundary_loop.cpp.i
-.PHONY : include/igl/boundary_loop.i
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.i: Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.i
 
 # target to preprocess a source file
-include/igl/boundary_loop.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/boundary_loop.cpp.i
-.PHONY : include/igl/boundary_loop.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.cpp.i:
+	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.cpp.i
 
-include/igl/boundary_loop.s: include/igl/boundary_loop.cpp.s
-.PHONY : include/igl/boundary_loop.s
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.s: Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.s
 
 # target to generate assembly for a file
-include/igl/boundary_loop.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/boundary_loop.cpp.s
-.PHONY : include/igl/boundary_loop.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.cpp.s:
+	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.cpp.s
 
-include/igl/bounding_box.o: include/igl/bounding_box.cpp.o
-.PHONY : include/igl/bounding_box.o
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.o: Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.o
 
 # target to build an object file
-include/igl/bounding_box.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/bounding_box.cpp.o
-.PHONY : include/igl/bounding_box.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.cpp.o:
+	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.cpp.o
 
-include/igl/bounding_box.i: include/igl/bounding_box.cpp.i
-.PHONY : include/igl/bounding_box.i
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.i: Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.i
 
 # target to preprocess a source file
-include/igl/bounding_box.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/bounding_box.cpp.i
-.PHONY : include/igl/bounding_box.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.cpp.i:
+	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.cpp.i
 
-include/igl/bounding_box.s: include/igl/bounding_box.cpp.s
-.PHONY : include/igl/bounding_box.s
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.s: Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.s
 
 # target to generate assembly for a file
-include/igl/bounding_box.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/bounding_box.cpp.s
-.PHONY : include/igl/bounding_box.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.cpp.s:
+	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.cpp.s
 
-include/igl/bounding_box_diagonal.o: include/igl/bounding_box_diagonal.cpp.o
-.PHONY : include/igl/bounding_box_diagonal.o
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.o: Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.o
 
 # target to build an object file
-include/igl/bounding_box_diagonal.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/bounding_box_diagonal.cpp.o
-.PHONY : include/igl/bounding_box_diagonal.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.cpp.o:
+	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.cpp.o
 
-include/igl/bounding_box_diagonal.i: include/igl/bounding_box_diagonal.cpp.i
-.PHONY : include/igl/bounding_box_diagonal.i
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.i: Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.i
 
 # target to preprocess a source file
-include/igl/bounding_box_diagonal.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/bounding_box_diagonal.cpp.i
-.PHONY : include/igl/bounding_box_diagonal.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.cpp.i:
+	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.cpp.i
 
-include/igl/bounding_box_diagonal.s: include/igl/bounding_box_diagonal.cpp.s
-.PHONY : include/igl/bounding_box_diagonal.s
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.s: Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.s
 
 # target to generate assembly for a file
-include/igl/bounding_box_diagonal.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/bounding_box_diagonal.cpp.s
-.PHONY : include/igl/bounding_box_diagonal.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.cpp.s:
+	$(MAKE) -f CMakeFiles/iglboolean.dir/build.make CMakeFiles/iglboolean.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.cpp.s
 
-include/igl/canonical_quaternions.o: include/igl/canonical_quaternions.cpp.o
-.PHONY : include/igl/canonical_quaternions.o
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.o: Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.o
 
 # target to build an object file
-include/igl/canonical_quaternions.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/canonical_quaternions.cpp.o
-.PHONY : include/igl/canonical_quaternions.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.cpp.o
 
-include/igl/canonical_quaternions.i: include/igl/canonical_quaternions.cpp.i
-.PHONY : include/igl/canonical_quaternions.i
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.i: Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.i
 
 # target to preprocess a source file
-include/igl/canonical_quaternions.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/canonical_quaternions.cpp.i
-.PHONY : include/igl/canonical_quaternions.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.cpp.i
 
-include/igl/canonical_quaternions.s: include/igl/canonical_quaternions.cpp.s
-.PHONY : include/igl/canonical_quaternions.s
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.s: Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.s
 
 # target to generate assembly for a file
-include/igl/canonical_quaternions.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/canonical_quaternions.cpp.s
-.PHONY : include/igl/canonical_quaternions.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.cpp.s
 
-include/igl/cat.o: include/igl/cat.cpp.o
-.PHONY : include/igl/cat.o
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.o: Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.o
 
 # target to build an object file
-include/igl/cat.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cat.cpp.o
-.PHONY : include/igl/cat.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.cpp.o
 
-include/igl/cat.i: include/igl/cat.cpp.i
-.PHONY : include/igl/cat.i
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.i: Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.i
 
 # target to preprocess a source file
-include/igl/cat.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cat.cpp.i
-.PHONY : include/igl/cat.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.cpp.i
 
-include/igl/cat.s: include/igl/cat.cpp.s
-.PHONY : include/igl/cat.s
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.s: Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.s
 
 # target to generate assembly for a file
-include/igl/cat.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cat.cpp.s
-.PHONY : include/igl/cat.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.cpp.s
 
-include/igl/ceil.o: include/igl/ceil.cpp.o
-.PHONY : include/igl/ceil.o
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.o: Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.o
 
 # target to build an object file
-include/igl/ceil.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/ceil.cpp.o
-.PHONY : include/igl/ceil.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.cpp.o
 
-include/igl/ceil.i: include/igl/ceil.cpp.i
-.PHONY : include/igl/ceil.i
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.i: Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.i
 
 # target to preprocess a source file
-include/igl/ceil.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/ceil.cpp.i
-.PHONY : include/igl/ceil.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.cpp.i
 
-include/igl/ceil.s: include/igl/ceil.cpp.s
-.PHONY : include/igl/ceil.s
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.s: Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.s
 
 # target to generate assembly for a file
-include/igl/ceil.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/ceil.cpp.s
-.PHONY : include/igl/ceil.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.cpp.s
 
-include/igl/centroid.o: include/igl/centroid.cpp.o
-.PHONY : include/igl/centroid.o
+Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.o: Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.o
 
 # target to build an object file
-include/igl/centroid.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/centroid.cpp.o
-.PHONY : include/igl/centroid.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.cpp.o
 
-include/igl/centroid.i: include/igl/centroid.cpp.i
-.PHONY : include/igl/centroid.i
+Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.i: Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.i
 
 # target to preprocess a source file
-include/igl/centroid.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/centroid.cpp.i
-.PHONY : include/igl/centroid.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.cpp.i
 
-include/igl/centroid.s: include/igl/centroid.cpp.s
-.PHONY : include/igl/centroid.s
+Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.s: Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.s
 
 # target to generate assembly for a file
-include/igl/centroid.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/centroid.cpp.s
-.PHONY : include/igl/centroid.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.cpp.s
 
-include/igl/cgal/complex_to_mesh.o: include/igl/cgal/complex_to_mesh.cpp.o
-.PHONY : include/igl/cgal/complex_to_mesh.o
+Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.o: Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.o
 
 # target to build an object file
-include/igl/cgal/complex_to_mesh.cpp.o:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/complex_to_mesh.cpp.o
-.PHONY : include/igl/cgal/complex_to_mesh.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.cpp.o
 
-include/igl/cgal/complex_to_mesh.i: include/igl/cgal/complex_to_mesh.cpp.i
-.PHONY : include/igl/cgal/complex_to_mesh.i
+Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.i: Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.i
 
 # target to preprocess a source file
-include/igl/cgal/complex_to_mesh.cpp.i:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/complex_to_mesh.cpp.i
-.PHONY : include/igl/cgal/complex_to_mesh.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.cpp.i
 
-include/igl/cgal/complex_to_mesh.s: include/igl/cgal/complex_to_mesh.cpp.s
-.PHONY : include/igl/cgal/complex_to_mesh.s
+Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.s: Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.s
 
 # target to generate assembly for a file
-include/igl/cgal/complex_to_mesh.cpp.s:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/complex_to_mesh.cpp.s
-.PHONY : include/igl/cgal/complex_to_mesh.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.cpp.s
 
-include/igl/cgal/intersect_other.o: include/igl/cgal/intersect_other.cpp.o
-.PHONY : include/igl/cgal/intersect_other.o
+Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.o: Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.o
 
 # target to build an object file
-include/igl/cgal/intersect_other.cpp.o:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/intersect_other.cpp.o
-.PHONY : include/igl/cgal/intersect_other.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.cpp.o
 
-include/igl/cgal/intersect_other.i: include/igl/cgal/intersect_other.cpp.i
-.PHONY : include/igl/cgal/intersect_other.i
+Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.i: Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.i
 
 # target to preprocess a source file
-include/igl/cgal/intersect_other.cpp.i:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/intersect_other.cpp.i
-.PHONY : include/igl/cgal/intersect_other.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.cpp.i
 
-include/igl/cgal/intersect_other.s: include/igl/cgal/intersect_other.cpp.s
-.PHONY : include/igl/cgal/intersect_other.s
+Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.s: Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.s
 
 # target to generate assembly for a file
-include/igl/cgal/intersect_other.cpp.s:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/intersect_other.cpp.s
-.PHONY : include/igl/cgal/intersect_other.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.cpp.s
 
-include/igl/cgal/mesh_to_cgal_triangle_list.o: include/igl/cgal/mesh_to_cgal_triangle_list.cpp.o
-.PHONY : include/igl/cgal/mesh_to_cgal_triangle_list.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cat.o: Users/daniele/Dropbox/igl/libigl/include/igl/cat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cat.o
 
 # target to build an object file
-include/igl/cgal/mesh_to_cgal_triangle_list.cpp.o:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.o
-.PHONY : include/igl/cgal/mesh_to_cgal_triangle_list.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cat.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cat.cpp.o
 
-include/igl/cgal/mesh_to_cgal_triangle_list.i: include/igl/cgal/mesh_to_cgal_triangle_list.cpp.i
-.PHONY : include/igl/cgal/mesh_to_cgal_triangle_list.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cat.i: Users/daniele/Dropbox/igl/libigl/include/igl/cat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cat.i
 
 # target to preprocess a source file
-include/igl/cgal/mesh_to_cgal_triangle_list.cpp.i:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.i
-.PHONY : include/igl/cgal/mesh_to_cgal_triangle_list.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cat.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cat.cpp.i
 
-include/igl/cgal/mesh_to_cgal_triangle_list.s: include/igl/cgal/mesh_to_cgal_triangle_list.cpp.s
-.PHONY : include/igl/cgal/mesh_to_cgal_triangle_list.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cat.s: Users/daniele/Dropbox/igl/libigl/include/igl/cat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cat.s
 
 # target to generate assembly for a file
-include/igl/cgal/mesh_to_cgal_triangle_list.cpp.s:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.s
-.PHONY : include/igl/cgal/mesh_to_cgal_triangle_list.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cat.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cat.cpp.s
 
-include/igl/cgal/mesh_to_polyhedron.o: include/igl/cgal/mesh_to_polyhedron.cpp.o
-.PHONY : include/igl/cgal/mesh_to_polyhedron.o
+Users/daniele/Dropbox/igl/libigl/include/igl/ceil.o: Users/daniele/Dropbox/igl/libigl/include/igl/ceil.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ceil.o
 
 # target to build an object file
-include/igl/cgal/mesh_to_polyhedron.cpp.o:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/mesh_to_polyhedron.cpp.o
-.PHONY : include/igl/cgal/mesh_to_polyhedron.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/ceil.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/ceil.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ceil.cpp.o
 
-include/igl/cgal/mesh_to_polyhedron.i: include/igl/cgal/mesh_to_polyhedron.cpp.i
-.PHONY : include/igl/cgal/mesh_to_polyhedron.i
+Users/daniele/Dropbox/igl/libigl/include/igl/ceil.i: Users/daniele/Dropbox/igl/libigl/include/igl/ceil.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ceil.i
 
 # target to preprocess a source file
-include/igl/cgal/mesh_to_polyhedron.cpp.i:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/mesh_to_polyhedron.cpp.i
-.PHONY : include/igl/cgal/mesh_to_polyhedron.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/ceil.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/ceil.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ceil.cpp.i
 
-include/igl/cgal/mesh_to_polyhedron.s: include/igl/cgal/mesh_to_polyhedron.cpp.s
-.PHONY : include/igl/cgal/mesh_to_polyhedron.s
+Users/daniele/Dropbox/igl/libigl/include/igl/ceil.s: Users/daniele/Dropbox/igl/libigl/include/igl/ceil.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ceil.s
 
 # target to generate assembly for a file
-include/igl/cgal/mesh_to_polyhedron.cpp.s:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/mesh_to_polyhedron.cpp.s
-.PHONY : include/igl/cgal/mesh_to_polyhedron.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/ceil.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/ceil.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ceil.cpp.s
 
-include/igl/cgal/order_facets_around_edges.o: include/igl/cgal/order_facets_around_edges.cpp.o
-.PHONY : include/igl/cgal/order_facets_around_edges.o
+Users/daniele/Dropbox/igl/libigl/include/igl/centroid.o: Users/daniele/Dropbox/igl/libigl/include/igl/centroid.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/centroid.o
 
 # target to build an object file
-include/igl/cgal/order_facets_around_edges.cpp.o:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/order_facets_around_edges.cpp.o
-.PHONY : include/igl/cgal/order_facets_around_edges.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/centroid.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/centroid.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/centroid.cpp.o
 
-include/igl/cgal/order_facets_around_edges.i: include/igl/cgal/order_facets_around_edges.cpp.i
-.PHONY : include/igl/cgal/order_facets_around_edges.i
+Users/daniele/Dropbox/igl/libigl/include/igl/centroid.i: Users/daniele/Dropbox/igl/libigl/include/igl/centroid.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/centroid.i
 
 # target to preprocess a source file
-include/igl/cgal/order_facets_around_edges.cpp.i:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/order_facets_around_edges.cpp.i
-.PHONY : include/igl/cgal/order_facets_around_edges.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/centroid.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/centroid.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/centroid.cpp.i
 
-include/igl/cgal/order_facets_around_edges.s: include/igl/cgal/order_facets_around_edges.cpp.s
-.PHONY : include/igl/cgal/order_facets_around_edges.s
+Users/daniele/Dropbox/igl/libigl/include/igl/centroid.s: Users/daniele/Dropbox/igl/libigl/include/igl/centroid.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/centroid.s
 
 # target to generate assembly for a file
-include/igl/cgal/order_facets_around_edges.cpp.s:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/order_facets_around_edges.cpp.s
-.PHONY : include/igl/cgal/order_facets_around_edges.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/centroid.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/centroid.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/centroid.cpp.s
 
-include/igl/cgal/outer_hull.o: include/igl/cgal/outer_hull.cpp.o
-.PHONY : include/igl/cgal/outer_hull.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.o: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.o
 
 # target to build an object file
-include/igl/cgal/outer_hull.cpp.o:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/outer_hull.cpp.o
-.PHONY : include/igl/cgal/outer_hull.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.cpp.o:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.cpp.o
 
-include/igl/cgal/outer_hull.i: include/igl/cgal/outer_hull.cpp.i
-.PHONY : include/igl/cgal/outer_hull.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.i: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.i
 
 # target to preprocess a source file
-include/igl/cgal/outer_hull.cpp.i:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/outer_hull.cpp.i
-.PHONY : include/igl/cgal/outer_hull.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.cpp.i:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.cpp.i
 
-include/igl/cgal/outer_hull.s: include/igl/cgal/outer_hull.cpp.s
-.PHONY : include/igl/cgal/outer_hull.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.s: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.s
 
 # target to generate assembly for a file
-include/igl/cgal/outer_hull.cpp.s:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/outer_hull.cpp.s
-.PHONY : include/igl/cgal/outer_hull.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.cpp.s:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.cpp.s
 
-include/igl/cgal/peel_outer_hull_layers.o: include/igl/cgal/peel_outer_hull_layers.cpp.o
-.PHONY : include/igl/cgal/peel_outer_hull_layers.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.o: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.o
 
 # target to build an object file
-include/igl/cgal/peel_outer_hull_layers.cpp.o:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/peel_outer_hull_layers.cpp.o
-.PHONY : include/igl/cgal/peel_outer_hull_layers.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.cpp.o:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.cpp.o
 
-include/igl/cgal/peel_outer_hull_layers.i: include/igl/cgal/peel_outer_hull_layers.cpp.i
-.PHONY : include/igl/cgal/peel_outer_hull_layers.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.i: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.i
 
 # target to preprocess a source file
-include/igl/cgal/peel_outer_hull_layers.cpp.i:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/peel_outer_hull_layers.cpp.i
-.PHONY : include/igl/cgal/peel_outer_hull_layers.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.cpp.i:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.cpp.i
 
-include/igl/cgal/peel_outer_hull_layers.s: include/igl/cgal/peel_outer_hull_layers.cpp.s
-.PHONY : include/igl/cgal/peel_outer_hull_layers.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.s: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.s
 
 # target to generate assembly for a file
-include/igl/cgal/peel_outer_hull_layers.cpp.s:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/peel_outer_hull_layers.cpp.s
-.PHONY : include/igl/cgal/peel_outer_hull_layers.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.cpp.s:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.cpp.s
 
-include/igl/cgal/point_mesh_squared_distance.o: include/igl/cgal/point_mesh_squared_distance.cpp.o
-.PHONY : include/igl/cgal/point_mesh_squared_distance.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.o: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.o
 
 # target to build an object file
-include/igl/cgal/point_mesh_squared_distance.cpp.o:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/point_mesh_squared_distance.cpp.o
-.PHONY : include/igl/cgal/point_mesh_squared_distance.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.o:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.o
 
-include/igl/cgal/point_mesh_squared_distance.i: include/igl/cgal/point_mesh_squared_distance.cpp.i
-.PHONY : include/igl/cgal/point_mesh_squared_distance.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.i: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.i
 
 # target to preprocess a source file
-include/igl/cgal/point_mesh_squared_distance.cpp.i:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/point_mesh_squared_distance.cpp.i
-.PHONY : include/igl/cgal/point_mesh_squared_distance.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.i:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.i
 
-include/igl/cgal/point_mesh_squared_distance.s: include/igl/cgal/point_mesh_squared_distance.cpp.s
-.PHONY : include/igl/cgal/point_mesh_squared_distance.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.s: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.s
 
 # target to generate assembly for a file
-include/igl/cgal/point_mesh_squared_distance.cpp.s:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/point_mesh_squared_distance.cpp.s
-.PHONY : include/igl/cgal/point_mesh_squared_distance.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.s:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.cpp.s
 
-include/igl/cgal/polyhedron_to_mesh.o: include/igl/cgal/polyhedron_to_mesh.cpp.o
-.PHONY : include/igl/cgal/polyhedron_to_mesh.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.o: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.o
 
 # target to build an object file
-include/igl/cgal/polyhedron_to_mesh.cpp.o:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/polyhedron_to_mesh.cpp.o
-.PHONY : include/igl/cgal/polyhedron_to_mesh.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.cpp.o:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.cpp.o
 
-include/igl/cgal/polyhedron_to_mesh.i: include/igl/cgal/polyhedron_to_mesh.cpp.i
-.PHONY : include/igl/cgal/polyhedron_to_mesh.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.i: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.i
 
 # target to preprocess a source file
-include/igl/cgal/polyhedron_to_mesh.cpp.i:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/polyhedron_to_mesh.cpp.i
-.PHONY : include/igl/cgal/polyhedron_to_mesh.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.cpp.i:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.cpp.i
 
-include/igl/cgal/polyhedron_to_mesh.s: include/igl/cgal/polyhedron_to_mesh.cpp.s
-.PHONY : include/igl/cgal/polyhedron_to_mesh.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.s: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.s
 
 # target to generate assembly for a file
-include/igl/cgal/polyhedron_to_mesh.cpp.s:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/polyhedron_to_mesh.cpp.s
-.PHONY : include/igl/cgal/polyhedron_to_mesh.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.cpp.s:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.cpp.s
 
-include/igl/cgal/remesh_self_intersections.o: include/igl/cgal/remesh_self_intersections.cpp.o
-.PHONY : include/igl/cgal/remesh_self_intersections.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.o: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.o
 
 # target to build an object file
-include/igl/cgal/remesh_self_intersections.cpp.o:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/remesh_self_intersections.cpp.o
-.PHONY : include/igl/cgal/remesh_self_intersections.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.cpp.o:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.cpp.o
 
-include/igl/cgal/remesh_self_intersections.i: include/igl/cgal/remesh_self_intersections.cpp.i
-.PHONY : include/igl/cgal/remesh_self_intersections.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.i: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.i
 
 # target to preprocess a source file
-include/igl/cgal/remesh_self_intersections.cpp.i:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/remesh_self_intersections.cpp.i
-.PHONY : include/igl/cgal/remesh_self_intersections.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.cpp.i:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.cpp.i
 
-include/igl/cgal/remesh_self_intersections.s: include/igl/cgal/remesh_self_intersections.cpp.s
-.PHONY : include/igl/cgal/remesh_self_intersections.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.s: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.s
 
 # target to generate assembly for a file
-include/igl/cgal/remesh_self_intersections.cpp.s:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/remesh_self_intersections.cpp.s
-.PHONY : include/igl/cgal/remesh_self_intersections.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.cpp.s:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.cpp.s
 
-include/igl/cgal/signed_distance_isosurface.o: include/igl/cgal/signed_distance_isosurface.cpp.o
-.PHONY : include/igl/cgal/signed_distance_isosurface.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.o: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.o
 
 # target to build an object file
-include/igl/cgal/signed_distance_isosurface.cpp.o:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/signed_distance_isosurface.cpp.o
-.PHONY : include/igl/cgal/signed_distance_isosurface.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.cpp.o:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.cpp.o
 
-include/igl/cgal/signed_distance_isosurface.i: include/igl/cgal/signed_distance_isosurface.cpp.i
-.PHONY : include/igl/cgal/signed_distance_isosurface.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.i: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.i
 
 # target to preprocess a source file
-include/igl/cgal/signed_distance_isosurface.cpp.i:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/signed_distance_isosurface.cpp.i
-.PHONY : include/igl/cgal/signed_distance_isosurface.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.cpp.i:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.cpp.i
 
-include/igl/cgal/signed_distance_isosurface.s: include/igl/cgal/signed_distance_isosurface.cpp.s
-.PHONY : include/igl/cgal/signed_distance_isosurface.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.s: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.s
 
 # target to generate assembly for a file
-include/igl/cgal/signed_distance_isosurface.cpp.s:
-	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/include/igl/cgal/signed_distance_isosurface.cpp.s
-.PHONY : include/igl/cgal/signed_distance_isosurface.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.cpp.s:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.cpp.s
 
-include/igl/circulation.o: include/igl/circulation.cpp.o
-.PHONY : include/igl/circulation.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.o: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.o
 
 # target to build an object file
-include/igl/circulation.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/circulation.cpp.o
-.PHONY : include/igl/circulation.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.cpp.o:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.cpp.o
 
-include/igl/circulation.i: include/igl/circulation.cpp.i
-.PHONY : include/igl/circulation.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.i: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.i
 
 # target to preprocess a source file
-include/igl/circulation.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/circulation.cpp.i
-.PHONY : include/igl/circulation.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.cpp.i:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.cpp.i
 
-include/igl/circulation.s: include/igl/circulation.cpp.s
-.PHONY : include/igl/circulation.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.s: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.s
 
 # target to generate assembly for a file
-include/igl/circulation.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/circulation.cpp.s
-.PHONY : include/igl/circulation.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.cpp.s:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.cpp.s
 
-include/igl/collapse_edge.o: include/igl/collapse_edge.cpp.o
-.PHONY : include/igl/collapse_edge.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.o: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.o
 
 # target to build an object file
-include/igl/collapse_edge.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/collapse_edge.cpp.o
-.PHONY : include/igl/collapse_edge.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.cpp.o:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.cpp.o
 
-include/igl/collapse_edge.i: include/igl/collapse_edge.cpp.i
-.PHONY : include/igl/collapse_edge.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.i: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.i
 
 # target to preprocess a source file
-include/igl/collapse_edge.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/collapse_edge.cpp.i
-.PHONY : include/igl/collapse_edge.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.cpp.i:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.cpp.i
 
-include/igl/collapse_edge.s: include/igl/collapse_edge.cpp.s
-.PHONY : include/igl/collapse_edge.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.s: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.s
 
 # target to generate assembly for a file
-include/igl/collapse_edge.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/collapse_edge.cpp.s
-.PHONY : include/igl/collapse_edge.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.cpp.s:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.cpp.s
 
-include/igl/collapse_small_triangles.o: include/igl/collapse_small_triangles.cpp.o
-.PHONY : include/igl/collapse_small_triangles.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.o: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.o
 
 # target to build an object file
-include/igl/collapse_small_triangles.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/collapse_small_triangles.cpp.o
-.PHONY : include/igl/collapse_small_triangles.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.cpp.o:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.cpp.o
 
-include/igl/collapse_small_triangles.i: include/igl/collapse_small_triangles.cpp.i
-.PHONY : include/igl/collapse_small_triangles.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.i: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.i
 
 # target to preprocess a source file
-include/igl/collapse_small_triangles.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/collapse_small_triangles.cpp.i
-.PHONY : include/igl/collapse_small_triangles.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.cpp.i:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.cpp.i
 
-include/igl/collapse_small_triangles.s: include/igl/collapse_small_triangles.cpp.s
-.PHONY : include/igl/collapse_small_triangles.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.s: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.s
 
 # target to generate assembly for a file
-include/igl/collapse_small_triangles.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/collapse_small_triangles.cpp.s
-.PHONY : include/igl/collapse_small_triangles.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.cpp.s:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.cpp.s
 
-include/igl/colon.o: include/igl/colon.cpp.o
-.PHONY : include/igl/colon.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.o: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.o
 
 # target to build an object file
-include/igl/colon.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/colon.cpp.o
-.PHONY : include/igl/colon.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.cpp.o:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.cpp.o
 
-include/igl/colon.i: include/igl/colon.cpp.i
-.PHONY : include/igl/colon.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.i: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.i
 
 # target to preprocess a source file
-include/igl/colon.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/colon.cpp.i
-.PHONY : include/igl/colon.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.cpp.i:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.cpp.i
 
-include/igl/colon.s: include/igl/colon.cpp.s
-.PHONY : include/igl/colon.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.s: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.s
 
 # target to generate assembly for a file
-include/igl/colon.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/colon.cpp.s
-.PHONY : include/igl/colon.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.cpp.s:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.cpp.s
 
-include/igl/column_to_quats.o: include/igl/column_to_quats.cpp.o
-.PHONY : include/igl/column_to_quats.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.o: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.o
 
 # target to build an object file
-include/igl/column_to_quats.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/column_to_quats.cpp.o
-.PHONY : include/igl/column_to_quats.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.cpp.o:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.cpp.o
 
-include/igl/column_to_quats.i: include/igl/column_to_quats.cpp.i
-.PHONY : include/igl/column_to_quats.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.i: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.i
 
 # target to preprocess a source file
-include/igl/column_to_quats.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/column_to_quats.cpp.i
-.PHONY : include/igl/column_to_quats.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.cpp.i:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.cpp.i
 
-include/igl/column_to_quats.s: include/igl/column_to_quats.cpp.s
-.PHONY : include/igl/column_to_quats.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.s: Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.s
 
 # target to generate assembly for a file
-include/igl/column_to_quats.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/column_to_quats.cpp.s
-.PHONY : include/igl/column_to_quats.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.cpp.s:
+	$(MAKE) -f CMakeFiles/iglcgal.dir/build.make CMakeFiles/iglcgal.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.cpp.s
 
-include/igl/columnize.o: include/igl/columnize.cpp.o
-.PHONY : include/igl/columnize.o
+Users/daniele/Dropbox/igl/libigl/include/igl/circulation.o: Users/daniele/Dropbox/igl/libigl/include/igl/circulation.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/circulation.o
 
 # target to build an object file
-include/igl/columnize.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/columnize.cpp.o
-.PHONY : include/igl/columnize.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/circulation.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/circulation.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/circulation.cpp.o
 
-include/igl/columnize.i: include/igl/columnize.cpp.i
-.PHONY : include/igl/columnize.i
+Users/daniele/Dropbox/igl/libigl/include/igl/circulation.i: Users/daniele/Dropbox/igl/libigl/include/igl/circulation.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/circulation.i
 
 # target to preprocess a source file
-include/igl/columnize.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/columnize.cpp.i
-.PHONY : include/igl/columnize.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/circulation.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/circulation.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/circulation.cpp.i
 
-include/igl/columnize.s: include/igl/columnize.cpp.s
-.PHONY : include/igl/columnize.s
+Users/daniele/Dropbox/igl/libigl/include/igl/circulation.s: Users/daniele/Dropbox/igl/libigl/include/igl/circulation.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/circulation.s
 
 # target to generate assembly for a file
-include/igl/columnize.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/columnize.cpp.s
-.PHONY : include/igl/columnize.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/circulation.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/circulation.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/circulation.cpp.s
 
-include/igl/comb_cross_field.o: include/igl/comb_cross_field.cpp.o
-.PHONY : include/igl/comb_cross_field.o
+Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.o: Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.o
 
 # target to build an object file
-include/igl/comb_cross_field.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/comb_cross_field.cpp.o
-.PHONY : include/igl/comb_cross_field.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.cpp.o
 
-include/igl/comb_cross_field.i: include/igl/comb_cross_field.cpp.i
-.PHONY : include/igl/comb_cross_field.i
+Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.i: Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.i
 
 # target to preprocess a source file
-include/igl/comb_cross_field.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/comb_cross_field.cpp.i
-.PHONY : include/igl/comb_cross_field.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.cpp.i
 
-include/igl/comb_cross_field.s: include/igl/comb_cross_field.cpp.s
-.PHONY : include/igl/comb_cross_field.s
+Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.s: Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.s
 
 # target to generate assembly for a file
-include/igl/comb_cross_field.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/comb_cross_field.cpp.s
-.PHONY : include/igl/comb_cross_field.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.cpp.s
 
-include/igl/comb_frame_field.o: include/igl/comb_frame_field.cpp.o
-.PHONY : include/igl/comb_frame_field.o
+Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.o: Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.o
 
 # target to build an object file
-include/igl/comb_frame_field.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/comb_frame_field.cpp.o
-.PHONY : include/igl/comb_frame_field.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.cpp.o
 
-include/igl/comb_frame_field.i: include/igl/comb_frame_field.cpp.i
-.PHONY : include/igl/comb_frame_field.i
+Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.i: Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.i
 
 # target to preprocess a source file
-include/igl/comb_frame_field.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/comb_frame_field.cpp.i
-.PHONY : include/igl/comb_frame_field.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.cpp.i
 
-include/igl/comb_frame_field.s: include/igl/comb_frame_field.cpp.s
-.PHONY : include/igl/comb_frame_field.s
+Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.s: Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.s
 
 # target to generate assembly for a file
-include/igl/comb_frame_field.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/comb_frame_field.cpp.s
-.PHONY : include/igl/comb_frame_field.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.cpp.s
 
-include/igl/comb_line_field.o: include/igl/comb_line_field.cpp.o
-.PHONY : include/igl/comb_line_field.o
+Users/daniele/Dropbox/igl/libigl/include/igl/colon.o: Users/daniele/Dropbox/igl/libigl/include/igl/colon.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/colon.o
 
 # target to build an object file
-include/igl/comb_line_field.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/comb_line_field.cpp.o
-.PHONY : include/igl/comb_line_field.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/colon.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/colon.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/colon.cpp.o
 
-include/igl/comb_line_field.i: include/igl/comb_line_field.cpp.i
-.PHONY : include/igl/comb_line_field.i
+Users/daniele/Dropbox/igl/libigl/include/igl/colon.i: Users/daniele/Dropbox/igl/libigl/include/igl/colon.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/colon.i
 
 # target to preprocess a source file
-include/igl/comb_line_field.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/comb_line_field.cpp.i
-.PHONY : include/igl/comb_line_field.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/colon.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/colon.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/colon.cpp.i
 
-include/igl/comb_line_field.s: include/igl/comb_line_field.cpp.s
-.PHONY : include/igl/comb_line_field.s
+Users/daniele/Dropbox/igl/libigl/include/igl/colon.s: Users/daniele/Dropbox/igl/libigl/include/igl/colon.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/colon.s
 
 # target to generate assembly for a file
-include/igl/comb_line_field.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/comb_line_field.cpp.s
-.PHONY : include/igl/comb_line_field.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/colon.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/colon.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/colon.cpp.s
 
-include/igl/comiso/frame_field.o: include/igl/comiso/frame_field.cpp.o
-.PHONY : include/igl/comiso/frame_field.o
+Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.o: Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.o
 
 # target to build an object file
-include/igl/comiso/frame_field.cpp.o:
-	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/include/igl/comiso/frame_field.cpp.o
-.PHONY : include/igl/comiso/frame_field.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.cpp.o
 
-include/igl/comiso/frame_field.i: include/igl/comiso/frame_field.cpp.i
-.PHONY : include/igl/comiso/frame_field.i
+Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.i: Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.i
 
 # target to preprocess a source file
-include/igl/comiso/frame_field.cpp.i:
-	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/include/igl/comiso/frame_field.cpp.i
-.PHONY : include/igl/comiso/frame_field.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.cpp.i
 
-include/igl/comiso/frame_field.s: include/igl/comiso/frame_field.cpp.s
-.PHONY : include/igl/comiso/frame_field.s
+Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.s: Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.s
 
 # target to generate assembly for a file
-include/igl/comiso/frame_field.cpp.s:
-	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/include/igl/comiso/frame_field.cpp.s
-.PHONY : include/igl/comiso/frame_field.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.cpp.s
 
-include/igl/comiso/miq.o: include/igl/comiso/miq.cpp.o
-.PHONY : include/igl/comiso/miq.o
+Users/daniele/Dropbox/igl/libigl/include/igl/columnize.o: Users/daniele/Dropbox/igl/libigl/include/igl/columnize.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/columnize.o
 
 # target to build an object file
-include/igl/comiso/miq.cpp.o:
-	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/include/igl/comiso/miq.cpp.o
-.PHONY : include/igl/comiso/miq.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/columnize.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/columnize.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/columnize.cpp.o
 
-include/igl/comiso/miq.i: include/igl/comiso/miq.cpp.i
-.PHONY : include/igl/comiso/miq.i
+Users/daniele/Dropbox/igl/libigl/include/igl/columnize.i: Users/daniele/Dropbox/igl/libigl/include/igl/columnize.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/columnize.i
 
 # target to preprocess a source file
-include/igl/comiso/miq.cpp.i:
-	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/include/igl/comiso/miq.cpp.i
-.PHONY : include/igl/comiso/miq.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/columnize.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/columnize.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/columnize.cpp.i
 
-include/igl/comiso/miq.s: include/igl/comiso/miq.cpp.s
-.PHONY : include/igl/comiso/miq.s
+Users/daniele/Dropbox/igl/libigl/include/igl/columnize.s: Users/daniele/Dropbox/igl/libigl/include/igl/columnize.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/columnize.s
 
 # target to generate assembly for a file
-include/igl/comiso/miq.cpp.s:
-	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/include/igl/comiso/miq.cpp.s
-.PHONY : include/igl/comiso/miq.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/columnize.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/columnize.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/columnize.cpp.s
 
-include/igl/comiso/nrosy.o: include/igl/comiso/nrosy.cpp.o
-.PHONY : include/igl/comiso/nrosy.o
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.o: Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.o
 
 # target to build an object file
-include/igl/comiso/nrosy.cpp.o:
-	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/include/igl/comiso/nrosy.cpp.o
-.PHONY : include/igl/comiso/nrosy.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.cpp.o
 
-include/igl/comiso/nrosy.i: include/igl/comiso/nrosy.cpp.i
-.PHONY : include/igl/comiso/nrosy.i
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.i: Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.i
 
 # target to preprocess a source file
-include/igl/comiso/nrosy.cpp.i:
-	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/include/igl/comiso/nrosy.cpp.i
-.PHONY : include/igl/comiso/nrosy.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.cpp.i
 
-include/igl/comiso/nrosy.s: include/igl/comiso/nrosy.cpp.s
-.PHONY : include/igl/comiso/nrosy.s
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.s: Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.s
 
 # target to generate assembly for a file
-include/igl/comiso/nrosy.cpp.s:
-	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/include/igl/comiso/nrosy.cpp.s
-.PHONY : include/igl/comiso/nrosy.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.cpp.s
 
-include/igl/compile_and_link_program.o: include/igl/compile_and_link_program.cpp.o
-.PHONY : include/igl/compile_and_link_program.o
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.o: Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.o
 
 # target to build an object file
-include/igl/compile_and_link_program.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/compile_and_link_program.cpp.o
-.PHONY : include/igl/compile_and_link_program.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.cpp.o
 
-include/igl/compile_and_link_program.i: include/igl/compile_and_link_program.cpp.i
-.PHONY : include/igl/compile_and_link_program.i
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.i: Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.i
 
 # target to preprocess a source file
-include/igl/compile_and_link_program.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/compile_and_link_program.cpp.i
-.PHONY : include/igl/compile_and_link_program.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.cpp.i
 
-include/igl/compile_and_link_program.s: include/igl/compile_and_link_program.cpp.s
-.PHONY : include/igl/compile_and_link_program.s
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.s: Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.s
 
 # target to generate assembly for a file
-include/igl/compile_and_link_program.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/compile_and_link_program.cpp.s
-.PHONY : include/igl/compile_and_link_program.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.cpp.s
 
-include/igl/compile_shader.o: include/igl/compile_shader.cpp.o
-.PHONY : include/igl/compile_shader.o
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.o: Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.o
 
 # target to build an object file
-include/igl/compile_shader.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/compile_shader.cpp.o
-.PHONY : include/igl/compile_shader.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.cpp.o
 
-include/igl/compile_shader.i: include/igl/compile_shader.cpp.i
-.PHONY : include/igl/compile_shader.i
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.i: Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.i
 
 # target to preprocess a source file
-include/igl/compile_shader.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/compile_shader.cpp.i
-.PHONY : include/igl/compile_shader.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.cpp.i
 
-include/igl/compile_shader.s: include/igl/compile_shader.cpp.s
-.PHONY : include/igl/compile_shader.s
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.s: Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.s
 
 # target to generate assembly for a file
-include/igl/compile_shader.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/compile_shader.cpp.s
-.PHONY : include/igl/compile_shader.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.cpp.s
 
-include/igl/compute_frame_field_bisectors.o: include/igl/compute_frame_field_bisectors.cpp.o
-.PHONY : include/igl/compute_frame_field_bisectors.o
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.o: Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.o
 
 # target to build an object file
-include/igl/compute_frame_field_bisectors.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/compute_frame_field_bisectors.cpp.o
-.PHONY : include/igl/compute_frame_field_bisectors.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.cpp.o:
+	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.cpp.o
 
-include/igl/compute_frame_field_bisectors.i: include/igl/compute_frame_field_bisectors.cpp.i
-.PHONY : include/igl/compute_frame_field_bisectors.i
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.i: Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.i
 
 # target to preprocess a source file
-include/igl/compute_frame_field_bisectors.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/compute_frame_field_bisectors.cpp.i
-.PHONY : include/igl/compute_frame_field_bisectors.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.cpp.i:
+	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.cpp.i
 
-include/igl/compute_frame_field_bisectors.s: include/igl/compute_frame_field_bisectors.cpp.s
-.PHONY : include/igl/compute_frame_field_bisectors.s
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.s: Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.s
 
 # target to generate assembly for a file
-include/igl/compute_frame_field_bisectors.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/compute_frame_field_bisectors.cpp.s
-.PHONY : include/igl/compute_frame_field_bisectors.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.cpp.s:
+	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.cpp.s
 
-include/igl/conjugate_frame_fields.o: include/igl/conjugate_frame_fields.cpp.o
-.PHONY : include/igl/conjugate_frame_fields.o
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.o: Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.o
 
 # target to build an object file
-include/igl/conjugate_frame_fields.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/conjugate_frame_fields.cpp.o
-.PHONY : include/igl/conjugate_frame_fields.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.cpp.o:
+	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.cpp.o
 
-include/igl/conjugate_frame_fields.i: include/igl/conjugate_frame_fields.cpp.i
-.PHONY : include/igl/conjugate_frame_fields.i
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.i: Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.i
 
 # target to preprocess a source file
-include/igl/conjugate_frame_fields.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/conjugate_frame_fields.cpp.i
-.PHONY : include/igl/conjugate_frame_fields.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.cpp.i:
+	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.cpp.i
 
-include/igl/conjugate_frame_fields.s: include/igl/conjugate_frame_fields.cpp.s
-.PHONY : include/igl/conjugate_frame_fields.s
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.s: Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.s
 
 # target to generate assembly for a file
-include/igl/conjugate_frame_fields.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/conjugate_frame_fields.cpp.s
-.PHONY : include/igl/conjugate_frame_fields.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.cpp.s:
+	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.cpp.s
 
-include/igl/cotmatrix.o: include/igl/cotmatrix.cpp.o
-.PHONY : include/igl/cotmatrix.o
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.o: Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.o
 
 # target to build an object file
-include/igl/cotmatrix.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cotmatrix.cpp.o
-.PHONY : include/igl/cotmatrix.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.cpp.o:
+	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.cpp.o
 
-include/igl/cotmatrix.i: include/igl/cotmatrix.cpp.i
-.PHONY : include/igl/cotmatrix.i
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.i: Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.i
 
 # target to preprocess a source file
-include/igl/cotmatrix.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cotmatrix.cpp.i
-.PHONY : include/igl/cotmatrix.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.cpp.i:
+	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.cpp.i
 
-include/igl/cotmatrix.s: include/igl/cotmatrix.cpp.s
-.PHONY : include/igl/cotmatrix.s
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.s: Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.s
 
 # target to generate assembly for a file
-include/igl/cotmatrix.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cotmatrix.cpp.s
-.PHONY : include/igl/cotmatrix.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.cpp.s:
+	$(MAKE) -f CMakeFiles/iglcomiso.dir/build.make CMakeFiles/iglcomiso.dir/Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.cpp.s
 
-include/igl/cotmatrix_entries.o: include/igl/cotmatrix_entries.cpp.o
-.PHONY : include/igl/cotmatrix_entries.o
+Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.o: Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.o
 
 # target to build an object file
-include/igl/cotmatrix_entries.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cotmatrix_entries.cpp.o
-.PHONY : include/igl/cotmatrix_entries.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.cpp.o
 
-include/igl/cotmatrix_entries.i: include/igl/cotmatrix_entries.cpp.i
-.PHONY : include/igl/cotmatrix_entries.i
+Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.i: Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.i
 
 # target to preprocess a source file
-include/igl/cotmatrix_entries.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cotmatrix_entries.cpp.i
-.PHONY : include/igl/cotmatrix_entries.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.cpp.i
 
-include/igl/cotmatrix_entries.s: include/igl/cotmatrix_entries.cpp.s
-.PHONY : include/igl/cotmatrix_entries.s
+Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.s: Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.s
 
 # target to generate assembly for a file
-include/igl/cotmatrix_entries.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cotmatrix_entries.cpp.s
-.PHONY : include/igl/cotmatrix_entries.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.cpp.s
 
-include/igl/covariance_scatter_matrix.o: include/igl/covariance_scatter_matrix.cpp.o
-.PHONY : include/igl/covariance_scatter_matrix.o
+Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.o: Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.o
 
 # target to build an object file
-include/igl/covariance_scatter_matrix.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/covariance_scatter_matrix.cpp.o
-.PHONY : include/igl/covariance_scatter_matrix.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.cpp.o
 
-include/igl/covariance_scatter_matrix.i: include/igl/covariance_scatter_matrix.cpp.i
-.PHONY : include/igl/covariance_scatter_matrix.i
+Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.i: Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.i
 
 # target to preprocess a source file
-include/igl/covariance_scatter_matrix.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/covariance_scatter_matrix.cpp.i
-.PHONY : include/igl/covariance_scatter_matrix.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.cpp.i
 
-include/igl/covariance_scatter_matrix.s: include/igl/covariance_scatter_matrix.cpp.s
-.PHONY : include/igl/covariance_scatter_matrix.s
+Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.s: Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.s
 
 # target to generate assembly for a file
-include/igl/covariance_scatter_matrix.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/covariance_scatter_matrix.cpp.s
-.PHONY : include/igl/covariance_scatter_matrix.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.cpp.s
 
-include/igl/create_index_vbo.o: include/igl/create_index_vbo.cpp.o
-.PHONY : include/igl/create_index_vbo.o
+Users/daniele/Dropbox/igl/libigl/include/igl/components.o: Users/daniele/Dropbox/igl/libigl/include/igl/components.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/components.o
 
 # target to build an object file
-include/igl/create_index_vbo.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/create_index_vbo.cpp.o
-.PHONY : include/igl/create_index_vbo.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/components.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/components.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/components.cpp.o
 
-include/igl/create_index_vbo.i: include/igl/create_index_vbo.cpp.i
-.PHONY : include/igl/create_index_vbo.i
+Users/daniele/Dropbox/igl/libigl/include/igl/components.i: Users/daniele/Dropbox/igl/libigl/include/igl/components.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/components.i
 
 # target to preprocess a source file
-include/igl/create_index_vbo.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/create_index_vbo.cpp.i
-.PHONY : include/igl/create_index_vbo.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/components.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/components.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/components.cpp.i
 
-include/igl/create_index_vbo.s: include/igl/create_index_vbo.cpp.s
-.PHONY : include/igl/create_index_vbo.s
+Users/daniele/Dropbox/igl/libigl/include/igl/components.s: Users/daniele/Dropbox/igl/libigl/include/igl/components.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/components.s
 
 # target to generate assembly for a file
-include/igl/create_index_vbo.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/create_index_vbo.cpp.s
-.PHONY : include/igl/create_index_vbo.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/components.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/components.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/components.cpp.s
 
-include/igl/create_mesh_vbo.o: include/igl/create_mesh_vbo.cpp.o
-.PHONY : include/igl/create_mesh_vbo.o
+Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.o: Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.o
 
 # target to build an object file
-include/igl/create_mesh_vbo.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/create_mesh_vbo.cpp.o
-.PHONY : include/igl/create_mesh_vbo.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.cpp.o
 
-include/igl/create_mesh_vbo.i: include/igl/create_mesh_vbo.cpp.i
-.PHONY : include/igl/create_mesh_vbo.i
+Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.i: Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.i
 
 # target to preprocess a source file
-include/igl/create_mesh_vbo.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/create_mesh_vbo.cpp.i
-.PHONY : include/igl/create_mesh_vbo.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.cpp.i
 
-include/igl/create_mesh_vbo.s: include/igl/create_mesh_vbo.cpp.s
-.PHONY : include/igl/create_mesh_vbo.s
+Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.s: Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.s
 
 # target to generate assembly for a file
-include/igl/create_mesh_vbo.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/create_mesh_vbo.cpp.s
-.PHONY : include/igl/create_mesh_vbo.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.cpp.s
 
-include/igl/create_shader_program.o: include/igl/create_shader_program.cpp.o
-.PHONY : include/igl/create_shader_program.o
+Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.o: Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.o
 
 # target to build an object file
-include/igl/create_shader_program.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/create_shader_program.cpp.o
-.PHONY : include/igl/create_shader_program.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.cpp.o
 
-include/igl/create_shader_program.i: include/igl/create_shader_program.cpp.i
-.PHONY : include/igl/create_shader_program.i
+Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.i: Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.i
 
 # target to preprocess a source file
-include/igl/create_shader_program.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/create_shader_program.cpp.i
-.PHONY : include/igl/create_shader_program.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.cpp.i
 
-include/igl/create_shader_program.s: include/igl/create_shader_program.cpp.s
-.PHONY : include/igl/create_shader_program.s
+Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.s: Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.s
 
 # target to generate assembly for a file
-include/igl/create_shader_program.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/create_shader_program.cpp.s
-.PHONY : include/igl/create_shader_program.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.cpp.s
 
-include/igl/create_vector_vbo.o: include/igl/create_vector_vbo.cpp.o
-.PHONY : include/igl/create_vector_vbo.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.o: Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.o
 
 # target to build an object file
-include/igl/create_vector_vbo.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/create_vector_vbo.cpp.o
-.PHONY : include/igl/create_vector_vbo.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.cpp.o
 
-include/igl/create_vector_vbo.i: include/igl/create_vector_vbo.cpp.i
-.PHONY : include/igl/create_vector_vbo.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.i: Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.i
 
 # target to preprocess a source file
-include/igl/create_vector_vbo.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/create_vector_vbo.cpp.i
-.PHONY : include/igl/create_vector_vbo.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.cpp.i
 
-include/igl/create_vector_vbo.s: include/igl/create_vector_vbo.cpp.s
-.PHONY : include/igl/create_vector_vbo.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.s: Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.s
 
 # target to generate assembly for a file
-include/igl/create_vector_vbo.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/create_vector_vbo.cpp.s
-.PHONY : include/igl/create_vector_vbo.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.cpp.s
 
-include/igl/cross.o: include/igl/cross.cpp.o
-.PHONY : include/igl/cross.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.o: Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.o
 
 # target to build an object file
-include/igl/cross.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cross.cpp.o
-.PHONY : include/igl/cross.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.cpp.o
 
-include/igl/cross.i: include/igl/cross.cpp.i
-.PHONY : include/igl/cross.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.i: Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.i
 
 # target to preprocess a source file
-include/igl/cross.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cross.cpp.i
-.PHONY : include/igl/cross.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.cpp.i
 
-include/igl/cross.s: include/igl/cross.cpp.s
-.PHONY : include/igl/cross.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.s: Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.s
 
 # target to generate assembly for a file
-include/igl/cross.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cross.cpp.s
-.PHONY : include/igl/cross.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.cpp.s
 
-include/igl/cross_field_missmatch.o: include/igl/cross_field_missmatch.cpp.o
-.PHONY : include/igl/cross_field_missmatch.o
+Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.o: Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.o
 
 # target to build an object file
-include/igl/cross_field_missmatch.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cross_field_missmatch.cpp.o
-.PHONY : include/igl/cross_field_missmatch.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.cpp.o
 
-include/igl/cross_field_missmatch.i: include/igl/cross_field_missmatch.cpp.i
-.PHONY : include/igl/cross_field_missmatch.i
+Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.i: Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.i
 
 # target to preprocess a source file
-include/igl/cross_field_missmatch.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cross_field_missmatch.cpp.i
-.PHONY : include/igl/cross_field_missmatch.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.cpp.i
 
-include/igl/cross_field_missmatch.s: include/igl/cross_field_missmatch.cpp.s
-.PHONY : include/igl/cross_field_missmatch.s
+Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.s: Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.s
 
 # target to generate assembly for a file
-include/igl/cross_field_missmatch.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cross_field_missmatch.cpp.s
-.PHONY : include/igl/cross_field_missmatch.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.cpp.s
 
-include/igl/crouzeix_raviart_massmatrix.o: include/igl/crouzeix_raviart_massmatrix.cpp.o
-.PHONY : include/igl/crouzeix_raviart_massmatrix.o
+Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.o: Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.o
 
 # target to build an object file
-include/igl/crouzeix_raviart_massmatrix.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/crouzeix_raviart_massmatrix.cpp.o
-.PHONY : include/igl/crouzeix_raviart_massmatrix.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.cpp.o
 
-include/igl/crouzeix_raviart_massmatrix.i: include/igl/crouzeix_raviart_massmatrix.cpp.i
-.PHONY : include/igl/crouzeix_raviart_massmatrix.i
+Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.i: Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.i
 
 # target to preprocess a source file
-include/igl/crouzeix_raviart_massmatrix.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/crouzeix_raviart_massmatrix.cpp.i
-.PHONY : include/igl/crouzeix_raviart_massmatrix.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.cpp.i
 
-include/igl/crouzeix_raviart_massmatrix.s: include/igl/crouzeix_raviart_massmatrix.cpp.s
-.PHONY : include/igl/crouzeix_raviart_massmatrix.s
+Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.s: Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.s
 
 # target to generate assembly for a file
-include/igl/crouzeix_raviart_massmatrix.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/crouzeix_raviart_massmatrix.cpp.s
-.PHONY : include/igl/crouzeix_raviart_massmatrix.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.cpp.s
 
-include/igl/cumsum.o: include/igl/cumsum.cpp.o
-.PHONY : include/igl/cumsum.o
+Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.o: Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.o
 
 # target to build an object file
-include/igl/cumsum.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cumsum.cpp.o
-.PHONY : include/igl/cumsum.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.cpp.o
 
-include/igl/cumsum.i: include/igl/cumsum.cpp.i
-.PHONY : include/igl/cumsum.i
+Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.i: Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.i
 
 # target to preprocess a source file
-include/igl/cumsum.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cumsum.cpp.i
-.PHONY : include/igl/cumsum.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.cpp.i
 
-include/igl/cumsum.s: include/igl/cumsum.cpp.s
-.PHONY : include/igl/cumsum.s
+Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.s: Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.s
 
 # target to generate assembly for a file
-include/igl/cumsum.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cumsum.cpp.s
-.PHONY : include/igl/cumsum.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.cpp.s
 
-include/igl/cut_mesh_from_singularities.o: include/igl/cut_mesh_from_singularities.cpp.o
-.PHONY : include/igl/cut_mesh_from_singularities.o
+Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.o: Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.o
 
 # target to build an object file
-include/igl/cut_mesh_from_singularities.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cut_mesh_from_singularities.cpp.o
-.PHONY : include/igl/cut_mesh_from_singularities.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.cpp.o
 
-include/igl/cut_mesh_from_singularities.i: include/igl/cut_mesh_from_singularities.cpp.i
-.PHONY : include/igl/cut_mesh_from_singularities.i
+Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.i: Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.i
 
 # target to preprocess a source file
-include/igl/cut_mesh_from_singularities.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cut_mesh_from_singularities.cpp.i
-.PHONY : include/igl/cut_mesh_from_singularities.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.cpp.i
 
-include/igl/cut_mesh_from_singularities.s: include/igl/cut_mesh_from_singularities.cpp.s
-.PHONY : include/igl/cut_mesh_from_singularities.s
+Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.s: Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.s
 
 # target to generate assembly for a file
-include/igl/cut_mesh_from_singularities.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/cut_mesh_from_singularities.cpp.s
-.PHONY : include/igl/cut_mesh_from_singularities.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.cpp.s
 
-include/igl/dated_copy.o: include/igl/dated_copy.cpp.o
-.PHONY : include/igl/dated_copy.o
+Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.o: Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.o
 
 # target to build an object file
-include/igl/dated_copy.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dated_copy.cpp.o
-.PHONY : include/igl/dated_copy.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.cpp.o
 
-include/igl/dated_copy.i: include/igl/dated_copy.cpp.i
-.PHONY : include/igl/dated_copy.i
+Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.i: Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.i
 
 # target to preprocess a source file
-include/igl/dated_copy.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dated_copy.cpp.i
-.PHONY : include/igl/dated_copy.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.cpp.i
 
-include/igl/dated_copy.s: include/igl/dated_copy.cpp.s
-.PHONY : include/igl/dated_copy.s
+Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.s: Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.s
 
 # target to generate assembly for a file
-include/igl/dated_copy.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dated_copy.cpp.s
-.PHONY : include/igl/dated_copy.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.cpp.s
 
-include/igl/decimate.o: include/igl/decimate.cpp.o
-.PHONY : include/igl/decimate.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cross.o: Users/daniele/Dropbox/igl/libigl/include/igl/cross.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cross.o
 
 # target to build an object file
-include/igl/decimate.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/decimate.cpp.o
-.PHONY : include/igl/decimate.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cross.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cross.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cross.cpp.o
 
-include/igl/decimate.i: include/igl/decimate.cpp.i
-.PHONY : include/igl/decimate.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cross.i: Users/daniele/Dropbox/igl/libigl/include/igl/cross.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cross.i
 
 # target to preprocess a source file
-include/igl/decimate.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/decimate.cpp.i
-.PHONY : include/igl/decimate.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cross.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cross.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cross.cpp.i
 
-include/igl/decimate.s: include/igl/decimate.cpp.s
-.PHONY : include/igl/decimate.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cross.s: Users/daniele/Dropbox/igl/libigl/include/igl/cross.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cross.s
 
 # target to generate assembly for a file
-include/igl/decimate.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/decimate.cpp.s
-.PHONY : include/igl/decimate.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cross.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cross.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cross.cpp.s
 
-include/igl/deform_skeleton.o: include/igl/deform_skeleton.cpp.o
-.PHONY : include/igl/deform_skeleton.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.o: Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.o
 
 # target to build an object file
-include/igl/deform_skeleton.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/deform_skeleton.cpp.o
-.PHONY : include/igl/deform_skeleton.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.cpp.o
 
-include/igl/deform_skeleton.i: include/igl/deform_skeleton.cpp.i
-.PHONY : include/igl/deform_skeleton.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.i: Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.i
 
 # target to preprocess a source file
-include/igl/deform_skeleton.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/deform_skeleton.cpp.i
-.PHONY : include/igl/deform_skeleton.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.cpp.i
 
-include/igl/deform_skeleton.s: include/igl/deform_skeleton.cpp.s
-.PHONY : include/igl/deform_skeleton.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.s: Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.s
 
 # target to generate assembly for a file
-include/igl/deform_skeleton.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/deform_skeleton.cpp.s
-.PHONY : include/igl/deform_skeleton.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.cpp.s
 
-include/igl/destroy_shader_program.o: include/igl/destroy_shader_program.cpp.o
-.PHONY : include/igl/destroy_shader_program.o
+Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.o: Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.o
 
 # target to build an object file
-include/igl/destroy_shader_program.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/destroy_shader_program.cpp.o
-.PHONY : include/igl/destroy_shader_program.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.cpp.o
 
-include/igl/destroy_shader_program.i: include/igl/destroy_shader_program.cpp.i
-.PHONY : include/igl/destroy_shader_program.i
+Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.i: Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.i
 
 # target to preprocess a source file
-include/igl/destroy_shader_program.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/destroy_shader_program.cpp.i
-.PHONY : include/igl/destroy_shader_program.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.cpp.i
 
-include/igl/destroy_shader_program.s: include/igl/destroy_shader_program.cpp.s
-.PHONY : include/igl/destroy_shader_program.s
+Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.s: Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.s
 
 # target to generate assembly for a file
-include/igl/destroy_shader_program.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/destroy_shader_program.cpp.s
-.PHONY : include/igl/destroy_shader_program.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.cpp.s
 
-include/igl/diag.o: include/igl/diag.cpp.o
-.PHONY : include/igl/diag.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.o: Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.o
 
 # target to build an object file
-include/igl/diag.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/diag.cpp.o
-.PHONY : include/igl/diag.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.cpp.o
 
-include/igl/diag.i: include/igl/diag.cpp.i
-.PHONY : include/igl/diag.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.i: Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.i
 
 # target to preprocess a source file
-include/igl/diag.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/diag.cpp.i
-.PHONY : include/igl/diag.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.cpp.i
 
-include/igl/diag.s: include/igl/diag.cpp.s
-.PHONY : include/igl/diag.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.s: Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.s
 
 # target to generate assembly for a file
-include/igl/diag.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/diag.cpp.s
-.PHONY : include/igl/diag.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.cpp.s
 
-include/igl/dihedral_angles.o: include/igl/dihedral_angles.cpp.o
-.PHONY : include/igl/dihedral_angles.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.o: Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.o
 
 # target to build an object file
-include/igl/dihedral_angles.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dihedral_angles.cpp.o
-.PHONY : include/igl/dihedral_angles.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.cpp.o
 
-include/igl/dihedral_angles.i: include/igl/dihedral_angles.cpp.i
-.PHONY : include/igl/dihedral_angles.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.i: Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.i
 
 # target to preprocess a source file
-include/igl/dihedral_angles.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dihedral_angles.cpp.i
-.PHONY : include/igl/dihedral_angles.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.cpp.i
 
-include/igl/dihedral_angles.s: include/igl/dihedral_angles.cpp.s
-.PHONY : include/igl/dihedral_angles.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.s: Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.s
 
 # target to generate assembly for a file
-include/igl/dihedral_angles.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dihedral_angles.cpp.s
-.PHONY : include/igl/dihedral_angles.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.cpp.s
 
-include/igl/directed_edge_orientations.o: include/igl/directed_edge_orientations.cpp.o
-.PHONY : include/igl/directed_edge_orientations.o
+Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.o: Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.o
 
 # target to build an object file
-include/igl/directed_edge_orientations.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/directed_edge_orientations.cpp.o
-.PHONY : include/igl/directed_edge_orientations.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.cpp.o
 
-include/igl/directed_edge_orientations.i: include/igl/directed_edge_orientations.cpp.i
-.PHONY : include/igl/directed_edge_orientations.i
+Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.i: Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.i
 
 # target to preprocess a source file
-include/igl/directed_edge_orientations.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/directed_edge_orientations.cpp.i
-.PHONY : include/igl/directed_edge_orientations.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.cpp.i
 
-include/igl/directed_edge_orientations.s: include/igl/directed_edge_orientations.cpp.s
-.PHONY : include/igl/directed_edge_orientations.s
+Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.s: Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.s
 
 # target to generate assembly for a file
-include/igl/directed_edge_orientations.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/directed_edge_orientations.cpp.s
-.PHONY : include/igl/directed_edge_orientations.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.cpp.s
 
-include/igl/directed_edge_parents.o: include/igl/directed_edge_parents.cpp.o
-.PHONY : include/igl/directed_edge_parents.o
+Users/daniele/Dropbox/igl/libigl/include/igl/decimate.o: Users/daniele/Dropbox/igl/libigl/include/igl/decimate.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/decimate.o
 
 # target to build an object file
-include/igl/directed_edge_parents.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/directed_edge_parents.cpp.o
-.PHONY : include/igl/directed_edge_parents.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/decimate.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/decimate.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/decimate.cpp.o
 
-include/igl/directed_edge_parents.i: include/igl/directed_edge_parents.cpp.i
-.PHONY : include/igl/directed_edge_parents.i
+Users/daniele/Dropbox/igl/libigl/include/igl/decimate.i: Users/daniele/Dropbox/igl/libigl/include/igl/decimate.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/decimate.i
 
 # target to preprocess a source file
-include/igl/directed_edge_parents.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/directed_edge_parents.cpp.i
-.PHONY : include/igl/directed_edge_parents.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/decimate.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/decimate.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/decimate.cpp.i
 
-include/igl/directed_edge_parents.s: include/igl/directed_edge_parents.cpp.s
-.PHONY : include/igl/directed_edge_parents.s
+Users/daniele/Dropbox/igl/libigl/include/igl/decimate.s: Users/daniele/Dropbox/igl/libigl/include/igl/decimate.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/decimate.s
 
 # target to generate assembly for a file
-include/igl/directed_edge_parents.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/directed_edge_parents.cpp.s
-.PHONY : include/igl/directed_edge_parents.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/decimate.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/decimate.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/decimate.cpp.s
 
-include/igl/dirname.o: include/igl/dirname.cpp.o
-.PHONY : include/igl/dirname.o
+Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.o: Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.o
 
 # target to build an object file
-include/igl/dirname.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dirname.cpp.o
-.PHONY : include/igl/dirname.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.cpp.o
 
-include/igl/dirname.i: include/igl/dirname.cpp.i
-.PHONY : include/igl/dirname.i
+Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.i: Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.i
 
 # target to preprocess a source file
-include/igl/dirname.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dirname.cpp.i
-.PHONY : include/igl/dirname.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.cpp.i
 
-include/igl/dirname.s: include/igl/dirname.cpp.s
-.PHONY : include/igl/dirname.s
+Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.s: Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.s
 
 # target to generate assembly for a file
-include/igl/dirname.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dirname.cpp.s
-.PHONY : include/igl/dirname.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.cpp.s
 
-include/igl/dot.o: include/igl/dot.cpp.o
-.PHONY : include/igl/dot.o
+Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.o: Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.o
 
 # target to build an object file
-include/igl/dot.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dot.cpp.o
-.PHONY : include/igl/dot.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.cpp.o
 
-include/igl/dot.i: include/igl/dot.cpp.i
-.PHONY : include/igl/dot.i
+Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.i: Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.i
 
 # target to preprocess a source file
-include/igl/dot.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dot.cpp.i
-.PHONY : include/igl/dot.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.cpp.i
 
-include/igl/dot.s: include/igl/dot.cpp.s
-.PHONY : include/igl/dot.s
+Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.s: Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.s
 
 # target to generate assembly for a file
-include/igl/dot.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dot.cpp.s
-.PHONY : include/igl/dot.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.cpp.s
 
-include/igl/dot_row.o: include/igl/dot_row.cpp.o
-.PHONY : include/igl/dot_row.o
+Users/daniele/Dropbox/igl/libigl/include/igl/diag.o: Users/daniele/Dropbox/igl/libigl/include/igl/diag.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/diag.o
 
 # target to build an object file
-include/igl/dot_row.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dot_row.cpp.o
-.PHONY : include/igl/dot_row.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/diag.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/diag.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/diag.cpp.o
 
-include/igl/dot_row.i: include/igl/dot_row.cpp.i
-.PHONY : include/igl/dot_row.i
+Users/daniele/Dropbox/igl/libigl/include/igl/diag.i: Users/daniele/Dropbox/igl/libigl/include/igl/diag.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/diag.i
 
 # target to preprocess a source file
-include/igl/dot_row.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dot_row.cpp.i
-.PHONY : include/igl/dot_row.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/diag.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/diag.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/diag.cpp.i
 
-include/igl/dot_row.s: include/igl/dot_row.cpp.s
-.PHONY : include/igl/dot_row.s
+Users/daniele/Dropbox/igl/libigl/include/igl/diag.s: Users/daniele/Dropbox/igl/libigl/include/igl/diag.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/diag.s
 
 # target to generate assembly for a file
-include/igl/dot_row.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dot_row.cpp.s
-.PHONY : include/igl/dot_row.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/diag.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/diag.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/diag.cpp.s
 
-include/igl/doublearea.o: include/igl/doublearea.cpp.o
-.PHONY : include/igl/doublearea.o
+Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.o: Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.o
 
 # target to build an object file
-include/igl/doublearea.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/doublearea.cpp.o
-.PHONY : include/igl/doublearea.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.cpp.o
 
-include/igl/doublearea.i: include/igl/doublearea.cpp.i
-.PHONY : include/igl/doublearea.i
+Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.i: Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.i
 
 # target to preprocess a source file
-include/igl/doublearea.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/doublearea.cpp.i
-.PHONY : include/igl/doublearea.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.cpp.i
 
-include/igl/doublearea.s: include/igl/doublearea.cpp.s
-.PHONY : include/igl/doublearea.s
+Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.s: Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.s
 
 # target to generate assembly for a file
-include/igl/doublearea.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/doublearea.cpp.s
-.PHONY : include/igl/doublearea.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.cpp.s
 
-include/igl/dqs.o: include/igl/dqs.cpp.o
-.PHONY : include/igl/dqs.o
+Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.o: Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.o
 
 # target to build an object file
-include/igl/dqs.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dqs.cpp.o
-.PHONY : include/igl/dqs.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.cpp.o
 
-include/igl/dqs.i: include/igl/dqs.cpp.i
-.PHONY : include/igl/dqs.i
+Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.i: Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.i
 
 # target to preprocess a source file
-include/igl/dqs.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dqs.cpp.i
-.PHONY : include/igl/dqs.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.cpp.i
 
-include/igl/dqs.s: include/igl/dqs.cpp.s
-.PHONY : include/igl/dqs.s
+Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.s: Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.s
 
 # target to generate assembly for a file
-include/igl/dqs.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/dqs.cpp.s
-.PHONY : include/igl/dqs.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.cpp.s
 
-include/igl/draw_beach_ball.o: include/igl/draw_beach_ball.cpp.o
-.PHONY : include/igl/draw_beach_ball.o
+Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.o: Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.o
 
 # target to build an object file
-include/igl/draw_beach_ball.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_beach_ball.cpp.o
-.PHONY : include/igl/draw_beach_ball.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.cpp.o
 
-include/igl/draw_beach_ball.i: include/igl/draw_beach_ball.cpp.i
-.PHONY : include/igl/draw_beach_ball.i
+Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.i: Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.i
 
 # target to preprocess a source file
-include/igl/draw_beach_ball.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_beach_ball.cpp.i
-.PHONY : include/igl/draw_beach_ball.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.cpp.i
 
-include/igl/draw_beach_ball.s: include/igl/draw_beach_ball.cpp.s
-.PHONY : include/igl/draw_beach_ball.s
+Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.s: Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.s
 
 # target to generate assembly for a file
-include/igl/draw_beach_ball.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_beach_ball.cpp.s
-.PHONY : include/igl/draw_beach_ball.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.cpp.s
 
-include/igl/draw_floor.o: include/igl/draw_floor.cpp.o
-.PHONY : include/igl/draw_floor.o
+Users/daniele/Dropbox/igl/libigl/include/igl/dirname.o: Users/daniele/Dropbox/igl/libigl/include/igl/dirname.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dirname.o
 
 # target to build an object file
-include/igl/draw_floor.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_floor.cpp.o
-.PHONY : include/igl/draw_floor.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/dirname.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dirname.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dirname.cpp.o
 
-include/igl/draw_floor.i: include/igl/draw_floor.cpp.i
-.PHONY : include/igl/draw_floor.i
+Users/daniele/Dropbox/igl/libigl/include/igl/dirname.i: Users/daniele/Dropbox/igl/libigl/include/igl/dirname.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dirname.i
 
 # target to preprocess a source file
-include/igl/draw_floor.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_floor.cpp.i
-.PHONY : include/igl/draw_floor.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/dirname.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dirname.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dirname.cpp.i
 
-include/igl/draw_floor.s: include/igl/draw_floor.cpp.s
-.PHONY : include/igl/draw_floor.s
+Users/daniele/Dropbox/igl/libigl/include/igl/dirname.s: Users/daniele/Dropbox/igl/libigl/include/igl/dirname.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dirname.s
 
 # target to generate assembly for a file
-include/igl/draw_floor.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_floor.cpp.s
-.PHONY : include/igl/draw_floor.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/dirname.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dirname.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dirname.cpp.s
 
-include/igl/draw_mesh.o: include/igl/draw_mesh.cpp.o
-.PHONY : include/igl/draw_mesh.o
+Users/daniele/Dropbox/igl/libigl/include/igl/dot.o: Users/daniele/Dropbox/igl/libigl/include/igl/dot.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dot.o
 
 # target to build an object file
-include/igl/draw_mesh.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_mesh.cpp.o
-.PHONY : include/igl/draw_mesh.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/dot.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dot.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dot.cpp.o
 
-include/igl/draw_mesh.i: include/igl/draw_mesh.cpp.i
-.PHONY : include/igl/draw_mesh.i
+Users/daniele/Dropbox/igl/libigl/include/igl/dot.i: Users/daniele/Dropbox/igl/libigl/include/igl/dot.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dot.i
 
 # target to preprocess a source file
-include/igl/draw_mesh.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_mesh.cpp.i
-.PHONY : include/igl/draw_mesh.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/dot.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dot.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dot.cpp.i
 
-include/igl/draw_mesh.s: include/igl/draw_mesh.cpp.s
-.PHONY : include/igl/draw_mesh.s
+Users/daniele/Dropbox/igl/libigl/include/igl/dot.s: Users/daniele/Dropbox/igl/libigl/include/igl/dot.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dot.s
 
 # target to generate assembly for a file
-include/igl/draw_mesh.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_mesh.cpp.s
-.PHONY : include/igl/draw_mesh.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/dot.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dot.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dot.cpp.s
 
-include/igl/draw_point.o: include/igl/draw_point.cpp.o
-.PHONY : include/igl/draw_point.o
+Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.o: Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.o
 
 # target to build an object file
-include/igl/draw_point.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_point.cpp.o
-.PHONY : include/igl/draw_point.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.cpp.o
 
-include/igl/draw_point.i: include/igl/draw_point.cpp.i
-.PHONY : include/igl/draw_point.i
+Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.i: Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.i
 
 # target to preprocess a source file
-include/igl/draw_point.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_point.cpp.i
-.PHONY : include/igl/draw_point.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.cpp.i
 
-include/igl/draw_point.s: include/igl/draw_point.cpp.s
-.PHONY : include/igl/draw_point.s
+Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.s: Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.s
 
 # target to generate assembly for a file
-include/igl/draw_point.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_point.cpp.s
-.PHONY : include/igl/draw_point.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.cpp.s
 
-include/igl/draw_rectangular_marquee.o: include/igl/draw_rectangular_marquee.cpp.o
-.PHONY : include/igl/draw_rectangular_marquee.o
+Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.o: Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.o
 
 # target to build an object file
-include/igl/draw_rectangular_marquee.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_rectangular_marquee.cpp.o
-.PHONY : include/igl/draw_rectangular_marquee.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.cpp.o
 
-include/igl/draw_rectangular_marquee.i: include/igl/draw_rectangular_marquee.cpp.i
-.PHONY : include/igl/draw_rectangular_marquee.i
+Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.i: Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.i
 
 # target to preprocess a source file
-include/igl/draw_rectangular_marquee.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_rectangular_marquee.cpp.i
-.PHONY : include/igl/draw_rectangular_marquee.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.cpp.i
 
-include/igl/draw_rectangular_marquee.s: include/igl/draw_rectangular_marquee.cpp.s
-.PHONY : include/igl/draw_rectangular_marquee.s
+Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.s: Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.s
 
 # target to generate assembly for a file
-include/igl/draw_rectangular_marquee.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_rectangular_marquee.cpp.s
-.PHONY : include/igl/draw_rectangular_marquee.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.cpp.s
 
-include/igl/draw_skeleton_3d.o: include/igl/draw_skeleton_3d.cpp.o
-.PHONY : include/igl/draw_skeleton_3d.o
+Users/daniele/Dropbox/igl/libigl/include/igl/dqs.o: Users/daniele/Dropbox/igl/libigl/include/igl/dqs.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dqs.o
 
 # target to build an object file
-include/igl/draw_skeleton_3d.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_skeleton_3d.cpp.o
-.PHONY : include/igl/draw_skeleton_3d.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/dqs.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dqs.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dqs.cpp.o
 
-include/igl/draw_skeleton_3d.i: include/igl/draw_skeleton_3d.cpp.i
-.PHONY : include/igl/draw_skeleton_3d.i
+Users/daniele/Dropbox/igl/libigl/include/igl/dqs.i: Users/daniele/Dropbox/igl/libigl/include/igl/dqs.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dqs.i
 
 # target to preprocess a source file
-include/igl/draw_skeleton_3d.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_skeleton_3d.cpp.i
-.PHONY : include/igl/draw_skeleton_3d.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/dqs.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dqs.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dqs.cpp.i
 
-include/igl/draw_skeleton_3d.s: include/igl/draw_skeleton_3d.cpp.s
-.PHONY : include/igl/draw_skeleton_3d.s
+Users/daniele/Dropbox/igl/libigl/include/igl/dqs.s: Users/daniele/Dropbox/igl/libigl/include/igl/dqs.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dqs.s
 
 # target to generate assembly for a file
-include/igl/draw_skeleton_3d.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_skeleton_3d.cpp.s
-.PHONY : include/igl/draw_skeleton_3d.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/dqs.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/dqs.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/dqs.cpp.s
 
-include/igl/draw_skeleton_vector_graphics.o: include/igl/draw_skeleton_vector_graphics.cpp.o
-.PHONY : include/igl/draw_skeleton_vector_graphics.o
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.o: Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.o
 
 # target to build an object file
-include/igl/draw_skeleton_vector_graphics.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_skeleton_vector_graphics.cpp.o
-.PHONY : include/igl/draw_skeleton_vector_graphics.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.cpp.o
 
-include/igl/draw_skeleton_vector_graphics.i: include/igl/draw_skeleton_vector_graphics.cpp.i
-.PHONY : include/igl/draw_skeleton_vector_graphics.i
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.i: Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.i
 
 # target to preprocess a source file
-include/igl/draw_skeleton_vector_graphics.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_skeleton_vector_graphics.cpp.i
-.PHONY : include/igl/draw_skeleton_vector_graphics.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.cpp.i
 
-include/igl/draw_skeleton_vector_graphics.s: include/igl/draw_skeleton_vector_graphics.cpp.s
-.PHONY : include/igl/draw_skeleton_vector_graphics.s
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.s: Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.s
 
 # target to generate assembly for a file
-include/igl/draw_skeleton_vector_graphics.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/draw_skeleton_vector_graphics.cpp.s
-.PHONY : include/igl/draw_skeleton_vector_graphics.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.cpp.s
 
-include/igl/edge_collapse_is_valid.o: include/igl/edge_collapse_is_valid.cpp.o
-.PHONY : include/igl/edge_collapse_is_valid.o
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.o: Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.o
 
 # target to build an object file
-include/igl/edge_collapse_is_valid.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edge_collapse_is_valid.cpp.o
-.PHONY : include/igl/edge_collapse_is_valid.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.cpp.o
 
-include/igl/edge_collapse_is_valid.i: include/igl/edge_collapse_is_valid.cpp.i
-.PHONY : include/igl/edge_collapse_is_valid.i
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.i: Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.i
 
 # target to preprocess a source file
-include/igl/edge_collapse_is_valid.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edge_collapse_is_valid.cpp.i
-.PHONY : include/igl/edge_collapse_is_valid.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.cpp.i
 
-include/igl/edge_collapse_is_valid.s: include/igl/edge_collapse_is_valid.cpp.s
-.PHONY : include/igl/edge_collapse_is_valid.s
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.s: Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.s
 
 # target to generate assembly for a file
-include/igl/edge_collapse_is_valid.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edge_collapse_is_valid.cpp.s
-.PHONY : include/igl/edge_collapse_is_valid.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.cpp.s
 
-include/igl/edge_flaps.o: include/igl/edge_flaps.cpp.o
-.PHONY : include/igl/edge_flaps.o
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.o: Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.o
 
 # target to build an object file
-include/igl/edge_flaps.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edge_flaps.cpp.o
-.PHONY : include/igl/edge_flaps.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.cpp.o
 
-include/igl/edge_flaps.i: include/igl/edge_flaps.cpp.i
-.PHONY : include/igl/edge_flaps.i
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.i: Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.i
 
 # target to preprocess a source file
-include/igl/edge_flaps.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edge_flaps.cpp.i
-.PHONY : include/igl/edge_flaps.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.cpp.i
 
-include/igl/edge_flaps.s: include/igl/edge_flaps.cpp.s
-.PHONY : include/igl/edge_flaps.s
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.s: Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.s
 
 # target to generate assembly for a file
-include/igl/edge_flaps.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edge_flaps.cpp.s
-.PHONY : include/igl/edge_flaps.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.cpp.s
 
-include/igl/edge_lengths.o: include/igl/edge_lengths.cpp.o
-.PHONY : include/igl/edge_lengths.o
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.o: Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.o
 
 # target to build an object file
-include/igl/edge_lengths.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edge_lengths.cpp.o
-.PHONY : include/igl/edge_lengths.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.cpp.o
 
-include/igl/edge_lengths.i: include/igl/edge_lengths.cpp.i
-.PHONY : include/igl/edge_lengths.i
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.i: Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.i
 
 # target to preprocess a source file
-include/igl/edge_lengths.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edge_lengths.cpp.i
-.PHONY : include/igl/edge_lengths.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.cpp.i
 
-include/igl/edge_lengths.s: include/igl/edge_lengths.cpp.s
-.PHONY : include/igl/edge_lengths.s
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.s: Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.s
 
 # target to generate assembly for a file
-include/igl/edge_lengths.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edge_lengths.cpp.s
-.PHONY : include/igl/edge_lengths.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.cpp.s
 
-include/igl/edge_topology.o: include/igl/edge_topology.cpp.o
-.PHONY : include/igl/edge_topology.o
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.o: Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.o
 
 # target to build an object file
-include/igl/edge_topology.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edge_topology.cpp.o
-.PHONY : include/igl/edge_topology.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.cpp.o
 
-include/igl/edge_topology.i: include/igl/edge_topology.cpp.i
-.PHONY : include/igl/edge_topology.i
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.i: Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.i
 
 # target to preprocess a source file
-include/igl/edge_topology.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edge_topology.cpp.i
-.PHONY : include/igl/edge_topology.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.cpp.i
 
-include/igl/edge_topology.s: include/igl/edge_topology.cpp.s
-.PHONY : include/igl/edge_topology.s
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.s: Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.s
 
 # target to generate assembly for a file
-include/igl/edge_topology.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edge_topology.cpp.s
-.PHONY : include/igl/edge_topology.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.cpp.s
 
-include/igl/edges.o: include/igl/edges.cpp.o
-.PHONY : include/igl/edges.o
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.o: Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.o
 
 # target to build an object file
-include/igl/edges.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edges.cpp.o
-.PHONY : include/igl/edges.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.cpp.o
 
-include/igl/edges.i: include/igl/edges.cpp.i
-.PHONY : include/igl/edges.i
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.i: Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.i
 
 # target to preprocess a source file
-include/igl/edges.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edges.cpp.i
-.PHONY : include/igl/edges.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.cpp.i
 
-include/igl/edges.s: include/igl/edges.cpp.s
-.PHONY : include/igl/edges.s
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.s: Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.s
 
 # target to generate assembly for a file
-include/igl/edges.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/edges.cpp.s
-.PHONY : include/igl/edges.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.cpp.s
 
-include/igl/embree/ambient_occlusion.o: include/igl/embree/ambient_occlusion.cpp.o
-.PHONY : include/igl/embree/ambient_occlusion.o
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.o: Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.o
 
 # target to build an object file
-include/igl/embree/ambient_occlusion.cpp.o:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/ambient_occlusion.cpp.o
-.PHONY : include/igl/embree/ambient_occlusion.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.cpp.o
 
-include/igl/embree/ambient_occlusion.i: include/igl/embree/ambient_occlusion.cpp.i
-.PHONY : include/igl/embree/ambient_occlusion.i
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.i: Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.i
 
 # target to preprocess a source file
-include/igl/embree/ambient_occlusion.cpp.i:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/ambient_occlusion.cpp.i
-.PHONY : include/igl/embree/ambient_occlusion.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.cpp.i
 
-include/igl/embree/ambient_occlusion.s: include/igl/embree/ambient_occlusion.cpp.s
-.PHONY : include/igl/embree/ambient_occlusion.s
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.s: Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.s
 
 # target to generate assembly for a file
-include/igl/embree/ambient_occlusion.cpp.s:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/ambient_occlusion.cpp.s
-.PHONY : include/igl/embree/ambient_occlusion.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.cpp.s
 
-include/igl/embree/bone_heat.o: include/igl/embree/bone_heat.cpp.o
-.PHONY : include/igl/embree/bone_heat.o
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.o: Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.o
 
 # target to build an object file
-include/igl/embree/bone_heat.cpp.o:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/bone_heat.cpp.o
-.PHONY : include/igl/embree/bone_heat.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.cpp.o
 
-include/igl/embree/bone_heat.i: include/igl/embree/bone_heat.cpp.i
-.PHONY : include/igl/embree/bone_heat.i
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.i: Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.i
 
 # target to preprocess a source file
-include/igl/embree/bone_heat.cpp.i:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/bone_heat.cpp.i
-.PHONY : include/igl/embree/bone_heat.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.cpp.i
 
-include/igl/embree/bone_heat.s: include/igl/embree/bone_heat.cpp.s
-.PHONY : include/igl/embree/bone_heat.s
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.s: Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.s
 
 # target to generate assembly for a file
-include/igl/embree/bone_heat.cpp.s:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/bone_heat.cpp.s
-.PHONY : include/igl/embree/bone_heat.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.cpp.s
 
-include/igl/embree/bone_visible.o: include/igl/embree/bone_visible.cpp.o
-.PHONY : include/igl/embree/bone_visible.o
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.o: Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.o
 
 # target to build an object file
-include/igl/embree/bone_visible.cpp.o:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/bone_visible.cpp.o
-.PHONY : include/igl/embree/bone_visible.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.cpp.o
 
-include/igl/embree/bone_visible.i: include/igl/embree/bone_visible.cpp.i
-.PHONY : include/igl/embree/bone_visible.i
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.i: Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.i
 
 # target to preprocess a source file
-include/igl/embree/bone_visible.cpp.i:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/bone_visible.cpp.i
-.PHONY : include/igl/embree/bone_visible.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.cpp.i
 
-include/igl/embree/bone_visible.s: include/igl/embree/bone_visible.cpp.s
-.PHONY : include/igl/embree/bone_visible.s
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.s: Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.s
 
 # target to generate assembly for a file
-include/igl/embree/bone_visible.cpp.s:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/bone_visible.cpp.s
-.PHONY : include/igl/embree/bone_visible.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.cpp.s
 
-include/igl/embree/line_mesh_intersection.o: include/igl/embree/line_mesh_intersection.cpp.o
-.PHONY : include/igl/embree/line_mesh_intersection.o
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.o: Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.o
 
 # target to build an object file
-include/igl/embree/line_mesh_intersection.cpp.o:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/line_mesh_intersection.cpp.o
-.PHONY : include/igl/embree/line_mesh_intersection.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.cpp.o
 
-include/igl/embree/line_mesh_intersection.i: include/igl/embree/line_mesh_intersection.cpp.i
-.PHONY : include/igl/embree/line_mesh_intersection.i
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.i: Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.i
 
 # target to preprocess a source file
-include/igl/embree/line_mesh_intersection.cpp.i:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/line_mesh_intersection.cpp.i
-.PHONY : include/igl/embree/line_mesh_intersection.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.cpp.i
 
-include/igl/embree/line_mesh_intersection.s: include/igl/embree/line_mesh_intersection.cpp.s
-.PHONY : include/igl/embree/line_mesh_intersection.s
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.s: Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.s
 
 # target to generate assembly for a file
-include/igl/embree/line_mesh_intersection.cpp.s:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/line_mesh_intersection.cpp.s
-.PHONY : include/igl/embree/line_mesh_intersection.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.cpp.s
 
-include/igl/embree/reorient_facets_raycast.o: include/igl/embree/reorient_facets_raycast.cpp.o
-.PHONY : include/igl/embree/reorient_facets_raycast.o
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.o: Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.o
 
 # target to build an object file
-include/igl/embree/reorient_facets_raycast.cpp.o:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/reorient_facets_raycast.cpp.o
-.PHONY : include/igl/embree/reorient_facets_raycast.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.cpp.o
 
-include/igl/embree/reorient_facets_raycast.i: include/igl/embree/reorient_facets_raycast.cpp.i
-.PHONY : include/igl/embree/reorient_facets_raycast.i
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.i: Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.i
 
 # target to preprocess a source file
-include/igl/embree/reorient_facets_raycast.cpp.i:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/reorient_facets_raycast.cpp.i
-.PHONY : include/igl/embree/reorient_facets_raycast.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.cpp.i
 
-include/igl/embree/reorient_facets_raycast.s: include/igl/embree/reorient_facets_raycast.cpp.s
-.PHONY : include/igl/embree/reorient_facets_raycast.s
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.s: Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.s
 
 # target to generate assembly for a file
-include/igl/embree/reorient_facets_raycast.cpp.s:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/reorient_facets_raycast.cpp.s
-.PHONY : include/igl/embree/reorient_facets_raycast.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.cpp.s
 
-include/igl/embree/unproject_in_mesh.o: include/igl/embree/unproject_in_mesh.cpp.o
-.PHONY : include/igl/embree/unproject_in_mesh.o
+Users/daniele/Dropbox/igl/libigl/include/igl/edges.o: Users/daniele/Dropbox/igl/libigl/include/igl/edges.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edges.o
 
 # target to build an object file
-include/igl/embree/unproject_in_mesh.cpp.o:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/unproject_in_mesh.cpp.o
-.PHONY : include/igl/embree/unproject_in_mesh.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/edges.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edges.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edges.cpp.o
 
-include/igl/embree/unproject_in_mesh.i: include/igl/embree/unproject_in_mesh.cpp.i
-.PHONY : include/igl/embree/unproject_in_mesh.i
+Users/daniele/Dropbox/igl/libigl/include/igl/edges.i: Users/daniele/Dropbox/igl/libigl/include/igl/edges.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edges.i
 
 # target to preprocess a source file
-include/igl/embree/unproject_in_mesh.cpp.i:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/unproject_in_mesh.cpp.i
-.PHONY : include/igl/embree/unproject_in_mesh.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/edges.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edges.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edges.cpp.i
 
-include/igl/embree/unproject_in_mesh.s: include/igl/embree/unproject_in_mesh.cpp.s
-.PHONY : include/igl/embree/unproject_in_mesh.s
+Users/daniele/Dropbox/igl/libigl/include/igl/edges.s: Users/daniele/Dropbox/igl/libigl/include/igl/edges.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edges.s
 
 # target to generate assembly for a file
-include/igl/embree/unproject_in_mesh.cpp.s:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/unproject_in_mesh.cpp.s
-.PHONY : include/igl/embree/unproject_in_mesh.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/edges.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/edges.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/edges.cpp.s
 
-include/igl/embree/unproject_onto_mesh.o: include/igl/embree/unproject_onto_mesh.cpp.o
-.PHONY : include/igl/embree/unproject_onto_mesh.o
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.o: Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.o
 
 # target to build an object file
-include/igl/embree/unproject_onto_mesh.cpp.o:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/unproject_onto_mesh.cpp.o
-.PHONY : include/igl/embree/unproject_onto_mesh.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.cpp.o:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.cpp.o
 
-include/igl/embree/unproject_onto_mesh.i: include/igl/embree/unproject_onto_mesh.cpp.i
-.PHONY : include/igl/embree/unproject_onto_mesh.i
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.i: Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.i
 
 # target to preprocess a source file
-include/igl/embree/unproject_onto_mesh.cpp.i:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/unproject_onto_mesh.cpp.i
-.PHONY : include/igl/embree/unproject_onto_mesh.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.cpp.i:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.cpp.i
 
-include/igl/embree/unproject_onto_mesh.s: include/igl/embree/unproject_onto_mesh.cpp.s
-.PHONY : include/igl/embree/unproject_onto_mesh.s
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.s: Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.s
 
 # target to generate assembly for a file
-include/igl/embree/unproject_onto_mesh.cpp.s:
-	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/include/igl/embree/unproject_onto_mesh.cpp.s
-.PHONY : include/igl/embree/unproject_onto_mesh.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.cpp.s:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.cpp.s
 
-include/igl/example_fun.o: include/igl/example_fun.cpp.o
-.PHONY : include/igl/example_fun.o
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.o: Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.o
 
 # target to build an object file
-include/igl/example_fun.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/example_fun.cpp.o
-.PHONY : include/igl/example_fun.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.cpp.o:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.cpp.o
 
-include/igl/example_fun.i: include/igl/example_fun.cpp.i
-.PHONY : include/igl/example_fun.i
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.i: Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.i
 
 # target to preprocess a source file
-include/igl/example_fun.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/example_fun.cpp.i
-.PHONY : include/igl/example_fun.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.cpp.i:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.cpp.i
 
-include/igl/example_fun.s: include/igl/example_fun.cpp.s
-.PHONY : include/igl/example_fun.s
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.s: Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.s
 
 # target to generate assembly for a file
-include/igl/example_fun.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/example_fun.cpp.s
-.PHONY : include/igl/example_fun.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.cpp.s:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.cpp.s
 
-include/igl/exterior_edges.o: include/igl/exterior_edges.cpp.o
-.PHONY : include/igl/exterior_edges.o
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.o: Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.o
 
 # target to build an object file
-include/igl/exterior_edges.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/exterior_edges.cpp.o
-.PHONY : include/igl/exterior_edges.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.cpp.o:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.cpp.o
 
-include/igl/exterior_edges.i: include/igl/exterior_edges.cpp.i
-.PHONY : include/igl/exterior_edges.i
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.i: Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.i
 
 # target to preprocess a source file
-include/igl/exterior_edges.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/exterior_edges.cpp.i
-.PHONY : include/igl/exterior_edges.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.cpp.i:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.cpp.i
 
-include/igl/exterior_edges.s: include/igl/exterior_edges.cpp.s
-.PHONY : include/igl/exterior_edges.s
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.s: Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.s
 
 # target to generate assembly for a file
-include/igl/exterior_edges.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/exterior_edges.cpp.s
-.PHONY : include/igl/exterior_edges.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.cpp.s:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.cpp.s
 
-include/igl/face_areas.o: include/igl/face_areas.cpp.o
-.PHONY : include/igl/face_areas.o
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.o: Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.o
 
 # target to build an object file
-include/igl/face_areas.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/face_areas.cpp.o
-.PHONY : include/igl/face_areas.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.cpp.o:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.cpp.o
 
-include/igl/face_areas.i: include/igl/face_areas.cpp.i
-.PHONY : include/igl/face_areas.i
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.i: Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.i
 
 # target to preprocess a source file
-include/igl/face_areas.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/face_areas.cpp.i
-.PHONY : include/igl/face_areas.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.cpp.i:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.cpp.i
 
-include/igl/face_areas.s: include/igl/face_areas.cpp.s
-.PHONY : include/igl/face_areas.s
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.s: Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.s
 
 # target to generate assembly for a file
-include/igl/face_areas.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/face_areas.cpp.s
-.PHONY : include/igl/face_areas.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.cpp.s:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.cpp.s
 
-include/igl/face_occurrences.o: include/igl/face_occurrences.cpp.o
-.PHONY : include/igl/face_occurrences.o
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.o: Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.o
 
 # target to build an object file
-include/igl/face_occurrences.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/face_occurrences.cpp.o
-.PHONY : include/igl/face_occurrences.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.cpp.o:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.cpp.o
 
-include/igl/face_occurrences.i: include/igl/face_occurrences.cpp.i
-.PHONY : include/igl/face_occurrences.i
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.i: Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.i
 
 # target to preprocess a source file
-include/igl/face_occurrences.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/face_occurrences.cpp.i
-.PHONY : include/igl/face_occurrences.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.cpp.i:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.cpp.i
 
-include/igl/face_occurrences.s: include/igl/face_occurrences.cpp.s
-.PHONY : include/igl/face_occurrences.s
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.s: Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.s
 
 # target to generate assembly for a file
-include/igl/face_occurrences.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/face_occurrences.cpp.s
-.PHONY : include/igl/face_occurrences.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.cpp.s:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.cpp.s
 
-include/igl/faces_first.o: include/igl/faces_first.cpp.o
-.PHONY : include/igl/faces_first.o
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.o: Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.o
 
 # target to build an object file
-include/igl/faces_first.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/faces_first.cpp.o
-.PHONY : include/igl/faces_first.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.cpp.o:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.cpp.o
 
-include/igl/faces_first.i: include/igl/faces_first.cpp.i
-.PHONY : include/igl/faces_first.i
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.i: Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.i
 
 # target to preprocess a source file
-include/igl/faces_first.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/faces_first.cpp.i
-.PHONY : include/igl/faces_first.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.cpp.i:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.cpp.i
 
-include/igl/faces_first.s: include/igl/faces_first.cpp.s
-.PHONY : include/igl/faces_first.s
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.s: Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.s
 
 # target to generate assembly for a file
-include/igl/faces_first.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/faces_first.cpp.s
-.PHONY : include/igl/faces_first.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.cpp.s:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.cpp.s
 
-include/igl/facet_components.o: include/igl/facet_components.cpp.o
-.PHONY : include/igl/facet_components.o
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.o: Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.o
 
 # target to build an object file
-include/igl/facet_components.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/facet_components.cpp.o
-.PHONY : include/igl/facet_components.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.cpp.o:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.cpp.o
 
-include/igl/facet_components.i: include/igl/facet_components.cpp.i
-.PHONY : include/igl/facet_components.i
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.i: Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.i
 
 # target to preprocess a source file
-include/igl/facet_components.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/facet_components.cpp.i
-.PHONY : include/igl/facet_components.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.cpp.i:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.cpp.i
 
-include/igl/facet_components.s: include/igl/facet_components.cpp.s
-.PHONY : include/igl/facet_components.s
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.s: Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.s
 
 # target to generate assembly for a file
-include/igl/facet_components.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/facet_components.cpp.s
-.PHONY : include/igl/facet_components.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.cpp.s:
+	$(MAKE) -f CMakeFiles/iglembree.dir/build.make CMakeFiles/iglembree.dir/Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.cpp.s
 
-include/igl/false_barycentric_subdivision.o: include/igl/false_barycentric_subdivision.cpp.o
-.PHONY : include/igl/false_barycentric_subdivision.o
+Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.o: Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.o
 
 # target to build an object file
-include/igl/false_barycentric_subdivision.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/false_barycentric_subdivision.cpp.o
-.PHONY : include/igl/false_barycentric_subdivision.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.cpp.o
 
-include/igl/false_barycentric_subdivision.i: include/igl/false_barycentric_subdivision.cpp.i
-.PHONY : include/igl/false_barycentric_subdivision.i
+Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.i: Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.i
 
 # target to preprocess a source file
-include/igl/false_barycentric_subdivision.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/false_barycentric_subdivision.cpp.i
-.PHONY : include/igl/false_barycentric_subdivision.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.cpp.i
 
-include/igl/false_barycentric_subdivision.s: include/igl/false_barycentric_subdivision.cpp.s
-.PHONY : include/igl/false_barycentric_subdivision.s
+Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.s: Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.s
 
 # target to generate assembly for a file
-include/igl/false_barycentric_subdivision.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/false_barycentric_subdivision.cpp.s
-.PHONY : include/igl/false_barycentric_subdivision.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.cpp.s
 
-include/igl/file_contents_as_string.o: include/igl/file_contents_as_string.cpp.o
-.PHONY : include/igl/file_contents_as_string.o
+Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.o: Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.o
 
 # target to build an object file
-include/igl/file_contents_as_string.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/file_contents_as_string.cpp.o
-.PHONY : include/igl/file_contents_as_string.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.cpp.o
 
-include/igl/file_contents_as_string.i: include/igl/file_contents_as_string.cpp.i
-.PHONY : include/igl/file_contents_as_string.i
+Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.i: Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.i
 
 # target to preprocess a source file
-include/igl/file_contents_as_string.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/file_contents_as_string.cpp.i
-.PHONY : include/igl/file_contents_as_string.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.cpp.i
 
-include/igl/file_contents_as_string.s: include/igl/file_contents_as_string.cpp.s
-.PHONY : include/igl/file_contents_as_string.s
+Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.s: Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.s
 
 # target to generate assembly for a file
-include/igl/file_contents_as_string.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/file_contents_as_string.cpp.s
-.PHONY : include/igl/file_contents_as_string.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.cpp.s
 
-include/igl/file_dialog_open.o: include/igl/file_dialog_open.cpp.o
-.PHONY : include/igl/file_dialog_open.o
+Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.o: Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.o
 
 # target to build an object file
-include/igl/file_dialog_open.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/file_dialog_open.cpp.o
-.PHONY : include/igl/file_dialog_open.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.cpp.o
 
-include/igl/file_dialog_open.i: include/igl/file_dialog_open.cpp.i
-.PHONY : include/igl/file_dialog_open.i
+Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.i: Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.i
 
 # target to preprocess a source file
-include/igl/file_dialog_open.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/file_dialog_open.cpp.i
-.PHONY : include/igl/file_dialog_open.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.cpp.i
 
-include/igl/file_dialog_open.s: include/igl/file_dialog_open.cpp.s
-.PHONY : include/igl/file_dialog_open.s
+Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.s: Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.s
 
 # target to generate assembly for a file
-include/igl/file_dialog_open.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/file_dialog_open.cpp.s
-.PHONY : include/igl/file_dialog_open.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.cpp.s
 
-include/igl/file_dialog_save.o: include/igl/file_dialog_save.cpp.o
-.PHONY : include/igl/file_dialog_save.o
+Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.o: Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.o
 
 # target to build an object file
-include/igl/file_dialog_save.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/file_dialog_save.cpp.o
-.PHONY : include/igl/file_dialog_save.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.cpp.o
 
-include/igl/file_dialog_save.i: include/igl/file_dialog_save.cpp.i
-.PHONY : include/igl/file_dialog_save.i
+Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.i: Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.i
 
 # target to preprocess a source file
-include/igl/file_dialog_save.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/file_dialog_save.cpp.i
-.PHONY : include/igl/file_dialog_save.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.cpp.i
 
-include/igl/file_dialog_save.s: include/igl/file_dialog_save.cpp.s
-.PHONY : include/igl/file_dialog_save.s
+Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.s: Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.s
 
 # target to generate assembly for a file
-include/igl/file_dialog_save.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/file_dialog_save.cpp.s
-.PHONY : include/igl/file_dialog_save.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.cpp.s
 
-include/igl/file_exists.o: include/igl/file_exists.cpp.o
-.PHONY : include/igl/file_exists.o
+Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.o: Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.o
 
 # target to build an object file
-include/igl/file_exists.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/file_exists.cpp.o
-.PHONY : include/igl/file_exists.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.cpp.o
 
-include/igl/file_exists.i: include/igl/file_exists.cpp.i
-.PHONY : include/igl/file_exists.i
+Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.i: Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.i
 
 # target to preprocess a source file
-include/igl/file_exists.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/file_exists.cpp.i
-.PHONY : include/igl/file_exists.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.cpp.i
 
-include/igl/file_exists.s: include/igl/file_exists.cpp.s
-.PHONY : include/igl/file_exists.s
+Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.s: Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.s
 
 # target to generate assembly for a file
-include/igl/file_exists.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/file_exists.cpp.s
-.PHONY : include/igl/file_exists.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.cpp.s
 
-include/igl/find.o: include/igl/find.cpp.o
-.PHONY : include/igl/find.o
+Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.o: Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.o
 
 # target to build an object file
-include/igl/find.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/find.cpp.o
-.PHONY : include/igl/find.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.cpp.o
 
-include/igl/find.i: include/igl/find.cpp.i
-.PHONY : include/igl/find.i
+Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.i: Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.i
 
 # target to preprocess a source file
-include/igl/find.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/find.cpp.i
-.PHONY : include/igl/find.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.cpp.i
 
-include/igl/find.s: include/igl/find.cpp.s
-.PHONY : include/igl/find.s
+Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.s: Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.s
 
 # target to generate assembly for a file
-include/igl/find.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/find.cpp.s
-.PHONY : include/igl/find.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.cpp.s
 
-include/igl/find_cross_field_singularities.o: include/igl/find_cross_field_singularities.cpp.o
-.PHONY : include/igl/find_cross_field_singularities.o
+Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.o: Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.o
 
 # target to build an object file
-include/igl/find_cross_field_singularities.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/find_cross_field_singularities.cpp.o
-.PHONY : include/igl/find_cross_field_singularities.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.cpp.o
 
-include/igl/find_cross_field_singularities.i: include/igl/find_cross_field_singularities.cpp.i
-.PHONY : include/igl/find_cross_field_singularities.i
+Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.i: Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.i
 
 # target to preprocess a source file
-include/igl/find_cross_field_singularities.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/find_cross_field_singularities.cpp.i
-.PHONY : include/igl/find_cross_field_singularities.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.cpp.i
 
-include/igl/find_cross_field_singularities.s: include/igl/find_cross_field_singularities.cpp.s
-.PHONY : include/igl/find_cross_field_singularities.s
+Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.s: Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.s
 
 # target to generate assembly for a file
-include/igl/find_cross_field_singularities.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/find_cross_field_singularities.cpp.s
-.PHONY : include/igl/find_cross_field_singularities.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.cpp.s
 
-include/igl/fit_plane.o: include/igl/fit_plane.cpp.o
-.PHONY : include/igl/fit_plane.o
+Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.o: Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.o
 
 # target to build an object file
-include/igl/fit_plane.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/fit_plane.cpp.o
-.PHONY : include/igl/fit_plane.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.cpp.o
 
-include/igl/fit_plane.i: include/igl/fit_plane.cpp.i
-.PHONY : include/igl/fit_plane.i
+Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.i: Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.i
 
 # target to preprocess a source file
-include/igl/fit_plane.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/fit_plane.cpp.i
-.PHONY : include/igl/fit_plane.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.cpp.i
 
-include/igl/fit_plane.s: include/igl/fit_plane.cpp.s
-.PHONY : include/igl/fit_plane.s
+Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.s: Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.s
 
 # target to generate assembly for a file
-include/igl/fit_plane.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/fit_plane.cpp.s
-.PHONY : include/igl/fit_plane.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.cpp.s
 
-include/igl/fit_rigid.o: include/igl/fit_rigid.cpp.o
-.PHONY : include/igl/fit_rigid.o
+Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.o: Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.o
 
 # target to build an object file
-include/igl/fit_rigid.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/fit_rigid.cpp.o
-.PHONY : include/igl/fit_rigid.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.cpp.o
 
-include/igl/fit_rigid.i: include/igl/fit_rigid.cpp.i
-.PHONY : include/igl/fit_rigid.i
+Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.i: Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.i
 
 # target to preprocess a source file
-include/igl/fit_rigid.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/fit_rigid.cpp.i
-.PHONY : include/igl/fit_rigid.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.cpp.i
 
-include/igl/fit_rigid.s: include/igl/fit_rigid.cpp.s
-.PHONY : include/igl/fit_rigid.s
+Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.s: Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.s
 
 # target to generate assembly for a file
-include/igl/fit_rigid.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/fit_rigid.cpp.s
-.PHONY : include/igl/fit_rigid.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.cpp.s
 
-include/igl/floor.o: include/igl/floor.cpp.o
-.PHONY : include/igl/floor.o
+Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.o: Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.o
 
 # target to build an object file
-include/igl/floor.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/floor.cpp.o
-.PHONY : include/igl/floor.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.cpp.o
 
-include/igl/floor.i: include/igl/floor.cpp.i
-.PHONY : include/igl/floor.i
+Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.i: Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.i
 
 # target to preprocess a source file
-include/igl/floor.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/floor.cpp.i
-.PHONY : include/igl/floor.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.cpp.i
 
-include/igl/floor.s: include/igl/floor.cpp.s
-.PHONY : include/igl/floor.s
+Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.s: Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.s
 
 # target to generate assembly for a file
-include/igl/floor.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/floor.cpp.s
-.PHONY : include/igl/floor.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.cpp.s
 
-include/igl/forward_kinematics.o: include/igl/forward_kinematics.cpp.o
-.PHONY : include/igl/forward_kinematics.o
+Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.o: Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.o
 
 # target to build an object file
-include/igl/forward_kinematics.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/forward_kinematics.cpp.o
-.PHONY : include/igl/forward_kinematics.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.cpp.o
 
-include/igl/forward_kinematics.i: include/igl/forward_kinematics.cpp.i
-.PHONY : include/igl/forward_kinematics.i
+Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.i: Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.i
 
 # target to preprocess a source file
-include/igl/forward_kinematics.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/forward_kinematics.cpp.i
-.PHONY : include/igl/forward_kinematics.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.cpp.i
 
-include/igl/forward_kinematics.s: include/igl/forward_kinematics.cpp.s
-.PHONY : include/igl/forward_kinematics.s
+Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.s: Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.s
 
 # target to generate assembly for a file
-include/igl/forward_kinematics.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/forward_kinematics.cpp.s
-.PHONY : include/igl/forward_kinematics.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.cpp.s
 
-include/igl/frame_field_deformer.o: include/igl/frame_field_deformer.cpp.o
-.PHONY : include/igl/frame_field_deformer.o
+Users/daniele/Dropbox/igl/libigl/include/igl/find.o: Users/daniele/Dropbox/igl/libigl/include/igl/find.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/find.o
 
 # target to build an object file
-include/igl/frame_field_deformer.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/frame_field_deformer.cpp.o
-.PHONY : include/igl/frame_field_deformer.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/find.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/find.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/find.cpp.o
 
-include/igl/frame_field_deformer.i: include/igl/frame_field_deformer.cpp.i
-.PHONY : include/igl/frame_field_deformer.i
+Users/daniele/Dropbox/igl/libigl/include/igl/find.i: Users/daniele/Dropbox/igl/libigl/include/igl/find.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/find.i
 
 # target to preprocess a source file
-include/igl/frame_field_deformer.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/frame_field_deformer.cpp.i
-.PHONY : include/igl/frame_field_deformer.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/find.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/find.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/find.cpp.i
 
-include/igl/frame_field_deformer.s: include/igl/frame_field_deformer.cpp.s
-.PHONY : include/igl/frame_field_deformer.s
+Users/daniele/Dropbox/igl/libigl/include/igl/find.s: Users/daniele/Dropbox/igl/libigl/include/igl/find.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/find.s
 
 # target to generate assembly for a file
-include/igl/frame_field_deformer.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/frame_field_deformer.cpp.s
-.PHONY : include/igl/frame_field_deformer.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/find.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/find.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/find.cpp.s
 
-include/igl/frame_to_cross_field.o: include/igl/frame_to_cross_field.cpp.o
-.PHONY : include/igl/frame_to_cross_field.o
+Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.o: Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.o
 
 # target to build an object file
-include/igl/frame_to_cross_field.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/frame_to_cross_field.cpp.o
-.PHONY : include/igl/frame_to_cross_field.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.cpp.o
 
-include/igl/frame_to_cross_field.i: include/igl/frame_to_cross_field.cpp.i
-.PHONY : include/igl/frame_to_cross_field.i
+Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.i: Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.i
 
 # target to preprocess a source file
-include/igl/frame_to_cross_field.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/frame_to_cross_field.cpp.i
-.PHONY : include/igl/frame_to_cross_field.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.cpp.i
 
-include/igl/frame_to_cross_field.s: include/igl/frame_to_cross_field.cpp.s
-.PHONY : include/igl/frame_to_cross_field.s
+Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.s: Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.s
 
 # target to generate assembly for a file
-include/igl/frame_to_cross_field.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/frame_to_cross_field.cpp.s
-.PHONY : include/igl/frame_to_cross_field.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.cpp.s
 
-include/igl/frustum.o: include/igl/frustum.cpp.o
-.PHONY : include/igl/frustum.o
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.o: Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.o
 
 # target to build an object file
-include/igl/frustum.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/frustum.cpp.o
-.PHONY : include/igl/frustum.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.cpp.o
 
-include/igl/frustum.i: include/igl/frustum.cpp.i
-.PHONY : include/igl/frustum.i
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.i: Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.i
 
 # target to preprocess a source file
-include/igl/frustum.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/frustum.cpp.i
-.PHONY : include/igl/frustum.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.cpp.i
 
-include/igl/frustum.s: include/igl/frustum.cpp.s
-.PHONY : include/igl/frustum.s
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.s: Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.s
 
 # target to generate assembly for a file
-include/igl/frustum.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/frustum.cpp.s
-.PHONY : include/igl/frustum.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.cpp.s
 
-include/igl/full.o: include/igl/full.cpp.o
-.PHONY : include/igl/full.o
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.o: Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.o
 
 # target to build an object file
-include/igl/full.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/full.cpp.o
-.PHONY : include/igl/full.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.cpp.o
 
-include/igl/full.i: include/igl/full.cpp.i
-.PHONY : include/igl/full.i
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.i: Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.i
 
 # target to preprocess a source file
-include/igl/full.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/full.cpp.i
-.PHONY : include/igl/full.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.cpp.i
 
-include/igl/full.s: include/igl/full.cpp.s
-.PHONY : include/igl/full.s
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.s: Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.s
 
 # target to generate assembly for a file
-include/igl/full.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/full.cpp.s
-.PHONY : include/igl/full.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.cpp.s
 
-include/igl/gaussian_curvature.o: include/igl/gaussian_curvature.cpp.o
-.PHONY : include/igl/gaussian_curvature.o
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.o: Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.o
 
 # target to build an object file
-include/igl/gaussian_curvature.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/gaussian_curvature.cpp.o
-.PHONY : include/igl/gaussian_curvature.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.cpp.o
 
-include/igl/gaussian_curvature.i: include/igl/gaussian_curvature.cpp.i
-.PHONY : include/igl/gaussian_curvature.i
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.i: Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.i
 
 # target to preprocess a source file
-include/igl/gaussian_curvature.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/gaussian_curvature.cpp.i
-.PHONY : include/igl/gaussian_curvature.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.cpp.i
 
-include/igl/gaussian_curvature.s: include/igl/gaussian_curvature.cpp.s
-.PHONY : include/igl/gaussian_curvature.s
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.s: Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.s
 
 # target to generate assembly for a file
-include/igl/gaussian_curvature.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/gaussian_curvature.cpp.s
-.PHONY : include/igl/gaussian_curvature.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.cpp.s
 
-include/igl/get_seconds.o: include/igl/get_seconds.cpp.o
-.PHONY : include/igl/get_seconds.o
+Users/daniele/Dropbox/igl/libigl/include/igl/floor.o: Users/daniele/Dropbox/igl/libigl/include/igl/floor.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/floor.o
 
 # target to build an object file
-include/igl/get_seconds.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/get_seconds.cpp.o
-.PHONY : include/igl/get_seconds.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/floor.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/floor.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/floor.cpp.o
 
-include/igl/get_seconds.i: include/igl/get_seconds.cpp.i
-.PHONY : include/igl/get_seconds.i
+Users/daniele/Dropbox/igl/libigl/include/igl/floor.i: Users/daniele/Dropbox/igl/libigl/include/igl/floor.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/floor.i
 
 # target to preprocess a source file
-include/igl/get_seconds.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/get_seconds.cpp.i
-.PHONY : include/igl/get_seconds.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/floor.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/floor.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/floor.cpp.i
 
-include/igl/get_seconds.s: include/igl/get_seconds.cpp.s
-.PHONY : include/igl/get_seconds.s
+Users/daniele/Dropbox/igl/libigl/include/igl/floor.s: Users/daniele/Dropbox/igl/libigl/include/igl/floor.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/floor.s
 
 # target to generate assembly for a file
-include/igl/get_seconds.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/get_seconds.cpp.s
-.PHONY : include/igl/get_seconds.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/floor.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/floor.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/floor.cpp.s
 
-include/igl/get_seconds_hires.o: include/igl/get_seconds_hires.cpp.o
-.PHONY : include/igl/get_seconds_hires.o
+Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.o: Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.o
 
 # target to build an object file
-include/igl/get_seconds_hires.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/get_seconds_hires.cpp.o
-.PHONY : include/igl/get_seconds_hires.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.cpp.o
 
-include/igl/get_seconds_hires.i: include/igl/get_seconds_hires.cpp.i
-.PHONY : include/igl/get_seconds_hires.i
+Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.i: Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.i
 
 # target to preprocess a source file
-include/igl/get_seconds_hires.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/get_seconds_hires.cpp.i
-.PHONY : include/igl/get_seconds_hires.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.cpp.i
 
-include/igl/get_seconds_hires.s: include/igl/get_seconds_hires.cpp.s
-.PHONY : include/igl/get_seconds_hires.s
+Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.s: Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.s
 
 # target to generate assembly for a file
-include/igl/get_seconds_hires.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/get_seconds_hires.cpp.s
-.PHONY : include/igl/get_seconds_hires.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.cpp.s
 
-include/igl/gl_type_size.o: include/igl/gl_type_size.cpp.o
-.PHONY : include/igl/gl_type_size.o
+Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.o: Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.o
 
 # target to build an object file
-include/igl/gl_type_size.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/gl_type_size.cpp.o
-.PHONY : include/igl/gl_type_size.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.cpp.o
 
-include/igl/gl_type_size.i: include/igl/gl_type_size.cpp.i
-.PHONY : include/igl/gl_type_size.i
+Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.i: Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.i
 
 # target to preprocess a source file
-include/igl/gl_type_size.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/gl_type_size.cpp.i
-.PHONY : include/igl/gl_type_size.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.cpp.i
 
-include/igl/gl_type_size.s: include/igl/gl_type_size.cpp.s
-.PHONY : include/igl/gl_type_size.s
+Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.s: Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.s
 
 # target to generate assembly for a file
-include/igl/gl_type_size.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/gl_type_size.cpp.s
-.PHONY : include/igl/gl_type_size.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.cpp.s
 
-include/igl/grad.o: include/igl/grad.cpp.o
-.PHONY : include/igl/grad.o
+Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.o: Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.o
 
 # target to build an object file
-include/igl/grad.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/grad.cpp.o
-.PHONY : include/igl/grad.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.cpp.o
 
-include/igl/grad.i: include/igl/grad.cpp.i
-.PHONY : include/igl/grad.i
+Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.i: Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.i
 
 # target to preprocess a source file
-include/igl/grad.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/grad.cpp.i
-.PHONY : include/igl/grad.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.cpp.i
 
-include/igl/grad.s: include/igl/grad.cpp.s
-.PHONY : include/igl/grad.s
+Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.s: Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.s
 
 # target to generate assembly for a file
-include/igl/grad.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/grad.cpp.s
-.PHONY : include/igl/grad.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.cpp.s
 
-include/igl/group_sum_matrix.o: include/igl/group_sum_matrix.cpp.o
-.PHONY : include/igl/group_sum_matrix.o
+Users/daniele/Dropbox/igl/libigl/include/igl/frustum.o: Users/daniele/Dropbox/igl/libigl/include/igl/frustum.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frustum.o
 
 # target to build an object file
-include/igl/group_sum_matrix.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/group_sum_matrix.cpp.o
-.PHONY : include/igl/group_sum_matrix.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/frustum.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/frustum.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frustum.cpp.o
 
-include/igl/group_sum_matrix.i: include/igl/group_sum_matrix.cpp.i
-.PHONY : include/igl/group_sum_matrix.i
+Users/daniele/Dropbox/igl/libigl/include/igl/frustum.i: Users/daniele/Dropbox/igl/libigl/include/igl/frustum.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frustum.i
 
 # target to preprocess a source file
-include/igl/group_sum_matrix.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/group_sum_matrix.cpp.i
-.PHONY : include/igl/group_sum_matrix.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/frustum.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/frustum.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frustum.cpp.i
 
-include/igl/group_sum_matrix.s: include/igl/group_sum_matrix.cpp.s
-.PHONY : include/igl/group_sum_matrix.s
+Users/daniele/Dropbox/igl/libigl/include/igl/frustum.s: Users/daniele/Dropbox/igl/libigl/include/igl/frustum.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frustum.s
 
 # target to generate assembly for a file
-include/igl/group_sum_matrix.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/group_sum_matrix.cpp.s
-.PHONY : include/igl/group_sum_matrix.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/frustum.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/frustum.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/frustum.cpp.s
 
-include/igl/harmonic.o: include/igl/harmonic.cpp.o
-.PHONY : include/igl/harmonic.o
+Users/daniele/Dropbox/igl/libigl/include/igl/full.o: Users/daniele/Dropbox/igl/libigl/include/igl/full.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/full.o
 
 # target to build an object file
-include/igl/harmonic.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/harmonic.cpp.o
-.PHONY : include/igl/harmonic.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/full.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/full.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/full.cpp.o
 
-include/igl/harmonic.i: include/igl/harmonic.cpp.i
-.PHONY : include/igl/harmonic.i
+Users/daniele/Dropbox/igl/libigl/include/igl/full.i: Users/daniele/Dropbox/igl/libigl/include/igl/full.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/full.i
 
 # target to preprocess a source file
-include/igl/harmonic.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/harmonic.cpp.i
-.PHONY : include/igl/harmonic.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/full.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/full.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/full.cpp.i
 
-include/igl/harmonic.s: include/igl/harmonic.cpp.s
-.PHONY : include/igl/harmonic.s
+Users/daniele/Dropbox/igl/libigl/include/igl/full.s: Users/daniele/Dropbox/igl/libigl/include/igl/full.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/full.s
 
 # target to generate assembly for a file
-include/igl/harmonic.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/harmonic.cpp.s
-.PHONY : include/igl/harmonic.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/full.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/full.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/full.cpp.s
 
-include/igl/harwell_boeing.o: include/igl/harwell_boeing.cpp.o
-.PHONY : include/igl/harwell_boeing.o
+Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.o: Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.o
 
 # target to build an object file
-include/igl/harwell_boeing.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/harwell_boeing.cpp.o
-.PHONY : include/igl/harwell_boeing.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.cpp.o
 
-include/igl/harwell_boeing.i: include/igl/harwell_boeing.cpp.i
-.PHONY : include/igl/harwell_boeing.i
+Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.i: Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.i
 
 # target to preprocess a source file
-include/igl/harwell_boeing.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/harwell_boeing.cpp.i
-.PHONY : include/igl/harwell_boeing.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.cpp.i
 
-include/igl/harwell_boeing.s: include/igl/harwell_boeing.cpp.s
-.PHONY : include/igl/harwell_boeing.s
+Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.s: Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.s
 
 # target to generate assembly for a file
-include/igl/harwell_boeing.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/harwell_boeing.cpp.s
-.PHONY : include/igl/harwell_boeing.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.cpp.s
 
-include/igl/histc.o: include/igl/histc.cpp.o
-.PHONY : include/igl/histc.o
+Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.o: Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.o
 
 # target to build an object file
-include/igl/histc.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/histc.cpp.o
-.PHONY : include/igl/histc.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.cpp.o
 
-include/igl/histc.i: include/igl/histc.cpp.i
-.PHONY : include/igl/histc.i
+Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.i: Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.i
 
 # target to preprocess a source file
-include/igl/histc.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/histc.cpp.i
-.PHONY : include/igl/histc.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.cpp.i
 
-include/igl/histc.s: include/igl/histc.cpp.s
-.PHONY : include/igl/histc.s
+Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.s: Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.s
 
 # target to generate assembly for a file
-include/igl/histc.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/histc.cpp.s
-.PHONY : include/igl/histc.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.cpp.s
 
-include/igl/hsv_to_rgb.o: include/igl/hsv_to_rgb.cpp.o
-.PHONY : include/igl/hsv_to_rgb.o
+Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.o: Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.o
 
 # target to build an object file
-include/igl/hsv_to_rgb.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/hsv_to_rgb.cpp.o
-.PHONY : include/igl/hsv_to_rgb.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.cpp.o
 
-include/igl/hsv_to_rgb.i: include/igl/hsv_to_rgb.cpp.i
-.PHONY : include/igl/hsv_to_rgb.i
+Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.i: Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.i
 
 # target to preprocess a source file
-include/igl/hsv_to_rgb.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/hsv_to_rgb.cpp.i
-.PHONY : include/igl/hsv_to_rgb.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.cpp.i
 
-include/igl/hsv_to_rgb.s: include/igl/hsv_to_rgb.cpp.s
-.PHONY : include/igl/hsv_to_rgb.s
+Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.s: Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.s
 
 # target to generate assembly for a file
-include/igl/hsv_to_rgb.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/hsv_to_rgb.cpp.s
-.PHONY : include/igl/hsv_to_rgb.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.cpp.s
 
-include/igl/in_element.o: include/igl/in_element.cpp.o
-.PHONY : include/igl/in_element.o
+Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.o: Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.o
 
 # target to build an object file
-include/igl/in_element.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/in_element.cpp.o
-.PHONY : include/igl/in_element.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.cpp.o
 
-include/igl/in_element.i: include/igl/in_element.cpp.i
-.PHONY : include/igl/in_element.i
+Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.i: Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.i
 
 # target to preprocess a source file
-include/igl/in_element.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/in_element.cpp.i
-.PHONY : include/igl/in_element.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.cpp.i
 
-include/igl/in_element.s: include/igl/in_element.cpp.s
-.PHONY : include/igl/in_element.s
+Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.s: Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.s
 
 # target to generate assembly for a file
-include/igl/in_element.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/in_element.cpp.s
-.PHONY : include/igl/in_element.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.cpp.s
 
-include/igl/init_render_to_texture.o: include/igl/init_render_to_texture.cpp.o
-.PHONY : include/igl/init_render_to_texture.o
+Users/daniele/Dropbox/igl/libigl/include/igl/grad.o: Users/daniele/Dropbox/igl/libigl/include/igl/grad.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/grad.o
 
 # target to build an object file
-include/igl/init_render_to_texture.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/init_render_to_texture.cpp.o
-.PHONY : include/igl/init_render_to_texture.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/grad.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/grad.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/grad.cpp.o
 
-include/igl/init_render_to_texture.i: include/igl/init_render_to_texture.cpp.i
-.PHONY : include/igl/init_render_to_texture.i
+Users/daniele/Dropbox/igl/libigl/include/igl/grad.i: Users/daniele/Dropbox/igl/libigl/include/igl/grad.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/grad.i
 
 # target to preprocess a source file
-include/igl/init_render_to_texture.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/init_render_to_texture.cpp.i
-.PHONY : include/igl/init_render_to_texture.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/grad.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/grad.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/grad.cpp.i
 
-include/igl/init_render_to_texture.s: include/igl/init_render_to_texture.cpp.s
-.PHONY : include/igl/init_render_to_texture.s
+Users/daniele/Dropbox/igl/libigl/include/igl/grad.s: Users/daniele/Dropbox/igl/libigl/include/igl/grad.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/grad.s
 
 # target to generate assembly for a file
-include/igl/init_render_to_texture.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/init_render_to_texture.cpp.s
-.PHONY : include/igl/init_render_to_texture.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/grad.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/grad.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/grad.cpp.s
 
-include/igl/internal_angles.o: include/igl/internal_angles.cpp.o
-.PHONY : include/igl/internal_angles.o
+Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.o: Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.o
 
 # target to build an object file
-include/igl/internal_angles.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/internal_angles.cpp.o
-.PHONY : include/igl/internal_angles.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.cpp.o
 
-include/igl/internal_angles.i: include/igl/internal_angles.cpp.i
-.PHONY : include/igl/internal_angles.i
+Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.i: Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.i
 
 # target to preprocess a source file
-include/igl/internal_angles.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/internal_angles.cpp.i
-.PHONY : include/igl/internal_angles.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.cpp.i
 
-include/igl/internal_angles.s: include/igl/internal_angles.cpp.s
-.PHONY : include/igl/internal_angles.s
+Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.s: Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.s
 
 # target to generate assembly for a file
-include/igl/internal_angles.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/internal_angles.cpp.s
-.PHONY : include/igl/internal_angles.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.cpp.s
 
-include/igl/intersect.o: include/igl/intersect.cpp.o
-.PHONY : include/igl/intersect.o
+Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.o: Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.o
 
 # target to build an object file
-include/igl/intersect.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/intersect.cpp.o
-.PHONY : include/igl/intersect.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.cpp.o
 
-include/igl/intersect.i: include/igl/intersect.cpp.i
-.PHONY : include/igl/intersect.i
+Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.i: Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.i
 
 # target to preprocess a source file
-include/igl/intersect.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/intersect.cpp.i
-.PHONY : include/igl/intersect.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.cpp.i
 
-include/igl/intersect.s: include/igl/intersect.cpp.s
-.PHONY : include/igl/intersect.s
+Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.s: Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.s
 
 # target to generate assembly for a file
-include/igl/intersect.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/intersect.cpp.s
-.PHONY : include/igl/intersect.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.cpp.s
 
-include/igl/invert_diag.o: include/igl/invert_diag.cpp.o
-.PHONY : include/igl/invert_diag.o
+Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.o: Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.o
 
 # target to build an object file
-include/igl/invert_diag.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/invert_diag.cpp.o
-.PHONY : include/igl/invert_diag.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.cpp.o
 
-include/igl/invert_diag.i: include/igl/invert_diag.cpp.i
-.PHONY : include/igl/invert_diag.i
+Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.i: Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.i
 
 # target to preprocess a source file
-include/igl/invert_diag.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/invert_diag.cpp.i
-.PHONY : include/igl/invert_diag.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.cpp.i
 
-include/igl/invert_diag.s: include/igl/invert_diag.cpp.s
-.PHONY : include/igl/invert_diag.s
+Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.s: Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.s
 
 # target to generate assembly for a file
-include/igl/invert_diag.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/invert_diag.cpp.s
-.PHONY : include/igl/invert_diag.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.cpp.s
 
-include/igl/is_border_vertex.o: include/igl/is_border_vertex.cpp.o
-.PHONY : include/igl/is_border_vertex.o
+Users/daniele/Dropbox/igl/libigl/include/igl/histc.o: Users/daniele/Dropbox/igl/libigl/include/igl/histc.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/histc.o
 
 # target to build an object file
-include/igl/is_border_vertex.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_border_vertex.cpp.o
-.PHONY : include/igl/is_border_vertex.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/histc.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/histc.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/histc.cpp.o
 
-include/igl/is_border_vertex.i: include/igl/is_border_vertex.cpp.i
-.PHONY : include/igl/is_border_vertex.i
+Users/daniele/Dropbox/igl/libigl/include/igl/histc.i: Users/daniele/Dropbox/igl/libigl/include/igl/histc.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/histc.i
 
 # target to preprocess a source file
-include/igl/is_border_vertex.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_border_vertex.cpp.i
-.PHONY : include/igl/is_border_vertex.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/histc.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/histc.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/histc.cpp.i
 
-include/igl/is_border_vertex.s: include/igl/is_border_vertex.cpp.s
-.PHONY : include/igl/is_border_vertex.s
+Users/daniele/Dropbox/igl/libigl/include/igl/histc.s: Users/daniele/Dropbox/igl/libigl/include/igl/histc.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/histc.s
 
 # target to generate assembly for a file
-include/igl/is_border_vertex.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_border_vertex.cpp.s
-.PHONY : include/igl/is_border_vertex.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/histc.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/histc.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/histc.cpp.s
 
-include/igl/is_boundary_edge.o: include/igl/is_boundary_edge.cpp.o
-.PHONY : include/igl/is_boundary_edge.o
+Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.o: Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.o
 
 # target to build an object file
-include/igl/is_boundary_edge.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_boundary_edge.cpp.o
-.PHONY : include/igl/is_boundary_edge.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.cpp.o
 
-include/igl/is_boundary_edge.i: include/igl/is_boundary_edge.cpp.i
-.PHONY : include/igl/is_boundary_edge.i
+Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.i: Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.i
 
 # target to preprocess a source file
-include/igl/is_boundary_edge.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_boundary_edge.cpp.i
-.PHONY : include/igl/is_boundary_edge.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.cpp.i
 
-include/igl/is_boundary_edge.s: include/igl/is_boundary_edge.cpp.s
-.PHONY : include/igl/is_boundary_edge.s
+Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.s: Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.s
 
 # target to generate assembly for a file
-include/igl/is_boundary_edge.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_boundary_edge.cpp.s
-.PHONY : include/igl/is_boundary_edge.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.cpp.s
 
-include/igl/is_dir.o: include/igl/is_dir.cpp.o
-.PHONY : include/igl/is_dir.o
+Users/daniele/Dropbox/igl/libigl/include/igl/in_element.o: Users/daniele/Dropbox/igl/libigl/include/igl/in_element.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/in_element.o
 
 # target to build an object file
-include/igl/is_dir.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_dir.cpp.o
-.PHONY : include/igl/is_dir.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/in_element.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/in_element.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/in_element.cpp.o
 
-include/igl/is_dir.i: include/igl/is_dir.cpp.i
-.PHONY : include/igl/is_dir.i
+Users/daniele/Dropbox/igl/libigl/include/igl/in_element.i: Users/daniele/Dropbox/igl/libigl/include/igl/in_element.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/in_element.i
 
 # target to preprocess a source file
-include/igl/is_dir.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_dir.cpp.i
-.PHONY : include/igl/is_dir.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/in_element.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/in_element.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/in_element.cpp.i
 
-include/igl/is_dir.s: include/igl/is_dir.cpp.s
-.PHONY : include/igl/is_dir.s
+Users/daniele/Dropbox/igl/libigl/include/igl/in_element.s: Users/daniele/Dropbox/igl/libigl/include/igl/in_element.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/in_element.s
 
 # target to generate assembly for a file
-include/igl/is_dir.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_dir.cpp.s
-.PHONY : include/igl/is_dir.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/in_element.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/in_element.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/in_element.cpp.s
 
-include/igl/is_edge_manifold.o: include/igl/is_edge_manifold.cpp.o
-.PHONY : include/igl/is_edge_manifold.o
+Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.o: Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.o
 
 # target to build an object file
-include/igl/is_edge_manifold.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_edge_manifold.cpp.o
-.PHONY : include/igl/is_edge_manifold.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.cpp.o
 
-include/igl/is_edge_manifold.i: include/igl/is_edge_manifold.cpp.i
-.PHONY : include/igl/is_edge_manifold.i
+Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.i: Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.i
 
 # target to preprocess a source file
-include/igl/is_edge_manifold.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_edge_manifold.cpp.i
-.PHONY : include/igl/is_edge_manifold.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.cpp.i
 
-include/igl/is_edge_manifold.s: include/igl/is_edge_manifold.cpp.s
-.PHONY : include/igl/is_edge_manifold.s
+Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.s: Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.s
 
 # target to generate assembly for a file
-include/igl/is_edge_manifold.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_edge_manifold.cpp.s
-.PHONY : include/igl/is_edge_manifold.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.cpp.s
 
-include/igl/is_file.o: include/igl/is_file.cpp.o
-.PHONY : include/igl/is_file.o
+Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.o: Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.o
 
 # target to build an object file
-include/igl/is_file.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_file.cpp.o
-.PHONY : include/igl/is_file.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.cpp.o
 
-include/igl/is_file.i: include/igl/is_file.cpp.i
-.PHONY : include/igl/is_file.i
+Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.i: Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.i
 
 # target to preprocess a source file
-include/igl/is_file.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_file.cpp.i
-.PHONY : include/igl/is_file.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.cpp.i
 
-include/igl/is_file.s: include/igl/is_file.cpp.s
-.PHONY : include/igl/is_file.s
+Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.s: Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.s
 
 # target to generate assembly for a file
-include/igl/is_file.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_file.cpp.s
-.PHONY : include/igl/is_file.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.cpp.s
 
-include/igl/is_irregular_vertex.o: include/igl/is_irregular_vertex.cpp.o
-.PHONY : include/igl/is_irregular_vertex.o
+Users/daniele/Dropbox/igl/libigl/include/igl/intersect.o: Users/daniele/Dropbox/igl/libigl/include/igl/intersect.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/intersect.o
 
 # target to build an object file
-include/igl/is_irregular_vertex.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_irregular_vertex.cpp.o
-.PHONY : include/igl/is_irregular_vertex.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/intersect.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/intersect.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/intersect.cpp.o
 
-include/igl/is_irregular_vertex.i: include/igl/is_irregular_vertex.cpp.i
-.PHONY : include/igl/is_irregular_vertex.i
+Users/daniele/Dropbox/igl/libigl/include/igl/intersect.i: Users/daniele/Dropbox/igl/libigl/include/igl/intersect.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/intersect.i
 
 # target to preprocess a source file
-include/igl/is_irregular_vertex.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_irregular_vertex.cpp.i
-.PHONY : include/igl/is_irregular_vertex.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/intersect.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/intersect.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/intersect.cpp.i
 
-include/igl/is_irregular_vertex.s: include/igl/is_irregular_vertex.cpp.s
-.PHONY : include/igl/is_irregular_vertex.s
+Users/daniele/Dropbox/igl/libigl/include/igl/intersect.s: Users/daniele/Dropbox/igl/libigl/include/igl/intersect.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/intersect.s
 
 # target to generate assembly for a file
-include/igl/is_irregular_vertex.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_irregular_vertex.cpp.s
-.PHONY : include/igl/is_irregular_vertex.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/intersect.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/intersect.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/intersect.cpp.s
 
-include/igl/is_planar.o: include/igl/is_planar.cpp.o
-.PHONY : include/igl/is_planar.o
+Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.o: Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.o
 
 # target to build an object file
-include/igl/is_planar.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_planar.cpp.o
-.PHONY : include/igl/is_planar.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.cpp.o
 
-include/igl/is_planar.i: include/igl/is_planar.cpp.i
-.PHONY : include/igl/is_planar.i
+Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.i: Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.i
 
 # target to preprocess a source file
-include/igl/is_planar.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_planar.cpp.i
-.PHONY : include/igl/is_planar.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.cpp.i
 
-include/igl/is_planar.s: include/igl/is_planar.cpp.s
-.PHONY : include/igl/is_planar.s
+Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.s: Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.s
 
 # target to generate assembly for a file
-include/igl/is_planar.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_planar.cpp.s
-.PHONY : include/igl/is_planar.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.cpp.s
 
-include/igl/is_readable.o: include/igl/is_readable.cpp.o
-.PHONY : include/igl/is_readable.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.o: Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.o
 
 # target to build an object file
-include/igl/is_readable.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_readable.cpp.o
-.PHONY : include/igl/is_readable.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.cpp.o
 
-include/igl/is_readable.i: include/igl/is_readable.cpp.i
-.PHONY : include/igl/is_readable.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.i: Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.i
 
 # target to preprocess a source file
-include/igl/is_readable.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_readable.cpp.i
-.PHONY : include/igl/is_readable.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.cpp.i
 
-include/igl/is_readable.s: include/igl/is_readable.cpp.s
-.PHONY : include/igl/is_readable.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.s: Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.s
 
 # target to generate assembly for a file
-include/igl/is_readable.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_readable.cpp.s
-.PHONY : include/igl/is_readable.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.cpp.s
 
-include/igl/is_sparse.o: include/igl/is_sparse.cpp.o
-.PHONY : include/igl/is_sparse.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.o: Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.o
 
 # target to build an object file
-include/igl/is_sparse.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_sparse.cpp.o
-.PHONY : include/igl/is_sparse.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.cpp.o
 
-include/igl/is_sparse.i: include/igl/is_sparse.cpp.i
-.PHONY : include/igl/is_sparse.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.i: Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.i
 
 # target to preprocess a source file
-include/igl/is_sparse.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_sparse.cpp.i
-.PHONY : include/igl/is_sparse.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.cpp.i
 
-include/igl/is_sparse.s: include/igl/is_sparse.cpp.s
-.PHONY : include/igl/is_sparse.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.s: Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.s
 
 # target to generate assembly for a file
-include/igl/is_sparse.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_sparse.cpp.s
-.PHONY : include/igl/is_sparse.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.cpp.s
 
-include/igl/is_symmetric.o: include/igl/is_symmetric.cpp.o
-.PHONY : include/igl/is_symmetric.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.o: Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.o
 
 # target to build an object file
-include/igl/is_symmetric.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_symmetric.cpp.o
-.PHONY : include/igl/is_symmetric.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.cpp.o
 
-include/igl/is_symmetric.i: include/igl/is_symmetric.cpp.i
-.PHONY : include/igl/is_symmetric.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.i: Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.i
 
 # target to preprocess a source file
-include/igl/is_symmetric.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_symmetric.cpp.i
-.PHONY : include/igl/is_symmetric.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.cpp.i
 
-include/igl/is_symmetric.s: include/igl/is_symmetric.cpp.s
-.PHONY : include/igl/is_symmetric.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.s: Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.s
 
 # target to generate assembly for a file
-include/igl/is_symmetric.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_symmetric.cpp.s
-.PHONY : include/igl/is_symmetric.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.cpp.s
 
-include/igl/is_vertex_manifold.o: include/igl/is_vertex_manifold.cpp.o
-.PHONY : include/igl/is_vertex_manifold.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.o: Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.o
 
 # target to build an object file
-include/igl/is_vertex_manifold.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_vertex_manifold.cpp.o
-.PHONY : include/igl/is_vertex_manifold.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.cpp.o
 
-include/igl/is_vertex_manifold.i: include/igl/is_vertex_manifold.cpp.i
-.PHONY : include/igl/is_vertex_manifold.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.i: Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.i
 
 # target to preprocess a source file
-include/igl/is_vertex_manifold.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_vertex_manifold.cpp.i
-.PHONY : include/igl/is_vertex_manifold.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.cpp.i
 
-include/igl/is_vertex_manifold.s: include/igl/is_vertex_manifold.cpp.s
-.PHONY : include/igl/is_vertex_manifold.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.s: Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.s
 
 # target to generate assembly for a file
-include/igl/is_vertex_manifold.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_vertex_manifold.cpp.s
-.PHONY : include/igl/is_vertex_manifold.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.cpp.s
 
-include/igl/is_writable.o: include/igl/is_writable.cpp.o
-.PHONY : include/igl/is_writable.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_file.o: Users/daniele/Dropbox/igl/libigl/include/igl/is_file.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_file.o
 
 # target to build an object file
-include/igl/is_writable.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_writable.cpp.o
-.PHONY : include/igl/is_writable.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_file.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_file.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_file.cpp.o
 
-include/igl/is_writable.i: include/igl/is_writable.cpp.i
-.PHONY : include/igl/is_writable.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_file.i: Users/daniele/Dropbox/igl/libigl/include/igl/is_file.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_file.i
 
 # target to preprocess a source file
-include/igl/is_writable.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_writable.cpp.i
-.PHONY : include/igl/is_writable.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_file.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_file.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_file.cpp.i
 
-include/igl/is_writable.s: include/igl/is_writable.cpp.s
-.PHONY : include/igl/is_writable.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_file.s: Users/daniele/Dropbox/igl/libigl/include/igl/is_file.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_file.s
 
 # target to generate assembly for a file
-include/igl/is_writable.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/is_writable.cpp.s
-.PHONY : include/igl/is_writable.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_file.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_file.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_file.cpp.s
 
-include/igl/jet.o: include/igl/jet.cpp.o
-.PHONY : include/igl/jet.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.o: Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.o
 
 # target to build an object file
-include/igl/jet.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/jet.cpp.o
-.PHONY : include/igl/jet.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.cpp.o
 
-include/igl/jet.i: include/igl/jet.cpp.i
-.PHONY : include/igl/jet.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.i: Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.i
 
 # target to preprocess a source file
-include/igl/jet.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/jet.cpp.i
-.PHONY : include/igl/jet.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.cpp.i
 
-include/igl/jet.s: include/igl/jet.cpp.s
-.PHONY : include/igl/jet.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.s: Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.s
 
 # target to generate assembly for a file
-include/igl/jet.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/jet.cpp.s
-.PHONY : include/igl/jet.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.cpp.s
 
-include/igl/kronecker_product.o: include/igl/kronecker_product.cpp.o
-.PHONY : include/igl/kronecker_product.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.o: Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.o
 
 # target to build an object file
-include/igl/kronecker_product.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/kronecker_product.cpp.o
-.PHONY : include/igl/kronecker_product.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.cpp.o
 
-include/igl/kronecker_product.i: include/igl/kronecker_product.cpp.i
-.PHONY : include/igl/kronecker_product.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.i: Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.i
 
 # target to preprocess a source file
-include/igl/kronecker_product.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/kronecker_product.cpp.i
-.PHONY : include/igl/kronecker_product.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.cpp.i
 
-include/igl/kronecker_product.s: include/igl/kronecker_product.cpp.s
-.PHONY : include/igl/kronecker_product.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.s: Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.s
 
 # target to generate assembly for a file
-include/igl/kronecker_product.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/kronecker_product.cpp.s
-.PHONY : include/igl/kronecker_product.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.cpp.s
 
-include/igl/launch_medit.o: include/igl/launch_medit.cpp.o
-.PHONY : include/igl/launch_medit.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.o: Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.o
 
 # target to build an object file
-include/igl/launch_medit.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/launch_medit.cpp.o
-.PHONY : include/igl/launch_medit.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.cpp.o
 
-include/igl/launch_medit.i: include/igl/launch_medit.cpp.i
-.PHONY : include/igl/launch_medit.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.i: Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.i
 
 # target to preprocess a source file
-include/igl/launch_medit.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/launch_medit.cpp.i
-.PHONY : include/igl/launch_medit.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.cpp.i
 
-include/igl/launch_medit.s: include/igl/launch_medit.cpp.s
-.PHONY : include/igl/launch_medit.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.s: Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.s
 
 # target to generate assembly for a file
-include/igl/launch_medit.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/launch_medit.cpp.s
-.PHONY : include/igl/launch_medit.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.cpp.s
 
-include/igl/lbs_matrix.o: include/igl/lbs_matrix.cpp.o
-.PHONY : include/igl/lbs_matrix.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.o: Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.o
 
 # target to build an object file
-include/igl/lbs_matrix.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/lbs_matrix.cpp.o
-.PHONY : include/igl/lbs_matrix.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.cpp.o
 
-include/igl/lbs_matrix.i: include/igl/lbs_matrix.cpp.i
-.PHONY : include/igl/lbs_matrix.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.i: Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.i
 
 # target to preprocess a source file
-include/igl/lbs_matrix.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/lbs_matrix.cpp.i
-.PHONY : include/igl/lbs_matrix.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.cpp.i
 
-include/igl/lbs_matrix.s: include/igl/lbs_matrix.cpp.s
-.PHONY : include/igl/lbs_matrix.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.s: Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.s
 
 # target to generate assembly for a file
-include/igl/lbs_matrix.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/lbs_matrix.cpp.s
-.PHONY : include/igl/lbs_matrix.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.cpp.s
 
-include/igl/lens_flare.o: include/igl/lens_flare.cpp.o
-.PHONY : include/igl/lens_flare.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.o: Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.o
 
 # target to build an object file
-include/igl/lens_flare.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/lens_flare.cpp.o
-.PHONY : include/igl/lens_flare.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.cpp.o
 
-include/igl/lens_flare.i: include/igl/lens_flare.cpp.i
-.PHONY : include/igl/lens_flare.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.i: Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.i
 
 # target to preprocess a source file
-include/igl/lens_flare.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/lens_flare.cpp.i
-.PHONY : include/igl/lens_flare.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.cpp.i
 
-include/igl/lens_flare.s: include/igl/lens_flare.cpp.s
-.PHONY : include/igl/lens_flare.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.s: Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.s
 
 # target to generate assembly for a file
-include/igl/lens_flare.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/lens_flare.cpp.s
-.PHONY : include/igl/lens_flare.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.cpp.s
 
-include/igl/lim/lim.o: include/igl/lim/lim.cpp.o
-.PHONY : include/igl/lim/lim.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.o: Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.o
 
 # target to build an object file
-include/igl/lim/lim.cpp.o:
-	$(MAKE) -f CMakeFiles/igllim.dir/build.make CMakeFiles/igllim.dir/include/igl/lim/lim.cpp.o
-.PHONY : include/igl/lim/lim.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.cpp.o
 
-include/igl/lim/lim.i: include/igl/lim/lim.cpp.i
-.PHONY : include/igl/lim/lim.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.i: Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.i
 
 # target to preprocess a source file
-include/igl/lim/lim.cpp.i:
-	$(MAKE) -f CMakeFiles/igllim.dir/build.make CMakeFiles/igllim.dir/include/igl/lim/lim.cpp.i
-.PHONY : include/igl/lim/lim.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.cpp.i
 
-include/igl/lim/lim.s: include/igl/lim/lim.cpp.s
-.PHONY : include/igl/lim/lim.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.s: Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.s
 
 # target to generate assembly for a file
-include/igl/lim/lim.cpp.s:
-	$(MAKE) -f CMakeFiles/igllim.dir/build.make CMakeFiles/igllim.dir/include/igl/lim/lim.cpp.s
-.PHONY : include/igl/lim/lim.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.cpp.s
 
-include/igl/limit_faces.o: include/igl/limit_faces.cpp.o
-.PHONY : include/igl/limit_faces.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.o: Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.o
 
 # target to build an object file
-include/igl/limit_faces.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/limit_faces.cpp.o
-.PHONY : include/igl/limit_faces.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.cpp.o
 
-include/igl/limit_faces.i: include/igl/limit_faces.cpp.i
-.PHONY : include/igl/limit_faces.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.i: Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.i
 
 # target to preprocess a source file
-include/igl/limit_faces.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/limit_faces.cpp.i
-.PHONY : include/igl/limit_faces.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.cpp.i
 
-include/igl/limit_faces.s: include/igl/limit_faces.cpp.s
-.PHONY : include/igl/limit_faces.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.s: Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.s
 
 # target to generate assembly for a file
-include/igl/limit_faces.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/limit_faces.cpp.s
-.PHONY : include/igl/limit_faces.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.cpp.s
 
-include/igl/line_field_missmatch.o: include/igl/line_field_missmatch.cpp.o
-.PHONY : include/igl/line_field_missmatch.o
+Users/daniele/Dropbox/igl/libigl/include/igl/jet.o: Users/daniele/Dropbox/igl/libigl/include/igl/jet.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/jet.o
 
 # target to build an object file
-include/igl/line_field_missmatch.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/line_field_missmatch.cpp.o
-.PHONY : include/igl/line_field_missmatch.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/jet.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/jet.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/jet.cpp.o
 
-include/igl/line_field_missmatch.i: include/igl/line_field_missmatch.cpp.i
-.PHONY : include/igl/line_field_missmatch.i
+Users/daniele/Dropbox/igl/libigl/include/igl/jet.i: Users/daniele/Dropbox/igl/libigl/include/igl/jet.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/jet.i
 
 # target to preprocess a source file
-include/igl/line_field_missmatch.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/line_field_missmatch.cpp.i
-.PHONY : include/igl/line_field_missmatch.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/jet.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/jet.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/jet.cpp.i
 
-include/igl/line_field_missmatch.s: include/igl/line_field_missmatch.cpp.s
-.PHONY : include/igl/line_field_missmatch.s
+Users/daniele/Dropbox/igl/libigl/include/igl/jet.s: Users/daniele/Dropbox/igl/libigl/include/igl/jet.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/jet.s
 
 # target to generate assembly for a file
-include/igl/line_field_missmatch.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/line_field_missmatch.cpp.s
-.PHONY : include/igl/line_field_missmatch.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/jet.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/jet.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/jet.cpp.s
 
-include/igl/line_segment_in_rectangle.o: include/igl/line_segment_in_rectangle.cpp.o
-.PHONY : include/igl/line_segment_in_rectangle.o
+Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.o: Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.o
 
 # target to build an object file
-include/igl/line_segment_in_rectangle.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/line_segment_in_rectangle.cpp.o
-.PHONY : include/igl/line_segment_in_rectangle.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.cpp.o
 
-include/igl/line_segment_in_rectangle.i: include/igl/line_segment_in_rectangle.cpp.i
-.PHONY : include/igl/line_segment_in_rectangle.i
+Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.i: Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.i
 
 # target to preprocess a source file
-include/igl/line_segment_in_rectangle.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/line_segment_in_rectangle.cpp.i
-.PHONY : include/igl/line_segment_in_rectangle.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.cpp.i
 
-include/igl/line_segment_in_rectangle.s: include/igl/line_segment_in_rectangle.cpp.s
-.PHONY : include/igl/line_segment_in_rectangle.s
+Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.s: Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.s
 
 # target to generate assembly for a file
-include/igl/line_segment_in_rectangle.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/line_segment_in_rectangle.cpp.s
-.PHONY : include/igl/line_segment_in_rectangle.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.cpp.s
 
-include/igl/linprog.o: include/igl/linprog.cpp.o
-.PHONY : include/igl/linprog.o
+Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.o: Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.o
 
 # target to build an object file
-include/igl/linprog.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/linprog.cpp.o
-.PHONY : include/igl/linprog.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.cpp.o
 
-include/igl/linprog.i: include/igl/linprog.cpp.i
-.PHONY : include/igl/linprog.i
+Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.i: Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.i
 
 # target to preprocess a source file
-include/igl/linprog.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/linprog.cpp.i
-.PHONY : include/igl/linprog.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.cpp.i
 
-include/igl/linprog.s: include/igl/linprog.cpp.s
-.PHONY : include/igl/linprog.s
+Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.s: Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.s
 
 # target to generate assembly for a file
-include/igl/linprog.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/linprog.cpp.s
-.PHONY : include/igl/linprog.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.cpp.s
 
-include/igl/list_to_matrix.o: include/igl/list_to_matrix.cpp.o
-.PHONY : include/igl/list_to_matrix.o
+Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.o: Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.o
 
 # target to build an object file
-include/igl/list_to_matrix.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/list_to_matrix.cpp.o
-.PHONY : include/igl/list_to_matrix.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.cpp.o
 
-include/igl/list_to_matrix.i: include/igl/list_to_matrix.cpp.i
-.PHONY : include/igl/list_to_matrix.i
+Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.i: Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.i
 
 # target to preprocess a source file
-include/igl/list_to_matrix.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/list_to_matrix.cpp.i
-.PHONY : include/igl/list_to_matrix.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.cpp.i
 
-include/igl/list_to_matrix.s: include/igl/list_to_matrix.cpp.s
-.PHONY : include/igl/list_to_matrix.s
+Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.s: Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.s
 
 # target to generate assembly for a file
-include/igl/list_to_matrix.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/list_to_matrix.cpp.s
-.PHONY : include/igl/list_to_matrix.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.cpp.s
 
-include/igl/load_shader.o: include/igl/load_shader.cpp.o
-.PHONY : include/igl/load_shader.o
+Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.o: Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.o
 
 # target to build an object file
-include/igl/load_shader.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/load_shader.cpp.o
-.PHONY : include/igl/load_shader.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.cpp.o
 
-include/igl/load_shader.i: include/igl/load_shader.cpp.i
-.PHONY : include/igl/load_shader.i
+Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.i: Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.i
 
 # target to preprocess a source file
-include/igl/load_shader.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/load_shader.cpp.i
-.PHONY : include/igl/load_shader.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.cpp.i
 
-include/igl/load_shader.s: include/igl/load_shader.cpp.s
-.PHONY : include/igl/load_shader.s
+Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.s: Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.s
 
 # target to generate assembly for a file
-include/igl/load_shader.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/load_shader.cpp.s
-.PHONY : include/igl/load_shader.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.cpp.s
 
-include/igl/local_basis.o: include/igl/local_basis.cpp.o
-.PHONY : include/igl/local_basis.o
+Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.o: Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.o
 
 # target to build an object file
-include/igl/local_basis.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/local_basis.cpp.o
-.PHONY : include/igl/local_basis.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.cpp.o
 
-include/igl/local_basis.i: include/igl/local_basis.cpp.i
-.PHONY : include/igl/local_basis.i
+Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.i: Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.i
 
 # target to preprocess a source file
-include/igl/local_basis.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/local_basis.cpp.i
-.PHONY : include/igl/local_basis.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.cpp.i
 
-include/igl/local_basis.s: include/igl/local_basis.cpp.s
-.PHONY : include/igl/local_basis.s
+Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.s: Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.s
 
 # target to generate assembly for a file
-include/igl/local_basis.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/local_basis.cpp.s
-.PHONY : include/igl/local_basis.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.cpp.s
 
-include/igl/look_at.o: include/igl/look_at.cpp.o
-.PHONY : include/igl/look_at.o
+Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.o: Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.o
 
 # target to build an object file
-include/igl/look_at.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/look_at.cpp.o
-.PHONY : include/igl/look_at.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.cpp.o
 
-include/igl/look_at.i: include/igl/look_at.cpp.i
-.PHONY : include/igl/look_at.i
+Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.i: Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.i
 
 # target to preprocess a source file
-include/igl/look_at.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/look_at.cpp.i
-.PHONY : include/igl/look_at.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.cpp.i
 
-include/igl/look_at.s: include/igl/look_at.cpp.s
-.PHONY : include/igl/look_at.s
+Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.s: Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.s
 
 # target to generate assembly for a file
-include/igl/look_at.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/look_at.cpp.s
-.PHONY : include/igl/look_at.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.cpp.s
 
-include/igl/lscm.o: include/igl/lscm.cpp.o
-.PHONY : include/igl/lscm.o
+Users/daniele/Dropbox/igl/libigl/include/igl/linprog.o: Users/daniele/Dropbox/igl/libigl/include/igl/linprog.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/linprog.o
 
 # target to build an object file
-include/igl/lscm.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/lscm.cpp.o
-.PHONY : include/igl/lscm.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/linprog.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/linprog.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/linprog.cpp.o
 
-include/igl/lscm.i: include/igl/lscm.cpp.i
-.PHONY : include/igl/lscm.i
+Users/daniele/Dropbox/igl/libigl/include/igl/linprog.i: Users/daniele/Dropbox/igl/libigl/include/igl/linprog.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/linprog.i
 
 # target to preprocess a source file
-include/igl/lscm.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/lscm.cpp.i
-.PHONY : include/igl/lscm.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/linprog.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/linprog.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/linprog.cpp.i
 
-include/igl/lscm.s: include/igl/lscm.cpp.s
-.PHONY : include/igl/lscm.s
+Users/daniele/Dropbox/igl/libigl/include/igl/linprog.s: Users/daniele/Dropbox/igl/libigl/include/igl/linprog.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/linprog.s
 
 # target to generate assembly for a file
-include/igl/lscm.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/lscm.cpp.s
-.PHONY : include/igl/lscm.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/linprog.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/linprog.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/linprog.cpp.s
 
-include/igl/lu_lagrange.o: include/igl/lu_lagrange.cpp.o
-.PHONY : include/igl/lu_lagrange.o
+Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.o: Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.o
 
 # target to build an object file
-include/igl/lu_lagrange.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/lu_lagrange.cpp.o
-.PHONY : include/igl/lu_lagrange.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.cpp.o
 
-include/igl/lu_lagrange.i: include/igl/lu_lagrange.cpp.i
-.PHONY : include/igl/lu_lagrange.i
+Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.i: Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.i
 
 # target to preprocess a source file
-include/igl/lu_lagrange.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/lu_lagrange.cpp.i
-.PHONY : include/igl/lu_lagrange.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.cpp.i
 
-include/igl/lu_lagrange.s: include/igl/lu_lagrange.cpp.s
-.PHONY : include/igl/lu_lagrange.s
+Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.s: Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.s
 
 # target to generate assembly for a file
-include/igl/lu_lagrange.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/lu_lagrange.cpp.s
-.PHONY : include/igl/lu_lagrange.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.cpp.s
 
-include/igl/map_vertices_to_circle.o: include/igl/map_vertices_to_circle.cpp.o
-.PHONY : include/igl/map_vertices_to_circle.o
+Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.o: Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.o
 
 # target to build an object file
-include/igl/map_vertices_to_circle.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/map_vertices_to_circle.cpp.o
-.PHONY : include/igl/map_vertices_to_circle.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.cpp.o
 
-include/igl/map_vertices_to_circle.i: include/igl/map_vertices_to_circle.cpp.i
-.PHONY : include/igl/map_vertices_to_circle.i
+Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.i: Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.i
 
 # target to preprocess a source file
-include/igl/map_vertices_to_circle.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/map_vertices_to_circle.cpp.i
-.PHONY : include/igl/map_vertices_to_circle.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.cpp.i
 
-include/igl/map_vertices_to_circle.s: include/igl/map_vertices_to_circle.cpp.s
-.PHONY : include/igl/map_vertices_to_circle.s
+Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.s: Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.s
 
 # target to generate assembly for a file
-include/igl/map_vertices_to_circle.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/map_vertices_to_circle.cpp.s
-.PHONY : include/igl/map_vertices_to_circle.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.cpp.s
 
-include/igl/marching_cubes.o: include/igl/marching_cubes.cpp.o
-.PHONY : include/igl/marching_cubes.o
+Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.o: Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.o
 
 # target to build an object file
-include/igl/marching_cubes.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/marching_cubes.cpp.o
-.PHONY : include/igl/marching_cubes.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.cpp.o
 
-include/igl/marching_cubes.i: include/igl/marching_cubes.cpp.i
-.PHONY : include/igl/marching_cubes.i
+Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.i: Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.i
 
 # target to preprocess a source file
-include/igl/marching_cubes.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/marching_cubes.cpp.i
-.PHONY : include/igl/marching_cubes.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.cpp.i
 
-include/igl/marching_cubes.s: include/igl/marching_cubes.cpp.s
-.PHONY : include/igl/marching_cubes.s
+Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.s: Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.s
 
 # target to generate assembly for a file
-include/igl/marching_cubes.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/marching_cubes.cpp.s
-.PHONY : include/igl/marching_cubes.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.cpp.s
 
-include/igl/massmatrix.o: include/igl/massmatrix.cpp.o
-.PHONY : include/igl/massmatrix.o
+Users/daniele/Dropbox/igl/libigl/include/igl/look_at.o: Users/daniele/Dropbox/igl/libigl/include/igl/look_at.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/look_at.o
 
 # target to build an object file
-include/igl/massmatrix.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/massmatrix.cpp.o
-.PHONY : include/igl/massmatrix.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/look_at.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/look_at.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/look_at.cpp.o
 
-include/igl/massmatrix.i: include/igl/massmatrix.cpp.i
-.PHONY : include/igl/massmatrix.i
+Users/daniele/Dropbox/igl/libigl/include/igl/look_at.i: Users/daniele/Dropbox/igl/libigl/include/igl/look_at.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/look_at.i
 
 # target to preprocess a source file
-include/igl/massmatrix.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/massmatrix.cpp.i
-.PHONY : include/igl/massmatrix.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/look_at.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/look_at.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/look_at.cpp.i
 
-include/igl/massmatrix.s: include/igl/massmatrix.cpp.s
-.PHONY : include/igl/massmatrix.s
+Users/daniele/Dropbox/igl/libigl/include/igl/look_at.s: Users/daniele/Dropbox/igl/libigl/include/igl/look_at.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/look_at.s
 
 # target to generate assembly for a file
-include/igl/massmatrix.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/massmatrix.cpp.s
-.PHONY : include/igl/massmatrix.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/look_at.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/look_at.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/look_at.cpp.s
 
-include/igl/mat_max.o: include/igl/mat_max.cpp.o
-.PHONY : include/igl/mat_max.o
+Users/daniele/Dropbox/igl/libigl/include/igl/lscm.o: Users/daniele/Dropbox/igl/libigl/include/igl/lscm.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lscm.o
 
 # target to build an object file
-include/igl/mat_max.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mat_max.cpp.o
-.PHONY : include/igl/mat_max.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/lscm.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/lscm.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lscm.cpp.o
 
-include/igl/mat_max.i: include/igl/mat_max.cpp.i
-.PHONY : include/igl/mat_max.i
+Users/daniele/Dropbox/igl/libigl/include/igl/lscm.i: Users/daniele/Dropbox/igl/libigl/include/igl/lscm.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lscm.i
 
 # target to preprocess a source file
-include/igl/mat_max.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mat_max.cpp.i
-.PHONY : include/igl/mat_max.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/lscm.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/lscm.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lscm.cpp.i
 
-include/igl/mat_max.s: include/igl/mat_max.cpp.s
-.PHONY : include/igl/mat_max.s
+Users/daniele/Dropbox/igl/libigl/include/igl/lscm.s: Users/daniele/Dropbox/igl/libigl/include/igl/lscm.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lscm.s
 
 # target to generate assembly for a file
-include/igl/mat_max.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mat_max.cpp.s
-.PHONY : include/igl/mat_max.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/lscm.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/lscm.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lscm.cpp.s
 
-include/igl/mat_min.o: include/igl/mat_min.cpp.o
-.PHONY : include/igl/mat_min.o
+Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.o: Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.o
 
 # target to build an object file
-include/igl/mat_min.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mat_min.cpp.o
-.PHONY : include/igl/mat_min.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.cpp.o
 
-include/igl/mat_min.i: include/igl/mat_min.cpp.i
-.PHONY : include/igl/mat_min.i
+Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.i: Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.i
 
 # target to preprocess a source file
-include/igl/mat_min.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mat_min.cpp.i
-.PHONY : include/igl/mat_min.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.cpp.i
 
-include/igl/mat_min.s: include/igl/mat_min.cpp.s
-.PHONY : include/igl/mat_min.s
+Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.s: Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.s
 
 # target to generate assembly for a file
-include/igl/mat_min.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mat_min.cpp.s
-.PHONY : include/igl/mat_min.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.cpp.s
 
-include/igl/mat_to_quat.o: include/igl/mat_to_quat.cpp.o
-.PHONY : include/igl/mat_to_quat.o
+Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.o: Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.o
 
 # target to build an object file
-include/igl/mat_to_quat.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mat_to_quat.cpp.o
-.PHONY : include/igl/mat_to_quat.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.cpp.o
 
-include/igl/mat_to_quat.i: include/igl/mat_to_quat.cpp.i
-.PHONY : include/igl/mat_to_quat.i
+Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.i: Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.i
 
 # target to preprocess a source file
-include/igl/mat_to_quat.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mat_to_quat.cpp.i
-.PHONY : include/igl/mat_to_quat.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.cpp.i
 
-include/igl/mat_to_quat.s: include/igl/mat_to_quat.cpp.s
-.PHONY : include/igl/mat_to_quat.s
+Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.s: Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.s
 
 # target to generate assembly for a file
-include/igl/mat_to_quat.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mat_to_quat.cpp.s
-.PHONY : include/igl/mat_to_quat.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.cpp.s
 
-include/igl/matlab/matlabinterface.o: include/igl/matlab/matlabinterface.cpp.o
-.PHONY : include/igl/matlab/matlabinterface.o
+Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.o: Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.o
 
 # target to build an object file
-include/igl/matlab/matlabinterface.cpp.o:
-	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/include/igl/matlab/matlabinterface.cpp.o
-.PHONY : include/igl/matlab/matlabinterface.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.cpp.o
 
-include/igl/matlab/matlabinterface.i: include/igl/matlab/matlabinterface.cpp.i
-.PHONY : include/igl/matlab/matlabinterface.i
+Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.i: Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.i
 
 # target to preprocess a source file
-include/igl/matlab/matlabinterface.cpp.i:
-	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/include/igl/matlab/matlabinterface.cpp.i
-.PHONY : include/igl/matlab/matlabinterface.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.cpp.i
 
-include/igl/matlab/matlabinterface.s: include/igl/matlab/matlabinterface.cpp.s
-.PHONY : include/igl/matlab/matlabinterface.s
+Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.s: Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.s
 
 # target to generate assembly for a file
-include/igl/matlab/matlabinterface.cpp.s:
-	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/include/igl/matlab/matlabinterface.cpp.s
-.PHONY : include/igl/matlab/matlabinterface.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.cpp.s
 
-include/igl/matlab/mexErrMsgTxt.o: include/igl/matlab/mexErrMsgTxt.cpp.o
-.PHONY : include/igl/matlab/mexErrMsgTxt.o
+Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.o: Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.o
 
 # target to build an object file
-include/igl/matlab/mexErrMsgTxt.cpp.o:
-	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/include/igl/matlab/mexErrMsgTxt.cpp.o
-.PHONY : include/igl/matlab/mexErrMsgTxt.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.cpp.o
 
-include/igl/matlab/mexErrMsgTxt.i: include/igl/matlab/mexErrMsgTxt.cpp.i
-.PHONY : include/igl/matlab/mexErrMsgTxt.i
+Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.i: Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.i
 
 # target to preprocess a source file
-include/igl/matlab/mexErrMsgTxt.cpp.i:
-	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/include/igl/matlab/mexErrMsgTxt.cpp.i
-.PHONY : include/igl/matlab/mexErrMsgTxt.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.cpp.i
 
-include/igl/matlab/mexErrMsgTxt.s: include/igl/matlab/mexErrMsgTxt.cpp.s
-.PHONY : include/igl/matlab/mexErrMsgTxt.s
+Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.s: Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.s
 
 # target to generate assembly for a file
-include/igl/matlab/mexErrMsgTxt.cpp.s:
-	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/include/igl/matlab/mexErrMsgTxt.cpp.s
-.PHONY : include/igl/matlab/mexErrMsgTxt.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.cpp.s
 
-include/igl/matlab/parse_rhs.o: include/igl/matlab/parse_rhs.cpp.o
-.PHONY : include/igl/matlab/parse_rhs.o
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.o: Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.o
 
 # target to build an object file
-include/igl/matlab/parse_rhs.cpp.o:
-	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/include/igl/matlab/parse_rhs.cpp.o
-.PHONY : include/igl/matlab/parse_rhs.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.cpp.o
 
-include/igl/matlab/parse_rhs.i: include/igl/matlab/parse_rhs.cpp.i
-.PHONY : include/igl/matlab/parse_rhs.i
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.i: Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.i
 
 # target to preprocess a source file
-include/igl/matlab/parse_rhs.cpp.i:
-	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/include/igl/matlab/parse_rhs.cpp.i
-.PHONY : include/igl/matlab/parse_rhs.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.cpp.i
 
-include/igl/matlab/parse_rhs.s: include/igl/matlab/parse_rhs.cpp.s
-.PHONY : include/igl/matlab/parse_rhs.s
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.s: Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.s
 
 # target to generate assembly for a file
-include/igl/matlab/parse_rhs.cpp.s:
-	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/include/igl/matlab/parse_rhs.cpp.s
-.PHONY : include/igl/matlab/parse_rhs.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.cpp.s
 
-include/igl/matlab/prepare_lhs.o: include/igl/matlab/prepare_lhs.cpp.o
-.PHONY : include/igl/matlab/prepare_lhs.o
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.o: Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.o
 
 # target to build an object file
-include/igl/matlab/prepare_lhs.cpp.o:
-	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/include/igl/matlab/prepare_lhs.cpp.o
-.PHONY : include/igl/matlab/prepare_lhs.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.cpp.o
 
-include/igl/matlab/prepare_lhs.i: include/igl/matlab/prepare_lhs.cpp.i
-.PHONY : include/igl/matlab/prepare_lhs.i
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.i: Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.i
 
 # target to preprocess a source file
-include/igl/matlab/prepare_lhs.cpp.i:
-	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/include/igl/matlab/prepare_lhs.cpp.i
-.PHONY : include/igl/matlab/prepare_lhs.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.cpp.i
 
-include/igl/matlab/prepare_lhs.s: include/igl/matlab/prepare_lhs.cpp.s
-.PHONY : include/igl/matlab/prepare_lhs.s
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.s: Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.s
 
 # target to generate assembly for a file
-include/igl/matlab/prepare_lhs.cpp.s:
-	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/include/igl/matlab/prepare_lhs.cpp.s
-.PHONY : include/igl/matlab/prepare_lhs.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.cpp.s
 
-include/igl/matlab_format.o: include/igl/matlab_format.cpp.o
-.PHONY : include/igl/matlab_format.o
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.o: Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.o
 
 # target to build an object file
-include/igl/matlab_format.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/matlab_format.cpp.o
-.PHONY : include/igl/matlab_format.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.cpp.o
 
-include/igl/matlab_format.i: include/igl/matlab_format.cpp.i
-.PHONY : include/igl/matlab_format.i
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.i: Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.i
 
 # target to preprocess a source file
-include/igl/matlab_format.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/matlab_format.cpp.i
-.PHONY : include/igl/matlab_format.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.cpp.i
 
-include/igl/matlab_format.s: include/igl/matlab_format.cpp.s
-.PHONY : include/igl/matlab_format.s
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.s: Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.s
 
 # target to generate assembly for a file
-include/igl/matlab_format.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/matlab_format.cpp.s
-.PHONY : include/igl/matlab_format.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.cpp.s
 
-include/igl/matrix_to_list.o: include/igl/matrix_to_list.cpp.o
-.PHONY : include/igl/matrix_to_list.o
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.o: Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.o
 
 # target to build an object file
-include/igl/matrix_to_list.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/matrix_to_list.cpp.o
-.PHONY : include/igl/matrix_to_list.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.cpp.o:
+	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.cpp.o
 
-include/igl/matrix_to_list.i: include/igl/matrix_to_list.cpp.i
-.PHONY : include/igl/matrix_to_list.i
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.i: Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.i
 
 # target to preprocess a source file
-include/igl/matrix_to_list.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/matrix_to_list.cpp.i
-.PHONY : include/igl/matrix_to_list.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.cpp.i:
+	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.cpp.i
 
-include/igl/matrix_to_list.s: include/igl/matrix_to_list.cpp.s
-.PHONY : include/igl/matrix_to_list.s
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.s: Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.s
 
 # target to generate assembly for a file
-include/igl/matrix_to_list.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/matrix_to_list.cpp.s
-.PHONY : include/igl/matrix_to_list.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.cpp.s:
+	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.cpp.s
 
-include/igl/max_size.o: include/igl/max_size.cpp.o
-.PHONY : include/igl/max_size.o
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.o: Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.o
 
 # target to build an object file
-include/igl/max_size.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/max_size.cpp.o
-.PHONY : include/igl/max_size.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.cpp.o:
+	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.cpp.o
 
-include/igl/max_size.i: include/igl/max_size.cpp.i
-.PHONY : include/igl/max_size.i
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.i: Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.i
 
 # target to preprocess a source file
-include/igl/max_size.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/max_size.cpp.i
-.PHONY : include/igl/max_size.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.cpp.i:
+	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.cpp.i
 
-include/igl/max_size.s: include/igl/max_size.cpp.s
-.PHONY : include/igl/max_size.s
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.s: Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.s
 
 # target to generate assembly for a file
-include/igl/max_size.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/max_size.cpp.s
-.PHONY : include/igl/max_size.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.cpp.s:
+	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.cpp.s
 
-include/igl/median.o: include/igl/median.cpp.o
-.PHONY : include/igl/median.o
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.o: Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.o
 
 # target to build an object file
-include/igl/median.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/median.cpp.o
-.PHONY : include/igl/median.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.cpp.o:
+	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.cpp.o
 
-include/igl/median.i: include/igl/median.cpp.i
-.PHONY : include/igl/median.i
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.i: Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.i
 
 # target to preprocess a source file
-include/igl/median.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/median.cpp.i
-.PHONY : include/igl/median.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.cpp.i:
+	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.cpp.i
 
-include/igl/median.s: include/igl/median.cpp.s
-.PHONY : include/igl/median.s
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.s: Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.s
 
 # target to generate assembly for a file
-include/igl/median.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/median.cpp.s
-.PHONY : include/igl/median.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.cpp.s:
+	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.cpp.s
 
-include/igl/min_quad_dense.o: include/igl/min_quad_dense.cpp.o
-.PHONY : include/igl/min_quad_dense.o
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.o: Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.o
 
 # target to build an object file
-include/igl/min_quad_dense.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/min_quad_dense.cpp.o
-.PHONY : include/igl/min_quad_dense.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.cpp.o:
+	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.cpp.o
 
-include/igl/min_quad_dense.i: include/igl/min_quad_dense.cpp.i
-.PHONY : include/igl/min_quad_dense.i
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.i: Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.i
 
 # target to preprocess a source file
-include/igl/min_quad_dense.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/min_quad_dense.cpp.i
-.PHONY : include/igl/min_quad_dense.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.cpp.i:
+	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.cpp.i
 
-include/igl/min_quad_dense.s: include/igl/min_quad_dense.cpp.s
-.PHONY : include/igl/min_quad_dense.s
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.s: Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.s
 
 # target to generate assembly for a file
-include/igl/min_quad_dense.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/min_quad_dense.cpp.s
-.PHONY : include/igl/min_quad_dense.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.cpp.s:
+	$(MAKE) -f CMakeFiles/iglmatlab.dir/build.make CMakeFiles/iglmatlab.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.cpp.s
 
-include/igl/min_quad_with_fixed.o: include/igl/min_quad_with_fixed.cpp.o
-.PHONY : include/igl/min_quad_with_fixed.o
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.o: Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.o
 
 # target to build an object file
-include/igl/min_quad_with_fixed.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/min_quad_with_fixed.cpp.o
-.PHONY : include/igl/min_quad_with_fixed.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.cpp.o
 
-include/igl/min_quad_with_fixed.i: include/igl/min_quad_with_fixed.cpp.i
-.PHONY : include/igl/min_quad_with_fixed.i
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.i: Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.i
 
 # target to preprocess a source file
-include/igl/min_quad_with_fixed.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/min_quad_with_fixed.cpp.i
-.PHONY : include/igl/min_quad_with_fixed.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.cpp.i
 
-include/igl/min_quad_with_fixed.s: include/igl/min_quad_with_fixed.cpp.s
-.PHONY : include/igl/min_quad_with_fixed.s
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.s: Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.s
 
 # target to generate assembly for a file
-include/igl/min_quad_with_fixed.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/min_quad_with_fixed.cpp.s
-.PHONY : include/igl/min_quad_with_fixed.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.cpp.s
 
-include/igl/min_size.o: include/igl/min_size.cpp.o
-.PHONY : include/igl/min_size.o
+Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.o: Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.o
 
 # target to build an object file
-include/igl/min_size.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/min_size.cpp.o
-.PHONY : include/igl/min_size.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.cpp.o
 
-include/igl/min_size.i: include/igl/min_size.cpp.i
-.PHONY : include/igl/min_size.i
+Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.i: Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.i
 
 # target to preprocess a source file
-include/igl/min_size.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/min_size.cpp.i
-.PHONY : include/igl/min_size.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.cpp.i
 
-include/igl/min_size.s: include/igl/min_size.cpp.s
-.PHONY : include/igl/min_size.s
+Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.s: Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.s
 
 # target to generate assembly for a file
-include/igl/min_size.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/min_size.cpp.s
-.PHONY : include/igl/min_size.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.cpp.s
 
-include/igl/mod.o: include/igl/mod.cpp.o
-.PHONY : include/igl/mod.o
+Users/daniele/Dropbox/igl/libigl/include/igl/max_size.o: Users/daniele/Dropbox/igl/libigl/include/igl/max_size.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/max_size.o
 
 # target to build an object file
-include/igl/mod.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mod.cpp.o
-.PHONY : include/igl/mod.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/max_size.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/max_size.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/max_size.cpp.o
 
-include/igl/mod.i: include/igl/mod.cpp.i
-.PHONY : include/igl/mod.i
+Users/daniele/Dropbox/igl/libigl/include/igl/max_size.i: Users/daniele/Dropbox/igl/libigl/include/igl/max_size.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/max_size.i
 
 # target to preprocess a source file
-include/igl/mod.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mod.cpp.i
-.PHONY : include/igl/mod.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/max_size.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/max_size.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/max_size.cpp.i
 
-include/igl/mod.s: include/igl/mod.cpp.s
-.PHONY : include/igl/mod.s
+Users/daniele/Dropbox/igl/libigl/include/igl/max_size.s: Users/daniele/Dropbox/igl/libigl/include/igl/max_size.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/max_size.s
 
 # target to generate assembly for a file
-include/igl/mod.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mod.cpp.s
-.PHONY : include/igl/mod.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/max_size.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/max_size.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/max_size.cpp.s
 
-include/igl/mode.o: include/igl/mode.cpp.o
-.PHONY : include/igl/mode.o
+Users/daniele/Dropbox/igl/libigl/include/igl/median.o: Users/daniele/Dropbox/igl/libigl/include/igl/median.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/median.o
 
 # target to build an object file
-include/igl/mode.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mode.cpp.o
-.PHONY : include/igl/mode.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/median.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/median.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/median.cpp.o
 
-include/igl/mode.i: include/igl/mode.cpp.i
-.PHONY : include/igl/mode.i
+Users/daniele/Dropbox/igl/libigl/include/igl/median.i: Users/daniele/Dropbox/igl/libigl/include/igl/median.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/median.i
 
 # target to preprocess a source file
-include/igl/mode.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mode.cpp.i
-.PHONY : include/igl/mode.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/median.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/median.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/median.cpp.i
 
-include/igl/mode.s: include/igl/mode.cpp.s
-.PHONY : include/igl/mode.s
+Users/daniele/Dropbox/igl/libigl/include/igl/median.s: Users/daniele/Dropbox/igl/libigl/include/igl/median.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/median.s
 
 # target to generate assembly for a file
-include/igl/mode.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mode.cpp.s
-.PHONY : include/igl/mode.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/median.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/median.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/median.cpp.s
 
-include/igl/mvc.o: include/igl/mvc.cpp.o
-.PHONY : include/igl/mvc.o
+Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.o: Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.o
 
 # target to build an object file
-include/igl/mvc.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mvc.cpp.o
-.PHONY : include/igl/mvc.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.cpp.o
 
-include/igl/mvc.i: include/igl/mvc.cpp.i
-.PHONY : include/igl/mvc.i
+Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.i: Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.i
 
 # target to preprocess a source file
-include/igl/mvc.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mvc.cpp.i
-.PHONY : include/igl/mvc.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.cpp.i
 
-include/igl/mvc.s: include/igl/mvc.cpp.s
-.PHONY : include/igl/mvc.s
+Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.s: Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.s
 
 # target to generate assembly for a file
-include/igl/mvc.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/mvc.cpp.s
-.PHONY : include/igl/mvc.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.cpp.s
 
-include/igl/n_polyvector.o: include/igl/n_polyvector.cpp.o
-.PHONY : include/igl/n_polyvector.o
+Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.o: Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.o
 
 # target to build an object file
-include/igl/n_polyvector.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/n_polyvector.cpp.o
-.PHONY : include/igl/n_polyvector.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.cpp.o
 
-include/igl/n_polyvector.i: include/igl/n_polyvector.cpp.i
-.PHONY : include/igl/n_polyvector.i
+Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.i: Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.i
 
 # target to preprocess a source file
-include/igl/n_polyvector.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/n_polyvector.cpp.i
-.PHONY : include/igl/n_polyvector.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.cpp.i
 
-include/igl/n_polyvector.s: include/igl/n_polyvector.cpp.s
-.PHONY : include/igl/n_polyvector.s
+Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.s: Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.s
 
 # target to generate assembly for a file
-include/igl/n_polyvector.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/n_polyvector.cpp.s
-.PHONY : include/igl/n_polyvector.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.cpp.s
 
-include/igl/n_polyvector_general.o: include/igl/n_polyvector_general.cpp.o
-.PHONY : include/igl/n_polyvector_general.o
+Users/daniele/Dropbox/igl/libigl/include/igl/min_size.o: Users/daniele/Dropbox/igl/libigl/include/igl/min_size.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_size.o
 
 # target to build an object file
-include/igl/n_polyvector_general.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/n_polyvector_general.cpp.o
-.PHONY : include/igl/n_polyvector_general.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/min_size.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/min_size.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_size.cpp.o
 
-include/igl/n_polyvector_general.i: include/igl/n_polyvector_general.cpp.i
-.PHONY : include/igl/n_polyvector_general.i
+Users/daniele/Dropbox/igl/libigl/include/igl/min_size.i: Users/daniele/Dropbox/igl/libigl/include/igl/min_size.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_size.i
 
 # target to preprocess a source file
-include/igl/n_polyvector_general.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/n_polyvector_general.cpp.i
-.PHONY : include/igl/n_polyvector_general.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/min_size.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/min_size.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_size.cpp.i
 
-include/igl/n_polyvector_general.s: include/igl/n_polyvector_general.cpp.s
-.PHONY : include/igl/n_polyvector_general.s
+Users/daniele/Dropbox/igl/libigl/include/igl/min_size.s: Users/daniele/Dropbox/igl/libigl/include/igl/min_size.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_size.s
 
 # target to generate assembly for a file
-include/igl/n_polyvector_general.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/n_polyvector_general.cpp.s
-.PHONY : include/igl/n_polyvector_general.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/min_size.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/min_size.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/min_size.cpp.s
 
-include/igl/nchoosek.o: include/igl/nchoosek.cpp.o
-.PHONY : include/igl/nchoosek.o
+Users/daniele/Dropbox/igl/libigl/include/igl/mod.o: Users/daniele/Dropbox/igl/libigl/include/igl/mod.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mod.o
 
 # target to build an object file
-include/igl/nchoosek.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/nchoosek.cpp.o
-.PHONY : include/igl/nchoosek.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/mod.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mod.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mod.cpp.o
 
-include/igl/nchoosek.i: include/igl/nchoosek.cpp.i
-.PHONY : include/igl/nchoosek.i
+Users/daniele/Dropbox/igl/libigl/include/igl/mod.i: Users/daniele/Dropbox/igl/libigl/include/igl/mod.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mod.i
 
 # target to preprocess a source file
-include/igl/nchoosek.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/nchoosek.cpp.i
-.PHONY : include/igl/nchoosek.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/mod.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mod.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mod.cpp.i
 
-include/igl/nchoosek.s: include/igl/nchoosek.cpp.s
-.PHONY : include/igl/nchoosek.s
+Users/daniele/Dropbox/igl/libigl/include/igl/mod.s: Users/daniele/Dropbox/igl/libigl/include/igl/mod.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mod.s
 
 # target to generate assembly for a file
-include/igl/nchoosek.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/nchoosek.cpp.s
-.PHONY : include/igl/nchoosek.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/mod.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mod.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mod.cpp.s
 
-include/igl/next_filename.o: include/igl/next_filename.cpp.o
-.PHONY : include/igl/next_filename.o
+Users/daniele/Dropbox/igl/libigl/include/igl/mode.o: Users/daniele/Dropbox/igl/libigl/include/igl/mode.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mode.o
 
 # target to build an object file
-include/igl/next_filename.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/next_filename.cpp.o
-.PHONY : include/igl/next_filename.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/mode.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mode.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mode.cpp.o
 
-include/igl/next_filename.i: include/igl/next_filename.cpp.i
-.PHONY : include/igl/next_filename.i
+Users/daniele/Dropbox/igl/libigl/include/igl/mode.i: Users/daniele/Dropbox/igl/libigl/include/igl/mode.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mode.i
 
 # target to preprocess a source file
-include/igl/next_filename.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/next_filename.cpp.i
-.PHONY : include/igl/next_filename.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/mode.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mode.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mode.cpp.i
 
-include/igl/next_filename.s: include/igl/next_filename.cpp.s
-.PHONY : include/igl/next_filename.s
+Users/daniele/Dropbox/igl/libigl/include/igl/mode.s: Users/daniele/Dropbox/igl/libigl/include/igl/mode.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mode.s
 
 # target to generate assembly for a file
-include/igl/next_filename.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/next_filename.cpp.s
-.PHONY : include/igl/next_filename.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/mode.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mode.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mode.cpp.s
 
-include/igl/normalize_quat.o: include/igl/normalize_quat.cpp.o
-.PHONY : include/igl/normalize_quat.o
+Users/daniele/Dropbox/igl/libigl/include/igl/mvc.o: Users/daniele/Dropbox/igl/libigl/include/igl/mvc.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mvc.o
 
 # target to build an object file
-include/igl/normalize_quat.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/normalize_quat.cpp.o
-.PHONY : include/igl/normalize_quat.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/mvc.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mvc.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mvc.cpp.o
 
-include/igl/normalize_quat.i: include/igl/normalize_quat.cpp.i
-.PHONY : include/igl/normalize_quat.i
+Users/daniele/Dropbox/igl/libigl/include/igl/mvc.i: Users/daniele/Dropbox/igl/libigl/include/igl/mvc.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mvc.i
 
 # target to preprocess a source file
-include/igl/normalize_quat.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/normalize_quat.cpp.i
-.PHONY : include/igl/normalize_quat.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/mvc.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mvc.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mvc.cpp.i
 
-include/igl/normalize_quat.s: include/igl/normalize_quat.cpp.s
-.PHONY : include/igl/normalize_quat.s
+Users/daniele/Dropbox/igl/libigl/include/igl/mvc.s: Users/daniele/Dropbox/igl/libigl/include/igl/mvc.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mvc.s
 
 # target to generate assembly for a file
-include/igl/normalize_quat.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/normalize_quat.cpp.s
-.PHONY : include/igl/normalize_quat.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/mvc.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/mvc.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/mvc.cpp.s
 
-include/igl/normalize_row_lengths.o: include/igl/normalize_row_lengths.cpp.o
-.PHONY : include/igl/normalize_row_lengths.o
+Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.o: Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.o
 
 # target to build an object file
-include/igl/normalize_row_lengths.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/normalize_row_lengths.cpp.o
-.PHONY : include/igl/normalize_row_lengths.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.cpp.o
 
-include/igl/normalize_row_lengths.i: include/igl/normalize_row_lengths.cpp.i
-.PHONY : include/igl/normalize_row_lengths.i
+Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.i: Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.i
 
 # target to preprocess a source file
-include/igl/normalize_row_lengths.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/normalize_row_lengths.cpp.i
-.PHONY : include/igl/normalize_row_lengths.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.cpp.i
 
-include/igl/normalize_row_lengths.s: include/igl/normalize_row_lengths.cpp.s
-.PHONY : include/igl/normalize_row_lengths.s
+Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.s: Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.s
 
 # target to generate assembly for a file
-include/igl/normalize_row_lengths.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/normalize_row_lengths.cpp.s
-.PHONY : include/igl/normalize_row_lengths.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.cpp.s
 
-include/igl/normalize_row_sums.o: include/igl/normalize_row_sums.cpp.o
-.PHONY : include/igl/normalize_row_sums.o
+Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.o: Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.o
 
 # target to build an object file
-include/igl/normalize_row_sums.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/normalize_row_sums.cpp.o
-.PHONY : include/igl/normalize_row_sums.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.cpp.o
 
-include/igl/normalize_row_sums.i: include/igl/normalize_row_sums.cpp.i
-.PHONY : include/igl/normalize_row_sums.i
+Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.i: Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.i
 
 # target to preprocess a source file
-include/igl/normalize_row_sums.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/normalize_row_sums.cpp.i
-.PHONY : include/igl/normalize_row_sums.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.cpp.i
 
-include/igl/normalize_row_sums.s: include/igl/normalize_row_sums.cpp.s
-.PHONY : include/igl/normalize_row_sums.s
+Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.s: Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.s
 
 # target to generate assembly for a file
-include/igl/normalize_row_sums.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/normalize_row_sums.cpp.s
-.PHONY : include/igl/normalize_row_sums.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.cpp.s
 
-include/igl/null.o: include/igl/null.cpp.o
-.PHONY : include/igl/null.o
+Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.o: Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.o
 
 # target to build an object file
-include/igl/null.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/null.cpp.o
-.PHONY : include/igl/null.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.cpp.o
 
-include/igl/null.i: include/igl/null.cpp.i
-.PHONY : include/igl/null.i
+Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.i: Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.i
 
 # target to preprocess a source file
-include/igl/null.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/null.cpp.i
-.PHONY : include/igl/null.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.cpp.i
 
-include/igl/null.s: include/igl/null.cpp.s
-.PHONY : include/igl/null.s
+Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.s: Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.s
 
 # target to generate assembly for a file
-include/igl/null.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/null.cpp.s
-.PHONY : include/igl/null.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.cpp.s
 
-include/igl/on_boundary.o: include/igl/on_boundary.cpp.o
-.PHONY : include/igl/on_boundary.o
+Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.o: Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.o
 
 # target to build an object file
-include/igl/on_boundary.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/on_boundary.cpp.o
-.PHONY : include/igl/on_boundary.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.cpp.o
 
-include/igl/on_boundary.i: include/igl/on_boundary.cpp.i
-.PHONY : include/igl/on_boundary.i
+Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.i: Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.i
 
 # target to preprocess a source file
-include/igl/on_boundary.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/on_boundary.cpp.i
-.PHONY : include/igl/on_boundary.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.cpp.i
 
-include/igl/on_boundary.s: include/igl/on_boundary.cpp.s
-.PHONY : include/igl/on_boundary.s
+Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.s: Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.s
 
 # target to generate assembly for a file
-include/igl/on_boundary.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/on_boundary.cpp.s
-.PHONY : include/igl/on_boundary.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.cpp.s
 
-include/igl/orient_outward.o: include/igl/orient_outward.cpp.o
-.PHONY : include/igl/orient_outward.o
+Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.o: Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.o
 
 # target to build an object file
-include/igl/orient_outward.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/orient_outward.cpp.o
-.PHONY : include/igl/orient_outward.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.cpp.o
 
-include/igl/orient_outward.i: include/igl/orient_outward.cpp.i
-.PHONY : include/igl/orient_outward.i
+Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.i: Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.i
 
 # target to preprocess a source file
-include/igl/orient_outward.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/orient_outward.cpp.i
-.PHONY : include/igl/orient_outward.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.cpp.i
 
-include/igl/orient_outward.s: include/igl/orient_outward.cpp.s
-.PHONY : include/igl/orient_outward.s
+Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.s: Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.s
 
 # target to generate assembly for a file
-include/igl/orient_outward.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/orient_outward.cpp.s
-.PHONY : include/igl/orient_outward.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.cpp.s
 
-include/igl/orth.o: include/igl/orth.cpp.o
-.PHONY : include/igl/orth.o
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.o: Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.o
 
 # target to build an object file
-include/igl/orth.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/orth.cpp.o
-.PHONY : include/igl/orth.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.cpp.o
 
-include/igl/orth.i: include/igl/orth.cpp.i
-.PHONY : include/igl/orth.i
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.i: Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.i
 
 # target to preprocess a source file
-include/igl/orth.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/orth.cpp.i
-.PHONY : include/igl/orth.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.cpp.i
 
-include/igl/orth.s: include/igl/orth.cpp.s
-.PHONY : include/igl/orth.s
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.s: Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.s
 
 # target to generate assembly for a file
-include/igl/orth.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/orth.cpp.s
-.PHONY : include/igl/orth.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.cpp.s
 
-include/igl/ortho.o: include/igl/ortho.cpp.o
-.PHONY : include/igl/ortho.o
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.o: Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.o
 
 # target to build an object file
-include/igl/ortho.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/ortho.cpp.o
-.PHONY : include/igl/ortho.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.cpp.o
 
-include/igl/ortho.i: include/igl/ortho.cpp.i
-.PHONY : include/igl/ortho.i
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.i: Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.i
 
 # target to preprocess a source file
-include/igl/ortho.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/ortho.cpp.i
-.PHONY : include/igl/ortho.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.cpp.i
 
-include/igl/ortho.s: include/igl/ortho.cpp.s
-.PHONY : include/igl/ortho.s
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.s: Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.s
 
 # target to generate assembly for a file
-include/igl/ortho.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/ortho.cpp.s
-.PHONY : include/igl/ortho.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.cpp.s
 
-include/igl/outer_facet.o: include/igl/outer_facet.cpp.o
-.PHONY : include/igl/outer_facet.o
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.o: Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.o
 
 # target to build an object file
-include/igl/outer_facet.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/outer_facet.cpp.o
-.PHONY : include/igl/outer_facet.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.cpp.o
 
-include/igl/outer_facet.i: include/igl/outer_facet.cpp.i
-.PHONY : include/igl/outer_facet.i
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.i: Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.i
 
 # target to preprocess a source file
-include/igl/outer_facet.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/outer_facet.cpp.i
-.PHONY : include/igl/outer_facet.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.cpp.i
 
-include/igl/outer_facet.s: include/igl/outer_facet.cpp.s
-.PHONY : include/igl/outer_facet.s
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.s: Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.s
 
 # target to generate assembly for a file
-include/igl/outer_facet.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/outer_facet.cpp.s
-.PHONY : include/igl/outer_facet.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.cpp.s
 
-include/igl/partition.o: include/igl/partition.cpp.o
-.PHONY : include/igl/partition.o
+Users/daniele/Dropbox/igl/libigl/include/igl/null.o: Users/daniele/Dropbox/igl/libigl/include/igl/null.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/null.o
 
 # target to build an object file
-include/igl/partition.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/partition.cpp.o
-.PHONY : include/igl/partition.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/null.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/null.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/null.cpp.o
 
-include/igl/partition.i: include/igl/partition.cpp.i
-.PHONY : include/igl/partition.i
+Users/daniele/Dropbox/igl/libigl/include/igl/null.i: Users/daniele/Dropbox/igl/libigl/include/igl/null.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/null.i
 
 # target to preprocess a source file
-include/igl/partition.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/partition.cpp.i
-.PHONY : include/igl/partition.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/null.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/null.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/null.cpp.i
 
-include/igl/partition.s: include/igl/partition.cpp.s
-.PHONY : include/igl/partition.s
+Users/daniele/Dropbox/igl/libigl/include/igl/null.s: Users/daniele/Dropbox/igl/libigl/include/igl/null.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/null.s
 
 # target to generate assembly for a file
-include/igl/partition.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/partition.cpp.s
-.PHONY : include/igl/partition.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/null.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/null.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/null.cpp.s
 
-include/igl/parula.o: include/igl/parula.cpp.o
-.PHONY : include/igl/parula.o
+Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.o: Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.o
 
 # target to build an object file
-include/igl/parula.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/parula.cpp.o
-.PHONY : include/igl/parula.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.cpp.o
 
-include/igl/parula.i: include/igl/parula.cpp.i
-.PHONY : include/igl/parula.i
+Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.i: Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.i
 
 # target to preprocess a source file
-include/igl/parula.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/parula.cpp.i
-.PHONY : include/igl/parula.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.cpp.i
 
-include/igl/parula.s: include/igl/parula.cpp.s
-.PHONY : include/igl/parula.s
+Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.s: Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.s
 
 # target to generate assembly for a file
-include/igl/parula.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/parula.cpp.s
-.PHONY : include/igl/parula.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.cpp.s
 
-include/igl/path_to_executable.o: include/igl/path_to_executable.cpp.o
-.PHONY : include/igl/path_to_executable.o
+Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.o: Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.o
 
 # target to build an object file
-include/igl/path_to_executable.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/path_to_executable.cpp.o
-.PHONY : include/igl/path_to_executable.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.cpp.o
 
-include/igl/path_to_executable.i: include/igl/path_to_executable.cpp.i
-.PHONY : include/igl/path_to_executable.i
+Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.i: Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.i
 
 # target to preprocess a source file
-include/igl/path_to_executable.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/path_to_executable.cpp.i
-.PHONY : include/igl/path_to_executable.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.cpp.i
 
-include/igl/path_to_executable.s: include/igl/path_to_executable.cpp.s
-.PHONY : include/igl/path_to_executable.s
+Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.s: Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.s
 
 # target to generate assembly for a file
-include/igl/path_to_executable.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/path_to_executable.cpp.s
-.PHONY : include/igl/path_to_executable.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.cpp.s
 
-include/igl/pathinfo.o: include/igl/pathinfo.cpp.o
-.PHONY : include/igl/pathinfo.o
+Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.o: Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.o
 
 # target to build an object file
-include/igl/pathinfo.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/pathinfo.cpp.o
-.PHONY : include/igl/pathinfo.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.cpp.o
 
-include/igl/pathinfo.i: include/igl/pathinfo.cpp.i
-.PHONY : include/igl/pathinfo.i
+Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.i: Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.i
 
 # target to preprocess a source file
-include/igl/pathinfo.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/pathinfo.cpp.i
-.PHONY : include/igl/pathinfo.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.cpp.i
 
-include/igl/pathinfo.s: include/igl/pathinfo.cpp.s
-.PHONY : include/igl/pathinfo.s
+Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.s: Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.s
 
 # target to generate assembly for a file
-include/igl/pathinfo.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/pathinfo.cpp.s
-.PHONY : include/igl/pathinfo.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.cpp.s
 
-include/igl/per_corner_normals.o: include/igl/per_corner_normals.cpp.o
-.PHONY : include/igl/per_corner_normals.o
+Users/daniele/Dropbox/igl/libigl/include/igl/orth.o: Users/daniele/Dropbox/igl/libigl/include/igl/orth.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orth.o
 
 # target to build an object file
-include/igl/per_corner_normals.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_corner_normals.cpp.o
-.PHONY : include/igl/per_corner_normals.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/orth.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/orth.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orth.cpp.o
 
-include/igl/per_corner_normals.i: include/igl/per_corner_normals.cpp.i
-.PHONY : include/igl/per_corner_normals.i
+Users/daniele/Dropbox/igl/libigl/include/igl/orth.i: Users/daniele/Dropbox/igl/libigl/include/igl/orth.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orth.i
 
 # target to preprocess a source file
-include/igl/per_corner_normals.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_corner_normals.cpp.i
-.PHONY : include/igl/per_corner_normals.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/orth.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/orth.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orth.cpp.i
 
-include/igl/per_corner_normals.s: include/igl/per_corner_normals.cpp.s
-.PHONY : include/igl/per_corner_normals.s
+Users/daniele/Dropbox/igl/libigl/include/igl/orth.s: Users/daniele/Dropbox/igl/libigl/include/igl/orth.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orth.s
 
 # target to generate assembly for a file
-include/igl/per_corner_normals.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_corner_normals.cpp.s
-.PHONY : include/igl/per_corner_normals.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/orth.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/orth.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/orth.cpp.s
 
-include/igl/per_edge_normals.o: include/igl/per_edge_normals.cpp.o
-.PHONY : include/igl/per_edge_normals.o
+Users/daniele/Dropbox/igl/libigl/include/igl/ortho.o: Users/daniele/Dropbox/igl/libigl/include/igl/ortho.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ortho.o
 
 # target to build an object file
-include/igl/per_edge_normals.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_edge_normals.cpp.o
-.PHONY : include/igl/per_edge_normals.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/ortho.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/ortho.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ortho.cpp.o
 
-include/igl/per_edge_normals.i: include/igl/per_edge_normals.cpp.i
-.PHONY : include/igl/per_edge_normals.i
+Users/daniele/Dropbox/igl/libigl/include/igl/ortho.i: Users/daniele/Dropbox/igl/libigl/include/igl/ortho.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ortho.i
 
 # target to preprocess a source file
-include/igl/per_edge_normals.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_edge_normals.cpp.i
-.PHONY : include/igl/per_edge_normals.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/ortho.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/ortho.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ortho.cpp.i
 
-include/igl/per_edge_normals.s: include/igl/per_edge_normals.cpp.s
-.PHONY : include/igl/per_edge_normals.s
+Users/daniele/Dropbox/igl/libigl/include/igl/ortho.s: Users/daniele/Dropbox/igl/libigl/include/igl/ortho.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ortho.s
 
 # target to generate assembly for a file
-include/igl/per_edge_normals.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_edge_normals.cpp.s
-.PHONY : include/igl/per_edge_normals.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/ortho.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/ortho.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ortho.cpp.s
 
-include/igl/per_face_normals.o: include/igl/per_face_normals.cpp.o
-.PHONY : include/igl/per_face_normals.o
+Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.o: Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.o
 
 # target to build an object file
-include/igl/per_face_normals.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_face_normals.cpp.o
-.PHONY : include/igl/per_face_normals.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.cpp.o
 
-include/igl/per_face_normals.i: include/igl/per_face_normals.cpp.i
-.PHONY : include/igl/per_face_normals.i
+Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.i: Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.i
 
 # target to preprocess a source file
-include/igl/per_face_normals.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_face_normals.cpp.i
-.PHONY : include/igl/per_face_normals.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.cpp.i
 
-include/igl/per_face_normals.s: include/igl/per_face_normals.cpp.s
-.PHONY : include/igl/per_face_normals.s
+Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.s: Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.s
 
 # target to generate assembly for a file
-include/igl/per_face_normals.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_face_normals.cpp.s
-.PHONY : include/igl/per_face_normals.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.cpp.s
 
-include/igl/per_vertex_attribute_smoothing.o: include/igl/per_vertex_attribute_smoothing.cpp.o
-.PHONY : include/igl/per_vertex_attribute_smoothing.o
+Users/daniele/Dropbox/igl/libigl/include/igl/partition.o: Users/daniele/Dropbox/igl/libigl/include/igl/partition.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/partition.o
 
 # target to build an object file
-include/igl/per_vertex_attribute_smoothing.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_vertex_attribute_smoothing.cpp.o
-.PHONY : include/igl/per_vertex_attribute_smoothing.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/partition.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/partition.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/partition.cpp.o
 
-include/igl/per_vertex_attribute_smoothing.i: include/igl/per_vertex_attribute_smoothing.cpp.i
-.PHONY : include/igl/per_vertex_attribute_smoothing.i
+Users/daniele/Dropbox/igl/libigl/include/igl/partition.i: Users/daniele/Dropbox/igl/libigl/include/igl/partition.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/partition.i
 
 # target to preprocess a source file
-include/igl/per_vertex_attribute_smoothing.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_vertex_attribute_smoothing.cpp.i
-.PHONY : include/igl/per_vertex_attribute_smoothing.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/partition.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/partition.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/partition.cpp.i
 
-include/igl/per_vertex_attribute_smoothing.s: include/igl/per_vertex_attribute_smoothing.cpp.s
-.PHONY : include/igl/per_vertex_attribute_smoothing.s
+Users/daniele/Dropbox/igl/libigl/include/igl/partition.s: Users/daniele/Dropbox/igl/libigl/include/igl/partition.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/partition.s
 
 # target to generate assembly for a file
-include/igl/per_vertex_attribute_smoothing.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_vertex_attribute_smoothing.cpp.s
-.PHONY : include/igl/per_vertex_attribute_smoothing.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/partition.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/partition.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/partition.cpp.s
 
-include/igl/per_vertex_normals.o: include/igl/per_vertex_normals.cpp.o
-.PHONY : include/igl/per_vertex_normals.o
+Users/daniele/Dropbox/igl/libigl/include/igl/parula.o: Users/daniele/Dropbox/igl/libigl/include/igl/parula.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/parula.o
 
 # target to build an object file
-include/igl/per_vertex_normals.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_vertex_normals.cpp.o
-.PHONY : include/igl/per_vertex_normals.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/parula.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/parula.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/parula.cpp.o
 
-include/igl/per_vertex_normals.i: include/igl/per_vertex_normals.cpp.i
-.PHONY : include/igl/per_vertex_normals.i
+Users/daniele/Dropbox/igl/libigl/include/igl/parula.i: Users/daniele/Dropbox/igl/libigl/include/igl/parula.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/parula.i
 
 # target to preprocess a source file
-include/igl/per_vertex_normals.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_vertex_normals.cpp.i
-.PHONY : include/igl/per_vertex_normals.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/parula.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/parula.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/parula.cpp.i
 
-include/igl/per_vertex_normals.s: include/igl/per_vertex_normals.cpp.s
-.PHONY : include/igl/per_vertex_normals.s
+Users/daniele/Dropbox/igl/libigl/include/igl/parula.s: Users/daniele/Dropbox/igl/libigl/include/igl/parula.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/parula.s
 
 # target to generate assembly for a file
-include/igl/per_vertex_normals.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/per_vertex_normals.cpp.s
-.PHONY : include/igl/per_vertex_normals.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/parula.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/parula.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/parula.cpp.s
 
-include/igl/planarize_quad_mesh.o: include/igl/planarize_quad_mesh.cpp.o
-.PHONY : include/igl/planarize_quad_mesh.o
+Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.o: Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.o
 
 # target to build an object file
-include/igl/planarize_quad_mesh.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/planarize_quad_mesh.cpp.o
-.PHONY : include/igl/planarize_quad_mesh.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.cpp.o
 
-include/igl/planarize_quad_mesh.i: include/igl/planarize_quad_mesh.cpp.i
-.PHONY : include/igl/planarize_quad_mesh.i
+Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.i: Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.i
 
 # target to preprocess a source file
-include/igl/planarize_quad_mesh.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/planarize_quad_mesh.cpp.i
-.PHONY : include/igl/planarize_quad_mesh.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.cpp.i
 
-include/igl/planarize_quad_mesh.s: include/igl/planarize_quad_mesh.cpp.s
-.PHONY : include/igl/planarize_quad_mesh.s
+Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.s: Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.s
 
 # target to generate assembly for a file
-include/igl/planarize_quad_mesh.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/planarize_quad_mesh.cpp.s
-.PHONY : include/igl/planarize_quad_mesh.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.cpp.s
 
-include/igl/point_in_circle.o: include/igl/point_in_circle.cpp.o
-.PHONY : include/igl/point_in_circle.o
+Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.o: Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.o
 
 # target to build an object file
-include/igl/point_in_circle.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/point_in_circle.cpp.o
-.PHONY : include/igl/point_in_circle.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.cpp.o
 
-include/igl/point_in_circle.i: include/igl/point_in_circle.cpp.i
-.PHONY : include/igl/point_in_circle.i
+Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.i: Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.i
 
 # target to preprocess a source file
-include/igl/point_in_circle.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/point_in_circle.cpp.i
-.PHONY : include/igl/point_in_circle.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.cpp.i
 
-include/igl/point_in_circle.s: include/igl/point_in_circle.cpp.s
-.PHONY : include/igl/point_in_circle.s
+Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.s: Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.s
 
 # target to generate assembly for a file
-include/igl/point_in_circle.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/point_in_circle.cpp.s
-.PHONY : include/igl/point_in_circle.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.cpp.s
 
-include/igl/point_in_poly.o: include/igl/point_in_poly.cpp.o
-.PHONY : include/igl/point_in_poly.o
+Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.o: Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.o
 
 # target to build an object file
-include/igl/point_in_poly.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/point_in_poly.cpp.o
-.PHONY : include/igl/point_in_poly.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.cpp.o
 
-include/igl/point_in_poly.i: include/igl/point_in_poly.cpp.i
-.PHONY : include/igl/point_in_poly.i
+Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.i: Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.i
 
 # target to preprocess a source file
-include/igl/point_in_poly.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/point_in_poly.cpp.i
-.PHONY : include/igl/point_in_poly.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.cpp.i
 
-include/igl/point_in_poly.s: include/igl/point_in_poly.cpp.s
-.PHONY : include/igl/point_in_poly.s
+Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.s: Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.s
 
 # target to generate assembly for a file
-include/igl/point_in_poly.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/point_in_poly.cpp.s
-.PHONY : include/igl/point_in_poly.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.cpp.s
 
-include/igl/point_mesh_squared_distance.o: include/igl/point_mesh_squared_distance.cpp.o
-.PHONY : include/igl/point_mesh_squared_distance.o
+Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.o: Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.o
 
 # target to build an object file
-include/igl/point_mesh_squared_distance.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/point_mesh_squared_distance.cpp.o
-.PHONY : include/igl/point_mesh_squared_distance.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.cpp.o
 
-include/igl/point_mesh_squared_distance.i: include/igl/point_mesh_squared_distance.cpp.i
-.PHONY : include/igl/point_mesh_squared_distance.i
+Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.i: Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.i
 
 # target to preprocess a source file
-include/igl/point_mesh_squared_distance.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/point_mesh_squared_distance.cpp.i
-.PHONY : include/igl/point_mesh_squared_distance.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.cpp.i
 
-include/igl/point_mesh_squared_distance.s: include/igl/point_mesh_squared_distance.cpp.s
-.PHONY : include/igl/point_mesh_squared_distance.s
+Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.s: Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.s
 
 # target to generate assembly for a file
-include/igl/point_mesh_squared_distance.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/point_mesh_squared_distance.cpp.s
-.PHONY : include/igl/point_mesh_squared_distance.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.cpp.s
 
-include/igl/polar_dec.o: include/igl/polar_dec.cpp.o
-.PHONY : include/igl/polar_dec.o
+Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.o: Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.o
 
 # target to build an object file
-include/igl/polar_dec.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/polar_dec.cpp.o
-.PHONY : include/igl/polar_dec.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.cpp.o
 
-include/igl/polar_dec.i: include/igl/polar_dec.cpp.i
-.PHONY : include/igl/polar_dec.i
+Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.i: Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.i
 
 # target to preprocess a source file
-include/igl/polar_dec.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/polar_dec.cpp.i
-.PHONY : include/igl/polar_dec.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.cpp.i
 
-include/igl/polar_dec.s: include/igl/polar_dec.cpp.s
-.PHONY : include/igl/polar_dec.s
+Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.s: Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.s
 
 # target to generate assembly for a file
-include/igl/polar_dec.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/polar_dec.cpp.s
-.PHONY : include/igl/polar_dec.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.cpp.s
 
-include/igl/polar_svd.o: include/igl/polar_svd.cpp.o
-.PHONY : include/igl/polar_svd.o
+Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.o: Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.o
 
 # target to build an object file
-include/igl/polar_svd.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/polar_svd.cpp.o
-.PHONY : include/igl/polar_svd.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.cpp.o
 
-include/igl/polar_svd.i: include/igl/polar_svd.cpp.i
-.PHONY : include/igl/polar_svd.i
+Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.i: Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.i
 
 # target to preprocess a source file
-include/igl/polar_svd.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/polar_svd.cpp.i
-.PHONY : include/igl/polar_svd.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.cpp.i
 
-include/igl/polar_svd.s: include/igl/polar_svd.cpp.s
-.PHONY : include/igl/polar_svd.s
+Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.s: Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.s
 
 # target to generate assembly for a file
-include/igl/polar_svd.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/polar_svd.cpp.s
-.PHONY : include/igl/polar_svd.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.cpp.s
 
-include/igl/polygon_mesh_to_triangle_mesh.o: include/igl/polygon_mesh_to_triangle_mesh.cpp.o
-.PHONY : include/igl/polygon_mesh_to_triangle_mesh.o
+Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.o: Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.o
 
 # target to build an object file
-include/igl/polygon_mesh_to_triangle_mesh.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/polygon_mesh_to_triangle_mesh.cpp.o
-.PHONY : include/igl/polygon_mesh_to_triangle_mesh.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.cpp.o
 
-include/igl/polygon_mesh_to_triangle_mesh.i: include/igl/polygon_mesh_to_triangle_mesh.cpp.i
-.PHONY : include/igl/polygon_mesh_to_triangle_mesh.i
+Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.i: Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.i
 
 # target to preprocess a source file
-include/igl/polygon_mesh_to_triangle_mesh.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/polygon_mesh_to_triangle_mesh.cpp.i
-.PHONY : include/igl/polygon_mesh_to_triangle_mesh.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.cpp.i
 
-include/igl/polygon_mesh_to_triangle_mesh.s: include/igl/polygon_mesh_to_triangle_mesh.cpp.s
-.PHONY : include/igl/polygon_mesh_to_triangle_mesh.s
+Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.s: Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.s
 
 # target to generate assembly for a file
-include/igl/polygon_mesh_to_triangle_mesh.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/polygon_mesh_to_triangle_mesh.cpp.s
-.PHONY : include/igl/polygon_mesh_to_triangle_mesh.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.cpp.s
 
-include/igl/polyroots.o: include/igl/polyroots.cpp.o
-.PHONY : include/igl/polyroots.o
+Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.o: Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.o
 
 # target to build an object file
-include/igl/polyroots.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/polyroots.cpp.o
-.PHONY : include/igl/polyroots.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.cpp.o
 
-include/igl/polyroots.i: include/igl/polyroots.cpp.i
-.PHONY : include/igl/polyroots.i
+Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.i: Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.i
 
 # target to preprocess a source file
-include/igl/polyroots.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/polyroots.cpp.i
-.PHONY : include/igl/polyroots.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.cpp.i
 
-include/igl/polyroots.s: include/igl/polyroots.cpp.s
-.PHONY : include/igl/polyroots.s
+Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.s: Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.s
 
 # target to generate assembly for a file
-include/igl/polyroots.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/polyroots.cpp.s
-.PHONY : include/igl/polyroots.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.cpp.s
 
-include/igl/principal_curvature.o: include/igl/principal_curvature.cpp.o
-.PHONY : include/igl/principal_curvature.o
+Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.o: Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.o
 
 # target to build an object file
-include/igl/principal_curvature.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/principal_curvature.cpp.o
-.PHONY : include/igl/principal_curvature.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.cpp.o:
+	$(MAKE) -f CMakeFiles/iglpng.dir/build.make CMakeFiles/iglpng.dir/Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.cpp.o
 
-include/igl/principal_curvature.i: include/igl/principal_curvature.cpp.i
-.PHONY : include/igl/principal_curvature.i
+Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.i: Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.i
 
 # target to preprocess a source file
-include/igl/principal_curvature.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/principal_curvature.cpp.i
-.PHONY : include/igl/principal_curvature.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.cpp.i:
+	$(MAKE) -f CMakeFiles/iglpng.dir/build.make CMakeFiles/iglpng.dir/Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.cpp.i
 
-include/igl/principal_curvature.s: include/igl/principal_curvature.cpp.s
-.PHONY : include/igl/principal_curvature.s
+Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.s: Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.s
 
 # target to generate assembly for a file
-include/igl/principal_curvature.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/principal_curvature.cpp.s
-.PHONY : include/igl/principal_curvature.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.cpp.s:
+	$(MAKE) -f CMakeFiles/iglpng.dir/build.make CMakeFiles/iglpng.dir/Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.cpp.s
 
-include/igl/print_gl_get.o: include/igl/print_gl_get.cpp.o
-.PHONY : include/igl/print_gl_get.o
+Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.o: Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.o
 
 # target to build an object file
-include/igl/print_gl_get.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_gl_get.cpp.o
-.PHONY : include/igl/print_gl_get.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.cpp.o:
+	$(MAKE) -f CMakeFiles/iglpng.dir/build.make CMakeFiles/iglpng.dir/Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.cpp.o
 
-include/igl/print_gl_get.i: include/igl/print_gl_get.cpp.i
-.PHONY : include/igl/print_gl_get.i
+Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.i: Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.i
 
 # target to preprocess a source file
-include/igl/print_gl_get.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_gl_get.cpp.i
-.PHONY : include/igl/print_gl_get.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.cpp.i:
+	$(MAKE) -f CMakeFiles/iglpng.dir/build.make CMakeFiles/iglpng.dir/Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.cpp.i
 
-include/igl/print_gl_get.s: include/igl/print_gl_get.cpp.s
-.PHONY : include/igl/print_gl_get.s
+Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.s: Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.s
 
 # target to generate assembly for a file
-include/igl/print_gl_get.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_gl_get.cpp.s
-.PHONY : include/igl/print_gl_get.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.cpp.s:
+	$(MAKE) -f CMakeFiles/iglpng.dir/build.make CMakeFiles/iglpng.dir/Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.cpp.s
 
-include/igl/print_ijv.o: include/igl/print_ijv.cpp.o
-.PHONY : include/igl/print_ijv.o
+Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.o: Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.o
 
 # target to build an object file
-include/igl/print_ijv.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_ijv.cpp.o
-.PHONY : include/igl/print_ijv.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.cpp.o:
+	$(MAKE) -f CMakeFiles/iglpng.dir/build.make CMakeFiles/iglpng.dir/Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.cpp.o
 
-include/igl/print_ijv.i: include/igl/print_ijv.cpp.i
-.PHONY : include/igl/print_ijv.i
+Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.i: Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.i
 
 # target to preprocess a source file
-include/igl/print_ijv.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_ijv.cpp.i
-.PHONY : include/igl/print_ijv.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.cpp.i:
+	$(MAKE) -f CMakeFiles/iglpng.dir/build.make CMakeFiles/iglpng.dir/Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.cpp.i
 
-include/igl/print_ijv.s: include/igl/print_ijv.cpp.s
-.PHONY : include/igl/print_ijv.s
+Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.s: Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.s
 
 # target to generate assembly for a file
-include/igl/print_ijv.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_ijv.cpp.s
-.PHONY : include/igl/print_ijv.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.cpp.s:
+	$(MAKE) -f CMakeFiles/iglpng.dir/build.make CMakeFiles/iglpng.dir/Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.cpp.s
 
-include/igl/print_program_info_log.o: include/igl/print_program_info_log.cpp.o
-.PHONY : include/igl/print_program_info_log.o
+Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.o: Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.o
 
 # target to build an object file
-include/igl/print_program_info_log.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_program_info_log.cpp.o
-.PHONY : include/igl/print_program_info_log.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.cpp.o:
+	$(MAKE) -f CMakeFiles/iglpng.dir/build.make CMakeFiles/iglpng.dir/Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.cpp.o
 
-include/igl/print_program_info_log.i: include/igl/print_program_info_log.cpp.i
-.PHONY : include/igl/print_program_info_log.i
+Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.i: Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.i
 
 # target to preprocess a source file
-include/igl/print_program_info_log.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_program_info_log.cpp.i
-.PHONY : include/igl/print_program_info_log.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.cpp.i:
+	$(MAKE) -f CMakeFiles/iglpng.dir/build.make CMakeFiles/iglpng.dir/Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.cpp.i
 
-include/igl/print_program_info_log.s: include/igl/print_program_info_log.cpp.s
-.PHONY : include/igl/print_program_info_log.s
+Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.s: Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.s
 
 # target to generate assembly for a file
-include/igl/print_program_info_log.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_program_info_log.cpp.s
-.PHONY : include/igl/print_program_info_log.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.cpp.s:
+	$(MAKE) -f CMakeFiles/iglpng.dir/build.make CMakeFiles/iglpng.dir/Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.cpp.s
 
-include/igl/print_shader_info_log.o: include/igl/print_shader_info_log.cpp.o
-.PHONY : include/igl/print_shader_info_log.o
+Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.o: Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.o
 
 # target to build an object file
-include/igl/print_shader_info_log.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_shader_info_log.cpp.o
-.PHONY : include/igl/print_shader_info_log.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.cpp.o
 
-include/igl/print_shader_info_log.i: include/igl/print_shader_info_log.cpp.i
-.PHONY : include/igl/print_shader_info_log.i
+Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.i: Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.i
 
 # target to preprocess a source file
-include/igl/print_shader_info_log.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_shader_info_log.cpp.i
-.PHONY : include/igl/print_shader_info_log.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.cpp.i
 
-include/igl/print_shader_info_log.s: include/igl/print_shader_info_log.cpp.s
-.PHONY : include/igl/print_shader_info_log.s
+Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.s: Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.s
 
 # target to generate assembly for a file
-include/igl/print_shader_info_log.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_shader_info_log.cpp.s
-.PHONY : include/igl/print_shader_info_log.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.cpp.s
 
-include/igl/print_vector.o: include/igl/print_vector.cpp.o
-.PHONY : include/igl/print_vector.o
+Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.o: Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.o
 
 # target to build an object file
-include/igl/print_vector.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_vector.cpp.o
-.PHONY : include/igl/print_vector.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.cpp.o
 
-include/igl/print_vector.i: include/igl/print_vector.cpp.i
-.PHONY : include/igl/print_vector.i
+Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.i: Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.i
 
 # target to preprocess a source file
-include/igl/print_vector.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_vector.cpp.i
-.PHONY : include/igl/print_vector.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.cpp.i
 
-include/igl/print_vector.s: include/igl/print_vector.cpp.s
-.PHONY : include/igl/print_vector.s
+Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.s: Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.s
 
 # target to generate assembly for a file
-include/igl/print_vector.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/print_vector.cpp.s
-.PHONY : include/igl/print_vector.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.cpp.s
 
-include/igl/procrustes.o: include/igl/procrustes.cpp.o
-.PHONY : include/igl/procrustes.o
+Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.o: Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.o
 
 # target to build an object file
-include/igl/procrustes.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/procrustes.cpp.o
-.PHONY : include/igl/procrustes.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.cpp.o
 
-include/igl/procrustes.i: include/igl/procrustes.cpp.i
-.PHONY : include/igl/procrustes.i
+Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.i: Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.i
 
 # target to preprocess a source file
-include/igl/procrustes.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/procrustes.cpp.i
-.PHONY : include/igl/procrustes.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.cpp.i
 
-include/igl/procrustes.s: include/igl/procrustes.cpp.s
-.PHONY : include/igl/procrustes.s
+Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.s: Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.s
 
 # target to generate assembly for a file
-include/igl/procrustes.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/procrustes.cpp.s
-.PHONY : include/igl/procrustes.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.cpp.s
 
-include/igl/project.o: include/igl/project.cpp.o
-.PHONY : include/igl/project.o
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.o: Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.o
 
 # target to build an object file
-include/igl/project.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/project.cpp.o
-.PHONY : include/igl/project.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.cpp.o
 
-include/igl/project.i: include/igl/project.cpp.i
-.PHONY : include/igl/project.i
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.i: Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.i
 
 # target to preprocess a source file
-include/igl/project.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/project.cpp.i
-.PHONY : include/igl/project.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.cpp.i
 
-include/igl/project.s: include/igl/project.cpp.s
-.PHONY : include/igl/project.s
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.s: Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.s
 
 # target to generate assembly for a file
-include/igl/project.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/project.cpp.s
-.PHONY : include/igl/project.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.cpp.s
 
-include/igl/project_isometrically_to_plane.o: include/igl/project_isometrically_to_plane.cpp.o
-.PHONY : include/igl/project_isometrically_to_plane.o
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.o: Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.o
 
 # target to build an object file
-include/igl/project_isometrically_to_plane.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/project_isometrically_to_plane.cpp.o
-.PHONY : include/igl/project_isometrically_to_plane.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.cpp.o
 
-include/igl/project_isometrically_to_plane.i: include/igl/project_isometrically_to_plane.cpp.i
-.PHONY : include/igl/project_isometrically_to_plane.i
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.i: Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.i
 
 # target to preprocess a source file
-include/igl/project_isometrically_to_plane.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/project_isometrically_to_plane.cpp.i
-.PHONY : include/igl/project_isometrically_to_plane.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.cpp.i
 
-include/igl/project_isometrically_to_plane.s: include/igl/project_isometrically_to_plane.cpp.s
-.PHONY : include/igl/project_isometrically_to_plane.s
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.s: Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.s
 
 # target to generate assembly for a file
-include/igl/project_isometrically_to_plane.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/project_isometrically_to_plane.cpp.s
-.PHONY : include/igl/project_isometrically_to_plane.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.cpp.s
 
-include/igl/project_to_line.o: include/igl/project_to_line.cpp.o
-.PHONY : include/igl/project_to_line.o
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.o: Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.o
 
 # target to build an object file
-include/igl/project_to_line.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/project_to_line.cpp.o
-.PHONY : include/igl/project_to_line.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.cpp.o
 
-include/igl/project_to_line.i: include/igl/project_to_line.cpp.i
-.PHONY : include/igl/project_to_line.i
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.i: Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.i
 
 # target to preprocess a source file
-include/igl/project_to_line.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/project_to_line.cpp.i
-.PHONY : include/igl/project_to_line.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.cpp.i
 
-include/igl/project_to_line.s: include/igl/project_to_line.cpp.s
-.PHONY : include/igl/project_to_line.s
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.s: Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.s
 
 # target to generate assembly for a file
-include/igl/project_to_line.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/project_to_line.cpp.s
-.PHONY : include/igl/project_to_line.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.cpp.s
 
-include/igl/project_to_line_segment.o: include/igl/project_to_line_segment.cpp.o
-.PHONY : include/igl/project_to_line_segment.o
+Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.o: Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.o
 
 # target to build an object file
-include/igl/project_to_line_segment.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/project_to_line_segment.cpp.o
-.PHONY : include/igl/project_to_line_segment.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.cpp.o
 
-include/igl/project_to_line_segment.i: include/igl/project_to_line_segment.cpp.i
-.PHONY : include/igl/project_to_line_segment.i
+Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.i: Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.i
 
 # target to preprocess a source file
-include/igl/project_to_line_segment.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/project_to_line_segment.cpp.i
-.PHONY : include/igl/project_to_line_segment.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.cpp.i
 
-include/igl/project_to_line_segment.s: include/igl/project_to_line_segment.cpp.s
-.PHONY : include/igl/project_to_line_segment.s
+Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.s: Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.s
 
 # target to generate assembly for a file
-include/igl/project_to_line_segment.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/project_to_line_segment.cpp.s
-.PHONY : include/igl/project_to_line_segment.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.cpp.s
 
-include/igl/quad_planarity.o: include/igl/quad_planarity.cpp.o
-.PHONY : include/igl/quad_planarity.o
+Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.o: Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.o
 
 # target to build an object file
-include/igl/quad_planarity.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quad_planarity.cpp.o
-.PHONY : include/igl/quad_planarity.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.cpp.o
 
-include/igl/quad_planarity.i: include/igl/quad_planarity.cpp.i
-.PHONY : include/igl/quad_planarity.i
+Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.i: Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.i
 
 # target to preprocess a source file
-include/igl/quad_planarity.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quad_planarity.cpp.i
-.PHONY : include/igl/quad_planarity.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.cpp.i
 
-include/igl/quad_planarity.s: include/igl/quad_planarity.cpp.s
-.PHONY : include/igl/quad_planarity.s
+Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.s: Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.s
 
 # target to generate assembly for a file
-include/igl/quad_planarity.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quad_planarity.cpp.s
-.PHONY : include/igl/quad_planarity.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.cpp.s
 
-include/igl/quat_conjugate.o: include/igl/quat_conjugate.cpp.o
-.PHONY : include/igl/quat_conjugate.o
+Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.o: Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.o
 
 # target to build an object file
-include/igl/quat_conjugate.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quat_conjugate.cpp.o
-.PHONY : include/igl/quat_conjugate.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.cpp.o
 
-include/igl/quat_conjugate.i: include/igl/quat_conjugate.cpp.i
-.PHONY : include/igl/quat_conjugate.i
+Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.i: Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.i
 
 # target to preprocess a source file
-include/igl/quat_conjugate.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quat_conjugate.cpp.i
-.PHONY : include/igl/quat_conjugate.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.cpp.i
 
-include/igl/quat_conjugate.s: include/igl/quat_conjugate.cpp.s
-.PHONY : include/igl/quat_conjugate.s
+Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.s: Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.s
 
 # target to generate assembly for a file
-include/igl/quat_conjugate.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quat_conjugate.cpp.s
-.PHONY : include/igl/quat_conjugate.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.cpp.s
 
-include/igl/quat_mult.o: include/igl/quat_mult.cpp.o
-.PHONY : include/igl/quat_mult.o
+Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.o: Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.o
 
 # target to build an object file
-include/igl/quat_mult.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quat_mult.cpp.o
-.PHONY : include/igl/quat_mult.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.cpp.o
 
-include/igl/quat_mult.i: include/igl/quat_mult.cpp.i
-.PHONY : include/igl/quat_mult.i
+Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.i: Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.i
 
 # target to preprocess a source file
-include/igl/quat_mult.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quat_mult.cpp.i
-.PHONY : include/igl/quat_mult.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.cpp.i
 
-include/igl/quat_mult.s: include/igl/quat_mult.cpp.s
-.PHONY : include/igl/quat_mult.s
+Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.s: Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.s
 
 # target to generate assembly for a file
-include/igl/quat_mult.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quat_mult.cpp.s
-.PHONY : include/igl/quat_mult.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.cpp.s
 
-include/igl/quat_to_axis_angle.o: include/igl/quat_to_axis_angle.cpp.o
-.PHONY : include/igl/quat_to_axis_angle.o
+Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.o: Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.o
 
 # target to build an object file
-include/igl/quat_to_axis_angle.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quat_to_axis_angle.cpp.o
-.PHONY : include/igl/quat_to_axis_angle.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.cpp.o
 
-include/igl/quat_to_axis_angle.i: include/igl/quat_to_axis_angle.cpp.i
-.PHONY : include/igl/quat_to_axis_angle.i
+Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.i: Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.i
 
 # target to preprocess a source file
-include/igl/quat_to_axis_angle.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quat_to_axis_angle.cpp.i
-.PHONY : include/igl/quat_to_axis_angle.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.cpp.i
 
-include/igl/quat_to_axis_angle.s: include/igl/quat_to_axis_angle.cpp.s
-.PHONY : include/igl/quat_to_axis_angle.s
+Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.s: Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.s
 
 # target to generate assembly for a file
-include/igl/quat_to_axis_angle.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quat_to_axis_angle.cpp.s
-.PHONY : include/igl/quat_to_axis_angle.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.cpp.s
 
-include/igl/quat_to_mat.o: include/igl/quat_to_mat.cpp.o
-.PHONY : include/igl/quat_to_mat.o
+Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.o: Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.o
 
 # target to build an object file
-include/igl/quat_to_mat.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quat_to_mat.cpp.o
-.PHONY : include/igl/quat_to_mat.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.cpp.o
 
-include/igl/quat_to_mat.i: include/igl/quat_to_mat.cpp.i
-.PHONY : include/igl/quat_to_mat.i
+Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.i: Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.i
 
 # target to preprocess a source file
-include/igl/quat_to_mat.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quat_to_mat.cpp.i
-.PHONY : include/igl/quat_to_mat.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.cpp.i
 
-include/igl/quat_to_mat.s: include/igl/quat_to_mat.cpp.s
-.PHONY : include/igl/quat_to_mat.s
+Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.s: Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.s
 
 # target to generate assembly for a file
-include/igl/quat_to_mat.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quat_to_mat.cpp.s
-.PHONY : include/igl/quat_to_mat.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.cpp.s
 
-include/igl/quats_to_column.o: include/igl/quats_to_column.cpp.o
-.PHONY : include/igl/quats_to_column.o
+Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.o: Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.o
 
 # target to build an object file
-include/igl/quats_to_column.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quats_to_column.cpp.o
-.PHONY : include/igl/quats_to_column.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.cpp.o
 
-include/igl/quats_to_column.i: include/igl/quats_to_column.cpp.i
-.PHONY : include/igl/quats_to_column.i
+Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.i: Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.i
 
 # target to preprocess a source file
-include/igl/quats_to_column.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quats_to_column.cpp.i
-.PHONY : include/igl/quats_to_column.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.cpp.i
 
-include/igl/quats_to_column.s: include/igl/quats_to_column.cpp.s
-.PHONY : include/igl/quats_to_column.s
+Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.s: Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.s
 
 # target to generate assembly for a file
-include/igl/quats_to_column.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/quats_to_column.cpp.s
-.PHONY : include/igl/quats_to_column.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.cpp.s
 
-include/igl/random_dir.o: include/igl/random_dir.cpp.o
-.PHONY : include/igl/random_dir.o
+Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.o: Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.o
 
 # target to build an object file
-include/igl/random_dir.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/random_dir.cpp.o
-.PHONY : include/igl/random_dir.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.cpp.o
 
-include/igl/random_dir.i: include/igl/random_dir.cpp.i
-.PHONY : include/igl/random_dir.i
+Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.i: Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.i
 
 # target to preprocess a source file
-include/igl/random_dir.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/random_dir.cpp.i
-.PHONY : include/igl/random_dir.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.cpp.i
 
-include/igl/random_dir.s: include/igl/random_dir.cpp.s
-.PHONY : include/igl/random_dir.s
+Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.s: Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.s
 
 # target to generate assembly for a file
-include/igl/random_dir.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/random_dir.cpp.s
-.PHONY : include/igl/random_dir.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.cpp.s
 
-include/igl/random_points_on_mesh.o: include/igl/random_points_on_mesh.cpp.o
-.PHONY : include/igl/random_points_on_mesh.o
+Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.o: Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.o
 
 # target to build an object file
-include/igl/random_points_on_mesh.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/random_points_on_mesh.cpp.o
-.PHONY : include/igl/random_points_on_mesh.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.cpp.o
 
-include/igl/random_points_on_mesh.i: include/igl/random_points_on_mesh.cpp.i
-.PHONY : include/igl/random_points_on_mesh.i
+Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.i: Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.i
 
 # target to preprocess a source file
-include/igl/random_points_on_mesh.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/random_points_on_mesh.cpp.i
-.PHONY : include/igl/random_points_on_mesh.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.cpp.i
 
-include/igl/random_points_on_mesh.s: include/igl/random_points_on_mesh.cpp.s
-.PHONY : include/igl/random_points_on_mesh.s
+Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.s: Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.s
 
 # target to generate assembly for a file
-include/igl/random_points_on_mesh.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/random_points_on_mesh.cpp.s
-.PHONY : include/igl/random_points_on_mesh.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.cpp.s
 
-include/igl/random_quaternion.o: include/igl/random_quaternion.cpp.o
-.PHONY : include/igl/random_quaternion.o
+Users/daniele/Dropbox/igl/libigl/include/igl/project.o: Users/daniele/Dropbox/igl/libigl/include/igl/project.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project.o
 
 # target to build an object file
-include/igl/random_quaternion.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/random_quaternion.cpp.o
-.PHONY : include/igl/random_quaternion.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/project.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/project.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project.cpp.o
 
-include/igl/random_quaternion.i: include/igl/random_quaternion.cpp.i
-.PHONY : include/igl/random_quaternion.i
+Users/daniele/Dropbox/igl/libigl/include/igl/project.i: Users/daniele/Dropbox/igl/libigl/include/igl/project.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project.i
 
 # target to preprocess a source file
-include/igl/random_quaternion.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/random_quaternion.cpp.i
-.PHONY : include/igl/random_quaternion.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/project.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/project.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project.cpp.i
 
-include/igl/random_quaternion.s: include/igl/random_quaternion.cpp.s
-.PHONY : include/igl/random_quaternion.s
+Users/daniele/Dropbox/igl/libigl/include/igl/project.s: Users/daniele/Dropbox/igl/libigl/include/igl/project.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project.s
 
 # target to generate assembly for a file
-include/igl/random_quaternion.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/random_quaternion.cpp.s
-.PHONY : include/igl/random_quaternion.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/project.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/project.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project.cpp.s
 
-include/igl/randperm.o: include/igl/randperm.cpp.o
-.PHONY : include/igl/randperm.o
+Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.o: Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.o
 
 # target to build an object file
-include/igl/randperm.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/randperm.cpp.o
-.PHONY : include/igl/randperm.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.cpp.o
 
-include/igl/randperm.i: include/igl/randperm.cpp.i
-.PHONY : include/igl/randperm.i
+Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.i: Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.i
 
 # target to preprocess a source file
-include/igl/randperm.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/randperm.cpp.i
-.PHONY : include/igl/randperm.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.cpp.i
 
-include/igl/randperm.s: include/igl/randperm.cpp.s
-.PHONY : include/igl/randperm.s
+Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.s: Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.s
 
 # target to generate assembly for a file
-include/igl/randperm.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/randperm.cpp.s
-.PHONY : include/igl/randperm.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.cpp.s
 
-include/igl/ray_sphere_intersect.o: include/igl/ray_sphere_intersect.cpp.o
-.PHONY : include/igl/ray_sphere_intersect.o
+Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.o: Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.o
 
 # target to build an object file
-include/igl/ray_sphere_intersect.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/ray_sphere_intersect.cpp.o
-.PHONY : include/igl/ray_sphere_intersect.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.cpp.o
 
-include/igl/ray_sphere_intersect.i: include/igl/ray_sphere_intersect.cpp.i
-.PHONY : include/igl/ray_sphere_intersect.i
+Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.i: Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.i
 
 # target to preprocess a source file
-include/igl/ray_sphere_intersect.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/ray_sphere_intersect.cpp.i
-.PHONY : include/igl/ray_sphere_intersect.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.cpp.i
 
-include/igl/ray_sphere_intersect.s: include/igl/ray_sphere_intersect.cpp.s
-.PHONY : include/igl/ray_sphere_intersect.s
+Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.s: Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.s
 
 # target to generate assembly for a file
-include/igl/ray_sphere_intersect.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/ray_sphere_intersect.cpp.s
-.PHONY : include/igl/ray_sphere_intersect.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.cpp.s
 
-include/igl/readCSV.o: include/igl/readCSV.cpp.o
-.PHONY : include/igl/readCSV.o
+Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.o: Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.o
 
 # target to build an object file
-include/igl/readCSV.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readCSV.cpp.o
-.PHONY : include/igl/readCSV.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.cpp.o
 
-include/igl/readCSV.i: include/igl/readCSV.cpp.i
-.PHONY : include/igl/readCSV.i
+Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.i: Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.i
 
 # target to preprocess a source file
-include/igl/readCSV.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readCSV.cpp.i
-.PHONY : include/igl/readCSV.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.cpp.i
 
-include/igl/readCSV.s: include/igl/readCSV.cpp.s
-.PHONY : include/igl/readCSV.s
+Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.s: Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.s
 
 # target to generate assembly for a file
-include/igl/readCSV.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readCSV.cpp.s
-.PHONY : include/igl/readCSV.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.cpp.s
 
-include/igl/readDMAT.o: include/igl/readDMAT.cpp.o
-.PHONY : include/igl/readDMAT.o
+Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.o: Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.o
 
 # target to build an object file
-include/igl/readDMAT.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readDMAT.cpp.o
-.PHONY : include/igl/readDMAT.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.cpp.o
 
-include/igl/readDMAT.i: include/igl/readDMAT.cpp.i
-.PHONY : include/igl/readDMAT.i
+Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.i: Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.i
 
 # target to preprocess a source file
-include/igl/readDMAT.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readDMAT.cpp.i
-.PHONY : include/igl/readDMAT.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.cpp.i
 
-include/igl/readDMAT.s: include/igl/readDMAT.cpp.s
-.PHONY : include/igl/readDMAT.s
+Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.s: Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.s
 
 # target to generate assembly for a file
-include/igl/readDMAT.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readDMAT.cpp.s
-.PHONY : include/igl/readDMAT.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.cpp.s
 
-include/igl/readMESH.o: include/igl/readMESH.cpp.o
-.PHONY : include/igl/readMESH.o
+Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.o: Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.o
 
 # target to build an object file
-include/igl/readMESH.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readMESH.cpp.o
-.PHONY : include/igl/readMESH.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.cpp.o
 
-include/igl/readMESH.i: include/igl/readMESH.cpp.i
-.PHONY : include/igl/readMESH.i
+Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.i: Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.i
 
 # target to preprocess a source file
-include/igl/readMESH.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readMESH.cpp.i
-.PHONY : include/igl/readMESH.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.cpp.i
 
-include/igl/readMESH.s: include/igl/readMESH.cpp.s
-.PHONY : include/igl/readMESH.s
+Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.s: Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.s
 
 # target to generate assembly for a file
-include/igl/readMESH.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readMESH.cpp.s
-.PHONY : include/igl/readMESH.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.cpp.s
 
-include/igl/readNODE.o: include/igl/readNODE.cpp.o
-.PHONY : include/igl/readNODE.o
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.o: Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.o
 
 # target to build an object file
-include/igl/readNODE.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readNODE.cpp.o
-.PHONY : include/igl/readNODE.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.cpp.o
 
-include/igl/readNODE.i: include/igl/readNODE.cpp.i
-.PHONY : include/igl/readNODE.i
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.i: Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.i
 
 # target to preprocess a source file
-include/igl/readNODE.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readNODE.cpp.i
-.PHONY : include/igl/readNODE.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.cpp.i
 
-include/igl/readNODE.s: include/igl/readNODE.cpp.s
-.PHONY : include/igl/readNODE.s
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.s: Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.s
 
 # target to generate assembly for a file
-include/igl/readNODE.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readNODE.cpp.s
-.PHONY : include/igl/readNODE.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.cpp.s
 
-include/igl/readOBJ.o: include/igl/readOBJ.cpp.o
-.PHONY : include/igl/readOBJ.o
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.o: Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.o
 
 # target to build an object file
-include/igl/readOBJ.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readOBJ.cpp.o
-.PHONY : include/igl/readOBJ.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.cpp.o
 
-include/igl/readOBJ.i: include/igl/readOBJ.cpp.i
-.PHONY : include/igl/readOBJ.i
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.i: Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.i
 
 # target to preprocess a source file
-include/igl/readOBJ.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readOBJ.cpp.i
-.PHONY : include/igl/readOBJ.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.cpp.i
 
-include/igl/readOBJ.s: include/igl/readOBJ.cpp.s
-.PHONY : include/igl/readOBJ.s
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.s: Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.s
 
 # target to generate assembly for a file
-include/igl/readOBJ.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readOBJ.cpp.s
-.PHONY : include/igl/readOBJ.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.cpp.s
 
-include/igl/readOFF.o: include/igl/readOFF.cpp.o
-.PHONY : include/igl/readOFF.o
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.o: Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.o
 
 # target to build an object file
-include/igl/readOFF.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readOFF.cpp.o
-.PHONY : include/igl/readOFF.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.cpp.o
 
-include/igl/readOFF.i: include/igl/readOFF.cpp.i
-.PHONY : include/igl/readOFF.i
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.i: Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.i
 
 # target to preprocess a source file
-include/igl/readOFF.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readOFF.cpp.i
-.PHONY : include/igl/readOFF.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.cpp.i
 
-include/igl/readOFF.s: include/igl/readOFF.cpp.s
-.PHONY : include/igl/readOFF.s
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.s: Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.s
 
 # target to generate assembly for a file
-include/igl/readOFF.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readOFF.cpp.s
-.PHONY : include/igl/readOFF.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.cpp.s
 
-include/igl/readPLY.o: include/igl/readPLY.cpp.o
-.PHONY : include/igl/readPLY.o
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.o: Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.o
 
 # target to build an object file
-include/igl/readPLY.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readPLY.cpp.o
-.PHONY : include/igl/readPLY.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.cpp.o
 
-include/igl/readPLY.i: include/igl/readPLY.cpp.i
-.PHONY : include/igl/readPLY.i
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.i: Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.i
 
 # target to preprocess a source file
-include/igl/readPLY.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readPLY.cpp.i
-.PHONY : include/igl/readPLY.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.cpp.i
 
-include/igl/readPLY.s: include/igl/readPLY.cpp.s
-.PHONY : include/igl/readPLY.s
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.s: Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.s
 
 # target to generate assembly for a file
-include/igl/readPLY.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readPLY.cpp.s
-.PHONY : include/igl/readPLY.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.cpp.s
 
-include/igl/readSTL.o: include/igl/readSTL.cpp.o
-.PHONY : include/igl/readSTL.o
+Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.o: Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.o
 
 # target to build an object file
-include/igl/readSTL.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readSTL.cpp.o
-.PHONY : include/igl/readSTL.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.cpp.o
 
-include/igl/readSTL.i: include/igl/readSTL.cpp.i
-.PHONY : include/igl/readSTL.i
+Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.i: Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.i
 
 # target to preprocess a source file
-include/igl/readSTL.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readSTL.cpp.i
-.PHONY : include/igl/readSTL.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.cpp.i
 
-include/igl/readSTL.s: include/igl/readSTL.cpp.s
-.PHONY : include/igl/readSTL.s
+Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.s: Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.s
 
 # target to generate assembly for a file
-include/igl/readSTL.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readSTL.cpp.s
-.PHONY : include/igl/readSTL.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.cpp.s
 
-include/igl/readTGF.o: include/igl/readTGF.cpp.o
-.PHONY : include/igl/readTGF.o
+Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.o: Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.o
 
 # target to build an object file
-include/igl/readTGF.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readTGF.cpp.o
-.PHONY : include/igl/readTGF.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.cpp.o
 
-include/igl/readTGF.i: include/igl/readTGF.cpp.i
-.PHONY : include/igl/readTGF.i
+Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.i: Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.i
 
 # target to preprocess a source file
-include/igl/readTGF.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readTGF.cpp.i
-.PHONY : include/igl/readTGF.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.cpp.i
 
-include/igl/readTGF.s: include/igl/readTGF.cpp.s
-.PHONY : include/igl/readTGF.s
+Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.s: Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.s
 
 # target to generate assembly for a file
-include/igl/readTGF.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readTGF.cpp.s
-.PHONY : include/igl/readTGF.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.cpp.s
 
-include/igl/readWRL.o: include/igl/readWRL.cpp.o
-.PHONY : include/igl/readWRL.o
+Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.o: Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.o
 
 # target to build an object file
-include/igl/readWRL.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readWRL.cpp.o
-.PHONY : include/igl/readWRL.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.cpp.o
 
-include/igl/readWRL.i: include/igl/readWRL.cpp.i
-.PHONY : include/igl/readWRL.i
+Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.i: Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.i
 
 # target to preprocess a source file
-include/igl/readWRL.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readWRL.cpp.i
-.PHONY : include/igl/readWRL.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.cpp.i
 
-include/igl/readWRL.s: include/igl/readWRL.cpp.s
-.PHONY : include/igl/readWRL.s
+Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.s: Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.s
 
 # target to generate assembly for a file
-include/igl/readWRL.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/readWRL.cpp.s
-.PHONY : include/igl/readWRL.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.cpp.s
 
-include/igl/read_triangle_mesh.o: include/igl/read_triangle_mesh.cpp.o
-.PHONY : include/igl/read_triangle_mesh.o
+Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.o: Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.o
 
 # target to build an object file
-include/igl/read_triangle_mesh.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/read_triangle_mesh.cpp.o
-.PHONY : include/igl/read_triangle_mesh.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.cpp.o
 
-include/igl/read_triangle_mesh.i: include/igl/read_triangle_mesh.cpp.i
-.PHONY : include/igl/read_triangle_mesh.i
+Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.i: Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.i
 
 # target to preprocess a source file
-include/igl/read_triangle_mesh.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/read_triangle_mesh.cpp.i
-.PHONY : include/igl/read_triangle_mesh.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.cpp.i
 
-include/igl/read_triangle_mesh.s: include/igl/read_triangle_mesh.cpp.s
-.PHONY : include/igl/read_triangle_mesh.s
+Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.s: Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.s
 
 # target to generate assembly for a file
-include/igl/read_triangle_mesh.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/read_triangle_mesh.cpp.s
-.PHONY : include/igl/read_triangle_mesh.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.cpp.s
 
-include/igl/remove_duplicate_vertices.o: include/igl/remove_duplicate_vertices.cpp.o
-.PHONY : include/igl/remove_duplicate_vertices.o
+Users/daniele/Dropbox/igl/libigl/include/igl/randperm.o: Users/daniele/Dropbox/igl/libigl/include/igl/randperm.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/randperm.o
 
 # target to build an object file
-include/igl/remove_duplicate_vertices.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/remove_duplicate_vertices.cpp.o
-.PHONY : include/igl/remove_duplicate_vertices.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/randperm.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/randperm.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/randperm.cpp.o
 
-include/igl/remove_duplicate_vertices.i: include/igl/remove_duplicate_vertices.cpp.i
-.PHONY : include/igl/remove_duplicate_vertices.i
+Users/daniele/Dropbox/igl/libigl/include/igl/randperm.i: Users/daniele/Dropbox/igl/libigl/include/igl/randperm.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/randperm.i
 
 # target to preprocess a source file
-include/igl/remove_duplicate_vertices.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/remove_duplicate_vertices.cpp.i
-.PHONY : include/igl/remove_duplicate_vertices.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/randperm.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/randperm.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/randperm.cpp.i
 
-include/igl/remove_duplicate_vertices.s: include/igl/remove_duplicate_vertices.cpp.s
-.PHONY : include/igl/remove_duplicate_vertices.s
+Users/daniele/Dropbox/igl/libigl/include/igl/randperm.s: Users/daniele/Dropbox/igl/libigl/include/igl/randperm.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/randperm.s
 
 # target to generate assembly for a file
-include/igl/remove_duplicate_vertices.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/remove_duplicate_vertices.cpp.s
-.PHONY : include/igl/remove_duplicate_vertices.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/randperm.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/randperm.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/randperm.cpp.s
 
-include/igl/remove_duplicates.o: include/igl/remove_duplicates.cpp.o
-.PHONY : include/igl/remove_duplicates.o
+Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.o: Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.o
 
 # target to build an object file
-include/igl/remove_duplicates.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/remove_duplicates.cpp.o
-.PHONY : include/igl/remove_duplicates.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.cpp.o
 
-include/igl/remove_duplicates.i: include/igl/remove_duplicates.cpp.i
-.PHONY : include/igl/remove_duplicates.i
+Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.i: Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.i
 
 # target to preprocess a source file
-include/igl/remove_duplicates.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/remove_duplicates.cpp.i
-.PHONY : include/igl/remove_duplicates.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.cpp.i
 
-include/igl/remove_duplicates.s: include/igl/remove_duplicates.cpp.s
-.PHONY : include/igl/remove_duplicates.s
+Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.s: Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.s
 
 # target to generate assembly for a file
-include/igl/remove_duplicates.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/remove_duplicates.cpp.s
-.PHONY : include/igl/remove_duplicates.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.cpp.s
 
-include/igl/remove_unreferenced.o: include/igl/remove_unreferenced.cpp.o
-.PHONY : include/igl/remove_unreferenced.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.o: Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.o
 
 # target to build an object file
-include/igl/remove_unreferenced.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/remove_unreferenced.cpp.o
-.PHONY : include/igl/remove_unreferenced.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.cpp.o
 
-include/igl/remove_unreferenced.i: include/igl/remove_unreferenced.cpp.i
-.PHONY : include/igl/remove_unreferenced.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.i: Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.i
 
 # target to preprocess a source file
-include/igl/remove_unreferenced.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/remove_unreferenced.cpp.i
-.PHONY : include/igl/remove_unreferenced.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.cpp.i
 
-include/igl/remove_unreferenced.s: include/igl/remove_unreferenced.cpp.s
-.PHONY : include/igl/remove_unreferenced.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.s: Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.s
 
 # target to generate assembly for a file
-include/igl/remove_unreferenced.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/remove_unreferenced.cpp.s
-.PHONY : include/igl/remove_unreferenced.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.cpp.s
 
-include/igl/render_to_tga.o: include/igl/render_to_tga.cpp.o
-.PHONY : include/igl/render_to_tga.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.o: Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.o
 
 # target to build an object file
-include/igl/render_to_tga.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/render_to_tga.cpp.o
-.PHONY : include/igl/render_to_tga.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.cpp.o
 
-include/igl/render_to_tga.i: include/igl/render_to_tga.cpp.i
-.PHONY : include/igl/render_to_tga.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.i: Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.i
 
 # target to preprocess a source file
-include/igl/render_to_tga.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/render_to_tga.cpp.i
-.PHONY : include/igl/render_to_tga.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.cpp.i
 
-include/igl/render_to_tga.s: include/igl/render_to_tga.cpp.s
-.PHONY : include/igl/render_to_tga.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.s: Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.s
 
 # target to generate assembly for a file
-include/igl/render_to_tga.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/render_to_tga.cpp.s
-.PHONY : include/igl/render_to_tga.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.cpp.s
 
-include/igl/reorder.o: include/igl/reorder.cpp.o
-.PHONY : include/igl/reorder.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.o: Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.o
 
 # target to build an object file
-include/igl/reorder.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/reorder.cpp.o
-.PHONY : include/igl/reorder.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.cpp.o
 
-include/igl/reorder.i: include/igl/reorder.cpp.i
-.PHONY : include/igl/reorder.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.i: Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.i
 
 # target to preprocess a source file
-include/igl/reorder.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/reorder.cpp.i
-.PHONY : include/igl/reorder.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.cpp.i
 
-include/igl/reorder.s: include/igl/reorder.cpp.s
-.PHONY : include/igl/reorder.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.s: Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.s
 
 # target to generate assembly for a file
-include/igl/reorder.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/reorder.cpp.s
-.PHONY : include/igl/reorder.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.cpp.s
 
-include/igl/repdiag.o: include/igl/repdiag.cpp.o
-.PHONY : include/igl/repdiag.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.o: Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.o
 
 # target to build an object file
-include/igl/repdiag.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/repdiag.cpp.o
-.PHONY : include/igl/repdiag.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.cpp.o
 
-include/igl/repdiag.i: include/igl/repdiag.cpp.i
-.PHONY : include/igl/repdiag.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.i: Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.i
 
 # target to preprocess a source file
-include/igl/repdiag.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/repdiag.cpp.i
-.PHONY : include/igl/repdiag.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.cpp.i
 
-include/igl/repdiag.s: include/igl/repdiag.cpp.s
-.PHONY : include/igl/repdiag.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.s: Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.s
 
 # target to generate assembly for a file
-include/igl/repdiag.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/repdiag.cpp.s
-.PHONY : include/igl/repdiag.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.cpp.s
 
-include/igl/repmat.o: include/igl/repmat.cpp.o
-.PHONY : include/igl/repmat.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.o: Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.o
 
 # target to build an object file
-include/igl/repmat.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/repmat.cpp.o
-.PHONY : include/igl/repmat.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.cpp.o
 
-include/igl/repmat.i: include/igl/repmat.cpp.i
-.PHONY : include/igl/repmat.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.i: Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.i
 
 # target to preprocess a source file
-include/igl/repmat.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/repmat.cpp.i
-.PHONY : include/igl/repmat.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.cpp.i
 
-include/igl/repmat.s: include/igl/repmat.cpp.s
-.PHONY : include/igl/repmat.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.s: Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.s
 
 # target to generate assembly for a file
-include/igl/repmat.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/repmat.cpp.s
-.PHONY : include/igl/repmat.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.cpp.s
 
-include/igl/report_gl_error.o: include/igl/report_gl_error.cpp.o
-.PHONY : include/igl/report_gl_error.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.o: Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.o
 
 # target to build an object file
-include/igl/report_gl_error.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/report_gl_error.cpp.o
-.PHONY : include/igl/report_gl_error.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.cpp.o
 
-include/igl/report_gl_error.i: include/igl/report_gl_error.cpp.i
-.PHONY : include/igl/report_gl_error.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.i: Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.i
 
 # target to preprocess a source file
-include/igl/report_gl_error.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/report_gl_error.cpp.i
-.PHONY : include/igl/report_gl_error.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.cpp.i
 
-include/igl/report_gl_error.s: include/igl/report_gl_error.cpp.s
-.PHONY : include/igl/report_gl_error.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.s: Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.s
 
 # target to generate assembly for a file
-include/igl/report_gl_error.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/report_gl_error.cpp.s
-.PHONY : include/igl/report_gl_error.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.cpp.s
 
-include/igl/rgb_to_hsv.o: include/igl/rgb_to_hsv.cpp.o
-.PHONY : include/igl/rgb_to_hsv.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.o: Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.o
 
 # target to build an object file
-include/igl/rgb_to_hsv.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rgb_to_hsv.cpp.o
-.PHONY : include/igl/rgb_to_hsv.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.cpp.o
 
-include/igl/rgb_to_hsv.i: include/igl/rgb_to_hsv.cpp.i
-.PHONY : include/igl/rgb_to_hsv.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.i: Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.i
 
 # target to preprocess a source file
-include/igl/rgb_to_hsv.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rgb_to_hsv.cpp.i
-.PHONY : include/igl/rgb_to_hsv.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.cpp.i
 
-include/igl/rgb_to_hsv.s: include/igl/rgb_to_hsv.cpp.s
-.PHONY : include/igl/rgb_to_hsv.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.s: Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.s
 
 # target to generate assembly for a file
-include/igl/rgb_to_hsv.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rgb_to_hsv.cpp.s
-.PHONY : include/igl/rgb_to_hsv.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.cpp.s
 
-include/igl/right_axis.o: include/igl/right_axis.cpp.o
-.PHONY : include/igl/right_axis.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.o: Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.o
 
 # target to build an object file
-include/igl/right_axis.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/right_axis.cpp.o
-.PHONY : include/igl/right_axis.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.cpp.o
 
-include/igl/right_axis.i: include/igl/right_axis.cpp.i
-.PHONY : include/igl/right_axis.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.i: Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.i
 
 # target to preprocess a source file
-include/igl/right_axis.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/right_axis.cpp.i
-.PHONY : include/igl/right_axis.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.cpp.i
 
-include/igl/right_axis.s: include/igl/right_axis.cpp.s
-.PHONY : include/igl/right_axis.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.s: Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.s
 
 # target to generate assembly for a file
-include/igl/right_axis.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/right_axis.cpp.s
-.PHONY : include/igl/right_axis.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.cpp.s
 
-include/igl/rotate_by_quat.o: include/igl/rotate_by_quat.cpp.o
-.PHONY : include/igl/rotate_by_quat.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.o: Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.o
 
 # target to build an object file
-include/igl/rotate_by_quat.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rotate_by_quat.cpp.o
-.PHONY : include/igl/rotate_by_quat.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.cpp.o
 
-include/igl/rotate_by_quat.i: include/igl/rotate_by_quat.cpp.i
-.PHONY : include/igl/rotate_by_quat.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.i: Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.i
 
 # target to preprocess a source file
-include/igl/rotate_by_quat.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rotate_by_quat.cpp.i
-.PHONY : include/igl/rotate_by_quat.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.cpp.i
 
-include/igl/rotate_by_quat.s: include/igl/rotate_by_quat.cpp.s
-.PHONY : include/igl/rotate_by_quat.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.s: Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.s
 
 # target to generate assembly for a file
-include/igl/rotate_by_quat.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rotate_by_quat.cpp.s
-.PHONY : include/igl/rotate_by_quat.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.cpp.s
 
-include/igl/rotate_vectors.o: include/igl/rotate_vectors.cpp.o
-.PHONY : include/igl/rotate_vectors.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.o: Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.o
 
 # target to build an object file
-include/igl/rotate_vectors.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rotate_vectors.cpp.o
-.PHONY : include/igl/rotate_vectors.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.cpp.o
 
-include/igl/rotate_vectors.i: include/igl/rotate_vectors.cpp.i
-.PHONY : include/igl/rotate_vectors.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.i: Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.i
 
 # target to preprocess a source file
-include/igl/rotate_vectors.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rotate_vectors.cpp.i
-.PHONY : include/igl/rotate_vectors.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.cpp.i
 
-include/igl/rotate_vectors.s: include/igl/rotate_vectors.cpp.s
-.PHONY : include/igl/rotate_vectors.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.s: Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.s
 
 # target to generate assembly for a file
-include/igl/rotate_vectors.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rotate_vectors.cpp.s
-.PHONY : include/igl/rotate_vectors.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.cpp.s
 
-include/igl/rotation_matrix_from_directions.o: include/igl/rotation_matrix_from_directions.cpp.o
-.PHONY : include/igl/rotation_matrix_from_directions.o
+Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.o: Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.o
 
 # target to build an object file
-include/igl/rotation_matrix_from_directions.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rotation_matrix_from_directions.cpp.o
-.PHONY : include/igl/rotation_matrix_from_directions.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.cpp.o
 
-include/igl/rotation_matrix_from_directions.i: include/igl/rotation_matrix_from_directions.cpp.i
-.PHONY : include/igl/rotation_matrix_from_directions.i
+Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.i: Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.i
 
 # target to preprocess a source file
-include/igl/rotation_matrix_from_directions.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rotation_matrix_from_directions.cpp.i
-.PHONY : include/igl/rotation_matrix_from_directions.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.cpp.i
 
-include/igl/rotation_matrix_from_directions.s: include/igl/rotation_matrix_from_directions.cpp.s
-.PHONY : include/igl/rotation_matrix_from_directions.s
+Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.s: Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.s
 
 # target to generate assembly for a file
-include/igl/rotation_matrix_from_directions.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rotation_matrix_from_directions.cpp.s
-.PHONY : include/igl/rotation_matrix_from_directions.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.cpp.s
 
-include/igl/round.o: include/igl/round.cpp.o
-.PHONY : include/igl/round.o
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.o: Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.o
 
 # target to build an object file
-include/igl/round.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/round.cpp.o
-.PHONY : include/igl/round.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.cpp.o
 
-include/igl/round.i: include/igl/round.cpp.i
-.PHONY : include/igl/round.i
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.i: Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.i
 
 # target to preprocess a source file
-include/igl/round.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/round.cpp.i
-.PHONY : include/igl/round.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.cpp.i
 
-include/igl/round.s: include/igl/round.cpp.s
-.PHONY : include/igl/round.s
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.s: Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.s
 
 # target to generate assembly for a file
-include/igl/round.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/round.cpp.s
-.PHONY : include/igl/round.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.cpp.s
 
-include/igl/rows_to_matrix.o: include/igl/rows_to_matrix.cpp.o
-.PHONY : include/igl/rows_to_matrix.o
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.o: Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.o
 
 # target to build an object file
-include/igl/rows_to_matrix.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rows_to_matrix.cpp.o
-.PHONY : include/igl/rows_to_matrix.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.cpp.o
 
-include/igl/rows_to_matrix.i: include/igl/rows_to_matrix.cpp.i
-.PHONY : include/igl/rows_to_matrix.i
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.i: Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.i
 
 # target to preprocess a source file
-include/igl/rows_to_matrix.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rows_to_matrix.cpp.i
-.PHONY : include/igl/rows_to_matrix.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.cpp.i
 
-include/igl/rows_to_matrix.s: include/igl/rows_to_matrix.cpp.s
-.PHONY : include/igl/rows_to_matrix.s
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.s: Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.s
 
 # target to generate assembly for a file
-include/igl/rows_to_matrix.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/rows_to_matrix.cpp.s
-.PHONY : include/igl/rows_to_matrix.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.cpp.s
 
-include/igl/sample_edges.o: include/igl/sample_edges.cpp.o
-.PHONY : include/igl/sample_edges.o
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.o: Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.o
 
 # target to build an object file
-include/igl/sample_edges.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sample_edges.cpp.o
-.PHONY : include/igl/sample_edges.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.cpp.o
 
-include/igl/sample_edges.i: include/igl/sample_edges.cpp.i
-.PHONY : include/igl/sample_edges.i
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.i: Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.i
 
 # target to preprocess a source file
-include/igl/sample_edges.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sample_edges.cpp.i
-.PHONY : include/igl/sample_edges.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.cpp.i
 
-include/igl/sample_edges.s: include/igl/sample_edges.cpp.s
-.PHONY : include/igl/sample_edges.s
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.s: Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.s
 
 # target to generate assembly for a file
-include/igl/sample_edges.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sample_edges.cpp.s
-.PHONY : include/igl/sample_edges.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.cpp.s
 
-include/igl/setdiff.o: include/igl/setdiff.cpp.o
-.PHONY : include/igl/setdiff.o
+Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.o: Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.o
 
 # target to build an object file
-include/igl/setdiff.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/setdiff.cpp.o
-.PHONY : include/igl/setdiff.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.cpp.o
 
-include/igl/setdiff.i: include/igl/setdiff.cpp.i
-.PHONY : include/igl/setdiff.i
+Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.i: Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.i
 
 # target to preprocess a source file
-include/igl/setdiff.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/setdiff.cpp.i
-.PHONY : include/igl/setdiff.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.cpp.i
 
-include/igl/setdiff.s: include/igl/setdiff.cpp.s
-.PHONY : include/igl/setdiff.s
+Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.s: Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.s
 
 # target to generate assembly for a file
-include/igl/setdiff.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/setdiff.cpp.s
-.PHONY : include/igl/setdiff.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.cpp.s
 
-include/igl/signed_distance.o: include/igl/signed_distance.cpp.o
-.PHONY : include/igl/signed_distance.o
+Users/daniele/Dropbox/igl/libigl/include/igl/reorder.o: Users/daniele/Dropbox/igl/libigl/include/igl/reorder.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/reorder.o
 
 # target to build an object file
-include/igl/signed_distance.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/signed_distance.cpp.o
-.PHONY : include/igl/signed_distance.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/reorder.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/reorder.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/reorder.cpp.o
 
-include/igl/signed_distance.i: include/igl/signed_distance.cpp.i
-.PHONY : include/igl/signed_distance.i
+Users/daniele/Dropbox/igl/libigl/include/igl/reorder.i: Users/daniele/Dropbox/igl/libigl/include/igl/reorder.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/reorder.i
 
 # target to preprocess a source file
-include/igl/signed_distance.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/signed_distance.cpp.i
-.PHONY : include/igl/signed_distance.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/reorder.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/reorder.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/reorder.cpp.i
 
-include/igl/signed_distance.s: include/igl/signed_distance.cpp.s
-.PHONY : include/igl/signed_distance.s
+Users/daniele/Dropbox/igl/libigl/include/igl/reorder.s: Users/daniele/Dropbox/igl/libigl/include/igl/reorder.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/reorder.s
 
 # target to generate assembly for a file
-include/igl/signed_distance.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/signed_distance.cpp.s
-.PHONY : include/igl/signed_distance.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/reorder.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/reorder.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/reorder.cpp.s
 
-include/igl/slice.o: include/igl/slice.cpp.o
-.PHONY : include/igl/slice.o
+Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.o: Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.o
 
 # target to build an object file
-include/igl/slice.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/slice.cpp.o
-.PHONY : include/igl/slice.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.cpp.o
 
-include/igl/slice.i: include/igl/slice.cpp.i
-.PHONY : include/igl/slice.i
+Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.i: Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.i
 
 # target to preprocess a source file
-include/igl/slice.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/slice.cpp.i
-.PHONY : include/igl/slice.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.cpp.i
 
-include/igl/slice.s: include/igl/slice.cpp.s
-.PHONY : include/igl/slice.s
+Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.s: Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.s
 
 # target to generate assembly for a file
-include/igl/slice.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/slice.cpp.s
-.PHONY : include/igl/slice.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.cpp.s
 
-include/igl/slice_into.o: include/igl/slice_into.cpp.o
-.PHONY : include/igl/slice_into.o
+Users/daniele/Dropbox/igl/libigl/include/igl/repmat.o: Users/daniele/Dropbox/igl/libigl/include/igl/repmat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/repmat.o
 
 # target to build an object file
-include/igl/slice_into.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/slice_into.cpp.o
-.PHONY : include/igl/slice_into.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/repmat.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/repmat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/repmat.cpp.o
 
-include/igl/slice_into.i: include/igl/slice_into.cpp.i
-.PHONY : include/igl/slice_into.i
+Users/daniele/Dropbox/igl/libigl/include/igl/repmat.i: Users/daniele/Dropbox/igl/libigl/include/igl/repmat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/repmat.i
 
 # target to preprocess a source file
-include/igl/slice_into.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/slice_into.cpp.i
-.PHONY : include/igl/slice_into.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/repmat.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/repmat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/repmat.cpp.i
 
-include/igl/slice_into.s: include/igl/slice_into.cpp.s
-.PHONY : include/igl/slice_into.s
+Users/daniele/Dropbox/igl/libigl/include/igl/repmat.s: Users/daniele/Dropbox/igl/libigl/include/igl/repmat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/repmat.s
 
 # target to generate assembly for a file
-include/igl/slice_into.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/slice_into.cpp.s
-.PHONY : include/igl/slice_into.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/repmat.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/repmat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/repmat.cpp.s
 
-include/igl/slice_mask.o: include/igl/slice_mask.cpp.o
-.PHONY : include/igl/slice_mask.o
+Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.o: Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.o
 
 # target to build an object file
-include/igl/slice_mask.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/slice_mask.cpp.o
-.PHONY : include/igl/slice_mask.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.cpp.o
 
-include/igl/slice_mask.i: include/igl/slice_mask.cpp.i
-.PHONY : include/igl/slice_mask.i
+Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.i: Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.i
 
 # target to preprocess a source file
-include/igl/slice_mask.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/slice_mask.cpp.i
-.PHONY : include/igl/slice_mask.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.cpp.i
 
-include/igl/slice_mask.s: include/igl/slice_mask.cpp.s
-.PHONY : include/igl/slice_mask.s
+Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.s: Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.s
 
 # target to generate assembly for a file
-include/igl/slice_mask.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/slice_mask.cpp.s
-.PHONY : include/igl/slice_mask.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.cpp.s
 
-include/igl/slice_tets.o: include/igl/slice_tets.cpp.o
-.PHONY : include/igl/slice_tets.o
+Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.o: Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.o
 
 # target to build an object file
-include/igl/slice_tets.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/slice_tets.cpp.o
-.PHONY : include/igl/slice_tets.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.cpp.o
 
-include/igl/slice_tets.i: include/igl/slice_tets.cpp.i
-.PHONY : include/igl/slice_tets.i
+Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.i: Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.i
 
 # target to preprocess a source file
-include/igl/slice_tets.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/slice_tets.cpp.i
-.PHONY : include/igl/slice_tets.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.cpp.i
 
-include/igl/slice_tets.s: include/igl/slice_tets.cpp.s
-.PHONY : include/igl/slice_tets.s
+Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.s: Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.s
 
 # target to generate assembly for a file
-include/igl/slice_tets.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/slice_tets.cpp.s
-.PHONY : include/igl/slice_tets.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.cpp.s
 
-include/igl/snap_points.o: include/igl/snap_points.cpp.o
-.PHONY : include/igl/snap_points.o
+Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.o: Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.o
 
 # target to build an object file
-include/igl/snap_points.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/snap_points.cpp.o
-.PHONY : include/igl/snap_points.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.cpp.o
 
-include/igl/snap_points.i: include/igl/snap_points.cpp.i
-.PHONY : include/igl/snap_points.i
+Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.i: Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.i
 
 # target to preprocess a source file
-include/igl/snap_points.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/snap_points.cpp.i
-.PHONY : include/igl/snap_points.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.cpp.i
 
-include/igl/snap_points.s: include/igl/snap_points.cpp.s
-.PHONY : include/igl/snap_points.s
+Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.s: Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.s
 
 # target to generate assembly for a file
-include/igl/snap_points.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/snap_points.cpp.s
-.PHONY : include/igl/snap_points.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.cpp.s
 
-include/igl/snap_to_canonical_view_quat.o: include/igl/snap_to_canonical_view_quat.cpp.o
-.PHONY : include/igl/snap_to_canonical_view_quat.o
+Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.o: Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.o
 
 # target to build an object file
-include/igl/snap_to_canonical_view_quat.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/snap_to_canonical_view_quat.cpp.o
-.PHONY : include/igl/snap_to_canonical_view_quat.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.cpp.o
 
-include/igl/snap_to_canonical_view_quat.i: include/igl/snap_to_canonical_view_quat.cpp.i
-.PHONY : include/igl/snap_to_canonical_view_quat.i
+Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.i: Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.i
 
 # target to preprocess a source file
-include/igl/snap_to_canonical_view_quat.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/snap_to_canonical_view_quat.cpp.i
-.PHONY : include/igl/snap_to_canonical_view_quat.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.cpp.i
 
-include/igl/snap_to_canonical_view_quat.s: include/igl/snap_to_canonical_view_quat.cpp.s
-.PHONY : include/igl/snap_to_canonical_view_quat.s
+Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.s: Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.s
 
 # target to generate assembly for a file
-include/igl/snap_to_canonical_view_quat.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/snap_to_canonical_view_quat.cpp.s
-.PHONY : include/igl/snap_to_canonical_view_quat.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.cpp.s
 
-include/igl/snap_to_fixed_up.o: include/igl/snap_to_fixed_up.cpp.o
-.PHONY : include/igl/snap_to_fixed_up.o
+Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.o: Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.o
 
 # target to build an object file
-include/igl/snap_to_fixed_up.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/snap_to_fixed_up.cpp.o
-.PHONY : include/igl/snap_to_fixed_up.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.cpp.o
 
-include/igl/snap_to_fixed_up.i: include/igl/snap_to_fixed_up.cpp.i
-.PHONY : include/igl/snap_to_fixed_up.i
+Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.i: Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.i
 
 # target to preprocess a source file
-include/igl/snap_to_fixed_up.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/snap_to_fixed_up.cpp.i
-.PHONY : include/igl/snap_to_fixed_up.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.cpp.i
 
-include/igl/snap_to_fixed_up.s: include/igl/snap_to_fixed_up.cpp.s
-.PHONY : include/igl/snap_to_fixed_up.s
+Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.s: Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.s
 
 # target to generate assembly for a file
-include/igl/snap_to_fixed_up.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/snap_to_fixed_up.cpp.s
-.PHONY : include/igl/snap_to_fixed_up.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.cpp.s
 
-include/igl/sort.o: include/igl/sort.cpp.o
-.PHONY : include/igl/sort.o
+Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.o: Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.o
 
 # target to build an object file
-include/igl/sort.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sort.cpp.o
-.PHONY : include/igl/sort.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.cpp.o
 
-include/igl/sort.i: include/igl/sort.cpp.i
-.PHONY : include/igl/sort.i
+Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.i: Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.i
 
 # target to preprocess a source file
-include/igl/sort.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sort.cpp.i
-.PHONY : include/igl/sort.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.cpp.i
 
-include/igl/sort.s: include/igl/sort.cpp.s
-.PHONY : include/igl/sort.s
+Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.s: Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.s
 
 # target to generate assembly for a file
-include/igl/sort.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sort.cpp.s
-.PHONY : include/igl/sort.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.cpp.s
 
-include/igl/sort_angles.o: include/igl/sort_angles.cpp.o
-.PHONY : include/igl/sort_angles.o
+Users/daniele/Dropbox/igl/libigl/include/igl/round.o: Users/daniele/Dropbox/igl/libigl/include/igl/round.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/round.o
 
 # target to build an object file
-include/igl/sort_angles.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sort_angles.cpp.o
-.PHONY : include/igl/sort_angles.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/round.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/round.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/round.cpp.o
 
-include/igl/sort_angles.i: include/igl/sort_angles.cpp.i
-.PHONY : include/igl/sort_angles.i
+Users/daniele/Dropbox/igl/libigl/include/igl/round.i: Users/daniele/Dropbox/igl/libigl/include/igl/round.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/round.i
 
 # target to preprocess a source file
-include/igl/sort_angles.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sort_angles.cpp.i
-.PHONY : include/igl/sort_angles.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/round.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/round.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/round.cpp.i
 
-include/igl/sort_angles.s: include/igl/sort_angles.cpp.s
-.PHONY : include/igl/sort_angles.s
+Users/daniele/Dropbox/igl/libigl/include/igl/round.s: Users/daniele/Dropbox/igl/libigl/include/igl/round.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/round.s
 
 # target to generate assembly for a file
-include/igl/sort_angles.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sort_angles.cpp.s
-.PHONY : include/igl/sort_angles.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/round.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/round.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/round.cpp.s
 
-include/igl/sort_triangles.o: include/igl/sort_triangles.cpp.o
-.PHONY : include/igl/sort_triangles.o
+Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.o: Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.o
 
 # target to build an object file
-include/igl/sort_triangles.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sort_triangles.cpp.o
-.PHONY : include/igl/sort_triangles.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.cpp.o
 
-include/igl/sort_triangles.i: include/igl/sort_triangles.cpp.i
-.PHONY : include/igl/sort_triangles.i
+Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.i: Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.i
 
 # target to preprocess a source file
-include/igl/sort_triangles.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sort_triangles.cpp.i
-.PHONY : include/igl/sort_triangles.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.cpp.i
 
-include/igl/sort_triangles.s: include/igl/sort_triangles.cpp.s
-.PHONY : include/igl/sort_triangles.s
+Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.s: Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.s
 
 # target to generate assembly for a file
-include/igl/sort_triangles.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sort_triangles.cpp.s
-.PHONY : include/igl/sort_triangles.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.cpp.s
 
-include/igl/sortrows.o: include/igl/sortrows.cpp.o
-.PHONY : include/igl/sortrows.o
+Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.o: Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.o
 
 # target to build an object file
-include/igl/sortrows.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sortrows.cpp.o
-.PHONY : include/igl/sortrows.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.cpp.o
 
-include/igl/sortrows.i: include/igl/sortrows.cpp.i
-.PHONY : include/igl/sortrows.i
+Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.i: Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.i
 
 # target to preprocess a source file
-include/igl/sortrows.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sortrows.cpp.i
-.PHONY : include/igl/sortrows.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.cpp.i
 
-include/igl/sortrows.s: include/igl/sortrows.cpp.s
-.PHONY : include/igl/sortrows.s
+Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.s: Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.s
 
 # target to generate assembly for a file
-include/igl/sortrows.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sortrows.cpp.s
-.PHONY : include/igl/sortrows.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.cpp.s
 
-include/igl/sparse.o: include/igl/sparse.cpp.o
-.PHONY : include/igl/sparse.o
+Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.o: Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.o
 
 # target to build an object file
-include/igl/sparse.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sparse.cpp.o
-.PHONY : include/igl/sparse.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.cpp.o
 
-include/igl/sparse.i: include/igl/sparse.cpp.i
-.PHONY : include/igl/sparse.i
+Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.i: Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.i
 
 # target to preprocess a source file
-include/igl/sparse.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sparse.cpp.i
-.PHONY : include/igl/sparse.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.cpp.i
 
-include/igl/sparse.s: include/igl/sparse.cpp.s
-.PHONY : include/igl/sparse.s
+Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.s: Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.s
 
 # target to generate assembly for a file
-include/igl/sparse.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sparse.cpp.s
-.PHONY : include/igl/sparse.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.cpp.s
 
-include/igl/speye.o: include/igl/speye.cpp.o
-.PHONY : include/igl/speye.o
+Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.o: Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.o
 
 # target to build an object file
-include/igl/speye.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/speye.cpp.o
-.PHONY : include/igl/speye.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.cpp.o
 
-include/igl/speye.i: include/igl/speye.cpp.i
-.PHONY : include/igl/speye.i
+Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.i: Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.i
 
 # target to preprocess a source file
-include/igl/speye.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/speye.cpp.i
-.PHONY : include/igl/speye.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.cpp.i
 
-include/igl/speye.s: include/igl/speye.cpp.s
-.PHONY : include/igl/speye.s
+Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.s: Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.s
 
 # target to generate assembly for a file
-include/igl/speye.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/speye.cpp.s
-.PHONY : include/igl/speye.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.cpp.s
 
-include/igl/stdin_to_temp.o: include/igl/stdin_to_temp.cpp.o
-.PHONY : include/igl/stdin_to_temp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/slice.o: Users/daniele/Dropbox/igl/libigl/include/igl/slice.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice.o
 
 # target to build an object file
-include/igl/stdin_to_temp.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/stdin_to_temp.cpp.o
-.PHONY : include/igl/stdin_to_temp.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/slice.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/slice.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice.cpp.o
 
-include/igl/stdin_to_temp.i: include/igl/stdin_to_temp.cpp.i
-.PHONY : include/igl/stdin_to_temp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/slice.i: Users/daniele/Dropbox/igl/libigl/include/igl/slice.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice.i
 
 # target to preprocess a source file
-include/igl/stdin_to_temp.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/stdin_to_temp.cpp.i
-.PHONY : include/igl/stdin_to_temp.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/slice.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/slice.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice.cpp.i
 
-include/igl/stdin_to_temp.s: include/igl/stdin_to_temp.cpp.s
-.PHONY : include/igl/stdin_to_temp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/slice.s: Users/daniele/Dropbox/igl/libigl/include/igl/slice.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice.s
 
 # target to generate assembly for a file
-include/igl/stdin_to_temp.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/stdin_to_temp.cpp.s
-.PHONY : include/igl/stdin_to_temp.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/slice.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/slice.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice.cpp.s
 
-include/igl/sum.o: include/igl/sum.cpp.o
-.PHONY : include/igl/sum.o
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.o: Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.o
 
 # target to build an object file
-include/igl/sum.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sum.cpp.o
-.PHONY : include/igl/sum.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.cpp.o
 
-include/igl/sum.i: include/igl/sum.cpp.i
-.PHONY : include/igl/sum.i
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.i: Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.i
 
 # target to preprocess a source file
-include/igl/sum.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sum.cpp.i
-.PHONY : include/igl/sum.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.cpp.i
 
-include/igl/sum.s: include/igl/sum.cpp.s
-.PHONY : include/igl/sum.s
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.s: Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.s
 
 # target to generate assembly for a file
-include/igl/sum.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/sum.cpp.s
-.PHONY : include/igl/sum.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.cpp.s
 
-include/igl/svd3x3/arap.o: include/igl/svd3x3/arap.cpp.o
-.PHONY : include/igl/svd3x3/arap.o
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.o: Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.o
 
 # target to build an object file
-include/igl/svd3x3/arap.cpp.o:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/arap.cpp.o
-.PHONY : include/igl/svd3x3/arap.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.cpp.o
 
-include/igl/svd3x3/arap.i: include/igl/svd3x3/arap.cpp.i
-.PHONY : include/igl/svd3x3/arap.i
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.i: Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.i
 
 # target to preprocess a source file
-include/igl/svd3x3/arap.cpp.i:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/arap.cpp.i
-.PHONY : include/igl/svd3x3/arap.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.cpp.i
 
-include/igl/svd3x3/arap.s: include/igl/svd3x3/arap.cpp.s
-.PHONY : include/igl/svd3x3/arap.s
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.s: Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.s
 
 # target to generate assembly for a file
-include/igl/svd3x3/arap.cpp.s:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/arap.cpp.s
-.PHONY : include/igl/svd3x3/arap.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.cpp.s
 
-include/igl/svd3x3/arap_dof.o: include/igl/svd3x3/arap_dof.cpp.o
-.PHONY : include/igl/svd3x3/arap_dof.o
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.o: Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.o
 
 # target to build an object file
-include/igl/svd3x3/arap_dof.cpp.o:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/arap_dof.cpp.o
-.PHONY : include/igl/svd3x3/arap_dof.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.cpp.o
 
-include/igl/svd3x3/arap_dof.i: include/igl/svd3x3/arap_dof.cpp.i
-.PHONY : include/igl/svd3x3/arap_dof.i
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.i: Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.i
 
 # target to preprocess a source file
-include/igl/svd3x3/arap_dof.cpp.i:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/arap_dof.cpp.i
-.PHONY : include/igl/svd3x3/arap_dof.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.cpp.i
 
-include/igl/svd3x3/arap_dof.s: include/igl/svd3x3/arap_dof.cpp.s
-.PHONY : include/igl/svd3x3/arap_dof.s
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.s: Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.s
 
 # target to generate assembly for a file
-include/igl/svd3x3/arap_dof.cpp.s:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/arap_dof.cpp.s
-.PHONY : include/igl/svd3x3/arap_dof.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.cpp.s
 
-include/igl/svd3x3/fit_rotations.o: include/igl/svd3x3/fit_rotations.cpp.o
-.PHONY : include/igl/svd3x3/fit_rotations.o
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.o: Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.o
 
 # target to build an object file
-include/igl/svd3x3/fit_rotations.cpp.o:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/fit_rotations.cpp.o
-.PHONY : include/igl/svd3x3/fit_rotations.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.cpp.o
 
-include/igl/svd3x3/fit_rotations.i: include/igl/svd3x3/fit_rotations.cpp.i
-.PHONY : include/igl/svd3x3/fit_rotations.i
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.i: Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.i
 
 # target to preprocess a source file
-include/igl/svd3x3/fit_rotations.cpp.i:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/fit_rotations.cpp.i
-.PHONY : include/igl/svd3x3/fit_rotations.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.cpp.i
 
-include/igl/svd3x3/fit_rotations.s: include/igl/svd3x3/fit_rotations.cpp.s
-.PHONY : include/igl/svd3x3/fit_rotations.s
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.s: Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.s
 
 # target to generate assembly for a file
-include/igl/svd3x3/fit_rotations.cpp.s:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/fit_rotations.cpp.s
-.PHONY : include/igl/svd3x3/fit_rotations.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.cpp.s
 
-include/igl/svd3x3/polar_svd3x3.o: include/igl/svd3x3/polar_svd3x3.cpp.o
-.PHONY : include/igl/svd3x3/polar_svd3x3.o
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.o: Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.o
 
 # target to build an object file
-include/igl/svd3x3/polar_svd3x3.cpp.o:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/polar_svd3x3.cpp.o
-.PHONY : include/igl/svd3x3/polar_svd3x3.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.cpp.o
 
-include/igl/svd3x3/polar_svd3x3.i: include/igl/svd3x3/polar_svd3x3.cpp.i
-.PHONY : include/igl/svd3x3/polar_svd3x3.i
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.i: Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.i
 
 # target to preprocess a source file
-include/igl/svd3x3/polar_svd3x3.cpp.i:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/polar_svd3x3.cpp.i
-.PHONY : include/igl/svd3x3/polar_svd3x3.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.cpp.i
 
-include/igl/svd3x3/polar_svd3x3.s: include/igl/svd3x3/polar_svd3x3.cpp.s
-.PHONY : include/igl/svd3x3/polar_svd3x3.s
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.s: Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.s
 
 # target to generate assembly for a file
-include/igl/svd3x3/polar_svd3x3.cpp.s:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/polar_svd3x3.cpp.s
-.PHONY : include/igl/svd3x3/polar_svd3x3.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.cpp.s
 
-include/igl/svd3x3/svd3x3.o: include/igl/svd3x3/svd3x3.cpp.o
-.PHONY : include/igl/svd3x3/svd3x3.o
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.o: Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.o
 
 # target to build an object file
-include/igl/svd3x3/svd3x3.cpp.o:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/svd3x3.cpp.o
-.PHONY : include/igl/svd3x3/svd3x3.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.cpp.o
 
-include/igl/svd3x3/svd3x3.i: include/igl/svd3x3/svd3x3.cpp.i
-.PHONY : include/igl/svd3x3/svd3x3.i
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.i: Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.i
 
 # target to preprocess a source file
-include/igl/svd3x3/svd3x3.cpp.i:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/svd3x3.cpp.i
-.PHONY : include/igl/svd3x3/svd3x3.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.cpp.i
 
-include/igl/svd3x3/svd3x3.s: include/igl/svd3x3/svd3x3.cpp.s
-.PHONY : include/igl/svd3x3/svd3x3.s
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.s: Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.s
 
 # target to generate assembly for a file
-include/igl/svd3x3/svd3x3.cpp.s:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/svd3x3.cpp.s
-.PHONY : include/igl/svd3x3/svd3x3.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.cpp.s
 
-include/igl/svd3x3/svd3x3_avx.o: include/igl/svd3x3/svd3x3_avx.cpp.o
-.PHONY : include/igl/svd3x3/svd3x3_avx.o
+Users/daniele/Dropbox/igl/libigl/include/igl/sort.o: Users/daniele/Dropbox/igl/libigl/include/igl/sort.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort.o
 
 # target to build an object file
-include/igl/svd3x3/svd3x3_avx.cpp.o:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/svd3x3_avx.cpp.o
-.PHONY : include/igl/svd3x3/svd3x3_avx.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/sort.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sort.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort.cpp.o
 
-include/igl/svd3x3/svd3x3_avx.i: include/igl/svd3x3/svd3x3_avx.cpp.i
-.PHONY : include/igl/svd3x3/svd3x3_avx.i
+Users/daniele/Dropbox/igl/libigl/include/igl/sort.i: Users/daniele/Dropbox/igl/libigl/include/igl/sort.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort.i
 
 # target to preprocess a source file
-include/igl/svd3x3/svd3x3_avx.cpp.i:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/svd3x3_avx.cpp.i
-.PHONY : include/igl/svd3x3/svd3x3_avx.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/sort.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sort.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort.cpp.i
 
-include/igl/svd3x3/svd3x3_avx.s: include/igl/svd3x3/svd3x3_avx.cpp.s
-.PHONY : include/igl/svd3x3/svd3x3_avx.s
+Users/daniele/Dropbox/igl/libigl/include/igl/sort.s: Users/daniele/Dropbox/igl/libigl/include/igl/sort.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort.s
 
 # target to generate assembly for a file
-include/igl/svd3x3/svd3x3_avx.cpp.s:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/svd3x3_avx.cpp.s
-.PHONY : include/igl/svd3x3/svd3x3_avx.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/sort.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sort.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort.cpp.s
 
-include/igl/svd3x3/svd3x3_sse.o: include/igl/svd3x3/svd3x3_sse.cpp.o
-.PHONY : include/igl/svd3x3/svd3x3_sse.o
+Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.o: Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.o
 
 # target to build an object file
-include/igl/svd3x3/svd3x3_sse.cpp.o:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/svd3x3_sse.cpp.o
-.PHONY : include/igl/svd3x3/svd3x3_sse.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.cpp.o
 
-include/igl/svd3x3/svd3x3_sse.i: include/igl/svd3x3/svd3x3_sse.cpp.i
-.PHONY : include/igl/svd3x3/svd3x3_sse.i
+Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.i: Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.i
 
 # target to preprocess a source file
-include/igl/svd3x3/svd3x3_sse.cpp.i:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/svd3x3_sse.cpp.i
-.PHONY : include/igl/svd3x3/svd3x3_sse.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.cpp.i
 
-include/igl/svd3x3/svd3x3_sse.s: include/igl/svd3x3/svd3x3_sse.cpp.s
-.PHONY : include/igl/svd3x3/svd3x3_sse.s
+Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.s: Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.s
 
 # target to generate assembly for a file
-include/igl/svd3x3/svd3x3_sse.cpp.s:
-	$(MAKE) -f CMakeFiles/iglsvd3x3.dir/build.make CMakeFiles/iglsvd3x3.dir/include/igl/svd3x3/svd3x3_sse.cpp.s
-.PHONY : include/igl/svd3x3/svd3x3_sse.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.cpp.s
 
-include/igl/tetgen/cdt.o: include/igl/tetgen/cdt.cpp.o
-.PHONY : include/igl/tetgen/cdt.o
+Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.o: Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.o
 
 # target to build an object file
-include/igl/tetgen/cdt.cpp.o:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/cdt.cpp.o
-.PHONY : include/igl/tetgen/cdt.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.cpp.o
 
-include/igl/tetgen/cdt.i: include/igl/tetgen/cdt.cpp.i
-.PHONY : include/igl/tetgen/cdt.i
+Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.i: Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.i
 
 # target to preprocess a source file
-include/igl/tetgen/cdt.cpp.i:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/cdt.cpp.i
-.PHONY : include/igl/tetgen/cdt.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.cpp.i
 
-include/igl/tetgen/cdt.s: include/igl/tetgen/cdt.cpp.s
-.PHONY : include/igl/tetgen/cdt.s
+Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.s: Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.s
 
 # target to generate assembly for a file
-include/igl/tetgen/cdt.cpp.s:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/cdt.cpp.s
-.PHONY : include/igl/tetgen/cdt.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.cpp.s
 
-include/igl/tetgen/mesh_to_tetgenio.o: include/igl/tetgen/mesh_to_tetgenio.cpp.o
-.PHONY : include/igl/tetgen/mesh_to_tetgenio.o
+Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.o: Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.o
 
 # target to build an object file
-include/igl/tetgen/mesh_to_tetgenio.cpp.o:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/mesh_to_tetgenio.cpp.o
-.PHONY : include/igl/tetgen/mesh_to_tetgenio.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.cpp.o
 
-include/igl/tetgen/mesh_to_tetgenio.i: include/igl/tetgen/mesh_to_tetgenio.cpp.i
-.PHONY : include/igl/tetgen/mesh_to_tetgenio.i
+Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.i: Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.i
 
 # target to preprocess a source file
-include/igl/tetgen/mesh_to_tetgenio.cpp.i:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/mesh_to_tetgenio.cpp.i
-.PHONY : include/igl/tetgen/mesh_to_tetgenio.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.cpp.i
 
-include/igl/tetgen/mesh_to_tetgenio.s: include/igl/tetgen/mesh_to_tetgenio.cpp.s
-.PHONY : include/igl/tetgen/mesh_to_tetgenio.s
+Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.s: Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.s
 
 # target to generate assembly for a file
-include/igl/tetgen/mesh_to_tetgenio.cpp.s:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/mesh_to_tetgenio.cpp.s
-.PHONY : include/igl/tetgen/mesh_to_tetgenio.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.cpp.s
 
-include/igl/tetgen/mesh_with_skeleton.o: include/igl/tetgen/mesh_with_skeleton.cpp.o
-.PHONY : include/igl/tetgen/mesh_with_skeleton.o
+Users/daniele/Dropbox/igl/libigl/include/igl/sparse.o: Users/daniele/Dropbox/igl/libigl/include/igl/sparse.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sparse.o
 
 # target to build an object file
-include/igl/tetgen/mesh_with_skeleton.cpp.o:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/mesh_with_skeleton.cpp.o
-.PHONY : include/igl/tetgen/mesh_with_skeleton.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/sparse.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sparse.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sparse.cpp.o
 
-include/igl/tetgen/mesh_with_skeleton.i: include/igl/tetgen/mesh_with_skeleton.cpp.i
-.PHONY : include/igl/tetgen/mesh_with_skeleton.i
+Users/daniele/Dropbox/igl/libigl/include/igl/sparse.i: Users/daniele/Dropbox/igl/libigl/include/igl/sparse.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sparse.i
 
 # target to preprocess a source file
-include/igl/tetgen/mesh_with_skeleton.cpp.i:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/mesh_with_skeleton.cpp.i
-.PHONY : include/igl/tetgen/mesh_with_skeleton.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/sparse.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sparse.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sparse.cpp.i
 
-include/igl/tetgen/mesh_with_skeleton.s: include/igl/tetgen/mesh_with_skeleton.cpp.s
-.PHONY : include/igl/tetgen/mesh_with_skeleton.s
+Users/daniele/Dropbox/igl/libigl/include/igl/sparse.s: Users/daniele/Dropbox/igl/libigl/include/igl/sparse.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sparse.s
 
 # target to generate assembly for a file
-include/igl/tetgen/mesh_with_skeleton.cpp.s:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/mesh_with_skeleton.cpp.s
-.PHONY : include/igl/tetgen/mesh_with_skeleton.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/sparse.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sparse.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sparse.cpp.s
 
-include/igl/tetgen/read_into_tetgenio.o: include/igl/tetgen/read_into_tetgenio.cpp.o
-.PHONY : include/igl/tetgen/read_into_tetgenio.o
+Users/daniele/Dropbox/igl/libigl/include/igl/speye.o: Users/daniele/Dropbox/igl/libigl/include/igl/speye.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/speye.o
 
 # target to build an object file
-include/igl/tetgen/read_into_tetgenio.cpp.o:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/read_into_tetgenio.cpp.o
-.PHONY : include/igl/tetgen/read_into_tetgenio.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/speye.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/speye.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/speye.cpp.o
 
-include/igl/tetgen/read_into_tetgenio.i: include/igl/tetgen/read_into_tetgenio.cpp.i
-.PHONY : include/igl/tetgen/read_into_tetgenio.i
+Users/daniele/Dropbox/igl/libigl/include/igl/speye.i: Users/daniele/Dropbox/igl/libigl/include/igl/speye.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/speye.i
 
 # target to preprocess a source file
-include/igl/tetgen/read_into_tetgenio.cpp.i:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/read_into_tetgenio.cpp.i
-.PHONY : include/igl/tetgen/read_into_tetgenio.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/speye.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/speye.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/speye.cpp.i
 
-include/igl/tetgen/read_into_tetgenio.s: include/igl/tetgen/read_into_tetgenio.cpp.s
-.PHONY : include/igl/tetgen/read_into_tetgenio.s
+Users/daniele/Dropbox/igl/libigl/include/igl/speye.s: Users/daniele/Dropbox/igl/libigl/include/igl/speye.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/speye.s
 
 # target to generate assembly for a file
-include/igl/tetgen/read_into_tetgenio.cpp.s:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/read_into_tetgenio.cpp.s
-.PHONY : include/igl/tetgen/read_into_tetgenio.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/speye.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/speye.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/speye.cpp.s
 
-include/igl/tetgen/tetgenio_to_tetmesh.o: include/igl/tetgen/tetgenio_to_tetmesh.cpp.o
-.PHONY : include/igl/tetgen/tetgenio_to_tetmesh.o
+Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.o: Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.o
 
 # target to build an object file
-include/igl/tetgen/tetgenio_to_tetmesh.cpp.o:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/tetgenio_to_tetmesh.cpp.o
-.PHONY : include/igl/tetgen/tetgenio_to_tetmesh.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.cpp.o
 
-include/igl/tetgen/tetgenio_to_tetmesh.i: include/igl/tetgen/tetgenio_to_tetmesh.cpp.i
-.PHONY : include/igl/tetgen/tetgenio_to_tetmesh.i
+Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.i: Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.i
 
 # target to preprocess a source file
-include/igl/tetgen/tetgenio_to_tetmesh.cpp.i:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/tetgenio_to_tetmesh.cpp.i
-.PHONY : include/igl/tetgen/tetgenio_to_tetmesh.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.cpp.i
 
-include/igl/tetgen/tetgenio_to_tetmesh.s: include/igl/tetgen/tetgenio_to_tetmesh.cpp.s
-.PHONY : include/igl/tetgen/tetgenio_to_tetmesh.s
+Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.s: Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.s
 
 # target to generate assembly for a file
-include/igl/tetgen/tetgenio_to_tetmesh.cpp.s:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/tetgenio_to_tetmesh.cpp.s
-.PHONY : include/igl/tetgen/tetgenio_to_tetmesh.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.cpp.s
 
-include/igl/tetgen/tetrahedralize.o: include/igl/tetgen/tetrahedralize.cpp.o
-.PHONY : include/igl/tetgen/tetrahedralize.o
+Users/daniele/Dropbox/igl/libigl/include/igl/sum.o: Users/daniele/Dropbox/igl/libigl/include/igl/sum.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sum.o
 
 # target to build an object file
-include/igl/tetgen/tetrahedralize.cpp.o:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/tetrahedralize.cpp.o
-.PHONY : include/igl/tetgen/tetrahedralize.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/sum.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sum.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sum.cpp.o
 
-include/igl/tetgen/tetrahedralize.i: include/igl/tetgen/tetrahedralize.cpp.i
-.PHONY : include/igl/tetgen/tetrahedralize.i
+Users/daniele/Dropbox/igl/libigl/include/igl/sum.i: Users/daniele/Dropbox/igl/libigl/include/igl/sum.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sum.i
 
 # target to preprocess a source file
-include/igl/tetgen/tetrahedralize.cpp.i:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/tetrahedralize.cpp.i
-.PHONY : include/igl/tetgen/tetrahedralize.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/sum.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sum.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sum.cpp.i
 
-include/igl/tetgen/tetrahedralize.s: include/igl/tetgen/tetrahedralize.cpp.s
-.PHONY : include/igl/tetgen/tetrahedralize.s
+Users/daniele/Dropbox/igl/libigl/include/igl/sum.s: Users/daniele/Dropbox/igl/libigl/include/igl/sum.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sum.s
 
 # target to generate assembly for a file
-include/igl/tetgen/tetrahedralize.cpp.s:
-	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/include/igl/tetgen/tetrahedralize.cpp.s
-.PHONY : include/igl/tetgen/tetrahedralize.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/sum.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/sum.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/sum.cpp.s
 
-include/igl/texture_from_tga.o: include/igl/texture_from_tga.cpp.o
-.PHONY : include/igl/texture_from_tga.o
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.o: Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.o
 
 # target to build an object file
-include/igl/texture_from_tga.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/texture_from_tga.cpp.o
-.PHONY : include/igl/texture_from_tga.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.cpp.o
 
-include/igl/texture_from_tga.i: include/igl/texture_from_tga.cpp.i
-.PHONY : include/igl/texture_from_tga.i
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.i: Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.i
 
 # target to preprocess a source file
-include/igl/texture_from_tga.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/texture_from_tga.cpp.i
-.PHONY : include/igl/texture_from_tga.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.cpp.i
 
-include/igl/texture_from_tga.s: include/igl/texture_from_tga.cpp.s
-.PHONY : include/igl/texture_from_tga.s
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.s: Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.s
 
 # target to generate assembly for a file
-include/igl/texture_from_tga.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/texture_from_tga.cpp.s
-.PHONY : include/igl/texture_from_tga.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.cpp.s
 
-include/igl/tga.o: include/igl/tga.cpp.o
-.PHONY : include/igl/tga.o
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.o: Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.o
 
 # target to build an object file
-include/igl/tga.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/tga.cpp.o
-.PHONY : include/igl/tga.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.cpp.o
 
-include/igl/tga.i: include/igl/tga.cpp.i
-.PHONY : include/igl/tga.i
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.i: Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.i
 
 # target to preprocess a source file
-include/igl/tga.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/tga.cpp.i
-.PHONY : include/igl/tga.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.cpp.i
 
-include/igl/tga.s: include/igl/tga.cpp.s
-.PHONY : include/igl/tga.s
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.s: Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.s
 
 # target to generate assembly for a file
-include/igl/tga.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/tga.cpp.s
-.PHONY : include/igl/tga.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.cpp.s
 
-include/igl/trackball.o: include/igl/trackball.cpp.o
-.PHONY : include/igl/trackball.o
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.o: Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.o
 
 # target to build an object file
-include/igl/trackball.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/trackball.cpp.o
-.PHONY : include/igl/trackball.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.cpp.o
 
-include/igl/trackball.i: include/igl/trackball.cpp.i
-.PHONY : include/igl/trackball.i
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.i: Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.i
 
 # target to preprocess a source file
-include/igl/trackball.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/trackball.cpp.i
-.PHONY : include/igl/trackball.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.cpp.i
 
-include/igl/trackball.s: include/igl/trackball.cpp.s
-.PHONY : include/igl/trackball.s
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.s: Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.s
 
 # target to generate assembly for a file
-include/igl/trackball.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/trackball.cpp.s
-.PHONY : include/igl/trackball.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.cpp.s
 
-include/igl/transpose_blocks.o: include/igl/transpose_blocks.cpp.o
-.PHONY : include/igl/transpose_blocks.o
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.o: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.o
 
 # target to build an object file
-include/igl/transpose_blocks.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/transpose_blocks.cpp.o
-.PHONY : include/igl/transpose_blocks.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.cpp.o:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.cpp.o
 
-include/igl/transpose_blocks.i: include/igl/transpose_blocks.cpp.i
-.PHONY : include/igl/transpose_blocks.i
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.i: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.i
 
 # target to preprocess a source file
-include/igl/transpose_blocks.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/transpose_blocks.cpp.i
-.PHONY : include/igl/transpose_blocks.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.cpp.i:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.cpp.i
 
-include/igl/transpose_blocks.s: include/igl/transpose_blocks.cpp.s
-.PHONY : include/igl/transpose_blocks.s
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.s: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.s
 
 # target to generate assembly for a file
-include/igl/transpose_blocks.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/transpose_blocks.cpp.s
-.PHONY : include/igl/transpose_blocks.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.cpp.s:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.cpp.s
 
-include/igl/triangle/triangulate.o: include/igl/triangle/triangulate.cpp.o
-.PHONY : include/igl/triangle/triangulate.o
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.o: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.o
 
 # target to build an object file
-include/igl/triangle/triangulate.cpp.o:
-	$(MAKE) -f CMakeFiles/igltriangle.dir/build.make CMakeFiles/igltriangle.dir/include/igl/triangle/triangulate.cpp.o
-.PHONY : include/igl/triangle/triangulate.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.cpp.o:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.cpp.o
 
-include/igl/triangle/triangulate.i: include/igl/triangle/triangulate.cpp.i
-.PHONY : include/igl/triangle/triangulate.i
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.i: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.i
 
 # target to preprocess a source file
-include/igl/triangle/triangulate.cpp.i:
-	$(MAKE) -f CMakeFiles/igltriangle.dir/build.make CMakeFiles/igltriangle.dir/include/igl/triangle/triangulate.cpp.i
-.PHONY : include/igl/triangle/triangulate.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.cpp.i:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.cpp.i
 
-include/igl/triangle/triangulate.s: include/igl/triangle/triangulate.cpp.s
-.PHONY : include/igl/triangle/triangulate.s
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.s: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.s
 
 # target to generate assembly for a file
-include/igl/triangle/triangulate.cpp.s:
-	$(MAKE) -f CMakeFiles/igltriangle.dir/build.make CMakeFiles/igltriangle.dir/include/igl/triangle/triangulate.cpp.s
-.PHONY : include/igl/triangle/triangulate.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.cpp.s:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.cpp.s
 
-include/igl/triangle_fan.o: include/igl/triangle_fan.cpp.o
-.PHONY : include/igl/triangle_fan.o
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.o: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.o
 
 # target to build an object file
-include/igl/triangle_fan.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/triangle_fan.cpp.o
-.PHONY : include/igl/triangle_fan.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.cpp.o:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.cpp.o
 
-include/igl/triangle_fan.i: include/igl/triangle_fan.cpp.i
-.PHONY : include/igl/triangle_fan.i
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.i: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.i
 
 # target to preprocess a source file
-include/igl/triangle_fan.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/triangle_fan.cpp.i
-.PHONY : include/igl/triangle_fan.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.cpp.i:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.cpp.i
 
-include/igl/triangle_fan.s: include/igl/triangle_fan.cpp.s
-.PHONY : include/igl/triangle_fan.s
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.s: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.s
 
 # target to generate assembly for a file
-include/igl/triangle_fan.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/triangle_fan.cpp.s
-.PHONY : include/igl/triangle_fan.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.cpp.s:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.cpp.s
 
-include/igl/triangle_triangle_adjacency.o: include/igl/triangle_triangle_adjacency.cpp.o
-.PHONY : include/igl/triangle_triangle_adjacency.o
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.o: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.o
 
 # target to build an object file
-include/igl/triangle_triangle_adjacency.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/triangle_triangle_adjacency.cpp.o
-.PHONY : include/igl/triangle_triangle_adjacency.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.cpp.o:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.cpp.o
 
-include/igl/triangle_triangle_adjacency.i: include/igl/triangle_triangle_adjacency.cpp.i
-.PHONY : include/igl/triangle_triangle_adjacency.i
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.i: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.i
 
 # target to preprocess a source file
-include/igl/triangle_triangle_adjacency.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/triangle_triangle_adjacency.cpp.i
-.PHONY : include/igl/triangle_triangle_adjacency.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.cpp.i:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.cpp.i
 
-include/igl/triangle_triangle_adjacency.s: include/igl/triangle_triangle_adjacency.cpp.s
-.PHONY : include/igl/triangle_triangle_adjacency.s
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.s: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.s
 
 # target to generate assembly for a file
-include/igl/triangle_triangle_adjacency.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/triangle_triangle_adjacency.cpp.s
-.PHONY : include/igl/triangle_triangle_adjacency.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.cpp.s:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.cpp.s
 
-include/igl/triangles_from_strip.o: include/igl/triangles_from_strip.cpp.o
-.PHONY : include/igl/triangles_from_strip.o
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.o: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.o
 
 # target to build an object file
-include/igl/triangles_from_strip.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/triangles_from_strip.cpp.o
-.PHONY : include/igl/triangles_from_strip.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.cpp.o:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.cpp.o
 
-include/igl/triangles_from_strip.i: include/igl/triangles_from_strip.cpp.i
-.PHONY : include/igl/triangles_from_strip.i
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.i: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.i
 
 # target to preprocess a source file
-include/igl/triangles_from_strip.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/triangles_from_strip.cpp.i
-.PHONY : include/igl/triangles_from_strip.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.cpp.i:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.cpp.i
 
-include/igl/triangles_from_strip.s: include/igl/triangles_from_strip.cpp.s
-.PHONY : include/igl/triangles_from_strip.s
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.s: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.s
 
 # target to generate assembly for a file
-include/igl/triangles_from_strip.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/triangles_from_strip.cpp.s
-.PHONY : include/igl/triangles_from_strip.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.cpp.s:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.cpp.s
 
-include/igl/two_axis_valuator_fixed_up.o: include/igl/two_axis_valuator_fixed_up.cpp.o
-.PHONY : include/igl/two_axis_valuator_fixed_up.o
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.o: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.o
 
 # target to build an object file
-include/igl/two_axis_valuator_fixed_up.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/two_axis_valuator_fixed_up.cpp.o
-.PHONY : include/igl/two_axis_valuator_fixed_up.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.cpp.o:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.cpp.o
 
-include/igl/two_axis_valuator_fixed_up.i: include/igl/two_axis_valuator_fixed_up.cpp.i
-.PHONY : include/igl/two_axis_valuator_fixed_up.i
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.i: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.i
 
 # target to preprocess a source file
-include/igl/two_axis_valuator_fixed_up.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/two_axis_valuator_fixed_up.cpp.i
-.PHONY : include/igl/two_axis_valuator_fixed_up.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.cpp.i:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.cpp.i
 
-include/igl/two_axis_valuator_fixed_up.s: include/igl/two_axis_valuator_fixed_up.cpp.s
-.PHONY : include/igl/two_axis_valuator_fixed_up.s
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.s: Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.s
 
 # target to generate assembly for a file
-include/igl/two_axis_valuator_fixed_up.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/two_axis_valuator_fixed_up.cpp.s
-.PHONY : include/igl/two_axis_valuator_fixed_up.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.cpp.s:
+	$(MAKE) -f CMakeFiles/igltetgen.dir/build.make CMakeFiles/igltetgen.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.cpp.s
 
-include/igl/uniform_type_to_string.o: include/igl/uniform_type_to_string.cpp.o
-.PHONY : include/igl/uniform_type_to_string.o
+Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.o: Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.o
 
 # target to build an object file
-include/igl/uniform_type_to_string.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/uniform_type_to_string.cpp.o
-.PHONY : include/igl/uniform_type_to_string.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.cpp.o
 
-include/igl/uniform_type_to_string.i: include/igl/uniform_type_to_string.cpp.i
-.PHONY : include/igl/uniform_type_to_string.i
+Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.i: Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.i
 
 # target to preprocess a source file
-include/igl/uniform_type_to_string.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/uniform_type_to_string.cpp.i
-.PHONY : include/igl/uniform_type_to_string.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.cpp.i
 
-include/igl/uniform_type_to_string.s: include/igl/uniform_type_to_string.cpp.s
-.PHONY : include/igl/uniform_type_to_string.s
+Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.s: Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.s
 
 # target to generate assembly for a file
-include/igl/uniform_type_to_string.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/uniform_type_to_string.cpp.s
-.PHONY : include/igl/uniform_type_to_string.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.cpp.s
 
-include/igl/uniformly_sample_two_manifold.o: include/igl/uniformly_sample_two_manifold.cpp.o
-.PHONY : include/igl/uniformly_sample_two_manifold.o
+Users/daniele/Dropbox/igl/libigl/include/igl/tga.o: Users/daniele/Dropbox/igl/libigl/include/igl/tga.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tga.o
 
 # target to build an object file
-include/igl/uniformly_sample_two_manifold.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/uniformly_sample_two_manifold.cpp.o
-.PHONY : include/igl/uniformly_sample_two_manifold.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/tga.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tga.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tga.cpp.o
 
-include/igl/uniformly_sample_two_manifold.i: include/igl/uniformly_sample_two_manifold.cpp.i
-.PHONY : include/igl/uniformly_sample_two_manifold.i
+Users/daniele/Dropbox/igl/libigl/include/igl/tga.i: Users/daniele/Dropbox/igl/libigl/include/igl/tga.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tga.i
 
 # target to preprocess a source file
-include/igl/uniformly_sample_two_manifold.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/uniformly_sample_two_manifold.cpp.i
-.PHONY : include/igl/uniformly_sample_two_manifold.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/tga.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tga.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tga.cpp.i
 
-include/igl/uniformly_sample_two_manifold.s: include/igl/uniformly_sample_two_manifold.cpp.s
-.PHONY : include/igl/uniformly_sample_two_manifold.s
+Users/daniele/Dropbox/igl/libigl/include/igl/tga.s: Users/daniele/Dropbox/igl/libigl/include/igl/tga.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tga.s
 
 # target to generate assembly for a file
-include/igl/uniformly_sample_two_manifold.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/uniformly_sample_two_manifold.cpp.s
-.PHONY : include/igl/uniformly_sample_two_manifold.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/tga.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/tga.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/tga.cpp.s
 
-include/igl/unique.o: include/igl/unique.cpp.o
-.PHONY : include/igl/unique.o
+Users/daniele/Dropbox/igl/libigl/include/igl/trackball.o: Users/daniele/Dropbox/igl/libigl/include/igl/trackball.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/trackball.o
 
 # target to build an object file
-include/igl/unique.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unique.cpp.o
-.PHONY : include/igl/unique.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/trackball.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/trackball.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/trackball.cpp.o
 
-include/igl/unique.i: include/igl/unique.cpp.i
-.PHONY : include/igl/unique.i
+Users/daniele/Dropbox/igl/libigl/include/igl/trackball.i: Users/daniele/Dropbox/igl/libigl/include/igl/trackball.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/trackball.i
 
 # target to preprocess a source file
-include/igl/unique.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unique.cpp.i
-.PHONY : include/igl/unique.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/trackball.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/trackball.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/trackball.cpp.i
 
-include/igl/unique.s: include/igl/unique.cpp.s
-.PHONY : include/igl/unique.s
+Users/daniele/Dropbox/igl/libigl/include/igl/trackball.s: Users/daniele/Dropbox/igl/libigl/include/igl/trackball.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/trackball.s
 
 # target to generate assembly for a file
-include/igl/unique.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unique.cpp.s
-.PHONY : include/igl/unique.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/trackball.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/trackball.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/trackball.cpp.s
 
-include/igl/unique_edge_map.o: include/igl/unique_edge_map.cpp.o
-.PHONY : include/igl/unique_edge_map.o
+Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.o: Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.o
 
 # target to build an object file
-include/igl/unique_edge_map.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unique_edge_map.cpp.o
-.PHONY : include/igl/unique_edge_map.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.cpp.o
 
-include/igl/unique_edge_map.i: include/igl/unique_edge_map.cpp.i
-.PHONY : include/igl/unique_edge_map.i
+Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.i: Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.i
 
 # target to preprocess a source file
-include/igl/unique_edge_map.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unique_edge_map.cpp.i
-.PHONY : include/igl/unique_edge_map.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.cpp.i
 
-include/igl/unique_edge_map.s: include/igl/unique_edge_map.cpp.s
-.PHONY : include/igl/unique_edge_map.s
+Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.s: Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.s
 
 # target to generate assembly for a file
-include/igl/unique_edge_map.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unique_edge_map.cpp.s
-.PHONY : include/igl/unique_edge_map.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.cpp.s
 
-include/igl/unique_simplices.o: include/igl/unique_simplices.cpp.o
-.PHONY : include/igl/unique_simplices.o
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.o: Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.o
 
 # target to build an object file
-include/igl/unique_simplices.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unique_simplices.cpp.o
-.PHONY : include/igl/unique_simplices.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.cpp.o:
+	$(MAKE) -f CMakeFiles/igltriangle.dir/build.make CMakeFiles/igltriangle.dir/Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.cpp.o
 
-include/igl/unique_simplices.i: include/igl/unique_simplices.cpp.i
-.PHONY : include/igl/unique_simplices.i
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.i: Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.i
 
 # target to preprocess a source file
-include/igl/unique_simplices.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unique_simplices.cpp.i
-.PHONY : include/igl/unique_simplices.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.cpp.i:
+	$(MAKE) -f CMakeFiles/igltriangle.dir/build.make CMakeFiles/igltriangle.dir/Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.cpp.i
 
-include/igl/unique_simplices.s: include/igl/unique_simplices.cpp.s
-.PHONY : include/igl/unique_simplices.s
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.s: Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.s
 
 # target to generate assembly for a file
-include/igl/unique_simplices.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unique_simplices.cpp.s
-.PHONY : include/igl/unique_simplices.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.cpp.s:
+	$(MAKE) -f CMakeFiles/igltriangle.dir/build.make CMakeFiles/igltriangle.dir/Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.cpp.s
 
-include/igl/unproject.o: include/igl/unproject.cpp.o
-.PHONY : include/igl/unproject.o
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.o: Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.o
 
 # target to build an object file
-include/igl/unproject.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unproject.cpp.o
-.PHONY : include/igl/unproject.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.cpp.o
 
-include/igl/unproject.i: include/igl/unproject.cpp.i
-.PHONY : include/igl/unproject.i
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.i: Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.i
 
 # target to preprocess a source file
-include/igl/unproject.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unproject.cpp.i
-.PHONY : include/igl/unproject.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.cpp.i
 
-include/igl/unproject.s: include/igl/unproject.cpp.s
-.PHONY : include/igl/unproject.s
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.s: Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.s
 
 # target to generate assembly for a file
-include/igl/unproject.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unproject.cpp.s
-.PHONY : include/igl/unproject.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.cpp.s
 
-include/igl/unproject_to_zero_plane.o: include/igl/unproject_to_zero_plane.cpp.o
-.PHONY : include/igl/unproject_to_zero_plane.o
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.o: Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.o
 
 # target to build an object file
-include/igl/unproject_to_zero_plane.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unproject_to_zero_plane.cpp.o
-.PHONY : include/igl/unproject_to_zero_plane.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.cpp.o
 
-include/igl/unproject_to_zero_plane.i: include/igl/unproject_to_zero_plane.cpp.i
-.PHONY : include/igl/unproject_to_zero_plane.i
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.i: Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.i
 
 # target to preprocess a source file
-include/igl/unproject_to_zero_plane.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unproject_to_zero_plane.cpp.i
-.PHONY : include/igl/unproject_to_zero_plane.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.cpp.i
 
-include/igl/unproject_to_zero_plane.s: include/igl/unproject_to_zero_plane.cpp.s
-.PHONY : include/igl/unproject_to_zero_plane.s
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.s: Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.s
 
 # target to generate assembly for a file
-include/igl/unproject_to_zero_plane.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/unproject_to_zero_plane.cpp.s
-.PHONY : include/igl/unproject_to_zero_plane.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.cpp.s
 
-include/igl/up_axis.o: include/igl/up_axis.cpp.o
-.PHONY : include/igl/up_axis.o
+Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.o: Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.o
 
 # target to build an object file
-include/igl/up_axis.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/up_axis.cpp.o
-.PHONY : include/igl/up_axis.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.cpp.o
 
-include/igl/up_axis.i: include/igl/up_axis.cpp.i
-.PHONY : include/igl/up_axis.i
+Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.i: Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.i
 
 # target to preprocess a source file
-include/igl/up_axis.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/up_axis.cpp.i
-.PHONY : include/igl/up_axis.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.cpp.i
 
-include/igl/up_axis.s: include/igl/up_axis.cpp.s
-.PHONY : include/igl/up_axis.s
+Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.s: Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.s
 
 # target to generate assembly for a file
-include/igl/up_axis.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/up_axis.cpp.s
-.PHONY : include/igl/up_axis.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.cpp.s
 
-include/igl/upsample.o: include/igl/upsample.cpp.o
-.PHONY : include/igl/upsample.o
+Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.o: Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.o
 
 # target to build an object file
-include/igl/upsample.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/upsample.cpp.o
-.PHONY : include/igl/upsample.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.cpp.o
 
-include/igl/upsample.i: include/igl/upsample.cpp.i
-.PHONY : include/igl/upsample.i
+Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.i: Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.i
 
 # target to preprocess a source file
-include/igl/upsample.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/upsample.cpp.i
-.PHONY : include/igl/upsample.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.cpp.i
 
-include/igl/upsample.s: include/igl/upsample.cpp.s
-.PHONY : include/igl/upsample.s
+Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.s: Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.s
 
 # target to generate assembly for a file
-include/igl/upsample.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/upsample.cpp.s
-.PHONY : include/igl/upsample.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.cpp.s
 
-include/igl/vector_area_matrix.o: include/igl/vector_area_matrix.cpp.o
-.PHONY : include/igl/vector_area_matrix.o
+Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.o: Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.o
 
 # target to build an object file
-include/igl/vector_area_matrix.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/vector_area_matrix.cpp.o
-.PHONY : include/igl/vector_area_matrix.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.cpp.o
 
-include/igl/vector_area_matrix.i: include/igl/vector_area_matrix.cpp.i
-.PHONY : include/igl/vector_area_matrix.i
+Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.i: Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.i
 
 # target to preprocess a source file
-include/igl/vector_area_matrix.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/vector_area_matrix.cpp.i
-.PHONY : include/igl/vector_area_matrix.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.cpp.i
 
-include/igl/vector_area_matrix.s: include/igl/vector_area_matrix.cpp.s
-.PHONY : include/igl/vector_area_matrix.s
+Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.s: Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.s
 
 # target to generate assembly for a file
-include/igl/vector_area_matrix.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/vector_area_matrix.cpp.s
-.PHONY : include/igl/vector_area_matrix.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.cpp.s
 
-include/igl/vertex_triangle_adjacency.o: include/igl/vertex_triangle_adjacency.cpp.o
-.PHONY : include/igl/vertex_triangle_adjacency.o
+Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.o: Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.o
 
 # target to build an object file
-include/igl/vertex_triangle_adjacency.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/vertex_triangle_adjacency.cpp.o
-.PHONY : include/igl/vertex_triangle_adjacency.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.cpp.o
 
-include/igl/vertex_triangle_adjacency.i: include/igl/vertex_triangle_adjacency.cpp.i
-.PHONY : include/igl/vertex_triangle_adjacency.i
+Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.i: Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.i
 
 # target to preprocess a source file
-include/igl/vertex_triangle_adjacency.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/vertex_triangle_adjacency.cpp.i
-.PHONY : include/igl/vertex_triangle_adjacency.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.cpp.i
 
-include/igl/vertex_triangle_adjacency.s: include/igl/vertex_triangle_adjacency.cpp.s
-.PHONY : include/igl/vertex_triangle_adjacency.s
+Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.s: Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.s
 
 # target to generate assembly for a file
-include/igl/vertex_triangle_adjacency.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/vertex_triangle_adjacency.cpp.s
-.PHONY : include/igl/vertex_triangle_adjacency.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.cpp.s
 
-include/igl/view_axis.o: include/igl/view_axis.cpp.o
-.PHONY : include/igl/view_axis.o
+Users/daniele/Dropbox/igl/libigl/include/igl/unique.o: Users/daniele/Dropbox/igl/libigl/include/igl/unique.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique.o
 
 # target to build an object file
-include/igl/view_axis.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/view_axis.cpp.o
-.PHONY : include/igl/view_axis.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/unique.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unique.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique.cpp.o
 
-include/igl/view_axis.i: include/igl/view_axis.cpp.i
-.PHONY : include/igl/view_axis.i
+Users/daniele/Dropbox/igl/libigl/include/igl/unique.i: Users/daniele/Dropbox/igl/libigl/include/igl/unique.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique.i
 
 # target to preprocess a source file
-include/igl/view_axis.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/view_axis.cpp.i
-.PHONY : include/igl/view_axis.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/unique.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unique.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique.cpp.i
 
-include/igl/view_axis.s: include/igl/view_axis.cpp.s
-.PHONY : include/igl/view_axis.s
+Users/daniele/Dropbox/igl/libigl/include/igl/unique.s: Users/daniele/Dropbox/igl/libigl/include/igl/unique.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique.s
 
 # target to generate assembly for a file
-include/igl/view_axis.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/view_axis.cpp.s
-.PHONY : include/igl/view_axis.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/unique.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unique.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique.cpp.s
 
-include/igl/viewer/OpenGL_shader.o: include/igl/viewer/OpenGL_shader.cpp.o
-.PHONY : include/igl/viewer/OpenGL_shader.o
+Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.o: Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.o
 
 # target to build an object file
-include/igl/viewer/OpenGL_shader.cpp.o:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/OpenGL_shader.cpp.o
-.PHONY : include/igl/viewer/OpenGL_shader.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.cpp.o
 
-include/igl/viewer/OpenGL_shader.i: include/igl/viewer/OpenGL_shader.cpp.i
-.PHONY : include/igl/viewer/OpenGL_shader.i
+Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.i: Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.i
 
 # target to preprocess a source file
-include/igl/viewer/OpenGL_shader.cpp.i:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/OpenGL_shader.cpp.i
-.PHONY : include/igl/viewer/OpenGL_shader.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.cpp.i
 
-include/igl/viewer/OpenGL_shader.s: include/igl/viewer/OpenGL_shader.cpp.s
-.PHONY : include/igl/viewer/OpenGL_shader.s
+Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.s: Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.s
 
 # target to generate assembly for a file
-include/igl/viewer/OpenGL_shader.cpp.s:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/OpenGL_shader.cpp.s
-.PHONY : include/igl/viewer/OpenGL_shader.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.cpp.s
 
-include/igl/viewer/OpenGL_state.o: include/igl/viewer/OpenGL_state.cpp.o
-.PHONY : include/igl/viewer/OpenGL_state.o
+Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.o: Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.o
 
 # target to build an object file
-include/igl/viewer/OpenGL_state.cpp.o:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/OpenGL_state.cpp.o
-.PHONY : include/igl/viewer/OpenGL_state.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.cpp.o
 
-include/igl/viewer/OpenGL_state.i: include/igl/viewer/OpenGL_state.cpp.i
-.PHONY : include/igl/viewer/OpenGL_state.i
+Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.i: Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.i
 
 # target to preprocess a source file
-include/igl/viewer/OpenGL_state.cpp.i:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/OpenGL_state.cpp.i
-.PHONY : include/igl/viewer/OpenGL_state.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.cpp.i
 
-include/igl/viewer/OpenGL_state.s: include/igl/viewer/OpenGL_state.cpp.s
-.PHONY : include/igl/viewer/OpenGL_state.s
+Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.s: Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.s
 
 # target to generate assembly for a file
-include/igl/viewer/OpenGL_state.cpp.s:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/OpenGL_state.cpp.s
-.PHONY : include/igl/viewer/OpenGL_state.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.cpp.s
 
-include/igl/viewer/TextRenderer.o: include/igl/viewer/TextRenderer.cpp.o
-.PHONY : include/igl/viewer/TextRenderer.o
+Users/daniele/Dropbox/igl/libigl/include/igl/unproject.o: Users/daniele/Dropbox/igl/libigl/include/igl/unproject.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unproject.o
 
 # target to build an object file
-include/igl/viewer/TextRenderer.cpp.o:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/TextRenderer.cpp.o
-.PHONY : include/igl/viewer/TextRenderer.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/unproject.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unproject.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unproject.cpp.o
 
-include/igl/viewer/TextRenderer.i: include/igl/viewer/TextRenderer.cpp.i
-.PHONY : include/igl/viewer/TextRenderer.i
+Users/daniele/Dropbox/igl/libigl/include/igl/unproject.i: Users/daniele/Dropbox/igl/libigl/include/igl/unproject.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unproject.i
 
 # target to preprocess a source file
-include/igl/viewer/TextRenderer.cpp.i:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/TextRenderer.cpp.i
-.PHONY : include/igl/viewer/TextRenderer.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/unproject.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unproject.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unproject.cpp.i
 
-include/igl/viewer/TextRenderer.s: include/igl/viewer/TextRenderer.cpp.s
-.PHONY : include/igl/viewer/TextRenderer.s
+Users/daniele/Dropbox/igl/libigl/include/igl/unproject.s: Users/daniele/Dropbox/igl/libigl/include/igl/unproject.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unproject.s
 
 # target to generate assembly for a file
-include/igl/viewer/TextRenderer.cpp.s:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/TextRenderer.cpp.s
-.PHONY : include/igl/viewer/TextRenderer.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/unproject.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unproject.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unproject.cpp.s
 
-include/igl/viewer/Viewer.o: include/igl/viewer/Viewer.cpp.o
-.PHONY : include/igl/viewer/Viewer.o
+Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.o: Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.o
 
 # target to build an object file
-include/igl/viewer/Viewer.cpp.o:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/Viewer.cpp.o
-.PHONY : include/igl/viewer/Viewer.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.cpp.o
 
-include/igl/viewer/Viewer.i: include/igl/viewer/Viewer.cpp.i
-.PHONY : include/igl/viewer/Viewer.i
+Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.i: Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.i
 
 # target to preprocess a source file
-include/igl/viewer/Viewer.cpp.i:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/Viewer.cpp.i
-.PHONY : include/igl/viewer/Viewer.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.cpp.i
 
-include/igl/viewer/Viewer.s: include/igl/viewer/Viewer.cpp.s
-.PHONY : include/igl/viewer/Viewer.s
+Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.s: Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.s
 
 # target to generate assembly for a file
-include/igl/viewer/Viewer.cpp.s:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/Viewer.cpp.s
-.PHONY : include/igl/viewer/Viewer.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.cpp.s
 
-include/igl/viewer/ViewerCore.o: include/igl/viewer/ViewerCore.cpp.o
-.PHONY : include/igl/viewer/ViewerCore.o
+Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.o: Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.o
 
 # target to build an object file
-include/igl/viewer/ViewerCore.cpp.o:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/ViewerCore.cpp.o
-.PHONY : include/igl/viewer/ViewerCore.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.cpp.o
 
-include/igl/viewer/ViewerCore.i: include/igl/viewer/ViewerCore.cpp.i
-.PHONY : include/igl/viewer/ViewerCore.i
+Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.i: Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.i
 
 # target to preprocess a source file
-include/igl/viewer/ViewerCore.cpp.i:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/ViewerCore.cpp.i
-.PHONY : include/igl/viewer/ViewerCore.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.cpp.i
 
-include/igl/viewer/ViewerCore.s: include/igl/viewer/ViewerCore.cpp.s
-.PHONY : include/igl/viewer/ViewerCore.s
+Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.s: Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.s
 
 # target to generate assembly for a file
-include/igl/viewer/ViewerCore.cpp.s:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/ViewerCore.cpp.s
-.PHONY : include/igl/viewer/ViewerCore.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.cpp.s
 
-include/igl/viewer/ViewerData.o: include/igl/viewer/ViewerData.cpp.o
-.PHONY : include/igl/viewer/ViewerData.o
+Users/daniele/Dropbox/igl/libigl/include/igl/upsample.o: Users/daniele/Dropbox/igl/libigl/include/igl/upsample.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/upsample.o
 
 # target to build an object file
-include/igl/viewer/ViewerData.cpp.o:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/ViewerData.cpp.o
-.PHONY : include/igl/viewer/ViewerData.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/upsample.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/upsample.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/upsample.cpp.o
 
-include/igl/viewer/ViewerData.i: include/igl/viewer/ViewerData.cpp.i
-.PHONY : include/igl/viewer/ViewerData.i
+Users/daniele/Dropbox/igl/libigl/include/igl/upsample.i: Users/daniele/Dropbox/igl/libigl/include/igl/upsample.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/upsample.i
 
 # target to preprocess a source file
-include/igl/viewer/ViewerData.cpp.i:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/ViewerData.cpp.i
-.PHONY : include/igl/viewer/ViewerData.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/upsample.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/upsample.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/upsample.cpp.i
 
-include/igl/viewer/ViewerData.s: include/igl/viewer/ViewerData.cpp.s
-.PHONY : include/igl/viewer/ViewerData.s
+Users/daniele/Dropbox/igl/libigl/include/igl/upsample.s: Users/daniele/Dropbox/igl/libigl/include/igl/upsample.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/upsample.s
 
 # target to generate assembly for a file
-include/igl/viewer/ViewerData.cpp.s:
-	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/include/igl/viewer/ViewerData.cpp.s
-.PHONY : include/igl/viewer/ViewerData.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/upsample.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/upsample.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/upsample.cpp.s
 
-include/igl/volume.o: include/igl/volume.cpp.o
-.PHONY : include/igl/volume.o
+Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.o: Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.o
 
 # target to build an object file
-include/igl/volume.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/volume.cpp.o
-.PHONY : include/igl/volume.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.cpp.o
 
-include/igl/volume.i: include/igl/volume.cpp.i
-.PHONY : include/igl/volume.i
+Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.i: Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.i
 
 # target to preprocess a source file
-include/igl/volume.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/volume.cpp.i
-.PHONY : include/igl/volume.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.cpp.i
 
-include/igl/volume.s: include/igl/volume.cpp.s
-.PHONY : include/igl/volume.s
+Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.s: Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.s
 
 # target to generate assembly for a file
-include/igl/volume.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/volume.cpp.s
-.PHONY : include/igl/volume.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.cpp.s
 
-include/igl/winding_number.o: include/igl/winding_number.cpp.o
-.PHONY : include/igl/winding_number.o
+Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.o: Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.o
 
 # target to build an object file
-include/igl/winding_number.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/winding_number.cpp.o
-.PHONY : include/igl/winding_number.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.cpp.o
 
-include/igl/winding_number.i: include/igl/winding_number.cpp.i
-.PHONY : include/igl/winding_number.i
+Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.i: Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.i
 
 # target to preprocess a source file
-include/igl/winding_number.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/winding_number.cpp.i
-.PHONY : include/igl/winding_number.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.cpp.i
 
-include/igl/winding_number.s: include/igl/winding_number.cpp.s
-.PHONY : include/igl/winding_number.s
+Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.s: Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.s
 
 # target to generate assembly for a file
-include/igl/winding_number.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/winding_number.cpp.s
-.PHONY : include/igl/winding_number.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.cpp.s
 
-include/igl/writeDMAT.o: include/igl/writeDMAT.cpp.o
-.PHONY : include/igl/writeDMAT.o
+Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.o: Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.o
 
 # target to build an object file
-include/igl/writeDMAT.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeDMAT.cpp.o
-.PHONY : include/igl/writeDMAT.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.cpp.o
 
-include/igl/writeDMAT.i: include/igl/writeDMAT.cpp.i
-.PHONY : include/igl/writeDMAT.i
+Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.i: Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.i
 
 # target to preprocess a source file
-include/igl/writeDMAT.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeDMAT.cpp.i
-.PHONY : include/igl/writeDMAT.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.cpp.i
 
-include/igl/writeDMAT.s: include/igl/writeDMAT.cpp.s
-.PHONY : include/igl/writeDMAT.s
+Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.s: Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.s
 
 # target to generate assembly for a file
-include/igl/writeDMAT.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeDMAT.cpp.s
-.PHONY : include/igl/writeDMAT.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.cpp.s
 
-include/igl/writeMESH.o: include/igl/writeMESH.cpp.o
-.PHONY : include/igl/writeMESH.o
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.o: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.o
 
 # target to build an object file
-include/igl/writeMESH.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeMESH.cpp.o
-.PHONY : include/igl/writeMESH.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.cpp.o:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.cpp.o
 
-include/igl/writeMESH.i: include/igl/writeMESH.cpp.i
-.PHONY : include/igl/writeMESH.i
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.i: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.i
 
 # target to preprocess a source file
-include/igl/writeMESH.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeMESH.cpp.i
-.PHONY : include/igl/writeMESH.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.cpp.i:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.cpp.i
 
-include/igl/writeMESH.s: include/igl/writeMESH.cpp.s
-.PHONY : include/igl/writeMESH.s
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.s: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.s
 
 # target to generate assembly for a file
-include/igl/writeMESH.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeMESH.cpp.s
-.PHONY : include/igl/writeMESH.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.cpp.s:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.cpp.s
 
-include/igl/writeOBJ.o: include/igl/writeOBJ.cpp.o
-.PHONY : include/igl/writeOBJ.o
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.o: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.o
 
 # target to build an object file
-include/igl/writeOBJ.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeOBJ.cpp.o
-.PHONY : include/igl/writeOBJ.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.cpp.o:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.cpp.o
 
-include/igl/writeOBJ.i: include/igl/writeOBJ.cpp.i
-.PHONY : include/igl/writeOBJ.i
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.i: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.i
 
 # target to preprocess a source file
-include/igl/writeOBJ.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeOBJ.cpp.i
-.PHONY : include/igl/writeOBJ.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.cpp.i:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.cpp.i
 
-include/igl/writeOBJ.s: include/igl/writeOBJ.cpp.s
-.PHONY : include/igl/writeOBJ.s
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.s: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.s
 
 # target to generate assembly for a file
-include/igl/writeOBJ.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeOBJ.cpp.s
-.PHONY : include/igl/writeOBJ.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.cpp.s:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.cpp.s
 
-include/igl/writeOFF.o: include/igl/writeOFF.cpp.o
-.PHONY : include/igl/writeOFF.o
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.o: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.o
 
 # target to build an object file
-include/igl/writeOFF.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeOFF.cpp.o
-.PHONY : include/igl/writeOFF.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.cpp.o:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.cpp.o
 
-include/igl/writeOFF.i: include/igl/writeOFF.cpp.i
-.PHONY : include/igl/writeOFF.i
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.i: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.i
 
 # target to preprocess a source file
-include/igl/writeOFF.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeOFF.cpp.i
-.PHONY : include/igl/writeOFF.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.cpp.i:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.cpp.i
 
-include/igl/writeOFF.s: include/igl/writeOFF.cpp.s
-.PHONY : include/igl/writeOFF.s
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.s: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.s
 
 # target to generate assembly for a file
-include/igl/writeOFF.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeOFF.cpp.s
-.PHONY : include/igl/writeOFF.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.cpp.s:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.cpp.s
 
-include/igl/writePLY.o: include/igl/writePLY.cpp.o
-.PHONY : include/igl/writePLY.o
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.o: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.o
 
 # target to build an object file
-include/igl/writePLY.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writePLY.cpp.o
-.PHONY : include/igl/writePLY.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.cpp.o:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.cpp.o
 
-include/igl/writePLY.i: include/igl/writePLY.cpp.i
-.PHONY : include/igl/writePLY.i
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.i: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.i
 
 # target to preprocess a source file
-include/igl/writePLY.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writePLY.cpp.i
-.PHONY : include/igl/writePLY.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.cpp.i:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.cpp.i
 
-include/igl/writePLY.s: include/igl/writePLY.cpp.s
-.PHONY : include/igl/writePLY.s
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.s: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.s
 
 # target to generate assembly for a file
-include/igl/writePLY.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writePLY.cpp.s
-.PHONY : include/igl/writePLY.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.cpp.s:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.cpp.s
 
-include/igl/writeSTL.o: include/igl/writeSTL.cpp.o
-.PHONY : include/igl/writeSTL.o
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.o: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.o
 
 # target to build an object file
-include/igl/writeSTL.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeSTL.cpp.o
-.PHONY : include/igl/writeSTL.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.cpp.o:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.cpp.o
 
-include/igl/writeSTL.i: include/igl/writeSTL.cpp.i
-.PHONY : include/igl/writeSTL.i
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.i: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.i
 
 # target to preprocess a source file
-include/igl/writeSTL.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeSTL.cpp.i
-.PHONY : include/igl/writeSTL.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.cpp.i:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.cpp.i
 
-include/igl/writeSTL.s: include/igl/writeSTL.cpp.s
-.PHONY : include/igl/writeSTL.s
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.s: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.s
 
 # target to generate assembly for a file
-include/igl/writeSTL.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeSTL.cpp.s
-.PHONY : include/igl/writeSTL.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.cpp.s:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.cpp.s
 
-include/igl/writeTGF.o: include/igl/writeTGF.cpp.o
-.PHONY : include/igl/writeTGF.o
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.o: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.o
 
 # target to build an object file
-include/igl/writeTGF.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeTGF.cpp.o
-.PHONY : include/igl/writeTGF.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.cpp.o:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.cpp.o
 
-include/igl/writeTGF.i: include/igl/writeTGF.cpp.i
-.PHONY : include/igl/writeTGF.i
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.i: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.i
 
 # target to preprocess a source file
-include/igl/writeTGF.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeTGF.cpp.i
-.PHONY : include/igl/writeTGF.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.cpp.i:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.cpp.i
 
-include/igl/writeTGF.s: include/igl/writeTGF.cpp.s
-.PHONY : include/igl/writeTGF.s
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.s: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.s
 
 # target to generate assembly for a file
-include/igl/writeTGF.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeTGF.cpp.s
-.PHONY : include/igl/writeTGF.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.cpp.s:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.cpp.s
 
-include/igl/writeWRL.o: include/igl/writeWRL.cpp.o
-.PHONY : include/igl/writeWRL.o
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.o: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.o
 
 # target to build an object file
-include/igl/writeWRL.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeWRL.cpp.o
-.PHONY : include/igl/writeWRL.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.cpp.o:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.cpp.o
 
-include/igl/writeWRL.i: include/igl/writeWRL.cpp.i
-.PHONY : include/igl/writeWRL.i
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.i: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.i
 
 # target to preprocess a source file
-include/igl/writeWRL.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeWRL.cpp.i
-.PHONY : include/igl/writeWRL.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.cpp.i:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.cpp.i
 
-include/igl/writeWRL.s: include/igl/writeWRL.cpp.s
-.PHONY : include/igl/writeWRL.s
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.s: Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.s
 
 # target to generate assembly for a file
-include/igl/writeWRL.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/writeWRL.cpp.s
-.PHONY : include/igl/writeWRL.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.cpp.s:
+	$(MAKE) -f CMakeFiles/iglviewer.dir/build.make CMakeFiles/iglviewer.dir/Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.cpp.s
 
-include/igl/write_triangle_mesh.o: include/igl/write_triangle_mesh.cpp.o
-.PHONY : include/igl/write_triangle_mesh.o
+Users/daniele/Dropbox/igl/libigl/include/igl/volume.o: Users/daniele/Dropbox/igl/libigl/include/igl/volume.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/volume.o
 
 # target to build an object file
-include/igl/write_triangle_mesh.cpp.o:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/write_triangle_mesh.cpp.o
-.PHONY : include/igl/write_triangle_mesh.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/volume.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/volume.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/volume.cpp.o
 
-include/igl/write_triangle_mesh.i: include/igl/write_triangle_mesh.cpp.i
-.PHONY : include/igl/write_triangle_mesh.i
+Users/daniele/Dropbox/igl/libigl/include/igl/volume.i: Users/daniele/Dropbox/igl/libigl/include/igl/volume.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/volume.i
 
 # target to preprocess a source file
-include/igl/write_triangle_mesh.cpp.i:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/write_triangle_mesh.cpp.i
-.PHONY : include/igl/write_triangle_mesh.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/volume.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/volume.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/volume.cpp.i
 
-include/igl/write_triangle_mesh.s: include/igl/write_triangle_mesh.cpp.s
-.PHONY : include/igl/write_triangle_mesh.s
+Users/daniele/Dropbox/igl/libigl/include/igl/volume.s: Users/daniele/Dropbox/igl/libigl/include/igl/volume.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/volume.s
 
 # target to generate assembly for a file
-include/igl/write_triangle_mesh.cpp.s:
-	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/include/igl/write_triangle_mesh.cpp.s
-.PHONY : include/igl/write_triangle_mesh.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/volume.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/volume.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/volume.cpp.s
 
-include/igl/xml/serialization_test.o: include/igl/xml/serialization_test.cpp.o
-.PHONY : include/igl/xml/serialization_test.o
+Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.o: Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.o
 
 # target to build an object file
-include/igl/xml/serialization_test.cpp.o:
-	$(MAKE) -f CMakeFiles/iglxml.dir/build.make CMakeFiles/iglxml.dir/include/igl/xml/serialization_test.cpp.o
-.PHONY : include/igl/xml/serialization_test.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.cpp.o
 
-include/igl/xml/serialization_test.i: include/igl/xml/serialization_test.cpp.i
-.PHONY : include/igl/xml/serialization_test.i
+Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.i: Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.i
 
 # target to preprocess a source file
-include/igl/xml/serialization_test.cpp.i:
-	$(MAKE) -f CMakeFiles/iglxml.dir/build.make CMakeFiles/iglxml.dir/include/igl/xml/serialization_test.cpp.i
-.PHONY : include/igl/xml/serialization_test.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.cpp.i
 
-include/igl/xml/serialization_test.s: include/igl/xml/serialization_test.cpp.s
-.PHONY : include/igl/xml/serialization_test.s
+Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.s: Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.s
 
 # target to generate assembly for a file
-include/igl/xml/serialization_test.cpp.s:
-	$(MAKE) -f CMakeFiles/iglxml.dir/build.make CMakeFiles/iglxml.dir/include/igl/xml/serialization_test.cpp.s
-.PHONY : include/igl/xml/serialization_test.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.cpp.s
 
-include/igl/xml/serialize_xml.o: include/igl/xml/serialize_xml.cpp.o
-.PHONY : include/igl/xml/serialize_xml.o
+Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.o: Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.o
 
 # target to build an object file
-include/igl/xml/serialize_xml.cpp.o:
-	$(MAKE) -f CMakeFiles/iglxml.dir/build.make CMakeFiles/iglxml.dir/include/igl/xml/serialize_xml.cpp.o
-.PHONY : include/igl/xml/serialize_xml.cpp.o
+Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.cpp.o
 
-include/igl/xml/serialize_xml.i: include/igl/xml/serialize_xml.cpp.i
-.PHONY : include/igl/xml/serialize_xml.i
+Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.i: Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.i
 
 # target to preprocess a source file
-include/igl/xml/serialize_xml.cpp.i:
-	$(MAKE) -f CMakeFiles/iglxml.dir/build.make CMakeFiles/iglxml.dir/include/igl/xml/serialize_xml.cpp.i
-.PHONY : include/igl/xml/serialize_xml.cpp.i
+Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.cpp.i
 
-include/igl/xml/serialize_xml.s: include/igl/xml/serialize_xml.cpp.s
-.PHONY : include/igl/xml/serialize_xml.s
+Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.s: Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.s
 
 # target to generate assembly for a file
-include/igl/xml/serialize_xml.cpp.s:
-	$(MAKE) -f CMakeFiles/iglxml.dir/build.make CMakeFiles/iglxml.dir/include/igl/xml/serialize_xml.cpp.s
-.PHONY : include/igl/xml/serialize_xml.cpp.s
+Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.cpp.s
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.o: Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.o
+
+# target to build an object file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.cpp.o
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.i: Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.i
+
+# target to preprocess a source file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.cpp.i
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.s: Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.s
+
+# target to generate assembly for a file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.cpp.s
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.o: Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.o
+
+# target to build an object file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.cpp.o
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.i: Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.i
+
+# target to preprocess a source file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.cpp.i
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.s: Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.s
+
+# target to generate assembly for a file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.cpp.s
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.o: Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.o
+
+# target to build an object file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.cpp.o
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.i: Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.i
+
+# target to preprocess a source file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.cpp.i
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.s: Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.s
+
+# target to generate assembly for a file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.cpp.s
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.o: Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.o
+
+# target to build an object file
+Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.cpp.o
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.i: Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.i
+
+# target to preprocess a source file
+Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.cpp.i
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.s: Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.s
+
+# target to generate assembly for a file
+Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.cpp.s
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.o: Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.o
+
+# target to build an object file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.cpp.o
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.i: Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.i
+
+# target to preprocess a source file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.cpp.i
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.s: Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.s
+
+# target to generate assembly for a file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.cpp.s
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.o: Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.o
+
+# target to build an object file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.cpp.o
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.i: Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.i
+
+# target to preprocess a source file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.cpp.i
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.s: Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.s
+
+# target to generate assembly for a file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.cpp.s
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.o: Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.o
+
+# target to build an object file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.cpp.o
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.i: Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.i
+
+# target to preprocess a source file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.cpp.i
+
+Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.s: Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.s
+
+# target to generate assembly for a file
+Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.cpp.s
+
+Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.o: Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.o
+
+# target to build an object file
+Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.cpp.o:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.cpp.o
+
+Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.i: Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.i
+
+# target to preprocess a source file
+Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.cpp.i:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.cpp.i
+
+Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.s: Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.s
+
+# target to generate assembly for a file
+Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.cpp.s:
+	$(MAKE) -f CMakeFiles/igl.dir/build.make CMakeFiles/igl.dir/Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.cpp.s
+
+Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.o: Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.o
+
+# target to build an object file
+Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.cpp.o:
+	$(MAKE) -f CMakeFiles/iglxml.dir/build.make CMakeFiles/iglxml.dir/Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.cpp.o
+
+Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.i: Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.i
+
+# target to preprocess a source file
+Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.cpp.i:
+	$(MAKE) -f CMakeFiles/iglxml.dir/build.make CMakeFiles/iglxml.dir/Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.cpp.i
+
+Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.s: Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.s
+
+# target to generate assembly for a file
+Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.cpp.s:
+	$(MAKE) -f CMakeFiles/iglxml.dir/build.make CMakeFiles/iglxml.dir/Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.cpp.s
+
+Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.o: Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.o
+
+# target to build an object file
+Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.cpp.o:
+	$(MAKE) -f CMakeFiles/iglxml.dir/build.make CMakeFiles/iglxml.dir/Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.cpp.o
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.cpp.o
+
+Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.i: Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.i
+
+# target to preprocess a source file
+Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.cpp.i:
+	$(MAKE) -f CMakeFiles/iglxml.dir/build.make CMakeFiles/iglxml.dir/Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.cpp.i
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.cpp.i
+
+Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.s: Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.s
+
+# target to generate assembly for a file
+Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.cpp.s:
+	$(MAKE) -f CMakeFiles/iglxml.dir/build.make CMakeFiles/iglxml.dir/Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.cpp.s
+.PHONY : Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.cpp.s
 
 # Help Target
 help:
@@ -8414,11 +8654,12 @@ help:
 	@echo "... depend"
 	@echo "... iglviewer"
 	@echo "... iglembree"
+	@echo "... iglanttweakbar"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... iglsvd3x3"
 	@echo "... igltetgen"
 	@echo "... iglbbw"
+	@echo "... iglpng"
 	@echo "... iglmatlab"
 	@echo "... iglcomiso"
 	@echo "... iglxml"
@@ -8426,1024 +8667,1053 @@ help:
 	@echo "... iglboolean"
 	@echo "... iglcgal"
 	@echo "... igl"
-	@echo "... igllim"
-	@echo "... include/igl/EPS.o"
-	@echo "... include/igl/EPS.i"
-	@echo "... include/igl/EPS.s"
-	@echo "... include/igl/active_set.o"
-	@echo "... include/igl/active_set.i"
-	@echo "... include/igl/active_set.s"
-	@echo "... include/igl/adjacency_list.o"
-	@echo "... include/igl/adjacency_list.i"
-	@echo "... include/igl/adjacency_list.s"
-	@echo "... include/igl/adjacency_matrix.o"
-	@echo "... include/igl/adjacency_matrix.i"
-	@echo "... include/igl/adjacency_matrix.s"
-	@echo "... include/igl/all_edges.o"
-	@echo "... include/igl/all_edges.i"
-	@echo "... include/igl/all_edges.s"
-	@echo "... include/igl/all_pairs_distances.o"
-	@echo "... include/igl/all_pairs_distances.i"
-	@echo "... include/igl/all_pairs_distances.s"
-	@echo "... include/igl/angle_bound_frame_fields.o"
-	@echo "... include/igl/angle_bound_frame_fields.i"
-	@echo "... include/igl/angle_bound_frame_fields.s"
-	@echo "... include/igl/angles.o"
-	@echo "... include/igl/angles.i"
-	@echo "... include/igl/angles.s"
-	@echo "... include/igl/angular_distance.o"
-	@echo "... include/igl/angular_distance.i"
-	@echo "... include/igl/angular_distance.s"
-	@echo "... include/igl/any_of.o"
-	@echo "... include/igl/any_of.i"
-	@echo "... include/igl/any_of.s"
-	@echo "... include/igl/arap_linear_block.o"
-	@echo "... include/igl/arap_linear_block.i"
-	@echo "... include/igl/arap_linear_block.s"
-	@echo "... include/igl/arap_rhs.o"
-	@echo "... include/igl/arap_rhs.i"
-	@echo "... include/igl/arap_rhs.s"
-	@echo "... include/igl/average_onto_faces.o"
-	@echo "... include/igl/average_onto_faces.i"
-	@echo "... include/igl/average_onto_faces.s"
-	@echo "... include/igl/average_onto_vertices.o"
-	@echo "... include/igl/average_onto_vertices.i"
-	@echo "... include/igl/average_onto_vertices.s"
-	@echo "... include/igl/avg_edge_length.o"
-	@echo "... include/igl/avg_edge_length.i"
-	@echo "... include/igl/avg_edge_length.s"
-	@echo "... include/igl/axis_angle_to_quat.o"
-	@echo "... include/igl/axis_angle_to_quat.i"
-	@echo "... include/igl/axis_angle_to_quat.s"
-	@echo "... include/igl/barycenter.o"
-	@echo "... include/igl/barycenter.i"
-	@echo "... include/igl/barycenter.s"
-	@echo "... include/igl/barycentric_coordinates.o"
-	@echo "... include/igl/barycentric_coordinates.i"
-	@echo "... include/igl/barycentric_coordinates.s"
-	@echo "... include/igl/barycentric_to_global.o"
-	@echo "... include/igl/barycentric_to_global.i"
-	@echo "... include/igl/barycentric_to_global.s"
-	@echo "... include/igl/basename.o"
-	@echo "... include/igl/basename.i"
-	@echo "... include/igl/basename.s"
-	@echo "... include/igl/bbw/bbw.o"
-	@echo "... include/igl/bbw/bbw.i"
-	@echo "... include/igl/bbw/bbw.s"
-	@echo "... include/igl/bone_parents.o"
-	@echo "... include/igl/bone_parents.i"
-	@echo "... include/igl/bone_parents.s"
-	@echo "... include/igl/boolean/from_cork_mesh.o"
-	@echo "... include/igl/boolean/from_cork_mesh.i"
-	@echo "... include/igl/boolean/from_cork_mesh.s"
-	@echo "... include/igl/boolean/mesh_boolean.o"
-	@echo "... include/igl/boolean/mesh_boolean.i"
-	@echo "... include/igl/boolean/mesh_boolean.s"
-	@echo "... include/igl/boolean/mesh_boolean_cork.o"
-	@echo "... include/igl/boolean/mesh_boolean_cork.i"
-	@echo "... include/igl/boolean/mesh_boolean_cork.s"
-	@echo "... include/igl/boolean/to_cork_mesh.o"
-	@echo "... include/igl/boolean/to_cork_mesh.i"
-	@echo "... include/igl/boolean/to_cork_mesh.s"
-	@echo "... include/igl/boundary_conditions.o"
-	@echo "... include/igl/boundary_conditions.i"
-	@echo "... include/igl/boundary_conditions.s"
-	@echo "... include/igl/boundary_facets.o"
-	@echo "... include/igl/boundary_facets.i"
-	@echo "... include/igl/boundary_facets.s"
-	@echo "... include/igl/boundary_loop.o"
-	@echo "... include/igl/boundary_loop.i"
-	@echo "... include/igl/boundary_loop.s"
-	@echo "... include/igl/bounding_box.o"
-	@echo "... include/igl/bounding_box.i"
-	@echo "... include/igl/bounding_box.s"
-	@echo "... include/igl/bounding_box_diagonal.o"
-	@echo "... include/igl/bounding_box_diagonal.i"
-	@echo "... include/igl/bounding_box_diagonal.s"
-	@echo "... include/igl/canonical_quaternions.o"
-	@echo "... include/igl/canonical_quaternions.i"
-	@echo "... include/igl/canonical_quaternions.s"
-	@echo "... include/igl/cat.o"
-	@echo "... include/igl/cat.i"
-	@echo "... include/igl/cat.s"
-	@echo "... include/igl/ceil.o"
-	@echo "... include/igl/ceil.i"
-	@echo "... include/igl/ceil.s"
-	@echo "... include/igl/centroid.o"
-	@echo "... include/igl/centroid.i"
-	@echo "... include/igl/centroid.s"
-	@echo "... include/igl/cgal/complex_to_mesh.o"
-	@echo "... include/igl/cgal/complex_to_mesh.i"
-	@echo "... include/igl/cgal/complex_to_mesh.s"
-	@echo "... include/igl/cgal/intersect_other.o"
-	@echo "... include/igl/cgal/intersect_other.i"
-	@echo "... include/igl/cgal/intersect_other.s"
-	@echo "... include/igl/cgal/mesh_to_cgal_triangle_list.o"
-	@echo "... include/igl/cgal/mesh_to_cgal_triangle_list.i"
-	@echo "... include/igl/cgal/mesh_to_cgal_triangle_list.s"
-	@echo "... include/igl/cgal/mesh_to_polyhedron.o"
-	@echo "... include/igl/cgal/mesh_to_polyhedron.i"
-	@echo "... include/igl/cgal/mesh_to_polyhedron.s"
-	@echo "... include/igl/cgal/order_facets_around_edges.o"
-	@echo "... include/igl/cgal/order_facets_around_edges.i"
-	@echo "... include/igl/cgal/order_facets_around_edges.s"
-	@echo "... include/igl/cgal/outer_hull.o"
-	@echo "... include/igl/cgal/outer_hull.i"
-	@echo "... include/igl/cgal/outer_hull.s"
-	@echo "... include/igl/cgal/peel_outer_hull_layers.o"
-	@echo "... include/igl/cgal/peel_outer_hull_layers.i"
-	@echo "... include/igl/cgal/peel_outer_hull_layers.s"
-	@echo "... include/igl/cgal/point_mesh_squared_distance.o"
-	@echo "... include/igl/cgal/point_mesh_squared_distance.i"
-	@echo "... include/igl/cgal/point_mesh_squared_distance.s"
-	@echo "... include/igl/cgal/polyhedron_to_mesh.o"
-	@echo "... include/igl/cgal/polyhedron_to_mesh.i"
-	@echo "... include/igl/cgal/polyhedron_to_mesh.s"
-	@echo "... include/igl/cgal/remesh_self_intersections.o"
-	@echo "... include/igl/cgal/remesh_self_intersections.i"
-	@echo "... include/igl/cgal/remesh_self_intersections.s"
-	@echo "... include/igl/cgal/signed_distance_isosurface.o"
-	@echo "... include/igl/cgal/signed_distance_isosurface.i"
-	@echo "... include/igl/cgal/signed_distance_isosurface.s"
-	@echo "... include/igl/circulation.o"
-	@echo "... include/igl/circulation.i"
-	@echo "... include/igl/circulation.s"
-	@echo "... include/igl/collapse_edge.o"
-	@echo "... include/igl/collapse_edge.i"
-	@echo "... include/igl/collapse_edge.s"
-	@echo "... include/igl/collapse_small_triangles.o"
-	@echo "... include/igl/collapse_small_triangles.i"
-	@echo "... include/igl/collapse_small_triangles.s"
-	@echo "... include/igl/colon.o"
-	@echo "... include/igl/colon.i"
-	@echo "... include/igl/colon.s"
-	@echo "... include/igl/column_to_quats.o"
-	@echo "... include/igl/column_to_quats.i"
-	@echo "... include/igl/column_to_quats.s"
-	@echo "... include/igl/columnize.o"
-	@echo "... include/igl/columnize.i"
-	@echo "... include/igl/columnize.s"
-	@echo "... include/igl/comb_cross_field.o"
-	@echo "... include/igl/comb_cross_field.i"
-	@echo "... include/igl/comb_cross_field.s"
-	@echo "... include/igl/comb_frame_field.o"
-	@echo "... include/igl/comb_frame_field.i"
-	@echo "... include/igl/comb_frame_field.s"
-	@echo "... include/igl/comb_line_field.o"
-	@echo "... include/igl/comb_line_field.i"
-	@echo "... include/igl/comb_line_field.s"
-	@echo "... include/igl/comiso/frame_field.o"
-	@echo "... include/igl/comiso/frame_field.i"
-	@echo "... include/igl/comiso/frame_field.s"
-	@echo "... include/igl/comiso/miq.o"
-	@echo "... include/igl/comiso/miq.i"
-	@echo "... include/igl/comiso/miq.s"
-	@echo "... include/igl/comiso/nrosy.o"
-	@echo "... include/igl/comiso/nrosy.i"
-	@echo "... include/igl/comiso/nrosy.s"
-	@echo "... include/igl/compile_and_link_program.o"
-	@echo "... include/igl/compile_and_link_program.i"
-	@echo "... include/igl/compile_and_link_program.s"
-	@echo "... include/igl/compile_shader.o"
-	@echo "... include/igl/compile_shader.i"
-	@echo "... include/igl/compile_shader.s"
-	@echo "... include/igl/compute_frame_field_bisectors.o"
-	@echo "... include/igl/compute_frame_field_bisectors.i"
-	@echo "... include/igl/compute_frame_field_bisectors.s"
-	@echo "... include/igl/conjugate_frame_fields.o"
-	@echo "... include/igl/conjugate_frame_fields.i"
-	@echo "... include/igl/conjugate_frame_fields.s"
-	@echo "... include/igl/cotmatrix.o"
-	@echo "... include/igl/cotmatrix.i"
-	@echo "... include/igl/cotmatrix.s"
-	@echo "... include/igl/cotmatrix_entries.o"
-	@echo "... include/igl/cotmatrix_entries.i"
-	@echo "... include/igl/cotmatrix_entries.s"
-	@echo "... include/igl/covariance_scatter_matrix.o"
-	@echo "... include/igl/covariance_scatter_matrix.i"
-	@echo "... include/igl/covariance_scatter_matrix.s"
-	@echo "... include/igl/create_index_vbo.o"
-	@echo "... include/igl/create_index_vbo.i"
-	@echo "... include/igl/create_index_vbo.s"
-	@echo "... include/igl/create_mesh_vbo.o"
-	@echo "... include/igl/create_mesh_vbo.i"
-	@echo "... include/igl/create_mesh_vbo.s"
-	@echo "... include/igl/create_shader_program.o"
-	@echo "... include/igl/create_shader_program.i"
-	@echo "... include/igl/create_shader_program.s"
-	@echo "... include/igl/create_vector_vbo.o"
-	@echo "... include/igl/create_vector_vbo.i"
-	@echo "... include/igl/create_vector_vbo.s"
-	@echo "... include/igl/cross.o"
-	@echo "... include/igl/cross.i"
-	@echo "... include/igl/cross.s"
-	@echo "... include/igl/cross_field_missmatch.o"
-	@echo "... include/igl/cross_field_missmatch.i"
-	@echo "... include/igl/cross_field_missmatch.s"
-	@echo "... include/igl/crouzeix_raviart_massmatrix.o"
-	@echo "... include/igl/crouzeix_raviart_massmatrix.i"
-	@echo "... include/igl/crouzeix_raviart_massmatrix.s"
-	@echo "... include/igl/cumsum.o"
-	@echo "... include/igl/cumsum.i"
-	@echo "... include/igl/cumsum.s"
-	@echo "... include/igl/cut_mesh_from_singularities.o"
-	@echo "... include/igl/cut_mesh_from_singularities.i"
-	@echo "... include/igl/cut_mesh_from_singularities.s"
-	@echo "... include/igl/dated_copy.o"
-	@echo "... include/igl/dated_copy.i"
-	@echo "... include/igl/dated_copy.s"
-	@echo "... include/igl/decimate.o"
-	@echo "... include/igl/decimate.i"
-	@echo "... include/igl/decimate.s"
-	@echo "... include/igl/deform_skeleton.o"
-	@echo "... include/igl/deform_skeleton.i"
-	@echo "... include/igl/deform_skeleton.s"
-	@echo "... include/igl/destroy_shader_program.o"
-	@echo "... include/igl/destroy_shader_program.i"
-	@echo "... include/igl/destroy_shader_program.s"
-	@echo "... include/igl/diag.o"
-	@echo "... include/igl/diag.i"
-	@echo "... include/igl/diag.s"
-	@echo "... include/igl/dihedral_angles.o"
-	@echo "... include/igl/dihedral_angles.i"
-	@echo "... include/igl/dihedral_angles.s"
-	@echo "... include/igl/directed_edge_orientations.o"
-	@echo "... include/igl/directed_edge_orientations.i"
-	@echo "... include/igl/directed_edge_orientations.s"
-	@echo "... include/igl/directed_edge_parents.o"
-	@echo "... include/igl/directed_edge_parents.i"
-	@echo "... include/igl/directed_edge_parents.s"
-	@echo "... include/igl/dirname.o"
-	@echo "... include/igl/dirname.i"
-	@echo "... include/igl/dirname.s"
-	@echo "... include/igl/dot.o"
-	@echo "... include/igl/dot.i"
-	@echo "... include/igl/dot.s"
-	@echo "... include/igl/dot_row.o"
-	@echo "... include/igl/dot_row.i"
-	@echo "... include/igl/dot_row.s"
-	@echo "... include/igl/doublearea.o"
-	@echo "... include/igl/doublearea.i"
-	@echo "... include/igl/doublearea.s"
-	@echo "... include/igl/dqs.o"
-	@echo "... include/igl/dqs.i"
-	@echo "... include/igl/dqs.s"
-	@echo "... include/igl/draw_beach_ball.o"
-	@echo "... include/igl/draw_beach_ball.i"
-	@echo "... include/igl/draw_beach_ball.s"
-	@echo "... include/igl/draw_floor.o"
-	@echo "... include/igl/draw_floor.i"
-	@echo "... include/igl/draw_floor.s"
-	@echo "... include/igl/draw_mesh.o"
-	@echo "... include/igl/draw_mesh.i"
-	@echo "... include/igl/draw_mesh.s"
-	@echo "... include/igl/draw_point.o"
-	@echo "... include/igl/draw_point.i"
-	@echo "... include/igl/draw_point.s"
-	@echo "... include/igl/draw_rectangular_marquee.o"
-	@echo "... include/igl/draw_rectangular_marquee.i"
-	@echo "... include/igl/draw_rectangular_marquee.s"
-	@echo "... include/igl/draw_skeleton_3d.o"
-	@echo "... include/igl/draw_skeleton_3d.i"
-	@echo "... include/igl/draw_skeleton_3d.s"
-	@echo "... include/igl/draw_skeleton_vector_graphics.o"
-	@echo "... include/igl/draw_skeleton_vector_graphics.i"
-	@echo "... include/igl/draw_skeleton_vector_graphics.s"
-	@echo "... include/igl/edge_collapse_is_valid.o"
-	@echo "... include/igl/edge_collapse_is_valid.i"
-	@echo "... include/igl/edge_collapse_is_valid.s"
-	@echo "... include/igl/edge_flaps.o"
-	@echo "... include/igl/edge_flaps.i"
-	@echo "... include/igl/edge_flaps.s"
-	@echo "... include/igl/edge_lengths.o"
-	@echo "... include/igl/edge_lengths.i"
-	@echo "... include/igl/edge_lengths.s"
-	@echo "... include/igl/edge_topology.o"
-	@echo "... include/igl/edge_topology.i"
-	@echo "... include/igl/edge_topology.s"
-	@echo "... include/igl/edges.o"
-	@echo "... include/igl/edges.i"
-	@echo "... include/igl/edges.s"
-	@echo "... include/igl/embree/ambient_occlusion.o"
-	@echo "... include/igl/embree/ambient_occlusion.i"
-	@echo "... include/igl/embree/ambient_occlusion.s"
-	@echo "... include/igl/embree/bone_heat.o"
-	@echo "... include/igl/embree/bone_heat.i"
-	@echo "... include/igl/embree/bone_heat.s"
-	@echo "... include/igl/embree/bone_visible.o"
-	@echo "... include/igl/embree/bone_visible.i"
-	@echo "... include/igl/embree/bone_visible.s"
-	@echo "... include/igl/embree/line_mesh_intersection.o"
-	@echo "... include/igl/embree/line_mesh_intersection.i"
-	@echo "... include/igl/embree/line_mesh_intersection.s"
-	@echo "... include/igl/embree/reorient_facets_raycast.o"
-	@echo "... include/igl/embree/reorient_facets_raycast.i"
-	@echo "... include/igl/embree/reorient_facets_raycast.s"
-	@echo "... include/igl/embree/unproject_in_mesh.o"
-	@echo "... include/igl/embree/unproject_in_mesh.i"
-	@echo "... include/igl/embree/unproject_in_mesh.s"
-	@echo "... include/igl/embree/unproject_onto_mesh.o"
-	@echo "... include/igl/embree/unproject_onto_mesh.i"
-	@echo "... include/igl/embree/unproject_onto_mesh.s"
-	@echo "... include/igl/example_fun.o"
-	@echo "... include/igl/example_fun.i"
-	@echo "... include/igl/example_fun.s"
-	@echo "... include/igl/exterior_edges.o"
-	@echo "... include/igl/exterior_edges.i"
-	@echo "... include/igl/exterior_edges.s"
-	@echo "... include/igl/face_areas.o"
-	@echo "... include/igl/face_areas.i"
-	@echo "... include/igl/face_areas.s"
-	@echo "... include/igl/face_occurrences.o"
-	@echo "... include/igl/face_occurrences.i"
-	@echo "... include/igl/face_occurrences.s"
-	@echo "... include/igl/faces_first.o"
-	@echo "... include/igl/faces_first.i"
-	@echo "... include/igl/faces_first.s"
-	@echo "... include/igl/facet_components.o"
-	@echo "... include/igl/facet_components.i"
-	@echo "... include/igl/facet_components.s"
-	@echo "... include/igl/false_barycentric_subdivision.o"
-	@echo "... include/igl/false_barycentric_subdivision.i"
-	@echo "... include/igl/false_barycentric_subdivision.s"
-	@echo "... include/igl/file_contents_as_string.o"
-	@echo "... include/igl/file_contents_as_string.i"
-	@echo "... include/igl/file_contents_as_string.s"
-	@echo "... include/igl/file_dialog_open.o"
-	@echo "... include/igl/file_dialog_open.i"
-	@echo "... include/igl/file_dialog_open.s"
-	@echo "... include/igl/file_dialog_save.o"
-	@echo "... include/igl/file_dialog_save.i"
-	@echo "... include/igl/file_dialog_save.s"
-	@echo "... include/igl/file_exists.o"
-	@echo "... include/igl/file_exists.i"
-	@echo "... include/igl/file_exists.s"
-	@echo "... include/igl/find.o"
-	@echo "... include/igl/find.i"
-	@echo "... include/igl/find.s"
-	@echo "... include/igl/find_cross_field_singularities.o"
-	@echo "... include/igl/find_cross_field_singularities.i"
-	@echo "... include/igl/find_cross_field_singularities.s"
-	@echo "... include/igl/fit_plane.o"
-	@echo "... include/igl/fit_plane.i"
-	@echo "... include/igl/fit_plane.s"
-	@echo "... include/igl/fit_rigid.o"
-	@echo "... include/igl/fit_rigid.i"
-	@echo "... include/igl/fit_rigid.s"
-	@echo "... include/igl/floor.o"
-	@echo "... include/igl/floor.i"
-	@echo "... include/igl/floor.s"
-	@echo "... include/igl/forward_kinematics.o"
-	@echo "... include/igl/forward_kinematics.i"
-	@echo "... include/igl/forward_kinematics.s"
-	@echo "... include/igl/frame_field_deformer.o"
-	@echo "... include/igl/frame_field_deformer.i"
-	@echo "... include/igl/frame_field_deformer.s"
-	@echo "... include/igl/frame_to_cross_field.o"
-	@echo "... include/igl/frame_to_cross_field.i"
-	@echo "... include/igl/frame_to_cross_field.s"
-	@echo "... include/igl/frustum.o"
-	@echo "... include/igl/frustum.i"
-	@echo "... include/igl/frustum.s"
-	@echo "... include/igl/full.o"
-	@echo "... include/igl/full.i"
-	@echo "... include/igl/full.s"
-	@echo "... include/igl/gaussian_curvature.o"
-	@echo "... include/igl/gaussian_curvature.i"
-	@echo "... include/igl/gaussian_curvature.s"
-	@echo "... include/igl/get_seconds.o"
-	@echo "... include/igl/get_seconds.i"
-	@echo "... include/igl/get_seconds.s"
-	@echo "... include/igl/get_seconds_hires.o"
-	@echo "... include/igl/get_seconds_hires.i"
-	@echo "... include/igl/get_seconds_hires.s"
-	@echo "... include/igl/gl_type_size.o"
-	@echo "... include/igl/gl_type_size.i"
-	@echo "... include/igl/gl_type_size.s"
-	@echo "... include/igl/grad.o"
-	@echo "... include/igl/grad.i"
-	@echo "... include/igl/grad.s"
-	@echo "... include/igl/group_sum_matrix.o"
-	@echo "... include/igl/group_sum_matrix.i"
-	@echo "... include/igl/group_sum_matrix.s"
-	@echo "... include/igl/harmonic.o"
-	@echo "... include/igl/harmonic.i"
-	@echo "... include/igl/harmonic.s"
-	@echo "... include/igl/harwell_boeing.o"
-	@echo "... include/igl/harwell_boeing.i"
-	@echo "... include/igl/harwell_boeing.s"
-	@echo "... include/igl/histc.o"
-	@echo "... include/igl/histc.i"
-	@echo "... include/igl/histc.s"
-	@echo "... include/igl/hsv_to_rgb.o"
-	@echo "... include/igl/hsv_to_rgb.i"
-	@echo "... include/igl/hsv_to_rgb.s"
-	@echo "... include/igl/in_element.o"
-	@echo "... include/igl/in_element.i"
-	@echo "... include/igl/in_element.s"
-	@echo "... include/igl/init_render_to_texture.o"
-	@echo "... include/igl/init_render_to_texture.i"
-	@echo "... include/igl/init_render_to_texture.s"
-	@echo "... include/igl/internal_angles.o"
-	@echo "... include/igl/internal_angles.i"
-	@echo "... include/igl/internal_angles.s"
-	@echo "... include/igl/intersect.o"
-	@echo "... include/igl/intersect.i"
-	@echo "... include/igl/intersect.s"
-	@echo "... include/igl/invert_diag.o"
-	@echo "... include/igl/invert_diag.i"
-	@echo "... include/igl/invert_diag.s"
-	@echo "... include/igl/is_border_vertex.o"
-	@echo "... include/igl/is_border_vertex.i"
-	@echo "... include/igl/is_border_vertex.s"
-	@echo "... include/igl/is_boundary_edge.o"
-	@echo "... include/igl/is_boundary_edge.i"
-	@echo "... include/igl/is_boundary_edge.s"
-	@echo "... include/igl/is_dir.o"
-	@echo "... include/igl/is_dir.i"
-	@echo "... include/igl/is_dir.s"
-	@echo "... include/igl/is_edge_manifold.o"
-	@echo "... include/igl/is_edge_manifold.i"
-	@echo "... include/igl/is_edge_manifold.s"
-	@echo "... include/igl/is_file.o"
-	@echo "... include/igl/is_file.i"
-	@echo "... include/igl/is_file.s"
-	@echo "... include/igl/is_irregular_vertex.o"
-	@echo "... include/igl/is_irregular_vertex.i"
-	@echo "... include/igl/is_irregular_vertex.s"
-	@echo "... include/igl/is_planar.o"
-	@echo "... include/igl/is_planar.i"
-	@echo "... include/igl/is_planar.s"
-	@echo "... include/igl/is_readable.o"
-	@echo "... include/igl/is_readable.i"
-	@echo "... include/igl/is_readable.s"
-	@echo "... include/igl/is_sparse.o"
-	@echo "... include/igl/is_sparse.i"
-	@echo "... include/igl/is_sparse.s"
-	@echo "... include/igl/is_symmetric.o"
-	@echo "... include/igl/is_symmetric.i"
-	@echo "... include/igl/is_symmetric.s"
-	@echo "... include/igl/is_vertex_manifold.o"
-	@echo "... include/igl/is_vertex_manifold.i"
-	@echo "... include/igl/is_vertex_manifold.s"
-	@echo "... include/igl/is_writable.o"
-	@echo "... include/igl/is_writable.i"
-	@echo "... include/igl/is_writable.s"
-	@echo "... include/igl/jet.o"
-	@echo "... include/igl/jet.i"
-	@echo "... include/igl/jet.s"
-	@echo "... include/igl/kronecker_product.o"
-	@echo "... include/igl/kronecker_product.i"
-	@echo "... include/igl/kronecker_product.s"
-	@echo "... include/igl/launch_medit.o"
-	@echo "... include/igl/launch_medit.i"
-	@echo "... include/igl/launch_medit.s"
-	@echo "... include/igl/lbs_matrix.o"
-	@echo "... include/igl/lbs_matrix.i"
-	@echo "... include/igl/lbs_matrix.s"
-	@echo "... include/igl/lens_flare.o"
-	@echo "... include/igl/lens_flare.i"
-	@echo "... include/igl/lens_flare.s"
-	@echo "... include/igl/lim/lim.o"
-	@echo "... include/igl/lim/lim.i"
-	@echo "... include/igl/lim/lim.s"
-	@echo "... include/igl/limit_faces.o"
-	@echo "... include/igl/limit_faces.i"
-	@echo "... include/igl/limit_faces.s"
-	@echo "... include/igl/line_field_missmatch.o"
-	@echo "... include/igl/line_field_missmatch.i"
-	@echo "... include/igl/line_field_missmatch.s"
-	@echo "... include/igl/line_segment_in_rectangle.o"
-	@echo "... include/igl/line_segment_in_rectangle.i"
-	@echo "... include/igl/line_segment_in_rectangle.s"
-	@echo "... include/igl/linprog.o"
-	@echo "... include/igl/linprog.i"
-	@echo "... include/igl/linprog.s"
-	@echo "... include/igl/list_to_matrix.o"
-	@echo "... include/igl/list_to_matrix.i"
-	@echo "... include/igl/list_to_matrix.s"
-	@echo "... include/igl/load_shader.o"
-	@echo "... include/igl/load_shader.i"
-	@echo "... include/igl/load_shader.s"
-	@echo "... include/igl/local_basis.o"
-	@echo "... include/igl/local_basis.i"
-	@echo "... include/igl/local_basis.s"
-	@echo "... include/igl/look_at.o"
-	@echo "... include/igl/look_at.i"
-	@echo "... include/igl/look_at.s"
-	@echo "... include/igl/lscm.o"
-	@echo "... include/igl/lscm.i"
-	@echo "... include/igl/lscm.s"
-	@echo "... include/igl/lu_lagrange.o"
-	@echo "... include/igl/lu_lagrange.i"
-	@echo "... include/igl/lu_lagrange.s"
-	@echo "... include/igl/map_vertices_to_circle.o"
-	@echo "... include/igl/map_vertices_to_circle.i"
-	@echo "... include/igl/map_vertices_to_circle.s"
-	@echo "... include/igl/marching_cubes.o"
-	@echo "... include/igl/marching_cubes.i"
-	@echo "... include/igl/marching_cubes.s"
-	@echo "... include/igl/massmatrix.o"
-	@echo "... include/igl/massmatrix.i"
-	@echo "... include/igl/massmatrix.s"
-	@echo "... include/igl/mat_max.o"
-	@echo "... include/igl/mat_max.i"
-	@echo "... include/igl/mat_max.s"
-	@echo "... include/igl/mat_min.o"
-	@echo "... include/igl/mat_min.i"
-	@echo "... include/igl/mat_min.s"
-	@echo "... include/igl/mat_to_quat.o"
-	@echo "... include/igl/mat_to_quat.i"
-	@echo "... include/igl/mat_to_quat.s"
-	@echo "... include/igl/matlab/matlabinterface.o"
-	@echo "... include/igl/matlab/matlabinterface.i"
-	@echo "... include/igl/matlab/matlabinterface.s"
-	@echo "... include/igl/matlab/mexErrMsgTxt.o"
-	@echo "... include/igl/matlab/mexErrMsgTxt.i"
-	@echo "... include/igl/matlab/mexErrMsgTxt.s"
-	@echo "... include/igl/matlab/parse_rhs.o"
-	@echo "... include/igl/matlab/parse_rhs.i"
-	@echo "... include/igl/matlab/parse_rhs.s"
-	@echo "... include/igl/matlab/prepare_lhs.o"
-	@echo "... include/igl/matlab/prepare_lhs.i"
-	@echo "... include/igl/matlab/prepare_lhs.s"
-	@echo "... include/igl/matlab_format.o"
-	@echo "... include/igl/matlab_format.i"
-	@echo "... include/igl/matlab_format.s"
-	@echo "... include/igl/matrix_to_list.o"
-	@echo "... include/igl/matrix_to_list.i"
-	@echo "... include/igl/matrix_to_list.s"
-	@echo "... include/igl/max_size.o"
-	@echo "... include/igl/max_size.i"
-	@echo "... include/igl/max_size.s"
-	@echo "... include/igl/median.o"
-	@echo "... include/igl/median.i"
-	@echo "... include/igl/median.s"
-	@echo "... include/igl/min_quad_dense.o"
-	@echo "... include/igl/min_quad_dense.i"
-	@echo "... include/igl/min_quad_dense.s"
-	@echo "... include/igl/min_quad_with_fixed.o"
-	@echo "... include/igl/min_quad_with_fixed.i"
-	@echo "... include/igl/min_quad_with_fixed.s"
-	@echo "... include/igl/min_size.o"
-	@echo "... include/igl/min_size.i"
-	@echo "... include/igl/min_size.s"
-	@echo "... include/igl/mod.o"
-	@echo "... include/igl/mod.i"
-	@echo "... include/igl/mod.s"
-	@echo "... include/igl/mode.o"
-	@echo "... include/igl/mode.i"
-	@echo "... include/igl/mode.s"
-	@echo "... include/igl/mvc.o"
-	@echo "... include/igl/mvc.i"
-	@echo "... include/igl/mvc.s"
-	@echo "... include/igl/n_polyvector.o"
-	@echo "... include/igl/n_polyvector.i"
-	@echo "... include/igl/n_polyvector.s"
-	@echo "... include/igl/n_polyvector_general.o"
-	@echo "... include/igl/n_polyvector_general.i"
-	@echo "... include/igl/n_polyvector_general.s"
-	@echo "... include/igl/nchoosek.o"
-	@echo "... include/igl/nchoosek.i"
-	@echo "... include/igl/nchoosek.s"
-	@echo "... include/igl/next_filename.o"
-	@echo "... include/igl/next_filename.i"
-	@echo "... include/igl/next_filename.s"
-	@echo "... include/igl/normalize_quat.o"
-	@echo "... include/igl/normalize_quat.i"
-	@echo "... include/igl/normalize_quat.s"
-	@echo "... include/igl/normalize_row_lengths.o"
-	@echo "... include/igl/normalize_row_lengths.i"
-	@echo "... include/igl/normalize_row_lengths.s"
-	@echo "... include/igl/normalize_row_sums.o"
-	@echo "... include/igl/normalize_row_sums.i"
-	@echo "... include/igl/normalize_row_sums.s"
-	@echo "... include/igl/null.o"
-	@echo "... include/igl/null.i"
-	@echo "... include/igl/null.s"
-	@echo "... include/igl/on_boundary.o"
-	@echo "... include/igl/on_boundary.i"
-	@echo "... include/igl/on_boundary.s"
-	@echo "... include/igl/orient_outward.o"
-	@echo "... include/igl/orient_outward.i"
-	@echo "... include/igl/orient_outward.s"
-	@echo "... include/igl/orth.o"
-	@echo "... include/igl/orth.i"
-	@echo "... include/igl/orth.s"
-	@echo "... include/igl/ortho.o"
-	@echo "... include/igl/ortho.i"
-	@echo "... include/igl/ortho.s"
-	@echo "... include/igl/outer_facet.o"
-	@echo "... include/igl/outer_facet.i"
-	@echo "... include/igl/outer_facet.s"
-	@echo "... include/igl/partition.o"
-	@echo "... include/igl/partition.i"
-	@echo "... include/igl/partition.s"
-	@echo "... include/igl/parula.o"
-	@echo "... include/igl/parula.i"
-	@echo "... include/igl/parula.s"
-	@echo "... include/igl/path_to_executable.o"
-	@echo "... include/igl/path_to_executable.i"
-	@echo "... include/igl/path_to_executable.s"
-	@echo "... include/igl/pathinfo.o"
-	@echo "... include/igl/pathinfo.i"
-	@echo "... include/igl/pathinfo.s"
-	@echo "... include/igl/per_corner_normals.o"
-	@echo "... include/igl/per_corner_normals.i"
-	@echo "... include/igl/per_corner_normals.s"
-	@echo "... include/igl/per_edge_normals.o"
-	@echo "... include/igl/per_edge_normals.i"
-	@echo "... include/igl/per_edge_normals.s"
-	@echo "... include/igl/per_face_normals.o"
-	@echo "... include/igl/per_face_normals.i"
-	@echo "... include/igl/per_face_normals.s"
-	@echo "... include/igl/per_vertex_attribute_smoothing.o"
-	@echo "... include/igl/per_vertex_attribute_smoothing.i"
-	@echo "... include/igl/per_vertex_attribute_smoothing.s"
-	@echo "... include/igl/per_vertex_normals.o"
-	@echo "... include/igl/per_vertex_normals.i"
-	@echo "... include/igl/per_vertex_normals.s"
-	@echo "... include/igl/planarize_quad_mesh.o"
-	@echo "... include/igl/planarize_quad_mesh.i"
-	@echo "... include/igl/planarize_quad_mesh.s"
-	@echo "... include/igl/point_in_circle.o"
-	@echo "... include/igl/point_in_circle.i"
-	@echo "... include/igl/point_in_circle.s"
-	@echo "... include/igl/point_in_poly.o"
-	@echo "... include/igl/point_in_poly.i"
-	@echo "... include/igl/point_in_poly.s"
-	@echo "... include/igl/point_mesh_squared_distance.o"
-	@echo "... include/igl/point_mesh_squared_distance.i"
-	@echo "... include/igl/point_mesh_squared_distance.s"
-	@echo "... include/igl/polar_dec.o"
-	@echo "... include/igl/polar_dec.i"
-	@echo "... include/igl/polar_dec.s"
-	@echo "... include/igl/polar_svd.o"
-	@echo "... include/igl/polar_svd.i"
-	@echo "... include/igl/polar_svd.s"
-	@echo "... include/igl/polygon_mesh_to_triangle_mesh.o"
-	@echo "... include/igl/polygon_mesh_to_triangle_mesh.i"
-	@echo "... include/igl/polygon_mesh_to_triangle_mesh.s"
-	@echo "... include/igl/polyroots.o"
-	@echo "... include/igl/polyroots.i"
-	@echo "... include/igl/polyroots.s"
-	@echo "... include/igl/principal_curvature.o"
-	@echo "... include/igl/principal_curvature.i"
-	@echo "... include/igl/principal_curvature.s"
-	@echo "... include/igl/print_gl_get.o"
-	@echo "... include/igl/print_gl_get.i"
-	@echo "... include/igl/print_gl_get.s"
-	@echo "... include/igl/print_ijv.o"
-	@echo "... include/igl/print_ijv.i"
-	@echo "... include/igl/print_ijv.s"
-	@echo "... include/igl/print_program_info_log.o"
-	@echo "... include/igl/print_program_info_log.i"
-	@echo "... include/igl/print_program_info_log.s"
-	@echo "... include/igl/print_shader_info_log.o"
-	@echo "... include/igl/print_shader_info_log.i"
-	@echo "... include/igl/print_shader_info_log.s"
-	@echo "... include/igl/print_vector.o"
-	@echo "... include/igl/print_vector.i"
-	@echo "... include/igl/print_vector.s"
-	@echo "... include/igl/procrustes.o"
-	@echo "... include/igl/procrustes.i"
-	@echo "... include/igl/procrustes.s"
-	@echo "... include/igl/project.o"
-	@echo "... include/igl/project.i"
-	@echo "... include/igl/project.s"
-	@echo "... include/igl/project_isometrically_to_plane.o"
-	@echo "... include/igl/project_isometrically_to_plane.i"
-	@echo "... include/igl/project_isometrically_to_plane.s"
-	@echo "... include/igl/project_to_line.o"
-	@echo "... include/igl/project_to_line.i"
-	@echo "... include/igl/project_to_line.s"
-	@echo "... include/igl/project_to_line_segment.o"
-	@echo "... include/igl/project_to_line_segment.i"
-	@echo "... include/igl/project_to_line_segment.s"
-	@echo "... include/igl/quad_planarity.o"
-	@echo "... include/igl/quad_planarity.i"
-	@echo "... include/igl/quad_planarity.s"
-	@echo "... include/igl/quat_conjugate.o"
-	@echo "... include/igl/quat_conjugate.i"
-	@echo "... include/igl/quat_conjugate.s"
-	@echo "... include/igl/quat_mult.o"
-	@echo "... include/igl/quat_mult.i"
-	@echo "... include/igl/quat_mult.s"
-	@echo "... include/igl/quat_to_axis_angle.o"
-	@echo "... include/igl/quat_to_axis_angle.i"
-	@echo "... include/igl/quat_to_axis_angle.s"
-	@echo "... include/igl/quat_to_mat.o"
-	@echo "... include/igl/quat_to_mat.i"
-	@echo "... include/igl/quat_to_mat.s"
-	@echo "... include/igl/quats_to_column.o"
-	@echo "... include/igl/quats_to_column.i"
-	@echo "... include/igl/quats_to_column.s"
-	@echo "... include/igl/random_dir.o"
-	@echo "... include/igl/random_dir.i"
-	@echo "... include/igl/random_dir.s"
-	@echo "... include/igl/random_points_on_mesh.o"
-	@echo "... include/igl/random_points_on_mesh.i"
-	@echo "... include/igl/random_points_on_mesh.s"
-	@echo "... include/igl/random_quaternion.o"
-	@echo "... include/igl/random_quaternion.i"
-	@echo "... include/igl/random_quaternion.s"
-	@echo "... include/igl/randperm.o"
-	@echo "... include/igl/randperm.i"
-	@echo "... include/igl/randperm.s"
-	@echo "... include/igl/ray_sphere_intersect.o"
-	@echo "... include/igl/ray_sphere_intersect.i"
-	@echo "... include/igl/ray_sphere_intersect.s"
-	@echo "... include/igl/readCSV.o"
-	@echo "... include/igl/readCSV.i"
-	@echo "... include/igl/readCSV.s"
-	@echo "... include/igl/readDMAT.o"
-	@echo "... include/igl/readDMAT.i"
-	@echo "... include/igl/readDMAT.s"
-	@echo "... include/igl/readMESH.o"
-	@echo "... include/igl/readMESH.i"
-	@echo "... include/igl/readMESH.s"
-	@echo "... include/igl/readNODE.o"
-	@echo "... include/igl/readNODE.i"
-	@echo "... include/igl/readNODE.s"
-	@echo "... include/igl/readOBJ.o"
-	@echo "... include/igl/readOBJ.i"
-	@echo "... include/igl/readOBJ.s"
-	@echo "... include/igl/readOFF.o"
-	@echo "... include/igl/readOFF.i"
-	@echo "... include/igl/readOFF.s"
-	@echo "... include/igl/readPLY.o"
-	@echo "... include/igl/readPLY.i"
-	@echo "... include/igl/readPLY.s"
-	@echo "... include/igl/readSTL.o"
-	@echo "... include/igl/readSTL.i"
-	@echo "... include/igl/readSTL.s"
-	@echo "... include/igl/readTGF.o"
-	@echo "... include/igl/readTGF.i"
-	@echo "... include/igl/readTGF.s"
-	@echo "... include/igl/readWRL.o"
-	@echo "... include/igl/readWRL.i"
-	@echo "... include/igl/readWRL.s"
-	@echo "... include/igl/read_triangle_mesh.o"
-	@echo "... include/igl/read_triangle_mesh.i"
-	@echo "... include/igl/read_triangle_mesh.s"
-	@echo "... include/igl/remove_duplicate_vertices.o"
-	@echo "... include/igl/remove_duplicate_vertices.i"
-	@echo "... include/igl/remove_duplicate_vertices.s"
-	@echo "... include/igl/remove_duplicates.o"
-	@echo "... include/igl/remove_duplicates.i"
-	@echo "... include/igl/remove_duplicates.s"
-	@echo "... include/igl/remove_unreferenced.o"
-	@echo "... include/igl/remove_unreferenced.i"
-	@echo "... include/igl/remove_unreferenced.s"
-	@echo "... include/igl/render_to_tga.o"
-	@echo "... include/igl/render_to_tga.i"
-	@echo "... include/igl/render_to_tga.s"
-	@echo "... include/igl/reorder.o"
-	@echo "... include/igl/reorder.i"
-	@echo "... include/igl/reorder.s"
-	@echo "... include/igl/repdiag.o"
-	@echo "... include/igl/repdiag.i"
-	@echo "... include/igl/repdiag.s"
-	@echo "... include/igl/repmat.o"
-	@echo "... include/igl/repmat.i"
-	@echo "... include/igl/repmat.s"
-	@echo "... include/igl/report_gl_error.o"
-	@echo "... include/igl/report_gl_error.i"
-	@echo "... include/igl/report_gl_error.s"
-	@echo "... include/igl/rgb_to_hsv.o"
-	@echo "... include/igl/rgb_to_hsv.i"
-	@echo "... include/igl/rgb_to_hsv.s"
-	@echo "... include/igl/right_axis.o"
-	@echo "... include/igl/right_axis.i"
-	@echo "... include/igl/right_axis.s"
-	@echo "... include/igl/rotate_by_quat.o"
-	@echo "... include/igl/rotate_by_quat.i"
-	@echo "... include/igl/rotate_by_quat.s"
-	@echo "... include/igl/rotate_vectors.o"
-	@echo "... include/igl/rotate_vectors.i"
-	@echo "... include/igl/rotate_vectors.s"
-	@echo "... include/igl/rotation_matrix_from_directions.o"
-	@echo "... include/igl/rotation_matrix_from_directions.i"
-	@echo "... include/igl/rotation_matrix_from_directions.s"
-	@echo "... include/igl/round.o"
-	@echo "... include/igl/round.i"
-	@echo "... include/igl/round.s"
-	@echo "... include/igl/rows_to_matrix.o"
-	@echo "... include/igl/rows_to_matrix.i"
-	@echo "... include/igl/rows_to_matrix.s"
-	@echo "... include/igl/sample_edges.o"
-	@echo "... include/igl/sample_edges.i"
-	@echo "... include/igl/sample_edges.s"
-	@echo "... include/igl/setdiff.o"
-	@echo "... include/igl/setdiff.i"
-	@echo "... include/igl/setdiff.s"
-	@echo "... include/igl/signed_distance.o"
-	@echo "... include/igl/signed_distance.i"
-	@echo "... include/igl/signed_distance.s"
-	@echo "... include/igl/slice.o"
-	@echo "... include/igl/slice.i"
-	@echo "... include/igl/slice.s"
-	@echo "... include/igl/slice_into.o"
-	@echo "... include/igl/slice_into.i"
-	@echo "... include/igl/slice_into.s"
-	@echo "... include/igl/slice_mask.o"
-	@echo "... include/igl/slice_mask.i"
-	@echo "... include/igl/slice_mask.s"
-	@echo "... include/igl/slice_tets.o"
-	@echo "... include/igl/slice_tets.i"
-	@echo "... include/igl/slice_tets.s"
-	@echo "... include/igl/snap_points.o"
-	@echo "... include/igl/snap_points.i"
-	@echo "... include/igl/snap_points.s"
-	@echo "... include/igl/snap_to_canonical_view_quat.o"
-	@echo "... include/igl/snap_to_canonical_view_quat.i"
-	@echo "... include/igl/snap_to_canonical_view_quat.s"
-	@echo "... include/igl/snap_to_fixed_up.o"
-	@echo "... include/igl/snap_to_fixed_up.i"
-	@echo "... include/igl/snap_to_fixed_up.s"
-	@echo "... include/igl/sort.o"
-	@echo "... include/igl/sort.i"
-	@echo "... include/igl/sort.s"
-	@echo "... include/igl/sort_angles.o"
-	@echo "... include/igl/sort_angles.i"
-	@echo "... include/igl/sort_angles.s"
-	@echo "... include/igl/sort_triangles.o"
-	@echo "... include/igl/sort_triangles.i"
-	@echo "... include/igl/sort_triangles.s"
-	@echo "... include/igl/sortrows.o"
-	@echo "... include/igl/sortrows.i"
-	@echo "... include/igl/sortrows.s"
-	@echo "... include/igl/sparse.o"
-	@echo "... include/igl/sparse.i"
-	@echo "... include/igl/sparse.s"
-	@echo "... include/igl/speye.o"
-	@echo "... include/igl/speye.i"
-	@echo "... include/igl/speye.s"
-	@echo "... include/igl/stdin_to_temp.o"
-	@echo "... include/igl/stdin_to_temp.i"
-	@echo "... include/igl/stdin_to_temp.s"
-	@echo "... include/igl/sum.o"
-	@echo "... include/igl/sum.i"
-	@echo "... include/igl/sum.s"
-	@echo "... include/igl/svd3x3/arap.o"
-	@echo "... include/igl/svd3x3/arap.i"
-	@echo "... include/igl/svd3x3/arap.s"
-	@echo "... include/igl/svd3x3/arap_dof.o"
-	@echo "... include/igl/svd3x3/arap_dof.i"
-	@echo "... include/igl/svd3x3/arap_dof.s"
-	@echo "... include/igl/svd3x3/fit_rotations.o"
-	@echo "... include/igl/svd3x3/fit_rotations.i"
-	@echo "... include/igl/svd3x3/fit_rotations.s"
-	@echo "... include/igl/svd3x3/polar_svd3x3.o"
-	@echo "... include/igl/svd3x3/polar_svd3x3.i"
-	@echo "... include/igl/svd3x3/polar_svd3x3.s"
-	@echo "... include/igl/svd3x3/svd3x3.o"
-	@echo "... include/igl/svd3x3/svd3x3.i"
-	@echo "... include/igl/svd3x3/svd3x3.s"
-	@echo "... include/igl/svd3x3/svd3x3_avx.o"
-	@echo "... include/igl/svd3x3/svd3x3_avx.i"
-	@echo "... include/igl/svd3x3/svd3x3_avx.s"
-	@echo "... include/igl/svd3x3/svd3x3_sse.o"
-	@echo "... include/igl/svd3x3/svd3x3_sse.i"
-	@echo "... include/igl/svd3x3/svd3x3_sse.s"
-	@echo "... include/igl/tetgen/cdt.o"
-	@echo "... include/igl/tetgen/cdt.i"
-	@echo "... include/igl/tetgen/cdt.s"
-	@echo "... include/igl/tetgen/mesh_to_tetgenio.o"
-	@echo "... include/igl/tetgen/mesh_to_tetgenio.i"
-	@echo "... include/igl/tetgen/mesh_to_tetgenio.s"
-	@echo "... include/igl/tetgen/mesh_with_skeleton.o"
-	@echo "... include/igl/tetgen/mesh_with_skeleton.i"
-	@echo "... include/igl/tetgen/mesh_with_skeleton.s"
-	@echo "... include/igl/tetgen/read_into_tetgenio.o"
-	@echo "... include/igl/tetgen/read_into_tetgenio.i"
-	@echo "... include/igl/tetgen/read_into_tetgenio.s"
-	@echo "... include/igl/tetgen/tetgenio_to_tetmesh.o"
-	@echo "... include/igl/tetgen/tetgenio_to_tetmesh.i"
-	@echo "... include/igl/tetgen/tetgenio_to_tetmesh.s"
-	@echo "... include/igl/tetgen/tetrahedralize.o"
-	@echo "... include/igl/tetgen/tetrahedralize.i"
-	@echo "... include/igl/tetgen/tetrahedralize.s"
-	@echo "... include/igl/texture_from_tga.o"
-	@echo "... include/igl/texture_from_tga.i"
-	@echo "... include/igl/texture_from_tga.s"
-	@echo "... include/igl/tga.o"
-	@echo "... include/igl/tga.i"
-	@echo "... include/igl/tga.s"
-	@echo "... include/igl/trackball.o"
-	@echo "... include/igl/trackball.i"
-	@echo "... include/igl/trackball.s"
-	@echo "... include/igl/transpose_blocks.o"
-	@echo "... include/igl/transpose_blocks.i"
-	@echo "... include/igl/transpose_blocks.s"
-	@echo "... include/igl/triangle/triangulate.o"
-	@echo "... include/igl/triangle/triangulate.i"
-	@echo "... include/igl/triangle/triangulate.s"
-	@echo "... include/igl/triangle_fan.o"
-	@echo "... include/igl/triangle_fan.i"
-	@echo "... include/igl/triangle_fan.s"
-	@echo "... include/igl/triangle_triangle_adjacency.o"
-	@echo "... include/igl/triangle_triangle_adjacency.i"
-	@echo "... include/igl/triangle_triangle_adjacency.s"
-	@echo "... include/igl/triangles_from_strip.o"
-	@echo "... include/igl/triangles_from_strip.i"
-	@echo "... include/igl/triangles_from_strip.s"
-	@echo "... include/igl/two_axis_valuator_fixed_up.o"
-	@echo "... include/igl/two_axis_valuator_fixed_up.i"
-	@echo "... include/igl/two_axis_valuator_fixed_up.s"
-	@echo "... include/igl/uniform_type_to_string.o"
-	@echo "... include/igl/uniform_type_to_string.i"
-	@echo "... include/igl/uniform_type_to_string.s"
-	@echo "... include/igl/uniformly_sample_two_manifold.o"
-	@echo "... include/igl/uniformly_sample_two_manifold.i"
-	@echo "... include/igl/uniformly_sample_two_manifold.s"
-	@echo "... include/igl/unique.o"
-	@echo "... include/igl/unique.i"
-	@echo "... include/igl/unique.s"
-	@echo "... include/igl/unique_edge_map.o"
-	@echo "... include/igl/unique_edge_map.i"
-	@echo "... include/igl/unique_edge_map.s"
-	@echo "... include/igl/unique_simplices.o"
-	@echo "... include/igl/unique_simplices.i"
-	@echo "... include/igl/unique_simplices.s"
-	@echo "... include/igl/unproject.o"
-	@echo "... include/igl/unproject.i"
-	@echo "... include/igl/unproject.s"
-	@echo "... include/igl/unproject_to_zero_plane.o"
-	@echo "... include/igl/unproject_to_zero_plane.i"
-	@echo "... include/igl/unproject_to_zero_plane.s"
-	@echo "... include/igl/up_axis.o"
-	@echo "... include/igl/up_axis.i"
-	@echo "... include/igl/up_axis.s"
-	@echo "... include/igl/upsample.o"
-	@echo "... include/igl/upsample.i"
-	@echo "... include/igl/upsample.s"
-	@echo "... include/igl/vector_area_matrix.o"
-	@echo "... include/igl/vector_area_matrix.i"
-	@echo "... include/igl/vector_area_matrix.s"
-	@echo "... include/igl/vertex_triangle_adjacency.o"
-	@echo "... include/igl/vertex_triangle_adjacency.i"
-	@echo "... include/igl/vertex_triangle_adjacency.s"
-	@echo "... include/igl/view_axis.o"
-	@echo "... include/igl/view_axis.i"
-	@echo "... include/igl/view_axis.s"
-	@echo "... include/igl/viewer/OpenGL_shader.o"
-	@echo "... include/igl/viewer/OpenGL_shader.i"
-	@echo "... include/igl/viewer/OpenGL_shader.s"
-	@echo "... include/igl/viewer/OpenGL_state.o"
-	@echo "... include/igl/viewer/OpenGL_state.i"
-	@echo "... include/igl/viewer/OpenGL_state.s"
-	@echo "... include/igl/viewer/TextRenderer.o"
-	@echo "... include/igl/viewer/TextRenderer.i"
-	@echo "... include/igl/viewer/TextRenderer.s"
-	@echo "... include/igl/viewer/Viewer.o"
-	@echo "... include/igl/viewer/Viewer.i"
-	@echo "... include/igl/viewer/Viewer.s"
-	@echo "... include/igl/viewer/ViewerCore.o"
-	@echo "... include/igl/viewer/ViewerCore.i"
-	@echo "... include/igl/viewer/ViewerCore.s"
-	@echo "... include/igl/viewer/ViewerData.o"
-	@echo "... include/igl/viewer/ViewerData.i"
-	@echo "... include/igl/viewer/ViewerData.s"
-	@echo "... include/igl/volume.o"
-	@echo "... include/igl/volume.i"
-	@echo "... include/igl/volume.s"
-	@echo "... include/igl/winding_number.o"
-	@echo "... include/igl/winding_number.i"
-	@echo "... include/igl/winding_number.s"
-	@echo "... include/igl/writeDMAT.o"
-	@echo "... include/igl/writeDMAT.i"
-	@echo "... include/igl/writeDMAT.s"
-	@echo "... include/igl/writeMESH.o"
-	@echo "... include/igl/writeMESH.i"
-	@echo "... include/igl/writeMESH.s"
-	@echo "... include/igl/writeOBJ.o"
-	@echo "... include/igl/writeOBJ.i"
-	@echo "... include/igl/writeOBJ.s"
-	@echo "... include/igl/writeOFF.o"
-	@echo "... include/igl/writeOFF.i"
-	@echo "... include/igl/writeOFF.s"
-	@echo "... include/igl/writePLY.o"
-	@echo "... include/igl/writePLY.i"
-	@echo "... include/igl/writePLY.s"
-	@echo "... include/igl/writeSTL.o"
-	@echo "... include/igl/writeSTL.i"
-	@echo "... include/igl/writeSTL.s"
-	@echo "... include/igl/writeTGF.o"
-	@echo "... include/igl/writeTGF.i"
-	@echo "... include/igl/writeTGF.s"
-	@echo "... include/igl/writeWRL.o"
-	@echo "... include/igl/writeWRL.i"
-	@echo "... include/igl/writeWRL.s"
-	@echo "... include/igl/write_triangle_mesh.o"
-	@echo "... include/igl/write_triangle_mesh.i"
-	@echo "... include/igl/write_triangle_mesh.s"
-	@echo "... include/igl/xml/serialization_test.o"
-	@echo "... include/igl/xml/serialization_test.i"
-	@echo "... include/igl/xml/serialization_test.s"
-	@echo "... include/igl/xml/serialize_xml.o"
-	@echo "... include/igl/xml/serialize_xml.i"
-	@echo "... include/igl/xml/serialize_xml.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/EPS.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/EPS.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/EPS.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/active_set.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/active_set.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/active_set.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_list.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/adjacency_matrix.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/all_edges.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/all_pairs_distances.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/angle_bound_frame_fields.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/angular_distance.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/ReAntTweakBar.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/anttweakbar/cocoa_key_to_anttweakbar_key.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/any_of.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/any_of.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/any_of.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/arap.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/arap.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/arap.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/arap_dof.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/arap_linear_block.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/arap_rhs.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_faces.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/average_onto_vertices.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/avg_edge_length.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/axis_angle_to_quat.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/barycenter.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_coordinates.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/barycentric_to_global.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/basename.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/basename.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/basename.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bbw/bbw.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bfs_orient.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/biharmonic_coordinates.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bone_parents.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boolean/from_cork_mesh.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boolean/mesh_boolean_cork.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boolean/to_cork_mesh.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boundary_conditions.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boundary_facets.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/boundary_loop.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/bounding_box_diagonal.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/canonical_quaternions.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cat.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cat.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cat.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/ceil.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/ceil.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/ceil.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/centroid.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/centroid.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/centroid.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/complex_to_mesh.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/intersect_other.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_cgal_triangle_list.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/mesh_to_polyhedron.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/order_facets_around_edges.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/outer_hull.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/peel_outer_hull_layers.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/point_mesh_squared_distance.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/polyhedron_to_mesh.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/remesh_self_intersections.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cgal/signed_distance_isosurface.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/circulation.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/circulation.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/circulation.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/collapse_edge.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/collapse_small_triangles.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/colon.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/colon.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/colon.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/column_to_quats.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/columnize.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/columnize.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/columnize.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comb_cross_field.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comb_frame_field.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comb_line_field.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comiso/frame_field.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comiso/miq.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/comiso/nrosy.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/compile_and_link_program.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/compile_shader.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/components.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/components.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/components.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/compute_frame_field_bisectors.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/conjugate_frame_fields.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cotmatrix_entries.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/covariance_scatter_matrix.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/create_index_vbo.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/create_mesh_vbo.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/create_shader_program.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/create_vector_vbo.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cross.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cross.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cross.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cross_field_missmatch.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/crouzeix_raviart_massmatrix.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cumsum.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/cut_mesh_from_singularities.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dated_copy.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/decimate.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/decimate.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/decimate.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/deform_skeleton.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/destroy_shader_program.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/diag.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/diag.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/diag.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dihedral_angles.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_orientations.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/directed_edge_parents.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dirname.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dirname.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dirname.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dot.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dot.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dot.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dot_row.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/doublearea.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dqs.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dqs.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/dqs.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_beach_ball.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_floor.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_mesh.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_point.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_rectangular_marquee.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_3d.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/draw_skeleton_vector_graphics.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edge_collapse_is_valid.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edge_flaps.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edge_lengths.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edge_topology.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edges.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edges.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/edges.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/ambient_occlusion.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_heat.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/bone_visible.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/line_mesh_intersection.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/reorient_facets_raycast.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_in_mesh.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/embree/unproject_onto_mesh.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/example_fun.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/exterior_edges.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/face_areas.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/face_occurrences.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/faces_first.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/facet_components.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/false_barycentric_subdivision.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/file_contents_as_string.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_open.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/file_dialog_save.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/file_exists.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/find.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/find.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/find.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/find_cross_field_singularities.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/fit_plane.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/fit_rigid.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/fit_rotations.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/floor.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/floor.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/floor.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/forward_kinematics.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/frame_field_deformer.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/frame_to_cross_field.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/frustum.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/frustum.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/frustum.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/full.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/full.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/full.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/gaussian_curvature.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/get_seconds_hires.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/gl_type_size.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/grad.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/grad.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/grad.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/group_sum_matrix.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/harmonic.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/harwell_boeing.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/histc.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/histc.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/histc.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/hsv_to_rgb.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/in_element.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/in_element.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/in_element.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/init_render_to_texture.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/internal_angles.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/intersect.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/intersect.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/intersect.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/invert_diag.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_border_vertex.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_boundary_edge.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_dir.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_edge_manifold.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_file.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_file.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_file.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_irregular_vertex.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_planar.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_readable.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_sparse.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_symmetric.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_vertex_manifold.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/is_writable.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/jet.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/jet.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/jet.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/launch_medit.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/lbs_matrix.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/lens_flare.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/limit_faces.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/line_field_missmatch.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/line_segment_in_rectangle.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/linprog.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/linprog.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/linprog.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/list_to_matrix.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/load_shader.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/local_basis.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/look_at.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/look_at.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/look_at.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/lscm.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/lscm.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/lscm.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/lu_lagrange.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/map_vertices_to_circle.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/marching_cubes.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/massmatrix.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mat_max.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mat_min.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mat_to_quat.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab/matlabinterface.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab/mexErrMsgTxt.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab/parse_rhs.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab/prepare_lhs.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matlab_format.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/matrix_to_list.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/max_size.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/max_size.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/max_size.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/median.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/median.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/median.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_dense.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/min_quad_with_fixed.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/min_size.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/min_size.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/min_size.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mod.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mod.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mod.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mode.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mode.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mode.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mvc.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mvc.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/mvc.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/n_polyvector_general.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/nchoosek.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/next_filename.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/normal_derivative.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/normalize_quat.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_lengths.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/normalize_row_sums.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/null.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/null.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/null.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/on_boundary.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/orient_outward.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/orientable_patches.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/orth.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/orth.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/orth.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/ortho.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/ortho.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/ortho.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/outer_facet.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/partition.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/partition.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/partition.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/parula.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/parula.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/parula.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/path_to_executable.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/pathinfo.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_corner_normals.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_edge_normals.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_face_normals.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_attribute_smoothing.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/per_vertex_normals.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/planarize_quad_mesh.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/png/render_to_png_async.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_file.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/png/texture_from_png.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/point_in_circle.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/point_in_poly.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/point_mesh_squared_distance.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polar_dec.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polar_svd3x3.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polygon_mesh_to_triangle_mesh.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/polyroots.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/principal_curvature.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_gl_get.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_ijv.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_program_info_log.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_shader_info_log.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/print_vector.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/procrustes.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/project.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/project.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/project.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/project_isometrically_to_plane.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/project_to_line_segment.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/pseudonormal_test.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quad_planarity.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quat_conjugate.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quat_mult.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_axis_angle.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quat_to_mat.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/quats_to_column.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/random_dir.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/random_points_on_mesh.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/random_quaternion.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/randperm.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/randperm.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/randperm.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/ray_sphere_intersect.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readCSV.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readDMAT.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readMESH.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readNODE.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readOBJ.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readOFF.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readPLY.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readSTL.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readTGF.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/readWRL.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/read_triangle_mesh.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicate_vertices.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/remove_duplicates.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/remove_unreferenced.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/render_to_tga.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/reorder.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/reorder.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/reorder.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/repdiag.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/repmat.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/repmat.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/repmat.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/report_gl_error.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rgb_to_hsv.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/right_axis.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rotate_by_quat.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rotate_vectors.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rotation_matrix_from_directions.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/round.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/round.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/round.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/rows_to_matrix.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sample_edges.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/setdiff.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/signed_distance.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/slice.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/slice.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/slice.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/slice_into.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/slice_mask.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/slice_tets.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/snap_points.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_canonical_view_quat.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/snap_to_fixed_up.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sort.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sort.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sort.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sort_angles.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sort_triangles.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sortrows.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sparse.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sparse.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sparse.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/speye.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/speye.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/speye.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/stdin_to_temp.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sum.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sum.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/sum.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_avx.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/svd3x3_sse.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/cdt.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_to_tetgenio.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/mesh_with_skeleton.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/read_into_tetgenio.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetgenio_to_tetmesh.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tetgen/tetrahedralize.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/texture_from_tga.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tga.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tga.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/tga.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/trackball.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/trackball.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/trackball.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/transpose_blocks.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/triangle/triangulate.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/triangle_fan.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/triangle_triangle_adjacency.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/triangles_from_strip.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/two_axis_valuator_fixed_up.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/uniform_type_to_string.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/uniformly_sample_two_manifold.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unique.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unique.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unique.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unique_edge_map.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unique_simplices.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unproject.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unproject.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unproject.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/unproject_to_zero_plane.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/up_axis.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/upsample.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/upsample.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/upsample.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/vector_area_matrix.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/vertex_triangle_adjacency.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/view_axis.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_shader.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/OpenGL_state.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/TextRenderer_fonts.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/Viewer.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerCore.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/viewer/ViewerData.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/volume.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/volume.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/volume.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/winding_number.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeDMAT.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeMESH.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeOBJ.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeOFF.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writePLY.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeSTL.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeTGF.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/writeWRL.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/write_triangle_mesh.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialization_test.s"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.o"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.i"
+	@echo "... Users/daniele/Dropbox/igl/libigl/include/igl/xml/serialize_xml.s"
 .PHONY : help
 
 

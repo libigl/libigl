@@ -1,8 +1,7 @@
 #include <igl/readOFF.h>
-#include <iostream>
-
 #include <igl/serialize.h>
 #include <igl/xml/serialize_xml.h>
+#include <iostream>
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -84,9 +83,9 @@ int main(int argc, char *argv[])
   // XML serialization
   
   // binary = false, overwrite = true
-  igl::serialize_xml(vec,"VectorXML",xmlFile,false,true);
+  igl::xml::serialize_xml(vec,"VectorXML",xmlFile,false,true);
   // binary = true, overwrite = false
-  igl::serialize_xml(vec,"VectorBin",xmlFile,true,false);
-  igl::deserialize_xml(vec,"VectorXML",xmlFile);
-  igl::deserialize_xml(vec,"VectorBin",xmlFile);
+  igl::xml::serialize_xml(vec,"VectorBin",xmlFile,true,false);
+  igl::xml::deserialize_xml(vec,"VectorXML",xmlFile);
+  igl::xml::deserialize_xml(vec,"VectorBin",xmlFile);
 }

@@ -1,16 +1,16 @@
-#include <igl/readOBJ.h>
-#include <igl/readDMAT.h>
-#include <igl/viewer/Viewer.h>
-#include <igl/barycenter.h>
 #include <igl/avg_edge_length.h>
+#include <igl/barycenter.h>
+#include <igl/frame_field_deformer.h>
+#include <igl/frame_to_cross_field.h>
+#include <igl/jet.h>
+#include <igl/local_basis.h>
+#include <igl/readDMAT.h>
+#include <igl/readOBJ.h>
+#include <igl/rotate_vectors.h>
 #include <igl/comiso/nrosy.h>
 #include <igl/comiso/miq.h>
 #include <igl/comiso/frame_field.h>
-#include <igl/frame_field_deformer.h>
-#include <igl/jet.h>
-#include <igl/frame_to_cross_field.h>
-#include <igl/local_basis.h>
-#include <igl/rotate_vectors.h>
+#include <igl/viewer/Viewer.h>
 
 // Input mesh
 Eigen::MatrixXd V;
@@ -66,7 +66,7 @@ void line_texture(Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &te
   texture_B = texture_R;
 }
 
-bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
@@ -194,16 +194,17 @@ int main(int argc, char *argv[])
   bc2 = temp.block(0,4,temp.rows(),3);
 
   // Interpolate the frame field
-  igl::frame_field(V, F, b, bc1, bc2, FF1, FF2);
+  igl::comiso::frame_field(V, F, b, bc1, bc2, FF1, FF2);
 
   // Deform the mesh to transform the frame field in a cross field
-  igl::frame_field_deformer(V,F,FF1,FF2,V_deformed,FF1_deformed,FF2_deformed);
+  igl::comiso::frame_field_deformer(
+    V,F,FF1,FF2,V_deformed,FF1_deformed,FF2_deformed);
 
   // Compute face barycenters deformed mesh
   igl::barycenter(V_deformed, F, B_deformed);
 
   // Find the closest crossfield to the deformed frame field
-igl::frame_to_cross_field(V_deformed,F,FF1_deformed,FF2_deformed,X1_deformed);
+  igl::frame_to_cross_field(V_deformed,F,FF1_deformed,FF2_deformed,X1_deformed);
 
   // Find a smooth crossfield that interpolates the deformed constraints
   MatrixXd bc_x(b.size(),3);
@@ -211,7 +212,7 @@ igl::frame_to_cross_field(V_deformed,F,FF1_deformed,FF2_deformed,X1_deformed);
     bc_x.row(i) = X1_deformed.row(b(i));
 
   VectorXd S;
-  igl::nrosy(
+  igl::comiso::nrosy(
              V,
              F,
              b,
@@ -227,10 +228,11 @@ igl::frame_to_cross_field(V_deformed,F,FF1_deformed,FF2_deformed,X1_deformed);
   // The other representative of the cross field is simply rotated by 90 degrees
   MatrixXd B1,B2,B3;
   igl::local_basis(V_deformed,F,B1,B2,B3);
-  X2_deformed = igl::rotate_vectors(X1_deformed, VectorXd::Constant(1,M_PI/2), B1, B2);
+  X2_deformed = 
+    igl::rotate_vectors(X1_deformed, VectorXd::Constant(1,M_PI/2), B1, B2);
 
   // Global seamless parametrization
-  igl::miq(V_deformed,
+  igl::comiso::miq(V_deformed,
            F,
            X1_deformed,
            X2_deformed,
@@ -241,7 +243,7 @@ igl::frame_to_cross_field(V_deformed,F,FF1_deformed,FF2_deformed,X1_deformed);
            false,
            2);
 
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   // Plot the original mesh with a texture parametrization
   key_down(viewer,'6',0);
 

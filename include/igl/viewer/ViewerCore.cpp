@@ -19,6 +19,7 @@
 #ifdef ENABLE_SERIALIZATION
 #include <igl/serialize.h>
 namespace igl {
+namespace viewer {
   namespace serialization {
 
     IGL_INLINE void serialization(bool s,ViewerCore& obj,std::vector<char>& buffer)
@@ -82,9 +83,10 @@ namespace igl {
     }
   }
 }
+}
 #endif
 
-IGL_INLINE void igl::ViewerCore::align_camera_center(
+IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F)
 {
@@ -99,7 +101,7 @@ IGL_INLINE void igl::ViewerCore::align_camera_center(
   }
 }
 
-IGL_INLINE void igl::ViewerCore::get_scale_and_shift_to_fit_mesh(
+IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F,
   float& zoom,
@@ -125,7 +127,7 @@ IGL_INLINE void igl::ViewerCore::get_scale_and_shift_to_fit_mesh(
   zoom = 2.0 / std::max(z_scale,std::max(x_scale,y_scale));
 }
 
-IGL_INLINE void igl::ViewerCore::clear_framebuffers()
+IGL_INLINE void igl::viewer::ViewerCore::clear_framebuffers()
 {
   glClearColor(background_color[0],
                background_color[1],
@@ -134,7 +136,7 @@ IGL_INLINE void igl::ViewerCore::clear_framebuffers()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bool update_matrices)
+IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bool update_matrices)
 {
   using namespace std;
   using namespace Eigen;
@@ -316,7 +318,7 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bo
 
 }
 
-IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
+IGL_INLINE void igl::viewer::ViewerCore::draw_buffer(ViewerData& data,
   OpenGL_state& opengl,
   bool update_matrices,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
@@ -403,7 +405,7 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
 }
 
 
-IGL_INLINE igl::ViewerCore::ViewerCore()
+IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
 {
   // Default shininess
   shininess = 35.0f;
@@ -451,12 +453,12 @@ IGL_INLINE igl::ViewerCore::ViewerCore()
   animation_max_fps = 30.;
 }
 
-IGL_INLINE void igl::ViewerCore::init()
+IGL_INLINE void igl::viewer::ViewerCore::init()
 {
   textrenderer.Init();
 }
 
-IGL_INLINE void igl::ViewerCore::shut()
+IGL_INLINE void igl::viewer::ViewerCore::shut()
 {
   textrenderer.Shut();
 }
