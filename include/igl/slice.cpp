@@ -79,7 +79,7 @@ IGL_INLINE void igl::slice(
   // handled here (although it's not clear if there is a performance gain when
   // the #removals >> #remains). If this is sufficiently faster than the
   // correct code above, one could test whether all entries in R and C are
-  // unique and apply the permutation version if appropriate. 
+  // unique and apply the permutation version if appropriate.
   //
 
   int xm = X.rows();
