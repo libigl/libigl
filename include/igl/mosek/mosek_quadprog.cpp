@@ -17,7 +17,7 @@
 #include "../EPS.h"
 
 
-igl::MosekData::MosekData()
+igl::mosek::MosekData::MosekData()
 {
   // These are the default settings that worked well for BBW. Your miles may
   // very well be kilometers.
@@ -59,7 +59,7 @@ igl::MosekData::MosekData()
 }
 
 template <typename Index, typename Scalar>
-IGL_INLINE bool igl::mosek_quadprog(
+IGL_INLINE bool igl::mosek::mosek_quadprog(
   const Index n,
   std::vector<Index> & Qi,
   std::vector<Index> & Qj,
@@ -267,7 +267,7 @@ IGL_INLINE bool igl::mosek_quadprog(
   return success;
 }
 
-IGL_INLINE bool igl::mosek_quadprog(
+IGL_INLINE bool igl::mosek::mosek_quadprog(
   const Eigen::SparseMatrix<double> & Q,
   const Eigen::VectorXd & c,
   const double cf,

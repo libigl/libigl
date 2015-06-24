@@ -12,12 +12,11 @@
 #define NANOVG_GL3
 #include <nanovg_gl.h>
 
-
 using namespace std;
 
-  IGL_INLINE igl::TextRenderer::TextRenderer() { }
+  IGL_INLINE igl::viewer::TextRenderer::TextRenderer() { }
 
-  IGL_INLINE int igl::TextRenderer::Init()
+  IGL_INLINE int igl::viewer::TextRenderer::Init()
   {
     #ifdef NDEBUG
       ctx = nvgCreateGL3(NVG_STENCIL_STROKES | NVG_ANTIALIAS);
@@ -31,13 +30,13 @@ using namespace std;
     return 0;
   }
 
-  IGL_INLINE int igl::TextRenderer::Shut()
+  IGL_INLINE int igl::viewer::TextRenderer::Shut()
   {
     nvgDeleteGL3(ctx);
     return 0;
   }
 
-  IGL_INLINE void igl::TextRenderer::BeginDraw(const Eigen::Matrix4f &view, const Eigen::Matrix4f &proj,
+  IGL_INLINE void igl::viewer::TextRenderer::BeginDraw(const Eigen::Matrix4f &view, const Eigen::Matrix4f &proj,
     const Eigen::Vector4f &_viewport, float _object_scale)
   {
     viewport = _viewport;
@@ -60,12 +59,12 @@ using namespace std;
     nvgBeginFrame(ctx,mSize[0],mSize[1],mPixelRatio);
   }
 
-  IGL_INLINE void igl::TextRenderer::EndDraw()
+  IGL_INLINE void igl::viewer::TextRenderer::EndDraw()
   {
     nvgEndFrame(ctx);
   }
 
-  IGL_INLINE void igl::TextRenderer::DrawText(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text)
+  IGL_INLINE void igl::viewer::TextRenderer::DrawText(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text)
   {
     pos += normal * 0.005f * object_scale;
     Eigen::Vector3f coord = igl::project(Eigen::Vector3f(pos(0), pos(1), pos(2)),

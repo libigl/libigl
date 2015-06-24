@@ -3,15 +3,15 @@
 #include <igl/readOBJ.h>
 #include <igl/readOFF.h>
 #include <igl/readMESH.h>
-#include <igl/tetgen/mesh_with_skeleton.h>
 #include <igl/faces_first.h>
 #include <igl/readTGF.h>
 #include <igl/launch_medit.h>
 #include <igl/boundary_conditions.h>
-#include <igl/bbw/bbw.h>
 #include <igl/writeDMAT.h>
 #include <igl/writeMESH.h>
 #include <igl/normalize_row_sums.h>
+#include <igl/bbw/bbw.h>
+#include <igl/tetgen/mesh_with_skeleton.h>
 
 #include <Eigen/Dense>
 
@@ -231,7 +231,7 @@ int main(int argc, char * argv[])
   MatrixXi TT;
   // New surface faces FF
   MatrixXi FF;
-  if(!mesh_with_skeleton(V,F,C,P,BE,CE,10,VV,TT,FF))
+  if(!igl::tetgen::mesh_with_skeleton(V,F,C,P,BE,CE,10,VV,TT,FF))
   {
     return 1;
   }
@@ -255,12 +255,12 @@ int main(int argc, char * argv[])
 
   // compute BBW 
   // Default bbw data and flags
-  BBWData bbw_data;
-  bbw_data.qp_solver = QP_SOLVER_IGL_ACTIVE_SET;
-  //bbw_data.qp_solver = QP_SOLVER_MOSEK;
+  igl::bbw::BBWData bbw_data;
+  bbw_data.qp_solver = igl::bbw::QP_SOLVER_IGL_ACTIVE_SET;
+  //bbw_data.qp_solver = igl::bbw::QP_SOLVER_MOSEK;
   // Weights matrix
   MatrixXd W;
-  if(!bbw(VV,TT,b,bc,bbw_data,W))
+  if(!igl::bbw::bbw(VV,TT,b,bc,bbw_data,W))
   {
     return 1;
   }

@@ -1,39 +1,39 @@
-#include <igl/svd3x3/arap.h>
-#include <igl/writeDMAT.h>
-#include <igl/partition.h>
-#include <igl/harmonic.h>
-#include <igl/cotmatrix.h>
-#include <igl/massmatrix.h>
-#include <igl/invert_diag.h>
-#include <igl/OpenGL_convenience.h>
-#include <igl/per_face_normals.h>
-#include <igl/per_vertex_normals.h>
-#include <igl/two_axis_valuator_fixed_up.h>
-#include <igl/normalize_row_lengths.h>
-#include <igl/draw_mesh.h>
-#include <igl/draw_floor.h>
-#include <igl/quat_to_mat.h>
-#include <igl/report_gl_error.h>
-#include <igl/readOBJ.h>
-#include <igl/readDMAT.h>
-#include <igl/readOFF.h>
-#include <igl/readMESH.h>
-#include <igl/jet.h>
-#include <igl/readWRL.h>
-#include <igl/trackball.h>
-#include <igl/list_to_matrix.h>
-#include <igl/snap_to_canonical_view_quat.h>
-#include <igl/snap_to_fixed_up.h>
-#include <igl/polygon_mesh_to_triangle_mesh.h>
-#include <igl/material_colors.h>
-#include <igl/barycenter.h>
-#include <igl/matlab_format.h>
-#include <igl/ReAntTweakBar.h>
-#include <igl/pathinfo.h>
 #include <igl/Camera.h>
-#include <igl/get_seconds.h>
+#include <igl/OpenGL_convenience.h>
 #include <igl/PI.h>
 #include <igl/STR.h>
+#include <igl/arap.h>
+#include <igl/barycenter.h>
+#include <igl/cotmatrix.h>
+#include <igl/draw_floor.h>
+#include <igl/draw_mesh.h>
+#include <igl/get_seconds.h>
+#include <igl/harmonic.h>
+#include <igl/invert_diag.h>
+#include <igl/jet.h>
+#include <igl/list_to_matrix.h>
+#include <igl/massmatrix.h>
+#include <igl/material_colors.h>
+#include <igl/matlab_format.h>
+#include <igl/normalize_row_lengths.h>
+#include <igl/partition.h>
+#include <igl/pathinfo.h>
+#include <igl/per_face_normals.h>
+#include <igl/per_vertex_normals.h>
+#include <igl/polygon_mesh_to_triangle_mesh.h>
+#include <igl/quat_to_mat.h>
+#include <igl/readDMAT.h>
+#include <igl/readMESH.h>
+#include <igl/readOBJ.h>
+#include <igl/readOFF.h>
+#include <igl/readWRL.h>
+#include <igl/report_gl_error.h>
+#include <igl/snap_to_canonical_view_quat.h>
+#include <igl/snap_to_fixed_up.h>
+#include <igl/trackball.h>
+#include <igl/two_axis_valuator_fixed_up.h>
+#include <igl/writeDMAT.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 
 #ifdef __APPLE__
 #  include <GLUT/glut.h>
@@ -141,7 +141,7 @@ int selected_col = 0;
 double bbd;
 int tot_num_samples = 0;
 #define REBAR_NAME "temp.rbr"
-igl::ReTwBar rebar; // Pointer to the tweak bar
+igl::anttweakbar::ReTwBar rebar; // Pointer to the tweak bar
 
 int num_in_selection(const Eigen::VectorXi & S)
 {
@@ -708,7 +708,8 @@ int main(int argc, char * argv[])
     s.camera.m_rotation_conj.coeffs().data(), "open readonly=true");
   s.camera.push_away(3);
   s.camera.dolly_zoom(25-s.camera.m_angle);
-  TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType",
+  TwType RotationTypeTW = igl::anttweakbar::ReTwDefineEnumFromString(
+     "RotationType",
     "igl_trackball,two-a...-fixed-up");
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");

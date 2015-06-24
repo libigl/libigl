@@ -1,20 +1,17 @@
-#include <igl/readOFF.h>
-#include <igl/viewer/Viewer.h>
-#include <igl/per_vertex_normals.h>
 #include <igl/avg_edge_length.h>
+#include <igl/per_vertex_normals.h>
+#include <igl/readOFF.h>
+#include <igl/lim/lim.h>
+#include <igl/viewer/Viewer.h>
 #include <iostream>
 
-#include "igl/lim/lim.h"
-
-using namespace Eigen;
-using namespace std;
 
 // Mesh
 Eigen::MatrixX3d V0;
 Eigen::MatrixX3d V1;
 Eigen::MatrixXi F;
 
-SparseMatrix<double> C;
+Eigen::SparseMatrix<double> C;
 Eigen::VectorXd b;
 
 int energyType;
@@ -22,7 +19,7 @@ bool barriersEnabled;
 
 // This function is called every time a keyboard button is pressed
 // keys: 0:Original Mesh / 1:Harmonic / 2:Biharmonic / 3:Green / 4:ARAP
-bool key_down(igl::Viewer& viewer,unsigned char key,int modifier)
+bool key_down(igl::viewer::Viewer& viewer,unsigned char key,int modifier)
 {
   using namespace std;
   using namespace Eigen;
@@ -45,7 +42,10 @@ bool key_down(igl::Viewer& viewer,unsigned char key,int modifier)
     }
 
     if(key != '0')
-      igl::lim(V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
+    {
+      igl::lim::lim(
+          V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
+    }
 
     // set mesh
     viewer.data.set_vertices(V1);
@@ -101,10 +101,11 @@ int main(int argc, char *argv[])
   b(2*fixedVertices.size()+1) = 0.2;
 
   // compute locally injective map
-  igl::lim(V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
+  igl::lim::lim(
+    V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
 
   // Show mesh
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.callback_key_down = &key_down;
   viewer.data.set_mesh(V1, F);
   viewer.core.show_lines = true;

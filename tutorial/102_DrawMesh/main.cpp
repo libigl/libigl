@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
   igl::readOFF("../shared/bunny.off", V, F);
 
   // Plot the mesh
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(V, F);
   viewer.launch();
 }

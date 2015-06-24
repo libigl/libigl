@@ -28,10 +28,10 @@ int main(int argc, char *argv[])
   H << 0,0;
 
   // Triangulate the interior
-  igl::triangulate(V,E,H,"a0.005q",V2,F2);
+  igl::triangle::triangulate(V,E,H,"a0.005q",V2,F2);
 
   // Plot the generated mesh
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(V2,F2);
   viewer.launch();
 }

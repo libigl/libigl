@@ -2,7 +2,7 @@
 
 # Shared flags etc.
 include ../Makefile.conf
-LIBIGL_LIB=+liglcgal
+LIBIGL_LIB+=-liglcgal
 
 all: example
 

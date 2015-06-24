@@ -7,30 +7,30 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "arap_dof.h"
 
-#include <igl/cotmatrix.h>
-#include <igl/massmatrix.h>
-#include <igl/speye.h>
-#include <igl/repdiag.h>
-#include <igl/repmat.h>
-#include <igl/slice.h>
-#include <igl/colon.h>
-#include <igl/full.h>
-#include <igl/is_sparse.h>
-#include <igl/mode.h>
-#include <igl/is_symmetric.h>
-#include <igl/group_sum_matrix.h>
-#include <igl/arap_rhs.h>
-#include <igl/covariance_scatter_matrix.h>
-#include <igl/svd3x3/fit_rotations.h>
+#include "cotmatrix.h"
+#include "massmatrix.h"
+#include "speye.h"
+#include "repdiag.h"
+#include "repmat.h"
+#include "slice.h"
+#include "colon.h"
+#include "full.h"
+#include "is_sparse.h"
+#include "mode.h"
+#include "is_symmetric.h"
+#include "group_sum_matrix.h"
+#include "arap_rhs.h"
+#include "covariance_scatter_matrix.h"
+#include "fit_rotations.h"
 
-#include <igl/verbose.h>
-#include <igl/print_ijv.h>
+#include "verbose.h"
+#include "print_ijv.h"
 
-#include <igl/get_seconds_hires.h>
+#include "get_seconds_hires.h"
 //#include "MKLEigenInterface.h"
-#include <igl/min_quad_dense.h>
-#include <igl/get_seconds.h>
-#include <igl/columnize.h>
+#include "min_quad_dense.h"
+#include "get_seconds.h"
+#include "columnize.h"
 
 // defined if no early exit is supported, i.e., always take a fixed number of iterations
 #define IGL_ARAP_DOF_FIXED_ITERATIONS_COUNT

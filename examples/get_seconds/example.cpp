@@ -1,12 +1,11 @@
-#include <cstdio>
-
 #include <igl/get_seconds.h>
-using namespace igl;
+#include <cstdio>
 #include <cmath>
-using namespace std;
 
 int main(int argc, char * argv[])
 {
+  using namespace igl;
+  using namespace std;
   double start = get_seconds();
   printf("start: %lgs\n",start);
   double lap = start;

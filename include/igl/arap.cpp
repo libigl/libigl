@@ -6,18 +6,18 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "arap.h"
-#include <igl/colon.h>
-#include <igl/cotmatrix.h>
-#include <igl/massmatrix.h>
-#include <igl/group_sum_matrix.h>
-#include <igl/covariance_scatter_matrix.h>
-#include <igl/speye.h>
-#include <igl/mode.h>
-#include <igl/project_isometrically_to_plane.h>
-#include <igl/slice.h>
-#include <igl/arap_rhs.h>
-#include <igl/repdiag.h>
-#include <igl/columnize.h>
+#include "colon.h"
+#include "cotmatrix.h"
+#include "massmatrix.h"
+#include "group_sum_matrix.h"
+#include "covariance_scatter_matrix.h"
+#include "speye.h"
+#include "mode.h"
+#include "project_isometrically_to_plane.h"
+#include "slice.h"
+#include "arap_rhs.h"
+#include "repdiag.h"
+#include "columnize.h"
 #include "fit_rotations.h"
 #include <cassert>
 #include <iostream>
