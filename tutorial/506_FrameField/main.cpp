@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
   igl::comiso::frame_field(V, F, b, bc1, bc2, FF1, FF2);
 
   // Deform the mesh to transform the frame field in a cross field
-  igl::comiso::frame_field_deformer(
+  igl::frame_field_deformer(
     V,F,FF1,FF2,V_deformed,FF1_deformed,FF2_deformed);
 
   // Compute face barycenters deformed mesh
@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
   // The other representative of the cross field is simply rotated by 90 degrees
   MatrixXd B1,B2,B3;
   igl::local_basis(V_deformed,F,B1,B2,B3);
-  X2_deformed = 
+  X2_deformed =
     igl::rotate_vectors(X1_deformed, VectorXd::Constant(1,M_PI/2), B1, B2);
 
   // Global seamless parametrization

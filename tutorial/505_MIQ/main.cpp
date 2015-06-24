@@ -277,7 +277,7 @@ int main(int argc, char *argv[])
   igl::comb_frame_field(V, F, X1, X2, BIS1_combed, BIS2_combed, X1_combed, X2_combed);
 
   // Global parametrization
-  igl::miq(V,
+  igl::comiso::miq(V,
            F,
            X1_combed,
            X2_combed,
@@ -294,7 +294,7 @@ int main(int argc, char *argv[])
            true);
 
 // Global parametrization (with seams, only for demonstration)
-igl::miq(V,
+igl::comiso::miq(V,
          F,
          X1_combed,
          X2_combed,

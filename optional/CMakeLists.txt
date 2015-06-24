@@ -27,6 +27,14 @@ else (ANTTWEAKBAR_FOUND)
   message(STATUS "AntTweakBar not found.")
 endif(ANTTWEAKBAR_FOUND)
 
+## Check for NANOGUI
+find_package(NANOGUI QUIET)
+if (NANOGUI_FOUND)
+  include_directories( ${NANOGUI_INCLUDE_DIRS})
+else (NANOGUI_FOUND)
+  message(STATUS "nanogui not found.")
+endif(NANOGUI_FOUND)
+
 ## Check for Boost
 find_package(BOOST QUIET)
 if (Boost_FOUND)
@@ -214,12 +222,12 @@ if (MATLAB_FOUND)
 endif (MATLAB_FOUND)
 
 #### Compile the png part
-if (PNG_FOUND)
+if (PNG_FOUND AND YIMG_FOUND)
   file(GLOB SOURCES_PNG
     "${PROJECT_SOURCE_DIR}/../include/igl/png/*.cpp"
   )
   add_library(iglpng STATIC ${SOURCES_PNG})
-endif (PNG_FOUND)
+endif (PNG_FOUND AND YIMG_FOUND)
 
 #### Compile the tetgen part
 if (TETGEN_FOUND)
@@ -258,10 +266,10 @@ if (LIBCOMISO_FOUND)
 endif (LIBCOMISO_FOUND)
 
 #### Compile the viewer
-if (GLFW_FOUND AND ANTTWEAKBAR_FOUND)
-  file(GLOB SOURCES_XML
+if (GLFW_FOUND AND NANOGUI_FOUND)
+  file(GLOB SOURCES_VIEWER
     "${PROJECT_SOURCE_DIR}/../include/igl/viewer/*.cpp"
   )
 
-  add_library(iglviewer STATIC ${SOURCES_XML})
-endif (GLFW_FOUND AND ANTTWEAKBAR_FOUND)
+  add_library(iglviewer STATIC ${SOURCES_VIEWER})
+endif (GLFW_FOUND AND NANOGUI_FOUND)
