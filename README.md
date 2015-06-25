@@ -65,7 +65,7 @@ If you save this in `hello.cpp`, then you could compile this with (assuming
 Eigen is installed in `/usr/local/include/eigen3`):
 
 ```bash
-gcc -I/usr/local/include/eigen3 -I./libigl/include/ hello.cpp -o hello
+g++ -std=c++11 -I/usr/local/include/eigen3 -I./libigl/include/ hello.cpp -o hello
 ```
 
 Running `./hello` would then produce
