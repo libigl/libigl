@@ -26,7 +26,7 @@ set(CMAKE_COLOR_MAKEFILE ON)
 find_package(OpenGL REQUIRED)
 find_package(EIGEN REQUIRED)
 #find_package(LIBIGL REQUIRED)
-find_package(NANOGUI REQUIRED)
+#find_package(NANOGUI REQUIRED)
 find_package(GLFW REQUIRED)
 
 if(NOT APPLE)
@@ -43,7 +43,7 @@ if(UNIX AND NOT APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx")
 endif(UNIX AND NOT APPLE)
 
-include_directories( ${NANOGUI_INCLUDE_DIRS} )
+#include_directories( ${NANOGUI_INCLUDE_DIRS} )
 
 
 if(NOT APPLE)
@@ -96,7 +96,7 @@ endif(NOT APPLE)
 set(SHARED_LIBRARIES
 #		${LIBIGL_LIBRARIES}
 		${OPENGL_LIBRARIES}
-		${NANOGUI_LIBRARY}
+#		${NANOGUI_LIBRARY}
 		${EIGEN_LIBRARIES}
 		${GLEW_LIBRARIES}
 		${GLFW_LIBRARIES}
