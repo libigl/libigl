@@ -110,7 +110,7 @@ namespace igl
       //   tnear      start of ray segment
       //   tfar       end of ray segment
       //   masks      a 32 bit mask to identify active geometries.
-      //   geoId      id of geometry mask (default -1 if no: no masking)
+      //   geoId      id of geometry mask (default std::numeric_limits<float>::infinity() if no: no masking)
       //   closestHit true for gets closest hit, false for furthest hit
       // Output:
       //   hit        information about hit
@@ -120,7 +120,7 @@ namespace igl
         const Eigen::RowVector3f& direction,
         Hit& hit,
         float tnear = 0,
-        float tfar = -1,
+        float tfar = std::numeric_limits<float>::infinity(),
         int mask = 0xFFFFFFFF,
         int geoId = -1,
         bool closestHit = true) const;
@@ -388,7 +388,8 @@ inline bool igl::embree::EmbreeIntersector::intersectBeam(
       float tfar,
       int mask,
       int geoId,
-      bool closestHit) const
+      bool closestHit,
+	  unsigned int samples) const
 {
   bool hasHit = false;
   Hit bestHit;
@@ -398,19 +399,18 @@ inline bool igl::embree::EmbreeIntersector::intersectBeam(
   else
     bestHit.t = 0;
 
-  if(hasHit = ((intersectRay(origin,direction,hit,tnear,tfar,mask)) && (hit.gid == geoId || geoId == -1)))
+  if(hasHit = (intersectRay(origin,direction,hit,tnear,tfar,mask) && (hit.gid == geoId || geoId == -1)))
     bestHit = hit;
   
   // sample points around actual ray (conservative hitcheck)
-  float eps= 1e-5;
-  int density = 4;
+  const float eps= 1e-5;
         
   Eigen::RowVector3f up(0,1,0);
   Eigen::RowVector3f offset = direction.cross(up).normalized();
 
-  Eigen::Matrix3f rot = Eigen::AngleAxis<float>(2*3.14159265358979/density,direction).toRotationMatrix();
+  Eigen::Matrix3f rot = Eigen::AngleAxis<float>(2*3.14159265358979/samples,direction).toRotationMatrix();
         
-  for(int r=0;r<density;r++)
+  for(int r=0;r<samples;r++)
   {
     if(intersectRay(origin+offset*eps,direction,hit,tnear,tfar,mask) && ((closestHit && (hit.t < bestHit.t)) || (!closestHit && (hit.t > bestHit.t))) && (hit.gid == geoId || geoId == -1))
     {
@@ -447,7 +447,7 @@ igl::embree::EmbreeIntersector
   double min_t = tnear;
   bool large_hits_warned = false;
   RTCRay ray;
-  createRay(ray,origin,direction,tnear,std::numeric_limits<float>::infinity(),mask);
+  createRay(ray,origin,direction,tnear,tfar,mask);
 
   while(true)
   {
