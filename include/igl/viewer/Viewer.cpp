@@ -196,7 +196,7 @@ namespace viewer
     ngui->addVariable(core.camera_zoom,"Zoom");
     ngui->addVariable(core.orthographic,"Orthographic view");
 
-    ngui->addNewGroup("Draw options");
+    ngui->addNewGroup("Draw options",FormScreen::Layout::Vertical);
 
     ngui->addVariable([&](bool checked)
     {
@@ -421,23 +421,6 @@ namespace viewer
         return true;
 
     char k = key;
-
-    // if(key == GLFW_KEY_S && modifiers == GLFW_MOD_SHIFT)
-    //   mouse_scroll(1);
-    //
-    // if(key == GLFW_KEY_A && modifiers == GLFW_MOD_SHIFT)
-    //   mouse_scroll(-1);
-
-    // // Why aren't these handled via AntTweakBar?
-    // if(key == GLFW_KEY_Z) // Don't use 'Z' because that clobbers snap_to_canonical_view_quat
-    //   core.trackball_angle << 0.0f, 0.0f, 0.0f, 1.0f;
-    //
-    // if(key == GLFW_KEY_Y)
-    //   core.trackball_angle << -sqrt(2.0f)/2.0f, 0.0f, 0.0f, sqrt(2.0f)/2.0f;
-    //
-    // if(key == GLFW_KEY_X)
-    //   core.trackball_angle << -0.5f, -0.5f, -0.5f, 0.5f;
-
 
     return false;
   }
