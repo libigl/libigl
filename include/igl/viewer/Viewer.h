@@ -45,7 +45,7 @@ namespace viewer
   {
   public:
 
-    IGL_INLINE int launch(std::string filename = "",bool resizable = true,bool fullscreen = false);
+    IGL_INLINE int launch(bool resizable = true,bool fullscreen = false);
     IGL_INLINE void init();
 
     // Stores all the viewing options
