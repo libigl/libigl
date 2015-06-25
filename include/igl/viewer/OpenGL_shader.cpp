@@ -26,7 +26,7 @@
 #include <iostream>
 #include <fstream>
 
-IGL_INLINE bool igl::OpenGL_shader::init_from_files(
+IGL_INLINE bool igl::viewer::OpenGL_shader::init_from_files(
   const std::string &vertex_shader_filename,
   const std::string &fragment_shader_filename,
   const std::string &fragment_data_name,
@@ -49,7 +49,7 @@ IGL_INLINE bool igl::OpenGL_shader::init_from_files(
  );
 }
 
-IGL_INLINE bool igl::OpenGL_shader::init(
+IGL_INLINE bool igl::viewer::OpenGL_shader::init(
   const std::string &vertex_shader_string,
   const std::string &fragment_shader_string,
   const std::string &fragment_data_name,
@@ -97,22 +97,22 @@ IGL_INLINE bool igl::OpenGL_shader::init(
   return true;
 }
 
-IGL_INLINE void igl::OpenGL_shader::bind()
+IGL_INLINE void igl::viewer::OpenGL_shader::bind()
 {
   glUseProgram(program_shader);
 }
 
-IGL_INLINE GLint igl::OpenGL_shader::attrib(const std::string &name) const
+IGL_INLINE GLint igl::viewer::OpenGL_shader::attrib(const std::string &name) const
 {
   return glGetAttribLocation(program_shader, name.c_str());
 }
 
-IGL_INLINE GLint igl::OpenGL_shader::uniform(const std::string &name) const
+IGL_INLINE GLint igl::viewer::OpenGL_shader::uniform(const std::string &name) const
 {
   return glGetUniformLocation(program_shader, name.c_str());
 }
 
-IGL_INLINE GLint igl::OpenGL_shader::bindVertexAttribArray(
+IGL_INLINE GLint igl::viewer::OpenGL_shader::bindVertexAttribArray(
   const std::string &name, GLuint bufferID, const Eigen::MatrixXf &M, bool refresh) const
 {
   GLint id = attrib(name);
@@ -131,7 +131,7 @@ IGL_INLINE GLint igl::OpenGL_shader::bindVertexAttribArray(
   return id;
 }
 
-IGL_INLINE void igl::OpenGL_shader::free()
+IGL_INLINE void igl::viewer::OpenGL_shader::free()
 {
   if (program_shader)
   {
@@ -155,7 +155,7 @@ IGL_INLINE void igl::OpenGL_shader::free()
   }
 }
 
-IGL_INLINE GLuint igl::OpenGL_shader::create_shader_helper(GLint type, const std::string &shader_string)
+IGL_INLINE GLuint igl::viewer::OpenGL_shader::create_shader_helper(GLint type, const std::string &shader_string)
 {
   using namespace std;
   if (shader_string.empty())

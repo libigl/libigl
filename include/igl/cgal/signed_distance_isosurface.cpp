@@ -29,7 +29,7 @@
 #include <CGAL/AABB_triangle_primitive.h>
 #include <vector>
 
-IGL_INLINE bool igl::signed_distance_isosurface(
+IGL_INLINE bool igl::cgal::signed_distance_isosurface(
   const Eigen::MatrixXd & IV,
   const Eigen::MatrixXi & IF,
   const double level,
@@ -136,5 +136,5 @@ IGL_INLINE bool igl::signed_distance_isosurface(
   // meshing surface
   CGAL::make_surface_mesh(c2t3, surface, criteria, CGAL::Manifold_tag());
   // complex to (V,F)
-  return igl::complex_to_mesh(c2t3,V,F);
+  return igl::cgal::complex_to_mesh(c2t3,V,F);
 }

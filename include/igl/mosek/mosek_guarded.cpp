@@ -8,7 +8,7 @@
 #include "mosek_guarded.h"
 #include <iostream>
 
-IGL_INLINE MSKrescodee igl::mosek_guarded(const MSKrescodee r)
+IGL_INLINE MSKrescodee igl::mosek::mosek_guarded(const MSKrescodee r)
 {
   using namespace std;
   if(r != MSK_RES_OK)

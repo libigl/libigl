@@ -31,8 +31,7 @@
 //  ---------------------------------------------------------------------------
 
 
-#include <igl/ReAntTweakBar.h>
-using namespace igl;
+#include <igl/anttweakbar/ReAntTweakBar.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -75,7 +74,7 @@ float g_MatDiffuse[] = { 1.0f, 1.0f, 0.0f, 1.0f };
 double g_LightMultiplier = 1.0f;
 float g_LightDirection[] = { -0.57735f, -0.57735f, -0.57735f };
 
-ReTwBar rebar; // Pointer to the tweak bar
+igl::anttweakbar::ReTwBar rebar; // Pointer to the tweak bar
 
 // Routine to set a quaternion from a rotation axis and angle
 // ( input axis = float[3] angle = float  output: quat = float[4] )
@@ -347,7 +346,7 @@ int main(int argc, char *argv[])
     // ShapeEV associates Shape enum values with labels that will be displayed instead of enum values
     TwEnumVal shapeEV[NUM_SHAPES] = { {SHAPE_TEAPOT, "Teapot"}, {SHAPE_TORUS, "Torus"}, {SHAPE_CONE, "Cone"} , {SHAPE_SPHERE, "Sphere"}};
     // Create a type for the enum shapeEV
-    TwType shapeType = ReTwDefineEnum("ShapeType", shapeEV, NUM_SHAPES);
+    TwType shapeType = igl::anttweakbar::ReTwDefineEnum("ShapeType", shapeEV, NUM_SHAPES);
     // add 'g_CurrentShape' to 'bar': this is a variable of type ShapeType. Its key shortcuts are [<] and [>].
     rebar.TwAddVarRW("Shape", shapeType, &g_CurrentShape, " keyIncr='<' keyDecr='>' help='Change object shape.' ");
   }

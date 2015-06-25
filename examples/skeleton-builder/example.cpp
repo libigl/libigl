@@ -1,46 +1,46 @@
-#include <igl/draw_skeleton_vector_graphics.h>
-#include <igl/two_axis_valuator_fixed_up.h>
-#include <igl/read_triangle_mesh.h>
-#include <igl/readTGF.h>
-#include <igl/writeOBJ.h>
-#include <igl/writeOFF.h>
-#include <igl/report_gl_error.h>
-#include <igl/draw_mesh.h>
-#include <igl/draw_floor.h>
-#include <igl/pathinfo.h>
-#include <igl/list_to_matrix.h>
-#include <igl/quat_to_mat.h>
-#include <igl/per_face_normals.h>
-#include <igl/material_colors.h>
-#include <igl/trackball.h>
-#include <igl/snap_to_canonical_view_quat.h>
-#include <igl/snap_to_fixed_up.h>
-#include <igl/REDRUM.h>
 #include <igl/Camera.h>
-#include <igl/ReAntTweakBar.h>
-#include <igl/get_seconds.h>
-#include <igl/forward_kinematics.h>
-#include <igl/boundary_conditions.h>
-#include <igl/normalize_row_sums.h>
-#include <igl/lbs_matrix.h>
-#include <igl/sort_triangles.h>
-#include <igl/slice.h>
-#include <igl/project.h>
-#include <igl/unproject.h>
-#include <igl/embree/EmbreeIntersector.h>
-#include <igl/embree/unproject_in_mesh.h>
-#include <igl/matlab_format.h>
-#include <igl/remove_unreferenced.h>
+#include <igl/REDRUM.h>
+#include <igl/REDRUM.h>
 #include <igl/adjacency_list.h>
 #include <igl/adjacency_matrix.h>
-#include <igl/right_axis.h>
-#include <igl/colon.h>
-#include <igl/unique.h>
-#include <igl/REDRUM.h>
-#include <igl/writeTGF.h>
-#include <igl/file_exists.h>
+#include <igl/boundary_conditions.h>
 #include <igl/centroid.h>
+#include <igl/colon.h>
+#include <igl/draw_floor.h>
+#include <igl/draw_mesh.h>
 #include <igl/draw_skeleton_3d.h>
+#include <igl/draw_skeleton_vector_graphics.h>
+#include <igl/file_exists.h>
+#include <igl/forward_kinematics.h>
+#include <igl/get_seconds.h>
+#include <igl/lbs_matrix.h>
+#include <igl/list_to_matrix.h>
+#include <igl/material_colors.h>
+#include <igl/matlab_format.h>
+#include <igl/normalize_row_sums.h>
+#include <igl/pathinfo.h>
+#include <igl/per_face_normals.h>
+#include <igl/project.h>
+#include <igl/quat_to_mat.h>
+#include <igl/readTGF.h>
+#include <igl/read_triangle_mesh.h>
+#include <igl/remove_unreferenced.h>
+#include <igl/report_gl_error.h>
+#include <igl/right_axis.h>
+#include <igl/slice.h>
+#include <igl/snap_to_canonical_view_quat.h>
+#include <igl/snap_to_fixed_up.h>
+#include <igl/sort_triangles.h>
+#include <igl/trackball.h>
+#include <igl/two_axis_valuator_fixed_up.h>
+#include <igl/unique.h>
+#include <igl/unproject.h>
+#include <igl/writeOBJ.h>
+#include <igl/writeOFF.h>
+#include <igl/writeTGF.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
+#include <igl/embree/EmbreeIntersector.h>
+#include <igl/embree/unproject_in_mesh.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -127,8 +127,8 @@ int width,height;
 Eigen::Vector4f light_pos(-0.1,-0.1,0.9,0);
 
 #define REBAR_NAME "temp.rbr"
-igl::ReTwBar rebar;
-igl::EmbreeIntersector ei;
+igl::anttweakbar::ReTwBar rebar;
+igl::embree::EmbreeIntersector ei;
 
 void push_undo()
 {
@@ -668,7 +668,7 @@ void mouse_drag(int mouse_x, int mouse_y)
       s.C.conservativeResize(s.C.rows()+2,3);
       const int nc = s.C.rows();
       Vector3d obj;
-      int nhits = unproject_in_mesh(mouse_x,height-mouse_y,ei,obj);
+      int nhits = igl::embree::unproject_in_mesh(mouse_x,height-mouse_y,ei,obj);
       if(nhits == 0)
       {
         Vector3d pV_mid = project(Vcen);
@@ -688,7 +688,7 @@ void mouse_drag(int mouse_x, int mouse_y)
     }
     double z = 0;
     Vector3d obj,win;
-    int nhits = unproject_in_mesh(mouse_x,height-mouse_y,ei,obj);
+    int nhits = igl::embree::unproject_in_mesh(mouse_x,height-mouse_y,ei,obj);
     project(obj,win);
     z = win(2);
 
@@ -1016,7 +1016,7 @@ void key(unsigned char key, int mouse_x, int mouse_y)
       {
         Vector3d P = project((Vector3d)s.C.row(c));
         Vector3d obj;
-        int nhits = unproject_in_mesh(P(0),P(1),ei,obj);
+        int nhits = igl::embree::unproject_in_mesh(P(0),P(1),ei,obj);
         if(nhits > 0)
         {
           s.C.row(c) = obj;
@@ -1148,13 +1148,13 @@ int main(int argc, char * argv[])
   rebar.TwNewBar("TweakBar");
   rebar.TwAddVarRW("camera_rotation", TW_TYPE_QUAT4D,
     camera.m_rotation_conj.coeffs().data(), "open readonly=true");
-  TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType",
+  TwType RotationTypeTW = igl::anttweakbar::ReTwDefineEnumFromString("RotationType",
     "igl_trackball,two-a...-fixed-up");
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");
   rebar.TwAddVarRW("skeleton_on_top", TW_TYPE_BOOLCPP,&skeleton_on_top,"key=O");
   rebar.TwAddVarRW("wireframe", TW_TYPE_BOOLCPP,&wireframe,"key=l");
-  TwType SkelStyleTypeTW = ReTwDefineEnumFromString("SkelStyleType",
+  TwType SkelStyleTypeTW = igl::anttweakbar::ReTwDefineEnumFromString("SkelStyleType",
     "3d,vector-graphics");
   rebar.TwAddVarRW("style",SkelStyleTypeTW,&skel_style,"");
   rebar.TwAddVarRW("alpha",TW_TYPE_DOUBLE,&alpha,

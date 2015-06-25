@@ -70,7 +70,7 @@
 #endif
 
 // Internal global variables used for glfw event handling
-static igl::Viewer * __viewer;
+static igl::viewer::Viewer * __viewer;
 static double highdpi = 1;
 static double scroll_x = 0;
 static double scroll_y = 0;
@@ -80,14 +80,14 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 {
   bool tw_used = __viewer->ngui->mouseButtonEvent(window,button,action,modifier);
 
-  igl::Viewer::MouseButton mb;
+  igl::viewer::Viewer::MouseButton mb;
 
   if (button == GLFW_MOUSE_BUTTON_1)
-    mb = igl::Viewer::MouseButton::Left;
+    mb = igl::viewer::Viewer::MouseButton::Left;
   else if (button == GLFW_MOUSE_BUTTON_2)
-    mb = igl::Viewer::MouseButton::Right;
+    mb = igl::viewer::Viewer::MouseButton::Right;
   else //if (button == GLFW_MOUSE_BUTTON_3)
-    mb = igl::Viewer::MouseButton::Middle;
+    mb = igl::viewer::Viewer::MouseButton::Middle;
 
   if (action == GLFW_PRESS)
   {
@@ -162,6 +162,8 @@ static void glfw_drop_callback(GLFWwindow *window,int count,const char **filenam
 
 namespace igl
 {
+namespace viewer
+{
   IGL_INLINE void Viewer::init()
   {
     using namespace nanogui;
@@ -229,91 +231,6 @@ namespace igl
     ngui->addVariable(core.show_faceid,"Show faces labels");
 
     ngui->layout();
-
-    // Create a tweak bar
-    /*bar = TwNewBar("libIGL-Viewer");
-    TwDefine(" libIGL-Viewer help='This is a simple 3D mesh viewer.' "); // Message added to the help bar->
-    TwDefine(" libIGL-Viewer size='200 685'"); // change default tweak bar size
-    TwDefine(" libIGL-Viewer color='76 76 127' "); // change default tweak bar color
-    TwDefine(" libIGL-Viewer refresh=0.5"); // change refresh rate
-
-    // ---------------------- LOADING ----------------------
-
-    #ifdef ENABLE_SERIALIZATION
-    TwAddButton(bar,"Load Scene", load_scene_cb,    this, "group='Workspace'");
-    TwAddButton(bar,"Save Scene", save_scene_cb,    this, "group='Workspace'");
-    #endif
-
-    #ifdef ENABLE_IO
-    TwAddButton(bar,"Load Mesh",  open_dialog_mesh, this, "group='Mesh' key=o");
-    #endif
-
-    // ---------------------- SCENE ----------------------
-
-    TwAddButton(bar,"Center object", align_camera_center_cb, this,
-                " group='Viewing Options'"
-                " label='Center object' key=A help='Set the center of the camera to the mesh center.'");
-    TwAddVarRW(bar, "Zoom", TW_TYPE_FLOAT, &(core.camera_zoom),
-               " min=0.05 max=50 step=0.1 keyIncr=+ keyDecr=- help='Scale the object (1=original size).' group='Scene'");
-    TwAddButton(bar,"SnapView", snap_to_canonical_quaternion_cb, this,
-                " group='Scene'"
-                " label='Snap to canonical view' key=Z "
-                " help='Snaps view to nearest canonical view.'");
-    TwAddVarRW(bar,"LightDir", TW_TYPE_DIR3F, core.light_position.data(),
-               " group='Scene'"
-               " label='Light direction' open help='Change the light direction.' ");
-
-    // ---------------------- DRAW OPTIONS ----------------------
-    TwAddVarRW(bar, "ToggleOrthographic", TW_TYPE_BOOLCPP, &(core.orthographic),
-               " group='Viewing Options'"
-               " label='Orthographic view' "
-               " help='Toggles orthographic / perspective view. Default: perspective.'");
-    TwAddVarRW(bar, "Rotation", TW_TYPE_QUAT4F, &(core.trackball_angle),
-      " group='Viewing Options'"
-      " label='Rotation'"
-      " help='Rotates view.'");
-    TwAddVarCB(bar,"Face-based Normals/Colors", TW_TYPE_BOOLCPP, set_face_based_cb, get_face_based_cb, this,
-               " group='Draw options'"
-               " label='Face-based' key=T help='Toggle per face shading/colors.' ");
-
-    TwAddVarRW(bar,"Show texture", TW_TYPE_BOOLCPP, &(core.show_texture),
-               " group='Draw options'");
-
-    TwAddVarCB(bar,"Invert Normals", TW_TYPE_BOOLCPP, set_invert_normals_cb, get_invert_normals_cb, this,
-               " group='Draw options'"
-               " label='Invert normals' key=i help='Invert normal directions for inside out meshes.' ");
-
-    TwAddVarRW(bar,"ShowOverlay", TW_TYPE_BOOLCPP, &(core.show_overlay),
-               " group='Draw options'"
-               " label='Show overlay' key=o help='Show the overlay layers.' ");
-    TwAddVarRW(bar,"ShowOverlayDepth", TW_TYPE_BOOLCPP, &(core.show_overlay_depth),
-               " group='Draw options'"
-               " label='Show overlay depth test' help='Enable the depth test for overlay layer.' ");
-    TwAddVarRW(bar,"Background color", TW_TYPE_COLOR3F,
-               core.background_color.data(),
-               " help='Select a background color' colormode=hls group='Draw options'");
-    TwAddVarRW(bar, "LineColor", TW_TYPE_COLOR3F,
-               core.line_color.data(),
-               " label='Line color' help='Select a outline color' group='Draw options'");
-    TwAddVarRW(bar,"Shininess",TW_TYPE_FLOAT,&core.shininess," group='Draw options'"
-               " min=1 max=128");
-
-    // ---------------------- Overlays ----------------------
-
-    TwAddVarRW(bar,"Wireframe", TW_TYPE_BOOLCPP, &(core.show_lines),
-               " group='Overlays'"
-               " label='Wireframe' key=l help='Toggle wire frame of mesh'");
-    TwAddVarRW(bar,"Fill", TW_TYPE_BOOLCPP, &(core.show_faces),
-               " group='Overlays'"
-               " label='Fill' key=t help='Display filled polygons of mesh'");
-    TwAddVarRW(bar,"ShowVertexId", TW_TYPE_BOOLCPP, &(core.show_vertid),
-               " group='Overlays'"
-               " label='Show Vertex Labels' key=';' help='Toggle vertex indices'");
-    TwAddVarRW(bar,"ShowFaceId", TW_TYPE_BOOLCPP, &(core.show_faceid),
-               " group='Overlays'"
-               " label='Show Faces Labels' key='CTRL+;' help='Toggle face"
-               " indices'");
-    */
 
     core.init();
 
@@ -431,7 +348,10 @@ namespace igl
       Eigen::MatrixXd V;
       Eigen::MatrixXi F;
 
-      if (!(igl::readOBJ(mesh_file_name_string, V, F, corner_normals, fNormIndices, UV_V, UV_F)))
+      if (!(
+            igl::readOBJ(
+              mesh_file_name_string,
+              V, UV_V, corner_normals, F, UV_F, fNormIndices)))
         return false;
 
       data.set_mesh(V,F);
@@ -514,21 +434,21 @@ namespace igl
 
     char k = key;
 
-    if(key == GLFW_KEY_S && modifiers == GLFW_MOD_SHIFT)
-      mouse_scroll(1);
+    // if(key == GLFW_KEY_S && modifiers == GLFW_MOD_SHIFT)
+    //   mouse_scroll(1);
+    //
+    // if(key == GLFW_KEY_A && modifiers == GLFW_MOD_SHIFT)
+    //   mouse_scroll(-1);
 
-    if(key == GLFW_KEY_A && modifiers == GLFW_MOD_SHIFT)
-      mouse_scroll(-1);
-
-    // Why aren't these handled via AntTweakBar?
-    if(key == GLFW_KEY_Z) // Don't use 'Z' because that clobbers snap_to_canonical_view_quat
-      core.trackball_angle << 0.0f, 0.0f, 0.0f, 1.0f;
-
-    if(key == GLFW_KEY_Y)
-      core.trackball_angle << -sqrt(2.0f)/2.0f, 0.0f, 0.0f, sqrt(2.0f)/2.0f;
-
-    if(key == GLFW_KEY_X)
-      core.trackball_angle << -0.5f, -0.5f, -0.5f, 0.5f;
+    // // Why aren't these handled via AntTweakBar?
+    // if(key == GLFW_KEY_Z) // Don't use 'Z' because that clobbers snap_to_canonical_view_quat
+    //   core.trackball_angle << 0.0f, 0.0f, 0.0f, 1.0f;
+    //
+    // if(key == GLFW_KEY_Y)
+    //   core.trackball_angle << -sqrt(2.0f)/2.0f, 0.0f, 0.0f, sqrt(2.0f)/2.0f;
+    //
+    // if(key == GLFW_KEY_X)
+    //   core.trackball_angle << -0.5f, -0.5f, -0.5f, 0.5f;
 
 
     return false;
@@ -943,3 +863,4 @@ namespace igl
     return EXIT_SUCCESS;
   }
 } // end namespace
+}

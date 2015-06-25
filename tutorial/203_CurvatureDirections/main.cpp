@@ -1,14 +1,14 @@
+#include <igl/avg_edge_length.h>
+#include <igl/cotmatrix.h>
+#include <igl/invert_diag.h>
+#include <igl/massmatrix.h>
+#include <igl/parula.h>
+#include <igl/per_corner_normals.h>
+#include <igl/per_face_normals.h>
+#include <igl/per_vertex_normals.h>
+#include <igl/principal_curvature.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/viewer/Viewer.h>
-#include <igl/per_vertex_normals.h>
-#include <igl/per_face_normals.h>
-#include <igl/per_corner_normals.h>
-#include <igl/avg_edge_length.h>
-#include <igl/principal_curvature.h>
-#include <igl/parula.h>
-#include <igl/cotmatrix.h>
-#include <igl/massmatrix.h>
-#include <igl/invert_diag.h>
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
   // mean curvature
   H = 0.5*(PV1+PV2);
 
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(V, F);
 
 

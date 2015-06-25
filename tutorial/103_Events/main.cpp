@@ -5,7 +5,7 @@ Eigen::MatrixXd V1,V2;
 Eigen::MatrixXi F1,F2;
 
 // This function is called every time a keyboard button is pressed
-bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key == '1')
   {
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
   igl::readOFF("../shared/bumpy.off", V1, F1);
   igl::readOFF("../shared/fertility.off", V2, F2);
 
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   // Register a keyboard callback that allows to switch between
   // the two loaded meshes
   viewer.callback_key_down = &key_down;

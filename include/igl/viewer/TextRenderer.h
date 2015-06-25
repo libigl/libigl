@@ -5,20 +5,19 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
+#ifndef IGL_VIEWER_TEXT_RENDERER_H
+#define IGL_VIEWER_TEXT_RENDERER_H
 
 /* This class extends the font rendering code in AntTweakBar
    so that it can be used to render text at arbitrary 3D positions */
 
-#ifndef IGL_TEXT_RENDERER_H
-#define IGL_TEXT_RENDERER_H
-
 #include <igl/igl_inline.h>
-//#include <igl/viewer/OpenGL_shader.h>
-//#include <TwOpenGLCore.h>
 #include <map>
 #include <nanogui/opengl.h>
 
 namespace igl
+{
+namespace viewer
 {
 
 class TextRenderer
@@ -37,16 +36,15 @@ public:
   IGL_INLINE void DrawText(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text);
 
 protected:
-//  igl::OpenGL_shader m_shader;
   std::map<std::string, void *> m_textObjects;
-  // GLuint m_shaderHandleBackup;
-  // GLuint m_TriTexUniLocationDepth;
   Eigen::Matrix4f view_matrix, proj_matrix;
   Eigen::Vector4f viewport;
   float object_scale;
+  float mPixelRatio;
   NVGcontext *ctx;
 };
 
+}
 }
 
 #ifndef IGL_STATIC_LIBRARY

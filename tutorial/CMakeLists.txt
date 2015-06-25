@@ -1,22 +1,22 @@
 cmake_minimum_required(VERSION 2.6)
 project(libigl_tutorials)
 
+message("Generated with config types: ${CMAKE_CONFIGURATION_TYPES}")
+
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../)
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-## Check for CoMiSo, if not available skip the examples that depends on it
-find_package(LIBCOMISO QUIET)
-
-## Check for MATLAB, if not available skip the examples that depends on it
-find_package(MATLAB QUIET)
-
-## Check for EMBREE, if not available skip the examples that depends on it
-find_package(EMBREE QUIET)
+find_package(CORK QUIET)
 find_package(CGAL QUIET)
-
-## Check for mosek
+find_package(EMBREE QUIET)
+find_package(LIBCOMISO QUIET)
+find_package(MATLAB QUIET)
 find_package(MOSEK QUIET)
+find_package(TETGEN QUIET)
+find_package(TINYXML2 QUIET)
+find_package(TRIANGLE QUIET)
 
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 include("CMakeLists.shared")
 
 # Chapter 1
@@ -52,30 +52,33 @@ add_subdirectory("406_FastAutomaticSkinningTransformations")
 add_subdirectory("501_HarmonicParam")
 add_subdirectory("502_LSCMParam")
 add_subdirectory("503_ARAPParam")
-
 if(LIBCOMISO_FOUND)
-add_subdirectory("504_NRosyDesign")
-add_subdirectory("505_MIQ")
-add_subdirectory("506_FrameField")
+  add_subdirectory("504_NRosyDesign")
+  add_subdirectory("505_MIQ")
+  add_subdirectory("506_FrameField")
+endif(LIBCOMISO_FOUND)
 add_subdirectory("507_PolyVectorField")
 add_subdirectory("508_ConjugateField")
-endif(LIBCOMISO_FOUND)
 add_subdirectory("509_Planarization")
 
 # Chapter 6
-add_subdirectory("601_Serialization")
+if(TINYXML2_FOUND)
+  add_subdirectory("601_Serialization")
+endif(TINYXML2_FOUND)
 if(MATLAB_FOUND)
-add_subdirectory("602_Matlab")
+  add_subdirectory("602_Matlab")
 endif(MATLAB_FOUND)
 add_subdirectory("604_Triangle")
 add_subdirectory("605_Tetgen")
 if(EMBREE_FOUND)
-add_subdirectory("606_AmbientOcclusion")
-add_subdirectory("607_Picking")
+  add_subdirectory("606_AmbientOcclusion")
+  add_subdirectory("607_Picking")
 endif(EMBREE_FOUND)
-add_subdirectory("608_LIM")
+if(LIM_FOUND)
+  add_subdirectory("608_LIM")
+endif(LIM_FOUND)
 if(CGAL_FOUND)
-add_subdirectory("609_Boolean")
+  add_subdirectory("609_Boolean")
 endif()
 add_subdirectory("701_Statistics")
 add_subdirectory("702_WindingNumber")

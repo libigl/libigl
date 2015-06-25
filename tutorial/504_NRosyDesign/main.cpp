@@ -1,12 +1,10 @@
-#include <igl/readOFF.h>
-#include <igl/viewer/Viewer.h>
-#include <igl/local_basis.h>
-#include <igl/barycenter.h>
 #include <igl/avg_edge_length.h>
+#include <igl/barycenter.h>
+#include <igl/local_basis.h>
+#include <igl/readOFF.h>
 #include <igl/comiso/nrosy.h>
+#include <igl/viewer/Viewer.h>
 
-using namespace Eigen;
-using namespace std;
 
 // Mesh
 Eigen::MatrixXd V;
@@ -23,8 +21,15 @@ int N = 4;
 
 // Converts a representative vector per face in the full set of vectors that describe
 // an N-RoSy field
-void representative_to_nrosy(const MatrixXd& V, const MatrixXi& F, const MatrixXd& R, const int N, MatrixXd& Y)
+void representative_to_nrosy(
+  const Eigen::MatrixXd& V, 
+  const Eigen::MatrixXi& F, 
+  const Eigen::MatrixXd& R, 
+  const int N, 
+  Eigen::MatrixXd& Y)
 {
+  using namespace Eigen;
+  using namespace std;
   MatrixXd B1, B2, B3;
 
   igl::local_basis(V,F,B1,B2,B3);
@@ -48,8 +53,17 @@ void representative_to_nrosy(const MatrixXd& V, const MatrixXi& F, const MatrixX
 
 // Plots the mesh with an N-RoSy field and its singularities on top
 // The constrained faces (b) are colored in red.
-void plot_mesh_nrosy(igl::Viewer& viewer, MatrixXd& V, MatrixXi& F, int N, MatrixXd& PD1, VectorXd& S, VectorXi& b)
+void plot_mesh_nrosy(
+  igl::viewer::Viewer& viewer, 
+  Eigen::MatrixXd& V, 
+  Eigen::MatrixXi& F, 
+  int N, 
+  Eigen::MatrixXd& PD1, 
+  Eigen::VectorXd& S, 
+  Eigen::VectorXi& b)
 {
+  using namespace Eigen;
+  using namespace std;
   // Clear the mesh
   viewer.data.clear();
   viewer.data.set_mesh(V,F);
@@ -86,15 +100,17 @@ void plot_mesh_nrosy(igl::Viewer& viewer, MatrixXd& V, MatrixXi& F, int N, Matri
 }
 
   // It allows to change the degree of the field when a number is pressed
-bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
+  using namespace Eigen;
+  using namespace std;
   if (key >= '1' && key <= '9')
     N = key - '0';
 
   MatrixXd R;
   VectorXd S;
 
-  igl::nrosy(V,F,b,bc,VectorXi(),VectorXd(),MatrixXd(),N,0.5,R,S);
+  igl::comiso::nrosy(V,F,b,bc,VectorXi(),VectorXd(),MatrixXd(),N,0.5,R,S);
   plot_mesh_nrosy(viewer,V,F,N,R,S,b);
 
   return false;
@@ -114,7 +130,7 @@ int main(int argc, char *argv[])
   bc.resize(1,3);
   bc << 1,1,1;
 
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
 
   // Interpolate the field and plot
   key_down(viewer, '4', 0);

@@ -11,20 +11,20 @@
 
 // Init the MATLAB engine
 // (no need to call it directly since it is automatically invoked by any other command)
-IGL_INLINE void igl::mlinit(Engine** mlengine)
+IGL_INLINE void igl::matlab::mlinit(Engine** mlengine)
 {
   *mlengine = engOpen("\0");
 }
 
 // Closes the MATLAB engine
-IGL_INLINE void igl::mlclose(Engine** mlengine)
+IGL_INLINE void igl::matlab::mlclose(Engine** mlengine)
 {
   engClose(*mlengine);
   *mlengine = 0;
 }
 
 // Send a matrix to MATLAB
-IGL_INLINE void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::MatrixXd& M)
+IGL_INLINE void igl::matlab::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::MatrixXd& M)
 {
   if (*mlengine == 0)
     mlinit(mlengine);
@@ -42,7 +42,7 @@ IGL_INLINE void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eige
 }
 
 // Send a matrix to MATLAB
-IGL_INLINE void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::MatrixXf& M)
+IGL_INLINE void igl::matlab::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::MatrixXf& M)
 {
   if (*mlengine == 0)
     mlinit(mlengine);
@@ -60,7 +60,7 @@ IGL_INLINE void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eige
 }
 
 // Send a matrix to MATLAB
-IGL_INLINE void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::MatrixXi& M)
+IGL_INLINE void igl::matlab::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::MatrixXi& M)
 {
   if (*mlengine == 0)
     mlinit(mlengine);
@@ -78,7 +78,7 @@ IGL_INLINE void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eige
 }
 
 // Send a matrix to MATLAB
-IGL_INLINE void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic >& M)
+IGL_INLINE void igl::matlab::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic >& M)
 {
   if (*mlengine == 0)
     mlinit(mlengine);
@@ -96,7 +96,7 @@ IGL_INLINE void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eige
 }
 
 // Receive a matrix from MATLAB
-IGL_INLINE void igl::mlgetmatrix(Engine** mlengine, std::string name, Eigen::MatrixXd& M)
+IGL_INLINE void igl::matlab::mlgetmatrix(Engine** mlengine, std::string name, Eigen::MatrixXd& M)
 {
   if (*mlengine == 0)
     mlinit(mlengine);
@@ -129,7 +129,7 @@ IGL_INLINE void igl::mlgetmatrix(Engine** mlengine, std::string name, Eigen::Mat
   mxDestroyArray(ary);
 }
 
-IGL_INLINE void igl::mlgetmatrix(Engine** mlengine, std::string name, Eigen::MatrixXf& M)
+IGL_INLINE void igl::matlab::mlgetmatrix(Engine** mlengine, std::string name, Eigen::MatrixXf& M)
 {
   if (*mlengine == 0)
     mlinit(mlengine);
@@ -163,7 +163,7 @@ IGL_INLINE void igl::mlgetmatrix(Engine** mlengine, std::string name, Eigen::Mat
 }
 
 // Receive a matrix from MATLAB
-IGL_INLINE void igl::mlgetmatrix(Engine** mlengine, std::string name, Eigen::MatrixXi& M)
+IGL_INLINE void igl::matlab::mlgetmatrix(Engine** mlengine, std::string name, Eigen::MatrixXi& M)
 {
   if (*mlengine == 0)
     mlinit(mlengine);
@@ -197,7 +197,7 @@ IGL_INLINE void igl::mlgetmatrix(Engine** mlengine, std::string name, Eigen::Mat
 }
 
 // Receive a matrix from MATLAB
-IGL_INLINE void igl::mlgetmatrix(Engine** mlengine, std::string name, Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic >& M)
+IGL_INLINE void igl::matlab::mlgetmatrix(Engine** mlengine, std::string name, Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic >& M)
 {
   if (*mlengine == 0)
     mlinit(mlengine);
@@ -232,7 +232,7 @@ IGL_INLINE void igl::mlgetmatrix(Engine** mlengine, std::string name, Eigen::Mat
 
 
 // Send a single scalar to MATLAB
-IGL_INLINE void igl::mlsetscalar(Engine** mlengine, std::string name, double s)
+IGL_INLINE void igl::matlab::mlsetscalar(Engine** mlengine, std::string name, double s)
 {
   if (*mlengine == 0)
     mlinit(mlengine);
@@ -243,7 +243,7 @@ IGL_INLINE void igl::mlsetscalar(Engine** mlengine, std::string name, double s)
 }
 
 // Receive a single scalar from MATLAB
-IGL_INLINE double igl::mlgetscalar(Engine** mlengine, std::string name)
+IGL_INLINE double igl::matlab::mlgetscalar(Engine** mlengine, std::string name)
 {
   if (*mlengine == 0)
     mlinit(mlengine);
@@ -254,7 +254,7 @@ IGL_INLINE double igl::mlgetscalar(Engine** mlengine, std::string name)
 }
 
 // Execute arbitrary MATLAB code and return the MATLAB output
-IGL_INLINE std::string igl::mleval(Engine** mlengine, std::string code)
+IGL_INLINE std::string igl::matlab::mleval(Engine** mlengine, std::string code)
 {
   if (*mlengine == 0)
     mlinit(mlengine);
@@ -295,7 +295,7 @@ IGL_INLINE std::string igl::mleval(Engine** mlengine, std::string code)
 }
 
 // Send a sparse matrix
-IGL_INLINE void igl::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::SparseMatrix<double>& M)
+IGL_INLINE void igl::matlab::mlsetmatrix(Engine** mlengine, std::string name, const Eigen::SparseMatrix<double>& M)
 {
   int count = 0;
 //  // Count non-zero

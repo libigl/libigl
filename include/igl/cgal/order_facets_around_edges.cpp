@@ -23,7 +23,7 @@ template<
 IGL_INLINE
 typename std::enable_if<!std::is_same<typename DerivedV::Scalar,
 typename CGAL::Exact_predicates_exact_constructions_kernel::FT>::value, void>::type
-igl::order_facets_around_edges(
+igl::cgal::order_facets_around_edges(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedN>& N,
@@ -167,7 +167,7 @@ template<
 IGL_INLINE 
 typename std::enable_if<std::is_same<typename DerivedV::Scalar,
 typename CGAL::Exact_predicates_exact_constructions_kernel::FT>::value, void>::type
-igl::order_facets_around_edges(
+igl::cgal::order_facets_around_edges(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedN>& N,
