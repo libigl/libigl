@@ -714,7 +714,7 @@ namespace viewer
     this->save_mesh_to_file(fname.c_str());
   }
 
-  IGL_INLINE int Viewer::launch(std::string filename,bool resizable,bool fullscreen)
+  IGL_INLINE int Viewer::launch(bool resizable,bool fullscreen)
   {
     GLFWwindow* window;
 
@@ -801,16 +801,6 @@ namespace viewer
     glfw_window_size(window,width_window,height_window);
 
     opengl.init();
-
-    // Alec: It seems silly to overload launch to take a filename as an
-    // argument. load_mesh_from_file has many side effects so it makes
-    // debugging launch difficult.
-
-    // Load the mesh passed as input
-    if (filename.size() > 0)
-    {
-      load_mesh_from_file(filename.c_str());
-    }
 
     core.align_camera_center(data.V,data.F);
 
