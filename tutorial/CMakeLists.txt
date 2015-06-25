@@ -23,8 +23,14 @@ include("CMakeLists.shared")
 
 #Compile libigl
 add_definitions(-DIGL_STATIC_LIBRARY)
-add_subdirectory("../optional" ".")
+add_subdirectory("../optional" "libigl")
 include_directories("../include")
+
+#Compile nanogui
+add_subdirectory("../external/nanogui/" "nanogui")
+include_directories("../external/nanogui/include")
+include_directories("../external/nanogui/ext/nanovg/src")
+list(APPEND SHARED_LIBRARIES "nanogui")
 
 message(STATUS "Linking with: ${LIBIGL_LIBRARIES}")
 list(APPEND SHARED_LIBRARIES ${LIBIGL_LIBRARIES})
