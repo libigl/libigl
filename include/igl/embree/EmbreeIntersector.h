@@ -118,7 +118,7 @@ namespace igl
       const Eigen::RowVector3f& direction,
       Hit& hit,
       float tnear = 0,
-      float tfar = -1,
+      float tfar = std::numeric_limits<float>::infinity(),
       int mask = 0xFFFFFFFF,
       int geoId = -1,
       bool closestHit = true,
@@ -394,7 +394,7 @@ inline bool igl::EmbreeIntersector::intersectBeam(
   else
     bestHit.t = 0;
 
-  if(hasHit = ((intersectRay(origin,direction,hit,tnear,tfar,mask)) && (hit.gid == geoId || geoId == -1)))
+  if(hasHit = (intersectRay(origin,direction,hit,tnear,tfar,mask) && (hit.gid == geoId || geoId == -1)))
     bestHit = hit;
   
   // sample points around actual ray (conservative hitcheck)
@@ -442,7 +442,7 @@ igl::EmbreeIntersector
   double min_t = tnear;
   bool large_hits_warned = false;
   RTCRay ray;
-  createRay(ray,origin,direction,tnear,std::numeric_limits<float>::infinity(),mask);
+  createRay(ray,origin,direction,tnear,tfar,mask);
 
   while(true)
   {
