@@ -14,7 +14,7 @@
 #include "../mat_min.h"
 #include <Eigen/Sparse>
 
-bool igl::bone_heat(
+bool igl::embree::bone_heat(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   const Eigen::MatrixXd & C,

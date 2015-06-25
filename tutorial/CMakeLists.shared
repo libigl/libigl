@@ -1,3 +1,10 @@
+# http://stackoverflow.com/a/18234926/148668
+# -stdlib=libc++ breaks gcc (for clang, the correct stdlib will be used with
+# -std=c++11 anyway)
+macro(remove_cxx_flag flag)
+  string(REPLACE "${flag}" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+endmacro()
+remove_cxx_flag("-stdlib=libc++")
 if(NOT CMAKELISTS_SHARED_INCLUDED)
 set(CMAKELISTS_SHARED_INCLUDED TRUE)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")

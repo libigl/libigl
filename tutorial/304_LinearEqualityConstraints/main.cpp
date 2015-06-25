@@ -70,13 +70,13 @@ int main(int argc, char *argv[])
   igl::jet(Z_const,min_z,max_z,data.C_const);
 
   // Plot the mesh with pseudocolors
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(V, F);
   viewer.core.show_lines = false;
   viewer.data.set_colors(data.C);
 
   viewer.callback_key_down = 
-    [](igl::Viewer& viewer,unsigned char key,int mod)->bool
+    [](igl::viewer::Viewer& viewer,unsigned char key,int mod)->bool
     {
       if(key == ' ')
       {

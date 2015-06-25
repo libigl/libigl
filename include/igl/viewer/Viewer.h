@@ -5,9 +5,9 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
+#ifndef IGL_VIEWER_VIEWER_H
+#define IGL_VIEWER_VIEWER_H
 
-#ifndef IGL_VIEWER_H
-#define IGL_VIEWER_H
 #ifndef IGL_OPENGL_4
 #define IGL_OPENGL_4
 #endif
@@ -38,6 +38,8 @@ namespace nanogui {
 
 namespace igl
 {
+namespace viewer
+{
   // GLFW-based mesh viewer
   class Viewer
   {
@@ -51,13 +53,13 @@ namespace igl
     char **argv;
 
     // Stores all the viewing options
-    igl::ViewerCore core;
+    ViewerCore core;
 
     // Stores all the data that should be visualized
-    igl::ViewerData data;
+    ViewerData data;
 
     // Stores the vbos indices and opengl related settings
-    igl::OpenGL_state opengl;
+    OpenGL_state opengl;
 
     // List of registered plugins
     std::vector<ViewerPlugin*> plugins;
@@ -143,6 +145,7 @@ namespace igl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+} // end namespace
 } // end namespace
 
 #ifndef IGL_STATIC_LIBRARY

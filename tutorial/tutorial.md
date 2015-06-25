@@ -117,7 +117,7 @@ libigl:
 3. **Header-only.** It is straight forward to use our library since it is only
   one additional include directory in your project. (if you are worried about
   compilation speed, it is also possible to build the library as a [static
-  library](../build/))
+  library](../optional/))
 
 4. **Function encapsulation.** Every function (including its full
   implementation) is contained in a pair of .h/.cpp files with the same name of
@@ -778,7 +778,7 @@ functionality as common Matlab functions.
 | `igl::cross`             | Cross product per-row |
 | `igl::dot`               | dot product per-row |
 | `igl::find`              | Find subscripts of non-zero entries |
-| `igl::floot`             | Round entries down to nearest integer |
+| `igl::floor`             | Round entries down to nearest integer |
 | `igl::histc`             | Counting occurrences for building a histogram |
 | `igl::hsv_to_rgb`        | Convert HSV colors to RGB (cf. Matlab's `hsv2rgb`) |
 | `igl::intersect`         | Set intersection of matrix elements. |
@@ -786,9 +786,17 @@ functionality as common Matlab functions.
 | `igl::kronecker_product` | Compare to Matlab's `kronprod` |
 | `igl::median`            | Compute the median per column |
 | `igl::mode`              | Compute the mode per column |
+| `igl::null`              | Compute the null space basis of a matrix |
+| `igl::nchoosek`          | Compute all k-size combinations of n-long vector |
 | `igl::orth`              | Orthogonalization of a basis |
+| `igl::parula`            | Generate a quantized colormap from blue to yellow |
+| `igl::randperm`          | Generate a random permutation of [0,...,n-1] |
+| `igl::rgb_to_hsv`        | Convert RGB colors to HSV (cf. Matlab's `rgb2hsv`) |
 | `igl::setdiff`           | Set difference of matrix elements |
+| `igl::sort`              | Sort elements or rows of matrix |
 | `igl::speye`             | Identity as sparse matrix |
+| `igl::sum`               | Sum along columns or rows (of sparse matrix) |
+| `igl::unique`            | Extract unique elements or rows of matrix |
 
 ## Laplace equation
 A common linear system in geometry processing is the Laplace equation:

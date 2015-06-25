@@ -1,9 +1,9 @@
+#include <igl/barycenter.h>
+#include <igl/colon.h>
+#include <igl/jet.h>
 #include <igl/readOFF.h>
 #include <igl/slice_into.h>
-#include <igl/colon.h>
 #include <igl/sortrows.h>
-#include <igl/barycenter.h>
-#include <igl/jet.h>
 #include <igl/viewer/Viewer.h>
 #include <iostream>
 
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
   igl::jet(J,true,C);
 
   // Plot the mesh with pseudocolors
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(V, F);
   viewer.data.set_colors(C);
   viewer.launch();

@@ -66,35 +66,6 @@ IGL_INLINE void igl::nchoosek(
   doCombs(0,k);
 }
 
-IGL_INLINE void igl::nchoosek(
-  int offset,
-  int k,
-  int N,
-  std::vector<std::vector<int> > &allCombs)
-{
-  allCombs.clear();
-  std::vector<int> running;
-  const std::function<void(int,int)> doCombs = 
-    [&allCombs,&running,&N,&doCombs](int offset, int k)
-  {
-    if(k==0)
-    {
-      allCombs.push_back(running);
-      return;
-    }
-    for (int i = offset; i <= N - k; ++i) 
-    {
-      running.push_back(i);
-      doCombs(i+1,k-1);
-      running.pop_back();
-    }
-  };
-  doCombs(offset,k);
-
-}
-
-
-
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif

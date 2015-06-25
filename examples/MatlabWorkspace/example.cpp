@@ -24,7 +24,7 @@ int main(int argc, char * argv[])
   }
   MatrixXd M;
   readDMAT(argv[1],M);
-  MatlabWorkspace mat;
+  igl::matlab::MatlabWorkspace mat;
   mat.save(M,"M");
   mat.write(argv[2]);
 
