@@ -239,18 +239,6 @@ namespace viewer
         return;
 
     init_plugins();
-
-    // Parse command line arguments
-    bool isLoaded = false;
-    for(int i=1;i<argc;i++)
-    {
-      if(strcmp(argv[i],"-s")==0) {
-        std::cout << "load scene file: " << argv[i+1] << std::endl;
-        isLoaded = load_scene(argv[i+1]);
-        if(isLoaded == false)
-          std::cout << "file not found: " << argv[i+1] << std::endl;
-      }
-    }
   }
 
   IGL_INLINE Viewer::Viewer()

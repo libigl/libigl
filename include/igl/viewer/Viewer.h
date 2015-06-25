@@ -48,10 +48,6 @@ namespace viewer
     IGL_INLINE int launch(std::string filename = "",bool resizable = true,bool fullscreen = false);
     IGL_INLINE void init();
 
-    // Stores command line arguments
-    int argc;
-    char **argv;
-
     // Stores all the viewing options
     ViewerCore core;
 
