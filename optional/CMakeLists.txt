@@ -150,6 +150,7 @@ file(GLOB SOURCES
 )
 
 add_library(igl STATIC ${SOURCES})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "igl")
 
 #### Compile the AntTweakBar part
 if (ANTTWEAKBAR_FOUND)
@@ -157,6 +158,7 @@ if (ANTTWEAKBAR_FOUND)
     "${PROJECT_SOURCE_DIR}/../include/igl/anttweakbar/*.cpp"
   )
 add_library(iglanttweakbar STATIC ${SOURCES_ANTTWEAKBAR})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglanttweakbar")
 endif (ANTTWEAKBAR_FOUND)
 
 #### Compile the BBW part
@@ -165,6 +167,7 @@ file(GLOB SOURCES_BBW
   "${PROJECT_SOURCE_DIR}/../include/igl/bbw/*.cpp"
 )
 add_library(iglbbw STATIC ${SOURCES_BBW})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglbbw")
 
 #### Compile the mosek part
 if (MOSEK_FOUND)
@@ -172,6 +175,8 @@ if (MOSEK_FOUND)
     "${PROJECT_SOURCE_DIR}/../include/igl/mosek/*.cpp"
   )
 add_library(iglmosek STATIC ${SOURCES_MOSEK})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglmosek")
+
 endif (MOSEK_FOUND)
 
 #### Compile the cgal part
@@ -181,6 +186,7 @@ if (CGAL_FOUND)
   )
 
 add_library(iglcgal STATIC ${SOURCES_CGAL})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglcgal")
 
 #### Compile the boolean part
 if (NOT CORK_FOUND)
@@ -192,6 +198,8 @@ file(GLOB SOURCES_BOOLEAN
 )
 
 add_library(iglboolean STATIC ${SOURCES_BOOLEAN})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglboolean")
+
 endif (CGAL_FOUND)
 
 #### Compile the embree part
@@ -201,6 +209,8 @@ if (EMBREE_FOUND)
   )
 
   add_library(iglembree STATIC ${SOURCES_EMBREE})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglembree")
+
 endif (EMBREE_FOUND)
 
 #### Compile the lim part
@@ -210,6 +220,8 @@ if (LIM_FOUND)
   )
 
   add_library(igllim STATIC ${SOURCES_LIM})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "igllim")
+
 endif (LIM_FOUND)
 
 #### Compile the matlab part
@@ -219,6 +231,8 @@ if (MATLAB_FOUND)
   )
 
   add_library(iglmatlab STATIC ${SOURCES_MATLAB})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglmatlab")
+
 endif (MATLAB_FOUND)
 
 #### Compile the png part
@@ -227,6 +241,8 @@ if (PNG_FOUND AND YIMG_FOUND)
     "${PROJECT_SOURCE_DIR}/../include/igl/png/*.cpp"
   )
   add_library(iglpng STATIC ${SOURCES_PNG})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglpng")
+
 endif (PNG_FOUND AND YIMG_FOUND)
 
 #### Compile the tetgen part
@@ -236,6 +252,8 @@ if (TETGEN_FOUND)
   )
 
   add_library(igltetgen STATIC ${SOURCES_TETGEN})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "igltetgen")
+
 endif (TETGEN_FOUND)
 
 #### Compile the triangle part
@@ -245,6 +263,8 @@ if (TRIANGLE_FOUND)
   )
 
   add_library(igltriangle STATIC ${SOURCES_TRIANGLE})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "igltriangle")
+
 endif (TRIANGLE_FOUND)
 
 #### Compile the xml part
@@ -254,6 +274,8 @@ if (TINYXML2_FOUND)
   )
 
   add_library(iglxml STATIC ${SOURCES_XML})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglxml")
+
 endif (TINYXML2_FOUND)
 
 #### Compile the xml part
@@ -263,6 +285,8 @@ if (LIBCOMISO_FOUND)
   )
 
   add_library(iglcomiso STATIC ${SOURCES_COMISO})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglcomiso")
+
 endif (LIBCOMISO_FOUND)
 
 #### Compile the viewer
@@ -272,4 +296,9 @@ if (GLFW_FOUND AND NANOGUI_FOUND)
   )
 
   add_library(iglviewer STATIC ${SOURCES_VIEWER})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglviewer")
+
 endif (GLFW_FOUND AND NANOGUI_FOUND)
+
+# Pass the list of compiled libraries to the parent
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} PARENT_SCOPE)

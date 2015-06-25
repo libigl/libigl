@@ -3,6 +3,8 @@ project(libigl_tutorials)
 
 message("Generated with config types: ${CMAKE_CONFIGURATION_TYPES}")
 
+SET(LIBIGL_USE_STATIC_LIBRARY 1)
+
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../)
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -18,6 +20,15 @@ find_package(TRIANGLE QUIET)
 
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 include("CMakeLists.shared")
+
+#Compile libigl
+add_definitions(-DIGL_STATIC_LIBRARY)
+add_subdirectory("../optional" ".")
+include_directories("../include")
+
+message(STATUS "Linking with: ${LIBIGL_LIBRARIES}")
+list(APPEND SHARED_LIBRARIES ${LIBIGL_LIBRARIES})
+
 
 # Chapter 1
 add_subdirectory("101_FileIO")
