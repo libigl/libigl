@@ -4,9 +4,13 @@ project(libigl_tutorials)
 message("Generated with config types: ${CMAKE_CONFIGURATION_TYPES}")
 
 SET(LIBIGL_USE_STATIC_LIBRARY 1)
+add_definitions(-DIGL_STATIC_LIBRARY)
 
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../)
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 find_package(CORK QUIET)
 find_package(CGAL QUIET)
