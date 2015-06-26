@@ -17,6 +17,7 @@ FIND_PATH(GLFW_INCLUDE_DIR GLFW/glfw3.h
     ${PROJECT_SOURCE_DIR}/../../libigl/external/glfw/include
     ${PROJECT_SOURCE_DIR}/../libigl/external/glfw/include
     ${PROJECT_SOURCE_DIR}/libigl/external/glfw/include
+    ${PROJECT_SOURCE_DIR}/../../../libigl/external/nanogui/ext/glfw/include
     ${PROJECT_SOURCE_DIR}/../../libigl/external/nanogui/ext/glfw/include
     ${PROJECT_SOURCE_DIR}/../libigl/external/nanogui/ext/glfw/include
     ${PROJECT_SOURCE_DIR}/libigl/external/nanogui/ext/glfw/include
@@ -27,37 +28,13 @@ FIND_PATH(GLFW_INCLUDE_DIR GLFW/glfw3.h
     NO_DEFAULT_PATH
     )
 
-FIND_LIBRARY( GLFW_LIBRARIES NAMES glfw glfw3
-  PATHS
-    ${PROJECT_SOURCE_DIR}/../../external/glfw/src
-    ${PROJECT_SOURCE_DIR}/../external/glfw/src
-    ${PROJECT_SOURCE_DIR}/external/glfw/src
-    ${PROJECT_SOURCE_DIR}/../../libigl/external/glfw/src
-    ${PROJECT_SOURCE_DIR}/../libigl/external/glfw/src
-    ${PROJECT_SOURCE_DIR}/libigl/external/glfw/src
-    ${PROJECT_SOURCE_DIR}/../../external/glfw/lib/x64
-    ${PROJECT_SOURCE_DIR}/../external/glfw/lib/x64
-    ${PROJECT_SOURCE_DIR}/external/glfw/lib/x64
-    ${PROJECT_SOURCE_DIR}/../../libigl/external/glfw/lib/x64
-    ${PROJECT_SOURCE_DIR}/../libigl/external/glfw/lib/x64
-    ${PROJECT_SOURCE_DIR}/libigl/external/glfw/lib/x64
-    /usr/local
-    /usr/X11
-    /usr
-    PATH_SUFFIXES
-    a
-    lib64
-    lib
-    NO_DEFAULT_PATH
-)
-
 SET(GLFW_FOUND "NO")
-IF (GLFW_INCLUDE_DIR AND GLFW_LIBRARIES)
+IF (GLFW_INCLUDE_DIR)
 	SET(GLFW_FOUND "YES")
-ENDIF (GLFW_INCLUDE_DIR AND GLFW_LIBRARIES)
+ENDIF (GLFW_INCLUDE_DIR)
 
 if(GLFW_FOUND)
-  message(STATUS "Found GLFW: ${GLFW_INCLUDE_DIR}")
+  message(STATUS "Found GLFW: ${GLFW_INCLUDE_DIR} -- HEADERS ONLY")
 else(GLFW_FOUND)
   if (NOT GLFW_FIND_QUIETLY)
     message(FATAL_ERROR "could NOT find GLFW")

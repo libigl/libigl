@@ -25,9 +25,9 @@ set(CMAKE_COLOR_MAKEFILE ON)
 
 find_package(OpenGL REQUIRED)
 find_package(EIGEN REQUIRED)
-find_package(LIBIGL REQUIRED)
-find_package(NANOGUI REQUIRED)
-find_package(GLFW REQUIRED)
+find_package(GLFWH REQUIRED)
+#find_package(LIBIGL REQUIRED)
+#find_package(NANOGUI REQUIRED)
 
 if(NOT APPLE)
 	find_package(GLEW REQUIRED)
@@ -43,7 +43,7 @@ if(UNIX AND NOT APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx")
 endif(UNIX AND NOT APPLE)
 
-include_directories( ${NANOGUI_INCLUDE_DIRS} )
+#include_directories( ${NANOGUI_INCLUDE_DIRS} )
 
 
 if(NOT APPLE)
@@ -51,7 +51,7 @@ if(NOT APPLE)
 endif(NOT APPLE)
 
 include_directories( ${EIGEN_INCLUDE_DIR})
-include_directories( ${LIBIGL_INCLUDE_DIRS})
+#include_directories( ${LIBIGL_INCLUDE_DIRS})
 include_directories( ${GLFW_INCLUDE_DIR})
 include_directories(
 	/usr/local/include
@@ -84,7 +84,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" ST
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-register")
 endif()
 
-set(SHARED_SOURCES ${LIBIGL_SOURCES})
+# set(SHARED_SOURCES ${LIBIGL_SOURCES})
 
 if(NOT APPLE)
 	set(SHARED_SOURCES ${SHARED_SOURCES} ${GLEW_SOURCES})
@@ -94,12 +94,12 @@ endif(NOT APPLE)
 
 
 set(SHARED_LIBRARIES
-		${LIBIGL_LIBRARIES}
+#		${LIBIGL_LIBRARIES}
 		${OPENGL_LIBRARIES}
-		${NANOGUI_LIBRARY}
+#		${NANOGUI_LIBRARY}
 		${EIGEN_LIBRARIES}
 		${GLEW_LIBRARIES}
-		${GLFW_LIBRARIES}
+#		${GLFW_LIBRARIES}
 )
 
 #message(FATAL_ERROR ${SHARED_LIBRARIES})
