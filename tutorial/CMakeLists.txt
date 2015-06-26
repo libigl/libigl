@@ -30,7 +30,7 @@ include_directories("../include")
 add_subdirectory("../external/nanogui/" "nanogui")
 include_directories("../external/nanogui/include")
 include_directories("../external/nanogui/ext/nanovg/src")
-list(APPEND SHARED_LIBRARIES "nanogui")
+list(APPEND SHARED_LIBRARIES "nanogui" "glfw3")
 
 message(STATUS "Linking with: ${LIBIGL_LIBRARIES}")
 list(APPEND SHARED_LIBRARIES ${LIBIGL_LIBRARIES})
