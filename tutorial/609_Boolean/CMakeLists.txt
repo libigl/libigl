@@ -11,7 +11,7 @@ remove_cxx_flag("-stdlib=libc++")
 
 # for some reason must come after cgal include. I think that it's overwriting
 # come flags like CXX_FLAGS
-set(CMAKELISTS_SHARED_INCLUDED FALSE)
+#set(CMAKELISTS_SHARED_INCLUDED FALSE)
 include("../CMakeLists.shared")
 
 set(SOURCES
