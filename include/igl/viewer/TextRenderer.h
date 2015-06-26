@@ -8,8 +8,7 @@
 #ifndef IGL_VIEWER_TEXT_RENDERER_H
 #define IGL_VIEWER_TEXT_RENDERER_H
 
-/* This class extends the font rendering code in AntTweakBar
-   so that it can be used to render text at arbitrary 3D positions */
+#include <Eigen/Dense>
 
 #include <igl/igl_inline.h>
 #include <map>

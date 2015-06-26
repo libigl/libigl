@@ -12,6 +12,8 @@
 #include <nanogui/opengl.h>
 #include <nanovg.h>
 
+#include <Eigen/Dense>
+
 #define NANOVG_GL3
 #include <nanovg_gl.h>
 
