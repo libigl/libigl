@@ -8,13 +8,16 @@
 #include "TextRenderer.h"
 #include "TextRenderer_fonts.h"
 #include <igl/project.h>
+
+#include <nanogui/opengl.h>
 #include <nanovg.h>
+
 #define NANOVG_GL3
 #include <nanovg_gl.h>
 
 using namespace std;
 
-  IGL_INLINE igl::viewer::TextRenderer::TextRenderer() { }
+  IGL_INLINE igl::viewer::TextRenderer::TextRenderer(): ctx(nullptr) {}
 
   IGL_INLINE int igl::viewer::TextRenderer::Init()
   {
@@ -32,7 +35,8 @@ using namespace std;
 
   IGL_INLINE int igl::viewer::TextRenderer::Shut()
   {
-    nvgDeleteGL3(ctx);
+    if(ctx)
+      nvgDeleteGL3(ctx);
     return 0;
   }
 
