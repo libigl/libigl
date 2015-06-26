@@ -10,7 +10,7 @@ find_package(EIGEN REQUIRED)
 add_definitions(-DIGL_STATIC_LIBRARY)
 
 ## Check for GLFW
-find_package(GLFW QUIET)
+find_package(GLFWH QUIET)
 if (GLFW_FOUND)
   include_directories( ${GLFW_INCLUDE_DIR})
 else (GLFW_FOUND)
@@ -28,7 +28,8 @@ else (ANTTWEAKBAR_FOUND)
 endif(ANTTWEAKBAR_FOUND)
 
 ## Check for NANOGUI
-find_package(NANOGUI QUIET)
+find_package(NANOGUIH QUIET)
+#message(FATAL_ERROR "nanogui not found. ${NANOGUI_INCLUDE_DIRS}")
 if (NANOGUI_FOUND)
   include_directories( ${NANOGUI_INCLUDE_DIRS})
 else (NANOGUI_FOUND)
@@ -290,7 +291,7 @@ if (LIBCOMISO_FOUND)
 endif (LIBCOMISO_FOUND)
 
 #### Compile the viewer
-if (GLFW_FOUND AND NANOGUI_FOUND)
+if (NANOGUI_FOUND)
   file(GLOB SOURCES_VIEWER
     "${PROJECT_SOURCE_DIR}/../include/igl/viewer/*.cpp"
   )
@@ -298,7 +299,7 @@ if (GLFW_FOUND AND NANOGUI_FOUND)
   add_library(iglviewer STATIC ${SOURCES_VIEWER})
   set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglviewer")
 
-endif (GLFW_FOUND AND NANOGUI_FOUND)
+endif (NANOGUI_FOUND)
 
 # Pass the list of compiled libraries to the parent
 set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} PARENT_SCOPE)

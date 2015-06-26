@@ -25,9 +25,9 @@ set(CMAKE_COLOR_MAKEFILE ON)
 
 find_package(OpenGL REQUIRED)
 find_package(EIGEN REQUIRED)
+find_package(GLFWH REQUIRED)
 #find_package(LIBIGL REQUIRED)
 #find_package(NANOGUI REQUIRED)
-find_package(GLFW REQUIRED)
 
 if(NOT APPLE)
 	find_package(GLEW REQUIRED)
@@ -99,7 +99,7 @@ set(SHARED_LIBRARIES
 #		${NANOGUI_LIBRARY}
 		${EIGEN_LIBRARIES}
 		${GLEW_LIBRARIES}
-		${GLFW_LIBRARIES}
+#		${GLFW_LIBRARIES}
 )
 
 #message(FATAL_ERROR ${SHARED_LIBRARIES})
