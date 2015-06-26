@@ -8,41 +8,41 @@
 #ifndef IGL_VIEWER_TEXT_RENDERER_H
 #define IGL_VIEWER_TEXT_RENDERER_H
 
-/* This class extends the font rendering code in AntTweakBar
-   so that it can be used to render text at arbitrary 3D positions */
+#include <Eigen/Dense>
 
 #include <igl/igl_inline.h>
 #include <map>
-#include <nanogui/opengl.h>
+
+struct NVGcontext;
 
 namespace igl
 {
 namespace viewer
 {
 
-class TextRenderer
-{
-public:
-  IGL_INLINE TextRenderer();
+  class TextRenderer
+  {
+  public:
+    IGL_INLINE TextRenderer();
 
-  IGL_INLINE virtual int Init();
-  IGL_INLINE virtual int Shut();
+    IGL_INLINE virtual int Init();
+    IGL_INLINE virtual int Shut();
 
-  IGL_INLINE void BeginDraw(const Eigen::Matrix4f &view, const Eigen::Matrix4f &proj,
-    const Eigen::Vector4f &_viewport, float _object_scale);
+    IGL_INLINE void BeginDraw(const Eigen::Matrix4f &view,const Eigen::Matrix4f &proj,
+      const Eigen::Vector4f &_viewport,float _object_scale);
 
-  IGL_INLINE void EndDraw();
+    IGL_INLINE void EndDraw();
 
-  IGL_INLINE void DrawText(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text);
+    IGL_INLINE void DrawText(Eigen::Vector3d pos,Eigen::Vector3d normal,const std::string &text);
 
-protected:
-  std::map<std::string, void *> m_textObjects;
-  Eigen::Matrix4f view_matrix, proj_matrix;
-  Eigen::Vector4f viewport;
-  float object_scale;
-  float mPixelRatio;
-  NVGcontext *ctx;
-};
+  protected:
+    std::map<std::string,void *> m_textObjects;
+    Eigen::Matrix4f view_matrix,proj_matrix;
+    Eigen::Vector4f viewport;
+    float object_scale;
+    float mPixelRatio;
+    NVGcontext *ctx;
+  };
 
 }
 }
