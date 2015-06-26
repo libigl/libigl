@@ -32,9 +32,7 @@
 #define IGL_MOD_ALT             0x0004
 #define IGL_MOD_SUPER           0x0008
 
-namespace nanogui {
-  class FormScreen;
-}
+namespace nanogui { class FormScreen; }
 
 namespace igl
 {

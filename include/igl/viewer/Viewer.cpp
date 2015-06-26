@@ -63,8 +63,6 @@
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/unproject.h>
 
-#include <igl/viewer/TextRenderer.h>
-
 #ifdef ENABLE_SERIALIZATION
 #include <igl/serialize.h>
 #endif
