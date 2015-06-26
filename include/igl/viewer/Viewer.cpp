@@ -626,12 +626,12 @@ namespace viewer
 #ifdef ENABLE_SERIALIZATION
 
     igl::serialize(core,"Core",fname.c_str(),true);
-#ifndef ENABLE_SERIALIZATION_DATA_SEPARATION
-    igl::serialize(data,"Data",fname.c_str());
-#endif
 
+#ifndef ENABLE_SERIALIZATION_CORE_ONLY
+    igl::serialize(data,"Data",fname.c_str());
     for(unsigned int i = 0; i <plugins.size(); ++i)
       igl::serialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
+#endif
 
 #endif
 
@@ -652,12 +652,12 @@ namespace viewer
 #ifdef ENABLE_SERIALIZATION
 
     igl::deserialize(core,"Core",fname.c_str());
-#ifndef ENABLE_SERIALIZATION_DATA_SEPARATION
-    igl::deserialize(data,"Data",fname.c_str());
-#endif
 
+#ifndef ENABLE_SERIALIZATION_CORE_ONLY
+    igl::deserialize(data,"Data",fname.c_str());
     for(unsigned int i = 0; i <plugins.size(); ++i)
       igl::deserialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
+#endif
 
 #endif
 
