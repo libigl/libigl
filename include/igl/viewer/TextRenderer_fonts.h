@@ -11,17 +11,28 @@
 
 #include <stdint.h>
 
-extern uint8_t igl_entypo_ttf[];
-extern uint32_t igl_entypo_ttf_size;
+#ifndef IGL_STATIC_LIBRARY
+namespace
+{
+#endif
+  extern uint8_t igl_entypo_ttf[];
+  extern uint32_t igl_entypo_ttf_size;
 
-extern uint8_t igl_roboto_bold_ttf[];
-extern uint32_t igl_roboto_bold_ttf_size;
+  extern uint8_t igl_roboto_bold_ttf[];
+  extern uint32_t igl_roboto_bold_ttf_size;
 
-extern uint8_t igl_roboto_regular_ttf[];
-extern uint32_t igl_roboto_regular_ttf_size;
+  extern uint8_t igl_roboto_regular_ttf[];
+  extern uint32_t igl_roboto_regular_ttf_size;
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "TextRenderer_fonts.cpp"
+}
+#endif
+
+#ifndef IGL_STATIC_LIBRARY
+namespace
+{
+  #include "TextRenderer_fonts.cpp"
+}
 #endif
 
 #endif
