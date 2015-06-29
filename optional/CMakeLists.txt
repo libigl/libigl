@@ -17,6 +17,14 @@ else (GLFW_FOUND)
   message(STATUS "GLFW not found.")
 endif(GLFW_FOUND)
 
+## Check for GLEW
+find_package(GLEW QUIET)
+if (GLEW_FOUND)
+  include_directories( ${GLEW_INCLUDE_DIR})
+else (GLEW_FOUND)
+  message(STATUS "GLEW not found.")
+endif(GLEW_FOUND)
+
 find_package(OpenGL QUIET)
 
 ## Check for Anttweakbar
@@ -301,5 +309,7 @@ if (NANOGUI_FOUND)
 
 endif (NANOGUI_FOUND)
 
-# Pass the list of compiled libraries to the parent
-set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} PARENT_SCOPE)
+# Pass the list of compiled libraries to the parent if there is one
+if(NOT ${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} PARENT_SCOPE)
+endif (NOT ${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})

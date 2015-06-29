@@ -16,6 +16,10 @@
 #include <Eigen/Geometry>
 #include <iostream>
 
+#ifdef _WIN32
+#  undef DrawText
+#endif
+
 #ifdef ENABLE_SERIALIZATION
 #include <igl/serialize.h>
 namespace igl {

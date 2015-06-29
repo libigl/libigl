@@ -214,7 +214,7 @@ template <
     {
       const Index e = f + m*c;
       //const Index c = e/m;
-      const vector<Index> & N = uE2E[EMAP(e)];
+      const vector<uE2EType> & N = uE2E[EMAP(e)];
       for(const auto & ne : N)
       {
         const Index nf = ne%m;
