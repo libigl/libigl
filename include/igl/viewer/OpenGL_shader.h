@@ -17,6 +17,7 @@
 #  include <windows.h>
 #  undef max
 #  undef min
+#  undef DrawText
 #endif
 
 #ifndef __APPLE__

@@ -100,6 +100,7 @@ IGL_INLINE void igl::polar_svd3x3_avx(const Eigen::Matrix<T, 3*8, 3>& A, Eigen::
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instanciation
 template void igl::polar_svd3x3<Eigen::Matrix<double, 3, 3, 0, 3, 3> >(Eigen::Matrix<double, 3, 3, 0, 3, 3> const&, Eigen::Matrix<double, 3, 3, 0, 3, 3>&);
+template void igl::polar_svd3x3<Eigen::Matrix<float,3,3,0,3,3> >(Eigen::Matrix<float,3,3,0,3,3> const &,Eigen::Matrix<float,3,3,0,3,3> &);
 
 #ifdef __SSE__
 template void igl::polar_svd3x3_sse<float>(Eigen::Matrix<float, 12, 3, 0, 12, 3> const&, Eigen::Matrix<float, 12, 3, 0, 12, 3>&);
