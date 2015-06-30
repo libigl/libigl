@@ -32,6 +32,8 @@ include("CMakeLists.shared")
 
 #Compile libigl
 add_definitions(-DIGL_STATIC_LIBRARY)
+add_definitions(-DIGL_NO_OPENGL)
+
 add_subdirectory("../optional" "libigl")
 include_directories("../include")
 

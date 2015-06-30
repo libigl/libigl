@@ -10,6 +10,8 @@
 #include <Eigen/Dense>
 #include <Eigen/LU>
 
+#ifndef IGL_OPENGL_4
+
 IGL_INLINE void igl::unproject(
   const double winX,
   const double winY,
@@ -34,7 +36,7 @@ IGL_INLINE void igl::unproject(
 }
 
 // #ifndef IGL_NO_OPENGL
-// #ifndef IGL_OPENGL_4
+
 #include "OpenGL_convenience.h"
 
 template <typename Derivedwin>
@@ -55,7 +57,7 @@ IGL_INLINE Eigen::PlainObjectBase<Derivedwin> igl::unproject(
   return objd.template cast<Scalar>();
 }
 
-// #endif
+#endif
 // #endif
 
 template <typename Scalar>
@@ -81,14 +83,14 @@ IGL_INLINE Eigen::Matrix<Scalar,3,1> igl::unproject(
 
 #ifdef IGL_STATIC_LIBRARY
 
-#ifndef IGL_NO_OPENGL
+//#ifndef IGL_NO_OPENGL
 #ifndef IGL_OPENGL_4
 // Explicit template instanciation
+template Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > igl::unproject<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&);
 #endif
-#endif
+//#endif
 
 template Eigen::Matrix<float, 3, 1, 0, 3, 1> igl::unproject<float>(Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&);
 template Eigen::Matrix<double, 3, 1, 0, 3, 1> igl::unproject<double>(Eigen::Matrix<double, 3, 1, 0, 3, 1> const&, Eigen::Matrix<double, 4, 4, 0, 4, 4> const&, Eigen::Matrix<double, 4, 4, 0, 4, 4> const&, Eigen::Matrix<double, 4, 1, 0, 4, 1> const&);
-template Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > igl::unproject<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&);
 
 #endif
