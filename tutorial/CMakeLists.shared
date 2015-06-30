@@ -7,7 +7,15 @@ endmacro()
 remove_cxx_flag("-stdlib=libc++")
 if(NOT CMAKELISTS_SHARED_INCLUDED)
 set(CMAKELISTS_SHARED_INCLUDED TRUE)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+IF(MSVC)
+### Enable parallel compilation for Visual Studio
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+ELSE(MSVC)
+#### Libigl requires a modern C++ compiler that supports c++11
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+ENDIF(MSVC)
+
 find_package(OpenMP)
 if (OPENMP_FOUND AND NOT WIN32)
   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")

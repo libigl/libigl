@@ -147,8 +147,13 @@ else(YIMG_FOUND)
   message(STATUS "YIMG not found")
 endif(YIMG_FOUND)
 
+IF(MSVC)
+### Enable parallel compilation for Visual Studio
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+ELSE(MSVC)
 #### Libigl requires a modern C++ compiler that supports c++11
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+ENDIF(MSVC)
 
 #### Compile the core library that depends only on EIGEN ####
 include_directories( ${EIGEN_INCLUDE_DIR})

@@ -674,7 +674,7 @@ namespace viewer
   IGL_INLINE void Viewer::snap_to_canonical_quaternion()
   {
     Eigen::Vector4f snapq = this->core.trackball_angle;
-    igl::snap_to_canonical_view_quat<float>(snapq.data(),1,this->core.trackball_angle.data());
+    igl::snap_to_canonical_view_quat(snapq.data(),1.0f,this->core.trackball_angle.data());
   }
 
   IGL_INLINE void Viewer::open_dialog_load_mesh()
