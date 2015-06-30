@@ -16,10 +16,6 @@
 #include <Eigen/Geometry>
 #include <iostream>
 
-#ifdef _WIN32
-#  undef DrawText
-#endif
-
 #ifdef ENABLE_SERIALIZATION
 #include <igl/serialize.h>
 namespace igl {
@@ -246,7 +242,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
     {
       textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
       for (int i=0; i<data.V.rows(); ++i)
-        textrenderer.DrawText(data.V.row(i), data.V_normals.row(i), to_string(i));
+        textrenderer.DrawText(data.V.row(i),data.V_normals.row(i),to_string(i));
       textrenderer.EndDraw();
     }
 
