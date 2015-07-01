@@ -46,6 +46,12 @@ list(APPEND SHARED_LIBRARIES "nanogui" "glfw")
 message(STATUS "Linking with: ${LIBIGL_LIBRARIES}")
 list(APPEND SHARED_LIBRARIES ${LIBIGL_LIBRARIES})
 
+# This is necessary to work around the static linking order dependencies on linux
+if(UNIX AND NOT APPLE)
+  set(SHARED_LIBRARIES ${SHARED_LIBRARIES} ${SHARED_LIBRARIES})
+endif(UNIX AND NOT APPLE)
+
+#message(FATAL_ERROR ${SHARED_LIBRARIES})
 
 # Chapter 1
 add_subdirectory("101_FileIO")
