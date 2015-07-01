@@ -109,10 +109,4 @@ set(SHARED_LIBRARIES
 #		${GLFW_LIBRARIES}
 )
 
-# This is necessary to work around the static linking order dependencies on linux
-if(UNIX AND NOT APPLE)
-  set(SHARED_LIBRARIES ${SHARED_LIBRARIES} ${SHARED_LIBRARIES})
-endif(UNIX AND NOT APPLE)
-
-#message(FATAL_ERROR ${SHARED_LIBRARIES})
 endif(NOT CMAKELISTS_SHARED_INCLUDED)
