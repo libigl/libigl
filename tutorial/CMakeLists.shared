@@ -70,7 +70,6 @@ include_directories(
 
 link_directories(
 	/usr/local/lib
-	/opt/local/lib
 	${EIGEN_DIRS}
 )
 
