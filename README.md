@@ -185,7 +185,8 @@ If you find bugs or have problems please use our [github issue tracking
 page](https://github.com/libigl/libigl/issues).
 
 ## Copyright
-2015 Alec Jacobson, Daniele Panozzo, Olga Diamanti, Christian Schüller, Kenshi
-Takayama, Leo Sacht, Wenzel Jacob, Nico Pietroni, Amir Vaxman
+2015 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
+Zhou, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
+Giorgis, Luigi Rocca, Leonardo Sacht, Olga Sorkine-Hornung, and others.
 
-![](tutorial/images/libigl-logo.jpg)
+Please see individual files for appropriate copyright notices.
