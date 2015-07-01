@@ -2,7 +2,7 @@
 #include <igl/collapse_edge.h>
 #include <igl/edge_flaps.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/Viewer/viewer.h>
+#include <igl/viewer/Viewer.h>
 #include <Eigen/Core>
 #include <iostream>
 #include <set>
@@ -85,7 +85,7 @@ int main(int argc, char * argv[])
     if(viewer.core.is_animating && !Q.empty())
     {
       bool something_collapsed = false;
-      // collapse edge 
+      // collapse edge
       const int max_iter = std::ceil(0.01*Q.size());
       for(int j = 0;j<max_iter;j++)
       {
@@ -107,7 +107,7 @@ int main(int argc, char * argv[])
     return false;
   };
 
-  const auto &key_down = 
+  const auto &key_down =
     [&](igl::viewer::Viewer &viewer,unsigned char key,int mod)->bool
   {
     switch(key)
