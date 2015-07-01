@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifdef __AVX__
 #include "svd3x3_avx.h"
@@ -21,12 +21,12 @@
 #pragma runtime_checks( "u", off )  // disable runtime asserts on xor eax,eax type of stuff (doesn't always work, disable explicitly in compiler settings)
 template<typename T>
 IGL_INLINE void igl::svd3x3_avx(
-  const Eigen::Matrix<T, 3*8, 3>& A, 
-  Eigen::Matrix<T, 3*8, 3> &U, 
-  Eigen::Matrix<T, 3*8, 1> &S, 
+  const Eigen::Matrix<T, 3*8, 3>& A,
+  Eigen::Matrix<T, 3*8, 3> &U,
+  Eigen::Matrix<T, 3*8, 1> &S,
   Eigen::Matrix<T, 3*8, 3>&V)
 {
-  // this code assumes USE_AVX_IMPLEMENTATION is defined 
+  // this code assumes USE_AVX_IMPLEMENTATION is defined
   float Ashuffle[9][8], Ushuffle[9][8], Vshuffle[9][8], Sshuffle[3][8];
   for (int i=0; i<3; i++)
   {
@@ -101,7 +101,7 @@ IGL_INLINE void igl::svd3x3_avx(
 
 #ifdef IGL_STATIC_LIBRARY
 // forced instantiation
-template void igl::svd3x3_avx(const Eigen::Matrix<float, 3*8, 3>& A, Eigen::Matrix<float, 3*8, 3> &U, Eigen::Matrix<float, 3*8, 1> &S, Eigen::Matrix<float, 3*8, 3>&V);
+//template void igl::svd3x3_avx(const Eigen::Matrix<float, 3*8, 3>& A, Eigen::Matrix<float, 3*8, 3> &U, Eigen::Matrix<float, 3*8, 1> &S, Eigen::Matrix<float, 3*8, 3>&V);
 // doesn't even make sense with double because the wunder-SVD code is only single precision anyway...
 template void igl::svd3x3_avx<float>(Eigen::Matrix<float, 24, 3, 0, 24, 3> const&, Eigen::Matrix<float, 24, 3, 0, 24, 3>&, Eigen::Matrix<float, 24, 1, 0, 24, 1>&, Eigen::Matrix<float, 24, 3, 0, 24, 3>&);
 #endif
