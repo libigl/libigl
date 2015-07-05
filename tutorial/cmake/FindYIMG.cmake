@@ -10,13 +10,16 @@ FIND_PATH(YIMG_INCLUDE_DIR YImage.hpp
    /usr/local/include
    /opt/local/include
    $ENV{LIBIGL}/external/yimg
+   ${PROJECT_SOURCE_DIR}/../external/yimg/
 )
 
 set(YIMG_LIB_DIRS
    /usr/include
    /usr/local/include
    /opt/local/include
-   $ENV{LIBIGL}/external/yimg)
+   $ENV{LIBIGL}/external/yimg
+   ${PROJECT_SOURCE_DIR}/../external/yimg/
+   )
 FIND_LIBRARY( YIMG_LIBRARIES NAMES yimg PATHS ${YIMG_LIB_DIRS})
 
 if(YIMG_INCLUDE_DIR AND YIMG_LIBRARIES)
@@ -28,5 +31,3 @@ else()
 endif()
 
 MARK_AS_ADVANCED(YIMG_INCLUDE_DIR YIMG_LIBRARIES)
-
-
