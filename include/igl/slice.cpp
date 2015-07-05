@@ -9,9 +9,6 @@
 #include "colon.h"
 
 #include <vector>
-
-// Bug in unsupported/Eigen/SparseExtra needs iostream first
-#include <iostream>
 #include <unsupported/Eigen/SparseExtra>
 
 template <typename T>

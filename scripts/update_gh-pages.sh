@@ -32,8 +32,8 @@ echo "$HEADER" \
   git commit -m "update google-soc/index.html to match google-soc/google-soc.md" google-soc/google-soc.md google-soc/index.html 
 
 echo "$HEADER" \
-  | cat - build/README.md | multimarkdown -o build/index.html && \
-  git commit -m "update index.html to match README.md" build/README.md \
-  build/index.html
+  | cat - optional/README.md | multimarkdown -o optional/index.html && \
+  git commit -m "update index.html to match README.md" optional/README.md \
+  optional/index.html
 
 git push origin gh-pages && git checkout master && git merge gh-pages && git push
