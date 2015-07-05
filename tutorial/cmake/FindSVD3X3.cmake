@@ -9,6 +9,7 @@ FIND_PATH(SVD3X3_INCLUDE_DIR Singular_Value_Decomposition_Givens_QR_Factorizatio
    /usr/local/include
    ${PROJECT_SOURCE_DIR}/../libigl/external/Singular_Value_Decomposition/
    ${PROJECT_SOURCE_DIR}/../../external/Singular_Value_Decomposition/
+   ${PROJECT_SOURCE_DIR}/../external/Singular_Value_Decomposition/
    NO_DEFAULT_PATH
 )
 

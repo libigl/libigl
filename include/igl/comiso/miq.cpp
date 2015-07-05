@@ -738,7 +738,7 @@ IGL_INLINE void igl::VertexIndexing<DerivedV, DerivedF>::FindInitialPos(const in
   int f_init;
   int edge_init;
   FirstPos(vert,f_init,edge_init); // todo manually IGL_INLINE the function
-  igl::HalfEdgeIterator<DerivedF> VFI(&F,&TT,&TTi,f_init,edge_init);
+  igl::HalfEdgeIterator<DerivedF> VFI(F,TT,TTi,f_init,edge_init);
 
 #ifdef DEBUG_PRINT
   cerr<<"--FindInitialPos--"<<endl;
@@ -819,7 +819,7 @@ IGL_INLINE void igl::VertexIndexing<DerivedV, DerivedF>::MapIndexes(const int  v
   cerr<<"adding vertex for "<<vert<<endl;
 #endif
   ///and initialize the jumping pos
-  igl::HalfEdgeIterator<DerivedF> VFI(&F,&TT,&TTi,f_init,edge_init);
+  igl::HalfEdgeIterator<DerivedF> VFI(F,TT,TTi,f_init,edge_init);
   bool complete_turn=false;
   do
   {
@@ -870,7 +870,7 @@ IGL_INLINE void igl::VertexIndexing<DerivedV, DerivedF>::InitMappingSeam(const i
   int f_init = VF[vert][0];
   int indexE = VFi[vert][0];
 
-  igl::HalfEdgeIterator<DerivedF> VFI(&F,&TT,&TTi,f_init,indexE);
+  igl::HalfEdgeIterator<DerivedF> VFI(F,TT,TTi,f_init,indexE);
 
   int edge_init;
   int face_init;
