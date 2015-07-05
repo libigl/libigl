@@ -17,16 +17,17 @@
 
 namespace igl
 {
-  // BOUNDARY_FACES Determine boundary faces of tetrahedra stored in T
+  // ON_BOUNDARY Determine boundary facets of mesh elements stored in T
   //
   // Templates:
   //   IntegerT  integer-value: i.e. int
   //   IntegerF  integer-value: i.e. int
   // Input:
-  //  T  tetrahedron index list, m by 4, where m is the number of tetrahedra
+  //  T  triangle|tetrahedron index list, m by 3|4, where m is the number of
+  //    elements
   // Output:
   //  I  m long list of bools whether tet is on boundary
-  //  C  m by 4 list of bools whether opposite face is on boundary
+  //  C  m by 3|4 list of bools whether opposite facet is on boundary
   //
   template <typename IntegerT>
   IGL_INLINE void on_boundary(

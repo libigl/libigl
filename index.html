@@ -35,7 +35,7 @@ header file contains a single function (e.g. <code>igl/cotmatrix.h</code> contai
 stored in an n-by&#8211;3 matrix of vertex positions V and an m-by&#8211;3 matrix of
 triangle indices F. </p>
 
-<p><em>Optionally</em> the library may also be <a href="build/">pre-compiled</a> into a statically
+<p><em>Optionally</em> the library may also be <a href="optional/">pre-compiled</a> into a statically
 linked library, for faster compile times with your projects. This only effects
 compile time (run-time performance and behavior is identical). If in doubt, use
 the header-only default mode: (i.e. just include the headers you want to use).</p>
@@ -79,7 +79,7 @@ int main()
 <p>If you save this in <code>hello.cpp</code>, then you could compile this with (assuming
 Eigen is installed in <code>/usr/local/include/eigen3</code>):</p>
 
-<pre><code class="bash">gcc -I/usr/local/include/eigen3 -I./libigl/include/ hello.cpp -o hello
+<pre><code class="bash">g++ -std=c++11 -I/usr/local/include/eigen3 -I./libigl/include/ hello.cpp -o hello
 </code></pre>
 
 <p>Running <code>./hello</code> would then produce</p>
@@ -204,12 +204,11 @@ page</a>.</p>
 
 <h2 id="copyright">Copyright</h2>
 
-<p>2015 Alec Jacobson, Daniele Panozzo, Olga Diamanti, Christian Schüller, Kenshi
-Takayama, Leo Sacht, Wenzel Jacob, Nico Pietroni, Amir Vaxman</p>
+<p>2015 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
+Zhou, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
+Giorgis, Luigi Rocca, Leonardo Sacht, Olga Sorkine-Hornung, and others.</p>
 
-<figure>
-<img src="tutorial/images/libigl-logo.jpg" alt="" />
-<figcaption></figcaption></figure>
+<p>Please see individual files for appropriate copyright notices.</p>
 
 </body>
 </html>

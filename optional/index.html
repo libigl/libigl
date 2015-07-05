@@ -16,9 +16,9 @@
 
 <blockquote>
 <p>Warning: compiling libigl as a static library is considerably more difficult
-than using it as a header-only library (see <code>../README.md</code> instead). Do it
-only if you are experienced with C++ and you want to improve your compilation
-times.</p>
+than using it as a header-only library (see <a href="../">../README.md</a> instead). Do
+it only if you are experienced with C++, cmake and make, and you want to
+improve your compilation times.</p>
 </blockquote>
 
 <p>Libigl is developed most often on Mac OS X, though has current users in Linux
@@ -30,35 +30,31 @@ and Windows.</p>
 building a project with libigl, since when used as an header-only library can
 slow down compile times.</p>
 
-<p>To build the entire libigl library producing <code>lib/libigl.a</code>, issue:</p>
+<p>To build the entire libigl library producing at least <code>libigl/lib/libigl.a</code> and
+possible other (automatically detected) extras, e.g. <code>libigl/lib/libiglcgal.a</code>
+from <em>this current directory</em>: issue:</p>
 
-<pre><code>cd build
-make lib
-</code></pre>
-
-<p>You may need to edit <code>Makefile.conf</code> accordingly. Best to give yourself an
-<code>IGL_USERNAME</code> and add a custom install suite for yourself. Then you can enable
-appropriate extras.</p>
-
-<h4 id="extras">Extras</h4>
-
-<p>Once you&#8217;ve set up an <code>IGL_USERNAME</code> and enabled extras within Makefile.conf.
-You can build the extra libraries (into <code>lib/ligiglpng.a</code>, <code>lib/libiglmatlab.a</code>,
-<code>lib/libigltetgen.a</code>, <code>lib/libiglmosek.a</code>, etc.) by issuing:</p>
-
-<pre><code>cd build
-make extras
+<pre><code>mkdir -p ../lib
+cd ../lib
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
 </code></pre>
 
 <h4 id="examples">Examples</h4>
 
 <p>You can make a slew of examples by issuing:</p>
 
-<pre><code>cd build
-make examples
+<pre><code>cd ../examples
+make
 </code></pre>
 
 <h4 id="external">External</h4>
+
+<blockquote>
+<p><strong>Deprecation notice</strong> All external libraries will be absorbed by libigl or
+moved to separate git sub-repositories in the near future. The following
+instructions are subject to immediate change.</p>
+</blockquote>
 
 <p>Finally there are a number of external libraries that we include in
 <code>./external/</code> because they are either difficult to obtain or they have been
@@ -67,7 +63,7 @@ directories.</p>
 
 <h5 id="installinganttweakbar">Installing AntTweakBar</h5>
 
-<p>To build the a static AntTweakBar library on Mac OS X issue:</p>
+<p>To build a static AntTweakBar library on Mac OS X issue:</p>
 
 <pre><code>cd external/AntTweakBar/src
 make -f Makefile.osx.igl
@@ -131,6 +127,11 @@ make
 installed at <code>/usr/X11/lib</code>.</p>
 
 <h3 id="windowsexperimental">Windows (Experimental)</h3>
+
+<blockquote>
+<p><strong>Deprecation notice</strong> Windows users should run cmake on the <code>CMakeLists.txt</code>
+file in the current directory.</p>
+</blockquote>
 
 <p>To build a static library (.lib) on windows, open Visual Studio 2010.</p>
 
@@ -391,9 +392,10 @@ exposing templated functions.</li>
  <code>AntTweakBar</code>, <code>BLAS</code>). However, because all
  depencies other than Eigen should be encapsulated between
  <code>#ifndef</code> guards (e.g. <code>#ifndef IGL_NO_OPENGL</code>, it
- is possible to ignore certain functions that have such dependencies.</li>
- <li><strong>Long compile:</strong> Compiling <code>igl.cpp</code> takes a long time and isn&#8217;t easily parallelized (no <code>make -j12</code> equivalent).</li>
- </ul></p></li>
+ is possible to ignore certain functions that have such dependencies.</p></li>
+<li><p><strong>Long compile</strong>:
+ Compiling <code>igl.cpp</code> takes a long time and isn&#8217;t easily parallelized (no <code>make
+  -j12</code> equivalent).</p></li>
 </ul>
 
 <p>Here&#8217;s a tiny test example using <code>igl.h</code> and <code>igl.cpp</code>. Save the following in <code>test.cpp</code>:</p>
