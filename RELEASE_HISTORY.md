@@ -49,6 +49,19 @@ deprecated/repeated functions. The 3x3 svd code and dependent functions
 (including ARAP) were absorbed into the main library. Similarly, the boost
 dependency extra was absorbed.
 
+
+### External libraries as git subrepos ###
+The core functionality of libigl (still) just depends on stl, c++11 and Eigen.
+There are additional _optional_ dependencies (e.g. CGAL, embree, glfw, tetgen,
+triangle). Libigl functions using these are located (still) in sub-folders of
+the include directory (e.g.  `include/igl/cgal/`, `include/igl/embree/`). Prior
+to version 1.2 we included copies of the code for some of these dependencies in the
+`external/` directory. As of
+version 1.2, these have been replaced with git sub-repos. If you have cloned
+libigl _before version 1.2_ then you should issue 
+
+    git submodule update --init --recursive
+
 ### Deprecated/repeated functions ###
 
 Old                                     | New
