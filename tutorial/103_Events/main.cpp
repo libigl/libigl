@@ -1,5 +1,6 @@
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
+#include <iostream>
 
 Eigen::MatrixXd V1,V2;
 Eigen::MatrixXi F1,F2;
@@ -7,6 +8,7 @@ Eigen::MatrixXi F1,F2;
 // This function is called every time a keyboard button is pressed
 bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
+  std::cout<<"Key: "<<key<<" "<<(unsigned int)key<<std::endl;
   if (key == '1')
   {
     // Clear should be called before drawing the mesh
@@ -33,6 +35,10 @@ int main(int argc, char *argv[])
   // Load two meshes
   igl::readOFF("../shared/bumpy.off", V1, F1);
   igl::readOFF("../shared/fertility.off", V2, F2);
+  std::cout<<R"(
+1 Switch to bump mesh
+2 Switch to fertility mesh
+    )";
 
   igl::viewer::Viewer viewer;
   // Register a keyboard callback that allows to switch between
