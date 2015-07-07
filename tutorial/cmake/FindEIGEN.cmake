@@ -69,6 +69,9 @@ else ()
     ${PROJECT_SOURCE_DIR}/../../../external/nanogui/ext/eigen/
     ${PROJECT_SOURCE_DIR}/../../external/nanogui/ext/eigen/
     ${PROJECT_SOURCE_DIR}/../external/nanogui/ext/eigen/
+    ${PROJECT_SOURCE_DIR}/../libigl/external/nanogui/ext/eigen/
+    ${PROJECT_SOURCE_DIR}/../../libigl/external/nanogui/ext/eigen/
+    ${PROJECT_SOURCE_DIR}/../../../libigl/external/nanogui/ext/eigen/
 	  $ENV{DevLibraries}/Eigen
       PATH_SUFFIXES eigen3 eigen
     )
