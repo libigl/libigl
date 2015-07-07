@@ -5,7 +5,9 @@ find_package(CGAL REQUIRED)
 include(${CGAL_USE_FILE})
 # CGAL's monkeying with all of the flags. Rather than change the CGAL_USE_FILE
 # just get ride of this flag.
-remove_cxx_flag("-stdlib=libc++")
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  remove_cxx_flag("-stdlib=libc++")
+endif()
 
 # This is absolutely necessary for Exact Construction
 
