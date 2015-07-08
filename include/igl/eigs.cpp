@@ -14,7 +14,7 @@ template <
   typename DerivedS>
 IGL_INLINE bool igl::eigs(
   const Eigen::SparseMatrix<Atype> & A,
-  const Eigen::SparseMatrix<Btype> & B,
+  const Eigen::SparseMatrix<Btype> & iB,
   const size_t k,
   const EigsType type,
   Eigen::PlainObjectBase<DerivedU> & sU,
@@ -24,15 +24,19 @@ IGL_INLINE bool igl::eigs(
   using namespace std;
   const size_t n = A.rows();
   assert(A.cols() == n && "A should be square.");
-  assert(B.rows() == n && "B should be match A's dims.");
-  assert(B.cols() == n && "B should be square.");
+  assert(iB.rows() == n && "B should be match A's dims.");
+  assert(iB.cols() == n && "B should be square.");
   assert(type == EIGS_TYPE_SM && "Only low frequencies are supported");
   DerivedU U(n,k);
   DerivedS S(k,1);
   typedef Atype Scalar;
   typedef Eigen::Matrix<typename DerivedU::Scalar,DerivedU::RowsAtCompileTime,1> VectorXS;
+  // Rescale B for better numerics
+  const Scalar rescale = std::abs(iB.diagonal().maxCoeff());
+  const Eigen::SparseMatrix<Btype> B = iB/rescale;
+
   Scalar tol = 1e-4;
-  Scalar conv = 1e-15;
+  Scalar conv = 1e-14;
   int max_iter = 100;
   int i = 0;
   while(true)
@@ -141,5 +145,7 @@ IGL_INLINE bool igl::eigs(
   VectorXi I;
   igl::sort(S,1,false,sS,I);
   sU = igl::slice(U,I,2);
+  sS /= rescale;
+  sU /= sqrt(rescale);
   return true;
 }
