@@ -1,10 +1,10 @@
-#include <igl/readMESH.h>
-#include <igl/winding_number.h>
 #include <igl/barycenter.h>
 #include <igl/boundary_facets.h>
 #include <igl/parula.h>
-#include <igl/slice_tets.h>
+#include <igl/readMESH.h>
 #include <igl/slice.h>
+#include <igl/slice_tets.h>
+#include <igl/winding_number.h>
 #include <igl/viewer/Viewer.h>
 #include <Eigen/Sparse>
 #include <iostream>
@@ -21,7 +21,7 @@ enum OverLayType
   NUM_OVERLAY = 3,
 } overlay = OVERLAY_NONE;
 
-void update_visualization(igl::Viewer & viewer)
+void update_visualization(igl::viewer::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
@@ -68,7 +68,7 @@ void update_visualization(igl::Viewer & viewer)
   viewer.data.set_face_based(true);
 }
 
-bool key_down(igl::Viewer& viewer, unsigned char key, int mod)
+bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int mod)
 {
   switch(key)
   {
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
   W = (W.array() - W.minCoeff())/(W.maxCoeff()-W.minCoeff());
 
   // Plot the generated mesh
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   update_visualization(viewer);
   viewer.callback_key_down = &key_down;
   viewer.launch();

@@ -84,6 +84,14 @@ libigl depends only on the [Eigen](http://eigen.tuxfamily.org) library.
 
 For more information see our [tutorial](tutorial/tutorial.html).
 
+### Optional dependencies ###
+
+Libigl compartmentalizes its **optional** dependences via its directory
+organization in the `include/` folder. All header files located _directly_ in
+the `include/igl/` folder have only stl and Eigen as dependencies. For example,
+all of the headers that depend on CGAL are located in `include/igl/cgal`. For a
+full list of _optional_ dependencies check `optional/CMakeLists.txt`.
+
 ### GCC and the optional CGAL dependency
 The `include/igl/cgal/*.h` headers depend on CGAL. It has come to our attention
 that CGAL does not work properly with GCC 4.8. To the best of our knowledge,
@@ -100,7 +108,7 @@ You can keep up to date by cloning a read-only copy of our GitHub
 [repository](https://github.com/libigl).
 
 ## Known Issues
-We really heavily on Eigen. Nearly all inputs and outputs are Eigen matrices of
+We rely heavily on Eigen. Nearly all inputs and outputs are Eigen matrices of
 some kind. However, we currently _only_ officially support Eigen's default
 column-major ordering. That means, we **do not** expect our code to work for
 matrices using the `Eigen::RowMajor` flag. If you can, change definitions like:

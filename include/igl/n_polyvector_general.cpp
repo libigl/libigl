@@ -99,7 +99,7 @@ precomputeInteriorEdges()
   // Flag border edges
   numInteriorEdges = 0;
   isBorderEdge.setZero(numE,1);
-  indFullToInterior = -1.*Eigen::VectorXi::Ones(numE,1);
+  indFullToInterior = -1*Eigen::VectorXi::Ones(numE,1);
 
   for(unsigned i=0; i<numE; ++i)
   {
@@ -326,8 +326,11 @@ IGL_INLINE void igl::GeneralPolyVectorFieldFinder<DerivedV, DerivedF>::getGenera
   Ck.resize(numConstrained,1);
   // int n = rootsIndex.cols();
 
-  std::vector<std::vector<int>> allCombs;
-  igl::nchoosek(0,k+1,n,allCombs);
+  Eigen::MatrixXi allCombs;
+  {
+    Eigen::VectorXi V = Eigen::VectorXi::LinSpaced(n,0,n-1);
+    igl::nchoosek(V,k+1,allCombs);
+  }
 
   int ind = 0;
   for (int fi = 0; fi <numF; ++fi)
@@ -338,13 +341,13 @@ IGL_INLINE void igl::GeneralPolyVectorFieldFinder<DerivedV, DerivedF>::getGenera
     {
       std::complex<typename DerivedV::Scalar> ck(0);
 
-      for (int j = 0; j < allCombs.size(); ++j)
+      for (int j = 0; j < allCombs.rows(); ++j)
       {
         std::complex<typename DerivedV::Scalar> tk(1.);
         //collect products
-        for (int i = 0; i < allCombs[j].size(); ++i)
+        for (int i = 0; i < allCombs.cols(); ++i)
         {
-          int index = allCombs[j][i];
+          int index = allCombs(j,i);
 
           int ri = rootsIndex[index];
           Eigen::Matrix<typename DerivedV::Scalar, 1, 3> w;

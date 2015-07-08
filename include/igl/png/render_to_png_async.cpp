@@ -44,7 +44,7 @@ static IGL_INLINE bool render_to_png_async_helper(
   return ret;
 }
 
-IGL_INLINE std::thread igl::render_to_png_async(
+IGL_INLINE std::thread igl::png::render_to_png_async(
   const std::string png_file,
   const int width,
   const int height,

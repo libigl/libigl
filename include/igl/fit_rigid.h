@@ -8,7 +8,12 @@
 #ifndef IGL_FIT_RIGID_H
 #define IGL_FIT_RIGID_H
 
-#warning "Deprecated. Use igl/procrustes.h instead"
+#if defined(_WIN32)
+  #pragma message("Deprecated. Use igl/procrustes.h instead")
+#else
+  #warning "Deprecated. Use igl/procrustes.h instead"
+#endif
+
 #include "igl_inline.h"
 #include <Eigen/Core>
 #include <Eigen/Geometry>

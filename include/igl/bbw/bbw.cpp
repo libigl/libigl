@@ -21,7 +21,7 @@
 #include <cstdio>
 
 
-igl::BBWData::BBWData():
+igl::bbw::BBWData::BBWData():
   partition_unity(false),
   W0(),
 #ifndef IGL_NO_MOSEK
@@ -35,7 +35,7 @@ igl::BBWData::BBWData():
   active_set_params.Auu_pd = true;
 }
 
-void igl::BBWData::print()
+void igl::bbw::BBWData::print()
 {
   using namespace std;
   cout<<"partition_unity: "<<partition_unity<<endl;
@@ -50,12 +50,12 @@ template <
   typename Derivedb,
   typename Derivedbc, 
   typename DerivedW>
-IGL_INLINE bool igl::bbw(
+IGL_INLINE bool igl::bbw::bbw(
   const Eigen::PlainObjectBase<DerivedV> & V, 
   const Eigen::PlainObjectBase<DerivedEle> & Ele, 
   const Eigen::PlainObjectBase<Derivedb> & b, 
   const Eigen::PlainObjectBase<Derivedbc> & bc, 
-  igl::BBWData & data,
+  igl::bbw::BBWData & data,
   Eigen::PlainObjectBase<DerivedW> & W
   )
 {
@@ -212,5 +212,5 @@ IGL_INLINE bool igl::bbw(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template bool igl::bbw<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, igl::BBWData&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template bool igl::bbw::bbw<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, igl::bbw::BBWData&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

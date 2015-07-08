@@ -1,14 +1,16 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "draw_skeleton_vector_graphics.h"
 #include "OpenGL_convenience.h"
 #include "draw_point.h"
 #include "material_colors.h"
+
+#ifndef IGL_NO_OPENGL
 
 IGL_INLINE void igl::draw_skeleton_vector_graphics(
   const Eigen::MatrixXd & C,
@@ -104,7 +106,7 @@ IGL_INLINE void igl::draw_skeleton_vector_graphics(
   BET.resize(BE.rows(),2);
   for(int e = 0;e<BE.rows();e++)
   {
-    BET(e,0) = 2*e; 
+    BET(e,0) = 2*e;
     BET(e,1) = 2*e+1;
     const auto & c0 = C.row(BE(e,0));
     const auto & c1 = C.row(BE(e,1));
@@ -116,7 +118,12 @@ IGL_INLINE void igl::draw_skeleton_vector_graphics(
   draw_skeleton_vector_graphics(CT,BET,point_color,line_color);
 }
 
+#endif
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instanciation
+#ifndef IGL_NO_OPENGL
+
 template void igl::draw_skeleton_vector_graphics<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&);
+#endif
 #endif
