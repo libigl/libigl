@@ -1,8 +1,8 @@
+#include <igl/circulation.h>
 #include <igl/collapse_edge.h>
 #include <igl/edge_flaps.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/circulation.h>
-#include <igl/Viewer/viewer.h>
+#include <igl/viewer/Viewer.h>
 #include <Eigen/Core>
 #include <iostream>
 #include <set>
@@ -25,7 +25,7 @@ int main(int argc, char * argv[])
   MatrixXi F,OF;
   read_triangle_mesh(filename,OV,OF);
 
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
 
   // Prepare array-based edge data structures and priority queue
   VectorXi EMAP;
@@ -79,13 +79,13 @@ int main(int argc, char * argv[])
     viewer.data.set_face_based(true);
   };
 
-  const auto &pre_draw = [&](igl::Viewer & viewer)->bool
+  const auto &pre_draw = [&](igl::viewer::Viewer & viewer)->bool
   {
     // If animating then collapse 10% of edges
     if(viewer.core.is_animating && !Q.empty())
     {
       bool something_collapsed = false;
-      // collapse edge 
+      // collapse edge
       const int max_iter = std::ceil(0.01*Q.size());
       for(int j = 0;j<max_iter;j++)
       {
@@ -107,8 +107,8 @@ int main(int argc, char * argv[])
     return false;
   };
 
-  const auto &key_down = 
-    [&](igl::Viewer &viewer,unsigned char key,int mod)->bool
+  const auto &key_down =
+    [&](igl::viewer::Viewer &viewer,unsigned char key,int mod)->bool
   {
     switch(key)
     {

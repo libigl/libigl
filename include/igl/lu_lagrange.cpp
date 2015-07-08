@@ -25,7 +25,12 @@ IGL_INLINE bool igl::lu_lagrange(
   Eigen::SparseMatrix<T> & U)
 {
 #if EIGEN_VERSION_AT_LEAST(3,0,92)
-#  warning lu_lagrange has not yet been implemented for your Eigen Version
+#if defined(_WIN32)
+  #pragma message("lu_lagrange has not yet been implemented for your Eigen Version")
+#else
+  #warning lu_lagrange has not yet been implemented for your Eigen Version
+#endif
+
   return false;
 #else
   // number of unknowns

@@ -13,24 +13,24 @@
 #ifndef IGL_OPENGL_4
 template <
   typename Derivedobj>
-IGL_INLINE int igl::unproject_in_mesh(
+IGL_INLINE int igl::embree::unproject_in_mesh(
   const double x,
   const double y,
-  const igl::EmbreeIntersector & ei,
+  const EmbreeIntersector & ei,
   Eigen::PlainObjectBase<Derivedobj> & obj)
 {
-  std::vector<igl::Hit> hits;
-  return igl::unproject_in_mesh(x,y,ei,obj,hits);
+  std::vector<igl::embree::Hit> hits;
+  return unproject_in_mesh(x,y,ei,obj,hits);
 }
 
 template <
   typename Derivedobj>
-IGL_INLINE int igl::unproject_in_mesh(
+IGL_INLINE int igl::embree::unproject_in_mesh(
   const double x,
   const double y,
-  const igl::EmbreeIntersector & ei,
+  const EmbreeIntersector & ei,
   Eigen::PlainObjectBase<Derivedobj> & obj,
-  std::vector<igl::Hit > & hits)
+  std::vector<igl::embree::Hit > & hits)
 {
   using namespace igl;
   using namespace std;
@@ -68,14 +68,14 @@ IGL_INLINE int igl::unproject_in_mesh(
 #endif
 
 template <typename Derivedobj>
-IGL_INLINE int igl::unproject_in_mesh(
+IGL_INLINE int igl::embree::unproject_in_mesh(
   const Eigen::Vector2f& pos,
   const Eigen::Matrix4f& model,
   const Eigen::Matrix4f& proj,
   const Eigen::Vector4f& viewport,
-  const igl::EmbreeIntersector & ei,
+  const EmbreeIntersector & ei,
   Eigen::PlainObjectBase<Derivedobj> & obj,
-  std::vector<igl::Hit > & hits)
+  std::vector<igl::embree::Hit > & hits)
 {
   using namespace igl;
   using namespace std;
@@ -115,9 +115,9 @@ IGL_INLINE int igl::unproject_in_mesh(
 
 #ifdef IGL_STATIC_LIBRARY
 #  ifndef IGL_OPENLGL_4
-template int igl::unproject_in_mesh<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(double, double, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&, std::vector<igl::Hit, std::allocator<igl::Hit> >&);
-template int igl::unproject_in_mesh<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(double, double, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
+//template int igl::embree::unproject_in_mesh<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(double, double, igl::embree::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&, std::vector<igl::embree::Hit, std::allocator<igl::embree::Hit> >&);
+//template int igl::embree::unproject_in_mesh<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(double, double, igl::embree::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
 #  endif
-template int igl::unproject_in_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, std::vector<igl::Hit, std::allocator<igl::Hit> >&);
-template int igl::unproject_in_mesh<Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, igl::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&, std::vector<igl::Hit, std::allocator<igl::Hit> >&);
+template int igl::embree::unproject_in_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, igl::embree::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, std::vector<igl::embree::Hit, std::allocator<igl::embree::Hit> >&);
+template int igl::embree::unproject_in_mesh<Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, igl::embree::EmbreeIntersector const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&, std::vector<igl::embree::Hit, std::allocator<igl::embree::Hit> >&);
 #endif

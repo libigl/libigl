@@ -24,11 +24,12 @@ namespace igl
   //   q  quaternion possibly set to nearest canonical view
   // Return:
   //   true only if q was snapped to the nearest canonical view
-template <typename Q_type>
+  template <typename Q_type>
   IGL_INLINE bool snap_to_canonical_view_quat(
-    const Q_type q[4],
+    const Q_type* q,
     const Q_type threshold,
-    Q_type s[4]);
+    Q_type* s);
+
   IGL_INLINE bool snap_to_canonical_view_quat(
     const Eigen::Quaterniond & q,
     const double threshold,

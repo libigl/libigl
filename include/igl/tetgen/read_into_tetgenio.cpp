@@ -25,7 +25,7 @@
 #include <iostream>
 #include <vector>
 
-IGL_INLINE bool igl::read_into_tetgenio(
+IGL_INLINE bool igl::tetgen::read_into_tetgenio(
   const std::string & path,
   tetgenio & in)
 {

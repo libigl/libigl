@@ -6,8 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef IGL_OPENGL_SHADER_H
-#define IGL_OPENGL_SHADER_H
+#ifndef IGL_VIEWER_OPENGL_SHADER_H
+#define IGL_VIEWER_OPENGL_SHADER_H
 
 #include <igl/igl_inline.h>
 #include <string>
@@ -17,6 +17,7 @@
 #  include <windows.h>
 #  undef max
 #  undef min
+#  undef DrawText
 #endif
 
 #ifndef __APPLE__
@@ -35,6 +36,8 @@
 #endif
 
 namespace igl
+{
+namespace viewer
 {
 
 // This class wraps an OpenGL program composed of three shaders
@@ -88,6 +91,7 @@ public:
 
 };
 
+}
 }
 
 #ifndef IGL_STATIC_LIBRARY

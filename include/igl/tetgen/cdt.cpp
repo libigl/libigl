@@ -15,10 +15,10 @@ template <
   typename DerivedTV, 
   typename DerivedTT, 
   typename DerivedTF>
-IGL_INLINE bool igl::cdt(
+IGL_INLINE bool igl::tetgen::cdt(
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F,
-  const igl::CDTParam & param,
+  const CDTParam & param,
   Eigen::PlainObjectBase<DerivedTV>& TV,
   Eigen::PlainObjectBase<DerivedTT>& TT,
   Eigen::PlainObjectBase<DerivedTF>& TF)

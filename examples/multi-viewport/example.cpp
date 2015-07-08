@@ -1,21 +1,21 @@
-#include <igl/OpenGL_convenience.h>
-#include <igl/per_face_normals.h>
-#include <igl/read_triangle_mesh.h>
-#include <igl/normalize_row_lengths.h>
-#include <igl/draw_mesh.h>
-#include <igl/unproject.h>
-#include <igl/quat_to_mat.h>
-#include <igl/trackball.h>
-#include <igl/report_gl_error.h>
-#include <igl/canonical_quaternions.h>
-#include <igl/snap_to_canonical_view_quat.h>
-#include <igl/unproject_to_zero_plane.h>
 #include <igl/Camera.h>
-#include <igl/STR.h>
-#include <igl/draw_beach_ball.h>
-#include <igl/Viewport.h>
-#include <igl/project.h>
 #include <igl/EPS.h>
+#include <igl/OpenGL_convenience.h>
+#include <igl/STR.h>
+#include <igl/Viewport.h>
+#include <igl/canonical_quaternions.h>
+#include <igl/draw_beach_ball.h>
+#include <igl/draw_mesh.h>
+#include <igl/normalize_row_lengths.h>
+#include <igl/per_face_normals.h>
+#include <igl/project.h>
+#include <igl/quat_to_mat.h>
+#include <igl/read_triangle_mesh.h>
+#include <igl/report_gl_error.h>
+#include <igl/snap_to_canonical_view_quat.h>
+#include <igl/trackball.h>
+#include <igl/unproject.h>
+#include <igl/unproject_to_zero_plane.h>
 
 #ifdef __APPLE__
 #  include <OpenGL/gl.h>

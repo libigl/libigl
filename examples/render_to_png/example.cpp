@@ -1,6 +1,6 @@
 #include <igl/get_seconds.h>
-#include <igl/png/render_to_png.h>
 #include <igl/material_colors.h>
+#include <igl/png/render_to_png.h>
 
 #ifdef __APPLE__
 #   include <GLUT/glut.h>
@@ -94,7 +94,7 @@ void Display(void)
   {
     stringstream padnum; 
     padnum << "render_to_png-example-" << setw(4) << setfill('0') << capture_count++ << ".png";
-    render_to_png(padnum.str(),width,height);
+    igl::png::render_to_png(padnum.str(),width,height);
     capture_on_next = false;
   }
   

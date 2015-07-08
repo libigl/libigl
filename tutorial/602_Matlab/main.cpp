@@ -1,8 +1,8 @@
+#include <igl/jet.h>
 #include <igl/readOFF.h>
+#include <igl/cotmatrix.h>
 #include <igl/matlab/matlabinterface.h>
 #include <igl/viewer/Viewer.h>
-#include <igl/jet.h>
-#include <igl/cotmatrix.h>
 #include <iostream>
 
 // Base mesh
@@ -15,7 +15,7 @@ Engine* engine;
 // Eigenvectors of the laplacian
 Eigen::MatrixXd EV;
 
-void plotEV(igl::Viewer& viewer, int id)
+void plotEV(igl::viewer::Viewer& viewer, int id)
 {
   Eigen::VectorXd v = EV.col(id);
   v = v.array() - v.minCoeff();
@@ -34,7 +34,7 @@ void plotEV(igl::Viewer& viewer, int id)
 }
 
 // This function is called every time a keyboard button is pressed
-bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key >= '1' && key <= '9')
     plotEV(viewer,(key - '1') + 1);
@@ -48,29 +48,29 @@ int main(int argc, char *argv[])
   igl::readOFF("../shared/3holes.off", V, F);
 
   // Launch MATLAB
-  igl::mlinit(&engine);
+  igl::matlab::mlinit(&engine);
 
   // Compute the discrete Laplacian operator
   Eigen::SparseMatrix<double> L;
   igl::cotmatrix(V,F,L);
 
   // Send Laplacian matrix to matlab
-  igl::mlsetmatrix(&engine,"L",L);
+  igl::matlab::mlsetmatrix(&engine,"L",L);
 
   // Plot the laplacian matrix using matlab spy
-  igl::mleval(&engine,"spy(L)");
+  igl::matlab::mleval(&engine,"spy(L)");
 
   // Extract the first 10 eigenvectors
-  igl::mleval(&engine,"[EV,~] = eigs(-L,10,'sm')");
+  igl::matlab::mleval(&engine,"[EV,~] = eigs(-L,10,'sm')");
 
   // Plot the size of EV (only for demostration purposes)
-  std::cerr << igl::mleval(&engine,"size(EV)") << std::endl;
+  std::cerr << igl::matlab::mleval(&engine,"size(EV)") << std::endl;
 
   // Retrieve the result
-  igl::mlgetmatrix(&engine,"EV",EV);
+  igl::matlab::mlgetmatrix(&engine,"EV",EV);
 
   // Plot the mesh
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.callback_key_down = &key_down;
   viewer.data.set_mesh(V, F);
 

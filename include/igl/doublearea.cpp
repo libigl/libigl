@@ -133,7 +133,7 @@ IGL_INLINE void igl::doublearea(
   #  define IGL_OMP_MIN_VALUE 1000
   #endif
   #pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
-  for(size_t i = 0;i<m;i++)
+  for(long long i = 0;i<m;i++)
   {
     //// Heron's formula for area
     //const typename Derivedl::Scalar arg =

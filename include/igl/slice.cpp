@@ -18,7 +18,7 @@ IGL_INLINE void igl::slice(
   const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
   Eigen::SparseMatrix<T>& Y)
 {
-#if true
+#if 1
   int xm = X.rows();
   int xn = X.cols();
   int ym = R.size();
