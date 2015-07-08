@@ -8,6 +8,8 @@ SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../tutorial/cmake)
 find_package(EIGEN REQUIRED)
 
 add_definitions(-DIGL_STATIC_LIBRARY)
+add_definitions(-DIGL_NO_OPENGL)
+add_definitions(-DIGL_OPENGL_4)
 
 ## Check for GLFW
 find_package(GLFWH QUIET)
