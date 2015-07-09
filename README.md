@@ -156,6 +156,9 @@ BibTeX entry:
 ```
 
 ## Projects/Universities using libigl
+Libigl is used by many research groups around the world. In 2015, it won the
+Eurographics/ACM Symposium on Geometry Processing software award. Here are a
+few labs/companies/institutions using libigl:
 
  - [Spine by Esoteric Software](http://esotericsoftware.com/) is an animation tool dedicated to 2D characters.
  - Columbia University, [Columbia Computer Graphics Group](http://www.cs.columbia.edu/cg/), USA
