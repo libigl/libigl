@@ -17,7 +17,7 @@
 #include <igl/material_colors.h>
 #include <igl/barycenter.h>
 #include <igl/matlab_format.h>
-#include <igl/ReAntTweakBar.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 #include <igl/pathinfo.h>
 #include <igl/embree/EmbreeIntersector.h>
 #include <igl/embree/ambient_occlusion.h>
@@ -50,12 +50,12 @@ Eigen::MatrixXd V,N,C,mid;
 Eigen::MatrixXi F;
 // Bounding box diagonal length
 double bbd;
-igl::EmbreeIntersector ei;
+igl::embree::EmbreeIntersector ei;
 // Running ambient occlusion
 Eigen::VectorXd S;
 int tot_num_samples = 0;
 #define REBAR_NAME "temp.rbr"
-igl::ReTwBar rebar; // Pointer to the tweak bar
+igl::anttweakbar::ReTwBar rebar; // Pointer to the tweak bar
 bool lights_on = true;
 Eigen::Vector4f color(0.4,0.8,0.3,1.0);
 double ao_factor = 1.0;
@@ -156,7 +156,7 @@ void display()
     }
     VectorXd Si;
     const int num_samples = 20;
-    ambient_occlusion(ei,V,N,num_samples,Si);
+    igl::embree::ambient_occlusion(ei,V,N,num_samples,Si);
     S *= (double)tot_num_samples;
     S += Si*(double)num_samples;
     tot_num_samples += num_samples;

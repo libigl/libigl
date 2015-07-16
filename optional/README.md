@@ -20,8 +20,18 @@ from _this current directory_: issue:
 
     mkdir -p ../lib
     cd ../lib
-    cmake -DCMAKE_BUILD_TYPE=Release ..
+    cmake -DCMAKE_BUILD_TYPE=Release ../optional
     make
+
+#### Warnings ####
+
+You should expect to see a few linker warnings of the form:
+
+    /opt/local/bin/ranlib: file: libigl.a(*.cpp.o) has no symbols
+
+These are (admittedly unpopular) functions that have never been used by us
+statically so we haven't explicit instantiations (yet).
+
 
 #### Examples ####
 You can make a slew of examples by issuing:
@@ -31,38 +41,12 @@ You can make a slew of examples by issuing:
 
 #### External ####
 
-> **Deprecation notice** All external libraries will be absorbed by libigl or
-> moved to separate git sub-repositories in the near future. The following
-> instructions are subject to immediate change.
 
 Finally there are a number of external libraries that we include in
 `./external/` because they are either difficult to obtain or they have been
 patched for easier use with libigl. Please see the respective readmes in those
-directories.
-
-
-##### Installing AntTweakBar #####
-To build a static AntTweakBar library on Mac OS X issue:
-
-    cd external/AntTweakBar/src
-    make -f Makefile.osx.igl
-
-##### Installing Tetgen #####
-To build the tetgen library and executable on Mac OS X issue:
-
-    cd external/tetgen
-    make clean
-    rm -f obj/*.o
-    make -f Makefile.igl tetgen
-    rm -f obj/*.o
-    make -f Makefile.igl tetlib
-
-##### Installing medit #####
-To build the igl version of the medit executable on Mac OS X issue:
-
-    cd external/medit
-    make -C libmesh
-    make -f Makefile.igl medit
+directories or build the tutorial using cmake, which will recursively build all
+dependencies.
 
 ##### Installing Embree 2.0 #####
 To build the embree library and executables on Mac OS X issue:
@@ -78,72 +62,16 @@ To build the embree library and executables on Mac OS X issue:
     # this
     #sudo make install
 
-##### Installing tinyxml2 #####
-To build the a static tinyxml2 library on Mac OS X issue:
-
-    cd external/tinyxml2
-    cmake .
-    make
-
-
-##### Installing YImg #####
-To build the a static YImg library on Mac OS X issue:
-
-    cd external/yimg
-    make
-
-You may need to install libpng. Systems with X11 might find this already
-installed at `/usr/X11/lib`.
-
-
-### Windows (Experimental) ###
-
-> **Deprecation notice** Windows users should run cmake on the `CMakeLists.txt`
-> file in the current directory.
-
-To build a static library (.lib) on windows, open Visual Studio 2010.
-
-- New > Project ...
-- Visual C++ > Win32
-- Win32 Console Application
-- Name: libiglVisualStudio
-- Uncheck "Create directory for solution"
-- Then hit OK, and then Next
-- Check "Static Library"
-- Uncheck "Precompiled headers"
-- Add all include/igl/*.cpp to the sources directory
-- Add all include/igl/*.h to the headers directory
-- Open Project > libigl Properties...
-- Add the path to eigen3 to the include paths
-- Change the target name to libigl
-- Build and pray (this should create libigl.lib
-
-[Source](http://msdn.microsoft.com/en-us/library/ms235627(v=vs.80).aspx)
-
-## Examples ##
-To get started, we advise that you take a look at a few examples:
-
-    ./examples/hello-world/
-
-    ./examples/meshio/
-
-    ./examples/basic-topology/
-
-    ./examples/ReAntTweakBar/
-
 ## Extras ##
-Libigl compartmentalizes dependences via its organization into a _main_ libigl
-library and "extras."
-
 
 ### bbw ###
 This library extra contains functions for computing Bounded Biharmonic Weights, can
 be used with and without the [mosek](#mosek) extra via the `IGL_NO_MOSEK`
 macro.
 
-### boost ###
-This library extra utilizes the graph functions in the boost library for find
-connected components and performing breadth-first traversals.
+### boolean ##
+This library extra contains functions for computing mesh-mesh booleans,
+depending on CGAL and optionally Cork.
 
 ### cgal ###
 This library extra utilizes CGAL's efficient and exact intersection and
@@ -163,16 +91,13 @@ quadratic programs.
 ### png ###
 This library extra uses `libpng` and `YImage` to read and write `.png` files.
 
-### svd3x3 ###
-This library extra implements "as-rigid-as-possible" (ARAP) deformation
-techniques using the fast singular value decomposition routines
-written specifically for 3x3 matrices to use `SSE` intrinsics. This extra can
-still be compiled without sse support and support should be determined
-automatically at compile time via the `__SSE__` macro.
-
 ### tetgen ###
-This library extra provides a simplified wrapper to the tetgen 3d tetrahedral meshing
-library.
+This library extra provides a simplified wrapper to the tetgen 3d tetrahedral
+meshing library.
+
+### Triangle ###
+This library extra provides a simplified wrapper to the triangle 2d triangle
+meshing library.
 
 ### viewer ###
 This library extra utilizes glfw and glew to open an opengl context and launch

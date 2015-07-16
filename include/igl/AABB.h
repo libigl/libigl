@@ -259,14 +259,13 @@ private:
         int & i,
         RowVectorDIMS & c) const;
 public:
-      template <int SS>
       static
       inline void barycentric_coordinates(
         const RowVectorDIMS & p, 
         const RowVectorDIMS & a, 
         const RowVectorDIMS & b, 
         const RowVectorDIMS & c,
-        Eigen::Matrix<Scalar,1,SS> & bary);
+        Eigen::Matrix<Scalar,1,3> & bary);
 public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
@@ -858,7 +857,7 @@ inline typename igl::AABB<DerivedV,DIM>::Scalar igl::AABB<DerivedV,DIM>::squared
   //other->m_max_sqr_d = std::max(other->m_left->m_max_sqr_d,other->m_right->m_max_sqr_d);
 
   return 0;
-#if false
+#if 0 // False
 
   // _Very_ conservative approximation of maximum squared distance between
   // primitives inside this and other's bounding boxes
@@ -1114,16 +1113,14 @@ inline void igl::AABB<DerivedV,DIM>::set_min(
 
 
 template <typename DerivedV, int DIM>
-template <int SS>
 inline void
 igl::AABB<DerivedV,DIM>::barycentric_coordinates(
   const RowVectorDIMS & p, 
   const RowVectorDIMS & a, 
   const RowVectorDIMS & b, 
   const RowVectorDIMS & c,
-  Eigen::Matrix<Scalar,1,SS> & bary)
+  Eigen::Matrix<Scalar,1,3> & bary)
 {
-  assert(SS==3);
   // http://gamedev.stackexchange.com/a/23745
   const RowVectorDIMS v0 = b - a;
   const RowVectorDIMS v1 = c - a;
@@ -1137,6 +1134,6 @@ igl::AABB<DerivedV,DIM>::barycentric_coordinates(
   bary(1) = (d11 * d20 - d01 * d21) / denom;
   bary(2) = (d00 * d21 - d01 * d20) / denom;
   bary(0) = 1.0f - bary(1) - bary(2);
-};
+}
 
 #endif

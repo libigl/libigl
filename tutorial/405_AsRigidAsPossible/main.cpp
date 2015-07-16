@@ -8,7 +8,7 @@
 #include <igl/dqs.h>
 #include <igl/readDMAT.h>
 #include <igl/readOFF.h>
-#include <igl/svd3x3/arap.h>
+#include <igl/arap.h>
 #include <igl/viewer/Viewer.h>
 
 #include <Eigen/Geometry>
@@ -30,7 +30,7 @@ double anim_t = 0.0;
 double anim_t_dir = 0.03;
 igl::ARAPData arap_data;
 
-bool pre_draw(igl::Viewer & viewer)
+bool pre_draw(igl::viewer::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
@@ -75,7 +75,7 @@ bool pre_draw(igl::Viewer & viewer)
   return false;
 }
 
-bool key_down(igl::Viewer &viewer, unsigned char key, int mods)
+bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
 {
   switch(key)
   {
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
   }
 
   // Plot the mesh with pseudocolors
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(U, F);
   viewer.data.set_colors(C);
   viewer.callback_pre_draw = &pre_draw;

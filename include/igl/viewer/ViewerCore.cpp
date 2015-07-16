@@ -21,7 +21,7 @@
 namespace igl {
   namespace serialization {
 
-    IGL_INLINE void serialization(bool s,ViewerCore& obj,std::vector<char>& buffer)
+    IGL_INLINE void serialization(bool s,igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
     {
       SERIALIZE_MEMBER(shininess);
 
@@ -71,12 +71,12 @@ namespace igl {
       SERIALIZE_MEMBER(proj);
     }
 
-    IGL_INLINE void serialize(const ViewerCore& obj,std::vector<char>& buffer)
+    IGL_INLINE void serialize(const igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
     {
-      serialization(true,const_cast<ViewerCore&>(obj),buffer);
+      serialization(true,const_cast<igl::viewer::ViewerCore&>(obj),buffer);
     }
 
-    IGL_INLINE void deserialize(ViewerCore& obj,const std::vector<char>& buffer)
+    IGL_INLINE void deserialize(igl::viewer::ViewerCore& obj,const std::vector<char>& buffer)
     {
       serialization(false,obj,const_cast<std::vector<char>&>(buffer));
     }
@@ -84,7 +84,7 @@ namespace igl {
 }
 #endif
 
-IGL_INLINE void igl::ViewerCore::align_camera_center(
+IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F)
 {
@@ -99,7 +99,7 @@ IGL_INLINE void igl::ViewerCore::align_camera_center(
   }
 }
 
-IGL_INLINE void igl::ViewerCore::get_scale_and_shift_to_fit_mesh(
+IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F,
   float& zoom,
@@ -125,12 +125,12 @@ IGL_INLINE void igl::ViewerCore::get_scale_and_shift_to_fit_mesh(
   zoom = 2.0 / std::max(z_scale,std::max(x_scale,y_scale));
 }
 
-IGL_INLINE void igl::ViewerCore::align_camera_center(
+IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
                                                      const Eigen::MatrixXd& V)
 {
   if(V.rows() == 0)
     return;
-  
+
   get_scale_and_shift_to_fit_mesh(V,model_zoom,model_translation);
   // Rather than crash on empty mesh...
   if(V.size() > 0)
@@ -139,14 +139,14 @@ IGL_INLINE void igl::ViewerCore::align_camera_center(
   }
 }
 
-IGL_INLINE void igl::ViewerCore::get_scale_and_shift_to_fit_mesh(
+IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
                                                                  const Eigen::MatrixXd& V,
                                                                  float& zoom,
                                                                  Eigen::Vector3f& shift)
 {
   if (V.rows() == 0)
     return;
-  
+
   //Eigen::SparseMatrix<double> M;
   //igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_VORONOI,M);
   //const auto & MV = M*V;
@@ -154,7 +154,7 @@ IGL_INLINE void igl::ViewerCore::get_scale_and_shift_to_fit_mesh(
   Eigen::RowVector3d min_point = V.colwise().minCoeff();
   Eigen::RowVector3d max_point = V.colwise().maxCoeff();
   Eigen::RowVector3d centroid  = 0.5*(min_point + max_point);
-  
+
   shift = -centroid.cast<float>();
   double x_scale = fabs(max_point[0] - min_point[0]);
   double y_scale = fabs(max_point[1] - min_point[1]);
@@ -163,7 +163,7 @@ IGL_INLINE void igl::ViewerCore::get_scale_and_shift_to_fit_mesh(
 }
 
 
-IGL_INLINE void igl::ViewerCore::clear_framebuffers()
+IGL_INLINE void igl::viewer::ViewerCore::clear_framebuffers()
 {
   glClearColor(background_color[0],
                background_color[1],
@@ -172,7 +172,7 @@ IGL_INLINE void igl::ViewerCore::clear_framebuffers()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bool update_matrices)
+IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bool update_matrices)
 {
   using namespace std;
   using namespace Eigen;
@@ -198,13 +198,13 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bo
     model = Eigen::Matrix4f::Identity();
     view  = Eigen::Matrix4f::Identity();
     proj  = Eigen::Matrix4f::Identity();
-    
+
     // Set view
     look_at( camera_eye, camera_center, camera_up, view);
-    
+
     float width  = viewport(2);
     float height = viewport(3);
-    
+
     // Set projection
     if (orthographic)
     {
@@ -219,21 +219,21 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bo
       frustum(-fW, fW, -fH, fH, camera_dnear, camera_dfar,proj);
     }
     // end projection
-    
+
     // Set model transformation
     float mat[16];
     igl::quat_to_mat(trackball_angle.data(), mat);
-    
+
     for (unsigned i=0;i<4;++i)
       for (unsigned j=0;j<4;++j)
         model(i,j) = mat[i+4*j];
-    
+
     // Why not just use Eigen::Transform<double,3,Projective> for model...?
     model.topLeftCorner(3,3)*=camera_zoom;
     model.topLeftCorner(3,3)*=model_zoom;
     model.col(3).head(3) += model.topLeftCorner(3,3)*model_translation;
   }
-  
+
   // Send transformations to the GPU
   GLint modeli = opengl.shader_mesh.uniform("model");
   GLint viewi  = opengl.shader_mesh.uniform("view");
@@ -241,7 +241,7 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bo
   glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
   glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
   glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
-  
+
   // Light parameters
   GLint specular_exponenti    = opengl.shader_mesh.uniform("specular_exponent");
   GLint light_position_worldi = opengl.shader_mesh.uniform("light_position_world");
@@ -280,7 +280,7 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bo
     {
       textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
       for (int i=0; i<data.V.rows(); ++i)
-        textrenderer.DrawText(data.V.row(i), data.V_normals.row(i), to_string(i));
+        textrenderer.DrawText(data.V.row(i),data.V_normals.row(i),to_string(i));
       textrenderer.EndDraw();
     }
 
@@ -354,7 +354,7 @@ IGL_INLINE void igl::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bo
 
 }
 
-IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
+IGL_INLINE void igl::viewer::ViewerCore::draw_buffer(ViewerData& data,
   OpenGL_state& opengl,
   bool update_matrices,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
@@ -364,10 +364,10 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
 {
   assert(R.rows() == G.rows() && G.rows() == B.rows() && B.rows() == A.rows());
   assert(R.cols() == G.cols() && G.cols() == B.cols() && B.cols() == A.cols());
-  
+
   int x = R.rows();
   int y = R.cols();
-  
+
   // Create frame buffer
   GLuint frameBuffer;
   glGenFramebuffers(1, &frameBuffer);
@@ -377,14 +377,14 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
   GLuint texColorBuffer;
   glGenTextures(1, &texColorBuffer);
   glBindTexture(GL_TEXTURE_2D, texColorBuffer);
-  
+
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-  
+
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  
+
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer, 0);
-  
+
   // Create Renderbuffer Object to hold depth and stencil buffers
   GLuint rboDepthStencil;
   glGenRenderbuffers(1, &rboDepthStencil);
@@ -403,13 +403,13 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
   // Save old viewport
   Eigen::Vector4f viewport_ori = viewport;
   viewport << 0,0,x,y;
-  
+
   // Draw
   draw(data,opengl,update_matrices);
-  
+
   // Restore viewport
   viewport = viewport_ori;
-  
+
   // Copy back in the given Eigen matrices
   GLubyte* pixels = (GLubyte*)calloc(x*y*4,sizeof(GLubyte));
   glReadPixels
@@ -418,7 +418,7 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
    x, y,
    GL_RGBA, GL_UNSIGNED_BYTE, pixels
    );
-    
+
   int count = 0;
   for (unsigned j=0; j<y; ++j)
   {
@@ -431,7 +431,7 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
       ++count;
     }
   }
-  
+
   // Clean up
   free(pixels);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -441,7 +441,7 @@ IGL_INLINE void igl::ViewerCore::draw_buffer(ViewerData& data,
 }
 
 
-IGL_INLINE igl::ViewerCore::ViewerCore()
+IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
 {
   // Default shininess
   shininess = 35.0f;
@@ -489,12 +489,12 @@ IGL_INLINE igl::ViewerCore::ViewerCore()
   animation_max_fps = 30.;
 }
 
-IGL_INLINE void igl::ViewerCore::init()
+IGL_INLINE void igl::viewer::ViewerCore::init()
 {
   textrenderer.Init();
 }
 
-IGL_INLINE void igl::ViewerCore::shut()
+IGL_INLINE void igl::viewer::ViewerCore::shut()
 {
   textrenderer.Shut();
 }

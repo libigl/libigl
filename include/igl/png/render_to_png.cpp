@@ -19,7 +19,7 @@
 #  include <GL/gl.h>
 #endif
 
-IGL_INLINE bool igl::render_to_png(
+IGL_INLINE bool igl::png::render_to_png(
   const std::string png_file,
   const int width,
   const int height,

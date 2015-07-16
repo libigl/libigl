@@ -6,6 +6,11 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+#ifdef WIN32
+  #define _USE_MATH_DEFINES
+#endif
+#include <cmath>
+
 #include "compute_frame_field_bisectors.h"
 #include "igl/local_basis.h"
 

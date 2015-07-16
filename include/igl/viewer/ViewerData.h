@@ -5,9 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-
-#ifndef IGL_VIEWER_DATA_H
-#define IGL_VIEWER_DATA_H
+#ifndef IGL_VIEWER_VIEWER_DATA_H
+#define IGL_VIEWER_VIEWER_DATA_H
 
 #include <cstdint>
 #include <vector>
@@ -17,6 +16,8 @@
 #include <igl/igl_inline.h>
 
 namespace igl
+{
+namespace viewer
 {
 
 // TODO: write documentation
@@ -148,6 +149,7 @@ public:
   /*********************************/
 };
 
+}
 }
 
 #ifndef IGL_STATIC_LIBRARY

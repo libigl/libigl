@@ -35,22 +35,6 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedV> & V,
     const int k,
     Eigen::PlainObjectBase<DerivedU> & U);
-  // This version has a strange interface and confusing parameters. It seems to
-  // reproduce matlab's 
-  //
-  //     nchoosek(3:5,2) 
-  //
-  // Then one should use
-  //
-  //     igl::nchoosek(3,2,6,res);
-  //
-  IGL_INLINE 
-  IGL_DEPRECATED(
-  void nchoosek(
-    int offset,
-    int k,
-    int N,
-    std::vector<std::vector<int> > &allCombs));
 }
 
 
