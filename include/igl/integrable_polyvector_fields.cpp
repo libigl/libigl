@@ -29,8 +29,7 @@ wCloseUnconstrained(1e-3),
 wCloseConstrained(100),
 redFactor_wsmooth(.8),
 gamma(0.1),
-tikh_gamma(1e-8),
-do_partial(false)
+tikh_gamma(1e-8)
 {}
 
 
@@ -41,7 +40,7 @@ namespace igl {
   class IntegrableFieldSolver
   {
   private:
-    
+
     IntegrableFieldSolverData<DerivedV, DerivedF, DerivedFF, DerivedC> &data;
     //Symbolic calculations
     IGL_INLINE void rj_barrier_face(const Eigen::RowVectorXd &vec2D_a,
@@ -71,24 +70,24 @@ namespace igl {
                                        Eigen::VectorXd &residuals,
                                        bool do_jac = false,
                                        Eigen::MatrixXd &Jac = *(Eigen::MatrixXd*)NULL);
-    
+
   public:
     IGL_INLINE IntegrableFieldSolver(IntegrableFieldSolverData<DerivedV, DerivedF, DerivedFF, DerivedC> &cffsoldata);
-    
+
     IGL_INLINE bool solve(integrable_polyvector_fields_parameters &params,
                           Eigen::PlainObjectBase<DerivedFF>& current_field,
                           bool current_field_is_not_ccw);
-    
+
     IGL_INLINE void solveGaussNewton(integrable_polyvector_fields_parameters &params,
                                      const Eigen::VectorXd &x_initial,
                                      Eigen::VectorXd &x);
-    
+
     //Compute residuals and Jacobian for Gauss Newton
     IGL_INLINE double RJ(const Eigen::VectorXd &x,
                          const Eigen::VectorXd &x0,
                          const integrable_polyvector_fields_parameters &params,
                          bool doJacs = false);
-    
+
     IGL_INLINE void RJ_Smoothness(const Eigen::MatrixXd &sol2D,
                                   const double &wSmoothSqrt,
                                   const int startRowInJacobian,
@@ -104,7 +103,6 @@ namespace igl {
                                  const Eigen::MatrixXd &sol02D,
                                  const double &wCloseUnconstrainedSqrt,
                                  const double &wCloseConstrainedSqrt,
-                                 const bool do_partial,
                                  const int startRowInJacobian,
                                  bool doJacs = false,
                                  const int startIndexInVectors = 0);
@@ -119,8 +117,8 @@ namespace igl {
                                 const int startRowInJacobian,
                                 bool doJacs = false,
                                 const int startIndexInVectors = 0);
-    
-    
+
+
   };
 };
 
@@ -177,7 +175,7 @@ initializeConstraints(const Eigen::VectorXi& b,
   //sort in descending order (so removing rows will work)
   igl::sort(constrained_unsorted, 1, false, constrained, iSorted);
   constrained_vec3 = bc.template cast<double>();
-  
+
 }
 
 template<typename DerivedV, typename DerivedF, typename DerivedFF, typename DerivedC>
@@ -214,7 +212,7 @@ makeFieldCCW(Eigen::MatrixXd &sol3D)
       int n1 = 3*2*2-n2;
       t.segment(0,n1) = t.segment(s1,n1);
       t.segment(n1, n2) = temp;
-      
+
     }
     sol3D.row(fi) = t.segment(0, 2*3);
   }
@@ -231,7 +229,7 @@ initializeOriginalVariable(const Eigen::PlainObjectBase<DerivedFF>& original_fie
   xOriginal.setZero(numVariables);
   for (int i =0; i<numF; i++)
     xOriginal.segment(i*2*2, 2*2) = sol2D.row(i);
-  
+
 }
 
 template<typename DerivedV, typename DerivedF, typename DerivedFF, typename DerivedC>
@@ -243,7 +241,7 @@ computeInteriorEdges()
   numInteriorEdges = 0;
   isBorderEdge.setZero(numE,1);
   indFullToInterior = -1.*Eigen::VectorXi::Ones(numE,1);
-  
+
   for(unsigned i=0; i<numE; ++i)
   {
     if ((E2F(i,0) == -1) || ((E2F(i,1) == -1)))
@@ -254,7 +252,7 @@ computeInteriorEdges()
       numInteriorEdges++;
     }
   }
-  
+
   E2F_int.resize(numInteriorEdges, 2);
   indInteriorToFull.setZero(numInteriorEdges,1);
   int ii = 0;
@@ -266,7 +264,7 @@ computeInteriorEdges()
     indInteriorToFull[ii] = k;
     ii++;
   }
-  
+
 }
 
 template<typename DerivedV, typename DerivedF, typename DerivedFF, typename DerivedC>
@@ -294,7 +292,7 @@ add_jac_indices_face(const int numInnerRows,
 {
   for (int fi=0; fi<numF; ++fi)
   {
-    
+
     int startRow = startRowInJacobian+numInnerRows*fi;
     int startIndex = startIndexInVectors+numInnerRows*numInnerCols*fi;
     face_Jacobian_indices(startRow, startIndex, fi, 2, numInnerRows, numInnerCols, Rows, Columns);
@@ -340,13 +338,13 @@ add_jac_indices_edge(const int numInnerRows,
     // the two faces of the flap
     int a = E2F_int(ii,0);
     int b = E2F_int(ii,1);
-    
-    
+
+
     int startRow = startRowInJacobian+numInnerRows*ii;
     int startIndex = startIndexInVectors+numInnerRows*numInnerCols*ii;
-    
+
     edge_Jacobian_indices(startRow, startIndex, a, b, 2, numInnerRows, numInnerCols, Rows, Columns);
-    
+
   }
 }
 
@@ -386,30 +384,30 @@ computeJacobianPattern()
   num_residuals_polycurl = 2*numInteriorEdges;
   num_residuals_quotcurl = numInteriorEdges;
   num_residuals_barrier = numF;
-  
+
   num_residuals = num_residuals_smooth + num_residuals_close + num_residuals_polycurl + num_residuals_quotcurl + num_residuals_barrier;
-  
+
   residuals.setZero(num_residuals,1);
-  
+
   //per edge
   numJacElements_smooth = numInteriorEdges*numInnerJacCols_edge*numInnerJacRows_smooth;
   numJacElements_polycurl = numInteriorEdges*numInnerJacCols_edge*numInnerJacRows_polycurl;
   numJacElements_quotcurl = numInteriorEdges*numInnerJacCols_edge*numInnerJacRows_quotcurl;
-  
+
   //per face
   numJacElements_barrier = numF*numInnerJacCols_face*numInnerJacRows_barrier;
   numJacElements_close = numF*numInnerJacCols_face*numInnerJacRows_close;
-  
+
   numJacElements = (numJacElements_smooth +numJacElements_polycurl + numJacElements_quotcurl) + (numJacElements_barrier +numJacElements_close);
   //allocate
   II_Jac.setZero(numJacElements);
   JJ_Jac.setZero(numJacElements);
   SS_Jac.setOnes(numJacElements);
-  
+
   //set stuff (attention: order !)
   int startRowInJacobian = 0;
   int startIndexInVectors = 0;
-  
+
   //smoothness
   add_jac_indices_edge(numInnerJacRows_smooth,
                        numInnerJacCols_edge,
@@ -419,7 +417,7 @@ computeJacobianPattern()
                        JJ_Jac);
   startRowInJacobian += num_residuals_smooth;
   startIndexInVectors += numJacElements_smooth;
-  
+
   //closeness
   add_jac_indices_face(numInnerJacRows_close,
                        numInnerJacCols_face,
@@ -429,7 +427,7 @@ computeJacobianPattern()
                        JJ_Jac);
   startRowInJacobian += num_residuals_close;
   startIndexInVectors += numJacElements_close;
-  
+
   //barrier
   add_jac_indices_face(numInnerJacRows_barrier,
                        numInnerJacCols_face,
@@ -439,7 +437,7 @@ computeJacobianPattern()
                        JJ_Jac);
   startRowInJacobian += num_residuals_barrier;
   startIndexInVectors += numJacElements_barrier;
-  
+
   //polycurl
   add_jac_indices_edge(numInnerJacRows_polycurl,
                        numInnerJacCols_edge,
@@ -449,7 +447,7 @@ computeJacobianPattern()
                        JJ_Jac);
   startRowInJacobian += num_residuals_polycurl;
   startIndexInVectors += numJacElements_polycurl;
-  
+
   //quotcurl
   add_jac_indices_edge(numInnerJacRows_quotcurl,
                        numInnerJacCols_edge,
@@ -505,7 +503,7 @@ computeNewHessValues()
                                               Hess_triplets[i].col(),
                                               SS_Jac(indInSS_Hess_1_vec[i])*SS_Jac(indInSS_Hess_2_vec[i])
                                               );
-  
+
   Hess.setFromTriplets(Hess_triplets.begin(), Hess_triplets.end());
 }
 
@@ -526,13 +524,13 @@ solve(igl::integrable_polyvector_fields_parameters &params,
   Eigen::MatrixXd sol3D = current_field.template cast<double>();
   if (current_field_is_not_ccw)
     data.makeFieldCCW(sol3D);
-  
+
   igl::global2local(data.B1, data.B2, sol3D, sol2D);
   Eigen::VectorXd x;
   x.setZero(data.numVariables);
   for (int i =0; i<data.numF; i++)
     x.segment(i*2*2, 2*2) = sol2D.row(i);
-  
+
   //get x
   solveGaussNewton(params, data.xOriginal, x);
   //get output from x
@@ -550,23 +548,23 @@ solveGaussNewton(integrable_polyvector_fields_parameters &params,
                  Eigen::VectorXd &x)
 {
   bool converged = false;
-  
+
   double F;
   Eigen::VectorXd xprev = x;
   Eigen::VectorXd xc = igl::slice(x_initial, data.constrained, 1);
   //  double ESmooth, EClose, ECurl, EQuotCurl, EBarrier;
   for (int innerIter = 0; innerIter<params.numIter; ++innerIter)
   {
-    
+
     //set constrained entries to those of the initial
     igl::slice_into(xc, data.constrained, 1, xprev);
-    
-    
+
+
     //get function, gradients and Hessians
     F = RJ(x, xprev, params, true);
-    
+
     printf("IntegrableFieldSolver -- Iteration %d\n", innerIter);
-    
+
     if((data.residuals.array() == std::numeric_limits<double>::infinity()).any())
     {
       std::cerr<<"IntegrableFieldSolver -- residuals: got infinity somewhere"<<std::endl;
@@ -577,20 +575,20 @@ solveGaussNewton(integrable_polyvector_fields_parameters &params,
       std::cerr<<"IntegrableFieldSolver -- residuals: got infinity somewhere"<<std::endl;
       exit(1);
     };
-    
+
     converged = false;
-    
+
     Eigen::VectorXd rhs = data.Jac.transpose()*data.residuals;
-    
+
     bool success;
     data.solver.factorize(data.Hess);
     success = data.solver.info() == Eigen::Success;
-    
+
     if(!success)
       std::cerr<<"IntegrableFieldSolver -- Could not do LU"<<std::endl;
-    
+
     Eigen::VectorXd direction;
-    
+
     double error;
     direction = data.solver.solve(rhs);
     error = (data.Hess*direction - rhs).cwiseAbs().maxCoeff();
@@ -598,7 +596,7 @@ solveGaussNewton(integrable_polyvector_fields_parameters &params,
     {
       std::cerr<<"IntegrableFieldSolver -- Could not solve"<<std::endl;
     }
-    
+
     // adaptive backtracking
     bool repeat = true;
     int run = 0;
@@ -626,8 +624,8 @@ solveGaussNewton(integrable_polyvector_fields_parameters &params,
       }
       run++;
     }
-    
-    
+
+
     if (!converged)
     {
       xprev = x;
@@ -639,8 +637,8 @@ solveGaussNewton(integrable_polyvector_fields_parameters &params,
       break;
     }
   }
-  
-  
+
+
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedFF, typename DerivedC>
@@ -655,43 +653,43 @@ RJ(const Eigen::VectorXd &x,
     sol2D.row(i) = x.segment(i*2*2, 2*2);
   for (int i =0; i<data.numF; i++)
     sol02D.row(i) = x0.segment(i*2*2, 2*2);
-  
+
   data.SS_Jac.setZero(data.numJacElements);
-  
+
   //set stuff (attention: order !)
   int startRowInJacobian = 0;
   int startIndexInVectors = 0;
-  
+
   //smoothness
   RJ_Smoothness(sol2D, sqrt(params.wSmooth), startRowInJacobian, doJacs, startIndexInVectors);
   startRowInJacobian += data.num_residuals_smooth;
   startIndexInVectors += data.numJacElements_smooth;
-  
+
   //closeness
-  RJ_Closeness(sol2D, sol02D, sqrt(params.wCloseUnconstrained), sqrt(params.wCloseConstrained), params.do_partial, startRowInJacobian, doJacs, startIndexInVectors);
+  RJ_Closeness(sol2D, sol02D, sqrt(params.wCloseUnconstrained), sqrt(params.wCloseConstrained), startRowInJacobian, doJacs, startIndexInVectors);
   startRowInJacobian += data.num_residuals_close;
   startIndexInVectors += data.numJacElements_close;
-  
+
   //barrier
   RJ_Barrier(sol2D, params.sBarrier, sqrt(params.wBarrier), startRowInJacobian, doJacs, startIndexInVectors);
   startRowInJacobian += data.num_residuals_barrier;
   startIndexInVectors += data.numJacElements_barrier;
-  
+
   //polycurl
   RJ_Curl(sol2D, params.wCurl, powl(params.wCurl, 2), startRowInJacobian, doJacs, startIndexInVectors);
   startRowInJacobian += data.num_residuals_polycurl;
   startIndexInVectors += data.numJacElements_polycurl;
-  
+
   //quotcurl
   RJ_QuotCurl(sol2D, sqrt(params.wQuotCurl), startRowInJacobian, doJacs, startIndexInVectors);
-  
+
   if(doJacs)
   {
     for (int i =0; i<data.numJacElements; ++i)
       data.Jac.coeffRef(data.II_Jac(i), data.JJ_Jac(i)) = data.SS_Jac(i);
     data.computeNewHessValues();
   }
-  
+
   return data.residuals.transpose()*data.residuals;
 }
 
@@ -714,7 +712,7 @@ rj_smoothness_edge(const Eigen::RowVectorXd &vec2D_a,
   const Eigen::RowVector2d &vb = vec2D_b.segment(2, 2);
   const double &xua=ua[0], &yua=ua[1], &xva=va[0], &yva=va[1];
   const double &xub=ub[0], &yub=ub[1], &xvb=vb[0], &yvb=vb[1];
-  
+
   double xua_2 = xua*xua;
   double xva_2 = xva*xva;
   double yua_2 = yua*yua;
@@ -723,12 +721,12 @@ rj_smoothness_edge(const Eigen::RowVectorXd &vec2D_a,
   double xvb_2 = xvb*xvb;
   double yub_2 = yub*yub;
   double yvb_2 = yvb*yvb;
-  
+
   double sA = sin(nA*k);
   double cA = cos(nA*k);
   double sB = sin(nB*k);
   double cB = cos(nB*k);
-  
+
   double t1 = xua*yua;
   double t2 = xva*yva;
   double t3 = xub*xvb;
@@ -737,33 +735,33 @@ rj_smoothness_edge(const Eigen::RowVectorXd &vec2D_a,
   double t6 = xub*yub;
   double t7 = yua*yva;
   double t8 = xvb*yvb;
-  
+
   double t9  = xva_2 - yva_2;
   double t10 = xua_2 - yua_2;
   double t11 = xvb_2 - yvb_2;
   double t12 = xub_2 - yub_2;
-  
+
   double t13 = 2*t1 + 2*t2;
-  
+
   double t17 = (2*t1*t9 + 2*t2*t10);
   double t19 = (t10*t9 - 4*t5*t7);
-  
-  
+
+
   residuals.resize(4, 1);
   residuals <<
   cA*(t10 + t9) - sA*(t13) - t12 - t11,
   sA*(t10 + t9) - 2*t8 - 2*t6 + cA*(t13),
   cB*t19 - (t12)*(t11) - sB*t17 + 4*t3*t4,
   cB*t17 + sB*t19 - 2*t6*(t11) - 2*t8*(t12);
-  
-  
+
+
   if (do_jac)
   {
     double t20 = 2*yua*t9 + 4*xua*t2;
     double t21 = 2*xua*t9 - 4*xva*t7;
     double t22 = 2*yva*t10 + 4*t5*yua;
     double t23 = 2*xva*t10 - 4*t1*yva;
-    
+
     Jac.resize(4,8);
     Jac <<                                                                     2*xua*cA - 2*yua*sA,                                                                     - 2*yua*cA - 2*xua*sA,                                                                     2*xva*cA - 2*yva*sA,                                                                     - 2*yva*cA - 2*xva*sA,                                  -2*xub,                                 2*yub,                                  -2*xvb,                                 2*yvb,
     2*yua*cA + 2*xua*sA,                                                                       2*xua*cA - 2*yua*sA,                                                                     2*yva*cA + 2*xva*sA,                                                                       2*xva*cA - 2*yva*sA,                                  -2*yub,                                -2*xub,                                  -2*yvb,                                -2*xvb,
@@ -788,9 +786,9 @@ RJ_Smoothness(const Eigen::MatrixXd &sol2D,
     // the two faces of the flap
     int a = data.E2F_int(ii,0);
     int b = data.E2F_int(ii,1);
-    
+
     int k = data.indInteriorToFull[ii];
-    
+
     Eigen::MatrixXd tJac;
     Eigen::VectorXd tRes;
     rj_smoothness_edge(sol2D.row(a),
@@ -801,10 +799,10 @@ RJ_Smoothness(const Eigen::MatrixXd &sol2D,
                        tRes,
                        doJacs,
                        tJac);
-    
+
     int startRow = startRowInJacobian+data.numInnerJacRows_smooth*ii;
     data.residuals.segment(startRow,data.numInnerJacRows_smooth) = wSmoothSqrt*tRes;
-    
+
     if(doJacs)
     {
       int startIndex = startIndexInVectors+data.numInnerJacRows_smooth*data.numInnerJacCols_edge*ii;
@@ -822,26 +820,26 @@ rj_barrier_face(const Eigen::RowVectorXd &vec2D_a,
                 bool do_jac,
                 Eigen::MatrixXd &Jac)
 {
-  
+
   const Eigen::RowVector2d &ua = vec2D_a.segment(0, 2);
   const Eigen::RowVector2d &va = vec2D_a.segment(2, 2);
   const double &xua=ua[0], &yua=ua[1], &xva=va[0], &yva=va[1];
-  
-  
+
+
   double xva_2 = xva*xva;
   double yua_2 = yua*yua;
   double xua_2 = xua*xua;
   double yva_2 = yva*yva;
-  
+
   double s_2 = s*s;
   double s_3 = s*s_2;
-  
+
   double t00 = xua*yva;
   double t01 = xva*yua;
   double t05 = t00 - t01;
   double t05_2 = t05*t05;
   double t05_3 = t05*t05_2;
-  
+
   if (do_jac)
     Jac.setZero(1,4);
   residuals.resize(1, 1);
@@ -875,7 +873,7 @@ RJ_Barrier(const Eigen::MatrixXd &sol2D,
 {
   if (wBarrierSqrt ==0)
     return;
-  
+
   for (int fi=0; fi<data.numF; ++fi)
   {
     Eigen::MatrixXd tJac;
@@ -885,10 +883,10 @@ RJ_Barrier(const Eigen::MatrixXd &sol2D,
                     tRes,
                     doJacs,
                     tJac);
-    
+
     int startRow = startRowInJacobian+ data.numInnerJacRows_barrier * fi;
     data.residuals.segment(startRow,data.numInnerJacRows_barrier) = wBarrierSqrt*tRes;
-    
+
     if(doJacs)
     {
       int startIndex = startIndexInVectors+data.numInnerJacRows_barrier*data.numInnerJacCols_face*fi;
@@ -903,7 +901,6 @@ RJ_Closeness(const Eigen::MatrixXd &sol2D,
              const Eigen::MatrixXd &sol02D,
              const double &wCloseUnconstrainedSqrt,
              const double &wCloseConstrainedSqrt,
-             const bool do_partial,
              const int startRowInJacobian,
              bool doJacs,
              const int startIndexInVectors)
@@ -917,27 +914,27 @@ RJ_Closeness(const Eigen::MatrixXd &sol2D,
       weights.setConstant(wCloseUnconstrainedSqrt);
     else
     {
-      if (do_partial&&data.is_constrained_face[fi]==1)
+      if (data.is_constrained_face[fi]==1)
         //only constrain the first vector
         weights<<wCloseConstrainedSqrt,wCloseConstrainedSqrt,wCloseUnconstrainedSqrt,wCloseUnconstrainedSqrt;
       else
         //either not partial, or partial with 2 constraints
         weights.setConstant(wCloseConstrainedSqrt);
     }
-    
+
     Eigen::MatrixXd tJac;
     Eigen::VectorXd tRes;
     tJac = Eigen::MatrixXd::Identity(4,4);
     tRes.resize(4, 1); tRes<<(sol2D.row(fi)-sol02D.row(fi)).transpose();
     int startRow = startRowInJacobian+data.numInnerJacRows_close*fi;
     data.residuals.segment(startRow,data.numInnerJacRows_close) = weights.array()*tRes.array();
-    
+
     if(doJacs)
     {
       int startIndex = startIndexInVectors+data.numInnerJacRows_close*data.numInnerJacCols_face*fi;
       data.add_Jacobian_to_svector(startIndex, weights.asDiagonal()*tJac,data.SS_Jac);
     }
-    
+
   }
 }
 
@@ -960,26 +957,26 @@ rj_polycurl_edge(const Eigen::RowVectorXd &vec2D_a,
   const double &xub=ub[0], &yub=ub[1], &xvb=vb[0], &yvb=vb[1];
   const double &xea=ea[0], &yea=ea[1];
   const double &xeb=eb[0], &yeb=eb[1];
-  
+
   const double dua = (xea*xua + yea*yua);
   const double dub = (xeb*xub + yeb*yub);
   const double dva = (xea*xva + yea*yva);
   const double dvb = (xeb*xvb + yeb*yvb);
-  
+
   const double dua_2 = dua*dua;
   const double dva_2 = dva*dva;
   const double dub_2 = dub*dub;
   const double dvb_2 = dvb*dvb;
-  
+
   residuals.resize(2, 1);
   residuals << dua_2 - dub_2 + dva_2 - dvb_2,
   dua_2*dva_2 - dub_2*dvb_2 ;
-  
-  
-  
+
+
+
   if (do_jac)
   {
-    
+
     Jac.resize(2,8);
     Jac << 2*xea*dua,                       2*yea*dua,                       2*xea*dva,                       2*yea*dva,                       -2*xeb*dub,                       -2*yeb*dub,                       -2*xeb*dvb,                       -2*yeb*dvb,
     2*xea*dua*dva_2, 2*yea*dua*dva_2, 2*xea*dua_2*dva, 2*yea*dua_2*dva, -2*xeb*dub*dvb_2, -2*yeb*dub*dvb_2, -2*xeb*dub_2*dvb, -2*yeb*dub_2*dvb;
@@ -1002,12 +999,12 @@ RJ_Curl(const Eigen::MatrixXd &sol2D,
     // the two faces of the flap
     int a = data.E2F_int(ii,0);
     int b = data.E2F_int(ii,1);
-    
+
     int k = data.indInteriorToFull[ii];
-    
+
     // the common edge, a 3 vector
     const Eigen::RowVector3d &ce = data.EVecNorm.row(k);
-    
+
     // the common edge expressed in local coordinates in the two faces
     // x/y denotes real/imaginary
     double xea = data.B1.row(a).dot(ce);
@@ -1016,8 +1013,8 @@ RJ_Curl(const Eigen::MatrixXd &sol2D,
     double xeb = data.B1.row(b).dot(ce);
     double yeb = data.B2.row(b).dot(ce);
     Eigen::RowVector2d eb; eb<<xeb, yeb;
-    
-    
+
+
     Eigen::MatrixXd tJac;
     Eigen::VectorXd tRes;
     rj_polycurl_edge(sol2D.row(a),
@@ -1027,14 +1024,14 @@ RJ_Curl(const Eigen::MatrixXd &sol2D,
                      tRes,
                      doJacs,
                      tJac);
-    
+
     tRes[0] = tRes[0]*wCASqrt;
     tRes[1] = tRes[1]*wCBSqrt;
-    
-    
+
+
     int startRow = startRowInJacobian+data.numInnerJacRows_polycurl*ii;
     data.residuals.segment(startRow,data.numInnerJacRows_polycurl) = tRes;
-    
+
     if(doJacs)
     {
       tJac.row(0) = tJac.row(0)*wCASqrt;
@@ -1042,7 +1039,7 @@ RJ_Curl(const Eigen::MatrixXd &sol2D,
       int startIndex = startIndexInVectors+data.numInnerJacRows_polycurl*data.numInnerJacCols_edge*ii;
       data.add_Jacobian_to_svector(startIndex, tJac,data.SS_Jac);
     }
-    
+
   }
 }
 
@@ -1065,23 +1062,23 @@ rj_quotcurl_edge_polyversion(const Eigen::RowVectorXd &vec2D_a,
   const double &xub=ub[0], &yub=ub[1], &xvb=vb[0], &yvb=vb[1];
   const double &xea=ea[0], &yea=ea[1];
   const double &xeb=eb[0], &yeb=eb[1];
-  
+
   double dua = (xea*xua + yea*yua);
   double dva = (xea*xva + yea*yva);
   double dub = (xeb*xub + yeb*yub);
   double dvb = (xeb*xvb + yeb*yvb);
-  
+
   double dua_2 = dua * dua;
   double dva_2 = dva * dva;
   double dub_2 = dub * dub;
   double dvb_2 = dvb * dvb;
   double t00 = (dub_2 - dvb_2);
   double t01 = (dua_2 - dva_2);
-  
-  
+
+
   residuals.resize(1, 1);
   residuals << dua*dva*t00 - dub*dvb*t01;
-  
+
   if (do_jac)
   {
     Jac.resize(1,8);
@@ -1102,12 +1099,12 @@ RJ_QuotCurl(const Eigen::MatrixXd &sol2D,
     // the two faces of the flap
     int a = data.E2F_int(ii,0);
     int b = data.E2F_int(ii,1);
-    
+
     int k = data.indInteriorToFull[ii];
-    
+
     // the common edge, a 3 vector
     const Eigen::RowVector3d &ce = data.EVecNorm.row(k);
-    
+
     // the common edge expressed in local coordinates in the two faces
     // x/y denotes real/imaginary
     double xea = data.B1.row(a).dot(ce);
@@ -1116,8 +1113,8 @@ RJ_QuotCurl(const Eigen::MatrixXd &sol2D,
     double xeb = data.B1.row(b).dot(ce);
     double yeb = data.B2.row(b).dot(ce);
     Eigen::RowVector2d eb; eb<<xeb, yeb;
-    
-    
+
+
     Eigen::MatrixXd tJac;
     Eigen::VectorXd tRes;
     rj_quotcurl_edge_polyversion(sol2D.row(a),
@@ -1127,10 +1124,10 @@ RJ_QuotCurl(const Eigen::MatrixXd &sol2D,
                                  tRes,
                                  doJacs,
                                  tJac);
-    
+
     int startRow = startRowInJacobian+ data.numInnerJacRows_quotcurl*ii;
     data.residuals.segment(startRow,data.numInnerJacRows_quotcurl) = wQuotCurlSqrt*tRes;
-    
+
     if(doJacs)
     {
       int startIndex = startIndexInVectors+data.numInnerJacRows_quotcurl*data.numInnerJacCols_edge*ii;
@@ -1151,11 +1148,11 @@ IGL_INLINE void igl::integrable_polyvector_fields_precompute(
                                                              igl::IntegrableFieldSolverData<DerivedV, DerivedF, DerivedFF, DerivedC> &data)
 {
   data.precomputeMesh(V,F);
-  
+
   data.computeJacobianPattern();
   data.computeHessianPattern();
   data.solver.analyzePattern(data.Hess);
-  
+
   data.initializeConstraints(b,bc,constraint_level);
   data.initializeOriginalVariable(original_field);
 };

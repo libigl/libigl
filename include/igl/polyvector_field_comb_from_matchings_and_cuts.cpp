@@ -61,8 +61,8 @@ IGL_INLINE void igl::polyvector_field_comb_from_matchings_and_cuts(
       }
       else
       {
-        assert((E2Fcut(current_edge,1) == f0) &&
-               (E2Fcut(current_edge,0) == f1));
+        assert((E2F(current_edge,1) == f0) &&
+               (E2F(current_edge,0) == f1));
         //look at match_ba
         for(int i=0; i<half_degree; ++i)
         {

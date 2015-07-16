@@ -101,9 +101,6 @@ struct igl::integrable_polyvector_fields_parameters
   double gamma;
   //tikhonov regularization term (typically not needed, default value should suffice)
   double tikh_gamma;
-  //boolean, determines whether the frames at the constrained faces should be treated
-  //as partial constraints (i.e. only one of the vectors is preserved in the result)
-  bool do_partial;
 
   IGL_INLINE integrable_polyvector_fields_parameters();
 
