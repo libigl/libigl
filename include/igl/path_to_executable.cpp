@@ -9,6 +9,10 @@
 #ifdef __APPLE__
 #  include <mach-o/dyld.h>
 #endif
+#if defined(_WIN32)
+#  include <windows.h>
+#endif
+#include <stdint.h>
 IGL_INLINE std::string igl::path_to_executable()
 {
   // http://pastebin.com/ffzzxPzi
@@ -16,8 +20,8 @@ IGL_INLINE std::string igl::path_to_executable()
   std::string path;
   char buffer[1024];
   uint32_t size = sizeof(buffer);
-#if defined (WIN32) || defined (WIN64)
-  GetModuleFileName(buffer, &size);
+#if defined (WIN32)
+  GetModuleFileName(nullptr,buffer,size);
   path = buffer;
 #elif defined (__APPLE__)
   if(_NSGetExecutablePath(buffer, &size) == 0)

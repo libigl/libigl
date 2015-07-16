@@ -1,14 +1,14 @@
-#include <igl/readOFF.h>
-#include <igl/readDMAT.h>
-#include <igl/viewer/Viewer.h>
-#include <igl/barycenter.h>
 #include <igl/avg_edge_length.h>
-#include <vector>
-#include <stdlib.h>
+#include <igl/barycenter.h>
 #include <igl/jet.h>
-#include <igl/quad_planarity.h>
 #include <igl/planarize_quad_mesh.h>
+#include <igl/quad_planarity.h>
+#include <igl/readDMAT.h>
+#include <igl/readOFF.h>
 #include <igl/slice.h>
+#include <igl/viewer/Viewer.h>
+#include <vector>
+#include <cstdlib>
 
 // Quad mesh generated from conjugate field
 Eigen::MatrixXd VQC;
@@ -26,7 +26,7 @@ Eigen::MatrixXd PQC0plan, PQC1plan, PQC2plan, PQC3plan;
 double global_scale;
 
 
-bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
   igl::slice( VQCplan, FQC.col(3), 1, PQC3plan);
 
   // Launch the viewer
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   key_down(viewer,'2',0);
   viewer.core.invert_normals = true;
   viewer.core.show_lines = false;

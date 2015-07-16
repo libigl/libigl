@@ -98,6 +98,14 @@ libigl depends only on the <a href="http://eigen.tuxfamily.org">Eigen</a> librar
 
 <p>For more information see our <a href="tutorial/tutorial.html">tutorial</a>.</p>
 
+<h3 id="optionaldependencies">Optional dependencies</h3>
+
+<p>Libigl compartmentalizes its <strong>optional</strong> dependences via its directory
+organization in the <code>include/</code> folder. All header files located <em>directly</em> in
+the <code>include/igl/</code> folder have only stl and Eigen as dependencies. For example,
+all of the headers that depend on CGAL are located in <code>include/igl/cgal</code>. For a
+full list of <em>optional</em> dependencies check <code>optional/CMakeLists.txt</code>.</p>
+
 <h3 id="gccandtheoptionalcgaldependency">GCC and the optional CGAL dependency</h3>
 
 <p>The <code>include/igl/cgal/*.h</code> headers depend on CGAL. It has come to our attention
@@ -118,7 +126,7 @@ avoiding OpenMP on Windows or proceeding with caution.</p>
 
 <h2 id="knownissues">Known Issues</h2>
 
-<p>We really heavily on Eigen. Nearly all inputs and outputs are Eigen matrices of
+<p>We rely heavily on Eigen. Nearly all inputs and outputs are Eigen matrices of
 some kind. However, we currently <em>only</em> officially support Eigen&#8217;s default
 column-major ordering. That means, we <strong>do not</strong> expect our code to work for
 matrices using the <code>Eigen::RowMajor</code> flag. If you can, change definitions like:</p>
@@ -165,6 +173,10 @@ BibTeX entry:</p>
 </code></pre>
 
 <h2 id="projectsuniversitiesusinglibigl">Projects/Universities using libigl</h2>
+
+<p>Libigl is used by many research groups around the world. In 2015, it won the
+Eurographics/ACM Symposium on Geometry Processing software award. Here are a
+few labs/companies/institutions using libigl:</p>
 
 <ul>
 <li><a href="http://esotericsoftware.com/">Spine by Esoteric Software</a> is an animation tool dedicated to 2D characters.</li>

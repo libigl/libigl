@@ -21,7 +21,7 @@
 #include <igl/material_colors.h>
 #include <igl/barycenter.h>
 #include <igl/matlab_format.h>
-#include <igl/ReAntTweakBar.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 #include <igl/pathinfo.h>
 #include <igl/Camera.h>
 #include <igl/get_seconds.h>
@@ -129,7 +129,7 @@ double bbd;
 Eigen::VectorXd S;
 int tot_num_samples = 0;
 #define REBAR_NAME "temp.rbr"
-igl::ReTwBar rebar; // Pointer to the tweak bar
+igl::anttweakbar::ReTwBar rebar; // Pointer to the tweak bar
 
 void reshape(int width,int height)
 {
@@ -567,7 +567,7 @@ int main(int argc, char * argv[])
     s.camera.m_rotation_conj.coeffs().data(), "open readonly=true");
   s.camera.push_away(3);
   s.camera.dolly_zoom(25-s.camera.m_angle);
-  TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType",
+  TwType RotationTypeTW = igl::anttweakbar::ReTwDefineEnumFromString("RotationType",
     "igl_trackball,two-a...-fixed-up");
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");

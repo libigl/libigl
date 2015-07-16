@@ -1,6 +1,21 @@
+# http://stackoverflow.com/a/18234926/148668
+# -stdlib=libc++ breaks gcc (for clang, the correct stdlib will be used with
+# -std=c++11 anyway)
+macro(remove_cxx_flag flag)
+  string(REPLACE "${flag}" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+endmacro()
+remove_cxx_flag("-stdlib=libc++")
 if(NOT CMAKELISTS_SHARED_INCLUDED)
 set(CMAKELISTS_SHARED_INCLUDED TRUE)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+IF(MSVC)
+### Enable parallel compilation for Visual Studio
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+ELSE(MSVC)
+#### Libigl requires a modern C++ compiler that supports c++11
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+ENDIF(MSVC)
+
 find_package(OpenMP)
 if (OPENMP_FOUND AND NOT WIN32)
   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -18,9 +33,9 @@ set(CMAKE_COLOR_MAKEFILE ON)
 
 find_package(OpenGL REQUIRED)
 find_package(EIGEN REQUIRED)
-find_package(LIBIGL REQUIRED)
-find_package(ANTTWEAKBAR REQUIRED)
-find_package(GLFW REQUIRED)
+find_package(GLFWH REQUIRED)
+#find_package(LIBIGL REQUIRED)
+#find_package(NANOGUI REQUIRED)
 
 if(NOT APPLE)
 	find_package(GLEW REQUIRED)
@@ -36,16 +51,15 @@ if(UNIX AND NOT APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx")
 endif(UNIX AND NOT APPLE)
 
-include_directories( ${ANT_TWEAK_BAR_INCLUDE_DIR} )
+#include_directories( ${NANOGUI_INCLUDE_DIRS} )
 
-# message(FATAL_ERROR ${ANT_TWEAK_BAR_INCLUDE_DIR})
 
 if(NOT APPLE)
 	include_directories( ${GLEW_INCLUDE_DIR} )
 endif(NOT APPLE)
 
 include_directories( ${EIGEN_INCLUDE_DIR})
-include_directories( ${LIBIGL_INCLUDE_DIRS})
+#include_directories( ${LIBIGL_INCLUDE_DIRS})
 include_directories( ${GLFW_INCLUDE_DIR})
 include_directories(
 	/usr/local/include
@@ -56,8 +70,6 @@ include_directories(
 
 link_directories(
 	/usr/local/lib
-	/opt/local/lib
-	${ANT_TWEAK_BAR_DIRS}
 	${EIGEN_DIRS}
 )
 
@@ -74,12 +86,12 @@ ENDIF(CMAKE_BUILD_TYPE MATCHES RELEASE)
 
 
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-register")
 endif()
 
-set(SHARED_SOURCES ${LIBIGL_SOURCES})
+# set(SHARED_SOURCES ${LIBIGL_SOURCES})
 
 if(NOT APPLE)
 	set(SHARED_SOURCES ${SHARED_SOURCES} ${GLEW_SOURCES})
@@ -89,13 +101,12 @@ endif(NOT APPLE)
 
 
 set(SHARED_LIBRARIES
-		${LIBIGL_LIBRARIES}
+#		${LIBIGL_LIBRARIES}
 		${OPENGL_LIBRARIES}
-		${ANT_TWEAK_BAR_LIBRARY}
+#		${NANOGUI_LIBRARY}
 		${EIGEN_LIBRARIES}
 		${GLEW_LIBRARIES}
-		${GLFW_LIBRARIES}
+#		${GLFW_LIBRARIES}
 )
 
-#message(FATAL_ERROR ${SHARED_LIBRARIES})
 endif(NOT CMAKELISTS_SHARED_INCLUDED)

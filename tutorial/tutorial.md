@@ -129,23 +129,11 @@ libigl can be downloaded from our [github
 repository](https://github.com/libigl/libigl) or cloned with git:
 
 ```bash
-git clone https://github.com/libigl/libigl.git
+git clone --recursive https://github.com/libigl/libigl.git
 ```
 
 The core libigl functionality only depends on the C++ Standard Library and
 Eigen.
-
-The examples in this tutorial depend on [glfw](http://www.glfw.org),
-[glew](http://glew.sourceforge.net) and [AntTweakBar](http://anttweakbar.sourceforge.net/doc/).
-The source code of each library is bundled with libigl
-and they can be compiled all at once using:
-
-```bash
-sh compile_dependencies_macosx.sh (MACOSX)
-sh compile_dependencies_linux.sh (LINUX)
-```
-
-For windows, precompiled binaries are provided (Visual Studio 2014 64bit).
 
 To build all the examples in the tutorial, you can use the CMakeLists.txt in
 the tutorial folder:
@@ -1988,7 +1976,7 @@ igl::deserialize_xml(vec,"VectorXML",xmlFile);
 igl::deserialize_xml(vec,"VectorBin",xmlFile);
 ```
 
-For user defined types derive from `XMLSerializable`. 
+For user defined types derive from `XMLSerializable`.
 
 The code snippets above are extracted from [Example
 601](601_Serialization/main.cpp). We strongly suggest that you make the entire
@@ -2413,7 +2401,7 @@ counting how many (signed) times `(V,F)` _wraps_ around $\mathbf{p}$.  Finally,
 if `(V,F)` is not closed or not even manifold (but at least consistently
 oriented), then $w(\mathbf{p})$ tends smoothly toward 1 as $\mathbf{p}$ is
 _more_ inside `(V,F)`, and toward 0 as $\mathbf{p}$ is more outside.
- 
+
 ![Example [702](702_WindingNumber/main.cpp) computes the
 generalized winding number function for a tetrahedral mesh inside a cat with
 holes and self intersections (gold). The silver mesh is surface of the
@@ -2435,8 +2423,8 @@ collapsing edges [#hoppe_1996][]. The generic form of this technique is to
 construct a sequence of n meshes from the initial high-resolution mesh $M_0$ to
 the lowest resolution mesh $M_n$ by collapsing a single edge:
 
- $M_0 \mathop{\longrightarrow}_\text{edge collapse} 
-  M_1 \mathop{\longrightarrow}_\text{edge collapse} 
+ $M_0 \mathop{\longrightarrow}_\text{edge collapse}
+  M_1 \mathop{\longrightarrow}_\text{edge collapse}
   \dots \mathop{\longrightarrow}_\text{edge collapse}
   M_{n-1} \mathop{\longrightarrow}_\text{edge collapse} M_n.$
 
@@ -2450,7 +2438,7 @@ In order to maintain the topology (e.g. if the mesh is combinatorially as
 sphere or a torus etc.), one should assign infinite cost to edges whose
 collapse would alter the mesh topology. Indeed this happens if and only if the
 number of mutual neighbors of the endpoints of the collapsing edge is not
-exactly two! 
+exactly two!
 
 If there exists a third shared vertex, then another face will be removed, but 2
 edges will be removed. This can result in unwanted holes or non-manifold
@@ -2508,7 +2496,7 @@ opposite).
 When a collapse occurs, the sizes of the `F`,`E`, etc. matrices do not change.
 Rather rows corresponding to "removed" faces and edges are set to a special
 constant value `IGL_COLLAPSE_EDGE_NULL`. Doing this ensures that we're able to
-remove edges in truly constant time O(1). 
+remove edges in truly constant time O(1).
 
 
 > Conveniently `IGL_COLLAPSE_EDGE_NULL==0`. This means most OPENGL style renderings of `F`
@@ -2629,7 +2617,7 @@ tree.squared_distance(V,F,P,sqrD,I,C);
 Finally, from the closest point or the winding number it's possible to _sign_
 this distance. In `igl::signed_distance` we provide two methods for signing:
 the so-called "pseudo-normal test" [#baerentzen_2005][] and the generalized
-winding number [#jacobson_2013][]. 
+winding number [#jacobson_2013][].
 
 The pseudo-normal test (see also `igl::pseudonormal_test`) assumes the input
 mesh is a watertight (closed, non-self-intersecting, manifold) mesh. Then given
@@ -2690,7 +2678,7 @@ repository and to open a [pull
 request](https://help.github.com/articles/using-pull-requests) on [our github
 repository](https://github.com/libigl/libigl).
 
-[#attene_2014]: Marco Attene. 
+[#attene_2014]: Marco Attene.
   [Direct repair of self-intersecting
   meshes](https://www.google.com/search?q=Direct+repair+of+self-intersecting+meshes),
   2014.
@@ -2702,7 +2690,7 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   [Mixed-integer
   quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf),
   2009.
-[#botsch_2004]: Matrio Botsch and Leif Kobbelt. 
+[#botsch_2004]: Matrio Botsch and Leif Kobbelt.
   [An Intuitive Framework for Real-Time Freeform
   Modeling](https://www.google.com/search?q=An+Intuitive+Framework+for+Real-Time+Freeform+Modeling),
   2004.

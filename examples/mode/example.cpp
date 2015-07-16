@@ -1,7 +1,7 @@
 // g++ -o main main.cpp -I. -I/usr/local/include/eigen3
+#include <igl/mode.h>
 #include <Eigen/Core>
 #include <iostream>
-#include <igl/mode.h>
 
 using namespace std;
 using namespace igl;
