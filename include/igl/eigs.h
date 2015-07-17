@@ -13,6 +13,9 @@ namespace igl
   //
   // Solutions are approximate and sorted. 
   //
+  // Ideally one should use ARPACK and the Eigen unsupported ARPACK module.
+  // This implementation does simple, naive power iterations.
+  //
   // Inputs:
   //   A  #A by #A symmetric matrix
   //   B  #A by #A symmetric positive-definite matrix
