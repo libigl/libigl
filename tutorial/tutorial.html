@@ -83,6 +83,7 @@ lecture notes links to a cross-platform example application.</p>
 </ul></li>
 <li><a href="#linearequalityconstraints">304 Linear Equality Constraints</a></li>
 <li><a href="#quadraticprogramming">305 Quadratic Programming</a></li>
+<li><a href="#eigendecomposition">306 Eigen Decomposition</a></li>
 </ul></li>
 <li><a href="#chapter4:shapedeformation">Chapter 4: Shape Deformation</a>
 
@@ -1232,6 +1233,60 @@ discrete biharmonic kernels <a class="citation" href="#fn:6" title="Jump to cita
 .</figcaption>
 </figure>
 
+<h2 id="eigendecomposition">Eigen Decomposition</h2>
+
+<p>Libigl has rudimentary support for extracting eigen pairs of a generalized
+eigen value problem:</p>
+
+<p><span class="math">\(Ax = \lambda B x\)</span></p>
+
+<p>where <span class="math">\(A\)</span> is a sparse symmetric matrix and <span class="math">\(B\)</span> is a sparse positive definite
+matrix. Most commonly in geometry processing, we let <span class="math">\(A=L\)</span> the cotangent
+Laplacian and <span class="math">\(B=M\)</span> the per-vertex mass matrix (e.g. <a class="citation" href="#fn:7" title="Jump to citation">[7]<span class="citekey" style="display:none">vallet_2008</span></a>).
+Typically applications will make use of the <em>low frequency</em> eigen modes.
+Analagous to the Fourier decomposition, a function <span class="math">\(f\)</span> on a surface can be
+represented via its spectral decomposition of the eigen modes of the
+Laplace-Beltrami:</p>
+
+<p><span class="math">\(f = \sum\limits_{i=1}^\infty a_i \phi_i\)</span></p>
+
+<p>where each <span class="math">\(\phi_i\)</span> is an eigen function satisfying: <span class="math">\(\Delta \phi_i = \lambda_i
+\phi_i\)</span> and <span class="math">\(a_i\)</span> are scalar coefficients. For a discrete triangle mesh, a
+completely analogous decomposition exists, albeit with finite sum:</p>
+
+<p><span class="math">\(\mathbf{f} = \sum\limits_{i=1}^n a_i \phi_i\)</span></p>
+
+<p>where now a column vector of values at vertices <span class="math">\(\mathbf{f} \in \mathcal{R}^n\)</span>
+specifies a piecewise linear function and <span class="math">\(\phi_i \in \mathcal{R}^n\)</span> is an
+eigen vector satisfying: </p>
+
+<p><span class="math">\(\mathbf{L} \phi_i = \lambda_i \mathbf{M} \phi_i\)</span>.</p>
+
+<p>Note that Vallet &amp; Levy <a class="citation" href="#fn:7" title="Jump to citation">[7]<span class="citekey" style="display:none">vallet_2008</span></a> propose solving a symmetrized
+<em>standard</em> eigen problem <span class="math">\(\mathbf{M}^{-1/2}\mathbf{L}\mathbf{M}^{-1/2} \phi_i
+= \lambda_i \phi_i\)</span>. Libigl implements a generalized eigen problem solver so
+this unnecessary symmetrization can be avoided.</p>
+
+<p>Often the sum above is <em>truncated</em> to the first <span class="math">\(k\)</span> eigen vectors. If the low
+frequency modes are chosen, i.e. those corresponding to small <span class="math">\(\lambda_i\)</span>
+values, then this truncation effectively <em>regularizes</em> <span class="math">\(\mathbf{f}\)</span> to smooth,
+slowly changing functions over the mesh (e.g. <a class="citation" href="#fn:8" title="Jump to citation">[8]<span class="citekey" style="display:none">hildebrandt_2011</span></a>). Modal
+analysis and model subspaces have been used frequently in real-time deformation
+(e.g. <a class="citation" href="#fn:9" title="Jump to citation">[9]<span class="citekey" style="display:none">barbic_2005</span></a>).</p>
+
+<p>In <a href="306_EigenDecomposition/main.cpp">Example 306</a>), the first few eigen vectors
+of the discrete Laplace-Beltrami operator are computed and displayed in
+pseudo-color atop the beetle.</p>
+
+<figure>
+<img src="images/beetle-eigen-decomposition.gif" alt="(Example 306) Low frequency eigen vectors
+of the discrete Laplace-Beltrami operator vary smoothly and slowly over the
+Beetle." />
+<figcaption>(<a href="306_EigenDecomposition/main.cpp">Example 306</a>) Low frequency eigen vectors
+of the discrete Laplace-Beltrami operator vary smoothly and slowly over the
+<em>Beetle</em>.</figcaption>
+</figure>
+
 <h1 id="chapter4:shapedeformation">Chapter 4: Shape deformation</h1>
 
 <p>Modern mesh-based shape deformation methods satisfy user deformation
@@ -1251,9 +1306,9 @@ partial differential equation.</p>
 
 <p>There are many flavors of these techniques, but a prototypical subset are those
 that consider solutions to the bi-Laplace equation, that is a biharmonic
-function <a class="citation" href="#fn:7" title="Jump to citation">[7]<span class="citekey" style="display:none">botsch_2004</span></a>. This fourth-order PDE provides sufficient
+function <a class="citation" href="#fn:10" title="Jump to citation">[10]<span class="citekey" style="display:none">botsch_2004</span></a>. This fourth-order PDE provides sufficient
 flexibility in boundary conditions to ensure <span class="math">\(C^1\)</span> continuity at handle
-constraints (in the limit under refinement) <a class="citation" href="#fn:8" title="Jump to citation">[8]<span class="citekey" style="display:none">jacobson_mixed_2010</span></a>.</p>
+constraints (in the limit under refinement) <a class="citation" href="#fn:11" title="Jump to citation">[11]<span class="citekey" style="display:none">jacobson_mixed_2010</span></a>.</p>
 
 <h3 id="biharmonicsurfaces">Biharmonic surfaces</h3>
 
@@ -1352,7 +1407,7 @@ terms of the original positions <span class="math">\(\mathbf{x}\)</span> and the
  \|\Delta \mathbf{x}' - \Delta \mathbf{x})\|^2 dA.\)</span></p>
 
 <p>In the early work of Sorkine et al., the quantities <span class="math">\(\Delta \mathbf{x}'\)</span> and
-<span class="math">\(\Delta \mathbf{x}\)</span> were dubbed &#8220;differential coordinates&#8221; <a class="citation" href="#fn:9" title="Jump to citation">[9]<span class="citekey" style="display:none">sorkine_2004</span></a>.
+<span class="math">\(\Delta \mathbf{x}\)</span> were dubbed &#8220;differential coordinates&#8221; <a class="citation" href="#fn:12" title="Jump to citation">[12]<span class="citekey" style="display:none">sorkine_2004</span></a>.
 Their deformations (without linearized rotations) is thus equivalent to
 biharmonic deformation fields.</p>
 
@@ -1420,7 +1475,7 @@ any handle structure such as a cage, collection of points, selected regions,
 etc.).</p>
 
 <p>Bounded biharmonic weights are one such technique that casts weight computation
-as a constrained optimization problem <a class="citation" href="#fn:10" title="Jump to citation">[10]<span class="citekey" style="display:none">jacobson_2011</span></a>. The weights enforce
+as a constrained optimization problem <a class="citation" href="#fn:13" title="Jump to citation">[13]<span class="citekey" style="display:none">jacobson_2011</span></a>. The weights enforce
 smoothness by minimizing the familiar Laplacian energy:</p>
 
 <p><span class="math">\(\sum\limits_{i = 1}^m \int_S (\Delta w_i)^2 dA\)</span></p>
@@ -1464,7 +1519,7 @@ coordinates by zero:</p>
 <p>In practice, this means the shape shrinks and collapses in regions where bone
 weights overlap: near joints.</p>
 
-<p>Dual quaternion skinning presents a solution <a class="citation" href="#fn:11" title="Jump to citation">[11]<span class="citekey" style="display:none">kavan_2008</span></a>. This method
+<p>Dual quaternion skinning presents a solution <a class="citation" href="#fn:14" title="Jump to citation">[14]<span class="citekey" style="display:none">kavan_2008</span></a>. This method
 represents rigid transformations as a pair of unit quaternions,
 <span class="math">\(\hat{\mathbf{q}}\)</span>. The linear blend skinning formula is replaced with a
 linear blend of dual quaternions:</p>
@@ -1565,11 +1620,11 @@ the energy, thus we may safely iterate them until convergence.</p>
 
 <p>The different flavors of &#8220;as-rigid-as-possible&#8221; depend on the dimension and
 codimension of the domain and the edge-sets <span class="math">\(T\)</span>. The proposed surface
-manipulation technique by Sorkine and Alexa <a class="citation" href="#fn:12" title="Jump to citation">[12]<span class="citekey" style="display:none">sorkine_2007</span></a>, considers <span class="math">\(T\)</span> to
+manipulation technique by Sorkine and Alexa <a class="citation" href="#fn:15" title="Jump to citation">[15]<span class="citekey" style="display:none">sorkine_2007</span></a>, considers <span class="math">\(T\)</span> to
 be the set of sets of edges emanating from each vertex (spokes). Later, Chao et
 al. derived the relationship between &#8220;as-rigid-as-possible&#8221; mesh energies and
 co-rotational elasticity considering 0-codimension elements as edge-sets:
-triangles in 2D and tetrahedra in 3D <a class="citation" href="#fn:13" title="Jump to citation">[13]<span class="citekey" style="display:none">chao_2010</span></a>. They also showed how
+triangles in 2D and tetrahedra in 3D <a class="citation" href="#fn:16" title="Jump to citation">[16]<span class="citekey" style="display:none">chao_2010</span></a>. They also showed how
 Sorkine and Alexa&#8217;s edge-sets are not a discretization of a continuous energy,
 proposing instead edge-sets for surfaces containing all edges of elements
 incident on a vertex (spokes and rims). They show that this amounts to
@@ -1596,7 +1651,7 @@ certain constraints on the positions of vertices in <code>b</code>, we may call:
 
 <p>Libigl&#8217;s implementation of as-rigid-as-possible deformation takes advantage of
 the highly optimized singular value decomposition code from McAdams et al.
-<a class="citation" href="#fn:14" title="Jump to citation">[14]<span class="citekey" style="display:none">mcadams_2011</span></a> which leverages SSE intrinsics.</p>
+<a class="citation" href="#fn:17" title="Jump to citation">[17]<span class="citekey" style="display:none">mcadams_2011</span></a> which leverages SSE intrinsics.</p>
 
 <figure>
 <img src="images/decimated-knight-arap.jpg" alt="The example AsRigidAsPossible deforms a surface as if it were made of an
@@ -1648,7 +1703,7 @@ clustered edge-sets show diminishing returns on the deformation quality so we
 may choose a small number of clusters, proportional to the number of skinning
 weight functions (rather than the number of discrete mesh vertices).</p>
 
-<p>This proposed deformation model <a class="citation" href="#fn:15" title="Jump to citation">[15]<span class="citekey" style="display:none">jacobson_2012</span></a>, can simultaneously be seen as a
+<p>This proposed deformation model <a class="citation" href="#fn:18" title="Jump to citation">[18]<span class="citekey" style="display:none">jacobson_2012</span></a>, can simultaneously be seen as a
 fast, subspace optimization for ARAP and as an automatic method for finding
 <em>the best</em> skinning transformation degrees of freedom.</p>
 
@@ -1747,7 +1802,7 @@ genus. They initially cut the mesh in multiple patches that can be separately pa
 
 <h2 id="harmonicparametrization">Harmonic parametrization</h2>
 
-<p>Harmonic parametrization <a class="citation" href="#fn:16" title="Jump to citation">[16]<span class="citekey" style="display:none">eck_2005</span></a> is a single patch, fixed boundary parametrization
+<p>Harmonic parametrization <a class="citation" href="#fn:19" title="Jump to citation">[19]<span class="citekey" style="display:none">eck_2005</span></a> is a single patch, fixed boundary parametrization
 algorithm that computes the 2D coordinates of the flattened mesh as two
 harmonic functions.</p>
 
@@ -1792,7 +1847,7 @@ texture</figcaption>
 
 <h2 id="leastsquareconformalmaps">Least squares conformal maps</h2>
 
-<p>Least squares conformal maps parametrization <a class="citation" href="#fn:17" title="Jump to citation">[17]<span class="citekey" style="display:none">levy_2002</span></a> minimizes the
+<p>Least squares conformal maps parametrization <a class="citation" href="#fn:20" title="Jump to citation">[20]<span class="citekey" style="display:none">levy_2002</span></a> minimizes the
 conformal (angular) distortion of the parametrization. Differently from
 harmonic parametrization, it does not need to have a fixed boundary.</p>
 
@@ -1800,7 +1855,7 @@ harmonic parametrization, it does not need to have a fixed boundary.</p>
 
 <p><span class="math">\[ E_{LSCM}(\mathbf{u},\mathbf{v}) = \int_X \frac{1}{2}| \nabla \mathbf{u}^{\perp} - \nabla \mathbf{v} |^2 dA \]</span></p>
 
-<p>which can be rewritten in matrix form as <a class="citation" href="#fn:18" title="Jump to citation">[18]<span class="citekey" style="display:none">mullen_2008</span></a>:</p>
+<p>which can be rewritten in matrix form as <a class="citation" href="#fn:21" title="Jump to citation">[21]<span class="citekey" style="display:none">mullen_2008</span></a>:</p>
 
 <p><span class="math">\[ E_{LSCM}(\mathbf{u},\mathbf{v}) = \frac{1}{2} [\mathbf{u},\mathbf{v}]^t (L_c - 2A) [\mathbf{u},\mathbf{v}] \]</span></p>
 
@@ -1842,7 +1897,7 @@ with texture, (right) UV parametrization</figcaption>
 
 <h2 id="asrigidaspossible">As-rigid-as-possible parametrization</h2>
 
-<p>As-rigid-as-possible parametrization <a class="citation" href="#fn:19" title="Jump to citation">[19]<span class="citekey" style="display:none">liu_2008</span></a> is a powerful single-patch,
+<p>As-rigid-as-possible parametrization <a class="citation" href="#fn:22" title="Jump to citation">[22]<span class="citekey" style="display:none">liu_2008</span></a> is a powerful single-patch,
 non-linear algorithm to compute a parametrization that strives to preserve
 distances (and thus angles). The idea is very similar to ARAP surface
 deformation: each triangle is mapped to the plane trying to preserve its
@@ -1894,7 +1949,7 @@ the triangle mesh (output_field), plus the singularities of the field
 </figure>
 
 <p>The singularities are vertices where the field vanishes (highlighted in red in
-the figure above). <code>igl::nrosy</code> can also generate N-RoSy fields <a class="citation" href="#fn:20" title="Jump to citation">[20]<span class="citekey" style="display:none">levy_2008</span></a>,
+the figure above). <code>igl::nrosy</code> can also generate N-RoSy fields <a class="citation" href="#fn:23" title="Jump to citation">[23]<span class="citekey" style="display:none">levy_2008</span></a>,
 which are a generalization of vector fields where in every face the vector is
 defined up to a constant rotation of <span class="math">\(2\pi / N\)</span>. As can be observed in
 the following figure, the singularities of the fields generated with different
@@ -1908,8 +1963,8 @@ N are of different types and they appear in different positions.</p>
 <p>We demonstrate how to call and plot N-RoSy fields in <a href="504_NRosyDesign/main.cpp">Example
 504</a>, where the degree of the field can be change
 pressing the number keys. <code>igl::nrosy</code> implements the algorithm proposed in
-<a class="citation" href="#fn:21" title="Jump to citation">[21]<span class="citekey" style="display:none">bommes_2009</span></a>. N-RoSy fields can also be interpolated with the algorithm
-proposed in <a class="citation" href="#fn:22" title="Jump to citation">[22]<span class="citekey" style="display:none">knoppel_2013</span></a>, see Section <a href="#npolyvectorfields">npolyvectorfields</a> for more details
+<a class="citation" href="#fn:24" title="Jump to citation">[24]<span class="citekey" style="display:none">bommes_2009</span></a>. N-RoSy fields can also be interpolated with the algorithm
+proposed in <a class="citation" href="#fn:25" title="Jump to citation">[25]<span class="citekey" style="display:none">knoppel_2013</span></a>, see Section <a href="#npolyvectorfields">npolyvectorfields</a> for more details
 (<a href="../include/igl/n_polyvector.h">igl::n_polyvector</a>).</p>
 
 <h3 id="globalseamlessintegergridparametrization">Global, seamless integer-grid parametrization</h3>
@@ -1920,7 +1975,7 @@ properties such as normals and high-frequency details. Global, seamless
 parametrization aims at parametrizing complex shapes with a parametrization
 that is aligned with a given set of directions for the purpose of surface
 remeshing. In libigl, we provide a reference implementation of the pipeline
-proposed in the mixed integer quadrangulation paper <a class="citation" href="#fn:21" title="Jump to citation">[21]<span class="citekey" style="display:none">bommes_2009</span></a>.</p>
+proposed in the mixed integer quadrangulation paper <a class="citation" href="#fn:24" title="Jump to citation">[24]<span class="citekey" style="display:none">bommes_2009</span></a>.</p>
 
 <p>The first step involves the design of a 4-RoSy field (sometimes called <em>cross</em>
 field) that describes the alignment of the edges of the desired quadrilateral
@@ -1999,7 +2054,7 @@ input cross field.</p>
 </figure>
 
 <p>We hide the seams by adding integer constraints to the Poisson problem
-that align the isolines on both sides of each seam <a class="citation" href="#fn:21" title="Jump to citation">[21]<span class="citekey" style="display:none">bommes_2009</span></a>.</p>
+that align the isolines on both sides of each seam <a class="citation" href="#fn:24" title="Jump to citation">[24]<span class="citekey" style="display:none">bommes_2009</span></a>.</p>
 
 <figure>
 <img src="images/505_MIQ_7.png" alt="Seamless Poisson parametrization." />
@@ -2023,7 +2078,7 @@ The full pipeline is implemented in <a href="505_MIQ/main.cpp">Example 505</a>.<
 <p>Anisotropic and non-uniform quad remeshing is important to concentrate the
 elements in the regions with more details. It is possible to extend the MIQ
 quad meshing framework to generate anisotropic quad meshes using a mesh
-deformation approach <a class="citation" href="#fn:23" title="Jump to citation">[23]<span class="citekey" style="display:none">panozzo_2014</span></a>.</p>
+deformation approach <a class="citation" href="#fn:26" title="Jump to citation">[26]<span class="citekey" style="display:none">panozzo_2014</span></a>.</p>
 
 <p>The input of the anisotropic remeshing algorithm is a sparse set of constraints
 that define the shape and scale of the desired quads. This can be encoded as a
@@ -2083,7 +2138,7 @@ possible.</p>
 
 <p>N-RoSy vector fields can be further generalized to represent arbitrary
 vector-sets, with arbitrary angles between them and with arbitrary lengths
-<a class="citation" href="#fn:24" title="Jump to citation">[24]<span class="citekey" style="display:none">diamanti_2014</span></a>. This generalization is called N-PolyVector field, and
+<a class="citation" href="#fn:27" title="Jump to citation">[27]<span class="citekey" style="display:none">diamanti_2014</span></a>. This generalization is called N-PolyVector field, and
 libigl provides the function <code>igl::n_polyvector</code> to design them starting from a
 sparse set of constraints (<a href="507_PolyVectorField/main.cpp">Example 507</a>).</p>
 
@@ -2096,7 +2151,7 @@ sparse set of constraints (<a href="507_PolyVectorField/main.cpp">Example 507</a
 polynomial: The polynomial coefficients are then harmonically interpolated
 leading to polynomials whose roots smoothly vary over the surface.</p>
 
-<p>Globally optimal direction fields <a class="citation" href="#fn:22" title="Jump to citation">[22]<span class="citekey" style="display:none">knoppel_2013</span></a> are a special case of
+<p>Globally optimal direction fields <a class="citation" href="#fn:25" title="Jump to citation">[25]<span class="citekey" style="display:none">knoppel_2013</span></a> are a special case of
 PolyVector fields. If the constraints are taken from an N-RoSy field,
 <code>igl::n_polyvector</code> generates a field that is equivalent, after normalization,
 to a globally optimal direction field.</p>
@@ -2110,13 +2165,13 @@ to a globally optimal direction field.</p>
 <p>This condition is very important in architectural geometry: The faces of an
 infinitely dense quad mesh whose edges are aligned with a conjugate field are
 planar. Thus, a quad mesh whose edges follow a conjugate field are easier to
-planarize <a class="citation" href="#fn:25" title="Jump to citation">[25]<span class="citekey" style="display:none">liu_2011</span></a>.</p>
+planarize <a class="citation" href="#fn:28" title="Jump to citation">[28]<span class="citekey" style="display:none">liu_2011</span></a>.</p>
 
 <p>Finding a conjugate vector field that satisfies given directional constraints
 is a standard problem in architectural geometry, which can be tackled by
 deforming a Poly-Vector field to the closest conjugate field.</p>
 
-<p>This algorithm <a class="citation" href="#fn:24" title="Jump to citation">[24]<span class="citekey" style="display:none">diamanti_2014</span></a> alternates a global step, which enforces
+<p>This algorithm <a class="citation" href="#fn:27" title="Jump to citation">[27]<span class="citekey" style="display:none">diamanti_2014</span></a> alternates a global step, which enforces
 smoothness, with a local step, that projects the field on every face to the
 closest conjugate field (<a href="508_ConjugateField/main.cpp">Example 508</a>).</p>
 
@@ -2130,7 +2185,7 @@ closest conjugate field (<a href="508_ConjugateField/main.cpp">Example 508</a>).
 <h2 id="planarization">Planarization</h2>
 
 <p>A quad mesh can be transformed in a planar quad mesh with Shape-Up
-<a class="citation" href="#fn:26" title="Jump to citation">[26]<span class="citekey" style="display:none">bouaziz_2012</span></a>, a local/global approach that uses the global step to enforce
+<a class="citation" href="#fn:29" title="Jump to citation">[29]<span class="citekey" style="display:none">bouaziz_2012</span></a>, a local/global approach that uses the global step to enforce
 surface continuity and the local step to enforce planarity.</p>
 
 <p><a href="509_Planarization/main.cpp">Example 509</a> planarizes a quad mesh until it
@@ -2524,7 +2579,7 @@ elements. This is undesirable in many applications, and it is possible to
 avoid it by introducing a non-linear constraints that guarantees that the area
 of every element remain positive.</p>
 
-<p>Libigl can be used to compute Locally Injective Maps <a class="citation" href="#fn:27" title="Jump to citation">[27]<span class="citekey" style="display:none">schuller_2013</span></a> using a variety of
+<p>Libigl can be used to compute Locally Injective Maps <a class="citation" href="#fn:30" title="Jump to citation">[30]<span class="citekey" style="display:none">schuller_2013</span></a> using a variety of
 deformation energies. A simple deformation of a 2D grid is computed in <a href="608_LIM/main.cpp">Example
 608</a>.</p>
 
@@ -2583,7 +2638,7 @@ intersections have been &#8220;resolved&#8221;. That is, edges and vertices are 
 exactly at the intersection lines, so the resulting <em>non-manifold</em> mesh <code>(V,F)</code>
 has no self-intersections.</p>
 
-<p>Then libigl <em>peels</em> the outer hull <a class="citation" href="#fn:28" title="Jump to citation">[28]<span class="citekey" style="display:none">attene_2014</span></a> off this mesh recursively,
+<p>Then libigl <em>peels</em> the outer hull <a class="citation" href="#fn:31" title="Jump to citation">[31]<span class="citekey" style="display:none">attene_2014</span></a> off this mesh recursively,
 keeping track of the iteration parity and orientation flips for each layer.
 For any boolean operation, these two pieces of information determine for each
 triangle (1) if it should be included in the output, and (2) if its orientation
@@ -2687,7 +2742,7 @@ mesh and which are outside. That is, which should be kept and which should be
 removed.</p>
 
 <p>The &#8220;Generalized Winding Number&#8221; is a robust method for determined
-inside and outside for troublesome meshes <a class="citation" href="#fn:29" title="Jump to citation">[29]<span class="citekey" style="display:none">jacobson_2013</span></a>. The generalized
+inside and outside for troublesome meshes <a class="citation" href="#fn:32" title="Jump to citation">[32]<span class="citekey" style="display:none">jacobson_2013</span></a>. The generalized
 winding number with respect to <code>(V,F)</code> at some point <span class="math">\(\mathbf{p} \in
 \mathcal{R}^3\)</span> is defined as scalar function:</p>
 
@@ -2730,7 +2785,7 @@ methods are fairly advanced.</p>
 
 <p>One family of mesh decimation methods operates by successively remove elements
 from the mesh. In particular, Hoppe advocates for successively remove or rather
-collapsing edges <a class="citation" href="#fn:30" title="Jump to citation">[30]<span class="citekey" style="display:none">hoppe_1996</span></a>. The generic form of this technique is to
+collapsing edges <a class="citation" href="#fn:33" title="Jump to citation">[33]<span class="citekey" style="display:none">hoppe_1996</span></a>. The generic form of this technique is to
 construct a sequence of n meshes from the initial high-resolution mesh <span class="math">\(M_0\)</span> to
 the lowest resolution mesh <span class="math">\(M_n\)</span> by collapsing a single edge:</p>
 
@@ -2931,8 +2986,8 @@ tree.squared_distance(V,F,P,sqrD,I,C);
 
 <p>Finally, from the closest point or the winding number it&#8217;s possible to <em>sign</em>
 this distance. In <code>igl::signed_distance</code> we provide two methods for signing:
-the so-called &#8220;pseudo-normal test&#8221; <a class="citation" href="#fn:31" title="Jump to citation">[31]<span class="citekey" style="display:none">baerentzen_2005</span></a> and the generalized
-winding number <a class="citation" href="#fn:29" title="Jump to citation">[29]<span class="citekey" style="display:none">jacobson_2013</span></a>.</p>
+the so-called &#8220;pseudo-normal test&#8221; <a class="citation" href="#fn:34" title="Jump to citation">[34]<span class="citekey" style="display:none">baerentzen_2005</span></a> and the generalized
+winding number <a class="citation" href="#fn:32" title="Jump to citation">[32]<span class="citekey" style="display:none">jacobson_2013</span></a>.</p>
 
 <p>The pseudo-normal test (see also <code>igl::pseudonormal_test</code>) assumes the input
 mesh is a watertight (closed, non-self-intersecting, manifold) mesh. Then given
@@ -3030,140 +3085,158 @@ repository</a>.</p>
  Kernels</a>, 2011.</p>
 </li>
 
-<li id="fn:7" class="citation"><span class="citekey" style="display:none">botsch_2004</span><p>Matrio Botsch and Leif Kobbelt.
+<li id="fn:7" class="citation"><span class="citekey" style="display:none">vallet_2008</span><p>Bruno Vallet and Bruno Lévy. <a href="https://www.google.com/search?q=Spectral+Geometry+Processing+with+Manifold+Harmonics">Spectral Geometry Processing with
+ Manifold
+ Harmonics</a>,
+ 2008.</p>
+</li>
+
+<li id="fn:8" class="citation"><span class="citekey" style="display:none">hildebrandt_2011</span><p>Klaus Hildebrandt, Christian Schulz, Christoph von
+Tycowicz, and Konrad Polthier. <a href="https://www.google.com/search?q=Interactive+Surface+Modeling+using+Modal+Analysis">Interactive Surface Modeling using Modal
+Analysis</a>,
+2011.</p>
+</li>
+
+<li id="fn:9" class="citation"><span class="citekey" style="display:none">barbic_2005</span><p>Jernej Barbic and Doug James. <a href="https://www.google.com/search?q=Real-Time+Subspace+Integration+for+St.Venant-Kirchhoff+Deformable+Models">Real-Time Subspace Integration
+ for St.Venant-Kirchhoff Deformable
+ Models</a>,
+ 2005.</p>
+</li>
+
+<li id="fn:10" class="citation"><span class="citekey" style="display:none">botsch_2004</span><p>Matrio Botsch and Leif Kobbelt.
  <a href="https://www.google.com/search?q=An+Intuitive+Framework+for+Real-Time+Freeform+Modeling">An Intuitive Framework for Real-Time Freeform
  Modeling</a>,
  2004.</p>
 </li>
 
-<li id="fn:8" class="citation"><span class="citekey" style="display:none">jacobson_mixed_2010</span><p>Alec Jacobson, Elif Tosun, Olga Sorkine, and Denis
+<li id="fn:11" class="citation"><span class="citekey" style="display:none">jacobson_mixed_2010</span><p>Alec Jacobson, Elif Tosun, Olga Sorkine, and Denis
  Zorin. <a href="https://www.google.com/search?q=Mixed+Finite+Elements+for+Variational+Surface+Modeling">Mixed Finite Elements for Variational Surface
  Modeling</a>,
  2010.</p>
 </li>
 
-<li id="fn:9" class="citation"><span class="citekey" style="display:none">sorkine_2004</span><p>Olga Sorkine, Yaron Lipman, Daniel Cohen-Or, Marc Alexa,
+<li id="fn:12" class="citation"><span class="citekey" style="display:none">sorkine_2004</span><p>Olga Sorkine, Yaron Lipman, Daniel Cohen-Or, Marc Alexa,
  Christian Rössl and Hans-Peter Seidel. <a href="https://www.google.com/search?q=Laplacian+Surface+Editing">Laplacian Surface
  Editing</a>, 2004.</p>
 </li>
 
-<li id="fn:10" class="citation"><span class="citekey" style="display:none">jacobson_2011</span><p>Alec Jacobson, Ilya Baran, Jovan Popović, and Olga Sorkine.
+<li id="fn:13" class="citation"><span class="citekey" style="display:none">jacobson_2011</span><p>Alec Jacobson, Ilya Baran, Jovan Popović, and Olga Sorkine.
  <a href="https://www.google.com/search?q=Bounded+biharmonic+weights+for+real-time+deformation">Bounded Biharmonic Weights for Real-Time
  Deformation</a>,
  2011.</p>
 </li>
 
-<li id="fn:11" class="citation"><span class="citekey" style="display:none">kavan_2008</span><p>Ladislav Kavan, Steven Collins, Jiri Zara, and Carol O&#8217;Sullivan.
+<li id="fn:14" class="citation"><span class="citekey" style="display:none">kavan_2008</span><p>Ladislav Kavan, Steven Collins, Jiri Zara, and Carol O&#8217;Sullivan.
  <a href="https://www.google.com/search?q=Geometric+Skinning+with+Approximate+Dual+Quaternion+Blending">Geometric Skinning with Approximate Dual Quaternion
  Blending</a>,
  2008.</p>
 </li>
 
-<li id="fn:12" class="citation"><span class="citekey" style="display:none">sorkine_2007</span><p>Olga Sorkine and Marc Alexa, <a href="https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling">As-rigid-as-possible Surface
+<li id="fn:15" class="citation"><span class="citekey" style="display:none">sorkine_2007</span><p>Olga Sorkine and Marc Alexa, <a href="https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling">As-rigid-as-possible Surface
  Modeling</a>, 2007.</p>
 </li>
 
-<li id="fn:13" class="citation"><span class="citekey" style="display:none">chao_2010</span><p>Isaac Chao, Ulrich Pinkall, Patrick Sanan, Peter Schröder.
+<li id="fn:16" class="citation"><span class="citekey" style="display:none">chao_2010</span><p>Isaac Chao, Ulrich Pinkall, Patrick Sanan, Peter Schröder.
  <a href="https://www.google.com/search?q=A+Simple+Geometric+Model+for+Elastic+Deformations">A Simple Geometric Model for Elastic
  Deformations</a>,
  2010.</p>
 </li>
 
-<li id="fn:14" class="citation"><span class="citekey" style="display:none">mcadams_2011</span><p>Alexa McAdams, Andrew Selle, Rasmus Tamstorf, Joseph Teran,
+<li id="fn:17" class="citation"><span class="citekey" style="display:none">mcadams_2011</span><p>Alexa McAdams, Andrew Selle, Rasmus Tamstorf, Joseph Teran,
  Eftychios Sifakis. <a href="https://www.google.com/search?q=Computing+the+Singular+Value+Decomposition+of+3x3+matrices+with+minimal+branching+and+elementary+floating+point+operations">Computing the Singular Value Decomposition of 3x3
  matrices with minimal branching and elementary floating point
  operations</a>,
  2011.</p>
 </li>
 
-<li id="fn:15" class="citation"><span class="citekey" style="display:none">jacobson_2012</span><p>Alec Jacobson, Ilya Baran, Ladislav Kavan, Jovan Popović, and
+<li id="fn:18" class="citation"><span class="citekey" style="display:none">jacobson_2012</span><p>Alec Jacobson, Ilya Baran, Ladislav Kavan, Jovan Popović, and
  Olga Sorkine. <a href="https://www.google.com/search?q=Fast+Automatic+Skinning+Transformations">Fast Automatic Skinning
  Transformations</a>,
  2012.</p>
 </li>
 
-<li id="fn:16" class="citation"><span class="citekey" style="display:none">eck_2005</span><p>Matthias Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
+<li id="fn:19" class="citation"><span class="citekey" style="display:none">eck_2005</span><p>Matthias Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
  Stuetzle. <a href="http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf">Multiresolution Analysis of Arbitrary
  Meshes</a>, 2005.</p>
 </li>
 
-<li id="fn:17" class="citation"><span class="citekey" style="display:none">levy_2002</span><p>Bruno Lévy, Sylvain Petitjean, Nicolas Ray, Jérome Maillot.
+<li id="fn:20" class="citation"><span class="citekey" style="display:none">levy_2002</span><p>Bruno Lévy, Sylvain Petitjean, Nicolas Ray, Jérome Maillot.
  <a href="http://www.cs.jhu.edu/~misha/Fall09/Levy02.pdf">Least Squares Conformal Maps, for Automatic Texture Atlas
  Generation,</a>, 2002.</p>
 </li>
 
-<li id="fn:18" class="citation"><span class="citekey" style="display:none">mullen_2008</span><p>Patrick Mullen, Yiying Tong, Pierre Alliez, Mathieu Desbrun.
+<li id="fn:21" class="citation"><span class="citekey" style="display:none">mullen_2008</span><p>Patrick Mullen, Yiying Tong, Pierre Alliez, Mathieu Desbrun.
  <a href="http://www.geometry.caltech.edu/pubs/MTAD08.pdf">Spectral Conformal
  Parameterization</a>, 2008.</p>
 </li>
 
-<li id="fn:19" class="citation"><span class="citekey" style="display:none">liu_2008</span><p>Ligang Liu, Lei Zhang, Yin Xu, Craig Gotsman, Steven J. Gortler.
+<li id="fn:22" class="citation"><span class="citekey" style="display:none">liu_2008</span><p>Ligang Liu, Lei Zhang, Yin Xu, Craig Gotsman, Steven J. Gortler.
  <a href="http://cs.harvard.edu/~sjg/papers/arap.pdf">A Local/Global Approach to Mesh
  Parameterization</a>, 2008.</p>
 </li>
 
-<li id="fn:20" class="citation"><span class="citekey" style="display:none">levy_2008</span><p>Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy.
+<li id="fn:23" class="citation"><span class="citekey" style="display:none">levy_2008</span><p>Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy.
  <a href="http://alice.loria.fr/publications/papers/2008/DGF/NSDFD-TOG.pdf">N-Symmetry Direction Field
  Design</a>,
  2008.</p>
 </li>
 
-<li id="fn:21" class="citation"><span class="citekey" style="display:none">bommes_2009</span><p>David Bommes, Henrik Zimmer, Leif Kobbelt.
+<li id="fn:24" class="citation"><span class="citekey" style="display:none">bommes_2009</span><p>David Bommes, Henrik Zimmer, Leif Kobbelt.
  <a href="http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf">Mixed-integer
  quadrangulation</a>,
  2009.</p>
 </li>
 
-<li id="fn:22" class="citation"><span class="citekey" style="display:none">knoppel_2013</span><p>Felix Knöppel, Keenan Crane, Ulrich Pinkall, and Peter
+<li id="fn:25" class="citation"><span class="citekey" style="display:none">knoppel_2013</span><p>Felix Knöppel, Keenan Crane, Ulrich Pinkall, and Peter
  Schröder. <a href="http://www.cs.columbia.edu/~keenan/Projects/GloballyOptimalDirectionFields/paper.pdf">Globally Optimal Direction
  Fields</a>,
  2013.</p>
 </li>
 
-<li id="fn:23" class="citation"><span class="citekey" style="display:none">panozzo_2014</span><p>Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga
+<li id="fn:26" class="citation"><span class="citekey" style="display:none">panozzo_2014</span><p>Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga
  Sorkine-Hornung. <a href="http://www.inf.ethz.ch/personal/dpanozzo/papers/frame-fields-2014.pdf">Frame Fields: Anisotropic and Non-Orthogonal Cross
  Fields</a>,
  2014.</p>
 </li>
 
-<li id="fn:24" class="citation"><span class="citekey" style="display:none">diamanti_2014</span><p>Olga Diamanti, Amir Vaxman, Daniele Panozzo, Olga
+<li id="fn:27" class="citation"><span class="citekey" style="display:none">diamanti_2014</span><p>Olga Diamanti, Amir Vaxman, Daniele Panozzo, Olga
  Sorkine-Hornung. <a href="http://igl.ethz.ch/projects/complex-roots/">Designing N-PolyVector Fields with Complex
  Polynomials</a>, 2014</p>
 </li>
 
-<li id="fn:25" class="citation"><span class="citekey" style="display:none">liu_2011</span><p>Yang Liu, Weiwei Xu, Jun Wang, Lifeng Zhu, Baining Guo, Falai Chen, Guoping
+<li id="fn:28" class="citation"><span class="citekey" style="display:none">liu_2011</span><p>Yang Liu, Weiwei Xu, Jun Wang, Lifeng Zhu, Baining Guo, Falai Chen, Guoping
  Wang. <a href="http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf">General Planar Quadrilateral Mesh Design Using Conjugate Direction
  Field</a>,
  2008.</p>
 </li>
 
-<li id="fn:26" class="citation"><span class="citekey" style="display:none">bouaziz_2012</span><p>Sofien Bouaziz, Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
+<li id="fn:29" class="citation"><span class="citekey" style="display:none">bouaziz_2012</span><p>Sofien Bouaziz, Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
  <a href="http://lgg.epfl.ch/publications/2012/shapeup.pdf">Shape-Up: Shaping Discrete Geometry with
  Projections</a>, 2012</p>
 </li>
 
-<li id="fn:27" class="citation"><span class="citekey" style="display:none">schuller_2013</span><p>Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga
+<li id="fn:30" class="citation"><span class="citekey" style="display:none">schuller_2013</span><p>Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga
  Sorkine-Hornung. <a href="http://igl.ethz.ch/projects/LIM/">Locally Injective
  Mappings</a>, 2013.</p>
 </li>
 
-<li id="fn:28" class="citation"><span class="citekey" style="display:none">attene_2014</span><p>Marco Attene.
+<li id="fn:31" class="citation"><span class="citekey" style="display:none">attene_2014</span><p>Marco Attene.
  <a href="https://www.google.com/search?q=Direct+repair+of+self-intersecting+meshes">Direct repair of self-intersecting
  meshes</a>,
  2014.</p>
 </li>
 
-<li id="fn:29" class="citation"><span class="citekey" style="display:none">jacobson_2013</span><p>Alec Jacobson, Ladislav Kavan, and Olga Sorkine.
+<li id="fn:32" class="citation"><span class="citekey" style="display:none">jacobson_2013</span><p>Alec Jacobson, Ladislav Kavan, and Olga Sorkine.
  <a href="https://www.google.com/search?q=Robust+Inside-Outside+Segmentation+using+Generalized+Winding+Numbers">Robust Inside-Outside Segmentation using Generalized Winding
  Numbers</a>,
  2013.</p>
 </li>
 
-<li id="fn:30" class="citation"><span class="citekey" style="display:none">hoppe_1996</span><p>Hugues Hoppe. <a href="https://www.google.com/search?q=Progressive+meshes">Progressive
+<li id="fn:33" class="citation"><span class="citekey" style="display:none">hoppe_1996</span><p>Hugues Hoppe. <a href="https://www.google.com/search?q=Progressive+meshes">Progressive
  Meshes</a>, 1996</p>
 </li>
 
-<li id="fn:31" class="citation"><span class="citekey" style="display:none">baerentzen_2005</span><p>J Andreas Baerentzen and Henrik Aanaes.
+<li id="fn:34" class="citation"><span class="citekey" style="display:none">baerentzen_2005</span><p>J Andreas Baerentzen and Henrik Aanaes.
 <a href="https://www.google.com/search?q=Signed+distance+computation+using+the+angle+weighted+pseudonormal">Signed distance computation using the angle weighted
 pseudonormal</a>,
  2005.</p>

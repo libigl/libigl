@@ -77,6 +77,7 @@ add_subdirectory("302_Sort")
 add_subdirectory("303_LaplaceEquation")
 add_subdirectory("304_LinearEqualityConstraints")
 add_subdirectory("305_QuadraticProgramming")
+add_subdirectory("306_EigenDecomposition")
 
 # Chapter 4
 add_subdirectory("401_BiharmonicDeformation")

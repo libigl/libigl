@@ -54,6 +54,7 @@ lecture notes links to a cross-platform example application.
         * [Quadratic energy minimization](#quadraticenergyminimization)
     * [304 Linear Equality Constraints](#linearequalityconstraints)
     * [305 Quadratic Programming](#quadraticprogramming)
+    * [306 Eigen Decomposition](#eigendecomposition)
 * [Chapter 4: Shape Deformation](#chapter4:shapedeformation)
     * [401 Biharmonic Deformation](#biharmonicdeformation)
     * [402 Polyharmonic Deformation](#polyharmonicdeformation)
@@ -1039,6 +1040,55 @@ igl::active_set(Q,B,b,bc,Aeq,Beq,Aieq,Bieq,lx,ux,as,Z);
 discrete biharmonic kernels [#rustamov_2011][] at multiple scales
 .](images/cheburashka-multiscale-biharmonic-kernels.jpg)
 
+## Eigen Decomposition
+
+Libigl has rudimentary support for extracting eigen pairs of a generalized
+eigen value problem:
+
+ $Ax = \lambda B x$
+
+where $A$ is a sparse symmetric matrix and $B$ is a sparse positive definite
+matrix. Most commonly in geometry processing, we let $A=L$ the cotangent
+Laplacian and $B=M$ the per-vertex mass matrix (e.g. [#vallet_2008][]).
+Typically applications will make use of the _low frequency_ eigen modes.
+Analagous to the Fourier decomposition, a function $f$ on a surface can be
+represented via its spectral decomposition of the eigen modes of the
+Laplace-Beltrami:
+
+ $f = \sum\limits_{i=1}^\infty a_i \phi_i$
+
+where each $\phi_i$ is an eigen function satisfying: $\Delta \phi_i = \lambda_i
+\phi_i$ and $a_i$ are scalar coefficients. For a discrete triangle mesh, a
+completely analogous decomposition exists, albeit with finite sum:
+
+ $\mathbf{f} = \sum\limits_{i=1}^n a_i \phi_i$
+
+where now a column vector of values at vertices $\mathbf{f} \in \mathcal{R}^n$
+specifies a piecewise linear function and $\phi_i \in \mathcal{R}^n$ is an
+eigen vector satisfying: 
+
+$\mathbf{L} \phi_i = \lambda_i \mathbf{M} \phi_i$.
+
+Note that Vallet &amp; Levy [#vallet_2008][] propose solving a symmetrized
+_standard_ eigen problem $\mathbf{M}^{-1/2}\mathbf{L}\mathbf{M}^{-1/2} \phi_i
+= \lambda_i \phi_i$. Libigl implements a generalized eigen problem solver so
+this unnecessary symmetrization can be avoided.
+
+Often the sum above is _truncated_ to the first $k$ eigen vectors. If the low
+frequency modes are chosen, i.e. those corresponding to small $\lambda_i$
+values, then this truncation effectively _regularizes_ $\mathbf{f}$ to smooth,
+slowly changing functions over the mesh (e.g. [#hildebrandt_2011][]). Modal
+analysis and model subspaces have been used frequently in real-time deformation
+(e.g. [#barbic_2005][]).
+
+In [Example 306](306_EigenDecomposition/main.cpp)), the first few eigen vectors
+of the discrete Laplace-Beltrami operator are computed and displayed in
+pseudo-color atop the beetle.
+
+![([Example 306](306_EigenDecomposition/main.cpp)) Low frequency eigen vectors
+of the discrete Laplace-Beltrami operator vary smoothly and slowly over the
+_Beetle_.](images/beetle-eigen-decomposition.gif)
+
 # Chapter 4: Shape deformation
 Modern mesh-based shape deformation methods satisfy user deformation
 constraints at handles (selected vertices or regions on the mesh) and propagate
@@ -1173,7 +1223,7 @@ igl::harmonic(V,F,b,bc,k,Z);
 ![The [PolyharmonicDeformation](402_PolyharmonicDeformation/main.cpp) example deforms a flat domain (left) into a bump as a
 solution to various $k$-harmonic PDEs.](images/bump-k-harmonic.jpg)
 
-## Bounded biharmonic weights
+## Bounded biharmonic weights 
 In computer animation, shape deformation is often referred to as "skinning".
 Constraints are posed as relative rotations of internal rigid "bones" inside a
 character. The deformation method, or skinning method, determines how the
@@ -2686,6 +2736,10 @@ repository](https://github.com/libigl/libigl).
 [Signed distance computation using the angle weighted
 pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+the+angle+weighted+pseudonormal),
  2005.
+[#barbic_2005]: Jernej Barbic and Doug James. [Real-Time Subspace Integration
+  for St.Venant-Kirchhoff Deformable
+  Models](https://www.google.com/search?q=Real-Time+Subspace+Integration+for+St.Venant-Kirchhoff+Deformable+Models),
+  2005.
 [#bommes_2009]: David Bommes, Henrik Zimmer, Leif Kobbelt.
   [Mixed-integer
   quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf),
@@ -2707,6 +2761,10 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
 [#eck_2005]: Matthias Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
   Stuetzle.  [Multiresolution Analysis of Arbitrary
   Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), 2005.
+[#hildebrandt_2011]: Klaus Hildebrandt, Christian Schulz, Christoph von
+Tycowicz, and Konrad Polthier. [Interactive Surface Modeling using Modal
+Analysis](https://www.google.com/search?q=Interactive+Surface+Modeling+using+Modal+Analysis),
+2011.
 [#hoppe_1996]: Hugues Hoppe. [Progressive
   Meshes](https://www.google.com/search?q=Progressive+meshes), 1996
 [#jacobson_thesis_2013]: Alec Jacobson,
@@ -2789,3 +2847,8 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   Editing](https://www.google.com/search?q=Laplacian+Surface+Editing), 2004.
 [#sorkine_2007]: Olga Sorkine and Marc Alexa, [As-rigid-as-possible Surface
   Modeling](https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling), 2007.
+[#vallet_2008]: Bruno Vallet and Bruno Lévy. [Spectral Geometry Processing with
+  Manifold
+  Harmonics](https://www.google.com/search?q=Spectral+Geometry+Processing+with+Manifold+Harmonics),
+  2008.
+
