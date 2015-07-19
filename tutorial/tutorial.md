@@ -1081,9 +1081,20 @@ slowly changing functions over the mesh (e.g. [#hildebrandt_2011][]). Modal
 analysis and model subspaces have been used frequently in real-time deformation
 (e.g. [#barbic_2005][]).
 
-In [Example 306](306_EigenDecomposition/main.cpp)), the first few eigen vectors
+In [Example 306](306_EigenDecomposition/main.cpp)), the first 5 eigen vectors
 of the discrete Laplace-Beltrami operator are computed and displayed in
-pseudo-color atop the beetle.
+pseudo-color atop the beetle. Eigen vectors are computed using `igl::eigs`
+(mirroring MATLAB's `eigs`). The 5 eigen vectors are placed into the columns
+of `U` and the eigen values are placed into the entries of `S`:
+
+```cpp
+SparseMatrix<double> L,M;
+igl::cotmatrix(V,F,L);
+igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_DEFAULT,M);
+Eigen::MatrixXd U;
+Eigen::VectorXd S;
+igl::eigs(L,M,5,igl::EIGS_TYPE_SM,U,S);
+```
 
 ![([Example 306](306_EigenDecomposition/main.cpp)) Low frequency eigen vectors
 of the discrete Laplace-Beltrami operator vary smoothly and slowly over the

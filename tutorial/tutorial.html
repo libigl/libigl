@@ -1274,9 +1274,19 @@ slowly changing functions over the mesh (e.g. <a class="citation" href="#fn:8" t
 analysis and model subspaces have been used frequently in real-time deformation
 (e.g. <a class="citation" href="#fn:9" title="Jump to citation">[9]<span class="citekey" style="display:none">barbic_2005</span></a>).</p>
 
-<p>In <a href="306_EigenDecomposition/main.cpp">Example 306</a>), the first few eigen vectors
+<p>In <a href="306_EigenDecomposition/main.cpp">Example 306</a>), the first 5 eigen vectors
 of the discrete Laplace-Beltrami operator are computed and displayed in
-pseudo-color atop the beetle.</p>
+pseudo-color atop the beetle. Eigen vectors are computed using <code>igl::eigs</code>
+(mirroring MATLAB&#8217;s <code>eigs</code>). The 5 eigen vectors are placed into the columns
+of <code>U</code> and the eigen values are placed into the entries of <code>S</code>:</p>
+
+<pre><code class="cpp">SparseMatrix&lt;double&gt; L,M;
+igl::cotmatrix(V,F,L);
+igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_DEFAULT,M);
+Eigen::MatrixXd U;
+Eigen::VectorXd S;
+igl::eigs(L,M,5,igl::EIGS_TYPE_SM,U,S);
+</code></pre>
 
 <figure>
 <img src="images/beetle-eigen-decomposition.gif" alt="(Example 306) Low frequency eigen vectors
