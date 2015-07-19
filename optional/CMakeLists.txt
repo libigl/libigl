@@ -8,8 +8,15 @@ SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../tutorial/cmake)
 find_package(EIGEN REQUIRED)
 
 add_definitions(-DIGL_STATIC_LIBRARY)
-add_definitions(-DIGL_NO_OPENGL)
-add_definitions(-DIGL_OPENGL_4)
+option(LIBIGL_NO_OPENGL "Disable OpenGL2 legacy features in main library" ON)
+option(LIBIGL_OPENGL_4 "Enable OpenGL4 features in optional libraries" ON)
+
+if(LIBIGL_NO_OPENGL)
+  add_definitions(-DIGL_NO_OPENGL)
+endif(LIBIGL_NO_OPENGL)
+if(LIBIGL_OPENGL_4)
+  add_definitions(-DIGL_OPENGL_4)
+endif(LIBIGL_OPENGL_4)
 
 ## Check for GLFW
 find_package(GLFWH QUIET)
