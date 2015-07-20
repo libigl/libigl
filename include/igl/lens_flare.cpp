@@ -15,6 +15,7 @@
 #include "flare_textures.h"
 
 #include <iostream>
+#include <stdint.h>
 
 // http://www.opengl.org/archives/resources/features/KilgardTechniques/LensFlare/glflare.c
 
@@ -24,7 +25,7 @@ IGL_INLINE void igl::lens_flare_load_textures(
 {
 
   const auto setup_texture =[](
-    const uint8_t * texture, 
+    const uint8_t * texture,
     const int width,
     const int height,
     GLuint texobj,

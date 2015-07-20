@@ -1,9 +1,9 @@
+#include <igl/arap.h>
+#include <igl/boundary_loop.h>
+#include <igl/harmonic.h>
+#include <igl/map_vertices_to_circle.h>
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
-#include <igl/boundary_loop.h>
-#include <igl/map_vertices_to_circle.h>
-#include <igl/harmonic.h>
-#include <igl/svd3x3/arap.h>
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -12,7 +12,7 @@ Eigen::MatrixXd initial_guess;
 
 bool show_uv = false;
 
-bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key == '1')
     show_uv = false;
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
   V_uv *= 20;
 
   // Plot the mesh
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(V, F);
   viewer.data.set_uv(V_uv);
   viewer.callback_key_down = &key_down;

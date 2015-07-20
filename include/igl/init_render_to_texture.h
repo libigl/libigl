@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_INIT_RENDER_TO_TEXTURE_H
 #define IGL_INIT_RENDER_TO_TEXTURE_H
 #include "igl_inline.h"
@@ -5,6 +12,8 @@
 #include <cstdlib>
 namespace igl
 {
+  #ifndef IGL_NO_OPENGL
+
   // Create a texture+framebuffer+depthbuffer triplet bound for rendering into
   // the texture;
   //
@@ -21,6 +30,8 @@ namespace igl
     GLuint & tex_id,
     GLuint & fbo_id,
     GLuint & dfbo_id);
+
+  #endif
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "init_render_to_texture.cpp"

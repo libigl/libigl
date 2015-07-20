@@ -11,20 +11,20 @@
 #include <igl/embree/unproject_in_mesh.h>
 #include <vector>
 
-IGL_INLINE bool igl::unproject_onto_mesh(
+IGL_INLINE bool igl::embree::unproject_onto_mesh(
   const Eigen::Vector2f& pos,
   const Eigen::MatrixXi& F,
   const Eigen::Matrix4f& model,
   const Eigen::Matrix4f& proj,
   const Eigen::Vector4f& viewport,
-  const igl::EmbreeIntersector & ei,
+  const EmbreeIntersector & ei,
   int& fid,
   Eigen::Vector3f& bc)
 {
   using namespace std;
   using namespace Eigen;
   MatrixXd obj;
-  vector<igl::Hit> hits;
+  vector<igl::embree::Hit> hits;
 
   // This is lazy, it will find more than just the first hit
   unproject_in_mesh(pos,model,proj,viewport,ei,obj,hits);
@@ -39,13 +39,13 @@ IGL_INLINE bool igl::unproject_onto_mesh(
   return false;
 }
 
-IGL_INLINE bool igl::unproject_onto_mesh(
+IGL_INLINE bool igl::embree::unproject_onto_mesh(
   const Eigen::Vector2f& pos,
   const Eigen::MatrixXi& F,
   const Eigen::Matrix4f& model,
   const Eigen::Matrix4f& proj,
   const Eigen::Vector4f& viewport,
-  const igl::EmbreeIntersector & ei,
+  const EmbreeIntersector & ei,
   int& fid,
   int& vid)
 {

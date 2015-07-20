@@ -40,7 +40,7 @@
 SET(MATLAB_FOUND 0)
 IF(WIN32)
   # Search for a version of Matlab available, starting from the most modern one to older versions
-  FOREACH(MATVER "7.14" "7.11" "7.10" "7.9" "7.8" "7.7" "7.6" "7.5" "7.4")
+  FOREACH(MATVER "7.14" "7.11" "7.17" "7.10" "7.9" "7.8" "7.7" "7.6" "7.5" "7.4" "8.0" "8.1" "8.2" "8.3" "8.4" "8.5")
     IF((NOT DEFINED MATLAB_ROOT)
         OR ("${MATLAB_ROOT}" STREQUAL "")
         OR ("${MATLAB_ROOT}" STREQUAL "/registry"))
@@ -187,7 +187,7 @@ ELSE(WIN32)
 
 ENDIF(WIN32)
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   set(MATLAB_LIBSTDCPP "-lstdc++")
 endif ()
 

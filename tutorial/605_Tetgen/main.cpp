@@ -14,7 +14,7 @@ Eigen::MatrixXi TT;
 Eigen::MatrixXi TF;
 
 // This function is called every time a keyboard button is pressed
-bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
@@ -65,13 +65,13 @@ int main(int argc, char *argv[])
   igl::readOFF("../shared/fertility.off",V,F);
 
   // Tetrahedralize the interior
-  igl::tetrahedralize(V,F,"pq1.414Y", TV,TT,TF);
+  igl::tetgen::tetrahedralize(V,F,"pq1.414Y", TV,TT,TF);
 
   // Compute barycenters
   igl::barycenter(TV,TT,B);
 
   // Plot the generated mesh
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.callback_key_down = &key_down;
   key_down(viewer,'5',0);
   viewer.launch();

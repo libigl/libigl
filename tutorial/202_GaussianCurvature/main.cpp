@@ -1,6 +1,6 @@
+#include <igl/gaussian_curvature.h>
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
-#include <igl/gaussian_curvature.h>
 #include <igl/jet.h>
 
 int main(int argc, char *argv[])
@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
   igl::jet(K,true,C);
 
   // Plot the mesh with pseudocolors
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(V, F);
   viewer.data.set_colors(C);
   viewer.launch();

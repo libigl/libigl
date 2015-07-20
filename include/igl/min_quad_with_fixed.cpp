@@ -64,6 +64,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   assert((kr == 0 || known.maxCoeff() < n) && "known indices should be in [0,n)");
   assert(neq <= n && "Number of equality constraints should be less than DOFs");
 
+
   // cache known
   data.known = known;
   // get list of unknown indices
@@ -537,6 +538,31 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
 {
   Eigen::PlainObjectBase<DerivedZ> sol;
   return min_quad_with_fixed_solve(data,B,Y,Beq,Z,sol);
+}
+
+template <
+  typename T,
+  typename Derivedknown,
+  typename DerivedB,
+  typename DerivedY,
+  typename DerivedBeq,
+  typename DerivedZ>
+IGL_INLINE bool igl::min_quad_with_fixed(
+  const Eigen::SparseMatrix<T>& A,
+  const Eigen::PlainObjectBase<DerivedB> & B,
+  const Eigen::PlainObjectBase<Derivedknown> & known,
+  const Eigen::PlainObjectBase<DerivedY> & Y,
+  const Eigen::SparseMatrix<T>& Aeq,
+  const Eigen::PlainObjectBase<DerivedBeq> & Beq,
+  const bool pd,
+  Eigen::PlainObjectBase<DerivedZ> & Z)
+{
+  min_quad_with_fixed_data<T> data;
+  if(!min_quad_with_fixed_precompute(A,known,Aeq,pd,data))
+  {
+    return false;
+  }
+  return min_quad_with_fixed_solve(data,B,Y,Beq,Z);
 }
 
 #ifdef IGL_STATIC_LIBRARY

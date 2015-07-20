@@ -9,7 +9,7 @@
 #include "../per_face_normals.h"
 #include "../doublearea.h"
 #include "../random_dir.h"
-#include "../boost/bfs_orient.h"
+#include "../bfs_orient.h"
 #include "EmbreeIntersector.h"
 #include <iostream>
 #include <random>
@@ -21,7 +21,7 @@ template <
   typename DerivedF, 
   typename DerivedI,
   typename DerivedC>
-IGL_INLINE void igl::reorient_facets_raycast(
+IGL_INLINE void igl::embree::reorient_facets_raycast(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::PlainObjectBase<DerivedF> & F,
   int rays_total,
@@ -223,7 +223,7 @@ template <
   typename DerivedF, 
   typename DerivedFF,
   typename DerivedI>
-IGL_INLINE void igl::reorient_facets_raycast(
+IGL_INLINE void igl::embree::reorient_facets_raycast(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::PlainObjectBase<DerivedF> & F,
   Eigen::PlainObjectBase<DerivedFF> & FF,
@@ -253,5 +253,5 @@ IGL_INLINE void igl::reorient_facets_raycast(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::reorient_facets_raycast<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::embree::reorient_facets_raycast<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif

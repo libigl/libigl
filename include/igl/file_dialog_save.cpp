@@ -9,8 +9,8 @@
 #include <cstdio>
 #include <cstring>
 
-
 #ifdef _WIN32
+ #include <windows.h>
  #include <Commdlg.h>
 #endif
 

@@ -16,9 +16,9 @@
 
 <blockquote>
 <p>Warning: compiling libigl as a static library is considerably more difficult
-than using it as a header-only library (see <code>../README.md</code> instead). Do it
-only if you are experienced with C++ and you want to improve your compilation
-times.</p>
+than using it as a header-only library (see <a href="../">../README.md</a> instead). Do
+it only if you are experienced with C++, cmake and make, and you want to
+improve your compilation times.</p>
 </blockquote>
 
 <p>Libigl is developed most often on Mac OS X, though has current users in Linux
@@ -30,32 +30,32 @@ and Windows.</p>
 building a project with libigl, since when used as an header-only library can
 slow down compile times.</p>
 
-<p>To build the entire libigl library producing <code>lib/libigl.a</code>, issue:</p>
+<p>To build the entire libigl library producing at least <code>libigl/lib/libigl.a</code> and
+possible other (automatically detected) extras, e.g. <code>libigl/lib/libiglcgal.a</code>
+from <em>this current directory</em>: issue:</p>
 
-<pre><code>cd build
-make lib
+<pre><code>mkdir -p ../lib
+cd ../lib
+cmake -DCMAKE_BUILD_TYPE=Release ../optional
+make
 </code></pre>
 
-<p>You may need to edit <code>Makefile.conf</code> accordingly. Best to give yourself an
-<code>IGL_USERNAME</code> and add a custom install suite for yourself. Then you can enable
-appropriate extras.</p>
+<h4 id="warnings">Warnings</h4>
 
-<h4 id="extras">Extras</h4>
+<p>You should expect to see a few linker warnings of the form:</p>
 
-<p>Once you&#8217;ve set up an <code>IGL_USERNAME</code> and enabled extras within Makefile.conf.
-You can build the extra libraries (into <code>lib/ligiglpng.a</code>, <code>lib/libiglmatlab.a</code>,
-<code>lib/libigltetgen.a</code>, <code>lib/libiglmosek.a</code>, etc.) by issuing:</p>
-
-<pre><code>cd build
-make extras
+<pre><code>/opt/local/bin/ranlib: file: libigl.a(*.cpp.o) has no symbols
 </code></pre>
+
+<p>These are (admittedly unpopular) functions that have never been used by us
+statically so we haven&#8217;t explicit instantiations (yet).</p>
 
 <h4 id="examples">Examples</h4>
 
 <p>You can make a slew of examples by issuing:</p>
 
-<pre><code>cd build
-make examples
+<pre><code>cd ../examples
+make
 </code></pre>
 
 <h4 id="external">External</h4>
@@ -63,36 +63,8 @@ make examples
 <p>Finally there are a number of external libraries that we include in
 <code>./external/</code> because they are either difficult to obtain or they have been
 patched for easier use with libigl. Please see the respective readmes in those
-directories.</p>
-
-<h5 id="installinganttweakbar">Installing AntTweakBar</h5>
-
-<p>To build the a static AntTweakBar library on Mac OS X issue:</p>
-
-<pre><code>cd external/AntTweakBar/src
-make -f Makefile.osx.igl
-</code></pre>
-
-<h5 id="installingtetgen">Installing Tetgen</h5>
-
-<p>To build the tetgen library and executable on Mac OS X issue:</p>
-
-<pre><code>cd external/tetgen
-make clean
-rm -f obj/*.o
-make -f Makefile.igl tetgen
-rm -f obj/*.o
-make -f Makefile.igl tetlib
-</code></pre>
-
-<h5 id="installingmedit">Installing medit</h5>
-
-<p>To build the igl version of the medit executable on Mac OS X issue:</p>
-
-<pre><code>cd external/medit
-make -C libmesh
-make -f Makefile.igl medit
-</code></pre>
+directories or build the tutorial using cmake, which will recursively build all
+dependencies.</p>
 
 <h5 id="installingembree2.0">Installing Embree 2.0</h5>
 
@@ -110,66 +82,7 @@ make
 #sudo make install
 </code></pre>
 
-<h5 id="installingtinyxml2">Installing tinyxml2</h5>
-
-<p>To build the a static tinyxml2 library on Mac OS X issue:</p>
-
-<pre><code>cd external/tinyxml2
-cmake .
-make
-</code></pre>
-
-<h5 id="installingyimg">Installing YImg</h5>
-
-<p>To build the a static YImg library on Mac OS X issue:</p>
-
-<pre><code>cd external/yimg
-make
-</code></pre>
-
-<p>You may need to install libpng. Systems with X11 might find this already
-installed at <code>/usr/X11/lib</code>.</p>
-
-<h3 id="windowsexperimental">Windows (Experimental)</h3>
-
-<p>To build a static library (.lib) on windows, open Visual Studio 2010.</p>
-
-<ul>
-<li>New &gt; Project &#8230;</li>
-<li>Visual C++ &gt; Win32</li>
-<li>Win32 Console Application</li>
-<li>Name: libiglVisualStudio</li>
-<li>Uncheck &#8220;Create directory for solution&#8221;</li>
-<li>Then hit OK, and then Next</li>
-<li>Check &#8220;Static Library&#8221;</li>
-<li>Uncheck &#8220;Precompiled headers&#8221;</li>
-<li>Add all include/igl/*.cpp to the sources directory</li>
-<li>Add all include/igl/*.h to the headers directory</li>
-<li>Open Project &gt; libigl Properties&#8230;</li>
-<li>Add the path to eigen3 to the include paths</li>
-<li>Change the target name to libigl</li>
-<li>Build and pray (this should create libigl.lib</li>
-</ul>
-
-<p><a href="http://msdn.microsoft.com/en-us/library/ms235627(v=vs.80).aspx">Source</a></p>
-
-<h2 id="examples">Examples</h2>
-
-<p>To get started, we advise that you take a look at a few examples:</p>
-
-<pre><code>./examples/hello-world/
-
-./examples/meshio/
-
-./examples/basic-topology/
-
-./examples/ReAntTweakBar/
-</code></pre>
-
 <h2 id="extras">Extras</h2>
-
-<p>Libigl compartmentalizes dependences via its organization into a <em>main</em> libigl
-library and &#8220;extras.&#8221;</p>
 
 <h3 id="bbw">bbw</h3>
 
@@ -177,10 +90,10 @@ library and &#8220;extras.&#8221;</p>
 be used with and without the <a href="#mosek">mosek</a> extra via the <code>IGL_NO_MOSEK</code>
 macro.</p>
 
-<h3 id="boost">boost</h3>
+<h3 id="boolean">boolean</h3>
 
-<p>This library extra utilizes the graph functions in the boost library for find
-connected components and performing breadth-first traversals.</p>
+<p>This library extra contains functions for computing mesh-mesh booleans,
+depending on CGAL and optionally Cork.</p>
 
 <h3 id="cgal">cgal</h3>
 
@@ -205,18 +118,15 @@ quadratic programs.</p>
 
 <p>This library extra uses <code>libpng</code> and <code>YImage</code> to read and write <code>.png</code> files.</p>
 
-<h3 id="svd3x3">svd3x3</h3>
-
-<p>This library extra implements &#8220;as-rigid-as-possible&#8221; (ARAP) deformation
-techniques using the fast singular value decomposition routines
-written specifically for 3x3 matrices to use <code>SSE</code> intrinsics. This extra can
-still be compiled without sse support and support should be determined
-automatically at compile time via the <code>__SSE__</code> macro.</p>
-
 <h3 id="tetgen">tetgen</h3>
 
-<p>This library extra provides a simplified wrapper to the tetgen 3d tetrahedral meshing
-library.</p>
+<p>This library extra provides a simplified wrapper to the tetgen 3d tetrahedral
+meshing library.</p>
+
+<h3 id="triangle">Triangle</h3>
+
+<p>This library extra provides a simplified wrapper to the triangle 2d triangle
+meshing library.</p>
 
 <h3 id="viewer">viewer</h3>
 
@@ -391,9 +301,10 @@ exposing templated functions.</li>
  <code>AntTweakBar</code>, <code>BLAS</code>). However, because all
  depencies other than Eigen should be encapsulated between
  <code>#ifndef</code> guards (e.g. <code>#ifndef IGL_NO_OPENGL</code>, it
- is possible to ignore certain functions that have such dependencies.</li>
- <li><strong>Long compile:</strong> Compiling <code>igl.cpp</code> takes a long time and isn&#8217;t easily parallelized (no <code>make -j12</code> equivalent).</li>
- </ul></p></li>
+ is possible to ignore certain functions that have such dependencies.</p></li>
+<li><p><strong>Long compile</strong>:
+ Compiling <code>igl.cpp</code> takes a long time and isn&#8217;t easily parallelized (no <code>make
+  -j12</code> equivalent).</p></li>
 </ul>
 
 <p>Here&#8217;s a tiny test example using <code>igl.h</code> and <code>igl.cpp</code>. Save the following in <code>test.cpp</code>:</p>

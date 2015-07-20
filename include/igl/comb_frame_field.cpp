@@ -6,6 +6,11 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+#ifdef WIN32
+  #define _USE_MATH_DEFINES
+#endif
+#include <cmath>
+
 #include "comb_frame_field.h"
 #include "local_basis.h"
 
