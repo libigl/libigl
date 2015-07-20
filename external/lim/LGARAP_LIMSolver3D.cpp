@@ -4,7 +4,7 @@
 #include "LGARAP_LIMSolver3D.h"
 #include "TetrahedronMesh.h"
 
-#include "igl/svd3x3/svd3x3.h"
+#include "igl/svd3x3.h"
 
 #define IGL_HEADER_ONLY
 #include "igl/cotmatrix_entries.h"

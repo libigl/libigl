@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2015 Daniele Panozzo <daniele.panozzo@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
 #include "frame_field.h"
 
 #include <igl/triangle_triangle_adjacency.h>
@@ -7,6 +14,8 @@
 #include <iostream>
 
 namespace igl
+{
+namespace comiso
 {
 
 class FrameInterpolator
@@ -92,9 +101,6 @@ private:
   std::vector<Eigen::MatrixXd> TPs;
 
 };
-
-
-
 
 FrameInterpolator::FrameInterpolator(const Eigen::MatrixXd& _V, const Eigen::MatrixXi& _F)
 {
@@ -223,7 +229,7 @@ void FrameInterpolator::interpolateCross()
   b.conservativeResize(num,Eigen::NoChange);
   bc.conservativeResize(num,Eigen::NoChange);
 
-  igl::nrosy(V, F, b, bc, 4, R, S);
+  igl::comiso::nrosy(V, F, b, bc, 4, R, S);
   //olga:end
   assert(R.rows() == F.rows());
 
@@ -642,9 +648,9 @@ Eigen::MatrixXd FrameInterpolator::getFieldPerFace()
 }
 
 }
+}
 
-
-IGL_INLINE void igl::frame_field(
+IGL_INLINE void igl::comiso::frame_field(
                                  const Eigen::MatrixXd& V,
                                  const Eigen::MatrixXi& F,
                                  const Eigen::VectorXi& b,

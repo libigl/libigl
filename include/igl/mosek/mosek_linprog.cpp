@@ -12,7 +12,7 @@
 #include <cmath>
 #include <vector>
 
-IGL_INLINE bool igl::mosek_linprog(
+IGL_INLINE bool igl::mosek::mosek_linprog(
   const Eigen::VectorXd & c,
   const Eigen::SparseMatrix<double> & A,
   const Eigen::VectorXd & lc,
@@ -32,7 +32,7 @@ IGL_INLINE bool igl::mosek_linprog(
   return ret;
 }
 
-IGL_INLINE bool igl::mosek_linprog(
+IGL_INLINE bool igl::mosek::mosek_linprog(
   const Eigen::VectorXd & c,
   const Eigen::SparseMatrix<double> & A,
   const Eigen::VectorXd & lc,

@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
   7 ,3;
 
   // Plot the mesh
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(V, F);
 
   // Plot the corners of the bounding box as points

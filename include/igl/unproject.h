@@ -11,6 +11,10 @@
 #include <Eigen/Core>
 namespace igl
 {
+
+
+  #ifndef IGL_OPENGL_4
+
   // Wrapper for gluUnproject that uses the current GL_MODELVIEW_MATRIX,
   // GL_PROJECTION_MATRIX, and GL_VIEWPORT
   // Inputs:
@@ -32,6 +36,8 @@ namespace igl
   template <typename Derivedwin>
   IGL_INLINE Eigen::PlainObjectBase<Derivedwin> unproject(
     const Eigen::PlainObjectBase<Derivedwin> & win);
+
+  #endif
 
   // Eigen reimplementation of gluUnproject
   // Inputs:

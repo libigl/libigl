@@ -1,14 +1,14 @@
-#include <igl/embree/EmbreeIntersector.h>
 #include <igl/OpenGL_convenience.h>
-#include <igl/per_face_normals.h>
-#include <igl/read_triangle_mesh.h>
-#include <igl/normalize_row_lengths.h>
-#include <igl/draw_mesh.h>
 #include <igl/draw_floor.h>
-#include <igl/unproject.h>
+#include <igl/draw_mesh.h>
+#include <igl/normalize_row_lengths.h>
+#include <igl/per_face_normals.h>
 #include <igl/quat_to_mat.h>
-#include <igl/trackball.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/report_gl_error.h>
+#include <igl/trackball.h>
+#include <igl/unproject.h>
+#include <igl/embree/EmbreeIntersector.h>
 
 #ifdef __APPLE__
 #  include <GLUT/glut.h>
@@ -37,9 +37,9 @@ double bbd;
 // Faces
 Eigen::MatrixXi F;
 // Embree intersection structure
-igl::EmbreeIntersector ei;
+igl::embree::EmbreeIntersector ei;
 // Hits collected
-std::vector<igl::Hit > hits;
+std::vector<igl::embree::Hit > hits;
 // Ray information, "projection screen" corners
 Eigen::Vector3f win_s,s,d,dir,NW,NE,SE,SW;
 // Textures and framebuffers for "projection screen"
@@ -213,7 +213,7 @@ void display()
   // Draw all hits
   glBegin(GL_POINTS);
   glColor3f(0,0.2,0.2);
-  for(vector<igl::Hit>::iterator hit = hits.begin();
+  for(vector<igl::embree::Hit>::iterator hit = hits.begin();
       hit != hits.end();
       hit++)
   {
@@ -327,7 +327,7 @@ void mouse_move(int mouse_x, int mouse_y)
   dir = d-s;
   int num_rays_shot;
   ei.intersectRay(s,dir,hits,num_rays_shot);
-  for(vector<igl::Hit>::iterator hit = hits.begin();
+  for(vector<igl::embree::Hit>::iterator hit = hits.begin();
       hit != hits.end();
       hit++)
   {

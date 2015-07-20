@@ -1,11 +1,20 @@
-#ifndef ORDER_FACETS_AROUND_EDGES
-#define ORDER_FACETS_AROUND_EDGES
-
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
+#ifndef IGL_CGAL_ORDER_FACETS_AROUND_EDGES_H
+#define IGL_CGAL_ORDER_FACETS_AROUND_EDGES_H
 #include "../igl_inline.h"
 #include <Eigen/Core>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
-namespace igl {
+namespace igl
+{
+  namespace cgal
+  {
     // For each undirected edge, sort its adjacent faces.
     //
     // Inputs:
@@ -70,6 +79,7 @@ namespace igl {
             const std::vector<std::vector<uE2EType> >& uE2E,
             std::vector<std::vector<uE2oEType> >& uE2oE,
             std::vector<std::vector<uE2CType > >& uE2C );
+  }
 }
 
 #ifndef IGL_STATIC_LIBRARY

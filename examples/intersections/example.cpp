@@ -1,31 +1,31 @@
+#include <igl/Camera.h>
 #include <igl/OpenGL_convenience.h>
-#include <igl/per_face_normals.h>
-#include <igl/two_axis_valuator_fixed_up.h>
-#include <igl/normalize_row_lengths.h>
-#include <igl/draw_mesh.h>
+#include <igl/barycenter.h>
+#include <igl/cat.h>
 #include <igl/draw_floor.h>
-#include <igl/quat_to_mat.h>
-#include <igl/report_gl_error.h>
-#include <igl/readOBJ.h>
-#include <igl/writeOBJ.h>
-#include <igl/readDMAT.h>
-#include <igl/readOFF.h>
-#include <igl/readMESH.h>
+#include <igl/draw_mesh.h>
+#include <igl/get_seconds.h>
 #include <igl/jet.h>
-#include <igl/readWRL.h>
-#include <igl/trackball.h>
 #include <igl/list_to_matrix.h>
+#include <igl/material_colors.h>
+#include <igl/matlab_format.h>
+#include <igl/normalize_row_lengths.h>
+#include <igl/pathinfo.h>
+#include <igl/per_face_normals.h>
+#include <igl/polygon_mesh_to_triangle_mesh.h>
+#include <igl/quat_to_mat.h>
+#include <igl/readDMAT.h>
+#include <igl/readMESH.h>
+#include <igl/readOBJ.h>
+#include <igl/readOFF.h>
+#include <igl/readWRL.h>
+#include <igl/report_gl_error.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
-#include <igl/polygon_mesh_to_triangle_mesh.h>
-#include <igl/material_colors.h>
-#include <igl/barycenter.h>
-#include <igl/matlab_format.h>
-#include <igl/ReAntTweakBar.h>
-#include <igl/pathinfo.h>
-#include <igl/Camera.h>
-#include <igl/cat.h>
-#include <igl/get_seconds.h>
+#include <igl/trackball.h>
+#include <igl/two_axis_valuator_fixed_up.h>
+#include <igl/writeOBJ.h>
+#include <igl/anttweakbar/ReAntTweakBar.h>
 #include <igl/cgal/remesh_self_intersections.h>
 #include <igl/cgal/intersect_other.h>
 
@@ -138,7 +138,7 @@ double bbd;
 Eigen::VectorXd S;
 int tot_num_samples = 0;
 #define REBAR_NAME "temp.rbr"
-igl::ReTwBar rebar; // Pointer to the tweak bar
+igl::anttweakbar::ReTwBar rebar; // Pointer to the tweak bar
 
 void reshape(int width,int height)
 {
@@ -477,6 +477,7 @@ void color_selfintersections(
   Eigen::MatrixXd & C)
 {
   using namespace igl;
+  using namespace igl::cgal;
   using namespace Eigen;
   using namespace std;
   MatrixXd SV;
@@ -506,6 +507,7 @@ void color_intersections(
   Eigen::MatrixXd & D)
 {
   using namespace igl;
+  using namespace igl::cgal;
   using namespace Eigen;
   MatrixXi IF;
   const bool first_only = false;
@@ -663,7 +665,7 @@ int main(int argc, char * argv[])
     s.camera.m_rotation_conj.coeffs().data(), "open readonly=true");
   s.camera.push_away(3);
   s.camera.dolly_zoom(25-s.camera.m_angle);
-  TwType RotationTypeTW = ReTwDefineEnumFromString("RotationType",
+  TwType RotationTypeTW = igl::anttweakbar::ReTwDefineEnumFromString("RotationType",
     "igl_trackball,two-a...-fixed-up");
   rebar.TwAddVarCB( "rotation_type", RotationTypeTW,
     set_rotation_type,get_rotation_type,NULL,"keyIncr=] keyDecr=[");

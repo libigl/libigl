@@ -6,12 +6,11 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "unproject.h"
-#ifndef IGL_NO_OPENGL
-#ifndef IGL_OPENGL_4
 
 #include <Eigen/Dense>
 #include <Eigen/LU>
-#include "OpenGL_convenience.h"
+
+#ifndef IGL_OPENGL_4
 
 IGL_INLINE void igl::unproject(
   const double winX,
@@ -36,6 +35,10 @@ IGL_INLINE void igl::unproject(
   obj = igl::unproject(win).template cast<typename Derivedobj::Scalar>();
 }
 
+// #ifndef IGL_NO_OPENGL
+
+#include "OpenGL_convenience.h"
+
 template <typename Derivedwin>
 IGL_INLINE Eigen::PlainObjectBase<Derivedwin> igl::unproject(
   const Eigen::PlainObjectBase<Derivedwin> & win)
@@ -55,8 +58,7 @@ IGL_INLINE Eigen::PlainObjectBase<Derivedwin> igl::unproject(
 }
 
 #endif
-#endif
-
+// #endif
 
 template <typename Scalar>
 IGL_INLINE Eigen::Matrix<Scalar,3,1> igl::unproject(
@@ -81,19 +83,14 @@ IGL_INLINE Eigen::Matrix<Scalar,3,1> igl::unproject(
 
 #ifdef IGL_STATIC_LIBRARY
 
-#ifndef IGL_NO_OPENGL
+//#ifndef IGL_NO_OPENGL
 #ifndef IGL_OPENGL_4
 // Explicit template instanciation
-template void igl::unproject<Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
-template void igl::unproject<Eigen::Matrix<float, 3, 1, 0, 3, 1>, Eigen::Matrix<float, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> >&);
-template Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> > igl::unproject<Eigen::Matrix<float, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> > const&);
-template void igl::unproject<Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<float, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> >&);
 template Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > igl::unproject<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&);
-template void igl::unproject<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
-template Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > igl::unproject<Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&);
+#endif
+//#endif
+
 template Eigen::Matrix<float, 3, 1, 0, 3, 1> igl::unproject<float>(Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&);
-#endif
 template Eigen::Matrix<double, 3, 1, 0, 3, 1> igl::unproject<double>(Eigen::Matrix<double, 3, 1, 0, 3, 1> const&, Eigen::Matrix<double, 4, 4, 0, 4, 4> const&, Eigen::Matrix<double, 4, 4, 0, 4, 4> const&, Eigen::Matrix<double, 4, 1, 0, 4, 1> const&);
-#endif
 
 #endif

@@ -8,12 +8,31 @@ SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../tutorial/cmake)
 find_package(EIGEN REQUIRED)
 
 add_definitions(-DIGL_STATIC_LIBRARY)
+option(LIBIGL_NO_OPENGL "Disable OpenGL2 legacy features in main library" ON)
+option(LIBIGL_OPENGL_4 "Enable OpenGL4 features in optional libraries" ON)
+
+if(LIBIGL_NO_OPENGL)
+  add_definitions(-DIGL_NO_OPENGL)
+endif(LIBIGL_NO_OPENGL)
+if(LIBIGL_OPENGL_4)
+  add_definitions(-DIGL_OPENGL_4)
+endif(LIBIGL_OPENGL_4)
 
 ## Check for GLFW
-find_package(GLFW QUIET)
+find_package(GLFWH QUIET)
 if (GLFW_FOUND)
   include_directories( ${GLFW_INCLUDE_DIR})
+else (GLFW_FOUND)
+  message(STATUS "GLFW not found.")
 endif(GLFW_FOUND)
+
+## Check for GLEW
+find_package(GLEW QUIET)
+if (GLEW_FOUND)
+  include_directories( ${GLEW_INCLUDE_DIR})
+else (GLEW_FOUND)
+  message(STATUS "GLEW not found.")
+endif(GLEW_FOUND)
 
 find_package(OpenGL QUIET)
 
@@ -21,7 +40,18 @@ find_package(OpenGL QUIET)
 find_package(ANTTWEAKBAR QUIET)
 if (ANTTWEAKBAR_FOUND)
   include_directories( ${ANT_TWEAK_BAR_INCLUDE_DIR})
+else (ANTTWEAKBAR_FOUND)
+  message(STATUS "AntTweakBar not found.")
 endif(ANTTWEAKBAR_FOUND)
+
+## Check for NANOGUI
+find_package(NANOGUIH QUIET)
+#message(FATAL_ERROR "nanogui not found. ${NANOGUI_INCLUDE_DIRS}")
+if (NANOGUI_FOUND)
+  include_directories( ${NANOGUI_INCLUDE_DIRS})
+else (NANOGUI_FOUND)
+  message(STATUS "nanogui not found.")
+endif(NANOGUI_FOUND)
 
 ## Check for Boost
 find_package(BOOST QUIET)
@@ -40,12 +70,16 @@ endif(LIBCOMISO_FOUND)
 find_package(MATLAB QUIET)
 if (MATLAB_FOUND)
   include_directories( ${MATLAB_INCLUDE_DIR})
+else (MATLAB_FOUND)
+  message(STATUS "MATLAB not found.")
 endif(MATLAB_FOUND)
 
 ## Check for EMBREE, if not available skip the examples that depends on it
 find_package(EMBREE QUIET)
 if (EMBREE_FOUND)
   include_directories( ${EMBREE_INCLUDE_DIR})
+else (EMBREE_FOUND)
+  message(STATUS "Embree not found.")
 endif(EMBREE_FOUND)
 
 ## Check for CGAL, if not available skip the examples that depends on it
@@ -81,16 +115,12 @@ else(PNG_FOUND)
   message(STATUS "PNG not found")
 endif(PNG_FOUND)
 
-## Check for SVD3X3
-find_package(SVD3X3 QUIET)
-if(SVD3X3_FOUND)
-  include_directories( ${SVD3X3_INCLUDE_DIR})
-endif(SVD3X3_FOUND)
-
 ## Check for TETGEN
 find_package(TETGEN QUIET)
 if(TETGEN_FOUND)
   include_directories( ${TETGEN_INCLUDE_DIR})
+else(TETGEN_FOUND)
+  message(STATUS "Tetgen not found.")
 endif(TETGEN_FOUND)
 
 ## Check for TRIANGLE
@@ -126,8 +156,13 @@ else(YIMG_FOUND)
   message(STATUS "YIMG not found")
 endif(YIMG_FOUND)
 
+IF(MSVC)
+### Enable parallel compilation for Visual Studio
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+ELSE(MSVC)
 #### Libigl requires a modern C++ compiler that supports c++11
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+ENDIF(MSVC)
 
 #### Compile the core library that depends only on EIGEN ####
 include_directories( ${EIGEN_INCLUDE_DIR})
@@ -138,31 +173,33 @@ file(GLOB SOURCES
 )
 
 add_library(igl STATIC ${SOURCES})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "igl")
 
-#### Compile the boost part
-if (Boost_FOUND)
-  file(GLOB SOURCES_BOOST
-    "${PROJECT_SOURCE_DIR}/../include/igl/boost/*.cpp"
+#### Compile the AntTweakBar part
+if (ANTTWEAKBAR_FOUND)
+  file(GLOB SOURCES_ANTTWEAKBAR
+    "${PROJECT_SOURCE_DIR}/../include/igl/anttweakbar/*.cpp"
   )
-add_library(iglboost STATIC ${SOURCES_BOOST})
-else (Boost_FOUND)
-  message(STATUS "Boost not found.")
-endif (Boost_FOUND)
+add_library(iglanttweakbar STATIC ${SOURCES_ANTTWEAKBAR})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglanttweakbar")
+endif (ANTTWEAKBAR_FOUND)
 
 #### Compile the BBW part
 
 file(GLOB SOURCES_BBW
   "${PROJECT_SOURCE_DIR}/../include/igl/bbw/*.cpp"
 )
-
 add_library(iglbbw STATIC ${SOURCES_BBW})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglbbw")
 
-#### Compile the mosek part (untested)
+#### Compile the mosek part
 if (MOSEK_FOUND)
   file(GLOB SOURCES_MOSEK
     "${PROJECT_SOURCE_DIR}/../include/igl/mosek/*.cpp"
   )
 add_library(iglmosek STATIC ${SOURCES_MOSEK})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglmosek")
+
 endif (MOSEK_FOUND)
 
 #### Compile the cgal part
@@ -172,6 +209,7 @@ if (CGAL_FOUND)
   )
 
 add_library(iglcgal STATIC ${SOURCES_CGAL})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglcgal")
 
 #### Compile the boolean part
 if (NOT CORK_FOUND)
@@ -183,6 +221,8 @@ file(GLOB SOURCES_BOOLEAN
 )
 
 add_library(iglboolean STATIC ${SOURCES_BOOLEAN})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglboolean")
+
 endif (CGAL_FOUND)
 
 #### Compile the embree part
@@ -192,6 +232,8 @@ if (EMBREE_FOUND)
   )
 
   add_library(iglembree STATIC ${SOURCES_EMBREE})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglembree")
+
 endif (EMBREE_FOUND)
 
 #### Compile the lim part
@@ -201,6 +243,8 @@ if (LIM_FOUND)
   )
 
   add_library(igllim STATIC ${SOURCES_LIM})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "igllim")
+
 endif (LIM_FOUND)
 
 #### Compile the matlab part
@@ -210,23 +254,19 @@ if (MATLAB_FOUND)
   )
 
   add_library(iglmatlab STATIC ${SOURCES_MATLAB})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglmatlab")
+
 endif (MATLAB_FOUND)
 
 #### Compile the png part
-if (PNG_FOUND)
+if (PNG_FOUND AND YIMG_FOUND)
   file(GLOB SOURCES_PNG
     "${PROJECT_SOURCE_DIR}/../include/igl/png/*.cpp"
   )
   add_library(iglpng STATIC ${SOURCES_PNG})
-endif (PNG_FOUND)
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglpng")
 
-#### Compile the svd3x3 part
-if (SVD3X3_FOUND)
-  file(GLOB SOURCES_SVD3X3
-    "${PROJECT_SOURCE_DIR}/../include/igl/svd3x3/*.cpp"
-  )
-  add_library(iglsvd3x3 STATIC ${SOURCES_SVD3X3})
-endif (SVD3X3_FOUND)
+endif (PNG_FOUND AND YIMG_FOUND)
 
 #### Compile the tetgen part
 if (TETGEN_FOUND)
@@ -235,6 +275,8 @@ if (TETGEN_FOUND)
   )
 
   add_library(igltetgen STATIC ${SOURCES_TETGEN})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "igltetgen")
+
 endif (TETGEN_FOUND)
 
 #### Compile the triangle part
@@ -244,6 +286,8 @@ if (TRIANGLE_FOUND)
   )
 
   add_library(igltriangle STATIC ${SOURCES_TRIANGLE})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "igltriangle")
+
 endif (TRIANGLE_FOUND)
 
 #### Compile the xml part
@@ -253,6 +297,8 @@ if (TINYXML2_FOUND)
   )
 
   add_library(iglxml STATIC ${SOURCES_XML})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglxml")
+
 endif (TINYXML2_FOUND)
 
 #### Compile the xml part
@@ -262,13 +308,22 @@ if (LIBCOMISO_FOUND)
   )
 
   add_library(iglcomiso STATIC ${SOURCES_COMISO})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglcomiso")
+
 endif (LIBCOMISO_FOUND)
 
 #### Compile the viewer
-if (GLFW_FOUND AND ANTTWEAKBAR_FOUND)
-  file(GLOB SOURCES_XML
+if (NANOGUI_FOUND)
+  file(GLOB SOURCES_VIEWER
     "${PROJECT_SOURCE_DIR}/../include/igl/viewer/*.cpp"
   )
 
-  add_library(iglviewer STATIC ${SOURCES_XML})
-endif (GLFW_FOUND AND ANTTWEAKBAR_FOUND)
+  add_library(iglviewer STATIC ${SOURCES_VIEWER})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglviewer")
+
+endif (NANOGUI_FOUND)
+
+# Pass the list of compiled libraries to the parent if there is one
+if(NOT ${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} PARENT_SCOPE)
+endif (NOT ${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})

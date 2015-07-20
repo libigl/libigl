@@ -6,6 +6,7 @@
 
 #define IGL_HEADER_ONLY
 #include "igl/grad.h"
+#include "igl/doublearea.h"
 
 Poisson_LIMSolver2D::Poisson_LIMSolver2D()
 {
@@ -26,9 +27,11 @@ void Poisson_LIMSolver2D::prepareProblemData(std::vector<int>& hessRowIdx, std::
   const int numNodes = mesh->InitalVertices->rows();
 
   // create sparse gradient operator matrix
-  Eigen::SparseMatrix<double> tempG, tempL;
+  Eigen::SparseMatrix<double> tempG;
+  Eigen::VectorXd dAreas,dAreasTemp;
   Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> vertices(*mesh->DeformedVertices);
   Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> faces(*mesh->Triangles);
+  
   igl::grad(vertices,faces,tempG);
 
   // Only get x and y derivatives of elements as z is zero
@@ -65,8 +68,23 @@ void Poisson_LIMSolver2D::prepareProblemData(std::vector<int>& hessRowIdx, std::
   }
   G.setFromTriplets(triplets.begin(), triplets.end());
 
+  // Compute area weights
+  Eigen::SparseMatrix<double> M;
+  igl::doublearea(vertices,faces,dAreas);
+  triplets.clear();
+  M.resize(dAreas.rows()*4,dAreas.rows()*4);
+  for(int r=0;r<dAreas.rows();r++)
+  {
+    int id = 4*r;
+    triplets.push_back(Eigen::Triplet<double>(id,id,dAreas(r)));
+    triplets.push_back(Eigen::Triplet<double>(id+1,id+1,dAreas(r)));
+    triplets.push_back(Eigen::Triplet<double>(id+2,id+2,dAreas(r)));
+    triplets.push_back(Eigen::Triplet<double>(id+3,id+3,dAreas(r)));
+  }
+  M.setFromTriplets(triplets.begin(),triplets.end());
+
   // Compute laplacian
-  L = G.transpose()*G;
+  L = 0.5*G.transpose()*M*G;
 
   for (int k=0;k<L.outerSize();++k)
   {
@@ -84,7 +102,7 @@ void Poisson_LIMSolver2D::prepareProblemData(std::vector<int>& hessRowIdx, std::
     }
   }
 
-  GTb = G.transpose()*b;
+  GTb = 0.5*G.transpose()*M*b;
   constantEnergyPart = b.transpose()*b;
 }
 

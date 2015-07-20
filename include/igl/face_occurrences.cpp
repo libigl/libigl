@@ -36,7 +36,7 @@ IGL_INLINE void igl::face_occurrences(
     {
       // increment count
       counts[sortedF[i]]++;
-      assert(counts[sortedF[i]] == 2);
+      assert(counts[sortedF[i]] == 2 && "Input should be manifold");
     }
   }
 

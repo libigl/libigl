@@ -1,6 +1,7 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
-// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2015 Daniele Panozzo <daniele.panozzo@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -17,15 +18,45 @@ IGL_INLINE void igl::internal_angles(
 {
   using namespace Eigen;
   using namespace std;
-  // Edge lengths
-  Matrix<
-    typename DerivedV::Scalar,
-    DerivedF::RowsAtCompileTime,
-    DerivedF::ColsAtCompileTime> L;
-  edge_lengths(V,F,L);
+  if(F.cols() == 3)
+  {
+    // Edge lengths
+    Matrix<
+      typename DerivedV::Scalar,
+      DerivedF::RowsAtCompileTime,
+      DerivedF::ColsAtCompileTime> L;
+    edge_lengths(V,F,L);
 
-  assert(F.cols() == 3 && "F should contain triangles");
-  internal_angles(L,K);
+    assert(F.cols() == 3 && "F should contain triangles");
+    internal_angles(L,K);
+  }else
+  {
+    assert(V.cols() == 3 && "If F contains non-triangle facets, V must be 3D");
+    K.resize(F.rows(),F.cols());
+    auto corner = [](
+      const Eigen::PlainObjectBase<DerivedV>& x, 
+      const Eigen::PlainObjectBase<DerivedV>& y, 
+      const Eigen::PlainObjectBase<DerivedV>& z)
+    {
+      Eigen::RowVector3d v1 = (x-y).normalized();
+      Eigen::RowVector3d v2 = (z-y).normalized();
+      // http://stackoverflow.com/questions/10133957/signed-angle-between-two-vectors-without-a-reference-plane
+      double s = v1.cross(v2).norm();
+      double c = v1.dot(v2);
+      return atan2(s, c);
+    };
+    for(unsigned i=0; i<F.rows(); ++i)
+    {
+      for(unsigned j=0; j<F.cols(); ++j)
+      {
+        K(i,j) = corner(
+            V.row(F(i,int(j-1+F.cols())%F.cols())),
+            V.row(F(i,j)),
+            V.row(F(i,(j+1+F.cols())%F.cols()))
+            );
+      }
+    }
+  }
 }
 
 template <typename DerivedL, typename DerivedK>
@@ -48,7 +79,7 @@ IGL_INLINE void igl::internal_angles(
   #  define IGL_OMP_MIN_VALUE 1000
   #endif
   #pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
-  for(size_t f = 0;f<m;f++)
+  for(long long f = 0;f<m;f++)
   {
     for(size_t d = 0;d<3;d++)
     {

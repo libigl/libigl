@@ -54,6 +54,7 @@ lecture notes links to a cross-platform example application.
         * [Quadratic energy minimization](#quadraticenergyminimization)
     * [304 Linear Equality Constraints](#linearequalityconstraints)
     * [305 Quadratic Programming](#quadraticprogramming)
+    * [306 Eigen Decomposition](#eigendecomposition)
 * [Chapter 4: Shape Deformation](#chapter4:shapedeformation)
     * [401 Biharmonic Deformation](#biharmonicdeformation)
     * [402 Polyharmonic Deformation](#polyharmonicdeformation)
@@ -117,7 +118,7 @@ libigl:
 3. **Header-only.** It is straight forward to use our library since it is only
   one additional include directory in your project. (if you are worried about
   compilation speed, it is also possible to build the library as a [static
-  library](../build/))
+  library](../optional/))
 
 4. **Function encapsulation.** Every function (including its full
   implementation) is contained in a pair of .h/.cpp files with the same name of
@@ -129,23 +130,11 @@ libigl can be downloaded from our [github
 repository](https://github.com/libigl/libigl) or cloned with git:
 
 ```bash
-git clone https://github.com/libigl/libigl.git
+git clone --recursive https://github.com/libigl/libigl.git
 ```
 
 The core libigl functionality only depends on the C++ Standard Library and
 Eigen.
-
-The examples in this tutorial depend on [glfw](http://www.glfw.org),
-[glew](http://glew.sourceforge.net) and [AntTweakBar](http://anttweakbar.sourceforge.net/doc/).
-The source code of each library is bundled with libigl
-and they can be compiled all at once using:
-
-```bash
-sh compile_dependencies_macosx.sh (MACOSX)
-sh compile_dependencies_linux.sh (LINUX)
-```
-
-For windows, precompiled binaries are provided (Visual Studio 2014 64bit).
 
 To build all the examples in the tutorial, you can use the CMakeLists.txt in
 the tutorial folder:
@@ -778,7 +767,7 @@ functionality as common Matlab functions.
 | `igl::cross`             | Cross product per-row |
 | `igl::dot`               | dot product per-row |
 | `igl::find`              | Find subscripts of non-zero entries |
-| `igl::floot`             | Round entries down to nearest integer |
+| `igl::floor`             | Round entries down to nearest integer |
 | `igl::histc`             | Counting occurrences for building a histogram |
 | `igl::hsv_to_rgb`        | Convert HSV colors to RGB (cf. Matlab's `hsv2rgb`) |
 | `igl::intersect`         | Set intersection of matrix elements. |
@@ -786,9 +775,17 @@ functionality as common Matlab functions.
 | `igl::kronecker_product` | Compare to Matlab's `kronprod` |
 | `igl::median`            | Compute the median per column |
 | `igl::mode`              | Compute the mode per column |
+| `igl::null`              | Compute the null space basis of a matrix |
+| `igl::nchoosek`          | Compute all k-size combinations of n-long vector |
 | `igl::orth`              | Orthogonalization of a basis |
+| `igl::parula`            | Generate a quantized colormap from blue to yellow |
+| `igl::randperm`          | Generate a random permutation of [0,...,n-1] |
+| `igl::rgb_to_hsv`        | Convert RGB colors to HSV (cf. Matlab's `rgb2hsv`) |
 | `igl::setdiff`           | Set difference of matrix elements |
+| `igl::sort`              | Sort elements or rows of matrix |
 | `igl::speye`             | Identity as sparse matrix |
+| `igl::sum`               | Sum along columns or rows (of sparse matrix) |
+| `igl::unique`            | Extract unique elements or rows of matrix |
 
 ## Laplace equation
 A common linear system in geometry processing is the Laplace equation:
@@ -1043,6 +1040,66 @@ igl::active_set(Q,B,b,bc,Aeq,Beq,Aieq,Bieq,lx,ux,as,Z);
 discrete biharmonic kernels [#rustamov_2011][] at multiple scales
 .](images/cheburashka-multiscale-biharmonic-kernels.jpg)
 
+## Eigen Decomposition
+
+Libigl has rudimentary support for extracting eigen pairs of a generalized
+eigen value problem:
+
+ $Ax = \lambda B x$
+
+where $A$ is a sparse symmetric matrix and $B$ is a sparse positive definite
+matrix. Most commonly in geometry processing, we let $A=L$ the cotangent
+Laplacian and $B=M$ the per-vertex mass matrix (e.g. [#vallet_2008][]).
+Typically applications will make use of the _low frequency_ eigen modes.
+Analagous to the Fourier decomposition, a function $f$ on a surface can be
+represented via its spectral decomposition of the eigen modes of the
+Laplace-Beltrami:
+
+ $f = \sum\limits_{i=1}^\infty a_i \phi_i$
+
+where each $\phi_i$ is an eigen function satisfying: $\Delta \phi_i = \lambda_i
+\phi_i$ and $a_i$ are scalar coefficients. For a discrete triangle mesh, a
+completely analogous decomposition exists, albeit with finite sum:
+
+ $\mathbf{f} = \sum\limits_{i=1}^n a_i \phi_i$
+
+where now a column vector of values at vertices $\mathbf{f} \in \mathcal{R}^n$
+specifies a piecewise linear function and $\phi_i \in \mathcal{R}^n$ is an
+eigen vector satisfying: 
+
+$\mathbf{L} \phi_i = \lambda_i \mathbf{M} \phi_i$.
+
+Note that Vallet &amp; Levy [#vallet_2008][] propose solving a symmetrized
+_standard_ eigen problem $\mathbf{M}^{-1/2}\mathbf{L}\mathbf{M}^{-1/2} \phi_i
+= \lambda_i \phi_i$. Libigl implements a generalized eigen problem solver so
+this unnecessary symmetrization can be avoided.
+
+Often the sum above is _truncated_ to the first $k$ eigen vectors. If the low
+frequency modes are chosen, i.e. those corresponding to small $\lambda_i$
+values, then this truncation effectively _regularizes_ $\mathbf{f}$ to smooth,
+slowly changing functions over the mesh (e.g. [#hildebrandt_2011][]). Modal
+analysis and model subspaces have been used frequently in real-time deformation
+(e.g. [#barbic_2005][]).
+
+In [Example 306](306_EigenDecomposition/main.cpp)), the first 5 eigen vectors
+of the discrete Laplace-Beltrami operator are computed and displayed in
+pseudo-color atop the beetle. Eigen vectors are computed using `igl::eigs`
+(mirroring MATLAB's `eigs`). The 5 eigen vectors are placed into the columns
+of `U` and the eigen values are placed into the entries of `S`:
+
+```cpp
+SparseMatrix<double> L,M;
+igl::cotmatrix(V,F,L);
+igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_DEFAULT,M);
+Eigen::MatrixXd U;
+Eigen::VectorXd S;
+igl::eigs(L,M,5,igl::EIGS_TYPE_SM,U,S);
+```
+
+![([Example 306](306_EigenDecomposition/main.cpp)) Low frequency eigen vectors
+of the discrete Laplace-Beltrami operator vary smoothly and slowly over the
+_Beetle_.](images/beetle-eigen-decomposition.gif)
+
 # Chapter 4: Shape deformation
 Modern mesh-based shape deformation methods satisfy user deformation
 constraints at handles (selected vertices or regions on the mesh) and propagate
@@ -1177,7 +1234,7 @@ igl::harmonic(V,F,b,bc,k,Z);
 ![The [PolyharmonicDeformation](402_PolyharmonicDeformation/main.cpp) example deforms a flat domain (left) into a bump as a
 solution to various $k$-harmonic PDEs.](images/bump-k-harmonic.jpg)
 
-## Bounded biharmonic weights
+## Bounded biharmonic weights 
 In computer animation, shape deformation is often referred to as "skinning".
 Constraints are posed as relative rotations of internal rigid "bones" inside a
 character. The deformation method, or skinning method, determines how the
@@ -1980,7 +2037,7 @@ igl::deserialize_xml(vec,"VectorXML",xmlFile);
 igl::deserialize_xml(vec,"VectorBin",xmlFile);
 ```
 
-For user defined types derive from `XMLSerializable`. 
+For user defined types derive from `XMLSerializable`.
 
 The code snippets above are extracted from [Example
 601](601_Serialization/main.cpp). We strongly suggest that you make the entire
@@ -2405,7 +2462,7 @@ counting how many (signed) times `(V,F)` _wraps_ around $\mathbf{p}$.  Finally,
 if `(V,F)` is not closed or not even manifold (but at least consistently
 oriented), then $w(\mathbf{p})$ tends smoothly toward 1 as $\mathbf{p}$ is
 _more_ inside `(V,F)`, and toward 0 as $\mathbf{p}$ is more outside.
- 
+
 ![Example [702](702_WindingNumber/main.cpp) computes the
 generalized winding number function for a tetrahedral mesh inside a cat with
 holes and self intersections (gold). The silver mesh is surface of the
@@ -2427,8 +2484,8 @@ collapsing edges [#hoppe_1996][]. The generic form of this technique is to
 construct a sequence of n meshes from the initial high-resolution mesh $M_0$ to
 the lowest resolution mesh $M_n$ by collapsing a single edge:
 
- $M_0 \mathop{\longrightarrow}_\text{edge collapse} 
-  M_1 \mathop{\longrightarrow}_\text{edge collapse} 
+ $M_0 \mathop{\longrightarrow}_\text{edge collapse}
+  M_1 \mathop{\longrightarrow}_\text{edge collapse}
   \dots \mathop{\longrightarrow}_\text{edge collapse}
   M_{n-1} \mathop{\longrightarrow}_\text{edge collapse} M_n.$
 
@@ -2442,7 +2499,7 @@ In order to maintain the topology (e.g. if the mesh is combinatorially as
 sphere or a torus etc.), one should assign infinite cost to edges whose
 collapse would alter the mesh topology. Indeed this happens if and only if the
 number of mutual neighbors of the endpoints of the collapsing edge is not
-exactly two! 
+exactly two!
 
 If there exists a third shared vertex, then another face will be removed, but 2
 edges will be removed. This can result in unwanted holes or non-manifold
@@ -2500,7 +2557,7 @@ opposite).
 When a collapse occurs, the sizes of the `F`,`E`, etc. matrices do not change.
 Rather rows corresponding to "removed" faces and edges are set to a special
 constant value `IGL_COLLAPSE_EDGE_NULL`. Doing this ensures that we're able to
-remove edges in truly constant time O(1). 
+remove edges in truly constant time O(1).
 
 
 > Conveniently `IGL_COLLAPSE_EDGE_NULL==0`. This means most OPENGL style renderings of `F`
@@ -2621,7 +2678,7 @@ tree.squared_distance(V,F,P,sqrD,I,C);
 Finally, from the closest point or the winding number it's possible to _sign_
 this distance. In `igl::signed_distance` we provide two methods for signing:
 the so-called "pseudo-normal test" [#baerentzen_2005][] and the generalized
-winding number [#jacobson_2013][]. 
+winding number [#jacobson_2013][].
 
 The pseudo-normal test (see also `igl::pseudonormal_test`) assumes the input
 mesh is a watertight (closed, non-self-intersecting, manifold) mesh. Then given
@@ -2682,7 +2739,7 @@ repository and to open a [pull
 request](https://help.github.com/articles/using-pull-requests) on [our github
 repository](https://github.com/libigl/libigl).
 
-[#attene_2014]: Marco Attene. 
+[#attene_2014]: Marco Attene.
   [Direct repair of self-intersecting
   meshes](https://www.google.com/search?q=Direct+repair+of+self-intersecting+meshes),
   2014.
@@ -2690,11 +2747,15 @@ repository](https://github.com/libigl/libigl).
 [Signed distance computation using the angle weighted
 pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+the+angle+weighted+pseudonormal),
  2005.
+[#barbic_2005]: Jernej Barbic and Doug James. [Real-Time Subspace Integration
+  for St.Venant-Kirchhoff Deformable
+  Models](https://www.google.com/search?q=Real-Time+Subspace+Integration+for+St.Venant-Kirchhoff+Deformable+Models),
+  2005.
 [#bommes_2009]: David Bommes, Henrik Zimmer, Leif Kobbelt.
   [Mixed-integer
   quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf),
   2009.
-[#botsch_2004]: Matrio Botsch and Leif Kobbelt. 
+[#botsch_2004]: Matrio Botsch and Leif Kobbelt.
   [An Intuitive Framework for Real-Time Freeform
   Modeling](https://www.google.com/search?q=An+Intuitive+Framework+for+Real-Time+Freeform+Modeling),
   2004.
@@ -2711,6 +2772,10 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
 [#eck_2005]: Matthias Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
   Stuetzle.  [Multiresolution Analysis of Arbitrary
   Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), 2005.
+[#hildebrandt_2011]: Klaus Hildebrandt, Christian Schulz, Christoph von
+Tycowicz, and Konrad Polthier. [Interactive Surface Modeling using Modal
+Analysis](https://www.google.com/search?q=Interactive+Surface+Modeling+using+Modal+Analysis),
+2011.
 [#hoppe_1996]: Hugues Hoppe. [Progressive
   Meshes](https://www.google.com/search?q=Progressive+meshes), 1996
 [#jacobson_thesis_2013]: Alec Jacobson,
@@ -2793,3 +2858,8 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   Editing](https://www.google.com/search?q=Laplacian+Surface+Editing), 2004.
 [#sorkine_2007]: Olga Sorkine and Marc Alexa, [As-rigid-as-possible Surface
   Modeling](https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling), 2007.
+[#vallet_2008]: Bruno Vallet and Bruno Lévy. [Spectral Geometry Processing with
+  Manifold
+  Harmonics](https://www.google.com/search?q=Spectral+Geometry+Processing+with+Manifold+Harmonics),
+  2008.
+
