@@ -62,15 +62,21 @@ void line_texture(Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &te
                   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &texture_B)
   {
     unsigned size = 128;
-    unsigned size2 = size/2;
     unsigned lineWidth = 3;
     texture_R.setConstant(size, size, 255);
-    for (unsigned i=0; i<size; ++i)
-      for (unsigned j=size2-lineWidth; j<=size2+lineWidth; ++j)
+    for (unsigned i=0; i<size; ++i){
+      for (unsigned j=0; j<lineWidth; ++j)
         texture_R(i,j) = 0;
-    for (unsigned i=size2-lineWidth; i<=size2+lineWidth; ++i)
-      for (unsigned j=0; j<size; ++j)
+      for (unsigned j=size-lineWidth; j<size; ++j)
         texture_R(i,j) = 0;
+    }
+
+    for (unsigned j=0; j<size; ++j){
+      for (unsigned i=0; i<lineWidth; ++i)
+        texture_R(i,j) = 0;
+      for (unsigned i=size-lineWidth; i<size; ++i)
+        texture_R(i,j) = 0;
+    }
 
     texture_G = texture_R;
     texture_B = texture_R;
