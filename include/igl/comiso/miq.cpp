@@ -996,6 +996,91 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitFaceInteger
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
 {
+  std::vector<std::vector<int> >lEdgeSeamInfo; //tmp
+
+  // for every vertex, keep track of their adjacent vertices on seams.
+  std::vector<std::list<int> > VVSeam(V.rows());
+  Eigen::MatrixXi EV, FE, EF;
+  igl::edge_topology(V, F, EV, FE, EF);
+  for (unsigned int e=0;e<EF.rows();e++)
+  {
+      int f0 = EF(e,0);
+      int f1 = EF(e,1);
+      if (f1 == -1)
+        continue;
+
+      int k=0;
+      while(k<3)
+      {
+        if(FE(f0,k) == e)
+          break;
+        k++;
+      }
+      bool seam = Handle_Seams(f0,k);
+      if (seam)
+      {
+        int v0 = F(f0, k);
+        int v1 = F(f0, (k+1)%3);
+        VVSeam[v0].push_back(v1);
+        VVSeam[v1].push_back(v0);
+      }
+  }
+
+  // Find start vertices
+  std::vector<int> startVertices;
+  std::vector<bool> isStartVertex(V.rows());
+  for (unsigned int i=0;i<V.rows();i++)
+  {
+    isStartVertex[i] = false;
+    if (VVSeam[i].size() > 0 && VVSeam[i].size() != 2)
+    {
+      startVertices.push_back(i);
+      isStartVertex[i] = true;
+    }
+  }
+
+  for (unsigned int i=0;i<startVertices.size();i++)
+  {
+    auto startVertex = &VVSeam[startVertices[i]];
+    for (unsigned int j=0;j<startVertex->size();j++)
+    {
+      auto currentVertex = startVertex;
+      int currentVertexIndex = startVertices[i];
+
+      std::vector<int> thisSeam;
+      thisSeam.push_back(currentVertexIndex);
+
+      // walk along the seam
+      int nextVertexIndex = currentVertex->front();
+      currentVertex->pop_front();
+      int prevVertexIndex;
+      while (true)
+      {
+        // update indices (move to the next vertex)
+        prevVertexIndex = currentVertexIndex;
+        currentVertexIndex = nextVertexIndex;
+        currentVertex = &VVSeam[nextVertexIndex];
+
+        // add current vertex to this seam
+        thisSeam.push_back(currentVertexIndex);
+
+        // remove the previous vertex
+        auto it = std::find(currentVertex->begin(), currentVertex->end(), prevVertexIndex);
+        currentVertex->erase(it);
+
+        if (currentVertex->size() == 1 && !isStartVertex[currentVertexIndex])
+        {
+          nextVertexIndex = currentVertex->front();
+          currentVertex->pop_front();
+        }
+        else
+          break;
+      }
+      lEdgeSeamInfo.push_back(thisSeam);
+    }
+  }
+
+
   Handle_SystemInfo.EdgeSeamInfo.clear();
   for (unsigned int f0=0;f0<F.rows();f0++)
   {
