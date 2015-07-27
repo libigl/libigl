@@ -322,6 +322,86 @@ igl::comiso::miq(V,
   // Plot the original mesh with a texture parametrization
   key_down(viewer,'7',0);
 
+  //vertex to face adjacency for MIQ V to UV conversion
+  std::vector<std::vector<int> > VF, VFi;
+  igl::vertex_triangle_adjacency(V,F,VF,VFi);
+
+  //vertex to face adjacency for MIQ UV to V conversion
+  std::vector<std::vector<int> > UVF, UVFi;
+  igl::vertex_triangle_adjacency(UV, FUV, UVF, UVFi);
+
+  // Add MIQ-Tools menu
+  int vertexIndex = 0;
+  bool addPoints = false;
+  viewer.callback_init = [&](igl::viewer::Viewer& viewer)
+  {
+    viewer.ngui->addNewWindow(Eigen::Vector2i(200,10),"MIQ-Tools");
+    viewer.ngui->addNewGroup("Find vertex");
+    viewer.ngui->addVariable(vertexIndex,"Vertex Index", true);
+    viewer.ngui->addVariable(addPoints, "add points");
+    viewer.ngui->addButton("Find (UV)!", [&](){
+        if(vertexIndex < 0 || vertexIndex > UV.rows()){
+          std::cerr << "Vertex index " << vertexIndex << " not in range of UV.\n";
+          return;
+        }
+        if(addPoints)
+          viewer.data.add_points(UV.row(vertexIndex),Eigen::RowVector3d(1,1,0));
+        else
+          viewer.data.set_points(UV.row(vertexIndex),Eigen::RowVector3d(1,1,0));
+    });
+    viewer.ngui->addButton("Find (V)!", [&](){
+        if(vertexIndex < 0 || vertexIndex > V.rows()){
+          std::cerr << "Vertex index " << vertexIndex << " not in range of V.\n";
+          return;
+        }
+        if(addPoints)
+          viewer.data.add_points(V.row(vertexIndex),Eigen::RowVector3d(1,1,0));
+        else
+          viewer.data.set_points(V.row(vertexIndex),Eigen::RowVector3d(1,1,0));
+    });
+    viewer.ngui->addButton("Find converted UV->V", [&](){
+        if(vertexIndex < 0 || vertexIndex > UV.rows()){
+          std::cerr << "Vertex index " << vertexIndex << " not in range of UV.\n";
+          return;
+        }
+
+        int vIndex = F(UVF[vertexIndex][0], UVFi[vertexIndex][0]);
+        if(addPoints)
+          viewer.data.add_points(V.row(vIndex), Eigen::RowVector3d(1,1,0));
+        else
+          viewer.data.set_points(V.row(vIndex), Eigen::RowVector3d(1,1,0));
+        std::cout << "Index " << vertexIndex << "(UV) is index " << vIndex << "(V)\n";
+    });
+    viewer.ngui->addButton("Find converted V->UV", [&](){
+        if(vertexIndex < 0 || vertexIndex > V.rows()){
+          std::cerr << "Vertex index " << vertexIndex << " not in range of V.\n";
+          return;
+        }
+
+        std::vector<int> uvIndices;
+        for(int i = 0; i < VF[vertexIndex].size(); i++){
+          uvIndices.push_back(FUV(VF[vertexIndex][i], VFi[vertexIndex][i]));
+        }
+        std::sort(uvIndices.begin(), uvIndices.end());
+        for(auto it = uvIndices.begin(); it != uvIndices.end(); ++it){
+          // Ignore duplicates
+          if(it != uvIndices.begin())
+            if(*it == *(it-1))
+              continue;
+
+          if(addPoints)
+            viewer.data.add_points(UV.row(*it) ,Eigen::RowVector3d(1,1,0));
+          else
+            viewer.data.set_points(UV.row(*it) ,Eigen::RowVector3d(1,1,0));
+        std::cout << "Index " << vertexIndex << "(V) is index " << *it << "(UV)\n";
+        }
+    });
+
+
+    viewer.ngui->layout();
+    return false;
+  };
+
   // Launch the viewer
   viewer.callback_key_down = &key_down;
   viewer.launch();
