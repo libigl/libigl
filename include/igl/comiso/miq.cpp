@@ -257,10 +257,9 @@ namespace comiso {
     IGL_INLINE void InitSeamInfo();
 
 
-
+  private:
     ///this maps back index to vertices
     std::vector<int> IndexToVert; // TODO remove it is useless
-  private:
 
     ///this is used for drawing purposes
     std::vector<int> duplicated; // TODO remove it is useless
@@ -562,8 +561,6 @@ namespace comiso {
                          const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams,
                          Eigen::PlainObjectBase<DerivedU> &UV,
                          Eigen::PlainObjectBase<DerivedF> &FUV,
-                         std::vector<std::vector<int> > &V2UV,
-                         std::vector<int> &UV2V,
                          double GradientSize = 30.0,
                          double Stiffness = 5.0,
                          bool DirectRound = false,
@@ -1083,12 +1080,6 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
     }
   }
 
-  std::cout << "MY EDGE SEAM INFO" << std::endl;
-  int nSeams = 0;
-  for(auto elem : lEdgeSeamInfo){
-	  nSeams += elem.size();
-  }
-  std::cout << "No. edges: " << nSeams << std::endl;
 
   Handle_SystemInfo.EdgeSeamInfo.clear();
   for (unsigned int f0=0;f0<F.rows();f0++)
@@ -1111,9 +1102,6 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
       }
     }
   }
-
-  std::cout << "THEIR EDGE SEAM INFO\n";
-  std::cout << "No. edges " << Handle_SystemInfo.EdgeSeamInfo.size() << std::endl;
 }
 
 
@@ -2004,8 +1992,6 @@ IGL_INLINE igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::MIQ_class(const
                                                                    const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams,
                                                                    Eigen::PlainObjectBase<DerivedU> &UV,
                                                                    Eigen::PlainObjectBase<DerivedF> &FUV,
-                                                                   std::vector<std::vector<int> > &V2UV,
-                                                                   std::vector<int> &UV2V,
                                                                    double GradientSize,
                                                                    double Stiffness,
                                                                    bool DirectRound,
@@ -2028,8 +2014,6 @@ F(F_)
   VInd.InitFaceIntegerVal();
   VInd.InitSeamInfo();
 
-  V2UV = VInd.HandleV_Integer;
-  UV2V = VInd.IndexToVert;
   // Eigen::PlainObjectBase<DerivedV> PD1_combed_for_poisson, PD2_combed_for_poisson;
   // // Rotate by 90 degrees CCW
   // PD1_combed_for_poisson.setZero(PD1_combed.rows(),3);
@@ -2350,8 +2334,6 @@ IGL_INLINE void igl::comiso::miq(
   const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams,
   Eigen::PlainObjectBase<DerivedU> &UV,
   Eigen::PlainObjectBase<DerivedF> &FUV,
-  std::vector<std::vector<int> > &V2UV,
-  std::vector<int> &UV2V,
   double GradientSize,
   double Stiffness,
   bool DirectRound,
@@ -2376,8 +2358,6 @@ IGL_INLINE void igl::comiso::miq(
     Handle_Seams,
     UV,
     FUV,
-    V2UV,
-    UV2V,
     GradientSize,
     Stiffness,
     DirectRound,
@@ -2399,8 +2379,6 @@ IGL_INLINE void igl::comiso::miq(
     const Eigen::PlainObjectBase<DerivedV> &PD2,
     Eigen::PlainObjectBase<DerivedU> &UV,
     Eigen::PlainObjectBase<DerivedF> &FUV,
-    std::vector<std::vector<int> > &V2UV,
-    std::vector<int> &UV2V,
     double GradientSize,
     double Stiffness,
     bool DirectRound,
@@ -2449,8 +2427,6 @@ IGL_INLINE void igl::comiso::miq(
            Handle_Seams,
            UV,
            FUV,
-           V2UV,
-           UV2V,
            GradientSize,
            Stiffness,
            DirectRound,
