@@ -282,10 +282,6 @@ int main(int argc, char *argv[])
   // Comb the frame-field accordingly
   igl::comb_frame_field(V, F, X1, X2, BIS1_combed, BIS2_combed, X1_combed, X2_combed);
 
-  // Debug purposes
-  std::vector<std::vector<int> > V2UV;
-  std::vector<int> UV2V
-
   // Global parametrization
   igl::comiso::miq(V,
            F,
@@ -296,8 +292,6 @@ int main(int argc, char *argv[])
            Seams,
            UV,
            FUV,
-           V2UV,
-           UV2V,
            gradient_size,
            stiffness,
            direct_round,
@@ -315,14 +309,13 @@ igl::comiso::miq(V,
          Seams,
          UV_seams,
          FUV_seams,
-         V2UV,
-         UV2V,
          gradient_size,
          stiffness,
          direct_round,
          iter,
          5,
          false);
+
   // Plot the mesh
   igl::viewer::Viewer viewer;
 
@@ -330,64 +323,6 @@ igl::comiso::miq(V,
   key_down(viewer,'7',0);
 
   // Launch the viewer
-  int vertexIndexV = 0;
-  bool addPoints = false;
-  viewer.callback_init = [&](igl::viewer::Viewer& viewer)
-  {
-    viewer.ngui->addNewWindow(Eigen::Vector2i(200,10),"MIQ-Tools");
-    viewer.ngui->addNewGroup("Find vertex");
-    viewer.ngui->addVariable(vertexIndexV,"Vertex Index", true);
-    viewer.ngui->addVariable(addPoints, "add points");
-    viewer.ngui->addButton("Find (UV)!", [&](){
-        if(vertexIndexV < 0 || vertexIndexV > UV.rows()){
-          std::cerr << "Vertex index " << vertexIndexV << " not in range of UV.\n";
-          return;
-        }
-        if(addPoints)
-          viewer.data.add_points(UV.row(vertexIndexV),Eigen::RowVector3d(1,1,0));
-        else
-          viewer.data.set_points(UV.row(vertexIndexV),Eigen::RowVector3d(1,1,0));
-    });
-    viewer.ngui->addButton("Find (V)!", [&](){
-        if(vertexIndexV < 0 || vertexIndexV > V.rows()){
-          std::cerr << "Vertex index " << vertexIndexV << " not in range of V.\n";
-          return;
-        }
-        if(addPoints)
-          viewer.data.add_points(V.row(vertexIndexV),Eigen::RowVector3d(1,1,0));
-        else
-          viewer.data.set_points(V.row(vertexIndexV),Eigen::RowVector3d(1,1,0));
-    });
-    viewer.ngui->addButton("Find converted UV->V", [&](){
-        if(vertexIndexV < 0 || vertexIndexV > UV.rows()){
-          std::cerr << "Vertex index " << vertexIndexV << " not in range of UV.\n";
-          return;
-        }
-        if(addPoints)
-          viewer.data.add_points(V.row(UV2V[vertexIndexV]),Eigen::RowVector3d(1,1,0));
-        else
-          viewer.data.set_points(V.row(UV2V[vertexIndexV]),Eigen::RowVector3d(1,1,0));
-        std::cout << "Index " << vertexIndexV << "(UV) is " << "index" << UV2V[vertexIndexV] << "(V)\n";
-    });
-    viewer.ngui->addButton("Find converted V->UV", [&](){
-        if(vertexIndexV < 0 || vertexIndexV > V.rows()){
-          std::cerr << "Vertex index " << vertexIndexV << " not in range of V.\n";
-          return;
-        }
-
-        for(int i = 0; i < V2UV[vertexIndexV].size(); i++){
-          if(addPoints)
-            viewer.data.add_points(UV.row(V2UV[vertexIndexV][i]) ,Eigen::RowVector3d(1,1,0));
-          else
-            viewer.data.set_points(UV.row(V2UV[vertexIndexV][i]) ,Eigen::RowVector3d(1,1,0));
-        std::cout << "Index " << vertexIndexV << "(V) is " << "index" << V2UV[vertexIndexV][i] << "(UV)\n";
-        }
-    });
-
-
-    viewer.ngui->layout();
-    return false;
-  };
   viewer.callback_key_down = &key_down;
   viewer.launch();
 }
