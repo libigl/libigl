@@ -44,6 +44,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#interactionwithkeyboardandmouse">103 Interaction with keyboard and mouse</a></li>
 <li><a href="#scalarfieldvisualization">104 Scalar field visualization</a></li>
 <li><a href="#overlays">105 Overlays</a></li>
+<li><a href="#viewermenu">106 Viewer Menu</a></li>
 </ul></li>
 <li><a href="#chapter2:discretegeometricquantitiesandoperators">Chapter 2: Discrete Geometric Quantities and
  Operators</a>
@@ -423,6 +424,69 @@ Eigen::Vector3d M = V.colwise().maxCoeff();
 using overlays." />
 <figcaption>(<a href="105_Overlays/main.cpp">Example 105</a>) The bounding box of a mesh is shown
 using overlays.</figcaption>
+</figure>
+
+<h2 id="viewermenu">Viewer Menu</h2>
+
+<p>As of version 1.2 the viewer uses a new menu and completely replaces <a href="http://anttweakbar.sourceforge.net/doc/">AntTweakBar</a>. It is based on the open-source projects <a href="https://github.com/memononen/nanovg">nanovg</a> and <a href="https://github.com/wjakob/nanogui">nanogui</a>. To extend the default menu of the viewer and to expose more user defined variables you have to define a callback function:</p>
+
+<pre><code class="cpp">igl::viewer::Viewer viewer;
+
+bool boolVariable = true;
+float floatVariable = 0.1f;
+
+// extend viewer menu
+viewer.callback_init = [&amp;](igl::viewer::Viewer&amp; viewer)
+{
+  // add new group
+  viewer.ngui-&gt;addNewGroup(&quot;New Group&quot;);
+
+  // expose variables
+  viewer.ngui-&gt;addVariable(boolVariable,&quot;bool&quot;);
+  viewer.ngui-&gt;addVariable(floatVariable,&quot;float&quot;);
+
+  // add button
+  viewer.ngui-&gt;addButton(&quot;Print Hello&quot;,[](){ cout &lt;&lt; &quot;Hello\n&quot;; });
+
+  // call to generate menu
+  viewer.ngui-&gt;layout();
+  return false;
+};
+
+// start viewer
+viewer.launch();
+</code></pre>
+
+<p>If you need a separate new menu window use:</p>
+
+<pre><code class="cpp">viewer.ngui-&gt;addNewWindow(Eigen::Vector2i(220,10),&quot;New Window&quot;);
+</code></pre>
+
+<p>You can also switch between different orientation of the layout:</p>
+
+<pre><code class="cpp">// horizontal alignment
+viewer.ngui-&gt;addNewGroup(&quot;New Group&quot;,nanogui::FormScreen::Layout::Horizontal);
+viewer.ngui-&gt;addButton(&quot;Print Test1&quot;,[](){ cout &lt;&lt; &quot;Test1\n&quot;; });
+viewer.ngui-&gt;addButton(&quot;Print Test2&quot;,[](){ cout &lt;&lt; &quot;Test2\n&quot;; });
+
+// vertical alignment
+viewer.ngui-&gt;setCurrentLayout(nanogui::FormScreen::Layout::Vertical);
+viewer.ngui-&gt;addVariable(boolVariable,&quot;bool&quot;);
+viewer.ngui-&gt;addVariable(floatVariable,&quot;float&quot;);
+</code></pre>
+
+<p>If you do not want to expose variables directly but rather use the get/set functionality:</p>
+
+<pre><code class="cpp">viewer.ngui-&gt;addVariable([&amp;](bool val) {
+  boolVariable = val; // set
+},[&amp;]() {
+  return boolVariable; // get
+},&quot;bool&quot;,true);
+</code></pre>
+
+<figure>
+<img src="images/106_ViewerMenu.png" alt="(Example 106) The UI of the viewer can be easily customized." />
+<figcaption>(<a href="106_ViewerMenu/main.cpp">Example 106</a>) The UI of the viewer can be easily customized.</figcaption>
 </figure>
 
 <h1 id="chapter2:discretegeometricquantitiesandoperators">Chapter 2: Discrete Geometric Quantities and Operators</h1>
@@ -1259,7 +1323,7 @@ completely analogous decomposition exists, albeit with finite sum:</p>
 
 <p>where now a column vector of values at vertices <span class="math">\(\mathbf{f} \in \mathcal{R}^n\)</span>
 specifies a piecewise linear function and <span class="math">\(\phi_i \in \mathcal{R}^n\)</span> is an
-eigen vector satisfying: </p>
+eigen vector satisfying:</p>
 
 <p><span class="math">\(\mathbf{L} \phi_i = \lambda_i \mathbf{M} \phi_i\)</span>.</p>
 

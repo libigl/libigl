@@ -438,6 +438,8 @@ viewer.ngui->addVariable([&](bool val) {
 },"bool",true);
 ```
 
+![([Example 106](106_ViewerMenu/main.cpp)) The UI of the viewer can be easily customized.](images/106_ViewerMenu.png)
+
 # Chapter 2: Discrete Geometric Quantities and Operators
 This chapter illustrates a few discrete quantities that libigl can compute on a
 mesh and the libigl functions that construct popular discrete differential
