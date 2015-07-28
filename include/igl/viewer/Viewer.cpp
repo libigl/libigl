@@ -62,6 +62,7 @@
 #include <igl/quat_mult.h>
 #include <igl/axis_angle_to_quat.h>
 #include <igl/trackball.h>
+#include <igl/two_axis_valuator_fixed_up.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/unproject.h>
 
@@ -108,6 +109,16 @@ static void glfw_error_callback(int error, const char* description)
   fputs(description, stderr);
 }
 
+static void glfw_char_mods_callback(GLFWwindow* window, unsigned int codepoint, int modifier)
+{
+  // TODO: pass to nanogui (although it's also using physical key down/up
+  // rather than character codes...
+  if(! __viewer->ngui->charEvent(window,codepoint) )
+  {
+    __viewer->key_pressed(codepoint, modifier);
+  }
+}
+
 static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int modifier)
 {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -148,11 +159,6 @@ static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
 
   if (__viewer->ngui->scrollEvent(window,x,y) == false)
     __viewer->mouse_scroll(y);
-}
-
-static void glfw_char_callback(GLFWwindow* window, unsigned int c)
-{
-  __viewer->ngui->charEvent(window,c);
 }
 
 static void glfw_drop_callback(GLFWwindow *window,int count,const char **filenames)
@@ -410,18 +416,26 @@ namespace viewer
     return true;
   }
 
+  IGL_INLINE bool Viewer::key_pressed(unsigned int unicode_key,int modifiers)
+  {
+    if (callback_key_pressed)
+      if (callback_key_pressed(*this,unicode_key,modifiers))
+        return true;
+
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+      if (plugins[i]->key_pressed(unicode_key, modifiers))
+        return true;
+    return false;
+  }
+
   IGL_INLINE bool Viewer::key_down(int key,int modifiers)
   {
     if (callback_key_down)
       if (callback_key_down(*this,key,modifiers))
         return true;
-
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->key_down(key, modifiers))
         return true;
-
-    char k = key;
-
     return false;
   }
 
@@ -526,17 +540,30 @@ namespace viewer
     {
       switch (mouse_mode)
       {
-        case MouseMode::Rotation :
+        case MouseMode::Rotation:
         {
-          igl::trackball(core.viewport(2),
-                         core.viewport(3),
-                         2.0f,
-                         down_rotation.data(),
-                         down_mouse_x,
-                         down_mouse_y,
-                         mouse_x,
-                         mouse_y,
-                         core.trackball_angle.data());
+          switch(core.rotation_type)
+          {
+            case ViewerCore::ROTATION_TYPE_TRACKBALL:
+              igl::trackball(core.viewport(2),
+                             core.viewport(3),
+                             2.0f,
+                             down_rotation,
+                             down_mouse_x,
+                             down_mouse_y,
+                             mouse_x,
+                             mouse_y,
+                             core.trackball_angle);
+              break;
+            case ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
+              igl::two_axis_valuator_fixed_up(
+                  core.viewport(2),core.viewport(3),
+                  2.0,
+                  down_rotation,
+                  down_mouse_x, down_mouse_y, mouse_x, mouse_y,
+                  core.trackball_angle);
+              break;
+          }
           //Eigen::Vector4f snapq = core.trackball_angle;
 
           break;
@@ -673,8 +700,8 @@ namespace viewer
 
   IGL_INLINE void Viewer::snap_to_canonical_quaternion()
   {
-    Eigen::Vector4f snapq = this->core.trackball_angle;
-    igl::snap_to_canonical_view_quat(snapq.data(),1.0f,this->core.trackball_angle.data());
+    Eigen::Quaternionf snapq = this->core.trackball_angle;
+    igl::snap_to_canonical_view_quat(snapq,1.0f,this->core.trackball_angle);
   }
 
   IGL_INLINE void Viewer::open_dialog_load_mesh()
@@ -769,7 +796,7 @@ namespace viewer
     glfwSetWindowSizeCallback(window,glfw_window_size);
     glfwSetMouseButtonCallback(window,glfw_mouse_press);
     glfwSetScrollCallback(window,glfw_mouse_scroll);
-    glfwSetCharCallback(window,glfw_char_callback);
+    glfwSetCharModsCallback(window,glfw_char_mods_callback);
     glfwSetDropCallback(window,glfw_drop_callback);
 
     // Handle retina displays (windows and mac)

@@ -96,12 +96,13 @@ IGL_INLINE bool igl::snap_to_canonical_view_quat(
   return false;
 }
 
+template <typename Scalarq, typename Scalars>
 IGL_INLINE bool igl::snap_to_canonical_view_quat(
-  const Eigen::Quaterniond & q,
+  const Eigen::Quaternion<Scalarq> & q,
   const double threshold,
-  Eigen::Quaterniond & s)
+  Eigen::Quaternion<Scalars> & s)
 {
-  return snap_to_canonical_view_quat<double>( 
+  return snap_to_canonical_view_quat<Scalars>( 
     q.coeffs().data(),threshold,s.coeffs().data());
 }
 
