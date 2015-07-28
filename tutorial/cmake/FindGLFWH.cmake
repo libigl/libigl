@@ -14,6 +14,9 @@ FIND_PATH(GLFW_INCLUDE_DIR GLFW/glfw3.h
     ${PROJECT_SOURCE_DIR}/../../external/glfw/include
     ${PROJECT_SOURCE_DIR}/../external/glfw/include
     ${PROJECT_SOURCE_DIR}/external/glfw/include
+    ${PROJECT_SOURCE_DIR}/../../external/nanogui/ext/glfw/include
+    ${PROJECT_SOURCE_DIR}/../external/nanogui/ext/glfw/include
+    ${PROJECT_SOURCE_DIR}/external/nanogui/ext/glfw/include
     ${PROJECT_SOURCE_DIR}/../../libigl/external/glfw/include
     ${PROJECT_SOURCE_DIR}/../libigl/external/glfw/include
     ${PROJECT_SOURCE_DIR}/libigl/external/glfw/include
