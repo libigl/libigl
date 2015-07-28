@@ -11,9 +11,8 @@
 #include <igl/cgal/remesh_self_intersections.h>
 #include <igl/remove_unreferenced.h>
 #include <igl/unique_simplices.h>
-#include <iostream>
-
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#include <iostream>
 
 //#define IGL_MESH_BOOLEAN_DEBUG
 
@@ -312,7 +311,6 @@ IGL_INLINE void igl::boolean::mesh_boolean(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-
 // This is a hack to discuss
 #include <igl/remove_unreferenced.cpp>
 

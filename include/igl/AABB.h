@@ -1037,7 +1037,6 @@ inline void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
   }
   const auto & point_point_squared_distance = [&](const RowVectorDIMS & s)
   {
-    cout<<"pp"<<endl;
     const Scalar sqr_d_s = (p-s).squaredNorm();
     set_min(p,sqr_d_s,m_primitive,s,sqr_d,i,c);
   };
