@@ -4,9 +4,11 @@ project(505_MIQ)
 include("../CMakeLists.shared")
 
 find_package(LIBCOMISO REQUIRED)
+find_package(TINYXML2 REQUIRED)
 
 include_directories( ${LIBCOMISO_INCLUDE_DIR}
                      ${LIBCOMISO_INCLUDE_DIRS} )
+include_directories( ${TINYXML2_INCLUDE_DIR})
 
 set(SOURCES
 ${PROJECT_SOURCE_DIR}/main.cpp
