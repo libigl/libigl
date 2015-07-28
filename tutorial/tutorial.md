@@ -64,6 +64,7 @@ lecture notes links to a cross-platform example application.
     * [406 Fast automatic skinning
       transformations](#fastautomaticskinningtransformations)
         * [ARAP with grouped edge-sets](#arapwithgroupededge-sets)
+    * [407 Biharmonic Coordinates](#biharmoniccoordinates)
 * [Chapter 5: Parametrization](#chapter5:parametrization)
     * [501 Harmonic parametrization](#harmonicparametrization)
     * [502 Least-Square Conformal Maps](#leastsquareconformalmaps)
@@ -1545,9 +1546,11 @@ much. In such cases one can use the skinning subspace to build an effective
 clustering of rotation edge-sets for a traditional ARAP optimization: forgoing
 the subspace substitution. This has an two-fold effect. The cost of the
 rotation fitting, local step drastically reduces, and the deformations are
-"regularized" according the clusters. From a high level point of view, if the clusters
-are derived from skinning weights, then they will discourage bending,
-especially along isolines of the weight functions.
+"regularized" according the clusters. From a high level point of view, if the
+clusters are derived from skinning weights, then they will discourage bending,
+especially along isolines of the weight functions. If handles are not known in
+advance, one could also cluster according to a "geodesic embedding" like the
+biharmonic distance embedding.
 
 In this light, we can think of the "spokes+rims" style surface ARAP as a (slight and
 redundant) clustering of the per-triangle edge-sets.
@@ -1556,6 +1559,91 @@ redundant) clustering of the per-triangle edge-sets.
 ARAP deformation on a detailed shape (left of middle), to ARAP with grouped
 rotation edge sets (right of middle), to the very fast subpsace method
 (right).](images/armadillo-fast.jpg)
+
+## Biharmonic Coordinates
+
+Linear blend skinning (as [above](#boundedbiharmonicweights)) deforms a mesh by
+propogating _full affine transformations_ at handles (bones, points, regions,
+etc.) to the rest of the shape via weights. Another deformation framework,
+called "generalized barycentric coordinates", is a special case of linear blend
+skinning [#jacobson_skinning_course_2014][]: transformations are restricted to
+_pure translations_ and weights are required to retain _affine precision_. This
+latter requirement means that we can write the rest-position of any vertex in
+the mesh as the weighted combination of the control handle locations:
+
+ $\mathbf{x} = \sum\limits_{i=1}^m w_i(\mathbf{x}) * \mathbf{c}_i,$
+
+where $\mathbf{c}_i$ is the rest position of the $i$th control point. This
+simplifies the deformation formula at run-time. We can simply take the new
+position of each point of the shape to be the weighted combination of the
+_translated_ control point positions:
+
+ $\mathbf{x}' = \sum\limits_{i=1}^m w_i(\mathbf{x}) * \mathbf{c}_i'.$
+
+There are _many_ different flavors of "generalized barycentric coordinates"
+(see table in "Automatic Methods" section,
+[#jacobson_skinning_course_2014][]). The vague goal of "generalized barycentric
+coordinates" is to capture as many properties of simplicial barycentric
+coordinates (e.g. for triangles in 2D and tetrahedral in 3D) for larger sets of
+points or polyhedra. Some generalized barycentric coordinates can be computed
+in closed form; others require optimization-based precomputation. Nearly all
+flavors require connectivity information describing how the control points form
+a external polyhedron around the input shape: a cage. However, a recent
+techinique does not require a cage [#wang_bc_2015][]. This method ensures
+affine precision during optimization over weights of a smoothness energy with
+affine functions in its kernel:
+
+ $\mathop{\text{min}}_\mathbf{W}\,\, \text{trace}(\frac{1}{2}\mathbf{W}^T \mathbf{A}
+ \mathbf{W}), \text{subject to: } \mathbf{C} = \mathbf{W}\mathbf{C}$
+
+subject to interpolation constraints at selected vertices. If $\mathbf{A}$ has
+affine functions in its kernel---that is, if $\mathbf{A}\mathbf{V} = 0$---then
+the weights $\mathbf{W}$ will retain affine precision and we'll have that:
+
+ $\mathbf{V} = \mathbf{W}\mathbf{C}$
+
+the matrix form of the equality above. The proposed way to define $\mathbf{A}$
+is to construct a matrix $\mathbf{K}$ that measures the Laplacian at all
+interior vertices _and at all boundary vertices_. The _usual_ definition of the
+discrete Laplacian (e.g. what libigl returns from `igl::cotmatrix`), measures
+the Laplacian of a function for interior vertices, but measures the Laplacian
+of a function _minus_ the normal derivative of a function for boundary
+vertices. Thus, we can let:
+
+ $\mathbf{K} = \mathbf{L} + \mathbf{N}$
+
+where $\mathbf{L}$ is the _usual_ Laplacian and $\mathbf{N}$ is matrix that
+computes normal derivatives of a piecewise-linear function at boundary vertices
+of a mesh. Then $\mathbf{A}$ is taken as quadratic form computing the square of
+the integral-average of $\mathbf{K}$ applied to a function and integrated over
+the mesh:
+
+ $\mathbf{A} = (\mathbf{M}^{-1}\mathbf{K})^2_\mathbf{M} = \mathbf{K}^T \mathbf{M}^{-1}
+ \mathbf{K}.$
+
+Since the Laplacian $\mathbf{K}$ is a second-order derivative it measures zero on affine
+functions, thus $\mathbf{A}$ has affine functions in its null space. A short
+derivation proves that this implies $\mathbf{W}$ will be affine precise (see
+[#wang_bc_2015][]).
+
+Minimizers of this "squared Laplacian" energy are in some sense _discrete
+biharmonic functions_. Thus they're dubbed "biharmonic coordinates" (not the
+same as _bounded biharmonic weights_, which are _not_ generalized barycentric
+coordinates).
+
+In libigl, one can compute biharmonic coordinates given a mesh `(V,F)` and a
+list `S` of selected control points or control regions (which act like skinning
+handles):
+
+```cpp
+igl::biharmonic_coordinates(V,F,S,W);
+```
+
+![([Example 407](407_BiharmonicCoordinates/main.cpp)) shows a physics
+simulation on a coarse orange mesh. The vertices of this mesh become control
+points for a biharmonic coordinates deformation of the blue high-resolution
+mesh.](images/octopus-biharmonic-coordinates-physics.gif)
+
 
 # Chapter 5: Parametrization [chapter5:parametrization]
 
@@ -2773,11 +2861,15 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   Stuetzle.  [Multiresolution Analysis of Arbitrary
   Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), 2005.
 [#hildebrandt_2011]: Klaus Hildebrandt, Christian Schulz, Christoph von
-Tycowicz, and Konrad Polthier. [Interactive Surface Modeling using Modal
-Analysis](https://www.google.com/search?q=Interactive+Surface+Modeling+using+Modal+Analysis),
-2011.
+  Tycowicz, and Konrad Polthier. [Interactive Surface Modeling using Modal
+  Analysis](https://www.google.com/search?q=Interactive+Surface+Modeling+using+Modal+Analysis),
+  2011.
 [#hoppe_1996]: Hugues Hoppe. [Progressive
   Meshes](https://www.google.com/search?q=Progressive+meshes), 1996
+[#jacobson_skinning_course_2014]: Alec Jacobson, Zhigang Deng, Ladislav Kavan,
+  J.P. Lewis. [_Skinning: Real-Time Shape
+  Deformation_](https://www.google.com/search?q=Skinning+Real-Time+Shape+Deformation),
+  2014.
 [#jacobson_thesis_2013]: Alec Jacobson,
   [_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D
   Shapes_](https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes),
@@ -2862,4 +2954,8 @@ Analysis](https://www.google.com/search?q=Interactive+Surface+Modeling+using+Mod
   Manifold
   Harmonics](https://www.google.com/search?q=Spectral+Geometry+Processing+with+Manifold+Harmonics),
   2008.
+[#wang_bc_2015]: Yu Wang, Alec Jacobson, Jernej Barbic, Ladislav Kavan. [Linear
+  Subspace Design for Real-Time Shape
+  Deformation](https://www.google.com/search?q=Linear+Subspace+Design+for+Real-Time+Shape+Deformation),
+  2015
 
