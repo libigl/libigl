@@ -132,22 +132,23 @@ IGL_INLINE void igl::trackball(
   }
 }
 
+template <typename Scalardown_quat, typename Scalarquat>
 IGL_INLINE void igl::trackball(
   const double w,
   const double h,
   const double speed_factor,
-  const Eigen::Quaterniond & down_quat,
+  const Eigen::Quaternion<Scalardown_quat> & down_quat,
   const double down_mouse_x,
   const double down_mouse_y,
   const double mouse_x,
   const double mouse_y,
-  Eigen::Quaterniond & quat)
+  Eigen::Quaternion<Scalarquat> & quat)
 {
   using namespace std;
   return trackball(
     w,
     h,
-    speed_factor,
+    (Scalarquat)speed_factor,
     down_quat.coeffs().data(),
     down_mouse_x,
     down_mouse_y,
