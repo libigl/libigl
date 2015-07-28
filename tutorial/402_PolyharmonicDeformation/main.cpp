@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
   viewer.data.set_mesh(U, F);
   viewer.core.show_lines = false;
   viewer.data.set_colors(C);
-  viewer.core.trackball_angle << -0.58,-0.03,-0.03,0.81;
+  viewer.core.trackball_angle = Eigen::Quaternionf(0.81,-0.58,-0.03,-0.03);
   viewer.core.trackball_angle.normalize();
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
