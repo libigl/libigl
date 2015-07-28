@@ -84,7 +84,13 @@ public:
   float lighting_factor;
 
   // Trackball angle (quaternion)
-  Eigen::Vector4f trackball_angle;
+  enum RotationType
+  {
+    ROTATION_TYPE_TRACKBALL = 0,
+    ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP = 1,
+    NUM_ROTATION_TYPES = 2
+  } rotation_type;
+  Eigen::Quaternionf trackball_angle;
 
   // Model viewing parameters
   float model_zoom;
