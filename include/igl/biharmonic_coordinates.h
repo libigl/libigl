@@ -70,6 +70,19 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedT> & T,
     const std::vector<std::vector<SType> > & S,
     Eigen::PlainObjectBase<DerivedW> & W);
+  // k  2-->biharmonic, 3-->triharmonic
+  template <
+    typename DerivedV,
+    typename DerivedT,
+    typename SType,
+    typename DerivedW>
+  IGL_INLINE bool biharmonic_coordinates(
+    const Eigen::PlainObjectBase<DerivedV> & V,
+    const Eigen::PlainObjectBase<DerivedT> & T,
+    const std::vector<std::vector<SType> > & S,
+    const int k,
+    Eigen::PlainObjectBase<DerivedW> & W);
+
 };
 #  ifndef IGL_STATIC_LIBRARY
 #    include "biharmonic_coordinates.cpp"

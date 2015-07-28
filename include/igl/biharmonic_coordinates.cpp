@@ -24,6 +24,21 @@ IGL_INLINE bool igl::biharmonic_coordinates(
   const std::vector<std::vector<SType> > & S,
   Eigen::PlainObjectBase<DerivedW> & W)
 {
+  return biharmonic_coordinates(V,T,S,2,W);
+}
+
+template <
+  typename DerivedV,
+  typename DerivedT,
+  typename SType,
+  typename DerivedW>
+IGL_INLINE bool igl::biharmonic_coordinates(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedT> & T,
+  const std::vector<std::vector<SType> > & S,
+  const int k,
+  Eigen::PlainObjectBase<DerivedW> & W)
+{
   using namespace Eigen;
   using namespace std;
   // This is not the most efficient way to build A, but follows "Linear
@@ -58,9 +73,23 @@ IGL_INLINE bool igl::biharmonic_coordinates(
     cotmatrix(V,T,L);
     K = N+L;
     massmatrix(V,T,MASSMATRIX_TYPE_DEFAULT,M);
+    // normalize
+    M /= ((VectorXd)M.diagonal()).array().abs().maxCoeff();
     DiagonalMatrix<double,Dynamic> Minv = 
       ((VectorXd)M.diagonal().array().inverse()).asDiagonal();
-    A = K.transpose() * (Minv * K);
+    switch(k)
+    {
+      default:
+        assert(false && "unsupported");
+      case 2:
+        // For C1 smoothness in 2D, one should use bi-harmonic
+        A = K.transpose() * (Minv * K);
+        break;
+      case 3:
+        // For C1 smoothness in 3D, one should use tri-harmonic
+        A = K.transpose() * (Minv * (-L * (Minv * K)));
+        break;
+    }
   }
   // Vertices in point handles
   const size_t mp = 
