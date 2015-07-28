@@ -544,6 +544,8 @@ namespace viewer
         {
           switch(core.rotation_type)
           {
+            default:
+              assert(false && "Unknown rotation type");
             case ViewerCore::ROTATION_TYPE_TRACKBALL:
               igl::trackball(core.viewport(2),
                              core.viewport(3),
