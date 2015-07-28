@@ -152,7 +152,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     MatrixX3I SF;
     MatrixX2I SIF;
     VectorXI SIM,UIM;
-    RemeshSelfIntersectionsParam params;
+    igl::cgal::RemeshSelfIntersectionsParam params;
     remesh_self_intersections(V,F,params,SV,SF,SIF,J,SIM);
     for_each(SF.data(),SF.data()+SF.size(),[&SIM](int & a){a=SIM(a);});
     {
