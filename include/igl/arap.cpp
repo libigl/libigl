@@ -153,7 +153,8 @@ IGL_INLINE bool igl::arap_precomputation(
     assert(h != 0);
     SparseMatrix<double> M;
     massmatrix(V,F,MASSMATRIX_TYPE_DEFAULT,data.M);
-    SparseMatrix<double> DQ = 1./(h*h)*data.M;
+    const double dw = (1./data.ym)*(h*h);
+    SparseMatrix<double> DQ = dw * 1./(h*h)*data.M;
     Q += DQ;
     // Dummy external forces
     data.f_ext = MatrixXd::Zero(n,data.dim);
@@ -268,7 +269,8 @@ IGL_INLINE bool igl::arap_solve(
       // h*data.vel = (V0-Vm1)
       // -h*data.vel = -V0+Vm1)
       // -V0-h*data.vel = -2V0+Vm1
-      Dl = 1./(h*h)*data.M*(-U0 - h*data.vel) - data.f_ext;
+      const double dw = (1./data.ym)*(h*h);
+      Dl = dw * (1./(h*h)*data.M*(-U0 - h*data.vel) - data.f_ext);
     }
 
     VectorXd Rcol;
