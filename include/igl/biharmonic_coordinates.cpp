@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "biharmonic_coordinates.h"
 #include "cotmatrix.h"
@@ -42,7 +42,7 @@ IGL_INLINE bool igl::biharmonic_coordinates(
   using namespace Eigen;
   using namespace std;
   // This is not the most efficient way to build A, but follows "Linear
-  // Subspace Design for Real-Time Shape Deformation" [Wang et al. 2015]. 
+  // Subspace Design for Real-Time Shape Deformation" [Wang et al. 2015].
   SparseMatrix<double> A;
   {
     SparseMatrix<double> N,Z,L,K,M;
@@ -75,7 +75,7 @@ IGL_INLINE bool igl::biharmonic_coordinates(
     massmatrix(V,T,MASSMATRIX_TYPE_DEFAULT,M);
     // normalize
     M /= ((VectorXd)M.diagonal()).array().abs().maxCoeff();
-    DiagonalMatrix<double,Dynamic> Minv = 
+    DiagonalMatrix<double,Dynamic> Minv =
       ((VectorXd)M.diagonal().array().inverse()).asDiagonal();
     switch(k)
     {
@@ -92,7 +92,7 @@ IGL_INLINE bool igl::biharmonic_coordinates(
     }
   }
   // Vertices in point handles
-  const size_t mp = 
+  const size_t mp =
     count_if(S.begin(),S.end(),[](const vector<int> & h){return h.size()==1;});
   // number of region handles
   const size_t r = S.size()-mp;
@@ -139,8 +139,13 @@ IGL_INLINE bool igl::biharmonic_coordinates(
       }
     }
   }
-  // minimize    ½ W' A W' 
+  // minimize    ½ W' A W'
   // subject to  W(b,:) = J
   return min_quad_with_fixed(
     A,VectorXd::Zero(A.rows()).eval(),b,J,{},VectorXd(),true,W);
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template specialization
+template bool igl::biharmonic_coordinates<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, int, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::__1::vector<std::__1::vector<int, std::__1::allocator<int> >, std::__1::allocator<std::__1::vector<int, std::__1::allocator<int> > > > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+#endif

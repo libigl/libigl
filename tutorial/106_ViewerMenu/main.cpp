@@ -1,5 +1,7 @@
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
+#include <nanogui/formscreen.h>
+#include <iostream>
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -32,7 +34,7 @@ int main(int argc, char *argv[])
     },"bool",true);
 
     // Add a button
-    viewer.ngui->addButton("Print Hello",[](){ cout << "Hello\n"; });
+    viewer.ngui->addButton("Print Hello",[](){ std::cout << "Hello\n"; });
 
     // Add an additional bar
     viewer.ngui->addNewWindow(Eigen::Vector2i(220,10),"New Window");
