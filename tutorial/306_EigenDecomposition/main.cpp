@@ -3,6 +3,7 @@
 #include <igl/massmatrix.h>
 #include <igl/Viewer/viewer.h>
 #include <igl/parula.h>
+#include <igl/read_triangle_mesh.h>
 #include <Eigen/Sparse>
 #include <iostream>
 #include <queue>
@@ -40,13 +41,13 @@ int main(int argc, char * argv[])
   {
     switch(key)
     {
-      default: 
+      default:
         return false;
       case ' ':
       {
         U = U.rightCols(k).eval();
         // Rescale eigen vectors for visualization
-        VectorXd Z = 
+        VectorXd Z =
           bbd*0.5*U.col(c);
         Eigen::MatrixXd C;
         igl::parula(U.col(c).eval(),false,C);
