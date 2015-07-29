@@ -6,6 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "remove_unreferenced.h"
+#include "slice.h"
+#include <algorithm>
 
 template <
   typename DerivedV,
@@ -39,6 +41,7 @@ IGL_INLINE void igl::remove_unreferenced(
   Eigen::PlainObjectBase<DerivedI> &I,
   Eigen::PlainObjectBase<DerivedJ> &J)
 {
+  using namespace std;
   const size_t n = V.rows();
   remove_unreferenced(n,F,I,J);
   NF = F;
