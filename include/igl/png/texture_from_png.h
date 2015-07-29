@@ -10,6 +10,7 @@
 #include "../igl_inline.h"
 #include <Eigen/Core>
 #include <string>
+#include <Eigen/Core>
 
 #ifndef IGL_NO_OPENGL
 #include "../OpenGL_convenience.h"

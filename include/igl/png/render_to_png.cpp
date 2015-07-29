@@ -52,5 +52,4 @@ IGL_INLINE bool igl::png::render_to_png(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-// template bool igl::png::render_to_png(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, int, int, bool, bool);
-#endif
+#endif;
