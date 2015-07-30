@@ -38,6 +38,8 @@
 #include <fstream>
 #include <iostream>
 #include <igl/matlab_format.h>
+
+#warning "using namespace *; in global scope **must** be removed"
 using namespace std;
 using namespace Eigen;
 

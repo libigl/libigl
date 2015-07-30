@@ -400,8 +400,10 @@ inline bool igl::embree::EmbreeIntersector::intersectBeam(
   else
     bestHit.t = 0;
 
-  if(hasHit = (intersectRay(origin,direction,hit,tnear,tfar,mask) && (hit.gid == geoId || geoId == -1)))
+  if((intersectRay(origin,direction,hit,tnear,tfar,mask) && (hit.gid == geoId || geoId == -1)))
+  {
     bestHit = hit;
+  }
 
   // sample points around actual ray (conservative hitcheck)
   const float eps= 1e-5;
@@ -413,7 +415,10 @@ inline bool igl::embree::EmbreeIntersector::intersectBeam(
 
   for(int r=0;r<samples;r++)
   {
-    if(intersectRay(origin+offset*eps,direction,hit,tnear,tfar,mask) && ((closestHit && (hit.t < bestHit.t)) || (!closestHit && (hit.t > bestHit.t))) && (hit.gid == geoId || geoId == -1))
+    if(intersectRay(origin+offset*eps,direction,hit,tnear,tfar,mask) && 
+        ((closestHit && (hit.t < bestHit.t)) || 
+           (!closestHit && (hit.t > bestHit.t)))  &&
+        (hit.gid == geoId || geoId == -1))
     {
       bestHit = hit;
       hasHit = true;

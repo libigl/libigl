@@ -8,6 +8,14 @@ include(${CGAL_USE_FILE})
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   remove_cxx_flag("-stdlib=libc++")
 endif()
+IF(MSVC)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP") ### Enable parallel compilation for Visual Studio
+  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} )
+  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} )
+ELSE(MSVC)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") #### Libigl requires a modern C++ compiler that supports c++11
+  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../" )
+ENDIF(MSVC)
 
 # This is absolutely necessary for Exact Construction
 

@@ -2,3 +2,5 @@
 	path = external/nanogui
 	url = https://github.com/schuellc/nanogui.git
         fetchRecursiveSubmodules = true
+        ignore = dirty
+

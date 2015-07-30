@@ -168,7 +168,6 @@ int main(int argc, char *argv[])
   viewer.core.show_lines = false;
   viewer.core.show_overlay_depth = false;
   viewer.core.line_width = 1;
-  viewer.core.trackball_angle.normalize();
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
   viewer.core.is_animating = false;

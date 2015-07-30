@@ -1,21 +1,21 @@
 #include <igl/Camera.h>
 #include <igl/EPS.h>
-#include <igl/OpenGL_convenience.h>
+#include <igl/opengl/OpenGL_convenience.h>
 #include <igl/STR.h>
 #include <igl/Viewport.h>
 #include <igl/canonical_quaternions.h>
-#include <igl/draw_beach_ball.h>
-#include <igl/draw_mesh.h>
+#include <igl/opengl2/draw_beach_ball.h>
+#include <igl/opengl2/draw_mesh.h>
 #include <igl/normalize_row_lengths.h>
 #include <igl/per_face_normals.h>
-#include <igl/project.h>
+#include <igl/opengl2/project.h>
 #include <igl/quat_to_mat.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/trackball.h>
-#include <igl/unproject.h>
-#include <igl/unproject_to_zero_plane.h>
+#include <igl/opengl2/unproject.h>
+#include <igl/opengl2/unproject_to_zero_plane.h>
 
 #ifdef __APPLE__
 #  include <OpenGL/gl.h>
@@ -31,7 +31,7 @@
 #include <string>
 #include <algorithm>
 #define IGL_HEADER_ONLY
-#include <igl/draw_floor.h>
+#include <igl/opengl2/draw_floor.h>
 
 #define NUM_VIEWPORTS 4
 class AugViewport : public igl::Viewport
@@ -171,7 +171,7 @@ void lights()
   glLightfv(GL_LIGHT1,GL_POSITION,pos);
 }
 
-// Set up projection and model view of scene
+// Set up igl::opengl2::projection and model view of scene
 void push_scene(const AugViewport & vp)
 {
   using namespace igl;
@@ -246,7 +246,7 @@ void display()
     push_object();
     // Draw the model
     glEnable(GL_LIGHTING);
-    draw_mesh(V,F,N,C);
+    igl::opengl2::draw_mesh(V,F,N,C);
     pop_object();
 
     // Draw a nice floor
@@ -255,11 +255,11 @@ void display()
     glEnable(GL_CULL_FACE);
     glEnable(GL_LIGHTING);
     glTranslated(0,-1,0);
-    if(project(Vector3d(0,0,0))(2) - project(Vector3d(0,1,0))(2) > -FLOAT_EPS)
+    if(igl::opengl2::project(Vector3d(0,0,0))(2) - igl::opengl2::project(Vector3d(0,1,0))(2) > -FLOAT_EPS)
     {
-      draw_floor_outline();
+      igl::opengl2::draw_floor_outline();
     }
-    draw_floor();
+    igl::opengl2::draw_floor();
     glPopMatrix();
     glDisable(GL_CULL_FACE);
 
@@ -269,7 +269,7 @@ void display()
       glPushMatrix();
       glTranslated(ball(0),ball(1),ball(2));
       glScaled(0.1,0.1,0.1);
-      draw_beach_ball();
+      igl::opengl2::draw_beach_ball();
       glPopMatrix();
     }
 
@@ -318,7 +318,7 @@ void display()
   glEnd();
 
 
-  report_gl_error();
+  igl::opengl::report_gl_error();
 
   glutSwapBuffers();
 }
@@ -356,7 +356,7 @@ void mouse_move(int mouse_x, int mouse_y)
         viewports[in_vp].height);
       push_scene(viewports[in_vp]);
       Vector3d screen_ball(mouse_x,height-mouse_y,0);
-      unproject_to_zero_plane(screen_ball,ball);
+      igl::opengl2::unproject_to_zero_plane(screen_ball,ball);
       pop_scene();
     }
   }

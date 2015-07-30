@@ -2,7 +2,7 @@
 
 # Shared flags etc.
 include ../Makefile.conf
-LIBIGL_LIB+=-liglembree -liglboost
+LIBIGL_LIB+=-liglembree 
 
 all: obj example
 
