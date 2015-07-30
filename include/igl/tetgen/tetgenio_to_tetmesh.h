@@ -9,7 +9,9 @@
 #define IGL_TETGEN_TETGENIO_TO_TETMESH_H
 #include "../igl_inline.h"
 
+#ifndef TETLIBRARY
 #define TETLIBRARY 
+#endif
 #include "tetgen.h" // Defined tetgenio, REAL
 #include <vector>
 #include <Eigen/Core>

@@ -1,9 +1,9 @@
 #include <igl/Camera.h>
-#include <igl/OpenGL_convenience.h>
+#include <igl/opengl/OpenGL_convenience.h>
 #include <igl/barycenter.h>
 #include <igl/cat.h>
-#include <igl/draw_floor.h>
-#include <igl/draw_mesh.h>
+#include <igl/opengl2/draw_floor.h>
+#include <igl/opengl2/draw_mesh.h>
 #include <igl/get_seconds.h>
 #include <igl/jet.h>
 #include <igl/list_to_matrix.h>
@@ -19,7 +19,7 @@
 #include <igl/readOBJ.h>
 #include <igl/readOFF.h>
 #include <igl/readWRL.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
 #include <igl/trackball.h>
@@ -278,7 +278,7 @@ void display()
     glEnable(GL_POLYGON_OFFSET_FILL); // Avoid Stitching!
     glPolygonOffset(1.0,1);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    draw_mesh(V,F,N,C);
+    igl::opengl2::draw_mesh(V,F,N,C);
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
     glDisable(GL_COLOR_MATERIAL);
     const float black[4] = {0,0,0,1};
@@ -290,7 +290,7 @@ void display()
     glLightfv(GL_LIGHT0, GL_DIFFUSE, black);
     glLineWidth(1.0);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    draw_mesh(V,F,N,C);
+    igl::opengl2::draw_mesh(V,F,N,C);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glEnable(GL_COLOR_MATERIAL);
   };
@@ -312,12 +312,12 @@ void display()
   glTranslated(0,floor_offset,0);
   const float GREY[4] = {0.5,0.5,0.6,1.0};
   const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
-  draw_floor(GREY,DARK_GREY);
+  igl::opengl2::draw_floor(GREY,DARK_GREY);
   glPopMatrix();
 
   pop_scene();
 
-  report_gl_error();
+  igl::opengl::report_gl_error();
 
   TwDraw();
   glutSwapBuffers();

@@ -10,7 +10,9 @@
 #include "../igl_inline.h"
 
 #include <string>
+#ifndef TETLIBRARY
 #define TETLIBRARY 
+#endif
 #include "tetgen.h" // Defined tetgenio, REAL
 
 namespace igl

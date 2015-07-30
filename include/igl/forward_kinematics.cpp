@@ -80,5 +80,5 @@ IGL_INLINE void igl::forward_kinematics(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template instanciation
+// Explicit template specialization
 #endif
