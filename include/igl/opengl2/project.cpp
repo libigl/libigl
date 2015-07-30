@@ -38,7 +38,7 @@ IGL_INLINE int igl::opengl2::project(
     "];"<<endl;
 #endif
 #ifndef NDEBUG
-  igl::opengl2::report_gl_error();
+  igl::opengl::report_gl_error();
 #endif
 
   glGetDoublev(GL_PROJECTION_MATRIX, P);
@@ -52,7 +52,7 @@ IGL_INLINE int igl::opengl2::project(
     "];"<<endl;
 #endif
 #ifndef NDEBUG
-  igl::opengl2::report_gl_error();
+  igl::opengl::report_gl_error();
 #endif
 
   glGetIntegerv(GL_VIEWPORT, VP);
@@ -63,7 +63,7 @@ IGL_INLINE int igl::opengl2::project(
     "];"<<endl;
 #endif
 #ifndef NDEBUG
-  igl::opengl2::report_gl_error();
+  igl::opengl::report_gl_error();
 #endif
 
 #ifdef EXTREME_VERBOSE
