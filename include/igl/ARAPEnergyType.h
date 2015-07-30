@@ -22,7 +22,7 @@ namespace igl
   //       deformation" by [Chao et al.  2010], rotations defined at elements
   //       (triangles or tets) 
   //     ARAP_ENERGY_TYPE_DEFAULT  Choose one automatically: spokes and rims
-  //       for surfaces, elements for planar meshes and test (not fully
+  //       for surfaces, elements for planar meshes and tets (not fully
   //       supported)
   enum ARAPEnergyType
   {

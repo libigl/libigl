@@ -60,16 +60,17 @@ namespace igl
     const double mouse_y,
     Q_type * quat);
   // Eigen wrapper.
+  template <typename Scalardown_quat, typename Scalarquat>
   IGL_INLINE void trackball(
     const double w,
     const double h,
     const double speed_factor,
-    const Eigen::Quaterniond & down_quat,
+    const Eigen::Quaternion<Scalardown_quat> & down_quat,
     const double down_mouse_x,
     const double down_mouse_y,
     const double mouse_x,
     const double mouse_y,
-    Eigen::Quaterniond & quat);
+    Eigen::Quaternion<Scalarquat> & quat);
 }
 
 #ifndef IGL_STATIC_LIBRARY

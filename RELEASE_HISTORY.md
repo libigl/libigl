@@ -11,6 +11,7 @@ html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathja
 
 Version | Short description
 --------|----------------------------------------------------------------------
+1.2.1   | Reorganization opengl-dependent functions: opengl and opengl2 extras
 1.2.0   | Reorganization of "extras", rm deprecated funcs, absorb boost & svd3x3
 1.1.7   | Switch build for static library to cmake.
 1.1.6   | Major boolean robustness fix, drop CGAL dependency for AABB/distances

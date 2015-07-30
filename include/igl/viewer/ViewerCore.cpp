@@ -222,7 +222,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
 
     // Set model transformation
     float mat[16];
-    igl::quat_to_mat(trackball_angle.data(), mat);
+    igl::quat_to_mat(trackball_angle.coeffs().data(), mat);
 
     for (unsigned i=0;i<4;++i)
       for (unsigned j=0;j<4;++j)
@@ -455,7 +455,7 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
   lighting_factor = 1.0f; //on
 
   // Default trackball
-  trackball_angle << 0.0f, 0.0f, 0.0f, 1.0f;
+  trackball_angle = Eigen::Quaternionf::Identity();
 
   // Defalut model viewing parameters
   model_zoom = 1.0f;

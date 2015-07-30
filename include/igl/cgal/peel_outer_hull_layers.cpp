@@ -17,7 +17,6 @@
 #include "../STR.h"
 #endif
 
-using namespace std;
 template <
   typename DerivedV,
   typename DerivedF,
@@ -126,6 +125,7 @@ IGL_INLINE size_t igl::cgal::peel_outer_hull_layers(
   Eigen::PlainObjectBase<Derivedodd > & odd,
   Eigen::PlainObjectBase<Derivedflip > & flip)
 {
+  using namespace std;
   Eigen::Matrix<typename DerivedV::Scalar,DerivedF::RowsAtCompileTime,3> N;
   per_face_normals(V,F,N);
   return peel_outer_hull_layers(V,F,N,odd,flip);

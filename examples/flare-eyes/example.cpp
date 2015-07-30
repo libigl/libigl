@@ -2,10 +2,10 @@
 #include <igl/PI.h>
 #include <igl/REDRUM.h>
 #include <igl/STR.h>
-#include <igl/draw_floor.h>
-#include <igl/draw_mesh.h>
+#include <igl/opengl2/draw_floor.h>
+#include <igl/opengl2/draw_mesh.h>
 #include <igl/get_seconds.h>
-#include <igl/lens_flare.h>
+#include <igl/opengl2/lens_flare.h>
 #include <igl/list_to_matrix.h>
 #include <igl/material_colors.h>
 #include <igl/pathinfo.h>
@@ -16,8 +16,8 @@
 #include <igl/readOBJ.h>
 #include <igl/readOFF.h>
 #include <igl/readWRL.h>
-#include <igl/render_to_tga.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/render_to_tga.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
 #include <igl/trackball.h>
@@ -60,7 +60,7 @@
 bool eyes_visible = true;
 double x=6,y=232,z=61;
 
-std::vector<igl::Flare> flares;
+std::vector<igl::opengl2::Flare> flares;
 std::vector<GLuint> shine_ids;
 std::vector<GLuint> flare_ids;
 int shine_tic = 0;
@@ -222,7 +222,7 @@ void draw_flare()
   glScaled(bbd*0.5,bbd*0.5,bbd*0.5);
   glScaled(0.2,0.2,0.2);
   Vector3f light(0,0,0);
-  lens_flare_draw(flares,shine_ids,flare_ids,light,1.0,shine_tic);
+  igl::opengl2::lens_flare_draw(flares,shine_ids,flare_ids,light,1.0,shine_tic);
   glPopMatrix();
 }
 
@@ -335,7 +335,7 @@ void display()
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,  MIDNIGHT_BLUE_DIFFUSE);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, SILVER_SPECULAR);
     glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128);
-    draw_mesh(V,F,N);
+    igl::opengl2::draw_mesh(V,F,N);
     pop_object();
     // Draw a nice floor
     glPushMatrix();
@@ -344,7 +344,7 @@ void display()
     glTranslated(0,floor_offset,0);
     const float GREY[4] = {0.5,0.5,0.6,1.0};
     const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
-    draw_floor(GREY,DARK_GREY);
+    igl::opengl2::draw_floor(GREY,DARK_GREY);
     glPopMatrix();
 
     glEndList();
@@ -361,13 +361,13 @@ void display()
 
   pop_scene();
 
-  report_gl_error();
+  igl::opengl::report_gl_error();
 
   if(render_to_tga_on_next)
   {
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT,viewport);
-    render_to_tga(
+    igl::opengl::render_to_tga(
       STR("./"<< "flare-eyes-" << setw(4) << setfill('0') << render_count++ << ".tga"),
       viewport[2],viewport[3],true);
     //render_to_tga_on_next = false;
@@ -722,16 +722,16 @@ int main(int argc, char * argv[])
   glutMotionFunc(mouse_drag);
   glutPassiveMotionFunc((GLUTmousemotionfun)TwEventMouseMotionGLUT);
   // Init flares
-  lens_flare_load_textures(shine_ids,flare_ids);
+  igl::opengl2::lens_flare_load_textures(shine_ids,flare_ids);
   const float RED[3] = {1,0,0};
   const float GREEN[3] = {0,1,0};
   const float BLUE[3] = {0,0,1};
   //lens_flare_create(RED,GREEN,BLUE,flares);
   flares.resize(4);
-  flares[0] = Flare(-1, 1.0f, 1.*0.1f,  RED, 1.0);
-  flares[1] = Flare(-1, 1.0f, 1.*0.15f, GREEN, 1.0);
-  flares[2] = Flare(-1, 1.0f, 1.*0.35f, BLUE, 1.0);
-  flares[3] = Flare( 2, 1.0f, 1.*0.1f, BLUE, 0.4);
+  flares[0] = igl::opengl2::Flare(-1, 1.0f, 1.*0.1f,  RED, 1.0);
+  flares[1] = igl::opengl2::Flare(-1, 1.0f, 1.*0.15f, GREEN, 1.0);
+  flares[2] = igl::opengl2::Flare(-1, 1.0f, 1.*0.35f, BLUE, 1.0);
+  flares[3] = igl::opengl2::Flare( 2, 1.0f, 1.*0.1f, BLUE, 0.4);
 
   glutMainLoop();
 

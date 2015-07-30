@@ -6,10 +6,10 @@
 #include <igl/boundary_conditions.h>
 #include <igl/centroid.h>
 #include <igl/colon.h>
-#include <igl/draw_floor.h>
-#include <igl/draw_mesh.h>
-#include <igl/draw_skeleton_3d.h>
-#include <igl/draw_skeleton_vector_graphics.h>
+#include <igl/opengl2/draw_floor.h>
+#include <igl/opengl2/draw_mesh.h>
+#include <igl/opengl2/draw_skeleton_3d.h>
+#include <igl/opengl2/draw_skeleton_vector_graphics.h>
 #include <igl/file_exists.h>
 #include <igl/forward_kinematics.h>
 #include <igl/get_seconds.h>
@@ -20,21 +20,22 @@
 #include <igl/normalize_row_sums.h>
 #include <igl/pathinfo.h>
 #include <igl/per_face_normals.h>
-#include <igl/project.h>
+#include <igl/opengl2/project.h>
 #include <igl/quat_to_mat.h>
 #include <igl/readTGF.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/remove_unreferenced.h>
-#include <igl/report_gl_error.h>
-#include <igl/right_axis.h>
+#include <igl/opengl/report_gl_error.h>
+#include <igl/opengl2/right_axis.h>
 #include <igl/slice.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
-#include <igl/sort_triangles.h>
+#include <igl/opengl2/sort_triangles.h>
 #include <igl/trackball.h>
 #include <igl/two_axis_valuator_fixed_up.h>
 #include <igl/unique.h>
-#include <igl/unproject.h>
+#include <igl/opengl2/unproject.h>
+#include <igl/opengl2/model_proj_viewport.h>
 #include <igl/writeOBJ.h>
 #include <igl/writeOFF.h>
 #include <igl/writeTGF.h>
@@ -248,7 +249,7 @@ void sort()
   push_scene();
   push_object();
   VectorXi I;
-  sort_triangles(V,F,sorted_F,I);
+  igl::opengl2::sort_triangles(V,F,sorted_F,I);
   slice(N,I,1,sorted_N);
   pop_object();
   pop_scene();
@@ -301,7 +302,7 @@ void display()
   glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
-  draw_floor(GREY,DARK_GREY);
+  igl::opengl2::draw_floor(GREY,DARK_GREY);
   glDisable(GL_CULL_FACE);
   glPopMatrix();
 
@@ -325,11 +326,11 @@ void display()
             }
           }
         }
-        draw_skeleton_3d(s.C,s.BE,MatrixXd(),colors,bbd*0.5);
+        igl::opengl2::draw_skeleton_3d(s.C,s.BE,MatrixXd(),colors,bbd*0.5);
         break;
       }
       case SKEL_STYLE_TYPE_VECTOR_GRAPHICS:
-        draw_skeleton_vector_graphics(s.C,s.BE);
+        igl::opengl2::draw_skeleton_vector_graphics(s.C,s.BE);
         break;
     }
   };
@@ -361,7 +362,7 @@ void display()
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
   }
   glLineWidth(1.0);
-  draw_mesh(V,sorted_F,sorted_N);
+  igl::opengl2::draw_mesh(V,sorted_F,sorted_N);
   glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
   if(skeleton_on_top)
@@ -373,7 +374,7 @@ void display()
   pop_object();
   pop_scene();
 
-  report_gl_error();
+  igl::opengl::report_gl_error();
 
   TwDraw();
   glutSwapBuffers();
@@ -468,7 +469,7 @@ bool ss_select(
   for(int c = 0;c<C.rows();c++)
   {
     const RowVector3d & Cc = C.row(c);
-    const auto Pc = project(Cc);
+    const auto Pc = igl::opengl2::project(Cc);
     const double SELECTION_DIST = 18;//pixels
     const double dist = (Pc.head(2)-RowVector2d(mouse_x,height-mouse_y)).norm();
     if(dist < SELECTION_DIST && (accum || dist < min_dist))
@@ -662,17 +663,24 @@ void mouse_drag(int mouse_x, int mouse_y)
       down_C = s.C;
       new_leaf_on_drag = false;
     }
+      Eigen::Matrix4f model,proj;
+      Eigen::Vector4f viewport;
+      igl::opengl2::model_proj_viewport(model,proj,viewport);
+      Eigen::Vector2f pos(mouse_x,height-mouse_y);
     if(new_root_on_drag)
     {
       // two new nodes
       s.C.conservativeResize(s.C.rows()+2,3);
       const int nc = s.C.rows();
       Vector3d obj;
-      int nhits = igl::embree::unproject_in_mesh(mouse_x,height-mouse_y,ei,obj);
+
+      int nhits = igl::embree::unproject_in_mesh(
+          pos,model,proj,viewport,ei,obj);
+
       if(nhits == 0)
       {
-        Vector3d pV_mid = project(Vcen);
-        obj = unproject(Vector3d(mouse_x,height-mouse_y,pV_mid(2)));
+        Vector3d pV_mid = igl::opengl2::project(Vcen);
+        obj = igl::opengl2::unproject(Vector3d(mouse_x,height-mouse_y,pV_mid(2)));
       }
       s.C.row(nc-2) = obj;
       s.C.row(nc-1) = obj;
@@ -688,21 +696,21 @@ void mouse_drag(int mouse_x, int mouse_y)
     }
     double z = 0;
     Vector3d obj,win;
-    int nhits = igl::embree::unproject_in_mesh(mouse_x,height-mouse_y,ei,obj);
-    project(obj,win);
+    int nhits = igl::embree::unproject_in_mesh(pos,model,proj,viewport,ei,obj);
+    igl::opengl2::project(obj,win);
     z = win(2);
 
     for(int si = 0;si<s.sel.size();si++)
     {
       const int c = s.sel(si);
-      Vector3d pc = project((RowVector3d) down_C.row(c));
+      Vector3d pc = igl::opengl2::project((RowVector3d) down_C.row(c));
       pc(0) += mouse_x-down_x;
       pc(1) += (height-mouse_y)-(height-down_y);
       if(nhits > 0)
       {
         pc(2) = z;
       }
-      s.C.row(c) = unproject(pc);
+      s.C.row(c) = igl::opengl2::unproject(pc);
     }
     pop_object();
     pop_scene();
@@ -762,7 +770,7 @@ void symmetrize()
   push_scene();
   push_object();
   Vector3d right;
-  right_axis(right.data(),right.data()+1,right.data()+2);
+  igl::opengl2::right_axis(right.data(),right.data()+1,right.data()+2);
   right.normalize();
   MatrixXd RC(s.C.rows(),s.C.cols());
   MatrixXd old_C = s.C;
@@ -1014,9 +1022,13 @@ void key(unsigned char key, int mouse_x, int mouse_y)
       push_object();
       for(int c = 0;c<s.C.rows();c++)
       {
-        Vector3d P = project((Vector3d)s.C.row(c));
+        Vector3d P = igl::opengl2::project((Vector3d)s.C.row(c));
         Vector3d obj;
-        int nhits = igl::embree::unproject_in_mesh(P(0),P(1),ei,obj);
+        Eigen::Matrix4f model,proj;
+        Eigen::Vector4f viewport;
+        igl::opengl2::model_proj_viewport(model,proj,viewport);
+        Eigen::Vector2f pos(P(0),P(1));
+        int nhits = igl::embree::unproject_in_mesh(pos,model,proj,viewport,ei,obj);
         if(nhits > 0)
         {
           s.C.row(c) = obj;
@@ -1105,7 +1117,7 @@ int main(int argc, char * argv[])
   cout<<"P,p                    Split \"parent\" bone(s) of selection by creating new node(s)."<<endl;
   cout<<"R,r                    Breadth first search at selection to redirect skeleton into tree."<<endl;
   cout<<"S,s                    Save current skeleton to output .tgf file."<<endl;
-  cout<<"U,u                    Project then unproject inside mesh (as if dragging each by ε)."<<endl;
+  cout<<"U,u                    Project then igl::opengl2::unproject inside mesh (as if dragging each by ε)."<<endl;
   cout<<"Y,Y                    Symmetrize selection over plane through object centroid and right vector."<<endl;
   cout<<"Z,z                    Snap to canonical view."<<endl;
   cout<<"⌘ Z                    Undo."<<endl;

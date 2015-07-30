@@ -60,7 +60,7 @@ IGL_INLINE void igl::parula(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template instanciation
+// Explicit template specialization
 template void igl::parula<double>(double, double*);
 template void igl::parula<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

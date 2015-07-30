@@ -167,4 +167,6 @@ template bool igl::list_to_matrix<double, Eigen::PlainObjectBase<Eigen::Matrix<d
 template bool igl::list_to_matrix<double, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > >(std::vector<double, std::allocator<double> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 template bool igl::list_to_matrix<int, Eigen::Matrix<int, -1, 2, 0, -1, 2> >(std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > const&, Eigen::Matrix<int, -1, 2, 0, -1, 2>&);
 template bool igl::list_to_matrix<unsigned long long int,Eigen::PlainObjectBase<Eigen::Matrix<int,-1,1,0,-1,1> > >(std::vector<unsigned long long int,std::allocator<unsigned long long int> > const &,Eigen::PlainObjectBase<Eigen::Matrix<int,-1,1,0,-1,1> > &);
+template bool igl::list_to_matrix<bool, Eigen::PlainObjectBase<Eigen::Array<bool, -1, 1, 0, -1, 1> > >(std::vector<bool, std::allocator<bool> > const&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, 1, 0, -1, 1> >&);
+template bool igl::list_to_matrix<bool, Eigen::PlainObjectBase<Eigen::Array<bool, -1, -1, 0, -1, -1> > >(std::vector<std::vector<bool, std::allocator<bool> >, std::allocator<std::vector<bool, std::allocator<bool> > > > const&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, -1, 0, -1, -1> >&);
 #endif

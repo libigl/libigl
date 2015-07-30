@@ -3,8 +3,8 @@
 
 #include <igl/C_STR.h>
 #include <igl/REDRUM.h>
-#include <igl/draw_floor.h>
-#include <igl/draw_mesh.h>
+#include <igl/opengl2/draw_floor.h>
+#include <igl/opengl2/draw_mesh.h>
 #include <igl/get_seconds.h>
 #include <igl/jet.h>
 #include <igl/list_to_matrix.h>
@@ -20,7 +20,7 @@
 #include <igl/readOBJ.h>
 #include <igl/readOFF.h>
 #include <igl/readWRL.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/trackball.h>
 #include <igl/unique_simplices.h>
@@ -244,7 +244,7 @@ void push_scene(
   double z_fix = 1.0;
   // 5 is far enough to see unit "things" well
   const double camera_z = 2;
-  // Test if should be using true orthographic projection
+  // Test if should be using true orthographic igl::opengl2::projection
   if(angle == 0)
   {
     glOrtho(
@@ -377,7 +377,7 @@ void draw_objects()
     glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128);
     glPushMatrix();
     glMultMatrixd(mesh.a.matrix().data());
-    draw_mesh(mesh.V,mesh.F,mesh.N);
+    igl::opengl2::draw_mesh(mesh.V,mesh.F,mesh.N);
     glPopMatrix();
   }
 
@@ -472,7 +472,7 @@ void display()
 
   draw_scene();
 
-  report_gl_error();
+  igl::opengl::report_gl_error();
   TwDraw();
   glutSwapBuffers();
   glutPostRedisplay();

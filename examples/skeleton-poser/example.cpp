@@ -1,5 +1,5 @@
 #include <igl/Camera.h>
-#include <igl/MouseController.h>
+#include <igl/opengl2/MouseController.h>
 #include <igl/REDRUM.h>
 #include <igl/STR.h>
 #include <igl/barycenter.h>
@@ -8,11 +8,11 @@
 #include <igl/boundary_facets.h>
 #include <igl/centroid.h>
 #include <igl/colon.h>
-#include <igl/draw_beach_ball.h>
-#include <igl/draw_floor.h>
-#include <igl/draw_mesh.h>
-#include <igl/draw_skeleton_3d.h>
-#include <igl/draw_skeleton_vector_graphics.h>
+#include <igl/opengl2/draw_beach_ball.h>
+#include <igl/opengl2/draw_floor.h>
+#include <igl/opengl2/draw_mesh.h>
+#include <igl/opengl2/draw_skeleton_3d.h>
+#include <igl/opengl2/draw_skeleton_vector_graphics.h>
 #include <igl/forward_kinematics.h>
 #include <igl/get_seconds.h>
 #include <igl/lbs_matrix.h>
@@ -26,7 +26,7 @@
 #include <igl/readTGF.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/remove_unreferenced.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
 #include <igl/trackball.h>
@@ -97,7 +97,7 @@ Eigen::VectorXi P,RP;
 
 struct State
 {
-  igl::MouseController mouse;
+  igl::opengl2::MouseController mouse;
   Eigen::MatrixXf colors;
 } s;
 
@@ -295,7 +295,7 @@ void display()
   glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
-  draw_floor(GREY,DARK_GREY);
+  igl::opengl2::draw_floor(GREY,DARK_GREY);
   glDisable(GL_CULL_FACE);
   glPopMatrix();
 
@@ -308,11 +308,11 @@ void display()
       default:
       case SKEL_STYLE_TYPE_3D:
       {
-        draw_skeleton_3d(C,BE,T,s.colors,bbd*0.5);
+        igl::opengl2::draw_skeleton_3d(C,BE,T,s.colors,bbd*0.5);
         break;
       }
       case SKEL_STYLE_TYPE_VECTOR_GRAPHICS:
-        draw_skeleton_vector_graphics(C,BE,T);
+        igl::opengl2::draw_skeleton_vector_graphics(C,BE,T);
         break;
     }
   };
@@ -359,7 +359,7 @@ void display()
   MatrixXd U = M*T;
   MatrixXd UN;
   per_face_normals(U,F,UN);
-  draw_mesh(U,F,UN);
+  igl::opengl2::draw_mesh(U,F,UN);
   glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
   glDisable(GL_DEPTH_TEST);
   draw_skeleton(T);
@@ -375,7 +375,7 @@ void display()
     glScaled(0.1,0.1,0.1);
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(0,-100000);
-    draw_beach_ball();
+    igl::opengl2::draw_beach_ball();
     glDisable(GL_POLYGON_OFFSET_FILL);
     glPopMatrix();
   }
@@ -389,7 +389,7 @@ void display()
   pop_object();
   pop_scene();
 
-  report_gl_error();
+  igl::opengl::report_gl_error();
 
   TwDraw();
   glutSwapBuffers();
@@ -459,6 +459,7 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
           if(mouse_was_selecting)
           {
             s.mouse.set_selection_from_last_drag(C,BE,P,RP);
+            using namespace igl::opengl2;
             MouseController::VectorXb S;
             MouseController::propogate_to_descendants_if(
               s.mouse.selection(),P,S);

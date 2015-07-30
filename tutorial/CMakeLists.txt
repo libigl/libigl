@@ -63,6 +63,7 @@ add_subdirectory("102_DrawMesh")
 add_subdirectory("103_Events")
 add_subdirectory("104_Colors")
 add_subdirectory("105_Overlays")
+add_subdirectory("106_ViewerMenu")
 
 # Chapter 2
 add_subdirectory("201_Normals")
@@ -77,6 +78,7 @@ add_subdirectory("302_Sort")
 add_subdirectory("303_LaplaceEquation")
 add_subdirectory("304_LinearEqualityConstraints")
 add_subdirectory("305_QuadraticProgramming")
+add_subdirectory("306_EigenDecomposition")
 
 # Chapter 4
 add_subdirectory("401_BiharmonicDeformation")
@@ -85,6 +87,7 @@ add_subdirectory("403_BoundedBiharmonicWeights")
 add_subdirectory("404_DualQuaternionSkinning")
 add_subdirectory("405_AsRigidAsPossible")
 add_subdirectory("406_FastAutomaticSkinningTransformations")
+add_subdirectory("407_BiharmonicCoordinates")
 
 # Chapter 5
 add_subdirectory("501_HarmonicParam")
@@ -98,6 +101,7 @@ endif(LIBCOMISO_FOUND)
 add_subdirectory("507_PolyVectorField")
 add_subdirectory("508_ConjugateField")
 add_subdirectory("509_Planarization")
+add_subdirectory("510_Integrable")
 
 # Chapter 6
 if(TINYXML2_FOUND)
@@ -122,4 +126,3 @@ add_subdirectory("701_Statistics")
 add_subdirectory("702_WindingNumber")
 add_subdirectory("703_Decimation")
 add_subdirectory("704_SignedDistance")
-add_subdirectory("705_Integrable")

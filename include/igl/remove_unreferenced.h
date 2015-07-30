@@ -18,14 +18,16 @@
 #include <Eigen/Core>
 namespace igl 
 {
-  // [ NV, NF ] = remove_unreferenced( V,F)
   // Remove unreferenced vertices from V, updating F accordingly
   //
   // Input:
-  // V,F: mesh description
-  //
-  // Output:
-  // NV, NF: new mesh without unreferenced vertices
+  //   V  #V by dim list of mesh vertex positions
+  //   F  #F by ss list of simplices (Values of -1 are quitely skipped)
+  // Outputs:
+  //   NV  #NV by dim list of mesh vertex positions
+  //   NF  #NF by ss list of simplices
+  //   IM  #V by 1 list of indices such that: NF = IM(F) and NT = IM(T)
+  //      and V(find(IM<=size(NV,1)),:) = NV
   //
   template <
     typename DerivedV,
@@ -39,6 +41,38 @@ namespace igl
     Eigen::PlainObjectBase<DerivedNV> &NV,
     Eigen::PlainObjectBase<DerivedNF> &NF,
     Eigen::PlainObjectBase<DerivedI> &I);
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedNV,
+    typename DerivedNF,
+    typename DerivedI,
+    typename DerivedJ>
+  IGL_INLINE void remove_unreferenced(
+    const Eigen::PlainObjectBase<DerivedV> &V,
+    const Eigen::PlainObjectBase<DerivedF> &F,
+    Eigen::PlainObjectBase<DerivedNV> &NV,
+    Eigen::PlainObjectBase<DerivedNF> &NF,
+    Eigen::PlainObjectBase<DerivedI> &I,
+    Eigen::PlainObjectBase<DerivedJ> &J);
+  // Inputs:
+  //   n  number of vertices (possibly greater than F.maxCoeff()+1)
+  //   F  #F by ss list of simplices
+  // Outputs:
+  //   IM  #V by 1 list of indices such that: NF = IM(F) and NT = IM(T)
+  //      and V(find(IM<=size(NV,1)),:) = NV
+  //   J  #RV by 1 list, such that RV = V(J,:)
+  //   
+  template <
+    typename DerivedF,
+    typename DerivedI,
+    typename DerivedJ>
+  IGL_INLINE void remove_unreferenced(
+    const size_t n,
+    const Eigen::PlainObjectBase<DerivedF> &F,
+    Eigen::PlainObjectBase<DerivedI> &I,
+    Eigen::PlainObjectBase<DerivedJ> &J);
+
 }
 
 #ifndef IGL_STATIC_LIBRARY

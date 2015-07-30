@@ -2,16 +2,16 @@
 #include <igl/Camera.h>
 #include <igl/REDRUM.h>
 #include <igl/components.h>
-#include <igl/create_shader_program.h>
-#include <igl/draw_floor.h>
+#include <igl/opengl/create_shader_program.h>
+#include <igl/opengl2/draw_floor.h>
 #include <igl/get_seconds.h>
 #include <igl/hsv_to_rgb.h>
-#include <igl/init_render_to_texture.h>
+#include <igl/opengl/init_render_to_texture.h>
 #include <igl/jet.h>
 #include <igl/per_face_normals.h>
 #include <igl/randperm.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/rgb_to_hsv.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
@@ -152,8 +152,8 @@ void reshape(int width, int height)
   // Send the new window size to AntTweakBar
   TwWindowSize(width, height);
   s.camera.m_aspect = (double)width/(double)height;
-  igl::init_render_to_texture(width,height, pick_tex, pick_fbo, pick_dfbo);
-  igl::report_gl_error("init_render_to_texture: ");
+  igl::opengl::init_render_to_texture(width,height, pick_tex, pick_fbo, pick_dfbo);
+  igl::opengl::report_gl_error("init_render_to_texture: ");
   glutPostRedisplay();
 }
 
@@ -231,7 +231,7 @@ void draw_mesh(
 
     glBindBuffer(GL_ARRAY_BUFFER,sbo);
     glBufferData(GL_ARRAY_BUFFER,sizeof(float)*SR.size(),SR.data(),GL_STATIC_DRAW);
-    igl::report_gl_error("glBindBuffer: ");
+    igl::opengl::report_gl_error("glBindBuffer: ");
 
     scene_dirty = false;
   }
@@ -289,11 +289,11 @@ GLuint generate_1d_texture(
   glTexImage1D(GL_TEXTURE_1D, 0, colors.cols(),colors.rows(),
     0,GL_RGB, GL_UNSIGNED_BYTE,
     colors.data());
-  igl::report_gl_error("glTexImage1D: ");
+  igl::opengl::report_gl_error("glTexImage1D: ");
   glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
   glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP);
   glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-  igl::report_gl_error("texture: ");
+  igl::opengl::report_gl_error("texture: ");
   return tex_id;
 }
  
@@ -333,7 +333,7 @@ void main()
     colors(id,2) = re;
   }
   tex_id = generate_1d_texture(colors);
-  return igl::create_shader_program(
+  return igl::opengl::create_shader_program(
     vertex_shader.c_str(), 
     fragment_shader.c_str(),
     {{"scalar_in",scalar_loc}}
@@ -519,12 +519,12 @@ void main()
 
     tex_id = generate_1d_texture(colors);
 
-    GLuint prog_id = igl::create_shader_program(
+    GLuint prog_id = igl::opengl::create_shader_program(
       vertex_shader.c_str(), 
       fragment_shader.c_str(),
       {{"scalar_in",scalar_loc}}
       );
-    igl::report_gl_error("create_shader_program: ");
+    igl::opengl::report_gl_error("create_shader_program: ");
     return prog_id;
   };
   static GLuint scalar_loc = 1;
@@ -547,7 +547,7 @@ void main()
     }else
     {
       glUseProgram(color_components_prog);
-      igl::report_gl_error("UseProgram: ");
+      igl::opengl::report_gl_error("UseProgram: ");
       draw_mesh(V,F,N,s.I,scalar_loc);
     }
   }
@@ -556,7 +556,7 @@ void main()
 
   glPushAttrib(GL_ALL_ATTRIB_BITS);
   glUseProgram(color_components_prog);
-    igl::report_gl_error("use: ");
+    igl::opengl::report_gl_error("use: ");
   glUniform1f(glGetUniformLocation(color_components_prog,"cmin"),s.I.minCoeff());
   glUniform1f(glGetUniformLocation(color_components_prog,"cmax"),s.I.maxCoeff());
   //glUniform1f(glGetUniformLocation(color_components_prog,"cc_selected"),cc_selected);
@@ -568,7 +568,7 @@ void main()
   glBindTexture(GL_TEXTURE_1D, s.mask_id);
   glUniform1i(glGetUniformLocation(color_components_prog,"selected_mask"),1);
 
-    igl::report_gl_error("unif: ");
+    igl::opengl::report_gl_error("unif: ");
   if(fill_visible)
   {
     glEnable(GL_POLYGON_OFFSET_FILL); // Avoid Stitching!
@@ -585,7 +585,7 @@ void main()
   glTranslated(0,floor_offset,0);
   const float GREY[4] = {0.5,0.5,0.6,1.0};
   const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
-  draw_floor(GREY,DARK_GREY);
+  igl::opengl2::draw_floor(GREY,DARK_GREY);
   glPopMatrix();
 
   pop_scene();
