@@ -37,14 +37,13 @@
 # email address as the sender and add a filter.
 #
 function report_error {
-  subject="$(echo -e "libigl compilation failure\nContent-Type: text/html")" 
+  subject="$(echo -e "libigl compilation failure: $1 \nContent-Type: text/html")" 
   recipients="alecjacobson@gmail.com"
   pre_style="style='background-color: #c3e0f0; overflow: auto; padding-left: 8px; padding-right: 8px; padding-top: 4px; padding-bottom: 4px; border: 1px solid #999;'";
   html_content="
 <p>
 The following command failed during the last nightly libigl build:
-<pre $pre_style><code>
-$(echo $1 | \
+<pre $pre_style><code>$(echo -e "$1" | \
   sed \
   's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
 </code></pre>
@@ -52,8 +51,7 @@ $(echo $1 | \
 
 <p>
 The command produced the following standard output/error before failing:
-<pre $pre_style><code>
-$(echo $2 | \
+<pre $pre_style><code>$(echo -e "$2" | \
   sed \
   's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
 </code></pre>
@@ -63,7 +61,7 @@ $(echo $2 | \
 <a href=https://github.com/libigl/libigl/>libigl github</a> | <a href=https://github.com/libigl/libigl/commits/master>commits</a>
 </p>
 "
-  echo $html_content | mail -s "$subject" $recipients
+  echo -e "$html_content" | mail -s "$subject" $recipients
 } 
 
 # Runs the arguements as a command as usual, but if the command fails send an
@@ -73,6 +71,9 @@ $(echo $2 | \
 #
 function guard {
   command="$@"
+  pwd
+  echo "$command"
+  sleep 2
   if ! output=$($command 2>&1) ;
   then
     report_error "$command" "$output"
@@ -92,18 +93,17 @@ guard git submodule update --init --recursive
 # Build static library
 mkdir lib
 cd lib
-# echo's make it easier to identify which cmake/make command is failing
-guard echo "cmake static lib" && cmake -DCMAKE_BUILD_TYPE=Release  ../optional/
-guard echo "make static lib" && make
+# Redundant paths make it clear which command is failing
+guard cmake -DCMAKE_BUILD_TYPE=Debug  ../optional/
+guard make -C ../lib
 # Build tutorial with default settings
 mkdir ../tutorial/build
 cd ../tutorial/build
-guard echo "cmake tutorial" && cmake -DCMAKE_BUILD_TYPE=Release  ..
-guard echo "make tutorial" && make
+guard cmake -DCMAKE_BUILD_TYPE=Debug  ../../tutorial/
+guard make -C ../../tutorial/build
 # Build tutorial with static library
 cd ../
-rm -rf build
-mkdir build
-cd build
-guard echo "cmake tutorial static" && cmake -DLIBIGL_USE_STATIC_LIBRARY=ON -DCMAKE_BUILD_TYPE=Release  ..
-guard echo "make tutorial static" && make
+mkdir build-use-static
+cd build-use-static
+guard cmake -DCMAKE_BUILD_TYPE=Debug -DLIBIGL_USE_STATIC_LIBRARY=ON ../../tutorial/
+guard make -C ../../tutorial/build-use-static
