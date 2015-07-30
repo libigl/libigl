@@ -4,6 +4,14 @@
 
 <https://github.com/libigl/libigl/>
 
+> Get started with:
+>
+```bash
+git clone https://github.com/libigl/libigl.git
+cd libigl
+git submodule update --init --recursive
+```
+
 libigl is a simple C++ geometry processing library. We have a wide
 functionality including construction of sparse discrete differential geometry
 operators and finite-elements matrices such as the cotangent Laplacian and
