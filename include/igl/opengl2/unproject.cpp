@@ -33,7 +33,8 @@ IGL_INLINE void igl::opengl2::unproject(
   const Eigen::PlainObjectBase<Derivedwin> & win,
   Eigen::PlainObjectBase<Derivedobj> & obj)
 {
-  obj = igl::opengl2::unproject(win).template cast<typename Derivedobj::Scalar>();
+  const auto ret = igl::opengl2::unproject(win);
+  obj = ret.template cast<typename Derivedobj::Scalar>();
 }
 
 
