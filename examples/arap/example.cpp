@@ -1,12 +1,12 @@
 #include <igl/Camera.h>
-#include <igl/OpenGL_convenience.h>
+#include <igl/opengl/OpenGL_convenience.h>
 #include <igl/PI.h>
 #include <igl/STR.h>
 #include <igl/arap.h>
 #include <igl/barycenter.h>
 #include <igl/cotmatrix.h>
-#include <igl/draw_floor.h>
-#include <igl/draw_mesh.h>
+#include <igl/opengl2/draw_floor.h>
+#include <igl/opengl2/draw_mesh.h>
 #include <igl/get_seconds.h>
 #include <igl/harmonic.h>
 #include <igl/invert_diag.h>
@@ -27,7 +27,7 @@
 #include <igl/readOBJ.h>
 #include <igl/readOFF.h>
 #include <igl/readWRL.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
 #include <igl/trackball.h>
@@ -420,7 +420,7 @@ void display()
   //glMaterialf (GL_BACK, GL_SHININESS, 128);
   glEnable(GL_COLOR_MATERIAL);
 
-  draw_mesh(U,F,N,C);
+  igl::opengl2::draw_mesh(U,F,N,C);
   glDisable(GL_COLOR_MATERIAL);
 
   pop_object();
@@ -435,12 +435,12 @@ void display()
   //const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
 
   //draw_floor(GREY,DARK_GREY);
-  draw_floor();
+  igl::opengl2::draw_floor();
   glPopMatrix();
 
   pop_scene();
 
-  report_gl_error();
+  igl::opengl::report_gl_error();
 
   TwDraw();
   glutSwapBuffers();

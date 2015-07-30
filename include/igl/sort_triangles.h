@@ -35,52 +35,6 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedP> & P,
     Eigen::PlainObjectBase<DerivedFF> & FF,
     Eigen::PlainObjectBase<DerivedI> & I);
-#ifndef IGL_NO_OPENGL
-  template <
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedFF,
-    typename DerivedI>
-  IGL_INLINE void sort_triangles(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    Eigen::PlainObjectBase<DerivedFF> & FF,
-    Eigen::PlainObjectBase<DerivedI> & I);
-  template <
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedFF,
-    typename DerivedI>
-  IGL_INLINE void sort_triangles_slow(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    Eigen::PlainObjectBase<DerivedFF> & FF,
-    Eigen::PlainObjectBase<DerivedI> & I);
-  //template <
-  //  typename DerivedV,
-  //  typename DerivedF,
-  //  typename DerivedMV,
-  //  typename DerivedP,
-  //  typename DerivedFF,
-  //  typename DerivedI>
-  //IGL_INLINE void sort_triangles_robust(
-  //  const Eigen::PlainObjectBase<DerivedV> & V,
-  //  const Eigen::PlainObjectBase<DerivedF> & F,
-  //  const Eigen::PlainObjectBase<DerivedMV> & MV,
-  //  const Eigen::PlainObjectBase<DerivedP> & P,
-  //  Eigen::PlainObjectBase<DerivedFF> & FF,
-  //  Eigen::PlainObjectBase<DerivedI> & I);
-  //template <
-  //  typename DerivedV,
-  //  typename DerivedF,
-  //  typename DerivedFF,
-  //  typename DerivedI>
-  //IGL_INLINE void sort_triangles_robust(
-  //  const Eigen::PlainObjectBase<DerivedV> & V,
-  //  const Eigen::PlainObjectBase<DerivedF> & F,
-  //  Eigen::PlainObjectBase<DerivedFF> & FF,
-  //  Eigen::PlainObjectBase<DerivedI> & I);
-#endif
 }
 
 #ifndef IGL_STATIC_LIBRARY

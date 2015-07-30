@@ -7,10 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_PNG_TEXTURE_FROM_FILE_H
 #define IGL_PNG_TEXTURE_FROM_FILE_H
-#ifndef IGL_NO_OPENGL
 #include "../igl_inline.h"
-
-#include "../OpenGL_convenience.h"
+#include "../opengl/OpenGL_convenience.h"
 
 #include <string>
 
@@ -35,7 +33,6 @@ namespace igl
 #  include "texture_from_file.cpp"
 #endif
 
-#endif
 #endif
 
 

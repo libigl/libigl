@@ -11,8 +11,7 @@
 #include <Eigen/Core>
 #include <string>
 
-#ifndef IGL_NO_OPENGL
-#include "../OpenGL_convenience.h"
+#include "../opengl/OpenGL_convenience.h"
 
 namespace igl
 {
@@ -28,7 +27,6 @@ namespace igl
     IGL_INLINE bool texture_from_png(const std::string png_file, GLuint & id);
   }
 }
-#endif
 
 namespace igl
 {

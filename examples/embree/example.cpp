@@ -1,13 +1,13 @@
-#include <igl/OpenGL_convenience.h>
-#include <igl/draw_floor.h>
-#include <igl/draw_mesh.h>
+#include <igl/opengl/OpenGL_convenience.h>
+#include <igl/opengl2/draw_floor.h>
+#include <igl/opengl2/draw_mesh.h>
 #include <igl/normalize_row_lengths.h>
 #include <igl/per_face_normals.h>
 #include <igl/quat_to_mat.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/trackball.h>
-#include <igl/unproject.h>
+#include <igl/opengl2/unproject.h>
 #include <igl/embree/EmbreeIntersector.h>
 
 #ifdef __APPLE__
@@ -129,7 +129,7 @@ void lights()
   glLightfv(GL_LIGHT1,GL_POSITION,pos);
 }
 
-// Set up projection and model view of scene
+// Set up igl::opengl2::projection and model view of scene
 void push_scene()
 {
   using namespace igl;
@@ -208,7 +208,7 @@ void display()
 
   // Draw the model
   glEnable(GL_LIGHTING);
-  draw_mesh(V,F,N,C);
+  igl::opengl2::draw_mesh(V,F,N,C);
 
   // Draw all hits
   glBegin(GL_POINTS);
@@ -234,7 +234,7 @@ void display()
   glPushMatrix();
   glEnable(GL_LIGHTING);
   glTranslated(0,-1,0);
-  draw_floor();
+  igl::opengl2::draw_floor();
   glPopMatrix();
 
   // draw a transparent "projection screen" show model at time of hit (aka
@@ -290,7 +290,7 @@ void display()
     glVertex2fv(win_s.data());
     glEnd();
   }
-  report_gl_error();
+  igl::opengl::report_gl_error();
 
   glutSwapBuffers();
   glutPostRedisplay();
@@ -318,12 +318,12 @@ void mouse_move(int mouse_x, int mouse_y)
   // Unproject mouse at 0 depth and some positive depth
   win_s = Vector3f(mouse_x,height-mouse_y,0);
   Vector3f win_d(mouse_x,height-mouse_y,1);
-  unproject(win_s,s);
-  unproject(win_d,d);
+  igl::opengl2::unproject(win_s,s);
+  igl::opengl2::unproject(win_d,d);
   pop_object();
   pop_scene();
-  report_gl_error();
-  // Shoot ray at unprojected mouse in view direction
+  igl::opengl::report_gl_error();
+  // Shoot ray at igl::opengl2::unprojected mouse in view direction
   dir = d-s;
   int num_rays_shot;
   ei.intersectRay(s,dir,hits,num_rays_shot);
@@ -365,16 +365,16 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
       // Collect "projection screen" locations
       push_scene();
       push_object();
-      // unproject corners of window
+      // igl::opengl2::unproject corners of window
       const double depth = 0.999;
       Vector3d win_NW(    0,height,depth);
       Vector3d win_NE(width,height,depth);
       Vector3d win_SE(width,0,depth);
       Vector3d win_SW(0,0,depth);
-      unproject(win_NW,NW);
-      unproject(win_NE,NE);
-      unproject(win_SE,SE);
-      unproject(win_SW,SW);
+      igl::opengl2::unproject(win_NW,NW);
+      igl::opengl2::unproject(win_NE,NE);
+      igl::opengl2::unproject(win_SE,SE);
+      igl::opengl2::unproject(win_SW,SW);
       // render to framebuffer
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
       glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, dfbo_id);
@@ -386,7 +386,7 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
       glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
       glEnable(GL_LIGHTING);
       glEnable(GL_DEPTH_TEST);
-      draw_mesh(V,F,N,C);
+      igl::opengl2::draw_mesh(V,F,N,C);
       pop_object();
       pop_scene();
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);

@@ -1,9 +1,9 @@
 #include <igl/Camera.h>
-#include <igl/OpenGL_convenience.h>
+#include <igl/opengl/OpenGL_convenience.h>
 #include <igl/STR.h>
 #include <igl/barycenter.h>
-#include <igl/draw_floor.h>
-#include <igl/draw_mesh.h>
+#include <igl/opengl2/draw_floor.h>
+#include <igl/opengl2/draw_mesh.h>
 #include <igl/get_seconds.h>
 #include <igl/jet.h>
 #include <igl/list_to_matrix.h>
@@ -20,10 +20,9 @@
 #include <igl/readOBJ.h>
 #include <igl/readOFF.h>
 #include <igl/readWRL.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
-#include <igl/texture_from_tga.h>
 #include <igl/trackball.h>
 #include <igl/two_axis_valuator_fixed_up.h>
 #include <igl/anttweakbar/ReAntTweakBar.h>
@@ -287,7 +286,7 @@ void display()
   }
   glMatrixMode(GL_MODELVIEW);
 
-  draw_mesh(V,F,N,MatrixXi(),MatrixXd(),TC,TF,MatrixXd(),0,MatrixXi(),0);
+  igl::opengl2::draw_mesh(V,F,N,MatrixXi(),MatrixXd(),TC,TF,MatrixXd(),0,MatrixXi(),0);
 
   glMatrixMode(GL_TEXTURE);
   glPopMatrix();
@@ -320,12 +319,12 @@ void display()
   glDisable(GL_POLYGON_OFFSET_FILL);
   glDisable(GL_TEXTURE_2D);
 
-  draw_floor(GREY,DARK_GREY);
+  igl::opengl2::draw_floor(GREY,DARK_GREY);
   glPopMatrix();
 
   pop_scene();
 
-  report_gl_error();
+  igl::opengl::report_gl_error();
 
   TwDraw();
   glutSwapBuffers();

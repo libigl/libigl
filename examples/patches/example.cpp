@@ -3,8 +3,8 @@
 #include <igl/REDRUM.h>
 #include <igl/bfs_orient.h>
 #include <igl/components.h>
-#include <igl/draw_floor.h>
-#include <igl/draw_mesh.h>
+#include <igl/opengl2/draw_floor.h>
+#include <igl/opengl2/draw_mesh.h>
 #include <igl/get_seconds.h>
 #include <igl/jet.h>
 #include <igl/list_to_matrix.h>
@@ -21,7 +21,7 @@
 #include <igl/readOFF.h>
 #include <igl/readPLY.h>
 #include <igl/readWRL.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
 #include <igl/trackball.h>
@@ -295,10 +295,10 @@ void display()
     if(fill_visible)
     {
       glColor3f(0,0,0);
-      draw_mesh(V,F,s.N);
+      igl::opengl2::draw_mesh(V,F,s.N);
     }else
     {
-      draw_mesh(V,F,s.N,s.C);
+      igl::opengl2::draw_mesh(V,F,s.N,s.C);
     }
 
     // visualize selected patch
@@ -338,7 +338,7 @@ void display()
   {
     glEnable(GL_POLYGON_OFFSET_FILL); // Avoid Stitching!
     glPolygonOffset(1.0, 0);
-    draw_mesh(V,F,s.N,s.C);
+    igl::opengl2::draw_mesh(V,F,s.N,s.C);
   }
 
   pop_object();
@@ -350,12 +350,12 @@ void display()
   glTranslated(0,floor_offset,0);
   const float GREY[4] = {0.5,0.5,0.6,1.0};
   const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
-  draw_floor(GREY,DARK_GREY);
+  igl::opengl2::draw_floor(GREY,DARK_GREY);
   glPopMatrix();
 
   pop_scene();
 
-  report_gl_error();
+  igl::opengl::report_gl_error();
 
   TwDraw();
   glutSwapBuffers();

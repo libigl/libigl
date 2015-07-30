@@ -3,7 +3,7 @@
 # Shared flags etc.
 include ../Makefile.conf
 ifdef LIBIGL_USE_STATIC_LIBRARY
-	LIBIGL_LIB+=-liglembree -liglboost
+	LIBIGL_LIB+=-liglembree
 endif
 
 all: obj example
