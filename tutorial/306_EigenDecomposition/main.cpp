@@ -1,7 +1,7 @@
 #include <igl/eigs.h>
 #include <igl/cotmatrix.h>
 #include <igl/massmatrix.h>
-#include <igl/Viewer/viewer.h>
+#include <igl/viewer/Viewer.h>
 #include <igl/parula.h>
 #include <igl/read_triangle_mesh.h>
 #include <Eigen/Sparse>

@@ -11,7 +11,7 @@
 #include <igl/remove_unreferenced.h>
 #include <igl/slice.h>
 #include <igl/writeDMAT.h>
-#include <igl/Viewer/viewer.h>
+#include <igl/viewer/Viewer.h>
 #include <Eigen/Sparse>
 #include <iostream>
 #include <queue>
