@@ -76,6 +76,7 @@ lecture notes links to a cross-platform example application.
     * [507 N-PolyVector fields](#npolyvectorfields)
     * [508 Conjugate vector fields](#conjugatevectorfields)
     * [509 Planarization](#planarization)
+    * [510 Integrable PolyVector Fields](#integrable)
 * [Chapter 6: External libraries](#chapter6:externallibraries)
     * [601 State serialization](#stateserialization)
     * [602 Mixing Matlab code](#mixingmatlabcode)
@@ -2070,7 +2071,7 @@ satisfies a user-given planarity threshold.
 igl::palanarize (right). The colors represent the planarity of the
 quads.](images/509_Planarization.png)
 
-## Integrable PolyVector fields [integrablenpolyvectors]
+## Integrable PolyVector Fields [integrable]
 
 Vector-field guided surface parameterization is based on the idea of designing the gradients
 of the parameterization functions (which are tangent vector fields on the surface) instead of the functions themselves. Thus, vector-set fields (N-Rosy, frame fields, and polyvector fields) that are to be used for parameterization (and subsequent remeshing) need to be integrable: it must be possible to break them down into individual vector fields that are gradients of scalar functions. Fields obtained by most smoothness-based design methods (eg. [#levy_2008][], [#knoppel_2013][], [#diamanti_2014][], [#bommes_2009][], [#panozzo_2014][]) do not have this property. In [#diamanti_2015][], a method for creating integrable polyvector fields was introduced. This method takes as input a given field and improves its integrability by removing the vector field curl, thus turning it into a gradient of a function ([Example 510](510_Integrable/main.cpp)).
@@ -2932,6 +2933,8 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
 [#diamanti_2014]: Olga Diamanti, Amir Vaxman, Daniele Panozzo, Olga
   Sorkine-Hornung. [Designing N-PolyVector Fields with Complex
   Polynomials](http://igl.ethz.ch/projects/complex-roots/), 2014
+[#diamanti_2015]: Olga Diamanti, Amir Vaxman, Daniele Panozzo, Olga
+  Sorkine-Hornung. [Integrable PolyVector Fields](http://igl.ethz.ch/projects/integrable/), 2015
 [#eck_2005]: Matthias Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
   Stuetzle.  [Multiresolution Analysis of Arbitrary
   Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), 2005.
