@@ -147,14 +147,24 @@ IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
   if (V.rows() == 0)
     return;
 
-  //Eigen::SparseMatrix<double> M;
-  //igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_VORONOI,M);
-  //const auto & MV = M*V;
-  //Eigen::RowVector3d centroid  = MV.colwise().sum()/M.diagonal().sum();
-  Eigen::RowVector3d min_point = V.colwise().minCoeff();
-  Eigen::RowVector3d max_point = V.colwise().maxCoeff();
-  Eigen::RowVector3d centroid  = 0.5*(min_point + max_point);
+  Eigen::RowVector3d min_point;
+  Eigen::RowVector3d max_point;
+  Eigen::RowVector3d centroid;
 
+  if (V.cols() == 3)
+  {
+    min_point = V.colwise().minCoeff();
+    max_point = V.colwise().maxCoeff();
+  }
+  else if (V.cols() == 2)
+  {
+    min_point << V.colwise().minCoeff(),0;
+    max_point << V.colwise().maxCoeff(),0;
+  }
+  else
+    return;
+
+  centroid = 0.5 * (min_point + max_point);
   shift = -centroid.cast<float>();
   double x_scale = fabs(max_point[0] - min_point[0]);
   double y_scale = fabs(max_point[1] - min_point[1]);

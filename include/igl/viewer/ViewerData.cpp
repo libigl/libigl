@@ -316,7 +316,7 @@ IGL_INLINE void igl::viewer::ViewerData::add_label(const Eigen::VectorXd& P,  co
   if (P.size() == 2)
   {
     P_temp = Eigen::RowVectorXd::Zero(3);
-    P_temp << P, 0;
+    P_temp << P.transpose(), 0;
   }
   else
     P_temp = P;
