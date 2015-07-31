@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Daniele Panozzo <daniele.panozzo@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "line_mesh_intersection.h"
 
@@ -25,14 +25,14 @@ IGL_INLINE ScalarMatrix igl::embree::line_mesh_intersection
 {
 
   double tol = 0.00001;
-  
+
   Eigen::MatrixXd ray_pos = V_source;
   Eigen::MatrixXd ray_dir = N_source;
 
   // Allocate matrix for the result
   ScalarMatrix R;
   R.resize(V_source.rows(), 3);
-  
+
   // Initialize embree
   EmbreeIntersector embree;
   embree.init(V_target.template cast<float>(),F_target.template cast<int>());
@@ -41,28 +41,27 @@ IGL_INLINE ScalarMatrix igl::embree::line_mesh_intersection
   for (unsigned i=0; i<ray_pos.rows(); ++i)
   {
     igl::embree::Hit A,B;
-    
     // Shoot ray A
     Eigen::RowVector3d A_pos = ray_pos.row(i) + tol * ray_dir.row(i);
     Eigen::RowVector3d A_dir = -ray_dir.row(i);
-    
-    bool A_hit = embree.intersectRay(A_pos.cast<float>(), A_dir.cast<float>(),A);
-    
+
+    bool A_hit = embree.intersectBeam(A_pos.cast<float>(), A_dir.cast<float>(),A);
+
     Eigen::RowVector3d B_pos = ray_pos.row(i) - tol * ray_dir.row(i);
     Eigen::RowVector3d B_dir = ray_dir.row(i);
-    
-    bool B_hit = embree.intersectRay(B_pos.cast<float>(), B_dir.cast<float>(),B);
-    
-    
+
+    bool B_hit = embree.intersectBeam(B_pos.cast<float>(), B_dir.cast<float>(),B);
+
+
     int choice = -1;
-    
+
     if (A_hit && ! B_hit)
       choice = 0;
     else if (!A_hit && B_hit)
       choice = 1;
     else if (A_hit && B_hit)
       choice = A.t > B.t;
-    
+
     Eigen::RowVector3d temp;
 
     if (choice == -1)
@@ -73,10 +72,13 @@ IGL_INLINE ScalarMatrix igl::embree::line_mesh_intersection
       temp << B.id, B.u, B.v;
 
     R.row(i) = temp;
-    
+
   }
 
   return R;
 
 }
 
+#ifdef IGL_STATIC_LIBRARY
+template Eigen::Matrix<double, -1, -1, 0, -1, -1> igl::embree::line_mesh_intersection<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&);
+#endif

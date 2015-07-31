@@ -70,3 +70,6 @@ external/glfw/build
 tutorial/build*
 tutorial/*/*.mexmaci64
 external/libpng/build
+external/tinyxml2/build
+optional/build
+lib
