@@ -1,19 +1,19 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2014 Stefan Brugger <stefanbrugger@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "procrustes.h"
 #include "polar_svd.h"
 #include "polar_dec.h"
- 
+
 template <
-  typename DerivedX, 
-  typename DerivedY, 
-  typename Scalar, 
-  typename DerivedR, 
+  typename DerivedX,
+  typename DerivedY,
+  typename Scalar,
+  typename DerivedR,
   typename DerivedT>
 IGL_INLINE void igl::procrustes(
     const Eigen::PlainObjectBase<DerivedX>& X,
@@ -29,8 +29,8 @@ IGL_INLINE void igl::procrustes(
   assert(X.cols() == Y.cols() && "Points have same dimensions");
 
   // Center data
-  const VectorXd Xmean = X.colwise().mean();      
-  const VectorXd Ymean = Y.colwise().mean();      
+  const VectorXd Xmean = X.colwise().mean();
+  const VectorXd Ymean = Y.colwise().mean();
   MatrixXd XC = X.rowwise() - Xmean.transpose();
   MatrixXd YC = Y.rowwise() - Ymean.transpose();
 
@@ -45,8 +45,8 @@ IGL_INLINE void igl::procrustes(
      assert (abs(XC.norm() / XC.rows() - scaleY) < 1e-8);
   }
 
-  // Rotation 
-  MatrixXd S = XC.transpose() * YC; 
+  // Rotation
+  MatrixXd S = XC.transpose() * YC;
   MatrixXd T;
   if (includeReflections)
   {
@@ -63,10 +63,10 @@ IGL_INLINE void igl::procrustes(
 
 
 template <
-  typename DerivedX, 
-  typename DerivedY, 
-  typename Scalar, 
-  int DIM, 
+  typename DerivedX,
+  typename DerivedY,
+  typename Scalar,
+  int DIM,
   int TType>
 IGL_INLINE void igl::procrustes(
     const Eigen::PlainObjectBase<DerivedX>& X,
@@ -86,9 +86,9 @@ IGL_INLINE void igl::procrustes(
 }
 
 template <
-  typename DerivedX, 
-  typename DerivedY, 
-  typename DerivedR, 
+  typename DerivedX,
+  typename DerivedY,
+  typename DerivedR,
   typename DerivedT>
 IGL_INLINE void igl::procrustes(
     const Eigen::PlainObjectBase<DerivedX>& X,
@@ -104,9 +104,9 @@ IGL_INLINE void igl::procrustes(
 }
 
 template <
-  typename DerivedX, 
-  typename DerivedY, 
-  typename DerivedR, 
+  typename DerivedX,
+  typename DerivedY,
+  typename DerivedR,
   typename DerivedT>
 IGL_INLINE void igl::procrustes(
     const Eigen::PlainObjectBase<DerivedX>& X,
@@ -118,9 +118,9 @@ IGL_INLINE void igl::procrustes(
 }
 
 template <
-  typename DerivedX, 
-  typename DerivedY, 
-  typename Scalar, 
+  typename DerivedX,
+  typename DerivedY,
+  typename Scalar,
   typename DerivedT>
 IGL_INLINE void igl::procrustes(
     const Eigen::PlainObjectBase<DerivedX>& X,
@@ -134,3 +134,7 @@ IGL_INLINE void igl::procrustes(
   procrustes(X,Y,false,false,Rmat,t);
   R.fromRotationMatrix(Rmat);
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template void igl::procrustes<Eigen::Matrix<double, 3, 2, 0, 3, 2>, Eigen::Matrix<double, 3, 2, 0, 3, 2>, double, Eigen::Matrix<double, 2, 2, 0, 2, 2>, Eigen::Matrix<double, 2, 1, 0, 2, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 2, 0, 3, 2> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 2, 0, 3, 2> > const&, bool, bool, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 2, 0, 2, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> >&);
+#endif
