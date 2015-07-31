@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(705_Integrable)
+project(510_Integrable)
 
 include("../CMakeLists.shared")
 

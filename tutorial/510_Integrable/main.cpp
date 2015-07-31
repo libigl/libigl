@@ -238,15 +238,14 @@ void drawCuts(igl::viewer::Viewer& viewer,
 }
 
 void drawField(igl::viewer::Viewer &viewer,
-               const Eigen::MatrixXd &field)
+               const Eigen::MatrixXd &field,
+               const Eigen::RowVector3d &color)
 {
   for (int n=0; n<2; ++n)
   {
     Eigen::MatrixXd VF = field.block(0,n*3,F.rows(),3);
     Eigen::VectorXd c = VF.rowwise().norm();
-    Eigen::MatrixXd C2;
-    igl::jet(c,1,1+rand_factor,C2);
-    viewer.data.add_edges(B - global_scale*VF, B + global_scale*VF , C2);
+    viewer.data.add_edges(B - global_scale*VF, B + global_scale*VF , color);
   }
 }
 
@@ -335,7 +334,8 @@ void update_display(igl::viewer::Viewer& viewer)
     drawConstraints(viewer);
 
     // Draw Field
-    drawField(viewer,two_pv_ori);
+    Eigen::RowVector3d color; color<<0,0,1;
+    drawField(viewer,two_pv_ori,color);
 
     // Draw Cuts
     drawCuts(viewer,cuts_ori);
@@ -362,7 +362,8 @@ void update_display(igl::viewer::Viewer& viewer)
     drawConstraints(viewer);
 
     // Draw Field
-    drawField(viewer,two_pv);
+    Eigen::RowVector3d color; color<<0,0,1;
+    drawField(viewer,two_pv,color);
 
     // Draw Cuts
     drawCuts(viewer,cuts);
@@ -382,7 +383,8 @@ void update_display(igl::viewer::Viewer& viewer)
     viewer.data.set_colors(C);
 
     // Draw Field
-    drawField(viewer,two_pv_ori);
+    Eigen::RowVector3d color; color<<1,1,1;
+    drawField(viewer,two_pv_ori,color);
 
   }
 
@@ -396,7 +398,8 @@ void update_display(igl::viewer::Viewer& viewer)
     viewer.data.set_colors(C);
 
     // Draw Field
-    drawField(viewer,two_pv);
+    Eigen::RowVector3d color; color<<1,1,1;
+    drawField(viewer,two_pv,color);
   }
 
   if (display_mode == 5)
@@ -409,7 +412,8 @@ void update_display(igl::viewer::Viewer& viewer)
     viewer.data.set_colors(C);
 
     // Draw Field
-    drawField(viewer,two_pv_poisson_ori);
+    Eigen::RowVector3d color; color<<1,1,1;
+    drawField(viewer,two_pv_poisson_ori,color);
   }
 
   if (display_mode == 6)
@@ -422,7 +426,8 @@ void update_display(igl::viewer::Viewer& viewer)
     viewer.data.set_colors(C);
 
     // Draw Field
-    drawField(viewer,two_pv_poisson);
+    Eigen::RowVector3d color; color<<1,1,1;
+    drawField(viewer,two_pv_poisson,color);
   }
 
   if (display_mode == 7)
@@ -477,10 +482,12 @@ void update_display(igl::viewer::Viewer& viewer)
     viewer.data.set_colors(C);
 
     // Draw Field
-    drawField(viewer,two_pv_ori);
+    Eigen::RowVector3d color; color<<0,0,1;
+    drawField(viewer,two_pv_ori,color);
 
     // Draw Integrated Field
-    drawField(viewer,two_pv_poisson_ori);
+    color<<.2,.2,.2;
+    drawField(viewer,two_pv_poisson_ori,color);
 
   }
 
@@ -497,10 +504,12 @@ void update_display(igl::viewer::Viewer& viewer)
     viewer.data.set_colors(C);
 
     // Draw Field
-    drawField(viewer,two_pv);
+    Eigen::RowVector3d color; color<<0,0,1;
+    drawField(viewer,two_pv,color);
 
     // Draw Integrated Field
-    drawField(viewer,two_pv_poisson);
+    color<<.2,.2,.2;
+    drawField(viewer,two_pv_poisson,color);
   }
 
 }
