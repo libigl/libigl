@@ -73,3 +73,5 @@ external/libpng/build
 external/tinyxml2/build
 optional/build
 lib
+tutorial/XXX_test/CMakeLists.txt
+tutorial/XXX_test/main.cpp

@@ -101,6 +101,7 @@ endif(LIBCOMISO_FOUND)
 add_subdirectory("507_PolyVectorField")
 add_subdirectory("508_ConjugateField")
 add_subdirectory("509_Planarization")
+add_subdirectory("510_Integrable")
 
 # Chapter 6
 if(TINYXML2_FOUND)
@@ -125,4 +126,3 @@ add_subdirectory("701_Statistics")
 add_subdirectory("702_WindingNumber")
 add_subdirectory("703_Decimation")
 add_subdirectory("704_SignedDistance")
-add_subdirectory("705_Integrable")
