@@ -340,6 +340,7 @@ namespace comiso {
     const Eigen::PlainObjectBase<DerivedV> &PD2;
     const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular; // bool
     const Eigen::MatrixXi &HandleS_Index; //todo
+    const Eigen::MatrixXi &Handle_Seams;
 
     const MeshSystemInfo &Handle_SystemInfo;
 
@@ -355,11 +356,11 @@ namespace comiso {
     // per wedge UV coordinates, 6 coordinates (1 face) per row
     Eigen::MatrixXd WUV;
 
-    ///solver data
-    SparseSystemData S;
-
+    // Matrices
+    Eigen::SparseMatrix<double> matU, matV;
+    Eigen::VectorXd rhsU, rhsV;
     ///vector of unknowns
-    std::vector< double > X;
+    std::vector< double > XU, XV;
 
     ////REAL PART
     ///number of fixed vertex
@@ -1188,7 +1189,8 @@ IGL_INLINE igl::comiso::PoissonSolver<DerivedV, DerivedF>
                 const Eigen::PlainObjectBase<DerivedV> &_PD2,
                 const Eigen::MatrixXi &_HandleS_Index,
                 const Eigen::Matrix<int, Eigen::Dynamic, 1>&_Handle_Singular,
-                const MeshSystemInfo &_Handle_SystemInfo //todo: const?
+                const MeshSystemInfo &_Handle_SystemInfo, //todo: const?
+                const Eigen::MatrixXi &_Handle_Seams
 ):
 V(_V),
 F(_F),
@@ -1198,7 +1200,8 @@ PD1(_PD1),
 PD2(_PD2),
 HandleS_Index(_HandleS_Index),
 Handle_Singular(_Handle_Singular),
-Handle_SystemInfo(_Handle_SystemInfo)
+Handle_SystemInfo(_Handle_SystemInfo),
+Handle_Seams(_Handle_Seams)
 {
   UV        = Eigen::MatrixXd(V.rows(),2);
   WUV       = Eigen::MatrixXd(F.rows(),6);
@@ -1613,30 +1616,28 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddToRoundVertic
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildLaplacianMatrix(double vfscale)
 {
-  ///then for each face
-  for (unsigned int f=0;f<F.rows();f++)
-  {
+  Eigen::MatrixXd Vcut;
+  Eigen::MatrixXi Fcut;
+  igl::cut_mesh(V, F, Handle_Seams, Vcut, Fcut);
+  igl::cotmatrix(Vcut, Fcut, matU);
+  matU = -matU * Handle_Stiffness.asDiagonal();
+  matV = matU * Handle_Stiffness.asDiagonal();
 
-    int var_idx[3]; //vertex variable indices
 
-    for(int k = 0; k < 3; ++k)
-      var_idx[k] = HandleS_Index(f,k);
+  Eigen::SparseMatrix<double> G(Fcut.rows() * 3, Vcut.rows());
+  igl::grad(Vcut, Fcut, G);
 
-    ///block of variables
-    double val[3][3];
-    ///block of vertex indexes
-    int index[3][3][2];
-    ///righe hand side
-    double b[6];
-    ///compute the system for the given face
-    PerElementSystemReal(f, val,index, b, vfscale);
+  // triangle weights
+  Eigen::VectorXd dblA(Fcut.rows());
+  igl::doublearea(Vcut, Fcut, dblA);
 
-    //Add the element to the matrix
-    Add33Block(val,index);
+  //reshape nrosy vectors
+  Eigen::MatrixXd u = Eigen::Map<Eigen::MatrixXd>(PD1.data(),Fcut.rows()*3,1); // this mimics a reshape at the cost of a copy.
+  Eigen::MatrixXd v = Eigen::Map<Eigen::MatrixXd>(PD2.data(),Fcut.rows()*3,1); // this mimics a reshape at the cost of a copy.
 
-    ///add right hand side
-    AddRHS(b,var_idx);
-  }
+  //multiply with weights
+  rhsU = G.transpose() * dblA.replicate<3,1>().asDiagonal() * Handle_Stiffness.asDiagonal() * u * 0.5 * vfscale * h;
+  rhsV = -G.transpose() * dblA.replicate<3,1>().asDiagonal() * Handle_Stiffness.asDiagonal() * v * 0.5 * vfscale * h;
 }
 
 ///find different sized of the system
@@ -1656,10 +1657,10 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
   ///CONSTRAINT PART
   num_cut_constraint = Handle_SystemInfo.EdgeSeamInfo.size()*2;
 
-  num_constraint_equations = num_cut_constraint*2 + n_fixed_vars*2 + num_userdefined_constraint;
+  num_constraint_equations = num_cut_constraint + n_fixed_vars + num_userdefined_constraint;
 
   ///total variable of the system
-  num_total_vars = n_vert_vars*2+n_integer_vars*2;
+  num_total_vars = n_vert_vars+n_integer_vars;
 
   ///initialize matrix size
 
@@ -1688,8 +1689,12 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AllocateSystem()
 {
-  S.initialize(system_size, system_size);
-  printf("\n INITIALIZED SPARSE MATRIX OF %d x %d \n",system_size, system_size);
+  matU.resize(system_size, system_size);
+  matV.resize(system_size, system_size);
+  rhsU.resize(system_size);
+  rhsV.resize(system_size);
+
+  printf("\n INITIALIZED 2 SPARSE MATRICES OF %d x %d \n",system_size, system_size);
 }
 
 ///intitialize the whole matrix
@@ -2047,7 +2052,8 @@ F(F_)
                                             PD2_combed,
                                             VInd.HandleS_Index,
                                             /*VInd.Handle_Singular*/Handle_Singular,
-                                            VInd.Handle_SystemInfo);
+                                            VInd.Handle_SystemInfo,
+                                            VInd.Handle_Seams);
   Handle_Stiffness = Eigen::VectorXd::Constant(F.rows(),1);
 
 
