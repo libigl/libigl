@@ -38,6 +38,9 @@
 #include <fstream>
 #include <iostream>
 #include <igl/matlab_format.h>
+
+
+#include <igl/slice_into.h>
 using namespace std;
 using namespace Eigen;
 
@@ -357,10 +360,12 @@ namespace comiso {
     Eigen::MatrixXd WUV;
 
     // Matrices
-    Eigen::SparseMatrix<double> matU, matV;
-    Eigen::VectorXd rhsU, rhsV;
+    Eigen::SparseMatrix<double> Lhs;
+    Eigen::SparseMatrix<double> Constraints;
+    Eigen::VectorXd rhs;
+    Eigen::VectorXd constraints_rhs;
     ///vector of unknowns
-    std::vector< double > XU, XV;
+    std::vector< double > X;
 
     ////REAL PART
     ///number of fixed vertex
@@ -425,10 +430,6 @@ namespace comiso {
     ///and normalize on the overlap zones
     IGL_INLINE void AddAreaTerm(int index[3][3][2],double ScaleFactor);
 
-    ///set the diagonal of the matrix (which is zero at the beginning)
-    ///such that the sum of a row or a colums is zero
-    IGL_INLINE void SetDiagonal(double val[3][3]);
-
     ///given a vector of scalar values and
     ///a vector of indexes add such values
     ///as specified by the indexes
@@ -451,29 +452,6 @@ namespace comiso {
     ///for a given missmatch interval
     IGL_INLINE std::complex<double> GetRotationComplex(int interval);
     ///END COMMON MATH FUNCTIONS
-
-
-    ///START ENERGY MINIMIZATION PART
-    ///initialize the LHS for a given face
-    ///for minimization of Dirichlet's energy
-    IGL_INLINE void perElementLHS(int f,
-                                  double val[3][3],
-                                  int index[3][3][2]);
-
-    ///initialize the RHS for a given face
-    ///for minimization of Dirichlet's energy
-    IGL_INLINE void perElementRHS(int f,
-                                  double b[6],
-                                  double vector_field_scale=1);
-
-    ///evaluate the LHS and RHS for a single face
-    ///for minimization of Dirichlet's energy
-    IGL_INLINE void PerElementSystemReal(int f,
-                                         double val[3][3],
-                                         int index[3][3][2],
-                                         double b[6],
-                                         double vector_field_scale=1.0);
-    ///END ENERGY MINIMIZATION PART
 
     ///START FIXING VERTICES
     ///set a given vertex as fixed
@@ -1270,20 +1248,6 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddAreaTerm(int 
     }
 }
 
-///set the diagonal of the matrix (which is zero at the beginning)
-///such that the sum of a row or a colums is zero
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::SetDiagonal(double val[3][3])
-{
-  for (int i=0;i<3;i++)
-  {
-    double sum=0;
-    for (int j=0;j<3;j++)
-      sum+=val[i][j];
-    val[i][i]=-sum;
-  }
-}
-
 ///given a vector of scalar values and
 ///a vector of indexes add such values
 ///as specified by the indexes
@@ -1357,144 +1321,6 @@ IGL_INLINE std::complex<double> igl::comiso::PoissonSolver<DerivedV, DerivedF>::
 }
 
 ///END COMMON MATH FUNCTIONS
-
-
-///START ENERGY MINIMIZATION PART
-///initialize the LHS for a given face
-///for minimization of Dirichlet's energy
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::perElementLHS(int f,
-                                                                      double val[3][3],
-                                                                      int index[3][3][2])
-{
-  ///initialize to zero
-  for (int x=0;x<3;x++)
-    for (int y=0;y<3;y++)
-      val[x][y]=0;
-
-  ///get the vertices
-  int v[3];
-  v[0] = F(f,0);
-  v[1] = F(f,1);
-  v[2] = F(f,2);
-
-  ///get the indexes of vertex instance (to consider cuts)
-  ///for the current face
-  int Vindexes[3];
-  Vindexes[0]=HandleS_Index(f,0);
-  Vindexes[1]=HandleS_Index(f,1);
-  Vindexes[2]=HandleS_Index(f,2);
-
-  ///initialize the indexes for the block
-  for (int x=0;x<3;x++)
-    for (int y=0;y<3;y++)
-    {
-      index[x][y][0]=Vindexes[x];
-      index[x][y][1]=Vindexes[y];
-    }
-
-  ///initialize edges
-  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> e[3];
-  for (int k=0;k<3;k++)
-    e[k] = V.row(v[(k+2)%3]) - V.row(v[(k+1)%3]);
-
-  ///then consider area but also considering scale factor dur to overlaps
-
-  double areaT = doublearea(f)/2.0;
-
-  for (int x=0;x<3;x++)
-    for (int y=0;y<3;y++)
-      if (x!=y)
-      {
-        double num =  (e[x].dot(e[y]));
-        val[x][y]  =  num/(4.0*areaT);
-        val[x][y]  *= Handle_Stiffness[f];//f->stiffening;
-      }
-
-  ///set the matrix as diagonal
-  SetDiagonal(val);
-}
-
-///initialize the RHS for a given face
-///for minimization of Dirichlet's energy
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::perElementRHS(int f,
-                                                                      double b[6],
-                                                                      double vector_field_scale)
-{
-
-  /// then set the rhs
-  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> scaled_Kreal;
-  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> scaled_Kimag;
-  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> fNorm = N.row(f);
-  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> p[3];
-  p[0] = V.row(F(f,0));
-  p[1] = V.row(F(f,1));
-  p[2] = V.row(F(f,2));
-
-  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> neg_t[3];
-  neg_t[0] = fNorm.cross(p[2] - p[1]);
-  neg_t[1] = fNorm.cross(p[0] - p[2]);
-  neg_t[2] = fNorm.cross(p[1] - p[0]);
-
-  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> K1,K2;
-  K1 = PD1.row(f);
-  K2 = -PD2.row(f); // TODO: the "-" accounts for the orientation of local_basis.h, adapt the code before and remove the "-"
-
-  scaled_Kreal = K1*(vector_field_scale)/2;
-  scaled_Kimag = K2*(vector_field_scale)/2;
-
-  double stiff_val = Handle_Stiffness[f];
-
-  b[0] = scaled_Kreal.dot(neg_t[0]) * stiff_val;
-  b[1] = scaled_Kimag.dot(neg_t[0]) * stiff_val;
-  b[2] = scaled_Kreal.dot(neg_t[1]) * stiff_val;
-  b[3] = scaled_Kimag.dot(neg_t[1]) * stiff_val;
-  b[4] = scaled_Kreal.dot(neg_t[2]) * stiff_val;
-  b[5] = scaled_Kimag.dot(neg_t[2]) * stiff_val;
-
-  //    if (f == 0)
-  //    {
-  //      cerr << "DEBUG!!!" << endl;
-  //
-  //
-  //      for (unsigned z = 0; z<6; ++z)
-  //        cerr << b[z] << " ";
-  //      cerr << endl;
-  //
-  //      scaled_Kreal = K1*(vector_field_scale)/2;
-  //      scaled_Kimag = -K2*(vector_field_scale)/2;
-  //
-  //      double stiff_val = Handle_Stiffness[f];
-  //
-  //      b[0] = scaled_Kreal.dot(neg_t[0]) * stiff_val;
-  //      b[1] = scaled_Kimag.dot(neg_t[0]) * stiff_val;
-  //      b[2] = scaled_Kreal.dot(neg_t[1]) * stiff_val;
-  //      b[3] = scaled_Kimag.dot(neg_t[1]) * stiff_val;
-  //      b[4] = scaled_Kreal.dot(neg_t[2]) * stiff_val;
-  //      b[5] = scaled_Kimag.dot(neg_t[2]) * stiff_val;
-  //
-  //      for (unsigned z = 0; z<6; ++z)
-  //        cerr << b[z] << " ";
-  //      cerr << endl;
-  //
-  //    }
-
-}
-
-///evaluate the LHS and RHS for a single face
-///for minimization of Dirichlet's energy
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::PerElementSystemReal(int f,
-                                                                             double val[3][3],
-                                                                             int index[3][3][2],
-                                                                             double b[6],
-                                                                             double vector_field_scale)
-{
-  perElementLHS(f,val,index);
-  perElementRHS(f,b,vector_field_scale);
-}
-///END ENERGY MINIMIZATION PART
 
 ///START FIXING VERTICES
 ///set a given vertex as fixed
@@ -1619,25 +1445,32 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildLaplacianMa
   Eigen::MatrixXd Vcut;
   Eigen::MatrixXi Fcut;
   igl::cut_mesh(V, F, Handle_Seams, Vcut, Fcut);
-  igl::cotmatrix(Vcut, Fcut, matU);
-  matU = -matU * Handle_Stiffness.asDiagonal();
-  matV = matU * Handle_Stiffness.asDiagonal();
+  Eigen::VectorXd idx  = Eigen::VectorXd::LinSpace(2, 0, 2*Vcut.size()-2);
+  Eigen::VectorXd idx2 = Eigen::VectorXd::LinSpace(2, 1, 2*Vcut.size()-1);
 
+  ///  Compute LHS
+  Eigen::SparseMatrix<double> C;
+  igl::cotmatrix(Vcut, Fcut, C);
+  C = -C * Handle_Stiffness.asDiagonal();
+  igl::slice_into(Lhs, idx,  idx,  C);
+  igl::slice_into(Lhs, idx2, idx2, C);
 
+  /// Compute RHS
+  // get gradient matrix
   Eigen::SparseMatrix<double> G(Fcut.rows() * 3, Vcut.rows());
   igl::grad(Vcut, Fcut, G);
 
-  // triangle weights
+  // get triangle weights
   Eigen::VectorXd dblA(Fcut.rows());
   igl::doublearea(Vcut, Fcut, dblA);
 
-  //reshape nrosy vectors
+  // reshape nrosy vectors
   Eigen::MatrixXd u = Eigen::Map<Eigen::MatrixXd>(PD1.data(),Fcut.rows()*3,1); // this mimics a reshape at the cost of a copy.
   Eigen::MatrixXd v = Eigen::Map<Eigen::MatrixXd>(PD2.data(),Fcut.rows()*3,1); // this mimics a reshape at the cost of a copy.
 
-  //multiply with weights
-  rhsU = G.transpose() * dblA.replicate<3,1>().asDiagonal() * Handle_Stiffness.asDiagonal() * u * 0.5 * vfscale * h;
-  rhsV = -G.transpose() * dblA.replicate<3,1>().asDiagonal() * Handle_Stiffness.asDiagonal() * v * 0.5 * vfscale * h;
+  // multiply with weights
+  igl::slice_into(rhs, idx,  1, G.transpose() * dblA.replicate<3,1>().asDiagonal() * Handle_Stiffness.asDiagonal() * u * 0.5 * vfscale);
+  igl::slice_into(rhs, idx2, 1, G.transpose() * dblA.replicate<3,1>().asDiagonal() * Handle_Stiffness.asDiagonal() * v * 0.5 * vfscale);
 }
 
 ///find different sized of the system
@@ -1657,10 +1490,10 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
   ///CONSTRAINT PART
   num_cut_constraint = Handle_SystemInfo.EdgeSeamInfo.size()*2;
 
-  num_constraint_equations = num_cut_constraint + n_fixed_vars + num_userdefined_constraint;
+  num_constraint_equations = num_cut_constraint * 2 + n_fixed_vars * 2 + num_userdefined_constraint;
 
   ///total variable of the system
-  num_total_vars = n_vert_vars+n_integer_vars;
+  num_total_vars = (n_vert_vars+n_integer_vars) * 2;
 
   ///initialize matrix size
 
@@ -1689,12 +1522,15 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AllocateSystem()
 {
-  matU.resize(system_size, system_size);
-  matV.resize(system_size, system_size);
-  rhsU.resize(system_size);
-  rhsV.resize(system_size);
+  Lhs.resize(system_size, system_size);
+  Constraints.resize(num_constraint_equations, system_size);
+  rhs.resize(system_size);
+  constraints_rhs.resize(num_constraint_equations);
 
-  printf("\n INITIALIZED 2 SPARSE MATRICES OF %d x %d \n",system_size, system_size);
+  printf("\n INITIALIZED SPARSE MATRIX OF %d x %d \n",system_size, system_size);
+  printf("\n INITIALIZED SPARSE MATRIX OF %d x %d \n",num_constraint_equations, system_size);
+  printf("\n INITIALIZED VECTOR OF %d x 1 \n",system_size);
+  printf("\n INITIALIZED VECTOR OF %d x 1 \n",num_constraint_equations);
 }
 
 ///intitialize the whole matrix
