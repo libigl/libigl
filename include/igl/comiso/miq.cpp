@@ -41,6 +41,9 @@
 
 
 #include <igl/slice_into.h>
+#include <igl/grad.h>
+#include <igl/cotmatrix.h>
+#include <igl/cut_mesh.h>
 using namespace std;
 using namespace Eigen;
 
@@ -49,128 +52,6 @@ using namespace Eigen;
 
 namespace igl {
 namespace comiso {
-
-  class SparseMatrixData{
-  protected:
-    unsigned int m_nrows;
-    unsigned int m_ncols;
-    std::vector<unsigned int> m_rowind;
-    std::vector<unsigned int> m_colind;
-    std::vector<double>       m_vals;
-
-  public:
-    unsigned int   nrows()    { return m_nrows      ; }
-    unsigned int   ncols()    { return m_ncols      ; }
-    unsigned int   nentries() { return m_vals.size(); }
-    std::vector<unsigned int>&  rowind()   { return m_rowind     ; }
-    std::vector<unsigned int>&  colind()   { return m_colind     ; }
-    std::vector<double>&        vals()     { return m_vals       ; }
-
-    // create an empty matrix with a fixed number of rows
-    IGL_INLINE SparseMatrixData()
-    {
-      initialize(0,0);
-    }
-
-    // create an empty matrix with a fixed number of rows
-    IGL_INLINE void initialize(int nr, int nc) {
-      assert(nr >= 0 && nc >=0);
-      m_nrows = nr;
-      m_ncols = nc;
-
-      m_rowind.resize(0);
-      m_colind.resize(0);
-      m_vals.resize(0);
-    }
-
-    // add a nonzero entry to the matrix
-    // no checks are done for coinciding entries
-    // the interpretation of the repeated entries (replace or add)
-    // depends on how the actual sparse matrix datastructure is constructed
-
-    IGL_INLINE void addEntryCmplx(unsigned int i, unsigned int j, std::complex<double> val) {
-      m_rowind.push_back(2*i);   m_colind.push_back(2*j);   m_vals.push_back( val.real());
-      m_rowind.push_back(2*i);   m_colind.push_back(2*j+1); m_vals.push_back(-val.imag());
-      m_rowind.push_back(2*i+1); m_colind.push_back(2*j);   m_vals.push_back( val.imag());
-      m_rowind.push_back(2*i+1); m_colind.push_back(2*j+1); m_vals.push_back( val.real());
-    }
-
-    IGL_INLINE void addEntryReal(unsigned int i, unsigned int j, double val) {
-      m_rowind.push_back(i);   m_colind.push_back(j);   m_vals.push_back(val);
-    }
-
-    IGL_INLINE virtual ~SparseMatrixData() {
-    }
-
-  };
-
-  // a small class to manage storage for matrix data
-  // not using stl vectors: want to make all memory management
-  // explicit to avoid hidden automatic reallocation
-  // TODO: redo with STL vectors but with explicit mem. management
-
-  class SparseSystemData {
-  private:
-    // matrix representation,  A[rowind[i],colind[i]] = vals[i]
-    // right-hand side
-    SparseMatrixData m_A;
-    double       *m_b;
-    double       *m_x;
-
-  public:
-    IGL_INLINE SparseMatrixData& A() { return m_A; }
-    IGL_INLINE double*        b()        { return m_b       ; }
-    IGL_INLINE double*        x()        { return m_x       ; }
-    IGL_INLINE unsigned int   nrows()    { return  m_A.nrows(); }
-
-  public:
-
-    IGL_INLINE SparseSystemData(): m_A(), m_b(NULL), m_x(NULL){ }
-
-    IGL_INLINE void initialize(unsigned int nr, unsigned int nc) {
-      m_A.initialize(nr,nc);
-      m_b      = new          double[nr];
-      m_x      = new          double[nr];
-      assert(m_b);
-      std::fill( m_b,  m_b+nr, 0.);
-    }
-
-    IGL_INLINE void addRHSCmplx(unsigned int i, std::complex<double> val) {
-      assert( 2*i+1 < m_A.nrows());
-      m_b[2*i] += val.real(); m_b[2*i+1] += val.imag();
-    }
-
-    IGL_INLINE void setRHSCmplx(unsigned int i, std::complex<double> val) {
-      assert( 2*i+1 < m_A.nrows());
-      m_b[2*i] = val.real(); m_b[2*i+1] = val.imag();
-    }
-
-    IGL_INLINE std::complex<double> getRHSCmplx(unsigned int i) {
-      assert( 2*i+1 < m_A.nrows());
-      return std::complex<double>( m_b[2*i], m_b[2*i+1]);
-    }
-
-    IGL_INLINE double getRHSReal(unsigned int i) {
-      assert( i < m_A.nrows());
-      return m_b[i];
-    }
-
-    IGL_INLINE std::complex<double> getXCmplx(unsigned int i) {
-      assert( 2*i+1 < m_A.nrows());
-      return std::complex<double>( m_x[2*i], m_x[2*i+1]);
-    }
-
-    IGL_INLINE void cleanMem() {
-      //m_A.cleanup();
-      delete [] m_b;
-      delete [] m_x;
-    }
-
-    IGL_INLINE virtual ~SparseSystemData() {
-      delete [] m_b;
-      delete [] m_x;
-    }
-  };
 
   struct SeamInfo
   {
@@ -332,7 +213,8 @@ namespace comiso {
                              const Eigen::PlainObjectBase<DerivedV> &_PD2,
                              const Eigen::MatrixXi &_HandleS_Index,
                              const Eigen::Matrix<int, Eigen::Dynamic, 1>&_Handle_Singular,
-                             const MeshSystemInfo &_Handle_SystemInfo
+                             const MeshSystemInfo &_Handle_SystemInfo,
+                             const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_Seams
                              );
 
     const Eigen::PlainObjectBase<DerivedV> &V;
@@ -343,7 +225,7 @@ namespace comiso {
     const Eigen::PlainObjectBase<DerivedV> &PD2;
     const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular; // bool
     const Eigen::MatrixXi &HandleS_Index; //todo
-    const Eigen::MatrixXi &Handle_Seams;
+    const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams;
 
     const MeshSystemInfo &Handle_SystemInfo;
 
@@ -410,42 +292,6 @@ namespace comiso {
 
     ///boolean that is true if rounding to integer is needed
     bool integer_rounding;
-
-    ///START SYSTEM ACCESS METHODS
-    ///add an entry to the LHS
-    IGL_INLINE void AddValA(int Xindex,
-                            int Yindex,
-                            double val);
-
-    ///add a complex entry to the LHS
-    IGL_INLINE void AddComplexA(int VarXindex,
-                                int VarYindex,
-                                std::complex<double> val);
-
-    ///add a velue to the RHS
-    IGL_INLINE void AddValB(int Xindex,
-                            double val);
-
-    ///add the area term, scalefactor is used to sum up
-    ///and normalize on the overlap zones
-    IGL_INLINE void AddAreaTerm(int index[3][3][2],double ScaleFactor);
-
-    ///given a vector of scalar values and
-    ///a vector of indexes add such values
-    ///as specified by the indexes
-    IGL_INLINE void AddRHS(double b[6],
-                           int index[3]);
-
-    ///add a 3x3 block matrix to the system matrix...
-    ///indexes are specified in the 3x3 matrix of x,y pairs
-    ///indexes must be multiplied by 2 cause u and v
-    IGL_INLINE void Add33Block(double val[3][3], int index[3][3][2]);
-
-    ///add a 3x3 block matrix to the system matrix...
-    ///indexes are specified in the 3x3 matrix of x,y pairs
-    ///indexes must be multiplied by 2 cause u and v
-    IGL_INLINE void Add44Block(double val[4][4],int index[4][4][2]);
-    ///END SYSTEM ACCESS METHODS
 
     ///START COMMON MATH FUNCTIONS
     ///return the complex encoding the rotation
@@ -1168,7 +1014,7 @@ IGL_INLINE igl::comiso::PoissonSolver<DerivedV, DerivedF>
                 const Eigen::MatrixXi &_HandleS_Index,
                 const Eigen::Matrix<int, Eigen::Dynamic, 1>&_Handle_Singular,
                 const MeshSystemInfo &_Handle_SystemInfo, //todo: const?
-                const Eigen::MatrixXi &_Handle_Seams
+                const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_Seams
 ):
 V(_V),
 F(_F),
@@ -1187,121 +1033,6 @@ Handle_Seams(_Handle_Seams)
   igl::per_face_normals(V,F,N);
   igl::vertex_triangle_adjacency(V,F,VF,VFi);
 }
-
-
-///START SYSTEM ACCESS METHODS
-///add an entry to the LHS
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddValA(int Xindex,
-                                                                int Yindex,
-                                                                double val)
-{
-  int size=(int)S.nrows();
-  assert(0 <= Xindex && Xindex < size);
-  assert(0 <= Yindex && Yindex < size);
-  S.A().addEntryReal(Xindex,Yindex,val);
-}
-
-///add a complex entry to the LHS
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddComplexA(int VarXindex,
-                                                                    int VarYindex,
-                                                                    std::complex<double> val)
-{
-  int size=(int)S.nrows()/2;
-  assert(0 <= VarXindex && VarXindex < size);
-  assert(0 <= VarYindex && VarYindex < size);
-  S.A().addEntryCmplx(VarXindex,VarYindex,val);
-}
-
-///add a velue to the RHS
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddValB(int Xindex,
-                                                                double val)
-{
-  int size=(int)S.nrows();
-  assert(0 <= Xindex && Xindex < size);
-  S.b()[Xindex] += val;
-}
-
-///add the area term, scalefactor is used to sum up
-///and normalize on the overlap zones
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddAreaTerm(int index[3][3][2],double ScaleFactor)
-{
-  const double entry = 0.5*ScaleFactor;
-  double val[3][3]= {
-    {0,       entry, -entry},
-    {-entry,      0,  entry},
-    {entry,  -entry,      0}
-  };
-
-  for (int i=0;i<3;i++)
-    for (int j=0;j<3;j++)
-    {
-      ///add for both u and v
-      int Xindex=index[i][j][0]*2;
-      int Yindex=index[i][j][1]*2;
-
-      AddValA(Xindex+1,Yindex,-val[i][j]);
-      AddValA(Xindex,Yindex+1,val[i][j]);
-    }
-}
-
-///given a vector of scalar values and
-///a vector of indexes add such values
-///as specified by the indexes
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddRHS(double b[6],
-                                                               int index[3])
-{
-  for (int i=0;i<3;i++)
-  {
-    double valU=b[i*2];
-    double valV=b[(i*2)+1];
-    AddValB((index[i]*2),valU);
-    AddValB((index[i]*2)+1,valV);
-  }
-}
-
-///add a 3x3 block matrix to the system matrix...
-///indexes are specified in the 3x3 matrix of x,y pairs
-///indexes must be multiplied by 2 cause u and v
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::Add33Block(double val[3][3], int index[3][3][2])
-{
-  for (int i=0;i<3;i++)
-    for (int j=0;j<3;j++)
-    {
-      ///add for both u and v
-      int Xindex=index[i][j][0]*2;
-      int Yindex=index[i][j][1]*2;
-      assert((unsigned)Xindex<(n_vert_vars*2));
-      assert((unsigned)Yindex<(n_vert_vars*2));
-      AddValA(Xindex,Yindex,val[i][j]);
-      AddValA(Xindex+1,Yindex+1,val[i][j]);
-    }
-}
-
-///add a 3x3 block matrix to the system matrix...
-///indexes are specified in the 3x3 matrix of x,y pairs
-///indexes must be multiplied by 2 cause u and v
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::Add44Block(double val[4][4],int index[4][4][2])
-{
-  for (int i=0;i<4;i++)
-    for (int j=0;j<4;j++)
-    {
-      ///add for both u and v
-      int Xindex=index[i][j][0]*2;
-      int Yindex=index[i][j][1]*2;
-      assert((unsigned)Xindex<(n_vert_vars*2));
-      assert((unsigned)Yindex<(n_vert_vars*2));
-      AddValA(Xindex,Yindex,val[i][j]);
-      AddValA(Xindex+1,Yindex+1,val[i][j]);
-    }
-}
-///END SYSTEM ACCESS METHODS
 
 ///START COMMON MATH FUNCTIONS
 ///return the complex encoding the rotation
@@ -1375,7 +1106,7 @@ IGL_INLINE int igl::comiso::PoissonSolver<DerivedV, DerivedF>::GetFirstVertexInd
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FixBlockedVertex()
 {
-  int offset_row = n_vert_vars*2 + num_cut_constraint*2;
+  int offset_row = num_cut_constraint*2;
 
   unsigned int constr_num = 0;
   for (unsigned int i=0;i<Hard_constraints.size();i++)
@@ -1394,12 +1125,12 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FixBlockedVertex
     int indexCol = indexRow;
 
     ///add fixing constraint LHS
-    AddValA(indexRow,indexvert,1);
-    AddValA(indexRow+1,indexvert+1,1);
+    Constraints.coeffRef(indexRow,  indexvert)   = 1;
+    Constraints.coeffRef(indexRow+1,indexvert+1) = 1;
 
     ///add fixing constraint RHS
-    AddValB(indexCol,  UV(v,0));
-    AddValB(indexCol+1,UV(v,1));
+    rhs[indexCol]   = UV(v,0);
+    rhs[indexCol+1] = UV(v,1);
 
     constr_num++;
   }
@@ -1445,17 +1176,9 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildLaplacianMa
   Eigen::MatrixXd Vcut;
   Eigen::MatrixXi Fcut;
   igl::cut_mesh(V, F, Handle_Seams, Vcut, Fcut);
-  Eigen::VectorXd idx  = Eigen::VectorXd::LinSpace(2, 0, 2*Vcut.size()-2);
-  Eigen::VectorXd idx2 = Eigen::VectorXd::LinSpace(2, 1, 2*Vcut.size()-1);
+  Eigen::VectorXi idx  = Eigen::VectorXi::LinSpaced(Vcut.rows(), 0, 2*Vcut.rows()-2);
+  Eigen::VectorXi idx2 = Eigen::VectorXi::LinSpaced(Vcut.rows(), 1, 2*Vcut.rows()-1);
 
-  ///  Compute LHS
-  Eigen::SparseMatrix<double> C;
-  igl::cotmatrix(Vcut, Fcut, C);
-  C = -C * Handle_Stiffness.asDiagonal();
-  igl::slice_into(Lhs, idx,  idx,  C);
-  igl::slice_into(Lhs, idx2, idx2, C);
-
-  /// Compute RHS
   // get gradient matrix
   Eigen::SparseMatrix<double> G(Fcut.rows() * 3, Vcut.rows());
   igl::grad(Vcut, Fcut, G);
@@ -1464,13 +1187,26 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildLaplacianMa
   Eigen::VectorXd dblA(Fcut.rows());
   igl::doublearea(Vcut, Fcut, dblA);
 
+  // compute intermediate result
+  Eigen::SparseMatrix<double> G2;
+  G2 = G.transpose() * dblA.replicate<3,1>().asDiagonal();// * Handle_Stiffness.replicate<3,1>().asDiagonal();
+
+  ///  Compute LHS
+  Eigen::SparseMatrix<double> Cotmatrix;
+  Cotmatrix = -G2 * G;
+  igl::slice_into(Cotmatrix, idx,  idx,  Lhs);
+  igl::slice_into(Cotmatrix, idx2, idx2, Lhs);
+
+  /// Compute RHS
   // reshape nrosy vectors
-  Eigen::MatrixXd u = Eigen::Map<Eigen::MatrixXd>(PD1.data(),Fcut.rows()*3,1); // this mimics a reshape at the cost of a copy.
-  Eigen::MatrixXd v = Eigen::Map<Eigen::MatrixXd>(PD2.data(),Fcut.rows()*3,1); // this mimics a reshape at the cost of a copy.
+  const Eigen::MatrixXd u = Eigen::Map<const Eigen::MatrixXd>(PD1.data(),Fcut.rows()*3,1); // this mimics a reshape at the cost of a copy.
+  const Eigen::MatrixXd v = Eigen::Map<const Eigen::MatrixXd>(PD2.data(),Fcut.rows()*3,1); // this mimics a reshape at the cost of a copy.
 
   // multiply with weights
-  igl::slice_into(rhs, idx,  1, G.transpose() * dblA.replicate<3,1>().asDiagonal() * Handle_Stiffness.asDiagonal() * u * 0.5 * vfscale);
-  igl::slice_into(rhs, idx2, 1, G.transpose() * dblA.replicate<3,1>().asDiagonal() * Handle_Stiffness.asDiagonal() * v * 0.5 * vfscale);
+  Eigen::VectorXd rhs1 = G2 * u * 0.5 * vfscale;
+  Eigen::VectorXd rhs2 = G2 * v * 0.5 * vfscale;
+  igl::slice_into(rhs1, idx,  1, rhs);
+  igl::slice_into(rhs2, idx2, 1, rhs);
 }
 
 ///find different sized of the system
@@ -1522,7 +1258,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AllocateSystem()
 {
-  Lhs.resize(system_size, system_size);
+  Lhs.resize(n_vert_vars * 2, n_vert_vars * 2);
   Constraints.resize(num_constraint_equations, system_size);
   rhs.resize(system_size);
   constraints_rhs.resize(num_constraint_equations);
@@ -1587,12 +1323,8 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MapCoords()
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstraintsExplicitTranslation()
 {
-  ///add constraint(s) for every seam edge (not halfedge)
-  int offset_row = n_vert_vars;
   ///current constraint row
-  int constr_row = offset_row;
-  ///current constraint
-  unsigned int constr_num = 0;
+  int constr_row = 0;
 
   for (unsigned int i=0; i<num_cut_constraint/2; i++)
   {
@@ -1611,7 +1343,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
     std::complex<double> rot = GetRotationComplex(interval);
 
     ///get the integer variable
-    int integerVar = offset_row+Handle_SystemInfo.EdgeSeamInfo[i].integerVar;
+    int integerVar = n_vert_vars * 2 +Handle_SystemInfo.EdgeSeamInfo[i].integerVar;
 
     if (integer_rounding)
     {
@@ -1619,28 +1351,40 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
       ids_to_round.push_back(integerVar*2+1);
     }
 
-    AddComplexA(constr_row, p0 ,  rot);
-    AddComplexA(constr_row, p0p,   -1);
-    ///then translation...considering the rotation
-    ///due to substitution
-    AddComplexA(constr_row, integerVar, 1);
+    // cross boundary compatibility conditions
+    // constraints for one end of edge
+    Constraints.coeffRef(constr_row,   2*p0)   =  rot.real();
+    Constraints.coeffRef(constr_row,   2*p0+1) = -rot.imag();
+    Constraints.coeffRef(constr_row+1, 2*p0)   =  rot.imag();
+    Constraints.coeffRef(constr_row+1, 2*p0+1) =  rot.real();
 
-    AddValB(2*constr_row  ,0);
-    AddValB(2*constr_row+1,0);
-    constr_row +=1;
-    constr_num++;
+    Constraints.coeffRef(constr_row,   2*p0p)   = -1;
+    Constraints.coeffRef(constr_row+1, 2*p0p+1) = -1;
 
-    AddComplexA(constr_row, p1,  rot);
-    AddComplexA(constr_row, p1p, -1);
+    Constraints.coeffRef(constr_row,   integerVar) = 1;
+    Constraints.coeffRef(constr_row+1, integerVar) = 1;
 
-    ///other translation
-    AddComplexA(constr_row, integerVar  , 1);
+    rhs[constr_row]   = 0;
+    rhs[constr_row+1] = 0;
 
-    AddValB(2*constr_row,0);
-    AddValB(2*constr_row+1,0);
+    constr_row += 2;
 
-    constr_row +=1;
-    constr_num++;
+    // constraints for other end of edge
+    Constraints.coeffRef(constr_row,   2*p1)   =  rot.real();
+    Constraints.coeffRef(constr_row,   2*p1+1) = -rot.imag();
+    Constraints.coeffRef(constr_row+1, 2*p1)   =  rot.imag();
+    Constraints.coeffRef(constr_row+1, 2*p1+1) =  rot.real();
+
+    Constraints.coeffRef(constr_row,   2*p1p)   = -1;
+    Constraints.coeffRef(constr_row+1, 2*p1p+1) = -1;
+
+    Constraints.coeffRef(constr_row,   integerVar) = 1;
+    Constraints.coeffRef(constr_row+1, integerVar) = 1;
+
+    rhs[constr_row]   = 0;
+    rhs[constr_row+1] = 0;
+
+    constr_row += 2;
   }
 }
 
@@ -1649,7 +1393,7 @@ template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildUserDefinedConstraints()
 {
   /// the user defined constraints are at the end
-  int offset_row = n_vert_vars*2 + num_cut_constraint*2 + n_fixed_vars*2;
+  int offset_row = num_cut_constraint*2 + n_fixed_vars*2;
 
   ///current constraint row
   int constr_row = offset_row;
@@ -1660,11 +1404,10 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildUserDefined
   {
     for (unsigned int j=0; j<userdefined_constraints[i].size()-1; ++j)
     {
-      AddValA(constr_row, j ,  userdefined_constraints[i][j]);
+      Constraints.coeffRef(constr_row, j) = userdefined_constraints[i][j];
     }
 
-    AddValB(constr_row,userdefined_constraints[i][userdefined_constraints[i].size()-1]);
-
+    rhs[constr_row] = userdefined_constraints[i][userdefined_constraints[i].size()-1];
     constr_row +=1;
   }
 }
@@ -1695,33 +1438,25 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolv
   if (DEBUGPRINT)
     printf("\n ALLOCATED QMM STRUCTURES \n");
 
-  std::vector<double> rhs(SizeMatrix,0);  // rhs
+  std::vector<double> B(SizeMatrix,0);  // rhs
 
   if (DEBUGPRINT)
     printf("\n ALLOCATED RHS STRUCTURES \n");
 
   //// copy LHS
-  for(int i = 0; i < (int)S.A().nentries(); ++i)
-  {
-    int row  = S.A().rowind()[i];
-    int col  = S.A().colind()[i];
-    int size =(int)S.nrows();
-    assert(0 <= row && row < size);
-    assert(0 <= col && col < size);
-
-    // it's either part of the matrix
-    if (row < ScalarSize)
-    {
-      A(row, col) += S.A().vals()[i];
+  for (int k=0; k < Lhs.outerSize(); ++k){
+    for (Eigen::SparseMatrix<double>::InnerIterator it(Lhs,k); it; ++it){
+      int row = it.row();
+      int col = it.col();
+      A(row, col) += it.value();
     }
-    // or it's a part of the constraint
-    else
-    {
-      assert ((unsigned int)row < (n_vert_vars+num_constraint_equations)*2);
-      int r = row - ScalarSize;
-      assert(r   < CsizeX);
-      assert(col < CsizeY);
-      C(r  , col  ) +=  S.A().vals()[i];
+  }
+  //// copy Constraints
+  for (int k=0; k < Constraints.outerSize(); ++k){
+    for (Eigen::SparseMatrix<double>::InnerIterator it(Constraints,k); it; ++it){
+      int row = it.row();
+      int col = it.col();
+      C(row, col) += it.value();
     }
   }
 
@@ -1743,7 +1478,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolv
   // copy RHS
   for(int i = 0; i < (int)ScalarSize; ++i)
   {
-    rhs[i] = S.getRHSReal(i) * cone_grid_res;
+    B[i] = rhs[i] * cone_grid_res;
   }
 
   // copy constraint RHS
@@ -1752,7 +1487,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolv
 
   for(unsigned int i = 0; i < num_constraint_equations; ++i)
   {
-    C(i, SizeMatrix) = -S.getRHSReal(ScalarSize + i) * cone_grid_res;
+    C(i, SizeMatrix) = -constraints_rhs[i] * cone_grid_res;
   }
 
   ///copy values back into S
@@ -1767,7 +1502,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolv
   int dist=distance(ids_to_round.begin(),new_end);
   ids_to_round.resize(dist);
 
-  solver.solve( C, A, X, rhs, ids_to_round, 0.0, false, false);
+  solver.solve( C, A, X, B, ids_to_round, 0.0, false, false);
 }
 
 template <typename DerivedV, typename DerivedF>
@@ -1889,7 +1624,7 @@ F(F_)
                                             VInd.HandleS_Index,
                                             /*VInd.Handle_Singular*/Handle_Singular,
                                             VInd.Handle_SystemInfo,
-                                            VInd.Handle_Seams);
+                                            Handle_Seams);
   Handle_Stiffness = Eigen::VectorXd::Constant(F.rows(),1);
 
 
