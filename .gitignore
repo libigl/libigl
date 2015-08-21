@@ -80,3 +80,5 @@ python/.idea
 untitled
 Untitled.ipynb
 python/.ipynb_checkpoints
+py_doc.cpp
+py_doc.h

@@ -17,7 +17,7 @@ void python_export_igl(py::module &m) {
   )
   {
     return igl::readOFF(str,V,F);
-  }, __doc_readOFF,
+  }, __doc_igl_readOFF,
   py::arg("str"), py::arg("V"), py::arg("F"));
 
   m.def("readOFF", []
@@ -29,7 +29,7 @@ void python_export_igl(py::module &m) {
   )
   {
     return igl::readOFF(str,V,F,N);
-  }, __doc_readOFF,
+  }, __doc_igl_readOFF,
   py::arg("str"), py::arg("V"), py::arg("F"), py::arg("N"));
 
 // writeOBJ.h
@@ -45,7 +45,7 @@ m.def("writeOBJ", []
 )
 {
   return igl::writeOBJ(str,V,F,CN,FN,TC,FTC);
-}, __doc_writeOBJ,
+}, __doc_igl_writeOBJ,
 py::arg("str"), py::arg("V"), py::arg("F"), py::arg("CN"), py::arg("FN"), py::arg("TC"), py::arg("FTC"));
 
 m.def("writeOBJ", []
@@ -56,7 +56,7 @@ m.def("writeOBJ", []
 )
 {
   return igl::writeOBJ(str,V,F);
-}, __doc_writeOBJ,
+}, __doc_igl_writeOBJ,
 py::arg("str"), py::arg("V"), py::arg("F"));
 
 // per_face_normals
@@ -70,7 +70,7 @@ m.def("per_face_normals", []
 )
 {
   return igl::per_face_normals(V,F,Z,N);
-}, __doc_per_face_normals,
+}, __doc_igl_per_face_normals,
 py::arg("V"), py::arg("F"), py::arg("Z"), py::arg("N"));
 
 m.def("per_face_normals", []
@@ -81,7 +81,7 @@ m.def("per_face_normals", []
 )
 {
   return igl::per_face_normals(V,F,N);
-}, __doc_per_face_normals,
+}, __doc_igl_per_face_normals,
 py::arg("V"), py::arg("F"), py::arg("N"));
 
 m.def("per_face_normals_stable", []
@@ -92,7 +92,7 @@ m.def("per_face_normals_stable", []
 )
 {
   return igl::per_face_normals_stable(V,F,N);
-}, __doc_per_face_normals,
+}, __doc_igl_per_face_normals,
 py::arg("V"), py::arg("F"), py::arg("N"));
 
 }
