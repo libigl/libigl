@@ -193,7 +193,8 @@ Libigl is a group endeavor led by [Alec
 Jacobson](http://www.cs.columbia.edu/~jacobson/) and [Daniele
 Panozzo](http://www.inf.ethz.ch/personal/dpanozzo/). Please [contact
 us](mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com) if you have
-questions or comments. We are happy to get feedback!
+questions or comments. For troubleshooting, please post an
+[issue](https://github.com/libigl/libigl/issues) on github.
 
 If you're using libigl in your projects, quickly [drop us a
 note](mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com). Tell us who you
