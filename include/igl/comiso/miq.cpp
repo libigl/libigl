@@ -1125,12 +1125,12 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FixBlockedVertex
     int indexCol = indexRow;
 
     ///add fixing constraint LHS
-    Constraints.coeffRef(indexRow,  indexvert)   = 1;
-    Constraints.coeffRef(indexRow+1,indexvert+1) = 1;
+    Constraints.coeffRef(indexRow,  indexvert)   += 1;
+    Constraints.coeffRef(indexRow+1,indexvert+1) += 1;
 
     ///add fixing constraint RHS
-    rhs[indexCol]   = UV(v,0);
-    rhs[indexCol+1] = UV(v,1);
+    constraints_rhs[indexCol]   = UV(v,0);
+    constraints_rhs[indexCol+1] = UV(v,1);
 
     constr_num++;
   }
@@ -1193,7 +1193,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildLaplacianMa
 
   ///  Compute LHS
   Eigen::SparseMatrix<double> Cotmatrix;
-  Cotmatrix = -G2 * G;
+  Cotmatrix = 0.5 * G2 * G;
   igl::slice_into(Cotmatrix, idx,  idx,  Lhs);
   igl::slice_into(Cotmatrix, idx2, idx2, Lhs);
 
@@ -1203,8 +1203,8 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildLaplacianMa
   const Eigen::MatrixXd v = Eigen::Map<const Eigen::MatrixXd>(PD2.data(),Fcut.rows()*3,1); // this mimics a reshape at the cost of a copy.
 
   // multiply with weights
-  Eigen::VectorXd rhs1 = G2 * u * 0.5 * vfscale;
-  Eigen::VectorXd rhs2 = G2 * v * 0.5 * vfscale;
+  Eigen::VectorXd rhs1 =  G2 * u * 0.5 * vfscale;
+  Eigen::VectorXd rhs2 = -G2 * v * 0.5 * vfscale;
   igl::slice_into(rhs1, idx,  1, rhs);
   igl::slice_into(rhs2, idx2, 1, rhs);
 }
@@ -1343,7 +1343,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
     std::complex<double> rot = GetRotationComplex(interval);
 
     ///get the integer variable
-    int integerVar = n_vert_vars * 2 +Handle_SystemInfo.EdgeSeamInfo[i].integerVar;
+    int integerVar = n_vert_vars + Handle_SystemInfo.EdgeSeamInfo[i].integerVar;
 
     if (integer_rounding)
     {
@@ -1353,36 +1353,36 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
 
     // cross boundary compatibility conditions
     // constraints for one end of edge
-    Constraints.coeffRef(constr_row,   2*p0)   =  rot.real();
-    Constraints.coeffRef(constr_row,   2*p0+1) = -rot.imag();
-    Constraints.coeffRef(constr_row+1, 2*p0)   =  rot.imag();
-    Constraints.coeffRef(constr_row+1, 2*p0+1) =  rot.real();
+    Constraints.coeffRef(constr_row,   2*p0)   +=  rot.real();
+    Constraints.coeffRef(constr_row,   2*p0+1) += -rot.imag();
+    Constraints.coeffRef(constr_row+1, 2*p0)   +=  rot.imag();
+    Constraints.coeffRef(constr_row+1, 2*p0+1) +=  rot.real();
 
-    Constraints.coeffRef(constr_row,   2*p0p)   = -1;
-    Constraints.coeffRef(constr_row+1, 2*p0p+1) = -1;
+    Constraints.coeffRef(constr_row,   2*p0p)   += -1;
+    Constraints.coeffRef(constr_row+1, 2*p0p+1) += -1;
 
-    Constraints.coeffRef(constr_row,   integerVar) = 1;
-    Constraints.coeffRef(constr_row+1, integerVar) = 1;
+    Constraints.coeffRef(constr_row,   2*integerVar)   += 1;
+    Constraints.coeffRef(constr_row+1, 2*integerVar+1) += 1;
 
-    rhs[constr_row]   = 0;
-    rhs[constr_row+1] = 0;
+    constraints_rhs[constr_row]   = 0;
+    constraints_rhs[constr_row+1] = 0;
 
     constr_row += 2;
 
     // constraints for other end of edge
-    Constraints.coeffRef(constr_row,   2*p1)   =  rot.real();
-    Constraints.coeffRef(constr_row,   2*p1+1) = -rot.imag();
-    Constraints.coeffRef(constr_row+1, 2*p1)   =  rot.imag();
-    Constraints.coeffRef(constr_row+1, 2*p1+1) =  rot.real();
+    Constraints.coeffRef(constr_row,   2*p1)   +=  rot.real();
+    Constraints.coeffRef(constr_row,   2*p1+1) += -rot.imag();
+    Constraints.coeffRef(constr_row+1, 2*p1)   +=  rot.imag();
+    Constraints.coeffRef(constr_row+1, 2*p1+1) +=  rot.real();
 
-    Constraints.coeffRef(constr_row,   2*p1p)   = -1;
-    Constraints.coeffRef(constr_row+1, 2*p1p+1) = -1;
+    Constraints.coeffRef(constr_row,   2*p1p)   += -1;
+    Constraints.coeffRef(constr_row+1, 2*p1p+1) += -1;
 
-    Constraints.coeffRef(constr_row,   integerVar) = 1;
-    Constraints.coeffRef(constr_row+1, integerVar) = 1;
+    Constraints.coeffRef(constr_row,   2*integerVar)   += 1;
+    Constraints.coeffRef(constr_row+1, 2*integerVar+1) += 1;
 
-    rhs[constr_row]   = 0;
-    rhs[constr_row+1] = 0;
+    constraints_rhs[constr_row]   = 0;
+    constraints_rhs[constr_row+1] = 0;
 
     constr_row += 2;
   }
@@ -1407,7 +1407,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildUserDefined
       Constraints.coeffRef(constr_row, j) = userdefined_constraints[i][j];
     }
 
-    rhs[constr_row] = userdefined_constraints[i][userdefined_constraints[i].size()-1];
+    constraints_rhs[constr_row] = userdefined_constraints[i][userdefined_constraints[i].size()-1];
     constr_row +=1;
   }
 }
@@ -1452,11 +1452,13 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolv
     }
   }
   //// copy Constraints
+  std::ofstream consout("constraintsIGL.txt");
   for (int k=0; k < Constraints.outerSize(); ++k){
     for (Eigen::SparseMatrix<double>::InnerIterator it(Constraints,k); it; ++it){
       int row = it.row();
       int col = it.col();
       C(row, col) += it.value();
+      consout << row << "\t" << col << "\t" << it.value() << std::endl;
     }
   }
 
