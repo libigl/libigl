@@ -33,7 +33,7 @@ namespace igl
     // Outputs:
     //   TV  #V by 3 vertex position list
     //   TT  #T by 4 list of tet face indices
-    //   TF  #F by 3 list of trianlge face indices
+    //   TF  #F by 3 list of triangle face indices
     // Returns status:
     //   0 success
     //   1 tetgen threw exception
