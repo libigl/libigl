@@ -75,3 +75,8 @@ optional/build
 lib
 tutorial/XXX_test/CMakeLists.txt
 tutorial/XXX_test/main.cpp
+python/build
+python/.idea
+untitled
+Untitled.ipynb
+python/.ipynb_checkpoints

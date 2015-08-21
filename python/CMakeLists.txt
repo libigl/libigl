@@ -1,0 +1,118 @@
+# CMakeLists.txt -- Build system for the pybind11 examples
+#
+# Copyright (c) 2015 Wenzel Jakob <wenzel@inf.ethz.ch>
+#
+# All rights reserved. Use of this source code is governed by a
+# BSD-style license that can be found in the LICENSE file.
+
+cmake_minimum_required(VERSION 2.8)
+
+project(pybind)
+
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to 'MinSizeRel' as none was specified.")
+  set(CMAKE_BUILD_TYPE MinSizeRel CACHE STRING "Choose the type of build." FORCE)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
+    "MinSizeRel" "RelWithDebInfo")
+endif()
+
+if (true)
+SET(PYTHON_LIBRARIES "/usr/local/Cellar/python3/3.4.3_2/Frameworks/Python.framework/Versions/3.4/lib/libpython3.4m.dylib")
+SET(PYTHON_INCLUDE_DIR "/usr/local/Cellar/python3/3.4.3_2/Frameworks/Python.framework/Versions/3.4/include/python3.4m")
+
+#set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
+find_package(PythonLibs REQUIRED)
+find_package(PythonInterp REQUIRED)
+
+else()
+
+SET(PYTHON_LIBRARIES "/usr/local/Cellar/python3/3.4.3_2/Frameworks/Python.framework/Versions/3.4/lib/libpython3.4m.dylib")
+SET(PYTHON_INCLUDE_DIR "/usr/local/Cellar/python3/3.4.3_2/Frameworks/Python.framework/Versions/3.4/include/python3.4m")
+
+set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
+find_package(PythonLibs 3 REQUIRED)
+find_package(PythonInterp 3 REQUIRED)
+
+endif()
+
+string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
+if (UNIX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -flto")
+  endif()
+endif()
+
+# Compile with compiler warnings turned on
+if(MSVC)
+  if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+    string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+  endif()
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+endif()
+
+include_directories(${PYTHON_INCLUDE_DIR} include)
+
+## include pybing
+include_directories(${PROJECT_SOURCE_DIR}/../external/pybind11/include)
+
+## include eigen
+include_directories(${PROJECT_SOURCE_DIR}/../external/nanogui/ext/eigen)
+
+## include libigl
+include_directories(${PROJECT_SOURCE_DIR}/../include)
+
+add_library(igl SHARED
+  python.cpp
+  py_vector.cpp
+  py_igl.cpp
+  py_doc.cpp
+)
+
+set_target_properties(igl PROPERTIES PREFIX "")
+set_target_properties(igl PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+if (WIN32)
+  if (MSVC)
+    # Enforce size-based optimization and link time code generation on MSVC (~30% smaller binaries in experiments)
+    set_target_properties(igl PROPERTIES COMPILE_FLAGS "/Os /GL")
+    set_target_properties(igl PROPERTIES LINK_FLAGS "/LTCG")
+  endif()
+
+  # .PYD file extension on Windows
+  set_target_properties(igl PROPERTIES SUFFIX ".pyd")
+
+  # Link against the Python shared library
+  target_link_libraries(igl ${PYTHON_LIBRARY})
+elseif (UNIX)
+  # It's quite common to have multiple copies of the same Python version
+  # installed on one's system. E.g.: one copy from the OS and another copy
+  # that's statically linked into an application like Blender or Maya.
+  # If we link our plugin library against the OS Python here and import it
+  # into Blender or Maya later on, this will cause segfaults when multiple
+  # conflicting Python instances are active at the same time.
+
+  # Windows does not seem to be affected by this issue. The solution for Linux
+  # and Mac OS is simple: we just don't link against the Python library. The
+  # resulting shared library will have missing symbols, but that's perfectly
+  # fine -- they will be resolved at import time.
+
+  # .SO file extension on Linux/Mac OS
+  set_target_properties(igl PROPERTIES SUFFIX ".so")
+
+  # Strip unnecessary sections of the binary on Linux/Mac OS
+  if(APPLE)
+    set_target_properties(igl PROPERTIES MACOSX_RPATH ".")
+    set_target_properties(igl PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
+    if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+      add_custom_command(TARGET igl POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/igl.so)
+    endif()
+  else()
+    if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+      add_custom_command(TARGET igl POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/igl.so)
+    endif()
+  endif()
+endif()
