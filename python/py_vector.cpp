@@ -162,6 +162,12 @@ py::class_<Type> bind_eigen_1(py::module &m, const char *name,
         .def_cast(py::self * Scalar())
         .def_cast(py::self / Scalar())
 
+        .def("__rmul__", [](const Type& a, const Scalar& b)
+        {
+          return Type(b * a);
+        })
+
+
         /* Arithmetic in-place operators */
         .def_cast(py::self += py::self)
         .def_cast(py::self -= py::self)
@@ -277,6 +283,21 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("cwiseProduct", [](const Type &m1, const Type &m2) -> Type { return m1.cwiseProduct(m2); })
         .def("cwiseQuotient", [](const Type &m1, const Type &m2) -> Type { return m1.cwiseQuotient(m2); })
 
+        /* Row and column-wise operations */
+        .def("rowwiseSum", [](const Type &m) {return Type(m.rowwise().sum());} )
+        .def("rowwiseProd", [](const Type &m) {return Type(m.rowwise().prod());} )
+        .def("rowwiseMean", [](const Type &m) {return Type(m.rowwise().mean());} )
+        .def("rowwiseNorm", [](const Type &m) {return Type(m.rowwise().norm());} )
+        .def("rowwiseMinCoeff", [](const Type &m) {return Type(m.rowwise().minCoeff());} )
+        .def("rowwiseMaxCoeff", [](const Type &m) {return Type(m.rowwise().maxCoeff());} )
+
+        .def("colwiseSum", [](const Type &m) {return Type(m.colwise().sum());} )
+        .def("colwiseProd", [](const Type &m) {return Type(m.colwise().prod());} )
+        .def("colwiseMean", [](const Type &m) {return Type(m.colwise().mean());} )
+        .def("colwiseNorm", [](const Type &m) {return Type(m.colwise().norm());} )
+        .def("colwiseMinCoeff", [](const Type &m) {return Type(m.colwise().minCoeff());} )
+        .def("colwiseMaxCoeff", [](const Type &m) {return Type(m.colwise().maxCoeff());} )
+
         /* Arithmetic operators (def_cast forcefully casts the result back to a
            Type to avoid type issues with Eigen's crazy expression templates) */
         .def_cast(-py::self)
@@ -285,6 +306,11 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def_cast(py::self * py::self)
         .def_cast(py::self * Scalar())
         .def_cast(py::self / Scalar())
+
+        .def("__rmul__", [](const Type& a, const Scalar& b)
+        {
+          return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(b * a);
+        })
 
         /* Arithmetic in-place operators */
         .def_cast(py::self += py::self)
@@ -414,7 +440,17 @@ py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name,
         .def_cast(py::self - py::self)
         .def_cast(py::self * py::self)
         .def_cast(py::self * Scalar())
-        .def(py::self * Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>())
+        // Special case, sparse * dense produces a dense matrix
+        .def("__mul__", []
+        (const Type &a, const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& b)
+        {
+          return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(a * b);
+        })
+        .def("__rmul__", [](const Type& a, const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& b)
+        {
+          return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(b * a);
+        })
+        //.def(py::self * Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>())
         .def_cast(py::self / Scalar())
 
         /* Arithmetic in-place operators */

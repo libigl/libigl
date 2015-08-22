@@ -13,6 +13,8 @@
 #include <igl/cotmatrix.h>
 #include <igl/massmatrix.h>
 #include <igl/invert_diag.h>
+#include <igl/principal_curvature.h>
+#include <igl/parula.h>
 
 void python_export_igl(py::module &m)
 {
@@ -27,4 +29,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_cotmatrix.cpp"
 #include "py_igl/py_massmatrix.cpp"
 #include "py_igl/py_invert_diag.cpp"
+#include "py_igl/py_principal_curvature.cpp"
+#include "py_igl/py_parula.cpp"
+
 }
