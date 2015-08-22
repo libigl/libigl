@@ -17,30 +17,34 @@ igl.massmatrix(V,F,igl.MASSMATRIX_TYPE_VORONOI,M);
 igl.invert_diag(M,Minv);
 
 # Laplace-Beltrami of position
-temp = igl.eigen.SparseMatrixd();
-temp = L*V
 HN = -Minv*(L*V);
 
 # Extract magnitude as mean curvature
-#   VectorXd H = HN.rowwise().norm();
-#
-#   // Compute curvature directions via quadric fitting
-#   MatrixXd PD1,PD2;
-#   VectorXd PV1,PV2;
-#   igl::principal_curvature(V,F,PD1,PD2,PV1,PV2);
-#   // mean curvature
-#   H = 0.5*(PV1+PV2);
-#
+H = HN.rowwiseNorm();
+
+# Compute curvature directions via quadric fitting
+PD1 = igl.eigen.MatrixXd()
+PD2 = igl.eigen.MatrixXd()
+
+PV1 = igl.eigen.VectorXd()
+PV2 = igl.eigen.VectorXd()
+
+igl.principal_curvature(V,F,PD1,PD2,PV1,PV2);
+
+# Mean curvature
+H = 0.5*(PV1+PV2);
+
 #   igl::viewer::Viewer viewer;
 #   viewer.data.set_mesh(V, F);
 #
-#
-#   // Compute pseudocolor
-#   MatrixXd C;
-#   igl::parula(H,true,C);
+
+# Compute pseudocolor
+C = igl.eigen.MatrixXd();
+igl.parula(H,True,C);
+
 #   viewer.data.set_colors(C);
-#
-#   // Average edge length for sizing
+
+# Average edge length for sizing
 #   const double avg = igl::avg_edge_length(V,F);
 #
 #   // Draw a blue segment parallel to the minimal curvature direction
