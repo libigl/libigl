@@ -853,7 +853,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildLaplacianMa
 
   // compute intermediate result
   Eigen::SparseMatrix<double> G2;
-  G2 = G.transpose() * dblA.replicate<3,1>().asDiagonal();// * Handle_Stiffness.replicate<3,1>().asDiagonal();
+  G2 = G.transpose() * dblA.replicate<3,1>().asDiagonal() * Handle_Stiffness.replicate<3,1>().asDiagonal();
 
   ///  Compute LHS
   Eigen::SparseMatrix<double> Cotmatrix;
@@ -947,7 +947,7 @@ template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MapCoords()
 {
   ///map coords to faces
-  for (unsigned int f=0;f<F.rows();f++)
+  for (unsigned int f=0;f<Fcut.rows();f++)
   {
 
     for (int k=0;k<3;k++)
@@ -1408,9 +1408,9 @@ IGL_INLINE double igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::Distorti
   uv1 << WUV(f,2), WUV(f,3);
   uv2 << WUV(f,4), WUV(f,5);
 
-  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> p0 = V.row(F(f,0));
-  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> p1 = V.row(F(f,1));
-  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> p2 = V.row(F(f,2));
+  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> p0 = V.row(Fcut(f,0));
+  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> p1 = V.row(Fcut(f,1));
+  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> p2 = V.row(Fcut(f,2));
 
   Eigen::Matrix<typename DerivedV::Scalar, 3, 1> norm = (p1 - p0).cross(p2 - p0);
   double area2 = norm.norm();
@@ -1514,7 +1514,7 @@ IGL_INLINE bool igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::updateStif
     const double c = 1.0;
     const double d = 5.0;
 
-    for (unsigned int i = 0; i < F.rows(); ++i)
+    for (unsigned int i = 0; i < Fcut.rows(); ++i)
     {
       double dist=Distortion(i,grad_size,WUV);
       if (dist > maxD)
