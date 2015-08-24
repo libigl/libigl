@@ -505,6 +505,34 @@ py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name,
         // .def_static("Ones", [](size_t n, size_t m) { return Type(Type::Ones(n, m)); })
         // .def_static("Constant", [](size_t n, size_t m, Scalar value) { return Type(Type::Constant(n, m, value)); })
         // .def_static("Identity", [](size_t n, size_t m) { return Type(Type::Identity(n, m)); })
+        .def("toCOO",[](const Type& m)
+        {
+          Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> t(m.nonZeros(),3);
+          int count = 0;
+          for (int k=0; k<m.outerSize(); ++k)
+            for (typename Type::InnerIterator it(m,k); it; ++it)
+              t.row(count++) << it.row(), it.col(), it.value();
+          return t;
+        })
+
+        .def("fromCOO",[](Type& m, const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& t, int rows, int cols)
+        {
+          typedef Eigen::Triplet<Scalar> T;
+          std::vector<T> tripletList;
+          tripletList.reserve(t.rows());
+          for(unsigned i=0;i<t.rows();++i)
+            tripletList.push_back(T(round(t(i,0)),round(t(i,1)),t(i,2)));
+
+          if (rows == -1)
+            rows = t.col(0).maxCoeff()+1;
+
+          if (cols == -1)
+            cols = t.col(1).maxCoeff()+1;
+
+          m.resize(rows,cols);
+          m.setFromTriplets(tripletList.begin(), tripletList.end());
+        }, py::arg("t"), py::arg("rows") = -1, py::arg("cols") = -1)
+
         ;
     return matrix;
 }
