@@ -213,8 +213,7 @@ namespace comiso {
                              const Eigen::PlainObjectBase<DerivedV> &_PD2,
                              const Eigen::MatrixXi &_HandleS_Index,
                              const Eigen::Matrix<int, Eigen::Dynamic, 1>&_Handle_Singular,
-                             const MeshSystemInfo &_Handle_SystemInfo,
-                             const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_Seams
+                             const MeshSystemInfo &_Handle_SystemInfo
                              );
 
     const Eigen::PlainObjectBase<DerivedV> &V;
@@ -225,7 +224,6 @@ namespace comiso {
     const Eigen::PlainObjectBase<DerivedV> &PD2;
     const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular; // bool
     const Eigen::MatrixXi &HandleS_Index; //todo
-    const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams;
 
     const MeshSystemInfo &Handle_SystemInfo;
 
@@ -1013,8 +1011,7 @@ IGL_INLINE igl::comiso::PoissonSolver<DerivedV, DerivedF>
                 const Eigen::PlainObjectBase<DerivedV> &_PD2,
                 const Eigen::MatrixXi &_HandleS_Index,
                 const Eigen::Matrix<int, Eigen::Dynamic, 1>&_Handle_Singular,
-                const MeshSystemInfo &_Handle_SystemInfo, //todo: const?
-                const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_Seams
+                const MeshSystemInfo &_Handle_SystemInfo //todo: const?
 ):
 V(_V),
 F(_F),
@@ -1024,8 +1021,7 @@ PD1(_PD1),
 PD2(_PD2),
 HandleS_Index(_HandleS_Index),
 Handle_Singular(_Handle_Singular),
-Handle_SystemInfo(_Handle_SystemInfo),
-Handle_Seams(_Handle_Seams)
+Handle_SystemInfo(_Handle_SystemInfo)
 {
   UV        = Eigen::MatrixXd(V.rows(),2);
   WUV       = Eigen::MatrixXd(F.rows(),6);
@@ -1625,8 +1621,7 @@ F(F_)
                                             PD2_combed,
                                             VInd.HandleS_Index,
                                             /*VInd.Handle_Singular*/Handle_Singular,
-                                            VInd.Handle_SystemInfo,
-                                            Handle_Seams);
+                                            VInd.Handle_SystemInfo);
   Handle_Stiffness = Eigen::VectorXd::Constant(F.rows(),1);
 
 
