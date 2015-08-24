@@ -71,8 +71,6 @@ namespace comiso {
 
   struct MeshSystemInfo
   {
-    ///total number of scalar variables
-    int num_scalar_variables;
     ////number of vertices variables
     int num_vert_variables;
     ///num of integer for cuts
@@ -93,6 +91,8 @@ namespace comiso {
     // Input:
     const Eigen::PlainObjectBase<DerivedV> &V;
     const Eigen::PlainObjectBase<DerivedF> &F;
+    const Eigen::PlainObjectBase<DerivedV> &Vcut;
+    const Eigen::PlainObjectBase<DerivedF> &Fcut;
     const Eigen::PlainObjectBase<DerivedF> &TT;
     const Eigen::PlainObjectBase<DerivedF> &TTi;
     // const Eigen::PlainObjectBase<DerivedV> &PD1;
@@ -111,18 +111,13 @@ namespace comiso {
     ///this maps the integer for edge - face
     Eigen::MatrixXi Handle_Integer; // TODO: remove it is useless
 
-    ///per face indexes of vertex in the solver
-    Eigen::MatrixXi HandleS_Index;
-
-    ///per vertex variable indexes
-    std::vector<std::vector<int> > HandleV_Integer;
-
     // internal
     std::vector<std::vector<int> > VF, VFi;
-    std::vector<bool> V_border; // bool
 
     IGL_INLINE VertexIndexing(const Eigen::PlainObjectBase<DerivedV> &_V,
                               const Eigen::PlainObjectBase<DerivedF> &_F,
+                              const Eigen::PlainObjectBase<DerivedV> &_Vcut,
+                              const Eigen::PlainObjectBase<DerivedF> &_Fcut,
                               const Eigen::PlainObjectBase<DerivedF> &_TT,
                               const Eigen::PlainObjectBase<DerivedF> &_TTi,
                               //  const Eigen::PlainObjectBase<DerivedV> &_PD1,
@@ -134,26 +129,12 @@ namespace comiso {
                               );
 
     ///vertex to variable mapping
-    IGL_INLINE void InitMapping();
-
     IGL_INLINE void InitFaceIntegerVal();
 
     IGL_INLINE void InitSeamInfo();
 
 
   private:
-    ///this maps back index to vertices
-    std::vector<int> IndexToVert; // TODO remove it is useless
-
-    ///this is used for drawing purposes
-    std::vector<int> duplicated; // TODO remove it is useless
-
-    IGL_INLINE void FirstPos(const int v, int &f, int &edge);
-
-    IGL_INLINE int AddNewIndex(const int v0);
-
-    IGL_INLINE bool HasIndex(int indexVert,int indexVar);
-
     IGL_INLINE void GetSeamInfo(const int f0,
                                 const int f1,
                                 const int indexE,
@@ -161,32 +142,6 @@ namespace comiso {
                                 int &v0p,int &v1p,
                                 unsigned char &_MMatch,
                                 int &integerVar);
-    IGL_INLINE bool IsSeam(const int f0, const int f1);
-
-    ///find initial position of the pos to
-    // assing face to vert inxex correctly
-    IGL_INLINE void FindInitialPos(const int vert, int &edge, int &face);
-
-
-    ///intialize the mapping given an initial pos
-    ///whih must be initialized with FindInitialPos
-    IGL_INLINE void MapIndexes(const int  vert, const int edge_init, const int f_init);
-
-    ///intialize the mapping for a given vertex
-    IGL_INLINE void InitMappingSeam(const int vert);
-
-    ///intialize the mapping for a given sampled mesh
-    IGL_INLINE void InitMappingSeam();
-
-    ///test consistency of face variables per vert mapping
-    IGL_INLINE void TestSeamMappingFace(const int f);
-
-    ///test consistency of face variables per vert mapping
-    IGL_INLINE void TestSeamMappingVertex(int indexVert);
-
-    ///check consistency of variable mapping across seams
-    IGL_INLINE void TestSeamMapping();
-
   };
 
 
@@ -207,23 +162,25 @@ namespace comiso {
 
     IGL_INLINE PoissonSolver(const Eigen::PlainObjectBase<DerivedV> &_V,
                              const Eigen::PlainObjectBase<DerivedF> &_F,
+                             const Eigen::PlainObjectBase<DerivedV> &_Vcut,
+                             const Eigen::PlainObjectBase<DerivedF> &_Fcut,
                              const Eigen::PlainObjectBase<DerivedF> &_TT,
                              const Eigen::PlainObjectBase<DerivedF> &_TTi,
                              const Eigen::PlainObjectBase<DerivedV> &_PD1,
                              const Eigen::PlainObjectBase<DerivedV> &_PD2,
-                             const Eigen::MatrixXi &_HandleS_Index,
                              const Eigen::Matrix<int, Eigen::Dynamic, 1>&_Handle_Singular,
                              const MeshSystemInfo &_Handle_SystemInfo
                              );
 
     const Eigen::PlainObjectBase<DerivedV> &V;
     const Eigen::PlainObjectBase<DerivedF> &F;
+    const Eigen::PlainObjectBase<DerivedV> &Vcut;
+    const Eigen::PlainObjectBase<DerivedF> &Fcut;
     const Eigen::PlainObjectBase<DerivedF> &TT;
     const Eigen::PlainObjectBase<DerivedF> &TTi;
     const Eigen::PlainObjectBase<DerivedV> &PD1;
     const Eigen::PlainObjectBase<DerivedV> &PD2;
     const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular; // bool
-    const Eigen::MatrixXi &HandleS_Index; //todo
 
     const MeshSystemInfo &Handle_SystemInfo;
 
@@ -362,6 +319,8 @@ namespace comiso {
   private:
     const Eigen::PlainObjectBase<DerivedV> &V;
     const Eigen::PlainObjectBase<DerivedF> &F;
+    Eigen::PlainObjectBase<DerivedV> Vcut;
+    Eigen::PlainObjectBase<DerivedF> Fcut;
     Eigen::MatrixXd WUV;
     // internal
     Eigen::PlainObjectBase<DerivedF> TT;
@@ -446,6 +405,8 @@ IGL_INLINE igl::comiso::SeamInfo::SeamInfo(const SeamInfo &S1)
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE igl::comiso::VertexIndexing<DerivedV, DerivedF>::VertexIndexing(const Eigen::PlainObjectBase<DerivedV> &_V,
                                                                    const Eigen::PlainObjectBase<DerivedF> &_F,
+                                                                   const Eigen::PlainObjectBase<DerivedV> &_Vcut,
+                                                                   const Eigen::PlainObjectBase<DerivedF> &_Fcut,
                                                                    const Eigen::PlainObjectBase<DerivedF> &_TT,
                                                                    const Eigen::PlainObjectBase<DerivedF> &_TTi,
                                                                    // const Eigen::PlainObjectBase<DerivedV> &_PD1,
@@ -458,6 +419,8 @@ IGL_INLINE igl::comiso::VertexIndexing<DerivedV, DerivedF>::VertexIndexing(const
                                                                    ):
 V(_V),
 F(_F),
+Vcut(_Vcut),
+Fcut(_Fcut),
 TT(_TT),
 TTi(_TTi),
 // PD1(_PD1),
@@ -470,46 +433,12 @@ Handle_Seams(_Handle_Seams)
   #ifdef DEBUG_PRINT
   cerr<<igl::matlab_format(Handle_Seams,"Handle_Seams");
 #endif
-  V_border = igl::is_border_vertex(V,F);
   igl::vertex_triangle_adjacency(V,F,VF,VFi);
 
-  IndexToVert.clear();
-
-  Handle_SystemInfo.num_scalar_variables=0;
-  Handle_SystemInfo.num_vert_variables=0;
+  Handle_SystemInfo.num_vert_variables=Vcut.rows();
   Handle_SystemInfo.num_integer_cuts=0;
 
-  duplicated.clear();
-
-  HandleS_Index = Eigen::MatrixXi::Constant(F.rows(),3,-1);
-
   Handle_Integer = Eigen::MatrixXi::Constant(F.rows(),3,-1);
-
-  HandleV_Integer.resize(V.rows());
-}
-
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::FirstPos(const int v, int &f, int &edge)
-{
-  f    = VF[v][0];  // f=v->cVFp();
-  edge = VFi[v][0]; // edge=v->cVFi();
-}
-
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE int igl::comiso::VertexIndexing<DerivedV, DerivedF>::AddNewIndex(const int v0)
-{
-  Handle_SystemInfo.num_scalar_variables++;
-  HandleV_Integer[v0].push_back(Handle_SystemInfo.num_scalar_variables);
-  IndexToVert.push_back(v0);
-  return Handle_SystemInfo.num_scalar_variables;
-}
-
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE bool igl::comiso::VertexIndexing<DerivedV, DerivedF>::HasIndex(int indexVert,int indexVar)
-{
-  for (unsigned int i=0;i<HandleV_Integer[indexVert].size();i++)
-    if (HandleV_Integer[indexVert][i]==indexVar)return true;
-  return false;
 }
 
 template <typename DerivedV, typename DerivedF>
@@ -522,278 +451,18 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::GetSeamInfo(con
                                                                      int &integerVar)
 {
   int edgef0 = indexE;
-  v0 = HandleS_Index(f0,edgef0);
-  v1 = HandleS_Index(f0,(edgef0+1)%3);
+  v0 = Fcut(f0,edgef0);
+  v1 = Fcut(f0,(edgef0+1)%3);
   ////get the index on opposite side
   assert(TT(f0,edgef0) == f1);
   int edgef1 = TTi(f0,edgef0);
-  v1p = HandleS_Index(f1,edgef1);
-  v0p = HandleS_Index(f1,(edgef1+1)%3);
+  v1p = Fcut(f1,edgef1);
+  v0p = Fcut(f1,(edgef1+1)%3);
 
   integerVar = Handle_Integer(f0,edgef0);
   _MMatch = Handle_MMatch(f0,edgef0);
   assert(F(f0,edgef0)         == F(f1,((edgef1+1)%3)));
   assert(F(f0,((edgef0+1)%3)) == F(f1,edgef1));
-}
-
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE bool igl::comiso::VertexIndexing<DerivedV, DerivedF>::IsSeam(const int f0, const int f1)
-{
-  for (int i=0;i<3;i++)
-  {
-    int f_clos = TT(f0,i);
-
-    if (f_clos == -1)
-      continue; ///border
-
-    if (f_clos == f1)
-      return(Handle_Seams(f0,i));
-  }
-  assert(0);
-  return false;
-}
-
-///find initial position of the pos to
-// assing face to vert inxex correctly
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::FindInitialPos(const int vert,
-                                                                        int &edge,
-                                                                        int &face)
-{
-  int f_init;
-  int edge_init;
-  FirstPos(vert,f_init,edge_init); // todo manually IGL_INLINE the function
-  igl::HalfEdgeIterator<DerivedF> VFI(F,TT,TTi,f_init,edge_init);
-
-#ifdef DEBUG_PRINT
-  cerr<<"--FindInitialPos--"<<endl;
-#endif
-  bool vertexB = V_border[vert];
-  bool possible_split=false;
-  bool complete_turn=false;
-  do
-  {
-    int curr_f = VFI.Fi();
-    int curr_edge=VFI.Ei();
-#ifdef DEBUG_PRINT
-    cerr<<"@ face "<<curr_f<<", edge "<< F(curr_f,curr_edge)<<" - "<< F(curr_f,(curr_edge+1)%3)<<endl;
-#endif
-    VFI.NextFE();
-    int next_f=VFI.Fi();
-#ifdef DEBUG_PRINT
-    cerr<<"next face "<<next_f<<", edge "<< F(next_f,VFI.Ei())<<" - "<< F(next_f,(VFI.Ei()+1)%3)<<endl;
-#endif
-    ///test if I've just crossed a border
-    bool on_border=(TT(curr_f,curr_edge)==-1);
-#ifdef DEBUG_PRINT
-    cerr<<"on_border: "<<on_border<<endl;
-#endif
-    //bool mismatch=false;
-    bool seam=false;
-
-    #ifdef DEBUG_PRINT
-    cerr<<igl::matlab_format(Handle_Seams,"Handle_Seams");
-    #endif
-    ///or if I've just crossed a seam
-    ///if I'm on a border I MUST start from the one next t othe border
-    if (!vertexB)
-      //seam=curr_f->IsSeam(next_f);
-      seam=IsSeam(curr_f,next_f);
-    // if (vertexB)
-    // assert(!Handle_Singular(vert));
-    // ;
-    //assert(!vert->IsSingular());
-#ifdef DEBUG_PRINT
-    cerr<<"seam: "<<seam<<endl;
-#endif
-    possible_split=((on_border)||(seam));
-#ifdef DEBUG_PRINT
-    cerr<<"possible_split: "<<possible_split<<endl;
-#endif
-    complete_turn = next_f == f_init;
-#ifdef DEBUG_PRINT
-    cerr<<"complete_turn: "<<complete_turn<<endl;
-#endif
-  } while ((!possible_split)&&(!complete_turn));
-  face=VFI.Fi();
-  edge=VFI.Ei();
-#ifdef DEBUG_PRINT
-  cerr<<"FindInitialPos done. Face: "<<face<<", edge: "<< F(face,edge)<<" - "<< F(face,(edge+1)%3)<<endl;
-#endif
-  ///test that is not on a border
-  //assert(face->FFp(edge)!=face);
-}
-
-
-
-///intialize the mapping given an initial pos
-///whih must be initialized with FindInitialPos
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::MapIndexes(const int  vert,
-                                                                    const int edge_init,
-                                                                    const int f_init)
-{
-  ///check that is not on border..
-  ///in such case maybe it's non manyfold
-  ///insert an initial index
-  int curr_index=AddNewIndex(vert);
-#ifdef DEBUG_PRINT
-  cerr<<"--MapIndexes--"<<endl;
-#endif
-#ifdef DEBUG_PRINT
-  cerr<<"adding vertex for "<<vert<<endl;
-#endif
-  ///and initialize the jumping pos
-  igl::HalfEdgeIterator<DerivedF> VFI(F,TT,TTi,f_init,edge_init);
-  bool complete_turn=false;
-  do
-  {
-    int curr_f = VFI.Fi();
-    int curr_edge = VFI.Ei();
-#ifdef DEBUG_PRINT
-    cerr<<"Adding vertex "<<curr_index<<" to face "<<curr_f<<", edge "<< F(curr_f,curr_edge)<<" - "<< F(curr_f,(curr_edge+1)%3)<<endl;
-#endif
-    ///assing the current index
-    HandleS_Index(curr_f,curr_edge) = curr_index;
-#ifdef DEBUG_PRINT
-    cerr<<igl::matlab_format(HandleS_Index,"HandleS_Index")<<endl;
-#endif
-    VFI.NextFE();
-    int next_f = VFI.Fi();
-#ifdef DEBUG_PRINT
-    cerr<<"next face "<<next_f<<", edge "<< F(next_f,VFI.Ei())<<" - "<< F(next_f,(VFI.Ei()+1)%3)<<endl;
-#endif
-    ///test if I've finiseh with the face exploration
-    complete_turn = (next_f==f_init);
-#ifdef DEBUG_PRINT
-    cerr<<"complete_turn: "<<complete_turn<<endl;
-#endif
-    ///or if I've just crossed a mismatch
-    if (!complete_turn)
-    {
-      bool seam=false;
-      //seam=curr_f->IsSeam(next_f);
-      seam=IsSeam(curr_f,next_f);
-      if (seam)
-      {
-        ///then add a new index
-        curr_index=AddNewIndex(vert);
-#ifdef DEBUG_PRINT
-        cerr<<"Found a seam, adding vertex for "<<vert<<endl;
-#endif
-      }
-    }
-  } while (!complete_turn);
-}
-
-///intialize the mapping for a given vertex
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitMappingSeam(const int vert)
-{
-  ///first rotate until find the first pos after a mismatch
-  ///or a border or return to the first position...
-  int f_init = VF[vert][0];
-  int indexE = VFi[vert][0];
-
-  igl::HalfEdgeIterator<DerivedF> VFI(F,TT,TTi,f_init,indexE);
-
-  int edge_init;
-  int face_init;
-#ifdef DEBUG_PRINT
-  cerr<<"---Vertex: "<<vert<<"---"<<endl;
-#endif
-  FindInitialPos(vert,edge_init,face_init);
-  MapIndexes(vert,edge_init,face_init);
-}
-
-///intialize the mapping for a given sampled mesh
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitMappingSeam()
-{
-  //num_scalar_variables=-1;
-  Handle_SystemInfo.num_scalar_variables=-1;
-  for (unsigned int i=0;i<V.rows();i++)
-    InitMappingSeam(i);
-
-  for (unsigned int j=0;j<V.rows();j++)
-  {
-    assert(HandleV_Integer[j].size()>0);
-    if (HandleV_Integer[j].size()>1)
-      duplicated.push_back(j);
-  }
-}
-
-///test consistency of face variables per vert mapping
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::TestSeamMappingFace(const int f)
-{
-  for (int k=0;k<3;k++)
-  {
-    int indexV=HandleS_Index(f,k);
-    int v = F(f,k);
-    bool has_index=HasIndex(v,indexV);
-    assert(has_index);
-  }
-}
-
-///test consistency of face variables per vert mapping
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::TestSeamMappingVertex(int indexVert)
-{
-  for (unsigned int k=0;k<HandleV_Integer[indexVert].size();k++)
-  {
-    int indexV=HandleV_Integer[indexVert][k];
-
-    ///get faces sharing vertex
-    std::vector<int> faces = VF[indexVert];
-    std::vector<int> indexes = VFi[indexVert];
-
-    for (unsigned int j=0;j<faces.size();j++)
-    {
-      int f = faces[j];
-      int index = indexes[j];
-      assert(F(f,index) == indexVert);
-      assert((index>=0)&&(index<3));
-
-      if (HandleS_Index(f,index) == indexV)
-        return;
-    }
-  }
-  assert(0);
-}
-
-
-///check consistency of variable mapping across seams
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::TestSeamMapping()
-{
-  printf("\n TESTING SEAM INDEXES \n");
-  ///test F-V mapping
-  for (unsigned int j=0;j<F.rows();j++)
-    TestSeamMappingFace(j);
-
-  ///TEST  V-F MAPPING
-  for (unsigned int j=0;j<V.rows();j++)
-    TestSeamMappingVertex(j);
-
-}
-
-
-///vertex to variable mapping
-template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitMapping()
-{
-  //use_direction_field=_use_direction_field;
-
-  IndexToVert.clear();
-  duplicated.clear();
-
-  InitMappingSeam();
-
-  Handle_SystemInfo.num_vert_variables=Handle_SystemInfo.num_scalar_variables+1;
-
-  ///end testing...
-  TestSeamMapping();
 }
 
 template <typename DerivedV, typename DerivedF>
@@ -1005,21 +674,23 @@ template <typename DerivedV, typename DerivedF>
 IGL_INLINE igl::comiso::PoissonSolver<DerivedV, DerivedF>
 ::PoissonSolver(const Eigen::PlainObjectBase<DerivedV> &_V,
                 const Eigen::PlainObjectBase<DerivedF> &_F,
+                const Eigen::PlainObjectBase<DerivedV> &_Vcut,
+                const Eigen::PlainObjectBase<DerivedF> &_Fcut,
                 const Eigen::PlainObjectBase<DerivedF> &_TT,
                 const Eigen::PlainObjectBase<DerivedF> &_TTi,
                 const Eigen::PlainObjectBase<DerivedV> &_PD1,
                 const Eigen::PlainObjectBase<DerivedV> &_PD2,
-                const Eigen::MatrixXi &_HandleS_Index,
                 const Eigen::Matrix<int, Eigen::Dynamic, 1>&_Handle_Singular,
                 const MeshSystemInfo &_Handle_SystemInfo //todo: const?
 ):
 V(_V),
 F(_F),
+Vcut(_Vcut),
+Fcut(_Fcut),
 TT(_TT),
 TTi(_TTi),
 PD1(_PD1),
 PD2(_PD2),
-HandleS_Index(_HandleS_Index),
 Handle_Singular(_Handle_Singular),
 Handle_SystemInfo(_Handle_SystemInfo)
 {
@@ -1095,7 +766,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindFixedVert()
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE int igl::comiso::PoissonSolver<DerivedV, DerivedF>::GetFirstVertexIndex(int v)
 {
-  return HandleS_Index(VF[v][0],VFi[v][0]);
+  return Fcut(VF[v][0],VFi[v][0]);
 }
 
 ///fix the vertices which are flagged as fixed
@@ -1169,9 +840,6 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddToRoundVertic
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildLaplacianMatrix(double vfscale)
 {
-  Eigen::MatrixXd Vcut;
-  Eigen::MatrixXi Fcut;
-  igl::cut_mesh(V, F, Handle_Seams, Vcut, Fcut);
   Eigen::VectorXi idx  = Eigen::VectorXi::LinSpaced(Vcut.rows(), 0, 2*Vcut.rows()-2);
   Eigen::VectorXi idx2 = Eigen::VectorXi::LinSpaced(Vcut.rows(), 1, 2*Vcut.rows()-1);
 
@@ -1285,7 +953,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MapCoords()
     for (int k=0;k<3;k++)
     {
       //get the index of the variable in the system
-      int indexUV = HandleS_Index(f,k);
+      int indexUV = Fcut(f,k);
       ///then get U and V coords
       double U=X[indexUV*2];
       double V=X[indexUV*2+1];
@@ -1521,14 +1189,11 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::addSharpEdgeCons
     c[i] = 0;
   }
 
-  int v1 = F(fid,vid);
-  int v2 = F(fid,(vid+1)%3);
+  int v1 = Fcut(fid,vid);
+  int v2 = Fcut(fid,(vid+1)%3);
 
-  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> e = V.row(v2) - V.row(v1);
+  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> e = Vcut.row(v2) - Vcut.row(v1);
   e = e.normalized();
-
-  int v1i = HandleS_Index(fid,vid);//GetFirstVertexIndex(v1);
-  int v2i = HandleS_Index(fid,(vid+1)%3);//GetFirstVertexIndex(v2);
 
   double d1 = fabs(e.dot(PD1.row(fid).normalized()));
   double d2 = fabs(e.dot(PD2.row(fid).normalized()));
@@ -1538,12 +1203,12 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::addSharpEdgeCons
   if (d1>d2)
     offset = 1;
 
-  ids_to_round.push_back((v1i * 2) + offset);
-  ids_to_round.push_back((v2i * 2) + offset);
+  ids_to_round.push_back((v1 * 2) + offset);
+  ids_to_round.push_back((v2 * 2) + offset);
 
   // add constraint
-  c[(v1i * 2) + offset] =  1;
-  c[(v2i * 2) + offset] = -1;
+  c[(v1 * 2) + offset] =  1;
+  c[(v2 * 2) + offset] = -1;
 
   // add to the user-defined constraints
   num_userdefined_constraint++;
@@ -1578,13 +1243,14 @@ IGL_INLINE igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::MIQ_class(const
 V(V_),
 F(F_)
 {
+  igl::cut_mesh(V, F, Handle_Seams, Vcut, Fcut);
+
   igl::local_basis(V,F,B1,B2,B3);
   igl::triangle_triangle_adjacency(V,F,TT,TTi);
 
   // Prepare indexing for the linear system
-  VertexIndexing<DerivedV, DerivedF> VInd(V, F, TT, TTi, /*BIS1_combed, BIS2_combed,*/ Handle_MMatch, /*Handle_Singular, Handle_SingularDegree,*/ Handle_Seams);
+  VertexIndexing<DerivedV, DerivedF> VInd(V, F, Vcut, Fcut, TT, TTi, /*BIS1_combed, BIS2_combed,*/ Handle_MMatch, /*Handle_Singular, Handle_SingularDegree,*/ Handle_Seams);
 
-  VInd.InitMapping();
   VInd.InitFaceIntegerVal();
   VInd.InitSeamInfo();
 
@@ -1615,11 +1281,12 @@ F(F_)
   // Assemble the system and solve
   PoissonSolver<DerivedV, DerivedF> PSolver(V,
                                             F,
+                                            Vcut,
+                                            Fcut,
                                             TT,
                                             TTi,
                                             PD1_combed,
                                             PD2_combed,
-                                            VInd.HandleS_Index,
                                             /*VInd.Handle_Singular*/Handle_Singular,
                                             VInd.Handle_SystemInfo);
   Handle_Stiffness = Eigen::VectorXd::Constant(F.rows(),1);
