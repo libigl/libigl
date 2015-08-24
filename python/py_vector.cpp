@@ -130,8 +130,8 @@ py::class_<Type> bind_eigen_1(py::module &m, const char *name,
 
         /* Size query functions */
         .def("size", [](const Type &m) { return m.size(); })
-        .def("cols", &Type::cols)
-        .def("rows", &Type::rows)
+        .def("cols", [](const Type &m) { return m.cols(); })
+        .def("rows", [](const Type &m) { return m.rows(); })
 
         /* Initialization */
         .def("setZero", [](Type &m) { m.setZero(); })
@@ -212,7 +212,12 @@ py::class_<Type> bind_eigen_1(py::module &m, const char *name,
         /* Static initializers */
         .def_static("Zero", [](size_t n) { return Type(Type::Zero(n)); })
         .def_static("Ones", [](size_t n) { return Type(Type::Ones(n)); })
-        .def_static("Constant", [](size_t n, Scalar value) { return Type(Type::Constant(n, value)); });
+        .def_static("Constant", [](size_t n, Scalar value) { return Type(Type::Constant(n, value)); })
+        .def("MapMatrix", [](const Type& m, size_t r, size_t c)
+        {
+          return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(Eigen::Map<const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>>(m.data(),r,c));
+        })
+        ;
     return vector;
 }
 
@@ -258,8 +263,8 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
 
         /* Size query functions */
         .def("size", [](const Type &m) { return m.size(); })
-        .def("cols", &Type::cols)
-        .def("rows", &Type::rows)
+        .def("cols", [](const Type &m) { return m.cols(); })
+        .def("rows", [](const Type &m) { return m.rows(); })
 
         /* Initialization */
         .def("setZero", [](Type &m) { m.setZero(); })
@@ -362,7 +367,12 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def_static("Zero", [](size_t n, size_t m) { return Type(Type::Zero(n, m)); })
         .def_static("Ones", [](size_t n, size_t m) { return Type(Type::Ones(n, m)); })
         .def_static("Constant", [](size_t n, size_t m, Scalar value) { return Type(Type::Constant(n, m, value)); })
-        .def_static("Identity", [](size_t n, size_t m) { return Type(Type::Identity(n, m)); });
+        .def_static("Identity", [](size_t n, size_t m) { return Type(Type::Identity(n, m)); })
+        .def("MapMatrix", [](const Type& m, size_t r, size_t c)
+        {
+          return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(Eigen::Map<const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>>(m.data(),r,c));
+        })
+        ;
     return matrix;
 }
 
@@ -450,6 +460,17 @@ py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name,
         {
           return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(b * a);
         })
+        // Special case, sparse * dense vector produces a dense vector
+        .def("__mul__", []
+        (const Type &a, const Eigen::Matrix<Scalar,Eigen::Dynamic,1>& b)
+        {
+          return Eigen::Matrix<Scalar,Eigen::Dynamic,1>(a * b);
+        })
+        .def("__rmul__", [](const Type& a, const Eigen::Matrix<Scalar,1,Eigen::Dynamic>& b)
+        {
+          return Eigen::Matrix<Scalar,1,Eigen::Dynamic>(b * a);
+        })
+
         //.def(py::self * Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>())
         .def_cast(py::self / Scalar())
 

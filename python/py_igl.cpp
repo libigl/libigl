@@ -15,6 +15,10 @@
 #include <igl/invert_diag.h>
 #include <igl/principal_curvature.h>
 #include <igl/parula.h>
+#include <igl/readDMAT.h>
+#include <igl/grad.h>
+#include <igl/avg_edge_length.h>
+#include <igl/barycenter.h>
 
 void python_export_igl(py::module &m)
 {
@@ -31,5 +35,9 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_invert_diag.cpp"
 #include "py_igl/py_principal_curvature.cpp"
 #include "py_igl/py_parula.cpp"
+#include "py_igl/py_readDMAT.cpp"
+#include "py_igl/py_grad.cpp"
+#include "py_igl/py_avg_edge_length.cpp"
+#include "py_igl/py_barycenter.cpp"
 
 }
