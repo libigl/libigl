@@ -195,6 +195,8 @@ namespace comiso {
     // Output:
     // per wedge UV coordinates, 6 coordinates (1 face) per row
     Eigen::MatrixXd WUV;
+    // per vertex UV coordinates, Vcut.rows() x 2
+    Eigen::MatrixXd UV_out;
 
     // Matrices
     Eigen::SparseMatrix<double> Lhs;
@@ -321,7 +323,8 @@ namespace comiso {
     const Eigen::PlainObjectBase<DerivedF> &F;
     Eigen::PlainObjectBase<DerivedV> Vcut;
     Eigen::PlainObjectBase<DerivedF> Fcut;
-    Eigen::MatrixXd WUV;
+    Eigen::MatrixXd UV_out;
+    Eigen::PlainObjectBase<DerivedF> FUV_out;
     // internal
     Eigen::PlainObjectBase<DerivedF> TT;
     Eigen::PlainObjectBase<DerivedF> TTi;
@@ -696,6 +699,7 @@ Handle_SystemInfo(_Handle_SystemInfo)
 {
   UV        = Eigen::MatrixXd(V.rows(),2);
   WUV       = Eigen::MatrixXd(F.rows(),6);
+  UV_out    = Eigen::MatrixXd(Vcut.rows(),2);
   igl::doublearea(V,F,doublearea);
   igl::per_face_normals(V,F,N);
   igl::vertex_triangle_adjacency(V,F,VF,VFi);
@@ -961,8 +965,13 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MapCoords()
       WUV(f,k*2 + 0) = U;
       WUV(f,k*2 + 1) = V;
     }
+
   }
 
+  for(int i = 0; i < Vcut.rows(); i++){
+    UV_out(i,0) = X[i*2];
+    UV_out(i,1) = X[i*2+1];
+  }
 #if 0
   ///initialize the vector of integer variables to return their values
   Handle_SystemInfo.IntegerValues.resize(n_integer_vars*2);
@@ -1311,78 +1320,17 @@ F(F_)
   int nflips=NumFlips(PSolver.WUV);
   printf("**** END OPTIMIZING #FLIPS %d  ****\n",nflips);
 
+  UV_out = PSolver.UV_out;
+  FUV_out = PSolver.Fcut;
   fflush(stdout);
-  WUV = PSolver.WUV;
-
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
 IGL_INLINE void igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::extractUV(Eigen::PlainObjectBase<DerivedU> &UV_out,
                                                                         Eigen::PlainObjectBase<DerivedF> &FUV_out)
 {
-  //      int f = F.rows();
-  int f = WUV.rows();
-
-  unsigned vtfaceid[f*3];
-  std::vector<double> vtu;
-  std::vector<double> vtv;
-
-  std::vector<std::vector<double> > listUV;
-  unsigned counter = 0;
-
-  for (unsigned i=0; i<f; ++i)
-  {
-    for (unsigned j=0; j<3; ++j)
-    {
-      std::vector<double> t(3);
-      t[0] = WUV(i,j*2 + 0);
-      t[1] = WUV(i,j*2 + 1);
-      t[2] = counter++;
-      listUV.push_back(t);
-    }
-  }
-  std::sort(listUV.begin(),listUV.end());
-
-  counter = 0;
-  unsigned k = 0;
-  while (k < f*3)
-  {
-    double u = listUV[k][0];
-    double v = listUV[k][1];
-    unsigned id = round(listUV[k][2]);
-
-    vtfaceid[id] = counter;
-    vtu.push_back(u);
-    vtv.push_back(v);
-
-    unsigned j=1;
-    while(k+j < f*3 && u == listUV[k+j][0] && v == listUV[k+j][1])
-    {
-      unsigned tid = round(listUV[k+j][2]);
-      vtfaceid[tid] = counter;
-      ++j;
-    }
-    k = k+j;
-    counter++;
-  }
-
-  UV_out.resize(vtu.size(),2);
-  for (unsigned i=0; i<vtu.size(); ++i)
-  {
-    UV_out(i,0) = vtu[i];
-    UV_out(i,1) = vtv[i];
-  }
-
-  FUV_out.resize(f,3);
-
-  unsigned vcounter = 0;
-  for (unsigned i=0; i<f; ++i)
-  {
-    FUV_out(i,0)  = vtfaceid[vcounter++];
-    FUV_out(i,1)  = vtfaceid[vcounter++];
-    FUV_out(i,2)  = vtfaceid[vcounter++];
-  }
-
+  UV_out = this->UV_out;
+  FUV_out = this->FUV_out;
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
