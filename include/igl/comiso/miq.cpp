@@ -471,18 +471,29 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::GetSeamInfo(con
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitFaceIntegerVal()
 {
+
+  Eigen::MatrixXi EV, FE, EF;
+  igl::edge_topology(V, F, EV, FE, EF);
   Handle_SystemInfo.num_integer_cuts=0;
+  for (unsigned int j=0;j<F.rows();j++){
+    for (int k=0;k<3;k++){
+      Handle_Integer(j,k) = -1;
+    }
+  }
+
   for (unsigned int j=0;j<F.rows();j++)
   {
     for (int k=0;k<3;k++)
     {
-      if (Handle_Seams(j,k))
+      if (Handle_Seams(j,k) && Handle_Integer(j,k) == -1)
       {
         Handle_Integer(j,k) = Handle_SystemInfo.num_integer_cuts;
+        int globalEdge = FE(j,k);
+        int otherFace = (EF(globalEdge, 0) == j) ? EF(globalEdge, 0) : EF(globalEdge, 1);
+        int localEdge = FE(otherFace, 0) == k ? 0 : (FE(otherFace, 1) == k ? 1 : 2);
+        Handle_Integer(otherFace, localEdge) = Handle_Integer(j,k);
         Handle_SystemInfo.num_integer_cuts++;
       }
-      else
-        Handle_Integer(j,k)=-1;
     }
   }
 }
