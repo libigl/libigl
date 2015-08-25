@@ -107,10 +107,6 @@ namespace comiso {
     ///this handle for mesh TODO: move with the other global variables
     MeshSystemInfo Handle_SystemInfo;
 
-    // Output:
-    ///this maps the integer for edge - face
-    Eigen::MatrixXi Handle_Integer; // TODO: remove it is useless
-
     // internal
     std::vector<std::vector<int> > VF, VFi;
 
@@ -140,8 +136,7 @@ namespace comiso {
                                 const int indexE,
                                 int &v0,int &v1,
                                 int &v0p,int &v1p,
-                                unsigned char &_MMatch,
-                                int &integerVar);
+                                unsigned char &_MMatch);
   };
 
 
@@ -440,8 +435,6 @@ Handle_Seams(_Handle_Seams)
 
   Handle_SystemInfo.num_vert_variables=Vcut.rows();
   Handle_SystemInfo.num_integer_cuts=0;
-
-  Handle_Integer = Eigen::MatrixXi::Constant(F.rows(),3,-1);
 }
 
 template <typename DerivedV, typename DerivedF>
@@ -450,8 +443,7 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::GetSeamInfo(con
                                                                      const int indexE,
                                                                      int &v0,int &v1,
                                                                      int &v0p,int &v1p,
-                                                                     unsigned char &_MMatch,
-                                                                     int &integerVar)
+                                                                     unsigned char &_MMatch)
 {
   int edgef0 = indexE;
   v0 = Fcut(f0,edgef0);
@@ -462,7 +454,6 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::GetSeamInfo(con
   v1p = Fcut(f1,edgef1);
   v0p = Fcut(f1,(edgef1+1)%3);
 
-  integerVar = Handle_Integer(f0,edgef0);
   _MMatch = Handle_MMatch(f0,edgef0);
   assert(F(f0,edgef0)         == F(f1,((edgef1+1)%3)));
   assert(F(f0,((edgef0+1)%3)) == F(f1,edgef1));
@@ -478,11 +469,8 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitFaceInteger
     {
       if (Handle_Seams(j,k))
       {
-        Handle_Integer(j,k) = Handle_SystemInfo.num_integer_cuts;
         Handle_SystemInfo.num_integer_cuts++;
       }
-      else
-        Handle_Integer(j,k)=-1;
     }
   }
 }
@@ -492,6 +480,7 @@ template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
 {
   Handle_SystemInfo.EdgeSeamInfo.clear();
+  int intVar = 0;
   for (unsigned int f0=0;f0<F.rows();f0++)
   {
     for (int k=0;k<3;k++)
@@ -507,11 +496,13 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
         int v0,v0p,v1,v1p;
         unsigned char MM;
         int integerVar;
-        GetSeamInfo(f0,f1,k,v0,v1,v0p,v1p,MM,integerVar);
-        Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,integerVar));
+        GetSeamInfo(f0,f1,k,v0,v1,v0p,v1p,MM);
+        Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,intVar));
+        intVar++;
       }
     }
   }
+  assert(intVar == Handle_SystemInfo.num_integer_cuts);
 }
 
 
