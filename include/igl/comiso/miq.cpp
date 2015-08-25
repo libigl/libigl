@@ -473,6 +473,8 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitFaceInteger
       }
     }
   }
+  Handle_SystemInfo.num_integer_cuts /= 2;
+  assert(Handle_SystemInfo.num_integer_cuts % 2 == 0);
 }
 
 
@@ -481,7 +483,7 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
 {
   Handle_SystemInfo.EdgeSeamInfo.clear();
   std::set<int> hasConstraint;
-  int intVar = 0;
+  int integerVar = 0;
   for (unsigned int f0=0;f0<F.rows();f0++)
   {
     for (int k=0;k<3;k++)
@@ -497,18 +499,17 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
       {
         int v0,v0p,v1,v1p;
         unsigned char MM;
-        int integerVar;
         GetSeamInfo(f0,f1,k,v0,v1,v0p,v1p,MM);
-        Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,intVar));
+        Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,integerVar));
 
         // mark this face-edge pair and face-edge pair across seam as constrained
         hasConstraint.insert(3*f0 + k);
         hasConstraint.insert(3*f1 + TTi(f0,k));
-        intVar++;
+        integerVar++;
       }
     }
   }
-  assert(intVar == Handle_SystemInfo.num_integer_cuts / 2);
+  assert(integerVar == Handle_SystemInfo.num_integer_cuts);
 }
 
 
@@ -801,7 +802,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
 
   ///INTEGER PART
   ///the total number of integer variables
-  n_integer_vars = Handle_SystemInfo.num_integer_cuts / 2;
+  n_integer_vars = Handle_SystemInfo.num_integer_cuts;
 
   ///CONSTRAINT PART
   num_cut_constraint = Handle_SystemInfo.EdgeSeamInfo.size()*2;
@@ -911,7 +912,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
   ///current constraint row
   int constr_row = 0;
 
-  for (unsigned int i=0; i<num_cut_constraint/4; i++)
+  for (unsigned int i=0; i<num_cut_constraint/2; i++)
   {
     unsigned char interval = Handle_SystemInfo.EdgeSeamInfo[i].MMatch;
     if (interval==1)
@@ -926,7 +927,6 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
     int p1p = Handle_SystemInfo.EdgeSeamInfo[i].v1p;
 
     std::complex<double> rot = GetRotationComplex(interval);
-    std::complex<double> counterRot = GetRotationComplex((interval % 2 == 0 ) ? interval : (interval + 2) % 4);
 
     ///get the integer variable
     int integerVar = n_vert_vars + Handle_SystemInfo.EdgeSeamInfo[i].integerVar;
@@ -956,25 +956,6 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
 
     constr_row += 2;
 
-    // constraints for start vertex across edge
-    Constraints.coeffRef(constr_row,   2*p0)   += 1;
-    Constraints.coeffRef(constr_row+1, 2*p0+1) += 1;
-
-    Constraints.coeffRef(constr_row,   2*p0p)   += -counterRot.real();
-    Constraints.coeffRef(constr_row,   2*p0p+1) +=  counterRot.imag();
-    Constraints.coeffRef(constr_row+1, 2*p0p)   += -counterRot.imag();
-    Constraints.coeffRef(constr_row+1, 2*p0p+1) += -counterRot.real();
-
-    Constraints.coeffRef(constr_row,   2*integerVar)   +=  counterRot.real();
-    Constraints.coeffRef(constr_row,   2*integerVar+1) += -counterRot.imag();
-    Constraints.coeffRef(constr_row+1, 2*integerVar)   +=  counterRot.imag();
-    Constraints.coeffRef(constr_row+1, 2*integerVar+1) +=  counterRot.real();
-
-    constraints_rhs[constr_row]   = 0;
-    constraints_rhs[constr_row+1] = 0;
-
-    constr_row += 2;
-
     // constraints for end vertex of edge
     Constraints.coeffRef(constr_row,   2*p1)   +=  rot.real();
     Constraints.coeffRef(constr_row,   2*p1+1) += -rot.imag();
@@ -986,25 +967,6 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
 
     Constraints.coeffRef(constr_row,   2*integerVar)   += 1;
     Constraints.coeffRef(constr_row+1, 2*integerVar+1) += 1;
-
-    constraints_rhs[constr_row]   = 0;
-    constraints_rhs[constr_row+1] = 0;
-
-    constr_row += 2;
-
-    // constraints for end vertex across edge
-    Constraints.coeffRef(constr_row,   2*p1)   += 1;
-    Constraints.coeffRef(constr_row+1, 2*p1+1) += 1;
-
-    Constraints.coeffRef(constr_row,   2*p1p)   += -counterRot.real();
-    Constraints.coeffRef(constr_row,   2*p1p+1) +=  counterRot.imag();
-    Constraints.coeffRef(constr_row+1, 2*p1p)   += -counterRot.imag();
-    Constraints.coeffRef(constr_row+1, 2*p1p+1) += -counterRot.real();
-
-    Constraints.coeffRef(constr_row,   2*integerVar)   +=  counterRot.real();
-    Constraints.coeffRef(constr_row,   2*integerVar+1) += -counterRot.imag();
-    Constraints.coeffRef(constr_row+1, 2*integerVar)   +=  counterRot.imag();
-    Constraints.coeffRef(constr_row+1, 2*integerVar+1) +=  counterRot.real();
 
     constraints_rhs[constr_row]   = 0;
     constraints_rhs[constr_row+1] = 0;
