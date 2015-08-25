@@ -1187,6 +1187,29 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolv
   ids_to_round.resize(dist);
 
   solver.solve( C, A, X, B, ids_to_round, 0.0, false, false);
+
+
+  ////DEBUG OUTPUT
+    std::ofstream consout("Cmat.txt");
+    Eigen::SparseMatrix<double, Eigen::RowMajor> Cmat = Constraints;
+    for (int k=0; k < Cmat.outerSize(); ++k){
+      for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator it(Cmat,k); it; ++it){
+        int row = it.row();
+        int col = it.col();
+        consout << "(" << row << ", " << col << ")" << "\t" << it.value() << std::endl;
+      }
+    }
+    consout.close();
+
+    std::ofstream rhsCout("rhsC.txt");
+    rhsCout << rhs;
+    rhsCout.close();
+
+    std::ofstream xout("Xout.txt");
+    for(auto it = X.begin(); it != X.end(); it+=2){
+      xout << *it << "\t" << *(it+1) << std::endl;
+    }
+    xout.close();
 }
 
 template <typename DerivedV, typename DerivedF>
