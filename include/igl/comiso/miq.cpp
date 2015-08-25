@@ -1136,13 +1136,11 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolv
     }
   }
   //// copy Constraints
-  std::ofstream consout("constraintsIGL.txt");
   for (int k=0; k < Constraints.outerSize(); ++k){
     for (Eigen::SparseMatrix<double>::InnerIterator it(Constraints,k); it; ++it){
       int row = it.row();
       int col = it.col();
       C(row, col) += it.value();
-      consout << row << "\t" << col << "\t" << it.value() << std::endl;
     }
   }
 
