@@ -10,6 +10,7 @@
 #include <igl/cgal/peel_outer_hull_layers.h>
 #include <igl/cgal/remesh_self_intersections.h>
 #include <igl/remove_unreferenced.h>
+#include <igl/mod.h>
 #include <igl/unique_simplices.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <iostream>
@@ -199,9 +200,11 @@ IGL_INLINE void igl::boolean::mesh_boolean(
 #endif
   Matrix<bool,Dynamic,1> from_A(CF.rows());
   // peel layers keeping track of odd and even flips
-  Matrix<bool,Dynamic,1> odd;
+  VectorXi I;
   Matrix<bool,Dynamic,1> flip;
-  peel_outer_hull_layers(EV,CF,CN,odd,flip);
+  peel_outer_hull_layers(EV,CF,CN,I,flip);
+  // 0 is "first" iteration, so it's odd
+  Array<bool,Dynamic,1> odd = igl::mod(I,2).array()==0;
 
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"categorize..."<<endl;
