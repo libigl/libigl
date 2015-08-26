@@ -47,7 +47,7 @@
 using namespace std;
 using namespace Eigen;
 
-#define DEBUGPRINT 0
+#define DEBUGPRINT 1
 
 
 namespace igl {
@@ -1093,6 +1093,12 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolv
 
 
   ////DEBUG OUTPUT
+  std::ofstream idsout("ids.txt");
+  for(auto elem : ids_to_round){
+    idsout << elem << std::endl;
+  }
+  idsout.close();
+
     std::ofstream consout("Cmat.txt");
     Eigen::SparseMatrix<double, Eigen::RowMajor> Cmat = Constraints;
     for (int k=0; k < Cmat.outerSize(); ++k){
