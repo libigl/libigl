@@ -19,3 +19,13 @@ IGL_INLINE void igl::mod(
     *(B.data()+i) = (*(A.data()+i))%base;
   }
 }
+template <typename DerivedA>
+IGL_INLINE Eigen::PlainObjectBase<DerivedA> igl::mod(
+  const Eigen::PlainObjectBase<DerivedA> & A, const int base)
+{
+  DerivedA B;
+  mod(A,base,B);
+  return B;
+}
+#ifdef IGL_STATIC_LIBRARY
+#endif
