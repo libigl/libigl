@@ -1,8 +1,8 @@
 import igl
 
 # Load mesh
-V = igl.eigen.MatrixXd();
-F = igl.eigen.MatrixXi();
+V = igl.eigen.MatrixXd()
+F = igl.eigen.MatrixXi()
 igl.readOFF("../tutorial/shared/bumpy.off",V,F);
 
 # Compute Gaussian curvature
