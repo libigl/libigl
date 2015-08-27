@@ -481,11 +481,19 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitFaceInteger
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
 {
+  struct VertexInfo{
+    int v, f0, k0, f1, k1;
+    VertexInfo(int _v, int _f0, int _k0, int _f1, int _k1) :
+               v(_v), f0(_f0), k0(_k0), f1(_f1), k1(_k1){}
+    bool operator==(VertexInfo const& other){
+      return other.v == v;
+    }
+  };
 
-  std::vector<std::vector<int> >lEdgeSeamInfo; //tmp
+  std::vector<std::vector<VertexInfo> >verticesPerSeam; //tmp
 
   // for every vertex, keep track of their adjacent vertices on seams.
-  std::vector<std::list<int> > VVSeam(V.rows());
+  std::vector<std::list<VertexInfo> > VVSeam(V.rows());
   Eigen::MatrixXi EV, FE, EF;
   igl::edge_topology(V, F, EV, FE, EF);
   for (unsigned int e=0;e<EF.rows();e++)
@@ -507,73 +515,98 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
       {
         int v0 = F(f0, k);
         int v1 = F(f0, (k+1)%3);
-        VVSeam[v0].push_back(v1);
-        VVSeam[v1].push_back(v0);
+        VVSeam[v0].push_back(VertexInfo(v1, f0, k, f1, TTi(f0,k)));
+        VVSeam[v1].push_back(VertexInfo(v0, f0, k, f1, TTi(f0,k)));
       }
   }
 
   // Find start vertices
-  std::vector<int> startVertices;
+  std::vector<int> startVertexIndices;
   std::vector<bool> isStartVertex(V.rows());
   for (unsigned int i=0;i<V.rows();i++)
   {
     isStartVertex[i] = false;
     if (VVSeam[i].size() > 0 && VVSeam[i].size() != 2)
     {
-      startVertices.push_back(i);
+      startVertexIndices.push_back(i);
       isStartVertex[i] = true;
     }
   }
 
-  for (unsigned int i=0;i<startVertices.size();i++)
+  // for each startVertex, walk along its seam
+  for (unsigned int i=0;i<startVertexIndices.size();i++)
   {
-    auto startVertex = &VVSeam[startVertices[i]];
-    for (unsigned int j=0;j<startVertex->size();j++)
+    auto startVertexNeighbors = &VVSeam[startVertexIndices[i]];
+    for (unsigned int j=0;j<startVertexNeighbors->size();j++)
     {
+      // temporary container for VertexInfo of this seam
+      std::vector<VertexInfo> thisSeam;
+
+      // advance on the seam
+      auto currentVertexNeighbors = startVertexNeighbors;
+      auto nextVertex = currentVertexNeighbors->front();
+      currentVertexNeighbors->pop_front();
+
+      // Create vertexInfo struct for start vertex
+      auto startVertex = VertexInfo(startVertexIndices[i], nextVertex.f0, nextVertex.k0, nextVertex.f1, nextVertex.k1);
       auto currentVertex = startVertex;
-      int currentVertexIndex = startVertices[i];
+      // Add start vertex to the seam
+      thisSeam.push_back(startVertex);
 
-      std::vector<int> thisSeam;
-      thisSeam.push_back(currentVertexIndex);
-
-      // walk along the seam
-      int nextVertexIndex = currentVertex->front();
-      currentVertex->pop_front();
-      int prevVertexIndex;
+      auto prevVertex = currentVertex;
       while (true)
       {
-        // update indices (move to the next vertex)
-        prevVertexIndex = currentVertexIndex;
-        currentVertexIndex = nextVertexIndex;
-        currentVertex = &VVSeam[nextVertexIndex];
+        // move to the next vertex
+        prevVertex = currentVertex;
+        currentVertex = nextVertex;
+        currentVertexNeighbors = &VVSeam[nextVertex.v];
 
         // add current vertex to this seam
-        thisSeam.push_back(currentVertexIndex);
+        thisSeam.push_back(currentVertex);
 
         // remove the previous vertex
-        auto it = std::find(currentVertex->begin(), currentVertex->end(), prevVertexIndex);
-        currentVertex->erase(it);
+        auto it = std::find(currentVertexNeighbors->begin(), currentVertexNeighbors->end(), prevVertex);
+        assert(it != currentVertexNeighbors->end());
+        currentVertexNeighbors->erase(it);
 
-        if (currentVertex->size() == 1 && !isStartVertex[currentVertexIndex])
+        if (currentVertexNeighbors->size() == 1 && !isStartVertex[currentVertex.v])
         {
-          nextVertexIndex = currentVertex->front();
-          currentVertex->pop_front();
+          nextVertex = currentVertexNeighbors->front();
+          currentVertexNeighbors->pop_front();
         }
         else
           break;
       }
-      lEdgeSeamInfo.push_back(thisSeam);
+      verticesPerSeam.push_back(thisSeam);
     }
   }
 
-  for(auto elem : lEdgeSeamInfo){
-	  for(auto elem2 : elem){
-		  std::cout << elem2 << "\t";
-	  }
-	std::cout << std::endl;
+  Handle_SystemInfo.EdgeSeamInfo.clear();
+  int integerVar = 0;
+  for(auto seam : verticesPerSeam){
+    int orientation = Handle_MMatch(seam[0].f0, seam[0].k0);
+    for(auto vertex : seam){
+      int f,k,ff,kk;
+      if(Handle_MMatch(vertex.f0, vertex.k0) == orientation){
+        f = vertex.f0; ff = vertex.f1;
+        k = vertex.k0; kk = vertex.k1;
+      }
+      else{
+        f = vertex.f1; ff = vertex.f0;
+        k = vertex.k1; kk = vertex.k0;
+        assert(Handle_MMatch(vertex.f1, vertex.k1) == orientation);
+      }
+      int v0,v0p,v1,v1p;
+      unsigned char MM;
+      GetSeamInfo(f,ff,k,v0,v1,v0p,v1p,MM);
+      Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,integerVar));
+    }
+    integerVar++;
   }
 
-  Handle_SystemInfo.EdgeSeamInfo.clear();
+  Handle_SystemInfo.num_integer_cuts = integerVar;
+
+  /*
   std::set<int> hasConstraint;
   int integerVar = 0;
   for (unsigned int f0=0;f0<F.rows();f0++)
@@ -602,6 +635,7 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
     }
   }
   assert(integerVar == Handle_SystemInfo.num_integer_cuts);
+  */
 }
 
 
@@ -897,7 +931,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
   n_integer_vars = Handle_SystemInfo.num_integer_cuts;
 
   ///CONSTRAINT PART
-  num_cut_constraint = Handle_SystemInfo.EdgeSeamInfo.size()*2;
+  num_cut_constraint = Handle_SystemInfo.EdgeSeamInfo.size();//*2;
 
   num_constraint_equations = num_cut_constraint * 2 + n_fixed_vars * 2 + num_userdefined_constraint;
 
@@ -1004,7 +1038,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
   ///current constraint row
   int constr_row = 0;
 
-  for (unsigned int i=0; i<num_cut_constraint/2; i++)
+  for (unsigned int i=0; i<num_cut_constraint; i++)
   {
     unsigned char interval = Handle_SystemInfo.EdgeSeamInfo[i].MMatch;
     if (interval==1)
@@ -1047,7 +1081,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
     constraints_rhs[constr_row+1] = 0;
 
     constr_row += 2;
-
+/*
     // constraints for end vertex of edge
     Constraints.coeffRef(constr_row,   2*p1)   +=  rot.real();
     Constraints.coeffRef(constr_row,   2*p1+1) += -rot.imag();
@@ -1064,7 +1098,9 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
     constraints_rhs[constr_row+1] = 0;
 
     constr_row += 2;
+    */
   }
+
 }
 
 ///set the constraints for the inter-range cuts
@@ -1185,6 +1221,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolv
 
 
   ////DEBUG OUTPUT
+  if(integer_rounding){
   std::ofstream idsout("ids.txt");
   for(auto elem : ids_to_round){
     idsout << elem << std::endl;
@@ -1211,6 +1248,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolv
       xout << *it << "\t" << *(it+1) << std::endl;
     }
     xout.close();
+  }
 }
 
 template <typename DerivedV, typename DerivedF>
