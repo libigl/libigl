@@ -23,9 +23,7 @@
 <blockquote>
 <p>Get started with:</p>
 
-<pre><code class="bash">git clone https://github.com/libigl/libigl.git
-cd libigl
-git submodule update --init --recursive
+<pre><code class="bash">git clone --recursive https://github.com/libigl/libigl.git
 </code></pre>
 </blockquote>
 
@@ -154,6 +152,25 @@ Eigen::Matrix&lt;double, Eigen::Dynamic, 3&gt; A;
 them probably work just fine). This requires setting up unit testing, which is
 a major <em>todo</em> for our development.</p>
 
+<h2 id="gitsubmodules">Git Submodules</h2>
+
+<p>Libigl uses git submodules for its <em>optional</em> dependencies,
+in particular, those needed by the OpenGL viewer to run the examples in the
+<a href="tutorial/tutorial.html">tutorial</a>. Git submodules allow use to treat clones of
+other libraries as sub-directories within ours while separating our commits.
+Read the <a href="http://git-scm.com/docs/git-submodule">documentation</a> for a detailed
+explanation, but essentially our libigl repo stores a hash for each of its
+subrepos containing which version to update to. When a change is introduced in
+a dependencies repo we can incorporate that change by pulling in our sub-repo
+and updating (i.e. committing) that change to the hash.</p>
+
+<p>When pulling new changes to libigl it&#8217;s also a good idea to update changes to
+subrepos:</p>
+
+<pre><code class="bash">git pull
+git submodule update -- recursive
+</code></pre>
+
 <h2 id="howtocontribute">How to contribute</h2>
 
 <p>If you are interested in joining development, please fork the repository and
@@ -213,7 +230,8 @@ few labs/companies/institutions using libigl:</p>
 Jacobson</a> and <a href="http://www.inf.ethz.ch/personal/dpanozzo/">Daniele
 Panozzo</a>. Please <a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#x61;&#x6c;&#101;&#x63;&#x6a;&#x61;&#x63;&#111;&#98;&#115;&#111;&#110;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#x6f;&#x6d;&#44;&#x64;&#x61;&#110;&#105;&#101;&#x6c;&#101;&#x2e;&#x70;&#x61;&#110;&#x6f;&#122;&#x7a;&#x6f;&#64;&#x67;&#x6d;&#x61;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#x6d;">&#99;&#x6f;&#x6e;&#116;&#x61;&#99;&#x74;
 &#117;&#115;</a> if you have
-questions or comments. We are happy to get feedback!</p>
+questions or comments. For troubleshooting, please post an
+<a href="https://github.com/libigl/libigl/issues">issue</a> on github.</p>
 
 <p>If you&#8217;re using libigl in your projects, quickly <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#x6f;&#58;&#97;&#x6c;&#101;&#99;&#106;&#x61;&#x63;&#111;&#x62;&#x73;&#x6f;&#110;&#64;&#103;&#x6d;&#x61;&#x69;&#x6c;&#46;&#99;&#x6f;&#x6d;&#x2c;&#100;&#x61;&#110;&#105;&#x65;&#108;&#x65;&#x2e;&#112;&#97;&#x6e;&#111;&#x7a;&#x7a;&#x6f;&#x40;&#103;&#109;&#x61;&#105;&#x6c;&#x2e;&#x63;&#111;&#109;">&#x64;&#x72;&#111;&#112; &#x75;&#x73; &#97;
 &#110;&#111;&#116;&#101;</a>. Tell us who you
