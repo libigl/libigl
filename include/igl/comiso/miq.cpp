@@ -600,8 +600,11 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
       unsigned char MM;
       GetSeamInfo(f,ff,k,v0,v1,v0p,v1p,MM);
       Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,integerVar));
+      GetSeamInfo(ff,f,kk,v0,v1,v0p,v1p,MM);
+      integerVar++;
+      Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,integerVar));
+      integerVar++;
     }
-    integerVar++;
   }
 
   Handle_SystemInfo.num_integer_cuts = integerVar;
@@ -931,7 +934,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
   n_integer_vars = Handle_SystemInfo.num_integer_cuts;
 
   ///CONSTRAINT PART
-  num_cut_constraint = Handle_SystemInfo.EdgeSeamInfo.size();//*2;
+  num_cut_constraint = Handle_SystemInfo.EdgeSeamInfo.size()*2;
 
   num_constraint_equations = num_cut_constraint * 2 + n_fixed_vars * 2 + num_userdefined_constraint;
 
@@ -1038,7 +1041,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
   ///current constraint row
   int constr_row = 0;
 
-  for (unsigned int i=0; i<num_cut_constraint; i++)
+  for (unsigned int i=0; i<num_cut_constraint / 2; i++)
   {
     unsigned char interval = Handle_SystemInfo.EdgeSeamInfo[i].MMatch;
     if (interval==1)
@@ -1081,7 +1084,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
     constraints_rhs[constr_row+1] = 0;
 
     constr_row += 2;
-/*
+
     // constraints for end vertex of edge
     Constraints.coeffRef(constr_row,   2*p1)   +=  rot.real();
     Constraints.coeffRef(constr_row,   2*p1+1) += -rot.imag();
@@ -1098,7 +1101,6 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
     constraints_rhs[constr_row+1] = 0;
 
     constr_row += 2;
-    */
   }
 
 }
