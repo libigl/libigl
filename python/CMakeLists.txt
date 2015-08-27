@@ -65,15 +65,39 @@ include_directories(${PROJECT_SOURCE_DIR}/../external/nanogui/ext/eigen)
 ## include libigl
 include_directories(${PROJECT_SOURCE_DIR}/../include)
 
+# include nanogui and dependencies
+add_subdirectory("../external/nanogui/" "nanogui")
+include_directories("../external/nanogui/include")
+include_directories("../external/nanogui/ext/nanovg/src")
+list(APPEND SHARED_LIBRARIES "nanogui" "glfw")
+
+
 add_library(igl SHARED
   python.cpp
   py_vector.cpp
   py_igl.cpp
   py_doc.cpp
+  py_igl_viewer.cpp
 )
+
+# if(NOT APPLE)
+# 	find_package(GLEW REQUIRED)
+# endif(NOT APPLE)
+
+if(APPLE)
+	set(CMAKE_SHARED_LINKER_FLAGS "-framework OpenGL -framework Cocoa")
+endif (APPLE) #APPLE
+#
+# if(UNIX AND NOT APPLE)
+#   set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -lGL -lGLU -lrt -lX11 -lXxf86vm -lXrandr -lpthread -lXi  -lXcursor -lXinerama ")
+#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx")
+# endif(UNIX AND NOT APPLE)
+
 
 set_target_properties(igl PROPERTIES PREFIX "")
 set_target_properties(igl PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+target_link_libraries(igl ${SHARED_LIBRARIES})
 
 if (WIN32)
   if (MSVC)
