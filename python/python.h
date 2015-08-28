@@ -5,6 +5,7 @@
 #include <pybind/complex.h>
 #include <pybind/numpy.h>
 #include <pybind/stl.h>
+#include <pybind/functional.h>
 
 #include "py_doc.h"
 
