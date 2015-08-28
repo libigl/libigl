@@ -580,12 +580,14 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
       verticesPerSeam.push_back(thisSeam);
     }
   }
+  Eigen::MatrixXi Handle_Integer(F.rows(),3);
 
   Handle_SystemInfo.EdgeSeamInfo.clear();
   int integerVar = 0;
   for(auto seam : verticesPerSeam){
     int orientation = Handle_MMatch(seam[0].f0, seam[0].k0);
-    for(auto vertex : seam){
+    for(auto it=seam.begin()+1; it != seam.end(); ++it){
+      auto vertex = *it;
       int f,k,ff,kk;
       if(Handle_MMatch(vertex.f0, vertex.k0) == orientation){
         f = vertex.f0; ff = vertex.f1;
@@ -596,22 +598,24 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
         k = vertex.k1; kk = vertex.k0;
         assert(Handle_MMatch(vertex.f1, vertex.k1) == orientation);
       }
+      //Handle_Integer(f,k) = integerVar++;
+      //Handle_Integer(ff,kk) = integerVar++;
+
       int v0,v0p,v1,v1p;
       unsigned char MM;
       GetSeamInfo(f,ff,k,v0,v1,v0p,v1p,MM);
       Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,integerVar));
-      GetSeamInfo(ff,f,kk,v0,v1,v0p,v1p,MM);
       integerVar++;
+      GetSeamInfo(ff,f,kk,v0,v1,v0p,v1p,MM);
       Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,integerVar));
       integerVar++;
+
     }
   }
 
   Handle_SystemInfo.num_integer_cuts = integerVar;
 
-  /*
-  std::set<int> hasConstraint;
-  int integerVar = 0;
+/*
   for (unsigned int f0=0;f0<F.rows();f0++)
   {
     for (int k=0;k<3;k++)
@@ -622,22 +626,15 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
         continue;
 
       bool seam = Handle_Seams(f0,k);
-      auto search = hasConstraint.find(3*f0 + k);
-      if (seam && search == hasConstraint.end())
+      if (seam)
       {
         int v0,v0p,v1,v1p;
         unsigned char MM;
         GetSeamInfo(f0,f1,k,v0,v1,v0p,v1p,MM);
-        Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,integerVar));
-
-        // mark this face-edge pair and face-edge pair across seam as constrained
-        hasConstraint.insert(3*f0 + k);
-        hasConstraint.insert(3*f1 + TTi(f0,k));
-        integerVar++;
+        Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,Handle_Integer(f0,k)));
       }
     }
   }
-  assert(integerVar == Handle_SystemInfo.num_integer_cuts);
   */
 }
 
