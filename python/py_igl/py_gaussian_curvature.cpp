@@ -2,7 +2,7 @@ m.def("gaussian_curvature", []
 (
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F,
-  Eigen::VectorXd& K
+  Eigen::MatrixXd& K
 )
 {
   return igl::gaussian_curvature(V,F,K);

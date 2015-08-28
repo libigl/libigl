@@ -4,8 +4,8 @@ m.def("principal_curvature", []
   const Eigen::MatrixXi& F,
   Eigen::MatrixXd& PD1,
   Eigen::MatrixXd& PD2,
-  Eigen::VectorXd& PV1,
-  Eigen::VectorXd& PV2,
+  Eigen::MatrixXd& PV1,
+  Eigen::MatrixXd& PV2,
   unsigned radius,
   bool useKring
 )

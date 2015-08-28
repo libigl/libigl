@@ -9,4 +9,11 @@
 
 #include "py_doc.h"
 
+#include <Eigen/Dense>
+
+void assert_is_VectorXd(const std::string name, const Eigen::MatrixXd& v);
+void assert_is_RowVectorXd(const std::string name, const Eigen::MatrixXd& v);
+void assert_is_Vector3d(const std::string name, const Eigen::MatrixXd& v);
+void assert_is_RowVector3d(const std::string name, const Eigen::MatrixXd& v);
+
 namespace py = pybind;

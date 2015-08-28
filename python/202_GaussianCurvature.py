@@ -6,7 +6,7 @@ F = igl.eigen.MatrixXi()
 igl.readOFF("../tutorial/shared/bumpy.off",V,F);
 
 # Compute Gaussian curvature
-K = igl.eigen.VectorXd();
+K = igl.eigen.MatrixXd();
 igl.gaussian_curvature(V,F,K);
 
 print("igl::gaussian_curvature: \n", K, sep='')
