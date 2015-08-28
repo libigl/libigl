@@ -1,10 +1,11 @@
 m.def("jet", []
 (
-  const Eigen::VectorXd& Z,
+  const Eigen::MatrixXd& Z,
   const bool normalize,
   Eigen::MatrixXd& C
 )
 {
+  assert_is_VectorXd("Z",Z);
   return igl::jet(Z,normalize,C);
 }, __doc_igl_jet,
 py::arg("Z"), py::arg("normalize"), py::arg("C"));
