@@ -279,7 +279,6 @@ namespace viewer
     callback_mouse_scroll_data  = nullptr;
     callback_key_down_data      = nullptr;
     callback_key_up_data        = nullptr;
-
   }
 
   IGL_INLINE void Viewer::init_plugins()
