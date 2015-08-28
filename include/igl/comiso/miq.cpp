@@ -125,8 +125,6 @@ namespace comiso {
                               );
 
     ///vertex to variable mapping
-    IGL_INLINE void InitFaceIntegerVal();
-
     IGL_INLINE void InitSeamInfo();
 
 
@@ -460,25 +458,6 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::GetSeamInfo(con
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitFaceIntegerVal()
-{
-  Handle_SystemInfo.num_integer_cuts=0;
-  for (unsigned int j=0;j<F.rows();j++)
-  {
-    for (int k=0;k<3;k++)
-    {
-      if (Handle_Seams(j,k))
-      {
-        Handle_SystemInfo.num_integer_cuts++;
-      }
-    }
-  }
-  Handle_SystemInfo.num_integer_cuts /= 2;
-  assert(Handle_SystemInfo.num_integer_cuts % 2 == 0);
-}
-
-
-template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
 {
   struct VertexInfo{
@@ -580,62 +559,50 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
       verticesPerSeam.push_back(thisSeam);
     }
   }
-  Eigen::MatrixXi Handle_Integer(F.rows(),3);
+
+  std::vector<std::vector<int> > FcutDebug;
+  for(int i = 0; i < Fcut.rows(); i++){
+	  std::vector<int> tmp;
+	  tmp.push_back(Fcut(i,0));
+	  tmp.push_back(Fcut(i,1));
+	  tmp.push_back(Fcut(i,2));
+	  FcutDebug.push_back(tmp);
+  }
 
   Handle_SystemInfo.EdgeSeamInfo.clear();
   int integerVar = 0;
   for(auto seam : verticesPerSeam){
-    int orientation = Handle_MMatch(seam[0].f0, seam[0].k0);
+    int connectingVertexCandidate0 = Fcut(seam[1].f0, seam[1].k0); // Vertex number according to Vcut
+    int connectingVertexCandidate1 = connectingVertexCandidate0;
     for(auto it=seam.begin()+1; it != seam.end(); ++it){
       auto vertex = *it;
+      // choose the correct side of the seam
       int f,k,ff,kk;
-      if(Handle_MMatch(vertex.f0, vertex.k0) == orientation){
+      if(   Fcut(vertex.f0, vertex.k0)         == connectingVertexCandidate0 || Fcut(vertex.f0, vertex.k0)         == connectingVertexCandidate1
+         || Fcut(vertex.f0, (vertex.k0+1) % 3) == connectingVertexCandidate0 || Fcut(vertex.f0, (vertex.k0+1) % 3) == connectingVertexCandidate1
+         || Fcut(vertex.f0, (vertex.k0+2) % 3) == connectingVertexCandidate0 || Fcut(vertex.f0, (vertex.k0+2) % 3) == connectingVertexCandidate1){
         f = vertex.f0; ff = vertex.f1;
         k = vertex.k0; kk = vertex.k1;
       }
       else{
         f = vertex.f1; ff = vertex.f0;
         k = vertex.k1; kk = vertex.k0;
-        assert(Handle_MMatch(vertex.f1, vertex.k1) == orientation);
+        assert(   Fcut(vertex.f1, vertex.k1)         == connectingVertexCandidate0 || Fcut(vertex.f1, vertex.k1)         == connectingVertexCandidate1
+               || Fcut(vertex.f1, (vertex.k1+1) % 3) == connectingVertexCandidate0 || Fcut(vertex.f1, (vertex.k1+1) % 3) == connectingVertexCandidate1
+               || Fcut(vertex.f1, (vertex.k1+2) % 3) == connectingVertexCandidate0 || Fcut(vertex.f1, (vertex.k1+2) % 3) == connectingVertexCandidate1);
       }
-      //Handle_Integer(f,k) = integerVar++;
-      //Handle_Integer(ff,kk) = integerVar++;
 
       int v0,v0p,v1,v1p;
       unsigned char MM;
       GetSeamInfo(f,ff,k,v0,v1,v0p,v1p,MM);
       Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,integerVar));
-      integerVar++;
-      GetSeamInfo(ff,f,kk,v0,v1,v0p,v1p,MM);
-      Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,integerVar));
-      integerVar++;
-
+      connectingVertexCandidate0 = v0;
+      connectingVertexCandidate1 = v1;
     }
+    integerVar++;
   }
 
   Handle_SystemInfo.num_integer_cuts = integerVar;
-
-/*
-  for (unsigned int f0=0;f0<F.rows();f0++)
-  {
-    for (int k=0;k<3;k++)
-    {
-      int f1 = TT(f0,k);
-
-      if (f1 == -1)
-        continue;
-
-      bool seam = Handle_Seams(f0,k);
-      if (seam)
-      {
-        int v0,v0p,v1,v1p;
-        unsigned char MM;
-        GetSeamInfo(f0,f1,k,v0,v1,v0p,v1p,MM);
-        Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,Handle_Integer(f0,k)));
-      }
-    }
-  }
-  */
 }
 
 
@@ -1330,7 +1297,6 @@ F(F_)
   // Prepare indexing for the linear system
   VertexIndexing<DerivedV, DerivedF> VInd(V, F, Vcut, Fcut, TT, TTi, /*BIS1_combed, BIS2_combed,*/ Handle_MMatch, /*Handle_Singular, Handle_SingularDegree,*/ Handle_Seams);
 
-  VInd.InitFaceIntegerVal();
   VInd.InitSeamInfo();
 
   // Eigen::PlainObjectBase<DerivedV> PD1_combed_for_poisson, PD2_combed_for_poisson;
