@@ -71,6 +71,9 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("resizeLike", [](Type &m, const Type &m2) { m.resizeLike(m2); })
         .def("conservativeResize", [](Type &m, size_t s0, size_t s1) { m.conservativeResize(s0, s1); })
 
+
+        .def("mean", [](const Type &m) {return m.mean();})
+
         /* Component-wise operations */
         .def("cwiseAbs", &Type::cwiseAbs)
         .def("cwiseAbs2", &Type::cwiseAbs2)
