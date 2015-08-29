@@ -281,7 +281,7 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
         .value("Right", igl::viewer::Viewer::MouseButton::Right)
         .export_values();
 
-    viewercore_class
+    viewer_class
     .def(py::init<>())
     .def_readwrite("data", &igl::viewer::Viewer::data)
     .def_readwrite("core", &igl::viewer::Viewer::core)
