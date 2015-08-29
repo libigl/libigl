@@ -9,9 +9,12 @@ igl.readOFF("../tutorial/shared/bumpy.off",V,F);
 K = igl.eigen.MatrixXd();
 igl.gaussian_curvature(V,F,K);
 
-print("igl::gaussian_curvature: \n", K, sep='')
-
 # Compute pseudocolor
 C = igl.eigen.MatrixXd();
 igl.jet(K,True,C);
-print("igl::jet: \n", C, sep='')
+
+# Plot the mesh with pseudocolors
+viewer = igl.viewer.Viewer()
+viewer.data.set_mesh(V, F)
+viewer.data.set_colors(C)
+viewer.launch()
