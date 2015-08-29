@@ -2,7 +2,7 @@ m.def("barycenter", []
 (
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F,
-  Eigen::MatrixXd BC
+  Eigen::MatrixXd& BC
 )
 {
   return igl::barycenter(V,F,BC);

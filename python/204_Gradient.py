@@ -1,4 +1,5 @@
 import igl
+from iglhelpers import *
 
 V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
@@ -15,39 +16,36 @@ U = U.col(0)
 G = igl.eigen.SparseMatrixd()
 igl.grad(V,F,G)
 
-
 # Compute gradient of U
 GU = (G*U).MapMatrix(F.rows(),3)
 
 # Compute gradient magnitude
 GU_mag = GU.rowwiseNorm()
 
-
-  # igl::viewer::Viewer viewer;
-  # viewer.data.set_mesh(V, F);
+viewer = igl.viewer.Viewer()
+viewer.data.set_mesh(V, F)
 
 # Compute pseudocolor for original function
 C = igl.eigen.MatrixXd()
 
 igl.jet(U,True,C)
 
-#
-# # Or for gradient magnitude
-# # igl.jet(GU_mag,True,C)
-#
-#   # viewer.data.set_colors(C);
-#
-# # Average edge length divided by average gradient (for scaling)
-# max_size = igl.avg_edge_length(V,F) / GU_mag.mean()
-#
-# # Draw a black segment in direction of gradient at face barycenters
-# BC = igl.eigen.MatrixXd()
-# igl.barycenter(V,F,BC)
+# Or for gradient magnitude
+# igl.jet(GU_mag,True,C)
 
-  # const RowVector3d black(0,0,0);
-  # viewer.data.add_edges(BC,BC+max_size*GU, black);
-  #
-  # // Hide wireframe
-  # viewer.core.show_lines = false;
-  #
-  # viewer.launch();
+viewer.data.set_colors(C);
+
+# Average edge length divided by average gradient (for scaling)
+max_size = igl.avg_edge_length(V,F) / GU_mag.mean()
+
+# Draw a black segment in direction of gradient at face barycenters
+BC = igl.eigen.MatrixXd()
+igl.barycenter(V,F,BC)
+
+black = p2e(np.array([[0.0,0.0,0.0]]))
+viewer.data.add_edges(BC,BC+max_size*GU, black)
+
+# Hide wireframe
+viewer.core.show_lines = False
+
+viewer.launch()
