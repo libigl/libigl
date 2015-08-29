@@ -4,11 +4,11 @@ import igl
 
 def p2e(m):
     if isinstance(m, np.ndarray):
-        if m.dtype.type == np.int64:
+        if m.dtype.type == np.int32:
             return igl.eigen.MatrixXi(m)
         elif m.dtype.type == np.float64:
             return igl.eigen.MatrixXd(m)
-        raise TypeError("p2e only support dtype float64 or int64")
+        raise TypeError("p2e only support dtype float64 or int32")
     if sparse.issparse(m):
         # convert in a dense matrix with triples
         coo = m.tocoo()
@@ -16,7 +16,7 @@ def p2e(m):
 
         triples_eigen_wrapper = igl.eigen.MatrixXd(triplets)
 
-        if m.dtype.type == np.int64:
+        if m.dtype.type == np.int32:
             t = igl.eigen.SparseMatrixi()
             t.fromcoo(triples_eigen_wrapper)
             return t
@@ -33,7 +33,7 @@ def e2p(m):
     if isinstance(m, igl.eigen.MatrixXd):
         return np.array(m, dtype='float64')
     elif isinstance(m, igl.eigen.MatrixXi):
-        return np.array(m, dtype='int64')
+        return np.array(m, dtype='int32')
     elif isinstance(m, igl.eigen.SparseMatrixd):
         coo = np.array(m.toCOO())
         I = coo[:, 0]
@@ -45,4 +45,4 @@ def e2p(m):
         I = coo[:, 0]
         J = coo[:, 1]
         V = coo[:, 2]
-        return sparse.coo_matrix((V,(I,J)), shape=(m.rows(),m.cols()), dtype='int64')
+        return sparse.coo_matrix((V,(I,J)), shape=(m.rows(),m.cols()), dtype='int32')
