@@ -52,9 +52,10 @@ if __name__ == '__main__':
         f_clean = f_clean.replace(" ", "_")
         f_clean = f_clean.replace(".", "_")
 
-        tmp = open(f, 'r')
-        tmp_string = tmp.read()
-        tmp.close()
+        #tmp = open(f, 'r', encoding="utf8")
+        tmp_string = f.replace("../include/", "libigl/") # " " # tmp.read()
+        tmp_string = "See " + tmp_string + " for the documentation."
+        #tmp.close()
 
         h_string = "extern const char *__doc_" + f_clean + ";\n"
         cpp_string = "const char *__doc_" + f_clean + " = R\"igl_Qu8mg5v7(" + tmp_string + ")igl_Qu8mg5v7\";\n"
