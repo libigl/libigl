@@ -1,13 +1,13 @@
-# CMakeLists.txt -- Build system for the pybind11 examples
-#
-# Copyright (c) 2015 Wenzel Jakob <wenzel@inf.ethz.ch>
-#
-# All rights reserved. Use of this source code is governed by a
-# BSD-style license that can be found in the LICENSE file.
-
 cmake_minimum_required(VERSION 2.8)
 
 project(pybind)
+
+IF(MSVC)
+### Enable parallel compilation for Visual Studio
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+ENDIF(MSVC)
+
+SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../tutorial/cmake)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'MinSizeRel' as none was specified.")
@@ -16,22 +16,24 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "MinSizeRel" "RelWithDebInfo")
 endif()
 
-if (true)
-SET(PYTHON_LIBRARIES "/usr/local/Cellar/python3/3.4.3_2/Frameworks/Python.framework/Versions/3.4/lib/libpython3.4m.dylib")
-SET(PYTHON_INCLUDE_DIR "/usr/local/Cellar/python3/3.4.3_2/Frameworks/Python.framework/Versions/3.4/include/python3.4m")
+find_package(OPENGL REQUIRED)
 
-#set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
-find_package(PythonLibs REQUIRED)
-find_package(PythonInterp REQUIRED)
+
+if (true)
+SET(PYTHON_LIBRARIES "D:/Python34/libs/python34.lib")
+SET(PYTHON_INCLUDE_DIR "D:/Python34/include")
+
+add_definitions(-DEIGEN_DONT_ALIGN)
+
+#set(Python_ADDITIONAL_VERSIONS 3.4.3 3.5 3.6)
+#find_package(PythonLibs 3.3.4 REQUIRED)
+#find_package(PythonInterp 3.3.4 REQUIRED)
 
 else()
 
-SET(PYTHON_LIBRARIES "/usr/local/Cellar/python3/3.4.3_2/Frameworks/Python.framework/Versions/3.4/lib/libpython3.4m.dylib")
-SET(PYTHON_INCLUDE_DIR "/usr/local/Cellar/python3/3.4.3_2/Frameworks/Python.framework/Versions/3.4/include/python3.4m")
-
 set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
-find_package(PythonLibs 3 REQUIRED)
-find_package(PythonInterp 3 REQUIRED)
+find_package(PythonLibs  REQUIRED)
+find_package(PythonInterp 3.4.3 REQUIRED)
 
 endif()
 
@@ -65,11 +67,20 @@ include_directories(${PROJECT_SOURCE_DIR}/../external/nanogui/ext/eigen)
 ## include libigl
 include_directories(${PROJECT_SOURCE_DIR}/../include)
 
+## include glew
+if(NOT APPLE)
+  find_package(GLEW REQUIRED)
+  include_directories( ${GLEW_INCLUDE_DIR} )
+	set(SHARED_SOURCES ${SHARED_SOURCES} ${GLEW_SOURCES})
+endif(NOT APPLE)
+
+
 # include nanogui and dependencies
 add_subdirectory("../external/nanogui/" "nanogui")
 include_directories("../external/nanogui/include")
+include_directories("../external/nanogui/ext/glfw/include")
 include_directories("../external/nanogui/ext/nanovg/src")
-list(APPEND SHARED_LIBRARIES "nanogui" "glfw")
+list(APPEND SHARED_LIBRARIES "nanogui" "glfw" ${OPENGL_LIBRARIES})
 
 
 add_library(igl SHARED
@@ -78,6 +89,7 @@ add_library(igl SHARED
   py_igl.cpp
   py_doc.cpp
   py_igl_viewer.cpp
+  ${SHARED_SOURCES}
 )
 
 # if(NOT APPLE)
@@ -110,7 +122,11 @@ if (WIN32)
   set_target_properties(igl PROPERTIES SUFFIX ".pyd")
 
   # Link against the Python shared library
-  target_link_libraries(igl ${PYTHON_LIBRARY})
+  # message(FATAL_ERROR ${PYTHON_LIBRARY})
+  # target_link_libraries(igl ${PYTHON_LIBRARY})
+  target_link_libraries(igl ${PYTHON_LIBRARIES})
+
+
 elseif (UNIX)
   # It's quite common to have multiple copies of the same Python version
   # installed on one's system. E.g.: one copy from the OS and another copy
