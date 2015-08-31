@@ -255,7 +255,7 @@ IP.conservativeResize(stable_partition(
       <tr class=d0>
         <td><pre><code>B = A(R&lt;2,C&gt;1);</code></pre>
         <td><pre><code>B = igl::slice_mask(A,R.array()&lt;2,C.array()&gt;1);</code></pre>
-        <td>Where </td>
+        <td></td>
       </tr>
 
       <tr class=d1>
@@ -264,6 +264,12 @@ IP.conservativeResize(stable_partition(
 bool a = A.array().any();
         </code></pre></td>
         <td>Casts <code>Matrix::Scalar<code> to <code>bool</code>.</td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>B = mod(A,2)</code></pre></td>
+        <td><pre><code>igl::mod(A,2,B)</code></pre></td>
+        <td></td>
       </tr>
 
       <!-- Insert rows for each command pair -->
