@@ -90,13 +90,17 @@ namespace igl
         Index count;
         typedef std::vector<CGAL::Object> ObjectList;
         // Using a vector here makes this **not** output sensitive
-        std::vector<ObjectList > F_objects;
         Triangles T;
         typedef std::vector<Index> IndexList;
         IndexList lIF;
         // #F-long list of faces with intersections mapping to the order in
         // which they were first found
-        std::map<Index,Index> offending;
+        struct IDObjectList
+        {
+          Index id;
+          ObjectList objects;
+        };
+        std::map<Index,IDObjectList> offending;
         // Make a short name for the edge map's key
         typedef std::pair<Index,Index> EMK;
         // Make a short name for the type stored at each edge, the edge map's
@@ -104,6 +108,7 @@ namespace igl
         typedef std::vector<Index> EMV;
         // Make a short name for the edge map
         typedef std::map<EMK,EMV> EdgeMap;
+        // Maps edges of offending faces to all incident offending faces
         EdgeMap edge2faces;
       public:
         RemeshSelfIntersectionsParam params;
@@ -140,8 +145,8 @@ namespace igl
         // Inputs:
         //   A  triangle in 3D
         //   B  triangle in 3D
-        //   fa  index of A in F (and F_objects)
-        //   fb  index of A in F (and F_objects)
+        //   fa  index of A in F (and key into offending)
+        //   fb  index of A in F (and key into offending)
         // Returns true only if A intersects B
         //
         inline bool intersect(
@@ -157,10 +162,10 @@ namespace igl
         // Inputs:
         //   A  triangle in 3D
         //   B  triangle in 3D
-        //   fa  index of A in F (and F_objects)
-        //   fb  index of B in F (and F_objects)
-        //   va  index of shared vertex in A (and F_objects)
-        //   vb  index of shared vertex in B (and F_objects)
+        //   fa  index of A in F (and key into offending)
+        //   fb  index of B in F (and key into offending)
+        //   va  index of shared vertex in A (and key into offending)
+        //   vb  index of shared vertex in B (and key into offending)
         //// Returns object of intersection (should be Segment or point)
         //   Returns true if intersection (besides shared point)
         //
@@ -324,7 +329,6 @@ inline igl::cgal::SelfIntersectMesh<
   V(V),
   F(F),
   count(0),
-  F_objects(F.rows()),
   T(),
   lIF(),
   offending(),
@@ -416,9 +420,8 @@ inline igl::cgal::SelfIntersectMesh<
   const auto & remesh = [](
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
-    const std::vector<ObjectList > & F_objects,
     const Triangles & T,
-    const std::map<Index,Index> & offending,
+    const std::map<Index,IDObjectList> & offending,
     const EdgeMap & edge2faces,
     Eigen::PlainObjectBase<DerivedVV> & VV,
     Eigen::PlainObjectBase<DerivedFF> & FF,
@@ -451,12 +454,12 @@ inline igl::cgal::SelfIntersectMesh<
     {
       // index in F
       const Index f = okv.first;
-      const Index o = okv.second;
+      const Index o = okv.second.id;
       {
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
         const double t_before = get_seconds();
 #endif
-        projected_delaunay(T[f],F_objects[f],cdt[o]);
+        projected_delaunay(T[f],okv.second.objects,cdt[o]);
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
         t_proj_del += (get_seconds()-t_before);
 #endif
@@ -521,7 +524,7 @@ inline igl::cgal::SelfIntersectMesh<
                 }
                 // index of neighbor in offending (to find its cdt)
                 assert(offending.count(*nit) == 1);
-                Index no = offending.find(*nit)->second;
+                Index no = offending.find(*nit)->second.id;
                 // Loop over vertices of that neighbor's cdt (might not have been
                 // processed yet, but then it's OK because it'll just be empty)
                 for(
@@ -608,7 +611,7 @@ inline igl::cgal::SelfIntersectMesh<
     {
       // index in F
       const Index f = okv.first;
-      const Index o = okv.second;
+      const Index o = okv.second.id;
       FF.block(off,0,NF[o].rows(),3) = NF[o];
       J.block(off,0,NF[o].rows(),1).setConstant(f);
       off += NF[o].rows();
@@ -669,7 +672,7 @@ inline igl::cgal::SelfIntersectMesh<
 #endif
   };
   remesh(
-    V,F,F_objects,T,offending,edge2faces,VV,FF,J,IM);
+    V,F,T,offending,edge2faces,VV,FF,J,IM);
 
   // Q: Does this give the same result as TETGEN?
   // A: For the cow and beast, yes.
@@ -708,8 +711,8 @@ inline void igl::cgal::SelfIntersectMesh<
   lIF.push_back(f);
   if(offending.count(f) == 0)
   {
-    // first time marking
-    offending[f] = offending.size();
+    // first time marking, initialize with new id and empty list
+    offending[f] = {(Index)offending.size(),{}};
     // Add to edge map
     for(Index e = 0; e<3;e++)
     {
@@ -791,14 +794,14 @@ inline bool igl::cgal::SelfIntersectMesh<
   {
     return false;
   }
+  count_intersection(fa,fb);
   if(!params.detect_only)
   {
     // Construct intersection
     CGAL::Object result = CGAL::intersection(A,B);
-    F_objects[fa].push_back(result);
-    F_objects[fb].push_back(result);
+    offending[fa].objects.push_back(result);
+    offending[fb].objects.push_back(result);
   }
-  count_intersection(fa,fb);
   return true;
 }
 
@@ -894,9 +897,9 @@ inline bool igl::cgal::SelfIntersectMesh<
       CGAL::Object seg = CGAL::make_object(Segment_3(
         A.vertex(va),
         *p));
-      F_objects[fa].push_back(seg);
-      F_objects[fb].push_back(seg);
       count_intersection(fa,fb);
+      offending[fa].objects.push_back(seg);
+      offending[fb].objects.push_back(seg);
       return true;
     }else if(CGAL::object_cast<Segment_3 >(&result))
     {
@@ -1042,8 +1045,8 @@ inline bool igl::cgal::SelfIntersectMesh<
       } else
       {
         // Triangle object
-        F_objects[fa].push_back(result);
-        F_objects[fb].push_back(result);
+        offending[fa].objects.push_back(result);
+        offending[fb].objects.push_back(result);
         //cerr<<REDRUM("Coplanar at: "<<fa<<" & "<<fb<<" (double shared).")<<endl;
         return true;
       }
