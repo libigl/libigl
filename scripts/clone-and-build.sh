@@ -14,7 +14,7 @@
 #
 # and then add the line:
 #
-#     30 2 * * * /usr/local/igl/libigl/scripts/clone-and-build.sh
+#     30 2 * * * source /Users/ajx/.profile; /usr/local/igl/libigl/scripts/clone-and-build.sh
 #
 # replace the path above with the **full path** to this file.
 #

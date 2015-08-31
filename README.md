@@ -7,9 +7,7 @@
 > Get started with:
 >
 ```bash
-git clone https://github.com/libigl/libigl.git
-cd libigl
-git submodule update --init --recursive
+git clone --recursive https://github.com/libigl/libigl.git
 ```
 
 libigl is a simple C++ geometry processing library. We have a wide
@@ -137,6 +135,25 @@ We hope to fix this, or at least identify which functions are safe (many of
 them probably work just fine). This requires setting up unit testing, which is
 a major _todo_ for our development.
 
+## Git Submodules 
+Libigl uses git submodules for its _optional_ dependencies,
+in particular, those needed by the OpenGL viewer to run the examples in the
+[tutorial](tutorial/tutorial.html). Git submodules allow use to treat clones of
+other libraries as sub-directories within ours while separating our commits.
+Read the [documentation](http://git-scm.com/docs/git-submodule) for a detailed
+explanation, but essentially our libigl repo stores a hash for each of its
+subrepos containing which version to update to. When a change is introduced in
+a dependencies repo we can incorporate that change by pulling in our sub-repo
+and updating (i.e.  committing) that change to the hash.
+
+When pulling new changes to libigl it's also a good idea to update changes to
+subrepos:
+
+```bash
+git pull
+git submodule update -- recursive
+```
+
 ## How to contribute
 
 If you are interested in joining development, please fork the repository and
@@ -193,7 +210,8 @@ Libigl is a group endeavor led by [Alec
 Jacobson](http://www.cs.columbia.edu/~jacobson/) and [Daniele
 Panozzo](http://www.inf.ethz.ch/personal/dpanozzo/). Please [contact
 us](mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com) if you have
-questions or comments. We are happy to get feedback!
+questions or comments. For troubleshooting, please post an
+[issue](https://github.com/libigl/libigl/issues) on github.
 
 If you're using libigl in your projects, quickly [drop us a
 note](mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com). Tell us who you
