@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "outer_hull.h"
 #include "order_facets_around_edges.h"
-#include "../exterior_element.h"
+#include "../outer_element.h"
 #include "../sortrows.h"
 #include "../facet_components.h"
 #include "../winding_number.h"
@@ -160,7 +160,7 @@ IGL_INLINE void igl::cgal::outer_hull(
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"outer facet..."<<endl;
 #endif
-    exterior_facet(V,F,N,IM,f,f_flip);
+    outer_facet(V,F,N,IM,f,f_flip);
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"outer facet: "<<f<<endl;
   //cout << V.row(F(f, 0)) << std::endl;
@@ -536,7 +536,7 @@ IGL_INLINE void igl::cgal::outer_hull(
 // Explicit template specialization
 #undef IGL_STATIC_LIBRARY
 #include <igl/barycenter.cpp>
-#include <igl/exterior_element.cpp>
+#include <igl/outer_element.cpp>
 #include <igl/cgal/order_facets_around_edges.cpp>
 #define IGL_STATIC_LIBRARY
 template void igl::cgal::outer_hull<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
