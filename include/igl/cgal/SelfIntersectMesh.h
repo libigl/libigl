@@ -94,11 +94,9 @@ namespace igl
         Triangles T;
         typedef std::vector<Index> IndexList;
         IndexList lIF;
-        // #F-long list of bools revealing whether face is participating in any
-        // intersections
-        std::vector<bool> offensive;
-        std::vector<Index> offending_index;
-        std::vector<Index> offending;
+        // #F-long list of faces with intersections mapping to the order in
+        // which they were first found
+        std::map<Index,Index> offending;
         // Make a short name for the edge map's key
         typedef std::pair<Index,Index> EMK;
         // Make a short name for the type stored at each edge, the edge map's
@@ -329,8 +327,6 @@ inline igl::cgal::SelfIntersectMesh<
   F_objects(F.rows()),
   T(),
   lIF(),
-  offensive(F.rows(),false),
-  offending_index(F.rows(),-1),
   offending(),
   edge2faces(),
   params(params)
@@ -422,9 +418,7 @@ inline igl::cgal::SelfIntersectMesh<
     const Eigen::PlainObjectBase<DerivedF> & F,
     const std::vector<ObjectList > & F_objects,
     const Triangles & T,
-    const std::vector<bool> & offensive,
-    const std::vector<Index> & offending_index,
-    const std::vector<Index> & offending,
+    const std::map<Index,Index> & offending,
     const EdgeMap & edge2faces,
     Eigen::PlainObjectBase<DerivedVV> & VV,
     Eigen::PlainObjectBase<DerivedFF> & FF,
@@ -453,10 +447,11 @@ inline igl::cgal::SelfIntersectMesh<
     // Unfortunately it looks like CGAL has trouble allocating memory when
     // multiple openmp threads are running. Crashes durring CDT...
   //# pragma omp parallel for if (noff>1000)
-    for(Index o = 0;o<(Index)noff;o++)
+    for(const auto & okv : offending)
     {
       // index in F
-      const Index f = offending[o];
+      const Index f = okv.first;
+      const Index o = okv.second;
       {
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
         const double t_before = get_seconds();
@@ -525,7 +520,8 @@ inline igl::cgal::SelfIntersectMesh<
                   continue;
                 }
                 // index of neighbor in offending (to find its cdt)
-                Index no = offending_index[*nit];
+                assert(offending.count(*nit) == 1);
+                Index no = offending.find(*nit)->second;
                 // Loop over vertices of that neighbor's cdt (might not have been
                 // processed yet, but then it's OK because it'll just be empty)
                 for(
@@ -582,14 +578,14 @@ inline igl::cgal::SelfIntersectMesh<
     assert(NV_count == (Index)NV.size());
     // Build output
 #ifndef NDEBUG
-    {
-      Index off_count = 0;
-      for(Index f = 0;f<F.rows();f++)
-      {
-        off_count+= (offensive[f]?1:0);
-      }
-      assert(off_count==(Index)offending.size());
-    }
+    //{
+    //  Index off_count = 0;
+    //  for(Index f = 0;f<F.rows();f++)
+    //  {
+    //    off_count+= (offensive[f]?1:0);
+    //  }
+    //  assert(off_count==(Index)offending.size());
+    //}
 #endif
     // Append faces
     FF.resize(F.rows()-offending.size()+NF_count,3);
@@ -599,7 +595,7 @@ inline igl::cgal::SelfIntersectMesh<
     Index off = 0;
     for(Index f = 0;f<F.rows();f++)
     {
-      if(!offensive[f])
+      if(!offending.count(f))
       {
         FF.row(off) = F.row(f);
         J(off) = f;
@@ -608,10 +604,13 @@ inline igl::cgal::SelfIntersectMesh<
     }
     assert(off == (Index)(F.rows()-offending.size()));
     // Now append replacement faces for offending faces
-    for(Index o = 0;o<(Index)offending.size();o++)
+    for(const auto & okv : offending)
     {
+      // index in F
+      const Index f = okv.first;
+      const Index o = okv.second;
       FF.block(off,0,NF[o].rows(),3) = NF[o];
-      J.block(off,0,NF[o].rows(),1).setConstant(offending[o]);
+      J.block(off,0,NF[o].rows(),1).setConstant(f);
       off += NF[o].rows();
     }
     // Append vertices
@@ -670,7 +669,7 @@ inline igl::cgal::SelfIntersectMesh<
 #endif
   };
   remesh(
-    V,F,F_objects,T,offensive,offending_index,offending,edge2faces,VV,FF,J,IM);
+    V,F,F_objects,T,offending,edge2faces,VV,FF,J,IM);
 
   // Q: Does this give the same result as TETGEN?
   // A: For the cow and beast, yes.
@@ -707,11 +706,10 @@ inline void igl::cgal::SelfIntersectMesh<
 {
   using namespace std;
   lIF.push_back(f);
-  if(!offensive[f])
+  if(offending.count(f) == 0)
   {
-    offensive[f]=true;
-    offending_index[f]=offending.size();
-    offending.push_back(f);
+    // first time marking
+    offending[f] = offending.size();
     // Add to edge map
     for(Index e = 0; e<3;e++)
     {
