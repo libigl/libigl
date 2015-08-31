@@ -41,6 +41,16 @@ namespace igl
     const Eigen::RowVector3d & c,
     double & s,
     Eigen::RowVector3d & n);
+  IGL_INLINE void pseudonormal_test(
+    const Eigen::MatrixXd & V,
+    const Eigen::MatrixXi & E,
+    const Eigen::MatrixXd & EN,
+    const Eigen::MatrixXd & VN,
+    const Eigen::RowVector2d & q,
+    const int i,
+    const Eigen::RowVector2d & c,
+    double & s,
+    Eigen::RowVector2d & n);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "pseudonormal_test.cpp"

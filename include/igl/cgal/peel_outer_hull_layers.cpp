@@ -21,13 +21,13 @@ template <
   typename DerivedV,
   typename DerivedF,
   typename DerivedN,
-  typename Derivedodd,
+  typename DerivedI,
   typename Derivedflip>
 IGL_INLINE size_t igl::cgal::peel_outer_hull_layers(
   const Eigen::PlainObjectBase<DerivedV > & V,
   const Eigen::PlainObjectBase<DerivedF > & F,
   const Eigen::PlainObjectBase<DerivedN > & N,
-  Eigen::PlainObjectBase<Derivedodd > & odd,
+  Eigen::PlainObjectBase<DerivedI> & I,
   Eigen::PlainObjectBase<Derivedflip > & flip)
 {
   using namespace Eigen;
@@ -52,12 +52,11 @@ IGL_INLINE size_t igl::cgal::peel_outer_hull_layers(
   // keep track of iteration parity and whether flipped in hull
   MatrixXF Fr = F;
   MatrixXN Nr = N;
-  odd.resize(m,1);
+  I.resize(m,1);
   flip.resize(m,1);
   // Keep track of index map
   MatrixXI IM = MatrixXI::LinSpaced(m,0,m-1);
   // This is O(n * layers)
-  bool odd_iter = true;
   MatrixXI P(m,1);
   Index iter = 0;
   while(Fr.size() > 0)
@@ -82,7 +81,7 @@ IGL_INLINE size_t igl::cgal::peel_outer_hull_layers(
     vector<bool> in_outer(Fr.rows(),false);
     for(Index g = 0;g<Jo.rows();g++)
     {
-      odd(IM(Jo(g))) = odd_iter;
+      I(IM(Jo(g))) = iter;
       P(IM(Jo(g))) = iter;
       in_outer[Jo(g)] = true;
       flip(IM(Jo(g))) = flipr(Jo(g));
@@ -108,7 +107,6 @@ IGL_INLINE size_t igl::cgal::peel_outer_hull_layers(
         }
       }
     }
-    odd_iter = !odd_iter;
     iter++;
   }
   return iter;
@@ -117,23 +115,23 @@ IGL_INLINE size_t igl::cgal::peel_outer_hull_layers(
 template <
   typename DerivedV,
   typename DerivedF,
-  typename Derivedodd,
+  typename DerivedI,
   typename Derivedflip>
 IGL_INLINE size_t igl::cgal::peel_outer_hull_layers(
   const Eigen::PlainObjectBase<DerivedV > & V,
   const Eigen::PlainObjectBase<DerivedF > & F,
-  Eigen::PlainObjectBase<Derivedodd > & odd,
+  Eigen::PlainObjectBase<DerivedI > & I,
   Eigen::PlainObjectBase<Derivedflip > & flip)
 {
   using namespace std;
   Eigen::Matrix<typename DerivedV::Scalar,DerivedF::RowsAtCompileTime,3> N;
   per_face_normals(V,F,N);
-  return peel_outer_hull_layers(V,F,N,odd,flip);
+  return peel_outer_hull_layers(V,F,N,I,flip);
 }
 
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template size_t igl::cgal::peel_outer_hull_layers<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<bool, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
-template size_t igl::cgal::peel_outer_hull_layers<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<bool, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
+template size_t igl::cgal::peel_outer_hull_layers<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template size_t igl::cgal::peel_outer_hull_layers<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif

@@ -78,6 +78,19 @@ namespace igl
   //   c  closest point
   //   n  normal
   IGL_INLINE void signed_distance_pseudonormal(
+    const Eigen::MatrixXd & P,
+    const Eigen::MatrixXd & V,
+    const Eigen::MatrixXi & F,
+    const AABB<Eigen::MatrixXd,3> & tree,
+    const Eigen::MatrixXd & FN,
+    const Eigen::MatrixXd & VN,
+    const Eigen::MatrixXd & EN,
+    const Eigen::VectorXi & EMAP,
+    Eigen::VectorXd & S,
+    Eigen::VectorXi & I,
+    Eigen::MatrixXd & C,
+    Eigen::MatrixXd & N);
+  IGL_INLINE void signed_distance_pseudonormal(
     const AABB<Eigen::MatrixXd,3> & tree,
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
@@ -92,18 +105,17 @@ namespace igl
     Eigen::RowVector3d & c,
     Eigen::RowVector3d & n);
   IGL_INLINE void signed_distance_pseudonormal(
-    const Eigen::MatrixXd & P,
+    const AABB<Eigen::MatrixXd,2> & tree,
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
-    const AABB<Eigen::MatrixXd,3> & tree,
     const Eigen::MatrixXd & FN,
     const Eigen::MatrixXd & VN,
-    const Eigen::MatrixXd & EN,
-    const Eigen::VectorXi & EMAP,
-    Eigen::VectorXd & S,
-    Eigen::VectorXi & I,
-    Eigen::MatrixXd & C,
-    Eigen::MatrixXd & N);
+    const Eigen::RowVector2d & q,
+    double & s,
+    double & sqrd,
+    int & i,
+    Eigen::RowVector2d & c,
+    Eigen::RowVector2d & n);
 
   // Inputs:
   //   tree  AABB acceleration tree (see cgal/point_mesh_squared_distance.h)
@@ -124,12 +136,21 @@ namespace igl
     const AABB<Eigen::MatrixXd,3> & tree,
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
-    const igl::WindingNumberAABB<Eigen::Vector3d> & hier,
-    const Eigen::RowVector3d & q,
+    const igl::WindingNumberAABB<Eigen::Matrix<double,3,1> > & hier,
+    const Eigen::Matrix<double,1,3> & q,
     double & s,
     double & sqrd,
     int & i,
-    Eigen::RowVector3d & c);
+    Eigen::Matrix<double,1,3> & c);
+  IGL_INLINE void signed_distance_winding_number(
+    const AABB<Eigen::MatrixXd,2> & tree,
+    const Eigen::MatrixXd & V,
+    const Eigen::MatrixXi & F,
+    const Eigen::Matrix<double,1,2> & q,
+    double & s,
+    double & sqrd,
+    int & i,
+    Eigen::Matrix<double,1,2> & c);
 }
 
 #ifndef IGL_STATIC_LIBRARY
