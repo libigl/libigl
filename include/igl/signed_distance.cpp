@@ -113,9 +113,18 @@ IGL_INLINE void igl::signed_distance(
   C.resize(P.rows(),dim);
   for(int p = 0;p<P.rows();p++)
   {
-    const RowVectorXd q = P.row(p);
-    const RowVector3d q3 = q;
-    const RowVector2d q2 = q;
+    RowVector3d q3;
+    RowVector2d q2;
+    switch(P.cols())
+    {
+      default:
+      case 3:
+        q3 = P.row(p);
+        break;
+      case 2:
+        q2 = P.row(p);
+        break;
+    }
     double s,sqrd;
     RowVectorXd c;
     RowVector3d c3;
