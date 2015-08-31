@@ -12,7 +12,7 @@
 namespace igl
 {
   // Find a vertex that is reachable from infinite without crossing any faces.
-  // This vertex is called "exterior vertex."
+  // Such vertex is called "exterior vertex."
   //
   // Precondition: The input mesh must have all self-intersection resolved and
   // no duplicated vertices.  See cgal::remesh_self_intersections.h for how to
@@ -41,7 +41,7 @@ namespace igl
 
 
   // Find an edge that is reachable from infinity without crossing any faces.
-  // This edge is called "exterior edge."
+  // Such edge is called "exterior edge."
   //
   // Precondition: The input mesh must have all self-intersection resolved and
   // no duplicated vertices.  The correctness of the output depends on the fact
@@ -73,7 +73,7 @@ namespace igl
 
 
   // Find a facet that is reachable from infinity without crossing any faces.
-  // This facet is called "exterior facet."
+  // Such facet is called "exterior facet."
   //
   // Precondition: The input mesh must have all self-intersection resolved.  I.e
   // there is no duplicated vertices, no overlapping edge and no intersecting
