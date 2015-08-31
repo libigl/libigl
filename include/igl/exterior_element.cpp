@@ -179,7 +179,7 @@ IGL_INLINE void igl::exterior_facet(
     //    Compute the exterior edge.
     //    Find the facet with the largest absolute X normal component.
     //    If there is a tie, keep the one with positive X component.
-    //    If there is still a tie, just pick first candidate.
+    //    If there is still a tie, pick the face with the larger index.
     typedef typename DerivedV::Scalar Scalar;
     typedef typename DerivedV::Index Index;
     const size_t INVALID = std::numeric_limits<size_t>::max();
@@ -210,6 +210,12 @@ IGL_INLINE void igl::exterior_facet(
             } else if (nx == -max_nx && nx > 0) {
                 max_nx = nx;
                 exterior_fid = fid;
+            } else if (nx == max_nx) {
+                if ((max_nx >= 0 && exterior_fid < fid) ||
+                    (max_nx <  0 && exterior_fid > fid)) {
+                    max_nx = nx;
+                    exterior_fid = fid;
+                }
             }
         }
     }
