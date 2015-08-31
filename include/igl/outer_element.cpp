@@ -5,8 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "exterior_element.h"
-#include "vertex_triangle_adjacency.h"
+#include "outer_element.h"
 #include <iostream>
 
 template <
@@ -16,14 +15,14 @@ template <
      typename IndexType,
      typename DerivedA
      >
-IGL_INLINE void igl::exterior_vertex(
+IGL_INLINE void igl::outer_vertex(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::PlainObjectBase<DerivedF> & F,
         const Eigen::PlainObjectBase<DerivedI> & I,
         IndexType & v_index,
         Eigen::PlainObjectBase<DerivedA> & A) {
     // Algorithm: 
-    //    Find an exterior vertex (i.e. vertex reachable from infinity)
+    //    Find an outer vertex (i.e. vertex reachable from infinity)
     //    Return the vertex with the largest X value.
     //    If there is a tie, pick the one with largest Y value.
     //    If there is still a tie, pick the one with the largest Z value.
@@ -32,40 +31,40 @@ IGL_INLINE void igl::exterior_vertex(
     const size_t INVALID = std::numeric_limits<size_t>::max();
     const size_t num_selected_faces = I.rows();
     std::vector<size_t> candidate_faces;
-    size_t exterior_vid = INVALID;
-    typename DerivedV::Scalar exterior_val = 0;
+    size_t outer_vid = INVALID;
+    typename DerivedV::Scalar outer_val = 0;
     for (size_t i=0; i<num_selected_faces; i++) {
         size_t f = I[i];
         for (size_t j=0; j<3; j++) {
             auto v = F(f, j);
             auto vx = V(v, 0);
-            if (exterior_vid == INVALID || vx > exterior_val) {
-                exterior_val = vx;
-                exterior_vid = v;
+            if (outer_vid == INVALID || vx > outer_val) {
+                outer_val = vx;
+                outer_vid = v;
                 candidate_faces = {f};
-            } else if (v == exterior_vid) {
+            } else if (v == outer_vid) {
                 candidate_faces.push_back(f);
-            } else if (vx == exterior_val) {
+            } else if (vx == outer_val) {
                 // Break tie.
                 auto vy = V(v,1);
                 auto vz = V(v, 2);
-                auto exterior_y = V(exterior_vid, 1);
-                auto exterior_z = V(exterior_vid, 2);
-                assert(!(vy == exterior_y && vz == exterior_z));
-                bool replace = (vy > exterior_y) ||
-                    ((vy == exterior_y) && (vz > exterior_z));
+                auto outer_y = V(outer_vid, 1);
+                auto outer_z = V(outer_vid, 2);
+                assert(!(vy == outer_y && vz == outer_z));
+                bool replace = (vy > outer_y) ||
+                    ((vy == outer_y) && (vz > outer_z));
                 if (replace) {
-                    exterior_val = vx;
-                    exterior_vid = v;
+                    outer_val = vx;
+                    outer_vid = v;
                     candidate_faces = {f};
                 }
             }
         }
     }
 
-    assert(exterior_vid != INVALID);
+    assert(outer_vid != INVALID);
     assert(candidate_faces.size() > 0);
-    v_index = exterior_vid;
+    v_index = outer_vid;
     A.resize(candidate_faces.size());
     std::copy(candidate_faces.begin(), candidate_faces.end(), A.data());
 }
@@ -77,7 +76,7 @@ template<
     typename IndexType,
     typename DerivedA
     >
-IGL_INLINE void igl::exterior_edge(
+IGL_INLINE void igl::outer_edge(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::PlainObjectBase<DerivedF> & F,
         const Eigen::PlainObjectBase<DerivedI> & I,
@@ -85,9 +84,9 @@ IGL_INLINE void igl::exterior_edge(
         IndexType & v2,
         Eigen::PlainObjectBase<DerivedA> & A) {
     // Algorithm:
-    //    Find an exterior vertex first.
+    //    Find an outer vertex first.
     //    Find the incident edge with largest slope when projected onto XY plane.
-    //    If there is still a tie, break it using the projected splot onto ZX plane.
+    //    If there is still a tie, break it using the projected slope onto ZX plane.
     //    If there is still a tie, then there are multiple overlapping edges,
     //    which violates the precondition.
     typedef typename DerivedV::Scalar Scalar;
@@ -96,10 +95,10 @@ IGL_INLINE void igl::exterior_edge(
     typedef typename Eigen::Matrix<typename DerivedF::Scalar, 3, 1> IndexArray3;
     const size_t INVALID = std::numeric_limits<size_t>::max();
 
-    Index exterior_vid;
+    Index outer_vid;
     DerivedI candidate_faces;
-    exterior_vertex(V, F, I, exterior_vid, candidate_faces);
-    const ScalarArray3& exterior_v = V.row(exterior_vid);
+    outer_vertex(V, F, I, outer_vid, candidate_faces);
+    const ScalarArray3& outer_v = V.row(outer_vid);
     assert(candidate_faces.size() > 0);
 
     auto get_vertex_index = [&](const IndexArray3& f,
@@ -110,35 +109,35 @@ IGL_INLINE void igl::exterior_edge(
         assert(false);
     };
 
-    Scalar exterior_slope_YX = 0;
-    Scalar exterior_slope_ZX = 0;
-    size_t exterior_opp_vid = INVALID;
+    Scalar outer_slope_YX = 0;
+    Scalar outer_slope_ZX = 0;
+    size_t outer_opp_vid = INVALID;
     bool infinite_slope_detected = false;
     std::vector<Index> incident_faces;
-    auto check_and_update_exterior_edge = [&](Index opp_vid, Index fid) {
-        if (opp_vid == exterior_opp_vid) {
+    auto check_and_update_outer_edge = [&](Index opp_vid, Index fid) {
+        if (opp_vid == outer_opp_vid) {
             incident_faces.push_back(fid);
             return;
         }
 
         const ScalarArray3 opp_v = V.row(opp_vid);
-        if (!infinite_slope_detected && exterior_v[0] != opp_v[0]) {
+        if (!infinite_slope_detected && outer_v[0] != opp_v[0]) {
             // Finite slope
-            const ScalarArray3 diff = opp_v - exterior_v;
+            const ScalarArray3 diff = opp_v - outer_v;
             const Scalar slope_YX = diff[1] / diff[0];
             const Scalar slope_ZX = diff[2] / diff[0];
-            if (exterior_opp_vid == INVALID ||
-                    slope_YX > exterior_slope_YX ||
-                    (slope_YX == exterior_slope_YX &&
-                     slope_ZX > exterior_slope_ZX)) {
-                exterior_opp_vid = opp_vid;
-                exterior_slope_YX = slope_YX;
-                exterior_slope_ZX = slope_ZX;
+            if (outer_opp_vid == INVALID ||
+                    slope_YX > outer_slope_YX ||
+                    (slope_YX == outer_slope_YX &&
+                     slope_ZX > outer_slope_ZX)) {
+                outer_opp_vid = opp_vid;
+                outer_slope_YX = slope_YX;
+                outer_slope_ZX = slope_ZX;
                 incident_faces = {fid};
             }
         } else if (!infinite_slope_detected) {
             // Infinite slope
-            exterior_opp_vid = opp_vid;
+            outer_opp_vid = opp_vid;
             infinite_slope_detected = true;
             incident_faces = {fid};
         }
@@ -148,15 +147,15 @@ IGL_INLINE void igl::exterior_edge(
     for (size_t i=0; i<num_candidate_faces; i++) {
         const Index fid = candidate_faces[i];
         const IndexArray3& f = F.row(fid);
-        size_t id = get_vertex_index(f, exterior_vid);
+        size_t id = get_vertex_index(f, outer_vid);
         Index next_vid = f[(id+1)%3];
         Index prev_vid = f[(id+2)%3];
-        check_and_update_exterior_edge(next_vid, fid);
-        check_and_update_exterior_edge(prev_vid, fid);
+        check_and_update_outer_edge(next_vid, fid);
+        check_and_update_outer_edge(prev_vid, fid);
     }
 
-    v1 = exterior_vid;
-    v2 = exterior_opp_vid;
+    v1 = outer_vid;
+    v2 = outer_opp_vid;
     A.resize(incident_faces.size());
     std::copy(incident_faces.begin(), incident_faces.end(), A.data());
 }
@@ -168,7 +167,7 @@ template<
     typename DerivedI,
     typename IndexType
     >
-IGL_INLINE void igl::exterior_facet(
+IGL_INLINE void igl::outer_facet(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::PlainObjectBase<DerivedF> & F,
         const Eigen::PlainObjectBase<DerivedN> & N,
@@ -176,17 +175,18 @@ IGL_INLINE void igl::exterior_facet(
         IndexType & f,
         bool & flipped) {
     // Algorithm:
-    //    Compute the exterior edge.
-    //    Find the facet with the largest absolute X normal component.
+    //    Find an outer edge.
+    //    Find the incident facet with the largest absolute X normal component.
     //    If there is a tie, keep the one with positive X component.
-    //    If there is still a tie, pick the face with the larger index.
+    //    If there is still a tie, pick the face with the larger signed index
+    //    (flipped face has negative index).
     typedef typename DerivedV::Scalar Scalar;
     typedef typename DerivedV::Index Index;
     const size_t INVALID = std::numeric_limits<size_t>::max();
 
     Index v1,v2;
     DerivedI incident_faces;
-    exterior_edge(V, F, I, v1, v2, incident_faces);
+    outer_edge(V, F, I, v1, v2, incident_faces);
     assert(incident_faces.size() > 0);
 
     auto generic_fabs = [&](const Scalar& val) -> const Scalar {
@@ -195,41 +195,41 @@ IGL_INLINE void igl::exterior_facet(
     };
 
     Scalar max_nx = 0;
-    size_t exterior_fid = INVALID;
+    size_t outer_fid = INVALID;
     const size_t num_incident_faces = incident_faces.size();
     for (size_t i=0; i<num_incident_faces; i++) {
         const auto& fid = incident_faces[i];
         const Scalar nx = N(fid, 0);
-        if (exterior_fid == INVALID) {
+        if (outer_fid == INVALID) {
             max_nx = nx;
-            exterior_fid = fid;
+            outer_fid = fid;
         } else {
             if (generic_fabs(nx) > generic_fabs(max_nx)) {
                 max_nx = nx;
-                exterior_fid = fid;
+                outer_fid = fid;
             } else if (nx == -max_nx && nx > 0) {
                 max_nx = nx;
-                exterior_fid = fid;
+                outer_fid = fid;
             } else if (nx == max_nx) {
-                if ((max_nx >= 0 && exterior_fid < fid) ||
-                    (max_nx <  0 && exterior_fid > fid)) {
+                if ((max_nx >= 0 && outer_fid < fid) ||
+                    (max_nx <  0 && outer_fid > fid)) {
                     max_nx = nx;
-                    exterior_fid = fid;
+                    outer_fid = fid;
                 }
             }
         }
     }
 
-    assert(exterior_fid != INVALID);
-    f = exterior_fid;
+    assert(outer_fid != INVALID);
+    f = outer_fid;
     flipped = max_nx < 0;
 }
 
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::exterior_facet<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, int&, bool&);
-template void igl::exterior_facet<Eigen::Matrix<double, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 1, -1, -1>, Eigen::Matrix<double, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 1, -1, -1>, unsigned long>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 1, -1, -1> > const&, unsigned long&, bool&);
-template void igl::exterior_facet<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int&, bool&);
-template void igl::exterior_facet<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int&, bool&);
+template void igl::outer_facet<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, int&, bool&);
+template void igl::outer_facet<Eigen::Matrix<double, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 1, -1, -1>, Eigen::Matrix<double, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 1, -1, -1>, unsigned long>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 1, -1, -1> > const&, unsigned long&, bool&);
+template void igl::outer_facet<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int&, bool&);
+template void igl::outer_facet<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int&, bool&);
 #endif

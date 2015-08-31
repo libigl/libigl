@@ -5,14 +5,14 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_EXTERIOR_ELEMENT_H
-#define IGL_EXTERIOR_ELEMENT_H
+#ifndef IGL_OUTER_ELEMENT_H
+#define IGL_OUTER_ELEMENT_H
 #include "igl_inline.h"
 #include <Eigen/Core>
 namespace igl
 {
   // Find a vertex that is reachable from infinite without crossing any faces.
-  // Such vertex is called "exterior vertex."
+  // Such vertex is called "outer vertex."
   //
   // Precondition: The input mesh must have all self-intersection resolved and
   // no duplicated vertices.  See cgal::remesh_self_intersections.h for how to
@@ -23,8 +23,8 @@ namespace igl
   //   F  #F by 3 list of triangle indices into V
   //   I  #I list of facets to consider
   // Outputs:
-  //   v_index  index of exterior vertex
-  //   A  #A list of facets incident to the exterior vertex
+  //   v_index  index of outer vertex
+  //   A  #A list of facets incident to the outer vertex
   template <
       typename DerivedV,
       typename DerivedF,
@@ -32,7 +32,7 @@ namespace igl
       typename IndexType,
       typename DerivedA
       >
-  IGL_INLINE void exterior_vertex(
+  IGL_INLINE void outer_vertex(
           const Eigen::PlainObjectBase<DerivedV> & V,
           const Eigen::PlainObjectBase<DerivedF> & F,
           const Eigen::PlainObjectBase<DerivedI> & I,
@@ -41,7 +41,7 @@ namespace igl
 
 
   // Find an edge that is reachable from infinity without crossing any faces.
-  // Such edge is called "exterior edge."
+  // Such edge is called "outer edge."
   //
   // Precondition: The input mesh must have all self-intersection resolved and
   // no duplicated vertices.  The correctness of the output depends on the fact
@@ -53,9 +53,9 @@ namespace igl
   //   F  #F by 3 list of triangle indices into V
   //   I  #I list of facets to consider
   // Outputs:
-  //   v1 index of the first end point of exterior edge
-  //   v2 index of the second end point of exterior edge
-  //   A  #A list of facets incident to the exterior edge
+  //   v1 index of the first end point of outer edge
+  //   v2 index of the second end point of outer edge
+  //   A  #A list of facets incident to the outer edge
   template<
       typename DerivedV,
       typename DerivedF,
@@ -63,7 +63,7 @@ namespace igl
       typename IndexType,
       typename DerivedA
       >
-  IGL_INLINE void exterior_edge(
+  IGL_INLINE void outer_edge(
           const Eigen::PlainObjectBase<DerivedV> & V,
           const Eigen::PlainObjectBase<DerivedF> & F,
           const Eigen::PlainObjectBase<DerivedI> & I,
@@ -73,7 +73,7 @@ namespace igl
 
 
   // Find a facet that is reachable from infinity without crossing any faces.
-  // Such facet is called "exterior facet."
+  // Such facet is called "outer facet."
   //
   // Precondition: The input mesh must have all self-intersection resolved.  I.e
   // there is no duplicated vertices, no overlapping edge and no intersecting
@@ -86,7 +86,7 @@ namespace igl
   //   N  #N by 3 list of face normals
   //   I  #I list of facets to consider
   // Outputs:
-  //   f  Index of the exterior facet.
+  //   f  Index of the outer facet.
   //   flipped  true iff the normal of f points inwards.
   template<
       typename DerivedV,
@@ -95,7 +95,7 @@ namespace igl
       typename DerivedI,
       typename IndexType
       >
-  IGL_INLINE void exterior_facet(
+  IGL_INLINE void outer_facet(
           const Eigen::PlainObjectBase<DerivedV> & V,
           const Eigen::PlainObjectBase<DerivedF> & F,
           const Eigen::PlainObjectBase<DerivedN> & N,
@@ -105,6 +105,6 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "exterior_element.cpp"
+#  include "outer_element.cpp"
 #endif
 #endif
