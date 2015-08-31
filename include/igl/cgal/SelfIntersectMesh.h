@@ -185,7 +185,8 @@ namespace igl
             const Triangle_3 & A,
             const Triangle_3 & B,
             const Index fa,
-            const Index fb);
+            const Index fb,
+            const std::vector<std::pair<Index,Index> > shared);
   
       public:
         // Callback function called during box self intersections test. Means
@@ -858,43 +859,41 @@ inline bool igl::cgal::SelfIntersectMesh<
 
   if(CGAL::do_intersect(sa,B))
   {
+    // can't put count_intersection(fa,fb) here since we use intersect below
+    // and then it will be counted twice.
+    if(params.detect_only)
+    {
+      count_intersection(fa,fb);
+      return true;
+    }
     CGAL::Object result = CGAL::intersection(sa,B);
     if(const Point_3 * p = CGAL::object_cast<Point_3 >(&result))
     {
-      if(!params.detect_only)
-      {
-        // Single intersection --> segment from shared point to intersection
-        CGAL::Object seg = CGAL::make_object(Segment_3(
-          A.vertex(va),
-          *p));
-        F_objects[fa].push_back(seg);
-        F_objects[fb].push_back(seg);
-      }
+      // Single intersection --> segment from shared point to intersection
+      CGAL::Object seg = CGAL::make_object(Segment_3(
+        A.vertex(va),
+        *p));
+      F_objects[fa].push_back(seg);
+      F_objects[fb].push_back(seg);
       count_intersection(fa,fb);
       return true;
     }else if(CGAL::object_cast<Segment_3 >(&result))
     {
       //cerr<<REDRUM("Coplanar at: "<<fa<<" & "<<fb<<" (single shared).")<<endl;
       // Must be coplanar
-      if(params.detect_only)
-      {
-        count_intersection(fa,fb);
-      }else
-      {
-        // WRONG:
-        //// Segment intersection --> triangle from shared point to intersection
-        //CGAL::Object tri = CGAL::make_object(Triangle_3(
-        //  A.vertex(va),
-        //  s->vertex(0),
-        //  s->vertex(1)));
-        //F_objects[fa].push_back(tri);
-        //F_objects[fb].push_back(tri);
-        //count_intersection(fa,fb);
-        // Need to do full test. Intersection could be a general poly.
-        bool test = intersect(A,B,fa,fb);
-        ((void)test);
-        assert(test);
-      }
+      // WRONG:
+      //// Segment intersection --> triangle from shared point to intersection
+      //CGAL::Object tri = CGAL::make_object(Triangle_3(
+      //  A.vertex(va),
+      //  s->vertex(0),
+      //  s->vertex(1)));
+      //F_objects[fa].push_back(tri);
+      //F_objects[fb].push_back(tri);
+      //count_intersection(fa,fb);
+      // Need to do full test. Intersection could be a general poly.
+      bool test = intersect(A,B,fa,fb);
+      ((void)test);
+      assert(test && "intersect should agree with do_intersect");
       return true;
     }else
     {
@@ -928,60 +927,122 @@ inline bool igl::cgal::SelfIntersectMesh<
   const Triangle_3 & A,
   const Triangle_3 & B,
   const Index fa,
-  const Index fb)
+  const Index fb,
+  const std::vector<std::pair<Index,Index> > shared)
 {
   using namespace std;
-  // Cheaper way to do this than calling do_intersect?
+
+  // must be co-planar
   if(
-    // Can only have an intersection if co-planar
-    (A.supporting_plane() == B.supporting_plane() ||
-    A.supporting_plane() == B.supporting_plane().opposite()) &&
-    CGAL::do_intersect(A,B))
+    A.supporting_plane() != B.supporting_plane() &&
+    A.supporting_plane() != B.supporting_plane().opposite())
   {
-    // Construct intersection
-    try
+    return false;
+  }
+  // Since A and B are non-degenerate the intersection must be a polygon
+  // (triangle). Either
+  //   - the vertex of A (B) opposite the shared edge of lies on B (A), or
+  //   - an edge of A intersects and edge of B without sharing a vertex
+
+
+
+  // Determine if the vertex opposite edge (a0,a1) in triangle A lies in
+  // (intersects) triangle B
+  const auto & opposite_point_inside = [](
+    const Triangle_3 & A, const Index a0, const Index a1, const Triangle_3 & B) 
+    -> bool
+  {
+    // get opposite index
+    Index a2 = -1;
+    for(int c = 0;c<3;c++)
     {
-      // This can fail for Epick but not Epeck
-      CGAL::Object result = CGAL::intersection(A,B);
-      if(!result.empty())
+      if(c != a0 && c != a1)
       {
-        if(CGAL::object_cast<Segment_3 >(&result))
-        {
-          // not coplanar
-          return false;
-        } else if(CGAL::object_cast<Point_3 >(&result))
-        {
-          // this "shouldn't" happen but does for inexact
-          return false;
-        } else
-        {
-          if(!params.detect_only)
-          {
-            // Triangle object
-            F_objects[fa].push_back(result);
-            F_objects[fb].push_back(result);
-          }
-          count_intersection(fa,fb);
-          //cerr<<REDRUM("Coplanar at: "<<fa<<" & "<<fb<<" (double shared).")<<endl;
-          return true;
-        }
-      }else
-      {
-        // CGAL::intersection is disagreeing with do_intersect
-        return false;
+        a2 = c;
+        break;
       }
-    }catch(...)
+    }
+    assert(a2 != -1);
+    bool ret = CGAL::do_intersect(A.vertex(a2),B);
+    //cout<<"opposite_point_inside: "<<ret<<endl;
+    return ret;
+  };
+
+  // Determine if edge opposite vertex va in triangle A intersects edge
+  // opposite vertex vb in triangle B.
+  const auto & opposite_edges_intersect = [](
+    const Triangle_3 & A, const Index va,
+    const Triangle_3 & B, const Index vb) -> bool
+  {
+    Segment_3 sa( A.vertex((va+1)%3), A.vertex((va+2)%3));
+    Segment_3 sb( B.vertex((vb+1)%3), B.vertex((vb+2)%3));
+    //cout<<sa<<endl;
+    //cout<<sb<<endl;
+    bool ret = CGAL::do_intersect(sa,sb);
+    //cout<<"opposite_edges_intersect: "<<ret<<endl;
+    return ret;
+  };
+
+
+  if( 
+    !opposite_point_inside(A,shared[0].first,shared[1].first,B) &&
+    !opposite_point_inside(B,shared[0].second,shared[1].second,A) &&
+    !opposite_edges_intersect(A,shared[0].first,B,shared[1].second) && 
+    !opposite_edges_intersect(A,shared[1].first,B,shared[0].second))
+  {
+    return false;
+  }
+
+  // there is an intersection indeed
+  count_intersection(fa,fb);
+  if(params.detect_only)
+  {
+    return true;
+  }
+  // Construct intersection
+  try
+  {
+    // This can fail for Epick but not Epeck
+    CGAL::Object result = CGAL::intersection(A,B);
+    if(!result.empty())
     {
-      // This catches some cgal assertion:
-      //     CGAL error: assertion violation!
-      //     Expression : is_finite(d)
-      //     File       : /opt/local/include/CGAL/GMP/Gmpq_type.h
-      //     Line       : 132
-      //     Explanation: 
-      // But only if NDEBUG is not defined, otherwise there's an uncaught
-      // "Floating point exception: 8" SIGFPE
+      if(CGAL::object_cast<Segment_3 >(&result))
+      {
+        // not coplanar
+        assert(false && 
+          "Co-planar non-degenerate triangles should intersect over triangle");
+        return false;
+      } else if(CGAL::object_cast<Point_3 >(&result))
+      {
+        // this "shouldn't" happen but does for inexact
+        assert(false && 
+          "Co-planar non-degenerate triangles should intersect over triangle");
+        return false;
+      } else
+      {
+        // Triangle object
+        F_objects[fa].push_back(result);
+        F_objects[fb].push_back(result);
+        //cerr<<REDRUM("Coplanar at: "<<fa<<" & "<<fb<<" (double shared).")<<endl;
+        return true;
+      }
+    }else
+    {
+      // CGAL::intersection is disagreeing with do_intersect
+      assert(false && "CGAL::intersection should agree with predicate tests");
       return false;
     }
+  }catch(...)
+  {
+    // This catches some cgal assertion:
+    //     CGAL error: assertion violation!
+    //     Expression : is_finite(d)
+    //     File       : /opt/local/include/CGAL/GMP/Gmpq_type.h
+    //     Line       : 132
+    //     Explanation: 
+    // But only if NDEBUG is not defined, otherwise there's an uncaught
+    // "Floating point exception: 8" SIGFPE
+    return false;
   }
   // No intersection.
   return false;
@@ -1030,9 +1091,8 @@ inline void igl::cgal::SelfIntersectMesh<
   // Number of geometrically shared vertices (*not* including combinatorially
   // shared)
   Index geo_shared_vertices = 0;
-  // Keep track of shared vertex indices (we only handles single shared
-  // vertices as a special case, so just need last/first/only ones)
-  Index va=-1,vb=-1;
+  // Keep track of shared vertex indices
+  std::vector<std::pair<Index,Index> > shared;
   Index ea,eb;
   for(ea=0;ea<3;ea++)
   {
@@ -1041,25 +1101,25 @@ inline void igl::cgal::SelfIntersectMesh<
       if(F(fa,ea) == F(fb,eb))
       {
         comb_shared_vertices++;
-        va = ea;
-        vb = eb;
+        shared.emplace_back(ea,eb);
       }else if(A.vertex(ea) == B.vertex(eb))
       {
         geo_shared_vertices++;
-        va = ea;
-        vb = eb;
+        shared.emplace_back(ea,eb);
       }
     }
   }
   const Index total_shared_vertices = comb_shared_vertices + geo_shared_vertices;
   if(comb_shared_vertices== 3)
   {
+    assert(shared.size() == 3);
     //// Combinatorially duplicate face, these should be removed by preprocessing
     //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are combinatorial duplicates")<<endl;
     goto done;
   }
   if(total_shared_vertices== 3)
   {
+    assert(shared.size() == 3);
     //// Geometrically duplicate face, these should be removed by preprocessing
     //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are geometrical duplicates")<<endl;
     goto done;
@@ -1081,6 +1141,7 @@ inline void igl::cgal::SelfIntersectMesh<
 
   if(total_shared_vertices == 2)
   {
+    assert(shared.size() == 2);
     // Q: What about coplanar?
     //
     // o    o
@@ -1089,19 +1150,17 @@ inline void igl::cgal::SelfIntersectMesh<
     // | /\ |
     // |/  \|
     // o----o
-    double_shared_vertex(A,B,fa,fb);
+    double_shared_vertex(A,B,fa,fb,shared);
 
     goto done;
   }
   assert(total_shared_vertices<=1);
   if(total_shared_vertices==1)
   {
-    assert(va>=0 && va<3);
-    assert(vb>=0 && vb<3);
 //#ifndef NDEBUG
 //    CGAL::Object result =
 //#endif
-    single_shared_vertex(A,B,fa,fb,va,vb);
+    single_shared_vertex(A,B,fa,fb,shared[0].first,shared[0].second);
 //#ifndef NDEBUG
 //    if(!CGAL::object_cast<Segment_3 >(&result))
 //    {
