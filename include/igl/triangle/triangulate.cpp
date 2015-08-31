@@ -54,7 +54,7 @@ IGL_INLINE void igl::triangle::triangulate(
   using namespace Eigen;
 
   // Prepare the flags
-  string full_flags = flags + "pzBV";
+  string full_flags = flags + "pzB";
 
   // Prepare the input struct
   triangulateio in;
