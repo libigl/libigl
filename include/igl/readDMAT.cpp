@@ -45,7 +45,8 @@ static inline int readDMAT_read_header(FILE * fp, int & num_rows, int & num_cols
   }
   // finish reading header
   char lf;
-  if(fread(&lf, sizeof(char), 1, fp)!=1 || lf != '\n')
+
+  if(fread(&lf, sizeof(char), 1, fp)!=1 || !(lf == '\n' || lf == '\r'))
   {
     fprintf(stderr,"IOError: bad line ending in header\n");
     return 4;
