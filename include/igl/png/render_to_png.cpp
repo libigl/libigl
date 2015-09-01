@@ -52,4 +52,4 @@ IGL_INLINE bool igl::png::render_to_png(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-#endif;
+#endif
