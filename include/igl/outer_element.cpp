@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "outer_element.h"
 #include <iostream>
+#include <vector>
 
 template <
      typename DerivedV,
@@ -34,7 +35,7 @@ IGL_INLINE void igl::outer_vertex(
     size_t outer_vid = INVALID;
     typename DerivedV::Scalar outer_val = 0;
     for (size_t i=0; i<num_selected_faces; i++) {
-        size_t f = I[i];
+        size_t f = I(i);
         for (size_t j=0; j<3; j++) {
             auto v = F(f, j);
             auto vx = V(v, 0);
@@ -96,17 +97,18 @@ IGL_INLINE void igl::outer_edge(
     const size_t INVALID = std::numeric_limits<size_t>::max();
 
     Index outer_vid;
-    DerivedI candidate_faces;
+    Eigen::Matrix<Index,Eigen::Dynamic,1> candidate_faces;
     outer_vertex(V, F, I, outer_vid, candidate_faces);
     const ScalarArray3& outer_v = V.row(outer_vid);
     assert(candidate_faces.size() > 0);
 
-    auto get_vertex_index = [&](const IndexArray3& f,
-            Index vid) {
+    auto get_vertex_index = [&](const IndexArray3& f, Index vid) -> Index 
+    {
         if (f[0] == vid) return 0;
         if (f[1] == vid) return 1;
         if (f[2] == vid) return 2;
         assert(false);
+        return -1;
     };
 
     Scalar outer_slope_YX = 0;
@@ -145,11 +147,11 @@ IGL_INLINE void igl::outer_edge(
 
     const auto num_candidate_faces = candidate_faces.size();
     for (size_t i=0; i<num_candidate_faces; i++) {
-        const Index fid = candidate_faces[i];
+        const Index fid = candidate_faces(i);
         const IndexArray3& f = F.row(fid);
         size_t id = get_vertex_index(f, outer_vid);
-        Index next_vid = f[(id+1)%3];
-        Index prev_vid = f[(id+2)%3];
+        Index next_vid = f((id+1)%3);
+        Index prev_vid = f((id+2)%3);
         check_and_update_outer_edge(next_vid, fid);
         check_and_update_outer_edge(prev_vid, fid);
     }
@@ -185,7 +187,7 @@ IGL_INLINE void igl::outer_facet(
     const size_t INVALID = std::numeric_limits<size_t>::max();
 
     Index v1,v2;
-    DerivedI incident_faces;
+    Eigen::Matrix<Index,Eigen::Dynamic,1> incident_faces;
     outer_edge(V, F, I, v1, v2, incident_faces);
     assert(incident_faces.size() > 0);
 
@@ -197,8 +199,9 @@ IGL_INLINE void igl::outer_facet(
     Scalar max_nx = 0;
     size_t outer_fid = INVALID;
     const size_t num_incident_faces = incident_faces.size();
-    for (size_t i=0; i<num_incident_faces; i++) {
-        const auto& fid = incident_faces[i];
+    for (size_t i=0; i<num_incident_faces; i++) 
+    {
+        const auto& fid = incident_faces(i);
         const Scalar nx = N(fid, 0);
         if (outer_fid == INVALID) {
             max_nx = nx;
