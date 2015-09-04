@@ -525,7 +525,8 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
   for (unsigned int i=0;i<startVertexIndices.size();i++)
   {
     auto startVertexNeighbors = &VVSeam[startVertexIndices[i]];
-    for (unsigned int j=0;j<startVertexNeighbors->size();j++)
+    const int neighborSize = startVertexNeighbors->size();
+    for (unsigned int j=0;j<neighborSize;j++)
     {
       // temporary container for VertexInfo of this seam
       std::vector<VertexInfo> thisSeam;
@@ -583,7 +584,7 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
   for(auto seam : verticesPerSeam){
     int connectingVertexCandidate0 = Fcut(seam[1].f0, seam[1].k0); // Vertex number according to Vcut
     int connectingVertexCandidate1 = connectingVertexCandidate0;
-    for(auto it=seam.begin()+1; it != seam.end(); ++it){
+    for(auto it=seam.begin(); it != seam.end(); ++it){
       auto vertex = *it;
       // choose the correct side of the seam
       int f,k,ff,kk;
