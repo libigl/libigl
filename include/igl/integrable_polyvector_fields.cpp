@@ -190,7 +190,8 @@ makeFieldCCW(Eigen::MatrixXd &sol3D)
   {
     //take all 4 vectors (including opposites) and pick two that are in ccw order
     all << sol3D.row(fi), -sol3D.row(fi);
-    igl::sort_vectors_ccw(all, FN.row(fi).eval(), order, true, t);
+	Eigen::VectorXi inv_order_unused;
+    igl::sort_vectors_ccw(all, FN.row(fi).eval(), order, true, t, false, inv_order_unused);
     //if we are in a constrained face, we need to make sure that the first vector is always the same vector as in the constraints
     if(is_constrained_face[fi])
     {
@@ -240,7 +241,7 @@ computeInteriorEdges()
   // Flag border edges
   numInteriorEdges = 0;
   isBorderEdge.setZero(numE,1);
-  indFullToInterior = -1.*Eigen::VectorXi::Ones(numE,1);
+  indFullToInterior = -1*Eigen::VectorXi::Ones(numE,1);
 
   for(unsigned i=0; i<numE; ++i)
   {
