@@ -50,8 +50,17 @@ list(APPEND SHARED_LIBRARIES "nanogui" "glfw")
 #Compile embree
 option(ENABLE_ISPC_SUPPORT " " OFF)
 option(RTCORE_TASKING_SYSTEM " " INTERNAL)
-option(ENABLE_STATIC_LIB " " ON)
-set(ENABLE_STATIC_LIB ON CACHE BOOL "force static build of embree" FORCE)
+
+IF(NOT MSVC) # embree static build is broken on visual studio
+	option(ENABLE_STATIC_LIB " " ON)
+	set(ENABLE_STATIC_LIB ON CACHE BOOL "force static build of embree" FORCE)
+ENDIF(NOT MSVC)
+
+IF(MSVC)
+	option(USE_STATIC_RUNTIME " " OFF)
+	set(USE_STATIC_RUNTIME OFF CACHE BOOL "disable changes in the runtime for VS" FORCE)
+ENDIF(MSVC)
+
 option(ENABLE_TUTORIALS " " OFF)
 
 add_subdirectory("../external/embree/" "embree")
