@@ -48,11 +48,11 @@ include_directories("../external/nanogui/ext/nanovg/src")
 list(APPEND SHARED_LIBRARIES "nanogui" "glfw")
 
 #Compile embree
-option(ENABLE_ISPC_SUPPORT OFF)
-option(RTCORE_TASKING_SYSTEM INTERNAL)
-option(ENABLE_STATIC_LIB ON)
-option(ENABLE_TUTORIALS OFF)
-option(XEON_ISA SSE2)
+option(ENABLE_ISPC_SUPPORT " " OFF)
+option(RTCORE_TASKING_SYSTEM " " INTERNAL)
+option(ENABLE_STATIC_LIB " " ON)
+set(ENABLE_STATIC_LIB ON CACHE BOOL "force static build of embree" FORCE)
+option(ENABLE_TUTORIALS " " OFF)
 
 add_subdirectory("../external/embree/" "embree")
 include_directories("../external/embree/include")
