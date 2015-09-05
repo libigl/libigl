@@ -35,10 +35,10 @@ namespace igl {
                                    const Eigen::PlainObjectBase<DerivedS>& P,
                                    const Eigen::PlainObjectBase<DerivedS>& N,
                                    Eigen::PlainObjectBase<DerivedI> &order,
-                                   const bool do_sorted = false,
-                                   Eigen::PlainObjectBase<DerivedS> &sorted = *(Eigen::PlainObjectBase<DerivedS>*)NULL,
-                                   const bool do_inv_order = false,
-                                   Eigen::PlainObjectBase<DerivedI> &inv_order = *(Eigen::PlainObjectBase<DerivedI> *)NULL);
+                                   const bool do_sorted,
+                                   Eigen::PlainObjectBase<DerivedS> &sorted,
+                                   const bool do_inv_order,
+                                   Eigen::PlainObjectBase<DerivedI> &inv_order);
 };
 
 
