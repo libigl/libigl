@@ -4,6 +4,7 @@ project(pybind)
 
 IF(MSVC)
 ### Enable parallel compilation for Visual Studio
+  add_definitions(-DEIGEN_DONT_ALIGN)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 ENDIF(MSVC)
 
@@ -18,24 +19,13 @@ endif()
 
 find_package(OPENGL REQUIRED)
 
+# Force a specific python version
+# SET(PYTHON_LIBRARIES "D:/Python34/libs/python34.lib")
+# SET(PYTHON_INCLUDE_DIR "D:/Python34/include")
 
-if (true)
-SET(PYTHON_LIBRARIES "D:/Python34/libs/python34.lib")
-SET(PYTHON_INCLUDE_DIR "D:/Python34/include")
-
-add_definitions(-DEIGEN_DONT_ALIGN)
-
-#set(Python_ADDITIONAL_VERSIONS 3.4.3 3.5 3.6)
-#find_package(PythonLibs 3.3.4 REQUIRED)
-#find_package(PythonInterp 3.3.4 REQUIRED)
-
-else()
-
-set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
-find_package(PythonLibs  REQUIRED)
-find_package(PythonInterp 3.4.3 REQUIRED)
-
-endif()
+set(Python_ADDITIONAL_VERSIONS 3.4.3 3.5 3.6)
+find_package(PythonLibs REQUIRED)
+find_package(PythonInterp REQUIRED)
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 if (UNIX)
@@ -148,11 +138,11 @@ elseif (UNIX)
     set_target_properties(igl PROPERTIES MACOSX_RPATH ".")
     set_target_properties(igl PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
     if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-      add_custom_command(TARGET igl POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/igl.so)
+      add_custom_command(TARGET igl POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/../igl.so)
     endif()
   else()
     if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-      add_custom_command(TARGET igl POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/igl.so)
+      add_custom_command(TARGET igl POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/../igl.so)
     endif()
   endif()
 endif()
