@@ -47,6 +47,18 @@ include_directories("../external/nanogui/include")
 include_directories("../external/nanogui/ext/nanovg/src")
 list(APPEND SHARED_LIBRARIES "nanogui" "glfw")
 
+#Compile embree
+option(ENABLE_ISPC_SUPPORT OFF)
+option(RTCORE_TASKING_SYSTEM INTERNAL)
+option(ENABLE_STATIC_LIB ON)
+option(ENABLE_TUTORIALS OFF)
+option(XEON_ISA SSE2)
+
+add_subdirectory("../external/embree/" "embree")
+include_directories("../external/embree/include")
+list(APPEND SHARED_LIBRARIES "embree")
+
+
 message(STATUS "Linking with: ${LIBIGL_LIBRARIES}")
 list(APPEND SHARED_LIBRARIES ${LIBIGL_LIBRARIES})
 
@@ -112,10 +124,10 @@ if(MATLAB_FOUND)
 endif(MATLAB_FOUND)
 add_subdirectory("604_Triangle")
 add_subdirectory("605_Tetgen")
-if(EMBREE_FOUND)
-  add_subdirectory("606_AmbientOcclusion")
-  add_subdirectory("607_Picking")
-endif(EMBREE_FOUND)
+
+add_subdirectory("606_AmbientOcclusion")
+add_subdirectory("607_Picking")
+
 if(LIM_FOUND)
   add_subdirectory("608_LIM")
 endif(LIM_FOUND)
