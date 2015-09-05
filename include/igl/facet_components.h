@@ -27,6 +27,7 @@ namespace igl
   //   triangle_triangle_adjacency.h)
   // Ouputs:
   //   C  #F list of connected component ids
+  //   counts #C list of number of facets in each components
   template <
     typename TTIndex, 
     typename DerivedC,
