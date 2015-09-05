@@ -75,3 +75,6 @@ optional/build
 lib
 tutorial/XXX_test/CMakeLists.txt
 tutorial/XXX_test/main.cpp
+python/py_igl/todo
+python/build
+python/.idea
