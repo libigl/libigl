@@ -203,6 +203,19 @@ inside each example folder.</p>
 solver</a> which has to be
 downloaded and compiled separately.</p>
 
+<p>Note for linux users: Many linux distributions do not include gcc and the basic development tools
+in their default installation. On Ubuntu, you need to install the following packages:</p>
+
+<pre><code class="bash">sudo apt-get install git
+sudo apt-get install build-essential
+sudo apt-get install cmake
+sudo apt-get install libx11-dev
+sudo apt-get install mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev
+sudo apt-get install libxrandr-dev
+sudo apt-get install libxi-dev
+sudo apt-get install libxmu-dev
+</code></pre>
+
 <h2 id="meshrepresentation">Mesh representation</h2>
 
 <p>libigl uses the <a href="http://eigen.tuxfamily.org/">Eigen</a> library to encode vector
