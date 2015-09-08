@@ -488,7 +488,7 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
   {
       int f0 = EF(e,0);
       int f1 = EF(e,1);
-      if (f1 == -1)
+      if (f1 == -1 || f0 == -1)
         continue;
 
       int k=0;
