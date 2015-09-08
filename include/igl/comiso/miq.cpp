@@ -98,7 +98,7 @@ namespace comiso {
     // const Eigen::PlainObjectBase<DerivedV> &PD2;
 
     const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_MMatch;
-    // const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular; // bool
+    const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular; // bool
     // const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_SingularDegree; // vertex;
     const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams; // 3 bool
 
@@ -121,7 +121,7 @@ namespace comiso {
                               //  const Eigen::PlainObjectBase<DerivedV> &_PD1,
                               //  const Eigen::PlainObjectBase<DerivedV> &_PD2,
                               const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_MMatch,
-                              //  const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_Singular,
+                              const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_Singular,
                               //  const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_SingularDegree,
                               const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_Seams
                               );
@@ -417,7 +417,7 @@ IGL_INLINE igl::comiso::VertexIndexing<DerivedV, DerivedF>::VertexIndexing(const
                                                                    // const Eigen::PlainObjectBase<DerivedV> &_PD1,
                                                                    // const Eigen::PlainObjectBase<DerivedV> &_PD2,
                                                                    const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_MMatch,
-                                                                   // const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_Singular,
+                                                                   const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_Singular,
                                                                    // const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_SingularDegree,
                                                                    const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_Seams
 
@@ -431,7 +431,7 @@ TTi(_TTi),
 // PD1(_PD1),
 // PD2(_PD2),
 Handle_MMatch(_Handle_MMatch),
-// Handle_Singular(_Handle_Singular),
+Handle_Singular(_Handle_Singular),
 // Handle_SingularDegree(_Handle_SingularDegree),
 Handle_Seams(_Handle_Seams)
 {
@@ -514,7 +514,7 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
   for (unsigned int i=0;i<V.rows();i++)
   {
     isStartVertex[i] = false;
-    if (VVSeam[i].size() > 0 && VVSeam[i].size() != 2)
+    if (VVSeam[i].size() > 0 && VVSeam[i].size() != 2 || Handle_Singular(i) == true)
     {
       startVertexIndices.push_back(i);
       isStartVertex[i] = true;
@@ -1308,7 +1308,7 @@ F(F_)
   igl::triangle_triangle_adjacency(V,F,TT,TTi);
 
   // Prepare indexing for the linear system
-  VertexIndexing<DerivedV, DerivedF> VInd(V, F, Vcut, Fcut, TT, TTi, /*BIS1_combed, BIS2_combed,*/ Handle_MMatch, /*Handle_Singular, Handle_SingularDegree,*/ Handle_Seams);
+  VertexIndexing<DerivedV, DerivedF> VInd(V, F, Vcut, Fcut, TT, TTi, /*BIS1_combed, BIS2_combed,*/ Handle_MMatch, Handle_Singular, /* Handle_SingularDegree,*/ Handle_Seams);
 
   VInd.InitSeamInfo();
 
