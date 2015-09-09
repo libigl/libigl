@@ -54,14 +54,12 @@ namespace igl {
 namespace comiso {
   struct SeamInfo
   {
-    int v0,v0p,v1,v1p;
+    int v0,v0p;
     int integerVar;
     unsigned char MMatch;
 
     IGL_INLINE SeamInfo(int _v0,
-                        int _v1,
                         int _v0p,
-                        int _v1p,
                         int _MMatch,
                         int _integerVar);
 
@@ -94,12 +92,9 @@ namespace comiso {
     const Eigen::PlainObjectBase<DerivedF> &Fcut;
     const Eigen::PlainObjectBase<DerivedF> &TT;
     const Eigen::PlainObjectBase<DerivedF> &TTi;
-    // const Eigen::PlainObjectBase<DerivedV> &PD1;
-    // const Eigen::PlainObjectBase<DerivedV> &PD2;
 
     const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_MMatch;
     const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular; // bool
-    // const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_SingularDegree; // vertex;
     const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams; // 3 bool
 
 
@@ -109,34 +104,41 @@ namespace comiso {
     //DEBUG
     std::vector<DebugFaceEdgeInfo> DebugInfo;
 
-    // internal
-    std::vector<std::vector<int> > VF, VFi;
-
     IGL_INLINE VertexIndexing(const Eigen::PlainObjectBase<DerivedV> &_V,
                               const Eigen::PlainObjectBase<DerivedF> &_F,
                               const Eigen::PlainObjectBase<DerivedV> &_Vcut,
                               const Eigen::PlainObjectBase<DerivedF> &_Fcut,
                               const Eigen::PlainObjectBase<DerivedF> &_TT,
                               const Eigen::PlainObjectBase<DerivedF> &_TTi,
-                              //  const Eigen::PlainObjectBase<DerivedV> &_PD1,
-                              //  const Eigen::PlainObjectBase<DerivedV> &_PD2,
                               const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_MMatch,
                               const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_Singular,
-                              //  const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_SingularDegree,
                               const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_Seams
                               );
 
-    ///vertex to variable mapping
+    // provide information about every vertex per seam
     IGL_INLINE void InitSeamInfo();
 
 
   private:
+    struct VertexInfo{
+      int v;  // vertex index (according to V)
+      int f0, k0; // face and local edge information of the edge that connects this vertex to the previous vertex (previous in the vector)
+      int f1, k1; // face and local edge information of the other face corresponding to the same edge
+      VertexInfo(int _v, int _f0, int _k0, int _f1, int _k1) :
+                 v(_v), f0(_f0), k0(_k0), f1(_f1), k1(_k1){}
+      bool operator==(VertexInfo const& other){
+        return other.v == v;
+      }
+    };
+
     IGL_INLINE void GetSeamInfo(const int f0,
                                 const int f1,
                                 const int indexE,
                                 int &v0,int &v1,
                                 int &v0p,int &v1p,
                                 unsigned char &_MMatch);
+
+    IGL_INLINE std::vector<std::vector<VertexInfo> > GetVerticesPerSeam();
   };
 
 
@@ -225,9 +227,6 @@ namespace comiso {
 
     ///total number of constraints equations
     unsigned int num_constraint_equations;
-
-    ///total size of the system including constraints
-    unsigned int system_size;
 
     ///if you intend to make integer rotation
     ///and translations
@@ -382,16 +381,12 @@ namespace comiso {
 }
 
 IGL_INLINE igl::comiso::SeamInfo::SeamInfo(int _v0,
-                                   int _v1,
                                    int _v0p,
-                                   int _v1p,
                                    int _MMatch,
                                    int _integerVar)
 {
   v0=_v0;
-  v1=_v1;
   v0p=_v0p;
-  v1p=_v1p;
   integerVar=_integerVar;
   MMatch=_MMatch;
 }
@@ -399,9 +394,7 @@ IGL_INLINE igl::comiso::SeamInfo::SeamInfo(int _v0,
 IGL_INLINE igl::comiso::SeamInfo::SeamInfo(const SeamInfo &S1)
 {
   v0=S1.v0;
-  v1=S1.v1;
   v0p=S1.v0p;
-  v1p=S1.v1p;
   integerVar=S1.integerVar;
   MMatch=S1.MMatch;
 }
@@ -414,13 +407,9 @@ IGL_INLINE igl::comiso::VertexIndexing<DerivedV, DerivedF>::VertexIndexing(const
                                                                    const Eigen::PlainObjectBase<DerivedF> &_Fcut,
                                                                    const Eigen::PlainObjectBase<DerivedF> &_TT,
                                                                    const Eigen::PlainObjectBase<DerivedF> &_TTi,
-                                                                   // const Eigen::PlainObjectBase<DerivedV> &_PD1,
-                                                                   // const Eigen::PlainObjectBase<DerivedV> &_PD2,
                                                                    const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_MMatch,
                                                                    const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_Singular,
-                                                                   // const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_SingularDegree,
                                                                    const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_Seams
-
                                                                    ):
 V(_V),
 F(_F),
@@ -428,17 +417,13 @@ Vcut(_Vcut),
 Fcut(_Fcut),
 TT(_TT),
 TTi(_TTi),
-// PD1(_PD1),
-// PD2(_PD2),
 Handle_MMatch(_Handle_MMatch),
 Handle_Singular(_Handle_Singular),
-// Handle_SingularDegree(_Handle_SingularDegree),
 Handle_Seams(_Handle_Seams)
 {
   #ifdef DEBUG_PRINT
   cerr<<igl::matlab_format(Handle_Seams,"Handle_Seams");
 #endif
-  igl::vertex_triangle_adjacency(V,F,VF,VFi);
 
   Handle_SystemInfo.num_vert_variables=Vcut.rows();
   Handle_SystemInfo.num_integer_cuts=0;
@@ -467,53 +452,44 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::GetSeamInfo(con
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
+IGL_INLINE std::vector<std::vector<typename igl::comiso::VertexIndexing<DerivedV, DerivedF>::VertexInfo> > igl::comiso::VertexIndexing<DerivedV, DerivedF>::GetVerticesPerSeam()
 {
-  struct VertexInfo{
-    int v, f0, k0, f1, k1;
-    VertexInfo(int _v, int _f0, int _k0, int _f1, int _k1) :
-               v(_v), f0(_f0), k0(_k0), f1(_f1), k1(_k1){}
-    bool operator==(VertexInfo const& other){
-      return other.v == v;
-    }
-  };
-
-  std::vector<std::vector<VertexInfo> >verticesPerSeam; //tmp
+  // Return value
+  std::vector<std::vector<VertexInfo> >verticesPerSeam;
 
   // for every vertex, keep track of their adjacent vertices on seams.
+  // regular vertices have two neighbors on a seam, start- and endvertices may have any other numbers of neighbors (e.g. 1 or 3)
   std::vector<std::list<VertexInfo> > VVSeam(V.rows());
-  Eigen::MatrixXi EV, FE, EF;
-  igl::edge_topology(V, F, EV, FE, EF);
-  for (unsigned int e=0;e<EF.rows();e++)
+  Eigen::MatrixXi F_hit = Eigen::MatrixXi::Zero(F.rows(), 3);
+  for (unsigned int f=0; f<F.rows();f++)
   {
-      int f0 = EF(e,0);
-      int f1 = EF(e,1);
-      if (f1 == -1 || f0 == -1)
+    int f0 = f;
+    for(int k0=0; k0<3; k0++){
+      int f1 = TT(f0,k0);
+      if(f1 == -1)
         continue;
 
-      int k=0;
-      while(k<3)
+      bool seam = Handle_Seams(f0,k0);
+      if (seam && F_hit(f0,k0) == 0)
       {
-        if(FE(f0,k) == e)
-          break;
-        k++;
+        int v0 = F(f0, k0);
+        int v1 = F(f0, (k0+1)%3);
+        int k1 = TTi(f0,k0);
+        VVSeam[v0].push_back(VertexInfo(v1, f0, k0, f1, k1));
+        VVSeam[v1].push_back(VertexInfo(v0, f0, k0, f1, k1));
+        F_hit(f0, k0) = 1;
+        F_hit(f1, k1) = 1;
       }
-      bool seam = Handle_Seams(f0,k);
-      if (seam)
-      {
-        int v0 = F(f0, k);
-        int v1 = F(f0, (k+1)%3);
-        VVSeam[v0].push_back(VertexInfo(v1, f0, k, f1, TTi(f0,k)));
-        VVSeam[v1].push_back(VertexInfo(v0, f0, k, f1, TTi(f0,k)));
-      }
+    }
   }
 
-  // Find start vertices
+  // Find start vertices, i.e. vertices that start or end a seam branch
   std::vector<int> startVertexIndices;
   std::vector<bool> isStartVertex(V.rows());
   for (unsigned int i=0;i<V.rows();i++)
   {
     isStartVertex[i] = false;
+    // vertices with two neighbors are regular vertices, unless the vertex is a singularity, in which case it qualifies as a start vertex
     if (VVSeam[i].size() > 0 && VVSeam[i].size() != 2 || Handle_Singular(i) == true)
     {
       startVertexIndices.push_back(i);
@@ -521,28 +497,30 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
     }
   }
 
-  // for each startVertex, walk along its seam
+  // For each startVertex, walk along its seam
   for (unsigned int i=0;i<startVertexIndices.size();i++)
   {
     auto startVertexNeighbors = &VVSeam[startVertexIndices[i]];
     const int neighborSize = startVertexNeighbors->size();
+
+    // explore every seam to which this vertex is a start vertex
+    // note: a vertex can never be a start vertex and a regular vertex simultaneously
     for (unsigned int j=0;j<neighborSize;j++)
     {
-      // temporary container for VertexInfo of this seam
-      std::vector<VertexInfo> thisSeam;
+      std::vector<VertexInfo> thisSeam; // temporary container
+
+      // Create vertexInfo struct for start vertex
+      auto startVertex = VertexInfo(startVertexIndices[i], -1, -1, -1, -1);// -1 values are arbitrary (will never be used)
+      auto currentVertex = startVertex;
+      // Add start vertex to the seam
+      thisSeam.push_back(currentVertex);
 
       // advance on the seam
       auto currentVertexNeighbors = startVertexNeighbors;
       auto nextVertex = currentVertexNeighbors->front();
       currentVertexNeighbors->pop_front();
 
-      // Create vertexInfo struct for start vertex
-      auto startVertex = VertexInfo(startVertexIndices[i], nextVertex.f0, nextVertex.k0, nextVertex.f1, nextVertex.k1);
-      auto currentVertex = startVertex;
-      // Add start vertex to the seam
-      thisSeam.push_back(startVertex);
-
-      auto prevVertex = currentVertex;
+      auto prevVertex = startVertex; // bogus initialization to get the type
       while (true)
       {
         // move to the next vertex
@@ -570,63 +548,62 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
     }
   }
 
-  std::vector<std::vector<int> > FcutDebug;
-  for(int i = 0; i < Fcut.rows(); i++){
-	  std::vector<int> tmp;
-	  tmp.push_back(Fcut(i,0));
-	  tmp.push_back(Fcut(i,1));
-	  tmp.push_back(Fcut(i,2));
-	  FcutDebug.push_back(tmp);
-  }
+  return verticesPerSeam;
+}
 
+template <typename DerivedV, typename DerivedF>
+IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
+{
+  auto verticesPerSeam = GetVerticesPerSeam();
   Handle_SystemInfo.EdgeSeamInfo.clear();
   int integerVar = 0;
+  // Loop over each seam
   for(auto seam : verticesPerSeam){
-
-    //choose initial side of the seam such that the start vertex corresponds to Fcut(f, k) and the end vertex corresponds to Fcut(f, (k+1)%3)
-    int lastVertexIdx;
+    //choose initial side of the seam such that the start vertex corresponds to Fcut(f, k) and the end vertex corresponds to Fcut(f, (k+1)%3) and not vice versa.
+    int priorVertexIdx;
     if(seam.size() > 2){
       auto v1 = seam[1];
       auto v2 = seam[2];
       if(Fcut(v1.f0, (v1.k0+1) % 3) == Fcut(v2.f0, v2.k0) || Fcut(v1.f0, (v1.k0+1) % 3) == Fcut(v2.f1, v2.k1)){
-        lastVertexIdx = Fcut(v1.f0, v1.k0);
+        priorVertexIdx = Fcut(v1.f0, v1.k0);
       }
       else{
-        lastVertexIdx = Fcut(v1.f1, v1.k1);
+        priorVertexIdx = Fcut(v1.f1, v1.k1);
         assert(Fcut(v1.f1, (v1.k1+1) % 3) == Fcut(v2.f0, v2.k0) || Fcut(v1.f1, (v1.k1+1) % 3) == Fcut(v2.f1, v2.k1));
       }
     }
     else{
       auto v1 = seam[1];
-      lastVertexIdx = Fcut(v1.f0, v1.k0);
+      priorVertexIdx = Fcut(v1.f0, v1.k0);
     }
 
-
+    // Loop over each vertex of the seam
     for(auto it=seam.begin()+1; it != seam.end(); ++it){
       auto vertex = *it;
       // choose the correct side of the seam
       int f,k,ff,kk;
-      if(lastVertexIdx == Fcut(vertex.f0, vertex.k0)){
+      if(priorVertexIdx == Fcut(vertex.f0, vertex.k0)){
         f = vertex.f0; ff = vertex.f1;
         k = vertex.k0; kk = vertex.k1;
       }
       else{
         f = vertex.f1; ff = vertex.f0;
         k = vertex.k1; kk = vertex.k0;
-        assert(lastVertexIdx == Fcut(vertex.f1, vertex.k1));
+        assert(priorVertexIdx == Fcut(vertex.f1, vertex.k1));
       }
 
       int vtx0,vtx0p,vtx1,vtx1p;
       unsigned char MM;
       GetSeamInfo(f,ff,k,vtx0,vtx1,vtx0p,vtx1p,MM);
-      Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(vtx0,vtx1,vtx0p,vtx1p,MM,integerVar));
+      Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(vtx0,vtx0p,MM,integerVar));
       if(it == seam.end() -1){
-        Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(vtx1,vtx1,vtx1p,vtx1p,MM,integerVar));
+        Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(vtx1,vtx1p,MM,integerVar));
       }
-      lastVertexIdx = vtx1;
+      priorVertexIdx = vtx1;
       //DEBUG
       DebugInfo.push_back(DebugFaceEdgeInfo(f,k,integerVar));
     }
+    // use the same integer for each seam
     integerVar++;
   }
   Handle_SystemInfo.num_integer_cuts = integerVar;
@@ -636,8 +613,8 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
   for(auto seam : verticesPerSeam){
     totalNVerticesOnSeams += seam.size();
   }
-#endif
   assert(Handle_SystemInfo.EdgeSeamInfo.size() == totalNVerticesOnSeams);
+#endif
 }
 
 
@@ -933,7 +910,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
   n_integer_vars = Handle_SystemInfo.num_integer_cuts;
 
   ///CONSTRAINT PART
-  num_cut_constraint = Handle_SystemInfo.EdgeSeamInfo.size();//*2;
+  num_cut_constraint = Handle_SystemInfo.EdgeSeamInfo.size();
 
   num_constraint_equations = num_cut_constraint * 2 + n_fixed_vars * 2 + num_userdefined_constraint;
 
@@ -941,8 +918,6 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
   num_total_vars = (n_vert_vars+n_integer_vars) * 2;
 
   ///initialize matrix size
-
-  system_size = num_total_vars + num_constraint_equations;
 
   if (DEBUGPRINT)     printf("\n*** SYSTEM VARIABLES *** \n");
   if (DEBUGPRINT)     printf("* NUM REAL VERTEX VARIABLES %d \n",n_vert_vars);
@@ -961,20 +936,19 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
   if (DEBUGPRINT)     printf("\n*** TOTAL SIZE *** \n");
   if (DEBUGPRINT)     printf("* TOTAL VARIABLE SIZE (WITH INTEGER TRASL) %d \n",num_total_vars);
   if (DEBUGPRINT)     printf("* TOTAL CONSTRAINTS %d \n",num_constraint_equations);
-  if (DEBUGPRINT)     printf("* MATRIX SIZE  %d \n",system_size);
 }
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AllocateSystem()
 {
   Lhs.resize(n_vert_vars * 2, n_vert_vars * 2);
-  Constraints.resize(num_constraint_equations, system_size);
-  rhs.resize(system_size);
+  Constraints.resize(num_constraint_equations, num_total_vars);
+  rhs.resize(n_vert_vars * 2);
   constraints_rhs.resize(num_constraint_equations);
 
-  printf("\n INITIALIZED SPARSE MATRIX OF %d x %d \n",system_size, system_size);
-  printf("\n INITIALIZED SPARSE MATRIX OF %d x %d \n",num_constraint_equations, system_size);
-  printf("\n INITIALIZED VECTOR OF %d x 1 \n",system_size);
+  printf("\n INITIALIZED SPARSE MATRIX OF %d x %d \n",n_vert_vars*2, n_vert_vars*2);
+  printf("\n INITIALIZED SPARSE MATRIX OF %d x %d \n",num_constraint_equations, num_total_vars);
+  printf("\n INITIALIZED VECTOR OF %d x 1 \n",n_vert_vars*2);
   printf("\n INITIALIZED VECTOR OF %d x 1 \n",num_constraint_equations);
 }
 
@@ -1050,9 +1024,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
         interval=1;
 
     int p0  = Handle_SystemInfo.EdgeSeamInfo[i].v0;
-    int p1  = Handle_SystemInfo.EdgeSeamInfo[i].v1;
     int p0p = Handle_SystemInfo.EdgeSeamInfo[i].v0p;
-    int p1p = Handle_SystemInfo.EdgeSeamInfo[i].v1p;
 
     std::complex<double> rot = GetRotationComplex(interval);
 
@@ -1065,9 +1037,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
       ids_to_round.push_back(integerVar*2+1);
     }
 
-    // TODO: exploit fact that rotations have either zeros on diagonal (real) or off-diagonal (imag). don't explicitly store the zeros.
     // cross boundary compatibility conditions
-    // constraints for start vertex of edge
     Constraints.coeffRef(constr_row,   2*p0)   +=  rot.real();
     Constraints.coeffRef(constr_row,   2*p0+1) += -rot.imag();
     Constraints.coeffRef(constr_row+1, 2*p0)   +=  rot.imag();
@@ -1083,24 +1053,6 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
     constraints_rhs[constr_row+1] = 0;
 
     constr_row += 2;
-/*
-    // constraints for end vertex of edge
-    Constraints.coeffRef(constr_row,   2*p1)   +=  rot.real();
-    Constraints.coeffRef(constr_row,   2*p1+1) += -rot.imag();
-    Constraints.coeffRef(constr_row+1, 2*p1)   +=  rot.imag();
-    Constraints.coeffRef(constr_row+1, 2*p1+1) +=  rot.real();
-
-    Constraints.coeffRef(constr_row,   2*p1p)   += -1;
-    Constraints.coeffRef(constr_row+1, 2*p1p+1) += -1;
-
-    Constraints.coeffRef(constr_row,   2*integerVar)   += 1;
-    Constraints.coeffRef(constr_row+1, 2*integerVar+1) += 1;
-
-    constraints_rhs[constr_row]   = 0;
-    constraints_rhs[constr_row+1] = 0;
-
-    constr_row += 2;
-    */
   }
 
 }
@@ -1136,16 +1088,15 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolv
                                                                           int localIter)
 {
   X = std::vector<double>((n_vert_vars+n_integer_vars)*2);
+  if (DEBUGPRINT)
+    printf("\n ALLOCATED X \n");
 
   ///variables part
   int ScalarSize = n_vert_vars*2;
   int SizeMatrix = (n_vert_vars+n_integer_vars)*2;
 
-  if (DEBUGPRINT)
-    printf("\n ALLOCATED X \n");
-
   ///matrix A
-  gmm::col_matrix< gmm::wsvector< double > > A(SizeMatrix,SizeMatrix); // lhs matrix variables +
+  gmm::col_matrix< gmm::wsvector< double > > A(SizeMatrix,SizeMatrix); // lhs matrix variables
 
   ///constraints part
   int CsizeX = num_constraint_equations;
@@ -1207,7 +1158,6 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolv
     C(i, SizeMatrix) = -constraints_rhs[i] * cone_grid_res;
   }
 
-  ///copy values back into S
   COMISO::ConstrainedSolver solver;
 
   solver.misolver().set_local_iters(localIter);
@@ -1331,7 +1281,7 @@ F(F_)
   igl::triangle_triangle_adjacency(V,F,TT,TTi);
 
   // Prepare indexing for the linear system
-  VertexIndexing<DerivedV, DerivedF> VInd(V, F, Vcut, Fcut, TT, TTi, /*BIS1_combed, BIS2_combed,*/ Handle_MMatch, Handle_Singular, /* Handle_SingularDegree,*/ Handle_Seams);
+  VertexIndexing<DerivedV, DerivedF> VInd(V, F, Vcut, Fcut, TT, TTi, Handle_MMatch, Handle_Singular, Handle_Seams);
 
   VInd.InitSeamInfo();
 
@@ -1368,7 +1318,7 @@ F(F_)
                                             TTi,
                                             PD1_combed,
                                             PD2_combed,
-                                            /*VInd.Handle_Singular*/Handle_Singular,
+                                            Handle_Singular,
                                             VInd.Handle_SystemInfo);
   Handle_Stiffness = Eigen::VectorXd::Constant(F.rows(),1);
 
@@ -1594,11 +1544,8 @@ IGL_INLINE void igl::comiso::miq(
   const Eigen::PlainObjectBase<DerivedF> &F,
   const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
   const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
-  //  const Eigen::PlainObjectBase<DerivedV> &BIS1_combed,
-  //  const Eigen::PlainObjectBase<DerivedV> &BIS2_combed,
   const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_MMatch,
   const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular,
-  //  const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_SingularDegree,
   const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams,
   Eigen::PlainObjectBase<DerivedU> &UV,
   Eigen::PlainObjectBase<DerivedF> &FUV,
@@ -1620,11 +1567,8 @@ IGL_INLINE void igl::comiso::miq(
     F,
     PD1_combed,
     PD2_combed,
-    //  BIS1_combed,
-    //  BIS2_combed,
     Handle_MMatch,
     Handle_Singular,
-    //  Handle_SingularDegree,
     Handle_Seams,
     UV,
     FUV,
@@ -1692,11 +1636,8 @@ IGL_INLINE void igl::comiso::miq(
            F,
            PD1_combed,
            PD2_combed,
-           //  BIS1_combed,
-           //  BIS2_combed,
            Handle_MMatch,
            isSingularity,
-           //  singularityIndex,
            Handle_Seams,
            UV,
            FUV,
