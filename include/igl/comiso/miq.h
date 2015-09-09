@@ -15,13 +15,6 @@ namespace igl
 {
   namespace comiso
   {
-  //DEBUG
-  struct DebugFaceEdgeInfo
-  {
-	int f, e, integerVar;
-
-	IGL_INLINE DebugFaceEdgeInfo(int _f, int _e, int _integerVar) : f(_f), e(_e), integerVar(_integerVar){}
-  };
   // Global seamless parametrization aligned with a given per-face jacobian (PD1,PD2).
     // The algorithm is based on
     // "Mixed-Integer Quadrangulation" by D. Bommes, H. Zimmer, L. Kobbelt
@@ -59,8 +52,6 @@ namespace igl
       const Eigen::PlainObjectBase<DerivedV> &PD2,
       Eigen::PlainObjectBase<DerivedU> &UV,
       Eigen::PlainObjectBase<DerivedF> &FUV,
-      //DEBUG
-      std::vector<DebugFaceEdgeInfo> &debugFaceEdgeInfo,
       double scale = 30.0,
       double stiffness = 5.0,
       bool direct_round = false,
@@ -89,8 +80,6 @@ namespace igl
       const Eigen::Matrix<int, Eigen::Dynamic, 3> &Seams,
       Eigen::PlainObjectBase<DerivedU> &UV,
       Eigen::PlainObjectBase<DerivedF> &FUV,
-      //DEBUG
-      std::vector<DebugFaceEdgeInfo> &debugFaceEdgeInfo,
       double GradientSize = 30.0,
       double Stiffness = 5.0,
       bool DirectRound = false,

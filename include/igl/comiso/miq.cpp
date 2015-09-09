@@ -35,14 +35,16 @@
 #include <igl/compute_frame_field_bisectors.h>
 #include <igl/rotate_vectors.h>
 
+#ifndef NDEBUG
 #include <fstream>
+#endif
 #include <iostream>
 #include <igl/matlab_format.h>
 
 using namespace std;
 using namespace Eigen;
 
-#define DEBUGPRINT 1
+#define DEBUGPRINT 0
 
 
 namespace igl {
@@ -95,9 +97,6 @@ namespace comiso {
 
     ///this handle for mesh TODO: move with the other global variables
     MeshSystemInfo Handle_SystemInfo;
-
-    //DEBUG
-    std::vector<DebugFaceEdgeInfo> DebugInfo;
 
     IGL_INLINE VertexIndexing(const Eigen::PlainObjectBase<DerivedV> &_V,
                               const Eigen::PlainObjectBase<DerivedF> &_F,
@@ -309,8 +308,6 @@ namespace comiso {
     Eigen::MatrixXd UV_out;
     Eigen::PlainObjectBase<DerivedF> FUV_out;
 
-    //DEBUG
-    std::vector<DebugFaceEdgeInfo> debugFaceEdgeInfo_out;
     // internal
     Eigen::PlainObjectBase<DerivedF> TT;
     Eigen::PlainObjectBase<DerivedF> TTi;
@@ -342,10 +339,6 @@ namespace comiso {
 
     IGL_INLINE void extractUV(Eigen::PlainObjectBase<DerivedU> &UV_out,
                               Eigen::PlainObjectBase<DerivedF> &FUV_out);
-
-    //DEBUG
-
-    IGL_INLINE void extractDebugInfo(std::vector<igl::comiso::DebugFaceEdgeInfo>& debugFaceEdgeInfo);
 
   private:
     IGL_INLINE int NumFlips(const Eigen::MatrixXd& WUV);
@@ -586,8 +579,6 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
         Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(vtx1,vtx1p,MM,integerVar));
       }
       priorVertexIdx = vtx1;
-      //DEBUG
-      DebugInfo.push_back(DebugFaceEdgeInfo(f,k,integerVar));
     }
     // use the same integer for each seam
     integerVar++;
@@ -1151,37 +1142,6 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolv
   ids_to_round.resize(dist);
 
   solver.solve( C, A, X, B, ids_to_round, 0.0, false, false);
-
-
-  ////DEBUG OUTPUT
-  if(integer_rounding){
-  std::ofstream idsout("ids.txt");
-  for(auto elem : ids_to_round){
-    idsout << elem << std::endl;
-  }
-  idsout.close();
-
-    std::ofstream consout("Cmat.txt");
-    Eigen::SparseMatrix<double, Eigen::RowMajor> Cmat = Constraints;
-    for (int k=0; k < Cmat.outerSize(); ++k){
-      for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator it(Cmat,k); it; ++it){
-        int row = it.row();
-        int col = it.col();
-        consout << "(" << row << ", " << col << ")" << "\t" << it.value() << std::endl;
-      }
-    }
-    consout.close();
-
-    std::ofstream rhsCout("rhsC.txt");
-    rhsCout << rhs;
-    rhsCout.close();
-
-    std::ofstream xout("Xout.txt");
-    for(auto it = X.begin(); it != X.end(); it+=2){
-      xout << *it << "\t" << *(it+1) << std::endl;
-    }
-    xout.close();
-  }
 }
 
 template <typename DerivedV, typename DerivedF>
@@ -1322,7 +1282,6 @@ F(F_)
 
   UV_out = PSolver.UV_out;
   FUV_out = PSolver.Fcut;
-  debugFaceEdgeInfo_out = VInd.DebugInfo;
   fflush(stdout);
 }
 
@@ -1332,12 +1291,6 @@ IGL_INLINE void igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::extractUV(
 {
   UV_out = this->UV_out;
   FUV_out = this->FUV_out;
-}
-
-//DEBUG
-template <typename DerivedV, typename DerivedF, typename DerivedU>
-IGL_INLINE void igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::extractDebugInfo(std::vector<igl::comiso::DebugFaceEdgeInfo>& debugFaceEdgeInfo){
-  debugFaceEdgeInfo = this->debugFaceEdgeInfo_out;
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
@@ -1527,8 +1480,6 @@ IGL_INLINE void igl::comiso::miq(
   const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams,
   Eigen::PlainObjectBase<DerivedU> &UV,
   Eigen::PlainObjectBase<DerivedF> &FUV,
-  //DEBUG
-  std::vector<igl::comiso::DebugFaceEdgeInfo> &debugFaceEdgeInfo,
   double GradientSize,
   double Stiffness,
   bool DirectRound,
@@ -1561,7 +1512,6 @@ IGL_INLINE void igl::comiso::miq(
     hardFeatures);
 
   miq.extractUV(UV,FUV);
-  miq.extractDebugInfo(debugFaceEdgeInfo);
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
@@ -1572,8 +1522,6 @@ IGL_INLINE void igl::comiso::miq(
     const Eigen::PlainObjectBase<DerivedV> &PD2,
     Eigen::PlainObjectBase<DerivedU> &UV,
     Eigen::PlainObjectBase<DerivedF> &FUV,
-    //DEBUG
-    std::vector<igl::comiso::DebugFaceEdgeInfo> &debugFaceEdgeInfo,
     double GradientSize,
     double Stiffness,
     bool DirectRound,
@@ -1619,8 +1567,6 @@ IGL_INLINE void igl::comiso::miq(
            Handle_Seams,
            UV,
            FUV,
-           //DEBUG
-           debugFaceEdgeInfo,
            GradientSize,
            Stiffness,
            DirectRound,
