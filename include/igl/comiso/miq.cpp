@@ -9,20 +9,22 @@
 #include <igl/comiso/miq.h>
 #include <igl/local_basis.h>
 #include <igl/triangle_triangle_adjacency.h>
+#include <igl/cut_mesh.h>
 
 // includes for VertexIndexing
 #include <igl/HalfEdgeIterator.h>
 #include <igl/is_border_vertex.h>
 #include <igl/vertex_triangle_adjacency.h>
 
-
-// includes for poissonSolver
+// includes for PoissonSolver
+#include <igl/slice_into.h>
+#include <igl/grad.h>
+#include <igl/cotmatrix.h>
+#include <igl/doublearea.h>
 #include <gmm/gmm.h>
 #include <CoMISo/Solver/ConstrainedSolver.hh>
 #include <CoMISo/Solver/MISolver.hh>
 #include <CoMISo/Solver/GMM_Tools.hh>
-#include <igl/doublearea.h>
-#include <igl/per_face_normals.h>
 
 //
 #include <igl/cross_field_missmatch.h>
@@ -33,17 +35,10 @@
 #include <igl/compute_frame_field_bisectors.h>
 #include <igl/rotate_vectors.h>
 
-
-// #define DEBUG_PRINT
 #include <fstream>
 #include <iostream>
 #include <igl/matlab_format.h>
 
-
-#include <igl/slice_into.h>
-#include <igl/grad.h>
-#include <igl/cotmatrix.h>
-#include <igl/cut_mesh.h>
 using namespace std;
 using namespace Eigen;
 
@@ -182,9 +177,7 @@ namespace comiso {
     const MeshSystemInfo &Handle_SystemInfo;
 
     // Internal:
-    Eigen::MatrixXd doublearea;
     Eigen::VectorXd Handle_Stiffness;
-    Eigen::PlainObjectBase<DerivedV> N;
     std::vector<std::vector<int> > VF;
     std::vector<std::vector<int> > VFi;
     Eigen::MatrixXd UV; // this is probably useless
@@ -227,10 +220,6 @@ namespace comiso {
 
     ///total number of constraints equations
     unsigned int num_constraint_equations;
-
-    ///if you intend to make integer rotation
-    ///and translations
-    bool integer_jumps_bary;
 
     ///vector of blocked vertices
     std::vector<int> Hard_constraints;
@@ -335,11 +324,8 @@ namespace comiso {
                          const Eigen::PlainObjectBase<DerivedF> &F_,
                          const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
                          const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
-                         // const Eigen::PlainObjectBase<DerivedV> &BIS1_combed,
-                         // const Eigen::PlainObjectBase<DerivedV> &BIS2_combed,
                          const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_MMatch,
                          const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular,
-                         // const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_SingularDegree,
                          const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams,
                          Eigen::PlainObjectBase<DerivedU> &UV,
                          Eigen::PlainObjectBase<DerivedF> &FUV,
@@ -702,7 +688,7 @@ IGL_INLINE igl::comiso::PoissonSolver<DerivedV, DerivedF>
                 const Eigen::PlainObjectBase<DerivedV> &_PD1,
                 const Eigen::PlainObjectBase<DerivedV> &_PD2,
                 const Eigen::Matrix<int, Eigen::Dynamic, 1>&_Handle_Singular,
-                const MeshSystemInfo &_Handle_SystemInfo //todo: const?
+                const MeshSystemInfo &_Handle_SystemInfo
 ):
 V(_V),
 F(_F),
@@ -718,8 +704,6 @@ Handle_SystemInfo(_Handle_SystemInfo)
   UV        = Eigen::MatrixXd(V.rows(),2);
   WUV       = Eigen::MatrixXd(F.rows(),6);
   UV_out    = Eigen::MatrixXd(Vcut.rows(),2);
-  igl::doublearea(V,F,doublearea);
-  igl::per_face_normals(V,F,N);
   igl::vertex_triangle_adjacency(V,F,VF,VFi);
 }
 
@@ -921,9 +905,6 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
 
   if (DEBUGPRINT)     printf("\n*** SYSTEM VARIABLES *** \n");
   if (DEBUGPRINT)     printf("* NUM REAL VERTEX VARIABLES %d \n",n_vert_vars);
-
-  if (DEBUGPRINT)     printf("\n*** SINGULARITY *** \n ");
-  if (DEBUGPRINT)     printf("* NUM SINGULARITY %d\n",(int)ids_to_round.size()/2);
 
   if (DEBUGPRINT)     printf("\n*** INTEGER VARIABLES *** \n");
   if (DEBUGPRINT)     printf("* NUM INTEGER VARIABLES %d \n",(int)n_integer_vars);
@@ -1255,11 +1236,8 @@ IGL_INLINE igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::MIQ_class(const
                                                                    const Eigen::PlainObjectBase<DerivedF> &F_,
                                                                    const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
                                                                    const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
-                                                                   // const Eigen::PlainObjectBase<DerivedV> &BIS1_combed,
-                                                                   // const Eigen::PlainObjectBase<DerivedV> &BIS2_combed,
                                                                    const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_MMatch,
                                                                    const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular,
-                                                                   // const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_SingularDegree,
                                                                    const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams,
                                                                    Eigen::PlainObjectBase<DerivedU> &UV,
                                                                    Eigen::PlainObjectBase<DerivedF> &FUV,
