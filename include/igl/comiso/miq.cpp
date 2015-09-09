@@ -582,40 +582,62 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
   Handle_SystemInfo.EdgeSeamInfo.clear();
   int integerVar = 0;
   for(auto seam : verticesPerSeam){
-    int connectingVertexCandidate0 = Fcut(seam[1].f0, seam[1].k0); // Vertex number according to Vcut
-    int connectingVertexCandidate1 = connectingVertexCandidate0;
-    for(auto it=seam.begin(); it != seam.end(); ++it){
+
+    //choose initial side of the seam such that the start vertex corresponds to Fcut(f, k) and the end vertex corresponds to Fcut(f, (k+1)%3)
+    int lastVertexIdx;
+    if(seam.size() > 2){
+      auto v1 = seam[1];
+      auto v2 = seam[2];
+      if(Fcut(v1.f0, (v1.k0+1) % 3) == Fcut(v2.f0, v2.k0) || Fcut(v1.f0, (v1.k0+1) % 3) == Fcut(v2.f1, v2.k1)){
+        lastVertexIdx = Fcut(v1.f0, v1.k0);
+      }
+      else{
+        lastVertexIdx = Fcut(v1.f1, v1.k1);
+        assert(Fcut(v1.f1, (v1.k1+1) % 3) == Fcut(v2.f0, v2.k0) || Fcut(v1.f1, (v1.k1+1) % 3) == Fcut(v2.f1, v2.k1));
+      }
+    }
+    else{
+      auto v1 = seam[1];
+      lastVertexIdx = Fcut(v1.f0, v1.k0);
+    }
+
+
+    for(auto it=seam.begin()+1; it != seam.end(); ++it){
       auto vertex = *it;
       // choose the correct side of the seam
       int f,k,ff,kk;
-      if(   Fcut(vertex.f0, vertex.k0)         == connectingVertexCandidate0 || Fcut(vertex.f0, vertex.k0)         == connectingVertexCandidate1
-         || Fcut(vertex.f0, (vertex.k0+1) % 3) == connectingVertexCandidate0 || Fcut(vertex.f0, (vertex.k0+1) % 3) == connectingVertexCandidate1
-         || Fcut(vertex.f0, (vertex.k0+2) % 3) == connectingVertexCandidate0 || Fcut(vertex.f0, (vertex.k0+2) % 3) == connectingVertexCandidate1){
+      if(lastVertexIdx == Fcut(vertex.f0, vertex.k0)){
         f = vertex.f0; ff = vertex.f1;
         k = vertex.k0; kk = vertex.k1;
       }
       else{
         f = vertex.f1; ff = vertex.f0;
         k = vertex.k1; kk = vertex.k0;
-        assert(   Fcut(vertex.f1, vertex.k1)         == connectingVertexCandidate0 || Fcut(vertex.f1, vertex.k1)         == connectingVertexCandidate1
-               || Fcut(vertex.f1, (vertex.k1+1) % 3) == connectingVertexCandidate0 || Fcut(vertex.f1, (vertex.k1+1) % 3) == connectingVertexCandidate1
-               || Fcut(vertex.f1, (vertex.k1+2) % 3) == connectingVertexCandidate0 || Fcut(vertex.f1, (vertex.k1+2) % 3) == connectingVertexCandidate1);
+        assert(lastVertexIdx == Fcut(vertex.f1, vertex.k1));
       }
 
-      int v0,v0p,v1,v1p;
+      int vtx0,vtx0p,vtx1,vtx1p;
       unsigned char MM;
-      GetSeamInfo(f,ff,k,v0,v1,v0p,v1p,MM);
-      Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(v0,v1,v0p,v1p,MM,integerVar));
-      connectingVertexCandidate0 = v0;
-      connectingVertexCandidate1 = v1;
-
+      GetSeamInfo(f,ff,k,vtx0,vtx1,vtx0p,vtx1p,MM);
+      Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(vtx0,vtx1,vtx0p,vtx1p,MM,integerVar));
+      if(it == seam.end() -1){
+        Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(vtx1,vtx1,vtx1p,vtx1p,MM,integerVar));
+      }
+      lastVertexIdx = vtx1;
       //DEBUG
       DebugInfo.push_back(DebugFaceEdgeInfo(f,k,integerVar));
     }
     integerVar++;
   }
-
   Handle_SystemInfo.num_integer_cuts = integerVar;
+
+#ifndef NDEBUG
+  int totalNVerticesOnSeams = 0;
+  for(auto seam : verticesPerSeam){
+    totalNVerticesOnSeams += seam.size();
+  }
+#endif
+  assert(Handle_SystemInfo.EdgeSeamInfo.size() == totalNVerticesOnSeams);
 }
 
 
@@ -911,7 +933,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
   n_integer_vars = Handle_SystemInfo.num_integer_cuts;
 
   ///CONSTRAINT PART
-  num_cut_constraint = Handle_SystemInfo.EdgeSeamInfo.size()*2;
+  num_cut_constraint = Handle_SystemInfo.EdgeSeamInfo.size();//*2;
 
   num_constraint_equations = num_cut_constraint * 2 + n_fixed_vars * 2 + num_userdefined_constraint;
 
@@ -1018,7 +1040,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
   ///current constraint row
   int constr_row = 0;
 
-  for (unsigned int i=0; i<num_cut_constraint / 2; i++)
+  for (unsigned int i=0; i<num_cut_constraint; i++)
   {
     unsigned char interval = Handle_SystemInfo.EdgeSeamInfo[i].MMatch;
     if (interval==1)
@@ -1061,7 +1083,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
     constraints_rhs[constr_row+1] = 0;
 
     constr_row += 2;
-
+/*
     // constraints for end vertex of edge
     Constraints.coeffRef(constr_row,   2*p1)   +=  rot.real();
     Constraints.coeffRef(constr_row,   2*p1+1) += -rot.imag();
@@ -1078,6 +1100,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
     constraints_rhs[constr_row+1] = 0;
 
     constr_row += 2;
+    */
   }
 
 }
