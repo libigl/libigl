@@ -19,6 +19,7 @@
 #include <igl/grad.h>
 #include <igl/avg_edge_length.h>
 #include <igl/barycenter.h>
+#include <igl/doublearea.h>
 
 void python_export_igl(py::module &m)
 {
@@ -39,5 +40,6 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_grad.cpp"
 #include "py_igl/py_avg_edge_length.cpp"
 #include "py_igl/py_barycenter.cpp"
+#include "py_igl/py_doublearea.cpp"
 
 }
