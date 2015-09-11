@@ -86,6 +86,9 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("norm", [](const Type &m) {return m.norm();})
         .def("squaredNorm", [](const Type &m) {return m.squaredNorm();})
 
+        .def("castdouble", [](const Type &m) {return Eigen::MatrixXd(m.template cast<double>());})
+        .def("castint", [](const Type &m) {return Eigen::MatrixXi(m.template cast<int>());})
+
         /* Component-wise operations */
         .def("cwiseAbs", &Type::cwiseAbs)
         .def("cwiseAbs2", &Type::cwiseAbs2)

@@ -23,6 +23,8 @@
 #include <igl/floor.h>
 #include <igl/slice.h>
 #include <igl/slice_into.h>
+#include <igl/sortrows.h>
+#include <igl/colon.h>
 
 void python_export_igl(py::module &m)
 {
@@ -47,5 +49,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_floor.cpp"
 #include "py_igl/py_slice.cpp"
 #include "py_igl/py_slice_into.cpp"
+#include "py_igl/py_sortrows.cpp"
+#include "py_igl/py_colon.cpp"
 
 }
