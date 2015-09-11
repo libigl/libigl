@@ -6,7 +6,7 @@ m.def("per_face_normals", []
   Eigen::MatrixXd& N
 )
 {
-  assert_is_VectorXd("Z",Z);
+  assert_is_VectorX("Z",Z);
   return igl::per_face_normals(V,F,Z,N);
 }, __doc_igl_per_face_normals,
 py::arg("V"), py::arg("F"), py::arg("Z"), py::arg("N"));
