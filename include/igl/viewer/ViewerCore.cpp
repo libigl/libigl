@@ -481,7 +481,7 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
   camera_eye << 0, 0, 5;
   camera_center << 0, 0, 0;
   camera_up << 0, 1, 0;
-
+  
   // Default visualization options
   show_faces = true;
   show_lines = true;
