@@ -74,6 +74,12 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
 
         .def("mean", [](const Type &m) {return m.mean();})
 
+        .def("sum", [](const Type &m) {return m.sum();})
+        .def("prod", [](const Type &m) {return m.prod();})
+        .def("trace", [](const Type &m) {return m.trace();})
+        .def("norm", [](const Type &m) {return m.norm();})
+        .def("squaredNorm", [](const Type &m) {return m.squaredNorm();})
+
         /* Component-wise operations */
         .def("cwiseAbs", &Type::cwiseAbs)
         .def("cwiseAbs2", &Type::cwiseAbs2)
@@ -91,6 +97,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("rowwiseProd", [](const Type &m) {return Type(m.rowwise().prod());} )
         .def("rowwiseMean", [](const Type &m) {return Type(m.rowwise().mean());} )
         .def("rowwiseNorm", [](const Type &m) {return Type(m.rowwise().norm());} )
+        .def("rowwiseNormalized", [](const Type &m) {return Type(m.rowwise().normalized());} )
         .def("rowwiseMinCoeff", [](const Type &m) {return Type(m.rowwise().minCoeff());} )
         .def("rowwiseMaxCoeff", [](const Type &m) {return Type(m.rowwise().maxCoeff());} )
 
@@ -100,6 +107,9 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("colwiseNorm", [](const Type &m) {return Type(m.colwise().norm());} )
         .def("colwiseMinCoeff", [](const Type &m) {return Type(m.colwise().minCoeff());} )
         .def("colwiseMaxCoeff", [](const Type &m) {return Type(m.colwise().maxCoeff());} )
+
+        .def("replicate", [](const Type &m, const int& r, const int& c) {return Type(m.replicate(r,c));} )
+        .def("asDiagonal", [](const Type &m) {return Eigen::DiagonalMatrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(m.asDiagonal());} )
 
         /* Arithmetic operators (def_cast forcefully casts the result back to a
            Type to avoid type issues with Eigen's crazy expression templates) */
@@ -258,9 +268,11 @@ py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name,
         .def("rows", [](const Type &m) { return m.rows(); })
 
         /* Initialization */
-        // .def("setZero", [](Type &m) { m.setZero(); })
-        // .def("setIdentity", [](Type &m) { m.setIdentity(); })
-        // .def("setConstant", [](Type &m, Scalar value) { m.setConstant(value); })
+        .def("setZero", [](Type &m) { m.setZero(); })
+        .def("setIdentity", [](Type &m) { m.setIdentity(); })
+
+        .def("transpose", [](Type &m) { return Type(m.transpose()); })
+        .def("norm", [](Type &m) { return m.norm(); })
 
         /* Resizing */
         // .def("resize", [](Type &m, size_t s0, size_t s1) { m.resize(s0, s1); })
@@ -286,7 +298,19 @@ py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name,
         .def_cast(py::self - py::self)
         .def_cast(py::self * py::self)
         .def_cast(py::self * Scalar())
+        .def_cast(Scalar() * py::self)
         // Special case, sparse * dense produces a dense matrix
+
+        // .def("__mul__", []
+        // (const Type &a, const Scalar& b)
+        // {
+        //   return Type(a * b);
+        // })
+        // .def("__rmul__", [](const Type& a, const Scalar& b)
+        // {
+        //   return Type(b * a);
+        // })
+
         .def("__mul__", []
         (const Type &a, const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& b)
         {
@@ -295,6 +319,16 @@ py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name,
         .def("__rmul__", [](const Type& a, const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& b)
         {
           return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(b * a);
+        })
+
+        .def("__mul__", []
+        (const Type &a, const Eigen::DiagonalMatrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& b)
+        {
+          return Type(a * b);
+        })
+        .def("__rmul__", [](const Type& a, const Eigen::DiagonalMatrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& b)
+        {
+          return Type(b * a);
         })
 
         //.def(py::self * Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>())
@@ -384,6 +418,82 @@ py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name,
     return matrix;
 }
 
+/// Creates Python bindings for a diagonal Eigen sparse order-2 tensor (i.e. a matrix)
+template <typename Type>
+py::class_<Type> bind_eigen_diagonal_2(py::module &m, const char *name,
+                                py::object parent = py::object()) {
+    typedef typename Type::Scalar Scalar;
+
+    /* Many Eigen functions are templated and can't easily be referenced using
+       a function pointer, thus a big portion of the binding code below
+       instantiates Eigen code using small anonymous wrapper functions */
+    py::class_<Type> matrix(m, name, parent);
+
+    matrix
+        /* Constructors */
+        .def(py::init<>())
+        //.def(py::init<size_t, size_t>())
+
+        /* Size query functions */
+        .def("size", [](const Type &m) { return m.size(); })
+        .def("cols", [](const Type &m) { return m.cols(); })
+        .def("rows", [](const Type &m) { return m.rows(); })
+
+        /* Initialization */
+        .def("setZero", [](Type &m) { m.setZero(); })
+        .def("setIdentity", [](Type &m) { m.setIdentity(); })
+
+        /* Arithmetic operators (def_cast forcefully casts the result back to a
+           Type to avoid type issues with Eigen's crazy expression templates) */
+        // .def_cast(-py::self)
+        // .def_cast(py::self + py::self)
+        // .def_cast(py::self - py::self)
+        // .def_cast(py::self * py::self)
+        .def_cast(py::self * Scalar())
+        .def_cast(Scalar() * py::self)
+
+        // // Special case, sparse * dense produces a dense matrix
+        // .def("__mul__", []
+        // (const Type &a, const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& b)
+        // {
+        //   return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(a * b);
+        // })
+        // .def("__rmul__", [](const Type& a, const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& b)
+        // {
+        //   return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(b * a);
+        // })
+
+        .def("__mul__", []
+        (const Type &a, const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& b)
+        {
+          return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(a * b);
+        })
+        .def("__rmul__", [](const Type& a, const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>& b)
+        {
+          return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(b * a);
+        })
+
+        .def("__mul__", []
+        (const Type &a, const Eigen::SparseMatrix<Scalar>& b)
+        {
+          return Eigen::SparseMatrix<Scalar>(a * b);
+        })
+        .def("__rmul__", [](const Type& a, const Eigen::SparseMatrix<Scalar>& b)
+        {
+          return Eigen::SparseMatrix<Scalar>(b * a);
+        })
+
+        /* Python protocol implementations */
+        .def("__repr__", [](const Type &/*v*/) {
+            std::ostringstream oss;
+            oss << "Eigen is not able to plot Diagonal Matrices";
+            return oss.str();
+        })
+
+        ;
+    return matrix;
+}
+
 
 void python_export_vector(py::module &m) {
 
@@ -440,7 +550,29 @@ void python_export_vector(py::module &m) {
     /* Bindings for SparseMatrix<int> */
     bind_eigen_sparse_2< Eigen::SparseMatrix<int> > (me, "SparseMatrixi");
 
+    /* Bindings for DiagonalMatrix<double> */
+    bind_eigen_diagonal_2< Eigen::DiagonalMatrix<double,Eigen::Dynamic,Eigen::Dynamic> > (me, "DiagonalMatrixd");
 
+    /* Bindings for DiagonalMatrix<int> */
+    bind_eigen_diagonal_2< Eigen::DiagonalMatrix<int,Eigen::Dynamic,Eigen::Dynamic> > (me, "DiagonalMatrixi");
+
+    /* Bindings for SimplicialLLT*/
+
+    py::class_<Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >> simpliciallltsparse(me, "SimplicialLLTsparse");
+
+    simpliciallltsparse
+    .def(py::init<>())
+    .def(py::init<Eigen::SparseMatrix<double>>())
+    .def("info",[](const Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >& s)
+    {
+       if (s.info() == Eigen::Success)
+          return "Success";
+       else
+          return "Numerical Issue";
+    })
+    .def("solve",[](const Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >& s, const Eigen::MatrixXd& rhs) { return Eigen::MatrixXd(s.solve(rhs)); })
+
+    ;
 
 
 
