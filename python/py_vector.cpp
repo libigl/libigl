@@ -65,6 +65,12 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("setZero", [](Type &m) { m.setZero(); })
         .def("setIdentity", [](Type &m) { m.setIdentity(); })
         .def("setConstant", [](Type &m, Scalar value) { m.setConstant(value); })
+        .def("setRandom", [](Type &m) { m.setRandom(); })
+
+        .def("setZero", [](Type &m, const int& r, const int& c) { m.setZero(r,c); })
+        .def("setIdentity", [](Type &m, const int& r, const int& c) { m.setIdentity(r,c); })
+        .def("setConstant", [](Type &m, const int& r, const int& c, Scalar value) { m.setConstant(r,c,value); })
+        .def("setRandom", [](Type &m, const int& r, const int& c) { m.setRandom(r,c); })
 
         /* Resizing */
         .def("resize", [](Type &m, size_t s0, size_t s1) { m.resize(s0, s1); })

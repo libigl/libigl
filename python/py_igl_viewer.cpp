@@ -59,7 +59,7 @@ py::enum_<igl::viewer::ViewerData::DirtyFlags>(viewerdata_class, "DirtyFlags")
 
     .def("add_label", [] (igl::viewer::ViewerData& data, const Eigen::MatrixXd& P,  const std::string& str)
     {
-      assert_is_VectorXd("P",P);
+      assert_is_VectorX("P",P);
       data.add_label(P,str);
     })
 
@@ -67,9 +67,9 @@ py::enum_<igl::viewer::ViewerData::DirtyFlags>(viewerdata_class, "DirtyFlags")
 
     .def("uniform_colors", [] (igl::viewer::ViewerData& data, const Eigen::MatrixXd& ambient, const Eigen::MatrixXd& diffuse, const Eigen::MatrixXd& specular)
     {
-      assert_is_Vector3d("ambient",ambient);
-      assert_is_Vector3d("diffuse",diffuse);
-      assert_is_Vector3d("specular",specular);
+      assert_is_Vector3("ambient",ambient);
+      assert_is_Vector3("diffuse",diffuse);
+      assert_is_Vector3("specular",specular);
       data.uniform_colors(ambient,diffuse, specular);
     })
 
@@ -139,7 +139,7 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.background_color.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Vector3d("background_color",v);
+      assert_is_Vector3("background_color",v);
       core.background_color = Eigen::Vector3f(v.cast<float>());
     })
 
@@ -147,7 +147,7 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.line_color.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Vector3d("line_color",v);
+      assert_is_Vector3("line_color",v);
       core.line_color = Eigen::Vector3f(v.cast<float>());
     })
 
@@ -155,7 +155,7 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.light_position.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Vector3d("light_position",v);
+      assert_is_Vector3("light_position",v);
       core.light_position = Eigen::Vector3f(v.cast<float>());
     })
 
@@ -167,7 +167,7 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.model_translation.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Vector3d("model_translation",v);
+      assert_is_Vector3("model_translation",v);
       core.model_translation = Eigen::Vector3f(v.cast<float>());
     })
 
@@ -177,7 +177,7 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.model_translation_uv.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Vector3d("model_translation_uv",v);
+      assert_is_Vector3("model_translation_uv",v);
       core.model_translation_uv = Eigen::Vector3f(v.cast<float>());
     })
 
@@ -188,7 +188,7 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.camera_eye.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Vector3d("camera_eye",v);
+      assert_is_Vector3("camera_eye",v);
       core.camera_eye = Eigen::Vector3f(v.cast<float>());
     })
 
@@ -196,7 +196,7 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.camera_up.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Vector3d("camera_up",v);
+      assert_is_Vector3("camera_up",v);
       core.camera_up = Eigen::Vector3f(v.cast<float>());
     })
 
@@ -204,7 +204,7 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.camera_center.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Vector3d("camera_center",v);
+      assert_is_Vector3("camera_center",v);
       core.camera_center = Eigen::Vector3f(v.cast<float>());
     })
 
@@ -236,7 +236,7 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.viewport.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Vector4d("viewport",v);
+      assert_is_Vector4("viewport",v);
       core.viewport = Eigen::Vector4f(v.cast<float>());
     })
 
@@ -244,7 +244,7 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.view.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Matrix4d("view",v);
+      assert_is_Matrix4("view",v);
       core.view = Eigen::Matrix4f(v.cast<float>());
     })
 
@@ -252,7 +252,7 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.model.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Matrix4d("model",v);
+      assert_is_Matrix4("model",v);
       core.model = Eigen::Matrix4f(v.cast<float>());
     })
 
@@ -260,7 +260,7 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.proj.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Matrix4d("proj",v);
+      assert_is_Matrix4("proj",v);
       core.proj = Eigen::Matrix4f(v.cast<float>());
     })
 
