@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "outer_hull.h"
 #include "order_facets_around_edges.h"
-#include "../outer_element.h"
+#include "outer_facet.h"
 #include "../sortrows.h"
 #include "../facet_components.h"
 #include "../winding_number.h"
@@ -31,14 +31,12 @@
 template <
   typename DerivedV,
   typename DerivedF,
-  typename DerivedN,
   typename DerivedG,
   typename DerivedJ,
   typename Derivedflip>
 IGL_INLINE void igl::cgal::outer_hull(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::PlainObjectBase<DerivedF> & F,
-  const Eigen::PlainObjectBase<DerivedN> & N,
   Eigen::PlainObjectBase<DerivedG> & G,
   Eigen::PlainObjectBase<DerivedJ> & J,
   Eigen::PlainObjectBase<Derivedflip> & flip)
@@ -54,7 +52,6 @@ IGL_INLINE void igl::cgal::outer_hull(
   typedef Matrix<typename DerivedF::Scalar,Dynamic,DerivedF::ColsAtCompileTime> MatrixXF;
   typedef Matrix<typename DerivedG::Scalar,Dynamic,DerivedG::ColsAtCompileTime> MatrixXG;
   typedef Matrix<typename DerivedJ::Scalar,Dynamic,DerivedJ::ColsAtCompileTime> MatrixXJ;
-  typedef Matrix<typename DerivedN::Scalar,1,3> RowVector3N;
   const Index m = F.rows();
 
   // UNUSED:
@@ -95,7 +92,6 @@ IGL_INLINE void igl::cgal::outer_hull(
 
   std::vector<std::vector<typename DerivedF::Index> > uE2oE;
   std::vector<std::vector<bool> > uE2C;
-  //order_facets_around_edges(V, F, N, E, uE, EMAP, uE2E, uE2oE, uE2C);
   order_facets_around_edges(V, F, E, uE, EMAP, uE2E, uE2oE, uE2C);
   uE2E = uE2oE;
   VectorXI diIM(3*m);
@@ -162,7 +158,7 @@ IGL_INLINE void igl::cgal::outer_hull(
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"outer facet..."<<endl;
 #endif
-    outer_facet(V,F,N,IM,f,f_flip);
+  igl::cgal::outer_facet(V,F,IM,f,f_flip);
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"outer facet: "<<f<<endl;
   //cout << V.row(F(f, 0)) << std::endl;
@@ -225,19 +221,6 @@ IGL_INLINE void igl::cgal::outer_hull(
               << uE2E[EMAP(e)][i] % m * (uE2C[EMAP(e)][i] ? 1:-1) << ")" << std::endl;
       }
 #endif
-      //// find overlapping face-edges
-      //const auto & neighbors = uE2E[EMAP(e)];
-      //// normal after possible flipping
-      //const auto & fN = (flip(f)?-1.:1.)*N.row(f);
-      //// Edge vector according to f's (flipped) orientation.
-      ////const auto & eV = (V.row(fd)-V.row(fs)).normalized();
-
-//#warning "EXPERIMENTAL, DO NOT USE"
-      //// THIS IS WRONG! The first face is---after sorting---no longer the face
-      //// used for orienting the sort.
-      //const auto ui = EMAP(e);
-      //const auto fe0 = uE2E[ui][0];
-      //const auto es = F(fe0%m,((fe0/m)+1)%3);
 
       // is edge consistent with edge of face used for sorting
       const int e_cons = (uE2C[EMAP(e)][diIM(e)] ? 1: -1);
@@ -247,11 +230,6 @@ IGL_INLINE void igl::cgal::outer_hull(
       {
         const int nfei_new = (diIM(e) + 2*val + e_cons*step*(flip(f)?-1:1))%val;
         const int nf = uE2E[EMAP(e)][nfei_new] % m;
-        // Don't consider faces with identical dihedral angles
-        //if ((di[EMAP(e)][diIM(e)].array() != di[EMAP(e)][nfei_new].array()).any())
-        //if((di[EMAP(e)][diIM(e)] != di[EMAP(e)][nfei_new]))
-//#warning "THIS IS HACK, FIX ME"
-//        if( abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new]) < 1e-15 )
         {
 #ifdef IGL_OUTER_HULL_DEBUG
         //cout<<"Next facet: "<<(f+1)<<" --> "<<(nf+1)<<", |"<<
@@ -283,64 +261,6 @@ IGL_INLINE void igl::cgal::outer_hull(
       }
 
       int max_ne = -1;
-      //// Loop over and find max dihedral angle
-      //typename DerivedV::Scalar max_di = -1;
-      //for(const auto & ne : neighbors)
-      //{
-      //  const int nf = ne%m;
-      //  if(nf == f)
-      //  {
-      //    continue;
-      //  }
-      //  // Corner of neighbor
-      //  const int nc = ne/m;
-      //  // Is neighbor oriented consistently with (flipped) f?
-      //  //const int ns = F(nf,(nc+1)%3);
-      //  const int nd = F(nf,(nc+2)%3);
-      //  const bool cons = (flip(f)?fd:fs) == nd;
-      //  // Normal after possibly flipping to match flip or orientation of f
-      //  const auto & nN = (cons? (flip(f)?-1:1.) : (flip(f)?1.:-1.) )*N.row(nf);
-      //  // Angle between n and f
-      //  const auto & ndi = M_PI - atan2( fN.cross(nN).dot(eV), fN.dot(nN));
-      //  if(ndi>=max_di)
-      //  {
-      //    max_ne = ne;
-      //    max_di = ndi;
-      //  }
-      //}
-
-      ////cout<<(max_ne != max_ne_2)<<" =?= "<<e_cons<<endl;
-      //if(max_ne != max_ne_2)
-      //{
-      //  cout<<(f+1)<<" ---> "<<(max_ne%m)+1<<" != "<<(max_ne_2%m)+1<<" ... "<<e_cons<<" "<<flip(f)<<endl;
-      //  typename DerivedV::Scalar max_di = -1;
-      //  for(size_t nei = 0;nei<neighbors.size();nei++)
-      //  {
-      //    const auto & ne = neighbors[nei];
-      //    const int nf = ne%m;
-      //    if(nf == f)
-      //    {
-      //      cout<<"  "<<(ne%m)+1<<":\t"<<0<<"\t"<<di[EMAP[e]][nei]<<" "<<diIM(ne)<<endl;
-      //      continue;
-      //    }
-      //    // Corner of neighbor
-      //    const int nc = ne/m;
-      //    // Is neighbor oriented consistently with (flipped) f?
-      //    //const int ns = F(nf,(nc+1)%3);
-      //    const int nd = F(nf,(nc+2)%3);
-      //    const bool cons = (flip(f)?fd:fs) == nd;
-      //    // Normal after possibly flipping to match flip or orientation of f
-      //    const auto & nN = (cons? (flip(f)?-1:1.) : (flip(f)?1.:-1.) )*N.row(nf);
-      //    // Angle between n and f
-      //    const auto & ndi = M_PI - atan2( fN.cross(nN).dot(eV), fN.dot(nN));
-      //    cout<<"  "<<(ne%m)+1<<":\t"<<ndi<<"\t"<<di[EMAP[e]][nei]<<" "<<diIM(ne)<<endl;
-      //    if(ndi>=max_di)
-      //    {
-      //      max_ne = ne;
-      //      max_di = ndi;
-      //    }
-      //  }
-      //}
       if(nfei >= 0)
       {
         max_ne = uE2E[EMAP(e)][nfei];
@@ -515,24 +435,6 @@ IGL_INLINE void igl::cgal::outer_hull(
   }
 }
 
-template <
-  typename DerivedV,
-  typename DerivedF,
-  typename DerivedG,
-  typename DerivedJ,
-  typename Derivedflip>
-IGL_INLINE void igl::cgal::outer_hull(
-  const Eigen::PlainObjectBase<DerivedV> & V,
-  const Eigen::PlainObjectBase<DerivedF> & F,
-  Eigen::PlainObjectBase<DerivedG> & G,
-  Eigen::PlainObjectBase<DerivedJ> & J,
-  Eigen::PlainObjectBase<Derivedflip> & flip)
-{
-  Eigen::Matrix<typename DerivedV::Scalar,DerivedF::RowsAtCompileTime,3> N;
-  per_face_normals_stable(V,F,N);
-  return outer_hull(V,F,N,G,J,flip);
-}
-
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
@@ -543,5 +445,4 @@ IGL_INLINE void igl::cgal::outer_hull(
 #define IGL_STATIC_LIBRARY
 template void igl::cgal::outer_hull<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
 template void igl::cgal::outer_hull<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::outer_hull<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
 #endif

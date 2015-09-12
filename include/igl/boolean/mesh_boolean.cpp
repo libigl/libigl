@@ -187,13 +187,6 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     J = CJ;
     return;
   }
-  MatrixX3S N,CN;
-  per_face_normals_stable(V,F,N);
-  CN.resize(CF.rows(),3);
-  for(size_t f = 0;f<(size_t)CN.rows();f++)
-  {
-    CN.row(f) = N.row(CJ(f));
-  }
 
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"peel..."<<endl;
@@ -202,7 +195,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
   // peel layers keeping track of odd and even flips
   VectorXi I;
   Matrix<bool,Dynamic,1> flip;
-  peel_outer_hull_layers(EV,CF,CN,I,flip);
+  peel_outer_hull_layers(EV,CF,I,flip);
   // 0 is "first" iteration, so it's odd
   Array<bool,Dynamic,1> odd = igl::mod(I,2).array()==0;
 
