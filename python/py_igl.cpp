@@ -25,6 +25,10 @@
 #include <igl/slice_into.h>
 #include <igl/sortrows.h>
 #include <igl/colon.h>
+#include <igl/boundary_facets.h>
+#include <igl/unique.h>
+#include <igl/setdiff.h>
+#include <igl/min_quad_with_fixed.h>
 
 void python_export_igl(py::module &m)
 {
@@ -51,5 +55,9 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_slice_into.cpp"
 #include "py_igl/py_sortrows.cpp"
 #include "py_igl/py_colon.cpp"
+#include "py_igl/py_boundary_facets.cpp"
+#include "py_igl/py_unique.cpp"
+#include "py_igl/py_setdiff.cpp"
+#include "py_igl/py_min_quad_with_fixed.cpp"
 
 }
