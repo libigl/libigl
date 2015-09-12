@@ -15,7 +15,14 @@ namespace igl
 {
   namespace cgal
   {
-    // For each undirected edge, sort its adjacent faces.
+    // For each undirected edge, sort its adjacent faces.  Assuming the
+    // undirected edge is (s, d).  Sort the adjacent faces clockwise around the
+    // axis (d - s), i.e. left-hand rule.  An adjacent face is consistently
+    // oriented if it contains (d, s) as a directed edge.
+    //
+    // For overlapping faces, break the tie using signed face index, smaller
+    // signed index comes before the larger signed index.  Signed index is
+    // computed as (consistent? 1:-1) * index.
     //
     // Inputs:
     //   V    #V by 3 list of vertices.
@@ -73,6 +80,27 @@ namespace igl
             const Eigen::PlainObjectBase<DerivedV>& V,
             const Eigen::PlainObjectBase<DerivedF>& F,
             const Eigen::PlainObjectBase<DerivedN>& N,
+            const Eigen::PlainObjectBase<DerivedE>& E,
+            const Eigen::PlainObjectBase<DeriveduE>& uE,
+            const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+            const std::vector<std::vector<uE2EType> >& uE2E,
+            std::vector<std::vector<uE2oEType> >& uE2oE,
+            std::vector<std::vector<uE2CType > >& uE2C );
+
+    // Order faces around each edge. Only exact predicate is used in the algorithm.
+    // Normal is not needed.
+    template<
+        typename DerivedV,
+        typename DerivedF,
+        typename DerivedE,
+        typename DeriveduE,
+        typename DerivedEMAP,
+        typename uE2EType,
+        typename uE2oEType,
+        typename uE2CType >
+    IGL_INLINE void order_facets_around_edges(
+            const Eigen::PlainObjectBase<DerivedV>& V,
+            const Eigen::PlainObjectBase<DerivedF>& F,
             const Eigen::PlainObjectBase<DerivedE>& E,
             const Eigen::PlainObjectBase<DeriveduE>& uE,
             const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,

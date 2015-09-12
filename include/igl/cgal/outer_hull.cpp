@@ -17,6 +17,7 @@
 #include "../per_face_normals.h"
 #include "../writePLY.h"
 #include "../sort_angles.h"
+#include "../writeDMAT.h"
 
 #include <Eigen/Geometry>
 #include <vector>
@@ -94,7 +95,8 @@ IGL_INLINE void igl::cgal::outer_hull(
 
   std::vector<std::vector<typename DerivedF::Index> > uE2oE;
   std::vector<std::vector<bool> > uE2C;
-  order_facets_around_edges(V, F, N, E, uE, EMAP, uE2E, uE2oE, uE2C);
+  //order_facets_around_edges(V, F, N, E, uE, EMAP, uE2E, uE2oE, uE2C);
+  order_facets_around_edges(V, F, E, uE, EMAP, uE2E, uE2oE, uE2C);
   uE2E = uE2oE;
   VectorXI diIM(3*m);
   for (auto ue : uE2E) {
