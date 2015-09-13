@@ -1,5 +1,4 @@
 import igl
-from iglhelpers import *
 
 V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
@@ -42,7 +41,7 @@ max_size = igl.avg_edge_length(V,F) / GU_mag.mean()
 BC = igl.eigen.MatrixXd()
 igl.barycenter(V,F,BC)
 
-black = p2e(np.array([[0.0,0.0,0.0]]))
+black = igl.eigen.MatrixXd([[0.0,0.0,0.0]])
 viewer.data.add_edges(BC,BC+max_size*GU, black)
 
 # Hide wireframe

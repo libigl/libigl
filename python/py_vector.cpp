@@ -22,6 +22,29 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
             new (&m) Type(1, 1);
             m(0, 0) = f;
         })
+        .def("__init__", [](Type &m, std::vector<std::vector< Scalar> >& b) {
+          if (b.size() == 0)
+          {
+            new (&m) Type(0, 0);
+            return;
+          }
+
+          // Size checks
+          unsigned rows = b.size();
+          unsigned cols = b[0].size();
+          for (unsigned i=0;i<rows;++i)
+            if (b[i].size() != cols)
+              throw std::runtime_error("All rows should have the same size!");
+
+          new (&m) Type(rows, cols);
+
+          m.resize(rows,cols);
+          for (unsigned i=0;i<rows;++i)
+            for (unsigned j=0;j<cols;++j)
+              m(i,j) = b[i][j];
+
+          return;
+        })
         .def("__init__", [](Type &m, py::buffer b) {
             py::buffer_info info = b.request();
             if (info.format != py::format_descriptor<Scalar>::value())

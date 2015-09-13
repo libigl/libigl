@@ -1,6 +1,4 @@
 import igl
-import numpy as np
-from iglhelpers import *
 
 V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
@@ -12,8 +10,9 @@ igl.readOFF("../tutorial/shared/bunny.off", V, F)
 m = V.colwiseMinCoeff()
 M = V.colwiseMaxCoeff()
 
+
 # Corners of the bounding box
-V_box = p2e(np.matrix(
+V_box = igl.eigen.MatrixXd(
 [
 [m[0,0], m[0,1], m[0,2]],
 [M[0,0], m[0,1], m[0,2]],
@@ -24,9 +23,9 @@ V_box = p2e(np.matrix(
 [M[0,0], M[0,1], M[0,2]],
 [m[0,0], M[0,1], M[0,2]]
 ]
-))
+)
 
-E_box = p2e(np.matrix(
+E_box = igl.eigen.MatrixXi(
 [
 [0, 1],
 [1, 2],
@@ -40,23 +39,22 @@ E_box = p2e(np.matrix(
 [1, 5],
 [2, 6],
 [7 ,3]
-], dtype='int32'
-))
+]
+)
 
 # Plot the mesh
 viewer = igl.viewer.Viewer()
 viewer.data.set_mesh(V, F)
 
 # Plot the corners of the bounding box as points
-viewer.data.add_points(V_box,p2e(np.array([[1,0,0]], dtype='float64')))
+viewer.data.add_points(V_box,igl.eigen.MatrixXd([[1,0,0]]))
 
 # Plot the edges of the bounding box
-
 for i in range(0,E_box.rows()):
     viewer.data.add_edges(
         V_box.row(E_box[i,0]),
         V_box.row(E_box[i,1]),
-        p2e(np.array([[1,0,0]], dtype='float64')))
+        igl.eigen.MatrixXd([[1,0,0]]))
 
 # Plot labels with the coordinates of bounding box vertices
 l1 = 'x: ' + str(m[0,0]) + ' y: ' + str(m[0,1]) + ' z: ' + str(m[0,2])
