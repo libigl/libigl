@@ -75,7 +75,7 @@ else (MATLAB_FOUND)
 endif(MATLAB_FOUND)
 
 ## Check for EMBREE, if not available skip the examples that depends on it
-find_package(EMBREE QUIET)
+find_package(EMBREEH QUIET)
 if (EMBREE_FOUND)
   include_directories( ${EMBREE_INCLUDE_DIR})
 else (EMBREE_FOUND)
