@@ -23,8 +23,6 @@ igl.floor((0.5*(temp+1.)*I.rows()),J)
 K = igl.eigen.MatrixXi()
 igl.slice(I,J,K)
 
-exit(0)
-
 # default green for all faces
 #C = p2e(np.array([[0.4,0.8,0.3]])).replicate(F.rows(),1)
 C = igl.eigen.MatrixXd([[0.4,0.8,0.3]]).replicate(F.rows(),1)

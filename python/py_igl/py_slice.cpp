@@ -1,5 +1,5 @@
-// Double
-
+// // Double
+//
 m.def("slice", []
 (
   const Eigen::SparseMatrix<double>& X,
@@ -53,16 +53,19 @@ m.def("slice", []
 }, __doc_igl_slice,
 py::arg("X"), py::arg("R"), py::arg("Y"));
 
-m.def("slice", []
-(
-  const Eigen::MatrixXd& X,
-  const Eigen::MatrixXi& R
-)
-{
-  assert_is_VectorX("R",R);
-  return igl::slice(X,R);
-}, __doc_igl_slice,
-py::arg("X"), py::arg("R"));
+// // TODO: problematic!
+// m.def("slice", []
+// (
+//   const Eigen::MatrixXd& X,
+//   const Eigen::MatrixXi& R
+// )
+// {
+//   std::cerr << "Maybe also here?" << std::endl;
+//   // assert_is_VectorX("R",R);
+//   // return igl::slice(X,R);
+//   return;
+// }, __doc_igl_slice,
+// py::arg("X"), py::arg("R"));
 
 m.def("slice", []
 (
@@ -118,6 +121,7 @@ m.def("slice", []
 }, __doc_igl_slice,
 py::arg("X"), py::arg("R"), py::arg("C"), py::arg("Y"));
 
+
 m.def("slice", []
 (
   const Eigen::MatrixXi& X,
@@ -130,16 +134,17 @@ m.def("slice", []
 }, __doc_igl_slice,
 py::arg("X"), py::arg("R"), py::arg("Y"));
 
-m.def("slice", []
-(
-  const Eigen::MatrixXi& X,
-  const Eigen::MatrixXi& R
-)
-{
-  assert_is_VectorX("R",R);
-  return igl::slice(X,R);
-}, __doc_igl_slice,
-py::arg("X"), py::arg("R"));
+// TODO: Problematic
+// m.def("slice", []
+// (
+//   const Eigen::MatrixXi& X,
+//   const Eigen::MatrixXi& R
+// )
+// {
+//   assert_is_VectorX("R",R);
+//   return igl::slice(X,R);
+// }, __doc_igl_slice,
+// py::arg("X"), py::arg("R"));
 
 m.def("slice", []
 (

@@ -21,7 +21,7 @@ igl.sortrows(BC,True,sorted_BC,I)
 J.resize(I.rows(),1)
 # J(I) = 1:numel(I)
 
-igl.slice_into(igl.coloni(0,I.size())-1,I,J)
+igl.slice_into(igl.coloni(0,I.size()-1),I,J)
 
 # Pseudo-color based on sorted place
 C = igl.eigen.MatrixXd()
