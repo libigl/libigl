@@ -62,14 +62,24 @@ IGL_INLINE size_t igl::cgal::peel_outer_hull_layers(
     MatrixXI Jo;
     MatrixXflip flipr;
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
-  cout<<"calling outer hull..."<<endl;
-  writePLY(STR("outer-hull-input-"<<iter<<".ply"),V,Fr);
+  {
+      cout<<"calling outer hull..." << iter <<endl;
+      std::stringstream ss;
+      ss << "outer_hull_" << iter << ".ply";
+      Eigen::MatrixXd vertices(V.rows(), V.cols());
+      std::transform(V.data(), V.data() + V.rows()*V.cols(),
+              vertices.data(),
+              [](typename DerivedV::Scalar val)
+              {return CGAL::to_double(val); });
+      writePLY(ss.str(), vertices, Fr);
+  }
 #endif
     outer_hull(V,Fr,Fo,Jo,flipr);
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
   writePLY(STR("outer-hull-output-"<<iter<<".ply"),V,Fo);
   cout<<"reindex, flip..."<<endl;
 #endif
+    assert(Fo.rows() != 0);
     assert(Fo.rows() == Jo.rows());
     // all faces in Fo of Fr
     vector<bool> in_outer(Fr.rows(),false);
