@@ -46,3 +46,6 @@ def e2p(m):
         J = coo[:, 1]
         V = coo[:, 2]
         return sparse.coo_matrix((V,(I,J)), shape=(m.rows(),m.cols()), dtype='int32')
+
+def printMatrixSizes(x,xn):
+    print(xn + " (" + str(x.rows()) + "," + str(x.cols()) + ")")
