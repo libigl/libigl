@@ -1,6 +1,4 @@
 from __future__ import print_function
-import sys, os
-import numpy as np
 import igl
 
 # Load a mesh in OFF format

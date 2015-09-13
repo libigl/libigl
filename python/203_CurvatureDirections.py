@@ -1,6 +1,4 @@
 import igl
-import numpy as np
-from iglhelpers import *
 
 V = igl.eigen.MatrixXd();
 F = igl.eigen.MatrixXi();
@@ -49,8 +47,8 @@ viewer.data.set_colors(C)
 avg = igl.avg_edge_length(V,F)
 
 # Draw a blue segment parallel to the minimal curvature direction
-red = p2e(np.array([[0.8,0.2,0.2]]))
-blue = p2e(np.array([[0.2,0.2,0.8]]))
+red = igl.eigen.MatrixXd([[0.8,0.2,0.2]])
+blue = igl.eigen.MatrixXd([[0.2,0.2,0.8]])
 
 viewer.data.add_edges(V + PD1*avg, V - PD1*avg, blue)
 

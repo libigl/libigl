@@ -1,6 +1,5 @@
 from __future__ import print_function
 import igl
-from iglhelpers import *
 
 V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
@@ -24,11 +23,14 @@ igl.floor((0.5*(temp+1.)*I.rows()),J)
 K = igl.eigen.MatrixXi()
 igl.slice(I,J,K)
 
+exit(0)
+
 # default green for all faces
-C = p2e(np.array([[0.4,0.8,0.3]])).replicate(F.rows(),1)
+#C = p2e(np.array([[0.4,0.8,0.3]])).replicate(F.rows(),1)
+C = igl.eigen.MatrixXd([[0.4,0.8,0.3]]).replicate(F.rows(),1)
 
 # Red for each in K
-R = p2e(np.array([[1.0,0.3,0.3]])).replicate(K.rows(),1)
+R = igl.eigen.MatrixXd([[1.0,0.3,0.3]]).replicate(K.rows(),1)
 # C(K,:) = R
 igl.slice_into(R,K,1,C)
 

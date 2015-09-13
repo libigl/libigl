@@ -1,6 +1,5 @@
 from __future__ import print_function
 import igl
-from iglhelpers import *
 import math
 
 global V
@@ -74,7 +73,7 @@ def key_pressed(viewer, key, modifier):
         area = 0.5*dblA.sum()
         BC = igl.eigen.MatrixXd()
         igl.barycenter(U,F,BC)
-        centroid = p2e(np.array([[0.0,0.0,0.0]]))
+        centroid = igl.eigen.MatrixXd([[0.0,0.0,0.0]])
 
         for i in range(0,BC.rows()):
             centroid += 0.5*dblA[i,0]/area*BC.row(i)
