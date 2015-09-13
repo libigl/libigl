@@ -174,8 +174,8 @@ IGL_INLINE void igl::sort2(
     Index & bi = (dim==1 ? IX(1,i) : IX(i,1));
     if((ascending && a>b) || (!ascending && a<b))
     {
-      swap(a,b);
-      swap(ai,bi);
+      std::swap(a,b);
+      std::swap(ai,bi);
     }
   }
 }
