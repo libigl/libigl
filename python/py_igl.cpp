@@ -29,6 +29,8 @@
 #include <igl/unique.h>
 #include <igl/setdiff.h>
 #include <igl/min_quad_with_fixed.h>
+#include <igl/SolverStatus.h>
+#include <igl/active_set.h>
 
 void python_export_igl(py::module &m)
 {
@@ -59,5 +61,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_unique.cpp"
 #include "py_igl/py_setdiff.cpp"
 #include "py_igl/py_min_quad_with_fixed.cpp"
+#include "py_igl/py_SolverStatus.cpp"
+#include "py_igl/py_active_set.cpp"
 
 }
