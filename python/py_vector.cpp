@@ -95,6 +95,21 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("setConstant", [](Type &m, const int& r, const int& c, Scalar value) { m.setConstant(r,c,value); })
         .def("setRandom", [](Type &m, const int& r, const int& c) { m.setRandom(r,c); })
 
+        .def("setCol", [](Type &m, int i, const Type& v) { m.col(i) = v; })
+        .def("setRow", [](Type &m, int i, const Type& v) { m.row(i) = v; })
+
+
+        .def("rightCols", [](Type &m, const int& k) { return Type(m.rightCols(k)); })
+        .def("leftCols", [](Type &m, const int& k) { return Type(m.leftCols(k)); })
+
+        .def("topRows", [](Type &m, const int& k) { return Type(m.topRows(k)); })
+        .def("bottomRows", [](Type &m, const int& k) { return Type(m.bottomRows(k)); })
+
+        .def("topLeftCorner", [](Type &m, const int& p, const int&q) { return Type(m.topLeftCorner(p,q)); })
+        .def("bottomLeftCorner", [](Type &m, const int& p, const int&q) { return Type(m.bottomLeftCorner(p,q)); })
+        .def("topRightCorner", [](Type &m, const int& p, const int&q) { return Type(m.topRightCorner(p,q)); })
+        .def("bottomRightCorner", [](Type &m, const int& p, const int&q) { return Type(m.bottomRightCorner(p,q)); })
+
         /* Resizing */
         .def("resize", [](Type &m, size_t s0, size_t s1) { m.resize(s0, s1); })
         .def("resizeLike", [](Type &m, const Type &m2) { m.resizeLike(m2); })
