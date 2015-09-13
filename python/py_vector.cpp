@@ -109,6 +109,9 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("norm", [](const Type &m) {return m.norm();})
         .def("squaredNorm", [](const Type &m) {return m.squaredNorm();})
 
+        .def("minCoeff", [](const Type &m) {return m.minCoeff();} )
+        .def("maxCoeff", [](const Type &m) {return m.maxCoeff();} )
+
         .def("castdouble", [](const Type &m) {return Eigen::MatrixXd(m.template cast<double>());})
         .def("castint", [](const Type &m) {return Eigen::MatrixXi(m.template cast<int>());})
 
@@ -243,6 +246,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
 
         /* Static initializers */
         .def_static("Zero", [](size_t n, size_t m) { return Type(Type::Zero(n, m)); })
+        .def_static("Random", [](size_t n, size_t m) { return Type(Type::Random(n, m)); })
         .def_static("Ones", [](size_t n, size_t m) { return Type(Type::Ones(n, m)); })
         .def_static("Constant", [](size_t n, size_t m, Scalar value) { return Type(Type::Constant(n, m, value)); })
         .def_static("Identity", [](size_t n, size_t m) { return Type(Type::Identity(n, m)); })
@@ -445,6 +449,16 @@ py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name,
           m.resize(rows,cols);
           m.setFromTriplets(tripletList.begin(), tripletList.end());
         }, py::arg("t"), py::arg("rows") = -1, py::arg("cols") = -1)
+
+        .def("insert",[](Type& m, const int row, const int col, const Scalar value)
+        {
+          return m.insert(row,col) = value;
+        }, py::arg("row"), py::arg("col"), py::arg("value"))
+
+        .def("makeCompressed",[](Type& m)
+        {
+          return m.makeCompressed();
+        })
 
         ;
     return matrix;

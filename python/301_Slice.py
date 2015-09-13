@@ -6,18 +6,13 @@ F = igl.eigen.MatrixXi()
 
 igl.readOFF("../tutorial/shared/decimated-knight.off",V,F)
 
-temp  = igl.eigen.MatrixXd()
-
 # 100 random indicies into rows of F
-temp.setRandom(100,1)
-
 I = igl.eigen.MatrixXi()
-igl.floor((0.5*(temp+1.)*F.rows()),I);
+igl.floor((0.5*(igl.eigen.MatrixXd.Random(100,1)+1.)*F.rows()),I);
 
 # 50 random indicies into rows of I
-temp.setRandom(50,1)
 J = igl.eigen.MatrixXi()
-igl.floor((0.5*(temp+1.)*I.rows()),J)
+igl.floor((0.5*(igl.eigen.MatrixXd.Random(50,1)+1.)*I.rows()),J)
 
 # K = I(J);
 K = igl.eigen.MatrixXi()
