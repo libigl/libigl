@@ -146,6 +146,8 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("replicate", [](const Type &m, const int& r, const int& c) {return Type(m.replicate(r,c));} )
         .def("asDiagonal", [](const Type &m) {return Eigen::DiagonalMatrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(m.asDiagonal());} )
 
+        .def("sparseView", [](Type &m) { return Eigen::SparseMatrix<Scalar>(m.sparseView()); })
+
         /* Arithmetic operators (def_cast forcefully casts the result back to a
            Type to avoid type issues with Eigen's crazy expression templates) */
         .def_cast(-py::self)
@@ -391,31 +393,6 @@ py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name,
             oss << v;
             return oss.str();
         })
-        // .def("__getitem__", [](const Type &m, std::pair<size_t, size_t> i) {
-        //     if (i.first >= (size_t) m.rows() || i.second >= (size_t) m.cols())
-        //         throw py::index_error();
-        //     return m(i.first, i.second);
-        //  })
-        // .def("__setitem__", [](Type &m, std::pair<size_t, size_t> i, Scalar v) {
-        //     if (i.first >= (size_t) m.rows() || i.second >= (size_t) m.cols())
-        //         throw py::index_error();
-        //     m(i.first, i.second) = v;
-        //  })
-
-        // /* Buffer access for interacting with NumPy */
-        // .def_buffer([](Type &m) -> py::buffer_info {
-        //     return py::buffer_info(
-        //         m.data(),                /* Pointer to buffer */
-        //         sizeof(Scalar),          /* Size of one scalar */
-        //         /* Python struct-style format descriptor */
-        //         py::format_descriptor<Scalar>::value(),
-        //         2,                       /* Number of dimensions */
-        //         { (size_t) m.rows(),     /* Buffer dimensions */
-        //           (size_t) m.cols() },
-        //         { sizeof(Scalar),        /* Strides (in bytes) for each index */
-        //           sizeof(Scalar) * m.rows() }
-        //     );
-        //  })
 
         /* Static initializers */
         // .def_static("Zero", [](size_t n, size_t m) { return Type(Type::Zero(n, m)); })
@@ -459,6 +436,8 @@ py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name,
         {
           return m.makeCompressed();
         })
+
+        .def("diagonal", [](const Type &m) {return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(m.diagonal());} )
 
         ;
     return matrix;
@@ -532,9 +511,11 @@ py::class_<Type> bind_eigen_diagonal_2(py::module &m, const char *name,
         /* Python protocol implementations */
         .def("__repr__", [](const Type &/*v*/) {
             std::ostringstream oss;
-            oss << "Eigen is not able to plot Diagonal Matrices";
+            oss << "<< operator undefined for diagonal matrices";
             return oss.str();
         })
+
+        /* Other transformations */
 
         ;
     return matrix;

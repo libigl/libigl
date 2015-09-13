@@ -14,6 +14,7 @@ m.def("min_quad_with_fixed_precompute", []
   igl::min_quad_with_fixed_data<double> & data
 )
 {
+  assert_is_VectorX("known",known);
   return igl::min_quad_with_fixed_precompute(A,known,Aeq,pd,data);
 }, __doc_igl_min_quad_with_fixed,
 py::arg("A"), py::arg("known"), py::arg("Aeq"), py::arg("pd"), py::arg("data"));
@@ -28,6 +29,9 @@ m.def("min_quad_with_fixed_solve", []
   Eigen::MatrixXd& sol
 )
 {
+  assert_is_VectorX("B",B);
+  assert_is_VectorX("Y",Y);
+  assert_is_VectorX("Beq",Beq);
   return igl::min_quad_with_fixed_solve(data,B,Y,Beq,Z,sol);
 }, __doc_igl_min_quad_with_fixed,
 py::arg("data"), py::arg("B"), py::arg("Y"), py::arg("Beq"), py::arg("Z"), py::arg("sol"));
@@ -41,6 +45,9 @@ m.def("min_quad_with_fixed_solve", []
   Eigen::MatrixXd& Z
 )
 {
+  assert_is_VectorX("B",B);
+  assert_is_VectorX("Y",Y);
+  assert_is_VectorX("Beq",Beq);
   return igl::min_quad_with_fixed_solve(data,B,Y,Beq,Z);
 }, __doc_igl_min_quad_with_fixed,
 py::arg("data"), py::arg("B"), py::arg("Y"), py::arg("Beq"), py::arg("Z"));
@@ -57,6 +64,10 @@ m.def("min_quad_with_fixed", []
   Eigen::MatrixXd& Z
 )
 {
+  assert_is_VectorX("B",B);
+  assert_is_VectorX("known",known);
+  assert_is_VectorX("Y",Y);
+  assert_is_VectorX("Beq",Beq);
   return igl::min_quad_with_fixed(A,B,known,Y,Aeq,Beq,pd,Z);
 }, __doc_igl_min_quad_with_fixed,
 py::arg("A"), py::arg("B"), py::arg("known"), py::arg("Y"), py::arg("Aeq"), py::arg("Beq"), py::arg("pd"), py::arg("Z"));
