@@ -55,11 +55,11 @@ void igl::cgal::order_facets_around_edge(
 
     // Handle base cases
     if (adj_faces.size() == 0) {
-        order.resize(0);
+        order.resize(0, 1);
         return;
     } else if (adj_faces.size() == 1) {
-        order.resize(1);
-        order[0] = 0;
+        order.resize(1, 1);
+        order(0, 0) = 0;
         return;
     } else if (adj_faces.size() == 2) {
         const size_t o1 =
@@ -70,19 +70,19 @@ void igl::cgal::order_facets_around_edge(
         const Point_3 pd(V(d, 0), V(d, 1), V(d, 2));
         const Point_3 p1(V(o1, 0), V(o1, 1), V(o1, 2));
         const Point_3 p2(V(o2, 0), V(o2, 1), V(o2, 2));
-        order.resize(2);
+        order.resize(2, 1);
         switch (CGAL::orientation(ps, pd, p1, p2)) {
             case CGAL::POSITIVE:
-                order[0] = 1;
-                order[1] = 0;
+                order(0, 0) = 1;
+                order(1, 0) = 0;
                 break;
             case CGAL::NEGATIVE:
-                order[0] = 0;
-                order[1] = 1;
+                order(0, 0) = 0;
+                order(1, 0) = 1;
                 break;
             case CGAL::COPLANAR:
-                order[0] = adj_faces[0] < adj_faces[1] ? 0:1;
-                order[1] = adj_faces[0] < adj_faces[1] ? 1:0;
+                order(0, 0) = adj_faces[0] < adj_faces[1] ? 0:1;
+                order(1, 0) = adj_faces[0] < adj_faces[1] ? 1:0;
                 break;
             default:
                 assert(false);
@@ -167,28 +167,28 @@ void igl::cgal::order_facets_around_edge(
     const size_t negative_size = negative_order.size();
 
     order.resize(tie_positive_size + positive_size +
-            tie_negative_size + negative_size);
+            tie_negative_size + negative_size, 1);
 
     size_t count=0;
     for (size_t i=0; i<tie_positive_size; i++) {
-        order[count+i] =
+        order(count+i, 0) =
             tie_positive_oriented_index[tie_positive_order[i]];
     }
     count += tie_positive_size;
 
     for (size_t i=0; i<negative_size; i++) {
-        order[count+i] = negative_side_index[negative_order[i]];
+        order(count+i, 0) = negative_side_index[negative_order(i, 0)];
     }
     count += negative_size;
 
     for (size_t i=0; i<tie_negative_size; i++) {
-        order[count+i] =
+        order(count+i, 0) =
             tie_negative_oriented_index[tie_negative_order[i]];
     }
     count += tie_negative_size;
 
     for (size_t i=0; i<positive_size; i++) {
-        order[count+i] = positive_side_index[positive_order[i]];
+        order(count+i, 0) = positive_side_index[positive_order(i, 0)];
     }
     count += positive_size;
     assert(count == num_adj_faces);
@@ -196,9 +196,9 @@ void igl::cgal::order_facets_around_edge(
     // Find the correct start point.
     size_t start_idx = 0;
     for (size_t i=0; i<num_adj_faces; i++) {
-        const Point_3& p_a = opposite_vertices[order[i]];
+        const Point_3& p_a = opposite_vertices[order(i, 0)];
         const Point_3& p_b =
-            opposite_vertices[order[(i+1)%num_adj_faces]];
+            opposite_vertices[order((i+1)%num_adj_faces, 0)];
         if (CGAL::orientation(p_s, p_d, p_a, p_b) == CGAL::POSITIVE) {
             start_idx = (i+1)%num_adj_faces;
             break;
@@ -206,6 +206,6 @@ void igl::cgal::order_facets_around_edge(
     }
     DerivedI circular_order = order;
     for (size_t i=0; i<num_adj_faces; i++) {
-        order[i] = circular_order[(start_idx + i)%num_adj_faces];
+        order(i, 0) = circular_order((start_idx + i)%num_adj_faces, 0);
     }
 }
