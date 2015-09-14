@@ -140,11 +140,8 @@ igl::cgal::order_facets_around_edges(
             angle_data(fei, 2) = (cons[fei]?1.:-1.)*(f+1);
         }
 
-        std::cout << "angle_data:" << std::endl;
-        std::cout << angle_data << std::endl;
         Eigen::VectorXi order;
         igl::sort_angles(angle_data, order);
-        std::cout << "order: " << order.transpose() << std::endl;
 
         auto& ordered_edges = uE2oE[ui];
         auto& consistency = uE2C[ui];
