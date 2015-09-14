@@ -1,4 +1,5 @@
 #include "order_facets_around_edge.h"
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
 namespace igl {
     namespace cgal {

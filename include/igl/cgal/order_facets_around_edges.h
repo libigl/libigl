@@ -10,6 +10,7 @@
 #include "../igl_inline.h"
 #include <Eigen/Core>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#include <vector>
 
 namespace igl
 {
