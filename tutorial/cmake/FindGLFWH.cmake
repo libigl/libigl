@@ -37,7 +37,7 @@ if(GLFW_FOUND)
   message(STATUS "Found GLFW: ${GLFW_INCLUDE_DIR} -- HEADERS ONLY")
 else(GLFW_FOUND)
   if (NOT GLFW_FIND_QUIETLY)
-    message(FATAL_ERROR "could NOT find GLFW")
+    message("could NOT find GLFW")
   endif (NOT GLFW_FIND_QUIETLY)
 endif(GLFW_FOUND)
 
