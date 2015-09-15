@@ -17,7 +17,6 @@
 #include "../per_face_normals.h"
 #include "../writePLY.h"
 #include "../sort_angles.h"
-#include "../writeDMAT.h"
 
 #include <Eigen/Geometry>
 #include <vector>

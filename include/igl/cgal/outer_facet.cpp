@@ -25,15 +25,21 @@ IGL_INLINE void igl::cgal::outer_facet(
         bool & flipped) {
 
     // Algorithm:
-    //    Find an outer edge.
-    //    Order adjacent facets around the edge.
-    //    For consecutive facets, check if the tetrahedron formed by them is
-    //    positively oriented.
-    //    If yes, check the next pair.
-    //    If not, return either face.
-    typedef typename DerivedV::Scalar Scalar;
-    typedef typename DerivedV::Index Index;
-    const size_t INVALID = std::numeric_limits<size_t>::max();
+    //
+    //    1. Find an outer edge (s, d).
+    //
+    //    2. Order adjacent facets around this edge. Because the edge is an
+    //    outer edge, there exists a plane passing through it such that all its
+    //    adjacent facets lie on the same side. The implementation of
+    //    order_facets_around_edge() will find a natural start facet such that
+    //    The first and last facets according to this order are on the outside.
+    //
+    //    3. Because the vertex s is an outer vertex by construction (see
+    //    implemnetation of outer_edge()). The first adjacent facet is facing
+    //    outside (i.e. flipped=false) if it contains directed edge (s, d).  
+    //
+    typedef typename DerivedV::Scalar Scalar; typedef typename DerivedV::Index
+        Index; const size_t INVALID = std::numeric_limits<size_t>::max();
 
     Index s,d;
     Eigen::Matrix<Index,Eigen::Dynamic,1> incident_faces;
