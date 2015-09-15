@@ -78,3 +78,5 @@ tutorial/XXX_test/main.cpp
 python/py_igl/todo
 python/build
 python/.idea
+tests/build
+tests/bin

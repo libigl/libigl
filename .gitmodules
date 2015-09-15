@@ -7,3 +7,7 @@ url=https://github.com/libigl/nanogui.git
 [submodule "external/embree"]
 	path = external/embree
 	url = https://github.com/embree/embree.git
+
+[submodule "tests/googletest"]
+	path = tests/googletest
+	url = https://github.com/google/googletest.git
