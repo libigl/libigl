@@ -25,26 +25,11 @@ namespace igl
     // Inputs:
     //   V  #V by 3 list of vertex positions
     //   F  #F by 3 list of triangle indices into V
-    //   N  #F by 3 list of per-face normals
     // Outputs:
     //   G  #G by 3 list of output triangle indices into V
     //   J  #G list of indices into F
     //   flip  #F list of whether facet was added to G **and** flipped orientation
     //     (false for faces not added to G)
-    template <
-      typename DerivedV,
-      typename DerivedF,
-      typename DerivedN,
-      typename DerivedG,
-      typename DerivedJ,
-      typename Derivedflip>
-    IGL_INLINE void outer_hull(
-      const Eigen::PlainObjectBase<DerivedV> & V,
-      const Eigen::PlainObjectBase<DerivedF> & F,
-      const Eigen::PlainObjectBase<DerivedN> & N,
-      Eigen::PlainObjectBase<DerivedG> & G,
-      Eigen::PlainObjectBase<DerivedJ> & J,
-      Eigen::PlainObjectBase<Derivedflip> & flip);
     template <
       typename DerivedV,
       typename DerivedF,
