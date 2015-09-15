@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "order_facets_around_edges.h"
+#include "order_facets_around_edge.h"
 #include "../sort_angles.h"
 #include <type_traits>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
@@ -252,3 +253,80 @@ igl::cgal::order_facets_around_edges(
         }
     }
 }
+
+template<
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedE,
+    typename DeriveduE,
+    typename DerivedEMAP,
+    typename uE2EType,
+    typename uE2oEType,
+    typename uE2CType >
+IGL_INLINE void igl::cgal::order_facets_around_edges(
+        const Eigen::PlainObjectBase<DerivedV>& V,
+        const Eigen::PlainObjectBase<DerivedF>& F,
+        const Eigen::PlainObjectBase<DerivedE>& E,
+        const Eigen::PlainObjectBase<DeriveduE>& uE,
+        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+        const std::vector<std::vector<uE2EType> >& uE2E,
+        std::vector<std::vector<uE2oEType> >& uE2oE,
+        std::vector<std::vector<uE2CType > >& uE2C ) {
+
+    typedef Eigen::Matrix<typename DerivedV::Scalar, 3, 1> Vector3E;
+    const size_t num_faces = F.rows();
+    const size_t num_undirected_edges = uE.rows();
+
+    auto edge_index_to_face_index = [&](size_t ei) { return ei % num_faces; };
+    auto edge_index_to_corner_index = [&](size_t ei) { return ei / num_faces; };
+
+    uE2oE.resize(num_undirected_edges);
+    uE2C.resize(num_undirected_edges);
+
+    for(size_t ui = 0;ui<num_undirected_edges;ui++)
+    {
+        const auto& adj_edges = uE2E[ui];
+        const size_t edge_valance = adj_edges.size();
+        assert(edge_valance > 0);
+
+        const auto ref_edge = adj_edges[0];
+        const auto ref_face = edge_index_to_face_index(ref_edge);
+
+        const auto ref_corner_o = edge_index_to_corner_index(ref_edge);
+        const auto ref_corner_s = (ref_corner_o+1)%3;
+        const auto ref_corner_d = (ref_corner_o+2)%3;
+
+        const typename DerivedF::Scalar o = F(ref_face, ref_corner_o);
+        const typename DerivedF::Scalar s = F(ref_face, ref_corner_s);
+        const typename DerivedF::Scalar d = F(ref_face, ref_corner_d);
+
+        std::vector<bool> cons(edge_valance);
+        std::vector<int> adj_faces(edge_valance);
+        for (size_t fei=0; fei<edge_valance; fei++) {
+            const auto fe = adj_edges[fei];
+            const auto f = edge_index_to_face_index(fe);
+            const auto c = edge_index_to_corner_index(fe);
+            cons[fei] = (d == F(f, (c+1)%3));
+            adj_faces[fei] = (f+1) * (cons[fei] ? 1:-1);
+
+            assert( cons[fei] ||  (d == F(f,(c+2)%3)));
+            assert(!cons[fei] || (s == F(f,(c+2)%3)));
+            assert(!cons[fei] || (d == F(f,(c+1)%3)));
+        }
+
+        Eigen::VectorXi order;
+        order_facets_around_edge(V, F, s, d, adj_faces, order);
+        assert(order.size() == edge_valance);
+
+        auto& ordered_edges = uE2oE[ui];
+        auto& consistency = uE2C[ui];
+
+        ordered_edges.resize(edge_valance);
+        consistency.resize(edge_valance);
+        for (size_t fei=0; fei<edge_valance; fei++) {
+            ordered_edges[fei] = adj_edges[order[fei]];
+            consistency[fei] = cons[order[fei]];
+        }
+    }
+}
+
