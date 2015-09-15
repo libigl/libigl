@@ -7,6 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "mesh_boolean.h"
 #include <igl/per_face_normals.h>
+#include <igl/boundary_facets.h>
+#include <igl/exterior_edges.h>
 #include <igl/cgal/peel_outer_hull_layers.h>
 #include <igl/cgal/remesh_self_intersections.h>
 #include <igl/remove_unreferenced.h>
@@ -252,6 +254,14 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     GJ(g) = CJ(vG[g]);
   }
 #ifdef IGL_MESH_BOOLEAN_DEBUG
+  {
+    MatrixXd O;
+    boundary_facets(FC,O);
+    cout<<"# boundary: "<<O.rows()<<endl;
+  }
+  cout<<"# exterior: "<<exterior_edges(FC).rows()<<endl;
+#endif
+#ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"clean..."<<endl;
 #endif
   // Deal with duplicate faces
@@ -264,6 +274,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     vector<vector<Index> > uG2G(uG.rows());
     // signed counts
     VectorXi counts = VectorXi::Zero(uG.rows());
+    VectorXi ucounts = VectorXi::Zero(uG.rows());
     // loop over all faces
     for(Index g = 0;g<gm;g++)
     {
@@ -276,6 +287,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
         (G(g,0) == uG(ug,1) && G(g,1) == uG(ug,2) && G(g,2) == uG(ug,0)) ||
         (G(g,0) == uG(ug,2) && G(g,1) == uG(ug,0) && G(g,2) == uG(ug,1));
       counts(ug) += consistent ? 1 : -1;
+      ucounts(ug)++;
     }
     MatrixX3I oldG = G;
     // Faces of output vG[i] = j means ith face of output should be jth face in
@@ -285,17 +297,33 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     {
       // if signed occurrences is zero or ±two then keep none
       // else if signed occurrences is ±one then keep just one facet
-      if(abs(counts(ug)) == 1)
+      switch(abs(counts(ug)))
       {
-        assert(uG2G.size() > 0);
-        vG.push_back(uG2G[ug][0]);
-      }
+        case 1:
+          assert(uG2G[ug].size() > 0);
+          vG.push_back(uG2G[ug][0]);
 #ifdef IGL_MESH_BOOLEAN_DEBUG
-      else
-      {
-        cout<<"Skipping "<<uG2G.size()<<" facets..."<<endl;
-      }
+          if(abs(ucounts(ug)) != 1)
+          {
+            cout<<"count,ucount of "<<counts(ug)<<","<<ucounts(ug)<<endl;
+          }
 #endif
+          break;
+        case 0:
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+          cout<<"Skipping "<<uG2G[ug].size()<<" facets..."<<endl;
+          if(abs(ucounts(ug)) != 0)
+          {
+            cout<<"count,ucount of "<<counts(ug)<<","<<ucounts(ug)<<endl;
+          }
+#endif
+          break;
+        default:
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+          cout<<"Didn't expect to be here."<<endl;
+#endif
+          assert(false && "Shouldn't count be -1/0/1 ?");
+      }
     }
     G.resize(vG.size(),3);
     J.resize(vG.size());
@@ -311,6 +339,14 @@ IGL_INLINE void igl::boolean::mesh_boolean(
   //cerr<<"warning not removing unref"<<endl;
   //VC = CV;
   //FC = G;
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+  {
+    MatrixXd O;
+    boundary_facets(FC,O);
+    cout<<"# boundary: "<<O.rows()<<endl;
+  }
+  cout<<"# exterior: "<<exterior_edges(FC).rows()<<endl;
+#endif
 }
 
 #ifdef IGL_STATIC_LIBRARY
