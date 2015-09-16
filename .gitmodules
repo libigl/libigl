@@ -9,3 +9,6 @@ url=https://github.com/libigl/nanogui.git
 [submodule "external/pybind11"]
 	path = external/pybind11
 	url = https://github.com/wjakob/pybind11.git
+[submodule "tests/googletest"]
+	path = tests/googletest
+	url = https://github.com/google/googletest.git
