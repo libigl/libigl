@@ -333,6 +333,13 @@ namespace igl
     template<typename T,int P,typename I>
     inline void deserialize(Eigen::SparseMatrix<T,P,I>& obj,std::vector<char>::const_iterator& iter);
 
+    template<typename T,int P>
+    inline size_t getByteSize(const Eigen::Quaternion<T,P>& obj);
+    template<typename T,int P>
+    inline void serialize(const Eigen::Quaternion<T,P>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    template<typename T,int P>
+    inline void deserialize(Eigen::Quaternion<T,P>& obj,std::vector<char>::const_iterator& iter);
+
     // raw pointers
     template <typename T>
     inline typename std::enable_if<std::is_pointer<T>::value,size_t>::type getByteSize(const T& obj);
@@ -1008,6 +1015,30 @@ namespace igl
         triplets.push_back(Eigen::Triplet<T,I>(rowId,colId,value));
       }
       obj.setFromTriplets(triplets.begin(),triplets.end());
+    }
+
+    template<typename T,int P>
+    inline size_t getByteSize(const Eigen::Quaternion<T,P>& obj)
+    {
+      return sizeof(T)*4;
+    }
+
+    template<typename T,int P>
+    inline void serialize(const Eigen::Quaternion<T,P>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter)
+    {
+      serialization::serialize(obj.w(),buffer,iter);
+      serialization::serialize(obj.x(),buffer,iter);
+      serialization::serialize(obj.y(),buffer,iter);
+      serialization::serialize(obj.z(),buffer,iter);
+    }
+
+    template<typename T,int P>
+    inline void deserialize(Eigen::Quaternion<T,P>& obj,std::vector<char>::const_iterator& iter)
+    {
+      serialization::deserialize(obj.w(),iter);
+      serialization::deserialize(obj.x(),iter);
+      serialization::deserialize(obj.y(),iter);
+      serialization::deserialize(obj.z(),iter);
     }
 
     // pointers
