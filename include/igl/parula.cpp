@@ -21,8 +21,8 @@ IGL_INLINE void igl::parula(const T f, T & r, T & g, T & b)
   const float eff_f = (f>=1.?1.:(f<=0.?0.:f));
   // continuous index into array
   const float ff = eff_f*(PARULA_COLOR_MAP.rows()-1);
-  size_t s = floor(ff);
-  size_t d = ceil(ff);
+  size_t s = std::floor(ff);
+  size_t d = std::ceil(ff);
   const float t = (s==d ? 0. : (ff-s)/float(d-s));
 
   assert(t>=0 && t<=1);
