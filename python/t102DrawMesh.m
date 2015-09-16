@@ -6,7 +6,7 @@ py.igl.readOFF('../tutorial/shared/beetle.off', V, F);
 V
 
 % Plot the mesh
-viewer = py.igl.viewer.Viewer();
-viewer.data.set_mesh(V, F);
-viewer.launch();
+viewer = py.tcpviewer.TCPViewer()
+viewer.data.set_mesh(V, F)
+viewer.launch()
 
