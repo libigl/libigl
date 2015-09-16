@@ -3,8 +3,15 @@ import multiprocessing
 import igl
 import array
 
-HOST = ''                 # Symbolic name meaning all available interfaces
+HOST = 'localhost'                 # Symbolic name meaning all available interfaces
 PORT = 50008              # Arbitrary non-privileged port
+
+def worker(data):
+    viewer = igl.viewer.Viewer()
+    temp = list(data)
+    viewer.deserialize(temp)
+    viewer.launch(True,False)
+    return
 
 class TCPViewer(igl.viewer.Viewer):
     def launch(self):
@@ -22,20 +29,15 @@ if __name__ == "__main__": # The main script is a server
     try:
         while True:
             conn, addr = s.accept()
-            data = ''
+            slist = []
             while True:
-                datanew = conn.recv(1024)
-                if not datanew:
+                buf = conn.recv(4096)
+                if not buf:
                     break
-                data = data+datanew
+                slist.append(buf.decode('unicode_internal','ignore'))
             conn.close()
 
-            def worker(data):
-                viewer = igl.viewer.Viewer()
-                temp = list(data.decode('unicode_internal','ignore'))
-                viewer.deserialize(temp)
-                viewer.launch(True,False)
-                return
+            data = ''.join(slist)
 
             t = multiprocessing.Process(target=worker, args=(data,))
             t.start()
