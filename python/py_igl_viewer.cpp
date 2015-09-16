@@ -2,6 +2,7 @@
 #include <Eigen/Sparse>
 
 #include "python.h"
+#define ENABLE_SERIALIZATION
 #include <igl/viewer/Viewer.h>
 #include <igl/viewer/ViewerCore.h>
 #include <igl/viewer/ViewerData.h>
@@ -287,6 +288,21 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     .def_readwrite("core", &igl::viewer::Viewer::core)
     .def("launch", &igl::viewer::Viewer::launch, py::arg("resizable") = true, py::arg("fullscreen") = false)
     .def("init", &igl::viewer::Viewer::init)
+    .def("serialize", [](igl::viewer::Viewer& viewer)
+    {
+      std::vector<char> a;
+      igl::serialize(viewer.core,"Core",a);
+      igl::serialize(viewer.data,"Data",a);
+
+      return a;
+    })
+
+    .def("deserialize", [](igl::viewer::Viewer& viewer, const std::vector<char>& a)
+    {
+      igl::deserialize(viewer.core,"Core",a);
+      igl::deserialize(viewer.data,"Data",a);
+      return;
+    })
 
     // Scene IO
     .def("load_scene", [](igl::viewer::Viewer& viewer)
