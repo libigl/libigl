@@ -71,11 +71,13 @@ namespace igl {
       SERIALIZE_MEMBER(proj);
     }
 
+    template<>
     IGL_INLINE void serialize(const igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
     {
       serialization(true,const_cast<igl::viewer::ViewerCore&>(obj),buffer);
     }
 
+    template<>
     IGL_INLINE void deserialize(igl::viewer::ViewerCore& obj,const std::vector<char>& buffer)
     {
       serialization(false,obj,const_cast<std::vector<char>&>(buffer));
@@ -481,7 +483,7 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
   camera_eye << 0, 0, 5;
   camera_center << 0, 0, 0;
   camera_up << 0, 1, 0;
-  
+
   // Default visualization options
   show_faces = true;
   show_lines = true;

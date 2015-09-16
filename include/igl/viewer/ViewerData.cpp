@@ -49,11 +49,13 @@ namespace igl {
       SERIALIZE_MEMBER(face_based);
     }
 
+    template<>
     IGL_INLINE void serialize(const igl::viewer::ViewerData& obj,std::vector<char>& buffer)
     {
       serialization(true,const_cast<igl::viewer::ViewerData&>(obj),buffer);
     }
 
+    template<>
     IGL_INLINE void deserialize(igl::viewer::ViewerData& obj,const std::vector<char>& buffer)
     {
       serialization(false,obj,const_cast<std::vector<char>&>(buffer));
