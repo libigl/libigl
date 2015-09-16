@@ -21,7 +21,7 @@
 // -----------------------------------------------------------------------------
 
 // Known issues: This is not written in libigl-style so it isn't (easily)
-// "dualized" into the static library. 
+// "dualized" into the static library.
 //
 
 #include <type_traits>
@@ -53,8 +53,8 @@ namespace igl { namespace serialization { \
     } \
 }}
 
-#define SERIALIZE_MEMBER(Object) ::igl::serializer(s,obj.##Object,std::string(#Object),buffer);
-#define SERIALIZE_MEMBER_NAME(Object,Name) ::igl::serializer(s,obj.##Object,std::string(Name),buffer);
+#define SERIALIZE_MEMBER(Object) igl::serializer(s,obj.Object,std::string(#Object),buffer);
+#define SERIALIZE_MEMBER_NAME(Object,Name) igl::serializer(s,obj.Object,std::string(Name),buffer);
 
 namespace igl
 {
@@ -101,21 +101,21 @@ namespace igl
   // Wrapper to expose both, the de- and serialization as one function
   //
   template <typename T>
-  inline bool serializer(bool serialize,T& obj,std::string& filename);
+  inline bool serializer(bool serialize,T& obj,const std::string& filename);
   template <typename T>
-  inline bool serializer(bool serialize,T& obj,std::string& objectName,const std::string& filename,bool overwrite = false);
+  inline bool serializer(bool serialize,T& obj,const std::string& objectName,const std::string& filename,bool overwrite = false);
   template <typename T>
-  inline bool serializer(bool serialize,T& obj,std::string& objectName,std::vector<char>& buffer);
+  inline bool serializer(bool serialize,T& obj,const std::string& objectName,std::vector<char>& buffer);
 
   // User defined types have to either overload the function igl::serialization::serialize()
   // and igl::serialization::deserialize() for their type (non-intrusive serialization):
   //
-  // namespace igl { namespace serialization 
+  // namespace igl { namespace serialization
   // {
   //   inline void serialize(const UserType& obj,std::vector<char>& buffer) {
   //     ::igl::serialize(obj.var,"var",buffer);
   //   }
-  //     
+  //
   //   inline void deserialize(UserType& obj,const std::vector<char>& buffer) {
   //     ::igl::deserialize(obj.var,"var",buffer);
   //   }
@@ -281,7 +281,7 @@ namespace igl
     template <typename T>
     inline typename std::enable_if<std::is_base_of<SerializableBase,T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
     template <typename T>
-    inline typename std::enable_if<std::is_base_of<SerializableBase,T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter);    
+    inline typename std::enable_if<std::is_base_of<SerializableBase,T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter);
 
     // stl containers
     // std::pair
@@ -521,19 +521,19 @@ namespace igl
 
   // Wrapper function which combines both, de- and serialization
   template <typename T>
-  inline bool serializer(bool s,T& obj,std::string& filename)
+  inline bool serializer(bool s,T& obj,const std::string& filename)
   {
     return s ? serialize(obj,filename) : deserialize(obj,filename);
   }
 
   template <typename T>
-  inline bool serializer(bool s,T& obj,std::string& objectName,const std::string& filename,bool overwrite)
+  inline bool serializer(bool s,T& obj,const std::string& objectName,const std::string& filename,bool overwrite)
   {
     return s ? serialize(obj,objectName,filename,overwrite) : deserialize(obj,objectName,filename);
   }
 
   template <typename T>
-  inline bool serializer(bool s,T& obj,std::string& objectName,std::vector<char>& buffer)
+  inline bool serializer(bool s,T& obj,const std::string& objectName,std::vector<char>& buffer)
   {
     return s ? serialize(obj,objectName,buffer) : deserialize(obj,objectName,buffer);
   }
@@ -627,7 +627,7 @@ namespace igl
   }
 
   template <typename T>
-  inline void Serializable::Add(T& obj,std::string name,bool binary)
+  inline void Serializable::Add(T& obj,const std::string name,bool binary)
   {
     auto object = new SerializationObject<T>();
     object->Binary = binary;
@@ -650,7 +650,7 @@ namespace igl
     {
       // data
       std::vector<char> tmp;
-      serialize(obj,tmp);
+      igl::serialization::serialize<>(obj,tmp);
 
       // size
       size_t size = buffer.size();
@@ -666,7 +666,7 @@ namespace igl
     inline typename std::enable_if<!is_serializable<T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter)
     {
       std::vector<char>::size_type size;
-      serialization::deserialize(size,iter);
+      serialization::deserialize<>(size,iter);
 
       std::vector<char> tmp;
       tmp.resize(size);
