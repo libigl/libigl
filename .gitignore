@@ -85,3 +85,5 @@ python/py_igl/todo
 python/__pycache__
 iglhelpers.pyc
 python/build2
+tests/build
+tests/bin
