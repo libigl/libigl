@@ -45,16 +45,16 @@
 #define SERIALIZE_TYPE(Type,Params) \
 namespace igl { namespace serialization { \
   void _serialization(bool s,Type& obj,std::vector<char>& buffer) {Params} \
-  void serialize(const Type& obj,std::vector<char>& buffer) { \
+  template<> inline void serialize(const Type& obj,std::vector<char>& buffer) { \
     _serialization(true,const_cast<Type&>(obj),buffer); \
     } \
-  void deserialize(Type& obj,const std::vector<char>& buffer) { \
+  template<> inline void deserialize(Type& obj,const std::vector<char>& buffer) { \
     _serialization(false,obj,const_cast<std::vector<char>&>(buffer)); \
     } \
 }}
 
-#define SERIALIZE_MEMBER(Object) ::igl::serializer(s,obj.##Object,std::string(#Object),buffer);
-#define SERIALIZE_MEMBER_NAME(Object,Name) ::igl::serializer(s,obj.##Object,std::string(Name),buffer);
+#define SERIALIZE_MEMBER(Object) ::igl::serializer(s,obj.Object,std::string(#Object),buffer);
+#define SERIALIZE_MEMBER_NAME(Object,Name) ::igl::serializer(s,obj.Object,std::string(Name),buffer);
 
 namespace igl
 {
@@ -112,10 +112,12 @@ namespace igl
   //
   // namespace igl { namespace serialization
   // {
+  //   template<>
   //   inline void serialize(const UserType& obj,std::vector<char>& buffer) {
   //     ::igl::serialize(obj.var,"var",buffer);
   //   }
   //
+  //   template<>
   //   inline void deserialize(UserType& obj,const std::vector<char>& buffer) {
   //     ::igl::deserialize(obj.var,"var",buffer);
   //   }
@@ -657,7 +659,7 @@ namespace igl
     {
       // data
       std::vector<char> tmp;
-      serialize(obj,tmp);
+      serialize<>(obj,tmp);
 
       // size
       size_t size = buffer.size();
@@ -679,7 +681,7 @@ namespace igl
       tmp.resize(size);
       std::copy(iter,iter+size,tmp.begin());
 
-      deserialize(obj,tmp);
+      deserialize<>(obj,tmp);
       iter += size;
     }
 
