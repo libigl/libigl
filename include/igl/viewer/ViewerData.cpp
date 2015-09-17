@@ -18,7 +18,7 @@
 namespace igl {
   namespace serialization {
 
-    IGL_INLINE void serialization(bool s,igl::viewer::ViewerData& obj,std::vector<char>& buffer)
+    inline void serialization(bool s,igl::viewer::ViewerData& obj,std::vector<char>& buffer)
     {
       SERIALIZE_MEMBER(V);
       SERIALIZE_MEMBER(F);
@@ -49,12 +49,14 @@ namespace igl {
       SERIALIZE_MEMBER(face_based);
     }
 
-    IGL_INLINE void serialize(const igl::viewer::ViewerData& obj,std::vector<char>& buffer)
+	template<>
+    inline void serialize(const igl::viewer::ViewerData& obj,std::vector<char>& buffer)
     {
       serialization(true,const_cast<igl::viewer::ViewerData&>(obj),buffer);
     }
 
-    IGL_INLINE void deserialize(igl::viewer::ViewerData& obj,const std::vector<char>& buffer)
+	template<>
+    inline void deserialize(igl::viewer::ViewerData& obj,const std::vector<char>& buffer)
     {
       serialization(false,obj,const_cast<std::vector<char>&>(buffer));
       obj.dirty = igl::viewer::ViewerData::DIRTY_ALL;

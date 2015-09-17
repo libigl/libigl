@@ -21,7 +21,7 @@
 namespace igl {
   namespace serialization {
 
-    IGL_INLINE void serialization(bool s,igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
+    inline void serialization(bool s,igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
     {
       SERIALIZE_MEMBER(shininess);
 
@@ -71,12 +71,14 @@ namespace igl {
       SERIALIZE_MEMBER(proj);
     }
 
-    IGL_INLINE void serialize(const igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
+	template<>
+    inline void serialize(const igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
     {
       serialization(true,const_cast<igl::viewer::ViewerCore&>(obj),buffer);
     }
 
-    IGL_INLINE void deserialize(igl::viewer::ViewerCore& obj,const std::vector<char>& buffer)
+	template<>
+    inline void deserialize(igl::viewer::ViewerCore& obj,const std::vector<char>& buffer)
     {
       serialization(false,obj,const_cast<std::vector<char>&>(buffer));
     }
