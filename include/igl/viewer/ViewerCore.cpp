@@ -32,14 +32,13 @@ namespace igl {
       SERIALIZE_MEMBER(lighting_factor);
 
       SERIALIZE_MEMBER(trackball_angle);
+      SERIALIZE_MEMBER(rotation_type);
 
       SERIALIZE_MEMBER(model_zoom);
       SERIALIZE_MEMBER(model_translation);
 
       SERIALIZE_MEMBER(model_zoom_uv);
       SERIALIZE_MEMBER(model_translation_uv);
-
-      SERIALIZE_MEMBER(object_scale);
 
       SERIALIZE_MEMBER(camera_zoom);
       SERIALIZE_MEMBER(orthographic);
@@ -64,6 +63,8 @@ namespace igl {
       SERIALIZE_MEMBER(line_width);
       SERIALIZE_MEMBER(is_animating);
       SERIALIZE_MEMBER(animation_max_fps);
+
+      SERIALIZE_MEMBER(object_scale);
 
       SERIALIZE_MEMBER(viewport);
       SERIALIZE_MEMBER(view);

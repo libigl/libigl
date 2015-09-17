@@ -46,6 +46,8 @@ namespace igl {
       SERIALIZE_MEMBER(labels_positions);
       SERIALIZE_MEMBER(labels_strings);
 
+      SERIALIZE_MEMBER(dirty);
+
       SERIALIZE_MEMBER(face_based);
     }
 
