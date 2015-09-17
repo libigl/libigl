@@ -820,8 +820,8 @@ namespace viewer
 
   IGL_INLINE bool Viewer::launch_rendering(bool loop)
   {
-    glfwMakeContextCurrent(window);
-    
+    // glfwMakeContextCurrent(window);
+
     // Rendering loop
     while (!glfwWindowShouldClose(window))
     {
