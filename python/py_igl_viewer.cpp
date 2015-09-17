@@ -287,6 +287,9 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     .def_readwrite("data", &igl::viewer::Viewer::data)
     .def_readwrite("core", &igl::viewer::Viewer::core)
     .def("launch", &igl::viewer::Viewer::launch, py::arg("resizable") = true, py::arg("fullscreen") = false)
+    .def("launch_init", &igl::viewer::Viewer::launch_init, py::arg("resizable") = true, py::arg("fullscreen") = false)
+    .def("launch_rendering", &igl::viewer::Viewer::launch_rendering, py::arg("loop") = true)
+    .def("launch_shut", &igl::viewer::Viewer::launch_shut)
     .def("init", &igl::viewer::Viewer::init)
     .def("serialize", [](igl::viewer::Viewer& viewer)
     {
