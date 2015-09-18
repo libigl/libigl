@@ -102,6 +102,18 @@ py::enum_<igl::viewer::ViewerData::DirtyFlags>(viewerdata_class, "DirtyFlags")
     .def_readwrite("labels_strings", &igl::viewer::ViewerData::labels_strings)
     .def_readwrite("dirty", &igl::viewer::ViewerData::dirty)
     .def_readwrite("face_based", &igl::viewer::ViewerData::face_based)
+    .def("serialize", [](igl::viewer::ViewerData& data)
+    {
+      std::vector<char> a;
+      igl::serialize(data,"Data",a);
+      return a;
+    })
+
+    .def("deserialize", [](igl::viewer::ViewerData& data, const std::vector<char>& a)
+    {
+      igl::deserialize(data,"Data",a);
+      return;
+    })
 
     ;
 
@@ -266,6 +278,19 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     })
 
     .def_readwrite("rotation_type",&igl::viewer::ViewerCore::rotation_type)
+
+    .def("serialize", [](igl::viewer::ViewerCore& core)
+    {
+      std::vector<char> a;
+      igl::serialize(core,"Core",a);
+      return a;
+    })
+
+    .def("deserialize", [](igl::viewer::ViewerCore& core, const std::vector<char>& a)
+    {
+      igl::deserialize(core,"Core",a);
+      return;
+    })
 
     // TODO: wrap this!
     // Eigen::Quaternionf trackball_angle;
