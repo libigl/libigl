@@ -867,6 +867,7 @@ namespace viewer
     launch_init(resizable,fullscreen);
     launch_rendering(true);
     launch_shut();
+    return 1;
   }
 } // end namespace
 }
