@@ -75,9 +75,9 @@ public:
       AABB(AABB&& other):
         // initialize via default constructor
         AABB() 
-    {
-      swap(*this,other);
-    }
+      {
+        swap(*this,other);
+      }
       // Seems like there should have been an elegant solution to this using
       // the copy-swap idiom above:
       inline void deinit()
