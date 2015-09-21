@@ -34,6 +34,8 @@
 
 namespace nanogui { class FormScreen; }
 
+class GLFWwindow;
+
 namespace igl
 {
 namespace viewer
