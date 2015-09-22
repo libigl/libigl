@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(610_Boolean)
+project(610_CSGTree)
 
 find_package(CGAL REQUIRED)
 include(${CGAL_USE_FILE})
