@@ -43,13 +43,23 @@ namespace igl
         //typedef Eigen::MatrixXi POBF;
         // http://stackoverflow.com/a/3279550/148668
         CSGTree(const CSGTree & other)
+          :
           // copy things
+          m_V(other.m_V),
+          m_F(other.m_F),
+          m_J(other.m_J),
+          m_number_of_birth_faces(other.m_number_of_birth_faces)
         {
         }
         // copy-swap idiom
         friend void swap(CSGTree& first, CSGTree& second)
         {
           using std::swap;
+          // swap things
+          swap(first.m_V,second.m_V);
+          swap(first.m_F,second.m_F);
+          swap(first.m_J,second.m_J);
+          swap(first.m_number_of_birth_faces,second.m_number_of_birth_faces);
         }
         // Pass-by-value (aka copy)
         CSGTree& operator=(CSGTree other)
