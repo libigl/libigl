@@ -142,7 +142,7 @@ IGL_INLINE bool igl::biharmonic_coordinates(
   // minimize    ½ W' A W'
   // subject to  W(b,:) = J
   return min_quad_with_fixed(
-    A,VectorXd::Zero(A.rows()).eval(),b,J,{},VectorXd(),true,W);
+    A,VectorXd::Zero(A.rows()).eval(),b,J,SparseMatrix<double>(),VectorXd(),true,W);
 }
 
 #ifdef IGL_STATIC_LIBRARY

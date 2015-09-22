@@ -23,7 +23,7 @@ just include igl headers (e.g. `#include <igl/cotmatrix.h>`) and run.  Each
 header file contains a single function (e.g. `igl/cotmatrix.h` contains
 `igl::cotmatrix()`). Most are tailored to operate on a generic triangle mesh
 stored in an n-by-3 matrix of vertex positions V and an m-by-3 matrix of
-triangle indices F. 
+triangle indices F.
 
 _Optionally_ the library may also be [pre-compiled](optional/) into a statically
 linked library, for faster compile times with your projects. This only effects
@@ -37,7 +37,7 @@ conversion table](matlab-to-eigen.html).
 ## Tutorial
 
 As of version 1.0, libigl includes an introductory
-[tutorial](tutorial/tutorial.html) that covers many functionalities.
+[tutorial](http://libigl.github.io/libigl/tutorial/tutorial.html) that covers many functionalities.
 
 ## Installation
 
@@ -135,7 +135,7 @@ We hope to fix this, or at least identify which functions are safe (many of
 them probably work just fine). This requires setting up unit testing, which is
 a major _todo_ for our development.
 
-## Git Submodules 
+## Git Submodules
 Libigl uses git submodules for its _optional_ dependencies,
 in particular, those needed by the OpenGL viewer to run the examples in the
 [tutorial](tutorial/tutorial.html). Git submodules allow use to treat clones of
@@ -192,7 +192,7 @@ few labs/companies/institutions using libigl:
  - ETH Zurich, [Interactive Geometry Lab](http://igl.ethz.ch/) and [Advanced Technologies Lab](http://ait.inf.ethz.ch/), Swizterland
  - George Mason University, [CraGL](http://cs.gmu.edu/~ygingold/), USA
  - [Hong Kong University of Science and Technology](http://www.ust.hk/), USA
- - [National Institute of Informatics](http://www.nii.ac.jp/en/), Japan 
+ - [National Institute of Informatics](http://www.nii.ac.jp/en/), Japan
  - New York University, [Media Research Lab](http://mrl.nyu.edu/), USA
  - NYUPoly, [Game Innovation Lab](http://game.engineering.nyu.edu/), USA
  - [Telecom ParisTech](http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html), Paris, France

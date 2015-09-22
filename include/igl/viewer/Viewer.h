@@ -34,6 +34,8 @@
 
 namespace nanogui { class FormScreen; }
 
+class GLFWwindow;
+
 namespace igl
 {
 namespace viewer
@@ -42,8 +44,13 @@ namespace viewer
   class Viewer
   {
   public:
+    GLFWwindow* window;
 
     IGL_INLINE int launch(bool resizable = true,bool fullscreen = false);
+    IGL_INLINE int launch_init(bool resizable = true,bool fullscreen = false);
+    IGL_INLINE bool launch_rendering(bool loop = true);
+    IGL_INLINE void launch_shut();
+
     IGL_INLINE void init();
 
     // Stores all the viewing options
