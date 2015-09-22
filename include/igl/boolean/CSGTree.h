@@ -18,6 +18,7 @@ namespace igl
   {
     // Class for defining and computing a constructive solid geometry result
     // out of a tree of boolean operations on "solid" triangle meshes.
+    //
     template <typename DerivedF>
     class CSGTree
     {
@@ -62,6 +63,12 @@ namespace igl
         {
           swap(*this,other);
         }
+        // Construct and compute a boolean operation on existing CSGTree nodes.
+        //
+        // Inputs:
+        //   A  Solid result of previous CSG operation (or identity, see below)
+        //   B  Solid result of previous CSG operation (or identity, see below)
+        //   type  type of mesh boolean to compute 
         CSGTree(
           const CSGTree & A,
           const CSGTree & B,
@@ -85,7 +92,7 @@ namespace igl
           m_number_of_birth_faces = 
             A.number_of_birth_faces() + B.number_of_birth_faces();
         }
-        // Overload using string
+        // Overload using string for type
         CSGTree(
           const CSGTree & A,
           const CSGTree & B,
@@ -94,7 +101,12 @@ namespace igl
         {
           // do nothing (all done in constructor).
         }
-        // "Leaf" node with identity operation
+        // "Leaf" node with identity operation on assumed "solid" mesh (V,F)
+        //
+        // Inputs:
+        //   V  #V by 3 list of mesh vertices (in any precision, will be
+        //     converted to exact)
+        //   F  #F by 3 list of mesh face indices into V
         template <typename DerivedV>
         CSGTree(const Eigen::PlainObjectBase<DerivedV> & V, const POBF & F)//:
         // Possible Eigen bug:
@@ -109,12 +121,14 @@ namespace igl
           m_J = VectorJ::LinSpaced(
             m_number_of_birth_faces,0,m_number_of_birth_faces-1);
         }
-        // Returns reference to resulting mesh vertices m_V
+        // Returns reference to resulting mesh vertices m_V in exact scalar
+        // representation
         const MatrixX3E & V() const
         {
           return m_V;
         }
-        // Returns reference to resulting mesh faces m_F
+        // Returns mesh vertices in the desired output type, casting when
+        // appropriate to floating precision.
         template <typename DerivedV>
         Eigen::PlainObjectBase<DerivedV> cast_V() const
         {
@@ -126,14 +140,19 @@ namespace igl
           }
           return dV;
         }
+        // Returns reference to resulting mesh faces m_F
         const POBF & F() const
         {
           return m_F;
         }
+        // Returns reference to "birth parents" indices into [F1;F2;...;Fn]
+        // where F1, ... , Fn are the face lists of the leaf ("original") input
+        // meshes.
         const VectorJ & J() const
         {
           return m_J;
         }
+        // The number of leaf faces = #F1 + #F2 + ... + #Fn
         const size_t & number_of_birth_faces() const
         {
           return m_number_of_birth_faces;
