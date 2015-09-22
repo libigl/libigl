@@ -14,8 +14,6 @@
 #include <igl/viewer/Viewer.h>
 #include <sstream>
 
-#include <igl/serialize.h>
-#include <igl/xml/serialize_xml.h>
 // Input mesh
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -57,49 +55,6 @@ Eigen::MatrixXi FUV_seams;
 Eigen::MatrixXd UV;
 Eigen::MatrixXi FUV;
 
-// Serialization state
-struct MIQState : public igl::Serializable
-{
-  Eigen::MatrixXd UV;
-  Eigen::MatrixXi FUV;
-
-  // You have to define this function to
-  // register the fields you want to serialize
-  void InitSerialization()
-  {
-    this->Add(UV  , "UV");
-    this->Add(FUV , "FUV");
-  }
-
-  virtual ~MIQState(){}
-
-  void printDiff(const MIQState &other, std::ostream& out = std::cout){
-    std::cout << "Start Diff..\n";
-    out << "Checking UV..\n";
-    int nErrorsUV = 0;
-    for(int i = 0; i < UV.rows(); i++){
-      if(UV.row(i) != other.UV.row(i)){
-        if(nErrorsUV == 0)
-          out << "Index\tthisUV\totherUV\n";
-        out << i << UV(i,0) << "\t" << UV(i,1) << "\t" << other.UV(i,0) << "\t" << other.UV(i,1) << std::endl;
-        nErrorsUV++;
-      }
-    }
-
-    out << "Checking FUV..\n";
-    int nErrorsFUV = 0;
-    for(int i = 0; i < FUV.rows(); i++){
-      if(FUV.row(i) != other.FUV.row(i)){
-        if(nErrorsFUV == 0)
-          out << "Index\tthisFUV\totherFUV\n";
-        out << i << FUV(i,0) << "\t" << FUV(i,1) << "\t" << other.FUV(i,0) << "\t" << other.FUV(i,1) << std::endl;
-        nErrorsFUV++;
-      }
-    }
-
-    std::cout << "Finished.\n" << nErrorsUV << " errors in UV.\n" << nErrorsFUV << " errors in FUV.\n";
-  }
-};
 
 // Create a texture that hides the integer translation in the parametrization
 void line_texture(Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &texture_R,
@@ -107,21 +62,15 @@ void line_texture(Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &te
                   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &texture_B)
   {
     unsigned size = 128;
+    unsigned size2 = size/2;
     unsigned lineWidth = 3;
     texture_R.setConstant(size, size, 255);
-    for (unsigned i=0; i<size; ++i){
-      for (unsigned j=0; j<lineWidth; ++j)
+    for (unsigned i=0; i<size; ++i)
+      for (unsigned j=size2-lineWidth; j<=size2+lineWidth; ++j)
         texture_R(i,j) = 0;
-      for (unsigned j=size-lineWidth; j<size; ++j)
+    for (unsigned i=size2-lineWidth; i<=size2+lineWidth; ++i)
+      for (unsigned j=0; j<size; ++j)
         texture_R(i,j) = 0;
-    }
-
-    for (unsigned j=0; j<size; ++j){
-      for (unsigned i=0; i<lineWidth; ++i)
-        texture_R(i,j) = 0;
-      for (unsigned i=size-lineWidth; i<size; ++i)
-        texture_R(i,j) = 0;
-    }
 
     texture_G = texture_R;
     texture_B = texture_R;
@@ -367,115 +316,8 @@ igl::comiso::miq(V,
   // Plot the original mesh with a texture parametrization
   key_down(viewer,'7',0);
 
-  //vertex to face adjacency for MIQ V to UV conversion
-  std::vector<std::vector<int> > VF, VFi;
-  igl::vertex_triangle_adjacency(V,F,VF,VFi);
-
-  //vertex to face adjacency for MIQ UV to V conversion
-  std::vector<std::vector<int> > UVF, UVFi;
-  igl::vertex_triangle_adjacency(UV, FUV, UVF, UVFi);
-
-  // Add MIQ-Tools menu
-  int vertexIndex = 0;
-  bool addPoints = false;
-  viewer.callback_init = [&](igl::viewer::Viewer& viewer)
-  {
-    viewer.ngui->addNewWindow(Eigen::Vector2i(200,10),"MIQ-Tools");
-    viewer.ngui->addNewGroup("Find vertex");
-    viewer.ngui->addVariable(vertexIndex,"Vertex Index", true);
-    viewer.ngui->addVariable(addPoints, "add points");
-    viewer.ngui->addButton("Find (UV)!", [&](){
-        if(vertexIndex < 0 || vertexIndex > UV.rows()){
-          std::cerr << "Vertex index " << vertexIndex << " not in range of UV.\n";
-          return;
-        }
-        if(addPoints)
-          viewer.data.add_points(UV.row(vertexIndex),Eigen::RowVector3d(1,1,0));
-        else
-          viewer.data.set_points(UV.row(vertexIndex),Eigen::RowVector3d(1,1,0));
-    });
-    viewer.ngui->addButton("Find (V)!", [&](){
-        if(vertexIndex < 0 || vertexIndex > V.rows()){
-          std::cerr << "Vertex index " << vertexIndex << " not in range of V.\n";
-          return;
-        }
-        if(addPoints)
-          viewer.data.add_points(V.row(vertexIndex),Eigen::RowVector3d(1,1,0));
-        else
-          viewer.data.set_points(V.row(vertexIndex),Eigen::RowVector3d(1,1,0));
-    });
-    viewer.ngui->addButton("Find converted UV->V", [&](){
-        if(vertexIndex < 0 || vertexIndex > UV.rows()){
-          std::cerr << "Vertex index " << vertexIndex << " not in range of UV.\n";
-          return;
-        }
-
-        int vIndex = F(UVF[vertexIndex][0], UVFi[vertexIndex][0]);
-        if(addPoints)
-          viewer.data.add_points(V.row(vIndex), Eigen::RowVector3d(1,1,0));
-        else
-          viewer.data.set_points(V.row(vIndex), Eigen::RowVector3d(1,1,0));
-        std::cout << "Index " << vertexIndex << "(UV) is index " << vIndex << "(V)\n";
-    });
-    viewer.ngui->addButton("Find converted V->UV", [&](){
-        if(vertexIndex < 0 || vertexIndex > V.rows()){
-          std::cerr << "Vertex index " << vertexIndex << " not in range of V.\n";
-          return;
-        }
-
-        std::vector<int> uvIndices;
-        for(int i = 0; i < VF[vertexIndex].size(); i++){
-          uvIndices.push_back(FUV(VF[vertexIndex][i], VFi[vertexIndex][i]));
-        }
-        std::sort(uvIndices.begin(), uvIndices.end());
-        for(auto it = uvIndices.begin(); it != uvIndices.end(); ++it){
-          // Ignore duplicates
-          if(it != uvIndices.begin())
-            if(*it == *(it-1))
-              continue;
-
-          if(addPoints)
-            viewer.data.add_points(UV.row(*it) ,Eigen::RowVector3d(1,1,0));
-          else
-            viewer.data.set_points(UV.row(*it) ,Eigen::RowVector3d(1,1,0));
-        std::cout << "Index " << vertexIndex << "(V) is index " << *it << "(UV)\n";
-        }
-    });
-
-    viewer.ngui->addNewGroup("Check results");
-    viewer.ngui->addButton("Serialize results", [&](){
-      auto path = nanogui::file_dialog({}, true);
-
-      if(path != ""){
-        MIQState miqstate;
-        miqstate.UV = UV;
-        miqstate.FUV = FUV;
-        // Serialize the state of the application
-        igl::serialize(miqstate,"MIQState",path,true);
-        std::cout << "Serialized UV(" << UV.rows() << " rows) and FUV(" << FUV.rows() << " rows)\n";
-      }
-    });
-
-    viewer.ngui->addButton("Check results with reference", [&](){
-      auto path = nanogui::file_dialog({ {"*", "Any file"}, }, true);
-
-      if(path != ""){
-        MIQState miqstate_ref, miqstate;
-        miqstate.UV = UV;
-        miqstate.FUV = FUV;
-        // Serialize the state of the application
-        igl::deserialize(miqstate_ref,"MIQState",path);
-        std::cout << "this = reference\n";
-        miqstate_ref.printDiff(miqstate);
-      }
-    });
-
-
-    viewer.ngui->layout();
-    return false;
-  };
-
   // Launch the viewer
   viewer.callback_key_down = &key_down;
   viewer.launch();
 }
+
