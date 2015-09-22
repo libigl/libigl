@@ -9,7 +9,7 @@ html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathja
 
 # libigl tutorial notes
 
-#### as presented by Daniele Panozzo and Alec Jacobson at SGP Graduate School 2015
+#### originally presented by Daniele Panozzo and Alec Jacobson at SGP Graduate School 2014
 
 ![](images/libigl-logo.jpg)
 
@@ -90,6 +90,7 @@ lecture notes links to a cross-platform example application.
     * [607 Picking vertices and faces](#pickingverticesandfaces)
     * [608 Locally Injective Maps](#locallyinjectivemaps)
     * [609 Boolean Operations on Meshes](#booleanoperationsonmeshes)
+    * [610 CSG Tree](#csgtree)
 * [Chapter 7: Miscellaneous](#chapter7:miscellaneous)
     * [701 Mesh Statistics](#meshstatistics)
     * [702 Generalized Winding Number](#generalizedwindingnumber)
@@ -2557,6 +2558,41 @@ together coincident vertices, maintaining original triangle orientations.
 Libigl also provides a wrapper `igl::mesh_boolean_cork` to the
 [cork](https://github.com/gilbo/cork), which is typically faster, but is not
 always robust.
+
+## CSG Tree [csgtree]
+
+The [previous section](#booleanoperationsonmeshes) discusses using
+`igl::boolean::mesh_boolean` to compute the result of a _single_ boolean
+operation on two input triangle meshes. When employing constructive solid
+geometry (CSG) as a modeling paradigm, shapes are represented as the result of
+many such binary operations. The sequence is stored in a binary tree.
+
+Libigl uses exact arithmetic internally to construct the intermediary boolean
+results robustly. "Rounding" this result to floating point (even double
+precision) would cause problems if re-injected into a further boolean
+operation. To facilitate CSG tree operations and encourage callers _not_ to
+call `igl::boolean::mesh_boolean` multiple times explicitly, libigl implements
+a class `igl::boolean::CSGTree`. Leaf nodes of this class are simply "solid"
+meshes (otherwise good input to `igl::boolean::mesh_boolean`). Interior nodes
+of the tree combine two children with a boolean operation. Using the intializer
+list constructor it is easy to hard-code specific tree constructions. Here's an
+example taking the _intersection_ of a cube A and sphere B _minus_ the _union_
+of three cylinders:
+
+```cpp
+// Compute result of (A ∩ B) \ ((C ∪ D) ∪ E)
+igl::boolean::CSGTree<MatrixXi> CSGTree = 
+  {{{VA,FA},{VB,FB},"i"},{{{VC,FC},{VD,FD},"u"},{VE,FE},"u"},"m"};
+```
+
+![A CSG Tree represents a shape as a combination of binary boolean
+operations](images/cube-sphere-cylinders-csg-tree.jpg)
+
+Example [610](610_CSGTree/main.cpp) computes each intermediary CSG result and
+then the final composite.
+
+![Example [610](610_CSGTree/main.cpp) computes  complex CSG Tree operation on 5
+input meshes.](images/cube-sphere-cylinders-csg.gif)
 
 # Miscellaneous [chapter7:miscellaneous]
 
