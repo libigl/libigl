@@ -816,6 +816,7 @@ namespace viewer
 
     // Initialize IGL viewer
     init();
+    return EXIT_SUCCESS;
   }
 
   IGL_INLINE bool Viewer::launch_rendering(bool loop)
@@ -848,6 +849,7 @@ namespace viewer
       if (!loop)
         return !glfwWindowShouldClose(window);
     }
+    return EXIT_SUCCESS;
   }
 
   IGL_INLINE void Viewer::launch_shut()
@@ -864,9 +866,11 @@ namespace viewer
 
   IGL_INLINE int Viewer::launch(bool resizable,bool fullscreen)
   {
+    // TODO return values are being ignored...
     launch_init(resizable,fullscreen);
     launch_rendering(true);
     launch_shut();
+    return EXIT_SUCCESS;
   }
 } // end namespace
 }
