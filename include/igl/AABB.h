@@ -719,7 +719,7 @@ inline void igl::AABB<DerivedV,DIM>::squared_distance(
     int Ip;
     sqrD(p) = squared_distance(V,Ele,Pp,Ip,c);
     I(p) = Ip;
-    C.row(p) = c;
+    C.row(p).head(DIM) = c;
   }
 }
 
