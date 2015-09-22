@@ -21,15 +21,16 @@ namespace igl
     // Class for defining and computing a constructive solid geometry result
     // out of a tree of boolean operations on "solid" triangle meshes.
     //
-    template <typename DerivedF>
+    //template <typename DerivedF>
     class CSGTree
     {
       private:
         typedef CGAL::Epeck::FT ExactScalar;
         typedef Eigen::Matrix<ExactScalar,Eigen::Dynamic,3> MatrixX3E;
-        typedef Eigen::PlainObjectBase<DerivedF> POBF;
-        typedef Eigen::Matrix<typename DerivedF::Index,Eigen::Dynamic,1> 
-          VectorJ;
+        //typedef Eigen::PlainObjectBase<DerivedF> POBF;
+        typedef Eigen::MatrixXi POBF;
+        typedef POBF::Index FIndex;
+        typedef Eigen::Matrix<FIndex,Eigen::Dynamic,1> VectorJ;
         // Resulting mesh
         MatrixX3E m_V;
         POBF m_F;
@@ -48,6 +49,8 @@ namespace igl
           :
           // copy things
           m_V(other.m_V),
+          // This is an issue if m_F is templated
+          // https://forum.kde.org/viewtopic.php?f=74&t=128414
           m_F(other.m_F),
           m_J(other.m_J),
           m_number_of_birth_faces(other.m_number_of_birth_faces)
@@ -59,6 +62,8 @@ namespace igl
           using std::swap;
           // swap things
           swap(first.m_V,second.m_V);
+          // This is an issue if m_F is templated, similar to
+          // https://forum.kde.org/viewtopic.php?f=74&t=128414
           swap(first.m_F,second.m_F);
           swap(first.m_J,second.m_J);
           swap(first.m_number_of_birth_faces,second.m_number_of_birth_faces);
