@@ -20,3 +20,10 @@ IGL_INLINE void igl::cgal::assign_scalar(
 {
   d = CGAL::to_double(cgal);
 }
+
+IGL_INLINE void igl::cgal::assign_scalar(
+  const double & c,
+  double & d)
+{
+  d = c;
+}

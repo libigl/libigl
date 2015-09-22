@@ -86,10 +86,8 @@ set -o xtrace
 # Clone repo
 guard rm -rf /var/tmp/libigl
 cd /var/tmp/
-guard git clone git@github.com:libigl/libigl.git
+guard git clone --recursive git@github.com:libigl/libigl.git
 cd libigl
-# Update subrepos
-guard git submodule update --init --recursive
 # Build static library
 mkdir lib
 cd lib

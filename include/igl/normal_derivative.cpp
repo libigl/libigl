@@ -64,7 +64,7 @@ IGL_INLINE void igl::normal_derivative(
           2);
       DDV *= S;
 
-      IJV.resize(DDV.size());
+      IJV.reserve(DDV.size());
       for(size_t f = 0;f<6*4;f++)
       {
         for(size_t e = 0;e<m;e++)
@@ -95,7 +95,7 @@ IGL_INLINE void igl::normal_derivative(
         slice(C,(VectorXi(12)<<1,1,2,2,2,2,0,0,0,0,1,1).finished(),2);
       DDV *= S;
 
-      IJV.resize(DDV.size());
+      IJV.reserve(DDV.size());
       for(size_t f = 0;f<12;f++)
       {
         for(size_t e = 0;e<m;e++)
