@@ -11,6 +11,8 @@
 #include <igl/boolean/string_to_mesh_boolean_type.h>
 #include <igl/boolean/MeshBooleanType.h>
 #include <igl/boolean/mesh_boolean.h>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#include <CGAL/number_utils.h>
 
 namespace igl
 {
