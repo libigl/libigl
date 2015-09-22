@@ -274,7 +274,11 @@ IGL_INLINE void igl::cgal::remesh_intersections(
   // incoming reps are different then the points are unique.
   for(Index v = 0;v<V.rows();v++)
   {
-    const Point_3 p(V(v,0),V(v,1),V(v,2));
+    typename Kernel::FT p0,p1,p2;
+    assign_scalar(V(v,0),p0);
+    assign_scalar(V(v,1),p1);
+    assign_scalar(V(v,2),p2);
+    const Point_3 p(p0,p1,p2);
     if(vv2i.count(p)==0)
     {
       vv2i[p] = v;
