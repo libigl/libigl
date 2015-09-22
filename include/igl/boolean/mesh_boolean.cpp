@@ -203,6 +203,12 @@ IGL_INLINE void igl::boolean::mesh_boolean(
   VectorXi I;
   Matrix<bool,Dynamic,1> flip;
   peel_outer_hull_layers(EV,CF,CN,I,flip);
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+  for(int f = 0;f<I.size();f++)
+  {
+    cout<<I(f)<<"\t"<<flip(f)<<endl;
+  }
+#endif
   // 0 is "first" iteration, so it's odd
   Array<bool,Dynamic,1> odd = igl::mod(I,2).array()==0;
 
@@ -293,7 +299,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
 #ifdef IGL_MESH_BOOLEAN_DEBUG
       else
       {
-        cout<<"Skipping "<<uG2G.size()<<" facets..."<<endl;
+        cout<<"Skipping "<<uG2G[ug].size()<<" facets..."<<endl;
       }
 #endif
     }
