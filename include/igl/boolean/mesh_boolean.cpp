@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "mesh_boolean.h"
+#include "assign_scalar.h"
 #include <igl/per_face_normals.h>
 #include <igl/boundary_facets.h>
 #include <igl/exterior_edges.h>
