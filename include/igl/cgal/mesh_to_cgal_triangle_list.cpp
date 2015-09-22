@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "mesh_to_cgal_triangle_list.h"
+#include "assign_scalar.h"
 
 #include <cassert>
 
@@ -22,6 +23,17 @@ IGL_INLINE void igl::cgal::mesh_to_cgal_triangle_list(
   typedef CGAL::Triangle_3<Kernel> Triangle_3; 
   // Must be 3D
   assert(V.cols() == 3);
+  // **Copy** to convert to output type (this is especially/only needed if the
+  // input type DerivedV::Scalar is CGAL::Epeck
+  Eigen::Matrix<
+    typename Kernel::FT,
+    DerivedV::RowsAtCompileTime,
+    DerivedV::ColsAtCompileTime> 
+    KV(V.rows(),V.cols());
+  for(int i = 0;i<V.size();i++)
+  {
+    assign_scalar(*(V.data()+i),*(KV.data()+i));
+  }
   // Must be triangles
   assert(F.cols() == 3);
   T.reserve(F.rows());
@@ -30,9 +42,9 @@ IGL_INLINE void igl::cgal::mesh_to_cgal_triangle_list(
   {
     T.push_back(
       Triangle_3(
-        Point_3( V(F(f,0),0), V(F(f,0),1), V(F(f,0),2)),
-        Point_3( V(F(f,1),0), V(F(f,1),1), V(F(f,1),2)),
-        Point_3( V(F(f,2),0), V(F(f,2),1), V(F(f,2),2))));
+        Point_3( KV(F(f,0),0), KV(F(f,0),1), KV(F(f,0),2)),
+        Point_3( KV(F(f,1),0), KV(F(f,1),1), KV(F(f,1),2)),
+        Point_3( KV(F(f,2),0), KV(F(f,2),1), KV(F(f,2),2))));
   }
 }
 

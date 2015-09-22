@@ -105,7 +105,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
   using namespace igl::cgal;
   MeshBooleanType eff_type = type;
   // Concatenate A and B into a single mesh
-  typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
+  typedef CGAL::Epeck Kernel;
   typedef Kernel::FT ExactScalar;
   typedef typename DerivedVC::Scalar Scalar;
   typedef typename DerivedFC::Scalar Index;
@@ -178,7 +178,9 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     CV.resize(EV.rows(), EV.cols());
     std::transform(EV.data(), EV.data() + EV.rows()*EV.cols(),
             CV.data(), [&](ExactScalar val) {
-            return CGAL::to_double(val);
+            Scalar c;
+            assign_scalar(val,c);
+            return c;
             });
   }
 
@@ -248,7 +250,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
   }
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   {
-    MatrixXd O;
+    MatrixXi O;
     boundary_facets(FC,O);
     cout<<"# boundary: "<<O.rows()<<endl;
   }
@@ -334,7 +336,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
   //FC = G;
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   {
-    MatrixXd O;
+    MatrixXi O;
     boundary_facets(FC,O);
     cout<<"# boundary: "<<O.rows()<<endl;
   }
