@@ -279,7 +279,6 @@ namespace viewer
     callback_mouse_scroll_data  = nullptr;
     callback_key_down_data      = nullptr;
     callback_key_up_data        = nullptr;
-
   }
 
   IGL_INLINE void Viewer::init_plugins()
@@ -726,10 +725,9 @@ namespace viewer
     this->save_mesh_to_file(fname.c_str());
   }
 
-  IGL_INLINE int Viewer::launch(bool resizable,bool fullscreen)
-  {
-    GLFWwindow* window;
 
+  IGL_INLINE int  Viewer::launch_init(bool resizable,bool fullscreen)
+  {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
       return EXIT_FAILURE;
@@ -818,6 +816,11 @@ namespace viewer
 
     // Initialize IGL viewer
     init();
+  }
+
+  IGL_INLINE bool Viewer::launch_rendering(bool loop)
+  {
+    // glfwMakeContextCurrent(window);
 
     // Rendering loop
     while (!glfwWindowShouldClose(window))
@@ -841,8 +844,14 @@ namespace viewer
       {
         glfwWaitEvents();
       }
-    }
 
+      if (!loop)
+        return !glfwWindowShouldClose(window);
+    }
+  }
+
+  IGL_INLINE void Viewer::launch_shut()
+  {
     opengl.free();
     core.shut();
 
@@ -850,7 +859,14 @@ namespace viewer
 
     glfwDestroyWindow(window);
     glfwTerminate();
-    return EXIT_SUCCESS;
+    return;
+  }
+
+  IGL_INLINE int Viewer::launch(bool resizable,bool fullscreen)
+  {
+    launch_init(resizable,fullscreen);
+    launch_rendering(true);
+    launch_shut();
   }
 } // end namespace
 }

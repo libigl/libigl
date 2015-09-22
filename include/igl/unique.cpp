@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "unique.h"
 #include "sort.h"
@@ -97,9 +97,8 @@ IGL_INLINE void igl::unique(
 
 template <
   typename DerivedA,
-  typename DerivedC,
-  typename DerivedIA,
-  typename DerivedIC>
+  typename DerivedC
+  >
 IGL_INLINE void igl::unique(
     const Eigen::PlainObjectBase<DerivedA> & A,
     Eigen::PlainObjectBase<DerivedC> & C)
@@ -123,7 +122,7 @@ IGL_INLINE void igl::unique(
 //   Eigen::PlainObjectBase<DerivedIC>& IC)
 // {
 //   using namespace std;
-// 
+//
 //   typedef Eigen::Matrix<typename DerivedA::Scalar, Eigen::Dynamic, 1> RowVector;
 //   vector<SortableRow<RowVector> > rows;
 //   rows.resize(A.rows());
@@ -134,12 +133,12 @@ IGL_INLINE void igl::unique(
 //     rows[i] = SortableRow<RowVector>(ri);
 //   }
 //   vector<SortableRow<RowVector> > vC;
-// 
+//
 //   // unique on rows
 //   vector<size_t> vIA;
 //   vector<size_t> vIC;
 //   unique(rows,vC,vIA,vIC);
-// 
+//
 //   // Convert to eigen
 //   C.resize(vC.size(),A.cols());
 //   IA.resize(vIA.size(),1);
