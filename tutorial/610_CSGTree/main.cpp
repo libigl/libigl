@@ -13,11 +13,11 @@ int main(int argc, char * argv[])
   MatrixXi FA,FB,FC,FD,FE;
   MatrixXd VA,VB,VC,VD,VE;
   // Read in inputs as double precision floating point meshes
-  read_triangle_mesh(     "cube.obj",VA,FA);
-  read_triangle_mesh(   "sphere.obj",VB,FB);
-  read_triangle_mesh("xcylinder.obj",VC,FC);
-  read_triangle_mesh("ycylinder.obj",VD,FD);
-  read_triangle_mesh("zcylinder.obj",VE,FE);
+  read_triangle_mesh("../shared/cube.obj"     ,VA,FA);
+  read_triangle_mesh("../shared/sphere.obj"   ,VB,FB);
+  read_triangle_mesh("../shared/xcylinder.obj",VC,FC);
+  read_triangle_mesh("../shared/ycylinder.obj",VD,FD);
+  read_triangle_mesh("../shared/zcylinder.obj",VE,FE);
   igl::viewer::Viewer viewer;
 
   int num_views = 5+4;
@@ -26,7 +26,6 @@ int main(int argc, char * argv[])
   {
     viewer.data.clear();
     // CSGTree templated on type of F
-    typedef CSGTree<MatrixXi> CSGTreei;
     VectorXd I;
     const auto & set_mesh = 
       [&](const MatrixXd & V, const MatrixXi & F, const int i)
@@ -53,7 +52,7 @@ int main(int argc, char * argv[])
         break;
       default:
       {
-        CSGTreei M;
+        CSGTree M;
         Matrix<long int,Dynamic,1> J;
         switch(view_id)
         {
