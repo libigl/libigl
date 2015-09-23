@@ -10,6 +10,7 @@
 #include "../outer_element.h"
 #include "order_facets_around_edge.h"
 #include <algorithm>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
 template<
     typename DerivedV,
@@ -36,10 +37,13 @@ IGL_INLINE void igl::cgal::outer_facet(
     //
     //    3. Because the vertex s is an outer vertex by construction (see
     //    implemnetation of outer_edge()). The first adjacent facet is facing
-    //    outside (i.e. flipped=false) if it contains directed edge (s, d).  
-    //
-    typedef typename DerivedV::Scalar Scalar; typedef typename DerivedV::Index
-        Index; const size_t INVALID = std::numeric_limits<size_t>::max();
+    //    outside (i.e. flipped=false) if it has positive X normal component.
+    //    If it has zero normal component, it is facing outside if it contains
+    //    directed edge (s, d).  
+
+    typedef typename DerivedV::Scalar Scalar;
+    typedef typename DerivedV::Index Index;
+    const size_t INVALID = std::numeric_limits<size_t>::max();
 
     Index s,d;
     Eigen::Matrix<Index,Eigen::Dynamic,1> incident_faces;
@@ -70,5 +74,18 @@ IGL_INLINE void igl::cgal::outer_facet(
     order_facets_around_edge(V, F, s, d, adj_faces, order);
 
     f = signed_index_to_index(adj_faces[order[0]]);
-    flipped = adj_faces[order[0]] > 0;
+    if (V(F(f, 0),0) == V(F(f, 1),0) && V(F(f, 0),0) == V(F(f, 2),0)) {
+        // The face is perpendicular to X axis.
+        typedef CGAL::Exact_predicates_exact_constructions_kernel K;
+        typedef K::Point_2 Point_2;
+        Point_2 p0(V(F(f,0),1), V(F(f,0),2));
+        Point_2 p1(V(F(f,1),1), V(F(f,1),2));
+        Point_2 p2(V(F(f,2),1), V(F(f,2),2));
+        auto orientation = CGAL::orientation(p0, p1, p2);
+        assert(orientation != CGAL::COLLINEAR);
+        flipped = (orientation == CGAL::NEGATIVE);
+
+    } else {
+        flipped = adj_faces[order[0]] > 0;
+    }
 }

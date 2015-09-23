@@ -81,8 +81,22 @@ void igl::cgal::order_facets_around_edge(
                 order(1, 0) = 1;
                 break;
             case CGAL::COPLANAR:
-                order(0, 0) = adj_faces[0] < adj_faces[1] ? 0:1;
-                order(1, 0) = adj_faces[0] < adj_faces[1] ? 1:0;
+                {
+                    Plane_3 P1(ps, pd, p1);
+                    Plane_3 P2(ps, pd, p2);
+                    if (P1.orthogonal_direction() == P2.orthogonal_direction()){
+                        // Duplicated face, use index to break tie.
+                        order(0, 0) = adj_faces[0] < adj_faces[1] ? 0:1;
+                        order(1, 0) = adj_faces[0] < adj_faces[1] ? 1:0;
+                    } else {
+                        // Coplanar faces, one on each side of the edge.
+                        // It is equally valid to order them (0, 1) or (1, 0).
+                        // I cannot think of any reason to prefer one to the
+                        // other.  So just use (0, 1) ordering by default.
+                        order(0, 0) = 0;
+                        order(1, 0) = 1;
+                    }
+                }
                 break;
             default:
                 assert(false);
@@ -199,7 +213,18 @@ void igl::cgal::order_facets_around_edge(
         const Point_3& p_a = opposite_vertices[order(i, 0)];
         const Point_3& p_b =
             opposite_vertices[order((i+1)%num_adj_faces, 0)];
-        if (CGAL::orientation(p_s, p_d, p_a, p_b) == CGAL::POSITIVE) {
+        auto orientation = CGAL::orientation(p_s, p_d, p_a, p_b);
+        if (orientation == CGAL::POSITIVE) {
+            // Angle between triangle (p_s, p_d, p_a) and (p_s, p_d, p_b) is
+            // more than 180 degrees.
+            start_idx = (i+1)%num_adj_faces;
+            break;
+        } else if (orientation == CGAL::COPLANAR &&
+                Plane_3(p_s, p_d, p_a).orthogonal_direction() !=
+                Plane_3(p_s, p_d, p_b).orthogonal_direction()) {
+            // All 4 points are coplanar, but p_a and p_b are on each side of
+            // the edge (p_s, p_d).  This means the angle between triangle
+            // (p_s, p_d, p_a) and (p_s, p_d, p_b) is exactly 180 degrees.
             start_idx = (i+1)%num_adj_faces;
             break;
         }
