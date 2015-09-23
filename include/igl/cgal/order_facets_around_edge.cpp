@@ -234,3 +234,89 @@ void igl::cgal::order_facets_around_edge(
         order(i, 0) = circular_order((start_idx + i)%num_adj_faces, 0);
     }
 }
+
+template<
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedI>
+IGL_INLINE
+void igl::cgal::order_facets_around_edge(
+        const Eigen::PlainObjectBase<DerivedV>& V,
+        const Eigen::PlainObjectBase<DerivedF>& F,
+        size_t s, size_t d, 
+        const std::vector<int>& adj_faces,
+        const Eigen::PlainObjectBase<DerivedV>& pivot_point,
+        Eigen::PlainObjectBase<DerivedI>& order) {
+
+    assert(V.cols() == 3);
+    assert(F.cols() == 3);
+    auto signed_index_to_index = [&](int signed_idx) {
+        return abs(signed_idx) -1;
+    };
+    auto get_opposite_vertex_index = [&](size_t fid) {
+        if (F(fid, 0) != s && F(fid, 0) != d) return F(fid, 0);
+        if (F(fid, 1) != s && F(fid, 1) != d) return F(fid, 1);
+        if (F(fid, 2) != s && F(fid, 2) != d) return F(fid, 2);
+        assert(false);
+    };
+
+    const size_t N = adj_faces.size();
+    const size_t num_faces = N + 1; // N adj faces + 1 pivot face
+
+    DerivedV vertices(num_faces + 2, 3);
+    for (size_t i=0; i<N; i++) {
+        const size_t fid = signed_index_to_index(adj_faces[i]);
+        vertices.row(i) = V.row(get_opposite_vertex_index(fid));
+    }
+    vertices.row(N  ) = pivot_point;
+    vertices.row(N+1) = V.row(s);
+    vertices.row(N+2) = V.row(d);
+
+    DerivedF faces(num_faces, 3);
+    for (size_t i=0; i<N; i++) {
+        if (adj_faces[i] < 0) {
+            faces(i,0) = N+1; // s
+            faces(i,1) = N+2; // d
+            faces(i,2) = i  ;
+        } else {
+            faces(i,0) = N+2; // d
+            faces(i,1) = N+1; // s
+            faces(i,2) = i  ;
+        }
+    }
+    // Last face is the pivot face.
+    faces(N, 0) = N+1;
+    faces(N, 1) = N+2;
+    faces(N, 2) = N;
+
+    std::vector<int> adj_faces_with_pivot(num_faces);
+    for (size_t i=0; i<num_faces; i++) {
+        if (faces(i,0) == N+1 && faces(i,1) == N+2) {
+            adj_faces_with_pivot[i] = int(i+1) * -1;
+        } else {
+            adj_faces_with_pivot[i] = int(i+1);
+        }
+    }
+
+    DerivedI order_with_pivot;
+    igl::cgal::order_facets_around_edge(
+            vertices, faces, N+1, N+2,
+            adj_faces_with_pivot, order_with_pivot);
+
+    assert(order_with_pivot.size() == num_faces);
+    order.resize(N);
+    size_t pivot_index = num_faces + 1;
+    for (size_t i=0; i<num_faces; i++) {
+        if (order_with_pivot[i] == N) {
+            pivot_index = i;
+            break;
+        }
+    }
+    assert(pivot_index < num_faces);
+
+    for (size_t i=0; i<N; i++) {
+        order[i] = order_with_pivot[(pivot_index+i+1)%num_faces];
+    }
+}
+
+
