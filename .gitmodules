@@ -3,7 +3,6 @@
 url=https://github.com/libigl/nanogui.git
         fetchRecursiveSubmodules = true
         ignore = dirty
-
 [submodule "external/embree"]
 	path = external/embree
 	url = https://github.com/embree/embree.git
@@ -11,3 +10,6 @@ url=https://github.com/libigl/nanogui.git
 [submodule "external/googletest"]
 	path = external/googletest
 	url = https://github.com/google/googletest.git
+[submodule "external/pybind11"]
+	path = external/pybind11
+	url = https://github.com/wjakob/pybind11.git

@@ -11,7 +11,9 @@
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 
-namespace igl {
+namespace igl 
+{
+  // Data class for the Conjugate Frame Field Solver
   template <typename DerivedV, typename DerivedF>
   class ConjugateFFSolverData
   {

@@ -1,0 +1,12 @@
+% Load a mesh in OFF format
+V = py.igl.eigen.MatrixXd();
+F = py.igl.eigen.MatrixXi();
+py.igl.readOFF('../tutorial/shared/beetle.off', V, F);
+
+V
+
+% Plot the mesh
+viewer = py.tcpviewer.TCPViewer()
+viewer.data.set_mesh(V, F)
+viewer.launch()
+
