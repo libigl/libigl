@@ -96,6 +96,7 @@ lecture notes links to a cross-platform example application.
     * [702 Generalized Winding Number](#generalizedwindingnumber)
     * [703 Mesh Decimation](#meshdecimation)
     * [704 Signed Distances](#signeddistances)
+    * [705 Marching Cubes](#marchingcubes)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -2923,6 +2924,38 @@ with the pseudo-normal test.
 ![Example [704](704_SignedDistance/main.cpp) computes signed distance on
 slices through the bunny.](images/bunny-signed-distance.gif)
 
+## Marching Cubes [marchingcubes]
+
+Often 3D data is captured as scalar field defined over space $f(\mathbf{x}) :
+\mathcal{R}^3 \rightarrow \mathcal{R}$. Lurking within this field,
+_iso-surfaces_ of the scalar field are often salient geometric objects. The
+iso-surface at value $v$ is composed of all points $\mathbf{x}$ in
+$\mathcal{R}^3$ such that $f(\mathbf{x}) = v$. A core problem in geometry
+processing is to extract an iso-surface as a triangle mesh for further
+mesh-based processing or visualization. This is referred to as iso-contouring.
+
+"Marching Cubes" [lorensen_1987] is a [famous
+method](https://en.wikipedia.org/wiki/Marching_cubes) for iso-contouring
+tri-linear functions $f$ on a regular lattice (aka grid). The core idea of this
+method is to contour the iso-surface passing through each cell  (if it does at
+all) with a predefined topology (aka connectivity) chosen from a look up table
+depending on the function values at each vertex of the cell. The method
+iterates ("marches") over all cells ("cubes") in the grid and stitches together
+the final, watertight mesh.
+
+In libigl, `igl::marching_cubes` constructs a triangle mesh `(V,F)` from an
+input scalar field `S` sampled at vertex locations `GV` of a `nx` by `ny` by
+`nz` regular grid:
+
+```cpp
+igl::marching_cubes(S,GV,nx,ny,nz,V,F);
+```
+
+![([Example 705](705_MarchingCubes/main.cpp)) samples signed distance to the
+input mesh (left) and then reconstructs the surface using
+marching cubes to counter the 0-level set (center). For comparison, clamping
+this signed distance field to an indicator function and contouring reveals
+serious aliasing artifacts.](images/armadillo-marching-cubes.jpg)
 
 # Outlook for continuing development [future]
 
@@ -3044,6 +3077,10 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   Wang.  [General Planar Quadrilateral Mesh Design Using Conjugate Direction
   Field](http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf),
   2008.
+[#lorensen_1987]: W.E. Lorensen and Harvey E. Cline. [Marching cubes: A high
+  resolution 3d surface construction
+  algorithm](https://www.google.com/search?q=Marching+cubes:+A+high+resolution+3d
+  surface+construction+algorithm), 1987.
 [#mcadams_2011]: Alexa McAdams, Andrew Selle, Rasmus Tamstorf, Joseph Teran,
   Eftychios Sifakis. [Computing the Singular Value Decomposition of 3x3
   matrices with minimal branching and elementary floating point
