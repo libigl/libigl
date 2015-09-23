@@ -177,12 +177,14 @@ IGL_INLINE void igl::boolean::mesh_boolean(
   {
     libigl_resolve(V,F,EV,CF,CJ);
     CV.resize(EV.rows(), EV.cols());
-    std::transform(EV.data(), EV.data() + EV.rows()*EV.cols(),
-            CV.data(), [&](ExactScalar val) {
-            Scalar c;
-            assign_scalar(val,c);
-            return c;
-            });
+    // Just use f'ing for loops. What if EV and CV don't use the same ordering?
+    for(int i=0;i<EV.rows();i++)
+    {
+      for(int j=0;j<EV.cols();j++)
+      {
+        assign_scalar(EV(i,j),CV(i,j));
+      }
+    }
   }
 
   if(type == MESH_BOOLEAN_TYPE_RESOLVE)
