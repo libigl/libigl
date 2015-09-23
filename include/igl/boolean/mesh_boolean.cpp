@@ -201,8 +201,11 @@ IGL_INLINE void igl::boolean::mesh_boolean(
   VectorXi I;
   Matrix<bool,Dynamic,1> flip;
   peel_outer_hull_layers(EV,CF,I,flip);
-  // 0 is "first" iteration, so it's odd
-  Array<bool,Dynamic,1> odd = igl::mod(I,2).array()==0;
+  //Array<bool,Dynamic,1> even = igl::mod(I,2).array()==0;
+  const auto even = [&](const Index & f)->bool
+  {
+    return (I(f)%2)==0;
+  };
 
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"categorize..."<<endl;
@@ -219,7 +222,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     {
       case MESH_BOOLEAN_TYPE_XOR:
       case MESH_BOOLEAN_TYPE_UNION:
-        if((odd(f)&&!flip(f))||(!odd(f)&&flip(f)))
+        if((even(f)&&!flip(f))||(!even(f)&&flip(f)))
         {
           vG.push_back(f);
           Gflip.push_back(false);
@@ -230,7 +233,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
         }
         break;
       case MESH_BOOLEAN_TYPE_INTERSECT:
-        if((!odd(f) && !flip(f)) || (odd(f) && flip(f)))
+        if((!even(f) && !flip(f)) || (even(f) && flip(f)))
         {
           vG.push_back(f);
           Gflip.push_back(type == MESH_BOOLEAN_TYPE_MINUS);
