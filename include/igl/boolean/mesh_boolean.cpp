@@ -177,12 +177,14 @@ IGL_INLINE void igl::boolean::mesh_boolean(
   {
     libigl_resolve(V,F,EV,CF,CJ);
     CV.resize(EV.rows(), EV.cols());
-    std::transform(EV.data(), EV.data() + EV.rows()*EV.cols(),
-            CV.data(), [&](ExactScalar val) {
-            Scalar c;
-            assign_scalar(val,c);
-            return c;
-            });
+    // Just use f'ing for loops. What if EV and CV don't use the same ordering?
+    for(int i=0;i<EV.rows();i++)
+    {
+      for(int j=0;j<EV.cols();j++)
+      {
+        assign_scalar(EV(i,j),CV(i,j));
+      }
+    }
   }
 
   if(type == MESH_BOOLEAN_TYPE_RESOLVE)
@@ -201,8 +203,11 @@ IGL_INLINE void igl::boolean::mesh_boolean(
   VectorXi I;
   Matrix<bool,Dynamic,1> flip;
   peel_outer_hull_layers(EV,CF,I,flip);
-  // 0 is "first" iteration, so it's odd
-  Array<bool,Dynamic,1> odd = igl::mod(I,2).array()==0;
+  //Array<bool,Dynamic,1> even = igl::mod(I,2).array()==0;
+  const auto even = [&](const Index & f)->bool
+  {
+    return (I(f)%2)==0;
+  };
 
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"categorize..."<<endl;
@@ -219,7 +224,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     {
       case MESH_BOOLEAN_TYPE_XOR:
       case MESH_BOOLEAN_TYPE_UNION:
-        if((odd(f)&&!flip(f))||(!odd(f)&&flip(f)))
+        if((even(f)&&!flip(f))||(!even(f)&&flip(f)))
         {
           vG.push_back(f);
           Gflip.push_back(false);
@@ -230,7 +235,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
         }
         break;
       case MESH_BOOLEAN_TYPE_INTERSECT:
-        if((!odd(f) && !flip(f)) || (odd(f) && flip(f)))
+        if((!even(f) && !flip(f)) || (even(f) && flip(f)))
         {
           vG.push_back(f);
           Gflip.push_back(type == MESH_BOOLEAN_TYPE_MINUS);
