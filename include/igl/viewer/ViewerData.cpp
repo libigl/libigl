@@ -393,6 +393,12 @@ IGL_INLINE void igl::viewer::ViewerData::uniform_colors(Eigen::Vector3d ambient,
 
 IGL_INLINE void igl::viewer::ViewerData::grid_texture()
 {
+  // Don't do anything for an empty mesh
+  if(V.rows() == 0)
+  {
+    V_uv.resize(V.rows(),2);
+    return;
+  }
   if (V_uv.rows() == 0)
   {
     V_uv = V.block(0, 0, V.rows(), 2);

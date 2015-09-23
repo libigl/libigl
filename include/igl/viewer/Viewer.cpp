@@ -363,7 +363,9 @@ namespace viewer
                    Eigen::Vector3d(255.0/255.0,228.0/255.0,58.0/255.0),
                    Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
     if (data.V_uv.rows() == 0)
+    {
       data.grid_texture();
+    }
 
     core.align_camera_center(data.V,data.F);
 
