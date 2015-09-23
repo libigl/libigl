@@ -153,7 +153,7 @@ IGL_INLINE void igl::mvc(const Eigen::MatrixXd &V, const Eigen::MatrixXd &C, Eig
         // handled that)
         // domain vertex j is on the segment from i to i+1 if the distances from vj to
         // pi and pi+1 are about 
-        if(abs((dist_C_V(i,j) + dist_C_V_next) / edge_length - 1) < EPS)
+        if(std::abs((dist_C_V(i,j) + dist_C_V_next) / edge_length - 1) < EPS)
           on_segment.push_back(std::make_pair(j,i));
       
     }

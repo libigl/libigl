@@ -8,6 +8,15 @@ SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../tutorial/cmake)
 find_package(EIGEN REQUIRED)
 
 add_definitions(-DIGL_STATIC_LIBRARY)
+#option(LIBIGL_NO_OPENGL "Disable OpenGL2 legacy features in main library" ON)
+#option(LIBIGL_OPENGL_4 "Enable OpenGL4 features in optional libraries" ON)
+#
+#if(LIBIGL_NO_OPENGL)
+#  add_definitions(-DIGL_NO_OPENGL)
+#endif(LIBIGL_NO_OPENGL)
+#if(LIBIGL_OPENGL_4)
+#  add_definitions(-DIGL_OPENGL_4)
+#endif(LIBIGL_OPENGL_4)
 
 ## Check for GLFW
 find_package(GLFWH QUIET)
@@ -66,7 +75,7 @@ else (MATLAB_FOUND)
 endif(MATLAB_FOUND)
 
 ## Check for EMBREE, if not available skip the examples that depends on it
-find_package(EMBREE QUIET)
+find_package(EMBREEH QUIET)
 if (EMBREE_FOUND)
   include_directories( ${EMBREE_INCLUDE_DIR})
 else (EMBREE_FOUND)
@@ -176,12 +185,66 @@ set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglanttweakbar")
 endif (ANTTWEAKBAR_FOUND)
 
 #### Compile the BBW part
-
 file(GLOB SOURCES_BBW
   "${PROJECT_SOURCE_DIR}/../include/igl/bbw/*.cpp"
 )
 add_library(iglbbw STATIC ${SOURCES_BBW})
 set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglbbw")
+
+#### Compile the boolean and cgal parts
+if (CGAL_FOUND)
+#### Compile the boolean part
+if (NOT CORK_FOUND)
+  add_definitions(-DIGL_NO_CORK)
+endif(NOT CORK_FOUND)
+file(GLOB SOURCES_BOOLEAN
+  "${PROJECT_SOURCE_DIR}/../include/igl/boolean/*.cpp"
+)
+add_library(iglboolean STATIC ${SOURCES_BOOLEAN})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglboolean")
+#### Compile the cgal part
+  file(GLOB SOURCES_CGAL
+    "${PROJECT_SOURCE_DIR}/../include/igl/cgal/*.cpp"
+  )
+add_library(iglcgal STATIC ${SOURCES_CGAL})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglcgal")
+endif (CGAL_FOUND)
+
+#### Compile the comiso part
+if (LIBCOMISO_FOUND)
+  file(GLOB SOURCES_COMISO
+    "${PROJECT_SOURCE_DIR}/../include/igl/comiso/*.cpp"
+  )
+  add_library(iglcomiso STATIC ${SOURCES_COMISO})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglcomiso")
+endif (LIBCOMISO_FOUND)
+
+#### Compile the embree part
+if (EMBREE_FOUND)
+  file(GLOB SOURCES_EMBREE
+    "${PROJECT_SOURCE_DIR}/../include/igl/embree/*.cpp"
+  )
+  add_library(iglembree STATIC ${SOURCES_EMBREE})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglembree")
+endif (EMBREE_FOUND)
+
+#### Compile the lim part
+if (LIM_FOUND)
+  file(GLOB SOURCES_LIM
+    "${PROJECT_SOURCE_DIR}/../include/igl/lim/*.cpp"
+  )
+  add_library(igllim STATIC ${SOURCES_LIM})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "igllim")
+endif (LIM_FOUND)
+
+#### Compile the matlab part
+if (MATLAB_FOUND)
+  file(GLOB SOURCES_MATLAB
+    "${PROJECT_SOURCE_DIR}/../include/igl/matlab/*.cpp"
+  )
+  add_library(iglmatlab STATIC ${SOURCES_MATLAB})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglmatlab")
+endif (MATLAB_FOUND)
 
 #### Compile the mosek part
 if (MOSEK_FOUND)
@@ -190,74 +253,31 @@ if (MOSEK_FOUND)
   )
 add_library(iglmosek STATIC ${SOURCES_MOSEK})
 set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglmosek")
-
 endif (MOSEK_FOUND)
 
-#### Compile the cgal part
-if (CGAL_FOUND)
-  file(GLOB SOURCES_CGAL
-    "${PROJECT_SOURCE_DIR}/../include/igl/cgal/*.cpp"
+#### Compile the opengl parts
+if (OPENGL_FOUND)
+  file(GLOB SOURCES_OPENGL2
+    "${PROJECT_SOURCE_DIR}/../include/igl/opengl2/*.cpp"
   )
-
-add_library(iglcgal STATIC ${SOURCES_CGAL})
-set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglcgal")
-
-#### Compile the boolean part
-if (NOT CORK_FOUND)
-  add_definitions(-DIGL_NO_CORK)
-endif(NOT CORK_FOUND)
-
-file(GLOB SOURCES_BOOLEAN
-  "${PROJECT_SOURCE_DIR}/../include/igl/boolean/*.cpp"
-)
-
-add_library(iglboolean STATIC ${SOURCES_BOOLEAN})
-set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglboolean")
-
-endif (CGAL_FOUND)
-
-#### Compile the embree part
-if (EMBREE_FOUND)
-  file(GLOB SOURCES_EMBREE
-    "${PROJECT_SOURCE_DIR}/../include/igl/embree/*.cpp"
+  add_library(iglopengl2 STATIC ${SOURCES_OPENGL2})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglopengl2")
+  file(GLOB SOURCES_OPENGL
+    "${PROJECT_SOURCE_DIR}/../include/igl/opengl/*.cpp"
   )
-
-  add_library(iglembree STATIC ${SOURCES_EMBREE})
-  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglembree")
-
-endif (EMBREE_FOUND)
-
-#### Compile the lim part
-if (LIM_FOUND)
-  file(GLOB SOURCES_LIM
-    "${PROJECT_SOURCE_DIR}/../include/igl/lim/*.cpp"
-  )
-
-  add_library(igllim STATIC ${SOURCES_LIM})
-  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "igllim")
-
-endif (LIM_FOUND)
-
-#### Compile the matlab part
-if (MATLAB_FOUND)
-  file(GLOB SOURCES_MATLAB
-    "${PROJECT_SOURCE_DIR}/../include/igl/matlab/*.cpp"
-  )
-
-  add_library(iglmatlab STATIC ${SOURCES_MATLAB})
-  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglmatlab")
-
-endif (MATLAB_FOUND)
+  add_library(iglopengl STATIC ${SOURCES_OPENGL})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglopengl")
+endif (OPENGL_FOUND)
 
 #### Compile the png part
-if (PNG_FOUND AND YIMG_FOUND)
+if (PNG_FOUND AND YIMG_FOUND AND OPENGL_FOUND)
   file(GLOB SOURCES_PNG
     "${PROJECT_SOURCE_DIR}/../include/igl/png/*.cpp"
   )
   add_library(iglpng STATIC ${SOURCES_PNG})
   set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglpng")
 
-endif (PNG_FOUND AND YIMG_FOUND)
+endif (PNG_FOUND AND YIMG_FOUND AND OPENGL_FOUND)
 
 #### Compile the tetgen part
 if (TETGEN_FOUND)
@@ -281,38 +301,23 @@ if (TRIANGLE_FOUND)
 
 endif (TRIANGLE_FOUND)
 
-#### Compile the xml part
-if (TINYXML2_FOUND)
-  file(GLOB SOURCES_XML
-    "${PROJECT_SOURCE_DIR}/../include/igl/xml/*.cpp"
-  )
-
-  add_library(iglxml STATIC ${SOURCES_XML})
-  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglxml")
-
-endif (TINYXML2_FOUND)
-
-#### Compile the xml part
-if (LIBCOMISO_FOUND)
-  file(GLOB SOURCES_COMISO
-    "${PROJECT_SOURCE_DIR}/../include/igl/comiso/*.cpp"
-  )
-
-  add_library(iglcomiso STATIC ${SOURCES_COMISO})
-  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglcomiso")
-
-endif (LIBCOMISO_FOUND)
-
 #### Compile the viewer
 if (NANOGUI_FOUND)
   file(GLOB SOURCES_VIEWER
     "${PROJECT_SOURCE_DIR}/../include/igl/viewer/*.cpp"
   )
-
   add_library(iglviewer STATIC ${SOURCES_VIEWER})
   set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglviewer")
-
 endif (NANOGUI_FOUND)
+
+#### Compile the xml part
+if (TINYXML2_FOUND)
+  file(GLOB SOURCES_XML
+    "${PROJECT_SOURCE_DIR}/../include/igl/xml/*.cpp"
+  )
+  add_library(iglxml STATIC ${SOURCES_XML})
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglxml")
+endif (TINYXML2_FOUND)
 
 # Pass the list of compiled libraries to the parent if there is one
 if(NOT ${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})

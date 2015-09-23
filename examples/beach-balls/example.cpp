@@ -1,7 +1,7 @@
 #include "BeachBall.h"
 
 #include <igl/quat_to_mat.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/trackball.h>
 #include <igl/canonical_quaternions.h>
 #include <igl/PI.h>
@@ -135,7 +135,7 @@ void display()
   //  }
   //}
 
-  report_gl_error();
+  igl::opengl::report_gl_error();
   glutSwapBuffers();
   glutPostRedisplay();
 

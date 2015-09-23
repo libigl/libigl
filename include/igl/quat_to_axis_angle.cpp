@@ -69,7 +69,7 @@ IGL_INLINE void igl::quat_to_axis_angle_deg(
 }
 
 #ifndef IGL_NO_HEADER
-// Explicit template instanciation
+// Explicit template specialization
 template void igl::quat_to_axis_angle<float>(float const*, float*, float&);
 template void igl::quat_to_axis_angle_deg<float>(float const*, float*, float&);
 #endif

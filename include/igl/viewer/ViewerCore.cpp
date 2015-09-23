@@ -32,14 +32,13 @@ namespace igl {
       SERIALIZE_MEMBER(lighting_factor);
 
       SERIALIZE_MEMBER(trackball_angle);
+      SERIALIZE_MEMBER(rotation_type);
 
       SERIALIZE_MEMBER(model_zoom);
       SERIALIZE_MEMBER(model_translation);
 
       SERIALIZE_MEMBER(model_zoom_uv);
       SERIALIZE_MEMBER(model_translation_uv);
-
-      SERIALIZE_MEMBER(object_scale);
 
       SERIALIZE_MEMBER(camera_zoom);
       SERIALIZE_MEMBER(orthographic);
@@ -65,17 +64,21 @@ namespace igl {
       SERIALIZE_MEMBER(is_animating);
       SERIALIZE_MEMBER(animation_max_fps);
 
+      SERIALIZE_MEMBER(object_scale);
+
       SERIALIZE_MEMBER(viewport);
       SERIALIZE_MEMBER(view);
       SERIALIZE_MEMBER(model);
       SERIALIZE_MEMBER(proj);
     }
 
+    template<>
     IGL_INLINE void serialize(const igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
     {
       serialization(true,const_cast<igl::viewer::ViewerCore&>(obj),buffer);
     }
 
+    template<>
     IGL_INLINE void deserialize(igl::viewer::ViewerCore& obj,const std::vector<char>& buffer)
     {
       serialization(false,obj,const_cast<std::vector<char>&>(buffer));
@@ -124,6 +127,54 @@ IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
   double z_scale = fabs(max_point[2] - min_point[2]);
   zoom = 2.0 / std::max(z_scale,std::max(x_scale,y_scale));
 }
+
+IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
+                                                     const Eigen::MatrixXd& V)
+{
+  if(V.rows() == 0)
+    return;
+
+  get_scale_and_shift_to_fit_mesh(V,model_zoom,model_translation);
+  // Rather than crash on empty mesh...
+  if(V.size() > 0)
+  {
+    object_scale = (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm();
+  }
+}
+
+IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
+                                                                 const Eigen::MatrixXd& V,
+                                                                 float& zoom,
+                                                                 Eigen::Vector3f& shift)
+{
+  if (V.rows() == 0)
+    return;
+
+  Eigen::RowVector3d min_point;
+  Eigen::RowVector3d max_point;
+  Eigen::RowVector3d centroid;
+
+  if (V.cols() == 3)
+  {
+    min_point = V.colwise().minCoeff();
+    max_point = V.colwise().maxCoeff();
+  }
+  else if (V.cols() == 2)
+  {
+    min_point << V.colwise().minCoeff(),0;
+    max_point << V.colwise().maxCoeff(),0;
+  }
+  else
+    return;
+
+  centroid = 0.5 * (min_point + max_point);
+  shift = -centroid.cast<float>();
+  double x_scale = fabs(max_point[0] - min_point[0]);
+  double y_scale = fabs(max_point[1] - min_point[1]);
+  double z_scale = fabs(max_point[2] - min_point[2]);
+  zoom = 2.0 / std::max(z_scale,std::max(x_scale,y_scale));
+}
+
 
 IGL_INLINE void igl::viewer::ViewerCore::clear_framebuffers()
 {
@@ -184,7 +235,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
 
     // Set model transformation
     float mat[16];
-    igl::quat_to_mat(trackball_angle.data(), mat);
+    igl::quat_to_mat(trackball_angle.coeffs().data(), mat);
 
     for (unsigned i=0;i<4;++i)
       for (unsigned j=0;j<4;++j)
@@ -417,7 +468,8 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
   lighting_factor = 1.0f; //on
 
   // Default trackball
-  trackball_angle << 0.0f, 0.0f, 0.0f, 1.0f;
+  trackball_angle = Eigen::Quaternionf::Identity();
+  rotation_type = ViewerCore::ROTATION_TYPE_TRACKBALL;
 
   // Defalut model viewing parameters
   model_zoom = 1.0f;

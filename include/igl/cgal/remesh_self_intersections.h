@@ -37,7 +37,7 @@ namespace igl
     //   params  struct of optional parameters
     // Outputs:
     //   VV  #VV by 3 list of vertex positions
-    //   FF  #FF by 3 list of triangle indices into V
+    //   FF  #FF by 3 list of triangle indices into VV
     //   IF  #intersecting face pairs by 2  list of intersecting face pairs,
     //     indexing F
     //   J  #FF list of indices into F denoting birth triangle

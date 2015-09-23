@@ -1,11 +1,11 @@
 #include "BeachBall.h"
 
 
-#include <igl/draw_beach_ball.h>
+#include <igl/opengl2/draw_beach_ball.h>
 #include <igl/quat_to_mat.h>
-#include <igl/unproject_to_zero_plane.h>
-#include <igl/unproject.h>
-#include <igl/project.h>
+#include <igl/opengl2/unproject_to_zero_plane.h>
+#include <igl/opengl2/unproject.h>
+#include <igl/opengl2/project.h>
 #include <igl/quat_mult.h>
 #include <igl/quat_conjugate.h>
 #include <igl/trackball.h>
@@ -76,7 +76,7 @@ void BeachBall::draw()
   glPushMatrix();
   glScaled(radius,radius,radius);
   // draw oriented glyph 
-  draw_beach_ball();
+  igl::opengl2::draw_beach_ball();
   // Pop scale
   glPopMatrix();
   // Reset lighting
@@ -93,8 +93,8 @@ bool BeachBall::in(const int x,const int y) const
   push();
   // Now origin is center of object
   double obj[3];
-  // Check if unprojected screen point is nearby
-  unproject_to_zero_plane(x,y, &obj[0], &obj[1], &obj[2]);
+  // Check if igl::opengl2::unprojected screen point is nearby
+  igl::opengl2::unproject_to_zero_plane(x,y, &obj[0], &obj[1], &obj[2]);
   bool near = (obj[0]*obj[0] + obj[1]*obj[1] + obj[2]*obj[2])<radius*radius;
   pop();
   popmv();
@@ -136,7 +136,7 @@ bool BeachBall::drag(const int x,const int y)
     pushmv();
     push();
     double origin[3];
-    project(0,0,0,&origin[0],&origin[1],&origin[2]);
+    igl::opengl2::project(0,0,0,&origin[0],&origin[1],&origin[2]);
     pop();
     popmv();
     double rot[4];
@@ -193,20 +193,20 @@ bool BeachBall::drag(const int x,const int y)
   }else
   {
     // We want that origin follows mouse move. First define plane we
-    // projecteing screen mouse movement to as perpendicular plan passing
+    // igl::opengl2::projecteing screen mouse movement to as perpendicular plan passing
     // through this origin.
     pushmv();
-    // down_t projected to screen to get depth value
+    // down_t igl::opengl2::projected to screen to get depth value
     double p[3];
-    project(down_t[0],down_t[1],down_t[2],&p[0],&p[1],&p[2]);
-    // unprojected down_x,down_y with down_t depth
+    igl::opengl2::project(down_t[0],down_t[1],down_t[2],&p[0],&p[1],&p[2]);
+    // igl::opengl2::unprojected down_x,down_y with down_t depth
     double du[3];
-    unproject(down_x,down_y,p[2],&du[0],&du[1],&du[2]);
-    // unprojected x,y with down_t depth
+    igl::opengl2::unproject(down_x,down_y,p[2],&du[0],&du[1],&du[2]);
+    // igl::opengl2::unprojected x,y with down_t depth
     double u[3];
-    unproject(x,y,p[2],&u[0], &u[1], &u[2]);
+    igl::opengl2::unproject(x,y,p[2],&u[0], &u[1], &u[2]);
     popmv();
-    // Then move this origin according to project mouse displacment
+    // Then move this origin according to igl::opengl2::project mouse displacment
     t[0] = down_t[0] + (u[0]-du[0]);
     t[1] = down_t[1] + (u[1]-du[1]);
     t[2] = down_t[2] + (u[2]-du[2]);

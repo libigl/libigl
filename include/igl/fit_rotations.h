@@ -12,6 +12,9 @@
 
 namespace igl
 {
+  // Known issues: This seems to be implemented in Eigen/Geometry:
+  // Eigen::umeyama
+  //
   // FIT_ROTATIONS Given an input mesh and new positions find rotations for
   // every covariance matrix in a stack of covariance matrices
   // 

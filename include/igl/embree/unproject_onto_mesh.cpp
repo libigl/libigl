@@ -62,5 +62,5 @@ IGL_INLINE bool igl::embree::unproject_onto_mesh(
 
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template instanciation
+// Explicit template specialization
 #endif

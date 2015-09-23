@@ -31,7 +31,7 @@ namespace igl
         int _ei,
         bool _reverse = false
         )
-    : F(_F), FF(_FF), FFi(_FFi), fi(_fi), ei(_ei), reverse(_reverse)
+    : fi(_fi), ei(_ei), reverse(_reverse), F(_F), FF(_FF), FFi(_FFi)
     {}
 
     // Change Face

@@ -9,8 +9,8 @@
 // lost in the output file.
 //
 #include <igl/read_triangle_mesh.h>
-#include <igl/draw_mesh.h>
-#include <igl/draw_floor.h>
+#include <igl/opengl2/draw_mesh.h>
+#include <igl/opengl2/draw_floor.h>
 #include <igl/pathinfo.h>
 #include <igl/list_to_matrix.h>
 #include <igl/per_face_normals.h>
@@ -99,7 +99,7 @@ void push_scene()
   double z_fix = 1.0;
   // 5 is far enough to see unit "things" well
   const double camera_z = 2;
-  // Test if should be using true orthographic projection
+  // Test if should be using true orthographic igl::opengl2::projection
   if(angle == 0)
   {
     glOrtho(
@@ -194,7 +194,7 @@ void display()
   glMaterialf (GL_BACK, GL_SHININESS, 128);
 
 
-  draw_mesh(s.V,s.F,s.N);
+  igl::opengl2::draw_mesh(s.V,s.F,s.N);
 
   glDisable(GL_LIGHTING);
   glPushMatrix();
@@ -230,7 +230,7 @@ void display()
   glEnable(GL_LIGHTING);
   glPushMatrix();
   glTranslated(0,-1,0);
-  draw_floor();
+  igl::opengl2::draw_floor();
   glPopMatrix();
   pop_scene();
 

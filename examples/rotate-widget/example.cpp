@@ -1,8 +1,8 @@
 #include <igl/Camera.h>
 #include <igl/REDRUM.h>
-#include <igl/RotateWidget.h>
-#include <igl/draw_floor.h>
-#include <igl/draw_mesh.h>
+#include <igl/opengl2/RotateWidget.h>
+#include <igl/opengl2/draw_floor.h>
+#include <igl/opengl2/draw_mesh.h>
 #include <igl/get_seconds.h>
 #include <igl/list_to_matrix.h>
 #include <igl/material_colors.h>
@@ -15,7 +15,7 @@
 #include <igl/readOFF.h>
 #include <igl/readTGF.h>
 #include <igl/readWRL.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
 #include <igl/trackball.h>
@@ -63,7 +63,7 @@ Eigen::VectorXi P;
 struct State
 {
   igl::Camera camera;
-  igl::RotateWidget widget;
+  igl::opengl2::RotateWidget widget;
 } s;
 
 bool wireframe = false;
@@ -251,7 +251,7 @@ void display()
   const float GREY[4] = {0.5,0.5,0.6,1.0};
   const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
   glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-  draw_floor(GREY,DARK_GREY);
+  igl::opengl2::draw_floor(GREY,DARK_GREY);
   glPopMatrix();
 
   push_object();
@@ -272,7 +272,7 @@ void display()
   glTranslated( s.widget.pos(0), s.widget.pos(1), s.widget.pos(2));
   glMultMatrixd(Affine3d(s.widget.rot).matrix().data());
   glTranslated( -s.widget.pos(0), -s.widget.pos(1), -s.widget.pos(2));
-  draw_mesh(V,F,N);
+  igl::opengl2::draw_mesh(V,F,N);
   glPopMatrix();
 
   if(widget_on_top)
@@ -286,7 +286,7 @@ void display()
 
   pop_scene();
 
-  report_gl_error();
+  igl::opengl::report_gl_error();
 
   TwDraw();
   glutSwapBuffers();

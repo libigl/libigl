@@ -70,4 +70,3 @@ namespace igl {
 
 
 #endif /* defined(IGL_CUT_MESH) */
-

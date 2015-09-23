@@ -12,7 +12,7 @@
 #include <Eigen/Core>
 #include <string>
 #ifndef TETLIBRARY
-#define TETLIBRARY 
+#  define TETLIBRARY 
 #endif
 #include "tetgen.h" // Defined REAL
 

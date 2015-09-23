@@ -8,6 +8,7 @@
 
 #include "rotation_matrix_from_directions.h"
 #include <Eigen/Geometry>
+#include <iostream>
 
 template <typename Scalar>
 IGL_INLINE Eigen::Matrix<Scalar, 3, 3> igl::rotation_matrix_from_directions(const Eigen::Matrix<Scalar, 3, 1> v0,
@@ -29,7 +30,13 @@ IGL_INLINE Eigen::Matrix<Scalar, 3, 3> igl::rotation_matrix_from_directions(cons
     rotM = Eigen::Matrix<Scalar, 3, 3>::Identity();
     return rotM;
   }
-
+  if ((v0+v1).norm()<epsilon)
+  {
+    rotM = -Eigen::Matrix<Scalar, 3, 3>::Identity();
+    rotM(0,0) = 1.;
+    std::cerr<<"igl::rotation_matrix_from_directions: rotating around x axis by 180o"<<std::endl;
+    return rotM;
+  }
   ///find the axis of rotation
   Eigen::Matrix<Scalar, 3, 1> axis;
   axis=v0.cross(v1);

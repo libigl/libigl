@@ -177,7 +177,7 @@ trackball(float q[4], float p1x, float p1y, float p2x, float p2y)
     }
 
     /*
-     * First, figure out z-coordinates for projection of P1 and P2 to
+     * First, figure out z-coordinates for igl::opengl2::projection of P1 and P2 to
      * deformed sphere
      */
     vset(p1,p1x,p1y,tb_project_to_sphere(TRACKBALLSIZE,p1x,p1y));

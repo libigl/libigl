@@ -52,6 +52,17 @@ public:
     float & zoom,
     Eigen::Vector3f& shift);
 
+    // Adjust the view to see the entire model
+    IGL_INLINE void align_camera_center(
+      const Eigen::MatrixXd& V);
+
+    // Determines how much to zoom and shift such that the mesh fills the unit
+    // box (centered at the origin)
+    IGL_INLINE void get_scale_and_shift_to_fit_mesh(
+      const Eigen::MatrixXd& V,
+      float & zoom,
+      Eigen::Vector3f& shift);
+
   // ------------------- Drawing functions
 
   // Clear the frame buffers
@@ -84,7 +95,13 @@ public:
   float lighting_factor;
 
   // Trackball angle (quaternion)
-  Eigen::Vector4f trackball_angle;
+  enum RotationType
+  {
+    ROTATION_TYPE_TRACKBALL = 0,
+    ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP = 1,
+    NUM_ROTATION_TYPES = 2
+  } rotation_type;
+  Eigen::Quaternionf trackball_angle;
 
   // Model viewing parameters
   float model_zoom;

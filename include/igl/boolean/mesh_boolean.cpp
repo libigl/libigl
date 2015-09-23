@@ -7,13 +7,15 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "mesh_boolean.h"
 #include <igl/per_face_normals.h>
+#include <igl/boundary_facets.h>
+#include <igl/exterior_edges.h>
 #include <igl/cgal/peel_outer_hull_layers.h>
 #include <igl/cgal/remesh_self_intersections.h>
 #include <igl/remove_unreferenced.h>
+#include <igl/mod.h>
 #include <igl/unique_simplices.h>
-#include <iostream>
-
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#include <iostream>
 
 //#define IGL_MESH_BOOLEAN_DEBUG
 
@@ -152,7 +154,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     MatrixX3I SF;
     MatrixX2I SIF;
     VectorXI SIM,UIM;
-    RemeshSelfIntersectionsParam params;
+    igl::cgal::RemeshSelfIntersectionsParam params;
     remesh_self_intersections(V,F,params,SV,SF,SIF,J,SIM);
     for_each(SF.data(),SF.data()+SF.size(),[&SIM](int & a){a=SIM(a);});
     {
@@ -187,22 +189,17 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     J = CJ;
     return;
   }
-  MatrixX3S N,CN;
-  per_face_normals_stable(V,F,N);
-  CN.resize(CF.rows(),3);
-  for(size_t f = 0;f<(size_t)CN.rows();f++)
-  {
-    CN.row(f) = N.row(CJ(f));
-  }
 
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"peel..."<<endl;
 #endif
   Matrix<bool,Dynamic,1> from_A(CF.rows());
   // peel layers keeping track of odd and even flips
-  Matrix<bool,Dynamic,1> odd;
+  VectorXi I;
   Matrix<bool,Dynamic,1> flip;
-  peel_outer_hull_layers(EV,CF,CN,odd,flip);
+  peel_outer_hull_layers(EV,CF,I,flip);
+  // 0 is "first" iteration, so it's odd
+  Array<bool,Dynamic,1> odd = igl::mod(I,2).array()==0;
 
 #ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"categorize..."<<endl;
@@ -250,6 +247,14 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     GJ(g) = CJ(vG[g]);
   }
 #ifdef IGL_MESH_BOOLEAN_DEBUG
+  {
+    MatrixXd O;
+    boundary_facets(FC,O);
+    cout<<"# boundary: "<<O.rows()<<endl;
+  }
+  cout<<"# exterior: "<<exterior_edges(FC).rows()<<endl;
+#endif
+#ifdef IGL_MESH_BOOLEAN_DEBUG
   cout<<"clean..."<<endl;
 #endif
   // Deal with duplicate faces
@@ -262,6 +267,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     vector<vector<Index> > uG2G(uG.rows());
     // signed counts
     VectorXi counts = VectorXi::Zero(uG.rows());
+    VectorXi ucounts = VectorXi::Zero(uG.rows());
     // loop over all faces
     for(Index g = 0;g<gm;g++)
     {
@@ -274,6 +280,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
         (G(g,0) == uG(ug,1) && G(g,1) == uG(ug,2) && G(g,2) == uG(ug,0)) ||
         (G(g,0) == uG(ug,2) && G(g,1) == uG(ug,0) && G(g,2) == uG(ug,1));
       counts(ug) += consistent ? 1 : -1;
+      ucounts(ug)++;
     }
     MatrixX3I oldG = G;
     // Faces of output vG[i] = j means ith face of output should be jth face in
@@ -283,17 +290,33 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     {
       // if signed occurrences is zero or ±two then keep none
       // else if signed occurrences is ±one then keep just one facet
-      if(abs(counts(ug)) == 1)
+      switch(abs(counts(ug)))
       {
-        assert(uG2G.size() > 0);
-        vG.push_back(uG2G[ug][0]);
-      }
+        case 1:
+          assert(uG2G[ug].size() > 0);
+          vG.push_back(uG2G[ug][0]);
 #ifdef IGL_MESH_BOOLEAN_DEBUG
-      else
-      {
-        cout<<"Skipping "<<uG2G.size()<<" facets..."<<endl;
-      }
+          if(abs(ucounts(ug)) != 1)
+          {
+            cout<<"count,ucount of "<<counts(ug)<<","<<ucounts(ug)<<endl;
+          }
 #endif
+          break;
+        case 0:
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+          cout<<"Skipping "<<uG2G[ug].size()<<" facets..."<<endl;
+          if(abs(ucounts(ug)) != 0)
+          {
+            cout<<"count,ucount of "<<counts(ug)<<","<<ucounts(ug)<<endl;
+          }
+#endif
+          break;
+        default:
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+          cout<<"Didn't expect to be here."<<endl;
+#endif
+          assert(false && "Shouldn't count be -1/0/1 ?");
+      }
     }
     G.resize(vG.size(),3);
     J.resize(vG.size());
@@ -309,21 +332,26 @@ IGL_INLINE void igl::boolean::mesh_boolean(
   //cerr<<"warning not removing unref"<<endl;
   //VC = CV;
   //FC = G;
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+  {
+    MatrixXd O;
+    boundary_facets(FC,O);
+    cout<<"# boundary: "<<O.rows()<<endl;
+  }
+  cout<<"# exterior: "<<exterior_edges(FC).rows()<<endl;
+#endif
 }
 
 #ifdef IGL_STATIC_LIBRARY
-
-// This is a hack to discuss
+// This is a hack to discuss. I'm not sure why this _doesn't_ create
+// duplicate symbols.
 #include <igl/remove_unreferenced.cpp>
-
 template void igl::remove_unreferenced<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-
 #include <igl/cgal/peel_outer_hull_layers.cpp>
-template unsigned long igl::cgal::peel_outer_hull_layers<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<bool, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
-
+template unsigned long
+igl::cgal::peel_outer_hull_layers<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
 #include <igl/cgal/outer_hull.cpp>
-template void igl::cgal::outer_hull<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
-
+template void igl::cgal::outer_hull<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
 // Explicit template specialization
 template void igl::boolean::mesh_boolean<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::boolean::MeshBooleanType const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template void igl::boolean::mesh_boolean<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::boolean::MeshBooleanType const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);

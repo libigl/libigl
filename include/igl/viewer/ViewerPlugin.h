@@ -126,7 +126,16 @@ public:
     return false;
   }
 
-  // This function is called when a keyboard key is pressed
+  // This function is called when a keyboard key is pressed. Unlike key_down
+  // this will reveal the actual character being sent (not just the physical
+  // key)
+  // - modifiers is a bitfield that might one or more of the following bits Preview3D::NO_KEY, Preview3D::SHIFT, Preview3D::CTRL, Preview3D::ALT;
+  IGL_INLINE virtual bool key_pressed(unsigned int key, int modifiers)
+  {
+    return false;
+  }
+
+  // This function is called when a keyboard key is down
   // - modifiers is a bitfield that might one or more of the following bits Preview3D::NO_KEY, Preview3D::SHIFT, Preview3D::CTRL, Preview3D::ALT;
   IGL_INLINE virtual bool key_down(int key, int modifiers)
   {

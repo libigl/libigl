@@ -1,5 +1,6 @@
 #include <igl/readOFF.h>
 #define IGL_NO_CORK
+#undef IGL_STATIC_LIBRARY
 #include <igl/boolean/mesh_boolean.h>
 #include <igl/viewer/Viewer.h>
 
@@ -12,7 +13,7 @@ Eigen::MatrixXi FA,FB,FC;
 igl::boolean::MeshBooleanType boolean_type(
   igl::boolean::MESH_BOOLEAN_TYPE_UNION);
 
-const char * MESH_BOOLEAN_TYPE_NAMES[] = 
+const char * MESH_BOOLEAN_TYPE_NAMES[] =
 {
   "Union",
   "Intersect",
@@ -47,12 +48,12 @@ bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
     default:
       return false;
     case '.':
-      boolean_type = 
+      boolean_type =
         static_cast<igl::boolean::MeshBooleanType>(
           (boolean_type+1)% igl::boolean::NUM_MESH_BOOLEAN_TYPES);
       break;
     case ',':
-      boolean_type = 
+      boolean_type =
         static_cast<igl::boolean::MeshBooleanType>(
           (boolean_type+igl::boolean::NUM_MESH_BOOLEAN_TYPES-1)%
           igl::boolean::NUM_MESH_BOOLEAN_TYPES);
