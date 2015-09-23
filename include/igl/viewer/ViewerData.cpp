@@ -46,14 +46,18 @@ namespace igl {
       SERIALIZE_MEMBER(labels_positions);
       SERIALIZE_MEMBER(labels_strings);
 
+      SERIALIZE_MEMBER(dirty);
+
       SERIALIZE_MEMBER(face_based);
     }
 
+    template<>
     IGL_INLINE void serialize(const igl::viewer::ViewerData& obj,std::vector<char>& buffer)
     {
       serialization(true,const_cast<igl::viewer::ViewerData&>(obj),buffer);
     }
 
+    template<>
     IGL_INLINE void deserialize(igl::viewer::ViewerData& obj,const std::vector<char>& buffer)
     {
       serialization(false,obj,const_cast<std::vector<char>&>(buffer));
@@ -114,7 +118,7 @@ IGL_INLINE void igl::viewer::ViewerData::set_mesh(const Eigen::MatrixXd& _V, con
       F = _F;
     }
     else
-      cerr << "ERROR (set_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting.";
+      cerr << "ERROR (set_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting."<<endl;
   }
   dirty |= DIRTY_FACE | DIRTY_POSITION;
 }
@@ -140,7 +144,7 @@ IGL_INLINE void igl::viewer::ViewerData::set_normals(const Eigen::MatrixXd& N)
     F_normals = N;
   }
   else
-    cerr << "ERROR (set_normals): Please provide a normal per face, per corner or per vertex.";
+    cerr << "ERROR (set_normals): Please provide a normal per face, per corner or per vertex."<<endl;
   dirty |= DIRTY_NORMAL;
 }
 
@@ -191,7 +195,7 @@ IGL_INLINE void igl::viewer::ViewerData::set_colors(const Eigen::MatrixXd &C)
     F_material_specular = specular(F_material_diffuse);
   }
   else
-    cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex.";
+    cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex."<<endl;;
   dirty |= DIRTY_DIFFUSE;
 
 }
@@ -205,7 +209,7 @@ IGL_INLINE void igl::viewer::ViewerData::set_uv(const Eigen::MatrixXd& UV)
     V_uv = UV;
   }
   else
-    cerr << "ERROR (set_UV): Please provide uv per vertex.";
+    cerr << "ERROR (set_UV): Please provide uv per vertex."<<endl;;
   dirty |= DIRTY_UV;
 }
 
@@ -389,6 +393,12 @@ IGL_INLINE void igl::viewer::ViewerData::uniform_colors(Eigen::Vector3d ambient,
 
 IGL_INLINE void igl::viewer::ViewerData::grid_texture()
 {
+  // Don't do anything for an empty mesh
+  if(V.rows() == 0)
+  {
+    V_uv.resize(V.rows(),2);
+    return;
+  }
   if (V_uv.rows() == 0)
   {
     V_uv = V.block(0, 0, V.rows(), 2);

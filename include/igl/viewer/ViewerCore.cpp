@@ -32,14 +32,13 @@ namespace igl {
       SERIALIZE_MEMBER(lighting_factor);
 
       SERIALIZE_MEMBER(trackball_angle);
+      SERIALIZE_MEMBER(rotation_type);
 
       SERIALIZE_MEMBER(model_zoom);
       SERIALIZE_MEMBER(model_translation);
 
       SERIALIZE_MEMBER(model_zoom_uv);
       SERIALIZE_MEMBER(model_translation_uv);
-
-      SERIALIZE_MEMBER(object_scale);
 
       SERIALIZE_MEMBER(camera_zoom);
       SERIALIZE_MEMBER(orthographic);
@@ -65,17 +64,21 @@ namespace igl {
       SERIALIZE_MEMBER(is_animating);
       SERIALIZE_MEMBER(animation_max_fps);
 
+      SERIALIZE_MEMBER(object_scale);
+
       SERIALIZE_MEMBER(viewport);
       SERIALIZE_MEMBER(view);
       SERIALIZE_MEMBER(model);
       SERIALIZE_MEMBER(proj);
     }
 
+    template<>
     IGL_INLINE void serialize(const igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
     {
       serialization(true,const_cast<igl::viewer::ViewerCore&>(obj),buffer);
     }
 
+    template<>
     IGL_INLINE void deserialize(igl::viewer::ViewerCore& obj,const std::vector<char>& buffer)
     {
       serialization(false,obj,const_cast<std::vector<char>&>(buffer));

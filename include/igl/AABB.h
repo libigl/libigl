@@ -8,18 +8,18 @@
 #ifndef IGL_AABB_H
 #define IGL_AABB_H
 
-// Implementation of semi-general purpose axis-aligned bounding box hierarchy.
-// The mesh (V,Ele) is stored and managed by the caller and each routine here
-// simply takes it as references (it better not change between calls).
-//
-// It's a little annoying that the Dimension is a template parameter and not
-// picked up at run time from V. This leads to duplicated code for 2d/3d (up to
-// dim).
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <vector>
 namespace igl
 {
+  // Implementation of semi-general purpose axis-aligned bounding box hierarchy.
+  // The mesh (V,Ele) is stored and managed by the caller and each routine here
+  // simply takes it as references (it better not change between calls).
+  //
+  // It's a little annoying that the Dimension is a template parameter and not
+  // picked up at run time from V. This leads to duplicated code for 2d/3d (up to
+  // dim).
   template <typename DerivedV, int DIM>
     class AABB 
     {
@@ -75,9 +75,9 @@ public:
       AABB(AABB&& other):
         // initialize via default constructor
         AABB() 
-    {
-      swap(*this,other);
-    }
+      {
+        swap(*this,other);
+      }
       // Seems like there should have been an elegant solution to this using
       // the copy-swap idiom above:
       inline void deinit()
@@ -719,7 +719,7 @@ inline void igl::AABB<DerivedV,DIM>::squared_distance(
     int Ip;
     sqrD(p) = squared_distance(V,Ele,Pp,Ip,c);
     I(p) = Ip;
-    C.row(p) = c;
+    C.row(p).head(DIM) = c;
   }
 }
 

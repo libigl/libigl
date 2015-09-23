@@ -10,6 +10,10 @@
 
 namespace igl
 {
+  // PER_VERTEX_NORMALS  Normals computed per vertex based on incident faces
+  // PER_FACE_NORMALS  Normals computed per face
+  // PER_CORNER_NORMALS  Normals computed per corner (aka wedge) based on
+  //   incident faces without sharp edge
   enum NormalType
   {
     PER_VERTEX_NORMALS,
