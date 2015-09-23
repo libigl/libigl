@@ -70,22 +70,12 @@ IGL_INLINE void igl::cgal::outer_facet(
             adj_faces.begin(),
             convert_to_signed_index);
 
+    DerivedV pivot_point = V.row(s);
+    pivot_point(0, 0) += 1.0;
+
     Eigen::VectorXi order;
-    order_facets_around_edge(V, F, s, d, adj_faces, order);
+    order_facets_around_edge(V, F, s, d, adj_faces, pivot_point, order);
 
     f = signed_index_to_index(adj_faces[order[0]]);
-    if (V(F(f, 0),0) == V(F(f, 1),0) && V(F(f, 0),0) == V(F(f, 2),0)) {
-        // The face is perpendicular to X axis.
-        typedef CGAL::Exact_predicates_exact_constructions_kernel K;
-        typedef K::Point_2 Point_2;
-        Point_2 p0(V(F(f,0),1), V(F(f,0),2));
-        Point_2 p1(V(F(f,1),1), V(F(f,1),2));
-        Point_2 p2(V(F(f,2),1), V(F(f,2),2));
-        auto orientation = CGAL::orientation(p0, p1, p2);
-        assert(orientation != CGAL::COLLINEAR);
-        flipped = (orientation == CGAL::NEGATIVE);
-
-    } else {
-        flipped = adj_faces[order[0]] > 0;
-    }
+    flipped = adj_faces[order[0]] > 0;
 }
