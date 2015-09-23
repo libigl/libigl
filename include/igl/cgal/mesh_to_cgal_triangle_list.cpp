@@ -30,9 +30,13 @@ IGL_INLINE void igl::cgal::mesh_to_cgal_triangle_list(
     DerivedV::RowsAtCompileTime,
     DerivedV::ColsAtCompileTime> 
     KV(V.rows(),V.cols());
-  for(int i = 0;i<V.size();i++)
+  // Just use f'ing for loops. What if V and KV don't use same ordering?
+  for(int i = 0;i<V.rows();i++)
   {
-    assign_scalar(*(V.data()+i),*(KV.data()+i));
+    for(int j = 0;j<V.cols();j++)
+    {
+      assign_scalar(V(i,j),KV(i,j));
+    }
   }
   // Must be triangles
   assert(F.cols() == 3);
