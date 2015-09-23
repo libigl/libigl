@@ -484,7 +484,7 @@ inline std::vector<int> igl::AABB<DerivedV,DIM>::find(
   if(is_leaf())
   {
     // Initialize to some value > -epsilon
-    Scalar a1=1,a2=1,a3=1,a4=1;
+    Scalar a1=0,a2=0,a3=0,a4=0;
     switch(DIM)
     {
       case 3:
@@ -511,7 +511,6 @@ inline std::vector<int> igl::AABB<DerivedV,DIM>::find(
           // Hack for now to keep templates simple. If becomes bottleneck
           // consider using std::enable_if_t 
           const Vector2S q2 = q.head(2);
-          Scalar a0 = doublearea_single(V1,V2,V3);
           a1 = doublearea_single(V1,V2,q2);
           a2 = doublearea_single(V2,V3,q2);
           a3 = doublearea_single(V3,V1,q2);
@@ -519,6 +518,12 @@ inline std::vector<int> igl::AABB<DerivedV,DIM>::find(
         }
       default:assert(false);
     }
+    // Normalization is important for correcting sign
+    Scalar sum = a1+a2+a3+a4;
+    a1 /= sum;
+    a2 /= sum;
+    a3 /= sum;
+    a4 /= sum;
     if(
         a1>=-epsilon && 
         a2>=-epsilon && 
@@ -624,7 +629,7 @@ igl::AABB<DerivedV,DIM>::squared_distance(
   using namespace std;
   using namespace igl;
   Scalar sqr_d = min_sqr_d;
-  assert(DIM == 3 && "Code has only been tested for DIM == 3");
+  //assert(DIM == 3 && "Code has only been tested for DIM == 3");
   assert((Ele.cols() == 3 || Ele.cols() == 2 || Ele.cols() == 1)
     && "Code has only been tested for simplex sizes 3,2,1");
 
@@ -1007,9 +1012,14 @@ inline void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
       Ele(m_primitive,1) != Ele(m_primitive,2) && 
       Ele(m_primitive,2) != Ele(m_primitive,0))
   {
-    const RowVectorDIMS v10 = (V.row(Ele(m_primitive,1))- V.row(Ele(m_primitive,0)));
-    const RowVectorDIMS v20 = (V.row(Ele(m_primitive,2))- V.row(Ele(m_primitive,0)));
-    const RowVectorDIMS n = v10.cross(v20);
+    assert(DIM == 3 && "Only implemented for 3D triangles");
+    typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
+    // can't be const because of annoying DIM template
+    RowVector3S v10(0,0,0);
+    v10.head(DIM) = (V.row(Ele(m_primitive,1))- V.row(Ele(m_primitive,0)));
+    RowVector3S v20(0,0,0);
+    v20.head(DIM) = (V.row(Ele(m_primitive,2))- V.row(Ele(m_primitive,0)));
+    const RowVectorDIMS n = (v10.cross(v20)).head(DIM);
     Scalar n_norm = n.norm();
     if(n_norm > 0)
     {
@@ -1037,7 +1047,6 @@ inline void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
   }
   const auto & point_point_squared_distance = [&](const RowVectorDIMS & s)
   {
-    cout<<"pp"<<endl;
     const Scalar sqr_d_s = (p-s).squaredNorm();
     set_min(p,sqr_d_s,m_primitive,s,sqr_d,i,c);
   };

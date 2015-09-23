@@ -4,6 +4,12 @@
 
 <https://github.com/libigl/libigl/>
 
+> Get started with:
+>
+```bash
+git clone --recursive https://github.com/libigl/libigl.git
+```
+
 libigl is a simple C++ geometry processing library. We have a wide
 functionality including construction of sparse discrete differential geometry
 operators and finite-elements matrices such as the cotangent Laplacian and
@@ -17,7 +23,7 @@ just include igl headers (e.g. `#include <igl/cotmatrix.h>`) and run.  Each
 header file contains a single function (e.g. `igl/cotmatrix.h` contains
 `igl::cotmatrix()`). Most are tailored to operate on a generic triangle mesh
 stored in an n-by-3 matrix of vertex positions V and an m-by-3 matrix of
-triangle indices F. 
+triangle indices F.
 
 _Optionally_ the library may also be [pre-compiled](optional/) into a statically
 linked library, for faster compile times with your projects. This only effects
@@ -31,7 +37,7 @@ conversion table](matlab-to-eigen.html).
 ## Tutorial
 
 As of version 1.0, libigl includes an introductory
-[tutorial](tutorial/tutorial.html) that covers many functionalities.
+[tutorial](http://libigl.github.io/libigl/tutorial/tutorial.html) that covers many functionalities.
 
 ## Installation
 
@@ -129,6 +135,25 @@ We hope to fix this, or at least identify which functions are safe (many of
 them probably work just fine). This requires setting up unit testing, which is
 a major _todo_ for our development.
 
+## Git Submodules
+Libigl uses git submodules for its _optional_ dependencies,
+in particular, those needed by the OpenGL viewer to run the examples in the
+[tutorial](tutorial/tutorial.html). Git submodules allow use to treat clones of
+other libraries as sub-directories within ours while separating our commits.
+Read the [documentation](http://git-scm.com/docs/git-submodule) for a detailed
+explanation, but essentially our libigl repo stores a hash for each of its
+subrepos containing which version to update to. When a change is introduced in
+a dependencies repo we can incorporate that change by pulling in our sub-repo
+and updating (i.e.  committing) that change to the hash.
+
+When pulling new changes to libigl it's also a good idea to update changes to
+subrepos:
+
+```bash
+git pull
+git submodule update -- recursive
+```
+
 ## How to contribute
 
 If you are interested in joining development, please fork the repository and
@@ -156,6 +181,9 @@ BibTeX entry:
 ```
 
 ## Projects/Universities using libigl
+Libigl is used by many research groups around the world. In 2015, it won the
+Eurographics/ACM Symposium on Geometry Processing software award. Here are a
+few labs/companies/institutions using libigl:
 
  - [Spine by Esoteric Software](http://esotericsoftware.com/) is an animation tool dedicated to 2D characters.
  - Columbia University, [Columbia Computer Graphics Group](http://www.cs.columbia.edu/cg/), USA
@@ -164,7 +192,7 @@ BibTeX entry:
  - ETH Zurich, [Interactive Geometry Lab](http://igl.ethz.ch/) and [Advanced Technologies Lab](http://ait.inf.ethz.ch/), Swizterland
  - George Mason University, [CraGL](http://cs.gmu.edu/~ygingold/), USA
  - [Hong Kong University of Science and Technology](http://www.ust.hk/), USA
- - [National Institute of Informatics](http://www.nii.ac.jp/en/), Japan 
+ - [National Institute of Informatics](http://www.nii.ac.jp/en/), Japan
  - New York University, [Media Research Lab](http://mrl.nyu.edu/), USA
  - NYUPoly, [Game Innovation Lab](http://game.engineering.nyu.edu/), USA
  - [Telecom ParisTech](http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html), Paris, France
@@ -182,7 +210,8 @@ Libigl is a group endeavor led by [Alec
 Jacobson](http://www.cs.columbia.edu/~jacobson/) and [Daniele
 Panozzo](http://www.inf.ethz.ch/personal/dpanozzo/). Please [contact
 us](mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com) if you have
-questions or comments. We are happy to get feedback!
+questions or comments. For troubleshooting, please post an
+[issue](https://github.com/libigl/libigl/issues) on github.
 
 If you're using libigl in your projects, quickly [drop us a
 note](mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com). Tell us who you
@@ -193,7 +222,8 @@ If you find bugs or have problems please use our [github issue tracking
 page](https://github.com/libigl/libigl/issues).
 
 ## Copyright
-2015 Alec Jacobson, Daniele Panozzo, Olga Diamanti, Christian Schüller, Kenshi
-Takayama, Leo Sacht, Wenzel Jacob, Nico Pietroni, Amir Vaxman
+2015 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
+Zhou, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
+Giorgis, Luigi Rocca, Leonardo Sacht, Olga Sorkine-Hornung, and others.
 
-![](tutorial/images/libigl-logo.jpg)
+Please see individual files for appropriate copyright notices.

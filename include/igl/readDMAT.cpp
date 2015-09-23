@@ -45,7 +45,8 @@ static inline int readDMAT_read_header(FILE * fp, int & num_rows, int & num_cols
   }
   // finish reading header
   char lf;
-  if(fread(&lf, sizeof(char), 1, fp)!=1 || lf != '\n')
+
+  if(fread(&lf, sizeof(char), 1, fp)!=1 || !(lf == '\n' || lf == '\r'))
   {
     fprintf(stderr,"IOError: bad line ending in header\n");
     return 4;
@@ -212,13 +213,13 @@ IGL_INLINE bool igl::readDMAT(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template bool igl::readDMAT<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template bool igl::readDMAT<double>(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&);
-template bool igl::readDMAT<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template bool igl::readDMAT<Eigen::Matrix<double, 4, 1, 0, 4, 1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, 4, 1, 0, 4, 1> >&);
-template bool igl::readDMAT<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
-template bool igl::readDMAT<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template bool igl::readDMAT<Eigen::Matrix<int, -1, 2, 0, -1, 2> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&);
-template bool igl::readDMAT<Eigen::Matrix<double, -1, -1, 1, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 1, -1, -1> >&);
-template bool igl::readDMAT<Eigen::Matrix<int, -1, -1, 1, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 1, -1, -1> >&);
+template bool igl::readDMAT<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::string, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template bool igl::readDMAT<double>(std::string, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&);
+template bool igl::readDMAT<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::string, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template bool igl::readDMAT<Eigen::Matrix<double, 4, 1, 0, 4, 1> >(std::string, Eigen::PlainObjectBase<Eigen::Matrix<double, 4, 1, 0, 4, 1> >&);
+template bool igl::readDMAT<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(std::string, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template bool igl::readDMAT<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(std::string, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template bool igl::readDMAT<Eigen::Matrix<int, -1, 2, 0, -1, 2> >(std::string, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&);
+template bool igl::readDMAT<Eigen::Matrix<double, -1, -1, 1, -1, -1> >(std::string, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 1, -1, -1> >&);
+template bool igl::readDMAT<Eigen::Matrix<int, -1, -1, 1, -1, -1> >(std::string, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 1, -1, -1> >&);
 #endif

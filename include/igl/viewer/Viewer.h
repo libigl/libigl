@@ -42,8 +42,13 @@ namespace viewer
   class Viewer
   {
   public:
+    GLFWwindow* window;
 
     IGL_INLINE int launch(bool resizable = true,bool fullscreen = false);
+    IGL_INLINE int launch_init(bool resizable = true,bool fullscreen = false);
+    IGL_INLINE bool launch_rendering(bool loop = true);
+    IGL_INLINE void launch_shut();
+
     IGL_INLINE void init();
 
     // Stores all the viewing options
@@ -61,7 +66,7 @@ namespace viewer
     IGL_INLINE void shutdown_plugins();
 
     // Temporary data stored when the mouse button is pressed
-    Eigen::Vector4f down_rotation;
+    Eigen::Quaternionf down_rotation;
     int current_mouse_x;
     int current_mouse_y;
     int down_mouse_x;
@@ -88,6 +93,7 @@ namespace viewer
     IGL_INLINE bool save_mesh_to_file(const char* mesh_file_name);
 
     // Callbacks
+    IGL_INLINE bool key_pressed(unsigned int unicode_key,int modifier);
     IGL_INLINE bool key_down(int key,int modifier);
     IGL_INLINE bool key_up(int key,int modifier);
 
@@ -121,6 +127,8 @@ namespace viewer
     std::function<bool(Viewer& viewer, int button, int modifier)> callback_mouse_up;
     std::function<bool(Viewer& viewer, int mouse_x, int mouse_y)> callback_mouse_move;
     std::function<bool(Viewer& viewer, float delta_y)> callback_mouse_scroll;
+    std::function<bool(Viewer& viewer, unsigned int key, int modifiers)> callback_key_pressed;
+    // THESE SHOULD BE DEPRECATED:
     std::function<bool(Viewer& viewer, unsigned char key, int modifiers)> callback_key_down;
     std::function<bool(Viewer& viewer, unsigned char key, int modifiers)> callback_key_up;
 
@@ -132,6 +140,7 @@ namespace viewer
     void* callback_mouse_up_data;
     void* callback_mouse_move_data;
     void* callback_mouse_scroll_data;
+    void* callback_key_pressed_data;
     void* callback_key_down_data;
     void* callback_key_up_data;
 

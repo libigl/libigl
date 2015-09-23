@@ -7,7 +7,7 @@ all: example
 
 .PHONY: example
 
-CFLAGS+=-O3 -fopenmp
+CFLAGS+=-O3 
 
 INC=$(LIBIGL_INC) $(ANTTWEAKBAR_INC) $(EIGEN3_INC)
 LIB=$(OPENGL_LIB) $(GLUT_LIB) $(ANTTWEAKBAR_LIB) $(LIBIGL_LIB)

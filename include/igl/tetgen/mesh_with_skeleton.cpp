@@ -102,5 +102,5 @@ IGL_INLINE bool igl::tetgen::mesh_with_skeleton(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template instanciation
+// Explicit template specialization
 #endif

@@ -26,6 +26,7 @@ namespace igl
     // f_ext  #V by dim list of external forces
     // vel  #V by dim list of velocities
     // h  dynamics time step
+    // ym  ~Young's modulus smaller is softer, larger is more rigid/stiff
     // max_iter  maximum inner iterations
     // K  rhs pre-multiplier
     // M  mass matrix
@@ -38,6 +39,7 @@ namespace igl
     bool with_dynamics;
     Eigen::MatrixXd f_ext,vel;
     double h;
+    double ym;
     int max_iter;
     Eigen::SparseMatrix<double> K,M;
     Eigen::SparseMatrix<double> CSM;
@@ -51,6 +53,7 @@ namespace igl
         with_dynamics(false),
         f_ext(),
         h(1),
+        ym(1),
         max_iter(10),
         K(),
         CSM(),

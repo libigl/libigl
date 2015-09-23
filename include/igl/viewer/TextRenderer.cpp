@@ -17,12 +17,12 @@
 #define NANOVG_GL3
 #include <nanovg_gl.h>
 
-using namespace std;
 
   IGL_INLINE igl::viewer::TextRenderer::TextRenderer(): ctx(nullptr) {}
 
   IGL_INLINE int igl::viewer::TextRenderer::Init()
   {
+    using namespace std;
     #ifdef NDEBUG
       ctx = nvgCreateGL3(NVG_STENCIL_STROKES | NVG_ANTIALIAS);
     #else
@@ -37,6 +37,7 @@ using namespace std;
 
   IGL_INLINE int igl::viewer::TextRenderer::Shut()
   {
+    using namespace std;
     if(ctx)
       nvgDeleteGL3(ctx);
     return 0;
@@ -45,6 +46,7 @@ using namespace std;
   IGL_INLINE void igl::viewer::TextRenderer::BeginDraw(const Eigen::Matrix4f &view, const Eigen::Matrix4f &proj,
     const Eigen::Vector4f &_viewport, float _object_scale)
   {
+    using namespace std;
     viewport = _viewport;
     proj_matrix = proj;
     view_matrix = view;
@@ -67,16 +69,18 @@ using namespace std;
 
   IGL_INLINE void igl::viewer::TextRenderer::EndDraw()
   {
+    using namespace std;
     nvgEndFrame(ctx);
   }
 
   IGL_INLINE void igl::viewer::TextRenderer::DrawText(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text)
   {
+    using namespace std;
     pos += normal * 0.005f * object_scale;
     Eigen::Vector3f coord = igl::project(Eigen::Vector3f(pos(0), pos(1), pos(2)),
         view_matrix, proj_matrix, viewport);
 
-    nvgFontSize(ctx, 16/mPixelRatio);
+    nvgFontSize(ctx, 16*mPixelRatio);
     nvgFontFace(ctx, "sans");
     nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
     nvgFillColor(ctx, nvgRGBA(10,10,250,255));

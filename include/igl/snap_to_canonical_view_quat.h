@@ -30,10 +30,11 @@ namespace igl
     const Q_type threshold,
     Q_type* s);
 
+  template <typename Scalarq, typename Scalars>
   IGL_INLINE bool snap_to_canonical_view_quat(
-    const Eigen::Quaterniond & q,
+    const Eigen::Quaternion<Scalarq> & q,
     const double threshold,
-    Eigen::Quaterniond & s);
+    Eigen::Quaternion<Scalars> & s);
 }
 
 #ifndef IGL_STATIC_LIBRARY

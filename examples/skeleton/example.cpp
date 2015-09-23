@@ -1,10 +1,10 @@
 #include <igl/Camera.h>
 #include <igl/REDRUM.h>
 #include <igl/boundary_conditions.h>
-#include <igl/draw_floor.h>
-#include <igl/draw_mesh.h>
-#include <igl/draw_skeleton_3d.h>
-#include <igl/draw_skeleton_vector_graphics.h>
+#include <igl/opengl2/draw_floor.h>
+#include <igl/opengl2/draw_mesh.h>
+#include <igl/opengl2/draw_skeleton_3d.h>
+#include <igl/opengl2/draw_skeleton_vector_graphics.h>
 #include <igl/forward_kinematics.h>
 #include <igl/get_seconds.h>
 #include <igl/lbs_matrix.h>
@@ -20,7 +20,7 @@
 #include <igl/readOFF.h>
 #include <igl/readTGF.h>
 #include <igl/readWRL.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/snap_to_fixed_up.h>
 #include <igl/trackball.h>
@@ -255,7 +255,7 @@ void display()
   const float GREY[4] = {0.5,0.5,0.6,1.0};
   const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
   glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-  draw_floor(GREY,DARK_GREY);
+  igl::opengl2::draw_floor(GREY,DARK_GREY);
   glPopMatrix();
 
   push_object();
@@ -296,7 +296,7 @@ void display()
   glLineWidth(1.0);
   MatrixXd U = M*T;
   per_face_normals(U,F,N);
-  draw_mesh(U,F,N);
+  igl::opengl2::draw_mesh(U,F,N);
   glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 
   if(skeleton_on_top)
@@ -308,10 +308,10 @@ void display()
   {
     default:
     case SKEL_STYLE_TYPE_3D:
-      draw_skeleton_3d(C,BE,T,MAYA_VIOLET,bbd*0.5);
+      igl::opengl2::draw_skeleton_3d(C,BE,T,MAYA_VIOLET,bbd*0.5);
       break;
     case SKEL_STYLE_TYPE_VECTOR_GRAPHICS:
-      draw_skeleton_vector_graphics(C,BE,T);
+      igl::opengl2::draw_skeleton_vector_graphics(C,BE,T);
       break;
   }
 
@@ -319,7 +319,7 @@ void display()
 
   pop_scene();
 
-  report_gl_error();
+  igl::opengl::report_gl_error();
 
   TwDraw();
   glutSwapBuffers();

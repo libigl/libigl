@@ -2,7 +2,6 @@
 
 # Shared flags etc.
 include ../Makefile.conf
-LIBIGL_LIB+=-liglsvd3x3
 
 all: example
 

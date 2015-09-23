@@ -1,11 +1,11 @@
-#include <igl/OpenGL_convenience.h>
+#include <igl/opengl/OpenGL_convenience.h>
 #include <igl/per_face_normals.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/normalize_row_lengths.h>
-#include <igl/draw_mesh.h>
-#include <igl/draw_floor.h>
+#include <igl/opengl2/draw_mesh.h>
+#include <igl/opengl2/draw_floor.h>
 #include <igl/quat_to_mat.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/readOBJ.h>
 #include <igl/readDMAT.h>
 #include <igl/readOFF.h>
@@ -76,7 +76,7 @@ void reshape(int width,int height)
   TwWindowSize(width, height);
 }
 
-// Set up projection and model view of scene
+// Set up igl::opengl2::projection and model view of scene
 void push_scene()
 {
   using namespace igl;
@@ -204,7 +204,7 @@ void display()
   // Draw the model
   // Set material properties
   glEnable(GL_COLOR_MATERIAL);
-  draw_mesh(V,F,N,C);
+  igl::opengl2::draw_mesh(V,F,N,C);
 
   pop_object();
 
@@ -215,12 +215,12 @@ void display()
   glTranslated(0,floor_offset,0);
   const float GREY[4] = {0.5,0.5,0.6,1.0};
   const float DARK_GREY[4] = {0.2,0.2,0.3,1.0};
-  draw_floor(GREY,DARK_GREY);
+  igl::opengl2::draw_floor(GREY,DARK_GREY);
   glPopMatrix();
 
   pop_scene();
 
-  report_gl_error();
+  igl::opengl::report_gl_error();
 
   TwDraw();
   glutSwapBuffers();

@@ -2,7 +2,7 @@
 #include <igl/Viewport.h>
 #include <igl/Camera.h>
 #include <igl/matlab_format.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/anttweakbar/ReAntTweakBar.h>
 #include <igl/trackball.h>
 #include <igl/two_axis_valuator_fixed_up.h>
@@ -10,12 +10,12 @@
 #include <igl/EPS.h>
 #include <igl/get_seconds.h>
 #include <igl/material_colors.h>
-#include <igl/draw_mesh.h>
+#include <igl/opengl2/draw_mesh.h>
 #include <igl/readOFF.h>
 #include <igl/per_face_normals.h>
-#include <igl/draw_floor.h>
-#include <igl/project.h>
-#include <igl/unproject.h>
+#include <igl/opengl2/draw_floor.h>
+#include <igl/opengl2/project.h>
+#include <igl/opengl2/unproject.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -354,7 +354,7 @@ void draw_scene(const igl::Camera & v_camera,
   glMaterialfv(GL_BACK, GL_DIFFUSE,  FAST_GREEN_DIFFUSE  );
   glMaterialfv(GL_BACK, GL_SPECULAR, SILVER_SPECULAR);
   glMaterialf (GL_BACK, GL_SHININESS, 128);
-  draw_mesh(V,F,N);
+  igl::opengl2::draw_mesh(V,F,N);
   glDisable(GL_LIGHTING);
   glEnable(GL_COLOR_MATERIAL);
   //glLineWidth(3.f);
@@ -365,7 +365,7 @@ void draw_scene(const igl::Camera & v_camera,
   {
     glPushMatrix();
     glTranslated(0,-1,0);
-    draw_floor();
+    igl::opengl2::draw_floor();
     glPopMatrix();
   }
   
@@ -383,7 +383,7 @@ void draw_scene(const igl::Camera & v_camera,
   glPopMatrix();
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
-  report_gl_error();
+  igl::opengl::report_gl_error();
 
   if(render_to_texture)
   {

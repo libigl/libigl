@@ -1,8 +1,8 @@
 #include <igl/EPS.h>
-#include <igl/OpenGL_convenience.h>
+#include <igl/opengl/OpenGL_convenience.h>
 #include <igl/colon.h>
-#include <igl/draw_floor.h>
-#include <igl/draw_mesh.h>
+#include <igl/opengl2/draw_floor.h>
+#include <igl/opengl2/draw_mesh.h>
 #include <igl/jet.h>
 #include <igl/material_colors.h>
 #include <igl/matlab_format.h>
@@ -10,12 +10,12 @@
 #include <igl/per_face_normals.h>
 #include <igl/quat_to_mat.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/report_gl_error.h>
-#include <igl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
+#include <igl/opengl/report_gl_error.h>
 #include <igl/slice.h>
-#include <igl/sort_triangles.h>
+#include <igl/opengl2/sort_triangles.h>
 #include <igl/trackball.h>
-#include <igl/unproject.h>
+#include <igl/opengl2/unproject.h>
 #include <igl/anttweakbar/ReAntTweakBar.h>
 
 #ifdef __APPLE__
@@ -87,7 +87,7 @@ void lights()
   glLightfv(GL_LIGHT1,GL_POSITION,pos);
 }
 
-// Set up projection and model view of scene
+// Set up igl::opengl2::projection and model view of scene
 void push_scene()
 {
   using namespace igl;
@@ -154,7 +154,7 @@ void mouse(int glutButton, int glutState, int mouse_x, int mouse_y)
       // sort!
       push_scene();
       push_object();
-      sort_triangles(V,F,sorted_F,I);
+      igl::opengl2::sort_triangles(V,F,sorted_F,I);
       slice(N,I,1,sorted_N);
       init_C(I);
       pop_object();
@@ -206,7 +206,7 @@ void display()
   glTranslated(0,-1000*FLOAT_EPS,0);
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
-  draw_floor();
+  igl::opengl2::draw_floor();
   pop_object();
 
   glDisable(GL_CULL_FACE);
@@ -241,12 +241,12 @@ void display()
 
   push_object();
   // Draw the model
-  draw_mesh(V,sorted_F,sorted_N,C);
+  igl::opengl2::draw_mesh(V,sorted_F,sorted_N,C);
   pop_object();
 
   pop_scene();
 
-  report_gl_error();
+  igl::opengl::report_gl_error();
   glutSwapBuffers();
   glutPostRedisplay();
 }

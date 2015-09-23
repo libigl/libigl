@@ -9,7 +9,7 @@ IF (WIN32)
    add_definitions(-DNO_TIMER)
 ENDIF (WIN32)
 
-FIND_PATH(TRIANGLE_INCLUDE_DIR triangle.h
+FIND_PATH(TRIANGLE_INCLUDE_DIR triangle.c
    /usr/include
    /usr/local/include
    ${PROJECT_SOURCE_DIR}/../libigl/external/triangle/

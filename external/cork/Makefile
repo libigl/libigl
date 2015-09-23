@@ -36,9 +36,9 @@ PLATFORM := $(shell uname)
 # | Programs |
 # +----------+
 CPP11_FLAGS := -std=c++11 
-include ../../build/Makefile.conf
-CC  := ${GG}
-CXX := ${GG}
+#include ../../build/Makefile.conf
+#CC  := ${GG}
+#CXX := ${GG}
 ifeq ($(PLATFORM),Darwin) # on mac
     CPP11_FLAGS := $(CPP11_FLAGS)  -Wno-c++11-extensions
 endif

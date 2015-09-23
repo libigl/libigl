@@ -47,4 +47,5 @@ IGL_INLINE void igl::sum(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+template void igl::sum<double>(Eigen::SparseMatrix<double, 0, int> const&, int, Eigen::SparseVector<double, 0, int>&);
 #endif

@@ -12,7 +12,7 @@ endif(LIBIGL_USE_STATIC_LIBRARY)
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 IF(MSVC)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP") ### Enable parallel compilation for Visual Studio
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj") ### Enable parallel compilation for Visual Studio
   SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} )
   SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} )
 ELSE(MSVC)
@@ -47,6 +47,27 @@ include_directories("../external/nanogui/include")
 include_directories("../external/nanogui/ext/nanovg/src")
 list(APPEND SHARED_LIBRARIES "nanogui" "glfw")
 
+#Compile embree
+option(ENABLE_ISPC_SUPPORT " " OFF)
+option(RTCORE_TASKING_SYSTEM " " INTERNAL)
+
+IF(NOT MSVC) # embree static build is broken on visual studio
+	option(ENABLE_STATIC_LIB " " ON)
+	set(ENABLE_STATIC_LIB ON CACHE BOOL "force static build of embree" FORCE)
+ENDIF(NOT MSVC)
+
+IF(MSVC)
+	option(USE_STATIC_RUNTIME " " OFF)
+	set(USE_STATIC_RUNTIME OFF CACHE BOOL "disable changes in the runtime for VS" FORCE)
+ENDIF(MSVC)
+
+option(ENABLE_TUTORIALS " " OFF)
+
+add_subdirectory("../external/embree/" "embree")
+include_directories("../external/embree/include")
+list(APPEND SHARED_LIBRARIES "embree")
+
+
 message(STATUS "Linking with: ${LIBIGL_LIBRARIES}")
 list(APPEND SHARED_LIBRARIES ${LIBIGL_LIBRARIES})
 
@@ -63,6 +84,7 @@ add_subdirectory("102_DrawMesh")
 add_subdirectory("103_Events")
 add_subdirectory("104_Colors")
 add_subdirectory("105_Overlays")
+add_subdirectory("106_ViewerMenu")
 
 # Chapter 2
 add_subdirectory("201_Normals")
@@ -77,6 +99,7 @@ add_subdirectory("302_Sort")
 add_subdirectory("303_LaplaceEquation")
 add_subdirectory("304_LinearEqualityConstraints")
 add_subdirectory("305_QuadraticProgramming")
+add_subdirectory("306_EigenDecomposition")
 
 # Chapter 4
 add_subdirectory("401_BiharmonicDeformation")
@@ -85,6 +108,7 @@ add_subdirectory("403_BoundedBiharmonicWeights")
 add_subdirectory("404_DualQuaternionSkinning")
 add_subdirectory("405_AsRigidAsPossible")
 add_subdirectory("406_FastAutomaticSkinningTransformations")
+add_subdirectory("407_BiharmonicCoordinates")
 
 # Chapter 5
 add_subdirectory("501_HarmonicParam")
@@ -98,6 +122,7 @@ endif(LIBCOMISO_FOUND)
 add_subdirectory("507_PolyVectorField")
 add_subdirectory("508_ConjugateField")
 add_subdirectory("509_Planarization")
+add_subdirectory("510_Integrable")
 
 # Chapter 6
 if(TINYXML2_FOUND)
@@ -108,10 +133,10 @@ if(MATLAB_FOUND)
 endif(MATLAB_FOUND)
 add_subdirectory("604_Triangle")
 add_subdirectory("605_Tetgen")
-if(EMBREE_FOUND)
-  add_subdirectory("606_AmbientOcclusion")
-  add_subdirectory("607_Picking")
-endif(EMBREE_FOUND)
+
+add_subdirectory("606_AmbientOcclusion")
+add_subdirectory("607_Picking")
+
 if(LIM_FOUND)
   add_subdirectory("608_LIM")
 endif(LIM_FOUND)

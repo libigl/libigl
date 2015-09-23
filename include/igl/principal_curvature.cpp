@@ -197,7 +197,7 @@ public:
   {
     float t;
 
-    if (abs(*v2) >= abs(*v1) && abs(*v2) >= abs(*v0))
+    if (std::abs(*v2) >= std::abs(*v1) && std::abs(*v2) >= std::abs(*v0))
       return 0;
 
     t = *v0;
