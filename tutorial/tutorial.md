@@ -2934,7 +2934,7 @@ $\mathcal{R}^3$ such that $f(\mathbf{x}) = v$. A core problem in geometry
 processing is to extract an iso-surface as a triangle mesh for further
 mesh-based processing or visualization. This is referred to as iso-contouring.
 
-"Marching Cubes" [lorensen_1987] is a [famous
+"Marching Cubes" [#lorensen_1987] is a [famous
 method](https://en.wikipedia.org/wiki/Marching_cubes) for iso-contouring
 tri-linear functions $f$ on a regular lattice (aka grid). The core idea of this
 method is to contour the iso-surface passing through each cell  (if it does at
@@ -3079,8 +3079,8 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   2008.
 [#lorensen_1987]: W.E. Lorensen and Harvey E. Cline. [Marching cubes: A high
   resolution 3d surface construction
-  algorithm](https://www.google.com/search?q=Marching+cubes:+A+high+resolution+3d
-  surface+construction+algorithm), 1987.
+  algorithm](https://www.google.com/search?q=Marching+cubes:+A+high+resolution+3d+surface+construction+algorithm),
+  1987.
 [#mcadams_2011]: Alexa McAdams, Andrew Selle, Rasmus Tamstorf, Joseph Teran,
   Eftychios Sifakis. [Computing the Singular Value Decomposition of 3x3
   matrices with minimal branching and elementary floating point
