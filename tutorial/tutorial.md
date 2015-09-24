@@ -2953,7 +2953,7 @@ igl::marching_cubes(S,GV,nx,ny,nz,V,F);
 
 ![([Example 705](705_MarchingCubes/main.cpp)) samples signed distance to the
 input mesh (left) and then reconstructs the surface using
-marching cubes to counter the 0-level set (center). For comparison, clamping
+marching cubes to contour the 0-level set (center). For comparison, clamping
 this signed distance field to an indicator function and contouring reveals
 serious aliasing artifacts.](images/armadillo-marching-cubes.jpg)
 
