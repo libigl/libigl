@@ -24,6 +24,7 @@
  \*===========================================================================*/
 
 #include "marching_cubes.h"
+#include "marching_cubes_tables.h"
 #include <map>
 
 extern int edgeTable[256];
