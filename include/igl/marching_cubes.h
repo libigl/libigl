@@ -18,7 +18,6 @@ namespace igl
   // points, and generates vertices and faces
   //
   // Input:
-  //  xres, yres, zres  resolutions of the grid in x,y,z dimensions
   //  values  #number_of_grid_points x 1 array -- the scalar values of an
   //    implicit function defined on the grid points (<0 in the inside of the
   //    surface, 0 on the border, >0 outside)
@@ -30,6 +29,9 @@ namespace igl
   //      z = index / (xres -1) / (yres -1) ).
   //      where x,y,z index x, y, z dimensions
   //      i.e. index = x + y*xres + z*xres*yres
+  //  xres  resolutions of the grid in x dimension
+  //  yres  resolutions of the grid in y dimension
+  //  zres  resolutions of the grid in z dimension
   // Output:
   //   vertices  #V by 3 list of mesh vertex positions
   //   faces  #F by 3 list of mesh triangle indices
