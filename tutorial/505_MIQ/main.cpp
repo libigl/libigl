@@ -320,4 +320,3 @@ igl::comiso::miq(V,
   viewer.callback_key_down = &key_down;
   viewer.launch();
 }
-
