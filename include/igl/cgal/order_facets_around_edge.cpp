@@ -258,6 +258,8 @@ void igl::cgal::order_facets_around_edge(
         if (F(fid, 1) != s && F(fid, 1) != d) return F(fid, 1);
         if (F(fid, 2) != s && F(fid, 2) != d) return F(fid, 2);
         assert(false);
+        // avoid warning
+        return -1;
     };
 
     const size_t N = adj_faces.size();
