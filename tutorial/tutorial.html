@@ -3267,7 +3267,7 @@ iso-surface at value <span class="math">\(v\)</span> is composed of all points <
 processing is to extract an iso-surface as a triangle mesh for further
 mesh-based processing or visualization. This is referred to as iso-contouring.</p>
 
-<p>&#8220;Marching Cubes&#8221; [lorensen_1987] is a <a href="https://en.wikipedia.org/wiki/Marching_cubes">famous
+<p>&#8220;Marching Cubes&#8221; <a class="citation" href="#fn:38" title="Jump to citation">[38]<span class="citekey" style="display:none">lorensen_1987</span></a> is a <a href="https://en.wikipedia.org/wiki/Marching_cubes">famous
 method</a> for iso-contouring
 tri-linear functions <span class="math">\(f\)</span> on a regular lattice (aka grid). The core idea of this
 method is to contour the iso-surface passing through each cell (if it does at
@@ -3286,12 +3286,12 @@ input scalar field <code>S</code> sampled at vertex locations <code>GV</code> of
 <figure>
 <img src="images/armadillo-marching-cubes.jpg" alt="(Example 705) samples signed distance to the
 input mesh (left) and then reconstructs the surface using
-marching cubes to counter the 0-level set (center). For comparison, clamping
+marching cubes to contour the 0-level set (center). For comparison, clamping
 this signed distance field to an indicator function and contouring reveals
 serious aliasing artifacts." />
 <figcaption>(<a href="705_MarchingCubes/main.cpp">Example 705</a>) samples signed distance to the
 input mesh (left) and then reconstructs the surface using
-marching cubes to counter the 0-level set (center). For comparison, clamping
+marching cubes to contour the 0-level set (center). For comparison, clamping
 this signed distance field to an indicator function and contouring reveals
 serious aliasing artifacts.</figcaption>
 </figure>
@@ -3531,6 +3531,12 @@ repository</a>.</p>
 <a href="https://www.google.com/search?q=Signed+distance+computation+using+the+angle+weighted+pseudonormal">Signed distance computation using the angle weighted
 pseudonormal</a>,
  2005.</p>
+</li>
+
+<li id="fn:38" class="citation"><span class="citekey" style="display:none">lorensen_1987</span><p>W.E. Lorensen and Harvey E. Cline. <a href="https://www.google.com/search?q=Marching+cubes:+A+high+resolution+3d+surface+construction+algorithm">Marching cubes: A high
+ resolution 3d surface construction
+ algorithm</a>,
+ 1987.</p>
 </li>
 
 </ol>
