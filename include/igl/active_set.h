@@ -28,7 +28,6 @@ namespace igl
   // and further optionally subject to the linear inequality constraints that
   // Aieq*Z <= Bieq and constant inequality constraints lx <= x <= ux
   //
-  // Templates:
   // Inputs:
   //   A  n by n matrix of quadratic coefficients
   //   B  n by 1 column of linear coefficients
@@ -50,7 +49,6 @@ namespace igl
   // Benchmark: For a harmonic solve on a mesh with 325K facets, matlab 2.2
   // secs, igl/min_quad_with_fixed.h 7.1 secs
   //
-
   template <
     typename AT, 
     typename DerivedB,

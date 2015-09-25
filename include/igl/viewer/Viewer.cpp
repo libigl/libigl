@@ -363,7 +363,9 @@ namespace viewer
                    Eigen::Vector3d(255.0/255.0,228.0/255.0,58.0/255.0),
                    Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
     if (data.V_uv.rows() == 0)
+    {
       data.grid_texture();
+    }
 
     core.align_camera_center(data.V,data.F);
 
@@ -816,6 +818,7 @@ namespace viewer
 
     // Initialize IGL viewer
     init();
+    return EXIT_SUCCESS;
   }
 
   IGL_INLINE bool Viewer::launch_rendering(bool loop)
@@ -848,6 +851,7 @@ namespace viewer
       if (!loop)
         return !glfwWindowShouldClose(window);
     }
+    return EXIT_SUCCESS;
   }
 
   IGL_INLINE void Viewer::launch_shut()
@@ -864,10 +868,11 @@ namespace viewer
 
   IGL_INLINE int Viewer::launch(bool resizable,bool fullscreen)
   {
+    // TODO return values are being ignored...
     launch_init(resizable,fullscreen);
     launch_rendering(true);
     launch_shut();
-    return 1;
+    return EXIT_SUCCESS;
   }
 } // end namespace
 }

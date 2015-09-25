@@ -154,6 +154,11 @@ git pull
 git submodule update -- recursive
 ```
 
+## Unit testing 
+
+Libigl maintains [separate
+repository](https://github.com/libigl/libigl-unit-tests) for unit testing.
+
 ## How to contribute
 
 If you are interested in joining development, please fork the repository and

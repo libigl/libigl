@@ -44,6 +44,23 @@ namespace igl {
                 size_t s, size_t d, 
                 const std::vector<int>& adj_faces,
                 Eigen::PlainObjectBase<DerivedI>& order);
+
+        // This funciton is a wrapper around the one above.  Since the ordering
+        // is circular, the pivot point is used to define a starting point.  So
+        // order[0] is the index into adj_face that is immediately after the
+        // pivot face (s, d, pivot point) in clockwise order.
+        template<
+            typename DerivedV,
+            typename DerivedF,
+            typename DerivedI>
+        IGL_INLINE
+        void order_facets_around_edge(
+                const Eigen::PlainObjectBase<DerivedV>& V,
+                const Eigen::PlainObjectBase<DerivedF>& F,
+                size_t s, size_t d, 
+                const std::vector<int>& adj_faces,
+                const Eigen::PlainObjectBase<DerivedV>& pivot_point,
+                Eigen::PlainObjectBase<DerivedI>& order);
     }
 }
 
