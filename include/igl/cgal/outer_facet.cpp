@@ -10,6 +10,7 @@
 #include "../outer_element.h"
 #include "order_facets_around_edge.h"
 #include <algorithm>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
 template<
     typename DerivedV,
@@ -36,10 +37,13 @@ IGL_INLINE void igl::cgal::outer_facet(
     //
     //    3. Because the vertex s is an outer vertex by construction (see
     //    implemnetation of outer_edge()). The first adjacent facet is facing
-    //    outside (i.e. flipped=false) if it contains directed edge (s, d).  
-    //
-    typedef typename DerivedV::Scalar Scalar; typedef typename DerivedV::Index
-        Index; const size_t INVALID = std::numeric_limits<size_t>::max();
+    //    outside (i.e. flipped=false) if it has positive X normal component.
+    //    If it has zero normal component, it is facing outside if it contains
+    //    directed edge (s, d).  
+
+    typedef typename DerivedV::Scalar Scalar;
+    typedef typename DerivedV::Index Index;
+    const size_t INVALID = std::numeric_limits<size_t>::max();
 
     Index s,d;
     Eigen::Matrix<Index,Eigen::Dynamic,1> incident_faces;
@@ -66,9 +70,21 @@ IGL_INLINE void igl::cgal::outer_facet(
             adj_faces.begin(),
             convert_to_signed_index);
 
+    DerivedV pivot_point = V.row(s);
+    pivot_point(0, 0) += 1.0;
+
     Eigen::VectorXi order;
-    order_facets_around_edge(V, F, s, d, adj_faces, order);
+    order_facets_around_edge(V, F, s, d, adj_faces, pivot_point, order);
 
     f = signed_index_to_index(adj_faces[order[0]]);
     flipped = adj_faces[order[0]] > 0;
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template specialization
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+template void igl::cgal::outer_facet<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, int&, bool&);
+template void igl::cgal::outer_facet<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, int&, bool&);
+template void igl::cgal::outer_facet<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int&, bool&);
+#endif

@@ -22,7 +22,7 @@ namespace igl
   // Inputs:
   //   F  #F by 3 list of triangle indices
   // Outputs:
-  //   B  #V list whether 
+  //   B  #V list indicate whether each vertex is locally manifold.
   // Returns whether mesh is vertex manifold.
   //
   // See also: is_edge_manifold

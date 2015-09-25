@@ -21,6 +21,7 @@ example1
 external/yimg/.git*
 external/tinyxml2/CMakeFiles*
 external/tinyxml2/CMakeCache.txt
+external/embree/build/*
 external/embree/bin/*
 external/embree/bin
 external/embree/doc/html/*
@@ -87,3 +88,5 @@ iglhelpers.pyc
 python/build2
 tests/build
 tests/bin
+python/build3
+*.pyc

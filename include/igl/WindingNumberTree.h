@@ -12,9 +12,13 @@
 #include <Eigen/Dense>
 #include "WindingNumberMethod.h"
 
-static Eigen::MatrixXd dummyV;
 namespace igl
 {
+  // This is only need to fill in references, it should never actually be touched
+  // and shouldn't cause race conditions. (This is a hack, but I think it's "safe")
+  static Eigen::MatrixXd dummyV;
+  // Space partitioning tree for computing winding number hierarchically.
+  //
   // Templates:
   //   Point  type for points in space, e.g. Eigen::Vector3d
   template <typename Point>
@@ -146,7 +150,7 @@ template <typename Point>
 inline igl::WindingNumberTree<Point>::WindingNumberTree():
   method(EXACT_WINDING_NUMBER_METHOD),
   parent(NULL),
-  V(dummyV),
+  V(igl::dummyV),
   SV(),
   F(),
   //boundary(igl::boundary_facets<Eigen::MatrixXi,Eigen::MatrixXi>(F))
@@ -162,7 +166,7 @@ inline igl::WindingNumberTree<Point>::WindingNumberTree(
   const Eigen::MatrixXi & _F):
   method(EXACT_WINDING_NUMBER_METHOD),
   parent(NULL),
-  V(dummyV),
+  V(igl::dummyV),
   SV(),
   F(),
   //boundary(igl::boundary_facets<Eigen::MatrixXi,Eigen::MatrixXi>(F))

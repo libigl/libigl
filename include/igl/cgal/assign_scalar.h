@@ -23,6 +23,9 @@ namespace igl
     IGL_INLINE void assign_scalar(
       const typename CGAL::Epeck::FT & cgal,
       double & d);
+    IGL_INLINE void assign_scalar(
+      const double & c,
+      double & d);
   }
 }
 #ifndef IGL_STATIC_LIBRARY

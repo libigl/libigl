@@ -15,7 +15,7 @@
 
 <h1 id="libigltutorialnotes">libigl tutorial notes</h1>
 
-<h4 id="aspresentedbydanielepanozzoandalecjacobsonatsgpgraduateschool2015">as presented by Daniele Panozzo and Alec Jacobson at SGP Graduate School 2015</h4>
+<h4 id="originallypresentedbydanielepanozzoandalecjacobsonatsgpgraduateschool2014">originally presented by Daniele Panozzo and Alec Jacobson at SGP Graduate School 2014</h4>
 
 <figure>
 <img src="images/libigl-logo.jpg" alt="" />
@@ -134,6 +134,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#pickingverticesandfaces">607 Picking vertices and faces</a></li>
 <li><a href="#locallyinjectivemaps">608 Locally Injective Maps</a></li>
 <li><a href="#booleanoperationsonmeshes">609 Boolean Operations on Meshes</a></li>
+<li><a href="#csgtree">610 CSG Tree</a></li>
 </ul></li>
 <li><a href="#chapter7:miscellaneous">Chapter 7: Miscellaneous</a>
 
@@ -142,6 +143,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#generalizedwindingnumber">702 Generalized Winding Number</a></li>
 <li><a href="#meshdecimation">703 Mesh Decimation</a></li>
 <li><a href="#signeddistances">704 Signed Distances</a></li>
+<li><a href="#marchingcubes">705 Marching Cubes</a></li>
 </ul></li>
 <li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
@@ -2870,6 +2872,48 @@ together coincident vertices, maintaining original triangle orientations.</p>
 <a href="https://github.com/gilbo/cork">cork</a>, which is typically faster, but is not
 always robust.</p>
 
+<h2 id="csgtree">CSG Tree</h2>
+
+<p>The <a href="#booleanoperationsonmeshes">previous section</a> discusses using
+<code>igl::boolean::mesh_boolean</code> to compute the result of a <em>single</em> boolean
+operation on two input triangle meshes. When employing constructive solid
+geometry (CSG) as a modeling paradigm, shapes are represented as the result of
+many such binary operations. The sequence is stored in a binary tree.</p>
+
+<p>Libigl uses exact arithmetic internally to construct the intermediary boolean
+results robustly. &#8220;Rounding&#8221; this result to floating point (even double
+precision) would cause problems if re-injected into a further boolean
+operation. To facilitate CSG tree operations and encourage callers <em>not</em> to
+call <code>igl::boolean::mesh_boolean</code> multiple times explicitly, libigl implements
+a class <code>igl::boolean::CSGTree</code>. Leaf nodes of this class are simply &#8220;solid&#8221;
+meshes (otherwise good input to <code>igl::boolean::mesh_boolean</code>). Interior nodes
+of the tree combine two children with a boolean operation. Using the intializer
+list constructor it is easy to hard-code specific tree constructions. Here&#8217;s an
+example taking the <em>intersection</em> of a cube A and sphere B <em>minus</em> the <em>union</em>
+of three cylinders:</p>
+
+<pre><code class="cpp">// Compute result of (A ∩ B) \ ((C ∪ D) ∪ E)
+igl::boolean::CSGTree&lt;MatrixXi&gt; CSGTree = 
+  {{{VA,FA},{VB,FB},&quot;i&quot;},{{{VC,FC},{VD,FD},&quot;u&quot;},{VE,FE},&quot;u&quot;},&quot;m&quot;};
+</code></pre>
+
+<figure>
+<img src="images/cube-sphere-cylinders-csg-tree.jpg" alt="A CSG Tree represents a shape as a combination of binary boolean
+operations" />
+<figcaption>A CSG Tree represents a shape as a combination of binary boolean
+operations</figcaption>
+</figure>
+
+<p>Example <a href="610_CSGTree/main.cpp">610</a> computes each intermediary CSG result and
+then the final composite.</p>
+
+<figure>
+<img src="images/cube-sphere-cylinders-csg.gif" alt="Example 610 computes complex CSG Tree operation on 5
+input meshes." />
+<figcaption>Example <a href="610_CSGTree/main.cpp">610</a> computes complex CSG Tree operation on 5
+input meshes.</figcaption>
+</figure>
+
 <h1 id="chapter7:miscellaneous">Miscellaneous</h1>
 
 <p>Libigl contains a <em>wide</em> variety of geometry processing tools and functions for
@@ -3213,6 +3257,45 @@ slices through the bunny." />
 slices through the bunny.</figcaption>
 </figure>
 
+<h2 id="marchingcubes">Marching Cubes</h2>
+
+<p>Often 3D data is captured as scalar field defined over space <span class="math">\(f(\mathbf{x}) :
+\mathcal{R}^3 \rightarrow \mathcal{R}\)</span>. Lurking within this field,
+<em>iso-surfaces</em> of the scalar field are often salient geometric objects. The
+iso-surface at value <span class="math">\(v\)</span> is composed of all points <span class="math">\(\mathbf{x}\)</span> in
+<span class="math">\(\mathcal{R}^3\)</span> such that <span class="math">\(f(\mathbf{x}) = v\)</span>. A core problem in geometry
+processing is to extract an iso-surface as a triangle mesh for further
+mesh-based processing or visualization. This is referred to as iso-contouring.</p>
+
+<p>&#8220;Marching Cubes&#8221; <a class="citation" href="#fn:38" title="Jump to citation">[38]<span class="citekey" style="display:none">lorensen_1987</span></a> is a <a href="https://en.wikipedia.org/wiki/Marching_cubes">famous
+method</a> for iso-contouring
+tri-linear functions <span class="math">\(f\)</span> on a regular lattice (aka grid). The core idea of this
+method is to contour the iso-surface passing through each cell (if it does at
+all) with a predefined topology (aka connectivity) chosen from a look up table
+depending on the function values at each vertex of the cell. The method
+iterates (&#8220;marches&#8221;) over all cells (&#8220;cubes&#8221;) in the grid and stitches together
+the final, watertight mesh.</p>
+
+<p>In libigl, <code>igl::marching_cubes</code> constructs a triangle mesh <code>(V,F)</code> from an
+input scalar field <code>S</code> sampled at vertex locations <code>GV</code> of a <code>nx</code> by <code>ny</code> by
+<code>nz</code> regular grid:</p>
+
+<pre><code class="cpp">igl::marching_cubes(S,GV,nx,ny,nz,V,F);
+</code></pre>
+
+<figure>
+<img src="images/armadillo-marching-cubes.jpg" alt="(Example 705) samples signed distance to the
+input mesh (left) and then reconstructs the surface using
+marching cubes to contour the 0-level set (center). For comparison, clamping
+this signed distance field to an indicator function and contouring reveals
+serious aliasing artifacts." />
+<figcaption>(<a href="705_MarchingCubes/main.cpp">Example 705</a>) samples signed distance to the
+input mesh (left) and then reconstructs the surface using
+marching cubes to contour the 0-level set (center). For comparison, clamping
+this signed distance field to an indicator function and contouring reveals
+serious aliasing artifacts.</figcaption>
+</figure>
+
 <h1 id="future">Outlook for continuing development</h1>
 
 <p>Libigl is in active development, and we plan to focus on the following features
@@ -3448,6 +3531,12 @@ repository</a>.</p>
 <a href="https://www.google.com/search?q=Signed+distance+computation+using+the+angle+weighted+pseudonormal">Signed distance computation using the angle weighted
 pseudonormal</a>,
  2005.</p>
+</li>
+
+<li id="fn:38" class="citation"><span class="citekey" style="display:none">lorensen_1987</span><p>W.E. Lorensen and Harvey E. Cline. <a href="https://www.google.com/search?q=Marching+cubes:+A+high+resolution+3d+surface+construction+algorithm">Marching cubes: A high
+ resolution 3d surface construction
+ algorithm</a>,
+ 1987.</p>
 </li>
 
 </ol>
