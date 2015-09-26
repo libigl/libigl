@@ -45,7 +45,7 @@ IGL_INLINE bool igl::writeOBJ(
   {
     for(int i = 0;i<(int)CN.rows();i++)
     {
-      fprintf(obj_file,"v %0.15g %0.15g %0.15g\n",
+      fprintf(obj_file,"vn %0.15g %0.15g %0.15g\n",
               CN(i,0),
               CN(i,1),
               CN(i,2)
