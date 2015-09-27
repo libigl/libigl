@@ -10,6 +10,10 @@
 #include <iostream>
 #include <cassert>
 
+#if CGAL_VERSION_NR < 1040611000
+#  warning "CGAL Version < 4.6.1 may result in crashes. Please upgrade CGAL"
+#endif
+
 template <typename Kernel>
 IGL_INLINE void igl::cgal::projected_delaunay(
   const CGAL::Triangle_3<Kernel> & A,
