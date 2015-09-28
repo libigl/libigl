@@ -1,6 +1,6 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
-// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>, Olga Diamanti <olga.diam@gmail.com>
+// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>, Olga Diamanti <olga.diam@gmail.com>, Kevin Walliman <wkevin@student.ethz.ch>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -21,7 +21,7 @@ namespace igl
     // ACM SIGGRAPH 2009, Article No. 77 (http://dl.acm.org/citation.cfm?id=1531383)
     // We thank Nico Pietroni for providing a reference implementation of MIQ
     // on which our code is based.
-  
+
     // Inputs:
     //   V              #V by 3 list of mesh vertex 3D positions
     //   F              #F by 3 list of faces indices in V
@@ -43,7 +43,7 @@ namespace igl
     //
     // TODO: rename the parameters name in the cpp consistenly
     //       improve the handling of hard_features, right now it might fail in difficult cases
-  
+
     template <typename DerivedV, typename DerivedF, typename DerivedU>
     IGL_INLINE void miq(
       const Eigen::PlainObjectBase<DerivedV> &V,
@@ -60,7 +60,7 @@ namespace igl
       bool DoRound = true,bool SingularityRound=true,
       std::vector<int> round_vertices = std::vector<int>(),
       std::vector<std::vector<int> > hard_features = std::vector<std::vector<int> >());
-  
+
     // Helper function that allows to directly provided pre-combed bisectors for an already cut mesh
     // Additional input:
     // PD1_combed, PD2_combed  :   #F by 3 combed jacobian
@@ -69,7 +69,7 @@ namespace igl
     // Singular:                   #V list of flag that denotes if a vertex is singular or not
     // SingularDegree:             #V list of flag that denotes the degree of the singularity
     // Seams:                      #F by 3 list of per-corner flag that denotes seams
-  
+
     template <typename DerivedV, typename DerivedF, typename DerivedU>
     IGL_INLINE void miq(const Eigen::PlainObjectBase<DerivedV> &V,
       const Eigen::PlainObjectBase<DerivedF> &F,
