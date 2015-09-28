@@ -15,7 +15,7 @@ namespace igl
 {
   namespace comiso
   {
-    // Global seamless parametrization aligned with a given per-face jacobian (PD1,PD2).
+  // Global seamless parametrization aligned with a given per-face jacobian (PD1,PD2).
     // The algorithm is based on
     // "Mixed-Integer Quadrangulation" by D. Bommes, H. Zimmer, L. Kobbelt
     // ACM SIGGRAPH 2009, Article No. 77 (http://dl.acm.org/citation.cfm?id=1531383)
@@ -75,11 +75,8 @@ namespace igl
       const Eigen::PlainObjectBase<DerivedF> &F,
       const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
       const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
-      // const Eigen::PlainObjectBase<DerivedV> &BIS1_combed,
-      // const Eigen::PlainObjectBase<DerivedV> &BIS2_combed,
       const Eigen::Matrix<int, Eigen::Dynamic, 3> &MMatch,
       const Eigen::Matrix<int, Eigen::Dynamic, 1> &Singular,
-      // const Eigen::Matrix<int, Eigen::Dynamic, 1> &SingularDegree,
       const Eigen::Matrix<int, Eigen::Dynamic, 3> &Seams,
       Eigen::PlainObjectBase<DerivedU> &UV,
       Eigen::PlainObjectBase<DerivedF> &FUV,
