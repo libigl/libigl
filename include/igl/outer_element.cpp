@@ -86,8 +86,10 @@ IGL_INLINE void igl::outer_edge(
         Eigen::PlainObjectBase<DerivedA> & A) {
     // Algorithm:
     //    Find an outer vertex first.
-    //    Find the incident edge with largest slope when projected onto XY plane.
+    //    Find the incident edge with largest abs slope when projected onto XY plane.
+    //    If there is a tie, check the signed slope and use the positive one.
     //    If there is still a tie, break it using the projected slope onto ZX plane.
+    //    If there is still a tie, again check the signed slope and use the positive one.
     //    If there is still a tie, then there are multiple overlapping edges,
     //    which violates the precondition.
     typedef typename DerivedV::Scalar Scalar;
@@ -111,6 +113,11 @@ IGL_INLINE void igl::outer_edge(
         return -1;
     };
 
+    auto unsigned_value = [](Scalar v) -> Scalar {
+        if (v < 0) return v * -1;
+        else return v;
+    };
+
     Scalar outer_slope_YX = 0;
     Scalar outer_slope_ZX = 0;
     size_t outer_opp_vid = INVALID;
@@ -128,10 +135,33 @@ IGL_INLINE void igl::outer_edge(
             const ScalarArray3 diff = opp_v - outer_v;
             const Scalar slope_YX = diff[1] / diff[0];
             const Scalar slope_ZX = diff[2] / diff[0];
-            if (outer_opp_vid == INVALID ||
-                    slope_YX > outer_slope_YX ||
-                    (slope_YX == outer_slope_YX &&
-                     slope_ZX > outer_slope_ZX)) {
+            const Scalar u_slope_YX = unsigned_value(slope_YX);
+            const Scalar u_slope_ZX = unsigned_value(slope_ZX);
+            bool update = false;
+            if (outer_opp_vid == INVALID) {
+                update = true;
+            } else {
+                const Scalar u_outer_slope_YX = unsigned_value(outer_slope_YX);
+                if (u_slope_YX > u_outer_slope_YX) {
+                    update = true;
+                } else if (u_slope_YX == u_outer_slope_YX &&
+                        slope_YX > outer_slope_YX) {
+                    update = true;
+                } else if (slope_YX == outer_slope_YX) {
+                    const Scalar u_outer_slope_ZX =
+                        unsigned_value(outer_slope_ZX);
+                    if (u_slope_ZX > u_outer_slope_ZX) {
+                        update = true;
+                    } else if (u_slope_ZX == u_outer_slope_ZX &&
+                            slope_ZX > outer_slope_ZX) {
+                        update = true;
+                    } else if (slope_ZX == u_outer_slope_ZX) {
+                        assert(false);
+                    }
+                }
+            }
+
+            if (update) {
                 outer_opp_vid = opp_vid;
                 outer_slope_YX = slope_YX;
                 outer_slope_ZX = slope_ZX;
