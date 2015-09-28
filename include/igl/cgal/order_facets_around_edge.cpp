@@ -82,19 +82,27 @@ void igl::cgal::order_facets_around_edge(
                 break;
             case CGAL::COPLANAR:
                 {
-                    Plane_3 P1(ps, pd, p1);
-                    Plane_3 P2(ps, pd, p2);
-                    if (P1.orthogonal_direction() == P2.orthogonal_direction()){
-                        // Duplicated face, use index to break tie.
-                        order(0, 0) = adj_faces[0] < adj_faces[1] ? 0:1;
-                        order(1, 0) = adj_faces[0] < adj_faces[1] ? 1:0;
-                    } else {
-                        // Coplanar faces, one on each side of the edge.
-                        // It is equally valid to order them (0, 1) or (1, 0).
-                        // I cannot think of any reason to prefer one to the
-                        // other.  So just use (0, 1) ordering by default.
-                        order(0, 0) = 0;
-                        order(1, 0) = 1;
+                    switch (CGAL::coplanar_orientation(ps, pd, p1, p2)) {
+                        case CGAL::POSITIVE:
+                            // Duplicated face, use index to break tie.
+                            order(0, 0) = adj_faces[0] < adj_faces[1] ? 0:1;
+                            order(1, 0) = adj_faces[0] < adj_faces[1] ? 1:0;
+                            break;
+                        case CGAL::NEGATIVE:
+                            // Coplanar faces, one on each side of the edge.
+                            // It is equally valid to order them (0, 1) or (1, 0).
+                            // I cannot think of any reason to prefer one to the
+                            // other.  So just use (0, 1) ordering by default.
+                            order(0, 0) = 0;
+                            order(1, 0) = 1;
+                            break;
+                        case CGAL::COLLINEAR:
+                            std::cerr << "Degenerated triangle detected." <<
+                                std::endl;
+                            assert(false);
+                            break;
+                        default:
+                            assert(false);
                     }
                 }
                 break;
@@ -146,17 +154,21 @@ void igl::cgal::order_facets_around_edge(
                 break;
             case CGAL::ON_ORIENTED_BOUNDARY:
                 {
-                    const Plane_3 other(p_s, p_d, p_a);
-                    const auto target_dir = separator.orthogonal_direction();
-                    const auto query_dir = other.orthogonal_direction();
-                    if (target_dir == query_dir) {
-                        tie_positive_oriented.push_back(f);
-                        tie_positive_oriented_index.push_back(i);
-                    } else if (target_dir == -query_dir) {
-                        tie_negative_oriented.push_back(f);
-                        tie_negative_oriented_index.push_back(i);
-                    } else {
-                        assert(false);
+                    auto inplane_orientation = CGAL::coplanar_orientation(
+                            p_s, p_d, p_o, p_a);
+                    switch (inplane_orientation) {
+                        case CGAL::POSITIVE:
+                            tie_positive_oriented.push_back(f);
+                            tie_positive_oriented_index.push_back(i);
+                            break;
+                        case CGAL::NEGATIVE:
+                            tie_negative_oriented.push_back(f);
+                            tie_negative_oriented_index.push_back(i);
+                            break;
+                        case CGAL::COLLINEAR:
+                        default:
+                            assert(false);
+                            break;
                     }
                 }
                 break;
@@ -262,12 +274,31 @@ void igl::cgal::order_facets_around_edge(
         return -1;
     };
 
+    {
+        // Check if s, d and pivot are collinear.
+        typedef CGAL::Exact_predicates_exact_constructions_kernel K;
+        K::Point_3 ps(V(s,0), V(s,1), V(s,2));
+        K::Point_3 pd(V(d,0), V(d,1), V(d,2));
+        K::Point_3 pp(pivot_point(0,0), pivot_point(0,1), pivot_point(0,2));
+        if (CGAL::collinear(ps, pd, pp)) {
+            throw "Pivot point is collinear with the outer edge!";
+        }
+    }
+
     const size_t N = adj_faces.size();
     const size_t num_faces = N + 1; // N adj faces + 1 pivot face
 
+    // Because face indices are used for tie breaking, the original face indices
+    // in the new faces array must be ascending.
+    auto comp = [&](int i, int j) {
+        return signed_index_to_index(i) < signed_index_to_index(j);
+    };
+    std::vector<int> ordered_adj_faces(adj_faces);
+    std::sort(ordered_adj_faces.begin(), ordered_adj_faces.end(), comp);
+
     DerivedV vertices(num_faces + 2, 3);
     for (size_t i=0; i<N; i++) {
-        const size_t fid = signed_index_to_index(adj_faces[i]);
+        const size_t fid = signed_index_to_index(ordered_adj_faces[i]);
         vertices.row(i) = V.row(get_opposite_vertex_index(fid));
     }
     vertices.row(N  ) = pivot_point;
@@ -276,7 +307,7 @@ void igl::cgal::order_facets_around_edge(
 
     DerivedF faces(num_faces, 3);
     for (size_t i=0; i<N; i++) {
-        if (adj_faces[i] < 0) {
+        if (ordered_adj_faces[i] < 0) {
             faces(i,0) = N+1; // s
             faces(i,1) = N+2; // d
             faces(i,2) = i  ;
