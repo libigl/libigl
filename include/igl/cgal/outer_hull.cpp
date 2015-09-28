@@ -5,6 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
+#include "is_inside.h"
 #include "outer_hull.h"
 #include "order_facets_around_edges.h"
 #include "outer_facet.h"
@@ -17,6 +18,7 @@
 #include "../per_face_normals.h"
 #include "../writePLY.h"
 #include "../sort_angles.h"
+#include "../writePLY.h"
 
 #include <Eigen/Geometry>
 #include <vector>
@@ -326,18 +328,18 @@ IGL_INLINE void igl::cgal::outer_hull(
   // Is A inside B? Assuming A and B are consistently oriented but closed and
   // non-intersecting.
   const auto & is_component_inside_other = [](
-    const Eigen::MatrixXd & V,
+    const DerivedV & V,
     const MatrixXV & BC,
     const MatrixXG & A,
     const MatrixXJ & AJ,
     const MatrixXG & B)->bool
   {
     const auto & bounding_box = [](
-      const Eigen::MatrixXd & V,
+      const DerivedV & V,
       const MatrixXG & F)->
-      Eigen::MatrixXd
+        DerivedV
     {
-      Eigen::MatrixXd BB(2,3);
+      DerivedV BB(2,3);
       BB<<
          1e26,1e26,1e26,
         -1e26,-1e26,-1e26;
@@ -355,42 +357,17 @@ IGL_INLINE void igl::cgal::outer_hull(
     };
     // A lot of the time we're dealing with unrelated, distant components: cull
     // them.
-    Eigen::MatrixXd ABB = bounding_box(V,A);
-    Eigen::MatrixXd BBB = bounding_box(V,B);
+    DerivedV ABB = bounding_box(V,A);
+    DerivedV BBB = bounding_box(V,B);
     if( (BBB.row(0)-ABB.row(1)).maxCoeff()>0  ||
         (ABB.row(0)-BBB.row(1)).maxCoeff()>0 )
     {
       // bounding boxes do not overlap
       return false;
+    } else {
+        return is_inside(V, A, V, B);
     }
-    ////////////////////////////////////////////////////////////////////////
-    // POTENTIAL ROBUSTNESS WEAK AREA
-    ////////////////////////////////////////////////////////////////////////
-    //
-
-    // winding_number_3 expects colmajor
-    // q could be so close (<~1e-15) to B that the winding number is not a robust way to
-    // determine inside/outsideness. We could try to find a _better_ q which is
-    // farther away, but couldn't they all be bad?
-    double q[3] = {
-        CGAL::to_double(BC(AJ(0), 0)),
-        CGAL::to_double(BC(AJ(0), 1)),
-        CGAL::to_double(BC(AJ(0), 2)) };
-    // In a perfect world, it's enough to test a single point.
-    double w;
-    winding_number_3(
-      V.data(),V.rows(),
-      B.data(),B.rows(),
-      q,1,&w);
-    return w > 0.5 || w < -0.5;
   };
-
-  Eigen::MatrixXd Vcol(V.rows(), V.cols());
-  for (size_t i=0; i<(size_t)V.rows(); i++) {
-      for (size_t j=0; j<(size_t)V.cols(); j++) {
-          Vcol(i, j) = CGAL::to_double(V(i, j));
-      }
-  }
 
   // Reject components which are completely inside other components
   vector<bool> keep(ncc,true);
@@ -404,7 +381,7 @@ IGL_INLINE void igl::cgal::outer_hull(
       {
         continue;
       }
-      const bool inside = is_component_inside_other(Vcol,BC,vG[id],vJ[id],vG[oid]);
+      bool inside = is_component_inside_other(V,BC,vG[id],vJ[id],vG[oid]);
 #ifdef IGL_OUTER_HULL_DEBUG
       cout<<id<<" is inside "<<oid<<" ? "<<inside<<endl;
 #endif
