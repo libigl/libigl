@@ -12,8 +12,6 @@
 
 #include "order_facets_around_edge.h"
 #include "assign_scalar.h"
-#include "intersect_other.h"
-#include "RemeshSelfIntersectionsParam.h"
 
 namespace igl {
     namespace cgal {
@@ -28,40 +26,6 @@ namespace igl {
             typedef CGAL::AABB_triangle_primitive<Kernel, Iterator> Primitive;
             typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
             typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
-
-            template<typename DerivedV, typename DerivedF, typename DerivedI>
-            bool intersect_each_other(
-                    const Eigen::PlainObjectBase<DerivedV>& V1,
-                    const Eigen::PlainObjectBase<DerivedF>& F1,
-                    const Eigen::PlainObjectBase<DerivedI>& I1,
-                    const Eigen::PlainObjectBase<DerivedV>& V2,
-                    const Eigen::PlainObjectBase<DerivedF>& F2,
-                    const Eigen::PlainObjectBase<DerivedI>& I2) {
-                const size_t num_faces_1 = I1.rows();
-                DerivedF F1_selected(num_faces_1, F1.cols());
-                for (size_t i=0; i<num_faces_1; i++) {
-                    F1_selected.row(i) = F1.row(I1(i,0));
-                }
-
-                const size_t num_faces_2 = I2.rows();
-                DerivedF F2_selected(num_faces_2, F2.cols());
-                for (size_t i=0; i<num_faces_2; i++) {
-                    F2_selected.row(i) = F2.row(I2(i,0));
-                }
-
-                DerivedV VVA, VVB;
-                DerivedF IF, FFA, FFB;
-                Eigen::VectorXi JA, IMA, JB, IMB;
-                RemeshSelfIntersectionsParam param;
-                param.detect_only = true;
-                param.first_only = true;
-                return igl::cgal::intersect_other(
-                        V1, F1_selected,
-                        V2, F2_selected,
-                        param, IF,
-                        VVA, FFA, JA, IMA,
-                        VVB, FFB, JB, IMB);
-            }
 
             enum ElementType { VERTEX, EDGE, FACE };
             template<typename DerivedV, typename DerivedF, typename DerivedI>
@@ -148,80 +112,49 @@ namespace igl {
                     const Point_3& query, size_t s, size_t d) {
                 // Algorithm:
                 //
-                // If the query point is projected onto an edge, all adjacent
-                // faces of that edge must be on or belong to a single half
-                // space (i.e. there exists a plane passing through the edge and
-                // all adjacent faces are either on the plane or on the same
-                // side of that plane).
+                // Order the adj faces around the edge (s,d) clockwise using
+                // query point as pivot.  (i.e. The first face of the ordering
+                // is directly after the pivot point, and the last face is
+                // directly before the pivot.)
                 //
-                // If these adjacent faces are not coplanar, query is inside iff
-                // the edge is concave.
+                // The point is outside if the first and last faces of the
+                // ordering forms a convex angle.  This check can be done
+                // without any construction by looking at the orientation of the
+                // faces.  The angle is convex iff the first face contains (s,d)
+                // as an edge and the last face contains (d,s) as an edge.
                 //
-                // If two or more faces are coplanar, the query point is
-                // definitely outside of the 
+                // The point is inside if the first and last faces of the
+                // ordering forms a concave angle.  That is the first face
+                // contains (d,s) as an edge and the last face contains (s,d) as
+                // an edge.
+                //
+                // In the special case of duplicated faces. I.e. multiple faces
+                // sharing the same 3 corners, but not necessarily the same
+                // orientation.  The ordering will always rank faces containing
+                // edge (s,d) before faces containing edge (d,s).
+                //
+                // Therefore, if there are any duplicates of the first faces,
+                // the ordering will always choose the one with edge (s,d) if
+                // possible.  The same for the last face.
+                //
+                // In the very degenerated case where the first and last face
+                // are duplicates, but with different orientations, it is
+                // equally valid to think the angle formed by them is either 0
+                // or 360 degrees.  By default, 0 degree is used, and thus the
+                // query point is outside.
 
                 std::vector<int> adj_faces;
                 extract_adj_faces(V, F, I, s, d, adj_faces);
                 const size_t num_adj_faces = adj_faces.size();
                 assert(num_adj_faces > 0);
-                //std::cout << "adj faces: ";
-                //for (size_t i=0; i<num_adj_faces; i++) {
-                //    std::cout << adj_faces[i] << " ";
-                //}
-                //std::cout << std::endl;
 
                 DerivedV pivot_point(1, 3);
                 igl::cgal::assign_scalar(query.x(), pivot_point(0, 0));
                 igl::cgal::assign_scalar(query.y(), pivot_point(0, 1));
                 igl::cgal::assign_scalar(query.z(), pivot_point(0, 2));
-                //{
-                //    auto get_opposite_vertex = [&](int fid) -> size_t{
-                //        Eigen::Vector3i f = F.row(abs(fid)-1);
-                //        if (f[0] != s && f[0] != d) return f[0];
-                //        if (f[1] != s && f[1] != d) return f[1];
-                //        if (f[2] != s && f[2] != d) return f[2];
-                //        return -1;
-                //    };
-                //    Point_3 p_s(V(s,0), V(s,1), V(s,2));
-                //    Point_3 p_d(V(d,0), V(d,1), V(d,2));
-                //    //std::cout << "s: "
-                //    //    << CGAL::to_double(V(s,0)) << " "
-                //    //    << CGAL::to_double(V(s,1)) << " "
-                //    //    << CGAL::to_double(V(s,2)) << std::endl;
-                //    //std::cout << "d: "
-                //    //    << CGAL::to_double(V(d,0)) << " "
-                //    //    << CGAL::to_double(V(d,1)) << " "
-                //    //    << CGAL::to_double(V(d,2)) << std::endl;
-                //    for (size_t i=0; i<num_adj_faces; i++) {
-                //        size_t o = get_opposite_vertex(adj_faces[i]);
-                //        Point_3 p_o(V(o,0), V(o,1), V(o,2));
-                //        std::cout << "o" << i << ": "
-                //            << CGAL::to_double(V(o,0)) << " "
-                //            << CGAL::to_double(V(o,1)) << " "
-                //            << CGAL::to_double(V(o,2)) << std::endl;
-                //        switch (CGAL::orientation(p_s, p_d, p_o, query)) {
-                //            case CGAL::POSITIVE:
-                //                std::cout << adj_faces[i] << " positive"  <<
-                //                    std::endl;
-                //                break;
-                //            case CGAL::NEGATIVE:
-                //                std::cout << adj_faces[i] << " negative"  <<
-                //                    std::endl;
-                //                break;
-                //            case CGAL::COPLANAR:
-                //                std::cout << adj_faces[i] << " coplanar"  <<
-                //                    std::endl;
-                //                break;
-                //            default:
-                //                break;
-                //        }
-                //        //assert(!CGAL::coplanar(p_s, p_d, p_o, query));
-                //    }
-                //}
                 Eigen::VectorXi order;
                 order_facets_around_edge(V, F, s, d,
                         adj_faces, pivot_point, order);
-                //std::cout << "order: " << order.transpose() << std::endl;
                 assert(order.size() == num_adj_faces);
                 if (adj_faces[order[0]] > 0 &&
                     adj_faces[order[num_adj_faces-1] < 0]) {
@@ -230,7 +163,7 @@ namespace igl {
                     adj_faces[order[num_adj_faces-1] > 0]) {
                     return false;
                 } else {
-                    assert(false);
+                    throw "The input mesh does not represent a valid volume";
                 }
                 assert(false);
                 return false;
@@ -246,20 +179,9 @@ namespace igl {
                 extract_adj_vertices(V, F, I, s, adj_vertices);
                 const size_t num_adj_vertices = adj_vertices.size();
 
-                //std::cout << "Q: "
-                //    << CGAL::to_double(query.x()) << " "
-                //    << CGAL::to_double(query.y()) << " "
-                //    << CGAL::to_double(query.z()) << " "
-                //    << std::endl;
-
                 std::vector<Point_3> adj_points;
                 for (size_t i=0; i<num_adj_vertices; i++) {
                     const size_t vi = adj_vertices[i];
-                    //std::cout << "P: "
-                    //    << CGAL::to_double(V(vi,0)) << " "
-                    //    << CGAL::to_double(V(vi,1)) << " "
-                    //    << CGAL::to_double(V(vi,2)) << " "
-                    //    << std::endl;
                     adj_points.emplace_back(V(vi,0), V(vi,1), V(vi,2));
                 }
 
@@ -293,11 +215,6 @@ namespace igl {
                 };
 
                 size_t d = std::numeric_limits<size_t>::max();
-                //std::cout << "P: "
-                //    << CGAL::to_double(V(s,0)) << " "
-                //    << CGAL::to_double(V(s,1)) << " "
-                //    << CGAL::to_double(V(s,2)) << " "
-                //    << std::endl;
                 Point_3 p(V(s,0), V(s,1), V(s,2));
                 for (size_t i=0; i<num_adj_vertices; i++) {
                     const size_t vi = adj_vertices[i];
@@ -316,10 +233,7 @@ namespace igl {
                 if (d > V.rows()) {
                     // All adj faces are coplanar, use the first edge.
                     d = adj_vertices[0];
-                    //std::cout << "all adj faces are coplanar" << std::endl;
-                    //return false;
                 }
-                //std::cout << "s: " << s << "  d: " << d << std::endl;
                 return determine_point_edge_orientation(V, F, I, query, s, d);
             }
 
