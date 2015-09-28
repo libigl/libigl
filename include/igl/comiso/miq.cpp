@@ -1,6 +1,6 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
-// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>, Olga Diamanti <olga.diam@gmail.com>
+// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>, Olga Diamanti <olga.diam@gmail.com>, Kevin Walliman <wkevin@student.ethz.ch>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -41,10 +41,6 @@
 #include <iostream>
 #include <igl/matlab_format.h>
 
-#warning "using namespace *; in global scope **must** be removed"
-using namespace std;
-using namespace Eigen;
-
 #define DEBUGPRINT 0
 
 
@@ -72,10 +68,6 @@ namespace comiso {
     int num_integer_cuts;
     ///this are used for drawing purposes
     std::vector<SeamInfo> EdgeSeamInfo;
-#if 0
-    ///this are values of integer variables after optimization
-    std::vector<int> IntegerValues;
-#endif
   };
 
 
@@ -747,7 +739,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindFixedVertFie
   }
 
   ///if anything fixed fix the first
-  AddFixedVertex(0); // TODO HERE IT ISSSSSS
+  AddFixedVertex(0);
   UV.row(0) << 0,0;
   std::cerr << "No vertices to fix, I am fixing the first vertex to the origin!" << std::endl;
 }
@@ -833,8 +825,6 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddToRoundVertic
 }
 
 ///START GENERIC SYSTEM FUNCTIONS
-//build the laplacian matrix cyclyng over all rangemaps
-//and over all faces
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildLaplacianMatrix(double vfscale)
 {
@@ -960,22 +950,6 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MapCoords()
     UV_out(i,0) = X[i*2];
     UV_out(i,1) = X[i*2+1];
   }
-#if 0
-  ///initialize the vector of integer variables to return their values
-  Handle_SystemInfo.IntegerValues.resize(n_integer_vars*2);
-  int baseIndex = (n_vert_vars)*2;
-  int endIndex  = baseIndex+n_integer_vars*2;
-  int index     = 0;
-  for (int i=baseIndex; i<endIndex; i++)
-  {
-    ///assert that the value is an integer value
-    double value=X[i];
-    double diff = value-(int)floor(value+0.5);
-    assert(diff<0.00000001);
-    Handle_SystemInfo.IntegerValues[index] = value;
-    index++;
-  }
-#endif
 }
 
 ///END GENERIC SYSTEM FUNCTIONS
@@ -1223,30 +1197,6 @@ F(F_)
   VertexIndexing<DerivedV, DerivedF> VInd(V, F, Vcut, Fcut, TT, TTi, Handle_MMatch, Handle_Singular, Handle_Seams);
 
   VInd.InitSeamInfo();
-
-  // Eigen::PlainObjectBase<DerivedV> PD1_combed_for_poisson, PD2_combed_for_poisson;
-  // // Rotate by 90 degrees CCW
-  // PD1_combed_for_poisson.setZero(PD1_combed.rows(),3);
-  // PD2_combed_for_poisson.setZero(PD2_combed.rows(),3);
-  // for (unsigned i=0; i<PD1_combed.rows();++i)
-  // {
-  //   double n1 = PD1_combed.row(i).norm();
-  //   double n2 = PD2_combed.row(i).norm();
-  //
-  //   double a1 = atan2(B2.row(i).dot(PD1_combed.row(i)),B1.row(i).dot(PD1_combed.row(i)));
-  //   double a2 = atan2(B2.row(i).dot(PD2_combed.row(i)),B1.row(i).dot(PD2_combed.row(i)));
-  //
-  //   // a1 += M_PI/2;
-  //   // a2 += M_PI/2;
-  //
-  //
-  //   PD1_combed_for_poisson.row(i) = cos(a1) * B1.row(i) + sin(a1) * B2.row(i);
-  //   PD2_combed_for_poisson.row(i) = cos(a2) * B1.row(i) + sin(a2) * B2.row(i);
-  //
-  //   PD1_combed_for_poisson.row(i) = PD1_combed_for_poisson.row(i).normalized() * n1;
-  //   PD2_combed_for_poisson.row(i) = PD2_combed_for_poisson.row(i).normalized() * n2;
-  // }
-
 
   // Assemble the system and solve
   PoissonSolver<DerivedV, DerivedF> PSolver(V,
@@ -1533,13 +1483,6 @@ IGL_INLINE void igl::comiso::miq(
     std::vector<int> roundVertices,
     std::vector<std::vector<int> > hardFeatures)
 {
-  // Eigen::MatrixXd PD2i = PD2;
-  // if (PD2i.size() == 0)
-  // {
-  // Eigen::MatrixXd B1, B2, B3;
-  // igl::local_basis(V,F,B1,B2,B3);
-  // PD2i = igl::rotate_vectors(V,Eigen::VectorXd::Constant(1,M_PI/2),B1,B2);
-  // }
 
   Eigen::PlainObjectBase<DerivedV> BIS1, BIS2;
   igl::compute_frame_field_bisectors(V, F, PD1, PD2, BIS1, BIS2);
