@@ -40,6 +40,39 @@ namespace igl {
                     const Eigen::PlainObjectBase<DerivedF>& F1,
                     const Eigen::PlainObjectBase<DerivedV>& V2,
                     const Eigen::PlainObjectBase<DerivedF>& F2);
+
+        // Determine if queries points are inside of mesh (V, F).
+        //
+        // Precondition:
+        // The input mesh must be a closed, self-intersection free,
+        // non-degenerated surface.  Queries points must be either inside or
+        // outside of the mesh.
+        //
+        // Inputs:
+        //   V  #V by 3 array of vertex positions.
+        //   F  #F by 3 array of triangles.
+        //   I  #I list of triangle indices to consider.
+        //   P  #P by 3 array of query points.
+        //
+        // Outputs:
+        //   inside  #P list of booleans that is true iff the corresponding
+        //           query point is inside of the mesh.
+        template<typename DerivedV, typename DerivedF, typename DerivedI,
+            typename DerivedP, typename DerivedB>
+            IGL_INLINE void is_inside(
+                    const Eigen::PlainObjectBase<DerivedV>& V,
+                    const Eigen::PlainObjectBase<DerivedF>& F,
+                    const Eigen::PlainObjectBase<DerivedI>& I,
+                    const Eigen::PlainObjectBase<DerivedP>& P,
+                    Eigen::PlainObjectBase<DerivedB>& inside);
+
+        template<typename DerivedV, typename DerivedF, typename DerivedP,
+            typename DerivedB>
+            IGL_INLINE void is_inside(
+                    const Eigen::PlainObjectBase<DerivedV>& V,
+                    const Eigen::PlainObjectBase<DerivedF>& F,
+                    const Eigen::PlainObjectBase<DerivedP>& P,
+                    Eigen::PlainObjectBase<DerivedB>& inside);
     }
 }
 

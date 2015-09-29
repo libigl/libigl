@@ -327,15 +327,15 @@ IGL_INLINE void igl::cgal::outer_hull(
 
   // Is A inside B? Assuming A and B are consistently oriented but closed and
   // non-intersecting.
-  const auto & is_component_inside_other = [](
-    const DerivedV & V,
+  const auto & has_overlapping_bbox = [](
+    const Eigen::PlainObjectBase<DerivedV> & V,
     const MatrixXV & BC,
     const MatrixXG & A,
     const MatrixXJ & AJ,
     const MatrixXG & B)->bool
   {
     const auto & bounding_box = [](
-      const DerivedV & V,
+      const Eigen::PlainObjectBase<DerivedV> & V,
       const MatrixXG & F)->
         DerivedV
     {
@@ -349,8 +349,12 @@ IGL_INLINE void igl::cgal::outer_hull(
         for(size_t c = 0;c<3;c++)
         {
           const auto & vfc = V.row(F(f,c));
-          BB.row(0) = BB.row(0).array().min(vfc.array()).eval();
-          BB.row(1) = BB.row(1).array().max(vfc.array()).eval();
+          BB(0,0) = std::min(BB(0,0), vfc(0,0));
+          BB(0,1) = std::min(BB(0,1), vfc(0,1));
+          BB(0,2) = std::min(BB(0,2), vfc(0,2));
+          BB(1,0) = std::max(BB(0,0), vfc(0,0));
+          BB(1,1) = std::max(BB(0,1), vfc(0,1));
+          BB(1,2) = std::max(BB(0,2), vfc(0,2));
         }
       }
       return BB;
@@ -365,7 +369,7 @@ IGL_INLINE void igl::cgal::outer_hull(
       // bounding boxes do not overlap
       return false;
     } else {
-        return is_inside(V, A, V, B);
+      return true;
     }
   };
 
@@ -375,22 +379,41 @@ IGL_INLINE void igl::cgal::outer_hull(
   // This is O( ncc * ncc * m)
   for(size_t id = 0;id<ncc;id++)
   {
+    if (!keep[id]) continue;
+    std::vector<size_t> unresolved;
     for(size_t oid = 0;oid<ncc;oid++)
     {
-      if(id == oid)
+      if(id == oid || !keep[oid])
       {
         continue;
       }
-      bool inside = is_component_inside_other(V,BC,vG[id],vJ[id],vG[oid]);
-#ifdef IGL_OUTER_HULL_DEBUG
-      cout<<id<<" is inside "<<oid<<" ? "<<inside<<endl;
-#endif
-      keep[id] = keep[id] && !inside;
+      if (has_overlapping_bbox(V, BC, vG[id], vJ[id], vG[oid])) {
+          unresolved.push_back(oid);
+      }
     }
-    if(keep[id])
-    {
-      nG += vJ[id].rows();
+    const size_t num_unresolved_components = unresolved.size();
+    DerivedV query_points(num_unresolved_components, 3);
+    for (size_t i=0; i<num_unresolved_components; i++) {
+        const size_t oid = unresolved[i];
+        DerivedF f = vG[oid].row(0);
+        query_points(i,0) = (V(f(0,0), 0) + V(f(0,1), 0) + V(f(0,2), 0))/3.0;
+        query_points(i,1) = (V(f(0,0), 1) + V(f(0,1), 1) + V(f(0,2), 1))/3.0;
+        query_points(i,2) = (V(f(0,0), 2) + V(f(0,1), 2) + V(f(0,2), 2))/3.0;
     }
+    Eigen::VectorXi inside;
+    igl::cgal::is_inside(V, vG[id], query_points, inside);
+    assert(inside.size() == num_unresolved_components);
+    for (size_t i=0; i<num_unresolved_components; i++) {
+        if (inside[i]) {
+            const size_t oid = unresolved[i];
+            keep[oid] = false;
+        }
+    }
+  }
+  for (size_t id = 0; id<ncc; id++) {
+      if (keep[id]) {
+          nG += vJ[id].rows();
+      }
   }
 
   // collect G and J across components

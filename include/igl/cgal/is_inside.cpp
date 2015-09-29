@@ -266,67 +266,20 @@ IGL_INLINE bool igl::cgal::is_inside(
         const Eigen::PlainObjectBase<DerivedV>& V2,
         const Eigen::PlainObjectBase<DerivedF>& F2,
         const Eigen::PlainObjectBase<DerivedI>& I2) {
-    using namespace igl::cgal::is_inside_helper;
     assert(F1.rows() > 0);
     assert(I1.rows() > 0);
     assert(F2.rows() > 0);
     assert(I2.rows() > 0);
 
-    //assert(!intersect_each_other(V1, F1, I1, V2, F2, I2));
-
-    const size_t num_faces = I2.rows();
-    std::vector<Triangle> triangles;
-    for (size_t i=0; i<num_faces; i++) {
-        const Eigen::Vector3i f = F2.row(I2(i, 0));
-        triangles.emplace_back(
-                Point_3(V2(f[0], 0), V2(f[0], 1), V2(f[0], 2)),
-                Point_3(V2(f[1], 0), V2(f[1], 1), V2(f[1], 2)),
-                Point_3(V2(f[2], 0), V2(f[2], 1), V2(f[2], 2)));
-        assert(!triangles.back().is_degenerate());
-    }
-    Tree tree(triangles.begin(), triangles.end());
-    tree.accelerate_distance_queries();
-
     const Eigen::Vector3i& f = F1.row(I1(0, 0));
-    const Point_3 query(
+    const Eigen::Matrix<typename DerivedV::Scalar, 1, 3> query(
             (V1(f[0],0) + V1(f[1],0) + V1(f[2],0))/3.0,
             (V1(f[0],1) + V1(f[1],1) + V1(f[2],1))/3.0,
             (V1(f[0],2) + V1(f[1],2) + V1(f[2],2))/3.0);
-    // Computing the closest point to mesh2 is the only exact construction
-    // needed in the algorithm.
-    auto projection = tree.closest_point_and_primitive(query);
-    auto closest_point = projection.first;
-    size_t fid = projection.second - triangles.begin();
-
-    size_t element_index;
-    switch (determine_element_type(
-                V2, F2, I2, fid, closest_point, element_index)) {
-        case VERTEX:
-            {
-                //std::cout << "vertex case" << std::endl;
-                const size_t s = F2(I2(fid, 0), element_index);
-                return determine_point_vertex_orientation(
-                        V2, F2, I2, query, s);
-            }
-            break;
-        case EDGE:
-            {
-                //std::cout << "edge case" << std::endl;
-                const size_t s = F2(I2(fid, 0), (element_index+1)%3);
-                const size_t d = F2(I2(fid, 0), (element_index+2)%3);
-                return determine_point_edge_orientation(
-                        V2, F2, I2, query, s, d);
-            }
-            break;
-        case FACE:
-            //std::cout << "face case" << std::endl;
-            return determine_point_face_orientation(V2, F2, I2, query, fid);
-            break;
-        default:
-            assert(false);
-    }
-    assert(false);
-    return false;
+    Eigen::VectorXi inside;
+    igl::cgal::is_inside(V2, F2, I2, query, inside);
+    assert(inside.size() == 1);
+    return inside[0];
 }
 
 template<typename DerivedV, typename DerivedF>
@@ -339,4 +292,76 @@ IGL_INLINE bool igl::cgal::is_inside(
     I1.setLinSpaced(F1.rows(), 0, F1.rows()-1);
     I2.setLinSpaced(F2.rows(), 0, F2.rows()-1);
     return igl::cgal::is_inside(V1, F1, I1, V2, F2, I2);
+}
+
+template<typename DerivedV, typename DerivedF, typename DerivedI,
+    typename DerivedP, typename DerivedB>
+IGL_INLINE void igl::cgal::is_inside(
+        const Eigen::PlainObjectBase<DerivedV>& V,
+        const Eigen::PlainObjectBase<DerivedF>& F,
+        const Eigen::PlainObjectBase<DerivedI>& I,
+        const Eigen::PlainObjectBase<DerivedP>& P,
+        Eigen::PlainObjectBase<DerivedB>& inside) {
+    using namespace igl::cgal::is_inside_helper;
+    assert(F.rows() > 0);
+    assert(I.rows() > 0);
+
+    const size_t num_faces = I.rows();
+    std::vector<Triangle> triangles;
+    for (size_t i=0; i<num_faces; i++) {
+        const Eigen::Vector3i f = F.row(I(i, 0));
+        triangles.emplace_back(
+                Point_3(V(f[0], 0), V(f[0], 1), V(f[0], 2)),
+                Point_3(V(f[1], 0), V(f[1], 1), V(f[1], 2)),
+                Point_3(V(f[2], 0), V(f[2], 1), V(f[2], 2)));
+        assert(!triangles.back().is_degenerate());
+    }
+    Tree tree(triangles.begin(), triangles.end());
+    tree.accelerate_distance_queries();
+
+    const size_t num_queries = P.rows();
+    inside.resize(num_queries);
+    for (size_t i=0; i<num_queries; i++) {
+        const Point_3 query(P(i,0), P(i,1), P(i,2));
+        auto projection = tree.closest_point_and_primitive(query);
+        auto closest_point = projection.first;
+        size_t fid = projection.second - triangles.begin();
+
+        size_t element_index;
+        switch (determine_element_type(
+                    V, F, I, fid, closest_point, element_index)) {
+            case VERTEX:
+                {
+                    const size_t s = F(I(fid, 0), element_index);
+                    inside[i] = determine_point_vertex_orientation(
+                            V, F, I, query, s);
+                }
+                break;
+            case EDGE:
+                {
+                    const size_t s = F(I(fid, 0), (element_index+1)%3);
+                    const size_t d = F(I(fid, 0), (element_index+2)%3);
+                    inside[i] = determine_point_edge_orientation(
+                            V, F, I, query, s, d);
+                }
+                break;
+            case FACE:
+                inside[i] = determine_point_face_orientation(V, F, I, query, fid);
+                break;
+            default:
+                assert(false);
+        }
+    }
+}
+
+template<typename DerivedV, typename DerivedF, typename DerivedP,
+    typename DerivedB>
+IGL_INLINE void igl::cgal::is_inside(
+        const Eigen::PlainObjectBase<DerivedV>& V,
+        const Eigen::PlainObjectBase<DerivedF>& F,
+        const Eigen::PlainObjectBase<DerivedP>& P,
+        Eigen::PlainObjectBase<DerivedB>& inside) {
+    Eigen::VectorXi I(F.rows());
+    I.setLinSpaced(F.rows(), 0, F.rows()-1);
+    igl::cgal::is_inside(V, F, I, P, inside);
 }
