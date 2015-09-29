@@ -30,17 +30,18 @@ IGL_INLINE void igl::outer_vertex(
   //    If there is still a tie, pick the one with the largest Z value.
   //    If there is still a tie, then there are duplicated vertices within the
   //    mesh, which violates the precondition.
-  const size_t INVALID = std::numeric_limits<size_t>::max();
+  typedef typename DerivedF::Scalar Index;
+  const Index INVALID = std::numeric_limits<Index>::max();
   const size_t num_selected_faces = I.rows();
   std::vector<size_t> candidate_faces;
-  size_t outer_vid = INVALID;
+  Index outer_vid = INVALID;
   typename DerivedV::Scalar outer_val = 0;
   for (size_t i=0; i<num_selected_faces; i++)
   {
     size_t f = I(i);
     for (size_t j=0; j<3; j++)
     {
-      auto v = F(f, j);
+      Index v = F(f, j);
       auto vx = V(v, 0);
       if (outer_vid == INVALID || vx > outer_val)
       {

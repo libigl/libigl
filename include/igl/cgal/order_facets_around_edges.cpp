@@ -15,9 +15,7 @@ template<
     typename DerivedV,
     typename DerivedF,
     typename DerivedN,
-    typename DerivedE,
     typename DeriveduE,
-    typename DerivedEMAP,
     typename uE2EType,
     typename uE2oEType,
     typename uE2CType >
@@ -28,9 +26,7 @@ igl::cgal::order_facets_around_edges(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedN>& N,
-        const Eigen::PlainObjectBase<DerivedE>& E,
         const Eigen::PlainObjectBase<DeriveduE>& uE,
-        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
         const std::vector<std::vector<uE2EType> >& uE2E,
         std::vector<std::vector<uE2oEType> >& uE2oE,
         std::vector<std::vector<uE2CType > >& uE2C ) {
@@ -159,9 +155,7 @@ template<
     typename DerivedV,
     typename DerivedF,
     typename DerivedN,
-    typename DerivedE,
     typename DeriveduE,
-    typename DerivedEMAP,
     typename uE2EType,
     typename uE2oEType,
     typename uE2CType >
@@ -172,9 +166,7 @@ igl::cgal::order_facets_around_edges(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedN>& N,
-        const Eigen::PlainObjectBase<DerivedE>& E,
         const Eigen::PlainObjectBase<DeriveduE>& uE,
-        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
         const std::vector<std::vector<uE2EType> >& uE2E,
         std::vector<std::vector<uE2oEType> >& uE2oE,
         std::vector<std::vector<uE2CType > >& uE2C ) {
@@ -257,23 +249,19 @@ igl::cgal::order_facets_around_edges(
 template<
     typename DerivedV,
     typename DerivedF,
-    typename DerivedE,
     typename DeriveduE,
-    typename DerivedEMAP,
     typename uE2EType,
     typename uE2oEType,
     typename uE2CType >
 IGL_INLINE void igl::cgal::order_facets_around_edges(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
-        const Eigen::PlainObjectBase<DerivedE>& E,
         const Eigen::PlainObjectBase<DeriveduE>& uE,
-        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
         const std::vector<std::vector<uE2EType> >& uE2E,
         std::vector<std::vector<uE2oEType> >& uE2oE,
         std::vector<std::vector<uE2CType > >& uE2C ) {
 
-    typedef Eigen::Matrix<typename DerivedV::Scalar, 3, 1> Vector3E;
+    //typedef Eigen::Matrix<typename DerivedV::Scalar, 3, 1> Vector3E;
     const size_t num_faces = F.rows();
     const size_t num_undirected_edges = uE.rows();
 
@@ -332,7 +320,7 @@ IGL_INLINE void igl::cgal::order_facets_around_edges(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::cgal::order_facets_around_edges<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, long, long, bool>(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, std::__1::vector<std::__1::vector<long, std::__1::allocator<long> >, std::__1::allocator<std::__1::vector<long, std::__1::allocator<long> > > > const&, std::__1::vector<std::__1::vector<long, std::__1::allocator<long> >, std::__1::allocator<std::__1::vector<long, std::__1::allocator<long> > > >&, std::__1::vector<std::__1::vector<bool, std::__1::allocator<bool> >, std::__1::allocator<std::__1::vector<bool, std::__1::allocator<bool> > > >&);
-template void igl::cgal::order_facets_around_edges<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, long, long, bool>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, std::__1::vector<std::__1::vector<long, std::__1::allocator<long> >, std::__1::allocator<std::__1::vector<long, std::__1::allocator<long> > > > const&, std::__1::vector<std::__1::vector<long, std::__1::allocator<long> >, std::__1::allocator<std::__1::vector<long, std::__1::allocator<long> > > >&, std::__1::vector<std::__1::vector<bool, std::__1::allocator<bool> >, std::__1::allocator<std::__1::vector<bool, std::__1::allocator<bool> > > >&);
-template void igl::cgal::order_facets_around_edges<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, long, long, bool>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, std::__1::vector<std::__1::vector<long, std::__1::allocator<long> >, std::__1::allocator<std::__1::vector<long, std::__1::allocator<long> > > > const&, std::__1::vector<std::__1::vector<long, std::__1::allocator<long> >, std::__1::allocator<std::__1::vector<long, std::__1::allocator<long> > > >&, std::__1::vector<std::__1::vector<bool, std::__1::allocator<bool> >, std::__1::allocator<std::__1::vector<bool, std::__1::allocator<bool> > > >&);
+template void igl::cgal::order_facets_around_edges<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, long, long, bool>(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, std::__1::vector<std::__1::vector<long, std::__1::allocator<long> >, std::__1::allocator<std::__1::vector<long, std::__1::allocator<long> > > > const&, std::__1::vector<std::__1::vector<long, std::__1::allocator<long> >, std::__1::allocator<std::__1::vector<long, std::__1::allocator<long> > > >&, std::__1::vector<std::__1::vector<bool, std::__1::allocator<bool> >, std::__1::allocator<std::__1::vector<bool, std::__1::allocator<bool> > > >&);
+template void igl::cgal::order_facets_around_edges<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, long, long, bool>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, std::__1::vector<std::__1::vector<long, std::__1::allocator<long> >, std::__1::allocator<std::__1::vector<long, std::__1::allocator<long> > > > const&, std::__1::vector<std::__1::vector<long, std::__1::allocator<long> >, std::__1::allocator<std::__1::vector<long, std::__1::allocator<long> > > >&, std::__1::vector<std::__1::vector<bool, std::__1::allocator<bool> >, std::__1::allocator<std::__1::vector<bool, std::__1::allocator<bool> > > >&);
+template void igl::cgal::order_facets_around_edges<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, long, long, bool>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, std::__1::vector<std::__1::vector<long, std::__1::allocator<long> >, std::__1::allocator<std::__1::vector<long, std::__1::allocator<long> > > > const&, std::__1::vector<std::__1::vector<long, std::__1::allocator<long> >, std::__1::allocator<std::__1::vector<long, std::__1::allocator<long> > > >&, std::__1::vector<std::__1::vector<bool, std::__1::allocator<bool> >, std::__1::allocator<std::__1::vector<bool, std::__1::allocator<bool> > > >&);
 #endif

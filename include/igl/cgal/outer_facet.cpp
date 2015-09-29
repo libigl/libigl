@@ -41,7 +41,7 @@ IGL_INLINE void igl::cgal::outer_facet(
     //    If it has zero normal component, it is facing outside if it contains
     //    directed edge (s, d).  
 
-    typedef typename DerivedV::Scalar Scalar;
+    //typedef typename DerivedV::Scalar Scalar;
     typedef typename DerivedV::Index Index;
 
     Index s,d;
