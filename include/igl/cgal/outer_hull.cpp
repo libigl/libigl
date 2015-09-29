@@ -48,7 +48,7 @@ IGL_INLINE void igl::cgal::outer_hull(
   typedef typename DerivedF::Index Index;
   Matrix<Index,DerivedF::RowsAtCompileTime,1> C;
   typedef Matrix<typename DerivedV::Scalar,Dynamic,DerivedV::ColsAtCompileTime> MatrixXV;
-  typedef Matrix<typename DerivedF::Scalar,Dynamic,DerivedF::ColsAtCompileTime> MatrixXF;
+  //typedef Matrix<typename DerivedF::Scalar,Dynamic,DerivedF::ColsAtCompileTime> MatrixXF;
   typedef Matrix<typename DerivedG::Scalar,Dynamic,DerivedG::ColsAtCompileTime> MatrixXG;
   typedef Matrix<typename DerivedJ::Scalar,Dynamic,DerivedJ::ColsAtCompileTime> MatrixXJ;
   const Index m = F.rows();
@@ -74,7 +74,7 @@ IGL_INLINE void igl::cgal::outer_hull(
 #endif
   typedef Matrix<typename DerivedF::Scalar,Dynamic,2> MatrixX2I;
   typedef Matrix<typename DerivedF::Index,Dynamic,1> VectorXI;
-  typedef Matrix<typename DerivedV::Scalar, 3, 1> Vector3F;
+  //typedef Matrix<typename DerivedV::Scalar, 3, 1> Vector3F;
   MatrixX2I E,uE;
   VectorXI EMAP;
   vector<vector<typename DerivedF::Index> > uE2E;
@@ -91,7 +91,7 @@ IGL_INLINE void igl::cgal::outer_hull(
 
   std::vector<std::vector<typename DerivedF::Index> > uE2oE;
   std::vector<std::vector<bool> > uE2C;
-  order_facets_around_edges(V, F, E, uE, EMAP, uE2E, uE2oE, uE2C);
+  order_facets_around_edges(V, F, uE, uE2E, uE2oE, uE2C);
   uE2E = uE2oE;
   VectorXI diIM(3*m);
   for (auto ue : uE2E) {
