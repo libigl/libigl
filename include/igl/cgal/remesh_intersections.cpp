@@ -73,13 +73,13 @@ IGL_INLINE void igl::cgal::remesh_intersections(
   vector<Plane_3> P(offending.size());
   // Use map for *all* faces
   map<typename CDT_plus_2::Vertex_handle,Index> v2i;
-  // Loop over offending triangles
-  const size_t noff = offending.size();
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
   double t_proj_del = 0;
 #endif
   // Unfortunately it looks like CGAL has trouble allocating memory when
   // multiple openmp threads are running. Crashes durring CDT...
+  //// Loop over offending triangles
+  //const size_t noff = offending.size();
 //# pragma omp parallel for if (noff>1000)
   for(const auto & okv : offending)
   {
