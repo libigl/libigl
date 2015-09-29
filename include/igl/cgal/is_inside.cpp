@@ -277,7 +277,7 @@ IGL_INLINE bool igl::cgal::is_inside(
             (V1(f[0],1) + V1(f[1],1) + V1(f[2],1))/3.0,
             (V1(f[0],2) + V1(f[1],2) + V1(f[2],2))/3.0);
     Eigen::VectorXi inside;
-    igl::cgal::is_inside(V2, F2, I2, query, inside);
+    igl::cgal::is_inside_batch(V2, F2, I2, query, inside);
     assert(inside.size() == 1);
     return inside[0];
 }
@@ -296,7 +296,7 @@ IGL_INLINE bool igl::cgal::is_inside(
 
 template<typename DerivedV, typename DerivedF, typename DerivedI,
     typename DerivedP, typename DerivedB>
-IGL_INLINE void igl::cgal::is_inside(
+IGL_INLINE void igl::cgal::is_inside_batch(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedI>& I,
@@ -356,12 +356,12 @@ IGL_INLINE void igl::cgal::is_inside(
 
 template<typename DerivedV, typename DerivedF, typename DerivedP,
     typename DerivedB>
-IGL_INLINE void igl::cgal::is_inside(
+IGL_INLINE void igl::cgal::is_inside_batch(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedP>& P,
         Eigen::PlainObjectBase<DerivedB>& inside) {
     Eigen::VectorXi I(F.rows());
     I.setLinSpaced(F.rows(), 0, F.rows()-1);
-    igl::cgal::is_inside(V, F, I, P, inside);
+    igl::cgal::is_inside_batch(V, F, I, P, inside);
 }

@@ -401,7 +401,7 @@ IGL_INLINE void igl::cgal::outer_hull(
         query_points(i,2) = (V(f(0,0), 2) + V(f(0,1), 2) + V(f(0,2), 2))/3.0;
     }
     Eigen::VectorXi inside;
-    igl::cgal::is_inside(V, vG[id], query_points, inside);
+    igl::cgal::is_inside_batch(V, vG[id], query_points, inside);
     assert(inside.size() == num_unresolved_components);
     for (size_t i=0; i<num_unresolved_components; i++) {
         if (inside[i]) {
