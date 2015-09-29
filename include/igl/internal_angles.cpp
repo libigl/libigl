@@ -64,8 +64,9 @@ IGL_INLINE void igl::internal_angles(
   const Eigen::PlainObjectBase<DerivedL>& L,
   Eigen::PlainObjectBase<DerivedK> & K)
 {
+  typedef typename DerivedL::Index Index;
   assert(L.cols() == 3 && "Edge-lengths should come from triangles");
-  const size_t m = L.rows();
+  const Index m = L.rows();
   K.resize(m,3);
   //for(int d = 0;d<3;d++)
   //{
@@ -79,7 +80,7 @@ IGL_INLINE void igl::internal_angles(
   #  define IGL_OMP_MIN_VALUE 1000
   #endif
   #pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
-  for(long long f = 0;f<m;f++)
+  for(Index f = 0;f<m;f++)
   {
     for(size_t d = 0;d<3;d++)
     {

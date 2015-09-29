@@ -190,7 +190,7 @@ public:
           const RowVectorDIMS & p,
           int & i,
           RowVectorDIMS & c) const;
-private:
+//private:
       inline Scalar squared_distance(
           const Eigen::PlainObjectBase<DerivedV> & V,
           const Eigen::MatrixXi & Ele, 
@@ -369,7 +369,7 @@ inline void igl::AABB<DerivedV,DIM>::init(
   using namespace Eigen;
   using namespace std;
   assert(DIM == V.cols() && "V.cols() should matched declared dimension");
-  const Scalar inf = numeric_limits<Scalar>::infinity();
+  //const Scalar inf = numeric_limits<Scalar>::infinity();
   m_box = AlignedBox<Scalar,DIM>();
   // Compute bounding box
   for(int i = 0;i<I.rows();i++)

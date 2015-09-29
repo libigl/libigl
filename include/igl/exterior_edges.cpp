@@ -86,7 +86,7 @@ IGL_INLINE void igl::exterior_edges(
       }
       // Append edge for every repeated entry
       const int abs_count = abs(count);
-      for(size_t k = 0;k<abs_count;k++)
+      for(int k = 0;k<abs_count;k++)
       {
         E(e,0) = i;
         E(e,1) = j;
