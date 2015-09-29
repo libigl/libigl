@@ -43,7 +43,6 @@ IGL_INLINE void igl::cgal::outer_facet(
 
     typedef typename DerivedV::Scalar Scalar;
     typedef typename DerivedV::Index Index;
-    const size_t INVALID = std::numeric_limits<size_t>::max();
 
     Index s,d;
     Eigen::Matrix<Index,Eigen::Dynamic,1> incident_faces;
