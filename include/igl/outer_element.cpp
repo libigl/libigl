@@ -104,7 +104,7 @@ IGL_INLINE void igl::outer_edge(
    typedef typename DerivedV::Index Index;
    typedef typename Eigen::Matrix<Scalar, 3, 1> ScalarArray3;
    typedef typename Eigen::Matrix<typename DerivedF::Scalar, 3, 1> IndexArray3;
-   const size_t INVALID = std::numeric_limits<size_t>::max();
+   const Index INVALID = std::numeric_limits<Index>::max();
 
    Index outer_vid;
    Eigen::Matrix<Index,Eigen::Dynamic,1> candidate_faces;
@@ -123,7 +123,7 @@ IGL_INLINE void igl::outer_edge(
 
    Scalar outer_slope_YX = 0;
    Scalar outer_slope_ZX = 0;
-   size_t outer_opp_vid = INVALID;
+   Index outer_opp_vid = INVALID;
    bool infinite_slope_detected = false;
    std::vector<Index> incident_faces;
    auto check_and_update_outer_edge = [&](Index opp_vid, Index fid) {
