@@ -40,12 +40,12 @@ IGL_INLINE void igl::cgal::remesh_intersections(
   using namespace Eigen;
   typedef typename DerivedF::Index          Index;
   typedef CGAL::Point_3<Kernel>    Point_3;
-  typedef CGAL::Segment_3<Kernel>  Segment_3; 
-  typedef CGAL::Triangle_3<Kernel> Triangle_3; 
+  //typedef CGAL::Segment_3<Kernel>  Segment_3; 
+  //typedef CGAL::Triangle_3<Kernel> Triangle_3; 
   typedef CGAL::Plane_3<Kernel>    Plane_3;
-  typedef CGAL::Point_2<Kernel>    Point_2;
-  typedef CGAL::Segment_2<Kernel>  Segment_2; 
-  typedef CGAL::Triangle_2<Kernel> Triangle_2; 
+  //typedef CGAL::Point_2<Kernel>    Point_2;
+  //typedef CGAL::Segment_2<Kernel>  Segment_2; 
+  //typedef CGAL::Triangle_2<Kernel> Triangle_2; 
   typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
   typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTFB_2;
   typedef CGAL::Triangulation_data_structure_2<TVB_2,CTFB_2> TDS_2;
@@ -55,9 +55,9 @@ IGL_INLINE void igl::cgal::remesh_intersections(
   typedef CGAL::Constrained_triangulation_plus_2<CDT_2> CDT_plus_2;
   typedef std::pair<Index,Index> EMK;
   typedef std::vector<Index> EMV;
-  typedef std::map<EMK,EMV> EdgeMap;
+  //typedef std::map<EMK,EMV> EdgeMap;
   typedef std::pair<Index,Index> EMK;
-  typedef std::vector<CGAL::Object> ObjectList;
+  //typedef std::vector<CGAL::Object> ObjectList;
   typedef std::vector<Index> IndexList;
 
   int NF_count = 0;
@@ -73,13 +73,13 @@ IGL_INLINE void igl::cgal::remesh_intersections(
   vector<Plane_3> P(offending.size());
   // Use map for *all* faces
   map<typename CDT_plus_2::Vertex_handle,Index> v2i;
-  // Loop over offending triangles
-  const size_t noff = offending.size();
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
   double t_proj_del = 0;
 #endif
   // Unfortunately it looks like CGAL has trouble allocating memory when
   // multiple openmp threads are running. Crashes durring CDT...
+  //// Loop over offending triangles
+  //const size_t noff = offending.size();
 //# pragma omp parallel for if (noff>1000)
   for(const auto & okv : offending)
   {

@@ -21,7 +21,8 @@ IGL_INLINE void igl::outer_vertex(
         const Eigen::PlainObjectBase<DerivedF> & F,
         const Eigen::PlainObjectBase<DerivedI> & I,
         IndexType & v_index,
-        Eigen::PlainObjectBase<DerivedA> & A) {
+        Eigen::PlainObjectBase<DerivedA> & A)
+{
     // Algorithm: 
     //    Find an outer vertex (i.e. vertex reachable from infinity)
     //    Return the vertex with the largest X value.
@@ -29,23 +30,29 @@ IGL_INLINE void igl::outer_vertex(
     //    If there is still a tie, pick the one with the largest Z value.
     //    If there is still a tie, then there are duplicated vertices within the
     //    mesh, which violates the precondition.
-    const size_t INVALID = std::numeric_limits<size_t>::max();
+    typedef typename DerivedF::Scalar Index;
+    const Index INVALID = std::numeric_limits<Index>::max();
     const size_t num_selected_faces = I.rows();
     std::vector<size_t> candidate_faces;
-    size_t outer_vid = INVALID;
+    Index outer_vid = INVALID;
     typename DerivedV::Scalar outer_val = 0;
-    for (size_t i=0; i<num_selected_faces; i++) {
+    for (size_t i=0; i<num_selected_faces; i++)
+    {
         size_t f = I(i);
-        for (size_t j=0; j<3; j++) {
-            auto v = F(f, j);
+        for (size_t j=0; j<3; j++)
+        {
+            Index v = F(f, j);
             auto vx = V(v, 0);
-            if (outer_vid == INVALID || vx > outer_val) {
+            if (outer_vid == INVALID || vx > outer_val)
+            {
                 outer_val = vx;
                 outer_vid = v;
                 candidate_faces = {f};
-            } else if (v == outer_vid) {
+            } else if (v == outer_vid)
+            {
                 candidate_faces.push_back(f);
-            } else if (vx == outer_val) {
+            } else if (vx == outer_val)
+            {
                 // Break tie.
                 auto vy = V(v,1);
                 auto vz = V(v, 2);
@@ -54,7 +61,8 @@ IGL_INLINE void igl::outer_vertex(
                 assert(!(vy == outer_y && vz == outer_z));
                 bool replace = (vy > outer_y) ||
                     ((vy == outer_y) && (vz > outer_z));
-                if (replace) {
+                if (replace)
+                {
                     outer_val = vx;
                     outer_vid = v;
                     candidate_faces = {f};
@@ -96,7 +104,7 @@ IGL_INLINE void igl::outer_edge(
     typedef typename DerivedV::Index Index;
     typedef typename Eigen::Matrix<Scalar, 3, 1> ScalarArray3;
     typedef typename Eigen::Matrix<typename DerivedF::Scalar, 3, 1> IndexArray3;
-    const size_t INVALID = std::numeric_limits<size_t>::max();
+    const Index INVALID = std::numeric_limits<Index>::max();
 
     Index outer_vid;
     Eigen::Matrix<Index,Eigen::Dynamic,1> candidate_faces;
@@ -120,17 +128,19 @@ IGL_INLINE void igl::outer_edge(
 
     Scalar outer_slope_YX = 0;
     Scalar outer_slope_ZX = 0;
-    size_t outer_opp_vid = INVALID;
+    Index outer_opp_vid = INVALID;
     bool infinite_slope_detected = false;
     std::vector<Index> incident_faces;
     auto check_and_update_outer_edge = [&](Index opp_vid, Index fid) {
-        if (opp_vid == outer_opp_vid) {
+        if (opp_vid == outer_opp_vid)
+        {
             incident_faces.push_back(fid);
             return;
         }
 
         const ScalarArray3 opp_v = V.row(opp_vid);
-        if (!infinite_slope_detected && outer_v[0] != opp_v[0]) {
+        if (!infinite_slope_detected && outer_v[0] != opp_v[0])
+        {
             // Finite slope
             const ScalarArray3 diff = opp_v - outer_v;
             const Scalar slope_YX = diff[1] / diff[0];
@@ -167,7 +177,8 @@ IGL_INLINE void igl::outer_edge(
                 outer_slope_ZX = slope_ZX;
                 incident_faces = {fid};
             }
-        } else if (!infinite_slope_detected) {
+        } else if (!infinite_slope_detected)
+        {
             // Infinite slope
             outer_opp_vid = opp_vid;
             infinite_slope_detected = true;
@@ -175,8 +186,9 @@ IGL_INLINE void igl::outer_edge(
         }
     };
 
-    const auto num_candidate_faces = candidate_faces.size();
-    for (size_t i=0; i<num_candidate_faces; i++) {
+    const size_t num_candidate_faces = candidate_faces.size();
+    for (size_t i=0; i<num_candidate_faces; i++)
+    {
         const Index fid = candidate_faces(i);
         const IndexArray3& f = F.row(fid);
         size_t id = get_vertex_index(f, outer_vid);

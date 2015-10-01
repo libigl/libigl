@@ -116,10 +116,11 @@ IGL_INLINE void igl::doublearea(
 {
   using namespace Eigen;
   using namespace std;
+  typedef typename Derivedl::Index Index;
   // Only support triangles
   assert(ul.cols() == 3);
   // Number of triangles
-  const size_t m = ul.rows();
+  const Index m = ul.rows();
   Eigen::PlainObjectBase<Derivedl> l;
   MatrixXi _;
   sort(ul,2,false,l,_);
@@ -133,7 +134,7 @@ IGL_INLINE void igl::doublearea(
   #  define IGL_OMP_MIN_VALUE 1000
   #endif
   #pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
-  for(long long i = 0;i<m;i++)
+  for(Index i = 0;i<m;i++)
   {
     //// Heron's formula for area
     //const typename Derivedl::Scalar arg =
