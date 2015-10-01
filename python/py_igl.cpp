@@ -34,6 +34,8 @@
 #include <igl/eigs.h>
 #include <igl/readOBJ.h>
 #include <igl/harmonic.h>
+#include <igl/arap.h>
+#include <igl/ARAPEnergyType.h>
 
 void python_export_igl(py::module &m)
 {
@@ -69,4 +71,6 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_eigs.cpp"
 #include "py_igl/py_readOBJ.cpp"
 #include "py_igl/py_harmonic.cpp"
+#include "py_igl/py_ARAPEnergyType.cpp"
+#include "py_igl/py_arap.cpp"
 }
