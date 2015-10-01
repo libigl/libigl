@@ -32,6 +32,8 @@
 #include <igl/SolverStatus.h>
 #include <igl/active_set.h>
 #include <igl/eigs.h>
+#include <igl/readOBJ.h>
+#include <igl/harmonic.h>
 
 void python_export_igl(py::module &m)
 {
@@ -65,5 +67,6 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_SolverStatus.cpp"
 #include "py_igl/py_active_set.cpp"
 #include "py_igl/py_eigs.cpp"
-
+#include "py_igl/py_readOBJ.cpp"
+#include "py_igl/py_harmonic.cpp"
 }

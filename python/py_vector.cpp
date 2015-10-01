@@ -1,5 +1,7 @@
+#include <Eigen/Geometry>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+
 
 #include "python.h"
 
@@ -245,6 +247,17 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
                 throw py::index_error();
             m(i.first, i.second) = v;
          })
+
+         .def("__getitem__", [](const Type &m, size_t i) {
+             if (i >= (size_t) m.size())
+                 throw py::index_error();
+             return m(i);
+          })
+         .def("__setitem__", [](Type &m, size_t i, Scalar v) {
+           if (i >= (size_t) m.size())
+                 throw py::index_error();
+             m(i) = v;
+          })
 
         /* Buffer access for interacting with NumPy */
         .def_buffer([](Type &m) -> py::buffer_info {
@@ -599,7 +612,6 @@ void python_export_vector(py::module &m) {
     bind_eigen_diagonal_2< Eigen::DiagonalMatrix<int,Eigen::Dynamic,Eigen::Dynamic> > (me, "DiagonalMatrixi");
 
     /* Bindings for SimplicialLLT*/
-
     py::class_<Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >> simpliciallltsparse(me, "SimplicialLLTsparse");
 
     simpliciallltsparse
@@ -613,9 +625,15 @@ void python_export_vector(py::module &m) {
           return "Numerical Issue";
     })
     .def("solve",[](const Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >& s, const Eigen::MatrixXd& rhs) { return Eigen::MatrixXd(s.solve(rhs)); })
-
     ;
 
+    /* Bindings for Quaterniond*/
+    //py::class_<Eigen::Quaterniond > quaterniond(me, "Quaterniond");
+    //
+    // quaterniond
+    // .def(py::init<>())
+    // .def(py::init<double, double, double, double>())
+    // ;
 
 
 
