@@ -284,7 +284,7 @@ IGL_INLINE void igl::cgal::order_facets_around_edges(
         const auto ref_corner_s = (ref_corner_o+1)%3;
         const auto ref_corner_d = (ref_corner_o+2)%3;
 
-        const typename DerivedF::Scalar o = F(ref_face, ref_corner_o);
+        //const typename DerivedF::Scalar o = F(ref_face, ref_corner_o);
         const typename DerivedF::Scalar s = F(ref_face, ref_corner_s);
         const typename DerivedF::Scalar d = F(ref_face, ref_corner_d);
 
