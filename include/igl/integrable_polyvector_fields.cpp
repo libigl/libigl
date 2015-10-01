@@ -190,8 +190,7 @@ makeFieldCCW(Eigen::MatrixXd &sol3D)
   {
     //take all 4 vectors (including opposites) and pick two that are in ccw order
     all << sol3D.row(fi), -sol3D.row(fi);
-	Eigen::VectorXi inv_order_unused;
-    igl::sort_vectors_ccw(all, FN.row(fi).eval(), order, true, t, false, inv_order_unused);
+	  igl::sort_vectors_ccw(all, FN.row(fi).eval(), order, t);
     //if we are in a constrained face, we need to make sure that the first vector is always the same vector as in the constraints
     if(is_constrained_face[fi])
     {
