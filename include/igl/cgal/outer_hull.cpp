@@ -348,13 +348,13 @@ IGL_INLINE void igl::cgal::outer_hull(
       {
         for(size_t c = 0;c<3;c++)
         {
-          const auto & vfc = V.row(F(f,c));
+          const auto & vfc = V.row(F(f,c)).eval();
           BB(0,0) = std::min(BB(0,0), vfc(0,0));
           BB(0,1) = std::min(BB(0,1), vfc(0,1));
           BB(0,2) = std::min(BB(0,2), vfc(0,2));
-          BB(1,0) = std::max(BB(0,0), vfc(0,0));
-          BB(1,1) = std::max(BB(0,1), vfc(0,1));
-          BB(1,2) = std::max(BB(0,2), vfc(0,2));
+          BB(1,0) = std::max(BB(1,0), vfc(0,0));
+          BB(1,1) = std::max(BB(1,1), vfc(0,1));
+          BB(1,2) = std::max(BB(1,2), vfc(0,2));
         }
       }
       return BB;
