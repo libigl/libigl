@@ -36,6 +36,8 @@
 #include <igl/harmonic.h>
 #include <igl/arap.h>
 #include <igl/ARAPEnergyType.h>
+#include <igl/boundary_loop.h>
+#include <igl/map_vertices_to_circle.h>
 
 void python_export_igl(py::module &m)
 {
@@ -73,4 +75,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_harmonic.cpp"
 #include "py_igl/py_ARAPEnergyType.cpp"
 #include "py_igl/py_arap.cpp"
+#include "py_igl/py_boundary_loop.cpp"
+#include "py_igl/py_map_vertices_to_circle.cpp"
+
 }

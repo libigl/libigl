@@ -221,8 +221,8 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def_cast(py::self += py::self)
         .def_cast(py::self -= py::self)
         .def_cast(py::self *= py::self)
-        // .def_cast(py::self *= Scalar())
-        // .def_cast(py::self /= Scalar())
+        .def_cast(py::self *= Scalar())
+        .def_cast(py::self /= Scalar())
 
         /* Comparison operators */
         .def(py::self == py::self)
