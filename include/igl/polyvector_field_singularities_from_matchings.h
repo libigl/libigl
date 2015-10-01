@@ -114,6 +114,31 @@ namespace igl {
                                                                 Eigen::PlainObjectBase<DerivedS> &singularities);
   
   
+  // Same pair as above but also returns singularity indices
+  template <typename DerivedV, typename DerivedF, typename DerivedM, typename DerivedS>
+  IGL_INLINE void polyvector_field_singularities_from_matchings(
+                                                                const Eigen::PlainObjectBase<DerivedV> &V,
+                                                                const Eigen::PlainObjectBase<DerivedF> &F,
+                                                                const Eigen::PlainObjectBase<DerivedM> &match_ab,
+                                                                const Eigen::PlainObjectBase<DerivedM> &match_ba,
+                                                                Eigen::PlainObjectBase<DerivedS> &singularities,
+                                                                Eigen::PlainObjectBase<DerivedS> &singularity_indices);
+  
+  template <typename DerivedV, typename DerivedF, typename DerivedM, typename VFType, typename DerivedS>
+  IGL_INLINE void polyvector_field_singularities_from_matchings(
+                                                                const Eigen::PlainObjectBase<DerivedV> &V,
+                                                                const Eigen::PlainObjectBase<DerivedF> &F,
+                                                                const std::vector<bool> &V_border,
+                                                                const std::vector<std::vector<VFType> > &VF,
+                                                                const Eigen::MatrixXi &TT,
+                                                                const Eigen::MatrixXi &E2F,
+                                                                const Eigen::MatrixXi &F2E,
+                                                                const Eigen::PlainObjectBase<DerivedM> &match_ab,
+                                                                const Eigen::PlainObjectBase<DerivedM> &match_ba,
+                                                                Eigen::PlainObjectBase<DerivedS> &singularities,
+                                                                Eigen::PlainObjectBase<DerivedS> &singularity_indices);
+
+  
   
 };
 

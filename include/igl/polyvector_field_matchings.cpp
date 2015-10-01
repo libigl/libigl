@@ -24,10 +24,8 @@ IGL_INLINE void igl::polyvector_field_matching(
   Eigen::Matrix<typename DerivedS::Scalar,1,Eigen::Dynamic> ua (1,N*3); ua <<_ua, -_ua;
   Eigen::Matrix<typename DerivedS::Scalar,1,Eigen::Dynamic> ub (1,N*3); ub <<_ub, -_ub;
   Eigen::Matrix<typename DerivedM::Scalar,Eigen::Dynamic,1> order_a, order_b;
-  Eigen::Matrix<typename DerivedS::Scalar, 1, Eigen::Dynamic> sorted_unused;
-  Eigen::VectorXi inv_order_unused;
-  igl::sort_vectors_ccw(ua, na, order_a,false,sorted_unused,false,inv_order_unused);
-  igl::sort_vectors_ccw(ub, nb, order_b,false,sorted_unused,false,inv_order_unused);
+  igl::sort_vectors_ccw(ua, na, order_a);
+  igl::sort_vectors_ccw(ub, nb, order_b);
 
   //checking all possible circshifts of order_b as matches for order_a
   Eigen::Matrix<typename DerivedM::Scalar,Eigen::Dynamic,Eigen::Dynamic> all_matches(N,N);
