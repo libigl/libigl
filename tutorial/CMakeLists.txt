@@ -23,7 +23,7 @@ ENDIF(MSVC)
 find_package(CORK QUIET)
 find_package(CGAL QUIET)
 find_package(EMBREE QUIET)
-find_package(LIBCOMISO QUIET)
+find_package(LIBCOMISOH QUIET)
 find_package(MATLAB QUIET)
 find_package(MOSEK QUIET)
 find_package(TETGEN QUIET)
@@ -41,6 +41,7 @@ if(LIBIGL_USE_STATIC_LIBRARY)
 endif(LIBIGL_USE_STATIC_LIBRARY)
 include_directories("../include")
 
+# if(True)
 #Compile nanogui
 add_subdirectory("../external/nanogui/" "nanogui")
 include_directories("../external/nanogui/include")
@@ -67,6 +68,24 @@ add_subdirectory("../external/embree/" "embree")
 include_directories("../external/embree/include")
 list(APPEND SHARED_LIBRARIES "embree")
 
+# endif(True)
+
+#Compile CoMISo (if found)
+# NOTE: this cmakefile works only with the
+# comiso available here: https://github.com/libigl/CoMISo
+IF(LIBCOMISO_FOUND)
+  include_directories("../../CoMISo/ext/gmm-4.2/include")
+  include_directories("../../")
+  add_subdirectory("../../CoMISo/" "CoMISo")
+
+  if(APPLE)
+    find_library(accelerate_library Accelerate)
+    list(APPEND SHARED_LIBRARIES "CoMISo" ${accelerate_library})
+  else(APPLE) #APPLE
+    list(APPEND SHARED_LIBRARIES "CoMISo")
+  endif(APPLE)
+
+ENDIF(LIBCOMISO_FOUND)
 
 message(STATUS "Linking with: ${LIBIGL_LIBRARIES}")
 list(APPEND SHARED_LIBRARIES ${LIBIGL_LIBRARIES})

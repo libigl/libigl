@@ -18,6 +18,7 @@
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 
+
 // Face barycenters
 Eigen::MatrixXd B;
 

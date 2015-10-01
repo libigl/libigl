@@ -154,7 +154,7 @@ git pull
 git submodule update -- recursive
 ```
 
-## Unit testing 
+## Unit testing
 
 Libigl maintains [separate
 repository](https://github.com/libigl/libigl-unit-tests) for unit testing.
@@ -229,6 +229,6 @@ page](https://github.com/libigl/libigl/issues).
 ## Copyright
 2015 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
 Zhou, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
-Giorgis, Luigi Rocca, Leonardo Sacht, Olga Sorkine-Hornung, and others.
+Giorgis, Luigi Rocca, Leonardo Sacht, Kevin Walliman, Olga Sorkine-Hornung, and others.
 
 Please see individual files for appropriate copyright notices.
