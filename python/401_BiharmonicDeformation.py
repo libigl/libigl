@@ -1,6 +1,6 @@
 import igl
 
-
+global bc_frac, bc_dir,deformation_field, V, U, V_bc, U_bc, F, b
 bc_frac = 1.0
 bc_dir = -0.03
 deformation_field = False
@@ -15,7 +15,7 @@ F = igl.eigen.MatrixXi()
 b = igl.eigen.MatrixXi()
 
 def pre_draw(viewer):
-    global V, bc_frac, bc_dir, U, U_bc, V_bc, b, deformation_field
+    global bc_frac, bc_dir,deformation_field, V, U, V_bc, U_bc, F, b
     # Determine boundary conditions
     if (viewer.core.is_animating):
         bc_frac += bc_dir
@@ -27,20 +27,16 @@ def pre_draw(viewer):
         D = igl.eigen.MatrixXd()
         D_bc = U_bc_anim - V_bc
         igl.harmonic(V,F,b,D_bc,2,D)
-        U = V+D;
+        U = V+D
     else:
-        D = igl.eigen.MatrixXd()
-        igl.harmonic(V,F,b,U_bc_anim,2,D)
-        U = D
-        # global U
-        # igl.harmonic(V,F,b,U_bc_anim,2,U)
+        igl.harmonic(V,F,b,U_bc_anim,2,U)
 
     viewer.data.set_vertices(U)
     viewer.data.compute_normals()
     return False
 
 def key_down(viewer, key, mods):
-    global deformation_field
+    global bc_frac, bc_dir,deformation_field, V, U, V_bc, U_bc, F, b
 
     if key == ord(' '):
         viewer.core.is_animating = not viewer.core.is_animating
@@ -52,7 +48,7 @@ def key_down(viewer, key, mods):
 
 
 igl.readOBJ("../tutorial/shared/decimated-max.obj",V,F)
-U=V
+U = igl.eigen.MatrixXd(V)
 
 # S(i) = j: j<0 (vertex i not in handle), j >= 0 (vertex i in handle j)
 S = igl.eigen.MatrixXd()
