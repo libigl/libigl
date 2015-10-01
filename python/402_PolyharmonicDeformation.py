@@ -1,6 +1,6 @@
 import igl
 
-global resolve, z_max, z_dir, k, Z, V, F, b, bc, U
+global z_max, z_dir, k, resolve, V, U, Z, F, b, bc
 
 z_max = 1.0
 z_dir = -0.03
@@ -19,13 +19,10 @@ b = igl.eigen.MatrixXi()
 bc = igl.eigen.MatrixXd()
 
 def pre_draw(viewer):
-    global resolve, z_max, z_dir, k, Z, V, F, b, bc
+    global z_max, z_dir, k, resolve, V, U, Z, F, b, bc
 
     if resolve:
-        print k
-        # T = igl.eigen.MatrixXd()
         igl.harmonic(V,F,b,bc,k,Z)
-        # Z = T # FIXME
         resolve = False
 
     U.setCol(2,z_max*Z)
@@ -39,33 +36,27 @@ def pre_draw(viewer):
     return False
 
 def key_down(viewer, key, mods):
-    global k, resolve
+    global z_max, z_dir, k, resolve, V, U, Z, F, b, bc
 
     if key == ord(' '):
         viewer.core.is_animating = not viewer.core.is_animating
     elif key == ord('.'):
         k = k + 1
         k = (4 if k>4 else k)
+        print k
         resolve = True
     elif key == ord(','):
         k = k - 1
         k = (1 if k<1 else k)
+        print k
         resolve = True
     return True
 
 
 igl.readOBJ("../tutorial/shared/bump-domain.obj",V,F)
-U=V
+U = igl.eigen.MatrixXd(V)
 
 # Find boundary vertices outside annulus
-
-# is_outer = (V.rowwise().norm().array()-1.0)>-1e-15
-# is_inner = (V.rowwise().norm().array()-0.15)<1e-15
-# in_b = is_outer.array() || is_inner.array()
-#
-# igl.colon_int(0,V.rows()-1,b)
-# b.conservativeResize(stable_partition( b.data(), b.data()+b.size(),
-#    [&in_b](int i)->bool{return in_b(i);})-b.data())
 
 Vrn = V.rowwiseNorm()
 is_outer = [Vrn[i]-1.00 > -1e-15 for i in range(0,V.rows())]
