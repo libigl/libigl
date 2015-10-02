@@ -3,6 +3,7 @@
 
 #include "../igl_inline.h"
 #include <Eigen/Core>
+#include <vector>
 
 namespace igl {
     namespace cgal {
@@ -58,21 +59,20 @@ namespace igl {
         //   inside  #P list of booleans that is true iff the corresponding
         //           query point is inside of the mesh.
         template<typename DerivedV, typename DerivedF, typename DerivedI,
-            typename DerivedP, typename DerivedB>
+            typename DerivedP>
             IGL_INLINE void is_inside(
                     const Eigen::PlainObjectBase<DerivedV>& V,
                     const Eigen::PlainObjectBase<DerivedF>& F,
                     const Eigen::PlainObjectBase<DerivedI>& I,
                     const Eigen::PlainObjectBase<DerivedP>& P,
-                    Eigen::PlainObjectBase<DerivedB>& inside);
+                    std::vector<bool>& inside);
 
-        template<typename DerivedV, typename DerivedF, typename DerivedP,
-            typename DerivedB>
+        template<typename DerivedV, typename DerivedF, typename DerivedP>
             IGL_INLINE void is_inside(
                     const Eigen::PlainObjectBase<DerivedV>& V,
                     const Eigen::PlainObjectBase<DerivedF>& F,
                     const Eigen::PlainObjectBase<DerivedP>& P,
-                    Eigen::PlainObjectBase<DerivedB>& inside);
+                    std::vector<bool>& inside);
     }
 }
 

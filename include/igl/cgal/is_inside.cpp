@@ -276,7 +276,7 @@ IGL_INLINE bool igl::cgal::is_inside(
             (V1(f[0],0) + V1(f[1],0) + V1(f[2],0))/3.0,
             (V1(f[0],1) + V1(f[1],1) + V1(f[2],1))/3.0,
             (V1(f[0],2) + V1(f[1],2) + V1(f[2],2))/3.0);
-    Eigen::VectorXi inside;
+    std::vector<bool> inside;
     igl::cgal::is_inside(V2, F2, I2, query, inside);
     assert(inside.size() == 1);
     return inside[0];
@@ -295,13 +295,13 @@ IGL_INLINE bool igl::cgal::is_inside(
 }
 
 template<typename DerivedV, typename DerivedF, typename DerivedI,
-    typename DerivedP, typename DerivedB>
+    typename DerivedP>
 IGL_INLINE void igl::cgal::is_inside(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedI>& I,
         const Eigen::PlainObjectBase<DerivedP>& P,
-        Eigen::PlainObjectBase<DerivedB>& inside) {
+        std::vector<bool>& inside) {
     using namespace igl::cgal::is_inside_helper;
     assert(F.rows() > 0);
     assert(I.rows() > 0);
@@ -320,7 +320,7 @@ IGL_INLINE void igl::cgal::is_inside(
     tree.accelerate_distance_queries();
 
     const size_t num_queries = P.rows();
-    inside.resize(num_queries);
+    inside.resize(num_queries, false);
     for (size_t i=0; i<num_queries; i++) {
         const Point_3 query(P(i,0), P(i,1), P(i,2));
         auto projection = tree.closest_point_and_primitive(query);
@@ -349,18 +349,17 @@ IGL_INLINE void igl::cgal::is_inside(
                 inside[i] = determine_point_face_orientation(V, F, I, query, fid);
                 break;
             default:
-                assert(false);
+                throw "Unknow closest element type!";
         }
     }
 }
 
-template<typename DerivedV, typename DerivedF, typename DerivedP,
-    typename DerivedB>
+template<typename DerivedV, typename DerivedF, typename DerivedP>
 IGL_INLINE void igl::cgal::is_inside(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedP>& P,
-        Eigen::PlainObjectBase<DerivedB>& inside) {
+        std::vector<bool>& inside) {
     Eigen::VectorXi I(F.rows());
     I.setLinSpaced(F.rows(), 0, F.rows()-1);
     igl::cgal::is_inside(V, F, I, P, inside);
@@ -369,6 +368,6 @@ IGL_INLINE void igl::cgal::is_inside(
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::cgal::is_inside<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::is_inside<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::is_inside<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::cgal::is_inside<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, std::vector<bool>&);
+template void igl::cgal::is_inside<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, std::vector<bool>&);
 #endif
