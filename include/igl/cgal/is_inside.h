@@ -59,7 +59,7 @@ namespace igl {
         //           query point is inside of the mesh.
         template<typename DerivedV, typename DerivedF, typename DerivedI,
             typename DerivedP, typename DerivedB>
-            IGL_INLINE void is_inside_batch(
+            IGL_INLINE void is_inside(
                     const Eigen::PlainObjectBase<DerivedV>& V,
                     const Eigen::PlainObjectBase<DerivedF>& F,
                     const Eigen::PlainObjectBase<DerivedI>& I,
@@ -68,7 +68,7 @@ namespace igl {
 
         template<typename DerivedV, typename DerivedF, typename DerivedP,
             typename DerivedB>
-            IGL_INLINE void is_inside_batch(
+            IGL_INLINE void is_inside(
                     const Eigen::PlainObjectBase<DerivedV>& V,
                     const Eigen::PlainObjectBase<DerivedF>& F,
                     const Eigen::PlainObjectBase<DerivedP>& P,

@@ -161,6 +161,10 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     {
       remove_unreferenced(SV,SF,CV,CF,UIM);
     }
+#ifdef IGL_MESH_BOOLEAN_DEBUG
+    cout<<"#F:  "<<F.rows()<<endl;
+    cout<<"#CF: "<<CF.rows()<<endl;
+#endif
   };
 
 #ifdef IGL_MESH_BOOLEAN_DEBUG
