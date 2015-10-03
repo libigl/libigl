@@ -311,7 +311,7 @@ IGL_INLINE void igl::cgal::points_inside_component(
             case VERTEX:
                 {
                     const size_t s = F(I(fid, 0), element_index);
-                    inside[i] = determine_point_vertex_orientation(
+                    inside(i,0) = determine_point_vertex_orientation(
                             V, F, I, query, s);
                 }
                 break;
@@ -319,12 +319,12 @@ IGL_INLINE void igl::cgal::points_inside_component(
                 {
                     const size_t s = F(I(fid, 0), (element_index+1)%3);
                     const size_t d = F(I(fid, 0), (element_index+2)%3);
-                    inside[i] = determine_point_edge_orientation(
+                    inside(i,0) = determine_point_edge_orientation(
                             V, F, I, query, s, d);
                 }
                 break;
             case FACE:
-                inside[i] = determine_point_face_orientation(V, F, I, query, fid);
+                inside(i,0) = determine_point_face_orientation(V, F, I, query, fid);
                 break;
             default:
                 throw "Unknow closest element type!";
@@ -348,23 +348,23 @@ IGL_INLINE void igl::cgal::points_inside_component(
 // Explicit template specialization
 template void igl::cgal::points_inside_component<
 Eigen::Matrix<double, -1, -1, 0, -1, -1>,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>,
+Eigen::Matrix<   int, -1, -1, 0, -1, -1>,
+Eigen::Matrix<   int, -1, -1, 0, -1, -1>,
 Eigen::Matrix<double, -1, -1, 0, -1, -1>,
-Eigen::Matrix<int, -1, -1, 0, -1, -1> > (
-Eigen::Matrix<double, -1, -1, 0, -1, -1> const&,
-Eigen::Matrix<int, -1, -1, 0, -1, -1> const&,
-Eigen::Matrix<int, -1, -1, 0, -1, -1> const&,
-Eigen::Matrix<double, -1, -1, 0, -1, -1> const&,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>&);
+Eigen::Matrix<   int, -1, -1, 0, -1, -1> > (
+Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> >&);
 
 template void igl::cgal::points_inside_component<
 Eigen::Matrix<double, -1, -1, 0, -1, -1>,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>,
+Eigen::Matrix<   int, -1, -1, 0, -1, -1>,
 Eigen::Matrix<double, -1, -1, 0, -1, -1>,
-Eigen::Matrix<int, -1, -1, 0, -1, -1> > (
-Eigen::Matrix<double, -1, -1, 0, -1, -1> const&,
-Eigen::Matrix<int, -1, -1, 0, -1, -1> const&,
-Eigen::Matrix<double, -1, -1, 0, -1, -1> const&,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>&);
+Eigen::Matrix<   int, -1, -1, 0, -1, -1> > (
+Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> >&);
 #endif

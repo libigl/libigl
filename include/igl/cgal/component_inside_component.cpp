@@ -19,6 +19,7 @@
 
 #include "order_facets_around_edge.h"
 #include "assign_scalar.h"
+#include "points_inside_component.h"
 
 template <typename DerivedV, typename DerivedF, typename DerivedI>
 IGL_INLINE bool igl::cgal::component_inside_component(
@@ -63,25 +64,20 @@ IGL_INLINE bool igl::cgal::component_inside_component(
 // Explicit template specialization
 template bool igl::cgal::component_inside_component<
 Eigen::Matrix<double, -1, -1, 0, -1, -1>,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>,
-Eigen::Matrix<double, -1, -1, 0, -1, -1>,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>,
-Eigen::Matrix<int, -1, -1, 0, -1, -1> >(
-Eigen::Matrix<double, -1, -1, 0, -1, -1>& const,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>& const,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>& const,
-Eigen::Matrix<double, -1, -1, 0, -1, -1>& const,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>& const,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>& const);
+Eigen::Matrix<   int, -1, -1, 0, -1, -1>,
+Eigen::Matrix<   int, -1, -1, 0, -1, -1> > (
+Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&);
 
 template bool igl::cgal::component_inside_component<
 Eigen::Matrix<double, -1, -1, 0, -1, -1>,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>,
-Eigen::Matrix<double, -1, -1, 0, -1, -1>,
-Eigen::Matrix<int, -1, -1, 0, -1, -1> >(
-Eigen::Matrix<double, -1, -1, 0, -1, -1>& const,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>& const,
-Eigen::Matrix<double, -1, -1, 0, -1, -1>& const,
-Eigen::Matrix<int, -1, -1, 0, -1, -1>& const);
+Eigen::Matrix<   int, -1, -1, 0, -1, -1> > (
+Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&);
 #endif
