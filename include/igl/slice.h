@@ -23,7 +23,9 @@ namespace igl
   //   Y  #R by #C matrix
   //
   // See also: slice_mask
-  template <typename TX, typename TY>
+  template <
+    typename TX, 
+    typename TY>
   IGL_INLINE void slice(
     const Eigen::SparseMatrix<TX>& X,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
@@ -35,17 +37,24 @@ namespace igl
   //   dim  dimension to slice in 1 or 2, dim=1 --> X(R,:), dim=2 --> X(:,R)
   //
   // Note: For now this is just a cheap wrapper.
-  template <typename MatX, typename MatY>
+  template <
+    typename MatX, 
+    typename DerivedR,
+    typename MatY>
   IGL_INLINE void slice(
     const MatX& X,
-    const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
+    const Eigen::PlainObjectBase<DerivedR> & R,
     const int dim,
     MatY& Y);
-  template <typename DerivedX, typename DerivedY>
+  template <
+    typename DerivedX, 
+    typename DerivedR, 
+    typename DerivedC, 
+    typename DerivedY>
   IGL_INLINE void slice(
     const Eigen::PlainObjectBase<DerivedX> & X,
-    const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
-    const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
+    const Eigen::PlainObjectBase<DerivedR> & R,
+    const Eigen::PlainObjectBase<DerivedC> & C,
     Eigen::PlainObjectBase<DerivedY> & Y);
 
   template <typename DerivedX, typename DerivedY>
