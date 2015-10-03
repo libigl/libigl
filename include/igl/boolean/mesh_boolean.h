@@ -21,82 +21,85 @@ namespace igl
     //  oriented meshes.
     // 
     //  Inputs:
-    //    V  #V by 3 list of vertex positions of first mesh
-    //    F  #F by 3 list of triangle indices into V
-    //    U  #U by 3 list of vertex positions of second mesh
-    //    G  #G by 3 list of triangle indices into U
+    //    VA  #VA by 3 list of vertex positions of first mesh
+    //    FA  #FA by 3 list of triangle indices into VA
+    //    VB  #VB by 3 list of vertex positions of second mesh
+    //    FB  #FB by 3 list of triangle indices into VB
     //    type  type of boolean operation
+    //    resolve_fun  function handle for computing resolve of a
+    //      self-intersections of a mesh and outputting the new mesh.
     //  Outputs:
-    //    W  #W by 3 list of vertex positions of boolean result mesh
-    //    H  #H by 3 list of triangle indices into W
-    //    J  #H list of indices into [FA;FB] revealing "birth" facet
-    //  
-    //  See also: self_intersect
+    //    VC  #VC by 3 list of vertex positions of boolean result mesh
+    //    FC  #FC by 3 list of triangle indices into VC
+    //    J  #FC list of indices into [FA;FB] revealing "birth" facet
+    //    I  #VA+#VB list of indices into SV (SV=[VA;VB;SVA;SVB], where SVA and
+    //      SVB are the new vertices from resolving intersections) revealing
+    //      "birth" vertices.
+    //
+    //  See also: mesh_boolean_cork, intersect_other, remesh_self_intersections
     //     
     template <
       typename DerivedVA,
-               typename DerivedFA,
-               typename DerivedVB,
-               typename DerivedFB,
-               typename DerivedVC,
-               typename DerivedFC,
-               typename DerivedJ>
-                 IGL_INLINE void mesh_boolean(
-                     const Eigen::PlainObjectBase<DerivedVA > & VA,
-                     const Eigen::PlainObjectBase<DerivedFA > & FA,
-                     const Eigen::PlainObjectBase<DerivedVB > & VB,
-                     const Eigen::PlainObjectBase<DerivedFB > & FB,
-                     const MeshBooleanType & type,
-                     Eigen::PlainObjectBase<DerivedVC > & VC,
-                     Eigen::PlainObjectBase<DerivedFC > & FC,
-                     Eigen::PlainObjectBase<DerivedJ > & J);
+      typename DerivedFA,
+      typename DerivedVB,
+      typename DerivedFB,
+      typename DerivedVC,
+      typename DerivedFC,
+      typename DerivedJ,
+      typename DerivedI>
+    IGL_INLINE void mesh_boolean(
+      const Eigen::PlainObjectBase<DerivedVA > & VA,
+      const Eigen::PlainObjectBase<DerivedFA > & FA,
+      const Eigen::PlainObjectBase<DerivedVB > & VB,
+      const Eigen::PlainObjectBase<DerivedFB > & FB,
+      const MeshBooleanType & type,
+      const std::function<void(
+        const Eigen::Matrix<typename DerivedVC::Scalar,Eigen::Dynamic,3> &,
+        const Eigen::Matrix<typename DerivedFC::Scalar,Eigen::Dynamic,3> &,
+        Eigen::Matrix<typename DerivedVC::Scalar,Eigen::Dynamic,3> &,
+        Eigen::Matrix<typename DerivedFC::Scalar,Eigen::Dynamic,3> &,
+        Eigen::Matrix<typename DerivedJ::Scalar,Eigen::Dynamic,1>&,
+        Eigen::Matrix<typename DerivedI::Scalar,Eigen::Dynamic,1>&)> &
+        resolve_fun,
+      Eigen::PlainObjectBase<DerivedVC > & VC,
+      Eigen::PlainObjectBase<DerivedFC > & FC,
+      Eigen::PlainObjectBase<DerivedJ > & J,
+      Eigen::PlainObjectBase<DerivedI > & I);
     template <
       typename DerivedVA,
-               typename DerivedFA,
-               typename DerivedVB,
-               typename DerivedFB,
-               typename DerivedVC,
-               typename DerivedFC>
-                 IGL_INLINE void mesh_boolean(
-                     const Eigen::PlainObjectBase<DerivedVA > & VA,
-                     const Eigen::PlainObjectBase<DerivedFA > & FA,
-                     const Eigen::PlainObjectBase<DerivedVB > & VB,
-                     const Eigen::PlainObjectBase<DerivedFB > & FB,
-                     const MeshBooleanType & type,
-                     Eigen::PlainObjectBase<DerivedVC > & VC,
-                     Eigen::PlainObjectBase<DerivedFC > & FC);
-    // Inputs:
-    //   resolve_fun  function handle for computing resolve of a
-    //     self-intersections of a mesh and outputting the new mesh.
+      typename DerivedFA,
+      typename DerivedVB,
+      typename DerivedFB,
+      typename DerivedVC,
+      typename DerivedFC,
+      typename DerivedJ,
+      typename DerivedI>
+    IGL_INLINE void mesh_boolean(
+      const Eigen::PlainObjectBase<DerivedVA > & VA,
+      const Eigen::PlainObjectBase<DerivedFA > & FA,
+      const Eigen::PlainObjectBase<DerivedVB > & VB,
+      const Eigen::PlainObjectBase<DerivedFB > & FB,
+      const MeshBooleanType & type,
+      Eigen::PlainObjectBase<DerivedVC > & VC,
+      Eigen::PlainObjectBase<DerivedFC > & FC,
+      Eigen::PlainObjectBase<DerivedJ > & J,
+      Eigen::PlainObjectBase<DerivedI > & I);
     template <
       typename DerivedVA,
-               typename DerivedFA,
-               typename DerivedVB,
-               typename DerivedFB,
-               typename DerivedVC,
-               typename DerivedFC,
-               typename DerivedJ>
-                 IGL_INLINE void mesh_boolean(
-                     const Eigen::PlainObjectBase<DerivedVA > & VA,
-                     const Eigen::PlainObjectBase<DerivedFA > & FA,
-                     const Eigen::PlainObjectBase<DerivedVB > & VB,
-                     const Eigen::PlainObjectBase<DerivedFB > & FB,
-                     const MeshBooleanType & type,
-                     const std::function<void(
-                       const Eigen::Matrix<
-                         typename DerivedVC::Scalar,Eigen::Dynamic,3> &,
-                       const Eigen::Matrix<
-                         typename DerivedFC::Scalar,Eigen::Dynamic,3> &,
-                       Eigen::Matrix<
-                         typename DerivedVC::Scalar,Eigen::Dynamic,3> &,
-                       Eigen::Matrix<
-                         typename DerivedFC::Scalar,Eigen::Dynamic,3> &,
-                       Eigen::Matrix<
-                         typename  DerivedJ::Scalar,Eigen::Dynamic,1>&)> 
-                     & resolve_fun,
-                     Eigen::PlainObjectBase<DerivedVC > & VC,
-                     Eigen::PlainObjectBase<DerivedFC > & FC,
-                     Eigen::PlainObjectBase<DerivedJ > & J);
+      typename DerivedFA,
+      typename DerivedVB,
+      typename DerivedFB,
+      typename DerivedVC,
+      typename DerivedFC>
+    IGL_INLINE void mesh_boolean(
+      const Eigen::PlainObjectBase<DerivedVA > & VA,
+      const Eigen::PlainObjectBase<DerivedFA > & FA,
+      const Eigen::PlainObjectBase<DerivedVB > & VB,
+      const Eigen::PlainObjectBase<DerivedFB > & FB,
+      const MeshBooleanType & type,
+      Eigen::PlainObjectBase<DerivedVC > & VC,
+      Eigen::PlainObjectBase<DerivedFC > & FC);
+
   }
 }
 
