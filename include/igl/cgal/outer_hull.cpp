@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "is_inside.h"
+#include "points_inside_component.h"
 #include "outer_hull.h"
 #include "order_facets_around_edges.h"
 #include "outer_facet.h"
@@ -400,11 +400,11 @@ IGL_INLINE void igl::cgal::outer_hull(
         query_points(i,1) = (V(f(0,0), 1) + V(f(0,1), 1) + V(f(0,2), 1))/3.0;
         query_points(i,2) = (V(f(0,0), 2) + V(f(0,1), 2) + V(f(0,2), 2))/3.0;
     }
-    std::vector<bool> inside;
-    igl::cgal::is_inside(V, vG[id], query_points, inside);
+    Eigen::VectorXi inside;
+    igl::cgal::points_inside_component(V, vG[id], query_points, inside);
     assert(inside.size() == num_unresolved_components);
     for (size_t i=0; i<num_unresolved_components; i++) {
-        if (inside[i]) {
+        if (inside(i, 0)) {
             const size_t oid = unresolved[i];
             keep[oid] = false;
         }
