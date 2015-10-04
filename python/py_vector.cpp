@@ -100,6 +100,8 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("setCol", [](Type &m, int i, const Type& v) { m.col(i) = v; })
         .def("setRow", [](Type &m, int i, const Type& v) { m.row(i) = v; })
 
+        .def("setBlock", [](Type &m, int i, int j, int p, int q, const Type& v) { m.block(i,j,p,q) = v; })
+        .def("block", [](Type &m, int i, int j, int p, int q) { return Type(m.block(i,j,p,q)); })
 
         .def("rightCols", [](Type &m, const int& k) { return Type(m.rightCols(k)); })
         .def("leftCols", [](Type &m, const int& k) { return Type(m.leftCols(k)); })
