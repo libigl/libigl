@@ -40,6 +40,14 @@
 #include <igl/map_vertices_to_circle.h>
 #include <igl/lscm.h>
 #include <igl/local_basis.h>
+#include <igl/rotate_vectors.h>
+#include <igl/compute_frame_field_bisectors.h>
+#include <igl/comb_cross_field.h>
+#include <igl/cross_field_missmatch.h>
+#include <igl/find_cross_field_singularities.h>
+#include <igl/cut_mesh_from_singularities.h>
+#include <igl/comb_frame_field.h>
+
 
 void python_export_igl(py::module &m)
 {
@@ -81,4 +89,12 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_map_vertices_to_circle.cpp"
 #include "py_igl/py_lscm.cpp"
 #include "py_igl/py_local_basis.cpp"
+#include "py_igl/py_rotate_vectors.cpp"
+#include "py_igl/py_compute_frame_field_bisectors.cpp"
+#include "py_igl/py_comb_cross_field.cpp"
+#include "py_igl/py_cross_field_missmatch.cpp"
+#include "py_igl/py_find_cross_field_singularities.cpp"
+#include "py_igl/py_cut_mesh_from_singularities.cpp"
+#include "py_igl/py_comb_frame_field.cpp"
+
 }
