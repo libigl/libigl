@@ -284,6 +284,9 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         {
           return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(Eigen::Map<const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>>(m.data(),r,c));
         })
+
+        .def("copy", [](const Type &m) { return Type(m); })
+
         ;
     return matrix;
 }
