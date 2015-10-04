@@ -47,6 +47,7 @@
 #include <igl/find_cross_field_singularities.h>
 #include <igl/cut_mesh_from_singularities.h>
 #include <igl/comb_frame_field.h>
+#include <igl/n_polyvector.h>
 
 
 void python_export_igl(py::module &m)
@@ -96,5 +97,6 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_find_cross_field_singularities.cpp"
 #include "py_igl/py_cut_mesh_from_singularities.cpp"
 #include "py_igl/py_comb_frame_field.cpp"
+#include "py_igl/py_n_polyvector.cpp"
 
 }
