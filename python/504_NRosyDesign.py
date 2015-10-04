@@ -75,7 +75,7 @@ def plot_mesh_nrosy(viewer, V, F, N, PD1, S, b):
 def key_down(viewer, key, modifier):
     global N
     if key >= ord('1') and key <= ord('9'):
-        N = key - '0'
+        N = key - ord('0')
 
     R = igl.eigen.MatrixXd()
     S = igl.eigen.MatrixXd()
@@ -95,7 +95,7 @@ bc = igl.eigen.MatrixXd([[1,1,1]])
 viewer = igl.viewer.Viewer()
 
 # Interpolate the field and plot
-key_down(viewer, '4', 0)
+key_down(viewer, ord('4'), 0)
 
 # Plot the mesh
 viewer.data.set_mesh(V, F)
