@@ -1,6 +1,7 @@
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
-#include <nanogui/formscreen.h>
+#include <nanogui/formhelper.h>
+#include <nanogui/screen.h>
 #include <iostream>
 
 Eigen::MatrixXd V;
@@ -21,29 +22,29 @@ int main(int argc, char *argv[])
   viewer.callback_init = [&](igl::viewer::Viewer& viewer)
   {
     // Add new group
-    viewer.ngui->addNewGroup("New Group");
+    viewer.ngui->addGroup("New Group");
 
     // Expose variable directly ...
-    viewer.ngui->addVariable(floatVariable,"float");
+    viewer.ngui->addVariable("float",floatVariable);
 
     // ... or using a custom callback
-    viewer.ngui->addVariable([&](bool val) {
+    viewer.ngui->addVariable<bool>("bool",[&](bool val) {
       boolVariable = val; // set
     },[&]() {
       return boolVariable; // get
-    },"bool",true);
+    });
 
     // Add a button
     viewer.ngui->addButton("Print Hello",[](){ std::cout << "Hello\n"; });
 
     // Add an additional bar
-    viewer.ngui->addNewWindow(Eigen::Vector2i(220,10),"New Window");
+    viewer.ngui->addWindow(Eigen::Vector2i(220,10),"New Window");
 
     // Expose the same variable directly ...
-    viewer.ngui->addVariable(floatVariable,"float");
+    viewer.ngui->addVariable("float",floatVariable);
 
     // Generate menu
-    viewer.ngui->layout();
+    viewer.screen->performLayout();
 
     return false;
   };

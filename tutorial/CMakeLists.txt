@@ -41,12 +41,6 @@ if(LIBIGL_USE_STATIC_LIBRARY)
 endif(LIBIGL_USE_STATIC_LIBRARY)
 include_directories("../include")
 
-# if(True)
-#Compile nanogui
-add_subdirectory("../external/nanogui/" "nanogui")
-include_directories("../external/nanogui/include")
-include_directories("../external/nanogui/ext/nanovg/src")
-list(APPEND SHARED_LIBRARIES "nanogui" "glfw")
 
 #Compile embree
 option(ENABLE_ISPC_SUPPORT " " OFF)
@@ -69,6 +63,18 @@ include_directories("../external/embree/include")
 list(APPEND SHARED_LIBRARIES "embree")
 
 # endif(True)
+
+# if(True)
+#Compile nanogui
+set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
+set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
+set(NANOGUI_BUILD_SHARED OFF CACHE BOOL " " FORCE)
+
+add_subdirectory("../external/nanogui/" "nanogui")
+include_directories("../external/nanogui/include")
+include_directories("../external/nanogui/ext/nanovg/src")
+list(APPEND SHARED_LIBRARIES "nanogui")
+
 
 #Compile CoMISo (if found)
 # NOTE: this cmakefile works only with the

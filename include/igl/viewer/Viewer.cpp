@@ -47,7 +47,8 @@
 #include <limits>
 #include <cassert>
 
-#include <nanogui/formscreen.h>
+#include <nanogui/formhelper.h>
+#include <nanogui/screen.h>
 
 #include <igl/project.h>
 #include <igl/get_seconds.h>
@@ -79,7 +80,7 @@ static int global_KMod = 0;
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
-  bool tw_used = __viewer->ngui->mouseButtonEvent(window,button,action,modifier);
+  bool tw_used = __viewer->screen->mouseButtonCallbackEvent(button,action,modifier);
 
   igl::viewer::Viewer::MouseButton mb;
 
@@ -113,7 +114,7 @@ static void glfw_char_mods_callback(GLFWwindow* window, unsigned int codepoint, 
 {
   // TODO: pass to nanogui (although it's also using physical key down/up
   // rather than character codes...
-  if(! __viewer->ngui->charEvent(window,codepoint) )
+  if(! __viewer->screen->charCallbackEvent(codepoint) )
   {
     __viewer->key_pressed(codepoint, modifier);
   }
@@ -124,7 +125,7 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
 
-  if (__viewer->ngui->keyEvent(window,key,scancode,action,modifier) == false)
+  if (__viewer->screen->keyCallbackEvent(key,scancode,action,modifier) == false)
   {
     if (action == GLFW_PRESS)
       __viewer->key_down(key, modifier);
@@ -145,7 +146,7 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
 
 static void glfw_mouse_move(GLFWwindow* window, double x, double y)
 {
-  if(__viewer->ngui->cursorPosEvent(window,x,y) == false || __viewer->down)
+  if(__viewer->screen->cursorPosCallbackEvent(x,y) == false || __viewer->down)
   {
     __viewer->mouse_move(x*highdpi, y*highdpi);
   }
@@ -157,13 +158,13 @@ static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
   scroll_x += x;
   scroll_y += y;
 
-  if (__viewer->ngui->scrollEvent(window,x,y) == false)
+  if (__viewer->screen->scrollCallbackEvent(x,y) == false)
     __viewer->mouse_scroll(y);
 }
 
 static void glfw_drop_callback(GLFWwindow *window,int count,const char **filenames)
 {
-  __viewer->ngui->dropEvent(window,count,filenames);
+  __viewer->screen->dropCallbackEvent(count,filenames);
 }
 
 namespace igl
@@ -174,69 +175,68 @@ namespace viewer
   {
     using namespace nanogui;
 
-    ngui->setInputCellSize(Eigen::Vector2i(60,20));
+    ngui->setFixedSize(Eigen::Vector2i(60,20));
 
     // Create nanogui widgets
-    ngui->addNewWindow(Eigen::Vector2i(10,10),"libIGL-Viewer");
+    nanogui::Window *window = ngui->addWindow(Eigen::Vector2i(10,10),"libIGL-Viewer");
 
     // ---------------------- LOADING ----------------------
 
   #ifdef ENABLE_SERIALIZATION
-    ngui->addNewGroup("Workspace",FormScreen::Layout::Horizontal);
+    ngui->addGroup("Workspace");
     ngui->addButton("Load",[&](){this->load_scene();});
     ngui->addButton("Save",[&](){this->save_scene();});
   #endif
 
   #ifdef ENABLE_IO
-    ngui->addNewGroup("Mesh",FormScreen::Layout::Horizontal);
+    ngui->addGroup("Mesh");
     ngui->addButton("Load",[&](){this->open_dialog_load_mesh();});
     ngui->addButton("Save",[&](){this->open_dialog_save_mesh();});
   #endif
 
-    ngui->addNewGroup("Viewing Options",FormScreen::Layout::Vertical);
+    ngui->addGroup("Viewing Options");
     ngui->addButton("Center object",[&](){this->core.align_camera_center(this->data.V,this->data.F);});
     ngui->addButton("Snap canonical view",[&]()
     {
       this->snap_to_canonical_quaternion();
     });
-    ngui->addVariable(core.camera_zoom,"Zoom");
-    ngui->addVariable(core.orthographic,"Orthographic view");
+    ngui->addVariable("Zoom", core.camera_zoom);
+    ngui->addVariable("Orthographic view", core.orthographic);
 
-    ngui->addNewGroup("Draw options",FormScreen::Layout::Vertical);
+    ngui->addGroup("Draw options");
 
-    ngui->addVariable([&](bool checked)
+    ngui->addVariable<bool>("Face-based", [&](bool checked)
     {
       this->data.set_face_based(checked);
     },[&]()
     {
       return this->data.face_based;
-    }, "Face-based",false);
+    });
 
-    ngui->addVariable(core.show_texture,"Show texture");
+    ngui->addVariable("Show texture",core.show_texture);
 
-    ngui->addVariable([&](bool checked)
+    ngui->addVariable<bool>("Invert normals",[&](bool checked)
     {
       this->data.dirty |= ViewerData::DIRTY_NORMAL;
       this->core.invert_normals = checked;
     },[&]()
     {
       return this->core.invert_normals;
-    },
-      "Invert normals",false);
+    });
 
-    ngui->addVariable(core.show_overlay,"Show overlay");
-    ngui->addVariable(core.show_overlay_depth,"Show overlay depth");
-    ngui->addColorPicker(core.background_color,"Background");
-    ngui->addColorPicker(core.line_color,"Line color");
-    ngui->addVariable(core.shininess,"Shininess");
+    ngui->addVariable("Show overlay", core.show_overlay);
+    ngui->addVariable("Show overlay depth", core.show_overlay_depth);
+    ngui->addVariable("Background", (nanogui::Color &) core.background_color);
+    ngui->addVariable("Line color", (nanogui::Color &) core.line_color);
+    ngui->addVariable("Shininess", core.shininess);
 
-    ngui->addNewGroup("Overlays");
-    ngui->addVariable(core.show_lines,"Wireframe");
-    ngui->addVariable(core.show_faces,"Fill");
-    ngui->addVariable(core.show_vertid,"Show vertex labels");
-    ngui->addVariable(core.show_faceid,"Show faces labels");
+    ngui->addGroup("Overlays");
+    ngui->addVariable("Wireframe", core.show_lines);
+    ngui->addVariable("Fill", core.show_faces);
+    ngui->addVariable("Show vertex labels", core.show_vertid);
+    ngui->addVariable("Show faces labels", core.show_faceid);
 
-    ngui->layout();
+    screen->performLayout();
 
     core.init();
 
@@ -250,6 +250,7 @@ namespace viewer
   IGL_INLINE Viewer::Viewer()
   {
     ngui = nullptr;
+    screen = nullptr;
 
     // Temporary variables initialization
     down = false;
@@ -290,7 +291,6 @@ namespace viewer
 
   IGL_INLINE Viewer::~Viewer()
   {
-    if(!ngui) delete ngui;
   }
 
   IGL_INLINE void Viewer::shutdown_plugins()
@@ -646,7 +646,8 @@ namespace viewer
       if (plugins[i]->post_draw())
         break;
 
-    ngui->draw();
+    ngui->refresh();
+    screen->drawWidgets();
   }
 
   IGL_INLINE bool Viewer::save_scene()
@@ -787,8 +788,9 @@ namespace viewer
     glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
 
     // Initialize FormScreen
-    ngui = new nanogui::FormScreen();
-    ngui->init(window);
+    screen = new nanogui::Screen();
+    screen->initialize(window, false);
+    ngui = new nanogui::FormHelper(screen);
 
     __viewer = this;
 
@@ -860,6 +862,10 @@ namespace viewer
     core.shut();
 
     shutdown_plugins();
+    delete ngui;
+    //delete screen;
+    screen = nullptr;
+    ngui = nullptr;
 
     glfwDestroyWindow(window);
     glfwTerminate();
