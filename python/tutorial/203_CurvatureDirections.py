@@ -1,8 +1,12 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 
 V = igl.eigen.MatrixXd();
 F = igl.eigen.MatrixXi();
-igl.read_triangle_mesh("../tutorial/shared/fertility.off", V, F);
+igl.read_triangle_mesh("../../tutorial/shared/fertility.off", V, F);
 
 # Alternative discrete mean curvature
 HN = igl.eigen.MatrixXd()

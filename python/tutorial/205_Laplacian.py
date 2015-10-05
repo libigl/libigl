@@ -1,4 +1,9 @@
 from __future__ import print_function
+
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 import math
 
@@ -15,7 +20,7 @@ L = igl.eigen.SparseMatrixd()
 viewer = igl.viewer.Viewer()
 
 # Load a mesh in OFF format
-igl.readOFF("../tutorial/shared/cow.off", V, F)
+igl.readOFF("../../tutorial/shared/cow.off", V, F)
 
 # Compute Laplace-Beltrami operator: #V by #V
 igl.cotmatrix(V,F,L)

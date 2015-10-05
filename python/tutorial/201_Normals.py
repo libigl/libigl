@@ -1,5 +1,8 @@
-import igl
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
 
+import igl
 
 V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
@@ -22,7 +25,7 @@ def key_pressed(viewer, key, modifier):
     return False
 
 # Load a mesh in OFF format
-igl.readOFF("../tutorial/shared/fandisk.off", V, F);
+igl.readOFF("../../tutorial/shared/fandisk.off", V, F);
 
 # Compute per-face normals
 N_faces = igl.eigen.MatrixXd()

@@ -1,9 +1,13 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 
 V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
 
-igl.readOFF("../tutorial/shared/cheburashka.off",V,F)
+igl.readOFF("../../tutorial/shared/cheburashka.off",V,F)
 
 # Two fixed points
 # Left hand, left foot
