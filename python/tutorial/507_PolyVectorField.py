@@ -1,3 +1,7 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 import random
 from math import cos,sin,pi
@@ -101,8 +105,8 @@ def key_down(viewer, key, modifier):
 
 
 # Load a mesh in OBJ format
-igl.readOBJ("../tutorial/shared/lilium.obj", V, F)
-samples = readSamples("../tutorial/shared/lilium.samples.0.2")
+igl.readOBJ("../../tutorial/shared/lilium.obj", V, F)
+samples = readSamples("../../tutorial/shared/lilium.samples.0.2")
 
 # Compute local basis for faces
 igl.local_basis(V,F,B1,B2,B3)

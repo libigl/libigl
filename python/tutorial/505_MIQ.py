@@ -1,3 +1,7 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 from math import pi
 
@@ -181,7 +185,7 @@ def key_down(viewer, key, modifier):
     return False
 
 # Load a mesh in OFF format
-igl.readOFF("../tutorial/shared/3holes.off", V, F)
+igl.readOFF("../../tutorial/shared/3holes.off", V, F)
 
 # Compute face barycenters
 igl.barycenter(V, F, B)
