@@ -406,13 +406,16 @@ inline void igl::WindingNumberTree<Point>::print(const char * tab)
 }
 
 template <typename Point>
-inline double igl::WindingNumberTree<Point>::max_abs_winding_number(const Point & p) const
+inline double 
+igl::WindingNumberTree<Point>::max_abs_winding_number(const Point & /*p*/) const
 {
   return std::numeric_limits<double>::infinity();
 }
 
 template <typename Point>
-inline double igl::WindingNumberTree<Point>::max_simple_abs_winding_number(const Point & p) const
+inline double 
+igl::WindingNumberTree<Point>::max_simple_abs_winding_number(
+  const Point & /*p*/) const
 {
   using namespace std;
   return numeric_limits<double>::infinity();
