@@ -40,7 +40,12 @@ m.def("arap_precomputation", []
   igl::ARAPData & data
 )
 {
-  return igl::arap_precomputation(V,F,dim,b,data);
+  assert_is_VectorX("b",b);
+  Eigen::VectorXi bt;
+  if (b.size() != 0)
+    bt = b;
+
+  return igl::arap_precomputation(V,F,dim,bt,data);
 }, __doc_igl_arap,
 py::arg("V"), py::arg("F"), py::arg("dim"), py::arg("b"), py::arg("data"));
 

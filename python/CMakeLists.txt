@@ -72,11 +72,16 @@ endif(NOT APPLE)
 
 
 # include nanogui and dependencies
+
+set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
+set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
+set(NANOGUI_BUILD_SHARED OFF CACHE BOOL " " FORCE)
+
 add_subdirectory("../external/nanogui/" "nanogui")
 include_directories("../external/nanogui/include")
 include_directories("../external/nanogui/ext/glfw/include")
 include_directories("../external/nanogui/ext/nanovg/src")
-list(APPEND SHARED_LIBRARIES "nanogui" "glfw" ${OPENGL_LIBRARIES})
+list(APPEND SHARED_LIBRARIES "nanogui" ${OPENGL_LIBRARIES})
 
 # include comiso if available
 
