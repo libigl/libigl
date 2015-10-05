@@ -1,3 +1,7 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 from math import atan2,pi,cos,sin
 
@@ -86,7 +90,7 @@ def key_down(viewer, key, modifier):
     return False
 
 # Load a mesh in OFF format
-igl.readOFF("../tutorial/shared/bumpy.off", V, F);
+igl.readOFF("../../tutorial/shared/bumpy.off", V, F);
 
 # Threshold faces with high anisotropy
 b  = igl.eigen.MatrixXi([[0]])
