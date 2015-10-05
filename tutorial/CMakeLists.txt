@@ -12,9 +12,11 @@ endif(LIBIGL_USE_STATIC_LIBRARY)
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 IF(MSVC)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj") ### Enable parallel compilation for Visual Studio
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj /w") ### Enable parallel compilation for Visual Studio
+
   SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} )
   SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} )
+
 ELSE(MSVC)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") #### Libigl requires a modern C++ compiler that supports c++11
   SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../" )
@@ -84,16 +86,38 @@ IF(LIBCOMISO_FOUND)
   list(GET LIBCOMISO_INCLUDE_DIRS 0 COMISO_ROOT)
   # message( FATAL_ERROR "${COMISO_ROOT}" )
 
+  if(APPLE)
+    find_library(accelerate_library Accelerate)
+    list(APPEND SHARED_LIBRARIES "CoMISo" ${accelerate_library})
+  endif(APPLE)
+
+  if(MSVC)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SCL_SECURE_NO_DEPRECATE")
+    #link_directories("${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/")
+    list(APPEND SHARED_LIBRARIES "CoMISo" "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/libopenblas.dll.a.lib")
+  endif(MSVC)
+
+
   include_directories("${COMISO_ROOT}/CoMISo/ext/gmm-4.2/include")
   include_directories("${COMISO_ROOT}/")
   add_subdirectory("${COMISO_ROOT}/CoMISo/" "CoMISo")
 
-  if(APPLE)
-    find_library(accelerate_library Accelerate)
-    list(APPEND SHARED_LIBRARIES "CoMISo" ${accelerate_library})
-  else(APPLE) #APPLE
-    list(APPEND SHARED_LIBRARIES "CoMISo")
-  endif(APPLE)
+  if(MSVC)
+    # Copy the dll
+    add_custom_target(Copy-CoMISo-DLL        # Adds a post-build event to MyTest
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libopenblas.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libopenblas.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgcc_s_seh-1.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libgcc_s_seh-1.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgfortran-3.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libgfortran-3.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libquadmath-0.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libquadmath-0.dll")
+  endif(MSVC)
 
 ENDIF(LIBCOMISO_FOUND)
 
