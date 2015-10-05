@@ -43,7 +43,7 @@ if(LIBCOMISO_INCLUDE_DIR)
       ${LIBCOMISO_INCLUDE_DIR}/CoMISo/Config
       ${LIBCOMISO_INCLUDE_DIR}/CoMISo/Utils
       ${LIBCOMISO_INCLUDE_DIR}/CoMISo/QtWidgets
-      ${LIBCOMISO_INCLUDE_DIR}/CoMISo/gmm/include
+      ${LIBCOMISO_INCLUDE_DIR}/CoMISo/ext/gmm-4.2/include
       )
 
    #message("${LIBCOMISO_INCLUDE_DIRS}")
