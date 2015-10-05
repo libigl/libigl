@@ -1,16 +1,23 @@
 #include "order_facets_around_edge.h"
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
-namespace igl {
-    namespace cgal {
-        namespace order_facets_around_edges_helper {
+namespace igl
+{
+    namespace cgal
+    {
+        namespace order_facets_around_edges_helper
+        {
             template<typename T>
-            std::vector<size_t> index_sort(const std::vector<T>& data) {
+            std::vector<size_t> index_sort(const std::vector<T>& data)
+            {
                 const size_t len = data.size();
                 std::vector<size_t> order(len);
-                for (size_t i=0; i<len; i++) order[i] = i;
-
-                auto comp = [&](size_t i, size_t j) {
+                for (size_t i=0; i<len; i++) 
+                {
+                    order[i] = i;
+                }
+                auto comp = [&](size_t i, size_t j) 
+                {
                     return data[i] < data[j];
                 };
                 std::sort(order.begin(), order.end(), comp);
@@ -28,10 +35,11 @@ template<
 void igl::cgal::order_facets_around_edge(
     const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedF>& F,
-    size_t s, size_t d, 
+    size_t s,
+    size_t d, 
     const std::vector<int>& adj_faces,
-    Eigen::PlainObjectBase<DerivedI>& order) {
-
+    Eigen::PlainObjectBase<DerivedI>& order)
+{
     using namespace igl::cgal::order_facets_around_edges_helper;
 
     // Although we only need exact predicates in the algorithm,
@@ -41,37 +49,42 @@ void igl::cgal::order_facets_around_edge(
     typedef K::Point_3 Point_3;
     typedef K::Plane_3 Plane_3;
 
-    auto get_face_index = [&](int adj_f)->size_t{
+    auto get_face_index = [&](int adj_f)->size_t
+    {
         return abs(adj_f) - 1;
     };
 
-    auto get_opposite_vertex = [&](size_t fid)->size_t {
-        if (F(fid, 0) != s && F(fid, 0) != d) return F(fid, 0);
-        if (F(fid, 1) != s && F(fid, 1) != d) return F(fid, 1);
-        if (F(fid, 2) != s && F(fid, 2) != d) return F(fid, 2);
+    auto get_opposite_vertex = [&](size_t fid)->size_t
+    {
+        typedef typename DerivedF::Scalar Index;
+        if (F(fid, 0) != (Index)s && F(fid, 0) != (Index)d) return F(fid, 0);
+        if (F(fid, 1) != (Index)s && F(fid, 1) != (Index)d) return F(fid, 1);
+        if (F(fid, 2) != (Index)s && F(fid, 2) != (Index)d) return F(fid, 2);
         assert(false);
         return -1;
     };
 
     // Handle base cases
-    if (adj_faces.size() == 0) {
+    if (adj_faces.size() == 0) 
+    {
         order.resize(0, 1);
         return;
-    } else if (adj_faces.size() == 1) {
+    } else if (adj_faces.size() == 1)
+    {
         order.resize(1, 1);
         order(0, 0) = 0;
         return;
-    } else if (adj_faces.size() == 2) {
-        const size_t o1 =
-            get_opposite_vertex(get_face_index(adj_faces[0]));
-        const size_t o2 =
-            get_opposite_vertex(get_face_index(adj_faces[1]));
+    } else if (adj_faces.size() == 2)
+    {
+        const size_t o1 = get_opposite_vertex(get_face_index(adj_faces[0]));
+        const size_t o2 = get_opposite_vertex(get_face_index(adj_faces[1]));
         const Point_3 ps(V(s, 0), V(s, 1), V(s, 2));
         const Point_3 pd(V(d, 0), V(d, 1), V(d, 2));
         const Point_3 p1(V(o1, 0), V(o1, 1), V(o1, 2));
         const Point_3 p2(V(o2, 0), V(o2, 1), V(o2, 2));
         order.resize(2, 1);
-        switch (CGAL::orientation(ps, pd, p1, p2)) {
+        switch (CGAL::orientation(ps, pd, p1, p2))
+        {
             case CGAL::POSITIVE:
                 order(0, 0) = 1;
                 order(1, 0) = 0;
@@ -82,19 +95,27 @@ void igl::cgal::order_facets_around_edge(
                 break;
             case CGAL::COPLANAR:
                 {
-                    Plane_3 P1(ps, pd, p1);
-                    Plane_3 P2(ps, pd, p2);
-                    if (P1.orthogonal_direction() == P2.orthogonal_direction()){
-                        // Duplicated face, use index to break tie.
-                        order(0, 0) = adj_faces[0] < adj_faces[1] ? 0:1;
-                        order(1, 0) = adj_faces[0] < adj_faces[1] ? 1:0;
-                    } else {
-                        // Coplanar faces, one on each side of the edge.
-                        // It is equally valid to order them (0, 1) or (1, 0).
-                        // I cannot think of any reason to prefer one to the
-                        // other.  So just use (0, 1) ordering by default.
-                        order(0, 0) = 0;
-                        order(1, 0) = 1;
+                    switch (CGAL::coplanar_orientation(ps, pd, p1, p2)) {
+                        case CGAL::POSITIVE:
+                            // Duplicated face, use index to break tie.
+                            order(0, 0) = adj_faces[0] < adj_faces[1] ? 0:1;
+                            order(1, 0) = adj_faces[0] < adj_faces[1] ? 1:0;
+                            break;
+                        case CGAL::NEGATIVE:
+                            // Coplanar faces, one on each side of the edge.
+                            // It is equally valid to order them (0, 1) or (1, 0).
+                            // I cannot think of any reason to prefer one to the
+                            // other.  So just use (0, 1) ordering by default.
+                            order(0, 0) = 0;
+                            order(1, 0) = 1;
+                            break;
+                        case CGAL::COLLINEAR:
+                            std::cerr << "Degenerated triangle detected." <<
+                                std::endl;
+                            assert(false);
+                            break;
+                        default:
+                            assert(false);
                     }
                 }
                 break;
@@ -105,8 +126,7 @@ void igl::cgal::order_facets_around_edge(
     }
 
     const size_t num_adj_faces = adj_faces.size();
-    const size_t o = get_opposite_vertex(
-            get_face_index(adj_faces[0]));
+    const size_t o = get_opposite_vertex( get_face_index(adj_faces[0]));
     const Point_3 p_s(V(s, 0), V(s, 1), V(s, 2));
     const Point_3 p_d(V(d, 0), V(d, 1), V(d, 2));
     const Point_3 p_o(V(o, 0), V(o, 1), V(o, 2));
@@ -114,9 +134,9 @@ void igl::cgal::order_facets_around_edge(
     assert(!separator.is_degenerate());
 
     std::vector<Point_3> opposite_vertices;
-    for (size_t i=0; i<num_adj_faces; i++) {
-        const size_t o = get_opposite_vertex(
-                get_face_index(adj_faces[i]));
+    for (size_t i=0; i<num_adj_faces; i++)
+    {
+        const size_t o = get_opposite_vertex( get_face_index(adj_faces[i]));
         opposite_vertices.emplace_back(
                 V(o, 0), V(o, 1), V(o, 2));
     }
@@ -131,7 +151,8 @@ void igl::cgal::order_facets_around_edge(
     std::vector<size_t> tie_positive_oriented_index;
     std::vector<size_t> tie_negative_oriented_index;
 
-    for (size_t i=0; i<num_adj_faces; i++) {
+    for (size_t i=0; i<num_adj_faces; i++)
+    {
         const int f = adj_faces[i];
         const Point_3& p_a = opposite_vertices[i];
         auto orientation = separator.oriented_side(p_a);
@@ -146,17 +167,21 @@ void igl::cgal::order_facets_around_edge(
                 break;
             case CGAL::ON_ORIENTED_BOUNDARY:
                 {
-                    const Plane_3 other(p_s, p_d, p_a);
-                    const auto target_dir = separator.orthogonal_direction();
-                    const auto query_dir = other.orthogonal_direction();
-                    if (target_dir == query_dir) {
-                        tie_positive_oriented.push_back(f);
-                        tie_positive_oriented_index.push_back(i);
-                    } else if (target_dir == -query_dir) {
-                        tie_negative_oriented.push_back(f);
-                        tie_negative_oriented_index.push_back(i);
-                    } else {
-                        assert(false);
+                    auto inplane_orientation = CGAL::coplanar_orientation(
+                            p_s, p_d, p_o, p_a);
+                    switch (inplane_orientation) {
+                        case CGAL::POSITIVE:
+                            tie_positive_oriented.push_back(f);
+                            tie_positive_oriented_index.push_back(i);
+                            break;
+                        case CGAL::NEGATIVE:
+                            tie_negative_oriented.push_back(f);
+                            tie_negative_oriented_index.push_back(i);
+                            break;
+                        case CGAL::COLLINEAR:
+                        default:
+                            assert(false);
+                            break;
                     }
                 }
                 break;
@@ -169,10 +194,8 @@ void igl::cgal::order_facets_around_edge(
     Eigen::PlainObjectBase<DerivedI> positive_order, negative_order;
     order_facets_around_edge(V, F, s, d, positive_side, positive_order);
     order_facets_around_edge(V, F, s, d, negative_side, negative_order);
-    std::vector<size_t> tie_positive_order =
-        index_sort(tie_positive_oriented);
-    std::vector<size_t> tie_negative_order =
-        index_sort(tie_negative_oriented);
+    std::vector<size_t> tie_positive_order = index_sort(tie_positive_oriented);
+    std::vector<size_t> tie_negative_order = index_sort(tie_negative_oriented);
 
     // Copy results into order vector.
     const size_t tie_positive_size = tie_positive_oriented.size();
@@ -180,28 +203,30 @@ void igl::cgal::order_facets_around_edge(
     const size_t positive_size = positive_order.size();
     const size_t negative_size = negative_order.size();
 
-    order.resize(tie_positive_size + positive_size +
-            tie_negative_size + negative_size, 1);
+    order.resize(
+      tie_positive_size + positive_size + tie_negative_size + negative_size,1);
 
     size_t count=0;
-    for (size_t i=0; i<tie_positive_size; i++) {
-        order(count+i, 0) =
-            tie_positive_oriented_index[tie_positive_order[i]];
+    for (size_t i=0; i<tie_positive_size; i++)
+    {
+        order(count+i, 0) = tie_positive_oriented_index[tie_positive_order[i]];
     }
     count += tie_positive_size;
 
-    for (size_t i=0; i<negative_size; i++) {
+    for (size_t i=0; i<negative_size; i++) 
+    {
         order(count+i, 0) = negative_side_index[negative_order(i, 0)];
     }
     count += negative_size;
 
-    for (size_t i=0; i<tie_negative_size; i++) {
-        order(count+i, 0) =
-            tie_negative_oriented_index[tie_negative_order[i]];
+    for (size_t i=0; i<tie_negative_size; i++)
+    {
+        order(count+i, 0) = tie_negative_oriented_index[tie_negative_order[i]];
     }
     count += tie_negative_size;
 
-    for (size_t i=0; i<positive_size; i++) {
+    for (size_t i=0; i<positive_size; i++)
+    {
         order(count+i, 0) = positive_side_index[positive_order(i, 0)];
     }
     count += positive_size;
@@ -209,19 +234,22 @@ void igl::cgal::order_facets_around_edge(
 
     // Find the correct start point.
     size_t start_idx = 0;
-    for (size_t i=0; i<num_adj_faces; i++) {
+    for (size_t i=0; i<num_adj_faces; i++)
+    {
         const Point_3& p_a = opposite_vertices[order(i, 0)];
         const Point_3& p_b =
             opposite_vertices[order((i+1)%num_adj_faces, 0)];
         auto orientation = CGAL::orientation(p_s, p_d, p_a, p_b);
-        if (orientation == CGAL::POSITIVE) {
+        if (orientation == CGAL::POSITIVE)
+        {
             // Angle between triangle (p_s, p_d, p_a) and (p_s, p_d, p_b) is
             // more than 180 degrees.
             start_idx = (i+1)%num_adj_faces;
             break;
         } else if (orientation == CGAL::COPLANAR &&
                 Plane_3(p_s, p_d, p_a).orthogonal_direction() !=
-                Plane_3(p_s, p_d, p_b).orthogonal_direction()) {
+                Plane_3(p_s, p_d, p_b).orthogonal_direction())
+        {
             // All 4 points are coplanar, but p_a and p_b are on each side of
             // the edge (p_s, p_d).  This means the angle between triangle
             // (p_s, p_d, p_a) and (p_s, p_d, p_b) is exactly 180 degrees.
@@ -230,7 +258,8 @@ void igl::cgal::order_facets_around_edge(
         }
     }
     DerivedI circular_order = order;
-    for (size_t i=0; i<num_adj_faces; i++) {
+    for (size_t i=0; i<num_adj_faces; i++)
+    {
         order(i, 0) = circular_order((start_idx + i)%num_adj_faces, 0);
     }
 }
@@ -243,31 +272,55 @@ IGL_INLINE
 void igl::cgal::order_facets_around_edge(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
-        size_t s, size_t d, 
+        size_t s,
+        size_t d, 
         const std::vector<int>& adj_faces,
         const Eigen::PlainObjectBase<DerivedV>& pivot_point,
-        Eigen::PlainObjectBase<DerivedI>& order) {
+        Eigen::PlainObjectBase<DerivedI>& order)
+{
 
     assert(V.cols() == 3);
     assert(F.cols() == 3);
-    auto signed_index_to_index = [&](int signed_idx) {
+    auto signed_index_to_index = [&](int signed_idx)
+    {
         return abs(signed_idx) -1;
     };
-    auto get_opposite_vertex_index = [&](size_t fid) {
-        if (F(fid, 0) != s && F(fid, 0) != d) return F(fid, 0);
-        if (F(fid, 1) != s && F(fid, 1) != d) return F(fid, 1);
-        if (F(fid, 2) != s && F(fid, 2) != d) return F(fid, 2);
+    auto get_opposite_vertex_index = [&](size_t fid)
+    {
+        typedef typename DerivedF::Scalar Index;
+        if (F(fid, 0) != (Index)s && F(fid, 0) != (Index)d) return F(fid, 0);
+        if (F(fid, 1) != (Index)s && F(fid, 1) != (Index)d) return F(fid, 1);
+        if (F(fid, 2) != (Index)s && F(fid, 2) != (Index)d) return F(fid, 2);
         assert(false);
         // avoid warning
         return -1;
     };
 
+    {
+        // Check if s, d and pivot are collinear.
+        typedef CGAL::Exact_predicates_exact_constructions_kernel K;
+        K::Point_3 ps(V(s,0), V(s,1), V(s,2));
+        K::Point_3 pd(V(d,0), V(d,1), V(d,2));
+        K::Point_3 pp(pivot_point(0,0), pivot_point(0,1), pivot_point(0,2));
+        if (CGAL::collinear(ps, pd, pp)) {
+            throw "Pivot point is collinear with the outer edge!";
+        }
+    }
+
     const size_t N = adj_faces.size();
     const size_t num_faces = N + 1; // N adj faces + 1 pivot face
 
+    // Because face indices are used for tie breaking, the original face indices
+    // in the new faces array must be ascending.
+    auto comp = [&](int i, int j) {
+        return signed_index_to_index(i) < signed_index_to_index(j);
+    };
+    std::vector<int> ordered_adj_faces(adj_faces);
+    std::sort(ordered_adj_faces.begin(), ordered_adj_faces.end(), comp);
+
     DerivedV vertices(num_faces + 2, 3);
     for (size_t i=0; i<N; i++) {
-        const size_t fid = signed_index_to_index(adj_faces[i]);
+        const size_t fid = signed_index_to_index(ordered_adj_faces[i]);
         vertices.row(i) = V.row(get_opposite_vertex_index(fid));
     }
     vertices.row(N  ) = pivot_point;
@@ -275,8 +328,9 @@ void igl::cgal::order_facets_around_edge(
     vertices.row(N+2) = V.row(d);
 
     DerivedF faces(num_faces, 3);
-    for (size_t i=0; i<N; i++) {
-        if (adj_faces[i] < 0) {
+    for (size_t i=0; i<N; i++)
+    {
+        if (ordered_adj_faces[i] < 0) {
             faces(i,0) = N+1; // s
             faces(i,1) = N+2; // d
             faces(i,2) = i  ;
@@ -292,10 +346,13 @@ void igl::cgal::order_facets_around_edge(
     faces(N, 2) = N;
 
     std::vector<int> adj_faces_with_pivot(num_faces);
-    for (size_t i=0; i<num_faces; i++) {
-        if (faces(i,0) == N+1 && faces(i,1) == N+2) {
+    for (size_t i=0; i<num_faces; i++)
+    {
+        if (faces(i,0) == N+1 && faces(i,1) == N+2)
+        {
             adj_faces_with_pivot[i] = int(i+1) * -1;
-        } else {
+        } else
+        {
             adj_faces_with_pivot[i] = int(i+1);
         }
     }
@@ -308,15 +365,18 @@ void igl::cgal::order_facets_around_edge(
     assert(order_with_pivot.size() == num_faces);
     order.resize(N);
     size_t pivot_index = num_faces + 1;
-    for (size_t i=0; i<num_faces; i++) {
-        if (order_with_pivot[i] == N) {
+    for (size_t i=0; i<num_faces; i++)
+    {
+        if (order_with_pivot[i] == N)
+        {
             pivot_index = i;
             break;
         }
     }
     assert(pivot_index < num_faces);
 
-    for (size_t i=0; i<N; i++) {
+    for (size_t i=0; i<N; i++)
+    {
         order[i] = order_with_pivot[(pivot_index+i+1)%num_faces];
     }
 }
