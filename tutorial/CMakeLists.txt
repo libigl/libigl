@@ -80,9 +80,13 @@ list(APPEND SHARED_LIBRARIES "nanogui")
 # NOTE: this cmakefile works only with the
 # comiso available here: https://github.com/libigl/CoMISo
 IF(LIBCOMISO_FOUND)
-  include_directories("../../CoMISo/ext/gmm-4.2/include")
-  include_directories("../../")
-  add_subdirectory("../../CoMISo/" "CoMISo")
+
+  list(GET LIBCOMISO_INCLUDE_DIRS 0 COMISO_ROOT)
+  # message( FATAL_ERROR "${COMISO_ROOT}" )
+
+  include_directories("${COMISO_ROOT}/CoMISo/ext/gmm-4.2/include")
+  include_directories("${COMISO_ROOT}/")
+  add_subdirectory("${COMISO_ROOT}/CoMISo/" "CoMISo")
 
   if(APPLE)
     find_library(accelerate_library Accelerate)
