@@ -1,3 +1,7 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 
 V = igl.eigen.MatrixXd()
@@ -5,7 +9,7 @@ F = igl.eigen.MatrixXi()
 C = igl.eigen.MatrixXd()
 
 # Load a mesh in OFF format
-igl.readOFF("../tutorial/shared/screwdriver.off", V, F)
+igl.readOFF("../../tutorial/shared/screwdriver.off", V, F)
 
 # Plot the mesh
 viewer = igl.viewer.Viewer()

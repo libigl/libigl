@@ -1,3 +1,7 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 
 V1 = igl.eigen.MatrixXd()
@@ -25,8 +29,8 @@ def key_pressed(viewer, key, modifier):
 
 
 #  Load two meshes
-igl.readOFF("../tutorial/shared/bumpy.off", V1, F1);
-igl.readOFF("../tutorial/shared/fertility.off", V2, F2);
+igl.readOFF("../../tutorial/shared/bumpy.off", V1, F1);
+igl.readOFF("../../tutorial/shared/fertility.off", V2, F2);
 
 print("1 Switch to bump mesh")
 print("2 Switch to fertility mesh")

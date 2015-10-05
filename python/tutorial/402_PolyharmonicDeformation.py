@@ -1,3 +1,7 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 
 global z_max, z_dir, k, resolve, V, U, Z, F, b, bc
@@ -43,17 +47,15 @@ def key_down(viewer, key, mods):
     elif key == ord('.'):
         k = k + 1
         k = (4 if k>4 else k)
-        print k
         resolve = True
     elif key == ord(','):
         k = k - 1
         k = (1 if k<1 else k)
-        print k
         resolve = True
     return True
 
 
-igl.readOBJ("../tutorial/shared/bump-domain.obj",V,F)
+igl.readOBJ("../../tutorial/shared/bump-domain.obj",V,F)
 U = igl.eigen.MatrixXd(V)
 
 # Find boundary vertices outside annulus

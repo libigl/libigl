@@ -1,3 +1,7 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 from math import sin,cos,pi
 
@@ -51,9 +55,9 @@ def key_down(viewer, key, mods):
         return True
     return False
 
-igl.readOFF("../tutorial/shared/decimated-knight.off",V,F)
+igl.readOFF("../../tutorial/shared/decimated-knight.off",V,F)
 U = igl.eigen.MatrixXd(V)
-igl.readDMAT("../tutorial/shared/decimated-knight-selection.dmat",S)
+igl.readDMAT("../../tutorial/shared/decimated-knight-selection.dmat",S)
 
 # Vertices in selection
 

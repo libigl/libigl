@@ -1,10 +1,14 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 
 V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
 
 # Load a mesh in OFF format
-igl.readOFF("../tutorial/shared/bunny.off", V, F)
+igl.readOFF("../../tutorial/shared/bunny.off", V, F)
 
 # Find the bounding box
 m = V.colwiseMinCoeff()

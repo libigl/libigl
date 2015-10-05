@@ -1,3 +1,7 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 
 b = igl.eigen.MatrixXi()
@@ -43,7 +47,7 @@ def key_down(viewer, key, mod):
 V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
 
-igl.readOFF("../tutorial/shared/cheburashka.off",V,F)
+igl.readOFF("../../tutorial/shared/cheburashka.off",V,F)
 
 # Plot the mesh
 viewer = igl.viewer.Viewer()

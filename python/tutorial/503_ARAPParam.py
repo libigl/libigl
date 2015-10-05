@@ -1,3 +1,7 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 
 V = igl.eigen.MatrixXd()
@@ -27,7 +31,7 @@ def key_down(viewer, key, modifier):
     return False
 
 # Load a mesh in OFF format
-igl.readOFF("../tutorial/shared/camelhead.off", V, F)
+igl.readOFF("../../tutorial/shared/camelhead.off", V, F)
 
 # Compute the initial solution for ARAP (harmonic parametrization)
 bnd = igl.eigen.MatrixXi()

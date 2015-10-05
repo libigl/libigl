@@ -1,3 +1,7 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 
 global bc_frac, bc_dir,deformation_field, V, U, V_bc, U_bc, F, b
@@ -47,12 +51,12 @@ def key_down(viewer, key, mods):
     return False
 
 
-igl.readOBJ("../tutorial/shared/decimated-max.obj",V,F)
+igl.readOBJ("../../tutorial/shared/decimated-max.obj",V,F)
 U = igl.eigen.MatrixXd(V)
 
 # S(i) = j: j<0 (vertex i not in handle), j >= 0 (vertex i in handle j)
 S = igl.eigen.MatrixXd()
-igl.readDMAT("../tutorial/shared/decimated-max-selection.dmat",S)
+igl.readDMAT("../../tutorial/shared/decimated-max-selection.dmat",S)
 
 S = S.castint()
 

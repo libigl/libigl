@@ -1,3 +1,7 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 
 V = igl.eigen.MatrixXd()
@@ -8,7 +12,7 @@ c = 0
 bbd = 1.0
 twod = False
 
-if not igl.read_triangle_mesh("../tutorial/shared/beetle.off",V,F):
+if not igl.read_triangle_mesh("../../tutorial/shared/beetle.off",V,F):
     print("failed to load mesh")
 
 twod = V.col(2).minCoeff() == V.col(2).maxCoeff()
@@ -32,7 +36,7 @@ viewer = igl.viewer.Viewer()
 
 def key_down(viewer,key,mod):
     global U, c
-    
+
     if key == ord(' '):
         U = U.rightCols(k)
 

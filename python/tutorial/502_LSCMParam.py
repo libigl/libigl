@@ -1,3 +1,7 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 
 V = igl.eigen.MatrixXd()
@@ -17,21 +21,22 @@ def key_down(viewer, key, modifier):
     return False
 
 # Load a mesh in OFF format
-igl.readOFF("../tutorial/shared/camelhead.off", V, F)
+igl.readOFF("../../tutorial/shared/camelhead.off", V, F);
 
-# Find the open boundary
+# Fix two points on the boundary
 bnd = igl.eigen.MatrixXi()
+b   = igl.eigen.MatrixXi(2,1)
+
 igl.boundary_loop(F,bnd)
+b[0] = bnd[0]
+b[1] = bnd[int(bnd.size()/2)]
+bc = igl.eigen.MatrixXd([[0,0],[1,0]])
 
-# Map the boundary to a circle, preserving edge proportions
-bnd_uv = igl.eigen.MatrixXd()
-igl.map_vertices_to_circle(V,bnd,bnd_uv)
+# LSCM parametrization
+igl.lscm(V,F,b,bc,V_uv)
 
-# Harmonic parametrization for the internal vertices
-igl.harmonic(V,F,bnd,bnd_uv,1,V_uv)
-
-# Scale UV to make the texture more clear
-V_uv *= 5;
+# Scale the uv
+V_uv *= 5
 
 # Plot the mesh
 viewer = igl.viewer.Viewer()

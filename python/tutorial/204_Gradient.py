@@ -1,14 +1,18 @@
+# Add the igl library to the modules search path
+import sys, os
+sys.path.insert(0, os.getcwd() + "/../")
+
 import igl
 
 V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
 
 # Load a mesh in OFF format
-igl.readOFF("../tutorial/shared/cheburashka.off", V, F)
+igl.readOFF("../../tutorial/shared/cheburashka.off", V, F)
 
 # Read scalar function values from a file, U: #V by 1
 U = igl.eigen.MatrixXd()
-igl.readDMAT("../tutorial/shared/cheburashka-scalar.dmat",U)
+igl.readDMAT("../../tutorial/shared/cheburashka-scalar.dmat",U)
 U = U.col(0)
 
 # Compute gradient operator: #F*3 by #V
