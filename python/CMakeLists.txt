@@ -19,17 +19,21 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "MinSizeRel" "RelWithDebInfo")
 endif()
 
-find_package(OPENGL REQUIRED)
+find_package(OPENGL QUIET)
+
+if (OPENGL_FOUND)
+  add_definitions(-DPY_VIEWER)
+endif (OPENGL_FOUND)
 
 # Force a specific python version
 # SET(PYTHON_LIBRARIES "D:/Python34/libs/python34.lib")
 # SET(PYTHON_INCLUDE_DIR "D:/Python34/include")
 
 # Force a specific python version
-SET(PYTHON_LIBRARIES "/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/lib/libpython3.5m.dylib")
-SET(PYTHON_INCLUDE_DIR "/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/include/python3.5m")
+# SET(PYTHON_LIBRARIES "/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/lib/libpython3.5m.dylib")
+# SET(PYTHON_INCLUDE_DIR "/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/include/python3.5m")
 
-set(Python_ADDITIONAL_VERSIONS 3.4.3 3.5 3.6)
+set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
 find_package(PythonLibs REQUIRED)
 find_package(PythonInterp REQUIRED)
 
@@ -63,26 +67,29 @@ include_directories(${PROJECT_SOURCE_DIR}/../external/nanogui/ext/eigen)
 ## include libigl
 include_directories(${PROJECT_SOURCE_DIR}/../include)
 
-## include glew
-if(NOT APPLE)
-  find_package(GLEW REQUIRED)
-  include_directories( ${GLEW_INCLUDE_DIR} )
-	set(SHARED_SOURCES ${SHARED_SOURCES} ${GLEW_SOURCES})
-endif(NOT APPLE)
+if (OPENGL_FOUND)
+
+  ## include glew
+  if(NOT APPLE)
+    find_package(GLEW REQUIRED)
+    include_directories( ${GLEW_INCLUDE_DIR} )
+  	set(SHARED_SOURCES ${SHARED_SOURCES} ${GLEW_SOURCES})
+  endif(NOT APPLE)
 
 
-# include nanogui and dependencies
+  # include nanogui and dependencies
 
-set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
-set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
-set(NANOGUI_BUILD_SHARED OFF CACHE BOOL " " FORCE)
+  set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
+  set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
+  set(NANOGUI_BUILD_SHARED OFF CACHE BOOL " " FORCE)
 
-add_subdirectory("../external/nanogui/" "nanogui")
-include_directories("../external/nanogui/include")
-include_directories("../external/nanogui/ext/glfw/include")
-include_directories("../external/nanogui/ext/nanovg/src")
-list(APPEND SHARED_LIBRARIES "nanogui" ${OPENGL_LIBRARIES})
+  add_subdirectory("../external/nanogui/" "nanogui")
+  include_directories("../external/nanogui/include")
+  include_directories("../external/nanogui/ext/glfw/include")
+  include_directories("../external/nanogui/ext/nanovg/src")
+  list(APPEND SHARED_LIBRARIES "nanogui" ${OPENGL_LIBRARIES})
 
+endif (OPENGL_FOUND)
 # include comiso if available
 
 find_package(LIBCOMISOH QUIET)
@@ -91,6 +98,9 @@ find_package(LIBCOMISOH QUIET)
 # NOTE: this cmakefile works only with the
 # comiso available here: https://github.com/libigl/CoMISo
 IF(LIBCOMISO_FOUND)
+
+  add_definitions(-DPY_COMISO)
+  list(APPEND SHARED_SOURCES "py_igl_comiso.cpp")
 
   list(GET LIBCOMISO_INCLUDE_DIRS 0 COMISO_ROOT)
   # message( FATAL_ERROR "${COMISO_ROOT}" )
@@ -119,16 +129,16 @@ IF(LIBCOMISO_FOUND)
     add_custom_target(Copy-CoMISo-DLL        # Adds a post-build event to MyTest
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libopenblas.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/../libopenblas.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libopenblas.dll"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgcc_s_seh-1.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/../libgcc_s_seh-1.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libgcc_s_seh-1.dll"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgfortran-3.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/../libgfortran-3.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libgfortran-3.dll"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libquadmath-0.dll"
-      "${CMAKE_CURRENT_BINARY_DIR}/../libquadmath-0.dll")
+        "${CMAKE_CURRENT_BINARY_DIR}/libquadmath-0.dll")
   endif(MSVC)
 
 ENDIF(LIBCOMISO_FOUND)
@@ -150,10 +160,11 @@ if(APPLE)
 	set(CMAKE_SHARED_LINKER_FLAGS "-framework OpenGL -framework Cocoa")
 endif (APPLE) #APPLE
 #
-# if(UNIX AND NOT APPLE)
-#   set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -lGL -lGLU -lrt -lX11 -lXxf86vm -lXrandr -lpthread -lXi  -lXcursor -lXinerama ")
-#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx")
-# endif(UNIX AND NOT APPLE)
+if(UNIX AND NOT APPLE)
+  if (OPENGL_FOUND)
+    set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -lGL -lGLU -lrt -lX11 -lXxf86vm -lXrandr -lpthread -lXi  -lXcursor -lXinerama ")
+  endif (OPENGL_FOUND)
+endif(UNIX AND NOT APPLE)
 
 
 set_target_properties(igl PROPERTIES PREFIX "")
