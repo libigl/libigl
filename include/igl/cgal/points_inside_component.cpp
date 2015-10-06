@@ -1,4 +1,11 @@
-#include "is_inside.h"
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2015 Qingnan Zhou <qnzhou@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
+#include "points_inside_component.h"
 
 #include <cassert>
 #include <list>
@@ -15,7 +22,7 @@
 
 namespace igl {
     namespace cgal {
-        namespace is_inside_helper {
+        namespace points_inside_component_helper {
             typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
             typedef Kernel::Ray_3 Ray_3;
             typedef Kernel::Point_3 Point_3;
@@ -165,7 +172,7 @@ namespace igl {
                 } else {
                     throw "The input mesh does not represent a valid volume";
                 }
-                assert(false);
+                throw "The input mesh does not represent a valid volume";
                 return false;
             }
 
@@ -203,7 +210,7 @@ namespace igl {
                                 coplanar++;
                                 break;
                             default:
-                                assert(false);
+                                throw "Unknown plane-point orientation";
                         }
                     }
                     auto query_orientation = separator.oriented_side(query);
@@ -221,7 +228,9 @@ namespace igl {
                     for (size_t j=i+1; j<num_adj_vertices; j++) {
                         const size_t vj = adj_vertices[j];
                         Plane_3 separator(p, adj_points[i], adj_points[j]);
-                        assert(!separator.is_degenerate());
+                        if (separator.is_degenerate()) {
+                            throw "Input mesh contains degenerated faces";
+                        }
                         if (is_on_exterior(separator)) {
                             d = vi;
                             assert(!CGAL::collinear(p, adj_points[i], query));
@@ -251,60 +260,27 @@ namespace igl {
                 const Point_3 v1(V(f[1], 0), V(f[1], 1), V(f[1], 2));
                 const Point_3 v2(V(f[2], 0), V(f[2], 1), V(f[2], 2));
                 auto result = CGAL::orientation(v0, v1, v2, query);
-                assert(result != CGAL::COPLANAR);
+                if (result == CGAL::COPLANAR) {
+                    throw "Cannot determine inside/outside because query point lies exactly on the input surface.";
+                }
                 return result == CGAL::NEGATIVE;
             }
         }
     }
 }
 
-template <typename DerivedV, typename DerivedF, typename DerivedI>
-IGL_INLINE bool igl::cgal::is_inside(
-        const Eigen::PlainObjectBase<DerivedV>& V1,
-        const Eigen::PlainObjectBase<DerivedF>& F1,
-        const Eigen::PlainObjectBase<DerivedI>& I1,
-        const Eigen::PlainObjectBase<DerivedV>& V2,
-        const Eigen::PlainObjectBase<DerivedF>& F2,
-        const Eigen::PlainObjectBase<DerivedI>& I2) {
-    assert(F1.rows() > 0);
-    assert(I1.rows() > 0);
-    assert(F2.rows() > 0);
-    assert(I2.rows() > 0);
-
-    const Eigen::Vector3i& f = F1.row(I1(0, 0));
-    const Eigen::Matrix<typename DerivedV::Scalar, 1, 3> query(
-            (V1(f[0],0) + V1(f[1],0) + V1(f[2],0))/3.0,
-            (V1(f[0],1) + V1(f[1],1) + V1(f[2],1))/3.0,
-            (V1(f[0],2) + V1(f[1],2) + V1(f[2],2))/3.0);
-    Eigen::VectorXi inside;
-    igl::cgal::is_inside(V2, F2, I2, query, inside);
-    assert(inside.size() == 1);
-    return inside[0];
-}
-
-template<typename DerivedV, typename DerivedF>
-IGL_INLINE bool igl::cgal::is_inside(
-        const Eigen::PlainObjectBase<DerivedV>& V1,
-        const Eigen::PlainObjectBase<DerivedF>& F1,
-        const Eigen::PlainObjectBase<DerivedV>& V2,
-        const Eigen::PlainObjectBase<DerivedF>& F2) {
-    Eigen::VectorXi I1(F1.rows()), I2(F2.rows());
-    I1.setLinSpaced(F1.rows(), 0, F1.rows()-1);
-    I2.setLinSpaced(F2.rows(), 0, F2.rows()-1);
-    return igl::cgal::is_inside(V1, F1, I1, V2, F2, I2);
-}
-
 template<typename DerivedV, typename DerivedF, typename DerivedI,
     typename DerivedP, typename DerivedB>
-IGL_INLINE void igl::cgal::is_inside(
+IGL_INLINE void igl::cgal::points_inside_component(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedI>& I,
         const Eigen::PlainObjectBase<DerivedP>& P,
         Eigen::PlainObjectBase<DerivedB>& inside) {
-    using namespace igl::cgal::is_inside_helper;
-    assert(F.rows() > 0);
-    assert(I.rows() > 0);
+    using namespace igl::cgal::points_inside_component_helper;
+    if (F.rows() <= 0 || I.rows() <= 0) {
+        throw "Inside check cannot be done on empty facet component.";
+    }
 
     const size_t num_faces = I.rows();
     std::vector<Triangle> triangles;
@@ -314,13 +290,15 @@ IGL_INLINE void igl::cgal::is_inside(
                 Point_3(V(f[0], 0), V(f[0], 1), V(f[0], 2)),
                 Point_3(V(f[1], 0), V(f[1], 1), V(f[1], 2)),
                 Point_3(V(f[2], 0), V(f[2], 1), V(f[2], 2)));
-        assert(!triangles.back().is_degenerate());
+        if (triangles.back().is_degenerate()) {
+            throw "Input facet components contains degenerated triangles";
+        }
     }
     Tree tree(triangles.begin(), triangles.end());
     tree.accelerate_distance_queries();
 
     const size_t num_queries = P.rows();
-    inside.resize(num_queries);
+    inside.resize(num_queries, 1);
     for (size_t i=0; i<num_queries; i++) {
         const Point_3 query(P(i,0), P(i,1), P(i,2));
         auto projection = tree.closest_point_and_primitive(query);
@@ -333,7 +311,7 @@ IGL_INLINE void igl::cgal::is_inside(
             case VERTEX:
                 {
                     const size_t s = F(I(fid, 0), element_index);
-                    inside[i] = determine_point_vertex_orientation(
+                    inside(i,0) = determine_point_vertex_orientation(
                             V, F, I, query, s);
                 }
                 break;
@@ -341,34 +319,52 @@ IGL_INLINE void igl::cgal::is_inside(
                 {
                     const size_t s = F(I(fid, 0), (element_index+1)%3);
                     const size_t d = F(I(fid, 0), (element_index+2)%3);
-                    inside[i] = determine_point_edge_orientation(
+                    inside(i,0) = determine_point_edge_orientation(
                             V, F, I, query, s, d);
                 }
                 break;
             case FACE:
-                inside[i] = determine_point_face_orientation(V, F, I, query, fid);
+                inside(i,0) = determine_point_face_orientation(V, F, I, query, fid);
                 break;
             default:
-                assert(false);
+                throw "Unknow closest element type!";
         }
     }
 }
 
 template<typename DerivedV, typename DerivedF, typename DerivedP,
     typename DerivedB>
-IGL_INLINE void igl::cgal::is_inside(
+IGL_INLINE void igl::cgal::points_inside_component(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedP>& P,
         Eigen::PlainObjectBase<DerivedB>& inside) {
     Eigen::VectorXi I(F.rows());
     I.setLinSpaced(F.rows(), 0, F.rows()-1);
-    igl::cgal::is_inside(V, F, I, P, inside);
+    igl::cgal::points_inside_component(V, F, I, P, inside);
 }
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::cgal::is_inside<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::is_inside<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::is_inside<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::cgal::points_inside_component<
+Eigen::Matrix<double, -1, -1, 0, -1, -1>,
+Eigen::Matrix<   int, -1, -1, 0, -1, -1>,
+Eigen::Matrix<   int, -1, -1, 0, -1, -1>,
+Eigen::Matrix<double, -1, -1, 0, -1, -1>,
+Eigen::Matrix<   int, -1, -1, 0, -1, -1> > (
+Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> >&);
+
+template void igl::cgal::points_inside_component<
+Eigen::Matrix<double, -1, -1, 0, -1, -1>,
+Eigen::Matrix<   int, -1, -1, 0, -1, -1>,
+Eigen::Matrix<double, -1, -1, 0, -1, -1>,
+Eigen::Matrix<   int, -1, -1, 0, -1, -1> > (
+Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,
+Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> >&);
 #endif
