@@ -86,25 +86,50 @@ list(APPEND SHARED_LIBRARIES "nanogui" ${OPENGL_LIBRARIES})
 # include comiso if available
 
 find_package(LIBCOMISOH QUIET)
+
 #Compile CoMISo (if found)
 # NOTE: this cmakefile works only with the
 # comiso available here: https://github.com/libigl/CoMISo
 IF(LIBCOMISO_FOUND)
 
-  add_definitions(-DPY_COMISO)
-
-  include_directories("../../CoMISo/ext/gmm-4.2/include")
-  include_directories("../../")
-  add_subdirectory("../../CoMISo/" "CoMISo")
-
-  list(APPEND SHARED_SOURCES "py_igl_comiso.cpp")
+  list(GET LIBCOMISO_INCLUDE_DIRS 0 COMISO_ROOT)
+  # message( FATAL_ERROR "${COMISO_ROOT}" )
 
   if(APPLE)
     find_library(accelerate_library Accelerate)
     list(APPEND SHARED_LIBRARIES "CoMISo" ${accelerate_library})
-  else(APPLE) #APPLE
-    list(APPEND SHARED_LIBRARIES "CoMISo")
+  elseif(UNIX)
+    find_package(BLAS REQUIRED)
+    list(APPEND SHARED_LIBRARIES "CoMISo" ${BLAS_LIBRARIES})
   endif(APPLE)
+
+  if(MSVC)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SCL_SECURE_NO_DEPRECATE")
+    #link_directories("${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/")
+    list(APPEND SHARED_LIBRARIES "CoMISo" "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/libopenblas.dll.a.lib")
+  endif(MSVC)
+
+
+  include_directories("${COMISO_ROOT}/CoMISo/ext/gmm-4.2/include")
+  include_directories("${COMISO_ROOT}/")
+  add_subdirectory("${COMISO_ROOT}/CoMISo/" "CoMISo")
+
+  if(MSVC)
+    # Copy the dll
+    add_custom_target(Copy-CoMISo-DLL        # Adds a post-build event to MyTest
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libopenblas.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/../libopenblas.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgcc_s_seh-1.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/../libgcc_s_seh-1.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgfortran-3.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/../libgfortran-3.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libquadmath-0.dll"
+      "${CMAKE_CURRENT_BINARY_DIR}/../libquadmath-0.dll")
+  endif(MSVC)
 
 ENDIF(LIBCOMISO_FOUND)
 
