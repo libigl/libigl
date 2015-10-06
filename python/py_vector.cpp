@@ -47,6 +47,25 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
 
           return;
         })
+        .def("__init__", [](Type &m, std::vector<Scalar>& b) {
+          if (b.size() == 0)
+          {
+            new (&m) Type(0, 0);
+            return;
+          }
+
+          // Size checks
+          unsigned rows = b.size();
+          unsigned cols = 1;
+
+          new (&m) Type(rows, cols);
+
+          m.resize(rows,cols);
+          for (unsigned i=0;i<rows;++i)
+            m(i,0) = b[i];
+
+          return;
+        })
         .def("__init__", [](Type &m, py::buffer b) {
             py::buffer_info info = b.request();
             if (info.format != py::format_descriptor<Scalar>::value())
