@@ -32,7 +32,7 @@ IGL_INLINE int igl::lim::lim(
     );
 }
 
-IGL_INLINE int igl::lim(
+IGL_INLINE int igl::lim::lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -66,7 +66,7 @@ IGL_INLINE int igl::lim(
     );
 }
 
-IGL_INLINE int igl::lim(
+IGL_INLINE int igl::lim::lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -94,7 +94,7 @@ IGL_INLINE int igl::lim(
     );
 }
 
-IGL_INLINE int igl::lim(
+IGL_INLINE int igl::lim::lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
