@@ -89,6 +89,8 @@ if (OPENGL_FOUND)
   include_directories("../external/nanogui/ext/nanovg/src")
   list(APPEND SHARED_LIBRARIES "nanogui" ${OPENGL_LIBRARIES})
 
+  list(APPEND SHARED_SOURCES "py_igl_viewer.cpp")
+
 endif (OPENGL_FOUND)
 # include comiso if available
 
@@ -148,7 +150,6 @@ add_library(igl SHARED
   py_vector.cpp
   py_igl.cpp
   py_doc.cpp
-  py_igl_viewer.cpp
   ${SHARED_SOURCES}
 )
 
