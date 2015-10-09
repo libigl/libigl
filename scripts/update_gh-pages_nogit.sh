@@ -27,3 +27,5 @@ html header:   <script type='text/javascript' src='http://cdn.mathjax.org/mathja
 
 echo "$HEADER" \
   | cat - optional/README.md | multimarkdown -o optional/index.html
+
+multimarkdown tutorial/tutorial.md -o tutorial/tutorial.html
