@@ -12,9 +12,11 @@ endif(LIBIGL_USE_STATIC_LIBRARY)
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 IF(MSVC)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj") ### Enable parallel compilation for Visual Studio
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj /w") ### Enable parallel compilation for Visual Studio
+
   SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} )
   SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} )
+
 ELSE(MSVC)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") #### Libigl requires a modern C++ compiler that supports c++11
   SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../" )
@@ -23,7 +25,7 @@ ENDIF(MSVC)
 find_package(CORK QUIET)
 find_package(CGAL QUIET)
 find_package(EMBREE QUIET)
-find_package(LIBCOMISO QUIET)
+find_package(LIBCOMISOH QUIET)
 find_package(MATLAB QUIET)
 find_package(MOSEK QUIET)
 find_package(TETGEN QUIET)
@@ -41,11 +43,6 @@ if(LIBIGL_USE_STATIC_LIBRARY)
 endif(LIBIGL_USE_STATIC_LIBRARY)
 include_directories("../include")
 
-#Compile nanogui
-add_subdirectory("../external/nanogui/" "nanogui")
-include_directories("../external/nanogui/include")
-include_directories("../external/nanogui/ext/nanovg/src")
-list(APPEND SHARED_LIBRARIES "nanogui" "glfw")
 
 #Compile embree
 option(ENABLE_ISPC_SUPPORT " " OFF)
@@ -67,6 +64,65 @@ add_subdirectory("../external/embree/" "embree")
 include_directories("../external/embree/include")
 list(APPEND SHARED_LIBRARIES "embree")
 
+# endif(True)
+
+# if(True)
+#Compile nanogui
+set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
+set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
+set(NANOGUI_BUILD_SHARED OFF CACHE BOOL " " FORCE)
+
+add_subdirectory("../external/nanogui/" "nanogui")
+include_directories("../external/nanogui/include")
+include_directories("../external/nanogui/ext/nanovg/src")
+list(APPEND SHARED_LIBRARIES "nanogui")
+
+
+#Compile CoMISo (if found)
+# NOTE: this cmakefile works only with the
+# comiso available here: https://github.com/libigl/CoMISo
+IF(LIBCOMISO_FOUND)
+
+  list(GET LIBCOMISO_INCLUDE_DIRS 0 COMISO_ROOT)
+  # message( FATAL_ERROR "${COMISO_ROOT}" )
+
+  if(APPLE)
+    find_library(accelerate_library Accelerate)
+    list(APPEND SHARED_LIBRARIES "CoMISo" ${accelerate_library})
+  elseif(UNIX)
+    find_package(BLAS REQUIRED)
+    list(APPEND SHARED_LIBRARIES "CoMISo" ${BLAS_LIBRARIES})
+  endif(APPLE)
+
+  if(MSVC)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SCL_SECURE_NO_DEPRECATE")
+    #link_directories("${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/")
+    list(APPEND SHARED_LIBRARIES "CoMISo" "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/libopenblas.dll.a.lib")
+  endif(MSVC)
+
+
+  include_directories("${COMISO_ROOT}/CoMISo/ext/gmm-4.2/include")
+  include_directories("${COMISO_ROOT}/")
+  add_subdirectory("${COMISO_ROOT}/CoMISo/" "CoMISo")
+
+  if(MSVC)
+    # Copy the dll
+    add_custom_target(Copy-CoMISo-DLL        # Adds a post-build event to MyTest
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libopenblas.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libopenblas.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgcc_s_seh-1.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libgcc_s_seh-1.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgfortran-3.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libgfortran-3.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libquadmath-0.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libquadmath-0.dll")
+  endif(MSVC)
+
+ENDIF(LIBCOMISO_FOUND)
 
 message(STATUS "Linking with: ${LIBIGL_LIBRARIES}")
 list(APPEND SHARED_LIBRARIES ${LIBIGL_LIBRARIES})
