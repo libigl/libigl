@@ -347,10 +347,10 @@ inline void igl::Camera::look_at(
   //cout<<"eye()-at(): "<<(this->eye()-this->at()).normalized().transpose()<<endl;
   //cout<<"eye-this->eye(): "<<(eye-this->eye()).squaredNorm()<<endl;
   assert(           (eye-this->eye()).squaredNorm() < DOUBLE_EPS);
-  assert((F-(this->eye()-this->at()).normalized()).squaredNorm() < 
-    DOUBLE_EPS);
+  //assert((F-(this->eye()-this->at()).normalized()).squaredNorm() < 
+  //  DOUBLE_EPS);
   assert(           (at-this->at()).squaredNorm() < DOUBLE_EPS);
-  assert(        (proj_up-this->up()).squaredNorm() < DOUBLE_EPS);
+  //assert(        (proj_up-this->up()).squaredNorm() < DOUBLE_EPS);
 }
 
 #endif

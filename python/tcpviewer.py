@@ -1,45 +1,80 @@
 import socket
-import multiprocessing
+import threading
 import igl
 import array
+import time
 
 HOST = 'localhost'                 # Symbolic name meaning all available interfaces
 PORT = 50008              # Arbitrary non-privileged port
 
-def worker(data):
-    viewer = igl.viewer.Viewer()
-    temp = list(data)
-    viewer.deserialize(temp)
-    viewer.launch(True,False)
-    return
+def worker(viewer,lock,s):
 
-class TCPViewer(igl.viewer.Viewer):
-    def launch(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((HOST, PORT))
-        a = array.array('u',self.serialize())
-        s.sendall(a)
-        s.close()
-
-if __name__ == "__main__": # The main script is a server
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((HOST, PORT))
-    s.listen(1)
     print("TCP iglviewer server listening on port " + str(PORT))
     try:
         while True:
             conn, addr = s.accept()
+            lock.acquire()
             slist = []
             while True:
-                buf = conn.recv(4096)
+                buf = conn.recv(10000000)
                 if not buf:
                     break
                 slist.append(buf.decode('unicode_internal','ignore'))
             conn.close()
 
             data = ''.join(slist)
+            temp = list(data)
 
-            t = multiprocessing.Process(target=worker, args=(data,))
-            t.start()
+            isempty = viewer.data.V.rows() == 0
+            viewer.data.deserialize(temp)
+            if isempty and viewer.data.V.rows() != 0:
+                viewer.core.align_camera_center(viewer.data.V,viewer.data.F)
+
+            lock.release()
+
     except:
         s.close()
+    return
+
+class TCPViewer(igl.viewer.Viewer):
+    def launch(self):
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((HOST, PORT))
+            a = array.array('u',self.data.serialize())
+            s.sendall(a)
+            s.close()
+        except:
+            print("Failed to open socket, is tcpviewer running?")
+
+if __name__ == "__main__": # The main script is a server
+
+    ## Try to open the socket first
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.bind((HOST, PORT))
+    except:
+        print("Failed to bind, port already used.")
+        exit(1)
+    s.listen(1)
+
+    viewer = igl.viewer.Viewer()
+
+    lock = threading.Lock()
+    t = threading.Thread(target=worker, args=(viewer,lock,s,))
+    t.setDaemon(True)
+    t.start()
+
+    viewer.core.is_animating = True
+    # viewer.data.dirty = int(0x03FF)
+
+    viewer.launch_init(True,False)
+    done = False
+    while not done:
+        lock.acquire()
+        done = not viewer.launch_rendering(False)
+        lock.release()
+
+        time.sleep(0.000001) # DO NOT REMOVE ME
+
+    viewer.launch_shut()

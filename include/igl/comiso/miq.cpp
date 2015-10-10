@@ -1267,9 +1267,9 @@ IGL_INLINE double igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::Distorti
   uv1 << WUV(f,2), WUV(f,3);
   uv2 << WUV(f,4), WUV(f,5);
 
-  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> p0 = V.row(Fcut(f,0));
-  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> p1 = V.row(Fcut(f,1));
-  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> p2 = V.row(Fcut(f,2));
+  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> p0 = Vcut.row(Fcut(f,0));
+  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> p1 = Vcut.row(Fcut(f,1));
+  Eigen::Matrix<typename DerivedV::Scalar, 3, 1> p2 = Vcut.row(Fcut(f,2));
 
   Eigen::Matrix<typename DerivedV::Scalar, 3, 1> norm = (p1 - p0).cross(p2 - p0);
   double area2 = norm.norm();

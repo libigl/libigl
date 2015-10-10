@@ -152,16 +152,16 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.background_color.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Vector3("background_color",v);
-      core.background_color = Eigen::Vector3f(v.cast<float>());
+      assert_is_Vector4("background_color",v);
+      core.background_color << Eigen::Vector4f(v.cast<float>());
     })
 
     .def_property("line_color",
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.line_color.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Vector3("line_color",v);
-      core.line_color = Eigen::Vector3f(v.cast<float>());
+      assert_is_Vector4("line_color",v);
+      core.line_color = Eigen::Vector4f(v.cast<float>());
     })
 
     .def_property("light_position",

@@ -19,8 +19,9 @@ FIND_PATH(LIBCOMISO_INCLUDE_DIR CoMISo/Solver/ConstrainedSolver.hh
    ${PROJECT_SOURCE_DIR}/../CoMISo/include
    ${PROJECT_SOURCE_DIR}/../../CoMISo/
    ${PROJECT_SOURCE_DIR}/../../CoMISo/include
-   /Users/daniele/Dropbox/igl/MIQ/src
-   /Users/olkido/Documents/igl/MIQ/src
+   ${PROJECT_SOURCE_DIR}/../external
+   ${PROJECT_SOURCE_DIR}/../../external
+   ${PROJECT_SOURCE_DIR}/../../../external
 )
 
 SET(LIBCOMISO_FOUND "NO")
@@ -43,7 +44,7 @@ if(LIBCOMISO_INCLUDE_DIR)
       ${LIBCOMISO_INCLUDE_DIR}/CoMISo/Config
       ${LIBCOMISO_INCLUDE_DIR}/CoMISo/Utils
       ${LIBCOMISO_INCLUDE_DIR}/CoMISo/QtWidgets
-      ${LIBCOMISO_INCLUDE_DIR}/CoMISo/gmm/include
+      ${LIBCOMISO_INCLUDE_DIR}/CoMISo/ext/gmm-4.2/include
       )
 
    #message("${LIBCOMISO_INCLUDE_DIRS}")
@@ -56,6 +57,6 @@ if(LIBCOMISO_INCLUDE_DIR)
 else(LIBCOMISO_INCLUDE_DIR)
   if (NOT LIBCOMISOH_FIND_QUIETLY)
    message(FATAL_ERROR "could NOT find LIBCOMISO")
- endif (NOT LIBCOMISO_FIND_QUIETLY)
+  endif (NOT LIBCOMISOH_FIND_QUIETLY)
 
 endif(LIBCOMISO_INCLUDE_DIR)
