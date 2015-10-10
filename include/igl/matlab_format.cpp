@@ -54,7 +54,7 @@ igl::matlab_format(
   if(!name.empty())
   {
     prefix = name + "IJV = ";
-    suffix = "\n"+name + " = sparse("+name+"IJV(:,1),"+name+"IJV(:,2),"+name+"IJV(:,3));";
+    suffix = "\n"+name + " = sparse("+name+"IJV(:,1),"+name+"IJV(:,2),"+name+"IJV(:,3),"+std::to_string(S.rows())+","+std::to_string(S.cols())+" );";
   }
   return STR(""<<
     SIJV.format(Eigen::IOFormat(
