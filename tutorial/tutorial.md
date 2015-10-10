@@ -155,11 +155,7 @@ make
 The examples can also be built independently using the CMakeLists.txt
 inside each example folder.
 
-A few examples in Chapter 5 requires the [CoMiSo
-solver](http://www.graphics.rwth-aachen.de/software/comiso) which has to be
-downloaded and compiled separately.
-
-Note for linux users: Many linux distributions do not include gcc and the basic development tools
+*Note for linux users*: Many linux distributions do not include gcc and the basic development tools
 in their default installation. On Ubuntu, you need to install the following packages:
 
 ```bash
@@ -171,7 +167,25 @@ sudo apt-get install mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev
 sudo apt-get install libxrandr-dev
 sudo apt-get install libxi-dev
 sudo apt-get install libxmu-dev
+sudo apt-get install libblas-dev
 ```
+
+A few examples in Chapter 5 requires the [CoMiSo
+solver](http://www.graphics.rwth-aachen.de/software/comiso). We provide a
+mirror of CoMISo that works out of the box with libigl. To install it:
+
+```bash
+cd libigl/external
+git clone --recursive https://github.com/libigl/CoMISo.git
+```
+
+You can then build the tutorials again and it libigl will automatically find and
+compile CoMISo.
+
+*Note 1*: CoMISo is distributed under the GPL3 license, it does impose restrictions on commercial usage.
+
+*Note 2*: CoMISo requires a blas implementation. We use the built-in blas in macosx and linux, and we bundle a precompiled binary for VS2015 64 bit. Do NOT compile the tutorials
+in 32 bit on windows.
 
 ## Mesh representation [meshrepresentation]
 
@@ -2582,7 +2596,7 @@ of three cylinders:
 
 ```cpp
 // Compute result of (A ∩ B) \ ((C ∪ D) ∪ E)
-igl::boolean::CSGTree<MatrixXi> CSGTree = 
+igl::boolean::CSGTree<MatrixXi> CSGTree =
   {{{VA,FA},{VB,FB},"i"},{{{VC,FC},{VD,FD},"u"},{VE,FE},"u"},"m"};
 ```
 

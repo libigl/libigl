@@ -87,8 +87,8 @@ public:
   float shininess;
 
   // Colors
-  Eigen::Vector3f background_color;
-  Eigen::Vector3f line_color;
+  Eigen::Vector4f background_color;
+  Eigen::Vector4f line_color;
 
   // Lighting
   Eigen::Vector3f light_position;

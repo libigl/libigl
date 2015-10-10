@@ -47,6 +47,25 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
 
           return;
         })
+        .def("__init__", [](Type &m, std::vector<Scalar>& b) {
+          if (b.size() == 0)
+          {
+            new (&m) Type(0, 0);
+            return;
+          }
+
+          // Size checks
+          unsigned rows = b.size();
+          unsigned cols = 1;
+
+          new (&m) Type(rows, cols);
+
+          m.resize(rows,cols);
+          for (unsigned i=0;i<rows;++i)
+            m(i,0) = b[i];
+
+          return;
+        })
         .def("__init__", [](Type &m, py::buffer b) {
             py::buffer_info info = b.request();
             if (info.format != py::format_descriptor<Scalar>::value())
@@ -100,6 +119,8 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("setCol", [](Type &m, int i, const Type& v) { m.col(i) = v; })
         .def("setRow", [](Type &m, int i, const Type& v) { m.row(i) = v; })
 
+        .def("setBlock", [](Type &m, int i, int j, int p, int q, const Type& v) { m.block(i,j,p,q) = v; })
+        .def("block", [](Type &m, int i, int j, int p, int q) { return Type(m.block(i,j,p,q)); })
 
         .def("rightCols", [](Type &m, const int& k) { return Type(m.rightCols(k)); })
         .def("leftCols", [](Type &m, const int& k) { return Type(m.leftCols(k)); })
@@ -221,8 +242,8 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def_cast(py::self += py::self)
         .def_cast(py::self -= py::self)
         .def_cast(py::self *= py::self)
-        // .def_cast(py::self *= Scalar())
-        // .def_cast(py::self /= Scalar())
+        .def_cast(py::self *= Scalar())
+        .def_cast(py::self /= Scalar())
 
         /* Comparison operators */
         .def(py::self == py::self)
@@ -284,6 +305,9 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         {
           return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(Eigen::Map<const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>>(m.data(),r,c));
         })
+
+        .def("copy", [](const Type &m) { return Type(m); })
+
         ;
     return matrix;
 }

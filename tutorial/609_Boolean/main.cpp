@@ -1,6 +1,6 @@
 #include <igl/readOFF.h>
 #define IGL_NO_CORK
-#undef IGL_STATIC_LIBRARY
+//#undef IGL_STATIC_LIBRARY
 #include <igl/boolean/mesh_boolean.h>
 #include <igl/viewer/Viewer.h>
 
@@ -8,7 +8,7 @@
 #include <iostream>
 
 Eigen::MatrixXd VA,VB,VC;
-Eigen::VectorXi J;
+Eigen::VectorXi J,I;
 Eigen::MatrixXi FA,FB,FC;
 igl::boolean::MeshBooleanType boolean_type(
   igl::boolean::MESH_BOOLEAN_TYPE_UNION);
@@ -24,7 +24,7 @@ const char * MESH_BOOLEAN_TYPE_NAMES[] =
 
 void update(igl::viewer::Viewer &viewer)
 {
-  igl::boolean::mesh_boolean(VA,FA,VB,FB,boolean_type,VC,FC,J);
+  igl::boolean::mesh_boolean(VA,FA,VB,FB,boolean_type,VC,FC,J,I);
   Eigen::MatrixXd C(FC.rows(),3);
   for(size_t f = 0;f<C.rows();f++)
   {
