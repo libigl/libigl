@@ -134,6 +134,12 @@ endif(UNIX AND NOT APPLE)
 
 #message(FATAL_ERROR ${SHARED_LIBRARIES})
 
+# Store location of tutorial/shared directory 
+set(TUTORIAL_SHARED_PATH ${CMAKE_CURRENT_SOURCE_DIR}/shared)
+message("tutorial_shared_path = ${TUTORIAL_SHARED_PATH}")
+configure_file(tutorial_shared_path.h.in "${CMAKE_BINARY_DIR}/tutorial_shared_path.h")
+include_directories(${CMAKE_BINARY_DIR})
+
 # Chapter 1
 add_subdirectory("101_FileIO")
 add_subdirectory("102_DrawMesh")

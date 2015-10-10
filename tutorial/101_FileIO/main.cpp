@@ -1,6 +1,7 @@
 #include <igl/readOFF.h>
 #include <igl/writeOBJ.h>
 #include <iostream>
+#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -8,7 +9,7 @@ Eigen::MatrixXi F;
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::readOFF("../shared/cube.off", V, F);
+  igl::readOFF(tutorial_shared_path + "/cube.off", V, F);
 
   // Print the vertices and faces matrices
   std::cout << "Vertices: " << std::endl << V << std::endl;

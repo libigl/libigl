@@ -7,6 +7,8 @@
 #include <Eigen/Core>
 #include <iostream>
 
+#include "tutorial_shared_path.h"
+
 Eigen::MatrixXd VA,VB,VC;
 Eigen::VectorXi J,I;
 Eigen::MatrixXi FA,FB,FC;
@@ -75,8 +77,8 @@ int main(int argc, char *argv[])
 {
   using namespace Eigen;
   using namespace std;
-  igl::readOFF("../shared/cheburashka.off",VA,FA);
-  igl::readOFF("../shared/decimated-knight.off",VB,FB);
+  igl::readOFF(tutorial_shared_path + "/cheburashka.off",VA,FA);
+  igl::readOFF(tutorial_shared_path + "/decimated-knight.off",VB,FB);
   // Plot the mesh with pseudocolors
   igl::viewer::Viewer viewer;
 

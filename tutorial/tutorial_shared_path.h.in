@@ -1,0 +1,10 @@
+#ifndef tutorial_shared_path_h_included
+#define tutorial_shared_path_h_included
+
+#include <string>
+
+const std::string tutorial_shared_path("@TUTORIAL_SHARED_PATH@");
+
+#endif
+
+

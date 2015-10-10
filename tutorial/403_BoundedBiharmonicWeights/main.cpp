@@ -30,6 +30,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include "tutorial_shared_path.h"
+
 typedef 
   std::vector<Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> >
   RotationList;
@@ -118,15 +120,15 @@ int main(int argc, char *argv[])
 {
   using namespace Eigen;
   using namespace std;
-  igl::readMESH("../shared/hand.mesh",V,T,F);
+  igl::readMESH(tutorial_shared_path + "/hand.mesh",V,T,F);
   U=V;
-  igl::readTGF("../shared/hand.tgf",C,BE);
+  igl::readTGF(tutorial_shared_path + "/hand.tgf",C,BE);
   // retrieve parents for forward kinematics
   igl::directed_edge_parents(BE,P);
 
   // Read pose as matrix of quaternions per row
   MatrixXd Q;
-  igl::readDMAT("../shared/hand-pose.dmat",Q);
+  igl::readDMAT(tutorial_shared_path + "/hand-pose.dmat",Q);
   igl::column_to_quats(Q,pose);
   assert(pose.size() == BE.rows());
 
