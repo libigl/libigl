@@ -5,6 +5,7 @@
 #include <igl/comiso/nrosy.h>
 #include <igl/viewer/Viewer.h>
 
+#include "tutorial_shared_path.h"
 
 // Mesh
 Eigen::MatrixXd V;
@@ -122,7 +123,7 @@ int main(int argc, char *argv[])
   using namespace Eigen;
 
   // Load a mesh in OFF format
-  igl::readOFF("../shared/bumpy.off", V, F);
+  igl::readOFF(tutorial_shared_path + "/bumpy.off", V, F);
 
   // Threshold faces with high anisotropy
   b.resize(1);

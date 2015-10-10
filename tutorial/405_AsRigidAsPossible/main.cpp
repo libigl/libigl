@@ -17,6 +17,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include "tutorial_shared_path.h"
+
 typedef 
   std::vector<Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> >
   RotationList;
@@ -90,9 +92,9 @@ int main(int argc, char *argv[])
 {
   using namespace Eigen;
   using namespace std;
-  igl::readOFF("../shared/decimated-knight.off",V,F);
+  igl::readOFF(tutorial_shared_path + "/decimated-knight.off",V,F);
   U=V;
-  igl::readDMAT("../shared/decimated-knight-selection.dmat",S);
+  igl::readDMAT(tutorial_shared_path + "/decimated-knight-selection.dmat",S);
 
   // vertices in selection
   igl::colon<int>(0,V.rows()-1,b);

@@ -5,6 +5,8 @@
 #include <Eigen/Core>
 #include <iostream>
 
+#include "tutorial_shared_path.h"
+
 int main(int argc, char * argv[])
 {
   using namespace Eigen;
@@ -14,7 +16,7 @@ int main(int argc, char * argv[])
   MatrixXd V;
   // Read in inputs as double precision floating point meshes
   read_triangle_mesh(
-      "../shared/armadillo.obj",V,F);
+      tutorial_shared_path + "/armadillo.obj",V,F);
   // number of vertices on the largest side
   const int s = 50;
   const RowVector3d Vmin = V.colwise().minCoeff();

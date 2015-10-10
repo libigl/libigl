@@ -4,6 +4,8 @@
 #include <igl/jet.h>
 #include <Eigen/Core>
 
+#include "tutorial_shared_path.h"
+
 int main(int argc, char * argv[])
 {
   using namespace Eigen;
@@ -13,11 +15,11 @@ int main(int argc, char * argv[])
   MatrixXi FA,FB,FC,FD,FE;
   MatrixXd VA,VB,VC,VD,VE;
   // Read in inputs as double precision floating point meshes
-  read_triangle_mesh("../shared/cube.obj"     ,VA,FA);
-  read_triangle_mesh("../shared/sphere.obj"   ,VB,FB);
-  read_triangle_mesh("../shared/xcylinder.obj",VC,FC);
-  read_triangle_mesh("../shared/ycylinder.obj",VD,FD);
-  read_triangle_mesh("../shared/zcylinder.obj",VE,FE);
+  read_triangle_mesh(tutorial_shared_path + "/cube.obj"     ,VA,FA);
+  read_triangle_mesh(tutorial_shared_path + "/sphere.obj"   ,VB,FB);
+  read_triangle_mesh(tutorial_shared_path + "/xcylinder.obj",VC,FC);
+  read_triangle_mesh(tutorial_shared_path + "/ycylinder.obj",VD,FD);
+  read_triangle_mesh(tutorial_shared_path + "/zcylinder.obj",VE,FE);
   igl::viewer::Viewer viewer;
 
   int num_views = 5+4;
