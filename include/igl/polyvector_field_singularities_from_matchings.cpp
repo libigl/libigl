@@ -23,7 +23,7 @@ void igl::polyvector_field_one_ring_matchings(const Eigen::PlainObjectBase<Deriv
   mvi.resize(VF[vi].size()+1,1);
   fi.resize(VF[vi].size()+1,1);
   //start from one face
-  const int &fstart = VF[vi][0];
+  const int fstart = VF[vi][0];
   int current_face = fstart;
   int i =0;
   mvi[i] = vector_to_match;

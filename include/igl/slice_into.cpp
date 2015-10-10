@@ -59,7 +59,7 @@ IGL_INLINE void igl::slice_into(
   int xn = X.cols();
 #ifndef NDEBUG
   assert(R.size() == xm);
-  assert(C.size() == xn);
+//  assert(C.size() == xn);
   int ym = Y.size();
   int yn = Y.size();
   assert(R.minCoeff() >= 0);
