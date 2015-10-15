@@ -190,7 +190,7 @@ public:
           const RowVectorDIMS & p,
           int & i,
           RowVectorDIMS & c) const;
-private:
+//private:
       inline Scalar squared_distance(
           const Eigen::PlainObjectBase<DerivedV> & V,
           const Eigen::MatrixXi & Ele, 
@@ -369,7 +369,7 @@ inline void igl::AABB<DerivedV,DIM>::init(
   using namespace Eigen;
   using namespace std;
   assert(DIM == V.cols() && "V.cols() should matched declared dimension");
-  const Scalar inf = numeric_limits<Scalar>::infinity();
+  //const Scalar inf = numeric_limits<Scalar>::infinity();
   m_box = AlignedBox<Scalar,DIM>();
   // Compute bounding box
   for(int i = 0;i<I.rows();i++)
@@ -768,7 +768,7 @@ inline typename igl::AABB<DerivedV,DIM>::Scalar igl::AABB<DerivedV,DIM>::squared
   const AABB<Derivedother_V,DIM> * other,
   const Eigen::PlainObjectBase<Derivedother_V> & other_V,
   const Eigen::MatrixXi & other_Ele, 
-  const Scalar min_sqr_d,
+  const Scalar /*min_sqr_d*/,
   Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
   Eigen::PlainObjectBase<DerivedI> & I,
   Eigen::PlainObjectBase<DerivedC> & C) const
@@ -1098,7 +1098,11 @@ inline void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
 
 template <typename DerivedV, int DIM>
 inline void igl::AABB<DerivedV,DIM>::set_min(
-  const RowVectorDIMS & p,
+  const RowVectorDIMS & 
+#ifndef NDEBUG
+  p
+#endif
+  ,
   const Scalar sqr_d_candidate,
   const int i_candidate,
   const RowVectorDIMS & c_candidate,

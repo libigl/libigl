@@ -54,9 +54,6 @@ IGL_INLINE void igl::per_face_normals_stable(
   Eigen::PlainObjectBase<DerivedN> & N)
 {
   using namespace Eigen;
-  typedef Matrix<typename DerivedN::Scalar,DerivedN::RowsAtCompileTime,3> MatrixN3;
-  typedef Matrix<typename DerivedV::Scalar,DerivedF::RowsAtCompileTime,3> MatrixV3;
-  typedef Matrix<typename DerivedV::Scalar,3,3> MatrixV33;
   typedef Matrix<typename DerivedV::Scalar,1,3> RowVectorV3;
   typedef typename DerivedV::Scalar Scalar;
 

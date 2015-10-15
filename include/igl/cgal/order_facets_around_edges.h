@@ -29,9 +29,7 @@ namespace igl
     //   V    #V by 3 list of vertices.
     //   F    #F by 3 list of faces
     //   N    #F by 3 list of face normals.
-    //   E    #F*3 by 2 list vertex indices, represents directed edges.
     //  uE    #uE by 2 list of vertex_indices, represents undirected edges.
-    //  EMAP  #F*3 list of indices that maps E to uE. (a many-to-one map)
     //  uE2E  #uE list of lists that maps uE to E. (a one-to-many map)
     //
     // Outputs:
@@ -44,9 +42,7 @@ namespace igl
         typename DerivedV,
         typename DerivedF,
         typename DerivedN,
-        typename DerivedE,
         typename DeriveduE,
-        typename DerivedEMAP,
         typename uE2EType,
         typename uE2oEType,
         typename uE2CType >
@@ -57,9 +53,7 @@ namespace igl
             const Eigen::PlainObjectBase<DerivedV>& V,
             const Eigen::PlainObjectBase<DerivedF>& F,
             const Eigen::PlainObjectBase<DerivedN>& N,
-            const Eigen::PlainObjectBase<DerivedE>& E,
             const Eigen::PlainObjectBase<DeriveduE>& uE,
-            const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
             const std::vector<std::vector<uE2EType> >& uE2E,
             std::vector<std::vector<uE2oEType> >& uE2oE,
             std::vector<std::vector<uE2CType > >& uE2C );
@@ -68,9 +62,7 @@ namespace igl
         typename DerivedV,
         typename DerivedF,
         typename DerivedN,
-        typename DerivedE,
         typename DeriveduE,
-        typename DerivedEMAP,
         typename uE2EType,
         typename uE2oEType,
         typename uE2CType >
@@ -81,9 +73,7 @@ namespace igl
             const Eigen::PlainObjectBase<DerivedV>& V,
             const Eigen::PlainObjectBase<DerivedF>& F,
             const Eigen::PlainObjectBase<DerivedN>& N,
-            const Eigen::PlainObjectBase<DerivedE>& E,
             const Eigen::PlainObjectBase<DeriveduE>& uE,
-            const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
             const std::vector<std::vector<uE2EType> >& uE2E,
             std::vector<std::vector<uE2oEType> >& uE2oE,
             std::vector<std::vector<uE2CType > >& uE2C );
@@ -93,18 +83,14 @@ namespace igl
     template<
         typename DerivedV,
         typename DerivedF,
-        typename DerivedE,
         typename DeriveduE,
-        typename DerivedEMAP,
         typename uE2EType,
         typename uE2oEType,
         typename uE2CType >
     IGL_INLINE void order_facets_around_edges(
             const Eigen::PlainObjectBase<DerivedV>& V,
             const Eigen::PlainObjectBase<DerivedF>& F,
-            const Eigen::PlainObjectBase<DerivedE>& E,
             const Eigen::PlainObjectBase<DeriveduE>& uE,
-            const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
             const std::vector<std::vector<uE2EType> >& uE2E,
             std::vector<std::vector<uE2oEType> >& uE2oE,
             std::vector<std::vector<uE2CType > >& uE2C );

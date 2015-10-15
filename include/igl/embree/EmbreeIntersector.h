@@ -333,7 +333,7 @@ igl::embree::EmbreeIntersector
 
 void igl::embree::EmbreeIntersector::deinit()
 {
-  if(scene)
+  if(EmbreeIntersector_inited && scene)
   {
     rtcDeleteScene(scene);
 
@@ -413,7 +413,7 @@ inline bool igl::embree::EmbreeIntersector::intersectBeam(
 
   Eigen::Matrix3f rot = Eigen::AngleAxis<float>(2*3.14159265358979/samples,direction).toRotationMatrix();
 
-  for(int r=0;r<samples;r++)
+  for(int r=0;r<(int)samples;r++)
   {
     if(intersectRay(origin+offset*eps,direction,hit,tnear,tfar,mask) && 
         ((closestHit && (hit.t < bestHit.t)) || 

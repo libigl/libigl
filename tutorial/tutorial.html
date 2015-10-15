@@ -201,11 +201,7 @@ make
 <p>The examples can also be built independently using the CMakeLists.txt
 inside each example folder.</p>
 
-<p>A few examples in Chapter 5 requires the <a href="http://www.graphics.rwth-aachen.de/software/comiso">CoMiSo
-solver</a> which has to be
-downloaded and compiled separately.</p>
-
-<p>Note for linux users: Many linux distributions do not include gcc and the basic development tools
+<p><em>Note for linux users</em>: Many linux distributions do not include gcc and the basic development tools
 in their default installation. On Ubuntu, you need to install the following packages:</p>
 
 <pre><code class="bash">sudo apt-get install git
@@ -216,7 +212,24 @@ sudo apt-get install mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev
 sudo apt-get install libxrandr-dev
 sudo apt-get install libxi-dev
 sudo apt-get install libxmu-dev
+sudo apt-get install libblas-dev
 </code></pre>
+
+<p>A few examples in Chapter 5 requires the <a href="http://www.graphics.rwth-aachen.de/software/comiso">CoMiSo
+solver</a>. We provide a
+mirror of CoMISo that works out of the box with libigl. To install it:</p>
+
+<pre><code class="bash">cd libigl/external
+git clone --recursive https://github.com/libigl/CoMISo.git
+</code></pre>
+
+<p>You can then build the tutorials again and it libigl will automatically find and
+compile CoMISo.</p>
+
+<p><em>Note 1</em>: CoMISo is distributed under the GPL3 license, it does impose restrictions on commercial usage.</p>
+
+<p><em>Note 2</em>: CoMISo requires a blas implementation. We use the built-in blas in macosx and linux, and we bundle a precompiled binary for VS2015 64 bit. Do NOT compile the tutorials
+in 32 bit on windows.</p>
 
 <h2 id="meshrepresentation">Mesh representation</h2>
 
@@ -2893,7 +2906,7 @@ example taking the <em>intersection</em> of a cube A and sphere B <em>minus</em>
 of three cylinders:</p>
 
 <pre><code class="cpp">// Compute result of (A ∩ B) \ ((C ∪ D) ∪ E)
-igl::boolean::CSGTree&lt;MatrixXi&gt; CSGTree = 
+igl::boolean::CSGTree&lt;MatrixXi&gt; CSGTree =
   {{{VA,FA},{VB,FB},&quot;i&quot;},{{{VC,FC},{VD,FD},&quot;u&quot;},{VE,FE},&quot;u&quot;},&quot;m&quot;};
 </code></pre>
 

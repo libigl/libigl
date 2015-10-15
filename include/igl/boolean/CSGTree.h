@@ -92,7 +92,10 @@ namespace igl
           const MeshBooleanType & type)
         {
           // conduct boolean operation
-          mesh_boolean(A.V(),A.F(),B.V(),B.F(),type,m_V,m_F,m_J);
+          {
+            Eigen::VectorXi I;
+            mesh_boolean(A.V(),A.F(),B.V(),B.F(),type,m_V,m_F,m_J,I);
+          }
           // reindex m_J
           std::for_each(m_J.data(),m_J.data()+m_J.size(),
             [&](typename VectorJ::Scalar & j)

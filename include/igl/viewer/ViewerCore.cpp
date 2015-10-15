@@ -460,8 +460,8 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
   shininess = 35.0f;
 
   // Default colors
-  background_color << 0.3f, 0.3f, 0.5f;
-  line_color << 0.0f, 0.0f, 0.0f;
+  background_color << 0.3f, 0.3f, 0.5f, 1.0f;
+  line_color << 0.0f, 0.0f, 0.0f, 1.0f;
 
   // Default lights settings
   light_position << 0.0f, -0.30f, -5.0f;
