@@ -18,7 +18,7 @@
 // to produce a graded tet mesh
 const static std::string DEFAULT_TETGEN_FLAGS = "pq2Y";
 
-IGL_INLINE bool igl::mesh_with_skeleton(
+IGL_INLINE bool igl::tetgen::mesh_with_skeleton(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   const Eigen::MatrixXd & C,
@@ -85,7 +85,7 @@ IGL_INLINE bool igl::mesh_with_skeleton(
   return true;
 }
 
-IGL_INLINE bool igl::mesh_with_skeleton(
+IGL_INLINE bool igl::tetgen::mesh_with_skeleton(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   const Eigen::MatrixXd & C,
@@ -97,10 +97,10 @@ IGL_INLINE bool igl::mesh_with_skeleton(
   Eigen::MatrixXi & TT,
   Eigen::MatrixXi & FF)
 {
-  return igl::mesh_with_skeleton(
+  return mesh_with_skeleton(
     V,F,C,P,BE,CE,samples_per_bone,DEFAULT_TETGEN_FLAGS,VV,TT,FF);
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template instanciation
+// Explicit template specialization
 #endif

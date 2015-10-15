@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #include "parula.h"
 
 
@@ -14,8 +21,8 @@ IGL_INLINE void igl::parula(const T f, T & r, T & g, T & b)
   const float eff_f = (f>=1.?1.:(f<=0.?0.:f));
   // continuous index into array
   const float ff = eff_f*(PARULA_COLOR_MAP.rows()-1);
-  size_t s = floor(ff);
-  size_t d = ceil(ff);
+  size_t s = std::floor(ff);
+  size_t d = std::ceil(ff);
   const float t = (s==d ? 0. : (ff-s)/float(d-s));
 
   assert(t>=0 && t<=1);
@@ -53,7 +60,7 @@ IGL_INLINE void igl::parula(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template instanciation
+// Explicit template specialization
 template void igl::parula<double>(double, double*);
 template void igl::parula<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

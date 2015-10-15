@@ -7,12 +7,10 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "texture_from_png.h"
 
+#include "../opengl/report_gl_error.h"
 #include <YImage.hpp>
-#include <igl/report_gl_error.h>
 
-#ifndef IGL_NO_OPENGL
-
-IGL_INLINE bool igl::texture_from_png(const std::string png_file, GLuint & id)
+IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, GLuint & id)
 {
   YImage yimg;
   if(!yimg.load(png_file.c_str()))
@@ -34,9 +32,8 @@ IGL_INLINE bool igl::texture_from_png(const std::string png_file, GLuint & id)
   return true;
 }
 
-#endif
 
-IGL_INLINE bool igl::texture_from_png(
+IGL_INLINE bool igl::png::texture_from_png(
   const std::string png_file,
   Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
   Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,

@@ -8,9 +8,9 @@
 #ifndef IGL_EPS_H
 #define IGL_EPS_H
 #include "igl_inline.h"
-// Define a standard value for double epsilon
 namespace igl
 {
+  // Define a standard value for double epsilon
   const double DOUBLE_EPS    = 1.0e-14;
   const double DOUBLE_EPS_SQ = 1.0e-28;
   const float FLOAT_EPS    = 1.0e-7;

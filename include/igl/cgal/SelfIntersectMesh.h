@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_SELFINTERSECTMESH_H
-#define IGL_SELFINTERSECTMESH_H
+#ifndef IGL_CGAL_SELFINTERSECTMESH_H
+#define IGL_CGAL_SELFINTERSECTMESH_H
 
 #include "CGAL_includes.hpp"
 #include "RemeshSelfIntersectionsParam.h"
@@ -25,209 +25,206 @@
 
 namespace igl
 {
-  // Kernel is a CGAL kernel like:
-  //     CGAL::Exact_predicates_inexact_constructions_kernel
-  // or 
-  //     CGAL::Exact_predicates_exact_constructions_kernel
-
-  template <
-    typename Kernel,
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedVV,
-    typename DerivedFF,
-    typename DerivedIF,
-    typename DerivedJ,
-    typename DerivedIM>
-  class SelfIntersectMesh
+  namespace cgal
   {
-    typedef 
-      SelfIntersectMesh<
-      Kernel,
-      DerivedV,
-      DerivedF,
-      DerivedVV,
-      DerivedFF,
-      DerivedIF,
-      DerivedJ,
-      DerivedIM> Self;
-    public:
-      // 3D Primitives
-      typedef CGAL::Point_3<Kernel>    Point_3;
-      typedef CGAL::Segment_3<Kernel>  Segment_3; 
-      typedef CGAL::Triangle_3<Kernel> Triangle_3; 
-      typedef CGAL::Plane_3<Kernel>    Plane_3;
-      typedef CGAL::Tetrahedron_3<Kernel> Tetrahedron_3; 
-      //typedef CGAL::Polyhedron_3<Kernel> Polyhedron_3; 
-      //typedef CGAL::Nef_polyhedron_3<Kernel> Nef_polyhedron_3; 
-      // 2D Primitives
-      typedef CGAL::Point_2<Kernel>    Point_2;
-      typedef CGAL::Segment_2<Kernel>  Segment_2; 
-      typedef CGAL::Triangle_2<Kernel> Triangle_2; 
-      // 2D Constrained Delaunay Triangulation types
-      typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
-      typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTFB_2;
-      typedef CGAL::Triangulation_data_structure_2<TVB_2,CTFB_2> TDS_2;
-      typedef CGAL::Exact_intersections_tag Itag;
-      typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel,TDS_2,Itag> 
-        CDT_2;
-      typedef CGAL::Constrained_triangulation_plus_2<CDT_2> CDT_plus_2;
-      // Axis-align boxes for all-pairs self-intersection detection
-      typedef std::vector<Triangle_3> Triangles;
-      typedef typename Triangles::iterator TrianglesIterator;
-      typedef typename Triangles::const_iterator TrianglesConstIterator;
+    // Kernel is a CGAL kernel like:
+    //     CGAL::Exact_predicates_inexact_constructions_kernel
+    // or 
+    //     CGAL::Exact_predicates_exact_constructions_kernel
+  
+    template <
+      typename Kernel,
+      typename DerivedV,
+      typename DerivedF,
+      typename DerivedVV,
+      typename DerivedFF,
+      typename DerivedIF,
+      typename DerivedJ,
+      typename DerivedIM>
+    class SelfIntersectMesh
+    {
       typedef 
-        CGAL::Box_intersection_d::Box_with_handle_d<double,3,TrianglesIterator> 
-        Box;
-
-      // Input mesh
-      const Eigen::PlainObjectBase<DerivedV> & V;
-      const Eigen::PlainObjectBase<DerivedF> & F;
-      // Number of self-intersecting triangle pairs
-      typedef typename DerivedF::Index Index;
-      Index count;
-      typedef std::vector<CGAL::Object> ObjectList;
-      std::vector<ObjectList > F_objects;
-      Triangles T;
-      typedef std::vector<Index> IndexList;
-      IndexList lIF;
-      std::vector<bool> offensive;
-      std::vector<Index> offending_index;
-      std::vector<Index> offending;
-      // Make a short name for the edge map's key
-      typedef std::pair<Index,Index> EMK;
-      // Make a short name for the type stored at each edge, the edge map's
-      // value
-      typedef std::vector<Index> EMV;
-      // Make a short name for the edge map
-      typedef std::map<EMK,EMV> EdgeMap;
-      EdgeMap edge2faces;
-    public:
-      RemeshSelfIntersectionsParam params;
-    public:
-      // Constructs (VV,FF) a new mesh with self-intersections of (V,F)
-      // subdivided
-      //
-      // See also: remesh_self_intersections.h
-      inline SelfIntersectMesh(
-          const Eigen::PlainObjectBase<DerivedV> & V,
-          const Eigen::PlainObjectBase<DerivedF> & F,
-          const RemeshSelfIntersectionsParam & params,
-          Eigen::PlainObjectBase<DerivedVV> & VV,
-          Eigen::PlainObjectBase<DerivedFF> & FF,
-          Eigen::PlainObjectBase<DerivedIF> & IF,
-          Eigen::PlainObjectBase<DerivedJ> & J,
-          Eigen::PlainObjectBase<DerivedIM> & IM);
-    private:
-      // Helper function to mark a face as offensive
-      //
-      // Inputs:
-      //   f  index of face in F
-      inline void mark_offensive(const Index f);
-      // Helper function to count intersections between faces
-      //
-      // Input:
-      //   fa  index of face A in F
-      //   fb  index of face B in F
-      inline void count_intersection( const Index fa, const Index fb);
-      // Helper function for box_intersect. Intersect two triangles A and B,
-      // append the intersection object (point,segment,triangle) to a running
-      // list for A and B
-      //
-      // Inputs:
-      //   A  triangle in 3D
-      //   B  triangle in 3D
-      //   fa  index of A in F (and F_objects)
-      //   fb  index of A in F (and F_objects)
-      // Returns true only if A intersects B
-      //
-      inline bool intersect(
-          const Triangle_3 & A, 
-          const Triangle_3 & B, 
-          const Index fa,
-          const Index fb);
-      // Helper function for box_intersect. In the case where A and B have
-      // already been identified to share a vertex, then we only want to add
-      // possible segment intersections. Assumes truly duplicate triangles are
-      // not given as input
-      //
-      // Inputs:
-      //   A  triangle in 3D
-      //   B  triangle in 3D
-      //   fa  index of A in F (and F_objects)
-      //   fb  index of B in F (and F_objects)
-      //   va  index of shared vertex in A (and F_objects)
-      //   vb  index of shared vertex in B (and F_objects)
-      //// Returns object of intersection (should be Segment or point)
-      //   Returns true if intersection (besides shared point)
-      //
-      inline bool single_shared_vertex(
-          const Triangle_3 & A,
-          const Triangle_3 & B,
-          const Index fa,
-          const Index fb,
-          const Index va,
-          const Index vb);
-      // Helper handling one direction
-      inline bool single_shared_vertex(
-          const Triangle_3 & A,
-          const Triangle_3 & B,
-          const Index fa,
-          const Index fb,
-          const Index va);
-      // Helper function for box_intersect. In the case where A and B have
-      // already been identified to share two vertices, then we only want to add
-      // a possible coplanar (Triangle) intersection. Assumes truly degenerate
-      // facets are not givin as input.
-      inline bool double_shared_vertex(
-          const Triangle_3 & A,
-          const Triangle_3 & B,
-          const Index fa,
-          const Index fb);
-
-    public:
-      // Callback function called during box self intersections test. Means
-      // boxes a and b intersect. This method then checks if the triangles in
-      // each box intersect and if so, then processes the intersections
-      //
-      // Inputs:
-      //   a  box containing a triangle
-      //   b  box containing a triangle
-      inline void box_intersect(const Box& a, const Box& b);
-    private:
-      // Compute 2D delaunay triangulation of a given 3d triangle and a list of
-      // intersection objects (points,segments,triangles). CGAL uses an affine
-      // projection rather than an isometric projection, so we're not
-      // guaranteed that the 2D delaunay triangulation here will be a delaunay
-      // triangulation in 3D.
-      //
-      // Inputs:
-      //   A  triangle in 3D
-      //   A_objects_3  updated list of intersection objects for A
-      // Outputs:
-      //   cdt  Contrained delaunay triangulation in projected 2D plane
-      inline void projected_delaunay(
-          const Triangle_3 & A,
-          const ObjectList & A_objects_3,
-          CDT_plus_2 & cdt);
-      // Getters:
-    public:
-      //const IndexList& get_lIF() const{ return lIF;}
-      static inline void box_intersect_static(
-        SelfIntersectMesh * SIM, 
-        const Box &a, 
-        const Box &b);
-      // Annoying wrappers to conver from cgal to double or cgal
-      static inline void to_output_type(const typename Kernel::FT & cgal,double & d);
-      static inline void to_output_type(
-        const typename CGAL::Epeck::FT & cgal,
-        CGAL::Epeck::FT & d);
-  };
+        SelfIntersectMesh<
+        Kernel,
+        DerivedV,
+        DerivedF,
+        DerivedVV,
+        DerivedFF,
+        DerivedIF,
+        DerivedJ,
+        DerivedIM> Self;
+      public:
+        // 3D Primitives
+        typedef CGAL::Point_3<Kernel>    Point_3;
+        typedef CGAL::Segment_3<Kernel>  Segment_3; 
+        typedef CGAL::Triangle_3<Kernel> Triangle_3; 
+        typedef CGAL::Plane_3<Kernel>    Plane_3;
+        typedef CGAL::Tetrahedron_3<Kernel> Tetrahedron_3; 
+        //typedef CGAL::Polyhedron_3<Kernel> Polyhedron_3; 
+        //typedef CGAL::Nef_polyhedron_3<Kernel> Nef_polyhedron_3; 
+        // 2D Primitives
+        typedef CGAL::Point_2<Kernel>    Point_2;
+        typedef CGAL::Segment_2<Kernel>  Segment_2; 
+        typedef CGAL::Triangle_2<Kernel> Triangle_2; 
+        // 2D Constrained Delaunay Triangulation types
+        typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
+        typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTFB_2;
+        typedef CGAL::Triangulation_data_structure_2<TVB_2,CTFB_2> TDS_2;
+        typedef CGAL::Exact_intersections_tag Itag;
+        typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel,TDS_2,Itag> 
+          CDT_2;
+        typedef CGAL::Constrained_triangulation_plus_2<CDT_2> CDT_plus_2;
+        // Axis-align boxes for all-pairs self-intersection detection
+        typedef std::vector<Triangle_3> Triangles;
+        typedef typename Triangles::iterator TrianglesIterator;
+        typedef typename Triangles::const_iterator TrianglesConstIterator;
+        typedef 
+          CGAL::Box_intersection_d::Box_with_handle_d<double,3,TrianglesIterator> 
+          Box;
+  
+        // Input mesh
+        const Eigen::PlainObjectBase<DerivedV> & V;
+        const Eigen::PlainObjectBase<DerivedF> & F;
+        // Number of self-intersecting triangle pairs
+        typedef typename DerivedF::Index Index;
+        Index count;
+        typedef std::vector<CGAL::Object> ObjectList;
+        // Using a vector here makes this **not** output sensitive
+        Triangles T;
+        typedef std::vector<Index> IndexList;
+        IndexList lIF;
+        // #F-long list of faces with intersections mapping to the order in
+        // which they were first found
+        std::map<Index,std::pair<Index,ObjectList> > offending;
+        // Make a short name for the edge map's key
+        typedef std::pair<Index,Index> EMK;
+        // Make a short name for the type stored at each edge, the edge map's
+        // value
+        typedef std::vector<Index> EMV;
+        // Make a short name for the edge map
+        typedef std::map<EMK,EMV> EdgeMap;
+        // Maps edges of offending faces to all incident offending faces
+        EdgeMap edge2faces;
+      public:
+        RemeshSelfIntersectionsParam params;
+      public:
+        // Constructs (VV,FF) a new mesh with self-intersections of (V,F)
+        // subdivided
+        //
+        // See also: remesh_self_intersections.h
+        inline SelfIntersectMesh(
+            const Eigen::PlainObjectBase<DerivedV> & V,
+            const Eigen::PlainObjectBase<DerivedF> & F,
+            const RemeshSelfIntersectionsParam & params,
+            Eigen::PlainObjectBase<DerivedVV> & VV,
+            Eigen::PlainObjectBase<DerivedFF> & FF,
+            Eigen::PlainObjectBase<DerivedIF> & IF,
+            Eigen::PlainObjectBase<DerivedJ> & J,
+            Eigen::PlainObjectBase<DerivedIM> & IM);
+      private:
+        // Helper function to mark a face as offensive
+        //
+        // Inputs:
+        //   f  index of face in F
+        inline void mark_offensive(const Index f);
+        // Helper function to count intersections between faces
+        //
+        // Input:
+        //   fa  index of face A in F
+        //   fb  index of face B in F
+        inline void count_intersection( const Index fa, const Index fb);
+        // Helper function for box_intersect. Intersect two triangles A and B,
+        // append the intersection object (point,segment,triangle) to a running
+        // list for A and B
+        //
+        // Inputs:
+        //   A  triangle in 3D
+        //   B  triangle in 3D
+        //   fa  index of A in F (and key into offending)
+        //   fb  index of A in F (and key into offending)
+        // Returns true only if A intersects B
+        //
+        inline bool intersect(
+            const Triangle_3 & A, 
+            const Triangle_3 & B, 
+            const Index fa,
+            const Index fb);
+        // Helper function for box_intersect. In the case where A and B have
+        // already been identified to share a vertex, then we only want to add
+        // possible segment intersections. Assumes truly duplicate triangles are
+        // not given as input
+        //
+        // Inputs:
+        //   A  triangle in 3D
+        //   B  triangle in 3D
+        //   fa  index of A in F (and key into offending)
+        //   fb  index of B in F (and key into offending)
+        //   va  index of shared vertex in A (and key into offending)
+        //   vb  index of shared vertex in B (and key into offending)
+        //// Returns object of intersection (should be Segment or point)
+        //   Returns true if intersection (besides shared point)
+        //
+        inline bool single_shared_vertex(
+            const Triangle_3 & A,
+            const Triangle_3 & B,
+            const Index fa,
+            const Index fb,
+            const Index va,
+            const Index vb);
+        // Helper handling one direction
+        inline bool single_shared_vertex(
+            const Triangle_3 & A,
+            const Triangle_3 & B,
+            const Index fa,
+            const Index fb,
+            const Index va);
+        // Helper function for box_intersect. In the case where A and B have
+        // already been identified to share two vertices, then we only want to add
+        // a possible coplanar (Triangle) intersection. Assumes truly degenerate
+        // facets are not givin as input.
+        inline bool double_shared_vertex(
+            const Triangle_3 & A,
+            const Triangle_3 & B,
+            const Index fa,
+            const Index fb,
+            const std::vector<std::pair<Index,Index> > shared);
+  
+      public:
+        // Callback function called during box self intersections test. Means
+        // boxes a and b intersect. This method then checks if the triangles in
+        // each box intersect and if so, then processes the intersections
+        //
+        // Inputs:
+        //   a  box containing a triangle
+        //   b  box containing a triangle
+        inline void box_intersect(const Box& a, const Box& b);
+      private:
+        // Compute 2D delaunay triangulation of a given 3d triangle and a list of
+        // intersection objects (points,segments,triangles). CGAL uses an affine
+        // projection rather than an isometric projection, so we're not
+        // guaranteed that the 2D delaunay triangulation here will be a delaunay
+        // triangulation in 3D.
+        //
+        // Inputs:
+        //   A  triangle in 3D
+        //   A_objects_3  updated list of intersection objects for A
+        // Outputs:
+        //   cdt  Contrained delaunay triangulation in projected 2D plane
+      public:
+        // Getters:
+        //const IndexList& get_lIF() const{ return lIF;}
+        static inline void box_intersect_static(
+          SelfIntersectMesh * SIM, 
+          const Box &a, 
+          const Box &b);
+    };
+  }
 }
 
 // Implementation
 
 #include "mesh_to_cgal_triangle_list.h"
+#include "remesh_intersections.h"
 
 #include <igl/REDRUM.h>
 #include <igl/get_seconds.h>
@@ -274,7 +271,7 @@ template <
   typename DerivedIF,
   typename DerivedJ,
   typename DerivedIM>
-inline void igl::SelfIntersectMesh<
+inline void igl::cgal::SelfIntersectMesh<
   Kernel,
   DerivedV,
   DerivedF,
@@ -299,7 +296,7 @@ template <
   typename DerivedIF,
   typename DerivedJ,
   typename DerivedIM>
-inline igl::SelfIntersectMesh<
+inline igl::cgal::SelfIntersectMesh<
   Kernel,
   DerivedV,
   DerivedF,
@@ -319,11 +316,8 @@ inline igl::SelfIntersectMesh<
   V(V),
   F(F),
   count(0),
-  F_objects(F.rows()),
   T(),
   lIF(),
-  offensive(F.rows(),false),
-  offending_index(F.rows(),-1),
   offending(),
   edge2faces(),
   params(params)
@@ -410,241 +404,7 @@ inline igl::SelfIntersectMesh<
     return;
   }
 
-  int NF_count = 0;
-  // list of new faces, we'll fix F later
-  vector<
-    typename Eigen::Matrix<typename DerivedFF::Scalar,Dynamic,Dynamic>
-    > NF(offending.size());
-  // list of new vertices
-  typedef vector<Point_3> Point_3List;
-  Point_3List NV;
-  Index NV_count = 0;
-  vector<CDT_plus_2> cdt(offending.size());
-  vector<Plane_3> P(offending.size());
-  // Use map for *all* faces
-  map<typename CDT_plus_2::Vertex_handle,Index> v2i;
-  // Loop over offending triangles
-  const size_t noff = offending.size();
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
-  double t_proj_del = 0;
-#endif
-  // Unfortunately it looks like CGAL has trouble allocating memory when
-  // multiple openmp threads are running. Crashes durring CDT...
-//# pragma omp parallel for if (noff>1000)
-  for(Index o = 0;o<(Index)noff;o++)
-  {
-    // index in F
-    const Index f = offending[o];
-    {
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
-      const double t_before = get_seconds();
-#endif
-      projected_delaunay(T[f],F_objects[f],cdt[o]);
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
-      t_proj_del += (get_seconds()-t_before);
-#endif
-    }
-    // Q: Is this also delaunay in 3D?
-    // A: No, because the projection is affine and delaunay is not affine
-    // invariant.
-    // Q: Then, can't we first get the 2D delaunay triangulation, then lift it
-    // to 3D and flip any offending edges?
-    // Plane of projection (also used by projected_delaunay)
-    P[o] = Plane_3(T[f].vertex(0),T[f].vertex(1),T[f].vertex(2));
-    // Build index map
-    {
-      Index i=0;
-      for(
-        typename CDT_plus_2::Finite_vertices_iterator vit = cdt[o].finite_vertices_begin();
-        vit != cdt[o].finite_vertices_end();
-        ++vit)
-      {
-        if(i<3)
-        {
-          //cout<<T[f].vertex(i)<<
-          //  (T[f].vertex(i) == P[o].to_3d(vit->point())?" == ":" != ")<<
-          //  P[o].to_3d(vit->point())<<endl;
-#ifndef NDEBUG
-          // I want to be sure that the original corners really show up as the
-          // original corners of the CDT. I.e. I don't trust CGAL to maintain
-          // the order
-          assert(T[f].vertex(i) == P[o].to_3d(vit->point()));
-#endif
-          // For first three, use original index in F
-//#   pragma omp critical
-          v2i[vit] = F(f,i);
-        }else
-        {
-          const Point_3 vit_point_3 = P[o].to_3d(vit->point());
-          // First look up each edge's neighbors to see if exact point has
-          // already been added (This makes everything a bit quadratic)
-          bool found = false;
-          for(int e = 0; e<3 && !found;e++)
-          {
-            // Index of F's eth edge in V
-            Index i = F(f,(e+1)%3);
-            Index j = F(f,(e+2)%3);
-            // Be sure that i<j
-            if(i>j)
-            {
-              swap(i,j);
-            }
-            assert(edge2faces.count(EMK(i,j))==1);
-            // loop over neighbors
-            for(
-              typename IndexList::const_iterator nit = edge2faces[EMK(i,j)].begin();
-              nit != edge2faces[EMK(i,j)].end() && !found;
-              nit++)
-            {
-              // don't consider self
-              if(*nit == f)
-              {
-                continue;
-              }
-              // index of neighbor in offending (to find its cdt)
-              Index no = offending_index[*nit];
-              // Loop over vertices of that neighbor's cdt (might not have been
-              // processed yet, but then it's OK because it'll just be empty)
-              for(
-                  typename CDT_plus_2::Finite_vertices_iterator uit = cdt[no].finite_vertices_begin();
-                  uit != cdt[no].finite_vertices_end() && !found;
-                  ++uit)
-              {
-                if(vit_point_3 == P[no].to_3d(uit->point()))
-                {
-                  assert(v2i.count(uit) == 1);
-//#   pragma omp critical
-                  v2i[vit] = v2i[uit];
-                  found = true;
-                }
-              }
-            }
-          }
-          if(!found)
-          {
-//#   pragma omp critical
-            {
-              v2i[vit] = V.rows()+NV_count;
-              NV.push_back(vit_point_3);
-              NV_count++;
-            }
-          }
-        }
-        i++;
-      }
-    }
-    {
-      Index i = 0;
-      // Resize to fit new number of triangles
-      NF[o].resize(cdt[o].number_of_faces(),3);
-//#   pragma omp atomic
-      NF_count+=NF[o].rows();
-      // Append new faces to NF
-      for(
-        typename CDT_plus_2::Finite_faces_iterator fit = cdt[o].finite_faces_begin();
-        fit != cdt[o].finite_faces_end();
-        ++fit)
-      {
-        NF[o](i,0) = v2i[fit->vertex(0)];
-        NF[o](i,1) = v2i[fit->vertex(1)];
-        NF[o](i,2) = v2i[fit->vertex(2)];
-        i++;
-      }
-    }
-  }
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
-  cout<<"CDT: "<<tictoc()<<"  "<<t_proj_del<<endl;
-#endif
-
-  assert(NV_count == (Index)NV.size());
-  // Build output
-#ifndef NDEBUG
-  {
-    Index off_count = 0;
-    for(Index f = 0;f<F.rows();f++)
-    {
-      off_count+= (offensive[f]?1:0);
-    }
-    assert(off_count==(Index)offending.size());
-  }
-#endif
-  // Append faces
-  FF.resize(F.rows()-offending.size()+NF_count,3);
-  J.resize(FF.rows());
-  // First append non-offending original faces
-  // There's an Eigen way to do this in one line but I forget
-  Index off = 0;
-  for(Index f = 0;f<F.rows();f++)
-  {
-    if(!offensive[f])
-    {
-      FF.row(off) = F.row(f);
-      J(off) = f;
-      off++;
-    }
-  }
-  assert(off == (Index)(F.rows()-offending.size()));
-  // Now append replacement faces for offending faces
-  for(Index o = 0;o<(Index)offending.size();o++)
-  {
-    FF.block(off,0,NF[o].rows(),3) = NF[o];
-    J.block(off,0,NF[o].rows(),1).setConstant(offending[o]);
-    off += NF[o].rows();
-  }
-  // Append vertices
-  VV.resize(V.rows()+NV_count,3);
-  VV.block(0,0,V.rows(),3) = V.template cast<typename DerivedVV::Scalar>();
-  {
-    Index i = 0;
-    for(
-      typename Point_3List::const_iterator nvit = NV.begin();
-      nvit != NV.end();
-      nvit++)
-    {
-      for(Index d = 0;d<3;d++)
-      {
-        const Point_3 & p = *nvit;
-        // Don't convert via double if output type is same as Kernel
-        to_output_type(p[d], VV(V.rows()+i,d));
-      }
-      i++;
-    }
-  }
-  IM.resize(VV.rows(),1);
-  map<Point_3,Index> vv2i;
-  // Safe to check for duplicates using double for original vertices: if
-  // incoming reps are different then the points are unique.
-  for(Index v = 0;v<V.rows();v++)
-  {
-    const Point_3 p(V(v,0),V(v,1),V(v,2));
-    if(vv2i.count(p)==0)
-    {
-      vv2i[p] = v;
-    }
-    assert(vv2i.count(p) == 1);
-    IM(v) = vv2i[p];
-  }
-  // Must check for duplicates of new vertices using exact.
-  {
-    Index v = V.rows();
-    for(
-      typename Point_3List::const_iterator nvit = NV.begin();
-      nvit != NV.end();
-      nvit++)
-    {
-      const Point_3 & p = *nvit;
-      if(vv2i.count(p)==0)
-      {
-        vv2i[p] = v;
-      }
-      assert(vv2i.count(p) == 1);
-      IM(v) = vv2i[p];
-      v++;
-    }
-  }
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
-  cout<<"Output + dupes: "<<tictoc()<<endl;
-#endif
+  remesh_intersections(V,F,T,offending,edge2faces,VV,FF,J,IM);
 
   // Q: Does this give the same result as TETGEN?
   // A: For the cow and beast, yes.
@@ -655,6 +415,7 @@ inline igl::SelfIntersectMesh<
   // But maybe tetgen is still faster for the detection part. For example, this
   // CGAL implementation on the beast takes 98 seconds but tetgen detection
   // takes 14 seconds
+
 
 }
 
@@ -668,7 +429,7 @@ template <
   typename DerivedIF,
   typename DerivedJ,
   typename DerivedIM>
-inline void igl::SelfIntersectMesh<
+inline void igl::cgal::SelfIntersectMesh<
   Kernel,
   DerivedV,
   DerivedF,
@@ -680,28 +441,16 @@ inline void igl::SelfIntersectMesh<
 {
   using namespace std;
   lIF.push_back(f);
-  if(!offensive[f])
+  if(offending.count(f) == 0)
   {
-    offensive[f]=true;
-    offending_index[f]=offending.size();
-    offending.push_back(f);
-    // Add to edge map
+    // first time marking, initialize with new id and empty list
+    const Index id = offending.size();
+    offending[f] = {id,{}};
     for(Index e = 0; e<3;e++)
     {
-      // Index of F's eth edge in V
-      Index i = F(f,(e+1)%3);
-      Index j = F(f,(e+2)%3);
-      // Be sure that i<j
-      if(i>j)
-      {
-        swap(i,j);
-      }
-      // Create new list if there is no entry
-      if(edge2faces.count(EMK(i,j))==0)
-      {
-        edge2faces[EMK(i,j)] = EMV();
-      }
-      // append to list
+      // append face to edge's list
+      Index i = F(f,(e+1)%3) < F(f,(e+2)%3) ? F(f,(e+1)%3) : F(f,(e+2)%3);
+      Index j = F(f,(e+1)%3) < F(f,(e+2)%3) ? F(f,(e+2)%3) : F(f,(e+1)%3);
       edge2faces[EMK(i,j)].push_back(f);
     }
   }
@@ -716,7 +465,7 @@ template <
   typename DerivedIF,
   typename DerivedJ,
   typename DerivedIM>
-inline void igl::SelfIntersectMesh<
+inline void igl::cgal::SelfIntersectMesh<
   Kernel,
   DerivedV,
   DerivedF,
@@ -747,7 +496,7 @@ template <
   typename DerivedIF,
   typename DerivedJ,
   typename DerivedIM>
-inline bool igl::SelfIntersectMesh<
+inline bool igl::cgal::SelfIntersectMesh<
   Kernel,
   DerivedV,
   DerivedF,
@@ -766,14 +515,14 @@ inline bool igl::SelfIntersectMesh<
   {
     return false;
   }
+  count_intersection(fa,fb);
   if(!params.detect_only)
   {
     // Construct intersection
     CGAL::Object result = CGAL::intersection(A,B);
-    F_objects[fa].push_back(result);
-    F_objects[fb].push_back(result);
+    offending[fa].second.push_back(result);
+    offending[fb].second.push_back(result);
   }
-  count_intersection(fa,fb);
   return true;
 }
 
@@ -786,7 +535,7 @@ template <
   typename DerivedIF,
   typename DerivedJ,
   typename DerivedIM>
-inline bool igl::SelfIntersectMesh<
+inline bool igl::cgal::SelfIntersectMesh<
   Kernel,
   DerivedV,
   DerivedF,
@@ -832,7 +581,7 @@ template <
   typename DerivedIF,
   typename DerivedJ,
   typename DerivedIM>
-inline bool igl::SelfIntersectMesh<
+inline bool igl::cgal::SelfIntersectMesh<
   Kernel,
   DerivedV,
   DerivedF,
@@ -855,43 +604,41 @@ inline bool igl::SelfIntersectMesh<
 
   if(CGAL::do_intersect(sa,B))
   {
+    // can't put count_intersection(fa,fb) here since we use intersect below
+    // and then it will be counted twice.
+    if(params.detect_only)
+    {
+      count_intersection(fa,fb);
+      return true;
+    }
     CGAL::Object result = CGAL::intersection(sa,B);
     if(const Point_3 * p = CGAL::object_cast<Point_3 >(&result))
     {
-      if(!params.detect_only)
-      {
-        // Single intersection --> segment from shared point to intersection
-        CGAL::Object seg = CGAL::make_object(Segment_3(
-          A.vertex(va),
-          *p));
-        F_objects[fa].push_back(seg);
-        F_objects[fb].push_back(seg);
-      }
+      // Single intersection --> segment from shared point to intersection
+      CGAL::Object seg = CGAL::make_object(Segment_3(
+        A.vertex(va),
+        *p));
       count_intersection(fa,fb);
+      offending[fa].second.push_back(seg);
+      offending[fb].second.push_back(seg);
       return true;
     }else if(CGAL::object_cast<Segment_3 >(&result))
     {
       //cerr<<REDRUM("Coplanar at: "<<fa<<" & "<<fb<<" (single shared).")<<endl;
       // Must be coplanar
-      if(params.detect_only)
-      {
-        count_intersection(fa,fb);
-      }else
-      {
-        // WRONG:
-        //// Segment intersection --> triangle from shared point to intersection
-        //CGAL::Object tri = CGAL::make_object(Triangle_3(
-        //  A.vertex(va),
-        //  s->vertex(0),
-        //  s->vertex(1)));
-        //F_objects[fa].push_back(tri);
-        //F_objects[fb].push_back(tri);
-        //count_intersection(fa,fb);
-        // Need to do full test. Intersection could be a general poly.
-        bool test = intersect(A,B,fa,fb);
-        ((void)test);
-        assert(test);
-      }
+      // WRONG:
+      //// Segment intersection --> triangle from shared point to intersection
+      //CGAL::Object tri = CGAL::make_object(Triangle_3(
+      //  A.vertex(va),
+      //  s->vertex(0),
+      //  s->vertex(1)));
+      //F_objects[fa].push_back(tri);
+      //F_objects[fb].push_back(tri);
+      //count_intersection(fa,fb);
+      // Need to do full test. Intersection could be a general poly.
+      bool test = intersect(A,B,fa,fb);
+      ((void)test);
+      assert(test && "intersect should agree with do_intersect");
       return true;
     }else
     {
@@ -913,7 +660,7 @@ template <
   typename DerivedIF,
   typename DerivedJ,
   typename DerivedIM>
-inline bool igl::SelfIntersectMesh<
+inline bool igl::cgal::SelfIntersectMesh<
   Kernel,
   DerivedV,
   DerivedF,
@@ -925,60 +672,122 @@ inline bool igl::SelfIntersectMesh<
   const Triangle_3 & A,
   const Triangle_3 & B,
   const Index fa,
-  const Index fb)
+  const Index fb,
+  const std::vector<std::pair<Index,Index> > shared)
 {
   using namespace std;
-  // Cheaper way to do this than calling do_intersect?
+
+  // must be co-planar
   if(
-    // Can only have an intersection if co-planar
-    (A.supporting_plane() == B.supporting_plane() ||
-    A.supporting_plane() == B.supporting_plane().opposite()) &&
-    CGAL::do_intersect(A,B))
+    A.supporting_plane() != B.supporting_plane() &&
+    A.supporting_plane() != B.supporting_plane().opposite())
   {
-    // Construct intersection
-    try
+    return false;
+  }
+  // Since A and B are non-degenerate the intersection must be a polygon
+  // (triangle). Either
+  //   - the vertex of A (B) opposite the shared edge of lies on B (A), or
+  //   - an edge of A intersects and edge of B without sharing a vertex
+
+
+
+  // Determine if the vertex opposite edge (a0,a1) in triangle A lies in
+  // (intersects) triangle B
+  const auto & opposite_point_inside = [](
+    const Triangle_3 & A, const Index a0, const Index a1, const Triangle_3 & B) 
+    -> bool
+  {
+    // get opposite index
+    Index a2 = -1;
+    for(int c = 0;c<3;c++)
     {
-      // This can fail for Epick but not Epeck
-      CGAL::Object result = CGAL::intersection(A,B);
-      if(!result.empty())
+      if(c != a0 && c != a1)
       {
-        if(CGAL::object_cast<Segment_3 >(&result))
-        {
-          // not coplanar
-          return false;
-        } else if(CGAL::object_cast<Point_3 >(&result))
-        {
-          // this "shouldn't" happen but does for inexact
-          return false;
-        } else
-        {
-          if(!params.detect_only)
-          {
-            // Triangle object
-            F_objects[fa].push_back(result);
-            F_objects[fb].push_back(result);
-          }
-          count_intersection(fa,fb);
-          //cerr<<REDRUM("Coplanar at: "<<fa<<" & "<<fb<<" (double shared).")<<endl;
-          return true;
-        }
-      }else
-      {
-        // CGAL::intersection is disagreeing with do_intersect
-        return false;
+        a2 = c;
+        break;
       }
-    }catch(...)
+    }
+    assert(a2 != -1);
+    bool ret = CGAL::do_intersect(A.vertex(a2),B);
+    //cout<<"opposite_point_inside: "<<ret<<endl;
+    return ret;
+  };
+
+  // Determine if edge opposite vertex va in triangle A intersects edge
+  // opposite vertex vb in triangle B.
+  const auto & opposite_edges_intersect = [](
+    const Triangle_3 & A, const Index va,
+    const Triangle_3 & B, const Index vb) -> bool
+  {
+    Segment_3 sa( A.vertex((va+1)%3), A.vertex((va+2)%3));
+    Segment_3 sb( B.vertex((vb+1)%3), B.vertex((vb+2)%3));
+    //cout<<sa<<endl;
+    //cout<<sb<<endl;
+    bool ret = CGAL::do_intersect(sa,sb);
+    //cout<<"opposite_edges_intersect: "<<ret<<endl;
+    return ret;
+  };
+
+
+  if( 
+    !opposite_point_inside(A,shared[0].first,shared[1].first,B) &&
+    !opposite_point_inside(B,shared[0].second,shared[1].second,A) &&
+    !opposite_edges_intersect(A,shared[0].first,B,shared[1].second) && 
+    !opposite_edges_intersect(A,shared[1].first,B,shared[0].second))
+  {
+    return false;
+  }
+
+  // there is an intersection indeed
+  count_intersection(fa,fb);
+  if(params.detect_only)
+  {
+    return true;
+  }
+  // Construct intersection
+  try
+  {
+    // This can fail for Epick but not Epeck
+    CGAL::Object result = CGAL::intersection(A,B);
+    if(!result.empty())
     {
-      // This catches some cgal assertion:
-      //     CGAL error: assertion violation!
-      //     Expression : is_finite(d)
-      //     File       : /opt/local/include/CGAL/GMP/Gmpq_type.h
-      //     Line       : 132
-      //     Explanation: 
-      // But only if NDEBUG is not defined, otherwise there's an uncaught
-      // "Floating point exception: 8" SIGFPE
+      if(CGAL::object_cast<Segment_3 >(&result))
+      {
+        // not coplanar
+        assert(false && 
+          "Co-planar non-degenerate triangles should intersect over triangle");
+        return false;
+      } else if(CGAL::object_cast<Point_3 >(&result))
+      {
+        // this "shouldn't" happen but does for inexact
+        assert(false && 
+          "Co-planar non-degenerate triangles should intersect over triangle");
+        return false;
+      } else
+      {
+        // Triangle object
+        offending[fa].second.push_back(result);
+        offending[fb].second.push_back(result);
+        //cerr<<REDRUM("Coplanar at: "<<fa<<" & "<<fb<<" (double shared).")<<endl;
+        return true;
+      }
+    }else
+    {
+      // CGAL::intersection is disagreeing with do_intersect
+      assert(false && "CGAL::intersection should agree with predicate tests");
       return false;
     }
+  }catch(...)
+  {
+    // This catches some cgal assertion:
+    //     CGAL error: assertion violation!
+    //     Expression : is_finite(d)
+    //     File       : /opt/local/include/CGAL/GMP/Gmpq_type.h
+    //     Line       : 132
+    //     Explanation: 
+    // But only if NDEBUG is not defined, otherwise there's an uncaught
+    // "Floating point exception: 8" SIGFPE
+    return false;
   }
   // No intersection.
   return false;
@@ -993,7 +802,7 @@ template <
   typename DerivedIF,
   typename DerivedJ,
   typename DerivedIM>
-inline void igl::SelfIntersectMesh<
+inline void igl::cgal::SelfIntersectMesh<
   Kernel,
   DerivedV,
   DerivedF,
@@ -1027,9 +836,8 @@ inline void igl::SelfIntersectMesh<
   // Number of geometrically shared vertices (*not* including combinatorially
   // shared)
   Index geo_shared_vertices = 0;
-  // Keep track of shared vertex indices (we only handles single shared
-  // vertices as a special case, so just need last/first/only ones)
-  Index va=-1,vb=-1;
+  // Keep track of shared vertex indices
+  std::vector<std::pair<Index,Index> > shared;
   Index ea,eb;
   for(ea=0;ea<3;ea++)
   {
@@ -1038,25 +846,25 @@ inline void igl::SelfIntersectMesh<
       if(F(fa,ea) == F(fb,eb))
       {
         comb_shared_vertices++;
-        va = ea;
-        vb = eb;
+        shared.emplace_back(ea,eb);
       }else if(A.vertex(ea) == B.vertex(eb))
       {
         geo_shared_vertices++;
-        va = ea;
-        vb = eb;
+        shared.emplace_back(ea,eb);
       }
     }
   }
   const Index total_shared_vertices = comb_shared_vertices + geo_shared_vertices;
   if(comb_shared_vertices== 3)
   {
+    assert(shared.size() == 3);
     //// Combinatorially duplicate face, these should be removed by preprocessing
     //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are combinatorial duplicates")<<endl;
     goto done;
   }
   if(total_shared_vertices== 3)
   {
+    assert(shared.size() == 3);
     //// Geometrically duplicate face, these should be removed by preprocessing
     //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are geometrical duplicates")<<endl;
     goto done;
@@ -1078,6 +886,7 @@ inline void igl::SelfIntersectMesh<
 
   if(total_shared_vertices == 2)
   {
+    assert(shared.size() == 2);
     // Q: What about coplanar?
     //
     // o    o
@@ -1086,19 +895,17 @@ inline void igl::SelfIntersectMesh<
     // | /\ |
     // |/  \|
     // o----o
-    double_shared_vertex(A,B,fa,fb);
+    double_shared_vertex(A,B,fa,fb,shared);
 
     goto done;
   }
   assert(total_shared_vertices<=1);
   if(total_shared_vertices==1)
   {
-    assert(va>=0 && va<3);
-    assert(vb>=0 && vb<3);
 //#ifndef NDEBUG
 //    CGAL::Object result =
 //#endif
-    single_shared_vertex(A,B,fa,fb,va,vb);
+    single_shared_vertex(A,B,fa,fb,shared[0].first,shared[0].second);
 //#ifndef NDEBUG
 //    if(!CGAL::object_cast<Segment_3 >(&result))
 //    {
@@ -1125,143 +932,6 @@ inline void igl::SelfIntersectMesh<
   }
 done:
   return;
-}
-
-// Compute 2D delaunay triangulation of a given 3d triangle and a list of
-// intersection objects (points,segments,triangles). CGAL uses an affine
-// projection rather than an isometric projection, so we're not guaranteed
-// that the 2D delaunay triangulation here will be a delaunay triangulation
-// in 3D.
-//
-// Inputs:
-//   A  triangle in 3D
-//   A_objects_3  updated list of intersection objects for A
-// Outputs:
-//   cdt  Contrained delaunay triangulation in projected 2D plane
-template <
-  typename Kernel,
-  typename DerivedV,
-  typename DerivedF,
-  typename DerivedVV,
-  typename DerivedFF,
-  typename DerivedIF,
-  typename DerivedJ,
-  typename DerivedIM>
-inline void igl::SelfIntersectMesh<
-  Kernel,
-  DerivedV,
-  DerivedF,
-  DerivedVV,
-  DerivedFF,
-  DerivedIF,
-  DerivedJ,
-  DerivedIM>::projected_delaunay(
-  const Triangle_3 & A,
-  const ObjectList & A_objects_3,
-  CDT_plus_2 & cdt)
-{
-  using namespace std;
-  // http://www.cgal.org/Manual/3.2/doc_html/cgal_manual/Triangulation_2/Chapter_main.html#Section_2D_Triangulations_Constrained_Plus
-  // Plane of triangle A
-  Plane_3 P(A.vertex(0),A.vertex(1),A.vertex(2));
-  // Insert triangle into vertices
-  typename CDT_plus_2::Vertex_handle corners[3];
-  for(Index i = 0;i<3;i++)
-  {
-    corners[i] = cdt.insert(P.to_2d(A.vertex(i)));
-  }
-  // Insert triangle edges as constraints
-  for(Index i = 0;i<3;i++)
-  {
-    cdt.insert_constraint( corners[(i+1)%3], corners[(i+2)%3]);
-  }
-  // Insert constraints for intersection objects
-  for( const auto & obj : A_objects_3)
-  {
-    if(const Segment_3 *iseg = CGAL::object_cast<Segment_3 >(&obj))
-    {
-      // Add segment constraint
-      cdt.insert_constraint(P.to_2d(iseg->vertex(0)),P.to_2d(iseg->vertex(1)));
-    }else if(const Point_3 *ipoint = CGAL::object_cast<Point_3 >(&obj))
-    {
-      // Add point
-      cdt.insert(P.to_2d(*ipoint));
-    } else if(const Triangle_3 *itri = CGAL::object_cast<Triangle_3 >(&obj))
-    {
-      // Add 3 segment constraints
-      cdt.insert_constraint(P.to_2d(itri->vertex(0)),P.to_2d(itri->vertex(1)));
-      cdt.insert_constraint(P.to_2d(itri->vertex(1)),P.to_2d(itri->vertex(2)));
-      cdt.insert_constraint(P.to_2d(itri->vertex(2)),P.to_2d(itri->vertex(0)));
-    } else if(const std::vector<Point_3 > *polyp = 
-        CGAL::object_cast< std::vector<Point_3 > >(&obj))
-    {
-      //cerr<<REDRUM("Poly...")<<endl;
-      const std::vector<Point_3 > & poly = *polyp;
-      const Index m = poly.size();
-      assert(m>=2);
-      for(Index p = 0;p<m;p++)
-      {
-        const Index np = (p+1)%m;
-        cdt.insert_constraint(P.to_2d(poly[p]),P.to_2d(poly[np]));
-      }
-    }else
-    {
-      cerr<<REDRUM("What is this object?!")<<endl;
-      assert(false);
-    }
-  }
-}
-
-template <
-  typename Kernel,
-  typename DerivedV,
-  typename DerivedF,
-  typename DerivedVV,
-  typename DerivedFF,
-  typename DerivedIF,
-  typename DerivedJ,
-  typename DerivedIM>
-inline 
-void 
-igl::SelfIntersectMesh<
-  Kernel,
-  DerivedV,
-  DerivedF,
-  DerivedVV,
-  DerivedFF,
-  DerivedIF,
-  DerivedJ,
-  DerivedIM>::to_output_type(
-    const typename Kernel::FT & cgal,
-    double & d)
-{
-  d = CGAL::to_double(cgal);
-}
-
-template <
-  typename Kernel,
-  typename DerivedV,
-  typename DerivedF,
-  typename DerivedVV,
-  typename DerivedFF,
-  typename DerivedIF,
-  typename DerivedJ,
-  typename DerivedIM>
-inline 
-void 
-igl::SelfIntersectMesh<
-  Kernel,
-  DerivedV,
-  DerivedF,
-  DerivedVV,
-  DerivedFF,
-  DerivedIF,
-  DerivedJ,
-  DerivedIM>::to_output_type(
-    const typename CGAL::Epeck::FT & cgal,
-    CGAL::Epeck::FT & d)
-{
-  d = cgal;
 }
 
 #endif

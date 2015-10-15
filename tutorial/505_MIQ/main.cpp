@@ -1,15 +1,23 @@
-#include <igl/readOFF.h>
-#include <igl/viewer/Viewer.h>
-#include <igl/comiso/miq.h>
-#include <igl/barycenter.h>
 #include <igl/avg_edge_length.h>
-#include <igl/comiso/nrosy.h>
-#include <sstream>
+#include <igl/barycenter.h>
+#include <igl/comb_cross_field.h>
+#include <igl/comb_frame_field.h>
+#include <igl/comiso/miq.h>
+#include <igl/compute_frame_field_bisectors.h>
+#include <igl/cross_field_missmatch.h>
+#include <igl/cut_mesh_from_singularities.h>
+#include <igl/find_cross_field_singularities.h>
+#include <igl/local_basis.h>
+#include <igl/readOFF.h>
 #include <igl/rotate_vectors.h>
+#include <igl/comiso/nrosy.h>
+#include <igl/viewer/Viewer.h>
+#include <sstream>
 
 // Input mesh
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
+
 
 // Face barycenters
 Eigen::MatrixXd B;
@@ -69,13 +77,13 @@ void line_texture(Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &te
     texture_B = texture_R;
   }
 
-bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key == 'E')
   {
     extend_arrows = !extend_arrows;
   }
-  
+
   if (key <'1' || key >'8')
     return false;
 
@@ -204,7 +212,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
     viewer.data.set_uv(UV_seams,FUV_seams);
     viewer.core.show_texture = true;
   }
-  
+
   viewer.data.set_colors(Eigen::RowVector3d(1,1,1));
 
   // Replace the standard texture with an integer shift invariant texture
@@ -239,7 +247,7 @@ int main(int argc, char *argv[])
 
   // Create a smooth 4-RoSy field
   VectorXd S;
-  igl::nrosy(V,F,b,bc,VectorXi(),VectorXd(),MatrixXd(),4,0.5,X1,S);
+  igl::comiso::nrosy(V,F,b,bc,VectorXi(),VectorXd(),MatrixXd(),4,0.5,X1,S);
 
   // Find the the orthogonal vector
   MatrixXd B1,B2,B3;
@@ -270,7 +278,7 @@ int main(int argc, char *argv[])
   igl::comb_frame_field(V, F, X1, X2, BIS1_combed, BIS2_combed, X1_combed, X2_combed);
 
   // Global parametrization
-  igl::miq(V,
+  igl::comiso::miq(V,
            F,
            X1_combed,
            X2_combed,
@@ -287,7 +295,7 @@ int main(int argc, char *argv[])
            true);
 
 // Global parametrization (with seams, only for demonstration)
-igl::miq(V,
+igl::comiso::miq(V,
          F,
          X1_combed,
          X2_combed,
@@ -304,7 +312,7 @@ igl::miq(V,
          false);
 
   // Plot the mesh
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
 
   // Plot the original mesh with a texture parametrization
   key_down(viewer,'7',0);

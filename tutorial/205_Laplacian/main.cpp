@@ -1,13 +1,13 @@
-#include <igl/readOFF.h>
-#include <igl/readDMAT.h>
 #include <igl/barycenter.h>
 #include <igl/cotmatrix.h>
-#include <igl/massmatrix.h>
-#include <igl/grad.h>
 #include <igl/doublearea.h>
-#include <igl/repdiag.h>
+#include <igl/grad.h>
 #include <igl/jet.h>
+#include <igl/massmatrix.h>
 #include <igl/per_vertex_normals.h>
+#include <igl/readDMAT.h>
+#include <igl/readOFF.h>
+#include <igl/repdiag.h>
 #include <igl/viewer/Viewer.h>
 
 #include <iostream>
@@ -15,7 +15,7 @@
 Eigen::MatrixXd V,U;
 Eigen::MatrixXi F;
 Eigen::SparseMatrix<double> L;
-igl::Viewer viewer;
+igl::viewer::Viewer viewer;
 
 int main(int argc, char *argv[])
 {
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
   K = -G.transpose() * T * G;
   cout<<"|K-L|: "<<(K-L).norm()<<endl;
 
-  const auto &key_down = [](igl::Viewer &viewer,unsigned char key,int mod)->bool
+  const auto &key_down = [](igl::viewer::Viewer &viewer,unsigned char key,int mod)->bool
   {
     switch(key)
     {

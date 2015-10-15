@@ -14,7 +14,7 @@ Eigen::VectorXd Z;
 Eigen::MatrixXi F;
 Eigen::VectorXi b;
 
-bool pre_draw(igl::Viewer & viewer)
+bool pre_draw(igl::viewer::Viewer & viewer)
 {
   using namespace Eigen;
   // Determine boundary conditions
@@ -40,7 +40,7 @@ bool pre_draw(igl::Viewer & viewer)
   return false;
 }
 
-bool key_down(igl::Viewer &viewer, unsigned char key, int mods)
+bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
 {
   switch(key)
   {
@@ -108,11 +108,11 @@ int main(int argc, char *argv[])
   }
 
   // Plot the mesh with pseudocolors
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(U, F);
   viewer.core.show_lines = false;
   viewer.data.set_colors(C);
-  viewer.core.trackball_angle << 0,sqrt(2.0),0,sqrt(2.0);
+  viewer.core.trackball_angle = Eigen::Quaternionf(sqrt(2.0),0,sqrt(2.0),0);
   viewer.core.trackball_angle.normalize();
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;

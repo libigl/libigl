@@ -8,12 +8,15 @@
 #include "triangulate.h"
 #ifdef ANSI_DECLARATORS
 #  define IGL_PREVIOUSLY_DEFINED_ANSI_DECLARATORS ANSI_DECLARATORS
+#  undef ANSI_DECLARATORS
 #endif
 #ifdef REAL
 #  define IGL_PREVIOUSLY_DEFINED_REAL REAL
+#  undef REAL
 #endif
 #ifdef VOID
 #  define IGL_PREVIOUSLY_DEFINED_VOID VOID
+#  undef VOID
 #endif
 #define ANSI_DECLARATORS
 #define REAL double
@@ -24,25 +27,22 @@ extern "C"
 #include <triangle.h>
 }
 
+#undef ANSI_DECLARATORS
 #ifdef IGL_PREVIOUSLY_DEFINED_ANSI_DECLARATORS
 #  define ANSI_DECLARATORS IGL_PREVIOUSLY_DEFINED_ANSI_DECLARATORS
-#else
-#  undef ANSI_DECLARATORS
 #endif
 
+#undef REAL
 #ifdef IGL_PREVIOUSLY_DEFINED_REAL
 #  define REAL IGL_PREVIOUSLY_DEFINED_REAL
-#else
-#  undef REAL
 #endif
 
+#undef VOID
 #ifdef IGL_PREVIOUSLY_DEFINED_VOID
 #  define VOID IGL_PREVIOUSLY_DEFINED_VOID
-#else
-#  undef VOID
 #endif
 
-IGL_INLINE void igl::triangulate(
+IGL_INLINE void igl::triangle::triangulate(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& E,
   const Eigen::MatrixXd& H,
@@ -54,7 +54,7 @@ IGL_INLINE void igl::triangulate(
   using namespace Eigen;
 
   // Prepare the flags
-  string full_flags = flags + "pzBV";
+  string full_flags = flags + "pzB";
 
   // Prepare the input struct
   triangulateio in;
@@ -104,14 +104,6 @@ IGL_INLINE void igl::triangulate(
   // Call triangle
   ::triangulate(const_cast<char*>(full_flags.c_str()), &in, &out, 0);
 
-  // Cleanup in
-  free(in.pointlist);
-  free(in.pointmarkerlist);
-  free(in.segmentlist);
-  free(in.segmentmarkerlist);
-  free(in.holelist);
-
-
   // Return the mesh
   V2.resize(out.numberofpoints,2);
   for (unsigned i=0;i<V2.rows();++i)
@@ -123,6 +115,13 @@ IGL_INLINE void igl::triangulate(
     for (unsigned j=0;j<3;++j)
       F2(i,j) = out.trianglelist[i*3+j];
 
+  // Cleanup in
+  free(in.pointlist);
+  free(in.pointmarkerlist);
+  free(in.segmentlist);
+  free(in.segmentmarkerlist);
+  free(in.holelist);
+
   // Cleanup out
   free(out.pointlist);
   free(out.trianglelist);
@@ -131,5 +130,5 @@ IGL_INLINE void igl::triangulate(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template instanciation
+// Explicit template specialization
 #endif

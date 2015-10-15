@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "min_quad_with_fixed.h"
 
@@ -64,6 +64,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   assert((kr == 0 || known.maxCoeff() < n) && "known indices should be in [0,n)");
   assert(neq <= n && "Number of equality constraints should be less than DOFs");
 
+
   // cache known
   data.known = known;
   // get list of unknown indices
@@ -106,7 +107,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     data.Auu_sym = true;
     // This is an annoying assertion unless EPS can be chosen in a nicer way.
     //assert(is_symmetric(Auu,EPS<double>()));
-    assert(is_symmetric(Auu,1.0) && 
+    assert(is_symmetric(Auu,1.0) &&
       "Auu should be symmetric if positive definite");
   }else
   {
@@ -126,9 +127,9 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
 #endif
     // QR decomposition to determine row rank in Aequ
     slice(Aeq,data.unknown,2,data.Aequ);
-    assert(data.Aequ.rows() == neq && 
+    assert(data.Aequ.rows() == neq &&
       "#Rows in Aequ should match #constraints");
-    assert(data.Aequ.cols() == data.unknown.size() && 
+    assert(data.Aequ.cols() == data.unknown.size() &&
       "#cols in Aequ should match #unknowns");
     data.AeqTQR.compute(data.Aequ.transpose().eval());
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
@@ -149,7 +150,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
         return false;
     }
     nc = data.AeqTQR.rank();
-    assert(nc<=neq && 
+    assert(nc<=neq &&
       "Rank of reduced constraints should be <= #original constraints");
     data.Aeq_li = nc == neq;
     //cout<<"data.Aeq_li: "<<data.Aeq_li<<endl;
@@ -466,7 +467,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
     assert(data.solver_type == min_quad_with_fixed_data<T>::QR_LLT);
     PlainObjectBase<DerivedBeq> eff_Beq;
     // Adjust Aeq rhs to include known parts
-    eff_Beq = 
+    eff_Beq =
       //data.AeqTQR.colsPermutation().transpose() * (-data.Aeqk * Y + Beq);
       data.AeqTET * (-data.Aeqk * Y + Beq);
     // Where did this -0.5 come from? Probably the same place as above.
@@ -539,11 +540,39 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
   return min_quad_with_fixed_solve(data,B,Y,Beq,Z,sol);
 }
 
+template <
+  typename T,
+  typename Derivedknown,
+  typename DerivedB,
+  typename DerivedY,
+  typename DerivedBeq,
+  typename DerivedZ>
+IGL_INLINE bool igl::min_quad_with_fixed(
+  const Eigen::SparseMatrix<T>& A,
+  const Eigen::PlainObjectBase<DerivedB> & B,
+  const Eigen::PlainObjectBase<Derivedknown> & known,
+  const Eigen::PlainObjectBase<DerivedY> & Y,
+  const Eigen::SparseMatrix<T>& Aeq,
+  const Eigen::PlainObjectBase<DerivedBeq> & Beq,
+  const bool pd,
+  Eigen::PlainObjectBase<DerivedZ> & Z)
+{
+  min_quad_with_fixed_data<T> data;
+  if(!min_quad_with_fixed_precompute(A,known,Aeq,pd,data))
+  {
+    return false;
+  }
+  return min_quad_with_fixed_solve(data,B,Y,Beq,Z);
+}
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 template bool igl::min_quad_with_fixed_precompute<double, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::SparseMatrix<double, 0, int> const&, bool, igl::min_quad_with_fixed_data<double>&);
 template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template  bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template bool igl::min_quad_with_fixed<double, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif
-

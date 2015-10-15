@@ -6,21 +6,21 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "texture_from_file.h"
-#ifndef IGL_NO_OPENGL
 
 #include "texture_from_png.h"
-#include <igl/report_gl_error.h>
-#include <igl/STR.h>
-#include <igl/pathinfo.h>
-#include <igl/texture_from_tga.h>
+#include "../STR.h"
+#include "../pathinfo.h"
+#include "../opengl/report_gl_error.h"
+#include "../opengl/texture_from_tga.h"
 #include <YImage.hpp>
 #include <string>
 #include <algorithm>
 #include <iostream>
 
-IGL_INLINE bool igl::texture_from_file(const std::string filename, GLuint & id)
+IGL_INLINE bool igl::png::texture_from_file(const std::string filename, GLuint & id)
 {
   using namespace igl;
+  using namespace igl::opengl;
   using namespace std;
   // dirname, basename, extension and filename
   string d,b,ext,f;
@@ -60,6 +60,3 @@ IGL_INLINE bool igl::texture_from_file(const std::string filename, GLuint & id)
 #endif
   }
 }
-#endif
-
-

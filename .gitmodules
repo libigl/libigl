@@ -1,0 +1,11 @@
+[submodule "external/nanogui"]
+	path = external/nanogui
+url=https://github.com/libigl/nanogui.git
+        fetchRecursiveSubmodules = true
+        ignore = dirty
+[submodule "external/embree"]
+	path = external/embree
+	url = https://github.com/embree/embree.git
+[submodule "external/pybind11"]
+	path = external/pybind11
+	url = https://github.com/wjakob/pybind11.git

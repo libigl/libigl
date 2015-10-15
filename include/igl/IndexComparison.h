@@ -8,9 +8,9 @@
 #ifndef IGL_INDEXCOMPARISON_H
 #define IGL_INDEXCOMPARISON_H
 #include <iostream>
-// Comparison struct used by sort
-// http://bytes.com/topic/c/answers/132045-sort-get-index
 namespace igl{
+  // Comparison struct used by sort
+  // http://bytes.com/topic/c/answers/132045-sort-get-index
 
   // For use with functions like std::sort
   template<class T> struct IndexLessThan

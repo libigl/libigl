@@ -24,6 +24,7 @@
  \*===========================================================================*/
 
 #include "marching_cubes.h"
+#include "marching_cubes_tables.h"
 #include <map>
 
 extern int edgeTable[256];
@@ -241,4 +242,5 @@ template void igl::marching_cubes<Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::
 template void igl::marching_cubes<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::Matrix<Eigen::Matrix<double, -1, 3, 0, -1, 3>::Scalar, -1, 1, 0, -1, 1> const&, Eigen::Matrix<Eigen::Matrix<double, -1, 3, 0, -1, 3>::Scalar, -1, 3, 0, -1, 3> const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
 template void igl::marching_cubes<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<unsigned int, -1, 3, 0, -1, 3> >(Eigen::Matrix<Eigen::Matrix<double, -1, 3, 0, -1, 3>::Scalar, -1, 1, 0, -1, 1> const&, Eigen::Matrix<Eigen::Matrix<double, -1, 3, 0, -1, 3>::Scalar, -1, 3, 0, -1, 3> const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<unsigned int, -1, 3, 0, -1, 3> >&);
 template void igl::marching_cubes<Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<unsigned int, -1, 3, 0, -1, 3> >(Eigen::Matrix<Eigen::Matrix<float, -1, 3, 0, -1, 3>::Scalar, -1, 1, 0, -1, 1> const&, Eigen::Matrix<Eigen::Matrix<float, -1, 3, 0, -1, 3>::Scalar, -1, 3, 0, -1, 3> const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<unsigned int, -1, 3, 0, -1, 3> >&);
+template void igl::marching_cubes<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::Matrix<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, -1, 1, 0, -1, 1> const&, Eigen::Matrix<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, -1, 3, 0, -1, 3> const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif

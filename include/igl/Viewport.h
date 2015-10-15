@@ -10,6 +10,7 @@
 
 namespace igl
 {
+  // Simple Viewport class for an opengl context. Handles reshaping and mouse.
   struct Viewport
   {
     int x,y,width,height;

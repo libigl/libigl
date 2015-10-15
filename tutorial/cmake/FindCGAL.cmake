@@ -81,7 +81,9 @@ if ( CGAL_DIR )
 
 endif()
 
-if( NOT CGAL_FOUND)
+if(CGAL_FOUND)
+  MESSAGE(STATUS "Found CGAL: ${CGAL_DIR}")
+else()
   if(CGAL_FIND_REQUIRED)
     MESSAGE(FATAL_ERROR ${CGAL_DIR_MESSAGE})
   else()

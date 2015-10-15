@@ -1,13 +1,14 @@
-#include <igl/readOBJ.h>
-#include <igl/readDMAT.h>
-#include <igl/viewer/Viewer.h>
-#include <igl/barycenter.h>
 #include <igl/avg_edge_length.h>
-#include <vector>
-#include <igl/n_polyvector.h>
-#include <igl/local_basis.h>
-#include <stdlib.h>
+#include <igl/barycenter.h>
 #include <igl/jet.h>
+#include <igl/local_basis.h>
+#include <igl/n_polyvector.h>
+#include <igl/readDMAT.h>
+#include <igl/readOBJ.h>
+#include <igl/viewer/Viewer.h>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
 
 // Input mesh
 Eigen::MatrixXd V;
@@ -67,7 +68,7 @@ Eigen::VectorXd random_constraints(const
   return r;
 }
 
-bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
@@ -80,7 +81,7 @@ bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
   int num = key  - '0';
 
   // Interpolate
-  cerr << "Interpolating " << num * 2 << "-PolyVector field" << endl;
+  std::cerr << "Interpolating " << num * 2 << "-PolyVector field" << std::endl;
 
   VectorXi b(4);
   b << 4550, 2321, 5413, 5350;
@@ -141,7 +142,7 @@ int main(int argc, char *argv[])
   // Make the example deterministic
   srand(0);
 
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(V, F);
   viewer.callback_key_down = &key_down;
   viewer.core.show_lines = false;

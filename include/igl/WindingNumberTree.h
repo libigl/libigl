@@ -12,9 +12,13 @@
 #include <Eigen/Dense>
 #include "WindingNumberMethod.h"
 
-static Eigen::MatrixXd dummyV;
 namespace igl
 {
+  // This is only need to fill in references, it should never actually be touched
+  // and shouldn't cause race conditions. (This is a hack, but I think it's "safe")
+  static Eigen::MatrixXd dummyV;
+  // Space partitioning tree for computing winding number hierarchically.
+  //
   // Templates:
   //   Point  type for points in space, e.g. Eigen::Vector3d
   template <typename Point>
@@ -45,7 +49,7 @@ namespace igl
       // (Approximate) center (of mass)
       Point center;
     public:
-      inline WindingNumberTree():V(dummyV){}
+      inline WindingNumberTree();
       // For root
       inline WindingNumberTree(
         const Eigen::MatrixXd & V,
@@ -143,12 +147,26 @@ std::map< std::pair<const igl::WindingNumberTree<Point>*,const igl::WindingNumbe
   igl::WindingNumberTree<Point>::cached;
 
 template <typename Point>
+inline igl::WindingNumberTree<Point>::WindingNumberTree():
+  method(EXACT_WINDING_NUMBER_METHOD),
+  parent(NULL),
+  V(igl::dummyV),
+  SV(),
+  F(),
+  //boundary(igl::boundary_facets<Eigen::MatrixXi,Eigen::MatrixXi>(F))
+  cap(),
+  radius(std::numeric_limits<double>::infinity()),
+  center(0,0,0)
+{
+}
+
+template <typename Point>
 inline igl::WindingNumberTree<Point>::WindingNumberTree(
   const Eigen::MatrixXd & _V,
   const Eigen::MatrixXi & _F):
   method(EXACT_WINDING_NUMBER_METHOD),
   parent(NULL),
-  V(dummyV),
+  V(igl::dummyV),
   SV(),
   F(),
   //boundary(igl::boundary_facets<Eigen::MatrixXi,Eigen::MatrixXi>(F))
@@ -388,13 +406,16 @@ inline void igl::WindingNumberTree<Point>::print(const char * tab)
 }
 
 template <typename Point>
-inline double igl::WindingNumberTree<Point>::max_abs_winding_number(const Point & p) const
+inline double 
+igl::WindingNumberTree<Point>::max_abs_winding_number(const Point & /*p*/) const
 {
   return std::numeric_limits<double>::infinity();
 }
 
 template <typename Point>
-inline double igl::WindingNumberTree<Point>::max_simple_abs_winding_number(const Point & p) const
+inline double 
+igl::WindingNumberTree<Point>::max_simple_abs_winding_number(
+  const Point & /*p*/) const
 {
   using namespace std;
   return numeric_limits<double>::infinity();

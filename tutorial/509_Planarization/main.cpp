@@ -1,14 +1,14 @@
-#include <igl/readOFF.h>
-#include <igl/readDMAT.h>
-#include <igl/viewer/Viewer.h>
-#include <igl/barycenter.h>
 #include <igl/avg_edge_length.h>
-#include <vector>
-#include <stdlib.h>
+#include <igl/barycenter.h>
 #include <igl/jet.h>
-#include <igl/quad_planarity.h>
 #include <igl/planarize_quad_mesh.h>
+#include <igl/quad_planarity.h>
+#include <igl/readDMAT.h>
+#include <igl/readOFF.h>
 #include <igl/slice.h>
+#include <igl/viewer/Viewer.h>
+#include <vector>
+#include <cstdlib>
 
 // Quad mesh generated from conjugate field
 Eigen::MatrixXd VQC;
@@ -26,7 +26,7 @@ Eigen::MatrixXd PQC0plan, PQC1plan, PQC2plan, PQC3plan;
 double global_scale;
 
 
-bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
@@ -90,22 +90,22 @@ int main(int argc, char *argv[])
   FQCtri.resize(2*FQC.rows(), 3);
   FQCtri <<  FQC.col(0),FQC.col(1),FQC.col(2),
              FQC.col(2),FQC.col(3),FQC.col(0);
-  igl::slice( VQC, FQC.col(0), 1, PQC0);
-  igl::slice( VQC, FQC.col(1), 1, PQC1);
-  igl::slice( VQC, FQC.col(2), 1, PQC2);
-  igl::slice( VQC, FQC.col(3), 1, PQC3);
+  igl::slice( VQC, FQC.col(0).eval(), 1, PQC0);
+  igl::slice( VQC, FQC.col(1).eval(), 1, PQC1);
+  igl::slice( VQC, FQC.col(2).eval(), 1, PQC2);
+  igl::slice( VQC, FQC.col(3).eval(), 1, PQC3);
 
   // Planarize it
   igl::planarize_quad_mesh(VQC, FQC, 100, 0.005, VQCplan);
 
   // Convert the planarized mesh to triangles
-  igl::slice( VQCplan, FQC.col(0), 1, PQC0plan);
-  igl::slice( VQCplan, FQC.col(1), 1, PQC1plan);
-  igl::slice( VQCplan, FQC.col(2), 1, PQC2plan);
-  igl::slice( VQCplan, FQC.col(3), 1, PQC3plan);
+  igl::slice( VQCplan, FQC.col(0).eval(), 1, PQC0plan);
+  igl::slice( VQCplan, FQC.col(1).eval(), 1, PQC1plan);
+  igl::slice( VQCplan, FQC.col(2).eval(), 1, PQC2plan);
+  igl::slice( VQCplan, FQC.col(3).eval(), 1, PQC3plan);
 
   // Launch the viewer
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   key_down(viewer,'2',0);
   viewer.core.invert_normals = true;
   viewer.core.show_lines = false;

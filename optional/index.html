@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>libigl</title>
+	<meta name="author" content="Alec Jacobson and Daniele Panozzo and others"/>
+	<link type="text/css" rel="stylesheet" href="../tutorial/style.css"/>
+<script type='text/javascript' src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+<link rel='stylesheet' href='http://yandex.st/highlightjs/7.3/styles/default.min.css'>
+<script src='http://yandex.st/highlightjs/7.3/highlight.min.js'></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+
+<h1 id="compilinglibiglasastaticlibrary">Compiling libigl as a static library</h1>
+
+<blockquote>
+<p>Warning: compiling libigl as a static library is considerably more difficult
+than using it as a header-only library (see <a href="../">../README.md</a> instead). Do
+it only if you are experienced with C++, cmake and make, and you want to
+improve your compilation times.</p>
+</blockquote>
+
+<p>Libigl is developed most often on Mac OS X, though has current users in Linux
+and Windows.</p>
+
+<h3 id="linuxmacosxcygwin">Linux/Mac OS X/Cygwin</h3>
+
+<p>Libigl may also be compiled to a static library. This is advantageous when
+building a project with libigl, since when used as an header-only library can
+slow down compile times.</p>
+
+<p>To build the entire libigl library producing at least <code>libigl/lib/libigl.a</code> and
+possible other (automatically detected) extras, e.g. <code>libigl/lib/libiglcgal.a</code>
+from <em>this current directory</em>: issue:</p>
+
+<pre><code>mkdir -p ../lib
+cd ../lib
+cmake -DCMAKE_BUILD_TYPE=Release ../optional
+make
+</code></pre>
+
+<h4 id="warnings">Warnings</h4>
+
+<p>You should expect to see a few linker warnings of the form:</p>
+
+<pre><code>/opt/local/bin/ranlib: file: libigl.a(*.cpp.o) has no symbols
+</code></pre>
+
+<p>These are (admittedly unpopular) functions that have never been used by us
+statically so we haven&#8217;t explicit instantiations (yet).</p>
+
+<h4 id="examples">Examples</h4>
+
+<p>You can make a slew of examples by issuing:</p>
+
+<pre><code>cd ../examples
+make
+</code></pre>
+
+<h4 id="external">External</h4>
+
+<p>Finally there are a number of external libraries that we include in
+<code>./external/</code> because they are either difficult to obtain or they have been
+patched for easier use with libigl. Please see the respective readmes in those
+directories or build the tutorial using cmake, which will recursively build all
+dependencies.</p>
+
+<h5 id="installingembree2.0">Installing Embree 2.0</h5>
+
+<p>To build the embree library and executables on Mac OS X issue:</p>
+
+<pre><code>cd external/embree
+mkdir build
+cd build
+cmake ..
+# Or using a different compiler
+#cmake .. -DCMAKE_C_COMPILER=/opt/local/bin/gcc -DCMAKE_CXX_COMPILER=/opt/local/bin/g++
+make
+# Could also install embree to your root, but libigl examples don't expect
+# this
+#sudo make install
+</code></pre>
+
+<h2 id="extras">Extras</h2>
+
+<h3 id="bbw">bbw</h3>
+
+<p>This library extra contains functions for computing Bounded Biharmonic Weights, can
+be used with and without the <a href="#mosek">mosek</a> extra via the <code>IGL_NO_MOSEK</code>
+macro.</p>
+
+<h3 id="boolean">boolean</h3>
+
+<p>This library extra contains functions for computing mesh-mesh booleans,
+depending on CGAL and optionally Cork.</p>
+
+<h3 id="cgal">cgal</h3>
+
+<p>This library extra utilizes CGAL&#8217;s efficient and exact intersection and
+proximity queries.</p>
+
+<h3 id="embree">embree</h3>
+
+<p>This library extra utilizes embree&#8217;s efficient ray tracing queries.</p>
+
+<h3 id="matlab">matlab</h3>
+
+<p>This library extra provides support for reading and writing <code>.mat</code> workspace
+files, interfacing with Matlab at run time and compiling mex functions.</p>
+
+<h3 id="mosek">mosek</h3>
+
+<p>This library extra utilizes mosek&#8217;s efficient interior-point solver for
+quadratic programs.</p>
+
+<h3 id="png">png</h3>
+
+<p>This library extra uses <code>libpng</code> and <code>YImage</code> to read and write <code>.png</code> files.</p>
+
+<h3 id="tetgen">tetgen</h3>
+
+<p>This library extra provides a simplified wrapper to the tetgen 3d tetrahedral
+meshing library.</p>
+
+<h3 id="triangle">Triangle</h3>
+
+<p>This library extra provides a simplified wrapper to the triangle 2d triangle
+meshing library.</p>
+
+<h3 id="viewer">viewer</h3>
+
+<p>This library extra utilizes glfw and glew to open an opengl context and launch
+a simple mesh viewer.</p>
+
+<h3 id="xml">xml</h3>
+
+<p>This library extra utilizes tinyxml2 to read and write serialized classes
+containing Eigen matrices and other standard simple data-structures.</p>
+
+<h2 id="development">Development</h2>
+
+<p>Further documentation for developers is listed in
+<a href="../style_guidelines.html">style_guidelines.html</a>.</p>
+
+<h2 id="license">License</h2>
+
+<p>See <code>LICENSE.txt</code></p>
+
+<h2 id="zipping">Zipping</h2>
+
+<p>Zip this directory without .git litter and binaries using:</p>
+
+<pre><code>git archive -prefix=libigl/ -o libigl.zip master
+</code></pre>
+
+<h2 id="explicitspecializationoftemplatedfunctions">Explicit specialization of templated functions</h2>
+
+<p>Special care must be taken by the developers of each function and
+class in the libigl library that uses C++ templates. If this function
+is intended to be compiled into the statically linked libigl library
+then function is only compiled for each <i>explicitly</i> specialized
+declaration. These should be added at the bottom of the corresponding
+.cpp file surrounded by a</p>
+
+<pre><code>#ifdef IGL_STATIC_LIBRARY
+</code></pre>
+
+<p>Of course, a developer may not know ahead of time which
+specializations should be explicitly included in the igl static lib.
+One way to find out is to add one explicit specialization for each
+call in one&#8217;s own project. This only ever needs to be done once for
+each template.</p>
+
+<p>The process is somewhat mechanical using a linker with reasonable error
+output.</p>
+
+<p>Supposed for example we have compiled the igl static lib, including the
+cat.h and cat.cpp functions, without any explicit instanciation. Say
+using the makefile in the <code>libigl</code> directory:</p>
+
+<pre><code>cd $LIBIGL
+make
+</code></pre>
+
+<p>Now if we try to compile a project and link against it we may get
+an error like:</p>
+
+<pre><code>Undefined symbols for architecture x86_64:
+&quot;Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; igl::cat&lt;Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; &gt;(int, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&amp;, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&amp;)&quot;, referenced from:
+uniform_sample(Eigen::Matrix&lt;double, -1, -1, 0, -1, -1&gt; const&amp;, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&amp;, int, double, Eigen::Matrix&lt;double, -1, -1, 0, -1, -1&gt;&amp;)in Skinning.o
+&quot;Eigen::SparseMatrix&lt;double, 0, int&gt; igl::cat&lt;Eigen::SparseMatrix&lt;double, 0, int&gt; &gt;(int, Eigen::SparseMatrix&lt;double, 0, int&gt; const&amp;, Eigen::SparseMatrix&lt;double, 0, int&gt; const&amp;)&quot;, referenced from:
+covariance_scatter_matrix(Eigen::Matrix&lt;double, -1, -1, 0, -1, -1&gt; const&amp;, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&amp;, ArapEnergy, Eigen::SparseMatrix&lt;double, 0, int&gt;&amp;)in arap_dof.o
+arap_rhs(Eigen::Matrix&lt;double, -1, -1, 0, -1, -1&gt; const&amp;, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&amp;, ArapEnergy, Eigen::SparseMatrix&lt;double, 0, int&gt;&amp;)in arap_dof.o
+</code></pre>
+
+<p>This looks like a mess, but luckily we don&#8217;t really need to read it
+all. Just copy the first part in quotes</p>
+
+<pre><code>Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; igl::cat&lt;Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; &gt;(int, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&amp;, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&amp;)
+</code></pre>
+
+<p>, then append it
+to the list of explicit template specializations at the end of
+<code>cat.cpp</code> after the word
+<strong>template</strong> and followed by a semi-colon.
+Like this:</p>
+
+<pre><code>#ifdef IGL_STATIC_LIBRARY
+// Explicit template specialization
+template Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; igl::cat&lt;Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; &gt;(int, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&amp;, Eigen::Matrix&lt;int, -1, -1, 0, -1, -1&gt; const&amp;);
+#endif
+</code></pre>
+
+<p>Then you must recompile the IGL static library.</p>
+
+<pre><code>cd $LIBIGL
+make
+</code></pre>
+
+<p>And try to compile your project again, potentially repeating this
+process until no more symbols are undefined.</p>
+
+<p><code>It may be useful to check that you code compiles with
+no errors first using the headers-only version to be sure that all errors are from missing template
+specializations.</code></p>
+
+<p>If you&#8217;re using make then the following command will
+reveal each missing symbol on its own line:</p>
+
+<pre><code>make 2&gt;&amp;1 | grep &quot;referenced from&quot; | sed -e &quot;s/, referenced from.*//&quot;
+</code></pre>
+
+<p>Alternatively you can use the <code>autoexplicit.sh</code> function
+which (for well organized .h/.cpp pairs in libigl) automatically
+create explicit instanciations from your compiler&#8217;s error messages.
+Repeat this process until convergence:</p>
+
+<pre><code>cd /to/your/project
+make 2&gt;$LIBIGL/make.err
+cd $LIBIGL
+cat make.err | ./autoexplicit.sh
+make clean
+make
+</code></pre>
+
+<h3 id="benefitsofstaticlibrary">Benefits of static library</h3>
+
+<ul>
+<li><strong>Faster compile time</strong>: Because the libigl library
+is already compiled, only the new code in ones project must be
+compiled and then linked to IGL. This means compile times are
+generally faster.</li>
+<li><strong>Debug or optimized</strong>: The IGL static
+library may be compiled in debug mode or optimized release mode
+regardless of whether one&#8217;s project is being optimized or
+debugged.</li>
+</ul>
+
+<h3 id="drawbacksofstaticlibrary">Drawbacks of static library</h3>
+
+<ul>
+<li><strong>Hard to use templates</strong>: Special
+care</a> (by the developers of the library) needs to be taken when
+exposing templated functions.</li>
+</ul>
+
+<h1 id="compressed.h.cpppair">Compressed .h/.cpp pair</h1>
+
+<p>Calling the script:</p>
+
+<pre><code>scripts/compress.sh igl.h igl.cpp
+</code></pre>
+
+<p>will create a single header <code>igl.h</code> and a single cpp file <code>igl.cpp</code>.</p>
+
+<p>Alternatively, you can also compress everything into a single header file:</p>
+
+<pre><code>scripts/compress.sh igl.h
+</code></pre>
+
+<h3 id="benefitsofcompressed.h.cpppair">Benefits of compressed .h/.cpp pair</h3>
+
+<ul>
+<li><strong>Easy incorporation</strong>: This can be easily incorporated
+ into external projects.</li>
+</ul>
+
+<h3 id="drawbacksofcompressed.h.cpppair">Drawbacks of compressed .h/.cpp pair</h3>
+
+<ul>
+<li><p><strong>Hard to debug/edit</strong>: The compressed files are
+ automatically generated. They&#8217;re huge and should not be edited. Thus
+ debugging and editting are near impossible.</p></li>
+<li><p><strong>Compounded dependencies</strong>:
+ An immediate disadvantage of this
+ seems to be that even to use a single function (e.g.
+ <code>cotmatrix</code>), compiling and linking against
+ <code>igl.cpp</code> will require linking to all of <code>libigl</code>&#8217;s
+ dependencies (<code>OpenGL</code>, <code>GLUT</code>,
+ <code>AntTweakBar</code>, <code>BLAS</code>). However, because all
+ depencies other than Eigen should be encapsulated between
+ <code>#ifndef</code> guards (e.g. <code>#ifndef IGL_NO_OPENGL</code>, it
+ is possible to ignore certain functions that have such dependencies.</p></li>
+<li><p><strong>Long compile</strong>:
+ Compiling <code>igl.cpp</code> takes a long time and isn&#8217;t easily parallelized (no <code>make
+  -j12</code> equivalent).</p></li>
+</ul>
+
+<p>Here&#8217;s a tiny test example using <code>igl.h</code> and <code>igl.cpp</code>. Save the following in <code>test.cpp</code>:</p>
+
+<pre><code>#include &lt;igl.h&gt;
+#include &lt;Eigen/Core&gt;
+
+int main(int argc, char * argv[])
+{
+Eigen::MatrixXd V;
+Eigen::MatrixXi F;
+return (argc&gt;=2 &amp;amp;&amp;amp; igl::read_triangle_mesh(argv[1],V,F)?0:1);
+}
+</code></pre>
+
+<p>Then compile <code>igl.cpp</code> with:</p>
+
+<pre><code>g++ -o igl.o -c igl.cpp -I/opt/local/include/eigen3 -DIGL_NO_OPENGL -DIGL_NO_ANTTWEAKBAR
+</code></pre>
+
+<p>Notice that we&#8217;re using <code>-DIGL_NO_OPENGL -DIGL_NO_ANTTWEAKBAR</code> to disable any libigl dependencies on OpenGL and AntTweakBar.</p>
+
+<p>Now compile <code>test.cpp</code> with:</p>
+
+<pre><code>g++ -g -I/opt/local/include/eigen3/ -I/usr/local/igl/libigl/ -L/usr/local/igl/libigl/ -ligl -DIGL_NO_OPENGL -DIGL_NO_ANTTWEAKBAR -o test
+</code></pre>
+
+<p>Try running it with:</p>
+
+<pre><code>./test path/to/mesh.obj
+</code></pre>
+
+<p>The following bash one-liner will find all source files that contain the string <code>OpenGL</code> but don&#8217;t contain and <code>IGL_NO_OPENGL</code> guard:</p>
+
+<pre><code>grep OpenGL `grep -L IGL_NO_OPENGL include/igl/*`
+</code></pre>
+
+<h3 id="optional">Optional</h3>
+
+<ul>
+<li>OpenGL (disable with <code>IGL_NO_OPENGL</code>)
+
+<ul>
+<li>OpenGL &gt;= 4 (enable with <code>IGL_OPENGL_4</code>)</li>
+</ul></li>
+<li>AntTweakBar (disable with <code>IGL_NO_ANTTWEAKBAR</code>) Last tested 1.16 (see
+ <code>libigl/external/AntTweakBar</code>)</li>
+<li>GLEW Windows and Linux</li>
+<li>OpenMP</li>
+<li>libpng libiglpng extra only</li>
+<li>Mosek libiglmosek extra only</li>
+<li>Matlab libiglmatlab extra only</li>
+<li>boost libiglboost, libiglcgal extra only</li>
+<li>SSE/AVX libiglsvd3x3 extra only</li>
+<li>CGAL libiglcgal extra only
+
+<ul>
+<li>boost</li>
+<li>gmp</li>
+<li>mpfr</li>
+</ul></li>
+<li>CoMiSo libcomiso extra only</li>
+</ul>
+
+<h3 id="optionalincludedinexternal">Optional (included in external/)</h3>
+
+<ul>
+<li>TetGen libigltetgen extra only</li>
+<li>Embree libiglembree extra only</li>
+<li>tinyxml2 libiglxml extra only</li>
+<li>glfw libviewer extra only</li>
+<li>LIM liblim extra only</li>
+</ul>
+
+</body>
+</html>

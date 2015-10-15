@@ -5,7 +5,6 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-
 #ifndef IGL_HALFEDGEITERATOR_H
 #define IGL_HALFEDGEITERATOR_H
 
@@ -24,14 +23,14 @@ namespace igl
   public:
     // Init the HalfEdgeIterator by specifying Face,Edge Index and Orientation
     IGL_INLINE HalfEdgeIterator(
-        const Eigen::PlainObjectBase<DerivedF>* F,
-        const Eigen::PlainObjectBase<DerivedF>* FF,
-        const Eigen::PlainObjectBase<DerivedF>* FFi,
-        int fi,
-        int ei,
-        bool reverse = false
+        const Eigen::PlainObjectBase<DerivedF>& _F,
+        const Eigen::PlainObjectBase<DerivedF>& _FF,
+        const Eigen::PlainObjectBase<DerivedF>& _FFi,
+        int _fi,
+        int _ei,
+        bool _reverse = false
         )
-    : F(F), FF(FF), FFi(FFi), fi(fi), ei(ei), reverse(reverse)
+    : fi(_fi), ei(_ei), reverse(_reverse), F(_F), FF(_FF), FFi(_FFi)
     {}
 
     // Change Face
@@ -40,8 +39,8 @@ namespace igl
       if (isBorder())
         return;
 
-      int fin = (*FF)(fi,ei);
-      int ein = (*FFi)(fi,ei);
+      int fin = (FF)(fi,ei);
+      int ein = (FFi)(fi,ei);
       int reversen = !reverse;
 
       fi = fin;
@@ -68,7 +67,7 @@ namespace igl
 
     IGL_INLINE bool isBorder()
     {
-      return (*FF)(fi,ei) == -1;
+      return (FF)(fi,ei) == -1;
     }
 
     /*!
@@ -106,7 +105,7 @@ namespace igl
     IGL_INLINE int Vi()
     {
       assert(fi >= 0);
-      assert(fi < F->rows());
+      assert(fi < F.rows());
       assert(ei >= 0);
       assert(ei <= 2);
 
@@ -147,9 +146,9 @@ namespace igl
     int ei;
     bool reverse;
 
-    const Eigen::PlainObjectBase<DerivedF>* F;
-    const Eigen::PlainObjectBase<DerivedF>* FF;
-    const Eigen::PlainObjectBase<DerivedF>* FFi;
+    const Eigen::PlainObjectBase<DerivedF>& F;
+    const Eigen::PlainObjectBase<DerivedF>& FF;
+    const Eigen::PlainObjectBase<DerivedF>& FFi;
   };
 
 }

@@ -5,9 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-
-#ifndef IGL_VIEWER_CORE_H
-#define IGL_VIEWER_CORE_H
+#ifndef IGL_VIEWER_VIEWER_CORE_H
+#define IGL_VIEWER_VIEWER_CORE_H
 
 #include <igl/viewer/TextRenderer.h>
 #include <igl/viewer/ViewerData.h>
@@ -16,6 +15,8 @@
 #include <igl/igl_inline.h>
 
 namespace igl
+{
+namespace viewer
 {
 
 // Basic class of the 3D mesh viewer
@@ -51,6 +52,17 @@ public:
     float & zoom,
     Eigen::Vector3f& shift);
 
+    // Adjust the view to see the entire model
+    IGL_INLINE void align_camera_center(
+      const Eigen::MatrixXd& V);
+
+    // Determines how much to zoom and shift such that the mesh fills the unit
+    // box (centered at the origin)
+    IGL_INLINE void get_scale_and_shift_to_fit_mesh(
+      const Eigen::MatrixXd& V,
+      float & zoom,
+      Eigen::Vector3f& shift);
+
   // ------------------- Drawing functions
 
   // Clear the frame buffers
@@ -75,15 +87,21 @@ public:
   float shininess;
 
   // Colors
-  Eigen::Vector3f background_color;
-  Eigen::Vector3f line_color;
+  Eigen::Vector4f background_color;
+  Eigen::Vector4f line_color;
 
   // Lighting
   Eigen::Vector3f light_position;
   float lighting_factor;
 
   // Trackball angle (quaternion)
-  Eigen::Vector4f trackball_angle;
+  enum RotationType
+  {
+    ROTATION_TYPE_TRACKBALL = 0,
+    ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP = 1,
+    NUM_ROTATION_TYPES = 2
+  } rotation_type;
+  Eigen::Quaternionf trackball_angle;
 
   // Model viewing parameters
   float model_zoom;
@@ -132,8 +150,11 @@ public:
   Eigen::Matrix4f view;
   Eigen::Matrix4f model;
   Eigen::Matrix4f proj;
+  public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
+}
 }
 
 #ifndef IGL_STATIC_LIBRARY
