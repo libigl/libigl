@@ -1,17 +1,15 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_BOUNDARY_FACETS_H
 #define IGL_BOUNDARY_FACETS_H
 #include "igl_inline.h"
 
-#ifndef IGL_NO_EIGEN
-#  include <Eigen/Dense>
-#endif
+#include <Eigen/Dense>
 
 #include <vector>
 
@@ -34,7 +32,6 @@ namespace igl
     const std::vector<std::vector<IntegerT> > & T,
     std::vector<std::vector<IntegerF> > & F);
 
-#ifndef IGL_NO_EIGEN
   // Templates:
   //   DerivedT  integer-value: i.e. from MatrixXi
   //   DerivedF  integer-value: i.e. from MatrixXi
@@ -46,7 +43,6 @@ namespace igl
   template <typename DerivedT, typename Ret>
   Ret boundary_facets(
     const Eigen::PlainObjectBase<DerivedT>& T);
-#endif
 }
 
 #ifndef IGL_STATIC_LIBRARY
@@ -54,4 +50,3 @@ namespace igl
 #endif
 
 #endif
-

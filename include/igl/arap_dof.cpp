@@ -184,7 +184,7 @@ IGL_INLINE bool igl::arap_dof_precomputation(
     //printf("CSM_M(): Mi\n");
     LbsMatrixType M_i;
     //printf("CSM_M(): slice\n");
-    slice(M,(span_n.array()+i*n).matrix(),span_mlbs_cols,M_i);
+    slice(M,(span_n.array()+i*n).matrix().eval(),span_mlbs_cols,M_i);
     LbsMatrixType M_i_dim;
     data.CSM_M[i].resize(k*data.dim,data.m*data.dim*(data.dim+1));
     assert(data.CSM_M[i].cols() == M.cols());

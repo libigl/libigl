@@ -1,5 +1,7 @@
+#include <Eigen/Geometry>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+
 
 #include "python.h"
 
@@ -42,6 +44,25 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
           for (unsigned i=0;i<rows;++i)
             for (unsigned j=0;j<cols;++j)
               m(i,j) = b[i][j];
+
+          return;
+        })
+        .def("__init__", [](Type &m, std::vector<Scalar>& b) {
+          if (b.size() == 0)
+          {
+            new (&m) Type(0, 0);
+            return;
+          }
+
+          // Size checks
+          unsigned rows = b.size();
+          unsigned cols = 1;
+
+          new (&m) Type(rows, cols);
+
+          m.resize(rows,cols);
+          for (unsigned i=0;i<rows;++i)
+            m(i,0) = b[i];
 
           return;
         })
@@ -98,6 +119,8 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("setCol", [](Type &m, int i, const Type& v) { m.col(i) = v; })
         .def("setRow", [](Type &m, int i, const Type& v) { m.row(i) = v; })
 
+        .def("setBlock", [](Type &m, int i, int j, int p, int q, const Type& v) { m.block(i,j,p,q) = v; })
+        .def("block", [](Type &m, int i, int j, int p, int q) { return Type(m.block(i,j,p,q)); })
 
         .def("rightCols", [](Type &m, const int& k) { return Type(m.rightCols(k)); })
         .def("leftCols", [](Type &m, const int& k) { return Type(m.leftCols(k)); })
@@ -219,8 +242,8 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def_cast(py::self += py::self)
         .def_cast(py::self -= py::self)
         .def_cast(py::self *= py::self)
-        // .def_cast(py::self *= Scalar())
-        // .def_cast(py::self /= Scalar())
+        .def_cast(py::self *= Scalar())
+        .def_cast(py::self /= Scalar())
 
         /* Comparison operators */
         .def(py::self == py::self)
@@ -245,6 +268,17 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
                 throw py::index_error();
             m(i.first, i.second) = v;
          })
+
+         .def("__getitem__", [](const Type &m, size_t i) {
+             if (i >= (size_t) m.size())
+                 throw py::index_error();
+             return m(i);
+          })
+         .def("__setitem__", [](Type &m, size_t i, Scalar v) {
+           if (i >= (size_t) m.size())
+                 throw py::index_error();
+             m(i) = v;
+          })
 
         /* Buffer access for interacting with NumPy */
         .def_buffer([](Type &m) -> py::buffer_info {
@@ -271,6 +305,9 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         {
           return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(Eigen::Map<const Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>>(m.data(),r,c));
         })
+
+        .def("copy", [](const Type &m) { return Type(m); })
+
         ;
     return matrix;
 }
@@ -599,7 +636,6 @@ void python_export_vector(py::module &m) {
     bind_eigen_diagonal_2< Eigen::DiagonalMatrix<int,Eigen::Dynamic,Eigen::Dynamic> > (me, "DiagonalMatrixi");
 
     /* Bindings for SimplicialLLT*/
-
     py::class_<Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >> simpliciallltsparse(me, "SimplicialLLTsparse");
 
     simpliciallltsparse
@@ -613,9 +649,15 @@ void python_export_vector(py::module &m) {
           return "Numerical Issue";
     })
     .def("solve",[](const Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >& s, const Eigen::MatrixXd& rhs) { return Eigen::MatrixXd(s.solve(rhs)); })
-
     ;
 
+    /* Bindings for Quaterniond*/
+    //py::class_<Eigen::Quaterniond > quaterniond(me, "Quaterniond");
+    //
+    // quaterniond
+    // .def(py::init<>())
+    // .def(py::init<double, double, double, double>())
+    // ;
 
 
 

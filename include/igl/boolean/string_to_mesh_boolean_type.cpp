@@ -42,7 +42,10 @@ IGL_INLINE igl::boolean::MeshBooleanType igl::boolean::string_to_mesh_boolean_ty
   const std::string & s)
 {
   MeshBooleanType type;
-  const bool ret = string_to_mesh_boolean_type(s,type);
+#ifndef NDEBUG
+  const bool ret = 
+#endif
+    string_to_mesh_boolean_type(s,type);
   assert(ret && "Unknown MeshBooleanType name");
   return type;
 }
