@@ -58,9 +58,8 @@ namespace igl {
                 return FACE;
             }
 
-            template<typename DerivedV, typename DerivedF, typename DerivedI>
+            template<typename DerivedF, typename DerivedI>
             void extract_adj_faces(
-                    const Eigen::PlainObjectBase<DerivedV>& V,
                     const Eigen::PlainObjectBase<DerivedF>& F,
                     const Eigen::PlainObjectBase<DerivedI>& I,
                     const size_t s, const size_t d,
@@ -68,24 +67,23 @@ namespace igl {
                 const size_t num_faces = I.rows();
                 for (size_t i=0; i<num_faces; i++) {
                     Eigen::Vector3i f = F.row(I(i, 0));
-                    if ((f[0] == s && f[1] == d) ||
-                        (f[1] == s && f[2] == d) ||
-                        (f[2] == s && f[0] == d)) {
+                    if (((size_t)f[0] == s && (size_t)f[1] == d) ||
+                        ((size_t)f[1] == s && (size_t)f[2] == d) ||
+                        ((size_t)f[2] == s && (size_t)f[0] == d)) {
                         adj_faces.push_back((I(i, 0)+1) * -1);
                         continue;
                     }
-                    if ((f[0] == d && f[1] == s) ||
-                        (f[1] == d && f[2] == s) ||
-                        (f[2] == d && f[0] == s)) {
+                    if (((size_t)f[0] == d && (size_t)f[1] == s) ||
+                        ((size_t)f[1] == d && (size_t)f[2] == s) ||
+                        ((size_t)f[2] == d && (size_t)f[0] == s)) {
                         adj_faces.push_back(I(i, 0)+1);
                         continue;
                     }
                 }
             }
 
-            template<typename DerivedV, typename DerivedF, typename DerivedI>
+            template<typename DerivedF, typename DerivedI>
             void extract_adj_vertices(
-                    const Eigen::PlainObjectBase<DerivedV>& V,
                     const Eigen::PlainObjectBase<DerivedF>& F,
                     const Eigen::PlainObjectBase<DerivedI>& I,
                     const size_t v, std::vector<int>& adj_vertices) {
@@ -94,13 +92,13 @@ namespace igl {
                 for (size_t i=0; i<num_faces; i++) {
                     Eigen::Vector3i f = F.row(I(i, 0));
                     assert((f.array() < V.rows()).all());
-                    if (f[0] == v) {
+                    if ((size_t)f[0] == v) {
                         unique_adj_vertices.insert(f[1]);
                         unique_adj_vertices.insert(f[2]);
-                    } else if (f[1] == v) {
+                    } else if ((size_t)f[1] == v) {
                         unique_adj_vertices.insert(f[0]);
                         unique_adj_vertices.insert(f[2]);
-                    } else if (f[2] == v) {
+                    } else if ((size_t)f[2] == v) {
                         unique_adj_vertices.insert(f[0]);
                         unique_adj_vertices.insert(f[1]);
                     }
@@ -151,7 +149,7 @@ namespace igl {
                 // query point is outside.
 
                 std::vector<int> adj_faces;
-                extract_adj_faces(V, F, I, s, d, adj_faces);
+                extract_adj_faces(F, I, s, d, adj_faces);
                 const size_t num_adj_faces = adj_faces.size();
                 assert(num_adj_faces > 0);
 
@@ -183,7 +181,7 @@ namespace igl {
                     const Eigen::PlainObjectBase<DerivedI>& I,
                     const Point_3& query, size_t s) {
                 std::vector<int> adj_vertices;
-                extract_adj_vertices(V, F, I, s, adj_vertices);
+                extract_adj_vertices(F, I, s, adj_vertices);
                 const size_t num_adj_vertices = adj_vertices.size();
 
                 std::vector<Point_3> adj_points;
@@ -226,7 +224,6 @@ namespace igl {
                 for (size_t i=0; i<num_adj_vertices; i++) {
                     const size_t vi = adj_vertices[i];
                     for (size_t j=i+1; j<num_adj_vertices; j++) {
-                        const size_t vj = adj_vertices[j];
                         Plane_3 separator(p, adj_points[i], adj_points[j]);
                         if (separator.is_degenerate()) {
                             throw "Input mesh contains degenerated faces";
@@ -237,9 +234,9 @@ namespace igl {
                             break;
                         }
                     }
-                    if (d < V.rows()) break;
+                    if (d < (size_t)V.rows()) break;
                 }
-                if (d > V.rows()) {
+                if (d > (size_t)V.rows()) {
                     // All adj faces are coplanar, use the first edge.
                     d = adj_vertices[0];
                 }
