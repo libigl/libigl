@@ -869,7 +869,6 @@ functionality as common Matlab functions.
 | `igl::hsv_to_rgb`        | Convert HSV colors to RGB (cf. Matlab's `hsv2rgb`) |
 | `igl::intersect`         | Set intersection of matrix elements. |
 | `igl::jet`               | Quantized colors along the rainbow. |
-| `igl::kronecker_product` | Compare to Matlab's `kronprod` |
 | `igl::median`            | Compute the median per column |
 | `igl::mode`              | Compute the mode per column |
 | `igl::null`              | Compute the null space basis of a matrix |
