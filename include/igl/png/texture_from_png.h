@@ -40,6 +40,9 @@ namespace igl
     // Output:
     //  R,G,B,A texture channels
     // Returns true on success, false on failure
+    //
+    // Todo: this is an inappropriate function name. This is really just
+    // reading a png.... Not necessarily as a texture.
     IGL_INLINE bool texture_from_png(const std::string png_file,
     Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
     Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
