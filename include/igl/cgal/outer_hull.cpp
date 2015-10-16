@@ -329,9 +329,7 @@ IGL_INLINE void igl::cgal::outer_hull(
   // non-intersecting.
   const auto & has_overlapping_bbox = [](
     const Eigen::PlainObjectBase<DerivedV> & V,
-    const MatrixXV & BC,
     const MatrixXG & A,
-    const MatrixXJ & AJ,
     const MatrixXG & B)->bool
   {
     const auto & bounding_box = [](
@@ -387,7 +385,7 @@ IGL_INLINE void igl::cgal::outer_hull(
       {
         continue;
       }
-      if (has_overlapping_bbox(V, BC, vG[id], vJ[id], vG[oid])) {
+      if (has_overlapping_bbox(V, vG[id], vG[oid])) {
           unresolved.push_back(oid);
       }
     }
