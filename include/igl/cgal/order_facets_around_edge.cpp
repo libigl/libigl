@@ -348,7 +348,7 @@ void igl::cgal::order_facets_around_edge(
     std::vector<int> adj_faces_with_pivot(num_faces);
     for (size_t i=0; i<num_faces; i++)
     {
-        if (faces(i,0) == N+1 && faces(i,1) == N+2)
+        if ((size_t)faces(i,0) == N+1 && (size_t)faces(i,1) == N+2)
         {
             adj_faces_with_pivot[i] = int(i+1) * -1;
         } else
@@ -367,7 +367,7 @@ void igl::cgal::order_facets_around_edge(
     size_t pivot_index = num_faces + 1;
     for (size_t i=0; i<num_faces; i++)
     {
-        if (order_with_pivot[i] == N)
+        if ((size_t)order_with_pivot[i] == N)
         {
             pivot_index = i;
             break;
