@@ -400,7 +400,7 @@ IGL_INLINE void igl::cgal::outer_hull(
     }
     Eigen::VectorXi inside;
     igl::cgal::points_inside_component(V, vG[id], query_points, inside);
-    assert(inside.size() == num_unresolved_components);
+    assert((size_t)inside.size() == num_unresolved_components);
     for (size_t i=0; i<num_unresolved_components; i++) {
         if (inside(i, 0)) {
             const size_t oid = unresolved[i];
