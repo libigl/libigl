@@ -304,7 +304,7 @@ IGL_INLINE void igl::cgal::order_facets_around_edges(
 
         Eigen::VectorXi order;
         order_facets_around_edge(V, F, s, d, adj_faces, order);
-        assert(order.size() == edge_valance);
+        assert((size_t)order.size() == edge_valance);
 
         auto& ordered_edges = uE2oE[ui];
         auto& consistency = uE2C[ui];

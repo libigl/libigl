@@ -159,7 +159,7 @@ namespace igl {
                 Eigen::VectorXi order;
                 order_facets_around_edge(V, F, s, d,
                         adj_faces, pivot_point, order);
-                assert(order.size() == num_adj_faces);
+                assert((size_t)order.size() == num_adj_faces);
                 if (adj_faces[order[0]] > 0 &&
                     adj_faces[order[num_adj_faces-1] < 0]) {
                     return true;
