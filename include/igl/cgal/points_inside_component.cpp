@@ -91,7 +91,6 @@ namespace igl {
                 const size_t num_faces = I.rows();
                 for (size_t i=0; i<num_faces; i++) {
                     Eigen::Vector3i f = F.row(I(i, 0));
-                    assert((f.array() < V.rows()).all());
                     if ((size_t)f[0] == v) {
                         unique_adj_vertices.insert(f[1]);
                         unique_adj_vertices.insert(f[2]);
