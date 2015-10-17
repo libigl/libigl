@@ -362,7 +362,7 @@ void igl::cgal::order_facets_around_edge(
             vertices, faces, N+1, N+2,
             adj_faces_with_pivot, order_with_pivot);
 
-    assert(order_with_pivot.size() == num_faces);
+    assert((size_t)order_with_pivot.size() == num_faces);
     order.resize(N);
     size_t pivot_index = num_faces + 1;
     for (size_t i=0; i<num_faces; i++)
