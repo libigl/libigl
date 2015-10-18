@@ -104,6 +104,9 @@ IGL_INLINE typename DerivedA::Scalar igl::doublearea_single(
   const Eigen::PlainObjectBase<DerivedB> & B,
   const Eigen::PlainObjectBase<DerivedC> & C)
 {
+  assert(A.size() == 2 && "Vertices should be 2D");
+  assert(B.size() == 2 && "Vertices should be 2D");
+  assert(C.size() == 2 && "Vertices should be 2D");
   auto r = A-C;
   auto s = B-C;
   return r(0)*s(1) - r(1)*s(0);
