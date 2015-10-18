@@ -16,6 +16,8 @@
 #include <iostream>
 #include <queue>
 
+#include "tutorial_shared_path.h"
+
 struct Mesh
 {
   Eigen::MatrixXd V,U;
@@ -30,11 +32,11 @@ int main(int argc, char * argv[])
   using namespace Eigen;
   using namespace std;
   using namespace igl;
-  if(!readMESH("../shared/octopus-low.mesh",low.V,low.T,low.F))
+  if(!readMESH(TUTORIAL_SHARED_PATH "/octopus-low.mesh",low.V,low.T,low.F))
   {
     cout<<"failed to load mesh"<<endl;
   }
-  if(!readMESH("../shared/octopus-high.mesh",high.V,high.T,high.F))
+  if(!readMESH(TUTORIAL_SHARED_PATH "/octopus-high.mesh",high.V,high.T,high.F))
   {
     cout<<"failed to load mesh"<<endl;
   }

@@ -1,6 +1,7 @@
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
 #include <sstream>
+#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -8,7 +9,7 @@ Eigen::MatrixXi F;
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::readOFF("../shared/bunny.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/bunny.off", V, F);
 
   // Find the bounding box
   Eigen::Vector3d m = V.colwise().minCoeff();

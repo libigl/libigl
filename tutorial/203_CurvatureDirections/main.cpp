@@ -9,6 +9,7 @@
 #include <igl/principal_curvature.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/viewer/Viewer.h>
+#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -16,7 +17,7 @@ Eigen::MatrixXi F;
 int main(int argc, char *argv[])
 {
   using namespace Eigen;
-  std::string filename = "../shared/fertility.off";
+  std::string filename = TUTORIAL_SHARED_PATH "/fertility.off";
   if(argc>1)
   {
     filename = argv[1];
