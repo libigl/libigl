@@ -47,7 +47,7 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::readOFF(tutorial_shared_path + "/3holes.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/3holes.off", V, F);
 
   // Launch MATLAB
   igl::matlab::mlinit(&engine);

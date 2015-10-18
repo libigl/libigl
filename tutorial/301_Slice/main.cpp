@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
   using namespace std;
   MatrixXd V;
   MatrixXi F;
-  igl::readOFF(tutorial_shared_path + "/decimated-knight.off",V,F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/decimated-knight.off",V,F);
 
   // 100 random indicies into rows of F
   VectorXi I;

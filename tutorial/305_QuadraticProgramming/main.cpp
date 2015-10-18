@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
   using namespace std;
   MatrixXd V;
   MatrixXi F;
-  igl::readOFF(tutorial_shared_path + "/cheburashka.off",V,F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/cheburashka.off",V,F);
 
   // Plot the mesh
   igl::viewer::Viewer viewer;

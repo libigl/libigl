@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
   using namespace std;
   MatrixXd V;
   MatrixXi F;
-  igl::readOFF(tutorial_shared_path + "/camelhead.off",V,F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/camelhead.off",V,F);
   // Find boundary edges
   MatrixXi E;
   igl::boundary_facets(F,E);

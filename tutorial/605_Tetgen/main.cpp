@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
   using namespace std;
 
   // Load a surface mesh
-  igl::readOFF(tutorial_shared_path + "/fertility.off",V,F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/fertility.off",V,F);
 
   // Tetrahedralize the interior
   igl::tetgen::tetrahedralize(V,F,"pq1.414Y", TV,TT,TF);

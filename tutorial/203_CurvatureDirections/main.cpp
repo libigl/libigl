@@ -17,7 +17,7 @@ Eigen::MatrixXi F;
 int main(int argc, char *argv[])
 {
   using namespace Eigen;
-  std::string filename = tutorial_shared_path + "/fertility.off";
+  std::string filename = TUTORIAL_SHARED_PATH "/fertility.off";
   if(argc>1)
   {
     filename = argv[1];

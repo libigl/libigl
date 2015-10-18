@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
   using namespace Eigen;
 
   // Load a mesh in OFF format
-  igl::readOFF(tutorial_shared_path + "/bumpy.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/bumpy.off", V, F);
 
   // Threshold faces with high anisotropy
   b.resize(1);

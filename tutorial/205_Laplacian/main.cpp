@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   using namespace std;
 
   // Load a mesh in OFF format
-  igl::readOFF(tutorial_shared_path + "/cow.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/cow.off", V, F);
 
   // Compute Laplace-Beltrami operator: #V by #V
   igl::cotmatrix(V,F,L);

@@ -120,15 +120,15 @@ int main(int argc, char *argv[])
 {
   using namespace Eigen;
   using namespace std;
-  igl::readMESH(tutorial_shared_path + "/hand.mesh",V,T,F);
+  igl::readMESH(TUTORIAL_SHARED_PATH "/hand.mesh",V,T,F);
   U=V;
-  igl::readTGF(tutorial_shared_path + "/hand.tgf",C,BE);
+  igl::readTGF(TUTORIAL_SHARED_PATH "/hand.tgf",C,BE);
   // retrieve parents for forward kinematics
   igl::directed_edge_parents(BE,P);
 
   // Read pose as matrix of quaternions per row
   MatrixXd Q;
-  igl::readDMAT(tutorial_shared_path + "/hand-pose.dmat",Q);
+  igl::readDMAT(TUTORIAL_SHARED_PATH "/hand-pose.dmat",Q);
   igl::column_to_quats(Q,pose);
   assert(pose.size() == BE.rows());
 

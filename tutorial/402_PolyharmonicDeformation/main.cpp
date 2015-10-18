@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 {
   using namespace Eigen;
   using namespace std;
-  igl::readOBJ(tutorial_shared_path + "/bump-domain.obj",V,F);
+  igl::readOBJ(TUTORIAL_SHARED_PATH "/bump-domain.obj",V,F);
   U=V;
   // Find boundary vertices outside annulus
   typedef Matrix<bool,Dynamic,1> VectorXb;

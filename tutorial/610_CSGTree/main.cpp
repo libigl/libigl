@@ -15,11 +15,11 @@ int main(int argc, char * argv[])
   MatrixXi FA,FB,FC,FD,FE;
   MatrixXd VA,VB,VC,VD,VE;
   // Read in inputs as double precision floating point meshes
-  read_triangle_mesh(tutorial_shared_path + "/cube.obj"     ,VA,FA);
-  read_triangle_mesh(tutorial_shared_path + "/sphere.obj"   ,VB,FB);
-  read_triangle_mesh(tutorial_shared_path + "/xcylinder.obj",VC,FC);
-  read_triangle_mesh(tutorial_shared_path + "/ycylinder.obj",VD,FD);
-  read_triangle_mesh(tutorial_shared_path + "/zcylinder.obj",VE,FE);
+  read_triangle_mesh(TUTORIAL_SHARED_PATH "/cube.obj"     ,VA,FA);
+  read_triangle_mesh(TUTORIAL_SHARED_PATH "/sphere.obj"   ,VB,FB);
+  read_triangle_mesh(TUTORIAL_SHARED_PATH "/xcylinder.obj",VC,FC);
+  read_triangle_mesh(TUTORIAL_SHARED_PATH "/ycylinder.obj",VD,FD);
+  read_triangle_mesh(TUTORIAL_SHARED_PATH "/zcylinder.obj",VE,FE);
   igl::viewer::Viewer viewer;
 
   int num_views = 5+4;

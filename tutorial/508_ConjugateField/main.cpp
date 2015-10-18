@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
   using namespace std;
 
   // Load a mesh in OBJ format
-  igl::readOBJ(tutorial_shared_path + "/inspired_mesh.obj", V, F);
+  igl::readOBJ(TUTORIAL_SHARED_PATH "/inspired_mesh.obj", V, F);
   // Compute face barycenters
   igl::barycenter(V, F, B);
 
@@ -136,8 +136,8 @@ int main(int argc, char *argv[])
   global_scale =  .4*igl::avg_edge_length(V, F);
 
   // Load constraints
-  igl::readDMAT(tutorial_shared_path + "/inspired_mesh_b.dmat",b);
-  igl::readDMAT(tutorial_shared_path + "/inspired_mesh_bc.dmat",bc);
+  igl::readDMAT(TUTORIAL_SHARED_PATH "/inspired_mesh_b.dmat",b);
+  igl::readDMAT(TUTORIAL_SHARED_PATH "/inspired_mesh_bc.dmat",bc);
 
   // Interpolate to get a smooth field
   igl::n_polyvector(V, F, b, bc, smooth_pvf);

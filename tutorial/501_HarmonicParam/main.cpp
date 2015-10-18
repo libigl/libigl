@@ -33,7 +33,7 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::readOFF(tutorial_shared_path + "/camelhead.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/camelhead.off", V, F);
 
   // Find the open boundary
   Eigen::VectorXi bnd;

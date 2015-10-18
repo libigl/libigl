@@ -36,7 +36,7 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::readOFF(tutorial_shared_path + "/fandisk.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/fandisk.off", V, F);
 
   // Compute per-face normals
   igl::per_face_normals(V,F,N_faces);

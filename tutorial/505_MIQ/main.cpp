@@ -232,7 +232,7 @@ int main(int argc, char *argv[])
   using namespace Eigen;
 
   // Load a mesh in OFF format
-  igl::readOFF(tutorial_shared_path + "/3holes.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/3holes.off", V, F);
 
   // Compute face barycenters
   igl::barycenter(V, F, B);

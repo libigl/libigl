@@ -627,7 +627,7 @@ int main(int argc, char *argv[])
 {
 
   // Load a mesh
-  igl::readOBJ(tutorial_shared_path + "/inspired_mesh.obj", V, F);
+  igl::readOBJ(TUTORIAL_SHARED_PATH "/inspired_mesh.obj", V, F);
 
   printf("--Initialization--\n");
   V_border = igl::is_border_vertex(V,F);
