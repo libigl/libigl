@@ -3,6 +3,7 @@
 #include <nanogui/formhelper.h>
 #include <nanogui/screen.h>
 #include <iostream>
+#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -13,7 +14,7 @@ float floatVariable = 0.1f;
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::readOFF("../shared/bunny.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/bunny.off", V, F);
 
   // Init the viewer
   igl::viewer::Viewer viewer;

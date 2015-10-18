@@ -5,6 +5,8 @@
 #include <igl/viewer/Viewer.h>
 #include <iostream>
 
+#include "tutorial_shared_path.h"
+
 // Base mesh
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -45,7 +47,7 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::readOFF("../shared/3holes.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/3holes.off", V, F);
 
   // Launch MATLAB
   igl::matlab::mlinit(&engine);

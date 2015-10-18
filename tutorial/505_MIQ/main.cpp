@@ -14,6 +14,8 @@
 #include <igl/viewer/Viewer.h>
 #include <sstream>
 
+#include "tutorial_shared_path.h"
+
 // Input mesh
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -230,7 +232,7 @@ int main(int argc, char *argv[])
   using namespace Eigen;
 
   // Load a mesh in OFF format
-  igl::readOFF("../shared/3holes.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/3holes.off", V, F);
 
   // Compute face barycenters
   igl::barycenter(V, F, B);

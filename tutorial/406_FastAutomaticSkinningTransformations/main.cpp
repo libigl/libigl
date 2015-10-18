@@ -23,6 +23,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include "tutorial_shared_path.h"
+
 typedef 
   std::vector<Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> >
   RotationList;
@@ -142,10 +144,10 @@ int main(int argc, char *argv[])
 {
   using namespace Eigen;
   using namespace std;
-  igl::readOBJ("../shared/armadillo.obj",V,F);
+  igl::readOBJ(TUTORIAL_SHARED_PATH "/armadillo.obj",V,F);
   U=V;
   MatrixXd W;
-  igl::readDMAT("../shared/armadillo-weights.dmat",W);
+  igl::readDMAT(TUTORIAL_SHARED_PATH "/armadillo-weights.dmat",W);
   igl::lbs_matrix_column(V,W,M);
 
   // Cluster according to weights
