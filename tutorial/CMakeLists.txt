@@ -136,7 +136,7 @@ endif(UNIX AND NOT APPLE)
 
 # Store location of tutorial/shared directory 
 set(TUTORIAL_SHARED_PATH ${CMAKE_CURRENT_SOURCE_DIR}/shared CACHE PATH "location of shared tutorial resources")
-add_definitions("-DTUTORIAL_SHARED_PATH=${TUTORIAL_SHARED_PATH}")
+add_definitions("-DTUTORIAL_SHARED_PATH=\"${TUTORIAL_SHARED_PATH}\"")
 
 # Chapter 1
 add_subdirectory("101_FileIO")

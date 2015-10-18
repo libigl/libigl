@@ -34,8 +34,8 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 int main(int argc, char *argv[])
 {
   // Load two meshes
-  igl::readOFF(tutorial_shared_path + "/bumpy.off", V1, F1);
-  igl::readOFF(tutorial_shared_path + "/fertility.off", V2, F2);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/bumpy.off", V1, F1);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/fertility.off", V2, F2);
   std::cout<<R"(
 1 Switch to bump mesh
 2 Switch to fertility mesh

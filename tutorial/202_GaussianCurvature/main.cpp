@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
   using namespace std;
   MatrixXd V;
   MatrixXi F;
-  igl::readOFF(tutorial_shared_path + "/bumpy.off",V,F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/bumpy.off",V,F);
 
   VectorXd K;
   igl::gaussian_curvature(V,F,K);

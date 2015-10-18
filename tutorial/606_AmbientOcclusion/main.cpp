@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     "Press , to turn down lighting"<<endl;
 
   // Load a mesh in OFF format
-  igl::readOFF(tutorial_shared_path + "/fertility.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/fertility.off", V, F);
 
   MatrixXd N;
   igl::per_vertex_normals(V,F,N);

@@ -92,9 +92,9 @@ int main(int argc, char *argv[])
 {
   using namespace Eigen;
   using namespace std;
-  igl::readOFF(tutorial_shared_path + "/decimated-knight.off",V,F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/decimated-knight.off",V,F);
   U=V;
-  igl::readDMAT(tutorial_shared_path + "/decimated-knight-selection.dmat",S);
+  igl::readDMAT(TUTORIAL_SHARED_PATH "/decimated-knight-selection.dmat",S);
 
   // vertices in selection
   igl::colon<int>(0,V.rows()-1,b);

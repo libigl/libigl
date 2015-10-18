@@ -226,7 +226,7 @@ By default, the .h files include the corresponding cpp files, making the library
 Reading a mesh from a file requires a single libigl function call:
 
 ```cpp
-igl::readOFF(tutorial_shared_path + "/cube.off", V, F);
+igl::readOFF(TUTORIAL_SHARED_PATH "/cube.off", V, F);
 ```
 
 The function reads the mesh cube.off and it fills the provided `V` and `F` matrices.
@@ -259,7 +259,7 @@ Eigen::MatrixXi F;
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::readOFF(tutorial_shared_path + "/bunny.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/bunny.off", V, F);
 
   // Plot the mesh
   igl::Viewer viewer;
@@ -2300,7 +2300,7 @@ To aid debugging, libigl also supplies functions to write Matlab `.mat`
 a file:
 
 ```cpp
-igl::readOFF(tutorial_shared_path + "/fertility.off", V, F);
+igl::readOFF(TUTORIAL_SHARED_PATH "/fertility.off", V, F);
 igl::cotmatrix(V,F,L);
 igl::MatlabWorkspace mw;
 mw.save(V,"V");
@@ -2325,7 +2325,7 @@ Libigl has wrapped up a particularly useful formatting which makes it simple to
 copy standard output from a C++ program into a Matlab IDE. The code:
 
 ```cpp
-igl::readOFF(tutorial_shared_path + "/2triangles.off", V, F);
+igl::readOFF(TUTORIAL_SHARED_PATH "/2triangles.off", V, F);
 igl::cotmatrix(V,F,L);
 std::cout<<igl::matlab_format(V,"V")<<std::endl;
 std::cout<<igl::matlab_format((F.array()+1).eval(),"F")<<std::endl;

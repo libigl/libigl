@@ -273,7 +273,7 @@ By default, the .h files include the corresponding cpp files, making the library
 
 <p>Reading a mesh from a file requires a single libigl function call:</p>
 
-<pre><code class="cpp">igl::readOFF(tutorial_shared_path + &quot;/cube.off&quot;, V, F);
+<pre><code class="cpp">igl::readOFF(TUTORIAL_SHARED_PATH &quot;/cube.off&quot;, V, F);
 </code></pre>
 
 <p>The function reads the mesh cube.off and it fills the provided <code>V</code> and <code>F</code> matrices.
@@ -306,7 +306,7 @@ Eigen::MatrixXi F;
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::readOFF(tutorial_shared_path + &quot;/bunny.off&quot;, V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH &quot;/bunny.off&quot;, V, F);
 
   // Plot the mesh
   igl::Viewer viewer;
@@ -2595,7 +2595,7 @@ viewer.</figcaption>
 &#8220;Workspaces&#8221;. This C++ snippet saves a mesh and it&#8217;s sparse Laplacian matrix to
 a file:</p>
 
-<pre><code class="cpp">igl::readOFF(tutorial_shared_path + &quot;/fertility.off&quot;, V, F);
+<pre><code class="cpp">igl::readOFF(TUTORIAL_SHARED_PATH &quot;/fertility.off&quot;, V, F);
 igl::cotmatrix(V,F,L);
 igl::MatlabWorkspace mw;
 mw.save(V,&quot;V&quot;);
@@ -2619,7 +2619,7 @@ instance upon execution.</p>
 Libigl has wrapped up a particularly useful formatting which makes it simple to
 copy standard output from a C++ program into a Matlab IDE. The code:</p>
 
-<pre><code class="cpp">igl::readOFF(tutorial_shared_path + &quot;/2triangles.off&quot;, V, F);
+<pre><code class="cpp">igl::readOFF(TUTORIAL_SHARED_PATH &quot;/2triangles.off&quot;, V, F);
 igl::cotmatrix(V,F,L);
 std::cout&lt;&lt;igl::matlab_format(V,&quot;V&quot;)&lt;&lt;std::endl;
 std::cout&lt;&lt;igl::matlab_format((F.array()+1).eval(),&quot;F&quot;)&lt;&lt;std::endl;

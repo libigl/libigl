@@ -16,7 +16,7 @@ int main(int argc, char * argv[])
   MatrixXd V;
   // Read in inputs as double precision floating point meshes
   read_triangle_mesh(
-      tutorial_shared_path + "/armadillo.obj",V,F);
+      TUTORIAL_SHARED_PATH "/armadillo.obj",V,F);
   // number of vertices on the largest side
   const int s = 50;
   const RowVector3d Vmin = V.colwise().minCoeff();

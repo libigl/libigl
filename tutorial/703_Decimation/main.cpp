@@ -18,7 +18,7 @@ int main(int argc, char * argv[])
   cout<<"  [space]  toggle animation."<<endl;
   cout<<"  'r'  reset."<<endl;
   // Load a closed manifold mesh
-  string filename(tutorial_shared_path + "/fertility.off");
+  string filename(TUTORIAL_SHARED_PATH "/fertility.off");
   if(argc>=2)
   {
     filename = argv[1];

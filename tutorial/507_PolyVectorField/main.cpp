@@ -129,8 +129,8 @@ int main(int argc, char *argv[])
   using namespace Eigen;
   using namespace std;
   // Load a mesh in OBJ format
-  igl::readOBJ(tutorial_shared_path + "/lilium.obj", V, F);
-  readSamples(tutorial_shared_path + "/lilium.samples.0.2", samples);
+  igl::readOBJ(TUTORIAL_SHARED_PATH "/lilium.obj", V, F);
+  readSamples(TUTORIAL_SHARED_PATH "/lilium.samples.0.2", samples);
 
   // Compute local basis for faces
   igl::local_basis(V,F,B1,B2,B3);

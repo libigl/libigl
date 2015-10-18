@@ -77,8 +77,8 @@ int main(int argc, char *argv[])
 {
   using namespace Eigen;
   using namespace std;
-  igl::readOFF(tutorial_shared_path + "/cheburashka.off",VA,FA);
-  igl::readOFF(tutorial_shared_path + "/decimated-knight.off",VB,FB);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/cheburashka.off",VA,FA);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/decimated-knight.off",VB,FB);
   // Plot the mesh with pseudocolors
   igl::viewer::Viewer viewer;
 

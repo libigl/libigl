@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 {
   using namespace std;
   // Load a mesh in OFF format
-  igl::readOFF(tutorial_shared_path + "/camelhead.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/camelhead.off", V, F);
 
   // Compute the initial solution for ARAP (harmonic parametrization)
   Eigen::VectorXi bnd;

@@ -32,11 +32,11 @@ int main(int argc, char * argv[])
   using namespace Eigen;
   using namespace std;
   using namespace igl;
-  if(!readMESH(tutorial_shared_path + "/octopus-low.mesh",low.V,low.T,low.F))
+  if(!readMESH(TUTORIAL_SHARED_PATH "/octopus-low.mesh",low.V,low.T,low.F))
   {
     cout<<"failed to load mesh"<<endl;
   }
-  if(!readMESH(tutorial_shared_path + "/octopus-high.mesh",high.V,high.T,high.F))
+  if(!readMESH(TUTORIAL_SHARED_PATH "/octopus-high.mesh",high.V,high.T,high.F))
   {
     cout<<"failed to load mesh"<<endl;
   }
