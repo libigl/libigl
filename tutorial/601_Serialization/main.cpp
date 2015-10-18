@@ -3,6 +3,8 @@
 #include <igl/xml/serialize_xml.h>
 #include <iostream>
 
+#include "tutorial_shared_path.h"
+
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 
@@ -62,7 +64,7 @@ int main(int argc, char *argv[])
   State stateIn, stateOut;
 
   // Load a mesh in OFF format
-  igl::readOFF("../shared/2triangles.off",stateIn.V,stateIn.F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/2triangles.off",stateIn.V,stateIn.F);
 
   // Save some integers in a vector
   stateIn.ids.push_back(6);

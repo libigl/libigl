@@ -11,6 +11,7 @@
 #include <igl/viewer/Viewer.h>
 
 #include <iostream>
+#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V,U;
 Eigen::MatrixXi F;
@@ -23,7 +24,7 @@ int main(int argc, char *argv[])
   using namespace std;
 
   // Load a mesh in OFF format
-  igl::readOFF("../shared/cow.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/cow.off", V, F);
 
   // Compute Laplace-Beltrami operator: #V by #V
   igl::cotmatrix(V,F,L);

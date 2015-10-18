@@ -1,6 +1,7 @@
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
 #include <iostream>
+#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V1,V2;
 Eigen::MatrixXi F1,F2;
@@ -33,8 +34,8 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 int main(int argc, char *argv[])
 {
   // Load two meshes
-  igl::readOFF("../shared/bumpy.off", V1, F1);
-  igl::readOFF("../shared/fertility.off", V2, F2);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/bumpy.off", V1, F1);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/fertility.off", V2, F2);
   std::cout<<R"(
 1 Switch to bump mesh
 2 Switch to fertility mesh

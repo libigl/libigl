@@ -5,6 +5,8 @@
 
 #include <algorithm>
 
+#include "tutorial_shared_path.h"
+
 // Mesh
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -54,7 +56,7 @@ int main(int argc, char *argv[])
   using namespace Eigen;
   using namespace std;
   // Load a mesh in OFF format
-  igl::readOFF("../shared/fertility.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/fertility.off", V, F);
 
   // Create a BVH for raycasting
   ei = new igl::embree::EmbreeIntersector();
