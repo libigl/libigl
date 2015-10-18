@@ -24,6 +24,9 @@
 #include <iostream>
 #include <fstream>
 #include <igl/matlab_format.h>
+
+#include "tutorial_shared_path.h"
+
 using namespace std;
 
 // Input mesh
@@ -624,7 +627,7 @@ int main(int argc, char *argv[])
 {
 
   // Load a mesh
-  igl::readOBJ("../shared/inspired_mesh.obj", V, F);
+  igl::readOBJ(TUTORIAL_SHARED_PATH "/inspired_mesh.obj", V, F);
 
   printf("--Initialization--\n");
   V_border = igl::is_border_vertex(V,F);
