@@ -119,6 +119,7 @@ IGL_INLINE void igl::cgal::closest_facet(
     auto process_edge_case = [&](
             size_t query_idx,
             const size_t s, const size_t d,
+            size_t preferred_facet,
             bool& orientation) {
 
         Point_3 mid_edge_point(
@@ -151,23 +152,46 @@ IGL_INLINE void igl::cgal::closest_facet(
                         index, get_orientation(index, s,d));
                 });
 
+        assert(num_intersected_faces >= 1);
+        if (num_intersected_faces == 1) {
+            // The edge must be a boundary edge.  Thus, the orientation can be
+            // simply determined by checking if the query point is on the
+            // positive side of the facet.
+            const size_t fid = intersected_face_indices[0];
+            orientation = on_the_positive_side(fid, query_point);
+            return fid;
+        }
+
         Eigen::VectorXi order;
         DerivedP pivot = P.row(query_idx).eval();
         igl::cgal::order_facets_around_edge(V, F, s, d,
                 intersected_face_signed_indices,
                 pivot, order);
-        orientation = intersected_face_signed_indices[order[0]] < 0;
-        return intersected_face_indices[order[0]];
+
+        // Although first and last are equivalent, make the choice based on
+        // preferred_facet.
+        const size_t first = order[0];
+        const size_t last = order[num_intersected_faces-1];
+        if (intersected_face_indices[first] == preferred_facet) {
+            orientation = intersected_face_signed_indices[first] < 0;
+            return intersected_face_indices[first];
+        } else if (intersected_face_indices[last] == preferred_facet) {
+            orientation = intersected_face_signed_indices[last] > 0;
+            return intersected_face_indices[last];
+        } else {
+            orientation = intersected_face_signed_indices[order[0]] < 0;
+            return intersected_face_indices[order[0]];
+        }
     };
 
     auto process_face_case = [&](
             const size_t query_idx, const size_t fid, bool& orientation) {
         const auto& f = F.row(I(fid, 0));
-        return process_edge_case(query_idx, f[0], f[1], orientation);
+        return process_edge_case(query_idx, f[0], f[1], I(fid, 0), orientation);
     };
 
     auto process_vertex_case = [&](const size_t query_idx, size_t s,
-            bool& orientation) {
+            size_t preferred_facet, bool& orientation) {
         Point_3 closest_point(V(s, 0), V(s, 1), V(s, 2));
         Point_3 query_point(P(query_idx, 0), P(query_idx, 1), P(query_idx, 2));
 
@@ -246,7 +270,7 @@ IGL_INLINE void igl::cgal::closest_facet(
         }
         assert(d != std::numeric_limits<size_t>::max());
 
-        return process_edge_case(query_idx, s, d, orientation);
+        return process_edge_case(query_idx, s, d, preferred_facet, orientation);
     };
 
     const size_t num_queries = P.rows();
@@ -279,7 +303,7 @@ IGL_INLINE void igl::cgal::closest_facet(
                 {
                     const auto& f = F.row(I(fid, 0));
                     const size_t s = f[element_index];
-                    fid = process_vertex_case(i, s, fid_ori);
+                    fid = process_vertex_case(i, s, I(fid, 0), fid_ori);
                 }
                 break;
             case EDGE:
@@ -287,7 +311,7 @@ IGL_INLINE void igl::cgal::closest_facet(
                     const auto& f = F.row(I(fid, 0));
                     const size_t s = f[(element_index+1)%3];
                     const size_t d = f[(element_index+2)%3];
-                    fid = process_edge_case(i, s, d, fid_ori);
+                    fid = process_edge_case(i, s, d, I(fid, 0), fid_ori);
                 }
                 break;
             case FACE:
