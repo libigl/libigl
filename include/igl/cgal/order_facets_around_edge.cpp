@@ -281,6 +281,7 @@ void igl::cgal::order_facets_around_edge(
 
     assert(V.cols() == 3);
     assert(F.cols() == 3);
+    assert(pivot_point.cols() == 3);
     auto signed_index_to_index = [&](int signed_idx)
     {
         return abs(signed_idx) -1;
@@ -313,14 +314,16 @@ void igl::cgal::order_facets_around_edge(
     // Because face indices are used for tie breaking, the original face indices
     // in the new faces array must be ascending.
     auto comp = [&](int i, int j) {
-        return signed_index_to_index(i) < signed_index_to_index(j);
+        return signed_index_to_index(adj_faces[i]) <
+            signed_index_to_index(adj_faces[j]);
     };
-    std::vector<int> ordered_adj_faces(adj_faces);
-    std::sort(ordered_adj_faces.begin(), ordered_adj_faces.end(), comp);
+    std::vector<size_t> adj_order(N);
+    for (size_t i=0; i<N; i++) adj_order[i] = i;
+    std::sort(adj_order.begin(), adj_order.end(), comp);
 
     DerivedV vertices(num_faces + 2, 3);
     for (size_t i=0; i<N; i++) {
-        const size_t fid = signed_index_to_index(ordered_adj_faces[i]);
+        const size_t fid = signed_index_to_index(adj_faces[adj_order[i]]);
         vertices.row(i) = V.row(get_opposite_vertex_index(fid));
     }
     vertices.row(N  ) = pivot_point;
@@ -330,7 +333,7 @@ void igl::cgal::order_facets_around_edge(
     DerivedF faces(num_faces, 3);
     for (size_t i=0; i<N; i++)
     {
-        if (ordered_adj_faces[i] < 0) {
+        if (adj_faces[adj_order[i]] < 0) {
             faces(i,0) = N+1; // s
             faces(i,1) = N+2; // d
             faces(i,2) = i  ;
@@ -377,7 +380,7 @@ void igl::cgal::order_facets_around_edge(
 
     for (size_t i=0; i<N; i++)
     {
-        order[i] = order_with_pivot[(pivot_index+i+1)%num_faces];
+        order[i] = adj_order[order_with_pivot[(pivot_index+i+1)%num_faces]];
     }
 }
 
