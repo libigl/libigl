@@ -60,13 +60,13 @@ IGL_INLINE bool igl::cgal::propagate_winding_numbers_single_component_patch_wise
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DeriveduE>& uE,
         const std::vector<std::vector<uE2EType> >& uE2E,
-        const Eigen::PlainObjectBase<DerivedC>& C,
+        const Eigen::PlainObjectBase<DerivedC>& labels,
         const Eigen::PlainObjectBase<DerivedP>& P,
         const std::vector<std::vector<size_t> >& intersection_curves,
         Eigen::PlainObjectBase<DerivedW>& patch_W) {
     const size_t num_faces = F.rows();
     const size_t num_patches = P.maxCoeff() + 1;
-    assert(C.size() == num_patches);
+    assert(labels.size() == num_patches);
     // Utility functions.
     auto edge_index_to_face_index = [&](size_t ei) { return ei % num_faces; };
     auto edge_index_to_corner_index = [&](size_t ei) { return ei / num_faces; };
@@ -137,7 +137,7 @@ IGL_INLINE bool igl::cgal::propagate_winding_numbers_single_component_patch_wise
 
     // Propagate winding number from infinity.
     // Assuming infinity has winding number 0.
-    const size_t num_labels = C.maxCoeff() + 1;
+    const size_t num_labels = labels.maxCoeff() + 1;
     const int INVALID = std::numeric_limits<int>::max();
     patch_W.resize(num_patches, 2*num_labels);
     patch_W.setConstant(INVALID);
@@ -149,7 +149,7 @@ IGL_INLINE bool igl::cgal::propagate_winding_numbers_single_component_patch_wise
     igl::cgal::outer_facet(V, F, face_indices,
             outer_facet_idx, outer_facet_is_flipped);
     size_t outer_patch_idx = P[outer_facet_idx];
-    size_t outer_patch_label = C[outer_patch_idx];
+    size_t outer_patch_label = labels[outer_patch_idx];
     patch_W.row(outer_patch_idx).setZero();
     if (outer_facet_is_flipped) {
         patch_W(outer_patch_idx, outer_patch_label*2) = -1;
@@ -165,7 +165,7 @@ IGL_INLINE bool igl::cgal::propagate_winding_numbers_single_component_patch_wise
     Q.push(outer_patch_idx);
     while (!Q.empty()) {
         const size_t curr_patch_idx = Q.front();
-        const size_t curr_patch_label = C[curr_patch_idx];
+        const size_t curr_patch_label = labels[curr_patch_idx];
         Q.pop();
 
         const auto& adj_curves = patch_curve_adjacency[curr_patch_idx];
@@ -196,7 +196,7 @@ IGL_INLINE bool igl::cgal::propagate_winding_numbers_single_component_patch_wise
             if (!winding_num_assigned(next_patch_idx)) {
                 const bool next_ori = orientation[next_i];
                 const bool next_cons = next_ori != curr_ori;
-                const size_t next_patch_label = C[next_patch_idx];
+                const size_t next_patch_label = labels[next_patch_idx];
                 for (size_t i=0; i<num_labels; i++) {
                     const int shared_winding_number =
                         patch_W(curr_patch_idx, i*2);
@@ -223,7 +223,7 @@ IGL_INLINE bool igl::cgal::propagate_winding_numbers_single_component_patch_wise
             if (!winding_num_assigned(prev_patch_idx)) {
                 const bool prev_ori = orientation[prev_i];
                 const bool prev_cons = prev_ori != curr_ori;
-                const size_t prev_patch_label = C[prev_patch_idx];
+                const size_t prev_patch_label = labels[prev_patch_idx];
 
                 for (size_t i=0; i<num_labels; i++) {
                     const int shared_winding_number =
@@ -263,7 +263,7 @@ typename DerivedW>
 IGL_INLINE bool igl::cgal::propagate_winding_numbers_single_component(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
-        const Eigen::PlainObjectBase<DerivedC>& C,
+        const Eigen::PlainObjectBase<DerivedC>& labels,
         Eigen::PlainObjectBase<DerivedW>& W) {
     typedef typename DerivedF::Scalar Index;
     const size_t num_faces = F.rows();
@@ -284,23 +284,23 @@ IGL_INLINE bool igl::cgal::propagate_winding_numbers_single_component(
     assert(P.size() == num_faces);
     assert(P.maxCoeff() + 1 == num_patches);
 
-    Eigen::VectorXi labels(num_patches);
+    Eigen::VectorXi patch_labels(num_patches);
     const int INVALID = std::numeric_limits<int>::max();
-    labels.setConstant(INVALID);
+    patch_labels.setConstant(INVALID);
     for (size_t i=0; i<num_faces; i++) {
-        if (labels[P[i]] == INVALID) {
-            labels[P[i]] = C[i];
+        if (patch_labels[P[i]] == INVALID) {
+            patch_labels[P[i]] = labels[i];
         } else {
-            assert(labels[P[i]] == C[i]);
+            assert(patch_labels[P[i]] == labels[i]);
         }
     }
-    assert((labels.array() != INVALID).all());
-    const size_t num_labels = labels.maxCoeff()+1;
+    assert((patch_labels.array() != INVALID).all());
+    const size_t num_labels = patch_labels.maxCoeff()+1;
 
     Eigen::MatrixXi winding_numbers;
     bool is_consistent =
         igl::cgal::propagate_winding_numbers_single_component_patch_wise(
-            V, F, uE, uE2E, labels, P, intersection_curves, winding_numbers);
+            V, F, uE, uE2E, patch_labels, P, intersection_curves, winding_numbers);
     assert(winding_numbers.rows() == num_patches);
     assert(winding_numbers.cols() == 2 * num_labels);
 
@@ -321,9 +321,9 @@ IGL_INLINE bool igl::cgal::propagate_winding_numbers_single_component(
         const Eigen::PlainObjectBase<DerivedF>& F,
         Eigen::PlainObjectBase<DerivedW>& W) {
     const size_t num_faces = F.rows();
-    Eigen::VectorXi C(num_faces);
-    C.setZero();
-    return igl::cgal::propagate_winding_numbers_single_component(V, F, C, W);
+    Eigen::VectorXi labels(num_faces);
+    labels.setZero();
+    return igl::cgal::propagate_winding_numbers_single_component(V, F, labels, W);
 }
 
 template<
