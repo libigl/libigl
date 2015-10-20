@@ -88,7 +88,7 @@ IGL_INLINE bool igl::cgal::propagate_winding_numbers_single_component_patch_wise
             if (f[0] == s && f[1] == d) return false;
             if (f[1] == s && f[2] == d) return false;
             if (f[2] == s && f[0] == d) return false;
-            throw "Edge does not belong to face.";
+            throw std::runtime_error("Edge does not belong to face.");
             return false;
         };
 
