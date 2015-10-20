@@ -153,12 +153,6 @@ IGL_INLINE void igl::cgal::closest_facet(
 
         Eigen::VectorXi order;
         DerivedP pivot = P.row(query_idx).eval();
-        auto get_opposite_vertex = [&](size_t fid) {
-            const auto& f = F.row(fid);
-            if (f[0] != s && f[0] != d) return V.row(f[0]).eval();
-            if (f[1] != s && f[1] != d) return V.row(f[1]).eval();
-            if (f[2] != s && f[2] != d) return V.row(f[2]).eval();
-        };
         igl::cgal::order_facets_around_edge(V, F, s, d,
                 intersected_face_signed_indices,
                 pivot, order);

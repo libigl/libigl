@@ -1,6 +1,8 @@
 #include "order_facets_around_edge.h"
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
+#include <stdexcept>
+
 namespace igl
 {
     namespace cgal
@@ -131,7 +133,10 @@ void igl::cgal::order_facets_around_edge(
     const Point_3 p_d(V(d, 0), V(d, 1), V(d, 2));
     const Point_3 p_o(V(o, 0), V(o, 1), V(o, 2));
     const Plane_3 separator(p_s, p_d, p_o);
-    assert(!separator.is_degenerate());
+    if (separator.is_degenerate()) {
+        throw std::runtime_error(
+                "Cannot order facets around edge due to degenerated facets");
+    }
 
     std::vector<Point_3> opposite_vertices;
     for (size_t i=0; i<num_adj_faces; i++)
@@ -180,14 +185,15 @@ void igl::cgal::order_facets_around_edge(
                             break;
                         case CGAL::COLLINEAR:
                         default:
-                            assert(false);
+                            throw std::runtime_error(
+                                    "Degenerated facet detected.");
                             break;
                     }
                 }
                 break;
             default:
                 // Should not be here.
-                assert(false);
+                throw std::runtime_error("Unknown CGAL state detected.");
         }
     }
 
@@ -304,7 +310,8 @@ void igl::cgal::order_facets_around_edge(
         K::Point_3 pd(V(d,0), V(d,1), V(d,2));
         K::Point_3 pp(pivot_point(0,0), pivot_point(0,1), pivot_point(0,2));
         if (CGAL::collinear(ps, pd, pp)) {
-            throw "Pivot point is collinear with the outer edge!";
+            throw std::runtime_error(
+                    "Pivot point is collinear with the outer edge!");
         }
     }
 
