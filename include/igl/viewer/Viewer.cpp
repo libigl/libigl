@@ -17,25 +17,28 @@
 #include <chrono>
 #include <thread>
 
-#ifndef __APPLE__
+/*#ifndef __APPLE__
 #  define GLEW_STATIC
 #  include <GL/glew.h>
 #endif
 
 #ifdef __APPLE__
 #   include <OpenGL/gl3.h>
-#   define __gl_h_ /* Prevent inclusion of the old gl.h */
+#   define __gl_h_ // Prevent inclusion of the old gl.h
 #else
 #   include <GL/gl.h>
-#endif
+#endif*/
 
-#include <Eigen/LU>
+#include "../opengl/OpenGL_convenience.h"
 
-#define GLFW_INCLUDE_GLU
+/*#define GLFW_INCLUDE_GLU
 #ifndef _WIN32
   #define GLFW_INCLUDE_GLCOREARB
 #endif
-#include <GLFW/glfw3.h>
+#include <GLFW/glfw3.h>*/
+
+#include <Eigen/LU>
+
 
 #include <cmath>
 #include <cstdio>

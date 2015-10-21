@@ -8,16 +8,7 @@
 #include "render_to_png.h"
 #include <stb_image_write.h>
 
-#ifdef __APPLE__
-#  include <OpenGL/gl.h>
-#else
-#  ifdef _WIN32
-#    define NOMINMAX
-#    include <Windows.h>
-#    undef NOMINMAX
-#  endif
-#  include <GL/gl.h>
-#endif
+#include "../opengl/OpenGL_convenience.h"
 
 IGL_INLINE bool igl::png::render_to_png(
   const std::string png_file,
