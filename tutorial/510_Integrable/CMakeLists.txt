@@ -1,11 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(510_Integrable)
 
-include("../CMakeLists.shared")
-
-set(SOURCES
-${PROJECT_SOURCE_DIR}/main.cpp
-)
-
-add_executable(${PROJECT_NAME}_bin ${SOURCES} ${SHARED_SOURCES})
-target_link_libraries(${PROJECT_NAME}_bin ${SHARED_LIBRARIES})
+include_directories(${LIBIGL_INCLUDE_DIRS})
+add_executable(${PROJECT_NAME}_bin
+  main.cpp
+${LIBIGL_EXTRA_SOURCES})
+target_link_libraries(${PROJECT_NAME}_bin ${LIBIGL_LIBRARIES} ${LIBIGL_EXTRA_LIBRARIES})
