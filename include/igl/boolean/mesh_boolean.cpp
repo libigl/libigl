@@ -237,7 +237,7 @@ IGL_INLINE void igl::boolean::mesh_boolean(
     for(Index g = 0;g<gm;g++)
     {
       const int ug = IC(g);
-      assert(ug < uG2G.size());
+      assert((size_t) ug < uG2G.size());
       uG2G[ug].push_back(g);
       // is uG(g,:) just a rotated version of G(g,:) ?
       const bool consistent =

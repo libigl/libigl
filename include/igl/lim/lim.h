@@ -61,7 +61,9 @@ namespace igl
     //                   mesh
     //--------------------------------------------------------------------------
     // Return values:
-    //  1 : Successful optimization with fulfilled tolerance
+    //  1 : Optimization deemed successful because either (a) it stagnated
+    //    (very step size) or (b) positional constraints were satisfied. (re:
+    //    https://github.com/libigl/libigl/issues/79 )
     // -1 : Max iteration reached before tolerance was fulfilled
     // -2 : not feasible -> has inverted elements (may want to decrease eps?)
   

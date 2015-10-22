@@ -27,9 +27,9 @@
 #include "marching_cubes_tables.h"
 #include <map>
 
-extern int edgeTable[256];
-extern int triTable[256][2][17];
-extern int polyTable[8][16];
+extern const int edgeTable[256];
+extern const int triTable[256][2][17];
+extern const int polyTable[8][16];
 
 class EdgeKey 
 {

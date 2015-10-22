@@ -9,6 +9,8 @@
 #include <Eigen/Sparse>
 #include <iostream>
 
+#include "tutorial_shared_path.h"
+
 Eigen::MatrixXd V,BC;
 Eigen::VectorXd W;
 Eigen::MatrixXi T,F,G;
@@ -101,7 +103,7 @@ int main(int argc, char *argv[])
 
   // Load mesh: (V,T) tet-mesh of convex hull, F contains facets of input
   // surface mesh _after_ self-intersection resolution
-  igl::readMESH("../shared/big-sigcat.mesh",V,T,F);
+  igl::readMESH(TUTORIAL_SHARED_PATH "/big-sigcat.mesh",V,T,F);
 
   // Compute barycenters of all tets
   igl::barycenter(V,T,BC);
