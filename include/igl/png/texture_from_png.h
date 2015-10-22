@@ -22,9 +22,11 @@ namespace igl
     //
     // Input:
     //  png_file  path to .png file
+    //  flip  whether to flip the image vertically (A --> ∀)
     // Output:
     //  id  of generated openGL texture
     // Returns true on success, false on failure
+    IGL_INLINE bool texture_from_png(const std::string png_file, const bool flip, GLuint & id);
     IGL_INLINE bool texture_from_png(const std::string png_file, GLuint & id);
   }
 }
@@ -40,6 +42,9 @@ namespace igl
     // Output:
     //  R,G,B,A texture channels
     // Returns true on success, false on failure
+    //
+    // Todo: this is an inappropriate function name. This is really just
+    // reading a png.... Not necessarily as a texture.
     IGL_INLINE bool texture_from_png(const std::string png_file,
     Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
     Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,

@@ -5,6 +5,7 @@
 #include <igl/viewer/Viewer.h>
 #include <algorithm>
 #include <iostream>
+#include "tutorial_shared_path.h"
 
 double bc_frac = 1.0;
 double bc_dir = -0.03;
@@ -59,11 +60,11 @@ int main(int argc, char *argv[])
 {
   using namespace Eigen;
   using namespace std;
-  igl::readOBJ("../shared/decimated-max.obj",V,F);
+  igl::readOBJ(TUTORIAL_SHARED_PATH "/decimated-max.obj",V,F);
   U=V;
   // S(i) = j: j<0 (vertex i not in handle), j >= 0 (vertex i in handle j)
   VectorXi S;
-  igl::readDMAT("../shared/decimated-max-selection.dmat",S);
+  igl::readDMAT(TUTORIAL_SHARED_PATH "/decimated-max-selection.dmat",S);
   igl::colon<int>(0,V.rows()-1,b);
   b.conservativeResize(stable_partition( b.data(), b.data()+b.size(), 
    [&S](int i)->bool{return S(i)>=0;})-b.data());

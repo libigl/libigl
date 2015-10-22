@@ -14,6 +14,8 @@
 #include <Eigen/Sparse>
 #include <iostream>
 
+#include "tutorial_shared_path.h"
+
 Eigen::MatrixXd V;
 Eigen::MatrixXi T,F;
 igl::AABB<Eigen::MatrixXd,3> tree;
@@ -127,7 +129,7 @@ int main(int argc, char *argv[])
 
   // Load mesh: (V,T) tet-mesh of convex hull, F contains original surface
   // triangles
-  igl::readMESH("../shared/bunny.mesh",V,T,F);
+  igl::readMESH(TUTORIAL_SHARED_PATH "/bunny.mesh",V,T,F);
 
 
   // Encapsulated call to point_mesh_squared_distance to determine bounds

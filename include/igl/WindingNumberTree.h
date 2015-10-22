@@ -59,6 +59,7 @@ namespace igl
         const WindingNumberTree<Point> & parent,
         const Eigen::MatrixXi & F);
       inline virtual ~WindingNumberTree();
+      inline void delete_children();
       inline virtual void set_mesh(
         const Eigen::MatrixXd & V,
         const Eigen::MatrixXi & F);
@@ -207,6 +208,12 @@ inline igl::WindingNumberTree<Point>::WindingNumberTree(
 
 template <typename Point>
 inline igl::WindingNumberTree<Point>::~WindingNumberTree()
+{
+  delete_children();
+}
+
+template <typename Point>
+inline void igl::WindingNumberTree<Point>::delete_children()
 {
   using namespace std;
   // Delete children

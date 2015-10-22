@@ -7,6 +7,7 @@
 #include <Eigen/Sparse>
 #include <iostream>
 #include <queue>
+#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V,U;
 Eigen::MatrixXi F;
@@ -19,7 +20,7 @@ int main(int argc, char * argv[])
   using namespace std;
   using namespace igl;
   VectorXd D;
-  if(!read_triangle_mesh("../shared/beetle.off",V,F))
+  if(!read_triangle_mesh(TUTORIAL_SHARED_PATH "/beetle.off",V,F))
   {
     cout<<"failed to load mesh"<<endl;
   }
