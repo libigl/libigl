@@ -257,8 +257,7 @@ if(LIBIGL_WITH_VIEWER) # to finish cleaning
   list(APPEND LIBIGL_INCLUDE_DIRS ${NANOGUI_INCLUDE_DIRS})
   list(APPEND LIBIGL_EXTRA_LIBRARIES "nanogui" "glfw" ${GLFW_LIBRARIES} pthread)
 
-  # GLEW: this should be cleaned and tested
-  if(WIN32 OR UNIX)
+  if(WIN32 OR UNIX) # GLEW should not be needed on Linux
     include_directories("${NANOGUI_DIR}/ext/glew/include")
     list(APPEND LIBIGL_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glew/include")
     list(APPEND LIBIGL_EXTRA_SOURCES "${NANOGUI_DIR}/ext/glew/src/glew.c")

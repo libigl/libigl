@@ -18,3 +18,6 @@ url=https://github.com/libigl/nanogui.git
 [submodule "external/tinyxml2"]
 	path = external/tinyxml2
 	url = https://github.com/leethomason/tinyxml2.git
+[submodule "external/cgal"]
+	path = external/cgal
+	url = https://github.com/CGAL/cgal.git
