@@ -90,3 +90,4 @@ tests/build
 tests/bin
 python/build3
 *.pyc
+python/build4
