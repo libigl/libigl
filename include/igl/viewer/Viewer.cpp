@@ -17,25 +17,7 @@
 #include <chrono>
 #include <thread>
 
-/*#ifndef __APPLE__
-#  define GLEW_STATIC
-#  include <GL/glew.h>
-#endif
-
-#ifdef __APPLE__
-#   include <OpenGL/gl3.h>
-#   define __gl_h_ // Prevent inclusion of the old gl.h
-#else
-#   include <GL/gl.h>
-#endif*/
-
 #include "../opengl/OpenGL_convenience.h"
-
-/*#define GLFW_INCLUDE_GLU
-#ifndef _WIN32
-  #define GLFW_INCLUDE_GLCOREARB
-#endif
-#include <GLFW/glfw3.h>*/
 
 #include <Eigen/LU>
 
@@ -742,10 +724,10 @@ namespace viewer
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
-    #ifdef __APPLE__
+//    #ifdef __APPLE__
       glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
       glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    #endif
+//    #endif
 
     if(fullscreen)
     {
@@ -766,7 +748,7 @@ namespace viewer
 
     glfwMakeContextCurrent(window);
 
-    #ifndef __APPLE__
+    #ifndef __APPLE__ // this should only be needed for Windows
       glewExperimental = true;
       GLenum err = glewInit();
       if(GLEW_OK != err)

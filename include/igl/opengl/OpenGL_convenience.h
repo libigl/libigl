@@ -38,12 +38,15 @@
     #define GLEW_STATIC
     #include <GL/glew.h>
 #else
+    /* glew should not be needed on Linux, and is not included by Nanogui,
+     * but removing it creates problems, and the GUI disappears
+     */
     #define GLEW_STATIC
     #include <GL/glew.h>
+
     #define GL_GLEXT_PROTOTYPES
 #endif
 
-//#define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
 
 #endif
