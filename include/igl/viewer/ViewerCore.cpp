@@ -111,12 +111,12 @@ IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
   if (V.rows() == 0)
     return;
 
-  //Eigen::SparseMatrix<double> M;
-  //igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_VORONOI,M);
-  //const auto & MV = M*V;
-  //Eigen::RowVector3d centroid  = MV.colwise().sum()/M.diagonal().sum();
   Eigen::MatrixXd BC;
-  igl::barycenter(V,F,BC);
+  if (F.rows() <= 1)
+    BC = V;
+  else
+    igl::barycenter(V,F,BC);
+
   Eigen::RowVector3d min_point = BC.colwise().minCoeff();
   Eigen::RowVector3d max_point = BC.colwise().maxCoeff();
   Eigen::RowVector3d centroid  = 0.5*(min_point + max_point);
