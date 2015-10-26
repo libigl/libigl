@@ -3,6 +3,8 @@
 #include <igl/readOFF.h>
 #include <igl/barycenter.h>
 
+#include "tutorial_shared_path.h"
+
 // Input polygon
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -62,7 +64,7 @@ int main(int argc, char *argv[])
   using namespace std;
 
   // Load a surface mesh
-  igl::readOFF("../shared/fertility.off",V,F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/fertility.off",V,F);
 
   // Tetrahedralize the interior
   igl::tetgen::tetrahedralize(V,F,"pq1.414Y", TV,TT,TF);

@@ -329,9 +329,7 @@ IGL_INLINE void igl::cgal::outer_hull(
   // non-intersecting.
   const auto & has_overlapping_bbox = [](
     const Eigen::PlainObjectBase<DerivedV> & V,
-    const MatrixXV & BC,
     const MatrixXG & A,
-    const MatrixXJ & AJ,
     const MatrixXG & B)->bool
   {
     const auto & bounding_box = [](
@@ -387,7 +385,7 @@ IGL_INLINE void igl::cgal::outer_hull(
       {
         continue;
       }
-      if (has_overlapping_bbox(V, BC, vG[id], vJ[id], vG[oid])) {
+      if (has_overlapping_bbox(V, vG[id], vG[oid])) {
           unresolved.push_back(oid);
       }
     }
@@ -402,7 +400,7 @@ IGL_INLINE void igl::cgal::outer_hull(
     }
     Eigen::VectorXi inside;
     igl::cgal::points_inside_component(V, vG[id], query_points, inside);
-    assert(inside.size() == num_unresolved_components);
+    assert((size_t)inside.size() == num_unresolved_components);
     for (size_t i=0; i<num_unresolved_components; i++) {
         if (inside(i, 0)) {
             const size_t oid = unresolved[i];

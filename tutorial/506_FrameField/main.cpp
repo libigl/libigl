@@ -12,6 +12,8 @@
 #include <igl/comiso/frame_field.h>
 #include <igl/viewer/Viewer.h>
 
+#include "tutorial_shared_path.h"
+
 // Input mesh
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -177,7 +179,7 @@ int main(int argc, char *argv[])
   using namespace Eigen;
 
   // Load a mesh in OBJ format
-  igl::readOBJ("../shared/bumpy-cube.obj", V, F);
+  igl::readOBJ(TUTORIAL_SHARED_PATH "/bumpy-cube.obj", V, F);
 
   // Compute face barycenters
   igl::barycenter(V, F, B);
@@ -187,7 +189,7 @@ int main(int argc, char *argv[])
 
   // Load constraints
   MatrixXd temp;
-  igl::readDMAT("../shared/bumpy-cube.dmat",temp);
+  igl::readDMAT(TUTORIAL_SHARED_PATH "/bumpy-cube.dmat",temp);
 
   b   = temp.block(0,0,temp.rows(),1).cast<int>();
   bc1 = temp.block(0,1,temp.rows(),3);

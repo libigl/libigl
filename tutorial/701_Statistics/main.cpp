@@ -5,6 +5,8 @@
 #include <Eigen/Core>
 #include <iostream>
 
+#include "tutorial_shared_path.h"
+
 int main(int argc, char *argv[])
 {
   using namespace Eigen;
@@ -13,7 +15,7 @@ int main(int argc, char *argv[])
   MatrixXd V;
   MatrixXi F;
 
-  igl::readOBJ("../shared/horse_quad.obj",V,F);
+  igl::readOBJ(TUTORIAL_SHARED_PATH "/horse_quad.obj",V,F);
 
   // Count the number of irregular vertices, the border is ignored
   vector<bool> irregular = igl::is_irregular_vertex(V,F);
