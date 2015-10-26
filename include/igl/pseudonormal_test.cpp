@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "pseudonormal_test.h"
 #include "AABB.h"
+#include "project_to_line_segment.h"
 #include <cassert>
 
 IGL_INLINE void igl::pseudonormal_test(
@@ -25,40 +26,93 @@ IGL_INLINE void igl::pseudonormal_test(
   using namespace Eigen;
   const auto & qc = q-c;
   RowVector3d b;
-  AABB<Eigen::MatrixXd,3>::barycentric_coordinates(
-    c,V.row(F(f,0)),V.row(F(f,1)),V.row(F(f,2)),b);
-  // Determine which normal to use
-  const double epsilon = 1e-12;
-  const int type = (b.array()<=epsilon).cast<int>().sum();
-  switch(type)
+  // Using barycentric coorindates to determine whether close to a vertex/edge
+  // seems prone to error when dealing with nearly degenerate triangles: Even
+  // the barycenter (1/3,1/3,1/3) can be made arbitrarily close to an
+  // edge/vertex
+  //
+  const RowVector3d A = V.row(F(f,0));
+  const RowVector3d B = V.row(F(f,1));
+  const RowVector3d C = V.row(F(f,2));
+
+  const double area = [&A,&B,&C]()
   {
-    case 2:
-      // Find vertex
-      for(int x = 0;x<3;x++)
-      {
-        if(b(x)>epsilon)
+    Matrix<double,1,1> area;
+    doublearea(A,B,C,area);
+    return area(0);
+  }();
+  // These were chosen arbitrarily. In a floating point scenario, I'm not sure
+  // the best way to determine if c is on a vertex/edge or in the middle of the
+  // face: specifically, I'm worrying about degenerate triangles where
+  // barycentric coordinates are error-prone.
+  const double MIN_DOUBLE_AREA = 1e-4;
+  const double epsilon = 1e-12;
+  if(area>MIN_DOUBLE_AREA)
+  {
+    AABB<Eigen::MatrixXd,3>::barycentric_coordinates( c,A,B,C,b);
+    // Determine which normal to use
+    const int type = (b.array()<=epsilon).cast<int>().sum();
+    switch(type)
+    {
+      case 2:
+        // Find vertex
+        for(int x = 0;x<3;x++)
         {
-          n = VN.row(F(f,x));
-          break;
+          if(b(x)>epsilon)
+          {
+            n = VN.row(F(f,x));
+            break;
+          }
         }
-      }
-      break;
-    case 1:
-      // Find edge
-      for(int x = 0;x<3;x++)
-      {
-        if(b(x)<=epsilon)
+        break;
+      case 1:
+        // Find edge
+        for(int x = 0;x<3;x++)
         {
-          n = EN.row(EMAP(F.rows()*x+f));
-          break;
+          if(b(x)<=epsilon)
+          {
+            n = EN.row(EMAP(F.rows()*x+f));
+            break;
+          }
         }
+        break;
+      default:
+        assert(false && "all barycentric coords zero.");
+      case 0:
+        n = FN.row(f);
+        break;
+    }
+  }else
+  {
+    // Check each vertex
+    bool found = false;
+    for(int v = 0;v<3 && !found;v++)
+    {
+      if( (c-V.row(F(f,v))).norm() < epsilon)
+      {
+        found = true;
+        n = VN.row(F(f,v));
       }
-      break;
-    default:
-      assert(false && "all barycentric coords zero.");
-    case 0:
+    }
+    // Check each edge
+    for(int e = 0;e<3 && !found;e++)
+    {
+      const RowVector3d s = V.row(F(f,(e+1)%3));
+      const RowVector3d d = V.row(F(f,(e+2)%3));
+      Matrix<double,1,1> sqr_d_j_x(1,1);
+      Matrix<double,1,1> t(1,1);
+      project_to_line_segment(c,s,d,t,sqr_d_j_x);
+      if(sqrt(sqr_d_j_x(0)) < epsilon)
+      {
+        n = EN.row(EMAP(F.rows()*e+f));
+        found = true;
+      }
+    }
+    // Finally just use face
+    if(!found)
+    {
       n = FN.row(f);
-      break;
+    }
   }
   s = (qc.dot(n) >= 0 ? 1. : -1.);
 }

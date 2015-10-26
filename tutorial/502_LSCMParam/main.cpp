@@ -4,6 +4,8 @@
 
 #include <igl/lscm.h>
 
+#include "tutorial_shared_path.h"
+
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 Eigen::MatrixXd V_uv;
@@ -35,7 +37,7 @@ int main(int argc, char *argv[])
   using namespace std;
 
   // Load a mesh in OFF format
-  igl::readOFF("../shared/camelhead.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/camelhead.off", V, F);
 
   // Fix two points on the boundary
   VectorXi bnd,b(2,1);

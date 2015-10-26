@@ -126,6 +126,9 @@ inline void igl::WindingNumberAABB<Point>::grow()
 {
   using namespace std;
   using namespace Eigen;
+  // Clear anything that already exists
+  this->delete_children();
+
   //cout<<"cap.rows(): "<<this->getcap().rows()<<endl;
   //cout<<"F.rows(): "<<this->getF().rows()<<endl;
 
