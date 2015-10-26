@@ -25,6 +25,10 @@ namespace igl {
   //   e                1 by 3, the vector corresponding to the shared edge between a and b
   //   match_with_curl  boolean flag, determines whether a curl or a smoothness matching will
   //                    be computed
+  //   is_symmetric     boolean flag, determines whether the input vector set field is symmetric(
+  //                    =consists of pairwise collinear vectors in each set, in which case only one
+  //                    of the vectors in the pair is stored) or not, i.e. the set contains all the vectors
+  // )
   // Outputs:
   //   mab              1 by N row vector, describing the matching a->b (i.e. vector #i of the
   //                    vector set in a is matched to vector #mab[i] in b)
@@ -40,7 +44,8 @@ namespace igl {
                                             const Eigen::PlainObjectBase<DerivedV>& e,
                                             bool match_with_curl,
                                             Eigen::PlainObjectBase<DerivedM>& mab,
-                                            Eigen::PlainObjectBase<DerivedM>& mba);
+                                            Eigen::PlainObjectBase<DerivedM>& mba,
+                                            bool is_symmetric);
 
 
   // Given a mesh and a vector set field consisting of unordered N-vector sets defined

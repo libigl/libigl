@@ -13,16 +13,29 @@ IGL_INLINE void igl::polyvector_field_matching(
                                                const Eigen::PlainObjectBase<DerivedV>& e,
                                                bool match_with_curl,
                                                Eigen::PlainObjectBase<DerivedM>& mab,
-                                               Eigen::PlainObjectBase<DerivedM>& mba)
+                                               Eigen::PlainObjectBase<DerivedM>& mba,
+                                             bool is_symmetric)
 {
   // make sure the matching preserve ccw order of the vectors across the edge
   // 1) order vectors in a, ccw  e.g. (0,1,2,3)_a not ccw --> (0,3,2,1)_a ccw
   // 2) order vectors in b, ccw  e.g. (0,1,2,3)_b not ccw --> (0,2,1,3)_b ccw
   // 3) the vectors in b that match the ordered vectors in a (in this case  (0,3,2,1)_a ) must be a circular shift of the ccw ordered vectors in b  - so we need to explicitely check only these matchings to find the best ccw one, there are N of them
   int hN = _ua.cols()/3;
-  int N = 2*hN;
-  Eigen::Matrix<typename DerivedS::Scalar,1,Eigen::Dynamic> ua (1,N*3); ua <<_ua, -_ua;
-  Eigen::Matrix<typename DerivedS::Scalar,1,Eigen::Dynamic> ub (1,N*3); ub <<_ub, -_ub;
+  int N = hN;
+  Eigen::Matrix<typename DerivedS::Scalar,1,Eigen::Dynamic> ua (1,N*3);
+  Eigen::Matrix<typename DerivedS::Scalar,1,Eigen::Dynamic> ub (1,N*3);
+  if (is_symmetric)
+  {
+    ua <<_ua, -_ua;
+    ub <<_ub, -_ub;
+    N = 2*hN;
+  }
+  else
+  {
+    ua =_ua;
+    ub =_ub;
+  }
+
   Eigen::Matrix<typename DerivedM::Scalar,Eigen::Dynamic,1> order_a, order_b;
   igl::sort_vectors_ccw(ua, na, order_a);
   igl::sort_vectors_ccw(ub, nb, order_b);
@@ -69,9 +82,11 @@ IGL_INLINE void igl::polyvector_field_matching(
   for (int i=0; i< N; ++i)
     mba[mab[i]] = i;
 
-  mab = mab.head(hN);
-  mba = mba.head(hN);
-
+  if (is_symmetric)
+  {
+    mab = mab.head(hN);
+    mba = mba.head(hN);
+  }
 }
 
 
@@ -122,7 +137,8 @@ IGL_INLINE typename DerivedC::Scalar igl::polyvector_field_matchings(
                                    ce,
                                    match_with_curl,
                                    mab,
-                                   mba);
+                                   mba,
+                                 true);
 
     match_ab.row(ei) = mab;
     match_ba.row(ei) = mba;
@@ -177,4 +193,5 @@ IGL_INLINE typename DerivedC::Scalar igl::polyvector_field_matchings(
 // Explicit template specialization
 template Eigen::Matrix<float, -1, 1, 0, -1, 1>::Scalar igl::polyvector_field_matchings<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> >&);
 template Eigen::Matrix<double, -1, 1, 0, -1, 1>::Scalar igl::polyvector_field_matchings<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template void igl::polyvector_field_matching<Eigen::Matrix<double, 1, -1, 1, 1, -1>, Eigen::Matrix<double, 1, -1, 1, 1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, bool);
 #endif
