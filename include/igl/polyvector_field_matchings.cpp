@@ -21,14 +21,18 @@ IGL_INLINE void igl::polyvector_field_matching(
   // 2) order vectors in b, ccw  e.g. (0,1,2,3)_b not ccw --> (0,2,1,3)_b ccw
   // 3) the vectors in b that match the ordered vectors in a (in this case  (0,3,2,1)_a ) must be a circular shift of the ccw ordered vectors in b  - so we need to explicitely check only these matchings to find the best ccw one, there are N of them
   int hN = _ua.cols()/3;
-  int N = hN;
+  int N;
+  if (is_symmetric)
+    N = 2*hN;
+  else
+    N = hN;
+  
   Eigen::Matrix<typename DerivedS::Scalar,1,Eigen::Dynamic> ua (1,N*3);
   Eigen::Matrix<typename DerivedS::Scalar,1,Eigen::Dynamic> ub (1,N*3);
   if (is_symmetric)
   {
     ua <<_ua, -_ua;
     ub <<_ub, -_ub;
-    N = 2*hN;
   }
   else
   {
