@@ -64,6 +64,27 @@ namespace igl {
                 const std::vector<std::vector<size_t> >& intersection_curves,
                 Eigen::PlainObjectBase<DerivedW>& patch_W);
 
+#if 0
+        template<
+            typename DerivedV,
+            typename DerivedF,
+            typename DeriveduE,
+            typename uE2EType,
+            typename DerivedEMAP,
+            typename DerivedC,
+            typename DerivedP,
+            typename DerivedW >
+        IGL_INLINE bool propagate_winding_numbers_single_component_patch_wise(
+                const Eigen::PlainObjectBase<DerivedV>& V,
+                const Eigen::PlainObjectBase<DerivedF>& F,
+                const Eigen::PlainObjectBase<DeriveduE>& uE,
+                const std::vector<std::vector<uE2EType> >& uE2E,
+                const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+                const Eigen::PlainObjectBase<DerivedC>& labels,
+                const Eigen::PlainObjectBase<DerivedP>& P,
+                Eigen::PlainObjectBase<DerivedW>& patch_W);
+#endif
+
         // Compute winding number on each side of the face.  The input mesh must
         // be a single edge-connected component.
         //
