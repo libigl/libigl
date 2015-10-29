@@ -50,7 +50,7 @@ IGL_INLINE void igl::extract_non_manifold_edge_curves(
             auto adj_edges = vertex_edge_adjacency.equal_range(front_vertex);
             for (auto itr = adj_edges.first; itr!=adj_edges.second; itr++) {
                 const size_t uei = itr->second;
-                assert(uE2E.at(uei).size() > 2);
+                assert(uE2E.at(uei).size() != 2);
                 const size_t ei = uE2E[uei][0];
                 if (uei == edge_curve.back()) continue;
                 size_t s,d;
@@ -75,7 +75,7 @@ IGL_INLINE void igl::extract_non_manifold_edge_curves(
             auto adj_edges = vertex_edge_adjacency.equal_range(front_vertex);
             for (auto itr = adj_edges.first; itr!=adj_edges.second; itr++) {
                 const size_t uei = itr->second;
-                assert(uE2E.at(uei).size() > 2);
+                assert(uE2E.at(uei).size() != 2);
                 const size_t ei = uE2E[uei][0];
                 if (uei == edge_curve.front()) continue;
                 size_t s,d;
