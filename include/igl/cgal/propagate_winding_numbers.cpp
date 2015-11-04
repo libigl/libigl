@@ -23,6 +23,7 @@
 #include <limits>
 #include <vector>
 #include <tuple>
+#include <queue>
 
 namespace propagate_winding_numbers_helper {
     template<typename DerivedW >
