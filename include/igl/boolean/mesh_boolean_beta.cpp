@@ -6,6 +6,9 @@
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
+#include "../writePLY.h"
+#include "../writeDMAT.h"
+
 namespace igl {
     namespace boolean {
         namespace mesh_boolean_helper {
@@ -116,19 +119,25 @@ namespace igl {
                         continue;
                     }
                     if (counts[i] == 1) {
+                        bool found = false;
                         for (auto fid : uF2F[i]) {
                             if (fid > 0) {
                                 kept_faces.push_back(abs(fid)-1);
+                                found = true;
                                 break;
                             }
                         }
+                        assert(found);
                     } else if (counts[i] == -1) {
+                        bool found = false;
                         for (auto fid : uF2F[i]) {
                             if (fid < 0) {
                                 kept_faces.push_back(abs(fid)-1);
+                                found = true;
                                 break;
                             }
                         }
+                        assert(found);
                     } else {
                         assert(counts[i] == 0);
                     }
@@ -242,7 +251,7 @@ IGL_INLINE void igl::boolean::per_face_winding_number_binary_operation(
     Eigen::VectorXi labels(num_faces);
     std::transform(CJ.data(), CJ.data()+CJ.size(), labels.data(),
             [&](int i) { return i<FA.rows() ? 0:1; });
-    igl::cgal::propagate_winding_numbers(V, F, labels, W);
+    igl::cgal::propagate_winding_numbers_beta(V, F, labels, W);
     assert(W.rows() == num_faces);
     if (W.cols() == 2) {
         assert(FB.rows() == 0);

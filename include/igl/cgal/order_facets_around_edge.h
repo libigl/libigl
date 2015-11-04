@@ -43,7 +43,8 @@ namespace igl {
                 const Eigen::PlainObjectBase<DerivedF>& F,
                 size_t s, size_t d, 
                 const std::vector<int>& adj_faces,
-                Eigen::PlainObjectBase<DerivedI>& order);
+                Eigen::PlainObjectBase<DerivedI>& order,
+                bool debug=false);
 
         // This funciton is a wrapper around the one above.  Since the ordering
         // is circular, the pivot point is used to define a starting point.  So
