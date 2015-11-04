@@ -16,6 +16,7 @@
 #include "outer_facet.h"
 
 #include <vector>
+#include <queue>
 
 template<
 typename DerivedV,
