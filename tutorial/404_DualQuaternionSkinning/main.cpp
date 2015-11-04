@@ -16,6 +16,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include "tutorial_shared_path.h"
+
 typedef 
   std::vector<Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> >
   RotationList;
@@ -110,9 +112,9 @@ int main(int argc, char *argv[])
 {
   using namespace Eigen;
   using namespace std;
-  igl::readOBJ("../shared/arm.obj",V,F);
+  igl::readOBJ(TUTORIAL_SHARED_PATH "/arm.obj",V,F);
   U=V;
-  igl::readTGF("../shared/arm.tgf",C,BE);
+  igl::readTGF(TUTORIAL_SHARED_PATH "/arm.tgf",C,BE);
   // retrieve parents for forward kinematics
   igl::directed_edge_parents(BE,P);
   RotationList rest_pose;
@@ -124,7 +126,7 @@ int main(int argc, char *argv[])
   const Quaterniond bend(AngleAxisd(-igl::PI*0.7,Vector3d(0,0,1)));
   poses[3][2] = rest_pose[2]*bend*rest_pose[2].conjugate();
 
-  igl::readDMAT("../shared/arm-weights.dmat",W);
+  igl::readDMAT(TUTORIAL_SHARED_PATH "/arm-weights.dmat",W);
   igl::lbs_matrix(V,W,M);
 
   // Plot the mesh with pseudocolors

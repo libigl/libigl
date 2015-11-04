@@ -4,6 +4,8 @@
 #include <igl/readOFF.h>
 #include <igl/viewer/Viewer.h>
 
+#include "tutorial_shared_path.h"
+
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 Eigen::MatrixXd V_uv;
@@ -31,7 +33,7 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::readOFF("../shared/camelhead.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/camelhead.off", V, F);
 
   // Find the open boundary
   Eigen::VectorXi bnd;
