@@ -18,8 +18,9 @@ IGL_INLINE bool igl::decimate(
   Eigen::MatrixXd & U,
   Eigen::MatrixXi & G)
 {
+  int m = F.rows();
   const auto & max_m_faces = 
-    [&max_m,&F](
+    [&max_m,&m](
     const Eigen::MatrixXd &,
     const Eigen::MatrixXi &,
     const Eigen::MatrixXi &,
@@ -35,8 +36,6 @@ IGL_INLINE bool igl::decimate(
     const int,
     const int)->bool
     {
-      using namespace std;
-      static int m = F.rows();
       m-=2;
       return m<=(int)max_m;
     };
