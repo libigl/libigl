@@ -858,31 +858,31 @@ IGL_INLINE void igl::cgal::propagate_winding_numbers_beta(
         cell_adjacency[negative_cell].emplace(positive_cell, true, i);
     }
 
-    {
-        auto save_cell = [&](const std::string& filename, size_t cell_id) {
-            std::vector<size_t> faces;
-            for (size_t i=0; i<num_patches; i++) {
-                if ((per_patch_cells.row(i).array() == cell_id).any()) {
-                    for (size_t j=0; j<num_faces; j++) {
-                        if (P[j] == i) {
-                            faces.push_back(j);
-                        }
+    auto save_cell = [&](const std::string& filename, size_t cell_id) {
+        std::vector<size_t> faces;
+        for (size_t i=0; i<num_patches; i++) {
+            if ((per_patch_cells.row(i).array() == cell_id).any()) {
+                for (size_t j=0; j<num_faces; j++) {
+                    if (P[j] == i) {
+                        faces.push_back(j);
                     }
                 }
             }
-            Eigen::MatrixXi cell_faces(faces.size(), 3);
-            for (size_t i=0; i<faces.size(); i++) {
-                cell_faces.row(i) = F.row(faces[i]);
-            }
-            Eigen::MatrixXd vertices(V.rows(), 3);
-            for (size_t i=0; i<V.rows(); i++) {
-                assign_scalar(V(i,0), vertices(i,0));
-                assign_scalar(V(i,1), vertices(i,1));
-                assign_scalar(V(i,2), vertices(i,2));
-            }
-            writePLY(filename, vertices, cell_faces);
-        };
+        }
+        Eigen::MatrixXi cell_faces(faces.size(), 3);
+        for (size_t i=0; i<faces.size(); i++) {
+            cell_faces.row(i) = F.row(faces[i]);
+        }
+        Eigen::MatrixXd vertices(V.rows(), 3);
+        for (size_t i=0; i<V.rows(); i++) {
+            assign_scalar(V(i,0), vertices(i,0));
+            assign_scalar(V(i,1), vertices(i,1));
+            assign_scalar(V(i,2), vertices(i,2));
+        }
+        writePLY(filename, vertices, cell_faces);
+    };
 
+    {
         // Check for odd cycle.
         Eigen::VectorXi cell_labels(num_cells);
         cell_labels.setZero();
@@ -978,6 +978,7 @@ IGL_INLINE void igl::cgal::propagate_winding_numbers_beta(
                     per_cell_W(neighbor_cell, i) =
                         per_cell_W(curr_cell, i) + inc;
                 }
+                Q.push(neighbor_cell);
             } else {
                 for (size_t i=0; i<num_labels; i++) {
                     if (i == patch_labels[patch_idx]) {
@@ -1003,5 +1004,11 @@ IGL_INLINE void igl::cgal::propagate_winding_numbers_beta(
             W(i,j*2+1) = per_cell_W(negative_cell, j);
         }
     }
+
+    //for (size_t i=0; i<num_cells; i++) {
+    //    std::stringstream filename;
+    //    filename << "cell_" << i << "_w_" << per_cell_W(i, 1) << ".ply";
+    //    save_cell(filename.str(), i);
+    //}
 }
 
