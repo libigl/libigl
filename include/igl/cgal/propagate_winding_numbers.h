@@ -163,6 +163,17 @@ namespace igl {
                 const Eigen::PlainObjectBase<DerivedF>& F,
                 const Eigen::PlainObjectBase<DerivedL>& labels,
                 Eigen::PlainObjectBase<DerivedW>& W);
+
+        template<
+            typename DerivedV,
+            typename DerivedF,
+            typename DerivedL,
+            typename DerivedW>
+        IGL_INLINE void propagate_winding_numbers_beta(
+                const Eigen::PlainObjectBase<DerivedV>& V,
+                const Eigen::PlainObjectBase<DerivedF>& F,
+                const Eigen::PlainObjectBase<DerivedL>& labels,
+                Eigen::PlainObjectBase<DerivedW>& W);
     }
 }
 

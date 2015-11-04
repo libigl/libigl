@@ -40,7 +40,7 @@ void igl::cgal::order_facets_around_edge(
     size_t s,
     size_t d, 
     const std::vector<int>& adj_faces,
-    Eigen::PlainObjectBase<DerivedI>& order)
+    Eigen::PlainObjectBase<DerivedI>& order, bool debug)
 {
     using namespace igl::cgal::order_facets_around_edges_helper;
 
@@ -196,10 +196,32 @@ void igl::cgal::order_facets_around_edge(
                 throw std::runtime_error("Unknown CGAL state detected.");
         }
     }
+    if (debug) {
+        std::cout << "tie positive: " << std::endl;
+        for (auto& f : tie_positive_oriented) {
+            std::cout << get_face_index(f) << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "positive side: " << std::endl;
+        for (auto& f : positive_side) {
+            std::cout << get_face_index(f) << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "tie negative: " << std::endl;
+        for (auto& f : tie_negative_oriented) {
+            std::cout << get_face_index(f) << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "negative side: " << std::endl;
+        for (auto& f : negative_side) {
+            std::cout << get_face_index(f) << " ";
+        }
+        std::cout << std::endl;
+    }
 
     Eigen::PlainObjectBase<DerivedI> positive_order, negative_order;
-    order_facets_around_edge(V, F, s, d, positive_side, positive_order);
-    order_facets_around_edge(V, F, s, d, negative_side, negative_order);
+    order_facets_around_edge(V, F, s, d, positive_side, positive_order, debug);
+    order_facets_around_edge(V, F, s, d, negative_side, negative_order, debug);
     std::vector<size_t> tie_positive_order = index_sort(tie_positive_oriented);
     std::vector<size_t> tie_negative_order = index_sort(tie_negative_oriented);
 

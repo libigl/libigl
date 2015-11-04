@@ -25,7 +25,6 @@ IGL_INLINE size_t igl::cgal::extract_cells_single_component(
         const std::vector<std::vector<uE2EType> >& uE2E,
         const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
         Eigen::PlainObjectBase<DerivedC>& cells) {
-
     typedef typename DerivedF::Scalar Index;
     const size_t num_faces = F.rows();
     auto edge_index_to_face_index = [&](size_t index) {
