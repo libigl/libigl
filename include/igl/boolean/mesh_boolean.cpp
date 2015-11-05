@@ -16,6 +16,8 @@
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
+#include "BinaryWindingNumberOperations.h"
+
 namespace igl {
     namespace boolean {
         namespace mesh_boolean_helper {
@@ -158,55 +160,6 @@ namespace igl {
                     J2.row(i) = J1.row(kept_faces[i]);
                 }
             }
-
-            typedef Eigen::Matrix<int, 1, Eigen::Dynamic> WindingNumbers;
-            typedef std::function<int(const WindingNumbers&)> WindingNumberOperation;
-
-            WindingNumberOperation binary_union() {
-                return [](const WindingNumbers& win_nums) -> int{
-                    return win_nums[0] > 0 || win_nums[1] > 0;
-                };
-            }
-
-            WindingNumberOperation binary_intersect() {
-                return [](const WindingNumbers& win_nums) -> int{
-                    return win_nums[0] > 0 && win_nums[1] > 0;
-                };
-            }
-
-            WindingNumberOperation binary_difference() {
-                return [](const WindingNumbers& win_nums) -> int{
-                    return win_nums[0] > 0 && win_nums[1] <= 0;
-                };
-            }
-
-            WindingNumberOperation binary_xor() {
-                return [](const WindingNumbers& win_nums) -> int{
-                    return (win_nums[0] > 0 && win_nums[1] <= 0) ||
-                           (win_nums[0] <= 0 && win_nums[1] > 0);
-                };
-            }
-
-            WindingNumberOperation binary_resolve() {
-                return [](const WindingNumbers& win_nums) -> int{
-                    return true;
-                };
-            }
-
-            typedef std::function<short(int, int)> ToKeepFunc;
-            ToKeepFunc keep_inside() {
-                return [](int out_w, int in_w) -> short {
-                    if (in_w > 0 && out_w <= 0) return 1;
-                    else if (in_w <= 0 && out_w > 0) return -1;
-                    else return 0;
-                };
-            }
-
-            ToKeepFunc keep_all() {
-                return [](int out_w, int in_w) -> short {
-                    return true;
-                };
-            }
         }
     }
 }
@@ -346,33 +299,6 @@ IGL_INLINE void igl::boolean::mesh_boolean(
         Eigen::PlainObjectBase<DerivedFC > & FC,
         Eigen::PlainObjectBase<DerivedJ > & J) {
     using namespace igl::boolean::mesh_boolean_helper;
-    WindingNumberOperation op;
-    ToKeepFunc keep;
-    switch (type) {
-        case MESH_BOOLEAN_TYPE_UNION:
-            op = binary_union();
-            keep = keep_inside();
-            break;
-        case MESH_BOOLEAN_TYPE_INTERSECT:
-            op = binary_intersect();
-            keep = keep_inside();
-            break;
-        case MESH_BOOLEAN_TYPE_MINUS:
-            op = binary_difference();
-            keep = keep_inside();
-            break;
-        case MESH_BOOLEAN_TYPE_XOR:
-            op = binary_xor();
-            keep = keep_inside();
-            break;
-        case MESH_BOOLEAN_TYPE_RESOLVE:
-            op = binary_resolve();
-            keep = keep_all();
-            break;
-        default:
-            throw std::runtime_error("Unsupported boolean type.");
-    }
-
     typedef Eigen::Matrix<
         ExactScalar,
         Eigen::Dynamic,
@@ -386,8 +312,36 @@ IGL_INLINE void igl::boolean::mesh_boolean(
             Eigen::PlainObjectBase<DerivedJ>&)> resolve_func =
         igl_resolve<DerivedVA, DerivedFA, MatrixXES, DerivedFC, DerivedJ>;
 
-    igl::boolean::per_face_winding_number_binary_operation(
-            VA, FA, VB, FB, op, keep, resolve_func, VC, FC, J);
+    switch (type) {
+        case MESH_BOOLEAN_TYPE_UNION:
+            igl::boolean::per_face_winding_number_binary_operation(
+                    VA, FA, VB, FB, igl::boolean::BinaryUnion(),
+                    igl::boolean::KeepInside(), resolve_func, VC, FC, J);
+            break;
+        case MESH_BOOLEAN_TYPE_INTERSECT:
+            igl::boolean::per_face_winding_number_binary_operation(
+                    VA, FA, VB, FB, igl::boolean::BinaryIntersect(),
+                    igl::boolean::KeepInside(), resolve_func, VC, FC, J);
+            break;
+        case MESH_BOOLEAN_TYPE_MINUS:
+            igl::boolean::per_face_winding_number_binary_operation(
+                    VA, FA, VB, FB, igl::boolean::BinaryMinus(),
+                    igl::boolean::KeepInside(), resolve_func, VC, FC, J);
+            break;
+        case MESH_BOOLEAN_TYPE_XOR:
+            igl::boolean::per_face_winding_number_binary_operation(
+                    VA, FA, VB, FB, igl::boolean::BinaryXor(),
+                    igl::boolean::KeepInside(), resolve_func, VC, FC, J);
+            break;
+        case MESH_BOOLEAN_TYPE_RESOLVE:
+            //op = binary_resolve();
+            igl::boolean::per_face_winding_number_binary_operation(
+                    VA, FA, VB, FB, igl::boolean::BinaryResolve(),
+                    igl::boolean::KeepAll(), resolve_func, VC, FC, J);
+            break;
+        default:
+            throw std::runtime_error("Unsupported boolean type.");
+    }
 }
 
 template <
