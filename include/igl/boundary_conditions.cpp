@@ -162,8 +162,11 @@ IGL_INLINE bool igl::boundary_conditions(
 
   // If there's only a single boundary condition, the following tests
   // are overzealous.
-  if(bc.rows() == 1)
+  if(bc.cols() == 1)
   {
+    // If there is only one weight function,
+    // then we expect that there is only one handle.
+    assert(P.rows() + BE.rows() == 1);
     return true;
   }
 
