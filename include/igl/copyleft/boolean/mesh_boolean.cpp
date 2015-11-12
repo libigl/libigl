@@ -286,35 +286,26 @@ IGL_INLINE void igl::copyleft::boolean::per_face_winding_number_binary_operation
 }
 
 template <
-typename DerivedVA,
-typename DerivedFA,
-typename DerivedVB,
-typename DerivedFB,
-typename DerivedVC,
-typename DerivedFC,
-typename DerivedJ>
+  typename DerivedVA,
+  typename DerivedFA,
+  typename DerivedVB,
+  typename DerivedFB,
+  typename ResolveFunc,
+  typename DerivedVC,
+  typename DerivedFC,
+  typename DerivedJ>
 IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
-        const Eigen::PlainObjectBase<DerivedVA > & VA,
-        const Eigen::PlainObjectBase<DerivedFA > & FA,
-        const Eigen::PlainObjectBase<DerivedVB > & VB,
-        const Eigen::PlainObjectBase<DerivedFB > & FB,
-        const MeshBooleanType & type,
-        Eigen::PlainObjectBase<DerivedVC > & VC,
-        Eigen::PlainObjectBase<DerivedFC > & FC,
-        Eigen::PlainObjectBase<DerivedJ > & J) {
-    using namespace igl::copyleft::boolean::mesh_boolean_helper;
-    typedef Eigen::Matrix<
-        ExactScalar,
-        Eigen::Dynamic,
-        Eigen::Dynamic,
-        DerivedVC::IsRowMajor> MatrixXES;
-    std::function<void(
-            const Eigen::PlainObjectBase<DerivedVA>&,
-            const Eigen::PlainObjectBase<DerivedFA>&,
-            Eigen::PlainObjectBase<MatrixXES>&,
-            Eigen::PlainObjectBase<DerivedFC>&,
-            Eigen::PlainObjectBase<DerivedJ>&)> resolve_func =
-        igl_resolve<DerivedVA, DerivedFA, MatrixXES, DerivedFC, DerivedJ>;
+  const Eigen::PlainObjectBase<DerivedVA > & VA,
+  const Eigen::PlainObjectBase<DerivedFA > & FA,
+  const Eigen::PlainObjectBase<DerivedVB > & VB,
+  const Eigen::PlainObjectBase<DerivedFB > & FB,
+  const MeshBooleanType & type,
+  const ResolveFunc& resolve_func,
+  Eigen::PlainObjectBase<DerivedVC > & VC,
+  Eigen::PlainObjectBase<DerivedFC > & FC,
+  Eigen::PlainObjectBase<DerivedJ > & J)
+{
+  using namespace igl::copyleft::boolean::mesh_boolean_helper;
 
     switch (type) {
         case MESH_BOOLEAN_TYPE_UNION:
@@ -346,6 +337,40 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
         default:
             throw std::runtime_error("Unsupported boolean type.");
     }
+}
+
+template <
+  typename DerivedVA,
+  typename DerivedFA,
+  typename DerivedVB,
+  typename DerivedFB,
+  typename DerivedVC,
+  typename DerivedFC,
+  typename DerivedJ>
+IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
+  const Eigen::PlainObjectBase<DerivedVA > & VA,
+  const Eigen::PlainObjectBase<DerivedFA > & FA,
+  const Eigen::PlainObjectBase<DerivedVB > & VB,
+  const Eigen::PlainObjectBase<DerivedFB > & FB,
+  const MeshBooleanType & type,
+  Eigen::PlainObjectBase<DerivedVC > & VC,
+  Eigen::PlainObjectBase<DerivedFC > & FC,
+  Eigen::PlainObjectBase<DerivedJ > & J)
+{
+  using namespace igl::copyleft::boolean::mesh_boolean_helper;
+  typedef Eigen::Matrix<
+    ExactScalar,
+    Eigen::Dynamic,
+    Eigen::Dynamic,
+    DerivedVC::IsRowMajor> MatrixXES;
+  std::function<void(
+    const Eigen::PlainObjectBase<DerivedVA>&,
+    const Eigen::PlainObjectBase<DerivedFA>&,
+    Eigen::PlainObjectBase<MatrixXES>&,
+    Eigen::PlainObjectBase<DerivedFC>&,
+    Eigen::PlainObjectBase<DerivedJ>&)> resolve_func =
+    igl_resolve<DerivedVA, DerivedFA, MatrixXES, DerivedFC, DerivedJ>;
+  return mesh_boolean(VA,FA,VB,FB,type,resolve_func,VC,FC,J);
 }
 
 template <
