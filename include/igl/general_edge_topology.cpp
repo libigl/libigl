@@ -1,16 +1,17 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
-// Copyright (C) 2014 Amir Vaxman <avaxman@gmail.com>
+// Copyright (C) 2015 Amir Vaxman <avaxman@gmail.com>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "edge_topology.h"
+#include "general_edge_topology.h"
 #include <algorithm>
 //#include "is_edge_manifold.h"
 
 template<typename DerivedF>
 IGL_INLINE void igl::general_edge_topology(
+                                   const Eigen::PlainObjectBase<DerivedF>& gD,
                                    const Eigen::PlainObjectBase<DerivedF>& gF,
                                    Eigen::MatrixXi& gEV,
                                    Eigen::MatrixXi& gFE,
@@ -19,16 +20,16 @@ IGL_INLINE void igl::general_edge_topology(
   // Only needs to be edge-manifold
 //TODO: CHECK THIS
   std::vector<std::vector<int> > ETT;
-  for(int f=0;f<gF.rows();++f)
-    for (int i=1;i<gF(f,0)+1;++i)
+  for(int f=0;f<gD.rows();++f)
+    for (int i=0;i<gD(f);++i)
     {
       // v1 v2 f vi
       int v1 = gF(f,i);
-      int v2 = gF(f,(i-1+1)%gF(f,0)+1);
+      int v2 = gF(f,(i+1)%gD(f));
       if (v1 > v2) std::swap(v1,v2);
       std::vector<int> r(4);
       r[0] = v1; r[1] = v2;
-      r[2] = f;  r[3] = i-1;
+      r[2] = f;  r[3] = i;
       ETT.push_back(r);
     }
   std::sort(ETT.begin(),ETT.end());
@@ -40,7 +41,7 @@ IGL_INLINE void igl::general_edge_topology(
       ++En;
 
   gEV = Eigen::MatrixXi::Constant((int)(En),2,-1);
-  gFE = Eigen::MatrixXi::Constant((int)(gF.rows()),(int)(gF.cols()-1),-1);
+  gFE = Eigen::MatrixXi::Constant((int)(gF.rows()),(int)(gF.cols()),-1);
   gEF = Eigen::MatrixXi::Constant((int)(En),2,-1);
   En = 0;
 
@@ -80,9 +81,9 @@ IGL_INLINE void igl::general_edge_topology(
     int fid = gEF(i,0);
     bool flip = true;
     // search for edge EV.row(i)
-    for (unsigned j=1; j<gF(fid,0)+1; ++j)
+    for (unsigned j=0; j<gD(fid); ++j)
     {
-      if ((gF(fid,j) == gEV(i,0)) && (gF(fid,(j-1+1)%gF(fid,0)+1) == gEV(i,1)))
+      if ((gF(fid,j) == gEV(i,0)) && (gF(fid,(j+1)%gD(fid)) == gEV(i,1)))
         flip = false;
     }
 

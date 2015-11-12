@@ -1,6 +1,6 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
-// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2015 Amir Vaxman <avaxman@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -16,13 +16,18 @@
 namespace igl 
 {
   // Initialize Edges and their topological relations
+    
+    //input:
+    //gD: #Fx1, Stores the degrees of the faces
+    //gF: #Fx(max(D)), Stores the faces
   
   // Output:
   // EV  : #Ex2, Stores the edge description as pair of indices to vertices
-  // FE : #Fx3, Stores the Triangle-Edge relation
-  // EF : #Ex2: Stores the Edge-Triangle relation
+  // FE : #Fx3, Stores the Face-Edge relation
+  // EF : #Ex2: Stores the Edge-Face relation
 template <typename DerivedF>
   IGL_INLINE void general_edge_topology(
+    const Eigen::PlainObjectBase<DerivedF>& gD,
     const Eigen::PlainObjectBase<DerivedF>& gF,
     Eigen::MatrixXi& gEV,
     Eigen::MatrixXi& gFE,
