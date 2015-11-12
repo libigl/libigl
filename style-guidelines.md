@@ -201,6 +201,15 @@ file. For example, `include/igl/tetgen/tetrahedralize.h` should be
 #endif
 ```
 
+## Spaces vs. tabs indentation
+
+Do not use tabs. Use 2 spaces for each indentation level.
+
+## Max line length
+
+Limit lines to 80 characters. Break up long lines into many operations (this
+also helps performance).
+
 ## Eigen templates
 
 
