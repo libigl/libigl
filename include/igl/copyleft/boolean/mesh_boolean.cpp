@@ -179,110 +179,111 @@ typename ResolveFunc,
 typename DerivedVC,
 typename DerivedFC,
 typename DerivedJ>
-IGL_INLINE void igl::copyleft::boolean::per_face_winding_number_binary_operation(
-        const Eigen::PlainObjectBase<DerivedVA> & VA,
-        const Eigen::PlainObjectBase<DerivedFA> & FA,
-        const Eigen::PlainObjectBase<DerivedVB> & VB,
-        const Eigen::PlainObjectBase<DerivedFB> & FB,
-        const WindingNumberOp& wind_num_op,
-        const KeepFunc& keep,
-        const ResolveFunc& resolve_fun,
-        Eigen::PlainObjectBase<DerivedVC > & VC,
-        Eigen::PlainObjectBase<DerivedFC > & FC,
-        Eigen::PlainObjectBase<DerivedJ > & J) {
-    using namespace igl::copyleft::boolean::mesh_boolean_helper;
+IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
+  const Eigen::PlainObjectBase<DerivedVA> & VA,
+  const Eigen::PlainObjectBase<DerivedFA> & FA,
+  const Eigen::PlainObjectBase<DerivedVB> & VB,
+  const Eigen::PlainObjectBase<DerivedFB> & FB,
+  const WindingNumberOp& wind_num_op,
+  const KeepFunc& keep,
+  const ResolveFunc& resolve_fun,
+  Eigen::PlainObjectBase<DerivedVC > & VC,
+  Eigen::PlainObjectBase<DerivedFC > & FC,
+  Eigen::PlainObjectBase<DerivedJ > & J)
+{
+  using namespace igl::copyleft::boolean::mesh_boolean_helper;
 
-    typedef typename DerivedVC::Scalar Scalar;
-    typedef typename DerivedFC::Scalar Index;
-    typedef Eigen::Matrix<Scalar,Eigen::Dynamic,3> MatrixX3S;
-    typedef Eigen::Matrix<Index,Eigen::Dynamic,Eigen::Dynamic> MatrixXI;
-    typedef Eigen::Matrix<typename DerivedJ::Scalar,Eigen::Dynamic,1> VectorXJ;
+  typedef typename DerivedVC::Scalar Scalar;
+  typedef typename DerivedFC::Scalar Index;
+  typedef Eigen::Matrix<Scalar,Eigen::Dynamic,3> MatrixX3S;
+  typedef Eigen::Matrix<Index,Eigen::Dynamic,Eigen::Dynamic> MatrixXI;
+  typedef Eigen::Matrix<typename DerivedJ::Scalar,Eigen::Dynamic,1> VectorXJ;
 
-    // Generate combined mesh.
-    typedef Eigen::Matrix<
-        ExactScalar,
-        Eigen::Dynamic,
-        Eigen::Dynamic,
-        DerivedVC::IsRowMajor> MatrixXES;
-    MatrixXES V;
-    DerivedFC F;
-    VectorXJ  CJ;
-    resolve_intersections(VA, FA, VB, FB, resolve_fun, V, F, CJ);
+  // Generate combined mesh.
+  typedef Eigen::Matrix<
+      ExactScalar,
+      Eigen::Dynamic,
+      Eigen::Dynamic,
+      DerivedVC::IsRowMajor> MatrixXES;
+  MatrixXES V;
+  DerivedFC F;
+  VectorXJ  CJ;
+  resolve_intersections(VA, FA, VB, FB, resolve_fun, V, F, CJ);
 
-    // Compute winding numbers on each side of each facet.
-    const size_t num_faces = F.rows();
-    Eigen::MatrixXi W;
-    Eigen::VectorXi labels(num_faces);
-    std::transform(CJ.data(), CJ.data()+CJ.size(), labels.data(),
-            [&](int i) { return i<FA.rows() ? 0:1; });
-    igl::copyleft::cgal::propagate_winding_numbers(V, F, labels, W);
-    assert(W.rows() == num_faces);
-    if (W.cols() == 2) {
-        assert(FB.rows() == 0);
-        Eigen::MatrixXi W_tmp(num_faces, 4);
-        W_tmp << W, Eigen::MatrixXi::Zero(num_faces, 2);
-        W = W_tmp;
-    } else {
-        assert(W.cols() == 4);
-    }
+  // Compute winding numbers on each side of each facet.
+  const size_t num_faces = F.rows();
+  Eigen::MatrixXi W;
+  Eigen::VectorXi labels(num_faces);
+  std::transform(CJ.data(), CJ.data()+CJ.size(), labels.data(),
+          [&](int i) { return i<FA.rows() ? 0:1; });
+  igl::copyleft::cgal::propagate_winding_numbers(V, F, labels, W);
+  assert(W.rows() == num_faces);
+  if (W.cols() == 2) {
+      assert(FB.rows() == 0);
+      Eigen::MatrixXi W_tmp(num_faces, 4);
+      W_tmp << W, Eigen::MatrixXi::Zero(num_faces, 2);
+      W = W_tmp;
+  } else {
+      assert(W.cols() == 4);
+  }
 
-    // Compute resulting winding number.
-    Eigen::MatrixXi Wr(num_faces, 2);
-    for (size_t i=0; i<num_faces; i++) {
-        Eigen::MatrixXi w_out(1,2), w_in(1,2);
-        w_out << W(i,0), W(i,2);
-        w_in  << W(i,1), W(i,3);
-        Wr(i,0) = wind_num_op(w_out);
-        Wr(i,1) = wind_num_op(w_in);
-    }
+  // Compute resulting winding number.
+  Eigen::MatrixXi Wr(num_faces, 2);
+  for (size_t i=0; i<num_faces; i++) {
+      Eigen::MatrixXi w_out(1,2), w_in(1,2);
+      w_out << W(i,0), W(i,2);
+      w_in  << W(i,1), W(i,3);
+      Wr(i,0) = wind_num_op(w_out);
+      Wr(i,1) = wind_num_op(w_in);
+  }
 
-    // Extract boundary separating inside from outside.
-    auto index_to_signed_index = [&](size_t i, bool ori) -> int{
-        return (i+1)*(ori?1:-1);
-    };
-    auto signed_index_to_index = [&](int i) -> size_t {
-        return abs(i) - 1;
-    };
-    std::vector<int> selected;
-    for(size_t i=0; i<num_faces; i++) {
-        auto should_keep = keep(Wr(i,0), Wr(i,1));
-        if (should_keep > 0) {
-            selected.push_back(index_to_signed_index(i, true));
-        } else if (should_keep < 0) {
-            selected.push_back(index_to_signed_index(i, false));
-        }
-    }
+  // Extract boundary separating inside from outside.
+  auto index_to_signed_index = [&](size_t i, bool ori) -> int{
+      return (i+1)*(ori?1:-1);
+  };
+  auto signed_index_to_index = [&](int i) -> size_t {
+      return abs(i) - 1;
+  };
+  std::vector<int> selected;
+  for(size_t i=0; i<num_faces; i++) {
+      auto should_keep = keep(Wr(i,0), Wr(i,1));
+      if (should_keep > 0) {
+          selected.push_back(index_to_signed_index(i, true));
+      } else if (should_keep < 0) {
+          selected.push_back(index_to_signed_index(i, false));
+      }
+  }
 
-    const size_t num_selected = selected.size();
-    DerivedFC kept_faces(num_selected, 3);
-    DerivedJ  kept_face_indices;
-    kept_face_indices.resize(num_selected, 1);
-    for (size_t i=0; i<num_selected; i++) {
-        size_t idx = abs(selected[i]) - 1;
-        if (selected[i] > 0) {
-            kept_faces.row(i) = F.row(idx);
-        } else {
-            kept_faces.row(i) = F.row(idx).reverse();
-        }
-        kept_face_indices(i, 0) = CJ[idx];
-    }
+  const size_t num_selected = selected.size();
+  DerivedFC kept_faces(num_selected, 3);
+  DerivedJ  kept_face_indices;
+  kept_face_indices.resize(num_selected, 1);
+  for (size_t i=0; i<num_selected; i++) {
+      size_t idx = abs(selected[i]) - 1;
+      if (selected[i] > 0) {
+          kept_faces.row(i) = F.row(idx);
+      } else {
+          kept_faces.row(i) = F.row(idx).reverse();
+      }
+      kept_face_indices(i, 0) = CJ[idx];
+  }
 
 
-    // Finally, remove duplicated faces and unreferenced vertices.
-    {
-        DerivedFC G;
-        DerivedJ J;
-        resolve_duplicated_faces(kept_faces, kept_face_indices, G, J);
+  // Finally, remove duplicated faces and unreferenced vertices.
+  {
+      DerivedFC G;
+      DerivedJ J;
+      resolve_duplicated_faces(kept_faces, kept_face_indices, G, J);
 
-        MatrixX3S Vs(V.rows(), V.cols());
-        for (size_t i=0; i<V.rows(); i++) {
-            for (size_t j=0; j<V.cols(); j++) {
-                igl::copyleft::cgal::assign_scalar(V(i,j), Vs(i,j));
-            }
-        }
-        Eigen::VectorXi newIM;
-        igl::remove_unreferenced(Vs,G,VC,FC,newIM);
-    }
+      MatrixX3S Vs(V.rows(), V.cols());
+      for (size_t i=0; i<V.rows(); i++) {
+          for (size_t j=0; j<V.cols(); j++) {
+              igl::copyleft::cgal::assign_scalar(V(i,j), Vs(i,j));
+          }
+      }
+      Eigen::VectorXi newIM;
+      igl::remove_unreferenced(Vs,G,VC,FC,newIM);
+  }
 }
 
 template <
@@ -309,28 +310,28 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
 
     switch (type) {
         case MESH_BOOLEAN_TYPE_UNION:
-            igl::copyleft::boolean::per_face_winding_number_binary_operation(
+            igl::copyleft::boolean::mesh_boolean(
                     VA, FA, VB, FB, igl::copyleft::boolean::BinaryUnion(),
                     igl::copyleft::boolean::KeepInside(), resolve_func, VC, FC, J);
             break;
         case MESH_BOOLEAN_TYPE_INTERSECT:
-            igl::copyleft::boolean::per_face_winding_number_binary_operation(
+            igl::copyleft::boolean::mesh_boolean(
                     VA, FA, VB, FB, igl::copyleft::boolean::BinaryIntersect(),
                     igl::copyleft::boolean::KeepInside(), resolve_func, VC, FC, J);
             break;
         case MESH_BOOLEAN_TYPE_MINUS:
-            igl::copyleft::boolean::per_face_winding_number_binary_operation(
+            igl::copyleft::boolean::mesh_boolean(
                     VA, FA, VB, FB, igl::copyleft::boolean::BinaryMinus(),
                     igl::copyleft::boolean::KeepInside(), resolve_func, VC, FC, J);
             break;
         case MESH_BOOLEAN_TYPE_XOR:
-            igl::copyleft::boolean::per_face_winding_number_binary_operation(
+            igl::copyleft::boolean::mesh_boolean(
                     VA, FA, VB, FB, igl::copyleft::boolean::BinaryXor(),
                     igl::copyleft::boolean::KeepInside(), resolve_func, VC, FC, J);
             break;
         case MESH_BOOLEAN_TYPE_RESOLVE:
             //op = binary_resolve();
-            igl::copyleft::boolean::per_face_winding_number_binary_operation(
+            igl::copyleft::boolean::mesh_boolean(
                     VA, FA, VB, FB, igl::copyleft::boolean::BinaryResolve(),
                     igl::copyleft::boolean::KeepAll(), resolve_func, VC, FC, J);
             break;
