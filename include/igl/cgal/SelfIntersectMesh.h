@@ -225,6 +225,7 @@ namespace igl
 
 #include "mesh_to_cgal_triangle_list.h"
 #include "remesh_intersections.h"
+#include "remesh_intersections.h"
 
 #include <igl/REDRUM.h>
 #include <igl/get_seconds.h>
