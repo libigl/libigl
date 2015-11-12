@@ -14,7 +14,7 @@ int main(int argc, char * argv[])
   using namespace std;
   using namespace Eigen;
   using namespace igl;
-  cout<<"Usage: ./progressive_hulls [filename.(off|obj|ply)]"<<endl;
+  cout<<"Usage: ./703_Decimation_bin [filename.(off|obj|ply)]"<<endl;
   cout<<"  [space]  toggle animation."<<endl;
   cout<<"  'r'  reset."<<endl;
   // Load a closed manifold mesh
