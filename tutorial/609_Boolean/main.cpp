@@ -26,7 +26,7 @@ const char * MESH_BOOLEAN_TYPE_NAMES[] =
 
 void update(igl::viewer::Viewer &viewer)
 {
-  igl::boolean::mesh_boolean(VA,FA,VB,FB,boolean_type,VC,FC,J,I);
+  igl::boolean::mesh_boolean(VA,FA,VB,FB,boolean_type,VC,FC,J);
   Eigen::MatrixXd C(FC.rows(),3);
   for(size_t f = 0;f<C.rows();f++)
   {
