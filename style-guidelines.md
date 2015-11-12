@@ -4,6 +4,8 @@ This library is shared by many people. This document highlights some style
 guidelines for _developers_ of the library, but also act as best-practices for
 users.
 
+> This is still a work in progress and will likely grow in the near future.
+
 ## One function, one .h/.cpp pair [filefunction]
 
 The structure of libigl is very flat and function-based. For every
