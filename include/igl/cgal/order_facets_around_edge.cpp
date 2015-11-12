@@ -1,6 +1,8 @@
 #include "order_facets_around_edge.h"
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
+#include <stdexcept>
+
 namespace igl
 {
     namespace cgal
@@ -38,7 +40,7 @@ void igl::cgal::order_facets_around_edge(
     size_t s,
     size_t d, 
     const std::vector<int>& adj_faces,
-    Eigen::PlainObjectBase<DerivedI>& order)
+    Eigen::PlainObjectBase<DerivedI>& order, bool debug)
 {
     using namespace igl::cgal::order_facets_around_edges_helper;
 
@@ -131,7 +133,10 @@ void igl::cgal::order_facets_around_edge(
     const Point_3 p_d(V(d, 0), V(d, 1), V(d, 2));
     const Point_3 p_o(V(o, 0), V(o, 1), V(o, 2));
     const Plane_3 separator(p_s, p_d, p_o);
-    assert(!separator.is_degenerate());
+    if (separator.is_degenerate()) {
+        throw std::runtime_error(
+                "Cannot order facets around edge due to degenerated facets");
+    }
 
     std::vector<Point_3> opposite_vertices;
     for (size_t i=0; i<num_adj_faces; i++)
@@ -180,20 +185,43 @@ void igl::cgal::order_facets_around_edge(
                             break;
                         case CGAL::COLLINEAR:
                         default:
-                            assert(false);
+                            throw std::runtime_error(
+                                    "Degenerated facet detected.");
                             break;
                     }
                 }
                 break;
             default:
                 // Should not be here.
-                assert(false);
+                throw std::runtime_error("Unknown CGAL state detected.");
         }
+    }
+    if (debug) {
+        std::cout << "tie positive: " << std::endl;
+        for (auto& f : tie_positive_oriented) {
+            std::cout << get_face_index(f) << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "positive side: " << std::endl;
+        for (auto& f : positive_side) {
+            std::cout << get_face_index(f) << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "tie negative: " << std::endl;
+        for (auto& f : tie_negative_oriented) {
+            std::cout << get_face_index(f) << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "negative side: " << std::endl;
+        for (auto& f : negative_side) {
+            std::cout << get_face_index(f) << " ";
+        }
+        std::cout << std::endl;
     }
 
     Eigen::PlainObjectBase<DerivedI> positive_order, negative_order;
-    order_facets_around_edge(V, F, s, d, positive_side, positive_order);
-    order_facets_around_edge(V, F, s, d, negative_side, negative_order);
+    order_facets_around_edge(V, F, s, d, positive_side, positive_order, debug);
+    order_facets_around_edge(V, F, s, d, negative_side, negative_order, debug);
     std::vector<size_t> tie_positive_order = index_sort(tie_positive_oriented);
     std::vector<size_t> tie_negative_order = index_sort(tie_negative_oriented);
 
@@ -281,6 +309,7 @@ void igl::cgal::order_facets_around_edge(
 
     assert(V.cols() == 3);
     assert(F.cols() == 3);
+    assert(pivot_point.cols() == 3);
     auto signed_index_to_index = [&](int signed_idx)
     {
         return abs(signed_idx) -1;
@@ -303,7 +332,8 @@ void igl::cgal::order_facets_around_edge(
         K::Point_3 pd(V(d,0), V(d,1), V(d,2));
         K::Point_3 pp(pivot_point(0,0), pivot_point(0,1), pivot_point(0,2));
         if (CGAL::collinear(ps, pd, pp)) {
-            throw "Pivot point is collinear with the outer edge!";
+            throw std::runtime_error(
+                    "Pivot point is collinear with the outer edge!");
         }
     }
 
@@ -313,14 +343,16 @@ void igl::cgal::order_facets_around_edge(
     // Because face indices are used for tie breaking, the original face indices
     // in the new faces array must be ascending.
     auto comp = [&](int i, int j) {
-        return signed_index_to_index(i) < signed_index_to_index(j);
+        return signed_index_to_index(adj_faces[i]) <
+            signed_index_to_index(adj_faces[j]);
     };
-    std::vector<int> ordered_adj_faces(adj_faces);
-    std::sort(ordered_adj_faces.begin(), ordered_adj_faces.end(), comp);
+    std::vector<size_t> adj_order(N);
+    for (size_t i=0; i<N; i++) adj_order[i] = i;
+    std::sort(adj_order.begin(), adj_order.end(), comp);
 
     DerivedV vertices(num_faces + 2, 3);
     for (size_t i=0; i<N; i++) {
-        const size_t fid = signed_index_to_index(ordered_adj_faces[i]);
+        const size_t fid = signed_index_to_index(adj_faces[adj_order[i]]);
         vertices.row(i) = V.row(get_opposite_vertex_index(fid));
     }
     vertices.row(N  ) = pivot_point;
@@ -330,7 +362,7 @@ void igl::cgal::order_facets_around_edge(
     DerivedF faces(num_faces, 3);
     for (size_t i=0; i<N; i++)
     {
-        if (ordered_adj_faces[i] < 0) {
+        if (adj_faces[adj_order[i]] < 0) {
             faces(i,0) = N+1; // s
             faces(i,1) = N+2; // d
             faces(i,2) = i  ;
@@ -377,15 +409,16 @@ void igl::cgal::order_facets_around_edge(
 
     for (size_t i=0; i<N; i++)
     {
-        order[i] = order_with_pivot[(pivot_index+i+1)%num_faces];
+        order[i] = adj_order[order_with_pivot[(pivot_index+i+1)%num_faces]];
     }
 }
 
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::cgal::order_facets_around_edge<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, unsigned long, unsigned long, std::vector<int, std::allocator<int> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::order_facets_around_edge<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, unsigned long, unsigned long, std::vector<int, std::allocator<int> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void
+igl::cgal::order_facets_around_edge<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, unsigned long, unsigned long, std::vector<int, std::allocator<int> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, bool);
+template void igl::cgal::order_facets_around_edge<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, unsigned long, unsigned long, std::vector<int, std::allocator<int> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, bool);
 template void igl::cgal::order_facets_around_edge<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, unsigned long, unsigned long, std::vector<int, std::allocator<int> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 template void igl::cgal::order_facets_around_edge<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, unsigned long, unsigned long, std::vector<int, std::allocator<int> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 template void igl::cgal::order_facets_around_edge<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, unsigned long, unsigned long, std::vector<int, std::allocator<int> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);

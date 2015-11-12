@@ -1,24 +1,18 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
-// Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2015 Qingnan Zhou <qnzhou@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
+//
 #ifndef IGL_CGAL_REMESH_INTERSECTIONS_H
 #define IGL_CGAL_REMESH_INTERSECTIONS_H
-#include <igl/igl_inline.h>
 
+#include <igl/igl_inline.h>
 #include <Eigen/Dense>
 #include "CGAL_includes.hpp"
 
-#ifdef MEX
-#  include <mex.h>
-#  include <cassert>
-#  undef assert
-#  define assert( isOK ) ( (isOK) ? (void)0 : (void) mexErrMsgTxt(C_STR(__FILE__<<":"<<__LINE__<<": failed assertion `"<<#isOK<<"'"<<std::endl) ) )
-#endif
-  
 namespace igl
 {
   namespace cgal
@@ -72,6 +66,5 @@ namespace igl
 #ifndef IGL_STATIC_LIBRARY
 #  include "remesh_intersections.cpp"
 #endif
-  
-#endif
 
+#endif
