@@ -1,5 +1,5 @@
 #include <igl/viewer/Viewer.h>
-#include <igl/tetgen/tetrahedralize.h>
+#include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/readOFF.h>
 #include <igl/barycenter.h>
 
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
   igl::readOFF(TUTORIAL_SHARED_PATH "/fertility.off",V,F);
 
   // Tetrahedralize the interior
-  igl::tetgen::tetrahedralize(V,F,"pq1.414Y", TV,TT,TF);
+  igl::copyleft::tetgen::tetrahedralize(V,F,"pq1.414Y", TV,TT,TF);
 
   // Compute barycenters
   igl::barycenter(TV,TT,B);
