@@ -170,6 +170,7 @@ include_directories( ${PROJECT_SOURCE_DIR}/../include/)
 
 file(GLOB SOURCES
   "${PROJECT_SOURCE_DIR}/../include/igl/*.cpp"
+  "${PROJECT_SOURCE_DIR}/../include/igl/copyleft/*.cpp"
 )
 
 add_library(igl STATIC ${SOURCES})
@@ -198,13 +199,13 @@ if (NOT CORK_FOUND)
   add_definitions(-DIGL_NO_CORK)
 endif(NOT CORK_FOUND)
 file(GLOB SOURCES_BOOLEAN
-  "${PROJECT_SOURCE_DIR}/../include/igl/boolean/*.cpp"
+  "${PROJECT_SOURCE_DIR}/../include/igl/copyleft/boolean/*.cpp"
 )
 add_library(iglboolean STATIC ${SOURCES_BOOLEAN})
 set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglboolean")
 #### Compile the cgal part
   file(GLOB SOURCES_CGAL
-    "${PROJECT_SOURCE_DIR}/../include/igl/cgal/*.cpp"
+    "${PROJECT_SOURCE_DIR}/../include/igl/copyleft/cgal/*.cpp"
   )
 add_library(iglcgal STATIC ${SOURCES_CGAL})
 set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglcgal")
