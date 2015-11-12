@@ -225,7 +225,7 @@ namespace igl
 
 #include "mesh_to_cgal_triangle_list.h"
 #include "remesh_intersections.h"
-#include "remesh_intersections_beta.h"
+#include "remesh_intersections.h"
 
 #include <igl/REDRUM.h>
 #include <igl/get_seconds.h>
@@ -405,8 +405,7 @@ inline igl::cgal::SelfIntersectMesh<
     return;
   }
 
-  //remesh_intersections(V,F,T,offending,edge2faces,VV,FF,J,IM);
-  remesh_intersections_beta(V,F,T,offending,edge2faces,VV,FF,J,IM);
+  remesh_intersections(V,F,T,offending,edge2faces,VV,FF,J,IM);
 
   // Q: Does this give the same result as TETGEN?
   // A: For the cow and beast, yes.

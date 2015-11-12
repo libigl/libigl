@@ -1,328 +1,338 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
-// Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2015 Qingnan Zhou <qnzhou@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
+//
 #include "remesh_intersections.h"
-#include "SelfIntersectMesh.h"
-#include "assign_scalar.h"
-#include "projected_delaunay.h"
+
+#include <vector>
+#include <map>
+#include <unordered_map>
 #include <iostream>
-#include <cassert>
 
 template <
-  typename DerivedV,
-  typename DerivedF,
-  typename Kernel,
-  typename DerivedVV,
-  typename DerivedFF,
-  typename DerivedJ,
-  typename DerivedIM>
+typename DerivedV,
+typename DerivedF,
+typename Kernel,
+typename DerivedVV,
+typename DerivedFF,
+typename DerivedJ,
+typename DerivedIM>
 IGL_INLINE void igl::cgal::remesh_intersections(
-  const Eigen::PlainObjectBase<DerivedV> & V,
-  const Eigen::PlainObjectBase<DerivedF> & F,
-  const std::vector<CGAL::Triangle_3<Kernel> > & T,
-  const std::map<
-    typename DerivedF::Index,
-    std::pair<typename DerivedF::Index,
-      std::vector<CGAL::Object> > > & offending,
-  const std::map<
-    std::pair<typename DerivedF::Index,typename DerivedF::Index>,
-    std::vector<typename DerivedF::Index> > & edge2faces,
-  Eigen::PlainObjectBase<DerivedVV> & VV,
-  Eigen::PlainObjectBase<DerivedFF> & FF,
-  Eigen::PlainObjectBase<DerivedJ> & J,
-  Eigen::PlainObjectBase<DerivedIM> & IM)
-{
-  using namespace std;
-  using namespace Eigen;
-  typedef typename DerivedF::Index          Index;
-  typedef CGAL::Point_3<Kernel>    Point_3;
-  //typedef CGAL::Segment_3<Kernel>  Segment_3; 
-  //typedef CGAL::Triangle_3<Kernel> Triangle_3; 
-  typedef CGAL::Plane_3<Kernel>    Plane_3;
-  //typedef CGAL::Point_2<Kernel>    Point_2;
-  //typedef CGAL::Segment_2<Kernel>  Segment_2; 
-  //typedef CGAL::Triangle_2<Kernel> Triangle_2; 
-  typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
-  typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTFB_2;
-  typedef CGAL::Triangulation_data_structure_2<TVB_2,CTFB_2> TDS_2;
-  typedef CGAL::Exact_intersections_tag Itag;
-  typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel,TDS_2,Itag> 
-    CDT_2;
-  typedef CGAL::Constrained_triangulation_plus_2<CDT_2> CDT_plus_2;
-  typedef std::pair<Index,Index> EMK;
-  typedef std::vector<Index> EMV;
-  //typedef std::map<EMK,EMV> EdgeMap;
-  typedef std::pair<Index,Index> EMK;
-  //typedef std::vector<CGAL::Object> ObjectList;
-  typedef std::vector<Index> IndexList;
+        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::PlainObjectBase<DerivedF> & F,
+        const std::vector<CGAL::Triangle_3<Kernel> > & T,
+        const std::map<
+        typename DerivedF::Index,
+        std::pair<typename DerivedF::Index,
+        std::vector<CGAL::Object> > > & offending,
+        const std::map<
+        std::pair<typename DerivedF::Index,typename DerivedF::Index>,
+        std::vector<typename DerivedF::Index> > & edge2faces,
+        Eigen::PlainObjectBase<DerivedVV> & VV,
+        Eigen::PlainObjectBase<DerivedFF> & FF,
+        Eigen::PlainObjectBase<DerivedJ> & J,
+        Eigen::PlainObjectBase<DerivedIM> & IM) {
 
-  int NF_count = 0;
-  // list of new faces, we'll fix F later
-  vector<
-    typename Eigen::Matrix<typename DerivedFF::Scalar,Dynamic,Dynamic>
-    > NF(offending.size());
-  // list of new vertices
-  typedef vector<Point_3> Point_3List;
-  Point_3List NV;
-  Index NV_count = 0;
-  vector<CDT_plus_2> cdt(offending.size());
-  vector<Plane_3> P(offending.size());
-  // Use map for *all* faces
-  map<typename CDT_plus_2::Vertex_handle,Index> v2i;
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
-  double t_proj_del = 0;
-#endif
-  // Unfortunately it looks like CGAL has trouble allocating memory when
-  // multiple openmp threads are running. Crashes durring CDT...
-  //// Loop over offending triangles
-  //const size_t noff = offending.size();
-//# pragma omp parallel for if (noff>1000)
-  for(const auto & okv : offending)
-  {
-    // index in F
-    const Index f = okv.first;
-    const Index o = okv.second.first;
-    {
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
-      const double t_before = get_seconds();
-#endif
-      CDT_plus_2 cdt_o;
-      projected_delaunay(T[f],okv.second.second,cdt_o);
-      cdt[o] = cdt_o;
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
-      t_proj_del += (get_seconds()-t_before);
-#endif
-    }
-    // Q: Is this also delaunay in 3D?
-    // A: No, because the projection is affine and delaunay is not affine
-    // invariant.
-    // Q: Then, can't we first get the 2D delaunay triangulation, then lift it
-    // to 3D and flip any offending edges?
-    // Plane of projection (also used by projected_delaunay)
-    P[o] = Plane_3(T[f].vertex(0),T[f].vertex(1),T[f].vertex(2));
-    // Build index map
-    {
-      Index i=0;
-      for(
-        typename CDT_plus_2::Finite_vertices_iterator vit = cdt[o].finite_vertices_begin();
-        vit != cdt[o].finite_vertices_end();
-        ++vit)
-      {
-        if(i<3)
-        {
-          //cout<<T[f].vertex(i)<<
-          //  (T[f].vertex(i) == P[o].to_3d(vit->point())?" == ":" != ")<<
-          //  P[o].to_3d(vit->point())<<endl;
-#ifndef NDEBUG
-          // I want to be sure that the original corners really show up as the
-          // original corners of the CDT. I.e. I don't trust CGAL to maintain
-          // the order
-          assert(T[f].vertex(i) == P[o].to_3d(vit->point()));
-#endif
-          // For first three, use original index in F
-//#   pragma omp critical
-          v2i[vit] = F(f,i);
-        }else
-        {
-          const Point_3 vit_point_3 = P[o].to_3d(vit->point());
-          // First look up each edge's neighbors to see if exact point has
-          // already been added (This makes everything a bit quadratic)
-          bool found = false;
-          for(int e = 0; e<3 && !found;e++)
-          {
-            // Index of F's eth edge in V
-            Index i = F(f,(e+1)%3);
-            Index j = F(f,(e+2)%3);
-            // Be sure that i<j
-            if(i>j)
-            {
-              swap(i,j);
-            }
-            assert(edge2faces.count(EMK(i,j))==1);
-            const EMV & facesij = edge2faces.find(EMK(i,j))->second;
-            // loop over neighbors
-            for(
-              typename IndexList::const_iterator nit = facesij.begin();
-              nit != facesij.end() && !found;
-              nit++)
-            {
-              // don't consider self
-              if(*nit == f)
-              {
-                continue;
-              }
-              // index of neighbor in offending (to find its cdt)
-              assert(offending.count(*nit) == 1);
-              Index no = offending.find(*nit)->second.first;
-              // Loop over vertices of that neighbor's cdt (might not have been
-              // processed yet, but then it's OK because it'll just be empty)
-              for(
-                  typename CDT_plus_2::Finite_vertices_iterator uit = cdt[no].finite_vertices_begin();
-                  uit != cdt[no].finite_vertices_end() && !found;
-                  ++uit)
-              {
-                if(vit_point_3 == P[no].to_3d(uit->point()))
-                {
-                  assert(v2i.count(uit) == 1);
-//#   pragma omp critical
-                  v2i[vit] = v2i[uit];
-                  found = true;
-                }
-              }
-            }
-          }
-          if(!found)
-          {
-//#   pragma omp critical
-            {
-              v2i[vit] = V.rows()+NV_count;
-              NV.push_back(vit_point_3);
-              NV_count++;
-            }
-          }
+    typedef CGAL::Point_3<Kernel>    Point_3;
+    typedef CGAL::Segment_3<Kernel>  Segment_3; 
+    typedef CGAL::Triangle_3<Kernel> Triangle_3; 
+    typedef CGAL::Plane_3<Kernel>    Plane_3;
+    typedef CGAL::Point_2<Kernel>    Point_2;
+    typedef CGAL::Segment_2<Kernel>  Segment_2; 
+    typedef CGAL::Triangle_2<Kernel> Triangle_2; 
+    typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
+    typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTFB_2;
+    typedef CGAL::Triangulation_data_structure_2<TVB_2,CTFB_2> TDS_2;
+    typedef CGAL::Exact_intersections_tag Itag;
+    typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel,TDS_2,Itag> 
+        CDT_2;
+    typedef CGAL::Constrained_triangulation_plus_2<CDT_2> CDT_plus_2;
+
+    typedef typename DerivedF::Index Index;
+    typedef std::pair<Index, Index> Edge;
+    struct EdgeHash {
+        size_t operator()(const Edge& e) const {
+            return (e.first * 805306457) ^ (e.second * 201326611);
         }
-        i++;
-      }
-    }
-    {
-      Index i = 0;
-      // Resize to fit new number of triangles
-      NF[o].resize(cdt[o].number_of_faces(),3);
-//#   pragma omp atomic
-      NF_count+=NF[o].rows();
-      // Append new faces to NF
-      for(
-        typename CDT_plus_2::Finite_faces_iterator fit = cdt[o].finite_faces_begin();
-        fit != cdt[o].finite_faces_end();
-        ++fit)
-      {
-        NF[o](i,0) = v2i[fit->vertex(0)];
-        NF[o](i,1) = v2i[fit->vertex(1)];
-        NF[o](i,2) = v2i[fit->vertex(2)];
-        i++;
-      }
-    }
-  }
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
-  cout<<"CDT: "<<tictoc()<<"  "<<t_proj_del<<endl;
-#endif
+    };
+    typedef std::unordered_map<Edge, std::vector<Index>, EdgeHash > EdgeMap;
 
-  assert(NV_count == (Index)NV.size());
-  // Build output
-#ifndef NDEBUG
-  //{
-  //  Index off_count = 0;
-  //  for(Index f = 0;f<F.rows();f++)
-  //  {
-  //    off_count+= (offensive[f]?1:0);
-  //  }
-  //  assert(off_count==(Index)offending.size());
-  //}
-#endif
-  // Append faces
-  FF.resize(F.rows()-offending.size()+NF_count,3);
-  J.resize(FF.rows());
-  // First append non-offending original faces
-  // There's an Eigen way to do this in one line but I forget
-  Index off = 0;
-  for(Index f = 0;f<F.rows();f++)
-  {
-    if(!offending.count(f))
-    {
-      FF.row(off) = F.row(f);
-      J(off) = f;
-      off++;
+    auto normalize_plane_coeff = [](const Plane_3& P) {
+        std::vector<typename Kernel::FT> coeffs = {
+            P.a(), P.b(), P.c(), P.d()
+        };
+        const auto max_itr = std::max_element(coeffs.begin(), coeffs.end());
+        const auto min_itr = std::min_element(coeffs.begin(), coeffs.end());
+        typename Kernel::FT max_coeff;
+        if (*max_itr < -1 * *min_itr) {
+            max_coeff = *min_itr;
+        } else {
+            max_coeff = *max_itr;
+        }
+        std::transform(coeffs.begin(), coeffs.end(), coeffs.begin(),
+                [&](const typename Kernel::FT& val)
+                {return val / max_coeff; } );
+        return coeffs;
+    };
+
+    auto plane_comp = [&](const Plane_3& p1, const Plane_3& p2) {
+        const auto p1_coeffs = normalize_plane_coeff(p1);
+        const auto p2_coeffs = normalize_plane_coeff(p2);
+        if (p1_coeffs[0] != p2_coeffs[0])
+            return p1_coeffs[0] < p2_coeffs[0];
+        if (p1_coeffs[1] != p2_coeffs[1])
+            return p1_coeffs[1] < p2_coeffs[1];
+        if (p1_coeffs[2] != p2_coeffs[2])
+            return p1_coeffs[2] < p2_coeffs[2];
+        if (p1_coeffs[3] != p2_coeffs[3])
+            return p1_coeffs[3] < p2_coeffs[3];
+        return false;
+    };
+    std::map<Plane_3, std::vector<Index>, decltype(plane_comp)>
+        unique_planes(plane_comp);
+
+    const size_t num_faces = F.rows();
+    const size_t num_base_vertices = V.rows();
+    assert(num_faces == T.size());
+    std::vector<bool> is_offending(num_faces, false);
+    for (const auto itr : offending) {
+        const auto& fid = itr.first;
+        is_offending[fid] = true;
+
+        Plane_3 key = T[fid].supporting_plane();
+        assert(!key.is_degenerate());
+        const auto jtr = unique_planes.find(key);
+        if (jtr == unique_planes.end()) {
+            unique_planes.insert({key, {fid}});
+        } else {
+            jtr->second.push_back(fid);
+        }
     }
-  }
-  assert(off == (Index)(F.rows()-offending.size()));
-  // Now append replacement faces for offending faces
-  for(const auto & okv : offending)
-  {
-    // index in F
-    const Index f = okv.first;
-    const Index o = okv.second.first;
-    FF.block(off,0,NF[o].rows(),3) = NF[o];
-    J.block(off,0,NF[o].rows(),1).setConstant(f);
-    off += NF[o].rows();
-  }
-  // Append vertices
-  VV.resize(V.rows()+NV_count,3);
-  VV.block(0,0,V.rows(),3) = V.template cast<typename DerivedVV::Scalar>();
-  {
-    Index i = 0;
-    for(
-      typename Point_3List::const_iterator nvit = NV.begin();
-      nvit != NV.end();
-      nvit++)
-    {
-      for(Index d = 0;d<3;d++)
-      {
-        const Point_3 & p = *nvit;
-        // Don't convert via double if output type is same as Kernel
-        assign_scalar(p[d], VV(V.rows()+i,d));
-      }
-      i++;
+
+    const size_t INVALID = std::numeric_limits<size_t>::max();
+    std::vector<std::vector<Index> > resolved_faces;
+    std::vector<Index> source_faces;
+    std::vector<Point_3> new_vertices;
+    EdgeMap edge_vertices;
+
+    /**
+     * Run constraint Delaunay triangulation on the plane.
+     */
+    auto run_delaunay_triangulation = [&](const Plane_3& P,
+            const std::vector<Index>& involved_faces,
+            std::vector<Point_3>& vertices,
+            std::vector<std::vector<Index> >& faces) {
+        CDT_plus_2 cdt;
+        for (const auto& fid : involved_faces) {
+            const auto itr = offending.find(fid);
+            const auto& triangle = T[fid];
+            cdt.insert_constraint(P.to_2d(triangle[0]), P.to_2d(triangle[1]));
+            cdt.insert_constraint(P.to_2d(triangle[1]), P.to_2d(triangle[2]));
+            cdt.insert_constraint(P.to_2d(triangle[2]), P.to_2d(triangle[0]));
+
+            if (itr == offending.end()) continue;
+            for (const auto& obj : itr->second.second) {
+                if(const Segment_3 *iseg = CGAL::object_cast<Segment_3 >(&obj)) {
+                    // Add segment constraint
+                    cdt.insert_constraint(
+                            P.to_2d(iseg->vertex(0)),P.to_2d(iseg->vertex(1)));
+                }else if(const Point_3 *ipoint = CGAL::object_cast<Point_3 >(&obj)) {
+                    // Add point
+                    cdt.insert(P.to_2d(*ipoint));
+                } else if(const Triangle_3 *itri = CGAL::object_cast<Triangle_3 >(&obj)) {
+                    // Add 3 segment constraints
+                    cdt.insert_constraint(
+                            P.to_2d(itri->vertex(0)),P.to_2d(itri->vertex(1)));
+                    cdt.insert_constraint(
+                            P.to_2d(itri->vertex(1)),P.to_2d(itri->vertex(2)));
+                    cdt.insert_constraint(
+                            P.to_2d(itri->vertex(2)),P.to_2d(itri->vertex(0)));
+                } else if(const std::vector<Point_3 > *polyp = 
+                        CGAL::object_cast< std::vector<Point_3 > >(&obj)) {
+                    //cerr<<REDRUM("Poly...")<<endl;
+                    const std::vector<Point_3 > & poly = *polyp;
+                    const Index m = poly.size();
+                    assert(m>=2);
+                    for(Index p = 0;p<m;p++)
+                    {
+                        const Index np = (p+1)%m;
+                        cdt.insert_constraint(P.to_2d(poly[p]),P.to_2d(poly[np]));
+                    }
+                }else {
+                    throw std::runtime_error("Unknown intersection object!");
+                }
+            }
+        }
+        const size_t num_vertices = cdt.number_of_vertices();
+        const size_t num_faces = cdt.number_of_faces();
+        std::map<typename CDT_plus_2::Vertex_handle,Index> v2i;
+        size_t count=0;
+        for (auto itr = cdt.finite_vertices_begin();
+                itr != cdt.finite_vertices_end(); itr++) {
+            vertices.push_back(P.to_3d(itr->point()));
+            v2i[itr] = count;
+            count++;
+        }
+        for (auto itr = cdt.finite_faces_begin();
+                itr != cdt.finite_faces_end(); itr++) {
+            faces.push_back( {
+                    v2i[itr->vertex(0)],
+                    v2i[itr->vertex(1)],
+                    v2i[itr->vertex(2)] });
+        }
+    };
+
+    /**
+     * Given p on triangle indexed by ori_f, determine the index of p.
+     */
+    auto determine_point_index = [&](
+            const Point_3& p, const size_t ori_f) -> Index {
+        const auto& triangle = T[ori_f];
+        const auto& f = F.row(ori_f).eval();
+
+        // Check if p is one of the triangle corners.
+        for (size_t i=0; i<3; i++) {
+            if (p == triangle[i]) return f[i];
+        }
+
+        // Check if p is on one of the edges.
+        for (size_t i=0; i<3; i++) {
+            const Point_3 curr_corner = triangle[i];
+            const Point_3 next_corner = triangle[(i+1)%3];
+            const Segment_3 edge(curr_corner, next_corner);
+            if (edge.has_on(p)) {
+                const Index curr = f[i];
+                const Index next = f[(i+1)%3];
+                Edge key;
+                key.first = curr<next?curr:next;
+                key.second = curr<next?next:curr;
+                auto itr = edge_vertices.find(key);
+                if (itr == edge_vertices.end()) {
+                    const Index index =
+                        num_base_vertices + new_vertices.size();
+                    edge_vertices.insert({key, {index}});
+                    new_vertices.push_back(p);
+                    return index;
+                } else {
+                    for (const auto vid : itr->second) {
+                        if (p == new_vertices[vid - num_base_vertices]) {
+                            return vid;
+                        }
+                    }
+                    const size_t index = num_base_vertices + new_vertices.size();
+                    new_vertices.push_back(p);
+                    itr->second.push_back(index);
+                    return index;
+                }
+            }
+        }
+
+        // p must be in the middle of the triangle.
+        const size_t index = num_base_vertices + new_vertices.size();
+        new_vertices.push_back(p);
+        return index;
+    };
+
+    /**
+     * Determine the vertex indices for each corner of each output triangle.
+     */
+    auto post_triangulation_process = [&](
+            const std::vector<Point_3>& vertices,
+            const std::vector<std::vector<Index> >& faces,
+            const std::vector<Index>& involved_faces) {
+        for (const auto& f : faces) {
+            const Point_3& v0 = vertices[f[0]];
+            const Point_3& v1 = vertices[f[1]];
+            const Point_3& v2 = vertices[f[2]];
+            Point_3 center(
+                    (v0[0] + v1[0] + v2[0]) / 3.0,
+                    (v0[1] + v1[1] + v2[1]) / 3.0,
+                    (v0[2] + v1[2] + v2[2]) / 3.0);
+            for (const auto& ori_f : involved_faces) {
+                const auto& triangle = T[ori_f];
+                const Plane_3 P = triangle.supporting_plane();
+                if (triangle.has_on(center)) {
+                    std::vector<Index> corners(3);
+                    corners[0] = determine_point_index(v0, ori_f);
+                    corners[1] = determine_point_index(v1, ori_f);
+                    corners[2] = determine_point_index(v2, ori_f);
+                    if (CGAL::orientation(
+                                P.to_2d(v0), P.to_2d(v1), P.to_2d(v2))
+                            == CGAL::RIGHT_TURN) {
+                        std::swap(corners[0], corners[1]);
+                    }
+                    resolved_faces.emplace_back(corners);
+                    source_faces.push_back(ori_f);
+                }
+            }
+        }
+    };
+
+    // Process un-touched faces.
+    for (size_t i=0; i<num_faces; i++) {
+        if (!is_offending[i]) {
+            resolved_faces.push_back(
+                    { F(i,0), F(i,1), F(i,2) } );
+            source_faces.push_back(i);
+        }
     }
-  }
-  IM.resize(VV.rows(),1);
-  map<Point_3,Index> vv2i;
-  // Safe to check for duplicates using double for original vertices: if
-  // incoming reps are different then the points are unique.
-  for(Index v = 0;v<V.rows();v++)
-  {
-    typename Kernel::FT p0,p1,p2;
-    assign_scalar(V(v,0),p0);
-    assign_scalar(V(v,1),p1);
-    assign_scalar(V(v,2),p2);
-    const Point_3 p(p0,p1,p2);
-    if(vv2i.count(p)==0)
-    {
-      vv2i[p] = v;
+
+    // Process self-intersecting faces.
+    for (const auto itr : unique_planes) {
+        Plane_3 P = itr.first;
+        const auto& involved_faces = itr.second;
+
+        std::vector<Point_3> vertices;
+        std::vector<std::vector<Index> > faces;
+        run_delaunay_triangulation(P, involved_faces, vertices, faces);
+        post_triangulation_process(vertices, faces, involved_faces);
     }
-    assert(vv2i.count(p) == 1);
-    IM(v) = vv2i[p];
-  }
-  // Must check for duplicates of new vertices using exact.
-  {
-    Index v = V.rows();
-    for(
-      typename Point_3List::const_iterator nvit = NV.begin();
-      nvit != NV.end();
-      nvit++)
-    {
-      const Point_3 & p = *nvit;
-      if(vv2i.count(p)==0)
-      {
-        vv2i[p] = v;
-      }
-      assert(vv2i.count(p) == 1);
-      IM(v) = vv2i[p];
-      v++;
+
+    // Output resolved mesh.
+    const size_t num_out_vertices = new_vertices.size() + num_base_vertices;
+    VV.resize(num_out_vertices, 3);
+    for (size_t i=0; i<num_base_vertices; i++) {
+        assign_scalar(V(i,0), VV(i,0));
+        assign_scalar(V(i,1), VV(i,1));
+        assign_scalar(V(i,2), VV(i,2));
     }
-  }
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
-  cout<<"Output + dupes: "<<tictoc()<<endl;
-#endif
+    for (size_t i=num_base_vertices; i<num_out_vertices; i++) {
+        assign_scalar(new_vertices[i-num_base_vertices][0], VV(i,0));
+        assign_scalar(new_vertices[i-num_base_vertices][1], VV(i,1));
+        assign_scalar(new_vertices[i-num_base_vertices][2], VV(i,2));
+    }
+
+    const size_t num_out_faces = resolved_faces.size();
+    FF.resize(num_out_faces, 3);
+    for (size_t i=0; i<num_out_faces; i++) {
+        FF(i,0) = resolved_faces[i][0];
+        FF(i,1) = resolved_faces[i][1];
+        FF(i,2) = resolved_faces[i][2];
+    }
+
+    J.resize(num_out_faces);
+    std::copy(source_faces.begin(), source_faces.end(), J.data());
+
+    // Extract unique vertex indices.
+    IM.resize(VV.rows(),1);
+    std::map<Point_3,Index> vv2i;
+    // Safe to check for duplicates using double for original vertices: if
+    // incoming reps are different then the points are unique.
+    for(Index v = 0;v<VV.rows();v++) {
+        typename Kernel::FT p0,p1,p2;
+        assign_scalar(VV(v,0),p0);
+        assign_scalar(VV(v,1),p1);
+        assign_scalar(VV(v,2),p2);
+        const Point_3 p(p0,p1,p2);
+        if(vv2i.count(p)==0) {
+            vv2i[p] = v;
+        }
+        assert(vv2i.count(p) == 1);
+        IM(v) = vv2i[p];
+    }
 }
 
-#ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
-template void igl::cgal::remesh_intersections<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, CGAL::Epeck, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, std::vector<CGAL::Triangle_3<CGAL::Epeck>, std::allocator<CGAL::Triangle_3<CGAL::Epeck> > > const&, std::map<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > >, std::less<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::allocator<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index const, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > > > > > const&, std::map<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::less<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::allocator<std::pair<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> const, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::remesh_intersections<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, CGAL::Epeck, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, std::vector<CGAL::Triangle_3<CGAL::Epeck>, std::allocator<CGAL::Triangle_3<CGAL::Epeck> > > const&, std::map<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > >, std::less<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::allocator<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index const, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > > > > > const&, std::map<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::less<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::allocator<std::pair<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> const, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::remesh_intersections<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, CGAL::Epeck, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, std::vector<CGAL::Triangle_3<CGAL::Epeck>, std::allocator<CGAL::Triangle_3<CGAL::Epeck> > > const&, std::map<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > >, std::less<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::allocator<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index const, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > > > > > const&, std::map<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::less<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::allocator<std::pair<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> const, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::remesh_intersections<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, CGAL::Epeck, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, std::vector<CGAL::Triangle_3<CGAL::Epeck>, std::allocator<CGAL::Triangle_3<CGAL::Epeck> > > const&, std::map<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > >, std::less<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::allocator<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index const, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > > > > > const&, std::map<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::less<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::allocator<std::pair<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> const, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::remesh_intersections<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, CGAL::Epick, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > > const&, std::map<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > >, std::less<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::allocator<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index const, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > > > > > const&, std::map<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::less<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::allocator<std::pair<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> const, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::remesh_intersections<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, CGAL::Epick, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > > const&, std::map<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > >, std::less<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::allocator<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index const, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > > > > > const&, std::map<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::less<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::allocator<std::pair<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> const, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::remesh_intersections<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, CGAL::Epick, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > > const&, std::map<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > >, std::less<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::allocator<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index const, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > > > > > const&, std::map<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::less<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::allocator<std::pair<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> const, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::remesh_intersections<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, CGAL::Epick, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > > const&, std::map<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > >, std::less<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::allocator<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index const, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > > > > > const&, std::map<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::less<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::allocator<std::pair<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> const, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::remesh_intersections<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, CGAL::Epeck, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::vector<CGAL::Triangle_3<CGAL::Epeck>, std::allocator<CGAL::Triangle_3<CGAL::Epeck> > > const&, std::map<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, std::pair<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > >, std::less<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index>, std::allocator<std::pair<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index const, std::pair<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > > > > > const&, std::map<std::pair<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index>, std::vector<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, std::allocator<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index> >, std::less<std::pair<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index> >, std::allocator<std::pair<std::pair<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index> const, std::vector<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, std::allocator<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index> > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::remesh_intersections<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, CGAL::Epick, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > > const&, std::map<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, std::pair<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > >, std::less<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index>, std::allocator<std::pair<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index const, std::pair<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > > > > > const&, std::map<std::pair<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index>, std::vector<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, std::allocator<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index> >, std::less<std::pair<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index> >, std::allocator<std::pair<std::pair<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index> const, std::vector<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, std::allocator<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index> > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::remesh_intersections<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, CGAL::Epeck, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, std::vector<CGAL::Triangle_3<CGAL::Epeck>, std::allocator<CGAL::Triangle_3<CGAL::Epeck> > > const&, std::map<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > >, std::less<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::allocator<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index const, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > > > > > const&, std::map<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::less<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::allocator<std::pair<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> const, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::remesh_intersections<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, CGAL::Epick, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > > const&, std::map<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > >, std::less<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::allocator<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index const, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > > > > > const&, std::map<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::less<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::allocator<std::pair<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> const, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::remesh_intersections<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, CGAL::Epeck, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<long, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, std::vector<CGAL::Triangle_3<CGAL::Epeck>, std::allocator<CGAL::Triangle_3<CGAL::Epeck> > > const&, std::map<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > >, std::less<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::allocator<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index const, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > > > > > const&, std::map<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::less<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::allocator<std::pair<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> const, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&);
-template void igl::cgal::remesh_intersections<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, CGAL::Epick, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::Matrix<long, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > > const&, std::map<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > >, std::less<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::allocator<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index const, std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::vector<CGAL::Object, std::allocator<CGAL::Object> > > > > > const&, std::map<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index>, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::less<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> >, std::allocator<std::pair<std::pair<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> const, std::vector<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, std::allocator<Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index> > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&);
-#endif

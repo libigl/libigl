@@ -215,31 +215,33 @@ IGL_INLINE size_t igl::cgal::extract_cells(
     std::vector<std::vector<size_t> > nested_cells(num_raw_cells);
     std::vector<std::vector<size_t> > ambient_cells(num_raw_cells);
     std::vector<std::vector<size_t> > ambient_comps(num_components);
-    for (size_t i=0; i<num_components; i++) {
-        DerivedV queries(num_components-1, 3);
-        for (size_t j=0; j<num_components; j++) {
-            if (i == j) continue;
-            size_t index = j<i ? j:j-1;
-            queries.row(index) = get_triangle_center(outer_facets[j]);
-        }
+    if (num_components > 1) {
+        for (size_t i=0; i<num_components; i++) {
+            DerivedV queries(num_components-1, 3);
+            for (size_t j=0; j<num_components; j++) {
+                if (i == j) continue;
+                size_t index = j<i ? j:j-1;
+                queries.row(index) = get_triangle_center(outer_facets[j]);
+            }
 
-        const auto& I = Is[i];
-        Eigen::VectorXi closest_facets, closest_facet_orientations;
-        igl::cgal::closest_facet(V, F, I, queries,
-                closest_facets, closest_facet_orientations);
+            const auto& I = Is[i];
+            Eigen::VectorXi closest_facets, closest_facet_orientations;
+            igl::cgal::closest_facet(V, F, I, queries,
+                    closest_facets, closest_facet_orientations);
 
-        for (size_t j=0; j<num_components; j++) {
-            if (i == j) continue;
-            size_t index = j<i ? j:j-1;
-            const size_t closest_patch = P[closest_facets[index]];
-            const size_t closest_patch_side = closest_facet_orientations[index]
-                ? 0:1;
-            const size_t ambient_cell = raw_cells(closest_patch,
-                    closest_patch_side);
-            if (ambient_cell != outer_cells[i]) {
-                nested_cells[ambient_cell].push_back(outer_cells[j]);
-                ambient_cells[outer_cells[j]].push_back(ambient_cell);
-                ambient_comps[j].push_back(i);
+            for (size_t j=0; j<num_components; j++) {
+                if (i == j) continue;
+                size_t index = j<i ? j:j-1;
+                const size_t closest_patch = P[closest_facets[index]];
+                const size_t closest_patch_side = closest_facet_orientations[index]
+                    ? 0:1;
+                const size_t ambient_cell = raw_cells(closest_patch,
+                        closest_patch_side);
+                if (ambient_cell != outer_cells[i]) {
+                    nested_cells[ambient_cell].push_back(outer_cells[j]);
+                    ambient_cells[outer_cells[j]].push_back(ambient_cell);
+                    ambient_comps[j].push_back(i);
+                }
             }
         }
     }
