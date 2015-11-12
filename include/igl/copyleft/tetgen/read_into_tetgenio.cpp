@@ -9,13 +9,13 @@
 #include "mesh_to_tetgenio.h"
 
 // IGL includes
-#include <igl/pathinfo.h>
+#include "../../pathinfo.h"
 #ifndef IGL_NO_EIGEN
 #  define IGL_NO_EIGEN_WAS_NOT_ALREADY_DEFINED
 #  define IGL_NO_EIGEN
 #endif 
 // Include igl headers without including Eigen
-#include <igl/readOBJ.h>
+#include "../../readOBJ.h"
 #ifdef IGL_NO_EIGEN_WAS_NOT_ALREADY_DEFINED
 #  undef IGL_NO_EIGEN
 #endif
@@ -25,7 +25,7 @@
 #include <iostream>
 #include <vector>
 
-IGL_INLINE bool igl::tetgen::read_into_tetgenio(
+IGL_INLINE bool igl::copyleft::tetgen::read_into_tetgenio(
   const std::string & path,
   tetgenio & in)
 {

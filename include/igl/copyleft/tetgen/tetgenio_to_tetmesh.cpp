@@ -8,12 +8,12 @@
 #include "tetgenio_to_tetmesh.h"
 
 // IGL includes
-#include <igl/list_to_matrix.h>
+#include "../../list_to_matrix.h"
 
 // STL includes
 #include <iostream>
 
-IGL_INLINE bool igl::tetgen::tetgenio_to_tetmesh(
+IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   const tetgenio & out,
   std::vector<std::vector<REAL > > & V, 
   std::vector<std::vector<int> > & T,
@@ -84,7 +84,7 @@ IGL_INLINE bool igl::tetgen::tetgenio_to_tetmesh(
   return true;
 }
 
-IGL_INLINE bool igl::tetgen::tetgenio_to_tetmesh(
+IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   const tetgenio & out,
   std::vector<std::vector<REAL > > & V, 
   std::vector<std::vector<int> > & T)
@@ -94,7 +94,7 @@ IGL_INLINE bool igl::tetgen::tetgenio_to_tetmesh(
 }
 
 template <typename DerivedV, typename DerivedT, typename DerivedF>
-IGL_INLINE bool igl::tetgen::tetgenio_to_tetmesh(
+IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   const tetgenio & out,
   Eigen::PlainObjectBase<DerivedV>& V,
   Eigen::PlainObjectBase<DerivedT>& T,
@@ -125,7 +125,7 @@ IGL_INLINE bool igl::tetgen::tetgenio_to_tetmesh(
 }
 
 template <typename DerivedV, typename DerivedT>
-IGL_INLINE bool igl::tetgen::tetgenio_to_tetmesh(
+IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   const tetgenio & out,
   Eigen::PlainObjectBase<DerivedV>& V,
   Eigen::PlainObjectBase<DerivedT>& T)
@@ -136,5 +136,5 @@ IGL_INLINE bool igl::tetgen::tetgenio_to_tetmesh(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template bool igl::tetgen::tetgenio_to_tetmesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(tetgenio const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template bool igl::copyleft::tetgen::tetgenio_to_tetmesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(tetgenio const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif
