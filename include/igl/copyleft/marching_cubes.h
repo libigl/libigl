@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_COPYLEFT_MARCHINGCUBES_H
 #define IGL_COPYLEFT_MARCHINGCUBES_H
-#include "igl_inline.h"
+#include "../igl_inline.h"
 
 #include <Eigen/Core>
 namespace igl 

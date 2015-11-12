@@ -140,8 +140,10 @@ IGL_INLINE bool igl::cgal::complex_to_mesh(
   }
 
   // CGAL code somehow can end up with unreferenced vertices
-  VectorXi _1;
-  remove_unreferenced( MatrixXd(V), MatrixXi(F), V,F,_1);
+  {
+    VectorXi _1;
+    remove_unreferenced( MatrixXd(V), MatrixXi(F), V,F,_1);
+  }
 
   return success;
 }
