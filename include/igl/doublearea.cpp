@@ -85,14 +85,30 @@ IGL_INLINE void igl::doublearea(
   const Eigen::PlainObjectBase<DerivedC> & C,
   Eigen::PlainObjectBase<DerivedD> & D)
 {
-  assert(A.cols() == 2 && "corners should be 2d");
-  assert(B.cols() == 2 && "corners should be 2d");
-  assert(C.cols() == 2 && "corners should be 2d");
+  assert((B.cols() == A.cols()) && "dimensions of A and B should match");
+  assert((C.cols() == A.cols()) && "dimensions of A and C should match");
   assert(A.rows() == B.rows() && "corners should have same length");
   assert(A.rows() == C.rows() && "corners should have same length");
-  const auto & R = A-C;
-  const auto & S = B-C;
-  D = R.col(0).array()*S.col(1).array() - R.col(1).array()*S.col(0).array();
+  switch(A.cols())
+  {
+    case 2:
+    {
+      // For 2d compute signed area
+      const auto & R = A-C;
+      const auto & S = B-C;
+      D = R.col(0).array()*S.col(1).array() - R.col(1).array()*S.col(0).array();
+      break;
+    }
+    default:
+    {
+      Eigen::Matrix<typename DerivedD::Scalar,DerivedD::RowsAtCompileTime,3> 
+        uL(A.rows(),3);
+      uL.col(0) = (B-C).rowwise().norm();
+      uL.col(1) = (C-A).rowwise().norm();
+      uL.col(2) = (A-B).rowwise().norm();
+      doublearea(uL,D);
+    }
+  }
 }
 
 template <
