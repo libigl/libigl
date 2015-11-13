@@ -33,7 +33,7 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::PlainObjectBase<DerivedF> & F,
     Eigen::PlainObjectBase<DeriveddblA> & dblA);
-  // Stream of triangles
+  // Stream of triangles, computes signed area...
   template <
     typename DerivedA,
     typename DerivedB,
@@ -56,13 +56,6 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedB> & B,
     const Eigen::PlainObjectBase<DerivedC> & C);
   // Same as above but use instrinsic edge lengths rather than (V,F) mesh
-  // Templates:
-  //   DerivedV  derived type of eigen matrix for V (e.g. derived from
-  //     MatrixXd)
-  //   DerivedF  derived type of eigen matrix for F (e.g. derived from
-  //     MatrixXi)
-  //   DeriveddblA  derived type of eigen matrix for dblA (e.g. derived from
-  //     MatrixXd)
   // Inputs:
   //   l  #F by dim list of edge lengths using
   //     for triangles, columns correspond to edges 23,31,12
