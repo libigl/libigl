@@ -60,9 +60,15 @@ ENDIF(MSVC)
 
 option(ENABLE_TUTORIALS " " OFF)
 
-add_subdirectory("../external/embree/" "embree")
-include_directories("../external/embree/include")
-list(APPEND SHARED_LIBRARIES "embree")
+#MESSAGE("===add subdirectory embree===")
+#MESSAGe(${CMAKE_CXX_COMPILER})
+#MESSAGe(${CMAKE_C_COMPILER})
+#add_subdirectory("../external/embree/" "embree")
+#MESSAGe(${CMAKE_CXX_COMPILER})
+#MESSAGe(${CMAKE_C_COMPILER})
+#MESSAGE("===done===")
+#include_directories("../external/embree/include")
+#list(APPEND SHARED_LIBRARIES "embree")
 
 # endif(True)
 
@@ -194,8 +200,10 @@ endif(MATLAB_FOUND)
 add_subdirectory("604_Triangle")
 add_subdirectory("605_Tetgen")
 
-add_subdirectory("606_AmbientOcclusion")
-add_subdirectory("607_Picking")
+if (EMBREE_FOUND)
+  add_subdirectory("606_AmbientOcclusion")
+  add_subdirectory("607_Picking")
+endif (EMBREE_FOUND)
 
 if(LIM_FOUND)
   add_subdirectory("608_LIM")
