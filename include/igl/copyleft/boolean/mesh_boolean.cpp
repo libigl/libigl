@@ -20,50 +20,6 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <algorithm>
 
-
-namespace igl {
-  namespace copyleft {
-    namespace boolean {
-      namespace mesh_boolean_helper {
-        typedef CGAL::Epeck Kernel;
-        typedef Kernel::FT ExactScalar;
-
-        template<
-          typename DerivedV,
-          typename DerivedF,
-          typename DerivedVo,
-          typename DerivedFo,
-          typename DerivedJ>
-        void igl_resolve(
-            const Eigen::PlainObjectBase<DerivedV>& V,
-            const Eigen::PlainObjectBase<DerivedF>& F,
-            Eigen::PlainObjectBase<DerivedVo>& Vo,
-            Eigen::PlainObjectBase<DerivedFo>& Fo,
-            Eigen::PlainObjectBase<DerivedJ>& J) {
-          Eigen::VectorXi I;
-          igl::copyleft::cgal::RemeshSelfIntersectionsParam params;
-
-          DerivedVo Vr;
-          DerivedFo Fr;
-          Eigen::MatrixXi IF;
-          igl::copyleft::cgal::remesh_self_intersections(
-                  V, F, params, Vr, Fr, IF, J, I);
-          assert(I.size() == Vr.rows());
-
-          // Merge coinciding vertices into non-manifold vertices.
-          std::for_each(Fr.data(), Fr.data()+Fr.size(),
-              [&I](typename DerivedF::Scalar& a) { a=I[a]; });
-
-          // Remove unreferenced vertices.
-          Eigen::VectorXi UIM;
-          igl::remove_unreferenced(Vr, Fr, Vo, Fo, UIM);
-        }
-
-      }
-    }
-  }
-}
-
 template <
   typename DerivedVA,
   typename DerivedFA,
@@ -86,10 +42,11 @@ IGL_INLINE void igl::copyleft::boolean::per_face_winding_number_binary_operation
     Eigen::PlainObjectBase<DerivedVC > & VC,
     Eigen::PlainObjectBase<DerivedFC > & FC,
     Eigen::PlainObjectBase<DerivedJ > & J) {
-  using namespace igl::copyleft::boolean::mesh_boolean_helper;
 
   typedef typename DerivedVC::Scalar Scalar;
   typedef typename DerivedFC::Scalar Index;
+  typedef CGAL::Epeck Kernel;
+  typedef Kernel::FT ExactScalar;
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,3> MatrixX3S;
   typedef Eigen::Matrix<Index,Eigen::Dynamic,Eigen::Dynamic> MatrixXI;
   typedef Eigen::Matrix<typename DerivedJ::Scalar,Eigen::Dynamic,1> VectorXJ;
@@ -203,7 +160,8 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
     Eigen::PlainObjectBase<DerivedVC > & VC,
     Eigen::PlainObjectBase<DerivedFC > & FC,
     Eigen::PlainObjectBase<DerivedJ > & J) {
-  using namespace igl::copyleft::boolean::mesh_boolean_helper;
+  typedef CGAL::Epeck Kernel;
+  typedef Kernel::FT ExactScalar;
   typedef Eigen::Matrix<
     ExactScalar,
     Eigen::Dynamic,
