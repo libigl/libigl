@@ -89,9 +89,12 @@ IGL_INLINE bool igl::readOFF(
       fscanf(off_file,"%[^\n]",comment);
     }else
     {
-      printf("Error: bad line in %s\n",off_file_name.c_str());
-      fclose(off_file);
-      return false;
+      printf("Error: bad line (%d) in %s\n",i,off_file_name.c_str());
+      if(feof(off_file))
+      {
+        fclose(off_file);
+        return false;
+      }
     }
   }
   // Read faces
