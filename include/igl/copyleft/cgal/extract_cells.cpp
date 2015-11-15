@@ -34,19 +34,19 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
         const std::vector<std::vector<uE2EType> >& uE2E,
         const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
         Eigen::PlainObjectBase<DerivedC>& cells) {
-    typedef typename DerivedF::Scalar Index;
+    //typedef typename DerivedF::Scalar Index;
     const size_t num_faces = F.rows();
     auto edge_index_to_face_index = [&](size_t index) {
         return index % num_faces;
     };
     auto is_consistent = [&](const size_t fid, const size_t s, const size_t d) {
-        if (F(fid, 0) == s && F(fid, 1) == d) return false;
-        if (F(fid, 1) == s && F(fid, 2) == d) return false;
-        if (F(fid, 2) == s && F(fid, 0) == d) return false;
+        if ((size_t)F(fid, 0) == s && (size_t)F(fid, 1) == d) return false;
+        if ((size_t)F(fid, 1) == s && (size_t)F(fid, 2) == d) return false;
+        if ((size_t)F(fid, 2) == s && (size_t)F(fid, 0) == d) return false;
 
-        if (F(fid, 0) == d && F(fid, 1) == s) return true;
-        if (F(fid, 1) == d && F(fid, 2) == s) return true;
-        if (F(fid, 2) == d && F(fid, 0) == s) return true;
+        if ((size_t)F(fid, 0) == d && (size_t)F(fid, 1) == s) return true;
+        if ((size_t)F(fid, 1) == d && (size_t)F(fid, 2) == s) return true;
+        if ((size_t)F(fid, 2) == d && (size_t)F(fid, 0) == s) return true;
         throw "Invalid face!";
         return false;
     };
@@ -111,7 +111,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
                 const size_t edge_valance = order.size();
                 size_t curr_i = 0;
                 for (curr_i=0; curr_i < edge_valance; curr_i++) {
-                    if (order[curr_i] == ei) break;
+                    if ((size_t)order[curr_i] == ei) break;
                 }
                 assert(curr_i < edge_valance);
 
@@ -133,7 +133,9 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
                     Q.emplace(next_patch_id, next_patch_side);
                     cells(next_patch_id, next_patch_side) = cell_idx;
                 } else {
-                    assert(cells(next_patch_id, next_patch_side) == cell_idx);
+                    assert(
+                      (size_t)cells(next_patch_id, next_patch_side) == 
+                      cell_idx);
                 }
             }
         }
@@ -237,7 +239,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
                     ? 0:1;
                 const size_t ambient_cell = raw_cells(closest_patch,
                         closest_patch_side);
-                if (ambient_cell != outer_cells[i]) {
+                if (ambient_cell != (size_t)outer_cells[i]) {
                     nested_cells[ambient_cell].push_back(outer_cells[j]);
                     ambient_cells[outer_cells[j]].push_back(ambient_cell);
                     ambient_comps[j].push_back(i);
@@ -318,7 +320,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         const Eigen::PlainObjectBase<DerivedF>& F,
         Eigen::PlainObjectBase<DerivedC>& cells) {
     const size_t num_faces = F.rows();
-    typedef typename DerivedF::Scalar Index;
+    //typedef typename DerivedF::Scalar Index;
 
     Eigen::MatrixXi E, uE;
     Eigen::VectorXi EMAP;
@@ -326,7 +328,8 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
     igl::unique_edge_map(F, E, uE, EMAP, uE2E);
 
     Eigen::VectorXi P;
-    const size_t num_patches = igl::extract_manifold_patches(F, EMAP, uE2E, P);
+    //const size_t num_patches = 
+      igl::extract_manifold_patches(F, EMAP, uE2E, P);
 
     DerivedC per_patch_cells;
     const size_t num_cells =

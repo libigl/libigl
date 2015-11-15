@@ -86,12 +86,12 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
 
     auto get_orientation = [&](size_t fid, size_t s, size_t d) -> bool {
         const auto& f = F.row(fid);
-        if (f[0] == s && f[1] == d) return false;
-        else if (f[1] == s && f[2] == d) return false;
-        else if (f[2] == s && f[0] == d) return false;
-        else if (f[0] == d && f[1] == s) return true;
-        else if (f[1] == d && f[2] == s) return true;
-        else if (f[2] == d && f[0] == s) return true;
+        if      ((size_t)f[0] == s && (size_t)f[1] == d) return false;
+        else if ((size_t)f[1] == s && (size_t)f[2] == d) return false;
+        else if ((size_t)f[2] == s && (size_t)f[0] == d) return false;
+        else if ((size_t)f[0] == d && (size_t)f[1] == s) return true;
+        else if ((size_t)f[1] == d && (size_t)f[2] == s) return true;
+        else if ((size_t)f[2] == d && (size_t)f[0] == s) return true;
         else {
             throw std::runtime_error(
                     "Cannot compute orientation due to incorrect connectivity");
@@ -101,9 +101,9 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     auto index_to_signed_index = [&](size_t index, bool ori) -> int{
         return (index+1) * (ori? 1:-1);
     };
-    auto signed_index_to_index = [&](int signed_index) -> size_t {
-        return abs(signed_index) - 1;
-    };
+    //auto signed_index_to_index = [&](int signed_index) -> size_t {
+    //    return abs(signed_index) - 1;
+    //};
 
     enum ElementType { VERTEX, EDGE, FACE };
     auto determine_element_type = [&](const Point_3& p, const size_t fid,
@@ -218,9 +218,9 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
         std::set<size_t> adj_vertices_set;
         for (auto fid : intersected_face_indices) {
             const auto& f = F.row(fid);
-            if (f[0] != s) adj_vertices_set.insert(f[0]);
-            if (f[1] != s) adj_vertices_set.insert(f[1]);
-            if (f[2] != s) adj_vertices_set.insert(f[2]);
+            if ((size_t)f[0] != s) adj_vertices_set.insert(f[0]);
+            if ((size_t)f[1] != s) adj_vertices_set.insert(f[1]);
+            if ((size_t)f[2] != s) adj_vertices_set.insert(f[2]);
         }
         const size_t num_adj_vertices = adj_vertices_set.size();
         std::vector<size_t> adj_vertices(num_adj_vertices);
