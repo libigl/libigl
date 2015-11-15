@@ -60,16 +60,6 @@ ENDIF(MSVC)
 
 option(ENABLE_TUTORIALS " " OFF)
 
-#MESSAGE("===add subdirectory embree===")
-#MESSAGe(${CMAKE_CXX_COMPILER})
-#MESSAGe(${CMAKE_C_COMPILER})
-#add_subdirectory("../external/embree/" "embree")
-#MESSAGe(${CMAKE_CXX_COMPILER})
-#MESSAGe(${CMAKE_C_COMPILER})
-#MESSAGE("===done===")
-#include_directories("../external/embree/include")
-#list(APPEND SHARED_LIBRARIES "embree")
-
 # endif(True)
 
 # if(True)
