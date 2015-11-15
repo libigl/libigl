@@ -31,7 +31,7 @@ template <
   typename DerivedVC,
   typename DerivedFC,
   typename DerivedJ>
-IGL_INLINE void igl::copyleft::boolean::per_face_winding_number_binary_operation(
+IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
     const Eigen::PlainObjectBase<DerivedVA> & VA,
     const Eigen::PlainObjectBase<DerivedFA> & FA,
     const Eigen::PlainObjectBase<DerivedVB> & VB,
@@ -148,6 +148,7 @@ template <
   typename DerivedFA,
   typename DerivedVB,
   typename DerivedFB,
+  typename ResolveFunc,
   typename DerivedVC,
   typename DerivedFC,
   typename DerivedJ>
@@ -157,9 +158,69 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
     const Eigen::PlainObjectBase<DerivedVB > & VB,
     const Eigen::PlainObjectBase<DerivedFB > & FB,
     const MeshBooleanType & type,
+    const ResolveFunc& resolve_func,
     Eigen::PlainObjectBase<DerivedVC > & VC,
     Eigen::PlainObjectBase<DerivedFC > & FC,
-    Eigen::PlainObjectBase<DerivedJ > & J) {
+    Eigen::PlainObjectBase<DerivedJ > & J)
+{
+  typedef CGAL::Epeck Kernel;
+  typedef Kernel::FT ExactScalar;
+  typedef Eigen::Matrix<
+    ExactScalar,
+    Eigen::Dynamic,
+    Eigen::Dynamic,
+    DerivedVC::IsRowMajor> MatrixXES;
+
+  switch (type) {
+    case MESH_BOOLEAN_TYPE_UNION:
+      igl::copyleft::boolean::mesh_boolean(
+          VA, FA, VB, FB, igl::copyleft::boolean::BinaryUnion(),
+          igl::copyleft::boolean::KeepInside(), resolve_func, VC, FC, J);
+      break;
+    case MESH_BOOLEAN_TYPE_INTERSECT:
+      igl::copyleft::boolean::mesh_boolean(
+          VA, FA, VB, FB, igl::copyleft::boolean::BinaryIntersect(),
+          igl::copyleft::boolean::KeepInside(), resolve_func, VC, FC, J);
+      break;
+    case MESH_BOOLEAN_TYPE_MINUS:
+      igl::copyleft::boolean::mesh_boolean(
+          VA, FA, VB, FB, igl::copyleft::boolean::BinaryMinus(),
+          igl::copyleft::boolean::KeepInside(), resolve_func, VC, FC, J);
+      break;
+    case MESH_BOOLEAN_TYPE_XOR:
+      igl::copyleft::boolean::mesh_boolean(
+          VA, FA, VB, FB, igl::copyleft::boolean::BinaryXor(),
+          igl::copyleft::boolean::KeepInside(), resolve_func, VC, FC, J);
+      break;
+    case MESH_BOOLEAN_TYPE_RESOLVE:
+      //op = binary_resolve();
+      igl::copyleft::boolean::mesh_boolean(
+          VA, FA, VB, FB, igl::copyleft::boolean::BinaryResolve(),
+          igl::copyleft::boolean::KeepAll(), resolve_func, VC, FC, J);
+      break;
+    default:
+      throw std::runtime_error("Unsupported boolean type.");
+  }
+}
+
+template <
+  typename DerivedVA,
+  typename DerivedFA,
+  typename DerivedVB,
+  typename DerivedFB,
+  typename DerivedVC,
+  typename DerivedFC,
+  typename DerivedJ>
+IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
+  const Eigen::PlainObjectBase<DerivedVA > & VA,
+  const Eigen::PlainObjectBase<DerivedFA > & FA,
+  const Eigen::PlainObjectBase<DerivedVB > & VB,
+  const Eigen::PlainObjectBase<DerivedFB > & FB,
+  const MeshBooleanType & type,
+  Eigen::PlainObjectBase<DerivedVC > & VC,
+  Eigen::PlainObjectBase<DerivedFC > & FC,
+  Eigen::PlainObjectBase<DerivedJ > & J)
+{
   typedef CGAL::Epeck Kernel;
   typedef Kernel::FT ExactScalar;
   typedef Eigen::Matrix<
@@ -198,45 +259,16 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
       igl::remove_unreferenced(Vr, Fr, Vo, Fo, UIM);
     };
 
-  switch (type) {
-    case MESH_BOOLEAN_TYPE_UNION:
-      igl::copyleft::boolean::per_face_winding_number_binary_operation(
-          VA, FA, VB, FB, igl::copyleft::boolean::BinaryUnion(),
-          igl::copyleft::boolean::KeepInside(), resolve_func, VC, FC, J);
-      break;
-    case MESH_BOOLEAN_TYPE_INTERSECT:
-      igl::copyleft::boolean::per_face_winding_number_binary_operation(
-          VA, FA, VB, FB, igl::copyleft::boolean::BinaryIntersect(),
-          igl::copyleft::boolean::KeepInside(), resolve_func, VC, FC, J);
-      break;
-    case MESH_BOOLEAN_TYPE_MINUS:
-      igl::copyleft::boolean::per_face_winding_number_binary_operation(
-          VA, FA, VB, FB, igl::copyleft::boolean::BinaryMinus(),
-          igl::copyleft::boolean::KeepInside(), resolve_func, VC, FC, J);
-      break;
-    case MESH_BOOLEAN_TYPE_XOR:
-      igl::copyleft::boolean::per_face_winding_number_binary_operation(
-          VA, FA, VB, FB, igl::copyleft::boolean::BinaryXor(),
-          igl::copyleft::boolean::KeepInside(), resolve_func, VC, FC, J);
-      break;
-    case MESH_BOOLEAN_TYPE_RESOLVE:
-      //op = binary_resolve();
-      igl::copyleft::boolean::per_face_winding_number_binary_operation(
-          VA, FA, VB, FB, igl::copyleft::boolean::BinaryResolve(),
-          igl::copyleft::boolean::KeepAll(), resolve_func, VC, FC, J);
-      break;
-    default:
-      throw std::runtime_error("Unsupported boolean type.");
-  }
+  return mesh_boolean(VA,FA,VB,FB,type,resolve_func,VC,FC,J);
 }
 
 template <
-  typename DerivedVA,
-  typename DerivedFA,
-  typename DerivedVB,
-  typename DerivedFB,
-  typename DerivedVC,
-  typename DerivedFC>
+typename DerivedVA,
+typename DerivedFA,
+typename DerivedVB,
+typename DerivedFB,
+typename DerivedVC,
+typename DerivedFC>
 IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
     const Eigen::PlainObjectBase<DerivedVA > & VA,
     const Eigen::PlainObjectBase<DerivedFA > & FA,

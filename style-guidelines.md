@@ -171,8 +171,8 @@ Eigen and stl. These functions should have the `igl::` namespace.
 
 Functions with other dependencies should be placed into
 appropriate sub-directories (e.g. if `myfunction` depends on tetgen then create
-`igl/tetgen/myfunction.h` and `igl/tetgen/myfunction.cpp` and give the function
-the namespace `igl::tetgen::myfunction`.
+`igl/copyleft/tetgen/myfunction.h` and `igl/copyleft/tetgen/myfunction.cpp` and give the function
+the namespace `igl::copyleft::tetgen::myfunction`.
 
 ### copyleft subdirectory/namespace 
 
@@ -192,11 +192,11 @@ assert(m < n && "m must be less than n");
 
 Every header file should be wrapped in an `#ifndef` compiler directive. The
 name of the guard should be in direct correspondence with the path of the .h
-file. For example, `include/igl/tetgen/tetrahedralize.h` should be
+file. For example, `include/igl/copyleft/tetgen/tetrahedralize.h` should be
 
 ```cpp
-#ifndef IGL_TETGEN_TETRAHEDRALIZE_H
-#define IGL_TETGEN_TETRAHEDRALIZE_H
+#ifndef IGL_COPYLEFT_TETGEN_TETRAHEDRALIZE_H
+#define IGL_COPYLEFT_TETGEN_TETRAHEDRALIZE_H
 ...
 #endif
 ```
@@ -210,6 +210,30 @@ Do not use tabs. Use 2 spaces for each indentation level.
 Limit lines to 80 characters. Break up long lines into many operations (this
 also helps performance).
 
+## Include order
+
+`#include` directives at the top of a .h or .cpp file should be sorted
+according to a simple principle: place headers of files most likely to be
+edited by you first. This means for
+`include/igl/copyleft/tetgen/tetrahedralize.cpp` you might see
+
+```cpp
+// [Includes of headers in this directory]
+#include "tetrahedralize.h"
+#include "mesh_to_tetgenio.h"
+#include "tetgenio_to_tetmesh.h"
+// [Includes of headers in this project]
+#include "../../matrix_to_list.h"
+#include "../../list_to_matrix.h"
+#include "../../boundary_facets.h"
+// [Includes of headers of related projects]
+#include <Eigen/Core>
+// [Includes of headers of standard libraries]
+#include <cassert>
+#include <iostream>
+```
+
 ## Eigen templates
+
 
 

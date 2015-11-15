@@ -6,19 +6,19 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "mesh_with_skeleton.h"
+#include "tetrahedralize.h"
 
-#include <igl/sample_edges.h>
-#include <igl/cat.h>
-#include <igl/tetgen/tetrahedralize.h>
-#include <igl/writeOFF.h>
-#include <igl/writeOBJ.h>
+#include "../../sample_edges.h"
+#include "../../cat.h"
+#include "../../writeOFF.h"
+#include "../../writeOBJ.h"
 
 #include <iostream>
 // Default settings pq2Y tell tetgen to mesh interior of triangle mesh and
 // to produce a graded tet mesh
 const static std::string DEFAULT_TETGEN_FLAGS = "pq2Y";
 
-IGL_INLINE bool igl::tetgen::mesh_with_skeleton(
+IGL_INLINE bool igl::copyleft::tetgen::mesh_with_skeleton(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   const Eigen::MatrixXd & C,
@@ -85,7 +85,7 @@ IGL_INLINE bool igl::tetgen::mesh_with_skeleton(
   return true;
 }
 
-IGL_INLINE bool igl::tetgen::mesh_with_skeleton(
+IGL_INLINE bool igl::copyleft::tetgen::mesh_with_skeleton(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   const Eigen::MatrixXd & C,

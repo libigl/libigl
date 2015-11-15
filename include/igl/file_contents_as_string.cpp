@@ -9,6 +9,7 @@
 
 #include <fstream>
 #include <cstdio>
+#include <cassert>
 
 IGL_INLINE bool igl::file_contents_as_string(
   const std::string file_name,
@@ -29,4 +30,16 @@ IGL_INLINE bool igl::file_contents_as_string(
     (std::istreambuf_iterator<char>(ifs)),
     (std::istreambuf_iterator<char>()));
   return true;
+}
+
+IGL_INLINE std::string igl::file_contents_as_string(
+  const std::string file_name)
+{
+  std::string content;
+#ifndef NDEBUG
+  bool ret = 
+#endif
+    file_contents_as_string(file_name,content);
+  assert(ret && "file_contents_as_string failed to read string from file");
+  return content;
 }

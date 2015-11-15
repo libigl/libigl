@@ -28,7 +28,7 @@ IGL_INLINE void igl::signed_distance(
   using namespace std;
   const int dim = V.cols();
   assert((V.cols() == 3||V.cols() == 2) && "V should have 3d or 2d positions");
-  assert((P.cols() == 3||V.cols() == 2) && "P should have 3d or 2d positions");
+  assert((P.cols() == 3||P.cols() == 2) && "P should have 3d or 2d positions");
   assert(V.cols() == P.cols() && "V should have same dimension as P");
   // Only unsigned distance is supported for non-triangles
   if(sign_type != SIGNED_DISTANCE_TYPE_UNSIGNED)

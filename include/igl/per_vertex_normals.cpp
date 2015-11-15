@@ -45,7 +45,8 @@ IGL_INLINE void igl::per_vertex_normals(
   // Resize for output
   N.setZero(V.rows(),3);
 
-  Eigen::MatrixXd W(F.rows(),3);
+  Eigen::Matrix<typename DerivedN::Scalar,DerivedF::RowsAtCompileTime,3> 
+    W(F.rows(),3);
   switch(weighting)
   {
     case PER_VERTEX_NORMALS_WEIGHTING_TYPE_UNIFORM:
@@ -56,7 +57,7 @@ IGL_INLINE void igl::per_vertex_normals(
     case PER_VERTEX_NORMALS_WEIGHTING_TYPE_DEFAULT:
     case PER_VERTEX_NORMALS_WEIGHTING_TYPE_AREA:
     {
-      Eigen::VectorXd A;
+      Eigen::Matrix<typename DerivedN::Scalar,DerivedF::RowsAtCompileTime,1> A;
       doublearea(V,F,A);
       W = A.replicate(1,3);
       break;

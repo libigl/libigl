@@ -52,13 +52,13 @@ namespace igl
       typename std::enable_if<!std::is_same<typename DerivedV::Scalar,
       typename CGAL::Exact_predicates_exact_constructions_kernel::FT>::value, void>::type
       order_facets_around_edges(
-              const Eigen::PlainObjectBase<DerivedV>& V,
-              const Eigen::PlainObjectBase<DerivedF>& F,
-              const Eigen::PlainObjectBase<DerivedN>& N,
-              const Eigen::PlainObjectBase<DeriveduE>& uE,
-              const std::vector<std::vector<uE2EType> >& uE2E,
-              std::vector<std::vector<uE2oEType> >& uE2oE,
-              std::vector<std::vector<uE2CType > >& uE2C );
+        const Eigen::PlainObjectBase<DerivedV>& V,
+        const Eigen::PlainObjectBase<DerivedF>& F,
+        const Eigen::PlainObjectBase<DerivedN>& N,
+        const Eigen::PlainObjectBase<DeriveduE>& uE,
+        const std::vector<std::vector<uE2EType> >& uE2E,
+        std::vector<std::vector<uE2oEType> >& uE2oE,
+        std::vector<std::vector<uE2CType > >& uE2C );
 
       template<
           typename DerivedV,
@@ -72,13 +72,13 @@ namespace igl
       typename std::enable_if<std::is_same<typename DerivedV::Scalar,
       typename CGAL::Exact_predicates_exact_constructions_kernel::FT>::value, void>::type
       order_facets_around_edges(
-              const Eigen::PlainObjectBase<DerivedV>& V,
-              const Eigen::PlainObjectBase<DerivedF>& F,
-              const Eigen::PlainObjectBase<DerivedN>& N,
-              const Eigen::PlainObjectBase<DeriveduE>& uE,
-              const std::vector<std::vector<uE2EType> >& uE2E,
-              std::vector<std::vector<uE2oEType> >& uE2oE,
-              std::vector<std::vector<uE2CType > >& uE2C );
+        const Eigen::PlainObjectBase<DerivedV>& V,
+        const Eigen::PlainObjectBase<DerivedF>& F,
+        const Eigen::PlainObjectBase<DerivedN>& N,
+        const Eigen::PlainObjectBase<DeriveduE>& uE,
+        const std::vector<std::vector<uE2EType> >& uE2E,
+        std::vector<std::vector<uE2oEType> >& uE2oE,
+        std::vector<std::vector<uE2CType > >& uE2C );
 
       // Order faces around each edge. Only exact predicate is used in the algorithm.
       // Normal is not needed.
@@ -90,12 +90,12 @@ namespace igl
           typename uE2oEType,
           typename uE2CType >
       IGL_INLINE void order_facets_around_edges(
-              const Eigen::PlainObjectBase<DerivedV>& V,
-              const Eigen::PlainObjectBase<DerivedF>& F,
-              const Eigen::PlainObjectBase<DeriveduE>& uE,
-              const std::vector<std::vector<uE2EType> >& uE2E,
-              std::vector<std::vector<uE2oEType> >& uE2oE,
-              std::vector<std::vector<uE2CType > >& uE2C );
+        const Eigen::PlainObjectBase<DerivedV>& V,
+        const Eigen::PlainObjectBase<DerivedF>& F,
+        const Eigen::PlainObjectBase<DeriveduE>& uE,
+        const std::vector<std::vector<uE2EType> >& uE2E,
+        std::vector<std::vector<uE2oEType> >& uE2oE,
+        std::vector<std::vector<uE2CType > >& uE2C );
     }
   }
 }

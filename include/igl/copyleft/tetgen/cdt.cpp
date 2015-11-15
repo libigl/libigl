@@ -6,8 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "cdt.h"
-#include "../bounding_box.h"
-#include "../writeOBJ.h"
+#include "../../bounding_box.h"
+#include "../../writeOBJ.h"
 
 template <
   typename DerivedV, 
@@ -15,7 +15,7 @@ template <
   typename DerivedTV, 
   typename DerivedTT, 
   typename DerivedTF>
-IGL_INLINE bool igl::tetgen::cdt(
+IGL_INLINE bool igl::copyleft::tetgen::cdt(
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F,
   const CDTParam & param,
