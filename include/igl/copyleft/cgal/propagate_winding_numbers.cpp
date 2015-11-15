@@ -40,13 +40,13 @@ namespace propagate_winding_numbers_helper {
             return ei % num_faces;
         };
         auto is_consistent = [&](size_t fid, size_t s, size_t d) {
-            if (F(fid, 0) == s && F(fid, 1) == d) return true;
-            if (F(fid, 1) == s && F(fid, 2) == d) return true;
-            if (F(fid, 2) == s && F(fid, 0) == d) return true;
+            if ((size_t)F(fid, 0) == s && (size_t)F(fid, 1) == d) return true;
+            if ((size_t)F(fid, 1) == s && (size_t)F(fid, 2) == d) return true;
+            if ((size_t)F(fid, 2) == s && (size_t)F(fid, 0) == d) return true;
 
-            if (F(fid, 0) == d && F(fid, 1) == s) return false;
-            if (F(fid, 1) == d && F(fid, 2) == s) return false;
-            if (F(fid, 2) == d && F(fid, 0) == s) return false;
+            if ((size_t)F(fid, 0) == d && (size_t)F(fid, 1) == s) return false;
+            if ((size_t)F(fid, 1) == d && (size_t)F(fid, 2) == s) return false;
+            if ((size_t)F(fid, 2) == d && (size_t)F(fid, 0) == s) return false;
             throw "Invalid face!!";
         };
         for (size_t i=0; i<num_edges; i++) {
@@ -77,7 +77,7 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
         const Eigen::PlainObjectBase<DerivedL>& labels,
         Eigen::PlainObjectBase<DerivedW>& W) {
     const size_t num_faces = F.rows();
-    typedef typename DerivedF::Scalar Index;
+    //typedef typename DerivedF::Scalar Index;
 
     Eigen::MatrixXi E, uE;
     Eigen::VectorXi EMAP;
@@ -106,7 +106,7 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
         for (size_t i=0; i<num_patches; i++) {
             if ((per_patch_cells.row(i).array() == cell_id).any()) {
                 for (size_t j=0; j<num_faces; j++) {
-                    if (P[j] == i) {
+                    if ((size_t)P[j] == i) {
                         faces.push_back(j);
                     }
                 }
@@ -117,7 +117,7 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
             cell_faces.row(i) = F.row(faces[i]);
         }
         Eigen::MatrixXd vertices(V.rows(), 3);
-        for (size_t i=0; i<V.rows(); i++) {
+        for (size_t i=0; i<(size_t)V.rows(); i++) {
             assign_scalar(V(i,0), vertices(i,0));
             assign_scalar(V(i,1), vertices(i,1));
             assign_scalar(V(i,2), vertices(i,2));
@@ -134,7 +134,7 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
         auto trace_parents = [&](size_t idx) {
             std::list<size_t> path;
             path.push_back(idx);
-            while (parents[path.back()] != path.back()) {
+            while ((size_t)parents[path.back()] != path.back()) {
                 path.push_back(parents[path.back()]);
             }
             return path;
@@ -216,7 +216,7 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
             if ((per_cell_W.row(neighbor_cell).array() == INVALID).any()) {
                 per_cell_W.row(neighbor_cell) = per_cell_W.row(curr_cell);
                 for (size_t i=0; i<num_labels; i++) {
-                    int inc = (patch_labels[patch_idx] == i) ?
+                    int inc = (patch_labels[patch_idx] == (int)i) ?
                         (direction ? -1:1) :0;
                     per_cell_W(neighbor_cell, i) =
                         per_cell_W(curr_cell, i) + inc;
@@ -224,10 +224,12 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
                 Q.push(neighbor_cell);
             } else {
                 for (size_t i=0; i<num_labels; i++) {
-                    if (i == patch_labels[patch_idx]) {
+                    if ((int)i == patch_labels[patch_idx]) {
+#ifndef NDEBUG
                         int inc = direction ? -1:1;
                         assert(per_cell_W(neighbor_cell, i) ==
                                 per_cell_W(curr_cell, i) + inc);
+#endif
                     } else {
                         assert(per_cell_W(neighbor_cell, i) ==
                                 per_cell_W(curr_cell, i));

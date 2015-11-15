@@ -32,7 +32,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         std::vector<CGAL::Object> > > & offending,
         const std::map<
         std::pair<typename DerivedF::Index,typename DerivedF::Index>,
-        std::vector<typename DerivedF::Index> > & edge2faces,
+        std::vector<typename DerivedF::Index> > & /*edge2faces*/,
         Eigen::PlainObjectBase<DerivedVV> & VV,
         Eigen::PlainObjectBase<DerivedFF> & FF,
         Eigen::PlainObjectBase<DerivedJ> & J,
@@ -42,9 +42,9 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     typedef CGAL::Segment_3<Kernel>  Segment_3; 
     typedef CGAL::Triangle_3<Kernel> Triangle_3; 
     typedef CGAL::Plane_3<Kernel>    Plane_3;
-    typedef CGAL::Point_2<Kernel>    Point_2;
-    typedef CGAL::Segment_2<Kernel>  Segment_2; 
-    typedef CGAL::Triangle_2<Kernel> Triangle_2; 
+    //typedef CGAL::Point_2<Kernel>    Point_2;
+    //typedef CGAL::Segment_2<Kernel>  Segment_2; 
+    //typedef CGAL::Triangle_2<Kernel> Triangle_2; 
     typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
     typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTFB_2;
     typedef CGAL::Triangulation_data_structure_2<TVB_2,CTFB_2> TDS_2;
@@ -114,7 +114,6 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         }
     }
 
-    const size_t INVALID = std::numeric_limits<size_t>::max();
     std::vector<std::vector<Index> > resolved_faces;
     std::vector<Index> source_faces;
     std::vector<Point_3> new_vertices;
@@ -168,8 +167,6 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
                 }
             }
         }
-        const size_t num_vertices = cdt.number_of_vertices();
-        const size_t num_faces = cdt.number_of_faces();
         std::map<typename CDT_plus_2::Vertex_handle,Index> v2i;
         size_t count=0;
         for (auto itr = cdt.finite_vertices_begin();

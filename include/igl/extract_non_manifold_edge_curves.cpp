@@ -11,12 +11,12 @@ typename DerivedEMAP,
 typename uE2EType >
 IGL_INLINE void igl::extract_non_manifold_edge_curves(
         const Eigen::PlainObjectBase<DerivedF>& F,
-        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+        const Eigen::PlainObjectBase<DerivedEMAP>& /*EMAP*/,
         const std::vector<std::vector<uE2EType> >& uE2E,
         std::vector<std::vector<size_t> >& curves) {
     const size_t num_faces = F.rows();
     assert(F.cols() == 3);
-    typedef std::pair<size_t, size_t> Edge;
+    //typedef std::pair<size_t, size_t> Edge;
     auto edge_index_to_face_index = [&](size_t ei) { return ei % num_faces; };
     auto edge_index_to_corner_index = [&](size_t ei) { return ei / num_faces; };
     auto get_edge_end_points = [&](size_t ei, size_t& s, size_t& d) {

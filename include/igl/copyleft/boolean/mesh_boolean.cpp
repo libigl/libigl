@@ -93,14 +93,14 @@ namespace igl {
                     const Eigen::PlainObjectBase<DerivedJ1>& J1,
                     Eigen::PlainObjectBase<DerivedF2>& F2,
                     Eigen::PlainObjectBase<DerivedJ2>& J2) {
-                typedef typename DerivedF1::Scalar Index;
+                //typedef typename DerivedF1::Scalar Index;
                 Eigen::VectorXi IA,IC;
                 DerivedF1 uF;
                 igl::unique_simplices(F1,uF,IA,IC);
 
                 const size_t num_faces = F1.rows();
                 const size_t num_unique_faces = uF.rows();
-                assert(IA.rows() == num_unique_faces);
+                assert((size_t) IA.rows() == num_unique_faces);
                 // faces ontop of each unique face
                 std::vector<std::vector<int> > uF2F(num_unique_faces);
                 // signed counts
@@ -194,9 +194,9 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
   using namespace igl::copyleft::boolean::mesh_boolean_helper;
 
   typedef typename DerivedVC::Scalar Scalar;
-  typedef typename DerivedFC::Scalar Index;
+  //typedef typename DerivedFC::Scalar Index;
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,3> MatrixX3S;
-  typedef Eigen::Matrix<Index,Eigen::Dynamic,Eigen::Dynamic> MatrixXI;
+  //typedef Eigen::Matrix<Index,Eigen::Dynamic,Eigen::Dynamic> MatrixXI;
   typedef Eigen::Matrix<typename DerivedJ::Scalar,Eigen::Dynamic,1> VectorXJ;
 
   // Generate combined mesh.
@@ -217,7 +217,7 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
   std::transform(CJ.data(), CJ.data()+CJ.size(), labels.data(),
           [&](int i) { return i<FA.rows() ? 0:1; });
   igl::copyleft::cgal::propagate_winding_numbers(V, F, labels, W);
-  assert(W.rows() == num_faces);
+  assert((size_t)W.rows() == num_faces);
   if (W.cols() == 2) {
       assert(FB.rows() == 0);
       Eigen::MatrixXi W_tmp(num_faces, 4);
@@ -241,9 +241,9 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
   auto index_to_signed_index = [&](size_t i, bool ori) -> int{
       return (i+1)*(ori?1:-1);
   };
-  auto signed_index_to_index = [&](int i) -> size_t {
-      return abs(i) - 1;
-  };
+  //auto signed_index_to_index = [&](int i) -> size_t {
+  //    return abs(i) - 1;
+  //};
   std::vector<int> selected;
   for(size_t i=0; i<num_faces; i++) {
       auto should_keep = keep(Wr(i,0), Wr(i,1));
@@ -276,8 +276,8 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
       resolve_duplicated_faces(kept_faces, kept_face_indices, G, J);
 
       MatrixX3S Vs(V.rows(), V.cols());
-      for (size_t i=0; i<V.rows(); i++) {
-          for (size_t j=0; j<V.cols(); j++) {
+      for (size_t i=0; i<(size_t)V.rows(); i++) {
+          for (size_t j=0; j<(size_t)V.cols(); j++) {
               igl::copyleft::cgal::assign_scalar(V(i,j), Vs(i,j));
           }
       }

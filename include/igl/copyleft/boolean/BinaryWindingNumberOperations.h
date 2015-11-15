@@ -25,7 +25,7 @@ namespace igl
             public:
                 template<typename DerivedW>
                     typename DerivedW::Scalar operator()(
-                            const Eigen::PlainObjectBase<DerivedW>& win_nums) const {
+                            const Eigen::PlainObjectBase<DerivedW>& /*win_nums*/) const {
                         throw (std::runtime_error("not implemented!"));
                     }
         };
@@ -76,7 +76,7 @@ namespace igl
             public:
                 template<typename DerivedW>
                     typename DerivedW::Scalar operator()(
-                            const Eigen::PlainObjectBase<DerivedW>& win_nums) const {
+                            const Eigen::PlainObjectBase<DerivedW>& /*win_nums*/) const {
                         return true;
                     }
         };
@@ -97,7 +97,7 @@ namespace igl
             public:
                 template<typename DerivedW>
                     short operator()(
-                            const Eigen::PlainObjectBase<DerivedW>& win_nums) const {
+                            const Eigen::PlainObjectBase<DerivedW>& /*win_nums*/) const {
                         throw std::runtime_error("Not implemented");
                     }
         };
@@ -117,7 +117,7 @@ namespace igl
         class WindingNumberFilter<KEEP_ALL> {
             public:
                 template<typename T>
-                    short operator()(T out_w, T in_w) const {
+                    short operator()(T /*out_w*/, T /*in_w*/) const {
                         return 1;
                     }
         };
