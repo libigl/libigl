@@ -283,7 +283,7 @@ endif (PNG_FOUND AND YIMG_FOUND AND OPENGL_FOUND)
 #### Compile the tetgen part
 if (TETGEN_FOUND)
   file(GLOB SOURCES_TETGEN
-    "${PROJECT_SOURCE_DIR}/../include/igl/tetgen/*.cpp"
+    "${PROJECT_SOURCE_DIR}/../include/igl/copyleft/tetgen/*.cpp"
   )
 
   add_library(igltetgen STATIC ${SOURCES_TETGEN})
