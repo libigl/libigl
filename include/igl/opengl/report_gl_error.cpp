@@ -29,14 +29,16 @@ IGL_INLINE GLenum igl::opengl::report_gl_error(const std::string id)
         return "invalid value";
       case GL_INVALID_OPERATION:
         return "invalid operation";
+#ifndef GL_VERSION_3_0
       case GL_STACK_OVERFLOW:
         return "stack overflow";
       case GL_STACK_UNDERFLOW:
         return "stack underflow";
-      case GL_OUT_OF_MEMORY:
-        return "out of memory";
       case GL_TABLE_TOO_LARGE:
         return "table too large";
+#endif
+      case GL_OUT_OF_MEMORY:
+        return "out of memory";
 #ifdef GL_EXT_framebuffer_object
       case GL_INVALID_FRAMEBUFFER_OPERATION_EXT:
         return "invalid framebuffer operation";
