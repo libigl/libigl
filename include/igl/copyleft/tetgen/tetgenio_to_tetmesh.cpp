@@ -104,7 +104,8 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   using namespace std;
   vector<vector<REAL> > vV;
   vector<vector<int> > vT;
-  bool success = tetgenio_to_tetmesh(out,vV,vT);
+  vector<vector<int> > vF;
+  bool success = tetgenio_to_tetmesh(out,vV,vT,vF);
   if(!success)
   {
     return false;
@@ -121,6 +122,12 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
     // igl::list_to_matrix(vT,T) already printed error message to std err
     return false;
   }
+  bool F_rect = list_to_matrix(vF,F);
+  if(!F_rect)
+  {
+    return false;
+  }
+
   return true;
 }
 
