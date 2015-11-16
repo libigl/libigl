@@ -76,7 +76,7 @@ IGL_INLINE void igl::opengl2::draw_skeleton_3d(
     draw_circle();
     glPopMatrix();
   };
-  auto draw_pyramid = [](const double r)
+  auto draw_pyramid = []()
   {
     glBegin(GL_LINE_STRIP);
     glVertex3d(0, 1,-1);
@@ -128,7 +128,7 @@ IGL_INLINE void igl::opengl2::draw_skeleton_3d(
       glTranslated(u(0),u(1),u(2));
       glMultMatrixd(Affine3d(q).matrix().data());
       glScaled(b.norm()-2.*r,r,r);
-      draw_pyramid(r);
+      draw_pyramid();
       glPopMatrix();
     }
     glTranslated(b(0),b(1),b(2));
