@@ -23,7 +23,7 @@ namespace igl
     {
       //  MESH_BOOLEAN Compute boolean csg operations on "solid", consistently
       //  oriented meshes.
-      // 
+      //
       //  Inputs:
       //    VA  #VA by 3 list of vertex positions of first mesh
       //    FA  #FA by 3 list of triangle indices into VA
@@ -42,7 +42,6 @@ namespace igl
       //
       //  See also: mesh_boolean_cork, intersect_other,
       //  remesh_self_intersections
-      //     
       template <
         typename DerivedVA,
         typename DerivedFA,
@@ -55,16 +54,17 @@ namespace igl
         typename DerivedFC,
         typename DerivedJ>
       IGL_INLINE void mesh_boolean(
-        const Eigen::PlainObjectBase<DerivedVA> & VA,
-        const Eigen::PlainObjectBase<DerivedFA> & FA,
-        const Eigen::PlainObjectBase<DerivedVB> & VB,
-        const Eigen::PlainObjectBase<DerivedFB> & FB,
-        const WindingNumberOp& wind_num_op,
-        const KeepFunc& keep,
-        const ResolveFunc& resolve_fun,
-        Eigen::PlainObjectBase<DerivedVC > & VC,
-        Eigen::PlainObjectBase<DerivedFC > & FC,
-        Eigen::PlainObjectBase<DerivedJ > & J);
+          const Eigen::PlainObjectBase<DerivedVA> & VA,
+          const Eigen::PlainObjectBase<DerivedFA> & FA,
+          const Eigen::PlainObjectBase<DerivedVB> & VB,
+          const Eigen::PlainObjectBase<DerivedFB> & FB,
+          const WindingNumberOp& wind_num_op,
+          const KeepFunc& keep,
+          const ResolveFunc& resolve_fun,
+          Eigen::PlainObjectBase<DerivedVC > & VC,
+          Eigen::PlainObjectBase<DerivedFC > & FC,
+          Eigen::PlainObjectBase<DerivedJ > & J);
+
       //  Inputs:
       //    VA  #VA by 3 list of vertex positions of first mesh
       //    FA  #FA by 3 list of triangle indices into VA
@@ -90,15 +90,16 @@ namespace igl
         typename DerivedFC,
         typename DerivedJ>
       IGL_INLINE void mesh_boolean(
-        const Eigen::PlainObjectBase<DerivedVA > & VA,
-        const Eigen::PlainObjectBase<DerivedFA > & FA,
-        const Eigen::PlainObjectBase<DerivedVB > & VB,
-        const Eigen::PlainObjectBase<DerivedFB > & FB,
-        const MeshBooleanType & type,
+          const Eigen::PlainObjectBase<DerivedVA > & VA,
+          const Eigen::PlainObjectBase<DerivedFA > & FA,
+          const Eigen::PlainObjectBase<DerivedVB > & VB,
+          const Eigen::PlainObjectBase<DerivedFB > & FB,
+          const MeshBooleanType & type,
         const ResolveFunc& resolve_func,
-        Eigen::PlainObjectBase<DerivedVC > & VC,
-        Eigen::PlainObjectBase<DerivedFC > & FC,
-        Eigen::PlainObjectBase<DerivedJ > & J);
+          Eigen::PlainObjectBase<DerivedVC > & VC,
+          Eigen::PlainObjectBase<DerivedFC > & FC,
+          Eigen::PlainObjectBase<DerivedJ > & J);
+
       //  Inputs:
       //    VA  #VA by 3 list of vertex positions of first mesh
       //    FA  #FA by 3 list of triangle indices into VA
@@ -129,6 +130,7 @@ namespace igl
         Eigen::PlainObjectBase<DerivedVC > & VC,
         Eigen::PlainObjectBase<DerivedFC > & FC,
         Eigen::PlainObjectBase<DerivedJ > & J);
+
       //  Inputs:
       //    VA  #VA by 3 list of vertex positions of first mesh
       //    FA  #FA by 3 list of triangle indices into VA
@@ -146,13 +148,13 @@ namespace igl
         typename DerivedVC,
         typename DerivedFC>
       IGL_INLINE void mesh_boolean(
-        const Eigen::PlainObjectBase<DerivedVA > & VA,
-        const Eigen::PlainObjectBase<DerivedFA > & FA,
-        const Eigen::PlainObjectBase<DerivedVB > & VB,
-        const Eigen::PlainObjectBase<DerivedFB > & FB,
-        const MeshBooleanType & type,
-        Eigen::PlainObjectBase<DerivedVC > & VC,
-        Eigen::PlainObjectBase<DerivedFC > & FC);
+          const Eigen::PlainObjectBase<DerivedVA > & VA,
+          const Eigen::PlainObjectBase<DerivedFA > & FA,
+          const Eigen::PlainObjectBase<DerivedVB > & VB,
+          const Eigen::PlainObjectBase<DerivedFB > & FB,
+          const MeshBooleanType & type,
+          Eigen::PlainObjectBase<DerivedVC > & VC,
+          Eigen::PlainObjectBase<DerivedFC > & FC);
     }
   }
 }

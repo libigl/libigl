@@ -52,4 +52,5 @@ template void igl::colon<int, long, int>(int, long, Eigen::Matrix<int, -1, 1, 0,
 template void igl::colon<int, int, int>(int, int, Eigen::Matrix<int, -1, 1, 0, -1, 1>&);
 template void igl::colon<int,long long int,int>(int,long long int,Eigen::Matrix<int,-1,1,0,-1,1> &);
 template void igl::colon<int, int, int, int>(int, int, int, Eigen::Matrix<int, -1, 1, 0, -1, 1>&);
+template void igl::colon<int, long, long>(int, long, Eigen::Matrix<long, -1, 1, 0, -1, 1>&);
 #endif
