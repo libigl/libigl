@@ -153,9 +153,12 @@ namespace igl
           {
             Eigen::PlainObjectBase<DerivedV> dV;
             dV.resize(m_V.rows(),m_V.cols());
-            for(int i = 0;i<m_V.size();i++)
+            for(int i = 0;i<m_V.rows();i++)
             {
-              *(dV.data()+i) = CGAL::to_double((*(m_V.data()+i)));
+              for(int j = 0;j<m_V.cols();j++)
+              {
+                dV(i,j) = CGAL::to_double(m_V(i,j));
+              }
             }
             return dV;
           }
