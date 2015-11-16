@@ -22,12 +22,12 @@ namespace igl
     {
       template <igl::copyleft::boolean::MeshBooleanType Op>
       class BinaryWindingNumberOperations {
-          public:
-              template<typename DerivedW>
-                  typename DerivedW::Scalar operator()(
-                          const Eigen::PlainObjectBase<DerivedW>& /*win_nums*/) const {
-                      throw (std::runtime_error("not implemented!"));
-                  }
+        public:
+          template<typename DerivedW>
+            typename DerivedW::Scalar operator()(
+                const Eigen::PlainObjectBase<DerivedW>& /*win_nums*/) const {
+              throw (std::runtime_error("not implemented!"));
+            }
       };
 
       template <>
@@ -73,12 +73,12 @@ namespace igl
 
       template <>
       class BinaryWindingNumberOperations<igl::copyleft::boolean::MESH_BOOLEAN_TYPE_RESOLVE> {
-          public:
-              template<typename DerivedW>
-                  typename DerivedW::Scalar operator()(
-                          const Eigen::PlainObjectBase<DerivedW>& /*win_nums*/) const {
-                      return true;
-                  }
+        public:
+          template<typename DerivedW>
+            typename DerivedW::Scalar operator()(
+                const Eigen::PlainObjectBase<DerivedW>& /*win_nums*/) const {
+              return true;
+            }
       };
 
       typedef BinaryWindingNumberOperations<MESH_BOOLEAN_TYPE_UNION> BinaryUnion;
@@ -94,12 +94,12 @@ namespace igl
 
       template<KeeperType T>
       class WindingNumberFilter {
-          public:
-              template<typename DerivedW>
-                  short operator()(
-                          const Eigen::PlainObjectBase<DerivedW>& /*win_nums*/) const {
-                      throw std::runtime_error("Not implemented");
-                  }
+        public:
+          template<typename DerivedW>
+            short operator()(
+                const Eigen::PlainObjectBase<DerivedW>& /*win_nums*/) const {
+              throw std::runtime_error("Not implemented");
+            }
       };
 
       template<>
@@ -115,11 +115,11 @@ namespace igl
 
       template<>
       class WindingNumberFilter<KEEP_ALL> {
-          public:
-              template<typename T>
-                  short operator()(T /*out_w*/, T /*in_w*/) const {
-                      return 1;
-                  }
+        public:
+          template<typename T>
+            short operator()(T /*out_w*/, T /*in_w*/) const {
+              return 1;
+            }
       };
 
       typedef WindingNumberFilter<KEEP_INSIDE> KeepInside;
