@@ -60,10 +60,6 @@ ENDIF(MSVC)
 
 option(ENABLE_TUTORIALS " " OFF)
 
-add_subdirectory("../external/embree/" "embree")
-include_directories("../external/embree/include")
-list(APPEND SHARED_LIBRARIES "embree")
-
 # endif(True)
 
 # if(True)
@@ -134,6 +130,10 @@ endif(UNIX AND NOT APPLE)
 
 #message(FATAL_ERROR ${SHARED_LIBRARIES})
 
+# Store location of tutorial/shared directory 
+set(TUTORIAL_SHARED_PATH ${CMAKE_CURRENT_SOURCE_DIR}/shared CACHE PATH "location of shared tutorial resources")
+add_definitions("-DTUTORIAL_SHARED_PATH=\"${TUTORIAL_SHARED_PATH}\"")
+
 # Chapter 1
 add_subdirectory("101_FileIO")
 add_subdirectory("102_DrawMesh")
@@ -190,8 +190,10 @@ endif(MATLAB_FOUND)
 add_subdirectory("604_Triangle")
 add_subdirectory("605_Tetgen")
 
-add_subdirectory("606_AmbientOcclusion")
-add_subdirectory("607_Picking")
+if (EMBREE_FOUND)
+  add_subdirectory("606_AmbientOcclusion")
+  add_subdirectory("607_Picking")
+endif (EMBREE_FOUND)
 
 if(LIM_FOUND)
   add_subdirectory("608_LIM")

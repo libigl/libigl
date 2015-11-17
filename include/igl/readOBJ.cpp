@@ -8,6 +8,8 @@
 #include "readOBJ.h"
 
 #include "list_to_matrix.h"
+#include "max_size.h"
+#include "min_size.h"
 
 #include <iostream>
 #include <cstdio>
@@ -235,15 +237,16 @@ IGL_INLINE bool igl::readOBJ(
     return false;
   }
   bool V_rect = igl::list_to_matrix(vV,V);
+  const char * format = "Failed to cast %s to matrix: min (%d) != max (%d)\n";
   if(!V_rect)
   {
-    // igl::list_to_matrix(vV,V) already printed error message to std err
+    printf(format,"V",igl::min_size(vV),igl::max_size(vV));
     return false;
   }
   bool F_rect = igl::list_to_matrix(vF,F);
   if(!F_rect)
   {
-    // igl::list_to_matrix(vF,F) already printed error message to std err
+    printf(format,"F",igl::min_size(vF),igl::max_size(vF));
     return false;
   }
   if(!vN.empty())
@@ -251,7 +254,7 @@ IGL_INLINE bool igl::readOBJ(
     bool VN_rect = igl::list_to_matrix(vN,CN);
     if(!VN_rect)
     {
-      // igl::list_to_matrix(vV,V) already printed error message to std err
+      printf(format,"CN",igl::min_size(vN),igl::max_size(vN));
       return false;
     }
   }
@@ -261,7 +264,7 @@ IGL_INLINE bool igl::readOBJ(
     bool FN_rect = igl::list_to_matrix(vFN,FN);
     if(!FN_rect)
     {
-      // igl::list_to_matrix(vV,V) already printed error message to std err
+      printf(format,"FN",igl::min_size(vFN),igl::max_size(vFN));
       return false;
     }
   }
@@ -272,7 +275,7 @@ IGL_INLINE bool igl::readOBJ(
     bool T_rect = igl::list_to_matrix(vTC,TC);
     if(!T_rect)
     {
-      // igl::list_to_matrix(vTC,T) already printed error message to std err
+      printf(format,"TC",igl::min_size(vTC),igl::max_size(vTC));
       return false;
     }
   }
@@ -282,7 +285,7 @@ IGL_INLINE bool igl::readOBJ(
     bool FTC_rect = igl::list_to_matrix(vFTC,FTC);
     if(!FTC_rect)
     {
-      // igl::list_to_matrix(vF,F) already printed error message to std err
+      printf(format,"FTC",igl::min_size(vFTC),igl::max_size(vFTC));
       return false;
     }
   }

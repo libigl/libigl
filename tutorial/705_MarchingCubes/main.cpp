@@ -1,9 +1,11 @@
-#include <igl/marching_cubes.h>
+#include <igl/copyleft/marching_cubes.h>
 #include <igl/signed_distance.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/viewer/Viewer.h>
 #include <Eigen/Core>
 #include <iostream>
+
+#include "tutorial_shared_path.h"
 
 int main(int argc, char * argv[])
 {
@@ -14,7 +16,7 @@ int main(int argc, char * argv[])
   MatrixXd V;
   // Read in inputs as double precision floating point meshes
   read_triangle_mesh(
-      "../shared/armadillo.obj",V,F);
+      TUTORIAL_SHARED_PATH "/armadillo.obj",V,F);
   // number of vertices on the largest side
   const int s = 50;
   const RowVector3d Vmin = V.colwise().minCoeff();
@@ -53,8 +55,8 @@ int main(int argc, char * argv[])
   cout<<"Marching cubes..."<<endl;
   MatrixXd SV,BV;
   MatrixXi SF,BF;
-  marching_cubes(S,GV,res(0),res(1),res(2),SV,SF);
-  marching_cubes(B,GV,res(0),res(1),res(2),BV,BF);
+  igl::copyleft::marching_cubes(S,GV,res(0),res(1),res(2),SV,SF);
+  igl::copyleft::marching_cubes(B,GV,res(0),res(1),res(2),BV,BF);
 
   cout<<R"(Usage:
 '1'  Show original mesh.

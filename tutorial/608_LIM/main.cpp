@@ -5,6 +5,7 @@
 #include <igl/viewer/Viewer.h>
 #include <iostream>
 
+#include "tutorial_shared_path.h"
 
 // Mesh
 Eigen::MatrixX3d V0;
@@ -65,7 +66,7 @@ int main(int argc, char *argv[])
   barriersEnabled = true;
 
   // load a mesh in OFF format
-  igl::readOFF("../shared/grid.off",V0,F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/grid.off",V0,F);
   V1 = V0;
 
   // find bottom and left boundary vertices
