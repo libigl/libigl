@@ -14,8 +14,8 @@ namespace igl
 {
   namespace opengl
   {
-    // Create a texture+framebuffer+depthbuffer triplet bound for rendering into
-    // the texture;
+    // Create a frame buffer that renders color to a RGBA texture a depth to a
+    // "render buffer".
     //
     // Inputs:
     //   width  image width

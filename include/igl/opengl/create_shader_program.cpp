@@ -35,11 +35,12 @@ IGL_INLINE bool igl::opengl::create_shader_program(
     cerr<<"create_shader_program() could not create shader program."<<endl;
     return false;
   }
+  GLuint g = 0,f = 0,v = 0;
 
   if(geom_source != "")
   {
     // load vertex shader
-    GLuint g = igl::opengl::load_shader(geom_source.c_str(),GL_GEOMETRY_SHADER_EXT);
+    g = igl::opengl::load_shader(geom_source.c_str(),GL_GEOMETRY_SHADER_EXT);
     if(g == 0)
     {
       cerr<<"geometry shader failed to compile."<<endl;
@@ -51,7 +52,7 @@ IGL_INLINE bool igl::opengl::create_shader_program(
   if(vert_source != "")
   {
     // load vertex shader
-    GLuint v = igl::opengl::load_shader(vert_source.c_str(),GL_VERTEX_SHADER);
+    v = igl::opengl::load_shader(vert_source.c_str(),GL_VERTEX_SHADER);
     if(v == 0)
     {
       cerr<<"vertex shader failed to compile."<<endl;
@@ -63,7 +64,7 @@ IGL_INLINE bool igl::opengl::create_shader_program(
   if(frag_source != "")
   {
     // load fragment shader
-    GLuint f = igl::opengl::load_shader(frag_source.c_str(),GL_FRAGMENT_SHADER);
+    f = igl::opengl::load_shader(frag_source.c_str(),GL_FRAGMENT_SHADER);
     if(f == 0)
     {
       cerr<<"fragment shader failed to compile."<<endl;
@@ -85,6 +86,17 @@ IGL_INLINE bool igl::opengl::create_shader_program(
   }
   // Link program
   glLinkProgram(id);
+  const auto & detach = [&id](const GLuint shader)
+  {
+    if(shader)
+    {
+      glDetachShader(id,shader);
+      glDeleteShader(shader);
+    }
+  };
+  detach(g);
+  detach(f);
+  detach(v);
 
   // print log if any
   igl::opengl::print_program_info_log(id);

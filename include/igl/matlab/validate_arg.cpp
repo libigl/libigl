@@ -7,6 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "validate_arg.h"
 #include "requires_arg.h"
+#include "mexErrMsgTxt.h"
+#include "../C_STR.h"
 
 IGL_INLINE void igl::matlab::validate_arg_scalar(
     const int i, const int nrhs, const mxArray * prhs[], const char * name)

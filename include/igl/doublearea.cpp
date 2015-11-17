@@ -85,14 +85,30 @@ IGL_INLINE void igl::doublearea(
   const Eigen::PlainObjectBase<DerivedC> & C,
   Eigen::PlainObjectBase<DerivedD> & D)
 {
-  assert(A.cols() == 2 && "corners should be 2d");
-  assert(B.cols() == 2 && "corners should be 2d");
-  assert(C.cols() == 2 && "corners should be 2d");
+  assert((B.cols() == A.cols()) && "dimensions of A and B should match");
+  assert((C.cols() == A.cols()) && "dimensions of A and C should match");
   assert(A.rows() == B.rows() && "corners should have same length");
   assert(A.rows() == C.rows() && "corners should have same length");
-  const auto & R = A-C;
-  const auto & S = B-C;
-  D = R.col(0).array()*S.col(1).array() - R.col(1).array()*S.col(0).array();
+  switch(A.cols())
+  {
+    case 2:
+    {
+      // For 2d compute signed area
+      const auto & R = A-C;
+      const auto & S = B-C;
+      D = R.col(0).array()*S.col(1).array() - R.col(1).array()*S.col(0).array();
+      break;
+    }
+    default:
+    {
+      Eigen::Matrix<typename DerivedD::Scalar,DerivedD::RowsAtCompileTime,3> 
+        uL(A.rows(),3);
+      uL.col(0) = (B-C).rowwise().norm();
+      uL.col(1) = (C-A).rowwise().norm();
+      uL.col(2) = (A-B).rowwise().norm();
+      doublearea(uL,D);
+    }
+  }
 }
 
 template <
@@ -104,6 +120,9 @@ IGL_INLINE typename DerivedA::Scalar igl::doublearea_single(
   const Eigen::PlainObjectBase<DerivedB> & B,
   const Eigen::PlainObjectBase<DerivedC> & C)
 {
+  assert(A.size() == 2 && "Vertices should be 2D");
+  assert(B.size() == 2 && "Vertices should be 2D");
+  assert(C.size() == 2 && "Vertices should be 2D");
   auto r = A-C;
   auto s = B-C;
   return r(0)*s(1) - r(1)*s(0);
@@ -126,7 +145,7 @@ IGL_INLINE void igl::doublearea(
   sort(ul,2,false,l,_);
   // semiperimeters
   Matrix<typename Derivedl::Scalar,Dynamic,1> s = l.rowwise().sum()*0.5;
-  assert((size_t)s.rows() == m);
+  assert((Index)s.rows() == m);
   // resize output
   dblA.resize(l.rows(),1);
   // Minimum number of iterms per openmp thread
@@ -196,4 +215,5 @@ template void igl::doublearea<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Mat
 template Eigen::Matrix<double, 2, 1, 0, 2, 1>::Scalar igl::doublearea_single<Eigen::Matrix<double, 2, 1, 0, 2, 1>, Eigen::Matrix<double, 2, 1, 0, 2, 1>, Eigen::Matrix<double, 2, 1, 0, 2, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&);
 template void igl::doublearea<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template void igl::doublearea<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::doublearea<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 1, 0, 1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 1, 0, 1, 1> >&);
 #endif

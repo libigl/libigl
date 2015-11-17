@@ -18,11 +18,12 @@ IGL_INLINE void igl::internal_angles(
 {
   using namespace Eigen;
   using namespace std;
+  typedef typename DerivedV::Scalar Scalar;
   if(F.cols() == 3)
   {
     // Edge lengths
     Matrix<
-      typename DerivedV::Scalar,
+      Scalar,
       DerivedF::RowsAtCompileTime,
       DerivedF::ColsAtCompileTime> L;
     edge_lengths(V,F,L);
@@ -38,11 +39,12 @@ IGL_INLINE void igl::internal_angles(
       const Eigen::PlainObjectBase<DerivedV>& y, 
       const Eigen::PlainObjectBase<DerivedV>& z)
     {
-      Eigen::RowVector3d v1 = (x-y).normalized();
-      Eigen::RowVector3d v2 = (z-y).normalized();
+      typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
+      RowVector3S v1 = (x-y).normalized();
+      RowVector3S v2 = (z-y).normalized();
       // http://stackoverflow.com/questions/10133957/signed-angle-between-two-vectors-without-a-reference-plane
-      double s = v1.cross(v2).norm();
-      double c = v1.dot(v2);
+      Scalar s = v1.cross(v2).norm();
+      Scalar c = v1.dot(v2);
       return atan2(s, c);
     };
     for(unsigned i=0; i<F.rows(); ++i)
@@ -97,4 +99,6 @@ IGL_INLINE void igl::internal_angles(
 template void igl::internal_angles<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template void igl::internal_angles<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template void igl::internal_angles<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::internal_angles<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
+template void igl::internal_angles<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
 #endif

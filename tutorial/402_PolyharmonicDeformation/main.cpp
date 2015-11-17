@@ -4,6 +4,7 @@
 #include <igl/viewer/Viewer.h>
 #include <algorithm>
 #include <iostream>
+#include "tutorial_shared_path.h"
 
 double z_max = 1.0;
 double z_dir = -0.03;
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
 {
   using namespace Eigen;
   using namespace std;
-  igl::readOBJ("../shared/bump-domain.obj",V,F);
+  igl::readOBJ(TUTORIAL_SHARED_PATH "/bump-domain.obj",V,F);
   U=V;
   // Find boundary vertices outside annulus
   typedef Matrix<bool,Dynamic,1> VectorXb;

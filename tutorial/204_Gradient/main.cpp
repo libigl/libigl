@@ -7,6 +7,7 @@
 #include <igl/viewer/Viewer.h>
 
 #include <iostream>
+#include "tutorial_shared_path.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,11 +17,11 @@ int main(int argc, char *argv[])
   MatrixXi F;
 
   // Load a mesh in OFF format
-  igl::readOFF("../shared/cheburashka.off", V, F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/cheburashka.off", V, F);
 
   // Read scalar function values from a file, U: #V by 1
   VectorXd U;
-  igl::readDMAT("../shared/cheburashka-scalar.dmat",U);
+  igl::readDMAT(TUTORIAL_SHARED_PATH "/cheburashka-scalar.dmat",U);
 
   // Compute gradient operator: #F*3 by #V
   SparseMatrix<double> G;

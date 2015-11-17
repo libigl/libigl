@@ -1,23 +1,25 @@
 #include <igl/read_triangle_mesh.h>
-#include <igl/boolean/CSGTree.h>
+#include <igl/copyleft/boolean/CSGTree.h>
 #include <igl/viewer/Viewer.h>
 #include <igl/jet.h>
 #include <Eigen/Core>
 
+#include "tutorial_shared_path.h"
+
 int main(int argc, char * argv[])
 {
   using namespace Eigen;
-  using namespace igl::boolean;
+  using namespace igl::copyleft::boolean;
   using namespace std;
   using namespace igl;
   MatrixXi FA,FB,FC,FD,FE;
   MatrixXd VA,VB,VC,VD,VE;
   // Read in inputs as double precision floating point meshes
-  read_triangle_mesh("../shared/cube.obj"     ,VA,FA);
-  read_triangle_mesh("../shared/sphere.obj"   ,VB,FB);
-  read_triangle_mesh("../shared/xcylinder.obj",VC,FC);
-  read_triangle_mesh("../shared/ycylinder.obj",VD,FD);
-  read_triangle_mesh("../shared/zcylinder.obj",VE,FE);
+  read_triangle_mesh(TUTORIAL_SHARED_PATH "/cube.obj"     ,VA,FA);
+  read_triangle_mesh(TUTORIAL_SHARED_PATH "/sphere.obj"   ,VB,FB);
+  read_triangle_mesh(TUTORIAL_SHARED_PATH "/xcylinder.obj",VC,FC);
+  read_triangle_mesh(TUTORIAL_SHARED_PATH "/ycylinder.obj",VD,FD);
+  read_triangle_mesh(TUTORIAL_SHARED_PATH "/zcylinder.obj",VE,FE);
   igl::viewer::Viewer viewer;
 
   int num_views = 5+4;

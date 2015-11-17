@@ -10,7 +10,7 @@
 #include "../opengl/report_gl_error.h"
 #include <YImage.hpp>
 
-IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, GLuint & id)
+IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, const bool flip, GLuint & id)
 {
   YImage yimg;
   if(!yimg.load(png_file.c_str()))
@@ -18,7 +18,10 @@ IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, GLuint & 
     return false;
   }
   // Why do I need to flip?
-  //yimg.flip();
+  if(flip)
+  {
+    yimg.flip();
+  }
   glGenTextures(1, &id);
   glBindTexture(GL_TEXTURE_2D, id);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -30,6 +33,11 @@ IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, GLuint & 
     yimg.width(), yimg.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, yimg.data());
   glBindTexture(GL_TEXTURE_2D, 0);
   return true;
+}
+
+IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, GLuint & id)
+{
+  return texture_from_png(png_file,false,id);
 }
 
 

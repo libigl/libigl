@@ -22,8 +22,6 @@ IGL_INLINE bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Mat 
   int m = V.size();
   if(m == 0)
   {
-    //fprintf(stderr,"Error: list_to_matrix() list is empty()\n");
-    //return false;
     M.resize(0,0);
     return true;
   }
@@ -31,9 +29,6 @@ IGL_INLINE bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Mat 
   int n = igl::min_size(V);
   if(n != igl::max_size(V))
   {
-    fprintf(stderr,"Error: list_to_matrix()"
-      " list elements are not all the same size: (min: %d, max: %d)\n",
-      n,igl::max_size(V));
     return false;
   }
   assert(n != -1);

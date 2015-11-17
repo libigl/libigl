@@ -73,13 +73,17 @@ function guard {
   command="$@"
   pwd
   echo "$command"
-  sleep 2
   if ! output=$($command 2>&1) ;
   then
     report_error "$command" "$output"
     echo "'$command' failed. Report sent."
     exit 1 
   fi
+}
+
+function grep_std_1
+{
+  (! grep -rI "std::__1" *)
 }
 
 set -o xtrace
@@ -105,3 +109,7 @@ mkdir build-use-static
 cd build-use-static
 guard cmake -DCMAKE_BUILD_TYPE=Debug -DLIBIGL_USE_STATIC_LIBRARY=ON ../../tutorial/
 guard make -C ../../tutorial/build-use-static
+# check that no files contain `std::__1` often coming from templates copied
+# from clang output. These will fail on gcc
+cd ../../include/igl
+guard grep_std_1

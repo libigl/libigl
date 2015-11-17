@@ -7,16 +7,18 @@
 #include <iostream>
 #include <set>
 
+#include "tutorial_shared_path.h"
+
 int main(int argc, char * argv[])
 {
   using namespace std;
   using namespace Eigen;
   using namespace igl;
-  cout<<"Usage: ./progressive_hulls [filename.(off|obj|ply)]"<<endl;
+  cout<<"Usage: ./703_Decimation_bin [filename.(off|obj|ply)]"<<endl;
   cout<<"  [space]  toggle animation."<<endl;
   cout<<"  'r'  reset."<<endl;
   // Load a closed manifold mesh
-  string filename("../shared/fertility.off");
+  string filename(TUTORIAL_SHARED_PATH "/fertility.off");
   if(argc>=2)
   {
     filename = argv[1];
