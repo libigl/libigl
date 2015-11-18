@@ -229,7 +229,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
             const auto& I = Is[i];
             Eigen::VectorXi closest_facets, closest_facet_orientations;
             igl::copyleft::cgal::closest_facet(V, F, I, queries,
-                    closest_facets, closest_facet_orientations);
+                    uE2E, EMAP, closest_facets, closest_facet_orientations);
 
             for (size_t j=0; j<num_components; j++) {
                 if (i == j) continue;

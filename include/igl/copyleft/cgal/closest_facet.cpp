@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <unordered_map>
 
 #include <CGAL/AABB_tree.h>
 #include <CGAL/AABB_traits.h>
@@ -18,12 +19,15 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
 #include "order_facets_around_edge.h"
+#include "../../vertex_triangle_adjacency.h"
 
 template<
     typename DerivedV,
     typename DerivedF,
     typename DerivedI,
     typename DerivedP,
+    typename uE2EType,
+    typename DerivedEMAP,
     typename DerivedR,
     typename DerivedS >
 IGL_INLINE void igl::copyleft::cgal::closest_facet(
@@ -31,6 +35,8 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedI>& I,
         const Eigen::PlainObjectBase<DerivedP>& P,
+        const std::vector<std::vector<uE2EType> >& uE2E,
+        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
         Eigen::PlainObjectBase<DerivedR>& R,
         Eigen::PlainObjectBase<DerivedS>& S) {
     typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
@@ -48,10 +54,16 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
                 "Closest facet cannot be computed on empty mesh.");
     }
 
+    std::vector<std::vector<size_t> > VF;
+    std::vector<std::vector<size_t> > VFi;
+    igl::vertex_triangle_adjacency(V, F, VF, VFi);
+
+    std::vector<bool> in_I(F.rows(), false);
     const size_t num_faces = I.rows();
     std::vector<Triangle> triangles;
     for (size_t i=0; i<num_faces; i++) {
         const Eigen::Vector3i f = F.row(I(i, 0));
+        in_I[I(i,0)] = true;
         triangles.emplace_back(
                 Point_3(V(f[0], 0), V(f[0], 1), V(f[0], 2)),
                 Point_3(V(f[1], 0), V(f[1], 1), V(f[1], 2)),
@@ -129,28 +141,40 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
             const size_t s, const size_t d,
             size_t preferred_facet,
             bool& orientation) {
-
-        Point_3 mid_edge_point(
-                (V(s,0) + V(d,0)) * 0.5,
-                (V(s,1) + V(d,1)) * 0.5,
-                (V(s,2) + V(d,2)) * 0.5);
         Point_3 query_point(
                 P(query_idx, 0),
                 P(query_idx, 1),
                 P(query_idx, 2));
 
-        std::vector<Tree::Primitive_id> intersected_faces;
-        tree.all_intersected_primitives(Segment_3(mid_edge_point, query_point),
-                std::back_inserter(intersected_faces));
+        size_t corner_idx = std::numeric_limits<size_t>::max();
+        if ((s == F(preferred_facet, 0) && d == F(preferred_facet, 1)) ||
+            (s == F(preferred_facet, 1) && d == F(preferred_facet, 0))) {
+            corner_idx = 2;
+        } else if ((s == F(preferred_facet, 0) && d == F(preferred_facet, 2)) ||
+                (s == F(preferred_facet, 2) && d == F(preferred_facet, 0))) {
+            corner_idx = 1;
+        } else if ((s == F(preferred_facet, 1) && d == F(preferred_facet, 2)) ||
+                (s == F(preferred_facet, 2) && d == F(preferred_facet, 1))) {
+            corner_idx = 0;
+        } else {
+            std::cerr << "s: " << s << "\t d:" << d << std::endl;
+            std::cout << F.row(preferred_facet) << std::endl;
+            throw std::runtime_error(
+                    "Invalid connectivity, edge does not belong to facet");
+        }
 
-        const size_t num_intersected_faces = intersected_faces.size();
-        std::vector<size_t> intersected_face_indices(num_intersected_faces);
+        auto ueid = EMAP(preferred_facet + corner_idx * F.rows());
+        auto eids = uE2E[ueid];
+        std::vector<size_t> intersected_face_indices;
+        for (auto eid : eids) {
+            const size_t fid = eid % F.rows();
+            if (in_I[fid]) {
+                intersected_face_indices.push_back(fid);
+            }
+        }
+
+        const size_t num_intersected_faces = intersected_face_indices.size();
         std::vector<int> intersected_face_signed_indices(num_intersected_faces);
-        std::transform(intersected_faces.begin(),
-                intersected_faces.end(),
-                intersected_face_indices.begin(),
-                [&](const Tree::Primitive_id& itr) -> size_t
-                { return I(itr-triangles.begin(), 0); });
         std::transform(
                 intersected_face_indices.begin(),
                 intersected_face_indices.end(),
@@ -193,34 +217,46 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     };
 
     auto process_face_case = [&](
-            const size_t query_idx, const size_t fid, bool& orientation) {
+            const size_t query_idx, const Point_3& closest_point,
+            const size_t fid, bool& orientation) {
         const auto& f = F.row(I(fid, 0));
         return process_edge_case(query_idx, f[0], f[1], I(fid, 0), orientation);
     };
 
     auto process_vertex_case = [&](const size_t query_idx, size_t s,
             size_t preferred_facet, bool& orientation) {
-        Point_3 closest_point(V(s, 0), V(s, 1), V(s, 2));
-        Point_3 query_point(P(query_idx, 0), P(query_idx, 1), P(query_idx, 2));
-
-        std::vector<Tree::Primitive_id> intersected_faces;
-        tree.all_intersected_primitives(Segment_3(closest_point, query_point),
-                std::back_inserter(intersected_faces));
-
-        const size_t num_intersected_faces = intersected_faces.size();
-        std::vector<size_t> intersected_face_indices(num_intersected_faces);
-        std::transform(intersected_faces.begin(),
-                intersected_faces.end(),
-                intersected_face_indices.begin(),
-                [&](const Tree::Primitive_id& itr) -> size_t
-                { return I(itr-triangles.begin(), 0); });
+        const Point_3 query_point(
+                P(query_idx, 0), P(query_idx, 1), P(query_idx, 2));
+        const Point_3 closest_point(V(s, 0), V(s, 1), V(s, 2));
+        std::vector<size_t> adj_faces;
+        std::vector<size_t> adj_face_corners;
+        {
+            // Gether adj faces to s within I.
+            const auto& all_adj_faces = VF[s];
+            const auto& all_adj_face_corners = VFi[s];
+            const size_t num_all_adj_faces = all_adj_faces.size();
+            for (size_t i=0; i<num_all_adj_faces; i++) {
+                const size_t fid = all_adj_faces[i];
+                if (in_I[fid]) {
+                    adj_faces.push_back(fid);
+                    adj_face_corners.push_back(all_adj_face_corners[i]);
+                }
+            }
+        }
+        const size_t num_adj_faces = adj_faces.size();
+        assert(num_adj_faces > 0);
 
         std::set<size_t> adj_vertices_set;
-        for (auto fid : intersected_face_indices) {
-            const auto& f = F.row(fid);
-            if ((size_t)f[0] != s) adj_vertices_set.insert(f[0]);
-            if ((size_t)f[1] != s) adj_vertices_set.insert(f[1]);
-            if ((size_t)f[2] != s) adj_vertices_set.insert(f[2]);
+        std::unordered_multimap<size_t, size_t> v2f;
+        for (size_t i=0; i<num_adj_faces; i++) {
+            const size_t fid = adj_faces[i];
+            const size_t cid = adj_face_corners[i];
+            const auto& f = F.row(adj_faces[i]);
+            const size_t next = f[(cid+1)%3];
+            const size_t prev = f[(cid+2)%3];
+            adj_vertices_set.insert(next);
+            adj_vertices_set.insert(prev);
+            v2f.insert({{next, fid}, {prev, fid}});
         }
         const size_t num_adj_vertices = adj_vertices_set.size();
         std::vector<size_t> adj_vertices(num_adj_vertices);
@@ -276,9 +312,24 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
                 }
             }
         }
-        assert(d != std::numeric_limits<size_t>::max());
+        if (d == std::numeric_limits<size_t>::max()) {
+            Eigen::MatrixXd tmp_vertices(V.rows(), V.cols());
+            for (size_t i=0; i<V.rows(); i++) {
+                for (size_t j=0; j<V.cols(); j++) {
+                    tmp_vertices(i,j) = CGAL::to_double(V(i,j));
+                }
+            }
+            Eigen::MatrixXi tmp_faces(adj_faces.size(), 3);
+            for (size_t i=0; i<adj_faces.size(); i++) {
+                tmp_faces.row(i) = F.row(adj_faces[i]);
+            }
+            igl::writePLY("debug.ply", tmp_vertices, tmp_faces, false);
+            throw std::runtime_error("Invalid vertex neighborhood");
+        }
+        const auto itr = v2f.equal_range(d);
+        assert(itr.first != itr.second);
 
-        return process_edge_case(query_idx, s, d, preferred_facet, orientation);
+        return process_edge_case(query_idx, s, d, itr.first->second, orientation);
     };
 
     const size_t num_queries = P.rows();
@@ -324,7 +375,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
                 break;
             case FACE:
                 {
-                    fid = process_face_case(i, fid, fid_ori);
+                    fid = process_face_case(i, closest_point, fid, fid_ori);
                 }
                 break;
             default:
@@ -341,18 +392,22 @@ template<
     typename DerivedV,
     typename DerivedF,
     typename DerivedP,
+    typename uE2EType,
+    typename DerivedEMAP,
     typename DerivedR,
     typename DerivedS >
 IGL_INLINE void igl::copyleft::cgal::closest_facet(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedP>& P,
+        const std::vector<std::vector<uE2EType> >& uE2E,
+        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
         Eigen::PlainObjectBase<DerivedR>& R,
         Eigen::PlainObjectBase<DerivedS>& S) {
     const size_t num_faces = F.rows();
     Eigen::VectorXi I(num_faces);
     I.setLinSpaced(num_faces, 0, num_faces-1);
-    igl::copyleft::cgal::closest_facet(V, F, I, P, R, S);
+    igl::copyleft::cgal::closest_facet(V, F, I, P, uE2E, EMAP, R, S);
 }
 
 #ifdef IGL_STATIC_LIBRARY
