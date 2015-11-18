@@ -36,30 +36,6 @@ namespace igl {
             typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
             typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
 
-            enum ElementType { VERTEX, EDGE, FACE };
-            template<typename DerivedV, typename DerivedF, typename DerivedI>
-            ElementType determine_element_type(
-                    const Eigen::PlainObjectBase<DerivedV>& V,
-                    const Eigen::PlainObjectBase<DerivedF>& F,
-                    const Eigen::PlainObjectBase<DerivedI>& I,
-                    const size_t fid, const Point_3& p,
-                    size_t& element_index) {
-                const Eigen::Vector3i f = F.row(I(fid, 0));
-                const Point_3 p0(V(f[0], 0), V(f[0], 1), V(f[0], 2));
-                const Point_3 p1(V(f[1], 0), V(f[1], 1), V(f[1], 2));
-                const Point_3 p2(V(f[2], 0), V(f[2], 1), V(f[2], 2));
-
-                if (p == p0) { element_index = 0; return VERTEX; }
-                if (p == p1) { element_index = 1; return VERTEX; }
-                if (p == p2) { element_index = 2; return VERTEX; }
-                if (CGAL::collinear(p0, p1, p)) { element_index = 2; return EDGE; }
-                if (CGAL::collinear(p1, p2, p)) { element_index = 0; return EDGE; }
-                if (CGAL::collinear(p2, p0, p)) { element_index = 1; return EDGE; }
-
-                element_index = 0;
-                return FACE;
-            }
-
             template<typename DerivedF, typename DerivedI>
             void extract_adj_faces(
                     const Eigen::PlainObjectBase<DerivedF>& F,
@@ -296,6 +272,25 @@ IGL_INLINE void igl::copyleft::cgal::points_inside_component(
     Tree tree(triangles.begin(), triangles.end());
     tree.accelerate_distance_queries();
 
+    enum ElementType { VERTEX, EDGE, FACE };
+    auto determine_element_type = [&](
+            size_t fid, const Point_3& p, size_t& element_index) -> ElementType{
+        const Eigen::Vector3i f = F.row(I(fid, 0));
+        const Point_3 p0(V(f[0], 0), V(f[0], 1), V(f[0], 2));
+        const Point_3 p1(V(f[1], 0), V(f[1], 1), V(f[1], 2));
+        const Point_3 p2(V(f[2], 0), V(f[2], 1), V(f[2], 2));
+
+        if (p == p0) { element_index = 0; return VERTEX; }
+        if (p == p1) { element_index = 1; return VERTEX; }
+        if (p == p2) { element_index = 2; return VERTEX; }
+        if (CGAL::collinear(p0, p1, p)) { element_index = 2; return EDGE; }
+        if (CGAL::collinear(p1, p2, p)) { element_index = 0; return EDGE; }
+        if (CGAL::collinear(p2, p0, p)) { element_index = 1; return EDGE; }
+
+        element_index = 0;
+        return FACE;
+    };
+
     const size_t num_queries = P.rows();
     inside.resize(num_queries, 1);
     for (size_t i=0; i<num_queries; i++) {
@@ -305,8 +300,7 @@ IGL_INLINE void igl::copyleft::cgal::points_inside_component(
         size_t fid = projection.second - triangles.begin();
 
         size_t element_index;
-        switch (determine_element_type(
-                    V, F, I, fid, closest_point, element_index)) {
+        switch (determine_element_type(fid, closest_point, element_index)) {
             case VERTEX:
                 {
                     const size_t s = F(I(fid, 0), element_index);
