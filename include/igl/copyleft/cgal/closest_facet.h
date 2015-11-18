@@ -35,6 +35,8 @@ namespace igl
           typename DerivedF,
           typename DerivedI,
           typename DerivedP,
+          typename uE2EType,
+          typename DerivedEMAP,
           typename DerivedR,
           typename DerivedS >
       IGL_INLINE void closest_facet(
@@ -42,6 +44,8 @@ namespace igl
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedI>& I,
         const Eigen::PlainObjectBase<DerivedP>& P,
+        const std::vector<std::vector<uE2EType> >& uE2E,
+        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
               Eigen::PlainObjectBase<DerivedR>& R,
               Eigen::PlainObjectBase<DerivedS>& S);
 
@@ -49,12 +53,16 @@ namespace igl
           typename DerivedV,
           typename DerivedF,
           typename DerivedP,
+          typename uE2EType,
+          typename DerivedEMAP,
           typename DerivedR,
           typename DerivedS >
       IGL_INLINE void closest_facet(
               const Eigen::PlainObjectBase<DerivedV>& V,
               const Eigen::PlainObjectBase<DerivedF>& F,
               const Eigen::PlainObjectBase<DerivedP>& P,
+              const std::vector<std::vector<uE2EType> >& uE2E,
+              const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
               Eigen::PlainObjectBase<DerivedR>& R,
               Eigen::PlainObjectBase<DerivedS>& S);
     }
