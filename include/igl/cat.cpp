@@ -8,10 +8,6 @@
 #include "cat.h"
 #include <cstdio>
 
-// Bug in unsupported/Eigen/SparseExtra needs iostream first
-#include <iostream>
-#include <unsupported/Eigen/SparseExtra>
-
 // Sparse matrices need to be handled carefully. Because C++ does not 
 // Template:
 //   Scalar  sparse matrix scalar type, e.g. double
@@ -24,6 +20,7 @@ IGL_INLINE void igl::cat(
 {
   assert(dim == 1 || dim == 2);
   using namespace Eigen;
+  typedef Eigen::Triplet<Scalar> Triplet;
   // Special case if B or A is empty
   if(A.size() == 0)
   {
@@ -36,47 +33,31 @@ IGL_INLINE void igl::cat(
     return;
   }
 
-  // This **must** be DynamicSparseMatrix, otherwise this implementation is
-  // insanely slow
-  DynamicSparseMatrix<Scalar, RowMajor> dyn_C;
-  if(dim == 1)
-  {
-    assert(A.cols() == B.cols());
-    dyn_C.resize(A.rows()+B.rows(),A.cols());
-  }else if(dim == 2)
-  {
-    assert(A.rows() == B.rows());
-    dyn_C.resize(A.rows(),A.cols()+B.cols());
-  }else
-  {
-    fprintf(stderr,"cat.h: Error: Unsupported dimension %d\n",dim);
-  }
-
-  dyn_C.reserve(A.nonZeros()+B.nonZeros());
+  std::vector<Triplet> entries(A.nonZeros() + B.nonZeros());
+  int entryIdx = 0;
 
   // Iterate over outside of A
-  for(int k=0; k<A.outerSize(); ++k)
+  for (int k = 0; k < A.outerSize(); ++k)
   {
-    // Iterate over inside
-    for(typename SparseMatrix<Scalar>::InnerIterator it (A,k); it; ++it)
+    // Iterate over inside of A
+    for (typename SparseMatrix<Scalar>::InnerIterator it(A, k); it; ++it)
     {
-      dyn_C.coeffRef(it.row(),it.col()) += it.value();
+      entries[entryIdx++] = Triplet(it.row(), it.col(), it.value());
     }
   }
 
-  // Iterate over outside of B
-  for(int k=0; k<B.outerSize(); ++k)
+  for (int k = 0; k<B.outerSize(); ++k)
   {
-    // Iterate over inside
-    for(typename SparseMatrix<Scalar>::InnerIterator it (B,k); it; ++it)
+    // Iterate over inside of B
+    for (typename SparseMatrix<Scalar>::InnerIterator it(B, k); it; ++it)
     {
-      int r = (dim == 1 ? A.rows()+it.row() : it.row());
-      int c = (dim == 2 ? A.cols()+it.col() : it.col());
-      dyn_C.coeffRef(r,c) += it.value();
+      int r = (dim == 1 ? A.rows() + it.row() : it.row());
+      int c = (dim == 2 ? A.cols() + it.col() : it.col());
+      entries[entryIdx++] = Triplet(r, c, it.value());
     }
   }
 
-  C = SparseMatrix<Scalar>(dyn_C);
+  C.setFromTriplets(entries.begin(), entries.end());
 }
 
 template <typename Derived, class MatC>
