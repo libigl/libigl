@@ -65,6 +65,23 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
       DerivedFC FF(FA.rows() + FB.rows(), 3);
       VV << VA, VB;
       FF << FA, FB.array() + VA.rows();
+      //// Handle annoying empty cases
+      //if(VA.size()>0)
+      //{
+      //  VV<<VA;
+      //}
+      //if(VB.size()>0)
+      //{
+      //  VV<<VB;
+      //}
+      //if(FA.size()>0)
+      //{
+      //  FF<<FA;
+      //}
+      //if(FB.size()>0)
+      //{
+      //  FF<<FB.array()+VA.rows();
+      //}
       resolve_fun(VV, FF, V, F, CJ);
   }
 
@@ -165,13 +182,13 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
     Eigen::PlainObjectBase<DerivedFC > & FC,
     Eigen::PlainObjectBase<DerivedJ > & J)
 {
-  typedef CGAL::Epeck Kernel;
-  typedef Kernel::FT ExactScalar;
-  typedef Eigen::Matrix<
-    ExactScalar,
-    Eigen::Dynamic,
-    Eigen::Dynamic,
-    DerivedVC::IsRowMajor> MatrixXES;
+  //typedef CGAL::Epeck Kernel;
+  //typedef Kernel::FT ExactScalar;
+  //typedef Eigen::Matrix<
+  //  ExactScalar,
+  //  Eigen::Dynamic,
+  //  Eigen::Dynamic,
+  //  DerivedVC::IsRowMajor> MatrixXES;
 
   switch (type) {
     case MESH_BOOLEAN_TYPE_UNION:
