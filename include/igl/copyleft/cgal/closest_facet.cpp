@@ -290,9 +290,16 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
                 }
             }
             auto query_orientation = separator.oriented_side(query_point);
-            bool r = (positive == 0 && query_orientation == CGAL::POSITIVE)
-                || (negative == 0 && query_orientation == CGAL::NEGATIVE);
-            return r;
+            if (query_orientation == CGAL::ON_ORIENTED_BOUNDARY &&
+                    (positive == 0 || negative == 0)) {
+                // All adj vertices and query point are coplanar.
+                // In this case, all separators are equally valid.
+                return true;
+            } else {
+                bool r = (positive == 0 && query_orientation == CGAL::POSITIVE)
+                    || (negative == 0 && query_orientation == CGAL::NEGATIVE);
+                return r;
+            }
         };
 
         size_t d = std::numeric_limits<size_t>::max();
