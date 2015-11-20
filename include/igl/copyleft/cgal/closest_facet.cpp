@@ -308,14 +308,19 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
             for (size_t j=i+1; j<num_adj_vertices; j++) {
                 Plane_3 separator(closest_point, adj_points[i], adj_points[j]);
                 if (separator.is_degenerate()) {
-                    throw std::runtime_error(
-                            "Input mesh contains degenerated faces");
+                    continue;
                 }
                 if (is_on_exterior(separator)) {
-                    d = vi;
-                    assert(!CGAL::collinear(
-                                query_point, adj_points[i], closest_point));
-                    break;
+                    if (!CGAL::collinear(
+                                query_point, adj_points[i], closest_point)) {
+                        d = vi;
+                        break;
+                    } else {
+                        d = adj_vertices[j];
+                        assert(!CGAL::collinear(
+                                    query_point, adj_points[j], closest_point));
+                        break;
+                    }
                 }
             }
         }
