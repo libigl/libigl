@@ -20,6 +20,7 @@
 
 #include "order_facets_around_edge.h"
 #include "../../vertex_triangle_adjacency.h"
+#include "../../writePLY.h"
 
 template<
     typename DerivedV,
@@ -158,7 +159,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
             corner_idx = 0;
         } else {
             std::cerr << "s: " << s << "\t d:" << d << std::endl;
-            std::cout << F.row(preferred_facet) << std::endl;
+            std::cerr << F.row(preferred_facet) << std::endl;
             throw std::runtime_error(
                     "Invalid connectivity, edge does not belong to facet");
         }
@@ -291,7 +292,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
             }
             auto query_orientation = separator.oriented_side(query_point);
             if (query_orientation == CGAL::ON_ORIENTED_BOUNDARY &&
-                    (positive == 0 || negative == 0)) {
+                    (positive == 0 && negative == 0)) {
                 // All adj vertices and query point are coplanar.
                 // In this case, all separators are equally valid.
                 return true;

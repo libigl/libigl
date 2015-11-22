@@ -83,7 +83,9 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
   Eigen::VectorXi EMAP;
   std::vector<std::vector<size_t> > uE2E;
   igl::unique_edge_map(F, E, uE, EMAP, uE2E);
-  assert(propagate_winding_numbers_helper::is_orientable(F, uE, uE2E));
+  if (!propagate_winding_numbers_helper::is_orientable(F, uE, uE2E)) {
+      std::cerr << "Input mesh is not orientable!" << std::endl;
+  }
 
   Eigen::VectorXi P;
   const size_t num_patches = igl::extract_manifold_patches(F, EMAP, uE2E, P);
