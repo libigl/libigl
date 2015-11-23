@@ -354,7 +354,10 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     tit != T.end(); 
     ++tit)
   {
-    boxes.push_back(Box(tit->bbox(), tit));
+    if (!tit->is_degenerate())
+    {
+      boxes.push_back(Box(tit->bbox(), tit));
+    }
   }
   // Leapfrog callback
   std::function<void(const Box &a,const Box &b)> cb = 
@@ -831,10 +834,10 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   Index fb = b.handle()-T.begin();
   const Triangle_3 & A = *a.handle();
   const Triangle_3 & B = *b.handle();
-  // I'm not going to deal with degenerate triangles, though at some point we
-  // should
-  assert(!a.handle()->is_degenerate());
-  assert(!b.handle()->is_degenerate());
+  //// I'm not going to deal with degenerate triangles, though at some point we
+  //// should
+  //assert(!a.handle()->is_degenerate());
+  //assert(!b.handle()->is_degenerate());
   // Number of combinatorially shared vertices
   Index comb_shared_vertices = 0;
   // Number of geometrically shared vertices (*not* including combinatorially
