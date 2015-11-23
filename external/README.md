@@ -11,7 +11,7 @@ and for building with Mesa (AntTweakBar/src/Makefile.mesa.igl)
 
 ## Embree
 
-Install `ispc` for example (`sudo port install ispc` or `brew install ispc`),
+Install `ispc`  and `tbb` for example (`brew install ispc tbb`),
 then
 
     mkdir build
