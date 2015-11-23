@@ -24,32 +24,32 @@ namespace igl {
   {
     namespace cgal {
 
-        // Compute winding number on each side of the face.  The input mesh
-        // could contain multiple connected components.  The input mesh must
-        // represent the boundary of a valid 3D volume, which means it is
-        // closed, consistently oriented and induces integer winding numbers.
-        //
-        // Inputs:
-        //   V  #V by 3 list of vertex positions.
-        //   F  #F by 3 list of triangle indices into V.
-        //   labels  #F list of facet labels ranging from 0 to k-1.
-        //
-        // Output:
-        //   W  #F by k*2 list of winding numbers.  ``W(i,j*2)`` is the winding
-        //      number on the positive side of facet ``i`` with respect to the
-        //      facets labeled ``j``.  Similarly, ``W(i,j*2+1)`` is the winding
-        //      number on the negative side of facet ``i`` with respect to the
-        //      facets labeled ``j``.
-        template<
-            typename DerivedV,
-            typename DerivedF,
-            typename DerivedL,
-            typename DerivedW>
-        IGL_INLINE void propagate_winding_numbers(
-                const Eigen::PlainObjectBase<DerivedV>& V,
-                const Eigen::PlainObjectBase<DerivedF>& F,
-                const Eigen::PlainObjectBase<DerivedL>& labels,
-                Eigen::PlainObjectBase<DerivedW>& W);
+      // Compute winding number on each side of the face.  The input mesh
+      // could contain multiple connected components.  The input mesh must
+      // represent the boundary of a valid 3D volume, which means it is
+      // closed, consistently oriented and induces integer winding numbers.
+      //
+      // Inputs:
+      //   V  #V by 3 list of vertex positions.
+      //   F  #F by 3 list of triangle indices into V.
+      //   labels  #F list of facet labels ranging from 0 to k-1.
+      //
+      // Output:
+      //   W  #F by k*2 list of winding numbers.  ``W(i,j*2)`` is the winding
+      //      number on the positive side of facet ``i`` with respect to the
+      //      facets labeled ``j``.  Similarly, ``W(i,j*2+1)`` is the winding
+      //      number on the negative side of facet ``i`` with respect to the
+      //      facets labeled ``j``.
+      template<
+        typename DerivedV,
+        typename DerivedF,
+        typename DerivedL,
+        typename DerivedW>
+      IGL_INLINE void propagate_winding_numbers(
+          const Eigen::PlainObjectBase<DerivedV>& V,
+          const Eigen::PlainObjectBase<DerivedF>& F,
+          const Eigen::PlainObjectBase<DerivedL>& labels,
+          Eigen::PlainObjectBase<DerivedW>& W);
     }
   }
 }
