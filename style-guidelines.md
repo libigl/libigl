@@ -1,22 +1,87 @@
 # Libigl Style Guidelines
 
-This library is shared by many people. This document highlights some style
-guidelines for _developers_ of the library, but also act as best-practices for
-users.
-
-> This is still a work in progress and will likely grow in the near future.
+Libigl is used and developed by many people. This document highlights some
+style guidelines for _developers_ of the library, but also acts as
+best-practices for users.
 
 ## One function, one .h/.cpp pair [filefunction]
 
 The structure of libigl is very flat and function-based. For every
-function/sub-routine create a single .h and .cpp file. For example, if you have
+function/sub-routine, create a single .h and .cpp file. For example, if you have
 a function that determines connected components from a face list `F` you would
 create the header `connected_components.h` and `connected_components.cpp` and the only
 function defined should be `void connected_components(const ... F, ... C)`. If the
 implementation of `connected_components` requires a subroutine to compute an
 adjacency matrix then _create another pair_ `adjacency_matrix.h` and
-`adjacency_matrix.cpp` with a single function `void adjacency_matrix(const ... F, ...
-A)`.
+`adjacency_matrix.cpp` with a single function `void adjacency_matrix(const ... F, ... A)`.
+
+### Example
+Here is an example function that would be defined in
+`include/igl/example_fun.h` and implemented in `include/igl/example_fun.cpp`.
+
+#### `example_fun.h`
+
+```cpp
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2015 [Your Name] [your email address]
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/
+#ifndef IGL_EXAMPLE_FUN_H
+#define IGL_EXAMPLE_FUN_H
+
+#include "igl_inline.h"
+
+namespace igl
+{
+  // This is an example of a function, it takes a templated parameter and
+  // shovels it into cout
+  //
+  // Templates:
+  //   T  type that supports
+  // Input:
+  //   input  some input of a Printable type
+  // Returns true for the sake of returning something
+  template <typename Printable>
+  IGL_INLINE bool example_fun(const Printable & input);
+}
+
+#ifndef IGL_STATIC_LIBRARY
+#  include "example_fun.cpp"
+#endif
+
+#endif
+```
+
+#### `example_fun.cpp`
+
+```
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2015 [Your Name] [your email address]
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/
+#include "igl/example_fun.h"
+#include <iostream>
+
+template <typename Printable>
+IGL_INLINE bool igl::example_fun(const Printable & input)
+{
+  using namespace std;
+  cout<<"example_fun: "<<input<<endl;
+  return true;
+}
+
+#ifdef IGL_STATIC_LIBRARY
+template bool igl::example_fun<double>(const double& input);
+template bool igl::example_fun<int>(const int& input);
+#endif
+```
+
 
 ### Avoid static "helper" functions
 
@@ -233,7 +298,7 @@ edited by you first. This means for
 #include <iostream>
 ```
 
-## Eigen templates
+## Placement of includes
 
-
-
+Whenever possible `#include` directives should be placed in the `.cpp`
+implementation file rather than the `.h` header file.

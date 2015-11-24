@@ -15,6 +15,9 @@ html header:   <script type='text/javascript' src='http://cdn.mathjax.org/mathja
 echo "$HEADER" \
   | cat - README.md | multimarkdown -o index.html
 
+echo "$HEADER" \
+  | cat - style-guidelines.md | multimarkdown -o style-guidelines.html 
+
 HEADER="title: libigl
 author: Alec Jacobson and Daniele Panozzo and others
 css: ../tutorial/style.css
