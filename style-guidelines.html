@@ -14,25 +14,20 @@
 
 <h1 id="libiglstyleguidelines">Libigl Style Guidelines</h1>
 
-<p>This library is shared by many people. This document highlights some style
-guidelines for <em>developers</em> of the library, but also act as best-practices for
-users.</p>
-
-<blockquote>
-<p>This is still a work in progress and will likely grow in the near future.</p>
-</blockquote>
+<p>Libigl is used and developed by many people. This document highlights some
+style guidelines for <em>developers</em> of the library, but also acts as
+best-practices for users.</p>
 
 <h2 id="filefunction">One function, one .h/.cpp pair</h2>
 
 <p>The structure of libigl is very flat and function-based. For every
-function/sub-routine create a single .h and .cpp file. For example, if you have
+function/sub-routine, create a single .h and .cpp file. For example, if you have
 a function that determines connected components from a face list <code>F</code> you would
 create the header <code>connected_components.h</code> and <code>connected_components.cpp</code> and the only
 function defined should be <code>void connected_components(const ... F, ... C)</code>. If the
 implementation of <code>connected_components</code> requires a subroutine to compute an
 adjacency matrix then <em>create another pair</em> <code>adjacency_matrix.h</code> and
-<code>adjacency_matrix.cpp</code> with a single function <code>void adjacency_matrix(const ... F, ...
-A)</code>.</p>
+<code>adjacency_matrix.cpp</code> with a single function <code>void adjacency_matrix(const ... F, ... A)</code>.</p>
 
 <h3 id="example">Example</h3>
 
@@ -309,8 +304,6 @@ edited by you first. This means for
 
 <p>Whenever possible <code>#include</code> directives should be placed in the <code>.cpp</code>
 implementation file rather than the <code>.h</code> header file.</p>
-
-<h2 id="eigentemplates">Eigen templates</h2>
 
 </body>
 </html>
