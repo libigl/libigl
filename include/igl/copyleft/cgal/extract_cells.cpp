@@ -11,12 +11,15 @@
 #include "../../facet_components.h"
 #include "../../triangle_triangle_adjacency.h"
 #include "../../unique_edge_map.h"
+#include "../../get_seconds.h"
 #include "closest_facet.h"
 #include "order_facets_around_edge.h"
 #include "outer_facet.h"
 
 #include <vector>
 #include <queue>
+
+//#define EXTRACT_CELLS_DEBUG
 
 template<
 typename DerivedV,
@@ -173,6 +176,16 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         const std::vector<std::vector<uE2EType> >& uE2E,
         const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
         Eigen::PlainObjectBase<DerivedC>& cells) {
+#ifdef EXTRACT_CELLS_DEBUG
+  const auto & tictoc = []()
+  {
+    static double t_start = igl::get_seconds();
+    double diff = igl::get_seconds()-t_start;
+    t_start += diff;
+    return diff;
+  };
+  tictoc();
+#endif
     const size_t num_faces = F.rows();
     typedef typename DerivedF::Scalar Index;
     const size_t num_patches = P.maxCoeff()+1;
@@ -181,12 +194,21 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
     const size_t num_raw_cells =
         igl::copyleft::cgal::extract_cells_single_component(
                 V, F, P, uE, uE2E, EMAP, raw_cells);
+#ifdef EXTRACT_CELLS_DEBUG
+    std::cout << "Extract single component cells: " << tictoc() << std::endl;
+#endif
 
     std::vector<std::vector<std::vector<Index > > > TT,_1;
     igl::triangle_triangle_adjacency(E, EMAP, uE2E, false, TT, _1);
+#ifdef EXTRACT_CELLS_DEBUG
+    std::cout << "face adj: " << tictoc() << std::endl;
+#endif
 
     Eigen::VectorXi C, counts;
     igl::facet_components(TT, C, counts);
+#ifdef EXTRACT_CELLS_DEBUG
+    std::cout << "face comp: " << tictoc() << std::endl;
+#endif
 
     const size_t num_components = counts.size();
     std::vector<std::vector<size_t> > components(num_components);
@@ -209,6 +231,9 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         outer_facet_orientation[i] = flipped?1:0;
         outer_cells[i] = raw_cells(P[outer_facets[i]], outer_facet_orientation[i]);
     }
+#ifdef EXTRACT_CELLS_DEBUG
+    std::cout << "Per comp outer facet: " << tictoc() << std::endl;
+#endif
 
     auto get_triangle_center = [&](const size_t fid) {
         return ((V.row(F(fid, 0)) + V.row(F(fid, 1)) + V.row(F(fid, 2)))
@@ -218,12 +243,47 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
     std::vector<std::vector<size_t> > ambient_cells(num_raw_cells);
     std::vector<std::vector<size_t> > ambient_comps(num_components);
     if (num_components > 1) {
+        DerivedV bbox_min(num_components, 3);
+        DerivedV bbox_max(num_components, 3);
+        bbox_min.rowwise() = V.colwise().maxCoeff().eval();
+        bbox_max.rowwise() = V.colwise().minCoeff().eval();
+        for (size_t i=0; i<num_faces; i++) {
+          const auto comp_id = C[i];
+          const auto& f = F.row(i);
+          for (size_t j=0; j<3; j++) {
+            bbox_min(comp_id, 0) = std::min(bbox_min(comp_id, 0), V(f[j], 0));
+            bbox_min(comp_id, 1) = std::min(bbox_min(comp_id, 1), V(f[j], 1));
+            bbox_min(comp_id, 2) = std::min(bbox_min(comp_id, 2), V(f[j], 2));
+            bbox_max(comp_id, 0) = std::max(bbox_max(comp_id, 0), V(f[j], 0));
+            bbox_max(comp_id, 1) = std::max(bbox_max(comp_id, 1), V(f[j], 1));
+            bbox_max(comp_id, 2) = std::max(bbox_max(comp_id, 2), V(f[j], 2));
+          }
+        }
+        auto bbox_intersects = [&](size_t comp_i, size_t comp_j) {
+          return !(
+              bbox_max(comp_i,0) < bbox_min(comp_j,0) ||
+              bbox_max(comp_i,1) < bbox_min(comp_j,1) ||
+              bbox_max(comp_i,2) < bbox_min(comp_j,2) ||
+              bbox_max(comp_j,0) < bbox_min(comp_i,0) ||
+              bbox_max(comp_j,1) < bbox_min(comp_i,1) ||
+              bbox_max(comp_j,2) < bbox_min(comp_i,2));
+        };
+
         for (size_t i=0; i<num_components; i++) {
-            DerivedV queries(num_components-1, 3);
+            std::vector<size_t> candidate_comps;
+            candidate_comps.reserve(num_components);
             for (size_t j=0; j<num_components; j++) {
                 if (i == j) continue;
-                size_t index = j<i ? j:j-1;
-                queries.row(index) = get_triangle_center(outer_facets[j]);
+                if (bbox_intersects(i,j)) candidate_comps.push_back(j);
+            }
+
+            const size_t num_candidate_comps = candidate_comps.size();
+            if (num_candidate_comps == 0) continue;
+
+            DerivedV queries(num_candidate_comps, 3);
+            for (size_t j=0; j<num_candidate_comps; j++) {
+                const size_t index = candidate_comps[j];
+                queries.row(j) = get_triangle_center(outer_facets[index]);
             }
 
             const auto& I = Is[i];
@@ -231,22 +291,24 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
             igl::copyleft::cgal::closest_facet(V, F, I, queries,
                     uE2E, EMAP, closest_facets, closest_facet_orientations);
 
-            for (size_t j=0; j<num_components; j++) {
-                if (i == j) continue;
-                size_t index = j<i ? j:j-1;
-                const size_t closest_patch = P[closest_facets[index]];
-                const size_t closest_patch_side = closest_facet_orientations[index]
+            for (size_t j=0; j<num_candidate_comps; j++) {
+                const size_t index = candidate_comps[j];
+                const size_t closest_patch = P[closest_facets[j]];
+                const size_t closest_patch_side = closest_facet_orientations[j]
                     ? 0:1;
                 const size_t ambient_cell = raw_cells(closest_patch,
                         closest_patch_side);
                 if (ambient_cell != (size_t)outer_cells[i]) {
-                    nested_cells[ambient_cell].push_back(outer_cells[j]);
-                    ambient_cells[outer_cells[j]].push_back(ambient_cell);
-                    ambient_comps[j].push_back(i);
+                    nested_cells[ambient_cell].push_back(outer_cells[index]);
+                    ambient_cells[outer_cells[index]].push_back(ambient_cell);
+                    ambient_comps[index].push_back(i);
                 }
             }
         }
     }
+#ifdef EXTRACT_CELLS_DEBUG
+    std::cout << "Determine nested relaitonship: " << tictoc() << std::endl;
+#endif
 
     const size_t INVALID = std::numeric_limits<size_t>::max();
     const size_t INFINITE_CELL = num_raw_cells;
@@ -308,6 +370,9 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         raw_cells(i, 1) = negative_cell_id;
     }
     cells = raw_cells;
+#ifdef EXTRACT_CELLS_DEBUG
+    std::cout << "Finalize and output: " << tictoc() << std::endl;
+#endif
     return count;
 }
 
