@@ -15,8 +15,8 @@
 #include "max_size.h"
 #include "min_size.h"
 
-template <typename T, class Mat>
-IGL_INLINE bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Mat & M)
+template <typename T, typename Derived>
+IGL_INLINE bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Eigen::PlainObjectBase<Derived>& M)
 {
   // number of rows
   int m = V.size();
@@ -48,12 +48,12 @@ IGL_INLINE bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Mat 
   return true;
 }
 
-template <typename T, class Mat>
+template <typename T, typename Derived>
 IGL_INLINE bool igl::list_to_matrix(
   const std::vector<std::vector<T > > & V,
   const int n,
   const T & padding,
-  Mat & M)
+  Eigen::PlainObjectBase<Derived>& M)
 {
   const int m = V.size();
   M.resize(m,n);
@@ -77,8 +77,8 @@ IGL_INLINE bool igl::list_to_matrix(
   return true;
 }
 
-template <typename T, class Mat>
-IGL_INLINE bool igl::list_to_matrix(const std::vector<T > & V,Mat & M)
+template <typename T, typename Derived>
+IGL_INLINE bool igl::list_to_matrix(const std::vector<T > & V,Eigen::PlainObjectBase<Derived>& M)
 {
   // number of rows
   int m = V.size();
