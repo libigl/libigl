@@ -16,7 +16,7 @@
 #ifndef IGL_EMBREE_EMBREE_INTERSECTOR_H
 #define IGL_EMBREE_EMBREE_INTERSECTOR_H
 
-#include "Hit.h"
+#include "../Hit.h"
 #include <Eigen/Geometry>
 #include <Eigen/Core>
 #include <Eigen/Geometry>

@@ -10,14 +10,22 @@
 #include <Eigen/Dense>
 #include <Eigen/LU>
 
-template <typename Scalar>
-IGL_INLINE Eigen::Matrix<Scalar,3,1> igl::unproject(
-  const    Eigen::Matrix<Scalar,3,1>&  win,
-  const    Eigen::Matrix<Scalar,4,4>& model,
-  const    Eigen::Matrix<Scalar,4,4>& proj,
-  const    Eigen::Matrix<Scalar,4,1>&  viewport)
+template <
+  typename Derivedwin,
+  typename Derivedmodel,
+  typename Derivedproj,
+  typename Derivedviewport,
+  typename Derivedscene>
+IGL_INLINE void igl::unproject(
+  const Eigen::PlainObjectBase<Derivedwin>&  win,
+  const Eigen::PlainObjectBase<Derivedmodel>& model,
+  const Eigen::PlainObjectBase<Derivedproj>& proj,
+  const Eigen::PlainObjectBase<Derivedviewport>&  viewport,
+  Eigen::PlainObjectBase<Derivedscene> & scene)
 {
-  Eigen::Matrix<Scalar,4,4> Inverse = (proj * model).inverse();
+  typedef typename Derivedscene::Scalar Scalar;
+  Eigen::Matrix<Scalar,4,4> Inverse = 
+    (proj.template cast<Scalar>() * model.template cast<Scalar>()).inverse();
 
   Eigen::Matrix<Scalar,4,1> tmp;
   tmp << win, 1;
@@ -28,7 +36,19 @@ IGL_INLINE Eigen::Matrix<Scalar,3,1> igl::unproject(
   Eigen::Matrix<Scalar,4,1> obj = Inverse * tmp;
   obj /= obj(3);
 
-  return obj.head(3);
+  scene = obj.head(3);
+}
+
+template <typename Scalar>
+IGL_INLINE Eigen::Matrix<Scalar,3,1> igl::unproject(
+  const    Eigen::Matrix<Scalar,3,1>&  win,
+  const    Eigen::Matrix<Scalar,4,4>& model,
+  const    Eigen::Matrix<Scalar,4,4>& proj,
+  const    Eigen::Matrix<Scalar,4,1>&  viewport)
+{
+  Eigen::Matrix<Scalar,3,1> scene;
+  unproject(win,model,proj,viewport,scene);
+  return scene;
 }
 
 #ifdef IGL_STATIC_LIBRARY
