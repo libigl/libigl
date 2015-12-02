@@ -7,8 +7,9 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "ambient_occlusion.h"
 #include "EmbreeIntersector.h"
-#include <igl/random_dir.h>
-#include <igl/EPS.h>
+#include "../Hit.h"
+#include "../random_dir.h"
+#include "../EPS.h"
 
 template <
   typename DerivedP,
@@ -44,7 +45,7 @@ IGL_INLINE void igl::embree::ambient_occlusion(
         // reverse ray
         d *= -1;
       }
-      igl::embree::Hit hit;
+      igl::Hit hit;
       const float tnear = 1e-4f;
       if(ei.intersectRay(origin,d,hit,tnear))
       {

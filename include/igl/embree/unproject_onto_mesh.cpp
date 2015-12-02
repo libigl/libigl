@@ -24,7 +24,7 @@ IGL_INLINE bool igl::embree::unproject_onto_mesh(
   using namespace std;
   using namespace Eigen;
   MatrixXd obj;
-  vector<igl::embree::Hit> hits;
+  vector<igl::Hit> hits;
 
   // This is lazy, it will find more than just the first hit
   unproject_in_mesh(pos,model,proj,viewport,ei,obj,hits);
