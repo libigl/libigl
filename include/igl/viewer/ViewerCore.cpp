@@ -190,6 +190,9 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
   using namespace std;
   using namespace Eigen;
 
+  if(data.hidden)
+    return;
+
   if (depth_test)
     glEnable(GL_DEPTH_TEST);
   else

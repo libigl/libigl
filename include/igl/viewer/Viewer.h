@@ -47,7 +47,7 @@ namespace viewer
     GLFWwindow* window;
 
     IGL_INLINE int launch(bool resizable = true,bool fullscreen = false);
-    IGL_INLINE int launch_init(bool resizable = true,bool fullscreen = false);
+    IGL_INLINE int launch_init(bool resizable = true,bool fullscreen = false, int width = 1800, int height = 1200);
     IGL_INLINE bool launch_rendering(bool loop = true);
     IGL_INLINE void launch_shut();
 
@@ -58,9 +58,12 @@ namespace viewer
 
     // Stores all the data that should be visualized
     ViewerData data;
+    unsigned int active_data_id;
+    // Don't access this directly but rather use the functions get_mesh() or set_active_mesh()
+    std::vector<ViewerData> data_buffer;
 
     // Stores the vbos indices and opengl related settings
-    OpenGL_state opengl;
+    std::vector<OpenGL_state> opengl;
 
     // List of registered plugins
     std::vector<ViewerPlugin*> plugins;
@@ -91,9 +94,23 @@ namespace viewer
     Viewer();
     ~Viewer();
 
+    // Add a new mesh instance
+    IGL_INLINE unsigned int add_mesh();
+    IGL_INLINE unsigned int add_mesh(const char* mesh_file_name);
+    // Get the data of a specific mesh instance
+    IGL_INLINE ViewerData& get_mesh(unsigned int data_id);
+    // Set the data of a specific mesh instance
+    IGL_INLINE bool set_mesh(unsigned int data_id,const ViewerData& data);
+    // Remove the data of a specific mesh instance
+    IGL_INLINE bool remove_mesh(unsigned int data_id);
+    // Set the active mesh instance exposed as a copy in data
+    IGL_INLINE bool set_active_mesh(unsigned int data_id);
+
     // Mesh IO
     IGL_INLINE bool load_mesh_from_file(const char* mesh_file_name);
+    IGL_INLINE bool load_mesh_from_file(const char* mesh_file_name,unsigned int data_id);
     IGL_INLINE bool save_mesh_to_file(const char* mesh_file_name);
+    IGL_INLINE bool save_mesh_to_file(const char* mesh_file_name,unsigned int data_id);
 
     // Callbacks
     IGL_INLINE bool key_pressed(unsigned int unicode_key,int modifier);

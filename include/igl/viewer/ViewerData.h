@@ -146,6 +146,9 @@ public:
 
   // Enable per-face or per-vertex properties
   bool face_based;
+
+  // If enabled hide mesh
+  bool hidden;
   /*********************************/
 };
 

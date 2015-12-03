@@ -49,6 +49,8 @@ namespace igl {
       SERIALIZE_MEMBER(dirty);
 
       SERIALIZE_MEMBER(face_based);
+
+      SERIALIZE_MEMBER(hidden);
     }
 
     template<>
@@ -356,6 +358,7 @@ IGL_INLINE void igl::viewer::ViewerData::clear()
   labels_strings.clear();
 
   face_based = false;
+  hidden = false;
 }
 
 IGL_INLINE void igl::viewer::ViewerData::compute_normals()

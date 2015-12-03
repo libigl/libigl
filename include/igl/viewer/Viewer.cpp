@@ -167,6 +167,37 @@ static void glfw_drop_callback(GLFWwindow *window,int count,const char **filenam
   __viewer->screen->dropCallbackEvent(count,filenames);
 }
 
+#ifdef ENABLE_SERIALIZATION
+#include <igl/serialize.h>
+namespace igl {
+  namespace serialization {
+
+    IGL_INLINE void serialization(bool s,igl::viewer::Viewer& obj,std::vector<char>& buffer)
+    {
+      obj.data_buffer[obj.active_data_id] = obj.data;
+
+      SERIALIZE_MEMBER(core);
+      SERIALIZE_MEMBER(data_buffer);
+      SERIALIZE_MEMBER(active_data_id);
+    }
+
+    template<>
+    IGL_INLINE void serialize(const igl::viewer::Viewer& obj,std::vector<char>& buffer)
+    {
+      serialization(true,const_cast<igl::viewer::Viewer&>(obj),buffer);
+    }
+
+    template<>
+    IGL_INLINE void deserialize(igl::viewer::Viewer& obj,const std::vector<char>& buffer)
+    {
+      serialization(false,obj,const_cast<std::vector<char>&>(buffer));
+      
+      obj.data = obj.data_buffer[obj.active_data_id];
+    }
+  }
+}
+#endif
+
 namespace igl
 {
 namespace viewer
@@ -183,15 +214,43 @@ namespace viewer
     // ---------------------- LOADING ----------------------
 
   #ifdef ENABLE_SERIALIZATION
-    ngui->addGroup("Workspace");
-    ngui->addButton("Load",[&](){this->load_scene();});
-    ngui->addButton("Save",[&](){this->save_scene();});
+    {
+      ngui->addGroup("Workspace");
+
+      Widget* container = new Widget(window);
+      ngui->addWidget("",container);
+
+      GridLayout* layout = new GridLayout(Orientation::Horizontal,2,Alignment::Fill);
+      container->setLayout(layout);
+
+      Button* loadButton = new Button(container,"Load");
+      loadButton->setFixedHeight(25);
+      loadButton->setCallback([&](){this->load_scene();});
+
+      Button* saveButton = new Button(container,"Save");
+      saveButton->setFixedHeight(25);
+      saveButton->setCallback([&](){this->save_scene();});
+    }
   #endif
 
   #ifdef ENABLE_IO
-    ngui->addGroup("Mesh");
-    ngui->addButton("Load",[&](){this->open_dialog_load_mesh();});
-    ngui->addButton("Save",[&](){this->open_dialog_save_mesh();});
+    {
+      ngui->addGroup("Mesh");
+
+      Widget* container = new Widget(window);
+      ngui->addWidget("",container);
+
+      GridLayout* layout = new GridLayout(Orientation::Horizontal,2,Alignment::Fill);
+      container->setLayout(layout);
+
+      Button* loadButton = new Button(container,"Load");
+      loadButton->setFixedHeight(25);
+      loadButton->setCallback([&](){this->open_dialog_load_mesh();});
+
+      Button* saveButton = new Button(container,"Save");
+      saveButton->setFixedHeight(25);
+      saveButton->setCallback([&](){this->open_dialog_save_mesh();});
+    }
   #endif
 
     ngui->addGroup("Viewing Options");
@@ -207,7 +266,7 @@ namespace viewer
 
     ngui->addVariable<bool>("Face-based", [&](bool checked)
     {
-      this->data.set_face_based(checked);
+      data.set_face_based(checked);
     },[&]()
     {
       return this->data.face_based;
@@ -217,7 +276,7 @@ namespace viewer
 
     ngui->addVariable<bool>("Invert normals",[&](bool checked)
     {
-      this->data.dirty |= ViewerData::DIRTY_NORMAL;
+      data.dirty |= ViewerData::DIRTY_NORMAL;
       this->core.invert_normals = checked;
     },[&]()
     {
@@ -252,13 +311,18 @@ namespace viewer
     ngui = nullptr;
     screen = nullptr;
 
+    active_data_id = 0;
+    data_buffer.push_back(ViewerData());
+    data = data_buffer[active_data_id];
+
     // Temporary variables initialization
     down = false;
     hack_never_moved = true;
     scroll_position = 0.0f;
 
     // Per face
-    data.set_face_based(false);
+    for(auto d : data_buffer)
+      d.set_face_based(false);
 
     // C-style callbacks
     callback_init         = nullptr;
@@ -299,23 +363,86 @@ namespace viewer
       plugins[i]->shutdown();
   }
 
+  IGL_INLINE unsigned int Viewer::add_mesh()
+  {
+    data_buffer.push_back(ViewerData());
+    
+    opengl.push_back(OpenGL_state());
+    opengl[opengl.size()-1].init();
+
+    return opengl.size()-1;
+  }
+
+  IGL_INLINE unsigned int Viewer::add_mesh(const char* mesh_file_name)
+  {
+    unsigned int bakId = active_data_id;
+    unsigned int id = add_mesh();
+    set_active_mesh(id);
+    load_mesh_from_file(mesh_file_name);
+    set_active_mesh(bakId);
+    return id;
+  }
+
+  IGL_INLINE ViewerData& Viewer::get_mesh(unsigned int data_id)
+  {
+    assert(data_buffer.size() > data_id && "data_id out of range");
+
+    if(data_id == active_data_id)
+      return this->data;
+    else
+      return data_buffer[data_id];
+  }
+
+  IGL_INLINE bool Viewer::remove_mesh(unsigned int data_id)
+  {
+    assert(data_buffer.size() > data_id && "data_id out of range");
+    assert(data_id != active_data_id > data_id && "active mesh cannot be removed!");
+    
+    if(active_data_id > data_id)
+      active_data_id--;
+
+    data_buffer.erase(data_buffer.begin()+data_id);
+    opengl[data_id].free();
+    opengl.erase(opengl.begin()+data_id);
+
+    return true;
+  }
+
+  IGL_INLINE bool Viewer::set_active_mesh(unsigned int data_id)
+  {
+    assert(data_buffer.size() > data_id && "data_id out of range");
+
+    data_buffer[active_data_id] = ViewerData(data);
+    active_data_id = data_id;
+    data = data_buffer[active_data_id];
+
+    return true;
+  }
+
   IGL_INLINE bool Viewer::load_mesh_from_file(const char* mesh_file_name)
   {
+    return load_mesh_from_file(mesh_file_name,active_data_id);
+  }
+
+  IGL_INLINE bool Viewer::load_mesh_from_file(const char* mesh_file_name,unsigned int data_id)
+  {
+    assert(data_buffer.size() > data_id && "data_id out of range");
+
     std::string mesh_file_name_string = std::string(mesh_file_name);
 
     // first try to load it with a plugin
-    for (unsigned int i = 0; i<plugins.size(); ++i)
+    for(unsigned int i = 0; i<plugins.size(); ++i)
     {
-      if (plugins[i]->load(mesh_file_name_string))
+      if(plugins[i]->load(mesh_file_name_string))
       {
         return true;
       }
     }
 
-    data.clear();
+    data_buffer[data_id].clear();
 
     size_t last_dot = mesh_file_name_string.rfind('.');
-    if (last_dot == std::string::npos)
+    if(last_dot == std::string::npos)
     {
       printf("Error: No file extension found in %s\n",mesh_file_name);
       return false;
@@ -323,15 +450,14 @@ namespace viewer
 
     std::string extension = mesh_file_name_string.substr(last_dot+1);
 
-    if (extension == "off" || extension =="OFF")
+    if(extension == "off" || extension =="OFF")
     {
       Eigen::MatrixXd V;
       Eigen::MatrixXi F;
-      if (!igl::readOFF(mesh_file_name_string, V, F))
+      if(!igl::readOFF(mesh_file_name_string,V,F))
         return false;
-      data.set_mesh(V,F);
-    }
-    else if (extension == "obj" || extension =="OBJ")
+      data_buffer[data_id].set_mesh(V,F);
+    } else if(extension == "obj" || extension =="OBJ")
     {
       Eigen::MatrixXd corner_normals;
       Eigen::MatrixXi fNormIndices;
@@ -341,36 +467,35 @@ namespace viewer
       Eigen::MatrixXd V;
       Eigen::MatrixXi F;
 
-      if (!(
-            igl::readOBJ(
-              mesh_file_name_string,
-              V, UV_V, corner_normals, F, UV_F, fNormIndices)))
+      if(!(
+        igl::readOBJ(
+          mesh_file_name_string,
+          V,UV_V,corner_normals,F,UV_F,fNormIndices)))
         return false;
 
-      data.set_mesh(V,F);
-      data.set_uv(UV_V,UV_F);
+      data_buffer[data_id].set_mesh(V,F);
+      data_buffer[data_id].set_uv(UV_V,UV_F);
 
-    }
-    else
+    } else
     {
       // unrecognized file type
       printf("Error: %s is not a recognized file type.\n",extension.c_str());
       return false;
     }
 
-    data.compute_normals();
-    data.uniform_colors(Eigen::Vector3d(51.0/255.0,43.0/255.0,33.3/255.0),
-                   Eigen::Vector3d(255.0/255.0,228.0/255.0,58.0/255.0),
-                   Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
-    if (data.V_uv.rows() == 0)
+    data_buffer[data_id].compute_normals();
+    data_buffer[data_id].uniform_colors(Eigen::Vector3d(51.0/255.0,43.0/255.0,33.3/255.0),
+                        Eigen::Vector3d(255.0/255.0,228.0/255.0,58.0/255.0),
+                        Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
+    if(data_buffer[data_id].V_uv.rows() == 0)
     {
-      data.grid_texture();
+      data_buffer[data_id].grid_texture();
     }
 
-    core.align_camera_center(data.V,data.F);
+    core.align_camera_center(data_buffer[data_id].V,data_buffer[data_id].F);
 
-    for (unsigned int i = 0; i<plugins.size(); ++i)
-      if (plugins[i]->post_load())
+    for(unsigned int i = 0; i<plugins.size(); ++i)
+      if(plugins[i]->post_load())
         return true;
 
     return true;
@@ -378,26 +503,32 @@ namespace viewer
 
   IGL_INLINE bool Viewer::save_mesh_to_file(const char* mesh_file_name)
   {
+    return save_mesh_to_file(mesh_file_name,active_data_id);
+  }
+
+  IGL_INLINE bool Viewer::save_mesh_to_file(const char* mesh_file_name, unsigned int data_id)
+  {
+    assert(data_buffer.size() > data_id && "data_id out of range");
+
     std::string mesh_file_name_string(mesh_file_name);
 
     // first try to load it with a plugin
-    for (unsigned int i = 0; i<plugins.size(); ++i)
-      if (plugins[i]->save(mesh_file_name_string))
+    for(unsigned int i = 0; i<plugins.size(); ++i)
+      if(plugins[i]->save(mesh_file_name_string))
         return true;
 
     size_t last_dot = mesh_file_name_string.rfind('.');
-    if (last_dot == std::string::npos)
+    if(last_dot == std::string::npos)
     {
       // No file type determined
       printf("Error: No file extension found in %s\n",mesh_file_name);
       return false;
     }
     std::string extension = mesh_file_name_string.substr(last_dot+1);
-    if (extension == "off" || extension =="OFF")
+    if(extension == "off" || extension =="OFF")
     {
-      return igl::writeOFF(mesh_file_name_string,data.V,data.F);
-    }
-    else if (extension == "obj" || extension =="OBJ")
+      return igl::writeOFF(mesh_file_name_string,data_buffer[data_id].V,data_buffer[data_id].F);
+    } else if(extension == "obj" || extension =="OBJ")
     {
       Eigen::MatrixXd corner_normals;
       Eigen::MatrixXi fNormIndices;
@@ -405,10 +536,9 @@ namespace viewer
       Eigen::MatrixXd UV_V;
       Eigen::MatrixXi UV_F;
 
-      return igl::writeOBJ(mesh_file_name_string, data.V,
-          data.F, corner_normals, fNormIndices, UV_V, UV_F);
-    }
-    else
+      return igl::writeOBJ(mesh_file_name_string,data_buffer[data_id].V,
+                           data_buffer[data_id].F,corner_normals,fNormIndices,UV_V,UV_F);
+    } else
     {
       // unrecognized file type
       printf("Error: %s is not a recognized file type.\n",extension.c_str());
@@ -636,7 +766,13 @@ namespace viewer
       if (plugins[i]->pre_draw())
         return;
 
-    core.draw(data,opengl);
+    for(int i=0;i<data_buffer.size();i++)
+    {
+      if(i != active_data_id)
+        core.draw(data_buffer[i],opengl[i]);
+      else
+        core.draw(data,opengl[active_data_id]);
+    }
 
     if (callback_post_draw)
       if (callback_post_draw(*this))
@@ -661,7 +797,10 @@ namespace viewer
     igl::serialize(core,"Core",fname.c_str(),true);
 
 #ifndef ENABLE_SERIALIZATION_CORE_ONLY
-    igl::serialize(data,"Data",fname.c_str());
+    data_buffer[active_data_id] = data;
+
+    igl::serialize(active_data_id,"ActiveDataId",fname.c_str());
+    igl::serialize(data_buffer,"Data",fname.c_str());
     for(unsigned int i = 0; i <plugins.size(); ++i)
       igl::serialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
 #endif
@@ -687,9 +826,12 @@ namespace viewer
     igl::deserialize(core,"Core",fname.c_str());
 
 #ifndef ENABLE_SERIALIZATION_CORE_ONLY
-    igl::deserialize(data,"Data",fname.c_str());
+    igl::deserialize(active_data_id,"ActiveDataId",fname.c_str());
+    igl::deserialize(data_buffer,"Data",fname.c_str());
     for(unsigned int i = 0; i <plugins.size(); ++i)
       igl::deserialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
+    
+    data = data_buffer[active_data_id];
 #endif
 
 #endif
@@ -729,7 +871,7 @@ namespace viewer
   }
 
 
-  IGL_INLINE int  Viewer::launch_init(bool resizable,bool fullscreen)
+  IGL_INLINE int  Viewer::launch_init(bool resizable,bool fullscreen,int width, int height)
   {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
@@ -752,7 +894,7 @@ namespace viewer
     }
     else
     {
-      window = glfwCreateWindow(1280,800,"libigl viewer",nullptr,nullptr);
+      window = glfwCreateWindow(width,height,"libigl viewer",nullptr,nullptr);
     }
 
     if (!window)
@@ -804,7 +946,6 @@ namespace viewer
     glfwSetDropCallback(window,glfw_drop_callback);
 
     // Handle retina displays (windows and mac)
-    int width, height;
     glfwGetFramebufferSize(window, &width, &height);
 
     int width_window, height_window;
@@ -814,7 +955,8 @@ namespace viewer
 
     glfw_window_size(window,width_window,height_window);
 
-    opengl.init();
+    opengl.push_back(OpenGL_state());
+    opengl[0].init();
 
     core.align_camera_center(data.V,data.F);
 
@@ -858,7 +1000,8 @@ namespace viewer
 
   IGL_INLINE void Viewer::launch_shut()
   {
-    opengl.free();
+    for(auto&& v : opengl)
+      v.free();
     core.shut();
 
     shutdown_plugins();
