@@ -61,6 +61,12 @@ ENDIF(MSVC)
 
 option(ENABLE_TUTORIALS " " OFF)
 
+IF(EMBREE_FOUND)
+  add_subdirectory("../external/embree/" "embree")		
+  include_directories("../external/embree/include")		
+  list(APPEND SHARED_LIBRARIES "embree")		
+ENDIF(EMBREE_FOUND)
+
 # endif(True)
 
 # if(True)

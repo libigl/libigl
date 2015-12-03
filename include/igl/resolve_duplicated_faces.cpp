@@ -21,14 +21,14 @@ IGL_INLINE void igl::resolve_duplicated_faces(
     Eigen::PlainObjectBase<DerivedF2>& F2,
     Eigen::PlainObjectBase<DerivedJ>& J) {
 
-  typedef typename DerivedF1::Scalar Index;
+  //typedef typename DerivedF1::Scalar Index;
   Eigen::VectorXi IA,IC;
   DerivedF1 uF;
   igl::unique_simplices(F1,uF,IA,IC);
 
   const size_t num_faces = F1.rows();
   const size_t num_unique_faces = uF.rows();
-  assert(IA.rows() == num_unique_faces);
+  assert((size_t) IA.rows() == num_unique_faces);
   // faces on top of each unique face
   std::vector<std::vector<int> > uF2F(num_unique_faces);
   // signed counts

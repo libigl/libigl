@@ -272,7 +272,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
 
     // Process un-touched faces.
     for (size_t i=0; i<num_faces; i++) {
-        if (!is_offending[i]) {
+        if (!is_offending[i] && !T[i].is_degenerate()) {
             resolved_faces.push_back(
                     { F(i,0), F(i,1), F(i,2) } );
             source_faces.push_back(i);
