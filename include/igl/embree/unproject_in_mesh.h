@@ -11,7 +11,7 @@
 #include <Eigen/Core>
 
 #include <vector>
-#include "Hit.h"
+#include "../Hit.h"
 
 namespace igl
 {
@@ -54,7 +54,7 @@ namespace igl
       const Eigen::Vector4f& viewport,
       const EmbreeIntersector & ei,
       Eigen::PlainObjectBase<Derivedobj> & obj,
-      std::vector<igl::embree::Hit > & hits);
+      std::vector<igl::Hit > & hits);
     template < typename Derivedobj>
     IGL_INLINE int unproject_in_mesh(
       const Eigen::Vector2f& pos,
