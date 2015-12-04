@@ -12,17 +12,32 @@
 namespace igl
 {
   // Eigen reimplementation of gluUnproject
+  //
   // Inputs:
   //   win  screen space x, y, and z coordinates
-  // Returns:
-  //   the unprojected x, y, and z coordinates
-  // Returns return value of gluUnProject call
+  //   model  4x4 model-view matrix
+  //   proj  4x4 projection matrix
+  //   viewport  4-long viewport vector
+  // Outputs:
+  //   scene  the unprojected x, y, and z coordinates
+  template <
+    typename Derivedwin,
+    typename Derivedmodel,
+    typename Derivedproj,
+    typename Derivedviewport,
+    typename Derivedscene>
+  IGL_INLINE void unproject(
+    const Eigen::PlainObjectBase<Derivedwin>&  win,
+    const Eigen::PlainObjectBase<Derivedmodel>& model,
+    const Eigen::PlainObjectBase<Derivedproj>& proj,
+    const Eigen::PlainObjectBase<Derivedviewport>&  viewport,
+    Eigen::PlainObjectBase<Derivedscene> & scene);
   template <typename Scalar>
   IGL_INLINE Eigen::Matrix<Scalar,3,1> unproject(
-    const    Eigen::Matrix<Scalar,3,1>&  win,
-    const    Eigen::Matrix<Scalar,4,4>& model,
-    const    Eigen::Matrix<Scalar,4,4>& proj,
-    const    Eigen::Matrix<Scalar,4,1>&  viewport);
+    const Eigen::Matrix<Scalar,3,1>&  win,
+    const Eigen::Matrix<Scalar,4,4>& model,
+    const Eigen::Matrix<Scalar,4,4>& proj,
+    const Eigen::Matrix<Scalar,4,1>&  viewport);
 }
 
 

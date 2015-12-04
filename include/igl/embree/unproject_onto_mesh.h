@@ -11,7 +11,6 @@
 #include <Eigen/Core>
 
 #include <vector>
-#include "Hit.h"
 
 namespace igl
 {
