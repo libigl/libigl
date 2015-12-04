@@ -12,6 +12,10 @@ int main(int argc, char * argv[])
   using namespace igl::copyleft::boolean;
   using namespace std;
   using namespace igl;
+  cout<<R"(
+[,]  Toggle between boolean sub-tree operations
+)";
+
   MatrixXi FA,FB,FC,FD,FE;
   MatrixXd VA,VB,VC,VD,VE;
   // Read in inputs as double precision floating point meshes
