@@ -289,6 +289,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
       glUniform4f(fixed_colori, 0.0f, 0.0f, 0.0f, 0.0f);
     }
 
+#ifdef IGL_VIEWER_WITH_NANOGUI
     if (show_vertid)
     {
       textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
@@ -312,6 +313,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
       }
       textrenderer.EndDraw();
     }
+#endif
   }
 
   if (show_overlay)
@@ -353,6 +355,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
       opengl.draw_overlay_points();
     }
 
+#ifdef IGL_VIEWER_WITH_NANOGUI
     if (data.labels_positions.rows() > 0)
     {
       textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
@@ -361,6 +364,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
             data.labels_strings[i]);
       textrenderer.EndDraw();
     }
+#endif
 
     glEnable(GL_DEPTH_TEST);
   }
@@ -505,10 +509,14 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
 
 IGL_INLINE void igl::viewer::ViewerCore::init()
 {
+#ifdef IGL_VIEWER_WITH_NANOGUI
   textrenderer.Init();
+#endif
 }
 
 IGL_INLINE void igl::viewer::ViewerCore::shut()
 {
+#ifdef IGL_VIEWER_WITH_NANOGUI
   textrenderer.Shut();
+#endif
 }

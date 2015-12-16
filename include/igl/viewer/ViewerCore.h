@@ -8,7 +8,9 @@
 #ifndef IGL_VIEWER_VIEWER_CORE_H
 #define IGL_VIEWER_VIEWER_CORE_H
 
+#ifdef IGL_VIEWER_WITH_NANOGUI
 #include <igl/viewer/TextRenderer.h>
+#endif
 #include <igl/viewer/ViewerData.h>
 #include <igl/viewer/OpenGL_state.h>
 
@@ -80,8 +82,10 @@ public:
 
   // ------------------- Properties
 
+#ifdef IGL_VIEWER_WITH_NANOGUI
   // Text rendering helper
   TextRenderer textrenderer;
+#endif
 
   // Shape material
   float shininess;

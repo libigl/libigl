@@ -47,8 +47,10 @@
 #include <limits>
 #include <cassert>
 
-#include <nanogui/formhelper.h>
-#include <nanogui/screen.h>
+#ifdef IGL_VIEWER_WITH_NANOGUI
+#  include <nanogui/formhelper.h>
+#  include <nanogui/screen.h>
+#endif
 
 #include <igl/project.h>
 #include <igl/get_seconds.h>
@@ -80,7 +82,12 @@ static int global_KMod = 0;
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
-  bool tw_used = __viewer->screen->mouseButtonCallbackEvent(button,action,modifier);
+  bool tw_used = 
+#ifdef IGL_VIEWER_WITH_NANOGUI
+    __viewer->screen->mouseButtonCallbackEvent(button,action,modifier);
+#else
+    false;
+#endif
 
   igl::viewer::Viewer::MouseButton mb;
 
@@ -114,7 +121,9 @@ static void glfw_char_mods_callback(GLFWwindow* window, unsigned int codepoint, 
 {
   // TODO: pass to nanogui (although it's also using physical key down/up
   // rather than character codes...
+#ifdef IGL_VIEWER_WITH_NANOGUI
   if(! __viewer->screen->charCallbackEvent(codepoint) )
+#endif
   {
     __viewer->key_pressed(codepoint, modifier);
   }
@@ -125,7 +134,9 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
 
+#ifdef IGL_VIEWER_WITH_NANOGUI
   if (__viewer->screen->keyCallbackEvent(key,scancode,action,modifier) == false)
+#endif
   {
     if (action == GLFW_PRESS)
       __viewer->key_down(key, modifier);
@@ -146,7 +157,11 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
 
 static void glfw_mouse_move(GLFWwindow* window, double x, double y)
 {
-  if(__viewer->screen->cursorPosCallbackEvent(x,y) == false || __viewer->down)
+  if(
+#ifdef IGL_VIEWER_WITH_NANOGUI
+      __viewer->screen->cursorPosCallbackEvent(x,y) == false || 
+#endif
+      __viewer->down)
   {
     __viewer->mouse_move(x*highdpi, y*highdpi);
   }
@@ -158,13 +173,19 @@ static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
   scroll_x += x;
   scroll_y += y;
 
+#ifdef IGL_VIEWER_WITH_NANOGUI
   if (__viewer->screen->scrollCallbackEvent(x,y) == false)
+#endif
+  {
     __viewer->mouse_scroll(y);
+  }
 }
 
 static void glfw_drop_callback(GLFWwindow *window,int count,const char **filenames)
 {
+#ifdef IGL_VIEWER_WITH_NANOGUI
   __viewer->screen->dropCallbackEvent(count,filenames);
+#endif
 }
 
 namespace igl
@@ -173,6 +194,7 @@ namespace viewer
 {
   IGL_INLINE void Viewer::init()
   {
+#ifdef IGL_VIEWER_WITH_NANOGUI
     using namespace nanogui;
 
     ngui->setFixedSize(Eigen::Vector2i(60,20));
@@ -237,6 +259,7 @@ namespace viewer
     ngui->addVariable("Show faces labels", core.show_faceid);
 
     screen->performLayout();
+#endif
 
     core.init();
 
@@ -249,8 +272,10 @@ namespace viewer
 
   IGL_INLINE Viewer::Viewer()
   {
+#ifdef IGL_VIEWER_WITH_NANOGUI
     ngui = nullptr;
     screen = nullptr;
+#endif
 
     // Temporary variables initialization
     down = false;
@@ -286,7 +311,9 @@ namespace viewer
   {
     // Init all plugins
     for (unsigned int i = 0; i<plugins.size(); ++i)
+    {
       plugins[i]->init(this);
+    }
   }
 
   IGL_INLINE Viewer::~Viewer()
@@ -296,7 +323,9 @@ namespace viewer
   IGL_INLINE void Viewer::shutdown_plugins()
   {
     for (unsigned int i = 0; i<plugins.size(); ++i)
+    {
       plugins[i]->shutdown();
+    }
   }
 
   IGL_INLINE bool Viewer::load_mesh_from_file(const char* mesh_file_name)
@@ -345,7 +374,9 @@ namespace viewer
             igl::readOBJ(
               mesh_file_name_string,
               V, UV_V, corner_normals, F, UV_F, fNormIndices)))
+      {
         return false;
+      }
 
       data.set_mesh(V,F);
       data.set_uv(UV_V,UV_F);
@@ -473,11 +504,19 @@ namespace viewer
     // Initialization code for the trackball
     Eigen::RowVector3d center;
     if (data.V.rows() == 0)
+    {
       center << 0,0,0;
-    else
+    }else
+    {
       center = data.V.colwise().sum()/data.V.rows();
+    }
 
-    Eigen::Vector3f coord = igl::project(Eigen::Vector3f(center(0),center(1),center(2)), (core.view * core.model).eval(), core.proj, core.viewport);
+    Eigen::Vector3f coord = 
+      igl::project(
+        Eigen::Vector3f(center(0),center(1),center(2)), 
+        (core.view * core.model).eval(), 
+        core.proj, 
+        core.viewport);
     down_mouse_z = coord[2];
     down_rotation = core.trackball_angle;
 
@@ -548,23 +587,24 @@ namespace viewer
             default:
               assert(false && "Unknown rotation type");
             case ViewerCore::ROTATION_TYPE_TRACKBALL:
-              igl::trackball(core.viewport(2),
-                             core.viewport(3),
-                             2.0f,
-                             down_rotation,
-                             down_mouse_x,
-                             down_mouse_y,
-                             mouse_x,
-                             mouse_y,
-                             core.trackball_angle);
+              igl::trackball(
+                core.viewport(2),
+                core.viewport(3),
+                2.0f,
+                down_rotation,
+                down_mouse_x,
+                down_mouse_y,
+                mouse_x,
+                mouse_y,
+                core.trackball_angle);
               break;
             case ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
               igl::two_axis_valuator_fixed_up(
-                  core.viewport(2),core.viewport(3),
-                  2.0,
-                  down_rotation,
-                  down_mouse_x, down_mouse_y, mouse_x, mouse_y,
-                  core.trackball_angle);
+                core.viewport(2),core.viewport(3),
+                2.0,
+                down_rotation,
+                down_mouse_x, down_mouse_y, mouse_x, mouse_y,
+                core.trackball_angle);
               break;
           }
           //Eigen::Vector4f snapq = core.trackball_angle;
@@ -646,8 +686,10 @@ namespace viewer
       if (plugins[i]->post_draw())
         break;
 
+#ifdef IGL_VIEWER_WITH_NANOGUI
     ngui->refresh();
     screen->drawWidgets();
+#endif
   }
 
   IGL_INLINE bool Viewer::save_scene()
@@ -788,9 +830,11 @@ namespace viewer
     glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
 
     // Initialize FormScreen
+#ifdef IGL_VIEWER_WITH_NANOGUI
     screen = new nanogui::Screen();
     screen->initialize(window, false);
     ngui = new nanogui::FormHelper(screen);
+#endif
 
     __viewer = this;
 
@@ -862,10 +906,12 @@ namespace viewer
     core.shut();
 
     shutdown_plugins();
+#ifdef IGL_VIEWER_WITH_NANOGUI
     delete ngui;
     //delete screen;
     screen = nullptr;
     ngui = nullptr;
+#endif
 
     glfwDestroyWindow(window);
     glfwTerminate();
