@@ -8,6 +8,8 @@ SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../tutorial/cmake)
 find_package(EIGEN REQUIRED)
 
 add_definitions(-DIGL_STATIC_LIBRARY)
+option(LIBIGL_VIEWER_WITH_NANOGUI "Enable nanogui " OFF)
+
 #option(LIBIGL_NO_OPENGL "Disable OpenGL2 legacy features in main library" ON)
 #option(LIBIGL_OPENGL_4 "Enable OpenGL4 features in optional libraries" ON)
 #
@@ -45,13 +47,15 @@ else (ANTTWEAKBAR_FOUND)
 endif(ANTTWEAKBAR_FOUND)
 
 ## Check for NANOGUI
-find_package(NANOGUIH QUIET)
-#message(FATAL_ERROR "nanogui not found. ${NANOGUI_INCLUDE_DIRS}")
-if (NANOGUI_FOUND)
-  include_directories( ${NANOGUI_INCLUDE_DIRS})
-else (NANOGUI_FOUND)
-  message(STATUS "nanogui not found.")
-endif(NANOGUI_FOUND)
+if(LIBIGL_VIEWER_WITH_NANOGUI)
+  find_package(NANOGUIH QUIET)
+  #message(FATAL_ERROR "nanogui not found. ${NANOGUI_INCLUDE_DIRS}")
+  if (NANOGUI_FOUND)
+    include_directories( ${NANOGUI_INCLUDE_DIRS})
+  else (NANOGUI_FOUND)
+    message(STATUS "nanogui not found.")
+  endif(NANOGUI_FOUND)
+endif()
 
 ## Check for Boost
 find_package(BOOST QUIET)
@@ -303,13 +307,16 @@ if (TRIANGLE_FOUND)
 endif (TRIANGLE_FOUND)
 
 #### Compile the viewer
-if (NANOGUI_FOUND)
-  file(GLOB SOURCES_VIEWER
-    "${PROJECT_SOURCE_DIR}/../include/igl/viewer/*.cpp"
-  )
-  add_library(iglviewer STATIC ${SOURCES_VIEWER})
-  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglviewer")
-endif (NANOGUI_FOUND)
+if(LIBIGL_VIEWER_WITH_NANOGUI)
+  if (NANOGUI_FOUND)
+    add_definitions(-DIGL_VIEWER_WITH_NANOGUI)
+  endif (NANOGUI_FOUND)
+endif()
+file(GLOB SOURCES_VIEWER
+  "${PROJECT_SOURCE_DIR}/../include/igl/viewer/*.cpp"
+)
+add_library(iglviewer STATIC ${SOURCES_VIEWER})
+set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} "iglviewer")
 
 #### Compile the xml part
 if (TINYXML2_FOUND)
