@@ -409,7 +409,12 @@ using overlays.](images/105_Overlays.png)
 
 ## Viewer Menu [viewermenu]
 
-As of version 1.2 the viewer uses a new menu and completely replaces [AntTweakBar](http://anttweakbar.sourceforge.net/doc/). It is based on the open-source projects [nanovg](https://github.com/memononen/nanovg) and [nanogui](https://github.com/wjakob/nanogui). To extend the default menu of the viewer and to expose more user defined variables you have to define a callback function:
+As of version 1.2 the viewer uses a new menu and completely replaces
+[AntTweakBar](http://anttweakbar.sourceforge.net/doc/). It is based on the
+open-source projects [nanovg](https://github.com/memononen/nanovg) and
+[nanogui](https://github.com/wjakob/nanogui). To extend the default menu of the
+viewer and to expose more user defined variables you have to define a callback
+function:
 
 ```cpp
 igl::viewer::Viewer viewer;
