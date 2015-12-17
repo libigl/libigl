@@ -15,6 +15,8 @@
 #include <igl/viewer/OpenGL_state.h>
 
 #include <igl/igl_inline.h>
+#include <Eigen/Geometry>
+#include <Eigen/Core>
 
 namespace igl
 {
