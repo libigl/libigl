@@ -2193,19 +2193,22 @@ void Serializable::PostDeserialization();
 Alternatively, if you want a non-intrusive way of serializing your state you can overload the following functions:
 
 ```cpp
-namespace igl { namespace serialization {
-
-void serialize(const State& obj,std::vector<char>& buffer){
-  ::igl::serialize(obj.V,std::string("V"),buffer);
-  ::igl::serialize(obj.F,std::string("F"),buffer);
-  ::igl::serialize(obj.ids,std::string("ids"),buffer);
+namespace igl
+{
+  namespace serialization
+  {
+    template <> inline void serialize(const State& obj,std::vector<char>& buffer){
+      ::igl::serialize(obj.V,std::string("V"),buffer);
+      ::igl::serialize(obj.F,std::string("F"),buffer);
+      ::igl::serialize(obj.ids,std::string("ids"),buffer);
+    }
+    template <> inline void deserialize(State& obj,const std::vector<char>& buffer){
+      ::igl::deserialize(obj.V,std::string("V"),buffer);
+      ::igl::deserialize(obj.F,std::string("F"),buffer);
+      ::igl::deserialize(obj.ids,std::string("ids"),buffer);
+    }
+  }
 }
-void deserialize(State& obj,const std::vector<char>& buffer){
-  ::igl::deserialize(obj.V,std::string("V"),buffer);
-  ::igl::deserialize(obj.F,std::string("F"),buffer);
-  ::igl::deserialize(obj.ids,std::string("ids"),buffer);
-}
-}}
 ```
 
 Equivalently, you can use the following macros:
