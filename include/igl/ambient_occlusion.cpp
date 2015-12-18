@@ -31,18 +31,19 @@ IGL_INLINE void igl::ambient_occlusion(
   const int n = P.rows();
   // Resize output
   S.resize(n,1);
+  VectorXi hits = VectorXi::Zero(n,1);
   // Embree seems to be parallel when constructing but not when tracing rays
 #pragma omp parallel for
+  const MatrixXf D = random_dir_stratified(num_samples).cast<float>();
   // loop over mesh vertices
   for(int p = 0;p<n;p++)
   {
     const Vector3f origin = P.row(p).template cast<float>();
     const Vector3f normal = N.row(p).template cast<float>();
     int num_hits = 0;
-    MatrixXf D = random_dir_stratified(num_samples).cast<float>();
     for(int s = 0;s<num_samples;s++)
     {
-      //Vector3d d = random_dir();
+//      //Vector3d d = random_dir();
       Vector3f d = D.row(s);
       if(d.dot(normal) < 0)
       {
