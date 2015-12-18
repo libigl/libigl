@@ -21,6 +21,9 @@ namespace igl
   //   box  axis aligned box
   //   t0  hit only if hit.t less than t0
   //   t1  hit only if hit.t greater than t1
+  // Outputs:
+  //   tmin  minimum of interval of overlap within [t0,t1]
+  //   tmax  maximum of interval of overlap within [t0,t1]
   // Returns true if hit
   template <
     typename Derivedsource,
@@ -31,7 +34,9 @@ namespace igl
     const Eigen::PlainObjectBase<Deriveddir> & dir,
     const Eigen::AlignedBox<Scalar,3> & box,
     const Scalar & t0,
-    const Scalar & t1);
+    const Scalar & t1,
+    Scalar & tmin,
+    Scalar & tmax);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "ray_box_intersect.cpp"

@@ -313,6 +313,8 @@ public:
 #include <iomanip>
 #include <limits>
 #include <list>
+#include <queue>
+#include <stack>
 
 template <typename DerivedV, int DIM>
   template <typename Derivedbb_mins, typename Derivedbb_maxs>
@@ -1189,9 +1191,12 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
   hits.clear();
   const Scalar t0 = 0;
   const Scalar t1 = std::numeric_limits<Scalar>::infinity();
-  if(!ray_box_intersect(origin,dir,m_box,t0,t1))
   {
-    return false;
+    Scalar _1,_2;
+    if(!ray_box_intersect(origin,dir,m_box,t0,t1,_1,_2))
+    {
+      return false;
+    }
   }
   if(this->is_leaf())
   {
@@ -1218,8 +1223,50 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
   const RowVectorDIMS & dir,
   igl::Hit & hit) const
 {
+#if false
+  // BFS
+  std::queue<const AABB *> Q;
+  // Or DFS
+  //std::stack<const AABB *> Q;
+  Q.push(this);
+  bool any_hit = false;
+  hit.t = std::numeric_limits<Scalar>::infinity();
+  while(!Q.empty())
+  {
+    const AABB * tree = Q.front();
+    //const AABB * tree = Q.top();
+    Q.pop();
+    {
+      Scalar _1,_2;
+      if(!ray_box_intersect(
+        origin,dir,tree->m_box,Scalar(0),Scalar(hit.t),_1,_2))
+      {
+        continue;
+      }
+    }
+    if(tree->is_leaf())
+    {
+      // Actually process elements
+      assert((Ele.size() == 0 || Ele.cols() == 3) && "Elements should be triangles");
+      igl::Hit leaf_hit;
+      if(
+        ray_mesh_intersect(origin,dir,V,Ele.row(tree->m_primitive).eval(),leaf_hit)&&
+        leaf_hit.t < hit.t)
+      {
+        hit = leaf_hit;
+      }
+      continue;
+    }
+    // Add children to queue
+    Q.push(tree->m_left);
+    Q.push(tree->m_right);
+  }
+  return any_hit;
+#else
+  // DFS
   return intersect_ray(
     V,Ele,origin,dir,std::numeric_limits<Scalar>::infinity(),hit);
+#endif
 }
 
 template <typename DerivedV, int DIM>
@@ -1245,9 +1292,12 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
   //}
   Scalar min_t = _min_t;
   const Scalar t0 = 0;
-  if(!ray_box_intersect(origin,dir,m_box,t0,min_t))
   {
-    return false;
+    Scalar _1,_2;
+    if(!ray_box_intersect(origin,dir,m_box,t0,min_t,_1,_2))
+    {
+      return false;
+    }
   }
   if(this->is_leaf())
   {
@@ -1256,11 +1306,15 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
     // Cheesecake way of hitting element
     return ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive).eval(),hit);
   }
+
+  // Doesn't seem like smartly choosing left before/after right makes a
+  // differnce
   igl::Hit left_hit;
   igl::Hit right_hit;
   bool left_ret = m_left->intersect_ray(V,Ele,origin,dir,min_t,left_hit);
   if(left_ret && left_hit.t<min_t)
   {
+    // It's scary that this line doesn't seem to matter....
     min_t = left_hit.t;
     hit = left_hit;
     left_ret = true;
