@@ -1,4 +1,6 @@
 #include "ray_box_intersect.h"
+#include <vector>
+
 template <
   typename Derivedsource,
   typename Deriveddir,
