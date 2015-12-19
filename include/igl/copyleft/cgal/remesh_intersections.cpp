@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <map>
+#include <queue>
 #include <unordered_map>
 #include <iostream>
 
@@ -28,8 +29,8 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         const std::vector<CGAL::Triangle_3<Kernel> > & T,
         const std::map<
         typename DerivedF::Index,
-        std::pair<typename DerivedF::Index,
-        std::vector<CGAL::Object> > > & offending,
+        std::vector<
+        std::pair<typename DerivedF::Index, CGAL::Object> > > & offending,
         const std::map<
         std::pair<typename DerivedF::Index,typename DerivedF::Index>,
         std::vector<typename DerivedF::Index> > & /*edge2faces*/,
@@ -93,24 +94,45 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
             return p1_coeffs[3] < p2_coeffs[3];
         return false;
     };
-    std::map<Plane_3, std::vector<Index>, decltype(plane_comp)>
-        unique_planes(plane_comp);
+    //std::map<Plane_3, std::vector<Index>, decltype(plane_comp)>
+    //    unique_planes(plane_comp);
+
 
     const size_t num_faces = F.rows();
     const size_t num_base_vertices = V.rows();
     assert(num_faces == T.size());
+
     std::vector<bool> is_offending(num_faces, false);
     for (const auto itr : offending) {
         const auto& fid = itr.first;
         is_offending[fid] = true;
 
-        Plane_3 key = T[fid].supporting_plane();
-        assert(!key.is_degenerate());
-        const auto jtr = unique_planes.find(key);
-        if (jtr == unique_planes.end()) {
-            unique_planes.insert({key, {fid}});
-        } else {
-            jtr->second.push_back(fid);
+        //Plane_3 key = T[fid].supporting_plane();
+        //assert(!key.is_degenerate());
+        //const auto jtr = unique_planes.find(key);
+        //if (jtr == unique_planes.end()) {
+        //    unique_planes.insert({key, {fid}});
+        //} else {
+        //    jtr->second.push_back(fid);
+        //}
+    }
+
+    std::unordered_map<Index, std::vector<Index> > intersecting_and_coplanar;
+    for (const auto itr : offending) {
+        const auto& fi = itr.first;
+        const auto P = T[fi].supporting_plane();
+        assert(!P.is_degenerate());
+        for (const auto jtr : itr.second) {
+            const auto& fj = jtr.first;
+            const auto& tj = T[fj];
+            if (P.has_on(tj[0]) && P.has_on(tj[1]) && P.has_on(tj[2])) {
+                auto loc = intersecting_and_coplanar.find(fi);
+                if (loc == intersecting_and_coplanar.end()) {
+                    intersecting_and_coplanar[fi] = {fj};
+                } else {
+                    loc->second.push_back(fj);
+                }
+            }
         }
     }
 
@@ -135,7 +157,9 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
             cdt.insert_constraint(P.to_2d(triangle[2]), P.to_2d(triangle[0]));
 
             if (itr == offending.end()) continue;
-            for (const auto& obj : itr->second.second) {
+            for (const auto& index_obj : itr->second) {
+                const auto& ofid = index_obj.first;
+                const auto& obj = index_obj.second;
                 if(const Segment_3 *iseg = CGAL::object_cast<Segment_3 >(&obj)) {
                     // Add segment constraint
                     cdt.insert_constraint(
@@ -280,15 +304,52 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     }
 
     // Process self-intersecting faces.
-    for (const auto itr : unique_planes) {
-        Plane_3 P = itr.first;
-        const auto& involved_faces = itr.second;
+    std::vector<bool> processed(num_faces, false);
+    for (const auto itr : offending) {
+        const auto fid = itr.first;
+        if (processed[fid]) continue;
+        processed[fid] = true;
 
+        const auto loc = intersecting_and_coplanar.find(fid);
+        std::vector<Index> involved_faces;
+        if (loc == intersecting_and_coplanar.end()) {
+            involved_faces.push_back(fid);
+        } else {
+            std::queue<Index> Q;
+            Q.push(fid);
+            while (!Q.empty()) {
+                const auto index = Q.front();
+                involved_faces.push_back(index);
+                Q.pop();
+
+                const auto overlapping_faces =
+                    intersecting_and_coplanar.find(index);
+                assert(overlapping_faces != intersecting_and_coplanar.end());
+
+                for (const auto other_index : overlapping_faces->second) {
+                    if (processed[other_index]) continue;
+                    processed[other_index] = true;
+                    Q.push(other_index);
+                }
+            }
+        }
+
+        Plane_3 P = T[fid].supporting_plane();
         std::vector<Point_3> vertices;
         std::vector<std::vector<Index> > faces;
         run_delaunay_triangulation(P, involved_faces, vertices, faces);
         post_triangulation_process(vertices, faces, involved_faces);
     }
+
+    //for (const auto itr : unique_planes) {
+    //    Plane_3 P = itr.first;
+    //    const auto& involved_faces = itr.second;
+
+    //    std::vector<Point_3> vertices;
+    //    std::vector<std::vector<Index> > faces;
+    //    run_delaunay_triangulation(P, involved_faces, vertices, faces);
+    //    post_triangulation_process(vertices, faces, involved_faces);
+    //}
 
     // Output resolved mesh.
     const size_t num_out_vertices = new_vertices.size() + num_base_vertices;

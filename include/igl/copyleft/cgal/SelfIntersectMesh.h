@@ -90,14 +90,14 @@ namespace igl
           // Number of self-intersecting triangle pairs
           typedef typename DerivedF::Index Index;
           Index count;
-          typedef std::vector<CGAL::Object> ObjectList;
+          typedef std::vector<std::pair<Index, CGAL::Object>> ObjectList;
           // Using a vector here makes this **not** output sensitive
           Triangles T;
           typedef std::vector<Index> IndexList;
           IndexList lIF;
           // #F-long list of faces with intersections mapping to the order in
           // which they were first found
-          std::map<Index,std::pair<Index,ObjectList> > offending;
+          std::map<Index,ObjectList> offending;
           // Make a short name for the edge map's key
           typedef std::pair<Index,Index> EMK;
           // Make a short name for the type stored at each edge, the edge map's
@@ -143,7 +143,7 @@ namespace igl
           //   A  triangle in 3D
           //   B  triangle in 3D
           //   fa  index of A in F (and key into offending)
-          //   fb  index of A in F (and key into offending)
+          //   fb  index of B in F (and key into offending)
           // Returns true only if A intersects B
           //
           inline bool intersect(
@@ -455,8 +455,7 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   if(offending.count(f) == 0)
   {
     // first time marking, initialize with new id and empty list
-    const Index id = offending.size();
-    offending[f] = {id,{}};
+    offending[f] = {};
     for(Index e = 0; e<3;e++)
     {
       // append face to edge's list
@@ -531,8 +530,8 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
   {
     // Construct intersection
     CGAL::Object result = CGAL::intersection(A,B);
-    offending[fa].second.push_back(result);
-    offending[fb].second.push_back(result);
+    offending[fa].push_back({fb, result});
+    offending[fb].push_back({fa, result});
   }
   return true;
 }
@@ -630,8 +629,8 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
         A.vertex(va),
         *p));
       count_intersection(fa,fb);
-      offending[fa].second.push_back(seg);
-      offending[fb].second.push_back(seg);
+      offending[fa].push_back({fb, seg});
+      offending[fb].push_back({fa, seg});
       return true;
     }else if(CGAL::object_cast<Segment_3 >(&result))
     {
@@ -777,8 +776,8 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
       } else
       {
         // Triangle object
-        offending[fa].second.push_back(result);
-        offending[fb].second.push_back(result);
+        offending[fa].push_back({fb, result});
+        offending[fb].push_back({fa, result});
         //cerr<<REDRUM("Coplanar at: "<<fa<<" & "<<fb<<" (double shared).")<<endl;
         return true;
       }
