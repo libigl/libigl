@@ -9,6 +9,7 @@
 #include "serialize_xml.h"
 #include "../STR.h"
 #include "../serialize.h"
+#include "XMLSerializable.h"
 
 #include <iterator>
 #include <limits>

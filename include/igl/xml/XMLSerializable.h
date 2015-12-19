@@ -1,6 +1,7 @@
 #ifndef IGL_XML_XMLSERIALIZABLE_H
 #define IGL_XML_XMLSERIALIZABLE_H
 
+#include "serialize_xml.h"
 #include "../igl_inline.h"
 #include "../serialize.h"
 
