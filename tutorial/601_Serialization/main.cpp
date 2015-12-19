@@ -8,22 +8,22 @@
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 
-//// derive from igl::Serializable to serialize your own type
-//struct State : public igl::Serializable
-//{
-//  Eigen::MatrixXd V;
-//  Eigen::MatrixXi F;
-//  std::vector<int> ids;
-//
-//  // You have to define this function to
-//  // register the fields you want to serialize
-//  void InitSerialization()
-//  {
-//    this->Add(V  , "V");
-//    this->Add(F  , "F");
-//    this->Add(ids, "ids");
-//  }
-//};
+// derive from igl::Serializable to serialize your own type
+struct State : public igl::Serializable
+{
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi F;
+  std::vector<int> ids;
+
+  // You have to define this function to
+  // register the fields you want to serialize
+  void InitSerialization()
+  {
+    this->Add(V  , "V");
+    this->Add(F  , "F");
+    this->Add(ids, "ids");
+  }
+};
 
 //// alternatively you can do it like the following to have
 //// a non-intrusive serialization:

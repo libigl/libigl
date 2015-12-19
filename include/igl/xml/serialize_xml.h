@@ -17,7 +17,6 @@
 
 #include "../igl_inline.h"
 
-#include "XMLSerializable.h"
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -38,6 +37,7 @@ namespace igl
 {
   namespace xml
   {
+    struct XMLSerializableBase;
     // serializes the given object either to a xml file or to the provided doc data
     //
     // Templates:
