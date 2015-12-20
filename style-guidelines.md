@@ -94,7 +94,12 @@ new pair of .h/.cpp files with this sub-function.
 
 If encapsulation in a separate file is not possible or does not make sense,
 then avoid crowding the namespace by creating lambda functions within the
-function implmentation.
+function implementation.
+
+These lambda functions must still be documented with clear [input and output
+arguments](#headerdocumentation). Avoid using full capturing of all automatic
+variables: do not use `[&]` or `[=]`. Rather specify each captured variable
+individually.
 
 ### Avoid "helper" classes
 
@@ -103,7 +108,6 @@ rather than "array of structs". The way we achieve this is to avoid classes and
 pass "basic types" directly. The price we pay is long function interfaces, but
 this increases code reuse dramatically. A "basic type" in our context is a
 Eigen type, stl type, or basic C type.
-
 
 ## Header Documentation
 
