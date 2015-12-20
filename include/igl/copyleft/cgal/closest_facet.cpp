@@ -226,8 +226,12 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     return process_edge_case(query_idx, f[0], f[1], I(fid, 0), orientation);
   };
 
-  auto process_vertex_case = [&](const size_t query_idx, size_t s,
-      size_t preferred_facet, bool& orientation) {
+  auto process_vertex_case = [&](
+    const size_t query_idx, 
+    size_t s,
+    size_t preferred_facet, 
+    bool& orientation) 
+  {
     const Point_3 query_point(
         P(query_idx, 0), P(query_idx, 1), P(query_idx, 2));
     const Point_3 closest_point(V(s, 0), V(s, 1), V(s, 2));
