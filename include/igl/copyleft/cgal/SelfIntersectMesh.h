@@ -16,7 +16,7 @@
 #include <map>
 #include <vector>
 
-//#define IGL_SELFINTERSECTMESH_DEBUG
+#define IGL_SELFINTERSECTMESH_DEBUG
 #ifndef IGL_FIRST_HIT_EXCEPTION
 #define IGL_FIRST_HIT_EXCEPTION 10
 #endif
@@ -337,13 +337,17 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     t_start += diff;
     return diff;
   };
+  const auto log_time = [&](const std::string& label) {
+    std::cout << "SelfIntersectMesh." << label << ": "
+      << tictoc() << std::endl;
+  };
   tictoc();
 #endif
 
   // Compute and process self intersections
   mesh_to_cgal_triangle_list(V,F,T);
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
-  cout<<"mesh_to_cgal_triangle_list: "<<tictoc()<<endl;
+  log_time("convert_to_triangle_list");
 #endif
   // http://www.cgal.org/Manual/latest/doc_html/cgal_manual/Box_intersection_d/Chapter_main.html#Section_63.5 
   // Create the corresponding vector of bounding boxes
@@ -367,7 +371,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
       std::placeholders::_1,
       std::placeholders::_2);
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
-  cout<<"boxes and bind: "<<tictoc()<<endl;
+  log_time("box_and_bind");
 #endif
   // Run the self intersection algorithm with all defaults
   try{
@@ -382,7 +386,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     // Otherwise just fall through
   }
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
-  cout<<"box_self_intersection_d: "<<tictoc()<<endl;
+  log_time("box_intersection_d");
 #endif
 
   // Convert lIF to Eigen matrix
@@ -403,7 +407,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     }
   }
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
-  cout<<"IF: "<<tictoc()<<endl;
+  log_time("store_intersecting_face_pairs");
 #endif
 
   if(params.detect_only)
@@ -414,7 +418,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
   remesh_intersections(V,F,T,offending,edge2faces,VV,FF,J,IM);
 
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
-  cout<<"remesh intersection: "<<tictoc()<<endl;
+  log_time("remesh_intersection");
 #endif
 
   // Q: Does this give the same result as TETGEN?

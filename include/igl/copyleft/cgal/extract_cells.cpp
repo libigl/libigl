@@ -19,7 +19,7 @@
 #include <vector>
 #include <queue>
 
-//#define EXTRACT_CELLS_DEBUG
+#define EXTRACT_CELLS_DEBUG
 
 template<
 typename DerivedV,
@@ -184,6 +184,10 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
     t_start += diff;
     return diff;
   };
+  const auto log_time = [&](const std::string& label) {
+    std::cout << "extract_cells." << label << ": "
+      << tictoc() << std::endl;
+  };
   tictoc();
 #endif
     const size_t num_faces = F.rows();
@@ -195,19 +199,19 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         igl::copyleft::cgal::extract_cells_single_component(
                 V, F, P, uE, uE2E, EMAP, raw_cells);
 #ifdef EXTRACT_CELLS_DEBUG
-    std::cout << "Extract single component cells: " << tictoc() << std::endl;
+    log_time("extract_single_component_cells");
 #endif
 
     std::vector<std::vector<std::vector<Index > > > TT,_1;
     igl::triangle_triangle_adjacency(E, EMAP, uE2E, false, TT, _1);
 #ifdef EXTRACT_CELLS_DEBUG
-    std::cout << "face adj: " << tictoc() << std::endl;
+    log_time("compute_face_adjacency");
 #endif
 
     Eigen::VectorXi C, counts;
     igl::facet_components(TT, C, counts);
 #ifdef EXTRACT_CELLS_DEBUG
-    std::cout << "face comp: " << tictoc() << std::endl;
+    log_time("form_components");
 #endif
 
     const size_t num_components = counts.size();
@@ -232,7 +236,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         outer_cells[i] = raw_cells(P[outer_facets[i]], outer_facet_orientation[i]);
     }
 #ifdef EXTRACT_CELLS_DEBUG
-    std::cout << "Per comp outer facet: " << tictoc() << std::endl;
+    log_time("outer_facet_per_component");
 #endif
 
     auto get_triangle_center = [&](const size_t fid) {
@@ -307,7 +311,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         }
     }
 #ifdef EXTRACT_CELLS_DEBUG
-    std::cout << "Determine nested relaitonship: " << tictoc() << std::endl;
+    log_time("nested_relationship");
 #endif
 
     const size_t INVALID = std::numeric_limits<size_t>::max();
@@ -371,7 +375,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
     }
     cells = raw_cells;
 #ifdef EXTRACT_CELLS_DEBUG
-    std::cout << "Finalize and output: " << tictoc() << std::endl;
+    log_time("finalize");
 #endif
     return count;
 }
