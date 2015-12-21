@@ -226,6 +226,20 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     return process_edge_case(query_idx, f[0], f[1], I(fid, 0), orientation);
   };
 
+  // Given that the closest point to query point P(query_idx,:) on (V,F(I,:))
+  // is the vertex at V(s,:) which is incident at least on triangle
+  // F(preferred_facet,:), determine a facet incident on V(s,:) that is
+  // _exposed_ to the query point and determine whether that facet is facing
+  // _toward_ or _away_ from the query point.
+  //
+  // Inputs:
+  //   query_idx  index into P of query point
+  //   s  index into V of closest point at vertex
+  //   preferred_facet  facet incident on s
+  // Outputs:
+  //   orientation  whether returned face is facing toward or away from
+  //     query (parity unclear)
+  // Returns face guaranteed to be "exposed" to P(query_idx,:)
   auto process_vertex_case = [&](
     const size_t query_idx, 
     size_t s,
@@ -238,13 +252,16 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     std::vector<size_t> adj_faces;
     std::vector<size_t> adj_face_corners;
     {
-      // Gether adj faces to s within I.
+      // Gather adj faces to s within I.
       const auto& all_adj_faces = VF[s];
       const auto& all_adj_face_corners = VFi[s];
       const size_t num_all_adj_faces = all_adj_faces.size();
-      for (size_t i=0; i<num_all_adj_faces; i++) {
+      for (size_t i=0; i<num_all_adj_faces; i++) 
+      {
         const size_t fid = all_adj_faces[i];
-        if (in_I[fid]) {
+        // Shouldn't this always be true if I is a full connected component?
+        if (in_I[fid]) 
+        {
           adj_faces.push_back(fid);
           adj_face_corners.push_back(all_adj_face_corners[i]);
         }
@@ -255,7 +272,8 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
 
     std::set<size_t> adj_vertices_set;
     std::unordered_multimap<size_t, size_t> v2f;
-    for (size_t i=0; i<num_adj_faces; i++) {
+    for (size_t i=0; i<num_adj_faces; i++) 
+    {
       const size_t fid = adj_faces[i];
       const size_t cid = adj_face_corners[i];
       const auto& f = F.row(adj_faces[i]);
@@ -271,7 +289,8 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
         adj_vertices.begin());
 
     std::vector<Point_3> adj_points;
-    for (size_t vid : adj_vertices) {
+    for (size_t vid : adj_vertices) 
+    {
       adj_points.emplace_back(V(vid,0), V(vid,1), V(vid,2));
     }
 
