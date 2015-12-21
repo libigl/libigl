@@ -20,6 +20,8 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <algorithm>
 
+#define MESH_BOOLEAN_TIMING
+
 template <
   typename DerivedVA,
   typename DerivedFA,
@@ -42,6 +44,21 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
     Eigen::PlainObjectBase<DerivedVC > & VC,
     Eigen::PlainObjectBase<DerivedFC > & FC,
     Eigen::PlainObjectBase<DerivedJ > & J) {
+
+#ifdef MESH_BOOLEAN_TIMING
+  const auto & tictoc = []()
+  {
+    static double t_start = igl::get_seconds();
+    double diff = igl::get_seconds()-t_start;
+    t_start += diff;
+    return diff;
+  };
+  const auto log_time = [&](const std::string& label) {
+    std::cout << "mesh_boolean." << label << ": "
+      << tictoc() << std::endl;
+  };
+  tictoc();
+#endif
 
   typedef typename DerivedVC::Scalar Scalar;
   //typedef typename DerivedFC::Scalar Index;
@@ -84,6 +101,9 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
       //}
       resolve_fun(VV, FF, V, F, CJ);
   }
+#ifdef MESH_BOOLEAN_TIMING
+  log_time("resolve_self_intersection");
+#endif
 
   // Compute winding numbers on each side of each facet.
   const size_t num_faces = F.rows();
@@ -101,6 +121,9 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
   } else {
     assert(W.cols() == 4);
   }
+#ifdef MESH_BOOLEAN_TIMING
+  log_time("propergate_input_winding_number");
+#endif
 
   // Compute resulting winding number.
   Eigen::MatrixXi Wr(num_faces, 2);
@@ -111,6 +134,9 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
     Wr(i,0) = wind_num_op(w_out);
     Wr(i,1) = wind_num_op(w_in);
   }
+#ifdef MESH_BOOLEAN_TIMING
+  log_time("compute_output_winding_number");
+#endif
 
   // Extract boundary separating inside from outside.
   auto index_to_signed_index = [&](size_t i, bool ori) -> int{
@@ -141,6 +167,9 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
     }
     kept_face_indices(i, 0) = CJ[idx];
   }
+#ifdef MESH_BOOLEAN_TIMING
+  log_time("extract_output");
+#endif
 
   // Finally, remove duplicated faces and unreferenced vertices.
   {
@@ -160,6 +189,9 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
     Eigen::VectorXi newIM;
     igl::remove_unreferenced(Vs,G,VC,FC,newIM);
   }
+#ifdef MESH_BOOLEAN_TIMING
+  log_time("clean_up");
+#endif
 }
 
 template <
