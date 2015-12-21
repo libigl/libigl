@@ -154,7 +154,7 @@ IGL_INLINE void igl::signed_distance(
           signed_distance_pseudonormal(tree3,V,F,FN,VN,EN,EMAP,q3,s,sqrd,i,c3,n3):
           signed_distance_pseudonormal(tree2,V,F,FN,VN,q2,s,sqrd,i,c2,n2);
         Eigen::RowVectorXd n;
-        (dim==3 ? n = n3 : n = n3);
+        (dim==3 ? n = n3 : n = n2);
         N.row(p) = n;
         break;
       }
