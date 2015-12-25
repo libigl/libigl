@@ -111,7 +111,11 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
   Eigen::VectorXi labels(num_faces);
   std::transform(CJ.data(), CJ.data()+CJ.size(), labels.data(),
       [&](int i) { return i<FA.rows() ? 0:1; });
-  igl::copyleft::cgal::propagate_winding_numbers(V, F, labels, W);
+  if (num_faces > 0) {
+    igl::copyleft::cgal::propagate_winding_numbers(V, F, labels, W);
+  } else {
+    W.resize(0, 4);
+  }
   assert((size_t)W.rows() == num_faces);
   if (W.cols() == 2) {
     assert(FB.rows() == 0);
