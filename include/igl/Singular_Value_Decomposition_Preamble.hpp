@@ -19,6 +19,11 @@
 #include <iostream>
 #endif
 
+// Prevent warnings
+#ifdef ENABLE_SCALAR_IMPLEMENTATION
+#  undef ENABLE_SCALAR_IMPLEMENTATION
+#endif
+
 #ifdef USE_SCALAR_IMPLEMENTATION
 #define ENABLE_SCALAR_IMPLEMENTATION(X) X
 #else
