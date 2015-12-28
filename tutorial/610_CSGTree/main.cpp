@@ -59,7 +59,7 @@ int main(int argc, char * argv[])
       default:
       {
         CSGTree M;
-        Matrix<long int,Dynamic,1> J;
+        Matrix<MatrixXi::Index,Dynamic,1> J;
         switch(view_id)
         {
           case 5:
