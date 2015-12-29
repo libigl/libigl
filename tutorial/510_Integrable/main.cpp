@@ -633,7 +633,7 @@ int main(int argc, char *argv[])
   V_border = igl::is_border_vertex(V,F);
   igl::adjacency_list(F, VV);
   igl::vertex_triangle_adjacency(V,F,VF,VFi);
-  igl::triangle_triangle_adjacency(V,F,TT,TTi);
+  igl::triangle_triangle_adjacency(F,TT,TTi);
   igl::edge_topology(V,F,E,F2E,E2F);
 
   // Generate "subdivided" mesh for visualization of curl terms
