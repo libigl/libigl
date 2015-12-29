@@ -147,7 +147,7 @@ namespace igl {
     F(F_),
     Handle_MMatch(Handle_MMatch_)
     {
-      triangle_triangle_adjacency(V,F,TT,TTi);
+      triangle_triangle_adjacency(F,TT,TTi);
       edge_topology(V,F,E,F2E,E2F);
     };
 

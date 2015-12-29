@@ -34,6 +34,10 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedTT>& TT,
     Eigen::PlainObjectBase<DerivedTTi>& TTi);
+  template <typename DerivedF, typename DerivedTT>
+  IGL_INLINE void triangle_triangle_adjacency(
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedTT>& TT);
   // Preprocessing
   template <typename DerivedF, typename TTT_type>
   IGL_INLINE void triangle_triangle_adjacency_preprocess(
