@@ -20,7 +20,7 @@ IGL_INLINE void igl::per_corner_normals(
 {
   using namespace Eigen;
   using namespace std;
-  Eigen::PlainObjectBase<DerivedV> FN;
+  Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,3> FN;
   per_face_normals(V,F,FN);
   vector<vector<int> > VF,VFi;
   vertex_triangle_adjacency(V,F,VF,VFi);

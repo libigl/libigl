@@ -23,6 +23,8 @@ IGL_INLINE void igl::randperm(
 template <typename DerivedI>
 IGL_INLINE Eigen::PlainObjectBase<DerivedI> igl::randperm( const int n)
 {
+
+#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
   Eigen::PlainObjectBase<DerivedI> I;
   randperm(n,I);
   return I;

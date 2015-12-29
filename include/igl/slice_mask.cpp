@@ -99,6 +99,7 @@ IGL_INLINE Eigen::PlainObjectBase<DerivedX> igl::slice_mask(
   const Eigen::Array<bool,Eigen::Dynamic,1> & R,
   const Eigen::Array<bool,Eigen::Dynamic,1> & C)
 {
+#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
   Eigen::PlainObjectBase<DerivedX> Y;
   igl::slice_mask(X,R,C,Y);
   return Y;
@@ -110,6 +111,7 @@ IGL_INLINE Eigen::PlainObjectBase<DerivedX> igl::slice_mask(
   const Eigen::Array<bool,Eigen::Dynamic,1> & R,
   const int dim)
 {
+#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
   Eigen::PlainObjectBase<DerivedX> Y;
   igl::slice_mask(X,R,dim,Y);
   return Y;

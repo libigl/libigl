@@ -168,7 +168,7 @@ IGL_INLINE typename DerivedC::Scalar igl::polyvector_field_matchings(
   Eigen::MatrixXi E, E2F, F2E;
   igl::edge_topology(V,F,E,F2E,E2F);
 
-  Eigen::PlainObjectBase<DerivedV> FN;
+  Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,3> FN;
   igl::per_face_normals(V,F,FN);
 
   return igl::polyvector_field_matchings(sol3D, V, F, E, FN, E2F, match_with_curl, match_ab, match_ba, curl);
