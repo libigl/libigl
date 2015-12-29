@@ -107,7 +107,7 @@ namespace igl
           typedef std::map<EMK,EMV> EdgeMap;
           // Maps edges of offending faces to all incident offending faces
           EdgeMap edge2faces;
-          std::vector<std::pair<const Box&, const Box&> > candidate_box_pairs;
+          std::vector<std::pair<const Box, const Box> > candidate_box_pairs;
 
         public:
           RemeshSelfIntersectionsParam params;
