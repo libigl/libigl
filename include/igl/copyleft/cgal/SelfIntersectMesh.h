@@ -107,6 +107,8 @@ namespace igl
           typedef std::map<EMK,EMV> EdgeMap;
           // Maps edges of offending faces to all incident offending faces
           EdgeMap edge2faces;
+          std::vector<std::pair<const Box&, const Box&> > candidate_box_pairs;
+
         public:
           RemeshSelfIntersectionsParam params;
         public:
@@ -200,6 +202,7 @@ namespace igl
           //   a  box containing a triangle
           //   b  box containing a triangle
           inline void box_intersect(const Box& a, const Box& b);
+          inline void process_intersecting_boxes();
         private:
           // Compute 2D delaunay triangulation of a given 3d triangle and a list of
           // intersection objects (points,segments,triangles). CGAL uses an affine
@@ -385,6 +388,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     }
     // Otherwise just fall through
   }
+  process_intersecting_boxes();
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
   log_time("box_intersection_d");
 #endif
@@ -828,125 +832,98 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   const Box& a, 
   const Box& b)
 {
-  using namespace std;
-  // Could we write this as a static function of:
-  //
-  // F.row(fa)
-  // F.row(fb)
-  // A
-  // B
+  candidate_box_pairs.push_back({a, b});
+}
 
-  // index in F and T
-  Index fa = a.handle()-T.begin();
-  Index fb = b.handle()-T.begin();
-  const Triangle_3 & A = *a.handle();
-  const Triangle_3 & B = *b.handle();
-  //// I'm not going to deal with degenerate triangles, though at some point we
-  //// should
-  //assert(!a.handle()->is_degenerate());
-  //assert(!b.handle()->is_degenerate());
-  // Number of combinatorially shared vertices
-  Index comb_shared_vertices = 0;
-  // Number of geometrically shared vertices (*not* including combinatorially
-  // shared)
-  Index geo_shared_vertices = 0;
-  // Keep track of shared vertex indices
-  std::vector<std::pair<Index,Index> > shared;
-  Index ea,eb;
-  for(ea=0;ea<3;ea++)
-  {
-    for(eb=0;eb<3;eb++)
+template <
+  typename Kernel,
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedVV,
+  typename DerivedFF,
+  typename DerivedIF,
+  typename DerivedJ,
+  typename DerivedIM>
+inline void igl::copyleft::cgal::SelfIntersectMesh<
+  Kernel,
+  DerivedV,
+  DerivedF,
+  DerivedVV,
+  DerivedFF,
+  DerivedIF,
+  DerivedJ,
+  DerivedIM>::process_intersecting_boxes()
+{
+  for (const auto& box_pair : candidate_box_pairs) {
+    const auto& a = box_pair.first;
+    const auto& b = box_pair.second;
+    Index fa = a.handle()-T.begin();
+    Index fb = b.handle()-T.begin();
+    const Triangle_3 & A = *a.handle();
+    const Triangle_3 & B = *b.handle();
+
+    // Number of combinatorially shared vertices
+    Index comb_shared_vertices = 0;
+    // Number of geometrically shared vertices (*not* including combinatorially
+    // shared)
+    Index geo_shared_vertices = 0;
+    // Keep track of shared vertex indices
+    std::vector<std::pair<Index,Index> > shared;
+    Index ea,eb;
+    for(ea=0;ea<3;ea++)
     {
-      if(F(fa,ea) == F(fb,eb))
+      for(eb=0;eb<3;eb++)
       {
-        comb_shared_vertices++;
-        shared.emplace_back(ea,eb);
-      }else if(A.vertex(ea) == B.vertex(eb))
-      {
-        geo_shared_vertices++;
-        shared.emplace_back(ea,eb);
+        if(F(fa,ea) == F(fb,eb))
+        {
+          comb_shared_vertices++;
+          shared.emplace_back(ea,eb);
+        }else if(A.vertex(ea) == B.vertex(eb))
+        {
+          geo_shared_vertices++;
+          shared.emplace_back(ea,eb);
+        }
       }
     }
-  }
-  const Index total_shared_vertices = comb_shared_vertices + geo_shared_vertices;
-  if(comb_shared_vertices== 3)
-  {
-    assert(shared.size() == 3);
-    //// Combinatorially duplicate face, these should be removed by preprocessing
-    //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are combinatorial duplicates")<<endl;
-    goto done;
-  }
-  if(total_shared_vertices== 3)
-  {
-    assert(shared.size() == 3);
-    //// Geometrically duplicate face, these should be removed by preprocessing
-    //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are geometrical duplicates")<<endl;
-    goto done;
-  }
-  //// SPECIAL CASES ARE BROKEN FOR COPLANAR TRIANGLES
-  //if(total_shared_vertices > 0)
-  //{
-  //  bool coplanar = 
-  //    CGAL::coplanar(A.vertex(0),A.vertex(1),A.vertex(2),B.vertex(0)) &&
-  //    CGAL::coplanar(A.vertex(0),A.vertex(1),A.vertex(2),B.vertex(1)) &&
-  //    CGAL::coplanar(A.vertex(0),A.vertex(1),A.vertex(2),B.vertex(2));
-  //  if(coplanar)
-  //  {
-  //    cerr<<MAGENTAGIN("Facets "<<fa<<" and "<<fb<<
-  //      " are coplanar and share vertices")<<endl;
-  //    goto full;
-  //  }
-  //}
+    const Index total_shared_vertices = comb_shared_vertices + geo_shared_vertices;
 
-  if(total_shared_vertices == 2)
-  {
-    assert(shared.size() == 2);
-    // Q: What about coplanar?
-    //
-    // o    o
-    // |\  /|
-    // | \/ |
-    // | /\ |
-    // |/  \|
-    // o----o
-    double_shared_vertex(A,B,fa,fb,shared);
-
-    goto done;
+    if(comb_shared_vertices== 3)
+    {
+      assert(shared.size() == 3);
+      //// Combinatorially duplicate face, these should be removed by preprocessing
+      //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are combinatorial duplicates")<<endl;
+      continue;
+    }
+    if(total_shared_vertices== 3)
+    {
+      assert(shared.size() == 3);
+      //// Geometrically duplicate face, these should be removed by preprocessing
+      //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are geometrical duplicates")<<endl;
+      continue;
+    }
+    if(total_shared_vertices == 2)
+    {
+      assert(shared.size() == 2);
+      // Q: What about coplanar?
+      //
+      // o    o
+      // |\  /|
+      // | \/ |
+      // | /\ |
+      // |/  \|
+      // o----o
+      double_shared_vertex(A,B,fa,fb,shared);
+      continue;
+    }
+    assert(total_shared_vertices<=1);
+    if(total_shared_vertices==1)
+    {
+      single_shared_vertex(A,B,fa,fb,shared[0].first,shared[0].second);
+    }else
+    {
+      intersect(*a.handle(),*b.handle(),fa,fb);
+    }
   }
-  assert(total_shared_vertices<=1);
-  if(total_shared_vertices==1)
-  {
-//#ifndef NDEBUG
-//    CGAL::Object result =
-//#endif
-    single_shared_vertex(A,B,fa,fb,shared[0].first,shared[0].second);
-//#ifndef NDEBUG
-//    if(!CGAL::object_cast<Segment_3 >(&result))
-//    {
-//      const Point_3 * p = CGAL::object_cast<Point_3 >(&result);
-//      assert(p);
-//      for(int ea=0;ea<3;ea++)
-//      {
-//        for(int eb=0;eb<3;eb++)
-//        {
-//          if(F(fa,ea) == F(fb,eb))
-//          {
-//            assert(*p==A.vertex(ea));
-//            assert(*p==B.vertex(eb));
-//          }
-//        }
-//      }
-//    }
-//#endif
-  }else
-  {
-//full:
-    // No geometrically shared vertices, do general intersect
-    intersect(*a.handle(),*b.handle(),fa,fb);
-  }
-done:
-  return;
 }
 
 #endif
-
