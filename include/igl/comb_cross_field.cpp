@@ -73,7 +73,7 @@ namespace igl {
     PD2(_PD2)
     {
       igl::per_face_normals(V,F,N);
-      igl::triangle_triangle_adjacency(V,F,TT,TTi);
+      igl::triangle_triangle_adjacency(F,TT,TTi);
     }
     inline void comb(Eigen::PlainObjectBase<DerivedV> &PD1out,
               Eigen::PlainObjectBase<DerivedV> &PD2out)
