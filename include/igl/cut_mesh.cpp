@@ -309,7 +309,7 @@ IGL_INLINE void igl::cut_mesh(
   Eigen::MatrixXd Vt = V;
   Eigen::MatrixXi Ft = F;
   Eigen::MatrixXi TT, TTi;
-  igl::triangle_triangle_adjacency(Vt,Ft,TT,TTi);
+  igl::triangle_triangle_adjacency(Ft,TT,TTi);
 
   std::vector<bool> V_border = igl::is_border_vertex(V,F);
 

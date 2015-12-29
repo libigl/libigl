@@ -67,7 +67,7 @@ public:
         PD1(_PD1)
     {
         igl::per_face_normals(V,F,N);
-        igl::triangle_triangle_adjacency(V,F,TT,TTi);
+        igl::triangle_triangle_adjacency(F,TT,TTi);
     }
 
     inline void comb(Eigen::PlainObjectBase<DerivedV> &PD1out)
