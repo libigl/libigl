@@ -23,6 +23,7 @@ template <typename DerivedA>
 IGL_INLINE Eigen::PlainObjectBase<DerivedA> igl::mod(
   const Eigen::PlainObjectBase<DerivedA> & A, const int base)
 {
+#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
   Eigen::PlainObjectBase<DerivedA> B;
   mod(A,base,B);
   return B;

@@ -229,6 +229,7 @@ IGL_INLINE Eigen::PlainObjectBase<DerivedX> igl::slice(
   const Eigen::PlainObjectBase<DerivedX> & X,
   const Eigen::Matrix<int,Eigen::Dynamic,1> & R)
 {
+#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
   Eigen::PlainObjectBase<DerivedX> Y;
   igl::slice(X,R,Y);
   return Y;
@@ -240,6 +241,7 @@ IGL_INLINE Eigen::PlainObjectBase<DerivedX> igl::slice(
   const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
   const int dim)
 {
+#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
   Eigen::PlainObjectBase<DerivedX> Y;
   igl::slice(X,R,dim,Y);
   return Y;

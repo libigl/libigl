@@ -536,7 +536,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
   const Eigen::PlainObjectBase<DerivedBeq> & Beq,
   Eigen::PlainObjectBase<DerivedZ> & Z)
 {
-  Eigen::PlainObjectBase<DerivedZ> sol;
+  Eigen::Matrix<typename DerivedZ::Scalar, Eigen::Dynamic, Eigen::Dynamic> sol;
   return min_quad_with_fixed_solve(data,B,Y,Beq,Z,sol);
 }
 

@@ -15,8 +15,8 @@ IGL_INLINE std::vector<bool> igl::is_border_vertex(
     const Eigen::PlainObjectBase<DerivedV> &V, 
     const Eigen::PlainObjectBase<DerivedF> &F)
 {
-  Eigen::PlainObjectBase<DerivedF> FF;
-  igl::triangle_triangle_adjacency(V,F,FF);
+  DerivedF FF;
+  igl::triangle_triangle_adjacency(F,FF);
   std::vector<bool> ret(V.rows());
   for(unsigned i=0; i<ret.size();++i)
     ret[i] = false;
