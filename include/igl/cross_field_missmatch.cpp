@@ -88,7 +88,7 @@ public:
     igl::per_face_normals(V,F,N);
     V_border = igl::is_border_vertex(V,F);
     igl::vertex_triangle_adjacency(V,F,VF,VFi);
-    igl::triangle_triangle_adjacency(V,F,TT,TTi);
+    igl::triangle_triangle_adjacency(F,TT,TTi);
   }
 
   inline void calculateMissmatch(Eigen::PlainObjectBase<DerivedF> &Handle_MMatch)
