@@ -13,7 +13,6 @@
 #include "sparse.h"
 #include "repmat.h"
 //#include "lu_lagrange.h"
-#include "full.h"
 #include "matlab_format.h"
 #include "EPS.h"
 #include "cat.h"
