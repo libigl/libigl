@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 project(610_CSGTree)
 
 find_package(CGAL REQUIRED)
+set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "CGAL's CMAKE Setup is super annoying ")
 include(${CGAL_USE_FILE})
 # CGAL's monkeying with all of the flags. Rather than change the CGAL_USE_FILE
 # just get ride of this flag.
