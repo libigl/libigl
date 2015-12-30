@@ -34,6 +34,7 @@ find_package(MOSEK QUIET)
 find_package(TETGEN QUIET)
 find_package(TINYXML2 QUIET)
 find_package(TRIANGLE QUIET)
+find_package(LIM QUIET)
 
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 include("CMakeLists.shared")
