@@ -7,6 +7,8 @@
 
 #include "tutorial_shared_path.h"
 
+using namespace igl::lim;
+
 // Mesh
 Eigen::MatrixX3d V0;
 Eigen::MatrixX3d V1;
@@ -15,7 +17,7 @@ Eigen::MatrixXi F;
 Eigen::SparseMatrix<double> C;
 Eigen::VectorXd b;
 
-int energyType;
+Energy energyType;
 bool barriersEnabled;
 
 // This function is called every time a keyboard button is pressed
@@ -28,7 +30,7 @@ bool key_down(igl::viewer::Viewer& viewer,unsigned char key,int modifier)
   if(key >= '0' && key <= '5' || key == 'B')
   {
     // compute locally injective map
-    int energy = key - '1';
+    Energy energy = Energy(key - '1');
 
     V1 = V0;
 
@@ -44,8 +46,7 @@ bool key_down(igl::viewer::Viewer& viewer,unsigned char key,int modifier)
 
     if(key != '0')
     {
-      igl::lim::lim(
-          V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
+      lim(V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
     }
 
     // set mesh
@@ -62,7 +63,7 @@ int main(int argc, char *argv[])
   using namespace std;
   using namespace Eigen;
 
-  energyType = 0;
+  energyType = Dirichlet;
   barriersEnabled = true;
 
   // load a mesh in OFF format
@@ -102,8 +103,7 @@ int main(int argc, char *argv[])
   b(2*fixedVertices.size()+1) = 0.2;
 
   // compute locally injective map
-  igl::lim::lim(
-    V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
+  lim(V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
 
   // Show mesh
   igl::viewer::Viewer viewer;
