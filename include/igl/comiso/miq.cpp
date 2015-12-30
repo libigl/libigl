@@ -1191,7 +1191,7 @@ F(F_)
   igl::cut_mesh(V, F, Handle_Seams, Vcut, Fcut);
 
   igl::local_basis(V,F,B1,B2,B3);
-  igl::triangle_triangle_adjacency(V,F,TT,TTi);
+  igl::triangle_triangle_adjacency(F,TT,TTi);
 
   // Prepare indexing for the linear system
   VertexIndexing<DerivedV, DerivedF> VInd(V, F, Vcut, Fcut, TT, TTi, Handle_MMatch, Handle_Singular, Handle_Seams);
