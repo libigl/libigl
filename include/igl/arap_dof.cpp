@@ -14,7 +14,6 @@
 #include "repmat.h"
 #include "slice.h"
 #include "colon.h"
-#include "full.h"
 #include "is_sparse.h"
 #include "mode.h"
 #include "is_symmetric.h"
@@ -203,9 +202,8 @@ IGL_INLINE bool igl::arap_dof_precomputation(
       if(is_sparse(CSMjM_i))
       {
         // Convert to full
-        MatrixXd CSMjM_ifull;
         //printf("CSM_M(): full\n");
-        full(CSMjM_i,CSMjM_ifull);
+        MatrixXd CSMjM_ifull(CSMjM_i);
 //        printf("CSM_M[%d]: %d %d\n",i,data.CSM_M[i].rows(),data.CSM_M[i].cols());
 //        printf("CSM_M[%d].block(%d*%d=%d,0,%d,%d): %d %d\n",i,j,k,CSMjM_i.rows(),CSMjM_i.cols(),
 //            data.CSM_M[i].block(j*k,0,CSMjM_i.rows(),CSMjM_i.cols()).rows(),
@@ -546,8 +544,8 @@ IGL_INLINE bool igl::arap_dof_recomputation(
 
   // Compute dense solve matrix (alternative of matrix factorization)
   //printf("min_quad_dense_precompute()\n");
-  MatrixXd Qfull; full(*Q, Qfull);  
-  MatrixXd A_eqfull; full(A_eq, A_eqfull);
+  MatrixXd Qfull(*Q);
+  MatrixXd A_eqfull(A_eq);
   MatrixXd M_Solve;
 
   double timer0_start = get_seconds_hires();
