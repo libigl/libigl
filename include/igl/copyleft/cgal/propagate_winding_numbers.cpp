@@ -26,7 +26,7 @@
 #include <tuple>
 #include <queue>
 
-#define PROPAGATE_WINDING_NUMBER_TIMING
+//#define PROPAGATE_WINDING_NUMBER_TIMING
 
 namespace propagate_winding_numbers_helper {
   template<
@@ -42,7 +42,7 @@ namespace propagate_winding_numbers_helper {
     auto edge_index_to_face_index = [&](size_t ei) {
       return ei % num_faces;
     };
-    auto is_consistent = [&](size_t fid, size_t s, size_t d) {
+    auto is_consistent = [&](size_t fid, size_t s, size_t d) -> bool {
       if ((size_t)F(fid, 0) == s && (size_t)F(fid, 1) == d) return true;
       if ((size_t)F(fid, 1) == s && (size_t)F(fid, 2) == d) return true;
       if ((size_t)F(fid, 2) == s && (size_t)F(fid, 0) == d) return true;
@@ -80,14 +80,14 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
     const Eigen::PlainObjectBase<DerivedL>& labels,
     Eigen::PlainObjectBase<DerivedW>& W) {
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
-  const auto & tictoc = []()
+  const auto & tictoc = []() -> double
   {
     static double t_start = igl::get_seconds();
     double diff = igl::get_seconds()-t_start;
     t_start += diff;
     return diff;
   };
-  const auto log_time = [&](const std::string& label) {
+  const auto log_time = [&](const std::string& label) -> void {
     std::cout << "propagate_winding_num." << label << ": "
       << tictoc() << std::endl;
   };
@@ -130,7 +130,7 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
   log_time("cell_connectivity");
 #endif
 
-  auto save_cell = [&](const std::string& filename, size_t cell_id) {
+  auto save_cell = [&](const std::string& filename, size_t cell_id) -> void{
     std::vector<size_t> faces;
     for (size_t i=0; i<num_patches; i++) {
       if ((per_patch_cells.row(i).array() == cell_id).any()) {
@@ -161,7 +161,7 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
     cell_labels.setZero();
     Eigen::VectorXi parents(num_cells);
     parents.setConstant(-1);
-    auto trace_parents = [&](size_t idx) {
+    auto trace_parents = [&](size_t idx) -> std::list<size_t> {
       std::list<size_t> path;
       path.push_back(idx);
       while ((size_t)parents[path.back()] != path.back()) {

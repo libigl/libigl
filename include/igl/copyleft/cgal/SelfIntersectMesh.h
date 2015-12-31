@@ -333,14 +333,14 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
   using namespace Eigen;
 
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
-  const auto & tictoc = []()
+  const auto & tictoc = []() -> double
   {
     static double t_start = igl::get_seconds();
     double diff = igl::get_seconds()-t_start;
     t_start += diff;
     return diff;
   };
-  const auto log_time = [&](const std::string& label) {
+  const auto log_time = [&](const std::string& label) -> void{
     std::cout << "SelfIntersectMesh." << label << ": "
       << tictoc() << std::endl;
   };
