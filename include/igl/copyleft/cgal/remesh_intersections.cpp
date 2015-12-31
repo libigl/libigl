@@ -60,7 +60,8 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     };
     typedef std::unordered_map<Edge, std::vector<Index>, EdgeHash > EdgeMap;
 
-    auto normalize_plane_coeff = [](const Plane_3& P) {
+    auto normalize_plane_coeff = [](const Plane_3& P) ->
+    std::vector<typename Kernel::FT> {
         std::vector<typename Kernel::FT> coeffs = {
             P.a(), P.b(), P.c(), P.d()
         };
