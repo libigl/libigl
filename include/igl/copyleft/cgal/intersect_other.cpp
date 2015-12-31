@@ -142,7 +142,7 @@ namespace igl
         EdgeMap edge2facesA,edge2facesB;
 
         std::list<int> lIF;
-        const auto cb = [&](const Box &a, const Box &b)
+        const auto cb = [&](const Box &a, const Box &b) -> void
         {
           using namespace std;
           // index in F and T

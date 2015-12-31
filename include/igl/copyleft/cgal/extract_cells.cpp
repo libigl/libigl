@@ -19,7 +19,7 @@
 #include <vector>
 #include <queue>
 
-#define EXTRACT_CELLS_DEBUG
+//#define EXTRACT_CELLS_DEBUG
 
 template<
 typename DerivedV,
@@ -42,7 +42,8 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
     auto edge_index_to_face_index = [&](size_t index) {
         return index % num_faces;
     };
-    auto is_consistent = [&](const size_t fid, const size_t s, const size_t d) {
+    auto is_consistent = [&](const size_t fid, const size_t s, const size_t d)
+    -> bool{
         if ((size_t)F(fid, 0) == s && (size_t)F(fid, 1) == d) return false;
         if ((size_t)F(fid, 1) == s && (size_t)F(fid, 2) == d) return false;
         if ((size_t)F(fid, 2) == s && (size_t)F(fid, 0) == d) return false;
@@ -96,7 +97,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
     auto peel_cell_bd = [&](
             size_t seed_patch_id,
             short seed_patch_side,
-            size_t cell_idx) {
+            size_t cell_idx) -> void {
         typedef std::pair<size_t, short> PatchSide;
         std::queue<PatchSide> Q;
         Q.emplace(seed_patch_id, seed_patch_side);
@@ -177,14 +178,14 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
         Eigen::PlainObjectBase<DerivedC>& cells) {
 #ifdef EXTRACT_CELLS_DEBUG
-  const auto & tictoc = []()
+  const auto & tictoc = []() -> double
   {
     static double t_start = igl::get_seconds();
     double diff = igl::get_seconds()-t_start;
     t_start += diff;
     return diff;
   };
-  const auto log_time = [&](const std::string& label) {
+  const auto log_time = [&](const std::string& label) -> void {
     std::cout << "extract_cells." << label << ": "
       << tictoc() << std::endl;
   };

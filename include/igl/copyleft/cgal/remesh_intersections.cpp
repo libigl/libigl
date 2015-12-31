@@ -78,7 +78,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         return coeffs;
     };
 
-    auto plane_comp = [&](const Plane_3& p1, const Plane_3& p2) {
+    auto plane_comp = [&](const Plane_3& p1, const Plane_3& p2) -> bool{
         const auto p1_coeffs = normalize_plane_coeff(p1);
         const auto p2_coeffs = normalize_plane_coeff(p2);
         if (p1_coeffs[0] != p2_coeffs[0])
@@ -132,7 +132,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     auto run_delaunay_triangulation = [&](const Plane_3& P,
             const std::vector<Index>& involved_faces,
             std::vector<Point_3>& vertices,
-            std::vector<std::vector<Index> >& faces) {
+            std::vector<std::vector<Index> >& faces) -> void {
         CDT_plus_2 cdt;
         for (const auto& fid : involved_faces) {
             const auto itr = offending.find(fid);
@@ -250,7 +250,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     auto post_triangulation_process = [&](
             const std::vector<Point_3>& vertices,
             const std::vector<std::vector<Index> >& faces,
-            const std::vector<Index>& involved_faces) {
+            const std::vector<Index>& involved_faces) -> void {
         for (const auto& f : faces) {
             const Point_3& v0 = vertices[f[0]];
             const Point_3& v1 = vertices[f[1]];
