@@ -6,16 +6,16 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
 template <
-  typename DerivedV,
-  typename DerivedF,
+  typename DerivedVA,
+  typename DerivedFA,
   typename Deriveds,
   typename Derivedd,
   typename DerivedW,
   typename DerivedG,
   typename DerivedJ>
 IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
-  const Eigen::PlainObjectBase<DerivedV> & V,
-  const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::PlainObjectBase<DerivedVA> & VA,
+  const Eigen::PlainObjectBase<DerivedFA> & FA,
   const Eigen::PlainObjectBase<Deriveds> & s,
   const Eigen::PlainObjectBase<Derivedd> & d,
   const bool resolve_overlaps, 
@@ -26,32 +26,32 @@ IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
   using namespace Eigen;
   using namespace std;
   // silly base case
-  if(F.size() == 0)
+  if(FA.size() == 0)
   {
     W.resize(0,3);
     G.resize(0,3);
     return;
   }
-  const int dim = V.cols();
+  const int dim = VA.cols();
   assert(dim == 3 && "dim must be 3D");
   assert(s.size() == 3 && "s must be 3D point");
   assert(d.size() == 3 && "d must be 3D point");
   // segment vector
   const CGAL::Vector_3<CGAL::Epeck> v(d(0)-s(0),d(1)-s(1),d(2)-s(2));
   // number of vertices
-  const int n = V.rows();
+  const int n = VA.rows();
   // duplicate vertices at s and d, we'll remove unreferernced later
   DerivedW WW(2*n,dim);
   for(int i = 0;i<n;i++)
   {
     for(int j = 0;j<dim;j++)
     {
-      WW  (i,j) = V(i,j) + s(j);
-      WW(i+n,j) = V(i,j) + d(j);
+      WW  (i,j) = VA(i,j) + s(j);
+      WW(i+n,j) = VA(i,j) + d(j);
     }
   }
   // number of faces
-  const int m = F.rows();
+  const int m = FA.rows();
   // Mask whether positive dot product, or negative: because of exactly zero,
   // these are not necessarily complementary
   Matrix<bool,Dynamic,1> P(m,1),N(m,1);
@@ -60,9 +60,9 @@ IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
   for(int f = 0;f<m;f++)
   {
     const CGAL::Plane_3<CGAL::Epeck> plane(
-      CGAL::Point_3<CGAL::Epeck>(V(F(f,0),0),V(F(f,0),1),V(F(f,0),2)),
-      CGAL::Point_3<CGAL::Epeck>(V(F(f,1),0),V(F(f,1),1),V(F(f,1),2)),
-      CGAL::Point_3<CGAL::Epeck>(V(F(f,2),0),V(F(f,2),1),V(F(f,2),2)));
+      CGAL::Point_3<CGAL::Epeck>(VA(FA(f,0),0),VA(FA(f,0),1),VA(FA(f,0),2)),
+      CGAL::Point_3<CGAL::Epeck>(VA(FA(f,1),0),VA(FA(f,1),1),VA(FA(f,1),2)),
+      CGAL::Point_3<CGAL::Epeck>(VA(FA(f,2),0),VA(FA(f,2),1),VA(FA(f,2),2)));
     const auto normal = plane.orthogonal_vector();
     const auto dt = normal * v;
     if(dt > 0)
@@ -85,8 +85,8 @@ IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
   typedef Matrix<typename DerivedG::Scalar,Dynamic,Dynamic> MatrixXI;
   typedef Matrix<typename DerivedG::Scalar,Dynamic,1> VectorXI;
   MatrixXI GT(mp+mn,3);
-  GT<< slice_mask(F,N,1), slice_mask((F.array()+n).eval(),P,1);
-  // J indexes F for parts at s and m+F for parts at d
+  GT<< slice_mask(FA,N,1), slice_mask((FA.array()+n).eval(),P,1);
+  // J indexes FA for parts at s and m+FA for parts at d
   J = DerivedJ::LinSpaced(m,0,m-1);
   DerivedJ JT(mp+mn);
   JT << slice_mask(J,P,1), slice_mask(J,N,1);
@@ -94,7 +94,7 @@ IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
 
   // Original non-co-planar faces with positively oriented reversed
   MatrixXI BA(mp+mn,3);
-  BA << slice_mask(F,P,1).rowwise().reverse(), slice_mask(F,N,1);
+  BA << slice_mask(FA,P,1).rowwise().reverse(), slice_mask(FA,N,1);
   // Quads along **all** sides
   MatrixXI GQ((mp+mn)*3,4);
   GQ<< 
@@ -175,7 +175,6 @@ IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
     {
       switch(S(q))
       {
-#warning "If (V,F) is non-manifold, does this handle all cases?"
         case -2:
           GQ.row(k++) = uGQ.row(q).reverse().eval();
           break;
@@ -202,7 +201,7 @@ IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
     DerivedJ SJ;
     mesh_boolean(
       WW,GG,
-      Matrix<typename DerivedV::Scalar,Dynamic,Dynamic>(),MatrixXI(),
+      Matrix<typename DerivedVA::Scalar,Dynamic,Dynamic>(),MatrixXI(),
       MESH_BOOLEAN_TYPE_UNION,
       W,G,SJ);
     J = slice(DerivedJ(J),SJ,1);
@@ -210,21 +209,21 @@ IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
 }
 
 template <
-  typename DerivedV,
-  typename DerivedF,
+  typename DerivedVA,
+  typename DerivedFA,
   typename Deriveds,
   typename Derivedd,
   typename DerivedW,
   typename DerivedG,
   typename DerivedJ>
 IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
-  const Eigen::PlainObjectBase<DerivedV> & V,
-  const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::PlainObjectBase<DerivedVA> & VA,
+  const Eigen::PlainObjectBase<DerivedFA> & FA,
   const Eigen::PlainObjectBase<Deriveds> & s,
   const Eigen::PlainObjectBase<Derivedd> & d,
   Eigen::PlainObjectBase<DerivedW> & W,
   Eigen::PlainObjectBase<DerivedG> & G,
   Eigen::PlainObjectBase<DerivedJ> & J)
 {
-  return minkowski_sum(V,F,s,d,true,W,G,J);
+  return minkowski_sum(VA,FA,s,d,true,W,G,J);
 }
