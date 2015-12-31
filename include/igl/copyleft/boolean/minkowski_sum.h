@@ -18,6 +18,9 @@ namespace igl
       //   F  #F by 3 list of triangle indices into V
       //   s  segment source endpoint in 3D
       //   d  segment source endpoint in 3D
+      //   resolve_overlaps  whether or not to resolve self-union. If false
+      //     then result may contain self-intersections if input mesh is
+      //     non-convex.
       // Outputs:
       //   W  #W by 3 list of mesh vertices in 3D
       //   G  #G by 3 list of triangle indices into W
@@ -36,9 +39,27 @@ namespace igl
         const Eigen::PlainObjectBase<DerivedF> & F,
         const Eigen::PlainObjectBase<Deriveds> & s,
         const Eigen::PlainObjectBase<Derivedd> & d,
+        const bool resolve_overlaps,
         Eigen::PlainObjectBase<DerivedW> & W,
         Eigen::PlainObjectBase<DerivedG> & G,
         Eigen::PlainObjectBase<DerivedJ> & J);
+      template <
+        typename DerivedV,
+        typename DerivedF,
+        typename Deriveds,
+        typename Derivedd,
+        typename DerivedW,
+        typename DerivedG,
+        typename DerivedJ>
+      IGL_INLINE void minkowski_sum(
+        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::PlainObjectBase<DerivedF> & F,
+        const Eigen::PlainObjectBase<Deriveds> & s,
+        const Eigen::PlainObjectBase<Derivedd> & d,
+        Eigen::PlainObjectBase<DerivedW> & W,
+        Eigen::PlainObjectBase<DerivedG> & G,
+        Eigen::PlainObjectBase<DerivedJ> & J);
+
     }
   }
 }

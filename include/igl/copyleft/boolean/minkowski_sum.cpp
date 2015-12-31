@@ -18,6 +18,7 @@ IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
   const Eigen::PlainObjectBase<DerivedF> & F,
   const Eigen::PlainObjectBase<Deriveds> & s,
   const Eigen::PlainObjectBase<Derivedd> & d,
+  const bool resolve_overlaps, 
   Eigen::PlainObjectBase<DerivedW> & W,
   Eigen::PlainObjectBase<DerivedG> & G,
   Eigen::PlainObjectBase<DerivedJ> & J)
@@ -196,6 +197,7 @@ IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
     GQ.col(0), GQ.col(2), GQ.col(3);
   J.resize(JT.rows()+2*GQ.rows(),1);
   J<<JT,DerivedJ::Constant(2*GQ.rows(),1,2*m+1);
+  if(resolve_overlaps)
   {
     DerivedJ SJ;
     mesh_boolean(
@@ -205,4 +207,24 @@ IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
       W,G,SJ);
     J = slice(DerivedJ(J),SJ,1);
   }
+}
+
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename Deriveds,
+  typename Derivedd,
+  typename DerivedW,
+  typename DerivedG,
+  typename DerivedJ>
+IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::PlainObjectBase<Deriveds> & s,
+  const Eigen::PlainObjectBase<Derivedd> & d,
+  Eigen::PlainObjectBase<DerivedW> & W,
+  Eigen::PlainObjectBase<DerivedG> & G,
+  Eigen::PlainObjectBase<DerivedJ> & J)
+{
+  return minkowski_sum(V,F,s,d,true,W,G,J);
 }
