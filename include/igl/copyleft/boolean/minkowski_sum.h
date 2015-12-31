@@ -14,8 +14,8 @@ namespace igl
       // segment [s,d] in 3D.
       //
       // Inputs:
-      //   V  #V by 3 list of mesh vertices in 3D
-      //   F  #F by 3 list of triangle indices into V
+      //   VA  #VA by 3 list of mesh vertices in 3D
+      //   FA  #FA by 3 list of triangle indices into VA
       //   s  segment source endpoint in 3D
       //   d  segment source endpoint in 3D
       //   resolve_overlaps  whether or not to resolve self-union. If false
@@ -27,16 +27,16 @@ namespace igl
       //   J  #G list of indices into [F;#V+F;[s d]] of birth parents
       //
       template <
-        typename DerivedV,
-        typename DerivedF,
+        typename DerivedVA,
+        typename DerivedFA,
         typename Deriveds,
         typename Derivedd,
         typename DerivedW,
         typename DerivedG,
         typename DerivedJ>
       IGL_INLINE void minkowski_sum(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::PlainObjectBase<DerivedF> & F,
+        const Eigen::PlainObjectBase<DerivedVA> & VA,
+        const Eigen::PlainObjectBase<DerivedFA> & FA,
         const Eigen::PlainObjectBase<Deriveds> & s,
         const Eigen::PlainObjectBase<Derivedd> & d,
         const bool resolve_overlaps,
@@ -44,16 +44,16 @@ namespace igl
         Eigen::PlainObjectBase<DerivedG> & G,
         Eigen::PlainObjectBase<DerivedJ> & J);
       template <
-        typename DerivedV,
-        typename DerivedF,
+        typename DerivedVA,
+        typename DerivedFA,
         typename Deriveds,
         typename Derivedd,
         typename DerivedW,
         typename DerivedG,
         typename DerivedJ>
       IGL_INLINE void minkowski_sum(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::PlainObjectBase<DerivedF> & F,
+        const Eigen::PlainObjectBase<DerivedVA> & VA,
+        const Eigen::PlainObjectBase<DerivedFA> & FA,
         const Eigen::PlainObjectBase<Deriveds> & s,
         const Eigen::PlainObjectBase<Derivedd> & d,
         Eigen::PlainObjectBase<DerivedW> & W,
