@@ -125,7 +125,7 @@ namespace igl
         // http://www.cgal.org/Manual/latest/doc_html/cgal_manual/Box_intersection_d/Chapter_main.html#Section_63.5 
         // Create the corresponding vector of bounding boxes
         std::vector<Box> A_boxes,B_boxes;
-        const auto box_up = [](Triangles & T, std::vector<Box> & boxes)
+        const auto box_up = [](Triangles & T, std::vector<Box> & boxes) -> void
         {
           boxes.reserve(T.size());
           for ( 
