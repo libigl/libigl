@@ -25,7 +25,7 @@ IGL_INLINE void igl::doublearea(
   assert(F.cols() == 3);
   const size_t m = F.rows();
   // Compute edge lengths
-  Eigen::PlainObjectBase<DerivedV> l;
+  Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 3> l;
   // "Lecture Notes on Geometric Robustness" Shewchuck 09, Section 3.1
   // http://www.cs.berkeley.edu/~jrs/meshpapers/robnotes.pdf
 
@@ -140,7 +140,7 @@ IGL_INLINE void igl::doublearea(
   assert(ul.cols() == 3);
   // Number of triangles
   const Index m = ul.rows();
-  Eigen::PlainObjectBase<Derivedl> l;
+  Eigen::Matrix<typename Derivedl::Scalar, Eigen::Dynamic, 3> l;
   MatrixXi _;
   sort(ul,2,false,l,_);
   // semiperimeters

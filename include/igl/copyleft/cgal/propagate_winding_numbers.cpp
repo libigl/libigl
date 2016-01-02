@@ -11,8 +11,10 @@
 #include "../../extract_non_manifold_edge_curves.h"
 #include "../../facet_components.h"
 #include "../../unique_edge_map.h"
+#include "../../piecewise_constant_winding_number.h"
 #include "../../writeOBJ.h"
 #include "../../writePLY.h"
+#include "../../get_seconds.h"
 #include "order_facets_around_edge.h"
 #include "outer_facet.h"
 #include "closest_facet.h"
@@ -25,46 +27,7 @@
 #include <tuple>
 #include <queue>
 
-namespace propagate_winding_numbers_helper {
-  template<
-    typename DerivedF,
-    typename DeriveduE,
-    typename uE2EType >
-  bool is_orientable(
-      const Eigen::PlainObjectBase<DerivedF>& F,
-      const Eigen::PlainObjectBase<DeriveduE>& uE,
-      const std::vector<std::vector<uE2EType> >& uE2E) {
-    const size_t num_faces = F.rows();
-    const size_t num_edges = uE.rows();
-    auto edge_index_to_face_index = [&](size_t ei) {
-      return ei % num_faces;
-    };
-    auto is_consistent = [&](size_t fid, size_t s, size_t d) {
-      if ((size_t)F(fid, 0) == s && (size_t)F(fid, 1) == d) return true;
-      if ((size_t)F(fid, 1) == s && (size_t)F(fid, 2) == d) return true;
-      if ((size_t)F(fid, 2) == s && (size_t)F(fid, 0) == d) return true;
-
-      if ((size_t)F(fid, 0) == d && (size_t)F(fid, 1) == s) return false;
-      if ((size_t)F(fid, 1) == d && (size_t)F(fid, 2) == s) return false;
-      if ((size_t)F(fid, 2) == d && (size_t)F(fid, 0) == s) return false;
-      throw "Invalid face!!";
-    };
-    for (size_t i=0; i<num_edges; i++) {
-      const size_t s = uE(i,0);
-      const size_t d = uE(i,1);
-      int count=0;
-      for (const auto& ei : uE2E[i]) {
-        const size_t fid = edge_index_to_face_index(ei);
-        if (is_consistent(fid, s, d)) count++;
-        else count--;
-      }
-      if (count != 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-}
+//#define PROPAGATE_WINDING_NUMBER_TIMING
 
 template<
   typename DerivedV,
@@ -76,6 +39,16 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
     const Eigen::PlainObjectBase<DerivedF>& F,
     const Eigen::PlainObjectBase<DerivedL>& labels,
     Eigen::PlainObjectBase<DerivedW>& W) {
+#ifdef PROPAGATE_WINDING_NUMBER_TIMING
+  const auto & tictoc = []()
+  {
+    static double t_start = igl::get_seconds();
+    double diff = igl::get_seconds()-t_start;
+    t_start += diff;
+    return diff;
+  };
+  tictoc();
+#endif
   const size_t num_faces = F.rows();
   //typedef typename DerivedF::Scalar Index;
 
@@ -83,17 +56,24 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
   Eigen::VectorXi EMAP;
   std::vector<std::vector<size_t> > uE2E;
   igl::unique_edge_map(F, E, uE, EMAP, uE2E);
-  if (!propagate_winding_numbers_helper::is_orientable(F, uE, uE2E)) {
-      std::cerr << "Input mesh is not orientable!" << std::endl;
+  if (!piecewise_constant_winding_number(F, uE, uE2E)) 
+  {
+    std::cerr << "Input mesh is not orientable!" << std::endl;
   }
 
   Eigen::VectorXi P;
   const size_t num_patches = igl::extract_manifold_patches(F, EMAP, uE2E, P);
+#ifdef PROPAGATE_WINDING_NUMBER_TIMING
+  std::cout << "extract manifold patches: " << tictoc() << std::endl;
+#endif
 
   DerivedW per_patch_cells;
   const size_t num_cells =
     igl::copyleft::cgal::extract_cells(
         V, F, P, E, uE, uE2E, EMAP, per_patch_cells);
+#ifdef PROPAGATE_WINDING_NUMBER_TIMING
+  std::cout << "extract cells: " << tictoc() << std::endl;;
+#endif
 
   typedef std::tuple<size_t, bool, size_t> CellConnection;
   std::vector<std::set<CellConnection> > cell_adjacency(num_cells);
@@ -103,6 +83,9 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
     cell_adjacency[positive_cell].emplace(negative_cell, false, i);
     cell_adjacency[negative_cell].emplace(positive_cell, true, i);
   }
+#ifdef PROPAGATE_WINDING_NUMBER_TIMING
+  std::cout << "cell connection: " << tictoc() << std::endl;
+#endif
 
   auto save_cell = [&](const std::string& filename, size_t cell_id) {
     std::vector<size_t> faces;
@@ -175,12 +158,19 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
                 }
                 std::cout << std::endl;
               }
-              assert(cell_labels[std::get<0>(neighbor)] == curr_label * -1);
+              // Do not fail when odd cycle is detected because the resulting
+              // integer winding number field, although inconsistent, may still
+              // be used if the problem region is local and embedded within a
+              // valid volume.
+              //assert(cell_labels[std::get<0>(neighbor)] == curr_label * -1);
             }
           }
         }
       }
     }
+#ifdef PROPAGATE_WINDING_NUMBER_TIMING
+    std::cout << "check for odd cycle: " << tictoc() << std::endl;
+#endif
   }
 #endif
 
@@ -189,6 +179,9 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
   Eigen::VectorXi I;
   I.setLinSpaced(num_faces, 0, num_faces-1);
   igl::copyleft::cgal::outer_facet(V, F, I, outer_facet, flipped);
+#ifdef PROPAGATE_WINDING_NUMBER_TIMING
+  std::cout << "outer facet: " << tictoc() << std::endl;
+#endif
 
   const size_t outer_patch = P[outer_facet];
   const size_t infinity_cell = per_patch_cells(outer_patch, flipped?1:0);
@@ -229,20 +222,30 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
         Q.push(neighbor_cell);
       } else {
 #ifndef NDEBUG
+        // Checking for winding number consistency.
+        // This check would inevitably fail for meshes that contain open
+        // boundary or non-orientable.  However, the inconsistent winding number
+        // field would still be useful in some cases such as when problem region
+        // is local and embedded within the volume.  This, unfortunately, is the
+        // best we can do because the problem of computing integer winding
+        // number is ill-defined for open and non-orientable surfaces.
         for (size_t i=0; i<num_labels; i++) {
           if ((int)i == patch_labels[patch_idx]) {
             int inc = direction ? -1:1;
-            assert(per_cell_W(neighbor_cell, i) ==
-                per_cell_W(curr_cell, i) + inc);
+            //assert(per_cell_W(neighbor_cell, i) ==
+            //    per_cell_W(curr_cell, i) + inc);
           } else {
-            assert(per_cell_W(neighbor_cell, i) ==
-                per_cell_W(curr_cell, i));
+            //assert(per_cell_W(neighbor_cell, i) ==
+            //    per_cell_W(curr_cell, i));
           }
         }
 #endif
       }
     }
   }
+#ifdef PROPAGATE_WINDING_NUMBER_TIMING
+  std::cout << "propagate winding number: " << tictoc() << std::endl;
+#endif
 
   W.resize(num_faces, num_labels*2);
   for (size_t i=0; i<num_faces; i++) {
@@ -254,6 +257,9 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
       W(i,j*2+1) = per_cell_W(negative_cell, j);
     }
   }
+#ifdef PROPAGATE_WINDING_NUMBER_TIMING
+  std::cout << "save result: " << tictoc() << std::endl;
+#endif
 }
 
 

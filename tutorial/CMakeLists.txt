@@ -4,6 +4,7 @@ project(libigl_tutorials)
 message("Generated with config types: ${CMAKE_CONFIGURATION_TYPES}")
 
 option(LIBIGL_USE_STATIC_LIBRARY "Use static library" OFF)
+option(LIBIGL_VIEWER_WITH_NANOGUI "Enable nanogui " OFF)
 
 if(LIBIGL_USE_STATIC_LIBRARY)
   add_definitions(-DIGL_STATIC_LIBRARY)
@@ -12,13 +13,15 @@ endif(LIBIGL_USE_STATIC_LIBRARY)
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 IF(MSVC)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj /w") ### Enable parallel compilation for Visual Studio
+  # Enable parallel compilation for Visual Studio
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj /w") 
 
   SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} )
   SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} )
 
 ELSE(MSVC)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") #### Libigl requires a modern C++ compiler that supports c++11
+  # Libigl requires a modern C++ compiler that supports c++11
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
   SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../" )
 ENDIF(MSVC)
 
@@ -31,6 +34,7 @@ find_package(MOSEK QUIET)
 find_package(TETGEN QUIET)
 find_package(TINYXML2 QUIET)
 find_package(TRIANGLE QUIET)
+find_package(LIM QUIET)
 
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 include("CMakeLists.shared")
@@ -48,36 +52,45 @@ include_directories("../include")
 option(ENABLE_ISPC_SUPPORT " " OFF)
 option(RTCORE_TASKING_SYSTEM " " INTERNAL)
 
-IF(NOT MSVC) # embree static build is broken on visual studio
-	option(ENABLE_STATIC_LIB " " ON)
-	set(ENABLE_STATIC_LIB ON CACHE BOOL "force static build of embree" FORCE)
+# embree static build is broken on visual studio
+IF(NOT MSVC) 
+  option(ENABLE_STATIC_LIB " " ON)
+  set(ENABLE_STATIC_LIB ON CACHE BOOL "force static build of embree" FORCE)
 ENDIF(NOT MSVC)
 
 IF(MSVC)
-	option(USE_STATIC_RUNTIME " " OFF)
-	set(USE_STATIC_RUNTIME OFF CACHE BOOL "disable changes in the runtime for VS" FORCE)
+  option(USE_STATIC_RUNTIME " " OFF)
+  set(USE_STATIC_RUNTIME OFF CACHE BOOL "disable changes in the runtime for VS" FORCE)
 ENDIF(MSVC)
 
 option(ENABLE_TUTORIALS " " OFF)
 
 IF(EMBREE_FOUND)
-  add_subdirectory("../external/embree/" "embree")		
-  include_directories("../external/embree/include")		
-  list(APPEND SHARED_LIBRARIES "embree")		
+  add_subdirectory("../external/embree/" "embree")    
+  include_directories("../external/embree/include")    
+  list(APPEND SHARED_LIBRARIES "embree")    
 ENDIF(EMBREE_FOUND)
 
-# endif(True)
-
-# if(True)
 #Compile nanogui
-set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
-set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
-set(NANOGUI_BUILD_SHARED OFF CACHE BOOL " " FORCE)
+if(LIBIGL_VIEWER_WITH_NANOGUI)
+  set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
+  set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
+  set(NANOGUI_BUILD_SHARED OFF CACHE BOOL " " FORCE)
+  add_definitions(-DIGL_VIEWER_WITH_NANOGUI)
+  add_subdirectory("../external/nanogui/" "nanogui")
+  include_directories("../external/nanogui/include")
+  include_directories("../external/nanogui/ext/nanovg/src")
+  list(APPEND SHARED_LIBRARIES "nanogui")
+else()
+  # still need to build GLFW
+  set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
+  set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+  set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
+  set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
+  add_subdirectory("${GLFW_INCLUDE_DIR}/../" "glfw")
+  list(APPEND SHARED_LIBRARIES "glfw")
 
-add_subdirectory("../external/nanogui/" "nanogui")
-include_directories("../external/nanogui/include")
-include_directories("../external/nanogui/ext/nanovg/src")
-list(APPEND SHARED_LIBRARIES "nanogui")
+endif()
 
 
 #Compile CoMISo (if found)

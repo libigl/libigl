@@ -409,27 +409,35 @@ using overlays.](images/105_Overlays.png)
 
 ## Viewer Menu [viewermenu]
 
-As of version 1.2 the viewer uses a new menu and completely replaces [AntTweakBar](http://anttweakbar.sourceforge.net/doc/). It is based on the open-source projects [nanovg](https://github.com/memononen/nanovg) and [nanogui](https://github.com/wjakob/nanogui). To extend the default menu of the viewer and to expose more user defined variables you have to define a callback function:
+As of version 1.2 the viewer uses a new menu and completely replaces
+[AntTweakBar](http://anttweakbar.sourceforge.net/doc/). It is based on the
+open-source projects [nanovg](https://github.com/memononen/nanovg) and
+[nanogui](https://github.com/wjakob/nanogui). To extend the default menu of the
+viewer and to expose more user defined variables you have to define a callback
+function:
 
 ```cpp
 igl::viewer::Viewer viewer;
 
 bool boolVariable = true;
 float floatVariable = 0.1f;
+enum Orientation { Up=0,Down,Left,Right } dir = Up;
 
-// extend viewer menu
+// Extend viewer menu
 viewer.callback_init = [&](igl::viewer::Viewer& viewer)
 {
-  // add new group
-  viewer.ngui->addNewGroup("New Group");
+  // Add new group
+  viewer.ngui->addGroup("New Group");
 
-  // expose variables
-  viewer.ngui->addVariable(boolVariable,"bool");
-  viewer.ngui->addVariable(floatVariable,"float");
+  // Expose a variable directly ...
+  viewer.ngui->addVariable("float",floatVariable);
+  
+  // Expose an enumaration type
+  viewer.ngui->addVariable<Orientation>("Direction",dir)->setItems({"Up","Down","Left","Right"});
 
-  // add button
-  viewer.ngui->addButton("Print Hello",[](){ cout << "Hello\n"; });
-
+  // Add a button
+  viewer.ngui->addButton("Print Hello",[](){ std::cout << "Hello\n"; });
+  
   // call to generate menu
   viewer.ngui->layout();
   return false;
@@ -442,31 +450,18 @@ viewer.launch();
 If you need a separate new menu window use:
 
 ```cpp
-viewer.ngui->addNewWindow(Eigen::Vector2i(220,10),"New Window");
-```
-
-You can also switch between different orientation of the layout:
-
-```cpp
-// horizontal alignment
-viewer.ngui->addNewGroup("New Group",nanogui::FormScreen::Layout::Horizontal);
-viewer.ngui->addButton("Print Test1",[](){ cout << "Test1\n"; });
-viewer.ngui->addButton("Print Test2",[](){ cout << "Test2\n"; });
-
-// vertical alignment
-viewer.ngui->setCurrentLayout(nanogui::FormScreen::Layout::Vertical);
-viewer.ngui->addVariable(boolVariable,"bool");
-viewer.ngui->addVariable(floatVariable,"float");
+viewer.ngui->addWindow(Eigen::Vector2i(220,10),"New Window");
 ```
 
 If you do not want to expose variables directly but rather use the get/set functionality:
 
 ```cpp
-viewer.ngui->addVariable([&](bool val) {
-  boolVariable = val; // set
+// ... or using a custom callback
+viewer.ngui->addVariable<bool>("bool",[&](bool val) {
+  boolVariable = val; // setter
 },[&]() {
-  return boolVariable; // get
-},"bool",true);
+  return boolVariable; // getter
+});
 ```
 
 ![([Example 106](106_ViewerMenu/main.cpp)) The UI of the viewer can be easily customized.](images/106_ViewerMenu.png)
@@ -2188,19 +2183,22 @@ void Serializable::PostDeserialization();
 Alternatively, if you want a non-intrusive way of serializing your state you can overload the following functions:
 
 ```cpp
-namespace igl { namespace serialization {
-
-void serialize(const State& obj,std::vector<char>& buffer){
-  ::igl::serialize(obj.V,std::string("V"),buffer);
-  ::igl::serialize(obj.F,std::string("F"),buffer);
-  ::igl::serialize(obj.ids,std::string("ids"),buffer);
+namespace igl
+{
+  namespace serialization
+  {
+    template <> inline void serialize(const State& obj,std::vector<char>& buffer){
+      ::igl::serialize(obj.V,std::string("V"),buffer);
+      ::igl::serialize(obj.F,std::string("F"),buffer);
+      ::igl::serialize(obj.ids,std::string("ids"),buffer);
+    }
+    template <> inline void deserialize(State& obj,const std::vector<char>& buffer){
+      ::igl::deserialize(obj.V,std::string("V"),buffer);
+      ::igl::deserialize(obj.F,std::string("F"),buffer);
+      ::igl::deserialize(obj.ids,std::string("ids"),buffer);
+    }
+  }
 }
-void deserialize(State& obj,const std::vector<char>& buffer){
-  ::igl::deserialize(obj.V,std::string("V"),buffer);
-  ::igl::deserialize(obj.F,std::string("F"),buffer);
-  ::igl::deserialize(obj.ids,std::string("ids"),buffer);
-}
-}}
 ```
 
 Equivalently, you can use the following macros:

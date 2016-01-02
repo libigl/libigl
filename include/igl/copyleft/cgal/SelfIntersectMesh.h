@@ -413,6 +413,10 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
 
   remesh_intersections(V,F,T,offending,edge2faces,VV,FF,J,IM);
 
+#ifdef IGL_SELFINTERSECTMESH_DEBUG
+  cout<<"remesh intersection: "<<tictoc()<<endl;
+#endif
+
   // Q: Does this give the same result as TETGEN?
   // A: For the cow and beast, yes.
 
