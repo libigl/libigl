@@ -26,7 +26,7 @@
 #include <tuple>
 #include <queue>
 
-//#define PROPAGATE_WINDING_NUMBER_TIMING
+#define PROPAGATE_WINDING_NUMBER_TIMING
 
 namespace propagate_winding_numbers_helper {
   template<
@@ -106,9 +106,6 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
 
   Eigen::VectorXi P;
   const size_t num_patches = igl::extract_manifold_patches(F, EMAP, uE2E, P);
-#ifdef PROPAGATE_WINDING_NUMBER_TIMING
-  log_time("patch_extraction");
-#endif
 
   DerivedW per_patch_cells;
   const size_t num_cells =

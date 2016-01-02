@@ -126,7 +126,7 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
     assert(W.cols() == 4);
   }
 #ifdef MESH_BOOLEAN_TIMING
-  log_time("propergate_input_winding_number");
+  log_time("propagate_input_winding_number");
 #endif
 
   // Compute resulting winding number.
