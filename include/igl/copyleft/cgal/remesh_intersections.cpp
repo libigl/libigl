@@ -107,7 +107,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         }
     }
 #ifdef REMESH_INTERSECTIONS_TIMING
-    log_time("coplanar_analysis");
+    log_time("overlap_analysis");
 #endif
 
     std::vector<std::vector<Index> > resolved_faces;
@@ -276,9 +276,6 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
             source_faces.push_back(i);
         }
     }
-#ifdef REMESH_INTERSECTIONS_TIMING
-    log_time("copy_untouched_faces");
-#endif
 
     // Process self-intersecting faces.
     std::vector<bool> processed(num_faces, false);
@@ -316,7 +313,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         cdt_inputs.emplace_back(P, involved_faces);
     }
 #ifdef REMESH_INTERSECTIONS_TIMING
-    log_time("prepare_cdt_input");
+    log_time("preprocess");
 #endif
 
     const size_t num_cdts = cdt_inputs.size();
@@ -345,7 +342,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         post_triangulation_process(vertices, faces, involved_faces);
     }
 #ifdef REMESH_INTERSECTIONS_TIMING
-    log_time("post_process");
+    log_time("stitching");
 #endif
 
     // Output resolved mesh.
