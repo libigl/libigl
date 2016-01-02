@@ -15,6 +15,8 @@
 #include <list>
 #include <map>
 #include <vector>
+#include <thread>
+#include <mutex>
 
 #define IGL_SELFINTERSECTMESH_DEBUG
 #ifndef IGL_FIRST_HIT_EXCEPTION
@@ -29,6 +31,23 @@ namespace igl
   {
     namespace cgal
     {
+      template<typename Kernel>
+      class DeepCoper {
+        public:
+          typename Kernel::FT operator()(const typename Kernel::FT& x) {
+            return typename Kernel::FT(x);
+          }
+      };
+
+      template<>
+      class DeepCoper<CGAL::Exact_predicates_exact_constructions_kernel> {
+        public:
+          typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
+          typename Kernel::FT operator()(const typename Kernel::FT& x) {
+            return Kernel::FT(x.exact() +1) - 1;
+          }
+      };
+
       // Kernel is a CGAL kernel like:
       //     CGAL::Exact_predicates_inexact_constructions_kernel
       // or 
@@ -222,6 +241,8 @@ namespace igl
             SelfIntersectMesh * SIM, 
             const Box &a, 
             const Box &b);
+        private:
+          std::mutex m_offending_lock;
       };
     }
   }
@@ -495,6 +516,7 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   const Index fa,
   const Index fb)
 {
+  std::lock_guard<std::mutex> guard(m_offending_lock);
   mark_offensive(fa);
   mark_offensive(fb);
   this->count++;
@@ -538,6 +560,7 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
   {
     // Construct intersection
     CGAL::Object result = CGAL::intersection(A,B);
+    std::lock_guard<std::mutex> guard(m_offending_lock);
     offending[fa].push_back({fb, result});
     offending[fb].push_back({fa, result});
   }
@@ -637,6 +660,7 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
         A.vertex(va),
         *p));
       count_intersection(fa,fb);
+      std::lock_guard<std::mutex> guard(m_offending_lock);
       offending[fa].push_back({fb, seg});
       offending[fb].push_back({fa, seg});
       return true;
@@ -695,12 +719,15 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
 {
   using namespace std;
 
+  {
+    std::lock_guard<std::mutex> guard(m_offending_lock);
   // must be co-planar
   if(
     A.supporting_plane() != B.supporting_plane() &&
     A.supporting_plane() != B.supporting_plane().opposite())
   {
     return false;
+  }
   }
   // Since A and B are non-degenerate the intersection must be a polygon
   // (triangle). Either
@@ -784,6 +811,7 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
       } else
       {
         // Triangle object
+        std::lock_guard<std::mutex> guard(m_offending_lock);
         offending[fa].push_back({fb, result});
         offending[fb].push_back({fa, result});
         //cerr<<REDRUM("Coplanar at: "<<fa<<" & "<<fb<<" (double shared).")<<endl;
@@ -854,76 +882,99 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   DerivedJ,
   DerivedIM>::process_intersecting_boxes()
 {
-  for (const auto& box_pair : candidate_box_pairs) {
-    const auto& a = box_pair.first;
-    const auto& b = box_pair.second;
-    Index fa = a.handle()-T.begin();
-    Index fb = b.handle()-T.begin();
-    const Triangle_3 & A = *a.handle();
-    const Triangle_3 & B = *b.handle();
+  CGAL::Identity_transformation I;
+  std::vector<std::mutex> triangle_locks(T.size());
+  auto process_chunk = [&](size_t first, size_t last) -> void{
+    assert(last >= first);
 
-    // Number of combinatorially shared vertices
-    Index comb_shared_vertices = 0;
-    // Number of geometrically shared vertices (*not* including combinatorially
-    // shared)
-    Index geo_shared_vertices = 0;
-    // Keep track of shared vertex indices
-    std::vector<std::pair<Index,Index> > shared;
-    Index ea,eb;
-    for(ea=0;ea<3;ea++)
-    {
-      for(eb=0;eb<3;eb++)
+    for (size_t i=first; i<last; i++) {
+      const auto& box_pair = candidate_box_pairs[i];
+      const auto& a = box_pair.first;
+      const auto& b = box_pair.second;
+      Index fa = a.handle()-T.begin();
+      Index fb = b.handle()-T.begin();
+
+      std::lock_guard<std::mutex> guard_A(triangle_locks[fa]);
+      std::lock_guard<std::mutex> guard_B(triangle_locks[fb]);
+      const Triangle_3& A = *a.handle();
+      const Triangle_3& B = *b.handle();
+
+      // Number of combinatorially shared vertices
+      Index comb_shared_vertices = 0;
+      // Number of geometrically shared vertices (*not* including combinatorially
+      // shared)
+      Index geo_shared_vertices = 0;
+      // Keep track of shared vertex indices
+      std::vector<std::pair<Index,Index> > shared;
+      Index ea,eb;
+      for(ea=0;ea<3;ea++)
       {
-        if(F(fa,ea) == F(fb,eb))
+        for(eb=0;eb<3;eb++)
         {
-          comb_shared_vertices++;
-          shared.emplace_back(ea,eb);
-        }else if(A.vertex(ea) == B.vertex(eb))
-        {
-          geo_shared_vertices++;
-          shared.emplace_back(ea,eb);
+          if(F(fa,ea) == F(fb,eb))
+          {
+            comb_shared_vertices++;
+            shared.emplace_back(ea,eb);
+          }else if(A.vertex(ea) == B.vertex(eb))
+          {
+            geo_shared_vertices++;
+            shared.emplace_back(ea,eb);
+          }
         }
       }
-    }
-    const Index total_shared_vertices = comb_shared_vertices + geo_shared_vertices;
+      const Index total_shared_vertices = comb_shared_vertices + geo_shared_vertices;
 
-    if(comb_shared_vertices== 3)
-    {
-      assert(shared.size() == 3);
-      //// Combinatorially duplicate face, these should be removed by preprocessing
-      //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are combinatorial duplicates")<<endl;
-      continue;
+      if(comb_shared_vertices== 3)
+      {
+        assert(shared.size() == 3);
+        //// Combinatorially duplicate face, these should be removed by preprocessing
+        //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are combinatorial duplicates")<<endl;
+        continue;
+      }
+      if(total_shared_vertices== 3)
+      {
+        assert(shared.size() == 3);
+        //// Geometrically duplicate face, these should be removed by preprocessing
+        //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are geometrical duplicates")<<endl;
+        continue;
+      }
+      if(total_shared_vertices == 2)
+      {
+        assert(shared.size() == 2);
+        // Q: What about coplanar?
+        //
+        // o    o
+        // |\  /|
+        // | \/ |
+        // | /\ |
+        // |/  \|
+        // o----o
+        double_shared_vertex(A,B,fa,fb,shared);
+        continue;
+      }
+      assert(total_shared_vertices<=1);
+      if(total_shared_vertices==1)
+      {
+        single_shared_vertex(A,B,fa,fb,shared[0].first,shared[0].second);
+      }else
+      {
+        intersect(*a.handle(),*b.handle(),fa,fb);
+      }
     }
-    if(total_shared_vertices== 3)
-    {
-      assert(shared.size() == 3);
-      //// Geometrically duplicate face, these should be removed by preprocessing
-      //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are geometrical duplicates")<<endl;
-      continue;
-    }
-    if(total_shared_vertices == 2)
-    {
-      assert(shared.size() == 2);
-      // Q: What about coplanar?
-      //
-      // o    o
-      // |\  /|
-      // | \/ |
-      // | /\ |
-      // |/  \|
-      // o----o
-      double_shared_vertex(A,B,fa,fb,shared);
-      continue;
-    }
-    assert(total_shared_vertices<=1);
-    if(total_shared_vertices==1)
-    {
-      single_shared_vertex(A,B,fa,fb,shared[0].first,shared[0].second);
-    }else
-    {
-      intersect(*a.handle(),*b.handle(),fa,fb);
-    }
+  };
+  const size_t num_threads = std::thread::hardware_concurrency();
+  const size_t num_pairs = candidate_box_pairs.size();
+  const size_t chunk_size = num_pairs / num_threads;
+  std::vector<std::thread> threads;
+  for (size_t i=0; i<num_threads-1; i++) {
+    threads.emplace_back(process_chunk, i*chunk_size, (i+1)*chunk_size);
   }
+  // Do some work in the master thread.
+  process_chunk((num_threads-1)*chunk_size, num_pairs);
+  for (auto& t : threads) {
+    if (t.joinable()) t.join();
+  }
+  //process_chunk(0, candidate_box_pairs.size());
 }
 
 #endif
