@@ -962,7 +962,15 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
       }
     }
   };
-  const size_t num_threads = std::thread::hardware_concurrency();
+  size_t num_threads=0;
+  const size_t hardware_limit = std::thread::hardware_concurrency();
+  if (const char* igl_num_threads = std::getenv("LIBIGL_NUM_THREADS")) {
+    num_threads = atoi(igl_num_threads);
+  }
+  if (num_threads == 0 || num_threads > hardware_limit) {
+    num_threads = hardware_limit;
+  }
+  assert(num_threads > 0);
   const size_t num_pairs = candidate_box_pairs.size();
   const size_t chunk_size = num_pairs / num_threads;
   std::vector<std::thread> threads;
