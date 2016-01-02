@@ -8,12 +8,15 @@
 //
 #include "remesh_intersections.h"
 #include "assign_scalar.h"
+#include "../../get_seconds.h"
 
 #include <vector>
 #include <map>
 #include <queue>
 #include <unordered_map>
 #include <iostream>
+
+#define REMESH_INTERSECTIONS_TIMING
 
 template <
 typename DerivedV,
@@ -39,6 +42,21 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         Eigen::PlainObjectBase<DerivedJ> & J,
         Eigen::PlainObjectBase<DerivedIM> & IM) {
 
+#ifdef REMESH_INTERSECTIONS_TIMING
+    const auto & tictoc = []() -> double
+    {
+      static double t_start = igl::get_seconds();
+      double diff = igl::get_seconds()-t_start;
+      t_start += diff;
+      return diff;
+    };
+    const auto log_time = [&](const std::string& label) -> void {
+      std::cout << "remesh_intersections." << label << ": "
+          << tictoc() << std::endl;
+    };
+    tictoc();
+#endif
+
     typedef CGAL::Point_3<Kernel>    Point_3;
     typedef CGAL::Segment_3<Kernel>  Segment_3; 
     typedef CGAL::Triangle_3<Kernel> Triangle_3; 
@@ -59,39 +77,6 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         }
     };
     typedef std::unordered_map<Edge, std::vector<Index>, EdgeHash > EdgeMap;
-
-    auto normalize_plane_coeff = [](const Plane_3& P) ->
-    std::vector<typename Kernel::FT> {
-        std::vector<typename Kernel::FT> coeffs = {
-            P.a(), P.b(), P.c(), P.d()
-        };
-        const auto max_itr = std::max_element(coeffs.begin(), coeffs.end());
-        const auto min_itr = std::min_element(coeffs.begin(), coeffs.end());
-        typename Kernel::FT max_coeff;
-        if (*max_itr < -1 * *min_itr) {
-            max_coeff = *min_itr;
-        } else {
-            max_coeff = *max_itr;
-        }
-        std::transform(coeffs.begin(), coeffs.end(), coeffs.begin(),
-                [&](const typename Kernel::FT& val)
-                {return val / max_coeff; } );
-        return coeffs;
-    };
-
-    auto plane_comp = [&](const Plane_3& p1, const Plane_3& p2) -> bool{
-        const auto p1_coeffs = normalize_plane_coeff(p1);
-        const auto p2_coeffs = normalize_plane_coeff(p2);
-        if (p1_coeffs[0] != p2_coeffs[0])
-            return p1_coeffs[0] < p2_coeffs[0];
-        if (p1_coeffs[1] != p2_coeffs[1])
-            return p1_coeffs[1] < p2_coeffs[1];
-        if (p1_coeffs[2] != p2_coeffs[2])
-            return p1_coeffs[2] < p2_coeffs[2];
-        if (p1_coeffs[3] != p2_coeffs[3])
-            return p1_coeffs[3] < p2_coeffs[3];
-        return false;
-    };
 
     const size_t num_faces = F.rows();
     const size_t num_base_vertices = V.rows();
@@ -121,6 +106,9 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
             }
         }
     }
+#ifdef REMESH_INTERSECTIONS_TIMING
+    log_time("coplanar_analysis");
+#endif
 
     std::vector<std::vector<Index> > resolved_faces;
     std::vector<Index> source_faces;
@@ -130,7 +118,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     /**
      * Run constraint Delaunay triangulation on the plane.
      */
-    auto run_delaunay_triangulation = [&](const Plane_3& P,
+    auto run_delaunay_triangulation = [&offending, &T](const Plane_3& P,
             const std::vector<Index>& involved_faces,
             std::vector<Point_3>& vertices,
             std::vector<std::vector<Index> >& faces) -> void {
@@ -288,9 +276,13 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
             source_faces.push_back(i);
         }
     }
+#ifdef REMESH_INTERSECTIONS_TIMING
+    log_time("copy_untouched_faces");
+#endif
 
     // Process self-intersecting faces.
     std::vector<bool> processed(num_faces, false);
+    std::vector<std::pair<Plane_3, std::vector<Index> > > cdt_inputs;
     for (const auto itr : offending) {
         const auto fid = itr.first;
         if (processed[fid]) continue;
@@ -321,11 +313,40 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         }
 
         Plane_3 P = T[fid].supporting_plane();
-        std::vector<Point_3> vertices;
-        std::vector<std::vector<Index> > faces;
+        cdt_inputs.emplace_back(P, involved_faces);
+    }
+#ifdef REMESH_INTERSECTIONS_TIMING
+    log_time("prepare_cdt_input");
+#endif
+
+    const size_t num_cdts = cdt_inputs.size();
+    std::vector<std::vector<Point_3> > cdt_vertices(num_cdts);
+    std::vector<std::vector<std::vector<Index> > > cdt_faces(num_cdts);
+
+    const auto run_cdt = [&](const size_t first, const size_t last) {
+      for (size_t i=first; i<last; i++) {
+        auto& vertices = cdt_vertices[i];
+        auto& faces = cdt_faces[i];
+        const auto& P = cdt_inputs[i].first;
+        const auto& involved_faces = cdt_inputs[i].second;
         run_delaunay_triangulation(P, involved_faces, vertices, faces);
+      }
+    };
+    run_cdt(0, num_cdts);
+#ifdef REMESH_INTERSECTIONS_TIMING
+    log_time("cdt");
+#endif
+
+    // Post process
+    for (size_t i=0; i<num_cdts; i++) {
+        const auto& vertices = cdt_vertices[i];
+        const auto& faces = cdt_faces[i];
+        const auto& involved_faces = cdt_inputs[i].second;
         post_triangulation_process(vertices, faces, involved_faces);
     }
+#ifdef REMESH_INTERSECTIONS_TIMING
+    log_time("post_process");
+#endif
 
     // Output resolved mesh.
     const size_t num_out_vertices = new_vertices.size() + num_base_vertices;
@@ -352,12 +373,25 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     J.resize(num_out_faces);
     std::copy(source_faces.begin(), source_faces.end(), J.data());
 
+    struct PointHash {
+        size_t operator()(const Point_3& p) const {
+            static const std::hash<double> hasher{};
+            double x,y,z;
+            assign_scalar(p.x(), x);
+            assign_scalar(p.y(), y);
+            assign_scalar(p.z(), z);
+            return hasher(x) ^ hasher(y) ^ hasher(z);
+        }
+    };
+
     // Extract unique vertex indices.
-    IM.resize(VV.rows(),1);
-    std::map<Point_3,Index> vv2i;
+    const size_t VV_size = VV.rows();
+    IM.resize(VV_size,1);
+    std::unordered_map<Point_3, Index, PointHash> vv2i;
+    vv2i.reserve(VV_size);
     // Safe to check for duplicates using double for original vertices: if
     // incoming reps are different then the points are unique.
-    for(Index v = 0;v<VV.rows();v++) {
+    for(Index v = 0;v<VV_size;v++) {
         typename Kernel::FT p0,p1,p2;
         assign_scalar(VV(v,0),p0);
         assign_scalar(VV(v,1),p1);
@@ -369,6 +403,9 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         assert(vv2i.count(p) == 1);
         IM(v) = vv2i[p];
     }
+#ifdef REMESH_INTERSECTIONS_TIMING
+    log_time("store_results");
+#endif
 }
 
 #ifdef IGL_STATIC_LIBRARY
