@@ -1,6 +1,6 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
-// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -12,8 +12,6 @@
 #include "find.h"
 #include "sparse.h"
 #include "repmat.h"
-//#include "lu_lagrange.h"
-#include "full.h"
 #include "matlab_format.h"
 #include "EPS.h"
 #include "cat.h"
@@ -536,7 +534,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
   const Eigen::PlainObjectBase<DerivedBeq> & Beq,
   Eigen::PlainObjectBase<DerivedZ> & Z)
 {
-  Eigen::PlainObjectBase<DerivedZ> sol;
+  Eigen::Matrix<typename DerivedZ::Scalar, Eigen::Dynamic, Eigen::Dynamic> sol;
   return min_quad_with_fixed_solve(data,B,Y,Beq,Z,sol);
 }
 

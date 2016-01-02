@@ -1,17 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8"/>
-	<title>libigl</title>
-	<meta name="author" content="Alec Jacobson and Daniele Panozzo and others"/>
-	<link type="text/css" rel="stylesheet" href="tutorial/style.css"/>
-<script type='text/javascript' src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
-<link rel='stylesheet' href='http://yandex.st/highlightjs/7.3/styles/default.min.css'>
-<script src='http://yandex.st/highlightjs/7.3/highlight.min.js'></script>
-<script>hljs.initHighlightingOnLoad();</script>
-</head>
-<body>
-
 <h1 id="libiglstyleguidelines">Libigl Style Guidelines</h1>
 
 <p>Libigl is used and developed by many people. This document highlights some
@@ -106,7 +92,10 @@ new pair of .h/.cpp files with this sub-function.</p>
 
 <p>If encapsulation in a separate file is not possible or does not make sense,
 then avoid crowding the namespace by creating lambda functions within the
-function implmentation.</p>
+function implementation.</p>
+
+<p>These lambda functions must still be documented with clear <a href="#header-documentation">input and output
+arguments</a>.</p>
 
 <h3 id="avoidhelperclasses">Avoid &#8220;helper&#8221; classes</h3>
 

@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_VIEWER_TEXT_RENDERER_H
 #define IGL_VIEWER_TEXT_RENDERER_H
+#ifdef IGL_VIEWER_WITH_NANOGUI
 
 #include <Eigen/Dense>
 
@@ -51,4 +52,5 @@ namespace viewer
 #  include "TextRenderer.cpp"
 #endif
 
+#endif
 #endif

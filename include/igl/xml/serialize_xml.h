@@ -17,19 +17,18 @@
 
 #include "../igl_inline.h"
 
+
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+#include <tinyxml2.h>
+
 #include <type_traits>
+#include <functional>
 #include <iostream>
 #include <vector>
 #include <set>
 #include <map>
 #include <memory>
-
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
-
-#include <igl/serialize.h>
-
-#include "tinyxml2.h"
 
 //#define SERIALIZE_XML(x) igl::xml::serialize_xml(x,#x,doc,element);
 //#define DESERIALIZE_XML(x) igl::xml::deserialize_xml(x,#x,,doc,element);
@@ -38,6 +37,7 @@ namespace igl
 {
   namespace xml
   {
+    struct XMLSerializableBase;
     // serializes the given object either to a xml file or to the provided doc data
     //
     // Templates:
@@ -55,9 +55,19 @@ namespace igl
     template <typename T>
     IGL_INLINE void serialize_xml(const T& obj,const std::string& filename);
     template <typename T>
-    IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,const std::string& filename, bool binary = false,bool overwrite = false);
+    IGL_INLINE void serialize_xml(
+      const T& obj,
+      const std::string& objectName,
+      const std::string& filename, 
+      bool binary = false,
+      bool overwrite = false);
     template <typename T>
-    IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,bool binary = false);
+    IGL_INLINE void serialize_xml(
+      const T& obj,
+      const std::string& objectName,
+      tinyxml2::XMLDocument* doc,
+      tinyxml2::XMLElement* element,
+      bool binary = false);
   
     // deserializes the given data from a xml file or doc data back to the provided object
     //
@@ -80,76 +90,6 @@ namespace igl
     IGL_INLINE void deserialize_xml(T& obj,const std::string& objectName,const std::string& filename);
     template <typename T>
     IGL_INLINE void deserialize_xml(T& obj,const std::string& objectName,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element);
-  
-    // interface for user defined types
-    struct XMLSerializableBase : public SerializableBase
-    {
-      virtual void Serialize(std::vector<char>& buffer) const = 0;
-      virtual void Deserialize(const std::vector<char>& buffer) = 0;
-      virtual void Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) const = 0;
-      virtual void Deserialize(const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element) = 0;
-    };
-  
-    // Convenient interface for user defined types
-    class XMLSerializable: public XMLSerializableBase
-    {
-    private:
-  
-      template <typename T>
-      struct XMLSerializationObject: public XMLSerializableBase
-      {
-        bool Binary;
-        std::string Name;
-        T* Object;
-  
-        void Serialize(std::vector<char>& buffer) const {
-          serialize(*Object,Name,buffer);
-        }
-  
-        void Deserialize(const std::vector<char>& buffer) {
-          deserialize(*Object,Name,buffer);
-        }
-  
-        void Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) const {
-          serialize_xml(*Object,Name,doc,element,Binary);
-        }
-  
-        void Deserialize(const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element) {
-          deserialize_xml(*Object,Name,doc,element);
-        }
-      };
-  
-      mutable bool initialized;
-      mutable std::vector<XMLSerializableBase*> objects;
-  
-    public:
-  
-      // Override this function to add your member variables which should be serialized
-      IGL_INLINE virtual void InitSerialization() = 0;
-  
-      // Following functions can be overridden to handle the specific events.
-      // Return false to prevent the de-/serialization of an object.
-      IGL_INLINE virtual bool PreSerialization() const;
-      IGL_INLINE virtual void PostSerialization() const;
-      IGL_INLINE virtual bool PreDeserialization();
-      IGL_INLINE virtual void PostDeserialization();
-  
-      // Default implementation of XMLSerializableBase interface
-      IGL_INLINE void Serialize(std::vector<char>& buffer) const;
-      IGL_INLINE void Deserialize(const std::vector<char>& buffer);
-      IGL_INLINE void Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) const;
-      IGL_INLINE void Deserialize(const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element);
-  
-      // Default constructor, destructor, assignment and copy constructor
-      IGL_INLINE XMLSerializable();
-      IGL_INLINE XMLSerializable(const XMLSerializable& obj);
-      IGL_INLINE ~XMLSerializable();
-      IGL_INLINE XMLSerializable& operator=(const XMLSerializable& obj);
-  
-      // Use this function to add your variables which should be serialized
-      template <typename T>
-      IGL_INLINE void Add(T& obj,std::string name,bool binary = false);
-    };
   
     // internal functions
     namespace serialization_xml
@@ -192,10 +132,56 @@ namespace igl
       IGL_INLINE void deserialize(std::map<T1,T2>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
   
       // Eigen types
+
+      // Serialize a Dense Eigen Matrix to xml (in the matrix= attribute,
+      // awkward...)
+      //
+      // Inputs:
+      //   obj  MR by MC matrix of T types
+      //   name  name of matrix
+      //   to_string  function converting T to string
+      // Outputs:
+      //   doc  pointer to xml document
+      //   element  pointer to xml element
+      //   
       template<typename T,int R,int C,int P,int MR,int MC>
-      IGL_INLINE void serialize(const Eigen::Matrix<T,R,C,P,MR,MC>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
+      IGL_INLINE void serialize(
+        const Eigen::Matrix<T,R,C,P,MR,MC>& obj,
+        const std::string& name,
+        const std::function<std::string(const T &) >& to_string,
+        tinyxml2::XMLDocument* doc,
+        tinyxml2::XMLElement* element);
+      // De-Serialize a Dense Eigen Matrix from xml (in the matrix= attribute,
+      // awkward...)
+      //
+      // Inputs:
+      //   doc  pointer to xml document
+      //   element  pointer to xml element
+      //   name  name of matrix
+      //   from_string  function string to T
+      // Outputs:
+      //   obj  MR by MC matrix of T types
       template<typename T,int R,int C,int P,int MR,int MC>
-      IGL_INLINE void deserialize(Eigen::Matrix<T,R,C,P,MR,MC>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
+      IGL_INLINE void deserialize(
+        const tinyxml2::XMLDocument* doc,
+        const tinyxml2::XMLElement* element,
+        const std::string& name,
+        const std::function<void(const std::string &,T &)> & from_string,
+        Eigen::Matrix<T,R,C,P,MR,MC>& obj);
+  
+      // Legacy APIs
+      template<typename T,int R,int C,int P,int MR,int MC>
+      IGL_INLINE void serialize(
+        const Eigen::Matrix<T,R,C,P,MR,MC>& obj,
+        tinyxml2::XMLDocument* doc,
+        tinyxml2::XMLElement* element,
+        const std::string& name);
+      template<typename T,int R,int C,int P,int MR,int MC>
+      IGL_INLINE void deserialize(
+        Eigen::Matrix<T,R,C,P,MR,MC>& obj,
+        const tinyxml2::XMLDocument* doc,
+        const tinyxml2::XMLElement* element,
+        const std::string& name);
   
       template<typename T,int P,typename I>
       IGL_INLINE void serialize(const Eigen::SparseMatrix<T,P,I>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
