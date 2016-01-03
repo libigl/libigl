@@ -70,7 +70,7 @@ IGL_INLINE void igl::compute_frame_field_bisectors(
                                                    Eigen::PlainObjectBase<DerivedV>& BIS1,
                                                    Eigen::PlainObjectBase<DerivedV>& BIS2)
 {
-  Eigen::PlainObjectBase<DerivedV> B1, B2, B3;
+  DerivedV B1, B2, B3;
   igl::local_basis(V,F,B1,B2,B3);
 
   compute_frame_field_bisectors( V, F, B1, B2, PD1, PD2, BIS1, BIS2);

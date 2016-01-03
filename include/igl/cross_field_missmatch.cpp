@@ -28,6 +28,7 @@ namespace igl {
     const Eigen::PlainObjectBase<DerivedF> &F;
     const Eigen::PlainObjectBase<DerivedV> &PD1;
     const Eigen::PlainObjectBase<DerivedV> &PD2;
+#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
     Eigen::PlainObjectBase<DerivedV> N;
 
   private:
@@ -35,6 +36,7 @@ namespace igl {
     std::vector<bool> V_border; // bool
     std::vector<std::vector<int> > VF;
     std::vector<std::vector<int> > VFi;
+#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
     Eigen::PlainObjectBase<DerivedF> TT;
     Eigen::PlainObjectBase<DerivedF> TTi;
 
@@ -88,7 +90,7 @@ public:
     igl::per_face_normals(V,F,N);
     V_border = igl::is_border_vertex(V,F);
     igl::vertex_triangle_adjacency(V,F,VF,VFi);
-    igl::triangle_triangle_adjacency(V,F,TT,TTi);
+    igl::triangle_triangle_adjacency(F,TT,TTi);
   }
 
   inline void calculateMissmatch(Eigen::PlainObjectBase<DerivedF> &Handle_MMatch)
@@ -116,8 +118,8 @@ IGL_INLINE void igl::cross_field_missmatch(const Eigen::PlainObjectBase<DerivedV
                                            const bool isCombed,
                                            Eigen::PlainObjectBase<DerivedF> &missmatch)
 {
-  Eigen::PlainObjectBase<DerivedV> PD1_combed;
-  Eigen::PlainObjectBase<DerivedV> PD2_combed;
+  DerivedV PD1_combed;
+  DerivedV PD2_combed;
 
   if (!isCombed)
     igl::comb_cross_field(V,F,PD1,PD2,PD1_combed,PD2_combed);

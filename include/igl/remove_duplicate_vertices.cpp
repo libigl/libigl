@@ -26,7 +26,7 @@ IGL_INLINE void igl::remove_duplicate_vertices(
 {
   if(epsilon > 0)
   {
-    Eigen::PlainObjectBase<DerivedV> rV,rSV;
+    DerivedV rV,rSV;
     round((V/(10.0*epsilon)).eval(),rV);
     unique_rows(rV,rSV,SVI,SVJ);
     slice(V,SVI,colon<int>(0,V.cols()-1),SV);

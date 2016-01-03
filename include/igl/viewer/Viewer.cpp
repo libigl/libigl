@@ -159,9 +159,10 @@ static void glfw_mouse_move(GLFWwindow* window, double x, double y)
 {
   if(
 #ifdef IGL_VIEWER_WITH_NANOGUI
-      __viewer->screen->cursorPosCallbackEvent(x,y) == false || 
+      __viewer->screen->cursorPosCallbackEvent(x,y) == false &&
 #endif
-      __viewer->down)
+      true
+    )
   {
     __viewer->mouse_move(x*highdpi, y*highdpi);
   }
