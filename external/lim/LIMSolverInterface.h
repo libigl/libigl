@@ -46,6 +46,9 @@ struct LIMData
   int iteration;
 };
 
+enum EnergyType { DIRICHLET = 0, LAPLACIAN = 1, GREEN = 2, ARAP = 3, LSCM = 4, POISSON = 5, UNIFORM_LAPLACIAN = 6, IDENTITY = 7 };
+enum SolverState { UNINITIALIZED = -4, INFEASIBLE = -3, ITERATION_LIMIT = -2, LOCAL_MINIMA = -1, RUNNING = 0, SUCCEEDED = 1 };
+
 //----------------------------------------------------------------------------------------
 // Function: FreeLIMData
 //----------------------------------------------------------------------------------------
@@ -90,7 +93,7 @@ void FreeLIMData(LIMData* data)
 //                   X,Y,Z-coordinates are alternatingly stacked per row (structure for triangles: [x_1, y_1, z_1, x_2, y_2, z_2, ..., x_v,y_v,z_v])
 //                   and each row of C belongs to a linear constraint.
 // constraintTargets d: c vector target positions
-// energyType        type of used energy: 0=Dirichlet,1=Laplacian,2=Green,3=ARAP,4=LSCM,5=Poisson
+// energyType        type of used energy: DIRICHLET, LAPLACIAN, GREEN, ARAP, LSCM, POISSON (only 2D), UNIFORM_LAPLACIAN, IDENTITY
 // enableOutput      (optional) enables the output (#iteration / hessian correction / step size / positional constraints squared error / barrier constraints energy / deformation energy)
 // enableBarriers    (optional) enables the non-flip constraints (default = true)
 // enableAlphaUpdate (optional) enables dynamic alpha weight adjustment (default = true)
@@ -114,7 +117,7 @@ LIMData* InitLIM(
   const Eigen::Matrix<double,Eigen::Dynamic,1>& gradients,
   const Eigen::SparseMatrix<double>& constraintMatrix,
   const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
-  int energyType,
+  EnergyType energyType,
   bool enableOuput = true,
   bool enableBarriers = true,
   bool enableAlphaUpdate = true,
@@ -170,20 +173,28 @@ LIMData* InitLIM(
   {
     switch(energyType)
     {
-      case 0:
+      case DIRICHLET:
         solver = new Dirichlet_LIMSolver3D();
         break;
 
-      case 1:
+      case LAPLACIAN:
         solver = new Laplacian_LIMSolver3D();
         break;
 
-      case 2:
+      case GREEN:
         solver = new GreenStrain_LIMSolver3D();
         break;
 
-      case 3:
+      case ARAP:
         solver = new LGARAP_LIMSolver3D();
+        break;
+
+      case UNIFORM_LAPLACIAN:
+        solver = new UniformLaplacian_LIMSolver3D();
+        break;
+
+      case IDENTITY:
+        solver = new Identity_LIMSolver3D();
         break;
   
       default:
@@ -195,33 +206,41 @@ LIMData* InitLIM(
   {
     switch(energyType)
     {
-      case 0:
+      case DIRICHLET:
         solver = new Dirichlet_LIMSolver2D();
         break;
 
-      case 1:
+      case LAPLACIAN:
         solver = new Laplacian_LIMSolver2D();
         break;
 
-      case 2:
+      case GREEN:
         solver = new GreenStrain_LIMSolver2D();
         break;
 
-      case 3:
+      case ARAP:
         solver = new LGARAP_LIMSolver2D();
         break;
 
-      case 4:
+      case LSCM:
         solver = new LSConformal_LIMSolver2D();
         break;
 
-      case 5:
+      case POISSON:
       {
         Poisson_LIMSolver2D* psolver = new Poisson_LIMSolver2D();
         psolver->b = gradients;
         solver = psolver;
       }
       break;
+
+      case UNIFORM_LAPLACIAN:
+        solver = new UniformLaplacian_LIMSolver2D();
+        break;
+
+      case IDENTITY:
+        solver = new Identity_LIMSolver2D();
+        break;
   
       default:
         new GreenStrain_LIMSolver2D();
@@ -247,7 +266,7 @@ LIMData* InitLIM(
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
   const Eigen::SparseMatrix<double>& constraintMatrix,
   const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
-  int energyType,
+  EnergyType energyType,
   bool enableOuput = true,
   bool enableBarriers = true,
   bool enableAlphaUpdate = true,
@@ -290,7 +309,7 @@ LIMData* InitLIM(
 //                   X,Y,Z-coordinates are alternatingly stacked per row (structure for triangles: [x_1, y_1, z_1, x_2, y_2, z_2, ..., x_v,y_v,z_v])
 //                   and each row of C belongs to a linear constraint.
 // constraintTargets d: c vector target positions
-// energyType        type of used energy: 0=Dirichlet,1=Laplacian,2=Green,3=ARAP,4=LSCM
+// energyType        type of used energy: DIRICHLET, LAPLACIAN, GREEN, ARAP, LSCM, UNIFORM_LAPLACIAN, IDENTITY
 // tolerance         max squared positional constraints error
 // maxIteration      max number of iterations
 // findLocalMinima   iterating until a local minima is found. If not enabled only tolerance must be fulfilled.
@@ -310,11 +329,12 @@ LIMData* InitLIM(
 // vertices          vx3 matrix containing resulting vertex position of the mesh
 //----------------------------------------------------------------------------------------
 // Return values:
-//  1 : Successful optimization with fulfilled tolerance
-// -1 : Max iteration reached before tolerance was fulfilled
-// -2 : not feasible -> has inverted elements (may want to decrease eps?)
+//  SUCCEEDED : Successful optimization with fulfilled tolerance
+//  LOCAL_MINIMA : Convergenged to a local minima / tolerance not fullfilled
+//  ITERATION_LIMIT : Max iteration reached before tolerance was fulfilled
+//  INFEASIBLE : not feasible -> has inverted elements (may want to decrease eps?)
 //----------------------------------------------------------------------------------------
-int ComputeLIM(
+SolverState ComputeLIM(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -322,7 +342,7 @@ int ComputeLIM(
   const Eigen::Matrix<double,Eigen::Dynamic,1>& gradients,
   const Eigen::SparseMatrix<double>& constraintMatrix,
   const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
-  int energyType,
+  EnergyType energyType,
   double tolerance,
   int maxIteration,
   bool findLocalMinima,
@@ -334,19 +354,24 @@ int ComputeLIM(
 {
   LIMData* data = InitLIM(vertices, initialVertices, elements, borderVertices, gradients, constraintMatrix, constraintTargets, energyType, enableOuput, enableBarriers, enableAlphaUpdate, beta, eps);
 
-  int result = 0;
-  while(result == 0)
+  const double MIN_STEPSIZE = 1e-15;
+
+  SolverState state = RUNNING;
+  while(state == RUNNING)
   {
-    if(data->solver->CurrentStepSize < 1e-15 || (data->solver->CurrentPositionalEnergy <= tolerance && (findLocalMinima == false || data->solver->CurrentStepSize < 1e-15)))
-      result = 1; // termination criteria fulfilled
+    if(data->solver->CurrentStepSize < MIN_STEPSIZE && data->solver->CurrentPositionalEnergy > tolerance)
+      state = LOCAL_MINIMA; // converged to local minima
+
+    if(data->solver->CurrentPositionalEnergy <= tolerance && (findLocalMinima == false || data->solver->CurrentStepSize < MIN_STEPSIZE))
+      state = SUCCEEDED; // succeeded
 
     if(data->iteration >= maxIteration)
-      result = -1; // max iteration reached
+      state = ITERATION_LIMIT; // max iteration reached
     
-    if(result == 0)
+    if(state == RUNNING)
     {
       if(data->solver->Solve() == -1)
-        result = -2; // state not feasible -> inverted elements
+        state = INFEASIBLE; // state not feasible -> inverted elements
       else
       {
         // swap vertex buffers
@@ -365,16 +390,16 @@ int ComputeLIM(
   // release solver data
   FreeLIMData(data);
 
-  return result;
+  return state;
 }
 
-int ComputeLIM(
+SolverState ComputeLIM(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
   const Eigen::SparseMatrix<double>& constraintMatrix,
   const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
-  int energyType,
+  EnergyType energyType,
   double tolerance,
   int maxIteration,
   bool findLocalMinima,
@@ -419,24 +444,24 @@ int ComputeLIM(
 // vertices          vx3 matrix containing resulting vertex position of the mesh
 //----------------------------------------------------------------------------------------
 // Return values:
-//  1 : Successful optimization step
-// -1 : Lim data is not initialized
-// -2 : not feasible -> has inverted elements (may want to decrease eps?)
+//  RUNNING : Successful optimization step
+//  UNINITIALIZED : Lim data is not initialized
+//  INFEASIBLE : infeasible -> has inverted elements (decrease eps?)
 //----------------------------------------------------------------------------------------
-int ComputeLIM_Step(
+SolverState ComputeLIM_Step(
   LIMData*& data,
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices)
 {
   if(data == NULL)
   {
     cerr << "LIM data is not initialized." << endl;
-    return -1;
+    return UNINITIALIZED;
   }
   
-  int result = 0;
+  SolverState state = RUNNING;
     
   if(data->solver->Solve() == -1)
-    result = -2; // state not feasible -> inverted elements
+    state = INFEASIBLE; // state not feasible -> inverted elements
   else
   {
     // swap vertex buffers
@@ -450,7 +475,7 @@ int ComputeLIM_Step(
   // assign resulting vertices
   vertices = *data->mesh->DeformedVertices;
 
-  return result;
+  return state;
 }
 
 #endif

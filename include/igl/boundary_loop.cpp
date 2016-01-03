@@ -23,10 +23,10 @@ IGL_INLINE void igl::boundary_loop(
   if(F.rows() == 0)
     return;
 
-  MatrixXd Vdummy(F.maxCoeff()+1,1);
-  MatrixXi TT,TTi;
+  VectorXd Vdummy(F.maxCoeff()+1,1);
+  DerivedF TT,TTi;
   vector<std::vector<int> > VF, VFi;
-  triangle_triangle_adjacency(Vdummy,F,TT,TTi);
+  triangle_triangle_adjacency(F,TT,TTi);
   vertex_triangle_adjacency(Vdummy,F,VF,VFi);
 
   vector<bool> unvisited = is_border_vertex(Vdummy,F);
