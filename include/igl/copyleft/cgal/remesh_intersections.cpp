@@ -16,7 +16,7 @@
 #include <unordered_map>
 #include <iostream>
 
-#define REMESH_INTERSECTIONS_TIMING
+//#define REMESH_INTERSECTIONS_TIMING
 
 template <
 typename DerivedV,

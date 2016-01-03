@@ -20,7 +20,7 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <algorithm>
 
-#define MESH_BOOLEAN_TIMING
+//#define MESH_BOOLEAN_TIMING
 
 template <
   typename DerivedVA,
