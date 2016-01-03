@@ -18,7 +18,7 @@
 #include <thread>
 #include <mutex>
 
-#define IGL_SELFINTERSECTMESH_DEBUG
+//#define IGL_SELFINTERSECTMESH_DEBUG
 #ifndef IGL_FIRST_HIT_EXCEPTION
 #define IGL_FIRST_HIT_EXCEPTION 10
 #endif

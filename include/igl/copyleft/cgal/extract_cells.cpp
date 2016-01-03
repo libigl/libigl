@@ -19,7 +19,7 @@
 #include <vector>
 #include <queue>
 
-#define EXTRACT_CELLS_DEBUG
+//#define EXTRACT_CELLS_DEBUG
 
 template<
 typename DerivedV,

@@ -27,7 +27,7 @@
 #include <tuple>
 #include <queue>
 
-#define PROPAGATE_WINDING_NUMBER_TIMING
+//#define PROPAGATE_WINDING_NUMBER_TIMING
 
 template<
   typename DerivedV,
