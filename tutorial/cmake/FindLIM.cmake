@@ -9,6 +9,7 @@ FIND_PATH(LIM_INCLUDE_DIR LIMSolverInterface.h
    /usr/include
    /usr/local/include
    ${PROJECT_SOURCE_DIR}/../libigl/external/lim/
+   ${PROJECT_SOURCE_DIR}/../external/lim/
    ${PROJECT_SOURCE_DIR}/../../external/lim/
    NO_DEFAULT_PATH
 )
@@ -33,6 +34,8 @@ set(
   ${LIM_INCLUDE_DIR}/GreenStrain_LIMSolver3D.cpp
   ${LIM_INCLUDE_DIR}/LSConformal_LIMSolver2D.cpp
   ${LIM_INCLUDE_DIR}/Poisson_LIMSolver2D.cpp
+  ${LIM_INCLUDE_DIR}/Identity_LIMSolver2D.cpp
+  ${LIM_INCLUDE_DIR}/Identity_LIMSolver3D.cpp
   )
 
 SET(LIM_FOUND "NO")

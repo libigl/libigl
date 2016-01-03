@@ -25,10 +25,12 @@ public:
     const Eigen::PlainObjectBase<DerivedV> &V;
     const Eigen::PlainObjectBase<DerivedF> &F;
     const Eigen::PlainObjectBase<DerivedV> &PD1;
+#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
     Eigen::PlainObjectBase<DerivedV> N;
 
 private:
     // internal
+#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
     Eigen::PlainObjectBase<DerivedF> TT;
     Eigen::PlainObjectBase<DerivedF> TTi;
 
@@ -65,7 +67,7 @@ public:
         PD1(_PD1)
     {
         igl::per_face_normals(V,F,N);
-        igl::triangle_triangle_adjacency(V,F,TT,TTi);
+        igl::triangle_triangle_adjacency(F,TT,TTi);
     }
 
     inline void comb(Eigen::PlainObjectBase<DerivedV> &PD1out)

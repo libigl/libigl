@@ -90,7 +90,7 @@ IGL_INLINE void igl::per_edge_normals(
   Eigen::PlainObjectBase<DerivedE> & E,
   Eigen::PlainObjectBase<DerivedEMAP> & EMAP)
 {
-  Eigen::PlainObjectBase<DerivedN> FN;
+  Eigen::Matrix<typename DerivedN::Scalar,Eigen::Dynamic,3> FN;
   per_face_normals(V,F,FN);
   return per_edge_normals(V,F,weighting,FN,N,E,EMAP);
 }

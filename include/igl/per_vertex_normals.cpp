@@ -19,7 +19,7 @@ IGL_INLINE void igl::per_vertex_normals(
   const igl::PerVertexNormalsWeightingType weighting,
   Eigen::PlainObjectBase<DerivedV> & N)
 {
-  Eigen::PlainObjectBase<DerivedV> PFN;
+  Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,3> PFN;
   igl::per_face_normals(V,F,PFN);
   return per_vertex_normals(V,F,weighting,PFN,N);
 }

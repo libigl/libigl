@@ -209,7 +209,7 @@ IGL_INLINE void igl::unique_rows(
   using namespace std;
   using namespace Eigen;
   VectorXi IM;
-  Eigen::PlainObjectBase<DerivedA> sortA;
+  DerivedA sortA;
   sortrows(A,true,sortA,IM);
 
 
