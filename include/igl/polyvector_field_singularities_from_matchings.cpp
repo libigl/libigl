@@ -80,7 +80,7 @@ IGL_INLINE void igl::polyvector_field_singularities_from_matchings(
   igl::vertex_triangle_adjacency(V,F,VF,VFi);
 
   Eigen::MatrixXi TT, TTi;
-  igl::triangle_triangle_adjacency(V,F,TT,TTi);
+  igl::triangle_triangle_adjacency(F,TT,TTi);
 
   Eigen::MatrixXi E, E2F, F2E;
   igl::edge_topology(V,F,E,F2E,E2F);

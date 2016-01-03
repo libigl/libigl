@@ -20,8 +20,8 @@ IGL_INLINE void igl::polar_svd(
   Eigen::PlainObjectBase<DerivedR> & R,
   Eigen::PlainObjectBase<DerivedT> & T)
 {
-  Eigen::PlainObjectBase<DerivedA> U;
-  Eigen::PlainObjectBase<DerivedA> V;
+  DerivedA U;
+  DerivedA V;
   Eigen::Matrix<typename DerivedA::Scalar,DerivedA::RowsAtCompileTime,1> S;
   return igl::polar_svd(A,R,T,U,S,V);
 }

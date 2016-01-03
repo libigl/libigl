@@ -115,7 +115,7 @@ FrameInterpolator::FrameInterpolator(const Eigen::MatrixXd& _V, const Eigen::Mat
 
 
   // Generate topological relations
-  igl::triangle_triangle_adjacency(V,F,TT,TTi);
+  igl::triangle_triangle_adjacency(F,TT,TTi);
   igl::edge_topology(V,F, EV, FE, EF);
 
   // Flag border edges

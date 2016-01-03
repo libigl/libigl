@@ -11,6 +11,7 @@
 #include "../../extract_non_manifold_edge_curves.h"
 #include "../../facet_components.h"
 #include "../../unique_edge_map.h"
+#include "../../piecewise_constant_winding_number.h"
 #include "../../writeOBJ.h"
 #include "../../writePLY.h"
 #include "../../get_seconds.h"
@@ -27,47 +28,6 @@
 #include <queue>
 
 #define PROPAGATE_WINDING_NUMBER_TIMING
-
-namespace propagate_winding_numbers_helper {
-  template<
-    typename DerivedF,
-    typename DeriveduE,
-    typename uE2EType >
-  bool is_orientable(
-      const Eigen::PlainObjectBase<DerivedF>& F,
-      const Eigen::PlainObjectBase<DeriveduE>& uE,
-      const std::vector<std::vector<uE2EType> >& uE2E) {
-    const size_t num_faces = F.rows();
-    const size_t num_edges = uE.rows();
-    auto edge_index_to_face_index = [&](size_t ei) {
-      return ei % num_faces;
-    };
-    auto is_consistent = [&](size_t fid, size_t s, size_t d) -> bool {
-      if ((size_t)F(fid, 0) == s && (size_t)F(fid, 1) == d) return true;
-      if ((size_t)F(fid, 1) == s && (size_t)F(fid, 2) == d) return true;
-      if ((size_t)F(fid, 2) == s && (size_t)F(fid, 0) == d) return true;
-
-      if ((size_t)F(fid, 0) == d && (size_t)F(fid, 1) == s) return false;
-      if ((size_t)F(fid, 1) == d && (size_t)F(fid, 2) == s) return false;
-      if ((size_t)F(fid, 2) == d && (size_t)F(fid, 0) == s) return false;
-      throw "Invalid face!!";
-    };
-    for (size_t i=0; i<num_edges; i++) {
-      const size_t s = uE(i,0);
-      const size_t d = uE(i,1);
-      int count=0;
-      for (const auto& ei : uE2E[i]) {
-        const size_t fid = edge_index_to_face_index(ei);
-        if (is_consistent(fid, s, d)) count++;
-        else count--;
-      }
-      if (count != 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-}
 
 template<
   typename DerivedV,
@@ -100,7 +60,8 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
   Eigen::VectorXi EMAP;
   std::vector<std::vector<size_t> > uE2E;
   igl::unique_edge_map(F, E, uE, EMAP, uE2E);
-  if (!propagate_winding_numbers_helper::is_orientable(F, uE, uE2E)) {
+  if (!piecewise_constant_winding_number(F, uE, uE2E)) 
+  {
     std::cerr << "Input mesh is not orientable!" << std::endl;
   }
 

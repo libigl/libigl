@@ -85,7 +85,7 @@ IGL_INLINE void igl::polar_svd3x3_avx(const Eigen::Matrix<T, 3*8, 3>& A, Eigen::
     Eigen::Matrix3f Rpart_SSE = R.block(3*k, 0, 3, 3);
     Eigen::Matrix3f diff = Rpart - Rpart_SSE;
     float diffNorm = diff.norm();
-    if (abs(diffNorm) > 0.001)
+    if (std::abs(diffNorm) > 0.001)
     {
       printf("Huh: diffNorm = %15f (k = %i)\n", diffNorm, k);
     }

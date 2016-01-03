@@ -8,37 +8,39 @@
 #include "lim.h"
 #include <LIMSolverInterface.h>
 
-IGL_INLINE int igl::lim::lim(
+using namespace igl::lim;
+
+IGL_INLINE State lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
   const Eigen::SparseMatrix<double>& constraintMatrix,
   const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
-  int energyType,
+  Energy energyType,
   double tolerance,
   int maxIteration,
   bool findLocalMinima)
 {
-  return ComputeLIM(
+  return (State)ComputeLIM(
     vertices,
     initialVertices,
     elements,
     constraintMatrix,
     constraintTargets,
-    energyType,
+    (EnergyType)energyType,
     tolerance,
     maxIteration,
     findLocalMinima
     );
 }
 
-IGL_INLINE int igl::lim(
+IGL_INLINE State igl::lim::lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
   const Eigen::SparseMatrix<double>& constraintMatrix,
   const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
-  int energyType,
+  Energy energyType,
   double tolerance,
   int maxIteration,
   bool findLocalMinima,
@@ -48,13 +50,13 @@ IGL_INLINE int igl::lim(
   double beta,
   double eps)
 {
-  return ComputeLIM(
+  return (State)ComputeLIM(
     vertices,
     initialVertices,
     elements,
     constraintMatrix,
     constraintTargets,
-    energyType,
+    (EnergyType)energyType,
     tolerance,
     maxIteration,
     findLocalMinima,
@@ -66,7 +68,7 @@ IGL_INLINE int igl::lim(
     );
 }
 
-IGL_INLINE int igl::lim(
+IGL_INLINE State igl::lim::lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -74,12 +76,12 @@ IGL_INLINE int igl::lim(
   const Eigen::Matrix<double,Eigen::Dynamic,1>& gradients,
   const Eigen::SparseMatrix<double>& constraintMatrix,
   const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
-  int energyType,
+  Energy energyType,
   double tolerance,
   int maxIteration,
   bool findLocalMinima)
 {
-  return ComputeLIM(
+  return (State)ComputeLIM(
     vertices,
     initialVertices,
     elements,
@@ -87,14 +89,14 @@ IGL_INLINE int igl::lim(
     gradients,
     constraintMatrix,
     constraintTargets,
-    energyType,
+    (EnergyType)energyType,
     tolerance,
     maxIteration,
     findLocalMinima
     );
 }
 
-IGL_INLINE int igl::lim(
+IGL_INLINE State igl::lim::lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -102,7 +104,7 @@ IGL_INLINE int igl::lim(
   const Eigen::Matrix<double,Eigen::Dynamic,1>& gradients,
   const Eigen::SparseMatrix<double>& constraintMatrix,
   const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
-  int energyType,
+  Energy energyType,
   double tolerance,
   int maxIteration,
   bool findLocalMinima,
@@ -112,7 +114,7 @@ IGL_INLINE int igl::lim(
   double beta,
   double eps)
 {
-  return ComputeLIM(
+  return (State)ComputeLIM(
     vertices,
     initialVertices,
     elements,
@@ -120,7 +122,7 @@ IGL_INLINE int igl::lim(
     gradients,
     constraintMatrix,
     constraintTargets,
-    energyType,
+    (EnergyType)energyType,
     tolerance,
     maxIteration,
     findLocalMinima,
