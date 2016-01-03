@@ -19,9 +19,12 @@ IGL_INLINE void igl::copyleft::cgal::assign_scalar(
   double & d)
 {
   const auto interval = CGAL::to_interval(cgal);
-  assert(nextafter(interval.first, interval.second) == interval.second);
-  d = (cgal-interval.first) < (interval.second-cgal)?
-    interval.first:interval.second;
+  d = interval.first;
+  while (d <= interval.second) {
+      const double next = nextafter(d, interval.second);
+      if (CGAL::abs(cgal-d) < CGAL::abs(cgal-next)) break;
+      d = next;
+  }
 }
 
 IGL_INLINE void igl::copyleft::cgal::assign_scalar(
