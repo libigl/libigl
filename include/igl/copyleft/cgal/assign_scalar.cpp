@@ -18,7 +18,10 @@ IGL_INLINE void igl::copyleft::cgal::assign_scalar(
   const typename CGAL::Epeck::FT & cgal,
   double & d)
 {
-  d = CGAL::to_double(cgal);
+  const auto interval = CGAL::to_interval(cgal);
+  assert(nextafter(interval.first, interval.second) == interval.second);
+  d = (cgal-interval.first) < (interval.second-cgal)?
+    interval.first:interval.second;
 }
 
 IGL_INLINE void igl::copyleft::cgal::assign_scalar(
