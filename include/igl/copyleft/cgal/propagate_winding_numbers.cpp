@@ -40,12 +40,16 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
     const Eigen::PlainObjectBase<DerivedL>& labels,
     Eigen::PlainObjectBase<DerivedW>& W) {
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
-  const auto & tictoc = []()
+  const auto & tictoc = []() -> double
   {
     static double t_start = igl::get_seconds();
     double diff = igl::get_seconds()-t_start;
     t_start += diff;
     return diff;
+  };
+  const auto log_time = [&](const std::string& label) -> void {
+    std::cout << "propagate_winding_num." << label << ": "
+      << tictoc() << std::endl;
   };
   tictoc();
 #endif
@@ -63,16 +67,13 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
 
   Eigen::VectorXi P;
   const size_t num_patches = igl::extract_manifold_patches(F, EMAP, uE2E, P);
-#ifdef PROPAGATE_WINDING_NUMBER_TIMING
-  std::cout << "extract manifold patches: " << tictoc() << std::endl;
-#endif
 
   DerivedW per_patch_cells;
   const size_t num_cells =
     igl::copyleft::cgal::extract_cells(
         V, F, P, E, uE, uE2E, EMAP, per_patch_cells);
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
-  std::cout << "extract cells: " << tictoc() << std::endl;;
+  log_time("cell_extraction");
 #endif
 
   typedef std::tuple<size_t, bool, size_t> CellConnection;
@@ -84,10 +85,10 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
     cell_adjacency[negative_cell].emplace(positive_cell, true, i);
   }
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
-  std::cout << "cell connection: " << tictoc() << std::endl;
+  log_time("cell_connectivity");
 #endif
 
-  auto save_cell = [&](const std::string& filename, size_t cell_id) {
+  auto save_cell = [&](const std::string& filename, size_t cell_id) -> void{
     std::vector<size_t> faces;
     for (size_t i=0; i<num_patches; i++) {
       if ((per_patch_cells.row(i).array() == cell_id).any()) {
@@ -118,7 +119,7 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
     cell_labels.setZero();
     Eigen::VectorXi parents(num_cells);
     parents.setConstant(-1);
-    auto trace_parents = [&](size_t idx) {
+    auto trace_parents = [&](size_t idx) -> std::list<size_t> {
       std::list<size_t> path;
       path.push_back(idx);
       while ((size_t)parents[path.back()] != path.back()) {
@@ -169,7 +170,7 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
       }
     }
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
-    std::cout << "check for odd cycle: " << tictoc() << std::endl;
+    log_time("odd_cycle_check");
 #endif
   }
 #endif
@@ -180,7 +181,7 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
   I.setLinSpaced(num_faces, 0, num_faces-1);
   igl::copyleft::cgal::outer_facet(V, F, I, outer_facet, flipped);
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
-  std::cout << "outer facet: " << tictoc() << std::endl;
+  log_time("outer_facet");
 #endif
 
   const size_t outer_patch = P[outer_facet];
@@ -244,7 +245,7 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
     }
   }
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
-  std::cout << "propagate winding number: " << tictoc() << std::endl;
+  log_time("propagate_winding_number");
 #endif
 
   W.resize(num_faces, num_labels*2);
@@ -258,7 +259,7 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
     }
   }
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
-  std::cout << "save result: " << tictoc() << std::endl;
+  log_time("store_result");
 #endif
 }
 
