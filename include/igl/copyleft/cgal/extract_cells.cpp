@@ -353,6 +353,10 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
 
     size_t count = 0;
     std::vector<size_t> mapped_indices(num_raw_cells+1, INVALID);
+    // Always map infinite cell to index 0.
+    mapped_indices[INFINITE_CELL] = count;
+    count++;
+
     for (size_t i=0; i<num_patches; i++) {
         const size_t old_positive_cell_id = raw_cells(i, 0);
         const size_t old_negative_cell_id = raw_cells(i, 1);
