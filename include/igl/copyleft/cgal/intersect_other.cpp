@@ -25,11 +25,12 @@ namespace igl
       static IGL_INLINE void push_result(
         const Eigen::PlainObjectBase<DerivedF> & F,
         const int f,
+        const int f_other,
         const CGAL::Object & result,
         std::map<
           typename DerivedF::Index,
-          std::pair<typename DerivedF::Index,
-            std::vector<CGAL::Object> > > & offending,
+          std::vector<std::pair<typename DerivedF::Index, CGAL::Object> > > &
+          offending,
         std::map<
           std::pair<typename DerivedF::Index,typename DerivedF::Index>,
           std::vector<typename DerivedF::Index> > & edge2faces)
@@ -39,8 +40,7 @@ namespace igl
         if(offending.count(f) == 0)
         {
           // first time marking, initialize with new id and empty list
-          Index id = offending.size();
-          offending[f] = {id,{}};
+          offending[f] = {};
           for(Index e = 0; e<3;e++)
           {
             // append face to edge's list
@@ -49,7 +49,7 @@ namespace igl
             edge2faces[EMK(i,j)].push_back(f);
           }
         }
-        offending[f].second.push_back(result);
+        offending[f].push_back({f_other,result});
       }
       template <
         typename Kernel,
@@ -113,7 +113,7 @@ namespace igl
           CGAL::Box_intersection_d::Box_with_handle_d<double,3,TrianglesIterator> 
           Box;
         typedef 
-          std::map<Index,std::pair<Index,std::vector<CGAL::Object> > > 
+          std::map<Index,std::vector<std::pair<Index,CGAL::Object> > > 
           OffendingMap;
         typedef std::map<std::pair<Index,Index>,std::vector<Index> >  EdgeMap;
         typedef std::pair<Index,Index> EMK;
@@ -125,7 +125,7 @@ namespace igl
         // http://www.cgal.org/Manual/latest/doc_html/cgal_manual/Box_intersection_d/Chapter_main.html#Section_63.5 
         // Create the corresponding vector of bounding boxes
         std::vector<Box> A_boxes,B_boxes;
-        const auto box_up = [](Triangles & T, std::vector<Box> & boxes)
+        const auto box_up = [](Triangles & T, std::vector<Box> & boxes) -> void
         {
           boxes.reserve(T.size());
           for ( 
@@ -142,7 +142,7 @@ namespace igl
         EdgeMap edge2facesA,edge2facesB;
 
         std::list<int> lIF;
-        const auto cb = [&](const Box &a, const Box &b)
+        const auto cb = [&](const Box &a, const Box &b) -> void
         {
           using namespace std;
           // index in F and T
@@ -163,8 +163,8 @@ namespace igl
             {
               CGAL::Object result = CGAL::intersection(A,B);
 
-              push_result(FA,fa,result,offendingA,edge2facesA);
-              push_result(FB,fb,result,offendingB,edge2facesB);
+              push_result(FA,fa,fb,result,offendingA,edge2facesA);
+              push_result(FB,fb,fa,result,offendingB,edge2facesB);
             }
           }
         };

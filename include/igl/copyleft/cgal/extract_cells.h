@@ -27,6 +27,7 @@ namespace igl {
         //   cells  #F by 2 array of cell indices.  cells(i,0) represents the
         //          cell index on the positive side of face i, and cells(i,1)
         //          represents cell index of the negqtive side.
+        //          By convension cell with index 0 is the infinite cell.
         template<
             typename DerivedV,
             typename DerivedF,
@@ -51,6 +52,7 @@ namespace igl {
         //   cells  #P by 2 array of cell indices.  cells(i,0) represents the
         //          cell index on the positive side of patch i, and cells(i,1)
         //          represents cell index of the negqtive side.
+        //          By convension cell with index 0 is the infinite cell.
         template<
             typename DerivedV,
             typename DerivedF,

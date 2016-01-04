@@ -131,7 +131,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_edge(
     Index outer_opp_vid = INVALID;
     bool infinite_slope_detected = false;
     std::vector<Index> incident_faces;
-    auto check_and_update_outer_edge = [&](Index opp_vid, Index fid) {
+    auto check_and_update_outer_edge = [&](Index opp_vid, Index fid) -> void {
         if (opp_vid == outer_opp_vid)
         {
             incident_faces.push_back(fid);

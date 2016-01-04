@@ -42,7 +42,8 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
     auto edge_index_to_face_index = [&](size_t index) {
         return index % num_faces;
     };
-    auto is_consistent = [&](const size_t fid, const size_t s, const size_t d) {
+    auto is_consistent = [&](const size_t fid, const size_t s, const size_t d)
+    -> bool{
         if ((size_t)F(fid, 0) == s && (size_t)F(fid, 1) == d) return false;
         if ((size_t)F(fid, 1) == s && (size_t)F(fid, 2) == d) return false;
         if ((size_t)F(fid, 2) == s && (size_t)F(fid, 0) == d) return false;
@@ -96,7 +97,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
     auto peel_cell_bd = [&](
             size_t seed_patch_id,
             short seed_patch_side,
-            size_t cell_idx) {
+            size_t cell_idx) -> void {
         typedef std::pair<size_t, short> PatchSide;
         std::queue<PatchSide> Q;
         Q.emplace(seed_patch_id, seed_patch_side);
@@ -177,12 +178,16 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
         Eigen::PlainObjectBase<DerivedC>& cells) {
 #ifdef EXTRACT_CELLS_DEBUG
-  const auto & tictoc = []()
+  const auto & tictoc = []() -> double
   {
     static double t_start = igl::get_seconds();
     double diff = igl::get_seconds()-t_start;
     t_start += diff;
     return diff;
+  };
+  const auto log_time = [&](const std::string& label) -> void {
+    std::cout << "extract_cells." << label << ": "
+      << tictoc() << std::endl;
   };
   tictoc();
 #endif
@@ -195,19 +200,19 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         igl::copyleft::cgal::extract_cells_single_component(
                 V, F, P, uE, uE2E, EMAP, raw_cells);
 #ifdef EXTRACT_CELLS_DEBUG
-    std::cout << "Extract single component cells: " << tictoc() << std::endl;
+    log_time("extract_single_component_cells");
 #endif
 
     std::vector<std::vector<std::vector<Index > > > TT,_1;
     igl::triangle_triangle_adjacency(E, EMAP, uE2E, false, TT, _1);
 #ifdef EXTRACT_CELLS_DEBUG
-    std::cout << "face adj: " << tictoc() << std::endl;
+    log_time("compute_face_adjacency");
 #endif
 
     Eigen::VectorXi C, counts;
     igl::facet_components(TT, C, counts);
 #ifdef EXTRACT_CELLS_DEBUG
-    std::cout << "face comp: " << tictoc() << std::endl;
+    log_time("form_components");
 #endif
 
     const size_t num_components = counts.size();
@@ -232,7 +237,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         outer_cells[i] = raw_cells(P[outer_facets[i]], outer_facet_orientation[i]);
     }
 #ifdef EXTRACT_CELLS_DEBUG
-    std::cout << "Per comp outer facet: " << tictoc() << std::endl;
+    log_time("outer_facet_per_component");
 #endif
 
     auto get_triangle_center = [&](const size_t fid) {
@@ -307,7 +312,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         }
     }
 #ifdef EXTRACT_CELLS_DEBUG
-    std::cout << "Determine nested relaitonship: " << tictoc() << std::endl;
+    log_time("nested_relationship");
 #endif
 
     const size_t INVALID = std::numeric_limits<size_t>::max();
@@ -348,6 +353,10 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
 
     size_t count = 0;
     std::vector<size_t> mapped_indices(num_raw_cells+1, INVALID);
+    // Always map infinite cell to index 0.
+    mapped_indices[INFINITE_CELL] = count;
+    count++;
+
     for (size_t i=0; i<num_patches; i++) {
         const size_t old_positive_cell_id = raw_cells(i, 0);
         const size_t old_negative_cell_id = raw_cells(i, 1);
@@ -371,7 +380,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
     }
     cells = raw_cells;
 #ifdef EXTRACT_CELLS_DEBUG
-    std::cout << "Finalize and output: " << tictoc() << std::endl;
+    log_time("finalize");
 #endif
     return count;
 }

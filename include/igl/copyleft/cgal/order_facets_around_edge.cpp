@@ -295,7 +295,7 @@ void igl::copyleft::cgal::order_facets_around_edge(
     {
         return abs(signed_idx) -1;
     };
-    auto get_opposite_vertex_index = [&](size_t fid)
+    auto get_opposite_vertex_index = [&](size_t fid) -> typename DerivedF::Scalar
     {
         typedef typename DerivedF::Scalar Index;
         if (F(fid, 0) != (Index)s && F(fid, 0) != (Index)d) return F(fid, 0);
