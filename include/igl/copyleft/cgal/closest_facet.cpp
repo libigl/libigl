@@ -77,7 +77,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
   Tree tree(triangles.begin(), triangles.end());
   tree.accelerate_distance_queries();
 
-  auto on_the_positive_side = [&](size_t fid, const Point_3& p) {
+  auto on_the_positive_side = [&](size_t fid, const Point_3& p) -> bool{
     const auto& f = F.row(fid).eval();
     Point_3 v0(V(f[0], 0), V(f[0], 1), V(f[0], 2));
     Point_3 v1(V(f[1], 0), V(f[1], 1), V(f[1], 2));
@@ -122,7 +122,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
 
   enum ElementType { VERTEX, EDGE, FACE };
   auto determine_element_type = [&](const Point_3& p, const size_t fid,
-      size_t& element_index) {
+      size_t& element_index) -> ElementType {
     const auto& tri = triangles[fid];
     const Point_3 p0 = tri[0];
     const Point_3 p1 = tri[1];
@@ -143,7 +143,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
       size_t query_idx,
       const size_t s, const size_t d,
       size_t preferred_facet,
-      bool& orientation) {
+      bool& orientation) -> size_t {
     Point_3 query_point(
         P(query_idx, 0),
         P(query_idx, 1),
@@ -221,7 +221,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
 
   auto process_face_case = [&](
       const size_t query_idx, const Point_3& closest_point,
-      const size_t fid, bool& orientation) {
+      const size_t fid, bool& orientation) -> size_t {
     const auto& f = F.row(I(fid, 0));
     return process_edge_case(query_idx, f[0], f[1], I(fid, 0), orientation);
   };
@@ -244,7 +244,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     const size_t query_idx, 
     size_t s,
     size_t preferred_facet, 
-    bool& orientation) 
+    bool& orientation) -> size_t
   {
     const Point_3 query_point(
         P(query_idx, 0), P(query_idx, 1), P(query_idx, 2));
@@ -296,7 +296,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
 
     // A plane is on the exterior if all adj_points lies on or to
     // one side of the plane.
-    auto is_on_exterior = [&](const Plane_3& separator) {
+    auto is_on_exterior = [&](const Plane_3& separator) -> bool{
       size_t positive=0;
       size_t negative=0;
       size_t coplanar=0;
