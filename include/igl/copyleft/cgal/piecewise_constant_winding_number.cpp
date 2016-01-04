@@ -12,7 +12,7 @@
 #include <algorithm>
 
 template < typename DerivedV, typename DerivedF>
-IGL_INLINE bool igl::piecewise_constant_winding_number(
+IGL_INLINE bool igl::copyleft::cgal::piecewise_constant_winding_number(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::PlainObjectBase<DerivedF> & F)
 {
