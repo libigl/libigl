@@ -24,7 +24,10 @@ namespace igl
   //   E #E by 2 list of edges in no particular order
   //
   // See also: adjacency_matrix
-  IGL_INLINE void edges( const Eigen::MatrixXi& F, Eigen::MatrixXi& E);
+  template <typename DerivedF, typename DerivedE>
+  IGL_INLINE void edges(
+    const Eigen::PlainObjectBase<DerivedF> & F, 
+    Eigen::PlainObjectBase<DerivedE> & E);
 }
 
 #ifndef IGL_STATIC_LIBRARY
