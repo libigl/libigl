@@ -31,23 +31,6 @@ namespace igl
   {
     namespace cgal
     {
-      template<typename Kernel>
-      class DeepCoper {
-        public:
-          typename Kernel::FT operator()(const typename Kernel::FT& x) {
-            return typename Kernel::FT(x);
-          }
-      };
-
-      template<>
-      class DeepCoper<CGAL::Exact_predicates_exact_constructions_kernel> {
-        public:
-          typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
-          typename Kernel::FT operator()(const typename Kernel::FT& x) {
-            return Kernel::FT(x.exact() +1) - 1;
-          }
-      };
-
       // Kernel is a CGAL kernel like:
       //     CGAL::Exact_predicates_inexact_constructions_kernel
       // or 
