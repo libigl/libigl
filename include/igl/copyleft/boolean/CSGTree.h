@@ -98,7 +98,7 @@ namespace igl
             mesh_boolean(A.V(),A.F(),B.V(),B.F(),type,m_V,m_F,m_J);
             // reindex m_J
             std::for_each(m_J.data(),m_J.data()+m_J.size(),
-              [&](typename VectorJ::Scalar & j)
+              [&](typename VectorJ::Scalar & j) -> void
               {
                 if(j < A.F().rows())
                 {
