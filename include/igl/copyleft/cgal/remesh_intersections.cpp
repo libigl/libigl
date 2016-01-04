@@ -9,6 +9,7 @@
 #include "remesh_intersections.h"
 #include "assign_scalar.h"
 #include "../../get_seconds.h"
+#include "../../unique.h"
 
 #include <vector>
 #include <map>
@@ -381,24 +382,17 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         }
     };
 
+    // TODO: use igl::unique()
     // Extract unique vertex indices.
+
     const size_t VV_size = VV.rows();
     IM.resize(VV_size,1);
-    std::unordered_map<Point_3, Index, PointHash> vv2i;
-    vv2i.reserve(VV_size);
-    // Safe to check for duplicates using double for original vertices: if
-    // incoming reps are different then the points are unique.
-    for(Index v = 0;v<VV_size;v++) {
-        typename Kernel::FT p0,p1,p2;
-        assign_scalar(VV(v,0),p0);
-        assign_scalar(VV(v,1),p1);
-        assign_scalar(VV(v,2),p2);
-        const Point_3 p(p0,p1,p2);
-        if(vv2i.count(p)==0) {
-            vv2i[p] = v;
-        }
-        assert(vv2i.count(p) == 1);
-        IM(v) = vv2i[p];
+
+    DerivedVV unique_vv;
+    Eigen::VectorXi unique_to_vv, vv_to_unique;
+    igl::unique_rows(VV, unique_vv, unique_to_vv, vv_to_unique);
+    for (Index v=0; v<VV_size; v++) {
+      IM(v) = unique_to_vv[vv_to_unique[v]];
     }
 #ifdef REMESH_INTERSECTIONS_TIMING
     log_time("store_results");
