@@ -59,7 +59,6 @@ IGL_INLINE bool igl::bbw::bbw(
   Eigen::PlainObjectBase<DerivedW> & W
   )
 {
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
 

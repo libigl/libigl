@@ -657,7 +657,6 @@ igl::AABB<DerivedV,DIM>::squared_distance(
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   Scalar sqr_d = min_sqr_d;
   //assert(DIM == 3 && "Code has only been tested for DIM == 3");
   assert((Ele.cols() == 3 || Ele.cols() == 2 || Ele.cols() == 1)
@@ -1026,7 +1025,6 @@ inline void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
   RowVectorDIMS & c) const
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
 
   // Simplex size
