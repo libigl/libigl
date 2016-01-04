@@ -293,7 +293,6 @@ inline bool igl::opengl2::MouseController::up(const int x, const int y)
 
 inline void igl::opengl2::MouseController::draw() const
 {
-  using namespace igl;
   if(any_selection())
   {
     m_widget.draw();
@@ -342,7 +341,6 @@ inline void igl::opengl2::MouseController::set_selection_from_last_drag(
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   m_rotations_at_selection = m_rotations;
   assert(BE.rows() == P.rows());
   m_selection = VectorXb::Zero(BE.rows());
@@ -378,7 +376,6 @@ inline void igl::opengl2::MouseController::set_selection(
     const Eigen::VectorXi & P,
     const Eigen::VectorXi & RP)
 {
-  using namespace igl;
   using namespace Eigen;
   using namespace std;
   vector<Quaterniond,aligned_allocator<Quaterniond> > & vQ = 

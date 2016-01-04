@@ -46,7 +46,6 @@ IGL_INLINE void igl::embree::ambient_occlusion(
   const int num_samples,
   Eigen::PlainObjectBase<DerivedS> & S)
 {
-  using namespace igl;
   using namespace Eigen;
   EmbreeIntersector ei;
   ei.init(V.template cast<float>(),F.template cast<int>());

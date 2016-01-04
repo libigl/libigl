@@ -19,7 +19,6 @@
 
 IGL_INLINE bool igl::png::texture_from_file(const std::string filename, GLuint & id)
 {
-  using namespace igl;
   using namespace igl::opengl;
   using namespace std;
   // dirname, basename, extension and filename
