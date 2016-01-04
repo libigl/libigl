@@ -68,3 +68,7 @@ IGL_INLINE bool igl::piecewise_constant_winding_number(
   unique_edge_map(F, E, uE, EMAP, uE2E);
   return piecewise_constant_winding_number(F,uE,uE2E);
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template bool igl::piecewise_constant_winding_number<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, unsigned long>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::__1::vector<std::__1::vector<unsigned long, std::__1::allocator<unsigned long> >, std::__1::allocator<std::__1::vector<unsigned long, std::__1::allocator<unsigned long> > > > const&);
+#endif
