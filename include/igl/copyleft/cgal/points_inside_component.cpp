@@ -169,7 +169,7 @@ namespace igl {
 
                 // A plane is on the exterior if all adj_points lies on or to
                 // one side of the plane.
-                auto is_on_exterior = [&](const Plane_3& separator) {
+                auto is_on_exterior = [&](const Plane_3& separator) -> bool{
                     size_t positive=0;
                     size_t negative=0;
                     size_t coplanar=0;
