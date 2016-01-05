@@ -37,7 +37,35 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         std::pair<typename DerivedF::Index, CGAL::Object> > > & offending,
         const std::map<
         std::pair<typename DerivedF::Index,typename DerivedF::Index>,
+        std::vector<typename DerivedF::Index> > & edge2faces,
+        Eigen::PlainObjectBase<DerivedVV> & VV,
+        Eigen::PlainObjectBase<DerivedFF> & FF,
+        Eigen::PlainObjectBase<DerivedJ> & J,
+        Eigen::PlainObjectBase<DerivedIM> & IM) {
+    igl::copyleft::cgal::remesh_intersections(
+            V, F, T, offending, edge2faces, false, VV, FF, J, IM);
+}
+
+template <
+typename DerivedV,
+typename DerivedF,
+typename Kernel,
+typename DerivedVV,
+typename DerivedFF,
+typename DerivedJ,
+typename DerivedIM>
+IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
+        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::PlainObjectBase<DerivedF> & F,
+        const std::vector<CGAL::Triangle_3<Kernel> > & T,
+        const std::map<
+        typename DerivedF::Index,
+        std::vector<
+        std::pair<typename DerivedF::Index, CGAL::Object> > > & offending,
+        const std::map<
+        std::pair<typename DerivedF::Index,typename DerivedF::Index>,
         std::vector<typename DerivedF::Index> > & /*edge2faces*/,
+        bool stitch_all,
         Eigen::PlainObjectBase<DerivedVV> & VV,
         Eigen::PlainObjectBase<DerivedFF> & FF,
         Eigen::PlainObjectBase<DerivedJ> & J,
@@ -187,51 +215,61 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
      * Given p on triangle indexed by ori_f, determine the index of p.
      */
     auto determine_point_index = [&](
-            const Point_3& p, const size_t ori_f) -> Index {
+        const Point_3& p, const size_t ori_f) -> Index {
+      if (stitch_all) {
+        // No need to check if p shared by multiple triangles because all shared
+        // vertices would be merged later on.
+        const size_t index = num_base_vertices + new_vertices.size();
+        new_vertices.push_back(p);
+        return index;
+      } else {
+        // Stitching triangles according to input connectivity.
+        // This step is potentially costly.
         const auto& triangle = T[ori_f];
         const auto& f = F.row(ori_f).eval();
 
         // Check if p is one of the triangle corners.
         for (size_t i=0; i<3; i++) {
-            if (p == triangle[i]) return f[i];
+          if (p == triangle[i]) return f[i];
         }
 
         // Check if p is on one of the edges.
         for (size_t i=0; i<3; i++) {
-            const Point_3 curr_corner = triangle[i];
-            const Point_3 next_corner = triangle[(i+1)%3];
-            const Segment_3 edge(curr_corner, next_corner);
-            if (edge.has_on(p)) {
-                const Index curr = f[i];
-                const Index next = f[(i+1)%3];
-                Edge key;
-                key.first = curr<next?curr:next;
-                key.second = curr<next?next:curr;
-                auto itr = edge_vertices.find(key);
-                if (itr == edge_vertices.end()) {
-                    const Index index =
-                        num_base_vertices + new_vertices.size();
-                    edge_vertices.insert({key, {index}});
-                    new_vertices.push_back(p);
-                    return index;
-                } else {
-                    for (const auto vid : itr->second) {
-                        if (p == new_vertices[vid - num_base_vertices]) {
-                            return vid;
-                        }
-                    }
-                    const size_t index = num_base_vertices + new_vertices.size();
-                    new_vertices.push_back(p);
-                    itr->second.push_back(index);
-                    return index;
+          const Point_3 curr_corner = triangle[i];
+          const Point_3 next_corner = triangle[(i+1)%3];
+          const Segment_3 edge(curr_corner, next_corner);
+          if (edge.has_on(p)) {
+            const Index curr = f[i];
+            const Index next = f[(i+1)%3];
+            Edge key;
+            key.first = curr<next?curr:next;
+            key.second = curr<next?next:curr;
+            auto itr = edge_vertices.find(key);
+            if (itr == edge_vertices.end()) {
+              const Index index =
+                num_base_vertices + new_vertices.size();
+              edge_vertices.insert({key, {index}});
+              new_vertices.push_back(p);
+              return index;
+            } else {
+              for (const auto vid : itr->second) {
+                if (p == new_vertices[vid - num_base_vertices]) {
+                  return vid;
                 }
+              }
+              const size_t index = num_base_vertices + new_vertices.size();
+              new_vertices.push_back(p);
+              itr->second.push_back(index);
+              return index;
             }
+          }
         }
 
         // p must be in the middle of the triangle.
         const size_t index = num_base_vertices + new_vertices.size();
         new_vertices.push_back(p);
         return index;
+      }
     };
 
     /**
@@ -241,32 +279,45 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
             const std::vector<Point_3>& vertices,
             const std::vector<std::vector<Index> >& faces,
             const std::vector<Index>& involved_faces) -> void {
-        for (const auto& f : faces) {
-            const Point_3& v0 = vertices[f[0]];
-            const Point_3& v1 = vertices[f[1]];
-            const Point_3& v2 = vertices[f[2]];
-            Point_3 center(
-                    (v0[0] + v1[0] + v2[0]) / 3.0,
-                    (v0[1] + v1[1] + v2[1]) / 3.0,
-                    (v0[2] + v1[2] + v2[2]) / 3.0);
-            for (const auto& ori_f : involved_faces) {
-                const auto& triangle = T[ori_f];
-                const Plane_3 P = triangle.supporting_plane();
-                if (triangle.has_on(center)) {
-                    std::vector<Index> corners(3);
-                    corners[0] = determine_point_index(v0, ori_f);
-                    corners[1] = determine_point_index(v1, ori_f);
-                    corners[2] = determine_point_index(v2, ori_f);
-                    if (CGAL::orientation(
-                                P.to_2d(v0), P.to_2d(v1), P.to_2d(v2))
-                            == CGAL::RIGHT_TURN) {
-                        std::swap(corners[0], corners[1]);
-                    }
-                    resolved_faces.emplace_back(corners);
-                    source_faces.push_back(ori_f);
-                }
+      assert(involved_faces.size() > 0);
+      for (const auto& f : faces) {
+        const Point_3& v0 = vertices[f[0]];
+        const Point_3& v1 = vertices[f[1]];
+        const Point_3& v2 = vertices[f[2]];
+        Point_3 center(
+            (v0[0] + v1[0] + v2[0]) / 3.0,
+            (v0[1] + v1[1] + v2[1]) / 3.0,
+            (v0[2] + v1[2] + v2[2]) / 3.0);
+        if (involved_faces.size() == 1) {
+          // If only there is only one involved face, all sub-triangles must
+          // belong to it and have the correct orientation.
+          const auto& ori_f = involved_faces[0];
+          std::vector<Index> corners(3);
+          corners[0] = determine_point_index(v0, ori_f);
+          corners[1] = determine_point_index(v1, ori_f);
+          corners[2] = determine_point_index(v2, ori_f);
+          resolved_faces.emplace_back(corners);
+          source_faces.push_back(ori_f);
+        } else {
+          for (const auto& ori_f : involved_faces) {
+            const auto& triangle = T[ori_f];
+            const Plane_3 P = triangle.supporting_plane();
+            if (triangle.has_on(center)) {
+              std::vector<Index> corners(3);
+              corners[0] = determine_point_index(v0, ori_f);
+              corners[1] = determine_point_index(v1, ori_f);
+              corners[2] = determine_point_index(v2, ori_f);
+              if (CGAL::orientation(
+                    P.to_2d(v0), P.to_2d(v1), P.to_2d(v2))
+                  == CGAL::RIGHT_TURN) {
+                std::swap(corners[0], corners[1]);
+              }
+              resolved_faces.emplace_back(corners);
+              source_faces.push_back(ori_f);
             }
+          }
         }
+      }
     };
 
     // Process un-touched faces.
@@ -335,12 +386,11 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     log_time("cdt");
 #endif
 
-    // Post process
     for (size_t i=0; i<num_cdts; i++) {
-        const auto& vertices = cdt_vertices[i];
-        const auto& faces = cdt_faces[i];
-        const auto& involved_faces = cdt_inputs[i].second;
-        post_triangulation_process(vertices, faces, involved_faces);
+      const auto& vertices = cdt_vertices[i];
+      const auto& faces = cdt_faces[i];
+      const auto& involved_faces = cdt_inputs[i].second;
+      post_triangulation_process(vertices, faces, involved_faces);
     }
 #ifdef REMESH_INTERSECTIONS_TIMING
     log_time("stitching");
@@ -371,28 +421,27 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     J.resize(num_out_faces);
     std::copy(source_faces.begin(), source_faces.end(), J.data());
 
-    struct PointHash {
-        size_t operator()(const Point_3& p) const {
-            static const std::hash<double> hasher{};
-            double x,y,z;
-            assign_scalar(p.x(), x);
-            assign_scalar(p.y(), y);
-            assign_scalar(p.z(), z);
-            return hasher(x) ^ hasher(y) ^ hasher(z);
-        }
-    };
-
-    // TODO: use igl::unique()
     // Extract unique vertex indices.
-
     const size_t VV_size = VV.rows();
     IM.resize(VV_size,1);
 
     DerivedVV unique_vv;
     Eigen::VectorXi unique_to_vv, vv_to_unique;
     igl::unique_rows(VV, unique_vv, unique_to_vv, vv_to_unique);
-    for (Index v=0; v<VV_size; v++) {
-      IM(v) = unique_to_vv[vv_to_unique[v]];
+    if (!stitch_all) {
+      // Vertices with the same coordinates would be represented by one vertex.
+      // The IM value of an vertex is the index of the representative vertex.
+      for (Index v=0; v<VV_size; v++) {
+        IM(v) = unique_to_vv[vv_to_unique[v]];
+      }
+    } else {
+      // Screw IM and representative vertices.  Merge all vertices having the
+      // same coordinates into a single vertex and set IM to identity map.
+      VV = unique_vv;
+      std::transform(FF.data(), FF.data() + FF.rows()*FF.cols(),
+          FF.data(), [&vv_to_unique](const typename DerivedFF::Scalar& a)
+          { return vv_to_unique[a]; });
+      IM.setLinSpaced(unique_vv.rows(), 0, unique_vv.rows()-1);
     }
 #ifdef REMESH_INTERSECTIONS_TIMING
     log_time("store_results");

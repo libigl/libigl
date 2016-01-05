@@ -423,7 +423,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     return;
   }
 
-  remesh_intersections(V,F,T,offending,edge2faces,VV,FF,J,IM);
+  remesh_intersections(V,F,T,offending,edge2faces,true,VV,FF,J,IM);
 
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
   log_time("remesh_intersection");
