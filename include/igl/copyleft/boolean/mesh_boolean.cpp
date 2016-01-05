@@ -16,6 +16,7 @@
 #include "../../unique_simplices.h"
 #include "../../slice.h"
 #include "../../resolve_duplicated_faces.h"
+#include "../../get_seconds.h"
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <algorithm>
