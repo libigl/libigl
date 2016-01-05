@@ -16,6 +16,7 @@
 #include "order_facets_around_edge.h"
 #include "outer_facet.h"
 
+#include <iostream>
 #include <vector>
 #include <queue>
 
