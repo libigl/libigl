@@ -55,14 +55,6 @@ IGL_INLINE void igl::remove_duplicate_vertices(
   using namespace Eigen;
   using namespace std;
   remove_duplicate_vertices(V,epsilon,SV,SVI,SVJ);
-  // remap faces
-// #ifndef _WIN32
-//   SF = F.unaryExpr(bind1st(mem_fun( 
-//     static_cast<VectorXi::Scalar&(VectorXi::*)(VectorXi::Index)>
-//       (&VectorXi::operator())), &SVJ)).eval();
-// #else
-  // Why doesn't the above compile on windows?
-  // Daniele: it also does not compile with CLANG
   SF.resize(F.rows(),F.cols());
   for(int f = 0;f<F.rows();f++)
   {
@@ -71,7 +63,6 @@ IGL_INLINE void igl::remove_duplicate_vertices(
       SF(f,c) = SVJ(F(f,c));
     }
   }
-// #endif
 }
 
 #ifdef IGL_STATIC_LIBRARY
