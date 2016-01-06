@@ -125,6 +125,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
     std::copy(components[i].begin(), components[i].end(),Is[i].data());
   }
 
+  // Find outer facets, their orientations and cells for each component
   Eigen::VectorXi outer_facets(num_components);
   Eigen::VectorXi outer_facet_orientation(num_components);
   Eigen::VectorXi outer_cells(num_components);
@@ -139,44 +140,61 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
   log_time("outer_facet_per_component");
 #endif
 
-    auto get_triangle_center = [&](const size_t fid) {
-        return ((V.row(F(fid, 0)) + V.row(F(fid, 1)) + V.row(F(fid, 2)))
-                /3.0).eval();
-    };
-    std::vector<std::vector<size_t> > nested_cells(num_raw_cells);
-    std::vector<std::vector<size_t> > ambient_cells(num_raw_cells);
-    std::vector<std::vector<size_t> > ambient_comps(num_components);
-    if (num_components > 1) {
-        DerivedV bbox_min(num_components, 3);
-        DerivedV bbox_max(num_components, 3);
-        bbox_min.rowwise() = V.colwise().maxCoeff().eval();
-        bbox_max.rowwise() = V.colwise().minCoeff().eval();
-        for (size_t i=0; i<num_faces; i++) {
-          const auto comp_id = C[i];
-          const auto& f = F.row(i);
-          for (size_t j=0; j<3; j++) {
-            bbox_min(comp_id, 0) = std::min(bbox_min(comp_id, 0), V(f[j], 0));
-            bbox_min(comp_id, 1) = std::min(bbox_min(comp_id, 1), V(f[j], 1));
-            bbox_min(comp_id, 2) = std::min(bbox_min(comp_id, 2), V(f[j], 2));
-            bbox_max(comp_id, 0) = std::max(bbox_max(comp_id, 0), V(f[j], 0));
-            bbox_max(comp_id, 1) = std::max(bbox_max(comp_id, 1), V(f[j], 1));
-            bbox_max(comp_id, 2) = std::max(bbox_max(comp_id, 2), V(f[j], 2));
-          }
+  // Compute barycenter of a triangle in mesh (V,F)
+  //
+  // Inputs:
+  //   fid  index into F
+  // Returns row-vector of barycenter coordinates
+  const auto get_triangle_center = [&V,&F](const size_t fid) 
+  {
+    return ((V.row(F(fid,0))+V.row(F(fid,1))+V.row(F(fid,2)))/3.0).eval();
+  };
+  std::vector<std::vector<size_t> > nested_cells(num_raw_cells);
+  std::vector<std::vector<size_t> > ambient_cells(num_raw_cells);
+  std::vector<std::vector<size_t> > ambient_comps(num_components);
+  // Only bother if there's more than one component
+  if(num_components > 1) 
+  {
+    // construct bounding boxes for each component
+    DerivedV bbox_min(num_components, 3);
+    DerivedV bbox_max(num_components, 3);
+    // Why not just initialize to numeric_limits::min, numeric_limits::max?
+    bbox_min.rowwise() = V.colwise().maxCoeff().eval();
+    bbox_max.rowwise() = V.colwise().minCoeff().eval();
+    // Loop over faces
+    for (size_t i=0; i<num_faces; i++)
+    {
+      // component of this face
+      const auto comp_id = C[i];
+      const auto& f = F.row(i);
+      for (size_t j=0; j<3; j++) 
+      {
+        for(size_t d=0;d<3;d++)
+        {
+          bbox_min(comp_id,d) = std::min(bbox_min(comp_id,d), V(f[j],d));
+          bbox_max(comp_id,d) = std::max(bbox_max(comp_id,d), V(f[j],d));
         }
-        auto bbox_intersects = [&](size_t comp_i, size_t comp_j) {
-          return !(
-              bbox_max(comp_i,0) < bbox_min(comp_j,0) ||
-              bbox_max(comp_i,1) < bbox_min(comp_j,1) ||
-              bbox_max(comp_i,2) < bbox_min(comp_j,2) ||
-              bbox_max(comp_j,0) < bbox_min(comp_i,0) ||
-              bbox_max(comp_j,1) < bbox_min(comp_i,1) ||
-              bbox_max(comp_j,2) < bbox_min(comp_i,2));
-        };
-
-        for (size_t i=0; i<num_components; i++) {
-            std::vector<size_t> candidate_comps;
-            candidate_comps.reserve(num_components);
-            for (size_t j=0; j<num_components; j++) {
+      }
+    }
+    // Return true if box of component ci intersects that of cj
+    const auto bbox_intersects = [&bbox_max,&bbox_min](size_t ci, size_t cj)
+    {
+      return !(
+        bbox_max(ci,0) < bbox_min(cj,0) ||
+        bbox_max(ci,1) < bbox_min(cj,1) ||
+        bbox_max(ci,2) < bbox_min(cj,2) ||
+        bbox_max(cj,0) < bbox_min(ci,0) ||
+        bbox_max(cj,1) < bbox_min(ci,1) ||
+        bbox_max(cj,2) < bbox_min(ci,2));
+    };
+    // Loop over components. This section is O(m²)
+    for (size_t i=0; i<num_components; i++)
+    {
+      std::vector<size_t> candidate_comps;
+      candidate_comps.reserve(num_components);
+      // Loop over components
+      for (size_t j=0; j<num_components; j++) 
+      {
                 if (i == j) continue;
                 if (bbox_intersects(i,j)) candidate_comps.push_back(j);
             }
