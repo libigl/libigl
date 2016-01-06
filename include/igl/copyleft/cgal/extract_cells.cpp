@@ -187,6 +187,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         bbox_max(cj,1) < bbox_min(ci,1) ||
         bbox_max(cj,2) < bbox_min(ci,2));
     };
+    
     // Loop over components. This section is O(m²)
     for (size_t i=0; i<num_components; i++)
     {
@@ -212,7 +213,8 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         queries.row(j) = get_triangle_center(outer_facets[index]);
       }
 
-      // Gather closest facets to each query point and their orientations
+      // Gather closest facets in ith component to each query point and their
+      // orientations
       const auto& I = Is[i];
       Eigen::VectorXi closest_facets, closest_facet_orientations;
       closest_facet(V, F, I, queries,
@@ -223,10 +225,20 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         const size_t index = candidate_comps[j];
         const size_t closest_patch = P[closest_facets[j]];
         const size_t closest_patch_side = closest_facet_orientations[j] ? 0:1;
+        // The cell id of the closest patch
         const size_t ambient_cell =
           raw_cells(closest_patch,closest_patch_side);
         if (ambient_cell != (size_t)outer_cells[i])
         {
+          // Awkardly, this doesn't seem to imply that component j is inside
+          // component i. Consider:
+          //
+          //    ________
+          //   /    ___ \       __
+          //  |  2 | i | |  0  / j\
+          //  |     ---  |     \__/
+          //   \________/
+          //
           nested_cells[ambient_cell].push_back(outer_cells[index]);
           ambient_cells[outer_cells[index]].push_back(ambient_cell);
           ambient_comps[index].push_back(i);
@@ -234,6 +246,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
       }
     }
   }
+
 #ifdef EXTRACT_CELLS_DEBUG
     log_time("nested_relationship");
 #endif
