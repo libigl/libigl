@@ -190,44 +190,50 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
     // Loop over components. This section is O(m²)
     for (size_t i=0; i<num_components; i++)
     {
+      // List of components that could overlap with component i
       std::vector<size_t> candidate_comps;
       candidate_comps.reserve(num_components);
       // Loop over components
       for (size_t j=0; j<num_components; j++) 
       {
-                if (i == j) continue;
-                if (bbox_intersects(i,j)) candidate_comps.push_back(j);
-            }
+        if (i == j) continue;
+        if (bbox_intersects(i,j)) candidate_comps.push_back(j);
+      }
 
-            const size_t num_candidate_comps = candidate_comps.size();
-            if (num_candidate_comps == 0) continue;
+      const size_t num_candidate_comps = candidate_comps.size();
+      if (num_candidate_comps == 0) continue;
 
-            DerivedV queries(num_candidate_comps, 3);
-            for (size_t j=0; j<num_candidate_comps; j++) {
-                const size_t index = candidate_comps[j];
-                queries.row(j) = get_triangle_center(outer_facets[index]);
-            }
+      // Get query points on each candidate component: barycenter of
+      // outer-facet 
+      DerivedV queries(num_candidate_comps, 3);
+      for (size_t j=0; j<num_candidate_comps; j++)
+      {
+        const size_t index = candidate_comps[j];
+        queries.row(j) = get_triangle_center(outer_facets[index]);
+      }
 
-            const auto& I = Is[i];
-            Eigen::VectorXi closest_facets, closest_facet_orientations;
-            igl::copyleft::cgal::closest_facet(V, F, I, queries,
-                    uE2E, EMAP, closest_facets, closest_facet_orientations);
-
-            for (size_t j=0; j<num_candidate_comps; j++) {
-                const size_t index = candidate_comps[j];
-                const size_t closest_patch = P[closest_facets[j]];
-                const size_t closest_patch_side = closest_facet_orientations[j]
-                    ? 0:1;
-                const size_t ambient_cell = raw_cells(closest_patch,
-                        closest_patch_side);
-                if (ambient_cell != (size_t)outer_cells[i]) {
-                    nested_cells[ambient_cell].push_back(outer_cells[index]);
-                    ambient_cells[outer_cells[index]].push_back(ambient_cell);
-                    ambient_comps[index].push_back(i);
-                }
-            }
+      // Gather closest facets to each query point and their orientations
+      const auto& I = Is[i];
+      Eigen::VectorXi closest_facets, closest_facet_orientations;
+      closest_facet(V, F, I, queries,
+        uE2E, EMAP, closest_facets, closest_facet_orientations);
+      // Loop over all candidates
+      for (size_t j=0; j<num_candidate_comps; j++)
+      {
+        const size_t index = candidate_comps[j];
+        const size_t closest_patch = P[closest_facets[j]];
+        const size_t closest_patch_side = closest_facet_orientations[j] ? 0:1;
+        const size_t ambient_cell =
+          raw_cells(closest_patch,closest_patch_side);
+        if (ambient_cell != (size_t)outer_cells[i])
+        {
+          nested_cells[ambient_cell].push_back(outer_cells[index]);
+          ambient_cells[outer_cells[index]].push_back(ambient_cell);
+          ambient_comps[index].push_back(i);
         }
+      }
     }
+  }
 #ifdef EXTRACT_CELLS_DEBUG
     log_time("nested_relationship");
 #endif
