@@ -173,7 +173,6 @@ IGL_INLINE bool igl::arap_solve(
   ARAPData & data,
   Eigen::PlainObjectBase<DerivedU> & U)
 {
-  using namespace igl;
   using namespace Eigen;
   using namespace std;
   assert(data.b.size() == bc.rows());

@@ -113,7 +113,6 @@ IGL_INLINE void igl::opengl2::lens_flare_draw(
   glBlendFunc(GL_ONE, GL_ONE);
 
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
 
   //// view_dir  direction from eye to position is is looking at

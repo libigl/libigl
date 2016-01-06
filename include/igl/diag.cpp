@@ -95,7 +95,6 @@ IGL_INLINE void igl::diag(
   for(int i = 0;i<V.size();i++)
   {
     dyn_X.coeffRef(i,i) += V[i];
-    i++;
   }
   X = Eigen::SparseMatrix<T>(dyn_X);
 }
