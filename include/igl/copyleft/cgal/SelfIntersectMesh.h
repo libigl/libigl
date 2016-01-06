@@ -10,6 +10,7 @@
 
 #include "CGAL_includes.hpp"
 #include "RemeshSelfIntersectionsParam.h"
+#include "../../unique.h"
 
 #include <Eigen/Dense>
 #include <list>
