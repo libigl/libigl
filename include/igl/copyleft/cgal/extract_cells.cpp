@@ -231,15 +231,10 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
           raw_cells(closest_patch,closest_patch_side);
         if (ambient_cell != (size_t)outer_cells[i])
         {
-          // Awkardly, this doesn't seem to imply that component j is inside
-          // component i. Consider:
-          //
-          //    ________
-          //   /    ___ \       __
-          //  |  2 | i | |  0  / j\
-          //  |     ---  |     \__/
-          //   \________/
-          //
+          // ---> component index inside component i, because the cell of the
+          // closest facet on i to component index is **not** the same as the
+          // "outer cell" of component i: component index is **not** outside of
+          // component i (therefore it's inside).
           nested_cells[ambient_cell].push_back(outer_cells[index]);
           ambient_cells[outer_cells[index]].push_back(ambient_cell);
           ambient_comps[index].push_back(i);
