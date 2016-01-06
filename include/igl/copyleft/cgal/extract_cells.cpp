@@ -22,137 +22,237 @@
 //#define EXTRACT_CELLS_DEBUG
 
 template<
-typename DerivedV,
-typename DerivedF,
-typename DerivedP,
-typename DeriveduE,
-typename uE2EType,
-typename DerivedEMAP,
-typename DerivedC >
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedC >
+IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::PlainObjectBase<DerivedC>& cells)
+{
+  const size_t num_faces = F.rows();
+  // Construct edge adjacency
+  Eigen::MatrixXi E, uE;
+  Eigen::VectorXi EMAP;
+  std::vector<std::vector<size_t> > uE2E;
+  igl::unique_edge_map(F, E, uE, EMAP, uE2E);
+  // Cluster into manifold patches
+  Eigen::VectorXi P;
+  igl::extract_manifold_patches(F, EMAP, uE2E, P);
+  // Extract cells
+  DerivedC per_patch_cells;
+  const size_t num_cells =
+    igl::copyleft::cgal::extract_cells(V,F,P,E,uE,uE2E,EMAP,per_patch_cells);
+  // Distribute per-patch cell information to each face
+  cells.resize(num_faces, 2);
+  for (size_t i=0; i<num_faces; i++) 
+  {
+    cells.row(i) = per_patch_cells.row(P[i]);
+  }
+  return num_cells;
+}
+
+
+template<
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedP,
+  typename DeriveduE,
+  typename uE2EType,
+  typename DerivedEMAP,
+  typename DerivedC>
 IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        const Eigen::PlainObjectBase<DerivedP>& P,
-        const Eigen::PlainObjectBase<DeriveduE>& uE,
-        const std::vector<std::vector<uE2EType> >& uE2E,
-        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
-        Eigen::PlainObjectBase<DerivedC>& cells) {
-    //typedef typename DerivedF::Scalar Index;
-    const size_t num_faces = F.rows();
-    auto edge_index_to_face_index = [&](size_t index) {
-        return index % num_faces;
-    };
-    auto is_consistent = [&](const size_t fid, const size_t s, const size_t d)
-    -> bool{
-        if ((size_t)F(fid, 0) == s && (size_t)F(fid, 1) == d) return false;
-        if ((size_t)F(fid, 1) == s && (size_t)F(fid, 2) == d) return false;
-        if ((size_t)F(fid, 2) == s && (size_t)F(fid, 0) == d) return false;
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  const Eigen::PlainObjectBase<DerivedP>& P,
+  const Eigen::PlainObjectBase<DeriveduE>& uE,
+  const std::vector<std::vector<uE2EType> >& uE2E,
+  const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+  Eigen::PlainObjectBase<DerivedC>& cells)
+{
+  const size_t num_faces = F.rows();
+  // Input:
+  //   index  index into #F*3 list of undirect edges
+  // Returns index into face
+  const auto edge_index_to_face_index = [&num_faces](size_t index)
+  {
+    return index % num_faces;
+  };
+  // Determine if a face (containing undirected edge {s,d} is consistently
+  // oriented with directed edge {s,d} (or otherwise it is with {d,s})
+  // 
+  // Inputs:
+  //   fid  face index into F
+  //   s  source index of edge
+  //   d  destination index of edge
+  // Returns true if face F(fid,:) is consistent with {s,d}
+  const auto is_consistent = 
+    [&F](const size_t fid, const size_t s, const size_t d) -> bool
+  {
+    if ((size_t)F(fid, 0) == s && (size_t)F(fid, 1) == d) return false;
+    if ((size_t)F(fid, 1) == s && (size_t)F(fid, 2) == d) return false;
+    if ((size_t)F(fid, 2) == s && (size_t)F(fid, 0) == d) return false;
 
-        if ((size_t)F(fid, 0) == d && (size_t)F(fid, 1) == s) return true;
-        if ((size_t)F(fid, 1) == d && (size_t)F(fid, 2) == s) return true;
-        if ((size_t)F(fid, 2) == d && (size_t)F(fid, 0) == s) return true;
-        throw "Invalid face!";
-        return false;
-    };
+    if ((size_t)F(fid, 0) == d && (size_t)F(fid, 1) == s) return true;
+    if ((size_t)F(fid, 1) == d && (size_t)F(fid, 2) == s) return true;
+    if ((size_t)F(fid, 2) == d && (size_t)F(fid, 0) == s) return true;
+    throw "Invalid face!";
+    return false;
+  };
 
-    const size_t num_unique_edges = uE.rows();
-    const size_t num_patches = P.maxCoeff() + 1;
+  const size_t num_unique_edges = uE.rows();
+  const size_t num_patches = P.maxCoeff() + 1;
 
-    std::vector<std::vector<size_t> > patch_edge_adj(num_patches);
-    std::vector<Eigen::VectorXi> orders(num_unique_edges);
-    std::vector<std::vector<bool> > orientations(num_unique_edges);
-    for (size_t i=0; i<num_unique_edges; i++) {
-        const size_t s = uE(i,0);
-        const size_t d = uE(i,1);
-        const auto adj_faces = uE2E[i];
-        if (adj_faces.size() > 2) {
-            std::vector<int> signed_adj_faces;
-            for (auto ei : adj_faces) {
-                const size_t fid = edge_index_to_face_index(ei);
-                bool cons = is_consistent(fid, s, d);
-                signed_adj_faces.push_back((fid+1)*(cons ? 1:-1));
-            }
-            auto& order = orders[i];
-            igl::copyleft::cgal::order_facets_around_edge(
-                    V, F, s, d, signed_adj_faces, order);
-            auto& orientation = orientations[i];
-            orientation.resize(order.size());
-            std::transform(order.data(), order.data() + order.size(),
-                    orientation.begin(), [&](int index) { return
-                    signed_adj_faces[index] > 0; });
-            std::transform(order.data(), order.data() + order.size(),
-                    order.data(), [&](int index) { return adj_faces[index]; });
-
-            for (auto ei : adj_faces) {
-                const size_t fid = edge_index_to_face_index(ei);
-                patch_edge_adj[P[fid]].push_back(ei);
-            }
-        }
+  // patch_edge_adj[p] --> list {e,f,g,...} such that p is a patch id and
+  //   e,f,g etc. are edge indices into 
+  std::vector<std::vector<size_t> > patch_edge_adj(num_patches);
+  // orders[u] --> J  where u is an index into unique edges uE and J is a
+  //   #adjacent-faces list of face-edge indices into F*3 sorted cyclicaly around
+  //   edge u.
+  std::vector<Eigen::VectorXi> orders(num_unique_edges);
+  // orientations[u] ---> list {f1,f2, ...} where u is an index into unique edges uE
+  //   and points to #adj-facets long list of flags whether faces are oriented
+  //   to point their normals clockwise around edge when looking along the
+  //   edge.
+  std::vector<std::vector<bool> > orientations(num_unique_edges);
+  // Loop over unique edges
+  for (size_t i=0; i<num_unique_edges; i++) 
+  {
+    const size_t s = uE(i,0);
+    const size_t d = uE(i,1);
+    const auto adj_faces = uE2E[i];
+    // If non-manifold (more than two incident faces)
+    if (adj_faces.size() > 2) 
+    {
+      // signed_adj_faces[a] --> sid  where a is an index into adj_faces
+      // (list of face edges on {s,d}) and sid is a signed index for resolve
+      // co-planar duplicates consistently (i.e. using simulation of
+      // simplicity).
+      std::vector<int> signed_adj_faces;
+      for (auto ei : adj_faces)
+      {
+        const size_t fid = edge_index_to_face_index(ei);
+        bool cons = is_consistent(fid, s, d);
+        signed_adj_faces.push_back((fid+1)*(cons ? 1:-1));
+      }
+      {
+        // Sort adjacent faces cyclically around {s,d}
+        auto& order = orders[i];
+        // order[f] will reveal the order of face f in signed_adj_faces
+        order_facets_around_edge(V, F, s, d, signed_adj_faces, order);
+        // Determine if each facet is oriented to point its normal clockwise or
+        // not around the {s,d} (normals are not explicitly computed/used)
+        auto& orientation = orientations[i];
+        orientation.resize(order.size());
+        std::transform(
+          order.data(), 
+          order.data() + order.size(),
+          orientation.begin(), 
+          [&signed_adj_faces](const int i){ return signed_adj_faces[i] > 0;});
+        // re-index order from adjacent faces to full face list. Now order
+        // indexes F directly
+        std::transform(
+          order.data(), 
+          order.data() + order.size(),
+          order.data(), 
+          [&adj_faces](const int index){ return adj_faces[index];});
+      }
+      // loop over adjacent faces, remember that patch is adjacent to this edge
+      for(const auto & ei : adj_faces)
+      {
+        const size_t fid = edge_index_to_face_index(ei);
+        patch_edge_adj[P[fid]].push_back(ei);
+      }
     }
+  }
 
-    const int INVALID = std::numeric_limits<int>::max();
-    cells.resize(num_patches, 2);
-    cells.setConstant(INVALID);
+  // Initialize all patch-to-cell indices as "invalid" (unlabeled)
+  const int INVALID = std::numeric_limits<int>::max();
+  cells.resize(num_patches, 2);
+  cells.setConstant(INVALID);
 
-    auto peel_cell_bd = [&](
-            size_t seed_patch_id,
-            short seed_patch_side,
-            size_t cell_idx) -> void {
-        typedef std::pair<size_t, short> PatchSide;
-        std::queue<PatchSide> Q;
-        Q.emplace(seed_patch_id, seed_patch_side);
-        cells(seed_patch_id, seed_patch_side) = cell_idx;
-        while (!Q.empty()) {
-            auto entry = Q.front();
-            Q.pop();
-            const size_t patch_id = entry.first;
-            const short side = entry.second;
-            const auto& adj_edges = patch_edge_adj[patch_id];
-            for (const auto& ei : adj_edges) {
-                const size_t uei = EMAP[ei];
-                const auto& order = orders[uei];
-                const auto& orientation = orientations[uei];
-                const size_t edge_valance = order.size();
-                size_t curr_i = 0;
-                for (curr_i=0; curr_i < edge_valance; curr_i++) {
-                    if ((size_t)order[curr_i] == ei) break;
-                }
-                assert(curr_i < edge_valance);
-
-                const bool cons = orientation[curr_i];
-                size_t next;
-                if (side == 0) {
-                    next = (cons ? (curr_i + 1) :
-                            (curr_i + edge_valance - 1)) % edge_valance;
-                } else {
-                    next = (cons ? (curr_i + edge_valance - 1) :
-                            (curr_i + 1)) % edge_valance;
-                }
-                const size_t next_ei = order[next];
-                const bool next_cons = orientation[next];
-                const size_t next_patch_id = P[next_ei % num_faces];
-                const short next_patch_side = (next_cons != cons) ?
-                    side:abs(side-1);
-                if (cells(next_patch_id, next_patch_side) == INVALID) {
-                    Q.emplace(next_patch_id, next_patch_side);
-                    cells(next_patch_id, next_patch_side) = cell_idx;
-                } else {
-                    assert(
-                      (size_t)cells(next_patch_id, next_patch_side) == 
-                      cell_idx);
-                }
-            }
+  // Given a "seed" patch id, a cell id, and which side of the patch that cell
+  // lies, identify all other patches bounding this cell (and tell them that
+  // they do)
+  //
+  // Inputs:
+  //   seed_patch_id  index into patches
+  //   cell_idx  index into cells
+  //   seed_patch_side   0 or 1 depending on whether cell_idx is on left or
+  //     right side of seed_patch_id 
+  //   cells  #cells by 2 list of current assignment of cells incident on each
+  //     side of a patch
+  // Outputs:
+  //   cells  udpated (see input)
+  // 
+  const auto & peel_cell_bd = 
+    [&P,&patch_edge_adj,&EMAP,&orders,&orientations,&num_faces](
+    const size_t seed_patch_id, 
+    const short seed_patch_side, 
+    const size_t cell_idx,
+    Eigen::PlainObjectBase<DerivedC>& cells)
+  {
+    typedef std::pair<size_t, short> PatchSide;
+    // Initialize a queue to BFS over all patches
+    std::queue<PatchSide> Q;
+    Q.emplace(seed_patch_id, seed_patch_side);
+    // assign cell id of seed patch on appropriate side
+    cells(seed_patch_id, seed_patch_side) = cell_idx;
+    while (!Q.empty())
+    {
+      auto entry = Q.front();
+      Q.pop();
+      const size_t patch_id = entry.first;
+      const short side = entry.second;
+      const auto& adj_edges = patch_edge_adj[patch_id];
+      for (const auto& ei : adj_edges)
+      {
+        const size_t uei = EMAP[ei];
+        const auto& order = orders[uei];
+        const auto& orientation = orientations[uei];
+        const size_t edge_valance = order.size();
+        size_t curr_i = 0;
+        for (curr_i=0; curr_i < edge_valance; curr_i++)
+        {
+          if ((size_t)order[curr_i] == ei) break;
         }
-    };
+        assert(curr_i < edge_valance && "Failed to find edge.");
+
+        const bool cons = orientation[curr_i];
+        size_t next;
+        if (side == 0)
+        {
+          next = (cons ? (curr_i + 1) :
+          (curr_i + edge_valance - 1)) % edge_valance;
+        } else {
+          next = (cons ? (curr_i+edge_valance-1) : (curr_i+1))%edge_valance;
+        }
+        const size_t next_ei = order[next];
+        const bool next_cons = orientation[next];
+        const size_t next_patch_id = P[next_ei % num_faces];
+        const short next_patch_side = (next_cons != cons) ?  side:abs(side-1);
+        if (cells(next_patch_id, next_patch_side) == INVALID) 
+        {
+          Q.emplace(next_patch_id, next_patch_side);
+          cells(next_patch_id, next_patch_side) = cell_idx;
+        }else 
+        {
+          assert(
+            (size_t)cells(next_patch_id, next_patch_side) == cell_idx && 
+            "Encountered cell assignment inconsistency");
+        }
+      }
+    }
+  };
 
     size_t count=0;
     for (size_t i=0; i<num_patches; i++) {
         if (cells(i, 0) == INVALID) {
-            peel_cell_bd(i, 0, count);
+            peel_cell_bd(i, 0, count,cells);
             count++;
         }
         if (cells(i, 1) == INVALID) {
-            peel_cell_bd(i, 1, count);
+            peel_cell_bd(i, 1, count,cells);
             count++;
         }
     }
@@ -383,37 +483,6 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
     log_time("finalize");
 #endif
     return count;
-}
-
-template<
-typename DerivedV,
-typename DerivedF,
-typename DerivedC >
-IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        Eigen::PlainObjectBase<DerivedC>& cells) {
-    const size_t num_faces = F.rows();
-    //typedef typename DerivedF::Scalar Index;
-
-    Eigen::MatrixXi E, uE;
-    Eigen::VectorXi EMAP;
-    std::vector<std::vector<size_t> > uE2E;
-    igl::unique_edge_map(F, E, uE, EMAP, uE2E);
-
-    Eigen::VectorXi P;
-    //const size_t num_patches = 
-      igl::extract_manifold_patches(F, EMAP, uE2E, P);
-
-    DerivedC per_patch_cells;
-    const size_t num_cells =
-        igl::copyleft::cgal::extract_cells(V, F, P, E, uE, uE2E, EMAP, per_patch_cells);
-
-    cells.resize(num_faces, 2);
-    for (size_t i=0; i<num_faces; i++) {
-        cells.row(i) = per_patch_cells.row(P[i]);
-    }
-    return num_cells;
 }
 
 #ifdef IGL_STATIC_LIBRARY
