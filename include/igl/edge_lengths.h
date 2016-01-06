@@ -32,7 +32,7 @@ namespace igl
   //     for edges, column of lengths
   //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
   //     for tets, columns correspond to edges
-  //     [1,2],[2,0],[0,1],[3,0],[3,1],[3,2]
+  //     [3 0],[3 1],[3 2],[1 2],[2 0],[0 1]
   //
   template <typename DerivedV, typename DerivedF, typename DerivedL>
   IGL_INLINE void edge_lengths(
