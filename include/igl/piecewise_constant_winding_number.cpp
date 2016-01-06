@@ -70,5 +70,5 @@ IGL_INLINE bool igl::piecewise_constant_winding_number(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template bool igl::piecewise_constant_winding_number<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, unsigned long>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::__1::vector<std::__1::vector<unsigned long, std::__1::allocator<unsigned long> >, std::__1::allocator<std::__1::vector<unsigned long, std::__1::allocator<unsigned long> > > > const&);
+template bool igl::piecewise_constant_winding_number<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, unsigned long>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::vector<std::vector<unsigned long, std::allocator<unsigned long> >, std::allocator<std::vector<unsigned long, std::allocator<unsigned long> > > > const&);
 #endif
