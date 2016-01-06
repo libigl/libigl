@@ -28,7 +28,7 @@ IGL_INLINE void igl::project_to_line_segment(
 #pragma omp parallel for if (np>10000)
   for(int p = 0;p<np;p++)
   {
-    const Eigen::PlainObjectBase<DerivedP> Pp = P.row(p);
+    const DerivedP Pp = P.row(p);
     if(t(p)<0)
     {
       sqrD(p) = (Pp-S).squaredNorm();

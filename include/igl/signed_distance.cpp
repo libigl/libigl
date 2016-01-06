@@ -303,7 +303,6 @@ IGL_INLINE void igl::signed_distance_winding_number(
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   sqrd = tree.squared_distance(V,F,q,i,c);
   const double w = hier.winding_number(q.transpose());
   s = 1.-2.*w;
@@ -321,7 +320,6 @@ IGL_INLINE void igl::signed_distance_winding_number(
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   sqrd = tree.squared_distance(V,F,q,i,c);
   double w;
   winding_number_2(V.data(), V.rows(), F.data(), F.rows(), q.data(), 1, &w);
