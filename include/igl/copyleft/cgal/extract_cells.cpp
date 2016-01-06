@@ -367,35 +367,62 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
   const size_t num_unique_edges = uE.rows();
   const size_t num_patches = P.maxCoeff() + 1;
 
-  // patch_edge_adj[p] --> list {e,f,g,...} such that p is a patch id and
-  //   e,f,g etc. are edge indices into 
-  std::vector<std::vector<size_t> > patch_edge_adj(num_patches);
-  // orders[u] --> J  where u is an index into unique edges uE and J is a
-  //   #adjacent-faces list of face-edge indices into F*3 sorted cyclicaly around
-  //   edge u.
-  std::vector<Eigen::VectorXi> orders(num_unique_edges);
-  // orientations[u] ---> list {f1,f2, ...} where u is an index into unique edges uE
-  //   and points to #adj-facets long list of flags whether faces are oriented
-  //   to point their normals clockwise around edge when looking along the
-  //   edge.
-  std::vector<std::vector<bool> > orientations(num_unique_edges);
-  // Loop over unique edges
-  for (size_t i=0; i<num_unique_edges; i++) 
-  {
+  // patch_adj is an adjacency list for patches.
+  // If patch i and j are adjacent, then patch_adj[i][j] and patch_adj[j][i]
+  // exist and equals to the index pair into E representing a shared directed
+  // edges.
+  std::vector<std::map<size_t, std::pair<size_t, size_t> > >
+    patch_adj(num_patches);
+  for (size_t i=0; i<num_unique_edges; i++) {
     const size_t s = uE(i,0);
     const size_t d = uE(i,1);
     const auto adj_faces = uE2E[i];
+    const size_t num_adj_faces = adj_faces.size();
     // If non-manifold (more than two incident faces)
     if (adj_faces.size() > 2) 
     {
-      // signed_adj_faces[a] --> sid  where a is an index into adj_faces
-      // (list of face edges on {s,d}) and sid is a signed index for resolve
-      // co-planar duplicates consistently (i.e. using simulation of
-      // simplicity).
-      std::vector<int> signed_adj_faces;
-      for (auto ei : adj_faces)
+      for (size_t j=0; j<num_adj_faces; j++)
       {
-        const size_t fid = edge_index_to_face_index(ei);
+        const size_t patch_j = P[edge_index_to_face_index(adj_faces[j])];
+        for (size_t k=j+1; k<num_adj_faces; k++)
+        {
+          const size_t patch_k = P[edge_index_to_face_index(adj_faces[k])];
+          if (patch_adj[patch_j].count(patch_k) == 0)
+          {
+            patch_adj[patch_j][patch_k] = {adj_faces[j], adj_faces[k]};
+          }
+          if (patch_adj[patch_k].count(patch_j) == 0)
+          {
+            patch_adj[patch_k][patch_j] = {adj_faces[k], adj_faces[j]};
+          }
+        }
+      }
+    }
+  }
+
+  // Ordered faces around each "shared" unsigned edges.  Thus the vector
+  // "orders" will be sparsely filled.
+  std::vector<Eigen::VectorXi> orders(num_unique_edges);
+  // Similarly, orientations records the orientation of ordered facets around
+  // each shared unique edge.  The array will be sparse too.
+  std::vector<std::vector<bool> > orientations(num_unique_edges);
+  for (const auto patches_adj_to_i : patch_adj)
+  {
+    for (const auto entries : patches_adj_to_i)
+    {
+      const size_t ei = entries.second.first;
+      const size_t i = EMAP[ei];
+      const auto adj_faces = uE2E[i];
+      if (orders[i].size() == adj_faces.size()) continue;
+
+      const size_t s = uE(i,0);
+      const size_t d = uE(i,1);
+      assert(adj_faces.size() > 2);
+
+      std::vector<int> signed_adj_faces;
+      for (auto ej : adj_faces)
+      {
+        const size_t fid = edge_index_to_face_index(ej);
         bool cons = is_consistent(fid, s, d);
         signed_adj_faces.push_back((fid+1)*(cons ? 1:-1));
       }
@@ -421,12 +448,6 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
           order.data(), 
           [&adj_faces](const int index){ return adj_faces[index];});
       }
-      // loop over adjacent faces, remember that patch is adjacent to this edge
-      for(const auto & ei : adj_faces)
-      {
-        const size_t fid = edge_index_to_face_index(ei);
-        patch_edge_adj[P[fid]].push_back(ei);
-      }
     }
   }
 
@@ -450,7 +471,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
   //   cells  udpated (see input)
   // 
   const auto & peel_cell_bd = 
-    [&P,&patch_edge_adj,&EMAP,&orders,&orientations,&num_faces](
+    [&](
     const size_t seed_patch_id, 
     const short seed_patch_side, 
     const size_t cell_idx,
@@ -470,16 +491,15 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
       Q.pop();
       const size_t patch_id = entry.first;
       const short side = entry.second;
-      // face-edges adjacent to patch
-      const auto& adj_edges = patch_edge_adj[patch_id];
-      // Loop over **ALL EDGES IN THE ENTIRE PATCH** not even just the boundary
-      // edges, all edges... O(n)
-      for (const auto& ei : adj_edges)
-      {
-        // unique edge
+      // Get a list of neighboring patches and the corresonding shared edge.
+      const auto& neighbors = patch_adj[patch_id];
+      for (const auto& entry : neighbors) {
+        const size_t ei = entry.second.first;
         const size_t uei = EMAP[ei];
+
         // ordering of face-edges stored at edge
         const auto& order = orders[uei];
+        assert(order.size() > 0);
         // consistent orientation flags at face-edges stored at edge
         const auto& orientation = orientations[uei];
         const size_t edge_valance = order.size();
