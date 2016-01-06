@@ -73,8 +73,9 @@ namespace igl {
         const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
         Eigen::PlainObjectBase<DerivedC>& cells);
 
-      // Extract connected 3D space partitioned by mesh (V,F) composed of a
-      // **single connected component**. 
+      // Extract connected 3D space partitioned by mesh (V,F) composed of
+      // **possibly multiple components** (the name of this function is
+      // dubious).
       //
       // Inputs:
       //   V  #V by 3 array of vertices.

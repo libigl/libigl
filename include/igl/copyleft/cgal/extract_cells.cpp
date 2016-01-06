@@ -54,23 +54,24 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
 
 
 template<
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedP,
-    typename DerivedE,
-    typename DeriveduE,
-    typename uE2EType,
-    typename DerivedEMAP,
-    typename DerivedC >
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedP,
+  typename DerivedE,
+  typename DeriveduE,
+  typename uE2EType,
+  typename DerivedEMAP,
+  typename DerivedC >
 IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        const Eigen::PlainObjectBase<DerivedP>& P,
-        const Eigen::PlainObjectBase<DerivedE>& E,
-        const Eigen::PlainObjectBase<DeriveduE>& uE,
-        const std::vector<std::vector<uE2EType> >& uE2E,
-        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
-        Eigen::PlainObjectBase<DerivedC>& cells) {
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  const Eigen::PlainObjectBase<DerivedP>& P,
+  const Eigen::PlainObjectBase<DerivedE>& E,
+  const Eigen::PlainObjectBase<DeriveduE>& uE,
+  const std::vector<std::vector<uE2EType> >& uE2E,
+  const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+  Eigen::PlainObjectBase<DerivedC>& cells) 
+{
 #ifdef EXTRACT_CELLS_DEBUG
   const auto & tictoc = []() -> double
   {
@@ -84,54 +85,58 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
       << tictoc() << std::endl;
   };
   tictoc();
+#else
+  // no-op
+  const auto log_time = [](const std::string){};
 #endif
-    const size_t num_faces = F.rows();
-    typedef typename DerivedF::Scalar Index;
-    const size_t num_patches = P.maxCoeff()+1;
+  const size_t num_faces = F.rows();
+  typedef typename DerivedF::Scalar Index;
+  const size_t num_patches = P.maxCoeff()+1;
 
-    DerivedC raw_cells;
-    const size_t num_raw_cells =
-        igl::copyleft::cgal::extract_cells_single_component(
-                V, F, P, uE, uE2E, EMAP, raw_cells);
+  // Extract all cells...
+  DerivedC raw_cells;
+  const size_t num_raw_cells =
+    extract_cells_single_component(V,F,P,uE,uE2E,EMAP,raw_cells);
+  log_time("extract_single_component_cells");
+
+  // Compute triangle-triangle adjacency data-structure
+  std::vector<std::vector<std::vector<Index > > > TT,_1;
+  igl::triangle_triangle_adjacency(E, EMAP, uE2E, false, TT, _1);
+  log_time("compute_face_adjacency");
+
+  // Compute connected components of the mesh
+  Eigen::VectorXi C, counts;
+  igl::facet_components(TT, C, counts);
+  log_time("form_components");
+
+  const size_t num_components = counts.size();
+  // components[c] --> list of face indices into F of faces in component c
+  std::vector<std::vector<size_t> > components(num_components);
+  // Loop over all faces
+  for (size_t i=0; i<num_faces; i++) 
+  {
+    components[C[i]].push_back(i);
+  }
+  // Convert vector lists to Eigen lists...
+  std::vector<Eigen::VectorXi> Is(num_components);
+  for (size_t i=0; i<num_components; i++)
+  {
+    Is[i].resize(components[i].size());
+    std::copy(components[i].begin(), components[i].end(),Is[i].data());
+  }
+
+  Eigen::VectorXi outer_facets(num_components);
+  Eigen::VectorXi outer_facet_orientation(num_components);
+  Eigen::VectorXi outer_cells(num_components);
+  for (size_t i=0; i<num_components; i++)
+  {
+    bool flipped;
+    igl::copyleft::cgal::outer_facet(V, F, Is[i], outer_facets[i], flipped);
+    outer_facet_orientation[i] = flipped?1:0;
+    outer_cells[i] = raw_cells(P[outer_facets[i]], outer_facet_orientation[i]);
+  }
 #ifdef EXTRACT_CELLS_DEBUG
-    log_time("extract_single_component_cells");
-#endif
-
-    std::vector<std::vector<std::vector<Index > > > TT,_1;
-    igl::triangle_triangle_adjacency(E, EMAP, uE2E, false, TT, _1);
-#ifdef EXTRACT_CELLS_DEBUG
-    log_time("compute_face_adjacency");
-#endif
-
-    Eigen::VectorXi C, counts;
-    igl::facet_components(TT, C, counts);
-#ifdef EXTRACT_CELLS_DEBUG
-    log_time("form_components");
-#endif
-
-    const size_t num_components = counts.size();
-    std::vector<std::vector<size_t> > components(num_components);
-    for (size_t i=0; i<num_faces; i++) {
-        components[C[i]].push_back(i);
-    }
-    std::vector<Eigen::VectorXi> Is(num_components);
-    for (size_t i=0; i<num_components; i++) {
-        Is[i].resize(components[i].size());
-        std::copy(components[i].begin(), components[i].end(),
-                Is[i].data());
-    }
-
-    Eigen::VectorXi outer_facets(num_components);
-    Eigen::VectorXi outer_facet_orientation(num_components);
-    Eigen::VectorXi outer_cells(num_components);
-    for (size_t i=0; i<num_components; i++) {
-        bool flipped;
-        igl::copyleft::cgal::outer_facet(V, F, Is[i], outer_facets[i], flipped);
-        outer_facet_orientation[i] = flipped?1:0;
-        outer_cells[i] = raw_cells(P[outer_facets[i]], outer_facet_orientation[i]);
-    }
-#ifdef EXTRACT_CELLS_DEBUG
-    log_time("outer_facet_per_component");
+  log_time("outer_facet_per_component");
 #endif
 
     auto get_triangle_center = [&](const size_t fid) {
