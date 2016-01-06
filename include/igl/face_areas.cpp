@@ -15,7 +15,7 @@ IGL_INLINE void igl::face_areas(
   const Eigen::PlainObjectBase<DerivedT>& T,
   Eigen::PlainObjectBase<DerivedA>& A)
 {
-  assert(T.cols() == 4);
+  assert(T.cols() == 3);
   typename Eigen::PlainObjectBase<DerivedA> L;
   edge_lengths(V,T,L);
   return face_areas(L,A);
