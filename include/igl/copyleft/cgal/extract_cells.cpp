@@ -367,34 +367,30 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
   const size_t num_unique_edges = uE.rows();
   const size_t num_patches = P.maxCoeff() + 1;
 
-  // patch_adj is an adjacency list for patches.
-  // If patch i and j are adjacent, then patch_adj[i][j] and patch_adj[j][i]
-  // exist and equals to the index pair into E representing a shared directed
-  // edges.
-  std::vector<std::map<size_t, std::pair<size_t, size_t> > >
-    patch_adj(num_patches);
-  for (size_t i=0; i<num_unique_edges; i++) {
+  // For each patch store a list of "representative" edges adjacent to it.
+  // An edge is considered equivalant to another if they are adjacent to the
+  // same set of patches.  One edge is selected from each equivalent group as
+  // the "representative."
+  std::set<std::vector<size_t> > patch_combo;
+  std::vector<std::vector<size_t> > patch_edge_adj(num_patches);
+  for (size_t i=0; i<num_unique_edges; i++) 
+  {
     const size_t s = uE(i,0);
     const size_t d = uE(i,1);
     const auto adj_faces = uE2E[i];
     const size_t num_adj_faces = adj_faces.size();
-    // If non-manifold (more than two incident faces)
-    if (adj_faces.size() > 2) 
-    {
-      for (size_t j=0; j<num_adj_faces; j++)
-      {
-        const size_t patch_j = P[edge_index_to_face_index(adj_faces[j])];
-        for (size_t k=j+1; k<num_adj_faces; k++)
+    if (num_adj_faces > 2) {
+      std::vector<size_t> adj_patch_ids(num_adj_faces);
+      std::transform(adj_faces.begin(), adj_faces.end(),
+          adj_patch_ids.begin(), [&](size_t ei) {
+          return P[edge_index_to_face_index(ei)]; } );
+      std::sort(adj_patch_ids.begin(), adj_patch_ids.end());
+      if (patch_combo.find(adj_patch_ids) == patch_combo.end()) {
+        patch_combo.insert(adj_patch_ids);
+        for (size_t j=0; j<num_adj_faces; j++)
         {
-          const size_t patch_k = P[edge_index_to_face_index(adj_faces[k])];
-          if (patch_adj[patch_j].count(patch_k) == 0)
-          {
-            patch_adj[patch_j][patch_k] = {adj_faces[j], adj_faces[k]};
-          }
-          if (patch_adj[patch_k].count(patch_j) == 0)
-          {
-            patch_adj[patch_k][patch_j] = {adj_faces[k], adj_faces[j]};
-          }
+          const size_t patch_j = P[edge_index_to_face_index(adj_faces[j])];
+          patch_edge_adj[patch_j].push_back(adj_faces[j]);
         }
       }
     }
@@ -406,11 +402,10 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
   // Similarly, orientations records the orientation of ordered facets around
   // each shared unique edge.  The array will be sparse too.
   std::vector<std::vector<bool> > orientations(num_unique_edges);
-  for (const auto patches_adj_to_i : patch_adj)
+  for (const auto edges_adj_to_patch_i : patch_edge_adj)
   {
-    for (const auto entries : patches_adj_to_i)
+    for (const auto ei : edges_adj_to_patch_i)
     {
-      const size_t ei = entries.second.first;
       const size_t i = EMAP[ei];
       const auto adj_faces = uE2E[i];
       if (orders[i].size() == adj_faces.size()) continue;
@@ -451,11 +446,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
     }
   }
 
-  // Initialize all patch-to-cell indices as "invalid" (unlabeled)
   const int INVALID = std::numeric_limits<int>::max();
-  cells.resize(num_patches, 2);
-  cells.setConstant(INVALID);
-
   // Given a "seed" patch id, a cell id, and which side of the patch that cell
   // lies, identify all other patches bounding this cell (and tell them that
   // they do)
@@ -492,9 +483,8 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
       const size_t patch_id = entry.first;
       const short side = entry.second;
       // Get a list of neighboring patches and the corresonding shared edge.
-      const auto& neighbors = patch_adj[patch_id];
-      for (const auto& entry : neighbors) {
-        const size_t ei = entry.second.first;
+      const auto& adj_edges = patch_edge_adj[patch_id];
+      for (const auto& ei: adj_edges) {
         const size_t uei = EMAP[ei];
 
         // ordering of face-edges stored at edge
@@ -541,6 +531,10 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
           cells(next_patch_id, next_patch_side) = cell_idx;
         }else 
         {
+          if (cells(next_patch_id, next_patch_side) != cell_idx) {
+            std::cerr << cells(next_patch_id, next_patch_side) << " "
+              << cell_idx << std::endl;
+          }
           assert(
             (size_t)cells(next_patch_id, next_patch_side) == cell_idx && 
             "Encountered cell assignment inconsistency");
@@ -548,6 +542,10 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
       }
     }
   };
+
+  // Initialize all patch-to-cell indices as "invalid" (unlabeled)
+  cells.resize(num_patches, 2);
+  cells.setConstant(INVALID);
 
   size_t count=0;
   // Loop over all patches
@@ -567,6 +565,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
       count++;
     }
   }
+  assert((cells.array() != INVALID).all());
   return count;
 }
 
