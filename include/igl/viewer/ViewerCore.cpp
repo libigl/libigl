@@ -8,6 +8,7 @@
 
 #include "ViewerCore.h"
 #include <igl/quat_to_mat.h>
+#include <igl/snap_to_fixed_up.h>
 #include <igl/look_at.h>
 #include <igl/frustum.h>
 #include <igl/ortho.h>
@@ -457,6 +458,20 @@ IGL_INLINE void igl::viewer::ViewerCore::draw_buffer(ViewerData& data,
   glDeleteFramebuffers(1, &frameBuffer);
 }
 
+IGL_INLINE void igl::viewer::ViewerCore::set_rotation_type(
+  const igl::viewer::ViewerCore::RotationType & value)
+{
+  using namespace Eigen;
+  using namespace std;
+  const RotationType old_rotation_type = rotation_type;
+  rotation_type = value;
+  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP &&
+    old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
+  {
+    snap_to_fixed_up(Quaternionf(trackball_angle),trackball_angle);
+  }
+}
+
 
 IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
 {
@@ -473,7 +488,7 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
 
   // Default trackball
   trackball_angle = Eigen::Quaternionf::Identity();
-  rotation_type = ViewerCore::ROTATION_TYPE_TRACKBALL;
+  set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
 
   // Defalut model viewing parameters
   model_zoom = 1.0f;
