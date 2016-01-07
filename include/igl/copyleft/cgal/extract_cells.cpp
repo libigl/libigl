@@ -367,52 +367,46 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
   const size_t num_unique_edges = uE.rows();
   const size_t num_patches = P.maxCoeff() + 1;
 
-  // For each patch store a list of "representative" edges adjacent to it.
-  // An edge is considered equivalant to another if they are adjacent to the
-  // same set of patches.  One edge is selected from each equivalent group as
-  // the "representative."
-  std::set<std::vector<size_t> > patch_combo;
-  std::vector<std::vector<size_t> > patch_edge_adj(num_patches);
-  for (size_t i=0; i<num_unique_edges; i++) 
-  {
+  // Build patch-patch adjacency list.
+  std::vector<std::map<size_t, size_t> > patch_adj(num_patches);
+  for (size_t i=0; i<num_unique_edges; i++) {
     const size_t s = uE(i,0);
     const size_t d = uE(i,1);
     const auto adj_faces = uE2E[i];
     const size_t num_adj_faces = adj_faces.size();
     if (num_adj_faces > 2) {
-      std::vector<size_t> adj_patch_ids(num_adj_faces);
-      std::transform(adj_faces.begin(), adj_faces.end(),
-          adj_patch_ids.begin(), [&](size_t ei) {
-          return P[edge_index_to_face_index(ei)]; } );
-      std::sort(adj_patch_ids.begin(), adj_patch_ids.end());
-      if (patch_combo.find(adj_patch_ids) == patch_combo.end()) {
-        patch_combo.insert(adj_patch_ids);
-        for (size_t j=0; j<num_adj_faces; j++)
-        {
-          const size_t patch_j = P[edge_index_to_face_index(adj_faces[j])];
-          patch_edge_adj[patch_j].push_back(adj_faces[j]);
+      for (size_t j=0; j<num_adj_faces; j++) {
+        const size_t patch_j = P[edge_index_to_face_index(adj_faces[j])];
+        for (size_t k=j+1; k<num_adj_faces; k++) {
+          const size_t patch_k = P[edge_index_to_face_index(adj_faces[k])];
+          if (patch_adj[patch_j].find(patch_k) == patch_adj[patch_j].end()) {
+            patch_adj[patch_j].insert({patch_k, i});
+          }
+          if (patch_adj[patch_k].find(patch_j) == patch_adj[patch_k].end()) {
+            patch_adj[patch_k].insert({patch_j, i});
+          }
         }
       }
     }
   }
 
-  // Ordered faces around each "shared" unsigned edges.  Thus the vector
-  // "orders" will be sparsely filled.
-  std::vector<Eigen::VectorXi> orders(num_unique_edges);
-  // Similarly, orientations records the orientation of ordered facets around
-  // each shared unique edge.  The array will be sparse too.
-  std::vector<std::vector<bool> > orientations(num_unique_edges);
-  for (const auto edges_adj_to_patch_i : patch_edge_adj)
-  {
-    for (const auto ei : edges_adj_to_patch_i)
-    {
-      const size_t i = EMAP[ei];
-      const auto adj_faces = uE2E[i];
-      if (orders[i].size() == adj_faces.size()) continue;
 
-      const size_t s = uE(i,0);
-      const size_t d = uE(i,1);
-      assert(adj_faces.size() > 2);
+  const int INVALID = std::numeric_limits<int>::max();
+  std::vector<size_t> cell_labels(num_patches * 2);
+  for (size_t i=0; i<num_patches; i++) cell_labels[i] = i;
+  std::vector<std::set<size_t> > equivalent_cells(num_patches*2);
+
+  size_t label_count=0;
+  for (size_t i=0; i<num_patches; i++) {
+    for (const auto& entry : patch_adj[i]) {
+      const size_t neighbor_patch = entry.first;
+      const size_t uei = entry.second;
+      const auto& adj_faces = uE2E[uei];
+      const size_t num_adj_faces = adj_faces.size();
+      assert(num_adj_faces > 2);
+
+      const size_t s = uE(uei,0);
+      const size_t d = uE(uei,1);
 
       std::vector<int> signed_adj_faces;
       for (auto ej : adj_faces)
@@ -423,148 +417,52 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
       }
       {
         // Sort adjacent faces cyclically around {s,d}
-        auto& order = orders[i];
+        Eigen::VectorXi order;
         // order[f] will reveal the order of face f in signed_adj_faces
         order_facets_around_edge(V, F, s, d, signed_adj_faces, order);
-        // Determine if each facet is oriented to point its normal clockwise or
-        // not around the {s,d} (normals are not explicitly computed/used)
-        auto& orientation = orientations[i];
-        orientation.resize(order.size());
-        std::transform(
-          order.data(), 
-          order.data() + order.size(),
-          orientation.begin(), 
-          [&signed_adj_faces](const int i){ return signed_adj_faces[i] > 0;});
-        // re-index order from adjacent faces to full face list. Now order
-        // indexes F directly
-        std::transform(
-          order.data(), 
-          order.data() + order.size(),
-          order.data(), 
-          [&adj_faces](const int index){ return adj_faces[index];});
+        for (size_t j=0; j<num_adj_faces; j++) {
+          const size_t curr_idx = j;
+          const size_t next_idx = (j+1)%num_adj_faces;
+          const size_t curr_patch_idx =
+            P[edge_index_to_face_index(adj_faces[order[curr_idx]])];
+          const size_t next_patch_idx =
+            P[edge_index_to_face_index(adj_faces[order[next_idx]])];
+          const bool curr_cons = signed_adj_faces[order[curr_idx]] > 0;
+          const bool next_cons = signed_adj_faces[order[next_idx]] > 0;
+          const size_t curr_cell_idx = curr_patch_idx*2 + (curr_cons?0:1);
+          const size_t next_cell_idx = next_patch_idx*2 + (next_cons?1:0);
+          equivalent_cells[curr_cell_idx].insert(next_cell_idx);
+          equivalent_cells[next_cell_idx].insert(curr_cell_idx);
+        }
       }
     }
   }
-
-  const int INVALID = std::numeric_limits<int>::max();
-  // Given a "seed" patch id, a cell id, and which side of the patch that cell
-  // lies, identify all other patches bounding this cell (and tell them that
-  // they do)
-  //
-  // Inputs:
-  //   seed_patch_id  index into patches
-  //   cell_idx  index into cells
-  //   seed_patch_side   0 or 1 depending on whether cell_idx is on left or
-  //     right side of seed_patch_id 
-  //   cells  #cells by 2 list of current assignment of cells incident on each
-  //     side of a patch
-  // Outputs:
-  //   cells  udpated (see input)
-  // 
-  const auto & peel_cell_bd = 
-    [&](
-    const size_t seed_patch_id, 
-    const short seed_patch_side, 
-    const size_t cell_idx,
-    Eigen::PlainObjectBase<DerivedC>& cells)
-  {
-    typedef std::pair<size_t, short> PatchSide;
-    // Initialize a queue of {p,side} patch id and patch side pairs to BFS over
-    // all patches
-    std::queue<PatchSide> Q;
-    Q.emplace(seed_patch_id, seed_patch_side);
-    // assign cell id of seed patch on appropriate side
-    cells(seed_patch_id, seed_patch_side) = cell_idx;
-    while (!Q.empty())
-    {
-      // Pop patch from Q
-      const auto entry = Q.front();
-      Q.pop();
-      const size_t patch_id = entry.first;
-      const short side = entry.second;
-      // Get a list of neighboring patches and the corresonding shared edge.
-      const auto& adj_edges = patch_edge_adj[patch_id];
-      for (const auto& ei: adj_edges) {
-        const size_t uei = EMAP[ei];
-
-        // ordering of face-edges stored at edge
-        const auto& order = orders[uei];
-        assert(order.size() > 0);
-        // consistent orientation flags at face-edges stored at edge
-        const auto& orientation = orientations[uei];
-        const size_t edge_valance = order.size();
-        // Search for ei's (i.e. patch_id's) place in the ordering: O(#patches)
-        size_t curr_i = 0;
-        for (curr_i=0; curr_i < edge_valance; curr_i++)
-        {
-          if ((size_t)order[curr_i] == ei) break;
-        }
-        assert(curr_i < edge_valance && "Failed to find edge.");
-        // is the starting face consistent?
-        const bool cons = orientation[curr_i];
-        // Look clockwise or counter-clockwise for the next face, depending on
-        // whether looking to left or right side and whether consistently
-        // oriented or not.
-        size_t next;
-        if (side == 0)
-        {
-          next = (cons ? (curr_i + 1) :
-          (curr_i + edge_valance - 1)) % edge_valance;
-        } else {
-          next = (cons ? (curr_i+edge_valance-1) : (curr_i+1))%edge_valance;
-        }
-        // Determine face-edge index of next face
-        const size_t next_ei = order[next];
-        // Determine whether next is consistently oriented
-        const bool next_cons = orientation[next];
-        // Determine patch of next
-        const size_t next_patch_id = P[next_ei % num_faces];
-        // Determine which side of patch cell_idx is on, based on whether the
-        // consistency of next matches the consistency of this patch and which
-        // side of this patch we're on.
-        const short next_patch_side = (next_cons != cons) ?  side:abs(side-1);
-        // If that side of next's patch is not labeled, then label and add to
-        // queue
-        if (cells(next_patch_id, next_patch_side) == INVALID) 
-        {
-          Q.emplace(next_patch_id, next_patch_side);
-          cells(next_patch_id, next_patch_side) = cell_idx;
-        }else 
-        {
-          if (cells(next_patch_id, next_patch_side) != cell_idx) {
-            std::cerr << cells(next_patch_id, next_patch_side) << " "
-              << cell_idx << std::endl;
-          }
-          assert(
-            (size_t)cells(next_patch_id, next_patch_side) == cell_idx && 
-            "Encountered cell assignment inconsistency");
-        }
-      }
-    }
-  };
-
-  // Initialize all patch-to-cell indices as "invalid" (unlabeled)
-  cells.resize(num_patches, 2);
-  cells.setConstant(INVALID);
 
   size_t count=0;
-  // Loop over all patches
-  for (size_t i=0; i<num_patches; i++)
-  {
-    // If left side of patch is still unlabeled, create a new cell and find all
-    // patches also on its boundary
-    if (cells(i, 0) == INVALID)
-    {
-      peel_cell_bd(i, 0, count,cells);
-      count++;
+  cells.resize(num_patches, 2);
+  cells.setConstant(INVALID);
+  const auto extract_equivalent_cells = [&](size_t i) {
+    if (cells(i/2, i%2) != INVALID) return;
+    std::queue<size_t> Q;
+    Q.push(i);
+    cells(i/2, i%2) = count;
+    while (!Q.empty()) {
+      const size_t index = Q.front();
+      Q.pop();
+      for (const auto j : equivalent_cells[index]) {
+        if (cells(j/2, j%2) == INVALID) {
+          cells(j/2, j%2) = count;
+          Q.push(j);
+        }
+      }
     }
-    // Likewise for right side
-    if (cells(i, 1) == INVALID)
-    {
-      peel_cell_bd(i, 1, count,cells);
-      count++;
-    }
+    count++;
+  };
+  for (size_t i=0; i<num_patches; i++) {
+    extract_equivalent_cells(i*2);
+    extract_equivalent_cells(i*2+1);
   }
+
   assert((cells.array() != INVALID).all());
   return count;
 }
