@@ -25,3 +25,8 @@ IGL_INLINE void igl::snap_to_fixed_up(
   dq = Quaternion<Qtype>::FromTwoVectors(up,proj_up);
   s = dq * q;
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instanciations
+template void igl::snap_to_fixed_up<float>(Eigen::Quaternion<float, 0> const&, Eigen::Quaternion<float, 0>&);
+#endif
