@@ -14,8 +14,9 @@
 
 namespace igl
 {
-  // Given a mesh and a list of edges that are to be cut, the function generates a
-  // new disk-topology mesh that has the cuts at its boundary.
+  // Given a mesh and a list of edges that are to be cut, the function
+  // generates a new disk-topology mesh that has the cuts at its boundary.
+  //
   // Inputs:
   //   V  #V by 3 list of the vertex positions
   //   F  #F by 3 list of the faces (must be triangles)
