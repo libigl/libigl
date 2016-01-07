@@ -395,12 +395,16 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
   std::vector<size_t> cell_labels(num_patches * 2);
   for (size_t i=0; i<num_patches; i++) cell_labels[i] = i;
   std::vector<std::set<size_t> > equivalent_cells(num_patches*2);
+  std::vector<bool> processed(num_unique_edges, false);
 
   size_t label_count=0;
   for (size_t i=0; i<num_patches; i++) {
     for (const auto& entry : patch_adj[i]) {
       const size_t neighbor_patch = entry.first;
       const size_t uei = entry.second;
+      if (processed[uei]) continue;
+      processed[uei] = true;
+
       const auto& adj_faces = uE2E[uei];
       const size_t num_adj_faces = adj_faces.size();
       assert(num_adj_faces > 2);
