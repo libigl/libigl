@@ -458,6 +458,69 @@ namespace viewer
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->key_pressed(unicode_key, modifiers))
         return true;
+    const std::string usage(R"(igl::viewer::Viewer:
+A,a  Toggle animation (tight draw loop)
+I,i  Toggle invert normals
+L,l  Toggle wireframe
+O,o  Toggle orthographic/perspective projection
+T,t  Toggle filled faces
+Z    Snap to canonical view
+[,]  Toggle between rotation control types (e.g. trackball, two-axis valuator
+     with fixed up)
+)");
+    switch(unicode_key)
+    {
+      case 'A':
+      case 'a':
+      {
+        core.is_animating = !core.is_animating;
+        return true;
+      }
+      case 'I':
+      case 'i':
+      {
+        data.dirty |= ViewerData::DIRTY_NORMAL;
+        core.invert_normals = !core.invert_normals;
+        return true;
+      }
+      case 'L':
+      case 'l':
+      {
+        core.show_lines = !core.show_lines;
+        return true;
+      }
+      case 'O':
+      case 'o':
+      {
+        core.orthographic = !core.orthographic;
+        return true;
+      }
+      case 'T':
+      case 't':
+      {
+        core.show_faces = !core.show_faces;
+        return true;
+      }
+      case 'Z':
+      {
+        snap_to_canonical_quaternion();
+        return true;
+      }
+      case '[':
+      case ']':
+      {
+        if(core.rotation_type == ViewerCore::ROTATION_TYPE_TRACKBALL)
+        {
+          core.set_rotation_type(
+            ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
+        }else
+        {
+          core.set_rotation_type(ViewerCore::ROTATION_TYPE_TRACKBALL);
+        }
+        return true;
+      }
+      default: break;//do nothing
+    }
     return false;
   }
 

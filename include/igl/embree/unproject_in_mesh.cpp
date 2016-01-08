@@ -21,7 +21,6 @@ IGL_INLINE int igl::embree::unproject_in_mesh(
   Eigen::PlainObjectBase<Derivedobj> & obj,
   std::vector<igl::Hit > & hits)
 {
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
   const auto & shoot_ray = [&ei](

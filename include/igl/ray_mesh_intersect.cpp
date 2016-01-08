@@ -18,7 +18,6 @@ IGL_INLINE bool igl::ray_mesh_intersect(
   std::vector<igl::Hit> & hits)
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
   // Should be but can't be const 
   Vector3d s_d = s.template cast<double>();

@@ -127,6 +127,8 @@ namespace viewer
     IGL_INLINE void open_dialog_save_mesh();
 
     // C++-style functions
+    //
+    // Returns **true** if action should be cancelled.
     std::function<bool(Viewer& viewer)> callback_init;
     std::function<bool(Viewer& viewer)> callback_pre_draw;
     std::function<bool(Viewer& viewer)> callback_post_draw;

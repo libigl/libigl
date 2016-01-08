@@ -74,13 +74,23 @@ public:
 
   // Draw everything
   IGL_INLINE void draw(ViewerData& data, OpenGL_state& opengl, bool update_matrices = true);
-  IGL_INLINE void draw_buffer(ViewerData& data,
-                              OpenGL_state& opengl,
-                              bool update_matrices,
-                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
-                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
-                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
-                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
+  IGL_INLINE void draw_buffer(
+    ViewerData& data,
+    OpenGL_state& opengl,
+    bool update_matrices,
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
+
+  // Trackball angle (quaternion)
+  enum RotationType
+  {
+    ROTATION_TYPE_TRACKBALL = 0,
+    ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP = 1,
+    NUM_ROTATION_TYPES = 2
+  };
+  IGL_INLINE void set_rotation_type(const RotationType & value);
 
   // ------------------- Properties
 
@@ -100,13 +110,8 @@ public:
   Eigen::Vector3f light_position;
   float lighting_factor;
 
-  // Trackball angle (quaternion)
-  enum RotationType
-  {
-    ROTATION_TYPE_TRACKBALL = 0,
-    ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP = 1,
-    NUM_ROTATION_TYPES = 2
-  } rotation_type;
+  RotationType rotation_type;
+
   Eigen::Quaternionf trackball_angle;
 
   // Model viewing parameters

@@ -47,7 +47,6 @@ IGL_INLINE void igl::embree::bone_visible(
   const Eigen::PlainObjectBase<DerivedSD> & d,
   Eigen::PlainObjectBase<Derivedflag>  & flag)
 {
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
   flag.resize(V.rows());

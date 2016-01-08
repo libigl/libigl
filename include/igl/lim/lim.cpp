@@ -8,9 +8,8 @@
 #include "lim.h"
 #include <LIMSolverInterface.h>
 
-using namespace igl::lim;
 
-IGL_INLINE State lim(
+IGL_INLINE igl::lim::State igl::lim::lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -34,7 +33,7 @@ IGL_INLINE State lim(
     );
 }
 
-IGL_INLINE State igl::lim::lim(
+IGL_INLINE igl::lim::State igl::lim::lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -68,7 +67,7 @@ IGL_INLINE State igl::lim::lim(
     );
 }
 
-IGL_INLINE State igl::lim::lim(
+IGL_INLINE igl::lim::State igl::lim::lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -96,7 +95,7 @@ IGL_INLINE State igl::lim::lim(
     );
 }
 
-IGL_INLINE State igl::lim::lim(
+IGL_INLINE igl::lim::State igl::lim::lim(
   Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
   const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
   const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
