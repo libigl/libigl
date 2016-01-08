@@ -53,8 +53,8 @@ namespace igl
         const std::vector<CGAL::Triangle_3<Kernel> > & T,
         const std::map<
           typename DerivedF::Index,
-          std::pair<typename DerivedF::Index,
-            std::vector<CGAL::Object> > > & offending,
+            std::vector<
+            std::pair<typename DerivedF::Index, CGAL::Object> > > & offending,
         const std::map<
           std::pair<typename DerivedF::Index,typename DerivedF::Index>,
           std::vector<typename DerivedF::Index> > & edge2faces,

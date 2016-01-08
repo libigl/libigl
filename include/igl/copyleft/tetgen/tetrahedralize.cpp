@@ -73,7 +73,6 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   Eigen::PlainObjectBase<DerivedTT>& TT,
   Eigen::PlainObjectBase<DerivedTF>& TF)
 {
-  using namespace igl;
   using namespace std;
   vector<vector<REAL> > vV,vTV;
   vector<vector<int> > vF,vTT,vTF;

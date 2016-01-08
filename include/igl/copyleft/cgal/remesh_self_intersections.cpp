@@ -56,7 +56,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_self_intersections(
         DerivedJ,
         DerivedIM>
       SelfIntersectMeshK;
-    SelfIntersectMeshK SIM = SelfIntersectMeshK(V,F,params,VV,FF,IF,J,IM);
+    SelfIntersectMeshK SIM(V,F,params,VV,FF,IF,J,IM);
 
 //#ifdef __APPLE__
 //    signal(SIGFPE,SIG_DFL);
@@ -76,7 +76,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_self_intersections(
         DerivedJ,
         DerivedIM>
       SelfIntersectMeshK;
-    SelfIntersectMeshK SIM = SelfIntersectMeshK(V,F,params,VV,FF,IF,J,IM);
+    SelfIntersectMeshK SIM(V,F,params,VV,FF,IF,J,IM);
   }
 }
 

@@ -27,7 +27,6 @@ IGL_INLINE void igl::ambient_occlusion(
   Eigen::PlainObjectBase<DerivedS> & S)
 {
   using namespace Eigen;
-  using namespace igl;
   const int n = P.rows();
   // Resize output
   S.resize(n,1);
