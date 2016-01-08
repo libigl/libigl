@@ -16,7 +16,7 @@
 #ifndef IGL_EMBREE_EMBREE_INTERSECTOR_H
 #define IGL_EMBREE_EMBREE_INTERSECTOR_H
 
-#include "Hit.h"
+#include "../Hit.h"
 #include <Eigen/Geometry>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -57,11 +57,13 @@ namespace igl
       // Inputs:
       //   V  #V by 3 list of vertex positions
       //   F  #F by 3 list of Oriented triangles
+      //   isStatic  scene is optimized for static geometry
       // Side effects:
       //   The first time this is ever called the embree engine is initialized.
       inline void init(
         const PointMatrixType& V,
-        const FaceMatrixType& F);
+        const FaceMatrixType& F,
+        bool isStatic = false);
 
       // Initialize with a given mesh.
       //
@@ -69,12 +71,14 @@ namespace igl
       //   V  vector of #V by 3 list of vertex positions for each geometry
       //   F  vector of #F by 3 list of Oriented triangles for each geometry
       //   masks  a 32 bit mask to identify active geometries.
+      //   isStatic  scene is optimized for static geometry
       // Side effects:
       //   The first time this is ever called the embree engine is initialized.
       inline void init(
         const std::vector<const PointMatrixType*>& V,
         const std::vector<const FaceMatrixType*>& F,
-        const std::vector<int>& masks);
+        const std::vector<int>& masks,
+        bool isStatic = false);
 
       // Deinitialize embree datasctructures for current mesh.  Also called on
       // destruction: no need to call if you just want to init() once and
@@ -252,7 +256,8 @@ inline igl::embree::EmbreeIntersector & igl::embree::EmbreeIntersector::operator
 
 inline void igl::embree::EmbreeIntersector::init(
   const PointMatrixType& V,
-  const FaceMatrixType& F)
+  const FaceMatrixType& F,
+  bool isStatic)
 {
   std::vector<const PointMatrixType*> Vtemp;
   std::vector<const FaceMatrixType*> Ftemp;
@@ -260,13 +265,14 @@ inline void igl::embree::EmbreeIntersector::init(
   Vtemp.push_back(&V);
   Ftemp.push_back(&F);
   masks.push_back(0xFFFFFFFF);
-  init(Vtemp,Ftemp,masks);
+  init(Vtemp,Ftemp,masks,isStatic);
 }
 
 inline void igl::embree::EmbreeIntersector::init(
   const std::vector<const PointMatrixType*>& V,
   const std::vector<const FaceMatrixType*>& F,
-  const std::vector<int>& masks)
+  const std::vector<int>& masks,
+  bool isStatic)
 {
 
   if(initialized)
@@ -282,7 +288,10 @@ inline void igl::embree::EmbreeIntersector::init(
   }
 
   // create a scene
-  scene = rtcNewScene(RTC_SCENE_ROBUST | RTC_SCENE_HIGH_QUALITY,RTC_INTERSECT1);
+  RTCSceneFlags flags = RTC_SCENE_ROBUST | RTC_SCENE_HIGH_QUALITY;
+  if(isStatic)
+    flags = flags | RTC_SCENE_STATIC;
+  scene = rtcNewScene(flags,RTC_INTERSECT1);
 
   for(int g=0;g<(int)V.size();g++)
   {

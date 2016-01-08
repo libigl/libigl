@@ -6,9 +6,9 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "ambient_occlusion.h"
+#include "../ambient_occlusion.h"
 #include "EmbreeIntersector.h"
-#include <igl/random_dir.h>
-#include <igl/EPS.h>
+#include "../Hit.h"
 
 template <
   typename DerivedP,
@@ -21,38 +21,15 @@ IGL_INLINE void igl::embree::ambient_occlusion(
   const int num_samples,
   Eigen::PlainObjectBase<DerivedS> & S)
 {
-  using namespace Eigen;
-  using namespace igl;
-  const int n = P.rows();
-  // Resize output
-  S.resize(n,1);
-  // Embree seems to be parallel when constructing but not when tracing rays
-#pragma omp parallel for
-  // loop over mesh vertices
-  for(int p = 0;p<n;p++)
+  const auto & shoot_ray = [&ei](
+    const Eigen::Vector3f& s,
+    const Eigen::Vector3f& dir)->bool
   {
-    const Vector3f origin = P.row(p).template cast<float>();
-    const Vector3f normal = N.row(p).template cast<float>();
-    int num_hits = 0;
-    MatrixXf D = random_dir_stratified(num_samples).cast<float>();
-    for(int s = 0;s<num_samples;s++)
-    {
-      //Vector3d d = random_dir();
-      Vector3f d = D.row(s);
-      if(d.dot(normal) < 0)
-      {
-        // reverse ray
-        d *= -1;
-      }
-      igl::embree::Hit hit;
-      const float tnear = 1e-4f;
-      if(ei.intersectRay(origin,d,hit,tnear))
-      {
-        num_hits++;
-      }
-    }
-    S(p) = (double)num_hits/(double)num_samples;
-  }
+    igl::Hit hit;
+    const float tnear = 1e-4f;
+    return ei.intersectRay(s,dir,hit,tnear);
+  };
+  return igl::ambient_occlusion(shoot_ray,P,N,num_samples,S);
 }
 
 template <
@@ -69,7 +46,6 @@ IGL_INLINE void igl::embree::ambient_occlusion(
   const int num_samples,
   Eigen::PlainObjectBase<DerivedS> & S)
 {
-  using namespace igl;
   using namespace Eigen;
   EmbreeIntersector ei;
   ei.init(V.template cast<float>(),F.template cast<int>());

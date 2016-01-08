@@ -1,0 +1,295 @@
+<h1 id="libiglstyleguidelines">Libigl Style Guidelines</h1>
+
+<p>Libigl is used and developed by many people. This document highlights some
+style guidelines for <em>developers</em> of the library, but also acts as
+best-practices for users.</p>
+
+<h2 id="filefunction">One function, one .h/.cpp pair</h2>
+
+<p>The structure of libigl is very flat and function-based. For every
+function/sub-routine, create a single .h and .cpp file. For example, if you have
+a function that determines connected components from a face list <code>F</code> you would
+create the header <code>connected_components.h</code> and <code>connected_components.cpp</code> and the only
+function defined should be <code>void connected_components(const ... F, ... C)</code>. If the
+implementation of <code>connected_components</code> requires a subroutine to compute an
+adjacency matrix then <em>create another pair</em> <code>adjacency_matrix.h</code> and
+<code>adjacency_matrix.cpp</code> with a single function <code>void adjacency_matrix(const ... F, ... A)</code>.</p>
+
+<h3 id="example">Example</h3>
+
+<p>Here is an example function that would be defined in
+<code>include/igl/example_fun.h</code> and implemented in <code>include/igl/example_fun.cpp</code>.</p>
+
+<h4 id="example_fun.h"><code>example_fun.h</code></h4>
+
+<pre><code class="cpp">// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2015 [Your Name] [your email address]
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/
+#ifndef IGL_EXAMPLE_FUN_H
+#define IGL_EXAMPLE_FUN_H
+
+#include &quot;igl_inline.h&quot;
+
+namespace igl
+{
+  // This is an example of a function, it takes a templated parameter and
+  // shovels it into cout
+  //
+  // Templates:
+  //   T  type that supports
+  // Input:
+  //   input  some input of a Printable type
+  // Returns true for the sake of returning something
+  template &lt;typename Printable&gt;
+  IGL_INLINE bool example_fun(const Printable &amp; input);
+}
+
+#ifndef IGL_STATIC_LIBRARY
+#  include &quot;example_fun.cpp&quot;
+#endif
+
+#endif
+</code></pre>
+
+<h4 id="example_fun.cpp"><code>example_fun.cpp</code></h4>
+
+<pre><code>// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2015 [Your Name] [your email address]
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/
+#include &quot;igl/example_fun.h&quot;
+#include &lt;iostream&gt;
+
+template &lt;typename Printable&gt;
+IGL_INLINE bool igl::example_fun(const Printable &amp; input)
+{
+  using namespace std;
+  cout&lt;&lt;&quot;example_fun: &quot;&lt;&lt;input&lt;&lt;endl;
+  return true;
+}
+
+#ifdef IGL_STATIC_LIBRARY
+template bool igl::example_fun&lt;double&gt;(const double&amp; input);
+template bool igl::example_fun&lt;int&gt;(const int&amp; input);
+#endif
+</code></pre>
+
+<h3 id="avoidstatichelperfunctions">Avoid static &#8220;helper&#8221; functions</h3>
+
+<p>Strive to encapsulate sub-functions that could possibly be useful outside of
+the implementation of your current function. This might mean abstracting the
+interface a bit. If it doesn&#8217;t dramatically effect performance then create a
+new pair of .h/.cpp files with this sub-function.</p>
+
+<h4 id="lambdafunctions">Lambda functions</h4>
+
+<p>If encapsulation in a separate file is not possible or does not make sense,
+then avoid crowding the namespace by creating lambda functions within the
+function implementation.</p>
+
+<p>These lambda functions must still be documented with clear <a href="#header-documentation">input and output
+arguments</a>.</p>
+
+<h3 id="avoidhelperclasses">Avoid &#8220;helper&#8221; classes</h3>
+
+<p>Libigl is built around the high-performance paradigm of &#8220;struct of arrays&#8221;
+rather than &#8220;array of structs&#8221;. The way we achieve this is to avoid classes and
+pass &#8220;basic types&#8221; directly. The price we pay is long function interfaces, but
+this increases code reuse dramatically. A &#8220;basic type&#8221; in our context is a
+Eigen type, stl type, or basic C type.</p>
+
+<h2 id="headerdocumentation">Header Documentation</h2>
+
+<p>Each function prototype should be well documented in its corresponding .h
+header file. A typical documentation consists of four parts:</p>
+
+<pre><code class="cpp">// [A human readable description of what the function does.]
+//
+// Inputs:
+//   [variable name of first (const) input]   [dimensions and description of
+//     this input variable]
+//   [variable name of second (const) input]   [dimensions and description of
+//     this input variable]
+//   ...
+// Outputs:
+//   [variable name of first output ]   [dimensions and description of this
+//     output variable]
+//   [variable name of second output ]   [dimensions and description of this
+//     output variable]
+//   ...
+// Returns [description of return value]
+</code></pre>
+
+<h3 id="example">Example</h3>
+
+<p>For example the header <code>barycenter.h</code></p>
+
+<pre><code>// Computes the barycenter of every simplex
+//
+// Inputs:
+//   V  #V by dim matrix of vertex coordinates
+//   F  #F by simplex_size  matrix of indices of simplex corners into V
+// Output:
+//   BC  #F by dim matrix of 3d vertices
+//
+</code></pre>
+
+<h2 id="constinputs">Const inputs</h2>
+
+<p>All input parameters should be demarcated <code>const</code>. If an input is also an
+output than consider exposing two parameters (one <code>const</code>) or be sure to list
+the variable under both <code>// Inputs:</code> and <code>// Outputs:</code> in the header comments.</p>
+
+<h2 id="referenceparameters">Reference parameters</h2>
+
+<p>All but simple types should be passed by reference (e.g. <code>Matrix &amp; mat</code>) rather
+than pointers (e.g. <code>Matrix * mat</code>) or value (e.g. <code>Matrix mat</code>).</p>
+
+<h2 id="returnsvsoutputparameters">Returns vs output parameters</h2>
+
+<p>All functions should be implemented with at least one overload that has a
+<code>void</code> or simple return type (e.g. <code>bool</code> on success/failure). With this
+implementation its then possible to write an overload that returns a single
+output.</p>
+
+<p>For example:</p>
+
+<pre><code class="cpp">template &lt;typename Atype&gt;
+void adjacency_matrix(const ... &amp; F, Eigen::SparseMatrix&lt;AType&gt; &amp; A);
+
+template &lt;typename Atype&gt;
+Eigen::SparseMatrix&lt;Atype&gt; adjacency_matrix(const ... &amp; F);
+</code></pre>
+
+<h2 id="functionnamingconventions">Function naming conventions</h2>
+
+<p>Functions (and <a href="#filefunction">thus also files</a>) should have simple,
+descriptive names using lowercase letters and underscores between words. Avoid
+unnecessary prefaces. For example, instead of <code>compute_adjacency_matrix</code>,
+<code>construct_adjacency_matrix</code>, <code>extract_adjacency_matrix</code>,
+<code>get_adjacency_matrix</code>, or <code>set_adjacency_matrix</code> just call the function
+<code>adjacency_matrix</code>.</p>
+
+<h2 id="variablenamingconventions">Variable naming conventions</h2>
+
+<p>Libigl prefers short (even single character) variable names <em>with heavy
+documentation</em> in the comments in the header file or above the declaration of
+the function. When possible use <code>V</code> to mean a list of vertex positions and <code>F</code>
+to mean a list of faces/triangles.</p>
+
+<h2 id="classnamingconventions">Class naming conventions</h2>
+
+<p>Classes should be avoided. When naming a class use CamelCase (e.g.
+SortableRow.h).</p>
+
+<h2 id="enumnamingconvertion">Enum naming convertion</h2>
+
+<p>Enums types should be placed in the appropriate <code>igl::</code> namespace and should be
+named in CamelCase (e.g. <code>igl::SolverStatus</code>) and instances should be named in
+ALL_CAPS with underscores between words and prefaced with the name of the enum.
+For example:</p>
+
+<pre><code class="cpp">namespace igl
+{
+  enum SolverStatus
+  {
+    // Good
+    SOLVER_STATUS_CONVERGED = 0,
+    // OK
+    SOLVER_STATUS_MAX_ITER = 1,
+    // Bad
+    SOLVER_STATUS_ERROR = 2,
+    NUM_SOLVER_STATUSES = 3,
+  };
+};
+</code></pre>
+
+<h3 id="exceptionforfileio">Exception for file IO</h3>
+
+<p>For legacy reasons, file reading and writing functions use a different naming
+convention. A functions reading a <code>.xyz</code> file should be named <code>readXYZ</code> and a
+function writing <code>.xyz</code> files should be names <code>writeXYZ</code>.</p>
+
+<h2 id="usingnamespace...inglobalscope"><code>using namespace ...</code> in global scope</h2>
+
+<p>Writing <code>using namespace std;</code>, <code>using namespace Eigen;</code> etc. outside of a
+global scope is strictly forbidden. Place these lines at the top of each
+function instead.</p>
+
+<h2 id="namespacesandexternaldependencies">Namespaces and external dependencies</h2>
+
+<p>Functions in the main library (directly in <code>include/igl</code>) should only depend on
+Eigen and stl. These functions should have the <code>igl::</code> namespace.</p>
+
+<p>Functions with other dependencies should be placed into
+appropriate sub-directories (e.g. if <code>myfunction</code> depends on tetgen then create
+<code>igl/copyleft/tetgen/myfunction.h</code> and <code>igl/copyleft/tetgen/myfunction.cpp</code> and give the function
+the namespace <code>igl::copyleft::tetgen::myfunction</code>.</p>
+
+<h3 id="copyleftsubdirectorynamespace">copyleft subdirectory/namespace</h3>
+
+<p>Dependencies that require users of libigl to release their projects open source
+(e.g. GPL) are considered aggressively &#8220;copyleft&#8221; and should be placed in the
+<code>include/igl/copyleft/</code> sub-directory and <code>igl::copyleft::</code> namespace.</p>
+
+<h2 id="assertions">Assertions</h2>
+
+<p>Be generous with assertions and always identify the assertion with strings:</p>
+
+<pre><code class="cpp">assert(m &lt; n &amp;&amp; &quot;m must be less than n&quot;);
+</code></pre>
+
+<h2 id="ifndefincludeguard">ifndef include guard</h2>
+
+<p>Every header file should be wrapped in an <code>#ifndef</code> compiler directive. The
+name of the guard should be in direct correspondence with the path of the .h
+file. For example, <code>include/igl/copyleft/tetgen/tetrahedralize.h</code> should be</p>
+
+<pre><code class="cpp">#ifndef IGL_COPYLEFT_TETGEN_TETRAHEDRALIZE_H
+#define IGL_COPYLEFT_TETGEN_TETRAHEDRALIZE_H
+...
+#endif
+</code></pre>
+
+<h2 id="spacesvs.tabsindentation">Spaces vs. tabs indentation</h2>
+
+<p>Do not use tabs. Use 2 spaces for each indentation level.</p>
+
+<h2 id="maxlinelength">Max line length</h2>
+
+<p>Limit lines to 80 characters. Break up long lines into many operations (this
+also helps performance).</p>
+
+<h2 id="includeorder">Include order</h2>
+
+<p><code>#include</code> directives at the top of a .h or .cpp file should be sorted
+according to a simple principle: place headers of files most likely to be
+edited by you first. This means for
+<code>include/igl/copyleft/tetgen/tetrahedralize.cpp</code> you might see</p>
+
+<pre><code class="cpp">// [Includes of headers in this directory]
+#include &quot;tetrahedralize.h&quot;
+#include &quot;mesh_to_tetgenio.h&quot;
+#include &quot;tetgenio_to_tetmesh.h&quot;
+// [Includes of headers in this project]
+#include &quot;../../matrix_to_list.h&quot;
+#include &quot;../../list_to_matrix.h&quot;
+#include &quot;../../boundary_facets.h&quot;
+// [Includes of headers of related projects]
+#include &lt;Eigen/Core&gt;
+// [Includes of headers of standard libraries]
+#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+</code></pre>
+
+<h2 id="placementofincludes">Placement of includes</h2>
+
+<p>Whenever possible <code>#include</code> directives should be placed in the <code>.cpp</code>
+implementation file rather than the <code>.h</code> header file.</p>

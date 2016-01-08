@@ -67,8 +67,8 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   assert((Aieq.size() == 0 && Bieq.size() == 0) || Aieq.cols() == n);
   assert((Aieq.size() == 0 && Bieq.size() == 0) || Aieq.rows() == Bieq.rows());
   assert((Aieq.size() == 0 && Bieq.size() == 0) || Bieq.cols() == 1);
-  Eigen::PlainObjectBase<Derivedlx> lx;
-  Eigen::PlainObjectBase<Derivedux> ux;
+  Eigen::Matrix<typename Derivedlx::Scalar,Eigen::Dynamic,1> lx;
+  Eigen::Matrix<typename Derivedux::Scalar,Eigen::Dynamic,1> ux;
   if(p_lx.size() == 0)
   {
     lx = Eigen::PlainObjectBase<Derivedlx>::Constant(

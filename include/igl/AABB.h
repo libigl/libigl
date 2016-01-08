@@ -8,6 +8,7 @@
 #ifndef IGL_AABB_H
 #define IGL_AABB_H
 
+#include "Hit.h"
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <vector>
@@ -134,7 +135,8 @@ public:
           const Eigen::VectorXi & I);
       // Return whether at leaf node
       inline bool is_leaf() const;
-      // Find the indices of elements containing given point.
+      // Find the indices of elements containing given point: this makes sense
+      // when Ele is a co-dimension 0 simplex (tets in 3D, triangles in 2D).
       //
       // Inputs:
       //   V  #V by dim list of mesh vertex positions. **Should be same as used to
@@ -185,19 +187,43 @@ public:
       // Known bugs: currently assumes Elements are triangles regardless of
       // dimension.
       inline Scalar squared_distance(
-          const Eigen::PlainObjectBase<DerivedV> & V,
-          const Eigen::MatrixXi & Ele, 
-          const RowVectorDIMS & p,
-          int & i,
-          RowVectorDIMS & c) const;
+        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixXi & Ele, 
+        const RowVectorDIMS & p,
+        int & i,
+        RowVectorDIMS & c) const;
 //private:
       inline Scalar squared_distance(
-          const Eigen::PlainObjectBase<DerivedV> & V,
-          const Eigen::MatrixXi & Ele, 
-          const RowVectorDIMS & p,
-          const Scalar min_sqr_d,
-          int & i,
-          RowVectorDIMS & c) const;
+        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixXi & Ele, 
+        const RowVectorDIMS & p,
+        const Scalar min_sqr_d,
+        int & i,
+        RowVectorDIMS & c) const;
+      // All hits
+      inline bool intersect_ray(
+        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixXi & Ele, 
+        const RowVectorDIMS & origin,
+        const RowVectorDIMS & dir,
+        std::vector<igl::Hit> & hits) const;
+      // First hit
+      inline bool intersect_ray(
+        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixXi & Ele, 
+        const RowVectorDIMS & origin,
+        const RowVectorDIMS & dir,
+        igl::Hit & hit) const;
+//private:
+      inline bool intersect_ray(
+        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixXi & Ele, 
+        const RowVectorDIMS & origin,
+        const RowVectorDIMS & dir,
+        const Scalar min_t,
+        igl::Hit & hit) const;
+
+
 public:
       template <
         typename DerivedP, 
@@ -281,10 +307,14 @@ public:
 #include "project_to_line_segment.h"
 #include "sort.h"
 #include "volume.h"
+#include "ray_box_intersect.h"
+#include "ray_mesh_intersect.h"
 #include <iostream>
 #include <iomanip>
 #include <limits>
 #include <list>
+#include <queue>
+#include <stack>
 
 template <typename DerivedV, int DIM>
   template <typename Derivedbb_mins, typename Derivedbb_maxs>
@@ -627,7 +657,6 @@ igl::AABB<DerivedV,DIM>::squared_distance(
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   Scalar sqr_d = min_sqr_d;
   //assert(DIM == 3 && "Code has only been tested for DIM == 3");
   assert((Ele.cols() == 3 || Ele.cols() == 2 || Ele.cols() == 1)
@@ -996,7 +1025,6 @@ inline void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
   RowVectorDIMS & c) const
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
 
   // Simplex size
@@ -1147,6 +1175,162 @@ igl::AABB<DerivedV,DIM>::barycentric_coordinates(
   bary(1) = (d11 * d20 - d01 * d21) / denom;
   bary(2) = (d00 * d21 - d01 * d20) / denom;
   bary(0) = 1.0f - bary(1) - bary(2);
+}
+
+template <typename DerivedV, int DIM>
+inline bool 
+igl::AABB<DerivedV,DIM>::intersect_ray(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::MatrixXi & Ele, 
+  const RowVectorDIMS & origin,
+  const RowVectorDIMS & dir,
+  std::vector<igl::Hit> & hits) const
+{
+  hits.clear();
+  const Scalar t0 = 0;
+  const Scalar t1 = std::numeric_limits<Scalar>::infinity();
+  {
+    Scalar _1,_2;
+    if(!ray_box_intersect(origin,dir,m_box,t0,t1,_1,_2))
+    {
+      return false;
+    }
+  }
+  if(this->is_leaf())
+  {
+    // Actually process elements
+    assert((Ele.size() == 0 || Ele.cols() == 3) && "Elements should be triangles");
+    // Cheesecake way of hitting element
+    return ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive).eval(),hits);
+  }
+  std::vector<igl::Hit> left_hits;
+  std::vector<igl::Hit> right_hits;
+  const bool left_ret = m_left->intersect_ray(V,Ele,origin,dir,left_hits);
+  const bool right_ret = m_right->intersect_ray(V,Ele,origin,dir,right_hits);
+  hits.insert(hits.end(),left_hits.begin(),left_hits.end());
+  hits.insert(hits.end(),right_hits.begin(),right_hits.end());
+  return left_ret || right_ret;
+}
+
+template <typename DerivedV, int DIM>
+inline bool 
+igl::AABB<DerivedV,DIM>::intersect_ray(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::MatrixXi & Ele, 
+  const RowVectorDIMS & origin,
+  const RowVectorDIMS & dir,
+  igl::Hit & hit) const
+{
+#if false
+  // BFS
+  std::queue<const AABB *> Q;
+  // Or DFS
+  //std::stack<const AABB *> Q;
+  Q.push(this);
+  bool any_hit = false;
+  hit.t = std::numeric_limits<Scalar>::infinity();
+  while(!Q.empty())
+  {
+    const AABB * tree = Q.front();
+    //const AABB * tree = Q.top();
+    Q.pop();
+    {
+      Scalar _1,_2;
+      if(!ray_box_intersect(
+        origin,dir,tree->m_box,Scalar(0),Scalar(hit.t),_1,_2))
+      {
+        continue;
+      }
+    }
+    if(tree->is_leaf())
+    {
+      // Actually process elements
+      assert((Ele.size() == 0 || Ele.cols() == 3) && "Elements should be triangles");
+      igl::Hit leaf_hit;
+      if(
+        ray_mesh_intersect(origin,dir,V,Ele.row(tree->m_primitive).eval(),leaf_hit)&&
+        leaf_hit.t < hit.t)
+      {
+        hit = leaf_hit;
+      }
+      continue;
+    }
+    // Add children to queue
+    Q.push(tree->m_left);
+    Q.push(tree->m_right);
+  }
+  return any_hit;
+#else
+  // DFS
+  return intersect_ray(
+    V,Ele,origin,dir,std::numeric_limits<Scalar>::infinity(),hit);
+#endif
+}
+
+template <typename DerivedV, int DIM>
+inline bool 
+igl::AABB<DerivedV,DIM>::intersect_ray(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::MatrixXi & Ele, 
+  const RowVectorDIMS & origin,
+  const RowVectorDIMS & dir,
+  const Scalar _min_t,
+  igl::Hit & hit) const
+{
+  //// Naive, slow
+  //std::vector<igl::Hit> hits;
+  //intersect_ray(V,Ele,origin,dir,hits);
+  //if(hits.size() > 0)
+  //{
+  //  hit = hits.front();
+  //  return true;
+  //}else
+  //{
+  //  return false;
+  //}
+  Scalar min_t = _min_t;
+  const Scalar t0 = 0;
+  {
+    Scalar _1,_2;
+    if(!ray_box_intersect(origin,dir,m_box,t0,min_t,_1,_2))
+    {
+      return false;
+    }
+  }
+  if(this->is_leaf())
+  {
+    // Actually process elements
+    assert((Ele.size() == 0 || Ele.cols() == 3) && "Elements should be triangles");
+    // Cheesecake way of hitting element
+    return ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive).eval(),hit);
+  }
+
+  // Doesn't seem like smartly choosing left before/after right makes a
+  // differnce
+  igl::Hit left_hit;
+  igl::Hit right_hit;
+  bool left_ret = m_left->intersect_ray(V,Ele,origin,dir,min_t,left_hit);
+  if(left_ret && left_hit.t<min_t)
+  {
+    // It's scary that this line doesn't seem to matter....
+    min_t = left_hit.t;
+    hit = left_hit;
+    left_ret = true;
+  }else
+  {
+    left_ret = false;
+  }
+  bool right_ret = m_right->intersect_ray(V,Ele,origin,dir,min_t,right_hit);
+  if(right_ret && right_hit.t<min_t)
+  {
+    min_t = right_hit.t;
+    hit = right_hit;
+    right_ret = true;
+  }else
+  {
+    right_ret = false;
+  }
+  return left_ret || right_ret;
 }
 
 #endif

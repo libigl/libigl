@@ -190,6 +190,8 @@ Libigl is used by many research groups around the world. In 2015, it won the
 Eurographics/ACM Symposium on Geometry Processing software award. Here are a
 few labs/companies/institutions using libigl:
 
+ - [Adobe Research](http://www.adobe.com/technology/)  
+ - [Pixar Research](http://graphics.pixar.com/research/)
  - [Spine by Esoteric Software](http://esotericsoftware.com/) is an animation tool dedicated to 2D characters.
  - Columbia University, [Columbia Computer Graphics Group](http://www.cs.columbia.edu/cg/), USA
  - [Cornell University](http://www.graphics.cornell.edu/), USA
@@ -200,13 +202,18 @@ few labs/companies/institutions using libigl:
  - [National Institute of Informatics](http://www.nii.ac.jp/en/), Japan
  - New York University, [Media Research Lab](http://mrl.nyu.edu/), USA
  - NYUPoly, [Game Innovation Lab](http://game.engineering.nyu.edu/), USA
- - [Telecom ParisTech](http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html), Paris, France
+ - [TU Berlin](https://www.cg.tu-berlin.de), Germany
  - [TU Delft](http://www.tudelft.nl/en/), Netherlands
+ - [Telecom ParisTech](http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html), Paris, France
  - [Universidade Federal de Santa Catarina](http://mtm.ufsc.br/~leo/), Brazil
- - [Università della Svizzera Italiana](http://www.usi.ch/en), Switzerland
  - [University College London](http://vecg.cs.ucl.ac.uk/), England
+ - [University of California Berkeley](http://vis.berkeley.edu/), USA
  - [University of Cambridge](http://www.cam.ac.uk/), England
  - [University of Pennsylvania](http://cg.cis.upenn.edu/), USA
+ - [University of Texas at Austin](http://www.cs.utexas.edu/users/evouga/), USA
+ - [University of Victoria](https://www.csc.uvic.ca/Research/graphics/), Canada
+ - [Università della Svizzera Italiana](http://www.usi.ch/en), Switzerland
+ - [Université Toulouse III Paul Sabatier](http://www.univ-tlse3.fr/), France
 
 
 ## Contact

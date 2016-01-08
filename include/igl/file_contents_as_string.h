@@ -21,6 +21,8 @@ namespace igl
   IGL_INLINE bool file_contents_as_string(
     const std::string file_name,
     std::string & content);
+  IGL_INLINE std::string file_contents_as_string(
+    const std::string file_name);
 }
 
 #ifndef IGL_STATIC_LIBRARY

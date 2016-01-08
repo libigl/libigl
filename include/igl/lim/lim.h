@@ -15,9 +15,6 @@ namespace igl
 {
   namespace lim
   {
-    // Known issues: energy type should be a readable enum rather than magic
-    // ints.
-    //
     // Computes a locally injective mapping of a triangle or tet-mesh based on
     // a deformation energy subject to some provided linear positional
     // constraints Cv-d.
@@ -39,7 +36,7 @@ namespace igl
     //                     y_2, ..., x_v,y_v])
     //   constraintTargets d: c vector target positions
     //   energyType        type of used energy:
-    //                     0=Dirichlet,1=Laplacian,2=Green,3=ARAP,4=LSCM
+    //                     Dirichlet, Laplacian, Green, ARAP, LSCM, Poisson (only 2D), UniformLaplacian, Identity
     //   tolerance         max squared positional constraints error
     //   maxIteration      max number of iterations
     //   findLocalMinima   iterating until a local minima is found. If not
@@ -61,30 +58,32 @@ namespace igl
     //                   mesh
     //--------------------------------------------------------------------------
     // Return values:
-    //  1 : Optimization deemed successful because either (a) it stagnated
-    //    (very step size) or (b) positional constraints were satisfied. (re:
-    //    https://github.com/libigl/libigl/issues/79 )
-    // -1 : Max iteration reached before tolerance was fulfilled
-    // -2 : not feasible -> has inverted elements (may want to decrease eps?)
+    //  Succeeded : Successful optimization with fulfilled tolerance
+    //  LocalMinima : Convergenged to a local minima / tolerance not fullfilled
+    //  IterationLimit : Max iteration reached before tolerance was fulfilled
+    //  Infeasible : not feasible -> has inverted elements (decrease eps?)
   
-    int lim(
+    enum Energy { Dirichlet = 0, Laplacian=1, Green=2, ARAP=3, LSCM=4, Poisson=5, UniformLaplacian=6, Identity=7 };
+    enum State { Uninitialized = -4, Infeasible = -3, IterationLimit = -2, LocalMinima = -1, Running = 0, Succeeded = 1 };
+
+    State lim(
       Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
       const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
       const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
       const Eigen::SparseMatrix<double>& constraintMatrix,
       const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
-      int energyType,
+      Energy energyType,
       double tolerance,
       int maxIteration,
       bool findLocalMinima);
   
-    int lim(
+    State lim(
       Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
       const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
       const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
       const Eigen::SparseMatrix<double>& constraintMatrix,
       const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
-      int energyType,
+      Energy energyType,
       double tolerance,
       int maxIteration,
       bool findLocalMinima,
@@ -94,7 +93,7 @@ namespace igl
       double beta,
       double eps);
   
-    int lim(
+    State lim(
       Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
       const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
       const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -102,12 +101,12 @@ namespace igl
       const Eigen::Matrix<double,Eigen::Dynamic,1>& gradients,
       const Eigen::SparseMatrix<double>& constraintMatrix,
       const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
-      int energyType,
+      Energy energyType,
       double tolerance,
       int maxIteration,
       bool findLocalMinima);
   
-    int lim(
+    State lim(
       Eigen::Matrix<double,Eigen::Dynamic,3>& vertices,
       const Eigen::Matrix<double,Eigen::Dynamic,3>& initialVertices,
       const Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>& elements,
@@ -115,7 +114,7 @@ namespace igl
       const Eigen::Matrix<double,Eigen::Dynamic,1>& gradients,
       const Eigen::SparseMatrix<double>& constraintMatrix,
       const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
-      int energyType,
+      Energy energyType,
       double tolerance,
       int maxIteration,
       bool findLocalMinima,

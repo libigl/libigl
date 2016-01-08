@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "line_mesh_intersection.h"
+#include "../Hit.h"
 
 // For error printing
 #include <cstdio>
@@ -40,7 +41,7 @@ IGL_INLINE ScalarMatrix igl::embree::line_mesh_intersection
   // Shoot rays from the source to the target
   for (unsigned i=0; i<ray_pos.rows(); ++i)
   {
-    igl::embree::Hit A,B;
+    igl::Hit A,B;
     // Shoot ray A
     Eigen::RowVector3d A_pos = ray_pos.row(i) + tol * ray_dir.row(i);
     Eigen::RowVector3d A_dir = -ray_dir.row(i);

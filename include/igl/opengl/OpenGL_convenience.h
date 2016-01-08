@@ -32,21 +32,23 @@
 #endif*/
 
 // From Nanogui
-#if defined(__APPLE__)
+/*#if defined(__APPLE__)
     #define GLFW_INCLUDE_GLCOREARB
 #elif defined(WIN32)
     #define GLEW_STATIC
     #include <GL/glew.h>
 #else
-    /* glew should not be needed on Linux, and is not included by Nanogui,
-     * but removing it creates problems, and the GUI disappears
-     */
+    // glew should not be needed on Linux, and is not included by Nanogui,
+    // but removing it creates problems, and the GUI disappears
+
     #define GLEW_STATIC
     #include <GL/glew.h>
 
     #define GL_GLEXT_PROTOTYPES
 #endif
 
-#include <GLFW/glfw3.h>
+#include <GLFW/glfw3.h>*/
+
+#include <nanogui/opengl.h>
 
 #endif

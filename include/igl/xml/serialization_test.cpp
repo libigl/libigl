@@ -8,7 +8,8 @@
 //#define IGL_SERIALIZATION_TEST_H
 
 //#include <igl/Timer.h>
-#include <igl/xml/serialize_xml.h>
+#include "serialize_xml.h"
+#include "XMLSerializable.h"
 
 namespace igl
 {
@@ -30,7 +31,7 @@ namespace igl
         tt = NULL;
       }
   
-      void InitSerialization()
+      virtual void InitSerialization()
       {
         Add(ts,"ts",false);
         Add(tvt,"tvt");

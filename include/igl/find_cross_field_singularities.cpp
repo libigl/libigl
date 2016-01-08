@@ -71,7 +71,7 @@ IGL_INLINE void igl::find_cross_field_singularities(const Eigen::PlainObjectBase
   // Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > Handle_MMatch;
   // Eigen::PlainObjectBase<Eigen::Matrix<int,  Eigen::Dynamic, 3> > Handle_MMatch;
   // Eigen::Matrix<int, Eigen::Dynamic, 3> Handle_MMatch;
-  Eigen::PlainObjectBase<DerivedF> Handle_MMatch;
+  Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 3> Handle_MMatch;
   // Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 3> Handle_MMatch;
   // Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, Eigen::Dynamic> Handle_MMatch;
   igl::cross_field_missmatch<DerivedV, DerivedF>(V, F, PD1, PD2, isCombed, Handle_MMatch);

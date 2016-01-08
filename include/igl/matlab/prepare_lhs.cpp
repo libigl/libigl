@@ -14,22 +14,17 @@ IGL_INLINE void igl::matlab::prepare_lhs_double(
 {
   using namespace std;
   using namespace Eigen;
-  plhs[0] = mxCreateDoubleMatrix(V.rows(),V.cols(), mxREAL);
+  const int m = V.rows();
+  const int n = V.cols();
+  plhs[0] = mxCreateDoubleMatrix(m,n, mxREAL);
   double * Vp = mxGetPr(plhs[0]);
-
-  typedef typename DerivedV::Scalar Scalar;
-  const Scalar * V_data;
-  Matrix<Scalar, DerivedV::ColsAtCompileTime, DerivedV::RowsAtCompileTime, RowMajor> VT;
-  if(DerivedV::IsRowMajor)
+  for(int i = 0;i<m;i++)
   {
-    VT = V.transpose();
-    V_data = VT.data();
-  }else
-  {
-    V_data = V.data();
+    for(int j = 0;j<n;j++)
+    {
+      Vp[i+m*j] = V(i,j);
+    }
   }
-
-  copy(V_data,V_data+V.size(),Vp);
 }
 
 template <typename DerivedV>
@@ -39,22 +34,17 @@ IGL_INLINE void igl::matlab::prepare_lhs_logical(
 {
   using namespace std;
   using namespace Eigen;
-  plhs[0] = mxCreateLogicalMatrix(V.rows(),V.cols());
+  const int m = V.rows();
+  const int n = V.cols();
+  plhs[0] = mxCreateLogicalMatrix(m,n);
   mxLogical * Vp = static_cast<mxLogical*>(mxGetData(plhs[0]));
-
-  typedef typename DerivedV::Scalar Scalar;
-  const Scalar * V_data;
-  Matrix<Scalar, DerivedV::ColsAtCompileTime, DerivedV::RowsAtCompileTime, RowMajor> VT;
-  if(DerivedV::IsRowMajor)
+  for(int i = 0;i<m;i++)
   {
-    VT = V.transpose();
-    V_data = VT.data();
-  }else
-  {
-    V_data = V.data();
+    for(int j = 0;j<n;j++)
+    {
+      Vp[i+m*j] = V(i,j);
+    }
   }
-
-  copy(V_data,V_data+V.size(),Vp);
 }
 
 template <typename DerivedV>
@@ -63,7 +53,6 @@ IGL_INLINE void igl::matlab::prepare_lhs_index(
   mxArray *plhs[])
 {
   // Treat indices as reals
-  
   const auto Vd = (V.template cast<double>().array()+1).eval();
   return prepare_lhs_double(Vd,plhs);
 }
