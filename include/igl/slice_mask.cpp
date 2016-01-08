@@ -94,23 +94,23 @@ IGL_INLINE void igl::slice_mask(
 }
 
 template <typename DerivedX>
-IGL_INLINE Eigen::PlainObjectBase<DerivedX> igl::slice_mask(
+IGL_INLINE DerivedX igl::slice_mask(
   const Eigen::PlainObjectBase<DerivedX> & X,
   const Eigen::Array<bool,Eigen::Dynamic,1> & R,
   const Eigen::Array<bool,Eigen::Dynamic,1> & C)
 {
-  Eigen::PlainObjectBase<DerivedX> Y;
+  DerivedX Y;
   igl::slice_mask(X,R,C,Y);
   return Y;
 }
 
 template <typename DerivedX>
-IGL_INLINE Eigen::PlainObjectBase<DerivedX> igl::slice_mask(
+IGL_INLINE DerivedX igl::slice_mask(
   const Eigen::PlainObjectBase<DerivedX>& X,
   const Eigen::Array<bool,Eigen::Dynamic,1> & R,
   const int dim)
 {
-  Eigen::PlainObjectBase<DerivedX> Y;
+  DerivedX Y;
   igl::slice_mask(X,R,dim,Y);
   return Y;
 }

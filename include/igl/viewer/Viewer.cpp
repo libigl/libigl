@@ -748,17 +748,17 @@ namespace viewer
 
     glfwMakeContextCurrent(window);
 
-    #ifndef __APPLE__ // this should only be needed for Windows
+    /*#ifndef __APPLE__ // this should only be needed for Windows
       glewExperimental = true;
       GLenum err = glewInit();
       if(GLEW_OK != err)
       {
-        /* Problem: glewInit failed, something is seriously wrong. */
+        // Problem: glewInit failed, something is seriously wrong.
        fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
       }
       glGetError(); // pull and savely ignonre unhandled errors like GL_INVALID_ENUM
       fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-    #endif
+    #endif*/
 
     #if defined(DEBUG) || defined(_DEBUG)
       int major, minor, rev;

@@ -34,7 +34,7 @@ public:
   IGL_INLINE void shut();
 
   // Serialization code
-  IGL_INLINE void InitSerialization();
+  IGL_INLINE virtual void InitSerialization();
 
 
   // ------------------- Camera control functions

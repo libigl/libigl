@@ -6,9 +6,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "bone_visible.h"
-#include <igl/project_to_line.h>
-#include <igl/EPS.h>
-#include <igl/Timer.h>
+#include "../project_to_line.h"
+#include "../EPS.h"
+#include "../Hit.h"
+#include "../Timer.h"
 #include <iostream>
 
 template <
@@ -46,7 +47,6 @@ IGL_INLINE void igl::embree::bone_visible(
   const Eigen::PlainObjectBase<DerivedSD> & d,
   Eigen::PlainObjectBase<Derivedflag>  & flag)
 {
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
   flag.resize(V.rows());
@@ -86,7 +86,7 @@ IGL_INLINE void igl::embree::bone_visible(
         projv = d;
       }
     }
-    igl::embree::Hit hit;
+    igl::Hit hit;
     // perhaps 1.0 should be 1.0-epsilon, or actually since we checking the
     // incident face, perhaps 1.0 should be 1.0+eps
     const Vector3d dir = (Vv-projv)*1.0;

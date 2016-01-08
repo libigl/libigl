@@ -20,7 +20,7 @@
 #  undef DrawText
 #endif
 
-#include "../opengl/OpenGL_convenience.h"
+#include <nanogui/opengl.h>
 
 namespace igl
 {
