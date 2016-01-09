@@ -198,7 +198,7 @@ few labs/companies/institutions using libigl:
  - EPF Lausanne, [Computer Graphics and Geometry Laboratory](http://lgg.epfl.ch/people.php), Switzerland
  - ETH Zurich, [Interactive Geometry Lab](http://igl.ethz.ch/) and [Advanced Technologies Lab](http://ait.inf.ethz.ch/), Swizterland
  - George Mason University, [CraGL](http://cs.gmu.edu/~ygingold/), USA
- - [Hong Kong University of Science and Technology](http://www.ust.hk/), USA
+ - [Hong Kong University of Science and Technology](http://www.ust.hk/), Hong Kong
  - [National Institute of Informatics](http://www.nii.ac.jp/en/), Japan
  - New York University, [Media Research Lab](http://mrl.nyu.edu/), USA
  - NYUPoly, [Game Innovation Lab](http://game.engineering.nyu.edu/), USA
