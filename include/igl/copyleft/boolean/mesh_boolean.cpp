@@ -16,11 +16,13 @@
 #include "../../unique_simplices.h"
 #include "../../slice.h"
 #include "../../resolve_duplicated_faces.h"
+#include "../../get_seconds.h"
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <algorithm>
 
 //#define MESH_BOOLEAN_TIMING
+//#define DOUBLE_CHECK_EXACT_OUTPUT
 
 template <
   typename DerivedVA,
@@ -181,6 +183,30 @@ IGL_INLINE void igl::copyleft::boolean::mesh_boolean(
     DerivedJ JJ;
     igl::resolve_duplicated_faces(kept_faces, G, JJ);
     igl::slice(kept_face_indices, JJ, 1, J);
+
+#ifdef DOUBLE_CHECK_EXACT_OUTPUT
+    {
+      // Sanity check on exact output.
+      igl::copyleft::cgal::RemeshSelfIntersectionsParam params;
+      params.detect_only = true;
+      params.first_only = true;
+      MatrixXES dummy_VV;
+      DerivedFC dummy_FF, dummy_IF;
+      Eigen::VectorXi dummy_J, dummy_IM;
+      igl::copyleft::cgal::SelfIntersectMesh<
+        Kernel,
+        MatrixXES, DerivedFC,
+        MatrixXES, DerivedFC,
+        DerivedFC,
+        Eigen::VectorXi,
+        Eigen::VectorXi
+      > checker(V, G, params,
+          dummy_VV, dummy_FF, dummy_IF, dummy_J, dummy_IM);
+      if (checker.count != 0) {
+        throw "Self-intersection not fully resolved.";
+      }
+    }
+#endif
 
     MatrixX3S Vs(V.rows(), V.cols());
     for (size_t i=0; i<(size_t)V.rows(); i++)
