@@ -34,11 +34,12 @@ template<
   typename DerivedF,
   typename DerivedL,
   typename DerivedW>
-IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
+IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
     const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedF>& F,
     const Eigen::PlainObjectBase<DerivedL>& labels,
-    Eigen::PlainObjectBase<DerivedW>& W) {
+    Eigen::PlainObjectBase<DerivedW>& W) 
+{
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
   const auto & tictoc = []() -> double
   {
@@ -60,9 +61,11 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
   Eigen::VectorXi EMAP;
   std::vector<std::vector<size_t> > uE2E;
   igl::unique_edge_map(F, E, uE, EMAP, uE2E);
+  bool valid = true;
   if (!piecewise_constant_winding_number(F, uE, uE2E)) 
   {
     std::cerr << "Input mesh is not orientable!" << std::endl;
+    valid = false;
   }
 
   Eigen::VectorXi P;
@@ -138,26 +141,29 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
           Q.pop();
           int curr_label = cell_labels[curr_idx];
           for (const auto& neighbor : cell_adjacency[curr_idx]) {
-            if (cell_labels[std::get<0>(neighbor)] == 0) {
+            if (cell_labels[std::get<0>(neighbor)] == 0) 
+            {
               cell_labels[std::get<0>(neighbor)] = curr_label * -1;
               Q.push(std::get<0>(neighbor));
               parents[std::get<0>(neighbor)] = curr_idx;
-            } else {
-              if (cell_labels[std::get<0>(neighbor)] !=
-                  curr_label * -1) {
+            } else 
+            {
+              if (cell_labels[std::get<0>(neighbor)] != curr_label * -1) 
+              {
                 std::cerr << "Odd cell cycle detected!" << std::endl;
                 auto path = trace_parents(curr_idx);
                 path.reverse();
                 auto path2 = trace_parents(std::get<0>(neighbor));
-                path.insert(path.end(),
-                    path2.begin(), path2.end());
-                for (auto cell_id : path) {
+                path.insert(path.end(), path2.begin(), path2.end());
+                for (auto cell_id : path) 
+                {
                   std::cout << cell_id << " ";
                   std::stringstream filename;
                   filename << "cell_" << cell_id << ".ply";
                   save_cell(filename.str(), cell_id);
                 }
                 std::cout << std::endl;
+                valid = false;
               }
               // Do not fail when odd cycle is detected because the resulting
               // integer winding number field, although inconsistent, may still
@@ -249,7 +255,8 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
 #endif
 
   W.resize(num_faces, num_labels*2);
-  for (size_t i=0; i<num_faces; i++) {
+  for (size_t i=0; i<num_faces; i++) 
+  {
     const size_t patch = P[i];
     const size_t positive_cell = per_patch_cells(patch, 0);
     const size_t negative_cell = per_patch_cells(patch, 1);
@@ -261,9 +268,10 @@ IGL_INLINE void igl::copyleft::cgal::propagate_winding_numbers(
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
   log_time("store_result");
 #endif
+  return valid;
 }
 
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::copyleft::cgal::propagate_winding_numbers<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template bool igl::copyleft::cgal::propagate_winding_numbers<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif
