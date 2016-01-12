@@ -39,6 +39,8 @@ namespace igl
       //    VC  #VC by 3 list of vertex positions of boolean result mesh
       //    FC  #FC by 3 list of triangle indices into VC
       //    J  #FC list of indices into [FA;FB] revealing "birth" facet
+      //  Returns true iff inputs induce a piecewise constant winding number
+      //    field
       //
       //  See also: mesh_boolean_cork, intersect_other,
       //  remesh_self_intersections
@@ -53,7 +55,7 @@ namespace igl
         typename DerivedVC,
         typename DerivedFC,
         typename DerivedJ>
-      IGL_INLINE void mesh_boolean(
+      IGL_INLINE bool mesh_boolean(
           const Eigen::PlainObjectBase<DerivedVA> & VA,
           const Eigen::PlainObjectBase<DerivedFA> & FA,
           const Eigen::PlainObjectBase<DerivedVB> & VB,
@@ -77,6 +79,8 @@ namespace igl
       //    VC  #VC by 3 list of vertex positions of boolean result mesh
       //    FC  #FC by 3 list of triangle indices into VC
       //    J  #FC list of indices into [FA;FB] revealing "birth" facet
+      //  Returns true if inputs induce a piecewise constant winding number
+      //    field and type is valid.
       //
       //  See also: mesh_boolean_cork, intersect_other,
       //  remesh_self_intersections
@@ -89,7 +93,7 @@ namespace igl
         typename DerivedVC,
         typename DerivedFC,
         typename DerivedJ>
-      IGL_INLINE void mesh_boolean(
+      IGL_INLINE bool mesh_boolean(
           const Eigen::PlainObjectBase<DerivedVA > & VA,
           const Eigen::PlainObjectBase<DerivedFA > & FA,
           const Eigen::PlainObjectBase<DerivedVB > & VB,
@@ -110,6 +114,8 @@ namespace igl
       //    VC  #VC by 3 list of vertex positions of boolean result mesh
       //    FC  #FC by 3 list of triangle indices into VC
       //    J  #FC list of indices into [FA;FB] revealing "birth" facet
+      //  Returns true if inputs induce a piecewise constant winding number
+      //  field and type is valid
       //
       //  See also: mesh_boolean_cork, intersect_other,
       //  remesh_self_intersections
@@ -121,7 +127,7 @@ namespace igl
         typename DerivedVC,
         typename DerivedFC,
         typename DerivedJ>
-      IGL_INLINE void mesh_boolean(
+      IGL_INLINE bool mesh_boolean(
         const Eigen::PlainObjectBase<DerivedVA > & VA,
         const Eigen::PlainObjectBase<DerivedFA > & FA,
         const Eigen::PlainObjectBase<DerivedVB > & VB,
@@ -140,6 +146,8 @@ namespace igl
       //  Outputs:
       //    VC  #VC by 3 list of vertex positions of boolean result mesh
       //    FC  #FC by 3 list of triangle indices into VC
+      //  Returns true ff inputs induce a piecewise constant winding number
+      //    field and type is valid
       template <
         typename DerivedVA,
         typename DerivedFA,
@@ -147,7 +155,7 @@ namespace igl
         typename DerivedFB,
         typename DerivedVC,
         typename DerivedFC>
-      IGL_INLINE void mesh_boolean(
+      IGL_INLINE bool mesh_boolean(
           const Eigen::PlainObjectBase<DerivedVA > & VA,
           const Eigen::PlainObjectBase<DerivedFA > & FA,
           const Eigen::PlainObjectBase<DerivedVB > & VB,
