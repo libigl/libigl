@@ -12,10 +12,12 @@
 #include <Eigen/Core>
 #include <vector>
 
-namespace igl {
+namespace igl 
+{
   namespace copyleft
   {
-    namespace cgal {
+    namespace cgal 
+    {
       // Given a directed edge, sort its adjacent faces.  Assuming the
       // directed edge is (s, d).  Sort the adjacent faces clockwise around the
       // axis (d - s), i.e. left-hand rule.  An adjacent face is consistently
