@@ -7,14 +7,22 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 //
 #include "extract_cells.h"
-#include "../../extract_manifold_patches.h"
-#include "../../facet_components.h"
-#include "../../triangle_triangle_adjacency.h"
-#include "../../unique_edge_map.h"
-#include "../../get_seconds.h"
 #include "closest_facet.h"
 #include "order_facets_around_edge.h"
 #include "outer_facet.h"
+#include "submesh_aabb_tree.h"
+#include "../../extract_manifold_patches.h"
+#include "../../facet_components.h"
+#include "../../get_seconds.h"
+#include "../../triangle_triangle_adjacency.h"
+#include "../../unique_edge_map.h"
+#include "../../vertex_triangle_adjacency.h"
+
+#include <CGAL/AABB_tree.h>
+#include <CGAL/AABB_traits.h>
+#include <CGAL/AABB_triangle_primitive.h>
+#include <CGAL/intersections.h>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
 #include <iostream>
 #include <vector>
@@ -75,6 +83,17 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
   const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
   Eigen::PlainObjectBase<DerivedC>& cells) 
 {
+
+  typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
+  typedef Kernel::Point_3 Point_3;
+  typedef Kernel::Plane_3 Plane_3;
+  typedef Kernel::Segment_3 Segment_3;
+  typedef Kernel::Triangle_3 Triangle;
+  typedef std::vector<Triangle>::iterator Iterator;
+  typedef CGAL::AABB_triangle_primitive<Kernel, Iterator> Primitive;
+  typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
+  typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
+
 #ifdef EXTRACT_CELLS_DEBUG
   const auto & tictoc = []() -> double
   {
@@ -121,11 +140,25 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
     components[C[i]].push_back(i);
   }
   // Convert vector lists to Eigen lists...
+  // and precompute data-structures for each component
+  std::vector<std::vector<size_t> > VF,VFi;
+  igl::vertex_triangle_adjacency(V.rows(), F, VF, VFi);
   std::vector<Eigen::VectorXi> Is(num_components);
+  std::vector<
+    CGAL::AABB_tree<
+      CGAL::AABB_traits<
+        Kernel, 
+        CGAL::AABB_triangle_primitive<
+          Kernel, std::vector<
+            Kernel::Triangle_3 >::iterator > > > > trees(num_components);
+  std::vector< std::vector<Kernel::Triangle_3 > > 
+    triangle_lists(num_components);
+  std::vector<std::vector<bool> > in_Is(num_components);
   for (size_t i=0; i<num_components; i++)
   {
     Is[i].resize(components[i].size());
     std::copy(components[i].begin(), components[i].end(),Is[i].data());
+    submesh_aabb_tree(V,F,Is[i],trees[i],triangle_lists[i],in_Is[i]);
   }
 
   // Find outer facets, their orientations and cells for each component
@@ -219,9 +252,25 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
       // Gather closest facets in ith component to each query point and their
       // orientations
       const auto& I = Is[i];
+      const auto& tree = trees[i];
+      const auto& in_I = in_Is[i];
+      const auto& triangles = triangle_lists[i];
+
       Eigen::VectorXi closest_facets, closest_facet_orientations;
-      closest_facet(V, F, I, queries,
-        uE2E, EMAP, closest_facets, closest_facet_orientations);
+      closest_facet(
+        V,
+        F, 
+        I, 
+        queries,
+        uE2E, 
+        EMAP, 
+        VF,
+        VFi,
+        tree,
+        triangles,
+        in_I,
+        closest_facets, 
+        closest_facet_orientations);
       // Loop over all candidates
       for (size_t j=0; j<num_candidate_comps; j++)
       {

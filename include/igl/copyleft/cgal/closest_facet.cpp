@@ -12,13 +12,8 @@
 #include <stdexcept>
 #include <unordered_map>
 
-#include <CGAL/AABB_tree.h>
-#include <CGAL/AABB_traits.h>
-#include <CGAL/AABB_triangle_primitive.h>
-#include <CGAL/intersections.h>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-
 #include "order_facets_around_edge.h"
+#include "submesh_aabb_tree.h"
 #include "../../vertex_triangle_adjacency.h"
 #include "../../writePLY.h"
 
@@ -39,7 +34,9 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     const std::vector<std::vector<uE2EType> >& uE2E,
     const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
     Eigen::PlainObjectBase<DerivedR>& R,
-    Eigen::PlainObjectBase<DerivedS>& S) {
+    Eigen::PlainObjectBase<DerivedS>& S)
+{
+
   typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
   typedef Kernel::Point_3 Point_3;
   typedef Kernel::Plane_3 Plane_3;
@@ -55,29 +52,64 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
         "Closest facet cannot be computed on empty mesh.");
   }
 
-  std::vector<std::vector<size_t> > VF;
-  std::vector<std::vector<size_t> > VFi;
+  std::vector<std::vector<size_t> > VF, VFi;
   igl::vertex_triangle_adjacency(V.rows(), F, VF, VFi);
-
-  std::vector<bool> in_I(F.rows(), false);
-  const size_t num_faces = I.rows();
+  std::vector<bool> in_I;
   std::vector<Triangle> triangles;
-  for (size_t i=0; i<num_faces; i++) {
-    const Eigen::Vector3i f = F.row(I(i, 0));
-    in_I[I(i,0)] = true;
-    triangles.emplace_back(
-        Point_3(V(f[0], 0), V(f[0], 1), V(f[0], 2)),
-        Point_3(V(f[1], 0), V(f[1], 1), V(f[1], 2)),
-        Point_3(V(f[2], 0), V(f[2], 1), V(f[2], 2)));
-    if (triangles.back().is_degenerate()) {
-      throw std::runtime_error(
-          "Input facet components contains degenerated triangles");
-    }
-  }
-  Tree tree(triangles.begin(), triangles.end());
-  tree.accelerate_distance_queries();
+  Tree tree;
+  submesh_aabb_tree(V,F,I,tree,triangles,in_I);
 
-  auto on_the_positive_side = [&](size_t fid, const Point_3& p) -> bool{
+  return closest_facet(
+    V,F,I,P,uE2E,EMAP,VF,VFi,tree,triangles,in_I,R,S);
+}
+
+template<
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedI,
+  typename DerivedP,
+  typename uE2EType,
+  typename DerivedEMAP,
+  typename Kernel,
+  typename DerivedR,
+  typename DerivedS >
+IGL_INLINE void igl::copyleft::cgal::closest_facet(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::PlainObjectBase<DerivedI>& I,
+    const Eigen::PlainObjectBase<DerivedP>& P,
+    const std::vector<std::vector<uE2EType> >& uE2E,
+    const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+    const std::vector<std::vector<size_t> > & VF,
+    const std::vector<std::vector<size_t> > & VFi,
+    const CGAL::AABB_tree<
+      CGAL::AABB_traits<
+        Kernel, 
+        CGAL::AABB_triangle_primitive<
+          Kernel, typename std::vector<
+            typename Kernel::Triangle_3 >::iterator > > > & tree,
+    const std::vector<typename Kernel::Triangle_3 > & triangles,
+    const std::vector<bool> & in_I,
+    Eigen::PlainObjectBase<DerivedR>& R,
+    Eigen::PlainObjectBase<DerivedS>& S)
+{
+  typedef typename Kernel::Point_3 Point_3;
+  typedef typename Kernel::Plane_3 Plane_3;
+  typedef typename Kernel::Segment_3 Segment_3;
+  typedef typename Kernel::Triangle_3 Triangle;
+  typedef typename std::vector<Triangle>::iterator Iterator;
+  typedef typename CGAL::AABB_triangle_primitive<Kernel, Iterator> Primitive;
+  typedef typename CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
+  typedef typename CGAL::AABB_tree<AABB_triangle_traits> Tree;
+
+  const size_t num_faces = I.rows();
+  if (F.rows() <= 0 || I.rows() <= 0) {
+    throw std::runtime_error(
+        "Closest facet cannot be computed on empty mesh.");
+  }
+
+  auto on_the_positive_side = [&](size_t fid, const Point_3& p) -> bool
+  {
     const auto& f = F.row(fid).eval();
     Point_3 v0(V(f[0], 0), V(f[0], 1), V(f[0], 2));
     Point_3 v1(V(f[1], 0), V(f[1], 1), V(f[1], 2));
@@ -99,7 +131,8 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     return false;
   };
 
-  auto get_orientation = [&](size_t fid, size_t s, size_t d) -> bool {
+  auto get_orientation = [&](size_t fid, size_t s, size_t d) -> bool 
+  {
     const auto& f = F.row(fid);
     if      ((size_t)f[0] == s && (size_t)f[1] == d) return false;
     else if ((size_t)f[1] == s && (size_t)f[2] == d) return false;
@@ -143,23 +176,28 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
       size_t query_idx,
       const size_t s, const size_t d,
       size_t preferred_facet,
-      bool& orientation) -> size_t {
+      bool& orientation) -> size_t 
+  {
     Point_3 query_point(
-        P(query_idx, 0),
-        P(query_idx, 1),
-        P(query_idx, 2));
+      P(query_idx, 0),
+      P(query_idx, 1),
+      P(query_idx, 2));
 
     size_t corner_idx = std::numeric_limits<size_t>::max();
     if ((s == F(preferred_facet, 0) && d == F(preferred_facet, 1)) ||
-        (s == F(preferred_facet, 1) && d == F(preferred_facet, 0))) {
+        (s == F(preferred_facet, 1) && d == F(preferred_facet, 0))) 
+    {
       corner_idx = 2;
     } else if ((s == F(preferred_facet, 0) && d == F(preferred_facet, 2)) ||
-        (s == F(preferred_facet, 2) && d == F(preferred_facet, 0))) {
+        (s == F(preferred_facet, 2) && d == F(preferred_facet, 0))) 
+    {
       corner_idx = 1;
     } else if ((s == F(preferred_facet, 1) && d == F(preferred_facet, 2)) ||
-        (s == F(preferred_facet, 2) && d == F(preferred_facet, 1))) {
+        (s == F(preferred_facet, 2) && d == F(preferred_facet, 1))) 
+    {
       corner_idx = 0;
-    } else {
+    } else 
+    {
       std::cerr << "s: " << s << "\t d:" << d << std::endl;
       std::cerr << F.row(preferred_facet) << std::endl;
       throw std::runtime_error(
@@ -169,9 +207,11 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     auto ueid = EMAP(preferred_facet + corner_idx * F.rows());
     auto eids = uE2E[ueid];
     std::vector<size_t> intersected_face_indices;
-    for (auto eid : eids) {
+    for (auto eid : eids) 
+    {
       const size_t fid = eid % F.rows();
-      if (in_I[fid]) {
+      if (in_I[fid]) 
+      {
         intersected_face_indices.push_back(fid);
       }
     }
@@ -188,7 +228,8 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
         });
 
     assert(num_intersected_faces >= 1);
-    if (num_intersected_faces == 1) {
+    if (num_intersected_faces == 1) 
+    {
       // The edge must be a boundary edge.  Thus, the orientation can be
       // simply determined by checking if the query point is on the
       // positive side of the facet.
@@ -200,8 +241,8 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     Eigen::VectorXi order;
     DerivedP pivot = P.row(query_idx).eval();
     igl::copyleft::cgal::order_facets_around_edge(V, F, s, d,
-        intersected_face_signed_indices,
-        pivot, order);
+      intersected_face_signed_indices,
+      pivot, order);
 
     // Although first and last are equivalent, make the choice based on
     // preferred_facet.
@@ -381,7 +422,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     bool fid_ori = false;
 
     // Gether all facets sharing the closest point.
-    std::vector<Tree::Primitive_id> intersected_faces;
+    typename std::vector<typename Tree::Primitive_id> intersected_faces;
     tree.all_intersected_primitives(Segment_3(closest_point, query),
         std::back_inserter(intersected_faces));
     const size_t num_intersected_faces = intersected_faces.size();
@@ -389,7 +430,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     std::transform(intersected_faces.begin(),
         intersected_faces.end(),
         intersected_face_indices.begin(),
-        [&](const Tree::Primitive_id& itr) -> size_t
+        [&](const typename Tree::Primitive_id& itr) -> size_t
         { return I(itr-triangles.begin(), 0); });
 
     size_t element_index;
