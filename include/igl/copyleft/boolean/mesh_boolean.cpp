@@ -12,6 +12,7 @@
 #include "../cgal/assign_scalar.h"
 #include "../cgal/propagate_winding_numbers.h"
 #include "../cgal/remesh_self_intersections.h"
+#include "../cgal/relabel_small_immersed_cells.h"
 #include "../../remove_unreferenced.h"
 #include "../../unique_simplices.h"
 #include "../../slice.h"
@@ -23,6 +24,7 @@
 
 //#define MESH_BOOLEAN_TIMING
 //#define DOUBLE_CHECK_EXACT_OUTPUT
+//#define SMALL_CELL_REMOVAL
 
 template <
   typename DerivedVA,
@@ -155,6 +157,11 @@ IGL_INLINE bool igl::copyleft::boolean::mesh_boolean(
   }
 #ifdef MESH_BOOLEAN_TIMING
   log_time("compute_output_winding_number");
+#endif
+
+#ifdef SMALL_CELL_REMOVAL
+  igl::copyleft::cgal::relabel_small_immersed_cells(V, F,
+          num_patches, P, num_cells, per_patch_cells, 1e-3, Wr);
 #endif
 
   // Extract boundary separating inside from outside.
