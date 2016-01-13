@@ -26,15 +26,14 @@ namespace igl {
       // computed as (consistent? 1:-1) * (face_index + 1).
       //
       // Inputs:
-      //   V          #V by 3 list of vertices.
-      //   F          #F by 3 list of faces
-      //   s          Index of source vertex.
-      //   d          Index of desination vertex.
+      //   V  #V by 3 list of vertices.
+      //   F  #F by 3 list of faces
+      //   s  Index of source vertex.
+      //   d  Index of desination vertex.
       //   adj_faces  List of adjacent face signed indices.
-      //
       // Output:
-      //   order      List of face indices that orders adjacent faces around
-      //              edge (s, d) clockwise.
+      //   order  List of face indices that orders adjacent faces around edge
+      //     (s, d) clockwise.
       template<
         typename DerivedV,
         typename DerivedF,
@@ -43,7 +42,8 @@ namespace igl {
       void order_facets_around_edge(
           const Eigen::PlainObjectBase<DerivedV>& V,
           const Eigen::PlainObjectBase<DerivedF>& F,
-          size_t s, size_t d, 
+          size_t s, 
+          size_t d, 
           const std::vector<int>& adj_faces,
           Eigen::PlainObjectBase<DerivedI>& order,
           bool debug=false);
@@ -58,12 +58,13 @@ namespace igl {
         typename DerivedI>
       IGL_INLINE
       void order_facets_around_edge(
-          const Eigen::PlainObjectBase<DerivedV>& V,
-          const Eigen::PlainObjectBase<DerivedF>& F,
-          size_t s, size_t d, 
-          const std::vector<int>& adj_faces,
-          const Eigen::PlainObjectBase<DerivedV>& pivot_point,
-          Eigen::PlainObjectBase<DerivedI>& order);
+        const Eigen::PlainObjectBase<DerivedV>& V,
+        const Eigen::PlainObjectBase<DerivedF>& F,
+        size_t s, 
+        size_t d, 
+        const std::vector<int>& adj_faces,
+        const Eigen::PlainObjectBase<DerivedV>& pivot_point,
+        Eigen::PlainObjectBase<DerivedI>& order);
     }
   }
 }
