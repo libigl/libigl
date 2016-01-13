@@ -85,23 +85,6 @@ IGL_INLINE bool igl::copyleft::boolean::mesh_boolean(
       DerivedFC FF(FA.rows() + FB.rows(), 3);
       VV << VA, VB;
       FF << FA, FB.array() + VA.rows();
-      //// Handle annoying empty cases
-      //if(VA.size()>0)
-      //{
-      //  VV<<VA;
-      //}
-      //if(VB.size()>0)
-      //{
-      //  VV<<VB;
-      //}
-      //if(FA.size()>0)
-      //{
-      //  FF<<FA;
-      //}
-      //if(FB.size()>0)
-      //{
-      //  FF<<FB.array()+VA.rows();
-      //}
       resolve_fun(VV, FF, V, F, CJ);
   }
 #ifdef MESH_BOOLEAN_TIMING
