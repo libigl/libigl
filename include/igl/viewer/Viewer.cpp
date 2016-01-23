@@ -306,6 +306,22 @@ namespace viewer
     callback_mouse_scroll_data  = nullptr;
     callback_key_down_data      = nullptr;
     callback_key_up_data        = nullptr;
+
+#ifndef IGL_VIEWER_VIEWER_QUIET
+    const std::string usage(R"(igl::viewer::Viewer usage:
+  [drag]  Rotate scene
+  A,a     Toggle animation (tight draw loop)
+  I,i     Toggle invert normals
+  L,l     Toggle wireframe
+  O,o     Toggle orthographic/perspective projection
+  T,t     Toggle filled faces
+  Z       Snap to canonical view
+  [,]     Toggle between rotation control types (e.g. trackball, two-axis
+          valuator with fixed up)
+
+)");
+    std::cout<<usage;
+#endif
   }
 
   IGL_INLINE void Viewer::init_plugins()
@@ -456,18 +472,13 @@ namespace viewer
         return true;
 
     for (unsigned int i = 0; i<plugins.size(); ++i)
+    {
       if (plugins[i]->key_pressed(unicode_key, modifiers))
+      {
         return true;
-    const std::string usage(R"(igl::viewer::Viewer:
-A,a  Toggle animation (tight draw loop)
-I,i  Toggle invert normals
-L,l  Toggle wireframe
-O,o  Toggle orthographic/perspective projection
-T,t  Toggle filled faces
-Z    Snap to canonical view
-[,]  Toggle between rotation control types (e.g. trackball, two-axis valuator
-     with fixed up)
-)");
+      }
+    }
+
     switch(unicode_key)
     {
       case 'A':
