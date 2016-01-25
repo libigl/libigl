@@ -191,10 +191,12 @@ Eurographics/ACM Symposium on Geometry Processing software award. Here are a
 few labs/companies/institutions using libigl:
 
  - [Adobe Research](http://www.adobe.com/technology/)  
+ - [Mesh](http://meshconsultants.ca/), consultants, Canada
  - [Pixar Research](http://graphics.pixar.com/research/)
  - [Spine by Esoteric Software](http://esotericsoftware.com/) is an animation tool dedicated to 2D characters.
  - Columbia University, [Columbia Computer Graphics Group](http://www.cs.columbia.edu/cg/), USA
  - [Cornell University](http://www.graphics.cornell.edu/), USA
+ - [Czech Technical University in Prague](http://dcgi.felk.cvut.cz/), Czech
  - EPF Lausanne, [Computer Graphics and Geometry Laboratory](http://lgg.epfl.ch/people.php), Switzerland
  - ETH Zurich, [Interactive Geometry Lab](http://igl.ethz.ch/) and [Advanced Technologies Lab](http://ait.inf.ethz.ch/), Swizterland
  - George Mason University, [CraGL](http://cs.gmu.edu/~ygingold/), USA
@@ -204,6 +206,7 @@ few labs/companies/institutions using libigl:
  - NYUPoly, [Game Innovation Lab](http://game.engineering.nyu.edu/), USA
  - [TU Berlin](https://www.cg.tu-berlin.de), Germany
  - [TU Delft](http://www.tudelft.nl/en/), Netherlands
+ - [TU Wien](https://www.tuwien.ac.at/en/tuwien_home/), Austria
  - [Telecom ParisTech](http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html), Paris, France
  - [Universidade Federal de Santa Catarina](http://mtm.ufsc.br/~leo/), Brazil
  - [University College London](http://vecg.cs.ucl.ac.uk/), England
@@ -214,6 +217,7 @@ few labs/companies/institutions using libigl:
  - [University of Victoria](https://www.csc.uvic.ca/Research/graphics/), Canada
  - [Università della Svizzera Italiana](http://www.usi.ch/en), Switzerland
  - [Université Toulouse III Paul Sabatier](http://www.univ-tlse3.fr/), France
+ - [Zhejiang University](http://www.math.zju.edu.cn/cagd/), China
 
 
 ## Contact
