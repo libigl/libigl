@@ -39,15 +39,13 @@ namespace igl
   // Compute barycentric coordinates in a triangle
   //
   // Inputs:
-  //   P  #P by 2 Query points in 2d
-  //   A  #P by 2 Triangle corners in 2d
-  //   B  #P by 2 Triangle corners in 2d
-  //   C  #P by 2 Triangle corners in 2d
+  //   P  #P by dim Query points
+  //   A  #P by dim Triangle corners
+  //   B  #P by dim Triangle corners
+  //   C  #P by dim Triangle corners
   // Outputs:
-  //   L  #P by e list of barycentric coordinates
+  //   L  #P by 3 list of barycentric coordinates
   //   
-  // Known bugs: this code is not tested (and probably will not work) for
-  // triangles and queries in 3D even if the query lives in/on the triangle.
   template <
     typename DerivedP,
     typename DerivedA,
@@ -55,10 +53,10 @@ namespace igl
     typename DerivedC,
     typename DerivedL>
   IGL_INLINE void barycentric_coordinates(
-    const Eigen::PlainObjectBase<DerivedP> & P,
-    const Eigen::PlainObjectBase<DerivedA> & A,
-    const Eigen::PlainObjectBase<DerivedB> & B,
-    const Eigen::PlainObjectBase<DerivedC> & C,
+    const Eigen::MatrixBase<DerivedP> & P,
+    const Eigen::MatrixBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedB> & B,
+    const Eigen::MatrixBase<DerivedC> & C,
     Eigen::PlainObjectBase<DerivedL> & L);
 
 }
