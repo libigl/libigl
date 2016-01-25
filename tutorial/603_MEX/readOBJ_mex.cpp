@@ -36,9 +36,9 @@ void mexFunction(
   switch(nlhs)
   {
     case 2:
-      igl::prepare_lhs_index(F,plhs+1);
+      igl::matlab::prepare_lhs_index(F,plhs+1);
     case 1:
-      igl::prepare_lhs_double(V,plhs);
+      igl::matlab::prepare_lhs_double(V,plhs);
     default: break;
   }
 
