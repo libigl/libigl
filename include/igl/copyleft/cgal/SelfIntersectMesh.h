@@ -10,6 +10,7 @@
 
 #include "CGAL_includes.hpp"
 #include "RemeshSelfIntersectionsParam.h"
+#include "../../unique.h"
 
 #include <Eigen/Dense>
 #include <list>
@@ -423,7 +424,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     return;
   }
 
-  remesh_intersections(V,F,T,offending,edge2faces,VV,FF,J,IM);
+  remesh_intersections(V,F,T,offending,edge2faces,true,VV,FF,J,IM);
 
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
   log_time("remesh_intersection");
@@ -702,15 +703,12 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
 {
   using namespace std;
 
-  {
-    std::lock_guard<std::mutex> guard(m_offending_lock);
   // must be co-planar
   if(
     A.supporting_plane() != B.supporting_plane() &&
     A.supporting_plane() != B.supporting_plane().opposite())
   {
     return false;
-  }
   }
   // Since A and B are non-degenerate the intersection must be a polygon
   // (triangle). Either
@@ -865,22 +863,46 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   DerivedJ,
   DerivedIM>::process_intersecting_boxes()
 {
-  CGAL::Identity_transformation I;
   std::vector<std::mutex> triangle_locks(T.size());
-  auto process_chunk = [&](size_t first, size_t last) -> void{
+  std::vector<std::mutex> vertex_locks(V.rows());
+  std::mutex index_lock;
+  auto process_chunk = [&](const size_t first, const size_t last) -> void{
     assert(last >= first);
 
     for (size_t i=first; i<last; i++) {
-      const auto& box_pair = candidate_box_pairs[i];
-      const auto& a = box_pair.first;
-      const auto& b = box_pair.second;
-      Index fa = a.handle()-T.begin();
-      Index fb = b.handle()-T.begin();
+      Index fa=T.size(), fb=T.size();
+      {
+        // Before knowing which triangles are involved, we need to lock
+        // everything to prevent race condition in updating reference counters.
+        std::lock_guard<std::mutex> guard(index_lock);
+        const auto& box_pair = candidate_box_pairs[i];
+        const auto& a = box_pair.first;
+        const auto& b = box_pair.second;
+        fa = a.handle()-T.begin();
+        fb = b.handle()-T.begin();
+      }
+      assert(fa < T.size());
+      assert(fb < T.size());
 
+      // Lock triangles
       std::lock_guard<std::mutex> guard_A(triangle_locks[fa]);
       std::lock_guard<std::mutex> guard_B(triangle_locks[fb]);
-      const Triangle_3& A = *a.handle();
-      const Triangle_3& B = *b.handle();
+
+      // Lock vertices
+      std::list<std::lock_guard<std::mutex> > guard_vertices;
+      {
+        std::vector<typename DerivedF::Scalar> unique_vertices;
+        std::vector<size_t> tmp1, tmp2;
+        igl::unique({F(fa,0), F(fa,1), F(fa,2), F(fb,0), F(fb,1), F(fb,2)},
+            unique_vertices, tmp1, tmp2);
+        std::for_each(unique_vertices.begin(), unique_vertices.end(),
+            [&](const typename DerivedF::Scalar& vi) {
+            guard_vertices.emplace_back(vertex_locks[vi]);
+            });
+      }
+
+      const Triangle_3& A = T[fa];
+      const Triangle_3& B = T[fb];
 
       // Number of combinatorially shared vertices
       Index comb_shared_vertices = 0;
@@ -941,7 +963,7 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
         single_shared_vertex(A,B,fa,fb,shared[0].first,shared[0].second);
       }else
       {
-        intersect(*a.handle(),*b.handle(),fa,fb);
+        intersect(A,B,fa,fb);
       }
     }
   };
