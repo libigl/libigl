@@ -49,8 +49,9 @@ namespace igl
   //    model      model matrix
   //    proj       projection matrix
   //    viewport   vieweport vector
-  //    shoot_ray  function handle that outputs hits of a given ray against a
-  //      mesh (embedded in function handles as captured variable/data)
+  //    shoot_ray  function handle that outputs first hit of a given ray
+  //      against a mesh (embedded in function handles as captured
+  //      variable/data)
   // Outputs:
   //    obj        3d unprojected mouse point in mesh
   //    hits       vector of hits

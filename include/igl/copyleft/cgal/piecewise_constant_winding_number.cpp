@@ -24,6 +24,6 @@ IGL_INLINE bool igl::copyleft::cgal::piecewise_constant_winding_number(
   // resolve intersections
   remesh_self_intersections(V,F,{},VV,FF,IF,J,IM);
   // _apply_ duplicate vertex mapping IM to FF
-  for_each(FF.data(),FF.data()+FF.size(),[&IM](int & a){a=IM(a);});
-  return piecewise_constant_winding_number(FF);
+  std::for_each(FF.data(),FF.data()+FF.size(),[&IM](int & a){a=IM(a);});
+  return igl::piecewise_constant_winding_number(FF);
 }
