@@ -285,14 +285,6 @@ private:
         int & i,
         RowVectorDIMS & c) const;
 public:
-      static
-      inline void barycentric_coordinates(
-        const RowVectorDIMS & p, 
-        const RowVectorDIMS & a, 
-        const RowVectorDIMS & b, 
-        const RowVectorDIMS & c,
-        Eigen::Matrix<Scalar,1,3> & bary);
-public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 }
@@ -300,10 +292,12 @@ public:
 // Implementation
 #include "EPS.h"
 #include "barycenter.h"
+#include "barycentric_coordinates.h"
 #include "colon.h"
 #include "colon.h"
 #include "doublearea.h"
 #include "matlab_format.h"
+#include "point_simplex_squared_distance.h"
 #include "project_to_line_segment.h"
 #include "sort.h"
 #include "volume.h"
@@ -1030,101 +1024,11 @@ inline void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
 {
   using namespace Eigen;
   using namespace std;
-
-  // Simplex size
-  const size_t ss = Ele.cols();
-  // Only one element per node
-  // plane unit normal
-  bool inside_triangle = false;
-  Scalar d_j = std::numeric_limits<Scalar>::infinity();
-  RowVectorDIMS pp;
-  // Only consider triangles, and non-degenerate triangles at that
-  if(ss == 3 && 
-      Ele(m_primitive,0) != Ele(m_primitive,1) && 
-      Ele(m_primitive,1) != Ele(m_primitive,2) && 
-      Ele(m_primitive,2) != Ele(m_primitive,0))
-  {
-    assert(DIM == 3 && "Only implemented for 3D triangles");
-    typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
-    // can't be const because of annoying DIM template
-    RowVector3S v10(0,0,0);
-    v10.head(DIM) = (V.row(Ele(m_primitive,1))- V.row(Ele(m_primitive,0)));
-    RowVector3S v20(0,0,0);
-    v20.head(DIM) = (V.row(Ele(m_primitive,2))- V.row(Ele(m_primitive,0)));
-    const RowVectorDIMS n = (v10.cross(v20)).head(DIM);
-    Scalar n_norm = n.norm();
-    if(n_norm > 0)
-    {
-      const RowVectorDIMS un = n/n.norm();
-      // vector to plane
-      const RowVectorDIMS bc = 
-        1./3.*
-        ( V.row(Ele(m_primitive,0))+
-          V.row(Ele(m_primitive,1))+
-          V.row(Ele(m_primitive,2)));
-      const auto & v = p-bc;
-      // projected point on plane
-      d_j = v.dot(un);
-      pp = p - d_j*un;
-      // determine if pp is inside triangle
-      Eigen::Matrix<Scalar,1,3> b;
-      barycentric_coordinates(
-            pp,
-            V.row(Ele(m_primitive,0)),
-            V.row(Ele(m_primitive,1)),
-            V.row(Ele(m_primitive,2)),
-            b);
-      inside_triangle = fabs(fabs(b(0)) + fabs(b(1)) + fabs(b(2)) - 1.) <= 1e-10;
-    }
-  }
-  const auto & point_point_squared_distance = [&](const RowVectorDIMS & s)
-  {
-    const Scalar sqr_d_s = (p-s).squaredNorm();
-    set_min(p,sqr_d_s,m_primitive,s,sqr_d,i,c);
-  };
-  if(inside_triangle)
-  {
-    // point-triangle squared distance
-    const Scalar sqr_d_j = d_j*d_j;
-    //cout<<"point-triangle..."<<endl;
-    set_min(p,sqr_d_j,m_primitive,pp,sqr_d,i,c);
-  }else
-  {
-    if(ss >= 2)
-    {
-      // point-segment distance
-      // number of edges
-      size_t ne = ss==3?3:1;
-      for(size_t x = 0;x<ne;x++)
-      {
-        const size_t e1 = Ele(m_primitive,(x+1)%ss);
-        const size_t e2 = Ele(m_primitive,(x+2)%ss);
-        const RowVectorDIMS & s = V.row(e1);
-        const RowVectorDIMS & d = V.row(e2);
-        // Degenerate edge
-        if(e1 == e2 || (s-d).squaredNorm()==0)
-        {
-          // only consider once
-          if(e1 < e2)
-          {
-            point_point_squared_distance(s);
-          }
-          continue;
-        }
-        Matrix<Scalar,1,1> sqr_d_j_x(1,1);
-        Matrix<Scalar,1,1> t(1,1);
-        project_to_line_segment(p,s,d,t,sqr_d_j_x);
-        const RowVectorDIMS q = s+t(0)*(d-s);
-        set_min(p,sqr_d_j_x(0),m_primitive,q,sqr_d,i,c);
-      }
-    }else
-    {
-      // So then Ele is just a list of points...
-      assert(ss == 1);
-      const RowVectorDIMS & s = V.row(Ele(m_primitive,0));
-      point_point_squared_distance(s);
-    }
-  }
+  RowVectorDIMS c_candidate;
+  Scalar sqr_d_candidate;
+  igl::point_simplex_squared_distance<DIM>(
+    p,V,Ele,m_primitive,sqr_d_candidate,c_candidate);
+  set_min(p,sqr_d_candidate,m_primitive,c_candidate,sqr_d,i,c);
 }
 
 
@@ -1158,30 +1062,6 @@ inline void igl::AABB<DerivedV,DIM>::set_min(
 
 
 template <typename DerivedV, int DIM>
-inline void
-igl::AABB<DerivedV,DIM>::barycentric_coordinates(
-  const RowVectorDIMS & p, 
-  const RowVectorDIMS & a, 
-  const RowVectorDIMS & b, 
-  const RowVectorDIMS & c,
-  Eigen::Matrix<Scalar,1,3> & bary)
-{
-  // http://gamedev.stackexchange.com/a/23745
-  const RowVectorDIMS v0 = b - a;
-  const RowVectorDIMS v1 = c - a;
-  const RowVectorDIMS v2 = p - a;
-  Scalar d00 = v0.dot(v0);
-  Scalar d01 = v0.dot(v1);
-  Scalar d11 = v1.dot(v1);
-  Scalar d20 = v2.dot(v0);
-  Scalar d21 = v2.dot(v1);
-  Scalar denom = d00 * d11 - d01 * d01;
-  bary(1) = (d11 * d20 - d01 * d21) / denom;
-  bary(2) = (d00 * d21 - d01 * d20) / denom;
-  bary(0) = 1.0f - bary(1) - bary(2);
-}
-
-template <typename DerivedV, int DIM>
 inline bool 
 igl::AABB<DerivedV,DIM>::intersect_ray(
   const Eigen::PlainObjectBase<DerivedV> & V,
@@ -1205,7 +1085,7 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
     // Actually process elements
     assert((Ele.size() == 0 || Ele.cols() == 3) && "Elements should be triangles");
     // Cheesecake way of hitting element
-    return ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive).eval(),hits);
+    return ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive),hits);
   }
   std::vector<igl::Hit> left_hits;
   std::vector<igl::Hit> right_hits;
@@ -1252,7 +1132,7 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
       assert((Ele.size() == 0 || Ele.cols() == 3) && "Elements should be triangles");
       igl::Hit leaf_hit;
       if(
-        ray_mesh_intersect(origin,dir,V,Ele.row(tree->m_primitive).eval(),leaf_hit)&&
+        ray_mesh_intersect(origin,dir,V,Ele.row(tree->m_primitive),leaf_hit)&&
         leaf_hit.t < hit.t)
       {
         hit = leaf_hit;
@@ -1306,7 +1186,7 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
     // Actually process elements
     assert((Ele.size() == 0 || Ele.cols() == 3) && "Elements should be triangles");
     // Cheesecake way of hitting element
-    return ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive).eval(),hit);
+    return ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive),hit);
   }
 
   // Doesn't seem like smartly choosing left before/after right makes a
