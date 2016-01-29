@@ -398,6 +398,10 @@ inline void igl::AABB<DerivedV,DIM>::init(
 {
   using namespace Eigen;
   using namespace std;
+  if(V.size() == 0 || Ele.size() == 0 || I.size() == 0)
+  {
+    return;
+  }
   assert(DIM == V.cols() && "V.cols() should matched declared dimension");
   //const Scalar inf = numeric_limits<Scalar>::infinity();
   m_box = AlignedBox<Scalar,DIM>();
