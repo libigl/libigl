@@ -34,6 +34,9 @@ We use the [Eigen](http://eigen.tuxfamily.org) library heavily in our code. Our
 group prototypes a lot in MATLAB, and we have a useful [MATLAB to libigl+Eigen
 conversion table](matlab-to-eigen.html).
 
+We regularly test compiling our library on Mac OS X with clang, Linux with gcc
+and Windows with Visual Studio 2015 Community Edition.
+
 ## Tutorial
 
 As of version 1.0, libigl includes an introductory
