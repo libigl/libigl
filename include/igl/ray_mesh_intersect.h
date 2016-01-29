@@ -23,10 +23,10 @@ namespace igl
     typename DerivedV, 
     typename DerivedF> 
   IGL_INLINE bool ray_mesh_intersect(
-    const Eigen::PlainObjectBase<Derivedsource> & source,
-    const Eigen::PlainObjectBase<Deriveddir> & dir,
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     std::vector<igl::Hit> & hits);
   // Outputs:
   //   hit  first hit, set only if it exists
@@ -37,10 +37,10 @@ namespace igl
     typename DerivedV, 
     typename DerivedF> 
   IGL_INLINE bool ray_mesh_intersect(
-    const Eigen::PlainObjectBase<Derivedsource> & source,
-    const Eigen::PlainObjectBase<Deriveddir> & dir,
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     igl::Hit & hit);
 }
 #ifndef IGL_STATIC_LIBRARY
