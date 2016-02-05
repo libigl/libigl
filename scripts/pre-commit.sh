@@ -2,7 +2,7 @@
 #
 # To enable this hook, issue:
 #
-#     ln -s scripts/pre-commit.sh .git/hooks/pre-commit
+#     ln -s ../../scripts/pre-commit.sh .git/hooks/pre-commit
 #
 RED='\033[0;31m'
 NC='\033[0m'
