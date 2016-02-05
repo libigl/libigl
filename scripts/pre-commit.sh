@@ -9,8 +9,11 @@ NC='\033[0m'
 
 ## Throw error if any files contain "std::__1"
 
+
 # list of changed files
 CHANGED=$(git diff --cached --name-only --diff-filter=ACM)
+# Ignore this file!
+CHANGED=$(echo "$CHANGED" | grep -v "scripts/pre-commit.sh")
 # Changed files containing the namespace "std::__1"
 STD1=$(grep -Il "std::__1" $CHANGED)
 if  [ $? -eq 0 ]; then
