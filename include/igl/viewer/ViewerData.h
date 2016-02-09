@@ -44,8 +44,10 @@ public:
     DIRTY_ALL            = 0x03FF
   };
 
-  // Empy all fields
+  // Empty all fields but keep data options
   IGL_INLINE void clear();
+  // Reset all fields to default
+  IGL_INLINE void reset();
 
   // Change the visualization mode, invalidating the cache if necessary
   IGL_INLINE void set_face_based(bool newvalue);
@@ -147,8 +149,22 @@ public:
   // Enable per-face or per-vertex properties
   bool face_based;
 
-  // If enabled hide mesh
-  bool hidden;
+  // Visualization options
+  bool show_overlay;
+  bool show_overlay_depth;
+  bool show_texture;
+  bool show_faces;
+  bool show_lines;
+  bool show_vertid;
+  bool show_faceid;
+  bool invert_normals;
+  bool depth_test;
+  bool visible;
+
+  // Point size / line width
+  float point_size;
+  float line_width;
+
   /*********************************/
 };
 

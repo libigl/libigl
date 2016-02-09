@@ -49,18 +49,6 @@ namespace igl {
       SERIALIZE_MEMBER(camera_center);
       SERIALIZE_MEMBER(camera_up);
 
-      SERIALIZE_MEMBER(show_faces);
-      SERIALIZE_MEMBER(show_lines);
-      SERIALIZE_MEMBER(invert_normals);
-      SERIALIZE_MEMBER(show_overlay);
-      SERIALIZE_MEMBER(show_overlay_depth);
-      SERIALIZE_MEMBER(show_vertid);
-      SERIALIZE_MEMBER(show_faceid);
-      SERIALIZE_MEMBER(show_texture);
-      SERIALIZE_MEMBER(depth_test);
-
-      SERIALIZE_MEMBER(point_size);
-      SERIALIZE_MEMBER(line_width);
       SERIALIZE_MEMBER(is_animating);
       SERIALIZE_MEMBER(animation_max_fps);
 
@@ -190,10 +178,10 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
   using namespace std;
   using namespace Eigen;
 
-  if(data.hidden)
+  if(!data.visible)
     return;
 
-  if (depth_test)
+  if (data.depth_test)
     glEnable(GL_DEPTH_TEST);
   else
     glDisable(GL_DEPTH_TEST);
@@ -201,7 +189,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
   /* Bind and potentially refresh mesh/line/point data */
   if (data.dirty)
   {
-    opengl.set_data(data, invert_normals);
+    opengl.set_data(data,data.invert_normals);
     data.dirty = ViewerData::DIRTY_NONE;
   }
   opengl.bind_mesh();
@@ -274,25 +262,25 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
   if (data.V.rows()>0)
   {
     // Render fill
-    if (show_faces)
+    if (data.show_faces)
     {
       // Texture
-      glUniform1f(texture_factori, show_texture ? 1.0f : 0.0f);
+      glUniform1f(texture_factori,data.show_texture ? 1.0f : 0.0f);
       opengl.draw_mesh(true);
       glUniform1f(texture_factori, 0.0f);
     }
 
     // Render wireframe
-    if (show_lines)
+    if (data.show_lines)
     {
-      glLineWidth(line_width);
+      glLineWidth(data.line_width);
       glUniform4f(fixed_colori, line_color[0], line_color[1],
         line_color[2], 1.0f);
       opengl.draw_mesh(false);
       glUniform4f(fixed_colori, 0.0f, 0.0f, 0.0f, 0.0f);
     }
 
-    if (show_vertid)
+    if (data.show_vertid)
     {
       textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
       for (int i=0; i<data.V.rows(); ++i)
@@ -300,7 +288,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
       textrenderer.EndDraw();
     }
 
-    if (show_faceid)
+    if (data.show_faceid)
     {
       textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
 
@@ -317,9 +305,9 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
     }
   }
 
-  if (show_overlay)
+  if (data.show_overlay)
   {
-    if (show_overlay_depth)
+    if (data.show_overlay_depth)
       glEnable(GL_DEPTH_TEST);
     else
       glDisable(GL_DEPTH_TEST);
@@ -336,7 +324,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
       // This must be enabled, otherwise glLineWidth has no effect
       glEnable(GL_LINE_SMOOTH);
-      glLineWidth(line_width);
+      glLineWidth(data.line_width);
 
       opengl.draw_overlay_lines();
     }
@@ -351,7 +339,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
       glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
-      glPointSize(point_size);
+      glPointSize(data.point_size);
 
       opengl.draw_overlay_points();
     }
@@ -371,12 +359,28 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
 }
 
 IGL_INLINE void igl::viewer::ViewerCore::draw_buffer(ViewerData& data,
-  OpenGL_state& opengl,
-  bool update_matrices,
-  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
-  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
-  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
-  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A)
+                                                     OpenGL_state& opengl,
+                                                     bool update_matrices,
+                                                     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+                                                     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+                                                     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
+                                                     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A)
+{
+  std::vector<ViewerData*> dataBuffer;
+  dataBuffer.push_back(&data);
+  std::vector<OpenGL_state*> openglBuffer;
+  openglBuffer.push_back(&opengl);
+
+  draw_buffer(dataBuffer,openglBuffer,update_matrices,R,G,B,A);
+}
+
+IGL_INLINE void igl::viewer::ViewerCore::draw_buffer(std::vector<ViewerData*>& data,
+                                                      std::vector<OpenGL_state*>& opengl,
+                                                      bool update_matrices,
+                                                      Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+                                                      Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+                                                      Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
+                                                      Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A)
 {
   assert(R.rows() == G.rows() && G.rows() == B.rows() && B.rows() == A.rows());
   assert(R.cols() == G.cols() && G.cols() == B.cols() && B.cols() == A.cols());
@@ -413,7 +417,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw_buffer(ViewerData& data,
   glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 
   // Clear the buffer
-  glClearColor(background_color(0), background_color(1), background_color(2), 0.f);
+  glClearColor(background_color(0),background_color(1),background_color(2),0.f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Save old viewport
@@ -421,7 +425,10 @@ IGL_INLINE void igl::viewer::ViewerCore::draw_buffer(ViewerData& data,
   viewport << 0,0,x,y;
 
   // Draw
-  draw(data,opengl,update_matrices);
+  for(int i=0;i<data.size();i++)
+  {
+    draw(*data[i],*opengl[i],update_matrices);
+  }
 
   // Restore viewport
   viewport = viewport_ori;
@@ -488,20 +495,6 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
   camera_center << 0, 0, 0;
   camera_up << 0, 1, 0;
 
-  // Default visualization options
-  show_faces = true;
-  show_lines = true;
-  invert_normals = false;
-  show_overlay = true;
-  show_overlay_depth = true;
-  show_vertid = false;
-  show_faceid = false;
-  show_texture = false;
-  depth_test = true;
-
-  // Default point size / line width
-  point_size = 30;
-  line_width = 0.5f;
   is_animating = false;
   animation_max_fps = 30.;
 }

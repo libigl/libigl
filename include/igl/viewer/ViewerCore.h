@@ -78,6 +78,14 @@ public:
                               Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
                               Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
 
+  IGL_INLINE void draw_buffer(std::vector<ViewerData*>& data,
+                              std::vector<OpenGL_state*>& opengl,
+                              bool update_matrices,
+                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
+                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
+
   // ------------------- Properties
 
   // Text rendering helper
@@ -120,21 +128,6 @@ public:
   float camera_view_angle;
   float camera_dnear;
   float camera_dfar;
-
-  // Visualization options
-  bool show_overlay;
-  bool show_overlay_depth;
-  bool show_texture;
-  bool show_faces;
-  bool show_lines;
-  bool show_vertid;
-  bool show_faceid;
-  bool invert_normals;
-  bool depth_test;
-
-  // Point size / line width
-  float point_size;
-  float line_width;
 
   // Animation
   bool is_animating;

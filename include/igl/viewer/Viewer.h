@@ -46,8 +46,8 @@ namespace viewer
   public:
     GLFWwindow* window;
 
-    IGL_INLINE int launch(bool resizable = true,bool fullscreen = false);
-    IGL_INLINE int launch_init(bool resizable = true,bool fullscreen = false, int width = 1800, int height = 1200);
+    IGL_INLINE int launch(bool resizable = true,bool fullscreen = false,int width = 1200,int height = 768);
+    IGL_INLINE int launch_init(bool resizable = true,bool fullscreen = false, int width = 1200, int height = 768);
     IGL_INLINE bool launch_rendering(bool loop = true);
     IGL_INLINE void launch_shut();
 
@@ -58,9 +58,10 @@ namespace viewer
 
     // Stores all the data that should be visualized
     ViewerData data;
-    unsigned int active_data_id;
+    int active_data_id;
     // Don't access this directly but rather use the functions get_mesh() or set_active_mesh()
     std::vector<ViewerData> data_buffer;
+    std::vector<std::string> data_ids;
 
     // Stores the vbos indices and opengl related settings
     std::vector<OpenGL_state> opengl;
@@ -83,6 +84,7 @@ namespace viewer
 
     nanogui::FormHelper* ngui;
     nanogui::Screen* screen;
+    nanogui::ComboBox* currentDataCB;
 
     // Keep track of the global position of the scrollwheel
     float scroll_position;
@@ -95,15 +97,16 @@ namespace viewer
     ~Viewer();
 
     // Add a new mesh instance
-    IGL_INLINE unsigned int add_mesh();
-    IGL_INLINE unsigned int add_mesh(const char* mesh_file_name);
+    IGL_INLINE unsigned int add_mesh(const std::string& id);
+    IGL_INLINE unsigned int add_mesh(const char* mesh_file_name,const std::string& id);
     // Get the data of a specific mesh instance
     IGL_INLINE ViewerData& get_mesh(unsigned int data_id);
     // Set the data of a specific mesh instance
     IGL_INLINE bool set_mesh(unsigned int data_id,const ViewerData& data);
     // Remove the data of a specific mesh instance
     IGL_INLINE bool remove_mesh(unsigned int data_id);
-    // Set the active mesh instance exposed as a copy in data
+    // Get/Set the active mesh instance exposed as a copy in data
+    IGL_INLINE unsigned int get_active_mesh();
     IGL_INLINE bool set_active_mesh(unsigned int data_id);
 
     // Mesh IO

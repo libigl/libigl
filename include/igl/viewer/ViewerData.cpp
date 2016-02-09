@@ -48,9 +48,20 @@ namespace igl {
 
       SERIALIZE_MEMBER(dirty);
 
+      SERIALIZE_MEMBER(show_overlay);
+      SERIALIZE_MEMBER(show_overlay_depth);
+      SERIALIZE_MEMBER(show_texture);
+      SERIALIZE_MEMBER(show_faces);
+      SERIALIZE_MEMBER(show_lines);
+      SERIALIZE_MEMBER(show_vertid);
+      SERIALIZE_MEMBER(show_faceid);
+      SERIALIZE_MEMBER(invert_normals);
+      SERIALIZE_MEMBER(depth_test);
       SERIALIZE_MEMBER(face_based);
+      SERIALIZE_MEMBER(visible);
 
-      SERIALIZE_MEMBER(hidden);
+      SERIALIZE_MEMBER(point_size);
+      SERIALIZE_MEMBER(line_width);
     }
 
     template<>
@@ -72,7 +83,7 @@ namespace igl {
 IGL_INLINE igl::viewer::ViewerData::ViewerData()
 : dirty(DIRTY_ALL)
 {
-  clear();
+  reset();
 };
 
 IGL_INLINE void igl::viewer::ViewerData::set_face_based(bool newvalue)
@@ -356,9 +367,28 @@ IGL_INLINE void igl::viewer::ViewerData::clear()
   points                  = Eigen::MatrixXd (0,6);
   labels_positions        = Eigen::MatrixXd (0,3);
   labels_strings.clear();
+}
 
+IGL_INLINE void igl::viewer::ViewerData::reset()
+{
+  clear();
+
+  // Default visualization options
+  show_faces = true;
+  show_lines = true;
+  invert_normals = false;
+  show_overlay = true;
+  show_overlay_depth = true;
+  show_vertid = false;
+  show_faceid = false;
+  show_texture = false;
+  depth_test = true;
   face_based = false;
-  hidden = false;
+  visible = true;
+
+  // Default point size / line width
+  point_size = 30;
+  line_width = 0.5f;
 }
 
 IGL_INLINE void igl::viewer::ViewerData::compute_normals()

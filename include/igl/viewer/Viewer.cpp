@@ -178,6 +178,7 @@ namespace igl {
 
       SERIALIZE_MEMBER(core);
       SERIALIZE_MEMBER(data_buffer);
+      SERIALIZE_MEMBER(data_ids);
       SERIALIZE_MEMBER(active_data_id);
     }
 
@@ -213,7 +214,7 @@ namespace viewer
 
     // ---------------------- LOADING ----------------------
 
-  #ifdef ENABLE_SERIALIZATION
+#ifdef ENABLE_SERIALIZATION
     {
       ngui->addGroup("Workspace");
 
@@ -225,15 +226,15 @@ namespace viewer
 
       Button* loadButton = new Button(container,"Load");
       loadButton->setFixedHeight(25);
-      loadButton->setCallback([&](){this->load_scene();});
+      loadButton->setCallback([&]() {this->load_scene();});
 
       Button* saveButton = new Button(container,"Save");
       saveButton->setFixedHeight(25);
-      saveButton->setCallback([&](){this->save_scene();});
+      saveButton->setCallback([&]() {this->save_scene();});
     }
-  #endif
+#endif
 
-  #ifdef ENABLE_IO
+#ifdef ENABLE_IO
     {
       ngui->addGroup("Mesh");
 
@@ -245,26 +246,51 @@ namespace viewer
 
       Button* loadButton = new Button(container,"Load");
       loadButton->setFixedHeight(25);
-      loadButton->setCallback([&](){this->open_dialog_load_mesh();});
+      loadButton->setCallback([&]() {this->open_dialog_load_mesh();});
 
       Button* saveButton = new Button(container,"Save");
       saveButton->setFixedHeight(25);
-      saveButton->setCallback([&](){this->open_dialog_save_mesh();});
+      saveButton->setCallback([&]() {this->open_dialog_save_mesh();});
     }
-  #endif
+#endif
 
     ngui->addGroup("Viewing Options");
-    ngui->addButton("Center object",[&](){this->core.align_camera_center(this->data.V,this->data.F);});
-    ngui->addButton("Snap canonical view",[&]()
+
+    ngui->addButton("Center object",[&]() {this->core.align_camera_center(this->data.V,this->data.F);});
+    ngui->addButton("Canonical view",[&]()
     {
       this->snap_to_canonical_quaternion();
     });
-    ngui->addVariable("Zoom", core.camera_zoom);
-    ngui->addVariable("Orthographic view", core.orthographic);
+    ngui->addVariable("Zoom",core.camera_zoom);
+    ngui->addVariable("Orthographic view",core.orthographic);
+
+    ngui->addVariable("Background",(nanogui::Color &) core.background_color);
+    ngui->addVariable("Line color",(nanogui::Color &) core.line_color);
+    ngui->addVariable("Shininess",core.shininess);
 
     ngui->addGroup("Draw options");
 
-    ngui->addVariable<bool>("Face-based", [&](bool checked)
+    currentDataCB = new ComboBox(window,data_ids);
+    currentDataCB->setCallback([&](int id){
+      if(id != active_data_id)
+      {
+        currentDataCB->setSelectedIndex(id);
+        set_active_mesh(id);
+      }
+    });
+    currentDataCB->setFixedHeight(20);
+    currentDataCB->setFontSize(16);
+    ngui->addWidget("Active Mesh",currentDataCB);
+
+    ngui->addVariable<bool>("Visible",[&](bool checked)
+    {
+      data.visible = checked;
+    },[&]()
+    {
+      return this->data.visible;
+    });
+
+    ngui->addVariable<bool>("Face-based",[&](bool checked)
     {
       data.set_face_based(checked);
     },[&]()
@@ -272,28 +298,54 @@ namespace viewer
       return this->data.face_based;
     });
 
-    ngui->addVariable("Show texture",core.show_texture);
-
-    ngui->addVariable<bool>("Invert normals",[&](bool checked)
-    {
-      data.dirty |= ViewerData::DIRTY_NORMAL;
-      this->core.invert_normals = checked;
-    },[&]()
-    {
-      return this->core.invert_normals;
+    ngui->addVariable<bool>("Show texture",[&](bool checked) {
+      data.show_texture = checked;
+    },[&]() {
+      return data.show_texture;
     });
 
-    ngui->addVariable("Show overlay", core.show_overlay);
-    ngui->addVariable("Show overlay depth", core.show_overlay_depth);
-    ngui->addVariable("Background", (nanogui::Color &) core.background_color);
-    ngui->addVariable("Line color", (nanogui::Color &) core.line_color);
-    ngui->addVariable("Shininess", core.shininess);
+    ngui->addVariable<bool>("Invert normals",[&](bool checked){
+      data.dirty |= ViewerData::DIRTY_NORMAL;
+      this->data.invert_normals = checked;
+    },[&](){
+      return this->data.invert_normals;
+    });
 
-    ngui->addGroup("Overlays");
-    ngui->addVariable("Wireframe", core.show_lines);
-    ngui->addVariable("Fill", core.show_faces);
-    ngui->addVariable("Show vertex labels", core.show_vertid);
-    ngui->addVariable("Show faces labels", core.show_faceid);
+    ngui->addVariable<bool>("Wireframe",[&](bool checked) {
+      data.show_lines = checked;
+    },[&]() {
+      return data.show_lines;
+    });
+
+    ngui->addVariable<bool>("Fill",[&](bool checked) {
+      data.show_faces = checked;
+    },[&]() {
+      return data.show_faces;
+    });
+
+    ngui->addVariable<bool>("Show overlay",[&](bool checked) {
+      data.show_overlay = checked;
+    },[&]() {
+      return data.show_overlay;
+    });
+
+    ngui->addVariable<bool>("Show overlay depth",[&](bool checked) {
+      data.show_overlay_depth = checked;
+    },[&]() {
+      return data.show_overlay_depth;
+    });
+
+    ngui->addVariable<bool>("Show vertex labels",[&](bool checked) {
+      data.show_vertid = checked;
+    },[&]() {
+      return data.show_vertid;
+    });
+
+    ngui->addVariable<bool>("Show faces labels",[&](bool checked) {
+      data.show_faceid = checked;
+    },[&]() {
+      return data.show_faceid;
+    });
 
     screen->performLayout();
 
@@ -310,9 +362,11 @@ namespace viewer
   {
     ngui = nullptr;
     screen = nullptr;
+    currentDataCB = nullptr;
 
     active_data_id = 0;
     data_buffer.push_back(ViewerData());
+    data_ids.push_back("mesh");
     data = data_buffer[active_data_id];
 
     // Temporary variables initialization
@@ -363,9 +417,13 @@ namespace viewer
       plugins[i]->shutdown();
   }
 
-  IGL_INLINE unsigned int Viewer::add_mesh()
+  IGL_INLINE unsigned int Viewer::add_mesh(const std::string& id)
   {
     data_buffer.push_back(ViewerData());
+    
+    data_ids.push_back(id);
+    currentDataCB->setItems(data_ids);
+    screen->performLayout();
     
     opengl.push_back(OpenGL_state());
     opengl[opengl.size()-1].init();
@@ -373,14 +431,14 @@ namespace viewer
     return opengl.size()-1;
   }
 
-  IGL_INLINE unsigned int Viewer::add_mesh(const char* mesh_file_name)
+  IGL_INLINE unsigned int Viewer::add_mesh(const char* mesh_file_name,const std::string& id)
   {
     unsigned int bakId = active_data_id;
-    unsigned int id = add_mesh();
-    set_active_mesh(id);
+    unsigned int mid = add_mesh(id);
+    set_active_mesh(mid);
     load_mesh_from_file(mesh_file_name);
     set_active_mesh(bakId);
-    return id;
+    return mid;
   }
 
   IGL_INLINE ViewerData& Viewer::get_mesh(unsigned int data_id)
@@ -396,16 +454,25 @@ namespace viewer
   IGL_INLINE bool Viewer::remove_mesh(unsigned int data_id)
   {
     assert(data_buffer.size() > data_id && "data_id out of range");
-    assert(data_id != active_data_id > data_id && "active mesh cannot be removed!");
+    assert(active_data_id != data_id && "active mesh cannot be removed!");
     
     if(active_data_id > data_id)
       active_data_id--;
 
     data_buffer.erase(data_buffer.begin()+data_id);
+    data_ids.erase(data_ids.begin()+data_id);
     opengl[data_id].free();
     opengl.erase(opengl.begin()+data_id);
 
+    currentDataCB->setItems(data_ids);
+    screen->performLayout();
+
     return true;
+  }
+
+  IGL_INLINE unsigned int Viewer::get_active_mesh()
+  {
+    return active_data_id;
   }
 
   IGL_INLINE bool Viewer::set_active_mesh(unsigned int data_id)
@@ -415,6 +482,8 @@ namespace viewer
     data_buffer[active_data_id] = ViewerData(data);
     active_data_id = data_id;
     data = data_buffer[active_data_id];
+
+    currentDataCB->setSelectedIndex(active_data_id);
 
     return true;
   }
@@ -1015,10 +1084,10 @@ namespace viewer
     return;
   }
 
-  IGL_INLINE int Viewer::launch(bool resizable,bool fullscreen)
+  IGL_INLINE int Viewer::launch(bool resizable,bool fullscreen,int width,int height)
   {
     // TODO return values are being ignored...
-    launch_init(resizable,fullscreen);
+    launch_init(resizable,fullscreen,width,height);
     launch_rendering(true);
     launch_shut();
     return EXIT_SUCCESS;
