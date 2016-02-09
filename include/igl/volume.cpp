@@ -46,7 +46,7 @@ IGL_INLINE void igl::volume(
   const auto & AmD = A-D;
   const auto & BmD = B-D;
   const auto & CmD = C-D;
-  Eigen::PlainObjectBase<DerivedA> BmDxCmD;
+  DerivedA BmDxCmD;
   cross(BmD.eval(),CmD.eval(),BmDxCmD);
   const auto & AmDdx = (AmD.array() * BmDxCmD.array()).rowwise().sum();
   vol = -AmDdx/6.;

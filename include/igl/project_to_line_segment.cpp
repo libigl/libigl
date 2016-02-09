@@ -1,19 +1,19 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "project_to_line_segment.h"
 #include "project_to_line.h"
 #include <Eigen/Core>
 
 template <
-  typename DerivedP, 
-  typename DerivedS, 
-  typename DerivedD, 
-  typename Derivedt, 
+  typename DerivedP,
+  typename DerivedS,
+  typename DerivedD,
+  typename Derivedt,
   typename DerivedsqrD>
 IGL_INLINE void igl::project_to_line_segment(
   const Eigen::PlainObjectBase<DerivedP> & P,
@@ -28,7 +28,7 @@ IGL_INLINE void igl::project_to_line_segment(
 #pragma omp parallel for if (np>10000)
   for(int p = 0;p<np;p++)
   {
-    const Eigen::PlainObjectBase<DerivedS> Pp = P.row(p);
+    const DerivedP Pp = P.row(p);
     if(t(p)<0)
     {
       sqrD(p) = (Pp-S).squaredNorm();

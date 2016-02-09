@@ -21,12 +21,12 @@ namespace igl
   // Output:
   //   CN  #F*3 by 3 eigen Matrix of mesh vertex 3D normals, where the normal
   //     for corner F(i,j) is at CN(i*3+j,:) 
-  template <typename DerivedV, typename DerivedF>
+  template <typename DerivedV, typename DerivedF, typename DerivedCN>
   IGL_INLINE void per_corner_normals(
     const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedF>& F,
     const double corner_threshold,
-    Eigen::PlainObjectBase<DerivedV> & CN);
+    Eigen::PlainObjectBase<DerivedCN> & CN);
   // Other Inputs:
   //   FN  #F by 3 eigen Matrix of face normals
   template <
@@ -42,14 +42,19 @@ namespace igl
     Eigen::PlainObjectBase<DerivedCN> & CN);
   // Other Inputs:
   //   VF  map from vertices to list of incident faces
-  template <typename DerivedV, typename DerivedF, typename IndexType>
+  template <
+    typename DerivedV, 
+    typename DerivedF, 
+    typename DerivedFN, 
+    typename IndexType,
+    typename DerivedCN>
   IGL_INLINE void per_corner_normals(
     const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedF>& F,
-    const Eigen::PlainObjectBase<DerivedV>& FN,
+    const Eigen::PlainObjectBase<DerivedFN>& FN,
     const std::vector<std::vector<IndexType> >& VF,
     const double corner_threshold,
-    Eigen::PlainObjectBase<DerivedV> & CN);
+    Eigen::PlainObjectBase<DerivedCN> & CN);
 }
 
 #ifndef IGL_STATIC_LIBRARY

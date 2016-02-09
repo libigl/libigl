@@ -23,7 +23,6 @@ IGL_INLINE void igl::unproject_ray(
   Eigen::PlainObjectBase<Deriveds> & s,
   Eigen::PlainObjectBase<Deriveddir> & dir)
 {
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
   // Source and direction on screen

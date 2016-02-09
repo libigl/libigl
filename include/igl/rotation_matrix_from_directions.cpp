@@ -11,20 +11,14 @@
 #include <iostream>
 
 template <typename Scalar>
-IGL_INLINE Eigen::Matrix<Scalar, 3, 3> igl::rotation_matrix_from_directions(const Eigen::Matrix<Scalar, 3, 1> v0,
-                                                                        const Eigen::Matrix<Scalar, 3, 1> v1,
-                                                                        bool normalized)
+IGL_INLINE Eigen::Matrix<Scalar, 3, 3> igl::rotation_matrix_from_directions(
+  const Eigen::Matrix<Scalar, 3, 1> v0,
+  const Eigen::Matrix<Scalar, 3, 1> v1)
 {
   Eigen::Matrix<Scalar, 3, 3> rotM;
   const double epsilon=1e-8;
-  // if (!normalized)
-//   {
-    // v0.normalize();
-    // v1.normalize();
-  // }
   Scalar dot=v0.normalized().dot(v1.normalized());
   ///control if there is no rotation
-//  if (dot>((double)1-epsilon))
   if ((v0-v1).norm()<epsilon)
   {
     rotM = Eigen::Matrix<Scalar, 3, 3>::Identity();
@@ -65,5 +59,5 @@ IGL_INLINE Eigen::Matrix<Scalar, 3, 3> igl::rotation_matrix_from_directions(cons
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template Eigen::Matrix<double, 3, 3, 0, 3, 3> igl::rotation_matrix_from_directions<double>(const Eigen::Matrix<double, 3, 1, 0, 3, 1>, const Eigen::Matrix<double, 3, 1, 0, 3, 1>, const bool);
+template Eigen::Matrix<double, 3, 3, 0, 3, 3> igl::rotation_matrix_from_directions<double>(const Eigen::Matrix<double, 3, 1, 0, 3, 1>, const Eigen::Matrix<double, 3, 1, 0, 3, 1>);
 #endif

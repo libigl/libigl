@@ -7,8 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "unproject_onto_mesh.h"
 #include "EmbreeIntersector.h"
-#include <igl/unproject.h>
-#include <igl/embree/unproject_in_mesh.h>
+#include "../unproject_onto_mesh.h"
 #include <vector>
 
 IGL_INLINE bool igl::embree::unproject_onto_mesh(
@@ -23,20 +22,14 @@ IGL_INLINE bool igl::embree::unproject_onto_mesh(
 {
   using namespace std;
   using namespace Eigen;
-  MatrixXd obj;
-  vector<igl::Hit> hits;
-
-  // This is lazy, it will find more than just the first hit
-  unproject_in_mesh(pos,model,proj,viewport,ei,obj,hits);
-
-  if (hits.size()> 0)
+  const auto & shoot_ray = [&ei](
+    const Eigen::Vector3f& s,
+    const Eigen::Vector3f& dir,
+    igl::Hit & hit)->bool
   {
-    bc << 1.0-hits[0].u-hits[0].v, hits[0].u, hits[0].v;
-    fid = hits[0].id;
-    return true;
-  }
-
-  return false;
+    return ei.intersectRay(s,dir,hit);
+  };
+  return igl::unproject_onto_mesh(pos,model,proj,viewport,shoot_ray,fid,bc);
 }
 
 IGL_INLINE bool igl::embree::unproject_onto_mesh(
@@ -50,14 +43,14 @@ IGL_INLINE bool igl::embree::unproject_onto_mesh(
   int& vid)
 {
   Eigen::Vector3f bc;
-  bool hit = unproject_onto_mesh(pos,F,model,proj,viewport,ei,fid,bc);
-  int i;
-  if (hit)
+  if(!igl::embree::unproject_onto_mesh(pos,F,model,proj,viewport,ei,fid,bc))
   {
-    bc.maxCoeff(&i);
-    vid = F(fid,i);
+    return false;
   }
-  return hit;
+  int i;
+  bc.maxCoeff(&i);
+  vid = F(fid,i);
+  return true;
 }
 
 

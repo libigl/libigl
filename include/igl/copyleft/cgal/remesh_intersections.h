@@ -53,11 +53,40 @@ namespace igl
         const std::vector<CGAL::Triangle_3<Kernel> > & T,
         const std::map<
           typename DerivedF::Index,
-          std::pair<typename DerivedF::Index,
-            std::vector<CGAL::Object> > > & offending,
+            std::vector<
+            std::pair<typename DerivedF::Index, CGAL::Object> > > & offending,
         const std::map<
           std::pair<typename DerivedF::Index,typename DerivedF::Index>,
           std::vector<typename DerivedF::Index> > & edge2faces,
+        Eigen::PlainObjectBase<DerivedVV> & VV,
+        Eigen::PlainObjectBase<DerivedFF> & FF,
+        Eigen::PlainObjectBase<DerivedJ> & J,
+        Eigen::PlainObjectBase<DerivedIM> & IM);
+
+      // Same as above except ``stitch_all`` flag:
+      //
+      // Input:
+      //   stitch_all: if true, merge all vertices with thte same coordiante.
+      template <
+        typename DerivedV,
+        typename DerivedF,
+        typename Kernel,
+        typename DerivedVV,
+        typename DerivedFF,
+        typename DerivedJ,
+        typename DerivedIM>
+      IGL_INLINE void remesh_intersections(
+        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::PlainObjectBase<DerivedF> & F,
+        const std::vector<CGAL::Triangle_3<Kernel> > & T,
+        const std::map<
+          typename DerivedF::Index,
+            std::vector<
+            std::pair<typename DerivedF::Index, CGAL::Object> > > & offending,
+        const std::map<
+          std::pair<typename DerivedF::Index,typename DerivedF::Index>,
+          std::vector<typename DerivedF::Index> > & edge2faces,
+        bool stitch_all,
         Eigen::PlainObjectBase<DerivedVV> & VV,
         Eigen::PlainObjectBase<DerivedFF> & FF,
         Eigen::PlainObjectBase<DerivedJ> & J,

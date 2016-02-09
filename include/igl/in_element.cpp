@@ -41,7 +41,6 @@ IGL_INLINE void igl::in_element(
 {
   using namespace std;
   using namespace Eigen;
-  using namespace igl;
   const int Qr = Q.rows();
   std::vector<Triplet<Scalar> > IJV;
   IJV.reserve(Qr);

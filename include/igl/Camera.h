@@ -66,11 +66,13 @@ namespace igl
       //     glMultMatrixd(projection().data());
       //
       inline Eigen::Matrix4d projection() const;
-      // Return an Affine transformation (rigid actually) that takes a world 3d coordinate and
-      // transforms it into the relative camera coordinates.
+      // Return an Affine transformation (rigid actually) that 
+      // takes relative coordinates and tramsforms them into world 3d
+      // coordinates: moves the camera into the scene.
       inline Eigen::Affine3d affine() const;
-      // Return an Affine transformation (rigid actually) that takes relative
-      // coordinates and tramsforms them into world 3d coordinates.
+      // Return an Affine transformation (rigid actually) that puts the takes a
+      // world 3d coordinate and transforms it into the relative camera
+      // coordinates: moves the scene in front of the camera.
       //
       // Note:
       //
@@ -81,7 +83,7 @@ namespace igl
       //
       // Is equivalent to
       //
-      //     glMultMatrixd(camera.affine().matrix().data());
+      //     glMultMatrixd(camera.inverse().matrix().data());
       //
       // See also: affine, eye, at, up
       inline Eigen::Affine3d inverse() const;

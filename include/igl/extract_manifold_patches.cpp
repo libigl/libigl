@@ -20,7 +20,7 @@ IGL_INLINE size_t igl::extract_manifold_patches(
     auto face_and_corner_index_to_edge_index = [&](size_t fi, size_t ci) {
         return ci*num_faces + fi;
     };
-    auto is_manifold_edge = [&](size_t fi, size_t ci) {
+    auto is_manifold_edge = [&](size_t fi, size_t ci) -> bool {
         const size_t ei = face_and_corner_index_to_edge_index(fi, ci);
         return uE2E[EMAP(ei, 0)].size() == 2;
     };

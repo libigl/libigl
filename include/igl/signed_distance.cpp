@@ -154,7 +154,7 @@ IGL_INLINE void igl::signed_distance(
           signed_distance_pseudonormal(tree3,V,F,FN,VN,EN,EMAP,q3,s,sqrd,i,c3,n3):
           signed_distance_pseudonormal(tree2,V,F,FN,VN,q2,s,sqrd,i,c2,n2);
         Eigen::RowVectorXd n;
-        (dim==3 ? n = n3 : n = n3);
+        (dim==3 ? n = n3 : n = n2);
         N.row(p) = n;
         break;
       }
@@ -303,7 +303,6 @@ IGL_INLINE void igl::signed_distance_winding_number(
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   sqrd = tree.squared_distance(V,F,q,i,c);
   const double w = hier.winding_number(q.transpose());
   s = 1.-2.*w;
@@ -321,7 +320,6 @@ IGL_INLINE void igl::signed_distance_winding_number(
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
   sqrd = tree.squared_distance(V,F,q,i,c);
   double w;
   winding_number_2(V.data(), V.rows(), F.data(), F.rows(), q.data(), 1, &w);

@@ -32,7 +32,9 @@
 #define IGL_MOD_ALT             0x0004
 #define IGL_MOD_SUPER           0x0008
 
+#ifdef IGL_VIEWER_WITH_NANOGUI
 namespace nanogui { class FormHelper; class Screen; }
+#endif
 
 class GLFWwindow;
 
@@ -82,8 +84,11 @@ namespace viewer
     bool down;
     bool hack_never_moved;
 
+#ifdef IGL_VIEWER_WITH_NANOGUI
     nanogui::FormHelper* ngui;
     nanogui::Screen* screen;
+#endif
+
     nanogui::ComboBox* currentDataCB;
 
     // Keep track of the global position of the scrollwheel
@@ -143,6 +148,8 @@ namespace viewer
     IGL_INLINE void open_dialog_save_mesh();
 
     // C++-style functions
+    //
+    // Returns **true** if action should be cancelled.
     std::function<bool(Viewer& viewer)> callback_init;
     std::function<bool(Viewer& viewer)> callback_pre_draw;
     std::function<bool(Viewer& viewer)> callback_post_draw;
