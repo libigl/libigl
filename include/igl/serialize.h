@@ -1093,11 +1093,12 @@ namespace igl
       }
       else
       {
-        if(obj)
+        /*if(obj)
         {
           std::cout << "serialization: possible memory corruption in deserialization for '" << typeid(obj).name() << "'" << std::endl;
         }
-        else
+        else*/
+        if(obj == nullptr)
         {
           obj = new typename std::remove_pointer<T>::type();
         }

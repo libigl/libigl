@@ -16,11 +16,16 @@ IGL_INLINE std::string igl::dirname(const std::string & path)
   {
     return std::string("");
   }
+#if defined (WIN32)
+  char del('\\');
+#else
+  char del('/');
+#endif
   // http://stackoverflow.com/questions/5077693/dirnamephp-similar-function-in-c
   std::string::const_reverse_iterator last_slash =
     std::find(
       path.rbegin(), 
-      path.rend(), '/');
+      path.rend(),del);
   if( last_slash == path.rend() )
   {
     // No slashes found
@@ -28,7 +33,7 @@ IGL_INLINE std::string igl::dirname(const std::string & path)
   }else if(1 == (last_slash.base() - path.begin()))
   {
     // Slash is first char
-    return std::string("/");
+    return std::string(&del);
   }else if(path.end() == last_slash.base() )
   {
     // Slash is last char
