@@ -1712,6 +1712,8 @@ Entry:
 inline void ply_close(PlyFile *plyfile)
 {
   fclose (plyfile->fp);
+  // Alec:
+  plyfile->fp = NULL;
 
   /* free up memory associated with the PLY file */
   free (plyfile);

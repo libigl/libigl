@@ -11,10 +11,10 @@ template <
   typename DerivedV, 
   typename DerivedF> 
 IGL_INLINE bool igl::ray_mesh_intersect(
-  const Eigen::PlainObjectBase<Derivedsource> & s,
-  const Eigen::PlainObjectBase<Deriveddir> & dir,
-  const Eigen::PlainObjectBase<DerivedV> & V,
-  const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::MatrixBase<Derivedsource> & s,
+  const Eigen::MatrixBase<Deriveddir> & dir,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
   std::vector<igl::Hit> & hits)
 {
   using namespace Eigen;
@@ -53,10 +53,10 @@ template <
   typename DerivedV, 
   typename DerivedF> 
 IGL_INLINE bool igl::ray_mesh_intersect(
-  const Eigen::PlainObjectBase<Derivedsource> & source,
-  const Eigen::PlainObjectBase<Deriveddir> & dir,
-  const Eigen::PlainObjectBase<DerivedV> & V,
-  const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::MatrixBase<Derivedsource> & source,
+  const Eigen::MatrixBase<Deriveddir> & dir,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
   igl::Hit & hit)
 {
   std::vector<igl::Hit> hits;
@@ -70,3 +70,8 @@ IGL_INLINE bool igl::ray_mesh_intersect(
     return false;
   }
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instanciation
+template bool igl::ray_mesh_intersect<Eigen::Matrix<float, 3, 1, 0, 3, 1>, Eigen::Matrix<float, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::vector<igl::Hit, std::allocator<igl::Hit> >&);
+#endif

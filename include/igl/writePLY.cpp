@@ -132,7 +132,6 @@ IGL_INLINE bool igl::writePLY(
   }
 
   ply_close(ply);
-  fclose(fp);
   for(size_t i = 0;i<(size_t)F.rows();i++)
   {
     delete[] flist[i].verts;
