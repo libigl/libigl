@@ -153,7 +153,6 @@ IGL_INLINE bool igl::readPLY(
     }
   }
   ply_close(in_ply);
-  fclose(fp);
   return true;
 }
 
