@@ -25,3 +25,7 @@ IGL_INLINE void igl::copyleft::cgal::cell_adjacency(
     adjacency_list[negative_cell].emplace(positive_cell, true, i);
   }
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template void igl::copyleft::cgal::cell_adjacency<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, unsigned long, std::__1::vector<std::__1::set<std::__1::tuple<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, bool, unsigned long>, std::__1::less<std::__1::tuple<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, bool, unsigned long> >, std::__1::allocator<std::__1::tuple<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, bool, unsigned long> > >, std::__1::allocator<std::__1::set<std::__1::tuple<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, bool, unsigned long>, std::__1::less<std::__1::tuple<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, bool, unsigned long> >, std::__1::allocator<std::__1::tuple<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, bool, unsigned long> > > > >&);
+#endif

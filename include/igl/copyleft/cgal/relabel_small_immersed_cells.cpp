@@ -10,6 +10,7 @@
 #include "relabel_small_immersed_cells.h"
 #include "../../centroid.h"
 #include "assign_scalar.h"
+#include "cell_adjacency.h"
 
 #include <vector>
 
