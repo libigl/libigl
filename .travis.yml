@@ -36,7 +36,7 @@ matrix:
       script:
         - brew update
         - brew upgrade cmake
-        - brew install cgal
+        - brew upgrade cgal
         - git submodule update --init --recursive
         - cd tutorial
         - mkdir build
