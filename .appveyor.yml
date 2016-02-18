@@ -13,7 +13,7 @@ build_script:
   - cd c:\projects\libigl\tutorial
   - mkdir build
   - cd build
-  - cmake -G "Visual Studio 14 2015 Win64" ../
+  - cmake -D "LIBIGL_USE_STATIC_LIBRARY=ON" -G "Visual Studio 14 2015 Win64" ../
   - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - set MSBuildOptions=/v:m /p:Configuration=Release /logger:%MSBuildLogger%
   - msbuild %MSBuildOptions% libigl_tutorials.sln
