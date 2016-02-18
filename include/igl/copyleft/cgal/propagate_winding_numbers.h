@@ -60,7 +60,11 @@ namespace igl
       // Inputs:
       //   V  #V by 3 list of vertex positions.
       //   F  #F by 3 list of triangle indices into V.
+      //   uE    #uE by 2 list of vertex_indices, represents undirected edges.
+      //   uE2E  #uE list of lists that maps uE to E. (a one-to-many map)
+      //   num_patches  number of patches
       //   P  #F list of patch ids.
+      //   num_cells    number of cells
       //   C  #P by 2 list of cell ids on each side of each patch.
       //   labels  #F list of facet labels ranging from 0 to k-1.
       // Output:
