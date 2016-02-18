@@ -1,0 +1,33 @@
+language: cpp
+sudo: false
+matrix:
+  include:
+    - os: linux
+      compiler: gcc-4.8.1
+      script:
+        - git submodule update --init --recursive
+        - cd tutorial
+        - mkdir build
+        - cd build
+        - CXXFLAGS="-mno-rtm" cmake -DCMAKE_CXX_COMPILER=g++-4.8 .
+        - make -j 2
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - kalakris-cmake
+          packages:
+            - g++-4.8
+            - libglu1-mesa-dev
+            - libxxf86vm-dev
+            - cmake
+            - binutils
+    - os: osx
+      compiler: clang
+      script:
+        - git submodule update --init --recursive
+        - cd tutorial
+        - mkdir build
+        - cd build
+        - cmake .
+        - make -j 2
