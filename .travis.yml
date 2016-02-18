@@ -9,13 +9,14 @@ matrix:
         - cd tutorial
         - mkdir build
         - cd build
-        - CXXFLAGS="-mno-rtm" cmake -DCMAKE_CXX_COMPILER=g++-4.8 ../
+        # - CXXFLAGS="-mno-rtm" cmake -DCMAKE_CXX_COMPILER=g++-4.8 ../
+        - cmake -DCMAKE_CXX_COMPILER=g++-4.8 ../
         - make -j 2
       addons:
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - kalakris-cmake
+          # sources:
+          #   - ubuntu-toolchain-r-test
+          #   - kalakris-cmake
           packages:
             - g++-4.8
             - libglu1-mesa-dev
