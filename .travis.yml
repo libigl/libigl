@@ -30,12 +30,13 @@ matrix:
             - libxi-dev
             - libxmu-dev
             - libblas-dev
-    - os: osx
-      compiler: clang
-      script:
-        - git submodule update --init --recursive
-        - cd tutorial
-        - mkdir build
-        - cd build
-        - cmake ../
-        - make -j 2
+            - xorg-dev
+    # - os: osx
+    #   compiler: clang
+    #   script:
+    #     - git submodule update --init --recursive
+    #     - cd tutorial
+    #     - mkdir build
+    #     - cd build
+    #     - cmake ../
+    #     - make -j 2
