@@ -34,6 +34,8 @@ matrix:
     - os: osx
       compiler: clang
       script:
+        - brew update
+        - brew upgrade cmake
         - git submodule update --init --recursive
         - cd tutorial
         - mkdir build
