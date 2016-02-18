@@ -19,6 +19,20 @@ namespace igl
   {
     namespace cgal
     {
+      // Inputs:
+      //   V  #V by 3 list of vertex positions.
+      //   F  #F by 3 list of triangle indices into V.
+      //   num_patches  number of patches
+      //   P  #F list of patch ids.
+      //   num_cells    number of cells
+      //   C  #P by 2 list of cell ids on each side of each patch.
+      //   vol_threshold  Volume threshold, cells smaller than this
+      //                  and is completely immersed will be relabeled.
+      //
+      // In/Output:
+      //   W  #F by 2 cell labels.  W(i,0) is the label on the positive side of
+      //      face i, W(i,1) is the label on the negative side of face i.  W
+      //      will be modified in place by this method.
       template<
         typename DerivedV,
         typename DerivedF,
