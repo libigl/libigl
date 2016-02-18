@@ -9,7 +9,7 @@ matrix:
         - cd tutorial
         - mkdir build
         - cd build
-        - CXXFLAGS="-mno-rtm" cmake -DCMAKE_CXX_COMPILER=g++-4.8 .
+        - CXXFLAGS="-mno-rtm" cmake -DCMAKE_CXX_COMPILER=g++-4.8 ../
         - make -j 2
       addons:
         apt:
@@ -29,5 +29,5 @@ matrix:
         - cd tutorial
         - mkdir build
         - cd build
-        - cmake .
+        - cmake ../
         - make -j 2
