@@ -18,7 +18,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
             - kalakris-cmake
-    #       packages: cmake build-essential xorg-dev libglu1-mesa-dev g++-4.8
+          packages: 
             - xorg-dev
             - libglu1-mesa-dev
             - g++-4.8
