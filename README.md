@@ -1,4 +1,5 @@
 # libigl - A simple C++ geometry processing library
+[![Build Status](https://travis-ci.org/libigl/libigl.svg?branch=master)](https://travis-ci.org/libigl/libigl)
 
 ![](libigl-teaser.png)
 

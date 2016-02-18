@@ -22,6 +22,14 @@ matrix:
             - libxxf86vm-dev
             - cmake
             - binutils
+            - libx11-dev
+            - mesa-common-dev
+            - libgl1-mesa-dev
+            - libglu1-mesa-dev
+            - libxrandr-dev
+            - libxi-dev
+            - libxmu-dev
+            - libblas-dev
     - os: osx
       compiler: clang
       script:
