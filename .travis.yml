@@ -2,25 +2,27 @@ language: cpp
 sudo: false
 matrix:
   include:
-    # - os: linux
-    #   compiler: gcc-4.8.1
-    #   script:
-    #     - git submodule update --init --recursive
-    #     - cd tutorial
-    #     - mkdir build
-    #     - cd build
-    #     - CXXFLAGS="-mno-rtm" cmake -DCMAKE_CXX_COMPILER=g++-4.8 ../
-    #     - make -j 2
-    #   addons:
-    #     apt:
-    #       sources:
-    #         - ubuntu-toolchain-r-test
-    #         - kalakris-cmake
-    #       packages:
-    #         - g++-4.8
-    #         - libglu1-mesa-dev
-    #         - libxxf86vm-dev
-    #         - cmake
+    - os: linux
+      compiler: gcc-4.8.1
+      script:
+        - git submodule update --init --recursive
+        - mkdir external/nanogui/ext/glfw/include/GL
+        - wget -P external/nanogui/ext/glfw/include/GL http://www.opengl.org/registry/api/GL/glcorearb.h
+        - cd tutorial
+        - mkdir build
+        - cd build
+        - cmake -DCMAKE_CXX_COMPILER=g++-4.8 ../
+        - make -j 2
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - kalakris-cmake
+    #       packages: cmake build-essential xorg-dev libglu1-mesa-dev g++-4.8
+            - xorg-dev
+            - libglu1-mesa-dev
+            - g++-4.8
+            - cmake
     #         - binutils
     #         - libx11-dev
     #         - mesa-common-dev
