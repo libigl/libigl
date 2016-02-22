@@ -65,7 +65,7 @@ int main(int argc, char * argv[])
 )";
   igl::viewer::Viewer viewer;
   viewer.data.set_mesh(SV,SF);
-  viewer.callback_key_down = 
+  viewer.callback_key_down =
     [&](igl::viewer::Viewer & viewer, unsigned char key, int mod)->bool
     {
       switch(key)
