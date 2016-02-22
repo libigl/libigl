@@ -33,7 +33,7 @@ IGL_INLINE bool igl::writeOBJ(
   // Loop over V
   for(int i = 0;i<(int)V.rows();i++)
   {
-    fprintf(obj_file,"v %0.15g %0.15g %0.15g\n",
+    fprintf(obj_file,"v %0.17g %0.17g %0.17g\n",
       V(i,0),
       V(i,1),
       V(i,2)
@@ -45,7 +45,7 @@ IGL_INLINE bool igl::writeOBJ(
   {
     for(int i = 0;i<(int)CN.rows();i++)
     {
-      fprintf(obj_file,"vn %0.15g %0.15g %0.15g\n",
+      fprintf(obj_file,"vn %0.17g %0.17g %0.17g\n",
               CN(i,0),
               CN(i,1),
               CN(i,2)
@@ -60,7 +60,7 @@ IGL_INLINE bool igl::writeOBJ(
   {
     for(int i = 0;i<(int)TC.rows();i++)
     {
-      fprintf(obj_file, "vt %0.15g %0.15g\n",TC(i,0),TC(i,1));
+      fprintf(obj_file, "vt %0.17g %0.17g\n",TC(i,0),TC(i,1));
     }
     fprintf(obj_file,"\n");
   }
