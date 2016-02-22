@@ -393,9 +393,12 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     }
     // Otherwise just fall through
   }
-  process_intersecting_boxes();
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
   log_time("box_intersection_d");
+#endif
+  process_intersecting_boxes();
+#ifdef IGL_SELFINTERSECTMESH_DEBUG
+  log_time("resolve_intersection");
 #endif
 
   // Convert lIF to Eigen matrix
