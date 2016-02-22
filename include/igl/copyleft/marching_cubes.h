@@ -1,16 +1,16 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_COPYLEFT_MARCHINGCUBES_H
 #define IGL_COPYLEFT_MARCHINGCUBES_H
 #include "../igl_inline.h"
 
 #include <Eigen/Core>
-namespace igl 
+namespace igl
 {
   namespace copyleft
   {
@@ -26,7 +26,7 @@ namespace igl
     //  points  #number_of_grid_points x 3 array -- 3-D positions of the grid
     //    points, ordered in x,y,z order:
     //      points[index] = the point at (x,y,z) where :
-    //      x = (index % (xres -1), 
+    //      x = (index % (xres -1),
     //      y = (index / (xres-1)) %(yres-1),
     //      z = index / (xres -1) / (yres -1) ).
     //      where x,y,z index x, y, z dimensions
@@ -38,14 +38,14 @@ namespace igl
     //   vertices  #V by 3 list of mesh vertex positions
     //   faces  #F by 3 list of mesh triangle indices
     //
-    template <typename DerivedV, typename DerivedF>
+    template <typename DerivedV1, typename DerivedV2, typename DerivedF>
       IGL_INLINE void marching_cubes(
-        const Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 1> &values,
-        const Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 3> &points,
+        const Eigen::PlainObjectBase<DerivedV1> &values,
+        const Eigen::PlainObjectBase<DerivedV2> &points,
         const unsigned x_res,
         const unsigned y_res,
         const unsigned z_res,
-        Eigen::PlainObjectBase<DerivedV> &vertices,
+        Eigen::PlainObjectBase<DerivedV2> &vertices,
         Eigen::PlainObjectBase<DerivedF> &faces);
   }
 }
