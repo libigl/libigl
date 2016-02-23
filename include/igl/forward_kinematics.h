@@ -23,6 +23,7 @@ namespace igl
   //   BE  #BE by 2 list of bone edge indices
   //   P  #BE list of parent indices into BE
   //   dQ  #BE list of relative rotations
+  //   dT  #BE list of relative translations
   // Outputs:
   //   vQ  #BE list of absolute rotations
   //   vT  #BE list of absolute translations
@@ -32,9 +33,21 @@ namespace igl
     const Eigen::VectorXi & P,
     const std::vector<
       Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> > & dQ,
+    const std::vector<Eigen::Vector3d> & dT,
     std::vector<
       Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> > & vQ,
     std::vector<Eigen::Vector3d> & vT);
+  // Wrapper assuming each dT[i] == {0,0,0}
+  IGL_INLINE void forward_kinematics(
+    const Eigen::MatrixXd & C,
+    const Eigen::MatrixXi & BE,
+    const Eigen::VectorXi & P,
+    const std::vector<
+      Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> > & dQ,
+    std::vector<
+      Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> > & vQ,
+    std::vector<Eigen::Vector3d> & vT);
+
   // Outputs:
   //   T  #BE*(dim+1) by dim stack of transposed transformation matrices
   IGL_INLINE void forward_kinematics(
@@ -43,7 +56,16 @@ namespace igl
     const Eigen::VectorXi & P,
     const std::vector<
       Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> > & dQ,
+    const std::vector<Eigen::Vector3d> & dT,
     Eigen::MatrixXd & T);
+  IGL_INLINE void forward_kinematics(
+    const Eigen::MatrixXd & C,
+    const Eigen::MatrixXi & BE,
+    const Eigen::VectorXi & P,
+    const std::vector<
+      Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> > & dQ,
+    Eigen::MatrixXd & T);
+
 };
 
 #ifndef IGL_STATIC_LIBRARY
