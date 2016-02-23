@@ -31,7 +31,7 @@ public:
     const Eigen::PlainObjectBase<DerivedF> &F;
     const Eigen::PlainObjectBase<DerivedV> &PD1;
     const Eigen::PlainObjectBase<DerivedV> &PD2;
-#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
+//#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
     Eigen::PlainObjectBase<DerivedV> N;
 
 private:

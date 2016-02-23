@@ -9,7 +9,6 @@ NC='\033[0m'
 
 ## Throw error if any files contain "std::__1"
 
-
 # list of changed files
 CHANGED=$(git diff --cached --name-only --diff-filter=ACM)
 # Ignore this file!

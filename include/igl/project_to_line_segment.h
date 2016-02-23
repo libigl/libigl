@@ -35,9 +35,9 @@ namespace igl
     typename Derivedt, 
     typename DerivedsqrD>
   IGL_INLINE void project_to_line_segment(
-    const Eigen::PlainObjectBase<DerivedP> & P,
-    const Eigen::PlainObjectBase<DerivedS> & S,
-    const Eigen::PlainObjectBase<DerivedD> & D,
+    const Eigen::MatrixBase<DerivedP> & P,
+    const Eigen::MatrixBase<DerivedS> & S,
+    const Eigen::MatrixBase<DerivedD> & D,
     Eigen::PlainObjectBase<Derivedt> & t,
     Eigen::PlainObjectBase<DerivedsqrD> & sqrD);
 }
