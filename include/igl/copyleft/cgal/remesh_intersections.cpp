@@ -161,7 +161,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
 
             if (itr == offending.end()) continue;
             for (const auto& index_obj : itr->second) {
-                const auto& ofid = index_obj.first;
+                //const auto& ofid = index_obj.first;
                 const auto& obj = index_obj.second;
                 if(const Segment_3 *iseg = CGAL::object_cast<Segment_3 >(&obj)) {
                     // Add segment constraint
@@ -431,7 +431,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     if (!stitch_all) {
       // Vertices with the same coordinates would be represented by one vertex.
       // The IM value of an vertex is the index of the representative vertex.
-      for (Index v=0; v<VV_size; v++) {
+      for (Index v=0; v<(Index)VV_size; v++) {
         IM(v) = unique_to_vv[vv_to_unique[v]];
       }
     } else {
