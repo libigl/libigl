@@ -1,0 +1,47 @@
+language: cpp
+sudo: false
+matrix:
+  include:
+    - os: linux
+      compiler: gcc-4.8.1
+      script:
+        - git submodule update --init --recursive
+        - mkdir external/nanogui/ext/glfw/include/GL
+        - wget -P external/nanogui/ext/glfw/include/GL http://www.opengl.org/registry/api/GL/glcorearb.h
+        - cd tutorial
+        - mkdir build
+        - cd build
+        - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON -DCMAKE_CXX_COMPILER=g++-4.8 ../
+        - make -j 2
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - kalakris-cmake
+          packages:
+            - xorg-dev
+            - libglu1-mesa-dev
+            - g++-4.8
+            - cmake
+    #         - binutils
+    #         - libx11-dev
+    #         - mesa-common-dev
+    #         - libgl1-mesa-dev
+    #         - libglu1-mesa-dev
+    #         - libxrandr-dev
+    #         - libxi-dev
+    #         - libxmu-dev
+    #         - libblas-dev
+    #         - xorg-dev
+    - os: osx
+      compiler: clang
+      script:
+        - brew update
+        - brew upgrade cmake
+        - brew upgrade cgal
+        - git submodule update --init --recursive
+        - cd tutorial
+        - mkdir build
+        - cd build
+        - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON ../
+        - make -j 2

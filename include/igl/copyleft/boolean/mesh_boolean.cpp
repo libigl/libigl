@@ -12,8 +12,12 @@
 #include "../cgal/assign_scalar.h"
 #include "../cgal/propagate_winding_numbers.h"
 #include "../cgal/remesh_self_intersections.h"
+#include "../cgal/relabel_small_immersed_cells.h"
+#include "../cgal/extract_cells.h"
+#include "../../extract_manifold_patches.h"
 #include "../../remove_unreferenced.h"
 #include "../../unique_simplices.h"
+#include "../../unique_edge_map.h"
 #include "../../slice.h"
 #include "../../resolve_duplicated_faces.h"
 #include "../../get_seconds.h"
@@ -23,6 +27,7 @@
 
 //#define MESH_BOOLEAN_TIMING
 //#define DOUBLE_CHECK_EXACT_OUTPUT
+//#define SMALL_CELL_REMOVAL
 
 template <
   typename DerivedVA,
@@ -91,6 +96,28 @@ IGL_INLINE bool igl::copyleft::boolean::mesh_boolean(
   log_time("resolve_self_intersection");
 #endif
 
+  // Compute edges.
+  Eigen::MatrixXi E, uE;
+  Eigen::VectorXi EMAP;
+  std::vector<std::vector<size_t> > uE2E;
+  igl::unique_edge_map(F, E, uE, EMAP, uE2E);
+
+  // Compute patches
+  Eigen::VectorXi P;
+  const size_t num_patches = igl::extract_manifold_patches(F, EMAP, uE2E, P);
+#ifdef MESH_BOOLEAN_TIMING
+  log_time("patch_extraction");
+#endif
+
+  // Compute cells.
+  Eigen::MatrixXi per_patch_cells;
+  const size_t num_cells =
+    igl::copyleft::cgal::extract_cells(
+        V, F, P, E, uE, uE2E, EMAP, per_patch_cells);
+#ifdef MESH_BOOLEAN_TIMING
+  log_time("cell_extraction");
+#endif
+
   // Compute winding numbers on each side of each facet.
   const size_t num_faces = F.rows();
   Eigen::MatrixXi W;
@@ -101,7 +128,8 @@ IGL_INLINE bool igl::copyleft::boolean::mesh_boolean(
   if (num_faces > 0) 
   {
     valid = valid & 
-      igl::copyleft::cgal::propagate_winding_numbers(V, F, labels, W);
+      igl::copyleft::cgal::propagate_winding_numbers(
+          V, F, uE, uE2E, num_patches, P, num_cells, per_patch_cells, labels, W);
   } else 
   {
     W.resize(0, 4);
@@ -132,6 +160,11 @@ IGL_INLINE bool igl::copyleft::boolean::mesh_boolean(
   }
 #ifdef MESH_BOOLEAN_TIMING
   log_time("compute_output_winding_number");
+#endif
+
+#ifdef SMALL_CELL_REMOVAL
+  igl::copyleft::cgal::relabel_small_immersed_cells(V, F,
+          num_patches, P, num_cells, per_patch_cells, 1e-3, Wr);
 #endif
 
   // Extract boundary separating inside from outside.
