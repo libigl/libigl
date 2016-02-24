@@ -34,7 +34,7 @@ IGL_INLINE void igl::matrix_to_list(
 {
   using namespace std;
   V.resize(M.size());
-  // loop over rows
+  // loop over cols then rows
   for(int j = 0;j<M.cols();j++)
   {
     for(int i = 0;i<M.rows();i++)

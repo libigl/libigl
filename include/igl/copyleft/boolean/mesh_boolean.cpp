@@ -344,7 +344,7 @@ IGL_INLINE bool igl::copyleft::boolean::mesh_boolean(
         Eigen::PlainObjectBase<DerivedJ>& J) {
       Eigen::VectorXi I;
       igl::copyleft::cgal::RemeshSelfIntersectionsParam params;
-
+      params.stitch_all = true;
       MatrixXES Vr;
       DerivedFC Fr;
       Eigen::MatrixXi IF;
