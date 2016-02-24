@@ -131,4 +131,7 @@ template bool igl::writeDMAT<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::basic_
 template bool igl::writeDMAT<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, bool);
 template bool igl::writeDMAT<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, bool);
 template bool igl::writeDMAT<Eigen::Matrix<double, -1, 3, 0, -1, 3> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::Matrix<double, -1, 3, 0, -1, 3> const&, bool);
+template bool igl::writeDMAT<Eigen::Array<int, -1, 1, 0, -1, 1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::Array<int, -1, 1, 0, -1, 1> const&, bool);
+template bool igl::writeDMAT<Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, bool);
+template bool igl::writeDMAT<Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, bool);
 #endif

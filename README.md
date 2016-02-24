@@ -1,5 +1,6 @@
 # libigl - A simple C++ geometry processing library
-
+[![Build Status](https://travis-ci.org/libigl/libigl.svg?branch=master)](https://travis-ci.org/libigl/libigl)
+[![Build status](https://ci.appveyor.com/api/projects/status/mf3t9rnhco0vhly8?svg=true)](https://ci.appveyor.com/project/danielepanozzo/libigl-6hjk1)
 ![](libigl-teaser.png)
 
 <https://github.com/libigl/libigl/>
@@ -33,6 +34,9 @@ the header-only default mode: (i.e. just include the headers you want to use).
 We use the [Eigen](http://eigen.tuxfamily.org) library heavily in our code. Our
 group prototypes a lot in MATLAB, and we have a useful [MATLAB to libigl+Eigen
 conversion table](matlab-to-eigen.html).
+
+We regularly test compiling our library on Mac OS X with clang, Linux with gcc
+and Windows with Visual Studio 2015 Community Edition.
 
 ## Tutorial
 
