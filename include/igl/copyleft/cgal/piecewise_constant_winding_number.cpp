@@ -22,8 +22,6 @@ IGL_INLINE bool igl::copyleft::cgal::piecewise_constant_winding_number(
   Eigen::Matrix<typename DerivedF::Index,Eigen::Dynamic,1> J;
   Eigen::Matrix<typename DerivedV::Index,Eigen::Dynamic,1> UIM,IM;
   // resolve intersections
-  remesh_self_intersections(V,F,{},VV,FF,IF,J,IM);
-  // _apply_ duplicate vertex mapping IM to FF
-  std::for_each(FF.data(),FF.data()+FF.size(),[&IM](int & a){a=IM(a);});
+  remesh_self_intersections(V,F,{false,false,true},VV,FF,IF,J,IM);
   return igl::piecewise_constant_winding_number(FF);
 }
