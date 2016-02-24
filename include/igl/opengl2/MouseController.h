@@ -563,7 +563,7 @@ inline void igl::opengl2::MouseController::set_selection(
     m_widget.pos      = avg_pos;
     m_trans_widget.m_pos = avg_pos;
     //m_trans_widget.m_trans = m_trans_widget_trans_at_selection;
-    m_trans_widget.m_trans.setConstant(0,0,0);
+    m_trans_widget.m_trans.setConstant(0);
   }
   m_widget.m_is_enabled = true;
   m_trans_widget.m_is_enabled = true;
