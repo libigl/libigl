@@ -236,7 +236,6 @@ namespace igl
 
 #include "mesh_to_cgal_triangle_list.h"
 #include "remesh_intersections.h"
-#include "remesh_intersections.h"
 
 #include "../../REDRUM.h"
 #include "../../get_seconds.h"
@@ -393,9 +392,12 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     }
     // Otherwise just fall through
   }
-  process_intersecting_boxes();
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
   log_time("box_intersection_d");
+#endif
+  process_intersecting_boxes();
+#ifdef IGL_SELFINTERSECTMESH_DEBUG
+  log_time("resolve_intersection");
 #endif
 
   // Convert lIF to Eigen matrix
@@ -424,7 +426,8 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     return;
   }
 
-  remesh_intersections(V,F,T,offending,edge2faces,true,VV,FF,J,IM);
+  remesh_intersections(
+    V,F,T,offending,edge2faces,params.stitch_all,VV,FF,J,IM);
 
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
   log_time("remesh_intersection");

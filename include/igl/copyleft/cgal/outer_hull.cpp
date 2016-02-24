@@ -47,6 +47,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull(
   DerivedJ Jr;
   {
     RemeshSelfIntersectionsParam params;
+    params.stitch_all = true;
     Eigen::VectorXi I;
     Eigen::MatrixXi IF;
     remesh_self_intersections(V, F, params, Vr, Fr, IF, Jr, I);
