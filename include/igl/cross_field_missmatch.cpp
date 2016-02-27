@@ -19,7 +19,7 @@
 #include <igl/rotation_matrix_from_directions.h>
 
 namespace igl {
-  template <typename DerivedV, typename DerivedF>
+  template <typename DerivedV, typename DerivedF, typename DerivedM>
   class MissMatchCalculator
   {
   public:
@@ -93,7 +93,7 @@ public:
     igl::triangle_triangle_adjacency(F,TT,TTi);
   }
 
-  inline void calculateMissmatch(Eigen::PlainObjectBase<DerivedF> &Handle_MMatch)
+  inline void calculateMissmatch(Eigen::PlainObjectBase<DerivedM> &Handle_MMatch)
   {
     Handle_MMatch.setConstant(F.rows(),3,-1);
     for (size_t i=0;i<F.rows();i++)
@@ -110,13 +110,13 @@ public:
 
 };
 }
-template <typename DerivedV, typename DerivedF>
+template <typename DerivedV, typename DerivedF, typename DerivedM>
 IGL_INLINE void igl::cross_field_missmatch(const Eigen::PlainObjectBase<DerivedV> &V,
                                            const Eigen::PlainObjectBase<DerivedF> &F,
                                            const Eigen::PlainObjectBase<DerivedV> &PD1,
                                            const Eigen::PlainObjectBase<DerivedV> &PD2,
                                            const bool isCombed,
-                                           Eigen::PlainObjectBase<DerivedF> &missmatch)
+                                           Eigen::PlainObjectBase<DerivedM> &missmatch)
 {
   DerivedV PD1_combed;
   DerivedV PD2_combed;
@@ -128,7 +128,7 @@ IGL_INLINE void igl::cross_field_missmatch(const Eigen::PlainObjectBase<DerivedV
     PD1_combed = PD1;
     PD2_combed = PD2;
   }
-  igl::MissMatchCalculator<DerivedV, DerivedF> sf(V, F, PD1_combed, PD2_combed);
+  igl::MissMatchCalculator<DerivedV, DerivedF, DerivedM> sf(V, F, PD1_combed, PD2_combed);
   sf.calculateMissmatch(missmatch);
 }
 
