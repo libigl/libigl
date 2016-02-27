@@ -8,6 +8,12 @@ matrix:
         - git submodule update --init --recursive
         - mkdir external/nanogui/ext/glfw/include/GL
         - wget -P external/nanogui/ext/glfw/include/GL http://www.opengl.org/registry/api/GL/glcorearb.h
+        - cd python
+        - mkdir build
+        - cd build
+        - cmake ../
+        - make -j 2
+        - cd ../../
         - cd tutorial
         - mkdir build
         - cd build
@@ -40,6 +46,12 @@ matrix:
         - brew upgrade cmake
         - brew upgrade cgal
         - git submodule update --init --recursive
+        - cd python
+        - mkdir build
+        - cd build
+        - cmake ../
+        - make -j 2
+        - cd ../../
         - cd tutorial
         - mkdir build
         - cd build
