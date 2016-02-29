@@ -322,6 +322,7 @@ inline void igl::AABB<DerivedV,DIM>::init(
 {
   using namespace std;
   using namespace Eigen;
+  deinit();
   if(bb_mins.size() > 0)
   {
     assert(bb_mins.rows() == bb_maxs.rows() && "Serial tree arrays must match");
@@ -380,6 +381,7 @@ inline void igl::AABB<DerivedV,DIM>::init(
     const Eigen::MatrixXi & Ele)
 {
   using namespace Eigen;
+  // deinit will be immediately called...
   return init(V,Ele,MatrixXDIMS(),MatrixXDIMS(),VectorXi(),0);
 }
 
@@ -392,6 +394,7 @@ inline void igl::AABB<DerivedV,DIM>::init(
 {
   using namespace Eigen;
   using namespace std;
+  deinit();
   if(V.size() == 0 || Ele.size() == 0 || I.size() == 0)
   {
     return;

@@ -11,7 +11,7 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Determine squared distance from a point to linear simplex
+  // Determine squared distance from a point to linear simplex. 
   //
   // Inputs:
   //   p  d-long query point
