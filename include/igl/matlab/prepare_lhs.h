@@ -34,6 +34,11 @@ namespace igl
     IGL_INLINE void prepare_lhs_index(
       const Eigen::PlainObjectBase<DerivedV> & V,
       mxArray *plhs[]);
+    // SparseMatrix
+    template <typename Vtype>
+    IGL_INLINE void prepare_lhs_double(
+      const Eigen::SparseMatrix<Vtype> & V,
+      mxArray *plhs[]);
   };
 }
 #ifndef IGL_STATIC_LIBRARY
