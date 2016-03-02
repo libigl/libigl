@@ -88,7 +88,13 @@ if (OPENGL_FOUND)
   include_directories("../external/nanogui/include")
   include_directories("../external/nanogui/ext/glfw/include")
   include_directories("../external/nanogui/ext/nanovg/src")
-  list(APPEND SHARED_LIBRARIES "nanogui" ${OPENGL_LIBRARIES})
+
+  if(UNIX AND NOT APPLE)
+	find_package(GLFW REQUIRED)
+  endif(UNIX AND NOT APPLE)
+
+
+  list(APPEND SHARED_LIBRARIES "nanogui" ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
 
   list(APPEND SHARED_SOURCES "py_igl_viewer.cpp")
 
@@ -161,12 +167,6 @@ add_library(igl SHARED
 if(APPLE)
 	set(CMAKE_SHARED_LINKER_FLAGS "-framework OpenGL -framework Cocoa")
 endif (APPLE) #APPLE
-#
-if(UNIX AND NOT APPLE)
-  if (OPENGL_FOUND)
-    set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -lGL -lGLU -lrt -lX11 -lXxf86vm -lXrandr -lpthread -lXi  -lXcursor -lXinerama ")
-  endif (OPENGL_FOUND)
-endif(UNIX AND NOT APPLE)
 
 
 set_target_properties(igl PROPERTIES PREFIX "")
