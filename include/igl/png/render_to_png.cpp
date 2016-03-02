@@ -6,18 +6,9 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "render_to_png.h"
-#include <YImage.hpp>
+#include <stb_image_write.h>
 
-#ifdef __APPLE__
-#  include <OpenGL/gl.h>
-#else
-#  ifdef _WIN32
-#    define NOMINMAX
-#    include <Windows.h>
-#    undef NOMINMAX
-#  endif
-#  include <GL/gl.h>
-#endif
+#include "../opengl/OpenGL_convenience.h"
 
 IGL_INLINE bool igl::png::render_to_png(
   const std::string png_file,
@@ -26,8 +17,7 @@ IGL_INLINE bool igl::png::render_to_png(
   const bool alpha,
   const bool fast)
 {
-  YImage *img = new YImage();
-  img->resize(width,height);
+  unsigned char * data = new unsigned char[width*height];
   glReadPixels(
     0,
     0,
@@ -35,18 +25,18 @@ IGL_INLINE bool igl::png::render_to_png(
     height,
     GL_RGBA,
     GL_UNSIGNED_BYTE,
-    img->data());
-  img->flip();
+    data);
+  //img->flip();
   if(!alpha)
   {
     for(int i = 0;i<width;i++)
     for(int j = 0;j<height;j++)
     {
-      img->at(i,j).a = 255;
+      data[4*(i+j*width)+3] = 255;
     }
   }
-  bool ret = img->save(png_file.c_str(),fast);
-  delete img;
+  bool ret = stbi_write_png(png_file.c_str(), width, height, 4, data, width*sizeof(unsigned char));
+  delete [] data;
   return ret;
 }
 
