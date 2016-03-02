@@ -21,7 +21,7 @@ namespace igl
         bool detect_only;
         bool first_only;
         bool stitch_all;
-        RemeshSelfIntersectionsParam(
+        inline RemeshSelfIntersectionsParam(
           bool _detect_only=false, 
           bool _first_only=false,
           bool _stitch_all=false):
