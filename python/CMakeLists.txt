@@ -19,7 +19,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "MinSizeRel" "RelWithDebInfo")
 endif()
 
-find_package(OPENGL QUIET)
+find_package(OpenGL QUIET)
 
 if (OPENGL_FOUND)
   add_definitions(-DPY_VIEWER)
@@ -39,7 +39,8 @@ find_package(PythonInterp REQUIRED)
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 if (UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
   if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -flto")
   endif()
@@ -82,12 +83,19 @@ if (OPENGL_FOUND)
   set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
   set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
   set(NANOGUI_BUILD_SHARED OFF CACHE BOOL " " FORCE)
-
+  add_definitions(-DIGL_VIEWER_WITH_NANOGUI)
+  
   add_subdirectory("../external/nanogui/" "nanogui")
   include_directories("../external/nanogui/include")
   include_directories("../external/nanogui/ext/glfw/include")
   include_directories("../external/nanogui/ext/nanovg/src")
-  list(APPEND SHARED_LIBRARIES "nanogui" ${OPENGL_LIBRARIES})
+
+  if(UNIX AND NOT APPLE)
+	find_package(GLFW REQUIRED)
+  endif(UNIX AND NOT APPLE)
+
+
+  list(APPEND SHARED_LIBRARIES "nanogui" ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
 
   list(APPEND SHARED_SOURCES "py_igl_viewer.cpp")
 
@@ -160,12 +168,6 @@ add_library(igl SHARED
 if(APPLE)
 	set(CMAKE_SHARED_LINKER_FLAGS "-framework OpenGL -framework Cocoa")
 endif (APPLE) #APPLE
-#
-if(UNIX AND NOT APPLE)
-  if (OPENGL_FOUND)
-    set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -lGL -lGLU -lrt -lX11 -lXxf86vm -lXrandr -lpthread -lXi  -lXcursor -lXinerama ")
-  endif (OPENGL_FOUND)
-endif(UNIX AND NOT APPLE)
 
 
 set_target_properties(igl PROPERTIES PREFIX "")
