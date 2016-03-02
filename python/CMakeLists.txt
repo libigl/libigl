@@ -83,7 +83,8 @@ if (OPENGL_FOUND)
   set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
   set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
   set(NANOGUI_BUILD_SHARED OFF CACHE BOOL " " FORCE)
-
+  add_definitions(-DIGL_VIEWER_WITH_NANOGUI)
+  
   add_subdirectory("../external/nanogui/" "nanogui")
   include_directories("../external/nanogui/include")
   include_directories("../external/nanogui/ext/glfw/include")
