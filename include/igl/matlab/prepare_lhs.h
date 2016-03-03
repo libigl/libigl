@@ -10,6 +10,7 @@
 #include <igl/igl_inline.h>
 #include <mex.h>
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
 namespace igl
 {
   namespace matlab
