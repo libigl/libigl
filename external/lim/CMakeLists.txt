@@ -6,8 +6,8 @@ set(LIM_SOURCES
   Dirichlet_LIMSolver3D.cpp
   GreenStrain_LIMSolver2D.cpp
   GreenStrain_LIMSolver3D.cpp
-  #Identity_LIMSolver2D.cpp
-  #Identity_LIMSolver3D.cpp
+  Identity_LIMSolver2D.cpp
+  Identity_LIMSolver3D.cpp
   Laplacian_LIMSolver2D.cpp
   Laplacian_LIMSolver3D.cpp
   LGARAP_LIMSolver2D.cpp
