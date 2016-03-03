@@ -222,9 +222,6 @@ endif()
 
 ### Compile the opengl and png parts ###
 if(LIBIGL_WITH_OPENGL)
-  find_package(OpenGL REQUIRED)
-  list(APPEND LIBIGL_EXTRA_LIBRARIES ${OPENGL_LIBRARIES})
-
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module("opengl")
     CompileIGL_Module("opengl2")
@@ -275,11 +272,6 @@ if(LIBIGL_WITH_VIEWER) # to finish cleaning
   add_definitions(-DIGL_VIEWER_WITH_NANOGUI)
   list(APPEND LIBIGL_DEFINITIONS "-DIGL_VIEWER_WITH_NANOGUI")
 
-  #-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
-  if (APPLE)
-    list(APPEND LIBIGL_EXTRA_LIBRARIES "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo") #"glfw" ${GLFW_LIBRARIES})
-  endif()
-
   set(NANOGUI_DIR "${LIBIGL_EXTERNAL}/nanogui")
   set(NANOGUI_INCLUDE_DIRS
     "${NANOGUI_DIR}/include"
@@ -291,14 +283,26 @@ if(LIBIGL_WITH_VIEWER) # to finish cleaning
   option(NANOGUI_BUILD_SHARED  OFF)
   add_subdirectory("${NANOGUI_DIR}" "nanogui")
   list(APPEND LIBIGL_INCLUDE_DIRS ${NANOGUI_INCLUDE_DIRS})
-  list(APPEND LIBIGL_EXTRA_LIBRARIES "nanogui") #"glfw" ${GLFW_LIBRARIES})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES "nanogui" "glfw")
+
+  if (APPLE)
+    list(APPEND LIBIGL_EXTRA_LIBRARIES "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo" "glfw") #${GLFW_LIBRARIES})
+  endif()
+
+  if (UNIX AND NOT APPLE)
+    list(APPEND LIBIGL_EXTRA_LIBRARIES "-lXrandr" "-lXi" "-lXxf86vm" "-lXcursor" "-lXinerama")
+  endif()
+
 
   if((WIN32 OR UNIX) AND NOT APPLE) # GLEW should not be needed on Linux
     include_directories("${NANOGUI_DIR}/ext/glew/include")
     list(APPEND LIBIGL_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glew/include")
     list(APPEND LIBIGL_EXTRA_SOURCES "${NANOGUI_DIR}/ext/glew/src/glew.c")
-    #list(APPEND LIBIGL_EXTRA_LIBRARIES pthread)
+    list(APPEND LIBIGL_EXTRA_LIBRARIES pthread)
   endif()
+
+  find_package(OpenGL REQUIRED)
+  list(APPEND LIBIGL_EXTRA_LIBRARIES ${OPENGL_LIBRARIES})
 
   if(LIBIGL_USE_STATIC_LIBRARY)
     include_directories(${NANOGUI_INCLUDE_DIRS})
