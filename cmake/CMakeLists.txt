@@ -20,7 +20,7 @@ option(LIBIGL_WITH_XML         "Use XML"            OFF)
 
 ### Compilation configuration ###
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(CMAKE_MODULE_PATH "${CURRENT_SOURCE_DIR}")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
@@ -40,7 +40,14 @@ set(LIBIGL_DEFINITIONS "")
 
 if(LIBIGL_USE_STATIC_LIBRARY)
   add_definitions(-DIGL_STATIC_LIBRARY)
+  list(APPEND LIBIGL_DEFINITIONS "-DIGL_STATIC_LIBRARY")
 endif()
+
+if(LIBIGL_WITH_VIEWER)
+  add_definitions(-DIGL_VIEWER_WITH_NANOGUI)
+  list(APPEND LIBIGL_DEFINITIONS "-DIGL_VIEWER_WITH_NANOGUI")
+endif()
+
 
 ### macro definition ###
 set(LIBIGL_ROOT "${PROJECT_SOURCE_DIR}/..")
@@ -113,29 +120,55 @@ if(LIBIGL_WITH_BBW)
   endif()
 endif()
 
-### Compile the comiso part ###
-if(LIBIGL_WITH_COMISO)
-  find_package(LIBCOMISOH REQUIRED)
-  if(NOT LIBCOMISOH_FOUND)
-    message(SEND_ERROR "Could NOT find COMISO")
-  endif()
-  #include_directories( ${LIBCOMISO_INCLUDE_DIRS})
-  list(GET LIBCOMISO_INCLUDE_DIRS 0 COMISO_ROOT)
 
-  add_subdirectory("${COMISO_ROOT}/CoMISo/" "CoMISo")
+#Compile CoMISo
+# NOTE: this cmakefile works only with the
+# comiso available here: https://github.com/libigl/CoMISo
+IF(LIBIGL_WITH_COMISO)
+  set(COMISO_DIR "${LIBIGL_EXTERNAL}/CoMISo")
 
   set(COMISO_INCLUDE_DIRS
-    "${COMISO_ROOT}/CoMISo/ext/gmm-4.2/include"
-    "${COMISO_ROOT}/")
+    "${COMISO_DIR}/ext/gmm-4.2/include"
+    "${COMISO_DIR}/../")
 
   list(APPEND LIBIGL_INCLUDE_DIRS ${COMISO_INCLUDE_DIRS})
+  include_directories(${COMISO_INCLUDE_DIRS})
+
+  add_definitions(-DINCLUDE_TEMPLATES)
+  list(APPEND LIBIGL_DEFINITIONS "-DINCLUDE_TEMPLATES")
+
+  add_subdirectory("${COMISO_DIR}" "CoMISo")
 
   if(APPLE)
     find_library(accelerate_library Accelerate)
     list(APPEND LIBIGL_EXTRA_LIBRARIES "CoMISo" ${accelerate_library})
-  else()
-    list(APPEND LIBIGL_EXTRA_LIBRARIES "CoMISo")
-  endif()
+  elseif(UNIX)
+    find_package(BLAS REQUIRED)
+    list(APPEND LIBIGL_EXTRA_LIBRARIES "CoMISo" ${BLAS_LIBRARIES})
+  endif(APPLE)
+
+  if(MSVC)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SCL_SECURE_NO_DEPRECATE")
+    #link_directories("${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/")
+    list(APPEND LIBIGL_EXTRA_LIBRARIES "CoMISo" "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/lib/libopenblas.dll.a.lib")
+  endif(MSVC)
+
+  if(MSVC)
+    # Copy the dll
+    add_custom_target(Copy-CoMISo-DLL        # Adds a post-build event to MyTest
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libopenblas.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libopenblas.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgcc_s_seh-1.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libgcc_s_seh-1.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgfortran-3.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libgfortran-3.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libquadmath-0.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libquadmath-0.dll")
+  endif(MSVC)
 
   if(LIBIGL_USE_STATIC_LIBRARY)
     include_directories(${COMISO_INCLUDE_DIRS})
