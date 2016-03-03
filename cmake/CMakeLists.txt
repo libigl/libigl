@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 project(libigl)
 
 ### Available options ###
-option(LIBIGL_USE_STATIC_LIBRARY "Use libIGL as static library" ON)
+option(LIBIGL_USE_STATIC_LIBRARY "Use libIGL as static library" OFF)
 option(LIBIGL_WITH_BBW         "Use BBW"            OFF)
 option(LIBIGL_WITH_BOOLEAN     "Use Cork boolean"   OFF)
 option(LIBIGL_WITH_CGAL        "Use CGAL"           OFF)
@@ -172,7 +172,7 @@ IF(LIBIGL_WITH_COMISO)
 
   if(LIBIGL_USE_STATIC_LIBRARY)
     include_directories(${COMISO_INCLUDE_DIRS})
-    CompileIGL_Module("comiso")
+    CompileIGL_Module_Copyleft("comiso")
   endif()
 endif()
 

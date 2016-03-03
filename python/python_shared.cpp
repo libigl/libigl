@@ -1,4 +1,4 @@
-#include "python.h"
+#include "python_shared.h"
 #include <sstream>
 #include <string>
 #include <fstream>

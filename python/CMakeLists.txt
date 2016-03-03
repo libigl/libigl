@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 2.8)
-
 project(pybind)
 
 IF(MSVC)
@@ -10,20 +9,12 @@ IF(MSVC)
   SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/../ )
 ENDIF(MSVC)
 
-SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../tutorial/cmake)
-
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'MinSizeRel' as none was specified.")
   set(CMAKE_BUILD_TYPE MinSizeRel CACHE STRING "Choose the type of build." FORCE)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
     "MinSizeRel" "RelWithDebInfo")
 endif()
-
-find_package(OpenGL QUIET)
-
-if (OPENGL_FOUND)
-  add_definitions(-DPY_VIEWER)
-endif (OPENGL_FOUND)
 
 # Force a specific python version
 # SET(PYTHON_LIBRARIES "D:/Python34/libs/python34.lib")
@@ -62,118 +53,68 @@ include_directories(${PYTHON_INCLUDE_DIR} include)
 ## include pybing
 include_directories(${PROJECT_SOURCE_DIR}/../external/pybind11/include)
 
-## include eigen
-include_directories(${PROJECT_SOURCE_DIR}/../external/nanogui/ext/eigen)
-
 ## include libigl
-include_directories(${PROJECT_SOURCE_DIR}/../include)
+option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" OFF)
+option(LIBIGL_WITH_VIEWER      "Use Nanogui Viewer" ON)
+option(LIBIGL_WITH_BBW         "Use BBW"            ON)
+option(LIBIGL_WITH_EMBREE      "Use Embree"         ON)
+option(LIBIGL_WITH_OPENGL      "Use OpenGL"         ON)
+option(LIBIGL_WITH_PNG         "Use PNG"            ON)
+option(LIBIGL_WITH_TETGEN      "Use Tetgen"         ON)
+option(LIBIGL_WITH_TRIANGLE    "Use Triangle"       ON)
+option(LIBIGL_WITH_XML         "Use XML"            ON)
+option(LIBIGL_WITH_LIM         "Use LIM"            ON)
+option(LIBIGL_WITH_COMISO      "Use CoMiso"         ON)
+option(LIBIGL_WITH_BOOLEAN     "Use Cork boolean"   OFF)
+option(LIBIGL_WITH_MATLAB      "Use Matlab"         OFF)
+option(LIBIGL_WITH_MOSEK       "Use MOSEK"          OFF)
 
-if (OPENGL_FOUND)
+option(LIBIGL_WITH_CGAL        "Use CGAL"           OFF)
+if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build system fails without it
+  find_package(CGAL REQUIRED)
+  set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "CGAL's CMAKE Setup is super annoying ")
+  include(${CGAL_USE_FILE})
+endif()
 
-  ## include glew
-  if(NOT APPLE)
-    find_package(GLEW REQUIRED)
-    include_directories( ${GLEW_INCLUDE_DIR} )
-  	set(SHARED_SOURCES ${SHARED_SOURCES} ${GLEW_SOURCES})
-  endif(NOT APPLE)
+add_subdirectory("${PROJECT_SOURCE_DIR}/../cmake" "libigl")
 
+### ligIGL information ###
+message("libIGL includes: ${LIBIGL_INCLUDE_DIRS}")
+message("libIGL libraries: ${LIBIGL_LIBRARIES}")
+message("libIGL extra sources: ${LIBIGL_EXTRA_SOURCES}")
+message("libIGL extra libraries: ${LIBIGL_EXTRA_LIBRARIES}")
+message("libIGL definitions: ${LIBIGL_DEFINITIONS}")
 
-  # include nanogui and dependencies
+### Prepare the build environment
 
-  set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
-  set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
-  set(NANOGUI_BUILD_SHARED OFF CACHE BOOL " " FORCE)
-  add_definitions(-DIGL_VIEWER_WITH_NANOGUI)
-  
-  add_subdirectory("../external/nanogui/" "nanogui")
-  include_directories("../external/nanogui/include")
-  include_directories("../external/nanogui/ext/glfw/include")
-  include_directories("../external/nanogui/ext/nanovg/src")
+include_directories(${LIBIGL_INCLUDE_DIRS})
+add_definitions(${LIBIGL_DEFINITIONS})
 
-  if(UNIX AND NOT APPLE)
-	find_package(GLFW REQUIRED)
-  endif(UNIX AND NOT APPLE)
-
-
-  list(APPEND SHARED_LIBRARIES "nanogui" ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
-
+## Optional modules
+if (LIBIGL_WITH_OPENGL)
+  add_definitions(-DPY_VIEWER)
   list(APPEND SHARED_SOURCES "py_igl_viewer.cpp")
+endif ()
 
-endif (OPENGL_FOUND)
-# include comiso if available
-
-find_package(LIBCOMISOH QUIET)
-
-#Compile CoMISo (if found)
-# NOTE: this cmakefile works only with the
-# comiso available here: https://github.com/libigl/CoMISo
-IF(LIBCOMISO_FOUND)
-
+if (LIBIGL_WITH_COMISO)
   add_definitions(-DPY_COMISO)
-  list(APPEND SHARED_SOURCES "py_igl_comiso.cpp")
-
-  list(GET LIBCOMISO_INCLUDE_DIRS 0 COMISO_ROOT)
-  # message( FATAL_ERROR "${COMISO_ROOT}" )
-
-  if(APPLE)
-    find_library(accelerate_library Accelerate)
-    list(APPEND SHARED_LIBRARIES "CoMISo" ${accelerate_library})
-  elseif(UNIX)
-    find_package(BLAS REQUIRED)
-    list(APPEND SHARED_LIBRARIES "CoMISo" ${BLAS_LIBRARIES})
-  endif(APPLE)
-
-  if(MSVC)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SCL_SECURE_NO_DEPRECATE")
-    #link_directories("${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/")
-    list(APPEND SHARED_LIBRARIES "CoMISo" "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/libopenblas.dll.a.lib")
-  endif(MSVC)
+  list(APPEND SHARED_SOURCES "copyleft/py_igl_comiso.cpp")
+endif ()
 
 
-  include_directories("${COMISO_ROOT}/CoMISo/ext/gmm-4.2/include")
-  include_directories("${COMISO_ROOT}/")
-  add_subdirectory("${COMISO_ROOT}/CoMISo/" "CoMISo")
-
-  if(MSVC)
-    # Copy the dll
-    add_custom_target(Copy-CoMISo-DLL        # Adds a post-build event to MyTest
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libopenblas.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libopenblas.dll"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgcc_s_seh-1.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libgcc_s_seh-1.dll"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgfortran-3.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libgfortran-3.dll"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libquadmath-0.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libquadmath-0.dll")
-  endif(MSVC)
-
-ENDIF(LIBCOMISO_FOUND)
-
+## Prepare the python library
 add_library(igl SHARED
-  python.cpp
+  python_shared.cpp
   py_vector.cpp
   py_igl.cpp
   py_doc.cpp
   ${SHARED_SOURCES}
 )
 
-# if(NOT APPLE)
-# 	find_package(GLEW REQUIRED)
-# endif(NOT APPLE)
-
-if(APPLE)
-	set(CMAKE_SHARED_LINKER_FLAGS "-framework OpenGL -framework Cocoa")
-endif (APPLE) #APPLE
-
-
 set_target_properties(igl PROPERTIES PREFIX "")
 set_target_properties(igl PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
-target_link_libraries(igl ${SHARED_LIBRARIES})
+target_link_libraries(igl ${LIBIGL_LIBRARIES} ${LIBIGL_EXTRA_LIBRARIES})
 
 if (WIN32)
   if (MSVC)
