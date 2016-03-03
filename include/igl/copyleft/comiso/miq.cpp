@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include <igl/comiso/miq.h>
+#include <igl/copyleft/comiso/miq.h>
 #include <igl/local_basis.h>
 #include <igl/triangle_triangle_adjacency.h>
 #include <igl/cut_mesh.h>
@@ -45,6 +45,7 @@
 
 
 namespace igl {
+namespace copyleft {
 namespace comiso {
   struct SeamInfo
   {
@@ -350,9 +351,10 @@ namespace comiso {
 
   };
 };
+};
 }
 
-IGL_INLINE igl::comiso::SeamInfo::SeamInfo(int _v0,
+IGL_INLINE igl::copyleft::comiso::SeamInfo::SeamInfo(int _v0,
                                    int _v0p,
                                    int _MMatch,
                                    int _integerVar)
@@ -363,7 +365,7 @@ IGL_INLINE igl::comiso::SeamInfo::SeamInfo(int _v0,
   MMatch=_MMatch;
 }
 
-IGL_INLINE igl::comiso::SeamInfo::SeamInfo(const SeamInfo &S1)
+IGL_INLINE igl::copyleft::comiso::SeamInfo::SeamInfo(const SeamInfo &S1)
 {
   v0=S1.v0;
   v0p=S1.v0p;
@@ -373,7 +375,7 @@ IGL_INLINE igl::comiso::SeamInfo::SeamInfo(const SeamInfo &S1)
 
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE igl::comiso::VertexIndexing<DerivedV, DerivedF>::VertexIndexing(const Eigen::PlainObjectBase<DerivedV> &_V,
+IGL_INLINE igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::VertexIndexing(const Eigen::PlainObjectBase<DerivedV> &_V,
                                                                    const Eigen::PlainObjectBase<DerivedF> &_F,
                                                                    const Eigen::PlainObjectBase<DerivedV> &_Vcut,
                                                                    const Eigen::PlainObjectBase<DerivedF> &_Fcut,
@@ -402,7 +404,7 @@ Handle_Seams(_Handle_Seams)
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::GetSeamInfo(const int f0,
+IGL_INLINE void igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::GetSeamInfo(const int f0,
                                                                      const int f1,
                                                                      const int indexE,
                                                                      int &v0,int &v1,
@@ -424,7 +426,7 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::GetSeamInfo(con
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE std::vector<std::vector<typename igl::comiso::VertexIndexing<DerivedV, DerivedF>::VertexInfo> > igl::comiso::VertexIndexing<DerivedV, DerivedF>::GetVerticesPerSeam()
+IGL_INLINE std::vector<std::vector<typename igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::VertexInfo> > igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::GetVerticesPerSeam()
 {
   // Return value
   std::vector<std::vector<VertexInfo> >verticesPerSeam;
@@ -524,7 +526,7 @@ IGL_INLINE std::vector<std::vector<typename igl::comiso::VertexIndexing<DerivedV
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
+IGL_INLINE void igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
 {
   auto verticesPerSeam = GetVerticesPerSeam();
   Handle_SystemInfo.EdgeSeamInfo.clear();
@@ -590,7 +592,7 @@ IGL_INLINE void igl::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
 
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::SolvePoisson(Eigen::VectorXd Stiffness,
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::SolvePoisson(Eigen::VectorXd Stiffness,
                                                                      double vector_field_scale,
                                                                      double grid_res,
                                                                      bool direct_round,
@@ -662,7 +664,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::SolvePoisson(Eig
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE igl::comiso::PoissonSolver<DerivedV, DerivedF>
+IGL_INLINE igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>
 ::PoissonSolver(const Eigen::PlainObjectBase<DerivedV> &_V,
                 const Eigen::PlainObjectBase<DerivedF> &_F,
                 const Eigen::PlainObjectBase<DerivedV> &_Vcut,
@@ -695,7 +697,7 @@ Handle_SystemInfo(_Handle_SystemInfo)
 ///return the complex encoding the rotation
 ///for a given missmatch interval
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE std::complex<double> igl::comiso::PoissonSolver<DerivedV, DerivedF>::GetRotationComplex(int interval)
+IGL_INLINE std::complex<double> igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::GetRotationComplex(int interval)
 {
   assert((interval>=0)&&(interval<4));
 
@@ -713,7 +715,7 @@ IGL_INLINE std::complex<double> igl::comiso::PoissonSolver<DerivedV, DerivedF>::
 ///START FIXING VERTICES
 ///set a given vertex as fixed
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddFixedVertex(int v)
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::AddFixedVertex(int v)
 {
   n_fixed_vars++;
   Hard_constraints.push_back(v);
@@ -722,7 +724,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddFixedVertex(i
 ///find vertex to fix in case we're using
 ///a vector field NB: multiple components not handled
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindFixedVertField()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::FindFixedVertField()
 {
   Hard_constraints.clear();
 
@@ -747,21 +749,21 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindFixedVertFie
 ///find hard constraint depending if using or not
 ///a vector field
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindFixedVert()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::FindFixedVert()
 {
   Hard_constraints.clear();
   FindFixedVertField();
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE int igl::comiso::PoissonSolver<DerivedV, DerivedF>::GetFirstVertexIndex(int v)
+IGL_INLINE int igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::GetFirstVertexIndex(int v)
 {
   return Fcut(VF[v][0],VFi[v][0]);
 }
 
 ///fix the vertices which are flagged as fixed
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FixBlockedVertex()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::FixBlockedVertex()
 {
   int offset_row = num_cut_constraint*2;
 
@@ -798,7 +800,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FixBlockedVertex
 ///HANDLING SINGULARITY
 //set the singularity round to integer location
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddSingularityRound()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::AddSingularityRound()
 {
   for (unsigned int v=0;v<V.rows();v++)
   {
@@ -812,7 +814,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddSingularityRo
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddToRoundVertices(std::vector<int> ids)
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::AddToRoundVertices(std::vector<int> ids)
 {
   for (size_t i = 0; i < ids.size(); ++i)
   {
@@ -826,7 +828,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AddToRoundVertic
 
 ///START GENERIC SYSTEM FUNCTIONS
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildLaplacianMatrix(double vfscale)
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::BuildLaplacianMatrix(double vfscale)
 {
   Eigen::VectorXi idx  = Eigen::VectorXi::LinSpaced(Vcut.rows(), 0, 2*Vcut.rows()-2);
   Eigen::VectorXi idx2 = Eigen::VectorXi::LinSpaced(Vcut.rows(), 1, 2*Vcut.rows()-1);
@@ -863,7 +865,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildLaplacianMa
 
 ///find different sized of the system
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
 {
   ///find the vertex that need to be fixed
   FindFixedVert();
@@ -902,7 +904,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AllocateSystem()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::AllocateSystem()
 {
   Lhs.resize(n_vert_vars * 2, n_vert_vars * 2);
   Constraints.resize(num_constraint_equations, num_total_vars);
@@ -917,7 +919,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::AllocateSystem()
 
 ///intitialize the whole matrix
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::InitMatrix()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::InitMatrix()
 {
   FindSizes();
   AllocateSystem();
@@ -926,7 +928,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::InitMatrix()
 ///map back coordinates after that
 ///the system has been solved
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MapCoords()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::MapCoords()
 {
   ///map coords to faces
   for (unsigned int f=0;f<Fcut.rows();f++)
@@ -956,7 +958,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MapCoords()
 
 ///set the constraints for the inter-range cuts
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstraintsExplicitTranslation()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstraintsExplicitTranslation()
 {
   ///current constraint row
   int constr_row = 0;
@@ -1006,7 +1008,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstra
 
 ///set the constraints for the inter-range cuts
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildUserDefinedConstraints()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::BuildUserDefinedConstraints()
 {
   /// the user defined constraints are at the end
   int offset_row = num_cut_constraint*2 + n_fixed_vars*2;
@@ -1030,7 +1032,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::BuildUserDefined
 
 ///call of the mixed integer solver
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolve(double cone_grid_res,
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolve(double cone_grid_res,
                                                                           bool direct_round,
                                                                           int localIter)
 {
@@ -1120,14 +1122,14 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolv
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::clearUserConstraint()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::clearUserConstraint()
 {
   num_userdefined_constraint = 0;
   userdefined_constraints.clear();
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::addSharpEdgeConstraint(int fid, int vid)
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::addSharpEdgeConstraint(int fid, int vid)
 {
   // prepare constraint
   std::vector<int> c(Handle_SystemInfo.num_vert_variables*2 + 1);
@@ -1167,7 +1169,7 @@ IGL_INLINE void igl::comiso::PoissonSolver<DerivedV, DerivedF>::addSharpEdgeCons
 
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-IGL_INLINE igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::MIQ_class(const Eigen::PlainObjectBase<DerivedV> &V_,
+IGL_INLINE igl::copyleft::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::MIQ_class(const Eigen::PlainObjectBase<DerivedV> &V_,
                                                                    const Eigen::PlainObjectBase<DerivedF> &F_,
                                                                    const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
                                                                    const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
@@ -1237,7 +1239,7 @@ F(F_)
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-IGL_INLINE void igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::extractUV(Eigen::PlainObjectBase<DerivedU> &UV_out,
+IGL_INLINE void igl::copyleft::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::extractUV(Eigen::PlainObjectBase<DerivedU> &UV_out,
                                                                         Eigen::PlainObjectBase<DerivedF> &FUV_out)
 {
   UV_out = this->UV_out;
@@ -1245,7 +1247,7 @@ IGL_INLINE void igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::extractUV(
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-IGL_INLINE int igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::NumFlips(const Eigen::MatrixXd& WUV)
+IGL_INLINE int igl::copyleft::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::NumFlips(const Eigen::MatrixXd& WUV)
 {
   int numFl=0;
   for (unsigned int i=0;i<F.rows();i++)
@@ -1257,7 +1259,7 @@ IGL_INLINE int igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::NumFlips(co
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-IGL_INLINE double igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::Distortion(int f, double h, const Eigen::MatrixXd& WUV)
+IGL_INLINE double igl::copyleft::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::Distortion(int f, double h, const Eigen::MatrixXd& WUV)
 {
   assert(h > 0);
 
@@ -1345,7 +1347,7 @@ IGL_INLINE double igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::Distorti
 //  @return     distortion laplacian for f
 ///////////////////////////////////////////////////////////////////////////
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-IGL_INLINE double igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::LaplaceDistortion(const int f, double h, const Eigen::MatrixXd& WUV)
+IGL_INLINE double igl::copyleft::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::LaplaceDistortion(const int f, double h, const Eigen::MatrixXd& WUV)
 {
   double mydist = Distortion(f, h, WUV);
   double lapl=0;
@@ -1358,7 +1360,7 @@ IGL_INLINE double igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::LaplaceD
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-IGL_INLINE bool igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::updateStiffeningJacobianDistorsion(double grad_size, const Eigen::MatrixXd& WUV)
+IGL_INLINE bool igl::copyleft::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::updateStiffeningJacobianDistorsion(double grad_size, const Eigen::MatrixXd& WUV)
 {
   bool flipped = NumFlips(WUV)>0;
 
@@ -1394,7 +1396,7 @@ IGL_INLINE bool igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::updateStif
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-IGL_INLINE bool igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::IsFlipped(const Eigen::Vector2d &uv0,
+IGL_INLINE bool igl::copyleft::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::IsFlipped(const Eigen::Vector2d &uv0,
                                                                         const Eigen::Vector2d &uv1,
                                                                         const Eigen::Vector2d &uv2)
 {
@@ -1406,7 +1408,7 @@ IGL_INLINE bool igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::IsFlipped(
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-IGL_INLINE bool igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::IsFlipped(
+IGL_INLINE bool igl::copyleft::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::IsFlipped(
   const int i, const Eigen::MatrixXd& WUV)
 {
   Eigen::Vector2d uv0,uv1,uv2;
@@ -1421,7 +1423,7 @@ IGL_INLINE bool igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::IsFlipped(
 
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-IGL_INLINE void igl::comiso::miq(
+IGL_INLINE void igl::copyleft::comiso::miq(
   const Eigen::PlainObjectBase<DerivedV> &V,
   const Eigen::PlainObjectBase<DerivedF> &F,
   const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
@@ -1443,7 +1445,7 @@ IGL_INLINE void igl::comiso::miq(
 {
   GradientSize = GradientSize/(V.colwise().maxCoeff()-V.colwise().minCoeff()).norm();
 
-  igl::comiso::MIQ_class<DerivedV, DerivedF, DerivedU> miq(V,
+  igl::copyleft::comiso::MIQ_class<DerivedV, DerivedF, DerivedU> miq(V,
     F,
     PD1_combed,
     PD2_combed,
@@ -1466,7 +1468,7 @@ IGL_INLINE void igl::comiso::miq(
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
-IGL_INLINE void igl::comiso::miq(
+IGL_INLINE void igl::copyleft::comiso::miq(
     const Eigen::PlainObjectBase<DerivedV> &V,
     const Eigen::PlainObjectBase<DerivedF> &F,
     const Eigen::PlainObjectBase<DerivedV> &PD1,
@@ -1502,7 +1504,7 @@ IGL_INLINE void igl::comiso::miq(
   Eigen::PlainObjectBase<DerivedV> PD1_combed, PD2_combed;
   igl::comb_frame_field(V, F, PD1, PD2, BIS1_combed, BIS2_combed, PD1_combed, PD2_combed);
 
-  igl::comiso::miq(V,
+  igl::copyleft::comiso::miq(V,
            F,
            PD1_combed,
            PD2_combed,
@@ -1525,7 +1527,7 @@ IGL_INLINE void igl::comiso::miq(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::comiso::miq<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, double, double, bool, int, int, bool, bool, std::vector<int, std::allocator<int> >, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >);
-template void igl::comiso::miq<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, 3, 0, -1, 3> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 3, 0, -1, 3> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, double, double, bool, int, int, bool, bool, std::vector<int, std::allocator<int> >, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >);
-template void igl::comiso::miq<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, double, double, bool, int, int, bool, bool, std::vector<int, std::allocator<int> >, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >);
+template void igl::copyleft::comiso::miq<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, double, double, bool, int, int, bool, bool, std::vector<int, std::allocator<int> >, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >);
+template void igl::copyleft::comiso::miq<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, 3, 0, -1, 3> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 3, 0, -1, 3> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, double, double, bool, int, int, bool, bool, std::vector<int, std::allocator<int> >, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >);
+template void igl::copyleft::comiso::miq<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, double, double, bool, int, int, bool, bool, std::vector<int, std::allocator<int> >, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >);
 #endif

@@ -10,10 +10,12 @@
 #include <igl/triangle_triangle_adjacency.h>
 #include <igl/edge_topology.h>
 #include <igl/per_face_normals.h>
-#include <igl/comiso/nrosy.h>
+#include <igl/copyleft/comiso/nrosy.h>
 #include <iostream>
 
 namespace igl
+{
+namespace copyleft
 {
 namespace comiso
 {
@@ -229,7 +231,7 @@ void FrameInterpolator::interpolateCross()
   b.conservativeResize(num,Eigen::NoChange);
   bc.conservativeResize(num,Eigen::NoChange);
 
-  igl::comiso::nrosy(V, F, b, bc, 4, R, S);
+  igl::copyleft::comiso::nrosy(V, F, b, bc, 4, R, S);
   //olga:end
   assert(R.rows() == F.rows());
 
@@ -649,8 +651,9 @@ Eigen::MatrixXd FrameInterpolator::getFieldPerFace()
 
 }
 }
+}
 
-IGL_INLINE void igl::comiso::frame_field(
+IGL_INLINE void igl::copyleft::comiso::frame_field(
                                  const Eigen::MatrixXd& V,
                                  const Eigen::MatrixXi& F,
                                  const Eigen::VectorXi& b,

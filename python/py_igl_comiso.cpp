@@ -5,15 +5,15 @@
 
 #include "python.h"
 
-#include <igl/comiso/nrosy.h>
-#include <igl/comiso/miq.h>
+#include <igl/copyleft/comiso/nrosy.h>
+#include <igl/copyleft/comiso/miq.h>
 
 void python_export_igl_comiso(py::module &me) {
 
   py::module m = me.def_submodule(
     "comiso", "Wrappers for libigl functions that use comiso");
 
-  #include "py_igl/comiso/py_nrosy.cpp"
-  #include "py_igl/comiso/py_miq.cpp"
+  #include "py_igl/copyleft/comiso/py_nrosy.cpp"
+  #include "py_igl/copyleft/comiso/py_miq.cpp"
 
 }

@@ -16,6 +16,8 @@
 
 namespace igl
 {
+  namespace copyleft
+  {
   namespace comiso
   {
     // Generate a N-RoSy field from a sparse set of constraints
@@ -60,6 +62,7 @@ namespace igl
       );
 
   }
+}
 }
 
 #ifndef IGL_STATIC_LIBRARY
