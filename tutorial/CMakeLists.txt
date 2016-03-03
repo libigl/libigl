@@ -36,7 +36,7 @@ option(LIBIGL_WITH_COMISO      "Use CoMiso"         ON)
 ### End   to be tested ----
 
 ### libIGL options: decide if you want to use the functionalities that depends on cgal
-option(LIBIGL_WITH_CGAL        "Use CGAL"           ON)
+option(LIBIGL_WITH_CGAL        "Use CGAL"           OFF)
 if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build system fails without it
   find_package(CGAL REQUIRED)
   set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "CGAL's CMAKE Setup is super annoying ")
