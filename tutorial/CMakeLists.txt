@@ -23,7 +23,9 @@ endif()
 
 ### libIGL options: choose between header only and compiled static library
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
-option(LIBIGL_WITH_VIEWER      "Use Viewer Nanogui Bar" ON)
+option(LIBIGL_WITH_GLFW        "Use GLFW"           ON)
+option(LIBIGL_WITH_VIEWER      "Use OpenGL viewer"  ON)
+option(LIBIGL_WITH_NANOGUI     "Use Nanogui menu"   OFF)
 
 ### libIGL options: choose your dependencies (by default everything is OFF, in this example we need the viewer) ###
 option(LIBIGL_WITH_BBW         "Use BBW"            ON)

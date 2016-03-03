@@ -3,6 +3,9 @@ project(libigl)
 
 ### Available options ###
 option(LIBIGL_USE_STATIC_LIBRARY "Use libIGL as static library" OFF)
+option(LIBIGL_WITH_VIEWER      "Use OpenGL viewer"  OFF)
+option(LIBIGL_WITH_NANOGUI     "Use Nanogui menu"   OFF)
+option(LIBIGL_WITH_GLFW        "Use GLFW"           OFF)
 option(LIBIGL_WITH_BBW         "Use BBW"            OFF)
 option(LIBIGL_WITH_BOOLEAN     "Use Cork boolean"   OFF)
 option(LIBIGL_WITH_CGAL        "Use CGAL"           OFF)
@@ -17,6 +20,13 @@ option(LIBIGL_WITH_TETGEN      "Use Tetgen"         OFF)
 option(LIBIGL_WITH_TRIANGLE    "Use Triangle"       OFF)
 option(LIBIGL_WITH_VIEWER      "Use Nanogui Viewer" OFF)
 option(LIBIGL_WITH_XML         "Use XML"            OFF)
+
+if((WIN32 OR UNIX) AND NOT APPLE) # GLEW should not be needed on Linux
+  option(LIBIGL_WITH_GLEW        "Use Glew (not needed on Mac)" ON)
+else()
+  option(LIBIGL_WITH_GLEW        "Use Glew (not needed on Mac)" OFF)
+endif()
+
 
 ### Compilation configuration ###
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -266,9 +276,8 @@ if(LIBIGL_WITH_TRIANGLE)
   endif()
 endif()
 
-### Compile the viewer ###
-if(LIBIGL_WITH_VIEWER) # to finish cleaning
-
+### Compile nanogui and enables bar in the Viewer
+if(LIBIGL_WITH_NANOGUI)
   add_definitions(-DIGL_VIEWER_WITH_NANOGUI)
   list(APPEND LIBIGL_DEFINITIONS "-DIGL_VIEWER_WITH_NANOGUI")
 
@@ -282,6 +291,8 @@ if(LIBIGL_WITH_VIEWER) # to finish cleaning
   option(NANOGUI_BUILD_EXAMPLE OFF)
   option(NANOGUI_BUILD_SHARED  OFF)
   add_subdirectory("${NANOGUI_DIR}" "nanogui")
+
+  include_directories(${NANOGUI_INCLUDE_DIRS})
   list(APPEND LIBIGL_INCLUDE_DIRS ${NANOGUI_INCLUDE_DIRS})
   list(APPEND LIBIGL_EXTRA_LIBRARIES "nanogui" "glfw")
 
@@ -293,22 +304,51 @@ if(LIBIGL_WITH_VIEWER) # to finish cleaning
     list(APPEND LIBIGL_EXTRA_LIBRARIES "-lXrandr" "-lXi" "-lXxf86vm" "-lXcursor" "-lXinerama")
   endif()
 
+  find_package(OpenGL REQUIRED)
+  list(APPEND LIBIGL_EXTRA_LIBRARIES ${OPENGL_LIBRARIES})
+endif()
 
-  if((WIN32 OR UNIX) AND NOT APPLE) # GLEW should not be needed on Linux
-    include_directories("${NANOGUI_DIR}/ext/glew/include")
-    list(APPEND LIBIGL_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glew/include")
-    list(APPEND LIBIGL_EXTRA_SOURCES "${NANOGUI_DIR}/ext/glew/src/glew.c")
-    list(APPEND LIBIGL_EXTRA_LIBRARIES pthread)
-  endif()
+if((LIBIGL_WITH_GLFW OR LIBIGL_WITH_VIEWER) AND NOT LIBIGL_WITH_NANOGUI)
+  set(GLFW_DIR "${LIBIGL_EXTERNAL}/nanogui/ext/glfw")
+  set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
+  set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+  set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
+  set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
+  #message(FATAL_ERROR ${GLFW_DIR})
+  add_subdirectory("${GLFW_DIR}" "glfw")
+  list(APPEND LIBIGL_EXTRA_LIBRARIES "glfw")
+  include_directories("${GLFW_DIR}/include")
+  list(APPEND LIBIGL_INCLUDE_DIRS "${GLFW_DIR}/include")
 
   find_package(OpenGL REQUIRED)
   list(APPEND LIBIGL_EXTRA_LIBRARIES ${OPENGL_LIBRARIES})
 
+  if (APPLE)
+    list(APPEND LIBIGL_EXTRA_LIBRARIES "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo" "glfw") #${GLFW_LIBRARIES})
+  endif()
+
+  if (UNIX AND NOT APPLE)
+    list(APPEND LIBIGL_EXTRA_LIBRARIES "-lXrandr" "-lXi" "-lXxf86vm" "-lXcursor" "-lXinerama")
+  endif()
+
+endif()
+
+### Compile the viewer ###
+if(LIBIGL_WITH_VIEWER)
   if(LIBIGL_USE_STATIC_LIBRARY)
-    include_directories(${NANOGUI_INCLUDE_DIRS})
     CompileIGL_Module("viewer")
   endif()
 endif()
+
+### Compile glew if needed
+if(LIBIGL_WITH_GLEW)
+  set("GLEW_DIR" "${LIBIGL_EXTERNAL}/nanogui/ext/glew")
+  include_directories("${GLEW_DIR}/include")
+  list(APPEND LIBIGL_INCLUDE_DIRS "${GLEW_DIR}/include")
+  add_library(glew STATIC "${GLEW_DIR}src/glew.c")
+  list(APPEND LIBIGL_EXTRA_LIBRARIES glew)
+endif()
+
 
 ### Compile the xml part ###
 if(LIBIGL_WITH_XML)
