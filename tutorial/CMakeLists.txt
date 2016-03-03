@@ -52,7 +52,7 @@ endif()
 
 ### Adding libIGL: choose the path to your local copy libIGL ###
 ### This is going to compile everything you requested ###
-add_subdirectory("${PROJECT_SOURCE_DIR}/../cmake" "libigl")
+add_subdirectory("${PROJECT_SOURCE_DIR}/../shared/cmake" "libigl")
 
 ### ligIGL information ###
 message("libIGL includes: ${LIBIGL_INCLUDE_DIRS}")
