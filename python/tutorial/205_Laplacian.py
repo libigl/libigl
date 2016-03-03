@@ -4,7 +4,7 @@ from __future__ import print_function
 import sys, os
 sys.path.insert(0, os.getcwd() + "/../")
 
-import igl
+import pyigl as igl
 import math
 
 global V

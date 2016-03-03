@@ -2,7 +2,7 @@
 import sys, os
 sys.path.insert(0, os.getcwd() + "/../")
 
-import igl
+import pyigl as igl
 
 global z_max, z_dir, k, resolve, V, U, Z, F, b, bc
 

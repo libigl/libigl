@@ -2,7 +2,7 @@
 import sys, os
 sys.path.insert(0, os.getcwd() + "/../")
 
-import igl
+import pyigl as igl
 from math import pi
 
 V = igl.eigen.MatrixXd()

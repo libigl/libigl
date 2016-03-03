@@ -2,7 +2,7 @@
 import sys, os
 sys.path.insert(0, os.getcwd() + "/../")
 
-import igl
+import pyigl as igl
 import random
 from math import cos,sin,pi
 
