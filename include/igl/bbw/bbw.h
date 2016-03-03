@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_BBW_BBW_H
 #define IGL_BBW_BBW_H
@@ -51,7 +51,20 @@ namespace igl
         // 2: louder
         int verbosity;
       public:
-        inline BBWData();
+        inline BBWData():
+          partition_unity(false),
+          W0(),
+        #ifndef IGL_NO_MOSEK
+          mosek_data(),
+        #endif
+          active_set_params(),
+          qp_solver(QP_SOLVER_IGL_ACTIVE_SET),
+          verbosity(0)
+        {
+          // We know that the Bilaplacian is positive semi-definite
+          active_set_params.Auu_pd = true;
+        }
+
         // Print current state of object
         inline void print();
     };
@@ -72,25 +85,25 @@ namespace igl
     //   bc #b by #W list of boundary values
     //   data  object containing options, intial guess --> solution and results
     // Outputs:
-    //   W  #V by #W list of *unnormalized* weights to normalize use 
-    //    igl::normalize_row_sums(W,W); 
+    //   W  #V by #W list of *unnormalized* weights to normalize use
+    //    igl::normalize_row_sums(W,W);
     // Returns true on success, false on failure
     template <
-      typename DerivedV, 
-               typename DerivedEle, 
+      typename DerivedV,
+               typename DerivedEle,
                typename Derivedb,
-               typename Derivedbc, 
+               typename Derivedbc,
                typename DerivedW>
                  IGL_INLINE bool bbw(
-                     const Eigen::PlainObjectBase<DerivedV> & V, 
-                     const Eigen::PlainObjectBase<DerivedEle> & Ele, 
-                     const Eigen::PlainObjectBase<Derivedb> & b, 
-                     const Eigen::PlainObjectBase<Derivedbc> & bc, 
+                     const Eigen::PlainObjectBase<DerivedV> & V,
+                     const Eigen::PlainObjectBase<DerivedEle> & Ele,
+                     const Eigen::PlainObjectBase<Derivedb> & b,
+                     const Eigen::PlainObjectBase<Derivedbc> & bc,
                      BBWData & data,
                      Eigen::PlainObjectBase<DerivedW> & W);
   }
 }
-  
+
 #ifndef IGL_STATIC_LIBRARY
 #  include "bbw.cpp"
 #endif

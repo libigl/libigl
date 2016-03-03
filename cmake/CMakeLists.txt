@@ -43,12 +43,6 @@ if(LIBIGL_USE_STATIC_LIBRARY)
   list(APPEND LIBIGL_DEFINITIONS "-DIGL_STATIC_LIBRARY")
 endif()
 
-if(LIBIGL_WITH_VIEWER)
-  add_definitions(-DIGL_VIEWER_WITH_NANOGUI)
-  list(APPEND LIBIGL_DEFINITIONS "-DIGL_VIEWER_WITH_NANOGUI")
-endif()
-
-
 ### macro definition ###
 set(LIBIGL_ROOT "${PROJECT_SOURCE_DIR}/..")
 set(LIBIGL_SOURCE_DIR "${LIBIGL_ROOT}/include")
@@ -118,7 +112,6 @@ if(LIBIGL_WITH_BBW)
     CompileIGL_Module("bbw")
   endif()
 endif()
-
 
 #Compile CoMISo
 # NOTE: this cmakefile works only with the
@@ -278,7 +271,15 @@ endif()
 
 ### Compile the viewer ###
 if(LIBIGL_WITH_VIEWER) # to finish cleaning
+
   add_definitions(-DIGL_VIEWER_WITH_NANOGUI)
+  list(APPEND LIBIGL_DEFINITIONS "-DIGL_VIEWER_WITH_NANOGUI")
+
+  #-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+  if (APPLE)
+    list(APPEND LIBIGL_EXTRA_LIBRARIES "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo") #"glfw" ${GLFW_LIBRARIES})
+  endif()
+
   set(NANOGUI_DIR "${LIBIGL_EXTERNAL}/nanogui")
   set(NANOGUI_INCLUDE_DIRS
     "${NANOGUI_DIR}/include"
