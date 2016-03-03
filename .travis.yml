@@ -29,6 +29,8 @@ matrix:
             - libglu1-mesa-dev
             - g++-4.8
             - cmake
+            - libblas-dev
+            - liblapack-dev
     #         - binutils
     #         - libx11-dev
     #         - mesa-common-dev
