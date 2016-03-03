@@ -55,7 +55,9 @@ include_directories(${PROJECT_SOURCE_DIR}/../external/pybind11/include)
 
 ## include libigl
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" OFF)
-option(LIBIGL_WITH_VIEWER      "Use Nanogui Viewer" ON)
+option(LIBIGL_WITH_GLFW        "Use GLFW"           ON)
+option(LIBIGL_WITH_VIEWER      "Use OpenGL viewer"  ON)
+option(LIBIGL_WITH_NANOGUI     "Use Nanogui menu"   OFF)
 option(LIBIGL_WITH_BBW         "Use BBW"            ON)
 option(LIBIGL_WITH_EMBREE      "Use Embree"         ON)
 option(LIBIGL_WITH_OPENGL      "Use OpenGL"         ON)
