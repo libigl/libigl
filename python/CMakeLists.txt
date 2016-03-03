@@ -56,7 +56,7 @@ option(LIBIGL_WITH_GLFW        "Use GLFW"           ON)
 option(LIBIGL_WITH_VIEWER      "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_NANOGUI     "Use Nanogui menu"   OFF)
 option(LIBIGL_WITH_BBW         "Use BBW"            ON)
-option(LIBIGL_WITH_EMBREE      "Use Embree"         ON)
+option(LIBIGL_WITH_EMBREE      "Use Embree"         OFF)
 option(LIBIGL_WITH_OPENGL      "Use OpenGL"         ON)
 option(LIBIGL_WITH_PNG         "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN      "Use Tetgen"         ON)
@@ -102,7 +102,7 @@ endif ()
 
 
 ## Prepare the python library
-add_library(igl SHARED
+add_library(pyigl SHARED
   python_shared.cpp
   py_vector.cpp
   py_igl.cpp
@@ -110,25 +110,25 @@ add_library(igl SHARED
   ${SHARED_SOURCES}
 )
 
-set_target_properties(igl PROPERTIES PREFIX "")
-set_target_properties(igl PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
+set_target_properties(pyigl PROPERTIES PREFIX "")
+set_target_properties(pyigl PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
-target_link_libraries(igl ${LIBIGL_LIBRARIES} ${LIBIGL_EXTRA_LIBRARIES})
+target_link_libraries(pyigl ${LIBIGL_LIBRARIES} ${LIBIGL_EXTRA_LIBRARIES})
 
 if (WIN32)
   if (MSVC)
     # Enforce size-based optimization and link time code generation on MSVC (~30% smaller binaries in experiments)
-    set_target_properties(igl PROPERTIES COMPILE_FLAGS "/Os /GL")
-    set_target_properties(igl PROPERTIES LINK_FLAGS "/LTCG")
+    set_target_properties(pyigl PROPERTIES COMPILE_FLAGS "/Os /GL")
+    set_target_properties(pyigl PROPERTIES LINK_FLAGS "/LTCG")
   endif()
 
   # .PYD file extension on Windows
-  set_target_properties(igl PROPERTIES SUFFIX ".pyd")
+  set_target_properties(pyigl PROPERTIES SUFFIX ".pyd")
 
   # Link against the Python shared library
   # message(FATAL_ERROR ${PYTHON_LIBRARY})
   # target_link_libraries(igl ${PYTHON_LIBRARY})
-  target_link_libraries(igl ${PYTHON_LIBRARIES})
+  target_link_libraries(pyigl ${PYTHON_LIBRARIES})
 
 
 elseif (UNIX)
@@ -145,18 +145,18 @@ elseif (UNIX)
   # fine -- they will be resolved at import time.
 
   # .SO file extension on Linux/Mac OS
-  set_target_properties(igl PROPERTIES SUFFIX ".so")
+  set_target_properties(pyigl PROPERTIES SUFFIX ".so")
 
   # Strip unnecessary sections of the binary on Linux/Mac OS
   if(APPLE)
-    set_target_properties(igl PROPERTIES MACOSX_RPATH ".")
-    set_target_properties(igl PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
+    set_target_properties(pyigl PROPERTIES MACOSX_RPATH ".")
+    set_target_properties(pyigl PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
     if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-      add_custom_command(TARGET igl POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/../igl.so)
+      add_custom_command(TARGET pyigl POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/../pyigl.so)
     endif()
   else()
     if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-      add_custom_command(TARGET igl POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/../igl.so)
+      add_custom_command(TARGET pyigl POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/../pyigl.so)
     endif()
   endif()
 endif()
