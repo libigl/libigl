@@ -9,7 +9,8 @@ if(MSVC)
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") #### Libigl requires a modern C++ compiler that supports c++11
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../" )
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations -Wunused-parameter")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations -Wno-unused-parameter -Wno-deprecated-register -Wno-return-type-c-linkage")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations -Wno-unused-parameter -Wno-deprecated-register -Wno-return-type-c-linkage")
 endif()
 
 ### libIGL options: choose between header only and compiled static library
@@ -25,12 +26,10 @@ option(LIBIGL_WITH_TETGEN      "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE    "Use Triangle"       ON)
 option(LIBIGL_WITH_XML         "Use XML"            ON)
 option(LIBIGL_WITH_LIM         "Use LIM"            ON)
-option(LIBIGL_WITH_BOOLEAN     "Use Cork boolean"   OFF) # This option is not supported yet
 option(LIBIGL_WITH_COMISO      "Use CoMiso"         ON)
-
-### Start to be tested ----
-#option(LIBIGL_WITH_MATLAB      "Use Matlab"         OFF)
-#option(LIBIGL_WITH_MOSEK       "Use MOSEK"          OFF)
+option(LIBIGL_WITH_BOOLEAN     "Use Cork boolean"   OFF) # This option is not supported yet
+option(LIBIGL_WITH_MATLAB      "Use Matlab"         OFF) # This option is not supported yet
+option(LIBIGL_WITH_MOSEK       "Use MOSEK"          OFF) # This option is not supported yet
 ### End   to be tested ----
 
 ### libIGL options: decide if you want to use the functionalities that depends on cgal
