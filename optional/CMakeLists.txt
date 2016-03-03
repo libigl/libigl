@@ -28,7 +28,6 @@ option(LIBIGL_WITH_COMISO      "Use CoMiso"         ON)
 option(LIBIGL_WITH_BOOLEAN     "Use Cork boolean"   OFF)
 option(LIBIGL_WITH_MATLAB      "Use Matlab"         OFF)
 option(LIBIGL_WITH_MOSEK       "Use MOSEK"          OFF)
-
 option(LIBIGL_WITH_CGAL        "Use CGAL"           OFF)
 if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build system fails without it
   find_package(CGAL REQUIRED)
@@ -36,7 +35,7 @@ if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build syst
   include(${CGAL_USE_FILE})
 endif()
 
-add_subdirectory("${PROJECT_SOURCE_DIR}/../cmake" "libigl")
+add_subdirectory("${PROJECT_SOURCE_DIR}/../shared/cmake" "libigl")
 
 ### ligIGL information ###
 message("libIGL includes: ${LIBIGL_INCLUDE_DIRS}")

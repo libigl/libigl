@@ -54,7 +54,7 @@ if(LIBIGL_USE_STATIC_LIBRARY)
 endif()
 
 ### macro definition ###
-set(LIBIGL_ROOT "${PROJECT_SOURCE_DIR}/..")
+set(LIBIGL_ROOT "${PROJECT_SOURCE_DIR}/../../")
 set(LIBIGL_SOURCE_DIR "${LIBIGL_ROOT}/include")
 set(LIBIGL_EXTERNAL "${LIBIGL_ROOT}/external")
 

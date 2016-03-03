@@ -75,7 +75,7 @@ if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build syst
   include(${CGAL_USE_FILE})
 endif()
 
-add_subdirectory("${PROJECT_SOURCE_DIR}/../cmake" "libigl")
+add_subdirectory("${PROJECT_SOURCE_DIR}/../shared/cmake" "libigl")
 
 ### ligIGL information ###
 message("libIGL includes: ${LIBIGL_INCLUDE_DIRS}")
