@@ -13,6 +13,14 @@ else()
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations -Wno-unused-parameter -Wno-deprecated-register -Wno-return-type-c-linkage")
 endif()
 
+# Enable openMP if possible
+find_package(OpenMP)
+if (OPENMP_FOUND AND NOT WIN32)
+  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
+
 ### libIGL options: choose between header only and compiled static library
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
 option(LIBIGL_WITH_VIEWER      "Use Viewer Nanogui Bar" ON)
