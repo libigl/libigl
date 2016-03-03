@@ -15,7 +15,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
 
 ### libIGL options: choose between header only and compiled static library
-option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
+option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" OFF)
 if(LIBIGL_USE_STATIC_LIBRARY)
   add_definitions(-DIGL_STATIC_LIBRARY)
 endif()
@@ -34,13 +34,19 @@ option(LIBIGL_WITH_PNG         "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN      "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE    "Use Triangle"       ON)
 option(LIBIGL_WITH_XML         "Use XML"            ON)
+option(LIBIGL_WITH_LIM         "Use LIM"            ON)
+
+option(LIBIGL_WITH_CGAL        "Use CGAL"           ON)
+if(LIBIGL_WITH_CGAL) # Do not remove this line, cgal strange build system fails without it
+  find_package(CGAL REQUIRED)
+  set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "CGAL's CMAKE Setup is super annoying ")
+  include(${CGAL_USE_FILE})
+endif()
 
 ### Still need to be tested ----
-option(LIBIGL_WITH_LIM         "Use LIM"            ON)
 
 option(LIBIGL_WITH_COMISO      "Use CoMiso"         OFF)
 option(LIBIGL_WITH_BOOLEAN     "Use Cork boolean"   OFF)
-option(LIBIGL_WITH_CGAL        "Use CGAL"           OFF)
 #option(LIBIGL_WITH_MATLAB      "Use Matlab"         OFF)
 #option(LIBIGL_WITH_MOSEK       "Use MOSEK"          OFF)
 
