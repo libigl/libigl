@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 project(libigl)
 
 ### Available options ###
-option(LIBIGL_USE_STATIC_LIBRARY "Use libIGL as static library" OFF)
+option(LIBIGL_USE_STATIC_LIBRARY "Use libIGL as static library" ON)
 option(LIBIGL_WITH_BBW         "Use BBW"            OFF)
 option(LIBIGL_WITH_BOOLEAN     "Use Cork boolean"   OFF)
 option(LIBIGL_WITH_CGAL        "Use CGAL"           OFF)
@@ -42,16 +42,6 @@ if(LIBIGL_USE_STATIC_LIBRARY)
   add_definitions(-DIGL_STATIC_LIBRARY)
 endif()
 
-#if(APPLE)
-#  set(CMAKE_CXX_LINK_FLAGS "-framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo")
-#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2")
-#endif()
-
-#if(UNIX AND NOT APPLE)
-#  set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -lGL -lGLU -lrt -lX11 -lXxf86vm -lXrandr -lpthread -lXi  -lXcursor -lXinerama ")
-#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx")
-#endif()
-
 ### macro definition ###
 set(LIBIGL_ROOT "${PROJECT_SOURCE_DIR}/..")
 set(LIBIGL_SOURCE_DIR "${LIBIGL_ROOT}/include")
@@ -59,11 +49,19 @@ set(LIBIGL_EXTERNAL "${LIBIGL_ROOT}/external")
 
 macro(CompileIGL_Module module)
   file(GLOB SOURCES_${module}
-  "${LIBIGL_SOURCE_DIR}/igl/${module}/*.cpp")
+  "${LIBIGL_SOURCE_DIR}/igl/${module}/*.cpp"
+  )
   add_library(igl${module} STATIC ${SOURCES_${module}})
   list(APPEND LIBIGL_LIBRARIES "igl${module}")
 endmacro()
 
+macro(CompileIGL_Module_Copyleft module)
+  file(GLOB SOURCES_${module}
+  "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module}/*.cpp"
+  )
+  add_library(igl${module} STATIC ${SOURCES_${module}})
+  list(APPEND LIBIGL_LIBRARIES "igl${module}")
+endmacro()
 
 ### Eigen ###
 set(EIGEN_INCLUDE_DIR "${LIBIGL_EXTERNAL}/nanogui/ext/eigen")
@@ -82,7 +80,9 @@ endif()
 list(APPEND LIBIGL_INCLUDE_DIRS "${LIBIGL_SOURCE_DIR}")
 if(LIBIGL_USE_STATIC_LIBRARY)
   include_directories("${LIBIGL_SOURCE_DIR}")
-  file(GLOB SOURCES_IGL "${LIBIGL_SOURCE_DIR}/igl/*.cpp")
+  file(GLOB SOURCES_IGL
+  "${LIBIGL_SOURCE_DIR}/igl/*.cpp"
+  "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.cpp")
   add_library(igl STATIC ${SOURCES_IGL})
   list(APPEND LIBIGL_LIBRARIES "igl")
 endif()
@@ -224,7 +224,7 @@ if(LIBIGL_WITH_TETGEN)
 
   if(LIBIGL_USE_STATIC_LIBRARY)
     include_directories(${TETGEN_DIR})
-    CompileIGL_Module("tetgen")
+    CompileIGL_Module_Copyleft("tetgen")
   endif()
 endif()
 
@@ -243,6 +243,7 @@ endif()
 
 ### Compile the viewer ###
 if(LIBIGL_WITH_VIEWER) # to finish cleaning
+  add_definitions(-DIGL_VIEWER_WITH_NANOGUI)
   set(NANOGUI_DIR "${LIBIGL_EXTERNAL}/nanogui")
   set(NANOGUI_INCLUDE_DIRS
     "${NANOGUI_DIR}/include"
@@ -257,7 +258,7 @@ if(LIBIGL_WITH_VIEWER) # to finish cleaning
   list(APPEND LIBIGL_INCLUDE_DIRS ${NANOGUI_INCLUDE_DIRS})
   list(APPEND LIBIGL_EXTRA_LIBRARIES "nanogui" "glfw" ${GLFW_LIBRARIES} pthread)
 
-  if(WIN32 OR UNIX) # GLEW should not be needed on Linux
+  if((WIN32 OR UNIX) AND NOT APPLE) # GLEW should not be needed on Linux
     include_directories("${NANOGUI_DIR}/ext/glew/include")
     list(APPEND LIBIGL_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glew/include")
     list(APPEND LIBIGL_EXTRA_SOURCES "${NANOGUI_DIR}/ext/glew/src/glew.c")
