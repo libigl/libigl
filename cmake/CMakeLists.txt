@@ -74,7 +74,6 @@ endmacro()
 set(EIGEN_INCLUDE_DIR "${LIBIGL_EXTERNAL}/nanogui/ext/eigen")
 include_directories(${EIGEN_INCLUDE_DIR})
 list(APPEND LIBIGL_INCLUDE_DIRS "${EIGEN_INCLUDE_DIR}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations") # remove some annoying warning for Eigen (at least with gcc)
 
 ### OpenMP ###
 find_package(OpenMP)
@@ -137,8 +136,6 @@ IF(LIBIGL_WITH_COMISO)
   add_definitions(-DINCLUDE_TEMPLATES)
   list(APPEND LIBIGL_DEFINITIONS "-DINCLUDE_TEMPLATES")
 
-  add_subdirectory("${COMISO_DIR}" "CoMISo")
-
   if(APPLE)
     find_library(accelerate_library Accelerate)
     list(APPEND LIBIGL_EXTRA_LIBRARIES "CoMISo" ${accelerate_library})
@@ -152,6 +149,8 @@ IF(LIBIGL_WITH_COMISO)
     #link_directories("${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/")
     list(APPEND LIBIGL_EXTRA_LIBRARIES "CoMISo" "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/lib/libopenblas.dll.a.lib")
   endif(MSVC)
+
+  add_subdirectory("${COMISO_DIR}" "CoMISo")
 
   if(MSVC)
     # Copy the dll
@@ -230,6 +229,9 @@ endif()
 
 ### Compile the opengl and png parts ###
 if(LIBIGL_WITH_OPENGL)
+  find_package(OpenGL REQUIRED)
+  list(APPEND LIBIGL_EXTRA_LIBRARIES ${OPENGL_LIBRARIES})
+
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module("opengl")
     CompileIGL_Module("opengl2")
@@ -283,18 +285,18 @@ if(LIBIGL_WITH_VIEWER) # to finish cleaning
     "${NANOGUI_DIR}/ext/nanovg/src"
     "${NANOGUI_DIR}/ext/glfw/include")
 
-  option(GLFW_INSTALL OFF)
   option(NANOGUI_BUILD_PYTHON OFF)
   option(NANOGUI_BUILD_EXAMPLE OFF)
   option(NANOGUI_BUILD_SHARED  OFF)
   add_subdirectory("${NANOGUI_DIR}" "nanogui")
   list(APPEND LIBIGL_INCLUDE_DIRS ${NANOGUI_INCLUDE_DIRS})
-  list(APPEND LIBIGL_EXTRA_LIBRARIES "nanogui" "glfw" ${GLFW_LIBRARIES} pthread)
+  list(APPEND LIBIGL_EXTRA_LIBRARIES "nanogui") #"glfw" ${GLFW_LIBRARIES})
 
   if((WIN32 OR UNIX) AND NOT APPLE) # GLEW should not be needed on Linux
     include_directories("${NANOGUI_DIR}/ext/glew/include")
     list(APPEND LIBIGL_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glew/include")
     list(APPEND LIBIGL_EXTRA_SOURCES "${NANOGUI_DIR}/ext/glew/src/glew.c")
+    #list(APPEND LIBIGL_EXTRA_LIBRARIES pthread)
   endif()
 
   if(LIBIGL_USE_STATIC_LIBRARY)
