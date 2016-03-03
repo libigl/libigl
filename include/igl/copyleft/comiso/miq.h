@@ -13,6 +13,8 @@
 
 namespace igl
 {
+  namespace copyleft
+  {
   namespace comiso
   {
   // Global seamless parametrization aligned with a given per-face jacobian (PD1,PD2).
@@ -88,6 +90,7 @@ namespace igl
       std::vector<int> roundVertices = std::vector<int>(),
       std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
   };
+};
 };
 #ifndef IGL_STATIC_LIBRARY
 #include "miq.cpp"

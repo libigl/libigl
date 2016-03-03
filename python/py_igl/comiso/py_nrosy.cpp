@@ -30,7 +30,7 @@ m.def("nrosy", []
     w_softt = w_soft;
 
   Eigen::VectorXd St;
-  igl::comiso::nrosy(V,F,bt,bc,b_softt,w_softt,bc_soft,N,soft,R,St);
+  igl::copyleft::comiso::nrosy(V,F,bt,bc,b_softt,w_softt,bc_soft,N,soft,R,St);
   S = St;
 
 }, __doc_igl_comiso_nrosy,
@@ -54,7 +54,7 @@ m.def("nrosy", []
     bt = b;
 
   Eigen::VectorXd St;
-  igl::comiso::nrosy(V,F,bt,bc,N,R,St);
+  igl::copyleft::comiso::nrosy(V,F,bt,bc,N,R,St);
   S = St;
 }, __doc_igl_comiso_nrosy,
 py::arg("V"), py::arg("F"), py::arg("b"), py::arg("bc"), py::arg("N"), py::arg("R"), py::arg("S"));
