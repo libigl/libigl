@@ -21,3 +21,6 @@ url=https://github.com/libigl/nanogui.git
 [submodule "external/tinyxml2"]
 	path = external/tinyxml2
 	url = https://github.com/leethomason/tinyxml2.git
+[submodule "external/CoMISo"]
+	path = external/CoMISo
+	url = https://github.com/libigl/CoMISo.git
