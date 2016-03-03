@@ -20,7 +20,7 @@ option(LIBIGL_WITH_XML         "Use XML"            OFF)
 
 ### Compilation configuration ###
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}")
+set(CMAKE_MODULE_PATH "${CURRENT_SOURCE_DIR}")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
@@ -291,40 +291,29 @@ endif()
 
 ### Compile the boolean and cgal parts ###
 if(LIBIGL_WITH_CGAL) # to be cleaned
-  set(CGAL_DIR "${LIBIGL_EXTERNAL}/cgal/build")
-  #option(CGAL_BRANCH_BUILD ON)
-  #option(BUILD_SHARED_LIBS OFF)
-  #option(WITH_CGAL_ImageIO OFF)
-  #option(WITH_CGAL_QT3 OFF)
-  #option(WITH_CGAL_QT5 OFF)
-  set(CMAKELISTS_SHARED_INCLUDED FALSE)
   find_package(CGAL REQUIRED)
+  # set(Boost_USE_MULTITHREADED      ON)
+  # set(Boost_USE_STATIC_LIBS      ON)
+  #
+  # find_package(BOOST REQUIRED)
+
   message(${CGAL_USE_FILE})
   include(${CGAL_USE_FILE})
-  #add_subdirectory("${LIBIGL_EXTERNAL}/cgal" "cgal")
 
-#  find_package(CGAL REQUIRED)
-#  if(NOT CGAL_FOUND)
-#    message(SEND_ERROR "Could NOT find CGAL")
-#  endif()
+  list(APPEND LIBIGL_INCLUDE_DIRS ${CGAL_3RD_PARTY_INCLUDE_DIRS})
+  list(APPEND LIBIGL_INCLUDE_DIRS ${CGAL_INCLUDE_DIRS})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES ${CGAL_3RD_PARTY_LIBRARIES})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES ${CGAL_LIBRARIES})
 
   if(LIBIGL_WITH_CORK)
-#    find_package(CORK REQUIRED)
-#    if(NOT MOSEK_FOUND)
-#      message(SEND_ERROR "Could NOT find CORK")
-#    endif()
-
-#    if(LIBIGL_USE_STATIC_LIBRARY)
-#      include_directories(${CORK_INCLUDE_DIR})
-#      CompileIGL_Module("boolean")
-#    endif()
   else()
     add_definitions(-DIGL_NO_CORK)
     list(APPEND LIBIGL_DEFINITIONS "-DIGL_NO_CORK")
   endif()
 
   if(LIBIGL_USE_STATIC_LIBRARY)
-    CompileIGL_Module("cgal")
+    CompileIGL_Module_Copyleft("cgal")
+    CompileIGL_Module_Copyleft("boolean")
   endif()
 endif()
 
