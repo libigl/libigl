@@ -345,7 +345,7 @@ if(LIBIGL_WITH_GLEW)
   set("GLEW_DIR" "${LIBIGL_EXTERNAL}/nanogui/ext/glew")
   include_directories("${GLEW_DIR}/include")
   list(APPEND LIBIGL_INCLUDE_DIRS "${GLEW_DIR}/include")
-  add_library(glew STATIC "${GLEW_DIR}src/glew.c")
+  add_library(glew STATIC "${GLEW_DIR}/src/glew.c")
   list(APPEND LIBIGL_EXTRA_LIBRARIES glew)
 endif()
 
