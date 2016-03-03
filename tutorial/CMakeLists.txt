@@ -36,7 +36,7 @@ option(LIBIGL_WITH_TRIANGLE    "Use Triangle"       ON)
 option(LIBIGL_WITH_XML         "Use XML"            ON)
 
 ### Still need to be tested ----
-option(LIBIGL_WITH_LIM         "Use LIM"            OFF)
+option(LIBIGL_WITH_LIM         "Use LIM"            ON)
 
 option(LIBIGL_WITH_COMISO      "Use CoMiso"         OFF)
 option(LIBIGL_WITH_BOOLEAN     "Use Cork boolean"   OFF)
