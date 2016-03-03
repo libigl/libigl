@@ -14,30 +14,43 @@ endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
 
-### libIGL options: choose between header only and comiled static library
-option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" OFF)
+### libIGL options: choose between header only and compiled static library
+option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
+if(LIBIGL_USE_STATIC_LIBRARY)
+  add_definitions(-DIGL_STATIC_LIBRARY)
+endif()
+
+### libIGL options: decide if you want the nanogui bar in the viewer
+option(LIBIGL_WITH_VIEWER      "Use Nanogui Viewer" ON)
+if(LIBIGL_WITH_VIEWER)
+  add_definitions(-DIGL_VIEWER_WITH_NANOGUI)
+endif()
 
 ### libIGL options: choose your dependencies (by default everything is OFF, in this example we need the viewer) ###
-#option(LIBIGL_WITH_BBW         "Use BBW"            ON)
+option(LIBIGL_WITH_BBW         "Use BBW"            ON)
+option(LIBIGL_WITH_EMBREE      "Use Embree"         ON)
+option(LIBIGL_WITH_OPENGL      "Use OpenGL"         ON)
+option(LIBIGL_WITH_PNG         "Use PNG"            ON)
+option(LIBIGL_WITH_TETGEN      "Use Tetgen"         ON)
+option(LIBIGL_WITH_TRIANGLE    "Use Triangle"       ON)
+option(LIBIGL_WITH_XML         "Use XML"            ON)
+
+### Still need to be tested ----
+option(LIBIGL_WITH_LIM         "Use LIM"            OFF)
+
+option(LIBIGL_WITH_COMISO      "Use CoMiso"         OFF)
 option(LIBIGL_WITH_BOOLEAN     "Use Cork boolean"   OFF)
 option(LIBIGL_WITH_CGAL        "Use CGAL"           OFF)
-#option(LIBIGL_WITH_COMISO      "Use CoMiso"         OFF)
-#option(LIBIGL_WITH_EMBREE      "Use Embree"         ON)
-#option(LIBIGL_WITH_LIM         "Use LIM"            ON)
 #option(LIBIGL_WITH_MATLAB      "Use Matlab"         OFF)
 #option(LIBIGL_WITH_MOSEK       "Use MOSEK"          OFF)
-#option(LIBIGL_WITH_OPENGL      "Use OpenGL"         ON)
-#option(LIBIGL_WITH_PNG         "Use PNG"            ON)
-#option(LIBIGL_WITH_TETGEN      "Use Tetgen"         ON)
-#option(LIBIGL_WITH_TRIANGLE    "Use Triangle"       ON)
-option(LIBIGL_WITH_VIEWER      "Use Nanogui Viewer" ON)
-#option(LIBIGL_WITH_XML         "Use XML"            OFF)
+
+### END TESTING
 
 ### Adding libIGL: choose the path to your local copy libIGL ###
 ### This is going to compile everything you requested ###
 add_subdirectory("${PROJECT_SOURCE_DIR}/../cmake" "libigl")
 
-### ligIBL information ###
+### ligIGL information ###
 message("libIGL includes: ${LIBIGL_INCLUDE_DIRS}")
 message("libIGL libraries: ${LIBIGL_LIBRARIES}")
 message("libIGL extra sources: ${LIBIGL_EXTRA_SOURCES}")
@@ -46,12 +59,12 @@ message("libIGL definitions: ${LIBIGL_DEFINITIONS}")
 
 ### Choose which chapters to compile ###
 option(TUTORIALS_CHAPTER1 "Compile chapter 1" ON)
-option(TUTORIALS_CHAPTER2 "Compile chapter 2" OFF)
-option(TUTORIALS_CHAPTER3 "Compile chapter 3" OFF)
-option(TUTORIALS_CHAPTER4 "Compile chapter 4" OFF)
-option(TUTORIALS_CHAPTER5 "Compile chapter 5" OFF)
-option(TUTORIALS_CHAPTER6 "Compile chapter 6" OFF)
-option(TUTORIALS_CHAPTER7 "Compile chapter 7" OFF)
+option(TUTORIALS_CHAPTER2 "Compile chapter 2" ON)
+option(TUTORIALS_CHAPTER3 "Compile chapter 3" ON)
+option(TUTORIALS_CHAPTER4 "Compile chapter 4" ON)
+option(TUTORIALS_CHAPTER5 "Compile chapter 5" ON)
+option(TUTORIALS_CHAPTER6 "Compile chapter 6" ON)
+option(TUTORIALS_CHAPTER7 "Compile chapter 7" ON)
 
 # Store location of tutorial/shared directory
 set(TUTORIAL_SHARED_PATH ${CMAKE_CURRENT_SOURCE_DIR}/shared CACHE PATH "location of shared tutorial resources")
