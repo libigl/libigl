@@ -51,9 +51,9 @@ namespace igl
         // 2: louder
         int verbosity;
       public:
-        inline BBWData();
+        IGL_INLINE BBWData();
         // Print current state of object
-        inline void print();
+        IGL_INLINE void print();
     };
 
     // Compute Bounded Biharmonic Weights on a given domain (V,Ele) with a given
