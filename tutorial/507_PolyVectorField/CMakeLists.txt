@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 project(507_PolyVectorField)
 
-include_directories(${LIBIGL_INCLUDE_DIRS})
 add_executable(${PROJECT_NAME}_bin
-  main.cpp
-${LIBIGL_EXTRA_SOURCES})
+  main.cpp)
+target_include_directories(${PROJECT_NAME}_bin PRIVATE ${LIBIGL_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME}_bin ${LIBIGL_LIBRARIES} ${LIBIGL_EXTRA_LIBRARIES})
