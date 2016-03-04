@@ -40,6 +40,5 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/../shared/cmake" "libigl")
 ### ligIGL information ###
 message("libIGL includes: ${LIBIGL_INCLUDE_DIRS}")
 message("libIGL libraries: ${LIBIGL_LIBRARIES}")
-message("libIGL extra sources: ${LIBIGL_EXTRA_SOURCES}")
 message("libIGL extra libraries: ${LIBIGL_EXTRA_LIBRARIES}")
 message("libIGL definitions: ${LIBIGL_DEFINITIONS}")
