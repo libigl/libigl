@@ -24,6 +24,7 @@ set(LIM_SOURCES
   UniformLaplacian_LIMSolver3D.cpp
   )
 
-include_directories("../../include/") # depends on IGL
-
 add_library(lim STATIC ${LIM_SOURCES})
+target_include_directories(lim SYSTEM PRIVATE "../nanogui/ext/eigen")
+target_include_directories(lim PRIVATE "../../include")
+target_compile_options(lim PRIVATE -Wno-deprecated-declarations) # for Eigen
