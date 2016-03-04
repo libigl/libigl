@@ -301,7 +301,7 @@ if(LIBIGL_WITH_NANOGUI)
   endif()
 
   if (UNIX AND NOT APPLE)
-    list(APPEND LIBIGL_EXTRA_LIBRARIES "-lXrandr" "-lXi" "-lXxf86vm" "-lXcursor" "-lXinerama")
+    list(APPEND LIBIGL_EXTRA_LIBRARIES "-lXrandr" "-lXi" "-lXxf86vm" "-lXcursor" "-lXinerama" "-lX11" "-lpthread")
   endif()
 
   find_package(OpenGL REQUIRED)
@@ -328,7 +328,7 @@ if((LIBIGL_WITH_GLFW OR LIBIGL_WITH_VIEWER) AND NOT LIBIGL_WITH_NANOGUI)
   endif()
 
   if (UNIX AND NOT APPLE)
-    list(APPEND LIBIGL_EXTRA_LIBRARIES "-lXrandr" "-lXi" "-lXxf86vm" "-lXcursor" "-lXinerama")
+    list(APPEND LIBIGL_EXTRA_LIBRARIES "-lXrandr" "-lXi" "-lXxf86vm" "-lXcursor" "-lXinerama" "-lX11" "-lpthread")
   endif()
 
 endif()
