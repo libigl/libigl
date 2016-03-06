@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.12)
 project(libigl)
 
 ### Available options ###
@@ -245,6 +245,9 @@ if(LIBIGL_WITH_OPENGL)
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module("opengl")
     CompileIGL_Module("opengl2")
+    if(WIN32)
+      target_include_directories(iglopengl2 "${LIBIGL_EXTERNAL}/nanogui/ext/glew")
+    endif()
   endif()
 
   if(LIBIGL_WITH_PNG)

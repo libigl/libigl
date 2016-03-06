@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(lim)
 
-message(WARNING "CMake version: ${CMAKE_VERSION}")
-
 add_library(lim STATIC
     Dirichlet_LIMSolver2D.cpp
     Dirichlet_LIMSolver3D.cpp
@@ -28,4 +26,4 @@ add_library(lim STATIC
 target_include_directories(lim PRIVATE
   "../nanogui/ext/eigen"
   "../../include")
-#target_compile_options(lim PRIVATE -Wno-deprecated-declarations)
+target_compile_options(lim PRIVATE -Wno-deprecated-declarations)
