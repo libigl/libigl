@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 project(libigl)
 
 ### Available options ###
@@ -68,9 +68,9 @@ macro(CompileIGL_Module module)
   "${LIBIGL_SOURCE_DIR}/igl/${module}/*.cpp"
   )
   add_library(igl${module} STATIC ${SOURCES_IGL_${module}})
-  target_include_directories(igl${module} SYSTEM PRIVATE ${EIGEN_INCLUDE_DIR})
+  target_include_directories(igl${module} PRIVATE ${EIGEN_INCLUDE_DIR})
   target_include_directories(igl${module} PRIVATE ${LIBIGL_SOURCE_DIR})
-  target_compile_definitions(igl${module} PRIVATE "-DIGL_STATIC_LIBRARY")
+  target_compile_definitions(igl${module} PRIVATE -DIGL_STATIC_LIBRARY)
   list(APPEND LIBIGL_LIBRARIES "igl${module}")
 endmacro()
 
@@ -79,9 +79,9 @@ macro(CompileIGL_Module_Copyleft module)
   "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module}/*.cpp"
   )
   add_library(igl${module} STATIC ${SOURCES_IGL_${module}})
-  target_include_directories(igl${module} SYSTEM PRIVATE ${EIGEN_INCLUDE_DIR})
+  target_include_directories(igl${module} PRIVATE ${EIGEN_INCLUDE_DIR})
   target_include_directories(igl${module} PRIVATE ${LIBIGL_SOURCE_DIR})
-  target_compile_definitions(igl${module} PRIVATE "-DIGL_STATIC_LIBRARY")
+  target_compile_definitions(igl${module} PRIVATE -DIGL_STATIC_LIBRARY)
   list(APPEND LIBIGL_LIBRARIES "igl${module}")
 endmacro()
 
@@ -100,9 +100,9 @@ if(LIBIGL_USE_STATIC_LIBRARY)
   "${LIBIGL_SOURCE_DIR}/igl/*.cpp"
   "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.cpp")
   add_library(igl STATIC ${SOURCES_IGL})
-  target_include_directories(igl SYSTEM PRIVATE ${EIGEN_INCLUDE_DIR})
+  target_include_directories(igl PRIVATE ${EIGEN_INCLUDE_DIR})
   target_include_directories(igl PRIVATE ${LIBIGL_SOURCE_DIR})
-  target_compile_definitions(igl PRIVATE "-DIGL_STATIC_LIBRARY")
+  target_compile_definitions(igl PRIVATE -DIGL_STATIC_LIBRARY)
   list(APPEND LIBIGL_LIBRARIES "igl")
 endif()
 
@@ -115,7 +115,7 @@ if(LIBIGL_WITH_MOSEK)
 
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module("mosek")
-    target_include_directories(iglmosek ${MOSEK_INCLUDE_DIR})
+    target_include_directories(iglmosek PRIVATE ${MOSEK_INCLUDE_DIR})
   endif()
 else()
   list(APPEND LIBIGL_DEFINITIONS "-DIGL_NO_MOSEK")
@@ -129,7 +129,7 @@ if(LIBIGL_WITH_BBW)
       target_include_directories(iglbbw PRIVATE ${MOSEK_INCLUDE_DIR})
       target_link_libraries(iglbbw PRIVATE ${MOSEK_LIBRARIES})
     else()
-      target_compile_definitions(iglbbw PRIVATE "-DIGL_NO_MOSEK")
+      target_compile_definitions(iglbbw PRIVATE -DIGL_NO_MOSEK)
     endif()
   endif()
 endif()
@@ -137,7 +137,7 @@ endif()
 #Compile CoMISo
 # NOTE: this cmakefile works only with the
 # comiso available here: https://github.com/libigl/CoMISo
-IF(LIBIGL_WITH_COMISO)
+if(LIBIGL_WITH_COMISO)
   set(COMISO_DIR "${LIBIGL_EXTERNAL}/CoMISo")
 
   set(COMISO_INCLUDE_DIRS
@@ -145,7 +145,6 @@ IF(LIBIGL_WITH_COMISO)
     "${COMISO_DIR}/../")
 
   list(APPEND LIBIGL_INCLUDE_DIRS ${COMISO_INCLUDE_DIRS})
-  #include_directories(${COMISO_INCLUDE_DIRS}) (what needs this?)
 
   #add_definitions(-DINCLUDE_TEMPLATES) (what need this?)
   list(APPEND LIBIGL_DEFINITIONS "-DINCLUDE_TEMPLATES")
@@ -159,7 +158,7 @@ IF(LIBIGL_WITH_COMISO)
   endif(APPLE)
 
   if(MSVC)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SCL_SECURE_NO_DEPRECATE")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SCL_SECURE_NO_DEPRECATE")
     #link_directories("${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/")
     list(APPEND LIBIGL_EXTRA_LIBRARIES "CoMISo" "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/lib/libopenblas.dll.a.lib")
   endif(MSVC)
@@ -186,6 +185,7 @@ IF(LIBIGL_WITH_COMISO)
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module_Copyleft("comiso")
     target_include_directories(iglcomiso PRIVATE ${COMISO_INCLUDE_DIRS})
+    target_compile_definitions(iglcomiso PRIVATE -DINCLUDE_TEMPLATES)
   endif()
 endif()
 
@@ -301,18 +301,16 @@ if(LIBIGL_WITH_NANOGUI)
   option(NANOGUI_BUILD_SHARED  OFF)
   add_subdirectory("${NANOGUI_DIR}" "nanogui")
 
-  #include_directories(${NANOGUI_INCLUDE_DIRS})
   list(APPEND LIBIGL_INCLUDE_DIRS ${NANOGUI_INCLUDE_DIRS})
-  list(APPEND LIBIGL_EXTRA_LIBRARIES "nanogui" "glfw")
+  list(APPEND LIBIGL_EXTRA_LIBRARIES "nanogui" ${NANOGUI_EXTRA_LIBRARIES})
 
-  if (APPLE)
-    list(APPEND LIBIGL_EXTRA_LIBRARIES "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo" "glfw") #${GLFW_LIBRARIES})
-  endif()
-
-  if (UNIX AND NOT APPLE)
-    list(APPEND LIBIGL_EXTRA_LIBRARIES ${GLFW_LIBRARIES})
-  endif()
-
+# all this opengl things are already listed with nanogui
+  #if (APPLE)
+  #  list(APPEND LIBIGL_EXTRA_LIBRARIES "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo" "glfw") #${GLFW_LIBRARIES})
+#endif()
+  #if (UNIX AND NOT APPLE)
+  #  list(APPEND LIBIGL_EXTRA_LIBRARIES ${GLFW_LIBRARIES})
+#endif()
   #find_package(OpenGL REQUIRED)
   #list(APPEND LIBIGL_EXTRA_LIBRARIES ${OPENGL_LIBRARIES})
 endif()
@@ -324,20 +322,19 @@ if((LIBIGL_WITH_GLFW OR LIBIGL_WITH_VIEWER) AND NOT LIBIGL_WITH_NANOGUI)
   set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
   set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
   add_subdirectory("${GLFW_DIR}" "glfw")
-  list(APPEND LIBIGL_EXTRA_LIBRARIES "glfw")
-  #include_directories("${GLFW_DIR}/include")
-  #list(APPEND LIBIGL_INCLUDE_DIRS "${GLFW_DIR}/include")
 
+  list(APPEND LIBIGL_INCLUDE_DIRS "${GLFW_DIR}/include")
+  list(APPEND LIBIGL_EXTRA_LIBRARIES "glfw" ${GLFW_LIBRARIES})
+
+  # opengl libraries are already in glfw
   #find_package(OpenGL REQUIRED)
   #list(APPEND LIBIGL_EXTRA_LIBRARIES ${OPENGL_LIBRARIES})
-
   #if (APPLE)
   #  list(APPEND LIBIGL_EXTRA_LIBRARIES "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo" "glfw") #${GLFW_LIBRARIES})
   #endif()
-
-  if (UNIX AND NOT APPLE)
-    list(APPEND LIBIGL_EXTRA_LIBRARIES ${GLFW_LIBRARIES})
-  endif()
+  #if (UNIX AND NOT APPLE)
+  #  list(APPEND LIBIGL_EXTRA_LIBRARIES )
+  #endif()
 
 endif()
 
@@ -347,14 +344,16 @@ if(LIBIGL_WITH_VIEWER)
     CompileIGL_Module("viewer")
     if(LIBIGL_WITH_NANOGUI)
       target_include_directories(iglviewer PRIVATE ${NANOGUI_INCLUDE_DIRS})
-      target_compile_definitions(iglviewer PRIVATE "-DIGL_VIEWER_WITH_NANOGUI")
+      target_compile_definitions(iglviewer PRIVATE -DIGL_VIEWER_WITH_NANOGUI)
+    else()
+      target_include_directories(iglviewer PRIVATE "${GLFW_DIR}/include")
     endif()
   endif()
 endif()
 
 ### Compile glew if needed
-if(LIBIGL_WITH_GLEW)
-  set("GLEW_DIR" "${LIBIGL_EXTERNAL}/nanogui/ext/glew")
+if(LIBIGL_WITH_GLEW AND NOT WIN32)
+  set(GLEW_DIR "${LIBIGL_EXTERNAL}/nanogui/ext/glew")
   list(APPEND LIBIGL_INCLUDE_DIRS "${GLEW_DIR}/include")
   add_library(glew STATIC "${GLEW_DIR}/src/glew.c")
   target_include_directories(glew PRIVATE "${GLEW_DIR}/include")
@@ -406,10 +405,18 @@ if(LIBIGL_WITH_CGAL) # to be cleaned
     CompileIGL_Module_Copyleft("cgal")
     CompileIGL_Module_Copyleft("boolean")
     if(NOT LIBIGL_WITH_CORK)
-      target_compile_definitions(iglboolean PRIVATE "-DIGL_NO_CORK")
+      target_compile_definitions(iglboolean PRIVATE -DIGL_NO_CORK)
     endif()
   endif()
 endif()
+
+# Function to print list nicely
+function(print_list title list)
+  message("-- ${title}:")
+  foreach(elt ${list})
+    message("\t ${elt}")
+  endforeach()
+endfunction()
 
 # Pass the list of compiled libraries to the parent if there is one
 if(NOT ${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
@@ -419,4 +426,10 @@ if(NOT ${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
   set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} PARENT_SCOPE)
   set(LIBIGL_EXTRA_LIBRARIES ${LIBIGL_EXTRA_LIBRARIES} PARENT_SCOPE)
   set(LIBIGL_DEFINITIONS ${LIBIGL_DEFINITIONS} PARENT_SCOPE)
+
+  ### ligIGL information ###
+  print_list("libIGL includes" "${LIBIGL_INCLUDE_DIRS}")
+  print_list("libIGL libraries" "${LIBIGL_LIBRARIES}")
+  print_list("libIGL extra libraries" "${LIBIGL_EXTRA_LIBRARIES}")
+  print_list("libIGL definitions" "${LIBIGL_DEFINITIONS}")
 endif()
