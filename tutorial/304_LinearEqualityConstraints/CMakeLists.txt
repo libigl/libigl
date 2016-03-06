@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.12)
 project(304_LinearEqualityConstraints)
 
 add_executable(${PROJECT_NAME}_bin
