@@ -21,7 +21,7 @@ option(LIBIGL_WITH_TRIANGLE    "Use Triangle"       OFF)
 option(LIBIGL_WITH_VIEWER      "Use Nanogui Viewer" OFF)
 option(LIBIGL_WITH_XML         "Use XML"            OFF)
 
-if((WIN32 OR UNIX) AND NOT APPLE) # GLEW should not be needed on Linux
+if(UNIX) # GLEW should not be needed on Linux
   option(LIBIGL_WITH_GLEW        "Use Glew (not needed on Mac)" ON)
 else()
   option(LIBIGL_WITH_GLEW        "Use Glew (not needed on Mac)" OFF)
@@ -245,8 +245,8 @@ if(LIBIGL_WITH_OPENGL)
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module("opengl")
     CompileIGL_Module("opengl2")
-    if(WIN32)
-      target_include_directories(iglopengl2 "${LIBIGL_EXTERNAL}/nanogui/ext/glew")
+    if(NOT APPLE)
+      target_include_directories(iglopengl2 PRIVATE "${LIBIGL_EXTERNAL}/nanogui/ext/glew/include")
     endif()
   endif()
 
@@ -305,7 +305,7 @@ if(LIBIGL_WITH_NANOGUI)
   add_subdirectory("${NANOGUI_DIR}" "nanogui")
 
   list(APPEND LIBIGL_INCLUDE_DIRS ${NANOGUI_INCLUDE_DIRS})
-  list(APPEND LIBIGL_EXTRA_LIBRARIES "nanogui" ${NANOGUI_EXTRA_LIBRARIES})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES "nanogui" ${NANOGUI_EXTRA_LIBS})
 
 # all this opengl things are already listed with nanogui
   #if (APPLE)
