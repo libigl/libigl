@@ -26,4 +26,3 @@ add_library(lim STATIC
 target_include_directories(lim PRIVATE
   "../nanogui/ext/eigen"
   "../../include")
-target_compile_options(lim PRIVATE -Wno-deprecated-declarations)
