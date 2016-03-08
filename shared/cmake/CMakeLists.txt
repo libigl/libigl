@@ -20,12 +20,22 @@ option(LIBIGL_WITH_XML              "Use XML"            OFF)
 
 
 
-### Compilation configuration ### (do we need these because this pollutes subdirectories build?)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+### Compilation configuration ###
+if(WIN32)
+  ### Enable parallel compilation for Visual Studio
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj")
+else()
+  #### Libigl requires a modern C++ compiler that supports c++11
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif()
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
-#if(MSVC)
-#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj") ### Enable parallel compilation for Visual Studio
+### OpenMP ### (OpenMP is disable for now)
+#find_package(OpenMP)
+#if(OPENMP_FOUND AND NOT WIN32)
+#  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+#  list(APPEND LIBIGL_DEFINITIONS "${OpenMP_CXX_FLAGS}")
 #endif()
 
 
@@ -70,13 +80,6 @@ macro(CompileIGL_Module_Copyleft module)
   list(APPEND LIBIGL_LIBRARIES "igl${module}")
 endmacro()
 
-### OpenMP ### (this is not optimal, we should not pollute the global scope)
-#find_package(OpenMP)
-#if(OPENMP_FOUND AND NOT WIN32)
-#  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-#  list(APPEND LIBIGL_DEFINITIONS "${OpenMP_CXX_FLAGS}")
-#endif()
 
 ### IGL Common ###
 list(APPEND LIBIGL_INCLUDE_DIRS "${LIBIGL_SOURCE_DIR}")
