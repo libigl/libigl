@@ -21,6 +21,11 @@ option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
 option(LIBIGL_WITH_XML              "Use XML"            ON)
 ### End   to be tested ----
 
+### Output directories
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+
 ### libIGL options: decide if you want to use the functionalities that depends on cgal
 if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build system fails without it
   find_package(CGAL REQUIRED)
