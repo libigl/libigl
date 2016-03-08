@@ -131,17 +131,15 @@ if(LIBIGL_WITH_EMBREE)
   set(ENABLE_STATIC_LIB ON CACHE BOOL " " FORCE)
   set(ENABLE_INSTALLER OFF CACHE BOOL " " FORCE)
 
-  if(MSVC)
-    set(USE_STATIC_RUNTIME " " OFF CACHE BOOL " " FORCE)
-  endif()
-
   add_subdirectory("${EMBREE_DIR}" "embree")
   list(APPEND LIBIGL_INCLUDE_DIRS "${EMBREE_DIR}/include")
   list(APPEND LIBIGL_EXTRA_LIBRARIES "embree")
+  list(APPEND LIBIGL_DEFINITIONS "-DENABLE_STATIC_LIB")
 
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module("embree")
     target_include_directories(iglembree PRIVATE ${EMBREE_DIR}/include)
+    target_compile_definitions(iglembree PRIVATE -DENABLE_STATIC_LIB)
   endif()
 endif()
 
