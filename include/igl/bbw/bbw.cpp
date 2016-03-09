@@ -19,6 +19,20 @@
 #include <iostream>
 #include <cstdio>
 
+igl::bbw::BBWData::BBWData():
+  partition_unity(false),
+  W0(),
+#ifndef IGL_NO_MOSEK
+  mosek_data(),
+#endif
+  active_set_params(),
+  qp_solver(QP_SOLVER_IGL_ACTIVE_SET),
+  verbosity(0)
+{
+  // We know that the Bilaplacian is positive semi-definite
+  active_set_params.Auu_pd = true;
+}
+
 void igl::bbw::BBWData::print()
 {
   using namespace std;
