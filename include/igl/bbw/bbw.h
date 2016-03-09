@@ -51,22 +51,10 @@ namespace igl
         // 2: louder
         int verbosity;
       public:
-        inline BBWData():
-          partition_unity(false),
-          W0(),
-        #ifndef IGL_NO_MOSEK
-          mosek_data(),
-        #endif
-          active_set_params(),
-          qp_solver(QP_SOLVER_IGL_ACTIVE_SET),
-          verbosity(0)
-        {
-          // We know that the Bilaplacian is positive semi-definite
-          active_set_params.Auu_pd = true;
-        }
+        IGL_INLINE BBWData();
 
         // Print current state of object
-        inline void print();
+        IGL_INLINE void print();
     };
 
     // Compute Bounded Biharmonic Weights on a given domain (V,Ele) with a given
