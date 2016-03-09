@@ -19,14 +19,15 @@ option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       OFF)
 option(LIBIGL_WITH_XML              "Use XML"            OFF)
 
 
-
 ### Compilation configuration ###
-if(WIN32)
+if(MSVC)
   ### Enable parallel compilation for Visual Studio
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w") # disable all warnings (not ideal but...)
 else()
   #### Libigl requires a modern C++ compiler that supports c++11
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w") # disable all warnings (not ideal but...)
 endif()
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -130,6 +131,9 @@ if(LIBIGL_WITH_EMBREE)
   set(ENABLE_TUTORIALS OFF CACHE BOOL " " FORCE)
   set(ENABLE_STATIC_LIB ON CACHE BOOL " " FORCE)
   set(ENABLE_INSTALLER OFF CACHE BOOL " " FORCE)
+  if(MSVC)
+    set(USE_STATIC_RUNTIME OFF CACHE BOOL " " FORCE)
+  endif()
 
   add_subdirectory("${EMBREE_DIR}" "embree")
   list(APPEND LIBIGL_INCLUDE_DIRS "${EMBREE_DIR}/include")
@@ -291,7 +295,7 @@ if(LIBIGL_WITH_COMISO)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SCL_SECURE_NO_DEPRECATE")
     #link_directories("${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/")
     list(APPEND LIBIGL_EXTRA_LIBRARIES "CoMISo" "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/lib/libopenblas.dll.a.lib")
-  endif(MSVC)
+  endif()
 
   add_subdirectory("${COMISO_DIR}" "CoMISo")
 
@@ -310,7 +314,7 @@ if(LIBIGL_WITH_COMISO)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libquadmath-0.dll"
         "${CMAKE_CURRENT_BINARY_DIR}/libquadmath-0.dll")
-  endif(MSVC)
+  endif()
 
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module_Copyleft("comiso")
