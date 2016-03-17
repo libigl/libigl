@@ -16,19 +16,21 @@ endif()
 
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
 
-option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
-option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
-option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
+
+option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
+option(LIBIGL_WITH_BBW              "Use BBW"            ON)
 option(LIBIGL_WITH_BOOLEAN          "Use Cork boolean"   OFF)
+option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
 option(LIBIGL_WITH_EMBREE           "Use Embree"         ON)
 option(LIBIGL_WITH_LIM              "Use LIM"            ON)
 option(LIBIGL_WITH_MATLAB           "Use Matlab"         OFF)
 option(LIBIGL_WITH_MOSEK            "Use MOSEK"          OFF)
-option(LIBIGL_WITH_BBW              "Use BBW"            ON)
+option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
 option(LIBIGL_WITH_OPENGL_AND_PNG   "Use OpenGL"         ON)
 option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
+option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_XML              "Use XML"            ON)
 
 if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build system fails without it
@@ -37,4 +39,6 @@ if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build syst
   include(${CGAL_USE_FILE})
 endif()
 
+# libigl*.a libraries should be built directly into libigl/lib/
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 add_subdirectory("${PROJECT_SOURCE_DIR}/../shared/cmake" "libigl")
