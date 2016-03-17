@@ -94,7 +94,7 @@ libigl depends only on the [Eigen](http://eigen.tuxfamily.org) library.
 
 For more information see our [tutorial](tutorial/tutorial.html).
 
-### Optional dependencies ###
+### Optional dependencies
 
 Libigl compartmentalizes its **optional** dependences via its directory
 organization in the `include/` folder. All header files located _directly_ in
@@ -155,7 +155,7 @@ subrepos:
 
 ```bash
 git pull
-git submodule update -- recursive
+git submodule update --recursive
 ```
 
 ## Unit testing
