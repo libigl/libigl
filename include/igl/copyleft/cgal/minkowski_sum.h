@@ -15,7 +15,7 @@ namespace igl
 {
   namespace copyleft
   {
-    namespace boolean
+    namespace cgal
     {
       // Compute the Minkowski sum of a closed triangle mesh (V,F) and a
       // set of simplices in 3D.

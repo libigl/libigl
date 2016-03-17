@@ -5,13 +5,12 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_NO_CORK
 #include "from_cork_mesh.h"
 
 template <
   typename DerivedV,
   typename DerivedF>
-IGL_INLINE void igl::copyleft::boolean::from_cork_mesh(
+IGL_INLINE void igl::copyleft::cork::from_cork_mesh(
   const CorkTriMesh & mesh,
   Eigen::PlainObjectBase<DerivedV > & V,
   Eigen::PlainObjectBase<DerivedF > & F)
@@ -37,8 +36,6 @@ IGL_INLINE void igl::copyleft::boolean::from_cork_mesh(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::copyleft::boolean::from_cork_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(CorkTriMesh const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::copyleft::boolean::from_cork_mesh<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(CorkTriMesh const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
-#endif
-
+template void igl::copyleft::cork::from_cork_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(CorkTriMesh const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::copyleft::cork::from_cork_mesh<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(CorkTriMesh const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
 #endif

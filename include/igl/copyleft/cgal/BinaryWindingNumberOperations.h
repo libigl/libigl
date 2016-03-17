@@ -6,21 +6,21 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 //
-#ifndef IGL_COPYLEFT_BOOLEAN_BINARY_WINDING_NUMBER_OPERATIONS_H
-#define IGL_COPYLEFT_BOOLEAN_BINARY_WINDING_NUMBER_OPERATIONS_H
+#ifndef IGL_COPYLEFT_CGAL_BINARY_WINDING_NUMBER_OPERATIONS_H
+#define IGL_COPYLEFT_CGAL_BINARY_WINDING_NUMBER_OPERATIONS_H
 
 #include <stdexcept>
 #include "../../igl_inline.h"
-#include "MeshBooleanType.h"
+#include "../../MeshBooleanType.h"
 #include <Eigen/Core>
 
 namespace igl
 {
   namespace copyleft
   {
-    namespace boolean
+    namespace cgal
     {
-      template <igl::copyleft::boolean::MeshBooleanType Op>
+      template <igl::MeshBooleanType Op>
       class BinaryWindingNumberOperations {
         public:
           template<typename DerivedW>
@@ -72,7 +72,7 @@ namespace igl
       };
 
       template <>
-      class BinaryWindingNumberOperations<igl::copyleft::boolean::MESH_BOOLEAN_TYPE_RESOLVE> {
+      class BinaryWindingNumberOperations<MESH_BOOLEAN_TYPE_RESOLVE> {
         public:
           template<typename DerivedW>
             typename DerivedW::Scalar operator()(

@@ -5,10 +5,9 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_COPYLEFT_BOOLEAN_MESH_BOOLEAN_CORK_H
-#define IGL_COPYLEFT_BOOLEAN_MESH_BOOLEAN_CORK_H
-#ifndef IGL_NO_CORK
-#include "MeshBooleanType.h"
+#ifndef IGL_COPYLEFT_CORK_MESH_BOOLEAN_H
+#define IGL_COPYLEFT_CORK_MESH_BOOLEAN_H
+#include "../../MeshBooleanType.h"
 #include "../../igl_inline.h"
 #include <Eigen/Core>
 #include <cork.h> // for consistent uint
@@ -17,7 +16,7 @@ namespace igl
 {
   namespace copyleft
   {
-    namespace boolean
+    namespace cork
     {
       // Compute a boolean operation on two input meshes using the cork library.
       //
@@ -37,7 +36,7 @@ namespace igl
         typename DerivedFB,
         typename DerivedVC,
         typename DerivedFC>
-      IGL_INLINE void mesh_boolean_cork(
+      IGL_INLINE void mesh_boolean(
         const Eigen::PlainObjectBase<DerivedVA > & VA,
         const Eigen::PlainObjectBase<DerivedFA > & FA,
         const Eigen::PlainObjectBase<DerivedVB > & VB,
@@ -50,8 +49,7 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "mesh_boolean_cork.cpp"
-#endif
+#  include "mesh_boolean.cpp"
 #endif
 
 #endif

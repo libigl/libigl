@@ -5,11 +5,11 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_COPYLEFT_BOOLEAN_CSG_TREE_H
-#define IGL_COPYLEFT_BOOLEAN_CSG_TREE_H
+#ifndef IGL_COPYLEFT_CGAL_CSG_TREE_H
+#define IGL_COPYLEFT_CGAL_CSG_TREE_H
 
+#include "../../MeshBooleanType.h"
 #include "string_to_mesh_boolean_type.h"
-#include "MeshBooleanType.h"
 #include "mesh_boolean.h"
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/number_utils.h>
@@ -18,7 +18,7 @@ namespace igl
 {
   namespace copyleft
   {
-    namespace boolean
+    namespace cgal
     {
       // Class for defining and computing a constructive solid geometry result
       // out of a tree of boolean operations on "solid" triangle meshes.

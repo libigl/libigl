@@ -7,16 +7,18 @@ option(LIBIGL_WITH_VIEWER      "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_NANOGUI     "Use Nanogui menu"   OFF)
 
 ### libIGL options: choose your dependencies (by default everything is OFF, in this example we need the viewer) ###
+option(LIBIGL_WITH_BBW              "Use BBW"            ON)
 find_package(CGAL QUIET)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           "${CGAL_FOUND}")
-option(LIBIGL_WITH_BOOLEAN          "Use Cork boolean"   OFF) # This option is not supported yet
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
+option(LIBIGL_WITH_CORK             "Use CORK"           ON)
 option(LIBIGL_WITH_EMBREE           "Use Embree"         ON)
 option(LIBIGL_WITH_LIM              "Use LIM"            ON)
-option(LIBIGL_WITH_MATLAB           "Use Matlab"         OFF) # This option is not supported yet
-option(LIBIGL_WITH_MOSEK            "Use MOSEK"          OFF) # This option is not supported yet
-option(LIBIGL_WITH_BBW              "Use BBW"            ON)
-option(LIBIGL_WITH_OPENGL_AND_PNG   "Use OpenGL"         ON)
+find_package(MATLAB QUIET)
+option(LIBIGL_WITH_MATLAB           "Use Matlab"         "${MATLAB_FOUND}")
+option(LIBIGL_WITH_MOSEK            "Use MOSEK"          "${MOSEK_FOUND}")
+option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
+option(LIBIGL_WITH_PNG              "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
 option(LIBIGL_WITH_XML              "Use XML"            ON)

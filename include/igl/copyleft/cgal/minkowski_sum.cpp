@@ -12,7 +12,7 @@
 #include "../../unique.h"
 #include "../../get_seconds.h"
 #include "../../edges.h"
-#include "../cgal/assign_scalar.h"
+#include "assign_scalar.h"
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <cassert>
 #include <vector>
@@ -24,7 +24,7 @@ template <
   typename DerivedW,
   typename DerivedG,
   typename DerivedJ>
-IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
+IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   const Eigen::PlainObjectBase<DerivedVA> & VA,
   const Eigen::PlainObjectBase<DerivedFA> & FA,
   const Eigen::PlainObjectBase<DerivedVB> & VB,
@@ -149,7 +149,7 @@ template <
   typename DerivedW,
   typename DerivedG,
   typename DerivedJ>
-IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
+IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   const Eigen::PlainObjectBase<DerivedVA> & VA,
   const Eigen::PlainObjectBase<DerivedFA> & FA,
   const Eigen::Matrix<sType,1,sCols,sOptions> & s,
@@ -354,7 +354,7 @@ template <
   typename DerivedW,
   typename DerivedG,
   typename DerivedJ>
-IGL_INLINE void igl::copyleft::boolean::minkowski_sum(
+IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   const Eigen::PlainObjectBase<DerivedVA> & VA,
   const Eigen::PlainObjectBase<DerivedFA> & FA,
   const Eigen::Matrix<sType,1,sCols,sOptions> & s,

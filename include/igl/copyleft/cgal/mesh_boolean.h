@@ -7,11 +7,11 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 //
-#ifndef IGL_COPYLEFT_BOOLEAN_MESH_BOOLEAN_H
-#define IGL_COPYLEFT_BOOLEAN_MESH_BOOLEAN_H
+#ifndef IGL_COPYLEFT_CGAL_MESH_BOOLEAN_H
+#define IGL_COPYLEFT_CGAL_MESH_BOOLEAN_H
 
 #include "../../igl_inline.h"
-#include "MeshBooleanType.h"
+#include "../../MeshBooleanType.h"
 #include <Eigen/Core>
 #include <functional>
 
@@ -19,7 +19,7 @@ namespace igl
 {
   namespace copyleft
   {
-    namespace boolean
+    namespace cgal
     {
       //  MESH_BOOLEAN Compute boolean csg operations on "solid", consistently
       //  oriented meshes.

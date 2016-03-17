@@ -3,7 +3,7 @@
 #include <cassert>
 #include <vector>
 
-IGL_INLINE bool igl::copyleft::boolean::string_to_mesh_boolean_type( 
+IGL_INLINE bool igl::copyleft::cgal::string_to_mesh_boolean_type( 
   const std::string & s,
   MeshBooleanType & type)
 {
@@ -22,7 +22,8 @@ IGL_INLINE bool igl::copyleft::boolean::string_to_mesh_boolean_type(
   {
     type = MESH_BOOLEAN_TYPE_INTERSECT;
   }else if(
-    find_any({"minus","subtract","difference","relative complement","m","\\"},eff_s))
+    find_any(
+      {"minus","subtract","difference","relative complement","m","\\"},eff_s))
   {
     type = MESH_BOOLEAN_TYPE_MINUS;
   }else if(find_any({"xor","symmetric difference","x","∆"},eff_s))
@@ -38,7 +39,8 @@ IGL_INLINE bool igl::copyleft::boolean::string_to_mesh_boolean_type(
   return true;
 }
 
-IGL_INLINE igl::copyleft::boolean::MeshBooleanType igl::copyleft::boolean::string_to_mesh_boolean_type( 
+IGL_INLINE igl::MeshBooleanType 
+igl::copyleft::cgal::string_to_mesh_boolean_type( 
   const std::string & s)
 {
   MeshBooleanType type;

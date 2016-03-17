@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 2.8.12)
 project(libigl)
 
 ### Available options ###
-option(LIBIGL_USE_STATIC_LIBRARY    "Use libIGL as static library" OFF)
+option(LIBIGL_USE_STATIC_LIBRARY    "Use libigl as static library" OFF)
 option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
 option(LIBIGL_WITH_BBW              "Use BBW"            OFF)
-option(LIBIGL_WITH_BOOLEAN          "Use Cork boolean"   OFF)
+option(LIBIGL_WITH_CORK             "Use Cork"           OFF)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         OFF)
 option(LIBIGL_WITH_EMBREE           "Use Embree"         OFF)
@@ -13,7 +13,8 @@ option(LIBIGL_WITH_LIM              "Use LIM"            OFF)
 option(LIBIGL_WITH_MATLAB           "Use Matlab"         OFF)
 option(LIBIGL_WITH_MOSEK            "Use MOSEK"          OFF)
 option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
-option(LIBIGL_WITH_OPENGL_AND_PNG   "Use OpenGL"         OFF)
+option(LIBIGL_WITH_OPENGL           "Use OpenGL"         OFF)
+option(LIBIGL_WITH_PNG              "Use PNG"            OFF)
 option(LIBIGL_WITH_TETGEN           "Use Tetgen"         OFF)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       OFF)
 option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  OFF)
@@ -113,6 +114,42 @@ if(LIBIGL_WITH_BBW)
     else()
       target_compile_definitions(iglbbw PRIVATE -DIGL_NO_MOSEK)
     endif()
+  endif()
+endif()
+
+### Compile the cgal parts ###
+if(LIBIGL_WITH_CGAL) # to be cleaned
+  find_package(CGAL REQUIRED)
+  # set(Boost_USE_MULTITHREADED      ON)
+  # set(Boost_USE_STATIC_LIBS      ON)
+  #
+  # find_package(BOOST REQUIRED)
+  include(${CGAL_USE_FILE})
+  list(APPEND LIBIGL_INCLUDE_DIRS ${CGAL_3RD_PARTY_INCLUDE_DIRS})
+  list(APPEND LIBIGL_INCLUDE_DIRS ${CGAL_INCLUDE_DIRS})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES ${CGAL_3RD_PARTY_LIBRARIES})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES ${CGAL_LIBRARIES})
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module_Copyleft("cgal")
+    target_include_directories(iglcgal PRIVATE
+      ${CGAL_3RD_PARTY_INCLUDE_DIRS}
+      ${CGAL_INCLUDE_DIRS})
+  endif()
+endif()
+
+### Compile the cork parts ###
+if(LIBIGL_WITH_CORK)
+  set(CORK_DIR "${LIBIGL_EXTERNAL}/cork")
+  set(CORK_INCLUDE_DIR "${CORK_DIR}/src")
+  # call this "lib-cork" instead of "cork", otherwise cmake gets confused about
+  # "cork" executable
+  add_subdirectory("${CORK_DIR}" "lib-cork")
+  list(APPEND LIBIGL_INCLUDE_DIRS "${CORK_INCLUDE_DIR}")
+  list(APPEND LIBIGL_EXTRA_LIBRARIES "cork")
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module_Copyleft("cork")
+    target_include_directories(iglcork PRIVATE
+      ${CORK_INCLUDE_DIR})
   endif()
 endif()
 
@@ -255,21 +292,28 @@ if(LIBIGL_WITH_VIEWER)
   endif()
 endif()
 
-### Compile the opengl and png parts ###
-if(LIBIGL_WITH_OPENGL_AND_PNG)
+### Compile the opengl parts ###
+if(LIBIGL_WITH_OPENGL)
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module("opengl")
+    CompileIGL_Module("opengl2")
+    if(NOT APPLE)
+      target_include_directories(iglopengl PRIVATE "${LIBIGL_EXTERNAL}/nanogui/ext/glew/include")
+      target_include_directories(iglopengl2 PRIVATE "${LIBIGL_EXTERNAL}/nanogui/ext/glew/include")
+    endif()
+  endif()
+endif()
+
+### Compile the png parts ###
+if(LIBIGL_WITH_PNG)
   set(STB_IMAGE_DIR "${LIBIGL_EXTERNAL}/stb_image")
   add_subdirectory("${STB_IMAGE_DIR}" "stb_image")
   list(APPEND LIBIGL_INCLUDE_DIRS ${STB_IMAGE_DIR})
   list(APPEND LIBIGL_EXTRA_LIBRARIES "stb_image")
-
   if(LIBIGL_USE_STATIC_LIBRARY)
-    CompileIGL_Module("opengl")
-    CompileIGL_Module("opengl2")
     CompileIGL_Module("png")
     target_include_directories(iglpng PRIVATE ${STB_IMAGE_DIR})
     if(NOT APPLE)
-      target_include_directories(iglopengl PRIVATE "${LIBIGL_EXTERNAL}/nanogui/ext/glew/include")
-      target_include_directories(iglopengl2 PRIVATE "${LIBIGL_EXTERNAL}/nanogui/ext/glew/include")
       target_include_directories(iglpng PRIVATE "${LIBIGL_EXTERNAL}/nanogui/ext/glew/include")
     endif()
   endif()
@@ -333,7 +377,6 @@ endif()
 ### Compile the xml part ###
 if(LIBIGL_WITH_XML)
   set(TINYXML2_DIR "${LIBIGL_EXTERNAL}/tinyxml2")
-
   add_library(tinyxml2 STATIC ${TINYXML2_DIR}/tinyxml2.cpp ${TINYXML2_DIR}/tinyxml2.h)
   set_target_properties(tinyxml2 PROPERTIES
           COMPILE_DEFINITIONS "TINYXML2_EXPORT"
@@ -341,59 +384,9 @@ if(LIBIGL_WITH_XML)
           SOVERSION "3")
   list(APPEND LIBIGL_INCLUDE_DIRS ${TINYXML2_DIR})
   list(APPEND LIBIGL_EXTRA_LIBRARIES "tinyxml2")
-
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module("xml")
     target_include_directories(iglxml PRIVATE ${TINYXML2_DIR})
-  endif()
-endif()
-
-### Compile the boolean and cgal parts ###
-if(LIBIGL_WITH_CGAL) # to be cleaned
-  find_package(CGAL REQUIRED)
-  # set(Boost_USE_MULTITHREADED      ON)
-  # set(Boost_USE_STATIC_LIBS      ON)
-  #
-  # find_package(BOOST REQUIRED)
-
-  include(${CGAL_USE_FILE})
-
-  list(APPEND LIBIGL_INCLUDE_DIRS ${CGAL_3RD_PARTY_INCLUDE_DIRS})
-  list(APPEND LIBIGL_INCLUDE_DIRS ${CGAL_INCLUDE_DIRS})
-  list(APPEND LIBIGL_EXTRA_LIBRARIES ${CGAL_3RD_PARTY_LIBRARIES})
-  list(APPEND LIBIGL_EXTRA_LIBRARIES ${CGAL_LIBRARIES})
-
-  if(LIBIGL_USE_STATIC_LIBRARY)
-    CompileIGL_Module_Copyleft("cgal")
-    target_include_directories(iglcgal PRIVATE
-      ${CGAL_3RD_PARTY_INCLUDE_DIRS}
-      ${CGAL_INCLUDE_DIRS})
-  endif()
-
-  if(LIBIGL_WITH_BOOLEAN)
-    find_package(CORK QUIET)
-    if(CORK_FOUND)
-      list(APPEND LIBIGL_INCLUDE_DIRS ${CORK_INCLUDE_DIR})
-      list(APPEND LIBIGL_EXTRA_LIBRARIES ${CORK_LIBRARIES})
-
-      if(LIBIGL_USE_STATIC_LIBRARY)
-        CompileIGL_Module_Copyleft("boolean")
-        target_include_directories(iglboolean PRIVATE
-          ${CGAL_3RD_PARTY_INCLUDE_DIRS}
-          ${CGAL_INCLUDE_DIRS}
-          ${CORK_INCLUDE_DIR})
-      endif()
-    else()
-      list(APPEND LIBIGL_DEFINITIONS "-DIGL_NO_CORK")
-
-      if(LIBIGL_USE_STATIC_LIBRARY)
-        CompileIGL_Module_Copyleft("boolean")
-        target_include_directories(iglboolean PRIVATE
-          ${CGAL_3RD_PARTY_INCLUDE_DIRS}
-          ${CGAL_INCLUDE_DIRS})
-        target_compile_definitions(iglboolean PRIVATE -DIGL_NO_CORK)
-      endif()
-    endif()
   endif()
 endif()
 
@@ -415,8 +408,8 @@ if(NOT ${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
   set(LIBIGL_DEFINITIONS ${LIBIGL_DEFINITIONS} PARENT_SCOPE)
 
   ### ligIGL information ###
-  print_list("libIGL includes" "${LIBIGL_INCLUDE_DIRS}")
-  print_list("libIGL libraries" "${LIBIGL_LIBRARIES}")
-  print_list("libIGL extra libraries" "${LIBIGL_EXTRA_LIBRARIES}")
-  print_list("libIGL definitions" "${LIBIGL_DEFINITIONS}")
+  print_list("libigl includes" "${LIBIGL_INCLUDE_DIRS}")
+  print_list("libigl libraries" "${LIBIGL_LIBRARIES}")
+  print_list("libigl extra libraries" "${LIBIGL_EXTRA_LIBRARIES}")
+  print_list("libigl definitions" "${LIBIGL_DEFINITIONS}")
 endif()
