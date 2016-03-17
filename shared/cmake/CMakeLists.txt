@@ -3,19 +3,20 @@ project(libigl)
 
 ### Available options ###
 option(LIBIGL_USE_STATIC_LIBRARY    "Use libIGL as static library" OFF)
-option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  OFF)
-option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
-option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
+option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
+option(LIBIGL_WITH_BBW              "Use BBW"            OFF)
 option(LIBIGL_WITH_BOOLEAN          "Use Cork boolean"   OFF)
+option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         OFF)
 option(LIBIGL_WITH_EMBREE           "Use Embree"         OFF)
 option(LIBIGL_WITH_LIM              "Use LIM"            OFF)
 option(LIBIGL_WITH_MATLAB           "Use Matlab"         OFF)
 option(LIBIGL_WITH_MOSEK            "Use MOSEK"          OFF)
-option(LIBIGL_WITH_BBW              "Use BBW"            OFF)
+option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
 option(LIBIGL_WITH_OPENGL_AND_PNG   "Use OpenGL"         OFF)
 option(LIBIGL_WITH_TETGEN           "Use Tetgen"         OFF)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       OFF)
+option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  OFF)
 option(LIBIGL_WITH_XML              "Use XML"            OFF)
 
 
@@ -96,18 +97,11 @@ if(LIBIGL_USE_STATIC_LIBRARY)
 endif()
 
 
-### Compile the mosek part ###
-if(LIBIGL_WITH_MOSEK)
-  find_package(MOSEK REQUIRED)
-  list(APPEND LIBIGL_INCLUDE_DIRS ${MOSEK_INCLUDE_DIR})
-  list(APPEND LIBIGL_EXTRA_LIBRARIES ${MOSEK_LIBRARIES})
-
+### Compile the AntTweakBar part ###
+if(LIBIGL_WITH_ANTTWEAKBAR)
   if(LIBIGL_USE_STATIC_LIBRARY)
-    CompileIGL_Module("mosek")
-    target_include_directories(iglmosek PRIVATE ${MOSEK_INCLUDE_DIR})
+    CompileIGL_Module("anttweakbar")
   endif()
-else()
-  list(APPEND LIBIGL_DEFINITIONS "-DIGL_NO_MOSEK")
 endif()
 
 ### Compile the BBW part ###
@@ -170,6 +164,19 @@ if(LIBIGL_WITH_MATLAB)
     CompileIGL_Module("matlab")
     target_include_directories(iglmatlab PRIVATE ${MATLAB_INCLUDE_DIR})
   endif()
+endif()
+
+### Compile the mosek part ###
+if(LIBIGL_WITH_MOSEK)
+  find_package(MOSEK REQUIRED)
+  list(APPEND LIBIGL_INCLUDE_DIRS ${MOSEK_INCLUDE_DIR})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES ${MOSEK_LIBRARIES})
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module("mosek")
+    target_include_directories(iglmosek PRIVATE ${MOSEK_INCLUDE_DIR})
+  endif()
+else()
+  list(APPEND LIBIGL_DEFINITIONS "-DIGL_NO_MOSEK")
 endif()
 
 ### Compile the tetgen part ###
