@@ -53,4 +53,6 @@ IGL_INLINE void igl::matlab::parse_rhs_index(
 template void igl::matlab::parse_rhs_index<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(mxArray_tag const**, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 template void igl::matlab::parse_rhs_index<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(mxArray_tag const**, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template void igl::matlab::parse_rhs_double<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(mxArray_tag const**, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::matlab::parse_rhs_index<Eigen::Matrix<int, -1, 3, 1, -1, 3> >(mxArray_tag const**, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
+template void igl::matlab::parse_rhs_double<Eigen::Matrix<double, -1, 3, 1, -1, 3> >(mxArray_tag const**, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> >&);
 #endif
