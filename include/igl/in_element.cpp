@@ -58,3 +58,8 @@ IGL_INLINE void igl::in_element(
   I.resize(Qr,Ele.rows());
   I.setFromTriplets(IJV.begin(),IJV.end());
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template void igl::in_element<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, 2>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 2> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&);
+template void igl::in_element<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&);
+#endif
