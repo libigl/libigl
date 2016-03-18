@@ -32,15 +32,7 @@ You should expect to see a few linker warnings of the form:
 These are (admittedly unpopular) functions that have never been used by us
 statically so we haven't explicit instantiations (yet).
 
-
-#### Examples ####
-You can make a slew of examples by issuing:
-
-    cd ../examples
-    make
-
 #### External ####
-
 
 Finally there are a number of external libraries that we include in
 `./external/` because they are either difficult to obtain or they have been
