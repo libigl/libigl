@@ -258,7 +258,7 @@ Here's a tiny test example using `igl.h` and `igl.cpp`. Save the following in `t
     {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
-    return (argc>=2 &amp;&amp; igl::read_triangle_mesh(argv[1],V,F)?0:1);
+    return (argc>=2 && igl::read_triangle_mesh(argv[1],V,F)?0:1);
     }
 
 Then compile `igl.cpp` with:
