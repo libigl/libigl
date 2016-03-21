@@ -271,7 +271,7 @@ if(LIBIGL_WITH_VIEWER)
   endif()
 
   ### GLEW for linux and windows
-  if((UNIX AND NOT APPLE) OR (WIN32 AND NOT LIBIGL_WITH_NANOGUI)) ### Compile glew if needed
+  if((UNIX AND NOT APPLE) OR WIN32) ### Compile glew if needed
     set(GLEW_INSTALL OFF CACHE BOOL " " FORCE)
     add_subdirectory("${NANOGUI_DIR}/ext/glew" "glew")
   endif()
