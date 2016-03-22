@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "write_triangle_mesh.h"
 #include "../write_triangle_mesh.h"
+#include "../pathinfo.h"
 #include "writeDAE.h"
 
 template <typename DerivedV, typename DerivedF>
