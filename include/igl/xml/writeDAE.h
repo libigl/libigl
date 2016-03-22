@@ -15,7 +15,9 @@ namespace igl
 {
   namespace xml
   {
-    // Write a mesh to a Collada .dae scene file
+    // Write a mesh to a Collada .dae scene file. The resulting scene contains
+    // a single "geometry" suitable for solid operaions (boolean union,
+    // intersection, etc.) in SketchUp.
     //
     // Inputs:
     //   filename  path to .dae file
