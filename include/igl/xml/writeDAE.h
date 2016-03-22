@@ -7,7 +7,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_XML_WRITEDAE_H
 #define IGL_XML_WRITEDAE_H
-#ifndef IGL_STATIC_LIBRARY
 #include "../igl_inline.h"
 #include <string>
 #include <Eigen/Core>
@@ -33,6 +32,7 @@ namespace igl
   }
 }
 
+#ifndef IGL_STATIC_LIBRARY
 #include "writeDAE.cpp"
 #endif
 #endif
