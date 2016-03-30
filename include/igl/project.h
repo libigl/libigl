@@ -25,6 +25,20 @@ namespace igl
     const    Eigen::Matrix<Scalar,4,4>& model,
     const    Eigen::Matrix<Scalar,4,4>& proj,
     const    Eigen::Matrix<Scalar,4,1>&  viewport);
+  // Inputs:
+  //   V  #V by 3 list of object points
+  //   model  model matrix
+  //   proj  projection matrix
+  //   viewport  viewport vector
+  // Outputs:
+  //   P  #V by 3 list of screen space points
+  template <typename DerivedV, typename Scalar, typename DerivedP>
+  IGL_INLINE void project(
+    const    Eigen::PlainObjectBase<DerivedV>&  V,
+    const    Eigen::Matrix<Scalar,4,4>& model,
+    const    Eigen::Matrix<Scalar,4,4>& proj,
+    const    Eigen::Matrix<Scalar,4,1>&  viewport,
+    Eigen::PlainObjectBase<DerivedP> & P);
 }
 
 #ifndef IGL_STATIC_LIBRARY
