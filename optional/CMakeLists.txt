@@ -22,6 +22,7 @@ option(LIBIGL_WITH_BBW              "Use BBW"            ON)
 find_package(CGAL QUIET)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           "${CGAL_FOUND}")
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
+### Cork is off by default since it fails to build out-of-the-box on windows
 option(LIBIGL_WITH_CORK             "Use Cork"           OFF)
 option(LIBIGL_WITH_EMBREE           "Use Embree"         ON)
 option(LIBIGL_WITH_LIM              "Use LIM"            ON)
@@ -29,6 +30,8 @@ find_package(MATLAB QUIET)
 option(LIBIGL_WITH_MATLAB           "Use Matlab"         "${MATLAB_FOUND}")
 find_package(MOSEK  QUIET)
 option(LIBIGL_WITH_MOSEK            "Use MOSEK"          "${MOSEK_FOUND}")
+### Nanogui is off by default because it has many dependencies and generates
+### many issues 
 option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
 option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
 option(LIBIGL_WITH_PNG              "Use PNG"            ON)
