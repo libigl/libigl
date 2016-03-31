@@ -297,18 +297,18 @@ namespace comiso {
   private:
     const Eigen::PlainObjectBase<DerivedV> &V;
     const Eigen::PlainObjectBase<DerivedF> &F;
-    Eigen::PlainObjectBase<DerivedV> Vcut;
-    Eigen::PlainObjectBase<DerivedF> Fcut;
+    DerivedV Vcut;
+    DerivedF Fcut;
     Eigen::MatrixXd UV_out;
-    Eigen::PlainObjectBase<DerivedF> FUV_out;
+    DerivedF FUV_out;
 
     // internal
-    Eigen::PlainObjectBase<DerivedF> TT;
-    Eigen::PlainObjectBase<DerivedF> TTi;
+    DerivedF TT;
+    DerivedF TTi;
 
     // Stiffness per face
     Eigen::VectorXd Handle_Stiffness;
-    Eigen::PlainObjectBase<DerivedV> B1, B2, B3;
+    DerivedV B1, B2, B3;
 
   public:
     IGL_INLINE MIQ_class(const Eigen::PlainObjectBase<DerivedV> &V_,
@@ -1486,13 +1486,13 @@ IGL_INLINE void igl::copyleft::comiso::miq(
     std::vector<std::vector<int> > hardFeatures)
 {
 
-  Eigen::PlainObjectBase<DerivedV> BIS1, BIS2;
+  DerivedV BIS1, BIS2;
   igl::compute_frame_field_bisectors(V, F, PD1, PD2, BIS1, BIS2);
 
-  Eigen::PlainObjectBase<DerivedV> BIS1_combed, BIS2_combed;
+  DerivedV BIS1_combed, BIS2_combed;
   igl::comb_cross_field(V, F, BIS1, BIS2, BIS1_combed, BIS2_combed);
 
-  Eigen::PlainObjectBase<DerivedF> Handle_MMatch;
+  DerivedF Handle_MMatch;
   igl::cross_field_missmatch(V, F, BIS1_combed, BIS2_combed, true, Handle_MMatch);
 
   Eigen::Matrix<int, Eigen::Dynamic, 1> isSingularity, singularityIndex;
@@ -1501,7 +1501,7 @@ IGL_INLINE void igl::copyleft::comiso::miq(
   Eigen::Matrix<int, Eigen::Dynamic, 3> Handle_Seams;
   igl::cut_mesh_from_singularities(V, F, Handle_MMatch, Handle_Seams);
 
-  Eigen::PlainObjectBase<DerivedV> PD1_combed, PD2_combed;
+  DerivedV PD1_combed, PD2_combed;
   igl::comb_frame_field(V, F, PD1, PD2, BIS1_combed, BIS2_combed, PD1_combed, PD2_combed);
 
   igl::copyleft::comiso::miq(V,

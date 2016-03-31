@@ -133,7 +133,7 @@ public:
   //per-edge angles (for parallel transport)
   Eigen::VectorXd K;
   //local bases
-  Eigen::PlainObjectBase<DerivedV> B1, B2, FN;
+  DerivedV B1, B2, FN;
 
   //Solver Data
   Eigen::VectorXd residuals;
