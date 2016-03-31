@@ -100,8 +100,13 @@ endif()
 
 ### Compile the AntTweakBar part ###
 if(LIBIGL_WITH_ANTTWEAKBAR)
+  set(ANTTWEAKBAR_DIR "${LIBIGL_EXTERNAL}/anttweakbar")
+  set(ANTTWEAKBAR_INCLUDE_DIR "${ANTTWEAKBAR_DIR}/include")
+  list(APPEND LIBIGL_INCLUDE_DIRS "${ANTTWEAKBAR_INCLUDE_DIR}")
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module("anttweakbar")
+    target_include_directories(iglanttweakbar PRIVATE
+      ${ANTTWEAKBAR_INCLUDE_DIR})
   endif()
 endif()
 
