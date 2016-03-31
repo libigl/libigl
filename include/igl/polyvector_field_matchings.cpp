@@ -253,7 +253,7 @@ IGL_INLINE void igl::polyvector_field_matchings(
   Eigen::MatrixXi E, E2F, F2E;
   igl::edge_topology(V,F,E,F2E,E2F);
 
-  Eigen::PlainObjectBase<DerivedV> FN;
+  DerivedV FN;
   igl::per_face_normals(V,F,FN);
 
   igl::polyvector_field_matchings(sol3D, V, F, E, FN, E2F, match_with_curl, is_symmetric, match_ab, match_ba);

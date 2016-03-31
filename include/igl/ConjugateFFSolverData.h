@@ -32,7 +32,7 @@ namespace igl
       Eigen::VectorXi indInteriorToFull;
       Eigen::VectorXi indFullToInterior;
 
-      Eigen::PlainObjectBase<DerivedV> B1, B2, FN;
+      DerivedV B1, B2, FN;
 
 
       Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic,1> kmin, kmax;

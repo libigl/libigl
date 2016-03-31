@@ -39,8 +39,7 @@ namespace igl {
     Eigen::VectorXi indInteriorToFull;
     Eigen::VectorXi indFullToInterior;
 
-//#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
-    Eigen::PlainObjectBase<DerivedV> B1, B2, FN;
+    DerivedV B1, B2, FN;
 
     IGL_INLINE void computek();
     IGL_INLINE void setFieldFromGeneralCoefficients(const  std::vector<Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1> > &coeffs,
