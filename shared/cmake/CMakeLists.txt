@@ -1,0 +1,415 @@
+cmake_minimum_required(VERSION 2.8.12)
+project(libigl)
+
+### Available options ###
+option(LIBIGL_USE_STATIC_LIBRARY    "Use libigl as static library" OFF)
+option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
+option(LIBIGL_WITH_BBW              "Use BBW"            OFF)
+option(LIBIGL_WITH_CORK             "Use Cork"           OFF)
+option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
+option(LIBIGL_WITH_COMISO           "Use CoMiso"         OFF)
+option(LIBIGL_WITH_EMBREE           "Use Embree"         OFF)
+option(LIBIGL_WITH_LIM              "Use LIM"            OFF)
+option(LIBIGL_WITH_MATLAB           "Use Matlab"         OFF)
+option(LIBIGL_WITH_MOSEK            "Use MOSEK"          OFF)
+option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
+option(LIBIGL_WITH_OPENGL           "Use OpenGL"         OFF)
+option(LIBIGL_WITH_PNG              "Use PNG"            OFF)
+option(LIBIGL_WITH_TETGEN           "Use Tetgen"         OFF)
+option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       OFF)
+option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  OFF)
+option(LIBIGL_WITH_XML              "Use XML"            OFF)
+
+
+### Compilation configuration ###
+if(MSVC)
+  ### Enable parallel compilation for Visual Studio
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w") # disable all warnings (not ideal but...)
+else()
+  #### Libigl requires a modern C++ compiler that supports c++11
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w") # disable all warnings (not ideal but...)
+endif()
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+
+### OpenMP ### (OpenMP is disable for now)
+#find_package(OpenMP)
+#if(OPENMP_FOUND AND NOT WIN32)
+#  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+#  list(APPEND LIBIGL_DEFINITIONS "${OpenMP_CXX_FLAGS}")
+#endif()
+
+
+### Compiling libraries based on chosen options ###
+set(LIBIGL_INCLUDE_DIRS "")
+set(LIBIGL_LIBRARIES "")
+set(LIBIGL_EXTRA_LIBRARIES "")
+set(LIBIGL_DEFINITIONS "")
+
+if(LIBIGL_USE_STATIC_LIBRARY)
+  list(APPEND LIBIGL_DEFINITIONS "-DIGL_STATIC_LIBRARY")
+endif()
+
+### macro definition ###
+set(LIBIGL_ROOT "${PROJECT_SOURCE_DIR}/../..")
+set(LIBIGL_SOURCE_DIR "${LIBIGL_ROOT}/include")
+set(LIBIGL_EXTERNAL "${LIBIGL_ROOT}/external")
+
+### Eigen ###
+set(EIGEN_INCLUDE_DIR "${LIBIGL_EXTERNAL}/nanogui/ext/eigen")
+list(APPEND LIBIGL_INCLUDE_DIRS "${EIGEN_INCLUDE_DIR}")
+
+macro(CompileIGL_Module module)
+  file(GLOB SOURCES_IGL_${module}
+  "${LIBIGL_SOURCE_DIR}/igl/${module}/*.cpp"
+  )
+  add_library(igl${module} STATIC ${SOURCES_IGL_${module}})
+  target_include_directories(igl${module} PRIVATE ${EIGEN_INCLUDE_DIR})
+  target_include_directories(igl${module} PRIVATE ${LIBIGL_SOURCE_DIR})
+  target_compile_definitions(igl${module} PRIVATE -DIGL_STATIC_LIBRARY)
+  list(APPEND LIBIGL_LIBRARIES "igl${module}")
+endmacro()
+
+macro(CompileIGL_Module_Copyleft module)
+  file(GLOB SOURCES_IGL_${module}
+  "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module}/*.cpp"
+  )
+  add_library(igl${module} STATIC ${SOURCES_IGL_${module}})
+  target_include_directories(igl${module} PRIVATE ${EIGEN_INCLUDE_DIR})
+  target_include_directories(igl${module} PRIVATE ${LIBIGL_SOURCE_DIR})
+  target_compile_definitions(igl${module} PRIVATE -DIGL_STATIC_LIBRARY)
+  list(APPEND LIBIGL_LIBRARIES "igl${module}")
+endmacro()
+
+
+### IGL Common ###
+list(APPEND LIBIGL_INCLUDE_DIRS "${LIBIGL_SOURCE_DIR}")
+if(LIBIGL_USE_STATIC_LIBRARY)
+  file(GLOB SOURCES_IGL
+  "${LIBIGL_SOURCE_DIR}/igl/*.cpp"
+  "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.cpp")
+  add_library(igl STATIC ${SOURCES_IGL})
+  target_include_directories(igl PRIVATE ${EIGEN_INCLUDE_DIR})
+  target_include_directories(igl PRIVATE ${LIBIGL_SOURCE_DIR})
+  target_compile_definitions(igl PRIVATE -DIGL_STATIC_LIBRARY)
+  list(APPEND LIBIGL_LIBRARIES "igl")
+endif()
+
+
+### Compile the AntTweakBar part ###
+if(LIBIGL_WITH_ANTTWEAKBAR)
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module("anttweakbar")
+  endif()
+endif()
+
+### Compile the BBW part ###
+if(LIBIGL_WITH_BBW)
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module("bbw")
+    if(LIBIGL_WITH_MOSEK)
+      target_include_directories(iglbbw PRIVATE ${MOSEK_INCLUDE_DIR})
+    else()
+      target_compile_definitions(iglbbw PRIVATE -DIGL_NO_MOSEK)
+    endif()
+  endif()
+endif()
+
+### Compile the cgal parts ###
+if(LIBIGL_WITH_CGAL) # to be cleaned
+  find_package(CGAL REQUIRED)
+  # set(Boost_USE_MULTITHREADED      ON)
+  # set(Boost_USE_STATIC_LIBS      ON)
+  #
+  # find_package(BOOST REQUIRED)
+  include(${CGAL_USE_FILE})
+  list(APPEND LIBIGL_INCLUDE_DIRS ${CGAL_3RD_PARTY_INCLUDE_DIRS})
+  list(APPEND LIBIGL_INCLUDE_DIRS ${CGAL_INCLUDE_DIRS})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES ${CGAL_3RD_PARTY_LIBRARIES})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES ${CGAL_LIBRARIES})
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module_Copyleft("cgal")
+    target_include_directories(iglcgal PRIVATE
+      ${CGAL_3RD_PARTY_INCLUDE_DIRS}
+      ${CGAL_INCLUDE_DIRS})
+  endif()
+endif()
+
+### Compile the cork parts ###
+if(LIBIGL_WITH_CORK)
+  set(CORK_DIR "${LIBIGL_EXTERNAL}/cork")
+  set(CORK_INCLUDE_DIR "${CORK_DIR}/src")
+  # call this "lib-cork" instead of "cork", otherwise cmake gets confused about
+  # "cork" executable
+  add_subdirectory("${CORK_DIR}" "lib-cork")
+  list(APPEND LIBIGL_INCLUDE_DIRS "${CORK_INCLUDE_DIR}")
+  list(APPEND LIBIGL_EXTRA_LIBRARIES "cork")
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module_Copyleft("cork")
+    target_include_directories(iglcork PRIVATE
+      ${CORK_INCLUDE_DIR})
+  endif()
+endif()
+
+### Compile the embree part ###
+if(LIBIGL_WITH_EMBREE)
+  set(EMBREE_DIR "${LIBIGL_EXTERNAL}/embree")
+
+  set(ENABLE_ISPC_SUPPORT OFF CACHE BOOL " " FORCE)
+  set(RTCORE_TASKING_SYSTEM "INTERNAL" CACHE BOOL " " FORCE)
+  set(ENABLE_TUTORIALS OFF CACHE BOOL " " FORCE)
+  set(ENABLE_STATIC_LIB ON CACHE BOOL " " FORCE)
+  set(ENABLE_INSTALLER OFF CACHE BOOL " " FORCE)
+  if(MSVC)
+    set(USE_STATIC_RUNTIME OFF CACHE BOOL " " FORCE)
+  endif()
+
+  add_subdirectory("${EMBREE_DIR}" "embree")
+  list(APPEND LIBIGL_INCLUDE_DIRS "${EMBREE_DIR}/include")
+  list(APPEND LIBIGL_EXTRA_LIBRARIES "embree")
+  list(APPEND LIBIGL_DEFINITIONS "-DENABLE_STATIC_LIB")
+
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module("embree")
+    target_include_directories(iglembree PRIVATE ${EMBREE_DIR}/include)
+    target_compile_definitions(iglembree PRIVATE -DENABLE_STATIC_LIB)
+  endif()
+endif()
+
+### Compile the lim part ###
+if(LIBIGL_WITH_LIM)
+  set(LIM_DIR "${LIBIGL_EXTERNAL}/lim")
+  add_subdirectory("${LIM_DIR}" "lim")
+  list(APPEND LIBIGL_INCLUDE_DIRS ${LIM_DIR})
+  list(APPEND LIBIGL_LIBRARIES "lim") # it depends on ligigl, so placing it here solve linking problems
+
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module("lim")
+    target_include_directories(igllim PRIVATE ${LIM_DIR})
+  endif()
+endif()
+
+### Compile the matlab part ###
+if(LIBIGL_WITH_MATLAB)
+  find_package(MATLAB REQUIRED)
+  list(APPEND LIBIGL_INCLUDE_DIRS ${MATLAB_INCLUDE_DIR})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES ${MATLAB_LIBRARIES})
+
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module("matlab")
+    target_include_directories(iglmatlab PRIVATE ${MATLAB_INCLUDE_DIR})
+  endif()
+endif()
+
+### Compile the mosek part ###
+if(LIBIGL_WITH_MOSEK)
+  find_package(MOSEK REQUIRED)
+  list(APPEND LIBIGL_INCLUDE_DIRS ${MOSEK_INCLUDE_DIR})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES ${MOSEK_LIBRARIES})
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module("mosek")
+    target_include_directories(iglmosek PRIVATE ${MOSEK_INCLUDE_DIR})
+  endif()
+else()
+  list(APPEND LIBIGL_DEFINITIONS "-DIGL_NO_MOSEK")
+endif()
+
+### Compile the tetgen part ###
+if(LIBIGL_WITH_TETGEN)
+  set(TETGEN_DIR "${LIBIGL_EXTERNAL}/tetgen")
+  add_subdirectory("${TETGEN_DIR}" "tetgen")
+  list(APPEND LIBIGL_INCLUDE_DIRS ${TETGEN_DIR})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES "tetgen")
+
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module_Copyleft("tetgen")
+    target_include_directories(igltetgen PRIVATE ${TETGEN_DIR})
+  endif()
+endif()
+
+### Compile the triangle part ###
+if(LIBIGL_WITH_TRIANGLE)
+  set(TRIANGLE_DIR "${LIBIGL_EXTERNAL}/triangle")
+  add_subdirectory("${TRIANGLE_DIR}" "triangle")
+  list(APPEND LIBIGL_INCLUDE_DIRS ${TRIANGLE_DIR})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES "triangle")
+
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module("triangle")
+    target_include_directories(igltriangle PRIVATE ${TRIANGLE_DIR})
+  endif()
+endif()
+
+### Compile the viewer ###
+if(LIBIGL_WITH_VIEWER)
+  set(NANOGUI_DIR "${LIBIGL_EXTERNAL}/nanogui")
+
+  if(LIBIGL_WITH_NANOGUI)
+    list(APPEND LIBIGL_DEFINITIONS "-DIGL_VIEWER_WITH_NANOGUI")
+
+    option(NANOGUI_BUILD_PYTHON OFF)
+    option(NANOGUI_BUILD_EXAMPLE OFF)
+    option(NANOGUI_BUILD_SHARED  OFF)
+    add_subdirectory("${NANOGUI_DIR}" "nanogui")
+
+    set(VIEWER_INCLUDE_DIRS
+      "${NANOGUI_DIR}/include"
+      "${NANOGUI_DIR}/ext/nanovg/src"
+      "${NANOGUI_DIR}/ext/glfw/include")
+    set(VIEWER_LIBRARIES "nanogui" ${NANOGUI_EXTRA_LIBS})
+  else()
+    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
+    set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
+    set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
+    add_subdirectory("${NANOGUI_DIR}/ext/glfw" "glfw")
+
+    set(VIEWER_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glfw/include")
+    set(VIEWER_LIBRARIES "glfw" ${GLFW_LIBRARIES})
+  endif()
+
+  ### GLEW for linux and windows
+  if((UNIX AND NOT APPLE) OR WIN32) ### Compile glew if needed
+    set(GLEW_INSTALL OFF CACHE BOOL " " FORCE)
+    add_subdirectory("${NANOGUI_DIR}/ext/glew" "glew")
+  endif()
+  if(NOT APPLE)
+    list(APPEND VIEWER_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glew/include")
+    list(APPEND VIEWER_LIBRARIES "glew")
+  endif()
+
+  list(APPEND LIBIGL_INCLUDE_DIRS ${VIEWER_INCLUDE_DIRS})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES ${VIEWER_LIBRARIES})
+
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module("viewer")
+    if(LIBIGL_WITH_NANOGUI)
+      target_compile_definitions(iglviewer PRIVATE -DIGL_VIEWER_WITH_NANOGUI)
+    endif()
+    target_include_directories(iglviewer PRIVATE ${VIEWER_INCLUDE_DIRS})
+  endif()
+endif()
+
+### Compile the opengl parts ###
+if(LIBIGL_WITH_OPENGL)
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module("opengl")
+    CompileIGL_Module("opengl2")
+    if(NOT APPLE)
+      target_include_directories(iglopengl PRIVATE "${LIBIGL_EXTERNAL}/nanogui/ext/glew/include")
+      target_include_directories(iglopengl2 PRIVATE "${LIBIGL_EXTERNAL}/nanogui/ext/glew/include")
+    endif()
+  endif()
+endif()
+
+### Compile the png parts ###
+if(LIBIGL_WITH_PNG)
+  set(STB_IMAGE_DIR "${LIBIGL_EXTERNAL}/stb_image")
+  add_subdirectory("${STB_IMAGE_DIR}" "stb_image")
+  list(APPEND LIBIGL_INCLUDE_DIRS ${STB_IMAGE_DIR})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES "stb_image")
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module("png")
+    target_include_directories(iglpng PRIVATE ${STB_IMAGE_DIR})
+    if(NOT APPLE)
+      target_include_directories(iglpng PRIVATE "${LIBIGL_EXTERNAL}/nanogui/ext/glew/include")
+    endif()
+  endif()
+endif()
+
+#Compile CoMISo
+# NOTE: this cmakefile works only with the
+# comiso available here: https://github.com/libigl/CoMISo
+if(LIBIGL_WITH_COMISO)
+  set(COMISO_DIR "${LIBIGL_EXTERNAL}/CoMISo")
+
+  set(COMISO_INCLUDE_DIRS
+    "${COMISO_DIR}/ext/gmm-4.2/include"
+    "${COMISO_DIR}/../")
+
+  list(APPEND LIBIGL_INCLUDE_DIRS ${COMISO_INCLUDE_DIRS})
+
+  #add_definitions(-DINCLUDE_TEMPLATES) (what need this?)
+  list(APPEND LIBIGL_DEFINITIONS "-DINCLUDE_TEMPLATES")
+
+  if(APPLE)
+    find_library(accelerate_library Accelerate)
+    list(APPEND LIBIGL_EXTRA_LIBRARIES "CoMISo" ${accelerate_library})
+  elseif(UNIX)
+    find_package(BLAS REQUIRED)
+    list(APPEND LIBIGL_EXTRA_LIBRARIES "CoMISo" ${BLAS_LIBRARIES})
+  endif(APPLE)
+
+  if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SCL_SECURE_NO_DEPRECATE")
+    #link_directories("${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/")
+    list(APPEND LIBIGL_EXTRA_LIBRARIES "CoMISo" "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/lib/libopenblas.dll.a.lib")
+  endif()
+
+  add_subdirectory("${COMISO_DIR}" "CoMISo")
+
+  if(MSVC)
+    # Copy the dll
+    add_custom_target(Copy-CoMISo-DLL ALL       # Adds a post-build event to MyTest
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libopenblas.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/../libopenblas.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgcc_s_seh-1.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/../libgcc_s_seh-1.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgfortran-3.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/../libgfortran-3.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libquadmath-0.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/../libquadmath-0.dll")
+  endif()
+
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module_Copyleft("comiso")
+    target_include_directories(iglcomiso PRIVATE ${COMISO_INCLUDE_DIRS})
+    target_compile_definitions(iglcomiso PRIVATE -DINCLUDE_TEMPLATES)
+  endif()
+endif()
+
+### Compile the xml part ###
+if(LIBIGL_WITH_XML)
+  set(TINYXML2_DIR "${LIBIGL_EXTERNAL}/tinyxml2")
+  add_library(tinyxml2 STATIC ${TINYXML2_DIR}/tinyxml2.cpp ${TINYXML2_DIR}/tinyxml2.h)
+  set_target_properties(tinyxml2 PROPERTIES
+          COMPILE_DEFINITIONS "TINYXML2_EXPORT"
+          VERSION "3.0.0"
+          SOVERSION "3")
+  list(APPEND LIBIGL_INCLUDE_DIRS ${TINYXML2_DIR})
+  list(APPEND LIBIGL_EXTRA_LIBRARIES "tinyxml2")
+  if(LIBIGL_USE_STATIC_LIBRARY)
+    CompileIGL_Module("xml")
+    target_include_directories(iglxml PRIVATE ${TINYXML2_DIR})
+  endif()
+endif()
+
+# Function to print list nicely
+function(print_list title list)
+  message("-- ${title}:")
+  foreach(elt ${list})
+    message("\t ${elt}")
+  endforeach()
+endfunction()
+
+# Pass the list of compiled libraries to the parent if there is one
+if(NOT ${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
+  list(REVERSE LIBIGL_LIBRARIES)
+
+  set(LIBIGL_INCLUDE_DIRS ${LIBIGL_INCLUDE_DIRS} PARENT_SCOPE)
+  set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} PARENT_SCOPE)
+  set(LIBIGL_EXTRA_LIBRARIES ${LIBIGL_EXTRA_LIBRARIES} PARENT_SCOPE)
+  set(LIBIGL_DEFINITIONS ${LIBIGL_DEFINITIONS} PARENT_SCOPE)
+
+  ### ligIGL information ###
+  print_list("libigl includes" "${LIBIGL_INCLUDE_DIRS}")
+  print_list("libigl libraries" "${LIBIGL_LIBRARIES}")
+  print_list("libigl extra libraries" "${LIBIGL_EXTRA_LIBRARIES}")
+  print_list("libigl definitions" "${LIBIGL_DEFINITIONS}")
+endif()

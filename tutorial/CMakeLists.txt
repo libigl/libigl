@@ -1,228 +1,176 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.12)
 project(libigl_tutorials)
 
-message("Generated with config types: ${CMAKE_CONFIGURATION_TYPES}")
+### libIGL options: choose between header only and compiled static library
+option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
+option(LIBIGL_WITH_VIEWER      "Use OpenGL viewer"  ON)
+option(LIBIGL_WITH_NANOGUI     "Use Nanogui menu"   OFF)
 
-option(LIBIGL_USE_STATIC_LIBRARY "Use static library" OFF)
-option(LIBIGL_VIEWER_WITH_NANOGUI "Enable nanogui " OFF)
-
-if(LIBIGL_USE_STATIC_LIBRARY)
-  add_definitions(-DIGL_STATIC_LIBRARY)
-endif(LIBIGL_USE_STATIC_LIBRARY)
-
-SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-
-IF(MSVC)
-  # Enable parallel compilation for Visual Studio
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj /w") 
-
-  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} )
-  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} )
-
-ELSE(MSVC)
-  # Libigl requires a modern C++ compiler that supports c++11
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../" )
-ENDIF(MSVC)
-
-find_package(CORK QUIET)
+### libIGL options: choose your dependencies (by default everything is OFF, in this example we need the viewer) ###
+option(LIBIGL_WITH_BBW              "Use BBW"            ON)
 find_package(CGAL QUIET)
-find_package(EMBREE QUIET)
-find_package(LIBCOMISOH QUIET)
+option(LIBIGL_WITH_CGAL             "Use CGAL"           "${CGAL_FOUND}")
+option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
+option(LIBIGL_WITH_CORK             "Use CORK"           OFF)
+option(LIBIGL_WITH_EMBREE           "Use Embree"         ON)
+option(LIBIGL_WITH_LIM              "Use LIM"            ON)
 find_package(MATLAB QUIET)
-find_package(MOSEK QUIET)
-find_package(TETGEN QUIET)
-find_package(TINYXML2 QUIET)
-find_package(TRIANGLE QUIET)
-find_package(LIM QUIET)
+option(LIBIGL_WITH_MATLAB           "Use Matlab"         "${MATLAB_FOUND}")
+option(LIBIGL_WITH_MOSEK            "Use MOSEK"          "${MOSEK_FOUND}")
+option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
+option(LIBIGL_WITH_PNG              "Use PNG"            ON)
+option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
+option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
+option(LIBIGL_WITH_XML              "Use XML"            ON)
+### End   to be tested ----
 
-message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
-include("CMakeLists.shared")
-
-#Compile libigl
-add_definitions(-DIGL_NO_OPENGL)
-
-if(LIBIGL_USE_STATIC_LIBRARY)
-  add_subdirectory("../optional" "libigl")
-endif(LIBIGL_USE_STATIC_LIBRARY)
-include_directories("../include")
-
-
-#Compile embree
-option(ENABLE_ISPC_SUPPORT " " OFF)
-option(RTCORE_TASKING_SYSTEM " " INTERNAL)
-
-# embree static build is broken on visual studio
-IF(NOT MSVC) 
-  option(ENABLE_STATIC_LIB " " ON)
-  set(ENABLE_STATIC_LIB ON CACHE BOOL "force static build of embree" FORCE)
-ENDIF(NOT MSVC)
-
-IF(MSVC)
-  option(USE_STATIC_RUNTIME " " OFF)
-  set(USE_STATIC_RUNTIME OFF CACHE BOOL "disable changes in the runtime for VS" FORCE)
-ENDIF(MSVC)
-
-option(ENABLE_TUTORIALS " " OFF)
-
-IF(EMBREE_FOUND)
-  add_subdirectory("../external/embree/" "embree")    
-  include_directories("../external/embree/include")    
-  list(APPEND SHARED_LIBRARIES "embree")    
-ENDIF(EMBREE_FOUND)
-
-#Compile nanogui
-if(LIBIGL_VIEWER_WITH_NANOGUI)
-  set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
-  set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
-  set(NANOGUI_BUILD_SHARED OFF CACHE BOOL " " FORCE)
-  add_definitions(-DIGL_VIEWER_WITH_NANOGUI)
-  add_subdirectory("../external/nanogui/" "nanogui")
-  include_directories("../external/nanogui/include")
-  include_directories("../external/nanogui/ext/nanovg/src")
-  list(APPEND SHARED_LIBRARIES "nanogui")
-else()
-  # still need to build GLFW
-  set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
-  set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
-  set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
-  set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
-  add_subdirectory("${GLFW_INCLUDE_DIR}/../" "glfw")
-  list(APPEND SHARED_LIBRARIES "glfw")
-
+### libIGL options: decide if you want to use the functionalities that depends on cgal
+if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build system fails without it
+  find_package(CGAL REQUIRED)
+  set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "CGAL's CMAKE Setup is super annoying ")
+  include(${CGAL_USE_FILE})
 endif()
 
-
-#Compile CoMISo (if found)
-# NOTE: this cmakefile works only with the
-# comiso available here: https://github.com/libigl/CoMISo
-IF(LIBCOMISO_FOUND)
-
-  list(GET LIBCOMISO_INCLUDE_DIRS 0 COMISO_ROOT)
-  # message( FATAL_ERROR "${COMISO_ROOT}" )
-
-  if(APPLE)
-    find_library(accelerate_library Accelerate)
-    list(APPEND SHARED_LIBRARIES "CoMISo" ${accelerate_library})
-  elseif(UNIX)
-    find_package(BLAS REQUIRED)
-    list(APPEND SHARED_LIBRARIES "CoMISo" ${BLAS_LIBRARIES})
-  endif(APPLE)
-
-  if(MSVC)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SCL_SECURE_NO_DEPRECATE")
-    #link_directories("${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/")
-    list(APPEND SHARED_LIBRARIES "CoMISo" "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/libopenblas.dll.a.lib")
-  endif(MSVC)
+### Adding libIGL: choose the path to your local copy libIGL ###
+### This is going to compile everything you requested ###
+add_subdirectory("${PROJECT_SOURCE_DIR}/../shared/cmake" "libigl")
 
 
-  include_directories("${COMISO_ROOT}/CoMISo/ext/gmm-4.2/include")
-  include_directories("${COMISO_ROOT}/")
-  add_subdirectory("${COMISO_ROOT}/CoMISo/" "CoMISo")
+### Output directories
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
-  if(MSVC)
-    # Copy the dll
-    add_custom_target(Copy-CoMISo-DLL        # Adds a post-build event to MyTest
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libopenblas.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libopenblas.dll"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgcc_s_seh-1.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libgcc_s_seh-1.dll"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgfortran-3.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libgfortran-3.dll"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libquadmath-0.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libquadmath-0.dll")
-  endif(MSVC)
+### Compilation flags: adapt to your needs ###
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj") ### Enable parallel compilation
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} )
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} )
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w") # disable all warnings (not ideal but...)
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") #### Libigl requires a modern C++ compiler that supports c++11
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../" )
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w") # disable all warnings (not ideal but...)
+endif()
 
-ENDIF(LIBCOMISO_FOUND)
+# Enable openMP if possible
+#find_package(OpenMP)
+#if (OPENMP_FOUND AND NOT WIN32)
+#  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+#  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+#endif()
 
-message(STATUS "Linking with: ${LIBIGL_LIBRARIES}")
-list(APPEND SHARED_LIBRARIES ${LIBIGL_LIBRARIES})
 
-# This is necessary to work around the static linking order dependencies on linux
-if(UNIX AND NOT APPLE)
-  set(SHARED_LIBRARIES ${SHARED_LIBRARIES} ${SHARED_LIBRARIES})
-endif(UNIX AND NOT APPLE)
+### Prepare the build environment
 
-#message(FATAL_ERROR ${SHARED_LIBRARIES})
+include_directories(${LIBIGL_INCLUDE_DIRS})
+add_definitions(${LIBIGL_DEFINITIONS})
 
-# Store location of tutorial/shared directory 
+### Choose which chapters to compile ###
+option(TUTORIALS_CHAPTER1 "Compile chapter 1" ON)
+option(TUTORIALS_CHAPTER2 "Compile chapter 2" ON)
+option(TUTORIALS_CHAPTER3 "Compile chapter 3" ON)
+option(TUTORIALS_CHAPTER4 "Compile chapter 4" ON)
+option(TUTORIALS_CHAPTER5 "Compile chapter 5" ON)
+option(TUTORIALS_CHAPTER6 "Compile chapter 6" ON)
+option(TUTORIALS_CHAPTER7 "Compile chapter 7" ON)
+
+# Store location of tutorial/shared directory
 set(TUTORIAL_SHARED_PATH ${CMAKE_CURRENT_SOURCE_DIR}/shared CACHE PATH "location of shared tutorial resources")
 add_definitions("-DTUTORIAL_SHARED_PATH=\"${TUTORIAL_SHARED_PATH}\"")
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 # Chapter 1
-add_subdirectory("101_FileIO")
-add_subdirectory("102_DrawMesh")
-add_subdirectory("103_Events")
-add_subdirectory("104_Colors")
-add_subdirectory("105_Overlays")
-add_subdirectory("106_ViewerMenu")
+if(TUTORIALS_CHAPTER1)
+  add_subdirectory("101_FileIO")
+  add_subdirectory("102_DrawMesh")
+  add_subdirectory("103_Events")
+  add_subdirectory("104_Colors")
+  add_subdirectory("105_Overlays")
+  add_subdirectory("106_ViewerMenu")
+endif()
 
 # Chapter 2
-add_subdirectory("201_Normals")
-add_subdirectory("202_GaussianCurvature")
-add_subdirectory("203_CurvatureDirections")
-add_subdirectory("204_Gradient")
-add_subdirectory("205_Laplacian")
+if(TUTORIALS_CHAPTER2)
+  add_subdirectory("201_Normals")
+  add_subdirectory("202_GaussianCurvature")
+  add_subdirectory("203_CurvatureDirections")
+  add_subdirectory("204_Gradient")
+  add_subdirectory("205_Laplacian")
+endif()
 
 # Chapter 3
-add_subdirectory("301_Slice")
-add_subdirectory("302_Sort")
-add_subdirectory("303_LaplaceEquation")
-add_subdirectory("304_LinearEqualityConstraints")
-add_subdirectory("305_QuadraticProgramming")
-add_subdirectory("306_EigenDecomposition")
+if(TUTORIALS_CHAPTER3)
+  add_subdirectory("301_Slice")
+  add_subdirectory("302_Sort")
+  add_subdirectory("303_LaplaceEquation")
+  add_subdirectory("304_LinearEqualityConstraints")
+  add_subdirectory("305_QuadraticProgramming")
+  add_subdirectory("306_EigenDecomposition")
+endif()
 
 # Chapter 4
-add_subdirectory("401_BiharmonicDeformation")
-add_subdirectory("402_PolyharmonicDeformation")
-add_subdirectory("403_BoundedBiharmonicWeights")
-add_subdirectory("404_DualQuaternionSkinning")
-add_subdirectory("405_AsRigidAsPossible")
-add_subdirectory("406_FastAutomaticSkinningTransformations")
-add_subdirectory("407_BiharmonicCoordinates")
+if(TUTORIALS_CHAPTER4)
+  add_subdirectory("401_BiharmonicDeformation")
+  add_subdirectory("402_PolyharmonicDeformation")
+  if(LIBIGL_WITH_BBW)
+    add_subdirectory("403_BoundedBiharmonicWeights")
+  endif()
+  add_subdirectory("404_DualQuaternionSkinning")
+  add_subdirectory("405_AsRigidAsPossible")
+  add_subdirectory("406_FastAutomaticSkinningTransformations")
+  add_subdirectory("407_BiharmonicCoordinates")
+endif()
 
 # Chapter 5
-add_subdirectory("501_HarmonicParam")
-add_subdirectory("502_LSCMParam")
-add_subdirectory("503_ARAPParam")
-if(LIBCOMISO_FOUND)
-  add_subdirectory("504_NRosyDesign")
-  add_subdirectory("505_MIQ")
-  add_subdirectory("506_FrameField")
-endif(LIBCOMISO_FOUND)
-add_subdirectory("507_PolyVectorField")
-add_subdirectory("508_ConjugateField")
-add_subdirectory("509_Planarization")
-add_subdirectory("510_Integrable")
+if(TUTORIALS_CHAPTER5)
+  add_subdirectory("501_HarmonicParam")
+  add_subdirectory("502_LSCMParam")
+  add_subdirectory("503_ARAPParam")
+  if(LIBIGL_WITH_COMISO)
+    add_subdirectory("504_NRosyDesign")
+    add_subdirectory("505_MIQ")
+    add_subdirectory("506_FrameField")
+  endif()
+  add_subdirectory("507_PolyVectorField")
+  add_subdirectory("508_ConjugateField")
+  add_subdirectory("509_Planarization")
+  add_subdirectory("510_Integrable")
+endif()
 
 # Chapter 6
-if(TINYXML2_FOUND)
-  add_subdirectory("601_Serialization")
-endif(TINYXML2_FOUND)
-if(MATLAB_FOUND)
-  add_subdirectory("602_Matlab")
-endif(MATLAB_FOUND)
-add_subdirectory("604_Triangle")
-add_subdirectory("605_Tetgen")
-
-if (EMBREE_FOUND)
-  add_subdirectory("606_AmbientOcclusion")
-  add_subdirectory("607_Picking")
-endif (EMBREE_FOUND)
-
-if(LIM_FOUND)
-  add_subdirectory("608_LIM")
-endif(LIM_FOUND)
-if(CGAL_FOUND)
-  add_subdirectory("609_Boolean")
-  add_subdirectory("610_CSGTree")
+if(TUTORIALS_CHAPTER6)
+  if(LIBIGL_WITH_XML)
+    add_subdirectory("601_Serialization")
+  endif()
+  if(LIBIGL_WITH_MATLAB)
+    add_subdirectory("602_Matlab")
+  endif()
+  if(LIBIGL_WITH_TRIANGLE)
+    add_subdirectory("604_Triangle")
+  endif()
+  if(LIBIGL_WITH_TETGEN)
+    add_subdirectory("605_Tetgen")
+  endif()
+  if(LIBIGL_WITH_EMBREE)
+    add_subdirectory("606_AmbientOcclusion")
+    add_subdirectory("607_Picking")
+  endif()
+  if(LIBIGL_WITH_LIM)
+    add_subdirectory("608_LIM")
+  endif()
+  if(LIBIGL_WITH_CGAL)
+    add_subdirectory("609_Boolean")
+    add_subdirectory("610_CSGTree")
+  endif()
 endif()
-add_subdirectory("701_Statistics")
-add_subdirectory("702_WindingNumber")
-add_subdirectory("703_Decimation")
-add_subdirectory("704_SignedDistance")
-add_subdirectory("705_MarchingCubes")
+
+# Chapter 7
+if(TUTORIALS_CHAPTER7)
+  add_subdirectory("701_Statistics")
+  add_subdirectory("702_WindingNumber")
+  add_subdirectory("703_Decimation")
+  add_subdirectory("704_SignedDistance")
+  add_subdirectory("705_MarchingCubes")
+endif()

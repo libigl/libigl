@@ -2,7 +2,7 @@
 import sys, os
 sys.path.insert(0, os.getcwd() + "/../")
 
-import igl
+import pyigl as igl
 from math import sin,cos,pi
 
 sea_green = igl.eigen.MatrixXd([[70./255.,252./255.,167./255.]])

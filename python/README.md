@@ -70,7 +70,7 @@ native python functions as callbacks. This is a simple example that loads
 two meshes and switches between the two when a key is pressed:
 
 ```python
-import igl
+import pyigl as igl
 
 V1 = igl.eigen.MatrixXd()
 F1 = igl.eigen.MatrixXi()

@@ -1,14 +1,8 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.12)
 project(605_Tetgen)
 
-include("../CMakeLists.shared")
-find_package(TETGEN REQUIRED)
-
-include_directories( ${TETGEN_INCLUDE_DIR})
-
-set(SOURCES
-${PROJECT_SOURCE_DIR}/main.cpp
-)
-
-add_executable(${PROJECT_NAME}_bin ${SOURCES} ${SHARED_SOURCES} ${TETGEN_SOURCES})
-target_link_libraries(${PROJECT_NAME}_bin ${SHARED_LIBRARIES})
+add_executable(${PROJECT_NAME}_bin
+  main.cpp)
+target_include_directories(${PROJECT_NAME}_bin PRIVATE ${LIBIGL_INCLUDE_DIRS})
+target_compile_definitions(${PROJECT_NAME}_bin PRIVATE ${LIBIGL_DEFINITIONS})
+target_link_libraries(${PROJECT_NAME}_bin ${LIBIGL_LIBRARIES} ${LIBIGL_EXTRA_LIBRARIES})

@@ -1,29 +1,17 @@
-cmake_minimum_required(VERSION 2.8)
-
+cmake_minimum_required(VERSION 2.8.12)
 project(pybind)
 
-IF(MSVC)
-### Enable parallel compilation for Visual Studio
-  add_definitions(-DEIGEN_DONT_ALIGN)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/../ )
-  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/../ )
-ENDIF(MSVC)
-
-SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../tutorial/cmake)
-
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  message(STATUS "Setting build type to 'MinSizeRel' as none was specified.")
-  set(CMAKE_BUILD_TYPE MinSizeRel CACHE STRING "Choose the type of build." FORCE)
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
-    "MinSizeRel" "RelWithDebInfo")
+### Compilation flags: adapt to your needs ###
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj /w") ### Enable parallel compilation
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} )
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} )
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") #### Libigl requires a modern C++ compiler that supports c++11
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../" )
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations -Wno-unused-parameter -Wno-deprecated-register -Wno-return-type-c-linkage")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations -Wno-unused-parameter -Wno-deprecated-register -Wno-return-type-c-linkage")
 endif()
-
-find_package(OPENGL QUIET)
-
-if (OPENGL_FOUND)
-  add_definitions(-DPY_VIEWER)
-endif (OPENGL_FOUND)
 
 # Force a specific python version
 # SET(PYTHON_LIBRARIES "D:/Python34/libs/python34.lib")
@@ -39,154 +27,100 @@ find_package(PythonInterp REQUIRED)
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 if (UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
   if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -flto")
   endif()
 endif()
 
 # Compile with compiler warnings turned on
-if(MSVC)
-  if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
-    string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-  else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-  endif()
-else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
-endif()
+# if(MSVC)
+#   if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+#     string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+#   else()
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+#   endif()
+# else()
+#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+# endif()
 
 include_directories(${PYTHON_INCLUDE_DIR} include)
 
 ## include pybing
 include_directories(${PROJECT_SOURCE_DIR}/../external/pybind11/include)
 
-## include eigen
-include_directories(${PROJECT_SOURCE_DIR}/../external/nanogui/ext/eigen)
-
 ## include libigl
-include_directories(${PROJECT_SOURCE_DIR}/../include)
+option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" OFF)
+option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
+option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
+option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
+option(LIBIGL_WITH_BOOLEAN          "Use Cork boolean"   OFF)
+option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
+option(LIBIGL_WITH_EMBREE           "Use Embree"         OFF)
+option(LIBIGL_WITH_LIM              "Use LIM"            ON)
+option(LIBIGL_WITH_MATLAB           "Use Matlab"         OFF)
+option(LIBIGL_WITH_MOSEK            "Use MOSEK"          OFF)
+option(LIBIGL_WITH_BBW              "Use BBW"            ON)
+option(LIBIGL_WITH_OPENGL_AND_PNG   "Use OpenGL"         ON)
+option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
+option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
+option(LIBIGL_WITH_XML              "Use XML"            ON)
 
-if (OPENGL_FOUND)
+if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build system fails without it
+  find_package(CGAL REQUIRED)
+  set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "CGAL's CMAKE Setup is super annoying ")
+  include(${CGAL_USE_FILE})
+endif()
 
-  ## include glew
-  if(NOT APPLE)
-    find_package(GLEW REQUIRED)
-    include_directories( ${GLEW_INCLUDE_DIR} )
-  	set(SHARED_SOURCES ${SHARED_SOURCES} ${GLEW_SOURCES})
-  endif(NOT APPLE)
+add_subdirectory("${PROJECT_SOURCE_DIR}/../shared/cmake" "libigl")
 
 
-  # include nanogui and dependencies
+### Prepare the build environment
 
-  set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
-  set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
-  set(NANOGUI_BUILD_SHARED OFF CACHE BOOL " " FORCE)
+include_directories(${LIBIGL_INCLUDE_DIRS})
+add_definitions(${LIBIGL_DEFINITIONS})
 
-  add_subdirectory("../external/nanogui/" "nanogui")
-  include_directories("../external/nanogui/include")
-  include_directories("../external/nanogui/ext/glfw/include")
-  include_directories("../external/nanogui/ext/nanovg/src")
-  list(APPEND SHARED_LIBRARIES "nanogui" ${OPENGL_LIBRARIES})
-
+## Optional modules
+if (LIBIGL_WITH_OPENGL)
+  add_definitions(-DPY_VIEWER)
   list(APPEND SHARED_SOURCES "py_igl_viewer.cpp")
+endif ()
 
-endif (OPENGL_FOUND)
-# include comiso if available
-
-find_package(LIBCOMISOH QUIET)
-
-#Compile CoMISo (if found)
-# NOTE: this cmakefile works only with the
-# comiso available here: https://github.com/libigl/CoMISo
-IF(LIBCOMISO_FOUND)
-
+if (LIBIGL_WITH_COMISO)
   add_definitions(-DPY_COMISO)
-  list(APPEND SHARED_SOURCES "py_igl_comiso.cpp")
-
-  list(GET LIBCOMISO_INCLUDE_DIRS 0 COMISO_ROOT)
-  # message( FATAL_ERROR "${COMISO_ROOT}" )
-
-  if(APPLE)
-    find_library(accelerate_library Accelerate)
-    list(APPEND SHARED_LIBRARIES "CoMISo" ${accelerate_library})
-  elseif(UNIX)
-    find_package(BLAS REQUIRED)
-    list(APPEND SHARED_LIBRARIES "CoMISo" ${BLAS_LIBRARIES})
-  endif(APPLE)
-
-  if(MSVC)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SCL_SECURE_NO_DEPRECATE")
-    #link_directories("${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/")
-    list(APPEND SHARED_LIBRARIES "CoMISo" "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/lib/libopenblas.dll.a.lib")
-  endif(MSVC)
+  list(APPEND SHARED_SOURCES "copyleft/py_igl_comiso.cpp")
+endif ()
 
 
-  include_directories("${COMISO_ROOT}/CoMISo/ext/gmm-4.2/include")
-  include_directories("${COMISO_ROOT}/")
-  add_subdirectory("${COMISO_ROOT}/CoMISo/" "CoMISo")
-
-  if(MSVC)
-    # Copy the dll
-    add_custom_target(Copy-CoMISo-DLL        # Adds a post-build event to MyTest
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libopenblas.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libopenblas.dll"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgcc_s_seh-1.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libgcc_s_seh-1.dll"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgfortran-3.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libgfortran-3.dll"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${COMISO_ROOT}/CoMISo/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libquadmath-0.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libquadmath-0.dll")
-  endif(MSVC)
-
-ENDIF(LIBCOMISO_FOUND)
-
-add_library(igl SHARED
-  python.cpp
+## Prepare the python library
+add_library(pyigl SHARED
+  python_shared.cpp
   py_vector.cpp
   py_igl.cpp
   py_doc.cpp
   ${SHARED_SOURCES}
 )
 
-# if(NOT APPLE)
-# 	find_package(GLEW REQUIRED)
-# endif(NOT APPLE)
+set_target_properties(pyigl PROPERTIES PREFIX "")
+set_target_properties(pyigl PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
-if(APPLE)
-	set(CMAKE_SHARED_LINKER_FLAGS "-framework OpenGL -framework Cocoa")
-endif (APPLE) #APPLE
-#
-if(UNIX AND NOT APPLE)
-  if (OPENGL_FOUND)
-    set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -lGL -lGLU -lrt -lX11 -lXxf86vm -lXrandr -lpthread -lXi  -lXcursor -lXinerama ")
-  endif (OPENGL_FOUND)
-endif(UNIX AND NOT APPLE)
-
-
-set_target_properties(igl PROPERTIES PREFIX "")
-set_target_properties(igl PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
-
-target_link_libraries(igl ${SHARED_LIBRARIES})
+target_link_libraries(pyigl ${LIBIGL_LIBRARIES} ${LIBIGL_EXTRA_LIBRARIES})
 
 if (WIN32)
   if (MSVC)
     # Enforce size-based optimization and link time code generation on MSVC (~30% smaller binaries in experiments)
-    set_target_properties(igl PROPERTIES COMPILE_FLAGS "/Os /GL")
-    set_target_properties(igl PROPERTIES LINK_FLAGS "/LTCG")
+    set_target_properties(pyigl PROPERTIES COMPILE_FLAGS "/Os /GL")
+    set_target_properties(pyigl PROPERTIES LINK_FLAGS "/LTCG")
   endif()
 
   # .PYD file extension on Windows
-  set_target_properties(igl PROPERTIES SUFFIX ".pyd")
+  set_target_properties(pyigl PROPERTIES SUFFIX ".pyd")
 
   # Link against the Python shared library
   # message(FATAL_ERROR ${PYTHON_LIBRARY})
   # target_link_libraries(igl ${PYTHON_LIBRARY})
-  target_link_libraries(igl ${PYTHON_LIBRARIES})
+  target_link_libraries(pyigl ${PYTHON_LIBRARIES})
 
 
 elseif (UNIX)
@@ -203,18 +137,18 @@ elseif (UNIX)
   # fine -- they will be resolved at import time.
 
   # .SO file extension on Linux/Mac OS
-  set_target_properties(igl PROPERTIES SUFFIX ".so")
+  set_target_properties(pyigl PROPERTIES SUFFIX ".so")
 
   # Strip unnecessary sections of the binary on Linux/Mac OS
   if(APPLE)
-    set_target_properties(igl PROPERTIES MACOSX_RPATH ".")
-    set_target_properties(igl PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
+    set_target_properties(pyigl PROPERTIES MACOSX_RPATH ".")
+    set_target_properties(pyigl PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
     if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-      add_custom_command(TARGET igl POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/../igl.so)
+      add_custom_command(TARGET pyigl POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/../pyigl.so)
     endif()
   else()
     if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-      add_custom_command(TARGET igl POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/../igl.so)
+      add_custom_command(TARGET pyigl POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/../pyigl.so)
     endif()
   endif()
 endif()

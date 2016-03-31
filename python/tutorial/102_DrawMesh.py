@@ -2,7 +2,7 @@
 import sys, os
 sys.path.insert(0, os.getcwd() + "/../")
 
-import igl
+import pyigl as igl
 
 # Load a mesh in OFF format
 V = igl.eigen.MatrixXd()

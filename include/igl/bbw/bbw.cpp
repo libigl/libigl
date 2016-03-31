@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "bbw.h"
 
@@ -14,12 +14,10 @@
 #include <igl/slice_into.h>
 #include <igl/min_quad_with_fixed.h>
 
-#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #include <Eigen/Sparse>
 
 #include <iostream>
 #include <cstdio>
-
 
 igl::bbw::BBWData::BBWData():
   partition_unity(false),
@@ -45,16 +43,16 @@ void igl::bbw::BBWData::print()
 
 
 template <
-  typename DerivedV, 
-  typename DerivedEle, 
+  typename DerivedV,
+  typename DerivedEle,
   typename Derivedb,
-  typename Derivedbc, 
+  typename Derivedbc,
   typename DerivedW>
 IGL_INLINE bool igl::bbw::bbw(
-  const Eigen::PlainObjectBase<DerivedV> & V, 
-  const Eigen::PlainObjectBase<DerivedEle> & Ele, 
-  const Eigen::PlainObjectBase<Derivedb> & b, 
-  const Eigen::PlainObjectBase<Derivedbc> & bc, 
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedEle> & Ele,
+  const Eigen::PlainObjectBase<Derivedb> & b,
+  const Eigen::PlainObjectBase<Derivedbc> & bc,
   igl::bbw::BBWData & data,
   Eigen::PlainObjectBase<DerivedW> & W
   )
