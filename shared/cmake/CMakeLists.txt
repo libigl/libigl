@@ -352,19 +352,19 @@ if(LIBIGL_WITH_COMISO)
 
   if(MSVC)
     # Copy the dll
-    add_custom_target(Copy-CoMISo-DLL        # Adds a post-build event to MyTest
+    add_custom_target(Copy-CoMISo-DLL ALL       # Adds a post-build event to MyTest
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libopenblas.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libopenblas.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/../libopenblas.dll"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgcc_s_seh-1.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libgcc_s_seh-1.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/../libgcc_s_seh-1.dll"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libgfortran-3.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libgfortran-3.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/../libgfortran-3.dll"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${COMISO_DIR}/ext/OpenBLAS-v0.2.14-Win64-int64/bin/libquadmath-0.dll"
-        "${CMAKE_CURRENT_BINARY_DIR}/libquadmath-0.dll")
+        "${CMAKE_CURRENT_BINARY_DIR}/../libquadmath-0.dll")
   endif()
 
   if(LIBIGL_USE_STATIC_LIBRARY)
