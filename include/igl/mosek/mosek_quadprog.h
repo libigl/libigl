@@ -28,7 +28,7 @@ namespace igl
       // Double parameters
       std::map<MSKdparame,double> douparam;
       // Default values
-      MosekData();
+      IGL_INLINE MosekData();
     };
     // Solve a convex quadratic optimization problem with linear and constant
     // bounds, that is:

@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.sparse as sparse
-import igl
+import pyigl as igl
 
 def p2e(m):
     if isinstance(m, np.ndarray):

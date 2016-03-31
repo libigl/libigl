@@ -1,5 +1,5 @@
 #include <igl/read_triangle_mesh.h>
-#include <igl/copyleft/boolean/CSGTree.h>
+#include <igl/copyleft/cgal/CSGTree.h>
 #include <igl/viewer/Viewer.h>
 #include <igl/jet.h>
 #include <Eigen/Core>
@@ -9,7 +9,7 @@
 int main(int argc, char * argv[])
 {
   using namespace Eigen;
-  using namespace igl::copyleft::boolean;
+  using namespace igl::copyleft::cgal;
   using namespace std;
   using namespace igl;
   cout<<R"(

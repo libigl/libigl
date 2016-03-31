@@ -1,7 +1,7 @@
 #include <igl/readOFF.h>
-#define IGL_NO_CORK
+//#define IGL_NO_CORK
 //#undef IGL_STATIC_LIBRARY
-#include <igl/copyleft/boolean/mesh_boolean.h>
+#include <igl/copyleft/cgal/mesh_boolean.h>
 #include <igl/viewer/Viewer.h>
 
 #include <Eigen/Core>
@@ -12,8 +12,8 @@
 Eigen::MatrixXd VA,VB,VC;
 Eigen::VectorXi J,I;
 Eigen::MatrixXi FA,FB,FC;
-igl::copyleft::boolean::MeshBooleanType boolean_type(
-  igl::copyleft::boolean::MESH_BOOLEAN_TYPE_UNION);
+igl::MeshBooleanType boolean_type(
+  igl::MESH_BOOLEAN_TYPE_UNION);
 
 const char * MESH_BOOLEAN_TYPE_NAMES[] =
 {
@@ -26,7 +26,7 @@ const char * MESH_BOOLEAN_TYPE_NAMES[] =
 
 void update(igl::viewer::Viewer &viewer)
 {
-  igl::copyleft::boolean::mesh_boolean(VA,FA,VB,FB,boolean_type,VC,FC,J);
+  igl::copyleft::cgal::mesh_boolean(VA,FA,VB,FB,boolean_type,VC,FC,J);
   Eigen::MatrixXd C(FC.rows(),3);
   for(size_t f = 0;f<C.rows();f++)
   {
@@ -51,14 +51,14 @@ bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
       return false;
     case '.':
       boolean_type =
-        static_cast<igl::copyleft::boolean::MeshBooleanType>(
-          (boolean_type+1)% igl::copyleft::boolean::NUM_MESH_BOOLEAN_TYPES);
+        static_cast<igl::MeshBooleanType>(
+          (boolean_type+1)% igl::NUM_MESH_BOOLEAN_TYPES);
       break;
     case ',':
       boolean_type =
-        static_cast<igl::copyleft::boolean::MeshBooleanType>(
-          (boolean_type+igl::copyleft::boolean::NUM_MESH_BOOLEAN_TYPES-1)%
-          igl::copyleft::boolean::NUM_MESH_BOOLEAN_TYPES);
+        static_cast<igl::MeshBooleanType>(
+          (boolean_type+igl::NUM_MESH_BOOLEAN_TYPES-1)%
+          igl::NUM_MESH_BOOLEAN_TYPES);
       break;
     case '[':
       viewer.core.camera_dnear -= 0.1;
@@ -68,7 +68,7 @@ bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
       return true;
   }
   std::cout<<"A "<<MESH_BOOLEAN_TYPE_NAMES[boolean_type]<<" B."<<std::endl;
-  igl::copyleft::boolean::mesh_boolean(VA,FA,VB,FB,boolean_type,VC,FC);
+  igl::copyleft::cgal::mesh_boolean(VA,FA,VB,FB,boolean_type,VC,FC);
   update(viewer);
   return true;
 }

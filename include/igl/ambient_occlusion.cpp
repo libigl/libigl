@@ -44,7 +44,7 @@ IGL_INLINE void igl::ambient_occlusion(
     for(int t = 0;t<nthreads;t++)
     {
       threads[t] = std::thread(std::bind(
-        [&](const int bi, const int ei, const int t)
+        [&P,&N,&shoot_ray,&S,&num_samples,&D](const int bi, const int ei, const int t)
         {
           // loop over mesh vertices in this chunk
           for(int p = bi;p<ei;p++)

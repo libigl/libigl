@@ -1,6 +1,6 @@
 import socket
 import threading
-import igl
+import pyigl as igl
 import array
 import time
 

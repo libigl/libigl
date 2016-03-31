@@ -2,7 +2,7 @@
 import sys, os
 sys.path.insert(0, os.getcwd() + "/../")
 
-import igl
+import pyigl as igl
 
 global bc_frac, bc_dir,deformation_field, V, U, V_bc, U_bc, F, b
 bc_frac = 1.0

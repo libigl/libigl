@@ -13,7 +13,7 @@ os.system("python ../tcpviewer.py&")
 # Wait for it to set up the socket
 time.sleep(1)
 
-import igl
+import pyigl as igl
 import tcpviewer
 
 # Read a mesh
