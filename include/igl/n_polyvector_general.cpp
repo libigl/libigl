@@ -37,8 +37,7 @@ namespace igl {
     Eigen::VectorXi indInteriorToFull;
     Eigen::VectorXi indFullToInterior;
 
-//#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
-    Eigen::PlainObjectBase<DerivedV> B1, B2, FN;
+    DerivedV B1, B2, FN;
 
     IGL_INLINE void computek();
     IGL_INLINE void setFieldFromGeneralCoefficients(const  std::vector<Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1>> &coeffs,
@@ -203,8 +202,6 @@ IGL_INLINE bool igl::GeneralPolyVectorFieldFinder<DerivedV, DerivedF>::
                            const Eigen::VectorXi &rootsIndex,
                            Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, Eigen::Dynamic> &output)
 {
-	std::cerr << "This code is broken!" << std::endl;
-	exit(1);
   // polynomial is of the form:
   // z^(2n) +
   // -c[0]z^(2n-1) +
@@ -212,36 +209,36 @@ IGL_INLINE bool igl::GeneralPolyVectorFieldFinder<DerivedV, DerivedF>::
   // -c[2]z^(2n-3) +
   // ... +
   // (-1)^n c[n-1]
-  //std::vector<Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1>> coeffs(n,Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1>::Zero(numF, 1));
-  //for (int i =0; i<n; ++i)
-  //{
-  //  int degree = i+1;
-  //  Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1> Ck;
-  //  getGeneralCoeffConstraints(isConstrained,
-  //                             cfW,
-  //                             i,
-  //                             rootsIndex,
-  //                             Ck);
+  std::vector<Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1>> coeffs(n,Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1>::Zero(numF, 1));
+  for (int i =0; i<n; ++i)
+  {
+    int degree = i+1;
+    Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1> Ck;
+    getGeneralCoeffConstraints(isConstrained,
+                               cfW,
+                               i,
+                               rootsIndex,
+                               Ck);
 
-  //  Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar> > DD;
-  //  computeCoefficientLaplacian(degree, DD);
-  //  Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar> > f; f.resize(numF,1);
+    Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar> > DD;
+    computeCoefficientLaplacian(degree, DD);
+    Eigen::SparseMatrix<std::complex<typename DerivedV::Scalar> > f; f.resize(numF,1);
 
-  //  if (isConstrained.sum() == numF)
-  //    coeffs[i] = Ck;
-  //  else
-  //    minQuadWithKnownMini(DD, f, isConstrained, Ck, coeffs[i]);
-  //}
-  //std::vector<Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 2> > pv;
-  //setFieldFromGeneralCoefficients(coeffs, pv);
-  //output.setZero(numF,3*n);
-  //for (int fi=0; fi<numF; ++fi)
-  //{
-  //  const Eigen::Matrix<typename DerivedV::Scalar, 1, 3> &b1 = B1.row(fi);
-  //  const Eigen::Matrix<typename DerivedV::Scalar, 1, 3> &b2 = B2.row(fi);
-  //  for (int i=0; i<n; ++i)
-  //    output.block(fi,3*i, 1, 3) = pv[i](fi,0)*b1 + pv[i](fi,1)*b2;
-  //}
+    if (isConstrained.sum() == numF)
+      coeffs[i] = Ck;
+    else
+      minQuadWithKnownMini(DD, f, isConstrained, Ck, coeffs[i]);
+  }
+  std::vector<Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 2> > pv;
+  setFieldFromGeneralCoefficients(coeffs, pv);
+  output.setZero(numF,3*n);
+  for (int fi=0; fi<numF; ++fi)
+  {
+    const Eigen::Matrix<typename DerivedV::Scalar, 1, 3> &b1 = B1.row(fi);
+    const Eigen::Matrix<typename DerivedV::Scalar, 1, 3> &b2 = B2.row(fi);
+    for (int i=0; i<n; ++i)
+      output.block(fi,3*i, 1, 3) = pv[i](fi,0)*b1 + pv[i](fi,1)*b2;
+  }
   return true;
 }
 
@@ -475,8 +472,6 @@ IGL_INLINE void igl::n_polyvector_general(const Eigen::MatrixXd &V,
                              const Eigen::VectorXi &I,
                              Eigen::MatrixXd &output)
 {
-//	// This functions is broken, please contact Olga Diamanti
-//	assert(0);
   Eigen::VectorXi isConstrained = Eigen::VectorXi::Constant(F.rows(),0);
   Eigen::MatrixXd cfW = Eigen::MatrixXd::Constant(F.rows(),bc.cols(),0);
 
