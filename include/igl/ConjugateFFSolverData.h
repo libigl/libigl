@@ -10,7 +10,9 @@
 #include "igl_inline.h"
 #include <Eigen/Core>
 #include <Eigen/Sparse>
-
+#include <igl/matlab_format.h>
+#include <iostream>
+using namespace std;
 namespace igl 
 {
   // Data class for the Conjugate Frame Field Solver
@@ -122,6 +124,8 @@ IGL_INLINE void igl::ConjugateFFSolverData<DerivedV, DerivedF>::computeCurvature
   kmax = kmax.bottomRows(numF);
   kmin = kmin.bottomRows(numF);
 
+  cerr<<igl::matlab_format(kmax,"kmax")<<endl;
+  cerr<<igl::matlab_format(kmin,"kmin")<<endl;
   //  kmax = dmax3.rowwise().norm();
   //  kmin = dmin3.rowwise().norm();
 
