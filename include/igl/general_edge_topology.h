@@ -25,10 +25,9 @@ namespace igl
   // EV  : #Ex2, Stores the edge description as pair of indices to vertices
   // FE : #Fx3, Stores the Face-Edge relation
   // EF : #Ex2: Stores the Edge-Face relation
-template <typename DerivedF>
   IGL_INLINE void general_edge_topology(
-    const Eigen::PlainObjectBase<DerivedF>& gD,
-    const Eigen::PlainObjectBase<DerivedF>& gF,
+    const Eigen::VectorXi& gD,
+    const Eigen::MatrixXi& gF,
     Eigen::MatrixXi& gEV,
     Eigen::MatrixXi& gFE,
     Eigen::MatrixXi& gEF);

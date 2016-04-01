@@ -28,11 +28,10 @@ namespace igl
     //   V  eigen double matrix #V by 3
     // D  eigen int vector #F by 1 - face degrees
     //   F  eigen int matrix #F by max(D)
-    template <typename DerivedV, typename DerivedF>
     IGL_INLINE bool readPolygonalOFF(const std::string str,
-                                     Eigen::PlainObjectBase<DerivedV>& V,
-                                     Eigen::PlainObjectBase<DerivedF>& D,
-                                     Eigen::PlainObjectBase<DerivedF>& F)
+                                     Eigen::MatrixXd& V,
+                                     Eigen::VectorXi& D,
+                                     Eigen::MatrixXi& F)
     {
         
         using namespace std;
@@ -65,8 +64,8 @@ namespace igl
                 F(i,j)=RawFaces[i][j];
         
         //Handling non-zero indexed files: Assuming 0 is not an isolated vertex.
-        int MinIndex=F.minCoeff();
-        F-=MatrixXi::Constant(F.rows(), F.cols(), MinIndex);
+        //int MinIndex=F.minCoeff();
+        //F-=MatrixXi::Constant(F.rows(), F.cols(), MinIndex);
         FileHandle.close();
         return true;
     }

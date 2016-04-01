@@ -9,10 +9,9 @@
 #include <algorithm>
 //#include "is_edge_manifold.h"
 
-template<typename DerivedF>
 IGL_INLINE void igl::general_edge_topology(
-                                   const Eigen::PlainObjectBase<DerivedF>& gD,
-                                   const Eigen::PlainObjectBase<DerivedF>& gF,
+                                   const Eigen::VectorXi& gD,
+                                   const Eigen::MatrixXi& gF,
                                    Eigen::MatrixXi& gEV,
                                    Eigen::MatrixXi& gFE,
                                    Eigen::MatrixXi& gEF)
