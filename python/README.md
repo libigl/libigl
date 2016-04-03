@@ -25,7 +25,7 @@ that your terminal is pointing to the root of libigl:
 ```bash
 cd python
 mkdir build
-cd build; make; cd ..
+cd build; cmake ..; make; cd ..
 ```
 
 The cmake script will complain if it is not able to find python. In that case
