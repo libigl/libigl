@@ -307,7 +307,7 @@ int main(int argc, char *argv[])
   igl::readOFF(TUTORIAL_SHARED_PATH &quot;/bunny.off&quot;, V, F);
 
   // Plot the mesh
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(V, F);
   viewer.launch();
 }
@@ -346,7 +346,7 @@ bool (*callback_key_up)(Viewer&amp; viewer, unsigned char key, int modifiers);
 stages of an algorithm, as demonstrated in <a href="103_Events/main.cpp">Example 103</a>, where
 the keyboard callback changes the visualized mesh depending on the key pressed:</p>
 
-<pre><code class="cpp">bool key_down(igl::Viewer&amp; viewer, unsigned char key, int modifier)
+<pre><code class="cpp">bool key_down(igl::viewer::Viewer&amp; viewer, unsigned char key, int modifier)
 {
   if (key == '1')
   {
@@ -457,26 +457,34 @@ using overlays.</figcaption>
 
 <h2 id="viewermenu">Viewer Menu</h2>
 
-<p>As of version 1.2 the viewer uses a new menu and completely replaces <a href="http://anttweakbar.sourceforge.net/doc/">AntTweakBar</a>. It is based on the open-source projects <a href="https://github.com/memononen/nanovg">nanovg</a> and <a href="https://github.com/wjakob/nanogui">nanogui</a>. To extend the default menu of the viewer and to expose more user defined variables you have to define a callback function:</p>
+<p>As of version 1.2 the viewer uses a new menu and completely replaces
+<a href="http://anttweakbar.sourceforge.net/doc/">AntTweakBar</a>. It is based on the
+open-source projects <a href="https://github.com/memononen/nanovg">nanovg</a> and
+<a href="https://github.com/wjakob/nanogui">nanogui</a>. To extend the default menu of the
+viewer and to expose more user defined variables you have to define a callback
+function:</p>
 
 <pre><code class="cpp">igl::viewer::Viewer viewer;
 
 bool boolVariable = true;
 float floatVariable = 0.1f;
+enum Orientation { Up=0,Down,Left,Right } dir = Up;
 
-// extend viewer menu
+// Extend viewer menu
 viewer.callback_init = [&amp;](igl::viewer::Viewer&amp; viewer)
 {
-  // add new group
-  viewer.ngui-&gt;addNewGroup(&quot;New Group&quot;);
+  // Add new group
+  viewer.ngui-&gt;addGroup(&quot;New Group&quot;);
 
-  // expose variables
-  viewer.ngui-&gt;addVariable(boolVariable,&quot;bool&quot;);
-  viewer.ngui-&gt;addVariable(floatVariable,&quot;float&quot;);
+  // Expose a variable directly ...
+  viewer.ngui-&gt;addVariable(&quot;float&quot;,floatVariable);
+  
+  // Expose an enumaration type
+  viewer.ngui-&gt;addVariable&lt;Orientation&gt;(&quot;Direction&quot;,dir)-&gt;setItems({&quot;Up&quot;,&quot;Down&quot;,&quot;Left&quot;,&quot;Right&quot;});
 
-  // add button
-  viewer.ngui-&gt;addButton(&quot;Print Hello&quot;,[](){ cout &lt;&lt; &quot;Hello\n&quot;; });
-
+  // Add a button
+  viewer.ngui-&gt;addButton(&quot;Print Hello&quot;,[](){ std::cout &lt;&lt; &quot;Hello\n&quot;; });
+  
   // call to generate menu
   viewer.ngui-&gt;layout();
   return false;
@@ -488,29 +496,17 @@ viewer.launch();
 
 <p>If you need a separate new menu window use:</p>
 
-<pre><code class="cpp">viewer.ngui-&gt;addNewWindow(Eigen::Vector2i(220,10),&quot;New Window&quot;);
-</code></pre>
-
-<p>You can also switch between different orientation of the layout:</p>
-
-<pre><code class="cpp">// horizontal alignment
-viewer.ngui-&gt;addNewGroup(&quot;New Group&quot;,nanogui::FormScreen::Layout::Horizontal);
-viewer.ngui-&gt;addButton(&quot;Print Test1&quot;,[](){ cout &lt;&lt; &quot;Test1\n&quot;; });
-viewer.ngui-&gt;addButton(&quot;Print Test2&quot;,[](){ cout &lt;&lt; &quot;Test2\n&quot;; });
-
-// vertical alignment
-viewer.ngui-&gt;setCurrentLayout(nanogui::FormScreen::Layout::Vertical);
-viewer.ngui-&gt;addVariable(boolVariable,&quot;bool&quot;);
-viewer.ngui-&gt;addVariable(floatVariable,&quot;float&quot;);
+<pre><code class="cpp">viewer.ngui-&gt;addWindow(Eigen::Vector2i(220,10),&quot;New Window&quot;);
 </code></pre>
 
 <p>If you do not want to expose variables directly but rather use the get/set functionality:</p>
 
-<pre><code class="cpp">viewer.ngui-&gt;addVariable([&amp;](bool val) {
-  boolVariable = val; // set
+<pre><code class="cpp">// ... or using a custom callback
+viewer.ngui-&gt;addVariable&lt;bool&gt;(&quot;bool&quot;,[&amp;](bool val) {
+  boolVariable = val; // setter
 },[&amp;]() {
-  return boolVariable; // get
-},&quot;bool&quot;,true);
+  return boolVariable; // getter
+});
 </code></pre>
 
 <figure>
@@ -2477,19 +2473,22 @@ void Serializable::PostDeserialization();
 
 <p>Alternatively, if you want a non-intrusive way of serializing your state you can overload the following functions:</p>
 
-<pre><code class="cpp">namespace igl { namespace serialization {
-
-void serialize(const State&amp; obj,std::vector&lt;char&gt;&amp; buffer){
-  ::igl::serialize(obj.V,std::string(&quot;V&quot;),buffer);
-  ::igl::serialize(obj.F,std::string(&quot;F&quot;),buffer);
-  ::igl::serialize(obj.ids,std::string(&quot;ids&quot;),buffer);
+<pre><code class="cpp">namespace igl
+{
+  namespace serialization
+  {
+    template &lt;&gt; inline void serialize(const State&amp; obj,std::vector&lt;char&gt;&amp; buffer){
+      ::igl::serialize(obj.V,std::string(&quot;V&quot;),buffer);
+      ::igl::serialize(obj.F,std::string(&quot;F&quot;),buffer);
+      ::igl::serialize(obj.ids,std::string(&quot;ids&quot;),buffer);
+    }
+    template &lt;&gt; inline void deserialize(State&amp; obj,const std::vector&lt;char&gt;&amp; buffer){
+      ::igl::deserialize(obj.V,std::string(&quot;V&quot;),buffer);
+      ::igl::deserialize(obj.F,std::string(&quot;F&quot;),buffer);
+      ::igl::deserialize(obj.ids,std::string(&quot;ids&quot;),buffer);
+    }
+  }
 }
-void deserialize(State&amp; obj,const std::vector&lt;char&gt;&amp; buffer){
-  ::igl::deserialize(obj.V,std::string(&quot;V&quot;),buffer);
-  ::igl::deserialize(obj.F,std::string(&quot;F&quot;),buffer);
-  ::igl::deserialize(obj.ids,std::string(&quot;ids&quot;),buffer);
-}
-}}
 </code></pre>
 
 <p>Equivalently, you can use the following macros:</p>
@@ -2836,16 +2835,15 @@ compute robustly with boundary representations, but are nonetheless useful.</p>
 
 <p>To compute a boolean operation on a triangle mesh with vertices <code>VA</code> and
 triangles <code>FA</code> and another mesh <code>VB</code> and <code>FB</code>, libigl first computes a unified
-mesh with vertices <code>V</code> and triangles <code>F</code> where all triangle-triangle
+&#8220;mesh arrangement&#8221; (see <a class="citation" href="#fn:34" title="Jump to citation">[34]<span class="citekey" style="display:none">zhou_2016</span></a>) with vertices <code>V</code> and triangles <code>F</code> where all triangle-triangle
 intersections have been &#8220;resolved&#8221;. That is, edges and vertices are added
 exactly at the intersection lines, so the resulting <em>non-manifold</em> mesh <code>(V,F)</code>
 has no self-intersections.</p>
 
-<p>Then libigl <em>peels</em> the outer hull <a class="citation" href="#fn:34" title="Jump to citation">[34]<span class="citekey" style="display:none">attene_2014</span></a> off this mesh recursively,
-keeping track of the iteration parity and orientation flips for each layer.
-For any boolean operation, these two pieces of information determine for each
-triangle (1) if it should be included in the output, and (2) if its orientation
-should be reversed before added to the output.</p>
+<p>Then libigl labels each &#8220;cell&#8221; bounded by surfaces of the arrangement according
+to its <em>winding number vector</em>: winding number with respect to each input mesh
+<span class="math">\((w_A,w_B)\)</span>. Finally, according to the desired operation (e.g. union,
+intersection) the boundary of the corresponding cells are extracted.</p>
 
 <p>Calling libigl&#8217;s boolean operations is simple. To compute the union of
 <code>(VA,FA)</code> and <code>(VB,FB)</code> into a new mesh <code>(VC,FC)</code>, use:</p>
@@ -2884,7 +2882,7 @@ always robust.</p>
 <h2 id="csgtree">CSG Tree</h2>
 
 <p>The <a href="#booleanoperationsonmeshes">previous section</a> discusses using
-<code>igl::boolean::mesh_boolean</code> to compute the result of a <em>single</em> boolean
+<code>igl::copyleft::cgal::mesh_boolean</code> to compute the result of a <em>single</em> boolean
 operation on two input triangle meshes. When employing constructive solid
 geometry (CSG) as a modeling paradigm, shapes are represented as the result of
 many such binary operations. The sequence is stored in a binary tree.</p>
@@ -2893,16 +2891,16 @@ many such binary operations. The sequence is stored in a binary tree.</p>
 results robustly. &#8220;Rounding&#8221; this result to floating point (even double
 precision) would cause problems if re-injected into a further boolean
 operation. To facilitate CSG tree operations and encourage callers <em>not</em> to
-call <code>igl::boolean::mesh_boolean</code> multiple times explicitly, libigl implements
-a class <code>igl::boolean::CSGTree</code>. Leaf nodes of this class are simply &#8220;solid&#8221;
-meshes (otherwise good input to <code>igl::boolean::mesh_boolean</code>). Interior nodes
+call <code>igl::copyleft::cgal::mesh_boolean</code> multiple times explicitly, libigl implements
+a class <code>igl::copyleft::cgal::CSGTree</code>. Leaf nodes of this class are simply &#8220;solid&#8221;
+meshes (otherwise good input to <code>igl::copyleft::cgal::mesh_boolean</code>). Interior nodes
 of the tree combine two children with a boolean operation. Using the intializer
 list constructor it is easy to hard-code specific tree constructions. Here&#8217;s an
 example taking the <em>intersection</em> of a cube A and sphere B <em>minus</em> the <em>union</em>
 of three cylinders:</p>
 
 <pre><code class="cpp">// Compute result of (A ∩ B) \ ((C ∪ D) ∪ E)
-igl::boolean::CSGTree&lt;MatrixXi&gt; CSGTree =
+igl::copyleft::cgal::CSGTree&lt;MatrixXi&gt; CSGTree =
   {{{VA,FA},{VB,FB},&quot;i&quot;},{{{VC,FC},{VD,FD},&quot;u&quot;},{VE,FE},&quot;u&quot;},&quot;m&quot;};
 </code></pre>
 
@@ -3520,10 +3518,10 @@ repository</a>.</p>
  Mappings</a>, 2013.</p>
 </li>
 
-<li id="fn:34" class="citation"><span class="citekey" style="display:none">attene_2014</span><p>Marco Attene.
- <a href="https://www.google.com/search?q=Direct+repair+of+self-intersecting+meshes">Direct repair of self-intersecting
- meshes</a>,
- 2014.</p>
+<li id="fn:34" class="citation"><span class="citekey" style="display:none">zhou_2016</span><p>Qingnan Zhou, Eitan Grinspun, Denis Zorin. <a href="https://www.google.com/search?q=Mesh+Arrangements+for+Solid+Geometry">Mesh Arrangements for
+ Solid
+ Geometry</a>,
+ 2016</p>
 </li>
 
 <li id="fn:35" class="citation"><span class="citekey" style="display:none">jacobson_2013</span><p>Alec Jacobson, Ladislav Kavan, and Olga Sorkine.
