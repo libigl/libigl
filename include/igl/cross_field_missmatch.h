@@ -28,13 +28,13 @@ namespace igl
   //                    across all face edges
   //
 
-  template <typename DerivedV, typename DerivedF>
+  template <typename DerivedV, typename DerivedF, typename DerivedM>
   IGL_INLINE void cross_field_missmatch(const Eigen::PlainObjectBase<DerivedV> &V,
                                         const Eigen::PlainObjectBase<DerivedF> &F,
                                         const Eigen::PlainObjectBase<DerivedV> &PD1,
                                         const Eigen::PlainObjectBase<DerivedV> &PD2,
                                         const bool isCombed,
-                                        Eigen::PlainObjectBase<DerivedF> &missmatch);
+                                        Eigen::PlainObjectBase<DerivedM> &missmatch);
 }
 #ifndef IGL_STATIC_LIBRARY
 #include "cross_field_missmatch.cpp"

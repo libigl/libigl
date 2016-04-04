@@ -10,6 +10,10 @@
 #include "ray_mesh_intersect.h"
 #include "EPS.h"
 #include "Hit.h"
+#include <thread>
+#include <functional>
+#include <vector>
+#include <algorithm>
 
 template <
   typename DerivedP,
@@ -33,29 +37,41 @@ IGL_INLINE void igl::ambient_occlusion(
   VectorXi hits = VectorXi::Zero(n,1);
   // Embree seems to be parallel when constructing but not when tracing rays
   const MatrixXf D = random_dir_stratified(num_samples).cast<float>();
-  // loop over mesh vertices
-#pragma omp parallel for
-  for(int p = 0;p<n;p++)
+
+  const size_t nthreads = n<1000?1:std::thread::hardware_concurrency();
   {
-    const Vector3f origin = P.row(p).template cast<float>();
-    const Vector3f normal = N.row(p).template cast<float>();
-    int num_hits = 0;
-    for(int s = 0;s<num_samples;s++)
+    std::vector<std::thread> threads(nthreads);
+    for(int t = 0;t<nthreads;t++)
     {
-//      //Vector3d d = random_dir();
-      Vector3f d = D.row(s);
-      if(d.dot(normal) < 0)
-      {
-        // reverse ray
-        d *= -1;
-      }
-      if(shoot_ray(origin,d))
-      {
-        num_hits++;
-      }
+      threads[t] = std::thread(std::bind(
+        [&P,&N,&shoot_ray,&S,&num_samples,&D](const int bi, const int ei, const int t)
+        {
+          // loop over mesh vertices in this chunk
+          for(int p = bi;p<ei;p++)
+          {
+            const Vector3f origin = P.row(p).template cast<float>();
+            const Vector3f normal = N.row(p).template cast<float>();
+            int num_hits = 0;
+            for(int s = 0;s<num_samples;s++)
+            {
+              Vector3f d = D.row(s);
+              if(d.dot(normal) < 0)
+              {
+                // reverse ray
+                d *= -1;
+              }
+              if(shoot_ray(origin,d))
+              {
+                num_hits++;
+              }
+            }
+            S(p) = (double)num_hits/(double)num_samples;
+          }
+        },t*n/nthreads,(t+1)==nthreads?n:(t+1)*n/nthreads,t));
     }
-    S(p) = (double)num_hits/(double)num_samples;
+    std::for_each(threads.begin(),threads.end(),[](std::thread& x){x.join();});
   }
+
 }
 
 template <

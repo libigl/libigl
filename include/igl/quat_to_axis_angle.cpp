@@ -68,7 +68,7 @@ IGL_INLINE void igl::quat_to_axis_angle_deg(
   angle = angle*(180.0/PI);
 }
 
-#ifndef IGL_NO_HEADER
+#ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::quat_to_axis_angle<float>(float const*, float*, float&);
 template void igl::quat_to_axis_angle_deg<float>(float const*, float*, float&);

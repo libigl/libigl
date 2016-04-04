@@ -17,7 +17,7 @@ struct State : public igl::Serializable
 
   // You have to define this function to
   // register the fields you want to serialize
-  void InitSerialization()
+  virtual void InitSerialization()
   {
     this->Add(V  , "V");
     this->Add(F  , "F");

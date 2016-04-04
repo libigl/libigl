@@ -1,6 +1,5 @@
 #include "eigs.h"
 
-#include "read_triangle_mesh.h"
 #include "cotmatrix.h"
 #include "sort.h"
 #include "slice.h"

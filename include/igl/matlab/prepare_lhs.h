@@ -10,6 +10,7 @@
 #include <igl/igl_inline.h>
 #include <mex.h>
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
 namespace igl
 {
   namespace matlab
@@ -33,6 +34,11 @@ namespace igl
     template <typename DerivedV>
     IGL_INLINE void prepare_lhs_index(
       const Eigen::PlainObjectBase<DerivedV> & V,
+      mxArray *plhs[]);
+    // SparseMatrix
+    template <typename Vtype>
+    IGL_INLINE void prepare_lhs_double(
+      const Eigen::SparseMatrix<Vtype> & V,
       mxArray *plhs[]);
   };
 }

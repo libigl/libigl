@@ -57,6 +57,42 @@ IGL_INLINE void igl::matlab::prepare_lhs_index(
   return prepare_lhs_double(Vd,plhs);
 }
 
+template <typename Vtype>
+IGL_INLINE void igl::matlab::prepare_lhs_double(
+  const Eigen::SparseMatrix<Vtype> & M,
+  mxArray *plhs[])
+{
+  using namespace std;
+  const int m = M.rows();
+  const int n = M.cols();
+  // THIS WILL NOT WORK FOR ROW-MAJOR
+  assert(n==M.outerSize());
+  const int nzmax = M.nonZeros();
+  plhs[0] = mxCreateSparse(m, n, nzmax, mxREAL);
+  mxArray * mx_data = plhs[0];
+  // Copy data immediately
+  double * pr = mxGetPr(mx_data);
+  mwIndex * ir = mxGetIr(mx_data);
+  mwIndex * jc = mxGetJc(mx_data);
+
+  // Iterate over outside
+  int k = 0;
+  for(int j=0; j<M.outerSize();j++)
+  {
+    jc[j] = k;
+    // Iterate over inside
+    for(typename Eigen::SparseMatrix<Vtype>::InnerIterator it (M,j); it; ++it)
+    {
+      // copy (cast to double)
+      pr[k] = it.value();
+      ir[k] = it.row();
+      k++;
+    }
+  }
+  jc[M.outerSize()] = k;
+
+}
+
 #ifdef IGL_STATIC_LIBRARY
 template void igl::matlab::prepare_lhs_index<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_index<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
@@ -64,4 +100,7 @@ template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, -1, -1, 0, -
 template void igl::matlab::prepare_lhs_index<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_logical<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_logical<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_index<Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, -1, 3, 1, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> > const&, mxArray_tag**);
 #endif

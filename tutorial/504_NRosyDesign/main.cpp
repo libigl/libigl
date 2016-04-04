@@ -2,7 +2,7 @@
 #include <igl/barycenter.h>
 #include <igl/local_basis.h>
 #include <igl/readOFF.h>
-#include <igl/comiso/nrosy.h>
+#include <igl/copyleft/comiso/nrosy.h>
 #include <igl/viewer/Viewer.h>
 
 #include "tutorial_shared_path.h"
@@ -23,10 +23,10 @@ int N = 4;
 // Converts a representative vector per face in the full set of vectors that describe
 // an N-RoSy field
 void representative_to_nrosy(
-  const Eigen::MatrixXd& V, 
-  const Eigen::MatrixXi& F, 
-  const Eigen::MatrixXd& R, 
-  const int N, 
+  const Eigen::MatrixXd& V,
+  const Eigen::MatrixXi& F,
+  const Eigen::MatrixXd& R,
+  const int N,
   Eigen::MatrixXd& Y)
 {
   using namespace Eigen;
@@ -55,12 +55,12 @@ void representative_to_nrosy(
 // Plots the mesh with an N-RoSy field and its singularities on top
 // The constrained faces (b) are colored in red.
 void plot_mesh_nrosy(
-  igl::viewer::Viewer& viewer, 
-  Eigen::MatrixXd& V, 
-  Eigen::MatrixXi& F, 
-  int N, 
-  Eigen::MatrixXd& PD1, 
-  Eigen::VectorXd& S, 
+  igl::viewer::Viewer& viewer,
+  Eigen::MatrixXd& V,
+  Eigen::MatrixXi& F,
+  int N,
+  Eigen::MatrixXd& PD1,
+  Eigen::VectorXd& S,
   Eigen::VectorXi& b)
 {
   using namespace Eigen;
@@ -111,7 +111,7 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
   MatrixXd R;
   VectorXd S;
 
-  igl::comiso::nrosy(V,F,b,bc,VectorXi(),VectorXd(),MatrixXd(),N,0.5,R,S);
+  igl::copyleft::comiso::nrosy(V,F,b,bc,VectorXi(),VectorXd(),MatrixXd(),N,0.5,R,S);
   plot_mesh_nrosy(viewer,V,F,N,R,S,b);
 
   return false;

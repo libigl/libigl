@@ -10,7 +10,6 @@
 #include "../igl_inline.h"
 #include <Eigen/Core>
 #include <string>
-#include <Eigen/Core>
 
 #include "../opengl/OpenGL_convenience.h"
 
@@ -28,13 +27,7 @@ namespace igl
     // Returns true on success, false on failure
     IGL_INLINE bool texture_from_png(const std::string png_file, const bool flip, GLuint & id);
     IGL_INLINE bool texture_from_png(const std::string png_file, GLuint & id);
-  }
-}
 
-namespace igl
-{
-  namespace png
-  {
     // Read an image from a .png file and use it as a texture
     //
     // Input:

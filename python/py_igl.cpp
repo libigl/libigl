@@ -1,6 +1,6 @@
 #include <Eigen/Dense>
 
-#include "python.h"
+#include "python_shared.h"
 
 #include <igl/readOFF.h>
 #include <igl/writeOBJ.h>
