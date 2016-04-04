@@ -39,7 +39,14 @@ IGL_INLINE bool igl::read_triangle_mesh(
   vector<vector<Index> > FTC, FN;
   if(e == "obj")
   {
-    return readOBJ(str,V,TC,N,F,FTC,FN);
+    // Annoyingly obj can store 4 coordinates, truncate to xyz for this generic
+    // read_triangle_mesh
+    bool success = readOBJ(str,V,TC,N,F,FTC,FN);
+    for(auto & v : V)
+    {
+      v.resize(std::min(v.size(),(size_t)3));
+    }
+    return success;
   }else if(e == "off")
   {
     return readOFF(str,V,F,N);
@@ -97,6 +104,12 @@ IGL_INLINE bool igl::read_triangle_mesh(
     if(!readOBJ(filename,vV,vTC,vN,vF,vFTC,vFN))
     {
       return false;
+    }
+    // Annoyingly obj can store 4 coordinates, truncate to xyz for this generic
+    // read_triangle_mesh
+    for(auto & v : vV)
+    {
+      v.resize(std::min(v.size(),(size_t)3));
     }
   }else if(ext == "off")
   {

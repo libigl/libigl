@@ -262,7 +262,7 @@ int main(int argc, char *argv[])
   igl::readOFF(TUTORIAL_SHARED_PATH "/bunny.off", V, F);
 
   // Plot the mesh
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(V, F);
   viewer.launch();
 }
@@ -299,7 +299,7 @@ stages of an algorithm, as demonstrated in [Example 103](103_Events/main.cpp), w
 the keyboard callback changes the visualized mesh depending on the key pressed:
 
 ```cpp
-bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key == '1')
   {
@@ -2532,16 +2532,15 @@ compute robustly with boundary representations, but are nonetheless useful.
 
 To compute a boolean operation on a triangle mesh with vertices `VA` and
 triangles `FA` and another mesh `VB` and `FB`, libigl first computes a unified
-mesh with vertices `V` and triangles `F` where all triangle-triangle
+"mesh arrangement" (see [#zhou_2016][]) with vertices `V` and triangles `F` where all triangle-triangle
 intersections have been "resolved". That is, edges and vertices are added
 exactly at the intersection lines, so the resulting _non-manifold_ mesh `(V,F)`
 has no self-intersections.
 
-Then libigl _peels_ the outer hull [#attene_2014][] off this mesh recursively,
-keeping track of the iteration parity and orientation flips for each layer.
-For any boolean operation, these two pieces of information determine for each
-triangle (1) if it should be included in the output, and (2) if its orientation
-should be reversed before added to the output.
+Then libigl labels each "cell" bounded by surfaces of the arrangement according
+to its _winding number vector_: winding number with respect to each input mesh
+$(w_A,w_B)$. Finally, according to the desired operation (e.g. union,
+intersection) the boundary of the corresponding cells are extracted.
 
 Calling libigl's boolean operations is simple. To compute the union of
 `(VA,FA)` and `(VB,FB)` into a new mesh `(VC,FC)`, use:
@@ -2574,7 +2573,7 @@ always robust.
 ## CSG Tree [csgtree]
 
 The [previous section](#booleanoperationsonmeshes) discusses using
-`igl::boolean::mesh_boolean` to compute the result of a _single_ boolean
+`igl::copyleft::cgal::mesh_boolean` to compute the result of a _single_ boolean
 operation on two input triangle meshes. When employing constructive solid
 geometry (CSG) as a modeling paradigm, shapes are represented as the result of
 many such binary operations. The sequence is stored in a binary tree.
@@ -2583,9 +2582,9 @@ Libigl uses exact arithmetic internally to construct the intermediary boolean
 results robustly. "Rounding" this result to floating point (even double
 precision) would cause problems if re-injected into a further boolean
 operation. To facilitate CSG tree operations and encourage callers _not_ to
-call `igl::boolean::mesh_boolean` multiple times explicitly, libigl implements
-a class `igl::boolean::CSGTree`. Leaf nodes of this class are simply "solid"
-meshes (otherwise good input to `igl::boolean::mesh_boolean`). Interior nodes
+call `igl::copyleft::cgal::mesh_boolean` multiple times explicitly, libigl implements
+a class `igl::copyleft::cgal::CSGTree`. Leaf nodes of this class are simply "solid"
+meshes (otherwise good input to `igl::copyleft::cgal::mesh_boolean`). Interior nodes
 of the tree combine two children with a boolean operation. Using the intializer
 list constructor it is easy to hard-code specific tree constructions. Here's an
 example taking the _intersection_ of a cube A and sphere B _minus_ the _union_
@@ -2593,7 +2592,7 @@ of three cylinders:
 
 ```cpp
 // Compute result of (A ∩ B) \ ((C ∪ D) ∪ E)
-igl::boolean::CSGTree<MatrixXi> CSGTree =
+igl::copyleft::cgal::CSGTree<MatrixXi> CSGTree =
   {{{VA,FA},{VB,FB},"i"},{{{VC,FC},{VD,FD},"u"},{VE,FE},"u"},"m"};
 ```
 
@@ -3134,3 +3133,7 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   Subspace Design for Real-Time Shape
   Deformation](https://www.google.com/search?q=Linear+Subspace+Design+for+Real-Time+Shape+Deformation),
   2015
+[#zhou_2016]: Qingnan Zhou, Eitan Grinspun, Denis Zorin. [Mesh Arrangements for
+  Solid
+  Geometry](https://www.google.com/search?q=Mesh+Arrangements+for+Solid+Geometry),
+  2016

@@ -25,7 +25,7 @@ that your terminal is pointing to the root of libigl:
 ```bash
 cd python
 mkdir build
-cd build; make; cd ..
+cd build; cmake ..; make; cd ..
 ```
 
 The cmake script will complain if it is not able to find python. In that case
@@ -70,7 +70,7 @@ native python functions as callbacks. This is a simple example that loads
 two meshes and switches between the two when a key is pressed:
 
 ```python
-import igl
+import pyigl as igl
 
 V1 = igl.eigen.MatrixXd()
 F1 = igl.eigen.MatrixXi()

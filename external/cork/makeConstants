@@ -1,3 +1,0 @@
-
-GMP_INC_DIR = /usr/local/Cellar/gmp/5.0.2/include
-GMP_LIB_DIR = /usr/local/Cellar/gmp/5.0.2/lib
