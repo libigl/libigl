@@ -30,6 +30,10 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedC> & C,
     Eigen::SparseMatrix<AScalar> & A);
+  template <typename DerivedF, typename DerivedC>
+  IGL_INLINE void orientable_patches(
+    const Eigen::PlainObjectBase<DerivedF> & F,
+    Eigen::PlainObjectBase<DerivedC> & C);
 };
 #ifndef IGL_STATIC_LIBRARY
 #  include "orientable_patches.cpp"
