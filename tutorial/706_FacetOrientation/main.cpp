@@ -9,6 +9,8 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <vector>
+
 igl::viewer::Viewer viewer;
 Eigen::MatrixXd V;
 std::vector<Eigen::VectorXi> C(2);
