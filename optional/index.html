@@ -50,14 +50,6 @@ make
 <p>These are (admittedly unpopular) functions that have never been used by us
 statically so we haven&#8217;t explicit instantiations (yet).</p>
 
-<h4 id="examples">Examples</h4>
-
-<p>You can make a slew of examples by issuing:</p>
-
-<pre><code>cd ../examples
-make
-</code></pre>
-
 <h4 id="external">External</h4>
 
 <p>Finally there are a number of external libraries that we include in
@@ -316,7 +308,7 @@ int main(int argc, char * argv[])
 {
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
-return (argc&gt;=2 &amp;amp;&amp;amp; igl::read_triangle_mesh(argv[1],V,F)?0:1);
+return (argc&gt;=2 &amp;&amp; igl::read_triangle_mesh(argv[1],V,F)?0:1);
 }
 </code></pre>
 

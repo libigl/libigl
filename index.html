@@ -14,9 +14,9 @@
 
 <h1 id="libigl-asimplecgeometryprocessinglibrary">libigl - A simple C++ geometry processing library</h1>
 
-<figure>
-<img src="libigl-teaser.png" alt="" />
-</figure>
+<p><a href="https://travis-ci.org/libigl/libigl"><img src="https://travis-ci.org/libigl/libigl.svg?branch=master" alt="Build Status" /></a>
+<a href="https://ci.appveyor.com/project/danielepanozzo/libigl-6hjk1"><img src="https://ci.appveyor.com/api/projects/status/mf3t9rnhco0vhly8?svg=true" alt="Build status" /></a>
+<img src="libigl-teaser.png" alt="" /></p>
 
 <p><a href="https://github.com/libigl/libigl/">https://github.com/libigl/libigl/</a></p>
 
@@ -50,6 +50,9 @@ the header-only default mode: (i.e. just include the headers you want to use).</
 <p>We use the <a href="http://eigen.tuxfamily.org">Eigen</a> library heavily in our code. Our
 group prototypes a lot in MATLAB, and we have a useful <a href="matlab-to-eigen.html">MATLAB to libigl+Eigen
 conversion table</a>.</p>
+
+<p>We regularly test compiling our library on Mac OS X with clang, Linux with gcc
+and Windows with Visual Studio 2015 Community Edition.</p>
 
 <h2 id="tutorial">Tutorial</h2>
 
@@ -168,7 +171,7 @@ and updating (i.e. committing) that change to the hash.</p>
 subrepos:</p>
 
 <pre><code class="bash">git pull
-git submodule update -- recursive
+git submodule update --recursive
 </code></pre>
 
 <h2 id="unittesting">Unit testing</h2>
