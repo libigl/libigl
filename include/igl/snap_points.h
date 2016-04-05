@@ -46,6 +46,14 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedV > & V,
     Eigen::PlainObjectBase<DerivedI > & I,
     Eigen::PlainObjectBase<DerivedminD > & minD);
+  template <
+    typename DerivedC, 
+    typename DerivedV, 
+    typename DerivedI >
+  IGL_INLINE void snap_points(
+    const Eigen::PlainObjectBase<DerivedC > & C,
+    const Eigen::PlainObjectBase<DerivedV > & V,
+    Eigen::PlainObjectBase<DerivedI > & I);
 }
 
 #ifndef IGL_STATIC_LIBRARY
