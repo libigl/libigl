@@ -97,6 +97,7 @@ lecture notes links to a cross-platform example application.
     * [703 Mesh Decimation](#meshdecimation)
     * [704 Signed Distances](#signeddistances)
     * [705 Marching Cubes](#marchingcubes)
+    * [706 Facet Orientation](#facetorientation)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -2967,6 +2968,51 @@ marching cubes to contour the 0-level set (center). For comparison, clamping
 this signed distance field to an indicator function and contouring reveals
 serious aliasing artifacts.](images/armadillo-marching-cubes.jpg)
 
+## Facet Orientation [facetorientation]
+
+Models from the web occasionally arrive _unorientated_ in the sense that
+the orderings of each triangles vertices do not consistently agree. Determining
+a consistent facet orientation for a mesh is essential for two-sided lighting
+(e.g., a cloth with red velvet on one side and gold silk on the other side) and
+for inside-outside determination(e.g., using [generalized winding
+numbers][#generalizedwindingnumber]).
+
+For (open) surfaces representing two-sided sheets, libigl provides a routine to
+force consistent orientations within each orientable patch
+(`igl::orientable_patches`) of a mesh:
+
+```cpp
+igl::bfs_orient(F,FF,C);
+```
+
+This simple routine will use breadth-first search on each patch of the mesh to
+enforce a consistent facet orientation in the output faces `FF`.
+
+For (closed or nearly closed) surfaces representing the boundary of a solid
+object, libigl provides a routine to reorient faces so that the vertex ordering
+corresponds to a counter-clockwise ordering of the vertices with a
+right-hand-rule normal pointing outward. This method [#takayama14][] assumes
+that [most of the universe is
+empty](https://www.reddit.com/r/askscience/comments/32otgx/which_as_a_is_more_empty_an_atom_or_the_universe/).
+That is, most points in space are outside of the solid object than inside.
+Points are sampled over surface patches. For each sample point, rays are shot
+into both hemispheres to compute average of the (distance weighted) ambient
+occlusion on each side. A patch is oriented so that the outward side is _less
+occluded_ (lighter, i.e., facing more void space).
+
+```cpp
+igl::embree::reorient_facets_raycast(V,F,FF,I);
+```
+
+The boolean vector `I` reveals which rows of `F` have been flipped in `FF`.
+
+![([Example 706](706_FacetOrientation/main.cpp)) loads a truck model with
+inconsistent orientations (back facing triangles shown darker). Orientable
+patches are uniquely colored and then oriented to face outward (middle left).
+Alternatively, each individual triangle is considered a "patch" (middle right)
+and oriented outward independently.](images/truck-facet-orientation.jpg)
+
+
 # Outlook for continuing development [future]
 
 Libigl is in active development, and we plan to focus on the following features
@@ -3123,8 +3169,13 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
 [#sorkine_2004]: Olga Sorkine, Yaron Lipman, Daniel Cohen-Or, Marc Alexa,
   Christian Rössl and Hans-Peter Seidel. [Laplacian Surface
   Editing](https://www.google.com/search?q=Laplacian+Surface+Editing), 2004.
-[#sorkine_2007]: Olga Sorkine and Marc Alexa, [As-rigid-as-possible Surface
+[#sorkine_2007]: Olga Sorkine and Marc Alexa. [As-rigid-as-possible Surface
   Modeling](https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling), 2007.
+[#takayama14]: Kenshi Takayama, Alec Jacobson, Ladislav Kavan, Olga
+  Sorkine-Hornung. [A Simple Method for Correcting Facet Orientations in
+  Polygon Meshes Based on Ray
+  Casting](https://www.google.com/search?q=A+Simple+Method+for+Correcting+Facet+Orientations+in+Polygon+Meshes+Based+on+Ray+Casting),
+  2014.
 [#vallet_2008]: Bruno Vallet and Bruno Lévy. [Spectral Geometry Processing with
   Manifold
   Harmonics](https://www.google.com/search?q=Spectral+Geometry+Processing+with+Manifold+Harmonics),
