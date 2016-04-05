@@ -144,6 +144,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#meshdecimation">703 Mesh Decimation</a></li>
 <li><a href="#signeddistances">704 Signed Distances</a></li>
 <li><a href="#marchingcubes">705 Marching Cubes</a></li>
+<li><a href="#facetorientation">706 Facet Orientation</a></li>
 </ul></li>
 <li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
@@ -3303,6 +3304,55 @@ this signed distance field to an indicator function and contouring reveals
 serious aliasing artifacts.</figcaption>
 </figure>
 
+<h2 id="facetorientation">Facet Orientation</h2>
+
+<p>Models from the web occasionally arrive <em>unorientated</em> in the sense that
+the orderings of each triangles vertices do not consistently agree. Determining
+a consistent facet orientation for a mesh is essential for two-sided lighting
+(e.g., a cloth with red velvet on one side and gold silk on the other side) and
+for inside-outside determination(e.g., using <span class="externalcitation">[generalized winding
+numbers][#generalizedwindingnumber]</span>).</p>
+
+<p>For (open) surfaces representing two-sided sheets, libigl provides a routine to
+force consistent orientations within each orientable patch
+(<code>igl::orientable_patches</code>) of a mesh:</p>
+
+<pre><code class="cpp">igl::bfs_orient(F,FF,C);
+</code></pre>
+
+<p>This simple routine will use breadth-first search on each patch of the mesh to
+enforce a consistent facet orientation in the output faces <code>FF</code>.</p>
+
+<p>For (closed or nearly closed) surfaces representing the boundary of a solid
+object, libigl provides a routine to reorient faces so that the vertex ordering
+corresponds to a counter-clockwise ordering of the vertices with a
+right-hand-rule normal pointing outward. This method <a class="citation" href="#fn:39" title="Jump to citation">[39]<span class="citekey" style="display:none">takayama14</span></a> assumes
+that <a href="https://www.reddit.com/r/askscience/comments/32otgx/which_as_a_is_more_empty_an_atom_or_the_universe/">most of the universe is
+empty</a>.
+That is, most points in space are outside of the solid object than inside.
+Points are sampled over surface patches. For each sample point, rays are shot
+into both hemispheres to compute average of the (distance weighted) ambient
+occlusion on each side. A patch is oriented so that the outward side is <em>less
+occluded</em> (lighter, i.e., facing more void space).</p>
+
+<pre><code class="cpp">igl::embree::reorient_facets_raycast(V,F,FF,I);
+</code></pre>
+
+<p>The boolean vector <code>I</code> reveals which rows of <code>F</code> have been flipped in <code>FF</code>.</p>
+
+<figure>
+<img src="images/truck-facet-orientation.jpg" alt="(Example 706) loads a truck model with
+inconsistent orientations (back facing triangles shown darker). Orientable
+patches are uniquely colored and then oriented to face outward (middle left).
+Alternatively, each individual triangle is considered a patch (middle right)
+and oriented outward independently." />
+<figcaption>(<a href="706_FacetOrientation/main.cpp">Example 706</a>) loads a truck model with
+inconsistent orientations (back facing triangles shown darker). Orientable
+patches are uniquely colored and then oriented to face outward (middle left).
+Alternatively, each individual triangle is considered a &#8220;patch&#8221; (middle right)
+and oriented outward independently.</figcaption>
+</figure>
+
 <h1 id="future">Outlook for continuing development</h1>
 
 <p>Libigl is in active development, and we plan to focus on the following features
@@ -3414,7 +3464,7 @@ repository</a>.</p>
  2008.</p>
 </li>
 
-<li id="fn:15" class="citation"><span class="citekey" style="display:none">sorkine_2007</span><p>Olga Sorkine and Marc Alexa, <a href="https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling">As-rigid-as-possible Surface
+<li id="fn:15" class="citation"><span class="citekey" style="display:none">sorkine_2007</span><p>Olga Sorkine and Marc Alexa. <a href="https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling">As-rigid-as-possible Surface
  Modeling</a>, 2007.</p>
 </li>
 
@@ -3544,6 +3594,13 @@ pseudonormal</a>,
  resolution 3d surface construction
  algorithm</a>,
  1987.</p>
+</li>
+
+<li id="fn:39" class="citation"><span class="citekey" style="display:none">takayama14</span><p>Kenshi Takayama, Alec Jacobson, Ladislav Kavan, Olga
+ Sorkine-Hornung. <a href="https://www.google.com/search?q=A+Simple+Method+for+Correcting+Facet+Orientations+in+Polygon+Meshes+Based+on+Ray+Casting">A Simple Method for Correcting Facet Orientations in
+ Polygon Meshes Based on Ray
+ Casting</a>,
+ 2014.</p>
 </li>
 
 </ol>
