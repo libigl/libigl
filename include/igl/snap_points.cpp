@@ -67,7 +67,23 @@ IGL_INLINE void igl::snap_points(
   }
 }
 
+template <
+  typename DerivedC, 
+  typename DerivedV, 
+  typename DerivedI>
+IGL_INLINE void igl::snap_points(
+  const Eigen::PlainObjectBase<DerivedC > & C,
+  const Eigen::PlainObjectBase<DerivedV > & V,
+  Eigen::PlainObjectBase<DerivedI > & I)
+{
+  Eigen::Matrix<typename DerivedC::Scalar,DerivedC::RowsAtCompileTime,1> minD;
+  return igl::snap_points(C,V,I,minD);
+}
+
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::snap_points<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template void igl::snap_points<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif
+
