@@ -144,6 +144,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#meshdecimation">703 Mesh Decimation</a></li>
 <li><a href="#signeddistances">704 Signed Distances</a></li>
 <li><a href="#marchingcubes">705 Marching Cubes</a></li>
+<li><a href="#facetorientation">706 Facet Orientation</a></li>
 </ul></li>
 <li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
@@ -157,7 +158,7 @@ concepts of libigl and introduce a simple mesh viewer that allows to
 visualize a surface mesh and its attributes. All the tutorial examples are
 cross-platform and can be compiled on MacOSX, Linux and Windows.</p>
 
-<h2 id="libigldesignprinciples">libigl design principles</h2>
+<h2 id="libigldesignprinciples"><a href="#libigldesignprinciples">libigl design principles</a></h2>
 
 <p>Before getting into the examples, we summarize the main design principles in
 libigl:</p>
@@ -231,7 +232,7 @@ compile CoMISo.</p>
 <p><em>Note 2</em>: CoMISo requires a blas implementation. We use the built-in blas in macosx and linux, and we bundle a precompiled binary for VS2015 64 bit. Do NOT compile the tutorials
 in 32 bit on windows.</p>
 
-<h2 id="meshrepresentation">Mesh representation</h2>
+<h2 id="meshrepresentation"><a href="#meshrepresentation">Mesh representation</a></h2>
 
 <p>libigl uses the <a href="http://eigen.tuxfamily.org/">Eigen</a> library to encode vector
 and matrices. We suggest that you keep the
@@ -285,7 +286,7 @@ Similarly, a mesh can be written in an OBJ file using:</p>
 <p><a href="101_FileIO/main.cpp">Example 101</a> contains a simple mesh
 converter from OFF to OBJ format.</p>
 
-<h2 id="visualizingsurfaces">Visualizing surfaces</h2>
+<h2 id="visualizingsurfaces"><a href="#visualizingsurfaces">Visualizing surfaces</a></h2>
 
 <p>Libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
 properties and additional debugging informations.</p>
@@ -327,7 +328,7 @@ mesh." />
 mesh.</figcaption>
 </figure>
 
-<h2 id="interactionwithkeyboardandmouse">Interaction with keyboard and mouse</h2>
+<h2 id="interactionwithkeyboardandmouse"><a href="#interactionwithkeyboardandmouse">Interaction with keyboard and mouse</a></h2>
 
 <p>Keyboard and mouse events triggers callbacks that can be registered in the
 viewer. The viewer supports the following callbacks:</p>
@@ -380,7 +381,7 @@ control the camera directly in your code.</p>
 the viewer&#8217;s callbacks. See the
 <a href="../include/igl/viewer/ViewerPlugin.h">Viewer_plugin</a> for more details.</p>
 
-<h2 id="scalarfieldvisualization">Scalar field visualization</h2>
+<h2 id="scalarfieldvisualization"><a href="#scalarfieldvisualization">Scalar field visualization</a></h2>
 
 <p>Colors and normals can be associated to faces or vertices using the
 set_colors function:</p>
@@ -419,7 +420,7 @@ color field.</figcaption>
 types and can be easily reused for many different tasks. Not committing to
 heavy data structures types favors simplicity, ease of use and reusability.</p>
 
-<h2 id="overlays">Overlays</h2>
+<h2 id="overlays"><a href="#overlays">Overlays</a></h2>
 
 <p>In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helpful while developing geometric processing algorithms to plot debug informations.</p>
 
@@ -455,7 +456,7 @@ using overlays." />
 using overlays.</figcaption>
 </figure>
 
-<h2 id="viewermenu">Viewer Menu</h2>
+<h2 id="viewermenu"><a href="#viewermenu">Viewer Menu</a></h2>
 
 <p>As of version 1.2 the viewer uses a new menu and completely replaces
 <a href="http://anttweakbar.sourceforge.net/doc/">AntTweakBar</a>. It is based on the
@@ -1987,7 +1988,7 @@ genus. They initially cut the mesh in multiple patches that can be separately pa
 <li><p><strong>Global seamless parametrization</strong>: these are global parametrization algorithm that hides the seams, making the parametrization &#8220;continuous&#8221;, under specific assumptions that we will discuss later.</p></li>
 </ol>
 
-<h2 id="harmonicparametrization">Harmonic parametrization</h2>
+<h2 id="harmonicparametrization"><a href="#harmonicparametrization">Harmonic parametrization</a></h2>
 
 <p>Harmonic parametrization <a class="citation" href="#fn:21" title="Jump to citation">[21]<span class="citekey" style="display:none">eck_2005</span></a> is a single patch, fixed boundary parametrization
 algorithm that computes the 2D coordinates of the flattened mesh as two
@@ -2032,7 +2033,7 @@ mesh with texture, (right) UV parametrization with
 texture</figcaption>
 </figure>
 
-<h2 id="leastsquareconformalmaps">Least squares conformal maps</h2>
+<h2 id="leastsquareconformalmaps"><a href="#leastsquareconformalmaps">Least squares conformal maps</a></h2>
 
 <p>Least squares conformal maps parametrization <a class="citation" href="#fn:22" title="Jump to citation">[22]<span class="citekey" style="display:none">levy_2002</span></a> minimizes the
 conformal (angular) distortion of the parametrization. Differently from
@@ -2082,7 +2083,7 @@ with texture, (right) UV parametrization" />
 with texture, (right) UV parametrization</figcaption>
 </figure>
 
-<h2 id="asrigidaspossible">As-rigid-as-possible parametrization</h2>
+<h2 id="asrigidaspossible"><a href="#asrigidaspossible">As-rigid-as-possible parametrization</a></h2>
 
 <p>As-rigid-as-possible parametrization <a class="citation" href="#fn:24" title="Jump to citation">[24]<span class="citekey" style="display:none">liu_2008</span></a> is a powerful single-patch,
 non-linear algorithm to compute a parametrization that strives to preserve
@@ -2109,7 +2110,7 @@ texture" />
 texture</figcaption>
 </figure>
 
-<h2 id="nrotationallysymmetrictangetfields">N-rotationally symmetric tangent fields</h2>
+<h2 id="nrotationallysymmetrictangetfields"><a href="#nrotationallysymmetrictangetfields">N-rotationally symmetric tangent fields</a></h2>
 
 <p>The design of tangent fields is a basic tool used to design guidance fields for
 uniform quadrilateral and hexahedral remeshing. Libigl contains an
@@ -2154,7 +2155,7 @@ pressing the number keys. <code>igl::nrosy</code> implements the algorithm propo
 proposed in <a class="citation" href="#fn:27" title="Jump to citation">[27]<span class="citekey" style="display:none">knoppel_2013</span></a>, see Section <a href="#npolyvectorfields">npolyvectorfields</a> for more details
 (<a href="../include/igl/n_polyvector.h">igl::n_polyvector</a>).</p>
 
-<h3 id="globalseamlessintegergridparametrization">Global, seamless integer-grid parametrization</h3>
+<h3 id="globalseamlessintegergridparametrization"><a href="#globalseamlessintegergridparametrization">Global, seamless integer-grid parametrization</a></h3>
 
 <p>The previous parametrization methods were focusing on creating parametrizations
 of surface patches aimed at texture mapping or baking of other surface
@@ -2260,7 +2261,7 @@ it contains many overlaps.</p>
 <a href="https://github.com/hcebke/libQEx">libQEx</a> (not included in libigl).
 The full pipeline is implemented in <a href="505_MIQ/main.cpp">Example 505</a>.</p>
 
-<h2 id="anisotropicremeshingusingframefields">Anisotropic remeshing</h2>
+<h2 id="anisotropicremeshingusingframefields"><a href="#anisotropicremeshingusingframefields">Anisotropic remeshing</a></h2>
 
 <p>Anisotropic and non-uniform quad remeshing is important to concentrate the
 elements in the regions with more details. It is possible to extend the MIQ
@@ -2321,7 +2322,7 @@ generate the UV parametrization, but other algorithms could be applied: the
 only desiderata is that the generated quad mesh should be as isotropic as
 possible.</p>
 
-<h2 id="npolyvectorfields">N-PolyVector fields</h2>
+<h2 id="npolyvectorfields"><a href="#npolyvectorfields">N-PolyVector fields</a></h2>
 
 <p>N-RoSy vector fields can be further generalized to represent arbitrary
 vector-sets, with arbitrary angles between them and with arbitrary lengths
@@ -2343,7 +2344,7 @@ PolyVector fields. If the constraints are taken from an N-RoSy field,
 <code>igl::n_polyvector</code> generates a field that is equivalent, after normalization,
 to a globally optimal direction field.</p>
 
-<h2 id="conjugatevectorfields">Conjugate vector fields</h2>
+<h2 id="conjugatevectorfields"><a href="#conjugatevectorfields">Conjugate vector fields</a></h2>
 
 <p>Two tangent vectors lying on a face of a triangle mesh are conjugate if</p>
 
@@ -2369,7 +2370,7 @@ closest conjugate field (<a href="508_ConjugateField/main.cpp">Example 508</a>).
 (right).</figcaption>
 </figure>
 
-<h2 id="planarization">Planarization</h2>
+<h2 id="planarization"><a href="#planarization">Planarization</a></h2>
 
 <p>A quad mesh can be transformed in a planar quad mesh with Shape-Up
 <a class="citation" href="#fn:31" title="Jump to citation">[31]<span class="citekey" style="display:none">bouaziz_2012</span></a>, a local/global approach that uses the global step to enforce
@@ -2387,7 +2388,7 @@ igl::palanarize (right). The colors represent the planarity of the
 quads.</figcaption>
 </figure>
 
-<h2 id="integrable">Integrable PolyVector Fields</h2>
+<h2 id="integrable"><a href="#integrable">Integrable PolyVector Fields</a></h2>
 
 <p>Vector-field guided surface parameterization is based on the idea of designing the gradients
 of the parameterization functions (which are tangent vector fields on the surface) instead of the functions themselves. Thus, vector-set fields (N-Rosy, frame fields, and polyvector fields) that are to be used for parameterization (and subsequent remeshing) need to be integrable: it must be possible to break them down into individual vector fields that are gradients of scalar functions. Fields obtained by most smoothness-based design methods (eg. <a class="citation" href="#fn:25" title="Jump to citation">[25]<span class="citekey" style="display:none">levy_2008</span></a>, <a class="citation" href="#fn:27" title="Jump to citation">[27]<span class="citekey" style="display:none">knoppel_2013</span></a>, <a class="citation" href="#fn:29" title="Jump to citation">[29]<span class="citekey" style="display:none">diamanti_2014</span></a>, <a class="citation" href="#fn:26" title="Jump to citation">[26]<span class="citekey" style="display:none">bommes_2009</span></a>, <a class="citation" href="#fn:28" title="Jump to citation">[28]<span class="citekey" style="display:none">panozzo_2014</span></a>) do not have this property. In <a class="citation" href="#fn:32" title="Jump to citation">[32]<span class="citekey" style="display:none">diamanti_2015</span></a>, a method for creating integrable polyvector fields was introduced. This method takes as input a given field and improves its integrability by removing the vector field curl, thus turning it into a gradient of a function (<a href="510_Integrable/main.cpp">Example 510</a>).</p>
@@ -2404,7 +2405,7 @@ of the parameterization functions (which are tangent vector fields on the surfac
 <p>An additional positive side effect of using matrices as basic types is that it
 is easy to exchange data between libigl and other softwares and libraries.</p>
 
-<h2 id="stateserialization">State serialization</h2>
+<h2 id="stateserialization"><a href="#stateserialization">State serialization</a></h2>
 
 <p>Geometry processing applications often require a considerable amount of
 computational time and/or manual input. Serializing the state of the application is a simple strategy to greatly increase the development efficiency. It allows to quickly start debugging just
@@ -2526,7 +2527,7 @@ common to have to do small changes to figures, and being able to serialize the
 entire state just before you take screenshots will save you many painful hours
 before a submission deadline.</p>
 
-<h2 id="mixingmatlabcode">Mixing Matlab code</h2>
+<h2 id="mixingmatlabcode"><a href="#mixingmatlabcode">Mixing Matlab code</a></h2>
 
 <p>Libigl can be interfaced with Matlab to offload numerically heavy computation
 to a Matlab script. The major advantage of this approach is that you will be
@@ -2652,7 +2653,7 @@ L = sparse(LIJV(:,1),LIJV(:,2),LIJV(:,3));
 
 <p>which is easily copied and pasted into Matlab for debugging, etc.</p>
 
-<h2 id="callinglibiglfunctionsfrommatlab">Calling libigl functions from Matlab</h2>
+<h2 id="callinglibiglfunctionsfrommatlab"><a href="#callinglibiglfunctionsfrommatlab">Calling libigl functions from Matlab</a></h2>
 
 <p>It is also possible to call libigl functions from matlab, compiling them as MEX
 functions. This can be used to offload to C++ code the computationally
@@ -2663,7 +2664,7 @@ We plan to provide wrappers for all our functions in the future, if you are
 interested in this feature (or if you want to help implementing it) please let
 us know.</p>
 
-<h2 id="triangulationofclosedpolygons">Triangulation of closed polygons</h2>
+<h2 id="triangulationofclosedpolygons"><a href="#triangulationofclosedpolygons">Triangulation of closed polygons</a></h2>
 
 <p>The generation of high-quality triangle and tetrahedral meshes is a very common
 task in geometry processing. We provide wrappers in libigl to
@@ -2688,7 +2689,7 @@ in its interior) is triangulated.</p>
 <figcaption>Triangulation of the interior of a polygon.</figcaption>
 </figure>
 
-<h2 id="tetrahedralizationofclosedsurfaces">Tetrahedralization of closed surfaces</h2>
+<h2 id="tetrahedralizationofclosedsurfaces"><a href="#tetrahedralizationofclosedsurfaces">Tetrahedralization of closed surfaces</a></h2>
 
 <p>Similarly, the interior of a closed manifold surface can be tetrahedralized
 using the function <code>igl::tetrahedralize</code> which wraps the Tetgen library (<a href="605_Tetgen/main.c">Example
@@ -2702,7 +2703,7 @@ using the function <code>igl::tetrahedralize</code> which wraps the Tetgen libra
 <figcaption>Tetrahedralization of the interior of a surface mesh.</figcaption>
 </figure>
 
-<h2 id="bakingambientocclusion">Baking ambient occlusion</h2>
+<h2 id="bakingambientocclusion"><a href="#bakingambientocclusion">Baking ambient occlusion</a></h2>
 
 <p><a href="http://en.wikipedia.org/wiki/Ambient_occlusion">Ambient occlusion</a> is a
 rendering technique used to calculate the exposure of each point in a surface
@@ -2739,7 +2740,7 @@ occlusion." />
 occlusion.</figcaption>
 </figure>
 
-<h2 id="pickingverticesandfaces">Picking</h2>
+<h2 id="pickingverticesandfaces"><a href="#pickingverticesandfaces">Picking</a></h2>
 
 <p>Picking vertices and faces using the mouse is very common in geometry
 processing applications. While this might seem a simple operation, its
@@ -2774,7 +2775,7 @@ vertices are colored in red." />
 vertices are colored in red.</figcaption>
 </figure>
 
-<h2 id="locallyinjectivemaps">Locally Injective Maps</h2>
+<h2 id="locallyinjectivemaps"><a href="#locallyinjectivemaps">Locally Injective Maps</a></h2>
 
 <p>Extreme deformations or parametrizations with high-distortion might flip
 elements. This is undesirable in many applications, and it is possible to
@@ -2792,7 +2793,7 @@ editing plus the anti-flipping constraints (right)." />
 editing plus the anti-flipping constraints (right).</figcaption>
 </figure>
 
-<h2 id="booleanoperationsonmeshes">Boolean operations on meshes</h2>
+<h2 id="booleanoperationsonmeshes"><a href="#booleanoperationsonmeshes">Boolean operations on meshes</a></h2>
 
 <p>Constructive solid geometry (CSG) is a technique to define a complex surface as
 the result of a number of set operations on solid regions of space: union,
@@ -2879,7 +2880,7 @@ together coincident vertices, maintaining original triangle orientations.</p>
 <a href="https://github.com/gilbo/cork">cork</a>, which is typically faster, but is not
 always robust.</p>
 
-<h2 id="csgtree">CSG Tree</h2>
+<h2 id="csgtree"><a href="#csgtree">CSG Tree</a></h2>
 
 <p>The <a href="#booleanoperationsonmeshes">previous section</a> discusses using
 <code>igl::copyleft::cgal::mesh_boolean</code> to compute the result of a <em>single</em> boolean
@@ -2928,7 +2929,7 @@ dealing with meshes and the linear algebra related to them: far too many to
 discuss in this introductory tutorial. We&#8217;ve pulled out a couple of the
 interesting functions in this chapter to highlight.</p>
 
-<h2 id="meshstatistics">Mesh Statistics</h2>
+<h2 id="meshstatistics"><a href="#meshstatistics">Mesh Statistics</a></h2>
 
 <p>Libigl contains various mesh statistics, including face angles, face areas and
 the detection of singular vertices, which are vertices with more or less than 6
@@ -2963,7 +2964,7 @@ the angles are to 60 degrees the more stable will the optimization be. In this
 case, it is clear that the mesh is of bad quality and it will probably result
 in artifacts if used for solving PDEs.</p>
 
-<h2 id="generalizedwindingnumber">Generalized Winding Number</h2>
+<h2 id="generalizedwindingnumber"><a href="#generalizedwindingnumber">Generalized Winding Number</a></h2>
 
 <p>The problem of tetrahedralizing the interior of closed watertight surface mesh
 is a difficult, but well-posed problem (see our <a href="#tetrahedralizationofclosedsurfaces">Tetgen wrappers</a>). But
@@ -3018,7 +3019,7 @@ tets in the convex hull: blue (~0), green (~1), yellow
 (~2).</figcaption>
 </figure>
 
-<h2 id="meshdecimation">Mesh Decimation</h2>
+<h2 id="meshdecimation"><a href="#meshdecimation">Mesh Decimation</a></h2>
 
 <p>The study of mesh simplification or <em>decimation</em> is nearly as old as meshes
 themselves. Given a high resolution mesh with too many triangles, find a &#8220;well
@@ -3154,7 +3155,7 @@ model.</figcaption>
 queue based approach with the simple shortest-edge-midpoint cost/placement
 strategy discussed above.</p>
 
-<h2 id="signeddistances">Signed Distances</h2>
+<h2 id="signeddistances"><a href="#signeddistances">Signed Distances</a></h2>
 
 <p>In the <a href="#generalizedwindingnumber">Generalized Winding Number section</a>, we
 examined a robust method for determining whether points lie inside or outside
@@ -3264,7 +3265,7 @@ slices through the bunny." />
 slices through the bunny.</figcaption>
 </figure>
 
-<h2 id="marchingcubes">Marching Cubes</h2>
+<h2 id="marchingcubes"><a href="#marchingcubes">Marching Cubes</a></h2>
 
 <p>Often 3D data is captured as scalar field defined over space <span class="math">\(f(\mathbf{x}) :
 \mathcal{R}^3 \rightarrow \mathcal{R}\)</span>. Lurking within this field,
@@ -3301,6 +3302,55 @@ input mesh (left) and then reconstructs the surface using
 marching cubes to contour the 0-level set (center). For comparison, clamping
 this signed distance field to an indicator function and contouring reveals
 serious aliasing artifacts.</figcaption>
+</figure>
+
+<h2 id="facetorientation"><a href="#facetorientation">Facet Orientation</a></h2>
+
+<p>Models from the web occasionally arrive <em>unorientated</em> in the sense that
+the orderings of each triangles vertices do not consistently agree. Determining
+a consistent facet orientation for a mesh is essential for two-sided lighting
+(e.g., a cloth with red velvet on one side and gold silk on the other side) and
+for inside-outside determination(e.g., using <a href="#generalizedwindingnumber">generalized winding
+numbers</a>).</p>
+
+<p>For (open) surfaces representing two-sided sheets, libigl provides a routine to
+force consistent orientations within each orientable patch
+(<code>igl::orientable_patches</code>) of a mesh:</p>
+
+<pre><code class="cpp">igl::bfs_orient(F,FF,C);
+</code></pre>
+
+<p>This simple routine will use breadth-first search on each patch of the mesh to
+enforce a consistent facet orientation in the output faces <code>FF</code>.</p>
+
+<p>For (closed or nearly closed) surfaces representing the boundary of a solid
+object, libigl provides a routine to reorient faces so that the vertex ordering
+corresponds to a counter-clockwise ordering of the vertices with a
+right-hand-rule normal pointing outward. This method <a class="citation" href="#fn:39" title="Jump to citation">[39]<span class="citekey" style="display:none">takayama14</span></a> assumes
+that <a href="https://www.reddit.com/r/askscience/comments/32otgx/which_as_a_is_more_empty_an_atom_or_the_universe/">most of the universe is
+empty</a>.
+That is, most points in space are outside of the solid object than inside.
+Points are sampled over surface patches. For each sample point, rays are shot
+into both hemispheres to compute average of the (distance weighted) ambient
+occlusion on each side. A patch is oriented so that the outward side is <em>less
+occluded</em> (lighter, i.e., facing more void space).</p>
+
+<pre><code class="cpp">igl::embree::reorient_facets_raycast(V,F,FF,I);
+</code></pre>
+
+<p>The boolean vector <code>I</code> reveals which rows of <code>F</code> have been flipped in <code>FF</code>.</p>
+
+<figure>
+<img src="images/truck-facet-orientation.jpg" alt="(Example 706) loads a truck model with
+inconsistent orientations (back facing triangles shown darker). Orientable
+patches are uniquely colored and then oriented to face outward (middle left).
+Alternatively, each individual triangle is considered a patch (middle right)
+and oriented outward independently." />
+<figcaption>(<a href="706_FacetOrientation/main.cpp">Example 706</a>) loads a truck model with
+inconsistent orientations (back facing triangles shown darker). Orientable
+patches are uniquely colored and then oriented to face outward (middle left).
+Alternatively, each individual triangle is considered a &#8220;patch&#8221; (middle right)
+and oriented outward independently.</figcaption>
 </figure>
 
 <h1 id="future">Outlook for continuing development</h1>
@@ -3414,7 +3464,7 @@ repository</a>.</p>
  2008.</p>
 </li>
 
-<li id="fn:15" class="citation"><span class="citekey" style="display:none">sorkine_2007</span><p>Olga Sorkine and Marc Alexa, <a href="https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling">As-rigid-as-possible Surface
+<li id="fn:15" class="citation"><span class="citekey" style="display:none">sorkine_2007</span><p>Olga Sorkine and Marc Alexa. <a href="https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling">As-rigid-as-possible Surface
  Modeling</a>, 2007.</p>
 </li>
 
@@ -3544,6 +3594,13 @@ pseudonormal</a>,
  resolution 3d surface construction
  algorithm</a>,
  1987.</p>
+</li>
+
+<li id="fn:39" class="citation"><span class="citekey" style="display:none">takayama14</span><p>Kenshi Takayama, Alec Jacobson, Ladislav Kavan, Olga
+ Sorkine-Hornung. <a href="https://www.google.com/search?q=A+Simple+Method+for+Correcting+Facet+Orientations+in+Polygon+Meshes+Based+on+Ray+Casting">A Simple Method for Correcting Facet Orientations in
+ Polygon Meshes Based on Ray
+ Casting</a>,
+ 2014.</p>
 </li>
 
 </ol>

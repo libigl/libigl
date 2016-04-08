@@ -225,3 +225,25 @@ table tr th {
  font-weight: bold;
   background-color: #F0F0F0;
 }
+
+h2 a
+{
+  text-decoration: none;
+  color: inherit;
+}
+h2 a:hover
+{
+  color: blue;
+  text-decoration: underline;
+}
+
+h3 a
+{
+  text-decoration: none;
+  color: inherit;
+}
+h3 a:hover
+{
+  color: blue;
+  text-decoration: underline;
+}
