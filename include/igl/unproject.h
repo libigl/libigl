@@ -14,12 +14,12 @@ namespace igl
   // Eigen reimplementation of gluUnproject
   //
   // Inputs:
-  //   win  screen space x, y, and z coordinates
+  //   win  #P by 3 or 3-vector (#P=1) of screen space x, y, and z coordinates
   //   model  4x4 model-view matrix
   //   proj  4x4 projection matrix
   //   viewport  4-long viewport vector
   // Outputs:
-  //   scene  the unprojected x, y, and z coordinates
+  //   scene  #P by 3 or 3-vector (#P=1) the unprojected x, y, and z coordinates
   template <
     typename Derivedwin,
     typename Derivedmodel,
@@ -39,7 +39,6 @@ namespace igl
     const Eigen::Matrix<Scalar,4,4>& proj,
     const Eigen::Matrix<Scalar,4,1>&  viewport);
 }
-
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "unproject.cpp"

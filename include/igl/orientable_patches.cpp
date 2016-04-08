@@ -84,12 +84,22 @@ IGL_INLINE void igl::orientable_patches(
   //% Connected components are patches
   //%C = components(A); % alternative to graphconncomp from matlab_bgl
   //[~,C] = graphconncomp(A);
-  // graph connected components using boost
+  // graph connected components 
   components(A,C);
 
+}
+
+template <typename DerivedF, typename DerivedC>
+IGL_INLINE void igl::orientable_patches(
+  const Eigen::PlainObjectBase<DerivedF> & F,
+  Eigen::PlainObjectBase<DerivedC> & C)
+{
+  Eigen::SparseMatrix<typename DerivedF::Scalar> A;
+  return orientable_patches(F,C,A);
 }
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::orientable_patches<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<int, 0, int>&);
+template void igl::orientable_patches<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif
