@@ -14,13 +14,14 @@
 #include "remesh_self_intersections.h"
 #include "relabel_small_immersed_cells.h"
 #include "extract_cells.h"
+#include "../../cumsum.h"
 #include "../../extract_manifold_patches.h"
-#include "../../remove_unreferenced.h"
-#include "../../unique_simplices.h"
-#include "../../unique_edge_map.h"
-#include "../../slice.h"
-#include "../../resolve_duplicated_faces.h"
 #include "../../get_seconds.h"
+#include "../../remove_unreferenced.h"
+#include "../../resolve_duplicated_faces.h"
+#include "../../slice.h"
+#include "../../unique_edge_map.h"
+#include "../../unique_simplices.h"
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <algorithm>
@@ -67,49 +68,100 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
   };
   tictoc();
 #endif
-
   typedef typename DerivedVC::Scalar Scalar;
-  //typedef typename DerivedFC::Scalar Index;
   typedef CGAL::Epeck Kernel;
   typedef Kernel::FT ExactScalar;
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,3> MatrixX3S;
-  //typedef Eigen::Matrix<Index,Eigen::Dynamic,Eigen::Dynamic> MatrixXI;
   typedef Eigen::Matrix<typename DerivedJ::Scalar,Eigen::Dynamic,1> VectorXJ;
-
-  // Generate combined mesh.
+  // Generate combined mesh (VA,FA,VB,FB) -> (V,F,CJ)
   typedef Eigen::Matrix<
     ExactScalar,
     Eigen::Dynamic,
     Eigen::Dynamic,
     DerivedVC::IsRowMajor> MatrixXES;
+
   MatrixXES V;
   DerivedFC F;
   VectorXJ  CJ;
+  Eigen::Matrix<size_t,2,1> sizes(FA.rows(),FB.rows());
   {
-      DerivedVA VV(VA.rows() + VB.rows(), 3);
-      DerivedFC FF(FA.rows() + FB.rows(), 3);
-      VV << VA, VB;
-      FF << FA, FB.array() + VA.rows();
-      resolve_fun(VV, FF, V, F, CJ);
+    DerivedVA VV(VA.rows() + VB.rows(), 3);
+    DerivedFC FF(FA.rows() + FB.rows(), 3);
+    VV << VA, VB;
+    FF << FA, FB.array() + VA.rows();
+    resolve_fun(VV, FF, V, F, CJ);
   }
 #ifdef MESH_BOOLEAN_TIMING
   log_time("resolve_self_intersection");
 #endif
+  return mesh_boolean(V,F,CJ,sizes,wind_num_op,keep,VC,FC,J);
+}
 
-  // Compute edges.
+template <
+  typename Derivedsizes,
+  typename WindingNumberOp,
+  typename KeepFunc,
+  typename DerivedVC,
+  typename DerivedFC,
+  typename DerivedJ>
+IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
+    const Eigen::Matrix<
+      CGAL::Epeck::FT,
+      Eigen::Dynamic,
+      Eigen::Dynamic,
+      DerivedVC::IsRowMajor> V,
+    const Eigen::PlainObjectBase<DerivedFC > & F,
+    const Eigen::Matrix<
+      typename DerivedJ::Scalar,
+      Eigen::Dynamic,
+      1> & CJ,
+    const Eigen::PlainObjectBase<Derivedsizes> & sizes,
+    const WindingNumberOp& wind_num_op,
+    const KeepFunc& keep,
+    Eigen::PlainObjectBase<DerivedVC > & VC,
+    Eigen::PlainObjectBase<DerivedFC > & FC,
+    Eigen::PlainObjectBase<DerivedJ > & J)
+{
+#ifdef MESH_BOOLEAN_TIMING
+  const auto & tictoc = []() -> double
+  {
+    static double t_start = igl::get_seconds();
+    double diff = igl::get_seconds()-t_start;
+    t_start += diff;
+    return diff;
+  };
+  const auto log_time = [&](const std::string& label) -> void {
+    std::cout << "mesh_boolean." << label << ": "
+      << tictoc() << std::endl;
+  };
+  tictoc();
+#endif
+  typedef typename DerivedVC::Scalar Scalar;
+  typedef CGAL::Epeck Kernel;
+  typedef Kernel::FT ExactScalar;
+  typedef Eigen::Matrix<Scalar,Eigen::Dynamic,3> MatrixX3S;
+  typedef Eigen::Matrix<typename DerivedJ::Scalar,Eigen::Dynamic,1> VectorXJ;
+  // Generate combined mesh (VA,FA,VB,FB) -> (V,F,CJ)
+  typedef Eigen::Matrix<
+    ExactScalar,
+    Eigen::Dynamic,
+    Eigen::Dynamic,
+    DerivedVC::IsRowMajor> MatrixXES;
+
+  // Compute edges of (F) --> (E,uE,EMAP,uE2E)
   Eigen::MatrixXi E, uE;
   Eigen::VectorXi EMAP;
   std::vector<std::vector<size_t> > uE2E;
   igl::unique_edge_map(F, E, uE, EMAP, uE2E);
 
-  // Compute patches
+  // Compute patches (F,EMAP,uE2E) --> (P)
   Eigen::VectorXi P;
   const size_t num_patches = igl::extract_manifold_patches(F, EMAP, uE2E, P);
 #ifdef MESH_BOOLEAN_TIMING
   log_time("patch_extraction");
 #endif
 
-  // Compute cells.
+  // Compute cells (V,F,P,E,uE,EMAP) -> (per_patch_cells)
   Eigen::MatrixXi per_patch_cells;
   const size_t num_cells =
     igl::copyleft::cgal::extract_cells(
@@ -120,10 +172,31 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
 
   // Compute winding numbers on each side of each facet.
   const size_t num_faces = F.rows();
+  // W(f,:) --> [w1out,w1in,w2out,w2in, ... wnout,wnint] winding numbers above
+  // and below each face w.r.t. each input mesh, so that W(f,2*i) is the
+  // winding number above face f w.r.t. input i, and W(f,2*i+1) is the winding
+  // number below face f w.r.t. input i.
   Eigen::MatrixXi W;
+  // labels(f) = i means that face f comes from mesh i
   Eigen::VectorXi labels(num_faces);
-  std::transform(CJ.data(), CJ.data()+CJ.size(), labels.data(),
-      [&](int i) { return i<FA.rows() ? 0:1; });
+  // cumulative sizes
+  Derivedsizes cumsizes;
+  igl::cumsum(sizes,1,cumsizes);
+  const size_t num_inputs = sizes.size();
+  std::transform(
+    CJ.data(), 
+    CJ.data()+CJ.size(), 
+    labels.data(),
+    // Determine which input mesh birth face i comes from
+    [&num_inputs,&cumsizes](int i)->int
+    { 
+      for(int k = 0;k<num_inputs;k++)
+      {
+        if(i<cumsizes(k)) return k;
+      }
+      assert(false && "Birth parent index out of range");
+      return -1;
+    });
   bool valid = true;
   if (num_faces > 0) 
   {
@@ -132,18 +205,17 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
           V, F, uE, uE2E, num_patches, P, num_cells, per_patch_cells, labels, W);
   } else 
   {
-    W.resize(0, 4);
+    W.resize(0, 2*num_inputs);
   }
   assert((size_t)W.rows() == num_faces);
-  if (W.cols() == 2) 
+  // If W doesn't have enough columns, pad with zeros
+  if (W.cols() <= 2*num_inputs) 
   {
-    assert(FB.rows() == 0);
-    Eigen::MatrixXi W_tmp(num_faces, 4);
-    W_tmp << W, Eigen::MatrixXi::Zero(num_faces, 2);
-    W = W_tmp;
-  } else {
-    assert(W.cols() == 4);
+    const int old_ncols = W.cols();
+    W.conservativeResize(num_faces,2*num_inputs);
+    W.rightCols(2*num_inputs-old_ncols).setConstant(0);
   }
+  assert((size_t)W.cols() == 2*num_inputs);
 #ifdef MESH_BOOLEAN_TIMING
   log_time("propagate_input_winding_number");
 #endif
@@ -152,9 +224,13 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
   Eigen::MatrixXi Wr(num_faces, 2);
   for (size_t i=0; i<num_faces; i++) 
   {
-    Eigen::MatrixXi w_out(1,2), w_in(1,2);
-    w_out << W(i,0), W(i,2);
-    w_in  << W(i,1), W(i,3);
+    // Winding number vectors above and below
+    Eigen::RowVectorXi w_out(1,num_inputs), w_in(1,num_inputs);
+    for(size_t k =0;k<num_inputs;k++)
+    {
+      w_out(k) = W(i,2*k+0);
+      w_in(k) = W(i,2*k+1);
+    }
     Wr(i,0) = wind_num_op(w_out);
     Wr(i,1) = wind_num_op(w_in);
   }
@@ -163,8 +239,8 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
 #endif
 
 #ifdef SMALL_CELL_REMOVAL
-  igl::copyleft::cgal::relabel_small_immersed_cells(V, F,
-          num_patches, P, num_cells, per_patch_cells, 1e-3, Wr);
+  igl::copyleft::cgal::relabel_small_immersed_cells(
+    V, F, num_patches, P, num_cells, per_patch_cells, 1e-3, Wr);
 #endif
 
   // Extract boundary separating inside from outside.
