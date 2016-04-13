@@ -20,7 +20,7 @@ IGL_INLINE void igl::max_faces_stopping_condition(
     const int)> & stopping_condition)
 {
   stopping_condition = 
-    [&max_m,&m](
+    [max_m,&m](
     const Eigen::MatrixXd &,
     const Eigen::MatrixXi &,
     const Eigen::MatrixXi &,
