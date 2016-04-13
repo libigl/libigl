@@ -83,6 +83,13 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
   const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
   Eigen::PlainObjectBase<DerivedC>& cells) 
 {
+  // Trivial base case
+  if(P.size() == 0)
+  {
+    assert(F.size() == 0);
+    cells.resize(0,2);
+    return 0;
+  }
 
   typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
   typedef Kernel::Point_3 Point_3;
@@ -113,6 +120,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
 #endif
   const size_t num_faces = F.rows();
   typedef typename DerivedF::Scalar Index;
+  assert(P.size() > 0);
   const size_t num_patches = P.maxCoeff()+1;
 
   // Extract all cells...
