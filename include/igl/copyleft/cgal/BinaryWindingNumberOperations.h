@@ -14,6 +14,10 @@
 #include "../../MeshBooleanType.h"
 #include <Eigen/Core>
 
+// TODO: This is not written according to libigl style. These should be
+// function handles.
+//
+// Why is this templated on DerivedW
 namespace igl
 {
   namespace copyleft
