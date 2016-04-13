@@ -30,7 +30,7 @@ IGL_INLINE double igl::nchoosek(const int n, const int k)
 
 template < typename DerivedV, typename DerivedU>
 IGL_INLINE void igl::nchoosek(
-  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedV> & V,
   const int k,
   Eigen::PlainObjectBase<DerivedU> & U)
 {
@@ -68,5 +68,6 @@ IGL_INLINE void igl::nchoosek(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::nchoosek<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::nchoosek<Eigen::CwiseNullaryOp<Eigen::internal::linspaced_op<int, true>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::CwiseNullaryOp<Eigen::internal::linspaced_op<int, true>, Eigen::Matrix<int, -1, 1, 0, -1, 1> > > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::nchoosek<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif
