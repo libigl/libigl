@@ -8,13 +8,13 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 //
 #include "mesh_boolean.h"
-#include "BinaryWindingNumberOperations.h"
 #include "assign_scalar.h"
-#include "string_to_mesh_boolean_type.h"
-#include "propagate_winding_numbers.h"
-#include "remesh_self_intersections.h"
-#include "relabel_small_immersed_cells.h"
 #include "extract_cells.h"
+#include "mesh_boolean_type_to_funcs.h"
+#include "propagate_winding_numbers.h"
+#include "relabel_small_immersed_cells.h"
+#include "remesh_self_intersections.h"
+#include "string_to_mesh_boolean_type.h"
 #include "../../cumsum.h"
 #include "../../extract_manifold_patches.h"
 #include "../../get_seconds.h"
@@ -49,33 +49,10 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
     Eigen::PlainObjectBase<DerivedFC > & FC,
     Eigen::PlainObjectBase<DerivedJ > & J)
 {
-  switch (type) 
-  {
-    case MESH_BOOLEAN_TYPE_UNION:
-      return igl::copyleft::cgal::mesh_boolean(
-          VA, FA, VB, FB, igl::copyleft::cgal::BinaryUnion(),
-          igl::copyleft::cgal::KeepInside(), VC, FC, J);
-    case MESH_BOOLEAN_TYPE_INTERSECT:
-      return igl::copyleft::cgal::mesh_boolean(
-          VA, FA, VB, FB, igl::copyleft::cgal::BinaryIntersect(),
-          igl::copyleft::cgal::KeepInside(), VC, FC, J);
-    case MESH_BOOLEAN_TYPE_MINUS:
-      return igl::copyleft::cgal::mesh_boolean(
-          VA, FA, VB, FB, igl::copyleft::cgal::BinaryMinus(),
-          igl::copyleft::cgal::KeepInside(), VC, FC, J);
-    case MESH_BOOLEAN_TYPE_XOR:
-      return igl::copyleft::cgal::mesh_boolean(
-          VA, FA, VB, FB, igl::copyleft::cgal::BinaryXor(),
-          igl::copyleft::cgal::KeepInside(), VC, FC, J);
-    case MESH_BOOLEAN_TYPE_RESOLVE:
-      //op = binary_resolve();
-      return igl::copyleft::cgal::mesh_boolean(
-          VA, FA, VB, FB, igl::copyleft::cgal::BinaryResolve(),
-          igl::copyleft::cgal::KeepAll(), VC, FC, J);
-    default:
-      assert(false && "Unsupported boolean type.");
-      return false;
-  }
+  std::function<int(const int, const int)> keep;
+  std::function<int(const Eigen::Matrix<int,1,Eigen::Dynamic>) > wind_num_op;
+  mesh_boolean_type_to_funcs(type,wind_num_op,keep);
+  return mesh_boolean(VA,FA,VB,FB,wind_num_op,keep,VC,FC,J);
 }
 template <
   typename DerivedVA,
