@@ -28,6 +28,8 @@ namespace igl
       const int i, const int nrhs, const mxArray * prhs[], const char * name);
     IGL_INLINE void validate_arg_double(
       const int i, const int nrhs, const mxArray * prhs[], const char * name);
+    IGL_INLINE void validate_arg_function_handle(
+      const int i, const int nrhs, const mxArray * prhs[], const char * name);
   }
 }
 #ifndef IGL_STATIC_LIBRARY

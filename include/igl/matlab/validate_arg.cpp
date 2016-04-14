@@ -41,3 +41,10 @@ IGL_INLINE void igl::matlab::validate_arg_double(
   mexErrMsgTxt(mxIsDouble(prhs[i+1]),
     C_STR("Parameter '"<<name<<"' requires double argument"));
 }
+IGL_INLINE void igl::matlab::validate_arg_function_handle(
+    const int i, const int nrhs, const mxArray * prhs[], const char * name)
+{
+  requires_arg(i,nrhs,name);
+  mexErrMsgTxt(mxIsClass(prhs[i+1],"function_handle"),
+    C_STR("Parameter '"<<name<<"' requires function handle argument"));
+}
