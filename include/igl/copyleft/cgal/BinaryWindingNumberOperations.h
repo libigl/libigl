@@ -18,6 +18,8 @@
 // function handles.
 //
 // Why is this templated on DerivedW
+//
+// These are all generalized to n-ary operations
 namespace igl
 {
   namespace copyleft
@@ -34,44 +36,74 @@ namespace igl
             }
       };
 
+      // A ∪ B ∪ ... ∪ Z
       template <>
       class BinaryWindingNumberOperations<MESH_BOOLEAN_TYPE_UNION> {
         public:
           template<typename DerivedW>
           typename DerivedW::Scalar operator()(
-              const Eigen::PlainObjectBase<DerivedW>& win_nums) const {
-            return win_nums(0) > 0 || win_nums(1) > 0;
+              const Eigen::PlainObjectBase<DerivedW>& win_nums) const 
+          {
+            for(int i = 0;i<win_nums.size();i++)
+            {
+              if(win_nums(i) > 0) return true;
+            }
+            return false;
           }
       };
 
+      // A ∩ B ∩ ... ∩ Z
       template <>
       class BinaryWindingNumberOperations<MESH_BOOLEAN_TYPE_INTERSECT> {
         public:
           template<typename DerivedW>
           typename DerivedW::Scalar operator()(
-              const Eigen::PlainObjectBase<DerivedW>& win_nums) const {
-            return win_nums(0) > 0 && win_nums(1) > 0;
+              const Eigen::PlainObjectBase<DerivedW>& win_nums) const 
+          {
+            for(int i = 0;i<win_nums.size();i++)
+            {
+              if(win_nums(i)<=0) return false;
+            }
+            return true;
           }
       };
 
+      // A \ B \ ... \ Z = A \ (B ∪ ... ∪ Z)
       template <>
       class BinaryWindingNumberOperations<MESH_BOOLEAN_TYPE_MINUS> {
         public:
           template<typename DerivedW>
           typename DerivedW::Scalar operator()(
-              const Eigen::PlainObjectBase<DerivedW>& win_nums) const {
-            return win_nums(0) > 0 && win_nums(1) <= 0;
+              const Eigen::PlainObjectBase<DerivedW>& win_nums) const 
+          {
+            assert(win_nums.size()>1);
+            // Union of objects 1 through n-1
+            bool union_rest = false;
+            for(int i = 1;i<win_nums.size();i++)
+            {
+              union_rest = union_rest || win_nums(i) > 0;
+              if(union_rest) break;
+            }
+            // Must be in object 0 and not in union of objects 1 through n-1
+            return win_nums(0) > 0 && !union_rest;
           }
       };
 
+      // A ∆ B ∆ ... ∆ Z  (equivalent to set inside odd number of objects)
       template <>
       class BinaryWindingNumberOperations<MESH_BOOLEAN_TYPE_XOR> {
         public:
           template<typename DerivedW>
           typename DerivedW::Scalar operator()(
-              const Eigen::PlainObjectBase<DerivedW>& win_nums) const {
-            return (win_nums(0) > 0 && win_nums(1) <= 0) ||
-              (win_nums(0) <= 0 && win_nums(1) > 0);
+              const Eigen::PlainObjectBase<DerivedW>& win_nums) const 
+          {
+            // If inside an odd number of objects
+            int count = 0;
+            for(int i = 0;i<win_nums.size();i++)
+            {
+              if(win_nums(i) > 0) count++;
+            }
+            return count % 2 == 1;
           }
       };
 
