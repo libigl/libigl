@@ -61,10 +61,11 @@ IGL_INLINE void igl::polyvector_field_poisson_reconstruction(
       Eigen::VectorXd bu = igl::slice(b, Iu);
 
       Eigen::VectorXd rhs = bu-Quk*xk;
-      Eigen::MatrixXd yu = solver.solve(rhs);
+      Eigen::VectorXd yu = solver.solve(rhs);
 
-      Eigen::VectorXi index = i*Eigen::VectorXi::Ones(Iu.rows(),1);
-      igl::slice_into(yu, Iu, index, scalars);scalars(Ik[0],i)=xk[0];
+      Eigen::VectorXd y(Vcut.rows(),1);
+      igl::slice_into(yu, Iu, 1, y);y(Ik[0])=xk[0];
+      scalars.col(i) = y;
     }
 }
 
