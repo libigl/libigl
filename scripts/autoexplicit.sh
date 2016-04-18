@@ -13,7 +13,8 @@ while read line; do
   fi
   symbol=`echo "$line" | sed -e "s/^\"\(.*\)\", referenced from:$/\1/"`
   #echo "symbol = $symbol"
-  filename=`echo "$symbol" | perl -pe "s#.*?igl::([A-z0-9_]*).*$'$'#\1#"`
+  filename=`echo "$symbol" | perl -pe "s#.*?igl::([A-z0-9_:]*).*$'$'#\1#"`
+  filename=`echo "$filename" | sed -e "s/::/\//g"`
   #echo "filename = $filename"
   cpp="$LIBIGL/include/igl/$filename.cpp"
   # append .cpp and check that file exists

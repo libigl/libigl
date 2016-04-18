@@ -34,7 +34,7 @@ namespace igl
       //  Outputs:
       //    VC  #VC by 3 list of vertex positions of boolean result mesh
       //    FC  #FC by 3 list of triangle indices into VC
-      //    J  #FC list of indices into [FA;FB] revealing "birth" facet
+      //    J  #FC list of indices into [FA;FA.rows()+FB] revealing "birth" facet
       //  Returns true if inputs induce a piecewise constant winding number
       //  field and type is valid
       //
