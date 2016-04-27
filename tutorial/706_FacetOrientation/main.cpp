@@ -14,7 +14,7 @@
 igl::viewer::Viewer viewer;
 Eigen::MatrixXd V;
 std::vector<Eigen::VectorXi> C(2);
-std::vector<Eigen::MatrixXd> RGB(2);
+std::vector<Eigen::MatrixXd> RGBcolors(2);
 Eigen::MatrixXi F;
 std::vector<Eigen::MatrixXi> FF(2);
 bool is_showing_reoriented = false;
@@ -43,9 +43,9 @@ S,s      Scramble colors
       HSV.col(0) = 
         360.*C[pass].array().cast<double>()/(double)C[pass].maxCoeff();
       HSV.rightCols(2).setConstant(1.0);
-      igl::hsv_to_rgb(HSV,RGB[pass]);
+      igl::hsv_to_rgb(HSV,RGBcolors[pass]);
     }
-    viewer.data.set_colors(RGB[facetwise]);
+    viewer.data.set_colors(RGBcolors[facetwise]);
   };
 
   viewer.callback_key_pressed = 
@@ -76,7 +76,7 @@ S,s      Scramble colors
     }
     viewer.data.clear();
     viewer.data.set_mesh(V,is_showing_reoriented?FF[facetwise]:F);
-    viewer.data.set_colors(RGB[facetwise]);
+    viewer.data.set_colors(RGBcolors[facetwise]);
     return true;
   };
 
