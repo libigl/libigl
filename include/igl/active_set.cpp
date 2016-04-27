@@ -45,7 +45,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   )
 {
 //#define ACTIVE_SET_CPP_DEBUG
-#ifdef ACTIVE_SET_CPP_DEBUG
+#if defined(ACTIVE_SET_CPP_DEBUG) && !defined(_MSC_VER)
 #  warning "ACTIVE_SET_CPP_DEBUG"
 #endif
   using namespace Eigen;
