@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_READOBJ_H
 #define IGL_READOBJ_H
@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-namespace igl 
+namespace igl
 {
   // Read a mesh from an ascii obj file, filling in vertex positions, normals
   // and texture coordinates. Mesh may have faces of any number of degree
@@ -41,17 +41,19 @@ namespace igl
   // Returns true on success, false on errors
   template <typename Scalar, typename Index>
   IGL_INLINE bool readOBJ(
-    const std::string obj_file_name, 
+    const std::string obj_file_name,
     std::vector<std::vector<Scalar > > & V,
     std::vector<std::vector<Scalar > > & TC,
     std::vector<std::vector<Scalar > > & N,
     std::vector<std::vector<Index > > & F,
     std::vector<std::vector<Index > > & FTC,
-    std::vector<std::vector<Index > > & FN);
+    std::vector<std::vector<Index > > & FN,
+    std::string &mtllib,
+    std::string &usemtl);
   // Just V and F
   template <typename Scalar, typename Index>
   IGL_INLINE bool readOBJ(
-    const std::string obj_file_name, 
+    const std::string obj_file_name,
     std::vector<std::vector<Scalar > > & V,
     std::vector<std::vector<Index > > & F);
 #ifndef IGL_NO_EIGEN
@@ -66,7 +68,9 @@ namespace igl
     Eigen::PlainObjectBase<DerivedV>& CN,
     Eigen::PlainObjectBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedF>& FTC,
-    Eigen::PlainObjectBase<DerivedF>& FN);
+    Eigen::PlainObjectBase<DerivedF>& FN,
+    std::string &mtllib,
+    std::string &usemtl);
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool readOBJ(
     const std::string str,

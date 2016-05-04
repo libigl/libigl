@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_WRITEOBJ_H
 #define IGL_WRITEOBJ_H
@@ -14,7 +14,7 @@
 #include <Eigen/Core>
 #include <string>
 
-namespace igl 
+namespace igl
 {
   // Write a mesh in an ascii obj file
   // Inputs:
@@ -40,6 +40,9 @@ namespace igl
     const std::string str,
     const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedF>& F);
+    const Eigen::PlainObjectBase<DerivedF> &FTC,
+    const std::string &mtllib,
+    const std::string &usemtl);
 
 }
 
