@@ -128,4 +128,5 @@ template Eigen::WithFormat<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const igl::m
 template Eigen::WithFormat<Eigen::Matrix<double, 2, 3, 0, 2, 3> > const igl::matlab_format<Eigen::Matrix<double, 2, 3, 0, 2, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 3, 0, 2, 3> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
 template Eigen::WithFormat<Eigen::Matrix<double, 3, 2, 0, 3, 2> > const igl::matlab_format<Eigen::Matrix<double, 3, 2, 0, 3, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 2, 0, 3, 2> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
 template Eigen::WithFormat<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const igl::matlab_format<Eigen::Matrix<float, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
+template Eigen::WithFormat<Eigen::Matrix<int, 2, 2, 0, 2, 2> > const igl::matlab_format<Eigen::Matrix<int, 2, 2, 0, 2, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<int, 2, 2, 0, 2, 2> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
 #endif
