@@ -6,6 +6,7 @@
 #include <igl/viewer/Viewer.h>
 #include <igl/viewer/ViewerCore.h>
 #include <igl/viewer/ViewerData.h>
+#include <igl/serialize.h>
 
 void python_export_igl_viewer(py::module &m)
 {

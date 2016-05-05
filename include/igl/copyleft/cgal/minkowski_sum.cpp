@@ -16,6 +16,8 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <cassert>
 #include <vector>
+
+
 template <
   typename DerivedVA,
   typename DerivedFA,
@@ -190,8 +192,9 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   }
   // number of faces
   const int m = FA.rows();
-  // Mask whether positive dot product, or negative: because of exactly zero,
-  // these are not necessarily complementary
+  //// Mask whether positive dot product, or negative: because of exactly zero,
+  //// these are not necessarily complementary
+  // Nevermind, actually P = !N
   Matrix<bool,Dynamic,1> P(m,1),N(m,1);
   // loop over faces
   int mp = 0,mn = 0;
@@ -208,15 +211,16 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
       P(f) = true;
       N(f) = false;
       mp++;
-    }else if(dt < 0)
+    }else
+    //}else if(dt < 0)
     {
       P(f) = false;
       N(f) = true;
       mn++;
-    }else
-    {
-      P(f) = false;
-      N(f) = false;
+    //}else
+    //{
+    //  P(f) = false;
+    //  N(f) = false;
     }
   }
 
