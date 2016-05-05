@@ -82,7 +82,7 @@ include_directories(${LIBIGL_INCLUDE_DIRS})
 add_definitions(${LIBIGL_DEFINITIONS})
 
 ## Optional modules
-if (LIBIGL_WITH_OPENGL)
+if (LIBIGL_WITH_VIEWER)
   add_definitions(-DPY_VIEWER)
   list(APPEND SHARED_SOURCES "py_igl_viewer.cpp")
 endif ()
