@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "readOFF.h"
 #include "list_to_matrix.h"
@@ -11,17 +11,17 @@
 
 template <typename Scalar, typename Index>
 IGL_INLINE bool igl::readOFF(
-  const std::string off_file_name, 
+  const std::string off_file_name,
   std::vector<std::vector<Scalar > > & V,
   std::vector<std::vector<Index > > & F,
   std::vector<std::vector<Scalar > > & N)
 {
   using namespace std;
-  FILE * off_file = fopen(off_file_name.c_str(),"r");                                       
+  FILE * off_file = fopen(off_file_name.c_str(),"r");
   if(NULL==off_file)
   {
     printf("IOError: %s could not be opened...\n",off_file_name.c_str());
-    return false; 
+    return false;
   }
   V.clear();
   F.clear();
@@ -32,12 +32,12 @@ IGL_INLINE bool igl::readOFF(
   const std::string NOFF("NOFF");
   if(fscanf(off_file,"%s\n",header)!=1
      || !(
-       string(header).compare(0, OFF.length(), OFF)==0 || 
+       string(header).compare(0, OFF.length(), OFF)==0 ||
        string(header).compare(0,NOFF.length(),NOFF)==0))
   {
     printf("Error: %s's first line should be OFF or NOFF not %s...",off_file_name.c_str(),header);
     fclose(off_file);
-    return false; 
+    return false;
   }
   bool has_normals = string(header).compare(0,NOFF.length(),NOFF)==0;
   // Second line is #vertices #faces #edges
@@ -114,7 +114,7 @@ IGL_INLINE bool igl::readOFF(
         }else{
           fscanf(off_file,"%d%*[^\n]",&index);
         }
-        
+
         face[j] = index;
       }
       F[i] = face;
@@ -144,7 +144,7 @@ IGL_INLINE bool igl::readOFF(
   Eigen::PlainObjectBase<DerivedF>& F)
 {
   std::vector<std::vector<double> > vV;
-  std::vector<std::vector<double> > vN;  
+  std::vector<std::vector<double> > vN;
   std::vector<std::vector<int> > vF;
   bool success = igl::readOFF(str,vV,vF,vN);
   if(!success)
@@ -177,7 +177,7 @@ IGL_INLINE bool igl::readOFF(
   Eigen::PlainObjectBase<DerivedV>& N)
 {
   std::vector<std::vector<double> > vV;
-  std::vector<std::vector<double> > vN;  
+  std::vector<std::vector<double> > vN;
   std::vector<std::vector<int> > vF;
   bool success = igl::readOFF(str,vV,vF,vN);
   if(!success)
@@ -198,7 +198,7 @@ IGL_INLINE bool igl::readOFF(
     // igl::list_to_matrix(vF,F) already printed error message to std err
     return false;
   }
-  
+
   if (vN.size())
   {
     bool N_rect = igl::list_to_matrix(vN,N);
@@ -221,4 +221,5 @@ template bool igl::readOFF<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix
 template bool igl::readOFF<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template bool igl::readOFF<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1> >&);
 template bool igl::readOFF<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(std::string, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
+template bool igl::readOFF<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif
