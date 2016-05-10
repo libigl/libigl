@@ -142,11 +142,15 @@ elseif (UNIX)
   # Strip unnecessary sections of the binary on Linux/Mac OS
   if(APPLE)
     set_target_properties(pyigl PROPERTIES MACOSX_RPATH ".")
+    #Comment out if undefined symbols appear on pyigl module import to get notified about the missing templates at link time
     set_target_properties(pyigl PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
     if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
       add_custom_command(TARGET pyigl POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/../pyigl.so)
     endif()
   else()
+    #Comment in if undefined symbols appear on pyigl module import to get notified about the missing templates at link time
+    #target_link_libraries(pyigl ${PYTHON_LIBRARIES})
+    #set_target_properties(pyigl PROPERTIES LINK_FLAGS "-Wl,--no-undefined")
     if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
       add_custom_command(TARGET pyigl POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/../pyigl.so)
     endif()
