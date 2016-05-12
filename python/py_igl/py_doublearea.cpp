@@ -29,7 +29,7 @@ m.def("doublearea_single", []
 )
 {
   return igl::doublearea_single(A,B,C);
-}, __doc_igl_doublearea,
+}, __doc_igl_doublearea_single,
 py::arg("A"), py::arg("B"), py::arg("C"));
 
 m.def("doublearea", []
@@ -50,5 +50,5 @@ m.def("doublearea_quad", []
 )
 {
   return igl::doublearea_quad(V,F,dblA);
-}, __doc_igl_doublearea,
+}, __doc_igl_doublearea_quad,
 py::arg("V"), py::arg("F"), py::arg("dblA"));
