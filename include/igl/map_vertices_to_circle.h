@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_MAP_VERTICES_TO_CIRCLE_H
 #define IGL_MAP_VERTICES_TO_CIRCLE_H
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 
 #include <Eigen/Dense>
 #include <vector>

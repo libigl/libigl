@@ -8,7 +8,7 @@
 #ifndef IGL_LOCALBASIS_H
 #define IGL_LOCALBASIS_H
 
-#include "igl/igl_inline.h"
+#include "igl_inline.h"
 #include <Eigen/Core>
 #include <string>
 #include <vector>

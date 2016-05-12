@@ -12,7 +12,7 @@
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 #include <vector>
-#include <igl/igl_inline.h>
+#include "../../igl_inline.h"
 
 namespace igl
 {
