@@ -14,9 +14,17 @@ extern void python_export_igl_viewer(py::module &);
 extern void python_export_igl_comiso(py::module &);
 #endif
 
-PYTHON_PLUGIN(pyigl) {
-    py::init_threading();
-    py::module m("pyigl", "Python wrappers for libigl");
+PYBIND11_PLUGIN(pyigl) {
+    py::module m("pyigl", R"pyigldoc(
+        Python wrappers for libigl
+        --------------------------
+
+        .. currentmodule:: pyigl
+
+        .. autosummary::
+           :toctree: _generate
+
+    )pyigldoc");
 
     python_export_vector(m);
     python_export_igl(m);
