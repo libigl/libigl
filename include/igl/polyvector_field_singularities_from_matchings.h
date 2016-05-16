@@ -45,7 +45,8 @@ namespace igl {
   //   mvi              #numOneRingFaces by 1 list of the indices of the sequentially matching vectors
   //                    in the faces of the one ring (first enty is always vector_id, then the vector matching
   //                    vector_id in the next face, then the vector matching that in the third face etc.)
-  //   fi               #numOneRingFaces by 1 list of the sequentially visited faces in the one ring neighborhood
+  //   fi               #numOneRingFaces by 1 list of the sequentially visited faces in the one ring neighborhood.
+  //                    The one-ring is traversed in CLOCKWISE order with respect to the outward normal. (=opposite)
   //
   template <typename DerivedV, typename DerivedF, typename DerivedM, typename VFType, typename DerivedTT>
   void polyvector_field_one_ring_matchings(const Eigen::PlainObjectBase<DerivedV> &V,

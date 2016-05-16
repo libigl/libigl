@@ -33,7 +33,7 @@ void igl::polyvector_field_one_ring_matchings(const Eigen::PlainObjectBase<Deriv
   {
     int fi = VF[vi][i];
     for (int  j=0; j<3; ++j)
-      if (F(fi,(j+1)%3)==vi && TT(fi,j) == -1)
+      if (F(fi,j)==vi && TT(fi,j) == -1)
       {
         ind ++;
         fstart = fi;
@@ -59,7 +59,7 @@ void igl::polyvector_field_one_ring_matchings(const Eigen::PlainObjectBase<Deriv
     // look for the vertex
     int j=-1;
     for (unsigned z=0; z<3; ++z)
-      if (F(current_face,z) == vi)
+      if (F(current_face,(z+1)%3) == vi)
       {
         j=z;
         break;
