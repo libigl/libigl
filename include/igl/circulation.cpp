@@ -44,8 +44,8 @@ IGL_INLINE std::vector<int> igl::circulation(
   int ei = e;
   while(true)
   {
-    N.push_back(fi);
     step(ei,fi,ei,fi);
+    N.push_back(fi);
     // back to start?
     if(fi == f0)
     {
