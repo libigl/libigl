@@ -19,10 +19,9 @@ IGL_INLINE void igl::simplify_polyhedron(
   Eigen::MatrixXi & F,
   Eigen::VectorXi & J)
 {
-  assert(false && "This is incorrect. In all but simple cases, this could introduce self-intersections");
-  // TODO: to generalize to non-manifold and open meshes, the cost should be 0
-  // if moving the vertex kept all incident faces in their original planes and
-  // kept all incident boundary edges on their original lines.
+  // TODO: to generalize to open meshes, 0-cost should keep all incident
+  // boundary edges on their original lines. (for non-manifold meshes,
+  // igl::decimate needs to be generalized)
 
   Eigen::MatrixXd N;
   // Function for computing cost of collapsing edge (0 if at least one
@@ -57,22 +56,25 @@ IGL_INLINE void igl::simplify_polyhedron(
       const auto vj = E(e,!positive);
       p = V.row(vj);
       std::vector<int> faces = igl::circulation(e,positive,F,E,EMAP,EF,EI);
-      assert(faces.size() >= 2);
-      const Eigen::RowVectorXd nfront = N.row(faces.front());
-      const Eigen::RowVectorXd nback = N.row(faces.back());
-      // loop around faces incident on vi, beginning by matching normals to
-      // front, then allow one switch to back normal
-      bool matching_front = true;
       cost = 0;
       for(auto f : faces)
       {
-        const Eigen::RowVectorXd nf = N.row(f);
-        const double epsilon = 1e-10;
-        if(matching_front && (nf-nfront).norm()>epsilon)
+        // Skip the faces being collapsed
+        if(f == EF(e,0) || f == EF(e,1))
         {
-          matching_front = false;
+          continue;
         }
-        if(!matching_front && (nf-nback).norm()>epsilon)
+        const Eigen::RowVectorXd nbefore = N.row(f);
+        // Face with vi replaced with vj
+        const Eigen::RowVector3i fafter(
+            F(f,0) == vi ? vj : F(f,0),
+            F(f,1) == vi ? vj : F(f,1),
+            F(f,2) == vi ? vj : F(f,2));
+        Eigen::RowVectorXd nafter;
+        igl::per_face_normals(V,fafter,nafter);
+        const double epsilon = 1e-10;
+        // if normal changed then not feasible, break
+        if((nbefore-nafter).norm() > epsilon)
         {
           cost = std::numeric_limits<double>::infinity();
           break;
