@@ -27,7 +27,8 @@ template <
   typename DerivedBieq,
   typename Derivedlx,
   typename Derivedux,
-  typename DerivedZ
+  typename DerivedZ,
+  typename ProgressT
   >
 IGL_INLINE igl::SolverStatus igl::active_set(
   const Eigen::SparseMatrix<AT>& A,
@@ -41,7 +42,8 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   const Eigen::PlainObjectBase<Derivedlx> & p_lx,
   const Eigen::PlainObjectBase<Derivedux> & p_ux,
   const igl::active_set_params & params,
-  Eigen::PlainObjectBase<DerivedZ> & Z
+  Eigen::PlainObjectBase<DerivedZ> & Z,
+  ProgressT* progress
   )
 {
 //#define ACTIVE_SET_CPP_DEBUG
@@ -116,6 +118,11 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   int iter = 0;
   while(true)
   {
+    if (igl::was_interrupted(progress))
+    {
+      ret = SOLVER_STATUS_ABORTED;
+      break;
+    }
 #ifdef ACTIVE_SET_CPP_DEBUG
     cout<<"Iteration: "<<iter<<":"<<endl;
     cout<<"  pre"<<endl;

@@ -9,6 +9,7 @@
 #define IGL_ACTIVE_SET_H
 
 #include "igl_inline.h"
+#include "Progress.h"
 #include "SolverStatus.h"
 #include <Eigen/Core>
 #include <Eigen/Sparse>
@@ -60,7 +61,8 @@ namespace igl
     typename DerivedBieq,
     typename Derivedlx,
     typename Derivedux,
-    typename DerivedZ
+    typename DerivedZ,
+    typename ProgressT = NullProgress
     >
   IGL_INLINE igl::SolverStatus active_set(
     const Eigen::SparseMatrix<AT>& A,
@@ -74,7 +76,8 @@ namespace igl
     const Eigen::PlainObjectBase<Derivedlx> & lx,
     const Eigen::PlainObjectBase<Derivedux> & ux,
     const igl::active_set_params & params,
-    Eigen::PlainObjectBase<DerivedZ> & Z
+    Eigen::PlainObjectBase<DerivedZ> & Z,
+    ProgressT* progress = nullptr
     );
 };
 
