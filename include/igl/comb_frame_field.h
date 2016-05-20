@@ -8,7 +8,7 @@
 
 #ifndef IGL_COMB_FRAME_FIELD_H
 #define IGL_COMB_FRAME_FIELD_H
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 #include <Eigen/Core>
 namespace igl
 {
