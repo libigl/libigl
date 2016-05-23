@@ -122,6 +122,18 @@ IGL_INLINE bool igl::readOBJ(
         TC.push_back(tex);
       }else if(type == f)
       {
+        const auto & shift = [&V](const int i)->int
+        {
+          return i<0 ? i+V.size() : i-1;
+        };
+        const auto & shift_t = [&TC](const int i)->int
+        {
+          return i<0 ? i+TC.size() : i-1;
+        };
+        const auto & shift_n = [&N](const int i)->int
+        {
+          return i<0 ? i+N.size() : i-1;
+        };
         std::vector<Index > f;
         std::vector<Index > ftc;
         std::vector<Index > fn;
@@ -133,23 +145,23 @@ IGL_INLINE bool igl::readOBJ(
           // adjust offset
           l += offset;
           // Process word
-          unsigned int i,it,in;
-          if(sscanf(word,"%u/%u/%u",&i,&it,&in) == 3)
+          long int i,it,in;
+          if(sscanf(word,"%ld/%ld/%ld",&i,&it,&in) == 3)
           {
-            f.push_back(i-1);
-            ftc.push_back(it-1);
-            fn.push_back(in-1);
-          }else if(sscanf(word,"%u/%u",&i,&it) == 2)
+            f.push_back(shift(i));
+            ftc.push_back(shift_t(it));
+            fn.push_back(shift_n(in));
+          }else if(sscanf(word,"%ld/%ld",&i,&it) == 2)
           {
-            f.push_back(i-1);
-            ftc.push_back(it-1);
-          }else if(sscanf(word,"%u//%u",&i,&in) == 2)
+            f.push_back(shift(i));
+            ftc.push_back(shift_t(it));
+          }else if(sscanf(word,"%ld//%ld",&i,&in) == 2)
           {
-            f.push_back(i-1);
-            fn.push_back(in-1);
-          }else if(sscanf(word,"%u",&i) == 1)
+            f.push_back(shift(i));
+            fn.push_back(shift_n(in));
+          }else if(sscanf(word,"%ld",&i) == 1)
           {
-            f.push_back(i-1);
+            f.push_back(shift(i));
           }else
           {
             fprintf(stderr,

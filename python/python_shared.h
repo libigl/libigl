@@ -1,11 +1,11 @@
 #pragma once
 
-#include <pybind/pybind.h>
-#include <pybind/operators.h>
-#include <pybind/complex.h>
-#include <pybind/numpy.h>
-#include <pybind/stl.h>
-#include <pybind/functional.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/operators.h>
+#include <pybind11/complex.h>
+#include <pybind11/numpy.h>
+#include <pybind11/stl.h>
+#include <pybind11/functional.h>
 
 #include "py_doc.h"
 
@@ -83,4 +83,4 @@ void assert_is_Matrix4(const std::string name, const Eigen::PlainObjectBase<Scal
 
 
 
-namespace py = pybind;
+namespace py = pybind11;
