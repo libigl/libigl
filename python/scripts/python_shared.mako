@@ -24,6 +24,10 @@ PYBIND11_PLUGIN(pyigl) {
         .. autosummary::
            :toctree: _generate
 
+           % for f in functions:
+           ${f}
+           % endfor
+
     )pyigldoc");
 
     python_export_vector(m);

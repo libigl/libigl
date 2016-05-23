@@ -8,7 +8,7 @@
 #ifndef IGL_AVERAGEEDGELENGTH_H
 #define IGL_AVERAGEEDGELENGTH_H
 
-#include "igl/igl_inline.h"
+#include "igl_inline.h"
 #include <Eigen/Core>
 #include <string>
 #include <vector>
