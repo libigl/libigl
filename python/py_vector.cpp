@@ -91,6 +91,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("size", [](const Type &m) { return m.size(); })
         .def("cols", [](const Type &m) { return m.cols(); })
         .def("rows", [](const Type &m) { return m.rows(); })
+        .def("shape", [](const Type &m) { return std::tuple<int,int>(m.rows(), m.cols()); })
 
         /* Extract rows and colums */
         .def("col", [](const Type &m, int i) {
@@ -356,6 +357,8 @@ py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name,
         .def("size", [](const Type &m) { return m.size(); })
         .def("cols", [](const Type &m) { return m.cols(); })
         .def("rows", [](const Type &m) { return m.rows(); })
+        .def("shape", [](const Type &m) { return std::tuple<int,int>(m.rows(), m.cols()); })
+
 
         /* Initialization */
         .def("setZero", [](Type &m) { m.setZero(); })
@@ -515,6 +518,7 @@ py::class_<Type> bind_eigen_diagonal_2(py::module &m, const char *name,
         .def("size", [](const Type &m) { return m.size(); })
         .def("cols", [](const Type &m) { return m.cols(); })
         .def("rows", [](const Type &m) { return m.rows(); })
+        .def("shape", [](const Type &m) { return std::tuple<int,int>(m.rows(), m.cols()); })
 
         /* Initialization */
         .def("setZero", [](Type &m) { m.setZero(); })
@@ -648,6 +652,8 @@ void python_export_vector(py::module &m) {
        else
           return "Numerical Issue";
     })
+    .def("analyzePattern",[](Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >& s, const Eigen::SparseMatrix<double>& a) { return s.analyzePattern(a); })
+    .def("factorize",[](Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >& s, const Eigen::SparseMatrix<double>& a) { return s.factorize(a); })
     .def("solve",[](const Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >& s, const Eigen::MatrixXd& rhs) { return Eigen::MatrixXd(s.solve(rhs)); })
     ;
 
