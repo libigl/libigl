@@ -44,8 +44,8 @@ namespace igl
     const bool normalize,
     Eigen::PlainObjectBase<DerivedC> & C);
   // Inputs:
-  //   min_z  value at blue
-  //   max_z  value at red
+  //   min_Z  value at blue
+  //   max_Z  value at red
   template <typename DerivedZ, typename DerivedC>
   IGL_INLINE void parula(
     const Eigen::PlainObjectBase<DerivedZ> & Z,

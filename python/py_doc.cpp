@@ -32,6 +32,40 @@ const char *__doc_igl_local_basis = R"igl_Qu8mg5v7(// Compute a local orthogonal
   //   B3 eigen matrix #F by 3, normal of the triangle
   //
   // See also: adjacency_matrix)igl_Qu8mg5v7";
+const char *__doc_igl_signed_distance = R"igl_Qu8mg5v7(// Computes signed distance to a mesh
+  //
+  // Inputs:
+  //   P  #P by 3 list of query point positions
+  //   V  #V by 3 list of vertex positions
+  //   F  #F by ss list of triangle indices, ss should be 3 unless sign_type ==
+  //     SIGNED_DISTANCE_TYPE_UNSIGNED
+  //   sign_type  method for computing distance _sign_ S
+  // Outputs:
+  //   S  #P list of smallest signed distances
+  //   I  #P list of facet indices corresponding to smallest distances
+  //   C  #P by 3 list of closest points
+  //   N  #P by 3 list of closest normals (only set if
+  //     sign_type=SIGNED_DISTANCE_TYPE_PSEUDONORMAL)
+  //
+  // Known bugs: This only computes distances to triangles. So unreferenced
+  // vertices and degenerate triangles are ignored.)igl_Qu8mg5v7";
+const char *__doc_igl_signed_distance_pseudonormal = R"igl_Qu8mg5v7(// Computes signed distance to mesh
+  //
+  // Inputs:
+  //   tree  AABB acceleration tree (see AABB.h)
+  //   F  #F by 3 list of triangle indices
+  //   FN  #F by 3 list of triangle normals 
+  //   VN  #V by 3 list of vertex normals (ANGLE WEIGHTING)
+  //   EN  #E by 3 list of edge normals (UNIFORM WEIGHTING)
+  //   EMAP  #F*3 mapping edges in F to E
+  //   q  Query point
+  // Returns signed distance to mesh
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_signed_distance_winding_number = R"igl_Qu8mg5v7(// Inputs:
+  //   tree  AABB acceleration tree (see cgal/point_mesh_squared_distance.h)
+  //   hier  Winding number evaluation hierarchy
+  //   q  Query point
+  // Returns signed distance to mesh)igl_Qu8mg5v7";
 const char *__doc_igl_cotmatrix = R"igl_Qu8mg5v7(// Constructs the cotangent stiffness matrix (discrete laplacian) for a given
   // mesh (V,F).
   //
@@ -340,6 +374,17 @@ const char *__doc_igl_upsample = R"igl_Qu8mg5v7(// Subdivide a mesh without movi
   //
   // Known issues:
   //   - assumes (V,F) is edge-manifold.)igl_Qu8mg5v7";
+const char *__doc_igl_slice_mask = R"igl_Qu8mg5v7(// Act like the matlab X(row_mask,col_mask) operator, where
+  // row_mask, col_mask are non-negative integer indices.
+  // 
+  // Inputs:
+  //   X  m by n matrix
+  //   R  m list of row bools
+  //   C  n list of column bools
+  // Output:
+  //   Y  #trues-in-R by #trues-in-C matrix
+  //
+  // See also: slice_mask)igl_Qu8mg5v7";
 const char *__doc_igl_point_mesh_squared_distance = R"igl_Qu8mg5v7(// Compute distances from a set of points P to a triangle mesh (V,F)
   //
   // Inputs:

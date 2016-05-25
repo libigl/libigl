@@ -1,5 +1,8 @@
 extern const char *__doc_igl_principal_curvature;
 extern const char *__doc_igl_local_basis;
+extern const char *__doc_igl_signed_distance;
+extern const char *__doc_igl_signed_distance_pseudonormal;
+extern const char *__doc_igl_signed_distance_winding_number;
 extern const char *__doc_igl_cotmatrix;
 extern const char *__doc_igl_floor;
 extern const char *__doc_igl_slice;
@@ -26,6 +29,7 @@ extern const char *__doc_igl_barycentric_coordinates;
 extern const char *__doc_igl_lscm;
 extern const char *__doc_igl_find_cross_field_singularities;
 extern const char *__doc_igl_upsample;
+extern const char *__doc_igl_slice_mask;
 extern const char *__doc_igl_point_mesh_squared_distance;
 extern const char *__doc_igl_parula;
 extern const char *__doc_igl_setdiff;
