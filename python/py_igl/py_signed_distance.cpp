@@ -21,12 +21,10 @@ m.def("signed_distance", []
 )
 {
   Eigen::VectorXd Sv;
-  if (S.size() != 0)
-    Sv = S;
   Eigen::VectorXi Iv;
-  if (I.size() != 0)
-    Iv = I;
-  return igl::signed_distance(P, V, F, sign_type, Sv, Iv, C, N);
+  igl::signed_distance(P, V, F, sign_type, Sv, Iv, C, N);
+  S = Sv;
+  I = Iv;
 }, __doc_igl_signed_distance,
 py::arg("P"), py::arg("V"), py::arg("F"), py::arg("sign_type"), py::arg("S"), py::arg("I"), py::arg("C"), py::arg("N"));
 
