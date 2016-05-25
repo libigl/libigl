@@ -288,4 +288,10 @@ public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 }
+
+
+#ifndef IGL_STATIC_LIBRARY
+#  include "AABB.cpp"
+#endif
+
 #endif
