@@ -129,6 +129,9 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("topRows", [](Type &m, const int& k) { return Type(m.topRows(k)); })
         .def("bottomRows", [](Type &m, const int& k) { return Type(m.bottomRows(k)); })
 
+        .def("setTopRows", [](Type &m, const int& k, const Type& v) { return Type(m.topRows(k) = v); })
+        .def("setBottomRows", [](Type &m, const int& k, const Type& v) { return Type(m.bottomRows(k) = v); })
+
         .def("topLeftCorner", [](Type &m, const int& p, const int&q) { return Type(m.topLeftCorner(p,q)); })
         .def("bottomLeftCorner", [](Type &m, const int& p, const int&q) { return Type(m.bottomLeftCorner(p,q)); })
         .def("topRightCorner", [](Type &m, const int& p, const int&q) { return Type(m.topRightCorner(p,q)); })
@@ -249,6 +252,26 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         /* Comparison operators */
         .def(py::self == py::self)
         .def(py::self != py::self)
+        .def("__lt__", []
+        (const Type &a, const Scalar& b) -> Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic>
+        {
+          return Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>(a.array() < b);
+        })
+        .def("__gt__", []
+        (const Type &a, const Scalar& b) -> Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic>
+        {
+          return Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>(a.array() > b);
+        })
+        .def("__le__", []
+        (const Type &a, const Scalar& b) -> Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic>
+        {
+          return Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>(a.array() <= b);
+        })
+        .def("__ge__", []
+        (const Type &a, const Scalar& b) -> Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic>
+        {
+          return Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>(a.array() >= b);
+        })
 
         .def("transposeInPlace", [](Type &m) { m.transposeInPlace(); })
         /* Other transformations */
@@ -602,6 +625,9 @@ void python_export_vector(py::module &m) {
     bind_eigen_2<Eigen::MatrixXi> (me, "MatrixXi");
 //    py::implicitly_convertible<py::buffer, Eigen::MatrixXi>();
     //py::implicitly_convertible<double, Eigen::MatrixXi>();
+
+    /* Bindings for MatrixXb */
+    bind_eigen_2<Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> > (me, "MatrixXb");
 
     /* Bindings for MatrixXuc */
     bind_eigen_2<Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> > (me, "MatrixXuc");
