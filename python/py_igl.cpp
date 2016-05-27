@@ -62,6 +62,9 @@
 #include <igl/fit_rotations.h>
 #include <igl/polar_svd.h>
 #include <igl/covariance_scatter_matrix.h>
+#include <igl/slice_mask.h>
+#include <igl/signed_distance.h>
+//#include <igl/.h>
 
 
 void python_export_igl(py::module &m)
@@ -126,5 +129,9 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_fit_rotations.cpp"
 #include "py_igl/py_polar_svd.cpp"
 #include "py_igl/py_covariance_scatter_matrix.cpp"
+#include "py_igl/py_slice_mask.cpp"
+#include "py_igl/py_signed_distance.cpp"
+
+//#include "py_igl/py_.cpp"
 
 }
