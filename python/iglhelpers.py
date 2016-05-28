@@ -8,7 +8,9 @@ def p2e(m):
             return igl.eigen.MatrixXi(m)
         elif m.dtype.type == np.float64:
             return igl.eigen.MatrixXd(m)
-        raise TypeError("p2e only support dtype float64 or int32")
+        elif m.dtype.type == np.bool:
+            return igl.eigen.MatrixXb(m)
+        raise TypeError("p2e only support dtype float64, int32 and bool")
     if sparse.issparse(m):
         # convert in a dense matrix with triples
         coo = m.tocoo()
@@ -34,6 +36,8 @@ def e2p(m):
         return np.array(m, dtype='float64')
     elif isinstance(m, igl.eigen.MatrixXi):
         return np.array(m, dtype='int32')
+    elif isinstance(m, igl.eigen.MatrixXb):
+        return np.array(m, dtype='bool')
     elif isinstance(m, igl.eigen.SparseMatrixd):
         coo = np.array(m.toCOO())
         I = coo[:, 0]
