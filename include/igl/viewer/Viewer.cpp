@@ -346,13 +346,13 @@ namespace viewer
   T,t     Toggle filled faces
   Z       Snap to canonical view
   [,]     Toggle between rotation control types (e.g. trackball, two-axis
-          valuator with fixed up)
+          valuator with fixed up))"
 #ifdef IGL_VIEWER_WITH_NANOGUI
+		R"(
   ;       Toggle vertex labels
-  :       Toggle face labels
+  :       Toggle face labels)"
 #endif
-
-)");
+);
     std::cout<<usage;
 #endif
   }
