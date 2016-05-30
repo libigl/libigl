@@ -32,6 +32,40 @@ const char *__doc_igl_local_basis = R"igl_Qu8mg5v7(// Compute a local orthogonal
   //   B3 eigen matrix #F by 3, normal of the triangle
   //
   // See also: adjacency_matrix)igl_Qu8mg5v7";
+const char *__doc_igl_signed_distance = R"igl_Qu8mg5v7(// Computes signed distance to a mesh
+  //
+  // Inputs:
+  //   P  #P by 3 list of query point positions
+  //   V  #V by 3 list of vertex positions
+  //   F  #F by ss list of triangle indices, ss should be 3 unless sign_type ==
+  //     SIGNED_DISTANCE_TYPE_UNSIGNED
+  //   sign_type  method for computing distance _sign_ S
+  // Outputs:
+  //   S  #P list of smallest signed distances
+  //   I  #P list of facet indices corresponding to smallest distances
+  //   C  #P by 3 list of closest points
+  //   N  #P by 3 list of closest normals (only set if
+  //     sign_type=SIGNED_DISTANCE_TYPE_PSEUDONORMAL)
+  //
+  // Known bugs: This only computes distances to triangles. So unreferenced
+  // vertices and degenerate triangles are ignored.)igl_Qu8mg5v7";
+const char *__doc_igl_signed_distance_pseudonormal = R"igl_Qu8mg5v7(// Computes signed distance to mesh
+  //
+  // Inputs:
+  //   tree  AABB acceleration tree (see AABB.h)
+  //   F  #F by 3 list of triangle indices
+  //   FN  #F by 3 list of triangle normals 
+  //   VN  #V by 3 list of vertex normals (ANGLE WEIGHTING)
+  //   EN  #E by 3 list of edge normals (UNIFORM WEIGHTING)
+  //   EMAP  #F*3 mapping edges in F to E
+  //   q  Query point
+  // Returns signed distance to mesh
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_signed_distance_winding_number = R"igl_Qu8mg5v7(// Inputs:
+  //   tree  AABB acceleration tree (see cgal/point_mesh_squared_distance.h)
+  //   hier  Winding number evaluation hierarchy
+  //   q  Query point
+  // Returns signed distance to mesh)igl_Qu8mg5v7";
 const char *__doc_igl_cotmatrix = R"igl_Qu8mg5v7(// Constructs the cotangent stiffness matrix (discrete laplacian) for a given
   // mesh (V,F).
   //
@@ -150,6 +184,21 @@ const char *__doc_igl_jet = R"igl_Qu8mg5v7(// JET like MATLAB's jet
   //   r  red value
   //   g  green value
   //   b  blue value)igl_Qu8mg5v7";
+const char *__doc_igl_cat = R"igl_Qu8mg5v7(// Perform concatenation of a two matrices along a single dimension
+  // If dim == 1, then C = [A;B]. If dim == 2 then C = [A B]
+  // 
+  // Template:
+  //   Scalar  scalar data type for sparse matrices like double or int
+  //   Mat  matrix type for all matrices (e.g. MatrixXd, SparseMatrix)
+  //   MatC  matrix type for ouput matrix (e.g. MatrixXd) needs to support
+  //     resize
+  // Inputs:
+  //   A  first input matrix
+  //   B  second input matrix
+  //   dim  dimension along which to concatenate, 0 or 1
+  // Outputs:
+  //   C  output matrix
+  //   )igl_Qu8mg5v7";
 const char *__doc_igl_eigs = R"igl_Qu8mg5v7(See eigs for the documentation.)igl_Qu8mg5v7";
 const char *__doc_igl_per_corner_normals = R"igl_Qu8mg5v7(// Compute vertex normals via vertex position list, face list
   // Inputs:
@@ -198,6 +247,29 @@ const char *__doc_igl_colon = R"igl_Qu8mg5v7(// Colon operator like matlab's col
   //     than hi, vice versa if hi<low
   // Output:
   //   I  list of values from low to hi with step size step)igl_Qu8mg5v7";
+const char *__doc_igl_fit_rotations = R"igl_Qu8mg5v7(// Known issues: This seems to be implemented in Eigen/Geometry:
+  // Eigen::umeyama
+  //
+  // FIT_ROTATIONS Given an input mesh and new positions find rotations for
+  // every covariance matrix in a stack of covariance matrices
+  // 
+  // Inputs:
+  //   S  nr*dim by dim stack of covariance matrices
+  //   single_precision  whether to use single precision (faster)
+  // Outputs:
+  //   R  dim by dim * nr list of rotations
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_fit_rotations_planar = R"igl_Qu8mg5v7(// FIT_ROTATIONS Given an input mesh and new positions find 2D rotations for
+  // every vertex that best maps its one ring to the new one ring
+  // 
+  // Inputs:
+  //   S  nr*dim by dim stack of covariance matrices, third column and every
+  //   third row will be ignored
+  // Outputs:
+  //   R  dim by dim * nr list of rotations, third row and third column of each
+  //   rotation will just be identity
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_fit_rotations_SSE = R"igl_Qu8mg5v7(See fit_rotations_SSE for the documentation.)igl_Qu8mg5v7";
 const char *__doc_igl_rotate_vectors = R"igl_Qu8mg5v7(// Rotate the vectors V by A radiants on the tangent plane spanned by B1 and
   // B2
   //
@@ -245,6 +317,17 @@ const char *__doc_igl_avg_edge_length = R"igl_Qu8mg5v7(// Compute the average ed
   //   l  average edge length
   //
   // See also: adjacency_matrix)igl_Qu8mg5v7";
+const char *__doc_igl_barycentric_coordinates = R"igl_Qu8mg5v7(// Compute barycentric coordinates in a tet
+  //
+  // Inputs:
+  //   P  #P by 3 Query points in 3d
+  //   A  #P by 3 Tet corners in 3d
+  //   B  #P by 3 Tet corners in 3d
+  //   C  #P by 3 Tet corners in 3d
+  //   D  #P by 3 Tet corners in 3d
+  // Outputs:
+  //   L  #P by 4 list of barycentric coordinates
+  //   )igl_Qu8mg5v7";
 const char *__doc_igl_lscm = R"igl_Qu8mg5v7(// Compute a Least-squares conformal map parametrization (equivalently
   // derived in "Intrinsic Parameterizations of Surface Meshes" [Desbrun et al.
   // 2002] and "Least Squares Conformal Maps for Automatic Texture Atlas
@@ -273,6 +356,52 @@ const char *__doc_igl_find_cross_field_singularities = R"igl_Qu8mg5v7(// Inputs:
   //   isSingularity    #V by 1 boolean eigen Vector indicating the presence of a singularity on a vertex
   //   singularityIndex #V by 1 integer eigen Vector containing the singularity indices
   //)igl_Qu8mg5v7";
+const char *__doc_igl_upsample = R"igl_Qu8mg5v7(// Subdivide a mesh without moving vertices: loop subdivision but odd
+  // vertices stay put and even vertices are just edge midpoints
+  // 
+  // Templates:
+  //   MatV  matrix for vertex positions, e.g. MatrixXd
+  //   MatF  matrix for vertex positions, e.g. MatrixXi
+  // Inputs:
+  //   V  #V by dim  mesh vertices
+  //   F  #F by 3  mesh triangles
+  // Outputs:
+  //   NV new vertex positions, V is guaranteed to be at top
+  //   NF new list of face indices
+  //
+  // NOTE: V should not be the same as NV,
+  // NOTE: F should not be the same as NF, use other proto
+  //
+  // Known issues:
+  //   - assumes (V,F) is edge-manifold.)igl_Qu8mg5v7";
+const char *__doc_igl_slice_mask = R"igl_Qu8mg5v7(// Act like the matlab X(row_mask,col_mask) operator, where
+  // row_mask, col_mask are non-negative integer indices.
+  // 
+  // Inputs:
+  //   X  m by n matrix
+  //   R  m list of row bools
+  //   C  n list of column bools
+  // Output:
+  //   Y  #trues-in-R by #trues-in-C matrix
+  //
+  // See also: slice_mask)igl_Qu8mg5v7";
+const char *__doc_igl_point_mesh_squared_distance = R"igl_Qu8mg5v7(// Compute distances from a set of points P to a triangle mesh (V,F)
+  //
+  // Inputs:
+  //   P  #P by 3 list of query point positions
+  //   V  #V by 3 list of vertex positions
+  //   Ele  #Ele by (3|2|1) list of (triangle|edge|point) indices
+  // Outputs:
+  //   sqrD  #P list of smallest squared distances
+  //   I  #P list of primitive indices corresponding to smallest distances
+  //   C  #P by 3 list of closest points
+  //
+  // Known bugs: This only computes distances to given primitivess. So
+  // unreferenced vertices are ignored. However, degenerate primitives are
+  // handled correctly: triangle [1 2 2] is treated as a segment [1 2], and
+  // triangle [1 1 1] is treated as a point. So one _could_ add extra
+  // combinatorially degenerate rows to Ele for all unreferenced vertices to
+  // also get distances to points.)igl_Qu8mg5v7";
 const char *__doc_igl_parula = R"igl_Qu8mg5v7(// PARULA like MATLAB's parula
   //
   // Inputs:
@@ -361,6 +490,27 @@ const char *__doc_igl_active_set = R"igl_Qu8mg5v7(// Known Bugs: rows of [Aeq;Ai
   // Benchmark: For a harmonic solve on a mesh with 325K facets, matlab 2.2
   // secs, igl/min_quad_with_fixed.h 7.1 secs
   //)igl_Qu8mg5v7";
+const char *__doc_igl_per_edge_normals = R"igl_Qu8mg5v7(// Compute face normals via vertex position list, face list
+  // Inputs:
+  //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F  #F by 3 eigen Matrix of face (triangle) indices
+  //   weight  weighting type
+  //   FN  #F by 3 matrix of 3D face normals per face
+  // Output:
+  //   N  #2 by 3 matrix of mesh edge 3D normals per row
+  //   E  #E by 2 matrix of edge indices per row
+  //   EMAP  #E by 1 matrix of indices from all edges to E
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_covariance_scatter_matrix = R"igl_Qu8mg5v7(// Construct the covariance scatter matrix for a given arap energy
+  // Inputs:
+  //   V  #V by Vdim list of initial domain positions
+  //   F  #F by 3 list of triangle indices into V
+  //   energy  ARAPEnergyType enum value defining which energy is being used.
+  //     See ARAPEnergyType.h for valid options and explanations.
+  // Outputs:
+  //   CSM dim*#V/#F by dim*#V sparse matrix containing special laplacians along
+  //     the diagonal so that when multiplied by V gives covariance matrix
+  //     elements, can be used to speed up covariance matrix computation)igl_Qu8mg5v7";
 const char *__doc_igl_boundary_facets = R"igl_Qu8mg5v7(// BOUNDARY_FACETS Determine boundary faces (edges) of tetrahedra (triangles)
   // stored in T (analogous to qptoolbox's `outline` and `boundary_faces`).
   //
@@ -384,6 +534,27 @@ const char *__doc_igl_compute_frame_field_bisectors = R"igl_Qu8mg5v7(// Compute 
   // Output:
   //   BIS1  #F by 3 eigen Matrix of the first per face frame field bisector
   //   BIS2  #F by 3 eigen Matrix of the second per face frame field bisector
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_edge_lengths = R"igl_Qu8mg5v7(// Constructs a list of lengths of edges opposite each index in a face
+  // (triangle/tet) list
+  //
+  // Templates:
+  //   DerivedV derived from vertex positions matrix type: i.e. MatrixXd
+  //   DerivedF derived from face indices matrix type: i.e. MatrixXi
+  //   DerivedL derived from edge lengths matrix type: i.e. MatrixXd
+  // Inputs:
+  //   V  eigen matrix #V by 3
+  //   F  #F by 2 list of mesh edges
+  //    or
+  //   F  #F by 3 list of mesh faces (must be triangles)
+  //    or
+  //   T  #T by 4 list of mesh elements (must be tets)
+  // Outputs:
+  //   L  #F by {1|3|6} list of edge lengths 
+  //     for edges, column of lengths
+  //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
+  //     for tets, columns correspond to edges
+  //     [3 0],[3 1],[3 2],[1 2],[2 0],[0 1]
   //)igl_Qu8mg5v7";
 const char *__doc_igl_readOBJ = R"igl_Qu8mg5v7(// Read a mesh from an ascii obj file, filling in vertex positions, normals
   // and texture coordinates. Mesh may have faces of any number of degree
@@ -487,6 +658,18 @@ const char *__doc_igl_min_quad_with_fixed_solve = R"igl_Qu8mg5v7(// Solves a sys
   //   sol  #unknowns+#lagrange by cols solution to linear system
   // Returns true on success, false on error)igl_Qu8mg5v7";
 const char *__doc_igl_min_quad_with_fixed = R"igl_Qu8mg5v7(See min_quad_with_fixed for the documentation.)igl_Qu8mg5v7";
+const char *__doc_igl_writeMESH = R"igl_Qu8mg5v7(// save a tetrahedral volume mesh to a .mesh file
+  //
+  // Templates:
+  //   Scalar  type for positions and vectors (will be cast as double)
+  //   Index  type for indices (will be cast to int)
+  // Input:
+  //   mesh_file_name  path of .mesh file
+  //   V  double matrix of vertex positions  #V by 3
+  //   T  #T list of tet indices into vertex positions
+  //   F  #F list of face indices into vertex positions
+  //
+  // Known bugs: Holes and regions are not supported)igl_Qu8mg5v7";
 const char *__doc_igl_unique = R"igl_Qu8mg5v7(// Act like matlab's [C,IA,IC] = unique(X)
   //
   // Templates:
@@ -550,6 +733,23 @@ const char *__doc_igl_slice_into = R"igl_Qu8mg5v7(// Act like the matlab Y(row_i
   //   Y  ym by yn lhs matrix
   // Output:
   //   Y  ym by yn lhs matrix, same as input but Y(R,C) = X)igl_Qu8mg5v7";
+const char *__doc_igl_slice_tets = R"igl_Qu8mg5v7(// SLICE_TETS Slice through a tet mesh (V,T) along a given plane (via its
+  // implicit equation).
+  //
+  // Inputs:
+  //   V  #V by 3 list of tet mesh vertices
+  //   T  #T by 4 list of tet indices into V 
+  //   plane  list of 4 coefficients in the plane equation: [x y z 1]'*plane = 0
+  //   Optional:
+  //     'Manifold' followed by whether to stitch together triangles into a
+  //       manifold mesh {true}: results in more compact U but slightly slower.
+  // Outputs:
+  //   U  #U by 3 list of triangle mesh vertices along slice
+  //   G  #G by 3 list of triangles indices into U
+  //   J  #G list of indices into T revealing from which tet each faces comes
+  //   BC  #U by #V list of barycentric coordinates (or more generally: linear
+  //     interpolation coordinates) so that U = BC*V
+  // )igl_Qu8mg5v7";
 const char *__doc_igl_n_polyvector = R"igl_Qu8mg5v7(// Inputs:
   //   v0, v1         the two #3 by 1 vectors
   //   normalized     boolean, if false, then the vectors are normalized prior to the calculation
@@ -577,6 +777,19 @@ const char *__doc_igl_boundary_loop = R"igl_Qu8mg5v7(// Compute list of ordered 
   // Outputs:
   //   L  list of loops where L[i] = ordered list of boundary vertices in loop i
   //)igl_Qu8mg5v7";
+const char *__doc_igl_polar_svd = R"igl_Qu8mg5v7(// Computes the polar decomposition (R,T) of a matrix A using SVD singular
+  // value decomposition
+  //
+  // Inputs:
+  //   A  3 by 3 matrix to be decomposed
+  // Outputs:
+  //   R  3 by 3 rotation matrix part of decomposition (**always rotataion**)
+  //   T  3 by 3 stretch matrix part of decomposition
+  //   U  3 by 3 left-singular vectors
+  //   S  3 by 1 singular values
+  //   V  3 by 3 right-singular vectors
+  //
+  //)igl_Qu8mg5v7";
 const char *__doc_igl_comb_cross_field = R"igl_Qu8mg5v7(// Inputs:
   //   V          #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F          #F by 4 eigen Matrix of face (quad) indices
@@ -592,6 +805,20 @@ const char *__doc_igl_invert_diag = R"igl_Qu8mg5v7(// Templates:
   //   X  an m by n sparse matrix
   // Outputs:
   //   Y  an m by n sparse matrix)igl_Qu8mg5v7";
+const char *__doc_igl_readMESH = R"igl_Qu8mg5v7(// load a tetrahedral volume mesh from a .mesh file
+  //
+  // Templates:
+  //   Scalar  type for positions and vectors (will be read as double and cast
+  //     to Scalar)
+  //   Index  type for indices (will be read as int and cast to Index)
+  // Input:
+  //   mesh_file_name  path of .mesh file
+  // Outputs:
+  //   V  double matrix of vertex positions  #V by 3
+  //   T  #T list of tet indices into vertex positions
+  //   F  #F list of face indices into vertex positions
+  //
+  // Known bugs: Holes and regions are not supported)igl_Qu8mg5v7";
 const char *__doc_igl_copyleft_comiso_miq = R"igl_Qu8mg5v7(// Inputs:
     //   V              #V by 3 list of mesh vertex 3D positions
     //   F              #F by 3 list of faces indices in V

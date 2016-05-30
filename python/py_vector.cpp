@@ -91,6 +91,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("size", [](const Type &m) { return m.size(); })
         .def("cols", [](const Type &m) { return m.cols(); })
         .def("rows", [](const Type &m) { return m.rows(); })
+        .def("shape", [](const Type &m) { return std::tuple<int,int>(m.rows(), m.cols()); })
 
         /* Extract rows and colums */
         .def("col", [](const Type &m, int i) {
@@ -127,6 +128,9 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
 
         .def("topRows", [](Type &m, const int& k) { return Type(m.topRows(k)); })
         .def("bottomRows", [](Type &m, const int& k) { return Type(m.bottomRows(k)); })
+
+        .def("setTopRows", [](Type &m, const int& k, const Type& v) { return Type(m.topRows(k) = v); })
+        .def("setBottomRows", [](Type &m, const int& k, const Type& v) { return Type(m.bottomRows(k) = v); })
 
         .def("topLeftCorner", [](Type &m, const int& p, const int&q) { return Type(m.topLeftCorner(p,q)); })
         .def("bottomLeftCorner", [](Type &m, const int& p, const int&q) { return Type(m.bottomLeftCorner(p,q)); })
@@ -248,6 +252,26 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         /* Comparison operators */
         .def(py::self == py::self)
         .def(py::self != py::self)
+        .def("__lt__", []
+        (const Type &a, const Scalar& b) -> Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic>
+        {
+          return Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>(a.array() < b);
+        })
+        .def("__gt__", []
+        (const Type &a, const Scalar& b) -> Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic>
+        {
+          return Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>(a.array() > b);
+        })
+        .def("__le__", []
+        (const Type &a, const Scalar& b) -> Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic>
+        {
+          return Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>(a.array() <= b);
+        })
+        .def("__ge__", []
+        (const Type &a, const Scalar& b) -> Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic>
+        {
+          return Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>(a.array() >= b);
+        })
 
         .def("transposeInPlace", [](Type &m) { m.transposeInPlace(); })
         /* Other transformations */
@@ -356,6 +380,8 @@ py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name,
         .def("size", [](const Type &m) { return m.size(); })
         .def("cols", [](const Type &m) { return m.cols(); })
         .def("rows", [](const Type &m) { return m.rows(); })
+        .def("shape", [](const Type &m) { return std::tuple<int,int>(m.rows(), m.cols()); })
+
 
         /* Initialization */
         .def("setZero", [](Type &m) { m.setZero(); })
@@ -515,6 +541,7 @@ py::class_<Type> bind_eigen_diagonal_2(py::module &m, const char *name,
         .def("size", [](const Type &m) { return m.size(); })
         .def("cols", [](const Type &m) { return m.cols(); })
         .def("rows", [](const Type &m) { return m.rows(); })
+        .def("shape", [](const Type &m) { return std::tuple<int,int>(m.rows(), m.cols()); })
 
         /* Initialization */
         .def("setZero", [](Type &m) { m.setZero(); })
@@ -599,6 +626,9 @@ void python_export_vector(py::module &m) {
 //    py::implicitly_convertible<py::buffer, Eigen::MatrixXi>();
     //py::implicitly_convertible<double, Eigen::MatrixXi>();
 
+    /* Bindings for MatrixXb */
+    bind_eigen_2<Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> > (me, "MatrixXb");
+
     /* Bindings for MatrixXuc */
     bind_eigen_2<Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> > (me, "MatrixXuc");
     // py::implicitly_convertible<py::buffer, Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> >();
@@ -648,6 +678,8 @@ void python_export_vector(py::module &m) {
        else
           return "Numerical Issue";
     })
+    .def("analyzePattern",[](Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >& s, const Eigen::SparseMatrix<double>& a) { return s.analyzePattern(a); })
+    .def("factorize",[](Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >& s, const Eigen::SparseMatrix<double>& a) { return s.factorize(a); })
     .def("solve",[](const Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >& s, const Eigen::MatrixXd& rhs) { return Eigen::MatrixXd(s.solve(rhs)); })
     ;
 

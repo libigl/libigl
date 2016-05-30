@@ -87,16 +87,16 @@ if __name__ == '__main__':
     cpplines = []
 
     for idx, n in enumerate(implemented_names):
-        dict = dicts[idx]
-        contained_elements = sum(map(lambda x: len(x), dict.values()))
+        d = dicts[idx]
+        contained_elements = sum(map(lambda x: len(x), d.values()))
         # Check for files that don't contain functions/enums/classes
         if contained_elements == 0:
             print("Function %s contains no parseable content in cpp header. Something might be wrong." % n)
             continue
         else:
             names = []
-            namespaces = "_".join(dict["namespaces"])  # Assumption that all entities lie in deepest namespace
-            for f in dict["functions"]:
+            namespaces = "_".join(d["namespaces"])  # Assumption that all entities lie in deepest namespace
+            for f in d["functions"]:
                 h_string = "extern const char *__doc_" + namespaces + "_" + f.name + ";\n"
                 docu_string = "See " + f.name + " for the documentation."
                 if f.documentation != "":

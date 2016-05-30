@@ -195,6 +195,7 @@ Eurographics/ACM Symposium on Geometry Processing software award. Here are a
 few labs/companies/institutions using libigl:
 
  - [Adobe Research](http://www.adobe.com/technology/)  
+ - [Electronic Arts, Inc](http://www.ea.com)
  - [Mesh](http://meshconsultants.ca/), consultants, Canada
  - [Pixar Research](http://graphics.pixar.com/research/)
  - [Spine by Esoteric Software](http://esotericsoftware.com/) is an animation tool dedicated to 2D characters.
