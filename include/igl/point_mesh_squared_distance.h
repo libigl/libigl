@@ -10,6 +10,7 @@
 #include "igl_inline.h"
 #include <Eigen/Core>
 #include <vector>
+
 namespace igl
 {
   // Compute distances from a set of points P to a triangle mesh (V,F)
@@ -17,7 +18,7 @@ namespace igl
   // Inputs:
   //   P  #P by 3 list of query point positions
   //   V  #V by 3 list of vertex positions
-  //   F  #F by (3|2|1) list of (triangle|edge|point) indices
+  //   Ele  #Ele by (3|2|1) list of (triangle|edge|point) indices
   // Outputs:
   //   sqrD  #P list of smallest squared distances
   //   I  #P list of primitive indices corresponding to smallest distances
