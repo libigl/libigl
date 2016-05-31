@@ -26,13 +26,15 @@ namespace igl
     // Outputs:
     //   U  #U by dim list of output vertex posistions (can be same ref as V)
     //   G  #G by 3 list of output face indices into U (can be same ref as G)
+    //   J  #G list of indices into F of birth faces
     // Returns true if m was reached (otherwise #G > m)
     IGL_INLINE bool progressive_hulls(
       const Eigen::MatrixXd & V,
       const Eigen::MatrixXi & F,
       const size_t max_m,
       Eigen::MatrixXd & U,
-      Eigen::MatrixXi & G);
+      Eigen::MatrixXi & G,
+      Eigen::VectorXi & J);
   }
 }
 #ifndef IGL_STATIC_LIBRARY

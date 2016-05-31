@@ -17,7 +17,8 @@ IGL_INLINE bool igl::decimate(
   const Eigen::MatrixXi & F,
   const size_t max_m,
   Eigen::MatrixXd & U,
-  Eigen::MatrixXi & G)
+  Eigen::MatrixXi & G,
+  Eigen::VectorXi & J)
 {
   int m = F.rows();
   const auto & shortest_edge_and_midpoint = [](
@@ -40,7 +41,8 @@ IGL_INLINE bool igl::decimate(
     shortest_edge_and_midpoint,
     max_faces_stopping_condition(m,max_m),
     U,
-    G);
+    G,
+    J);
 }
 
 IGL_INLINE bool igl::decimate(
@@ -72,7 +74,8 @@ IGL_INLINE bool igl::decimate(
       const int,
       const int)> & stopping_condition,
   Eigen::MatrixXd & U,
-  Eigen::MatrixXi & G)
+  Eigen::MatrixXi & G,
+  Eigen::VectorXi & J)
 {
   using namespace Eigen;
   using namespace std;
@@ -132,6 +135,7 @@ IGL_INLINE bool igl::decimate(
   }
   // remove all IGL_COLLAPSE_EDGE_NULL faces
   MatrixXi F2(F.rows(),3);
+  J.resize(F.rows());
   int m = 0;
   for(int f = 0;f<F.rows();f++)
   {
@@ -140,10 +144,13 @@ IGL_INLINE bool igl::decimate(
       F(f,1) != IGL_COLLAPSE_EDGE_NULL || 
       F(f,2) != IGL_COLLAPSE_EDGE_NULL)
     {
-      F2.row(m++) = F.row(f);
+      F2.row(m) = F.row(f);
+      J(m) = f;
+      m++;
     }
   }
   F2.conservativeResize(m,F2.cols());
+  J.conservativeResize(m);
   VectorXi _1;
   remove_unreferenced(V,F2,U,G,_1);
   return clean_finish;
