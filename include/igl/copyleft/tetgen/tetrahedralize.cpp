@@ -148,7 +148,6 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
       return false;
     }
     bool TM_rect = list_to_matrix(vTM,TM);
-		printf("Number of markers is %lu\n", vTM.size());
     if(!TM_rect)
     {
       return false;

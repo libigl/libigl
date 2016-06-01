@@ -161,15 +161,9 @@ IGL_INLINE void igl::triangle::triangulate(
   in.numberofpointattributes = 0;
   in.pointmarkerlist = (int*)calloc(VM.rows(),sizeof(int));
 
-	printf("Just before... flags are [%s]\n", full_flags.c_str());
    for (unsigned i=0;i<VM.rows();++i) {
-		 if (VM(i) != 0) {
-			printf("Not zero at pos %d\n", i);
-			//exit(0);
-		 }
      in.pointmarkerlist[i] = VM(i);
 	 }
-	printf("Just after...\n");
 
   in.trianglelist = NULL;
   in.numberoftriangles = 0;
@@ -217,9 +211,6 @@ IGL_INLINE void igl::triangle::triangulate(
 
 	M2.resize(out.numberofpoints);
 	for (unsigned int i = 0; i < out.numberofpoints; ++i) {
-		if (out.pointmarkerlist[i] != 0) {
-			printf("Output has nonzero at pos %d\n", i);
-		}
 		M2(i) = out.pointmarkerlist[i];
 	}
 
