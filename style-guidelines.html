@@ -1,3 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>libigl</title>
+	<meta name="author" content="Alec Jacobson and Daniele Panozzo and others"/>
+	<link type="text/css" rel="stylesheet" href="tutorial/style.css"/>
+<script type='text/javascript' src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+<link rel='stylesheet' href='http://yandex.st/highlightjs/7.3/styles/default.min.css'>
+<script src='http://yandex.st/highlightjs/7.3/highlight.min.js'></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+
 <h1 id="libiglstyleguidelines">Libigl Style Guidelines</h1>
 
 <p>Libigl is used and developed by many people. This document highlights some
@@ -39,8 +53,6 @@ namespace igl
   // This is an example of a function, it takes a templated parameter and
   // shovels it into cout
   //
-  // Templates:
-  //   T  type that supports
   // Input:
   //   input  some input of a Printable type
   // Returns true for the sake of returning something
@@ -94,8 +106,10 @@ new pair of .h/.cpp files with this sub-function.</p>
 then avoid crowding the namespace by creating lambda functions within the
 function implementation.</p>
 
-<p>These lambda functions must still be documented with clear <a href="#header-documentation">input and output
-arguments</a>.</p>
+<p>These lambda functions must still be documented with clear <a href="#headerdocumentation">input and output
+arguments</a>. Avoid using full capturing of all automatic
+variables: do not use <code>[&amp;]</code> or <code>[=]</code>. Rather specify each captured variable
+individually.</p>
 
 <h3 id="avoidhelperclasses">Avoid &#8220;helper&#8221; classes</h3>
 
@@ -157,7 +171,7 @@ than pointers (e.g. <code>Matrix * mat</code>) or value (e.g. <code>Matrix mat</
 <p>All functions should be implemented with at least one overload that has a
 <code>void</code> or simple return type (e.g. <code>bool</code> on success/failure). With this
 implementation its then possible to write an overload that returns a single
-output.</p>
+output. Please see <a href="#templatingwitheigen">Templating with Eigen</a>.</p>
 
 <p>For example:</p>
 
@@ -167,6 +181,77 @@ void adjacency_matrix(const ... &amp; F, Eigen::SparseMatrix&lt;AType&gt; &amp; 
 template &lt;typename Atype&gt;
 Eigen::SparseMatrix&lt;Atype&gt; adjacency_matrix(const ... &amp; F);
 </code></pre>
+
+<h2 id="templatingwitheigen">Templating with Eigen</h2>
+
+<p>Functions taking Eigen dense matrices/arrays as inputs and outputs (but <strong>not</strong>
+return arguments), should template on top of <code>Eigen::PlainObjectBase</code>. <strong>Each
+parameter</strong> should be derived using its own template.</p>
+
+<p>For example,</p>
+
+<pre><code class="cpp">template &lt;typename DerivedV, typename DerivedF, typename DerivedBC&gt;
+void barycenter(
+  const Eigen::PlainObjectBase&lt;DerivedV&gt; &amp; V,
+  const Eigen::PlainObjectBase&lt;DerivedF&gt; &amp; F,
+  const Eigen::PlainObjectBase&lt;DerivedBC&gt; &amp; BC);
+</code></pre>
+
+<p>The <code>Derived*</code> template encodes the scalar type (e.g. <code>double</code>, <code>int</code>), the
+number of rows and cols at compile time, and the data storage (Row-major vs.
+column-major). </p>
+
+<p>Returning Eigen types is discouraged. In cases where the size and scalar type
+are a fixed <strong>and matching</strong> function of an input <code>Derived*</code> template, then
+return that <code>Derived*</code> type. <strong>Do not</strong> return
+<code>Eigen::PlainObjectBase&lt;...&gt;</code> types. For example, this function scales fits a
+given set of points to the unit cube. The return is a new set of vertex
+positions so its type should <em>match</em> that of the input points:</p>
+
+<pre><code class="cpp">template &lt;typename DerivedV&gt;
+void DerivedV fit_to_unit_cube(const Eigen::PlainObjectBase&lt;DerivedV&gt; &amp; V);
+</code></pre>
+
+<p>To implement this function, it is <strong>required</strong> to implement a more generic
+output-argument version and call that. So a full implementation looks like:</p>
+
+<p>In <code>igl/fit_in_unit_cube.h</code>:</p>
+
+<pre><code class="cpp">template &lt;typename DerivedV, typename DerivedW&gt;
+void fit_to_unit_cube(
+  const Eigen::PlainObjectBase&lt;DerivedV&gt; &amp; V,
+  Eigen::PlainObjectBase&lt;DerivedW&gt; &amp; W);
+template &lt;typename DerivedV&gt;
+void DerivedV fit_to_unit_cube(const Eigen::PlainObjectBase&lt;DerivedV&gt; &amp; V);
+</code></pre>
+
+<p>In <code>igl/fit_in_unit_cube.cpp</code>:</p>
+
+<pre><code>template &lt;typename DerivedV, typename DerivedW&gt;
+void fit_to_unit_cube(
+  const Eigen::PlainObjectBase&lt;DerivedV&gt; &amp; V,
+  Eigen::PlainObjectBase&lt;DerivedW&gt; &amp; W)
+{
+  W = (V.rowwise()-V.colwise().minCoeff()).array() /
+    (V.maxCoeff()-V.minCoeff());
+}
+
+template &lt;typename DerivedV&gt;
+void DerivedV fit_to_unit_cube(const Eigen::PlainObjectBase&lt;DerivedV&gt; &amp; V)
+{
+  DerivedV W;
+  fit_to_unit_cube(V,W);
+  return W;
+}
+</code></pre>
+
+<p>Notice that <code>W</code> is declared as a <code>DerivedV</code> type and <strong>not</strong>
+<code>Eigen::PlainObjectBase&lt;DerivedV&gt;</code> type.</p>
+
+<p><strong>Note:</strong> Not all functions are suitable for returning Eigen types. For example
+<code>igl::barycenter</code> above outputs a #F by dim list of barycenters. Returning a
+<code>DerivedV</code> type would be inappropriate since the number of rows in <code>DerivedV</code>
+will be #V and may not match the number of rows in <code>DerivedF</code> (#F).</p>
 
 <h2 id="functionnamingconventions">Function naming conventions</h2>
 
@@ -293,3 +378,17 @@ edited by you first. This means for
 
 <p>Whenever possible <code>#include</code> directives should be placed in the <code>.cpp</code>
 implementation file rather than the <code>.h</code> header file.</p>
+
+<h2 id="warnings">Warnings</h2>
+
+<p>Code should compile without firing any warnings.</p>
+
+<h3 id="anexception">An Exception</h3>
+
+<p>The only exception is for the use of the deprecated
+<code>Eigen::DynamicSparseMatrix</code> in core sub-routines (e.g. <code>igl::cat</code>). This class
+is still supported and faster than the standard, non-deprecated Eigen
+implementation so we&#8217;re keeping it as long as possible and profitable.</p>
+
+</body>
+</html>

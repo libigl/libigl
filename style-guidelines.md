@@ -379,3 +379,14 @@ edited by you first. This means for
 
 Whenever possible `#include` directives should be placed in the `.cpp`
 implementation file rather than the `.h` header file.
+
+## Warnings
+
+Code should compile without firing any warnings.
+
+### An Exception
+
+The only exception is for the use of the deprecated
+`Eigen::DynamicSparseMatrix` in core sub-routines (e.g. `igl::cat`). This class
+is still supported and faster than the standard, non-deprecated Eigen
+implementation so we're keeping it as long as possible and profitable.
