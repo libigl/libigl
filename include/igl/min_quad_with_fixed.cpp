@@ -201,10 +201,10 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     if(data.Auu_pd && neq == 0)
     {
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
-    cout<<"    llt"<<endl;
+    cout<<"    ldlt (Auu_pd)"<<endl;
 #endif
-      data.llt.compute(Auu);
-      switch(data.llt.info())
+      data.ldlt.compute(Auu);
+      switch(data.ldlt.info())
       {
         case Eigen::Success:
           break;
@@ -215,7 +215,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
           cerr<<"Error: Other."<<endl;
           return false;
       }
-      data.solver_type = min_quad_with_fixed_data<T>::LLT;
+      data.solver_type = min_quad_with_fixed_data<T>::LDLT;
     }else
     {
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
