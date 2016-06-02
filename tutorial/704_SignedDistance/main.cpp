@@ -67,6 +67,7 @@ void update_visualization(igl::viewer::Viewer & viewer)
     MatrixXd N,C;
     // Bunny is a watertight mesh so use pseudonormal for signing
     signed_distance_pseudonormal(V_vis,V,F,tree,FN,VN,EN,EMAP,S_vis,I,C,N);
+    cout<< S_vis.rows() << S_vis.cols() << endl;
   }
   // push to [0,1] range
   S_vis.array() = 0.5*(S_vis.array()/max_distance)+0.5;
