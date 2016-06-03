@@ -126,6 +126,9 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("rightCols", [](Type &m, const int& k) { return Type(m.rightCols(k)); })
         .def("leftCols", [](Type &m, const int& k) { return Type(m.leftCols(k)); })
 
+        .def("setLeftCols", [](Type &m, const int& k, const Type& v) { return Type(m.leftCols(k) = v); })
+        .def("setRightCols", [](Type &m, const int& k, const Type& v) { return Type(m.rightCols(k) = v); })
+
         .def("topRows", [](Type &m, const int& k) { return Type(m.topRows(k)); })
         .def("bottomRows", [](Type &m, const int& k) { return Type(m.bottomRows(k)); })
 

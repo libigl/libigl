@@ -27,11 +27,14 @@ PYBIND11_PLUGIN(pyigl) {
            principal_curvature
            local_basis
            signed_distance
+           triangle_triangulate
+           embree_ambient_occlusion
            cotmatrix
            floor
            slice
            per_face_normals
            ARAPEnergyType
+           quad_planarity
            readOFF
            per_vertex_normals
            sortrows
@@ -41,12 +44,14 @@ PYBIND11_PLUGIN(pyigl) {
            eigs
            per_corner_normals
            massmatrix
+           unproject_onto_mesh
            colon
            fit_rotations
            rotate_vectors
            read_triangle_mesh
            SolverStatus
            gaussian_curvature
+           planarize_quad_mesh
            avg_edge_length
            barycentric_coordinates
            lscm
@@ -56,6 +61,7 @@ PYBIND11_PLUGIN(pyigl) {
            point_mesh_squared_distance
            parula
            setdiff
+           copyleft_tetgen_tetrahedralize
            comb_frame_field
            map_vertices_to_circle
            writeOBJ
