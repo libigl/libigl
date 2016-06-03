@@ -322,8 +322,8 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     slice(B,known_i,Bk);
     MatrixXd Lambda_known_i = -(0.5*Ak*Z + 0.5*Bk);
     // reverse the lambda values for lx
-    Lambda_known_i.block(nk,0,as_lx_count,1) =
-      (-1*Lambda_known_i.block(nk,0,as_lx_count,1)).eval();
+    // (NOTE: MSVC crashes if we don't do this inplace, codegen bug perhaps)
+    Lambda_known_i.block(nk,0,as_lx_count,1) *= -1;
 
     // Extract Lagrange multipliers for Aieq_i (always at back of sol)
     VectorXd Lambda_Aieq_i(Aieq_i.rows(),1);
