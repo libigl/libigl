@@ -45,6 +45,19 @@ m.def("slice", []
 (
   const Eigen::MatrixXd& X,
   const Eigen::MatrixXi& R,
+  const int dim,
+  Eigen::MatrixXd& Y
+)
+{
+  assert_is_VectorX("R",R);
+  return igl::slice(X,R,dim,Y);
+}, __doc_igl_slice,
+py::arg("X"), py::arg("R"), py::arg("dim"), py::arg("Y"));
+
+m.def("slice", []
+(
+  const Eigen::MatrixXd& X,
+  const Eigen::MatrixXi& R,
   Eigen::MatrixXd& Y
 )
 {
