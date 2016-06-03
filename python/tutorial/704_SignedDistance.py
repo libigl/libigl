@@ -32,11 +32,13 @@ viewer = igl.viewer.Viewer()
 
 def append_mesh(C_vis, F_vis, V_vis, V, F, color):
     F_vis.conservativeResize(F_vis.rows() + F.rows(), 3)
-    # F_vis.setBottomRows(F.rows(), F + V_vis.rows())
+    F_vis.setBottomRows(F.rows(), F + V_vis.rows())
     V_vis.conservativeResize(V_vis.rows() + V.rows(), 3)
-    # V_vis.setBottomRows(V.rows(), V)
+    V_vis.setBottomRows(V.rows(), V)
     C_vis.conservativeResize(C_vis.rows() + V.rows(), 3)
-    # C_vis.setBottomRows(V.rows(), color)
+    colorM = igl.eigen.MatrixXd(V.rows(), C_vis.cols())
+    colorM.rowwiseSet(color)
+    C_vis.setBottomRows(V.rows(), colorM)
 
 
 def update_visualization(viewer):
