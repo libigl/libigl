@@ -13,93 +13,8 @@
 void python_export_igl_viewer(py::module &m)
 {
 
-//  py::module::import("nanogui");
-//  py::object FormHelper = (py::object) py::module::import("nanogui").attr("FormHelper");
-//  py::object Screen = (py::object) py::module::import("nanogui").attr("Screen");
-
   py::module me = m.def_submodule(
     "viewer", "Mesh viewer");
-
-//// NANOGUI
-//py::class_<nanogui::FormHelper> formhelper_class(me, "FormHelper", FormHelper);
-//py::class_<nanogui::Screen> screen_class(me, "Screen", Screen);
-
-
-//    py::class_<FormHelper>(m, "FormHelper", D(FormHelper))
-//        .def(py::init<Screen *>(), D(FormHelper, FormHelper))
-//        .def("addWindow", &FormHelper::addWindow, py::arg("pos"),
-//             py::arg("title") = std::string("Untitled"),
-//             D(FormHelper, addWindow))
-//        .def("addGroup", &FormHelper::addGroup, D(FormHelper, addGroup))
-//        .def("addButton", &FormHelper::addButton, py::arg("label"),
-//             py::arg("cb"), D(FormHelper, addGroup))
-//        .def("addBoolVariable",
-//             [](FormHelper &h, const std::string &label,
-//                const std::function<void(bool) > &setter,
-//                const std::function<bool(void) > &getter, bool editable) -> CheckBox* {
-//                return h.addVariable(label, setter, getter, editable);
-//             },
-//             py::arg("label"), py::arg("setter"), py::arg("getter"),
-//             py::arg("editable") = true)
-//        .def("addIntVariable",
-//             [](FormHelper &h, const std::string &label,
-//                const std::function<void(int64_t) > &setter,
-//                const std::function<int64_t(void) > &getter, bool editable) -> Int64Box* {
-//                return h.addVariable(label, setter, getter, editable);
-//             },
-//             py::arg("label"), py::arg("setter"), py::arg("getter"),
-//             py::arg("editable") = true)
-//        .def("addDoubleVariable",
-//             [](FormHelper &h, const std::string &label,
-//                const std::function<void(double) > &setter,
-//                const std::function<double(void) > &getter, bool editable) -> FloatBox<double>* {
-//                return h.addVariable(label, setter, getter, editable);
-//             },
-//             py::arg("label"), py::arg("setter"), py::arg("getter"),
-//             py::arg("editable") = true)
-//        .def("addStringVariable",
-//             [](FormHelper &h, const std::string &label,
-//                const std::function<void(std::string) > &setter,
-//                const std::function<std::string(void) > &getter, bool editable) -> TextBox* {
-//                return h.addVariable(label, setter, getter, editable);
-//             },
-//             py::arg("label"), py::arg("setter"), py::arg("getter"),
-//             py::arg("editable") = true)
-//        .def("addColorVariable",
-//             [](FormHelper &h, const std::string &label,
-//                const std::function<void(Color) > &setter,
-//                const std::function<Color(void) > &getter, bool editable) -> ColorPicker* {
-//                return h.addVariable(label, setter, getter, editable);
-//             },
-//             py::arg("label"), py::arg("setter"), py::arg("getter"),
-//             py::arg("editable") = true)
-//        .def("addEnumVariable",
-//             [](FormHelper &h, const std::string &label,
-//                const std::function<void(int) > &setter,
-//                const std::function<int(void) > &getter, bool editable) -> ComboBox* {
-//                return h.addVariable(label,
-//                        reinterpret_cast<const std::function<void(DummyEnum)>&>(setter),
-//                        reinterpret_cast<const std::function<DummyEnum(void)>&>(getter),
-//                        editable);
-//             },
-//             py::arg("label"), py::arg("setter"), py::arg("getter"),
-//             py::arg("editable") = true)
-//        .def("addWidget", &FormHelper::addWidget, D(FormHelper, addWidget))
-//        .def("refresh", &FormHelper::refresh, D(FormHelper, refresh))
-//        .def("window", &FormHelper::window, D(FormHelper, window))
-//        .def("setWindow", &FormHelper::setWindow, D(FormHelper, setWindow))
-//        .def("fixedSize", &FormHelper::fixedSize, D(FormHelper, fixedSize))
-//        .def("setFixedSize", &FormHelper::setFixedSize, D(FormHelper, setFixedSize))
-//        .def("groupFontName", &FormHelper::groupFontName, D(FormHelper, groupFontName))
-//        .def("setGroupFontName", &FormHelper::setGroupFontName, D(FormHelper, setGroupFontName))
-//        .def("labelFontName", &FormHelper::labelFontName, D(FormHelper, labelFontName))
-//        .def("setLabelFontName", &FormHelper::setLabelFontName, D(FormHelper, setLabelFontName))
-//        .def("groupFontSize", &FormHelper::groupFontSize, D(FormHelper, groupFontSize))
-//        .def("setGroupFontSize", &FormHelper::setGroupFontSize, D(FormHelper, setGroupFontSize))
-//        .def("labelFontSize", &FormHelper::labelFontSize, D(FormHelper, labelFontSize))
-//        .def("setLabelFontSize", &FormHelper::setLabelFontSize, D(FormHelper, setLabelFontSize))
-//        .def("widgetFontSize", &FormHelper::widgetFontSize, D(FormHelper, widgetFontSize))
-//        .def("setWidgetFontSize", &FormHelper::setWidgetFontSize, D(FormHelper, setWidgetFontSize));
 
 /////////////////////// DATA
 
@@ -398,8 +313,6 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     .def(py::init<>())
     .def_readwrite("data", &igl::viewer::Viewer::data)
     .def_readwrite("core", &igl::viewer::Viewer::core)
-    .def_readwrite("ngui", &igl::viewer::Viewer::ngui)
-    .def_readwrite("screen", &igl::viewer::Viewer::screen)
     .def("launch", &igl::viewer::Viewer::launch, py::arg("resizable") = true, py::arg("fullscreen") = false)
     .def("launch_init", &igl::viewer::Viewer::launch_init, py::arg("resizable") = true, py::arg("fullscreen") = false)
     .def("launch_rendering", &igl::viewer::Viewer::launch_rendering, py::arg("loop") = true)
