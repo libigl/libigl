@@ -2,6 +2,7 @@ from __future__ import print_function
 
 # Add the igl library to the modules search path
 import sys, os
+
 sys.path.insert(0, os.getcwd() + "/../")
 
 import pyigl as igl
@@ -31,11 +32,13 @@ viewer = igl.viewer.Viewer()
 
 def append_mesh(C_vis, F_vis, V_vis, V, F, color):
     F_vis.conservativeResize(F_vis.rows() + F.rows(), 3)
-    # F_vis.setBottomRows(F.rows(), F + V_vis.rows())
+    F_vis.setBottomRows(F.rows(), F + V_vis.rows())
     V_vis.conservativeResize(V_vis.rows() + V.rows(), 3)
-    # V_vis.setBottomRows(V.rows(), V)
+    V_vis.setBottomRows(V.rows(), V)
     C_vis.conservativeResize(C_vis.rows() + V.rows(), 3)
-    # C_vis.setBottomRows(V.rows(), color)
+    colorM = igl.eigen.MatrixXd(V.rows(), C_vis.cols())
+    colorM.rowwiseSet(color)
+    C_vis.setBottomRows(V.rows(), colorM)
 
 
 def update_visualization(viewer):
@@ -82,7 +85,7 @@ def update_visualization(viewer):
     igl.parula(S_vis, False, C_vis)
 
     if overlay:
-        append_mesh(C_vis, F_vis, V_vis, V, F, igl.eigen.MatrixXd([0.8, 0.8, 0.8]))
+        append_mesh(C_vis, F_vis, V_vis, V, F, igl.eigen.MatrixXd([[0.8, 0.8, 0.8]]))
 
     viewer.data.clear()
     viewer.data.set_mesh(V_vis, F_vis)
@@ -110,7 +113,7 @@ print("Press [space] to toggle showing surface.")
 print("Press '.'/',' to push back/pull forward slicing plane.")
 
 # Load mesh: (V,T) tet-mesh of convex hull, F contains original surface triangles
-igl.readMESH(TUTORIAL_SHARED_PATH + "bunny.mesh", V, T, F);
+igl.readMESH(TUTORIAL_SHARED_PATH + "bunny.mesh", V, T, F)
 
 # Call to point_mesh_squared_distance to determine bounds
 sqrD = igl.eigen.MatrixXd()
