@@ -57,7 +57,7 @@ option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
 option(LIBIGL_WITH_BOOLEAN          "Use Cork boolean"   OFF)
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
-option(LIBIGL_WITH_EMBREE           "Use Embree"         OFF)
+option(LIBIGL_WITH_EMBREE           "Use Embree"         ON)
 option(LIBIGL_WITH_LIM              "Use LIM"            ON)
 option(LIBIGL_WITH_MATLAB           "Use Matlab"         OFF)
 option(LIBIGL_WITH_MOSEK            "Use MOSEK"          OFF)
@@ -142,10 +142,10 @@ elseif (UNIX)
   #Enable flag if undefined symbols appear on pyigl module import to get notified about the missing symbols at link time
   option(CHECK_UNDEFINED        "Check for undefined symbols"    OFF)
 
-  # Strip unnecessary sections of the binary on Linux/Mac OS 
+  # Strip unnecessary sections of the binary on Linux/Mac OS
   if(APPLE)
     set_target_properties(pyigl PROPERTIES MACOSX_RPATH ".")
-    
+
     if (NOT CHECK_UNDEFINED)
       set_target_properties(pyigl PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
     endif()
