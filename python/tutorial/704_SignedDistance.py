@@ -5,15 +5,11 @@ import math
 sys.path.insert(0, os.getcwd() + "/../")
 import pyigl as igl
 
-from iglhelpers import e2p
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
 dependencies = ["viewer"]
 check_dependencies(dependencies)
 
-
-
-global V, F, T, tree, FN, VN, EN, E, EMAP, max_distance, slice_z, overlay
 
 V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
@@ -133,7 +129,7 @@ igl.per_vertex_normals(V, F, igl.PER_VERTEX_NORMALS_WEIGHTING_TYPE_ANGLE, FN, VN
 igl.per_edge_normals(V, F, igl.PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM, FN, EN, E, EMAP)
 
 # Plot the generated mesh
-update_visualization(viewer);
+update_visualization(viewer)
 viewer.callback_key_down = key_down
 viewer.core.show_lines = False
 viewer.launch()
