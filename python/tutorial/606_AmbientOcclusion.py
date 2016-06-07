@@ -1,5 +1,4 @@
 import sys, os
-import math
 
 # Add the igl library to the modules search path
 sys.path.insert(0, os.getcwd() + "/../")

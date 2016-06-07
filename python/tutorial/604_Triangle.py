@@ -9,6 +9,7 @@ from shared import check_dependencies
 dependencies = ["triangle", "viewer"]
 check_dependencies(dependencies)
 
+
 # Input polygon
 V = igl.eigen.MatrixXd([[-1, -1], [1, -1], [1, 1], [-1, 1], [-2, -2], [2, -2], [2, 2], [-2, 2]])
 E = igl.eigen.MatrixXi([[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6,7], [7,4]])

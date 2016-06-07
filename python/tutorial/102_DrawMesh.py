@@ -9,6 +9,7 @@ from shared import TUTORIAL_SHARED_PATH, check_dependencies
 dependencies = ["viewer"]
 check_dependencies(dependencies)
 
+
 # Load a mesh in OFF format
 V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()

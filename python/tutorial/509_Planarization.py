@@ -1,6 +1,4 @@
 import sys, os
-import random
-from math import cos, sin, pi
 
 # Add the igl library to the modules search path
 sys.path.insert(0, os.getcwd() + "/../")
@@ -10,7 +8,6 @@ from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
 dependencies = ["viewer"]
 check_dependencies(dependencies)
-
 
 
 viewer = igl.viewer.Viewer()
