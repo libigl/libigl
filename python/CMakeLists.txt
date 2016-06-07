@@ -142,10 +142,10 @@ elseif (UNIX)
   #Enable flag if undefined symbols appear on pyigl module import to get notified about the missing symbols at link time
   option(CHECK_UNDEFINED        "Check for undefined symbols"    OFF)
 
-  # Strip unnecessary sections of the binary on Linux/Mac OS 
+  # Strip unnecessary sections of the binary on Linux/Mac OS
   if(APPLE)
     set_target_properties(pyigl PROPERTIES MACOSX_RPATH ".")
-    
+
     if (NOT CHECK_UNDEFINED)
       set_target_properties(pyigl PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
     endif()
