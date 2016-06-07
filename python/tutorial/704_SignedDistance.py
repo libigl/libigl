@@ -1,15 +1,17 @@
-from __future__ import print_function
-
-# Add the igl library to the modules search path
 import sys, os
-
-sys.path.insert(0, os.getcwd() + "/../")
-
-import pyigl as igl
-from iglhelpers import e2p
 import math
 
-TUTORIAL_SHARED_PATH = "../../tutorial/shared/"
+# Add the igl library to the modules search path
+sys.path.insert(0, os.getcwd() + "/../")
+import pyigl as igl
+
+from iglhelpers import e2p
+from shared import TUTORIAL_SHARED_PATH, check_dependencies
+
+dependencies = ["viewer"]
+check_dependencies(dependencies)
+
+
 
 global V, F, T, tree, FN, VN, EN, E, EMAP, max_distance, slice_z, overlay
 

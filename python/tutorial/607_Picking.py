@@ -1,10 +1,14 @@
-# Add the igl library to the modules search path
 import sys, os
-sys.path.insert(0, os.getcwd() + "/../")
 
+# Add the igl library to the modules search path
+sys.path.insert(0, os.getcwd() + "/../")
 import pyigl as igl
 
-TUTORIAL_SHARED_PATH = "../../tutorial/shared/"
+
+from shared import TUTORIAL_SHARED_PATH, check_dependencies
+
+dependencies = ["viewer"]
+check_dependencies(dependencies)
 
 
 # Mesh with per-face color

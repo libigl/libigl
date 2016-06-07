@@ -1,6 +1,6 @@
 
 
-m.def("triangle_triangulate", []
+m.def("triangulate", []
 (
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& E,

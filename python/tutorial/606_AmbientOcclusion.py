@@ -1,13 +1,14 @@
-# Add the igl library to the modules search path
 import sys, os
-
 import math
 
+# Add the igl library to the modules search path
 sys.path.insert(0, os.getcwd() + "/../")
-
 import pyigl as igl
 
-TUTORIAL_SHARED_PATH = "../../tutorial/shared/"
+from shared import TUTORIAL_SHARED_PATH, check_dependencies
+
+dependencies = ["embree", "viewer"]
+check_dependencies(dependencies)
 
 
 # Mesh + AO values + Normals
@@ -53,7 +54,7 @@ igl.readOFF(TUTORIAL_SHARED_PATH + "fertility.off", V, F)
 igl.per_vertex_normals(V, F, N)
 
 # Compute ambient occlusion factor using embree
-igl.embree_ambient_occlusion(V, F, V, N, 500, AO)
+igl.embree.ambient_occlusion(V, F, V, N, 500, AO)
 AO = 1.0 - AO
 
 # Plot the generated mesh

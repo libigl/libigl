@@ -3,7 +3,7 @@
 #include <Eigen/Sparse>
 
 
-#include "python_shared.h"
+#include "../python_shared.h"
 
 /// Creates Python bindings for a dynamic Eigen matrix
 template <typename Type>
