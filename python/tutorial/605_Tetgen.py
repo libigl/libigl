@@ -1,10 +1,13 @@
-# Add the igl library to the modules search path
 import sys, os
-sys.path.insert(0, os.getcwd() + "/../")
 
+# Add the igl library to the modules search path
+sys.path.insert(0, os.getcwd() + "/../")
 import pyigl as igl
 
-TUTORIAL_SHARED_PATH = "../../tutorial/shared/"
+from shared import TUTORIAL_SHARED_PATH, check_dependencies
+
+dependencies = ["tetgen", "viewer"]
+check_dependencies(dependencies)
 
 
 # Input polygon
@@ -60,7 +63,7 @@ def key_down(viewer, key, modifier):
 igl.readOFF(TUTORIAL_SHARED_PATH + "fertility.off", V, F)
 
 # Tetrahedralize the interior
-igl.copyleft_tetgen_tetrahedralize(V, F, "pq1.414Y", TV, TT, TF)
+igl.tetgen.tetrahedralize(V, F, "pq1.414Y", TV, TT, TF)
 
 # Compute barycenters
 igl.barycenter(TV, TT, B)
