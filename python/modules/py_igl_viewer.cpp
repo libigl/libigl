@@ -1,7 +1,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#include "python_shared.h"
+#include "../python_shared.h"
 #define ENABLE_SERIALIZATION
 #include <igl/viewer/Viewer.h>
 #include <igl/viewer/ViewerCore.h>

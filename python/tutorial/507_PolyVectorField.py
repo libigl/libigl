@@ -1,10 +1,16 @@
-# Add the igl library to the modules search path
 import sys, os
-sys.path.insert(0, os.getcwd() + "/../")
-
-import pyigl as igl
 import random
 from math import cos,sin,pi
+
+# Add the igl library to the modules search path
+sys.path.insert(0, os.getcwd() + "/../")
+import pyigl as igl
+
+from shared import TUTORIAL_SHARED_PATH, check_dependencies
+
+dependencies = ["embree", "viewer"]
+check_dependencies(dependencies)
+
 
 # Input mesh
 V = igl.eigen.MatrixXd()
