@@ -32,6 +32,63 @@ const char *__doc_igl_local_basis = R"igl_Qu8mg5v7(// Compute a local orthogonal
   //   B3 eigen matrix #F by 3, normal of the triangle
   //
   // See also: adjacency_matrix)igl_Qu8mg5v7";
+const char *__doc_igl_signed_distance = R"igl_Qu8mg5v7(// Computes signed distance to a mesh
+  //
+  // Inputs:
+  //   P  #P by 3 list of query point positions
+  //   V  #V by 3 list of vertex positions
+  //   F  #F by ss list of triangle indices, ss should be 3 unless sign_type ==
+  //     SIGNED_DISTANCE_TYPE_UNSIGNED
+  //   sign_type  method for computing distance _sign_ S
+  // Outputs:
+  //   S  #P list of smallest signed distances
+  //   I  #P list of facet indices corresponding to smallest distances
+  //   C  #P by 3 list of closest points
+  //   N  #P by 3 list of closest normals (only set if
+  //     sign_type=SIGNED_DISTANCE_TYPE_PSEUDONORMAL)
+  //
+  // Known bugs: This only computes distances to triangles. So unreferenced
+  // vertices and degenerate triangles are ignored.)igl_Qu8mg5v7";
+const char *__doc_igl_signed_distance_pseudonormal = R"igl_Qu8mg5v7(// Computes signed distance to mesh
+  //
+  // Inputs:
+  //   tree  AABB acceleration tree (see AABB.h)
+  //   F  #F by 3 list of triangle indices
+  //   FN  #F by 3 list of triangle normals 
+  //   VN  #V by 3 list of vertex normals (ANGLE WEIGHTING)
+  //   EN  #E by 3 list of edge normals (UNIFORM WEIGHTING)
+  //   EMAP  #F*3 mapping edges in F to E
+  //   q  Query point
+  // Returns signed distance to mesh
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_signed_distance_winding_number = R"igl_Qu8mg5v7(// Inputs:
+  //   tree  AABB acceleration tree (see cgal/point_mesh_squared_distance.h)
+  //   hier  Winding number evaluation hierarchy
+  //   q  Query point
+  // Returns signed distance to mesh)igl_Qu8mg5v7";
+const char *__doc_igl_triangle_triangulate = R"igl_Qu8mg5v7(// Triangulate the interior of a polygon using the triangle library.
+    //
+    // Inputs:
+    //   V #V by 2 list of 2D vertex positions
+    //   E #E by 2 list of vertex ids forming unoriented edges of the boundary of the polygon
+    //   H #H by 2 coordinates of points contained inside holes of the polygon
+    //   flags  string of options pass to triangle (see triangle documentation)
+    // Outputs:
+    //   V2  #V2 by 2  coordinates of the vertives of the generated triangulation
+    //   F2  #F2 by 3  list of indices forming the faces of the generated triangulation
+    //
+    // TODO: expose the option to prevent Steiner points on the boundary
+    //)igl_Qu8mg5v7";
+const char *__doc_igl_embree_ambient_occlusion = R"igl_Qu8mg5v7(// Compute ambient occlusion per given point
+    //
+    // Inputs:
+    //    ei  EmbreeIntersector containing (V,F)
+    //    P  #P by 3 list of origin points
+    //    N  #P by 3 list of origin normals
+    // Outputs:
+    //    S  #P list of ambient occlusion values between 1 (fully occluded) and
+    //      0 (not occluded)
+    //)igl_Qu8mg5v7";
 const char *__doc_igl_cotmatrix = R"igl_Qu8mg5v7(// Constructs the cotangent stiffness matrix (discrete laplacian) for a given
   // mesh (V,F).
   //
@@ -86,6 +143,13 @@ const char *__doc_igl_per_face_normals = R"igl_Qu8mg5v7(// Compute face normals 
   //   per_face_normals(V,F,Vector3d(1,1,1).normalized(),N);)igl_Qu8mg5v7";
 const char *__doc_igl_per_face_normals_stable = R"igl_Qu8mg5v7(// Special version where order of face indices is guaranteed not to effect
   // output.)igl_Qu8mg5v7";
+const char *__doc_igl_quad_planarity = R"igl_Qu8mg5v7(// Compute planarity of the faces of a quad mesh
+  // Inputs:
+  //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F  #F by 4 eigen Matrix of face (quad) indices
+  // Output:
+  //   P  #F by 1 eigen Matrix of mesh face (quad) planarities
+  //)igl_Qu8mg5v7";
 const char *__doc_igl_readOFF = R"igl_Qu8mg5v7(// Read a mesh from an ascii obj file, filling in vertex positions, normals
   // and texture coordinates. Mesh may have faces of any number of degree
   //
@@ -194,6 +258,21 @@ const char *__doc_igl_massmatrix = R"igl_Qu8mg5v7(// Constructs the mass (area) 
   //
   // See also: adjacency_matrix
   //)igl_Qu8mg5v7";
+const char *__doc_igl_unproject_onto_mesh = R"igl_Qu8mg5v7(// Unproject a screen location (using current opengl viewport, projection, and
+  // model view) to a 3D position _onto_ a given mesh, if the ray through the
+  // given screen location (x,y) _hits_ the mesh.
+  //
+  // Inputs:
+  //    pos        screen space coordinates
+  //    model      model matrix
+  //    proj       projection matrix
+  //    viewport   vieweport vector
+  //    V   #V by 3 list of mesh vertex positions
+  //    F   #F by 3 list of mesh triangle indices into V
+  // Outputs:
+  //    fid  id of the first face hit
+  //    bc  barycentric coordinates of hit
+  // Returns true if there's a hit)igl_Qu8mg5v7";
 const char *__doc_igl_colon = R"igl_Qu8mg5v7(// Colon operator like matlab's colon operator. Enumerats values between low
   // and hi with step step.
   // Templates:
@@ -271,6 +350,14 @@ const char *__doc_igl_gaussian_curvature = R"igl_Qu8mg5v7(// Compute discrete lo
   // Output:
   //   K  #V by 1 eigen Matrix of discrete gaussian curvature values
   //)igl_Qu8mg5v7";
+const char *__doc_igl_planarize_quad_mesh = R"igl_Qu8mg5v7(// Inputs:
+  //   Vin        #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F          #F by 4 eigen Matrix of face (quad) indices
+  //   maxIter    maximum numbers of iterations
+  //   threshold  minimum allowed threshold for non-planarity
+  // Output:
+  //   Vout       #V by 3 eigen Matrix of planar mesh vertex 3D positions
+  //)igl_Qu8mg5v7";
 const char *__doc_igl_avg_edge_length = R"igl_Qu8mg5v7(// Compute the average edge length for the given triangle mesh
   // Templates:
   //   DerivedV derived from vertex positions matrix type: i.e. MatrixXd
@@ -340,6 +427,17 @@ const char *__doc_igl_upsample = R"igl_Qu8mg5v7(// Subdivide a mesh without movi
   //
   // Known issues:
   //   - assumes (V,F) is edge-manifold.)igl_Qu8mg5v7";
+const char *__doc_igl_slice_mask = R"igl_Qu8mg5v7(// Act like the matlab X(row_mask,col_mask) operator, where
+  // row_mask, col_mask are non-negative integer indices.
+  // 
+  // Inputs:
+  //   X  m by n matrix
+  //   R  m list of row bools
+  //   C  n list of column bools
+  // Output:
+  //   Y  #trues-in-R by #trues-in-C matrix
+  //
+  // See also: slice_mask)igl_Qu8mg5v7";
 const char *__doc_igl_point_mesh_squared_distance = R"igl_Qu8mg5v7(// Compute distances from a set of points P to a triangle mesh (V,F)
   //
   // Inputs:
@@ -382,6 +480,25 @@ const char *__doc_igl_setdiff = R"igl_Qu8mg5v7(// Set difference of elements of 
   //   C  (k<=m)-long vector of unique elements appearing in A but not in B
   //   IA  (k<=m)-long list of indices into A so that C = A(IA)
   //)igl_Qu8mg5v7";
+const char *__doc_igl_copyleft_tetgen_tetrahedralize = R"igl_Qu8mg5v7(// Mesh the interior of a surface mesh (V,F) using tetgen
+      //
+      // Inputs:
+      //   V  #V by 3 vertex position list
+      //   F  #F list of polygon face indices into V (0-indexed)
+      //   switches  string of tetgen options (See tetgen documentation) e.g.
+      //     "pq1.414a0.01" tries to mesh the interior of a given surface with
+      //       quality and area constraints
+      //     "" will mesh the convex hull constrained to pass through V (ignores F)
+      // Outputs:
+      //   TV  #V by 3 vertex position list
+      //   TT  #T by 4 list of tet face indices
+      //   TF  #F by 3 list of triangle face indices
+      // Returns status:
+      //   0 success
+      //   1 tetgen threw exception
+      //   2 tetgen did not crash but could not create any tets (probably there are
+      //     holes, duplicate faces etc.)
+      //   -1 other error)igl_Qu8mg5v7";
 const char *__doc_igl_comb_frame_field = R"igl_Qu8mg5v7(// Inputs:
   //   V            #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F            #F by 4 eigen Matrix of face (quad) indices

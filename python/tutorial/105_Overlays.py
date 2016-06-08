@@ -65,7 +65,7 @@ l1 = 'x: ' + str(m[0,0]) + ' y: ' + str(m[0,1]) + ' z: ' + str(m[0,2])
 viewer.data.add_label(m.transpose(),l1)
 
 l2 = 'x: ' + str(M[0,0]) + ' y: ' + str(M[0,1]) + ' z: ' + str(M[0,2])
-viewer.data.add_label(M.transpose(),l2);
+viewer.data.add_label(M.transpose(),l2)
 
 # Launch the viewer
-viewer.launch();
+viewer.launch()

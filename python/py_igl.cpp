@@ -62,6 +62,15 @@
 #include <igl/fit_rotations.h>
 #include <igl/polar_svd.h>
 #include <igl/covariance_scatter_matrix.h>
+#include <igl/slice_mask.h>
+#include <igl/signed_distance.h>
+#include <igl/quad_planarity.h>
+#include <igl/planarize_quad_mesh.h>
+#include <igl/triangle/triangulate.h>
+#include <igl/copyleft/tetgen/tetrahedralize.h>
+#include <igl/embree/ambient_occlusion.h>
+#include <igl/unproject_onto_mesh.h>
+//#include <igl/.h>
 
 
 void python_export_igl(py::module &m)
@@ -126,5 +135,14 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_fit_rotations.cpp"
 #include "py_igl/py_polar_svd.cpp"
 #include "py_igl/py_covariance_scatter_matrix.cpp"
+#include "py_igl/py_slice_mask.cpp"
+#include "py_igl/py_signed_distance.cpp"
+#include "py_igl/py_quad_planarity.cpp"
+#include "py_igl/py_planarize_quad_mesh.cpp"
+#include "py_igl/py_triangle_triangulate.cpp"
+#include "py_igl/py_copyleft_tetgen_tetrahedralize.cpp"
+#include "py_igl/py_embree_ambient_occlusion.cpp"
+#include "py_igl/py_unproject_onto_mesh.cpp"
+//#include "py_igl/py_.cpp"
 
 }
