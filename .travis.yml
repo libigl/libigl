@@ -11,7 +11,7 @@ matrix:
         - cd python
         - mkdir build
         - cd build
-        - cmake -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DCMAKE_BUILD_TYPE=Debug ../
+        - cmake -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF ../
         - make -j 2
         - cd ../../
         - cd tutorial
