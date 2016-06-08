@@ -11,8 +11,10 @@
 #include <Eigen/Dense>
 namespace igl
 {
-  // UNIFORMLY_SAMPLE_TWO_MANIFOLD Attempt to sample a mesh uniformly by furthest
-  // point relaxation as described in "Fast Automatic Skinning Transformations"
+  // UNIFORMLY_SAMPLE_TWO_MANIFOLD Attempt to sample a mesh uniformly by
+  // furthest point relaxation as described in "Fast Automatic Skinning
+  // Transformations"
+  //
   // [Jacobson et al. 12] Section 3.3.
   //
   // Inputs:
@@ -37,6 +39,6 @@ namespace igl
     Eigen::VectorXi & S);
 }
 #ifndef IGL_STATIC_LIBRARY
-#  include "uniformly_sample_two_manifold.h"
+#  include "uniformly_sample_two_manifold.cpp"
 #endif
 #endif
