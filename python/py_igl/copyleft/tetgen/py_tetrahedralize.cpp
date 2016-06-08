@@ -1,5 +1,5 @@
 
-m.def("copyleft_tetgen_tetrahedralize", []
+m.def("tetrahedralize", []
 (
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F,

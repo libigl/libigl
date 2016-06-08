@@ -1,17 +1,15 @@
-from __future__ import print_function
-
-# Add the igl library to the modules search path
 import sys, os
-
-sys.path.insert(0, os.getcwd() + "/../")
-
-import pyigl as igl
-from iglhelpers import e2p
 import math
 
-TUTORIAL_SHARED_PATH = "../../tutorial/shared/"
+# Add the igl library to the modules search path
+sys.path.insert(0, os.getcwd() + "/../")
+import pyigl as igl
 
-global V, F, T, tree, FN, VN, EN, E, EMAP, max_distance, slice_z, overlay
+from shared import TUTORIAL_SHARED_PATH, check_dependencies
+
+dependencies = ["viewer"]
+check_dependencies(dependencies)
+
 
 V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
@@ -131,7 +129,7 @@ igl.per_vertex_normals(V, F, igl.PER_VERTEX_NORMALS_WEIGHTING_TYPE_ANGLE, FN, VN
 igl.per_edge_normals(V, F, igl.PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM, FN, EN, E, EMAP)
 
 # Plot the generated mesh
-update_visualization(viewer);
+update_visualization(viewer)
 viewer.callback_key_down = key_down
 viewer.core.show_lines = False
 viewer.launch()

@@ -1,8 +1,14 @@
-# Add the igl library to the modules search path
 import sys, os
-sys.path.insert(0, os.getcwd() + "/../")
 
+# Add the igl library to the modules search path
+sys.path.insert(0, os.getcwd() + "/../")
 import pyigl as igl
+
+from shared import check_dependencies
+
+dependencies = ["triangle", "viewer"]
+check_dependencies(dependencies)
+
 
 # Input polygon
 V = igl.eigen.MatrixXd([[-1, -1], [1, -1], [1, 1], [-1, 1], [-2, -2], [2, -2], [2, 2], [-2, 2]])
@@ -13,7 +19,7 @@ H = igl.eigen.MatrixXd([[0, 0]])
 V2 = igl.eigen.MatrixXd()
 F2 = igl.eigen.MatrixXi()
 
-igl.triangle_triangulate(V, E, H, "a0.005q", V2, F2)
+igl.triangle.triangulate(V, E, H, "a0.005q", V2, F2)
 
 # Plot the mesh
 viewer = igl.viewer.Viewer()
