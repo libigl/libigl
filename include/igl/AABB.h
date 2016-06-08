@@ -9,6 +9,7 @@
 #define IGL_AABB_H
 
 #include "Hit.h"
+#include "igl_inline.h"
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <vector>
@@ -81,7 +82,7 @@ public:
       }
       // Seems like there should have been an elegant solution to this using
       // the copy-swap idiom above:
-      inline void deinit()
+      IGL_INLINE void deinit()
       {
         m_primitive = -1;
         m_box = Eigen::AlignedBox<Scalar,DIM>();
@@ -105,7 +106,7 @@ public:
       //   elements  max_tree list of element or (not leaf id) indices into Ele
       //   i  recursive call index {0}
       template <typename Derivedbb_mins, typename Derivedbb_maxs>
-        inline void init(
+        IGL_INLINE void init(
             const Eigen::PlainObjectBase<DerivedV> & V,
             const Eigen::MatrixXi & Ele, 
             const Eigen::PlainObjectBase<Derivedbb_mins> & bb_mins,
@@ -113,7 +114,7 @@ public:
             const Eigen::VectorXi & elements,
             const int i = 0);
       // Wrapper for root with empty serialization
-      inline void init(
+      IGL_INLINE void init(
           const Eigen::PlainObjectBase<DerivedV> & V,
           const Eigen::MatrixXi & Ele);
       // Build an Axis-Aligned Bounding Box tree for a given mesh.
@@ -128,13 +129,13 @@ public:
       //   I  #I list of indices into Ele of elements to include (for recursive
       //     calls)
       // 
-      inline void init(
+      IGL_INLINE void init(
           const Eigen::PlainObjectBase<DerivedV> & V,
           const Eigen::MatrixXi & Ele, 
           const Eigen::MatrixXi & SI,
           const Eigen::VectorXi & I);
       // Return whether at leaf node
-      inline bool is_leaf() const;
+      IGL_INLINE bool is_leaf() const;
       // Find the indices of elements containing given point: this makes sense
       // when Ele is a co-dimension 0 simplex (tets in 3D, triangles in 2D).
       //
@@ -148,7 +149,7 @@ public:
       // Returns:
       //   list of indices of elements containing q
       template <typename Derivedq>
-      inline std::vector<int> find(
+      IGL_INLINE std::vector<int> find(
           const Eigen::PlainObjectBase<DerivedV> & V,
           const Eigen::MatrixXi & Ele, 
           const Eigen::PlainObjectBase<Derivedq> & q,
@@ -156,7 +157,7 @@ public:
 
       // If number of elements m then total tree size should be 2*h where h is
       // the deepest depth 2^ceil(log(#Ele*2-1))
-      inline int subtree_size() const;
+      IGL_INLINE int subtree_size() const;
 
       // Serialize this class into 3 arrays (so we can pass it pack to matlab)
       //
@@ -166,7 +167,7 @@ public:
       //   elements  max_tree list of element or (not leaf id) indices into Ele
       //   i  recursive call index into these arrays {0}
       template <typename Derivedbb_mins, typename Derivedbb_maxs>
-        inline void serialize(
+        IGL_INLINE void serialize(
             Eigen::PlainObjectBase<Derivedbb_mins> & bb_mins,
             Eigen::PlainObjectBase<Derivedbb_maxs> & bb_maxs,
             Eigen::VectorXi & elements,
@@ -186,14 +187,14 @@ public:
       //
       // Known bugs: currently assumes Elements are triangles regardless of
       // dimension.
-      inline Scalar squared_distance(
+      IGL_INLINE Scalar squared_distance(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const RowVectorDIMS & p,
         int & i,
         RowVectorDIMS & c) const;
 //private:
-      inline Scalar squared_distance(
+      IGL_INLINE Scalar squared_distance(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const RowVectorDIMS & p,
@@ -201,21 +202,21 @@ public:
         int & i,
         RowVectorDIMS & c) const;
       // All hits
-      inline bool intersect_ray(
+      IGL_INLINE bool intersect_ray(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const RowVectorDIMS & origin,
         const RowVectorDIMS & dir,
         std::vector<igl::Hit> & hits) const;
       // First hit
-      inline bool intersect_ray(
+      IGL_INLINE bool intersect_ray(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const RowVectorDIMS & origin,
         const RowVectorDIMS & dir,
         igl::Hit & hit) const;
 //private:
-      inline bool intersect_ray(
+      IGL_INLINE bool intersect_ray(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const RowVectorDIMS & origin,
@@ -230,7 +231,7 @@ public:
         typename DerivedsqrD, 
         typename DerivedI, 
         typename DerivedC>
-      inline void squared_distance(
+      IGL_INLINE void squared_distance(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const Eigen::PlainObjectBase<DerivedP> & P,
@@ -243,7 +244,7 @@ public:
         typename DerivedsqrD, 
         typename DerivedI, 
         typename DerivedC>
-      inline void squared_distance(
+      IGL_INLINE void squared_distance(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const AABB<Derivedother_V,DIM> & other,
@@ -258,7 +259,7 @@ private:
         typename DerivedsqrD, 
         typename DerivedI, 
         typename DerivedC>
-      inline Scalar squared_distance_helper(
+      IGL_INLINE Scalar squared_distance_helper(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const AABB<Derivedother_V,DIM> * other,
@@ -269,14 +270,14 @@ private:
         Eigen::PlainObjectBase<DerivedI> & I,
         Eigen::PlainObjectBase<DerivedC> & C) const;
       // Helper function for leaves: works in-place on sqr_d
-      inline void leaf_squared_distance(
+      IGL_INLINE void leaf_squared_distance(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const RowVectorDIMS & p,
         Scalar & sqr_d,
         int & i,
         RowVectorDIMS & c) const;
-      inline void set_min(
+      IGL_INLINE void set_min(
         const RowVectorDIMS & p,
         const Scalar sqr_d_candidate,
         const int i_candidate,
