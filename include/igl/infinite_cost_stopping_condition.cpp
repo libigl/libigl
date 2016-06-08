@@ -55,7 +55,7 @@ IGL_INLINE void igl::infinite_cost_stopping_condition(
       Eigen::RowVectorXd p;
       double cost;
       cost_and_placement(e,V,F,E,EMAP,EF,EI,cost,p);
-      return isinf(cost);
+      return std::isinf(cost);
     };
 }
 
