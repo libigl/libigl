@@ -185,8 +185,8 @@ Eigen::SparseMatrix&lt;Atype&gt; adjacency_matrix(const ... &amp; F);
 <h2 id="templatingwitheigen">Templating with Eigen</h2>
 
 <p>Functions taking Eigen dense matrices/arrays as inputs and outputs (but <strong>not</strong>
-return arguments), should template on top of <code>Eigen::PlainObjectBase</code>. <strong>Each
-parameter</strong> should be derived using its own template.</p>
+return arguments), should template on top of <code>Eigen::PlainObjectBase</code>. **Each
+parameter** should be derived using its own template.</p>
 
 <p>For example,</p>
 
@@ -264,8 +264,8 @@ unnecessary prefaces. For example, instead of <code>compute_adjacency_matrix</co
 
 <h2 id="variablenamingconventions">Variable naming conventions</h2>
 
-<p>Libigl prefers short (even single character) variable names <em>with heavy
-documentation</em> in the comments in the header file or above the declaration of
+<p>Libigl prefers short (even single character) variable names _with heavy
+documentation_ in the comments in the header file or above the declaration of
 the function. When possible use <code>V</code> to mean a list of vertex positions and <code>F</code>
 to mean a list of faces/triangles.</p>
 

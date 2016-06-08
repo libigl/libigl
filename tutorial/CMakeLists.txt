@@ -89,6 +89,9 @@ if(TUTORIALS_CHAPTER1)
   add_subdirectory("104_Colors")
   add_subdirectory("105_Overlays")
   add_subdirectory("106_ViewerMenu")
+  if(LIBIGL_WITH_PNG)
+    add_subdirectory("107_ScreenCapture")
+  endif()
 endif()
 
 # Chapter 2
