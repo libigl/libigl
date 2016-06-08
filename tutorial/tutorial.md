@@ -34,6 +34,7 @@ lecture notes links to a cross-platform example application.
     * [104 Scalar field visualization](#scalarfieldvisualization)
     * [105 Overlays](#overlays)
     * [106 Viewer Menu](#viewermenu)
+    * [107 Screen Capture](#screencapture)
 * [Chapter 2: Discrete Geometric Quantities and
   Operators](#chapter2:discretegeometricquantitiesandoperators)
     * [201 Normals](#normals)
@@ -432,13 +433,13 @@ viewer.callback_init = [&](igl::viewer::Viewer& viewer)
 
   // Expose a variable directly ...
   viewer.ngui->addVariable("float",floatVariable);
-  
+
   // Expose an enumaration type
   viewer.ngui->addVariable<Orientation>("Direction",dir)->setItems({"Up","Down","Left","Right"});
 
   // Add a button
   viewer.ngui->addButton("Print Hello",[](){ std::cout << "Hello\n"; });
-  
+
   // call to generate menu
   viewer.ngui->layout();
   return false;
@@ -466,6 +467,26 @@ viewer.ngui->addVariable<bool>("bool",[&](bool val) {
 ```
 
 ![([Example 106](106_ViewerMenu/main.cpp)) The UI of the viewer can be easily customized.](images/106_ViewerMenu.png)
+
+## [Screen capture](#screencapture) [screencapture]
+
+It is possible to render the scene in a memory buffer using the function draw_buffer:
+
+```cpp
+// Allocate temporary buffers
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(1280,800);
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(1280,800);
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(1280,800);
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(1280,800);
+
+// Draw the scene in the buffers
+viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+
+// Save it to a PNG
+igl::png::writePNG(R,G,B,A,"out.png");
+```
+
+In [Example 107](107_ScreenCapture/main.cpp) a scene is rendered in a temporary png and used to texture a quadrilateral.
 
 # Chapter 2: Discrete Geometric Quantities and Operators
 This chapter illustrates a few discrete quantities that libigl can compute on a

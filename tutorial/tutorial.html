@@ -45,6 +45,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#scalarfieldvisualization">104 Scalar field visualization</a></li>
 <li><a href="#overlays">105 Overlays</a></li>
 <li><a href="#viewermenu">106 Viewer Menu</a></li>
+<li><a href="#screencapture">107 Screen Capture</a></li>
 </ul></li>
 <li><a href="#chapter2:discretegeometricquantitiesandoperators">Chapter 2: Discrete Geometric Quantities and
  Operators</a>
@@ -479,13 +480,13 @@ viewer.callback_init = [&amp;](igl::viewer::Viewer&amp; viewer)
 
   // Expose a variable directly ...
   viewer.ngui-&gt;addVariable(&quot;float&quot;,floatVariable);
-  
+
   // Expose an enumaration type
   viewer.ngui-&gt;addVariable&lt;Orientation&gt;(&quot;Direction&quot;,dir)-&gt;setItems({&quot;Up&quot;,&quot;Down&quot;,&quot;Left&quot;,&quot;Right&quot;});
 
   // Add a button
   viewer.ngui-&gt;addButton(&quot;Print Hello&quot;,[](){ std::cout &lt;&lt; &quot;Hello\n&quot;; });
-  
+
   // call to generate menu
   viewer.ngui-&gt;layout();
   return false;
@@ -514,6 +515,25 @@ viewer.ngui-&gt;addVariable&lt;bool&gt;(&quot;bool&quot;,[&amp;](bool val) {
 <img src="images/106_ViewerMenu.png" alt="(Example 106) The UI of the viewer can be easily customized." />
 <figcaption>(<a href="106_ViewerMenu/main.cpp">Example 106</a>) The UI of the viewer can be easily customized.</figcaption>
 </figure>
+
+<h2 id="screencapture"><a href="#screencapture">Screen capture</a></h2>
+
+<p>It is possible to render the scene in a memory buffer using the function draw_buffer:</p>
+
+<pre><code class="cpp">// Allocate temporary buffers
+Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; R(1280,800);
+Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; G(1280,800);
+Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; B(1280,800);
+Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; A(1280,800);
+
+// Draw the scene in the buffers
+viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+
+// Save it to a PNG
+igl::png::writePNG(R,G,B,A,&quot;out.png&quot;);
+</code></pre>
+
+<p>In <a href="107_ScreenCapture/main.cpp">Example 107</a> a scene is rendered in a temporary png and used to texture a quadrilateral.</p>
 
 <h1 id="chapter2:discretegeometricquantitiesandoperators">Chapter 2: Discrete Geometric Quantities and Operators</h1>
 
@@ -1388,8 +1408,8 @@ of the discrete Laplace-Beltrami operator vary smoothly and slowly over the
 
 <p>Modern mesh-based shape deformation methods satisfy user deformation
 constraints at handles (selected vertices or regions on the mesh) and propagate
-these handle deformations to the rest of shape <em>smoothly</em> and <em>without removing
-or distorting details</em>. Libigl provides implementations of a variety of
+these handle deformations to the rest of shape <em>smoothly</em> and _without removing
+or distorting details_. Libigl provides implementations of a variety of
 state-of-the-art deformation techniques, ranging from quadratic mesh-based
 energy minimizers, to skinning methods, to non-linear elasticity-inspired
 techniques.</p>
@@ -1477,11 +1497,11 @@ U = V+D;
 </code></pre>
 
 <figure>
-<img src="images/max-biharmonic.jpg" alt="The BiharmonicDeformation example deforms a statues head as a biharmonic
-surface (top) and using a biharmonic displacements
+<img src="images/max-biharmonic.jpg" alt="The BiharmonicDeformation example deforms a statues head as a _biharmonic
+surface_ (top) and using a biharmonic displacements
 (bottom)." />
-<figcaption>The <a href="401_BiharmonicDeformation/main.cpp">BiharmonicDeformation</a> example deforms a statue&#8217;s head as a <em>biharmonic
-surface</em> (top) and using a <em>biharmonic displacements</em>
+<figcaption>The <a href="401_BiharmonicDeformation/main.cpp">BiharmonicDeformation</a> example deforms a statue&#8217;s head as a _biharmonic
+surface_ (top) and using a <em>biharmonic displacements</em>
 (bottom).</figcaption>
 </figure>
 
@@ -1939,8 +1959,8 @@ functions, thus <span class="math">\(\mathbf{A}\)</span> has affine functions in
 derivation proves that this implies <span class="math">\(\mathbf{W}\)</span> will be affine precise (see
 <a class="citation" href="#fn:20" title="Jump to citation">[20]<span class="citekey" style="display:none">wang_bc_2015</span></a>).</p>
 
-<p>Minimizers of this &#8220;squared Laplacian&#8221; energy are in some sense <em>discrete
-biharmonic functions</em>. Thus they&#8217;re dubbed &#8220;biharmonic coordinates&#8221; (not the
+<p>Minimizers of this &#8220;squared Laplacian&#8221; energy are in some sense _discrete
+biharmonic functions_. Thus they&#8217;re dubbed &#8220;biharmonic coordinates&#8221; (not the
 same as <em>bounded biharmonic weights</em>, which are <em>not</em> generalized barycentric
 coordinates).</p>
 
@@ -3332,8 +3352,8 @@ empty</a>.
 That is, most points in space are outside of the solid object than inside.
 Points are sampled over surface patches. For each sample point, rays are shot
 into both hemispheres to compute average of the (distance weighted) ambient
-occlusion on each side. A patch is oriented so that the outward side is <em>less
-occluded</em> (lighter, i.e., facing more void space).</p>
+occlusion on each side. A patch is oriented so that the outward side is _less
+occluded_ (lighter, i.e., facing more void space).</p>
 
 <pre><code class="cpp">igl::embree::reorient_facets_raycast(V,F,FF,I);
 </code></pre>
@@ -3396,8 +3416,8 @@ repository</a>.</p>
 </li>
 
 <li id="fn:3" class="citation"><span class="citekey" style="display:none">jacobson_thesis_2013</span><p>Alec Jacobson,
- <a href="https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes"><em>Algorithms and Interfaces for Real-Time Deformation of 2D and 3D
- Shapes</em></a>,
+ <a href="https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes">_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D
+ Shapes_</a>,
  2013.</p>
 </li>
 
@@ -3488,8 +3508,8 @@ repository</a>.</p>
 </li>
 
 <li id="fn:19" class="citation"><span class="citekey" style="display:none">jacobson_skinning_course_2014</span><p>Alec Jacobson, Zhigang Deng, Ladislav Kavan,
- J.P. Lewis. <a href="https://www.google.com/search?q=Skinning+Real-Time+Shape+Deformation"><em>Skinning: Real-Time Shape
- Deformation</em></a>,
+ J.P. Lewis. <a href="https://www.google.com/search?q=Skinning+Real-Time+Shape+Deformation">_Skinning: Real-Time Shape
+ Deformation_</a>,
  2014.</p>
 </li>
 
