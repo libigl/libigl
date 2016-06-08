@@ -1,6 +1,6 @@
 
 
-m.def("embree_ambient_occlusion", []
+m.def("ambient_occlusion", []
 (
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F,

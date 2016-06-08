@@ -47,7 +47,7 @@ endif()
 
 include_directories(${PYTHON_INCLUDE_DIR} include)
 
-## include pybing
+## include pybind
 include_directories(${PROJECT_SOURCE_DIR}/../external/pybind11/include)
 
 ## include libigl
@@ -84,19 +84,34 @@ add_definitions(${LIBIGL_DEFINITIONS})
 ## Optional modules
 if (LIBIGL_WITH_VIEWER)
   add_definitions(-DPY_VIEWER)
-  list(APPEND SHARED_SOURCES "py_igl_viewer.cpp")
+  list(APPEND SHARED_SOURCES "modules/py_igl_viewer.cpp")
 endif ()
 
 if (LIBIGL_WITH_COMISO)
   add_definitions(-DPY_COMISO)
-  list(APPEND SHARED_SOURCES "copyleft/py_igl_comiso.cpp")
+  list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_comiso.cpp")
+endif ()
+
+if (LIBIGL_WITH_TETGEN)
+  add_definitions(-DPY_TETGEN)
+  list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_tetgen.cpp")
+endif ()
+
+if (LIBIGL_WITH_EMBREE)
+  add_definitions(-DPY_EMBREE)
+  list(APPEND SHARED_SOURCES "modules/py_igl_embree.cpp")
+endif ()
+
+if (LIBIGL_WITH_TRIANGLE)
+  add_definitions(-DPY_TRIANGLE)
+  list(APPEND SHARED_SOURCES "modules/py_igl_triangle.cpp")
 endif ()
 
 
 ## Prepare the python library
 add_library(pyigl SHARED
   python_shared.cpp
-  py_vector.cpp
+  modules/py_vector.cpp
   py_igl.cpp
   py_doc.cpp
   ${SHARED_SOURCES}
@@ -165,3 +180,4 @@ elseif (UNIX)
     endif()
   endif()
 endif()
+
