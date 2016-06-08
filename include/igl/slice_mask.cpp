@@ -55,8 +55,8 @@ IGL_INLINE void igl::slice_mask(
     case 1:
     {
       const int ym = R.count();
-      Y.resize(ym,X.cols());
       assert(X.rows() == R.size() && "X.rows() should match R.size()");
+      Y.resize(ym,X.cols());
       {
         int yi = 0;
         for(int i = 0;i<X.rows();i++)
