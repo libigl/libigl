@@ -18,7 +18,7 @@ IGL_INLINE void igl::repdiag(
   using namespace Eigen;
   int m = A.rows();
   int n = A.cols();
-
+#if false
   vector<Triplet<T> > IJV;
   IJV.reserve(A.nonZeros()*d);
   // Loop outer level
@@ -35,31 +35,32 @@ IGL_INLINE void igl::repdiag(
   }
   B.resize(m*d,n*d);
   B.setFromTriplets(IJV.begin(),IJV.end());
-  
-
-  // Q: Why is this **Very** slow?
-
-  //int m = A.rows();
-  //int n = A.cols();
-
-  //B.resize(m*d,n*d);
-  //// Reserve enough space for new non zeros
-  //B.reserve(d*A.nonZeros());
-
-  //// loop over reps
-  //for(int i=0;i<d;i++)
-  //{
-  //  // Loop outer level
-  //  for (int k=0; k<A.outerSize(); ++k)
-  //  {
-  //    // loop inner level
-  //    for (typename Eigen::SparseMatrix<T>::InnerIterator it(A,k); it; ++it)
-  //    {
-  //      B.insert(i*m+it.row(),i*n+it.col()) = it.value();
-  //    }
-  //  }
-  //}
-  //B.makeCompressed();
+#else
+  // This will not work for RowMajor
+  B.resize(m*d,n*d);
+  Eigen::VectorXi per_col = Eigen::VectorXi::Zero(n*d);
+  for (int k=0; k<A.outerSize(); ++k)
+  {
+    for (typename Eigen::SparseMatrix<T>::InnerIterator it(A,k); it; ++it)
+    {
+      for(int r = 0;r<d;r++) per_col(n*r + k)++;
+    }
+  }
+  B.reserve(per_col);
+  for(int r = 0;r<d;r++)
+  {
+    const int mr = m*r;
+    const int nr = n*r;
+    for (int k=0; k<A.outerSize(); ++k)
+    {
+      for (typename Eigen::SparseMatrix<T>::InnerIterator it(A,k); it; ++it)
+      {
+        B.insert(it.row()+mr,k+nr) = it.value();
+      }
+    }
+  }
+  B.makeCompressed();
+#endif
 }
 
 template <typename T>
