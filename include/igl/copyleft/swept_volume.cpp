@@ -1,9 +1,7 @@
 #include "swept_volume.h"
-//#include "tictoc.h"
-#include "../../swept_volume_bounding_box.h"
-#include "../../swept_volume_signed_distance.h"
-#include "../../voxel_grid.h"
-#include "../../get_seconds.h"
+#include "../swept_volume_bounding_box.h"
+#include "../swept_volume_signed_distance.h"
+#include "../voxel_grid.h"
 #include "../marching_cubes.h"
 #include <iostream>
 
@@ -39,20 +37,13 @@ IGL_INLINE void igl::copyleft::cgal::swept_volume(
   const double isolevel = isolevel_grid*h;
 
   // create grid
-  //cerr<<"Creating grid "<<s<<" ..."<<endl;
-  //tictoc();
   RowVector3i res;
   MatrixXd GV;
   voxel_grid(Mbox,s,pad,GV,res);
-  //cerr<<tictoc()<<" seconds."<<endl;
 
   // compute values
   VectorXd S;
-  //cerr<<"Signed Distance..."<<endl;
   swept_volume_signed_distance(V,F,transform,steps,GV,res,h,isolevel,S);
-  //cerr<<tictoc()<<" seconds."<<endl;
-  //cerr<<"Marching cubes..."<<endl;
   S.array()-=isolevel;
   marching_cubes(S,GV,res(0),res(1),res(2),SV,SF);
-  //cerr<<tictoc()<<" seconds."<<endl;
 }

@@ -1,6 +1,6 @@
-#ifndef IGL_COPYLEFT_CGAL_SWEPT_VOLUME_H
-#define IGL_COPYLEFT_CGAL_SWEPT_VOLUME_H
-#include "../../igl_inline.h"
+#ifndef IGL_COPYLEFT_SWEPT_VOLUME_H
+#define IGL_COPYLEFT_SWEPT_VOLUME_H
+#include "../igl_inline.h"
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 namespace igl
