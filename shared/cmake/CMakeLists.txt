@@ -102,7 +102,50 @@ endif()
 if(LIBIGL_WITH_ANTTWEAKBAR)
   set(ANTTWEAKBAR_DIR "${LIBIGL_EXTERNAL}/anttweakbar")
   set(ANTTWEAKBAR_INCLUDE_DIR "${ANTTWEAKBAR_DIR}/include")
+  set(ANTTWEAKBAR_C_SRC_FILES 
+    "${ANTTWEAKBAR_DIR}/src/TwEventGLFW.c"
+    "${ANTTWEAKBAR_DIR}/src/TwEventGLUT.c"
+    "${ANTTWEAKBAR_DIR}/src/TwEventSDL.c"
+    "${ANTTWEAKBAR_DIR}/src/TwEventSDL12.c"
+    "${ANTTWEAKBAR_DIR}/src/TwEventSDL13.c"
+    )
+  set(ANTTWEAKBAR_CPP_SRC_FILES 
+    "${ANTTWEAKBAR_DIR}/src/LoadOGL.cpp"
+    "${ANTTWEAKBAR_DIR}/src/LoadOGLCore.cpp"
+    "${ANTTWEAKBAR_DIR}/src/TwBar.cpp"
+    "${ANTTWEAKBAR_DIR}/src/TwColors.cpp"
+    "${ANTTWEAKBAR_DIR}/src/TwEventSFML.cpp"
+    "${ANTTWEAKBAR_DIR}/src/TwFonts.cpp"
+    "${ANTTWEAKBAR_DIR}/src/TwMgr.cpp"
+    "${ANTTWEAKBAR_DIR}/src/TwOpenGL.cpp"
+    "${ANTTWEAKBAR_DIR}/src/TwOpenGLCore.cpp"
+    "${ANTTWEAKBAR_DIR}/src/TwPrecomp.cpp"
+    )
+    # These are probably needed for windows/Linux, should append if
+    # windows/Linux
+    #"${ANTTWEAKBAR_DIR}/src/TwEventWin.c"
+    #"${ANTTWEAKBAR_DIR}/src/TwEventX11.c"
+    #"${ANTTWEAKBAR_DIR}/src/TwDirect3D10.cpp"
+    #"${ANTTWEAKBAR_DIR}/src/TwDirect3D11.cpp"
+    #"${ANTTWEAKBAR_DIR}/src/TwDirect3D9.cpp"
+  list(
+    APPEND 
+    ANTTWEAKBAR_SRC_FILES 
+    "${ANTTWEAKBAR_C_SRC_FILES}"
+    "${ANTTWEAKBAR_CPP_SRC_FILES}")
+  add_library(AntTweakBar STATIC "${ANTTWEAKBAR_SRC_FILES}")
+  target_include_directories(AntTweakBar PUBLIC "${ANTTWEAKBAR_INCLUDE_DIR}")
+  if(APPLE)
+    set_target_properties(
+      AntTweakBar 
+      PROPERTIES
+      COMPILE_FLAGS
+      "-fPIC -fno-strict-aliasing -x objective-c++")
+    target_compile_definitions(
+      AntTweakBar PUBLIC _MACOSX __PLACEMENT_NEW_INLINE)
+  endif()
   list(APPEND LIBIGL_INCLUDE_DIRS "${ANTTWEAKBAR_INCLUDE_DIR}")
+  list(APPEND LIBIGL_EXTRA_LIBRARIES "AntTweakBar")
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module("anttweakbar")
     target_include_directories(iglanttweakbar PRIVATE
