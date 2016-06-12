@@ -146,6 +146,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#signeddistances">704 Signed Distances</a></li>
 <li><a href="#marchingcubes">705 Marching Cubes</a></li>
 <li><a href="#facetorientation">706 Facet Orientation</a></li>
+<li><a href="#sweptvolume">707 Swept Volume</a></li>
 </ul></li>
 <li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
@@ -1408,8 +1409,8 @@ of the discrete Laplace-Beltrami operator vary smoothly and slowly over the
 
 <p>Modern mesh-based shape deformation methods satisfy user deformation
 constraints at handles (selected vertices or regions on the mesh) and propagate
-these handle deformations to the rest of shape <em>smoothly</em> and _without removing
-or distorting details_. Libigl provides implementations of a variety of
+these handle deformations to the rest of shape <em>smoothly</em> and <em>without removing
+or distorting details</em>. Libigl provides implementations of a variety of
 state-of-the-art deformation techniques, ranging from quadratic mesh-based
 energy minimizers, to skinning methods, to non-linear elasticity-inspired
 techniques.</p>
@@ -1497,11 +1498,11 @@ U = V+D;
 </code></pre>
 
 <figure>
-<img src="images/max-biharmonic.jpg" alt="The BiharmonicDeformation example deforms a statues head as a _biharmonic
-surface_ (top) and using a biharmonic displacements
+<img src="images/max-biharmonic.jpg" alt="The BiharmonicDeformation example deforms a statues head as a biharmonic
+surface (top) and using a biharmonic displacements
 (bottom)." />
-<figcaption>The <a href="401_BiharmonicDeformation/main.cpp">BiharmonicDeformation</a> example deforms a statue&#8217;s head as a _biharmonic
-surface_ (top) and using a <em>biharmonic displacements</em>
+<figcaption>The <a href="401_BiharmonicDeformation/main.cpp">BiharmonicDeformation</a> example deforms a statue&#8217;s head as a <em>biharmonic
+surface</em> (top) and using a <em>biharmonic displacements</em>
 (bottom).</figcaption>
 </figure>
 
@@ -1959,8 +1960,8 @@ functions, thus <span class="math">\(\mathbf{A}\)</span> has affine functions in
 derivation proves that this implies <span class="math">\(\mathbf{W}\)</span> will be affine precise (see
 <a class="citation" href="#fn:20" title="Jump to citation">[20]<span class="citekey" style="display:none">wang_bc_2015</span></a>).</p>
 
-<p>Minimizers of this &#8220;squared Laplacian&#8221; energy are in some sense _discrete
-biharmonic functions_. Thus they&#8217;re dubbed &#8220;biharmonic coordinates&#8221; (not the
+<p>Minimizers of this &#8220;squared Laplacian&#8221; energy are in some sense <em>discrete
+biharmonic functions</em>. Thus they&#8217;re dubbed &#8220;biharmonic coordinates&#8221; (not the
 same as <em>bounded biharmonic weights</em>, which are <em>not</em> generalized barycentric
 coordinates).</p>
 
@@ -3352,8 +3353,8 @@ empty</a>.
 That is, most points in space are outside of the solid object than inside.
 Points are sampled over surface patches. For each sample point, rays are shot
 into both hemispheres to compute average of the (distance weighted) ambient
-occlusion on each side. A patch is oriented so that the outward side is _less
-occluded_ (lighter, i.e., facing more void space).</p>
+occlusion on each side. A patch is oriented so that the outward side is <em>less
+occluded</em> (lighter, i.e., facing more void space).</p>
 
 <pre><code class="cpp">igl::embree::reorient_facets_raycast(V,F,FF,I);
 </code></pre>
@@ -3371,6 +3372,63 @@ inconsistent orientations (back facing triangles shown darker). Orientable
 patches are uniquely colored and then oriented to face outward (middle left).
 Alternatively, each individual triangle is considered a &#8220;patch&#8221; (middle right)
 and oriented outward independently.</figcaption>
+</figure>
+
+<h2 id="sweptvolume"><a href="#sweptvolume">Swept Volume</a></h2>
+
+<p>The swept volume <span class="math">\(S\)</span> of a moving solid object <span class="math">\(A\)</span> can be defined as any point in
+space such that at one moment in time the point lies inside the solid. In other
+words, it is the union of the solid object transformed by the rigid motion
+<span class="math">\(f(t)\)</span> over time:</p>
+
+<p><span class="math">\(S = \bigcup \limits_{t\in [0,1]} f(t) A.\)</span></p>
+
+<p>The surface of the swept volume of a solid bounded by a triangle mesh
+undergoing a rigid motion with non-trivial rotation is <em><strong>not</strong></em> a surface
+exactly representably by triangle mesh: it will be a piecewise-ruled surface.</p>
+
+<p>To see this, consider the surface swept by a single edge&#8217;s line segment as it
+performs a screw motion. </p>
+
+<p>This means that if we&#8217;d like to the surface of the swept volume of a triangle
+mesh undergoing a rigid motion and we&#8217;d like the output to be another triangle
+mesh, then we&#8217;re going to have to be happy with some amount of approximation
+error.</p>
+
+<p>With this in mind, the simplest method for computing an approximate swept
+volume is by exploiting an alternative definition of the swept volume based on
+signed distances:</p>
+
+<p><span class="math">\(S = \{ \mathbf{p}\ |\ d(\mathbf{p},\partial S) < 0 \} = \{ \mathbf{p}\ |\ \min_{t \in [0,1]} d(\mathbf{p},\partial A) < 0 \}\)</span></p>
+
+<p>If <span class="math">\(\partial A\)</span> is a triangle mesh, then we can approximate this by 1)
+discretizing time at a finite step of steps <span class="math">\([0,\Delta t,2\Delta t, \dots, 1]\)</span>
+and by 2) discretizing space with a regular grid and representing the distance
+field using trilinear interpolation of grid values. Finally the output mesh,
+<span class="math">\(\partial S\)</span> is approximated by contouring using Marching Cubes
+<a class="citation" href="#fn:38" title="Jump to citation">[38]<span class="citekey" style="display:none">lorensen_1987</span></a>.</p>
+
+<p>This method is similar to one described by Schroeder et al. in 1994
+<a class="citation" href="#fn:40" title="Jump to citation">[40]<span class="citekey" style="display:none">schroeder_1994</span></a>, and the one used in conjunction with boolean operations by
+Garg et al. 2016 <a class="citation" href="#fn:41" title="Jump to citation">[41]<span class="citekey" style="display:none">garg_2016</span></a>.</p>
+
+<p>In libigl, if your input solid&#8217;s surface is represented by <code>(V,F)</code> then the
+output surface mesh will be <code>(SV,SF)</code> after calling:</p>
+
+<pre><code class="cpp">igl::copyleft::swept_volume(V,F,num_time_steps,grid_size,isolevel,SV,SF);
+</code></pre>
+
+<p>The <code>isolevel</code> parameter can be set to zero to approximate the exact swept
+volume, greater than zero to approximate a positive offset of the swept volume
+or less than zero to approximate a negative offset.</p>
+
+<figure>
+<img src="images/bunny-swept-volume.gif" alt="(Example 707) computes
+the surface of the swept volume (silver) of the bunny model undergoing a rigid
+motion (gold)." />
+<figcaption>(<a href="707_SweptVolume/main.cpp">Example 707</a>) computes
+the surface of the swept volume (silver) of the bunny model undergoing a rigid
+motion (gold).</figcaption>
 </figure>
 
 <h1 id="future">Outlook for continuing development</h1>
@@ -3416,8 +3474,8 @@ repository</a>.</p>
 </li>
 
 <li id="fn:3" class="citation"><span class="citekey" style="display:none">jacobson_thesis_2013</span><p>Alec Jacobson,
- <a href="https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes">_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D
- Shapes_</a>,
+ <a href="https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes"><em>Algorithms and Interfaces for Real-Time Deformation of 2D and 3D
+ Shapes</em></a>,
  2013.</p>
 </li>
 
@@ -3508,8 +3566,8 @@ repository</a>.</p>
 </li>
 
 <li id="fn:19" class="citation"><span class="citekey" style="display:none">jacobson_skinning_course_2014</span><p>Alec Jacobson, Zhigang Deng, Ladislav Kavan,
- J.P. Lewis. <a href="https://www.google.com/search?q=Skinning+Real-Time+Shape+Deformation">_Skinning: Real-Time Shape
- Deformation_</a>,
+ J.P. Lewis. <a href="https://www.google.com/search?q=Skinning+Real-Time+Shape+Deformation"><em>Skinning: Real-Time Shape
+ Deformation</em></a>,
  2014.</p>
 </li>
 
@@ -3621,6 +3679,18 @@ pseudonormal</a>,
  Polygon Meshes Based on Ray
  Casting</a>,
  2014.</p>
+</li>
+
+<li id="fn:40" class="citation"><span class="citekey" style="display:none">schroeder_1994</span><p>William J. Schroeder, William E. Lorensen, and Steve
+ Linthicum. <a href="https://www.google.com/search?q=implicit+modeling+of+swept+surfaces+and+volumes">Implicit Modeling of Swept Surfaces and
+ Volumes</a>,
+ 1994.</p>
+</li>
+
+<li id="fn:41" class="citation"><span class="citekey" style="display:none">garg_2016</span><p>Akash Garg, Alec Jacobson, Eitan Grinspun. <a href="https://www.google.com/search?q=Computational+Design+of+Reconfigurables">Computational Design
+ of
+ Reconfigurables</a>,
+ 2016</p>
 </li>
 
 </ol>

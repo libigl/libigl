@@ -99,6 +99,7 @@ lecture notes links to a cross-platform example application.
     * [704 Signed Distances](#signeddistances)
     * [705 Marching Cubes](#marchingcubes)
     * [706 Facet Orientation](#facetorientation)
+    * [707 Swept Volume](#sweptvolume)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -3033,6 +3034,59 @@ patches are uniquely colored and then oriented to face outward (middle left).
 Alternatively, each individual triangle is considered a "patch" (middle right)
 and oriented outward independently.](images/truck-facet-orientation.jpg)
 
+## [Swept Volume](#sweptvolume) [sweptvolume]
+
+The swept volume $S$ of a moving solid object $A$ can be defined as any point in
+space such that at one moment in time the point lies inside the solid. In other
+words, it is the union of the solid object transformed by the rigid motion
+$f(t)$ over time:
+
+$S = \bigcup \limits_{t\in [0,1]} f(t) A.$
+
+The surface of the swept volume of a solid bounded by a triangle mesh
+undergoing a rigid motion with non-trivial rotation is _**not**_ a surface
+exactly representably by triangle mesh: it will be a piecewise-ruled surface.
+
+To see this, consider the surface swept by a single edge's line segment as it
+performs a screw motion. 
+
+This means that if we'd like to the surface of the swept volume of a triangle
+mesh undergoing a rigid motion and we'd like the output to be another triangle
+mesh, then we're going to have to be happy with some amount of approximation
+error.
+
+With this in mind, the simplest method for computing an approximate swept
+volume is by exploiting an alternative definition of the swept volume based on
+signed distances:
+
+$S = \{ \mathbf{p}\ |\ d(\mathbf{p},\partial S) < 0 \} = \{ \mathbf{p}\ |\ \min_{t \in [0,1]} d(\mathbf{p},\partial A) < 0 \}$
+
+If $\partial A$ is a triangle mesh, then we can approximate this by 1)
+discretizing time at a finite step of steps $[0,\Delta t,2\Delta t, \dots, 1]$
+and by 2) discretizing space with a regular grid and representing the distance
+field using trilinear interpolation of grid values. Finally the output mesh,
+$\partial S$ is approximated by contouring using Marching Cubes
+[#lorensen_1987].
+
+This method is similar to one described by Schroeder et al. in 1994
+[#schroeder_1994], and the one used in conjunction with boolean operations by
+Garg et al. 2016 [#garg_2016].
+
+In libigl, if your input solid's surface is represented by `(V,F)` then the
+output surface mesh will be `(SV,SF)` after calling:
+
+```cpp
+igl::copyleft::swept_volume(V,F,num_time_steps,grid_size,isolevel,SV,SF);
+```
+
+The `isolevel` parameter can be set to zero to approximate the exact swept
+volume, greater than zero to approximate a positive offset of the swept volume
+or less than zero to approximate a negative offset.
+
+![([Example 707](707_SweptVolume/main.cpp)) computes
+the surface of the swept volume (silver) of the bunny model undergoing a rigid
+motion (gold).](images/bunny-swept-volume.gif)
+
 
 # Outlook for continuing development [future]
 
@@ -3098,6 +3152,10 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
 [#eck_2005]: Matthias Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
   Stuetzle.  [Multiresolution Analysis of Arbitrary
   Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), 2005.
+[#garg_2016]: Akash Garg, Alec Jacobson, Eitan Grinspun. [Computational Design
+  of
+  Reconfigurables](https://www.google.com/search?q=Computational+Design+of+Reconfigurables),
+  2016
 [#hildebrandt_2011]: Klaus Hildebrandt, Christian Schulz, Christoph von
   Tycowicz, and Konrad Polthier. [Interactive Surface Modeling using Modal
   Analysis](https://www.google.com/search?q=Interactive+Surface+Modeling+using+Modal+Analysis),
@@ -3180,6 +3238,10 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   2014.
 [#rustamov_2011]: Raid M. Rustamov, [Multiscale Biharmonic
   Kernels](https://www.google.com/search?q=Multiscale+Biharmonic+Kernels), 2011.
+[#schroeder_1994]: William J. Schroeder, William E. Lorensen, and Steve
+  Linthicum. [Implicit Modeling of Swept Surfaces and
+  Volumes](https://www.google.com/search?q=implicit+modeling+of+swept+surfaces+and+volumes),
+  1994.
 [#schuller_2013]: Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga
   Sorkine-Hornung.  [Locally Injective
   Mappings](http://igl.ethz.ch/projects/LIM/), 2013.
