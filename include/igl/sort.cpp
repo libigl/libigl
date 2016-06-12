@@ -226,10 +226,10 @@ IGL_INLINE void igl::sort3(
   const int n = num_outer;
   const size_t nthreads = n<8000?1:std::thread::hardware_concurrency();
   {
-    std::vector<std::thread> threads(nthreads);
+    std::vector<std::thread> threads(nthreads<=1?0:nthreads);
     for(int t = 0;t<nthreads;t++)
     {
-      threads[t] = std::thread(std::bind(
+      const auto & inner =  
         [&X,&Y,&IX,&dim,&ascending](const int bi, const int ei, const int t)
       {
         // loop over columns (or rows)
@@ -285,7 +285,15 @@ IGL_INLINE void igl::sort3(
             }
           }
         }
-      }, t*n/nthreads, (t+1)==nthreads?n:(t+1)*n/nthreads,t));
+      };
+      if(nthreads == 1)
+      {
+        inner(0,n,0);
+      }else
+      {
+        threads[t] = std::thread(
+          std::bind(inner,t*n/nthreads,(t+1)==nthreads?n:(t+1)*n/nthreads,t));
+      }
     }
     std::for_each(threads.begin(),threads.end(),[](std::thread& x){x.join();});
   }
