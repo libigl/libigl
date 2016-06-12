@@ -7,8 +7,6 @@ namespace igl
 {
   namespace copyleft
   {
-    namespace cgal
-    {
     // Compute the surface of the swept volume of a solid object with surface
     // (V,F) mesh under going rigid motion.
     // 
@@ -33,7 +31,6 @@ namespace igl
       const size_t isolevel,
       Eigen::MatrixXd & SV,
       Eigen::MatrixXi & SF);
-    }
   }
 }
 

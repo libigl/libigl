@@ -5,7 +5,7 @@
 #include "marching_cubes.h"
 #include <iostream>
 
-IGL_INLINE void igl::copyleft::cgal::swept_volume(
+IGL_INLINE void igl::copyleft::swept_volume(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   const std::function<Eigen::Affine3d(const double t)> & transform,
