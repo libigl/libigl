@@ -34,7 +34,6 @@ lecture notes links to a cross-platform example application.
     * [104 Scalar field visualization](#scalarfieldvisualization)
     * [105 Overlays](#overlays)
     * [106 Viewer Menu](#viewermenu)
-    * [107 Screen Capture](#screencapture)
 * [Chapter 2: Discrete Geometric Quantities and
   Operators](#chapter2:discretegeometricquantitiesandoperators)
     * [201 Normals](#normals)
@@ -88,7 +87,7 @@ lecture notes links to a cross-platform example application.
     * [604 Triangulation of closed polygons](#triangulationofclosedpolygons)
     * [605 Tetrahedralization of closed surfaces](#tetrahedralizationofclosedsurfaces)
     * [606 Baking ambient occlusion](#bakingambientocclusion)
-    * [607 Picking vertices and faces](#pickingverticesandfaces)
+    * [607 Screen Capture](#screencapture)
     * [608 Locally Injective Maps](#locallyinjectivemaps)
     * [609 Boolean Operations on Meshes](#booleanoperationsonmeshes)
     * [610 CSG Tree](#csgtree)
@@ -100,6 +99,7 @@ lecture notes links to a cross-platform example application.
     * [705 Marching Cubes](#marchingcubes)
     * [706 Facet Orientation](#facetorientation)
     * [707 Swept Volume](#sweptvolume)
+    * [708 Picking vertices and faces](#pickingverticesandfaces)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -468,26 +468,6 @@ viewer.ngui->addVariable<bool>("bool",[&](bool val) {
 ```
 
 ![([Example 106](106_ViewerMenu/main.cpp)) The UI of the viewer can be easily customized.](images/106_ViewerMenu.png)
-
-## [Screen capture](#screencapture) [screencapture]
-
-It is possible to render the scene in a memory buffer using the function draw_buffer:
-
-```cpp
-// Allocate temporary buffers
-Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(1280,800);
-Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(1280,800);
-Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(1280,800);
-Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(1280,800);
-
-// Draw the scene in the buffers
-viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
-
-// Save it to a PNG
-igl::png::writePNG(R,G,B,A,"out.png");
-```
-
-In [Example 107](107_ScreenCapture/main.cpp) a scene is rendered in a temporary png and used to texture a quadrilateral.
 
 # Chapter 2: Discrete Geometric Quantities and Operators
 This chapter illustrates a few discrete quantities that libigl can compute on a
@@ -2466,37 +2446,31 @@ Ambient occlusion can be used to darken the surface colors, as shown in
 ![A mesh rendered without (left) and with (right) ambient
 occlusion.](images/606_AmbientOcclusion.png)
 
-## [Picking](#pickingverticesandfaces) [pickingverticesandfaces]
+## [Screen Capture](#screencapture) [screencapture]
 
-Picking vertices and faces using the mouse is very common in geometry
-processing applications. While this might seem a simple operation, its
-implementation is not straighforward. Libigl contains a function that solves this problem using the
-[Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels)
-raycaster. Its usage is demonstrated in [Example 607](607_Picking/main.cpp):
+Libigl supports read and writing to .png files via the
+[stb image](http://nothings.org/stb_image.h) code.
+
+With the viewer used in this tutorial, it is possible to render the scene in a
+memory buffer using the function, `igl::viewer::ViewerCore::draw_buffer`:
 
 ```cpp
-bool hit = igl::unproject_onto_mesh(
-  Vector2f(x,y),
-  F,
-  viewer.core.view * viewer.core.model,
-  viewer.core.proj,
-  viewer.core.viewport,
-  *ei,
-  fid,
-  vid);
+// Allocate temporary buffers for 1280x800 image
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(1280,800);
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(1280,800);
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(1280,800);
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(1280,800);
+
+// Draw the scene in the buffers
+viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+
+// Save it to a PNG
+igl::png::writePNG(R,G,B,A,"out.png");
 ```
 
-This function casts a ray from the view plane in the view direction. Variables
-`x` and `y` are
-the mouse screen coordinates; `view`, `model`, `proj` are the view, model and
-projection matrix respectively; `viewport` is the viewport in OpenGL format;
-`ei`
-contains a [Bounding Volume
-Hierarchy](http://en.wikipedia.org/wiki/Bounding_volume_hierarchy) constructed
-by Embree, and `fid` and `vid` are the picked face and vertex, respectively.
+In [Example 607](607_ScreenCapture/main.cpp) a scene is rendered in a temporary
+png and used to texture a quadrilateral.
 
-![([Example 607](607_Picking/main.cpp)) Picking via ray casting. The selected
-vertices are colored in red.](images/607_Picking.png)
 
 ## [Locally Injective Maps](#locallyinjectivemaps) [locallyinjectivemaps]
 
@@ -2569,7 +2543,7 @@ Calling libigl's boolean operations is simple. To compute the union of
 `(VA,FA)` and `(VB,FB)` into a new mesh `(VC,FC)`, use:
 
 ```cpp
-igl::mesh_boolean(VA,FA,VB,FB,MESH_BOOLEAN_TYPE_UNION,VC,FC);
+igl::copyleft::cgal::mesh_boolean(VA,FA,VB,FB,MESH_BOOLEAN_TYPE_UNION,VC,FC);
 ```
 
 The following figure shows each boolean operation on two meshes.
@@ -2589,7 +2563,7 @@ result of the operation. The "resolve" operation is not really a boolean
 operation, it is simply the result of resolving all intersections and gluing
 together coincident vertices, maintaining original triangle orientations.
 
-Libigl also provides a wrapper `igl::mesh_boolean_cork` to the
+Libigl also provides a wrapper `igl::copyleft::cork::mesh_boolean` to the
 [cork](https://github.com/gilbo/cork), which is typically faster, but is not
 always robust.
 
@@ -3088,6 +3062,38 @@ or less than zero to approximate a negative offset.
 ![([Example 707](707_SweptVolume/main.cpp)) computes
 the surface of the swept volume (silver) of the bunny model undergoing a rigid
 motion (gold).](images/bunny-swept-volume.gif)
+
+## [Picking](#pickingverticesandfaces) [pickingverticesandfaces]
+
+Picking vertices and faces using the mouse is very common in geometry
+processing applications. While this might seem a simple operation, its
+implementation is not straighforward. Libigl contains a function that solves this problem using the
+[Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels)
+raycaster. Its usage is demonstrated in [Example 708](708_Picking/main.cpp):
+
+```cpp
+bool hit = igl::unproject_onto_mesh(
+  Vector2f(x,y),
+  F,
+  viewer.core.view * viewer.core.model,
+  viewer.core.proj,
+  viewer.core.viewport,
+  *ei,
+  fid,
+  vid);
+```
+
+This function casts a ray from the view plane in the view direction. Variables
+`x` and `y` are
+the mouse screen coordinates; `view`, `model`, `proj` are the view, model and
+projection matrix respectively; `viewport` is the viewport in OpenGL format;
+`ei`
+contains a [Bounding Volume
+Hierarchy](http://en.wikipedia.org/wiki/Bounding_volume_hierarchy) constructed
+by Embree, and `fid` and `vid` are the picked face and vertex, respectively.
+
+![([Example 708](708_Picking/main.cpp)) Picking via ray casting. The selected
+vertices are colored in red.](images/607_Picking.png)
 
 
 # Outlook for continuing development [future]
