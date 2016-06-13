@@ -1,8 +1,8 @@
 #include <igl/read_triangle_mesh.h>
-#include <igl/copyleft/marching_cubes.h>
-#include <igl/copyleft/swept_volume.h>
 #include <igl/get_seconds.h>
 #include <igl/material_colors.h>
+#include <igl/copyleft/marching_cubes.h>
+#include <igl/copyleft/swept_volume.h>
 #include <igl/viewer/Viewer.h>
 #include <Eigen/Core>
 #include <iostream>

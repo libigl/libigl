@@ -2,7 +2,6 @@
 #include <igl/barycenter.h>
 #include <igl/comb_cross_field.h>
 #include <igl/comb_frame_field.h>
-#include <igl/copyleft/comiso/miq.h>
 #include <igl/compute_frame_field_bisectors.h>
 #include <igl/cross_field_missmatch.h>
 #include <igl/cut_mesh_from_singularities.h>
@@ -10,6 +9,7 @@
 #include <igl/local_basis.h>
 #include <igl/readOFF.h>
 #include <igl/rotate_vectors.h>
+#include <igl/copyleft/comiso/miq.h>
 #include <igl/copyleft/comiso/nrosy.h>
 #include <igl/viewer/Viewer.h>
 #include <sstream>
