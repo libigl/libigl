@@ -299,9 +299,9 @@ if(LIBIGL_WITH_VIEWER)
   if(LIBIGL_WITH_NANOGUI)
     list(APPEND LIBIGL_DEFINITIONS "-DIGL_VIEWER_WITH_NANOGUI")
 
-    option(NANOGUI_BUILD_PYTHON OFF)
-    option(NANOGUI_BUILD_EXAMPLE OFF)
-    option(NANOGUI_BUILD_SHARED  OFF)
+    set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
+    set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
+    set(NANOGUI_BUILD_SHARED  OFF CACHE BOOL " " FORCE)
     add_subdirectory("${NANOGUI_DIR}" "nanogui")
 
     set(VIEWER_INCLUDE_DIRS
@@ -360,6 +360,11 @@ if(LIBIGL_WITH_PNG)
   add_subdirectory("${STB_IMAGE_DIR}" "stb_image")
   list(APPEND LIBIGL_INCLUDE_DIRS ${STB_IMAGE_DIR})
   list(APPEND LIBIGL_EXTRA_LIBRARIES "stb_image")
+  if(LIBIGL_WITH_NANOGUI)
+    set(STBI_LOAD OFF CACHE BOOL " " FORCE) # Nanogui already precompiles stbi_load
+  else()
+    set(STBI_LOAD ON  CACHE BOOL " " FORCE) # Nanogui already precompiles stbi_load
+  endif()
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module("png")
     target_include_directories(iglpng PRIVATE ${STB_IMAGE_DIR})
