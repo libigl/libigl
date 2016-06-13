@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
   // Plot the mesh
   igl::viewer::Viewer viewer;
   viewer.callback_key_down = &key_down;
-  viewer.core.show_lines = false;
+  viewer.data.show_lines = false;
   viewer.data.set_mesh(V, F);
   viewer.data.set_normals(N_faces);
   std::cout<<

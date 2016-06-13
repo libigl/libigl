@@ -319,7 +319,7 @@ void update_display(igl::viewer::Viewer& viewer)
   viewer.data.clear();
   viewer.data.lines.resize(0,9);
   viewer.data.points.resize(0,6);
-  viewer.core.show_texture = false;
+  viewer.data.show_texture = false;
 
   if (display_mode == 1)
   {
@@ -442,7 +442,7 @@ void update_display(igl::viewer::Viewer& viewer)
     viewer.data.set_colors(C);
     viewer.data.set_uv(uv_scale*scalars_ori, Fcut_ori);
     viewer.data.set_texture(texture_R, texture_B, texture_G);
-    viewer.core.show_texture = true;
+    viewer.data.show_texture = true;
 
     // Draw Cuts
     drawCuts(viewer,cuts_ori);
@@ -461,7 +461,7 @@ void update_display(igl::viewer::Viewer& viewer)
     viewer.data.set_colors(C);
     viewer.data.set_uv(uv_scale*scalars, Fcut);
     viewer.data.set_texture(texture_R, texture_B, texture_G);
-    viewer.core.show_texture = true;
+    viewer.data.show_texture = true;
 
     // Draw Cuts
     drawCuts(viewer,cuts);
@@ -709,7 +709,7 @@ int main(int argc, char *argv[])
 
   igl::viewer::Viewer viewer;
   viewer.callback_key_down = &key_down;
-  viewer.core.show_lines = false;
+  viewer.data.show_lines = false;
   key_down(viewer,'2',0);
 
   // Replace the standard texture with an integer shift invariant texture

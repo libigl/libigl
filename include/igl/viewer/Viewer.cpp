@@ -305,6 +305,7 @@ namespace viewer
     });
     currentDataCB->setFixedHeight(20);
     currentDataCB->setFontSize(16);
+    currentDataCB->setVisible(false);
     ngui->addWidget("Active Mesh",currentDataCB);
 
     ngui->addVariable<bool>("Visible",[&](bool checked)
@@ -503,10 +504,12 @@ namespace viewer
     
     data_ids.push_back(id);
     currentDataCB->setItems(data_ids);
-    screen->performLayout();
     
     opengl.push_back(OpenGL_state());
     opengl[opengl.size()-1].init();
+
+    currentDataCB->setVisible(currentDataCB->items().size() <= 1);
+    screen->performLayout();
 
     return opengl.size()-1;
   }
@@ -518,6 +521,10 @@ namespace viewer
     set_active_mesh(mid);
     load_mesh_from_file(mesh_file_name);
     set_active_mesh(bakId);
+
+    currentDataCB->setVisible(currentDataCB->items().size() <= 1);
+    screen->performLayout();
+
     return mid;
   }
 
@@ -545,6 +552,7 @@ namespace viewer
     opengl.erase(opengl.begin()+data_id);
 
     currentDataCB->setItems(data_ids);
+    currentDataCB->setVisible(currentDataCB->items().size() <= 1);
     screen->performLayout();
 
     return true;
@@ -763,10 +771,10 @@ namespace viewer
         }
 #ifdef IGL_VIEWER_WITH_NANOGUI
         case ';':
-          core.show_vertid = !core.show_vertid;
+          data.show_vertid = !data.show_vertid;
           return true;
         case ':':
-          core.show_faceid = !core.show_faceid;
+          data.show_faceid = !data.show_faceid;
           return true;
 #endif        
         default: break;//do nothing

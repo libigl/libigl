@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
   igl::viewer::Viewer viewer;
   viewer.callback_key_down = &key_down;
   viewer.data.set_mesh(V1, F);
-  viewer.core.show_lines = true;
+  viewer.data.show_lines = true;
   viewer.core.lighting_factor = 0.0f;
   viewer.launch();
 }

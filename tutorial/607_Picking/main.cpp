@@ -41,6 +41,6 @@ int main(int argc, char *argv[])
   // Show mesh
   viewer.data.set_mesh(V, F);
   viewer.data.set_colors(C);
-  viewer.core.show_lines = false;
+  viewer.data.show_lines = false;
   viewer.launch();
 }

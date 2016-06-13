@@ -167,9 +167,9 @@ int main(int argc, char *argv[])
   viewer.data.set_mesh(U, F);
   set_color(viewer);
   viewer.data.set_edges(C,BE,sea_green);
-  viewer.core.show_lines = false;
-  viewer.core.show_overlay_depth = false;
-  viewer.core.line_width = 1;
+  viewer.data.show_lines = false;
+  viewer.data.show_overlay_depth = false;
+  viewer.data.line_width = 1;
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
   viewer.core.is_animating = false;

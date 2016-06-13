@@ -33,7 +33,7 @@
 #define IGL_MOD_SUPER           0x0008
 
 #ifdef IGL_VIEWER_WITH_NANOGUI
-namespace nanogui { class FormHelper; class Screen; }
+namespace nanogui { class FormHelper; class Screen; class ComboBox; }
 #endif
 
 class GLFWwindow;
