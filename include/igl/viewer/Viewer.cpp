@@ -353,7 +353,7 @@ namespace viewer
   :       Toggle face labels)"
 #endif
 );
-    std::cout<<usage;
+    std::cout<<usage<<std::endl;
 #endif
   }
 
