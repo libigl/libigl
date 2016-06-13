@@ -83,6 +83,7 @@ namespace viewer
     Eigen::Vector3f down_translation;
     bool down;
     bool hack_never_moved;
+    bool key_pressed_handeld;
 
 #ifdef IGL_VIEWER_WITH_NANOGUI
     nanogui::FormHelper* ngui;

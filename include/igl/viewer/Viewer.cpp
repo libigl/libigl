@@ -675,70 +675,78 @@ namespace viewer
       }
     }
 
-    switch(unicode_key)
+    if(key_pressed_handeld == false)
     {
-      case 'A':
-      case 'a':
+      switch(unicode_key)
       {
-        core.is_animating = !core.is_animating;
-        return true;
-      }
-      case 'I':
-      case 'i':
-      {
-        data.dirty |= ViewerData::DIRTY_NORMAL;
-        data.invert_normals = !data.invert_normals;
-        return true;
-      }
-      case 'L':
-      case 'l':
-      {
-        data.show_lines = !data.show_lines;
-        return true;
-      }
-      case 'O':
-      case 'o':
-      {
-        core.orthographic = !core.orthographic;
-        return true;
-      }
-      case 'T':
-      case 't':
-      {
-        data.show_faces = !data.show_faces;
-        return true;
-      }
-      case 'Z':
-      {
-        snap_to_canonical_quaternion();
-        return true;
-      }
-      case '[':
-      case ']':
-      {
-        if(core.rotation_type == ViewerCore::ROTATION_TYPE_TRACKBALL)
+        case 'A':
+        case 'a':
         {
-          core.set_rotation_type(
-            ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
-        }else
-        {
-          core.set_rotation_type(ViewerCore::ROTATION_TYPE_TRACKBALL);
+          core.is_animating = !core.is_animating;
+          return true;
         }
-        return true;
+        case 'I':
+        case 'i':
+        {
+          data.dirty |= ViewerData::DIRTY_NORMAL;
+          data.invert_normals = !data.invert_normals;
+          return true;
+        }
+        case 'L':
+        case 'l':
+        {
+          data.show_lines = !data.show_lines;
+          return true;
+        }
+        case 'O':
+        case 'o':
+        {
+          core.orthographic = !core.orthographic;
+          return true;
+        }
+        case 'T':
+        case 't':
+        {
+          data.show_faces = !data.show_faces;
+          return true;
+        }
+        case 'Z':
+        {
+          snap_to_canonical_quaternion();
+          return true;
+        }
+        case '[':
+        case ']':
+        {
+          if(core.rotation_type == ViewerCore::ROTATION_TYPE_TRACKBALL)
+          {
+            core.set_rotation_type(
+              ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
+          } else
+          {
+            core.set_rotation_type(ViewerCore::ROTATION_TYPE_TRACKBALL);
+          }
+          return true;
+        }
+        default: break;//do nothing
       }
-      default: break;//do nothing
     }
+    
     return false;
   }
 
   IGL_INLINE bool Viewer::key_down(int key,int modifiers)
   {
+    key_pressed_handeld = true;
+
     if (callback_key_down)
       if (callback_key_down(*this,key,modifiers))
         return true;
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->key_down(key, modifiers))
         return true;
+
+    key_pressed_handeld = false;
     return false;
   }
 
@@ -926,7 +934,7 @@ namespace viewer
     if(delta_y != 0)
     {
       float mult = (1.0+((delta_y>0)?1.:-1.)*0.05);
-      const float min_zoom = 0.1f;
+      const float min_zoom = 0.0001f;
       core.camera_zoom = (core.camera_zoom * mult > min_zoom ? core.camera_zoom * mult : min_zoom);
     }
     return true;

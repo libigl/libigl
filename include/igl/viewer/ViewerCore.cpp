@@ -204,8 +204,13 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
     view  = Eigen::Matrix4f::Identity();
     proj  = Eigen::Matrix4f::Identity();
 
+    // camera zoom by shifting
+    Vector3f camera_eye_zoomed = camera_center + (camera_eye-camera_center)*camera_zoom;
+    float camera_dnear_zoomed = camera_dnear * camera_zoom;
+    float camera_dfar_zoomed = camera_dfar * camera_zoom;
+
     // Set view
-    look_at( camera_eye, camera_center, camera_up, view);
+    look_at(camera_eye_zoomed,camera_center, camera_up, view);
 
     float width  = viewport(2);
     float height = viewport(3);
@@ -213,15 +218,19 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
     // Set projection
     if (orthographic)
     {
-      float length = (camera_eye - camera_center).norm();
+      float length = (camera_eye_zoomed - camera_center).norm();
       float h = tan(camera_view_angle/360.0 * M_PI) * (length);
-      ortho(-h*width/height, h*width/height, -h, h, camera_dnear, camera_dfar,proj);
+      // real camera Zoom
+      //ortho(-h*width/height*camera_zoom, h*width/height*camera_zoom, -h*camera_zoom, h*camera_zoom, camera_dnear, camera_dfar,proj); 
+      ortho(-h*width/height,h*width/height,-h,h,camera_dnear_zoomed,camera_dfar_zoomed,proj);
     }
     else
     {
-      float fH = tan(camera_view_angle / 360.0 * M_PI) * camera_dnear;
+      float fH = tan(camera_view_angle / 360.0 * M_PI) * camera_dnear_zoomed;
       float fW = fH * (double)width/(double)height;
-      frustum(-fW, fW, -fH, fH, camera_dnear, camera_dfar,proj);
+      // real camera Zoom
+      //frustum(-fW*camera_zoom, fW*camera_zoom, -fH*camera_zoom, fH*camera_zoom, camera_dnear, camera_dfar,proj); // real camera Zoom
+      frustum(-fW,fW,-fH,fH,camera_dnear_zoomed,camera_dfar_zoomed,proj);
     }
     // end projection
 
@@ -234,8 +243,8 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
         model(i,j) = mat[i+4*j];
 
     // Why not just use Eigen::Transform<double,3,Projective> for model...?
-    model.topLeftCorner(3,3)*=camera_zoom;
-    model.topLeftCorner(3,3)*=model_zoom;
+    //model.topLeftCorner(3,3)*=camera_zoom;
+    //model.topLeftCorner(3,3)*=model_zoom;
     model.col(3).head(3) += model.topLeftCorner(3,3)*model_translation;
   }
 
