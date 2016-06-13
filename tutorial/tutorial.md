@@ -3059,7 +3059,9 @@ With this in mind, the simplest method for computing an approximate swept
 volume is by exploiting an alternative definition of the swept volume based on
 signed distances:
 
-$S = \{ \mathbf{p}\ |\ d(\mathbf{p},\partial S) < 0 \} = \{ \mathbf{p}\ |\ \min_{t \in [0,1]} d(\mathbf{p},\partial A) < 0 \}$
+$S = \left\{ \mathbf{p}\ \middle| \ d(\mathbf{p},\partial S) < 0 \right\} = \left\{ \mathbf{p}\
+\middle|\
+\min\limits_{t \in [0,1]} d(\mathbf{p},f(t)\ \partial A) < 0 \right\}$
 
 If $\partial A$ is a triangle mesh, then we can approximate this by 1)
 discretizing time at a finite step of steps $[0,\Delta t,2\Delta t, \dots, 1]$
