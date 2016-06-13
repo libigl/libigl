@@ -46,7 +46,7 @@ m.def("arap_precomputation", []
     bt = b;
 
   return igl::arap_precomputation(V,F,dim,bt,data);
-}, __doc_igl_arap,
+}, __doc_igl_arap_precomputation,
 py::arg("V"), py::arg("F"), py::arg("dim"), py::arg("b"), py::arg("data"));
 
 m.def("arap_solve", []
@@ -57,5 +57,5 @@ m.def("arap_solve", []
 )
 {
   return igl::arap_solve(bc,data,U);
-}, __doc_igl_arap,
+}, __doc_igl_arap_solve,
 py::arg("bc"), py::arg("data"), py::arg("U"));

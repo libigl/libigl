@@ -29,7 +29,7 @@ namespace igl {
     int num_scalar_variables;
 
     // per face indexes of vertex in the solver
-#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
+//#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
     Eigen::PlainObjectBase<DerivedF> HandleS_Index;
 
     // per vertex variable indexes

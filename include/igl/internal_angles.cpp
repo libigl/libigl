@@ -35,9 +35,9 @@ IGL_INLINE void igl::internal_angles(
     assert(V.cols() == 3 && "If F contains non-triangle facets, V must be 3D");
     K.resize(F.rows(),F.cols());
     auto corner = [](
-      const Eigen::PlainObjectBase<DerivedV>& x, 
-      const Eigen::PlainObjectBase<DerivedV>& y, 
-      const Eigen::PlainObjectBase<DerivedV>& z)
+      const typename DerivedV::ConstRowXpr & x, 
+      const typename DerivedV::ConstRowXpr & y, 
+      const typename DerivedV::ConstRowXpr & z)
     {
       typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
       RowVector3S v1 = (x-y).normalized();

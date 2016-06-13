@@ -29,9 +29,30 @@ Eigen::Matrix<Scalar,3,1> igl::project(
   return tmp.head(3);
 }
 
+template <typename DerivedV, typename Scalar, typename DerivedP>
+IGL_INLINE void igl::project(
+  const    Eigen::PlainObjectBase<DerivedV>&  V,
+  const    Eigen::Matrix<Scalar,4,4>& model,
+  const    Eigen::Matrix<Scalar,4,4>& proj,
+  const    Eigen::Matrix<Scalar,4,1>&  viewport,
+  Eigen::PlainObjectBase<DerivedP> & P)
+{
+  typedef typename DerivedP::Scalar PScalar;
+  Eigen::Matrix<PScalar,DerivedV::RowsAtCompileTime,4> HV(V.rows(),4);
+  HV.leftCols(3) = V.template cast<PScalar>();
+  HV.col(3).setConstant(1);
+  HV = (HV*model.template cast<PScalar>().transpose()*
+      proj.template cast<PScalar>().transpose()).eval();
+  HV = (HV.array().colwise()/HV.col(3).array()).eval();
+  HV = (HV.array() * 0.5 + 0.5).eval();
+  HV.col(0) = (HV.array().col(0) * viewport(2) + viewport(0)).eval();
+  HV.col(1) = (HV.array().col(1) * viewport(3) + viewport(1)).eval();
+  P = HV.leftCols(3);
+}
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template Eigen::Matrix<double, 3, 1, 0, 3, 1> igl::project<double>(Eigen::Matrix<double, 3, 1, 0, 3, 1> const&, Eigen::Matrix<double, 4, 4, 0, 4, 4> const&, Eigen::Matrix<double, 4, 4, 0, 4, 4> const&, Eigen::Matrix<double, 4, 1, 0, 4, 1> const&);
 template Eigen::Matrix<float, 3, 1, 0, 3, 1> igl::project<float>(Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&);
+template void igl::project<Eigen::Matrix<double, -1, -1, 0, -1, -1>, float, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

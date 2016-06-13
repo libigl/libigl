@@ -1,6 +1,6 @@
 #include <Eigen/Dense>
 
-#include "python.h"
+#include "python_shared.h"
 
 #include <igl/readOFF.h>
 #include <igl/writeOBJ.h>
@@ -48,6 +48,26 @@
 #include <igl/cut_mesh_from_singularities.h>
 #include <igl/comb_frame_field.h>
 #include <igl/n_polyvector.h>
+
+#include <igl/point_mesh_squared_distance.h>
+#include <igl/AABB.h>
+#include <igl/readMESH.h>
+#include <igl/writeMESH.h>
+#include <igl/slice_tets.h>
+#include <igl/edge_lengths.h>
+#include <igl/upsample.h>
+#include <igl/cat.h>
+#include <igl/per_edge_normals.h>
+#include <igl/barycentric_coordinates.h>
+#include <igl/fit_rotations.h>
+#include <igl/polar_svd.h>
+#include <igl/covariance_scatter_matrix.h>
+#include <igl/slice_mask.h>
+#include <igl/signed_distance.h>
+#include <igl/quad_planarity.h>
+#include <igl/planarize_quad_mesh.h>
+#include <igl/unproject_onto_mesh.h>
+//#include <igl/.h>
 
 
 void python_export_igl(py::module &m)
@@ -98,5 +118,25 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_cut_mesh_from_singularities.cpp"
 #include "py_igl/py_comb_frame_field.cpp"
 #include "py_igl/py_n_polyvector.cpp"
+
+#include "py_igl/py_point_mesh_squared_distance.cpp"
+#include "py_igl/py_AABB.cpp"
+#include "py_igl/py_readMESH.cpp"
+#include "py_igl/py_writeMESH.cpp"
+#include "py_igl/py_slice_tets.cpp"
+#include "py_igl/py_edge_lengths.cpp"
+#include "py_igl/py_upsample.cpp"
+#include "py_igl/py_cat.cpp"
+#include "py_igl/py_per_edge_normals.cpp"
+#include "py_igl/py_barycentric_coordinates.cpp"
+#include "py_igl/py_fit_rotations.cpp"
+#include "py_igl/py_polar_svd.cpp"
+#include "py_igl/py_covariance_scatter_matrix.cpp"
+#include "py_igl/py_slice_mask.cpp"
+#include "py_igl/py_signed_distance.cpp"
+#include "py_igl/py_quad_planarity.cpp"
+#include "py_igl/py_planarize_quad_mesh.cpp"
+#include "py_igl/py_unproject_onto_mesh.cpp"
+//#include "py_igl/py_.cpp"
 
 }

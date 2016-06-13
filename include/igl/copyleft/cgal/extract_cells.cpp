@@ -83,6 +83,13 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
   const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
   Eigen::PlainObjectBase<DerivedC>& cells) 
 {
+  // Trivial base case
+  if(P.size() == 0)
+  {
+    assert(F.size() == 0);
+    cells.resize(0,2);
+    return 0;
+  }
 
   typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
   typedef Kernel::Point_3 Point_3;
@@ -113,6 +120,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
 #endif
   const size_t num_faces = F.rows();
   typedef typename DerivedF::Scalar Index;
+  assert(P.size() > 0);
   const size_t num_patches = P.maxCoeff()+1;
 
   // Extract all cells...
@@ -154,12 +162,6 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
   std::vector< std::vector<Kernel::Triangle_3 > > 
     triangle_lists(num_components);
   std::vector<std::vector<bool> > in_Is(num_components);
-  for (size_t i=0; i<num_components; i++)
-  {
-    Is[i].resize(components[i].size());
-    std::copy(components[i].begin(), components[i].end(),Is[i].data());
-    submesh_aabb_tree(V,F,Is[i],trees[i],triangle_lists[i],in_Is[i]);
-  }
 
   // Find outer facets, their orientations and cells for each component
   Eigen::VectorXi outer_facets(num_components);
@@ -167,6 +169,8 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
   Eigen::VectorXi outer_cells(num_components);
   for (size_t i=0; i<num_components; i++)
   {
+    Is[i].resize(components[i].size());
+    std::copy(components[i].begin(), components[i].end(),Is[i].data());
     bool flipped;
     igl::copyleft::cgal::outer_facet(V, F, Is[i], outer_facets[i], flipped);
     outer_facet_orientation[i] = flipped?1:0;
@@ -194,9 +198,9 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
     // construct bounding boxes for each component
     DerivedV bbox_min(num_components, 3);
     DerivedV bbox_max(num_components, 3);
-    // Why not just initialize to numeric_limits::min, numeric_limits::max?
-    bbox_min.rowwise() = V.colwise().maxCoeff().eval();
-    bbox_max.rowwise() = V.colwise().minCoeff().eval();
+    // Assuming our mesh (in exact numbers) fits in the range of double.
+    bbox_min.setConstant(std::numeric_limits<double>::max());
+    bbox_max.setConstant(std::numeric_limits<double>::min());
     // Loop over faces
     for (size_t i=0; i<num_faces; i++)
     {
@@ -239,6 +243,9 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
 
       const size_t num_candidate_comps = candidate_comps.size();
       if (num_candidate_comps == 0) continue;
+
+      // Build aabb tree for this component.
+      submesh_aabb_tree(V,F,Is[i],trees[i],triangle_lists[i],in_Is[i]);
 
       // Get query points on each candidate component: barycenter of
       // outer-facet 
@@ -526,4 +533,5 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
 #ifdef IGL_STATIC_LIBRARY
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 template unsigned long igl::copyleft::cgal::extract_cells<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, unsigned long, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::vector<std::vector<unsigned long, std::allocator<unsigned long> >, std::allocator<std::vector<unsigned long, std::allocator<unsigned long> > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template unsigned long igl::copyleft::cgal::extract_cells<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif

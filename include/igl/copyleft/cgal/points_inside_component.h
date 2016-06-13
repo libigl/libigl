@@ -12,7 +12,8 @@
 #include <Eigen/Core>
 #include <vector>
 
-namespace igl {
+namespace igl 
+{
   namespace copyleft
   {
     namespace cgal {

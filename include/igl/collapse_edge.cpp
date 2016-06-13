@@ -111,8 +111,8 @@ IGL_INLINE bool igl::collapse_edge(
   // finally, reindex faces and edges incident on d. Do this last so asserts
   // make sense.
   //
-  // Could actually skip first two, since those are always the two collpased
-  // faces.
+  // Could actually skip first and last, since those are always the two
+  // collpased faces.
   for(auto f : nV2Fd)
   {
     for(int v = 0;v<3;v++)

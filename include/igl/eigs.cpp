@@ -1,6 +1,5 @@
 #include "eigs.h"
 
-#include "read_triangle_mesh.h"
 #include "cotmatrix.h"
 #include "sort.h"
 #include "slice.h"
@@ -153,4 +152,7 @@ IGL_INLINE bool igl::eigs(
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template bool igl::eigs<double, double, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::SparseMatrix<double, 0, int> const&, unsigned long, igl::EigsType, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+#ifdef WIN32
+template bool igl::eigs<double, double, Eigen::Matrix<double,-1,-1,0,-1,-1>, Eigen::Matrix<double,-1,1,0,-1,1> >(Eigen::SparseMatrix<double,0,int> const &,Eigen::SparseMatrix<double,0,int> const &,unsigned long long, igl::EigsType, Eigen::PlainObjectBase< Eigen::Matrix<double,-1,-1,0,-1,-1> > &, Eigen::PlainObjectBase<Eigen::Matrix<double,-1,1,0,-1,1> > &);
+#endif
 #endif

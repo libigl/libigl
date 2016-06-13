@@ -168,7 +168,7 @@ IGL_INLINE typename DerivedC::Scalar igl::polyvector_field_matchings(
   Eigen::MatrixXi E, E2F, F2E;
   igl::edge_topology(V,F,E,F2E,E2F);
 
-#warning "Poor templating of igl::polyvector_field_matchings forces FN to be DerivedV (this could cause issues if DerivedV has fixed number of rows)"
+//#warning "Poor templating of igl::polyvector_field_matchings forces FN to be DerivedV (this could cause issues if DerivedV has fixed number of rows)"
   DerivedV FN;
   igl::per_face_normals(V,F,FN);
 

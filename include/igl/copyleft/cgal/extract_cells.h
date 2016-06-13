@@ -29,6 +29,7 @@ namespace igl {
       //          cell index on the positive side of face i, and cells(i,1)
       //          represents cell index of the negqtive side.
       //          By convension cell with index 0 is the infinite cell.
+      // Returns the number of cells
       template<
         typename DerivedV,
         typename DerivedF,

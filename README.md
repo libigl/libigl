@@ -1,5 +1,6 @@
 # libigl - A simple C++ geometry processing library
-
+[![Build Status](https://travis-ci.org/libigl/libigl.svg?branch=master)](https://travis-ci.org/libigl/libigl)
+[![Build status](https://ci.appveyor.com/api/projects/status/mf3t9rnhco0vhly8?svg=true)](https://ci.appveyor.com/project/danielepanozzo/libigl-6hjk1)
 ![](libigl-teaser.png)
 
 <https://github.com/libigl/libigl/>
@@ -93,7 +94,7 @@ libigl depends only on the [Eigen](http://eigen.tuxfamily.org) library.
 
 For more information see our [tutorial](tutorial/tutorial.html).
 
-### Optional dependencies ###
+### Optional dependencies
 
 Libigl compartmentalizes its **optional** dependences via its directory
 organization in the `include/` folder. All header files located _directly_ in
@@ -154,7 +155,7 @@ subrepos:
 
 ```bash
 git pull
-git submodule update -- recursive
+git submodule update --recursive
 ```
 
 ## Unit testing
@@ -194,6 +195,7 @@ Eurographics/ACM Symposium on Geometry Processing software award. Here are a
 few labs/companies/institutions using libigl:
 
  - [Adobe Research](http://www.adobe.com/technology/)  
+ - [Electronic Arts, Inc](http://www.ea.com)
  - [Mesh](http://meshconsultants.ca/), consultants, Canada
  - [Pixar Research](http://graphics.pixar.com/research/)
  - [Spine by Esoteric Software](http://esotericsoftware.com/) is an animation tool dedicated to 2D characters.
@@ -242,7 +244,7 @@ page](https://github.com/libigl/libigl/issues).
 
 ## Copyright
 2016 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
-Zhou, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
+Zhou, Sebastian Koch, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
 Giorgis, Luigi Rocca, Leonardo Sacht, Kevin Walliman, Olga Sorkine-Hornung, and others.
 
 Please see individual files for appropriate copyright notices.

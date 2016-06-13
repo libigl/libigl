@@ -11,7 +11,7 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Determine squared distance from a point to linear simplex
+  // Determine squared distance from a point to linear simplex. 
   //
   // Inputs:
   //   p  d-long query point
@@ -30,9 +30,9 @@ namespace igl
     typename Derivedsqr_d,
     typename Derivedc>
   IGL_INLINE void point_simplex_squared_distance(
-    const Eigen::PlainObjectBase<Derivedp> & p,
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedEle> & Ele,
+    const Eigen::MatrixBase<Derivedp> & p,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedEle> & Ele,
     const typename DerivedEle::Index i,
     Derivedsqr_d & sqr_d,
     Eigen::PlainObjectBase<Derivedc> & c);

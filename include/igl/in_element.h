@@ -11,6 +11,7 @@
 #include "igl_inline.h"
 #include "AABB.h"
 #include <Eigen/Core>
+#include <Eigen/Sparse>
 
 namespace igl
 {

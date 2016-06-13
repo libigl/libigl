@@ -38,7 +38,7 @@ namespace igl {
       Eigen::VectorXi indInteriorToFull;
       Eigen::VectorXi indFullToInterior;
 
-#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
+//#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
       Eigen::PlainObjectBase<DerivedV> B1, B2, FN;
 
       //laplacians

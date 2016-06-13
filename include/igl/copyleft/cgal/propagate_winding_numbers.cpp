@@ -20,6 +20,7 @@
 #include "closest_facet.h"
 #include "assign_scalar.h"
 #include "extract_cells.h"
+#include "cell_adjacency.h"
 
 #include <stdexcept>
 #include <limits>
@@ -54,19 +55,11 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   };
   tictoc();
 #endif
-  const size_t num_faces = F.rows();
-  //typedef typename DerivedF::Scalar Index;
 
   Eigen::MatrixXi E, uE;
   Eigen::VectorXi EMAP;
   std::vector<std::vector<size_t> > uE2E;
   igl::unique_edge_map(F, E, uE, EMAP, uE2E);
-  bool valid = true;
-  if (!piecewise_constant_winding_number(F, uE, uE2E)) 
-  {
-    std::cerr << "Input mesh is not orientable!" << std::endl;
-    valid = false;
-  }
 
   Eigen::VectorXi P;
   const size_t num_patches = igl::extract_manifold_patches(F, EMAP, uE2E, P);
@@ -79,14 +72,62 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   log_time("cell_extraction");
 #endif
 
-  typedef std::tuple<size_t, bool, size_t> CellConnection;
-  std::vector<std::set<CellConnection> > cell_adjacency(num_cells);
-  for (size_t i=0; i<num_patches; i++) {
-    const int positive_cell = per_patch_cells(i,0);
-    const int negative_cell = per_patch_cells(i,1);
-    cell_adjacency[positive_cell].emplace(negative_cell, false, i);
-    cell_adjacency[negative_cell].emplace(positive_cell, true, i);
+  return propagate_winding_numbers(V, F,
+          uE, uE2E,
+          num_patches, P,
+          num_cells, per_patch_cells,
+          labels, W);
+}
+
+
+template<
+  typename DerivedV,
+  typename DerivedF,
+  typename DeriveduE,
+  typename uE2EType,
+  typename DerivedP,
+  typename DerivedC,
+  typename DerivedL,
+  typename DerivedW>
+IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::PlainObjectBase<DeriveduE>& uE,
+    const std::vector<std::vector<uE2EType> >& uE2E,
+    const size_t num_patches,
+    const Eigen::PlainObjectBase<DerivedP>& P,
+    const size_t num_cells,
+    const Eigen::PlainObjectBase<DerivedC>& C,
+    const Eigen::PlainObjectBase<DerivedL>& labels,
+    Eigen::PlainObjectBase<DerivedW>& W)
+{
+#ifdef PROPAGATE_WINDING_NUMBER_TIMING
+  const auto & tictoc = []() -> double
+  {
+    static double t_start = igl::get_seconds();
+    double diff = igl::get_seconds()-t_start;
+    t_start += diff;
+    return diff;
+  };
+  const auto log_time = [&](const std::string& label) -> void {
+    std::cout << "propagate_winding_num." << label << ": "
+      << tictoc() << std::endl;
+  };
+  tictoc();
+#endif
+
+  bool valid = true;
+  if (!piecewise_constant_winding_number(F, uE, uE2E)) 
+  {
+    assert(false && "Input mesh is not orientable");
+    std::cerr << "Input mesh is not orientable!" << std::endl;
+    valid = false;
   }
+
+  const size_t num_faces = F.rows();
+  typedef std::tuple<typename DerivedC::Scalar, bool, size_t> CellConnection;
+  std::vector<std::set<CellConnection> > cell_adj;
+  igl::copyleft::cgal::cell_adjacency(C, num_cells, cell_adj);
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
   log_time("cell_connectivity");
 #endif
@@ -94,7 +135,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   auto save_cell = [&](const std::string& filename, size_t cell_id) -> void{
     std::vector<size_t> faces;
     for (size_t i=0; i<num_patches; i++) {
-      if ((per_patch_cells.row(i).array() == cell_id).any()) {
+      if ((C.row(i).array() == cell_id).any()) {
         for (size_t j=0; j<num_faces; j++) {
           if ((size_t)P[j] == i) {
             faces.push_back(j);
@@ -140,7 +181,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
           size_t curr_idx = Q.front();
           Q.pop();
           int curr_label = cell_labels[curr_idx];
-          for (const auto& neighbor : cell_adjacency[curr_idx]) {
+          for (const auto& neighbor : cell_adj[curr_idx]) {
             if (cell_labels[std::get<0>(neighbor)] == 0) 
             {
               cell_labels[std::get<0>(neighbor)] = curr_label * -1;
@@ -191,7 +232,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
 #endif
 
   const size_t outer_patch = P[outer_facet];
-  const size_t infinity_cell = per_patch_cells(outer_patch, flipped?1:0);
+  const size_t infinity_cell = C(outer_patch, flipped?1:0);
 
   Eigen::VectorXi patch_labels(num_patches);
   const int INVALID = std::numeric_limits<int>::max();
@@ -214,7 +255,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   while (!Q.empty()) {
     size_t curr_cell = Q.front();
     Q.pop();
-    for (const auto& neighbor : cell_adjacency[curr_cell]) {
+    for (const auto& neighbor : cell_adj[curr_cell]) {
       size_t neighbor_cell, patch_idx;
       bool direction;
       std::tie(neighbor_cell, direction, patch_idx) = neighbor;
@@ -258,8 +299,8 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   for (size_t i=0; i<num_faces; i++) 
   {
     const size_t patch = P[i];
-    const size_t positive_cell = per_patch_cells(patch, 0);
-    const size_t negative_cell = per_patch_cells(patch, 1);
+    const size_t positive_cell = C(patch, 0);
+    const size_t negative_cell = C(patch, 1);
     for (size_t j=0; j<num_labels; j++) {
       W(i,j*2  ) = per_cell_W(positive_cell, j);
       W(i,j*2+1) = per_cell_W(negative_cell, j);
