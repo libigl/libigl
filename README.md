@@ -23,8 +23,8 @@ It is **a header-only library**. You do not need to compile anything to use,
 just include igl headers (e.g. `#include <igl/cotmatrix.h>`) and run.  Each
 header file contains a single function (e.g. `igl/cotmatrix.h` contains
 `igl::cotmatrix()`). Most are tailored to operate on a generic triangle mesh
-stored in an n-by-3 matrix of vertex positions V and an m-by-3 matrix of
-triangle indices F.
+stored in an n-by-3 matrix of vertex positions `V` and an m-by-3 matrix of
+triangle indices `F`.
 
 _Optionally_ the library may also be [pre-compiled](optional/) into a statically
 linked library, for faster compile times with your projects. This only effects
