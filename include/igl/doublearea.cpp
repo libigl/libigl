@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "doublearea.h"
 #include "edge_lengths.h"
+#include "parallel_for.h"
 #include "sort.h"
 #include <cassert>
 #include <iostream>
@@ -148,28 +149,21 @@ IGL_INLINE void igl::doublearea(
   assert((Index)s.rows() == m);
   // resize output
   dblA.resize(l.rows(),1);
-  // Minimum number of iterms per openmp thread
-  #ifndef IGL_OMP_MIN_VALUE
-  #  define IGL_OMP_MIN_VALUE 1000
-  #endif
-  #pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
-  for(Index i = 0;i<m;i++)
-  {
-    //// Heron's formula for area
-    //const typename Derivedl::Scalar arg =
-    //  s(i)*(s(i)-l(i,0))*(s(i)-l(i,1))*(s(i)-l(i,2));
-    //assert(arg>=0);
-    //dblA(i) = 2.0*sqrt(arg);
-    // Kahan's Heron's formula
-    const typename Derivedl::Scalar arg =
-      (l(i,0)+(l(i,1)+l(i,2)))*
-      (l(i,2)-(l(i,0)-l(i,1)))*
-      (l(i,2)+(l(i,0)-l(i,1)))*
-      (l(i,0)+(l(i,1)-l(i,2)));
-    dblA(i) = 2.0*0.25*sqrt(arg);
-    assert( l(i,2) - (l(i,0)-l(i,1)) && "FAILED KAHAN'S ASSERTION");
-    assert(dblA(i) == dblA(i) && "DOUBLEAREA() PRODUCED NaN");
-  }
+  parallel_for(
+    m,
+    [&l,&dblA](const int i)
+    {
+      // Kahan's Heron's formula
+      const typename Derivedl::Scalar arg =
+        (l(i,0)+(l(i,1)+l(i,2)))*
+        (l(i,2)-(l(i,0)-l(i,1)))*
+        (l(i,2)+(l(i,0)-l(i,1)))*
+        (l(i,0)+(l(i,1)-l(i,2)));
+      dblA(i) = 2.0*0.25*sqrt(arg);
+      assert( l(i,2) - (l(i,0)-l(i,1)) && "FAILED KAHAN'S ASSERTION");
+      assert(dblA(i) == dblA(i) && "DOUBLEAREA() PRODUCED NaN");
+    },
+    1000l);
 }
 
 template <typename DerivedV, typename DerivedF, typename DeriveddblA>

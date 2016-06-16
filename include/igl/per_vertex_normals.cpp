@@ -10,6 +10,7 @@
 #include "get_seconds.h"
 #include "per_face_normals.h"
 #include "doublearea.h"
+#include "parallel_for.h"
 #include "internal_angles.h"
 
 template <typename DerivedV, typename DerivedF>
@@ -68,23 +69,34 @@ IGL_INLINE void igl::per_vertex_normals(
   }
 
   // loop over faces
-  const int Frows = F.rows();
-//// Minimum number of iterms per openmp thread
-//#ifndef IGL_OMP_MIN_VALUE
-//#  define IGL_OMP_MIN_VALUE 1000
-//#endif
-//#pragma omp parallel for if (Frows>IGL_OMP_MIN_VALUE)
-  for(int i = 0; i < Frows;i++)
+  for(int i = 0;i<F.rows();i++)
   {
     // throw normal at each corner
     for(int j = 0; j < 3;j++)
     {
-      // Q: Does this need to be critical?
-      // A: Yes. Different (i,j)'s could produce the same F(i,j)
-//#pragma omp critical
-      N.row(F(i,j)) += W(i,j)*FN.row(i);
+      N.row(F(i,j)) += W(i,j) * FN.row(i);
     }
   }
+
+  //// loop over faces
+  //std::mutex critical;
+  //std::vector<DerivedN> NN;
+  //parallel_for(
+  //  F.rows(),
+  //  [&NN,&N](const size_t n){ NN.resize(n,DerivedN::Zero(N.rows(),3));},
+  //  [&F,&W,&FN,&NN,&critical](const int i, const size_t t)
+  //  {
+  //    // throw normal at each corner
+  //    for(int j = 0; j < 3;j++)
+  //    {
+  //      // Q: Does this need to be critical?
+  //      // A: Yes. Different (i,j)'s could produce the same F(i,j)
+  //      NN[t].row(F(i,j)) += W(i,j) * FN.row(i);
+  //    }
+  //  },
+  //  [&N,&NN](const size_t t){ N += NN[t]; },
+  //  1000l);
+
   // take average via normalization
   N.rowwise().normalize();
 }
