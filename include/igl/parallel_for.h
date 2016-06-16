@@ -37,7 +37,7 @@ namespace igl
   inline bool parallel_for(
     const Index loop_size, 
     const FunctionType & func,
-    const Index min_parallel=0);
+    const size_t min_parallel=0);
   // PARALLEL_FOR Functional implementation of an open-mp style, parallel for
   // loop with accumulation. For example, serial code separated into n chunks
   // (each to be parallelized with a thread) might look like:
@@ -81,7 +81,7 @@ namespace igl
     const PrepFunctionType & prep_func,
     const FunctionType & func,
     const AccumFunctionType & accum_func,
-    const Index min_parallel=0);
+    const size_t min_parallel=0);
 }
 
 // Implementation
@@ -96,7 +96,7 @@ template<typename Index, typename FunctionType >
 inline bool igl::parallel_for(
   const Index loop_size, 
   const FunctionType & func,
-  const Index min_parallel)
+  const size_t min_parallel)
 {
   using namespace std;
   // no op preparation/accumulation
@@ -116,7 +116,7 @@ inline bool igl::parallel_for(
   const PreFunctionType & prep_func,
   const FunctionType & func,
   const AccumFunctionType & accum_func,
-  const Index min_parallel)
+  const size_t min_parallel)
 {
   assert(loop_size>=0);
   if(loop_size==0) return false;
