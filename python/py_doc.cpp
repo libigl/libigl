@@ -66,29 +66,6 @@ const char *__doc_igl_signed_distance_winding_number = R"igl_Qu8mg5v7(// Inputs:
   //   hier  Winding number evaluation hierarchy
   //   q  Query point
   // Returns signed distance to mesh)igl_Qu8mg5v7";
-const char *__doc_igl_triangle_triangulate = R"igl_Qu8mg5v7(// Triangulate the interior of a polygon using the triangle library.
-    //
-    // Inputs:
-    //   V #V by 2 list of 2D vertex positions
-    //   E #E by 2 list of vertex ids forming unoriented edges of the boundary of the polygon
-    //   H #H by 2 coordinates of points contained inside holes of the polygon
-    //   flags  string of options pass to triangle (see triangle documentation)
-    // Outputs:
-    //   V2  #V2 by 2  coordinates of the vertives of the generated triangulation
-    //   F2  #F2 by 3  list of indices forming the faces of the generated triangulation
-    //
-    // TODO: expose the option to prevent Steiner points on the boundary
-    //)igl_Qu8mg5v7";
-const char *__doc_igl_embree_ambient_occlusion = R"igl_Qu8mg5v7(// Compute ambient occlusion per given point
-    //
-    // Inputs:
-    //    ei  EmbreeIntersector containing (V,F)
-    //    P  #P by 3 list of origin points
-    //    N  #P by 3 list of origin normals
-    // Outputs:
-    //    S  #P list of ambient occlusion values between 1 (fully occluded) and
-    //      0 (not occluded)
-    //)igl_Qu8mg5v7";
 const char *__doc_igl_cotmatrix = R"igl_Qu8mg5v7(// Constructs the cotangent stiffness matrix (discrete laplacian) for a given
   // mesh (V,F).
   //
@@ -480,25 +457,6 @@ const char *__doc_igl_setdiff = R"igl_Qu8mg5v7(// Set difference of elements of 
   //   C  (k<=m)-long vector of unique elements appearing in A but not in B
   //   IA  (k<=m)-long list of indices into A so that C = A(IA)
   //)igl_Qu8mg5v7";
-const char *__doc_igl_copyleft_tetgen_tetrahedralize = R"igl_Qu8mg5v7(// Mesh the interior of a surface mesh (V,F) using tetgen
-      //
-      // Inputs:
-      //   V  #V by 3 vertex position list
-      //   F  #F list of polygon face indices into V (0-indexed)
-      //   switches  string of tetgen options (See tetgen documentation) e.g.
-      //     "pq1.414a0.01" tries to mesh the interior of a given surface with
-      //       quality and area constraints
-      //     "" will mesh the convex hull constrained to pass through V (ignores F)
-      // Outputs:
-      //   TV  #V by 3 vertex position list
-      //   TT  #T by 4 list of tet face indices
-      //   TF  #F by 3 list of triangle face indices
-      // Returns status:
-      //   0 success
-      //   1 tetgen threw exception
-      //   2 tetgen did not crash but could not create any tets (probably there are
-      //     holes, duplicate faces etc.)
-      //   -1 other error)igl_Qu8mg5v7";
 const char *__doc_igl_comb_frame_field = R"igl_Qu8mg5v7(// Inputs:
   //   V            #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F            #F by 4 eigen Matrix of face (quad) indices
@@ -891,6 +849,38 @@ const char *__doc_igl_readMESH = R"igl_Qu8mg5v7(// load a tetrahedral volume mes
   //   F  #F list of face indices into vertex positions
   //
   // Known bugs: Holes and regions are not supported)igl_Qu8mg5v7";
+const char *__doc_igl_triangle_triangulate = R"igl_Qu8mg5v7(// Triangulate the interior of a polygon using the triangle library.
+    //
+    // Inputs:
+    //   V #V by 2 list of 2D vertex positions
+    //   E #E by 2 list of vertex ids forming unoriented edges of the boundary of the polygon
+    //   H #H by 2 coordinates of points contained inside holes of the polygon
+    //   flags  string of options pass to triangle (see triangle documentation)
+    // Outputs:
+    //   V2  #V2 by 2  coordinates of the vertives of the generated triangulation
+    //   F2  #F2 by 3  list of indices forming the faces of the generated triangulation
+    //
+    // TODO: expose the option to prevent Steiner points on the boundary
+    //)igl_Qu8mg5v7";
+const char *__doc_igl_copyleft_tetgen_tetrahedralize = R"igl_Qu8mg5v7(// Mesh the interior of a surface mesh (V,F) using tetgen
+      //
+      // Inputs:
+      //   V  #V by 3 vertex position list
+      //   F  #F list of polygon face indices into V (0-indexed)
+      //   switches  string of tetgen options (See tetgen documentation) e.g.
+      //     "pq1.414a0.01" tries to mesh the interior of a given surface with
+      //       quality and area constraints
+      //     "" will mesh the convex hull constrained to pass through V (ignores F)
+      // Outputs:
+      //   TV  #V by 3 vertex position list
+      //   TT  #T by 4 list of tet face indices
+      //   TF  #F by 3 list of triangle face indices
+      // Returns status:
+      //   0 success
+      //   1 tetgen threw exception
+      //   2 tetgen did not crash but could not create any tets (probably there are
+      //     holes, duplicate faces etc.)
+      //   -1 other error)igl_Qu8mg5v7";
 const char *__doc_igl_copyleft_comiso_miq = R"igl_Qu8mg5v7(// Inputs:
     //   V              #V by 3 list of mesh vertex 3D positions
     //   F              #F by 3 list of faces indices in V
@@ -929,3 +919,13 @@ const char *__doc_igl_copyleft_comiso_nrosy = R"igl_Qu8mg5v7(// Generate a N-RoS
     // Outputs:
     //   R       #F by 3 the representative vectors of the interpolated field
     //   S       #V by 1 the singularity index for each vertex (0 = regular))igl_Qu8mg5v7";
+const char *__doc_igl_embree_ambient_occlusion = R"igl_Qu8mg5v7(// Compute ambient occlusion per given point
+    //
+    // Inputs:
+    //    ei  EmbreeIntersector containing (V,F)
+    //    P  #P by 3 list of origin points
+    //    N  #P by 3 list of origin normals
+    // Outputs:
+    //    S  #P list of ambient occlusion values between 1 (fully occluded) and
+    //      0 (not occluded)
+    //)igl_Qu8mg5v7";
