@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include <igl/per_face_normals.h>
+#include <igl/material_colors.h>
 #include <igl/per_vertex_normals.h>
 
 #ifdef ENABLE_SERIALIZATION
@@ -104,9 +105,10 @@ IGL_INLINE void igl::viewer::ViewerData::set_mesh(const Eigen::MatrixXd& _V, con
     F = _F;
 
     compute_normals();
-    uniform_colors(Eigen::Vector3d(51.0/255.0,43.0/255.0,33.3/255.0),
-                   Eigen::Vector3d(255.0/255.0,228.0/255.0,58.0/255.0),
-                   Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
+    uniform_colors(
+      Eigen::Vector3d(GOLD_AMBIENT[0], GOLD_AMBIENT[1], GOLD_AMBIENT[2]),
+      Eigen::Vector3d(GOLD_DIFFUSE[0], GOLD_DIFFUSE[1], GOLD_DIFFUSE[2]),
+      Eigen::Vector3d(GOLD_SPECULAR[0], GOLD_SPECULAR[1], GOLD_SPECULAR[2]));
 
     grid_texture();
   }
