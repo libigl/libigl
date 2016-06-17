@@ -107,6 +107,11 @@ if (LIBIGL_WITH_TRIANGLE)
   list(APPEND SHARED_SOURCES "modules/py_igl_triangle.cpp")
 endif ()
 
+if (LIBIGL_WITH_CGAL)
+  add_definitions(-DPY_CGAL)
+  list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_cgal.cpp")
+endif ()
+
 
 ## Prepare the python library
 add_library(pyigl SHARED

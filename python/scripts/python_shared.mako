@@ -26,6 +26,10 @@ extern void python_export_igl_embree(py::module &);
 extern void python_export_igl_triangle(py::module &);
 #endif
 
+#ifdef PY_CGAL
+extern void python_export_igl_cgal(py::module &);
+#endif
+
 PYBIND11_PLUGIN(pyigl) {
     py::module m("pyigl", R"pyigldoc(
         Python wrappers for libigl
@@ -64,6 +68,10 @@ PYBIND11_PLUGIN(pyigl) {
 
     #ifdef PY_TRIANGLE
     python_export_igl_triangle(m);
+    #endif
+
+    #ifdef PY_CGAL
+    python_export_igl_cgal(m);
     #endif
 
     return m.ptr();
