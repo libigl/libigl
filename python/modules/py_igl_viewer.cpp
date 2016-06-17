@@ -6,6 +6,7 @@
 #include <igl/viewer/Viewer.h>
 #include <igl/viewer/ViewerCore.h>
 #include <igl/viewer/ViewerData.h>
+#include <igl/viewer/OpenGL_state.h>
 #include <igl/serialize.h>
 
 void python_export_igl_viewer(py::module &m)
@@ -115,6 +116,16 @@ py::enum_<igl::viewer::ViewerData::DirtyFlags>(viewerdata_class, "DirtyFlags")
       igl::deserialize(data,"Data",a);
       return;
     })
+
+    ;
+
+//////////////////////// OPENGL_State
+
+py::class_<igl::viewer::OpenGL_state> opengl_state_class(me, "OpenGL_state");
+
+    opengl_state_class
+    .def(py::init<>())
+    .def("init", &igl::viewer::OpenGL_state::init)
 
     ;
 
@@ -311,6 +322,7 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     .def(py::init<>())
     .def_readwrite("data", &igl::viewer::Viewer::data)
     .def_readwrite("core", &igl::viewer::Viewer::core)
+    .def_readwrite("opengl", &igl::viewer::Viewer::opengl)
     .def("launch", &igl::viewer::Viewer::launch, py::arg("resizable") = true, py::arg("fullscreen") = false)
     .def("launch_init", &igl::viewer::Viewer::launch_init, py::arg("resizable") = true, py::arg("fullscreen") = false)
     .def("launch_rendering", &igl::viewer::Viewer::launch_rendering, py::arg("loop") = true)

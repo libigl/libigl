@@ -620,6 +620,22 @@ const char *__doc_igl_planarize_quad_mesh = R"igl_Qu8mg5v7(// Inputs:
   // Output:
   //   Vout       #V by 3 eigen Matrix of planar mesh vertex 3D positions
   //)igl_Qu8mg5v7";
+const char *__doc_igl_png_readPNG = R"igl_Qu8mg5v7(// Read an image from a .png file into 4 memory buffers
+    //
+    // Input:
+    //  png_file  path to .png file
+    // Output:
+    //  R,G,B,A texture channels
+    // Returns true on success, false on failure
+    //)igl_Qu8mg5v7";
+const char *__doc_igl_png_writePNG = R"igl_Qu8mg5v7(// Writes an image to a png file
+    //
+    // Input:
+    //  R,G,B,A texture channels
+    // Output:
+    //  png_file  path to .png file
+    // Returns true on success, false on failure
+    //)igl_Qu8mg5v7";
 const char *__doc_igl_point_mesh_squared_distance = R"igl_Qu8mg5v7(// Compute distances from a set of points P to a triangle mesh (V,F)
   //
   // Inputs:

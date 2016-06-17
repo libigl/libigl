@@ -30,6 +30,10 @@ extern void python_export_igl_triangle(py::module &);
 extern void python_export_igl_cgal(py::module &);
 #endif
 
+#ifdef PY_PNG
+extern void python_export_igl_png(py::module &);
+#endif
+
 PYBIND11_PLUGIN(pyigl) {
     py::module m("pyigl", R"pyigldoc(
         Python wrappers for libigl
@@ -88,6 +92,8 @@ PYBIND11_PLUGIN(pyigl) {
            per_face_normals
            per_vertex_normals
            planarize_quad_mesh
+           png_readPNG
+           png_writePNG
            point_mesh_squared_distance
            polar_svd
            principal_curvature
@@ -140,6 +146,10 @@ PYBIND11_PLUGIN(pyigl) {
 
     #ifdef PY_CGAL
     python_export_igl_cgal(m);
+    #endif
+
+    #ifdef PY_PNG
+    python_export_igl_png(m);
     #endif
 
     return m.ptr();
