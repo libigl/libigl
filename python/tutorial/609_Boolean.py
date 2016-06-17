@@ -35,7 +35,7 @@ def update(viewer):
 
 def key_down(viewer, key, modifier):
     global boolean_type
-    # print(boolean_types)
+
     if key == ord('.'):
         boolean_type = boolean_types[(boolean_types.index(boolean_type) + 1) % (len(boolean_types))]
     elif key == ord(','):
@@ -47,14 +47,13 @@ def key_down(viewer, key, modifier):
     else:
         return False
 
-    #igl.cgal.mesh_boolean(VA, FA, VB, FB, boolean_type, VC, FC)
     update(viewer)
 
     return False
 
 
 if __name__ == "__main__":
-    # Mesh with per-face color
+
     VA = igl.eigen.MatrixXd()
     FA = igl.eigen.MatrixXi()
     VB = igl.eigen.MatrixXd()
