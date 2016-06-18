@@ -1,8 +1,14 @@
-# Add the igl library to the modules search path
 import sys, os
-sys.path.insert(0, os.getcwd() + "/../")
 
+# Add the igl library to the modules search path
+sys.path.insert(0, os.getcwd() + "/../")
 import pyigl as igl
+
+from shared import TUTORIAL_SHARED_PATH, check_dependencies
+
+dependencies = ["viewer"]
+check_dependencies(dependencies)
+
 
 V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
@@ -11,33 +17,35 @@ N_vertices = igl.eigen.MatrixXd()
 N_faces = igl.eigen.MatrixXd()
 N_corners = igl.eigen.MatrixXd()
 
+
 # This function is called every time a keyboard button is pressed
 def key_pressed(viewer, key, modifier):
     if key == ord('1'):
-      viewer.data.set_normals(N_faces)
-      return True
+        viewer.data.set_normals(N_faces)
+        return True
     elif key == ord('2'):
-      viewer.data.set_normals(N_vertices)
-      return True
+        viewer.data.set_normals(N_vertices)
+        return True
     elif key == ord('3'):
-      viewer.data.set_normals(N_corners)
-      return True
+        viewer.data.set_normals(N_corners)
+        return True
     return False
 
+
 # Load a mesh in OFF format
-igl.readOFF("../../tutorial/shared/fandisk.off", V, F);
+igl.readOFF(TUTORIAL_SHARED_PATH + "fandisk.off", V, F)
 
 # Compute per-face normals
 N_faces = igl.eigen.MatrixXd()
-igl.per_face_normals(V,F,N_faces)
+igl.per_face_normals(V, F, N_faces)
 
 # Compute per-vertex normals
 N_vertices = igl.eigen.MatrixXd()
-igl.per_vertex_normals(V,F,igl.PER_VERTEX_NORMALS_WEIGHTING_TYPE_AREA,N_vertices)
+igl.per_vertex_normals(V, F, igl.PER_VERTEX_NORMALS_WEIGHTING_TYPE_AREA, N_vertices)
 
 # Compute per-corner normals, |dihedral angle| > 20 degrees --> crease
 N_corners = igl.eigen.MatrixXd()
-igl.per_corner_normals(V,F,20,N_corners)
+igl.per_corner_normals(V, F, 20, N_corners)
 
 # Plot the mesh
 viewer = igl.viewer.Viewer()

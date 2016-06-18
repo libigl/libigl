@@ -45,6 +45,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#scalarfieldvisualization">104 Scalar field visualization</a></li>
 <li><a href="#overlays">105 Overlays</a></li>
 <li><a href="#viewermenu">106 Viewer Menu</a></li>
+<li><a href="#screencapture">107 Screen Capture</a></li>
 </ul></li>
 <li><a href="#chapter2:discretegeometricquantitiesandoperators">Chapter 2: Discrete Geometric Quantities and
  Operators</a>
@@ -145,6 +146,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#signeddistances">704 Signed Distances</a></li>
 <li><a href="#marchingcubes">705 Marching Cubes</a></li>
 <li><a href="#facetorientation">706 Facet Orientation</a></li>
+<li><a href="#sweptvolume">707 Swept Volume</a></li>
 </ul></li>
 <li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
@@ -479,13 +481,13 @@ viewer.callback_init = [&amp;](igl::viewer::Viewer&amp; viewer)
 
   // Expose a variable directly ...
   viewer.ngui-&gt;addVariable(&quot;float&quot;,floatVariable);
-  
+
   // Expose an enumaration type
   viewer.ngui-&gt;addVariable&lt;Orientation&gt;(&quot;Direction&quot;,dir)-&gt;setItems({&quot;Up&quot;,&quot;Down&quot;,&quot;Left&quot;,&quot;Right&quot;});
 
   // Add a button
   viewer.ngui-&gt;addButton(&quot;Print Hello&quot;,[](){ std::cout &lt;&lt; &quot;Hello\n&quot;; });
-  
+
   // call to generate menu
   viewer.ngui-&gt;layout();
   return false;
@@ -514,6 +516,25 @@ viewer.ngui-&gt;addVariable&lt;bool&gt;(&quot;bool&quot;,[&amp;](bool val) {
 <img src="images/106_ViewerMenu.png" alt="(Example 106) The UI of the viewer can be easily customized." />
 <figcaption>(<a href="106_ViewerMenu/main.cpp">Example 106</a>) The UI of the viewer can be easily customized.</figcaption>
 </figure>
+
+<h2 id="screencapture"><a href="#screencapture">Screen capture</a></h2>
+
+<p>It is possible to render the scene in a memory buffer using the function draw_buffer:</p>
+
+<pre><code class="cpp">// Allocate temporary buffers
+Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; R(1280,800);
+Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; G(1280,800);
+Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; B(1280,800);
+Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; A(1280,800);
+
+// Draw the scene in the buffers
+viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+
+// Save it to a PNG
+igl::png::writePNG(R,G,B,A,&quot;out.png&quot;);
+</code></pre>
+
+<p>In <a href="107_ScreenCapture/main.cpp">Example 107</a> a scene is rendered in a temporary png and used to texture a quadrilateral.</p>
 
 <h1 id="chapter2:discretegeometricquantitiesandoperators">Chapter 2: Discrete Geometric Quantities and Operators</h1>
 
@@ -3353,6 +3374,65 @@ Alternatively, each individual triangle is considered a &#8220;patch&#8221; (mid
 and oriented outward independently.</figcaption>
 </figure>
 
+<h2 id="sweptvolume"><a href="#sweptvolume">Swept Volume</a></h2>
+
+<p>The swept volume <span class="math">\(S\)</span> of a moving solid object <span class="math">\(A\)</span> can be defined as any point in
+space such that at one moment in time the point lies inside the solid. In other
+words, it is the union of the solid object transformed by the rigid motion
+<span class="math">\(f(t)\)</span> over time:</p>
+
+<p><span class="math">\(S = \bigcup \limits_{t\in [0,1]} f(t) A.\)</span></p>
+
+<p>The surface of the swept volume of a solid bounded by a triangle mesh
+undergoing a rigid motion with non-trivial rotation is <em><strong>not</strong></em> a surface
+exactly representably by triangle mesh: it will be a piecewise-ruled surface.</p>
+
+<p>To see this, consider the surface swept by a single edge&#8217;s line segment as it
+performs a screw motion. </p>
+
+<p>This means that if we&#8217;d like to the surface of the swept volume of a triangle
+mesh undergoing a rigid motion and we&#8217;d like the output to be another triangle
+mesh, then we&#8217;re going to have to be happy with some amount of approximation
+error.</p>
+
+<p>With this in mind, the simplest method for computing an approximate swept
+volume is by exploiting an alternative definition of the swept volume based on
+signed distances:</p>
+
+<p><span class="math">\(S = \left\{ \mathbf{p}\ \middle| \ d(\mathbf{p},\partial S) < 0 \right\} = \left\{ \mathbf{p}\
+\middle|\
+\min\limits_{t \in [0,1]} d(\mathbf{p},f(t)\ \partial A) < 0 \right\}\)</span></p>
+
+<p>If <span class="math">\(\partial A\)</span> is a triangle mesh, then we can approximate this by 1)
+discretizing time at a finite step of steps <span class="math">\([0,\Delta t,2\Delta t, \dots, 1]\)</span>
+and by 2) discretizing space with a regular grid and representing the distance
+field using trilinear interpolation of grid values. Finally the output mesh,
+<span class="math">\(\partial S\)</span> is approximated by contouring using Marching Cubes
+<a class="citation" href="#fn:38" title="Jump to citation">[38]<span class="citekey" style="display:none">lorensen_1987</span></a>.</p>
+
+<p>This method is similar to one described by Schroeder et al. in 1994
+<a class="citation" href="#fn:40" title="Jump to citation">[40]<span class="citekey" style="display:none">schroeder_1994</span></a>, and the one used in conjunction with boolean operations by
+Garg et al. 2016 <a class="citation" href="#fn:41" title="Jump to citation">[41]<span class="citekey" style="display:none">garg_2016</span></a>.</p>
+
+<p>In libigl, if your input solid&#8217;s surface is represented by <code>(V,F)</code> then the
+output surface mesh will be <code>(SV,SF)</code> after calling:</p>
+
+<pre><code class="cpp">igl::copyleft::swept_volume(V,F,num_time_steps,grid_size,isolevel,SV,SF);
+</code></pre>
+
+<p>The <code>isolevel</code> parameter can be set to zero to approximate the exact swept
+volume, greater than zero to approximate a positive offset of the swept volume
+or less than zero to approximate a negative offset.</p>
+
+<figure>
+<img src="images/bunny-swept-volume.gif" alt="(Example 707) computes
+the surface of the swept volume (silver) of the bunny model undergoing a rigid
+motion (gold)." />
+<figcaption>(<a href="707_SweptVolume/main.cpp">Example 707</a>) computes
+the surface of the swept volume (silver) of the bunny model undergoing a rigid
+motion (gold).</figcaption>
+</figure>
+
 <h1 id="future">Outlook for continuing development</h1>
 
 <p>Libigl is in active development, and we plan to focus on the following features
@@ -3601,6 +3681,18 @@ pseudonormal</a>,
  Polygon Meshes Based on Ray
  Casting</a>,
  2014.</p>
+</li>
+
+<li id="fn:40" class="citation"><span class="citekey" style="display:none">schroeder_1994</span><p>William J. Schroeder, William E. Lorensen, and Steve
+ Linthicum. <a href="https://www.google.com/search?q=implicit+modeling+of+swept+surfaces+and+volumes">Implicit Modeling of Swept Surfaces and
+ Volumes</a>,
+ 1994.</p>
+</li>
+
+<li id="fn:41" class="citation"><span class="citekey" style="display:none">garg_2016</span><p>Akash Garg, Alec Jacobson, Eitan Grinspun. <a href="https://www.google.com/search?q=Computational+Design+of+Reconfigurables">Computational Design
+ of
+ Reconfigurables</a>,
+ 2016</p>
 </li>
 
 </ol>

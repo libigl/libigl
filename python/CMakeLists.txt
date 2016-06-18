@@ -47,7 +47,7 @@ endif()
 
 include_directories(${PYTHON_INCLUDE_DIR} include)
 
-## include pybing
+## include pybind
 include_directories(${PROJECT_SOURCE_DIR}/../external/pybind11/include)
 
 ## include libigl
@@ -57,12 +57,12 @@ option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
 option(LIBIGL_WITH_BOOLEAN          "Use Cork boolean"   OFF)
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
-option(LIBIGL_WITH_EMBREE           "Use Embree"         OFF)
+option(LIBIGL_WITH_EMBREE           "Use Embree"         ON)
 option(LIBIGL_WITH_LIM              "Use LIM"            ON)
 option(LIBIGL_WITH_MATLAB           "Use Matlab"         OFF)
 option(LIBIGL_WITH_MOSEK            "Use MOSEK"          OFF)
 option(LIBIGL_WITH_BBW              "Use BBW"            ON)
-option(LIBIGL_WITH_OPENGL_AND_PNG   "Use OpenGL"         ON)
+option(LIBIGL_WITH_PNG              "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
 option(LIBIGL_WITH_XML              "Use XML"            ON)
@@ -84,19 +84,44 @@ add_definitions(${LIBIGL_DEFINITIONS})
 ## Optional modules
 if (LIBIGL_WITH_VIEWER)
   add_definitions(-DPY_VIEWER)
-  list(APPEND SHARED_SOURCES "py_igl_viewer.cpp")
+  list(APPEND SHARED_SOURCES "modules/py_igl_viewer.cpp")
 endif ()
 
 if (LIBIGL_WITH_COMISO)
   add_definitions(-DPY_COMISO)
-  list(APPEND SHARED_SOURCES "copyleft/py_igl_comiso.cpp")
+  list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_comiso.cpp")
+endif ()
+
+if (LIBIGL_WITH_TETGEN)
+  add_definitions(-DPY_TETGEN)
+  list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_tetgen.cpp")
+endif ()
+
+if (LIBIGL_WITH_EMBREE)
+  add_definitions(-DPY_EMBREE)
+  list(APPEND SHARED_SOURCES "modules/py_igl_embree.cpp")
+endif ()
+
+if (LIBIGL_WITH_TRIANGLE)
+  add_definitions(-DPY_TRIANGLE)
+  list(APPEND SHARED_SOURCES "modules/py_igl_triangle.cpp")
+endif ()
+
+if (LIBIGL_WITH_CGAL)
+  add_definitions(-DPY_CGAL)
+  list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_cgal.cpp")
+endif ()
+
+if (LIBIGL_WITH_PNG)
+  add_definitions(-DPY_PNG)
+  list(APPEND SHARED_SOURCES "modules/py_igl_png.cpp")
 endif ()
 
 
 ## Prepare the python library
 add_library(pyigl SHARED
   python_shared.cpp
-  py_vector.cpp
+  modules/py_vector.cpp
   py_igl.cpp
   py_doc.cpp
   ${SHARED_SOURCES}
@@ -142,10 +167,10 @@ elseif (UNIX)
   #Enable flag if undefined symbols appear on pyigl module import to get notified about the missing symbols at link time
   option(CHECK_UNDEFINED        "Check for undefined symbols"    OFF)
 
-  # Strip unnecessary sections of the binary on Linux/Mac OS 
+  # Strip unnecessary sections of the binary on Linux/Mac OS
   if(APPLE)
     set_target_properties(pyigl PROPERTIES MACOSX_RPATH ".")
-    
+
     if (NOT CHECK_UNDEFINED)
       set_target_properties(pyigl PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
     endif()
