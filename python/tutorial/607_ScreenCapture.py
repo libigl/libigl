@@ -9,6 +9,7 @@ from shared import TUTORIAL_SHARED_PATH, check_dependencies
 dependencies = ["png", "viewer"]
 check_dependencies(dependencies)
 
+temp_png = os.path.join(os.getcwd(),"out.png")
 
 def key_down(viewer, key, modifier):
     if key == ord('1'):
@@ -22,7 +23,7 @@ def key_down(viewer, key, modifier):
         viewer.core.draw_buffer(viewer.data, viewer.opengl, False, R, G, B, A)
 
         # Save it to a PNG
-        igl.png.writePNG(R, G, B, A, "out.png")
+        igl.png.writePNG(R, G, B, A, temp_png)
     elif key == ord('2'):
         # Allocate temporary buffers
         R = igl.eigen.MatrixXuc()
@@ -31,7 +32,7 @@ def key_down(viewer, key, modifier):
         A = igl.eigen.MatrixXuc()
 
         # Read the PNG
-        igl.png.readPNG("out.png", R, G, B, A)
+        igl.png.readPNG(temp_png, R, G, B, A)
 
         # Replace the mesh with a triangulated square
         V = igl.eigen.MatrixXd([[-0.5, -0.5, 0],
@@ -74,4 +75,4 @@ if __name__ == "__main__":
     viewer.data.set_mesh(V, F)
     viewer.launch()
 
-    os.remove("out.png")
+    os.remove(temp_png)
