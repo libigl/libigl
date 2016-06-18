@@ -28,7 +28,7 @@
 
 template <typename DerivedV, int DIM>
   template <typename Derivedbb_mins, typename Derivedbb_maxs>
-inline void igl::AABB<DerivedV,DIM>::init(
+IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::MatrixXi & Ele, 
     const Eigen::PlainObjectBase<Derivedbb_mins> & bb_mins,
@@ -92,7 +92,7 @@ inline void igl::AABB<DerivedV,DIM>::init(
 }
 
   template <typename DerivedV, int DIM>
-inline void igl::AABB<DerivedV,DIM>::init(
+void igl::AABB<DerivedV,DIM>::init(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::MatrixXi & Ele)
 {
@@ -102,7 +102,7 @@ inline void igl::AABB<DerivedV,DIM>::init(
 }
 
   template <typename DerivedV, int DIM>
-inline void igl::AABB<DerivedV,DIM>::init(
+IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::MatrixXi & Ele, 
     const Eigen::MatrixXi & SI,
@@ -201,14 +201,14 @@ inline void igl::AABB<DerivedV,DIM>::init(
 }
 
 template <typename DerivedV, int DIM>
-inline bool igl::AABB<DerivedV,DIM>::is_leaf() const
+IGL_INLINE bool igl::AABB<DerivedV,DIM>::is_leaf() const
 {
   return m_primitive != -1;
 }
 
 template <typename DerivedV, int DIM>
 template <typename Derivedq>
-inline std::vector<int> igl::AABB<DerivedV,DIM>::find(
+IGL_INLINE std::vector<int> igl::AABB<DerivedV,DIM>::find(
     const Eigen::PlainObjectBase<DerivedV> & V,
     const Eigen::MatrixXi & Ele, 
     const Eigen::PlainObjectBase<Derivedq> & q,
@@ -298,7 +298,7 @@ inline std::vector<int> igl::AABB<DerivedV,DIM>::find(
 }
 
 template <typename DerivedV, int DIM>
-inline int igl::AABB<DerivedV,DIM>::subtree_size() const
+IGL_INLINE int igl::AABB<DerivedV,DIM>::subtree_size() const
 {
   // 1 for self
   int n = 1;
@@ -318,7 +318,7 @@ inline int igl::AABB<DerivedV,DIM>::subtree_size() const
 
 template <typename DerivedV, int DIM>
 template <typename Derivedbb_mins, typename Derivedbb_maxs>
-inline void igl::AABB<DerivedV,DIM>::serialize(
+IGL_INLINE void igl::AABB<DerivedV,DIM>::serialize(
     Eigen::PlainObjectBase<Derivedbb_mins> & bb_mins,
     Eigen::PlainObjectBase<Derivedbb_maxs> & bb_maxs,
     Eigen::VectorXi & elements,
@@ -350,7 +350,7 @@ inline void igl::AABB<DerivedV,DIM>::serialize(
 }
 
 template <typename DerivedV, int DIM>
-inline typename igl::AABB<DerivedV,DIM>::Scalar 
+IGL_INLINE typename igl::AABB<DerivedV,DIM>::Scalar 
 igl::AABB<DerivedV,DIM>::squared_distance(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::MatrixXi & Ele, 
@@ -363,7 +363,7 @@ igl::AABB<DerivedV,DIM>::squared_distance(
 
 
 template <typename DerivedV, int DIM>
-inline typename igl::AABB<DerivedV,DIM>::Scalar 
+IGL_INLINE typename igl::AABB<DerivedV,DIM>::Scalar 
 igl::AABB<DerivedV,DIM>::squared_distance(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::MatrixXi & Ele, 
@@ -447,7 +447,7 @@ template <
   typename DerivedsqrD, 
   typename DerivedI, 
   typename DerivedC>
-inline void igl::AABB<DerivedV,DIM>::squared_distance(
+IGL_INLINE void igl::AABB<DerivedV,DIM>::squared_distance(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::MatrixXi & Ele, 
   const Eigen::PlainObjectBase<DerivedP> & P,
@@ -475,7 +475,7 @@ template <
   typename DerivedsqrD, 
   typename DerivedI, 
   typename DerivedC>
-inline void igl::AABB<DerivedV,DIM>::squared_distance(
+IGL_INLINE void igl::AABB<DerivedV,DIM>::squared_distance(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::MatrixXi & Ele, 
   const AABB<Derivedother_V,DIM> & other,
@@ -508,7 +508,7 @@ template <
   typename DerivedsqrD, 
   typename DerivedI, 
   typename DerivedC>
-inline typename igl::AABB<DerivedV,DIM>::Scalar igl::AABB<DerivedV,DIM>::squared_distance_helper(
+IGL_INLINE typename igl::AABB<DerivedV,DIM>::Scalar igl::AABB<DerivedV,DIM>::squared_distance_helper(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::MatrixXi & Ele, 
   const AABB<Derivedother_V,DIM> * other,
@@ -733,7 +733,7 @@ inline typename igl::AABB<DerivedV,DIM>::Scalar igl::AABB<DerivedV,DIM>::squared
 }
 
 template <typename DerivedV, int DIM>
-inline void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
+IGL_INLINE void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::MatrixXi & Ele, 
   const RowVectorDIMS & p,
@@ -752,7 +752,7 @@ inline void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
 
 
 template <typename DerivedV, int DIM>
-inline void igl::AABB<DerivedV,DIM>::set_min(
+IGL_INLINE void igl::AABB<DerivedV,DIM>::set_min(
   const RowVectorDIMS & 
 #ifndef NDEBUG
   p
@@ -781,7 +781,7 @@ inline void igl::AABB<DerivedV,DIM>::set_min(
 
 
 template <typename DerivedV, int DIM>
-inline bool 
+IGL_INLINE bool 
 igl::AABB<DerivedV,DIM>::intersect_ray(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::MatrixXi & Ele, 
@@ -816,7 +816,7 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
 }
 
 template <typename DerivedV, int DIM>
-inline bool 
+IGL_INLINE bool 
 igl::AABB<DerivedV,DIM>::intersect_ray(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::MatrixXi & Ele, 
@@ -871,7 +871,7 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
 }
 
 template <typename DerivedV, int DIM>
-inline bool 
+IGL_INLINE bool 
 igl::AABB<DerivedV,DIM>::intersect_ray(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::MatrixXi & Ele, 
@@ -938,6 +938,7 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
+// generated by autoexplicit.sh
 template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::init(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&);
 template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 2>::init(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&);
 template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::squared_distance<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&) const;
@@ -946,8 +947,4 @@ template double igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::squared_
 template double igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 2>::squared_distance(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, 1, 2, 1, 1, 2> const&, int&, Eigen::Matrix<double, 1, 2, 1, 1, 2>&) const;
 template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 2>::squared_distance<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&) const;
 template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::squared_distance<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&) const;
-
-
 #endif
-
-

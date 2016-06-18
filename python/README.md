@@ -5,7 +5,7 @@
 <span style="color:#F62217">
 Everything in this folder is currently being developed and it is likely to be
 changed radically in the next couple of months, breaking compatibility between
-different version. We plan to stabilize the python API by the end of 2015.
+different version. We plan to stabilize the python API by the end of 2016.
 </span>
 
 ## Introduction
@@ -153,7 +153,7 @@ page](https://github.com/libigl/libigl/issues).
 
 ## Copyright
 2015 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
-Zhou, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
+Zhou, Sebastian Koch, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
 Giorgis, Luigi Rocca, Leonardo Sacht, Olga Sorkine-Hornung, and others.
 
 Please see individual files for appropriate copyright notices.

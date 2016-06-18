@@ -3,7 +3,7 @@
 #include <Eigen/Sparse>
 
 
-#include "python_shared.h"
+#include "../python_shared.h"
 
 /// Creates Python bindings for a dynamic Eigen matrix
 template <typename Type>
@@ -126,6 +126,9 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("rightCols", [](Type &m, const int& k) { return Type(m.rightCols(k)); })
         .def("leftCols", [](Type &m, const int& k) { return Type(m.leftCols(k)); })
 
+        .def("setLeftCols", [](Type &m, const int& k, const Type& v) { return Type(m.leftCols(k) = v); })
+        .def("setRightCols", [](Type &m, const int& k, const Type& v) { return Type(m.rightCols(k) = v); })
+
         .def("topRows", [](Type &m, const int& k) { return Type(m.topRows(k)); })
         .def("bottomRows", [](Type &m, const int& k) { return Type(m.bottomRows(k)); })
 
@@ -170,6 +173,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("cwiseQuotient", [](const Type &m1, const Type &m2) -> Type { return m1.cwiseQuotient(m2); })
 
         /* Row and column-wise operations */
+        .def("rowwiseSet", [](Type &m, const Type &m2) {return Type(m.rowwise() = Eigen::Matrix<Scalar, 1, Eigen::Dynamic>(m2));} )
         .def("rowwiseSum", [](const Type &m) {return Type(m.rowwise().sum());} )
         .def("rowwiseProd", [](const Type &m) {return Type(m.rowwise().prod());} )
         .def("rowwiseMean", [](const Type &m) {return Type(m.rowwise().mean());} )
@@ -178,6 +182,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("rowwiseMinCoeff", [](const Type &m) {return Type(m.rowwise().minCoeff());} )
         .def("rowwiseMaxCoeff", [](const Type &m) {return Type(m.rowwise().maxCoeff());} )
 
+        .def("colwiseSet", [](Type &m, const Type &m2) {return Type(m.colwise() = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>(m2));} )
         .def("colwiseSum", [](const Type &m) {return Type(m.colwise().sum());} )
         .def("colwiseProd", [](const Type &m) {return Type(m.colwise().prod());} )
         .def("colwiseMean", [](const Type &m) {return Type(m.colwise().mean());} )

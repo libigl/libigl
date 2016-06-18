@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_TRIANGLE_TRIANGULATE_H
 #define IGL_TRIANGLE_TRIANGULATE_H
-#include <igl/igl_inline.h>
+#include "../igl_inline.h"
 #include <string>
 #include <Eigen/Core>
 
