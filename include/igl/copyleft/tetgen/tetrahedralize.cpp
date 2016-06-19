@@ -178,7 +178,8 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
 	for (int i = 0; i < VM.size(); ++i) {
 		in.pointmarkerlist[i] = VM[i];
 	}
-	in.facetmarkerlist = new int[FM.size()];
+  // These have already been created in mesh_to_tetgenio.
+  // Reset them here.
 	for (int i = 0; i < FM.size(); ++i) {
 		in.facetmarkerlist[i] = FM[i];
 	}
