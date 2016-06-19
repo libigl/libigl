@@ -193,6 +193,7 @@ IGL_INLINE void igl::triangle::triangulate(
   out.pointlist = NULL;
   out.trianglelist = NULL;
   out.segmentlist = NULL;
+  out.segmentmarkerlist = NULL;
 	out.pointmarkerlist = NULL;
 
   // Call triangle
