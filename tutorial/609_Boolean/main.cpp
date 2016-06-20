@@ -79,6 +79,10 @@ int main(int argc, char *argv[])
   using namespace std;
   igl::readOFF(TUTORIAL_SHARED_PATH "/cheburashka.off",VA,FA);
   igl::readOFF(TUTORIAL_SHARED_PATH "/decimated-knight.off",VB,FB);
+  
+  std::cout << "Mosel A: " << FA.rows() << " Triangles" << std::endl
+	  << "Mosel B: " << FB.rows() << " Triangles" << std::endl;
+
   // Plot the mesh with pseudocolors
   igl::viewer::Viewer viewer;
 
