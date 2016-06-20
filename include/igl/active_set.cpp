@@ -79,7 +79,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   {
     lx = p_lx;
   }
-  if(ux.size() == 0)
+  if(p_ux.size() == 0)
   {
     ux = Eigen::PlainObjectBase<Derivedux>::Constant(
       n,1,numeric_limits<typename Derivedux::Scalar>::max());
@@ -162,15 +162,22 @@ IGL_INLINE igl::SolverStatus igl::active_set(
         }
       }
 #ifdef ACTIVE_SET_CPP_DEBUG
-      cout<<"  new_as_lx: "<<new_as_lx<<endl;
-      cout<<"  new_as_ux: "<<new_as_ux<<endl;
+      cout<<"  new_as_lx: "<<new_as_lx
+	  <<", total: "<<count(as_lx.data(),as_lx.data()+n,TRUE)
+	  <<"\n";
+      cout<<"  new_as_ux: "<<new_as_ux
+	  <<", total: "<<count(as_ux.data(),as_ux.data()+n,TRUE)
+	  <<"\n";
 #endif
       const double diff = (Z-old_Z).squaredNorm();
 #ifdef ACTIVE_SET_CPP_DEBUG
-      cout<<"diff: "<<diff<<endl;
+      cout<<"  diff: "<<diff<<endl;
 #endif
       if(diff < params.solution_diff_threshold)
       {
+#ifdef ACTIVE_SET_CPP_DEBUG
+        cout<<"  converged iterations: "<<iter<<", diff: "<<diff<<endl;
+#endif
         ret = SOLVER_STATUS_CONVERGED;
         break;
       }
@@ -355,11 +362,18 @@ IGL_INLINE igl::SolverStatus igl::active_set(
         as_ieq(as_ieq_list(a)) = FALSE;
       }
     }
+#ifdef ACTIVE_SET_CPP_DEBUG
+    cout<<"  phi(Z): " << Z.transpose() * A * Z<<"\n";
+#endif
 
     iter++;
     //cout<<iter<<endl;
     if(params.max_iter>0 && iter>=params.max_iter)
     {
+#ifdef ACTIVE_SET_CPP_DEBUG
+      const double diff = (Z-old_Z).squaredNorm();
+      cout<<"  unconverged diff: "<<diff<<endl;
+#endif
       ret = SOLVER_STATUS_MAX_ITER;
       break;
     }
