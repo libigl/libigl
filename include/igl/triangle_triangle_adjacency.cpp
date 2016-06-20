@@ -9,6 +9,7 @@
 #include "is_edge_manifold.h"
 #include "all_edges.h"
 #include "unique_simplices.h"
+#include "parallel_for.h"
 #include "unique_edge_map.h"
 #include <algorithm>
 #include <iostream>
@@ -172,36 +173,37 @@ template <
   }
 
   // No race conditions because TT*[f][c]'s are in bijection with e's
-  // Minimum number of iterms per openmp thread
+  // Minimum number of items per thread
   //const size_t num_e = E.rows();
-# ifndef IGL_OMP_MIN_VALUE
-#   define IGL_OMP_MIN_VALUE 1000
-# endif
-# pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
   // Slightly better memory access than loop over E
-  for(Index f = 0;f<(Index)m;f++)
-  {
-    for(Index c = 0;c<3;c++)
+  igl::parallel_for(
+    m,
+    [&](const Index & f)
     {
-      const Index e = f + m*c;
-      //const Index c = e/m;
-      const vector<uE2EType> & N = uE2E[EMAP(e)];
-      for(const auto & ne : N)
+      for(Index c = 0;c<3;c++)
       {
-        const Index nf = ne%m;
-        // don't add self
-        if(nf != f)
+        const Index e = f + m*c;
+        //const Index c = e/m;
+        const vector<uE2EType> & N = uE2E[EMAP(e)];
+        for(const auto & ne : N)
         {
-          TT[f][c].push_back(nf);
-          if(construct_TTi)
+          const Index nf = ne%m;
+          // don't add self
+          if(nf != f)
           {
-            const Index nc = ne/m;
-            TTi[f][c].push_back(nc);
+            TT[f][c].push_back(nf);
+            if(construct_TTi)
+            {
+              const Index nc = ne/m;
+              TTi[f][c].push_back(nc);
+            }
           }
         }
       }
-    }
-  }
+    },
+    1000ul);
+
+
 }
 
 #ifdef IGL_STATIC_LIBRARY

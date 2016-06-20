@@ -11,12 +11,11 @@
 #include "reorder.h"
 #include "IndexComparison.h"
 #include "colon.h"
+#include "parallel_for.h"
 
 #include <cassert>
 #include <algorithm>
 #include <iostream>
-#include <thread>
-#include <functional>
 
 template <typename DerivedX, typename DerivedY, typename DerivedIX>
 IGL_INLINE void igl::sort(
@@ -223,106 +222,86 @@ IGL_INLINE void igl::sort3(
     IX.col(2).setConstant(2);// = Eigen::PlainObjectBase<DerivedIX>::Ones (IX.rows(),1);
   }
 
-  const int n = num_outer;
-  const size_t nthreads = n<8000?1:std::thread::hardware_concurrency();
+
+  const auto & inner = [&IX,&Y,&dim,&ascending](const Index & i)
   {
-    std::vector<std::thread> threads(nthreads<=1?0:nthreads);
-    for(int t = 0;t<nthreads;t++)
+    YScalar & a = (dim==1 ? Y(0,i) : Y(i,0));
+    YScalar & b = (dim==1 ? Y(1,i) : Y(i,1));
+    YScalar & c = (dim==1 ? Y(2,i) : Y(i,2));
+    Index & ai = (dim==1 ? IX(0,i) : IX(i,0));
+    Index & bi = (dim==1 ? IX(1,i) : IX(i,1));
+    Index & ci = (dim==1 ? IX(2,i) : IX(i,2));
+    if(ascending)
     {
-      const auto & inner =  
-        [&X,&Y,&IX,&dim,&ascending](const int bi, const int ei, const int t)
+      // 123 132 213 231 312 321
+      if(a > b)
       {
-        // loop over columns (or rows)
-        for(int i = bi;i<ei;i++)
+        std::swap(a,b);
+        std::swap(ai,bi);
+      }
+      // 123 132 123 231 132 231
+      if(b > c)
+      {
+        std::swap(b,c);
+        std::swap(bi,ci);
+        // 123 123 123 213 123 213
+        if(a > b)
         {
-          YScalar & a = (dim==1 ? Y(0,i) : Y(i,0));
-          YScalar & b = (dim==1 ? Y(1,i) : Y(i,1));
-          YScalar & c = (dim==1 ? Y(2,i) : Y(i,2));
-          Index & ai = (dim==1 ? IX(0,i) : IX(i,0));
-          Index & bi = (dim==1 ? IX(1,i) : IX(i,1));
-          Index & ci = (dim==1 ? IX(2,i) : IX(i,2));
-          if(ascending)
-          {
-            // 123 132 213 231 312 321
-            if(a > b)
-            {
-              std::swap(a,b);
-              std::swap(ai,bi);
-            }
-            // 123 132 123 231 132 231
-            if(b > c)
-            {
-              std::swap(b,c);
-              std::swap(bi,ci);
-              // 123 123 123 213 123 213
-              if(a > b)
-              {
-                std::swap(a,b);
-                std::swap(ai,bi);
-              }
-              // 123 123 123 123 123 123
-            }
-          }else
-          {
-            // 123 132 213 231 312 321
-            if(a < b)
-            {
-              std::swap(a,b);
-              std::swap(ai,bi);
-            }
-            // 213 312 213 321 312 321
-            if(b < c)
-            {
-              std::swap(b,c);
-              std::swap(bi,ci);
-              // 231 321 231 321 321 321
-              if(a < b)
-              {
-                std::swap(a,b);
-                std::swap(ai,bi);
-              }
-              // 321 321 321 321 321 321
-            }
-          }
+          std::swap(a,b);
+          std::swap(ai,bi);
         }
-      };
-      if(nthreads == 1)
+        // 123 123 123 123 123 123
+      }
+    }else
+    {
+      // 123 132 213 231 312 321
+      if(a < b)
       {
-        inner(0,n,0);
-      }else
+        std::swap(a,b);
+        std::swap(ai,bi);
+      }
+      // 213 312 213 321 312 321
+      if(b < c)
       {
-        threads[t] = std::thread(
-          std::bind(inner,t*n/nthreads,(t+1)==nthreads?n:(t+1)*n/nthreads,t));
+        std::swap(b,c);
+        std::swap(bi,ci);
+        // 231 321 231 321 321 321
+        if(a < b)
+        {
+          std::swap(a,b);
+          std::swap(ai,bi);
+        }
+        // 321 321 321 321 321 321
       }
     }
-    std::for_each(threads.begin(),threads.end(),[](std::thread& x){x.join();});
-  }
+  };
+  parallel_for(num_outer,inner,16000);
 }
 
 template <class T>
 IGL_INLINE void igl::sort(
-  const std::vector<T> & unsorted,
-  const bool ascending,
-  std::vector<T> & sorted,
-  std::vector<size_t> & index_map)
+const std::vector<T> & unsorted,
+const bool ascending,
+std::vector<T> & sorted,
+std::vector<size_t> & index_map)
 {
-  // Original unsorted index map
-  index_map.resize(unsorted.size());
-  for(size_t i=0;i<unsorted.size();i++)
-  {
-    index_map[i] = i;
-  }
-  // Sort the index map, using unsorted for comparison
-  std::sort(
-    index_map.begin(),
-    index_map.end(),
-    igl::IndexLessThan<const std::vector<T>& >(unsorted));
+// Original unsorted index map
+index_map.resize(unsorted.size());
+for(size_t i=0;i<unsorted.size();i++)
+{
+  index_map[i] = i;
+}
+// Sort the index map, using unsorted for comparison
+std::sort(
+  index_map.begin(),
+  index_map.end(),
+  igl::IndexLessThan<const std::vector<T>& >(unsorted));
 
-  // if not ascending then reverse
-  if(!ascending)
-  {
-    std::reverse(index_map.begin(),index_map.end());
-  }
+// if not ascending then reverse
+if(!ascending)
+{
+  std::reverse(index_map.begin(),index_map.end());
+}
   // make space for output without clobbering
   sorted.resize(unsorted.size());
   // reorder unsorted into sorted using index map
