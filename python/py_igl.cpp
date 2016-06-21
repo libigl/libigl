@@ -31,7 +31,9 @@
 #include <igl/gaussian_curvature.h>
 #include <igl/grad.h>
 #include <igl/harmonic.h>
+#include <igl/internal_angles.h>
 #include <igl/invert_diag.h>
+#include <igl/is_irregular_vertex.h>
 #include <igl/jet.h>
 #include <igl/local_basis.h>
 #include <igl/lscm.h>
@@ -100,7 +102,9 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_gaussian_curvature.cpp"
 #include "py_igl/py_grad.cpp"
 #include "py_igl/py_harmonic.cpp"
+#include "py_igl/py_internal_angles.cpp"
 #include "py_igl/py_invert_diag.cpp"
+#include "py_igl/py_is_irregular_vertex.cpp"
 #include "py_igl/py_jet.cpp"
 #include "py_igl/py_local_basis.cpp"
 #include "py_igl/py_lscm.cpp"
