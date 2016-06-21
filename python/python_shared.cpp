@@ -78,7 +78,9 @@ PYBIND11_PLUGIN(pyigl) {
            gaussian_curvature
            grad
            harmonic
+           internal_angles
            invert_diag
+           is_irregular_vertex
            jet
            local_basis
            lscm
