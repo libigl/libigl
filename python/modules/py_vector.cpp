@@ -149,6 +149,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("mean", [](const Type &m) {return m.mean();})
 
         .def("sum", [](const Type &m) {return m.sum();})
+        .def("square", [](const Type &m) {return m.array().square();})
         .def("prod", [](const Type &m) {return m.prod();})
         .def("trace", [](const Type &m) {return m.trace();})
         .def("norm", [](const Type &m) {return m.norm();})
