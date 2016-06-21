@@ -39,28 +39,21 @@ namespace igl
       // Outputs:
       //   IF  #intersecting face pairs by 2 list of intersecting face pairs,
       //     indexing FA and FB
-      //   VVA  #VVA by 3 list of vertex positions
-      //   FFA  #FFA by 3 list of triangle indices into VVA
-      //   JA  #FFA list of indices into FA denoting birth triangle
-      //   IMA  #VVA list of indices into VVA of unique vertices.
-      //   VVB  #VVB by 3 list of vertex positions
-      //   FFB  #FFB by 3 list of triangle indices into VVB
-      //   JB  #FFB list of indices into FB denoting birth triangle
-      //   IMB  #VVB list of indices into VVB of unique vertices.
+      //   VVAB  #VVAB by 3 list of vertex positions
+      //   FFAB  #FFAB by 3 list of triangle indices into VVA
+      //   JAB  #FFAB list of indices into [FA;FB] denoting birth triangle
+      //   IMAB  #VVAB list of indices stitching duplicates (resulting from
+      //     mesh intersections) together
       template <
         typename DerivedVA,
         typename DerivedFA,
         typename DerivedVB,
         typename DerivedFB,
         typename DerivedIF,
-        typename DerivedVVA,
-        typename DerivedFFA,
-        typename DerivedJA,
-        typename DerivedIMA,
-        typename DerivedVVB,
-        typename DerivedFFB,
-        typename DerivedJB,
-        typename DerivedIMB>
+        typename DerivedVVAB,
+        typename DerivedFFAB,
+        typename DerivedJAB,
+        typename DerivedIMAB>
       IGL_INLINE bool intersect_other(
         const Eigen::PlainObjectBase<DerivedVA> & VA,
         const Eigen::PlainObjectBase<DerivedFA> & FA,
@@ -68,14 +61,10 @@ namespace igl
         const Eigen::PlainObjectBase<DerivedFB> & FB,
         const RemeshSelfIntersectionsParam & params,
         Eigen::PlainObjectBase<DerivedIF> & IF,
-        Eigen::PlainObjectBase<DerivedVVA> & VVA,
-        Eigen::PlainObjectBase<DerivedFFA> & FFA,
-        Eigen::PlainObjectBase<DerivedJA>  & JA,
-        Eigen::PlainObjectBase<DerivedIMA> & IMA,
-        Eigen::PlainObjectBase<DerivedVVB> & VVB,
-        Eigen::PlainObjectBase<DerivedFFB> & FFB,
-        Eigen::PlainObjectBase<DerivedJB>  & JB,
-        Eigen::PlainObjectBase<DerivedIMB> & IMB);
+        Eigen::PlainObjectBase<DerivedVVAB> & VVAB,
+        Eigen::PlainObjectBase<DerivedFFAB> & FFAB,
+        Eigen::PlainObjectBase<DerivedJAB>  & JAB,
+        Eigen::PlainObjectBase<DerivedIMAB> & IMAB);
       // Legacy wrapper for detect only using common types.
       //
       // Inputs:
