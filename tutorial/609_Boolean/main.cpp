@@ -41,6 +41,7 @@ void update(igl::viewer::Viewer &viewer)
   viewer.data.clear();
   viewer.data.set_mesh(VC,FC);
   viewer.data.set_colors(C);
+  std::cout<<"A "<<MESH_BOOLEAN_TYPE_NAMES[boolean_type]<<" B."<<std::endl;
 }
 
 bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
@@ -67,8 +68,6 @@ bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
       viewer.core.camera_dnear += 0.1;
       return true;
   }
-  std::cout<<"A "<<MESH_BOOLEAN_TYPE_NAMES[boolean_type]<<" B."<<std::endl;
-  igl::copyleft::cgal::mesh_boolean(VA,FA,VB,FB,boolean_type,VC,FC);
   update(viewer);
   return true;
 }
