@@ -109,7 +109,7 @@ namespace igl
           // Make a short name for the edge map
           typedef std::map<EMK,EMV> EdgeMap;
           // Maps edges of offending faces to all incident offending faces
-          EdgeMap edge2faces;
+          //EdgeMap edge2faces;
           std::vector<std::pair<const Box, const Box> > candidate_box_pairs;
 
         public:
@@ -330,7 +330,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
   T(),
   lIF(),
   offending(),
-  edge2faces(),
+  //edge2faces(),
   params(params)
 {
   using namespace std;
@@ -427,7 +427,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
   }
 
   remesh_intersections(
-    V,F,T,offending,edge2faces,params.stitch_all,VV,FF,J,IM);
+    V,F,T,offending,params.stitch_all,VV,FF,J,IM);
 
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
   log_time("remesh_intersection");
@@ -477,7 +477,7 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
       // append face to edge's list
       Index i = F(f,(e+1)%3) < F(f,(e+2)%3) ? F(f,(e+1)%3) : F(f,(e+2)%3);
       Index j = F(f,(e+1)%3) < F(f,(e+2)%3) ? F(f,(e+2)%3) : F(f,(e+1)%3);
-      edge2faces[EMK(i,j)].push_back(f);
+      //edge2faces[EMK(i,j)].push_back(f);
     }
   }
 }

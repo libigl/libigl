@@ -33,24 +33,35 @@ namespace igl
       //
       // Known bugs: This only computes distances to triangles. So unreferenced
       // vertices and degenerate triangles (segments) are ignored.
-      template <typename Kernel>
+      template <
+        typename Kernel,
+        typename DerivedP,
+        typename DerivedV,
+        typename DerivedF,
+        typename DerivedsqrD,
+        typename DerivedI,
+        typename DerivedC>
       IGL_INLINE void point_mesh_squared_distance(
-        const Eigen::MatrixXd & P,
-        const Eigen::MatrixXd & V,
-        const Eigen::MatrixXi & F,
-        Eigen::VectorXd & sqrD,
-        Eigen::VectorXi & I,
-        Eigen::MatrixXd & C);
+        const Eigen::PlainObjectBase<DerivedP> & P,
+        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::PlainObjectBase<DerivedF> & F,
+              Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
+              Eigen::PlainObjectBase<DerivedI> & I,
+              Eigen::PlainObjectBase<DerivedC> & C);
       // Probably can do this in a way that we don't pass around `tree` and `T`
       //
       // Outputs:
       //   tree  CGAL's AABB tree
       //   T  list of CGAL triangles in order of F (for determining which was found
       //     in computation)
-      template <typename Kernel>
+      template <
+        typename Kernel,
+        typename DerivedV,
+        typename DerivedF
+        >
       IGL_INLINE void point_mesh_squared_distance_precompute(
-        const Eigen::MatrixXd & V,
-        const Eigen::MatrixXi & F,
+        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::PlainObjectBase<DerivedF> & F,
         CGAL::AABB_tree<
           CGAL::AABB_traits<Kernel, 
             CGAL::AABB_triangle_primitive<Kernel, 
@@ -63,9 +74,14 @@ namespace igl
       //  see above
       // Outputs:
       //  see above
-      template <typename Kernel>
+      template <
+        typename Kernel,
+        typename DerivedP,
+        typename DerivedsqrD,
+        typename DerivedI,
+        typename DerivedC>
       IGL_INLINE void point_mesh_squared_distance(
-        const Eigen::MatrixXd & P,
+        const Eigen::PlainObjectBase<DerivedP> & P,
         const CGAL::AABB_tree<
           CGAL::AABB_traits<Kernel, 
             CGAL::AABB_triangle_primitive<Kernel, 
@@ -74,9 +90,9 @@ namespace igl
           >
         > & tree,
         const std::vector<CGAL::Triangle_3<Kernel> > & T,
-        Eigen::VectorXd & sqrD,
-        Eigen::VectorXi & I,
-        Eigen::MatrixXd & C);
+        Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
+        Eigen::PlainObjectBase<DerivedI> & I,
+        Eigen::PlainObjectBase<DerivedC> & C);
     }
   }
 }
