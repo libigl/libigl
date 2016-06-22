@@ -1,18 +1,20 @@
 #include "extract_manifold_patches.h"
+#include "unique_edge_map.h"
 #include <cassert>
 #include <limits>
 #include <queue>
 
 template<
-typename DerivedF,
-typename DerivedEMAP,
-typename uE2EType,
-typename DerivedP>
+  typename DerivedF,
+  typename DerivedEMAP,
+  typename uE2EType,
+  typename DerivedP>
 IGL_INLINE size_t igl::extract_manifold_patches(
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
-        const std::vector<std::vector<uE2EType> >& uE2E,
-        Eigen::PlainObjectBase<DerivedP>& P) {
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+  const std::vector<std::vector<uE2EType> >& uE2E,
+  Eigen::PlainObjectBase<DerivedP>& P) 
+{
     assert(F.cols() == 3);
     const size_t num_faces = F.rows();
 
@@ -65,6 +67,20 @@ IGL_INLINE size_t igl::extract_manifold_patches(
     assert((P.array() != INVALID).all());
 
     return num_patches;
+}
+
+template<
+  typename DerivedF,
+  typename DerivedP>
+IGL_INLINE size_t igl::extract_manifold_patches(
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::PlainObjectBase<DerivedP>& P) 
+{
+  Eigen::MatrixXi E, uE;
+  Eigen::VectorXi EMAP;
+  std::vector<std::vector<size_t> > uE2E;
+  igl::unique_edge_map(F, E, uE, EMAP, uE2E);
+  return igl::extract_manifold_patches(F, EMAP, uE2E, P);
 }
 
 #ifdef IGL_STATIC_LIBRARY
