@@ -36,10 +36,7 @@ if __name__ == "__main__":
     area_min = area.minCoeff() / area_avg
     area_max = area.maxCoeff() / area_avg
     area_ns = (area - area_avg) / area_avg
-    print(area_ns[0])
-    # area_ns *= area_ns
-    print(area_ns[0])
-    area_sigma = math.sqrt(area_ns.mean())
+    area_sigma = math.sqrt(area_ns.squaredMean())
 
     print("Areas (Min/Max)/Avg_Area Sigma: \n%.2f/%.2f (%.2f)\n" % (
         area_min, area_max, area_sigma))
@@ -52,8 +49,8 @@ if __name__ == "__main__":
     angle_avg = angles.mean()
     angle_min = angles.minCoeff()
     angle_max = angles.maxCoeff()
-    angle_ns = (angles - angle_avg) * (angles - angle_avg)
-    angle_sigma = math.sqrt(angle_ns.mean())
+    angle_ns = angles - angle_avg
+    angle_sigma = math.sqrt(angle_ns.squaredMean())
 
     print("Angles in degrees (Min/Max) Sigma: \n%.2f/%.2f (%.2f)\n" % (
         angle_min, angle_max, angle_sigma))

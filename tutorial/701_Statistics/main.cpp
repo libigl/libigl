@@ -36,12 +36,7 @@ int main(int argc, char *argv[])
   double area_avg   = area.mean();
   double area_min   = area.minCoeff() / area_avg;
   double area_max   = area.maxCoeff() / area_avg;
-  auto area_ns = ((area.array()-area_avg)/area_avg);
-
-  std::cout << area_ns(0) << std::endl;
-//  area_ns.square();
-  std::cout << area_ns(0) << std::endl;
-  double area_sigma = sqrt(area_ns.square().mean());
+  double area_sigma = sqrt(((area.array()-area_avg)/area_avg).square().mean());
 
   printf("Areas (Min/Max)/Avg_Area Sigma: \n%.2f/%.2f (%.2f)\n",
     area_min,area_max,area_sigma);
