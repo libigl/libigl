@@ -125,6 +125,8 @@ PYBIND11_PLUGIN(pyigl) {
            slice_mask
            slice_tets
            sortrows
+           streamlines_init
+           streamlines_next
            triangle_triangle_adjacency
            triangle_triangulate
            unique
