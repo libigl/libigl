@@ -153,6 +153,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("trace", [](const Type &m) {return m.trace();})
         .def("norm", [](const Type &m) {return m.norm();})
         .def("squaredNorm", [](const Type &m) {return m.squaredNorm();})
+        .def("squaredMean", [](const Type &m) {return m.array().square().mean();})
 
         .def("minCoeff", [](const Type &m) {return m.minCoeff();} )
         .def("maxCoeff", [](const Type &m) {return m.maxCoeff();} )

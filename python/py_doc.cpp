@@ -421,12 +421,31 @@ const char *__doc_igl_harmonic = R"igl_Qu8mg5v7(// Compute k-harmonic weight fun
   // Outputs:
   //   W  #V by #W list of weights
   //)igl_Qu8mg5v7";
+const char *__doc_igl_internal_angles = R"igl_Qu8mg5v7(// Compute internal angles for a triangle mesh
+  //
+  // Inputs:
+  //   V  #V by dim eigen Matrix of mesh vertex nD positions
+  //   F  #F by poly-size eigen Matrix of face (triangle) indices
+  // Output:
+  //   K  #F by poly-size eigen Matrix of internal angles
+  //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
+  //
+  // Known Issues:
+  //   if poly-size ≠ 3 then dim must equal 3.)igl_Qu8mg5v7";
 const char *__doc_igl_invert_diag = R"igl_Qu8mg5v7(// Templates:
   //   T  should be a eigen sparse matrix primitive type like int or double
   // Inputs:
   //   X  an m by n sparse matrix
   // Outputs:
   //   Y  an m by n sparse matrix)igl_Qu8mg5v7";
+const char *__doc_igl_is_irregular_vertex = R"igl_Qu8mg5v7(// Determine if a vertex is irregular, i.e. it has more than 6 (triangles)
+  // or 4 (quads) incident edges. Vertices on the boundary are ignored.
+  //
+  // Inputs:
+  //   V  #V by dim list of vertex positions
+  //   F  #F by 3[4] list of triangle[quads] indices
+  // Returns #V vector of bools revealing whether vertices are singular
+  //)igl_Qu8mg5v7";
 const char *__doc_igl_jet = R"igl_Qu8mg5v7(// JET like MATLAB's jet
   //
   // Inputs:
