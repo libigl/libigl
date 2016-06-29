@@ -988,6 +988,24 @@ const char *__doc_igl_sortrows = R"igl_Qu8mg5v7(// Act like matlab's [Y,I] = sor
   //     reference as X)
   //   I  m list of indices so that
   //     Y = X(I,:);)igl_Qu8mg5v7";
+const char *__doc_igl_streamlines_init = R"igl_Qu8mg5v7(    // Given a mesh and a field the function computes the /data/ necessary for tracing the field'
+    // streamlines, and creates the initial /state/ for the tracing.
+    // Inputs:
+    //   V             #V by 3 list of mesh vertex coordinates
+    //   F             #F by 3 list of mesh faces
+    //   temp_field    #F by 3n list of the 3D coordinates of the per-face vectors
+    //                    (n-degrees stacked horizontally for each triangle)
+    //   treat_as_symmetric
+    //              if true, adds n symmetry directions to the field (N = 2n). Else N = n
+    //   percentage    [0-1] percentage of faces sampled
+    // Outputs:
+    //   data          struct containing topology information of the mesh and field
+    //   state         struct containing the state of the tracing )igl_Qu8mg5v7";
+const char *__doc_igl_streamlines_next = R"igl_Qu8mg5v7( // The function computes the next state for each point in the sample
+    //   V             #V by 3 list of mesh vertex coordinates
+    //   F             #F by 3 list of mesh faces
+    //   data          struct containing topology information
+    //   state         struct containing the state of the tracing )igl_Qu8mg5v7";
 const char *__doc_igl_triangle_triangle_adjacency = R"igl_Qu8mg5v7(// Constructs the triangle-triangle adjacency matrix for a given
   // mesh (V,F).
   //

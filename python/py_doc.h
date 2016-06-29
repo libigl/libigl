@@ -81,6 +81,8 @@ extern const char *__doc_igl_slice_into;
 extern const char *__doc_igl_slice_mask;
 extern const char *__doc_igl_slice_tets;
 extern const char *__doc_igl_sortrows;
+extern const char *__doc_igl_streamlines_init;
+extern const char *__doc_igl_streamlines_next;
 extern const char *__doc_igl_triangle_triangle_adjacency;
 extern const char *__doc_igl_triangle_triangulate;
 extern const char *__doc_igl_unique;
