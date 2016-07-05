@@ -119,6 +119,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   bool valid = true;
   if (!piecewise_constant_winding_number(F, uE, uE2E)) 
   {
+    assert(false && "Input mesh is not orientable");
     std::cerr << "Input mesh is not orientable!" << std::endl;
     valid = false;
   }

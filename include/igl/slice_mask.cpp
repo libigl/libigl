@@ -55,8 +55,8 @@ IGL_INLINE void igl::slice_mask(
     case 1:
     {
       const int ym = R.count();
-      Y.resize(ym,X.cols());
       assert(X.rows() == R.size() && "X.rows() should match R.size()");
+      Y.resize(ym,X.cols());
       {
         int yi = 0;
         for(int i = 0;i<X.rows();i++)
@@ -117,4 +117,8 @@ IGL_INLINE DerivedX igl::slice_mask(
 
 #ifdef IGL_STATIC_LIBRARY
 template void igl::slice_mask<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::slice_mask<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::slice_mask<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::slice_mask<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+
 #endif

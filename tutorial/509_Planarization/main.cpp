@@ -25,7 +25,7 @@ Eigen::MatrixXd PQC0plan, PQC1plan, PQC2plan, PQC3plan;
 
 
 // Scale for visualizing the fields
-double global_scale;
+double global_scale; //TODO: not used
 
 
 bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)

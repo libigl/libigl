@@ -8,14 +8,21 @@
 #include "point_mesh_squared_distance.h"
 #include "mesh_to_cgal_triangle_list.h"
 
-template <typename Kernel>
+template <
+  typename Kernel,
+  typename DerivedP,
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedsqrD,
+  typename DerivedI,
+  typename DerivedC>
 IGL_INLINE void igl::copyleft::cgal::point_mesh_squared_distance(
-  const Eigen::MatrixXd & P,
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
-  Eigen::VectorXd & sqrD,
-  Eigen::VectorXi & I,
-  Eigen::MatrixXd & C)
+  const Eigen::PlainObjectBase<DerivedP> & P,
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
+        Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
+        Eigen::PlainObjectBase<DerivedI> & I,
+        Eigen::PlainObjectBase<DerivedC> & C)
 {
   using namespace std;
   typedef CGAL::Triangle_3<Kernel> Triangle_3; 
@@ -29,10 +36,10 @@ IGL_INLINE void igl::copyleft::cgal::point_mesh_squared_distance(
   return point_mesh_squared_distance(P,tree,T,sqrD,I,C);
 }
 
-template <typename Kernel>
+template <typename Kernel, typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::copyleft::cgal::point_mesh_squared_distance_precompute(
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
   CGAL::AABB_tree<
     CGAL::AABB_traits<Kernel, 
       CGAL::AABB_triangle_primitive<Kernel, 
@@ -77,9 +84,14 @@ IGL_INLINE void igl::copyleft::cgal::point_mesh_squared_distance_precompute(
   tree.closest_point_and_primitive(Point_3(0,0,0));
 }
 
-template <typename Kernel>
+template <
+  typename Kernel,
+  typename DerivedP,
+  typename DerivedsqrD,
+  typename DerivedI,
+  typename DerivedC>
 IGL_INLINE void igl::copyleft::cgal::point_mesh_squared_distance(
-  const Eigen::MatrixXd & P,
+  const Eigen::PlainObjectBase<DerivedP> & P,
   const CGAL::AABB_tree<
     CGAL::AABB_traits<Kernel, 
       CGAL::AABB_triangle_primitive<Kernel, 
@@ -88,9 +100,9 @@ IGL_INLINE void igl::copyleft::cgal::point_mesh_squared_distance(
     >
   > & tree,
   const std::vector<CGAL::Triangle_3<Kernel> > & T,
-  Eigen::VectorXd & sqrD,
-  Eigen::VectorXi & I,
-  Eigen::MatrixXd & C)
+  Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
+  Eigen::PlainObjectBase<DerivedI> & I,
+  Eigen::PlainObjectBase<DerivedC> & C)
 {
   typedef CGAL::Triangle_3<Kernel> Triangle_3; 
   typedef typename std::vector<Triangle_3>::iterator Iterator;
@@ -110,18 +122,14 @@ IGL_INLINE void igl::copyleft::cgal::point_mesh_squared_distance(
     // Find closest point and primitive id
     Point_and_primitive_id pp = tree.closest_point_and_primitive(query);
     Point_3 closest_point = pp.first;
-    C(p,0) = CGAL::to_double(closest_point[0]);
-    C(p,1) = CGAL::to_double(closest_point[1]);
-    C(p,2) = CGAL::to_double(closest_point[2]);
-    sqrD(p) = CGAL::to_double((closest_point-query).squared_length());
+    assign_scalar(closest_point[0],C(p,0));
+    assign_scalar(closest_point[1],C(p,1));
+    assign_scalar(closest_point[2],C(p,2));
+    assign_scalar((closest_point-query).squared_length(),sqrD(p));
     I(p) = pp.second - T.begin();
   }
 }
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::copyleft::cgal::point_mesh_squared_distance_precompute<CGAL::Epick>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, CGAL::AABB_tree<CGAL::AABB_traits<CGAL::Epick, CGAL::AABB_triangle_primitive<CGAL::Epick, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > >::iterator, CGAL::Boolean_tag<false> > > >&, std::vector<CGAL::Triangle_3<CGAL::Epick>, std::allocator<CGAL::Triangle_3<CGAL::Epick> > >&);
-template void igl::copyleft::cgal::point_mesh_squared_distance<CGAL::Epeck>( const Eigen::MatrixXd & P, const Eigen::MatrixXd & V, const Eigen::MatrixXi & F, Eigen::VectorXd & sqrD, Eigen::VectorXi & I, Eigen::MatrixXd & C);
-template void igl::copyleft::cgal::point_mesh_squared_distance<CGAL::Epick>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
-template void igl::copyleft::cgal::point_mesh_squared_distance<CGAL::Simple_cartesian<double> >(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
 #endif

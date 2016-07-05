@@ -1,6 +1,12 @@
 // dummy cpp file to compile the code in case IGL is in header only mode
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#ifdef STBI_LOAD
+	#define STB_IMAGE_IMPLEMENTATION
+	#include "stb_image.h"
+#endif
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
+#ifdef STBI_WRITE
+	#define STB_IMAGE_WRITE_IMPLEMENTATION
+	#include "stb_image_write.h"
+#endif
+
+ 

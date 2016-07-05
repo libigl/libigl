@@ -1,15 +1,15 @@
-from __future__ import print_function
+import sys, os
+import math
 
 # Add the igl library to the modules search path
-import sys, os
 sys.path.insert(0, os.getcwd() + "/../")
-
 import pyigl as igl
-from iglhelpers import e2p
-import math
-TUTORIAL_SHARED_PATH = "../../tutorial/shared/"
 
-global V, F, T, tree, FN, VN, EN, E, EMAP, max_distance, slice_z, overlay
+from shared import TUTORIAL_SHARED_PATH, check_dependencies
+
+dependencies = ["viewer"]
+check_dependencies(dependencies)
+
 
 V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
@@ -27,9 +27,21 @@ overlay = False
 
 viewer = igl.viewer.Viewer()
 
+
+def append_mesh(C_vis, F_vis, V_vis, V, F, color):
+    F_vis.conservativeResize(F_vis.rows() + F.rows(), 3)
+    F_vis.setBottomRows(F.rows(), F + V_vis.rows())
+    V_vis.conservativeResize(V_vis.rows() + V.rows(), 3)
+    V_vis.setBottomRows(V.rows(), V)
+    C_vis.conservativeResize(C_vis.rows() + V.rows(), 3)
+    colorM = igl.eigen.MatrixXd(V.rows(), C_vis.cols())
+    colorM.rowwiseSet(color)
+    C_vis.setBottomRows(V.rows(), colorM)
+
+
 def update_visualization(viewer):
     global V, F, T, tree, FN, VN, EN, E, EMAP, max_distance, slice_z, overlay
-    plane = igl.eigen.MatrixXd([0.0, 0.0, 1.0, -((1-slice_z) * V.col(2).minCoeff() + slice_z * V.col(2).maxCoeff())])
+    plane = igl.eigen.MatrixXd([0.0, 0.0, 1.0, -((1 - slice_z) * V.col(2).minCoeff() + slice_z * V.col(2).maxCoeff())])
     V_vis = igl.eigen.MatrixXd()
     F_vis = igl.eigen.MatrixXi()
 
@@ -38,58 +50,45 @@ def update_visualization(viewer):
     bary = igl.eigen.SparseMatrixd()
     igl.slice_tets(V, T, plane, V_vis, F_vis, J, bary)
     max_l = 0.03
-#    while True:
-#        l = igl.eigen.MatrixXd()
-#        igl.edge_lengths(V_vis, F_vis, l)
-#        l /= (V_vis.colwise().maxCoeff() - V_vis.colwise().minCoeff()).norm()
-#        
-#        if l.maxCoeff() < max_l:
-#            break
-#        
-#        bad = e2p(l.rowwiseMaxCoeff())
-#        bad = bad > max_l
-#        F_vis_bad = igl.eigen.MatrixXi()
-#        F_vis_good = igl.eigen.MatrixXi()
-#        igl::slice_mask(F_vis, bad, 1, F_vis_bad);
-#        igl::slice_mask(F_vis, (bad!=true).eval(), 1, F_vis_good);
-#        igl.upsample(V_vis, F_vis_bad)
-#        F_vis = igl.cat(1, F_vis_bad, F_vis_good)
+    while True:
+        l = igl.eigen.MatrixXd()
+        igl.edge_lengths(V_vis, F_vis, l)
+        l /= (V_vis.colwiseMaxCoeff() - V_vis.colwiseMinCoeff()).norm()
 
+        if l.maxCoeff() < max_l:
+            break
 
-#    #Compute signed distance
-#    S_vis = igl.eigen.MatrixXd()
-#    I = igl.eigen.MatrixXi()
-#    N = igl.eigen.MatrixXd()
-#    C = igl.eigen.MatrixXd()
+        bad = l.rowwiseMaxCoeff() > max_l
+        notbad = l.rowwiseMaxCoeff() <= max_l  # TODO replace by ~ operator
+        F_vis_bad = igl.eigen.MatrixXi()
+        F_vis_good = igl.eigen.MatrixXi()
+        igl.slice_mask(F_vis, bad, 1, F_vis_bad)
+        igl.slice_mask(F_vis, notbad, 1, F_vis_good)
+        igl.upsample(V_vis, F_vis_bad)
+        F_vis = igl.cat(1, F_vis_bad, F_vis_good)
 
-#    # Bunny is a watertight mesh so use pseudonormal for signing
-#    igl.signed_distance_pseudonormal(V_vis, V, F, tree, FN, VN, EN, EMAP, S_vis, I, C, N)
+    # Compute signed distance
+    S_vis = igl.eigen.MatrixXd()
+    I = igl.eigen.MatrixXi()
+    N = igl.eigen.MatrixXd()
+    C = igl.eigen.MatrixXd()
 
-#    # push to [0,1] range
-#    S_vis.array() = 0.5*(S_vis.array()/max_distance)+0.5;
-#    C_vis = igl.eigen.MatrixXi()
-#    # color without normalizing
-#    igl.parula(S_vis, False, C_vis)
+    # Bunny is a watertight mesh so use pseudonormal for signing
+    igl.signed_distance_pseudonormal(V_vis, V, F, tree, FN, VN, EN, EMAP, S_vis, I, C, N)
 
+    # push to [0,1] range
+    S_vis = 0.5 * (S_vis / max_distance) + 0.5
+    C_vis = igl.eigen.MatrixXd()
+    # color without normalizing
+    igl.parula(S_vis, False, C_vis)
 
-#    const auto & append_mesh = [&C_vis,&F_vis,&V_vis](const Eigen::MatrixXd & V, const Eigen::MatrixXi & F, const RowVector3d & color)
-
-#    F_vis.conservativeResize(F_vis.rows() + F.rows(), 3)
-#    F_vis.bottomRows(F.rows()) = F.array() + V_vis.rows()
-#    V_vis.conservativeResize(V_vis.rows() + V.rows(), 3)
-#    V_vis.bottomRows(V.rows()) = V
-#    C_vis.conservativeResize(C_vis.rows() + V.rows(), 3)
-#    C_vis.bottomRows(V.rows()).rowwise() = color
-
-#    if overlay:
-#        append_mesh(V, F, RowVector3d(0.8,0.8,0.8))
+    if overlay:
+        append_mesh(C_vis, F_vis, V_vis, V, F, igl.eigen.MatrixXd([[0.8, 0.8, 0.8]]))
 
     viewer.data.clear()
     viewer.data.set_mesh(V_vis, F_vis)
-#    viewer.data.set_colors(C_vis)
+    viewer.data.set_colors(C_vis)
     viewer.core.lighting_factor = overlay
-
-
 
 
 def key_down(viewer, key, modifier):
@@ -111,30 +110,26 @@ def key_down(viewer, key, modifier):
 print("Press [space] to toggle showing surface.")
 print("Press '.'/',' to push back/pull forward slicing plane.")
 
-#Load mesh: (V,T) tet-mesh of convex hull, F contains original surface triangles
-igl.readMESH(TUTORIAL_SHARED_PATH + "bunny.mesh", V, T, F);
+# Load mesh: (V,T) tet-mesh of convex hull, F contains original surface triangles
+igl.readMESH(TUTORIAL_SHARED_PATH + "bunny.mesh", V, T, F)
 
-#Call to point_mesh_squared_distance to determine bounds
+# Call to point_mesh_squared_distance to determine bounds
 sqrD = igl.eigen.MatrixXd()
 I = igl.eigen.MatrixXi()
 C = igl.eigen.MatrixXd()
 igl.point_mesh_squared_distance(V, V, F, sqrD, I, C)
 max_distance = math.sqrt(sqrD.maxCoeff())
 
-#Precompute signed distance AABB tree
+# Precompute signed distance AABB tree
 tree.init(V, F)
 
-#Precompute vertex, edge and face normals
+# Precompute vertex, edge and face normals
 igl.per_face_normals(V, F, FN)
 igl.per_vertex_normals(V, F, igl.PER_VERTEX_NORMALS_WEIGHTING_TYPE_ANGLE, FN, VN)
 igl.per_edge_normals(V, F, igl.PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM, FN, EN, E, EMAP)
 
-#Plot the generated mesh
-update_visualization(viewer);
+# Plot the generated mesh
+update_visualization(viewer)
 viewer.callback_key_down = key_down
 viewer.core.show_lines = False
 viewer.launch()
-
-
-
-
