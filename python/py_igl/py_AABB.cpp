@@ -5,7 +5,7 @@ AABB
 .def(py::init<const igl::AABB<Eigen::MatrixXd,3>& >())
 .def("init",[](igl::AABB<Eigen::MatrixXd,3>& tree, const Eigen::MatrixXd& V, const Eigen::MatrixXi& Ele)
 {
-    return tree.init(V, Ele, Eigen::Matrix<double, Eigen::Dynamic, 3>(), Eigen::Matrix<double, Eigen::Dynamic, 3>(), Eigen::MatrixXi(), 0); 
+    return tree.init(V, Ele, Eigen::Matrix<double, Eigen::Dynamic, 3>(), Eigen::Matrix<double, Eigen::Dynamic, 3>(), Eigen::VectorXi(), 0); 
 })
 .def("squared_distance", [](const igl::AABB<Eigen::MatrixXd,3>& tree, const Eigen::MatrixXd& V, const Eigen::MatrixXi& Ele, const Eigen::MatrixXd& P, Eigen::MatrixXd& sqrD, Eigen::MatrixXi& I, Eigen::MatrixXd& C)
 {

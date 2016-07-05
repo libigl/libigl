@@ -63,6 +63,9 @@ def map_parameter_types(name, cpp_type, parsed_types, errors, enum_types):
     if cpp_type.startswith("MatY"):
         result.append("Eigen::SparseMatrix<double>&")
         skip_parsing = True
+    if cpp_type.startswith("Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic>"):
+        result.append("Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic>")
+        skip_parsing = True
     if cpp_type == "std::vector<std::vector<Scalar> > &":
         result.append("std::vector<std::vector<double> > &")
         skip_parsing = True
@@ -100,7 +103,7 @@ def map_parameter_types(name, cpp_type, parsed_types, errors, enum_types):
                 else:
                     result.append("MatrixXd&")
                 break
-            if t == "MatrixXi":
+            if t == "MatrixXi" or t == "VectorXi":
                 result.append("MatrixXi&")
                 break
             if t == "MatrixXd" or t == "VectorXd":
@@ -197,7 +200,10 @@ if __name__ == '__main__':
     path = os.path.dirname(__file__)
     if path != "":
         os.chdir(path)
-    shutil.rmtree("generated")
+    try:
+        shutil.rmtree("generated")
+    except:
+        pass # Ignore missing generated directory
     os.makedirs("generated/complete")
     os.mkdir("generated/partial")
 

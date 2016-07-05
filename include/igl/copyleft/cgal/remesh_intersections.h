@@ -30,7 +30,6 @@ namespace igl
       //   offending #offending map taking face indices into F to pairs of order
       //     of first finding and list of intersection objects from all
       //     intersections
-      //   edge2faces  #edges <= #offending*3 to incident offending faces 
       //   stitch_all  if true, merge all vertices with thte same coordiante.
       // Outputs:
       //   VV  #VV by 3 list of vertex positions, if stitch_all = false then
@@ -58,9 +57,6 @@ namespace igl
           typename DerivedF::Index,
             std::vector<
             std::pair<typename DerivedF::Index, CGAL::Object> > > & offending,
-        const std::map<
-          std::pair<typename DerivedF::Index,typename DerivedF::Index>,
-          std::vector<typename DerivedF::Index> > & edge2faces,
         bool stitch_all,
         Eigen::PlainObjectBase<DerivedVV> & VV,
         Eigen::PlainObjectBase<DerivedFF> & FF,
@@ -83,9 +79,6 @@ namespace igl
           typename DerivedF::Index,
             std::vector<
             std::pair<typename DerivedF::Index, CGAL::Object> > > & offending,
-        const std::map<
-          std::pair<typename DerivedF::Index,typename DerivedF::Index>,
-          std::vector<typename DerivedF::Index> > & edge2faces,
         Eigen::PlainObjectBase<DerivedVV> & VV,
         Eigen::PlainObjectBase<DerivedFF> & FF,
         Eigen::PlainObjectBase<DerivedJ> & J,

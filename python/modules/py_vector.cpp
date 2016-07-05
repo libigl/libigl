@@ -3,7 +3,7 @@
 #include <Eigen/Sparse>
 
 
-#include "python_shared.h"
+#include "../python_shared.h"
 
 /// Creates Python bindings for a dynamic Eigen matrix
 template <typename Type>
@@ -126,8 +126,14 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("rightCols", [](Type &m, const int& k) { return Type(m.rightCols(k)); })
         .def("leftCols", [](Type &m, const int& k) { return Type(m.leftCols(k)); })
 
+        .def("setLeftCols", [](Type &m, const int& k, const Type& v) { return Type(m.leftCols(k) = v); })
+        .def("setRightCols", [](Type &m, const int& k, const Type& v) { return Type(m.rightCols(k) = v); })
+
         .def("topRows", [](Type &m, const int& k) { return Type(m.topRows(k)); })
         .def("bottomRows", [](Type &m, const int& k) { return Type(m.bottomRows(k)); })
+
+        .def("setTopRows", [](Type &m, const int& k, const Type& v) { return Type(m.topRows(k) = v); })
+        .def("setBottomRows", [](Type &m, const int& k, const Type& v) { return Type(m.bottomRows(k) = v); })
 
         .def("topLeftCorner", [](Type &m, const int& p, const int&q) { return Type(m.topLeftCorner(p,q)); })
         .def("bottomLeftCorner", [](Type &m, const int& p, const int&q) { return Type(m.bottomLeftCorner(p,q)); })
@@ -147,6 +153,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("trace", [](const Type &m) {return m.trace();})
         .def("norm", [](const Type &m) {return m.norm();})
         .def("squaredNorm", [](const Type &m) {return m.squaredNorm();})
+        .def("squaredMean", [](const Type &m) {return m.array().square().mean();})
 
         .def("minCoeff", [](const Type &m) {return m.minCoeff();} )
         .def("maxCoeff", [](const Type &m) {return m.maxCoeff();} )
@@ -167,6 +174,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("cwiseQuotient", [](const Type &m1, const Type &m2) -> Type { return m1.cwiseQuotient(m2); })
 
         /* Row and column-wise operations */
+        .def("rowwiseSet", [](Type &m, const Type &m2) {return Type(m.rowwise() = Eigen::Matrix<Scalar, 1, Eigen::Dynamic>(m2));} )
         .def("rowwiseSum", [](const Type &m) {return Type(m.rowwise().sum());} )
         .def("rowwiseProd", [](const Type &m) {return Type(m.rowwise().prod());} )
         .def("rowwiseMean", [](const Type &m) {return Type(m.rowwise().mean());} )
@@ -175,6 +183,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("rowwiseMinCoeff", [](const Type &m) {return Type(m.rowwise().minCoeff());} )
         .def("rowwiseMaxCoeff", [](const Type &m) {return Type(m.rowwise().maxCoeff());} )
 
+        .def("colwiseSet", [](Type &m, const Type &m2) {return Type(m.colwise() = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>(m2));} )
         .def("colwiseSum", [](const Type &m) {return Type(m.colwise().sum());} )
         .def("colwiseProd", [](const Type &m) {return Type(m.colwise().prod());} )
         .def("colwiseMean", [](const Type &m) {return Type(m.colwise().mean());} )
@@ -249,6 +258,26 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         /* Comparison operators */
         .def(py::self == py::self)
         .def(py::self != py::self)
+        .def("__lt__", []
+        (const Type &a, const Scalar& b) -> Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic>
+        {
+          return Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>(a.array() < b);
+        })
+        .def("__gt__", []
+        (const Type &a, const Scalar& b) -> Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic>
+        {
+          return Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>(a.array() > b);
+        })
+        .def("__le__", []
+        (const Type &a, const Scalar& b) -> Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic>
+        {
+          return Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>(a.array() <= b);
+        })
+        .def("__ge__", []
+        (const Type &a, const Scalar& b) -> Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic>
+        {
+          return Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>(a.array() >= b);
+        })
 
         .def("transposeInPlace", [](Type &m) { m.transposeInPlace(); })
         /* Other transformations */
@@ -602,6 +631,9 @@ void python_export_vector(py::module &m) {
     bind_eigen_2<Eigen::MatrixXi> (me, "MatrixXi");
 //    py::implicitly_convertible<py::buffer, Eigen::MatrixXi>();
     //py::implicitly_convertible<double, Eigen::MatrixXi>();
+
+    /* Bindings for MatrixXb */
+    bind_eigen_2<Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> > (me, "MatrixXb");
 
     /* Bindings for MatrixXuc */
     bind_eigen_2<Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> > (me, "MatrixXuc");

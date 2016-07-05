@@ -21,6 +21,7 @@ def get_filepaths(directory):
     it yields a 3-tuple (dirpath, dirnames, filenames).
     """
     file_paths = []  # List which will store all of the full filepaths.
+    root_file_paths = []
 
     # Walk the tree.
     for root, directories, files in os.walk(directory):
@@ -29,7 +30,10 @@ def get_filepaths(directory):
             filepath = os.path.join(root, filename)
             file_paths.append(filepath)  # Add it to the list.
 
-    return file_paths  # Self-explanatory.
+            if root.endswith(directory): # Add only the files in the root directory
+                root_file_paths.append(filepath)
+
+    return file_paths, root_file_paths  # file_paths contains all file paths, core_file_paths only the ones in <directory>
 
 
 def get_name_from_path(path, basepath, prefix, postfix):
@@ -53,8 +57,8 @@ if __name__ == '__main__':
     # List all files in the given folder and subfolders
     cpp_base_path = sys.argv[1]
     py_base_path = sys.argv[2]
-    cpp_file_paths = get_filepaths(cpp_base_path)
-    py_file_paths = get_filepaths(py_base_path)
+    cpp_file_paths, cpp_root_file_paths = get_filepaths(cpp_base_path)
+    py_file_paths, py_root_file_paths = get_filepaths(py_base_path)
 
     # Add all the .h filepaths to a dict
     mapping = {}
@@ -65,10 +69,16 @@ if __name__ == '__main__':
 
     # Add all python binding files to a list
     implemented_names = []
+    core_implemented_names = []
     for f in py_file_paths:
         if f.endswith(".cpp"):
             name = get_name_from_path(f, py_base_path, "py_", ".cpp")
             implemented_names.append(name)
+            if f in py_root_file_paths:
+                core_implemented_names.append(name)
+
+    implemented_names.sort()
+    core_implemented_names.sort()
 
     # Create a list of cpp header files for which a python binding file exists
     files_to_parse = []
@@ -123,4 +133,10 @@ if __name__ == '__main__':
     tpl = Template(filename='python_shared.mako')
     rendered = tpl.render(functions=implemented_names)
     with open("../python_shared.cpp", 'w') as fs:
+        fs.write(rendered)
+
+    # Write py_igl_cpp file with all core library files
+    tpl = Template(filename='py_igl.mako')
+    rendered = tpl.render(functions=core_implemented_names)
+    with open("../py_igl.cpp", 'w') as fs:
         fs.write(rendered)
