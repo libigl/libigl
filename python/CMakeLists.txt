@@ -48,7 +48,7 @@ endif()
 include_directories(${PYTHON_INCLUDE_DIR} include)
 
 ## include pybind
-include_directories(${PROJECT_SOURCE_DIR}/../external/pybind11/include)
+include_directories(${PROJECT_SOURCE_DIR}/../external/nanogui/ext/pybind11/include)
 
 ## include libigl
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" OFF)
@@ -66,7 +66,7 @@ option(LIBIGL_WITH_PNG              "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
 option(LIBIGL_WITH_XML              "Use XML"            ON)
-option(LIBIGL_WITH_PYTHON           "Use Python"         OFF)
+option(LIBIGL_WITH_PYTHON           "Use Python"         ON)
 
 if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build system fails without it
   find_package(CGAL REQUIRED)
@@ -118,7 +118,7 @@ if (LIBIGL_WITH_PNG)
   list(APPEND SHARED_SOURCES "modules/py_igl_png.cpp")
 endif ()
 
-
+#----
 ## Prepare the python library
 add_library(pyigl SHARED
   python_shared.cpp
@@ -193,4 +193,16 @@ elseif (UNIX)
       add_custom_command(TARGET pyigl POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/../pyigl.so)
     endif()
   endif()
+endif()
+
+if (LIBIGL_WITH_PYTHON)
+  # Copy the nanogui python lib after compilation
+  get_target_property(NANOGUI_LIB nanogui_python LOCATION)
+  add_custom_target(copy ALL)
+  add_custom_command(
+        TARGET copy
+        COMMAND ${CMAKE_COMMAND} -E copy ${NANOGUI_LIB} ${CMAKE_CURRENT_BINARY_DIR}/../
+        )
+  add_dependencies(copy pyigl)
+
 endif()
