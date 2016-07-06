@@ -195,7 +195,7 @@ elseif (UNIX)
   endif()
 endif()
 
-if (LIBIGL_WITH_PYTHON)
+if (LIBIGL_WITH_PYTHON AND LIBIGL_WITH_NANOGUI)
   # Copy the nanogui python lib after compilation
   get_target_property(NANOGUI_LIB nanogui_python LOCATION)
   add_custom_target(copy ALL)
