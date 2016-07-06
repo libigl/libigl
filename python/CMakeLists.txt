@@ -66,6 +66,7 @@ option(LIBIGL_WITH_PNG              "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
 option(LIBIGL_WITH_XML              "Use XML"            ON)
+option(LIBIGL_WITH_COPYLEFT         "Use Copyleft"       ON)
 
 if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build system fails without it
   find_package(CGAL REQUIRED)
@@ -110,6 +111,11 @@ endif ()
 if (LIBIGL_WITH_CGAL)
   add_definitions(-DPY_CGAL)
   list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_cgal.cpp")
+endif ()
+
+if (LIBIGL_WITH_COPYLEFT)
+  add_definitions(-DPY_COPYLEFT)
+  list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_copyleft.cpp")
 endif ()
 
 if (LIBIGL_WITH_PNG)
