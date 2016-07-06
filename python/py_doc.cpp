@@ -244,6 +244,21 @@ const char *__doc_igl_copyleft_marching_cubes = R"igl_Qu8mg5v7(// marching_cubes
     //   vertices  #V by 3 list of mesh vertex positions
     //   faces  #F by 3 list of mesh triangle indices
     //)igl_Qu8mg5v7";
+const char *__doc_igl_copyleft_swept_volume = R"igl_Qu8mg5v7(// Compute the surface of the swept volume of a solid object with surface
+    // (V,F) mesh under going rigid motion.
+    // 
+    // Inputs:
+    //   V  #V by 3 list of mesh positions in reference pose
+    //   F  #F by 3 list of mesh indices into V
+    //   transform  function handle so that transform(t) returns the rigid
+    //     transformation at time t∈[0,1]
+    //   steps  number of time steps: steps=3 --> t∈{0,0.5,1}
+    //   grid_res  number of grid cells on the longest side containing the
+    //     motion (isolevel+1 cells will also be added on each side as padding)
+    //   isolevel  distance level to be contoured as swept volume
+    // Outputs:
+    //   SV  #SV by 3 list of mesh positions of the swept surface
+    //   SF  #SF by 3 list of mesh faces into SV)igl_Qu8mg5v7";
 const char *__doc_igl_copyleft_tetgen_tetrahedralize = R"igl_Qu8mg5v7(// Mesh the interior of a surface mesh (V,F) using tetgen
       //
       // Inputs:
@@ -444,6 +459,22 @@ const char *__doc_igl_gaussian_curvature = R"igl_Qu8mg5v7(// Compute discrete lo
   // Output:
   //   K  #V by 1 eigen Matrix of discrete gaussian curvature values
   //)igl_Qu8mg5v7";
+const char *__doc_igl_get_seconds = R"igl_Qu8mg5v7(// Return the current time in seconds since program start
+  // 
+  // Example:
+  //    const auto & tictoc = []()
+  //    {
+  //      static double t_start = igl::get_seconds();
+  //      double diff = igl::get_seconds()-t_start;
+  //      t_start += diff;
+  //      return diff;
+  //    };
+  //    tictoc();
+  //    ... // part 1
+  //    cout<<"part 1: "<<tictoc()<<endl;
+  //    ... // part 2
+  //    cout<<"part 2: "<<tictoc()<<endl;
+  //    ... // etc)igl_Qu8mg5v7";
 const char *__doc_igl_grad = R"igl_Qu8mg5v7(// Gradient of a scalar function defined on piecewise linear elements (mesh)
   // is constant on each triangle i,j,k:
   // grad(Xijk) = (Xj-Xi) * (Vi - Vk)^R90 / 2A + (Xk-Xi) * (Vj - Vi)^R90 / 2A
