@@ -30,6 +30,10 @@ extern void python_export_igl_triangle(py::module &);
 extern void python_export_igl_cgal(py::module &);
 #endif
 
+#ifdef PY_COPYLEFT
+extern void python_export_igl_copyleft(py::module &);
+#endif
+
 #ifdef PY_PNG
 extern void python_export_igl_png(py::module &);
 #endif
@@ -56,6 +60,7 @@ PYBIND11_PLUGIN(pyigl) {
            boundary_facets
            boundary_loop
            cat
+           collapse_edge
            colon
            comb_cross_field
            comb_frame_field
@@ -63,6 +68,7 @@ PYBIND11_PLUGIN(pyigl) {
            copyleft_cgal_mesh_boolean
            copyleft_comiso_miq
            copyleft_comiso_nrosy
+           copyleft_marching_cubes
            copyleft_tetgen_tetrahedralize
            cotmatrix
            covariance_scatter_matrix
@@ -149,6 +155,10 @@ PYBIND11_PLUGIN(pyigl) {
 
     #ifdef PY_CGAL
     python_export_igl_cgal(m);
+    #endif
+
+    #ifdef PY_COPYLEFT
+    python_export_igl_copyleft(m);
     #endif
 
     #ifdef PY_PNG

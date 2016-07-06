@@ -112,6 +112,7 @@ const char *__doc_igl_cat = R"igl_Qu8mg5v7(// Perform concatenation of a two mat
   // Outputs:
   //   C  output matrix
   //   )igl_Qu8mg5v7";
+const char *__doc_igl_collapse_edge = R"igl_Qu8mg5v7(See collapse_edge for the documentation.)igl_Qu8mg5v7";
 const char *__doc_igl_colon = R"igl_Qu8mg5v7(// Colon operator like matlab's colon operator. Enumerats values between low
   // and hi with step step.
   // Templates:
@@ -219,6 +220,30 @@ const char *__doc_igl_copyleft_comiso_nrosy = R"igl_Qu8mg5v7(// Generate a N-RoS
     // Outputs:
     //   R       #F by 3 the representative vectors of the interpolated field
     //   S       #V by 1 the singularity index for each vertex (0 = regular))igl_Qu8mg5v7";
+const char *__doc_igl_copyleft_marching_cubes = R"igl_Qu8mg5v7(// marching_cubes( values, points, x_res, y_res, z_res, vertices, faces )
+    //
+    // performs marching cubes reconstruction on the grid defined by values, and
+    // points, and generates vertices and faces
+    //
+    // Input:
+    //  values  #number_of_grid_points x 1 array -- the scalar values of an
+    //    implicit function defined on the grid points (<0 in the inside of the
+    //    surface, 0 on the border, >0 outside)
+    //  points  #number_of_grid_points x 3 array -- 3-D positions of the grid
+    //    points, ordered in x,y,z order:
+    //      points[index] = the point at (x,y,z) where :
+    //      x = (index % (xres -1),
+    //      y = (index / (xres-1)) %(yres-1),
+    //      z = index / (xres -1) / (yres -1) ).
+    //      where x,y,z index x, y, z dimensions
+    //      i.e. index = x + y*xres + z*xres*yres
+    //  xres  resolutions of the grid in x dimension
+    //  yres  resolutions of the grid in y dimension
+    //  zres  resolutions of the grid in z dimension
+    // Output:
+    //   vertices  #V by 3 list of mesh vertex positions
+    //   faces  #F by 3 list of mesh triangle indices
+    //)igl_Qu8mg5v7";
 const char *__doc_igl_copyleft_tetgen_tetrahedralize = R"igl_Qu8mg5v7(// Mesh the interior of a surface mesh (V,F) using tetgen
       //
       // Inputs:
