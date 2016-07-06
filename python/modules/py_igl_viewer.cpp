@@ -312,6 +312,14 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
 // UI Enumerations
     py::class_<igl::viewer::Viewer> viewer_class(me, "Viewer");
 
+    #ifdef IGL_VIEWER_WITH_NANOGUI
+    py::object fh = (py::object) py::module::import("nanogui").attr("FormHelper");
+    py::class_<nanogui::FormHelper> form_helper_class(me, "FormHelper", fh);
+
+    py::object screen = (py::object) py::module::import("nanogui").attr("Screen");
+    py::class_<nanogui::Screen> screen_class(me, "Screen", screen);
+    #endif
+
     py::enum_<igl::viewer::Viewer::MouseButton>(viewer_class, "MouseButton")
         .value("Left", igl::viewer::Viewer::MouseButton::Left)
         .value("Middle", igl::viewer::Viewer::MouseButton::Middle)
@@ -323,6 +331,12 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     .def_readwrite("data", &igl::viewer::Viewer::data)
     .def_readwrite("core", &igl::viewer::Viewer::core)
     .def_readwrite("opengl", &igl::viewer::Viewer::opengl)
+
+    #ifdef IGL_VIEWER_WITH_NANOGUI
+    .def_readwrite("ngui", &igl::viewer::Viewer::ngui)
+    .def_readwrite("screen", &igl::viewer::Viewer::screen)
+    #endif
+
     .def("launch", &igl::viewer::Viewer::launch, py::arg("resizable") = true, py::arg("fullscreen") = false)
     .def("launch_init", &igl::viewer::Viewer::launch_init, py::arg("resizable") = true, py::arg("fullscreen") = false)
     .def("launch_rendering", &igl::viewer::Viewer::launch_rendering, py::arg("loop") = true)
