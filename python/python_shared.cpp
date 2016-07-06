@@ -30,10 +30,6 @@ extern void python_export_igl_triangle(py::module &);
 extern void python_export_igl_cgal(py::module &);
 #endif
 
-#ifdef PY_COPYLEFT
-extern void python_export_igl_copyleft(py::module &);
-#endif
-
 #ifdef PY_PNG
 extern void python_export_igl_png(py::module &);
 #endif
@@ -78,12 +74,14 @@ PYBIND11_PLUGIN(pyigl) {
            edge_lengths
            eigs
            embree_ambient_occlusion
+           embree_reorient_facets_raycast
            find_cross_field_singularities
            fit_rotations
            floor
            gaussian_curvature
            grad
            harmonic
+           hsv_to_rgb
            internal_angles
            invert_diag
            is_irregular_vertex
@@ -106,6 +104,7 @@ PYBIND11_PLUGIN(pyigl) {
            polar_svd
            principal_curvature
            quad_planarity
+           randperm
            readDMAT
            readMESH
            readOBJ
@@ -155,10 +154,6 @@ PYBIND11_PLUGIN(pyigl) {
 
     #ifdef PY_CGAL
     python_export_igl_cgal(m);
-    #endif
-
-    #ifdef PY_COPYLEFT
-    python_export_igl_copyleft(m);
     #endif
 
     #ifdef PY_PNG
