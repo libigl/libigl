@@ -78,5 +78,8 @@ extern const char *__doc_igl_unique;
 extern const char *__doc_igl_unique_rows;
 extern const char *__doc_igl_unproject_onto_mesh;
 extern const char *__doc_igl_upsample;
+extern const char *__doc_igl_winding_number;
+extern const char *__doc_igl_winding_number_3;
+extern const char *__doc_igl_winding_number_2;
 extern const char *__doc_igl_writeMESH;
 extern const char *__doc_igl_writeOBJ;
