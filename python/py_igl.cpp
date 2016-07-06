@@ -30,6 +30,7 @@
 #include <igl/fit_rotations.h>
 #include <igl/floor.h>
 #include <igl/gaussian_curvature.h>
+#include <igl/get_seconds.h>
 #include <igl/grad.h>
 #include <igl/harmonic.h>
 #include <igl/hsv_to_rgb.h>
@@ -105,6 +106,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_fit_rotations.cpp"
 #include "py_igl/py_floor.cpp"
 #include "py_igl/py_gaussian_curvature.cpp"
+#include "py_igl/py_get_seconds.cpp"
 #include "py_igl/py_grad.cpp"
 #include "py_igl/py_harmonic.cpp"
 #include "py_igl/py_hsv_to_rgb.cpp"

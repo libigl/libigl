@@ -692,6 +692,25 @@ void python_export_vector(py::module &m) {
     .def("solve",[](const Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >& s, const Eigen::MatrixXd& rhs) { return Eigen::MatrixXd(s.solve(rhs)); })
     ;
 
+    py::class_<Eigen::Affine3d > affine3d(me, "Affine3d");
+
+    affine3d
+    .def(py::init<>())
+    .def("setIdentity",[](Eigen::Affine3d& a){
+        return a.setIdentity();
+    })
+    .def("rotate",[](Eigen::Affine3d& a, double angle, Eigen::MatrixXd axis) {
+        assert_is_Vector3("axis", axis);
+        return a.rotate(Eigen::AngleAxisd(angle, Eigen::Vector3d(axis)));
+    })
+    .def("translate",[](Eigen::Affine3d& a, Eigen::MatrixXd offset) {
+        assert_is_Vector3("offset", offset);
+        return a.translate(Eigen::Vector3d(offset));
+    })
+    .def("matrix", [](Eigen::Affine3d& a) -> Eigen::MatrixXd {
+        return Eigen::MatrixXd(a.matrix());
+    })
+    ;
     /* Bindings for Quaterniond*/
     //py::class_<Eigen::Quaterniond > quaterniond(me, "Quaterniond");
     //

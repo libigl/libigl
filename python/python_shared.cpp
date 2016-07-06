@@ -34,6 +34,10 @@ extern void python_export_igl_cgal(py::module &);
 extern void python_export_igl_png(py::module &);
 #endif
 
+#ifdef PY_COPYLEFT
+extern void python_export_igl_copyleft(py::module &);
+#endif
+
 PYBIND11_PLUGIN(pyigl) {
     py::module m("pyigl", R"pyigldoc(
         Python wrappers for libigl
@@ -65,6 +69,7 @@ PYBIND11_PLUGIN(pyigl) {
            copyleft_comiso_miq
            copyleft_comiso_nrosy
            copyleft_marching_cubes
+           copyleft_swept_volume
            copyleft_tetgen_tetrahedralize
            cotmatrix
            covariance_scatter_matrix
@@ -79,6 +84,7 @@ PYBIND11_PLUGIN(pyigl) {
            fit_rotations
            floor
            gaussian_curvature
+           get_seconds
            grad
            harmonic
            hsv_to_rgb
@@ -158,6 +164,10 @@ PYBIND11_PLUGIN(pyigl) {
 
     #ifdef PY_PNG
     python_export_igl_png(m);
+    #endif
+
+    #ifdef PY_COPYLEFT
+    python_export_igl_copyleft(m);
     #endif
 
     return m.ptr();
