@@ -66,6 +66,7 @@ option(LIBIGL_WITH_PNG              "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
 option(LIBIGL_WITH_XML              "Use XML"            ON)
+option(LIBIGL_WITH_PYTHON           "Use Python"         OFF)
 
 if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build system fails without it
   find_package(CGAL REQUIRED)
@@ -132,6 +133,10 @@ set_target_properties(pyigl PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE
 
 target_link_libraries(pyigl ${LIBIGL_LIBRARIES} ${LIBIGL_EXTRA_LIBRARIES})
 
+# Copy the nanogui bindings
+#get_target_property(NANOGUI_LIB nanogui_python LOCATION)
+#file(COPY ${NANOGUI_LIB} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../)
+
 if (WIN32)
   if (MSVC)
     # Enforce size-based optimization and link time code generation on MSVC (~30% smaller binaries in experiments)
@@ -146,7 +151,6 @@ if (WIN32)
   # message(FATAL_ERROR ${PYTHON_LIBRARY})
   # target_link_libraries(igl ${PYTHON_LIBRARY})
   target_link_libraries(pyigl ${PYTHON_LIBRARIES})
-
 
 elseif (UNIX)
   # It's quite common to have multiple copies of the same Python version
