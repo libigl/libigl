@@ -6,15 +6,15 @@ m.def("slice_tets", []
   Eigen::MatrixXd& U,
   Eigen::MatrixXi& G,
   Eigen::MatrixXi& J,
-  Eigen::SparseMatrix<double> & BC
+  Eigen::SparseMatrix<double>& BC
 )
 {
   assert_is_VectorX("plane", plane);
-  Eigen::VectorXd pl;
+  Eigen::VectorXd planev;
   if (plane.size() != 0)
-    pl = plane;
+    planev = plane;
   Eigen::VectorXi Jv;
-  igl::slice_tets(V, T, pl, U, G, Jv, BC);
+  igl::slice_tets(V, T, planev, U, G, Jv, BC);
   J = Jv;
 }, __doc_igl_slice_tets,
 py::arg("V"), py::arg("T"), py::arg("plane"), py::arg("U"), py::arg("G"), py::arg("J"), py::arg("BC"));

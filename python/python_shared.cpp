@@ -34,6 +34,10 @@ extern void python_export_igl_cgal(py::module &);
 extern void python_export_igl_png(py::module &);
 #endif
 
+#ifdef PY_COPYLEFT
+extern void python_export_igl_copyleft(py::module &);
+#endif
+
 PYBIND11_PLUGIN(pyigl) {
     py::module m("pyigl", R"pyigldoc(
         Python wrappers for libigl
@@ -56,6 +60,7 @@ PYBIND11_PLUGIN(pyigl) {
            boundary_facets
            boundary_loop
            cat
+           collapse_edge
            colon
            comb_cross_field
            comb_frame_field
@@ -63,6 +68,8 @@ PYBIND11_PLUGIN(pyigl) {
            copyleft_cgal_mesh_boolean
            copyleft_comiso_miq
            copyleft_comiso_nrosy
+           copyleft_marching_cubes
+           copyleft_swept_volume
            copyleft_tetgen_tetrahedralize
            cotmatrix
            covariance_scatter_matrix
@@ -72,12 +79,15 @@ PYBIND11_PLUGIN(pyigl) {
            edge_lengths
            eigs
            embree_ambient_occlusion
+           embree_reorient_facets_raycast
            find_cross_field_singularities
            fit_rotations
            floor
            gaussian_curvature
+           get_seconds
            grad
            harmonic
+           hsv_to_rgb
            internal_angles
            invert_diag
            is_irregular_vertex
@@ -100,6 +110,7 @@ PYBIND11_PLUGIN(pyigl) {
            polar_svd
            principal_curvature
            quad_planarity
+           randperm
            readDMAT
            readMESH
            readOBJ
@@ -117,6 +128,7 @@ PYBIND11_PLUGIN(pyigl) {
            unique
            unproject_onto_mesh
            upsample
+           winding_number
            writeMESH
            writeOBJ
 
@@ -152,6 +164,10 @@ PYBIND11_PLUGIN(pyigl) {
 
     #ifdef PY_PNG
     python_export_igl_png(m);
+    #endif
+
+    #ifdef PY_COPYLEFT
+    python_export_igl_copyleft(m);
     #endif
 
     return m.ptr();
