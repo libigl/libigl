@@ -960,6 +960,41 @@ const char *__doc_igl_upsample = R"igl_Qu8mg5v7(// Subdivide a mesh without movi
   //
   // Known issues:
   //   - assumes (V,F) is edge-manifold.)igl_Qu8mg5v7";
+const char *__doc_igl_winding_number = R"igl_Qu8mg5v7(// WINDING_NUMBER Compute the sum of solid angles of a triangle/tetrahedron
+  // described by points (vectors) V
+  //
+  // Templates:
+  //   dim  dimension of input
+  // Inputs:
+  //  V  n by 3 list of vertex positions
+  //  F  #F by 3 list of triangle indices, minimum index is 0
+  //  O  no by 3 list of origin positions
+  // Outputs:
+  //  S  no by 1 list of winding numbers
+  //
+  // 3d)igl_Qu8mg5v7";
+const char *__doc_igl_winding_number_3 = R"igl_Qu8mg5v7(// Inputs:
+  //   V  pointer to array containing #V by 3 vertex positions along rows,
+  //     given in column major order
+  //   n  number of mesh vertices
+  //   F  pointer to array containing #F by 3 face indices along rows,
+  //     given in column major order
+  //   m  number of faces
+  //   O  pointer to array containing #O by 3 query positions along rows,
+  //     given in column major order
+  //   no  number of origins
+  // Outputs:
+  //   S  no by 1 list of winding numbers)igl_Qu8mg5v7";
+const char *__doc_igl_winding_number_2 = R"igl_Qu8mg5v7(//// Only one evaluation origin
+  //template <typename DerivedF>
+  //IGL_INLINE void winding_number_3(
+  //  const double * V,
+  //  const int n,
+  //  const DerivedF * F,
+  //  const int m,
+  //  const double * O,
+  //  double * S);
+  // 2d)igl_Qu8mg5v7";
 const char *__doc_igl_writeMESH = R"igl_Qu8mg5v7(// save a tetrahedral volume mesh to a .mesh file
   //
   // Templates:

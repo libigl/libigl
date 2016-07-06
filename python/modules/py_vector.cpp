@@ -180,6 +180,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("rowwiseMean", [](const Type &m) {return Type(m.rowwise().mean());} )
         .def("rowwiseNorm", [](const Type &m) {return Type(m.rowwise().norm());} )
         .def("rowwiseNormalized", [](const Type &m) {return Type(m.rowwise().normalized());} )
+        .def("rowwiseReverse", [](const Type &m) {return Type(m.rowwise().reverse());} )
         .def("rowwiseMinCoeff", [](const Type &m) {return Type(m.rowwise().minCoeff());} )
         .def("rowwiseMaxCoeff", [](const Type &m) {return Type(m.rowwise().maxCoeff());} )
 
@@ -188,6 +189,8 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("colwiseProd", [](const Type &m) {return Type(m.colwise().prod());} )
         .def("colwiseMean", [](const Type &m) {return Type(m.colwise().mean());} )
         .def("colwiseNorm", [](const Type &m) {return Type(m.colwise().norm());} )
+        .def("colwiseNormalized", [](const Type &m) {return Type(m.colwise().normalized());} )
+        .def("colwiseReverse", [](const Type &m) {return Type(m.colwise().reverse());} )
         .def("colwiseMinCoeff", [](const Type &m) {return Type(m.colwise().minCoeff());} )
         .def("colwiseMaxCoeff", [](const Type &m) {return Type(m.colwise().maxCoeff());} )
 

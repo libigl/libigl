@@ -117,6 +117,7 @@ PYBIND11_PLUGIN(pyigl) {
            unique
            unproject_onto_mesh
            upsample
+           winding_number
            writeMESH
            writeOBJ
 

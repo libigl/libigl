@@ -67,6 +67,7 @@
 #include <igl/unique.h>
 #include <igl/unproject_onto_mesh.h>
 #include <igl/upsample.h>
+#include <igl/winding_number.h>
 #include <igl/writeMESH.h>
 #include <igl/writeOBJ.h>
 
@@ -138,6 +139,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_unique.cpp"
 #include "py_igl/py_unproject_onto_mesh.cpp"
 #include "py_igl/py_upsample.cpp"
+#include "py_igl/py_winding_number.cpp"
 #include "py_igl/py_writeMESH.cpp"
 #include "py_igl/py_writeOBJ.cpp"
 
