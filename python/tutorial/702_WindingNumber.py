@@ -6,7 +6,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies, print_usage
 
-dependencies = []
+dependencies = ["viewer"]
 check_dependencies(dependencies)
 
 

@@ -380,6 +380,23 @@ const char *__doc_igl_embree_ambient_occlusion = R"igl_Qu8mg5v7(// Compute ambie
     //    S  #P list of ambient occlusion values between 1 (fully occluded) and
     //      0 (not occluded)
     //)igl_Qu8mg5v7";
+const char *__doc_igl_embree_reorient_facets_raycast = R"igl_Qu8mg5v7(// Orient each component (identified by C) of a mesh (V,F) using ambient
+    // occlusion such that the front side is less occluded than back side, as
+    // described in "A Simple Method for Correcting Facet Orientations in
+    // Polygon Meshes Based on Ray Casting" [Takayama et al. 2014].
+    //
+    // Inputs:
+    //   V  #V by 3 list of vertex positions
+    //   F  #F by 3 list of triangle indices
+    //   rays_total  Total number of rays that will be shot
+    //   rays_minimum  Minimum number of rays that each patch should receive
+    //   facet_wise  Decision made for each face independently, no use of patches
+    //     (i.e., each face is treated as a patch)
+    //   use_parity  Use parity mode
+    //   is_verbose  Verbose output to cout
+    // Outputs:
+    //   I  #F list of whether face has been flipped
+    //   C  #F list of patch ID (output of bfs_orient > manifold patches))igl_Qu8mg5v7";
 const char *__doc_igl_find_cross_field_singularities = R"igl_Qu8mg5v7(// Inputs:
   //   V                #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F                #F by 3 eigen Matrix of face (quad) indices
@@ -446,6 +463,16 @@ const char *__doc_igl_harmonic = R"igl_Qu8mg5v7(// Compute k-harmonic weight fun
   // Outputs:
   //   W  #V by #W list of weights
   //)igl_Qu8mg5v7";
+const char *__doc_igl_hsv_to_rgb = R"igl_Qu8mg5v7(// Convert RGB to HSV
+  //
+  // Inputs:
+  //   h  hue value (degrees: [0,360])
+  //   s  saturation value ([0,1])
+  //   v  value value ([0,1])
+  // Outputs:
+  //   r  red value ([0,1]) 
+  //   g  green value ([0,1])
+  //   b  blue value ([0,1]))igl_Qu8mg5v7";
 const char *__doc_igl_internal_angles = R"igl_Qu8mg5v7(// Compute internal angles for a triangle mesh
   //
   // Inputs:
@@ -738,6 +765,12 @@ const char *__doc_igl_quad_planarity = R"igl_Qu8mg5v7(// Compute planarity of th
   // Output:
   //   P  #F by 1 eigen Matrix of mesh face (quad) planarities
   //)igl_Qu8mg5v7";
+const char *__doc_igl_randperm = R"igl_Qu8mg5v7(// Like matlab's randperm(n) but minus 1
+  //
+  // Inputs:
+  //   n  number of elements
+  // Outputs:
+  //   I  n list of rand permutation of 0:n-1)igl_Qu8mg5v7";
 const char *__doc_igl_readDMAT = R"igl_Qu8mg5v7(See readDMAT for the documentation.)igl_Qu8mg5v7";
 const char *__doc_igl_readMESH = R"igl_Qu8mg5v7(// load a tetrahedral volume mesh from a .mesh file
   //

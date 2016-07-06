@@ -32,6 +32,7 @@
 #include <igl/gaussian_curvature.h>
 #include <igl/grad.h>
 #include <igl/harmonic.h>
+#include <igl/hsv_to_rgb.h>
 #include <igl/internal_angles.h>
 #include <igl/invert_diag.h>
 #include <igl/is_irregular_vertex.h>
@@ -52,6 +53,7 @@
 #include <igl/polar_svd.h>
 #include <igl/principal_curvature.h>
 #include <igl/quad_planarity.h>
+#include <igl/randperm.h>
 #include <igl/readDMAT.h>
 #include <igl/readMESH.h>
 #include <igl/readOBJ.h>
@@ -105,6 +107,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_gaussian_curvature.cpp"
 #include "py_igl/py_grad.cpp"
 #include "py_igl/py_harmonic.cpp"
+#include "py_igl/py_hsv_to_rgb.cpp"
 #include "py_igl/py_internal_angles.cpp"
 #include "py_igl/py_invert_diag.cpp"
 #include "py_igl/py_is_irregular_vertex.cpp"
@@ -125,6 +128,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_polar_svd.cpp"
 #include "py_igl/py_principal_curvature.cpp"
 #include "py_igl/py_quad_planarity.cpp"
+#include "py_igl/py_randperm.cpp"
 #include "py_igl/py_readDMAT.cpp"
 #include "py_igl/py_readMESH.cpp"
 #include "py_igl/py_readOBJ.cpp"
