@@ -45,7 +45,7 @@ if __name__ == "__main__":
     res = (s * ((Vmax - Vmin) / (Vmax - Vmin).maxCoeff())).castint()
 
     def lerp(res, Vmin, Vmax, di, d):
-        return Vmin[d] + di / (res[d] - 1) * (Vmax[d] - Vmin[d])
+        return Vmin[d] + float(di) / (res[d] - 1) * (Vmax[d] - Vmin[d])
 
     # create grid
     print("Creating grid...")
