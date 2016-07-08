@@ -8,6 +8,10 @@
 #include <igl/viewer/ViewerData.h>
 #include <igl/viewer/OpenGL_state.h>
 #include <igl/serialize.h>
+#ifdef IGL_VIEWER_WITH_NANOGUI
+#include "../../../external/nanogui/include/nanogui/formhelper.h"
+#include "../../../external/nanogui/include/nanogui/screen.h"
+#endif
 
 void python_export_igl_viewer(py::module &m)
 {
