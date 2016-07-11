@@ -205,19 +205,23 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 
     // PREPARE FIXED VALUES
     PlainObjectBase<Derivedknown> known_i;
+    PlainObjectBase<Derivedknown> lagrange_i;
     known_i.resize(nk + as_lx_count + as_ux_count,1);
+    lagrange_i.resize(as_lx_count + as_ux_count,1);
     PlainObjectBase<DerivedY> Y_i;
     Y_i.resize(nk + as_lx_count + as_ux_count,1);
     {
       known_i.block(0,0,known.rows(),known.cols()) = known;
       Y_i.block(0,0,Y.rows(),Y.cols()) = Y;
       int k = nk;
+      int nl = 0;
       // Then all lx
       for(int z = 0;z < n;z++)
       {
         if(as_lx(z))
         {
           known_i(k) = z;
+	  lagrange_i(nl++) = z;
           Y_i(k) = lx(z);
           k++;
         }
@@ -228,6 +232,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
         if(as_ux(z))
         {
           known_i(k) = z;
+	  lagrange_i(nl++) = z;
           Y_i(k) = ux(z);
           k++;
         }
@@ -322,48 +327,68 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     }
 
     // Compute Lagrange multiplier values for known_i
-    SparseMatrix<AT> Ak;
-    // Slow
-    slice(A,known_i,1,Ak);
-    Eigen::PlainObjectBase<DerivedB> Bk;
-    slice(B,known_i,Bk);
-    MatrixXd Lambda_known_i = -(0.5*Ak*Z + 0.5*Bk);
-    // reverse the lambda values for lx
-    // (NOTE: MSVC crashes if we don't do this inplace, codegen bug perhaps)
-    Lambda_known_i.block(nk,0,as_lx_count,1) *= -1;
-
-    // Extract Lagrange multipliers for Aieq_i (always at back of sol)
-    VectorXd Lambda_Aieq_i(Aieq_i.rows(),1);
-    for(int l = 0;l<Aieq_i.rows();l++)
+    Eigen::PlainObjectBase<DerivedB> Lambda_lagrange_i;
+    Lambda_lagrange_i.resize(as_lx_count + as_ux_count);
+    if (data.Auu_sym)
     {
-      Lambda_Aieq_i(Aieq_i.rows()-1-l) = sol(sol.rows()-1-l);
+      for(int i = 0, ni = as_lx_count; i < ni; ++i)
+      {
+	const int j = lagrange_i(i);
+	Lambda_lagrange_i(i) = +(0.5*A.col(j).dot(Z) + 0.5*B(j));
+      }
+      for(int i = as_lx_count, ni = as_lx_count + as_ux_count; i < ni; ++i)
+      {
+	const int j = lagrange_i(i);
+	Lambda_lagrange_i(i) = -(0.5*A.col(j).dot(Z) + 0.5*B(j));
+      }
+    }else
+    {
+      SparseMatrix<AT> Ak;
+      // Slow
+      slice(A,known_i,1,Ak);
+      Eigen::PlainObjectBase<DerivedB> Bk;
+      slice(B,known_i,Bk);
+      MatrixXd Lambda_lagrange_i = -(0.5*Ak*Z + 0.5*Bk);
+      // reverse the lambda values for lx
+      // (NOTE: MSVC crashes if we don't do this inplace, codegen bug perhaps)
+      Lambda_lagrange_i.block(nk,0,as_lx_count,1) *= -1;
     }
 
     // Remove from active set
     for(int l = 0;l<as_lx_count;l++)
     {
-      if(Lambda_known_i(nk + l) < params.inactive_threshold)
+      if(Lambda_lagrange_i(l) < params.inactive_threshold)
       {
-        as_lx(known_i(nk + l)) = FALSE;
+        as_lx(lagrange_i(l)) = FALSE;
       }
     }
     for(int u = 0;u<as_ux_count;u++)
     {
-      if(Lambda_known_i(nk + as_lx_count + u) <
-        params.inactive_threshold)
+      if(Lambda_lagrange_i(as_lx_count + u) < params.inactive_threshold)
       {
-        as_ux(known_i(nk + as_lx_count + u)) = FALSE;
+        as_ux(lagrange_i(as_lx_count + u)) = FALSE;
       }
     }
-    for(int a = 0;a<as_ieq_count;a++)
+    if (as_ieq_count > 0)
     {
-      if(Lambda_Aieq_i(a) < params.inactive_threshold)
+      // Extract Lagrange multipliers for Aieq_i (always at back of sol)
+      VectorXd Lambda_Aieq_i(Aieq_i.rows(),1);
+      for(int l = 0;l<Aieq_i.rows();l++)
       {
-        as_ieq(as_ieq_list(a)) = FALSE;
+	Lambda_Aieq_i(Aieq_i.rows()-1-l) = sol(sol.rows()-1-l);
+      }
+      for(int a = 0;a<as_ieq_count;a++)
+      {
+	if(Lambda_Aieq_i(a) < params.inactive_threshold)
+	{
+	  as_ieq(as_ieq_list(a)) = FALSE;
+	}
       }
     }
 #ifdef ACTIVE_SET_CPP_DEBUG
-    cout<<"  phi(Z): " << Z.transpose() * A * Z<<"\n";
+    cout<<"  phi(Z): " << sqrt(Z.transpose() * A * Z)
+        <<" (diff.norm2) / Z.size():" << (Z-old_Z).squaredNorm() / Z.size()
+	<<"\n";
 #endif
 
     iter++;
