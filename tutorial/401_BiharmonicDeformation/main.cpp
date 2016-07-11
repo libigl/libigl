@@ -30,11 +30,11 @@ bool pre_draw(igl::viewer::Viewer & viewer)
   {
     MatrixXd D;
     MatrixXd D_bc = U_bc_anim - V_bc;
-    igl::harmonic(V,F,b,D_bc,2,D);
+    igl::harmonic(V,F,b,D_bc,2,true,D);
     U = V+D;
   }else
   {
-    igl::harmonic(V,F,b,U_bc_anim,2,U);
+    igl::harmonic(V,F,b,U_bc_anim,2,true,U);
   }
   viewer.data.set_vertices(U);
   viewer.data.compute_normals();
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
   VectorXi S;
   igl::readDMAT(TUTORIAL_SHARED_PATH "/decimated-max-selection.dmat",S);
   igl::colon<int>(0,V.rows()-1,b);
-  b.conservativeResize(stable_partition( b.data(), b.data()+b.size(), 
+  b.conservativeResize(stable_partition( b.data(), b.data()+b.size(),
    [&S](int i)->bool{return S(i)>=0;})-b.data());
 
   // Boundary conditions directly on deformed positions
