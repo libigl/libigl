@@ -75,7 +75,11 @@ PYBIND11_PLUGIN(pyigl) {
            covariance_scatter_matrix
            cross_field_missmatch
            cut_mesh_from_singularities
+           deform_skeleton
+           directed_edge_orientations
+           directed_edge_parents
            doublearea
+           dqs
            edge_lengths
            eigs
            embree_ambient_occlusion
@@ -83,6 +87,7 @@ PYBIND11_PLUGIN(pyigl) {
            find_cross_field_singularities
            fit_rotations
            floor
+           forward_kinematics
            gaussian_curvature
            get_seconds
            grad
@@ -92,6 +97,7 @@ PYBIND11_PLUGIN(pyigl) {
            invert_diag
            is_irregular_vertex
            jet
+           lbs_matrix
            local_basis
            lscm
            map_vertices_to_circle
@@ -115,6 +121,7 @@ PYBIND11_PLUGIN(pyigl) {
            readMESH
            readOBJ
            readOFF
+           readTGF
            read_triangle_mesh
            rotate_vectors
            setdiff
