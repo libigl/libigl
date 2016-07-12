@@ -21,7 +21,7 @@ bool pre_draw(igl::viewer::Viewer & viewer)
   using namespace Eigen;
   if(resolve)
   {
-    igl::harmonic(V,F,b,bc,k,true,Z);
+    igl::harmonic(V,F,b,bc,k,Z);
     resolve = false;
   }
   U.col(2) = z_max*Z;

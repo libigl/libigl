@@ -30,11 +30,11 @@ bool pre_draw(igl::viewer::Viewer & viewer)
   {
     MatrixXd D;
     MatrixXd D_bc = U_bc_anim - V_bc;
-    igl::harmonic(V,F,b,D_bc,2,true,D);
+    igl::harmonic(V,F,b,D_bc,2,D);
     U = V+D;
   }else
   {
-    igl::harmonic(V,F,b,U_bc_anim,2,true,U);
+    igl::harmonic(V,F,b,U_bc_anim,2.,U);
   }
   viewer.data.set_vertices(U);
   viewer.data.compute_normals();
