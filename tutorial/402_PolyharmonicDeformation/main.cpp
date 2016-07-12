@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
   VectorXb is_inner = (V.rowwise().norm().array()-0.15)<1e-15;
   VectorXb in_b = is_outer.array() || is_inner.array();
   igl::colon<int>(0,V.rows()-1,b);
-  b.conservativeResize(stable_partition( b.data(), b.data()+b.size(), 
+  b.conservativeResize(stable_partition( b.data(), b.data()+b.size(),
    [&in_b](int i)->bool{return in_b(i);})-b.data());
   bc.resize(b.size(),1);
   for(int bi = 0;bi<b.size();bi++)
