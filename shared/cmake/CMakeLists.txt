@@ -19,7 +19,7 @@ option(LIBIGL_WITH_TETGEN           "Use Tetgen"         OFF)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       OFF)
 option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  OFF)
 option(LIBIGL_WITH_XML              "Use XML"            OFF)
-
+option(LIBIGL_WITH_PYTHON           "Use Python"         OFF)
 
 ### Compilation configuration ###
 if(MSVC)
@@ -102,14 +102,14 @@ endif()
 if(LIBIGL_WITH_ANTTWEAKBAR)
   set(ANTTWEAKBAR_DIR "${LIBIGL_EXTERNAL}/anttweakbar")
   set(ANTTWEAKBAR_INCLUDE_DIR "${ANTTWEAKBAR_DIR}/include")
-  set(ANTTWEAKBAR_C_SRC_FILES 
+  set(ANTTWEAKBAR_C_SRC_FILES
     "${ANTTWEAKBAR_DIR}/src/TwEventGLFW.c"
     "${ANTTWEAKBAR_DIR}/src/TwEventGLUT.c"
     "${ANTTWEAKBAR_DIR}/src/TwEventSDL.c"
     "${ANTTWEAKBAR_DIR}/src/TwEventSDL12.c"
     "${ANTTWEAKBAR_DIR}/src/TwEventSDL13.c"
     )
-  set(ANTTWEAKBAR_CPP_SRC_FILES 
+  set(ANTTWEAKBAR_CPP_SRC_FILES
     "${ANTTWEAKBAR_DIR}/src/LoadOGL.cpp"
     "${ANTTWEAKBAR_DIR}/src/LoadOGLCore.cpp"
     "${ANTTWEAKBAR_DIR}/src/TwBar.cpp"
@@ -129,15 +129,15 @@ if(LIBIGL_WITH_ANTTWEAKBAR)
     #"${ANTTWEAKBAR_DIR}/src/TwDirect3D11.cpp"
     #"${ANTTWEAKBAR_DIR}/src/TwDirect3D9.cpp"
   list(
-    APPEND 
-    ANTTWEAKBAR_SRC_FILES 
+    APPEND
+    ANTTWEAKBAR_SRC_FILES
     "${ANTTWEAKBAR_C_SRC_FILES}"
     "${ANTTWEAKBAR_CPP_SRC_FILES}")
   add_library(AntTweakBar STATIC "${ANTTWEAKBAR_SRC_FILES}")
   target_include_directories(AntTweakBar PUBLIC "${ANTTWEAKBAR_INCLUDE_DIR}")
   if(APPLE)
     set_target_properties(
-      AntTweakBar 
+      AntTweakBar
       PROPERTIES
       COMPILE_FLAGS
       "-fPIC -fno-strict-aliasing -x objective-c++")
@@ -286,7 +286,7 @@ if(LIBIGL_WITH_LIM)
   add_subdirectory("${LIM_DIR}" "lim")
   list(APPEND LIBIGL_INCLUDE_DIRS ${LIM_DIR})
   ## it depends on ligigl, so placing it here solve linking problems
-  #list(APPEND LIBIGL_LIBRARIES "lim") 
+  #list(APPEND LIBIGL_LIBRARIES "lim")
   # ^--- Alec: I don't understand this comment. Does lim need to come before
   # libigl libraries? Why can't lim be placed where it belongs in
   # LIBIGL_EXTRA_LIBRARIES?
@@ -389,7 +389,12 @@ if(LIBIGL_WITH_VIEWER)
   if(LIBIGL_WITH_NANOGUI)
     list(APPEND LIBIGL_DEFINITIONS "-DIGL_VIEWER_WITH_NANOGUI")
 
-    set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
+    if (LIBIGL_WITH_PYTHON)
+      set(NANOGUI_BUILD_PYTHON ON CACHE BOOL " " FORCE)
+    else()
+      set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
+    endif()
+
     set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
     set(NANOGUI_BUILD_SHARED  OFF CACHE BOOL " " FORCE)
     add_subdirectory("${NANOGUI_DIR}" "nanogui")
