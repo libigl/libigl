@@ -20,7 +20,7 @@ IGL_INLINE void igl::sort_vectors_ccw(
   for (int i=0; i<half_degree; ++i)
   {
     Eigen::Matrix<typename DerivedS::Scalar,1,3> Pl = F.colPivHouseholderQr().solve(P.segment(i*3,3).transpose()).transpose();
-    assert(fabs(Pl(2))/Pl.cwiseAbs().maxCoeff() <1e-5);
+//    assert(fabs(Pl(2))/Pl.cwiseAbs().maxCoeff() <1e-5);
     angles[i] = atan2(Pl(1),Pl(0));
   }
 
