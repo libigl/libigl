@@ -9,6 +9,9 @@
 #include "cotmatrix.h"
 #include "massmatrix.h"
 #include "invert_diag.h"
+#include "adjacency_matrix.h"
+#include "sum.h"
+#include "diag.h"
 #include "min_quad_with_fixed.h"
 #include <Eigen/Sparse>
 
@@ -29,6 +32,7 @@ IGL_INLINE bool igl::harmonic(
   using namespace Eigen;
   typedef typename DerivedV::Scalar Scalar;
   typedef Matrix<Scalar,Dynamic,1> VectorXS;
+  SparseMatrix<Scalar> Q;
   SparseMatrix<Scalar> L,M,Mi;
   cotmatrix(V,F,L);
   switch(F.cols())
@@ -39,18 +43,19 @@ IGL_INLINE bool igl::harmonic(
     case 4:
     default:
       massmatrix(V,F,MASSMATRIX_TYPE_BARYCENTRIC,M);
-      break;
+    break;
   }
   invert_diag(M,Mi);
-  SparseMatrix<Scalar> Q = -L;
+  Q = -L;
   for(int p = 1;p<k;p++)
   {
     Q = (Q*Mi*-L).eval();
   }
-  const VectorXS B = VectorXS::Zero(V.rows(),1);
+
   min_quad_with_fixed_data<Scalar> data;
   min_quad_with_fixed_precompute(Q,b,SparseMatrix<Scalar>(),true,data);
   W.resize(V.rows(),bc.cols());
+  const VectorXS B = VectorXS::Zero(V.rows(),1);
   for(int w = 0;w<bc.cols();w++)
   {
     const VectorXS bcw = bc.col(w);
@@ -64,9 +69,57 @@ IGL_INLINE bool igl::harmonic(
   return true;
 }
 
+template <
+  typename DerivedF,
+  typename Derivedb,
+  typename Derivedbc,
+  typename DerivedW>
+IGL_INLINE bool igl::harmonic(
+  const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::PlainObjectBase<Derivedb> & b,
+  const Eigen::PlainObjectBase<Derivedbc> & bc,
+  const int k,
+  Eigen::PlainObjectBase<DerivedW> & W)
+{
+  using namespace Eigen;
+  typedef typename Derivedbc::Scalar Scalar;
+  typedef Matrix<Scalar,Dynamic,1> VectorXS;
+  SparseMatrix<Scalar> Q;
+  SparseMatrix<Scalar> A;
+  adjacency_matrix(F,A);
+  // sum each row
+  SparseVector<Scalar> Asum;
+  sum(A,1,Asum);
+  // Convert row sums into diagonal of sparse matrix
+  SparseMatrix<Scalar> Adiag;
+  diag(Asum,Adiag);
+  // Build uniform laplacian
+  Q = -A+Adiag;
+  min_quad_with_fixed_data<Scalar> data;
+  min_quad_with_fixed_precompute(Q,b,SparseMatrix<Scalar>(),true,data);
+  W.resize(A.rows(),bc.cols());
+  const VectorXS B = VectorXS::Zero(A.rows(),1);
+  for(int w = 0;w<bc.cols();w++)
+  {
+    const VectorXS bcw = bc.col(w);
+    VectorXS Ww;
+    if(!min_quad_with_fixed_solve(data,B,bcw,VectorXS(),Ww))
+    {
+      return false;
+    }
+    W.col(w) = Ww;
+  }
+  return true;
+}
+
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template bool igl::harmonic<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 template bool igl::harmonic<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template bool igl::harmonic<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+
+template bool igl::harmonic<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template bool igl::harmonic<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template bool igl::harmonic<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif
