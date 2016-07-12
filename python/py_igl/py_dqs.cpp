@@ -4,7 +4,7 @@ m.def("dqs", []
 (
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXd& W,
-  const std::vector<Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond> > & vQ,
+  const RotationList& vQ,
   const std::vector<Eigen::MatrixXd> & vT,
   Eigen::MatrixXd& U
 )

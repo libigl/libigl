@@ -68,7 +68,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         })
         .def("__init__", [](Type &m, py::buffer b) {
             py::buffer_info info = b.request();
-            if (info.format != py::format_descriptor<Scalar>::value())
+            if (info.format != py::format_descriptor<Scalar>::value)
                 throw std::runtime_error("Incompatible buffer format!");
             if (info.ndim == 1) {
                 new (&m) Type(info.shape[0], 1);
@@ -319,7 +319,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
                 m.data(),                /* Pointer to buffer */
                 sizeof(Scalar),          /* Size of one scalar */
                 /* Python struct-style format descriptor */
-                py::format_descriptor<Scalar>::value(),
+                py::format_descriptor<Scalar>::value,
                 2,                       /* Number of dimensions */
                 { (size_t) m.rows(),     /* Buffer dimensions */
                   (size_t) m.cols() },
@@ -734,6 +734,9 @@ void python_export_vector(py::module &m) {
     })
     .def("conjugate",[](Eigen::Quaterniond& q) {
         return q.conjugate();
+    })
+    .def("normalize",[](Eigen::Quaterniond& q) {
+        return q.normalize();
     })
     .def("slerp",[](Eigen::Quaterniond& q, double & t, Eigen::Quaterniond other) {
         return q.slerp(t, other);

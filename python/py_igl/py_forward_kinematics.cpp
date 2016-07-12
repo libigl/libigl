@@ -19,18 +19,13 @@ m.def("forward_kinematics", []
   const Eigen::MatrixXd& C,
   const Eigen::MatrixXi& BE,
   const Eigen::MatrixXi& P,
-  const std::vector<Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond> > dQ,
-  py::list vQ,
+  const RotationList& dQ,
+  RotationList& vQ,
   py::list vT
 )
 {
-  std::vector<Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond> > vQl;
   std::vector<Eigen::Vector3d> vTl;
-  igl::forward_kinematics(C, BE, P, dQ, vQl, vTl);
-  for (auto item : vQl) {
-    py::object obj = py::cast(item);
-    vQ.append(obj);
-  }
+  igl::forward_kinematics(C, BE, P, dQ, vQ, vTl);
   for (auto item : vTl) {
     py::object obj = py::cast(Eigen::MatrixXd(item));
     vT.append(obj);

@@ -1,6 +1,7 @@
 #include <Eigen/Dense>
 
 #include "python_shared.h"
+#include "modules/py_typedefs.h"
 
 #include <igl/AABB.h>
 #include <igl/ARAPEnergyType.h>
@@ -85,6 +86,8 @@
 
 void python_export_igl(py::module &m)
 {
+#include "modules/py_typedefs.cpp"
+
 #include "py_igl/py_AABB.cpp"
 #include "py_igl/py_ARAPEnergyType.cpp"
 #include "py_igl/py_MeshBooleanType.cpp"
