@@ -14,7 +14,7 @@ check_dependencies(dependencies)
 
 
 def pre_draw(viewer):
-    global recompute, anim_t, poses, C, BE, P, U
+    global recompute, anim_t, poses, C, BE, P, U, M, anim_t_dir
 
     if recompute:
         # Find pose interval
@@ -23,12 +23,12 @@ def pre_draw(viewer):
         t = anim_t - math.floor(anim_t)
 
         # Interpolate pose and identity
-        anim_pose = []
+        anim_pose = igl.RotationList()
         for e in range(len(poses[begin])):
             anim_pose.append(poses[begin][e].slerp(t, poses[end][e]))
 
         # Propogate relative rotations via FK to retrieve absolute transformations
-        vQ = []
+        vQ = igl.RotationList()
         vT = []
         igl.forward_kinematics(C, BE, P, anim_pose, vQ, vT)
         dim = C.cols()
@@ -62,14 +62,23 @@ def pre_draw(viewer):
 
 
 def key_down(viewer, key, mods):
-    global recompute, use_dqs
+    global recompute, use_dqs, animation
     recompute = True
     if key == ord('D') or key == ord('d'):
         use_dqs = not use_dqs
-        return True
+        viewer.core.is_animating = False
+        animation = False
+        if use_dqs:
+            print("Switched to Dual Quaternion Skinning")
+        else:
+            print("Switched to Linear Blend Skinning")
     elif key == ord(' '):
-        viewer.core.is_animating = not viewer.core.is_animating
-        return True
+        if animation:
+            viewer.core.is_animating = False
+            animation = False
+        else:
+            viewer.core.is_animating = True
+            animation = True
     return False
 
 
@@ -93,6 +102,7 @@ if __name__ == "__main__":
     anim_t_dir = 0.015
     use_dqs = False
     recompute = True
+    animation = False  # Flag needed as there is some synchronization problem with viewer.core.is_animating
 
     poses = [[]]
 
@@ -102,7 +112,7 @@ if __name__ == "__main__":
 
     # retrieve parents for forward kinematics
     igl.directed_edge_parents(BE, P)
-    rest_pose = []
+    rest_pose = igl.RotationList()
     igl.directed_edge_orientations(C, BE, rest_pose)
     poses = [[igl.eigen.Quaterniond.Identity() for i in range(4)] for j in range(4)]
 
@@ -121,7 +131,7 @@ if __name__ == "__main__":
     viewer.core.show_lines = False
     viewer.core.show_overlay_depth = False
     viewer.core.line_width = 1
-    # viewer.core.trackball_angle.normalize()
+    viewer.core.trackball_angle.normalize()
     viewer.callback_pre_draw = pre_draw
     viewer.callback_key_down = key_down
     viewer.core.is_animating = False
