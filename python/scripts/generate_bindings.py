@@ -79,7 +79,7 @@ def map_parameter_types(name, cpp_type, parsed_types, errors, enum_types):
 
     if len(parsed_types) == 0:
         errors.append("Empty typechain: %s" % cpp_type)
-        if cpp_type == "int" or cpp_type == "bool":
+        if cpp_type == "int" or cpp_type == "bool" or cpp_type == "unsigned int":
             return cpp_type, True
         else:
             return cpp_type, False

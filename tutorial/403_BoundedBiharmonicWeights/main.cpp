@@ -32,7 +32,7 @@
 
 #include "tutorial_shared_path.h"
 
-typedef 
+typedef
   std::vector<Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> >
   RotationList;
 
@@ -78,7 +78,7 @@ bool pre_draw(igl::viewer::Viewer & viewer)
     MatrixXd CT;
     MatrixXi BET;
     igl::deform_skeleton(C,BE,T,CT,BET);
-    
+
     viewer.data.set_vertices(U);
     viewer.data.set_edges(CT,BET,sea_green);
     viewer.data.compute_normals();

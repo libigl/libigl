@@ -48,7 +48,7 @@ endif()
 include_directories(${PYTHON_INCLUDE_DIR} include)
 
 ## include pybind
-include_directories(${PROJECT_SOURCE_DIR}/../external/pybind11/include)
+include_directories(${PROJECT_SOURCE_DIR}/../external/nanogui/ext/pybind11/include)
 
 ## include libigl
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" OFF)
@@ -66,6 +66,9 @@ option(LIBIGL_WITH_PNG              "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
 option(LIBIGL_WITH_XML              "Use XML"            ON)
+option(LIBIGL_WITH_PYTHON           "Use Python"         ON)
+option(LIBIGL_WITH_COPYLEFT         "Use Copyleft"       ON)
+
 
 if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build system fails without it
   find_package(CGAL REQUIRED)
@@ -112,12 +115,17 @@ if (LIBIGL_WITH_CGAL)
   list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_cgal.cpp")
 endif ()
 
+if (LIBIGL_WITH_COPYLEFT)
+  add_definitions(-DPY_COPYLEFT)
+  list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_copyleft.cpp")
+endif ()
+
 if (LIBIGL_WITH_PNG)
   add_definitions(-DPY_PNG)
   list(APPEND SHARED_SOURCES "modules/py_igl_png.cpp")
 endif ()
 
-
+#----
 ## Prepare the python library
 add_library(pyigl SHARED
   python_shared.cpp
@@ -131,6 +139,10 @@ set_target_properties(pyigl PROPERTIES PREFIX "")
 set_target_properties(pyigl PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 target_link_libraries(pyigl ${LIBIGL_LIBRARIES} ${LIBIGL_EXTRA_LIBRARIES})
+
+# Copy the nanogui bindings
+#get_target_property(NANOGUI_LIB nanogui_python LOCATION)
+#file(COPY ${NANOGUI_LIB} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../)
 
 if (WIN32)
   if (MSVC)
@@ -146,7 +158,6 @@ if (WIN32)
   # message(FATAL_ERROR ${PYTHON_LIBRARY})
   # target_link_libraries(igl ${PYTHON_LIBRARY})
   target_link_libraries(pyigl ${PYTHON_LIBRARIES})
-
 
 elseif (UNIX)
   # It's quite common to have multiple copies of the same Python version
@@ -189,4 +200,16 @@ elseif (UNIX)
       add_custom_command(TARGET pyigl POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/../pyigl.so)
     endif()
   endif()
+endif()
+
+if (LIBIGL_WITH_PYTHON AND LIBIGL_WITH_NANOGUI)
+  # Copy the nanogui python lib after compilation
+  get_target_property(NANOGUI_LIB nanogui_python LOCATION)
+  add_custom_target(copy ALL)
+  add_custom_command(
+        TARGET copy
+        COMMAND ${CMAKE_COMMAND} -E copy ${NANOGUI_LIB} ${CMAKE_CURRENT_BINARY_DIR}/../
+        )
+  add_dependencies(copy pyigl)
+
 endif()
