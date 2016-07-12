@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
   Eigen::MatrixXd bnd_uv;
   igl::map_vertices_to_circle(V,bnd,bnd_uv);
 
-  igl::harmonic(V,F,bnd,bnd_uv,1,true,initial_guess);
+  igl::harmonic(V,F,bnd,bnd_uv,1,initial_guess);
 
   // Add dynamic regularization to avoid to specify boundary conditions
   igl::ARAPData arap_data;

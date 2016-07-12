@@ -20,7 +20,6 @@ namespace igl
   //   b  #b boundary indices into V
   //   bc #b by #W list of boundary values
   //   k  power of harmonic operation (1: harmonic, 2: biharmonic, etc)
-  //   use_cotan_weights  flag to indicate whether the laplacian operator is uniform
   // Outputs:
   //   W  #V by #W list of weights
   //
@@ -36,9 +35,32 @@ namespace igl
     const Eigen::PlainObjectBase<Derivedb> & b,
     const Eigen::PlainObjectBase<Derivedbc> & bc,
     const int k,
-    const bool use_cotan_weights,
     Eigen::PlainObjectBase<DerivedW> & W);
-};
+
+ // Compute harmonic map using uniform laplacian operator
+ //
+ //
+ // Inputs:
+ //   F  #F by simplex-size list of element indices
+ //   b  #b boundary indices into V
+ //   bc #b by #W list of boundary values
+ //   k  power of harmonic operation (1: harmonic, 2: biharmonic, etc)
+ // Outputs:
+ //   W  #V by #W list of weights
+ //
+ template <
+   typename DerivedF,
+   typename Derivedb,
+   typename Derivedbc,
+   typename DerivedW>
+ IGL_INLINE bool harmonic(
+   const Eigen::PlainObjectBase<DerivedF> & F,
+   const Eigen::PlainObjectBase<Derivedb> & b,
+   const Eigen::PlainObjectBase<Derivedbc> & bc,
+   int k,
+   Eigen::PlainObjectBase<DerivedW> & W);
+ };
+
 #ifndef IGL_STATIC_LIBRARY
 #include "harmonic.cpp"
 #endif
