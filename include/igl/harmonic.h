@@ -57,7 +57,7 @@ namespace igl
    const Eigen::PlainObjectBase<DerivedF> & F,
    const Eigen::PlainObjectBase<Derivedb> & b,
    const Eigen::PlainObjectBase<Derivedbc> & bc,
-   int k,
+   const int k,
    Eigen::PlainObjectBase<DerivedW> & W);
  };
 
