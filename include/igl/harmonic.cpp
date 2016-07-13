@@ -84,7 +84,7 @@ IGL_INLINE bool igl::harmonic(
   using namespace Eigen;
   typedef typename Derivedbc::Scalar Scalar;
   typedef Matrix<Scalar,Dynamic,1> VectorXS;
-  SparseMatrix<Scalar> Q;
+  SparseMatrix<Scalar> Q,L;
   SparseMatrix<Scalar> A;
   adjacency_matrix(F,A);
   // sum each row
@@ -94,7 +94,13 @@ IGL_INLINE bool igl::harmonic(
   SparseMatrix<Scalar> Adiag;
   diag(Asum,Adiag);
   // Build uniform laplacian
-  Q = -A+Adiag;
+  L = -A+Adiag;
+  Q = L;
+  for(int p = 1;p<k;p++)
+  {
+    Q = (Q*L).eval();
+  }
+
   min_quad_with_fixed_data<Scalar> data;
   min_quad_with_fixed_precompute(Q,b,SparseMatrix<Scalar>(),true,data);
   W.resize(A.rows(),bc.cols());
