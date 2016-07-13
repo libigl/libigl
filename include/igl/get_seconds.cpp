@@ -6,24 +6,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "get_seconds.h"
-// NULL for Linux
-#include <cstddef>
-
-#if _WIN32
-#  include <ctime>
+#include <chrono>
 IGL_INLINE double igl::get_seconds()
 {
-  // This does not work on mac os x with glut in the main loop
-  return double(clock())/CLOCKS_PER_SEC;
+  return 
+    std::chrono::duration<double>(
+      std::chrono::system_clock::now().time_since_epoch()).count();
 }
-#else
-#  include <sys/time.h>
-IGL_INLINE double igl::get_seconds()
-{
-  timeval time;
-  gettimeofday(&time, NULL);
-  return time.tv_sec + time.tv_usec / 1e6;
-  // This does not work on mac os x with glut in the main loop
-  //return double(clock())/CLOCKS_PER_SEC;
-}
-#endif
