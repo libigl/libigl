@@ -866,6 +866,7 @@ functionality as common Matlab functions.
 | `igl::histc`             | Counting occurrences for building a histogram |
 | `igl::hsv_to_rgb`        | Convert HSV colors to RGB (cf. Matlab's `hsv2rgb`) |
 | `igl::intersect`         | Set intersection of matrix elements. |
+| `igl::isdiag`            | Determine whether matrix is diagonal |
 | `igl::jet`               | Quantized colors along the rainbow. |
 | `igl::median`            | Compute the median per column |
 | `igl::mode`              | Compute the mode per column |
