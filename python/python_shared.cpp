@@ -30,12 +30,16 @@ extern void python_export_igl_triangle(py::module &);
 extern void python_export_igl_cgal(py::module &);
 #endif
 
+#ifdef PY_COPYLEFT
+extern void python_export_igl_copyleft(py::module &);
+#endif
+
 #ifdef PY_PNG
 extern void python_export_igl_png(py::module &);
 #endif
 
-#ifdef PY_COPYLEFT
-extern void python_export_igl_copyleft(py::module &);
+#ifdef PY_BBW
+extern void python_export_igl_bbw(py::module &);
 #endif
 
 PYBIND11_PLUGIN(pyigl) {
@@ -57,11 +61,14 @@ PYBIND11_PLUGIN(pyigl) {
            avg_edge_length
            barycenter
            barycentric_coordinates
+           bbw_bbw
+           boundary_conditions
            boundary_facets
            boundary_loop
            cat
            collapse_edge
            colon
+           column_to_quats
            comb_cross_field
            comb_frame_field
            compute_frame_field_bisectors
@@ -104,6 +111,8 @@ PYBIND11_PLUGIN(pyigl) {
            massmatrix
            min_quad_with_fixed
            n_polyvector
+           normalize_row_lengths
+           normalize_row_sums
            parula
            per_corner_normals
            per_edge_normals
@@ -169,12 +178,16 @@ PYBIND11_PLUGIN(pyigl) {
     python_export_igl_cgal(m);
     #endif
 
+    #ifdef PY_COPYLEFT
+    python_export_igl_copyleft(m);
+    #endif
+
     #ifdef PY_PNG
     python_export_igl_png(m);
     #endif
 
-    #ifdef PY_COPYLEFT
-    python_export_igl_copyleft(m);
+    #ifdef PY_BBW
+    python_export_igl_bbw(m);
     #endif
 
     return m.ptr();
