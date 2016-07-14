@@ -12,11 +12,13 @@
 #include <igl/avg_edge_length.h>
 #include <igl/barycenter.h>
 #include <igl/barycentric_coordinates.h>
+#include <igl/boundary_conditions.h>
 #include <igl/boundary_facets.h>
 #include <igl/boundary_loop.h>
 #include <igl/cat.h>
 #include <igl/collapse_edge.h>
 #include <igl/colon.h>
+#include <igl/column_to_quats.h>
 #include <igl/comb_cross_field.h>
 #include <igl/comb_frame_field.h>
 #include <igl/compute_frame_field_bisectors.h>
@@ -51,6 +53,8 @@
 #include <igl/massmatrix.h>
 #include <igl/min_quad_with_fixed.h>
 #include <igl/n_polyvector.h>
+#include <igl/normalize_row_lengths.h>
+#include <igl/normalize_row_sums.h>
 #include <igl/parula.h>
 #include <igl/per_corner_normals.h>
 #include <igl/per_edge_normals.h>
@@ -97,11 +101,13 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_avg_edge_length.cpp"
 #include "py_igl/py_barycenter.cpp"
 #include "py_igl/py_barycentric_coordinates.cpp"
+#include "py_igl/py_boundary_conditions.cpp"
 #include "py_igl/py_boundary_facets.cpp"
 #include "py_igl/py_boundary_loop.cpp"
 #include "py_igl/py_cat.cpp"
 #include "py_igl/py_collapse_edge.cpp"
 #include "py_igl/py_colon.cpp"
+#include "py_igl/py_column_to_quats.cpp"
 #include "py_igl/py_comb_cross_field.cpp"
 #include "py_igl/py_comb_frame_field.cpp"
 #include "py_igl/py_compute_frame_field_bisectors.cpp"
@@ -136,6 +142,8 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_massmatrix.cpp"
 #include "py_igl/py_min_quad_with_fixed.cpp"
 #include "py_igl/py_n_polyvector.cpp"
+#include "py_igl/py_normalize_row_lengths.cpp"
+#include "py_igl/py_normalize_row_sums.cpp"
 #include "py_igl/py_parula.cpp"
 #include "py_igl/py_per_corner_normals.cpp"
 #include "py_igl/py_per_edge_normals.cpp"

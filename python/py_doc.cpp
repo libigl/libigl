@@ -76,6 +76,45 @@ const char *__doc_igl_barycentric_coordinates = R"igl_Qu8mg5v7(// Compute baryce
   // Outputs:
   //   L  #P by 4 list of barycentric coordinates
   //   )igl_Qu8mg5v7";
+const char *__doc_igl_bbw_bbw = R"igl_Qu8mg5v7(// Compute Bounded Biharmonic Weights on a given domain (V,Ele) with a given
+    // set of boundary conditions
+    //
+    // Templates
+    //   DerivedV  derived type of eigen matrix for V (e.g. MatrixXd)
+    //   DerivedF  derived type of eigen matrix for F (e.g. MatrixXi)
+    //   Derivedb  derived type of eigen matrix for b (e.g. VectorXi)
+    //   Derivedbc  derived type of eigen matrix for bc (e.g. MatrixXd)
+    //   DerivedW  derived type of eigen matrix for W (e.g. MatrixXd)
+    // Inputs:
+    //   V  #V by dim vertex positions
+    //   Ele  #Elements by simplex-size list of element indices
+    //   b  #b boundary indices into V
+    //   bc #b by #W list of boundary values
+    //   data  object containing options, intial guess --> solution and results
+    // Outputs:
+    //   W  #V by #W list of *unnormalized* weights to normalize use
+    //    igl::normalize_row_sums(W,W);
+    // Returns true on success, false on failure)igl_Qu8mg5v7";
+const char *__doc_igl_boundary_conditions = R"igl_Qu8mg5v7(// Compute boundary conditions for automatic weights computation. This
+  // function expects that the given mesh (V,Ele) has sufficient samples
+  // (vertices) exactly at point handle locations and exactly along bone and
+  // cage edges.
+  //
+  // Inputs:
+  //   V  #V by dim list of domain vertices
+  //   Ele  #Ele by simplex-size list of simplex indices
+  //   C  #C by dim list of handle positions
+  //   P  #P by 1 list of point handle indices into C
+  //   BE  #BE by 2 list of bone edge indices into C
+  //   CE  #CE by 2 list of cage edge indices into *P*
+  // Outputs:
+  //   b  #b list of boundary indices (indices into V of vertices which have
+  //     known, fixed values)
+  //   bc #b by #weights list of known/fixed values for boundary vertices
+  //     (notice the #b != #weights in general because #b will include all the
+  //     intermediary samples along each bone, etc.. The ordering of the
+  //     weights corresponds to [P;BE]
+  // Returns true if boundary conditions make sense)igl_Qu8mg5v7";
 const char *__doc_igl_boundary_facets = R"igl_Qu8mg5v7(// BOUNDARY_FACETS Determine boundary faces (edges) of tetrahedra (triangles)
   // stored in T (analogous to qptoolbox's `outline` and `boundary_faces`).
   //
@@ -132,6 +171,13 @@ const char *__doc_igl_colon = R"igl_Qu8mg5v7(// Colon operator like matlab's col
   //     than hi, vice versa if hi<low
   // Output:
   //   I  list of values from low to hi with step size step)igl_Qu8mg5v7";
+const char *__doc_igl_column_to_quats = R"igl_Qu8mg5v7(// "Columnize" a list of quaternions (q1x,q1y,q1z,q1w,q2x,q2y,q2z,q2w,...)
+  //
+  // Inputs:
+  //   Q  n*4-long list of coefficients
+  // Outputs:
+  //   vQ  n-long list of quaternions
+  // Returns false if n%4!=0)igl_Qu8mg5v7";
 const char *__doc_igl_comb_cross_field = R"igl_Qu8mg5v7(// Inputs:
   //   V          #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F          #F by 4 eigen Matrix of face (quad) indices
@@ -739,6 +785,22 @@ const char *__doc_igl_n_polyvector = R"igl_Qu8mg5v7(// Inputs:
   // Output:
   //                  3 by 3 rotation matrix that takes v0 to v1
   //)igl_Qu8mg5v7";
+const char *__doc_igl_normalize_row_lengths = R"igl_Qu8mg5v7(// Obsolete: just use A.rowwise().normalize() or B=A.rowwise().normalized();
+  //
+  // Normalize the rows in A so that their lengths are each 1 and place the new
+  // entries in B
+  // Inputs:
+  //   A  #rows by k input matrix
+  // Outputs:
+  //   B  #rows by k input matrix, can be the same as A)igl_Qu8mg5v7";
+const char *__doc_igl_normalize_row_sums = R"igl_Qu8mg5v7(// Normalize the rows in A so that their sums are each 1 and place the new
+  // entries in B
+  // Inputs:
+  //   A  #rows by k input matrix
+  // Outputs:
+  //   B  #rows by k input matrix, can be the same as A
+  //
+  // Note: This is just calling an Eigen one-liner.)igl_Qu8mg5v7";
 const char *__doc_igl_parula = R"igl_Qu8mg5v7(// PARULA like MATLAB's parula
   //
   // Inputs:

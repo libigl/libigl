@@ -1,5 +1,6 @@
 py::class_<RotationList>(m, "RotationList")
     .def(py::init<>())
+    .def(py::init<size_t>())
     .def("pop_back", &RotationList::pop_back)
     /* There are multiple versions of push_back(), etc. Select the right ones. */
     .def("append", (void (RotationList::*)(const Eigen::Quaterniond &)) &RotationList::push_back)
