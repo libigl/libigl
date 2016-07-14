@@ -4,6 +4,8 @@ import pyigl as igl
 
 def p2e(m):
     if isinstance(m, np.ndarray):
+        if not m.flags['C_CONTIGUOUS']:
+            raise TypeError("p2e only support C-contiguous order")
         if m.dtype.type == np.int32:
             return igl.eigen.MatrixXi(m)
         elif m.dtype.type == np.float64:
@@ -33,11 +35,11 @@ def p2e(m):
 
 def e2p(m):
     if isinstance(m, igl.eigen.MatrixXd):
-        return np.array(m, dtype='float64')
+        return np.array(m, dtype='float64', order='C')
     elif isinstance(m, igl.eigen.MatrixXi):
-        return np.array(m, dtype='int32')
+        return np.array(m, dtype='int32', order='C')
     elif isinstance(m, igl.eigen.MatrixXb):
-        return np.array(m, dtype='bool')
+        return np.array(m, dtype='bool', order='C')
     elif isinstance(m, igl.eigen.SparseMatrixd):
         coo = np.array(m.toCOO())
         I = coo[:, 0]
