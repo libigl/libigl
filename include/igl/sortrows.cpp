@@ -62,24 +62,46 @@ IGL_INLINE void igl::sortrows(
   using namespace std;
   using namespace Eigen;
   // Resize output
-  Y.resize(X.rows(),X.cols());
-  IX.resize(X.rows(),1);
-  for(int i = 0;i<X.rows();i++)
+  const size_t num_rows = X.rows();
+  const size_t num_cols = X.cols();
+  Y.resize(num_rows,num_cols);
+  IX.resize(num_rows,1);
+  for(int i = 0;i<num_rows;i++)
   {
     IX(i) = i;
   }
-  std::sort(
-    IX.data(),
-    IX.data()+IX.size(),
-    igl::IndexRowLessThan<const Eigen::PlainObjectBase<DerivedX> & >(X));
-  // if not ascending then reverse
-  if(!ascending)
-  {
-    std::reverse(IX.data(),IX.data()+IX.size());
+  auto index_less_than = [&X, num_cols](size_t i, size_t j) {
+      for (size_t c=0; c<num_cols; c++) {
+          if (X.coeff(i, c) < X.coeff(j, c)) return true;
+          else if (X.coeff(j,c) < X.coeff(i,c)) return false;
+      }
+      return false;
+  };
+  auto index_greater_than = [&X, num_cols](size_t i, size_t j) {
+      for (size_t c=0; c<num_cols; c++) {
+          if (X.coeff(i, c) > X.coeff(j, c)) return true;
+          else if (X.coeff(j,c) > X.coeff(i,c)) return false;
+      }
+      return false;
+  };
+  if (ascending) {
+      std::sort(
+        IX.data(),
+        IX.data()+IX.size(),
+        index_less_than
+        );
+  } else {
+      std::sort(
+        IX.data(),
+        IX.data()+IX.size(),
+        index_greater_than
+        );
   }
-  for(int i = 0;i<X.rows();i++)
-  {
-    Y.row(i) = X.row(IX(i));
+  for (size_t j=0; j<num_cols; j++) {
+      for(int i = 0;i<num_rows;i++)
+      {
+          Y(i,j) = X(IX(i), j);
+      }
   }
 }
 
