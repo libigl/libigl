@@ -45,7 +45,6 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#scalarfieldvisualization">104 Scalar field visualization</a></li>
 <li><a href="#overlays">105 Overlays</a></li>
 <li><a href="#viewermenu">106 Viewer Menu</a></li>
-<li><a href="#screencapture">107 Screen Capture</a></li>
 </ul></li>
 <li><a href="#chapter2:discretegeometricquantitiesandoperators">Chapter 2: Discrete Geometric Quantities and
  Operators</a>
@@ -132,7 +131,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#triangulationofclosedpolygons">604 Triangulation of closed polygons</a></li>
 <li><a href="#tetrahedralizationofclosedsurfaces">605 Tetrahedralization of closed surfaces</a></li>
 <li><a href="#bakingambientocclusion">606 Baking ambient occlusion</a></li>
-<li><a href="#pickingverticesandfaces">607 Picking vertices and faces</a></li>
+<li><a href="#screencapture">607 Screen Capture</a></li>
 <li><a href="#locallyinjectivemaps">608 Locally Injective Maps</a></li>
 <li><a href="#booleanoperationsonmeshes">609 Boolean Operations on Meshes</a></li>
 <li><a href="#csgtree">610 CSG Tree</a></li>
@@ -147,6 +146,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#marchingcubes">705 Marching Cubes</a></li>
 <li><a href="#facetorientation">706 Facet Orientation</a></li>
 <li><a href="#sweptvolume">707 Swept Volume</a></li>
+<li><a href="#pickingverticesandfaces">708 Picking vertices and faces</a></li>
 </ul></li>
 <li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
@@ -516,25 +516,6 @@ viewer.ngui-&gt;addVariable&lt;bool&gt;(&quot;bool&quot;,[&amp;](bool val) {
 <img src="images/106_ViewerMenu.png" alt="(Example 106) The UI of the viewer can be easily customized." />
 <figcaption>(<a href="106_ViewerMenu/main.cpp">Example 106</a>) The UI of the viewer can be easily customized.</figcaption>
 </figure>
-
-<h2 id="screencapture"><a href="#screencapture">Screen capture</a></h2>
-
-<p>It is possible to render the scene in a memory buffer using the function draw_buffer:</p>
-
-<pre><code class="cpp">// Allocate temporary buffers
-Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; R(1280,800);
-Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; G(1280,800);
-Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; B(1280,800);
-Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; A(1280,800);
-
-// Draw the scene in the buffers
-viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
-
-// Save it to a PNG
-igl::png::writePNG(R,G,B,A,&quot;out.png&quot;);
-</code></pre>
-
-<p>In <a href="107_ScreenCapture/main.cpp">Example 107</a> a scene is rendered in a temporary png and used to texture a quadrilateral.</p>
 
 <h1 id="chapter2:discretegeometricquantitiesandoperators">Chapter 2: Discrete Geometric Quantities and Operators</h1>
 
@@ -1012,6 +993,10 @@ functionality as common Matlab functions.</p>
 <tr>
 	<td style="text-align:left;"><code>igl::intersect</code></td>
 	<td style="text-align:left;">Set intersection of matrix elements.</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::isdiag</code></td>
+	<td style="text-align:left;">Determine whether matrix is diagonal</td>
 </tr>
 <tr>
 	<td style="text-align:left;"><code>igl::jet</code></td>
@@ -2068,9 +2053,9 @@ harmonic parametrization, it does not need to have a fixed boundary.</p>
 
 <p><span class="math">\[ E_{LSCM}(\mathbf{u},\mathbf{v}) = \frac{1}{2} [\mathbf{u},\mathbf{v}]^t (L_c - 2A) [\mathbf{u},\mathbf{v}] \]</span></p>
 
-<p>where <span class="math">\(L_c\)</span> is the cotangent Laplacian matrix and A is a matrix such that \(
-[\mathbf{u},\mathbf{v}]^t A [\mathbf{u},\mathbf{v}]$ is equal to the
-<a href="http://en.wikipedia.org/wiki/Vector_area">vector area</a> of the mesh.</p>
+<p>where <span class="math">\(L_c\)</span> is the cotangent Laplacian matrix and <span class="math">\(A\)</span> is a matrix such that
+<span class="math">\([\mathbf{u},\mathbf{v}]^t A  [\mathbf{u},\mathbf{v}]\)</span> is equal to the <a href="http://en.wikipedia.org/wiki/Vector_area">vector
+area</a> of the mesh.</p>
 
 <p>Using libigl, this matrix energy can be written in a few lines of codes. The
 cotangent matrix can be computed using <code>igl::cotmatrix</code>:</p>
@@ -2761,40 +2746,29 @@ occlusion." />
 occlusion.</figcaption>
 </figure>
 
-<h2 id="pickingverticesandfaces"><a href="#pickingverticesandfaces">Picking</a></h2>
+<h2 id="screencapture"><a href="#screencapture">Screen Capture</a></h2>
 
-<p>Picking vertices and faces using the mouse is very common in geometry
-processing applications. While this might seem a simple operation, its
-implementation is not straighforward. Libigl contains a function that solves this problem using the
-<a href="https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels">Embree</a>
-raycaster. Its usage is demonstrated in <a href="607_Picking/main.cpp">Example 607</a>:</p>
+<p>Libigl supports read and writing to .png files via the
+<a href="http://nothings.org/stb_image.h">stb image</a> code.</p>
 
-<pre><code class="cpp">bool hit = igl::unproject_onto_mesh(
-  Vector2f(x,y),
-  F,
-  viewer.core.view * viewer.core.model,
-  viewer.core.proj,
-  viewer.core.viewport,
-  *ei,
-  fid,
-  vid);
+<p>With the viewer used in this tutorial, it is possible to render the scene in a
+memory buffer using the function, <code>igl::viewer::ViewerCore::draw_buffer</code>:</p>
+
+<pre><code class="cpp">// Allocate temporary buffers for 1280x800 image
+Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; R(1280,800);
+Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; G(1280,800);
+Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; B(1280,800);
+Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; A(1280,800);
+
+// Draw the scene in the buffers
+viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+
+// Save it to a PNG
+igl::png::writePNG(R,G,B,A,&quot;out.png&quot;);
 </code></pre>
 
-<p>This function casts a ray from the view plane in the view direction. Variables
-<code>x</code> and <code>y</code> are
-the mouse screen coordinates; <code>view</code>, <code>model</code>, <code>proj</code> are the view, model and
-projection matrix respectively; <code>viewport</code> is the viewport in OpenGL format;
-<code>ei</code>
-contains a <a href="http://en.wikipedia.org/wiki/Bounding_volume_hierarchy">Bounding Volume
-Hierarchy</a> constructed
-by Embree, and <code>fid</code> and <code>vid</code> are the picked face and vertex, respectively.</p>
-
-<figure>
-<img src="images/607_Picking.png" alt="(Example 607) Picking via ray casting. The selected
-vertices are colored in red." />
-<figcaption>(<a href="607_Picking/main.cpp">Example 607</a>) Picking via ray casting. The selected
-vertices are colored in red.</figcaption>
-</figure>
+<p>In <a href="607_ScreenCapture/main.cpp">Example 607</a> a scene is rendered in a temporary
+png and used to texture a quadrilateral.</p>
 
 <h2 id="locallyinjectivemaps"><a href="#locallyinjectivemaps">Locally Injective Maps</a></h2>
 
@@ -2870,7 +2844,7 @@ intersection) the boundary of the corresponding cells are extracted.</p>
 <p>Calling libigl&#8217;s boolean operations is simple. To compute the union of
 <code>(VA,FA)</code> and <code>(VB,FB)</code> into a new mesh <code>(VC,FC)</code>, use:</p>
 
-<pre><code class="cpp">igl::mesh_boolean(VA,FA,VB,FB,MESH_BOOLEAN_TYPE_UNION,VC,FC);
+<pre><code class="cpp">igl::copyleft::cgal::mesh_boolean(VA,FA,VB,FB,MESH_BOOLEAN_TYPE_UNION,VC,FC);
 </code></pre>
 
 <p>The following figure shows each boolean operation on two meshes.</p>
@@ -2897,7 +2871,7 @@ result of the operation. The &#8220;resolve&#8221; operation is not really a boo
 operation, it is simply the result of resolving all intersections and gluing
 together coincident vertices, maintaining original triangle orientations.</p>
 
-<p>Libigl also provides a wrapper <code>igl::mesh_boolean_cork</code> to the
+<p>Libigl also provides a wrapper <code>igl::copyleft::cork::mesh_boolean</code> to the
 <a href="https://github.com/gilbo/cork">cork</a>, which is typically faster, but is not
 always robust.</p>
 
@@ -3431,6 +3405,41 @@ motion (gold)." />
 <figcaption>(<a href="707_SweptVolume/main.cpp">Example 707</a>) computes
 the surface of the swept volume (silver) of the bunny model undergoing a rigid
 motion (gold).</figcaption>
+</figure>
+
+<h2 id="pickingverticesandfaces"><a href="#pickingverticesandfaces">Picking</a></h2>
+
+<p>Picking vertices and faces using the mouse is very common in geometry
+processing applications. While this might seem a simple operation, its
+implementation is not straighforward. Libigl contains a function that solves this problem using the
+<a href="https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels">Embree</a>
+raycaster. Its usage is demonstrated in <a href="708_Picking/main.cpp">Example 708</a>:</p>
+
+<pre><code class="cpp">bool hit = igl::unproject_onto_mesh(
+  Vector2f(x,y),
+  F,
+  viewer.core.view * viewer.core.model,
+  viewer.core.proj,
+  viewer.core.viewport,
+  *ei,
+  fid,
+  vid);
+</code></pre>
+
+<p>This function casts a ray from the view plane in the view direction. Variables
+<code>x</code> and <code>y</code> are
+the mouse screen coordinates; <code>view</code>, <code>model</code>, <code>proj</code> are the view, model and
+projection matrix respectively; <code>viewport</code> is the viewport in OpenGL format;
+<code>ei</code>
+contains a <a href="http://en.wikipedia.org/wiki/Bounding_volume_hierarchy">Bounding Volume
+Hierarchy</a> constructed
+by Embree, and <code>fid</code> and <code>vid</code> are the picked face and vertex, respectively.</p>
+
+<figure>
+<img src="images/607_Picking.png" alt="(Example 708) Picking via ray casting. The selected
+vertices are colored in red." />
+<figcaption>(<a href="708_Picking/main.cpp">Example 708</a>) Picking via ray casting. The selected
+vertices are colored in red.</figcaption>
 </figure>
 
 <h1 id="future">Outlook for continuing development</h1>

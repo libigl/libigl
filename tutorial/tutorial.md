@@ -1820,9 +1820,9 @@ which can be rewritten in matrix form as [#mullen_2008][]:
 
 \\[ E_{LSCM}(\mathbf{u},\mathbf{v}) = \frac{1}{2} [\mathbf{u},\mathbf{v}]^t (L_c - 2A) [\mathbf{u},\mathbf{v}] \\]
 
-where $L_c$ is the cotangent Laplacian matrix and A is a matrix such that \\(
-[\mathbf{u},\mathbf{v}]^t A  [\mathbf{u},\mathbf{v}]$ is equal to the
-[vector area](http://en.wikipedia.org/wiki/Vector_area) of the mesh.
+where $L_c$ is the cotangent Laplacian matrix and $A$ is a matrix such that
+$[\mathbf{u},\mathbf{v}]^t A  [\mathbf{u},\mathbf{v}]$ is equal to the [vector
+area](http://en.wikipedia.org/wiki/Vector_area) of the mesh.
 
 Using libigl, this matrix energy can be written in a few lines of codes. The
 cotangent matrix can be computed using `igl::cotmatrix`:
