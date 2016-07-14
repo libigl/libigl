@@ -70,27 +70,27 @@ IGL_INLINE void igl::sortrows(
   {
     IX(i) = i;
   }
-  auto index_less_than = [&X, num_cols](size_t i, size_t j) {
-      for (size_t c=0; c<num_cols; c++) {
-          if (X.coeff(i, c) < X.coeff(j, c)) return true;
-          else if (X.coeff(j,c) < X.coeff(i,c)) return false;
-      }
-      return false;
-  };
-  auto index_greater_than = [&X, num_cols](size_t i, size_t j) {
-      for (size_t c=0; c<num_cols; c++) {
-          if (X.coeff(i, c) > X.coeff(j, c)) return true;
-          else if (X.coeff(j,c) > X.coeff(i,c)) return false;
-      }
-      return false;
-  };
   if (ascending) {
+    auto index_less_than = [&X, num_cols](size_t i, size_t j) {
+      for (size_t c=0; c<num_cols; c++) {
+        if (X.coeff(i, c) < X.coeff(j, c)) return true;
+        else if (X.coeff(j,c) < X.coeff(i,c)) return false;
+      }
+      return false;
+    };
       std::sort(
         IX.data(),
         IX.data()+IX.size(),
         index_less_than
         );
   } else {
+    auto index_greater_than = [&X, num_cols](size_t i, size_t j) {
+      for (size_t c=0; c<num_cols; c++) {
+        if (X.coeff(i, c) > X.coeff(j, c)) return true;
+        else if (X.coeff(j,c) > X.coeff(i,c)) return false;
+      }
+      return false;
+    };
       std::sort(
         IX.data(),
         IX.data()+IX.size(),
