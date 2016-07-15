@@ -275,33 +275,6 @@ namespace viewer
 
   IGL_INLINE Viewer::Viewer()
   {
-    // This mess is to help debug problems arising when compiling
-    // libiglviewer.a with(without) IGL_STATIC_LIBRARY defined and including
-    // Viewer.h without(with) IGL_STATIC_LIBRARY defined.
-#ifdef IGL_STATIC_LIBRARY
-    std::cout<<"igl_with_nanogui_defined_consistently: "<<igl_with_nanogui_defined_consistently()<<std::endl;
-    std::cout<<"igl_with_nanogui_defined_at_compile: "<<  igl_with_nanogui_defined_at_compile()  <<std::endl;
-    std::cout<<"igl_with_nanogui_defined_at_include: "<<  igl_with_nanogui_defined_at_include()  <<std::endl;
-    // First try to first assert
-    assert(igl_with_nanogui_defined_consistently() &&
-      "Must compile and include with IGL_VIEWER_WITH_NANOGUI defined consistently");
-#ifdef NDEBUG
-    // Second print warning since it's hopeless that this will run if wrong.
-    if(!igl_with_nanogui_defined_consistently())
-    {
-      std::cerr<<
-        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl<<std::endl<<
-        "WARNING: Seems that IGL_WITH_NANOGUI " <<
-        (igl_with_nanogui_defined_at_compile() ? "was" : "was not") <<
-        " defined"<<std::endl<<"during compilation of Viewer.cpp and "<<
-        (igl_with_nanogui_defined_at_include() ? "was" : "was not") <<
-        " defined"<<std::endl<<"during inclusion of Viewer.h"<<std::endl <<
-        "You're about to get some nasty memory errors."<<std::endl<<std::endl<<
-        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
-    }
-#endif
-#endif
-
 #ifdef IGL_VIEWER_WITH_NANOGUI
     ngui = nullptr;
     screen = nullptr;
