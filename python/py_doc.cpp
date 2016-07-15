@@ -378,11 +378,18 @@ const char *__doc_igl_edge_lengths = R"igl_Qu8mg5v7(// Constructs a list of leng
   //    or
   //   T  #T by 4 list of mesh elements (must be tets)
   // Outputs:
-  //   L  #F by {1|3|6} list of edge lengths 
+  //   L  #F by {1|3|6} list of edge lengths
   //     for edges, column of lengths
   //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
   //     for tets, columns correspond to edges
   //     [3 0],[3 1],[3 2],[1 2],[2 0],[0 1]
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_edge_topology = R"igl_Qu8mg5v7(// Initialize Edges and their topological relations
+  //
+  // Output:
+  // EV  : #Ex2, Stores the edge description as pair of indices to vertices
+  // FE : #Fx3, Stores the Triangle-Edge relation
+  // EF : #Ex2: Stores the Edge-Triangle relation
   //)igl_Qu8mg5v7";
 const char *__doc_igl_eigs = R"igl_Qu8mg5v7(See eigs for the documentation.)igl_Qu8mg5v7";
 const char *__doc_igl_embree_ambient_occlusion = R"igl_Qu8mg5v7(// Compute ambient occlusion per given point
@@ -981,6 +988,22 @@ const char *__doc_igl_sortrows = R"igl_Qu8mg5v7(// Act like matlab's [Y,I] = sor
   //     reference as X)
   //   I  m list of indices so that
   //     Y = X(I,:);)igl_Qu8mg5v7";
+const char *__doc_igl_triangle_triangle_adjacency = R"igl_Qu8mg5v7(// Constructs the triangle-triangle adjacency matrix for a given
+  // mesh (V,F).
+  //
+  // Templates:
+  //   Scalar derived type of eigen matrix for V (e.g. derived from
+  //     MatrixXd)
+  //   Index  derived type of eigen matrix for F (e.g. derived from
+  //     MatrixXi)
+  // Inputs:
+  //   F  #F by simplex_size list of mesh faces (must be triangles)
+  // Outputs:
+  //   TT   #F by #3 adjacent matrix, the element i,j is the id of the triangle adjacent to the j edge of triangle i
+  //   TTi  #F by #3 adjacent matrix, the element i,j is the id of edge of the triangle TT(i,j) that is adjacent with triangle i
+  // NOTE: the first edge of a triangle is [0,1] the second [1,2] and the third [2,3].
+  //       this convention is DIFFERENT from cotmatrix_entries.h
+  // Known bug: this should not need to take V as input.)igl_Qu8mg5v7";
 const char *__doc_igl_triangle_triangulate = R"igl_Qu8mg5v7(// Triangulate the interior of a polygon using the triangle library.
     //
     // Inputs:

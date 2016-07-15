@@ -77,6 +77,7 @@ PYBIND11_PLUGIN(pyigl) {
            cut_mesh_from_singularities
            doublearea
            edge_lengths
+           edge_topology
            eigs
            embree_ambient_occlusion
            embree_reorient_facets_raycast
@@ -124,6 +125,7 @@ PYBIND11_PLUGIN(pyigl) {
            slice_mask
            slice_tets
            sortrows
+           triangle_triangle_adjacency
            triangle_triangulate
            unique
            unproject_onto_mesh
