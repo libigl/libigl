@@ -25,3 +25,8 @@ IGL_INLINE bool igl::isdiag(const Eigen::SparseMatrix<Scalar> & A)
   return true;
 }
 
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template specialization
+template bool igl::isdiag<double>(class Eigen::SparseMatrix<double,0,int> const &);
+#endif
