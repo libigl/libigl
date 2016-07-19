@@ -10,7 +10,6 @@
 #include "barycenter.h"
 #include "barycentric_coordinates.h"
 #include "colon.h"
-#include "colon.h"
 #include "doublearea.h"
 #include "matlab_format.h"
 #include "point_simplex_squared_distance.h"
