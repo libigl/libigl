@@ -26,8 +26,17 @@ namespace igl
         const typename CGAL::Epeck::FT & cgal,
         double & d);
       IGL_INLINE void assign_scalar(
+        const typename CGAL::Epeck::FT & cgal,
+        float& d);
+      IGL_INLINE void assign_scalar(
         const double & c,
         double & d);
+      IGL_INLINE void assign_scalar(
+        const float& c,
+        float & d);
+      IGL_INLINE void assign_scalar(
+        const float& c,
+        double& d);
     }
   }
 }

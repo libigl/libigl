@@ -866,6 +866,7 @@ functionality as common Matlab functions.
 | `igl::histc`             | Counting occurrences for building a histogram |
 | `igl::hsv_to_rgb`        | Convert HSV colors to RGB (cf. Matlab's `hsv2rgb`) |
 | `igl::intersect`         | Set intersection of matrix elements. |
+| `igl::isdiag`            | Determine whether matrix is diagonal |
 | `igl::jet`               | Quantized colors along the rainbow. |
 | `igl::median`            | Compute the median per column |
 | `igl::mode`              | Compute the mode per column |
@@ -1819,11 +1820,11 @@ which can be rewritten in matrix form as [#mullen_2008][]:
 
 \\[ E_{LSCM}(\mathbf{u},\mathbf{v}) = \frac{1}{2} [\mathbf{u},\mathbf{v}]^t (L_c - 2A) [\mathbf{u},\mathbf{v}] \\]
 
-where $L_c$ is the cotangent Laplacian matrix and A is a matrix such that \\(
-[\mathbf{u},\mathbf{v}]^t A  [\mathbf{u},\mathbf{v}]$ is equal to the
-[vector area](http://en.wikipedia.org/wiki/Vector_area) of the mesh.
+where $L_c$ is the cotangent Laplacian matrix and $A$ is a matrix such that
+$[\mathbf{u},\mathbf{v}]^t A  [\mathbf{u},\mathbf{v}]$ is equal to the [vector
+area](http://en.wikipedia.org/wiki/Vector_area) of the mesh.
 
-Using libigl, this matrix energy can be written in a few lines of codes. The
+Using libigl, this matrix energy can be written in a few lines of code. The
 cotangent matrix can be computed using `igl::cotmatrix`:
 
 ```cpp
@@ -1847,7 +1848,7 @@ SparseMatrix<double> A;
 igl::vector_area_matrix(F,A);
 ```
 
-The final energy matrix is the sum of these two matrices. Note that in this
+The final energy matrix is $L_{flat} - 2A$. Note that in this
 case we do not need to fix the boundary. To remove the null space of the energy and make the minimum unique, it is sufficient to fix two arbitrary
 vertices to two arbitrary positions. The full source code is provided in [Example 502](502_LSCMParam/main.cpp).
 
