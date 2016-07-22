@@ -36,12 +36,11 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
 //#define MIN_QUAD_WITH_FIXED_CPP_DEBUG
   using namespace Eigen;
   using namespace std;
-  const Eigen::SparseMatrix<T> A = 0.5*A2;
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
   cout<<"    pre"<<endl;
 #endif
   // number of rows
-  int n = A.rows();
+  int n = A2.rows();
   // cache problem size
   data.n = n;
 
@@ -49,11 +48,11 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   // default is to have 0 linear equality constraints
   if(Aeq.size() != 0)
   {
-    assert(n == Aeq.cols() && "#Aeq.cols() should match A.rows()");
+    assert(n == Aeq.cols() && "#Aeq.cols() should match A2.rows()");
   }
 
-  assert(A.rows() == n && "A should be square");
-  assert(A.cols() == n && "A should be square");
+  assert(A2.rows() == n && "A2 should be square");
+  assert(A2.cols() == n && "A2 should be square");
 
   // number of known rows
   int kr = known.size();
@@ -93,7 +92,8 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   data.unknown_lagrange << data.unknown, data.lagrange;
 
   SparseMatrix<T> Auu;
-  slice(A,data.unknown,data.unknown,Auu);
+  slice_fast(A2,data.unknown,data.unknown,Auu);
+  Auu *= 0.5;
   assert(Auu.size() > 0 && "There should be at least one unknown.");
 
   // Positive definiteness is *not* determined, rather it is given as a
@@ -109,7 +109,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
       "Auu should be symmetric if positive definite");
   }else
   {
-    // determine if A(unknown,unknown) is symmetric and/or positive definite
+    // determine if Auu(unknown,unknown) is symmetric and/or positive definite
     VectorXi AuuI,AuuJ;
     MatrixXd AuuV;
     find(Auu,AuuI,AuuJ,AuuV);
@@ -162,37 +162,6 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
     cout<<"    Aeq_li=true"<<endl;
 #endif
-    // Append lagrange multiplier quadratic terms
-    SparseMatrix<T> new_A;
-    SparseMatrix<T> AeqT = Aeq.transpose();
-    SparseMatrix<T> Z(neq,neq);
-    // This is a bit slower. But why isn't cat fast?
-    new_A = cat(1, cat(2,   A, AeqT ),
-                   cat(2, Aeq,    Z ));
-
-    // precompute RHS builders
-    if(kr > 0)
-    {
-      SparseMatrix<T> Aulk,Akul;
-      // Slow
-      slice(new_A,data.unknown_lagrange,data.known,Aulk);
-      //// This doesn't work!!!
-      //data.preY = Aulk + Akul.transpose();
-      // Slow
-      if(data.Auu_sym)
-      {
-        data.preY = Aulk*2;
-      }else
-      {
-        slice(new_A,data.known,data.unknown_lagrange,Akul);
-        SparseMatrix<T> AkulT = Akul.transpose();
-        data.preY = Aulk + AkulT;
-      }
-    }else
-    {
-      data.preY.resize(data.unknown_lagrange.size(),0);
-    }
-
     // Positive definite and no equality constraints (Postive definiteness
     // implies symmetric)
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
@@ -201,10 +170,17 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     if(data.Auu_pd && neq == 0)
     {
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
-    cout<<"    llt"<<endl;
+      cout<<"    ldlt (Auu_pd)"<<endl;
 #endif
-      data.llt.compute(Auu);
-      switch(data.llt.info())
+      // precompute RHS builders
+      // (NOTE We assume Auu is symmetric if Auu_pd was set to true
+      if(kr > 0)
+	slice_fast(A2,data.unknown,data.known,data.preY);
+      else
+	data.preY.resize(data.unknown.size(),0);
+
+      data.ldlt.compute(Auu);
+      switch(data.ldlt.info())
       {
         case Eigen::Success:
           break;
@@ -215,12 +191,44 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
           cerr<<"Error: Other."<<endl;
           return false;
       }
-      data.solver_type = min_quad_with_fixed_data<T>::LLT;
+      data.solver_type = min_quad_with_fixed_data<T>::LDLT;
     }else
     {
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
-    cout<<"    ldlt"<<endl;
+      cout<<"    ldlt"<<endl;
 #endif
+      // Append lagrange multiplier quadratic terms
+      SparseMatrix<T> new_A;
+      const Eigen::SparseMatrix<T> A = 0.5*A2;
+      SparseMatrix<T> AeqT = Aeq.transpose();
+      SparseMatrix<T> Z(neq,neq);
+      // This is a bit slower. But why isn't cat fast?
+      new_A = cat(1, cat(2,   A, AeqT ),
+		     cat(2, Aeq,    Z ));
+
+      // precompute RHS builders
+      if(kr > 0)
+      {
+	SparseMatrix<T> Aulk,Akul;
+	// Slow
+	slice(new_A,data.unknown_lagrange,data.known,Aulk);
+	//// This doesn't work!!!
+	//data.preY = Aulk + Akul.transpose();
+	// Slow
+	if(data.Auu_sym)
+	{
+	  data.preY = Aulk*2;
+	}else
+	{
+	  slice(new_A,data.known,data.unknown_lagrange,Akul);
+	  SparseMatrix<T> AkulT = Akul.transpose();
+	  data.preY = Aulk + AkulT;
+	}
+      }else
+      {
+	data.preY.resize(data.unknown_lagrange.size(),0);
+      }
+
       // Either not PD or there are equality constraints
       SparseMatrix<T> NA;
       slice(new_A,data.unknown_lagrange,data.unknown_lagrange,NA);
@@ -352,12 +360,12 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     cout<<"    smash"<<endl;
 #endif
     // Known value multiplier
-    SparseMatrix<T> Auk;
-    slice(A,data.unknown,data.known,Auk);
-    SparseMatrix<T> Aku;
-    slice(A,data.known,data.unknown,Aku);
-    SparseMatrix<T> AkuT = Aku.transpose();
-    data.preY = Auk + AkuT;
+    SparseMatrix<T> Auk2;
+    slice(A2,data.unknown,data.known,Auk2);
+    SparseMatrix<T> Aku2;
+    slice(A2,data.known,data.unknown,Aku2);
+    SparseMatrix<T> AkuT2 = Aku2.transpose();
+    data.preY = 0.5*Auk2 + 0.5*AkuT2;
     // Needed during solve
     data.Auu = Auu;
     slice(Aeq,data.known,2,data.Aeqk);

@@ -11,6 +11,28 @@
 #include <vector>
 #include <unsupported/Eigen/SparseExtra>
 
+namespace igl_detail
+{
+    template <typename T>
+    struct ColNNZ
+    {
+	typedef int value_type;
+	ColNNZ(
+		const Eigen::SparseMatrix<T>& M,
+		const Eigen::Matrix<int,Eigen::Dynamic,1>& C)
+	    : myM(M)
+	    , myC(C)
+	{
+	}
+	int operator[](int c) const
+	{
+	    return myM.col(myC(c)).nonZeros();
+	}
+	const Eigen::SparseMatrix<T>& myM;
+	const Eigen::Matrix<int,Eigen::Dynamic,1>& myC;
+    };
+}
+
 template <typename TX, typename TY>
 IGL_INLINE void igl::slice(
   const Eigen::SparseMatrix<TX>& X,
@@ -19,8 +41,6 @@ IGL_INLINE void igl::slice(
   Eigen::SparseMatrix<TY>& Y)
 {
 #if 1
-  int xm = X.rows();
-  int xn = X.cols();
   int ym = R.size();
   int yn = C.size();
 
@@ -32,46 +52,33 @@ IGL_INLINE void igl::slice(
   }
 
   assert(R.minCoeff() >= 0);
-  assert(R.maxCoeff() < xm);
+  assert(R.maxCoeff() < X.rows());
   assert(C.minCoeff() >= 0);
-  assert(C.maxCoeff() < xn);
+  assert(C.maxCoeff() < X.cols());
 
-  // Build reindexing maps for columns and rows, -1 means not in map
+  // Build reindexing maps for columns and rows (from X to Y)
   std::vector<std::vector<int> > RI;
-  RI.resize(xm);
+  RI.resize(X.rows());
   for(int i = 0;i<ym;i++)
   {
     RI[R(i)].push_back(i);
   }
-  std::vector<std::vector<int> > CI;
-  CI.resize(xn);
-  // initialize to -1
-  for(int i = 0;i<yn;i++)
-  {
-    CI[C(i)].push_back(i);
-  }
   // Resize output
-  Eigen::DynamicSparseMatrix<TY, Eigen::RowMajor> dyn_Y(ym,yn);
-  // Take a guess at the number of nonzeros (this assumes uniform distribution
-  // not banded or heavily diagonal)
-  dyn_Y.reserve((X.nonZeros()/(X.rows()*X.cols())) * (ym*yn));
-  // Iterate over outside
-  for(int k=0; k<X.outerSize(); ++k)
+  Y.resize(ym,yn);
+  igl_detail::ColNNZ<TY> col_nnz(X,C);
+  Y.reserve(col_nnz);
+  for (int c = 0; c < yn; ++c)
   {
     // Iterate over inside
-    for(typename Eigen::SparseMatrix<TX>::InnerIterator it (X,k); it; ++it)
+    for(typename Eigen::SparseMatrix<TX>::InnerIterator it(X,C(c)); it; ++it)
     {
-      std::vector<int>::iterator rit, cit;
-      for(rit = RI[it.row()].begin();rit != RI[it.row()].end(); rit++)
+      for(int ri : RI[it.row()])
       {
-        for(cit = CI[it.col()].begin();cit != CI[it.col()].end(); cit++)
-        {
-          dyn_Y.coeffRef(*rit,*cit) = it.value();
-        }
+	Y.insert(ri,c) = it.value();
       }
     }
   }
-  Y = Eigen::SparseMatrix<TY>(dyn_Y);
+  Y.makeCompressed();
 #else
 
   // Alec: This is _not_ valid for arbitrary R,C since they don't necessary
@@ -131,6 +138,82 @@ IGL_INLINE void igl::slice(
 
   Eigen::SparseMatrix<T> M = (rowPerm * X);
   Y = (M * colPerm).block(0,0,ym,yn);
+#endif
+}
+
+template <typename TX, typename TY>
+IGL_INLINE void igl::slice_fast(
+  const Eigen::SparseMatrix<TX>& X,
+  const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
+  const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
+  Eigen::SparseMatrix<TY>& Y)
+{
+  typedef typename Eigen::SparseMatrix<TX>::Index Index;
+
+  Index ym = R.size();
+  Index yn = C.size();
+
+  // special case when R or C is empty
+  if (ym == 0 || yn == 0)
+  {
+    Y.resize(ym,yn);
+    return;
+  }
+
+#ifndef NDEBUG
+  assert(X.isCompressed());
+  for (Index i = 0; i < ym; ++i)
+  {
+    assert(R(i) >= 0 && R(i) < X.rows());
+    assert(i < 1 || R(i) > R(i-1));
+  }
+#endif
+
+  // Build inverse map of R, -1 means not in map
+  std::vector<int> RI(X.rows(), -1);
+  for (int i = 0; i < ym; i++)
+    RI[R(i)] = i;
+
+  Y.resize(ym, yn);
+  Y.resizeNonZeros(X.nonZeros());
+
+  const Index* x_outer = X.outerIndexPtr();
+  const Index* x_inner = X.innerIndexPtr();
+  const TX*    x_value = X.valuePtr();
+  Index*       y_outer = Y.outerIndexPtr();
+  Index*       y_inner = Y.innerIndexPtr();
+  TY*	       y_value = Y.valuePtr();
+  const Index* y_start = y_inner;
+
+  for (Index c = 0; c < yn; ++c)
+  {
+    *y_outer++ = Index(y_inner - y_start);
+    const Index xc = C(c);
+    for (Index xi = x_outer[xc], nxi = x_outer[xc+1]; xi < nxi; ++xi)
+    {
+      const Index yr = RI[x_inner[xi]];
+      if (yr < 0)
+	continue;
+      *y_inner++ = yr;
+      *y_value++ = x_value[xi];
+    }
+  }
+  *y_outer = Index(y_inner - y_start);
+
+  Y.resizeNonZeros(*y_outer); // shrink to actual size
+
+  assert(Y.isCompressed());
+
+#if 0 //ndef NDEBUG
+  Eigen::SparseMatrix<TY> Y2;
+  slice(X, R, C, Y2);
+  assert(Y.rows() == Y2.rows() && Y.cols() == Y2.cols());
+  assert(Y.nonZeros() == Y2.nonZeros());
+  assert(!memcmp(Y.outerIndexPtr(), Y2.outerIndexPtr(),
+		 (Y.cols() + 1) * sizeof(Index)));
+  assert(!memcmp(Y.innerIndexPtr(), Y2.innerIndexPtr(),
+		 Y.nonZeros() * sizeof(Index)));
+  assert(!memcmp(Y.valuePtr(), Y2.valuePtr(), Y.nonZeros() * sizeof(TY)));
 #endif
 }
 

@@ -31,6 +31,18 @@ namespace igl
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
     Eigen::SparseMatrix<TY>& Y);
+
+  // Exactly like slice() except it assumes that the R indices have no
+  // duplicates and its values are in increasing order
+  template <
+    typename TX, 
+    typename TY>
+  IGL_INLINE void slice_fast(
+    const Eigen::SparseMatrix<TX>& X,
+    const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
+    const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
+    Eigen::SparseMatrix<TY>& Y);
+
   // Wrapper to only slice in one direction
   //
   // Inputs:

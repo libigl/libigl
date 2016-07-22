@@ -17,7 +17,8 @@ namespace igl
     SOLVER_STATUS_MAX_ITER = 1,
     // Bad
     SOLVER_STATUS_ERROR = 2,
-    NUM_SOLVER_STATUSES = 3,
+    SOLVER_STATUS_ABORTED = 3,
+    NUM_SOLVER_STATUSES = 4,
   };
 };
 #endif
