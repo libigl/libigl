@@ -340,7 +340,7 @@ endif()
 
 ### Compile the png parts ###
 if(LIBIGL_WITH_PNG)
-  if(LIBIGL_WITH_VIEWER)
+  if(LIBIGL_WITH_NANOGUI)
     set(STBI_LOAD OFF CACHE BOOL " " FORCE)
   endif()
   set(STB_IMAGE_DIR "${LIBIGL_EXTERNAL}/stb_image")
