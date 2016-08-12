@@ -24,8 +24,8 @@
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 
-igl::StreamlineData data;
-igl::StreamlineState state;
+igl::StreamlineData sl_data;
+igl::StreamlineState sl_state;
 
 int degree;         // degree of the vector field
 int half_degree;    // degree/2 if treat_as_symmetric
@@ -73,7 +73,7 @@ bool pre_draw(igl::viewer::Viewer &viewer)
     if (!viewer.core.is_animating)
         return false;
 
-    igl::streamlines_next(V, F, data, state);
+    igl::streamlines_next(V, F, sl_data, sl_state);
     Eigen::RowVector3d color = Eigen::RowVector3d::Zero();
     double value = ((anim_t) % 100) / 100.;
 
@@ -82,7 +82,7 @@ bool pre_draw(igl::viewer::Viewer &viewer)
     value = value / 0.5;
     igl::parula(value, color[0], color[1], color[2]);
 
-    viewer.data.add_edges(state.start_point, state.end_point, color);
+    viewer.data.add_edges(sl_state.start_point, sl_state.end_point, color);
 
     anim_t += anim_t_dir;
 
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
     representative_to_nrosy(V, F, temp_field, half_degree, temp_field2);
 
 
-    igl::streamlines_init(V, F, temp_field2, treat_as_symmetric, data, state);
+    igl::streamlines_init(V, F, temp_field2, treat_as_symmetric, sl_data, sl_state);
 
 
     // Viewer Settings
@@ -146,20 +146,17 @@ int main(int argc, char *argv[])
 
 
     // Draw vector field on sample points
-    igl::StreamlineState state0;
-    state0 = state;
-    igl::streamlines_next(V, F, data, state0);
-    Eigen::MatrixXd v = state0.end_point - state0.start_point;
+    igl::StreamlineState sl_state0;
+    sl_state0 = sl_state;
+    igl::streamlines_next(V, F, sl_data, sl_state0);
+    Eigen::MatrixXd v = sl_state0.end_point - sl_state0.start_point;
     v.rowwise().normalize();
 
-    viewer.data.add_edges(state0.start_point,
-                          state0.start_point + 0.059 * v,
+    viewer.data.add_edges(sl_state0.start_point,
+                          sl_state0.start_point + 0.059 * v,
                           Eigen::RowVector3d::Constant(1.0f));
 
     cout <<
     "Press [space] to toggle animation" << endl;
     viewer.launch();
 }
-
-
-
