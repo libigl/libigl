@@ -99,7 +99,8 @@ lecture notes links to a cross-platform example application.
     * [705 Marching Cubes](#marchingcubes)
     * [706 Facet Orientation](#facetorientation)
     * [707 Swept Volume](#sweptvolume)
-    * [708 Picking vertices and faces](#pickingverticesandfaces)
+    * [708 Picking Vertices and Faces](#pickingverticesandfaces)
+    * [709 Vector Field Visualization](#vectorfieldvisualizer)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -3023,7 +3024,7 @@ undergoing a rigid motion with non-trivial rotation is _**not**_ a surface
 exactly representably by triangle mesh: it will be a piecewise-ruled surface.
 
 To see this, consider the surface swept by a single edge's line segment as it
-performs a screw motion. 
+performs a screw motion.
 
 This means that if we'd like to the surface of the swept volume of a triangle
 mesh undergoing a rigid motion and we'd like the output to be another triangle
@@ -3096,6 +3097,16 @@ by Embree, and `fid` and `vid` are the picked face and vertex, respectively.
 ![([Example 708](708_Picking/main.cpp)) Picking via ray casting. The selected
 vertices are colored in red.](images/607_Picking.png)
 
+## [Vector Field Visualization](#vectorfieldvisualizer) [vectorfieldvisualizer]
+
+Vector fields on surfaces are commonly visualized by tracing [streamlines] (https://en.wikipedia.org/wiki/Streamlines,_streaklines,_and_pathlines). Libigl
+supports the seeding and tracing of streamlines, for both simple vector fields
+and for N-rosy fields. The seeds for the streamlines are initialized using `streamlines_init`,
+and the lines are traced using `streamlines_next`. Each call to `streamlines_next` extends
+each line by one triangle, allowing interactive rendering of the traced lines, as demonstrated
+in [Example 709](709_VectorFieldVisualizer/main.cpp).
+
+![([Example 709](709_VectorFieldVisualizer/main.cpp)) Interactive streamlines tracing.](images/streamlines.jpg)
 
 # Outlook for continuing development [future]
 
