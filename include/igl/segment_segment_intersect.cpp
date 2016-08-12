@@ -1,6 +1,6 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
-// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2016 Francisca Gil Ureta <gilureta@cs.nyu.edu>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -63,5 +63,5 @@ IGL_INLINE bool igl::segments_intersect(
 };
 
 #ifdef IGL_STATIC_LIBRARY
-// TODO: Explicit template specialization
+template bool igl::segments_intersect<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, double&, double&, double);
 #endif

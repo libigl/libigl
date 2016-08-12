@@ -1,3 +1,11 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2016 Francisca Gil Ureta <gilureta@cs.nyu.edu>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
+
 #include "edge_topology.h"
 #include "sort_vectors_ccw.h"
 #include "streamlines.h"
@@ -5,6 +13,8 @@
 #include "polyvector_field_matchings.h"
 #include "segment_segment_intersect.h"
 #include "triangle_triangle_adjacency.h"
+#include "barycenter.h"
+#include "slice.h"
 
 #include <Eigen/Geometry>
 

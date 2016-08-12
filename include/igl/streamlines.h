@@ -1,6 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
 //
-// Created by Francisca Gil Ureta on 7/1/16.
+// Copyright (C) 2016 Francisca Gil Ureta <gilureta@cs.nyu.edu>
 //
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
 
 #ifndef IGL_STREAMLINES_H
 #define IGL_STREAMLINES_H
