@@ -63,7 +63,7 @@ IGL_INLINE bool igl::lscm(
   V_uv.resize(V.rows(),2);
   for (unsigned i=0;i<V_uv.cols();++i)
   {
-    V_uv.col(i) = W_flat.block(V_uv.rows()*i,0,V_uv.rows(),1);
+    V_uv.col(V_uv.cols()-i-1) = W_flat.block(V_uv.rows()*i,0,V_uv.rows(),1);
   }
   return true;
 }
