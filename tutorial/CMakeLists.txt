@@ -180,4 +180,6 @@ if(TUTORIALS_CHAPTER7)
   endif()
   add_subdirectory("707_SweptVolume")
   add_subdirectory("708_Picking")
+  add_subdirectory("709_VectorFieldVisualizer")
+
 endif()

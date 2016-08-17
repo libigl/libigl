@@ -38,10 +38,10 @@ IGL_INLINE void igl::copyleft::cgal::assign_scalar(
   const auto interval = CGAL::to_interval(cgal);
   d = interval.first;
   do {
-      const float next = nextafter(d, interval.second);
+      const float next = nextafter(d, float(interval.second));
       if (CGAL::abs(cgal-d) < CGAL::abs(cgal-next)) break;
       d = next;
-  } while (d < interval.second);
+  } while (d < float(interval.second));
 }
 
 IGL_INLINE void igl::copyleft::cgal::assign_scalar(
