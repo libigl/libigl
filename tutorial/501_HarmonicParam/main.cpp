@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
   // Harmonic parametrization for the internal vertices
   igl::harmonic(V,F,bnd,bnd_uv,1,V_uv);
-  
+
   // Scale UV to make the texture more clear
   V_uv *= 5;
 

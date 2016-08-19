@@ -14,6 +14,7 @@
 #include <igl/boundary_facets.h>
 #include <igl/boundary_loop.h>
 #include <igl/cat.h>
+#include <igl/collapse_edge.h>
 #include <igl/colon.h>
 #include <igl/comb_cross_field.h>
 #include <igl/comb_frame_field.h>
@@ -24,14 +25,19 @@
 #include <igl/cut_mesh_from_singularities.h>
 #include <igl/doublearea.h>
 #include <igl/edge_lengths.h>
+#include <igl/edge_topology.h>
 #include <igl/eigs.h>
 #include <igl/find_cross_field_singularities.h>
 #include <igl/fit_rotations.h>
 #include <igl/floor.h>
 #include <igl/gaussian_curvature.h>
+#include <igl/get_seconds.h>
 #include <igl/grad.h>
 #include <igl/harmonic.h>
+#include <igl/hsv_to_rgb.h>
+#include <igl/internal_angles.h>
 #include <igl/invert_diag.h>
+#include <igl/is_irregular_vertex.h>
 #include <igl/jet.h>
 #include <igl/local_basis.h>
 #include <igl/lscm.h>
@@ -49,6 +55,7 @@
 #include <igl/polar_svd.h>
 #include <igl/principal_curvature.h>
 #include <igl/quad_planarity.h>
+#include <igl/randperm.h>
 #include <igl/readDMAT.h>
 #include <igl/readMESH.h>
 #include <igl/readOBJ.h>
@@ -62,9 +69,12 @@
 #include <igl/slice_mask.h>
 #include <igl/slice_tets.h>
 #include <igl/sortrows.h>
+#include <igl/streamlines.h>
+#include <igl/triangle_triangle_adjacency.h>
 #include <igl/unique.h>
 #include <igl/unproject_onto_mesh.h>
 #include <igl/upsample.h>
+#include <igl/winding_number.h>
 #include <igl/writeMESH.h>
 #include <igl/writeOBJ.h>
 
@@ -83,6 +93,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_boundary_facets.cpp"
 #include "py_igl/py_boundary_loop.cpp"
 #include "py_igl/py_cat.cpp"
+#include "py_igl/py_collapse_edge.cpp"
 #include "py_igl/py_colon.cpp"
 #include "py_igl/py_comb_cross_field.cpp"
 #include "py_igl/py_comb_frame_field.cpp"
@@ -93,14 +104,19 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_cut_mesh_from_singularities.cpp"
 #include "py_igl/py_doublearea.cpp"
 #include "py_igl/py_edge_lengths.cpp"
+#include "py_igl/py_edge_topology.cpp"
 #include "py_igl/py_eigs.cpp"
 #include "py_igl/py_find_cross_field_singularities.cpp"
 #include "py_igl/py_fit_rotations.cpp"
 #include "py_igl/py_floor.cpp"
 #include "py_igl/py_gaussian_curvature.cpp"
+#include "py_igl/py_get_seconds.cpp"
 #include "py_igl/py_grad.cpp"
 #include "py_igl/py_harmonic.cpp"
+#include "py_igl/py_hsv_to_rgb.cpp"
+#include "py_igl/py_internal_angles.cpp"
 #include "py_igl/py_invert_diag.cpp"
+#include "py_igl/py_is_irregular_vertex.cpp"
 #include "py_igl/py_jet.cpp"
 #include "py_igl/py_local_basis.cpp"
 #include "py_igl/py_lscm.cpp"
@@ -118,6 +134,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_polar_svd.cpp"
 #include "py_igl/py_principal_curvature.cpp"
 #include "py_igl/py_quad_planarity.cpp"
+#include "py_igl/py_randperm.cpp"
 #include "py_igl/py_readDMAT.cpp"
 #include "py_igl/py_readMESH.cpp"
 #include "py_igl/py_readOBJ.cpp"
@@ -131,9 +148,12 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_slice_mask.cpp"
 #include "py_igl/py_slice_tets.cpp"
 #include "py_igl/py_sortrows.cpp"
+#include "py_igl/py_streamlines.cpp"
+#include "py_igl/py_triangle_triangle_adjacency.cpp"
 #include "py_igl/py_unique.cpp"
 #include "py_igl/py_unproject_onto_mesh.cpp"
 #include "py_igl/py_upsample.cpp"
+#include "py_igl/py_winding_number.cpp"
 #include "py_igl/py_writeMESH.cpp"
 #include "py_igl/py_writeOBJ.cpp"
 
