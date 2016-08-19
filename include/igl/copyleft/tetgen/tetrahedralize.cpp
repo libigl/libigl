@@ -84,17 +84,17 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
     bool TV_rect = list_to_matrix(vTV,TV);
     if(!TV_rect)
     {
-      return false;
+      return 3;
     }
     bool TT_rect = list_to_matrix(vTT,TT);
     if(!TT_rect)
     {
-      return false;
+      return 3;
     }
     bool TF_rect = list_to_matrix(vTF,TF);
     if(!TF_rect)
     {
-      return false;
+      return 3;
     }
   }
   return e;

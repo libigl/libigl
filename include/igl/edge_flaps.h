@@ -24,6 +24,8 @@ namespace igl
   //     F(f,:) opposite the vth corner, where EI(e,0)=v. Similarly EF(e,1) "
   //     e=(j->i)
   //   EI  #E by 2 list of edge flap corners (see above).
+  //
+  // TODO: This seems to be a duplicate of edge_topology.h
   IGL_INLINE void edge_flaps(
     const Eigen::MatrixXi & F,
     const Eigen::MatrixXi & E,

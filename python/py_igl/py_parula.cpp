@@ -10,6 +10,17 @@
 
 m.def("parula", []
 (
+const double f
+)
+{
+  double r, g, b;
+  igl::parula(f, r, g, b);
+  return std::make_tuple(r,g,b);
+}, __doc_igl_parula,
+py::arg("f"));
+
+m.def("parula", []
+(
   const double f,
   double & r,
   double & g,

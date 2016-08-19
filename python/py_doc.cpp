@@ -112,6 +112,7 @@ const char *__doc_igl_cat = R"igl_Qu8mg5v7(// Perform concatenation of a two mat
   // Outputs:
   //   C  output matrix
   //   )igl_Qu8mg5v7";
+const char *__doc_igl_collapse_edge = R"igl_Qu8mg5v7(See collapse_edge for the documentation.)igl_Qu8mg5v7";
 const char *__doc_igl_colon = R"igl_Qu8mg5v7(// Colon operator like matlab's colon operator. Enumerats values between low
   // and hi with step step.
   // Templates:
@@ -219,6 +220,45 @@ const char *__doc_igl_copyleft_comiso_nrosy = R"igl_Qu8mg5v7(// Generate a N-RoS
     // Outputs:
     //   R       #F by 3 the representative vectors of the interpolated field
     //   S       #V by 1 the singularity index for each vertex (0 = regular))igl_Qu8mg5v7";
+const char *__doc_igl_copyleft_marching_cubes = R"igl_Qu8mg5v7(// marching_cubes( values, points, x_res, y_res, z_res, vertices, faces )
+    //
+    // performs marching cubes reconstruction on the grid defined by values, and
+    // points, and generates vertices and faces
+    //
+    // Input:
+    //  values  #number_of_grid_points x 1 array -- the scalar values of an
+    //    implicit function defined on the grid points (<0 in the inside of the
+    //    surface, 0 on the border, >0 outside)
+    //  points  #number_of_grid_points x 3 array -- 3-D positions of the grid
+    //    points, ordered in x,y,z order:
+    //      points[index] = the point at (x,y,z) where :
+    //      x = (index % (xres -1),
+    //      y = (index / (xres-1)) %(yres-1),
+    //      z = index / (xres -1) / (yres -1) ).
+    //      where x,y,z index x, y, z dimensions
+    //      i.e. index = x + y*xres + z*xres*yres
+    //  xres  resolutions of the grid in x dimension
+    //  yres  resolutions of the grid in y dimension
+    //  zres  resolutions of the grid in z dimension
+    // Output:
+    //   vertices  #V by 3 list of mesh vertex positions
+    //   faces  #F by 3 list of mesh triangle indices
+    //)igl_Qu8mg5v7";
+const char *__doc_igl_copyleft_swept_volume = R"igl_Qu8mg5v7(// Compute the surface of the swept volume of a solid object with surface
+    // (V,F) mesh under going rigid motion.
+    // 
+    // Inputs:
+    //   V  #V by 3 list of mesh positions in reference pose
+    //   F  #F by 3 list of mesh indices into V
+    //   transform  function handle so that transform(t) returns the rigid
+    //     transformation at time t∈[0,1]
+    //   steps  number of time steps: steps=3 --> t∈{0,0.5,1}
+    //   grid_res  number of grid cells on the longest side containing the
+    //     motion (isolevel+1 cells will also be added on each side as padding)
+    //   isolevel  distance level to be contoured as swept volume
+    // Outputs:
+    //   SV  #SV by 3 list of mesh positions of the swept surface
+    //   SF  #SF by 3 list of mesh faces into SV)igl_Qu8mg5v7";
 const char *__doc_igl_copyleft_tetgen_tetrahedralize = R"igl_Qu8mg5v7(// Mesh the interior of a surface mesh (V,F) using tetgen
       //
       // Inputs:
@@ -338,11 +378,18 @@ const char *__doc_igl_edge_lengths = R"igl_Qu8mg5v7(// Constructs a list of leng
   //    or
   //   T  #T by 4 list of mesh elements (must be tets)
   // Outputs:
-  //   L  #F by {1|3|6} list of edge lengths 
+  //   L  #F by {1|3|6} list of edge lengths
   //     for edges, column of lengths
   //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
   //     for tets, columns correspond to edges
   //     [3 0],[3 1],[3 2],[1 2],[2 0],[0 1]
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_edge_topology = R"igl_Qu8mg5v7(// Initialize Edges and their topological relations
+  //
+  // Output:
+  // EV  : #Ex2, Stores the edge description as pair of indices to vertices
+  // FE : #Fx3, Stores the Triangle-Edge relation
+  // EF : #Ex2: Stores the Edge-Triangle relation
   //)igl_Qu8mg5v7";
 const char *__doc_igl_eigs = R"igl_Qu8mg5v7(See eigs for the documentation.)igl_Qu8mg5v7";
 const char *__doc_igl_embree_ambient_occlusion = R"igl_Qu8mg5v7(// Compute ambient occlusion per given point
@@ -355,6 +402,23 @@ const char *__doc_igl_embree_ambient_occlusion = R"igl_Qu8mg5v7(// Compute ambie
     //    S  #P list of ambient occlusion values between 1 (fully occluded) and
     //      0 (not occluded)
     //)igl_Qu8mg5v7";
+const char *__doc_igl_embree_reorient_facets_raycast = R"igl_Qu8mg5v7(// Orient each component (identified by C) of a mesh (V,F) using ambient
+    // occlusion such that the front side is less occluded than back side, as
+    // described in "A Simple Method for Correcting Facet Orientations in
+    // Polygon Meshes Based on Ray Casting" [Takayama et al. 2014].
+    //
+    // Inputs:
+    //   V  #V by 3 list of vertex positions
+    //   F  #F by 3 list of triangle indices
+    //   rays_total  Total number of rays that will be shot
+    //   rays_minimum  Minimum number of rays that each patch should receive
+    //   facet_wise  Decision made for each face independently, no use of patches
+    //     (i.e., each face is treated as a patch)
+    //   use_parity  Use parity mode
+    //   is_verbose  Verbose output to cout
+    // Outputs:
+    //   I  #F list of whether face has been flipped
+    //   C  #F list of patch ID (output of bfs_orient > manifold patches))igl_Qu8mg5v7";
 const char *__doc_igl_find_cross_field_singularities = R"igl_Qu8mg5v7(// Inputs:
   //   V                #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F                #F by 3 eigen Matrix of face (quad) indices
@@ -402,6 +466,22 @@ const char *__doc_igl_gaussian_curvature = R"igl_Qu8mg5v7(// Compute discrete lo
   // Output:
   //   K  #V by 1 eigen Matrix of discrete gaussian curvature values
   //)igl_Qu8mg5v7";
+const char *__doc_igl_get_seconds = R"igl_Qu8mg5v7(// Return the current time in seconds since program start
+  // 
+  // Example:
+  //    const auto & tictoc = []()
+  //    {
+  //      static double t_start = igl::get_seconds();
+  //      double diff = igl::get_seconds()-t_start;
+  //      t_start += diff;
+  //      return diff;
+  //    };
+  //    tictoc();
+  //    ... // part 1
+  //    cout<<"part 1: "<<tictoc()<<endl;
+  //    ... // part 2
+  //    cout<<"part 2: "<<tictoc()<<endl;
+  //    ... // etc)igl_Qu8mg5v7";
 const char *__doc_igl_grad = R"igl_Qu8mg5v7(// Gradient of a scalar function defined on piecewise linear elements (mesh)
   // is constant on each triangle i,j,k:
   // grad(Xijk) = (Xj-Xi) * (Vi - Vk)^R90 / 2A + (Xk-Xi) * (Vj - Vi)^R90 / 2A
@@ -421,12 +501,41 @@ const char *__doc_igl_harmonic = R"igl_Qu8mg5v7(// Compute k-harmonic weight fun
   // Outputs:
   //   W  #V by #W list of weights
   //)igl_Qu8mg5v7";
+const char *__doc_igl_hsv_to_rgb = R"igl_Qu8mg5v7(// Convert RGB to HSV
+  //
+  // Inputs:
+  //   h  hue value (degrees: [0,360])
+  //   s  saturation value ([0,1])
+  //   v  value value ([0,1])
+  // Outputs:
+  //   r  red value ([0,1]) 
+  //   g  green value ([0,1])
+  //   b  blue value ([0,1]))igl_Qu8mg5v7";
+const char *__doc_igl_internal_angles = R"igl_Qu8mg5v7(// Compute internal angles for a triangle mesh
+  //
+  // Inputs:
+  //   V  #V by dim eigen Matrix of mesh vertex nD positions
+  //   F  #F by poly-size eigen Matrix of face (triangle) indices
+  // Output:
+  //   K  #F by poly-size eigen Matrix of internal angles
+  //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
+  //
+  // Known Issues:
+  //   if poly-size ≠ 3 then dim must equal 3.)igl_Qu8mg5v7";
 const char *__doc_igl_invert_diag = R"igl_Qu8mg5v7(// Templates:
   //   T  should be a eigen sparse matrix primitive type like int or double
   // Inputs:
   //   X  an m by n sparse matrix
   // Outputs:
   //   Y  an m by n sparse matrix)igl_Qu8mg5v7";
+const char *__doc_igl_is_irregular_vertex = R"igl_Qu8mg5v7(// Determine if a vertex is irregular, i.e. it has more than 6 (triangles)
+  // or 4 (quads) incident edges. Vertices on the boundary are ignored.
+  //
+  // Inputs:
+  //   V  #V by dim list of vertex positions
+  //   F  #F by 3[4] list of triangle[quads] indices
+  // Returns #V vector of bools revealing whether vertices are singular
+  //)igl_Qu8mg5v7";
 const char *__doc_igl_jet = R"igl_Qu8mg5v7(// JET like MATLAB's jet
   //
   // Inputs:
@@ -694,6 +803,12 @@ const char *__doc_igl_quad_planarity = R"igl_Qu8mg5v7(// Compute planarity of th
   // Output:
   //   P  #F by 1 eigen Matrix of mesh face (quad) planarities
   //)igl_Qu8mg5v7";
+const char *__doc_igl_randperm = R"igl_Qu8mg5v7(// Like matlab's randperm(n) but minus 1
+  //
+  // Inputs:
+  //   n  number of elements
+  // Outputs:
+  //   I  n list of rand permutation of 0:n-1)igl_Qu8mg5v7";
 const char *__doc_igl_readDMAT = R"igl_Qu8mg5v7(See readDMAT for the documentation.)igl_Qu8mg5v7";
 const char *__doc_igl_readMESH = R"igl_Qu8mg5v7(// load a tetrahedral volume mesh from a .mesh file
   //
@@ -873,6 +988,40 @@ const char *__doc_igl_sortrows = R"igl_Qu8mg5v7(// Act like matlab's [Y,I] = sor
   //     reference as X)
   //   I  m list of indices so that
   //     Y = X(I,:);)igl_Qu8mg5v7";
+const char *__doc_igl_streamlines_init = R"igl_Qu8mg5v7(    // Given a mesh and a field the function computes the /data/ necessary for tracing the field'
+    // streamlines, and creates the initial /state/ for the tracing.
+    // Inputs:
+    //   V             #V by 3 list of mesh vertex coordinates
+    //   F             #F by 3 list of mesh faces
+    //   temp_field    #F by 3n list of the 3D coordinates of the per-face vectors
+    //                    (n-degrees stacked horizontally for each triangle)
+    //   treat_as_symmetric
+    //              if true, adds n symmetry directions to the field (N = 2n). Else N = n
+    //   percentage    [0-1] percentage of faces sampled
+    // Outputs:
+    //   data          struct containing topology information of the mesh and field
+    //   state         struct containing the state of the tracing )igl_Qu8mg5v7";
+const char *__doc_igl_streamlines_next = R"igl_Qu8mg5v7( // The function computes the next state for each point in the sample
+    //   V             #V by 3 list of mesh vertex coordinates
+    //   F             #F by 3 list of mesh faces
+    //   data          struct containing topology information
+    //   state         struct containing the state of the tracing )igl_Qu8mg5v7";
+const char *__doc_igl_triangle_triangle_adjacency = R"igl_Qu8mg5v7(// Constructs the triangle-triangle adjacency matrix for a given
+  // mesh (V,F).
+  //
+  // Templates:
+  //   Scalar derived type of eigen matrix for V (e.g. derived from
+  //     MatrixXd)
+  //   Index  derived type of eigen matrix for F (e.g. derived from
+  //     MatrixXi)
+  // Inputs:
+  //   F  #F by simplex_size list of mesh faces (must be triangles)
+  // Outputs:
+  //   TT   #F by #3 adjacent matrix, the element i,j is the id of the triangle adjacent to the j edge of triangle i
+  //   TTi  #F by #3 adjacent matrix, the element i,j is the id of edge of the triangle TT(i,j) that is adjacent with triangle i
+  // NOTE: the first edge of a triangle is [0,1] the second [1,2] and the third [2,3].
+  //       this convention is DIFFERENT from cotmatrix_entries.h
+  // Known bug: this should not need to take V as input.)igl_Qu8mg5v7";
 const char *__doc_igl_triangle_triangulate = R"igl_Qu8mg5v7(// Triangulate the interior of a polygon using the triangle library.
     //
     // Inputs:
@@ -941,6 +1090,41 @@ const char *__doc_igl_upsample = R"igl_Qu8mg5v7(// Subdivide a mesh without movi
   //
   // Known issues:
   //   - assumes (V,F) is edge-manifold.)igl_Qu8mg5v7";
+const char *__doc_igl_winding_number = R"igl_Qu8mg5v7(// WINDING_NUMBER Compute the sum of solid angles of a triangle/tetrahedron
+  // described by points (vectors) V
+  //
+  // Templates:
+  //   dim  dimension of input
+  // Inputs:
+  //  V  n by 3 list of vertex positions
+  //  F  #F by 3 list of triangle indices, minimum index is 0
+  //  O  no by 3 list of origin positions
+  // Outputs:
+  //  S  no by 1 list of winding numbers
+  //
+  // 3d)igl_Qu8mg5v7";
+const char *__doc_igl_winding_number_3 = R"igl_Qu8mg5v7(// Inputs:
+  //   V  pointer to array containing #V by 3 vertex positions along rows,
+  //     given in column major order
+  //   n  number of mesh vertices
+  //   F  pointer to array containing #F by 3 face indices along rows,
+  //     given in column major order
+  //   m  number of faces
+  //   O  pointer to array containing #O by 3 query positions along rows,
+  //     given in column major order
+  //   no  number of origins
+  // Outputs:
+  //   S  no by 1 list of winding numbers)igl_Qu8mg5v7";
+const char *__doc_igl_winding_number_2 = R"igl_Qu8mg5v7(//// Only one evaluation origin
+  //template <typename DerivedF>
+  //IGL_INLINE void winding_number_3(
+  //  const double * V,
+  //  const int n,
+  //  const DerivedF * F,
+  //  const int m,
+  //  const double * O,
+  //  double * S);
+  // 2d)igl_Qu8mg5v7";
 const char *__doc_igl_writeMESH = R"igl_Qu8mg5v7(// save a tetrahedral volume mesh to a .mesh file
   //
   // Templates:
