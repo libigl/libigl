@@ -134,12 +134,12 @@ IGL_INLINE void igl::triangle::triangulate(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& E,
   const Eigen::MatrixXd& H,
-	const Eigen::VectorXi& VM,
-	const Eigen::VectorXi& EM,
+  const Eigen::VectorXi& VM,
+  const Eigen::VectorXi& EM,
   const std::string flags,
   Eigen::MatrixXd& V2,
   Eigen::MatrixXi& F2,
-	Eigen::VectorXi& M2)
+  Eigen::VectorXi& M2)
 {
   using namespace std;
   using namespace Eigen;
@@ -163,7 +163,7 @@ IGL_INLINE void igl::triangle::triangulate(
 
    for (unsigned i=0;i<VM.rows();++i) {
      in.pointmarkerlist[i] = VM(i);
-	 }
+   }
 
   in.trianglelist = NULL;
   in.numberoftriangles = 0;
@@ -194,7 +194,7 @@ IGL_INLINE void igl::triangle::triangulate(
   out.trianglelist = NULL;
   out.segmentlist = NULL;
   out.segmentmarkerlist = NULL;
-	out.pointmarkerlist = NULL;
+  out.pointmarkerlist = NULL;
 
   // Call triangle
   ::triangulate(const_cast<char*>(full_flags.c_str()), &in, &out, 0);
@@ -210,10 +210,10 @@ IGL_INLINE void igl::triangle::triangulate(
     for (unsigned j=0;j<3;++j)
       F2(i,j) = out.trianglelist[i*3+j];
 
-	M2.resize(out.numberofpoints);
-	for (unsigned int i = 0; i < out.numberofpoints; ++i) {
-		M2(i) = out.pointmarkerlist[i];
-	}
+  M2.resize(out.numberofpoints);
+  for (unsigned int i = 0; i < out.numberofpoints; ++i) {
+    M2(i) = out.pointmarkerlist[i];
+  }
 
   // Cleanup in
   free(in.pointlist);
@@ -226,7 +226,8 @@ IGL_INLINE void igl::triangle::triangulate(
   free(out.pointlist);
   free(out.trianglelist);
   free(out.segmentlist);
-	free(out.pointmarkerlist);
+  free(out.segmentmarkerlist);
+  free(out.pointmarkerlist);
 }
 
 #ifdef IGL_STATIC_LIBRARY
