@@ -35,6 +35,32 @@ namespace igl
       const std::string flags,
       Eigen::MatrixXd& V2,
       Eigen::MatrixXi& F2);
+		
+		// Triangulate the interior of a polygon using the triangle library.
+    //
+    // Inputs:
+    //   V #V by 2 list of 2D vertex positions
+    //   E #E by 2 list of vertex ids forming unoriented edges of the boundary of the polygon
+    //   H #H by 2 coordinates of points contained inside holes of the polygon
+		//   M #V list of markers for input vertices
+    //   flags  string of options pass to triangle (see triangle documentation)
+    // Outputs:
+    //   V2  #V2 by 2  coordinates of the vertives of the generated triangulation
+    //   F2  #F2 by 3  list of indices forming the faces of the generated triangulation
+		//   M2  #V2 list of markers for output vertices
+    //
+    // TODO: expose the option to prevent Steiner points on the boundary
+    //
+		IGL_INLINE void triangulate(
+			const Eigen::MatrixXd& V,
+			const Eigen::MatrixXi& E,
+			const Eigen::MatrixXd& H,
+			const Eigen::VectorXi& VM,
+			const Eigen::VectorXi& EM,
+			const std::string flags,
+			Eigen::MatrixXd& V2,
+			Eigen::MatrixXi& F2,
+			Eigen::VectorXi& M2);
   }
 }
 
