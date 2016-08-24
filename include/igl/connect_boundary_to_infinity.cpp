@@ -49,3 +49,7 @@ IGL_INLINE void igl::connect_boundary_to_infinity(
   auto inf = std::numeric_limits<typename DerivedVO::Scalar>::infinity();
   VO.row(V.rows()).setConstant(inf);
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template void igl::connect_boundary_to_infinity<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+#endif
