@@ -140,7 +140,7 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
   if (__viewer->screen->keyCallbackEvent(key,scancode,action,modifier) == false)
 #endif
   {
-    if (action == GLFW_PRESS)
+    if (action == GLFW_PRESS || action == GLFW_REPEAT)
       __viewer->key_down(key, modifier);
     else if(action == GLFW_RELEASE)
       __viewer->key_up(key, modifier);
@@ -305,7 +305,7 @@ namespace viewer
     });
     currentDataCB->setFixedHeight(20);
     currentDataCB->setFontSize(16);
-    currentDataCB->setVisible(false);
+    //currentDataCB->setVisible(true);
     ngui->addWidget("Active Mesh",currentDataCB);
 
     ngui->addVariable<bool>("Visible",[&](bool checked)
@@ -374,6 +374,7 @@ namespace viewer
     });
 
     screen->performLayout();
+
 #endif
 
     core.init();
@@ -508,7 +509,7 @@ namespace viewer
     opengl.push_back(OpenGL_state());
     opengl[opengl.size()-1].init();
 
-    currentDataCB->setVisible(currentDataCB->items().size() <= 1);
+    //currentDataCB->setVisible(currentDataCB->items().size() <= 1);
     screen->performLayout();
 
     return opengl.size()-1;
@@ -522,7 +523,7 @@ namespace viewer
     load_mesh_from_file(mesh_file_name);
     set_active_mesh(bakId);
 
-    currentDataCB->setVisible(currentDataCB->items().size() <= 1);
+    //currentDataCB->setVisible(currentDataCB->items().size() <= 1);
     screen->performLayout();
 
     return mid;
@@ -552,7 +553,7 @@ namespace viewer
     opengl.erase(opengl.begin()+data_id);
 
     currentDataCB->setItems(data_ids);
-    currentDataCB->setVisible(currentDataCB->items().size() <= 1);
+    //currentDataCB->setVisible(currentDataCB->items().size() <= 1);
     screen->performLayout();
 
     return true;
