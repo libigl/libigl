@@ -26,6 +26,18 @@ extern void python_export_igl_embree(py::module &);
 extern void python_export_igl_triangle(py::module &);
 #endif
 
+#ifdef PY_CGAL
+extern void python_export_igl_cgal(py::module &);
+#endif
+
+#ifdef PY_PNG
+extern void python_export_igl_png(py::module &);
+#endif
+
+#ifdef PY_COPYLEFT
+extern void python_export_igl_copyleft(py::module &);
+#endif
+
 PYBIND11_PLUGIN(pyigl) {
     py::module m("pyigl", R"pyigldoc(
         Python wrappers for libigl
@@ -36,6 +48,93 @@ PYBIND11_PLUGIN(pyigl) {
         .. autosummary::
            :toctree: _generate
 
+           AABB
+           ARAPEnergyType
+           MeshBooleanType
+           SolverStatus
+           active_set
+           arap
+           avg_edge_length
+           barycenter
+           barycentric_coordinates
+           boundary_facets
+           boundary_loop
+           cat
+           collapse_edge
+           colon
+           comb_cross_field
+           comb_frame_field
+           compute_frame_field_bisectors
+           copyleft_cgal_mesh_boolean
+           copyleft_comiso_miq
+           copyleft_comiso_nrosy
+           copyleft_marching_cubes
+           copyleft_swept_volume
+           copyleft_tetgen_tetrahedralize
+           cotmatrix
+           covariance_scatter_matrix
+           cross_field_missmatch
+           cut_mesh_from_singularities
+           doublearea
+           edge_lengths
+           edge_topology
+           eigs
+           embree_ambient_occlusion
+           embree_reorient_facets_raycast
+           find_cross_field_singularities
+           fit_rotations
+           floor
+           gaussian_curvature
+           get_seconds
+           grad
+           harmonic
+           hsv_to_rgb
+           internal_angles
+           invert_diag
+           is_irregular_vertex
+           jet
+           local_basis
+           lscm
+           map_vertices_to_circle
+           massmatrix
+           min_quad_with_fixed
+           n_polyvector
+           parula
+           per_corner_normals
+           per_edge_normals
+           per_face_normals
+           per_vertex_normals
+           planarize_quad_mesh
+           png_readPNG
+           png_writePNG
+           point_mesh_squared_distance
+           polar_svd
+           principal_curvature
+           quad_planarity
+           randperm
+           readDMAT
+           readMESH
+           readOBJ
+           readOFF
+           read_triangle_mesh
+           rotate_vectors
+           setdiff
+           signed_distance
+           slice
+           slice_into
+           slice_mask
+           slice_tets
+           sortrows
+           streamlines_init
+           streamlines_next
+           triangle_triangle_adjacency
+           triangle_triangulate
+           unique
+           unproject_onto_mesh
+           upsample
+           winding_number
+           writeMESH
+           writeOBJ
 
     )pyigldoc");
 
@@ -61,6 +160,18 @@ PYBIND11_PLUGIN(pyigl) {
 
     #ifdef PY_TRIANGLE
     python_export_igl_triangle(m);
+    #endif
+
+    #ifdef PY_CGAL
+    python_export_igl_cgal(m);
+    #endif
+
+    #ifdef PY_PNG
+    python_export_igl_png(m);
+    #endif
+
+    #ifdef PY_COPYLEFT
+    python_export_igl_copyleft(m);
     #endif
 
     return m.ptr();

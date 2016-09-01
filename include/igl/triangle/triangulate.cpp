@@ -129,6 +129,107 @@ IGL_INLINE void igl::triangle::triangulate(
 
 }
 
+// Allows use of markers
+IGL_INLINE void igl::triangle::triangulate(
+  const Eigen::MatrixXd& V,
+  const Eigen::MatrixXi& E,
+  const Eigen::MatrixXd& H,
+  const Eigen::VectorXi& VM,
+  const Eigen::VectorXi& EM,
+  const std::string flags,
+  Eigen::MatrixXd& V2,
+  Eigen::MatrixXi& F2,
+  Eigen::VectorXi& M2)
+{
+  using namespace std;
+  using namespace Eigen;
+
+  // Prepare the flags
+  string full_flags = flags + "pz";
+
+  // Prepare the input struct
+  triangulateio in;
+
+  assert(V.cols() == 2);
+
+  in.numberofpoints = V.rows();
+  in.pointlist = (double*)calloc(V.rows()*2,sizeof(double));
+  for (unsigned i=0;i<V.rows();++i)
+    for (unsigned j=0;j<2;++j)
+      in.pointlist[i*2+j] = V(i,j);
+
+  in.numberofpointattributes = 0;
+  in.pointmarkerlist = (int*)calloc(VM.rows(),sizeof(int));
+
+   for (unsigned i=0;i<VM.rows();++i) {
+     in.pointmarkerlist[i] = VM(i);
+   }
+
+  in.trianglelist = NULL;
+  in.numberoftriangles = 0;
+  in.numberofcorners = 0;
+  in.numberoftriangleattributes = 0;
+  in.triangleattributelist = NULL;
+
+  in.numberofsegments = E.rows();
+  in.segmentlist = (int*)calloc(E.rows()*2,sizeof(int));
+  for (unsigned i=0;i<E.rows();++i)
+    for (unsigned j=0;j<2;++j)
+      in.segmentlist[i*2+j] = E(i,j);
+  in.segmentmarkerlist = (int*)calloc(E.rows(),sizeof(int));
+  for (unsigned i=0;i<E.rows();++i)
+    in.segmentmarkerlist[i] = EM(i);
+
+  in.numberofholes = H.rows();
+  in.holelist = (double*)calloc(H.rows()*2,sizeof(double));
+  for (unsigned i=0;i<H.rows();++i)
+    for (unsigned j=0;j<2;++j)
+      in.holelist[i*2+j] = H(i,j);
+  in.numberofregions = 0;
+
+  // Prepare the output struct
+  triangulateio out;
+
+  out.pointlist = NULL;
+  out.trianglelist = NULL;
+  out.segmentlist = NULL;
+  out.segmentmarkerlist = NULL;
+  out.pointmarkerlist = NULL;
+
+  // Call triangle
+  ::triangulate(const_cast<char*>(full_flags.c_str()), &in, &out, 0);
+
+  // Return the mesh
+  V2.resize(out.numberofpoints,2);
+  for (unsigned i=0;i<V2.rows();++i)
+    for (unsigned j=0;j<2;++j)
+      V2(i,j) = out.pointlist[i*2+j];
+
+  F2.resize(out.numberoftriangles,3);
+  for (unsigned i=0;i<F2.rows();++i)
+    for (unsigned j=0;j<3;++j)
+      F2(i,j) = out.trianglelist[i*3+j];
+
+  M2.resize(out.numberofpoints);
+  for (unsigned int i = 0; i < out.numberofpoints; ++i) {
+    M2(i) = out.pointmarkerlist[i];
+  }
+
+  // Cleanup in
+  free(in.pointlist);
+  free(in.pointmarkerlist);
+  free(in.segmentlist);
+  free(in.segmentmarkerlist);
+  free(in.holelist);
+
+  // Cleanup out
+  free(out.pointlist);
+  free(out.trianglelist);
+  free(out.segmentlist);
+  free(out.segmentmarkerlist);
+  free(out.pointmarkerlist);
+}
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #endif

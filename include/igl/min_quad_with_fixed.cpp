@@ -94,7 +94,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
 
   SparseMatrix<T> Auu;
   slice(A,data.unknown,data.unknown,Auu);
-  assert(Auu.size() > 0 && "There should be at least one unknown.");
+  assert(Auu.size() != 0 && Auu.rows() > 0 && "There should be at least one unknown.");
 
   // Positive definiteness is *not* determined, rather it is given as a
   // parameter

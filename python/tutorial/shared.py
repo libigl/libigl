@@ -14,3 +14,9 @@ def check_dependencies(deps):
 
     if not all_available:
         sys.exit(-1)
+
+
+def print_usage(key_dict):
+    print("Usage:")
+    for k in key_dict.keys():
+        print("%s : %s" %(k, key_dict[k]))

@@ -34,7 +34,6 @@ lecture notes links to a cross-platform example application.
     * [104 Scalar field visualization](#scalarfieldvisualization)
     * [105 Overlays](#overlays)
     * [106 Viewer Menu](#viewermenu)
-    * [107 Screen Capture](#screencapture)
 * [Chapter 2: Discrete Geometric Quantities and
   Operators](#chapter2:discretegeometricquantitiesandoperators)
     * [201 Normals](#normals)
@@ -88,7 +87,7 @@ lecture notes links to a cross-platform example application.
     * [604 Triangulation of closed polygons](#triangulationofclosedpolygons)
     * [605 Tetrahedralization of closed surfaces](#tetrahedralizationofclosedsurfaces)
     * [606 Baking ambient occlusion](#bakingambientocclusion)
-    * [607 Picking vertices and faces](#pickingverticesandfaces)
+    * [607 Screen Capture](#screencapture)
     * [608 Locally Injective Maps](#locallyinjectivemaps)
     * [609 Boolean Operations on Meshes](#booleanoperationsonmeshes)
     * [610 CSG Tree](#csgtree)
@@ -99,6 +98,9 @@ lecture notes links to a cross-platform example application.
     * [704 Signed Distances](#signeddistances)
     * [705 Marching Cubes](#marchingcubes)
     * [706 Facet Orientation](#facetorientation)
+    * [707 Swept Volume](#sweptvolume)
+    * [708 Picking Vertices and Faces](#pickingverticesandfaces)
+    * [709 Vector Field Visualization](#vectorfieldvisualizer)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -467,26 +469,6 @@ viewer.ngui->addVariable<bool>("bool",[&](bool val) {
 ```
 
 ![([Example 106](106_ViewerMenu/main.cpp)) The UI of the viewer can be easily customized.](images/106_ViewerMenu.png)
-
-## [Screen capture](#screencapture) [screencapture]
-
-It is possible to render the scene in a memory buffer using the function draw_buffer:
-
-```cpp
-// Allocate temporary buffers
-Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(1280,800);
-Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(1280,800);
-Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(1280,800);
-Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(1280,800);
-
-// Draw the scene in the buffers
-viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
-
-// Save it to a PNG
-igl::png::writePNG(R,G,B,A,"out.png");
-```
-
-In [Example 107](107_ScreenCapture/main.cpp) a scene is rendered in a temporary png and used to texture a quadrilateral.
 
 # Chapter 2: Discrete Geometric Quantities and Operators
 This chapter illustrates a few discrete quantities that libigl can compute on a
@@ -885,6 +867,7 @@ functionality as common Matlab functions.
 | `igl::histc`             | Counting occurrences for building a histogram |
 | `igl::hsv_to_rgb`        | Convert HSV colors to RGB (cf. Matlab's `hsv2rgb`) |
 | `igl::intersect`         | Set intersection of matrix elements. |
+| `igl::isdiag`            | Determine whether matrix is diagonal |
 | `igl::jet`               | Quantized colors along the rainbow. |
 | `igl::median`            | Compute the median per column |
 | `igl::mode`              | Compute the mode per column |
@@ -1838,11 +1821,11 @@ which can be rewritten in matrix form as [#mullen_2008][]:
 
 \\[ E_{LSCM}(\mathbf{u},\mathbf{v}) = \frac{1}{2} [\mathbf{u},\mathbf{v}]^t (L_c - 2A) [\mathbf{u},\mathbf{v}] \\]
 
-where $L_c$ is the cotangent Laplacian matrix and A is a matrix such that \\(
-[\mathbf{u},\mathbf{v}]^t A  [\mathbf{u},\mathbf{v}]$ is equal to the
-[vector area](http://en.wikipedia.org/wiki/Vector_area) of the mesh.
+where $L_c$ is the cotangent Laplacian matrix and $A$ is a matrix such that
+$[\mathbf{u},\mathbf{v}]^t A  [\mathbf{u},\mathbf{v}]$ is equal to the [vector
+area](http://en.wikipedia.org/wiki/Vector_area) of the mesh.
 
-Using libigl, this matrix energy can be written in a few lines of codes. The
+Using libigl, this matrix energy can be written in a few lines of code. The
 cotangent matrix can be computed using `igl::cotmatrix`:
 
 ```cpp
@@ -1866,7 +1849,7 @@ SparseMatrix<double> A;
 igl::vector_area_matrix(F,A);
 ```
 
-The final energy matrix is the sum of these two matrices. Note that in this
+The final energy matrix is $L_{flat} - 2A$. Note that in this
 case we do not need to fix the boundary. To remove the null space of the energy and make the minimum unique, it is sufficient to fix two arbitrary
 vertices to two arbitrary positions. The full source code is provided in [Example 502](502_LSCMParam/main.cpp).
 
@@ -2465,37 +2448,31 @@ Ambient occlusion can be used to darken the surface colors, as shown in
 ![A mesh rendered without (left) and with (right) ambient
 occlusion.](images/606_AmbientOcclusion.png)
 
-## [Picking](#pickingverticesandfaces) [pickingverticesandfaces]
+## [Screen Capture](#screencapture) [screencapture]
 
-Picking vertices and faces using the mouse is very common in geometry
-processing applications. While this might seem a simple operation, its
-implementation is not straighforward. Libigl contains a function that solves this problem using the
-[Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels)
-raycaster. Its usage is demonstrated in [Example 607](607_Picking/main.cpp):
+Libigl supports read and writing to .png files via the
+[stb image](http://nothings.org/stb_image.h) code.
+
+With the viewer used in this tutorial, it is possible to render the scene in a
+memory buffer using the function, `igl::viewer::ViewerCore::draw_buffer`:
 
 ```cpp
-bool hit = igl::unproject_onto_mesh(
-  Vector2f(x,y),
-  F,
-  viewer.core.view * viewer.core.model,
-  viewer.core.proj,
-  viewer.core.viewport,
-  *ei,
-  fid,
-  vid);
+// Allocate temporary buffers for 1280x800 image
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(1280,800);
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(1280,800);
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(1280,800);
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(1280,800);
+
+// Draw the scene in the buffers
+viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+
+// Save it to a PNG
+igl::png::writePNG(R,G,B,A,"out.png");
 ```
 
-This function casts a ray from the view plane in the view direction. Variables
-`x` and `y` are
-the mouse screen coordinates; `view`, `model`, `proj` are the view, model and
-projection matrix respectively; `viewport` is the viewport in OpenGL format;
-`ei`
-contains a [Bounding Volume
-Hierarchy](http://en.wikipedia.org/wiki/Bounding_volume_hierarchy) constructed
-by Embree, and `fid` and `vid` are the picked face and vertex, respectively.
+In [Example 607](607_ScreenCapture/main.cpp) a scene is rendered in a temporary
+png and used to texture a quadrilateral.
 
-![([Example 607](607_Picking/main.cpp)) Picking via ray casting. The selected
-vertices are colored in red.](images/607_Picking.png)
 
 ## [Locally Injective Maps](#locallyinjectivemaps) [locallyinjectivemaps]
 
@@ -2568,7 +2545,7 @@ Calling libigl's boolean operations is simple. To compute the union of
 `(VA,FA)` and `(VB,FB)` into a new mesh `(VC,FC)`, use:
 
 ```cpp
-igl::mesh_boolean(VA,FA,VB,FB,MESH_BOOLEAN_TYPE_UNION,VC,FC);
+igl::copyleft::cgal::mesh_boolean(VA,FA,VB,FB,MESH_BOOLEAN_TYPE_UNION,VC,FC);
 ```
 
 The following figure shows each boolean operation on two meshes.
@@ -2588,7 +2565,7 @@ result of the operation. The "resolve" operation is not really a boolean
 operation, it is simply the result of resolving all intersections and gluing
 together coincident vertices, maintaining original triangle orientations.
 
-Libigl also provides a wrapper `igl::mesh_boolean_cork` to the
+Libigl also provides a wrapper `igl::copyleft::cork::mesh_boolean` to the
 [cork](https://github.com/gilbo/cork), which is typically faster, but is not
 always robust.
 
@@ -3033,6 +3010,103 @@ patches are uniquely colored and then oriented to face outward (middle left).
 Alternatively, each individual triangle is considered a "patch" (middle right)
 and oriented outward independently.](images/truck-facet-orientation.jpg)
 
+## [Swept Volume](#sweptvolume) [sweptvolume]
+
+The swept volume $S$ of a moving solid object $A$ can be defined as any point in
+space such that at one moment in time the point lies inside the solid. In other
+words, it is the union of the solid object transformed by the rigid motion
+$f(t)$ over time:
+
+$S = \bigcup \limits_{t\in [0,1]} f(t) A.$
+
+The surface of the swept volume of a solid bounded by a triangle mesh
+undergoing a rigid motion with non-trivial rotation is _**not**_ a surface
+exactly representably by triangle mesh: it will be a piecewise-ruled surface.
+
+To see this, consider the surface swept by a single edge's line segment as it
+performs a screw motion.
+
+This means that if we'd like to the surface of the swept volume of a triangle
+mesh undergoing a rigid motion and we'd like the output to be another triangle
+mesh, then we're going to have to be happy with some amount of approximation
+error.
+
+With this in mind, the simplest method for computing an approximate swept
+volume is by exploiting an alternative definition of the swept volume based on
+signed distances:
+
+$S = \left\{ \mathbf{p}\ \middle| \ d(\mathbf{p},\partial S) < 0 \right\} = \left\{ \mathbf{p}\
+\middle|\
+\min\limits_{t \in [0,1]} d(\mathbf{p},f(t)\ \partial A) < 0 \right\}$
+
+If $\partial A$ is a triangle mesh, then we can approximate this by 1)
+discretizing time at a finite step of steps $[0,\Delta t,2\Delta t, \dots, 1]$
+and by 2) discretizing space with a regular grid and representing the distance
+field using trilinear interpolation of grid values. Finally the output mesh,
+$\partial S$ is approximated by contouring using Marching Cubes
+[#lorensen_1987].
+
+This method is similar to one described by Schroeder et al. in 1994
+[#schroeder_1994], and the one used in conjunction with boolean operations by
+Garg et al. 2016 [#garg_2016].
+
+In libigl, if your input solid's surface is represented by `(V,F)` then the
+output surface mesh will be `(SV,SF)` after calling:
+
+```cpp
+igl::copyleft::swept_volume(V,F,num_time_steps,grid_size,isolevel,SV,SF);
+```
+
+The `isolevel` parameter can be set to zero to approximate the exact swept
+volume, greater than zero to approximate a positive offset of the swept volume
+or less than zero to approximate a negative offset.
+
+![([Example 707](707_SweptVolume/main.cpp)) computes
+the surface of the swept volume (silver) of the bunny model undergoing a rigid
+motion (gold).](images/bunny-swept-volume.gif)
+
+## [Picking](#pickingverticesandfaces) [pickingverticesandfaces]
+
+Picking vertices and faces using the mouse is very common in geometry
+processing applications. While this might seem a simple operation, its
+implementation is not straighforward. Libigl contains a function that solves this problem using the
+[Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels)
+raycaster. Its usage is demonstrated in [Example 708](708_Picking/main.cpp):
+
+```cpp
+bool hit = igl::unproject_onto_mesh(
+  Vector2f(x,y),
+  F,
+  viewer.core.view * viewer.core.model,
+  viewer.core.proj,
+  viewer.core.viewport,
+  *ei,
+  fid,
+  vid);
+```
+
+This function casts a ray from the view plane in the view direction. Variables
+`x` and `y` are
+the mouse screen coordinates; `view`, `model`, `proj` are the view, model and
+projection matrix respectively; `viewport` is the viewport in OpenGL format;
+`ei`
+contains a [Bounding Volume
+Hierarchy](http://en.wikipedia.org/wiki/Bounding_volume_hierarchy) constructed
+by Embree, and `fid` and `vid` are the picked face and vertex, respectively.
+
+![([Example 708](708_Picking/main.cpp)) Picking via ray casting. The selected
+vertices are colored in red.](images/607_Picking.png)
+
+## [Vector Field Visualization](#vectorfieldvisualizer) [vectorfieldvisualizer]
+
+Vector fields on surfaces are commonly visualized by tracing [streamlines] (https://en.wikipedia.org/wiki/Streamlines,_streaklines,_and_pathlines). Libigl
+supports the seeding and tracing of streamlines, for both simple vector fields
+and for N-rosy fields. The seeds for the streamlines are initialized using `streamlines_init`,
+and the lines are traced using `streamlines_next`. Each call to `streamlines_next` extends
+each line by one triangle, allowing interactive rendering of the traced lines, as demonstrated
+in [Example 709](709_VectorFieldVisualizer/main.cpp).
+
+![([Example 709](709_VectorFieldVisualizer/main.cpp)) Interactive streamlines tracing.](images/streamlines.jpg)
 
 # Outlook for continuing development [future]
 
@@ -3098,6 +3172,10 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
 [#eck_2005]: Matthias Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
   Stuetzle.  [Multiresolution Analysis of Arbitrary
   Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), 2005.
+[#garg_2016]: Akash Garg, Alec Jacobson, Eitan Grinspun. [Computational Design
+  of
+  Reconfigurables](https://www.google.com/search?q=Computational+Design+of+Reconfigurables),
+  2016
 [#hildebrandt_2011]: Klaus Hildebrandt, Christian Schulz, Christoph von
   Tycowicz, and Konrad Polthier. [Interactive Surface Modeling using Modal
   Analysis](https://www.google.com/search?q=Interactive+Surface+Modeling+using+Modal+Analysis),
@@ -3180,6 +3258,10 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   2014.
 [#rustamov_2011]: Raid M. Rustamov, [Multiscale Biharmonic
   Kernels](https://www.google.com/search?q=Multiscale+Biharmonic+Kernels), 2011.
+[#schroeder_1994]: William J. Schroeder, William E. Lorensen, and Steve
+  Linthicum. [Implicit Modeling of Swept Surfaces and
+  Volumes](https://www.google.com/search?q=implicit+modeling+of+swept+surfaces+and+volumes),
+  1994.
 [#schuller_2013]: Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga
   Sorkine-Hornung.  [Locally Injective
   Mappings](http://igl.ethz.ch/projects/LIM/), 2013.

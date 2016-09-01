@@ -1,6 +1,6 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
-// Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -8,7 +8,7 @@
 #include "unique_simplices.h"
 #include "sort.h"
 #include "unique.h"
-#include "get_seconds.h"
+#include "parallel_for.h"
 
 template <
   typename DerivedF,
@@ -31,16 +31,7 @@ IGL_INLINE void igl::unique_simplices(
   igl::unique_rows(sortF,C,IA,IC);
   FF.resize(IA.size(),F.cols());
   const size_t mff = FF.rows();
-  // Minimum number of iterms per openmp thread
-  #ifndef IGL_OMP_MIN_VALUE
-  #  define IGL_OMP_MIN_VALUE 1000
-  #endif
-  #pragma omp parallel for if (mff>IGL_OMP_MIN_VALUE)
-  // Copy into output
-  for(size_t i = 0;i<mff;i++)
-  {
-    FF.row(i) = F.row(IA(i));
-  }
+  parallel_for(mff,[&F,&IA,&FF](size_t & i){FF.row(i) = F.row(IA(i));},1000ul);
 }
 
 template <

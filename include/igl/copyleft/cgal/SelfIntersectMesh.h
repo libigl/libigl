@@ -109,7 +109,7 @@ namespace igl
           // Make a short name for the edge map
           typedef std::map<EMK,EMV> EdgeMap;
           // Maps edges of offending faces to all incident offending faces
-          EdgeMap edge2faces;
+          //EdgeMap edge2faces;
           std::vector<std::pair<const Box, const Box> > candidate_box_pairs;
 
         public:
@@ -330,7 +330,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
   T(),
   lIF(),
   offending(),
-  edge2faces(),
+  //edge2faces(),
   params(params)
 {
   using namespace std;
@@ -381,8 +381,12 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
   log_time("box_and_bind");
 #endif
   // Run the self intersection algorithm with all defaults
+  CGAL::box_self_intersection_d(boxes.begin(), boxes.end(),cb);
+#ifdef IGL_SELFINTERSECTMESH_DEBUG
+  log_time("box_intersection_d");
+#endif
   try{
-    CGAL::box_self_intersection_d(boxes.begin(), boxes.end(),cb);
+    process_intersecting_boxes();
   }catch(int e)
   {
     // Rethrow if not IGL_FIRST_HIT_EXCEPTION
@@ -392,10 +396,6 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     }
     // Otherwise just fall through
   }
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
-  log_time("box_intersection_d");
-#endif
-  process_intersecting_boxes();
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
   log_time("resolve_intersection");
 #endif
@@ -427,23 +427,11 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
   }
 
   remesh_intersections(
-    V,F,T,offending,edge2faces,params.stitch_all,VV,FF,J,IM);
+    V,F,T,offending,params.stitch_all,VV,FF,J,IM);
 
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
   log_time("remesh_intersection");
 #endif
-
-  // Q: Does this give the same result as TETGEN?
-  // A: For the cow and beast, yes.
-
-  // Q: Is tetgen faster than this CGAL implementation?
-  // A: Well, yes. But Tetgen is only solving the detection (predicates)
-  // problem. This is also appending the intersection objects (construction).
-  // But maybe tetgen is still faster for the detection part. For example, this
-  // CGAL implementation on the beast takes 98 seconds but tetgen detection
-  // takes 14 seconds
-
-
 }
 
 
@@ -477,7 +465,7 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
       // append face to edge's list
       Index i = F(f,(e+1)%3) < F(f,(e+2)%3) ? F(f,(e+1)%3) : F(f,(e+2)%3);
       Index j = F(f,(e+1)%3) < F(f,(e+2)%3) ? F(f,(e+2)%3) : F(f,(e+1)%3);
-      edge2faces[EMK(i,j)].push_back(f);
+      //edge2faces[EMK(i,j)].push_back(f);
     }
   }
 }
@@ -512,6 +500,7 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   {
     throw IGL_FIRST_HIT_EXCEPTION;
   }
+
 }
 
 template <
@@ -869,105 +858,124 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   std::vector<std::mutex> triangle_locks(T.size());
   std::vector<std::mutex> vertex_locks(V.rows());
   std::mutex index_lock;
-  auto process_chunk = [&](const size_t first, const size_t last) -> void{
-    assert(last >= first);
+  std::mutex exception_mutex;
+  bool exception_fired = false;
+  int exception = -1;
+  auto process_chunk = 
+    [&](
+      const size_t first, 
+      const size_t last) -> void
+  {
+    try
+    {
+      assert(last >= first);
 
-    for (size_t i=first; i<last; i++) {
-      Index fa=T.size(), fb=T.size();
+      for (size_t i=first; i<last; i++) 
       {
-        // Before knowing which triangles are involved, we need to lock
-        // everything to prevent race condition in updating reference counters.
-        std::lock_guard<std::mutex> guard(index_lock);
-        const auto& box_pair = candidate_box_pairs[i];
-        const auto& a = box_pair.first;
-        const auto& b = box_pair.second;
-        fa = a.handle()-T.begin();
-        fb = b.handle()-T.begin();
-      }
-      assert(fa < T.size());
-      assert(fb < T.size());
-
-      // Lock triangles
-      std::lock_guard<std::mutex> guard_A(triangle_locks[fa]);
-      std::lock_guard<std::mutex> guard_B(triangle_locks[fb]);
-
-      // Lock vertices
-      std::list<std::lock_guard<std::mutex> > guard_vertices;
-      {
-        std::vector<typename DerivedF::Scalar> unique_vertices;
-        std::vector<size_t> tmp1, tmp2;
-        igl::unique({F(fa,0), F(fa,1), F(fa,2), F(fb,0), F(fb,1), F(fb,2)},
-            unique_vertices, tmp1, tmp2);
-        std::for_each(unique_vertices.begin(), unique_vertices.end(),
-            [&](const typename DerivedF::Scalar& vi) {
-            guard_vertices.emplace_back(vertex_locks[vi]);
-            });
-      }
-
-      const Triangle_3& A = T[fa];
-      const Triangle_3& B = T[fb];
-
-      // Number of combinatorially shared vertices
-      Index comb_shared_vertices = 0;
-      // Number of geometrically shared vertices (*not* including combinatorially
-      // shared)
-      Index geo_shared_vertices = 0;
-      // Keep track of shared vertex indices
-      std::vector<std::pair<Index,Index> > shared;
-      Index ea,eb;
-      for(ea=0;ea<3;ea++)
-      {
-        for(eb=0;eb<3;eb++)
+        if(exception_fired) return;
+        Index fa=T.size(), fb=T.size();
         {
-          if(F(fa,ea) == F(fb,eb))
+          // Before knowing which triangles are involved, we need to lock
+          // everything to prevent race condition in updating reference counters.
+          std::lock_guard<std::mutex> guard(index_lock);
+          const auto& box_pair = candidate_box_pairs[i];
+          const auto& a = box_pair.first;
+          const auto& b = box_pair.second;
+          fa = a.handle()-T.begin();
+          fb = b.handle()-T.begin();
+        }
+        assert(fa < T.size());
+        assert(fb < T.size());
+
+        // Lock triangles
+        std::lock_guard<std::mutex> guard_A(triangle_locks[fa]);
+        std::lock_guard<std::mutex> guard_B(triangle_locks[fb]);
+
+        // Lock vertices
+        std::list<std::lock_guard<std::mutex> > guard_vertices;
+        {
+          std::vector<typename DerivedF::Scalar> unique_vertices;
+          std::vector<size_t> tmp1, tmp2;
+          igl::unique({F(fa,0), F(fa,1), F(fa,2), F(fb,0), F(fb,1), F(fb,2)},
+              unique_vertices, tmp1, tmp2);
+          std::for_each(unique_vertices.begin(), unique_vertices.end(),
+              [&](const typename DerivedF::Scalar& vi) {
+              guard_vertices.emplace_back(vertex_locks[vi]);
+              });
+        }
+        if(exception_fired) return;
+
+        const Triangle_3& A = T[fa];
+        const Triangle_3& B = T[fb];
+
+        // Number of combinatorially shared vertices
+        Index comb_shared_vertices = 0;
+        // Number of geometrically shared vertices (*not* including combinatorially
+        // shared)
+        Index geo_shared_vertices = 0;
+        // Keep track of shared vertex indices
+        std::vector<std::pair<Index,Index> > shared;
+        Index ea,eb;
+        for(ea=0;ea<3;ea++)
+        {
+          for(eb=0;eb<3;eb++)
           {
-            comb_shared_vertices++;
-            shared.emplace_back(ea,eb);
-          }else if(A.vertex(ea) == B.vertex(eb))
-          {
-            geo_shared_vertices++;
-            shared.emplace_back(ea,eb);
+            if(F(fa,ea) == F(fb,eb))
+            {
+              comb_shared_vertices++;
+              shared.emplace_back(ea,eb);
+            }else if(A.vertex(ea) == B.vertex(eb))
+            {
+              geo_shared_vertices++;
+              shared.emplace_back(ea,eb);
+            }
           }
         }
-      }
-      const Index total_shared_vertices = comb_shared_vertices + geo_shared_vertices;
+        const Index total_shared_vertices = comb_shared_vertices + geo_shared_vertices;
+        if(exception_fired) return;
 
-      if(comb_shared_vertices== 3)
-      {
-        assert(shared.size() == 3);
-        //// Combinatorially duplicate face, these should be removed by preprocessing
-        //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are combinatorial duplicates")<<endl;
-        continue;
+        if(comb_shared_vertices== 3)
+        {
+          assert(shared.size() == 3);
+          //// Combinatorially duplicate face, these should be removed by preprocessing
+          //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are combinatorial duplicates")<<endl;
+          continue;
+        }
+        if(total_shared_vertices== 3)
+        {
+          assert(shared.size() == 3);
+          //// Geometrically duplicate face, these should be removed by preprocessing
+          //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are geometrical duplicates")<<endl;
+          continue;
+        }
+        if(total_shared_vertices == 2)
+        {
+          assert(shared.size() == 2);
+          // Q: What about coplanar?
+          //
+          // o    o
+          // |\  /|
+          // | \/ |
+          // | /\ |
+          // |/  \|
+          // o----o
+          double_shared_vertex(A,B,fa,fb,shared);
+          continue;
+        }
+        assert(total_shared_vertices<=1);
+        if(total_shared_vertices==1)
+        {
+          single_shared_vertex(A,B,fa,fb,shared[0].first,shared[0].second);
+        }else
+        {
+          intersect(A,B,fa,fb);
+        }
       }
-      if(total_shared_vertices== 3)
-      {
-        assert(shared.size() == 3);
-        //// Geometrically duplicate face, these should be removed by preprocessing
-        //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are geometrical duplicates")<<endl;
-        continue;
-      }
-      if(total_shared_vertices == 2)
-      {
-        assert(shared.size() == 2);
-        // Q: What about coplanar?
-        //
-        // o    o
-        // |\  /|
-        // | \/ |
-        // | /\ |
-        // |/  \|
-        // o----o
-        double_shared_vertex(A,B,fa,fb,shared);
-        continue;
-      }
-      assert(total_shared_vertices<=1);
-      if(total_shared_vertices==1)
-      {
-        single_shared_vertex(A,B,fa,fb,shared[0].first,shared[0].second);
-      }else
-      {
-        intersect(A,B,fa,fb);
-      }
+    }catch(int e)
+    {
+      std::lock_guard<std::mutex> exception_lock(exception_mutex);
+      exception_fired = true;
+      exception = e;
     }
   };
   size_t num_threads=0;
@@ -982,14 +990,17 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   const size_t num_pairs = candidate_box_pairs.size();
   const size_t chunk_size = num_pairs / num_threads;
   std::vector<std::thread> threads;
-  for (size_t i=0; i<num_threads-1; i++) {
+  for (size_t i=0; i<num_threads-1; i++) 
+  {
     threads.emplace_back(process_chunk, i*chunk_size, (i+1)*chunk_size);
   }
   // Do some work in the master thread.
   process_chunk((num_threads-1)*chunk_size, num_pairs);
-  for (auto& t : threads) {
+  for (auto& t : threads) 
+  {
     if (t.joinable()) t.join();
   }
+  if(exception_fired) throw exception;
   //process_chunk(0, candidate_box_pairs.size());
 }
 

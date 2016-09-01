@@ -176,26 +176,8 @@ namespace viewer
     void* callback_key_up_data;
 
   public:
-
-    static IGL_INLINE bool igl_with_nanogui_defined_at_compile();
-    static IGL_INLINE bool igl_with_nanogui_defined_consistently();
-
-  public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
-
-  bool igl_with_nanogui_defined_at_include();
-#ifndef IGL_VIEWER_VIEWER_CPP
-  bool igl_with_nanogui_defined_at_include()
-  {
-    // this must be inlined here.
-#ifdef IGL_VIEWER_WITH_NANOGUI
-    return true;
-#else
-    return false;
-#endif
-  }
-#endif
 
 } // end namespace
 } // end namespace

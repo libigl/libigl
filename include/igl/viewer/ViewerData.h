@@ -110,7 +110,10 @@ public:
   IGL_INLINE void compute_normals();
 
   // Assigns uniform colors to all faces/vertices
-  IGL_INLINE void uniform_colors(Eigen::Vector3d ambient, Eigen::Vector3d diffuse, Eigen::Vector3d specular);
+  IGL_INLINE void uniform_colors(
+    Eigen::Vector3d ambient, 
+    Eigen::Vector3d diffuse, 
+    Eigen::Vector3d specular);
 
   // Generates a default grid texture
   IGL_INLINE void grid_texture();

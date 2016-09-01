@@ -87,6 +87,7 @@ IGL_INLINE void igl::swept_volume_signed_distance(
   }else
   {
 #ifndef NDEBUG
+    // Check for nans
     for_each(S.data(),S.data()+S.size(),[](const double s){assert(s==s);});
 #endif
   }

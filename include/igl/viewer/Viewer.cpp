@@ -84,7 +84,7 @@ static int global_KMod = 0;
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
-  bool tw_used = 
+  bool tw_used =
 #ifdef IGL_VIEWER_WITH_NANOGUI
     __viewer->screen->mouseButtonCallbackEvent(button,action,modifier);
 #else
@@ -373,6 +373,7 @@ namespace viewer
       return data.show_faceid;
     });
 
+    screen->setVisible(true);
     screen->performLayout();
 
 #endif
@@ -388,33 +389,6 @@ namespace viewer
 
   IGL_INLINE Viewer::Viewer()
   {
-    // This mess is to help debug problems arising when compiling
-    // libiglviewer.a with(without) IGL_STATIC_LIBRARY defined and including
-    // Viewer.h without(with) IGL_STATIC_LIBRARY defined.
-#ifdef IGL_STATIC_LIBRARY
-    std::cout<<"igl_with_nanogui_defined_consistently: "<<igl_with_nanogui_defined_consistently()<<std::endl;
-    std::cout<<"igl_with_nanogui_defined_at_compile: "<<  igl_with_nanogui_defined_at_compile()  <<std::endl;
-    std::cout<<"igl_with_nanogui_defined_at_include: "<<  igl_with_nanogui_defined_at_include()  <<std::endl;
-    // First try to first assert
-    assert(igl_with_nanogui_defined_consistently() && 
-      "Must compile and include with IGL_VIEWER_WITH_NANOGUI defined consistently");
-#ifdef NDEBUG
-    // Second print warning since it's hopeless that this will run if wrong.
-    if(!igl_with_nanogui_defined_consistently())
-    {
-      std::cerr<<
-        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl<<std::endl<<
-        "WARNING: Seems that IGL_WITH_NANOGUI " <<
-        (igl_with_nanogui_defined_at_compile() ? "was" : "was not") <<
-        " defined"<<std::endl<<"during compilation of Viewer.cpp and "<<
-        (igl_with_nanogui_defined_at_include() ? "was" : "was not") <<
-        " defined"<<std::endl<<"during inclusion of Viewer.h"<<std::endl <<
-        "You're about to get some nasty memory errors."<<std::endl<<std::endl<<
-        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
-    }
-#endif
-#endif
-
 #ifdef IGL_VIEWER_WITH_NANOGUI
     ngui = nullptr;
     screen = nullptr;
@@ -474,7 +448,7 @@ namespace viewer
   :       Toggle face labels)"
 #endif
 );
-    std::cout<<usage;
+    std::cout<<usage<<std::endl;
 #endif
   }
 
@@ -842,11 +816,11 @@ namespace viewer
       center = data.V.colwise().sum()/data.V.rows();
     }
 
-    Eigen::Vector3f coord = 
+    Eigen::Vector3f coord =
       igl::project(
-        Eigen::Vector3f(center(0),center(1),center(2)), 
-        (core.view * core.model).eval(), 
-        core.proj, 
+        Eigen::Vector3f(center(0),center(1),center(2)),
+        (core.view * core.model).eval(),
+        core.proj,
         core.viewport);
     down_mouse_z = coord[2];
     down_rotation = core.trackball_angle;
@@ -1270,20 +1244,5 @@ namespace viewer
     launch_shut();
     return EXIT_SUCCESS;
   }
-  IGL_INLINE bool Viewer::igl_with_nanogui_defined_at_compile()
-  {
-#ifdef IGL_VIEWER_WITH_NANOGUI
-    return true;
-#else
-    return false;
-#endif
-  }
-  IGL_INLINE bool Viewer::igl_with_nanogui_defined_consistently()
-  {
-    return 
-      igl_with_nanogui_defined_at_compile() == 
-      igl_with_nanogui_defined_at_include();
-  }
 } // end namespace
 }
-

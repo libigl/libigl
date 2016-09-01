@@ -6,7 +6,12 @@
 #include <igl/viewer/Viewer.h>
 #include <igl/viewer/ViewerCore.h>
 #include <igl/viewer/ViewerData.h>
+#include <igl/viewer/OpenGL_state.h>
 #include <igl/serialize.h>
+#ifdef IGL_VIEWER_WITH_NANOGUI
+#include "../../../external/nanogui/include/nanogui/formhelper.h"
+#include "../../../external/nanogui/include/nanogui/screen.h"
+#endif
 
 void python_export_igl_viewer(py::module &m)
 {
@@ -115,6 +120,16 @@ py::enum_<igl::viewer::ViewerData::DirtyFlags>(viewerdata_class, "DirtyFlags")
       igl::deserialize(data,"Data",a);
       return;
     })
+
+    ;
+
+//////////////////////// OPENGL_State
+
+py::class_<igl::viewer::OpenGL_state> opengl_state_class(me, "OpenGL_state");
+
+    opengl_state_class
+    .def(py::init<>())
+    .def("init", &igl::viewer::OpenGL_state::init)
 
     ;
 
@@ -301,6 +316,14 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
 // UI Enumerations
     py::class_<igl::viewer::Viewer> viewer_class(me, "Viewer");
 
+    #ifdef IGL_VIEWER_WITH_NANOGUI
+    py::object fh = (py::object) py::module::import("nanogui").attr("FormHelper");
+    py::class_<nanogui::FormHelper> form_helper_class(me, "FormHelper", fh);
+
+    py::object screen = (py::object) py::module::import("nanogui").attr("Screen");
+    py::class_<nanogui::Screen> screen_class(me, "Screen", screen);
+    #endif
+
     py::enum_<igl::viewer::Viewer::MouseButton>(viewer_class, "MouseButton")
         .value("Left", igl::viewer::Viewer::MouseButton::Left)
         .value("Middle", igl::viewer::Viewer::MouseButton::Middle)
@@ -311,6 +334,13 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     .def(py::init<>())
     .def_readwrite("data", &igl::viewer::Viewer::data)
     .def_readwrite("core", &igl::viewer::Viewer::core)
+    .def_readwrite("opengl", &igl::viewer::Viewer::opengl)
+
+    #ifdef IGL_VIEWER_WITH_NANOGUI
+    .def_readwrite("ngui", &igl::viewer::Viewer::ngui)
+    .def_readwrite("screen", &igl::viewer::Viewer::screen)
+    #endif
+
     .def("launch", &igl::viewer::Viewer::launch, py::arg("resizable") = true, py::arg("fullscreen") = false)
     .def("launch_init", &igl::viewer::Viewer::launch_init, py::arg("resizable") = true, py::arg("fullscreen") = false)
     .def("launch_rendering", &igl::viewer::Viewer::launch_rendering, py::arg("loop") = true)

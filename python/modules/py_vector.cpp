@@ -153,6 +153,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("trace", [](const Type &m) {return m.trace();})
         .def("norm", [](const Type &m) {return m.norm();})
         .def("squaredNorm", [](const Type &m) {return m.squaredNorm();})
+        .def("squaredMean", [](const Type &m) {return m.array().square().mean();})
 
         .def("minCoeff", [](const Type &m) {return m.minCoeff();} )
         .def("maxCoeff", [](const Type &m) {return m.maxCoeff();} )
@@ -179,6 +180,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("rowwiseMean", [](const Type &m) {return Type(m.rowwise().mean());} )
         .def("rowwiseNorm", [](const Type &m) {return Type(m.rowwise().norm());} )
         .def("rowwiseNormalized", [](const Type &m) {return Type(m.rowwise().normalized());} )
+        .def("rowwiseReverse", [](const Type &m) {return Type(m.rowwise().reverse());} )
         .def("rowwiseMinCoeff", [](const Type &m) {return Type(m.rowwise().minCoeff());} )
         .def("rowwiseMaxCoeff", [](const Type &m) {return Type(m.rowwise().maxCoeff());} )
 
@@ -187,6 +189,8 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("colwiseProd", [](const Type &m) {return Type(m.colwise().prod());} )
         .def("colwiseMean", [](const Type &m) {return Type(m.colwise().mean());} )
         .def("colwiseNorm", [](const Type &m) {return Type(m.colwise().norm());} )
+        .def("colwiseNormalized", [](const Type &m) {return Type(m.colwise().normalized());} )
+        .def("colwiseReverse", [](const Type &m) {return Type(m.colwise().reverse());} )
         .def("colwiseMinCoeff", [](const Type &m) {return Type(m.colwise().minCoeff());} )
         .def("colwiseMaxCoeff", [](const Type &m) {return Type(m.colwise().maxCoeff());} )
 
@@ -688,6 +692,25 @@ void python_export_vector(py::module &m) {
     .def("solve",[](const Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >& s, const Eigen::MatrixXd& rhs) { return Eigen::MatrixXd(s.solve(rhs)); })
     ;
 
+    py::class_<Eigen::Affine3d > affine3d(me, "Affine3d");
+
+    affine3d
+    .def(py::init<>())
+    .def("setIdentity",[](Eigen::Affine3d& a){
+        return a.setIdentity();
+    })
+    .def("rotate",[](Eigen::Affine3d& a, double angle, Eigen::MatrixXd axis) {
+        assert_is_Vector3("axis", axis);
+        return a.rotate(Eigen::AngleAxisd(angle, Eigen::Vector3d(axis)));
+    })
+    .def("translate",[](Eigen::Affine3d& a, Eigen::MatrixXd offset) {
+        assert_is_Vector3("offset", offset);
+        return a.translate(Eigen::Vector3d(offset));
+    })
+    .def("matrix", [](Eigen::Affine3d& a) -> Eigen::MatrixXd {
+        return Eigen::MatrixXd(a.matrix());
+    })
+    ;
     /* Bindings for Quaterniond*/
     //py::class_<Eigen::Quaterniond > quaterniond(me, "Quaterniond");
     //

@@ -23,8 +23,8 @@ It is **a header-only library**. You do not need to compile anything to use,
 just include igl headers (e.g. `#include <igl/cotmatrix.h>`) and run.  Each
 header file contains a single function (e.g. `igl/cotmatrix.h` contains
 `igl::cotmatrix()`). Most are tailored to operate on a generic triangle mesh
-stored in an n-by-3 matrix of vertex positions V and an m-by-3 matrix of
-triangle indices F.
+stored in an n-by-3 matrix of vertex positions `V` and an m-by-3 matrix of
+triangle indices `F`.
 
 _Optionally_ the library may also be [pre-compiled](optional/) into a statically
 linked library, for faster compile times with your projects. This only effects
@@ -194,8 +194,10 @@ Libigl is used by many research groups around the world. In 2015, it won the
 Eurographics/ACM Symposium on Geometry Processing software award. Here are a
 few labs/companies/institutions using libigl:
 
+ - [Activision](http://www.activision.com)
  - [Adobe Research](http://www.adobe.com/technology/)  
  - [Electronic Arts, Inc](http://www.ea.com)
+ - [Google Research](https://research.google.com)
  - [Mesh](http://meshconsultants.ca/), consultants, Canada
  - [Pixar Research](http://graphics.pixar.com/research/)
  - [Spine by Esoteric Software](http://esotericsoftware.com/) is an animation tool dedicated to 2D characters.
@@ -219,6 +221,7 @@ few labs/companies/institutions using libigl:
  - [University of Cambridge](http://www.cam.ac.uk/), England
  - [University of Pennsylvania](http://cg.cis.upenn.edu/), USA
  - [University of Texas at Austin](http://www.cs.utexas.edu/users/evouga/), USA
+ - [University of Toronto](http://dgp.toronto.edu), Canada
  - [University of Victoria](https://www.csc.uvic.ca/Research/graphics/), Canada
  - [Università della Svizzera Italiana](http://www.usi.ch/en), Switzerland
  - [Université Toulouse III Paul Sabatier](http://www.univ-tlse3.fr/), France
