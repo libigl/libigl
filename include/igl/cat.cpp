@@ -237,14 +237,14 @@ IGL_INLINE void igl::cat(const std::vector<std::vector< Mat > > & A, Mat & C)
   using namespace std;
   // Start with empty matrix
   C.resize(0,0);
-  for(typename vector<vector< Mat > >::const_iterator rit = A.begin(); rit != A.end(); rit++)
+  for(const auto & row_vec : A)
   {
     // Concatenate each row horizontally
     // Start with empty matrix
     Mat row(0,0);
-    for(typename vector<vector< Mat > >::iterator cit = A.begin(); rit != A.end(); rit++)
+    for(const auto & element : row_vec)
     {
-      row = cat(2,row,*cit);
+      row = cat(2,row,element);
     }
     // Concatenate rows vertically
     C = cat(1,C,row);
