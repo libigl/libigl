@@ -77,6 +77,7 @@ lecture notes links to a cross-platform example application.
     * [508 Conjugate vector fields](#conjugatevectorfields)
     * [509 Planarization](#planarization)
     * [510 Integrable PolyVector Fields](#integrable)
+    * [511 General N-PolyVector Fields](#npolyvectorfields_general)
 * [Chapter 6: External libraries](#chapter6:externallibraries)
     * [601 State serialization](#stateserialization)
     * [602 Mixing Matlab code](#mixingmatlabcode)
