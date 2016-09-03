@@ -25,6 +25,10 @@ namespace igl {
   //   e                1 by 3, the vector corresponding to the shared edge between a and b
   //   match_with_curl  boolean flag, determines whether a curl or a smoothness matching will
   //                    be computed
+  //   is_symmetric     boolean flag, determines whether the input vector set field is symmetric(
+  //                    =consists of pairwise collinear vectors in each set, in which case only one
+  //                    of the vectors in the pair is stored) or not, i.e. the set contains all the vectors
+  // )
   // Outputs:
   //   mab              1 by N row vector, describing the matching a->b (i.e. vector #i of the
   //                    vector set in a is matched to vector #mab[i] in b)
@@ -40,7 +44,8 @@ namespace igl {
                                             const Eigen::PlainObjectBase<DerivedV>& e,
                                             bool match_with_curl,
                                             Eigen::PlainObjectBase<DerivedM>& mab,
-                                            Eigen::PlainObjectBase<DerivedM>& mba);
+                                            Eigen::PlainObjectBase<DerivedM>& mba,
+                                            bool is_symmetric);
 
 
   // Given a mesh and a vector set field consisting of unordered N-vector sets defined
@@ -58,6 +63,9 @@ namespace igl {
   //                    via igl::edge_topology)
   //   match_with_curl  boolean flag, determines whether curl or smoothness matchings will
   //                    be computed
+  //   is_symmetric     boolean flag, determines whether the input vector set field is symmetric(
+  //                    =consists of pairwise collinear vectors in each set, in which case only one
+  //                    of the vectors in the pair is stored) or not, i.e. the set contains all the vectors
   // Outputs:
   //   match_ab         #E by N matrix, describing for each edge the matching a->b, where a
   //                    and b are the faces adjacent to the edge (i.e. vector #i of
@@ -78,6 +86,7 @@ namespace igl {
                                                                   const Eigen::PlainObjectBase<DerivedV>& FN,
                                                                   const Eigen::MatrixXi &E2F,
                                                                   bool match_with_curl,
+                                                                  bool is_symmetric,
                                                                   Eigen::PlainObjectBase<DerivedM>& match_ab,
                                                                   Eigen::PlainObjectBase<DerivedM>& match_ba,
                                                                   Eigen::PlainObjectBase<DerivedC>& curl);
@@ -90,10 +99,34 @@ namespace igl {
                                                                   const Eigen::PlainObjectBase<DerivedV>&V,
                                                                   const Eigen::PlainObjectBase<DerivedF>&F,
                                                                   bool match_with_curl,
+                                                                  bool is_symmetric,
                                                                   Eigen::PlainObjectBase<DerivedM>& match_ab,
                                                                   Eigen::PlainObjectBase<DerivedM>& match_ba,
                                                                   Eigen::PlainObjectBase<DerivedC>& curl);
 
+  //Wrappers with no curl output
+  template <typename DerivedS, typename DerivedV, typename DerivedF, typename DerivedM>
+  IGL_INLINE void polyvector_field_matchings(
+                                             const Eigen::PlainObjectBase<DerivedS>& sol3D,
+                                             const Eigen::PlainObjectBase<DerivedV>&V,
+                                             const Eigen::PlainObjectBase<DerivedF>&F,
+                                             bool match_with_curl,
+                                             bool is_symmetric,
+                                             Eigen::PlainObjectBase<DerivedM>& match_ab,
+                                             Eigen::PlainObjectBase<DerivedM>& match_ba);
+  template <typename DerivedS, typename DerivedV, typename DerivedF, typename DerivedE, typename DerivedM>
+  IGL_INLINE void polyvector_field_matchings(
+                                             const Eigen::PlainObjectBase<DerivedS>& sol3D,
+                                             const Eigen::PlainObjectBase<DerivedV>&V,
+                                             const Eigen::PlainObjectBase<DerivedF>&F,
+                                             const Eigen::PlainObjectBase<DerivedE>&E,
+                                             const Eigen::PlainObjectBase<DerivedV>& FN,
+                                             const Eigen::MatrixXi &E2F,
+                                             bool match_with_curl,
+                                             bool is_symmetric,
+                                             Eigen::PlainObjectBase<DerivedM>& match_ab,
+                                             Eigen::PlainObjectBase<DerivedM>& match_ba);
+  
 };
 
 

@@ -30,9 +30,8 @@ namespace igl {
     const Eigen::PlainObjectBase<DerivedM> &Handle_MMatch;
 
     Eigen::VectorXi F_visited;
-//#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
-    Eigen::PlainObjectBase<DerivedF> TT;
-    Eigen::PlainObjectBase<DerivedF> TTi;
+    DerivedF TT;
+    DerivedF TTi;
 
     Eigen::MatrixXi E, F2E, E2F;
   protected:
