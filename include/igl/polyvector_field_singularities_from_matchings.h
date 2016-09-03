@@ -17,7 +17,7 @@ namespace igl {
   
   // We are given a polyvector field on a mesh (with N vectors per face), and matchings between the vector sets
   // across all non-boundary edges.  The function computes, for the one-ring
-  // neighborhood of a given vertex, and for the selected vector of the vector set,
+  // neighborhood of a given vertex, and for each of the vectors of the vector set,
   // the sequence of the vectors that match to it around the one-ring. If the vector that
   // we land on by following the matchings is not the original vector that we started from,
   // the vertex is a singularity.
@@ -40,13 +40,13 @@ namespace igl {
   //                    and b are the faces adjacent to the edge (i.e. vector #mba[i] of
   //                    the vector set in a is matched to vector #i in b)
   //   vi               the selected one ring
-  //   vector_id        the selected vector of the polyvector
   //
   // Output:
   //   mvi              #numOneRingFaces by 1 list of the indices of the sequentially matching vectors
   //                    in the faces of the one ring (first enty is always vector_id, then the vector matching
   //                    vector_id in the next face, then the vector matching that in the third face etc.)
-  //   fi               #numOneRingFaces by 1 list of the sequentially visited faces in the one ring neighborhood
+  //   fi               #numOneRingFaces by 1 list of the sequentially visited faces in the one ring neighborhood.
+  //                    The one-ring is traversed in CLOCKWISE order with respect to the outward normal. (=opposite)
   //
   template <typename DerivedV, typename DerivedF, typename DerivedM, typename VFType, typename DerivedTT>
   void polyvector_field_one_ring_matchings(const Eigen::PlainObjectBase<DerivedV> &V,
@@ -58,8 +58,7 @@ namespace igl {
                                            const Eigen::PlainObjectBase<DerivedM> &match_ab,
                                            const Eigen::PlainObjectBase<DerivedM> &match_ba,
                                            const int vi,
-                                           const int vector_id,
-                                           Eigen::VectorXi &mvi,
+                                           Eigen::MatrixXi &mvi,
                                            Eigen::VectorXi &fi);
   
   
@@ -113,6 +112,31 @@ namespace igl {
                                                                 const Eigen::PlainObjectBase<DerivedM> &match_ba,
                                                                 Eigen::PlainObjectBase<DerivedS> &singularities);
   
+  
+  // Same pair as above but also returns singularity indices
+  template <typename DerivedV, typename DerivedF, typename DerivedM, typename DerivedS>
+  IGL_INLINE void polyvector_field_singularities_from_matchings(
+                                                                const Eigen::PlainObjectBase<DerivedV> &V,
+                                                                const Eigen::PlainObjectBase<DerivedF> &F,
+                                                                const Eigen::PlainObjectBase<DerivedM> &match_ab,
+                                                                const Eigen::PlainObjectBase<DerivedM> &match_ba,
+                                                                Eigen::PlainObjectBase<DerivedS> &singularities,
+                                                                Eigen::PlainObjectBase<DerivedS> &singularity_indices);
+  
+  template <typename DerivedV, typename DerivedF, typename DerivedM, typename VFType, typename DerivedS>
+  IGL_INLINE void polyvector_field_singularities_from_matchings(
+                                                                const Eigen::PlainObjectBase<DerivedV> &V,
+                                                                const Eigen::PlainObjectBase<DerivedF> &F,
+                                                                const std::vector<bool> &V_border,
+                                                                const std::vector<std::vector<VFType> > &VF,
+                                                                const Eigen::MatrixXi &TT,
+                                                                const Eigen::MatrixXi &E2F,
+                                                                const Eigen::MatrixXi &F2E,
+                                                                const Eigen::PlainObjectBase<DerivedM> &match_ab,
+                                                                const Eigen::PlainObjectBase<DerivedM> &match_ba,
+                                                                Eigen::PlainObjectBase<DerivedS> &singularities,
+                                                                Eigen::PlainObjectBase<DerivedS> &singularity_indices);
+
   
   
 };
