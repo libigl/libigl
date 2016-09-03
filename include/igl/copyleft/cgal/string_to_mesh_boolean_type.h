@@ -31,7 +31,7 @@ namespace igl
         const std::string & s,
         MeshBooleanType & type);
       // Returns type without error handling
-      IGL_INLINE MeshBooleanType string_to_mesh_boolean_type(
+      IGL_INLINE igl::MeshBooleanType string_to_mesh_boolean_type(
         const std::string & s);
     }
   }
