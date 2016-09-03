@@ -51,3 +51,4 @@ igl::copyleft::cgal::string_to_mesh_boolean_type(
   assert(ret && "Unknown MeshBooleanType name");
   return type;
 }
+
