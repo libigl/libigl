@@ -187,7 +187,6 @@ IGL_INLINE bool igl::readSTL(
       }
     }
     // read endfacet
-    fclose(stl_file);
     goto close_true;
   }else
   {
