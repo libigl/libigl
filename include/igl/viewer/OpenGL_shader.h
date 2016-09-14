@@ -14,6 +14,7 @@
 #include <Eigen/Core>
 
 #ifdef _WIN32
+struct IUnknown;
 #  include <windows.h>
 #  undef max
 #  undef min
