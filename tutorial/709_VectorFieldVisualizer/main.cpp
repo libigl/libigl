@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     viewer.callback_pre_draw = &pre_draw;
     viewer.callback_key_down = &key_down;
 
-    viewer.core.show_lines = false;
+    viewer.data.show_lines = false;
 
     viewer.core.is_animating = false;
     viewer.core.animation_max_fps = 30.;
