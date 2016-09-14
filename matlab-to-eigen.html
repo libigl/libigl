@@ -153,7 +153,7 @@ B = A.replicate(i,j);</code></pre></td>
         <td><pre><code>igl::colon(low,step,hi,I);
 // or
 const int size = ((hi-low)/step)+1;
-I = VectorXiLinSpaced(size,low,low+step*(size-1));</code></pre></td>
+I = VectorXi::LinSpaced(size,low,low+step*(size-1));</code></pre></td>
         <td>IGL version should be templated enough to handle same situations as
         matlab's colon. The matlab keyword <b>end</b> does not correspond in
         the C++ version. You'll have to use M.size(),M.rows() or whatever.
@@ -174,14 +174,14 @@ I = VectorXiLinSpaced(size,low,low+step*(size-1));</code></pre></td>
 
       <tr class=d1>
         <td><pre><code>B = A(I,J)<br>B = A(I,:)</code></pre></td>
-        <td><pre><code>igl::slice(A,I,J,B)<br>B = igl::slice(A,I,igl::colon(0,A.cols()-1))</code></pre></td>
+        <td><pre><code>igl::slice(A,I,J,B)<br>igl::slice(A,I,1,B)</code></pre></td>
         <td>This is only for the case when I and J are lists of indices and
         not vectors of logicals.</td>
       </tr>
 
       <tr class=d0>
         <td><pre><code>B(I,J) = A<br>B(I,:) = A</code></pre></td>
-        <td><pre><code>igl::slice_into(A,I,J,B)<br>B = igl::slice_into(A,I,igl::colon(0,B.cols()-1))</code></pre></td>
+        <td><pre><code>igl::slice_into(A,I,J,B)<br>igl::slice_into(A,I,1,B)</code></pre></td>
         <td>This is only for the case when I and J are lists of indices and
         not vectors of logicals.</td>
       </tr>

@@ -6,13 +6,15 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "harmonic.h"
-#include "cotmatrix.h"
-#include "massmatrix.h"
-#include "invert_diag.h"
 #include "adjacency_matrix.h"
-#include "sum.h"
+#include "cotmatrix.h"
 #include "diag.h"
+#include "invert_diag.h"
+#include "isdiag.h"
+#include "massmatrix.h"
 #include "min_quad_with_fixed.h"
+#include "speye.h"
+#include "sum.h"
 #include <Eigen/Sparse>
 
 template <
@@ -31,9 +33,7 @@ IGL_INLINE bool igl::harmonic(
 {
   using namespace Eigen;
   typedef typename DerivedV::Scalar Scalar;
-  typedef Matrix<Scalar,Dynamic,1> VectorXS;
-  SparseMatrix<Scalar> Q;
-  SparseMatrix<Scalar> L,M,Mi;
+  SparseMatrix<Scalar> L,M;
   cotmatrix(V,F,L);
   switch(F.cols())
   {
@@ -45,28 +45,7 @@ IGL_INLINE bool igl::harmonic(
       massmatrix(V,F,MASSMATRIX_TYPE_BARYCENTRIC,M);
     break;
   }
-  invert_diag(M,Mi);
-  Q = -L;
-  for(int p = 1;p<k;p++)
-  {
-    Q = (Q*Mi*-L).eval();
-  }
-
-  min_quad_with_fixed_data<Scalar> data;
-  min_quad_with_fixed_precompute(Q,b,SparseMatrix<Scalar>(),true,data);
-  W.resize(V.rows(),bc.cols());
-  const VectorXS B = VectorXS::Zero(V.rows(),1);
-  for(int w = 0;w<bc.cols();w++)
-  {
-    const VectorXS bcw = bc.col(w);
-    VectorXS Ww;
-    if(!min_quad_with_fixed_solve(data,B,bcw,VectorXS(),Ww))
-    {
-      return false;
-    }
-    W.col(w) = Ww;
-  }
-  return true;
+  return harmonic(L,M,b,bc,k,W);
 }
 
 template <
@@ -83,8 +62,6 @@ IGL_INLINE bool igl::harmonic(
 {
   using namespace Eigen;
   typedef typename Derivedbc::Scalar Scalar;
-  typedef Matrix<Scalar,Dynamic,1> VectorXS;
-  SparseMatrix<Scalar> Q;
   SparseMatrix<Scalar> A;
   adjacency_matrix(F,A);
   // sum each row
@@ -93,12 +70,46 @@ IGL_INLINE bool igl::harmonic(
   // Convert row sums into diagonal of sparse matrix
   SparseMatrix<Scalar> Adiag;
   diag(Asum,Adiag);
-  // Build uniform laplacian
-  Q = -A+Adiag;
+  SparseMatrix<Scalar> L = A-Adiag;
+  SparseMatrix<Scalar> M;
+  speye(L.rows(),M);
+  return harmonic(L,M,b,bc,k,W);
+}
+
+template <
+  typename DerivedL,
+  typename DerivedM,
+  typename Derivedb,
+  typename Derivedbc,
+  typename DerivedW>
+IGL_INLINE bool igl::harmonic(
+  const Eigen::SparseMatrix<DerivedL> & L,
+  const Eigen::SparseMatrix<DerivedM> & M,
+  const Eigen::PlainObjectBase<Derivedb> & b,
+  const Eigen::PlainObjectBase<Derivedbc> & bc,
+  const int k,
+  Eigen::PlainObjectBase<DerivedW> & W)
+{
+  const int n = L.rows();
+  assert(n == L.cols() && "L must be square");
+  assert(n == M.cols() && "M must be same size as L");
+  assert(n == M.rows() && "M must be square");
+  assert(igl::isdiag(M) && "Mass matrix should be diagonal");
+
+  Eigen::SparseMatrix<DerivedM> Mi;
+  invert_diag(M,Mi);
+  Eigen::SparseMatrix<DerivedL> Q;
+  Q = -L;
+  for(int p = 1;p<k;p++)
+  {
+    Q = (Q*Mi*-L).eval();
+  }
+  typedef DerivedL Scalar;
   min_quad_with_fixed_data<Scalar> data;
-  min_quad_with_fixed_precompute(Q,b,SparseMatrix<Scalar>(),true,data);
-  W.resize(A.rows(),bc.cols());
-  const VectorXS B = VectorXS::Zero(A.rows(),1);
+  min_quad_with_fixed_precompute(Q,b,Eigen::SparseMatrix<Scalar>(),true,data);
+  W.resize(n,bc.cols());
+  typedef Eigen::Matrix<Scalar,Eigen::Dynamic,1> VectorXS;
+  const VectorXS B = VectorXS::Zero(n,1);
   for(int w = 0;w<bc.cols();w++)
   {
     const VectorXS bcw = bc.col(w);

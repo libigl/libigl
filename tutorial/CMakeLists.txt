@@ -137,6 +137,7 @@ if(TUTORIALS_CHAPTER5)
   add_subdirectory("508_ConjugateField")
   add_subdirectory("509_Planarization")
   add_subdirectory("510_Integrable")
+  add_subdirectory("511_PolyVectorFieldGeneral")
 endif()
 
 # Chapter 6
@@ -180,4 +181,6 @@ if(TUTORIALS_CHAPTER7)
   endif()
   add_subdirectory("707_SweptVolume")
   add_subdirectory("708_Picking")
+  add_subdirectory("709_VectorFieldVisualizer")
+
 endif()
