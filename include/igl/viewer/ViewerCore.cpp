@@ -507,7 +507,7 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
 
   // Default trackball
   trackball_angle = Eigen::Quaternionf::Identity();
-  set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
+  set_rotation_type(ViewerCore::ROTATION_TYPE_TRACKBALL);
 
   // Defalut model viewing parameters
   model_zoom = 1.0f;
