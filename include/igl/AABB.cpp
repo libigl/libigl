@@ -803,7 +803,14 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
     // Actually process elements
     assert((Ele.size() == 0 || Ele.cols() == 3) && "Elements should be triangles");
     // Cheesecake way of hitting element
-    return ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive),hits);
+    bool ret = ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive),hits);
+    // Since we only gave ray_mesh_intersect a single face, it will have set
+    // any hits to id=0. Set these to this primitive's id
+    for(auto & hit : hits)
+    {
+      hit.id = m_primitive;
+    }
+    return ret;
   }
   std::vector<igl::Hit> left_hits;
   std::vector<igl::Hit> right_hits;
@@ -853,6 +860,8 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
         ray_mesh_intersect(origin,dir,V,Ele.row(tree->m_primitive),leaf_hit)&&
         leaf_hit.t < hit.t)
       {
+        // correct the id
+        leaf_hit.id = tree->m_primitive;
         hit = leaf_hit;
       }
       continue;
@@ -904,7 +913,9 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
     // Actually process elements
     assert((Ele.size() == 0 || Ele.cols() == 3) && "Elements should be triangles");
     // Cheesecake way of hitting element
-    return ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive),hit);
+    bool ret = ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive),hit);
+    hit.id = m_primitive;
+    return ret;
   }
 
   // Doesn't seem like smartly choosing left before/after right makes a
