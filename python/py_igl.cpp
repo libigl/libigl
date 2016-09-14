@@ -32,6 +32,7 @@
 #include <igl/doublearea.h>
 #include <igl/dqs.h>
 #include <igl/edge_lengths.h>
+#include <igl/edge_topology.h>
 #include <igl/eigs.h>
 #include <igl/find_cross_field_singularities.h>
 #include <igl/fit_rotations.h>
@@ -80,6 +81,8 @@
 #include <igl/slice_mask.h>
 #include <igl/slice_tets.h>
 #include <igl/sortrows.h>
+#include <igl/streamlines.h>
+#include <igl/triangle_triangle_adjacency.h>
 #include <igl/unique.h>
 #include <igl/unproject_onto_mesh.h>
 #include <igl/upsample.h>
@@ -121,6 +124,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_doublearea.cpp"
 #include "py_igl/py_dqs.cpp"
 #include "py_igl/py_edge_lengths.cpp"
+#include "py_igl/py_edge_topology.cpp"
 #include "py_igl/py_eigs.cpp"
 #include "py_igl/py_find_cross_field_singularities.cpp"
 #include "py_igl/py_fit_rotations.cpp"
@@ -169,6 +173,8 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_slice_mask.cpp"
 #include "py_igl/py_slice_tets.cpp"
 #include "py_igl/py_sortrows.cpp"
+#include "py_igl/py_streamlines.cpp"
+#include "py_igl/py_triangle_triangle_adjacency.cpp"
 #include "py_igl/py_unique.cpp"
 #include "py_igl/py_unproject_onto_mesh.cpp"
 #include "py_igl/py_upsample.cpp"
