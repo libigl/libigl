@@ -31,7 +31,7 @@ namespace {
 // I have verified that this function produces the exact same output as
 // `find_seam_fast.py` for `cow_triangled.obj`.
 template <typename DerivedV, typename DerivedF, typename DerivedT>
-IGL_INLINE void seam_edges(
+IGL_INLINE void igl::seam_edges(
     const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedT>& TC,
     const Eigen::PlainObjectBase<DerivedF>& F,

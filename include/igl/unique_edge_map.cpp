@@ -55,6 +55,7 @@ template void igl::unique_edge_map<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen:
 
 #ifdef WIN32
 template void __cdecl igl::unique_edge_map<class Eigen::Matrix<int, -1, 3, 0, -1, 3>, class Eigen::Matrix<int, -1, 2, 0, -1, 2>, class Eigen::Matrix<int, -1, 2, 0, -1, 2>, class Eigen::Matrix<__int64, -1, 1, 0, -1, 1>, __int64>(class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, 3, 0, -1, 3> > const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, 2, 0, -1, 2> > &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, 2, 0, -1, 2> > &, class Eigen::PlainObjectBase<class Eigen::Matrix<__int64, -1, 1, 0, -1, 1> > &, class std::vector<class std::vector<__int64, class std::allocator<__int64> >, class std::allocator<class std::vector<__int64, class std::allocator<__int64> > > > &);
+template void __cdecl igl::unique_edge_map<class Eigen::Matrix<int,-1,-1,0,-1,-1>,class Eigen::Matrix<int,-1,2,0,-1,2>,class Eigen::Matrix<int,-1,2,0,-1,2>,class Eigen::Matrix<__int64,-1,1,0,-1,1>,__int64>(class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,-1,0,-1,-1> > const &,class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,2,0,-1,2> > &,class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,2,0,-1,2> > &,class Eigen::PlainObjectBase<class Eigen::Matrix<__int64,-1,1,0,-1,1> > &,class std::vector<class std::vector<__int64,class std::allocator<__int64> >,class std::allocator<class std::vector<__int64,class std::allocator<__int64> > > > &);
 #endif
 
 #endif 

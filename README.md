@@ -197,6 +197,7 @@ few labs/companies/institutions using libigl:
  - [Activision](http://www.activision.com)
  - [Adobe Research](http://www.adobe.com/technology/)  
  - [Electronic Arts, Inc](http://www.ea.com)
+ - [Epic Games](https://epicgames.com)
  - [Google Research](https://research.google.com)
  - [Mesh](http://meshconsultants.ca/), consultants, Canada
  - [Pixar Research](http://graphics.pixar.com/research/)
