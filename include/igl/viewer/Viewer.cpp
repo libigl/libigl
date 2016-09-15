@@ -71,7 +71,7 @@
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/unproject.h>
 
-#ifdef ENABLE_SERIALIZATION
+#ifdef IGL_VIEWER_WITH_NANOGUI_SERIALIZATION
 #include <igl/serialize.h>
 #endif
 
@@ -191,36 +191,8 @@ static void glfw_drop_callback(GLFWwindow *window,int count,const char **filenam
 #endif
 }
 
-#ifdef ENABLE_SERIALIZATION
-#include <igl/serialize.h>
-namespace igl {
-  namespace serialization {
-
-    IGL_INLINE void serialization(bool s,igl::viewer::Viewer& obj,std::vector<char>& buffer)
-    {
-      obj.data_buffer[obj.active_data_id] = obj.data;
-
-      SERIALIZE_MEMBER(core);
-      SERIALIZE_MEMBER(data_buffer);
-      SERIALIZE_MEMBER(data_ids);
-      SERIALIZE_MEMBER(active_data_id);
-    }
-
-    template<>
-    IGL_INLINE void serialize(const igl::viewer::Viewer& obj,std::vector<char>& buffer)
-    {
-      serialization(true,const_cast<igl::viewer::Viewer&>(obj),buffer);
-    }
-
-    template<>
-    IGL_INLINE void deserialize(igl::viewer::Viewer& obj,const std::vector<char>& buffer)
-    {
-      serialization(false,obj,const_cast<std::vector<char>&>(buffer));
-      
-      obj.data = obj.data_buffer[obj.active_data_id];
-    }
-  }
-}
+#ifdef IGL_STATIC_LIBRARY
+#  include "ViewerSerialization.h"
 #endif
 
 namespace igl
@@ -239,7 +211,7 @@ namespace viewer
 
     // ---------------------- LOADING ----------------------
 
-#ifdef ENABLE_SERIALIZATION
+#ifdef IGL_VIEWER_WITH_NANOGUI_SERIALIZATION
     {
       ngui->addGroup("Workspace");
 
@@ -259,7 +231,7 @@ namespace viewer
     }
 #endif
 
-#ifdef ENABLE_IO
+#ifdef IGL_VIEWER_WITH_NANOGUI_IO
     {
       ngui->addGroup("Mesh");
 
@@ -281,7 +253,7 @@ namespace viewer
 
     ngui->addGroup("Viewing Options");
 
-    ngui->addButton("Center object",[&]() {this->core.align_camera_center(this->data.V,this->data.F);});
+    ngui->addButton("Center object",[&]() {this->core.align_camera_center(this->data);});
     ngui->addButton("Canonical view",[&]()
     {
       this->snap_to_canonical_quaternion();
@@ -295,6 +267,7 @@ namespace viewer
 
     ngui->addGroup("Draw options");
 
+#ifdef IGL_VIEWER_WITH_NANOGUI_MULTIMESH
     currentDataCB = new ComboBox(window,data_ids);
     currentDataCB->setCallback([&](int id){
       if(id != active_data_id)
@@ -305,15 +278,16 @@ namespace viewer
     });
     currentDataCB->setFixedHeight(20);
     currentDataCB->setFontSize(16);
-    //currentDataCB->setVisible(true);
+    currentDataCB->setSelectedIndex(active_data_id);
     ngui->addWidget("Active Mesh",currentDataCB);
+#endif
 
     ngui->addVariable<bool>("Visible",[&](bool checked)
     {
       data.visible = checked;
     },[&]()
     {
-      return this->data.visible;
+      return data.visible;
     });
 
     ngui->addVariable<bool>("Face-based",[&](bool checked)
@@ -321,7 +295,7 @@ namespace viewer
       data.set_face_based(checked);
     },[&]()
     {
-      return this->data.face_based;
+      return data.face_based;
     });
 
     ngui->addVariable<bool>("Show texture",[&](bool checked) {
@@ -332,9 +306,9 @@ namespace viewer
 
     ngui->addVariable<bool>("Invert normals",[&](bool checked){
       data.dirty |= ViewerData::DIRTY_NORMAL;
-      this->data.invert_normals = checked;
+      data.invert_normals = checked;
     },[&](){
-      return this->data.invert_normals;
+      return data.invert_normals;
     });
 
     ngui->addVariable<bool>("Wireframe",[&](bool checked) {
@@ -392,14 +366,16 @@ namespace viewer
 #ifdef IGL_VIEWER_WITH_NANOGUI
     ngui = nullptr;
     screen = nullptr;
+    currentDataCB = nullptr;
 #endif
 
-    currentDataCB = nullptr;
+    __viewer = nullptr;
 
     active_data_id = 0;
     data_buffer.push_back(ViewerData());
     data_ids.push_back("mesh");
     data = data_buffer[active_data_id];
+    opengl.push_back(OpenGL_state());
 
     // Temporary variables initialization
     down = false;
@@ -478,27 +454,36 @@ namespace viewer
     data_buffer.push_back(ViewerData());
     
     data_ids.push_back(id);
-    currentDataCB->setItems(data_ids);
     
     opengl.push_back(OpenGL_state());
-    opengl[opengl.size()-1].init();
 
-    //currentDataCB->setVisible(currentDataCB->items().size() <= 1);
-    screen->performLayout();
+    if(__viewer != nullptr)
+    {
+      opengl[opengl.size()-1].init();
+#if defined(IGL_VIEWER_WITH_NANOGUI) && defined(IGL_VIEWER_WITH_NANOGUI_MULTIMESH)
+      currentDataCB->setItems(data_ids);
+      screen->performLayout();
+#endif
+    }
+    else
+    {
+      set_active_mesh(opengl.size()-1);
+    }
 
     return opengl.size()-1;
   }
 
   IGL_INLINE unsigned int Viewer::add_mesh(const char* mesh_file_name,const std::string& id)
   {
-    unsigned int bakId = active_data_id;
     unsigned int mid = add_mesh(id);
-    set_active_mesh(mid);
     load_mesh_from_file(mesh_file_name);
-    set_active_mesh(bakId);
 
-    //currentDataCB->setVisible(currentDataCB->items().size() <= 1);
-    screen->performLayout();
+#if defined(IGL_VIEWER_WITH_NANOGUI) && defined(IGL_VIEWER_WITH_NANOGUI_MULTIMESH)
+    if(__viewer != nullptr)
+    {
+      screen->performLayout();
+    }
+#endif
 
     return mid;
   }
@@ -526,9 +511,13 @@ namespace viewer
     opengl[data_id].free();
     opengl.erase(opengl.begin()+data_id);
 
-    currentDataCB->setItems(data_ids);
-    //currentDataCB->setVisible(currentDataCB->items().size() <= 1);
-    screen->performLayout();
+#if defined(IGL_VIEWER_WITH_NANOGUI) && defined(IGL_VIEWER_WITH_NANOGUI_MULTIMESH)
+    if(__viewer != nullptr)
+    {
+      currentDataCB->setItems(data_ids);
+      screen->performLayout();
+    }
+#endif
 
     return true;
   }
@@ -546,7 +535,12 @@ namespace viewer
     active_data_id = data_id;
     data = data_buffer[active_data_id];
 
-    currentDataCB->setSelectedIndex(active_data_id);
+#if defined(IGL_VIEWER_WITH_NANOGUI) && defined(IGL_VIEWER_WITH_NANOGUI_MULTIMESH)
+    if(__viewer != nullptr)
+    {
+      currentDataCB->setSelectedIndex(active_data_id);
+    }
+#endif
 
     return true;
   }
@@ -571,7 +565,8 @@ namespace viewer
       }
     }
 
-    data_buffer[data_id].clear();
+    ViewerData& data = get_mesh(data_id);
+    data.clear();
 
     size_t last_dot = mesh_file_name_string.rfind('.');
     if(last_dot == std::string::npos)
@@ -588,7 +583,7 @@ namespace viewer
       Eigen::MatrixXi F;
       if(!igl::readOFF(mesh_file_name_string,V,F))
         return false;
-      data_buffer[data_id].set_mesh(V,F);
+      data.set_mesh(V,F);
     } else if(extension == "obj" || extension =="OBJ")
     {
       Eigen::MatrixXd corner_normals;
@@ -604,8 +599,8 @@ namespace viewer
           mesh_file_name_string,
           V,UV_V,corner_normals,F,UV_F,fNormIndices)))
 		    return false;
-      data_buffer[data_id].set_mesh(V,F);
-      data_buffer[data_id].set_uv(UV_V,UV_F);
+      data.set_mesh(V,F);
+      data.set_uv(UV_V,UV_F);
     } else
     {
       // unrecognized file type
@@ -613,16 +608,16 @@ namespace viewer
       return false;
     }
 
-    data_buffer[data_id].compute_normals();
-    data_buffer[data_id].uniform_colors(Eigen::Vector3d(51.0/255.0,43.0/255.0,33.3/255.0),
+    data.compute_normals();
+    data.uniform_colors(Eigen::Vector3d(51.0/255.0,43.0/255.0,33.3/255.0),
                         Eigen::Vector3d(255.0/255.0,228.0/255.0,58.0/255.0),
                         Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
-    if(data_buffer[data_id].V_uv.rows() == 0)
+    if(data.V_uv.rows() == 0)
     {
-      data_buffer[data_id].grid_texture();
+      data.grid_texture();
     }
 
-    core.align_camera_center(data_buffer[data_id].V,data_buffer[data_id].F);
+    core.align_camera_center(data);
 
     for(unsigned int i = 0; i<plugins.size(); ++i)
       if(plugins[i]->post_load())
@@ -647,6 +642,8 @@ namespace viewer
       if(plugins[i]->save(mesh_file_name_string))
         return true;
 
+    ViewerData& data = get_mesh(data_id);
+
     size_t last_dot = mesh_file_name_string.rfind('.');
     if(last_dot == std::string::npos)
     {
@@ -657,7 +654,7 @@ namespace viewer
     std::string extension = mesh_file_name_string.substr(last_dot+1);
     if(extension == "off" || extension =="OFF")
     {
-      return igl::writeOFF(mesh_file_name_string,data_buffer[data_id].V,data_buffer[data_id].F);
+      return igl::writeOFF(mesh_file_name_string,data.V,data.F);
     } else if(extension == "obj" || extension =="OBJ")
     {
       Eigen::MatrixXd corner_normals;
@@ -666,8 +663,8 @@ namespace viewer
       Eigen::MatrixXd UV_V;
       Eigen::MatrixXi UV_F;
 
-      return igl::writeOBJ(mesh_file_name_string,data_buffer[data_id].V,
-                           data_buffer[data_id].F,corner_normals,fNormIndices,UV_V,UV_F);
+      return igl::writeOBJ(mesh_file_name_string,data.V,
+                           data.F,corner_normals,fNormIndices,UV_V,UV_F);
     } else
     {
       // unrecognized file type
@@ -801,11 +798,6 @@ namespace viewer
       if(plugins[i]->mouse_down(static_cast<int>(button),modifier))
         return true;
 
-    down = true;
-
-    down_translation = core.model_translation;
-
-
     // Initialization code for the trackball
     Eigen::RowVector3d center;
     if (data.V.rows() == 0)
@@ -823,6 +815,18 @@ namespace viewer
         core.proj,
         core.viewport);
     down_mouse_z = coord[2];
+
+    down = true;
+
+    down_modifier = modifier;
+    if(down_modifier == GLFW_MOD_CONTROL)
+    {
+      down_translation = data.model_translation;
+    } else
+    {
+      down_translation = core.global_translation;
+    }
+
     down_rotation = core.trackball_angle;
 
     mouse_mode = MouseMode::Rotation;
@@ -892,6 +896,7 @@ namespace viewer
             default:
               assert(false && "Unknown rotation type");
             case ViewerCore::ROTATION_TYPE_TRACKBALL:
+            {
               igl::trackball(
                 core.viewport(2),
                 core.viewport(3),
@@ -902,6 +907,7 @@ namespace viewer
                 mouse_x,
                 mouse_y,
                 core.trackball_angle);
+            }
               break;
             case ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
               igl::two_axis_valuator_fixed_up(
@@ -924,7 +930,15 @@ namespace viewer
           Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, core.viewport[3] - down_mouse_y, down_mouse_z), (core.view * core.model).eval(), core.proj, core.viewport);
 
           Eigen::Vector3f diff = pos1 - pos0;
-          core.model_translation = down_translation + Eigen::Vector3f(diff[0],diff[1],diff[2]);
+          
+          if(down_modifier == GLFW_MOD_CONTROL)
+          {
+            data.model_translation = down_translation + Eigen::Vector3f(diff[0],diff[1],diff[2]);
+          }
+          else
+          {
+            core.global_translation = down_translation + Eigen::Vector3f(diff[0],diff[1],diff[2]);
+          }
 
           break;
         }
@@ -1009,7 +1023,7 @@ namespace viewer
     if (fname.length() == 0)
       return false;
 
-#ifdef ENABLE_SERIALIZATION
+#ifdef IGL_VIEWER_WITH_NANOGUI_SERIALIZATION
 
     igl::serialize(core,"Core",fname.c_str(),true);
 
@@ -1038,7 +1052,7 @@ namespace viewer
 
   IGL_INLINE bool Viewer::load_scene(std::string fname)
   {
-#ifdef ENABLE_SERIALIZATION
+#ifdef IGL_VIEWER_WITH_NANOGUI_SERIALIZATION
 
     igl::deserialize(core,"Core",fname.c_str());
 
@@ -1174,10 +1188,13 @@ namespace viewer
 
     glfw_window_size(window,width_window,height_window);
 
-    opengl.push_back(OpenGL_state());
-    opengl[0].init();
+    for(auto& v : opengl)
+    {
+      v.init();
+    }
+    
 
-    core.align_camera_center(data.V,data.F);
+    core.align_camera_center(data);
 
     // Initialize IGL viewer
     init();

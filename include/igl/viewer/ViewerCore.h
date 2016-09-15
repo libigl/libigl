@@ -43,29 +43,30 @@ public:
 
   // ------------------- Camera control functions
 
-  // Adjust the view to see the entire model
+  // Set camera center to new position (keep orientation)
+  IGL_INLINE void set_camera_position(
+    const Eigen::Vector3f& pos);
+
+  // Adjust the camera to see the entire model
+  IGL_INLINE void align_camera_center(
+    const ViewerData& data);
+  IGL_INLINE void align_camera_center(
+    const Eigen::MatrixXd& V);
   IGL_INLINE void align_camera_center(
     const Eigen::MatrixXd& V,
     const Eigen::MatrixXi& F);
 
   // Determines how much to zoom and shift such that the mesh fills the unit
   // box (centered at the origin)
-  IGL_INLINE void get_scale_and_shift_to_fit_mesh(
+  IGL_INLINE void get_zoom_and_shift_to_fit_mesh(
+    const Eigen::MatrixXd& V,
+    float & zoom,
+    Eigen::Vector3f& shift);
+  IGL_INLINE void get_zoom_and_shift_to_fit_mesh(
     const Eigen::MatrixXd& V,
     const Eigen::MatrixXi& F,
     float & zoom,
     Eigen::Vector3f& shift);
-
-    // Adjust the view to see the entire model
-    IGL_INLINE void align_camera_center(
-      const Eigen::MatrixXd& V);
-
-    // Determines how much to zoom and shift such that the mesh fills the unit
-    // box (centered at the origin)
-    IGL_INLINE void get_scale_and_shift_to_fit_mesh(
-      const Eigen::MatrixXd& V,
-      float & zoom,
-      Eigen::Vector3f& shift);
 
   // ------------------- Drawing functions
 
@@ -107,28 +108,19 @@ public:
   TextRenderer textrenderer;
 #endif
 
-  // Shape material
-  float shininess;
-
   // Colors
   Eigen::Vector4f background_color;
   Eigen::Vector4f line_color;
 
   // Lighting
+  float shininess;
   Eigen::Vector3f light_position;
   float lighting_factor;
 
+  // Global scene transformation
   RotationType rotation_type;
-
   Eigen::Quaternionf trackball_angle;
-
-  // Model viewing parameters
-  float model_zoom;
-  Eigen::Vector3f model_translation;
-
-  // Model viewing paramters (uv coordinates)
-  float model_zoom_uv;
-  Eigen::Vector3f model_translation_uv;
+  Eigen::Vector3f global_translation;
 
   // Camera parameters
   float camera_zoom;
@@ -143,9 +135,6 @@ public:
   // Animation
   bool is_animating;
   double animation_max_fps;
-
-  // Caches the two-norm between the min/max point of the bounding box
-  float object_scale;
 
   // Viewport size
   Eigen::Vector4f viewport;

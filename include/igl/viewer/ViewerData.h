@@ -12,6 +12,7 @@
 #include <vector>
 
 #include <Eigen/Core>
+#include <Eigen/Geometry>
 
 #include <igl/igl_inline.h>
 
@@ -118,6 +119,12 @@ public:
   // Generates a default grid texture
   IGL_INLINE void grid_texture();
 
+  // Model transformation
+  Eigen::Vector3f model_translation;
+
+  // Caches the two-norm between the min/max point of the bounding box
+  float object_scale;
+
   Eigen::MatrixXd V; // Vertices of the current mesh (#V x 3)
   Eigen::MatrixXi F; // Faces of the mesh (#F x 3)
 
@@ -138,6 +145,8 @@ public:
   // UV parametrization
   Eigen::MatrixXd V_uv; // UV vertices
   Eigen::MatrixXi F_uv; // optional faces for UVs
+  Eigen::Vector3f model_translation_uv;
+  float model_zoom_uv;
 
   // Texture
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_R;

@@ -1,6 +1,6 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
-// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>
+// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>IGL_VIEWER_WITH_NANOGUI_SERIALIZATION
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -17,64 +17,26 @@
 #include <Eigen/Geometry>
 #include <iostream>
 
-#ifdef ENABLE_SERIALIZATION
-#include <igl/serialize.h>
-namespace igl {
-  namespace serialization {
-
-    IGL_INLINE void serialization(bool s,igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
-    {
-      SERIALIZE_MEMBER(shininess);
-
-      SERIALIZE_MEMBER(background_color);
-      SERIALIZE_MEMBER(line_color);
-
-      SERIALIZE_MEMBER(light_position);
-      SERIALIZE_MEMBER(lighting_factor);
-
-      SERIALIZE_MEMBER(trackball_angle);
-      SERIALIZE_MEMBER(rotation_type);
-
-      SERIALIZE_MEMBER(model_zoom);
-      SERIALIZE_MEMBER(model_translation);
-
-      SERIALIZE_MEMBER(model_zoom_uv);
-      SERIALIZE_MEMBER(model_translation_uv);
-
-      SERIALIZE_MEMBER(camera_zoom);
-      SERIALIZE_MEMBER(orthographic);
-      SERIALIZE_MEMBER(camera_view_angle);
-      SERIALIZE_MEMBER(camera_dnear);
-      SERIALIZE_MEMBER(camera_dfar);
-      SERIALIZE_MEMBER(camera_eye);
-      SERIALIZE_MEMBER(camera_center);
-      SERIALIZE_MEMBER(camera_up);
-
-      SERIALIZE_MEMBER(is_animating);
-      SERIALIZE_MEMBER(animation_max_fps);
-
-      SERIALIZE_MEMBER(object_scale);
-
-      SERIALIZE_MEMBER(viewport);
-      SERIALIZE_MEMBER(view);
-      SERIALIZE_MEMBER(model);
-      SERIALIZE_MEMBER(proj);
-    }
-
-    template<>
-    IGL_INLINE void serialize(const igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
-    {
-      serialization(true,const_cast<igl::viewer::ViewerCore&>(obj),buffer);
-    }
-
-    template<>
-    IGL_INLINE void deserialize(igl::viewer::ViewerCore& obj,const std::vector<char>& buffer)
-    {
-      serialization(false,obj,const_cast<std::vector<char>&>(buffer));
-    }
-  }
+IGL_INLINE void igl::viewer::ViewerCore::set_camera_position(
+  const Eigen::Vector3f& pos)
+{
+  Eigen::Vector3f camera_direction = camera_center - camera_eye;
+  camera_center = pos;
+  camera_eye = camera_center - camera_direction;
 }
-#endif
+
+IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
+  const ViewerData& data)
+{
+  align_camera_center(data.V,data.F);
+  camera_center += data.model_translation;
+}
+
+IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
+  const Eigen::MatrixXd& V)
+{
+  align_camera_center(V,Eigen::MatrixXi());
+}
 
 IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
   const Eigen::MatrixXd& V,
@@ -83,15 +45,22 @@ IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
   if(V.rows() == 0)
     return;
 
-  get_scale_and_shift_to_fit_mesh(V,F,model_zoom,model_translation);
-  // Rather than crash on empty mesh...
-  if(V.size() > 0)
-  {
-    object_scale = (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm();
-  }
+  Eigen::Vector3f shift;
+  get_zoom_and_shift_to_fit_mesh(V,F,camera_zoom,shift);
+  Eigen::Vector3f camera_direction = camera_center - camera_eye;
+  camera_center = -shift + global_translation;
+  camera_eye = camera_center - camera_direction;
 }
 
-IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
+IGL_INLINE void igl::viewer::ViewerCore::get_zoom_and_shift_to_fit_mesh(
+  const Eigen::MatrixXd& V,
+  float& zoom,
+  Eigen::Vector3f& shift)
+{
+  get_zoom_and_shift_to_fit_mesh(V,Eigen::MatrixXi(),zoom,shift);
+}
+
+IGL_INLINE void igl::viewer::ViewerCore::get_zoom_and_shift_to_fit_mesh(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F,
   float& zoom,
@@ -100,70 +69,42 @@ IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
   if (V.rows() == 0)
     return;
 
-  Eigen::MatrixXd BC;
-  if (F.rows() <= 1)
-    BC = V;
-  else
-    igl::barycenter(V,F,BC);
-
-  Eigen::RowVector3d min_point = BC.colwise().minCoeff();
-  Eigen::RowVector3d max_point = BC.colwise().maxCoeff();
-  Eigen::RowVector3d centroid  = 0.5*(min_point + max_point);
-
-  shift = -centroid.cast<float>();
-  double x_scale = fabs(max_point[0] - min_point[0]);
-  double y_scale = fabs(max_point[1] - min_point[1]);
-  double z_scale = fabs(max_point[2] - min_point[2]);
-  zoom = 2.0 / std::max(z_scale,std::max(x_scale,y_scale));
-}
-
-IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
-                                                     const Eigen::MatrixXd& V)
-{
-  if(V.rows() == 0)
-    return;
-
-  get_scale_and_shift_to_fit_mesh(V,model_zoom,model_translation);
-  // Rather than crash on empty mesh...
-  if(V.size() > 0)
-  {
-    object_scale = (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm();
-  }
-}
-
-IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
-                                                                 const Eigen::MatrixXd& V,
-                                                                 float& zoom,
-                                                                 Eigen::Vector3f& shift)
-{
-  if (V.rows() == 0)
-    return;
-
   Eigen::RowVector3d min_point;
   Eigen::RowVector3d max_point;
   Eigen::RowVector3d centroid;
 
-  if (V.cols() == 3)
+  if(F.rows() == 0)
   {
-    min_point = V.colwise().minCoeff();
-    max_point = V.colwise().maxCoeff();
-  }
-  else if (V.cols() == 2)
-  {
-    min_point << V.colwise().minCoeff(),0;
-    max_point << V.colwise().maxCoeff(),0;
+    if(V.cols() == 3)
+    {
+      min_point = V.colwise().minCoeff();
+      max_point = V.colwise().maxCoeff();
+    } else if(V.cols() == 2)
+    {
+      min_point << V.colwise().minCoeff(),0;
+      max_point << V.colwise().maxCoeff(),0;
+    } else
+      return;
   }
   else
-    return;
+  {
+    Eigen::MatrixXd BC;
+    if(F.rows() <= 1)
+      BC = V;
+    else
+      igl::barycenter(V,F,BC);
+
+    min_point = BC.colwise().minCoeff();
+    max_point = BC.colwise().maxCoeff();
+  }
 
   centroid = 0.5 * (min_point + max_point);
   shift = -centroid.cast<float>();
   double x_scale = fabs(max_point[0] - min_point[0]);
   double y_scale = fabs(max_point[1] - min_point[1]);
   double z_scale = fabs(max_point[2] - min_point[2]);
-  zoom = 2.0 / std::max(z_scale,std::max(x_scale,y_scale));
+  zoom = std::max(z_scale,std::max(x_scale,y_scale)) / 2;
 }
-
 
 IGL_INLINE void igl::viewer::ViewerCore::clear_framebuffers()
 {
@@ -228,24 +169,33 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
     {
       float fH = tan(camera_view_angle / 360.0 * M_PI) * camera_dnear_zoomed;
       float fW = fH * (double)width/(double)height;
-      // real camera Zoom
       //frustum(-fW*camera_zoom, fW*camera_zoom, -fH*camera_zoom, fH*camera_zoom, camera_dnear, camera_dfar,proj); // real camera Zoom
       frustum(-fW,fW,-fH,fH,camera_dnear_zoomed,camera_dfar_zoomed,proj);
     }
     // end projection
 
     // Set model transformation
+    Eigen::Matrix4f GR = Eigen::Matrix4f::Identity();
+    Eigen::Matrix4f S = Eigen::Matrix4f::Identity();
+    Eigen::Matrix4f SI = Eigen::Matrix4f::Identity();
+    Eigen::Matrix4f T = Eigen::Matrix4f::Identity();
+    Eigen::Matrix4f GT = Eigen::Matrix4f::Identity();
+
     float mat[16];
-    igl::quat_to_mat(trackball_angle.coeffs().data(), mat);
+    igl::quat_to_mat(trackball_angle.coeffs().data(),mat);
 
-    for (unsigned i=0;i<4;++i)
-      for (unsigned j=0;j<4;++j)
-        model(i,j) = mat[i+4*j];
+    for(unsigned i=0;i<4;++i)
+      for(unsigned j=0;j<4;++j)
+        GR(i,j) = mat[i+4*j];
+    
+    S.col(3).head(3) = -camera_center;
+    SI.col(3).head(3) = camera_center;
+    T.col(3).head(3) = data.model_translation;
+    GT.col(3).head(3) = global_translation;
 
-    // Why not just use Eigen::Transform<double,3,Projective> for model...?
-    //model.topLeftCorner(3,3)*=camera_zoom;
-    //model.topLeftCorner(3,3)*=model_zoom;
-    model.col(3).head(3) += model.topLeftCorner(3,3)*model_translation;
+    model = SI * GR * S * GT * T;
+
+    //model.col(3).head(3) += model.topLeftCorner(3,3)*-camera_center;// data.model_translation;
   }
 
   // Send transformations to the GPU
@@ -263,7 +213,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
   GLint fixed_colori          = opengl.shader_mesh.uniform("fixed_color");
   GLint texture_factori       = opengl.shader_mesh.uniform("texture_factor");
 
-  glUniform1f(specular_exponenti, shininess);
+  glUniform1f(specular_exponenti,shininess);
   Vector3f rev_light = -1.*light_position;
   glUniform3fv(light_position_worldi, 1, rev_light.data());
   glUniform1f(lighting_factori, lighting_factor); // enables lighting
@@ -284,8 +234,8 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
     if (data.show_lines)
     {
       glLineWidth(data.line_width);
-      glUniform4f(fixed_colori, line_color[0], line_color[1],
-        line_color[2], 1.0f);
+      glUniform4f(fixed_colori,line_color[0],line_color[1],
+                  line_color[2], 1.0f);
       opengl.draw_mesh(false);
       glUniform4f(fixed_colori, 0.0f, 0.0f, 0.0f, 0.0f);
     }
@@ -293,7 +243,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
 #ifdef IGL_VIEWER_WITH_NANOGUI
     if (data.show_vertid)
     {
-      textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
+      textrenderer.BeginDraw(view*model, proj, viewport, data.object_scale);
       for (int i=0; i<data.V.rows(); ++i)
         textrenderer.DrawText(data.V.row(i),data.V_normals.row(i),to_string(i));
       textrenderer.EndDraw();
@@ -301,7 +251,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
 
     if (data.show_faceid)
     {
-      textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
+      textrenderer.BeginDraw(view*model, proj, viewport, data.object_scale);
 
       for (int i=0; i<data.F.rows(); ++i)
       {
@@ -359,7 +309,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
 #ifdef IGL_VIEWER_WITH_NANOGUI
     if (data.labels_positions.rows() > 0)
     {
-      textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
+      textrenderer.BeginDraw(view*model, proj, viewport, data.object_scale);
       for (int i=0; i<data.labels_positions.rows(); ++i)
         textrenderer.DrawText(data.labels_positions.row(i), Eigen::Vector3d(0.0,0.0,0.0),
             data.labels_strings[i]);
@@ -494,24 +444,19 @@ IGL_INLINE void igl::viewer::ViewerCore::set_rotation_type(
 
 IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
 {
-  // Default shininess
-  shininess = 35.0f;
-
   // Default colors
   background_color << 0.3f, 0.3f, 0.5f, 1.0f;
-  line_color << 0.0f, 0.0f, 0.0f, 1.0f;
+  line_color << 0.0f,0.0f,0.0f,1.0f;
 
   // Default lights settings
+  shininess = 35.0f;
   light_position << 0.0f, -0.30f, -5.0f;
   lighting_factor = 1.0f; //on
 
-  // Default trackball
+  // Global scene transformation
   trackball_angle = Eigen::Quaternionf::Identity();
   set_rotation_type(ViewerCore::ROTATION_TYPE_TRACKBALL);
-
-  // Defalut model viewing parameters
-  model_zoom = 1.0f;
-  model_translation << 0,0,0;
+  global_translation << 0,0,0;
 
   // Camera parameters
   camera_zoom = 1.0f;
@@ -519,9 +464,9 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
   camera_view_angle = 45.0;
   camera_dnear = 1.0;
   camera_dfar = 100.0;
-  camera_eye << 0, 0, 5;
-  camera_center << 0, 0, 0;
-  camera_up << 0, 1, 0;
+  camera_eye << 0,0,5;
+  camera_center << 0,0,0;
+  camera_up << 0,1,0;
 
   is_animating = false;
   animation_max_fps = 30.;

@@ -81,6 +81,7 @@ namespace viewer
     int down_mouse_y;
     float down_mouse_z;
     Eigen::Vector3f down_translation;
+    int down_modifier;
     bool down;
     bool hack_never_moved;
     bool key_pressed_handeld;
@@ -88,9 +89,8 @@ namespace viewer
 #ifdef IGL_VIEWER_WITH_NANOGUI
     nanogui::FormHelper* ngui;
     nanogui::Screen* screen;
-#endif
-
     nanogui::ComboBox* currentDataCB;
+#endif
 
     // Keep track of the global position of the scrollwheel
     float scroll_position;
@@ -184,6 +184,7 @@ namespace viewer
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "Viewer.cpp"
+#  include "ViewerSerialization.h"
 #endif
 
 #endif

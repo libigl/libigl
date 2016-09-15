@@ -15,73 +15,6 @@
 #include <igl/parula.h>
 #include <igl/per_vertex_normals.h>
 
-#ifdef ENABLE_SERIALIZATION
-#include <igl/serialize.h>
-namespace igl {
-  namespace serialization {
-
-    IGL_INLINE void serialization(bool s,igl::viewer::ViewerData& obj,std::vector<char>& buffer)
-    {
-      SERIALIZE_MEMBER(V);
-      SERIALIZE_MEMBER(F);
-
-      SERIALIZE_MEMBER(F_normals);
-      SERIALIZE_MEMBER(F_material_ambient);
-      SERIALIZE_MEMBER(F_material_diffuse);
-      SERIALIZE_MEMBER(F_material_specular);
-
-      SERIALIZE_MEMBER(V_normals);
-      SERIALIZE_MEMBER(V_material_ambient);
-      SERIALIZE_MEMBER(V_material_diffuse);
-      SERIALIZE_MEMBER(V_material_specular);
-
-      SERIALIZE_MEMBER(V_uv);
-      SERIALIZE_MEMBER(F_uv);
-
-      SERIALIZE_MEMBER(texture_R);
-      SERIALIZE_MEMBER(texture_G);
-      SERIALIZE_MEMBER(texture_B);
-
-      SERIALIZE_MEMBER(lines);
-      SERIALIZE_MEMBER(points);
-
-      SERIALIZE_MEMBER(labels_positions);
-      SERIALIZE_MEMBER(labels_strings);
-
-      SERIALIZE_MEMBER(dirty);
-
-      SERIALIZE_MEMBER(show_overlay);
-      SERIALIZE_MEMBER(show_overlay_depth);
-      SERIALIZE_MEMBER(show_texture);
-      SERIALIZE_MEMBER(show_faces);
-      SERIALIZE_MEMBER(show_lines);
-      SERIALIZE_MEMBER(show_vertid);
-      SERIALIZE_MEMBER(show_faceid);
-      SERIALIZE_MEMBER(invert_normals);
-      SERIALIZE_MEMBER(depth_test);
-      SERIALIZE_MEMBER(face_based);
-      SERIALIZE_MEMBER(visible);
-
-      SERIALIZE_MEMBER(point_size);
-      SERIALIZE_MEMBER(line_width);
-    }
-
-    template<>
-    IGL_INLINE void serialize(const igl::viewer::ViewerData& obj,std::vector<char>& buffer)
-    {
-      serialization(true,const_cast<igl::viewer::ViewerData&>(obj),buffer);
-    }
-
-    template<>
-    IGL_INLINE void deserialize(igl::viewer::ViewerData& obj,const std::vector<char>& buffer)
-    {
-      serialization(false,obj,const_cast<std::vector<char>&>(buffer));
-      obj.dirty = igl::viewer::ViewerData::DIRTY_ALL;
-    }
-  }
-}
-#endif
-
 IGL_INLINE igl::viewer::ViewerData::ViewerData()
 : dirty(DIRTY_ALL)
 {
@@ -136,6 +69,12 @@ IGL_INLINE void igl::viewer::ViewerData::set_mesh(const Eigen::MatrixXd& _V, con
     else
       cerr << "ERROR (set_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting."<<endl;
   }
+
+  if(V.size() > 0)
+  {
+    object_scale = (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm();
+  }
+
   dirty |= DIRTY_FACE | DIRTY_POSITION;
 }
 
@@ -381,6 +320,9 @@ IGL_INLINE void igl::viewer::ViewerData::clear()
 IGL_INLINE void igl::viewer::ViewerData::reset()
 {
   clear();
+
+  // Default model viewing parameters
+  model_translation << 0,0,0;
 
   // Default visualization options
   show_faces = true;
