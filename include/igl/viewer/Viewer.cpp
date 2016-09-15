@@ -598,9 +598,13 @@ namespace viewer
         igl::readOBJ(
           mesh_file_name_string,
           V,UV_V,corner_normals,F,UV_F,fNormIndices)))
+      {
 		    return false;
+      }
+      
       data.set_mesh(V,F);
       data.set_uv(UV_V,UV_F);
+
     } else
     {
       // unrecognized file type
